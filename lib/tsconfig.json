@@ -6,6 +6,7 @@
   "include": [
     "cards/**/*.ts",
     "skills/**/*.ts",
+    "sgs/**/*.ts",
     "characters/**/*.ts"
   ],
   "exclude": [
