@@ -1,0 +1,9 @@
+{
+  "name": "sgs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "tslint": "^5.20.1"
+  }
+}

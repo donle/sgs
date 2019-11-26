@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./"
+  },
+  "include": [
+    "cards/**/*.ts",
+    "skills/**/*.ts",
+    "characters/**/*.ts"
+  ],
+  "exclude": [
+    "ui/**/*.ts"
+  ]
+}
