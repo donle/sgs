@@ -3,13 +3,6 @@
   "compilerOptions": {
     "baseUrl": "./"
   },
-  "include": [
-    "cards/**/*.ts",
-    "skills/**/*.ts",
-    "sgs/**/*.ts",
-    "characters/**/*.ts"
-  ],
-  "exclude": [
-    "ui/**/*.ts"
-  ]
+  "include": ["cards/**/*.ts", "skills/**/*.ts", "sgs/**/*.ts", "characters/**/*.ts"],
+  "exclude": ["ui/**/*.ts"]
 }

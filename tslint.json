@@ -4,28 +4,35 @@
   },
   "rules": {
     "@canva/const-enum": true,
-    "@canva/html-message-parameter-types": [true, {
-      "includes": ["**/*_messages.ts"],
-      "excludes": [ "**/tests/**", "**/stories/**", "**/features/**" ]
-    }],
+    "@canva/html-message-parameter-types": [
+      true,
+      {
+        "includes": ["**/*_messages.ts"],
+        "excludes": ["**/tests/**", "**/stories/**", "**/features/**"]
+      }
+    ],
     "prettier": true,
     "adjacent-overload-signatures": true,
     "no-empty-interface": true,
     "no-reference": true,
     "no-var-requires": true,
-    "typedef-whitespace": [true, {
-      "call-signature": "nospace",
-      "index-signature": "nospace",
-      "parameter": "nospace",
-      "property-declaration": "nospace",
-      "variable-declaration": "nospace"
-    }, {
-      "call-signature": "onespace",
-      "index-signature": "onespace",
-      "parameter": "onespace",
-      "property-declaration": "onespace",
-      "variable-declaration": "onespace"
-    }],
+    "typedef-whitespace": [
+      true,
+      {
+        "call-signature": "nospace",
+        "index-signature": "nospace",
+        "parameter": "nospace",
+        "property-declaration": "nospace",
+        "variable-declaration": "nospace"
+      },
+      {
+        "call-signature": "onespace",
+        "index-signature": "onespace",
+        "parameter": "onespace",
+        "property-declaration": "onespace",
+        "variable-declaration": "onespace"
+      }
+    ],
 
     "curly": true,
     "label-position": true,
@@ -59,10 +66,13 @@
     "no-consecutive-blank-lines": true,
     "no-unnecessary-initializer": true,
     "object-literal-shorthand": true,
-    "ordered-imports": [true, {
-      "import-sources-order": "case-insensitive",
-      "named-imports-order": "case-insensitive"
-    }],
+    "ordered-imports": [
+      true,
+      {
+        "import-sources-order": "case-insensitive",
+        "named-imports-order": "case-insensitive"
+      }
+    ],
     "prefer-method-signature": true,
     "prefer-object-spread": true,
     "quotemark": [true, "single", "jsx-double", "avoid-escape", "avoid-template"],

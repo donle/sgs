@@ -1,13 +1,13 @@
 import { Skill } from 'skills/skill';
 
 export type CardProps = {
-  id: number,
-  number: number,
-  suit: CardSuit,
-  name: string,
-  description: string,
-  skills: Skill[],
-}
+  id: number;
+  number: number;
+  suit: CardSuit;
+  name: string;
+  description: string;
+  skills: Skill[];
+};
 
 export abstract class Card {
   protected number: number;
@@ -17,7 +17,7 @@ export abstract class Card {
   protected skills: Skill[];
 
   protected constructor(props: CardProps) {
-    for(const [key, value] of Object.entries(props)) {
+    for (const [key, value] of Object.entries(props)) {
       this[key] = value;
     }
   }

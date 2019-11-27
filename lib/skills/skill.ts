@@ -22,6 +22,4 @@ export abstract class CompulsorySkill extends Skill {
   public abstract onEffect(): void;
 }
 
-export abstract class ActiveSkill extends Skill {
-
-}
+export abstract class ActiveSkill extends Skill {}

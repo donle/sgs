@@ -4,7 +4,11 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
+    "prettier": "^1.19.1",
     "tslint": "^5.20.1",
     "typescript": "^3.7.2"
+  },
+  "scripts": {
+    "prettier": "prettier --write \"./**/*.{ts,css,json}\""
   }
 }
