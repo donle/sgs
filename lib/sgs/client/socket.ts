@@ -1,12 +1,11 @@
-import { PlayerId } from 'core/player';
-import { Socket, SocketMessage, SocketMessageTypes } from 'sgs/engine/socket';
 import {
-  SocketUserMessageEvent,
   CardUseEvent,
-  SkillUseEvent,
-  PinDianEvent,
   DamageEvent,
+  PinDianEvent,
+  SkillUseEvent,
+  SocketUserMessageEvent,
 } from 'core/event';
+import { Socket, SocketMessage, SocketMessageTypes } from 'sgs/engine/socket';
 
 export class ClientSocket extends Socket {
   private webSocketClient: WebSocket;
