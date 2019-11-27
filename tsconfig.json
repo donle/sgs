@@ -2,6 +2,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "sourceMap": false,
+    "outDir": "./build",
     "declaration": true,
     "module": "esnext",
     "moduleResolution": "node",
