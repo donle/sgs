@@ -1,0 +1,14 @@
+{
+  "name": "sanguosha",
+  "version": "1.0.0",
+  "description": "sanguosha cross-platform library based on node.js + typescript",
+  "main": "index.js",
+  "author": "Donle",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^7.2.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^6.0.4"
+  }
+}

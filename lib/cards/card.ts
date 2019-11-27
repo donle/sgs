@@ -1,5 +1,13 @@
 import { Skill } from 'skills/skill';
 
+export const enum CardSuit {
+  NoSuit,
+  Spade,
+  Heart,
+  Club,
+  Diamond,
+}
+
 export type CardProps = {
   id: number;
   number: number;
@@ -23,10 +31,28 @@ export abstract class Card {
   }
 }
 
-export const enum CardSuit {
-  NoSuit,
-  Spade,
-  Heart,
-  Club,
-  Diamond,
+export const enum EquipCardType {
+  Weapon,
+  Shield,
+  DefenseRide,
+  OffenseRide,
+}
+
+export type EquipCardProps = CardProps & {
+  cardType: EquipCardType;
+};
+
+export abstract class EquipCard extends Card {
+  private cardType: EquipCardType;
+
+  protected constructor(props: EquipCardProps) {
+    const { cardType, ...baseProps } = props;
+    super(baseProps);
+
+    this.cardType = cardType;
+  }
+
+  public get CardType() {
+    return this.cardType;
+  }
 }

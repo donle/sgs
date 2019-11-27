@@ -1,5 +1,5 @@
 import { Card } from 'cards/card';
-import { Player } from 'sgs/player';
+import { Player } from 'sgs/core/player';
 
 export type CardUseEvent = {
   from: Player;
@@ -14,7 +14,14 @@ export type SkillUseEvent = {
 };
 
 export type DamageEvent = {
-  from?: Player;
+  attacker?: Player;
   cards?: Card[];
-  to: Player;
+  target: Player;
+};
+
+export type PinDianEvent = {
+  attacker: Player;
+  displayedCardByAttacker: Card;
+  target: Player;
+  displayedCardByTarget: Card;
 };

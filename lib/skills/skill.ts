@@ -1,25 +1,26 @@
-import { Card } from 'cards/card';
-import { Character } from 'characters/character';
+import { SkillUseEvent } from 'core/event';
+import { GameEventStage } from 'core/stage';
 
 export abstract class Skill {
   constructor(protected name: string, protected description: string) {}
+  public abstract onEffect(): SkillUseEvent;
+
+  public get Description() {
+    return this.description;
+  }
 }
 
 export abstract class TriggerSkill extends Skill {
-  private triggerable = false;
-  public abstract onTrigger(): boolean;
+  protected abstract triggerStage: GameEventStage;
 
-  public get Triggerable() {
-    return this.triggerable;
-  }
-
-  public set Triggerable(triggerable: boolean) {
-    this.triggerable = triggerable;
+  public isTriggerable(stage: GameEventStage): boolean {
+    return stage === this.triggerStage;
   }
 }
 
 export abstract class CompulsorySkill extends Skill {
-  public abstract onEffect(): void;
 }
 
-export abstract class ActiveSkill extends Skill {}
+export abstract class ActiveSkill extends Skill {
+  public abstract isAvailable(): boolean;
+}
