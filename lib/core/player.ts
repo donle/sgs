@@ -1,16 +1,9 @@
 import { Card, EquipCard } from 'cards/card';
 import { Character } from 'characters/character';
 
-export const enum PlayerRole {
-  Unknown,
-  Lord,
-  Loyalist,
-  Rebel,
-  Renegade,
-}
-
+export type PlayerId = string;
 export type PlayerProps = {
-  playerId: string;
+  playerId: PlayerId;
   playerName: string;
   playerCharacter: Character;
   playerRole: PlayerRole;
@@ -23,6 +16,14 @@ export type PlayerCards = {
     : Card[];
 };
 
+export const enum PlayerRole {
+  Unknown,
+  Lord,
+  Loyalist,
+  Rebel,
+  Renegade,
+}
+
 export const enum PlayerCardsArea {
   JudgeArea,
   EquipArea,
@@ -31,7 +32,7 @@ export const enum PlayerCardsArea {
 }
 
 export abstract class Player {
-  protected playerId: string;
+  protected playerId: PlayerId;
   protected playerName: string;
   protected playerCharacter: Character;
   private playerRole: PlayerRole;

@@ -8,8 +8,9 @@ export const enum CardSuit {
   Diamond,
 }
 
+export type CardId = string;
 export type CardProps = {
-  id: number;
+  id: CardId;
   number: number;
   suit: CardSuit;
   name: string;
@@ -18,6 +19,7 @@ export type CardProps = {
 };
 
 export abstract class Card {
+  protected id: CardId;
   protected number: number;
   protected suit: CardSuit;
   protected name: string;

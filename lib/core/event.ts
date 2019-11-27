@@ -1,27 +1,39 @@
-import { Card } from 'cards/card';
-import { Player } from 'sgs/core/player';
+import { CardId } from 'cards/card';
+import { PlayerId } from './player';
 
 export type CardUseEvent = {
-  from: Player;
-  card: Card;
-  to?: Player;
+  fromId: PlayerId;
+  cardId: CardId;
+  toId?: PlayerId;
 };
 
 export type SkillUseEvent = {
-  from: Player;
-  cards?: Card[];
-  tos?: Player[];
+  fromId: PlayerId;
+  cardIds?: CardId[];
+  toIds?: PlayerId[];
 };
 
 export type DamageEvent = {
-  attacker?: Player;
-  cards?: Card[];
-  target: Player;
+  attackerId?: PlayerId;
+  cardIds?: CardId[];
+  targetId: PlayerId;
 };
 
 export type PinDianEvent = {
-  attacker: Player;
-  displayedCardByAttacker: Card;
-  target: Player;
-  displayedCardByTarget: Card;
+  attackerId: PlayerId;
+  displayedCardIdByAttacker: CardId;
+  targetId: PlayerId;
+  displayedCardIdByTarget: CardId;
 };
+
+export type SocketUserMessageEvent = {
+  playerId: PlayerId;
+  message: string;
+};
+
+export type GameEvent =
+  | SocketUserMessageEvent
+  | CardUseEvent
+  | SkillUseEvent
+  | DamageEvent
+  | PinDianEvent;
