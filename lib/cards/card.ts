@@ -8,7 +8,7 @@ export const enum CardSuit {
   Diamond,
 }
 
-export type CardId = string;
+export type CardId = number;
 export type CardProps = {
   id: CardId;
   number: number;
@@ -56,5 +56,9 @@ export abstract class EquipCard extends Card {
 
   public get CardType() {
     return this.cardType;
+  }
+
+  public get Id() {
+    return this.id;
   }
 }

@@ -11,15 +11,14 @@ export abstract class Skill {
 }
 
 export abstract class TriggerSkill extends Skill {
-  protected abstract triggerStage: GameEventStage;
+  protected abstract triggerStages: GameEventStage[];
 
   public isTriggerable(stage: GameEventStage): boolean {
-    return stage === this.triggerStage;
+    return this.triggerStages.includes(stage);
   }
 }
 
-export abstract class CompulsorySkill extends Skill {
-}
+export abstract class CompulsorySkill extends Skill {}
 
 export abstract class ActiveSkill extends Skill {
   public abstract isAvailable(): boolean;

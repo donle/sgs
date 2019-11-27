@@ -1,8 +1,10 @@
 import { Socket } from 'sgs/engine/socket';
-import * as ws from 'ws';
+import * as ServerWebSocket from 'ws';
 
-export class ServerSocket extends Socket {
-  private serverSocket = new ws(this.socketUrl, {
-    protocol: this.protocol,
-  });
+export abstract class ServerSocket extends Socket {
+  constructor(socketUrl: string, protocol: 'http' | 'https' = 'http') {
+    super(socketUrl, protocol, new ServerWebSocket(socketUrl, {
+      protocol,
+    }));
+  }
 }

@@ -1,7 +1,9 @@
 import { Skill } from 'skills/skill';
 
+export type CharacterId = number;
+
 export type CharacterProps = {
-  id: number;
+  id: CharacterId;
   name: string;
   maxHp: number;
   skills: Skill[];
@@ -21,5 +23,9 @@ export abstract class Character {
 
   protected getSkillsDescrption() {
     return this.skills.map(skill => skill.Description);
+  }
+
+  public get Id() {
+    return this.id;
   }
 }

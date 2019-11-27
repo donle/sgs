@@ -1,8 +1,9 @@
-import { Player, PlayerProps } from 'core/player';
+import { CharacterId } from 'characters/character';
+import { Player, PlayerId, PlayerProps, PlayerRole } from 'core/player';
 
 export type ClientPlayerProps = PlayerProps & {
   avatarUrl?: string;
-}
+};
 
 export class ClientPlayer extends Player {
   private avatarUrl: string | undefined;
@@ -16,4 +17,15 @@ export class ClientPlayer extends Player {
   public get Avatar() {
     return this.avatarUrl;
   }
+
+  public get Id() {
+    return this.playerId;
+  }
 }
+
+export type ClientViewPlayer = {
+  playerId: PlayerId;
+  playerName: string;
+  playerCharacterId: CharacterId;
+  playerRole: PlayerRole;
+};

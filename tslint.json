@@ -3,15 +3,6 @@
     "exclude": ["**/*.json"]
   },
   "rules": {
-    "@canva/const-enum": true,
-    "@canva/html-message-parameter-types": [
-      true,
-      {
-        "includes": ["**/*_messages.ts"],
-        "excludes": ["**/tests/**", "**/stories/**", "**/features/**"]
-      }
-    ],
-    "prettier": true,
     "adjacent-overload-signatures": true,
     "no-empty-interface": true,
     "no-reference": true,
@@ -54,7 +45,6 @@
     "use-isnan": true,
     "eofline": true,
     "indent": [true, "spaces"],
-    "linebreak-style": [true, "LF"],
     "no-require-imports": true,
     "prefer-const": true,
     "array-type": [true, "array"],

@@ -1,4 +1,5 @@
 import { CardId } from 'cards/card';
+import { ClientViewPlayer } from 'sgs/client/player';
 import { PlayerId } from './player';
 
 export type CardUseEvent = {
@@ -16,7 +17,14 @@ export type SkillUseEvent = {
 export type DamageEvent = {
   attackerId?: PlayerId;
   cardIds?: CardId[];
+  damage: number;
   targetId: PlayerId;
+};
+
+export type JudgeEvent = {
+  toId: PlayerId;
+  cardId: CardId;
+  judgeCardId: CardId;
 };
 
 export type PinDianEvent = {
@@ -31,7 +39,24 @@ export type SocketUserMessageEvent = {
   message: string;
 };
 
+export type GameStartEvent = {
+  currentPlayer: ClientViewPlayer;
+  otherPlayers: ClientViewPlayer[];
+};
+
+export type GameOverEvent = {
+  playersInfo: ClientViewPlayer[];
+};
+
+export type PlayerDiedEvent = {
+  player: ClientViewPlayer;
+};
+
 export type GameEvent =
+  | GameStartEvent
+  | GameOverEvent
+  | PlayerDiedEvent
+  | JudgeEvent
   | SocketUserMessageEvent
   | CardUseEvent
   | SkillUseEvent

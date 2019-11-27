@@ -1,12 +1,12 @@
 import { Card, EquipCard } from 'cards/card';
-import { Character } from 'characters/character';
+import { Character, CharacterId } from 'characters/character';
 
 export type PlayerId = string;
 export type PlayerProps = {
   playerId: PlayerId;
   playerName: string;
-  playerCharacter: Character;
-  playerRole: PlayerRole;
+  playerCharacter?: Character;
+  playerRole?: PlayerRole;
   playerCards?: PlayerCards;
 };
 
@@ -68,11 +68,12 @@ export abstract class Player {
     this.playerCards[PlayerCardsArea.EquipArea].push(equipCard);
   }
 
-  /**
-   * @Notice shouldn't be used anywhere
-   */
-  private assignRole(role: PlayerRole) {
+  public assignRole(role: PlayerRole) {
     this.playerRole = role;
+  }
+
+  public assignCharacter(character: Character) {
+    this.playerCharacter = character;
   }
 
   public get Role() {

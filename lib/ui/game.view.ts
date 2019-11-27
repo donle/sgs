@@ -19,15 +19,10 @@ export abstract class GameView {
     this.initGameView();
   }
 
-  private initGameView() {}
-
-  public playAnimation() {}
-
-  public showMessage(message: string) {}
-
-  public playerDied(player: ClientPlayer) {}
-
-  public showFinalStatisticBoard(finalData: FinalPlayersData) {}
-
-  public reset() {}
+  protected abstract initGameView(): void;
+  public abstract playAnimation(): void;
+  public abstract showMessage(message: string): void;
+  public abstract playerDied(player: ClientPlayer): void;
+  public abstract showFinalStatisticBoard(finalData: FinalPlayersData): void;
+  public abstract reset(): void;
 }
