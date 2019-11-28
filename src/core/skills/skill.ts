@@ -1,6 +1,6 @@
 import { Card } from 'core/cards/card';
+import { AllStages } from 'core/game/stage';
 import { Player } from 'core/player/player';
-import { AllStages } from 'core/stage';
 
 export abstract class Skill {
   constructor(

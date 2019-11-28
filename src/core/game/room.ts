@@ -1,11 +1,11 @@
 import { Card } from 'core/cards/card';
 import { Character } from 'core/characters/character';
+import { GameEventStage, PlayerStage } from 'core/game/stage';
+import { SocketMessageTypes } from 'core/network/socket';
+import { ServerSocket } from 'core/network/socket.server';
 import { Player } from 'core/player/player';
 import { ServerPlayer } from 'core/player/player.server';
-import { GameEventStage, PlayerStage } from 'core/stage';
-import { Languages, Translations } from 'core/translations/translations';
-import { SocketMessageTypes } from 'sgs/network/socket';
-import { ServerSocket } from 'sgs/network/socket.server';
+import { Languages, Translations } from 'translations/translations';
 import { GameEvent } from './event';
 import {
   GameCardExtensions,

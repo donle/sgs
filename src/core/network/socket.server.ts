@@ -1,4 +1,4 @@
-import { Socket } from 'sgs/network/socket';
+import { Socket } from 'core/network/socket';
 import * as ServerWebSocket from 'ws';
 
 export abstract class ServerSocket extends Socket {

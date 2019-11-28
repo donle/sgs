@@ -1,4 +1,4 @@
-import * as Events from 'sgs/game/event';
+import * as Events from 'core/game/event';
 
 interface WebSocketMessageEvent<T = any> {
   data: T;

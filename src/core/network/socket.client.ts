@@ -1,4 +1,4 @@
-import { Socket } from 'sgs/network/socket';
+import { Socket } from 'core/network/socket';
 
 export abstract class ClientSocket extends Socket {
   constructor(socketUrl: string, protocol: 'http' | 'https' = 'http') {
