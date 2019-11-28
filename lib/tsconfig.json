@@ -1,8 +1,4 @@
 {
   "extends": "../tsconfig.json",
-  "compilerOptions": {
-    "baseUrl": "./"
-  },
-  // "include": ["cards/**/*.ts", "skills/**/*.ts", "core/**/*.ts", "sgs/**/*.ts", "characters/**/*.ts"],
-  // "exclude": ["ui/**/*.ts"]
+  "exclude": ["ui/platforms/hybrid/*.ts"]
 }

@@ -1,6 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "baseUrl": "./lib",
     "sourceMap": false,
     "outDir": "./build",
     "declaration": true,

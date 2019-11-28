@@ -25,8 +25,13 @@ export const enum PlayerStage {
 }
 
 export const enum CardUseStage {
-  BeforeCardEffect = 'BeforeCardEffect',
-  AfterCardEffect = 'AfterCardEffect',
+  BeforeCardUseEffect = 'BeforeCardUseEffect',
+  AfterCardUseEffect = 'AfterCardUseEffect',
+}
+
+export const enum CardResponseStage {
+  BeforeCardResponseEffect = 'BeforeCardResponseEffect',
+  AfterCardResponseEffect = 'AfterCardResponseEffect',
 }
 
 export const enum CardDropStage {
@@ -39,14 +44,28 @@ export const enum DamageEffectStage {
   AfterDamageEffect = 'AfterDamageEffect',
 }
 
-export const enum SkillActivateStage {
+export const enum JudgeEffectStage {
+  BeforeJudgeEffectStage = 'BeforeJudgeEffectStage',
+  AfterJudgeEffectStage = 'AfterJudgeEffectStage',
+}
+
+export const enum PlayerDiedStage {
+  BeforePlayerDied = 'BeforePlayerDied',
+  AfterPlayerDied = 'AfterPlayerDied',
+}
+
+export const enum SkillEffectStage {
   BeforeSkillEffect = 'BeforeSkillEffect',
   AfterSkillEffect = 'AfterSkillEffect',
 }
 
 export type GameEventStage =
-  | PlayerStage
   | CardUseStage
   | CardDropStage
+  | CardResponseStage
+  | JudgeEffectStage
+  | PlayerDiedStage
   | DamageEffectStage
-  | SkillActivateStage;
+  | SkillEffectStage;
+
+export type AllStages = PlayerStage | GameEventStage;

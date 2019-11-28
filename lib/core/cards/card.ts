@@ -1,4 +1,4 @@
-import { Skill } from 'skills/skill';
+import { Skill } from 'core/skills/skill';
 
 export const enum CardSuit {
   NoSuit,
@@ -10,7 +10,6 @@ export const enum CardSuit {
 
 export type CardId = number;
 export type CardProps = {
-  id: CardId;
   number: number;
   suit: CardSuit;
   name: string;
@@ -19,17 +18,20 @@ export type CardProps = {
 };
 
 export abstract class Card {
-  protected id: CardId;
   protected number: number;
   protected suit: CardSuit;
   protected name: string;
   protected description: string;
   protected skills: Skill[];
 
-  protected constructor(props: CardProps) {
+  protected constructor(private id: CardId, props: CardProps) {
     for (const [key, value] of Object.entries(props)) {
       this[key] = value;
     }
+  }
+
+  public get Id() {
+    return this.id;
   }
 }
 
@@ -47,18 +49,14 @@ export type EquipCardProps = CardProps & {
 export abstract class EquipCard extends Card {
   private cardType: EquipCardType;
 
-  protected constructor(props: EquipCardProps) {
+  protected constructor(id: CardId, props: EquipCardProps) {
     const { cardType, ...baseProps } = props;
-    super(baseProps);
+    super(id, baseProps);
 
     this.cardType = cardType;
   }
 
   public get CardType() {
     return this.cardType;
-  }
-
-  public get Id() {
-    return this.id;
   }
 }

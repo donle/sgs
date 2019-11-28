@@ -1,5 +1,5 @@
-import { CharacterId } from 'characters/character';
-import { Player, PlayerId, PlayerProps, PlayerRole } from 'core/player';
+import { CharacterId } from 'core/characters/character';
+import { Player, PlayerId, PlayerProps, PlayerRole } from 'core/player/player';
 
 export type ClientPlayerProps = PlayerProps & {
   avatarUrl?: string;
@@ -17,15 +17,11 @@ export class ClientPlayer extends Player {
   public get Avatar() {
     return this.avatarUrl;
   }
-
-  public get Id() {
-    return this.playerId;
-  }
 }
 
 export type ClientViewPlayer = {
   playerId: PlayerId;
   playerName: string;
-  playerCharacterId: CharacterId;
-  playerRole: PlayerRole;
+  playerCharacterId?: CharacterId;
+  playerRole?: PlayerRole;
 };

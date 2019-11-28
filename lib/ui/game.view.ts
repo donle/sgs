@@ -1,6 +1,6 @@
-import { ClientCard } from 'sgs/client/card';
-import { ClientPlayer } from 'sgs/client/player';
-import { FinalPlayersData } from 'sgs/server/data';
+import { ClientCard } from 'core/cards/card.client';
+import { ClientPlayer } from 'core/player/player.client';
+import { FinalPlayersData } from 'sgs/game/game_props';
 import { UiPlatform } from './platforms/platform';
 
 export type GameViewProps = {

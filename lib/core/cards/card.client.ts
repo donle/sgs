@@ -1,4 +1,4 @@
-import { Card, CardProps } from 'cards/card';
+import { Card, CardId, CardProps } from 'core/cards/card';
 
 type ClientCardProps = CardProps & {
   imagePath: string;
@@ -9,9 +9,9 @@ export abstract class ClientCard extends Card {
   protected imagePath: string;
   protected soundTrackUrl: string | undefined;
 
-  constructor(props: ClientCardProps) {
+  constructor(id: CardId, props: ClientCardProps) {
     const { imagePath, soundTrackUrl, ...baseProps } = props;
-    super(baseProps);
+    super(id, baseProps);
 
     this.imagePath = imagePath;
     this.soundTrackUrl = soundTrackUrl;
