@@ -1,12 +1,10 @@
-import { Card } from 'core/cards/card';
-import { Character } from 'core/characters/character';
-import { GameEventStage, PlayerStage } from 'core/game/stage';
-import { SocketMessageTypes } from 'core/network/socket';
+import { CardId } from 'core/cards/card';
+import { GameEventStage } from 'core/game/stage';
 import { ServerSocket } from 'core/network/socket.server';
 import { Player } from 'core/player/player';
-import { ServerPlayer } from 'core/player/player.server';
 import { Languages, Translations } from 'translations/translations';
-import { GameEvent } from './event';
+import { AllGameEvent, GameEventIdentifiers } from '../event/event';
+import { Sanguosha } from './engine';
 import {
   GameCardExtensions,
   GameCharacterExtensions,
@@ -14,18 +12,16 @@ import {
 } from './game_props';
 
 export class Room {
-  private characters: Character[];
-  private cards: Card[];
-  private currentPlayer: ServerPlayer;
-  private currentPlayerStage: PlayerStage;
+  private cards: CardId[];
   private currentGameEventStage: GameEventStage;
-  private drawDile: Card[];
-  private dropDile: Card[];
+  private drawDile: CardId[];
+  private dropDile: CardId[];
 
   constructor(
     private gameInfo: GameInfo,
     private players: Player[],
     private socket: ServerSocket,
+    private engine: Sanguosha,
   ) {
     Translations.setupLanguage(Languages.ZH_CN);
 
@@ -41,13 +37,21 @@ export class Room {
 
   public gameStart() {}
 
-  public notify(type: SocketMessageTypes, payload: GameEvent) {
-    this.socket.sendEvent(type, payload);
+  public notify(
+    type: GameEventIdentifiers,
+    payload: AllGameEvent,
+    to?: Player,
+  ) {
+    if (to) {
+      //... do something
+    } else {
+      this.socket.sendEvent(type, payload);
+    }
   }
 
   public drawCards(numberOfCards: number) {
-    const drawCards = this.drawDile.slice(9, numberOfCards);
+    const drawCards = this.drawDile.slice(0, numberOfCards);
     this.drawDile = this.drawDile.slice(numberOfCards);
-    this.currentPlayer.drawCards(...drawCards);
+    this.engine.CurrentPlayer.drawCardIds(...drawCards);
   }
 }

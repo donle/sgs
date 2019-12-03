@@ -1,22 +1,22 @@
-import { ServerCard } from 'core/cards/card.server';
-import { PlayerCardsArea } from 'core/player/player';
-import { ServerPlayer } from 'core/player/player.server';
+import { CardId } from 'core/cards/card';
+import { Sanguosha } from 'core/game/engine';
+import { PlayerCardsArea } from 'core/player/player_props';
 import { ActiveSkill, SkillFilterResponse } from 'core/skills/skill';
 
 export class ZhiHeng extends ActiveSkill {
   isAvailable() {
-    return true;
+    return this.triggeredTimes < 1;
   }
 
-  onEffect(currentPlayer: ServerPlayer, otherPlayers: ServerPlayer[], cards: ServerCard[]): void {
-    currentPlayer.dropCards(...cards);
+  onEffect(engine: Sanguosha, cardIds: CardId[]): void {
+    engine.CurrentPlayer.dropCards(...cardIds);
   }
 
-  onUseFilter(currentPlayer: ServerPlayer, otherPlayers: ServerPlayer[], cards: ServerCard[]): SkillFilterResponse {
+  onUseFilter(engine: Sanguosha, cardIds: CardId[]): SkillFilterResponse {
     return {
-      availableCards: cards.filter(card =>
+      availableCards: cardIds.filter(card =>
         [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea].includes(
-          currentPlayer.cardFrom(card.Id),
+          engine.CurrentPlayer.cardFrom(card),
         ),
       ),
     };

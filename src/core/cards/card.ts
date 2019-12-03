@@ -18,45 +18,52 @@ export type CardProps = {
 };
 
 export abstract class Card {
-  protected number: number;
-  protected suit: CardSuit;
-  protected name: string;
-  protected description: string;
-  protected skills: Skill[];
-
-  protected constructor(private id: CardId, props: CardProps) {
-    for (const [key, value] of Object.entries(props)) {
-      this[key] = value;
-    }
-  }
+  protected abstract id: CardId;
+  protected abstract cardNumber: number;
+  protected abstract suit: CardSuit;
+  protected abstract name: string;
+  protected abstract description: string;
+  protected abstract skills: Skill[];
+  protected abstract cardType: CardType;
 
   public get Id() {
     return this.id;
   }
+
+  public get CardType() {
+    return this.cardType;
+  }
 }
 
-export const enum EquipCardType {
+export const enum CardType {
+  Basic,
+  Equip,
+  Trick,
+}
+
+export const enum EquipCardCategory {
   Weapon,
   Shield,
   DefenseRide,
   OffenseRide,
 }
 
-export type EquipCardProps = CardProps & {
-  cardType: EquipCardType;
-};
+export class EquipCard extends Card {
+  protected cardType = CardType.Basic;
 
-export abstract class EquipCard extends Card {
-  private cardType: EquipCardType;
-
-  protected constructor(id: CardId, props: EquipCardProps) {
-    const { cardType, ...baseProps } = props;
-    super(id, baseProps);
-
-    this.cardType = cardType;
+  constructor(
+    protected id: CardId,
+    protected cardNumber: number,
+    protected suit: CardSuit,
+    protected name: string,
+    protected description: string,
+    protected skills: Skill[],
+    private equiCardCategory: EquipCardCategory,
+  ) {
+    super();
   }
 
-  public get CardType() {
-    return this.cardType;
+  public get EqupCategory() {
+    return this.equiCardCategory;
   }
 }

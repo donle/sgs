@@ -1,4 +1,0 @@
-{
-  "extends": "../tsconfig.json",
-  "exclude": ["ui/platforms/hybrid/*.ts"]
-}

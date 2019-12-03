@@ -1,7 +1,6 @@
 import { ClientCard } from 'core/cards/card.client';
 import { FinalPlayersData } from 'core/game/game_props';
 import { ClientPlayer } from 'core/player/player.client';
-import { UiPlatform } from './platforms/platform';
 
 export type GameViewProps = {
   currentPlayer: ClientPlayer;
@@ -11,7 +10,7 @@ export type GameViewProps = {
 };
 
 export abstract class GameView {
-  constructor(private platform: UiPlatform, props: GameViewProps) {
+  constructor(props: GameViewProps) {
     for (const [key, value] of Object.entries(props)) {
       this[key] = value;
     }

@@ -1,63 +1,38 @@
 import { Card, CardId, EquipCard } from 'core/cards/card';
-import { Character } from 'core/characters/character';
-
-export type PlayerId = string;
-export type PlayerProps = {
-  playerId: PlayerId;
-  playerName: string;
-  playerCharacter?: Character;
-  playerRole?: PlayerRole;
-  playerCards?: PlayerCards;
-};
-
-export type PlayerCards = {
-  [K in PlayerCardsArea]: K extends PlayerCardsArea.EquipArea
-    ? EquipCard[]
-    : Card[];
-};
-
-export const enum PlayerRole {
-  Unknown,
-  Lord,
-  Loyalist,
-  Rebel,
-  Renegade,
-}
-
-export const enum PlayerCardsArea {
-  JudgeArea,
-  EquipArea,
-  HandArea,
-  HoldingArea,
-}
+import { Character, CharacterNationality } from 'core/characters/character';
+import { Sanguosha } from 'core/game/engine';
+import {
+  PlayerCards,
+  PlayerCardsArea,
+  PlayerId,
+  PlayerRole,
+} from 'core/player/player_props';
 
 export abstract class Player {
-  protected playerId: PlayerId;
-  protected playerName: string;
-  protected playerCharacter: Character;
-  private playerRole: PlayerRole;
-  private playerCards: PlayerCards;
   private hp: number;
   private maxHp: number;
+  protected abstract playerId: PlayerId;
+  protected abstract playerName: string;
+  protected playerRole: PlayerRole = PlayerRole.Unknown;
+  protected nationality: CharacterNationality;
 
-  constructor(props: PlayerProps) {
-    this.playerRole = PlayerRole.Unknown;
-    this.playerCards = {
+  constructor(
+    protected playerCharacter: Character,
+    protected playerCards?: PlayerCards,
+  ) {
+    this.playerCards = this.playerCards || {
       [PlayerCardsArea.HandArea]: [],
       [PlayerCardsArea.JudgeArea]: [],
       [PlayerCardsArea.HoldingArea]: [],
       [PlayerCardsArea.EquipArea]: [],
     };
 
-    for (const [key, value] of Object.entries(props)) {
-      this[key] = value;
-    }
-
     this.hp = this.playerCharacter.MaxHp;
     this.maxHp = this.playerCharacter.MaxHp;
+    this.nationality = this.playerCharacter.Nationality;
   }
 
-  public getCards(area?: PlayerCardsArea) {
+  public getCardIds(area?: PlayerCardsArea): CardId[] {
     if (area === undefined) {
       const [handCards, judgeCards, holdingCards, equipCards] = Object.values(
         this.playerCards,
@@ -68,9 +43,9 @@ export abstract class Player {
     return this.playerCards[area];
   }
 
-  public getCard(cardId: CardId): Card | undefined {
+  public getCardId(cardId: CardId): CardId | undefined {
     for (const cards of Object.values(this.playerCards)) {
-      const targetCard = cards.find(card => card.Id === cardId);
+      const targetCard = cards.find(card => card === cardId);
       if (targetCard !== undefined) {
         return targetCard;
       }
@@ -79,22 +54,54 @@ export abstract class Player {
 
   public cardFrom(cardId: CardId): PlayerCardsArea | undefined {
     for (const [area, cards] of Object.entries(this.playerCards)) {
-      if (cards.find(card => card.Id === cardId)) {
-        return area as any as PlayerCardsArea;
+      if (cards.find(card => card === cardId)) {
+        return (area as any) as PlayerCardsArea;
       }
     }
   }
 
-  public equip(equipCard: EquipCard) {
+  drawCardIds(...cards: CardId[]) {
+    const handCards = this.getCardIds(PlayerCardsArea.HandArea);
+    for (const card of cards) {
+      handCards.push(card);
+    }
+  }
+
+  dropCards(...cards: CardId[]): CardId[] {
+    const playerCardsAreas = [
+      PlayerCardsArea.EquipArea,
+      PlayerCardsArea.HandArea,
+      PlayerCardsArea.HoldingArea,
+      PlayerCardsArea.JudgeArea,
+    ];
+    let droppedCardIds: CardId[] = [];
+    for (const playerCardsArea of playerCardsAreas) {
+      const areaCards = this.getCardIds(playerCardsArea);
+      for (const card of cards) {
+        const index = areaCards.findIndex(areaCard => areaCard === card);
+        if (index >= 0) {
+          droppedCardIds = droppedCardIds.concat(areaCards.splice(index, 1)[0]);
+        }
+      }
+    }
+
+    return droppedCardIds;
+  }
+
+  public equip(engine: Sanguosha, equipCard: EquipCard) {
     const currentEquipIndex = this.playerCards[
       PlayerCardsArea.EquipArea
-    ].findIndex(card => card.CardType === equipCard.CardType);
+    ].findIndex(
+      card =>
+        engine.getCardById<EquipCard>(card).EqupCategory ===
+        equipCard.EqupCategory,
+    );
 
     if (currentEquipIndex >= 0) {
       this.playerCards[PlayerCardsArea.EquipArea].splice(currentEquipIndex, 1);
     }
 
-    this.playerCards[PlayerCardsArea.EquipArea].push(equipCard);
+    this.playerCards[PlayerCardsArea.EquipArea].push(equipCard.Id);
   }
 
   public onDamage(hit: number) {
@@ -107,6 +114,14 @@ export abstract class Player {
 
   public get Hp() {
     return this.hp;
+  }
+
+  public get Nationality() {
+    return this.nationality;
+  }
+
+  public set Nationality(nationality: CharacterNationality) {
+    this.nationality = nationality;
   }
 
   public get MaxHp() {

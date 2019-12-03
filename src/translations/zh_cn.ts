@@ -4,4 +4,5 @@ export const translations = {
   'slash': '杀',
   'jink': '闪',
   'peach': '桃',
+  'wine': '酒',
 };

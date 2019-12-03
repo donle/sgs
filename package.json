@@ -11,6 +11,7 @@
     "typescript": "^3.7.2"
   },
   "scripts": {
-    "prettier": "prettier --write \"./**/*.{ts,css,json}\""
+    "prettier": "prettier --write \"./**/*.{ts,css,json}\"",
+    "build": "rm -rf build && tsc"
   }
 }

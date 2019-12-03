@@ -4,29 +4,29 @@ export type CharacterId = number;
 export const enum CharacterGender {
   Male,
   Female,
+  Neutral,
 }
 
-export type CharacterProps = {
-  name: string;
-  gender: CharacterGender;
-  maxHp: number;
-  skills: Skill[];
-};
+export const enum CharacterNationality {
+  Wei,
+  Shu,
+  Wu,
+  Qun,
+  God,
+}
 
 export abstract class Character {
-  protected id: number;
-  protected name: string;
-  protected gender: CharacterGender;
-  protected maxHp: number;
-  protected skills: Skill[];
   private turnedOver: boolean = false;
   private linked: boolean = false;
 
-  protected constructor(id: CharacterId, props: CharacterProps) {
-    for (const [key, value]  of Object.entries(props)) {
-      this[key] = value;
-    }
-  }
+  protected constructor(
+    protected id: CharacterId,
+    protected name: string,
+    protected gender: CharacterGender,
+    protected nationality: CharacterNationality,
+    protected maxHp: number,
+    protected skills: Skill[],
+  ) {}
 
   protected getSkillsDescrption() {
     return this.skills.map(skill => skill.Description);
@@ -38,6 +38,18 @@ export abstract class Character {
 
   public get MaxHp() {
     return this.maxHp;
+  }
+
+  public get Nationality() {
+    return this.nationality;
+  }
+
+  public get Skills() {
+    return this.skills;
+  }
+
+  public get Name() {
+    return this.name;
   }
 
   public turnOver() {

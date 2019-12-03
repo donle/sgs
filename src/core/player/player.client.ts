@@ -1,27 +1,19 @@
-import { CharacterId } from 'core/characters/character';
-import { Player, PlayerId, PlayerProps, PlayerRole } from 'core/player/player';
-
-export type ClientPlayerProps = PlayerProps & {
-  avatarUrl?: string;
-};
+import { Character } from 'core/characters/character';
+import { Player } from 'core/player/player';
+import { PlayerCards, PlayerId } from './player_props';
 
 export class ClientPlayer extends Player {
-  private avatarUrl: string | undefined;
-  constructor(props: ClientPlayerProps) {
-    const { avatarUrl, ...baseProps } = props;
-    super(baseProps);
-
-    this.avatarUrl = avatarUrl;
+  constructor(
+    protected playerId: PlayerId,
+    protected playerName: string,
+    playerCharacter?: Character,
+    playerCards?: PlayerCards,
+    private avatarUrl?: string,
+  ) {
+    super(playerCharacter, playerCards);
   }
 
   public get Avatar() {
     return this.avatarUrl;
   }
 }
-
-export type ClientViewPlayer = {
-  playerId: PlayerId;
-  playerName: string;
-  playerCharacterId?: CharacterId;
-  playerRole?: PlayerRole;
-};

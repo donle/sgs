@@ -1,7 +1,12 @@
-import * as Events from 'core/game/event';
+import {
+  AllGameEvent,
+  EventMode,
+  EventPicker,
+  GameEventIdentifiers,
+} from 'core/event/event';
 
-interface WebSocketMessageEvent<T = any> {
-  data: T;
+interface WebSocketMessageEvent {
+  data: string;
   type: string;
   target: any;
 }
@@ -12,153 +17,144 @@ interface IWebSocket {
   ): void;
 }
 
-export abstract class Socket {
+export abstract class Socket<T extends EventMode> {
   constructor(
     protected socketUrl: string,
     protected protocol: 'http' | 'https',
     protected webSocket: IWebSocket,
+    protected eventMode: T,
   ) {
-    this.webSocket.onmessage = (event: WebSocketMessageEvent<string>) => {
-      const data = JSON.parse(event.data) as SocketMessage;
-      switch (data.type) {
-        case SocketMessageTypes.UserMessage:
-          this.sendUserMessage(data.content);
+    this.webSocket.onmessage = (event: WebSocketMessageEvent) => {
+      const { type, content } = JSON.parse(event.data) as SocketMessage<
+        GameEventIdentifiers,
+        T
+      >;
+
+      switch (type) {
+        case GameEventIdentifiers.UserMessageEvent:
+          this.sendUserMessage(content as EventPicker<typeof type, T>);
           break;
-        case SocketMessageTypes.CardUseEvent:
-          this.useCard(data.content);
+
+        case GameEventIdentifiers.CardUseEvent:
+          this.useCard(content as EventPicker<typeof type, T>);
           break;
-        case SocketMessageTypes.SkillUseEvent:
-          this.useSkill(data.content);
+        case GameEventIdentifiers.CardDropEvent:
+          this.dropCard(content as EventPicker<typeof type, T>);
           break;
-        case SocketMessageTypes.PinDianEvent:
-          this.pinDian(data.content);
+        case GameEventIdentifiers.CardResponseEvent:
+          this.responseCard(content as EventPicker<typeof type, T>);
           break;
-        case SocketMessageTypes.DamageEvent:
-          this.damage(data.content);
+        case GameEventIdentifiers.DrawCardEvent:
+          this.drawCard(content as EventPicker<typeof type, T>);
           break;
-        case SocketMessageTypes.JudgeEvent:
-          this.judge(data.content);
+        case GameEventIdentifiers.ObtainCardEvent:
+          this.obtainCard(content as EventPicker<typeof type, T>);
           break;
-        case SocketMessageTypes.GameCreatedEvent:
-          this.gameCreated(data.content);
+        case GameEventIdentifiers.MoveCardEvent:
+          this.moveCard(content as EventPicker<typeof type, T>);
           break;
-        case SocketMessageTypes.GameStartEvent:
-          this.gameStart(data.content);
+
+        case GameEventIdentifiers.SkillUseEvent:
+          this.useSkill(content as EventPicker<typeof type, T>);
           break;
-        case SocketMessageTypes.GamOverEvent:
-          this.gameOver(data.content);
+        case GameEventIdentifiers.PinDianEvent:
+          this.pinDian(content as EventPicker<typeof type, T>);
           break;
-        case SocketMessageTypes.PlayerEnterEvent:
-          this.playerEnter(data.content);
+        case GameEventIdentifiers.DamageEvent:
+          this.damage(content as EventPicker<typeof type, T>);
           break;
-        case SocketMessageTypes.PlayerLeaveEvent:
-          this.playerLeave(data.content);
+        case GameEventIdentifiers.JudgeEvent:
+          this.judge(content as EventPicker<typeof type, T>);
           break;
-        case SocketMessageTypes.PlayerDiedEvent:
-          this.playerDied(data.content);
+
+        case GameEventIdentifiers.GameCreatedEvent:
+          this.gameCreated(content as EventPicker<typeof type, T>);
+          break;
+        case GameEventIdentifiers.GameStartEvent:
+          this.gameStart(content as EventPicker<typeof type, T>);
+          break;
+        case GameEventIdentifiers.GameOverEvent:
+          this.gameOver(content as EventPicker<typeof type, T>);
+          break;
+
+        case GameEventIdentifiers.PlayerEnterEvent:
+          this.playerEnter(content as EventPicker<typeof type, T>);
+          break;
+        case GameEventIdentifiers.PlayerLeaveEvent:
+          this.playerLeave(content as EventPicker<typeof type, T>);
+          break;
+        case GameEventIdentifiers.PlayerDiedEvent:
+          this.playerDied(content as EventPicker<typeof type, T>);
         default:
           break;
       }
     };
   }
 
-  public sendEvent(type: SocketMessageTypes, content: Events.GameEvent) {
+  public sendEvent(type: GameEventIdentifiers, content: AllGameEvent) {
     this.webSocket.send(JSON.stringify({ type, content }));
   }
 
-  // tslint:disable-next-line:no-empty
-  public playerDied(ev: Events.PlayerDiedEvent): void {}
-  // tslint:disable-next-line:no-empty
-  public sendUserMessage(ev: Events.SocketUserMessageEvent): void {}
+  public abstract sendUserMessage(
+    ev: EventPicker<GameEventIdentifiers.UserMessageEvent, T>,
+  ): void;
 
-  public abstract gameCreated(ev?: Events.GameCreatedEvent): void;
-  public abstract gameOver(ev: Events.GameOverEvent): void;
-  public abstract gameStart(ev?: Events.GameStartEvent): void;
-  public abstract playerEnter(ev: Events.PlayerEnterEvent): void;
-  public abstract playerLeave(ev?: Events.PlayerLeaveEvent): void;
-  public abstract useCard(ev: Events.CardUseEvent): void;
-  public abstract useSkill(ev: Events.SkillUseEvent): void;
-  public abstract pinDian(ev: Events.PinDianEvent): void;
-  public abstract damage(ev: Events.DamageEvent): void;
-  public abstract judge(ev: Events.JudgeEvent): void;
+  public abstract gameCreated(
+    ev: EventPicker<GameEventIdentifiers.GameCreatedEvent, T>,
+  ): void;
+  public abstract gameOver(
+    ev: EventPicker<GameEventIdentifiers.GameOverEvent, T>,
+  ): void;
+  public abstract gameStart(
+    ev: EventPicker<GameEventIdentifiers.GameStartEvent, T>,
+  ): void;
+  public abstract playerEnter(
+    ev: EventPicker<GameEventIdentifiers.PlayerEnterEvent, T>,
+  ): void;
+  public abstract playerLeave(
+    ev: EventPicker<GameEventIdentifiers.PlayerLeaveEvent, T>,
+  ): void;
+  public abstract playerDied(
+    ev: EventPicker<GameEventIdentifiers.PlayerDiedEvent, T>,
+  ): void;
+
+  public abstract useCard(
+    ev: EventPicker<GameEventIdentifiers.CardUseEvent, T>,
+  ): void;
+  public abstract dropCard(
+    ev: EventPicker<GameEventIdentifiers.CardDropEvent, T>,
+  ): void;
+  public abstract responseCard(
+    ev: EventPicker<GameEventIdentifiers.CardResponseEvent, T>,
+  ): void;
+  public abstract drawCard(
+    ev: EventPicker<GameEventIdentifiers.DrawCardEvent, T>,
+  ): void;
+  public abstract obtainCard(
+    ev: EventPicker<GameEventIdentifiers.ObtainCardEvent, T>,
+  ): void;
+  public abstract moveCard(
+    ev: EventPicker<GameEventIdentifiers.MoveCardEvent, T>,
+  ): void;
+
+  public abstract useSkill(
+    ev: EventPicker<GameEventIdentifiers.SkillUseEvent, T>,
+  ): void;
+  public abstract pinDian(
+    ev: EventPicker<GameEventIdentifiers.PinDianEvent, T>,
+  ): void;
+  public abstract damage(
+    ev: EventPicker<GameEventIdentifiers.DamageEvent, T>,
+  ): void;
+  public abstract judge(
+    ev: EventPicker<GameEventIdentifiers.JudgeEvent, T>,
+  ): void;
 }
 
-export const enum SocketMessageTypes {
-  UserMessage,
-  CardDropEvent,
-  CardResponseEvent,
-  CardUseEvent,
-  SkillUseEvent,
-  PinDianEvent,
-  DamageEvent,
-  JudgeEvent,
-
-  GameCreatedEvent,
-  GameStartEvent,
-  GamOverEvent,
-  PlayerEnterEvent,
-  PlayerLeaveEvent,
-  PlayerDiedEvent,
-}
-
-export type GameEventMessage =
-  | {
-      type: SocketMessageTypes.UserMessage;
-      content: Events.SocketUserMessageEvent;
-    }
-  | {
-      type: SocketMessageTypes.CardUseEvent;
-      content: Events.CardUseEvent;
-    }
-  | {
-      type: SocketMessageTypes.CardDropEvent;
-      content: Events.CardDropEvent;
-    }
-  | {
-      type: SocketMessageTypes.CardResponseEvent;
-      content: Events.CardResponseEvent;
-    }
-  | {
-      type: SocketMessageTypes.SkillUseEvent;
-      content: Events.SkillUseEvent;
-    }
-  | {
-      type: SocketMessageTypes.PinDianEvent;
-      content: Events.PinDianEvent;
-    }
-  | {
-      type: SocketMessageTypes.DamageEvent;
-      content: Events.DamageEvent;
-    }
-  | {
-      type: SocketMessageTypes.JudgeEvent;
-      content: Events.JudgeEvent;
-    };
-
-export type RoomEventMessage =
-  | {
-      type: SocketMessageTypes.GameCreatedEvent;
-      content: Events.GameCreatedEvent;
-    }
-  | {
-      type: SocketMessageTypes.GameStartEvent;
-      content?: Events.GameStartEvent;
-    }
-  | {
-      type: SocketMessageTypes.GamOverEvent;
-      content: Events.GameOverEvent;
-    }
-  | {
-      type: SocketMessageTypes.PlayerEnterEvent;
-      content: Events.PlayerEnterEvent;
-    }
-  | {
-      type: SocketMessageTypes.PlayerLeaveEvent;
-      content: Events.PlayerLeaveEvent;
-    }
-  | {
-      type: SocketMessageTypes.PlayerDiedEvent;
-      content: Events.PlayerDiedEvent;
-    };
-
-export type SocketMessage = GameEventMessage | RoomEventMessage;
+export type SocketMessage<
+  I extends GameEventIdentifiers = GameEventIdentifiers,
+  E extends EventMode = EventMode
+> = {
+  type: I;
+  content: EventPicker<I, E>;
+};

@@ -1,4 +1,4 @@
-import { PlayerRole } from 'core/player/player';
+import { PlayerRole } from 'core/player/player_props';
 
 export const enum GameCharacterExtensions {
   Standard = 'standard',
