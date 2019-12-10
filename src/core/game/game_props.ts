@@ -22,6 +22,12 @@ export type GameInfo = {
   multiCharacters?: boolean;
 };
 
+export const enum DamageType {
+  Normal,
+  Fire,
+  Thunder,
+}
+
 export type FinalPlayersData = {
   playerName: string;
   playerCharacterName: string;

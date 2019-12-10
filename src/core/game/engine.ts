@@ -1,55 +1,39 @@
-import { Card, CardId, CardType } from 'core/cards/card';
-import { Character } from 'core/characters/character';
-import { Player } from 'core/player/player';
+import { Card, CardId } from 'core/cards/card';
+import { Character, CharacterId } from 'core/characters/character';
 import { Skill } from 'core/skills/skill';
-import { PlayerStage } from './stage';
 
 export class Sanguosha {
-  private currentPlayer: Player;
-  private gameStage: PlayerStage;
-  private skills: Skill[];
+  private static skills: Skill[];
+  private static cards: Card[];
+  private static characters: Character[];
 
-  constructor(
-    private cards: Card[],
-    private characters: Character[],
-    private players: Player[],
+  public static load(
+    cards: Card[],
+    characters: Character[],
     hiddenSkills: Skill[] = [],
   ) {
-    this.skills = hiddenSkills;
-    for (const character of this.characters) {
-      this.skills = this.skills.concat(character.Skills);
+    Sanguosha.cards = cards;
+    Sanguosha.characters = characters;
+
+    Sanguosha.skills = hiddenSkills;
+    for (const character of Sanguosha.characters) {
+      Sanguosha.skills = Sanguosha.skills.concat(character.Skills);
     }
   }
 
-  public getCardById<T extends Card>(cardId: CardId): T {
-    return this.cards.find(card => card.Id === cardId) as T;
+  public static getCharacterById(characterId: CharacterId) {
+    return Sanguosha.characters.find(character => character.Id === characterId);
   }
 
-  public get CurrentPlayer() {
-    return this.currentPlayer;
+  public static getCardById<T extends Card>(cardId: CardId): T {
+    return Sanguosha.cards.find(card => card.Id === cardId) as T;
   }
 
-  public set CurrentPlayer(player: Player) {
-    this.currentPlayer = player;
+  public static getSkillBySkillName(name: string) {
+    return Sanguosha.skills.find(skill => skill.Name === name);
   }
 
-  public get CurrentPlayerStage() {
-    return this.gameStage;
-  }
-
-  public set CurrentPlayerStage(stage: PlayerStage) {
-    this.gameStage = stage;
-  }
-
-  public get OtherPlayers() {
-    return this.players.filter(player => player.Id !== this.currentPlayer.Id);
-  }
-
-  public getSkillBySkillName(name: string) {
-    return this.skills.find(skill => skill.Name === name);
-  }
-
-  public getCharacterByCharaterName(name: string) {
-    return this.characters.find(character => character.Name === name);
+  public static getCharacterByCharaterName(name: string) {
+    return Sanguosha.characters.find(character => character.Name === name);
   }
 }

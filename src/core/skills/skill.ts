@@ -1,8 +1,14 @@
 import { Card, CardId } from 'core/cards/card';
-import { AllGameEvent } from 'core/event/event';
-import { Sanguosha } from 'core/game/engine';
-import { AllStages } from 'core/game/stage';
+import {
+  AllGameEvent,
+  ClientEventFinder,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from 'core/event/event';
+import { Room } from 'core/game/room';
+import { AllStage, GameEventStage, PlayerStage } from 'core/game/stage';
 import { Player } from 'core/player/player';
+import { PlayerId } from 'core/player/player_props';
 
 export const enum SkillType {
   Common,
@@ -19,7 +25,20 @@ export abstract class Skill {
     protected skillType = SkillType.Common,
   ) {}
   protected triggeredTimes: number = 0;
-  public abstract onEffect(engine: Sanguosha, cardIds: CardId[]): void;
+  protected abstract get RefreshAt(): AllStage | undefined;
+
+  public abstract onEffect(
+    room: Room,
+    skillUseEvent: ClientEventFinder<
+      GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent
+    >,
+  ): void;
+
+  public abstract onUse(
+    room: Room,
+    cardIds?: CardId[],
+    targets?: PlayerId[],
+  ): void;
 
   public abstract isAvailable(
     currentPlayer: Player,
@@ -58,9 +77,9 @@ export abstract class Skill {
 }
 
 export abstract class TriggerSkill extends Skill {
-  protected abstract triggerStages: AllStages[];
+  protected abstract triggerStages: AllStage[];
 
-  public isTriggerable(stage: AllStages): boolean {
+  public isTriggerable(stage: AllStage): boolean {
     return this.triggerStages.includes(stage);
   }
 
@@ -70,23 +89,29 @@ export abstract class TriggerSkill extends Skill {
 }
 
 export abstract class CompulsorySkill extends Skill {
+  public get TriggerStage(): AllStage | undefined {
+    return;
+  }
+
+  public get RefreshAt(): undefined {
+    return;
+  }
+
   public isAvailable() {
     return true;
   }
+
+  // tslint:disable-next-line: no-empty
+  public onUse() {}
 }
 
 export abstract class ActiveSkill extends Skill {
-  public abstract onUseFilter(
-    engine: Sanguosha,
-    cardIds: CardId[],
-  ): SkillFilterResponse;
-
+  public abstract targetFilter(room: Room, targets: PlayerId[]): boolean;
+  public abstract cardFilter(room: Room, cards: CardId[]): boolean;
   public abstract isAutoActivate(): boolean;
-}
+  public abstract availableCards(room: Room, cards: CardId[]): CardId[];
 
-export type SkillFilterResponse = {
-  availableTargets?: Player[];
-  availableCards?: CardId[];
-  targetsRestriction?(targets?: Player): boolean;
-  cardsRestriction?(cards?: Card): boolean;
-};
+  public get RefreshAt(): AllStage {
+    return PlayerStage.FinishStageEnd;
+  }
+}

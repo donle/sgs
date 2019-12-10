@@ -22,9 +22,10 @@ export const enum PlayerCardsArea {
   HoldingArea,
 }
 
-export type ClientViewPlayer = {
-  playerId: PlayerId;
-  playerName: string;
-  playerCharacterId?: CharacterId;
-  playerRole?: PlayerRole;
+export interface PlayerInfo {
+  Id: PlayerId;
+  Name: string;
+  CharacterId: CharacterId | undefined;
+  Role: PlayerRole | undefined;
+  Position: number | undefined;
 };

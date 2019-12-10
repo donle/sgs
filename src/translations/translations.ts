@@ -1,31 +1,38 @@
-export const enum Languages {
-  ZH_CN = 'zh_cn',
-}
+import { Languages, translations } from './languages';
 
 export type TranslationMap = {
   [OriginalString: string]: string;
 };
 
-export class Translations {
-  private static translationsMap: Map<string, string> | undefined;
-  private constructor() {}
+export function translate(source: string, ...params: string[]) {
+  return new TranslationInstace(source, params);
+}
 
-  static tr(source: string, ...params: string[]) {
-    if (!Translations.translationsMap) {
-      throw new Error('Translation language is not initialized yet');
+class TranslationInstace {
+  constructor(
+    private translationSource: string,
+    private translationParams: string[],
+  ) {}
+  public to(language: Languages): string {
+    const tr = translations(language);
+    let target = tr[this.translationSource];
+
+    if (target === undefined) {
+      // tslint:disable-next-line: no-console
+      console.warn(`Translations Warning - Missing translation: ${target}`);
+      target = this.translationSource;
+      // throw new Error(`Unable to find transations for ${target}`);
     }
 
-    let target = Translations.translationsMap.get(source) || source;
-
-    if (params.length > 0) {
-      for (let i = 0; i < params.length; i++) {
-        target = target.replace(new RegExp(`/\{${i}\}/`, 'g'), params[i]);
+    if (this.translationParams.length > 0) {
+      for (let i = 0; i < this.translationParams.length; i++) {
+        target = target.replace(
+          new RegExp(`/\{${i}\}/`, 'g'),
+          this.translationParams[i],
+        );
       }
     }
-  }
 
-  static async setupLanguage(language: Languages) {
-    const { translations }: { translations: TranslationMap } = await import(`./${language}.ts`);
-    Translations.translationsMap = new Map(Object.entries(translations));
+    return target;
   }
 }

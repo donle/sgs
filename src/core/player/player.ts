@@ -1,18 +1,22 @@
-import { Card, CardId, EquipCard } from 'core/cards/card';
+import { CardId, EquipCard } from 'core/cards/card';
 import { Character, CharacterNationality } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import {
   PlayerCards,
   PlayerCardsArea,
   PlayerId,
+  PlayerInfo,
   PlayerRole,
 } from 'core/player/player_props';
+import { Languages } from 'translations/languages';
 
-export abstract class Player {
+export abstract class Player implements PlayerInfo {
   private hp: number;
   private maxHp: number;
   protected abstract playerId: PlayerId;
   protected abstract playerName: string;
+  protected abstract playerLanguage: Languages;
+  protected abstract playerPosition: number;
   protected playerRole: PlayerRole = PlayerRole.Unknown;
   protected nationality: CharacterNationality;
 
@@ -88,12 +92,12 @@ export abstract class Player {
     return droppedCardIds;
   }
 
-  public equip(engine: Sanguosha, equipCard: EquipCard) {
+  public equip(equipCard: EquipCard) {
     const currentEquipIndex = this.playerCards[
       PlayerCardsArea.EquipArea
     ].findIndex(
       card =>
-        engine.getCardById<EquipCard>(card).EqupCategory ===
+        Sanguosha.getCardById<EquipCard>(card).EqupCategory ===
         equipCard.EqupCategory,
     );
 
@@ -145,7 +149,27 @@ export abstract class Player {
     return this.playerCharacter;
   }
 
+  public get CharacterId() {
+    return this.playerCharacter.Id;
+  }
+
   public get Id() {
     return this.playerId;
+  }
+
+  public get Name() {
+    return this.playerName;
+  }
+
+  public get Position() {
+    return this.playerPosition;
+  }
+
+  public get PlayerLanguage() {
+    return this.playerLanguage;
+  }
+
+  public set PlayerLanguage(language: Languages) {
+    this.playerLanguage = language;
   }
 }

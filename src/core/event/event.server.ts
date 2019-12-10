@@ -1,6 +1,7 @@
 import { CardId } from 'core/cards/card';
-import { GameInfo } from 'core/game/game_props';
-import { ClientViewPlayer, PlayerId } from 'core/player/player_props';
+import { DamageType, GameInfo } from 'core/game/game_props';
+import { PlayerId, PlayerInfo } from 'core/player/player_props';
+import { Languages } from 'translations/languages';
 import { EventUtilities, GameEventIdentifiers } from './event';
 
 //@@todo: to be updated
@@ -31,6 +32,7 @@ export interface ServerEvent extends EventUtilities {
     attackerId?: PlayerId;
     cardIds?: CardId[];
     damage: number;
+    type: DamageType;
     targetId: PlayerId;
   };
   [GameEventIdentifiers.JudgeEvent]: {
@@ -53,21 +55,20 @@ export interface ServerEvent extends EventUtilities {
     gameInfo: GameInfo;
   };
   [GameEventIdentifiers.GameStartEvent]: {
-    currentPlayer: ClientViewPlayer;
-    otherPlayers: ClientViewPlayer[];
+    currentPlayer: PlayerInfo;
+    otherPlayers: PlayerInfo[];
   };
   [GameEventIdentifiers.GameOverEvent]: {
-    playersInfo: ClientViewPlayer[];
+    playersInfo: PlayerInfo[];
   };
 
   [GameEventIdentifiers.PlayerEnterEvent]: {
-    player: ClientViewPlayer;
+    playerInfo: PlayerInfo;
   };
   [GameEventIdentifiers.PlayerLeaveEvent]: {
     playerId: PlayerId;
   };
-  [GameEventIdentifiers.PlayerDiedEvent]: {
-  };
+  [GameEventIdentifiers.PlayerDiedEvent]: {};
 
   [GameEventIdentifiers.AskForPeachEvent]: {};
   [GameEventIdentifiers.AskForNullificationEvent]: {};

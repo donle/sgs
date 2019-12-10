@@ -1,3 +1,5 @@
+import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
+import { Room } from 'core/game/room';
 import { Skill } from 'core/skills/skill';
 
 export const enum CardSuit {
@@ -33,6 +35,32 @@ export abstract class Card {
   public get CardType() {
     return this.cardType;
   }
+
+  public get Number() {
+    return this.Number;
+  }
+
+  public get Suit() {
+    return this.suit;
+  }
+
+  public get Name() {
+    return this.Name;
+  }
+
+  public get Description() {
+    return this.description;
+  }
+
+  public get Type() {
+    return this.cardType;
+  }
+
+  public get SKill() {
+    return this.skills;
+  }
+
+  public abstract get ActualSkill(): Skill;
 }
 
 export const enum CardType {
@@ -48,8 +76,8 @@ export const enum EquipCardCategory {
   OffenseRide,
 }
 
-export class EquipCard extends Card {
-  protected cardType = CardType.Basic;
+export abstract class EquipCard extends Card {
+  protected cardType = CardType.Equip;
 
   constructor(
     protected id: CardId,
@@ -65,5 +93,32 @@ export class EquipCard extends Card {
 
   public get EqupCategory() {
     return this.equiCardCategory;
+  }
+}
+
+export abstract class VirtualCard extends Card {
+  protected id = -1;
+  protected cardNumber = 0;
+  protected suit = CardSuit.NoSuit;
+  protected name = this.viewAs.Name;
+  protected description = this.viewAs.Description;
+  protected skills = this.viewAs.SKill;
+  protected cardType = this.viewAs.Type;
+
+  constructor(private viewAs: Card, private cards: Card[] = []) {
+    super();
+
+    if (cards.length === 1) {
+      this.cardNumber = cards[0].Number;
+      this.suit = cards[0].Suit;
+    }
+  }
+
+  public get ActualCards() {
+    return this.cards;
+  }
+
+  public get EffectCard() {
+    return this.viewAs;
   }
 }

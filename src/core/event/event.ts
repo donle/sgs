@@ -38,7 +38,11 @@ export const enum EventMode {
 
 export type BaseGameEvent = {
   triggeredBySkillName?: string;
-  message: string;
+  message?: string;
+}
+
+export type BaseServerEvent = {
+  playerId: string;
 }
 
 export type EventUtilities = {
@@ -48,7 +52,10 @@ export type EventUtilities = {
 export type EventPicker<
   I extends GameEventIdentifiers,
   E extends EventMode
-> = E extends EventMode.Client ? BaseGameEvent & ClientEvent[I] : ServerEvent[I];
+> = BaseGameEvent & (E extends EventMode.Client ? ClientEvent[I] : BaseServerEvent & ServerEvent[I]);
+
+export type ClientEventFinder<I extends GameEventIdentifiers> = BaseGameEvent & ClientEvent[I];
+export type ServerEventFinder<I extends GameEventIdentifiers> = BaseGameEvent & BaseServerEvent & ServerEvent[I];
 
 export type AllGameEvent =
   | GameEventIdentifiers.GameCreatedEvent

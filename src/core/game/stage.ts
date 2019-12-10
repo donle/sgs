@@ -68,4 +68,4 @@ export type GameEventStage =
   | DamageEffectStage
   | SkillEffectStage;
 
-export type AllStages = PlayerStage | GameEventStage;
+export type AllStage = PlayerStage | GameEventStage;
