@@ -1,7 +1,7 @@
-import { EventMode, EventPicker, GameEventIdentifiers } from 'core/event/event';
-import { Room } from 'core/game/room';
+import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
 import { Socket, SocketMessage } from 'core/network/socket';
 import { PlayerId, PlayerInfo } from 'core/player/player_props';
+import { ServerRoom } from 'core/room/room.server';
 import { createHash } from 'crypto';
 import * as ServerWebSocket from 'ws';
 
@@ -9,14 +9,14 @@ type WebSocket = ServerWebSocket & {
   id: string;
 };
 
-export class ServerSocket extends Socket<EventMode.Server> {
+export class ServerSocket extends Socket<WorkPlace.Server> {
   private socket: ServerWebSocket.Server;
-  private room: Room;
+  private room: ServerRoom;
   private clients: WebSocket[];
   private hash = createHash('sha256');
 
   constructor() {
-    super(EventMode.Server);
+    super(WorkPlace.Server);
 
     this.socket = new ServerWebSocket.Server({ noServer: true });
     this.socket.on('connection', (ws: WebSocket, req) => {
@@ -26,14 +26,14 @@ export class ServerSocket extends Socket<EventMode.Server> {
       ws.on('message', data => {
         const { type, content } = JSON.parse(data as string) as SocketMessage<
           GameEventIdentifiers,
-          EventMode.Client
+          WorkPlace.Client
         >;
 
         if (this.room !== undefined) {
           if (type === GameEventIdentifiers.PlayerEnterEvent) {
             const { playerLanguage, playerName } = content as EventPicker<
               GameEventIdentifiers.PlayerEnterEvent,
-              EventMode.Client
+              WorkPlace.Client
             >;
 
             const playerInfo: PlayerInfo = {
@@ -56,7 +56,7 @@ export class ServerSocket extends Socket<EventMode.Server> {
     });
   }
 
-  public emit(room: Room) {
+  public emit(room: ServerRoom) {
     if (!this.room) {
       this.room = room;
     }
@@ -64,7 +64,7 @@ export class ServerSocket extends Socket<EventMode.Server> {
 
   public sendEvent(
     type: GameEventIdentifiers,
-    content: EventPicker<typeof type, EventMode.Client>,
+    content: EventPicker<typeof type, WorkPlace.Client>,
     to: PlayerId,
   ) {
     const clientSocket = this.clients.find(client => client.id === to);
@@ -79,7 +79,7 @@ export class ServerSocket extends Socket<EventMode.Server> {
 
   broadcast(
     type: GameEventIdentifiers,
-    content: EventPicker<typeof type, EventMode.Client>,
+    content: EventPicker<typeof type, WorkPlace.Client>,
   ) {
     this.socket.clients.forEach(client => {
       client.send(JSON.stringify({ type, content }));

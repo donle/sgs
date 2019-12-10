@@ -1,8 +1,8 @@
 import {
   AllGameEvent,
-  EventMode,
   EventPicker,
   GameEventIdentifiers,
+  WorkPlace,
 } from 'core/event/event';
 import { PlayerId } from 'core/player/player_props';
 
@@ -18,14 +18,14 @@ export interface IWebSocket {
   ): void;
 }
 
-export abstract class Socket<T extends EventMode> {
+export abstract class Socket<T extends WorkPlace> {
   constructor(protected eventMode: T) {}
 
   public abstract sendEvent(
     type: GameEventIdentifiers,
     content: EventPicker<
       typeof type,
-      T extends EventMode.Client ? EventMode.Server : EventMode.Client
+      T extends WorkPlace.Client ? WorkPlace.Server : WorkPlace.Client
     >,
     to: PlayerId,
   ): void;
@@ -33,7 +33,7 @@ export abstract class Socket<T extends EventMode> {
 
 export type SocketMessage<
   I extends GameEventIdentifiers = GameEventIdentifiers,
-  E extends EventMode = EventMode
+  E extends WorkPlace = WorkPlace
 > = {
   type: I;
   content: EventPicker<I, E>;

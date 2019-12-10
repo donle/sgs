@@ -13,6 +13,6 @@ export class ServerPlayer extends Player {
     playerCharacterId?: CharacterId,
     playerCards?: PlayerCards,
   ) {
-    super(Sanguosha.getCharacterById(playerCharacterId), playerCards);
+    super(playerCharacterId, playerCards);
   }
 }

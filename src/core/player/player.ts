@@ -1,5 +1,10 @@
-import { CardId, EquipCard } from 'core/cards/card';
-import { Character, CharacterNationality } from 'core/characters/character';
+import { CardId } from 'core/cards/card';
+import { EquipCard, RideCard, WeaponCard } from 'core/cards/equip_card';
+import {
+  Character,
+  CharacterId,
+  CharacterNationality,
+} from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import {
   PlayerCards,
@@ -8,6 +13,7 @@ import {
   PlayerInfo,
   PlayerRole,
 } from 'core/player/player_props';
+import { DistanceSkill } from 'core/skills/skill';
 import { Languages } from 'translations/languages';
 
 export abstract class Player implements PlayerInfo {
@@ -19,9 +25,14 @@ export abstract class Player implements PlayerInfo {
   protected abstract playerPosition: number;
   protected playerRole: PlayerRole = PlayerRole.Unknown;
   protected nationality: CharacterNationality;
+  protected distanceToOthers: number = 0;
+  protected distanceFromOthers: number = 0;
+  protected position: number;
+
+  private playerCharacter: Character;
 
   constructor(
-    protected playerCharacter: Character,
+    protected playerCharacterId: CharacterId,
     protected playerCards?: PlayerCards,
   ) {
     this.playerCards = this.playerCards || {
@@ -31,6 +42,7 @@ export abstract class Player implements PlayerInfo {
       [PlayerCardsArea.EquipArea]: [],
     };
 
+    this.playerCharacter = Sanguosha.getCharacterById(this.playerCharacterId);
     this.hp = this.playerCharacter.MaxHp;
     this.maxHp = this.playerCharacter.MaxHp;
     this.nationality = this.playerCharacter.Nationality;
@@ -64,7 +76,7 @@ export abstract class Player implements PlayerInfo {
     }
   }
 
-  drawCardIds(...cards: CardId[]) {
+  public drawCardIds(...cards: CardId[]) {
     const handCards = this.getCardIds(PlayerCardsArea.HandArea);
     for (const card of cards) {
       handCards.push(card);
@@ -108,6 +120,67 @@ export abstract class Player implements PlayerInfo {
     this.playerCards[PlayerCardsArea.EquipArea].push(equipCard.Id);
   }
 
+  public hasArmored(card: CardId): boolean {
+    return this.playerCards[PlayerCardsArea.EquipArea].includes(card);
+  }
+
+  public attackDistance() {
+    let defaultDistance = 1;
+    const weapon = this.playerCards[PlayerCardsArea.EquipArea].find(
+      card => Sanguosha.getCardById(card) instanceof WeaponCard,
+    );
+    if (weapon !== undefined) {
+      const weaponCard: WeaponCard = Sanguosha.getCardById(weapon);
+      defaultDistance += weaponCard.AttackDistance;
+    }
+
+    return defaultDistance;
+  }
+
+  public inDistanceTo(target: Player): boolean {
+    const fixedDistance = this.getFixedDistance(true);
+    const targetFixedDistance = target.getFixedDistance(false);
+
+    return (this.position + fixedDistance) - (target.position + targetFixedDistance) <= 1;
+  }
+
+  public inDistanceFrom(source: Player): boolean {
+    const fixedDistance = this.getFixedDistance(false);
+    const sourceFixedDistance = source.getFixedDistance(true);
+
+    return (source.position + sourceFixedDistance) - (this.position + fixedDistance) <= 1;
+  }
+
+  private getFixedDistance(toOthers: boolean) {
+    const rides: DistanceSkill[] = this.playerCharacter[
+      PlayerCardsArea.EquipArea
+    ]
+      .filter(cardId => {
+        const card = Sanguosha.getCardById(cardId);
+        return card instanceof RideCard;
+      })
+      .map(cardId => Sanguosha.getCardById<RideCard>(cardId).ActualSkill);
+
+    const skills: DistanceSkill[] = this.playerCharacter.Skills.filter(
+      skill => skill instanceof DistanceSkill,
+    ) as DistanceSkill[];
+
+    let fixedDistance = 0;
+    for (const skill of [...rides, ...skills]) {
+      if (toOthers) {
+        if (skill.Distance < 0) {
+          fixedDistance += skill.Distance;
+        }
+      } else {
+        if (skill.Distance > 0) {
+          fixedDistance += skill.Distance;
+        }
+      }
+    }
+
+    return fixedDistance;
+  }
+
   public onDamage(hit: number) {
     this.hp -= hit;
   }
@@ -142,15 +215,15 @@ export abstract class Player implements PlayerInfo {
     this.playerRole = role;
   }
 
-  public set Character(character: Character) {
-    this.playerCharacter = character;
+  public set CharacterId(characterId: CharacterId) {
+    this.playerCharacterId = characterId;
   }
-  public get Character() {
-    return this.playerCharacter;
+  public get CharacterId() {
+    return this.playerCharacterId;
   }
 
-  public get CharacterId() {
-    return this.playerCharacter.Id;
+  public get Character() {
+    return this.playerCharacter;
   }
 
   public get Id() {

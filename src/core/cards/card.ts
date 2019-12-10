@@ -1,5 +1,5 @@
 import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
-import { Room } from 'core/game/room';
+import { Room } from 'core/room/room';
 import { Skill } from 'core/skills/skill';
 
 export const enum CardSuit {
@@ -74,26 +74,6 @@ export const enum EquipCardCategory {
   Shield,
   DefenseRide,
   OffenseRide,
-}
-
-export abstract class EquipCard extends Card {
-  protected cardType = CardType.Equip;
-
-  constructor(
-    protected id: CardId,
-    protected cardNumber: number,
-    protected suit: CardSuit,
-    protected name: string,
-    protected description: string,
-    protected skills: Skill[],
-    private equiCardCategory: EquipCardCategory,
-  ) {
-    super();
-  }
-
-  public get EqupCategory() {
-    return this.equiCardCategory;
-  }
 }
 
 export abstract class VirtualCard extends Card {

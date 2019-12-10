@@ -31,7 +31,7 @@ export const enum GameEventIdentifiers {
   AskForCardDropEvent,
 }
 
-export const enum EventMode {
+export const enum WorkPlace {
   Client,
   Server,
 }
@@ -51,8 +51,8 @@ export type EventUtilities = {
 
 export type EventPicker<
   I extends GameEventIdentifiers,
-  E extends EventMode
-> = BaseGameEvent & (E extends EventMode.Client ? ClientEvent[I] : BaseServerEvent & ServerEvent[I]);
+  E extends WorkPlace
+> = BaseGameEvent & (E extends WorkPlace.Client ? ClientEvent[I] : BaseServerEvent & ServerEvent[I]);
 
 export type ClientEventFinder<I extends GameEventIdentifiers> = BaseGameEvent & ClientEvent[I];
 export type ServerEventFinder<I extends GameEventIdentifiers> = BaseGameEvent & BaseServerEvent & ServerEvent[I];

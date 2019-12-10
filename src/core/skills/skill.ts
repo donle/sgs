@@ -3,15 +3,15 @@ import {
   AllGameEvent,
   ClientEventFinder,
   GameEventIdentifiers,
-  ServerEventFinder,
 } from 'core/event/event';
-import { Room } from 'core/game/room';
-import { AllStage, GameEventStage, PlayerStage } from 'core/game/stage';
+import { AllStage, PlayerStage } from 'core/game/stage';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
+import { Room } from 'core/room/room';
 
 export const enum SkillType {
   Common,
+  Compulsory,
   Awaken,
   Limit,
 }
@@ -103,6 +103,26 @@ export abstract class CompulsorySkill extends Skill {
 
   // tslint:disable-next-line: no-empty
   public onUse() {}
+}
+
+export class DistanceSkill extends CompulsorySkill {
+  constructor(
+    name: string,
+    description: string,
+    private distance: number,
+    shadowSkill = false,
+    lordSkill = false,
+    skillType = SkillType.Compulsory,
+  ) {
+    super(name, description, shadowSkill, lordSkill, skillType);
+  }
+
+  // tslint:disable-next-line:no-empty
+  public onEffect() {}
+
+  public get Distance() {
+    return this.distance;
+  }
 }
 
 export abstract class ActiveSkill extends Skill {

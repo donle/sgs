@@ -1,7 +1,7 @@
 import { CardId } from 'core/cards/card';
 import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
-import { Room } from 'core/game/room';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { Room } from 'core/room/room';
 import { ActiveSkill } from 'core/skills/skill';
 import { translate } from 'translations/translations';
 
