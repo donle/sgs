@@ -8,6 +8,7 @@ export const translations = {
   '{0} activates skill {1}': '{0} 发动了技能【{1}】',
   'sunquan': '孙权',
   'zhiheng': '制衡',
+  '{0} hits {1} for {2} hp': '{0} 对 {1} 造成了 {2} 点伤害',
   '{0} droppes cards {1}': '{0} 弃置了 {1}',
   '{0} cards are dropped': '{0} 进入了弃牌堆',
   '{0} uses card {2} to {1}': '{0} 对 {1} 使用了一张【{2}】',

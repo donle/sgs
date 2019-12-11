@@ -13,20 +13,19 @@ import {
   PlayerInfo,
   PlayerRole,
 } from 'core/player/player_props';
-import { DistanceSkill } from 'core/skills/skill';
+import { CompulsorySkill, DistanceSkill, TriggerSkill } from 'core/skills/skill';
 import { Languages } from 'translations/languages';
 
 export abstract class Player implements PlayerInfo {
   private hp: number;
   private maxHp: number;
+  private dead: boolean;
   protected abstract playerId: PlayerId;
   protected abstract playerName: string;
   protected abstract playerLanguage: Languages;
   protected abstract playerPosition: number;
   protected playerRole: PlayerRole = PlayerRole.Unknown;
   protected nationality: CharacterNationality;
-  protected distanceToOthers: number = 0;
-  protected distanceFromOthers: number = 0;
   protected position: number;
 
   private playerCharacter: Character;
@@ -46,6 +45,7 @@ export abstract class Player implements PlayerInfo {
     this.hp = this.playerCharacter.MaxHp;
     this.maxHp = this.playerCharacter.MaxHp;
     this.nationality = this.playerCharacter.Nationality;
+    this.dead = false;
   }
 
   public getCardIds(area?: PlayerCardsArea): CardId[] {
@@ -124,7 +124,7 @@ export abstract class Player implements PlayerInfo {
     return this.playerCards[PlayerCardsArea.EquipArea].includes(card);
   }
 
-  public attackDistance() {
+  public get AttackDistance() {
     let defaultDistance = 1;
     const weapon = this.playerCards[PlayerCardsArea.EquipArea].find(
       card => Sanguosha.getCardById(card) instanceof WeaponCard,
@@ -137,18 +137,12 @@ export abstract class Player implements PlayerInfo {
     return defaultDistance;
   }
 
-  public inDistanceTo(target: Player): boolean {
-    const fixedDistance = this.getFixedDistance(true);
-    const targetFixedDistance = target.getFixedDistance(false);
-
-    return (this.position + fixedDistance) - (target.position + targetFixedDistance) <= 1;
+  public getOffenseDistance() {
+    return this.getFixedDistance(true);
   }
 
-  public inDistanceFrom(source: Player): boolean {
-    const fixedDistance = this.getFixedDistance(false);
-    const sourceFixedDistance = source.getFixedDistance(true);
-
-    return (source.position + sourceFixedDistance) - (this.position + fixedDistance) <= 1;
+  public getDefenseDistance() {
+    return this.getFixedDistance(false);
   }
 
   private getFixedDistance(toOthers: boolean) {
@@ -187,6 +181,10 @@ export abstract class Player implements PlayerInfo {
 
   public onLoseHp(lostHp: number) {
     this.hp -= lostHp;
+  }
+
+  public onRecoverHp(recover: number) {
+    this.hp += recover;
   }
 
   public get Hp() {
@@ -244,5 +242,27 @@ export abstract class Player implements PlayerInfo {
 
   public set PlayerLanguage(language: Languages) {
     this.playerLanguage = language;
+  }
+
+  public getTriggerSkills() {
+    const equipCards = this.playerCards[PlayerCardsArea.EquipArea].map(card => Sanguosha.getCardById(card));
+    const skills: (TriggerSkill | CompulsorySkill)[] = [];
+    for (const equip of equipCards) {
+      if (equip.ActualSkill instanceof TriggerSkill || equip.ActualSkill instanceof CompulsorySkill) {
+        skills.push(equip.ActualSkill);
+      }
+    }
+
+    for (const skill of this.playerCharacter.Skills) {
+      if (skill instanceof TriggerSkill || skill instanceof CompulsorySkill) {
+        skills.push(skill);
+      }
+    }
+
+    return skills;
+  }
+
+  public get Dead() {
+    return this.dead;
   }
 }

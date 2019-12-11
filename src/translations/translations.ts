@@ -8,6 +8,10 @@ export function translate(source: string, ...params: string[]) {
   return new TranslationInstace(source, params);
 }
 
+export function translateNote(source: string, ...params: string[]) {
+  return (language: Languages) => translate(source, ...params.map(param => translate(param).to(language))).to(language);
+}
+
 class TranslationInstace {
   constructor(
     private translationSource: string,

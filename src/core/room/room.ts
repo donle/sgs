@@ -1,6 +1,6 @@
 import { CardId } from 'core/cards/card';
-import { WorkPlace, EventPicker, GameEventIdentifiers } from 'core/event/event';
-import { GameEventStage } from 'core/game/stage';
+import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
+import { AllStage, GameEventStage } from 'core/game/stage';
 import { Socket } from 'core/network/socket';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
@@ -9,7 +9,8 @@ import {
   GameCardExtensions,
   GameCharacterExtensions,
   GameInfo,
-} from '../game/game_props';
+} from 'core/game/game_props';
+import { Languages } from 'translations/languages';
 
 type RoomId = number;
 
@@ -33,15 +34,30 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public abstract notify(
     type: GameEventIdentifiers,
-    content: EventPicker<typeof type, WorkPlace.Client>,
+    content: EventPicker<typeof type, WorkPlace>,
     pleyer: PlayerId,
   ): void;
-  public abstract broadcast(
-    type: GameEventIdentifiers,
-    content: EventPicker<typeof type, WorkPlace.Client>,
+  public abstract broadcast<I extends GameEventIdentifiers>(
+    type: I,
+    content: EventPicker<I, WorkPlace>,
+    pendingMessage?: (language: Languages) => string,
   ): void;
+  public abstract trigger(
+    stage: AllStage,
+    content: EventPicker<GameEventIdentifiers, WorkPlace>,
+  ): void;
+
   public abstract drawCards(numberOfCards: number, player?: Player): void;
   public abstract dropCards(cardIds: CardId[], player?: Player): void;
+
+  public getPlayerById(playerId: PlayerId) {
+    const player = this.players.find(player => player.Id === playerId);
+    if (player === undefined) {
+      throw new Error(`Unable to find player by player ID: ${playerId}`);
+    }
+
+    return player;
+  }
 
   public on<I extends GameEventIdentifiers>(
     type: I,
@@ -54,5 +70,35 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public get CurrentPlayer() {
     return this.currentPlayer;
+  }
+
+  public get AlivePlayers() {
+    return this.players.filter(player => !player.Dead);
+  }
+
+  private onSeatDistance(from: Player, to: Player) {
+    const startPosition = Math.min(from.Position, to.Position);
+    const endPosition =
+      startPosition === from.Position ? to.Position : from.Position;
+    let distance = 0;
+    for (let start = startPosition; start === endPosition; start++) {
+      if (!this.players[start].Dead) {
+        distance++;
+      }
+    }
+
+    return this.AlivePlayers.length / 2 <= distance
+      ? distance
+      : this.AlivePlayers.length - distance;
+  }
+
+  public canAttack(from: Player, to: Player) {
+    const seatDistance = this.getFixedSeatDistance(from, to);
+    return from.AttackDistance >= seatDistance;
+  }
+
+  public getFixedSeatDistance(from: Player, to: Player) {
+    const seatGap = from.getOffenseDistance() + to.getDefenseDistance();
+    return this.onSeatDistance(from, to) + seatGap;
   }
 }

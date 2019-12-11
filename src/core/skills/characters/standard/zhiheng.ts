@@ -3,9 +3,13 @@ import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill } from 'core/skills/skill';
-import { translate } from 'translations/translations';
+import { translate, translateNote } from 'translations/translations';
 
 export class ZhiHeng extends ActiveSkill {
+  constructor() {
+    super('zhiheng', 'zhiheng_description');
+  }
+
   isAvailable() {
     return this.triggeredTimes < 1;
   }
@@ -40,19 +44,14 @@ export class ZhiHeng extends ActiveSkill {
   }
 
   onUse(room: Room, cardIds: CardId[]) {
-    const language = room.CurrentPlayer.PlayerLanguage;
-
-    room.broadcast(GameEventIdentifiers.SkillUseEvent, {
-      cardIds,
-      message: translate(
+    room.broadcast(
+      GameEventIdentifiers.SkillUseEvent,
+      { cardIds, fromId: room.CurrentPlayer.Id },
+      translateNote(
         '{0} activates skill {1}',
-        translate(room.CurrentPlayer.Character.Name).to(language),
-        translate(this.Name).to(language),
-      ).to(language),
-    });
-  }
-
-  isAutoActivate() {
-    return false;
+        room.CurrentPlayer.Character.Name,
+        this.name,
+      ),
+    );
   }
 }

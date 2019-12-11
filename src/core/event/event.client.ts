@@ -27,18 +27,17 @@ export interface ClientEvent extends EventUtilities {
     cardIds?: CardId[];
     toIds?: PlayerId[];
   };
-  [GameEventIdentifiers.DamageEvent]: {
-    attackerId?: PlayerId;
-    cardIds?: CardId[];
-    damage: number;
-    type: DamageType;
-    targetId: PlayerId;
-  };
+  [GameEventIdentifiers.DamageEvent]: never;
   [GameEventIdentifiers.JudgeEvent]: {
     toId: PlayerId;
     cardId: CardId;
     judgeCardId: CardId;
   };
+  [GameEventIdentifiers.RecoverEvent]: {
+    fromId: PlayerId;
+    toId: PlayerId;
+    recover: number;
+  }
   [GameEventIdentifiers.PinDianEvent]: {
     attackerId: PlayerId;
     displayedCardIdByAttacker: CardId;

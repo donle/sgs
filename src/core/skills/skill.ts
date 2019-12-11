@@ -1,10 +1,6 @@
-import { Card, CardId } from 'core/cards/card';
-import {
-  AllGameEvent,
-  ClientEventFinder,
-  GameEventIdentifiers,
-} from 'core/event/event';
-import { AllStage, PlayerStage } from 'core/game/stage';
+import { CardId } from 'core/cards/card';
+import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
+import { AllStage, PlayerStageListEnum } from 'core/game/stage';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -29,9 +25,7 @@ export abstract class Skill {
 
   public abstract onEffect(
     room: Room,
-    skillUseEvent: ClientEventFinder<
-      GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent
-    >,
+    event: ClientEventFinder<GameEventIdentifiers>,
   ): void;
 
   public abstract onUse(
@@ -42,7 +36,7 @@ export abstract class Skill {
 
   public abstract isAvailable(
     currentPlayer: Player,
-    triggerEvent?: AllGameEvent,
+    triggerEvent?: GameEventIdentifiers,
   ): boolean;
 
   public refresh() {
@@ -83,7 +77,10 @@ export abstract class TriggerSkill extends Skill {
     return this.triggerStages.includes(stage);
   }
 
-  public isAvailable(currentPlayer: Player, triggerEvent: AllGameEvent) {
+  public isAvailable(
+    currentPlayer: Player,
+    triggerEvent: GameEventIdentifiers,
+  ) {
     return true;
   }
 }
@@ -128,10 +125,10 @@ export class DistanceSkill extends CompulsorySkill {
 export abstract class ActiveSkill extends Skill {
   public abstract targetFilter(room: Room, targets: PlayerId[]): boolean;
   public abstract cardFilter(room: Room, cards: CardId[]): boolean;
-  public abstract isAutoActivate(): boolean;
-  public abstract availableCards(room: Room, cards: CardId[]): CardId[];
+  public abstract availableCards(room: Room, cards: CardId[], selectedCards?: CardId[]): CardId[];
+  public abstract availableTargets(room: Room, targets: PlayerId[], selectedTargets?: PlayerId[]): PlayerId[];
 
   public get RefreshAt(): AllStage {
-    return PlayerStage.FinishStageEnd;
+    return PlayerStageListEnum.FinishStageEnd;
   }
 }

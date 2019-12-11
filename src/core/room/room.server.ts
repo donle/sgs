@@ -1,6 +1,6 @@
 import { CardId } from 'core/cards/card';
 import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
-import { GameEventStage } from 'core/game/stage';
+import { AllStage, GameEventStage, GameStages } from 'core/game/stage';
 import { ServerSocket } from 'core/network/socket.server';
 import { Player } from 'core/player/player';
 import { ServerPlayer } from 'core/player/player.server';
@@ -11,7 +11,8 @@ import {
   GameCardExtensions,
   GameCharacterExtensions,
   GameInfo,
-} from '../game/game_props';
+} from 'core/game/game_props';
+import { TriggerSkill } from 'core/skills/skill';
 import { Room } from './room';
 
 type RoomId = number;
@@ -78,9 +79,48 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public broadcast(
     type: GameEventIdentifiers,
-    content: EventPicker<typeof type, WorkPlace.Client>,
+    content: EventPicker<typeof type, WorkPlace.Server>,
+    pendingMessage?: (language: Languages) => string,
   ) {
-    this.socket.broadcast(type, content);
+    this.socket.Clients.forEach(client => {
+      if (pendingMessage) {
+        const language = this.getPlayerById(client.id).PlayerLanguage;
+        content.message = pendingMessage(language);
+      }
+
+      client.send(JSON.stringify({ type, content }));
+    });
+
+    const stages: GameEventStage[] = GameStages[type];
+    for (const stage of stages) {
+      this.trigger(stage, content);
+    }
+  }
+
+  public trigger(
+    stage: AllStage,
+    content: EventPicker<GameEventIdentifiers, WorkPlace.Server>,
+  ) {
+    const start = this.players.length % this.CurrentPlayer.Position;
+    for (
+      let i = start;
+      i !== this.CurrentPlayer.Position;
+      i = this.players.length % (i + 1)
+    ) {
+      if (this.players[i].Dead) {
+        continue;
+      }
+
+      const skills = this.players[i].getTriggerSkills();
+      for (const skill of skills) {
+        if (skill instanceof TriggerSkill) {
+          skill.isTriggerable(stage);
+          skill.onEffect(this, content);
+        } else {
+          skill.TriggerStage === stage && skill.onEffect(this, content);
+        }
+      }
+    }
   }
 
   public drawCards(numberOfCards: number, player?: Player) {

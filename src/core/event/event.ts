@@ -14,6 +14,7 @@ export const enum GameEventIdentifiers {
   SkillUseEvent,
   PinDianEvent,
   DamageEvent,
+  RecoverEvent,
   JudgeEvent,
 
   GameCreatedEvent,
@@ -41,10 +42,6 @@ export type BaseGameEvent = {
   message?: string;
 }
 
-export type BaseServerEvent = {
-  playerId: string;
-}
-
 export type EventUtilities = {
   [K in keyof typeof GameEventIdentifiers]: object;
 };
@@ -52,23 +49,7 @@ export type EventUtilities = {
 export type EventPicker<
   I extends GameEventIdentifiers,
   E extends WorkPlace
-> = BaseGameEvent & (E extends WorkPlace.Client ? ClientEvent[I] : BaseServerEvent & ServerEvent[I]);
+> = BaseGameEvent & (E extends WorkPlace.Client ? ClientEvent[I] : ServerEvent[I]);
 
 export type ClientEventFinder<I extends GameEventIdentifiers> = BaseGameEvent & ClientEvent[I];
-export type ServerEventFinder<I extends GameEventIdentifiers> = BaseGameEvent & BaseServerEvent & ServerEvent[I];
-
-export type AllGameEvent =
-  | GameEventIdentifiers.GameCreatedEvent
-  | GameEventIdentifiers.GameStartEvent
-  | GameEventIdentifiers.GameOverEvent
-  | GameEventIdentifiers.PlayerEnterEvent
-  | GameEventIdentifiers.PlayerLeaveEvent
-  | GameEventIdentifiers.PlayerDiedEvent
-  | GameEventIdentifiers.JudgeEvent
-  | GameEventIdentifiers.UserMessageEvent
-  | GameEventIdentifiers.CardDropEvent
-  | GameEventIdentifiers.CardResponseEvent
-  | GameEventIdentifiers.CardUseEvent
-  | GameEventIdentifiers.SkillUseEvent
-  | GameEventIdentifiers.DamageEvent
-  | GameEventIdentifiers.PinDianEvent;
+export type ServerEventFinder<I extends GameEventIdentifiers> = BaseGameEvent & ServerEvent[I];

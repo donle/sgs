@@ -1,5 +1,3 @@
-import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
-import { Room } from 'core/room/room';
 import { Skill } from 'core/skills/skill';
 
 export const enum CardSuit {

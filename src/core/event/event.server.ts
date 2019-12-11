@@ -29,12 +29,13 @@ export interface ServerEvent extends EventUtilities {
     toIds?: PlayerId[];
   };
   [GameEventIdentifiers.DamageEvent]: {
-    attackerId?: PlayerId;
+    fromId?: PlayerId;
     cardIds?: CardId[];
     damage: number;
-    type: DamageType;
-    targetId: PlayerId;
+    damageType: DamageType;
+    toId: PlayerId;
   };
+  [GameEventIdentifiers.RecoverEvent]: never;
   [GameEventIdentifiers.JudgeEvent]: {
     toId: PlayerId;
     cardId: CardId;
