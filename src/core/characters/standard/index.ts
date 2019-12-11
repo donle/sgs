@@ -1,9 +1,9 @@
-import { CharacterGender, CharacterProps } from 'core/characters/character';
-import { ZhiHeng } from 'core/skills/characters/standard/zhiheng';
+import { GameCharacterExtensions } from 'core/game/game_props';
+import { CharacterPackage } from 'core/game/package_loader/loader.characters';
+import { SunQuan } from './sunquan';
 
-export const SunQuan: CharacterProps = {
-  gender: CharacterGender.Male,
-  maxHp: 4,
-  name: 'sunquan',
-  skills: [new ZhiHeng('zhiheng', '')],
-};
+export const StandardCharacterPackage: (
+  index: number,
+) => CharacterPackage<GameCharacterExtensions.Standard> = index => ({
+  [GameCharacterExtensions.Standard]: [new SunQuan(index++)],
+});

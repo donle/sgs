@@ -58,7 +58,7 @@ export abstract class Card {
     return this.skills;
   }
 
-  public abstract get ActualSkill(): Skill;
+  public abstract get ActualSkill(): Skill | undefined;
 }
 
 export const enum CardType {

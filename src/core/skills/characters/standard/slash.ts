@@ -13,6 +13,10 @@ import { translateNote } from 'translations/translations';
 export class SlashSkill extends ActiveSkill {
   private damageType: DamageType = DamageType.Normal;
 
+  constructor() {
+    super('slash', 'slash_skill_description');
+  }
+
   isAvailable() {
     return !this.hasUsed();
   }

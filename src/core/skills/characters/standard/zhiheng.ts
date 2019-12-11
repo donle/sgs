@@ -31,7 +31,7 @@ export class ZhiHeng extends ActiveSkill {
     return cards.length > 0;
   }
 
-  availableTargets(room: Room, targets: PlayerId[]): PlayerId[] {
+  availableTargets(): PlayerId[] {
     return [];
   }
 

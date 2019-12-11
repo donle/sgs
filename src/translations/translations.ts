@@ -25,7 +25,6 @@ class TranslationInstace {
       // tslint:disable-next-line: no-console
       console.warn(`Translations Warning - Missing translation: ${target}`);
       target = this.translationSource;
-      // throw new Error(`Unable to find transations for ${target}`);
     }
 
     if (this.translationParams.length > 0) {

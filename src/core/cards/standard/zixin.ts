@@ -1,16 +1,17 @@
+import { SkillLoader } from 'core/game/package_loader/loader.skills';
 import { DistanceSkill } from 'core/skills/skill';
 import { CardSuit } from '../card';
 import { OffenseRideCard } from '../equip_card';
 
 export class ZiXin extends OffenseRideCard {
-  constructor(id: number) {
+  constructor(id: number, cardNumber: number, suit: CardSuit) {
     super(
       id,
-      13,
-      CardSuit.Diamond,
+      cardNumber,
+      suit,
       'zixin',
       'zixin_description',
-      new DistanceSkill('zixin', 'zixin_skill_description', -1),
+      SkillLoader.getInstance().getSkillByName<DistanceSkill>('zixin'),
     );
   }
 }
