@@ -74,7 +74,7 @@ export const enum EquipCardCategory {
   OffenseRide,
 }
 
-export abstract class VirtualCard extends Card {
+export class VirtualCard<T extends Card> extends Card {
   protected id = -1;
   protected cardNumber = 0;
   protected suit = CardSuit.NoSuit;
@@ -83,7 +83,7 @@ export abstract class VirtualCard extends Card {
   protected skills = this.viewAs.SKill;
   protected cardType = this.viewAs.Type;
 
-  constructor(private viewAs: Card, private cards: Card[] = []) {
+  constructor(private viewAs: T, private cards: Card[] = []) {
     super();
 
     if (cards.length === 1) {
@@ -96,7 +96,7 @@ export abstract class VirtualCard extends Card {
     return this.cards;
   }
 
-  public get EffectCard() {
-    return this.viewAs;
+  public get ActualSkill() {
+    return this.viewAs.ActualSkill;
   }
 }

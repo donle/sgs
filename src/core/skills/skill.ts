@@ -1,4 +1,4 @@
-import { CardId } from 'core/cards/card';
+import { Card, CardId } from 'core/cards/card';
 import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
 import { AllStage, PlayerStageListEnum } from 'core/game/stage';
 import { Player } from 'core/player/player';
@@ -125,10 +125,55 @@ export class DistanceSkill extends CompulsorySkill {
 export abstract class ActiveSkill extends Skill {
   public abstract targetFilter(room: Room, targets: PlayerId[]): boolean;
   public abstract cardFilter(room: Room, cards: CardId[]): boolean;
-  public abstract availableCards(room: Room, cards: CardId[], selectedCards?: CardId[]): CardId[];
-  public abstract availableTargets(room: Room, targets: PlayerId[], selectedTargets?: PlayerId[]): PlayerId[];
+  public abstract availableCards(
+    room: Room,
+    cards: CardId[],
+    selectedCards?: CardId[],
+  ): CardId[];
+  public abstract availableTargets(
+    room: Room,
+    targets: PlayerId[],
+    selectedTargets?: PlayerId[],
+  ): PlayerId[];
 
   public get RefreshAt(): AllStage {
     return PlayerStageListEnum.FinishStageEnd;
   }
+}
+
+export abstract class AimSkill extends Skill {
+  // tslint:disable-next-line: no-empty
+  public onUse() {}
+  // tslint:disable-next-line: no-empty
+  public onEffect() {}
+
+  public isAvailable() {
+    return true;
+  }
+}
+
+export abstract class AimingSKill extends AimSkill {
+  public abstract onAiming(room: Room, target: PlayerId, cardId: CardId): void;
+}
+
+export abstract class AimmedSkill extends AimSkill {
+  public abstract onAimmed(
+    room: Room,
+    source: PlayerId,
+    cardId?: CardId,
+    skillName?: string,
+  ): void;
+}
+
+export abstract class UseCardSkill extends Skill {
+  // tslint:disable-next-line: no-empty
+  public onUse() {}
+  // tslint:disable-next-line: no-empty
+  public onEffect() {}
+
+  public isAvailable() {
+    return true;
+  }
+
+  public abstract useCardRules(history: CardId[]): ((card: Card) => boolean)[];
 }

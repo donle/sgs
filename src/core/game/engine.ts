@@ -29,6 +29,10 @@ export class Sanguosha {
     return Sanguosha.cards.find(card => card.Id === cardId) as T;
   }
 
+  public static getCardByName<T extends Card>(cardName: string): T {
+    return Sanguosha.cards.find(card => card.Name === cardName) as T;
+  }
+
   public static getSkillBySkillName(name: string) {
     return Sanguosha.skills.find(skill => skill.Name === name);
   }

@@ -1,10 +1,11 @@
-import { CardId } from 'core/cards/card';
+import { Card, CardId } from 'core/cards/card';
 import { EquipCard, RideCard, WeaponCard } from 'core/cards/equip_card';
 import {
   Character,
   CharacterId,
   CharacterNationality,
 } from 'core/characters/character';
+import { GameEventIdentifiers } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import {
   PlayerCards,
@@ -13,7 +14,12 @@ import {
   PlayerInfo,
   PlayerRole,
 } from 'core/player/player_props';
-import { CompulsorySkill, DistanceSkill, TriggerSkill } from 'core/skills/skill';
+import {
+  CompulsorySkill,
+  DistanceSkill,
+  TriggerSkill,
+  UseCardSkill,
+} from 'core/skills/skill';
 import { Languages } from 'translations/languages';
 
 export abstract class Player implements PlayerInfo {
@@ -28,6 +34,7 @@ export abstract class Player implements PlayerInfo {
   protected nationality: CharacterNationality;
   protected position: number;
 
+  private cardUseHistory: CardId[] = [];
   private playerCharacter: Character;
 
   constructor(
@@ -46,6 +53,57 @@ export abstract class Player implements PlayerInfo {
     this.maxHp = this.playerCharacter.MaxHp;
     this.nationality = this.playerCharacter.Nationality;
     this.dead = false;
+  }
+
+  private useCardRules(card: Card) {
+    if (card.Name === 'slash' || card.Name === 'wine') {
+      return (
+        this.cardUseHistory.filter(
+          cardId => Sanguosha.getCardById(cardId).Name === card.Name,
+        ).length < 1
+      );
+    }
+
+    return true;
+  }
+
+  public canUseCard(cardId: CardId) {
+    const card = Sanguosha.getCardById(cardId);
+
+    const useCardSkills: UseCardSkill[] = [
+      ...(this.playerCharacter.Skills.filter(
+        skill => skill instanceof UseCardSkill,
+      ) as UseCardSkill[]),
+      ...this.playerCards[PlayerCardsArea.EquipArea]
+        .map(cardId => Sanguosha.getCardById(cardId))
+        .filter(card => card instanceof UseCardSkill)
+        .map<UseCardSkill>(card => card.ActualSkill as UseCardSkill),
+    ];
+
+    if (useCardSkills.length > 0) {
+      for (const skill of useCardSkills) {
+        for (const rule of skill.useCardRules(this.cardUseHistory)) {
+          if (!rule(card)) {
+            return false;
+          }
+        }
+      }
+    }
+
+    return this.useCardRules(card);
+  }
+
+  public canUseSkill(skillName: string, triggerEvent?: GameEventIdentifiers) {
+    const skill = this.Character.Skills.find(skill => skill.Name === skillName);
+    return skill !== undefined && skill.isAvailable(this, triggerEvent);
+  }
+
+  public resetCardUseHistory() {
+    this.cardUseHistory = [];
+  }
+
+  public useCard(cardId: CardId) {
+    this.cardUseHistory.push(cardId);
   }
 
   public getCardIds(area?: PlayerCardsArea): CardId[] {
@@ -175,6 +233,29 @@ export abstract class Player implements PlayerInfo {
     return fixedDistance;
   }
 
+  public getTriggerSkills() {
+    const equipCards = this.playerCards[PlayerCardsArea.EquipArea].map(card =>
+      Sanguosha.getCardById(card),
+    );
+    const skills: (TriggerSkill | CompulsorySkill)[] = [];
+    for (const equip of equipCards) {
+      if (
+        equip.ActualSkill instanceof TriggerSkill ||
+        equip.ActualSkill instanceof CompulsorySkill
+      ) {
+        skills.push(equip.ActualSkill);
+      }
+    }
+
+    for (const skill of this.playerCharacter.Skills) {
+      if (skill instanceof TriggerSkill || skill instanceof CompulsorySkill) {
+        skills.push(skill);
+      }
+    }
+
+    return skills;
+  }
+
   public onDamage(hit: number) {
     this.hp -= hit;
   }
@@ -244,22 +325,8 @@ export abstract class Player implements PlayerInfo {
     this.playerLanguage = language;
   }
 
-  public getTriggerSkills() {
-    const equipCards = this.playerCards[PlayerCardsArea.EquipArea].map(card => Sanguosha.getCardById(card));
-    const skills: (TriggerSkill | CompulsorySkill)[] = [];
-    for (const equip of equipCards) {
-      if (equip.ActualSkill instanceof TriggerSkill || equip.ActualSkill instanceof CompulsorySkill) {
-        skills.push(equip.ActualSkill);
-      }
-    }
-
-    for (const skill of this.playerCharacter.Skills) {
-      if (skill instanceof TriggerSkill || skill instanceof CompulsorySkill) {
-        skills.push(skill);
-      }
-    }
-
-    return skills;
+  public get CardUseHistory() {
+    return this.cardUseHistory;
   }
 
   public get Dead() {

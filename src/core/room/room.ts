@@ -1,5 +1,10 @@
 import { CardId } from 'core/cards/card';
-import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
+import {
+  ClientEventFinder,
+  EventPicker,
+  GameEventIdentifiers,
+  WorkPlace,
+} from 'core/event/event';
 import { AllStage, GameEventStage } from 'core/game/stage';
 import { Socket } from 'core/network/socket';
 import { Player } from 'core/player/player';
@@ -63,6 +68,47 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     type: I,
     content: EventPicker<I, WorkPlace.Client>,
   ) {}
+
+  public canUseCard(fromId: PlayerId, toId: PlayerId, cardId: CardId) {
+    const from = this.getPlayerById(fromId);
+    const to = this.getPlayerById(toId);
+
+    /**
+     * TODO: get aim skills from players
+     *
+     */
+    if (!from.canUseCard(cardId)) {
+      return false;
+    }
+  }
+
+  public canUseSkill(
+    fromId: PlayerId,
+    toId: PlayerId | undefined,
+    skillName: string,
+    triggerEvent?: GameEventIdentifiers,
+  ) {
+    if (toId === undefined) {
+      return true;
+    }
+
+    return this.getPlayerById(fromId).canUseSkill(skillName, triggerEvent);
+  }
+
+  public useCard(
+    content: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
+  ) {
+    const from = this.getPlayerById(content.fromId);
+    from.useCard(content.cardId);
+
+    this.broadcast(GameEventIdentifiers.CardUseEvent, content);
+  }
+
+  public useSkill(
+    content: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
+  ) {
+    this.broadcast(GameEventIdentifiers.SkillUseEvent, content);
+  }
 
   public get RoomId() {
     return this.roomId;
