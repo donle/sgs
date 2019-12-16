@@ -25,16 +25,16 @@ export class Sanguosha {
     return Sanguosha.characters.find(character => character.Id === characterId);
   }
 
-  public static getCardById<T extends Card>(cardId: CardId): T {
-    return Sanguosha.cards.find(card => card.Id === cardId) as T;
+  public static getCardById<T extends Card>(cardId: CardId): T | undefined {
+    return Sanguosha.cards.find(card => card.Id === cardId) as T | undefined;
   }
 
-  public static getCardByName<T extends Card>(cardName: string): T {
-    return Sanguosha.cards.find(card => card.Name === cardName) as T;
+  public static getCardByName<T extends Card>(cardName: string): T | undefined {
+    return Sanguosha.cards.find(card => card.Name === cardName) as T | undefined;
   }
 
-  public static getSkillBySkillName(name: string) {
-    return Sanguosha.skills.find(skill => skill.Name === name);
+  public static getSkillBySkillName<T extends Skill = Skill>(name: string): T | undefined {
+    return Sanguosha.skills.find(skill => skill.Name === name) as T | undefined;
   }
 
   public static getCharacterByCharaterName(name: string) {

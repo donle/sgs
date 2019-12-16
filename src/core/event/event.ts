@@ -30,6 +30,9 @@ export const enum GameEventIdentifiers {
   AskForCardUseEvent,
   AskForCardDisplayEvent,
   AskForCardDropEvent,
+  AskForPinDianCardEvent,
+  AskforChoosingCardEvent,
+  AskforChoosingCardFromPlayerEvent,
 }
 
 export const enum WorkPlace {
@@ -38,7 +41,7 @@ export const enum WorkPlace {
 }
 
 export type BaseGameEvent = {
-  triggeredBySkillName?: string;
+  triggeredBySkillName: string;
   message?: string;
 }
 

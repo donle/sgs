@@ -1,5 +1,6 @@
 import { BasicCard } from 'core/cards/basic_card';
 import { SkillLoader } from 'core/game/package_loader/loader.skills';
+import { SlashSkill } from 'core/skills/characters/standard/slash';
 import { CardId, CardSuit } from '../card';
 
 export class Slash extends BasicCard {
@@ -10,6 +11,6 @@ export class Slash extends BasicCard {
   }
 
   public get ActualSkill() {
-    return this.skills[0];
+    return this.skills[0] as SlashSkill;
   }
 }

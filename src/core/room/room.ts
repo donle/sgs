@@ -5,7 +5,7 @@ import {
   GameEventIdentifiers,
   WorkPlace,
 } from 'core/event/event';
-import { AllStage, GameEventStage } from 'core/game/stage';
+import { AllStage, GameEventStage, PlayerStage } from 'core/game/stage';
 import { Socket } from 'core/network/socket';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
@@ -21,6 +21,7 @@ type RoomId = number;
 
 export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected abstract currentGameEventStage: GameEventStage;
+  protected abstract currentPlayerStage: PlayerStage;
   protected abstract currentPlayer: Player;
   protected abstract socket: Socket<T>;
   protected abstract gameInfo: GameInfo;
@@ -32,10 +33,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   protected abstract init(): void;
-  protected abstract loadCharacters(
-    characterPackages: GameCharacterExtensions[],
-  ): void;
-  protected abstract loadCards(cardPackages: GameCardExtensions[]): void;
 
   public abstract notify(
     type: GameEventIdentifiers,
@@ -46,10 +43,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     type: I,
     content: EventPicker<I, WorkPlace>,
     pendingMessage?: (language: Languages) => string,
-  ): void;
-  public abstract trigger(
-    stage: AllStage,
-    content: EventPicker<GameEventIdentifiers, WorkPlace>,
   ): void;
 
   public abstract drawCards(numberOfCards: number, player?: Player): void;
@@ -74,10 +67,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     const to = this.getPlayerById(toId);
 
     /**
-     * TODO: get aim skills from players
+     * TODO: to check filter skills for source and target
      *
      */
-    if (!from.canUseCard(cardId)) {
+    if (!from.canUseCard(this, cardId)) {
       return false;
     }
   }
@@ -86,13 +79,13 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     fromId: PlayerId,
     toId: PlayerId | undefined,
     skillName: string,
-    triggerEvent?: GameEventIdentifiers,
+    content?: ClientEventFinder<GameEventIdentifiers>,
   ) {
     if (toId === undefined) {
       return true;
     }
 
-    return this.getPlayerById(fromId).canUseSkill(skillName, triggerEvent);
+    return this.getPlayerById(fromId).canUseSkill(this, skillName, content);
   }
 
   public useCard(
@@ -112,6 +105,14 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public get RoomId() {
     return this.roomId;
+  }
+
+  public get CurrentPlayerStage() {
+    return this.currentPlayerStage;
+  }
+
+  public get CurrentGameEventStage() {
+    return this.currentGameEventStage;
   }
 
   public get CurrentPlayer() {

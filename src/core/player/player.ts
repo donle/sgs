@@ -5,7 +5,7 @@ import {
   CharacterId,
   CharacterNationality,
 } from 'core/characters/character';
-import { GameEventIdentifiers } from 'core/event/event';
+import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import {
   PlayerCards,
@@ -14,18 +14,17 @@ import {
   PlayerInfo,
   PlayerRole,
 } from 'core/player/player_props';
-import {
-  CompulsorySkill,
-  DistanceSkill,
-  TriggerSkill,
-  UseCardSkill,
-} from 'core/skills/skill';
+import { Room } from 'core/room/room';
+import { DistanceSkill, TriggerSkill } from 'core/skills/skill';
 import { Languages } from 'translations/languages';
 
 export abstract class Player implements PlayerInfo {
   private hp: number;
   private maxHp: number;
   private dead: boolean;
+  private chainLocked: boolean = false;
+  private turnedOver: boolean = false;
+
   protected abstract playerId: PlayerId;
   protected abstract playerName: string;
   protected abstract playerLanguage: Languages;
@@ -35,6 +34,9 @@ export abstract class Player implements PlayerInfo {
   protected position: number;
 
   private cardUseHistory: CardId[] = [];
+  private skillUsedHistory: {
+    [K: string]: number;
+  }[] = [];
   private playerCharacter: Character;
 
   constructor(
@@ -55,47 +57,22 @@ export abstract class Player implements PlayerInfo {
     this.dead = false;
   }
 
-  private useCardRules(card: Card) {
-    if (card.Name === 'slash' || card.Name === 'wine') {
-      return (
-        this.cardUseHistory.filter(
-          cardId => Sanguosha.getCardById(cardId).Name === card.Name,
-        ).length < 1
-      );
-    }
-
-    return true;
-  }
-
-  public canUseCard(cardId: CardId) {
+  public canUseCard(room: Room, cardId: CardId): boolean {
     const card = Sanguosha.getCardById(cardId);
 
-    const useCardSkills: UseCardSkill[] = [
-      ...(this.playerCharacter.Skills.filter(
-        skill => skill instanceof UseCardSkill,
-      ) as UseCardSkill[]),
-      ...this.playerCards[PlayerCardsArea.EquipArea]
-        .map(cardId => Sanguosha.getCardById(cardId))
-        .filter(card => card instanceof UseCardSkill)
-        .map<UseCardSkill>(card => card.ActualSkill as UseCardSkill),
-    ];
-
-    if (useCardSkills.length > 0) {
-      for (const skill of useCardSkills) {
-        for (const rule of skill.useCardRules(this.cardUseHistory)) {
-          if (!rule(card)) {
-            return false;
-          }
-        }
-      }
-    }
-
-    return this.useCardRules(card);
+    /**
+     * TODO: to check if the cad could be used
+     */
+    return card.ActualSkill.canUse(room, this);
   }
 
-  public canUseSkill(skillName: string, triggerEvent?: GameEventIdentifiers) {
+  public canUseSkill(
+    room: Room,
+    skillName: string,
+    content: ClientEventFinder<GameEventIdentifiers>,
+  ) {
     const skill = this.Character.Skills.find(skill => skill.Name === skillName);
-    return skill !== undefined && skill.isAvailable(this, triggerEvent);
+    return skill !== undefined && skill.canUse(room, this, content);
   }
 
   public resetCardUseHistory() {
@@ -104,6 +81,11 @@ export abstract class Player implements PlayerInfo {
 
   public useCard(cardId: CardId) {
     this.cardUseHistory.push(cardId);
+  }
+  public useSkill(skillName: string) {
+    this.skillUsedHistory[skillName] !== undefined
+      ? this.skillUsedHistory[skillName]++
+      : (this.skillUsedHistory[skillName] = 0);
   }
 
   public getCardIds(area?: PlayerCardsArea): CardId[] {
@@ -178,8 +160,32 @@ export abstract class Player implements PlayerInfo {
     this.playerCards[PlayerCardsArea.EquipArea].push(equipCard.Id);
   }
 
-  public hasArmored(card: CardId): boolean {
-    return this.playerCards[PlayerCardsArea.EquipArea].includes(card);
+  public hasArmored(cardId: CardId): boolean {
+    return this.playerCards[PlayerCardsArea.EquipArea].includes(cardId);
+  }
+
+  public hasUsed(cardName: string): boolean {
+    return (
+      this.cardUseHistory.find(
+        cardId => Sanguosha.getCardById(cardId).Name === cardName,
+      ) !== undefined
+    );
+  }
+  public hasUsedTimes(cardName: string): number {
+    return this.cardUseHistory.filter(
+      cardId => Sanguosha.getCardById(cardId).Name === cardName,
+    ).length;
+  }
+
+  public hasUsedSkill(skillName: string): boolean {
+    return (
+      this.skillUsedHistory[skillName] && this.skillUsedHistory[skillName] > 0
+    );
+  }
+  public hasUsedSkillTimes(skillName: string): number {
+    return this.skillUsedHistory[skillName] === undefined
+      ? 0
+      : this.skillUsedHistory[skillName];
   }
 
   public get AttackDistance() {
@@ -203,7 +209,7 @@ export abstract class Player implements PlayerInfo {
     return this.getFixedDistance(false);
   }
 
-  private getFixedDistance(toOthers: boolean) {
+  private getFixedDistance(inOffense: boolean) {
     const rides: DistanceSkill[] = this.playerCharacter[
       PlayerCardsArea.EquipArea
     ]
@@ -219,7 +225,7 @@ export abstract class Player implements PlayerInfo {
 
     let fixedDistance = 0;
     for (const skill of [...rides, ...skills]) {
-      if (toOthers) {
+      if (inOffense) {
         if (skill.Distance < 0) {
           fixedDistance += skill.Distance;
         }
@@ -237,23 +243,24 @@ export abstract class Player implements PlayerInfo {
     const equipCards = this.playerCards[PlayerCardsArea.EquipArea].map(card =>
       Sanguosha.getCardById(card),
     );
-    const skills: (TriggerSkill | CompulsorySkill)[] = [];
+    const skills: TriggerSkill[] = [];
     for (const equip of equipCards) {
-      if (
-        equip.ActualSkill instanceof TriggerSkill ||
-        equip.ActualSkill instanceof CompulsorySkill
-      ) {
+      if (equip.ActualSkill instanceof TriggerSkill) {
         skills.push(equip.ActualSkill);
       }
     }
 
     for (const skill of this.playerCharacter.Skills) {
-      if (skill instanceof TriggerSkill || skill instanceof CompulsorySkill) {
+      if (skill instanceof TriggerSkill) {
         skills.push(skill);
       }
     }
 
     return skills;
+  }
+
+  public turnOver() {
+    this.turnedOver = !this.turnedOver;
   }
 
   public onDamage(hit: number) {
@@ -272,10 +279,16 @@ export abstract class Player implements PlayerInfo {
     return this.hp;
   }
 
+  public get ChainLocked() {
+    return this.chainLocked;
+  }
+  public set ChainLocked(locked: boolean) {
+    this.chainLocked = locked;
+  }
+
   public get Nationality() {
     return this.nationality;
   }
-
   public set Nationality(nationality: CharacterNationality) {
     this.nationality = nationality;
   }
@@ -285,6 +298,9 @@ export abstract class Player implements PlayerInfo {
   }
   public set MaxHp(maxHp: number) {
     this.maxHp = maxHp;
+    if (this.hp > this.maxHp) {
+      this.hp = this.maxHp;
+    }
   }
 
   public get Role() {

@@ -1,18 +1,20 @@
 import { CardId } from 'core/cards/card';
 import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
+import { PlayerStage } from 'core/game/stage';
+import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { ActiveSkill } from 'core/skills/skill';
+import { ActiveSkill, SkillType } from 'core/skills/skill';
 import { translateNote } from 'translations/translations';
 
 export class PeachSkill extends ActiveSkill {
   constructor() {
-    super('peach', 'peach_skill_description');
+    super('peach', 'peach_skill_description', SkillType.Common);
   }
 
-  isAvailable() {
-    return true;
+  canUse(room: Room, owner: Player) {
+    return room.CurrentPlayer === owner && room.CurrentPlayerStage === PlayerStage.PlayCardStage;
   }
 
   cardFilter() {
@@ -22,19 +24,20 @@ export class PeachSkill extends ActiveSkill {
     return true;
   }
 
-  availableCards() {
-    return [];
+  isAvailableCard() {
+    return false;
   }
-  availableTargets(): PlayerId[] {
-    return [];
+  isAvailableTarget() {
+    return false;
   }
 
-  onUse(room: Room, cardIds?: CardId[]) {
+  onUse(room: Room, owner: PlayerId, cardIds?: CardId[]) {
     room.broadcast(
       GameEventIdentifiers.CardUseEvent,
       {
-        fromId: room.CurrentPlayer.Id,
+        fromId: room.getPlayerById(owner).Id,
         cardId: cardIds![0],
+        triggeredBySkillName: this.name,
       },
       translateNote(
         '{0} uses card {1}',
@@ -52,6 +55,7 @@ export class PeachSkill extends ActiveSkill {
       fromId: event.fromId,
       toId: event.toId,
       recover: 1,
+      triggeredBySkillName: this.name,
     };
 
     room.broadcast(

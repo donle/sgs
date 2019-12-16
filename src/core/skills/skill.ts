@@ -1,5 +1,10 @@
-import { Card, CardId } from 'core/cards/card';
-import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
+import { CardId } from 'core/cards/card';
+import {
+  ClientEventFinder,
+  EventPicker,
+  GameEventIdentifiers,
+  WorkPlace,
+} from 'core/event/event';
 import { AllStage, PlayerStageListEnum } from 'core/game/stage';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
@@ -12,46 +17,27 @@ export const enum SkillType {
   Limit,
 }
 
-export abstract class Skill {
+export abstract class Skill<T extends SkillType = SkillType> {
   constructor(
     protected name: string,
     protected description: string,
+    protected skillType: T,
     private shadowSkill = false,
     private lordSkill = false,
-    protected skillType = SkillType.Common,
   ) {}
   protected triggeredTimes: number = 0;
-  protected abstract get RefreshAt(): AllStage | undefined;
+  protected abstract isRefreshAt(stage: AllStage): boolean;
 
   public abstract onEffect(
     room: Room,
     event: ClientEventFinder<GameEventIdentifiers>,
   ): void;
 
-  public abstract onUse(
+  public abstract canUse(
     room: Room,
-    cardIds?: CardId[],
-    targets?: PlayerId[],
-  ): void;
-
-  public abstract isAvailable(
-    currentPlayer: Player,
-    triggerEvent?: GameEventIdentifiers,
+    owner: Player,
+    content?: ClientEventFinder<GameEventIdentifiers>,
   ): boolean;
-
-  public refresh() {
-    if (this.skillType === SkillType.Common) {
-      this.triggeredTimes = 0;
-    }
-  }
-
-  public hasUsed() {
-    return this.triggeredTimes > 0;
-  }
-
-  public skillUsed() {
-    this.triggeredTimes++;
-  }
 
   public get Description() {
     return this.description;
@@ -70,50 +56,41 @@ export abstract class Skill {
   }
 }
 
-export abstract class TriggerSkill extends Skill {
-  protected abstract triggerStages: AllStage[];
+export abstract class TriggerSkill<
+  T extends SkillType = SkillType.Common
+> extends Skill<T> {
+  public abstract isTriggerable(stage: AllStage): boolean;
+  public abstract onTrigger<I extends GameEventIdentifiers = GameEventIdentifiers>(
+    room: Room,
+    owner: Player,
+    content?: EventPicker<I, WorkPlace.Server>,
+  ): void;
 
-  public isTriggerable(stage: AllStage): boolean {
-    return this.triggerStages.includes(stage);
-  }
-
-  public isAvailable(
-    currentPlayer: Player,
-    triggerEvent: GameEventIdentifiers,
-  ) {
-    return true;
+  public isRefreshAt() {
+    return false;
   }
 }
 
-export abstract class CompulsorySkill extends Skill {
-  public get TriggerStage(): AllStage | undefined {
-    return;
-  }
-
-  public get RefreshAt(): undefined {
-    return;
-  }
-
-  public isAvailable() {
-    return true;
-  }
-
-  // tslint:disable-next-line: no-empty
-  public onUse() {}
-}
-
-export class DistanceSkill extends CompulsorySkill {
+export class DistanceSkill extends Skill<SkillType.Compulsory> {
   constructor(
     name: string,
     description: string,
     private distance: number,
     shadowSkill = false,
     lordSkill = false,
-    skillType = SkillType.Compulsory,
   ) {
-    super(name, description, shadowSkill, lordSkill, skillType);
+    super(name, description, SkillType.Compulsory, shadowSkill, lordSkill);
   }
 
+  public canUse() {
+    return false;
+  }
+  public isRefreshAt() {
+    return false;
+  }
+
+  // tslint:disable-next-line:no-empty
+  public onUse() {}
   // tslint:disable-next-line:no-empty
   public onEffect() {}
 
@@ -125,55 +102,33 @@ export class DistanceSkill extends CompulsorySkill {
 export abstract class ActiveSkill extends Skill {
   public abstract targetFilter(room: Room, targets: PlayerId[]): boolean;
   public abstract cardFilter(room: Room, cards: CardId[]): boolean;
-  public abstract availableCards(
+  public abstract isAvailableCard(
     room: Room,
-    cards: CardId[],
-    selectedCards?: CardId[],
-  ): CardId[];
-  public abstract availableTargets(
+    cardId: CardId,
+    selectedCards: CardId[],
+  ): boolean;
+  public abstract isAvailableTarget(
     room: Room,
-    targets: PlayerId[],
-    selectedTargets?: PlayerId[],
-  ): PlayerId[];
-
-  public get RefreshAt(): AllStage {
-    return PlayerStageListEnum.FinishStageEnd;
-  }
-}
-
-export abstract class AimSkill extends Skill {
-  // tslint:disable-next-line: no-empty
-  public onUse() {}
-  // tslint:disable-next-line: no-empty
-  public onEffect() {}
-
-  public isAvailable() {
-    return true;
-  }
-}
-
-export abstract class AimingSKill extends AimSkill {
-  public abstract onAiming(room: Room, target: PlayerId, cardId: CardId): void;
-}
-
-export abstract class AimmedSkill extends AimSkill {
-  public abstract onAimmed(
+    target: PlayerId,
+    selectedTargets: PlayerId[],
+  ): boolean;
+  public abstract onUse(
     room: Room,
-    source: PlayerId,
-    cardId?: CardId,
-    skillName?: string,
+    owner: PlayerId,
+    cardIds?: CardId[],
+    targets?: PlayerId[],
   ): void;
+
+  public isRefreshAt(stage: AllStage): boolean {
+    return stage === PlayerStageListEnum.FinishStageEnd;
+  }
 }
 
-export abstract class UseCardSkill extends Skill {
-  // tslint:disable-next-line: no-empty
-  public onUse() {}
-  // tslint:disable-next-line: no-empty
-  public onEffect() {}
-
-  public isAvailable() {
-    return true;
+export abstract class FilterSkill extends Skill<SkillType.Compulsory> {
+  public canUse() {
+    return false;
   }
 
-  public abstract useCardRules(history: CardId[]): ((card: Card) => boolean)[];
+  public abstract canUseCard(room: Room, owner: PlayerId, target: PlayerId, cardId: CardId): boolean;
+  public abstract canBeUsedCard(room: Room, owner: PlayerId, attacker: PlayerId, cardId: CardId): boolean;
 }

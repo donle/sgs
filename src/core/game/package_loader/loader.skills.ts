@@ -14,11 +14,9 @@ const allSkills = [
 ];
 
 export class SkillLoader {
-  private constructor() {
-    this.skills = allSkills;
+  private constructor(private skills: Skill[] = allSkills) {
   }
 
-  private skills: Skill[];
   private static instance: SkillLoader;
 
   public static getInstance() {

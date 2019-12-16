@@ -1,4 +1,5 @@
 import { SkillLoader } from 'core/game/package_loader/loader.skills';
+import { PeachSkill } from 'core/skills/characters/standard/peach';
 import { BasicCard } from '../basic_card';
 import { CardId, CardSuit } from '../card';
 
@@ -10,6 +11,6 @@ export class Peach extends BasicCard {
   }
 
   public get ActualSkill() {
-      return this.skills[0];
+    return this.skills[0] as PeachSkill;
   }
 }

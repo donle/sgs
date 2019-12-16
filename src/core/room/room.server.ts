@@ -1,24 +1,30 @@
 import { CardId } from 'core/cards/card';
 import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
-import { AllStage, GameEventStage, GameStages } from 'core/game/stage';
+import {
+  AllStage,
+  GameEventStage,
+  GameStages,
+  PlayerStage,
+} from 'core/game/stage';
 import { ServerSocket } from 'core/network/socket.server';
 import { Player } from 'core/player/player';
 import { ServerPlayer } from 'core/player/player.server';
 import { PlayerId, PlayerInfo } from 'core/player/player_props';
 import { Languages } from 'translations/languages';
 
+import { Sanguosha } from 'core/game/engine';
 import {
   GameCardExtensions,
   GameCharacterExtensions,
   GameInfo,
 } from 'core/game/game_props';
-import { TriggerSkill } from 'core/skills/skill';
 import { Room } from './room';
 
 type RoomId = number;
 
 export class ServerRoom extends Room<WorkPlace.Server> {
   protected currentGameEventStage: GameEventStage;
+  protected currentPlayerStage: PlayerStage;
   protected currentPlayer: Player;
 
   private cards: CardId[];
@@ -93,6 +99,17 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     const stages: GameEventStage[] = GameStages[type];
     for (const stage of stages) {
+      this.currentGameEventStage = stage;
+      if (
+        !this.currentGameEventStage.startsWith('Before') &&
+        !this.currentGameEventStage.startsWith('After')
+      ) {
+        const skill = Sanguosha.getSkillBySkillName(
+          content.triggeredBySkillName,
+        );
+        skill && skill.onEffect(this, content);
+      }
+
       this.trigger(stage, content);
     }
   }
@@ -113,12 +130,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
       const skills = this.players[i].getTriggerSkills();
       for (const skill of skills) {
-        if (skill instanceof TriggerSkill) {
-          skill.isTriggerable(stage);
-          skill.onEffect(this, content);
-        } else {
-          skill.TriggerStage === stage && skill.onEffect(this, content);
-        }
+        skill.isTriggerable(stage) &&
+          skill.canUse(this, this.players[i], content) &&
+          skill.onTrigger(this, this.players[i], content);
       }
     }
   }

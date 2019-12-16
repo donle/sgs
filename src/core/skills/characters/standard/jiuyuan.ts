@@ -1,18 +1,48 @@
 import { CharacterNationality } from 'core/characters/character';
 import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
-import { RecoverEffectStage } from 'core/game/stage';
+import { AllStage, RecoverEffectStage } from 'core/game/stage';
+import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { CompulsorySkill } from 'core/skills/skill';
+import { SkillType, TriggerSkill } from 'core/skills/skill';
+import { translateNote } from 'translations/translations';
 
-export class JiuYuan extends CompulsorySkill {
+export class JiuYuan extends TriggerSkill<SkillType.Compulsory> {
   public isLordSkill = true;
 
   constructor() {
-    super('jiuyuan', 'jiuyuan_description', false, true);
+    super('jiuyuan', 'jiuyuan_description', SkillType.Compulsory, false, true);
   }
 
-  public get TriggerStage() {
-    return RecoverEffectStage.BeforeRecoverEffect;
+  public canUse(
+    room: Room,
+    owner: Player,
+    content?: ClientEventFinder<GameEventIdentifiers.RecoverEvent>,
+  ) {
+    return (
+      content !== undefined &&
+      content.toId === owner.Id &&
+      owner.Id !== content.fromId &&
+      room.getPlayerById(content.fromId).Nationality === CharacterNationality.Wu
+    );
+  }
+
+  public isTriggerable(stage: AllStage) {
+    return stage === RecoverEffectStage.BeforeRecoverEffect;
+  }
+
+  onTrigger(room: Room, owner: Player) {
+    room.broadcast(
+      GameEventIdentifiers.SkillUseEvent,
+      {
+        fromId: owner.Id,
+        triggeredBySkillName: this.name,
+      },
+      translateNote(
+        '{0} activates skill {1}',
+        room.getPlayerById(owner.Id).Name,
+        this.name,
+      ),
+    );
   }
 
   onEffect(

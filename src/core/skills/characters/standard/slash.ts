@@ -1,28 +1,30 @@
 import { CardId } from 'core/cards/card';
-import {
-  ClientEventFinder,
-  GameEventIdentifiers,
-  WorkPlace,
-} from 'core/event/event';
+import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
 import { DamageType } from 'core/game/game_props';
+import { PlayerStage } from 'core/game/stage';
+import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { ActiveSkill } from 'core/skills/skill';
+import { ActiveSkill, SkillType } from 'core/skills/skill';
 import { translateNote } from 'translations/translations';
 
 export class SlashSkill extends ActiveSkill {
   private damageType: DamageType = DamageType.Normal;
 
   constructor() {
-    super('slash', 'slash_skill_description');
+    super('slash', 'slash_skill_description', SkillType.Common);
   }
 
-  isAvailable() {
-    return !this.hasUsed();
+  canUse(room: Room, owner: Player) {
+    return (
+      (room.CurrentPlayerStage === PlayerStage.PlayCardStage &&
+        !owner.hasUsed(this.name)) ||
+      room.CurrentPlayer !== owner
+    );
   }
 
-  availableCards(room: Room<WorkPlace>, cards: CardId[]) {
-    return [];
+  isAvailableCard() {
+    return false;
   }
 
   cardFilter() {
@@ -33,19 +35,18 @@ export class SlashSkill extends ActiveSkill {
     return targets.length === 1;
   }
 
-  availableTargets(room: Room, targets: PlayerId[]): PlayerId[] {
-    return targets.filter(target =>
-      room.canAttack(room.CurrentPlayer, room.getPlayerById(target)),
-    );
+  isAvailableTarget(room: Room, target: PlayerId) {
+    return room.canAttack(room.CurrentPlayer, room.getPlayerById(target));
   }
 
-  onUse(room: Room, cardIds?: CardId[], targets?: PlayerId[]) {
+  onUse(room: Room, owner: PlayerId, cardIds?: CardId[], targets?: PlayerId[]) {
     room.broadcast(
       GameEventIdentifiers.CardUseEvent,
       {
-        fromId: room.CurrentPlayer.Id,
+        fromId: room.getPlayerById(owner).Id,
         cardId: cardIds![0],
         toId: targets![0],
+        triggeredBySkillName: this.name,
       },
       translateNote(
         '{0} uses card {2} to {1}',
@@ -65,6 +66,7 @@ export class SlashSkill extends ActiveSkill {
       toId: event.toId,
       damage: 1,
       damageType: this.damageType,
+      triggeredBySkillName: this.name,
     };
 
     room.broadcast(
