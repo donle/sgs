@@ -9,6 +9,7 @@ const rooms: ServerRoom[] = [];
 const server = http.createServer();
 
 class App {
+  private rooms: ServerRoom[] = [];
   constructor(private server: http.Server | https.Server) {
 
   }

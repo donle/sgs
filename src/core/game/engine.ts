@@ -10,12 +10,12 @@ export class Sanguosha {
   public static load(
     cards: Card[],
     characters: Character[],
-    hiddenSkills: Skill[] = [],
+    invisibleSkills: Skill[] = [],
   ) {
     Sanguosha.cards = cards;
     Sanguosha.characters = characters;
 
-    Sanguosha.skills = hiddenSkills;
+    Sanguosha.skills = invisibleSkills;
     for (const character of Sanguosha.characters) {
       Sanguosha.skills = Sanguosha.skills.concat(character.Skills);
     }

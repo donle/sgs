@@ -16,6 +16,5 @@
   },
   "exclude": [
     "./src/ui/platforms/**/*.ts",
-    "./src/server/**/*.ts"
   ]
 }

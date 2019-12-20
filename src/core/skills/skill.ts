@@ -1,4 +1,4 @@
-import { CardId } from 'core/cards/card';
+import { Card, CardId, VirtualCard } from 'core/cards/card';
 import {
   ClientEventFinder,
   EventPicker,
@@ -54,13 +54,19 @@ export abstract class Skill<T extends SkillType = SkillType> {
   public get isShadowSkill() {
     return this.shadowSkill;
   }
+
+  public get SkillType() {
+    return this.skillType;
+  }
 }
 
 export abstract class TriggerSkill<
   T extends SkillType = SkillType.Common
 > extends Skill<T> {
   public abstract isTriggerable(stage: AllStage): boolean;
-  public abstract onTrigger<I extends GameEventIdentifiers = GameEventIdentifiers>(
+  public abstract onTrigger<
+    I extends GameEventIdentifiers = GameEventIdentifiers
+  >(
     room: Room,
     owner: Player,
     content?: EventPicker<I, WorkPlace.Server>,
@@ -99,7 +105,9 @@ export class DistanceSkill extends Skill<SkillType.Compulsory> {
   }
 }
 
-export abstract class ActiveSkill extends Skill {
+export abstract class ActiveSkill<
+  T extends SkillType = SkillType.Common
+> extends Skill<T> {
   public abstract targetFilter(room: Room, targets: PlayerId[]): boolean;
   public abstract cardFilter(room: Room, cards: CardId[]): boolean;
   public abstract isAvailableCard(
@@ -124,11 +132,30 @@ export abstract class ActiveSkill extends Skill {
   }
 }
 
+export abstract class ViewAsSkill<S extends SkillType> extends ActiveSkill<S> {
+  protected abstract viewAsCard: VirtualCard<Card>;
+  public abstract viewAs<T extends Card>(cardName: string): T;
+
+  public getViewAsCard<T extends Card>(): VirtualCard<T> {
+    return this.viewAsCard as VirtualCard<T>;
+  }
+}
+
 export abstract class FilterSkill extends Skill<SkillType.Compulsory> {
   public canUse() {
     return false;
   }
 
-  public abstract canUseCard(room: Room, owner: PlayerId, target: PlayerId, cardId: CardId): boolean;
-  public abstract canBeUsedCard(room: Room, owner: PlayerId, attacker: PlayerId, cardId: CardId): boolean;
+  public abstract canUseCard(
+    cardId: CardId,
+    room: Room,
+    owner: PlayerId,
+    target: PlayerId,
+  ): boolean;
+  public abstract canBeUsedCard(
+    cardId: CardId,
+    room: Room,
+    owner: PlayerId,
+    attacker: PlayerId,
+  ): boolean;
 }

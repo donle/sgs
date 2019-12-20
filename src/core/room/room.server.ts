@@ -19,6 +19,7 @@ import {
   GameInfo,
 } from 'core/game/game_props';
 import { Room } from './room';
+import { TriggerSkill } from 'core/skills/skill';
 
 type RoomId = number;
 
@@ -83,7 +84,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.socket.sendEvent(type, content, to);
   }
 
-  public broadcast(
+  public async broadcast(
     type: GameEventIdentifiers,
     content: EventPicker<typeof type, WorkPlace.Server>,
     pendingMessage?: (language: Languages) => string,
@@ -107,7 +108,15 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         const skill = Sanguosha.getSkillBySkillName(
           content.triggeredBySkillName,
         );
-        skill && skill.onEffect(this, content);
+        if (skill) {
+          const { invoke } = await this.socket.waitForResponse<
+            EventPicker<
+              GameEventIdentifiers.AskForInvokeEvent,
+              WorkPlace.Client
+            >
+          >('@skill_response');
+          invoke && skill.onEffect(this, content);
+        }
       }
 
       this.trigger(stage, content);
@@ -128,7 +137,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         continue;
       }
 
-      const skills = this.players[i].getTriggerSkills();
+      const skills = this.players[i].getSkills<TriggerSkill>('trigger');
       for (const skill of skills) {
         skill.isTriggerable(stage) &&
           skill.canUse(this, this.players[i], content) &&

@@ -74,6 +74,13 @@ export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.AskForPeachEvent]: {};
   [GameEventIdentifiers.AskForNullificationEvent]: {};
   [GameEventIdentifiers.AskForCardResponseEvent]: {};
+  [GameEventIdentifiers.AskForChoosingCardEvent]: {};
+  [GameEventIdentifiers.AskForChoosingCardFromPlayerEvent]: {};
+  [GameEventIdentifiers.AskForInvokeEvent]: {
+    eventName: string;
+    invoke: boolean;
+  };
+  [GameEventIdentifiers.AskForCardUseEvent]: {}
   [GameEventIdentifiers.AskForCardUseEvent]: {};
   [GameEventIdentifiers.AskForCardDisplayEvent]: {};
   [GameEventIdentifiers.AskForCardDropEvent]: {};

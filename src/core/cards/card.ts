@@ -1,4 +1,5 @@
 import { Skill } from 'core/skills/skill';
+import { Sanguosha } from 'core/game/engine';
 
 export const enum CardSuit {
   NoSuit,
@@ -75,21 +76,33 @@ export const enum EquipCardCategory {
 }
 
 export class VirtualCard<T extends Card> extends Card {
+  private viewAs: T;
+  protected name: string;
+  protected description: string;
+  protected skills: Skill[];
+  protected cardType: CardType;
+
   protected id = -1;
   protected cardNumber = 0;
   protected suit = CardSuit.NoSuit;
-  protected name = this.viewAs.Name;
-  protected description = this.viewAs.Description;
-  protected skills = this.viewAs.SKill;
-  protected cardType = this.viewAs.Type;
 
-  constructor(private viewAs: T, private cards: Card[] = []) {
+  private constructor(viewAsCardName: string, private cards: Card[]) {
     super();
+
+    this.viewAs = Sanguosha.getCardByName(viewAsCardName);
+    this.name = this.viewAs.Name;
+    this.description = this.viewAs.Description;
+    this.skills = this.viewAs.SKill;
+    this.cardType = this.viewAs.Type;
 
     if (cards.length === 1) {
       this.cardNumber = cards[0].Number;
       this.suit = cards[0].Suit;
     }
+  }
+
+  create(viewAsCardName: string, cards: Card[] = []) {
+    return new VirtualCard(viewAsCardName, cards);
   }
 
   public get ActualCards() {

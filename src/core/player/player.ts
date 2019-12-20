@@ -15,7 +15,15 @@ import {
   PlayerRole,
 } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { DistanceSkill, TriggerSkill } from 'core/skills/skill';
+import {
+  ActiveSkill,
+  DistanceSkill,
+  FilterSkill,
+  Skill,
+  SkillType,
+  TriggerSkill,
+  ViewAsSkill,
+} from 'core/skills/skill';
 import { Languages } from 'translations/languages';
 
 export abstract class Player implements PlayerInfo {
@@ -61,7 +69,7 @@ export abstract class Player implements PlayerInfo {
     const card = Sanguosha.getCardById(cardId);
 
     /**
-     * TODO: to check if the cad could be used
+     * TODO: to check if the cad could be used, by any filterSkilles
      */
     return card.ActualSkill.canUse(room, this);
   }
@@ -239,24 +247,60 @@ export abstract class Player implements PlayerInfo {
     return fixedDistance;
   }
 
-  public getTriggerSkills() {
+  public getSkills<T extends Skill = Skill>(
+    skillType?:
+      | 'trigger'
+      | 'common'
+      | 'limit'
+      | 'awaken'
+      | 'complusory'
+      | 'active'
+      | 'filter'
+      | 'viewAs'
+      | 'distance',
+  ): T[] {
     const equipCards = this.playerCards[PlayerCardsArea.EquipArea].map(card =>
       Sanguosha.getCardById(card),
     );
-    const skills: TriggerSkill[] = [];
-    for (const equip of equipCards) {
-      if (equip.ActualSkill instanceof TriggerSkill) {
-        skills.push(equip.ActualSkill);
-      }
+
+    const skills: Skill[] = [
+      ...equipCards.map(card => card.ActualSkill),
+      ...this.playerCharacter.Skills,
+    ];
+    if (skillType === undefined) {
+      return skills as T[];
     }
 
-    for (const skill of this.playerCharacter.Skills) {
-      if (skill instanceof TriggerSkill) {
-        skills.push(skill);
-      }
+    switch (skillType) {
+      case 'filter':
+        return skills.filter(skill => skill instanceof FilterSkill) as T[];
+      case 'active':
+        return skills.filter(skill => skill instanceof ActiveSkill) as T[];
+      case 'trigger':
+        return skills.filter(skill => skill instanceof TriggerSkill) as T[];
+      case 'viewAs':
+        return skills.filter(skill => skill instanceof ViewAsSkill) as T[];
+      case 'distance':
+        return skills.filter(skill => skill instanceof DistanceSkill) as T[];
+      case 'complusory':
+        return skills.filter(
+          skill => skill.SkillType === SkillType.Compulsory,
+        ) as T[];
+      case 'awaken':
+        return skills.filter(
+          skill => skill.SkillType === SkillType.Awaken,
+        ) as T[];
+      case 'limit':
+        return skills.filter(
+          skill => skill.SkillType === SkillType.Limit,
+        ) as T[];
+      case 'common':
+        return skills.filter(
+          skill => skill.SkillType === SkillType.Common,
+        ) as T[];
+      default:
+        throw new Error(`Unreachable error of skill type: ${skillType}`);
     }
-
-    return skills;
   }
 
   public turnOver() {

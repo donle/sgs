@@ -46,6 +46,7 @@ export abstract class Socket<T extends WorkPlace> {
   ): void;
 
   public abstract get Clients(): WebSocketWithId<{}>[];
+  public abstract async waitForResponse<T extends object = {}>(eventName: string): Promise<T>;
 }
 
 export type SocketMessage<

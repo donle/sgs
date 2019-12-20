@@ -14,6 +14,16 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
   private clients: SgsWebSocket[];
   private hash = createHash('sha256');
 
+  private asyncPendingEventName: string | undefined;
+  private asyncPendingEventResolver: Function;
+  private asyncPendingEventRejector: Function;
+  private asyncPendingEventPromiseListener = new Promise<any>(
+    (resolve, reject) => {
+      this.asyncPendingEventResolver = resolve;
+      this.asyncPendingEventRejector = reject;
+    },
+  );
+
   constructor() {
     super(WorkPlace.Server);
 
@@ -29,6 +39,18 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         >;
 
         if (this.room !== undefined) {
+          if (type === GameEventIdentifiers.AskForInvokeEvent) {
+            const { eventName } = content as EventPicker<
+              GameEventIdentifiers.AskForInvokeEvent,
+              WorkPlace.Client
+            >;
+            eventName === this.asyncPendingEventName
+              ? this.asyncPendingEventResolver(content)
+              : this.asyncPendingEventRejector('Mis-match invoke event name');
+
+            return;
+          }
+
           if (type === GameEventIdentifiers.PlayerEnterEvent) {
             const { playerLanguage, playerName } = content as EventPicker<
               GameEventIdentifiers.PlayerEnterEvent,
@@ -110,6 +132,14 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     }
 
     socket.send(JSON.stringify({ type, content }));
+  }
+
+  public async waitForResponse<T extends object = {}>(eventName: string) {
+    this.asyncPendingEventName = eventName;
+    const result = (await this.asyncPendingEventPromiseListener) as T;
+    this.asyncPendingEventName = undefined;
+
+    return result;
   }
 
   public get Clients() {

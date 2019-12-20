@@ -74,6 +74,12 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.AskForPeachEvent]: {};
   [GameEventIdentifiers.AskForNullificationEvent]: {};
   [GameEventIdentifiers.AskForCardResponseEvent]: {};
+  [GameEventIdentifiers.AskForChoosingCardEvent]: {};
+  [GameEventIdentifiers.AskForChoosingCardFromPlayerEvent]: {};
+  [GameEventIdentifiers.AskForInvokeEvent]: {
+    eventName: string;
+    to: PlayerId;
+  };
   [GameEventIdentifiers.AskForCardUseEvent]: {};
   [GameEventIdentifiers.AskForCardDisplayEvent]: {};
   [GameEventIdentifiers.AskForCardDropEvent]: {};

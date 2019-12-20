@@ -5,16 +5,13 @@ import {
   GameEventIdentifiers,
   WorkPlace,
 } from 'core/event/event';
-import { AllStage, GameEventStage, PlayerStage } from 'core/game/stage';
+import { GameEventStage, PlayerStage } from 'core/game/stage';
 import { Socket } from 'core/network/socket';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 
-import {
-  GameCardExtensions,
-  GameCharacterExtensions,
-  GameInfo,
-} from 'core/game/game_props';
+import { Sanguosha } from 'core/game/engine';
+import { GameInfo } from 'core/game/game_props';
 import { Languages } from 'translations/languages';
 
 type RoomId = number;
@@ -39,11 +36,11 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     content: EventPicker<typeof type, WorkPlace>,
     pleyer: PlayerId,
   ): void;
-  public abstract broadcast<I extends GameEventIdentifiers>(
+  public abstract async broadcast<I extends GameEventIdentifiers>(
     type: I,
     content: EventPicker<I, WorkPlace>,
     pendingMessage?: (language: Languages) => string,
-  ): void;
+  ): Promise<void>;
 
   public abstract drawCards(numberOfCards: number, player?: Player): void;
   public abstract dropCards(cardIds: CardId[], player?: Player): void;
@@ -61,32 +58,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     type: I,
     content: EventPicker<I, WorkPlace.Client>,
   ) {}
-
-  public canUseCard(fromId: PlayerId, toId: PlayerId, cardId: CardId) {
-    const from = this.getPlayerById(fromId);
-    const to = this.getPlayerById(toId);
-
-    /**
-     * TODO: to check filter skills for source and target
-     *
-     */
-    if (!from.canUseCard(this, cardId)) {
-      return false;
-    }
-  }
-
-  public canUseSkill(
-    fromId: PlayerId,
-    toId: PlayerId | undefined,
-    skillName: string,
-    content?: ClientEventFinder<GameEventIdentifiers>,
-  ) {
-    if (toId === undefined) {
-      return true;
-    }
-
-    return this.getPlayerById(fromId).canUseSkill(this, skillName, content);
-  }
 
   public useCard(
     content: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
