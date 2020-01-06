@@ -50,7 +50,7 @@ export abstract class ArmorCard extends EquipCard {
 export abstract class RideCard extends EquipCard {
   protected abstract distanceSkill: DistanceSkill;
 
-  public get ActualSkill(): DistanceSkill {
+  public get Skill(): DistanceSkill {
     return this.distanceSkill;
   }
 
@@ -60,7 +60,7 @@ export abstract class RideCard extends EquipCard {
 }
 
 export class DefenseRideCard extends RideCard {
-  protected skills: Skill[] = [this.distanceSkill];
+  protected skill: Skill = this.distanceSkill;
 
   constructor(
     protected id: CardId,
@@ -75,7 +75,7 @@ export class DefenseRideCard extends RideCard {
 }
 
 export class OffenseRideCard extends RideCard {
-  protected skills: Skill[] = [this.distanceSkill];
+  protected skill: Skill = this.distanceSkill;
 
   constructor(
     protected id: CardId,

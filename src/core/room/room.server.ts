@@ -18,8 +18,8 @@ import {
   GameCharacterExtensions,
   GameInfo,
 } from 'core/game/game_props';
-import { Room } from './room';
 import { TriggerSkill } from 'core/skills/skill';
+import { Room } from './room';
 
 type RoomId = number;
 
@@ -139,6 +139,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
       const skills = this.players[i].getSkills<TriggerSkill>('trigger');
       for (const skill of skills) {
+        // @TODO: to ask players if the skill is to be triggered.
         skill.isTriggerable(stage) &&
           skill.canUse(this, this.players[i], content) &&
           skill.onTrigger(this, this.players[i], content);

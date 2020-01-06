@@ -132,12 +132,31 @@ export abstract class ActiveSkill<
   }
 }
 
-export abstract class ViewAsSkill<S extends SkillType> extends ActiveSkill<S> {
-  protected abstract viewAsCard: VirtualCard<Card>;
-  public abstract viewAs<T extends Card>(cardName: string): T;
+export abstract class CardTransformSkill<
+  T extends Card,
+  S extends Skill
+> extends Skill<SkillType.Compulsory> {
+  public canUse() {
+    return false;
+  }
+  public isRefreshAt() {
+    return false;
+  }
+  // tslint:disable-next-line: no-empty
+  public onEffect() {}
+  // tslint:disable-next-line: no-empty
+  public onUse() {}
 
-  public getViewAsCard<T extends Card>(): VirtualCard<T> {
-    return this.viewAsCard as VirtualCard<T>;
+  public abstract override(skill: S): void;
+  public abstract canTransform(card: Card): boolean;
+  public clone(card: T): VirtualCard<T> {
+    const cloneSkill = Object.assign<S, S>(
+      Object.create(Object.getPrototypeOf(card.Skill)),
+      card.Skill as S,
+    );
+    this.override(cloneSkill);
+
+    return VirtualCard.create(card.Name, [card], cloneSkill);
   }
 }
 
@@ -145,6 +164,13 @@ export abstract class FilterSkill extends Skill<SkillType.Compulsory> {
   public canUse() {
     return false;
   }
+  public isRefreshAt() {
+    return false;
+  }
+  // tslint:disable-next-line: no-empty
+  public onEffect() {}
+  // tslint:disable-next-line: no-empty
+  public onUse() {}
 
   public abstract canUseCard(
     cardId: CardId,

@@ -8,13 +8,18 @@ export class Slash extends BasicCard {
   protected damageType: DamageType = DamageType.Normal;
 
   constructor(id: CardId, cardNumber: number, suit: CardSuit) {
-    super(id, cardNumber, suit, 'slash', 'slash_description', [
+    super(
+      id,
+      cardNumber,
+      suit,
+      'slash',
+      'slash_description',
       SkillLoader.getInstance().getSkillByName('slash'),
-    ]);
+    );
   }
 
-  public get ActualSkill() {
-    return this.skills[0] as SlashSkill;
+  public get Skill() {
+    return this.skill as SlashSkill;
   }
 
   public get DamageType() {

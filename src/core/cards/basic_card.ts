@@ -11,7 +11,7 @@ export abstract class BasicCard extends Card {
     protected suit: CardSuit,
     protected name: string,
     protected description: string,
-    protected skills: Skill[],
+    protected skill: Skill,
   ) {
     super();
   }

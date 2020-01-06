@@ -3,10 +3,10 @@ import { CardSuit } from '../card';
 
 export class Jink extends BasicCard {
   constructor(id: number, cardNumber: number, suit: CardSuit) {
-    super(id, cardNumber, suit, 'jink', 'jink_description', []);
+    super(id, cardNumber, suit, 'jink', 'jink_description', undefined);
   }
 
-  public get ActualSkill(): undefined {
+  public get Skill(): undefined {
     return;
   }
 }

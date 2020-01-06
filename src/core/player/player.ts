@@ -22,7 +22,7 @@ import {
   Skill,
   SkillType,
   TriggerSkill,
-  ViewAsSkill,
+  CardTransformSkill,
 } from 'core/skills/skill';
 import { Languages } from 'translations/languages';
 
@@ -71,7 +71,7 @@ export abstract class Player implements PlayerInfo {
     /**
      * TODO: to check if the cad could be used, by any filterSkilles
      */
-    return card.ActualSkill.canUse(room, this);
+    return card.Skill.canUse(room, this);
   }
 
   public canUseSkill(
@@ -225,7 +225,7 @@ export abstract class Player implements PlayerInfo {
         const card = Sanguosha.getCardById(cardId);
         return card instanceof RideCard;
       })
-      .map(cardId => Sanguosha.getCardById<RideCard>(cardId).ActualSkill);
+      .map(cardId => Sanguosha.getCardById<RideCard>(cardId).Skill);
 
     const skills: DistanceSkill[] = this.playerCharacter.Skills.filter(
       skill => skill instanceof DistanceSkill,
@@ -256,7 +256,7 @@ export abstract class Player implements PlayerInfo {
       | 'complusory'
       | 'active'
       | 'filter'
-      | 'viewAs'
+      | 'transform'
       | 'distance',
   ): T[] {
     const equipCards = this.playerCards[PlayerCardsArea.EquipArea].map(card =>
@@ -264,7 +264,7 @@ export abstract class Player implements PlayerInfo {
     );
 
     const skills: Skill[] = [
-      ...equipCards.map(card => card.ActualSkill),
+      ...equipCards.map(card => card.Skill),
       ...this.playerCharacter.Skills,
     ];
     if (skillType === undefined) {
@@ -278,8 +278,8 @@ export abstract class Player implements PlayerInfo {
         return skills.filter(skill => skill instanceof ActiveSkill) as T[];
       case 'trigger':
         return skills.filter(skill => skill instanceof TriggerSkill) as T[];
-      case 'viewAs':
-        return skills.filter(skill => skill instanceof ViewAsSkill) as T[];
+      case 'transform':
+        return skills.filter(skill => skill instanceof CardTransformSkill) as T[];
       case 'distance':
         return skills.filter(skill => skill instanceof DistanceSkill) as T[];
       case 'complusory':

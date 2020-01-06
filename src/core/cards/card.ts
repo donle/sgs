@@ -1,5 +1,5 @@
-import { Skill } from 'core/skills/skill';
 import { Sanguosha } from 'core/game/engine';
+import { Skill } from 'core/skills/skill';
 
 export const enum CardSuit {
   NoSuit,
@@ -24,7 +24,7 @@ export abstract class Card {
   protected abstract suit: CardSuit;
   protected abstract name: string;
   protected abstract description: string;
-  protected abstract skills: Skill[];
+  protected abstract skill: Skill;
   protected abstract cardType: CardType;
 
   public get Id() {
@@ -55,11 +55,9 @@ export abstract class Card {
     return this.cardType;
   }
 
-  public get SKill() {
-    return this.skills;
+  public get Skill() {
+    return this.skill;
   }
-
-  public abstract get ActualSkill(): Skill | undefined;
 }
 
 export const enum CardType {
@@ -79,20 +77,20 @@ export class VirtualCard<T extends Card> extends Card {
   private viewAs: T;
   protected name: string;
   protected description: string;
-  protected skills: Skill[];
+  protected skill: Skill;
   protected cardType: CardType;
 
   protected id = -1;
   protected cardNumber = 0;
   protected suit = CardSuit.NoSuit;
 
-  private constructor(viewAsCardName: string, private cards: Card[]) {
+  constructor(viewAsCardName: string, private cards: Card[], skill?: Skill) {
     super();
 
     this.viewAs = Sanguosha.getCardByName(viewAsCardName);
     this.name = this.viewAs.Name;
     this.description = this.viewAs.Description;
-    this.skills = this.viewAs.SKill;
+    this.skill = skill ? skill : this.viewAs.Skill;
     this.cardType = this.viewAs.Type;
 
     if (cards.length === 1) {
@@ -101,15 +99,19 @@ export class VirtualCard<T extends Card> extends Card {
     }
   }
 
-  create(viewAsCardName: string, cards: Card[] = []) {
-    return new VirtualCard(viewAsCardName, cards);
+  public static create<T extends Card>(
+    viewAsCardName: string,
+    cards: Card[] = [],
+    skill?: Skill,
+  ) {
+    return new VirtualCard<T>(viewAsCardName, cards, skill);
   }
 
   public get ActualCards() {
     return this.cards;
   }
 
-  public get ActualSkill() {
-    return this.viewAs.ActualSkill;
+  public get Skill() {
+    return this.skill;
   }
 }

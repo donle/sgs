@@ -10,7 +10,6 @@ import { Socket } from 'core/network/socket';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 
-import { Sanguosha } from 'core/game/engine';
 import { GameInfo } from 'core/game/game_props';
 import { Languages } from 'translations/languages';
 
