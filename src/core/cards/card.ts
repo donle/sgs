@@ -1,5 +1,5 @@
 import { Sanguosha } from 'core/game/engine';
-import { Skill } from 'core/skills/skill';
+import { CardTransformSkill, Skill } from 'core/skills/skill';
 
 export const enum CardSuit {
   NoSuit,
@@ -57,6 +57,17 @@ export abstract class Card {
 
   public get Skill() {
     return this.skill;
+  }
+
+  public hasTransformed() {
+    return this.skill instanceof CardTransformSkill;
+  }
+
+  public isBlack() {
+    return this.suit === CardSuit.Spade || this.suit === CardSuit.Club;
+  }
+  public isRed() {
+    return this.suit === CardSuit.Heart || this.suit === CardSuit.Diamond;
   }
 }
 

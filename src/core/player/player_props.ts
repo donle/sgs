@@ -3,8 +3,17 @@ import { CharacterId } from 'core/characters/character';
 
 export type PlayerId = string;
 
+export type PlayerCardsOutside =  & {
+  [S in PlayerCardsArea.OutsideArea]: {
+    [SkillName: string]: CardId[];
+  };
+};
+
 export type PlayerCards = {
-  [K in PlayerCardsArea]: CardId[];
+  [K in keyof Pick<
+    keyof typeof PlayerCardsArea,
+    Exclude<PlayerCardsArea, PlayerCardsArea.OutsideArea>
+  >]: CardId[];
 };
 
 export const enum PlayerRole {
@@ -20,6 +29,7 @@ export const enum PlayerCardsArea {
   EquipArea,
   HandArea,
   HoldingArea,
+  OutsideArea,
 }
 
 export interface PlayerInfo {
@@ -28,4 +38,4 @@ export interface PlayerInfo {
   CharacterId: CharacterId | undefined;
   Role: PlayerRole | undefined;
   Position: number | undefined;
-};
+}

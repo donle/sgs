@@ -1,4 +1,4 @@
-import { Card, CardId } from 'core/cards/card';
+import { CardId } from 'core/cards/card';
 import { EquipCard, RideCard, WeaponCard } from 'core/cards/equip_card';
 import {
   Character,
@@ -10,6 +10,7 @@ import { Sanguosha } from 'core/game/engine';
 import {
   PlayerCards,
   PlayerCardsArea,
+  PlayerCardsOutside,
   PlayerId,
   PlayerInfo,
   PlayerRole,
@@ -17,12 +18,12 @@ import {
 import { Room } from 'core/room/room';
 import {
   ActiveSkill,
+  CardTransformSkill,
   DistanceSkill,
   FilterSkill,
   Skill,
   SkillType,
   TriggerSkill,
-  CardTransformSkill,
 } from 'core/skills/skill';
 import { Languages } from 'translations/languages';
 
@@ -49,13 +50,14 @@ export abstract class Player implements PlayerInfo {
 
   constructor(
     protected playerCharacterId: CharacterId,
-    protected playerCards?: PlayerCards,
+    protected playerCards?: PlayerCards & PlayerCardsOutside,
   ) {
     this.playerCards = this.playerCards || {
       [PlayerCardsArea.HandArea]: [],
       [PlayerCardsArea.JudgeArea]: [],
       [PlayerCardsArea.HoldingArea]: [],
       [PlayerCardsArea.EquipArea]: [],
+      [PlayerCardsArea.OutsideArea]: {},
     };
 
     this.playerCharacter = Sanguosha.getCharacterById(this.playerCharacterId);
@@ -96,7 +98,10 @@ export abstract class Player implements PlayerInfo {
       : (this.skillUsedHistory[skillName] = 0);
   }
 
-  public getCardIds(area?: PlayerCardsArea): CardId[] {
+  public getCardIds(
+    area?: PlayerCardsArea,
+    outsideAreaName?: string,
+  ): CardId[] {
     if (area === undefined) {
       const [handCards, judgeCards, holdingCards, equipCards] = Object.values(
         this.playerCards,
@@ -104,20 +109,35 @@ export abstract class Player implements PlayerInfo {
       return [...handCards, ...judgeCards, ...holdingCards, ...equipCards];
     }
 
-    return this.playerCards[area];
+    if (area !== PlayerCardsArea.OutsideArea) {
+      return this.playerCards[area];
+    } else {
+      if (outsideAreaName === undefined) {
+        throw new Error('Unable to get undefined area cards');
+      }
+
+      return this.playerCards[area][outsideAreaName];
+    }
   }
 
   public getCardId(cardId: CardId): CardId | undefined {
-    for (const cards of Object.values(this.playerCards)) {
-      const targetCard = cards.find(card => card === cardId);
-      if (targetCard !== undefined) {
-        return targetCard;
+    for (const card of Object.values(this.getCardIds())) {
+      if (card === cardId) {
+        return cardId;
       }
     }
   }
 
   public cardFrom(cardId: CardId): PlayerCardsArea | undefined {
-    for (const [area, cards] of Object.entries(this.playerCards)) {
+    const {
+      [PlayerCardsArea.OutsideArea]: cards,
+      ...playerCardsInGame
+    } = this.playerCards;
+
+    for (const [area, cards] of Object.entries(playerCardsInGame) as [
+      string,
+      CardId[],
+    ][]) {
       if (cards.find(card => card === cardId)) {
         return (area as any) as PlayerCardsArea;
       }
@@ -279,7 +299,9 @@ export abstract class Player implements PlayerInfo {
       case 'trigger':
         return skills.filter(skill => skill instanceof TriggerSkill) as T[];
       case 'transform':
-        return skills.filter(skill => skill instanceof CardTransformSkill) as T[];
+        return skills.filter(
+          skill => skill instanceof CardTransformSkill,
+        ) as T[];
       case 'distance':
         return skills.filter(skill => skill instanceof DistanceSkill) as T[];
       case 'complusory':

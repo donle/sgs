@@ -34,6 +34,8 @@ export const enum GameEventIdentifiers {
   AskForChoosingCardEvent,
   AskForChoosingCardFromPlayerEvent,
   AskForInvokeEvent,
+  AskForGuanXinEvent,
+  AskForChooseCharacterEvent,
 }
 
 export const enum WorkPlace {

@@ -1,4 +1,4 @@
-import { CardId } from 'core/cards/card';
+import { Card, CardId } from 'core/cards/card';
 import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
 import {
   AllStage,
@@ -9,15 +9,18 @@ import {
 import { ServerSocket } from 'core/network/socket.server';
 import { Player } from 'core/player/player';
 import { ServerPlayer } from 'core/player/player.server';
-import { PlayerId, PlayerInfo } from 'core/player/player_props';
+import {
+  PlayerCardsArea,
+  PlayerId,
+  PlayerInfo,
+} from 'core/player/player_props';
 import { Languages } from 'translations/languages';
 
+import { Character } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
-import {
-  GameCardExtensions,
-  GameCharacterExtensions,
-  GameInfo,
-} from 'core/game/game_props';
+import { GameInfo } from 'core/game/game_props';
+import { CardLoader } from 'core/game/package_loader/loader.cards';
+import { CharacterLoader } from 'core/game/package_loader/loader.characters';
 import { TriggerSkill } from 'core/skills/skill';
 import { Room } from './room';
 
@@ -27,6 +30,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   protected currentGameEventStage: GameEventStage;
   protected currentPlayerStage: PlayerStage;
   protected currentPlayer: Player;
+
+  private loadedCharacters: Character[];
+  private loadedCards: Card[];
 
   private cards: CardId[];
   private drawDile: CardId[];
@@ -42,17 +48,17 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   protected init() {
-    this.loadCards(this.gameInfo.cardExtensions);
-    this.loadCharacters(this.gameInfo.characterExtensions);
-
+    this.loadedCharacters = CharacterLoader.getInstance().getPackages(
+      ...this.gameInfo.characterExtensions,
+    );
+    this.loadedCards = CardLoader.getInstance().getPackages(
+      ...this.gameInfo.cardExtensions,
+    );
     this.drawDile = this.cards.slice();
     this.dropDile = [];
 
     this.socket.emit(this);
   }
-
-  protected loadCharacters(characterPackages: GameCharacterExtensions[]) {}
-  protected loadCards(cardPackages: GameCardExtensions[]) {}
 
   private shuffle() {
     for (let i = 0; i < this.drawDile.length - 1; i++) {
@@ -67,6 +73,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
   }
 
+  // @@TODO: TBA here
   public gameStart() {}
 
   public createPlayer(playerInfo: PlayerInfo, playerLanguage: Languages) {
@@ -123,7 +130,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
   }
 
-  public trigger(
+  public async trigger(
     stage: AllStage,
     content: EventPicker<GameEventIdentifiers, WorkPlace.Server>,
   ) {
@@ -139,10 +146,22 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
       const skills = this.players[i].getSkills<TriggerSkill>('trigger');
       for (const skill of skills) {
-        // @TODO: to ask players if the skill is to be triggered.
-        skill.isTriggerable(stage) &&
-          skill.canUse(this, this.players[i], content) &&
-          skill.onTrigger(this, this.players[i], content);
+        if (
+          skill.isTriggerable(stage) &&
+          skill.canUse(this, this.players[i], content)
+        ) {
+          if (skill.isAutoTrigger()) {
+            skill.onTrigger(this, this.players[i], content);
+          } else {
+            const { invoke } = await this.socket.waitForResponse<
+              EventPicker<
+                GameEventIdentifiers.AskForInvokeEvent,
+                WorkPlace.Client
+              >
+            >('@skill_response');
+            invoke && skill.onTrigger(this, this.players[i], content);
+          }
+        }
       }
     }
   }
@@ -156,6 +175,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   public dropCards(cardIds: CardId[], player?: Player) {}
+
+  public moveCard(
+    cardId: CardId,
+    from: Player,
+    to: Player,
+    toArea: PlayerCardsArea,
+  ) {}
 
   public get RoomId() {
     return this.roomId;

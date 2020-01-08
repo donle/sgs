@@ -81,7 +81,6 @@ export interface ClientEvent extends EventUtilities {
     invoke: boolean;
   };
   [GameEventIdentifiers.AskForCardUseEvent]: {}
-  [GameEventIdentifiers.AskForCardUseEvent]: {};
   [GameEventIdentifiers.AskForCardDisplayEvent]: {};
   [GameEventIdentifiers.AskForCardDropEvent]: {};
 }

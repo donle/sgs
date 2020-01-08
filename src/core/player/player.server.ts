@@ -1,8 +1,7 @@
-import { Character, CharacterId } from 'core/characters/character';
-import { Sanguosha } from 'core/game/engine';
+import { CharacterId } from 'core/characters/character';
 import { Player } from 'core/player/player';
 import { Languages } from 'translations/languages';
-import { PlayerCards, PlayerId } from './player_props';
+import { PlayerCards, PlayerCardsOutside, PlayerId } from './player_props';
 
 export class ServerPlayer extends Player {
   constructor(
@@ -11,7 +10,7 @@ export class ServerPlayer extends Player {
     protected playerPosition: number,
     protected playerLanguage: Languages,
     playerCharacterId?: CharacterId,
-    playerCards?: PlayerCards,
+    playerCards?: PlayerCards & PlayerCardsOutside,
   ) {
     super(playerCharacterId, playerCards);
   }

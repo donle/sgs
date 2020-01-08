@@ -9,6 +9,10 @@ import { translateNote } from 'translations/translations';
 export class JiuYuan extends TriggerSkill<SkillType.Compulsory> {
   public isLordSkill = true;
 
+  public isAutoTrigger() {
+    return true;
+  }
+
   constructor() {
     super('jiuyuan', 'jiuyuan_description', SkillType.Compulsory, false, true);
   }

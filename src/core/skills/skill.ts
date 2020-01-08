@@ -64,6 +64,7 @@ export abstract class TriggerSkill<
   T extends SkillType = SkillType.Common
 > extends Skill<T> {
   public abstract isTriggerable(stage: AllStage): boolean;
+  public abstract isAutoTrigger(): boolean;
   public abstract onTrigger<
     I extends GameEventIdentifiers = GameEventIdentifiers
   >(
@@ -147,7 +148,7 @@ export abstract class CardTransformSkill<
   // tslint:disable-next-line: no-empty
   public onUse() {}
 
-  public abstract override(skill: S): void;
+  protected abstract override(skill: S): void;
   public abstract canTransform(card: Card): boolean;
   public clone(card: T): VirtualCard<T> {
     const cloneSkill = Object.assign<S, S>(
