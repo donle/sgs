@@ -158,13 +158,13 @@ export abstract class Player implements PlayerInfo {
       PlayerCardsArea.HoldingArea,
       PlayerCardsArea.JudgeArea,
     ];
-    let droppedCardIds: CardId[] = [];
+    const droppedCardIds: CardId[] = [];
     for (const playerCardsArea of playerCardsAreas) {
       const areaCards = this.getCardIds(playerCardsArea);
       for (const card of cards) {
         const index = areaCards.findIndex(areaCard => areaCard === card);
         if (index >= 0) {
-          droppedCardIds = droppedCardIds.concat(areaCards.splice(index, 1)[0]);
+          droppedCardIds.push(areaCards.splice(index, 1)[0]);
         }
       }
     }

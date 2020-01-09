@@ -35,9 +35,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     content: EventPicker<typeof type, WorkPlace>,
     pleyer: PlayerId,
   ): void;
-  public abstract async broadcast<I extends GameEventIdentifiers>(
-    type: I,
-    content: EventPicker<I, WorkPlace>,
+  public abstract async broadcast(
+    type: GameEventIdentifiers,
+    content: EventPicker<typeof type, WorkPlace>,
     pendingMessage?: (language: Languages) => string,
   ): Promise<void>;
 
@@ -53,9 +53,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return player;
   }
 
-  public on<I extends GameEventIdentifiers>(
-    type: I,
-    content: EventPicker<I, WorkPlace.Client>,
+  public on(
+    type: GameEventIdentifiers,
+    content: EventPicker<typeof type, WorkPlace.Client>,
   ) {}
 
   public useCard(

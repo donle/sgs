@@ -12,6 +12,7 @@ export const translations = {
   '{0} droppes cards {1}': '{0} 弃置了 {1}',
   '{0} cards are dropped': '{0} 进入了弃牌堆',
   '{0} uses card {1}': '{0} 使用了一张【{1}】',
+  '{0} obtains card {1}': '{0} 获得了【{1}】',
   '{0} uses card {2} to {1}': '{0} 对 {1} 使用了一张【{2}】',
   '{0} responses card {1}': '{0} 打出了一张【{0}】',
   'please drop {0} cards': '请弃置 {0} 张牌',

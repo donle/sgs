@@ -16,12 +16,14 @@ import {
 } from 'core/player/player_props';
 import { Languages } from 'translations/languages';
 
+import { EquipCard } from 'core/cards/equip_card';
 import { Character } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { GameInfo } from 'core/game/game_props';
 import { CardLoader } from 'core/game/package_loader/loader.cards';
 import { CharacterLoader } from 'core/game/package_loader/loader.characters';
 import { TriggerSkill } from 'core/skills/skill';
+import { translateNote } from 'translations/translations';
 import { Room } from './room';
 
 type RoomId = number;
@@ -91,9 +93,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.socket.sendEvent(type, content, to);
   }
 
-  public async broadcast(
-    type: GameEventIdentifiers,
-    content: EventPicker<typeof type, WorkPlace.Server>,
+  public async broadcast<I extends GameEventIdentifiers = GameEventIdentifiers>(
+    type: I,
+    content: EventPicker<I, WorkPlace.Server>,
     pendingMessage?: (language: Languages) => string,
   ) {
     this.socket.Clients.forEach(client => {
@@ -105,16 +107,16 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       client.send(JSON.stringify({ type, content }));
     });
 
-    const stages: GameEventStage[] = GameStages[type];
+    const stages: GameEventStage[] = GameStages[type as GameEventIdentifiers];
     for (const stage of stages) {
       this.currentGameEventStage = stage;
       if (
         !this.currentGameEventStage.startsWith('Before') &&
         !this.currentGameEventStage.startsWith('After')
       ) {
-        const skill = Sanguosha.getSkillBySkillName(
-          content.triggeredBySkillName,
-        );
+        const skill =
+          content.triggeredBySkillName &&
+          Sanguosha.getSkillBySkillName(content.triggeredBySkillName);
         if (skill) {
           const { invoke } = await this.socket.waitForResponse<
             EventPicker<
@@ -174,14 +176,50 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       : this.currentPlayer.drawCardIds(...drawCards);
   }
 
-  public dropCards(cardIds: CardId[], player?: Player) {}
+  public dropCards(cardIds: CardId[], from?: Player) {
+    if (from) {
+      from.dropCards(...cardIds);
+    }
+
+    this.dropDile.push(...cardIds);
+    this.drawDile.filter(cardId => !cardIds.includes(cardId));
+  }
 
   public moveCard(
     cardId: CardId,
-    from: Player,
+    from: Player | undefined,
     to: Player,
     toArea: PlayerCardsArea,
-  ) {}
+  ) {
+    if (from) {
+      from.dropCards(cardId);
+    }
+
+    const card = Sanguosha.getCardById(cardId);
+    if (toArea === PlayerCardsArea.EquipArea) {
+      // TODO: looks like the type of event object cannot be auto detected;
+      to.equip(card as EquipCard);
+      this.broadcast<GameEventIdentifiers.CardUseEvent>(
+        GameEventIdentifiers.CardUseEvent,
+        {
+          toId: to.Id,
+          cardId,
+        },
+        translateNote('{0} uses card {1}', to.Name, card.Name),
+      );
+    } else {
+      to.getCardIds(toArea).push(cardId);
+      this.broadcast(
+        GameEventIdentifiers.MoveCardEvent,
+        {
+          fromId: from && from.Id,
+          toId: to.Id,
+          area: toArea,
+        },
+        translateNote('{0} obtains card {1}', to.Name, card.Name),
+      );
+    }
+  }
 
   public get RoomId() {
     return this.roomId;

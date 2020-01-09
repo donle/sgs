@@ -1,13 +1,12 @@
 import { CardId } from 'core/cards/card';
 import { DamageType, GameInfo } from 'core/game/game_props';
-import { PlayerId, PlayerInfo } from 'core/player/player_props';
-import { Languages } from 'translations/languages';
+import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props';
 import { EventUtilities, GameEventIdentifiers } from './event';
 
 //@@todo: to be updated
 export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.CardUseEvent]: {
-    fromId: PlayerId;
+    fromId?: PlayerId;
     cardId: CardId;
     toId?: PlayerId;
   };
@@ -21,7 +20,11 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.DrawCardEvent]: {};
   [GameEventIdentifiers.ObtainCardEvent]: {};
-  [GameEventIdentifiers.MoveCardEvent]: {};
+  [GameEventIdentifiers.MoveCardEvent]: {
+    fromId?: PlayerId,
+    toId: PlayerId,
+    area: PlayerCardsArea,
+  };
 
   [GameEventIdentifiers.SkillUseEvent]: {
     fromId: PlayerId;
@@ -80,7 +83,6 @@ export interface ServerEvent extends EventUtilities {
     eventName: string;
     to: PlayerId;
   };
-  [GameEventIdentifiers.AskForCardUseEvent]: {};
   [GameEventIdentifiers.AskForCardDisplayEvent]: {};
   [GameEventIdentifiers.AskForCardDropEvent]: {};
 }
