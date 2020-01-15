@@ -10,6 +10,7 @@ export class Peach extends BasicCard {
       cardNumber,
       suit,
       'peach',
+      'peach',
       'peach_description',
       SkillLoader.getInstance().getSkillByName('peach'),
     );

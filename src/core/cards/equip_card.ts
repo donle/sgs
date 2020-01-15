@@ -67,6 +67,7 @@ export class DefenseRideCard extends RideCard {
     protected cardNumber: number,
     protected suit: CardSuit,
     protected name: string,
+    protected generalName: string,
     protected description: string,
     protected distanceSkill: DistanceSkill,
   ) {
@@ -82,6 +83,7 @@ export class OffenseRideCard extends RideCard {
     protected cardNumber: number,
     protected suit: CardSuit,
     protected name: string,
+    protected generalName: string,
     protected description: string,
     protected distanceSkill: DistanceSkill,
   ) {

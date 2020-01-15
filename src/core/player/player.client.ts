@@ -1,7 +1,7 @@
 import { CharacterId } from 'core/characters/character';
 import { Player } from 'core/player/player';
 import { Languages } from 'translations/languages';
-import { PlayerCards, PlayerId } from './player_props';
+import { PlayerCards, PlayerCardsOutside, PlayerId } from './player_props';
 
 export class ClientPlayer extends Player {
   constructor(
@@ -10,7 +10,7 @@ export class ClientPlayer extends Player {
     protected playerPosition: number,
     protected playerLanguage: Languages,
     playerCharacterId?: CharacterId,
-    playerCards?: PlayerCards,
+    playerCards?: PlayerCards & PlayerCardsOutside,
   ) {
     super(playerCharacterId, playerCards);
   }

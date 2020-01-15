@@ -161,6 +161,23 @@ export abstract class CardTransformSkill<
   }
 }
 
+export abstract class RulesOverrideSkill extends Skill<SkillType.Common> {
+  public canUse() {
+    return true;
+  }
+
+  public isRefreshAt() {
+    return false;
+  }
+
+  // tslint:disable-next-line: no-empty
+  public onEffect() {}
+  // tslint:disable-next-line: no-empty
+  public onUse() {}
+
+  public abstract overrideRule(room: Room, playerId: PlayerId): void;
+}
+
 export abstract class FilterSkill extends Skill<SkillType.Compulsory> {
   public canUse() {
     return false;

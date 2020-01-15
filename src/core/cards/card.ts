@@ -23,6 +23,7 @@ export abstract class Card {
   protected abstract cardNumber: number;
   protected abstract suit: CardSuit;
   protected abstract name: string;
+  protected abstract generalName: string;
   protected abstract description: string;
   protected abstract skill: Skill;
   protected abstract cardType: CardType;
@@ -45,6 +46,10 @@ export abstract class Card {
 
   public get Name() {
     return this.Name;
+  }
+
+  public get GeneralName() {
+    return this.generalName;
   }
 
   public get Description() {
@@ -87,6 +92,7 @@ export const enum EquipCardCategory {
 export class VirtualCard<T extends Card> extends Card {
   private viewAs: T;
   protected name: string;
+  protected generalName: string;
   protected description: string;
   protected skill: Skill;
   protected cardType: CardType;
@@ -100,6 +106,7 @@ export class VirtualCard<T extends Card> extends Card {
 
     this.viewAs = Sanguosha.getCardByName(viewAsCardName);
     this.name = this.viewAs.Name;
+    this.generalName = this.viewAs.GeneralName;
     this.description = this.viewAs.Description;
     this.skill = skill ? skill : this.viewAs.Skill;
     this.cardType = this.viewAs.Type;

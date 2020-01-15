@@ -13,6 +13,7 @@ export class Slash extends BasicCard {
       cardNumber,
       suit,
       'slash',
+      'slash',
       'slash_description',
       SkillLoader.getInstance().getSkillByName('slash'),
     );

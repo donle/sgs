@@ -98,6 +98,11 @@ export abstract class Player implements PlayerInfo {
       : (this.skillUsedHistory[skillName] = 0);
   }
 
+  public readonly cardUseRules = {
+    wine: 1,
+    slash: 1,
+  };
+
   public getCardIds(
     area?: PlayerCardsArea,
     outsideAreaName?: string,

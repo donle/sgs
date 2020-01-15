@@ -209,7 +209,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       );
     } else {
       to.getCardIds(toArea).push(cardId);
-      this.broadcast(
+      this.broadcast<GameEventIdentifiers.MoveCardEvent>(
         GameEventIdentifiers.MoveCardEvent,
         {
           fromId: from && from.Id,

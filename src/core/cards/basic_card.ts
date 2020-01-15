@@ -10,6 +10,7 @@ export abstract class BasicCard extends Card {
     protected cardNumber: number,
     protected suit: CardSuit,
     protected name: string,
+    protected generalName: string,
     protected description: string,
     protected skill: Skill,
   ) {
