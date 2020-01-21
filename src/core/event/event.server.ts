@@ -66,16 +66,14 @@ export interface ServerEvent extends EventUtilities {
     playersInfo: PlayerInfo[];
   };
 
-  [GameEventIdentifiers.PlayerEnterEvent]: {
-    playerInfo: PlayerInfo;
-  };
+  [GameEventIdentifiers.PlayerEnterEvent]: never;
   [GameEventIdentifiers.PlayerLeaveEvent]: {
     playerId: PlayerId;
   };
   [GameEventIdentifiers.PlayerDiedEvent]: {};
 
   [GameEventIdentifiers.AskForPeachEvent]: {};
-  [GameEventIdentifiers.AskForNullificationEvent]: {};
+  [GameEventIdentifiers.AskForWuXieKeJiEvent]: {};
   [GameEventIdentifiers.AskForCardResponseEvent]: {};
   [GameEventIdentifiers.AskForChoosingCardEvent]: {};
   [GameEventIdentifiers.AskForChoosingCardFromPlayerEvent]: {};

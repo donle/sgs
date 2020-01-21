@@ -72,7 +72,7 @@ export interface ClientEvent extends EventUtilities {
   };
 
   [GameEventIdentifiers.AskForPeachEvent]: {};
-  [GameEventIdentifiers.AskForNullificationEvent]: {};
+  [GameEventIdentifiers.AskForWuXieKeJiEvent]: {};
   [GameEventIdentifiers.AskForCardResponseEvent]: {};
   [GameEventIdentifiers.AskForChoosingCardEvent]: {};
   [GameEventIdentifiers.AskForChoosingCardFromPlayerEvent]: {};

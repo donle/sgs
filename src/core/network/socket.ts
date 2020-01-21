@@ -1,4 +1,5 @@
 import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
+import { HostConfigProps } from 'core/game/host.config';
 import { PlayerId } from 'core/player/player_props';
 import { Languages } from 'translations/languages';
 
@@ -19,7 +20,9 @@ export interface IWebSocket {
 }
 
 export abstract class Socket<T extends WorkPlace> {
-  constructor(protected eventMode: T) {}
+  protected abstract roomPath: string;
+
+  constructor(protected eventMode: T, protected hostConfig: HostConfigProps) {}
 
   public abstract sendEvent(
     type: GameEventIdentifiers,
@@ -45,8 +48,12 @@ export abstract class Socket<T extends WorkPlace> {
     language?: Languages,
   ): void;
 
-  public abstract get Clients(): WebSocketWithId<{}>[];
+  public abstract get ClientIds(): string[];
   public abstract async waitForResponse<T extends object = {}>(eventName: string): Promise<T>;
+
+  public get RoomPath() {
+    return this.roomPath;
+  }
 }
 
 export type SocketMessage<

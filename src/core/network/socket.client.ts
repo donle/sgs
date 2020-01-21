@@ -1,28 +1,35 @@
 import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
-import { socketUrl } from 'core/game/host.config';
+import { HostConfigProps } from 'core/game/host.config';
 import { Socket, SocketMessage } from 'core/network/socket';
+import * as IOSocketClient from 'socket.io-client';
 
 export abstract class ClientSocket extends Socket<WorkPlace.Client> {
-  private socket = new WebSocket(socketUrl);
+  protected roomPath: string;
+  private socketIO: SocketIOClient.Socket;
 
-  constructor() {
-    super(WorkPlace.Client);
+  constructor(config: HostConfigProps, roomId: string) {
+    super(WorkPlace.Client, config);
 
-    this.socket.onmessage = ev => {
-      const { type, content } = JSON.parse(ev.data as string) as SocketMessage<
-        GameEventIdentifiers,
-        WorkPlace.Client
-      >;
+    this.roomPath = `/room-${roomId}`;
+    this.socketIO = IOSocketClient(
+      `${config.protocal}://${config.host}:${config.port}`,
+      { path: this.roomPath },
+    );
 
-      this.on(type, content);
-    };
+    const gameEvent = [];
+    gameEvent.forEach(event => {
+      this.socketIO.on(event, content => {
+        const type = parseInt(event, 10) as GameEventIdentifiers;
+        this.on(type, content);
+      });
+    });
   }
 
   public sendEvent(
     type: GameEventIdentifiers,
     content: EventPicker<typeof type, WorkPlace.Client>,
   ) {
-    this.socket.send(JSON.stringify({ type, content }));
+    this.socketIO.send(JSON.stringify({ type, content }));
   }
 
   protected on<I extends GameEventIdentifiers>(
@@ -32,89 +39,142 @@ export abstract class ClientSocket extends Socket<WorkPlace.Client> {
     switch (type) {
       case GameEventIdentifiers.UserMessageEvent:
         this.userMessage(
-          content as EventPicker<GameEventIdentifiers.UserMessageEvent, WorkPlace.Server>,
+          content as EventPicker<
+            GameEventIdentifiers.UserMessageEvent,
+            WorkPlace.Server
+          >,
         );
         break;
 
       case GameEventIdentifiers.CardUseEvent:
         this.useCard(
-          content as EventPicker<GameEventIdentifiers.CardUseEvent, WorkPlace.Server>,
+          content as EventPicker<
+            GameEventIdentifiers.CardUseEvent,
+            WorkPlace.Server
+          >,
         );
         break;
       case GameEventIdentifiers.CardDropEvent:
         this.dropCard(
-          content as EventPicker<GameEventIdentifiers.CardDropEvent, WorkPlace.Server>,
+          content as EventPicker<
+            GameEventIdentifiers.CardDropEvent,
+            WorkPlace.Server
+          >,
         );
         break;
       case GameEventIdentifiers.CardResponseEvent:
         this.responseCard(
-          content as EventPicker<GameEventIdentifiers.CardResponseEvent, WorkPlace.Server>,
+          content as EventPicker<
+            GameEventIdentifiers.CardResponseEvent,
+            WorkPlace.Server
+          >,
         );
         break;
       case GameEventIdentifiers.DrawCardEvent:
         this.drawCard(
-          content as EventPicker<GameEventIdentifiers.DrawCardEvent, WorkPlace.Server>,
+          content as EventPicker<
+            GameEventIdentifiers.DrawCardEvent,
+            WorkPlace.Server
+          >,
         );
         break;
       case GameEventIdentifiers.ObtainCardEvent:
         this.obtainCard(
-          content as EventPicker<GameEventIdentifiers.ObtainCardEvent, WorkPlace.Server>,
+          content as EventPicker<
+            GameEventIdentifiers.ObtainCardEvent,
+            WorkPlace.Server
+          >,
         );
         break;
       case GameEventIdentifiers.MoveCardEvent:
         this.moveCard(
-          content as EventPicker<GameEventIdentifiers.MoveCardEvent, WorkPlace.Server>,
+          content as EventPicker<
+            GameEventIdentifiers.MoveCardEvent,
+            WorkPlace.Server
+          >,
         );
         break;
 
       case GameEventIdentifiers.SkillUseEvent:
         this.useSkill(
-          content as EventPicker<GameEventIdentifiers.SkillUseEvent, WorkPlace.Server>,
+          content as EventPicker<
+            GameEventIdentifiers.SkillUseEvent,
+            WorkPlace.Server
+          >,
         );
         break;
       case GameEventIdentifiers.PinDianEvent:
         this.pinDian(
-          content as EventPicker<GameEventIdentifiers.PinDianEvent, WorkPlace.Server>,
+          content as EventPicker<
+            GameEventIdentifiers.PinDianEvent,
+            WorkPlace.Server
+          >,
         );
         break;
       case GameEventIdentifiers.DamageEvent:
         this.damage(
-          content as EventPicker<GameEventIdentifiers.DamageEvent, WorkPlace.Server>,
+          content as EventPicker<
+            GameEventIdentifiers.DamageEvent,
+            WorkPlace.Server
+          >,
         );
         break;
       case GameEventIdentifiers.JudgeEvent:
-        this.judge(content as EventPicker<GameEventIdentifiers.JudgeEvent, WorkPlace.Server>);
+        this.judge(
+          content as EventPicker<
+            GameEventIdentifiers.JudgeEvent,
+            WorkPlace.Server
+          >,
+        );
         break;
 
       case GameEventIdentifiers.GameCreatedEvent:
         this.gameCreated(
-          content as EventPicker<GameEventIdentifiers.GameCreatedEvent, WorkPlace.Server>,
+          content as EventPicker<
+            GameEventIdentifiers.GameCreatedEvent,
+            WorkPlace.Server
+          >,
         );
         break;
       case GameEventIdentifiers.GameStartEvent:
         this.gameStart(
-          content as EventPicker<GameEventIdentifiers.GameStartEvent, WorkPlace.Server>,
+          content as EventPicker<
+            GameEventIdentifiers.GameStartEvent,
+            WorkPlace.Server
+          >,
         );
         break;
       case GameEventIdentifiers.GameOverEvent:
         this.gameOver(
-          content as EventPicker<GameEventIdentifiers.GameOverEvent, WorkPlace.Server>,
+          content as EventPicker<
+            GameEventIdentifiers.GameOverEvent,
+            WorkPlace.Server
+          >,
         );
         break;
 
       case GameEventIdentifiers.PlayerEnterEvent:
         this.playerEnter(
-          content as EventPicker<GameEventIdentifiers.PlayerEnterEvent, WorkPlace.Server>,
+          content as EventPicker<
+            GameEventIdentifiers.PlayerEnterEvent,
+            WorkPlace.Server
+          >,
         );
         break;
       case GameEventIdentifiers.PlayerLeaveEvent:
         this.playerLeave(
-          content as EventPicker<GameEventIdentifiers.PlayerLeaveEvent, WorkPlace.Server>,
+          content as EventPicker<
+            GameEventIdentifiers.PlayerLeaveEvent,
+            WorkPlace.Server
+          >,
         );
         break;
       case GameEventIdentifiers.PlayerDiedEvent:
         this.playerDied(
-          content as EventPicker<GameEventIdentifiers.PlayerDiedEvent, WorkPlace.Server>,
+          content as EventPicker<
+            GameEventIdentifiers.PlayerDiedEvent,
+            WorkPlace.Server
+          >,
         );
       default:
         break;

@@ -13,7 +13,7 @@ import { PlayerId } from 'core/player/player_props';
 import { GameInfo } from 'core/game/game_props';
 import { Languages } from 'translations/languages';
 
-type RoomId = number;
+export type RoomId = number;
 
 export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected abstract currentGameEventStage: GameEventStage;
@@ -29,6 +29,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   protected abstract init(): void;
+  public get Id(): RoomId {
+    return this.roomId;
+  }
 
   public abstract notify(
     type: GameEventIdentifiers,
@@ -53,6 +56,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return player;
   }
 
+  // TODO: complete the function
   public on(
     type: GameEventIdentifiers,
     content: EventPicker<typeof type, WorkPlace.Client>,

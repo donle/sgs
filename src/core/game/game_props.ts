@@ -1,5 +1,8 @@
 import { PlayerRole } from 'core/player/player_props';
 
+export const UNLIMITED_TRIGGERING_TIMES = 1000;
+export const FORBIDDEN_TRIGGERING_TIMES = -9999;
+
 export const enum GameCharacterExtensions {
   Standard = 'standard',
   // Wind,

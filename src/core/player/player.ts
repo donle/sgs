@@ -7,6 +7,7 @@ import {
 } from 'core/characters/character';
 import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
+import { UNLIMITED_TRIGGERING_TIMES } from 'core/game/game_props';
 import {
   PlayerCards,
   PlayerCardsArea,
@@ -48,6 +49,22 @@ export abstract class Player implements PlayerInfo {
   }[] = [];
   private playerCharacter: Character;
 
+  private readonly cardSkillUseRules: {
+    [cardSkillName: string]: {
+      general: number,
+      overlay?: {
+        [bySkill: string]: number,
+      }
+    };
+  };
+
+  private flags: {
+    [k: string]: any;
+  } = {};
+  private marks: {
+    [markName: string]: number;
+  } = {};
+
   constructor(
     protected playerCharacterId: CharacterId,
     protected playerCards?: PlayerCards & PlayerCardsOutside,
@@ -59,12 +76,49 @@ export abstract class Player implements PlayerInfo {
       [PlayerCardsArea.EquipArea]: [],
       [PlayerCardsArea.OutsideArea]: {},
     };
+    this.cardSkillUseRules = {
+      wine: {
+        general: 1,
+      },
+      slash: {
+        general: 1,
+      },
+    };
 
     this.playerCharacter = Sanguosha.getCharacterById(this.playerCharacterId);
     this.hp = this.playerCharacter.MaxHp;
     this.maxHp = this.playerCharacter.MaxHp;
     this.nationality = this.playerCharacter.Nationality;
     this.dead = false;
+  }
+
+  public clearFlags() {
+    this.flags = {};
+  }
+  removeFlag(name: string) {
+    delete this.flags[name];
+  }
+  setFlag<T>(name: string, value: T): T {
+    return (this.flags[name] = value);
+  }
+  getFlag<T>(name: string): T {
+    return this.flags[name];
+  }
+
+  public clearMarks() {
+    this.marks = {};
+  }
+  removeMark(name: string) {
+    delete this.marks[name];
+  }
+  setMark(name: string, value: number) {
+    return (this.marks[name] = value);
+  }
+  addMark(name: string, value: number) {
+    return (this.marks[name] += value);
+  }
+  getMark(name: string) {
+    return this.marks[name];
   }
 
   public canUseCard(room: Room, cardId: CardId): boolean {
@@ -98,10 +152,32 @@ export abstract class Player implements PlayerInfo {
       : (this.skillUsedHistory[skillName] = 0);
   }
 
-  public readonly cardUseRules = {
-    wine: 1,
-    slash: 1,
-  };
+  public resetCommonCardUseRules(
+    skillName?: string,
+    ...cardSkillNames: string[]
+  ) {
+    for (const [cardSkillName, rules] of Object.entries(this.cardSkillUseRules)) {
+      if (cardSkillNames.length <= 0) {
+        delete rules.overlay;
+      } else if (this.cardSkillUseRules[cardSkillName].overlay) {
+        for (const name of cardSkillNames) {
+          delete this.cardSkillUseRules[cardSkillName].overlay[name];
+        }
+      }
+    }
+  }
+
+  public overrideCardUseRules(
+    cardSkillName: string,
+    useTimes: number,
+    bySkill: string = cardSkillName,
+  ) {
+    if (!this.cardSkillUseRules[cardSkillName].overlay) {
+      this.cardSkillUseRules[cardSkillName].overlay = {
+        [bySkill]: useTimes,
+      }
+    }
+  }
 
   public getCardIds(
     area?: PlayerCardsArea,
@@ -204,10 +280,24 @@ export abstract class Player implements PlayerInfo {
       ) !== undefined
     );
   }
-  public hasUsedTimes(cardName: string): number {
+  public cardUsedTimes(cardSkillName: string): number {
     return this.cardUseHistory.filter(
-      cardId => Sanguosha.getCardById(cardId).Name === cardName,
+      cardId => Sanguosha.getCardById(cardId).GeneralName === cardSkillName,
     ).length;
+  }
+  public availableCardUseTimes(cardSkillName: string) {
+    if (this.cardSkillUseRules[cardSkillName] === undefined) {
+      return UNLIMITED_TRIGGERING_TIMES;
+    }
+
+    let times = this.cardSkillUseRules[cardSkillName].general;
+    if (this.cardSkillUseRules[cardSkillName].overlay) {
+      for (const [, addtionalTimes] of Object.entries(this.cardSkillUseRules[cardSkillName].overlay)) {
+        times += addtionalTimes;
+      }
+    }
+
+    return times;
   }
 
   public hasUsedSkill(skillName: string): boolean {

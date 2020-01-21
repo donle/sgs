@@ -7,6 +7,7 @@ export const enum GameEventIdentifiers {
   CardDropEvent,
   CardResponseEvent,
   CardUseEvent,
+  CardEffectEvent,
   DrawCardEvent,
   ObtainCardEvent,
   MoveCardEvent,
@@ -22,20 +23,22 @@ export const enum GameEventIdentifiers {
   GameOverEvent,
   PlayerEnterEvent,
   PlayerLeaveEvent,
+  PlayerDyingEvent,
   PlayerDiedEvent,
 
   AskForPeachEvent,
-  AskForNullificationEvent,
+  AskForWuXieKeJiEvent,
   AskForCardResponseEvent,
   AskForCardUseEvent,
   AskForCardDisplayEvent,
   AskForCardDropEvent,
   AskForPinDianCardEvent,
   AskForChoosingCardEvent,
+  AskForChooseOptionsEvent,
   AskForChoosingCardFromPlayerEvent,
   AskForInvokeEvent,
-  AskForGuanXinEvent,
   AskForChooseCharacterEvent,
+  AskForPlaceCardsInDileEvent,
 }
 
 export const enum WorkPlace {

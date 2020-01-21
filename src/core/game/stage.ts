@@ -1,29 +1,71 @@
 import { GameEventIdentifiers } from 'core/event/event';
 
 export const enum PlayerStageListEnum {
-  PrepareStageStart = 'PrepareStageStart',
-  PrepareStage = 'PrepareStage',
-  PrepareStageEnd = 'PrepareStageEnd',
+  BeginPrepareStageStart,
+  PrepareStageStart,
+  EndPrepareStageStart,
+  BeginPrepareStage,
+  PrepareStage,
+  EndPrepareStage,
+  BeginPrepareStageEnd,
+  PrepareStageEnd,
+  EndPrepareStageEnd,
 
-  JudgeStageStart = 'JudgeStageStart',
-  JudgeStage = 'JudgeStage',
-  JudgeStageEnd = 'JudgeStageEnd',
+  BeginJudgeStageStart,
+  JudgeStageStart,
+  EndJudgeStageStart,
+  BeginJudgeStage,
+  JudgeStage,
+  EndJudgeStage,
+  BeginJudgeStageEnd,
+  JudgeStageEnd,
+  EndJudgeStageEnd,
 
-  DrawCardStageStart = 'DrawCardStageStart',
-  DrawCardStage = 'DrawCardStage',
-  DrawCardStageEnd = 'DrawCardStageEnd',
+  BeginDrawCardStageStart,
+  DrawCardStageStart,
+  EndDrawCardStageStart,
+  BeginDrawCardStage,
+  DrawCardStage,
+  EndDrawCardStage,
+  BeginDrawCardStageEnd,
+  DrawCardStageEnd,
+  EndDrawCardStageEnd,
 
-  PlayCardStageStart = 'PlayCardStageStart',
-  PlayCardStage = 'PlayCardStage',
-  PlayCardStageEnd = 'PlayCardStageEnd',
+  BeginPlayCardStageStart,
+  PlayCardStageStart,
+  EndPlayCardStageStart,
+  BeginPlayCardStage,
+  PlayCardStage,
+  EndPlayCardStage,
+  BeginPlayCardStageEnd,
+  PlayCardStageEnd,
+  EndPlayCardStageEnd,
 
-  DropCardStageStart = 'DropCardStageStart',
-  DropCardStage = 'DropCardStage',
-  DropCardStageEnd = 'DropCardStageEnd',
+  BeginDropCardStageStart,
+  DropCardStageStart,
+  EndDropCardStageStart,
+  BeginDropCardStage,
+  DropCardStage,
+  EndDropCardStage,
+  BeginDropCardStageEnd,
+  DropCardStageEnd,
+  EndDropCardStageEnd,
 
-  FinishStageStart = 'FinishStageStart',
-  FinishStage = 'FinishStage',
-  FinishStageEnd = 'FinishStageEnd',
+  BeginFinishStageStart,
+  FinishStageStart,
+  EndFinishStageStart,
+  BeginFinishStage,
+  FinishStage,
+  EndFinishStage,
+  BeginFinishStageEnd,
+  FinishStageEnd,
+  EndFinishStageEnd,
+}
+
+export const enum StagePriority {
+  Low,
+  Medium,
+  Hight,
 }
 
 export const enum PlayerStage {
@@ -37,39 +79,80 @@ export const enum PlayerStage {
 
 export const PlayerStages = {
   [PlayerStage.PrepareStage]: [
+    PlayerStageListEnum.BeginPrepareStageStart,
     PlayerStageListEnum.PrepareStageStart,
+    PlayerStageListEnum.EndPrepareStageStart,
+    PlayerStageListEnum.BeginPrepareStage,
     PlayerStageListEnum.PrepareStage,
+    PlayerStageListEnum.EndPrepareStage,
+    PlayerStageListEnum.BeginDrawCardStageEnd,
     PlayerStageListEnum.DrawCardStageEnd,
+    PlayerStageListEnum.EndDrawCardStageEnd,
   ],
   [PlayerStage.JudgeStage]: [
+    PlayerStageListEnum.BeginJudgeStageStart,
     PlayerStageListEnum.JudgeStageStart,
+    PlayerStageListEnum.EndJudgeStageStart,
+    PlayerStageListEnum.BeginJudgeStage,
     PlayerStageListEnum.JudgeStage,
+    PlayerStageListEnum.EndJudgeStage,
+    PlayerStageListEnum.BeginDrawCardStageEnd,
     PlayerStageListEnum.DrawCardStageEnd,
+    PlayerStageListEnum.EndDrawCardStageEnd,
   ],
   [PlayerStage.DrawCardStage]: [
+    PlayerStageListEnum.BeginDrawCardStageStart,
     PlayerStageListEnum.DrawCardStageStart,
+    PlayerStageListEnum.EndDrawCardStageStart,
+    PlayerStageListEnum.BeginDrawCardStage,
     PlayerStageListEnum.DrawCardStage,
+    PlayerStageListEnum.EndDrawCardStage,
+    PlayerStageListEnum.BeginDrawCardStageEnd,
     PlayerStageListEnum.DrawCardStageEnd,
+    PlayerStageListEnum.EndDrawCardStageEnd,
   ],
   [PlayerStage.PlayCardStage]: [
+    PlayerStageListEnum.BeginPlayCardStageStart,
     PlayerStageListEnum.PlayCardStageStart,
+    PlayerStageListEnum.EndPlayCardStageStart,
+    PlayerStageListEnum.BeginPlayCardStage,
     PlayerStageListEnum.PlayCardStage,
+    PlayerStageListEnum.EndPlayCardStage,
+    PlayerStageListEnum.BeginPlayCardStageEnd,
     PlayerStageListEnum.PlayCardStageEnd,
+    PlayerStageListEnum.EndPlayCardStageEnd,
   ],
   [PlayerStage.DropCardStage]: [
+    PlayerStageListEnum.BeginDropCardStageStart,
     PlayerStageListEnum.DropCardStageStart,
+    PlayerStageListEnum.EndDropCardStageStart,
+    PlayerStageListEnum.BeginDropCardStage,
     PlayerStageListEnum.DropCardStage,
+    PlayerStageListEnum.EndDropCardStage,
+    PlayerStageListEnum.BeginDropCardStageEnd,
     PlayerStageListEnum.DropCardStageEnd,
+    PlayerStageListEnum.EndDropCardStageEnd,
   ],
   [PlayerStage.FinishStage]: [
+    PlayerStageListEnum.BeginFinishStageStart,
     PlayerStageListEnum.FinishStageStart,
+    PlayerStageListEnum.EndFinishStageStart,
+    PlayerStageListEnum.BeginFinishStage,
     PlayerStageListEnum.FinishStage,
+    PlayerStageListEnum.EndFinishStage,
+    PlayerStageListEnum.BeginFinishStageEnd,
     PlayerStageListEnum.FinishStageEnd,
+    PlayerStageListEnum.EndFinishStageEnd,
   ],
 };
 
 export const GameStages = {
   [GameEventIdentifiers.CardUseEvent]: [
+    CardUseStage.BeforeCardUseEffect,
+    CardUseStage.CardUsed,
+    CardUseStage.AfterCardUseEffect,
+  ],
+  [GameEventIdentifiers.CardEffectEvent]: [
     CardUseStage.BeforeCardUseEffect,
     CardUseStage.CardUsed,
     CardUseStage.AfterCardUseEffect,
@@ -99,6 +182,11 @@ export const GameStages = {
     PlayerDiedStage.PlayerDied,
     PlayerDiedStage.AfterPlayerDied,
   ],
+  [GameEventIdentifiers.PlayerDyingEvent]: [
+    PlayerDyingStage.BeforePlayerDying,
+    PlayerDyingStage.PlayerDying,
+    PlayerDyingStage.AfterPlayerDying,
+  ],
   [GameEventIdentifiers.SkillUseEvent]: [
     SkillEffectStage.BeforeSkillEffect,
     SkillEffectStage.SkillEffect,
@@ -127,72 +215,84 @@ export const GameStages = {
 };
 
 export const enum CardUseStage {
-  BeforeCardUseEffect = 'BeforeCardUseEffect',
-  CardUsed = 'CardUsed',
-  AfterCardUseEffect = 'AfterCardUseEffect',
+  BeforeCardUseEffect,
+  CardUsed,
+  AfterCardUseEffect,
+}
+
+export const enum CardEffectStage {
+  BeforeCardEffect,
+  CardEffect,
+  AfterCardEffect,
 }
 
 export const enum CardResponseStage {
-  BeforeCardResponseEffect = 'BeforeCardResponseEffect',
-  CardResponsed = 'CardResponsed',
-  AfterCardResponseEffect = 'AfterCardResponseEffect',
+  BeforeCardResponseEffect,
+  CardResponsed,
+  AfterCardResponseEffect,
 }
 
 export const enum DrawCardStage {
-  BeforeDrawCardEffect = 'BeforeDrawCardEffect',
-  CardDrawed = 'CardDrawed',
-  AfterDrawCardEffect = 'AfterDrawCardEffect',
+  BeforeDrawCardEffect,
+  CardDrawed,
+  AfterDrawCardEffect,
 }
 
 export const enum ObtainCardStage {
-  BeforeObtainCardEffect = 'BeforeObtainCardEffect',
-  CardObtained = 'CardObtained',
-  AfterObtainCardEffect = 'AfterObtainCardEffect',
+  BeforeObtainCardEffect,
+  CardObtained,
+  AfterObtainCardEffect,
 }
 
 export const enum CardDropStage {
-  BeforeCardDropEffect = 'BeforeCardDropEffect',
-  CardDropped = 'CardDropped',
-  AfterCardDropEffect = 'AfterCardDropEffect',
+  BeforeCardDropEffect,
+  CardDropped,
+  AfterCardDropEffect,
 }
 
 export const enum DamageEffectStage {
-  BeforeDamageEffect = 'BeforeDamageEffect',
-  DamageEffect = 'DamageEffect',
-  AfterDamageEffect = 'AfterDamageEffect',
+  BeforeDamageEffect,
+  DamageEffect,
+  AfterDamageEffect,
 }
 
 export const enum JudgeEffectStage {
-  BeforeJudgeEffectStage = 'BeforeJudgeEffectStage',
-  JudgeEffect = 'JudgeEffect',
-  AfterJudgeEffectStage = 'AfterJudgeEffectStage',
+  BeforeJudgeEffectStage,
+  JudgeEffect,
+  AfterJudgeEffectStage,
 }
 
 export const enum PinDianStage {
-  BeforePinDianEffect = 'BeforePinDianEffect',
-  PinDianEffect = 'PinDianEffect',
-  AfterPinDianEffect = 'AfterPinDianEffect',
+  BeforePinDianEffect,
+  PinDianEffect,
+  AfterPinDianEffect,
 }
 
+export const enum PlayerDyingStage {
+  BeforePlayerDying,
+  PlayerDying,
+  AfterPlayerDying,
+}
 export const enum PlayerDiedStage {
-  BeforePlayerDied = 'BeforePlayerDied',
-  PlayerDied = 'PlayerDied',
-  AfterPlayerDied = 'AfterPlayerDied',
+  BeforePlayerDied,
+  PlayerDied,
+  AfterPlayerDied,
 }
 
 export const enum SkillEffectStage {
-  BeforeSkillEffect = 'BeforeSkillEffect',
-  SkillEffect = 'SkillEffect',
-  AfterSkillEffect = 'AfterSkillEffect',
+  BeforeSkillEffect,
+  SkillEffect,
+  AfterSkillEffect,
 }
 
 export const enum RecoverEffectStage {
-  BeforeRecoverEffect = 'BeforeRecoverEffect',
-  RecoverEffect = 'RecoverEffect',
-  AfterRecoverEffect = 'AfterRecoverEffect',
+  BeforeRecoverEffect,
+  RecoverEffect,
+  AfterRecoverEffect,
 }
 
 export type GameEventStage =
+  | CardEffectStage
   | CardUseStage
   | CardDropStage
   | CardResponseStage

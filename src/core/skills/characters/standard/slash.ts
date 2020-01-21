@@ -17,9 +17,7 @@ export class SlashSkill extends ActiveSkill {
 
   canUse(room: Room, owner: Player) {
     return (
-      (room.CurrentPlayerStage === PlayerStage.PlayCardStage &&
-        !owner.hasUsed(this.name)) ||
-      room.CurrentPlayer !== owner
+      owner.cardUsedTimes(this.Name) < owner.availableCardUseTimes(this.Name)
     );
   }
 

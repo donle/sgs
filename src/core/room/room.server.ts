@@ -24,9 +24,7 @@ import { CardLoader } from 'core/game/package_loader/loader.cards';
 import { CharacterLoader } from 'core/game/package_loader/loader.characters';
 import { TriggerSkill } from 'core/skills/skill';
 import { translateNote } from 'translations/translations';
-import { Room } from './room';
-
-type RoomId = number;
+import { Room, RoomId } from './room';
 
 export class ServerRoom extends Room<WorkPlace.Server> {
   protected currentGameEventStage: GameEventStage;
@@ -44,7 +42,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     protected roomId: RoomId,
     protected gameInfo: GameInfo,
     protected socket: ServerSocket,
-    protected players: Player[],
+    protected players: Player[] = [],
   ) {
     super();
   }
@@ -98,22 +96,19 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     content: EventPicker<I, WorkPlace.Server>,
     pendingMessage?: (language: Languages) => string,
   ) {
-    this.socket.Clients.forEach(client => {
+    this.socket.ClientIds.forEach(clientId => {
       if (pendingMessage) {
-        const language = this.getPlayerById(client.id).PlayerLanguage;
+        const language = this.getPlayerById(clientId).PlayerLanguage;
         content.message = pendingMessage(language);
       }
 
-      client.send(JSON.stringify({ type, content }));
+      this.socket.getSocketById(clientId).send(JSON.stringify({ type, content }));
     });
 
     const stages: GameEventStage[] = GameStages[type as GameEventIdentifiers];
     for (const stage of stages) {
       this.currentGameEventStage = stage;
-      if (
-        !this.currentGameEventStage.startsWith('Before') &&
-        !this.currentGameEventStage.startsWith('After')
-      ) {
+      if (this.currentGameEventStage === 1) {
         const skill =
           content.triggeredBySkillName &&
           Sanguosha.getSkillBySkillName(content.triggeredBySkillName);

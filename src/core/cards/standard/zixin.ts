@@ -10,7 +10,6 @@ export class ZiXin extends OffenseRideCard {
       cardNumber,
       suit,
       'zixin',
-      'zixin',
       'zixin_description',
       SkillLoader.getInstance().getSkillByName<DistanceSkill>('zixin'),
     );

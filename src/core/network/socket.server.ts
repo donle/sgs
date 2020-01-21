@@ -1,18 +1,18 @@
 import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
+import { HostConfigProps } from 'core/game/host.config';
 import { Socket, SocketMessage, WebSocketWithId } from 'core/network/socket';
 import { PlayerId, PlayerInfo } from 'core/player/player_props';
+import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
-import { createHash } from 'crypto';
+// import { createHash } from 'crypto';
+import * as IOSocketServer from 'socket.io';
 import { Languages } from 'translations/languages';
-import * as ServerWebSocket from 'ws';
-
-type SgsWebSocket = WebSocketWithId<ServerWebSocket>;
 
 export class ServerSocket extends Socket<WorkPlace.Server> {
-  private socket: ServerWebSocket.Server;
+  private socket: IOSocketServer.Server;
   private room: ServerRoom;
-  private clients: SgsWebSocket[];
-  private hash = createHash('sha256');
+  private clientIds: string[];
+  protected roomPath: string;
 
   private asyncPendingEventName: string | undefined;
   private asyncPendingEventResolver: Function;
@@ -24,15 +24,23 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     },
   );
 
-  constructor() {
-    super(WorkPlace.Server);
+  constructor(config: HostConfigProps, roomId: RoomId) {
+    super(WorkPlace.Server, config);
+    this.roomPath = `/room-${roomId}`;
 
-    this.socket = new ServerWebSocket.Server({ noServer: true });
-    this.socket.on('connection', (ws: SgsWebSocket, req) => {
-      this.hash.update(this.clients.length.toString());
-      ws.id = this.hash.digest('latin1');
+    this.socket = IOSocketServer();
+    this.socket.of(this.roomPath).clients((error, clients) => {
+      if (error) {
+        throw new Error(error);
+      }
 
-      ws.on('message', data => {
+      this.clientIds = clients;
+    });
+    this.socket.of(this.roomPath).on('connect', socket => {
+      // this.hash.update(this.clients.length.toString());
+      // socket.id = this.hash.digest('latin1');
+
+      socket.on('message', data => {
         const { type, content } = JSON.parse(data as string) as SocketMessage<
           GameEventIdentifiers,
           WorkPlace.Client
@@ -58,20 +66,20 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
             >;
 
             const playerInfo: PlayerInfo = {
-              Id: ws.id,
-              Position: this.clients.length - 1,
+              Id: socket.id,
+              Position: this.clientIds.length - 1,
               Name: playerName,
               CharacterId: undefined,
               Role: undefined,
             };
 
-            playerInfo.Id = ws.id;
-            playerInfo.Position = this.clients.length - 1;
+            playerInfo.Id = socket.id;
+            playerInfo.Position = this.clientIds.length - 1;
 
             this.room && this.room.createPlayer(playerInfo, playerLanguage);
           }
 
-          this.room.on<typeof type>(type, content);
+          this.room.on(type, content);
         }
       });
     });
@@ -88,31 +96,30 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     content: EventPicker<typeof type, WorkPlace.Client>,
     to: PlayerId,
   ) {
-    const clientSocket = this.clients.find(client => client.id === to);
+    const clientSocket = this.clientIds.find(clientId => clientId === to);
     if (!clientSocket) {
       throw new Error(
         `Unable to find player: ${to} in connected socket clients`,
       );
     }
 
-    clientSocket.send(JSON.stringify({ type, content }));
+    this.socket.to(clientSocket).emit(type.toString(), content);
   }
 
   broadcast(
     type: GameEventIdentifiers,
     content: EventPicker<typeof type, WorkPlace.Server>,
   ) {
-    this.socket.clients.forEach((client: SgsWebSocket) => {
-      client.send(JSON.stringify({ type, content }));
-    });
+    this.socket.emit(type.toString(), content);
   }
 
   public getSocketById(id: PlayerId) {
-    for (const ws of this.socket.clients as Set<SgsWebSocket>) {
-      if (ws.id === id) {
-        return ws;
-      }
+    const clientId = this.clientIds.find(clientId => clientId === id);
+    if (clientId !== undefined) {
+      return this.socket.to(clientId);
     }
+
+    throw new Error(`Unable to find socket: ${id}`);
   }
 
   public notify(
@@ -131,7 +138,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       throw new Error(`Unable to find socket for player ${to}`);
     }
 
-    socket.send(JSON.stringify({ type, content }));
+    socket.emit(type.toString(), content);
   }
 
   public async waitForResponse<T extends object = {}>(eventName: string) {
@@ -142,7 +149,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     return result;
   }
 
-  public get Clients() {
-    return Array.from(this.socket.clients) as SgsWebSocket[];
+  public get ClientIds() {
+    return this.clientIds;
   }
 }

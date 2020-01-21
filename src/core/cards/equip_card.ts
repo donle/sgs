@@ -16,6 +16,7 @@ export abstract class EquipCard extends Card {
 }
 
 export abstract class WeaponCard extends EquipCard {
+  protected generalName: string;
   constructor(
     protected id: CardId,
     protected cardNumber: number,
@@ -24,8 +25,10 @@ export abstract class WeaponCard extends EquipCard {
     protected description: string,
     protected skills: Skill[],
     private attackDistance: number,
+    generalName?: string,
   ) {
     super(EquipCardCategory.Weapon);
+    this.generalName = generalName || this.name;
   }
 
   public get AttackDistance() {
@@ -34,6 +37,7 @@ export abstract class WeaponCard extends EquipCard {
 }
 export abstract class ArmorCard extends EquipCard {
   protected abstract triggeredStage: AllStage;
+  protected generalName: string;
 
   constructor(
     protected id: CardId,
@@ -42,8 +46,10 @@ export abstract class ArmorCard extends EquipCard {
     protected name: string,
     protected description: string,
     protected skills: Skill[],
+    generalName?: string,
   ) {
     super(EquipCardCategory.Weapon);
+    this.generalName = generalName || this.name;
   }
 }
 
@@ -61,32 +67,36 @@ export abstract class RideCard extends EquipCard {
 
 export class DefenseRideCard extends RideCard {
   protected skill: Skill = this.distanceSkill;
+  protected generalName: string;
 
   constructor(
     protected id: CardId,
     protected cardNumber: number,
     protected suit: CardSuit,
     protected name: string,
-    protected generalName: string,
     protected description: string,
     protected distanceSkill: DistanceSkill,
+    generalName?: string,
   ) {
     super(EquipCardCategory.DefenseRide);
+    this.generalName = generalName || this.name;
   }
 }
 
 export class OffenseRideCard extends RideCard {
   protected skill: Skill = this.distanceSkill;
+  protected generalName: string;
 
   constructor(
     protected id: CardId,
     protected cardNumber: number,
     protected suit: CardSuit,
     protected name: string,
-    protected generalName: string,
     protected description: string,
     protected distanceSkill: DistanceSkill,
+    generalName?: string,
   ) {
     super(EquipCardCategory.OffenseRide);
+    this.generalName = generalName || this.name;
   }
 }
