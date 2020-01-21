@@ -17,6 +17,6 @@
   "scripts": {
     "dev": "NODE_PATH=../ ts-node -P ./tsconfig.server.json ./main.ts",
     "build": "NODE_PATH=../ tsc -p ./tsconfig.server.json",
-    "start": "tsc && yarn build && DEV_MODE=prod node ./build/main.js"
+    "start": "tsc && yarn build && NODE_PATH=./build DEV_MODE=prod node ./build/server/main.js"
   }
 }
