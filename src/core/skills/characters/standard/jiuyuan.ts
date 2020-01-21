@@ -7,8 +7,6 @@ import { SkillType, TriggerSkill } from 'core/skills/skill';
 import { translateNote } from 'translations/translations';
 
 export class JiuYuan extends TriggerSkill<SkillType.Compulsory> {
-  public isLordSkill = true;
-
   public isAutoTrigger() {
     return true;
   }

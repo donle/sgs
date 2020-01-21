@@ -6,8 +6,6 @@ import * as http from 'http';
 import * as https from 'https';
 import * as SocketIO from 'socket.io';
 
-const mode = process.env.DEV_MODE || DevMode.Dev;
-
 class App {
   private server: http.Server | https.Server;
   private rooms: ServerRoom[] = [];
@@ -43,4 +41,4 @@ class App {
   }
 }
 
-new App(process.env.DEV_MODE as DevMode).start();
+new App(process.env.DEV_MODE as DevMode || DevMode.Dev).start();
