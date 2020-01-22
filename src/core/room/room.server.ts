@@ -22,6 +22,7 @@ import { Sanguosha } from 'core/game/engine';
 import { GameInfo } from 'core/game/game_props';
 import { CardLoader } from 'core/game/package_loader/loader.cards';
 import { CharacterLoader } from 'core/game/package_loader/loader.characters';
+import { RoomInfo } from 'core/shares/types/server_types';
 import { TriggerSkill } from 'core/skills/skill';
 import { translateNote } from 'translations/translations';
 import { Room, RoomId } from './room';
@@ -37,6 +38,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   private cards: CardId[];
   private drawDile: CardId[];
   private dropDile: CardId[];
+  private gameStarted: boolean = false;
 
   constructor(
     protected roomId: RoomId,
@@ -74,7 +76,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   // @@TODO: TBA here
-  public gameStart() {}
+  public gameStart() {
+    this.gameStarted = true;
+  }
 
   public createPlayer(playerInfo: PlayerInfo, playerLanguage: Languages) {
     const { Id, Name, Position, CharacterId } = playerInfo;
@@ -102,7 +106,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         content.message = pendingMessage(language);
       }
 
-      this.socket.getSocketById(clientId).send(JSON.stringify({ type, content }));
+      this.socket
+        .getSocketById(clientId)
+        .send(JSON.stringify({ type, content }));
     });
 
     const stages: GameEventStage[] = GameStages[type as GameEventIdentifiers];
@@ -222,5 +228,15 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public get CurrentPlayer() {
     return this.currentPlayer;
+  }
+
+  public getRoomInfo(): RoomInfo {
+    return {
+      name: this.gameInfo.roomName,
+      activePlayers: this.players.length,
+      totalPlayers: this.gameInfo.numberOfPlayers,
+      packages: this.gameInfo.characterExtensions,
+      status: this.gameStarted ? 'playing' : 'waiting',
+    };
   }
 }

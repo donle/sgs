@@ -30,3 +30,4 @@ build
 /platforms
 /plugins
 /www
+src/ui/platforms/desktop/src/core

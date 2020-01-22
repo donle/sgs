@@ -22,6 +22,7 @@ export type GameInfo = {
   characterExtensions: GameCharacterExtensions[];
   cardExtensions: GameCardExtensions[];
   numberOfPlayers: number;
+  roomName: string;
   multiCharacters?: boolean;
 };
 
