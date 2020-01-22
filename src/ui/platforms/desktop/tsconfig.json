@@ -1,0 +1,36 @@
+{
+  "extends": "./tsconfig.fixed.json",
+  "compilerOptions": {
+    "jsx": "react",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "ESNext",
+      "es2018"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "sourceMap": false,
+    "outDir": "./build",
+    "declaration": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "isolatedModules": true
+  },
+  "include": [
+    "src"
+  ]
+}
