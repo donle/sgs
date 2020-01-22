@@ -28,7 +28,7 @@
     "typeRoots": [
       "node_modules/@types"
     ],
-    "isolatedModules": true
+    "isolatedModules": false
   },
   "include": [
     "src"
