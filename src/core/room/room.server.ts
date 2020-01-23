@@ -14,7 +14,6 @@ import {
   PlayerId,
   PlayerInfo,
 } from 'core/player/player_props';
-import { Languages } from 'translations/languages';
 
 import { EquipCard } from 'core/cards/equip_card';
 import { Character } from 'core/characters/character';
@@ -24,20 +23,20 @@ import { CardLoader } from 'core/game/package_loader/loader.cards';
 import { CharacterLoader } from 'core/game/package_loader/loader.characters';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { TriggerSkill } from 'core/skills/skill';
-import { translateNote } from 'translations/translations';
+import { translationJsonPather } from 'core/translations/translation_json_tool';
 import { Room, RoomId } from './room';
 
 export class ServerRoom extends Room<WorkPlace.Server> {
-  protected currentGameEventStage: GameEventStage;
-  protected currentPlayerStage: PlayerStage;
-  protected currentPlayer: Player;
+  protected currentGameEventStage: GameEventStage | undefined;
+  protected currentPlayerStage: PlayerStage | undefined;
+  protected currentPlayer: Player | undefined;
 
-  private loadedCharacters: Character[];
-  private loadedCards: Card[];
+  private loadedCharacters: Character[] = [];
+  private loadedCards: Card[] = [];
 
-  private cards: CardId[];
-  private drawDile: CardId[];
-  private dropDile: CardId[];
+  private cards: CardId[] = [];
+  private drawDile: CardId[] = [];
+  private dropDile: CardId[] = [];
   private gameStarted: boolean = false;
 
   constructor(
@@ -80,11 +79,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.gameStarted = true;
   }
 
-  public createPlayer(playerInfo: PlayerInfo, playerLanguage: Languages) {
+  public createPlayer(playerInfo: PlayerInfo) {
     const { Id, Name, Position, CharacterId } = playerInfo;
-    this.players.push(
-      new ServerPlayer(Id, Name, Position, playerLanguage, CharacterId),
-    );
+    this.players.push(new ServerPlayer(Id, Name, Position, CharacterId));
   }
 
   public notify(
@@ -98,20 +95,19 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   public async broadcast<I extends GameEventIdentifiers = GameEventIdentifiers>(
     type: I,
     content: EventPicker<I, WorkPlace.Server>,
-    pendingMessage?: (language: Languages) => string,
   ) {
     this.socket.ClientIds.forEach(clientId => {
-      if (pendingMessage) {
-        const language = this.getPlayerById(clientId).PlayerLanguage;
-        content.message = pendingMessage(language);
-      }
-
       this.socket
         .getSocketById(clientId)
         .send(JSON.stringify({ type, content }));
     });
 
-    const stages: GameEventStage[] = GameStages[type as GameEventIdentifiers];
+    const stages: GameEventStage[] | undefined =
+      GameStages[type as GameEventIdentifiers];
+    if (!stages) {
+      throw new Error(`Unable to get game stage by identifier ${type}`);
+    }
+
     for (const stage of stages) {
       this.currentGameEventStage = stage;
       if (this.currentGameEventStage === 1) {
@@ -137,6 +133,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     stage: AllStage,
     content: EventPicker<GameEventIdentifiers, WorkPlace.Server>,
   ) {
+    if (!this.CurrentPlayer) {
+      throw new Error('current player is undefined');
+    }
+
     const start = this.players.length % this.CurrentPlayer.Position;
     for (
       let i = start;
@@ -174,7 +174,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.drawDile = this.drawDile.slice(numberOfCards);
     player
       ? player.drawCardIds(...drawCards)
-      : this.currentPlayer.drawCardIds(...drawCards);
+      : this.currentPlayer && this.currentPlayer.drawCardIds(...drawCards);
   }
 
   public dropCards(cardIds: CardId[], from?: Player) {
@@ -203,31 +203,27 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       this.broadcast<GameEventIdentifiers.CardUseEvent>(
         GameEventIdentifiers.CardUseEvent,
         {
+          message: translationJsonPather('{0} uses card {1}', to.Name, card.Name),
           toId: to.Id,
           cardId,
         },
-        translateNote('{0} uses card {1}', to.Name, card.Name),
       );
     } else {
       to.getCardIds(toArea).push(cardId);
       this.broadcast<GameEventIdentifiers.MoveCardEvent>(
         GameEventIdentifiers.MoveCardEvent,
         {
+          message: translationJsonPather('{0} obtains card {1}', to.Name, card.Name),
           fromId: from && from.Id,
           toId: to.Id,
           area: toArea,
         },
-        translateNote('{0} obtains card {1}', to.Name, card.Name),
       );
     }
   }
 
   public get RoomId() {
     return this.roomId;
-  }
-
-  public get CurrentPlayer() {
-    return this.currentPlayer;
   }
 
   public getRoomInfo(): RoomInfo {

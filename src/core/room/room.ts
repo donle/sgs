@@ -11,14 +11,13 @@ import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 
 import { GameInfo } from 'core/game/game_props';
-import { Languages } from 'translations/languages';
 
 export type RoomId = number;
 
 export abstract class Room<T extends WorkPlace = WorkPlace> {
-  protected abstract currentGameEventStage: GameEventStage;
-  protected abstract currentPlayerStage: PlayerStage;
-  protected abstract currentPlayer: Player;
+  protected abstract currentGameEventStage: GameEventStage | undefined;
+  protected abstract currentPlayerStage: PlayerStage | undefined;
+  protected abstract currentPlayer: Player | undefined;
   protected abstract socket: Socket<T>;
   protected abstract gameInfo: GameInfo;
   protected abstract players: Player[];
@@ -41,7 +40,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract async broadcast(
     type: GameEventIdentifiers,
     content: EventPicker<typeof type, WorkPlace>,
-    pendingMessage?: (language: Languages) => string,
   ): Promise<void>;
 
   public abstract drawCards(numberOfCards: number, player?: Player): void;
@@ -89,7 +87,11 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return this.currentGameEventStage;
   }
 
-  public get CurrentPlayer() {
+  public get CurrentPlayer(): Player {
+    if (!this.currentPlayer) {
+      throw new Error('Unable to get current player');
+    }
+
     return this.currentPlayer;
   }
 

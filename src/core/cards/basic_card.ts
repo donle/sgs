@@ -1,4 +1,3 @@
-import { SkillLoader } from 'core/game/package_loader/loader.skills';
 import { Skill } from 'core/skills/skill';
 import { Card, CardId, CardSuit, CardType } from './card';
 
@@ -7,7 +6,7 @@ export abstract class BasicCard extends Card {
   protected generalName: string;
 
   constructor(
-    protected id,
+    protected id: CardId,
     protected cardNumber: number,
     protected suit: CardSuit,
     protected name: string,

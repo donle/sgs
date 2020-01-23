@@ -77,7 +77,9 @@ export const enum PlayerStage {
   FinishStage,
 }
 
-export const PlayerStages = {
+export const PlayerStages: {
+  [K in PlayerStage]: PlayerStageListEnum[]
+} = {
   [PlayerStage.PrepareStage]: [
     PlayerStageListEnum.BeginPrepareStageStart,
     PlayerStageListEnum.PrepareStageStart,
@@ -146,7 +148,9 @@ export const PlayerStages = {
   ],
 };
 
-export const GameStages = {
+export const GameStages: {
+  [K in GameEventIdentifiers]?: GameEventStage[]
+} = {
   [GameEventIdentifiers.CardUseEvent]: [
     CardUseStage.BeforeCardUseEffect,
     CardUseStage.CardUsed,
@@ -301,6 +305,7 @@ export type GameEventStage =
   | JudgeEffectStage
   | RecoverEffectStage
   | PinDianStage
+  | PlayerDyingStage
   | PlayerDiedStage
   | DamageEffectStage
   | SkillEffectStage;

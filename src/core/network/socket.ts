@@ -1,7 +1,6 @@
 import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
 import { HostConfigProps } from 'core/game/host.config';
 import { PlayerId } from 'core/player/player_props';
-import { Languages } from 'translations/languages';
 
 export type WebSocketWithId<T> = T & {
   id: string;
@@ -36,7 +35,6 @@ export abstract class Socket<T extends WorkPlace> {
   public abstract broadcast(
     type: GameEventIdentifiers,
     content: EventPicker<typeof type, WorkPlace.Client>,
-    pendingMessage?: (language: Languages) => string,
   );
 
   public abstract getSocketById(id: PlayerId): any;
@@ -44,8 +42,6 @@ export abstract class Socket<T extends WorkPlace> {
     type: GameEventIdentifiers,
     content: EventPicker<typeof type, WorkPlace.Server>,
     to: PlayerId,
-    pendingMessage?: (language: Languages) => string,
-    language?: Languages,
   ): void;
 
   public abstract get ClientIds(): string[];

@@ -203,3 +203,20 @@ export abstract class FilterSkill extends Skill<SkillType.Compulsory> {
     attacker: PlayerId,
   ): boolean;
 }
+
+export class NullSkill extends Skill<SkillType.Compulsory> {
+  constructor() {
+    super('null_skill', 'null_skill_description', SkillType.Compulsory);
+  }
+
+  public canUse() {
+    return false;
+  }
+  public isRefreshAt() {
+    return false;
+  }
+  // tslint:disable-next-line: no-empty
+  public onEffect() {}
+  // tslint:disable-next-line: no-empty
+  public onUse() {}
+}

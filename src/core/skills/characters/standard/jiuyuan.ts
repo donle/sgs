@@ -4,7 +4,7 @@ import { AllStage, RecoverEffectStage } from 'core/game/stage';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { SkillType, TriggerSkill } from 'core/skills/skill';
-import { translateNote } from 'translations/translations';
+import { translationJsonPather } from 'core/translations/translation_json_tool';
 
 export class JiuYuan extends TriggerSkill<SkillType.Compulsory> {
   public isAutoTrigger() {
@@ -33,18 +33,15 @@ export class JiuYuan extends TriggerSkill<SkillType.Compulsory> {
   }
 
   onTrigger(room: Room, owner: Player) {
-    room.broadcast(
-      GameEventIdentifiers.SkillUseEvent,
-      {
-        fromId: owner.Id,
-        triggeredBySkillName: this.name,
-      },
-      translateNote(
+    room.broadcast(GameEventIdentifiers.SkillUseEvent, {
+      message: translationJsonPather(
         '{0} activates skill {1}',
         room.getPlayerById(owner.Id).Name,
         this.name,
       ),
-    );
+      fromId: owner.Id,
+      triggeredBySkillName: this.name,
+    });
   }
 
   onEffect(

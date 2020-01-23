@@ -6,7 +6,7 @@ import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, SkillType } from 'core/skills/skill';
-import { translateNote } from 'translations/translations';
+import { translationJsonPather } from 'core/translations/translation_json_tool';
 
 export class PeachSkill extends ActiveSkill {
   constructor() {
@@ -14,7 +14,10 @@ export class PeachSkill extends ActiveSkill {
   }
 
   canUse(room: Room, owner: Player) {
-    return room.CurrentPlayer === owner && room.CurrentPlayerStage === PlayerStage.PlayCardStage;
+    return (
+      room.CurrentPlayer === owner &&
+      room.CurrentPlayerStage === PlayerStage.PlayCardStage
+    );
   }
 
   cardFilter() {
@@ -32,19 +35,16 @@ export class PeachSkill extends ActiveSkill {
   }
 
   onUse(room: Room, owner: PlayerId, cardIds?: CardId[]) {
-    room.broadcast(
-      GameEventIdentifiers.CardUseEvent,
-      {
-        fromId: room.getPlayerById(owner).Id,
-        cardId: cardIds![0],
-        triggeredBySkillName: this.name,
-      },
-      translateNote(
+    room.broadcast(GameEventIdentifiers.CardUseEvent, {
+      fromId: room.getPlayerById(owner).Id,
+      cardId: cardIds![0],
+      triggeredBySkillName: this.name,
+      message: translationJsonPather(
         '{0} uses card {1}',
         room.CurrentPlayer.Name,
         Sanguosha.getCardById(cardIds![0]).Name,
       ),
-    );
+    });
   }
 
   onEffect(
@@ -56,16 +56,13 @@ export class PeachSkill extends ActiveSkill {
       toId: event.toId,
       recover: 1,
       triggeredBySkillName: this.name,
+      message: translationJsonPather(
+        '{0} recovers {1} hp',
+        room.getPlayerById(event.toId!).Name,
+        '1',
+      ),
     };
 
-    room.broadcast(
-      GameEventIdentifiers.RecoverEvent,
-      recoverContent,
-      translateNote(
-        '{0} recovers {1} hp',
-        room.getPlayerById(recoverContent.toId).Name,
-        recoverContent.recover.toString(),
-      ),
-    );
+    room.broadcast(GameEventIdentifiers.RecoverEvent, recoverContent);
   }
 }

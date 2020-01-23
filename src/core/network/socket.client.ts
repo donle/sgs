@@ -1,7 +1,7 @@
 import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
 import { HostConfigProps } from 'core/game/host.config';
 import { Socket, SocketMessage } from 'core/network/socket';
-import * as IOSocketClient from 'socket.io-client';
+import IOSocketClient from 'socket.io-client';
 
 export abstract class ClientSocket extends Socket<WorkPlace.Client> {
   protected roomPath: string;
@@ -16,11 +16,11 @@ export abstract class ClientSocket extends Socket<WorkPlace.Client> {
       { path: this.roomPath },
     );
 
-    const gameEvent = [];
+    const gameEvent: string[] = [];
     gameEvent.forEach(event => {
-      this.socketIO.on(event, content => {
+      this.socketIO.on(event, (content: unknown) => {
         const type = parseInt(event, 10) as GameEventIdentifiers;
-        this.on(type, content);
+        this.on(type, content as EventPicker<typeof type, WorkPlace.Client>);
       });
     });
   }

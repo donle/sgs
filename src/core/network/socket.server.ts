@@ -1,17 +1,16 @@
 import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
 import { HostConfigProps } from 'core/game/host.config';
-import { Socket, SocketMessage, WebSocketWithId } from 'core/network/socket';
+import { Socket, SocketMessage } from 'core/network/socket';
 import { PlayerId, PlayerInfo } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 // import { createHash } from 'crypto';
-import * as IOSocketServer from 'socket.io';
-import { Languages } from 'translations/languages';
+import IOSocketServer from 'socket.io';
 
 export class ServerSocket extends Socket<WorkPlace.Server> {
   private socket: IOSocketServer.Server;
-  private room: ServerRoom;
-  private clientIds: string[];
+  private room?: ServerRoom;
+  private clientIds: string[] = [];
   protected roomPath: string;
 
   private asyncPendingEventName: string | undefined;
@@ -29,7 +28,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     this.roomPath = `/room-${roomId}`;
 
     this.socket = IOSocketServer();
-    this.socket.of(this.roomPath).clients((error, clients) => {
+    this.socket.of(this.roomPath).clients((error: any, clients: string[]) => {
       if (error) {
         throw new Error(error);
       }
@@ -60,7 +59,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
           }
 
           if (type === GameEventIdentifiers.PlayerEnterEvent) {
-            const { playerLanguage, playerName } = content as EventPicker<
+            const { playerName } = content as EventPicker<
               GameEventIdentifiers.PlayerEnterEvent,
               WorkPlace.Client
             >;
@@ -76,7 +75,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
             playerInfo.Id = socket.id;
             playerInfo.Position = this.clientIds.length - 1;
 
-            this.room && this.room.createPlayer(playerInfo, playerLanguage);
+            this.room && this.room.createPlayer(playerInfo);
           }
 
           this.room.on(type, content);
@@ -126,13 +125,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     type: GameEventIdentifiers,
     content: EventPicker<typeof type, WorkPlace.Server>,
     to: PlayerId,
-    pendingMessage?: (language: Languages) => string,
-    language?: Languages,
   ) {
-    if (pendingMessage && language) {
-      content.message = pendingMessage(language);
-    }
-
     const socket = this.getSocketById(to);
     if (socket === undefined) {
       throw new Error(`Unable to find socket for player ${to}`);

@@ -36,8 +36,8 @@ export abstract class Card {
     return this.cardType;
   }
 
-  public get Number() {
-    return this.Number;
+  public get CardNumber() {
+    return this.cardNumber;
   }
 
   public get Suit() {
@@ -45,7 +45,7 @@ export abstract class Card {
   }
 
   public get Name() {
-    return this.Name;
+    return this.name;
   }
 
   public get GeneralName() {
@@ -104,7 +104,12 @@ export class VirtualCard<T extends Card> extends Card {
   constructor(viewAsCardName: string, private cards: Card[], skill?: Skill) {
     super();
 
-    this.viewAs = Sanguosha.getCardByName(viewAsCardName);
+    const viewAsCard = Sanguosha.getCardByName<T>(viewAsCardName);
+    if (!viewAsCard) {
+      throw new Error(`Unable to init virtual card: ${viewAsCardName}`);
+    }
+
+    this.viewAs = viewAsCard;
     this.name = this.viewAs.Name;
     this.generalName = this.viewAs.GeneralName;
     this.description = this.viewAs.Description;
@@ -112,7 +117,7 @@ export class VirtualCard<T extends Card> extends Card {
     this.cardType = this.viewAs.Type;
 
     if (cards.length === 1) {
-      this.cardNumber = cards[0].Number;
+      this.cardNumber = cards[0].CardNumber;
       this.suit = cards[0].Suit;
     }
   }

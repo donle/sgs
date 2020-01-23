@@ -13,7 +13,7 @@ export type CardPackageLoader = (index: number) => CardPackage<GameCardExtension
 const allPackageLoaders: CardPackageLoader[] = [StandardCardPackage];
 
 export class CardLoader {
-  private cards: CardPackages;
+  private cards: CardPackages = {} as any;
   private static instance: CardLoader;
 
   private constructor() {
@@ -25,7 +25,7 @@ export class CardLoader {
 
     for (const loader of allPackageLoaders) {
       const packages = loader(index);
-      for (const [packageName, cards] of Object.entries(packages)) {
+      for (const [packageName, cards] of Object.entries(packages) as [GameCardExtensions, Card[]][]) {
         this.cards[packageName] = cards;
 
         index += cards.length;

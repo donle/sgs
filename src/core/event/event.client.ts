@@ -1,7 +1,6 @@
 import { CardId } from 'core/cards/card';
-import { DamageType, GameInfo } from 'core/game/game_props';
+import { GameInfo } from 'core/game/game_props';
 import { PlayerId, PlayerInfo } from 'core/player/player_props';
-import { Languages } from 'translations/languages';
 import { EventUtilities, GameEventIdentifiers } from './event';
 
 export interface ClientEvent extends EventUtilities {
@@ -62,7 +61,6 @@ export interface ClientEvent extends EventUtilities {
 
   [GameEventIdentifiers.PlayerEnterEvent]: {
     playerName: string;
-    playerLanguage: Languages;
   };
   [GameEventIdentifiers.PlayerLeaveEvent]: {
     playerId: PlayerId;

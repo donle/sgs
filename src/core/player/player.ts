@@ -26,7 +26,6 @@ import {
   SkillType,
   TriggerSkill,
 } from 'core/skills/skill';
-import { Languages } from 'translations/languages';
 
 export abstract class Player implements PlayerInfo {
   private hp: number;
@@ -37,24 +36,24 @@ export abstract class Player implements PlayerInfo {
 
   protected abstract playerId: PlayerId;
   protected abstract playerName: string;
-  protected abstract playerLanguage: Languages;
   protected abstract playerPosition: number;
   protected playerRole: PlayerRole = PlayerRole.Unknown;
   protected nationality: CharacterNationality;
-  protected position: number;
+  protected position: number = -1;
 
   private cardUseHistory: CardId[] = [];
   private skillUsedHistory: {
     [K: string]: number;
   }[] = [];
-  private playerCharacter: Character;
+  private playerCharacter: Character | undefined;
+  protected playerCards: PlayerCards & PlayerCardsOutside;
 
   private readonly cardSkillUseRules: {
     [cardSkillName: string]: {
-      general: number,
-      overlay?: {
-        [bySkill: string]: number,
-      }
+      general: number;
+      overlay: {
+        [bySkill: string]: number;
+      };
     };
   };
 
@@ -66,10 +65,10 @@ export abstract class Player implements PlayerInfo {
   } = {};
 
   constructor(
-    protected playerCharacterId: CharacterId,
-    protected playerCards?: PlayerCards & PlayerCardsOutside,
+    playerCards?: PlayerCards & PlayerCardsOutside,
+    protected playerCharacterId?: CharacterId,
   ) {
-    this.playerCards = this.playerCards || {
+    this.playerCards = playerCards || {
       [PlayerCardsArea.HandArea]: [],
       [PlayerCardsArea.JudgeArea]: [],
       [PlayerCardsArea.HoldingArea]: [],
@@ -79,16 +78,21 @@ export abstract class Player implements PlayerInfo {
     this.cardSkillUseRules = {
       wine: {
         general: 1,
+        overlay: {},
       },
       slash: {
         general: 1,
+        overlay: {},
       },
     };
 
-    this.playerCharacter = Sanguosha.getCharacterById(this.playerCharacterId);
-    this.hp = this.playerCharacter.MaxHp;
-    this.maxHp = this.playerCharacter.MaxHp;
-    this.nationality = this.playerCharacter.Nationality;
+    if (this.playerCharacterId) {
+      this.playerCharacter = Sanguosha.getCharacterById(this.playerCharacterId);
+      this.hp = this.playerCharacter.MaxHp;
+      this.maxHp = this.playerCharacter.MaxHp;
+      this.nationality = this.playerCharacter.Nationality;
+    }
+
     this.dead = false;
   }
 
@@ -135,7 +139,15 @@ export abstract class Player implements PlayerInfo {
     skillName: string,
     content: ClientEventFinder<GameEventIdentifiers>,
   ) {
-    const skill = this.Character.Skills.find(skill => skill.Name === skillName);
+    if (!this.playerCharacter) {
+      throw new Error(
+        `Player ${this.playerName} has not been initialized with a character yet`,
+      );
+    }
+
+    const skill = this.playerCharacter.Skills.find(
+      skill => skill.Name === skillName,
+    );
     return skill !== undefined && skill.canUse(room, this, content);
   }
 
@@ -156,7 +168,9 @@ export abstract class Player implements PlayerInfo {
     skillName?: string,
     ...cardSkillNames: string[]
   ) {
-    for (const [cardSkillName, rules] of Object.entries(this.cardSkillUseRules)) {
+    for (const [cardSkillName, rules] of Object.entries(
+      this.cardSkillUseRules,
+    )) {
       if (cardSkillNames.length <= 0) {
         delete rules.overlay;
       } else if (this.cardSkillUseRules[cardSkillName].overlay) {
@@ -175,7 +189,7 @@ export abstract class Player implements PlayerInfo {
     if (!this.cardSkillUseRules[cardSkillName].overlay) {
       this.cardSkillUseRules[cardSkillName].overlay = {
         [bySkill]: useTimes,
-      }
+      };
     }
   }
 
@@ -292,7 +306,9 @@ export abstract class Player implements PlayerInfo {
 
     let times = this.cardSkillUseRules[cardSkillName].general;
     if (this.cardSkillUseRules[cardSkillName].overlay) {
-      for (const [, addtionalTimes] of Object.entries(this.cardSkillUseRules[cardSkillName].overlay)) {
+      for (const [, addtionalTimes] of Object.entries(
+        this.cardSkillUseRules[cardSkillName].overlay,
+      )) {
         times += addtionalTimes;
       }
     }
@@ -333,6 +349,12 @@ export abstract class Player implements PlayerInfo {
   }
 
   private getFixedDistance(inOffense: boolean) {
+    if (!this.playerCharacter) {
+      throw new Error(
+        `Player ${this.playerName} has not been initialized with a character yet`,
+      );
+    }
+
     const rides: DistanceSkill[] = this.playerCharacter[
       PlayerCardsArea.EquipArea
     ]
@@ -374,6 +396,12 @@ export abstract class Player implements PlayerInfo {
       | 'transform'
       | 'distance',
   ): T[] {
+    if (!this.playerCharacter) {
+      throw new Error(
+        `Player ${this.playerName} has not been initialized with a character yet`,
+      );
+    }
+
     const equipCards = this.playerCards[PlayerCardsArea.EquipArea].map(card =>
       Sanguosha.getCardById(card),
     );
@@ -475,10 +503,16 @@ export abstract class Player implements PlayerInfo {
     this.playerCharacterId = characterId;
   }
   public get CharacterId() {
+    if (this.playerCharacterId === undefined) {
+      throw new Error('No player character id initialized');
+    }
     return this.playerCharacterId;
   }
 
   public get Character() {
+    if (this.playerCharacter === undefined) {
+      throw new Error('No player character initialized');
+    }
     return this.playerCharacter;
   }
 
@@ -492,14 +526,6 @@ export abstract class Player implements PlayerInfo {
 
   public get Position() {
     return this.playerPosition;
-  }
-
-  public get PlayerLanguage() {
-    return this.playerLanguage;
-  }
-
-  public set PlayerLanguage(language: Languages) {
-    this.playerLanguage = language;
   }
 
   public get CardUseHistory() {

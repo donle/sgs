@@ -4,7 +4,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, SkillType } from 'core/skills/skill';
-import { translateNote } from 'translations/translations';
+import { translationJsonPather } from 'core/translations/translation_json_tool';
 
 export class ZhiHeng extends ActiveSkill {
   constructor() {
@@ -28,8 +28,12 @@ export class ZhiHeng extends ActiveSkill {
   }
 
   isAvailableCard(room: Room, cardId: CardId): boolean {
-    return [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea].includes(
-      room.CurrentPlayer.cardFrom(cardId),
+    const cardFromArea = room.CurrentPlayer.cardFrom(cardId);
+    return (
+      cardFromArea !== undefined &&
+      [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea].includes(
+        cardFromArea,
+      )
     );
   }
 
@@ -37,15 +41,14 @@ export class ZhiHeng extends ActiveSkill {
     room.broadcast(
       GameEventIdentifiers.SkillUseEvent,
       {
+        message: translationJsonPather(
+          '{0} activates skill {1}',
+          room.CurrentPlayer.Character.Name,
+          this.name,),
         cardIds,
         fromId: room.CurrentPlayer.Id,
         triggeredBySkillName: this.name,
       },
-      translateNote(
-        '{0} activates skill {1}',
-        room.CurrentPlayer.Character.Name,
-        this.name,
-      ),
     );
   }
 

@@ -22,22 +22,44 @@ export class Sanguosha {
   }
 
   public static getCharacterById(characterId: CharacterId) {
-    return Sanguosha.characters.find(character => character.Id === characterId);
+    const character = Sanguosha.characters.find(character => character.Id === characterId);
+    if (!character) {
+      throw new Error(`Unable to find character by id: ${characterId}`);
+    }
+
+    return character;
   }
 
-  public static getCardById<T extends Card>(cardId: CardId): T | undefined {
-    return Sanguosha.cards.find(card => card.Id === cardId) as T | undefined;
+  public static getCardById<T extends Card>(cardId: CardId): T {
+    const card = Sanguosha.cards.find(card => card.Id === cardId) as T | undefined;
+    if (!card) {
+      throw new Error(`Unable to find the card by id: ${cardId}`);
+    }
+    return card;
   }
 
-  public static getCardByName<T extends Card>(cardName: string): T | undefined {
-    return Sanguosha.cards.find(card => card.Name === cardName) as T | undefined;
+  public static getCardByName<T extends Card>(cardName: string): T {
+    const card = Sanguosha.cards.find(card => card.Name === cardName) as T | undefined;
+    if (!card) {
+      throw new Error(`Unable to find the card by name: ${cardName}`);
+    }
+    return card;
   }
 
-  public static getSkillBySkillName<T extends Skill = Skill>(name: string): T | undefined {
-    return Sanguosha.skills.find(skill => skill.Name === name) as T | undefined;
+  public static getSkillBySkillName<T extends Skill = Skill>(name: string): T {
+    const skill = Sanguosha.skills.find(skill => skill.Name === name) as T | undefined;
+    if (!skill) {
+      throw new Error(`Unable to find the skill by name: ${name}`);
+    }
+    return skill;
   }
 
   public static getCharacterByCharaterName(name: string) {
-    return Sanguosha.characters.find(character => character.Name === name);
+    const character = Sanguosha.characters.find(character => character.Name === name);
+    if (!character) {
+      throw new Error(`Unable to find character by name: ${name}`);
+    }
+
+    return character;
   }
 }

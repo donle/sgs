@@ -35,7 +35,7 @@ export const enum PlayerCardsArea {
 export interface PlayerInfo {
   Id: PlayerId;
   Name: string;
+  Position: number;
   CharacterId: CharacterId | undefined;
   Role: PlayerRole | undefined;
-  Position: number | undefined;
 }

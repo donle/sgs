@@ -1,6 +1,5 @@
 import { CharacterId } from 'core/characters/character';
 import { Player } from 'core/player/player';
-import { Languages } from 'translations/languages';
 import { PlayerCards, PlayerCardsOutside, PlayerId } from './player_props';
 
 export class ServerPlayer extends Player {
@@ -8,10 +7,9 @@ export class ServerPlayer extends Player {
     protected playerId: PlayerId,
     protected playerName: string,
     protected playerPosition: number,
-    protected playerLanguage: Languages,
     playerCharacterId?: CharacterId,
     playerCards?: PlayerCards & PlayerCardsOutside,
   ) {
-    super(playerCharacterId, playerCards);
+    super(playerCards, playerCharacterId);
   }
 }
