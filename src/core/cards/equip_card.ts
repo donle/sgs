@@ -10,7 +10,7 @@ export abstract class EquipCard extends Card {
     super();
   }
 
-  public get EqupCategory() {
+  public get EquipCategory() {
     return this.equiCardCategory;
   }
 }

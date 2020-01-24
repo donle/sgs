@@ -8,7 +8,9 @@ export type CardPackages = {
 export type CardPackage<Extension extends GameCardExtensions> = {
   [K in Extension]: Card[];
 };
-export type CardPackageLoader = (index: number) => CardPackage<GameCardExtensions>;
+export type CardPackageLoader = (
+  index: number,
+) => CardPackage<GameCardExtensions>;
 
 const allPackageLoaders: CardPackageLoader[] = [StandardCardPackage];
 
@@ -25,7 +27,10 @@ export class CardLoader {
 
     for (const loader of allPackageLoaders) {
       const packages = loader(index);
-      for (const [packageName, cards] of Object.entries(packages) as [GameCardExtensions, Card[]][]) {
+      for (const [packageName, cards] of Object.entries(packages) as [
+        GameCardExtensions,
+        Card[],
+      ][]) {
         this.cards[packageName] = cards;
 
         index += cards.length;

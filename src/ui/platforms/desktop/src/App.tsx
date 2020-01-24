@@ -1,11 +1,10 @@
-import { DevMode, hostConfig } from 'core/game/host.config';
+import { DevMode, hostConfig } from 'core/shares/types/host_config';
 import * as React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import SocketIOClient from 'socket.io-client';
-import styles from './App.module.css';
 import { Lobby } from './pages/lobby/lobby';
 
-const mode = process.env.DEV_MODE as DevMode || DevMode.Dev;
+const mode = (process.env.DEV_MODE as DevMode) || DevMode.Dev;
 
 export const App: React.FC = () => {
   const config = hostConfig[mode];
@@ -16,7 +15,7 @@ export const App: React.FC = () => {
     },
   );
   return (
-    <div className={styles.container}>
+    <div>
       <Switch>
         <Route path={'/lobby'}>
           <Lobby config={config} socket={socket} />

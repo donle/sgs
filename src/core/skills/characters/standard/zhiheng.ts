@@ -4,7 +4,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, SkillType } from 'core/skills/skill';
-import { translationJsonPather } from 'core/translations/translation_json_tool';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 export class ZhiHeng extends ActiveSkill {
   constructor() {
@@ -38,18 +38,16 @@ export class ZhiHeng extends ActiveSkill {
   }
 
   onUse(room: Room, owner: PlayerId, cardIds: CardId[]) {
-    room.broadcast(
-      GameEventIdentifiers.SkillUseEvent,
-      {
-        message: translationJsonPather(
-          '{0} activates skill {1}',
-          room.CurrentPlayer.Character.Name,
-          this.name,),
-        cardIds,
-        fromId: room.CurrentPlayer.Id,
-        triggeredBySkillName: this.name,
-      },
-    );
+    room.broadcast(GameEventIdentifiers.SkillUseEvent, {
+      translationsMessage: TranslationPack.translationJsonPatcher(
+        '{0} activates skill {1}',
+        room.CurrentPlayer.Character.Name,
+        this.name,
+      ),
+      cardIds,
+      fromId: room.CurrentPlayer.Id,
+      triggeredBySkillName: this.name,
+    });
   }
 
   onEffect(

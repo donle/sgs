@@ -1,10 +1,9 @@
 import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
-import { HostConfigProps } from 'core/game/host.config';
-import { Socket, SocketMessage } from 'core/network/socket';
+import { Socket } from 'core/network/socket';
 import { PlayerId, PlayerInfo } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
-// import { createHash } from 'crypto';
+import { HostConfigProps } from 'core/shares/types/host_config';
 import IOSocketServer from 'socket.io';
 
 export class ServerSocket extends Socket<WorkPlace.Server> {
@@ -35,52 +34,31 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
 
       this.clientIds = clients;
     });
-    this.socket.of(this.roomPath).on('connect', socket => {
-      // this.hash.update(this.clients.length.toString());
-      // socket.id = this.hash.digest('latin1');
+    this.socket.of(this.roomPath).on('connection', socket => {
+      const gameEvent: string[] = [];
+      gameEvent.forEach(event => {
+        socket.on(event, (content: unknown) => {
+          const type = parseInt(event, 10) as GameEventIdentifiers;
 
-      socket.on('message', data => {
-        const { type, content } = JSON.parse(data as string) as SocketMessage<
-          GameEventIdentifiers,
-          WorkPlace.Client
-        >;
-
-        if (this.room !== undefined) {
-          if (type === GameEventIdentifiers.AskForInvokeEvent) {
-            const { eventName } = content as EventPicker<
-              GameEventIdentifiers.AskForInvokeEvent,
-              WorkPlace.Client
-            >;
-            eventName === this.asyncPendingEventName
-              ? this.asyncPendingEventResolver(content)
-              : this.asyncPendingEventRejector('Mis-match invoke event name');
-
-            return;
-          }
-
+          const params: any[] = [];
           if (type === GameEventIdentifiers.PlayerEnterEvent) {
-            const { playerName } = content as EventPicker<
-              GameEventIdentifiers.PlayerEnterEvent,
-              WorkPlace.Client
-            >;
-
-            const playerInfo: PlayerInfo = {
-              Id: socket.id,
-              Position: this.clientIds.length - 1,
-              Name: playerName,
-              CharacterId: undefined,
-              Role: undefined,
-            };
-
-            playerInfo.Id = socket.id;
-            playerInfo.Position = this.clientIds.length - 1;
-
-            this.room && this.room.createPlayer(playerInfo);
+            params.push(socket.id);
           }
-
-          this.room.on(type, content);
-        }
+          this.on(
+            type,
+            content as EventPicker<typeof type, WorkPlace.Client>,
+            ...params,
+          );
+        });
       });
+
+      socket
+        .on('connect', () => {
+          this.clientIds.push(socket.id);
+        })
+        .on('disconnect', () => {
+          this.clientIds.filter(id => id !== socket.id);
+        });
     });
   }
 
@@ -144,5 +122,85 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
 
   public get ClientIds() {
     return this.clientIds;
+  }
+
+  //TODO: socket event handlers
+  public userMessage(
+    ev: EventPicker<GameEventIdentifiers.UserMessageEvent, WorkPlace.Client>,
+  ): void {}
+
+  public gameCreated(
+    ev: EventPicker<GameEventIdentifiers.GameCreatedEvent, WorkPlace.Client>,
+  ): void {}
+  public gameOver(
+    ev: EventPicker<GameEventIdentifiers.GameOverEvent, WorkPlace.Client>,
+  ): void {}
+  public gameStart(
+    ev: EventPicker<GameEventIdentifiers.GameStartEvent, WorkPlace.Client>,
+  ): void {}
+  public playerEnter(
+    ev: EventPicker<GameEventIdentifiers.PlayerEnterEvent, WorkPlace.Client>,
+    ...params: any[]
+  ): void {
+    const { playerName } = ev;
+    const [id] = params;
+
+    const playerInfo: PlayerInfo = {
+      Id: id,
+      Position: this.clientIds.length - 1,
+      Name: playerName,
+      CharacterId: undefined,
+      Role: undefined,
+    };
+
+    (playerInfo.Id = id), (playerInfo.Position = this.clientIds.length - 1);
+
+    this.room && this.room.createPlayer(playerInfo);
+  }
+  public playerLeave(
+    ev: EventPicker<GameEventIdentifiers.PlayerLeaveEvent, WorkPlace.Client>,
+  ): void {}
+  public playerDied(
+    ev: EventPicker<GameEventIdentifiers.PlayerDiedEvent, WorkPlace.Client>,
+  ): void {}
+
+  public useCard(
+    ev: EventPicker<GameEventIdentifiers.CardUseEvent, WorkPlace.Client>,
+  ): void {}
+  public dropCard(
+    ev: EventPicker<GameEventIdentifiers.CardDropEvent, WorkPlace.Client>,
+  ): void {}
+  public responseCard(
+    ev: EventPicker<GameEventIdentifiers.CardResponseEvent, WorkPlace.Client>,
+  ): void {}
+  public drawCard(
+    ev: EventPicker<GameEventIdentifiers.DrawCardEvent, WorkPlace.Client>,
+  ): void {}
+  public obtainCard(
+    ev: EventPicker<GameEventIdentifiers.ObtainCardEvent, WorkPlace.Client>,
+  ): void {}
+  public moveCard(
+    ev: EventPicker<GameEventIdentifiers.MoveCardEvent, WorkPlace.Client>,
+  ): void {}
+
+  public useSkill(
+    ev: EventPicker<GameEventIdentifiers.SkillUseEvent, WorkPlace.Client>,
+  ): void {}
+  public pinDian(
+    ev: EventPicker<GameEventIdentifiers.PinDianEvent, WorkPlace.Client>,
+  ): void {}
+  public damage(
+    ev: EventPicker<GameEventIdentifiers.DamageEvent, WorkPlace.Client>,
+  ): void {}
+  public judge(
+    ev: EventPicker<GameEventIdentifiers.JudgeEvent, WorkPlace.Client>,
+  ): void {}
+  public invokeSkill(
+    ev: EventPicker<GameEventIdentifiers.AskForInvokeEvent, WorkPlace.Client>,
+  ): void {
+    const { eventName } = ev;
+    eventName === this.asyncPendingEventName
+      ? this.asyncPendingEventResolver(ev)
+      : this.asyncPendingEventRejector('Mis-match invoke event name');
   }
 }

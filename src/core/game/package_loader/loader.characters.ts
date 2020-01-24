@@ -36,7 +36,10 @@ export class CharacterLoader {
     let index = 0;
     for (const loader of allCharacterLoaders) {
       const packages = loader(index);
-      for (const [packageName, characters] of Object.entries(packages) as [GameCharacterExtensions, Character[]][]) {
+      for (const [packageName, characters] of Object.entries(packages) as [
+        GameCharacterExtensions,
+        Character[],
+      ][]) {
         this.characters[packageName] = characters;
 
         index += characters.length;

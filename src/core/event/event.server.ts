@@ -1,6 +1,10 @@
 import { CardId } from 'core/cards/card';
 import { DamageType, GameInfo } from 'core/game/game_props';
-import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props';
+import {
+  PlayerCardsArea,
+  PlayerId,
+  PlayerInfo,
+} from 'core/player/player_props';
 import { EventUtilities, GameEventIdentifiers } from './event';
 
 //@@todo: to be updated
@@ -21,9 +25,9 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.DrawCardEvent]: {};
   [GameEventIdentifiers.ObtainCardEvent]: {};
   [GameEventIdentifiers.MoveCardEvent]: {
-    fromId?: PlayerId,
-    toId: PlayerId,
-    area: PlayerCardsArea,
+    fromId?: PlayerId;
+    toId: PlayerId;
+    area: PlayerCardsArea;
   };
 
   [GameEventIdentifiers.SkillUseEvent]: {

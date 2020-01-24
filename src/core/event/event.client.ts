@@ -36,7 +36,7 @@ export interface ClientEvent extends EventUtilities {
     fromId: PlayerId;
     toId: PlayerId;
     recover: number;
-  }
+  };
   [GameEventIdentifiers.PinDianEvent]: {
     attackerId: PlayerId;
     displayedCardIdByAttacker: CardId;
@@ -78,7 +78,7 @@ export interface ClientEvent extends EventUtilities {
     eventName: string;
     invoke: boolean;
   };
-  [GameEventIdentifiers.AskForCardUseEvent]: {}
+  [GameEventIdentifiers.AskForCardUseEvent]: {};
   [GameEventIdentifiers.AskForCardDisplayEvent]: {};
   [GameEventIdentifiers.AskForCardDropEvent]: {};
 }

@@ -39,6 +39,9 @@ export abstract class Skill<T extends SkillType = SkillType> {
     content?: ClientEventFinder<GameEventIdentifiers>,
   ): boolean;
 
+  // tslint:disable-next-line: no-empty
+  public onLoseSkill(owner: Player) {}
+
   public get Description() {
     return this.description;
   }
@@ -161,7 +164,7 @@ export abstract class CardTransformSkill<
   }
 }
 
-export abstract class RulesOverrideSkill extends Skill<SkillType.Common> {
+export abstract class RulesBreakerSkill extends Skill<SkillType.Common> {
   public canUse() {
     return true;
   }
@@ -175,7 +178,7 @@ export abstract class RulesOverrideSkill extends Skill<SkillType.Common> {
   // tslint:disable-next-line: no-empty
   public onUse() {}
 
-  public abstract overrideRule(room: Room, playerId: PlayerId): void;
+  public abstract breakRule(room: Room, playerId: PlayerId): void;
 }
 
 export abstract class FilterSkill extends Skill<SkillType.Compulsory> {

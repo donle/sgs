@@ -9,6 +9,7 @@ import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { UNLIMITED_TRIGGERING_TIMES } from 'core/game/game_props';
 import {
+  DistanceType,
   PlayerCards,
   PlayerCardsArea,
   PlayerCardsOutside,
@@ -56,6 +57,12 @@ export abstract class Player implements PlayerInfo {
       };
     };
   };
+  private readonly distanceRules: {
+    [K in DistanceType]?: {
+      skillName: string;
+      distance: number;
+    };
+  };
 
   private flags: {
     [k: string]: any;
@@ -85,6 +92,7 @@ export abstract class Player implements PlayerInfo {
         overlay: {},
       },
     };
+    this.distanceRules = {};
 
     if (this.playerCharacterId) {
       this.playerCharacter = Sanguosha.getCharacterById(this.playerCharacterId);
@@ -128,10 +136,11 @@ export abstract class Player implements PlayerInfo {
   public canUseCard(room: Room, cardId: CardId): boolean {
     const card = Sanguosha.getCardById(cardId);
 
-    /**
-     * TODO: to check if the cad could be used, by any filterSkilles
-     */
-    return card.Skill.canUse(room, this);
+    return (
+      this.cardUsedTimes(card.Skill.Name) <
+        this.availableCardUseTimes(card.Skill.Name) &&
+      card.Skill.canUse(room, this)
+    );
   }
 
   public canUseSkill(
@@ -164,15 +173,12 @@ export abstract class Player implements PlayerInfo {
       : (this.skillUsedHistory[skillName] = 0);
   }
 
-  public resetCommonCardUseRules(
-    skillName?: string,
-    ...cardSkillNames: string[]
-  ) {
+  public resetCommonCardUseRules(...cardSkillNames: string[]) {
     for (const [cardSkillName, rules] of Object.entries(
       this.cardSkillUseRules,
     )) {
       if (cardSkillNames.length <= 0) {
-        delete rules.overlay;
+        rules.overlay = {};
       } else if (this.cardSkillUseRules[cardSkillName].overlay) {
         for (const name of cardSkillNames) {
           delete this.cardSkillUseRules[cardSkillName].overlay[name];
@@ -181,7 +187,7 @@ export abstract class Player implements PlayerInfo {
     }
   }
 
-  public overrideCardUseRules(
+  public breakCardUseRules(
     cardSkillName: string,
     useTimes: number,
     bySkill: string = cardSkillName,
@@ -191,6 +197,25 @@ export abstract class Player implements PlayerInfo {
         [bySkill]: useTimes,
       };
     }
+
+    return this;
+  }
+
+  public breakDistanceRules(
+    skillName: string,
+    distance: number,
+    type: DistanceType,
+  ) {
+    this.distanceRules[type] = {
+      skillName,
+      distance,
+    };
+
+    return this;
+  }
+
+  public resetDistanceRules(type: DistanceType) {
+    delete this.distanceRules[type];
   }
 
   public getCardIds(
@@ -272,18 +297,21 @@ export abstract class Player implements PlayerInfo {
       PlayerCardsArea.EquipArea
     ].findIndex(
       card =>
-        Sanguosha.getCardById<EquipCard>(card).EqupCategory ===
-        equipCard.EqupCategory,
+        Sanguosha.getCardById<EquipCard>(card).EquipCategory ===
+        equipCard.EquipCategory,
     );
 
+    let lostEquipId: number | undefined;
     if (currentEquipIndex >= 0) {
-      this.playerCards[PlayerCardsArea.EquipArea].splice(currentEquipIndex, 1);
+      lostEquipId = this.playerCards[PlayerCardsArea.EquipArea].splice(currentEquipIndex, 1)[0];
     }
 
     this.playerCards[PlayerCardsArea.EquipArea].push(equipCard.Id);
+
+    return lostEquipId;
   }
 
-  public hasArmored(cardId: CardId): boolean {
+  public hasEquipped(cardId: CardId): boolean {
     return this.playerCards[PlayerCardsArea.EquipArea].includes(cardId);
   }
 
@@ -328,6 +356,10 @@ export abstract class Player implements PlayerInfo {
   }
 
   public get AttackDistance() {
+    if (this.distanceRules[DistanceType.Attack] !== undefined) {
+      return this.distanceRules[DistanceType.Attack]!.distance;
+    }
+
     let defaultDistance = 1;
     const weapon = this.playerCards[PlayerCardsArea.EquipArea].find(
       card => Sanguosha.getCardById(card) instanceof WeaponCard,
@@ -341,14 +373,17 @@ export abstract class Player implements PlayerInfo {
   }
 
   public getOffenseDistance() {
-    return this.getFixedDistance(true);
+    const presetOffset = this.distanceRules[DistanceType.Offense]?.distance;
+    return this.getFixedDistance(true, presetOffset);
   }
 
   public getDefenseDistance() {
-    return this.getFixedDistance(false);
+    const presetOffset = this.distanceRules[DistanceType.Defense]?.distance;
+
+    return this.getFixedDistance(false, presetOffset);
   }
 
-  private getFixedDistance(inOffense: boolean) {
+  private getFixedDistance(inOffense: boolean, presetOffset?: number) {
     if (!this.playerCharacter) {
       throw new Error(
         `Player ${this.playerName} has not been initialized with a character yet`,
@@ -380,8 +415,11 @@ export abstract class Player implements PlayerInfo {
         }
       }
     }
+    if (presetOffset) {
+      fixedDistance += presetOffset;
+    }
 
-    return fixedDistance;
+    return Math.min(1, fixedDistance);
   }
 
   public getSkills<T extends Skill = Skill>(
@@ -476,6 +514,9 @@ export abstract class Player implements PlayerInfo {
   }
 
   public get Nationality() {
+    if (this.nationality === undefined) {
+      throw new Error('Uninitialized nationality');
+    }
     return this.nationality;
   }
   public set Nationality(nationality: CharacterNationality) {

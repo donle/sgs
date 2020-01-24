@@ -104,7 +104,7 @@ export class VirtualCard<T extends Card> extends Card {
   constructor(viewAsCardName: string, private cards: Card[], skill?: Skill) {
     super();
 
-    const viewAsCard = Sanguosha.getCardByName<T>(viewAsCardName);
+    const viewAsCard = Sanguosha.getCardByName(viewAsCardName) as T;
     if (!viewAsCard) {
       throw new Error(`Unable to init virtual card: ${viewAsCardName}`);
     }

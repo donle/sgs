@@ -78,7 +78,7 @@ export const enum PlayerStage {
 }
 
 export const PlayerStages: {
-  [K in PlayerStage]: PlayerStageListEnum[]
+  [K in PlayerStage]: PlayerStageListEnum[];
 } = {
   [PlayerStage.PrepareStage]: [
     PlayerStageListEnum.BeginPrepareStageStart,
@@ -149,7 +149,7 @@ export const PlayerStages: {
 };
 
 export const GameStages: {
-  [K in GameEventIdentifiers]?: GameEventStage[]
+  [K in GameEventIdentifiers]?: GameEventStage[];
 } = {
   [GameEventIdentifiers.CardUseEvent]: [
     CardUseStage.BeforeCardUseEffect,

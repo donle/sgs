@@ -16,4 +16,6 @@ const allTranslations: TranslationsList = {
   [Languages.ZH_CN]: SimplifiedChinese,
 };
 
-export const translations = (language: Languages) => allTranslations[language];
+export const getLanguageDictionary = (lang: Languages) => {
+  return allTranslations[lang];
+};

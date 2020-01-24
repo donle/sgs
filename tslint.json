@@ -65,7 +65,13 @@
     ],
     "prefer-method-signature": true,
     "prefer-object-spread": true,
-    "quotemark": [true, "single", "jsx-double", "avoid-escape", "avoid-template"],
+    "quotemark": [
+      true,
+      "single",
+      "jsx-double",
+      "avoid-escape",
+      "avoid-template"
+    ],
     "variable-name": [true, "ban-keywords"]
   }
 }

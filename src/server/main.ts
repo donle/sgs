@@ -1,11 +1,15 @@
 import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
-import { DevMode, hostConfig, HostConfigProps } from 'core/game/host.config';
 import { ServerSocket } from 'core/network/socket.server';
 import { ServerRoom } from 'core/room/room.server';
+import {
+  DevMode,
+  hostConfig,
+  HostConfigProps,
+} from 'core/shares/types/host_config';
 import { LobbySocketEvent, RoomInfo } from 'core/shares/types/server_types';
 import * as http from 'http';
 import * as https from 'https';
-import * as SocketIO from 'socket.io';
+import SocketIO from 'socket.io';
 
 class App {
   private server: http.Server | https.Server;
@@ -18,12 +22,15 @@ class App {
     this.config = hostConfig[mode];
     //TODO: to use https on prod in the future.
     this.server = http.createServer();
-    this.lobbySocket = SocketIO(this.server, { path: '/lobby', origins: '*:*' });
+    this.lobbySocket = SocketIO.listen(this.server, {
+      path: '/lobby',
+      origins: '*:*',
+    });
     this.server.listen(this.config.port);
   }
 
   public start() {
-    this.lobbySocket.on('connect', socket => {
+    this.lobbySocket.on('connection', socket => {
       socket
         .on(
           GameEventIdentifiers.GameCreatedEvent.toString(),

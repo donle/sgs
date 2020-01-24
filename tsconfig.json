@@ -1,6 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "jsx": "react",
     "baseUrl": "./src",
     "sourceMap": false,
     "outDir": "./build",
@@ -12,12 +13,7 @@
     "importHelpers": true,
     "target": "es2015",
     "typeRoots": ["node_modules/@types"],
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "ESNext",
-      "es2018"
-    ],
+    "lib": ["dom", "dom.iterable", "ESNext", "es2018"],
     "allowJs": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -29,7 +25,5 @@
     "noEmit": true,
     "isolatedModules": false
   },
-  "exclude": [
-    "./src/ui/platforms/**/*.ts",
-  ]
+  "exclude": ["./src/ui/platforms/**/*.ts"]
 }

@@ -3,7 +3,7 @@ import { CharacterId } from 'core/characters/character';
 
 export type PlayerId = string;
 
-export type PlayerCardsOutside =  & {
+export type PlayerCardsOutside = {
   [S in PlayerCardsArea.OutsideArea]: {
     [SkillName: string]: CardId[];
   };
@@ -38,4 +38,10 @@ export interface PlayerInfo {
   Position: number;
   CharacterId: CharacterId | undefined;
   Role: PlayerRole | undefined;
+}
+
+export const enum DistanceType {
+  Offense,
+  Defense,
+  Attack,
 }

@@ -54,12 +54,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return player;
   }
 
-  // TODO: complete the function
-  public on(
-    type: GameEventIdentifiers,
-    content: EventPicker<typeof type, WorkPlace.Client>,
-  ) {}
-
   public useCard(
     content: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
   ) {

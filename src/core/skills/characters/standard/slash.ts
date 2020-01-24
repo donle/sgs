@@ -6,7 +6,7 @@ import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, SkillType } from 'core/skills/skill';
-import { translationJsonPather } from 'core/translations/translation_json_tool';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 export class SlashSkill extends ActiveSkill {
   private damageType: DamageType = DamageType.Normal;
@@ -43,7 +43,7 @@ export class SlashSkill extends ActiveSkill {
       cardId: cardIds![0],
       toId: targets![0],
       triggeredBySkillName: this.name,
-      message: translationJsonPather(
+      translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} uses card {2} to {1}',
         room.CurrentPlayer.Name,
         room.getPlayerById(targets![0]).Name,
@@ -62,7 +62,7 @@ export class SlashSkill extends ActiveSkill {
       damage: 1,
       damageType: this.damageType,
       triggeredBySkillName: this.name,
-      message: translationJsonPather(
+      translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} hits {1} for {2} hp',
         room.getPlayerById(event.fromId).Name,
         room.getPlayerById(event.toId!).Name,

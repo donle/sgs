@@ -23,7 +23,7 @@ import { CardLoader } from 'core/game/package_loader/loader.cards';
 import { CharacterLoader } from 'core/game/package_loader/loader.characters';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { TriggerSkill } from 'core/skills/skill';
-import { translationJsonPather } from 'core/translations/translation_json_tool';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 import { Room, RoomId } from './room';
 
 export class ServerRoom extends Room<WorkPlace.Server> {
@@ -97,9 +97,15 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     content: EventPicker<I, WorkPlace.Server>,
   ) {
     this.socket.ClientIds.forEach(clientId => {
-      this.socket
-        .getSocketById(clientId)
-        .send(JSON.stringify({ type, content }));
+      if (content.messages && typeof content.messages === 'string') {
+        content.messages = [content.messages];
+      }
+      if (content.translationsMessage) {
+        content.messages
+          ? content.messages.push(content.translationsMessage.toString())
+          : (content.messages = [content.translationsMessage.toString()]);
+      }
+      this.socket.getSocketById(clientId).emit(type.toString(), content);
     });
 
     const stages: GameEventStage[] | undefined =
@@ -199,11 +205,17 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     const card = Sanguosha.getCardById(cardId);
     if (toArea === PlayerCardsArea.EquipArea) {
       // TODO: looks like the type of event object cannot be auto detected;
-      to.equip(card as EquipCard);
+      const lostCardId = to.equip(card as EquipCard);
+      lostCardId !== undefined && this.onLoseCard(to, lostCardId);
+
       this.broadcast<GameEventIdentifiers.CardUseEvent>(
         GameEventIdentifiers.CardUseEvent,
         {
-          message: translationJsonPather('{0} uses card {1}', to.Name, card.Name),
+          translationsMessage: TranslationPack.translationJsonPatcher(
+            '{0} uses card {1}',
+            to.Name,
+            card.Name,
+          ),
           toId: to.Id,
           cardId,
         },
@@ -213,13 +225,22 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       this.broadcast<GameEventIdentifiers.MoveCardEvent>(
         GameEventIdentifiers.MoveCardEvent,
         {
-          message: translationJsonPather('{0} obtains card {1}', to.Name, card.Name),
+          translationsMessage: TranslationPack.translationJsonPatcher(
+            '{0} obtains card {1}',
+            to.Name,
+            card.Name,
+          ),
           fromId: from && from.Id,
           toId: to.Id,
           area: toArea,
         },
       );
     }
+  }
+
+  public onLoseCard(player: Player, cardId: CardId) {
+    const card = Sanguosha.getCardById(cardId);
+    card.Skill.onLoseSkill(player);
   }
 
   public get RoomId() {

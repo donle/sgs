@@ -1,5 +1,5 @@
 import { GameCharacterExtensions } from 'core/game/game_props';
-import { HostConfigProps } from 'core/game/host.config';
+import { HostConfigProps } from 'core/shares/types/host_config';
 
 export const enum LobbySocketEvent {
   QueryRoomList = 'room-list',

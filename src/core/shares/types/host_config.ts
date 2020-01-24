@@ -15,12 +15,12 @@ export type HostConfigProps = {
 
 export const hostConfig: ServerConfigProps = {
   [DevMode.Dev]: {
-    port: 6000,
+    port: 2020,
     host: 'localhost',
     protocal: 'http',
   },
   [DevMode.Prod]: {
-    port: 6000,
+    port: 2020,
     host: '127.0.0.1',
     protocal: 'http',
   },

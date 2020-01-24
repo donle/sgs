@@ -4,6 +4,4 @@ export abstract class TrickCard extends Card {
   protected cardType = CardType.Trick;
 }
 
-export abstract class DelayedTrickCard extends TrickCard {
-
-}
+export abstract class DelayedTrickCard extends TrickCard {}

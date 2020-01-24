@@ -22,7 +22,9 @@ export class Sanguosha {
   }
 
   public static getCharacterById(characterId: CharacterId) {
-    const character = Sanguosha.characters.find(character => character.Id === characterId);
+    const character = Sanguosha.characters.find(
+      character => character.Id === characterId,
+    );
     if (!character) {
       throw new Error(`Unable to find character by id: ${characterId}`);
     }
@@ -31,7 +33,9 @@ export class Sanguosha {
   }
 
   public static getCardById<T extends Card>(cardId: CardId): T {
-    const card = Sanguosha.cards.find(card => card.Id === cardId) as T | undefined;
+    const card = Sanguosha.cards.find(card => card.Id === cardId) as
+      | T
+      | undefined;
     if (!card) {
       throw new Error(`Unable to find the card by id: ${cardId}`);
     }
@@ -39,7 +43,9 @@ export class Sanguosha {
   }
 
   public static getCardByName<T extends Card>(cardName: string): T {
-    const card = Sanguosha.cards.find(card => card.Name === cardName) as T | undefined;
+    const card = Sanguosha.cards.find(card => card.Name === cardName) as
+      | T
+      | undefined;
     if (!card) {
       throw new Error(`Unable to find the card by name: ${cardName}`);
     }
@@ -47,7 +53,9 @@ export class Sanguosha {
   }
 
   public static getSkillBySkillName<T extends Skill = Skill>(name: string): T {
-    const skill = Sanguosha.skills.find(skill => skill.Name === name) as T | undefined;
+    const skill = Sanguosha.skills.find(skill => skill.Name === name) as
+      | T
+      | undefined;
     if (!skill) {
       throw new Error(`Unable to find the skill by name: ${name}`);
     }
@@ -55,7 +63,9 @@ export class Sanguosha {
   }
 
   public static getCharacterByCharaterName(name: string) {
-    const character = Sanguosha.characters.find(character => character.Name === name);
+    const character = Sanguosha.characters.find(
+      character => character.Name === name,
+    );
     if (!character) {
       throw new Error(`Unable to find character by name: ${name}`);
     }
