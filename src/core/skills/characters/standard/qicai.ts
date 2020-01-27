@@ -1,8 +1,8 @@
 import { Card } from 'core/cards/card';
 import { TrickCard } from 'core/cards/trick_card';
-import { ActiveSkill, CardTransformSkill } from 'core/skills/skill';
+import { ActiveSkill, CardTransformSkill, SkillType } from 'core/skills/skill';
 
-export class QiCaiSkill extends CardTransformSkill<TrickCard, ActiveSkill> {
+export class QiCaiSkill extends CardTransformSkill<TrickCard, ActiveSkill, SkillType.Compulsory> {
   public canTransform(card: Card) {
     return card instanceof TrickCard;
   }

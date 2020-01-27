@@ -1,27 +1,50 @@
 import { Card, CardId } from 'core/cards/card';
 import { Character, CharacterId } from 'core/characters/character';
 import { Skill } from 'core/skills/skill';
+import { GameCardExtensions, GameCharacterExtensions } from './game_props';
+import { CardLoader } from './package_loader/loader.cards';
+import { CharacterLoader } from './package_loader/loader.characters';
+import { SkillLoader } from './package_loader/loader.skills';
 
 export class Sanguosha {
   private static skills: Skill[];
   private static cards: Card[];
   private static characters: Character[];
 
-  public static load(
-    cards: Card[],
-    characters: Character[],
-    invisibleSkills: Skill[] = [],
-  ) {
-    Sanguosha.cards = cards;
-    Sanguosha.characters = characters;
-
-    Sanguosha.skills = invisibleSkills;
-    for (const character of Sanguosha.characters) {
-      Sanguosha.skills = Sanguosha.skills.concat(character.Skills);
+  private static tryToThrowUninitializedError() {
+    if (
+      Sanguosha.skills === undefined ||
+      Sanguosha.cards === undefined ||
+      Sanguosha.characters === undefined
+    ) {
+      throw new Error('Uninitialized game engine');
     }
   }
 
+  public static initialize() {
+    Sanguosha.skills = SkillLoader.getInstance().getAllSkills();
+    Sanguosha.cards = CardLoader.getInstance().getAllCards();
+    Sanguosha.characters = CharacterLoader.getInstance().getAllCharacters();
+  }
+
+  public static loadCards(...cards: GameCardExtensions[]) {
+    return Sanguosha.cards.filter(card => cards.includes(card.Package));
+  }
+
+  public static loadCharacters(
+    disabledCharacters: CharacterId[] = [],
+    ...characters: GameCharacterExtensions[]
+  ) {
+    return Sanguosha.characters.filter(
+      character =>
+        characters.includes(character.Package) &&
+        !disabledCharacters.includes(character.Id),
+    );
+  }
+
   public static getCharacterById(characterId: CharacterId) {
+    this.tryToThrowUninitializedError();
+
     const character = Sanguosha.characters.find(
       character => character.Id === characterId,
     );
@@ -33,6 +56,8 @@ export class Sanguosha {
   }
 
   public static getCardById<T extends Card>(cardId: CardId): T {
+    this.tryToThrowUninitializedError();
+
     const card = Sanguosha.cards.find(card => card.Id === cardId) as
       | T
       | undefined;
@@ -43,7 +68,9 @@ export class Sanguosha {
   }
 
   public static getCardByName<T extends Card>(cardName: string): T {
-    const card = Sanguosha.cards.find(card => card.Name === cardName) as
+    this.tryToThrowUninitializedError();
+
+    const card = Sanguosha.cards.find(card => card.GeneralName === cardName) as
       | T
       | undefined;
     if (!card) {
@@ -53,6 +80,8 @@ export class Sanguosha {
   }
 
   public static getSkillBySkillName<T extends Skill = Skill>(name: string): T {
+    this.tryToThrowUninitializedError();
+
     const skill = Sanguosha.skills.find(skill => skill.Name === name) as
       | T
       | undefined;
@@ -63,6 +92,8 @@ export class Sanguosha {
   }
 
   public static getCharacterByCharaterName(name: string) {
+    this.tryToThrowUninitializedError();
+
     const character = Sanguosha.characters.find(
       character => character.Name === name,
     );

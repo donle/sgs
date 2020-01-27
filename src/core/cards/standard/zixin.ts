@@ -1,3 +1,4 @@
+import { GameCardExtensions } from 'core/game/game_props';
 import { SkillLoader } from 'core/game/package_loader/loader.skills';
 import { DistanceSkill } from 'core/skills/skill';
 import { CardSuit } from '../card';
@@ -11,6 +12,7 @@ export class ZiXin extends OffenseRideCard {
       suit,
       'zixin',
       'zixin_description',
+      GameCardExtensions.Standard,
       SkillLoader.getInstance().getSkillByName<DistanceSkill>('zixin'),
     );
   }

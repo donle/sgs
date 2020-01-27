@@ -1,4 +1,5 @@
 import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { ServerSocket } from 'core/network/socket.server';
 import { ServerRoom } from 'core/room/room.server';
 import {
@@ -30,6 +31,8 @@ class App {
   }
 
   public start() {
+    Sanguosha.initialize();
+
     this.lobbySocket.on('connection', socket => {
       socket
         .on(

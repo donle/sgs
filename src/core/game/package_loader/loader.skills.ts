@@ -26,6 +26,10 @@ export class SkillLoader {
     return this.instance;
   }
 
+  public getAllSkills() {
+    return this.skills;
+  }
+
   public getSkillByName<S extends Skill = Skill>(skillName: string): S {
     const skill = this.skills.find(skill => skill.Name === skillName);
     if (skill === undefined) {

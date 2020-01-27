@@ -1,4 +1,5 @@
 import { Sanguosha } from 'core/game/engine';
+import { GameCardExtensions } from 'core/game/game_props';
 import { CardTransformSkill, Skill } from 'core/skills/skill';
 
 export const enum CardSuit {
@@ -27,6 +28,8 @@ export abstract class Card {
   protected abstract description: string;
   protected abstract skill: Skill;
   protected abstract cardType: CardType;
+
+  protected abstract fromPackage: GameCardExtensions;
 
   public get Id() {
     return this.id;
@@ -74,6 +77,10 @@ export abstract class Card {
   public isRed() {
     return this.suit === CardSuit.Heart || this.suit === CardSuit.Diamond;
   }
+
+  public get Package() {
+    return this.fromPackage;
+  }
 }
 
 export const enum CardType {
@@ -96,6 +103,7 @@ export class VirtualCard<T extends Card> extends Card {
   protected description: string;
   protected skill: Skill;
   protected cardType: CardType;
+  protected fromPackage: GameCardExtensions;
 
   protected id = -1;
   protected cardNumber = 0;
@@ -109,6 +117,7 @@ export class VirtualCard<T extends Card> extends Card {
       throw new Error(`Unable to init virtual card: ${viewAsCardName}`);
     }
 
+    this.fromPackage = viewAsCard.Package;
     this.viewAs = viewAsCard;
     this.name = this.viewAs.Name;
     this.generalName = this.viewAs.GeneralName;

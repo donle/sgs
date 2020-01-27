@@ -1,5 +1,6 @@
 import { Card, CardId, CardSuit, CardType, EquipCardCategory } from './card';
 
+import { GameCardExtensions } from 'core/game/game_props';
 import { AllStage } from 'core/game/stage';
 import { DistanceSkill, Skill } from 'core/skills/skill';
 
@@ -75,6 +76,7 @@ export class DefenseRideCard extends RideCard {
     protected suit: CardSuit,
     protected name: string,
     protected description: string,
+    protected fromPackage: GameCardExtensions,
     protected distanceSkill: DistanceSkill,
     generalName?: string,
   ) {
@@ -93,6 +95,7 @@ export class OffenseRideCard extends RideCard {
     protected suit: CardSuit,
     protected name: string,
     protected description: string,
+    protected fromPackage: GameCardExtensions,
     protected distanceSkill: DistanceSkill,
     generalName?: string,
   ) {

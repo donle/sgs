@@ -1,3 +1,4 @@
+import { GameCharacterExtensions } from 'core/game/game_props';
 import { Skill } from 'core/skills/skill';
 
 export type CharacterId = number;
@@ -25,6 +26,7 @@ export abstract class Character {
     protected gender: CharacterGender,
     protected nationality: CharacterNationality,
     protected maxHp: number,
+    protected fromPackage: GameCharacterExtensions,
     protected skills: Skill[],
   ) {}
 
@@ -50,6 +52,10 @@ export abstract class Character {
 
   public get Name() {
     return this.name;
+  }
+
+  public get Package() {
+    return this.fromPackage;
   }
 
   public turnOver() {

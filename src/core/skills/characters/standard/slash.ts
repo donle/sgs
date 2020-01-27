@@ -1,7 +1,6 @@
 import { CardId } from 'core/cards/card';
 import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
 import { DamageType } from 'core/game/game_props';
-import { PlayerStage } from 'core/game/stage';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -9,7 +8,7 @@ import { ActiveSkill, SkillType } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 export class SlashSkill extends ActiveSkill {
-  private damageType: DamageType = DamageType.Normal;
+  protected damageType: DamageType = DamageType.Normal;
 
   constructor() {
     super('slash', 'slash_skill_description', SkillType.Common);
@@ -61,16 +60,26 @@ export class SlashSkill extends ActiveSkill {
       toId: event.toId,
       damage: 1,
       damageType: this.damageType,
+      cardIds: [event.cardId],
       triggeredBySkillName: this.name,
       translationsMessage: TranslationPack.translationJsonPatcher(
-        '{0} hits {1} for {2} hp',
+        '{0} hits {1} for {2} {3} hp',
         room.getPlayerById(event.fromId).Name,
         room.getPlayerById(event.toId!).Name,
         // looks like the number cannot be changed once it has been set
         '1',
+        this.damageType,
       ),
     };
 
     room.broadcast(GameEventIdentifiers.DamageEvent, eventContent);
   }
+}
+
+export class ThunderSlashSkill extends SlashSkill {
+  protected damageType = DamageType.Thunder;
+}
+
+export class FireSlashSkill extends SlashSkill {
+  protected damageType = DamageType.Fire;
 }

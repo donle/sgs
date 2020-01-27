@@ -137,9 +137,10 @@ export abstract class ActiveSkill<
 }
 
 export abstract class CardTransformSkill<
-  T extends Card,
-  S extends Skill
-> extends Skill<SkillType.Compulsory> {
+  C extends Card,
+  S extends Skill,
+  T extends SkillType
+> extends Skill<T> {
   public canUse() {
     return false;
   }
@@ -153,7 +154,7 @@ export abstract class CardTransformSkill<
 
   protected abstract override(skill: S): void;
   public abstract canTransform(card: Card): boolean;
-  public clone(card: T): VirtualCard<T> {
+  public clone(card: C): VirtualCard<C> {
     const cloneSkill = Object.assign<S, S>(
       Object.create(Object.getPrototypeOf(card.Skill)),
       card.Skill as S,

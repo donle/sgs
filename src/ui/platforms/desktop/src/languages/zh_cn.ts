@@ -8,7 +8,7 @@ export const translations = {
   '{0} activates skill {1}': '{0} 发动了技能【{1}】',
   sunquan: '孙权',
   zhiheng: '制衡',
-  '{0} hits {1} for {2} hp': '{0} 对 {1} 造成了 {2} 点伤害',
+  '{0} hits {1} for {2} {3} hp': '{0} 对 {1} 造成了 {2} 点【{3}】伤害',
   '{0} droppes cards {1}': '{0} 弃置了 {1}',
   '{0} cards are dropped': '{0} 进入了弃牌堆',
   '{0} uses card {1}': '{0} 使用了一张【{1}】',
@@ -21,4 +21,7 @@ export const translations = {
   '{0} asks for a peach': '{0} 处于濒死阶段，是否对其使用一个【桃】？',
   '{0} recovers {1} hp': '{0} 恢复了 {1} 点体力',
   joint_symbol: '，',
+  normal_propery: '普通',
+  thunder_propery: '雷属性',
+  fire_propery: '火属性',
 };

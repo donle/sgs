@@ -28,9 +28,9 @@ export type GameInfo = {
 };
 
 export const enum DamageType {
-  Normal,
-  Fire,
-  Thunder,
+  Normal = 'normal_property',
+  Fire = 'fire_property',
+  Thunder = 'thunder_property',
 }
 
 export type FinalPlayersData = {
