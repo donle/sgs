@@ -1,6 +1,7 @@
-import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
+import { GameInfo } from 'core/game/game_props';
 import { ServerSocket } from 'core/network/socket.server';
+import { GameProcessor } from 'core/room/game_checker';
 import { ServerRoom } from 'core/room/room.server';
 import {
   DevMode,
@@ -35,26 +36,19 @@ class App {
 
     this.lobbySocket.on('connection', socket => {
       socket
-        .on(
-          GameEventIdentifiers.GameCreatedEvent.toString(),
-          this.onGameCreated,
-        )
-        .on(LobbySocketEvent.SocketConfig, this.onQuerySocketConfig)
+        .on(LobbySocketEvent.GameCreated, this.onGameCreated)
+        .on(LobbySocketEvent.SocketConfig, this.onQuerySocketConfig(socket))
         .on(LobbySocketEvent.QueryRoomList, this.onQueryRoomsInfo);
     });
   }
 
-  private readonly onGameCreated = (
-    content: EventPicker<
-      GameEventIdentifiers.GameCreatedEvent,
-      WorkPlace.Client
-    >,
-  ) => {
+  private readonly onGameCreated = (content: GameInfo) => {
     const roomSocket = new ServerSocket(this.config, this.rooms.length);
     const room = new ServerRoom(
       this.rooms.length,
-      content.gameInfo,
+      content,
       roomSocket,
+      new GameProcessor(),
     );
     this.rooms.push(room);
     this.roomsPathList.push(roomSocket.RoomPath);

@@ -1,9 +1,8 @@
-import { Card, CardId } from 'core/cards/card';
+import { Card } from 'core/cards/card';
 import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
 import {
   AllStage,
   GameEventStage,
-  GameStages,
   PlayerStage,
 } from 'core/game/stage';
 import { ServerSocket } from 'core/network/socket.server';
@@ -16,6 +15,7 @@ import {
 } from 'core/player/player_props';
 
 import { EquipCard } from 'core/cards/equip_card';
+import { CardId } from 'core/cards/libs/card_props';
 import { Character } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { GameInfo } from 'core/game/game_props';
@@ -24,6 +24,7 @@ import { CharacterLoader } from 'core/game/package_loader/loader.characters';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { GameProcessor } from './game_checker';
 import { Room, RoomId } from './room';
 
 export class ServerRoom extends Room<WorkPlace.Server> {
@@ -43,6 +44,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     protected roomId: RoomId,
     protected gameInfo: GameInfo,
     protected socket: ServerSocket,
+    protected gameProcessor: GameProcessor,
     protected players: Player[] = [],
   ) {
     super();
@@ -108,31 +110,32 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       this.socket.getSocketById(clientId).emit(type.toString(), content);
     });
 
-    const stages: GameEventStage[] | undefined =
-      GameStages[type as GameEventIdentifiers];
-    if (!stages) {
-      throw new Error(`Unable to get game stage by identifier ${type}`);
-    }
+    // const stages: GameEventStage[] | undefined =
+    //   GameStages[type as GameEventIdentifiers];
+    // if (!stages) {
+    //   throw new Error(`Unable to get game stage by identifier ${type}`);
+    // }
 
-    for (const stage of stages) {
-      this.currentGameEventStage = stage;
-      if (this.currentGameEventStage === 1) {
-        const skill =
-          content.triggeredBySkillName &&
-          Sanguosha.getSkillBySkillName(content.triggeredBySkillName);
-        if (skill) {
-          const { invoke } = await this.socket.waitForResponse<
-            EventPicker<
-              GameEventIdentifiers.AskForInvokeEvent,
-              WorkPlace.Client
-            >
-          >('@skill_response');
-          invoke && skill.onEffect(this, content);
-        }
-      }
+    //TODO: how to trigger skills?
+    // for (const stage of stages) {
+    //   this.currentGameEventStage = stage;
+    //   if (this.currentGameEventStage === 1) {
+    //     const skill =
+    //       content.triggeredBySkillName &&
+    //       Sanguosha.getSkillBySkillName(content.triggeredBySkillName);
+    //     if (skill) {
+    //       const { invoke } = await this.socket.waitForResponse<
+    //         EventPicker<
+    //           GameEventIdentifiers.AskForInvokeEvent,
+    //           WorkPlace.Client
+    //         >
+    //       >('@skill_response');
+    //       invoke && skill.onEffect(this, content);
+    //     }
+    //   }
 
-      this.trigger(stage, content);
-    }
+    //   this.trigger(stage, content);
+    // }
   }
 
   public async trigger(
@@ -153,25 +156,26 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         continue;
       }
 
-      const skills = this.players[i].getSkills<TriggerSkill>('trigger');
-      for (const skill of skills) {
-        if (
-          skill.isTriggerable(stage) &&
-          skill.canUse(this, this.players[i], content)
-        ) {
-          if (skill.isAutoTrigger()) {
-            skill.onTrigger(this, this.players[i], content);
-          } else {
-            const { invoke } = await this.socket.waitForResponse<
-              EventPicker<
-                GameEventIdentifiers.AskForInvokeEvent,
-                WorkPlace.Client
-              >
-            >('@skill_response');
-            invoke && skill.onTrigger(this, this.players[i], content);
-          }
-        }
-      }
+      // TODO: how to trigger skills?
+      // const skills = this.players[i].getSkills<TriggerSkill>('trigger');
+      // for (const skill of skills) {
+      //   if (
+      //     skill.isTriggerable(stage) &&
+      //     skill.canUse(this, this.players[i], content)
+      //   ) {
+      //     if (skill.isAutoTrigger()) {
+      //       skill.onTrigger(this, this.players[i], content);
+      //     } else {
+      //       const { invoke } = await this.socket.waitForResponse<
+      //         EventPicker<
+      //           GameEventIdentifiers.AskForInvokeEvent,
+      //           WorkPlace.Client
+      //         >
+      //       >('@skill_response');
+      //       invoke && skill.onTrigger(this, this.players[i], content);
+      //     }
+      //   }
+      // }
     }
   }
 
@@ -196,6 +200,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     cardId: CardId,
     from: Player | undefined,
     to: Player,
+    fromArea: PlayerCardsArea,
     toArea: PlayerCardsArea,
   ) {
     if (from) {
@@ -232,7 +237,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           ),
           fromId: from && from.Id,
           toId: to.Id,
-          area: toArea,
+          fromArea,
+          toArea,
         },
       );
     }

@@ -1,5 +1,5 @@
-import { CardId } from 'core/cards/card';
 import { EquipCard, RideCard, WeaponCard } from 'core/cards/equip_card';
+import { CardId } from 'core/cards/libs/card_props';
 import {
   Character,
   CharacterId,

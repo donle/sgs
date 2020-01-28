@@ -1,5 +1,7 @@
-import { CardId } from 'core/cards/card';
-import { DamageType, GameInfo } from 'core/game/game_props';
+import { CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
+import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
+import { CharacterId } from 'core/characters/character';
+import { DamageType } from 'core/game/game_props';
 import {
   PlayerCardsArea,
   PlayerId,
@@ -22,16 +24,40 @@ export interface ServerEvent extends EventUtilities {
     fromId: PlayerId;
     cardIds: CardId[];
   };
-  [GameEventIdentifiers.DrawCardEvent]: {};
-  [GameEventIdentifiers.ObtainCardEvent]: {};
+  [GameEventIdentifiers.DrawCardEvent]: {
+    playerId: PlayerId;
+    cardIds: CardId[];
+  };
+  [GameEventIdentifiers.ObtainCardEvent]: {
+    fromId?: PlayerId;
+    toId: PlayerId;
+    cardIds: CardId[];
+  };
   [GameEventIdentifiers.MoveCardEvent]: {
     fromId?: PlayerId;
     toId: PlayerId;
-    area: PlayerCardsArea;
+    fromArea: PlayerCardsArea;
+    toArea: PlayerCardsArea;
+  };
+  [GameEventIdentifiers.CardDisplayEvent]: {
+    displayCards: CardId[];
+    fromId?: PlayerId;
+  };
+
+  [GameEventIdentifiers.AimEvent]: {
+    bySkill?: string;
+    byCardId?: CardId;
+    toIds: PlayerId[];
+  };
+  [GameEventIdentifiers.AimmedEvent]: {
+    bySkill?: string;
+    byCardId?: CardId;
+    toOthers: PlayerId[];
   };
 
   [GameEventIdentifiers.SkillUseEvent]: {
     fromId: PlayerId;
+    skillName: string;
     cardIds?: CardId[];
     toIds?: PlayerId[];
   };
@@ -42,7 +68,11 @@ export interface ServerEvent extends EventUtilities {
     damageType: DamageType;
     toId: PlayerId;
   };
-  [GameEventIdentifiers.RecoverEvent]: never;
+  [GameEventIdentifiers.RecoverEvent]: {
+    recoverBy: PlayerId;
+    cardIds?: CardId[];
+    recoveredHp: number;
+  };
   [GameEventIdentifiers.JudgeEvent]: {
     toId: PlayerId;
     cardId: CardId;
@@ -59,9 +89,6 @@ export interface ServerEvent extends EventUtilities {
     playerId: PlayerId;
   };
 
-  [GameEventIdentifiers.GameCreatedEvent]: {
-    gameInfo: GameInfo;
-  };
   [GameEventIdentifiers.GameStartEvent]: {
     currentPlayer: PlayerInfo;
     otherPlayers: PlayerInfo[];
@@ -70,21 +97,53 @@ export interface ServerEvent extends EventUtilities {
     playersInfo: PlayerInfo[];
   };
 
-  [GameEventIdentifiers.PlayerEnterEvent]: never;
+  [GameEventIdentifiers.PlayerEnterEvent]: {
+    playerInfo: PlayerInfo;
+  };
   [GameEventIdentifiers.PlayerLeaveEvent]: {
     playerId: PlayerId;
   };
-  [GameEventIdentifiers.PlayerDiedEvent]: {};
+  [GameEventIdentifiers.PlayerDiedEvent]: {
+    playerInfo: PlayerInfo;
+  };
 
-  [GameEventIdentifiers.AskForPeachEvent]: {};
-  [GameEventIdentifiers.AskForWuXieKeJiEvent]: {};
-  [GameEventIdentifiers.AskForCardResponseEvent]: {};
+  [GameEventIdentifiers.AskForPeachEvent]: {
+    fromId: PlayerId;
+    amount: number;
+  };
+  [GameEventIdentifiers.AskForWuXieKeJiEvent]: {
+    fromId?: PlayerId;
+    cardId?: CardId;
+    cardName: string;
+  };
+  [GameEventIdentifiers.AskForCardResponseEvent]: {
+    macther: CardMatcherSocketPassenger;
+    byCardId?: CardId;
+    cardUserId?: PlayerId;
+  };
   [GameEventIdentifiers.AskForChoosingCardEvent]: {};
-  [GameEventIdentifiers.AskForChoosingCardFromPlayerEvent]: {};
+  [GameEventIdentifiers.AskForChoosingCardFromPlayerEvent]: {
+    chooseFromId?: PlayerId;
+    options: CardChoosingOptions;
+  };
   [GameEventIdentifiers.AskForInvokeEvent]: {
-    eventName: string;
+    invokeSkillNames: string[];
     to: PlayerId;
   };
-  [GameEventIdentifiers.AskForCardDisplayEvent]: {};
-  [GameEventIdentifiers.AskForCardDropEvent]: {};
+  [GameEventIdentifiers.AskForCardDisplayEvent]: {
+    cardMatcher?: CardMatcherSocketPassenger;
+    cardAmount?: number;
+  };
+  [GameEventIdentifiers.AskForCardDropEvent]: {
+    fromArea: [PlayerCardsArea];
+    cardAmount: number;
+  };
+  [GameEventIdentifiers.AskForChooseCharacterEvent]: {
+    characterIds: CharacterId[];
+  };
+  [GameEventIdentifiers.AskForPlaceCardsInDileEvent]: {
+    drawPendingCards?: CardId[];
+    placeCardsOnTop?: CardId[];
+    placeCardsAtBottom?: CardId[];
+  };
 }

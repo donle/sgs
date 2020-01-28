@@ -1,8 +1,9 @@
-import { Card, CardId, CardSuit, CardType, EquipCardCategory } from './card';
+import { Card, CardType, EquipCardCategory } from './card';
 
 import { GameCardExtensions } from 'core/game/game_props';
 import { AllStage } from 'core/game/stage';
 import { DistanceSkill, Skill } from 'core/skills/skill';
+import { CardId, CardSuit } from './libs/card_props';
 
 export abstract class EquipCard extends Card {
   protected cardType = CardType.Equip;

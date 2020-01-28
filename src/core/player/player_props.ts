@@ -1,4 +1,4 @@
-import { CardId } from 'core/cards/card';
+import { CardId } from 'core/cards/libs/card_props';
 import { CharacterId } from 'core/characters/character';
 
 export type PlayerId = string;

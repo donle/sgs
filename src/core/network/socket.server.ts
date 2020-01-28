@@ -12,16 +12,6 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
   private clientIds: string[] = [];
   protected roomPath: string;
 
-  private asyncPendingEventName: string | undefined;
-  private asyncPendingEventResolver: Function;
-  private asyncPendingEventRejector: Function;
-  private asyncPendingEventPromiseListener = new Promise<any>(
-    (resolve, reject) => {
-      this.asyncPendingEventResolver = resolve;
-      this.asyncPendingEventRejector = reject;
-    },
-  );
-
   constructor(config: HostConfigProps, roomId: RoomId) {
     super(WorkPlace.Server, config);
     this.roomPath = `/room-${roomId}`;
@@ -112,12 +102,9 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     socket.emit(type.toString(), content);
   }
 
-  public async waitForResponse<T extends object = {}>(eventName: string) {
-    this.asyncPendingEventName = eventName;
-    const result = (await this.asyncPendingEventPromiseListener) as T;
-    this.asyncPendingEventName = undefined;
-
-    return result;
+  public async waitForResponse(): Promise<void> {
+    //TODO: what should be awaited?
+    return Promise.resolve();
   }
 
   public get ClientIds() {
@@ -129,9 +116,6 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     ev: EventPicker<GameEventIdentifiers.UserMessageEvent, WorkPlace.Client>,
   ): void {}
 
-  public gameCreated(
-    ev: EventPicker<GameEventIdentifiers.GameCreatedEvent, WorkPlace.Client>,
-  ): void {}
   public gameOver(
     ev: EventPicker<GameEventIdentifiers.GameOverEvent, WorkPlace.Client>,
   ): void {}
@@ -197,10 +181,5 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
   ): void {}
   public invokeSkill(
     ev: EventPicker<GameEventIdentifiers.AskForInvokeEvent, WorkPlace.Client>,
-  ): void {
-    const { eventName } = ev;
-    eventName === this.asyncPendingEventName
-      ? this.asyncPendingEventResolver(ev)
-      : this.asyncPendingEventRejector('Mis-match invoke event name');
-  }
+  ): void {}
 }

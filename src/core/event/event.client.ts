@@ -1,4 +1,4 @@
-import { CardId } from 'core/cards/card';
+import { CardId } from 'core/cards/libs/card_props';
 import { GameInfo } from 'core/game/game_props';
 import { PlayerId, PlayerInfo } from 'core/player/player_props';
 import { EventUtilities, GameEventIdentifiers } from './event';
@@ -48,9 +48,6 @@ export interface ClientEvent extends EventUtilities {
     playerId: PlayerId;
   };
 
-  [GameEventIdentifiers.GameCreatedEvent]: {
-    gameInfo: GameInfo;
-  };
   [GameEventIdentifiers.GameStartEvent]: {
     currentPlayer: PlayerInfo;
     otherPlayers: PlayerInfo[];
@@ -74,11 +71,9 @@ export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.AskForCardResponseEvent]: {};
   [GameEventIdentifiers.AskForChoosingCardEvent]: {};
   [GameEventIdentifiers.AskForChoosingCardFromPlayerEvent]: {};
-  [GameEventIdentifiers.AskForInvokeEvent]: {
-    eventName: string;
-    invoke: boolean;
-  };
   [GameEventIdentifiers.AskForCardUseEvent]: {};
   [GameEventIdentifiers.AskForCardDisplayEvent]: {};
   [GameEventIdentifiers.AskForCardDropEvent]: {};
+  [GameEventIdentifiers.AskForChooseCharacterEvent]: {};
+  [GameEventIdentifiers.AskForPlaceCardsInDileEvent]: {};
 }

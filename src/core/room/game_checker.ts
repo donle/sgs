@@ -1,3 +1,5 @@
-export class GameChecker {
-  private constructor() {}
+export class GameProcessor {
+  constructor() {
+
+  }
 }

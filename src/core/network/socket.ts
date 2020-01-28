@@ -39,9 +39,6 @@ export abstract class Socket<T extends WorkPlace> {
   ): void;
 
   public abstract get ClientIds(): string[];
-  public abstract async waitForResponse<T extends object = {}>(
-    eventName: string,
-  ): Promise<T>;
 
   public get RoomPath() {
     return this.roomPath;
@@ -136,16 +133,6 @@ export abstract class Socket<T extends WorkPlace> {
           ...params,
         );
         break;
-
-      case GameEventIdentifiers.GameCreatedEvent:
-        this.gameCreated(
-          content as EventPicker<
-            GameEventIdentifiers.GameCreatedEvent,
-            WorkPlace
-          >,
-          ...params,
-        );
-        break;
       case GameEventIdentifiers.GameStartEvent:
         this.gameStart(
           content as EventPicker<
@@ -203,11 +190,6 @@ export abstract class Socket<T extends WorkPlace> {
 
   public abstract userMessage(
     ev: EventPicker<GameEventIdentifiers.UserMessageEvent, WorkPlace>,
-    ...params: any[]
-  ): void;
-
-  public abstract gameCreated(
-    ev: EventPicker<GameEventIdentifiers.GameCreatedEvent, WorkPlace>,
     ...params: any[]
   ): void;
   public abstract gameOver(

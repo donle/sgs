@@ -65,7 +65,7 @@ export const enum PlayerStageListEnum {
 export const enum StagePriority {
   Low,
   Medium,
-  Hight,
+  High,
 }
 
 export const enum PlayerStage {
@@ -77,7 +77,7 @@ export const enum PlayerStage {
   FinishStage,
 }
 
-export const PlayerStages: {
+const playerStagesList: {
   [K in PlayerStage]: PlayerStageListEnum[];
 } = {
   [PlayerStage.PrepareStage]: [
@@ -148,7 +148,7 @@ export const PlayerStages: {
   ],
 };
 
-export const GameStages: {
+const gameEventStageList: {
   [K in GameEventIdentifiers]?: GameEventStage[];
 } = {
   [GameEventIdentifiers.CardUseEvent]: [
@@ -181,15 +181,15 @@ export const GameStages: {
     JudgeEffectStage.JudgeEffect,
     JudgeEffectStage.AfterJudgeEffectStage,
   ],
-  [GameEventIdentifiers.PlayerDiedEvent]: [
-    PlayerDiedStage.BeforePlayerDied,
-    PlayerDiedStage.PlayerDied,
-    PlayerDiedStage.AfterPlayerDied,
-  ],
   [GameEventIdentifiers.PlayerDyingEvent]: [
     PlayerDyingStage.BeforePlayerDying,
     PlayerDyingStage.PlayerDying,
     PlayerDyingStage.AfterPlayerDying,
+  ],
+  [GameEventIdentifiers.PlayerDiedEvent]: [
+    PlayerDiedStage.BeforePlayerDied,
+    PlayerDiedStage.PlayerDied,
+    PlayerDiedStage.AfterPlayerDied,
   ],
   [GameEventIdentifiers.SkillUseEvent]: [
     SkillEffectStage.BeforeSkillEffect,
@@ -311,3 +311,132 @@ export type GameEventStage =
   | SkillEffectStage;
 
 export type AllStage = PlayerStageListEnum | GameEventStage;
+
+export class StageProcessor {
+  private currentPlayerStageInSpecific: PlayerStageListEnum | undefined;
+  private currentPlayerStage: PlayerStage | undefined;
+  private stagePointer: number;
+  private readonly playerSpecificStagesList: PlayerStageListEnum[];
+
+  private gameEventStageList: GameEventStage[] | undefined;
+  private currentGameEventStage: GameEventStage | undefined;
+  private processingGameEvent = false;
+
+  constructor() {
+    for (let i = 0; i < PlayerStageListEnum.EndFinishStageEnd; i++) {
+      this.playerSpecificStagesList.push(i);
+    }
+
+    this.stagePointer = 0;
+    this.currentPlayerStageInSpecific = this.playerSpecificStagesList[
+      this.stagePointer
+    ];
+    this.currentPlayerStage = PlayerStage.PrepareStage;
+  }
+
+  public insertGameEvent(identifier: GameEventIdentifiers) {
+    if (!this.gameEventStageList) {
+      this.processGameEvent(identifier);
+    } else {
+      const stageList = gameEventStageList[identifier];
+      if (stageList === undefined) {
+        throw new Error(`Unable to get game event of ${identifier}`);
+      }
+
+      this.gameEventStageList = [...stageList, ...this.gameEventStageList];
+      this.currentGameEventStage = this.gameEventStageList.shift();
+    }
+  }
+
+  public processGameEvent(identifier: GameEventIdentifiers) {
+    const stageList = gameEventStageList[identifier];
+    if (stageList === undefined) {
+      throw new Error(`Unable to get game event of ${identifier}`);
+    }
+
+    this.gameEventStageList = stageList.slice();
+    this.currentGameEventStage = this.gameEventStageList.shift();
+    this.processingGameEvent = true;
+  }
+
+  public nextGameEvent() {
+    if (!this.gameEventStageList || !this.processingGameEvent) {
+      return;
+    }
+
+    this.currentGameEventStage = this.gameEventStageList.shift();
+    if (this.currentGameEventStage === undefined) {
+      this.processingGameEvent = false;
+      return;
+    }
+
+    return this;
+  }
+
+  public next() {
+    this.stagePointer =
+      (this.stagePointer + 1) % this.playerSpecificStagesList.length;
+    this.currentPlayerStageInSpecific = this.playerSpecificStagesList[
+      this.stagePointer
+    ];
+    this.currentPlayerStage = this.getInsidePlayerStage(
+      this.currentPlayerStageInSpecific,
+    );
+
+    return this;
+  }
+
+  public get CurrentGameEventStage() {
+    return this.currentGameEventStage;
+  }
+
+  public get CurrentPlayerStageInSpecific() {
+    return this.currentPlayerStageInSpecific;
+  }
+
+  public get CurrentPlayerStage() {
+    return this.currentPlayerStage;
+  }
+
+  public isCurrentGameEventDone() {
+    return !this.processingGameEvent;
+  }
+
+  public isProcessingGameEvent() {
+    return this.processingGameEvent;
+  }
+
+  public createPlayerStage(stage?: PlayerStage) {
+    if (stage !== undefined) {
+      return playerStagesList[stage].slice();
+    } else {
+      const stages = [
+        PlayerStage.PrepareStage,
+        PlayerStage.JudgeStage,
+        PlayerStage.DrawCardStage,
+        PlayerStage.PlayCardStage,
+        PlayerStage.DropCardStage,
+        PlayerStage.FinishStage,
+      ];
+
+      let createdStages: PlayerStageListEnum[] = [];
+      for (const stage of stages) {
+        createdStages = [...createdStages, ...playerStagesList[stage].slice()];
+      }
+
+      return createdStages;
+    }
+  }
+
+  public getInsidePlayerStage(specificStage: PlayerStageListEnum): PlayerStage {
+    for (const [stage, stageList] of (Object.entries(
+      playerStagesList,
+    ) as unknown) as [PlayerStage, PlayerStageListEnum[]][]) {
+      if (stageList.includes(specificStage)) {
+        return stage;
+      }
+    }
+
+    throw new Error(`Unknown player stage: ${specificStage}`);
+  }
+}

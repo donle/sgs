@@ -3,6 +3,7 @@ import { HostConfigProps } from 'core/shares/types/host_config';
 
 export const enum LobbySocketEvent {
   QueryRoomList = 'room-list',
+  GameCreated = 'create-room',
   SocketConfig = 'config',
 }
 

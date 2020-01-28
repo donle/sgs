@@ -1,23 +1,7 @@
 import { Sanguosha } from 'core/game/engine';
 import { GameCardExtensions } from 'core/game/game_props';
 import { CardTransformSkill, Skill } from 'core/skills/skill';
-
-export const enum CardSuit {
-  NoSuit,
-  Spade,
-  Heart,
-  Club,
-  Diamond,
-}
-
-export type CardId = number;
-export type CardProps = {
-  number: number;
-  suit: CardSuit;
-  name: string;
-  description: string;
-  skills: Skill[];
-};
+import { CardId, CardSuit } from './libs/card_props';
 
 export abstract class Card {
   protected abstract id: CardId;

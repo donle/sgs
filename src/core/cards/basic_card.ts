@@ -1,6 +1,7 @@
 import { GameCardExtensions } from 'core/game/game_props';
 import { Skill } from 'core/skills/skill';
-import { Card, CardId, CardSuit, CardType } from './card';
+import { Card, CardType } from './card';
+import { CardId, CardSuit } from './libs/card_props';
 
 export abstract class BasicCard extends Card {
   protected cardType = CardType.Basic;

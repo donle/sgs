@@ -9,9 +9,13 @@ export const enum GameEventIdentifiers {
   CardResponseEvent,
   CardUseEvent,
   CardEffectEvent,
+  CardDisplayEvent,
   DrawCardEvent,
   ObtainCardEvent,
   MoveCardEvent,
+
+  AimEvent,
+  AimmedEvent,
 
   SkillUseEvent,
   PinDianEvent,
@@ -19,7 +23,6 @@ export const enum GameEventIdentifiers {
   RecoverEvent,
   JudgeEvent,
 
-  GameCreatedEvent,
   GameStartEvent,
   GameOverEvent,
   PlayerEnterEvent,

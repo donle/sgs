@@ -21,7 +21,7 @@ export abstract class ClientSocket extends Socket<WorkPlace.Client> {
     gameEvent.forEach(event => {
       this.socketIO.on(event, (content: unknown) => {
         const type = parseInt(event, 10) as GameEventIdentifiers;
-        this.on(type, content as EventPicker<typeof type, WorkPlace.Client>);
+        this.on(type, content as EventPicker<typeof type, WorkPlace.Server>);
       });
     });
   }
