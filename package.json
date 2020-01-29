@@ -12,6 +12,7 @@
   },
   "scripts": {
     "prettier": "prettier --write \"./**/*.{ts,css,json}\"",
-    "build": "rm -rf build && tsc"
+    "build": "rm -rf build && tsc",
+    "patch": "ts-node ./src/pre_release.ts"
   }
 }

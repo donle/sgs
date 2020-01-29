@@ -1,10 +1,12 @@
-import { Card, CardId } from 'core/cards/card';
+import { Card } from 'core/cards/card';
+import { CardId } from 'core/cards/libs/card_props';
 import { Character, CharacterId } from 'core/characters/character';
 import { Skill } from 'core/skills/skill';
 import { GameCardExtensions, GameCharacterExtensions } from './game_props';
 import { CardLoader } from './package_loader/loader.cards';
 import { CharacterLoader } from './package_loader/loader.characters';
 import { SkillLoader } from './package_loader/loader.skills';
+import { coreVersion } from './version';
 
 export class Sanguosha {
   private static skills: Skill[];
@@ -102,5 +104,9 @@ export class Sanguosha {
     }
 
     return character;
+  }
+
+  public static get Version() {
+    return coreVersion;
   }
 }

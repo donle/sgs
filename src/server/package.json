@@ -15,6 +15,7 @@
     "tsconfig-paths": "^3.9.0"
   },
   "scripts": {
+    "patch": "ts-node ../pre_release.ts",
     "dev": "NODE_PATH=../ ts-node -P ./tsconfig.server.json ./main.ts",
     "build": "NODE_PATH=../ tsc -p ./tsconfig.server.json",
     "start": "tsc && yarn build && NODE_PATH=./build DEV_MODE=prod node ./build/server/main.js"

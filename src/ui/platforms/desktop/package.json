@@ -71,6 +71,7 @@
     "workbox-webpack-plugin": "4.3.1"
   },
   "scripts": {
+    "patch": "ts-node -P ../../../../tsconfig.json ../../../pre_release.ts",
     "sync:mac": "rm -rf ./core ./build && cp -R ../../../core ./src",
     "sync:win": "rimraf ./src/core ./build && xcopy ..\\..\\..\\core .\\src\\core /s /i",
     "start:mac": "yarn sync:mac && NODE_PATH=./src node scripts/start.js",

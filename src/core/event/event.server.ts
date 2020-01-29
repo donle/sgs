@@ -121,7 +121,18 @@ export interface ServerEvent extends EventUtilities {
     byCardId?: CardId;
     cardUserId?: PlayerId;
   };
-  [GameEventIdentifiers.AskForChoosingCardEvent]: {};
+
+  [GameEventIdentifiers.AskForCardUseEvent]: {
+    askedFrom: PlayerId;
+    carMatcher: CardMatcherSocketPassenger;
+  };
+  [GameEventIdentifiers.AskForPinDianCardEvent]: {
+    askedFrom: PlayerId;
+    otherTargets?: PlayerId[];
+  };
+  [GameEventIdentifiers.AskForChoosingCardEvent]: {
+    cardIds: CardId[];
+  };
   [GameEventIdentifiers.AskForChoosingCardFromPlayerEvent]: {
     chooseFromId?: PlayerId;
     options: CardChoosingOptions;
@@ -143,7 +154,9 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.AskForPlaceCardsInDileEvent]: {
     drawPendingCards?: CardId[];
+    drawCards?: CardId[];
     placeCardsOnTop?: CardId[];
     placeCardsAtBottom?: CardId[];
+    putCards?: CardId[];
   };
 }
