@@ -1,4 +1,9 @@
-import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
+import {
+  createGameEventIdentifiersStringList,
+  EventPicker,
+  GameEventIdentifiers,
+  WorkPlace,
+} from 'core/event/event';
 import { Socket } from 'core/network/socket';
 import { PlayerId, PlayerInfo } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
@@ -11,6 +16,12 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
   private room?: ServerRoom;
   private clientIds: string[] = [];
   protected roomPath: string;
+
+  private asyncEventList: GameEventIdentifiers[] = [];
+  private asyncResponseResolver: <T>(res: T) => void;
+  private receivedAsyncResponse: Promise<any> = new Promise(resolve => {
+    this.asyncResponseResolver = resolve;
+  });
 
   constructor(config: HostConfigProps, roomId: RoomId) {
     super(WorkPlace.Server, config);
@@ -25,10 +36,14 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       this.clientIds = clients;
     });
     this.socket.of(this.roomPath).on('connection', socket => {
-      const gameEvent: string[] = [];
+      const gameEvent: string[] = createGameEventIdentifiersStringList();
       gameEvent.forEach(event => {
         socket.on(event, (content: unknown) => {
           const type = parseInt(event, 10) as GameEventIdentifiers;
+
+          if (this.asyncEventList.includes(type)) {
+            this.asyncResponseResolver(content);
+          }
 
           const params: any[] = [];
           if (type === GameEventIdentifiers.PlayerEnterEvent) {
@@ -102,13 +117,16 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     socket.emit(type.toString(), content);
   }
 
-  public async waitForResponse(): Promise<void> {
-    //TODO: what should be awaited?
-    return Promise.resolve();
-  }
-
   public get ClientIds() {
     return this.clientIds;
+  }
+
+  public async waitForResponse<T>(identifier: GameEventIdentifiers) {
+    if (!this.asyncEventList.includes(identifier)) {
+      this.asyncEventList.push(identifier);
+    }
+
+    return await this.receivedAsyncResponse as T;
   }
 
   //TODO: socket event handlers
@@ -181,5 +199,105 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
   ): void {}
   public invokeSkill(
     ev: EventPicker<GameEventIdentifiers.AskForInvokeEvent, WorkPlace.Client>,
+  ): void {}
+
+  public onCardEffect(
+    ev: EventPicker<GameEventIdentifiers.CardEffectEvent, WorkPlace.Client>,
+    ...params
+  ): void {}
+  public displayCard(
+    ev: EventPicker<GameEventIdentifiers.CardDisplayEvent, WorkPlace.Client>,
+    ...params
+  ): void {}
+  public onAim(
+    ev: EventPicker<GameEventIdentifiers.AimEvent, WorkPlace.Client>,
+    ...params
+  ): void {}
+  public onAimmed(
+    ev: EventPicker<GameEventIdentifiers.AimmedEvent, WorkPlace.Client>,
+    ...params
+  ): void {}
+  public onRecover(
+    ev: EventPicker<GameEventIdentifiers.RecoverEvent, WorkPlace.Client>,
+    ...params
+  ): void {}
+  public onDying(
+    ev: EventPicker<GameEventIdentifiers.PlayerDyingEvent, WorkPlace.Client>,
+    ...params
+  ): void {}
+  public onAskingForPeach(
+    ev: EventPicker<GameEventIdentifiers.AskForPeachEvent, WorkPlace.Client>,
+    ...params
+  ): void {}
+  public onAskingForWuXieKeJi(
+    ev: EventPicker<
+      GameEventIdentifiers.AskForWuXieKeJiEvent,
+      WorkPlace.Client
+    >,
+    ...params
+  ): void {}
+  public onAskingForCardResponse(
+    ev: EventPicker<
+      GameEventIdentifiers.AskForCardResponseEvent,
+      WorkPlace.Client
+    >,
+    ...params
+  ): void {}
+  public onAskingForCardUse(
+    ev: EventPicker<GameEventIdentifiers.AskForCardUseEvent, WorkPlace.Client>,
+    ...params
+  ): void {}
+  public onAskingForCardDisplay(
+    ev: EventPicker<
+      GameEventIdentifiers.AskForCardDisplayEvent,
+      WorkPlace.Client
+    >,
+    ...params
+  ): void {}
+  public onAskingForCardDrop(
+    ev: EventPicker<GameEventIdentifiers.AskForCardDropEvent, WorkPlace.Client>,
+    ...params
+  ): void {}
+  public onAskingForPinDianCard(
+    ev: EventPicker<
+      GameEventIdentifiers.AskForPinDianCardEvent,
+      WorkPlace.Client
+    >,
+    ...params
+  ): void {}
+  public onAskingForChoosingCard(
+    ev: EventPicker<
+      GameEventIdentifiers.AskForChoosingCardEvent,
+      WorkPlace.Client
+    >,
+    ...params
+  ): void {}
+  public onAskingForChoosingOptions(
+    ev: EventPicker<
+      GameEventIdentifiers.AskForChooseOptionsEvent,
+      WorkPlace.Client
+    >,
+    ...params
+  ): void {}
+  public onAskingForChoosingCardFromPlayer(
+    ev: EventPicker<
+      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
+      WorkPlace
+    >,
+    ...params
+  ): void {}
+  public onAskingForChooseCharacter(
+    ev: EventPicker<
+      GameEventIdentifiers.AskForChooseCharacterEvent,
+      WorkPlace.Client
+    >,
+    ...params
+  ): void {}
+  public onAskingForPlaceCardsInDile(
+    ev: EventPicker<
+      GameEventIdentifiers.AskForPlaceCardsInDileEvent,
+      WorkPlace.Client
+    >,
+    ...params
   ): void {}
 }

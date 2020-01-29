@@ -45,6 +45,15 @@ export const enum GameEventIdentifiers {
   AskForPlaceCardsInDileEvent,
 }
 
+export const createGameEventIdentifiersStringList = () => {
+  const list: string[] = [];
+  for (let i = 0; i <= GameEventIdentifiers.AskForPlaceCardsInDileEvent; i++) {
+    list.push(i.toString());
+  }
+
+  return list;
+};
+
 export const enum WorkPlace {
   Client,
   Server,

@@ -179,6 +179,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
   }
 
+  public async onReceivingAsyncReponse<T>(identifier: GameEventIdentifiers) {
+    return await this.socket.waitForResponse<T>(identifier);
+  }
+
   public drawCards(numberOfCards: number, player?: Player) {
     const drawCards = this.drawDile.slice(0, numberOfCards);
     this.drawDile = this.drawDile.slice(numberOfCards);

@@ -1,6 +1,6 @@
 import { DevMode, hostConfig } from 'core/shares/types/host_config';
 import * as React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import SocketIOClient from 'socket.io-client';
 import { Lobby } from './pages/lobby/lobby';
 
@@ -17,6 +17,9 @@ export const App: React.FC = () => {
   return (
     <div>
       <Switch>
+        <Route path="/">
+          <Redirect to={'lobby'} />
+        </Route>
         <Route path={'/lobby'}>
           <Lobby config={config} socket={socket} />
         </Route>

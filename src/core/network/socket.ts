@@ -23,23 +23,6 @@ export abstract class Socket<T extends WorkPlace> {
     to: PlayerId,
   ): void;
 
-  public abstract broadcast(
-    type: GameEventIdentifiers,
-    content: EventPicker<
-      typeof type,
-      T extends WorkPlace.Client ? WorkPlace.Server : T
-    >,
-  );
-
-  public abstract getSocketById(id: PlayerId): any;
-  public abstract notify(
-    type: GameEventIdentifiers,
-    content: EventPicker<typeof type, WorkPlace.Server>,
-    to: PlayerId,
-  ): void;
-
-  public abstract get ClientIds(): string[];
-
   public get RoomPath() {
     return this.roomPath;
   }
@@ -52,7 +35,162 @@ export abstract class Socket<T extends WorkPlace> {
     >,
     ...params: any[]
   ) {
+    //TODO: add all functions here
     switch (type) {
+      case GameEventIdentifiers.CardEffectEvent:
+        this.onCardEffect(
+          content as EventPicker<
+            GameEventIdentifiers.CardEffectEvent,
+            WorkPlace
+          >,
+          ...params,
+        );
+        break;
+      case GameEventIdentifiers.CardDisplayEvent:
+        this.displayCard(
+          content as EventPicker<
+            GameEventIdentifiers.CardDisplayEvent,
+            WorkPlace
+          >,
+          ...params,
+        );
+        break;
+      case GameEventIdentifiers.AimEvent:
+        this.onAim(
+          content as EventPicker<GameEventIdentifiers.AimEvent, WorkPlace>,
+          ...params,
+        );
+        break;
+      case GameEventIdentifiers.AimmedEvent:
+        this.onAimmed(
+          content as EventPicker<GameEventIdentifiers.AimmedEvent, WorkPlace>,
+          ...params,
+        );
+        break;
+      case GameEventIdentifiers.RecoverEvent:
+        this.onRecover(
+          content as EventPicker<GameEventIdentifiers.RecoverEvent, WorkPlace>,
+          ...params,
+        );
+        break;
+      case GameEventIdentifiers.PlayerDyingEvent:
+        this.onDying(
+          content as EventPicker<
+            GameEventIdentifiers.PlayerDyingEvent,
+            WorkPlace
+          >,
+          ...params,
+        );
+        break;
+      case GameEventIdentifiers.AskForPeachEvent:
+        this.onAskingForPeach(
+          content as EventPicker<
+            GameEventIdentifiers.AskForPeachEvent,
+            WorkPlace
+          >,
+          ...params,
+        );
+        break;
+      case GameEventIdentifiers.AskForWuXieKeJiEvent:
+        this.onAskingForWuXieKeJi(
+          content as EventPicker<
+            GameEventIdentifiers.AskForWuXieKeJiEvent,
+            WorkPlace
+          >,
+          ...params,
+        );
+        break;
+      case GameEventIdentifiers.AskForCardResponseEvent:
+        this.onAskingForCardResponse(
+          content as EventPicker<
+            GameEventIdentifiers.AskForCardResponseEvent,
+            WorkPlace
+          >,
+          ...params,
+        );
+        break;
+      case GameEventIdentifiers.AskForCardUseEvent:
+        this.onAskingForCardUse(
+          content as EventPicker<
+            GameEventIdentifiers.AskForCardUseEvent,
+            WorkPlace
+          >,
+          ...params,
+        );
+        break;
+      case GameEventIdentifiers.AskForCardDisplayEvent:
+        this.onAskingForCardDisplay(
+          content as EventPicker<
+            GameEventIdentifiers.AskForCardDisplayEvent,
+            WorkPlace
+          >,
+          ...params,
+        );
+        break;
+      case GameEventIdentifiers.AskForCardDropEvent:
+        this.onAskingForCardDrop(
+          content as EventPicker<
+            GameEventIdentifiers.AskForCardDropEvent,
+            WorkPlace
+          >,
+          ...params,
+        );
+        break;
+      case GameEventIdentifiers.AskForPinDianCardEvent:
+        this.onAskingForPinDianCard(
+          content as EventPicker<
+            GameEventIdentifiers.AskForPinDianCardEvent,
+            WorkPlace
+          >,
+          ...params,
+        );
+        break;
+      case GameEventIdentifiers.AskForChoosingCardEvent:
+        this.onAskingForChoosingCard(
+          content as EventPicker<
+            GameEventIdentifiers.AskForChoosingCardEvent,
+            WorkPlace
+          >,
+          ...params,
+        );
+        break;
+      case GameEventIdentifiers.AskForChooseOptionsEvent:
+        this.onAskingForChoosingOptions(
+          content as EventPicker<
+            GameEventIdentifiers.AskForChooseOptionsEvent,
+            WorkPlace
+          >,
+          ...params,
+        );
+        break;
+      case GameEventIdentifiers.AskForChoosingCardFromPlayerEvent:
+        this.onAskingForChoosingCardFromPlayer(
+          content as EventPicker<
+            GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
+            WorkPlace
+          >,
+          ...params,
+        );
+        break;
+      case GameEventIdentifiers.AskForChooseCharacterEvent:
+        this.onAskingForChooseCharacter(
+          content as EventPicker<
+            GameEventIdentifiers.AskForChooseCharacterEvent,
+            WorkPlace
+          >,
+          ...params,
+        );
+        break;
+      case GameEventIdentifiers.AskForPlaceCardsInDileEvent:
+        this.onAskingForPlaceCardsInDile(
+          content as EventPicker<
+            GameEventIdentifiers.AskForPlaceCardsInDileEvent,
+            WorkPlace
+          >,
+          ...params,
+        );
+        break;
+
       case GameEventIdentifiers.UserMessageEvent:
         this.userMessage(
           content as EventPicker<
@@ -257,5 +395,84 @@ export abstract class Socket<T extends WorkPlace> {
   public abstract invokeSkill(
     ev: EventPicker<GameEventIdentifiers.AskForInvokeEvent, WorkPlace>,
     ...params: any[]
+  ): void;
+
+  public abstract onCardEffect(
+    ev: EventPicker<GameEventIdentifiers.CardEffectEvent, WorkPlace>,
+    ...params
+  ): void;
+  public abstract displayCard(
+    ev: EventPicker<GameEventIdentifiers.CardDisplayEvent, WorkPlace>,
+    ...params
+  ): void;
+  public abstract onAim(
+    ev: EventPicker<GameEventIdentifiers.AimEvent, WorkPlace>,
+    ...params
+  ): void;
+  public abstract onAimmed(
+    ev: EventPicker<GameEventIdentifiers.AimmedEvent, WorkPlace>,
+    ...params
+  ): void;
+  public abstract onRecover(
+    ev: EventPicker<GameEventIdentifiers.RecoverEvent, WorkPlace>,
+    ...params
+  ): void;
+  public abstract onDying(
+    ev: EventPicker<GameEventIdentifiers.PlayerDyingEvent, WorkPlace>,
+    ...params
+  ): void;
+  public abstract onAskingForPeach(
+    ev: EventPicker<GameEventIdentifiers.AskForPeachEvent, WorkPlace>,
+    ...params
+  ): void;
+  public abstract onAskingForWuXieKeJi(
+    ev: EventPicker<GameEventIdentifiers.AskForWuXieKeJiEvent, WorkPlace>,
+    ...params
+  ): void;
+  public abstract onAskingForCardResponse(
+    ev: EventPicker<GameEventIdentifiers.AskForCardResponseEvent, WorkPlace>,
+    ...params
+  ): void;
+  public abstract onAskingForCardUse(
+    ev: EventPicker<GameEventIdentifiers.AskForCardUseEvent, WorkPlace>,
+    ...params
+  ): void;
+  public abstract onAskingForCardDisplay(
+    ev: EventPicker<GameEventIdentifiers.AskForCardDisplayEvent, WorkPlace>,
+    ...params
+  ): void;
+  public abstract onAskingForCardDrop(
+    ev: EventPicker<GameEventIdentifiers.AskForCardDropEvent, WorkPlace>,
+    ...params
+  ): void;
+  public abstract onAskingForPinDianCard(
+    ev: EventPicker<GameEventIdentifiers.AskForPinDianCardEvent, WorkPlace>,
+    ...params
+  ): void;
+  public abstract onAskingForChoosingCard(
+    ev: EventPicker<GameEventIdentifiers.AskForChoosingCardEvent, WorkPlace>,
+    ...params
+  ): void;
+  public abstract onAskingForChoosingOptions(
+    ev: EventPicker<GameEventIdentifiers.AskForChooseOptionsEvent, WorkPlace>,
+    ...params
+  ): void;
+  public abstract onAskingForChoosingCardFromPlayer(
+    ev: EventPicker<
+      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
+      WorkPlace
+    >,
+    ...params
+  ): void;
+  public abstract onAskingForChooseCharacter(
+    ev: EventPicker<GameEventIdentifiers.AskForChooseCharacterEvent, WorkPlace>,
+    ...params
+  ): void;
+  public abstract onAskingForPlaceCardsInDile(
+    ev: EventPicker<
+      GameEventIdentifiers.AskForPlaceCardsInDileEvent,
+      WorkPlace
+    >,
+    ...params
   ): void;
 }
