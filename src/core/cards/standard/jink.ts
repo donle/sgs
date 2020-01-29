@@ -1,7 +1,7 @@
 import { GameCardExtensions } from 'core/game/game_props';
 import { NullSkill } from 'core/skills/skill';
 import { BasicCard } from '../basic_card';
-import { CardSuit } from '../card';
+import { CardSuit } from '../libs/card_props';
 
 export class Jink extends BasicCard {
   constructor(id: number, cardNumber: number, suit: CardSuit) {

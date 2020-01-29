@@ -22,8 +22,8 @@
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "noEmit": true,
+    "noEmit": false,
     "isolatedModules": false
   },
-  "exclude": ["./src/ui/platforms/**/*.ts"]
+  "exclude": ["./src/ui/platforms/**/*.*"]
 }

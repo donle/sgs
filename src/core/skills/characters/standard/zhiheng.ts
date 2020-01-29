@@ -1,4 +1,4 @@
-import { CardId } from 'core/cards/card';
+import { CardId } from 'core/cards/libs/card_props';
 import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';

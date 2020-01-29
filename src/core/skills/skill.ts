@@ -1,4 +1,5 @@
-import { Card, CardId, VirtualCard } from 'core/cards/card';
+import { Card, VirtualCard } from 'core/cards/card';
+import { CardId } from 'core/cards/libs/card_props';
 import {
   ClientEventFinder,
   EventPicker,

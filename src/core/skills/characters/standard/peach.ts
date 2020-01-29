@@ -1,4 +1,4 @@
-import { CardId } from 'core/cards/card';
+import { CardId } from 'core/cards/libs/card_props';
 import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerStage } from 'core/game/stage';

@@ -2,7 +2,7 @@ import { BasicCard } from 'core/cards/basic_card';
 import { DamageType, GameCardExtensions } from 'core/game/game_props';
 import { SkillLoader } from 'core/game/package_loader/loader.skills';
 import { SlashSkill } from 'core/skills/characters/standard/slash';
-import { CardId, CardSuit } from '../card';
+import { CardId, CardSuit } from '../libs/card_props';
 
 export class Slash extends BasicCard {
   constructor(id: CardId, cardNumber: number, suit: CardSuit) {

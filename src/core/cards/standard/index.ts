@@ -1,6 +1,6 @@
 import { GameCardExtensions } from 'core/game/game_props';
 import { CardPackage } from 'core/game/package_loader/loader.cards';
-import { CardSuit } from '../card';
+import { CardSuit } from '../libs/card_props';
 import { Jink } from './jink';
 import { Peach } from './peach';
 import { Slash } from './slash';

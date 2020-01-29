@@ -11,6 +11,7 @@ import {
 import { LobbySocketEvent, RoomInfo } from 'core/shares/types/server_types';
 import * as http from 'http';
 import * as https from 'https';
+import { AddressInfo } from 'net';
 import SocketIO from 'socket.io';
 
 class App {
@@ -31,8 +32,21 @@ class App {
     this.server.listen(this.config.port);
   }
 
+  private log() {
+    const address = this.server.address() as AddressInfo;
+    // tslint:disable-next-line: no-console
+    console.info('----- Sanguosha server started -----');
+    // tslint:disable-next-line: no-console
+    console.info(
+      `----- ${address.family}: ${address.address}:${address.port} -----`,
+    );
+    // tslint:disable-next-line: no-console
+    console.info(`----- core version: ${Sanguosha.Version} -----`);
+  }
+
   public start() {
     Sanguosha.initialize();
+    this.log();
 
     this.lobbySocket.on('connection', socket => {
       socket
