@@ -17,7 +17,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
   private clientIds: string[] = [];
   protected roomPath: string;
 
-  private asyncEventList: GameEventIdentifiers[] = [];
+  private asyncEventIdentifier: GameEventIdentifiers | undefined;
   private asyncResponseResolver: <T>(res: T) => void;
   private receivedAsyncResponse: Promise<any> = new Promise(resolve => {
     this.asyncResponseResolver = resolve;
@@ -41,7 +41,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         socket.on(event, (content: unknown) => {
           const type = parseInt(event, 10) as GameEventIdentifiers;
 
-          if (this.asyncEventList.includes(type)) {
+          if (this.asyncEventIdentifier === type) {
             this.asyncResponseResolver(content);
           }
 
@@ -122,9 +122,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
   }
 
   public async waitForResponse<T>(identifier: GameEventIdentifiers) {
-    if (!this.asyncEventList.includes(identifier)) {
-      this.asyncEventList.push(identifier);
-    }
+    this.asyncEventIdentifier = identifier;
 
     return await this.receivedAsyncResponse as T;
   }
