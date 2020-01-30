@@ -11,6 +11,8 @@ import IOSocketClient from 'socket.io-client';
 export class ClientSocket extends Socket<WorkPlace.Client> {
   protected roomPath: string;
   private socketIO: SocketIOClient.Socket;
+  private asyncEventIdentifier: GameEventIdentifiers | undefined;
+  private asyncResponseResolver: (res: any) => void;
 
   constructor(config: HostConfigProps, roomId: string) {
     super(WorkPlace.Client, config);
@@ -25,8 +27,20 @@ export class ClientSocket extends Socket<WorkPlace.Client> {
     gameEvent.forEach(event => {
       this.socketIO.on(event, (content: unknown) => {
         const type = parseInt(event, 10) as GameEventIdentifiers;
+        if (type === this.asyncEventIdentifier) {
+          this.asyncResponseResolver && this.asyncResponseResolver(content);
+          this.asyncEventIdentifier = undefined;
+        }
+
         this.on(type, content as EventPicker<typeof type, WorkPlace.Server>);
       });
+    });
+  }
+
+  public async waitForResponse<T>(identifier: GameEventIdentifiers) {
+    this.asyncEventIdentifier = identifier;
+    return await new Promise<T>(resolve => {
+      this.asyncResponseResolver = resolve;
     });
   }
 
@@ -121,11 +135,17 @@ export class ClientSocket extends Socket<WorkPlace.Client> {
     ...params
   ): void {}
   public onAskingForWuXieKeJi(
-    ev: EventPicker<GameEventIdentifiers.AskForWuXieKeJiEvent, WorkPlace.Server>,
+    ev: EventPicker<
+      GameEventIdentifiers.AskForWuXieKeJiEvent,
+      WorkPlace.Server
+    >,
     ...params
   ): void {}
   public onAskingForCardResponse(
-    ev: EventPicker<GameEventIdentifiers.AskForCardResponseEvent, WorkPlace.Server>,
+    ev: EventPicker<
+      GameEventIdentifiers.AskForCardResponseEvent,
+      WorkPlace.Server
+    >,
     ...params
   ): void {}
   public onAskingForCardUse(
@@ -133,7 +153,10 @@ export class ClientSocket extends Socket<WorkPlace.Client> {
     ...params
   ): void {}
   public onAskingForCardDisplay(
-    ev: EventPicker<GameEventIdentifiers.AskForCardDisplayEvent, WorkPlace.Server>,
+    ev: EventPicker<
+      GameEventIdentifiers.AskForCardDisplayEvent,
+      WorkPlace.Server
+    >,
     ...params
   ): void {}
   public onAskingForCardDrop(
@@ -141,15 +164,24 @@ export class ClientSocket extends Socket<WorkPlace.Client> {
     ...params
   ): void {}
   public onAskingForPinDianCard(
-    ev: EventPicker<GameEventIdentifiers.AskForPinDianCardEvent, WorkPlace.Server>,
+    ev: EventPicker<
+      GameEventIdentifiers.AskForPinDianCardEvent,
+      WorkPlace.Server
+    >,
     ...params
   ): void {}
   public onAskingForChoosingCard(
-    ev: EventPicker<GameEventIdentifiers.AskForChoosingCardEvent, WorkPlace.Server>,
+    ev: EventPicker<
+      GameEventIdentifiers.AskForChoosingCardEvent,
+      WorkPlace.Server
+    >,
     ...params
   ): void {}
   public onAskingForChoosingOptions(
-    ev: EventPicker<GameEventIdentifiers.AskForChooseOptionsEvent, WorkPlace.Server>,
+    ev: EventPicker<
+      GameEventIdentifiers.AskForChooseOptionsEvent,
+      WorkPlace.Server
+    >,
     ...params
   ): void {}
   public onAskingForChoosingCardFromPlayer(
@@ -160,11 +192,17 @@ export class ClientSocket extends Socket<WorkPlace.Client> {
     ...params
   ): void {}
   public onAskingForChooseCharacter(
-    ev: EventPicker<GameEventIdentifiers.AskForChooseCharacterEvent, WorkPlace.Server>,
+    ev: EventPicker<
+      GameEventIdentifiers.AskForChooseCharacterEvent,
+      WorkPlace.Server
+    >,
     ...params
   ): void {}
   public onAskingForPlaceCardsInDile(
-    ev: EventPicker<GameEventIdentifiers.AskForPlaceCardsInDileEvent, WorkPlace.Server>,
+    ev: EventPicker<
+      GameEventIdentifiers.AskForPlaceCardsInDileEvent,
+      WorkPlace.Server
+    >,
     ...params
   ): void {}
 }

@@ -1,10 +1,6 @@
 import { Card } from 'core/cards/card';
 import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
-import {
-  AllStage,
-  GameEventStage,
-  PlayerStage,
-} from 'core/game/stage';
+import { AllStage } from 'core/game/stage';
 import { ServerSocket } from 'core/network/socket.server';
 import { Player } from 'core/player/player';
 import { ServerPlayer } from 'core/player/player.server';
@@ -24,12 +20,10 @@ import { CharacterLoader } from 'core/game/package_loader/loader.characters';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { GameProcessor } from './game_checker';
+import { GameProcessor } from './game_processor';
 import { Room, RoomId } from './room';
 
 export class ServerRoom extends Room<WorkPlace.Server> {
-  protected currentGameEventStage: GameEventStage | undefined;
-  protected currentPlayerStage: PlayerStage | undefined;
   protected currentPlayer: Player | undefined;
 
   private loadedCharacters: Character[] = [];
@@ -138,6 +132,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     // }
   }
 
+
+
   public async trigger(
     stage: AllStage,
     content: EventPicker<GameEventIdentifiers, WorkPlace.Server>,
@@ -179,8 +175,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
   }
 
-  public async onReceivingAsyncReponse<T>(identifier: GameEventIdentifiers) {
-    return await this.socket.waitForResponse<T>(identifier);
+  public async onReceivingAsyncReponseFrom<T>(
+    identifier: GameEventIdentifiers,
+    playerId: PlayerId,
+  ): Promise<T> {
+    return await this.socket.waitForResponse<T>(identifier, playerId);
   }
 
   public drawCards(numberOfCards: number, player?: Player) {
@@ -225,7 +224,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             to.Name,
             card.Name,
           ),
-          toId: to.Id,
+          fromId: to.Id,
+          toIds: [to.Id],
           cardId,
         },
       );

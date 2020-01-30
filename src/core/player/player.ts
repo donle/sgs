@@ -80,7 +80,8 @@ export abstract class Player implements PlayerInfo {
       [PlayerCardsArea.JudgeArea]: [],
       [PlayerCardsArea.HoldingArea]: [],
       [PlayerCardsArea.EquipArea]: [],
-      [PlayerCardsArea.OutsideArea]: {},
+      [PlayerCardsArea.OutsideArea]: {
+      },
     };
     this.cardSkillUseRules = {
       wine: {

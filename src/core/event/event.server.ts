@@ -14,7 +14,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.CardUseEvent]: {
     fromId?: PlayerId;
     cardId: CardId;
-    toId?: PlayerId;
+    toIds?: PlayerId[];
   };
   [GameEventIdentifiers.CardResponseEvent]: {
     fromId: PlayerId;
@@ -61,7 +61,18 @@ export interface ServerEvent extends EventUtilities {
     cardIds?: CardId[];
     toIds?: PlayerId[];
   };
+  [GameEventIdentifiers.LoseHpEvent]: {
+    lostHp: number;
+    who: PlayerId;
+  };
   [GameEventIdentifiers.DamageEvent]: {
+    fromId?: PlayerId;
+    cardIds?: CardId[];
+    damage: number;
+    damageType: DamageType;
+    toId: PlayerId;
+  };
+  [GameEventIdentifiers.DamagedEvent]: {
     fromId?: PlayerId;
     cardIds?: CardId[];
     damage: number;

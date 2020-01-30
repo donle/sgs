@@ -40,7 +40,7 @@ export class SlashSkill extends ActiveSkill {
     room.broadcast(GameEventIdentifiers.CardUseEvent, {
       fromId: room.getPlayerById(owner).Id,
       cardId: cardIds![0],
-      toId: targets![0],
+      toIds: targets!,
       triggeredBySkillName: this.name,
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} uses card {2} to {1}',
@@ -66,8 +66,7 @@ export class SlashSkill extends ActiveSkill {
         '{0} hits {1} for {2} {3} hp',
         room.getPlayerById(event.fromId).Name,
         room.getPlayerById(event.toId!).Name,
-        // looks like the number cannot be changed once it has been set
-        '1',
+        1,
         this.damageType,
       ),
     };

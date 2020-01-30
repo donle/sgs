@@ -5,23 +5,21 @@ import {
   GameEventIdentifiers,
   WorkPlace,
 } from 'core/event/event';
-import { GameEventStage, PlayerStage } from 'core/game/stage';
 import { Socket } from 'core/network/socket';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 
 import { GameInfo } from 'core/game/game_props';
+import { GameProcessor } from './game_processor';
 
 export type RoomId = number;
 
 export abstract class Room<T extends WorkPlace = WorkPlace> {
-  protected abstract currentGameEventStage: GameEventStage | undefined;
-  protected abstract currentPlayerStage: PlayerStage | undefined;
-  protected abstract currentPlayer: Player | undefined;
   protected abstract socket: Socket<T>;
   protected abstract gameInfo: GameInfo;
   protected abstract players: Player[];
   protected abstract roomId: RoomId;
+  protected abstract gameProcessor: GameProcessor;
 
   constructor() {
     this.init();
@@ -44,6 +42,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public abstract drawCards(numberOfCards: number, player?: Player): void;
   public abstract dropCards(cardIds: CardId[], player?: Player): void;
+  public abstract async onReceivingAsyncReponseFrom<P>(
+    identifier: GameEventIdentifiers,
+    playerId?: PlayerId,
+  ): Promise<P>;
 
   public getPlayerById(playerId: PlayerId) {
     const player = this.players.find(player => player.Id === playerId);
@@ -74,19 +76,15 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   public get CurrentPlayerStage() {
-    return this.currentPlayerStage;
+    return this.gameProcessor.CurrentPlayerStage;
   }
 
-  public get CurrentGameEventStage() {
-    return this.currentGameEventStage;
+  public get CurrentGameStage() {
+    return this.gameProcessor.CurrentGameStage;
   }
 
   public get CurrentPlayer(): Player {
-    if (!this.currentPlayer) {
-      throw new Error('Unable to get current player');
-    }
-
-    return this.currentPlayer;
+    return this.gameProcessor.CurrentPlayer;
   }
 
   public get AlivePlayers() {

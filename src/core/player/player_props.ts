@@ -10,8 +10,8 @@ export type PlayerCardsOutside = {
 };
 
 export type PlayerCards = {
-  [K in keyof Pick<
-    keyof typeof PlayerCardsArea,
+  [K in Extract<
+    PlayerCardsArea,
     Exclude<PlayerCardsArea, PlayerCardsArea.OutsideArea>
   >]: CardId[];
 };

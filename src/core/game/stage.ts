@@ -260,6 +260,12 @@ export const enum DamageEffectStage {
   AfterDamageEffect,
 }
 
+export const enum DamagedEffectStage {
+  BeforeDamagedEffect,
+  DamagedEffect,
+  AfterDamagedEffect,
+}
+
 export const enum JudgeEffectStage {
   BeforeJudgeEffectStage,
   JudgeEffect,
@@ -308,6 +314,7 @@ export type GameEventStage =
   | PlayerDyingStage
   | PlayerDiedStage
   | DamageEffectStage
+  | DamagedEffectStage
   | SkillEffectStage;
 
 export type AllStage = PlayerStageListEnum | GameEventStage;
@@ -327,16 +334,14 @@ export class StageProcessor {
       this.playerSpecificStagesList.push(i);
     }
 
-    this.stagePointer = 0;
-    this.currentPlayerStageInSpecific = this.playerSpecificStagesList[
-      this.stagePointer
-    ];
-    this.currentPlayerStage = PlayerStage.PrepareStage;
+    this.stagePointer = -1;
+    this.currentPlayerStageInSpecific = undefined;
+    this.currentPlayerStage = undefined;
   }
 
   public insertGameEvent(identifier: GameEventIdentifiers) {
     if (!this.gameEventStageList) {
-      this.processGameEvent(identifier);
+      this.involve(identifier);
     } else {
       const stageList = gameEventStageList[identifier];
       if (stageList === undefined) {
@@ -348,7 +353,7 @@ export class StageProcessor {
     }
   }
 
-  public processGameEvent(identifier: GameEventIdentifiers) {
+  public involve(identifier: GameEventIdentifiers) {
     const stageList = gameEventStageList[identifier];
     if (stageList === undefined) {
       throw new Error(`Unable to get game event of ${identifier}`);
@@ -357,9 +362,11 @@ export class StageProcessor {
     this.gameEventStageList = stageList.slice();
     this.currentGameEventStage = this.gameEventStageList.shift();
     this.processingGameEvent = true;
+
+    return this.currentGameEventStage;
   }
 
-  public nextGameEvent() {
+  public nextInstantEvent(): GameEventStage | undefined {
     if (!this.gameEventStageList || !this.processingGameEvent) {
       return;
     }
@@ -370,12 +377,14 @@ export class StageProcessor {
       return;
     }
 
-    return this;
+    return this.currentGameEventStage;
   }
 
-  public next() {
-    this.stagePointer =
-      (this.stagePointer + 1) % this.playerSpecificStagesList.length;
+  public nextStage(): PlayerStage | undefined {
+    if (++this.stagePointer >= this.playerSpecificStagesList.length) {
+      return;
+    }
+
     this.currentPlayerStageInSpecific = this.playerSpecificStagesList[
       this.stagePointer
     ];
@@ -383,7 +392,12 @@ export class StageProcessor {
       this.currentPlayerStageInSpecific,
     );
 
-    return this;
+    return this.currentPlayerStage;
+  }
+
+  public turnToNextPlayer() {
+    this.stagePointer = -1;
+    return this.nextStage();
   }
 
   public get CurrentGameEventStage() {

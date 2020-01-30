@@ -2,7 +2,7 @@ const translationObjectSign = '@@translate:';
 
 export type PatchedTranslationObject = {
   original: string;
-  params: string[];
+  params: (string | number)[];
 };
 
 type TranslationPackPatchedObject = PatchedTranslationObject & {
@@ -36,7 +36,7 @@ export class TranslationPack {
 
   public static translationJsonPatcher(
     originalText: string,
-    ...stringParams: string[]
+    ...stringParams: (string | number)[]
   ) {
     const translationJson: TranslationPackPatchedObject = {
       tag: translationObjectSign,
@@ -55,7 +55,10 @@ export class TranslationPack {
       const translateObject: TranslationPackPatchedObject = JSON.parse(
         wrappedString,
       );
-      if (!translateObject.tag || translateObject.tag !== translationObjectSign) {
+      if (
+        !translateObject.tag ||
+        translateObject.tag !== translationObjectSign
+      ) {
         return wrappedString;
       }
 
@@ -71,7 +74,7 @@ export class TranslationPack {
         for (let i = 0; i < translateObject.params.length; i++) {
           target = target.replace(
             new RegExp(`/\{${i}\}/`, 'g'),
-            translateObject.params[i],
+            translateObject.params[i].toString(),
           );
         }
       }

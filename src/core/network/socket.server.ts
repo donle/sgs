@@ -17,11 +17,12 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
   private clientIds: string[] = [];
   protected roomPath: string;
 
-  private asyncEventIdentifier: GameEventIdentifiers | undefined;
-  private asyncResponseResolver: <T>(res: T) => void;
-  private receivedAsyncResponse: Promise<any> = new Promise(resolve => {
-    this.asyncResponseResolver = resolve;
-  });
+  private asyncResponseResolver: {
+    [K in PlayerId]: {
+      identifier: GameEventIdentifiers;
+      resolve(res?: any): void;
+    };
+  };
 
   constructor(config: HostConfigProps, roomId: RoomId) {
     super(WorkPlace.Server, config);
@@ -41,8 +42,9 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         socket.on(event, (content: unknown) => {
           const type = parseInt(event, 10) as GameEventIdentifiers;
 
-          if (this.asyncEventIdentifier === type) {
-            this.asyncResponseResolver(content);
+          const asyncResolver = this.asyncResponseResolver[socket.id];
+          if (asyncResolver && asyncResolver.identifier === type) {
+            asyncResolver.resolve(content);
           }
 
           const params: any[] = [];
@@ -121,10 +123,20 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     return this.clientIds;
   }
 
-  public async waitForResponse<T>(identifier: GameEventIdentifiers) {
-    this.asyncEventIdentifier = identifier;
-
-    return await this.receivedAsyncResponse as T;
+  public async waitForResponse<T>(
+    identifier: GameEventIdentifiers,
+    playerId: PlayerId,
+  ) {
+    return await new Promise<T>(resolve => {
+      if (!this.asyncResponseResolver[playerId]) {
+        this.asyncResponseResolver[playerId] = {
+          identifier,
+          resolve,
+        };
+      } else {
+        this.asyncResponseResolver[playerId].resolve = resolve;
+      }
+    });
   }
 
   //TODO: socket event handlers

@@ -32,7 +32,7 @@ export abstract class Skill<T extends SkillType = SkillType> {
   public abstract onEffect(
     room: Room,
     event: ClientEventFinder<GameEventIdentifiers>,
-  ): void;
+  ): Promise<void> | void;
 
   public abstract canUse(
     room: Room,

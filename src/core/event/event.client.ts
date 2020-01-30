@@ -1,5 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { GameInfo } from 'core/game/game_props';
+import { DamageType } from 'core/game/game_props';
 import { PlayerId, PlayerInfo } from 'core/player/player_props';
 import { EventUtilities, GameEventIdentifiers } from './event';
 
@@ -26,7 +26,24 @@ export interface ClientEvent extends EventUtilities {
     cardIds?: CardId[];
     toIds?: PlayerId[];
   };
-  [GameEventIdentifiers.DamageEvent]: never;
+  [GameEventIdentifiers.LoseHpEvent]: {
+    lostHp: number;
+    who: PlayerId;
+  };
+  [GameEventIdentifiers.DamageEvent]: {
+    fromId?: PlayerId;
+    cardIds?: CardId[];
+    damage: number;
+    damageType: DamageType;
+    toId: PlayerId;
+  };
+  [GameEventIdentifiers.DamagedEvent]: {
+    fromId?: PlayerId;
+    cardIds?: CardId[];
+    damage: number;
+    damageType: DamageType;
+    toId: PlayerId;
+  };
   [GameEventIdentifiers.JudgeEvent]: {
     toId: PlayerId;
     cardId: CardId;
@@ -68,7 +85,9 @@ export interface ClientEvent extends EventUtilities {
 
   [GameEventIdentifiers.AskForPeachEvent]: {};
   [GameEventIdentifiers.AskForWuXieKeJiEvent]: {};
-  [GameEventIdentifiers.AskForCardResponseEvent]: {};
+  [GameEventIdentifiers.AskForCardResponseEvent]: {
+    cardId?: CardId;
+  };
   [GameEventIdentifiers.AskForChoosingCardEvent]: {};
   [GameEventIdentifiers.AskForChoosingCardFromPlayerEvent]: {};
   [GameEventIdentifiers.AskForCardUseEvent]: {};

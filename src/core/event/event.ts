@@ -19,7 +19,9 @@ export const enum GameEventIdentifiers {
 
   SkillUseEvent,
   PinDianEvent,
+  LoseHpEvent,
   DamageEvent,
+  DamagedEvent,
   RecoverEvent,
   JudgeEvent,
 

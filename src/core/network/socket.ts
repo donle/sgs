@@ -17,10 +17,15 @@ export abstract class Socket<T extends WorkPlace> {
 
   constructor(protected eventMode: T, protected hostConfig: HostConfigProps) {}
 
+  public abstract async waitForResponse<T>(
+    identifier: GameEventIdentifiers,
+    playerId?: PlayerId,
+  ): Promise<T>;
+
   public abstract sendEvent(
     type: GameEventIdentifiers,
     content: EventPicker<typeof type, T extends T ? WorkPlace.Server : T>,
-    to: PlayerId,
+    to?: PlayerId,
   ): void;
 
   public get RoomPath() {
