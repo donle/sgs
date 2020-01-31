@@ -6,7 +6,7 @@ import {
   GameEventIdentifiers,
   WorkPlace,
 } from 'core/event/event';
-import { AllStage, PlayerStageListEnum } from 'core/game/stage';
+import { AllStage, PlayerStageListEnum } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';

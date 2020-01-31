@@ -223,10 +223,6 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     ev: EventPicker<GameEventIdentifiers.AimEvent, WorkPlace.Client>,
     ...params
   ): void {}
-  public onAimmed(
-    ev: EventPicker<GameEventIdentifiers.AimmedEvent, WorkPlace.Client>,
-    ...params
-  ): void {}
   public onRecover(
     ev: EventPicker<GameEventIdentifiers.RecoverEvent, WorkPlace.Client>,
     ...params

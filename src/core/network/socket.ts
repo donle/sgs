@@ -66,12 +66,6 @@ export abstract class Socket<T extends WorkPlace> {
           ...params,
         );
         break;
-      case GameEventIdentifiers.AimmedEvent:
-        this.onAimmed(
-          content as EventPicker<GameEventIdentifiers.AimmedEvent, WorkPlace>,
-          ...params,
-        );
-        break;
       case GameEventIdentifiers.RecoverEvent:
         this.onRecover(
           content as EventPicker<GameEventIdentifiers.RecoverEvent, WorkPlace>,
@@ -412,10 +406,6 @@ export abstract class Socket<T extends WorkPlace> {
   ): void;
   public abstract onAim(
     ev: EventPicker<GameEventIdentifiers.AimEvent, WorkPlace>,
-    ...params
-  ): void;
-  public abstract onAimmed(
-    ev: EventPicker<GameEventIdentifiers.AimmedEvent, WorkPlace>,
     ...params
   ): void;
   public abstract onRecover(

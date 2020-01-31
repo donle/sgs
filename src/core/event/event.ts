@@ -15,13 +15,11 @@ export const enum GameEventIdentifiers {
   MoveCardEvent,
 
   AimEvent,
-  AimmedEvent,
 
   SkillUseEvent,
   PinDianEvent,
   LoseHpEvent,
   DamageEvent,
-  DamagedEvent,
   RecoverEvent,
   JudgeEvent,
 

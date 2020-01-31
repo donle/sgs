@@ -1,6 +1,6 @@
 import { Card } from 'core/cards/card';
 import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
-import { AllStage } from 'core/game/stage';
+import { AllStage } from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
 import { Player } from 'core/player/player';
 import { ServerPlayer } from 'core/player/player.server';
@@ -20,7 +20,7 @@ import { CharacterLoader } from 'core/game/package_loader/loader.characters';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { GameProcessor } from './game_processor';
+import { GameProcessor } from '../game/game_processor';
 import { Room, RoomId } from './room';
 
 export class ServerRoom extends Room<WorkPlace.Server> {
@@ -82,7 +82,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public notify(
     type: GameEventIdentifiers,
-    content: EventPicker<typeof type, WorkPlace.Client>,
+    content: EventPicker<typeof type, WorkPlace.Server>,
     to: PlayerId,
   ) {
     this.socket.sendEvent(type, content, to);
@@ -103,40 +103,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       }
       this.socket.getSocketById(clientId).emit(type.toString(), content);
     });
-
-    // const stages: GameEventStage[] | undefined =
-    //   GameStages[type as GameEventIdentifiers];
-    // if (!stages) {
-    //   throw new Error(`Unable to get game stage by identifier ${type}`);
-    // }
-
-    //TODO: how to trigger skills?
-    // for (const stage of stages) {
-    //   this.currentGameEventStage = stage;
-    //   if (this.currentGameEventStage === 1) {
-    //     const skill =
-    //       content.triggeredBySkillName &&
-    //       Sanguosha.getSkillBySkillName(content.triggeredBySkillName);
-    //     if (skill) {
-    //       const { invoke } = await this.socket.waitForResponse<
-    //         EventPicker<
-    //           GameEventIdentifiers.AskForInvokeEvent,
-    //           WorkPlace.Client
-    //         >
-    //       >('@skill_response');
-    //       invoke && skill.onEffect(this, content);
-    //     }
-    //   }
-
-    //   this.trigger(stage, content);
-    // }
   }
 
-
-
-  public async trigger(
+  public async trigger<T = never>(
     stage: AllStage,
-    content: EventPicker<GameEventIdentifiers, WorkPlace.Server>,
+    content: T extends never
+      ? EventPicker<GameEventIdentifiers, WorkPlace.Server>
+      : T,
   ) {
     if (!this.CurrentPlayer) {
       throw new Error('current player is undefined');
@@ -152,26 +125,32 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         continue;
       }
 
-      // TODO: how to trigger skills?
-      // const skills = this.players[i].getSkills<TriggerSkill>('trigger');
-      // for (const skill of skills) {
-      //   if (
-      //     skill.isTriggerable(stage) &&
-      //     skill.canUse(this, this.players[i], content)
-      //   ) {
-      //     if (skill.isAutoTrigger()) {
-      //       skill.onTrigger(this, this.players[i], content);
-      //     } else {
-      //       const { invoke } = await this.socket.waitForResponse<
-      //         EventPicker<
-      //           GameEventIdentifiers.AskForInvokeEvent,
-      //           WorkPlace.Client
-      //         >
-      //       >('@skill_response');
-      //       invoke && skill.onTrigger(this, this.players[i], content);
-      //     }
-      //   }
-      // }
+      const skills = this.players[i].getSkills<TriggerSkill>('trigger');
+      for (const skill of skills) {
+        if (
+          skill.isTriggerable(stage) &&
+          skill.canUse(this, this.players[i], content)
+        ) {
+          if (skill.isAutoTrigger()) {
+            skill.onTrigger(this, this.players[i], content);
+          } else {
+            this.notify(
+              GameEventIdentifiers.AskForInvokeEvent,
+              {
+                invokeSkillNames: [skill.Name],
+                to: this.players[i].Id,
+              },
+              this.players[i].Id,
+            );
+
+            const { invoke } = await this.onReceivingAsyncReponseFrom(
+              GameEventIdentifiers.AskForInvokeEvent,
+              this.players[i].Id,
+            );
+            invoke && skill.onTrigger(this, this.players[i], content);
+          }
+        }
+      }
     }
   }
 

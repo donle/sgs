@@ -10,7 +10,7 @@ import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 
 import { GameInfo } from 'core/game/game_props';
-import { GameProcessor } from './game_processor';
+import { GameProcessor } from '../game/game_processor';
 
 export type RoomId = number;
 
@@ -85,6 +85,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public get CurrentPlayer(): Player {
     return this.gameProcessor.CurrentPlayer;
+  }
+
+  public get Processor() {
+    return this.gameProcessor;
   }
 
   public get AlivePlayers() {

@@ -1,7 +1,7 @@
 import { Card, CardType, EquipCardCategory } from './card';
 
 import { GameCardExtensions } from 'core/game/game_props';
-import { AllStage } from 'core/game/stage';
+import { AllStage } from 'core/game/stage_processor';
 import { DistanceSkill, Skill } from 'core/skills/skill';
 import { CardId, CardSuit } from './libs/card_props';
 

@@ -1,7 +1,7 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { PlayerStage } from 'core/game/stage';
+import { PlayerStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -35,7 +35,7 @@ export class PeachSkill extends ActiveSkill {
   }
 
   onUse(room: Room, owner: PlayerId, cardIds?: CardId[]) {
-    room.broadcast(GameEventIdentifiers.CardUseEvent, {
+    room.Processor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, {
       fromId: room.getPlayerById(owner).Id,
       cardId: cardIds![0],
       triggeredBySkillName: this.name,
@@ -49,20 +49,20 @@ export class PeachSkill extends ActiveSkill {
 
   onEffect(
     room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
+    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
   ) {
     const recoverContent = {
-      fromId: event.fromId,
-      toId: event.toId,
+      fromId: event.fromId!,
+      toId: event.toIds![0],
       recover: 1,
       triggeredBySkillName: this.name,
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} recovers {1} hp',
-        room.getPlayerById(event.toId!).Name,
+        room.getPlayerById(event.toIds![0]).Name,
         '1',
       ),
     };
 
-    room.broadcast(GameEventIdentifiers.RecoverEvent, recoverContent);
+    room.Processor.onHandleIncomingEvent(GameEventIdentifiers.RecoverEvent, recoverContent);
   }
 }

@@ -1,8 +1,8 @@
 import { Sanguosha } from 'core/game/engine';
+import { GameProcessor } from 'core/game/game_processor';
 import { GameInfo } from 'core/game/game_props';
-import { StageProcessor } from 'core/game/stage';
+import { StageProcessor } from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
-import { GameProcessor } from 'core/room/game_processor';
 import { ServerRoom } from 'core/room/room.server';
 import {
   DevMode,

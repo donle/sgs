@@ -7,7 +7,7 @@ export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.CardUseEvent]: {
     fromId: PlayerId;
     cardId: CardId;
-    toId?: PlayerId;
+    toIds?: PlayerId[];
   };
   [GameEventIdentifiers.CardResponseEvent]: {
     fromId: PlayerId;
@@ -37,13 +37,6 @@ export interface ClientEvent extends EventUtilities {
     damageType: DamageType;
     toId: PlayerId;
   };
-  [GameEventIdentifiers.DamagedEvent]: {
-    fromId?: PlayerId;
-    cardIds?: CardId[];
-    damage: number;
-    damageType: DamageType;
-    toId: PlayerId;
-  };
   [GameEventIdentifiers.JudgeEvent]: {
     toId: PlayerId;
     cardId: CardId;
@@ -55,10 +48,8 @@ export interface ClientEvent extends EventUtilities {
     recover: number;
   };
   [GameEventIdentifiers.PinDianEvent]: {
-    attackerId: PlayerId;
-    displayedCardIdByAttacker: CardId;
-    targetId: PlayerId;
-    displayedCardIdByTarget: CardId;
+    from: PlayerId;
+    toIds: PlayerId[];
   };
 
   [GameEventIdentifiers.UserMessageEvent]: {
@@ -82,6 +73,10 @@ export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.PlayerDiedEvent]: {
     playerInfo: PlayerInfo;
   };
+  [GameEventIdentifiers.AskForPinDianCardEvent]: {
+    pindianCard: CardId;
+    from: PlayerId;
+  }
 
   [GameEventIdentifiers.AskForPeachEvent]: {};
   [GameEventIdentifiers.AskForWuXieKeJiEvent]: {};

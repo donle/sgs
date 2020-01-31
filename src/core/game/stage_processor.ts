@@ -172,9 +172,10 @@ const gameEventStageList: {
     CardDropStage.AfterCardDropEffect,
   ],
   [GameEventIdentifiers.DamageEvent]: [
-    DamageEffectStage.BeforeDamageEffect,
     DamageEffectStage.DamageEffect,
+    DamageEffectStage.DamagedEffect,
     DamageEffectStage.AfterDamageEffect,
+    DamageEffectStage.AfterDamagedEffect,
   ],
   [GameEventIdentifiers.JudgeEvent]: [
     JudgeEffectStage.BeforeJudgeEffectStage,
@@ -216,7 +217,20 @@ const gameEventStageList: {
     PinDianStage.PinDianEffect,
     PinDianStage.AfterPinDianEffect,
   ],
+  [GameEventIdentifiers.AimEvent]: [
+    AimStage.OnAim,
+    AimStage.OnAimmed,
+    AimStage.AfterAim,
+    AimStage.AfterAimmed,
+  ],
 };
+
+export const enum AimStage {
+  OnAim,
+  OnAimmed,
+  AfterAim,
+  AfterAimmed,
+}
 
 export const enum CardUseStage {
   BeforeCardUseEffect,
@@ -255,14 +269,9 @@ export const enum CardDropStage {
 }
 
 export const enum DamageEffectStage {
-  BeforeDamageEffect,
   DamageEffect,
-  AfterDamageEffect,
-}
-
-export const enum DamagedEffectStage {
-  BeforeDamagedEffect,
   DamagedEffect,
+  AfterDamageEffect,
   AfterDamagedEffect,
 }
 
@@ -314,7 +323,7 @@ export type GameEventStage =
   | PlayerDyingStage
   | PlayerDiedStage
   | DamageEffectStage
-  | DamagedEffectStage
+  | AimStage
   | SkillEffectStage;
 
 export type AllStage = PlayerStageListEnum | GameEventStage;
@@ -325,7 +334,7 @@ export class StageProcessor {
   private stagePointer: number;
   private readonly playerSpecificStagesList: PlayerStageListEnum[];
 
-  private gameEventStageList: GameEventStage[] | undefined;
+  private gameEventStageList: GameEventStage[] = [];
   private currentGameEventStage: GameEventStage | undefined;
   private processingGameEvent = false;
 
@@ -339,27 +348,18 @@ export class StageProcessor {
     this.currentPlayerStage = undefined;
   }
 
-  public insertGameEvent(identifier: GameEventIdentifiers) {
-    if (!this.gameEventStageList) {
-      this.involve(identifier);
-    } else {
-      const stageList = gameEventStageList[identifier];
-      if (stageList === undefined) {
-        throw new Error(`Unable to get game event of ${identifier}`);
-      }
-
-      this.gameEventStageList = [...stageList, ...this.gameEventStageList];
-      this.currentGameEventStage = this.gameEventStageList.shift();
-    }
-  }
-
   public involve(identifier: GameEventIdentifiers) {
     const stageList = gameEventStageList[identifier];
     if (stageList === undefined) {
       throw new Error(`Unable to get game event of ${identifier}`);
     }
 
-    this.gameEventStageList = stageList.slice();
+    if (this.gameEventStageList.length > 0) {
+      this.gameEventStageList = [...stageList, ...this.gameEventStageList];
+    } else {
+      this.gameEventStageList = stageList.slice();
+    }
+
     this.currentGameEventStage = this.gameEventStageList.shift();
     this.processingGameEvent = true;
 
@@ -378,6 +378,12 @@ export class StageProcessor {
     }
 
     return this.currentGameEventStage;
+  }
+
+  public skipEventProcess(identifier: GameEventIdentifiers) {
+    while (this.isInsideEvent(identifier, this.currentGameEventStage)) {
+      this.nextInstantEvent();
+    }
   }
 
   public nextStage(): PlayerStage | undefined {
@@ -418,6 +424,22 @@ export class StageProcessor {
 
   public isProcessingGameEvent() {
     return this.processingGameEvent;
+  }
+
+  public isInsideEvent(
+    identifier: GameEventIdentifiers,
+    stage?: GameEventStage,
+  ) {
+    if (stage === undefined) {
+      return false;
+    }
+
+    const stageList = gameEventStageList[identifier];
+    if (stageList === undefined) {
+      throw new Error(`Can't find stage events of ${identifier}`);
+    }
+
+    return stageList.includes(stage);
   }
 
   public createPlayerStage(stage?: PlayerStage) {

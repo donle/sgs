@@ -1,5 +1,10 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
+import {
+  EventPicker,
+  GameEventIdentifiers,
+  ServerEventFinder,
+  WorkPlace,
+} from 'core/event/event';
 import { DamageType } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
@@ -37,7 +42,7 @@ export class SlashSkill extends ActiveSkill {
   }
 
   onUse(room: Room, owner: PlayerId, cardIds?: CardId[], targets?: PlayerId[]) {
-    room.broadcast(GameEventIdentifiers.CardUseEvent, {
+    room.Processor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, {
       fromId: room.getPlayerById(owner).Id,
       cardId: cardIds![0],
       toIds: targets!,
@@ -53,25 +58,37 @@ export class SlashSkill extends ActiveSkill {
 
   onEffect(
     room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
+    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
   ) {
-    const eventContent = {
-      fromId: event.fromId,
-      toId: event.toId,
-      damage: 1,
-      damageType: this.damageType,
-      cardIds: [event.cardId],
-      triggeredBySkillName: this.name,
-      translationsMessage: TranslationPack.translationJsonPatcher(
-        '{0} hits {1} for {2} {3} hp',
-        room.getPlayerById(event.fromId).Name,
-        room.getPlayerById(event.toId!).Name,
-        1,
-        this.damageType,
-      ),
-    };
+    const { toIds, fromId, cardId } = event;
 
-    room.broadcast(GameEventIdentifiers.DamageEvent, eventContent);
+    for (const toId of toIds || []) {
+      const eventContent: EventPicker<
+        GameEventIdentifiers.DamageEvent,
+        WorkPlace.Server
+      > = {
+        fromId,
+        toId,
+        damage: 1,
+        damageType: this.damageType,
+        cardIds: [cardId],
+        triggeredBySkillName: this.name,
+        translationsMessage: fromId
+          ? TranslationPack.translationJsonPatcher(
+              '{0} hurts {1} for {2} {3} hp',
+              room.getPlayerById(fromId).Name,
+              room.getPlayerById(toId).Name,
+              1,
+              this.damageType,
+            )
+          : TranslationPack.translationJsonPatcher('${0} got '),
+      };
+
+      room.Processor.onHandleIncomingEvent(
+        GameEventIdentifiers.DamageEvent,
+        eventContent,
+      );
+    }
   }
 }
 

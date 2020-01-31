@@ -16,6 +16,11 @@ export interface ServerEvent extends EventUtilities {
     cardId: CardId;
     toIds?: PlayerId[];
   };
+  [GameEventIdentifiers.CardEffectEvent]: {
+    fromId?: PlayerId;
+    cardId: CardId;
+    toIds?: PlayerId[];
+  };
   [GameEventIdentifiers.CardResponseEvent]: {
     fromId: PlayerId;
     cardId: CardId;
@@ -26,7 +31,7 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.DrawCardEvent]: {
     playerId: PlayerId;
-    cardIds: CardId[];
+    cardNumber: number;
   };
   [GameEventIdentifiers.ObtainCardEvent]: {
     fromId?: PlayerId;
@@ -49,11 +54,6 @@ export interface ServerEvent extends EventUtilities {
     byCardId?: CardId;
     toIds: PlayerId[];
   };
-  [GameEventIdentifiers.AimmedEvent]: {
-    bySkill?: string;
-    byCardId?: CardId;
-    toOthers: PlayerId[];
-  };
 
   [GameEventIdentifiers.SkillUseEvent]: {
     fromId: PlayerId;
@@ -66,13 +66,6 @@ export interface ServerEvent extends EventUtilities {
     who: PlayerId;
   };
   [GameEventIdentifiers.DamageEvent]: {
-    fromId?: PlayerId;
-    cardIds?: CardId[];
-    damage: number;
-    damageType: DamageType;
-    toId: PlayerId;
-  };
-  [GameEventIdentifiers.DamagedEvent]: {
     fromId?: PlayerId;
     cardIds?: CardId[];
     damage: number;
@@ -138,7 +131,7 @@ export interface ServerEvent extends EventUtilities {
     carMatcher: CardMatcherSocketPassenger;
   };
   [GameEventIdentifiers.AskForPinDianCardEvent]: {
-    askedFrom: PlayerId;
+    from: PlayerId;
     otherTargets?: PlayerId[];
   };
   [GameEventIdentifiers.AskForChoosingCardEvent]: {
@@ -171,3 +164,8 @@ export interface ServerEvent extends EventUtilities {
     putCards?: CardId[];
   };
 }
+
+export type PinDianRsultType = {
+  winner: PlayerId | undefined;
+  pindianCards: CardId[];
+};

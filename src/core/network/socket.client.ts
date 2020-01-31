@@ -118,10 +118,6 @@ export class ClientSocket extends Socket<WorkPlace.Client> {
     ev: EventPicker<GameEventIdentifiers.AimEvent, WorkPlace.Server>,
     ...params
   ): void {}
-  public onAimmed(
-    ev: EventPicker<GameEventIdentifiers.AimmedEvent, WorkPlace.Server>,
-    ...params
-  ): void {}
   public onRecover(
     ev: EventPicker<GameEventIdentifiers.RecoverEvent, WorkPlace.Server>,
     ...params
