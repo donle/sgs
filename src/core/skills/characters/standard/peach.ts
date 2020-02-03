@@ -34,8 +34,8 @@ export class PeachSkill extends ActiveSkill {
     return false;
   }
 
-  onUse(room: Room, owner: PlayerId, cardIds?: CardId[]) {
-    room.Processor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, {
+  async onUse(room: Room, owner: PlayerId, cardIds?: CardId[]) {
+    await room.Processor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, {
       fromId: room.getPlayerById(owner).Id,
       cardId: cardIds![0],
       triggeredBySkillName: this.name,
@@ -47,7 +47,7 @@ export class PeachSkill extends ActiveSkill {
     });
   }
 
-  onEffect(
+  async onEffect(
     room: Room,
     event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
   ) {
@@ -63,6 +63,6 @@ export class PeachSkill extends ActiveSkill {
       ),
     };
 
-    room.Processor.onHandleIncomingEvent(GameEventIdentifiers.RecoverEvent, recoverContent);
+    await room.Processor.onHandleIncomingEvent(GameEventIdentifiers.RecoverEvent, recoverContent);
   }
 }

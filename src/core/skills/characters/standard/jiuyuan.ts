@@ -32,8 +32,8 @@ export class JiuYuan extends TriggerSkill<SkillType.Compulsory> {
     return stage === RecoverEffectStage.BeforeRecoverEffect;
   }
 
-  onTrigger(room: Room, owner: Player) {
-    room.Processor.onHandleIncomingEvent(GameEventIdentifiers.SkillUseEvent, {
+  async onTrigger(room: Room, owner: Player) {
+    await room.Processor.onHandleIncomingEvent(GameEventIdentifiers.SkillUseEvent, {
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} activates skill {1}',
         room.getPlayerById(owner.Id).Name,
@@ -44,7 +44,7 @@ export class JiuYuan extends TriggerSkill<SkillType.Compulsory> {
     });
   }
 
-  onEffect(
+  async onEffect(
     room: Room,
     event: ClientEventFinder<GameEventIdentifiers.RecoverEvent>,
   ) {

@@ -161,15 +161,20 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return await this.socket.waitForResponse<T>(identifier, playerId);
   }
 
-  public drawCards(numberOfCards: number, player?: Player) {
+  public drawCards(numberOfCards: number, playerId?: PlayerId) {
     const drawCards = this.drawDile.slice(0, numberOfCards);
     this.drawDile = this.drawDile.slice(numberOfCards);
+    const player =
+      playerId !== undefined ? this.getPlayerById(playerId) : undefined;
     player
       ? player.drawCardIds(...drawCards)
       : this.currentPlayer && this.currentPlayer.drawCardIds(...drawCards);
   }
 
-  public dropCards(cardIds: CardId[], from?: Player) {
+  public dropCards(cardIds: CardId[], playerId?: PlayerId) {
+    const from =
+      playerId !== undefined ? this.getPlayerById(playerId) : undefined;
+
     if (from) {
       from.dropCards(...cardIds);
     }
@@ -230,6 +235,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   public onLoseCard(player: Player, cardId: CardId) {
     const card = Sanguosha.getCardById(cardId);
     card.Skill.onLoseSkill(player);
+  }
+
+  public getCardOwnerId(card: CardId) {
+    for (const player of this.AlivePlayers) {
+      if (player.getCardId(card) !== undefined) {
+        return player.Id;
+      }
+    }
   }
 
   public get RoomId() {

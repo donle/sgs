@@ -37,8 +37,8 @@ export class ZhiHeng extends ActiveSkill {
     );
   }
 
-  onUse(room: Room, owner: PlayerId, cardIds: CardId[]) {
-    room.Processor.onHandleIncomingEvent(GameEventIdentifiers.SkillUseEvent, {
+  async onUse(room: Room, owner: PlayerId, cardIds: CardId[]) {
+    await room.Processor.onHandleIncomingEvent(GameEventIdentifiers.SkillUseEvent, {
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} activates skill {1}',
         room.CurrentPlayer.Character.Name,
@@ -62,10 +62,9 @@ export class ZhiHeng extends ActiveSkill {
       cardIds: skillUseEvent.cardIds!,
     });
 
-    room.drawCards(numberOfCards);
-    room.broadcast(GameEventIdentifiers.DrawCardEvent, {
+    room.Processor.onHandleIncomingEvent(GameEventIdentifiers.DrawCardEvent, {
       playerId: room.CurrentPlayer.Id,
-      cardNumber: numberOfCards,
+      numberOfCards,
     });
   }
 }

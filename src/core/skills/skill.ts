@@ -29,6 +29,12 @@ export abstract class Skill<T extends SkillType = SkillType> {
   protected triggeredTimes: number = 0;
   protected abstract isRefreshAt(stage: AllStage): boolean;
 
+  public abstract async onUse(
+    room: Room,
+    owner: PlayerId,
+    cardIds?: CardId[],
+    targets?: PlayerId[],
+  ): Promise<void>;
   public abstract onEffect(
     room: Room,
     event: ClientEventFinder<GameEventIdentifiers>,
@@ -76,6 +82,16 @@ export abstract class TriggerSkill<
     owner: Player,
     content?: EventPicker<I, WorkPlace.Server>,
   ): void;
+  public abstract async onTrigger(room: Room, owner: Player): Promise<void>;
+
+  public async onUse(
+    room: Room,
+    owner: PlayerId,
+    cardIds?: CardId[],
+    targets?: PlayerId[],
+  ) {
+    await this.onTrigger(room, room.getPlayerById(owner));
+  }
 
   public isRefreshAt() {
     return false;
@@ -101,9 +117,9 @@ export class DistanceSkill extends Skill<SkillType.Compulsory> {
   }
 
   // tslint:disable-next-line:no-empty
-  public onUse() {}
+  public async onUse() {}
   // tslint:disable-next-line:no-empty
-  public onEffect() {}
+  public async onEffect() {}
 
   public get Distance() {
     return this.distance;
@@ -125,12 +141,6 @@ export abstract class ActiveSkill<
     target: PlayerId,
     selectedTargets: PlayerId[],
   ): boolean;
-  public abstract onUse(
-    room: Room,
-    owner: PlayerId,
-    cardIds?: CardId[],
-    targets?: PlayerId[],
-  ): void;
 
   public isRefreshAt(stage: AllStage): boolean {
     return stage === PlayerStageListEnum.FinishStageEnd;
@@ -149,9 +159,9 @@ export abstract class CardTransformSkill<
     return false;
   }
   // tslint:disable-next-line: no-empty
-  public onEffect() {}
+  public async onEffect() {}
   // tslint:disable-next-line: no-empty
-  public onUse() {}
+  public async onUse() {}
 
   protected abstract override(skill: S): void;
   public abstract canTransform(card: Card): boolean;
@@ -176,9 +186,9 @@ export abstract class RulesBreakerSkill extends Skill<SkillType.Common> {
   }
 
   // tslint:disable-next-line: no-empty
-  public onEffect() {}
+  public async onEffect() {}
   // tslint:disable-next-line: no-empty
-  public onUse() {}
+  public async onUse() {}
 
   public abstract breakRule(room: Room, playerId: PlayerId): void;
 }
@@ -191,9 +201,9 @@ export abstract class FilterSkill extends Skill<SkillType.Compulsory> {
     return false;
   }
   // tslint:disable-next-line: no-empty
-  public onEffect() {}
+  public async onEffect() {}
   // tslint:disable-next-line: no-empty
-  public onUse() {}
+  public async onUse() {}
 
   public abstract canUseCard(
     cardId: CardId,
@@ -221,7 +231,7 @@ export class NullSkill extends Skill<SkillType.Compulsory> {
     return false;
   }
   // tslint:disable-next-line: no-empty
-  public onEffect() {}
+  public async onEffect() {}
   // tslint:disable-next-line: no-empty
-  public onUse() {}
+  public async onUse() {}
 }

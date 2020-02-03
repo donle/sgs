@@ -41,8 +41,8 @@ export class SlashSkill extends ActiveSkill {
     return room.canAttack(room.CurrentPlayer, room.getPlayerById(target));
   }
 
-  onUse(room: Room, owner: PlayerId, cardIds?: CardId[], targets?: PlayerId[]) {
-    room.Processor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, {
+  async onUse(room: Room, owner: PlayerId, cardIds?: CardId[], targets?: PlayerId[]) {
+    await room.Processor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, {
       fromId: room.getPlayerById(owner).Id,
       cardId: cardIds![0],
       toIds: targets!,
@@ -56,7 +56,7 @@ export class SlashSkill extends ActiveSkill {
     });
   }
 
-  onEffect(
+  async onEffect(
     room: Room,
     event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
   ) {
@@ -84,7 +84,7 @@ export class SlashSkill extends ActiveSkill {
           : TranslationPack.translationJsonPatcher('${0} got '),
       };
 
-      room.Processor.onHandleIncomingEvent(
+      await room.Processor.onHandleIncomingEvent(
         GameEventIdentifiers.DamageEvent,
         eventContent,
       );

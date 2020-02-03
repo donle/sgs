@@ -12,9 +12,9 @@ import { Room } from 'core/room/room';
 import { ActiveSkill, SkillType } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-export class NanManRuQingSkill extends ActiveSkill {
+export class WanJianQiFaSkill extends ActiveSkill {
   constructor() {
-    super('nanmanruqing', 'nanmanruqing_description', SkillType.Common);
+    super('wanjianqifa', 'wanjianqifa_description', SkillType.Common);
   }
 
   public targetFilter(room: Room, targets: PlayerId[]): boolean {
@@ -55,7 +55,7 @@ export class NanManRuQingSkill extends ActiveSkill {
         GameEventIdentifiers.AskForCardResponseEvent,
         {
           carMatcher: new CardMatcher({
-            name: ['slash'],
+            name: ['jink'],
           }).toSocketPassenger(),
           byCardId: cardId,
           cardUserId: fromId,

@@ -166,6 +166,11 @@ const gameEventStageList: {
     CardResponseStage.CardResponsed,
     CardResponseStage.AfterCardResponseEffect,
   ],
+  [GameEventIdentifiers.DrawCardEvent]: [
+    DrawCardStage.BeforeDrawCardEffect,
+    DrawCardStage.CardDrawed,
+    DrawCardStage.AfterDrawCardEffect,
+  ],
   [GameEventIdentifiers.CardDropEvent]: [
     CardDropStage.BeforeCardDropEffect,
     CardDropStage.CardDropped,
@@ -193,9 +198,14 @@ const gameEventStageList: {
     PlayerDiedStage.AfterPlayerDied,
   ],
   [GameEventIdentifiers.SkillUseEvent]: [
+    SkillUseStage.BeforeSkillUse,
+    SkillUseStage.SkillUsed,
+    SkillUseStage.AfterSkillUsed,
+  ],
+  [GameEventIdentifiers.SkillEffectEvent]: [
     SkillEffectStage.BeforeSkillEffect,
-    SkillEffectStage.SkillEffect,
-    SkillEffectStage.AfterSkillEffect,
+    SkillEffectStage.SkillEffected,
+    SkillEffectStage.AfterSkillEffected,
   ],
   [GameEventIdentifiers.RecoverEvent]: [
     RecoverEffectStage.BeforeRecoverEffect,
@@ -298,10 +308,15 @@ export const enum PlayerDiedStage {
   AfterPlayerDied,
 }
 
+export const enum SkillUseStage {
+  BeforeSkillUse,
+  SkillUsed,
+  AfterSkillUsed,
+}
 export const enum SkillEffectStage {
   BeforeSkillEffect,
-  SkillEffect,
-  AfterSkillEffect,
+  SkillEffected,
+  AfterSkillEffected,
 }
 
 export const enum RecoverEffectStage {
@@ -324,6 +339,7 @@ export type GameEventStage =
   | PlayerDiedStage
   | DamageEffectStage
   | AimStage
+  | SkillUseStage
   | SkillEffectStage;
 
 export type AllStage = PlayerStageListEnum | GameEventStage;

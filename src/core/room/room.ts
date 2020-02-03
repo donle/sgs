@@ -26,9 +26,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   protected abstract init(): void;
-  public get Id(): RoomId {
-    return this.roomId;
-  }
 
   public abstract notify(
     type: GameEventIdentifiers,
@@ -40,12 +37,14 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     content: EventPicker<typeof type, WorkPlace>,
   ): Promise<void>;
 
-  public abstract drawCards(numberOfCards: number, player?: Player): void;
-  public abstract dropCards(cardIds: CardId[], player?: Player): void;
+  public abstract drawCards(numberOfCards: number, player?: PlayerId): void;
+  public abstract dropCards(cardIds: CardId[], player?: PlayerId): void;
   public abstract async onReceivingAsyncReponseFrom<P>(
     identifier: GameEventIdentifiers,
     playerId?: PlayerId,
   ): Promise<P>;
+
+  public abstract getCardOwnerId(card: CardId): PlayerId | undefined;
 
   public getPlayerById(playerId: PlayerId) {
     const player = this.players.find(player => player.Id === playerId);

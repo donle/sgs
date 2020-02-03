@@ -31,7 +31,7 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.DrawCardEvent]: {
     playerId: PlayerId;
-    cardNumber: number;
+    numberOfCards: number;
   };
   [GameEventIdentifiers.ObtainCardEvent]: {
     fromId?: PlayerId;
@@ -56,6 +56,12 @@ export interface ServerEvent extends EventUtilities {
   };
 
   [GameEventIdentifiers.SkillUseEvent]: {
+    fromId: PlayerId;
+    skillName: string;
+    cardIds?: CardId[];
+    toIds?: PlayerId[];
+  };
+  [GameEventIdentifiers.SkillEffectEvent]: {
     fromId: PlayerId;
     skillName: string;
     cardIds?: CardId[];
@@ -165,7 +171,7 @@ export interface ServerEvent extends EventUtilities {
   };
 }
 
-export type PinDianRsultType = {
+export type PinDianResultType = {
   winner: PlayerId | undefined;
   pindianCards: CardId[];
 };

@@ -1,12 +1,15 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
-import { PinDianRsultType as PinDianResultType } from 'core/event/event.server';
+import { PinDianResultType } from 'core/event/event.server';
 import {
+  CardUseStage,
   DamageEffectStage,
+  DrawCardStage,
   GameEventStage,
   PinDianStage,
   PlayerStage,
   StageProcessor,
+  CardEffectStage,
 } from 'core/game/stage_processor';
 import { PlayerId } from 'core/player/player_props';
 import { ServerRoom } from '../room/room.server';
@@ -38,15 +41,18 @@ export class GameProcessor {
 
   public async onHandleIncomingEvent<
     T extends GameEventIdentifiers,
-    ResultType = any
-  >(
-    identifier: T,
-    event: EventPicker<T, WorkPlace.Client>,
-  ): Promise<ResultType | undefined> {
+    E extends EventPicker<T, WorkPlace>
+  >(identifier: T, event: E): Promise<void> {
     switch (identifier) {
       case GameEventIdentifiers.CardUseEvent:
         await this.onHandleCardUseEvent(
           identifier as GameEventIdentifiers.CardUseEvent,
+          event as any,
+        );
+        break;
+      case GameEventIdentifiers.AimEvent:
+        await this.onHandleAimEvent(
+          identifier as GameEventIdentifiers.AimEvent,
           event as any,
         );
         break;
@@ -62,7 +68,26 @@ export class GameProcessor {
           event as any,
         );
         break;
+      case GameEventIdentifiers.DrawCardEvent:
+        await this.onHandleDrawCardEvent(
+          identifier as GameEventIdentifiers.DrawCardEvent,
+          event as any,
+        );
+        break;
+      case GameEventIdentifiers.CardDropEvent:
+        await this.onHandleDropCardEvent(
+          identifier as GameEventIdentifiers.CardDropEvent,
+          event as any,
+        );
+        break;
+      case GameEventIdentifiers.CardEffectEvent:
+        await this.onHandleCardEffectEvent(
+          identifier as GameEventIdentifiers.CardEffectEvent,
+          event as any,
+        );
+        break;
       default:
+        throw new Error(`Unknow incoming event: ${identifier}`);
     }
 
     return;
@@ -85,6 +110,29 @@ export class GameProcessor {
     }
   };
 
+  private async onHandleDrawCardEvent(
+    identifier: GameEventIdentifiers.DrawCardEvent,
+    event: EventPicker<GameEventIdentifiers.DrawCardEvent, WorkPlace.Server>,
+  ) {
+    this.iterateEachStage(identifier, event, async stage => {
+      if (stage === DrawCardStage.CardDrawed) {
+        const { numberOfCards, playerId } = event;
+        this.room.drawCards(numberOfCards, playerId);
+        this.room.broadcast(identifier, event);
+      }
+    });
+  }
+
+  private async onHandleDropCardEvent(
+    identifier: GameEventIdentifiers.CardDropEvent,
+    event: EventPicker<GameEventIdentifiers.CardDropEvent, WorkPlace.Server>,
+  ) {
+    this.iterateEachStage(identifier, event, async stage => {
+      this.room.dropCards(event.cardIds);
+      this.room.broadcast(identifier, event);
+    });
+  }
+
   private async onHandleDamgeEvent(
     identifier: GameEventIdentifiers.DamageEvent,
     event: EventPicker<GameEventIdentifiers.DamageEvent, WorkPlace.Server>,
@@ -98,7 +146,8 @@ export class GameProcessor {
     });
   }
 
-  private async onHandleCardEffectEvent() {}
+  private async onHandleSkillUseEvent() {}
+  private async onHandleSkillEffectEvent() {}
 
   private async onHandleAimEvent(
     identifier: GameEventIdentifiers.AimEvent,
@@ -108,46 +157,33 @@ export class GameProcessor {
     return event;
   }
 
+  private async onHandleCardEffectEvent(
+    identifier: GameEventIdentifiers.CardEffectEvent,
+    event: EventPicker<GameEventIdentifiers.CardEffectEvent, WorkPlace.Server>,
+  ) {
+    this.iterateEachStage(identifier, event, async stage => {
+      if (stage === CardEffectStage.CardEffect) {
+        const { cardId } = event;
+        Sanguosha.getCardById(cardId).Skill.onEffect(this.room, event);
+      }
+    });
+  }
+
   private async onHandleCardUseEvent(
     identifier: GameEventIdentifiers.CardUseEvent,
     event: EventPicker<GameEventIdentifiers.CardUseEvent, WorkPlace.Client>,
   ) {
-    let eventProcessingResult: any = event;
-
-    this.iterateEachStage(identifier, event, async () => {
-      const { toIds, cardId, fromId } = event;
-      const cardAimEvent: EventPicker<
-        GameEventIdentifiers.AimEvent,
-        WorkPlace.Server
-      > = {
-        byCardId: cardId,
-        toIds: toIds!,
-      };
-      eventProcessingResult = await this.onHandleAimEvent(
-        GameEventIdentifiers.AimEvent,
-        cardAimEvent,
-      );
-    });
+    this.iterateEachStage(identifier, event);
   }
 
   private async onHandlePinDianEvent(
     identifier: GameEventIdentifiers.PinDianEvent,
     event: EventPicker<GameEventIdentifiers.PinDianEvent, WorkPlace.Client>,
   ) {
-    let eventStage = this.stageProcessor.involve(identifier);
-    let pindianResult: PinDianResultType = {
-      winner: undefined,
-      pindianCards: [],
-    };
+    let pindianResult: PinDianResultType | undefined;
 
-    while (eventStage !== undefined) {
-      if (eventStage === PinDianStage.BeforePinDianEffect) {
-        await this.room.trigger(eventStage, event);
-      } else {
-        await this.room.trigger<PinDianResultType>(eventStage, pindianResult);
-      }
-
-      if (eventStage === PinDianStage.PinDianEffect) {
+    this.iterateEachStage(identifier, pindianResult || event, async stage => {
+      if (stage === PinDianStage.PinDianEffect) {
         const { from, toIds } = event;
         const askForPinDianEvent: EventPicker<
           GameEventIdentifiers.AskForPinDianCardEvent,
@@ -200,11 +236,7 @@ export class GameProcessor {
           pindianCards,
         };
       }
-
-      eventStage = this.stageProcessor.nextInstantEvent();
-    }
-
-    return pindianResult;
+    });
   }
 
   public turnToNextPlayer() {
