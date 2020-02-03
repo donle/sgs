@@ -9,7 +9,9 @@ export const enum CardSuit {
   Diamond,
 }
 
-export type CardId = number;
+export type CardId = RealCardId | VirtualCardId;
+export type RealCardId = number;
+export type VirtualCardId = string;
 export type CardProps = {
   number: number;
   suit: CardSuit;
@@ -20,4 +22,10 @@ export type CardProps = {
 
 export type CardChoosingOptions = {
   [Area in PlayerCardsArea]?: number | CardId[];
+};
+
+export type VirtualCardIdProps = {
+  name: string;
+  skillName?: string;
+  containedCardIds: RealCardId[];
 };

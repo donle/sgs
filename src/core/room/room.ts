@@ -10,6 +10,7 @@ import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 
 import { GameInfo } from 'core/game/game_props';
+import { AllStage } from 'core/game/stage_processor';
 import { GameProcessor } from '../game/game_processor';
 
 export type RoomId = number;
@@ -45,6 +46,12 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   ): Promise<P>;
 
   public abstract getCardOwnerId(card: CardId): PlayerId | undefined;
+  public abstract trigger<T = never>(
+    stage: AllStage,
+    content: T extends never
+      ? EventPicker<GameEventIdentifiers, WorkPlace.Server>
+      : T,
+  ): void;
 
   public getPlayerById(playerId: PlayerId) {
     const player = this.players.find(player => player.Id === playerId);
@@ -92,6 +99,21 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public get AlivePlayers() {
     return this.players.filter(player => !player.Dead);
+  }
+
+  public getAlivePlayersFrom(playerId?: PlayerId) {
+    playerId = playerId === undefined ? this.CurrentPlayer.Id : playerId;
+    const alivePlayers = this.AlivePlayers;
+    const fromIndex = alivePlayers.findIndex(player => player.Id === playerId);
+
+    if (fromIndex < 0) {
+      throw new Error(`Player ${playerId} is dead or doesn't exist`);
+    }
+
+    return [
+      ...alivePlayers.slice(fromIndex),
+      ...alivePlayers.slice(0, fromIndex),
+    ];
   }
 
   private onSeatDistance(from: Player, to: Player) {

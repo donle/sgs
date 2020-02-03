@@ -1,7 +1,13 @@
 import { Sanguosha } from 'core/game/engine';
 import { GameCardExtensions } from 'core/game/game_props';
 import { CardTransformSkill, Skill } from 'core/skills/skill';
-import { CardId, CardSuit } from './libs/card_props';
+import {
+  CardId,
+  CardSuit,
+  RealCardId,
+  VirtualCardId,
+  VirtualCardIdProps,
+} from './libs/card_props';
 
 export abstract class Card {
   protected abstract id: CardId;
@@ -65,6 +71,10 @@ export abstract class Card {
   public get Package() {
     return this.fromPackage;
   }
+
+  public isVirtualCard() {
+    return false;
+  }
 }
 
 export const enum CardType {
@@ -93,7 +103,11 @@ export class VirtualCard<T extends Card> extends Card {
   protected cardNumber = 0;
   protected suit = CardSuit.NoSuit;
 
-  constructor(viewAsCardName: string, private cards: Card[], skill?: Skill) {
+  constructor(
+    viewAsCardName: string,
+    private cardIds: RealCardId[],
+    skill?: Skill,
+  ) {
     super();
 
     const viewAsCard = Sanguosha.getCardByName(viewAsCardName) as T;
@@ -109,25 +123,49 @@ export class VirtualCard<T extends Card> extends Card {
     this.skill = skill ? skill : this.viewAs.Skill;
     this.cardType = this.viewAs.Type;
 
-    if (cards.length === 1) {
-      this.cardNumber = cards[0].CardNumber;
-      this.suit = cards[0].Suit;
+    if (this.cardIds.length === 1) {
+      const card = Sanguosha.getCardById(this.cardIds[0]);
+      this.cardNumber = card.CardNumber;
+      this.suit = card.Suit;
     }
+  }
+
+  public static parseId<T extends Card>(cardId: VirtualCardId) {
+    const parsedId = JSON.parse(cardId) as VirtualCardIdProps;
+    const skill =
+      parsedId.skillName !== undefined
+        ? Sanguosha.getSkillBySkillName(parsedId.skillName)
+        : undefined;
+    return VirtualCard.create<T>(parsedId.name, parsedId.containedCardIds, skill);
   }
 
   public static create<T extends Card>(
     viewAsCardName: string,
-    cards: Card[] = [],
+    cardIds: RealCardId[] = [],
     skill?: Skill,
   ) {
-    return new VirtualCard<T>(viewAsCardName, cards, skill);
+    return new VirtualCard<T>(viewAsCardName, cardIds, skill);
   }
 
-  public get ActualCards() {
-    return this.cards;
+  public get Id() {
+    const virtualCardIdJSONObject: VirtualCardIdProps = {
+      name: this.name,
+      skillName: this.skill.Name,
+      containedCardIds: this.cardIds,
+    }
+
+    return JSON.stringify(virtualCardIdJSONObject);
+  }
+
+  public get ActualCardIds() {
+    return this.cardIds;
   }
 
   public get Skill() {
     return this.skill;
+  }
+
+  public isVirtualCard() {
+    return true;
   }
 }

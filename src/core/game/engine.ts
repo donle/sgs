@@ -1,5 +1,5 @@
-import { Card } from 'core/cards/card';
-import { CardId } from 'core/cards/libs/card_props';
+import { Card, VirtualCard } from 'core/cards/card';
+import { CardId, VirtualCardId } from 'core/cards/libs/card_props';
 import { Character, CharacterId } from 'core/characters/character';
 import { Skill } from 'core/skills/skill';
 import { GameCardExtensions, GameCharacterExtensions } from './game_props';
@@ -57,8 +57,19 @@ export class Sanguosha {
     return character;
   }
 
-  public static getCardById<T extends Card>(cardId: CardId): T {
+  public static getVirtualCardById<T extends Card>(
+    cardId: VirtualCardId,
+  ): VirtualCard<T> {
+    return VirtualCard.parseId<T>(cardId);
+  }
+  public static getCardById<T extends Card>(
+    cardId: CardId,
+  ): T {
     this.tryToThrowUninitializedError();
+
+    if (typeof cardId === 'string') {
+      return this.getVirtualCardById<T>(cardId) as any;
+    }
 
     const card = Sanguosha.cards.find(card => card.Id === cardId) as
       | T
@@ -104,6 +115,10 @@ export class Sanguosha {
     }
 
     return character;
+  }
+
+  public static isVirtualCardId(cardId: CardId) {
+    return typeof cardId === 'string';
   }
 
   public static get Version() {

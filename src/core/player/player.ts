@@ -302,9 +302,9 @@ export abstract class Player implements PlayerInfo {
         equipCard.EquipCategory,
     );
 
-    let lostEquipId: number | undefined;
+    let lostEquipId: CardId | undefined;
     if (currentEquipIndex >= 0) {
-      lostEquipId = this.playerCards[PlayerCardsArea.EquipArea].splice(currentEquipIndex, 1)[0];
+      lostEquipId = this.playerCards[PlayerCardsArea.EquipArea].splice(currentEquipIndex, 1)[0] as CardId;
     }
 
     this.playerCards[PlayerCardsArea.EquipArea].push(equipCard.Id);

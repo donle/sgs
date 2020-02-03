@@ -11,6 +11,7 @@
   "devDependencies": {
     "@types/express": "^4.17.2",
     "@types/socket.io": "^2.1.4",
+    "cross-env": "^7.0.0",
     "tsconfig": "^7.0.0",
     "tsconfig-paths": "^3.9.0"
   },
@@ -18,6 +19,8 @@
     "patch": "ts-node ../pre_release.ts",
     "dev": "NODE_PATH=../ ts-node -P ./tsconfig.server.json ./main.ts",
     "build": "NODE_PATH=../ tsc -p ./tsconfig.server.json",
+    "dev:win": "cross-env NODE_PATH=../ ts-node -P ./tsconfig.server.json ./main.ts",
+    "build:win": "cross-env NODE_PATH=../ tsc -p ./tsconfig.server.json",
     "start": "yarn build && NODE_PATH=./build DEV_MODE=prod node ./build/server/main.js"
   }
 }
