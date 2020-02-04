@@ -1,6 +1,6 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { CardId } from 'core/cards/libs/card_props';
 import {
+  ClientEventFinder,
   EventPicker,
   GameEventIdentifiers,
   ServerEventFinder,
@@ -9,12 +9,13 @@ import {
 import { DamageType } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { ActiveSkill, SkillType } from 'core/skills/skill';
+import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
+@CommonSkill
 export class NanManRuQingSkill extends ActiveSkill {
   constructor() {
-    super('nanmanruqing', 'nanmanruqing_description', SkillType.Common);
+    super('nanmanruqing', 'nanmanruqing_description');
   }
 
   public targetFilter(room: Room, targets: PlayerId[]): boolean {
@@ -29,24 +30,18 @@ export class NanManRuQingSkill extends ActiveSkill {
   public isAvailableTarget(): boolean {
     return false;
   }
-  public async onUse(room: Room, owner: PlayerId, cardIds?: CardId[]) {
-    const eventObject: EventPicker<
-      GameEventIdentifiers.CardUseEvent,
-      WorkPlace.Server
-    > = {
-      fromId: owner,
-      toIds: room.AlivePlayers.filter(player => player.Id !== owner).map(
-        player => player.Id,
-      ),
-      cardId: cardIds![0],
-    };
+  public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
+    event.toIds = room.AlivePlayers.filter(player => player.Id !== event.fromId).map(
+      player => player.Id,
+    );
 
-    await room.Processor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, eventObject);
+    await room.Processor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, event);
+    return true;
   }
 
   public async onEffect(
     room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
+    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
   ) {
     const { toIds, fromId, cardId } = event;
 
@@ -90,6 +85,7 @@ export class NanManRuQingSkill extends ActiveSkill {
         await room.Processor.onHandleIncomingEvent(GameEventIdentifiers.DamageEvent, eventContent);
       }
     }
+    return true;
   }
 
   canUse() {

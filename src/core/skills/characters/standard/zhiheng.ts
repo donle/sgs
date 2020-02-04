@@ -1,14 +1,19 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
+import {
+  ClientEventFinder,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from 'core/event/event';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { ActiveSkill, SkillType } from 'core/skills/skill';
+import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
+@CommonSkill
 export class ZhiHeng extends ActiveSkill {
   constructor() {
-    super('zhiheng', 'zhiheng_description', SkillType.Common);
+    super('zhiheng', 'zhiheng_description');
   }
 
   canUse(room: Room, owner: Player) {
@@ -37,34 +42,46 @@ export class ZhiHeng extends ActiveSkill {
     );
   }
 
-  async onUse(room: Room, owner: PlayerId, cardIds: CardId[]) {
-    await room.Processor.onHandleIncomingEvent(GameEventIdentifiers.SkillUseEvent, {
-      translationsMessage: TranslationPack.translationJsonPatcher(
-        '{0} activates skill {1}',
-        room.CurrentPlayer.Character.Name,
-        this.name,
-      ),
-      cardIds,
-      fromId: room.CurrentPlayer.Id,
-      triggeredBySkillName: this.name,
-    });
+  async onUse(
+    room: Room,
+    event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
+  ) {
+    event.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} activates skill {1}',
+      room.CurrentPlayer.Character.Name,
+      this.name,
+    );
+
+    return true;
   }
 
-  onEffect(
+  async onEffect(
     room: Room,
     skillUseEvent: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ): void {
-    //TODO: handled in game processor
-    const numberOfCards = skillUseEvent.cardIds!.length;
-    room.dropCards(skillUseEvent.cardIds!);
-    room.broadcast(GameEventIdentifiers.CardDropEvent, {
-      fromId: room.CurrentPlayer.Id,
-      cardIds: skillUseEvent.cardIds!,
-    });
+  ) {
+    if (!skillUseEvent.cardIds) {
+      throw new Error('Unable to get zhiheng cards');
+    }
 
-    room.Processor.onHandleIncomingEvent(GameEventIdentifiers.DrawCardEvent, {
-      playerId: room.CurrentPlayer.Id,
-      numberOfCards,
-    });
+    const dropCardEvent: ServerEventFinder<GameEventIdentifiers.CardDropEvent> = {
+      fromId: skillUseEvent.fromId,
+      cardIds: skillUseEvent.cardIds,
+    };
+
+    await room.Processor.onHandleIncomingEvent(
+      GameEventIdentifiers.CardDropEvent,
+      dropCardEvent,
+    );
+
+    const numberOfCards = skillUseEvent.cardIds.length;
+    await room.Processor.onHandleIncomingEvent(
+      GameEventIdentifiers.DrawCardEvent,
+      {
+        playerId: room.CurrentPlayer.Id,
+        numberOfCards,
+      },
+    );
+
+    return true;
   }
 }

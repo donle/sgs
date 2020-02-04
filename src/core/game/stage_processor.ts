@@ -151,6 +151,11 @@ const playerStagesList: {
 const gameEventStageList: {
   [K in GameEventIdentifiers]?: GameEventStage[];
 } = {
+  [GameEventIdentifiers.GameStartEvent]: [
+    GameStartStage.BeforeGameStart,
+    GameStartStage.GameStarted,
+    GameStartStage.AfterGameStarted,
+  ],
   [GameEventIdentifiers.CardUseEvent]: [
     CardUseStage.BeforeCardUseEffect,
     CardUseStage.CardUsed,
@@ -234,6 +239,12 @@ const gameEventStageList: {
     AimStage.AfterAimmed,
   ],
 };
+
+export const enum GameStartStage {
+  BeforeGameStart,
+  GameStarted,
+  AfterGameStarted,
+}
 
 export const enum AimStage {
   OnAim,
@@ -326,6 +337,7 @@ export const enum RecoverEffectStage {
 }
 
 export type GameEventStage =
+  | GameStartStage
   | CardEffectStage
   | CardUseStage
   | CardDropStage
@@ -400,6 +412,11 @@ export class StageProcessor {
     while (this.isInsideEvent(identifier, this.currentGameEventStage)) {
       this.nextInstantEvent();
     }
+  }
+
+  public terminateEventProcess() {
+    this.processingGameEvent = false;
+    this.currentGameEventStage = undefined;
   }
 
   public nextStage(): PlayerStage | undefined {

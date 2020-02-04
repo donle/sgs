@@ -10,7 +10,7 @@ import {
 } from './libs/card_props';
 
 export abstract class Card {
-  protected abstract id: CardId;
+  protected abstract id: RealCardId;
   protected abstract cardNumber: number;
   protected abstract suit: CardSuit;
   protected abstract name: string;
@@ -21,7 +21,7 @@ export abstract class Card {
 
   protected abstract fromPackage: GameCardExtensions;
 
-  public get Id() {
+  public get Id(): CardId {
     return this.id;
   }
 
@@ -147,7 +147,7 @@ export class VirtualCard<T extends Card> extends Card {
     return new VirtualCard<T>(viewAsCardName, cardIds, skill);
   }
 
-  public get Id() {
+  public get Id(): VirtualCardId {
     const virtualCardIdJSONObject: VirtualCardIdProps = {
       name: this.name,
       skillName: this.skill.Name,

@@ -7,7 +7,7 @@ import {
   PlayerId,
   PlayerInfo,
 } from 'core/player/player_props';
-import { EventUtilities, GameEventIdentifiers } from './event';
+import { EventUtilities, GameEventIdentifiers, ServerEventFinder } from './event';
 
 //@@todo: to be updated
 export interface ServerEvent extends EventUtilities {
@@ -20,6 +20,11 @@ export interface ServerEvent extends EventUtilities {
     fromId?: PlayerId;
     cardId: CardId;
     toIds?: PlayerId[];
+  };
+  [GameEventIdentifiers.AimEvent]: {
+    bySkill?: string;
+    byCardId?: CardId;
+    toIds: PlayerId[];
   };
   [GameEventIdentifiers.CardResponseEvent]: {
     fromId: PlayerId;
@@ -49,23 +54,19 @@ export interface ServerEvent extends EventUtilities {
     fromId?: PlayerId;
   };
 
-  [GameEventIdentifiers.AimEvent]: {
-    bySkill?: string;
-    byCardId?: CardId;
-    toIds: PlayerId[];
-  };
-
   [GameEventIdentifiers.SkillUseEvent]: {
     fromId: PlayerId;
     skillName: string;
     cardIds?: CardId[];
     toIds?: PlayerId[];
+    triggeredOnEvent?: ServerEventFinder<GameEventIdentifiers>;
   };
   [GameEventIdentifiers.SkillEffectEvent]: {
     fromId: PlayerId;
     skillName: string;
     cardIds?: CardId[];
     toIds?: PlayerId[];
+    triggeredOnEvent?: ServerEventFinder<GameEventIdentifiers>;
   };
   [GameEventIdentifiers.LoseHpEvent]: {
     lostHp: number;
@@ -79,9 +80,10 @@ export interface ServerEvent extends EventUtilities {
     toId: PlayerId;
   };
   [GameEventIdentifiers.RecoverEvent]: {
-    recoverBy: PlayerId;
+    recoverBy?: PlayerId;
     cardIds?: CardId[];
     recoveredHp: number;
+    toId: PlayerId;
   };
   [GameEventIdentifiers.JudgeEvent]: {
     toId: PlayerId;

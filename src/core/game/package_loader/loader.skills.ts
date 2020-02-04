@@ -1,3 +1,4 @@
+import { JinkSkill } from 'core/skills/characters/standard/jink';
 import { JiuYuan } from 'core/skills/characters/standard/jiuyuan';
 import { PeachSkill } from 'core/skills/characters/standard/peach';
 import { SlashSkill } from 'core/skills/characters/standard/slash';
@@ -11,6 +12,7 @@ const allSkills = [
   new JiuYuan(),
   new ZiXinSkill(),
   new PeachSkill(),
+  new JinkSkill(),
 ];
 
 export class SkillLoader {

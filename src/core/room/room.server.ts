@@ -1,6 +1,15 @@
 import { Card } from 'core/cards/card';
-import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
-import { AllStage } from 'core/game/stage_processor';
+import {
+  EventPicker,
+  GameEventIdentifiers,
+  ServerEventFinder,
+  WorkPlace,
+} from 'core/event/event';
+import {
+  AllStage,
+  SkillEffectStage,
+  SkillUseStage,
+} from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
 import { Player } from 'core/player/player';
 import { ServerPlayer } from 'core/player/player.server';
@@ -107,9 +116,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async trigger<T = never>(
     stage: AllStage,
-    content: T extends never
-      ? EventPicker<GameEventIdentifiers, WorkPlace.Server>
-      : T,
+    content: T extends never ? ServerEventFinder<GameEventIdentifiers> : T,
   ) {
     if (!this.CurrentPlayer) {
       throw new Error('current player is undefined');
@@ -131,14 +138,39 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           skill.isTriggerable(stage) &&
           skill.canUse(this, this.players[i], content)
         ) {
+          const triggerSkillEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent> = {
+            fromId: this.players[i].Id,
+            skillName: skill.Name,
+            triggeredOnEvent: content,
+          };
           if (skill.isAutoTrigger()) {
-            skill.onTrigger(this, this.players[i], content);
+            await this.Processor.onHandleIncomingEvent(
+              GameEventIdentifiers.SkillUseEvent,
+              triggerSkillEvent,
+              async stage => {
+                if (stage === SkillUseStage.SkillUsed) {
+                  return await skill.onTrigger(this, triggerSkillEvent);
+                }
+
+                return true;
+              },
+            );
+            await this.Processor.onHandleIncomingEvent(
+              GameEventIdentifiers.SkillEffectEvent,
+              triggerSkillEvent,
+              async stage => {
+                if (stage === SkillEffectStage.SkillEffected) {
+                  return await skill.onEffect(this, triggerSkillEvent);
+                }
+                return true;
+              },
+            );
           } else {
             this.notify(
               GameEventIdentifiers.AskForInvokeEvent,
               {
                 invokeSkillNames: [skill.Name],
-                to: this.players[i].Id,
+                toId: this.players[i].Id,
               },
               this.players[i].Id,
             );
@@ -147,7 +179,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               GameEventIdentifiers.AskForInvokeEvent,
               this.players[i].Id,
             );
-            invoke && skill.onTrigger(this, this.players[i], content);
+            if (invoke) {
+              await skill.onTrigger(this, triggerSkillEvent);
+              await skill.onEffect(this, content);
+            }
           }
         }
       }

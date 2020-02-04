@@ -3,7 +3,7 @@ import { Card, CardType, EquipCardCategory } from './card';
 import { GameCardExtensions } from 'core/game/game_props';
 import { AllStage } from 'core/game/stage_processor';
 import { DistanceSkill, Skill } from 'core/skills/skill';
-import { CardId, CardSuit } from './libs/card_props';
+import { CardId, CardSuit, RealCardId } from './libs/card_props';
 
 export abstract class EquipCard extends Card {
   protected cardType = CardType.Equip;
@@ -20,7 +20,7 @@ export abstract class EquipCard extends Card {
 export abstract class WeaponCard extends EquipCard {
   protected generalName: string;
   constructor(
-    protected id: CardId,
+    protected id: RealCardId,
     protected cardNumber: number,
     protected suit: CardSuit,
     protected name: string,
@@ -42,7 +42,7 @@ export abstract class ArmorCard extends EquipCard {
   protected generalName: string;
 
   constructor(
-    protected id: CardId,
+    protected id: RealCardId,
     protected cardNumber: number,
     protected suit: CardSuit,
     protected name: string,
@@ -72,7 +72,7 @@ export class DefenseRideCard extends RideCard {
   protected generalName: string;
 
   constructor(
-    protected id: CardId,
+    protected id: RealCardId,
     protected cardNumber: number,
     protected suit: CardSuit,
     protected name: string,
@@ -91,7 +91,7 @@ export class OffenseRideCard extends RideCard {
   protected generalName: string;
 
   constructor(
-    protected id: CardId,
+    protected id: RealCardId,
     protected cardNumber: number,
     protected suit: CardSuit,
     protected name: string,

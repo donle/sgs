@@ -366,7 +366,7 @@ export abstract class Player implements PlayerInfo {
       card => Sanguosha.getCardById(card) instanceof WeaponCard,
     );
     if (weapon !== undefined) {
-      const weaponCard: WeaponCard = Sanguosha.getCardById(weapon);
+      const weaponCard = Sanguosha.getCardById<WeaponCard>(weapon);
       defaultDistance += weaponCard.AttackDistance;
     }
 
@@ -434,7 +434,7 @@ export abstract class Player implements PlayerInfo {
       | 'filter'
       | 'transform'
       | 'distance',
-  ): T[] {
+    ): T[] {
     if (!this.playerCharacter) {
       throw new Error(
         `Player ${this.playerName} has not been initialized with a character yet`,

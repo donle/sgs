@@ -1,30 +1,37 @@
 import { CharacterNationality } from 'core/characters/character';
-import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
+import {
+  ClientEventFinder,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from 'core/event/event';
 import { AllStage, RecoverEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { SkillType, TriggerSkill } from 'core/skills/skill';
+import { CompulsorySkill, LordSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-export class JiuYuan extends TriggerSkill<SkillType.Compulsory> {
+@CompulsorySkill
+@LordSkill
+export class JiuYuan extends TriggerSkill {
   public isAutoTrigger() {
     return true;
   }
 
   constructor() {
-    super('jiuyuan', 'jiuyuan_description', SkillType.Compulsory, false, true);
+    super('jiuyuan', 'jiuyuan_description');
   }
 
   public canUse(
     room: Room,
     owner: Player,
-    content?: ClientEventFinder<GameEventIdentifiers.RecoverEvent>,
+    content: ClientEventFinder<GameEventIdentifiers.RecoverEvent>,
   ) {
     return (
-      content !== undefined &&
+      content.recoverBy !== undefined &&
       content.toId === owner.Id &&
-      owner.Id !== content.fromId &&
-      room.getPlayerById(content.fromId).Nationality === CharacterNationality.Wu
+      owner.Id !== content.recoverBy &&
+      room.getPlayerById(content.recoverBy).Nationality ===
+        CharacterNationality.Wu
     );
   }
 
@@ -32,27 +39,36 @@ export class JiuYuan extends TriggerSkill<SkillType.Compulsory> {
     return stage === RecoverEffectStage.BeforeRecoverEffect;
   }
 
-  async onTrigger(room: Room, owner: Player) {
-    await room.Processor.onHandleIncomingEvent(GameEventIdentifiers.SkillUseEvent, {
-      translationsMessage: TranslationPack.translationJsonPatcher(
-        '{0} activates skill {1}',
-        room.getPlayerById(owner.Id).Name,
-        this.name,
-      ),
-      fromId: owner.Id,
-      triggeredBySkillName: this.name,
-    });
+  async onTrigger(
+    room: Room,
+    event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
+  ) {
+    event.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} activates skill {1}',
+      room.getPlayerById(event.fromId).Name,
+      this.name,
+    );
+
+    return true;
   }
 
   async onEffect(
     room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.RecoverEvent>,
+    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ) {
+    const { triggeredOnEvent } = event;
+    const recoverEvent = triggeredOnEvent as ClientEventFinder<
+      GameEventIdentifiers.RecoverEvent
+    >;
     if (
-      event.toId == room.CurrentPlayer.Id &&
-      room.getPlayerById(event.fromId).Nationality === CharacterNationality.Wu
+      recoverEvent.recoverBy &&
+      recoverEvent.toId !== recoverEvent.recoverBy &&
+      room.getPlayerById(recoverEvent.recoverBy).Nationality ===
+        CharacterNationality.Wu
     ) {
-      event.recover++;
+      recoverEvent.recoveredHp++;
     }
+
+    return true;
   }
 }

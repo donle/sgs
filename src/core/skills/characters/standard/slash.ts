@@ -1,5 +1,5 @@
-import { CardId } from 'core/cards/libs/card_props';
 import {
+  ClientEventFinder,
   EventPicker,
   GameEventIdentifiers,
   ServerEventFinder,
@@ -9,14 +9,15 @@ import { DamageType } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { ActiveSkill, SkillType } from 'core/skills/skill';
+import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
+@CommonSkill
 export class SlashSkill extends ActiveSkill {
   protected damageType: DamageType = DamageType.Normal;
 
   constructor() {
-    super('slash', 'slash_skill_description', SkillType.Common);
+    super('slash', 'slash_skill_description');
   }
 
   canUse(room: Room, owner: Player) {
@@ -41,19 +42,18 @@ export class SlashSkill extends ActiveSkill {
     return room.canAttack(room.CurrentPlayer, room.getPlayerById(target));
   }
 
-  async onUse(room: Room, owner: PlayerId, cardIds?: CardId[], targets?: PlayerId[]) {
-    await room.Processor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, {
-      fromId: room.getPlayerById(owner).Id,
-      cardId: cardIds![0],
-      toIds: targets!,
-      triggeredBySkillName: this.name,
-      translationsMessage: TranslationPack.translationJsonPatcher(
-        '{0} uses card {2} to {1}',
-        room.CurrentPlayer.Name,
-        room.getPlayerById(targets![0]).Name,
-        this.name,
-      ),
-    });
+  async onUse(
+    room: Room,
+    event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
+  ) {
+    event.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} uses card {2} to {1}',
+      room.CurrentPlayer.Name,
+      room.getPlayerById(event.toIds![0]).Name,
+      this.name,
+    );
+
+    return true;
   }
 
   async onEffect(
@@ -89,6 +89,8 @@ export class SlashSkill extends ActiveSkill {
         eventContent,
       );
     }
+
+    return true;
   }
 }
 

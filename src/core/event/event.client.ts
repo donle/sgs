@@ -23,6 +23,7 @@ export interface ClientEvent extends EventUtilities {
 
   [GameEventIdentifiers.SkillUseEvent]: {
     fromId: PlayerId;
+    skillName: string;
     cardIds?: CardId[];
     toIds?: PlayerId[];
   };
@@ -43,9 +44,10 @@ export interface ClientEvent extends EventUtilities {
     judgeCardId: CardId;
   };
   [GameEventIdentifiers.RecoverEvent]: {
-    fromId: PlayerId;
+    recoverBy?: PlayerId;
+    cardIds?: CardId[];
+    recoveredHp: number;
     toId: PlayerId;
-    recover: number;
   };
   [GameEventIdentifiers.PinDianEvent]: {
     from: PlayerId;
