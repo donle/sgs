@@ -9,10 +9,15 @@ import { DamageType } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { ActiveSkill, CommonSkill } from 'core/skills/skill';
+import {
+  ActiveSkill,
+  CommonSkill,
+  TriggerableTimes,
+} from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
+@TriggerableTimes(1)
 export class SlashSkill extends ActiveSkill {
   protected damageType: DamageType = DamageType.Normal;
 

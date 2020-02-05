@@ -84,10 +84,14 @@ export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.AskForWuXieKeJiEvent]: {};
   [GameEventIdentifiers.AskForCardResponseEvent]: {
     cardId?: CardId;
+    fromId: PlayerId;
   };
   [GameEventIdentifiers.AskForChoosingCardEvent]: {};
   [GameEventIdentifiers.AskForChoosingCardFromPlayerEvent]: {};
-  [GameEventIdentifiers.AskForCardUseEvent]: {};
+  [GameEventIdentifiers.AskForCardUseEvent]: {
+    cardId?: CardId;
+    fromId: PlayerId;
+  };
   [GameEventIdentifiers.AskForCardDisplayEvent]: {};
   [GameEventIdentifiers.AskForCardDropEvent]: {};
   [GameEventIdentifiers.AskForChooseCharacterEvent]: {};

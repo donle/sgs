@@ -4,7 +4,6 @@ import {
   ServerEventFinder,
 } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { PlayerStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
@@ -17,10 +16,7 @@ export class PeachSkill extends ActiveSkill {
   }
 
   canUse(room: Room, owner: Player) {
-    return (
-      room.CurrentPlayer === owner &&
-      room.CurrentPlayerStage === PlayerStage.PlayCardStage
-    );
+    return owner.Hp < owner.MaxHp;
   }
 
   cardFilter() {

@@ -238,6 +238,16 @@ const gameEventStageList: {
     AimStage.AfterAim,
     AimStage.AfterAimmed,
   ],
+  [GameEventIdentifiers.AskForCardUseEvent]: [
+    AskForQueryStage.AskForCardUseStage,
+  ],
+  [GameEventIdentifiers.AskForCardResponseEvent]: [
+    AskForQueryStage.AskForCardResponseStage,
+  ],
+  [GameEventIdentifiers.AskForWuXieKeJiEvent]: [
+    AskForQueryStage.AskForWuXieKeJiStage,
+  ],
+  [GameEventIdentifiers.AskForPeachEvent]: [AskForQueryStage.AskForPeachStage],
 };
 
 export const enum GameStartStage {
@@ -336,6 +346,13 @@ export const enum RecoverEffectStage {
   AfterRecoverEffect,
 }
 
+export const enum AskForQueryStage {
+  AskForPeachStage,
+  AskForWuXieKeJiStage,
+  AskForCardResponseStage,
+  AskForCardUseStage,
+}
+
 export type GameEventStage =
   | GameStartStage
   | CardEffectStage
@@ -352,7 +369,8 @@ export type GameEventStage =
   | DamageEffectStage
   | AimStage
   | SkillUseStage
-  | SkillEffectStage;
+  | SkillEffectStage
+  | AskForQueryStage;
 
 export type AllStage = PlayerStageListEnum | GameEventStage;
 
@@ -409,8 +427,19 @@ export class StageProcessor {
   }
 
   public skipEventProcess(identifier: GameEventIdentifiers) {
+    let lastStage = this.currentGameEventStage;
     while (this.isInsideEvent(identifier, this.currentGameEventStage)) {
       this.nextInstantEvent();
+
+      if (
+        lastStage !== undefined &&
+        this.currentGameEventStage !== undefined &&
+        lastStage > this.currentGameEventStage
+      ) {
+        break;
+      }
+
+      lastStage = this.currentGameEventStage;
     }
   }
 

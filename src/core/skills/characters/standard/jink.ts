@@ -1,38 +1,46 @@
-import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
+import { CardMatcher } from 'core/cards/libs/card_matcher';
+import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
+import { AllStage, AskForQueryStage } from 'core/game/stage_processor';
+import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { ActiveSkill, CommonSkill } from 'core/skills/skill';
+import { CommonSkill, ResponsiveSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
-export class JinkSkill extends ActiveSkill {
+export class JinkSkill extends ResponsiveSkill {
   constructor() {
     super('jink', 'jink_skill_description');
   }
 
-  canUse() {
+  isAutoTrigger() {
     return false;
   }
 
-  isAvailableCard() {
-    return false;
-  }
-
-  cardFilter() {
-    return false;
-  }
-
-  targetFilter(): boolean {
-    return false;
-  }
-
-  isAvailableTarget() {
-    return false;
-  }
-
-  async onUse(
+  canUse(
     room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
+    owner: Player,
+    content: ServerEventFinder<
+      | GameEventIdentifiers.AskForCardResponseEvent
+      | GameEventIdentifiers.AskForCardUseEvent
+    >,
+  ) {
+    const { carMatcher } = content;
+    return CardMatcher.match(carMatcher, {
+      name: ['jink'],
+    });
+  }
+
+  isTriggerable(stage: AskForQueryStage): boolean {
+    return (
+      stage === AskForQueryStage.AskForCardUseStage ||
+      stage === AskForQueryStage.AskForCardResponseStage
+    );
+  }
+
+  async onTrigger(
+    room: Room,
+    event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
   ) {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} uses card {1}',

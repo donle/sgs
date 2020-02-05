@@ -129,7 +129,7 @@ export interface ServerEvent extends EventUtilities {
     cardName: string;
   };
   [GameEventIdentifiers.AskForCardResponseEvent]: {
-    macther: CardMatcherSocketPassenger;
+    carMatcher: CardMatcherSocketPassenger;
     byCardId?: CardId;
     cardUserId?: PlayerId;
   };

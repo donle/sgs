@@ -4,20 +4,16 @@ import {
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
-import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { ActiveSkill, CommonSkill } from 'core/skills/skill';
+import { ActiveSkill, CommonSkill, TriggerableTimes } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
+@TriggerableTimes(1)
 export class ZhiHeng extends ActiveSkill {
   constructor() {
     super('zhiheng', 'zhiheng_description');
-  }
-
-  canUse(room: Room, owner: Player) {
-    return room.CurrentPlayer === owner && !owner.hasUsedSkill(this.name);
   }
 
   targetFilter(room: Room, targets: PlayerId[]): boolean {
@@ -57,7 +53,7 @@ export class ZhiHeng extends ActiveSkill {
 
   async onEffect(
     room: Room,
-    skillUseEvent: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
+    skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ) {
     if (!skillUseEvent.cardIds) {
       throw new Error('Unable to get zhiheng cards');

@@ -6,7 +6,7 @@ import {
   ServerEventFinder,
 } from 'core/event/event';
 import { UNLIMITED_TRIGGERING_TIMES } from 'core/game/game_props';
-import { AllStage, PlayerStageListEnum } from 'core/game/stage_processor';
+import { AllStage, PlayerStageListEnum, AskForQueryStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -18,33 +18,143 @@ export const enum SkillType {
   Limit,
 }
 
-export function CommonSkill(constructorFunction: Function) {
-  constructorFunction.prototype.skillType = SkillType.Common;
+type SKillConstructor<T extends Skill> = new (
+  name: string,
+  description: string,
+) => T;
+function onCalculatingSkillUsageWrapper(
+  skillType: SkillType,
+  constructor: new () => any,
+): any {
+  return class extends constructor {
+    protected triggeredTimes: number = 0;
+    protected skillType = skillType;
+
+    constructor() {
+      super();
+
+      if (
+        this.skillType === SkillType.Awaken ||
+        this.skillType === SkillType.Limit
+      ) {
+        this.triggeredTimes = 1;
+      }
+    }
+
+    public async onUse(
+      room: Room,
+      event: ClientEventFinder<
+        GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent
+      >,
+    ) {
+      const result = await super.onUse(room, event);
+      this.triggeredTimes++;
+
+      return result;
+    }
+  } as any;
 }
-export function AwakeningSkill(constructorFunction: Function) {
-  constructorFunction.prototype.skillType = SkillType.Awaken;
+
+function skillPropertyWrapper(
+  options: {
+    lordSkill?: boolean;
+    shadowSkill?: boolean;
+    triggerableTimes?: number;
+  },
+  constructor: new () => any,
+): any {
+  return class extends constructor {
+    private triggerableTimes: number;
+    private lordSkill: boolean;
+    private shadowSkill: boolean;
+
+    constructor() {
+      super();
+
+      if (options.triggerableTimes !== undefined) {
+        this.triggerableTimes = options.triggerableTimes;
+      }
+      if (options.lordSkill !== undefined) {
+        this.lordSkill = options.lordSkill;
+      }
+      if (options.shadowSkill !== undefined) {
+        this.shadowSkill = options.shadowSkill;
+      }
+    }
+  } as any;
 }
-export function LimitSkill(constructorFunction: Function) {
-  constructorFunction.prototype.skillType = SkillType.Limit;
+
+export function CommonSkill<T extends Skill>(
+  constructorFunction: SKillConstructor<T>,
+) {
+  return onCalculatingSkillUsageWrapper(
+    SkillType.Common,
+    constructorFunction as any,
+  );
 }
-export function CompulsorySkill(constructorFunction: Function) {
-  constructorFunction.prototype.skillType = SkillType.Compulsory;
+export function AwakeningSkill<T extends Skill>(
+  constructorFunction: SKillConstructor<T>,
+) {
+  return onCalculatingSkillUsageWrapper(
+    SkillType.Awaken,
+    constructorFunction as any,
+  );
 }
-export function LordSkill(constructorFunction: Function) {
-  constructorFunction.prototype.lordSkill = true;
+export function LimitSkill<T extends Skill>(
+  constructorFunction: SKillConstructor<T>,
+) {
+  return onCalculatingSkillUsageWrapper(
+    SkillType.Limit,
+    constructorFunction as any,
+  );
 }
-export function ShadowSkill(constructorFunction: Function) {
-  constructorFunction.prototype.shadowSkill = true;
+export function CompulsorySkill<T extends Skill>(
+  constructorFunction: SKillConstructor<T>,
+) {
+  return onCalculatingSkillUsageWrapper(
+    SkillType.Compulsory,
+    constructorFunction as any,
+  );
+}
+export function LordSkill<T extends Skill>(
+  constructorFunction: SKillConstructor<T>,
+) {
+  return skillPropertyWrapper(
+    {
+      lordSkill: true,
+    },
+    constructorFunction as any,
+  );
+}
+export function ShadowSkill<T extends Skill>(
+  constructorFunction: SKillConstructor<T>,
+) {
+  return skillPropertyWrapper(
+    {
+      shadowSkill: true,
+    },
+    constructorFunction as any,
+  );
+}
+export function TriggerableTimes<T extends Skill>(times: number) {
+  return (constructorFunction: SKillConstructor<T>) => {
+    return skillPropertyWrapper(
+      {
+        triggerableTimes: times,
+      },
+      constructorFunction as any,
+    );
+  };
 }
 
 export abstract class Skill {
-  protected skillType: SkillType = SkillType.Common;
+  private skillType: SkillType = SkillType.Common;
   private shadowSkill = false;
   private lordSkill = false;
 
   constructor(protected name: string, protected description: string) {}
   protected triggerableTimes: number = 0;
-  protected triggeredTimes: number = 0;
+  private triggeredTimes: number = 0;
   protected abstract isRefreshAt(stage: AllStage): boolean;
 
   public refresh() {
@@ -65,11 +175,13 @@ export abstract class Skill {
     >,
   ): Promise<boolean>;
 
-  public abstract canUse(
+  public canUse(
     room: Room,
     owner: Player,
-    content?: ClientEventFinder<GameEventIdentifiers>,
-  ): boolean;
+    content?: ServerEventFinder<GameEventIdentifiers>,
+  ): boolean {
+    return this.triggeredTimes < this.triggerableTimes;
+  };
 
   // tslint:disable-next-line: no-empty
   public onLoseSkill(owner: Player) {}
@@ -105,12 +217,6 @@ export abstract class TriggerSkill extends Skill {
     >,
   ): Promise<boolean>;
 
-  public abstract canUse(
-    room: Room,
-    owner: Player,
-    content: ClientEventFinder<GameEventIdentifiers>,
-  ): boolean;
-
   public async onUse(
     room: Room,
     event: ClientEventFinder<
@@ -130,13 +236,16 @@ export abstract class TriggerSkill extends Skill {
   }
 }
 
+export abstract class ResponsiveSkill extends TriggerSkill {
+  public abstract isTriggerable(stage: AskForQueryStage): boolean;
+}
+
 export class DistanceSkill extends Skill {
-  constructor(
-    name: string,
-    description: string,
-    private distance: number,
-  ) {
+  protected triggerableTimes: number;
+
+  constructor(name: string, description: string, private distance: number) {
     super(name, description);
+    this.triggerableTimes = UNLIMITED_TRIGGERING_TIMES;
   }
 
   public canUse() {

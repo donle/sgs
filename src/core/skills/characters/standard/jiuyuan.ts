@@ -24,7 +24,7 @@ export class JiuYuan extends TriggerSkill {
   public canUse(
     room: Room,
     owner: Player,
-    content: ClientEventFinder<GameEventIdentifiers.RecoverEvent>,
+    content: ServerEventFinder<GameEventIdentifiers.RecoverEvent>,
   ) {
     return (
       content.recoverBy !== undefined &&
