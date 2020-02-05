@@ -80,3 +80,41 @@ export type ClientEventFinder<I extends GameEventIdentifiers> = BaseGameEvent &
   ClientEvent[I];
 export type ServerEventFinder<I extends GameEventIdentifiers> = BaseGameEvent &
   ServerEvent[I];
+
+export class EventPacker {
+  static createUncancellableEvent = <T extends GameEventIdentifiers>(
+    event: ServerEventFinder<T>,
+  ): ServerEventFinder<T> => {
+    return {
+      uncancellable: true,
+      ...event,
+    };
+  };
+
+  static createIdentifierEvent = <T extends GameEventIdentifiers>(
+    identifier: T,
+    event: ServerEventFinder<T>,
+  ): ServerEventFinder<T> => {
+    return {
+      identifier,
+      ...event,
+    };
+  };
+
+  static hasIdentifier = <T extends GameEventIdentifiers>(
+    identifier: T,
+    event: ServerEventFinder<T>,
+  ): boolean => {
+    return (event as any).identifier === identifier;
+  };
+
+  static getIdentifier = <T extends GameEventIdentifiers>(
+    event: ServerEventFinder<T>,
+  ): T | undefined => {
+    return (event as any).identifier;
+  };
+
+  static isUncancellabelEvent = (event: ServerEventFinder<GameEventIdentifiers>) => {
+    return !!(event as any).uncancellable;
+  };
+}
