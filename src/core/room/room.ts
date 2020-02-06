@@ -9,6 +9,7 @@ import { Socket } from 'core/network/socket';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 
+import { Card } from 'core/cards/card';
 import { GameInfo } from 'core/game/game_props';
 import { AllStage } from 'core/game/stage_processor';
 import { GameProcessor } from '../game/game_processor';
@@ -62,11 +63,14 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return player;
   }
 
+  //TODO: refactor useCard and useSkill
   public useCard(
-    content: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
+    content: EventPicker<GameEventIdentifiers.CardUseEvent, WorkPlace>,
   ) {
-    const from = this.getPlayerById(content.fromId);
-    from.useCard(content.cardId);
+    if (content.fromId) {
+      const from = this.getPlayerById(content.fromId);
+      from.useCard(content.cardId);
+    }
 
     this.broadcast(GameEventIdentifiers.CardUseEvent, content);
   }

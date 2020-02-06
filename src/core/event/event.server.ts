@@ -12,7 +12,7 @@ import { EventUtilities, GameEventIdentifiers, ServerEventFinder } from './event
 //@@todo: to be updated
 export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.CardUseEvent]: {
-    fromId?: PlayerId;
+    fromId: PlayerId;
     cardId: CardId;
     toIds?: PlayerId[];
   };

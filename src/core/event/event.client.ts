@@ -9,6 +9,11 @@ export interface ClientEvent extends EventUtilities {
     cardId: CardId;
     toIds?: PlayerId[];
   };
+  [GameEventIdentifiers.CardEffectEvent]: {
+    fromId?: PlayerId;
+    cardId: CardId;
+    toIds?: PlayerId[];
+  };
   [GameEventIdentifiers.CardResponseEvent]: {
     fromId: PlayerId;
     cardId: CardId;

@@ -168,7 +168,7 @@ export abstract class Skill {
   public abstract onEffect(
     room: Room,
     event: ServerEventFinder<
-      GameEventIdentifiers.SkillEffectEvent | GameEventIdentifiers.CardUseEvent
+      GameEventIdentifiers.SkillEffectEvent | GameEventIdentifiers.CardEffectEvent
     >,
   ): Promise<boolean>;
 
@@ -200,6 +200,32 @@ export abstract class Skill {
   public get SkillType() {
     return this.skillType;
   }
+}
+
+export abstract class ResponsiveSkill extends Skill {
+  public canUse() {
+    return true;
+  }
+
+  protected isRefreshAt() {
+    return false;
+  }
+
+  public abstract responsiveFor(): string[];
+
+  public abstract async onUse(
+    room: Room,
+    event: ClientEventFinder<
+      GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent
+    >,
+  ): Promise<boolean>;
+
+  public abstract onEffect(
+    room: Room,
+    event: ServerEventFinder<
+      GameEventIdentifiers.SkillEffectEvent | GameEventIdentifiers.CardUseEvent
+    >,
+  ): Promise<boolean>;
 }
 
 export abstract class TriggerSkill extends Skill {

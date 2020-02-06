@@ -1,6 +1,8 @@
+import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import {
   ClientEventFinder,
+  EventPacker,
   EventPicker,
   GameEventIdentifiers,
   ServerEventFinder,
@@ -10,11 +12,7 @@ import { DamageType } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import {
-  ActiveSkill,
-  CommonSkill,
-  TriggerableTimes,
-} from 'core/skills/skill';
+import { ActiveSkill, CommonSkill, TriggerableTimes } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
@@ -69,31 +67,63 @@ export class SlashSkill extends ActiveSkill {
     const { toIds, fromId, cardId } = event;
 
     for (const toId of toIds || []) {
-      const eventContent: EventPicker<
-        GameEventIdentifiers.DamageEvent,
-        WorkPlace.Server
-      > = {
-        fromId,
-        toId,
-        damage: 1,
-        damageType: this.damageType,
-        cardIds: [cardId],
-        triggeredBySkillName: this.name,
-        translationsMessage: fromId
-          ? TranslationPack.translationJsonPatcher(
-              '{0} hurts {1} for {2} {3} hp',
-              room.getPlayerById(fromId).Name,
-              room.getPlayerById(toId).Name,
-              1,
-              this.damageType,
-            )
-          : TranslationPack.translationJsonPatcher('${0} got '),
-      };
-
-      await room.Processor.onHandleIncomingEvent(
-        GameEventIdentifiers.DamageEvent,
-        eventContent,
+      const askForUseCardEvent: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent> = EventPacker.createIdentifierEvent(
+        GameEventIdentifiers.AskForCardUseEvent,
+        {
+          carMatcher: new CardMatcher({ name: ['jink'] }).toSocketPassenger(),
+          byCardId: cardId,
+          cardUserId: fromId,
+          triggeredBySkillName: this.name,
+        },
       );
+
+      room.notify(
+        GameEventIdentifiers.AskForCardUseEvent,
+        askForUseCardEvent,
+        toId,
+      );
+
+      const response = await room.onReceivingAsyncReponseFrom<
+        ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent>
+      >(GameEventIdentifiers.AskForCardUseEvent, toId);
+
+      if (response.cardId !== undefined) {
+        room.useCard(
+          EventPacker.createIdentifierEvent<GameEventIdentifiers.CardUseEvent>(
+            GameEventIdentifiers.CardUseEvent,
+            {
+              fromId: toId,
+              cardId: response.cardId,
+            },
+          ),
+        );
+      } else {
+        const damageEvent: EventPicker<
+          GameEventIdentifiers.DamageEvent,
+          WorkPlace.Server
+        > = {
+          fromId,
+          toId,
+          damage: 1,
+          damageType: this.damageType,
+          cardIds: [cardId],
+          triggeredBySkillName: this.name,
+          translationsMessage: fromId
+            ? TranslationPack.translationJsonPatcher(
+                '{0} hurts {1} for {2} {3} hp',
+                room.getPlayerById(fromId).Name,
+                room.getPlayerById(toId).Name,
+                1,
+                this.damageType,
+              )
+            : TranslationPack.translationJsonPatcher('${0} got '),
+        };
+
+        await room.Processor.onHandleIncomingEvent(
+          GameEventIdentifiers.DamageEvent,
+          damageEvent,
+        );
+      }
     }
 
     return true;
