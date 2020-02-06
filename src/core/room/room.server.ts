@@ -162,6 +162,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                 if (stage === SkillEffectStage.SkillEffected) {
                   return await skill.onEffect(this, triggerSkillEvent);
                 }
+
                 return true;
               },
             );

@@ -54,7 +54,7 @@ export class GameProcessor {
   >(
     identifier: T,
     event: E,
-    onActualExecuted?: (stage: GameEventStage) => Promise<void>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ): Promise<void> {
     switch (identifier) {
       case GameEventIdentifiers.CardUseEvent:
@@ -137,7 +137,7 @@ export class GameProcessor {
   private iterateEachStage = async <T extends GameEventIdentifiers>(
     identifier: T,
     event: EventPicker<GameEventIdentifiers, WorkPlace.Server>,
-    onActualExecuted?: (stage: GameEventStage) => Promise<void>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
     processor?: (stage: GameEventStage) => Promise<void>,
   ) => {
     let eventStage = this.stageProcessor.involve(identifier);
@@ -163,7 +163,7 @@ export class GameProcessor {
   private async onHandleDrawCardEvent(
     identifier: GameEventIdentifiers.DrawCardEvent,
     event: EventPicker<GameEventIdentifiers.DrawCardEvent, WorkPlace.Server>,
-    onActualExecuted?: (stage: GameEventStage) => Promise<void>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === DrawCardStage.CardDrawed) {
@@ -177,7 +177,7 @@ export class GameProcessor {
   private async onHandleDropCardEvent(
     identifier: GameEventIdentifiers.CardDropEvent,
     event: EventPicker<GameEventIdentifiers.CardDropEvent, WorkPlace.Server>,
-    onActualExecuted?: (stage: GameEventStage) => Promise<void>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === CardDropStage.CardDropped) {
@@ -190,7 +190,7 @@ export class GameProcessor {
   private async onHandleDamgeEvent(
     identifier: GameEventIdentifiers.DamageEvent,
     event: EventPicker<GameEventIdentifiers.DamageEvent, WorkPlace.Server>,
-    onActualExecuted?: (stage: GameEventStage) => Promise<void>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     const { toId, damage } = event;
     this.iterateEachStage(
@@ -209,7 +209,7 @@ export class GameProcessor {
   private async onHandleSkillUseEvent(
     identifier: GameEventIdentifiers.SkillUseEvent,
     event: EventPicker<GameEventIdentifiers.SkillUseEvent, WorkPlace.Server>,
-    onActualExecuted?: (stage: GameEventStage) => Promise<void>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === SkillUseStage.SkillUsed) {
@@ -220,7 +220,7 @@ export class GameProcessor {
   private async onHandleSkillEffectEvent(
     identifier: GameEventIdentifiers.SkillEffectEvent,
     event: EventPicker<GameEventIdentifiers.SkillEffectEvent, WorkPlace.Server>,
-    onActualExecuted?: (stage: GameEventStage) => Promise<void>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === SkillEffectStage.SkillEffected) {
@@ -237,7 +237,7 @@ export class GameProcessor {
   private async onHandleAimEvent(
     identifier: GameEventIdentifiers.AimEvent,
     event: EventPicker<GameEventIdentifiers.AimEvent, WorkPlace.Server>,
-    onActualExecuted?: (stage: GameEventStage) => Promise<void>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     this.iterateEachStage(identifier, event, onActualExecuted);
   }
@@ -245,7 +245,7 @@ export class GameProcessor {
   private async onHandleCardEffectEvent(
     identifier: GameEventIdentifiers.CardEffectEvent,
     event: EventPicker<GameEventIdentifiers.CardEffectEvent, WorkPlace.Server>,
-    onActualExecuted?: (stage: GameEventStage) => Promise<void>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === CardEffectStage.CardEffect) {
@@ -258,7 +258,7 @@ export class GameProcessor {
   private async onHandleCardUseEvent(
     identifier: GameEventIdentifiers.CardUseEvent,
     event: EventPicker<GameEventIdentifiers.CardUseEvent, WorkPlace.Client>,
-    onActualExecuted?: (stage: GameEventStage) => Promise<void>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === CardUseStage.CardUsed) {
@@ -273,7 +273,7 @@ export class GameProcessor {
       GameEventIdentifiers.CardResponseEvent,
       WorkPlace.Server
     >,
-    onActualExecuted?: (stage: GameEventStage) => Promise<void>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === CardResponseStage.CardResponsed) {
@@ -285,7 +285,7 @@ export class GameProcessor {
   private async onHandlePinDianEvent(
     identifier: GameEventIdentifiers.PinDianEvent,
     event: EventPicker<GameEventIdentifiers.PinDianEvent, WorkPlace.Client>,
-    onActualExecuted?: (stage: GameEventStage) => Promise<void>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     let pindianResult: PinDianResultType | undefined;
 

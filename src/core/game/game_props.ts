@@ -17,7 +17,7 @@ export const enum GameCharacterExtensions {
 
 export const enum GameCardExtensions {
   Standard = 'standard',
-  BattleWat = 'battlewar',
+  // BattleWat = 'battlewar',
 }
 
 export type GameInfo = {
