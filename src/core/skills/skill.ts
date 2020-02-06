@@ -288,15 +288,35 @@ export abstract class ViewAsSkill extends Skill {
 
   public abstract canViewAs(): string[];
 
+  public abstract targetFilterFor(
+    cardName: string,
+    room: Room,
+    targets: PlayerId[],
+  ): boolean;
+  public abstract cardFilterFor(
+    cardName: string,
+    room: Room,
+    cards: CardId[],
+  ): boolean;
+  public abstract isAvailableCardFor(
+    cardName: string,
+    room: Room,
+    pendingCardId: CardId,
+    selectedCards: CardId[],
+  ): boolean;
+
+  public abstract isAvailableTargetFor(
+    cardName: string,
+    room: Room,
+    pendingTargetId: PlayerId,
+    selectedTargets: PlayerId[],
+  ): boolean;
+
   public targetFilter(room: Room, targets: PlayerId[]): boolean {
     let validTarget = false;
     for (const cardName of this.canViewAs()) {
-      const card = Sanguosha.getCardByName(cardName);
-      if (!(card.Skill instanceof ActiveSkill)) {
-        continue;
-      }
-
-      validTarget = validTarget || card.Skill.targetFilter(room, targets);
+      validTarget =
+        validTarget || this.targetFilterFor(cardName, room, targets);
     }
 
     return validTarget;
@@ -305,21 +325,25 @@ export abstract class ViewAsSkill extends Skill {
   public cardFilter(room: Room, cards: CardId[]): boolean {
     let validCard = false;
     for (const cardName of this.canViewAs()) {
-      const card = Sanguosha.getCardByName(cardName);
-      if (!(card.Skill instanceof ActiveSkill)) {
-        continue;
-      }
-
-      validCard = validCard || card.Skill.cardFilter(room, cards);
+      validCard = validCard || this.cardFilterFor(cardName, room, cards);
     }
 
     return validCard;
   }
-  public abstract isAvailableCard(
+  public isAvailableCard(
     room: Room,
     cardId: CardId,
     selectedCards: CardId[],
-  ): boolean;
+  ): boolean {
+    let validCard = false;
+    for (const cardName of this.canViewAs()) {
+      validCard =
+        validCard ||
+        this.isAvailableCardFor(cardName, room, cardId, selectedCards);
+    }
+
+    return validCard;
+  }
 
   public isAvailableTarget(
     room: Room,
@@ -329,13 +353,9 @@ export abstract class ViewAsSkill extends Skill {
     let validTarget = false;
     for (const cardName of this.canViewAs()) {
       const card = Sanguosha.getCardByName(cardName);
-      if (!(card.Skill instanceof ActiveSkill)) {
-        continue;
-      }
-
       validTarget =
         validTarget ||
-        card.Skill.isAvailableTarget(room, target, selectedTargets);
+        this.isAvailableTargetFor(cardName, room, target, selectedTargets);
     }
 
     return validTarget;
