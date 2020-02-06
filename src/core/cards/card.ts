@@ -1,6 +1,6 @@
 import { Sanguosha } from 'core/game/engine';
 import { GameCardExtensions } from 'core/game/game_props';
-import { CardTransformSkill, Skill } from 'core/skills/skill';
+import { Skill, ViewAsSkill } from 'core/skills/skill';
 import {
   CardId,
   CardSuit,
@@ -18,6 +18,7 @@ export abstract class Card {
   protected abstract description: string;
   protected abstract skill: Skill;
   protected abstract cardType: CardType;
+  protected abstract effectUseDistance: number;
 
   protected abstract fromPackage: GameCardExtensions;
 
@@ -57,8 +58,12 @@ export abstract class Card {
     return this.skill;
   }
 
+  public get EffectUseDistance() {
+    return this.effectUseDistance;
+  }
+
   public hasTransformed() {
-    return this.skill instanceof CardTransformSkill;
+    return this.skill instanceof ViewAsSkill;
   }
 
   public isBlack() {
@@ -98,6 +103,7 @@ export class VirtualCard<T extends Card> extends Card {
   protected skill: Skill;
   protected cardType: CardType;
   protected fromPackage: GameCardExtensions;
+  protected effectUseDistance: number;
 
   protected id = -1;
   protected cardNumber = 0;
@@ -122,6 +128,7 @@ export class VirtualCard<T extends Card> extends Card {
     this.description = this.viewAs.Description;
     this.skill = skill ? skill : this.viewAs.Skill;
     this.cardType = this.viewAs.Type;
+    this.effectUseDistance = this.viewAs.EffectUseDistance;
 
     if (this.cardIds.length === 1) {
       const card = Sanguosha.getCardById(this.cardIds[0]);

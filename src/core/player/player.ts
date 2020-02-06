@@ -7,7 +7,7 @@ import {
 } from 'core/characters/character';
 import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { UNLIMITED_TRIGGERING_TIMES } from 'core/game/game_props';
+import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import {
   DistanceType,
   PlayerCards,
@@ -20,7 +20,6 @@ import {
 import { Room } from 'core/room/room';
 import {
   ActiveSkill,
-  CardTransformSkill,
   DistanceSkill,
   FilterSkill,
   Skill,
@@ -330,7 +329,7 @@ export abstract class Player implements PlayerInfo {
   }
   public availableCardUseTimes(cardSkillName: string) {
     if (this.cardSkillUseRules[cardSkillName] === undefined) {
-      return UNLIMITED_TRIGGERING_TIMES;
+      return INFINITE_TRIGGERING_TIMES;
     }
 
     let times = this.cardSkillUseRules[cardSkillName].general;
@@ -460,10 +459,6 @@ export abstract class Player implements PlayerInfo {
         return skills.filter(skill => skill instanceof ActiveSkill) as T[];
       case 'trigger':
         return skills.filter(skill => skill instanceof TriggerSkill) as T[];
-      case 'transform':
-        return skills.filter(
-          skill => skill instanceof CardTransformSkill,
-        ) as T[];
       case 'distance':
         return skills.filter(skill => skill instanceof DistanceSkill) as T[];
       case 'complusory':

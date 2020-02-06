@@ -9,6 +9,7 @@ export class Jink extends BasicCard {
       id,
       cardNumber,
       suit,
+      0,
       'jink',
       'jink_description',
       GameCardExtensions.Standard,

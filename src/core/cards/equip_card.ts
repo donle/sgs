@@ -7,6 +7,7 @@ import { CardId, CardSuit, RealCardId } from './libs/card_props';
 
 export abstract class EquipCard extends Card {
   protected cardType = CardType.Equip;
+  protected effectUseDistance = 0;
 
   constructor(private equiCardCategory: EquipCardCategory) {
     super();

@@ -6,17 +6,21 @@ import {
   ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
-import { DamageType, UNLIMITED_TRIGGERING_TIMES } from 'core/game/game_props';
+import { DamageType, INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill, TriggerableTimes } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
-@TriggerableTimes(UNLIMITED_TRIGGERING_TIMES)
+@TriggerableTimes(INFINITE_TRIGGERING_TIMES)
 export class NanManRuQingSkill extends ActiveSkill {
   constructor() {
     super('nanmanruqing', 'nanmanruqing_description');
+  }
+
+  public canUse() {
+    return true;
   }
 
   public targetFilter(room: Room, targets: PlayerId[]): boolean {

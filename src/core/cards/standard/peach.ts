@@ -10,6 +10,7 @@ export class Peach extends BasicCard {
       id,
       cardNumber,
       suit,
+      0,
       'peach',
       'peach_description',
       GameCardExtensions.Standard,

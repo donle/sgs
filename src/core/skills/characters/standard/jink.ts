@@ -1,46 +1,40 @@
-import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AllStage, AskForQueryStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
+import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { CommonSkill, ResponsiveSkill } from 'core/skills/skill';
+import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
-export class JinkSkill extends ResponsiveSkill {
+export class JinkSkill extends ActiveSkill {
   constructor() {
-    super('jink', 'jink_skill_description');
+    super('jink', 'jink_description');
   }
 
-  isAutoTrigger() {
+  canUse(room: Room, owner: Player) {
     return false;
   }
 
-  canUse(
-    room: Room,
-    owner: Player,
-    content: ServerEventFinder<
-      | GameEventIdentifiers.AskForCardResponseEvent
-      | GameEventIdentifiers.AskForCardUseEvent
-    >,
-  ) {
-    const { carMatcher } = content;
-    return CardMatcher.match(carMatcher, {
-      name: ['jink'],
-    });
+  isAvailableCard() {
+    return false;
   }
 
-  isTriggerable(stage: AskForQueryStage): boolean {
-    return (
-      stage === AskForQueryStage.AskForCardUseStage ||
-      stage === AskForQueryStage.AskForCardResponseStage
-    );
+  cardFilter() {
+    return true;
   }
 
-  async onTrigger(
+  targetFilter(room: Room, targets: PlayerId[]): boolean {
+    return true;
+  }
+
+  isAvailableTarget(room: Room, target: PlayerId) {
+    return false;
+  }
+
+  async onUse(
     room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
+    event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
   ) {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} uses card {1}',

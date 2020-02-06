@@ -1,15 +1,18 @@
 import { Card, VirtualCard } from 'core/cards/card';
-import { CardId, RealCardId } from 'core/cards/libs/card_props';
+import { CardId } from 'core/cards/libs/card_props';
 import {
   ClientEventFinder,
+  EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
-import { UNLIMITED_TRIGGERING_TIMES } from 'core/game/game_props';
-import { AllStage, AskForQueryStage, PlayerStageListEnum } from 'core/game/stage_processor';
+import { Sanguosha } from 'core/game/engine';
+import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
+import { AllStage, PlayerStageListEnum } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 export const enum SkillType {
   Common,
@@ -27,7 +30,6 @@ function onCalculatingSkillUsageWrapper(
   constructor: new () => any,
 ): any {
   return class extends constructor {
-    protected triggeredTimes: number = 0;
     protected skillType = skillType;
 
     constructor() {
@@ -48,7 +50,7 @@ function onCalculatingSkillUsageWrapper(
       >,
     ) {
       const result = await super.onUse(room, event);
-      this.triggeredTimes++;
+      room.getPlayerById(event.fromId).useSkill(this.name);
 
       return result;
     }
@@ -154,12 +156,7 @@ export abstract class Skill {
 
   constructor(protected name: string, protected description: string) {}
   protected triggerableTimes: number = 0;
-  private triggeredTimes: number = 0;
   protected abstract isRefreshAt(stage: AllStage): boolean;
-
-  public refresh() {
-    this.triggeredTimes = 0;
-  }
 
   public abstract async onUse(
     room: Room,
@@ -175,13 +172,11 @@ export abstract class Skill {
     >,
   ): Promise<boolean>;
 
-  public canUse(
+  public abstract canUse(
     room: Room,
     owner: Player,
     content?: ServerEventFinder<GameEventIdentifiers>,
-  ): boolean {
-    return this.triggeredTimes < this.triggerableTimes;
-  };
+  ): boolean;
 
   // tslint:disable-next-line: no-empty
   public onLoseSkill(owner: Player) {}
@@ -236,16 +231,12 @@ export abstract class TriggerSkill extends Skill {
   }
 }
 
-export abstract class ResponsiveSkill extends TriggerSkill {
-  public abstract isTriggerable(stage: AskForQueryStage): boolean;
-}
-
 export class DistanceSkill extends Skill {
   protected triggerableTimes: number;
 
   constructor(name: string, description: string, private distance: number) {
     super(name, description);
-    this.triggerableTimes = UNLIMITED_TRIGGERING_TIMES;
+    this.triggerableTimes = INFINITE_TRIGGERING_TIMES;
   }
 
   public canUse() {
@@ -286,34 +277,100 @@ export abstract class ActiveSkill extends Skill {
   }
 }
 
-export abstract class CardTransformSkill<
-  C extends Card,
-  S extends Skill
-> extends Skill {
+export abstract class ViewAsSkill extends Skill {
   public canUse() {
     return false;
   }
+
   public isRefreshAt() {
     return false;
   }
 
-  public async onEffect() {
-    return true;
-  }
-  public async onUse() {
-    return true;
+  public abstract canViewAs(): string[];
+
+  public targetFilter(room: Room, targets: PlayerId[]): boolean {
+    let validTarget = false;
+    for (const cardName of this.canViewAs()) {
+      const card = Sanguosha.getCardByName(cardName);
+      if (!(card.Skill instanceof ActiveSkill)) {
+        continue;
+      }
+
+      validTarget = validTarget || card.Skill.targetFilter(room, targets);
+    }
+
+    return validTarget;
   }
 
-  protected abstract override(skill: S): void;
-  public abstract canTransform(card: Card): boolean;
-  public clone(card: C): VirtualCard<C> {
-    const cloneSkill = Object.assign<S, S>(
-      Object.create(Object.getPrototypeOf(card.Skill)),
-      card.Skill as S,
+  public cardFilter(room: Room, cards: CardId[]): boolean {
+    let validCard = false;
+    for (const cardName of this.canViewAs()) {
+      const card = Sanguosha.getCardByName(cardName);
+      if (!(card.Skill instanceof ActiveSkill)) {
+        continue;
+      }
+
+      validCard = validCard || card.Skill.cardFilter(room, cards);
+    }
+
+    return validCard;
+  }
+  public abstract isAvailableCard(
+    room: Room,
+    cardId: CardId,
+    selectedCards: CardId[],
+  ): boolean;
+
+  public isAvailableTarget(
+    room: Room,
+    target: PlayerId,
+    selectedTargets: PlayerId[],
+  ): boolean {
+    let validTarget = false;
+    for (const cardName of this.canViewAs()) {
+      const card = Sanguosha.getCardByName(cardName);
+      if (!(card.Skill instanceof ActiveSkill)) {
+        continue;
+      }
+
+      validTarget =
+        validTarget ||
+        card.Skill.isAvailableTarget(room, target, selectedTargets);
+    }
+
+    return validTarget;
+  }
+
+  public async onUse(
+    room: Room,
+    event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
+  ): Promise<boolean> {
+    event.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} activates skill {1}',
+      room.getPlayerById(event.fromId).Name,
+      this.name,
     );
-    this.override(cloneSkill);
 
-    return VirtualCard.create(card.Name, [card.Id as RealCardId], cloneSkill);
+    return true;
+  }
+
+  public async onEffect(
+    room: Room,
+    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
+  ): Promise<boolean> {
+    const { triggeredOnEvent } = event;
+    const cardUseEvent = triggeredOnEvent as ClientEventFinder<
+      GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent
+    >;
+
+    const identifier = EventPacker.getIdentifier(cardUseEvent);
+    const card: VirtualCard<Card> = Sanguosha.getCardById(cardUseEvent.cardId);
+    if (!card.isVirtualCard() || identifier === undefined) {
+      throw new Error(`Invalid view as virtual card in ${this.name}`);
+    }
+
+    await room.Processor.onHandleIncomingEvent(identifier, cardUseEvent);
+    return true;
   }
 }
 

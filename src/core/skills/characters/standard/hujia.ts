@@ -87,6 +87,7 @@ export class Hujia extends TriggerSkill {
             | GameEventIdentifiers.AskForCardResponseEvent
           >
         >(identifier, player.Id);
+
         if (response.cardId !== undefined) {
           if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
             const cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = EventPacker.createIdentifierEvent(

@@ -1,16 +1,13 @@
-import { Card } from 'core/cards/card';
-import { TrickCard } from 'core/cards/trick_card';
-import { ActiveSkill, CardTransformSkill, CompulsorySkill } from 'core/skills/skill';
+import { INFINITE_DISTANCE } from 'core/game/game_props';
+import { DistanceType, PlayerId } from 'core/player/player_props';
+import { Room } from 'core/room/room';
+import { CompulsorySkill, RulesBreakerSkill } from 'core/skills/skill';
 
 @CompulsorySkill
-export class QiCaiSkill extends CardTransformSkill<TrickCard, ActiveSkill> {
-  public canTransform(card: Card) {
-    return card instanceof TrickCard;
-  }
-
-  public override(cloneSkill: ActiveSkill) {
-    cloneSkill.isAvailableTarget = () => {
-      return true;
-    };
+export class QiCaiSkill extends RulesBreakerSkill {
+  public breakRule(room: Room, owner: PlayerId) {
+    room
+      .getPlayerById(owner)
+      .breakDistanceRules(this.name, INFINITE_DISTANCE, DistanceType.Offense);
   }
 }

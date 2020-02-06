@@ -1,8 +1,8 @@
 import { PlayerRole } from 'core/player/player_props';
 
-export const UNLIMITED_TRIGGERING_TIMES = 1000;
-export const FORBIDDEN_TRIGGERING_TIMES = -9999;
-export const UNLIMITED_DISTANCE = 1000;
+export const INFINITE_TRIGGERING_TIMES = 1000;
+export const NONE_TRIGGERING_TIMES = -9999;
+export const INFINITE_DISTANCE = 1000;
 
 export const enum GameCharacterExtensions {
   Standard = 'standard',
@@ -17,6 +17,7 @@ export const enum GameCharacterExtensions {
 
 export const enum GameCardExtensions {
   Standard = 'standard',
+  BattleWat = 'battlewar',
 }
 
 export type GameInfo = {

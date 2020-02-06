@@ -10,6 +10,7 @@ export class Slash extends BasicCard {
       id,
       cardNumber,
       suit,
+      1,
       'slash',
       'slash_description',
       GameCardExtensions.Standard,

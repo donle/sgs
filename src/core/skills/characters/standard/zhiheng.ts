@@ -4,6 +4,7 @@ import {
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
+import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill, TriggerableTimes } from 'core/skills/skill';
@@ -14,6 +15,10 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 export class ZhiHeng extends ActiveSkill {
   constructor() {
     super('zhiheng', 'zhiheng_description');
+  }
+
+  public canUse(room: Room, owner: Player) {
+    return !owner.hasUsedSkill(this.name);
   }
 
   targetFilter(room: Room, targets: PlayerId[]): boolean {
@@ -44,7 +49,7 @@ export class ZhiHeng extends ActiveSkill {
   ) {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} activates skill {1}',
-      room.CurrentPlayer.Character.Name,
+      room.getPlayerById(event.fromId).Name,
       this.name,
     );
 

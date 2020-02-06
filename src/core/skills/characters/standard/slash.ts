@@ -1,3 +1,4 @@
+import { CardId } from 'core/cards/libs/card_props';
 import {
   ClientEventFinder,
   EventPicker,
@@ -22,7 +23,7 @@ export class SlashSkill extends ActiveSkill {
   protected damageType: DamageType = DamageType.Normal;
 
   constructor() {
-    super('slash', 'slash_skill_description');
+    super('slash', 'slash_description');
   }
 
   canUse(room: Room, owner: Player) {
@@ -35,8 +36,8 @@ export class SlashSkill extends ActiveSkill {
     return false;
   }
 
-  cardFilter() {
-    return true;
+  cardFilter(room: Room, cards: CardId[]) {
+    return cards.length === 0;
   }
 
   targetFilter(room: Room, targets: PlayerId[]): boolean {
