@@ -6,6 +6,9 @@ import { CompulsorySkill, RulesBreakerSkill } from 'core/skills/skill';
 
 @CompulsorySkill
 export class QiCaiSkill extends RulesBreakerSkill {
+  constructor() {
+    super('qicai', 'qicai_description');
+  }
   public breakCardUsableDistance(cardId: CardId) {
     const card = Sanguosha.getCardById(cardId);
     if (card.is(CardType.Trick)) {

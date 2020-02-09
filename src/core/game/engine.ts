@@ -62,9 +62,7 @@ export class Sanguosha {
   ): VirtualCard<T> {
     return VirtualCard.parseId<T>(cardId);
   }
-  public static getCardById<T extends Card>(
-    cardId: CardId,
-  ): T {
+  public static getCardById<T extends Card>(cardId: CardId): T {
     this.tryToThrowUninitializedError();
 
     if (typeof cardId === 'string') {

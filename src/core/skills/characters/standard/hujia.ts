@@ -13,7 +13,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
 @LordSkill
-export class Hujia extends TriggerSkill {
+export class HujiaSkill extends TriggerSkill {
   public isAutoTrigger() {
     return false;
   }
