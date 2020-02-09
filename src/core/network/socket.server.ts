@@ -1,4 +1,5 @@
 import {
+  ClientEventFinder,
   createGameEventIdentifiersStringList,
   EventPicker,
   GameEventIdentifiers,
@@ -113,11 +114,11 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     return this.clientIds;
   }
 
-  public async waitForResponse<T>(
-    identifier: GameEventIdentifiers,
+  public async waitForResponse<T extends GameEventIdentifiers>(
+    identifier: T,
     playerId: PlayerId,
   ) {
-    return await new Promise<T>(resolve => {
+    return await new Promise<ClientEventFinder<T>>(resolve => {
       if (!this.asyncResponseResolver[playerId]) {
         this.asyncResponseResolver[playerId] = {
           identifier,

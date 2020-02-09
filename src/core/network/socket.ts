@@ -1,4 +1,10 @@
-import { EventPicker, GameEventIdentifiers, WorkPlace } from 'core/event/event';
+import {
+  ClientEventFinder,
+  EventPicker,
+  GameEventIdentifiers,
+  ServerEventFinder,
+  WorkPlace,
+} from 'core/event/event';
 import { PlayerId } from 'core/player/player_props';
 import { HostConfigProps } from 'core/shares/types/host_config';
 
@@ -17,10 +23,12 @@ export abstract class Socket<T extends WorkPlace> {
 
   constructor(protected eventMode: T, protected hostConfig: HostConfigProps) {}
 
-  public abstract async waitForResponse<T>(
-    identifier: GameEventIdentifiers,
+  public abstract async waitForResponse<I extends GameEventIdentifiers>(
+    identifier: I,
     playerId?: PlayerId,
-  ): Promise<T>;
+  ): Promise<
+    T extends WorkPlace.Client ? ServerEventFinder<I> : ClientEventFinder<I>
+  >;
 
   public abstract sendEvent(
     type: GameEventIdentifiers,

@@ -387,26 +387,27 @@ export class GameProcessor {
             from,
           };
 
-          this.room.notify(identifier, askForPinDianEvent, from);
+          this.room.notify(
+            GameEventIdentifiers.AskForPinDianCardEvent,
+            askForPinDianEvent,
+            from,
+          );
           toIds.forEach(to => {
             askForPinDianEvent.from = to;
-            this.room.notify(identifier, askForPinDianEvent, to);
+            this.room.notify(
+              GameEventIdentifiers.AskForPinDianCardEvent,
+              askForPinDianEvent,
+              to,
+            );
           });
 
           const responses = await Promise.all([
-            this.room.onReceivingAsyncReponseFrom<
-              EventPicker<
-                GameEventIdentifiers.AskForPinDianCardEvent,
-                WorkPlace.Client
-              >
-            >(identifier, from),
+            this.room.onReceivingAsyncReponseFrom(
+              GameEventIdentifiers.AskForPinDianCardEvent,
+              from,
+            ),
             ...toIds.map(to =>
-              this.room.onReceivingAsyncReponseFrom<
-                EventPicker<
-                  GameEventIdentifiers.AskForPinDianCardEvent,
-                  WorkPlace.Client
-                >
-              >(identifier, to),
+              this.room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForPinDianCardEvent, to),
             ),
           ]);
 

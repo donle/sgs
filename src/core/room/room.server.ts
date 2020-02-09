@@ -1,5 +1,6 @@
 import { Card } from 'core/cards/card';
 import {
+  ClientEventFinder,
   EventPacker,
   EventPicker,
   GameEventIdentifiers,
@@ -8,8 +9,6 @@ import {
 } from 'core/event/event';
 import {
   AllStage,
-  SkillEffectStage,
-  SkillUseStage,
 } from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
 import { Player } from 'core/player/player';
@@ -150,28 +149,29 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             triggeredOnEvent: content,
           };
           if (skill.isAutoTrigger()) {
-            await this.Processor.onHandleIncomingEvent(
-              GameEventIdentifiers.SkillUseEvent,
-              triggerSkillEvent,
-              async stage => {
-                if (stage === SkillUseStage.SkillUsed) {
-                  return await skill.onTrigger(this, triggerSkillEvent);
-                }
+            await this.useSkill(triggerSkillEvent);
+            // await this.Processor.onHandleIncomingEvent(
+            //   GameEventIdentifiers.SkillUseEvent,
+            //   triggerSkillEvent,
+            //   async stage => {
+            //     if (stage === SkillUseStage.SkillUsed) {
+            //       return await skill.onTrigger(this, triggerSkillEvent);
+            //     }
 
-                return true;
-              },
-            );
-            await this.Processor.onHandleIncomingEvent(
-              GameEventIdentifiers.SkillEffectEvent,
-              triggerSkillEvent,
-              async stage => {
-                if (stage === SkillEffectStage.SkillEffected) {
-                  return await skill.onEffect(this, triggerSkillEvent);
-                }
+            //     return true;
+            //   },
+            // );
+            // await this.Processor.onHandleIncomingEvent(
+            //   GameEventIdentifiers.SkillEffectEvent,
+            //   triggerSkillEvent,
+            //   async stage => {
+            //     if (stage === SkillEffectStage.SkillEffected) {
+            //       return await skill.onEffect(this, triggerSkillEvent);
+            //     }
 
-                return true;
-              },
-            );
+            //     return true;
+            //   },
+            // );
           } else {
             this.notify(
               GameEventIdentifiers.AskForInvokeEvent,
@@ -187,8 +187,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               this.players[i].Id,
             );
             if (invoke) {
-              await skill.onTrigger(this, triggerSkillEvent);
-              await skill.onEffect(this, content);
+              await this.useSkill(triggerSkillEvent);
             }
           }
         }
@@ -196,10 +195,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
   }
 
-  public async onReceivingAsyncReponseFrom<T>(
-    identifier: GameEventIdentifiers,
+  public async onReceivingAsyncReponseFrom<T extends GameEventIdentifiers>(
+    identifier: T,
     playerId: PlayerId,
-  ): Promise<T> {
+  ): Promise<ClientEventFinder<T>> {
     return await this.socket.waitForResponse<T>(identifier, playerId);
   }
 
