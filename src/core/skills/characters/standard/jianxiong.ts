@@ -22,11 +22,7 @@ export class JianXiongSkill extends TriggerSkill {
     event: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
     stage?: AllStage,
   ) {
-    return (
-      stage === DamageEffectStage.AfterDamagedEffect &&
-      event.cardIds !== undefined &&
-      event.cardIds.length > 0
-    );
+    return stage === DamageEffectStage.AfterDamagedEffect;
   }
 
   canUse() {
@@ -54,7 +50,9 @@ export class JianXiongSkill extends TriggerSkill {
     const damagedEvent = triggeredOnEvent as ServerEventFinder<
       GameEventIdentifiers.DamageEvent
     >;
-    await room.obtainCards(damagedEvent.cardIds || [], damagedEvent.toId);
+    if (damagedEvent.cardIds !== undefined && damagedEvent.cardIds.length > 0) {
+      await room.obtainCards(damagedEvent.cardIds, damagedEvent.toId);
+    }
     await room.drawCards(1, damagedEvent.toId);
     return true;
   }

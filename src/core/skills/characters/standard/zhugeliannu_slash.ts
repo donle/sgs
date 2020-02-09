@@ -17,12 +17,4 @@ export class ZhuGeLianNuSlashSkill extends RulesBreakerSkill {
       return 0;
     }
   }
-
-  public onLoseSkill(owner: Player) {
-    GameCommonRules.addCardUsableTimes(
-      new CardMatcher({ name: ['slash'] }),
-      -INFINITE_TRIGGERING_TIMES,
-      owner,
-    );
-  }
 }
