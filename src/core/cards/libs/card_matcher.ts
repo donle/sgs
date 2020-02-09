@@ -17,7 +17,7 @@ export class CardMatcher {
 
   public static match(
     matcher: CardMatcherSocketPassenger | undefined,
-    card: Card | CardMatcherProps,
+    card: Card | CardMatcher,
   ) {
     if (matcher === undefined) {
       return false;
@@ -45,29 +45,30 @@ export class CardMatcher {
           matched && type.find(subType => card.is(subType)) !== undefined;
       }
     } else {
-      if (suit && card.suit) {
+      matcher = card.toSocketPassenger();
+      if (suit && matcher.suit) {
         matched =
-          matched && card.suit.every(cardSuit => suit.includes(cardSuit));
+          matched && matcher.suit.every(cardSuit => suit.includes(cardSuit));
       }
-      if (cardNumber && card.cardNumber) {
+      if (cardNumber && matcher.cardNumber) {
         matched =
           matched &&
-          card.cardNumber.every(cardNum => cardNumber.includes(cardNum));
+          matcher.cardNumber.every(cardNum => cardNumber.includes(cardNum));
       }
-      if (name && card.name) {
+      if (name && matcher.name) {
         matched =
-          matched && card.name.every(cardName => name.includes(cardName));
+          matched && matcher.name.every(cardName => name.includes(cardName));
       }
-      if (type && card.type) {
+      if (type && matcher.type) {
         matched =
-          matched && card.type.every(cardType => type.includes(cardType));
+          matched && matcher.type.every(cardType => type.includes(cardType));
       }
     }
 
     return matched;
   }
 
-  public match(card: Card) {
+  public match(card: Card | CardMatcher) {
     if (this.matcher === undefined) {
       return false;
     }

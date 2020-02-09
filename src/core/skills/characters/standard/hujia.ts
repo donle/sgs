@@ -44,9 +44,12 @@ export class Hujia extends TriggerSkill {
     >,
   ) {
     const { carMatcher } = content;
-    return CardMatcher.match(carMatcher, {
-      name: ['jink'],
-    });
+    return CardMatcher.match(
+      carMatcher,
+      new CardMatcher({
+        name: ['jink'],
+      }),
+    );
   }
 
   async onTrigger(
@@ -87,12 +90,7 @@ export class Hujia extends TriggerSkill {
       ) {
         room.notify(identifier, jinkCardEvent, player.Id);
 
-        const response = await room.onReceivingAsyncReponseFrom<
-          ClientEventFinder<
-            | GameEventIdentifiers.AskForCardUseEvent
-            | GameEventIdentifiers.AskForCardResponseEvent
-          >
-        >(identifier, player.Id);
+        const response = await room.onReceivingAsyncReponseFrom(identifier, player.Id);
 
         if (response.cardId !== undefined) {
           if (identifier === GameEventIdentifiers.AskForCardUseEvent) {

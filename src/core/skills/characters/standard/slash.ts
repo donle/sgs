@@ -78,9 +78,10 @@ export class SlashSkill extends ActiveSkill {
         toId,
       );
 
-      const response = await room.onReceivingAsyncReponseFrom<
-        ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent>
-      >(GameEventIdentifiers.AskForCardUseEvent, toId);
+      const response = await room.onReceivingAsyncReponseFrom(
+        GameEventIdentifiers.AskForCardUseEvent,
+        toId,
+      );
 
       if (response.cardId !== undefined) {
         room.useCard(

@@ -36,7 +36,7 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.DrawCardEvent]: {
     playerId: PlayerId;
-    numberOfCards: number;
+    cardIds: CardId[];
   };
   [GameEventIdentifiers.ObtainCardEvent]: {
     fromId?: PlayerId;
@@ -165,6 +165,14 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.AskForChooseCharacterEvent]: {
     characterIds: CharacterId[];
   };
+  [GameEventIdentifiers.AskForChooseOptionsEvent]: {
+    options: string[],
+    fromId: PlayerId,
+  };
+  [GameEventIdentifiers.AskForChoosPlayerEvent]: {
+    players: PlayerId[],
+    fromId: PlayerId,
+  }
   [GameEventIdentifiers.AskForPlaceCardsInDileEvent]: {
     drawPendingCards?: CardId[];
     drawCards?: CardId[];

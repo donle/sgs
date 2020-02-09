@@ -1,4 +1,5 @@
 import { Card, VirtualCard } from 'core/cards/card';
+import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import {
   ClientEventFinder,
@@ -9,8 +10,11 @@ import {
   WorkPlace,
 } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
-import { AllStage, PlayerStageListEnum } from 'core/game/stage_processor';
+import {
+  AllStage,
+  PlayerStage,
+  PlayerStageListEnum,
+} from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -183,6 +187,13 @@ export abstract class Skill {
 
   // tslint:disable-next-line: no-empty
   public onLoseSkill(owner: Player) {}
+  // tslint:disable-next-line: no-empty
+  public onPhaseChange(
+    fromPhase: PlayerStage,
+    toPhase: PlayerStage,
+    room: Room,
+    owner: PlayerId,
+  ) {}
 
   public get Description() {
     return this.description;
@@ -214,7 +225,7 @@ export abstract class ResponsiveSkill extends Skill {
     return false;
   }
 
-  public abstract responsiveFor(): string[];
+  public abstract responsiveFor(): CardMatcher;
 
   public abstract async onUse(
     room: Room,
@@ -415,16 +426,32 @@ export abstract class RulesBreakerSkill extends Skill {
     return true;
   }
 
-  public breakCardUsableTimes(cardId: CardId, room?: Room, owner?: PlayerId): number {
+  public breakCardUsableTimes(
+    cardId: CardId,
+    room?: Room,
+    owner?: PlayerId,
+  ): number {
     return 0;
   }
-  public breakCardUsableDistance(cardId: CardId, room?: Room, owner?: PlayerId): number {
+  public breakCardUsableDistance(
+    cardId: CardId,
+    room?: Room,
+    owner?: PlayerId,
+  ): number {
     return 0;
   }
-  public breakCardUsableTargets(cardId: CardId, room?: Room, owner?: PlayerId): number {
+  public breakCardUsableTargets(
+    cardId: CardId,
+    room?: Room,
+    owner?: PlayerId,
+  ): number {
     return 0;
   }
-  public breakAttackDistance(cardId: CardId, room?: Room, owner?: PlayerId): number {
+  public breakAttackDistance(
+    cardId: CardId,
+    room?: Room,
+    owner?: PlayerId,
+  ): number {
     return 0;
   }
   public breakOffenseDistance(room?: Room, owner?: PlayerId): number {
@@ -451,13 +478,13 @@ export abstract class FilterSkill extends Skill {
   }
 
   public abstract canUseCard(
-    cardId: CardId,
+    cardId: CardId | CardMatcher,
     room: Room,
     owner: PlayerId,
     target?: PlayerId,
   ): boolean;
   public abstract canBeUsedCard(
-    cardId: CardId,
+    cardId: CardId | CardMatcher,
     room: Room,
     owner: PlayerId,
     attacker?: PlayerId,

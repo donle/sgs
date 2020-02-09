@@ -16,6 +16,7 @@ import {
   DrawCardStage,
   GameEventStage,
   JudgeEffectStage,
+  ObtainCardStage,
   PinDianStage,
   PlayerStage,
   SkillEffectStage,
@@ -53,7 +54,7 @@ export class GameProcessor {
 
   public async onHandleIncomingEvent<
     T extends GameEventIdentifiers,
-    E extends EventPicker<T, WorkPlace>
+    E extends ServerEventFinder<T>
   >(
     identifier: T,
     event: E,
@@ -136,6 +137,12 @@ export class GameProcessor {
           event as any,
           onActualExecuted,
         );
+      case GameEventIdentifiers.ObtainCardEvent:
+        await this.onHandleObtainCardEvent(
+          identifier as GameEventIdentifiers.ObtainCardEvent,
+          event as any,
+          onActualExecuted,
+        );
       default:
         throw new Error(`Unknow incoming event: ${identifier}`);
     }
@@ -169,15 +176,43 @@ export class GameProcessor {
     }
   };
 
+  private async onHandleObtainCardEvent(
+    identifier: GameEventIdentifiers.ObtainCardEvent,
+    event: ServerEventFinder<GameEventIdentifiers.ObtainCardEvent>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
+  ) {
+    this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      if (stage === ObtainCardStage.CardObtained) {
+        const to = this.room.getPlayerById(event.toId);
+        // to.obtainCardIds(...event.cardIds);
+        event.translationsMessage = TranslationPack.translationJsonPatcher(
+          '{0} obtains {1} cards' + event.fromId ? ' from ${2}' : '',
+          to.Name,
+          event.cardIds.length,
+          event.fromId ? this.room.getPlayerById(event.fromId).Name : '',
+        );
+        this.room.broadcast(identifier, event);
+      }
+    });
+  }
+
   private async onHandleDrawCardEvent(
     identifier: GameEventIdentifiers.DrawCardEvent,
     event: EventPicker<GameEventIdentifiers.DrawCardEvent, WorkPlace.Server>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
+    event.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} draws {1} cards',
+      this.room.getPlayerById(event.playerId).Name,
+      event.cardIds.length,
+    );
+
     this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === DrawCardStage.CardDrawed) {
-        const { numberOfCards, playerId } = event;
-        this.room.drawCards(numberOfCards, playerId);
+        const { cardIds, playerId } = event;
+        const to = this.room.getPlayerById(playerId);
+        //Question?: How about xuyou?
+        to.obtainCardIds(...cardIds);
         this.room.broadcast(identifier, event);
       }
     });
@@ -188,9 +223,16 @@ export class GameProcessor {
     event: EventPicker<GameEventIdentifiers.CardDropEvent, WorkPlace.Server>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
+    event.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} drops {1} cards',
+      this.room.getPlayerById(event.fromId).Name,
+      event.cardIds.length,
+    );
+
     this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === CardDropStage.CardDropped) {
-        this.room.dropCards(event.cardIds);
+        const from = this.room.getPlayerById(event.fromId);
+        from.dropCards(...event.cardIds);
         this.room.broadcast(identifier, event);
       }
     });

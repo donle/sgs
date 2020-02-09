@@ -1,5 +1,6 @@
 import { Card } from 'core/cards/card';
 import {
+  EventPacker,
   EventPicker,
   GameEventIdentifiers,
   ServerEventFinder,
@@ -102,7 +103,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.socket.sendEvent(type, content, to);
   }
 
-  public async broadcast<I extends GameEventIdentifiers = GameEventIdentifiers>(
+  public broadcast<I extends GameEventIdentifiers = GameEventIdentifiers>(
     type: I,
     content: EventPicker<I, WorkPlace.Server>,
   ) {
@@ -218,40 +219,71 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return cards;
   }
 
-  public drawCards(
+  public async drawCards(
     numberOfCards: number,
     playerId?: PlayerId,
     from: 'top' | 'bottom' = 'top',
   ) {
-    const drawCards = this.getCards(numberOfCards, from);
-    const player =
-      playerId !== undefined ? this.getPlayerById(playerId) : undefined;
-    player
-      ? player.drawCardIds(...drawCards)
-      : this.currentPlayer && this.currentPlayer.drawCardIds(...drawCards);
+    const cardIds = this.getCards(numberOfCards, from);
+    const drawEvent: ServerEventFinder<GameEventIdentifiers.DrawCardEvent> = {
+      cardIds,
+      playerId: playerId || this.CurrentPlayer.Id,
+    };
+
+    await this.Processor.onHandleIncomingEvent(
+      GameEventIdentifiers.DrawCardEvent,
+      EventPacker.createIdentifierEvent(
+        GameEventIdentifiers.DrawCardEvent,
+        drawEvent,
+      ),
+    );
   }
 
-  public dropCards(cardIds: CardId[], playerId?: PlayerId) {
-    const from =
-      playerId !== undefined ? this.getPlayerById(playerId) : undefined;
+  public async dropCards(cardIds: CardId[], playerId?: PlayerId) {
+    const dropEvent: ServerEventFinder<GameEventIdentifiers.CardDropEvent> = {
+      cardIds,
+      fromId: playerId || this.CurrentPlayer.Id,
+    };
 
-    if (from) {
-      from.dropCards(...cardIds);
-    } else {
-      for (const cardId of cardIds) {
-        playerId = this.getCardOwnerId(cardId);
-        if (playerId) {
-          this.getPlayerById(playerId).dropCards(cardId);
-        }
-      }
-    }
+    await this.Processor.onHandleIncomingEvent(
+      GameEventIdentifiers.CardDropEvent,
+      EventPacker.createIdentifierEvent(
+        GameEventIdentifiers.CardDropEvent,
+        dropEvent,
+      ),
+    );
 
     this.dropDile.push(...cardIds);
     this.drawDile.filter(cardId => !cardIds.includes(cardId));
   }
 
+  public async obtainCards(cardIds: CardId[], to: PlayerId, fromId?: PlayerId) {
+    const obtainCardEvent = EventPacker.createIdentifierEvent(
+      GameEventIdentifiers.ObtainCardEvent,
+      {
+        cardIds,
+        toId: to,
+        fromId,
+      },
+    );
+    await this.Processor.onHandleIncomingEvent(
+      GameEventIdentifiers.ObtainCardEvent,
+      obtainCardEvent,
+    );
+  }
+
+  public async moveCards(
+    cardIds: CardId[],
+    fromId: PlayerId | undefined,
+    toId: PlayerId,
+    fromArea: PlayerCardsArea,
+    toArea: PlayerCardsArea,
+  ) {
+    //TODO: fill this function
+  }
+
   //TODO: refactor moveCard
-  public moveCard(
+  public async moveCard(
     cardId: CardId,
     fromId: PlayerId | undefined,
     toId: PlayerId,
@@ -270,16 +302,19 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       const lostCardId = to.equip(card);
       lostCardId !== undefined && this.onLoseCard(to, lostCardId);
 
-      this.Processor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, {
-        translationsMessage: TranslationPack.translationJsonPatcher(
-          '{0} uses card {1}',
-          to.Name,
-          TranslationPack.patchCardInTranslation(cardId),
-        ),
-        fromId: to.Id,
-        toIds: [to.Id],
-        cardId,
-      });
+      await this.Processor.onHandleIncomingEvent(
+        GameEventIdentifiers.CardUseEvent,
+        {
+          translationsMessage: TranslationPack.translationJsonPatcher(
+            '{0} uses card {1}',
+            to.Name,
+            TranslationPack.patchCardInTranslation(cardId),
+          ),
+          fromId: to.Id,
+          toIds: [to.Id],
+          cardId,
+        },
+      );
     } else {
       to.getCardIds(toArea).push(cardId);
       this.broadcast<GameEventIdentifiers.MoveCardEvent>(

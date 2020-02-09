@@ -9,6 +9,7 @@ import { Socket } from 'core/network/socket';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 
+import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { GameInfo } from 'core/game/game_props';
 import {
   AllStage,
@@ -36,37 +37,44 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     content: EventPicker<typeof type, WorkPlace>,
     pleyer: PlayerId,
   ): void;
-  public abstract async broadcast(
+  public abstract broadcast(
     type: GameEventIdentifiers,
     content: EventPicker<typeof type, WorkPlace>,
-  ): Promise<void>;
+  ): void;
 
   public abstract getCards(
     numberOfCards: number,
     from: 'top' | 'bottom',
   ): CardId[];
-  public abstract drawCards(
+  public abstract async drawCards(
     numberOfCards: number,
     player?: PlayerId,
     from?: 'top' | 'bottom',
-  ): void;
-  public abstract dropCards(cardIds: CardId[], player?: PlayerId): void;
-  public abstract moveCard(
+  ): Promise<void>;
+  public abstract async dropCards(cardIds: CardId[], player?: PlayerId): Promise<void>;
+  public abstract async obtainCards(cardIds: CardId[], to: PlayerId): Promise<void>;
+  public abstract async moveCard(
     cardId: CardId,
     from: PlayerId | undefined,
     to: PlayerId,
     fromArea: PlayerCardsArea | undefined,
     toArea: PlayerCardsArea,
-  ): void;
+  ): Promise<void>;
+  public abstract async moveCards(
+    cardIds: CardId[],
+    from: PlayerId | undefined,
+    to: PlayerId,
+    fromArea: PlayerCardsArea | undefined,
+    toArea: PlayerCardsArea,
+  ): Promise<void>;
   public abstract isAvailableTarget(
     cardId: CardId,
     attacker: PlayerId,
     target: PlayerId,
   ): boolean;
-  public abstract async onReceivingAsyncReponseFrom<P>(
-    identifier: GameEventIdentifiers,
-    playerId?: PlayerId,
-  ): Promise<P>;
+  public abstract async onReceivingAsyncReponseFrom<
+    T extends GameEventIdentifiers
+  >(identifier: T, playerId?: PlayerId): Promise<ClientEventFinder<T>>;
 
   public abstract getCardOwnerId(card: CardId): PlayerId | undefined;
   public abstract trigger<T = never>(
@@ -86,7 +94,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   //TODO: refactor useCard and useSkill
-  public useCard(
+  public async useCard(
     content: EventPicker<GameEventIdentifiers.CardUseEvent, WorkPlace>,
   ) {
     if (content.fromId) {
@@ -97,7 +105,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     this.broadcast(GameEventIdentifiers.CardUseEvent, content);
   }
 
-  public useSkill(
+  public async useSkill(
     content: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
   ) {
     this.broadcast(GameEventIdentifiers.SkillUseEvent, content);
@@ -157,11 +165,18 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public canAttack(from: Player, to: Player) {
     const seatDistance = this.getFixedSeatDistance(from, to);
-    return from.AttackDistance >= seatDistance;
+    return (
+      from.AttackDistance >= seatDistance &&
+      from.canUseCardTo(
+        this as any,
+        new CardMatcher({ name: ['slash'] }),
+        to.Id,
+      )
+    );
   }
 
   public getFixedSeatDistance(from: Player, to: Player) {
-    const seatGap = from.getOffenseDistance() + to.getDefenseDistance();
+    const seatGap = from.getOffenseDistance() - to.getDefenseDistance();
     return this.onSeatDistance(from, to) + seatGap;
   }
 }

@@ -75,12 +75,10 @@ export class NanManRuQingSkill extends ActiveSkill {
         to,
       );
 
-      const response = await room.onReceivingAsyncReponseFrom<
-        EventPicker<
-          GameEventIdentifiers.AskForCardResponseEvent,
-          WorkPlace.Client
-        >
-      >(GameEventIdentifiers.AskForCardResponseEvent, to);
+      const response = await room.onReceivingAsyncReponseFrom(
+        GameEventIdentifiers.AskForCardResponseEvent,
+        to,
+      );
 
       if (response.cardId === undefined) {
         const eventContent = EventPacker.createIdentifierEvent(

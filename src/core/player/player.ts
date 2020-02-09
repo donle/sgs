@@ -1,4 +1,5 @@
 import { EquipCard, RideCard, WeaponCard } from 'core/cards/equip_card';
+import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import {
   Character,
@@ -99,16 +100,54 @@ export abstract class Player implements PlayerInfo {
     return (this.marks[name] = value);
   }
   addMark(name: string, value: number) {
+    if (this.marks[name] === undefined) {
+      this.marks[name] = 0;
+    }
     return (this.marks[name] += value);
   }
   getMark(name: string) {
     return this.marks[name];
   }
+  addInvisibleMark(name: string, value: number) {
+    return this.addMark('#' + name, value);
+  }
+  getInvisibleMark(name: string) {
+    return this.marks['#' + name];
+  }
+  removeInvisibleMark(name: string) {
+    delete this.marks['#' + name];
+  }
 
-  public canUseCard(room: Room, cardId: CardId): boolean {
-    const card = Sanguosha.getCardById(cardId);
+  public canUseCardTo(
+    room: Room,
+    cardId: CardId | CardMatcher,
+    target: PlayerId,
+  ): boolean {
+    const player = room.getPlayerById(target);
 
-    return GameCommonRules.canUse(this, card) && card.Skill.canUse(room, this);
+    const skills = player.getSkills<FilterSkill>('filter');
+    for (const skill of skills) {
+      if (!skill.canBeUsedCard(cardId, room, target)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  public canUseCard(room: Room, cardId: CardId | CardMatcher): boolean {
+    const card =
+      cardId instanceof CardMatcher ? undefined : Sanguosha.getCardById(cardId);
+    const ruleCardUse = GameCommonRules.canUse(
+      this,
+      cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId),
+    );
+
+    if (card) {
+      return ruleCardUse && card.Skill.canUse(room, this);
+    }
+
+    return ruleCardUse;
   }
 
   public canUseSkill(
@@ -187,7 +226,7 @@ export abstract class Player implements PlayerInfo {
     }
   }
 
-  public drawCardIds(...cards: CardId[]) {
+  public obtainCardIds(...cards: CardId[]) {
     const handCards = this.getCardIds(PlayerCardsArea.HandArea);
     for (const card of cards) {
       handCards.push(card);
@@ -246,10 +285,13 @@ export abstract class Player implements PlayerInfo {
       ) !== undefined
     );
   }
-  public cardUsedTimes(cardSkillName: string): number {
-    return this.cardUseHistory.filter(
-      cardId => Sanguosha.getCardById(cardId).GeneralName === cardSkillName,
-    ).length;
+  public cardUsedTimes(cardSkillName: CardId | CardMatcher): number {
+    return this.cardUseHistory.filter(cardId => {
+      const card = Sanguosha.getCardById(cardId);
+      return cardSkillName instanceof CardMatcher
+        ? cardSkillName.match(card)
+        : card.GeneralName === cardSkillName;
+    }).length;
   }
 
   public hasUsedSkill(skillName: string): boolean {
@@ -286,11 +328,15 @@ export abstract class Player implements PlayerInfo {
 
   public getCardUsableDistance(cardId: CardId) {
     const card = Sanguosha.getCardById(cardId);
-    return card.EffectUseDistance + GameCommonRules.getCardAdditionalUsableDistance(card, this);
+    return (
+      card.EffectUseDistance +
+      GameCommonRules.getCardAdditionalUsableDistance(card, this)
+    );
   }
 
-  public getCardAdditionalUsableNumberOfTargets(cardId: CardId) {
-    const card = Sanguosha.getCardById(cardId);
+  public getCardAdditionalUsableNumberOfTargets(cardId: CardId | CardMatcher) {
+    const card =
+      cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId);
     return GameCommonRules.getCardAdditionalNumberOfTargets(card, this);
   }
 

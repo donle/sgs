@@ -22,7 +22,10 @@ export interface ClientEvent extends EventUtilities {
     fromId: PlayerId;
     cardIds: CardId[];
   };
-  [GameEventIdentifiers.DrawCardEvent]: {};
+  [GameEventIdentifiers.DrawCardEvent]: {
+    playerId: PlayerId;
+    numberOfCards: number;
+  };
   [GameEventIdentifiers.ObtainCardEvent]: {};
   [GameEventIdentifiers.MoveCardEvent]: {};
 
@@ -103,6 +106,16 @@ export interface ClientEvent extends EventUtilities {
     cardId?: CardId;
     fromId: PlayerId;
   };
+  [GameEventIdentifiers.AskForChooseOptionsEvent]: {
+    selectedOption?: string,
+    askedBy?: PlayerId,
+    fromId: PlayerId,
+  };
+  [GameEventIdentifiers.AskForChoosPlayerEvent]: {
+    selectedPlayer?: PlayerId,
+    fromId: PlayerId,
+    askedBy?: PlayerId,
+  }
   [GameEventIdentifiers.AskForCardDisplayEvent]: {};
   [GameEventIdentifiers.AskForCardDropEvent]: {};
   [GameEventIdentifiers.AskForChooseCharacterEvent]: {};

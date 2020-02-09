@@ -78,14 +78,16 @@ export class ZhiHeng extends ActiveSkill {
       dropCardEvent,
     );
 
-    const numberOfCards = skillUseEvent.cardIds.length;
-    await room.Processor.onHandleIncomingEvent(
-      GameEventIdentifiers.DrawCardEvent,
-      EventPacker.createIdentifierEvent(GameEventIdentifiers.DrawCardEvent, {
-        playerId: room.CurrentPlayer.Id,
-        numberOfCards,
-      }),
-    );
+    let drawAdditionalCards = 0;
+    if (
+      room
+        .getPlayerById(skillUseEvent.fromId)
+        .getCardIds(PlayerCardsArea.HandArea).length === 0
+    ) {
+      drawAdditionalCards++;
+    }
+
+    await room.drawCards(skillUseEvent.cardIds.length + drawAdditionalCards);
 
     return true;
   }

@@ -1,3 +1,4 @@
+import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { Room } from 'core/room/room';
@@ -11,7 +12,9 @@ export class JinkSkill extends ResponsiveSkill {
   }
 
   public responsiveFor() {
-    return ['jink'];
+    return new CardMatcher({
+      name: ['jink'],
+    });
   }
 
   async onUse(

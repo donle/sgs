@@ -66,7 +66,7 @@ export class GameCommonRules {
     GameCommonRules.preCheck(user);
   }
 
-  public static canUse(user: Player, card: Card) {
+  public static canUse(user: Player, card: Card | CardMatcher) {
     GameCommonRules.preCheck(user);
 
     let availableUseTimes = 0;
@@ -84,11 +84,16 @@ export class GameCommonRules {
     if (additionalRule) {
       availableUseTimes += additionalRule.additionalUsableTimes;
     }
-    for (const skill of user.getSkills<RulesBreakerSkill>('breaker')) {
-      availableUseTimes += skill.breakCardUsableTimes(card.Id);
+    if (card instanceof Card) {
+      for (const skill of user.getSkills<RulesBreakerSkill>('breaker')) {
+        availableUseTimes += skill.breakCardUsableTimes(card.Id);
+      }
     }
 
-    return user.cardUsedTimes(card.GeneralName) < availableUseTimes;
+    return (
+      user.cardUsedTimes(card instanceof Card ? card.Id : card) <
+      availableUseTimes
+    );
   }
 
   public static addAvailableHoldCardNumber(user: Player, addedNumber: number) {
@@ -104,9 +109,7 @@ export class GameCommonRules {
   ) {
     GameCommonRules.preCheck(user);
     this.userRules[user.Id].cards
-      .filter(
-        cardProp => cardProp.cardMatcher.toString() === cardMatcher.toString(),
-      )
+      .filter(cardProp => cardProp.cardMatcher.match(cardMatcher))
       .map(rule => (rule.additionalUsableTimes += times));
   }
 
@@ -117,9 +120,7 @@ export class GameCommonRules {
   ) {
     GameCommonRules.preCheck(user);
     this.userRules[user.Id].cards
-      .filter(
-        cardProp => cardProp.cardMatcher.toString() === cardMatcher.toString(),
-      )
+      .filter(cardProp => cardProp.cardMatcher.match(cardMatcher))
       .map(rule => (rule.additionalUsableDistance += times));
   }
 
@@ -148,44 +149,63 @@ export class GameCommonRules {
   public static removeCardRules(cardMatcher: CardMatcher, user: Player) {
     GameCommonRules.userRules[user.Id].cards = GameCommonRules.userRules[
       user.Id
-    ].cards.filter(
-      rule => rule.cardMatcher.toString() !== cardMatcher.toString(),
-    );
+    ].cards.filter(rule => rule.cardMatcher.match(cardMatcher));
   }
 
-  public static getCardAdditionalUsableTimes(card: Card, user: Player) {
+  public static getCardAdditionalUsableTimes(
+    card: Card | CardMatcher,
+    user: Player,
+  ) {
     let times = 0;
-    GameCommonRules.userRules[user.Id].cards.filter(rule => rule.cardMatcher.match(card)).forEach(rule => {
-      times += rule.additionalUsableTimes;
-    })
+    GameCommonRules.userRules[user.Id].cards
+      .filter(rule => rule.cardMatcher.match(card))
+      .forEach(rule => {
+        times += rule.additionalUsableTimes;
+      });
 
-    user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
-      times += skill.breakCardUsableTimes(card.Id);
-    })
+    if (card instanceof Card) {
+      user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
+        times += skill.breakCardUsableTimes(card.Id);
+      });
+    }
 
     return times;
   }
-  public static getCardAdditionalUsableDistance(card: Card, user: Player) {
+  public static getCardAdditionalUsableDistance(
+    card: Card | CardMatcher,
+    user: Player,
+  ) {
     let times = 0;
-    GameCommonRules.userRules[user.Id].cards.filter(rule => rule.cardMatcher.match(card)).forEach(rule => {
-      times += rule.additionalUsableDistance;
-    })
+    GameCommonRules.userRules[user.Id].cards
+      .filter(rule => rule.cardMatcher.match(card))
+      .forEach(rule => {
+        times += rule.additionalUsableDistance;
+      });
 
-    user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
-      times += skill.breakCardUsableDistance(card.Id);
-    })
+    if (card instanceof Card) {
+      user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
+        times += skill.breakCardUsableDistance(card.Id);
+      });
+    }
 
     return times;
   }
-  public static getCardAdditionalNumberOfTargets(card: Card, user: Player) {
+  public static getCardAdditionalNumberOfTargets(
+    card: Card | CardMatcher,
+    user: Player,
+  ) {
     let times = 0;
-    GameCommonRules.userRules[user.Id].cards.filter(rule => rule.cardMatcher.match(card)).forEach(rule => {
-      times += rule.additionalTargets;
-    })
+    GameCommonRules.userRules[user.Id].cards
+      .filter(rule => rule.cardMatcher.match(card))
+      .forEach(rule => {
+        times += rule.additionalTargets;
+      });
 
-    user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
-      times += skill.breakCardUsableTargets(card.Id);
-    })
+    if (card instanceof Card) {
+      user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
+        times += skill.breakCardUsableTargets(card.Id);
+      });
+    }
 
     return times;
   }
