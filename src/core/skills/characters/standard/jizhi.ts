@@ -37,7 +37,11 @@ export class JiZhiSkill extends TriggerSkill {
     content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
   ) {
     const card = Sanguosha.getCardById(content.cardId);
-    return card.is(CardType.Trick) && !card.is(CardType.DelayedTrick);
+    return (
+      content.fromId === owner.Id &&
+      card.is(CardType.Trick) &&
+      !card.is(CardType.DelayedTrick)
+    );
   }
 
   async onTrigger(
