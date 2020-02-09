@@ -187,12 +187,12 @@ export abstract class Skill {
 
   // tslint:disable-next-line: no-empty
   public onLoseSkill(owner: Player) {}
-  // tslint:disable-next-line: no-empty
   public onPhaseChange(
     fromPhase: PlayerStage,
     toPhase: PlayerStage,
     room: Room,
     owner: PlayerId,
+  // tslint:disable-next-line: no-empty
   ) {}
 
   public get Description() {

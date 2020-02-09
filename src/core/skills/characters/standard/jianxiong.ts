@@ -55,7 +55,7 @@ export class JianXiongSkill extends TriggerSkill {
       GameEventIdentifiers.DamageEvent
     >;
     await room.obtainCards(damagedEvent.cardIds || [], damagedEvent.toId);
-    await room.drawCards(1);
+    await room.drawCards(1, damagedEvent.toId);
     return true;
   }
 }
