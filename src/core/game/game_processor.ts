@@ -301,7 +301,14 @@ export class GameProcessor {
     this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === CardEffectStage.CardEffect) {
         const { cardId } = event;
-        await Sanguosha.getCardById(cardId).Skill.onEffect(this.room, event);
+        if (
+          !(await Sanguosha.getCardById(cardId).Skill.onEffect(
+            this.room,
+            event,
+          ))
+        ) {
+          this.stageProcessor.terminateEventProcess();
+        }
       }
     });
   }
@@ -313,6 +320,14 @@ export class GameProcessor {
   ) {
     this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === CardUseStage.CardUsed) {
+        if (
+          !(await Sanguosha.getCardById(event.cardId).Skill.onUse(
+            this.room,
+            event,
+          ))
+        ) {
+          this.stageProcessor.terminateEventProcess();
+        }
         this.room.broadcast(identifier, event);
       }
     });

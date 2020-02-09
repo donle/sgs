@@ -23,7 +23,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 @LordSkill
 export class JiJiangSkill extends ActiveSkill {
   constructor() {
-    super('jijiang', 'jijang_description');
+    super('jijiang', 'jijiang_description');
   }
 
   public canUse(room: Room, owner: Player) {
@@ -130,7 +130,7 @@ export class JiJiangSkill extends ActiveSkill {
 @LordSkill
 export class JiJiangShadowSkill extends ResponsiveSkill {
   constructor() {
-    super('jijiang', 'jijang_description');
+    super('jijiang', 'jijiang_description');
   }
   public responsiveFor() {
     return new CardMatcher({ name: ['slash'] });

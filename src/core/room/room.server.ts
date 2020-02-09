@@ -237,6 +237,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         drawEvent,
       ),
     );
+
+    return cardIds;
   }
 
   public async dropCards(cardIds: CardId[], playerId?: PlayerId) {

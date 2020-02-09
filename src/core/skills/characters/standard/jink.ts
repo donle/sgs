@@ -30,7 +30,10 @@ export class JinkSkill extends ResponsiveSkill {
     return true;
   }
 
-  async onEffect() {
+  async onEffect(
+    room: Room,
+    event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
+  ) {
     return true;
   }
 }

@@ -90,36 +90,28 @@ export class Hujia extends TriggerSkill {
       ) {
         room.notify(identifier, jinkCardEvent, player.Id);
 
-        const response = await room.onReceivingAsyncReponseFrom(identifier, player.Id);
+        const response = await room.onReceivingAsyncReponseFrom(
+          identifier,
+          player.Id,
+        );
 
         if (response.cardId !== undefined) {
-          if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
-            const cardUseEvent = EventPacker.createIdentifierEvent(
-              GameEventIdentifiers.CardUseEvent,
-              {
-                cardId: response.cardId,
-                fromId,
-              },
-            );
+          const eventIdentifier =
+            identifier === GameEventIdentifiers.AskForCardUseEvent
+              ? GameEventIdentifiers.CardUseEvent
+              : GameEventIdentifiers.CardResponseEvent;
+          const cardUseEvent = EventPacker.createIdentifierEvent(
+            eventIdentifier,
+            {
+              cardId: response.cardId,
+              fromId,
+            },
+          );
 
-            await room.Processor.onHandleIncomingEvent(
-              GameEventIdentifiers.CardUseEvent,
-              cardUseEvent,
-            );
-          } else {
-            const cardResponseEvent = EventPacker.createIdentifierEvent(
-              GameEventIdentifiers.CardResponseEvent,
-              {
-                cardId: response.cardId,
-                fromId,
-              },
-            );
-
-            await room.Processor.onHandleIncomingEvent(
-              GameEventIdentifiers.CardResponseEvent,
-              cardResponseEvent,
-            );
-          }
+          await room.Processor.onHandleIncomingEvent(
+            eventIdentifier,
+            cardUseEvent,
+          );
 
           return false;
         }

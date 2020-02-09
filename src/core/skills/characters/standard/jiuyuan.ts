@@ -41,7 +41,7 @@ export class JiuYuan extends TriggerSkill {
     stage: RecoverEffectStage,
   ) {
     return (
-      EventPacker.getIdentifier(event) === GameEventIdentifiers.RecoverEvent &&
+      // EventPacker.getIdentifier(event) === GameEventIdentifiers.RecoverEvent &&
       stage === RecoverEffectStage.BeforeRecoverEffect
     );
   }

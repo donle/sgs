@@ -31,7 +31,7 @@ export class GameCommonRules {
       }[];
       additionalOffenseDistance: number;
       additionalDefenseDistance: number;
-      additionalHold: number;
+      additionalHold: number; // server only
       additionalAttackDistance: number;
     };
   } = {};

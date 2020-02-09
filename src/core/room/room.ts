@@ -50,7 +50,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     numberOfCards: number,
     player?: PlayerId,
     from?: 'top' | 'bottom',
-  ): Promise<void>;
+  ): Promise<CardId[]>;
   public abstract async dropCards(cardIds: CardId[], player?: PlayerId): Promise<void>;
   public abstract async obtainCards(cardIds: CardId[], to: PlayerId): Promise<void>;
   public abstract async moveCard(
