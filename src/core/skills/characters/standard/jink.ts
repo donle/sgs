@@ -1,7 +1,5 @@
 import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { Player } from 'core/player/player';
-import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, ResponsiveSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';

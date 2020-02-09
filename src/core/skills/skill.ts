@@ -3,8 +3,10 @@ import { CardId } from 'core/cards/libs/card_props';
 import {
   ClientEventFinder,
   EventPacker,
+  EventPicker,
   GameEventIdentifiers,
   ServerEventFinder,
+  WorkPlace,
 } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
@@ -168,7 +170,8 @@ export abstract class Skill {
   public abstract onEffect(
     room: Room,
     event: ServerEventFinder<
-      GameEventIdentifiers.SkillEffectEvent | GameEventIdentifiers.CardEffectEvent
+      | GameEventIdentifiers.SkillEffectEvent
+      | GameEventIdentifiers.CardEffectEvent
     >,
   ): Promise<boolean>;
 
@@ -229,7 +232,10 @@ export abstract class ResponsiveSkill extends Skill {
 }
 
 export abstract class TriggerSkill extends Skill {
-  public abstract isTriggerable(stage: AllStage): boolean;
+  public abstract isTriggerable(
+    event: EventPicker<GameEventIdentifiers, WorkPlace>,
+    stage?: AllStage,
+  ): boolean;
   public abstract isAutoTrigger(): boolean;
   public abstract async onTrigger(
     room: Room,
@@ -254,33 +260,6 @@ export abstract class TriggerSkill extends Skill {
 
   public isRefreshAt() {
     return false;
-  }
-}
-
-export class DistanceSkill extends Skill {
-  protected triggerableTimes: number;
-
-  constructor(name: string, description: string, private distance: number) {
-    super(name, description);
-    this.triggerableTimes = INFINITE_TRIGGERING_TIMES;
-  }
-
-  public canUse() {
-    return false;
-  }
-  public isRefreshAt() {
-    return false;
-  }
-
-  public async onUse() {
-    return true;
-  }
-  public async onEffect() {
-    return true;
-  }
-
-  public get Distance() {
-    return this.distance;
   }
 }
 
@@ -436,7 +415,24 @@ export abstract class RulesBreakerSkill extends Skill {
     return true;
   }
 
-  public abstract breakRule(room: Room, playerId: PlayerId): void;
+  public breakCardUsableTimes(cardId: CardId, room?: Room, owner?: PlayerId): number {
+    return 0;
+  }
+  public breakCardUsableDistance(cardId: CardId, room?: Room, owner?: PlayerId): number {
+    return 0;
+  }
+  public breakCardUsableTargets(cardId: CardId, room?: Room, owner?: PlayerId): number {
+    return 0;
+  }
+  public breakAttackDistance(cardId: CardId, room?: Room, owner?: PlayerId): number {
+    return 0;
+  }
+  public breakOffenseDistance(room?: Room, owner?: PlayerId): number {
+    return 0;
+  }
+  public breakDefenseDistance(room?: Room, owner?: PlayerId): number {
+    return 0;
+  }
 }
 
 export abstract class FilterSkill extends Skill {
@@ -458,12 +454,12 @@ export abstract class FilterSkill extends Skill {
     cardId: CardId,
     room: Room,
     owner: PlayerId,
-    target: PlayerId,
+    target?: PlayerId,
   ): boolean;
   public abstract canBeUsedCard(
     cardId: CardId,
     room: Room,
     owner: PlayerId,
-    attacker: PlayerId,
+    attacker?: PlayerId,
   ): boolean;
 }

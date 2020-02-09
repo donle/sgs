@@ -1,20 +1,17 @@
-import { Card, CardType, EquipCardCategory } from './card';
+import { Card, CardType } from './card';
 
 import { GameCardExtensions } from 'core/game/game_props';
 import { AllStage } from 'core/game/stage_processor';
-import { DistanceSkill, Skill } from 'core/skills/skill';
-import { CardId, CardSuit, RealCardId } from './libs/card_props';
+import { RulesBreakerSkill, Skill } from 'core/skills/skill';
+import { CardSuit, RealCardId } from './libs/card_props';
 
 export abstract class EquipCard extends Card {
-  protected cardType = CardType.Equip;
+  protected cardType = [CardType.Equip];
   protected effectUseDistance = 0;
 
-  constructor(private equiCardCategory: EquipCardCategory) {
+  constructor(subType: CardType) {
     super();
-  }
-
-  public get EquipCategory() {
-    return this.equiCardCategory;
+    this.cardType.push(subType);
   }
 }
 
@@ -30,7 +27,7 @@ export abstract class WeaponCard extends EquipCard {
     private attackDistance: number,
     generalName?: string,
   ) {
-    super(EquipCardCategory.Weapon);
+    super(CardType.Weapon);
     this.generalName = generalName || this.name;
   }
 
@@ -51,25 +48,28 @@ export abstract class ArmorCard extends EquipCard {
     protected skills: Skill[],
     generalName?: string,
   ) {
-    super(EquipCardCategory.Weapon);
+    super(CardType.Armor);
     this.generalName = generalName || this.name;
   }
 }
 
 export abstract class RideCard extends EquipCard {
-  protected abstract distanceSkill: DistanceSkill;
+  protected abstract skill: RulesBreakerSkill;
 
-  public get Skill(): DistanceSkill {
-    return this.distanceSkill;
+  public get Skill(): RulesBreakerSkill {
+    return this.skill;
   }
 
-  public get Distance() {
-    return this.distanceSkill.Distance;
+  public get OffenseDistance() {
+    return this.skill.breakOffenseDistance();
+  }
+
+  public get DefenseDistance() {
+    return this.skill.breakDefenseDistance();
   }
 }
 
 export class DefenseRideCard extends RideCard {
-  protected skill: Skill = this.distanceSkill;
   protected generalName: string;
 
   constructor(
@@ -79,16 +79,15 @@ export class DefenseRideCard extends RideCard {
     protected name: string,
     protected description: string,
     protected fromPackage: GameCardExtensions,
-    protected distanceSkill: DistanceSkill,
+    protected skill: RulesBreakerSkill,
     generalName?: string,
   ) {
-    super(EquipCardCategory.DefenseRide);
+    super(CardType.DefenseRide);
     this.generalName = generalName || this.name;
   }
 }
 
 export class OffenseRideCard extends RideCard {
-  protected skill: Skill = this.distanceSkill;
   protected generalName: string;
 
   constructor(
@@ -98,10 +97,10 @@ export class OffenseRideCard extends RideCard {
     protected name: string,
     protected description: string,
     protected fromPackage: GameCardExtensions,
-    protected distanceSkill: DistanceSkill,
+    protected skill: RulesBreakerSkill,
     generalName?: string,
   ) {
-    super(EquipCardCategory.OffenseRide);
+    super(CardType.OffenseRide);
     this.generalName = generalName || this.name;
   }
 }

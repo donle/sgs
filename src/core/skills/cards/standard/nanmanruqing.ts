@@ -1,6 +1,7 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import {
   ClientEventFinder,
+  EventPacker,
   EventPicker,
   GameEventIdentifiers,
   ServerEventFinder,
@@ -42,6 +43,11 @@ export class NanManRuQingSkill extends ActiveSkill {
     event.toIds = room.AlivePlayers.filter(
       player => player.Id !== event.fromId,
     ).map(player => player.Id);
+    event.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} uses card ${1}',
+      room.getPlayerById(event.fromId).Name,
+      TranslationPack.patchCardInTranslation(event.cardId),
+    );
 
     await room.Processor.onHandleIncomingEvent(
       GameEventIdentifiers.CardUseEvent,
@@ -77,25 +83,41 @@ export class NanManRuQingSkill extends ActiveSkill {
       >(GameEventIdentifiers.AskForCardResponseEvent, to);
 
       if (response.cardId === undefined) {
-        const eventContent = {
-          fromId,
-          toId: to,
-          damage: 1,
-          damageType: DamageType.Normal,
-          cardIds: [event.cardId],
-          triggeredBySkillName: this.name,
-          translationsMessage: TranslationPack.translationJsonPatcher(
-            '{0} hits {1} for {2} {3} hp',
-            room.getPlayerById(fromId!).Name,
-            room.getPlayerById(to).Name,
-            1,
-            DamageType.Normal,
-          ),
-        };
+        const eventContent = EventPacker.createIdentifierEvent(
+          GameEventIdentifiers.DamageEvent,
+          {
+            fromId,
+            toId: to,
+            damage: 1,
+            damageType: DamageType.Normal,
+            cardIds: [event.cardId],
+            triggeredBySkillName: this.name,
+            translationsMessage: TranslationPack.translationJsonPatcher(
+              '{0} hits {1} for {2} {3} hp',
+              room.getPlayerById(fromId!).Name,
+              room.getPlayerById(to).Name,
+              1,
+              DamageType.Normal,
+            ),
+          },
+        );
 
         await room.Processor.onHandleIncomingEvent(
           GameEventIdentifiers.DamageEvent,
           eventContent,
+        );
+      } else {
+        const cardResponsedEvent: ServerEventFinder<GameEventIdentifiers.CardResponseEvent> = EventPacker.createIdentifierEvent(
+          GameEventIdentifiers.CardResponseEvent,
+          {
+            fromId: to,
+            cardId: response.cardId,
+          },
+        );
+
+        await room.Processor.onHandleIncomingEvent(
+          GameEventIdentifiers.CardResponseEvent,
+          cardResponsedEvent,
         );
       }
     }

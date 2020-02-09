@@ -1,5 +1,6 @@
 import { Sanguosha } from 'core/game/engine';
 import { GameCardExtensions } from 'core/game/game_props';
+import { JinkSkill } from 'core/skills/characters/standard/jink';
 import { BasicCard } from '../basic_card';
 import { CardSuit } from '../libs/card_props';
 
@@ -15,5 +16,9 @@ export class Jink extends BasicCard {
       GameCardExtensions.Standard,
       Sanguosha.getSkillBySkillName('jink'),
     );
+  }
+
+  public get Skill() {
+    return this.skill as JinkSkill;
   }
 }

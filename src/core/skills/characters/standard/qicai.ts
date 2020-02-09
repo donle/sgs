@@ -1,13 +1,17 @@
+import { CardType } from 'core/cards/card';
+import { CardId } from 'core/cards/libs/card_props';
+import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE } from 'core/game/game_props';
-import { DistanceType, PlayerId } from 'core/player/player_props';
-import { Room } from 'core/room/room';
 import { CompulsorySkill, RulesBreakerSkill } from 'core/skills/skill';
 
 @CompulsorySkill
 export class QiCaiSkill extends RulesBreakerSkill {
-  public breakRule(room: Room, owner: PlayerId) {
-    room
-      .getPlayerById(owner)
-      .breakDistanceRules(this.name, INFINITE_DISTANCE, DistanceType.Offense);
+  public breakCardUsableDistance(cardId: CardId) {
+    const card = Sanguosha.getCardById(cardId);
+    if (card.is(CardType.Trick)) {
+      return INFINITE_DISTANCE;
+    } else {
+      return 0;
+    }
   }
 }

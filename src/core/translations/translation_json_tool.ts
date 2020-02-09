@@ -1,3 +1,6 @@
+import { CardId } from 'core/cards/libs/card_props';
+import { Sanguosha } from 'core/game/engine';
+
 const translationObjectSign = '@@translate:';
 
 export type PatchedTranslationObject = {
@@ -13,8 +16,14 @@ type TranslationsDictionary = {
   [k: string]: string;
 };
 
+type EmojiOrImageTranslationDictionary = {
+  [k: string]: string
+}
+
 export class TranslationPack {
   private constructor(private translationJon: PatchedTranslationObject) {}
+
+  private static emojiOrImageTextDict: EmojiOrImageTranslationDictionary = {};
 
   updateRawText(newText: string) {
     this.translationJon.original = newText;
@@ -32,6 +41,21 @@ export class TranslationPack {
 
   toString() {
     return JSON.stringify(this.translationJon);
+  }
+
+  public static patchCardInTranslation(cardId: CardId) {
+    const card = Sanguosha.getCardById(cardId);
+    return `${TranslationPack.patchEmojiOrImageInTranslation(card.Suit)} ${card.CardNumber} ${card.Name}`;
+  }
+
+  public static patchEmojiOrImageInTranslation(rawText: string | number) {
+      return translationObjectSign + rawText;
+  }
+
+  public addEmojiOrImageSymbolText(...symbolTextPair: [string | number, string][]) {
+    for (const [rawText, translatePath] of symbolTextPair) {
+      TranslationPack.emojiOrImageTextDict[rawText] = translatePath;
+    }
   }
 
   public static translationJsonPatcher(
@@ -78,7 +102,9 @@ export class TranslationPack {
           );
         }
       }
-
+      for (const [rawText, path] of Object.entries(TranslationPack.emojiOrImageTextDict)) {
+        target.replace(rawText, path);
+      }
       return target;
     } catch {
       return wrappedString;

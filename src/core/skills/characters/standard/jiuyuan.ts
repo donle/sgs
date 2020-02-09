@@ -1,10 +1,11 @@
 import { CharacterNationality } from 'core/characters/character';
 import {
   ClientEventFinder,
+  EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
-import { AllStage, RecoverEffectStage } from 'core/game/stage_processor';
+import { RecoverEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CompulsorySkill, LordSkill, TriggerSkill } from 'core/skills/skill';
@@ -35,8 +36,14 @@ export class JiuYuan extends TriggerSkill {
     );
   }
 
-  public isTriggerable(stage: AllStage) {
-    return stage === RecoverEffectStage.BeforeRecoverEffect;
+  public isTriggerable(
+    event: ServerEventFinder<GameEventIdentifiers.RecoverEvent>,
+    stage: RecoverEffectStage,
+  ) {
+    return (
+      EventPacker.getIdentifier(event) === GameEventIdentifiers.RecoverEvent &&
+      stage === RecoverEffectStage.BeforeRecoverEffect
+    );
   }
 
   async onTrigger(

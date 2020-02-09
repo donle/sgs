@@ -1,6 +1,7 @@
 import { CardId } from 'core/cards/libs/card_props';
 import {
   ClientEventFinder,
+  EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
@@ -64,10 +65,13 @@ export class ZhiHeng extends ActiveSkill {
       throw new Error('Unable to get zhiheng cards');
     }
 
-    const dropCardEvent: ServerEventFinder<GameEventIdentifiers.CardDropEvent> = {
-      fromId: skillUseEvent.fromId,
-      cardIds: skillUseEvent.cardIds,
-    };
+    const dropCardEvent = EventPacker.createIdentifierEvent(
+      GameEventIdentifiers.CardDropEvent,
+      {
+        fromId: skillUseEvent.fromId,
+        cardIds: skillUseEvent.cardIds,
+      },
+    );
 
     await room.Processor.onHandleIncomingEvent(
       GameEventIdentifiers.CardDropEvent,
@@ -77,10 +81,10 @@ export class ZhiHeng extends ActiveSkill {
     const numberOfCards = skillUseEvent.cardIds.length;
     await room.Processor.onHandleIncomingEvent(
       GameEventIdentifiers.DrawCardEvent,
-      {
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.DrawCardEvent, {
         playerId: room.CurrentPlayer.Id,
         numberOfCards,
-      },
+      }),
     );
 
     return true;

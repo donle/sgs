@@ -3,6 +3,7 @@ import {
   EventPacker,
   EventPicker,
   GameEventIdentifiers,
+  ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
 import { PinDianResultType } from 'core/event/event.server';
@@ -14,6 +15,7 @@ import {
   DamageEffectStage,
   DrawCardStage,
   GameEventStage,
+  JudgeEffectStage,
   PinDianStage,
   PlayerStage,
   SkillEffectStage,
@@ -21,12 +23,13 @@ import {
   StageProcessor,
 } from 'core/game/stage_processor';
 import { PlayerId } from 'core/player/player_props';
-import { Room } from '../room/room';
+import { TranslationPack } from 'core/translations/translation_json_tool';
+import { ServerRoom } from '../room/room.server';
 import { Sanguosha } from './engine';
 
 export class GameProcessor {
   private playerPositionIndex = -1;
-  private room: Room;
+  private room: ServerRoom;
   private currentPlayerStage: PlayerStage | undefined;
 
   constructor(private stageProcessor: StageProcessor) {}
@@ -37,7 +40,7 @@ export class GameProcessor {
     }
   }
 
-  public start(room: Room) {
+  public start(room: ServerRoom) {
     this.room = room;
     this.playerPositionIndex = 0;
     //TODO
@@ -127,6 +130,12 @@ export class GameProcessor {
           onActualExecuted,
         );
         break;
+      case GameEventIdentifiers.JudgeEvent:
+        await this.onHandleJudgeEvent(
+          identifier as GameEventIdentifiers.JudgeEvent,
+          event as any,
+          onActualExecuted,
+        );
       default:
         throw new Error(`Unknow incoming event: ${identifier}`);
     }
@@ -142,7 +151,7 @@ export class GameProcessor {
   ) => {
     let eventStage = this.stageProcessor.involve(identifier);
     while (this.stageProcessor.isInsideEvent(identifier, eventStage)) {
-      await this.room.trigger<typeof event>(eventStage!, event);
+      await this.room.trigger<typeof event>(event, eventStage!);
       if (EventPacker.isTerminated(event)) {
         this.stageProcessor.skipEventProcess(identifier);
         break;
@@ -278,6 +287,24 @@ export class GameProcessor {
     this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === CardResponseStage.CardResponsed) {
         this.room.broadcast(identifier, event);
+      }
+    });
+  }
+
+  private async onHandleJudgeEvent(
+    identifier: GameEventIdentifiers.JudgeEvent,
+    event: ServerEventFinder<GameEventIdentifiers.JudgeEvent>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
+  ) {
+    this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      if (stage === JudgeEffectStage.JudgeEffect) {
+        const { toId, cardId, judgeCardId } = event;
+        event.translationsMessage = TranslationPack.translationJsonPatcher(
+          '{0} got judged card {2} on card {1}',
+          this.room.getPlayerById(toId).Name,
+          TranslationPack.patchCardInTranslation(cardId),
+          TranslationPack.patchCardInTranslation(judgeCardId),
+        );
       }
     });
   }

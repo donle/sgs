@@ -27,7 +27,7 @@ import { GameInfo } from 'core/game/game_props';
 import { CardLoader } from 'core/game/package_loader/loader.cards';
 import { CharacterLoader } from 'core/game/package_loader/loader.characters';
 import { RoomInfo } from 'core/shares/types/server_types';
-import { TriggerSkill } from 'core/skills/skill';
+import { FilterSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { GameProcessor } from '../game/game_processor';
 import { Room, RoomId } from './room';
@@ -67,6 +67,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   private shuffle() {
+    if (this.dropDile.length > 0) {
+      this.drawDile = this.drawDile.concat(this.dropDile);
+      this.dropDile = [];
+    }
+
     for (let i = 0; i < this.drawDile.length - 1; i++) {
       const swapCardIndex =
         Math.floor(Math.random() * (this.drawCards.length - i)) + i;
@@ -115,8 +120,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   public async trigger<T = never>(
-    stage: AllStage,
     content: T extends never ? ServerEventFinder<GameEventIdentifiers> : T,
+    stage?: AllStage,
   ) {
     if (!this.CurrentPlayer) {
       throw new Error('current player is undefined');
@@ -135,7 +140,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       const skills = this.players[i].getSkills<TriggerSkill>('trigger');
       for (const skill of skills) {
         if (
-          skill.isTriggerable(stage) &&
+          skill.isTriggerable(content, stage) &&
           skill.canUse(this, this.players[i], content)
         ) {
           const triggerSkillEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent> = {
@@ -197,9 +202,28 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return await this.socket.waitForResponse<T>(identifier, playerId);
   }
 
-  public drawCards(numberOfCards: number, playerId?: PlayerId) {
-    const drawCards = this.drawDile.slice(0, numberOfCards);
-    this.drawDile = this.drawDile.slice(numberOfCards);
+  public getCards(numberOfCards: number, from: 'top' | 'bottom') {
+    const cards: CardId[] = [];
+    while (numberOfCards-- > 0) {
+      if (this.drawDile.length === 0) {
+        this.shuffle();
+      }
+
+      const card = (from === 'top'
+        ? this.drawDile.shift()
+        : this.drawDile.pop()) as CardId;
+      cards.push(card);
+    }
+
+    return cards;
+  }
+
+  public drawCards(
+    numberOfCards: number,
+    playerId?: PlayerId,
+    from: 'top' | 'bottom' = 'top',
+  ) {
+    const drawCards = this.getCards(numberOfCards, from);
     const player =
       playerId !== undefined ? this.getPlayerById(playerId) : undefined;
     player
@@ -213,42 +237,49 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     if (from) {
       from.dropCards(...cardIds);
+    } else {
+      for (const cardId of cardIds) {
+        playerId = this.getCardOwnerId(cardId);
+        if (playerId) {
+          this.getPlayerById(playerId).dropCards(cardId);
+        }
+      }
     }
 
     this.dropDile.push(...cardIds);
     this.drawDile.filter(cardId => !cardIds.includes(cardId));
   }
 
+  //TODO: refactor moveCard
   public moveCard(
     cardId: CardId,
-    from: Player | undefined,
-    to: Player,
+    fromId: PlayerId | undefined,
+    toId: PlayerId,
     fromArea: PlayerCardsArea,
     toArea: PlayerCardsArea,
   ) {
+    const from = fromId ? this.getPlayerById(fromId) : undefined;
+    const to = this.getPlayerById(toId);
+
     if (from) {
       from.dropCards(cardId);
     }
 
-    const card = Sanguosha.getCardById(cardId);
+    const card = Sanguosha.getCardById<EquipCard>(cardId);
     if (toArea === PlayerCardsArea.EquipArea) {
-      // TODO: looks like the type of event object cannot be auto detected;
-      const lostCardId = to.equip(card as EquipCard);
+      const lostCardId = to.equip(card);
       lostCardId !== undefined && this.onLoseCard(to, lostCardId);
 
-      this.broadcast<GameEventIdentifiers.CardUseEvent>(
-        GameEventIdentifiers.CardUseEvent,
-        {
-          translationsMessage: TranslationPack.translationJsonPatcher(
-            '{0} uses card {1}',
-            to.Name,
-            card.Name,
-          ),
-          fromId: to.Id,
-          toIds: [to.Id],
-          cardId,
-        },
-      );
+      this.Processor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, {
+        translationsMessage: TranslationPack.translationJsonPatcher(
+          '{0} uses card {1}',
+          to.Name,
+          TranslationPack.patchCardInTranslation(cardId),
+        ),
+        fromId: to.Id,
+        toIds: [to.Id],
+        cardId,
+      });
     } else {
       to.getCardIds(toArea).push(cardId);
       this.broadcast<GameEventIdentifiers.MoveCardEvent>(
@@ -257,7 +288,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           translationsMessage: TranslationPack.translationJsonPatcher(
             '{0} obtains card {1}',
             to.Name,
-            card.Name,
+            TranslationPack.patchCardInTranslation(cardId),
           ),
           fromId: from && from.Id,
           toId: to.Id,
@@ -281,6 +312,22 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
   }
 
+  public isAvailableTarget(
+    cardId: CardId,
+    attacker: PlayerId,
+    target: PlayerId,
+  ) {
+    for (const skill of this.getPlayerById(target).getSkills<FilterSkill>(
+      'filter',
+    )) {
+      if (!skill.canBeUsedCard(cardId, this, target, attacker)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   public get RoomId() {
     return this.roomId;
   }
@@ -293,5 +340,21 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       packages: this.gameInfo.characterExtensions,
       status: this.gameStarted ? 'playing' : 'waiting',
     };
+  }
+
+  public get CurrentPlayerStage() {
+    return this.gameProcessor.CurrentPlayerStage;
+  }
+
+  public get CurrentGameStage() {
+    return this.gameProcessor.CurrentGameStage;
+  }
+
+  public get CurrentPlayer(): Player {
+    return this.gameProcessor.CurrentPlayer;
+  }
+
+  public get Processor() {
+    return this.gameProcessor;
   }
 }

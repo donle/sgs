@@ -6,7 +6,6 @@ import {
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
-import { AskForQueryStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CommonSkill, LordSkill, TriggerSkill } from 'core/skills/skill';
@@ -19,10 +18,16 @@ export class Hujia extends TriggerSkill {
     return false;
   }
 
-  public isTriggerable(stage: AskForQueryStage) {
+  public isTriggerable(
+    event: ServerEventFinder<
+      | GameEventIdentifiers.AskForCardResponseEvent
+      | GameEventIdentifiers.AskForCardUseEvent
+    >,
+  ) {
+    const identifier = EventPacker.getIdentifier(event);
     return (
-      stage === AskForQueryStage.AskForCardResponseStage ||
-      stage === AskForQueryStage.AskForCardUseStage
+      identifier === GameEventIdentifiers.AskForCardResponseEvent ||
+      identifier === GameEventIdentifiers.AskForCardUseEvent
     );
   }
 
@@ -43,6 +48,7 @@ export class Hujia extends TriggerSkill {
       name: ['jink'],
     });
   }
+
   async onTrigger(
     room: Room,
     event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
@@ -90,7 +96,7 @@ export class Hujia extends TriggerSkill {
 
         if (response.cardId !== undefined) {
           if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
-            const cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = EventPacker.createIdentifierEvent(
+            const cardUseEvent = EventPacker.createIdentifierEvent(
               GameEventIdentifiers.CardUseEvent,
               {
                 cardId: response.cardId,
@@ -103,7 +109,7 @@ export class Hujia extends TriggerSkill {
               cardUseEvent,
             );
           } else {
-            const cardResponseEvent: ServerEventFinder<GameEventIdentifiers.CardResponseEvent> = EventPacker.createIdentifierEvent(
+            const cardResponseEvent = EventPacker.createIdentifierEvent(
               GameEventIdentifiers.CardResponseEvent,
               {
                 cardId: response.cardId,

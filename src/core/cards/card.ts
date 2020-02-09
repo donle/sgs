@@ -1,5 +1,7 @@
+import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { GameCardExtensions } from 'core/game/game_props';
+import { Room } from 'core/room/room';
 import { Skill, ViewAsSkill } from 'core/skills/skill';
 import {
   CardId,
@@ -17,17 +19,13 @@ export abstract class Card {
   protected abstract generalName: string;
   protected abstract description: string;
   protected abstract skill: Skill;
-  protected abstract cardType: CardType;
+  protected abstract cardType: CardType[];
   protected abstract effectUseDistance: number;
 
   protected abstract fromPackage: GameCardExtensions;
 
   public get Id(): CardId {
     return this.id;
-  }
-
-  public get CardType() {
-    return this.cardType;
   }
 
   public get CardNumber() {
@@ -66,6 +64,15 @@ export abstract class Card {
     return this.skill instanceof ViewAsSkill;
   }
 
+  public is(type: CardType) {
+    return this.cardType.includes(type);
+  }
+  public isSameType(card: Card) {
+    return (
+      this.cardType.filter(subType => !card.Type.includes(subType)).length > 0
+    );
+  }
+
   public isBlack() {
     return this.suit === CardSuit.Spade || this.suit === CardSuit.Club;
   }
@@ -80,12 +87,27 @@ export abstract class Card {
   public isVirtualCard() {
     return false;
   }
+
+  public afterCardUsed(
+    room: Room,
+    event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
+  ) {
+    const ownerId = room.getCardOwnerId(this.id);
+    if (ownerId !== undefined && event.fromId === ownerId) {
+      room.dropCards([this.id]);
+    }
+  }
 }
 
 export const enum CardType {
   Basic,
   Equip,
+  Weapon,
+  Armor,
+  OffenseRide,
+  DefenseRide,
   Trick,
+  DelayedTrick,
 }
 
 export const enum EquipCardCategory {
@@ -101,7 +123,7 @@ export class VirtualCard<T extends Card> extends Card {
   protected generalName: string;
   protected description: string;
   protected skill: Skill;
-  protected cardType: CardType;
+  protected cardType: CardType[];
   protected fromPackage: GameCardExtensions;
   protected effectUseDistance: number;
 
@@ -143,7 +165,11 @@ export class VirtualCard<T extends Card> extends Card {
       parsedId.skillName !== undefined
         ? Sanguosha.getSkillBySkillName(parsedId.skillName)
         : undefined;
-    return VirtualCard.create<T>(parsedId.name, parsedId.containedCardIds, skill);
+    return VirtualCard.create<T>(
+      parsedId.name,
+      parsedId.containedCardIds,
+      skill,
+    );
   }
 
   public static create<T extends Card>(
@@ -159,7 +185,7 @@ export class VirtualCard<T extends Card> extends Card {
       name: this.name,
       skillName: this.skill.Name,
       containedCardIds: this.cardIds,
-    }
+    };
 
     return JSON.stringify(virtualCardIdJSONObject);
   }

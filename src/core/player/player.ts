@@ -7,9 +7,8 @@ import {
 } from 'core/characters/character';
 import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
+import { GameCommonRules } from 'core/game/game_rules';
 import {
-  DistanceType,
   PlayerCards,
   PlayerCardsArea,
   PlayerCardsOutside,
@@ -20,8 +19,8 @@ import {
 import { Room } from 'core/room/room';
 import {
   ActiveSkill,
-  DistanceSkill,
   FilterSkill,
+  RulesBreakerSkill,
   Skill,
   SkillType,
   TriggerSkill,
@@ -48,21 +47,6 @@ export abstract class Player implements PlayerInfo {
   private playerCharacter: Character | undefined;
   protected playerCards: PlayerCards & PlayerCardsOutside;
 
-  private readonly cardSkillUseRules: {
-    [cardSkillName: string]: {
-      general: number;
-      overlay: {
-        [bySkill: string]: number;
-      };
-    };
-  };
-  private readonly distanceRules: {
-    [K in DistanceType]?: {
-      skillName: string;
-      distance: number;
-    };
-  };
-
   private flags: {
     [k: string]: any;
   } = {};
@@ -79,20 +63,8 @@ export abstract class Player implements PlayerInfo {
       [PlayerCardsArea.JudgeArea]: [],
       [PlayerCardsArea.HoldingArea]: [],
       [PlayerCardsArea.EquipArea]: [],
-      [PlayerCardsArea.OutsideArea]: {
-      },
+      [PlayerCardsArea.OutsideArea]: {},
     };
-    this.cardSkillUseRules = {
-      wine: {
-        general: 1,
-        overlay: {},
-      },
-      slash: {
-        general: 1,
-        overlay: {},
-      },
-    };
-    this.distanceRules = {};
 
     if (this.playerCharacterId) {
       this.playerCharacter = Sanguosha.getCharacterById(this.playerCharacterId);
@@ -136,11 +108,7 @@ export abstract class Player implements PlayerInfo {
   public canUseCard(room: Room, cardId: CardId): boolean {
     const card = Sanguosha.getCardById(cardId);
 
-    return (
-      this.cardUsedTimes(card.Skill.Name) <
-        this.availableCardUseTimes(card.Skill.Name) &&
-      card.Skill.canUse(room, this)
-    );
+    return GameCommonRules.canUse(this, card) && card.Skill.canUse(room, this);
   }
 
   public canUseSkill(
@@ -171,51 +139,6 @@ export abstract class Player implements PlayerInfo {
     this.skillUsedHistory[skillName] !== undefined
       ? this.skillUsedHistory[skillName]++
       : (this.skillUsedHistory[skillName] = 0);
-  }
-
-  public resetCommonCardUseRules(...cardSkillNames: string[]) {
-    for (const [cardSkillName, rules] of Object.entries(
-      this.cardSkillUseRules,
-    )) {
-      if (cardSkillNames.length <= 0) {
-        rules.overlay = {};
-      } else if (this.cardSkillUseRules[cardSkillName].overlay) {
-        for (const name of cardSkillNames) {
-          delete this.cardSkillUseRules[cardSkillName].overlay[name];
-        }
-      }
-    }
-  }
-
-  public breakCardUseRules(
-    cardSkillName: string,
-    useTimes: number,
-    bySkill: string = cardSkillName,
-  ) {
-    if (!this.cardSkillUseRules[cardSkillName].overlay) {
-      this.cardSkillUseRules[cardSkillName].overlay = {
-        [bySkill]: useTimes,
-      };
-    }
-
-    return this;
-  }
-
-  public breakDistanceRules(
-    skillName: string,
-    distance: number,
-    type: DistanceType,
-  ) {
-    this.distanceRules[type] = {
-      skillName,
-      distance,
-    };
-
-    return this;
-  }
-
-  public resetDistanceRules(type: DistanceType) {
-    delete this.distanceRules[type];
   }
 
   public getCardIds(
@@ -295,15 +218,16 @@ export abstract class Player implements PlayerInfo {
   public equip(equipCard: EquipCard) {
     const currentEquipIndex = this.playerCards[
       PlayerCardsArea.EquipArea
-    ].findIndex(
-      card =>
-        Sanguosha.getCardById<EquipCard>(card).EquipCategory ===
-        equipCard.EquipCategory,
+    ].findIndex(card =>
+      Sanguosha.getCardById<EquipCard>(card).isSameType(equipCard),
     );
 
     let lostEquipId: CardId | undefined;
     if (currentEquipIndex >= 0) {
-      lostEquipId = this.playerCards[PlayerCardsArea.EquipArea].splice(currentEquipIndex, 1)[0] as CardId;
+      lostEquipId = this.playerCards[PlayerCardsArea.EquipArea].splice(
+        currentEquipIndex,
+        1,
+      )[0] as CardId;
     }
 
     this.playerCards[PlayerCardsArea.EquipArea].push(equipCard.Id);
@@ -327,22 +251,6 @@ export abstract class Player implements PlayerInfo {
       cardId => Sanguosha.getCardById(cardId).GeneralName === cardSkillName,
     ).length;
   }
-  public availableCardUseTimes(cardSkillName: string) {
-    if (this.cardSkillUseRules[cardSkillName] === undefined) {
-      return INFINITE_TRIGGERING_TIMES;
-    }
-
-    let times = this.cardSkillUseRules[cardSkillName].general;
-    if (this.cardSkillUseRules[cardSkillName].overlay) {
-      for (const [, addtionalTimes] of Object.entries(
-        this.cardSkillUseRules[cardSkillName].overlay,
-      )) {
-        times += addtionalTimes;
-      }
-    }
-
-    return times;
-  }
 
   public hasUsedSkill(skillName: string): boolean {
     return (
@@ -356,70 +264,34 @@ export abstract class Player implements PlayerInfo {
   }
 
   public get AttackDistance() {
-    if (this.distanceRules[DistanceType.Attack] !== undefined) {
-      return this.distanceRules[DistanceType.Attack]!.distance;
+    let attackDistance = this.getOffenseDistance();
+
+    for (const cardId of this.getCardIds(PlayerCardsArea.EquipArea)) {
+      const card = Sanguosha.getCardById(cardId);
+      if (card instanceof WeaponCard) {
+        attackDistance += card.AttackDistance;
+      }
     }
 
-    let defaultDistance = 1;
-    const weapon = this.playerCards[PlayerCardsArea.EquipArea].find(
-      card => Sanguosha.getCardById(card) instanceof WeaponCard,
-    );
-    if (weapon !== undefined) {
-      const weaponCard = Sanguosha.getCardById<WeaponCard>(weapon);
-      defaultDistance += weaponCard.AttackDistance;
-    }
-
-    return defaultDistance;
+    return attackDistance + GameCommonRules.getAdditionalAttackDistance(this);
   }
 
   public getOffenseDistance() {
-    const presetOffset = this.distanceRules[DistanceType.Offense]?.distance;
-    return this.getFixedDistance(true, presetOffset);
+    return GameCommonRules.getAdditionalOffenseDistance(this) + 1;
   }
 
   public getDefenseDistance() {
-    const presetOffset = this.distanceRules[DistanceType.Defense]?.distance;
-
-    return this.getFixedDistance(false, presetOffset);
+    return GameCommonRules.getAdditionalDefenseDistance(this);
   }
 
-  private getFixedDistance(inOffense: boolean, presetOffset?: number) {
-    if (!this.playerCharacter) {
-      throw new Error(
-        `Player ${this.playerName} has not been initialized with a character yet`,
-      );
-    }
+  public getCardUsableDistance(cardId: CardId) {
+    const card = Sanguosha.getCardById(cardId);
+    return card.EffectUseDistance + GameCommonRules.getCardAdditionalUsableDistance(card, this);
+  }
 
-    const rides: DistanceSkill[] = this.playerCharacter[
-      PlayerCardsArea.EquipArea
-    ]
-      .filter(cardId => {
-        const card = Sanguosha.getCardById(cardId);
-        return card instanceof RideCard;
-      })
-      .map(cardId => Sanguosha.getCardById<RideCard>(cardId).Skill);
-
-    const skills: DistanceSkill[] = this.playerCharacter.Skills.filter(
-      skill => skill instanceof DistanceSkill,
-    ) as DistanceSkill[];
-
-    let fixedDistance = 0;
-    for (const skill of [...rides, ...skills]) {
-      if (inOffense) {
-        if (skill.Distance < 0) {
-          fixedDistance += skill.Distance;
-        }
-      } else {
-        if (skill.Distance > 0) {
-          fixedDistance += skill.Distance;
-        }
-      }
-    }
-    if (presetOffset) {
-      fixedDistance += presetOffset;
-    }
-
-    return Math.min(1, fixedDistance);
+  public getCardAdditionalUsableNumberOfTargets(cardId: CardId) {
+    const card = Sanguosha.getCardById(cardId);
+    return GameCommonRules.getCardAdditionalNumberOfTargets(card, this);
   }
 
   public getSkills<T extends Skill = Skill>(
@@ -431,9 +303,9 @@ export abstract class Player implements PlayerInfo {
       | 'complusory'
       | 'active'
       | 'filter'
-      | 'transform'
+      | 'breaker'
       | 'distance',
-    ): T[] {
+  ): T[] {
     if (!this.playerCharacter) {
       throw new Error(
         `Player ${this.playerName} has not been initialized with a character yet`,
@@ -459,8 +331,10 @@ export abstract class Player implements PlayerInfo {
         return skills.filter(skill => skill instanceof ActiveSkill) as T[];
       case 'trigger':
         return skills.filter(skill => skill instanceof TriggerSkill) as T[];
-      case 'distance':
-        return skills.filter(skill => skill instanceof DistanceSkill) as T[];
+      case 'breaker':
+        return skills.filter(
+          skill => skill instanceof RulesBreakerSkill,
+        ) as T[];
       case 'complusory':
         return skills.filter(
           skill => skill.SkillType === SkillType.Compulsory,

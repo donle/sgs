@@ -4,6 +4,7 @@ import { ServerEvent } from './event.server';
 
 export const enum GameEventIdentifiers {
   UserMessageEvent,
+  PhaseChangeEvent,
 
   CardDropEvent,
   CardResponseEvent,
@@ -46,6 +47,23 @@ export const enum GameEventIdentifiers {
   AskForPlaceCardsInDileEvent,
 }
 
+export type CardResponsiveEventIdentifiers =
+  | GameEventIdentifiers.AskForPeachEvent
+  | GameEventIdentifiers.AskForWuXieKeJiEvent
+  | GameEventIdentifiers.AskForCardResponseEvent
+  | GameEventIdentifiers.AskForCardUseEvent;
+
+export const isCardResponsiveIdentifier = (
+  identifier: GameEventIdentifiers,
+): identifier is CardResponsiveEventIdentifiers => {
+  return [
+    GameEventIdentifiers.AskForPeachEvent,
+    GameEventIdentifiers.AskForWuXieKeJiEvent,
+    GameEventIdentifiers.AskForCardResponseEvent,
+    GameEventIdentifiers.AskForCardUseEvent,
+  ].includes(identifier);
+};
+
 export const createGameEventIdentifiersStringList = () => {
   const list: string[] = [];
   for (let i = 0; i <= GameEventIdentifiers.AskForPlaceCardsInDileEvent; i++) {
@@ -83,6 +101,42 @@ export type ServerEventFinder<I extends GameEventIdentifiers> = BaseGameEvent &
 
 export class EventPacker {
   private constructor() {}
+
+  static isDisresponsiveEvent = <T extends GameEventIdentifiers>(
+    event: ServerEventFinder<T>,
+  ) => {
+    return EventPacker.hasFlag('disresponsive', event);
+  };
+
+  static setDisresponsiveEvent = <T extends GameEventIdentifiers>(
+    event: ServerEventFinder<T>,
+  ): ServerEventFinder<T> => {
+    (event as any).disresponsive = true;
+    return event;
+  };
+
+  static addFlag = <T extends GameEventIdentifiers>(
+    property: string,
+    event: ServerEventFinder<T>,
+  ): ServerEventFinder<T> => {
+    (event as any)[property] = true;
+    return event;
+  };
+
+  static hasFlag = <T extends GameEventIdentifiers>(
+    property: string,
+    event: ServerEventFinder<T>,
+  ): boolean => {
+    return property in event;
+  };
+
+  static removeFlag = <T extends GameEventIdentifiers>(
+    property: string,
+    event: ServerEventFinder<T>,
+  ): ServerEventFinder<T> => {
+    delete event[property];
+    return event;
+  };
 
   static createUncancellableEvent = <T extends GameEventIdentifiers>(
     event: ServerEventFinder<T>,

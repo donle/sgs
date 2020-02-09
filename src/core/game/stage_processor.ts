@@ -188,9 +188,9 @@ const gameEventStageList: {
     DamageEffectStage.AfterDamagedEffect,
   ],
   [GameEventIdentifiers.JudgeEvent]: [
-    JudgeEffectStage.BeforeJudgeEffectStage,
+    JudgeEffectStage.OnJudge,
     JudgeEffectStage.JudgeEffect,
-    JudgeEffectStage.AfterJudgeEffectStage,
+    JudgeEffectStage.AfterJudgeEffect,
   ],
   [GameEventIdentifiers.PlayerDyingEvent]: [
     PlayerDyingStage.BeforePlayerDying,
@@ -238,16 +238,6 @@ const gameEventStageList: {
     AimStage.AfterAim,
     AimStage.AfterAimmed,
   ],
-  [GameEventIdentifiers.AskForCardUseEvent]: [
-    AskForQueryStage.AskForCardUseStage,
-  ],
-  [GameEventIdentifiers.AskForCardResponseEvent]: [
-    AskForQueryStage.AskForCardResponseStage,
-  ],
-  [GameEventIdentifiers.AskForWuXieKeJiEvent]: [
-    AskForQueryStage.AskForWuXieKeJiStage,
-  ],
-  [GameEventIdentifiers.AskForPeachEvent]: [AskForQueryStage.AskForPeachStage],
 };
 
 export const enum GameStartStage {
@@ -307,9 +297,9 @@ export const enum DamageEffectStage {
 }
 
 export const enum JudgeEffectStage {
-  BeforeJudgeEffectStage,
+  OnJudge,
   JudgeEffect,
-  AfterJudgeEffectStage,
+  AfterJudgeEffect,
 }
 
 export const enum PinDianStage {
@@ -346,13 +336,6 @@ export const enum RecoverEffectStage {
   AfterRecoverEffect,
 }
 
-export const enum AskForQueryStage {
-  AskForPeachStage,
-  AskForWuXieKeJiStage,
-  AskForCardResponseStage,
-  AskForCardUseStage,
-}
-
 export type GameEventStage =
   | GameStartStage
   | CardEffectStage
@@ -369,8 +352,7 @@ export type GameEventStage =
   | DamageEffectStage
   | AimStage
   | SkillUseStage
-  | SkillEffectStage
-  | AskForQueryStage;
+  | SkillEffectStage;
 
 export type AllStage = PlayerStageListEnum | GameEventStage;
 

@@ -83,10 +83,16 @@ export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.AskForPinDianCardEvent]: {
     pindianCard: CardId;
     from: PlayerId;
-  }
+  };
 
-  [GameEventIdentifiers.AskForPeachEvent]: {};
-  [GameEventIdentifiers.AskForWuXieKeJiEvent]: {};
+  [GameEventIdentifiers.AskForPeachEvent]: {
+    cardId?: CardId;
+    fromId: PlayerId;
+  };
+  [GameEventIdentifiers.AskForWuXieKeJiEvent]: {
+    cardId?: CardId;
+    fromId: PlayerId;
+  };
   [GameEventIdentifiers.AskForCardResponseEvent]: {
     cardId?: CardId;
     fromId: PlayerId;

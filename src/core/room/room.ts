@@ -7,11 +7,14 @@ import {
 } from 'core/event/event';
 import { Socket } from 'core/network/socket';
 import { Player } from 'core/player/player';
-import { PlayerId } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 
-import { Card } from 'core/cards/card';
 import { GameInfo } from 'core/game/game_props';
-import { AllStage } from 'core/game/stage_processor';
+import {
+  AllStage,
+  GameEventStage,
+  PlayerStage,
+} from 'core/game/stage_processor';
 import { GameProcessor } from '../game/game_processor';
 
 export type RoomId = number;
@@ -21,7 +24,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected abstract gameInfo: GameInfo;
   protected abstract players: Player[];
   protected abstract roomId: RoomId;
-  protected abstract gameProcessor: GameProcessor;
 
   constructor() {
     this.init();
@@ -39,8 +41,28 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     content: EventPicker<typeof type, WorkPlace>,
   ): Promise<void>;
 
-  public abstract drawCards(numberOfCards: number, player?: PlayerId): void;
+  public abstract getCards(
+    numberOfCards: number,
+    from: 'top' | 'bottom',
+  ): CardId[];
+  public abstract drawCards(
+    numberOfCards: number,
+    player?: PlayerId,
+    from?: 'top' | 'bottom',
+  ): void;
   public abstract dropCards(cardIds: CardId[], player?: PlayerId): void;
+  public abstract moveCard(
+    cardId: CardId,
+    from: PlayerId | undefined,
+    to: PlayerId,
+    fromArea: PlayerCardsArea | undefined,
+    toArea: PlayerCardsArea,
+  ): void;
+  public abstract isAvailableTarget(
+    cardId: CardId,
+    attacker: PlayerId,
+    target: PlayerId,
+  ): boolean;
   public abstract async onReceivingAsyncReponseFrom<P>(
     identifier: GameEventIdentifiers,
     playerId?: PlayerId,
@@ -48,10 +70,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public abstract getCardOwnerId(card: CardId): PlayerId | undefined;
   public abstract trigger<T = never>(
-    stage: AllStage,
     content: T extends never
       ? EventPicker<GameEventIdentifiers, WorkPlace.Server>
       : T,
+    stage?: AllStage,
   ): void;
 
   public getPlayerById(playerId: PlayerId) {
@@ -85,21 +107,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return this.roomId;
   }
 
-  public get CurrentPlayerStage() {
-    return this.gameProcessor.CurrentPlayerStage;
-  }
-
-  public get CurrentGameStage() {
-    return this.gameProcessor.CurrentGameStage;
-  }
-
-  public get CurrentPlayer(): Player {
-    return this.gameProcessor.CurrentPlayer;
-  }
-
-  public get Processor() {
-    return this.gameProcessor;
-  }
+  public abstract get CurrentPlayerStage(): PlayerStage | undefined;
+  public abstract get CurrentGameStage(): GameEventStage | undefined;
+  public abstract get CurrentPlayer(): Player;
+  public abstract get Processor(): GameProcessor;
 
   public get AlivePlayers() {
     return this.players.filter(player => !player.Dead);
@@ -118,6 +129,14 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       ...alivePlayers.slice(fromIndex),
       ...alivePlayers.slice(0, fromIndex),
     ];
+  }
+
+  public getNextPlayer(playerId: PlayerId) {
+    const alivePlayers = this.AlivePlayers;
+    const fromIndex = alivePlayers.findIndex(player => player.Id === playerId);
+    const nextIndex = (fromIndex + 1) % alivePlayers.length;
+
+    return alivePlayers[nextIndex];
   }
 
   private onSeatDistance(from: Player, to: Player) {
