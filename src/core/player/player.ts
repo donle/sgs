@@ -27,6 +27,16 @@ import {
   TriggerSkill,
 } from 'core/skills/skill';
 
+type SkillSytingType =
+  | 'trigger'
+  | 'common'
+  | 'limit'
+  | 'awaken'
+  | 'complusory'
+  | 'active'
+  | 'filter'
+  | 'breaker';
+
 export abstract class Player implements PlayerInfo {
   private hp: number;
   private maxHp: number;
@@ -340,18 +350,7 @@ export abstract class Player implements PlayerInfo {
     return GameCommonRules.getCardAdditionalNumberOfTargets(card, this);
   }
 
-  public getSkills<T extends Skill = Skill>(
-    skillType?:
-      | 'trigger'
-      | 'common'
-      | 'limit'
-      | 'awaken'
-      | 'complusory'
-      | 'active'
-      | 'filter'
-      | 'breaker'
-      | 'distance',
-  ): T[] {
+  public getEquipSkills<T extends Skill = Skill>(skillType?: SkillSytingType) {
     if (!this.playerCharacter) {
       throw new Error(
         `Player ${this.playerName} has not been initialized with a character yet`,
@@ -361,11 +360,7 @@ export abstract class Player implements PlayerInfo {
     const equipCards = this.playerCards[PlayerCardsArea.EquipArea].map(card =>
       Sanguosha.getCardById(card),
     );
-
-    const skills: Skill[] = [
-      ...equipCards.map(card => card.Skill),
-      ...this.playerCharacter.Skills,
-    ];
+    const skills = equipCards.map(card => card.Skill);
     if (skillType === undefined) {
       return skills as T[];
     }
@@ -400,6 +395,59 @@ export abstract class Player implements PlayerInfo {
       default:
         throw new Error(`Unreachable error of skill type: ${skillType}`);
     }
+  }
+
+  public getPlayerSkills<T extends Skill = Skill>(
+    skillType?: SkillSytingType,
+  ): T[] {
+    if (!this.playerCharacter) {
+      throw new Error(
+        `Player ${this.playerName} has not been initialized with a character yet`,
+      );
+    }
+
+    const skills = this.playerCharacter.Skills;
+    if (skillType === undefined) {
+      return skills as T[];
+    }
+
+    switch (skillType) {
+      case 'filter':
+        return skills.filter(skill => skill instanceof FilterSkill) as T[];
+      case 'active':
+        return skills.filter(skill => skill instanceof ActiveSkill) as T[];
+      case 'trigger':
+        return skills.filter(skill => skill instanceof TriggerSkill) as T[];
+      case 'breaker':
+        return skills.filter(
+          skill => skill instanceof RulesBreakerSkill,
+        ) as T[];
+      case 'complusory':
+        return skills.filter(
+          skill => skill.SkillType === SkillType.Compulsory,
+        ) as T[];
+      case 'awaken':
+        return skills.filter(
+          skill => skill.SkillType === SkillType.Awaken,
+        ) as T[];
+      case 'limit':
+        return skills.filter(
+          skill => skill.SkillType === SkillType.Limit,
+        ) as T[];
+      case 'common':
+        return skills.filter(
+          skill => skill.SkillType === SkillType.Common,
+        ) as T[];
+      default:
+        throw new Error(`Unreachable error of skill type: ${skillType}`);
+    }
+  }
+
+  public getSkills<T extends Skill = Skill>(skillType?: SkillSytingType): T[] {
+    return [
+      ...this.getEquipSkills<T>(skillType),
+      ...this.getPlayerSkills<T>(skillType),
+    ];
   }
 
   public turnOver() {

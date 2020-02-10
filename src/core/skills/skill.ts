@@ -68,6 +68,7 @@ function skillPropertyWrapper(
     lordSkill?: boolean;
     shadowSkill?: boolean;
     triggerableTimes?: number;
+    uniqueSkill?: boolean;
   },
   constructor: new () => any,
 ): any {
@@ -75,6 +76,7 @@ function skillPropertyWrapper(
     private triggerableTimes: number;
     private lordSkill: boolean;
     private shadowSkill: boolean;
+    private uniqueSkill: boolean;
 
     constructor() {
       super();
@@ -87,6 +89,9 @@ function skillPropertyWrapper(
       }
       if (options.shadowSkill !== undefined) {
         this.shadowSkill = options.shadowSkill;
+      }
+      if (options.uniqueSkill !== undefined) {
+        this.uniqueSkill = options.uniqueSkill;
       }
     }
   } as any;
@@ -144,6 +149,16 @@ export function ShadowSkill<T extends Skill>(
     constructorFunction as any,
   );
 }
+export function UniqueSkill<T extends Skill>(
+  constructorFunction: SKillConstructor<T>,
+) {
+  return skillPropertyWrapper(
+    {
+      uniqueSkill: true,
+    },
+    constructorFunction as any,
+  );
+}
 export function TriggerableTimes<T extends Skill>(times: number) {
   return (constructorFunction: SKillConstructor<T>) => {
     return skillPropertyWrapper(
@@ -159,6 +174,7 @@ export abstract class Skill {
   private skillType: SkillType = SkillType.Common;
   private shadowSkill = false;
   private lordSkill = false;
+  private uniqueSkill = false;
 
   constructor(protected name: string, protected description: string) {}
   protected triggerableTimes: number = 0;
@@ -203,12 +219,16 @@ export abstract class Skill {
     return this.name;
   }
 
-  public get isLordSkill() {
+  public isLordSkill() {
     return this.lordSkill;
   }
 
-  public get isShadowSkill() {
+  public isShadowSkill() {
     return this.shadowSkill;
+  }
+
+  public isUniqueSkill() {
+    return this.uniqueSkill;
   }
 
   public get SkillType() {

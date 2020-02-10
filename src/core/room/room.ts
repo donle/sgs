@@ -3,6 +3,7 @@ import {
   ClientEventFinder,
   EventPicker,
   GameEventIdentifiers,
+  RoomEvent,
   WorkPlace,
 } from 'core/event/event';
 import { Socket } from 'core/network/socket';
@@ -51,8 +52,14 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     player?: PlayerId,
     from?: 'top' | 'bottom',
   ): Promise<CardId[]>;
-  public abstract async dropCards(cardIds: CardId[], player?: PlayerId): Promise<void>;
-  public abstract async obtainCards(cardIds: CardId[], to: PlayerId): Promise<void>;
+  public abstract async dropCards(
+    cardIds: CardId[],
+    player?: PlayerId,
+  ): Promise<void>;
+  public abstract async obtainCards(
+    cardIds: CardId[],
+    to: PlayerId,
+  ): Promise<void>;
   public abstract async moveCard(
     cardId: CardId,
     from: PlayerId | undefined,
@@ -178,5 +185,63 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public getFixedSeatDistance(from: Player, to: Player) {
     const seatGap = from.getOffenseDistance() - to.getDefenseDistance();
     return this.onSeatDistance(from, to) + seatGap;
+  }
+
+  public clearFlags(player: PlayerId) {
+    this.socket.emitRoomStatus(RoomEvent.ClearFlagEvent, {
+      to: player,
+    });
+    this.getPlayerById(player).clearFlags();
+  }
+  removeFlag(player: PlayerId, name: string) {
+    this.socket.emitRoomStatus(RoomEvent.RemoveFlagEvent, {
+      to: player,
+      name,
+    });
+    this.getPlayerById(player).removeFlag(name);
+  }
+  setFlag<T>(player: PlayerId, name: string, value: T): T {
+    this.socket.emitRoomStatus(RoomEvent.SetFlagEvent, {
+      to: player,
+      value,
+      name,
+    });
+    return this.getPlayerById(player).setFlag(name, value);
+  }
+  getFlag<T>(player: PlayerId, name: string): T {
+    return this.getPlayerById(player).getFlag(name);
+  }
+
+  public clearMarks(player: PlayerId) {
+    this.socket.emitRoomStatus(RoomEvent.ClearMarkEvent, {
+      to: player,
+    });
+    this.getPlayerById(player).clearMarks();
+  }
+  removeMark(player: PlayerId, name: string) {
+    this.socket.emitRoomStatus(RoomEvent.RemoveMarkEvent, {
+      to: player,
+      name,
+    });
+    this.getPlayerById(player).removeMark(name);
+  }
+  setMark(player: PlayerId, name: string, value: number) {
+    this.socket.emitRoomStatus(RoomEvent.SetMarkEvent, {
+      to: player,
+      name,
+      value,
+    });
+    return this.getPlayerById(player).setMark(name, value);
+  }
+  addMark(player: PlayerId, name: string, value: number) {
+    this.socket.emitRoomStatus(RoomEvent.AddMarkEvent, {
+      to: player,
+      value,
+      name,
+    });
+    return this.getPlayerById(player).addMark(name, value);
+  }
+  getMark(player: PlayerId, name: string) {
+    return this.getPlayerById(player).getMark(name);
   }
 }

@@ -23,7 +23,8 @@ export abstract class WeaponCard extends EquipCard {
     protected suit: CardSuit,
     protected name: string,
     protected description: string,
-    protected skills: Skill[],
+    protected fromPackage: GameCardExtensions,
+    protected skill: Skill,
     private attackDistance: number,
     generalName?: string,
   ) {
@@ -45,7 +46,8 @@ export abstract class ArmorCard extends EquipCard {
     protected suit: CardSuit,
     protected name: string,
     protected description: string,
-    protected skills: Skill[],
+    protected fromPackage: GameCardExtensions,
+    protected skill: Skill,
     generalName?: string,
   ) {
     super(CardType.Armor);

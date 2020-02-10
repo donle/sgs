@@ -2,8 +2,11 @@ import { GameCardExtensions } from 'core/game/game_props';
 import { CardPackage } from 'core/game/package_loader/loader.cards';
 import { CardSuit } from '../libs/card_props';
 import { Jink } from './jink';
+import { NanManRuQing } from './nanmanruqing';
 import { Peach } from './peach';
+import { QingGang } from './qinggang';
 import { Slash } from './slash';
+import { WanJianQiFa } from './wanjianqifa';
 import { ZiXin } from './zixin';
 
 export const StandardCardPackage: (
@@ -64,6 +67,12 @@ export const StandardCardPackage: (
     new Peach(index++, 12, CardSuit.Heart),
     new Peach(index++, 12, CardSuit.Diamond),
 
+    new NanManRuQing(index++, 7, CardSuit.Spade),
+    new NanManRuQing(index++, 13, CardSuit.Spade),
+    new NanManRuQing(index++, 7, CardSuit.Club),
+    new WanJianQiFa(index++, 1, CardSuit.Heart),
+
     new ZiXin(index++, 13, CardSuit.Diamond),
+    new QingGang(index++, 6, CardSuit.Spade),
   ],
 });

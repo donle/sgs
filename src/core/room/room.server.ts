@@ -7,9 +7,7 @@ import {
   ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
-import {
-  AllStage,
-} from 'core/game/stage_processor';
+import { AllStage } from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
 import { Player } from 'core/player/player';
 import { ServerPlayer } from 'core/player/player.server';
@@ -28,6 +26,7 @@ import { CardLoader } from 'core/game/package_loader/loader.cards';
 import { CharacterLoader } from 'core/game/package_loader/loader.characters';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { FilterSkill, TriggerSkill } from 'core/skills/skill';
+import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { GameProcessor } from '../game/game_processor';
 import { Room, RoomId } from './room';
@@ -137,8 +136,31 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         continue;
       }
 
-      const skills = this.players[i].getSkills<TriggerSkill>('trigger');
-      for (const skill of skills) {
+      const { triggeredBySkillName } = content as ServerEventFinder<
+        GameEventIdentifiers
+      >;
+      const canTriggerSkills: TriggerSkill[] = [];
+      const bySkill =
+        triggeredBySkillName &&
+        Sanguosha.getSkillBySkillName(triggeredBySkillName);
+      for (const equip of this.players[i].getCardIds(
+        PlayerCardsArea.EquipArea,
+      )) {
+        const equipCard = Sanguosha.getCardById(equip);
+        if (
+          bySkill &&
+          UniqueSkillRule.canTriggerCardSkillRule(bySkill, equipCard)
+        ) {
+          canTriggerSkills.push(equipCard.Skill as TriggerSkill);
+        }
+      }
+      for (const skill of this.players[i].getPlayerSkills<TriggerSkill>('trigger')) {
+        if (bySkill && UniqueSkillRule.canUseSkillRule(bySkill, skill)) {
+          canTriggerSkills.push(skill);
+        }
+      }
+
+      for (const skill of canTriggerSkills) {
         if (
           skill.isTriggerable(content, stage) &&
           skill.canUse(this, this.players[i], content)

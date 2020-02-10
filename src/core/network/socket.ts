@@ -2,6 +2,8 @@ import {
   ClientEventFinder,
   EventPicker,
   GameEventIdentifiers,
+  RoomEvent,
+  RoomEventFinder,
   ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
@@ -34,6 +36,14 @@ export abstract class Socket<T extends WorkPlace> {
     type: GameEventIdentifiers,
     content: EventPicker<typeof type, T extends T ? WorkPlace.Server : T>,
     to?: PlayerId,
+  ): void;
+  public abstract broadcast(
+    type: GameEventIdentifiers,
+    content: EventPicker<typeof type, WorkPlace.Server>,
+  ): void;
+  public abstract emitRoomStatus<T extends RoomEvent>(
+    type: T,
+    content: RoomEventFinder<T>,
   ): void;
 
   public get RoomPath() {
