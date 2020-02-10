@@ -6,6 +6,7 @@ import { JiuYuan } from 'core/skills/characters/standard/jiuyuan';
 import { JiZhiSkill } from 'core/skills/characters/standard/jizhi';
 import { PeachSkill } from 'core/skills/characters/standard/peach';
 import { QiCaiSkill } from 'core/skills/characters/standard/qicai';
+import { QingGangSkill } from 'core/skills/characters/standard/qinggang';
 import { RendeSkill } from 'core/skills/characters/standard/rende';
 import { SlashSkill } from 'core/skills/characters/standard/slash';
 import { ZhiHeng } from 'core/skills/characters/standard/zhiheng';
@@ -28,6 +29,7 @@ const allSkills = [
   new QiCaiSkill(),
   new RendeSkill(),
   new ZhuGeLianNuSlashSkill(),
+  new QingGangSkill(),
 ];
 
 export class SkillLoader {
