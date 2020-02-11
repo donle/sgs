@@ -2,12 +2,17 @@ import { CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { CharacterId } from 'core/characters/character';
 import { DamageType } from 'core/game/game_props';
+import { PlayerStage } from 'core/game/stage_processor';
 import {
   PlayerCardsArea,
   PlayerId,
   PlayerInfo,
 } from 'core/player/player_props';
-import { EventUtilities, GameEventIdentifiers, ServerEventFinder } from './event';
+import {
+  EventUtilities,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from './event';
 
 //@@todo: to be updated
 export interface ServerEvent extends EventUtilities {
@@ -166,19 +171,24 @@ export interface ServerEvent extends EventUtilities {
     characterIds: CharacterId[];
   };
   [GameEventIdentifiers.AskForChooseOptionsEvent]: {
-    options: string[],
-    fromId: PlayerId,
+    options: string[];
+    fromId: PlayerId;
   };
   [GameEventIdentifiers.AskForChoosPlayerEvent]: {
-    players: PlayerId[],
-    fromId: PlayerId,
-  }
+    players: PlayerId[];
+    fromId: PlayerId;
+  };
   [GameEventIdentifiers.AskForPlaceCardsInDileEvent]: {
     drawPendingCards?: CardId[];
     drawCards?: CardId[];
     placeCardsOnTop?: CardId[];
     placeCardsAtBottom?: CardId[];
     putCards?: CardId[];
+  };
+  [GameEventIdentifiers.PhaseChangeEvent]: {
+    from: PlayerStage;
+    to: PlayerStage;
+    toPlayer: PlayerId;
   };
 }
 

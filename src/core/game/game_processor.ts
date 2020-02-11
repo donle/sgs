@@ -17,6 +17,7 @@ import {
   GameEventStage,
   JudgeEffectStage,
   ObtainCardStage,
+  PhaseChangeStage,
   PinDianStage,
   PlayerStage,
   SkillEffectStage,
@@ -41,12 +42,12 @@ export class GameProcessor {
     }
   }
 
-  public start(room: ServerRoom) {
+  public play(room: ServerRoom) {
     this.room = room;
+    const playerInfo = this.room.assignRoles();
+
     this.playerPositionIndex = 0;
     //TODO
-    this.currentPlayerStage = this.stageProcessor.nextStage();
-
     if (this.currentPlayerStage === undefined) {
       //TODO: go to next player, needs to broadcast in the
     }
@@ -61,6 +62,13 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ): Promise<void> {
     switch (identifier) {
+      case GameEventIdentifiers.PhaseChangeEvent:
+        await this.onHandlePhaseChangeEvent(
+          identifier as GameEventIdentifiers.PhaseChangeEvent,
+          event as any,
+          onActualExecuted,
+        );
+        break;
       case GameEventIdentifiers.CardUseEvent:
         await this.onHandleCardUseEvent(
           identifier as GameEventIdentifiers.CardUseEvent,
@@ -407,7 +415,10 @@ export class GameProcessor {
               from,
             ),
             ...toIds.map(to =>
-              this.room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForPinDianCardEvent, to),
+              this.room.onReceivingAsyncReponseFrom(
+                GameEventIdentifiers.AskForPinDianCardEvent,
+                to,
+              ),
             ),
           ]);
 
@@ -436,6 +447,18 @@ export class GameProcessor {
     );
   }
 
+  private onHandlePhaseChangeEvent(
+    identifier: GameEventIdentifiers.PhaseChangeEvent,
+    event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
+  ) {
+    this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      if (stage === PhaseChangeStage.PhaseChanged) {
+        this.room.broadcast(GameEventIdentifiers.PhaseChangeEvent, event);
+      }
+    });
+  }
+
   public turnToNextPlayer() {
     this.tryToThrowNotStartedError();
     this.playerPositionIndex =
@@ -454,6 +477,6 @@ export class GameProcessor {
 
   public get CurrentPlayerStage() {
     this.tryToThrowNotStartedError();
-    return this.stageProcessor.CurrentPlayerStage;
+    return this.currentPlayerStage;
   }
 }

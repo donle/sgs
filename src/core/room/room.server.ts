@@ -21,7 +21,7 @@ import { EquipCard } from 'core/cards/equip_card';
 import { CardId } from 'core/cards/libs/card_props';
 import { Character } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
-import { GameInfo } from 'core/game/game_props';
+import { GameInfo, getRoles } from 'core/game/game_props';
 import { CardLoader } from 'core/game/package_loader/loader.cards';
 import { CharacterLoader } from 'core/game/package_loader/loader.characters';
 import { RoomInfo } from 'core/shares/types/server_types';
@@ -154,7 +154,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           canTriggerSkills.push(equipCard.Skill as TriggerSkill);
         }
       }
-      for (const skill of this.players[i].getPlayerSkills<TriggerSkill>('trigger')) {
+      for (const skill of this.players[i].getPlayerSkills<TriggerSkill>(
+        'trigger',
+      )) {
         if (bySkill && UniqueSkillRule.canUseSkillRule(bySkill, skill)) {
           canTriggerSkills.push(skill);
         }
@@ -398,6 +400,51 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       packages: this.gameInfo.characterExtensions,
       status: this.gameStarted ? 'playing' : 'waiting',
     };
+  }
+
+  public assignRoles(): PlayerInfo[] {
+    const playerInfo: PlayerInfo[] = [];
+
+    const lordIndex = Math.floor(Math.random() * this.players.length);
+    [this.players[0], this.players[lordIndex]] = [
+      this.players[lordIndex],
+      this.players[0],
+    ];
+
+    const roles = getRoles(this.gameInfo.numberOfPlayers);
+
+    this.players[0].Role = roles[0];
+    this.players[0].Position = 0;
+    playerInfo.push({
+      Id: this.players[0].Id,
+      Name: this.players[0].Name,
+      Position: this.players[0].Position,
+      CharacterId: undefined,
+      Role: this.players[0].Role,
+    });
+
+    for (let i = 1; i < this.players.length; i++) {
+      const randomIndex = Math.floor(Math.random() * (i + 1));
+      [this.players[i], this.players[randomIndex]] = [
+        this.players[randomIndex],
+        this.players[i],
+      ];
+      const randomRoleIndex = Math.floor(Math.random() * (i + 1));
+      [roles[i], roles[randomRoleIndex]] = [roles[randomRoleIndex], roles[i]];
+
+      this.players[i].Position = i;
+      this.players[i].Role = roles[i];
+
+      playerInfo.push({
+        Id: this.players[i].Id,
+        Name: this.players[i].Name,
+        Position: this.players[i].Position,
+        CharacterId: undefined,
+        Role: this.players[i].Role,
+      });
+    }
+
+    return playerInfo;
   }
 
   public get CurrentPlayerStage() {

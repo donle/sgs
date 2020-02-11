@@ -532,6 +532,9 @@ export abstract class Player implements PlayerInfo {
   public get Position() {
     return this.playerPosition;
   }
+  public set Position(position: number) {
+    this.playerPosition = position;
+  }
 
   public get CardUseHistory() {
     return this.cardUseHistory;

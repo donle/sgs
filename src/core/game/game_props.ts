@@ -40,3 +40,59 @@ export type FinalPlayersData = {
   playerRole: PlayerRole;
   playerDead: boolean;
 }[];
+
+export function getRoles(totalPlayers: number): PlayerRole[] {
+  switch (totalPlayers) {
+    case 2:
+      return [PlayerRole.Lord, PlayerRole.Rebel];
+    case 3:
+      return [PlayerRole.Lord, PlayerRole.Rebel, PlayerRole.Rebel];
+    case 4:
+      return [
+        PlayerRole.Lord,
+        PlayerRole.Rebel,
+        PlayerRole.Loyalist,
+        PlayerRole.Renegade,
+      ];
+    case 5:
+      return [
+        PlayerRole.Lord,
+        PlayerRole.Rebel,
+        PlayerRole.Rebel,
+        PlayerRole.Loyalist,
+        PlayerRole.Renegade,
+      ];
+    case 6:
+      return [
+        PlayerRole.Lord,
+        PlayerRole.Rebel,
+        PlayerRole.Rebel,
+        PlayerRole.Rebel,
+        PlayerRole.Loyalist,
+        PlayerRole.Renegade,
+      ];
+    case 7:
+      return [
+        PlayerRole.Lord,
+        PlayerRole.Rebel,
+        PlayerRole.Rebel,
+        PlayerRole.Rebel,
+        PlayerRole.Loyalist,
+        PlayerRole.Loyalist,
+        PlayerRole.Renegade,
+      ];
+    case 8:
+      return [
+        PlayerRole.Lord,
+        PlayerRole.Rebel,
+        PlayerRole.Rebel,
+        PlayerRole.Rebel,
+        PlayerRole.Rebel,
+        PlayerRole.Loyalist,
+        PlayerRole.Loyalist,
+        PlayerRole.Renegade,
+      ];
+    default:
+      throw new Error('Unable to create roles with invalid number of players');
+  }
+}

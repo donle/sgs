@@ -238,7 +238,18 @@ const gameEventStageList: {
     AimStage.AfterAim,
     AimStage.AfterAimmed,
   ],
+  [GameEventIdentifiers.PhaseChangeEvent]: [
+    PhaseChangeStage.BeforePhaseChange,
+    PhaseChangeStage.PhaseChanged,
+    PhaseChangeStage.AfterPhaseChanged,
+  ],
 };
+
+export const enum PhaseChangeStage {
+  BeforePhaseChange,
+  PhaseChanged,
+  AfterPhaseChanged,
+}
 
 export const enum GameStartStage {
   BeforeGameStart,
@@ -337,6 +348,7 @@ export const enum RecoverEffectStage {
 }
 
 export type GameEventStage =
+  | PhaseChangeStage
   | GameStartStage
   | CardEffectStage
   | CardUseStage
@@ -357,24 +369,9 @@ export type GameEventStage =
 export type AllStage = PlayerStageListEnum | GameEventStage;
 
 export class StageProcessor {
-  private currentPlayerStageInSpecific: PlayerStageListEnum | undefined;
-  private currentPlayerStage: PlayerStage | undefined;
-  private stagePointer: number;
-  private readonly playerSpecificStagesList: PlayerStageListEnum[];
-
   private gameEventStageList: GameEventStage[] = [];
   private currentGameEventStage: GameEventStage | undefined;
   private processingGameEvent = false;
-
-  constructor() {
-    for (let i = 0; i < PlayerStageListEnum.EndFinishStageEnd; i++) {
-      this.playerSpecificStagesList.push(i);
-    }
-
-    this.stagePointer = -1;
-    this.currentPlayerStageInSpecific = undefined;
-    this.currentPlayerStage = undefined;
-  }
 
   public involve(identifier: GameEventIdentifiers) {
     const stageList = gameEventStageList[identifier];
@@ -430,36 +427,8 @@ export class StageProcessor {
     this.currentGameEventStage = undefined;
   }
 
-  public nextStage(): PlayerStage | undefined {
-    if (++this.stagePointer >= this.playerSpecificStagesList.length) {
-      return;
-    }
-
-    this.currentPlayerStageInSpecific = this.playerSpecificStagesList[
-      this.stagePointer
-    ];
-    this.currentPlayerStage = this.getInsidePlayerStage(
-      this.currentPlayerStageInSpecific,
-    );
-
-    return this.currentPlayerStage;
-  }
-
-  public turnToNextPlayer() {
-    this.stagePointer = -1;
-    return this.nextStage();
-  }
-
   public get CurrentGameEventStage() {
     return this.currentGameEventStage;
-  }
-
-  public get CurrentPlayerStageInSpecific() {
-    return this.currentPlayerStageInSpecific;
-  }
-
-  public get CurrentPlayerStage() {
-    return this.currentPlayerStage;
   }
 
   public isCurrentGameEventDone() {
@@ -484,6 +453,14 @@ export class StageProcessor {
     }
 
     return stageList.includes(stage);
+  }
+
+  public getGameStartStage() {
+    return [
+      GameStartStage.BeforeGameStart,
+      GameStartStage.GameStarted,
+      GameStartStage.AfterGameStarted,
+    ];
   }
 
   public createPlayerStage(stage?: PlayerStage) {

@@ -1,1 +1,1 @@
-export const coreVersion = '0.0.19';
+export const coreVersion = '0.0.20';
