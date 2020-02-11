@@ -1,17 +1,17 @@
+import { JinkSkill } from 'core/skills/cards/standard/jink';
+import { PeachSkill } from 'core/skills/cards/standard/peach';
+import { SlashSkill } from 'core/skills/cards/standard/slash';
+import { ZiXinSkill } from 'core/skills/cards/standard/zixin';
 import { HujiaSkill } from 'core/skills/characters/standard/hujia';
 import { JianXiongSkill } from 'core/skills/characters/standard/jianxiong';
 import { JiJiangShadowSkill, JiJiangSkill } from 'core/skills/characters/standard/jijiang';
-import { JinkSkill } from 'core/skills/characters/standard/jink';
 import { JiuYuan } from 'core/skills/characters/standard/jiuyuan';
 import { JiZhiSkill } from 'core/skills/characters/standard/jizhi';
-import { PeachSkill } from 'core/skills/characters/standard/peach';
 import { QiCaiSkill } from 'core/skills/characters/standard/qicai';
 import { QingGangSkill } from 'core/skills/characters/standard/qinggang';
 import { RendeSkill } from 'core/skills/characters/standard/rende';
-import { SlashSkill } from 'core/skills/characters/standard/slash';
 import { ZhiHeng } from 'core/skills/characters/standard/zhiheng';
 import { ZhuGeLianNuSlashSkill } from 'core/skills/characters/standard/zhugeliannu_slash';
-import { ZiXinSkill } from 'core/skills/characters/standard/zixin';
 import { Skill } from 'core/skills/skill';
 
 const allSkills = [
