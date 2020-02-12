@@ -77,6 +77,7 @@ export const enum GameEventIdentifiers {
   PlayerDyingEvent,
   PlayerDiedEvent,
 
+  AskForPlayCardsOrSkillsEvent,
   AskForPeachEvent,
   AskForWuXieKeJiEvent,
   AskForCardResponseEvent,
@@ -235,6 +236,13 @@ export class EventPacker {
     event: T,
   ): T {
     (event as any).terminate = true;
+    return event;
+  }
+  
+  static recall<T extends EventPicker<GameEventIdentifiers, WorkPlace>>(
+    event: T,
+  ): T {
+    (event as any).terminate = false;
     return event;
   }
 

@@ -226,6 +226,58 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return await this.socket.waitForResponse<T>(identifier, playerId);
   }
 
+  public async useCard(
+    content: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
+  ) {
+    if (content.fromId) {
+      const from = this.getPlayerById(content.fromId);
+      from.useCard(content.cardId);
+    }
+    await this.Processor.onHandleIncomingEvent(
+      GameEventIdentifiers.CardUseEvent,
+      content,
+    );
+    const cardAimEvent:
+      | ServerEventFinder<GameEventIdentifiers.AimEvent>
+      | undefined = content.toIds
+      ? {
+          byCardId: content.cardId,
+          toIds: content.toIds,
+        }
+      : undefined;
+    if (!EventPacker.isTerminated(content) && cardAimEvent !== undefined) {
+      await this.Processor.onHandleIncomingEvent(
+        GameEventIdentifiers.AimEvent,
+        cardAimEvent,
+      );
+    }
+    if (cardAimEvent && !EventPacker.isTerminated(cardAimEvent)) {
+      await this.Processor.onHandleIncomingEvent(
+        GameEventIdentifiers.CardEffectEvent,
+        EventPacker.recall(content),
+      );
+    }
+  }
+
+  public async useSkill(
+    content: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
+  ) {
+    if (content.fromId) {
+      const from = this.getPlayerById(content.fromId);
+      from.useSkill(content.skillName);
+    }
+    await this.Processor.onHandleIncomingEvent(
+      GameEventIdentifiers.SkillUseEvent,
+      content,
+    );
+    if (!EventPacker.isTerminated(content)) {
+      await this.Processor.onHandleIncomingEvent(
+        GameEventIdentifiers.SkillEffectEvent,
+        content,
+      );
+    }
+  }
+
   public getCards(numberOfCards: number, from: 'top' | 'bottom') {
     const cards: CardId[] = [];
     while (numberOfCards-- > 0) {

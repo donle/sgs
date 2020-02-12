@@ -84,7 +84,7 @@ export class SlashSkill extends ActiveSkill {
       );
 
       if (response.cardId !== undefined) {
-        room.useCard(
+        await room.useCard(
           EventPacker.createIdentifierEvent<GameEventIdentifiers.CardUseEvent>(
             GameEventIdentifiers.CardUseEvent,
             {

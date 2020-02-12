@@ -7,6 +7,7 @@ import { Peach } from './peach';
 import { QingGang } from './qinggang';
 import { Slash } from './slash';
 import { WanJianQiFa } from './wanjianqifa';
+import { ZhuGeLianNu } from './zhugeliannu';
 import { ZiXin } from './zixin';
 
 export const StandardCardPackage: (
@@ -74,5 +75,7 @@ export const StandardCardPackage: (
 
     new ZiXin(index++, 13, CardSuit.Diamond),
     new QingGang(index++, 6, CardSuit.Spade),
+    new ZhuGeLianNu(index++, 1, CardSuit.Club),
+    new ZhuGeLianNu(index++, 1, CardSuit.Diamond),
   ],
 });

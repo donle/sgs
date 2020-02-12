@@ -80,6 +80,9 @@ export class RendeSkill extends ActiveSkill {
       const options = ['peach'];
       if (from.canUseCard(room, new CardMatcher({ name: ['slash'] }))) {
         options.push('slash');
+        options.push('fire_slash');
+        options.push('thunder_slash');
+        //TODO: add wine afterwards
       }
 
       const chooseEvent = EventPacker.createIdentifierEvent(

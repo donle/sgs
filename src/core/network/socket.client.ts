@@ -2,6 +2,8 @@ import {
   createGameEventIdentifiersStringList,
   EventPicker,
   GameEventIdentifiers,
+  RoomEvent,
+  RoomEventFinder,
   WorkPlace,
 } from 'core/event/event';
 import { Socket } from 'core/network/socket';
@@ -11,7 +13,7 @@ import IOSocketClient from 'socket.io-client';
 export class ClientSocket extends Socket<WorkPlace.Client> {
   protected roomPath: string;
   private socketIO: SocketIOClient.Socket;
-  //TODO: manage async messages received
+  //TODO: async message
   private asyncEventIdentifier: GameEventIdentifiers | undefined;
   private asyncResponseResolver: (res: any) => void;
 
@@ -48,5 +50,18 @@ export class ClientSocket extends Socket<WorkPlace.Client> {
     content: EventPicker<typeof type, WorkPlace.Server>,
   ) {
     this.socketIO.emit(type.toString(), content);
+  }
+
+  public broadcast(
+    type: GameEventIdentifiers,
+    content: EventPicker<typeof type, WorkPlace.Server>,
+  ) {
+    throw new Error("Shouldn't call broadcast function in client socket");
+  }
+  public emitRoomStatus<T extends RoomEvent>(
+    type: T,
+    content: RoomEventFinder<T>,
+  ) {
+    throw new Error("Shouldn't call emitRoomStatus function in client socket");
   }
 }

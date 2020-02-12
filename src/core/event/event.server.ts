@@ -21,11 +21,13 @@ export interface ServerEvent extends EventUtilities {
     fromId: PlayerId;
     cardId: CardId;
     toIds?: PlayerId[];
+    toCardIds?: CardId[];
   };
   [GameEventIdentifiers.CardEffectEvent]: {
     fromId?: PlayerId;
     cardId: CardId;
     toIds?: PlayerId[];
+    toCardIds?: CardId[];
   };
   [GameEventIdentifiers.AimEvent]: {
     bySkill?: string;
@@ -131,8 +133,7 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.AskForWuXieKeJiEvent]: {
     fromId?: PlayerId;
-    cardId?: CardId;
-    cardName: string;
+    cardId: CardId;
   };
   [GameEventIdentifiers.AskForCardResponseEvent]: {
     carMatcher: CardMatcherSocketPassenger;

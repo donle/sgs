@@ -100,24 +100,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return player;
   }
 
-  //TODO: refactor useCard and useSkill
-  public async useCard(
-    content: EventPicker<GameEventIdentifiers.CardUseEvent, WorkPlace>,
-  ) {
-    if (content.fromId) {
-      const from = this.getPlayerById(content.fromId);
-      from.useCard(content.cardId);
-    }
-
-    this.broadcast(GameEventIdentifiers.CardUseEvent, content);
-  }
-
-  public async useSkill(
-    content: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ) {
-    this.broadcast(GameEventIdentifiers.SkillUseEvent, content);
-  }
-
   public get RoomId() {
     return this.roomId;
   }
@@ -126,12 +108,19 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract get CurrentGameStage(): GameEventStage | undefined;
   public abstract get CurrentPlayer(): Player;
   public abstract get Processor(): GameProcessor;
+  
+  public abstract async useCard(
+    content: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
+  ): Promise<void>;
+  public abstract async useSkill(
+    content: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
+  ): Promise<void>; 
 
   public get AlivePlayers() {
     return this.players.filter(player => !player.Dead);
   }
 
-  public getAlivePlayersFrom(playerId?: PlayerId) {
+  public getAlivePlayersFrom(playerId?: PlayerId, startsFromNext: boolean = false) {
     playerId = playerId === undefined ? this.CurrentPlayer.Id : playerId;
     const alivePlayers = this.AlivePlayers;
     const fromIndex = alivePlayers.findIndex(player => player.Id === playerId);
@@ -141,7 +130,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     }
 
     return [
-      ...alivePlayers.slice(fromIndex),
+      ...alivePlayers.slice(startsFromNext ? fromIndex + 1 : fromIndex),
       ...alivePlayers.slice(0, fromIndex),
     ];
   }

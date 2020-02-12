@@ -26,7 +26,11 @@ import {
   SkillUseStage,
   StageProcessor,
 } from 'core/game/stage_processor';
-import { PlayerId, PlayerInfo } from 'core/player/player_props';
+import {
+  PlayerCardsArea,
+  PlayerId,
+  PlayerInfo,
+} from 'core/player/player_props';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ServerRoom } from '../room/room.server';
 import { Sanguosha } from './engine';
@@ -162,7 +166,16 @@ export class GameProcessor {
   private async onPhase(phase: PlayerPhase) {
     switch (phase) {
       case PlayerPhase.JudgeStage:
-      //TODO: need to implement
+        const judgeCards = this.CurrentPlayer.getCardIds(
+          PlayerCardsArea.JudgeArea,
+        ).map(cardId => Sanguosha.getCardById(cardId));
+        for (const judgeCard of judgeCards) {
+          const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
+            cardId: judgeCard.Id,
+            toIds: [this.CurrentPlayer.Id],
+          };
+          await judgeCard.Skill.onEffect(this.room, cardEffectEvent);
+        }
       case PlayerPhase.DrawCardStage:
         await this.room.drawCards(2, this.CurrentPlayer.Id);
         return;
@@ -188,22 +201,25 @@ export class GameProcessor {
         this.currentPlayerStage,
       );
 
-      await this.onHandlePhaseChangeEvent(
-        GameEventIdentifiers.PhaseChangeEvent,
-        {
-          from: this.currentPlayerPhase,
-          to: nextPhase,
-          fromPlayer: lastPlayer.Id,
-          toPlayer: this.CurrentPlayer.Id,
-        },
-        async stage => {
-          if (stage === PhaseChangeStage.PhaseChanged) {
-            await this.onPhase(this.CurrentPlayerPhase);
-          }
+      if (nextPhase !== this.currentPlayerPhase) {
+        await this.onHandlePhaseChangeEvent(
+          GameEventIdentifiers.PhaseChangeEvent,
+          {
+            from: this.currentPlayerPhase,
+            to: nextPhase,
+            fromPlayer: lastPlayer.Id,
+            toPlayer: this.CurrentPlayer.Id,
+          },
+          async stage => {
+            if (stage === PhaseChangeStage.PhaseChanged) {
+              this.currentPlayerPhase = nextPhase;
+              await this.onPhase(this.CurrentPlayerPhase);
+            }
 
-          return true;
-        },
-      );
+            return true;
+          },
+        );
+      }
 
       lastPlayer = this.room.AlivePlayers[this.playerPositionIndex];
     }
@@ -470,7 +486,40 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      if (stage === CardEffectStage.CardEffect) {
+      if (stage == CardEffectStage.BeforeCardEffect) {
+        for (const player of this.room.getAlivePlayersFrom(
+          this.CurrentPlayer.Id,
+          true,
+        )) {
+          const wuxiekejiEvent: ServerEventFinder<GameEventIdentifiers.AskForWuXieKeJiEvent> = {
+            fromId: event.fromId,
+            cardId: event.cardId,
+          };
+          this.room.notify(
+            GameEventIdentifiers.AskForWuXieKeJiEvent,
+            wuxiekejiEvent,
+            player.Id,
+          );
+
+          const response = await this.room.onReceivingAsyncReponseFrom(
+            GameEventIdentifiers.AskForWuXieKeJiEvent,
+            player.Id,
+          );
+
+          if (response.cardId !== undefined) {
+            const cardUseEvent = EventPacker.createIdentifierEvent(
+              GameEventIdentifiers.CardUseEvent,
+              {
+                fromId: response.fromId,
+                cardId: response.cardId,
+                toCardIds: [event.cardId],
+              },
+            );
+            await this.room.useCard(cardUseEvent);
+            return;
+          }
+        }
+      } else if (stage === CardEffectStage.CardEffect) {
         const { cardId } = event;
         if (
           !(await Sanguosha.getCardById(cardId).Skill.onEffect(

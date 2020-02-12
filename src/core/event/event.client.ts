@@ -2,18 +2,24 @@ import { CardId } from 'core/cards/libs/card_props';
 import { CharacterId } from 'core/characters/character';
 import { DamageType } from 'core/game/game_props';
 import { PlayerId, PlayerInfo } from 'core/player/player_props';
-import { EventUtilities, GameEventIdentifiers } from './event';
+import {
+  EventUtilities,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from './event';
 
 export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.CardUseEvent]: {
     fromId: PlayerId;
     cardId: CardId;
     toIds?: PlayerId[];
+    toCardIds?: CardId[];
   };
   [GameEventIdentifiers.CardEffectEvent]: {
     fromId?: PlayerId;
     cardId: CardId;
     toIds?: PlayerId[];
+    toCardIds?: CardId[];
   };
   [GameEventIdentifiers.CardResponseEvent]: {
     fromId: PlayerId;

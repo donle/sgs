@@ -4,17 +4,17 @@ import { Skill } from 'core/skills/skill';
 import { WeaponCard } from '../equip_card';
 import { CardSuit } from '../libs/card_props';
 
-export class QingGang extends WeaponCard {
+export class ZhuGeLianNu extends WeaponCard {
   constructor(id: number, cardNumber: number, suit: CardSuit) {
     super(
       id,
       cardNumber,
       suit,
-      'qinggang',
-      'qinggang_description',
+      'zhugeliannu',
+      'zhugeliannu_description',
       GameCardExtensions.Standard,
-      SkillLoader.getInstance().getSkillByName<Skill>('qinggang'),
-      2,
+      SkillLoader.getInstance().getSkillByName<Skill>('zhugeliannu'),
+      1,
     );
   }
 }

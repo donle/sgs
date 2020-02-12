@@ -160,23 +160,6 @@ export abstract class Player implements PlayerInfo {
     return ruleCardUse;
   }
 
-  public canUseSkill(
-    room: Room,
-    skillName: string,
-    content: ClientEventFinder<GameEventIdentifiers>,
-  ) {
-    if (!this.playerCharacter) {
-      throw new Error(
-        `Player ${this.playerName} has not been initialized with a character yet`,
-      );
-    }
-
-    const skill = this.playerCharacter.Skills.find(
-      skill => skill.Name === skillName,
-    );
-    return skill !== undefined && skill.canUse(room, this, content);
-  }
-
   public resetCardUseHistory() {
     this.cardUseHistory = [];
   }
