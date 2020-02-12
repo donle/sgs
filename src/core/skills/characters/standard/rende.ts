@@ -7,7 +7,7 @@ import {
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
-import { PlayerStage } from 'core/game/stage_processor';
+import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -163,12 +163,12 @@ export class RendeSkill extends ActiveSkill {
   }
 
   onPhaseChange(
-    from: PlayerStage,
-    to: PlayerStage,
+    from: PlayerPhase,
+    to: PlayerPhase,
     room: Room,
     playerId: PlayerId,
   ) {
-    if (from === PlayerStage.FinishStage) {
+    if (from === PlayerPhase.FinishStage) {
       const player = room.getPlayerById(playerId);
       player.removeInvisibleMark(this.name);
       player.removeInvisibleMark(this.name + '-used');

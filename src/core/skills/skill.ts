@@ -12,7 +12,7 @@ import {
 import { Sanguosha } from 'core/game/engine';
 import {
   AllStage,
-  PlayerStage,
+  PlayerPhase,
   PlayerStageListEnum,
 } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -204,8 +204,8 @@ export abstract class Skill {
   // tslint:disable-next-line: no-empty
   public onLoseSkill(owner: Player) {}
   public onPhaseChange(
-    fromPhase: PlayerStage,
-    toPhase: PlayerStage,
+    fromPhase: PlayerPhase,
+    toPhase: PlayerPhase,
     room: Room,
     owner: PlayerId,
   // tslint:disable-next-line: no-empty

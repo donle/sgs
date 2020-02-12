@@ -68,7 +68,7 @@ export const enum StagePriority {
   High,
 }
 
-export const enum PlayerStage {
+export const enum PlayerPhase {
   PrepareStage,
   JudgeStage,
   DrawCardStage,
@@ -78,9 +78,9 @@ export const enum PlayerStage {
 }
 
 const playerStagesList: {
-  [K in PlayerStage]: PlayerStageListEnum[];
+  [K in PlayerPhase]: PlayerStageListEnum[];
 } = {
-  [PlayerStage.PrepareStage]: [
+  [PlayerPhase.PrepareStage]: [
     PlayerStageListEnum.BeginPrepareStageStart,
     PlayerStageListEnum.PrepareStageStart,
     PlayerStageListEnum.EndPrepareStageStart,
@@ -91,7 +91,7 @@ const playerStagesList: {
     PlayerStageListEnum.DrawCardStageEnd,
     PlayerStageListEnum.EndDrawCardStageEnd,
   ],
-  [PlayerStage.JudgeStage]: [
+  [PlayerPhase.JudgeStage]: [
     PlayerStageListEnum.BeginJudgeStageStart,
     PlayerStageListEnum.JudgeStageStart,
     PlayerStageListEnum.EndJudgeStageStart,
@@ -102,7 +102,7 @@ const playerStagesList: {
     PlayerStageListEnum.DrawCardStageEnd,
     PlayerStageListEnum.EndDrawCardStageEnd,
   ],
-  [PlayerStage.DrawCardStage]: [
+  [PlayerPhase.DrawCardStage]: [
     PlayerStageListEnum.BeginDrawCardStageStart,
     PlayerStageListEnum.DrawCardStageStart,
     PlayerStageListEnum.EndDrawCardStageStart,
@@ -113,7 +113,7 @@ const playerStagesList: {
     PlayerStageListEnum.DrawCardStageEnd,
     PlayerStageListEnum.EndDrawCardStageEnd,
   ],
-  [PlayerStage.PlayCardStage]: [
+  [PlayerPhase.PlayCardStage]: [
     PlayerStageListEnum.BeginPlayCardStageStart,
     PlayerStageListEnum.PlayCardStageStart,
     PlayerStageListEnum.EndPlayCardStageStart,
@@ -124,7 +124,7 @@ const playerStagesList: {
     PlayerStageListEnum.PlayCardStageEnd,
     PlayerStageListEnum.EndPlayCardStageEnd,
   ],
-  [PlayerStage.DropCardStage]: [
+  [PlayerPhase.DropCardStage]: [
     PlayerStageListEnum.BeginDropCardStageStart,
     PlayerStageListEnum.DropCardStageStart,
     PlayerStageListEnum.EndDropCardStageStart,
@@ -135,7 +135,7 @@ const playerStagesList: {
     PlayerStageListEnum.DropCardStageEnd,
     PlayerStageListEnum.EndDropCardStageEnd,
   ],
-  [PlayerStage.FinishStage]: [
+  [PlayerPhase.FinishStage]: [
     PlayerStageListEnum.BeginFinishStageStart,
     PlayerStageListEnum.FinishStageStart,
     PlayerStageListEnum.EndFinishStageStart,
@@ -463,17 +463,17 @@ export class StageProcessor {
     ];
   }
 
-  public createPlayerStage(stage?: PlayerStage) {
+  public createPlayerStage(stage?: PlayerPhase) {
     if (stage !== undefined) {
       return playerStagesList[stage].slice();
     } else {
       const stages = [
-        PlayerStage.PrepareStage,
-        PlayerStage.JudgeStage,
-        PlayerStage.DrawCardStage,
-        PlayerStage.PlayCardStage,
-        PlayerStage.DropCardStage,
-        PlayerStage.FinishStage,
+        PlayerPhase.PrepareStage,
+        PlayerPhase.JudgeStage,
+        PlayerPhase.DrawCardStage,
+        PlayerPhase.PlayCardStage,
+        PlayerPhase.DropCardStage,
+        PlayerPhase.FinishStage,
       ];
 
       let createdStages: PlayerStageListEnum[] = [];
@@ -485,10 +485,10 @@ export class StageProcessor {
     }
   }
 
-  public getInsidePlayerStage(specificStage: PlayerStageListEnum): PlayerStage {
+  public getInsidePlayerPhase(specificStage: PlayerStageListEnum): PlayerPhase {
     for (const [stage, stageList] of (Object.entries(
       playerStagesList,
-    ) as unknown) as [PlayerStage, PlayerStageListEnum[]][]) {
+    ) as unknown) as [PlayerPhase, PlayerStageListEnum[]][]) {
       if (stageList.includes(specificStage)) {
         return stage;
       }

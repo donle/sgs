@@ -15,7 +15,7 @@ import { GameInfo } from 'core/game/game_props';
 import {
   AllStage,
   GameEventStage,
-  PlayerStage,
+  PlayerPhase,
 } from 'core/game/stage_processor';
 import { GameProcessor } from '../game/game_processor';
 
@@ -122,7 +122,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return this.roomId;
   }
 
-  public abstract get CurrentPlayerStage(): PlayerStage | undefined;
+  public abstract get CurrentPlayerStage(): PlayerPhase | undefined;
   public abstract get CurrentGameStage(): GameEventStage | undefined;
   public abstract get CurrentPlayer(): Player;
   public abstract get Processor(): GameProcessor;

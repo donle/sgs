@@ -455,7 +455,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   public get CurrentPlayerStage() {
-    return this.gameProcessor.CurrentPlayerStage;
+    return this.gameProcessor.CurrentPlayerPhase;
   }
 
   public get CurrentGameStage() {

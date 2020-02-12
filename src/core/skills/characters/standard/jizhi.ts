@@ -7,7 +7,7 @@ import {
 } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { GameCommonRules } from 'core/game/game_rules';
-import { CardUseStage, PlayerStage } from 'core/game/stage_processor';
+import { CardUseStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -100,12 +100,12 @@ export class JiZhiSkill extends TriggerSkill {
   }
 
   onPhaseChange(
-    fromPhase: PlayerStage,
-    toPhase: PlayerStage,
+    fromPhase: PlayerPhase,
+    toPhase: PlayerPhase,
     room: Room,
     owner: PlayerId,
   ) {
-    if (fromPhase === PlayerStage.FinishStage) {
+    if (fromPhase === PlayerPhase.FinishStage) {
       const player = room.getPlayerById(owner);
       const extraHold = player.getInvisibleMark(this.name);
       GameCommonRules.addAvailableHoldCardNumber(player, -extraHold);

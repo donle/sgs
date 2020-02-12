@@ -20,7 +20,8 @@ import {
   ObtainCardStage,
   PhaseChangeStage,
   PinDianStage,
-  PlayerStage,
+  PlayerPhase,
+  PlayerStageListEnum,
   SkillEffectStage,
   SkillUseStage,
   StageProcessor,
@@ -33,7 +34,8 @@ import { Sanguosha } from './engine';
 export class GameProcessor {
   private playerPositionIndex = -1;
   private room: ServerRoom;
-  private currentPlayerStage: PlayerStage | undefined;
+  private currentPlayerStage: PlayerStageListEnum | undefined;
+  private currentPlayerPhase: PlayerPhase | undefined;
 
   constructor(private stageProcessor: StageProcessor) {}
 
@@ -157,12 +159,53 @@ export class GameProcessor {
     }
   }
 
+  private async onPhase(phase: PlayerPhase) {
+    switch (phase) {
+      case PlayerPhase.JudgeStage:
+      //TODO: need to implement
+      case PlayerPhase.DrawCardStage:
+        await this.room.drawCards(2, this.CurrentPlayer.Id);
+        return;
+      case PlayerPhase.PlayCardStage:
+      //TODO: need to implement
+      case PlayerPhase.DropCardStage:
+      //TODO: need to implement
+      default:
+        return;
+    }
+  }
+
   private async play() {
+    let lastPlayer = this.room.AlivePlayers[this.playerPositionIndex];
     this.playerPositionIndex =
       (this.playerPositionIndex + 1) % this.room.AlivePlayers.length;
-    //TODO
-    if (this.currentPlayerStage === undefined) {
-      //TODO: go to next player, needs to broadcast in the
+
+    const playerStages = this.stageProcessor.createPlayerStage();
+
+    while (playerStages.length > 0) {
+      this.currentPlayerStage = playerStages.unshift();
+      const nextPhase = this.stageProcessor.getInsidePlayerPhase(
+        this.currentPlayerStage,
+      );
+
+      await this.onHandlePhaseChangeEvent(
+        GameEventIdentifiers.PhaseChangeEvent,
+        {
+          from: this.currentPlayerPhase,
+          to: nextPhase,
+          fromPlayer: lastPlayer.Id,
+          toPlayer: this.CurrentPlayer.Id,
+        },
+        async stage => {
+          if (stage === PhaseChangeStage.PhaseChanged) {
+            await this.onPhase(this.CurrentPlayerPhase);
+          }
+
+          return true;
+        },
+      );
+
+      lastPlayer = this.room.AlivePlayers[this.playerPositionIndex];
     }
   }
 
@@ -607,8 +650,12 @@ export class GameProcessor {
     return this.stageProcessor.CurrentGameEventStage;
   }
 
+  public get CurrentPlayerPhase() {
+    this.tryToThrowNotStartedError();
+    return this.currentPlayerPhase!;
+  }
   public get CurrentPlayerStage() {
     this.tryToThrowNotStartedError();
-    return this.currentPlayerStage;
+    return this.currentPlayerStage!;
   }
 }

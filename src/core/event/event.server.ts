@@ -2,7 +2,7 @@ import { CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { CharacterId } from 'core/characters/character';
 import { DamageType } from 'core/game/game_props';
-import { PlayerStage } from 'core/game/stage_processor';
+import { GameStartStage, PlayerPhase } from 'core/game/stage_processor';
 import {
   PlayerCardsArea,
   PlayerId,
@@ -193,8 +193,9 @@ export interface ServerEvent extends EventUtilities {
     putCards?: CardId[];
   };
   [GameEventIdentifiers.PhaseChangeEvent]: {
-    from: PlayerStage;
-    to: PlayerStage;
+    from: PlayerPhase | undefined;
+    to: PlayerPhase;
+    fromPlayer: PlayerId | undefined;
     toPlayer: PlayerId;
   };
 }
