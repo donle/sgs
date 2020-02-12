@@ -33,9 +33,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   protected abstract init(): void;
 
-  public abstract notify(
-    type: GameEventIdentifiers,
-    content: EventPicker<typeof type, WorkPlace>,
+  public abstract notify<I extends GameEventIdentifiers>(
+    type: I,
+    content: EventPicker<I, T>,
     pleyer: PlayerId,
   ): void;
   public abstract broadcast(

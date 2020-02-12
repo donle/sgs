@@ -7,7 +7,7 @@ import {
   ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
-import { AllStage } from 'core/game/stage_processor';
+import { AllStage, DrawCardStage } from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
 import { Player } from 'core/player/player';
 import { ServerPlayer } from 'core/player/player.server';
@@ -93,9 +93,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.players.push(new ServerPlayer(Id, Name, Position, CharacterId));
   }
 
-  public notify(
-    type: GameEventIdentifiers,
-    content: EventPicker<typeof type, WorkPlace.Server>,
+  public notify<I extends GameEventIdentifiers>(
+    type: I,
+    content: ServerEventFinder<I>,
     to: PlayerId,
   ) {
     this.socket.sendEvent(type, content, to);
@@ -201,7 +201,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               GameEventIdentifiers.AskForInvokeEvent,
               {
                 invokeSkillNames: [skill.Name],
-                toId: this.players[i].Id,
+                to: this.players[i].Id,
               },
               this.players[i].Id,
             );
@@ -259,6 +259,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         GameEventIdentifiers.DrawCardEvent,
         drawEvent,
       ),
+      async stage => {
+        if (stage === DrawCardStage.CardDrawed) {
+          this.getPlayerById(drawEvent.playerId).obtainCardIds(...cardIds);
+        }
+
+        return true;
+      },
     );
 
     return cardIds;

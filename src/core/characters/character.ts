@@ -16,9 +16,16 @@ export const enum CharacterNationality {
   God,
 }
 
+export function Lord(constructor: new (...args: any[]) => any): any {
+  return class extends constructor {
+    private lord: boolean = true;
+  } as any;
+}
+
 export abstract class Character {
   private turnedOver: boolean = false;
   private linked: boolean = false;
+  private lord: boolean = false;
 
   protected constructor(
     protected id: CharacterId,
@@ -32,6 +39,10 @@ export abstract class Character {
 
   protected getSkillsDescrption() {
     return this.skills.map(skill => skill.Description);
+  }
+
+  public isLord() {
+    return this.lord;
   }
 
   public get Id() {

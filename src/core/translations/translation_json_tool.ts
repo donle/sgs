@@ -17,8 +17,8 @@ type TranslationsDictionary = {
 };
 
 type EmojiOrImageTranslationDictionary = {
-  [k: string]: string
-}
+  [k: string]: string;
+};
 
 export class TranslationPack {
   private constructor(private translationJon: PatchedTranslationObject) {}
@@ -45,16 +45,22 @@ export class TranslationPack {
 
   public static patchCardInTranslation(cardId: CardId) {
     const card = Sanguosha.getCardById(cardId);
-    return `${TranslationPack.patchEmojiOrImageInTranslation(card.Suit)} ${card.CardNumber} ${card.Name}`;
+    return `${TranslationPack.patchEmojiOrImageInTranslation(card.Suit)} ${
+      card.CardNumber
+    } ${card.Name}`;
   }
 
   public static patchEmojiOrImageInTranslation(rawText: string | number) {
-      return translationObjectSign + rawText;
+    return translationObjectSign + rawText;
   }
 
-  public addEmojiOrImageSymbolText(...symbolTextPair: [string | number, string][]) {
+  public addEmojiOrImageSymbolText(
+    ...symbolTextPair: [string | number, string][]
+  ) {
     for (const [rawText, translatePath] of symbolTextPair) {
-      TranslationPack.emojiOrImageTextDict[rawText] = translatePath;
+      TranslationPack.emojiOrImageTextDict[
+        TranslationPack.patchEmojiOrImageInTranslation(rawText)
+      ] = translatePath;
     }
   }
 
@@ -102,7 +108,9 @@ export class TranslationPack {
           );
         }
       }
-      for (const [rawText, path] of Object.entries(TranslationPack.emojiOrImageTextDict)) {
+      for (const [rawText, path] of Object.entries(
+        TranslationPack.emojiOrImageTextDict,
+      )) {
         target.replace(rawText, path);
       }
       return target;

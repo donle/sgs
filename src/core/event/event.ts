@@ -111,7 +111,16 @@ export const isCardResponsiveIdentifier = (
 };
 
 export const createGameEventIdentifiersStringList = () => {
-  const list: string[] = [];
+  const list: string[] = [
+    RoomEvent.SetFlagEvent,
+    RoomEvent.RemoveFlagEvent,
+    RoomEvent.ClearFlagEvent,
+    RoomEvent.AddMarkEvent,
+    RoomEvent.SetMarkEvent,
+    RoomEvent.RemoveMarkEvent,
+    RoomEvent.ClearMarkEvent,
+  ];
+
   for (let i = 0; i <= GameEventIdentifiers.AskForPlaceCardsInDileEvent; i++) {
     list.push(i.toString());
   }

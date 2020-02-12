@@ -1,5 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
 import {
+  ClientEventFinder,
   EventPacker,
   EventPicker,
   GameEventIdentifiers,
@@ -24,7 +25,7 @@ import {
   SkillUseStage,
   StageProcessor,
 } from 'core/game/stage_processor';
-import { PlayerId } from 'core/player/player_props';
+import { PlayerId, PlayerInfo } from 'core/player/player_props';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ServerRoom } from '../room/room.server';
 import { Sanguosha } from './engine';
@@ -42,11 +43,123 @@ export class GameProcessor {
     }
   }
 
-  public play(room: ServerRoom) {
-    this.room = room;
-    const playerInfo = this.room.assignRoles();
+  private async chooseCharacters(playersInfo: PlayerInfo[]) {
+    const lordInfo = playersInfo[0];
+    const gameStartEvent = EventPacker.createUncancellableEvent<
+      GameEventIdentifiers.AskForChooseCharacterEvent
+    >({
+      characterIds: Sanguosha.getLordCharacters().map(
+        character => character.Id,
+      ),
+      role: lordInfo.Role,
+      isGameStart: true,
+    });
+    this.room.notify(
+      GameEventIdentifiers.AskForChooseCharacterEvent,
+      EventPacker.createIdentifierEvent(
+        GameEventIdentifiers.AskForChooseCharacterEvent,
+        gameStartEvent,
+      ),
+      lordInfo.Id,
+    );
 
-    this.playerPositionIndex = 0;
+    const response = await this.room.onReceivingAsyncReponseFrom(
+      GameEventIdentifiers.AskForChooseCharacterEvent,
+      lordInfo.Id,
+    );
+    lordInfo.CharacterId = response.chosenCharacter;
+
+    const characters = Sanguosha.getRandomCharacters(
+      playersInfo.length - 1,
+      lordInfo.CharacterId,
+    );
+
+    const sequentialAsyncResponse: Promise<
+      ClientEventFinder<GameEventIdentifiers.AskForChooseCharacterEvent>
+    >[] = [];
+
+    for (let i = 1; i < playersInfo.length; i++) {
+      const playerInfo = playersInfo[i];
+      this.room.notify(
+        GameEventIdentifiers.AskForChooseCharacterEvent,
+        {
+          characterIds: [characters.pop()!.Id],
+          lordInfo: {
+            lordCharacter: lordInfo.CharacterId,
+            lordId: lordInfo.Id,
+          },
+          role: playerInfo.Role,
+          isGameStart: true,
+        },
+        playerInfo.Id,
+      );
+
+      sequentialAsyncResponse.push(
+        this.room.onReceivingAsyncReponseFrom(
+          GameEventIdentifiers.AskForChooseCharacterEvent,
+          playerInfo.Id,
+        ),
+      );
+    }
+
+    for (const response of await Promise.all(sequentialAsyncResponse)) {
+      const player = playersInfo.find(info => info.Id === response.fromId);
+      if (!player) {
+        throw new Error('Unexpected player id received');
+      }
+
+      player.CharacterId = response.chosenCharacter;
+    }
+  }
+
+  private drawGameBeginsCards(playersInfo: PlayerInfo[]) {
+    for (const player of playersInfo) {
+      const cardIds = this.room.getCards(4, 'top');
+      const drawEvent: ServerEventFinder<GameEventIdentifiers.DrawCardEvent> = {
+        cardIds,
+        playerId: player.Id,
+        translationsMessage: TranslationPack.translationJsonPatcher(
+          '{0} drawed {1} cards',
+          player.Name,
+          4,
+        ),
+      };
+
+      this.room.broadcast(GameEventIdentifiers.DrawCardEvent, drawEvent);
+    }
+  }
+
+  public async gameStart(room: ServerRoom) {
+    this.room = room;
+
+    const playersInfo = this.room.assignRoles();
+    await this.chooseCharacters(playersInfo);
+
+    for (const player of playersInfo) {
+      const gameStartEvent: ServerEventFinder<GameEventIdentifiers.GameStartEvent> = {
+        currentPlayer: player,
+        otherPlayers: playersInfo.filter(info => info.Id !== player.Id),
+      };
+
+      await this.onHandleIncomingEvent(
+        GameEventIdentifiers.GameStartEvent,
+        EventPacker.createIdentifierEvent(
+          GameEventIdentifiers.GameStartEvent,
+          gameStartEvent,
+        ),
+      );
+    }
+    this.drawGameBeginsCards(playersInfo);
+
+    while (this.room.AlivePlayers.length > 1) {
+      await this.play();
+      this.turnToNextPlayer();
+    }
+  }
+
+  private async play() {
+    this.playerPositionIndex =
+      (this.playerPositionIndex + 1) % this.room.AlivePlayers.length;
     //TODO
     if (this.currentPlayerStage === undefined) {
       //TODO: go to next player, needs to broadcast in the
@@ -65,6 +178,13 @@ export class GameProcessor {
       case GameEventIdentifiers.PhaseChangeEvent:
         await this.onHandlePhaseChangeEvent(
           identifier as GameEventIdentifiers.PhaseChangeEvent,
+          event as any,
+          onActualExecuted,
+        );
+        break;
+      case GameEventIdentifiers.GameStartEvent:
+        await this.onHandleGameStartEvent(
+          identifier as GameEventIdentifiers.GameStartEvent,
           event as any,
           onActualExecuted,
         );
@@ -152,7 +272,7 @@ export class GameProcessor {
           onActualExecuted,
         );
       default:
-        throw new Error(`Unknow incoming event: ${identifier}`);
+        throw new Error(`Unknown incoming event: ${identifier}`);
     }
 
     return;
@@ -423,7 +543,7 @@ export class GameProcessor {
           ]);
 
           let winner: PlayerId | undefined;
-          let largestCardNumber = -2;
+          let largestCardNumber = 0;
           const pindianCards: CardId[] = [];
 
           for (const result of responses) {
@@ -455,6 +575,18 @@ export class GameProcessor {
     this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === PhaseChangeStage.PhaseChanged) {
         this.room.broadcast(GameEventIdentifiers.PhaseChangeEvent, event);
+      }
+    });
+  }
+
+  private onHandleGameStartEvent(
+    identifier: GameEventIdentifiers.GameStartEvent,
+    event: ServerEventFinder<GameEventIdentifiers.GameStartEvent>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
+  ) {
+    this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      if (stage === PhaseChangeStage.PhaseChanged) {
+        this.room.broadcast(GameEventIdentifiers.GameStartEvent, event);
       }
     });
   }

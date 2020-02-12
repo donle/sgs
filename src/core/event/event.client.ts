@@ -1,4 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
+import { CharacterId } from 'core/characters/character';
 import { DamageType } from 'core/game/game_props';
 import { PlayerId, PlayerInfo } from 'core/player/player_props';
 import { EventUtilities, GameEventIdentifiers } from './event';
@@ -107,21 +108,25 @@ export interface ClientEvent extends EventUtilities {
     fromId: PlayerId;
   };
   [GameEventIdentifiers.AskForChooseOptionsEvent]: {
-    selectedOption?: string,
-    askedBy?: PlayerId,
-    fromId: PlayerId,
+    selectedOption?: string;
+    askedBy?: PlayerId;
+    fromId: PlayerId;
   };
   [GameEventIdentifiers.AskForChoosPlayerEvent]: {
-    selectedPlayer?: PlayerId,
-    fromId: PlayerId,
-    askedBy?: PlayerId,
-  }
+    selectedPlayer?: PlayerId;
+    fromId: PlayerId;
+    askedBy?: PlayerId;
+  };
   [GameEventIdentifiers.AskForInvokeEvent]: {
-    invoke?: string,
+    invoke?: string;
     fromId: PlayerId;
   };
   [GameEventIdentifiers.AskForCardDisplayEvent]: {};
   [GameEventIdentifiers.AskForCardDropEvent]: {};
-  [GameEventIdentifiers.AskForChooseCharacterEvent]: {};
+  [GameEventIdentifiers.AskForChooseCharacterEvent]: {
+    chosenCharacter: CharacterId;
+    fromId: PlayerId;
+    isGameStart?: boolean;
+  };
   [GameEventIdentifiers.AskForPlaceCardsInDileEvent]: {};
 }

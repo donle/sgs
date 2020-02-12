@@ -7,6 +7,7 @@ import {
   PlayerCardsArea,
   PlayerId,
   PlayerInfo,
+  PlayerRole,
 } from 'core/player/player_props';
 import {
   EventUtilities,
@@ -169,6 +170,12 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.AskForChooseCharacterEvent]: {
     characterIds: CharacterId[];
+    lordInfo?: {
+      lordId: PlayerId;
+      lordCharacter: CharacterId;
+    };
+    role?: PlayerRole;
+    isGameStart?: boolean;
   };
   [GameEventIdentifiers.AskForChooseOptionsEvent]: {
     options: string[];

@@ -22,10 +22,9 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
   protected roomPath: string;
 
   private asyncResponseResolver: {
-    [K in PlayerId]: {
-      identifier: GameEventIdentifiers;
-      resolve(res?: any): void;
-    }[];
+    [I in GameEventIdentifiers]: {
+      [K in PlayerId]: ((res?: any) => void) | undefined;
+    };
   };
 
   constructor(config: HostConfigProps, roomId: RoomId) {
@@ -44,18 +43,19 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       const gameEvent: string[] = createGameEventIdentifiersStringList();
       gameEvent.forEach(event => {
         socket.on(event, (content: unknown) => {
-          if (EventPacker.isRoomEvent(event as GameEventIdentifiers | RoomEvent)) {
-            throw new Error('Server can\'t receive room event');
+          if (
+            EventPacker.isRoomEvent(event as GameEventIdentifiers | RoomEvent)
+          ) {
+            throw new Error("Server can't receive room event");
           }
           const type = parseInt(event, 10) as GameEventIdentifiers;
 
           const asyncResolver =
-            this.asyncResponseResolver[socket.id] &&
-            this.asyncResponseResolver[socket.id].filter(
-              resolver => resolver.identifier === type,
-            );
-          if (asyncResolver !== undefined && asyncResolver.length > 0) {
-            asyncResolver.forEach(resolver => resolver.resolve(content));
+            this.asyncResponseResolver[type] &&
+            this.asyncResponseResolver[type][socket.id];
+          if (asyncResolver) {
+            asyncResolver(content);
+            this.asyncResponseResolver[type][socket.id] = undefined;
           }
         });
       });
@@ -103,7 +103,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     content: RoomEventFinder<typeof type>,
   ) {
     this.socket.emit(type, content);
-  };
+  }
 
   public getSocketById(id: PlayerId) {
     const clientId = this.clientIds.find(clientId => clientId === id);
@@ -136,25 +136,15 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     playerId: PlayerId,
   ) {
     return await new Promise<ClientEventFinder<T>>(resolve => {
-      if (!this.asyncResponseResolver[playerId]) {
-        this.asyncResponseResolver[playerId] = [
-          {
-            identifier,
-            resolve,
-          },
-        ];
+      if (!this.asyncResponseResolver[identifier]) {
+        this.asyncResponseResolver[identifier] = {
+          [playerId]: resolve,
+        };
       } else {
-        const resolvers = this.asyncResponseResolver[playerId].filter(
-          resolver => resolver.identifier === identifier,
-        );
-        resolvers.length === 0
-          ? this.asyncResponseResolver[playerId].push({
-              identifier,
-              resolve,
-            })
-          : resolvers.forEach(resolver => {
-              resolver.resolve = resolve;
-            });
+        const identifierResolvers = this.asyncResponseResolver[identifier] as {
+          [x: string]: (res?: any) => void;
+        };
+        identifierResolvers[playerId] = resolve;
       }
     });
   }

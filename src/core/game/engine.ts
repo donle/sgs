@@ -115,6 +115,37 @@ export class Sanguosha {
     return character;
   }
 
+  public static getRandomCharacters(
+    numberOfCharacters: number,
+    ...except: CharacterId[]
+  ) {
+    const characterIndex: number[] = [];
+    const availableCharacters = this.characters.filter(
+      character => !except.includes(character.Id),
+    );
+    for (let i = 0; i < availableCharacters.length; i++) {
+      characterIndex.push(i);
+    }
+
+    const selectedCharacterIndex: number[] = [];
+    while (numberOfCharacters > 0) {
+      selectedCharacterIndex.push(
+        characterIndex.splice(
+          Math.floor(Math.random() * numberOfCharacters),
+          1,
+        )[0],
+      );
+
+      numberOfCharacters--;
+    }
+
+    return selectedCharacterIndex.map(index => this.characters[index]);
+  }
+
+  public static getLordCharacters() {
+    return this.characters.filter(character => character.isLord());
+  }
+
   public static isVirtualCardId(cardId: CardId) {
     return typeof cardId === 'string';
   }

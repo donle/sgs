@@ -11,10 +11,10 @@ export class NanManRuQing extends TrickCard {
       cardNumber,
       suit,
       0,
-      'namnaruqing',
-      'namnaruqing_description',
+      'nanmanruqing',
+      'nanmanruqing_description',
       GameCardExtensions.Standard,
-      SkillLoader.getInstance().getSkillByName('namnaruqing'),
+      SkillLoader.getInstance().getSkillByName('nanmanruqing'),
     );
   }
 
