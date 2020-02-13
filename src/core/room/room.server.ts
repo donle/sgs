@@ -345,7 +345,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     //TODO: fill this function
   }
 
-  //TODO: refactor moveCard
   public async moveCard(
     cardId: CardId,
     fromId: PlayerId | undefined,
@@ -354,52 +353,60 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     toArea: PlayerCardsArea,
   ) {
     const from = fromId ? this.getPlayerById(fromId) : undefined;
-    const to = this.getPlayerById(toId);
-
     if (from) {
-      from.dropCards(cardId);
+      this.onLoseCard(from, cardId);
     }
+
+    const to = this.getPlayerById(toId);
 
     const card = Sanguosha.getCardById<EquipCard>(cardId);
     if (toArea === PlayerCardsArea.EquipArea) {
       const lostCardId = to.equip(card);
       lostCardId !== undefined && this.onLoseCard(to, lostCardId);
-
-      await this.Processor.onHandleIncomingEvent(
-        GameEventIdentifiers.CardUseEvent,
-        {
-          translationsMessage: TranslationPack.translationJsonPatcher(
-            '{0} uses card {1}',
-            to.Name,
-            TranslationPack.patchCardInTranslation(cardId),
-          ),
-          fromId: to.Id,
-          toIds: [to.Id],
-          cardId,
-        },
-      );
     } else {
       to.getCardIds(toArea).push(cardId);
-      this.broadcast<GameEventIdentifiers.MoveCardEvent>(
-        GameEventIdentifiers.MoveCardEvent,
-        {
-          translationsMessage: TranslationPack.translationJsonPatcher(
-            '{0} obtains card {1}',
-            to.Name,
-            TranslationPack.patchCardInTranslation(cardId),
+
+      if (toArea === PlayerCardsArea.HandArea) {
+        await this.Processor.onHandleIncomingEvent(
+          GameEventIdentifiers.ObtainCardEvent,
+          EventPacker.createIdentifierEvent(
+            GameEventIdentifiers.ObtainCardEvent,
+            {
+              fromId,
+              toId,
+              cardIds: [cardId],
+              translationsMessage: TranslationPack.translationJsonPatcher(
+                '{0} obtained cards {1}',
+                to.Name,
+                TranslationPack.patchCardInTranslation(cardId),
+              ),
+            },
           ),
-          fromId: from && from.Id,
-          toId: to.Id,
-          fromArea,
-          toArea,
-        },
-      );
+        );
+      } else {
+        this.broadcast<GameEventIdentifiers.MoveCardEvent>(
+          GameEventIdentifiers.MoveCardEvent,
+          {
+            translationsMessage: TranslationPack.translationJsonPatcher(
+              '{0} obtains card {1}',
+              to.Name,
+              TranslationPack.patchCardInTranslation(cardId),
+            ),
+            fromId,
+            toId,
+            fromArea,
+            toArea,
+          },
+        );
+      }
     }
   }
 
   public onLoseCard(player: Player, cardId: CardId) {
     const card = Sanguosha.getCardById(cardId);
     card.Skill.onLoseSkill(player);
+
+    player.dropCards(cardId);
   }
 
   public getCardOwnerId(card: CardId) {
