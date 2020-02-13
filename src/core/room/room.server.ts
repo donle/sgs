@@ -174,28 +174,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           };
           if (skill.isAutoTrigger()) {
             await this.useSkill(triggerSkillEvent);
-            // await this.Processor.onHandleIncomingEvent(
-            //   GameEventIdentifiers.SkillUseEvent,
-            //   triggerSkillEvent,
-            //   async stage => {
-            //     if (stage === SkillUseStage.SkillUsed) {
-            //       return await skill.onTrigger(this, triggerSkillEvent);
-            //     }
-
-            //     return true;
-            //   },
-            // );
-            // await this.Processor.onHandleIncomingEvent(
-            //   GameEventIdentifiers.SkillEffectEvent,
-            //   triggerSkillEvent,
-            //   async stage => {
-            //     if (stage === SkillEffectStage.SkillEffected) {
-            //       return await skill.onEffect(this, triggerSkillEvent);
-            //     }
-
-            //     return true;
-            //   },
-            // );
           } else {
             this.notify(
               GameEventIdentifiers.AskForInvokeEvent,
@@ -313,7 +291,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         drawEvent,
       ),
       async stage => {
-        if (stage === DrawCardStage.CardDrawed) {
+        if (stage === DrawCardStage.CardDrawing) {
           this.getPlayerById(drawEvent.playerId).obtainCardIds(...cardIds);
         }
 

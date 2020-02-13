@@ -451,7 +451,7 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      if (stage === ObtainCardStage.CardObtained) {
+      if (stage === ObtainCardStage.CardObtaining) {
         const to = this.room.getPlayerById(event.toId);
         // to.obtainCardIds(...event.cardIds);
         event.translationsMessage = TranslationPack.translationJsonPatcher(
@@ -477,7 +477,7 @@ export class GameProcessor {
     );
 
     this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      if (stage === DrawCardStage.CardDrawed) {
+      if (stage === DrawCardStage.CardDrawing) {
         const { cardIds, playerId } = event;
         const to = this.room.getPlayerById(playerId);
         //Question?: How about xuyou?
@@ -499,7 +499,7 @@ export class GameProcessor {
     );
 
     this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      if (stage === CardDropStage.CardDropped) {
+      if (stage === CardDropStage.CardDropping) {
         const from = this.room.getPlayerById(event.fromId);
         from.dropCards(...event.cardIds);
         this.room.broadcast(identifier, event);
@@ -532,7 +532,7 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      if (stage === SkillUseStage.SkillUsed) {
+      if (stage === SkillUseStage.SkillUsing) {
         this.room.broadcast(identifier, event);
       }
     });
@@ -543,7 +543,7 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      if (stage === SkillEffectStage.SkillEffected) {
+      if (stage === SkillEffectStage.SkillEffecting) {
         this.room.broadcast(identifier, event);
         const { skillName } = event;
         await Sanguosha.getSkillBySkillName(skillName).onEffect(
@@ -608,7 +608,7 @@ export class GameProcessor {
             return;
           }
         }
-      } else if (stage === CardEffectStage.CardEffect) {
+      } else if (stage === CardEffectStage.CardEffecting) {
         const { cardId } = event;
         if (
           !(await Sanguosha.getCardById(cardId).Skill.onEffect(
@@ -628,7 +628,7 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      if (stage === CardUseStage.CardUsed) {
+      if (stage === CardUseStage.CardUsing) {
         if (
           !(await Sanguosha.getCardById(event.cardId).Skill.onUse(
             this.room,
@@ -651,7 +651,7 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      if (stage === CardResponseStage.CardResponsed) {
+      if (stage === CardResponseStage.CardResponsing) {
         this.room.broadcast(identifier, event);
       }
     });

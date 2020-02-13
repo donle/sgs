@@ -15,7 +15,7 @@ import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
-export class RendeSkill extends ActiveSkill {
+export class Rende extends ActiveSkill {
   constructor() {
     super('rende', 'rende_description');
   }

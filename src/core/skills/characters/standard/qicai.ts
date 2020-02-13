@@ -5,7 +5,7 @@ import { INFINITE_DISTANCE } from 'core/game/game_props';
 import { CompulsorySkill, RulesBreakerSkill } from 'core/skills/skill';
 
 @CompulsorySkill
-export class QiCaiSkill extends RulesBreakerSkill {
+export class QiCai extends RulesBreakerSkill {
   constructor() {
     super('qicai', 'qicai_description');
   }

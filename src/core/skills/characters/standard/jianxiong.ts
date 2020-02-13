@@ -9,7 +9,7 @@ import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
-export class JianXiongSkill extends TriggerSkill {
+export class JianXiong extends TriggerSkill {
   constructor() {
     super('jianxiong', 'jianxiong_description');
   }

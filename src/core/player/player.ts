@@ -1,4 +1,4 @@
-import { EquipCard, RideCard, WeaponCard } from 'core/cards/equip_card';
+import { EquipCard, WeaponCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import {
@@ -6,7 +6,6 @@ import {
   CharacterId,
   CharacterNationality,
 } from 'core/characters/character';
-import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { GameCommonRules } from 'core/game/game_rules';
 import {
@@ -24,10 +23,11 @@ import {
   RulesBreakerSkill,
   Skill,
   SkillType,
+  TransformSkill,
   TriggerSkill,
 } from 'core/skills/skill';
 
-type SkillSytingType =
+type SkillStringType =
   | 'trigger'
   | 'common'
   | 'limit'
@@ -35,7 +35,8 @@ type SkillSytingType =
   | 'complusory'
   | 'active'
   | 'filter'
-  | 'breaker';
+  | 'breaker'
+  | 'transform';
 
 export abstract class Player implements PlayerInfo {
   private hp: number;
@@ -333,7 +334,7 @@ export abstract class Player implements PlayerInfo {
     return GameCommonRules.getCardAdditionalNumberOfTargets(card, this);
   }
 
-  public getEquipSkills<T extends Skill = Skill>(skillType?: SkillSytingType) {
+  public getEquipSkills<T extends Skill = Skill>(skillType?: SkillStringType) {
     if (!this.playerCharacter) {
       throw new Error(
         `Player ${this.playerName} has not been initialized with a character yet`,
@@ -380,8 +381,9 @@ export abstract class Player implements PlayerInfo {
     }
   }
 
+  //TODO: refacter this function
   public getPlayerSkills<T extends Skill = Skill>(
-    skillType?: SkillSytingType,
+    skillType?: SkillStringType,
   ): T[] {
     if (!this.playerCharacter) {
       throw new Error(
@@ -405,6 +407,8 @@ export abstract class Player implements PlayerInfo {
         return skills.filter(
           skill => skill instanceof RulesBreakerSkill,
         ) as T[];
+      case 'transform':
+        return skills.filter(skill => skill instanceof TransformSkill) as T[];
       case 'complusory':
         return skills.filter(
           skill => skill.SkillType === SkillType.Compulsory,
@@ -426,7 +430,7 @@ export abstract class Player implements PlayerInfo {
     }
   }
 
-  public getSkills<T extends Skill = Skill>(skillType?: SkillSytingType): T[] {
+  public getSkills<T extends Skill = Skill>(skillType?: SkillStringType): T[] {
     return [
       ...this.getEquipSkills<T>(skillType),
       ...this.getPlayerSkills<T>(skillType),

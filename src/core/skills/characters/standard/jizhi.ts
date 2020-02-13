@@ -15,7 +15,7 @@ import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
-export class JiZhiSkill extends TriggerSkill {
+export class JiZhi extends TriggerSkill {
   constructor() {
     super('jizhi', 'jizhi_description');
   }
@@ -28,7 +28,7 @@ export class JiZhiSkill extends TriggerSkill {
     event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
     stage: CardUseStage,
   ) {
-    return stage === CardUseStage.CardUsed;
+    return stage === CardUseStage.CardUsing;
   }
 
   public canUse(

@@ -108,13 +108,13 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract get CurrentGameStage(): GameEventStage | undefined;
   public abstract get CurrentPlayer(): Player;
   public abstract get Processor(): GameProcessor;
-  
+
   public abstract async useCard(
     content: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
   ): Promise<void>;
   public abstract async useSkill(
     content: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ): Promise<void>; 
+  ): Promise<void>;
 
   public get AlivePlayers() {
     return this.players.filter(player => !player.Dead);

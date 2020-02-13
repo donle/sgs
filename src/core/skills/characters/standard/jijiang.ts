@@ -21,7 +21,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
 @LordSkill
-export class JiJiangSkill extends ActiveSkill {
+export class JiJiang extends ActiveSkill {
   constructor() {
     super('jijiang', 'jijiang_description');
   }
@@ -117,7 +117,7 @@ export class JiJiangSkill extends ActiveSkill {
 @CommonSkill
 @ShadowSkill
 @LordSkill
-export class JiJiangShadowSkill extends ResponsiveSkill {
+export class JiJiangShadow extends ResponsiveSkill {
   constructor() {
     super('jijiang', 'jijiang_description');
   }

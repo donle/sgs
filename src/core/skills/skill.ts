@@ -208,7 +208,7 @@ export abstract class Skill {
     toPhase: PlayerPhase,
     room: Room,
     owner: PlayerId,
-  // tslint:disable-next-line: no-empty
+    // tslint:disable-next-line: no-empty
   ) {}
 
   public get Description() {
@@ -313,11 +313,24 @@ export abstract class ActiveSkill extends Skill {
   }
 }
 
-export abstract class ViewAsSkill extends Skill {
+export abstract class TransformSkill extends Skill {
   public canUse() {
+    return true;
+  }
+  public isRefreshAt() {
     return false;
   }
+  public async onEffect() {
+    return true;
+  }
+  public async onUse() {
+    return true;
+  }
 
+  public abstract forceToTransformCardTo(cardId: CardId): VirtualCard | Card;
+}
+
+export abstract class ViewAsSkill extends Skill {
   public isRefreshAt() {
     return false;
   }
@@ -420,7 +433,7 @@ export abstract class ViewAsSkill extends Skill {
     >;
 
     const identifier = EventPacker.getIdentifier(cardUseEvent);
-    const card: VirtualCard<Card> = Sanguosha.getCardById(cardUseEvent.cardId);
+    const card: VirtualCard = Sanguosha.getCardById(cardUseEvent.cardId);
     if (!card.isVirtualCard() || identifier === undefined) {
       throw new Error(`Invalid view as virtual card in ${this.name}`);
     }

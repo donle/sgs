@@ -60,7 +60,7 @@ export class Sanguosha {
   public static getVirtualCardById<T extends Card>(
     cardId: VirtualCardId,
   ): VirtualCard<T> {
-    return VirtualCard.parseId<T>(cardId);
+    return VirtualCard.parseId(cardId) as VirtualCard<T>;
   }
   public static getCardById<T extends Card>(cardId: CardId): T {
     this.tryToThrowUninitializedError();

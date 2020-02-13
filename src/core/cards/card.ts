@@ -118,7 +118,7 @@ export const enum EquipCardCategory {
 }
 
 //TODO: override isBlack and isRed
-export class VirtualCard<T extends Card> extends Card {
+export class VirtualCard<T extends Card = Card> extends Card {
   private viewAs: T;
   protected name: string;
   protected generalName: string;
@@ -134,7 +134,7 @@ export class VirtualCard<T extends Card> extends Card {
 
   constructor(
     viewAsCardName: string,
-    private cardIds: RealCardId[],
+    private cardIds: CardId[],
     skill?: Skill,
   ) {
     super();
@@ -160,25 +160,25 @@ export class VirtualCard<T extends Card> extends Card {
     }
   }
 
-  public static parseId<T extends Card>(cardId: VirtualCardId) {
+  public static parseId(cardId: VirtualCardId) {
     const parsedId = JSON.parse(cardId) as VirtualCardIdProps;
     const skill =
       parsedId.skillName !== undefined
         ? Sanguosha.getSkillBySkillName(parsedId.skillName)
         : undefined;
-    return VirtualCard.create<T>(
+    return VirtualCard.create(
       parsedId.name,
       parsedId.containedCardIds,
       skill,
     );
   }
 
-  public static create<T extends Card>(
+  public static create(
     viewAsCardName: string,
-    cardIds: RealCardId[] = [],
+    cardIds: CardId[] = [],
     skill?: Skill,
   ) {
-    return new VirtualCard<T>(viewAsCardName, cardIds, skill);
+    return new VirtualCard(viewAsCardName, cardIds, skill);
   }
 
   public get Id(): VirtualCardId {

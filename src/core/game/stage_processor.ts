@@ -153,32 +153,32 @@ const gameEventStageList: {
 } = {
   [GameEventIdentifiers.GameStartEvent]: [
     GameStartStage.BeforeGameStart,
-    GameStartStage.GameStarted,
+    GameStartStage.GameStarting,
     GameStartStage.AfterGameStarted,
   ],
   [GameEventIdentifiers.CardUseEvent]: [
     CardUseStage.BeforeCardUseEffect,
-    CardUseStage.CardUsed,
+    CardUseStage.CardUsing,
     CardUseStage.AfterCardUseEffect,
   ],
   [GameEventIdentifiers.CardEffectEvent]: [
-    CardUseStage.BeforeCardUseEffect,
-    CardUseStage.CardUsed,
-    CardUseStage.AfterCardUseEffect,
+    CardEffectStage.BeforeCardEffect,
+    CardEffectStage.CardEffecting,
+    CardEffectStage.AfterCardEffect,
   ],
   [GameEventIdentifiers.CardResponseEvent]: [
     CardResponseStage.BeforeCardResponseEffect,
-    CardResponseStage.CardResponsed,
+    CardResponseStage.CardResponsing,
     CardResponseStage.AfterCardResponseEffect,
   ],
   [GameEventIdentifiers.DrawCardEvent]: [
     DrawCardStage.BeforeDrawCardEffect,
-    DrawCardStage.CardDrawed,
+    DrawCardStage.CardDrawing,
     DrawCardStage.AfterDrawCardEffect,
   ],
   [GameEventIdentifiers.CardDropEvent]: [
     CardDropStage.BeforeCardDropEffect,
-    CardDropStage.CardDropped,
+    CardDropStage.CardDropping,
     CardDropStage.AfterCardDropEffect,
   ],
   [GameEventIdentifiers.DamageEvent]: [
@@ -204,27 +204,27 @@ const gameEventStageList: {
   ],
   [GameEventIdentifiers.SkillUseEvent]: [
     SkillUseStage.BeforeSkillUse,
-    SkillUseStage.SkillUsed,
+    SkillUseStage.SkillUsing,
     SkillUseStage.AfterSkillUsed,
   ],
   [GameEventIdentifiers.SkillEffectEvent]: [
     SkillEffectStage.BeforeSkillEffect,
-    SkillEffectStage.SkillEffected,
+    SkillEffectStage.SkillEffecting,
     SkillEffectStage.AfterSkillEffected,
   ],
   [GameEventIdentifiers.RecoverEvent]: [
     RecoverEffectStage.BeforeRecoverEffect,
-    RecoverEffectStage.RecoverEffect,
+    RecoverEffectStage.RecoverEffecting,
     RecoverEffectStage.AfterRecoverEffect,
   ],
   [GameEventIdentifiers.DrawCardEvent]: [
     DrawCardStage.BeforeDrawCardEffect,
-    DrawCardStage.CardDrawed,
+    DrawCardStage.CardDrawing,
     DrawCardStage.AfterDrawCardEffect,
   ],
   [GameEventIdentifiers.ObtainCardEvent]: [
     ObtainCardStage.BeforeObtainCardEffect,
-    ObtainCardStage.CardObtained,
+    ObtainCardStage.CardObtaining,
     ObtainCardStage.AfterObtainCardEffect,
   ],
   [GameEventIdentifiers.PinDianEvent]: [
@@ -253,7 +253,7 @@ export const enum PhaseChangeStage {
 
 export const enum GameStartStage {
   BeforeGameStart,
-  GameStarted,
+  GameStarting,
   AfterGameStarted,
 }
 
@@ -266,37 +266,37 @@ export const enum AimStage {
 
 export const enum CardUseStage {
   BeforeCardUseEffect,
-  CardUsed,
+  CardUsing,
   AfterCardUseEffect,
 }
 
 export const enum CardEffectStage {
   BeforeCardEffect,
-  CardEffect,
+  CardEffecting,
   AfterCardEffect,
 }
 
 export const enum CardResponseStage {
   BeforeCardResponseEffect,
-  CardResponsed,
+  CardResponsing,
   AfterCardResponseEffect,
 }
 
 export const enum DrawCardStage {
   BeforeDrawCardEffect,
-  CardDrawed,
+  CardDrawing,
   AfterDrawCardEffect,
 }
 
 export const enum ObtainCardStage {
   BeforeObtainCardEffect,
-  CardObtained,
+  CardObtaining,
   AfterObtainCardEffect,
 }
 
 export const enum CardDropStage {
   BeforeCardDropEffect,
-  CardDropped,
+  CardDropping,
   AfterCardDropEffect,
 }
 
@@ -332,18 +332,18 @@ export const enum PlayerDiedStage {
 
 export const enum SkillUseStage {
   BeforeSkillUse,
-  SkillUsed,
+  SkillUsing,
   AfterSkillUsed,
 }
 export const enum SkillEffectStage {
   BeforeSkillEffect,
-  SkillEffected,
+  SkillEffecting,
   AfterSkillEffected,
 }
 
 export const enum RecoverEffectStage {
   BeforeRecoverEffect,
-  RecoverEffect,
+  RecoverEffecting,
   AfterRecoverEffect,
 }
 
@@ -458,7 +458,7 @@ export class StageProcessor {
   public getGameStartStage() {
     return [
       GameStartStage.BeforeGameStart,
-      GameStartStage.GameStarted,
+      GameStartStage.GameStarting,
       GameStartStage.AfterGameStarted,
     ];
   }

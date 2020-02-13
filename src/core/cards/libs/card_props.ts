@@ -27,5 +27,5 @@ export type CardChoosingOptions = {
 export type VirtualCardIdProps = {
   name: string;
   skillName?: string;
-  containedCardIds: RealCardId[];
+  containedCardIds: CardId[];
 };
