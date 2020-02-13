@@ -10,6 +10,7 @@ import {
   HostConfigProps,
 } from 'core/shares/types/host_config';
 import { LobbySocketEvent, RoomInfo } from 'core/shares/types/server_types';
+import { Translation } from 'core/translations/translation_json_tool';
 import * as http from 'http';
 import * as https from 'https';
 import * as os from 'os';
@@ -22,6 +23,7 @@ class App {
   private rooms: ServerRoom[] = [];
   private roomsPathList: string[] = [];
   private config: HostConfigProps;
+  private translator: Translation;
 
   private lobbySocket: SocketIO.Server;
   constructor(mode: DevMode) {
@@ -51,15 +53,14 @@ class App {
     });
   }
 
-  private async log(language: Languages) {
-    const translationDictionary = getLanguageDictionary(language);
+  private async log() {
     // tslint:disable-next-line: no-console
     console.info(
-      `----- ${translationDictionary['Sanguosha Server Launched']} -----`,
+      `----- ${this.translator.tr('Sanguosha Server Launched')} -----`,
     );
     // tslint:disable-next-line: no-console
     console.info(
-      `----- ${translationDictionary['Server Address']}: ${
+      `----- ${this.translator.tr('Server Address')}: ${
         this.config.protocal
       }://${
         this.config.mode === DevMode.Dev
@@ -69,13 +70,20 @@ class App {
     );
     // tslint:disable-next-line: no-console
     console.info(
-      `----- ${translationDictionary['Core Version']}: ${Sanguosha.Version} -----`,
+      `----- ${this.translator.tr('Core Version')}: ${Sanguosha.Version} -----`,
     );
   }
 
+  private loadLanguages(language: Languages) {
+    const dictionary = getLanguageDictionary(language);
+    this.translator = Translation.setup(dictionary);
+  }
+
   public start(config: ServerConfig) {
+    this.loadLanguages(config.language);
+
     Sanguosha.initialize();
-    this.log(config.language);
+    this.log();
 
     this.lobbySocket.on('connection', socket => {
       socket

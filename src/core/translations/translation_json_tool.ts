@@ -1,5 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
+import { Languages } from 'server/languages';
 
 const translationObjectSign = '@@translate:';
 
@@ -19,6 +20,26 @@ type TranslationsDictionary = {
 type EmojiOrImageTranslationDictionary = {
   [k: string]: string;
 };
+
+type TranslationDictionary = {
+  [K: string]: string;
+};
+
+export class Translation {
+  private constructor(private readonly dictionary?: TranslationDictionary) {}
+
+  public static setup(dictionary?: TranslationDictionary) {
+    return new Translation(dictionary);
+  }
+
+  public tr(rawText: string) {
+    if (this.dictionary && this.dictionary[rawText]) {
+      return this.dictionary[rawText];
+    }
+
+    return rawText;
+  }
+}
 
 export class TranslationPack {
   private constructor(private translationJon: PatchedTranslationObject) {}
