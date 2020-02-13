@@ -241,6 +241,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       | ServerEventFinder<GameEventIdentifiers.AimEvent>
       | undefined = content.toIds
       ? {
+          fromId: content.fromId,
           byCardId: content.cardId,
           toIds: content.toIds,
         }

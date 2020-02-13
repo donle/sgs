@@ -96,10 +96,15 @@ export class GameCommonRules {
     );
   }
 
-  public static addAvailableHoldCardNumber(user: Player, addedNumber: number) {
+  public static addAdditionalHoldCardNumber(user: Player, addedNumber: number) {
     GameCommonRules.preCheck(user);
 
     this.userRules[user.Id].additionalHold += addedNumber;
+  }
+  public static getAdditionalHoldCardNumber(user: Player) {
+    GameCommonRules.preCheck(user);
+
+    return this.userRules[user.Id].additionalHold;
   }
 
   public static addCardUsableTimes(

@@ -30,6 +30,7 @@ export interface ServerEvent extends EventUtilities {
     toCardIds?: CardId[];
   };
   [GameEventIdentifiers.AimEvent]: {
+    fromId: string;
     bySkill?: string;
     byCardId?: CardId;
     toIds: PlayerId[];
@@ -168,6 +169,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.AskForCardDropEvent]: {
     fromArea: [PlayerCardsArea];
     cardAmount: number;
+    toId: PlayerId;
   };
   [GameEventIdentifiers.AskForChooseCharacterEvent]: {
     characterIds: CharacterId[];
@@ -199,6 +201,9 @@ export interface ServerEvent extends EventUtilities {
     fromPlayer: PlayerId | undefined;
     toPlayer: PlayerId;
   };
+  [GameEventIdentifiers.AskForPlayCardsOrSkillsEvent]: {
+    fromId: PlayerId;
+  }
 }
 
 export type PinDianResultType = {

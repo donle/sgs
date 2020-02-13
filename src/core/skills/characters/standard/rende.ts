@@ -77,12 +77,12 @@ export class RendeSkill extends ActiveSkill {
       from.getInvisibleMark(this.name) >= 2 &&
       from.getInvisibleMark(this.name + '-used') === 0
     ) {
+      //TODO: add wine afterwards
       const options = ['peach'];
       if (from.canUseCard(room, new CardMatcher({ name: ['slash'] }))) {
         options.push('slash');
         options.push('fire_slash');
         options.push('thunder_slash');
-        //TODO: add wine afterwards
       }
 
       const chooseEvent = EventPacker.createIdentifierEvent(

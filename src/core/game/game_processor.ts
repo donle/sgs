@@ -34,6 +34,7 @@ import {
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ServerRoom } from '../room/room.server';
 import { Sanguosha } from './engine';
+import { GameCommonRules } from './game_rules';
 
 export class GameProcessor {
   private playerPositionIndex = -1;
@@ -176,13 +177,94 @@ export class GameProcessor {
           };
           await judgeCard.Skill.onEffect(this.room, cardEffectEvent);
         }
+        return;
       case PlayerPhase.DrawCardStage:
         await this.room.drawCards(2, this.CurrentPlayer.Id);
         return;
       case PlayerPhase.PlayCardStage:
-      //TODO: need to implement
+        this.room.notify(
+          GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
+          EventPacker.createIdentifierEvent(
+            GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
+            {
+              fromId: this.CurrentPlayer.Id,
+            },
+          ),
+          this.CurrentPlayer.Id,
+        );
+
+        let response:
+          | ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent>
+          | undefined;
+
+        do {
+          this.room.notify(
+            GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
+            EventPacker.createIdentifierEvent(
+              GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
+              {
+                fromId: this.CurrentPlayer.Id,
+              },
+            ),
+            this.CurrentPlayer.Id,
+          );
+          response = await this.room.onReceivingAsyncReponseFrom(
+            GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
+            this.CurrentPlayer.Id,
+          );
+
+          if (response.end) {
+            break;
+          }
+
+          const identifier = EventPacker.getIdentifier(response);
+          if (identifier === GameEventIdentifiers.CardUseEvent) {
+            const event = response.event as ClientEventFinder<
+              GameEventIdentifiers.CardUseEvent
+            >;
+            await this.room.useCard(event);
+          } else {
+            const event = response.event as ClientEventFinder<
+              GameEventIdentifiers.SkillUseEvent
+            >;
+            await this.room.useSkill(event);
+          }
+        } while (true);
+        return;
       case PlayerPhase.DropCardStage:
-      //TODO: need to implement
+        const maxCardHold =
+          this.CurrentPlayer.MaxHp +
+          GameCommonRules.getAdditionalHoldCardNumber(this.CurrentPlayer);
+        const discardAmount =
+          this.CurrentPlayer.getCardIds(PlayerCardsArea.HandArea).length -
+          maxCardHold;
+
+        if (discardAmount > 0) {
+          const dropCardsEvent = EventPacker.createIdentifierEvent(
+            GameEventIdentifiers.AskForCardDropEvent,
+            {
+              cardAmount: discardAmount,
+              fromArea: [PlayerCardsArea.HandArea],
+              toId: this.CurrentPlayer.Id,
+            },
+          );
+          this.room.notify(
+            GameEventIdentifiers.AskForCardDropEvent,
+            EventPacker.createUncancellableEvent<
+              GameEventIdentifiers.AskForCardDropEvent
+            >(dropCardsEvent),
+            this.CurrentPlayer.Id,
+          );
+
+          const response = await this.room.onReceivingAsyncReponseFrom(
+            GameEventIdentifiers.AskForCardDropEvent,
+            this.CurrentPlayer.Id,
+          );
+
+          await this.room.dropCards(response.droppedCards, response.fromId);
+        }
+
+        return;
       default:
         return;
     }
@@ -477,6 +559,13 @@ export class GameProcessor {
     event: EventPicker<GameEventIdentifiers.AimEvent, WorkPlace.Server>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
+    if (event.byCardId !== undefined) {
+      const user = this.room.getPlayerById(event.fromId);
+      event.toIds = event.toIds.filter(to =>
+        user.canUseCardTo(this.room, event.byCardId!, to),
+      );
+    }
+
     this.iterateEachStage(identifier, event, onActualExecuted);
   }
 

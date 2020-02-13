@@ -13,6 +13,7 @@ import { LobbySocketEvent, RoomInfo } from 'core/shares/types/server_types';
 import * as http from 'http';
 import * as https from 'https';
 import { AddressInfo } from 'net';
+import * as os from 'os';
 import SocketIO from 'socket.io';
 
 class App {
@@ -33,13 +34,22 @@ class App {
     this.server.listen(this.config.port);
   }
 
+  private getLocalExternalIP() {
+    const { networkInterfaces } = os;
+
+    return ([] as os.NetworkInterfaceInfo[])
+      .concat(...Object.values(networkInterfaces()))
+      .filter(details => details.family === 'IPv4' && !details.internal)
+      .pop()!.address;
+  }
+
   private log() {
     const address = this.server.address() as AddressInfo;
     // tslint:disable-next-line: no-console
     console.info('----- Sanguosha server started -----');
     // tslint:disable-next-line: no-console
     console.info(
-      `----- ${address.family}: ${address.address}:${address.port} -----`,
+      `----- ${this.config.protocal}://${this.getLocalExternalIP()}:${this.config.port} -----`,
     );
     // tslint:disable-next-line: no-console
     console.info(`----- core version: ${Sanguosha.Version} -----`);

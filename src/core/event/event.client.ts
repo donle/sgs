@@ -2,11 +2,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { CharacterId } from 'core/characters/character';
 import { DamageType } from 'core/game/game_props';
 import { PlayerId, PlayerInfo } from 'core/player/player_props';
-import {
-  EventUtilities,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from './event';
+import { EventUtilities, GameEventIdentifiers } from './event';
 
 export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.CardUseEvent]: {
@@ -128,11 +124,21 @@ export interface ClientEvent extends EventUtilities {
     fromId: PlayerId;
   };
   [GameEventIdentifiers.AskForCardDisplayEvent]: {};
-  [GameEventIdentifiers.AskForCardDropEvent]: {};
+  [GameEventIdentifiers.AskForCardDropEvent]: {
+    droppedCards: CardId[];
+    fromId: PlayerId;
+  };
   [GameEventIdentifiers.AskForChooseCharacterEvent]: {
     chosenCharacter: CharacterId;
     fromId: PlayerId;
     isGameStart?: boolean;
   };
   [GameEventIdentifiers.AskForPlaceCardsInDileEvent]: {};
+  [GameEventIdentifiers.AskForPlayCardsOrSkillsEvent]: {
+    fromId: PlayerId;
+    end?: boolean;
+    event?:
+      | ClientEvent[GameEventIdentifiers.SkillUseEvent]
+      | ClientEvent[GameEventIdentifiers.CardUseEvent];
+  };
 }

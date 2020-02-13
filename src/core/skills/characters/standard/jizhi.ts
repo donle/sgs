@@ -91,7 +91,7 @@ export class JiZhiSkill extends TriggerSkill {
       if (response.selectedOption === 'discard') {
         await room.dropCards([cardId], event.fromId);
         const player = room.getPlayerById(event.fromId);
-        GameCommonRules.addAvailableHoldCardNumber(player, 1);
+        GameCommonRules.addAdditionalHoldCardNumber(player, 1);
         player.addInvisibleMark(this.name, 1);
       }
     }
@@ -108,7 +108,7 @@ export class JiZhiSkill extends TriggerSkill {
     if (fromPhase === PlayerPhase.FinishStage) {
       const player = room.getPlayerById(owner);
       const extraHold = player.getInvisibleMark(this.name);
-      GameCommonRules.addAvailableHoldCardNumber(player, -extraHold);
+      GameCommonRules.addAdditionalHoldCardNumber(player, -extraHold);
     }
   }
 }

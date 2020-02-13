@@ -47,18 +47,7 @@ export class JiJiangSkill extends ActiveSkill {
   }
 
   isAvailableTarget(room: Room, targetId: PlayerId): boolean {
-    return (
-      room.CurrentPlayer.AttackDistance -
-        room.getPlayerById(targetId).getDefenseDistance() >=
-        0 &&
-      room.CurrentPlayer.canUseCardTo(
-        room,
-        new CardMatcher({
-          name: ['slash'],
-        }),
-        targetId,
-      )
-    );
+    return room.canAttack(room.CurrentPlayer, room.getPlayerById(targetId));
   }
 
   isAvailableCard(room: Room, cardId: CardId): boolean {
