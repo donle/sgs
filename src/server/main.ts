@@ -26,7 +26,6 @@ class App {
   private lobbySocket: SocketIO.Server;
   constructor(mode: DevMode) {
     this.config = hostConfig[mode];
-    //TODO: to use https on prod in the future.
     this.server = http.createServer();
     this.lobbySocket = SocketIO.listen(this.server, {
       path: '/lobby',
@@ -44,7 +43,15 @@ class App {
       .pop()!.address;
   }
 
-  private log(language: Languages) {
+  private async getPublicExternalIp() {
+    return await new Promise(resolve => {
+      http.get('http://bot.whatismyipaddress.com/', res => {
+        res.on('data', ip => resolve(ip));
+      });
+    });
+  }
+
+  private async log(language: Languages) {
     const translationDictionary = getLanguageDictionary(language);
     // tslint:disable-next-line: no-console
     console.info(
@@ -54,7 +61,11 @@ class App {
     console.info(
       `----- ${translationDictionary['Server Address']}: ${
         this.config.protocal
-      }://${this.getLocalExternalIP()}:${this.config.port} -----`,
+      }://${
+        this.config.mode === DevMode.Dev
+          ? this.getLocalExternalIP()
+          : await this.getPublicExternalIp()
+      }:${this.config.port} -----`,
     );
     // tslint:disable-next-line: no-console
     console.info(

@@ -117,7 +117,6 @@ export const enum EquipCardCategory {
   OffenseRide,
 }
 
-//TODO: override isBlack and isRed
 export class VirtualCard<T extends Card = Card> extends Card {
   private viewAs: T;
   protected name: string;

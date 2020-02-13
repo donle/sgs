@@ -12,6 +12,15 @@ export class Sanguosha {
   private static skills: Skill[];
   private static cards: Card[];
   private static characters: Character[];
+  private static version: string;
+
+  private static parseCoreVersion() {
+    Sanguosha.version = coreVersion;
+    const [major,,] = coreVersion.split('.');
+    if (major === '0') {
+      Sanguosha.version += ' Alpha';
+    }
+  }
 
   private static tryToThrowUninitializedError() {
     if (
@@ -27,6 +36,7 @@ export class Sanguosha {
     Sanguosha.skills = SkillLoader.getInstance().getAllSkills();
     Sanguosha.cards = CardLoader.getInstance().getAllCards();
     Sanguosha.characters = CharacterLoader.getInstance().getAllCharacters();
+    Sanguosha.parseCoreVersion();
   }
 
   public static loadCards(...cards: GameCardExtensions[]) {
@@ -151,6 +161,6 @@ export class Sanguosha {
   }
 
   public static get Version() {
-    return coreVersion;
+    return Sanguosha.version;
   }
 }

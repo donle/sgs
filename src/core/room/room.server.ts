@@ -22,10 +22,11 @@ import { CardId } from 'core/cards/libs/card_props';
 import { Character } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { GameInfo, getRoles } from 'core/game/game_props';
+import { GameCommonRules } from 'core/game/game_rules';
 import { CardLoader } from 'core/game/package_loader/loader.cards';
 import { CharacterLoader } from 'core/game/package_loader/loader.characters';
 import { RoomInfo } from 'core/shares/types/server_types';
-import { FilterSkill, TriggerSkill } from 'core/skills/skill';
+import { TriggerSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { GameProcessor } from '../game/game_processor';
@@ -84,8 +85,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   // @@TODO: TBA here
-  public gameStart() {
+  public async gameStart() {
     this.gameStarted = true;
+
+    await this.gameProcessor.gameStart(this);
   }
 
   public createPlayer(playerInfo: PlayerInfo) {
@@ -417,22 +420,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
   }
 
-  public isAvailableTarget(
-    cardId: CardId,
-    attacker: PlayerId,
-    target: PlayerId,
-  ) {
-    for (const skill of this.getPlayerById(target).getSkills<FilterSkill>(
-      'filter',
-    )) {
-      if (!skill.canBeUsedCard(cardId, this, target, attacker)) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
   public get RoomId() {
     return this.roomId;
   }
@@ -445,6 +432,18 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       packages: this.gameInfo.characterExtensions,
       status: this.gameStarted ? 'playing' : 'waiting',
     };
+  }
+
+  public syncGameCommonRules(
+    playerId: PlayerId,
+    updateActions: (user: Player) => void,
+  ) {
+    updateActions(this.getPlayerById(playerId));
+
+    this.broadcast(GameEventIdentifiers.SyncGameCommonRulesEvent, {
+      toId: playerId,
+      commonRules: GameCommonRules.toSocketObject(this.getPlayerById(playerId)),
+    });
   }
 
   public assignRoles(): PlayerInfo[] {
@@ -494,10 +493,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public get CurrentPlayerStage() {
     return this.gameProcessor.CurrentPlayerPhase;
-  }
-
-  public get CurrentGameStage() {
-    return this.gameProcessor.CurrentGameStage;
   }
 
   public get CurrentPlayer(): Player {

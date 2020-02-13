@@ -108,12 +108,8 @@ export class Hujia extends TriggerSkill {
             },
           );
 
-          await room.Processor.onHandleIncomingEvent(
-            eventIdentifier,
-            cardUseEvent,
-          );
-
-          return false;
+          await room.useCard(cardUseEvent);
+          return !EventPacker.isTerminated(cardUseEvent);
         }
       }
     }

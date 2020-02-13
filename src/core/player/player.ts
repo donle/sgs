@@ -44,6 +44,7 @@ export abstract class Player implements PlayerInfo {
   private dead: boolean;
   private chainLocked: boolean = false;
   private turnedOver: boolean = false;
+  private playerSkills: Skill[] = [];
 
   protected abstract playerId: PlayerId;
   protected abstract playerName: string;
@@ -335,12 +336,6 @@ export abstract class Player implements PlayerInfo {
   }
 
   public getEquipSkills<T extends Skill = Skill>(skillType?: SkillStringType) {
-    if (!this.playerCharacter) {
-      throw new Error(
-        `Player ${this.playerName} has not been initialized with a character yet`,
-      );
-    }
-
     const equipCards = this.playerCards[PlayerCardsArea.EquipArea].map(card =>
       Sanguosha.getCardById(card),
     );
@@ -381,7 +376,6 @@ export abstract class Player implements PlayerInfo {
     }
   }
 
-  //TODO: refacter this function
   public getPlayerSkills<T extends Skill = Skill>(
     skillType?: SkillStringType,
   ): T[] {
@@ -501,13 +495,6 @@ export abstract class Player implements PlayerInfo {
       throw new Error('No player character id initialized');
     }
     return this.playerCharacterId;
-  }
-
-  public get Character() {
-    if (this.playerCharacter === undefined) {
-      throw new Error('No player character initialized');
-    }
-    return this.playerCharacter;
   }
 
   public get Id() {

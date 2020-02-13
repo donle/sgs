@@ -1,3 +1,4 @@
+import { CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
 import { PlayerRole } from 'core/player/player_props';
 
 export const INFINITE_TRIGGERING_TIMES = 1000;
@@ -40,6 +41,19 @@ export type FinalPlayersData = {
   playerRole: PlayerRole;
   playerDead: boolean;
 }[];
+
+export type GameCommonRuleObject = {
+  cards: {
+    cardMatcher: CardMatcherSocketPassenger;
+    additionalTargets: number;
+    additionalUsableTimes: number;
+    additionalUsableDistance: number;
+  }[];
+  additionalOffenseDistance: number;
+  additionalDefenseDistance: number;
+  additionalHold: number; // server only
+  additionalAttackDistance: number;
+};
 
 export function getRoles(totalPlayers: number): PlayerRole[] {
   switch (totalPlayers) {

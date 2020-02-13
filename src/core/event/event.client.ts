@@ -141,4 +141,5 @@ export interface ClientEvent extends EventUtilities {
       | ClientEvent[GameEventIdentifiers.SkillUseEvent]
       | ClientEvent[GameEventIdentifiers.CardUseEvent];
   };
+  [GameEventIdentifiers.SyncGameCommonRulesEvent]: never;
 }

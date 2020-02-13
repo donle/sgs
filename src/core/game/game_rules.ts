@@ -3,7 +3,7 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { RulesBreakerSkill } from 'core/skills/skill';
-import { INFINITE_TRIGGERING_TIMES } from './game_props';
+import { GameCommonRuleObject, INFINITE_TRIGGERING_TIMES } from './game_props';
 
 export class GameCommonRules {
   private constructor() {}
@@ -247,5 +247,44 @@ export class GameCommonRules {
     });
 
     return distance;
+  }
+
+  public static toSocketObject(user: Player): GameCommonRuleObject {
+    GameCommonRules.preCheck(user);
+
+    const rule = GameCommonRules.userRules[user.Id];
+    const cardRules = rule.cards.map(cardRule => {
+      return {
+        ...cardRule,
+        cardMatcher: cardRule.cardMatcher.toSocketPassenger(),
+      };
+    });
+
+    return {
+      ...rule,
+      cards: cardRules,
+    };
+  }
+
+  public static syncSocketObject(
+    user: Player,
+    ruleObject: GameCommonRuleObject,
+  ) {
+    if (GameCommonRules.userRules[user.Id] === undefined) {
+      GameCommonRules.initPlayerCommonRules(user);
+    }
+
+    const rule = GameCommonRules.userRules[user.Id];
+    rule.additionalAttackDistance = ruleObject.additionalAttackDistance;
+    rule.additionalDefenseDistance = ruleObject.additionalDefenseDistance;
+    rule.additionalHold = ruleObject.additionalHold;
+    rule.additionalOffenseDistance = ruleObject.additionalOffenseDistance;
+
+    rule.cards = ruleObject.cards.map(cardRule => {
+      return {
+        ...cardRule,
+        cardMatcher: new CardMatcher(cardRule.cardMatcher),
+      };
+    });
   }
 }

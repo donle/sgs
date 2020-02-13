@@ -50,6 +50,7 @@ export type RoomEventFinder<T extends RoomEvent> = RoomEventUtilities[T];
 export const enum GameEventIdentifiers {
   UserMessageEvent,
   PhaseChangeEvent,
+  SyncGameCommonRulesEvent,
 
   CardDropEvent,
   CardResponseEvent,

@@ -70,11 +70,12 @@ export class GameProcessor {
       lordInfo.Id,
     );
 
-    const response = await this.room.onReceivingAsyncReponseFrom(
+    const lordResponse = await this.room.onReceivingAsyncReponseFrom(
       GameEventIdentifiers.AskForChooseCharacterEvent,
       lordInfo.Id,
     );
-    lordInfo.CharacterId = response.chosenCharacter;
+    this.room.getPlayerById(lordInfo.Id).CharacterId = lordResponse.chosenCharacter;
+    lordInfo.CharacterId = lordResponse.chosenCharacter;
 
     const characters = Sanguosha.getRandomCharacters(
       playersInfo.length - 1,
@@ -115,6 +116,7 @@ export class GameProcessor {
         throw new Error('Unexpected player id received');
       }
 
+      this.room.getPlayerById(player.Id).CharacterId = response.chosenCharacter;
       player.CharacterId = response.chosenCharacter;
     }
   }
@@ -580,10 +582,22 @@ export class GameProcessor {
           this.CurrentPlayer.Id,
           true,
         )) {
-          const wuxiekejiEvent: ServerEventFinder<GameEventIdentifiers.AskForWuXieKeJiEvent> = {
-            fromId: event.fromId,
-            cardId: event.cardId,
-          };
+          const wuxiekejiEvent = EventPacker.createIdentifierEvent(
+            GameEventIdentifiers.AskForWuXieKeJiEvent,
+            {
+              fromId: event.fromId,
+              cardId: event.cardId,
+              cardUserId: event.fromId,
+              translationsMessage: TranslationPack.translationJsonPatcher(
+                'do you wanna use {0} for {1}' + event.fromId
+                  ? ' from {2}'
+                  : '',
+                'wuxiekeji',
+                TranslationPack.patchCardInTranslation(event.cardId),
+                event.fromId ? this.room.getPlayerById(event.fromId).Name : '',
+              ),
+            },
+          );
           this.room.notify(
             GameEventIdentifiers.AskForWuXieKeJiEvent,
             wuxiekejiEvent,
@@ -605,6 +619,10 @@ export class GameProcessor {
               },
             );
             await this.room.useCard(cardUseEvent);
+            if (!EventPacker.isTerminated(cardUseEvent)) {
+              EventPacker.terminate(event);
+            }
+
             return;
           }
         }

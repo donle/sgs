@@ -5,5 +5,5 @@ export type ServerConfig = {
 };
 
 export const serverConfig: ServerConfig = {
-  language: Languages.EN_AU,
+  language: Languages.ZH_CN,
 };

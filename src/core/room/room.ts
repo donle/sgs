@@ -12,11 +12,8 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { GameInfo } from 'core/game/game_props';
-import {
-  AllStage,
-  GameEventStage,
-  PlayerPhase,
-} from 'core/game/stage_processor';
+import { AllStage, PlayerPhase } from 'core/game/stage_processor';
+import { FilterSkill } from 'core/skills/skill';
 import { GameProcessor } from '../game/game_processor';
 
 export type RoomId = number;
@@ -33,6 +30,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   protected abstract init(): void;
 
+  //Server only
   public abstract notify<I extends GameEventIdentifiers>(
     type: I,
     content: EventPicker<I, T>,
@@ -43,23 +41,28 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     content: EventPicker<typeof type, WorkPlace>,
   ): void;
 
+  //Server only
   public abstract getCards(
     numberOfCards: number,
     from: 'top' | 'bottom',
   ): CardId[];
+  //Server only
   public abstract async drawCards(
     numberOfCards: number,
     player?: PlayerId,
     from?: 'top' | 'bottom',
   ): Promise<CardId[]>;
+  //Server only
   public abstract async dropCards(
     cardIds: CardId[],
     player?: PlayerId,
   ): Promise<void>;
+  //Server only
   public abstract async obtainCards(
     cardIds: CardId[],
     to: PlayerId,
   ): Promise<void>;
+  //Server only
   public abstract async moveCard(
     cardId: CardId,
     from: PlayerId | undefined,
@@ -67,6 +70,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     fromArea: PlayerCardsArea | undefined,
     toArea: PlayerCardsArea,
   ): Promise<void>;
+  //Server only
   public abstract async moveCards(
     cardIds: CardId[],
     from: PlayerId | undefined,
@@ -74,16 +78,14 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     fromArea: PlayerCardsArea | undefined,
     toArea: PlayerCardsArea,
   ): Promise<void>;
-  public abstract isAvailableTarget(
-    cardId: CardId,
-    attacker: PlayerId,
-    target: PlayerId,
-  ): boolean;
+  //Server only
   public abstract async onReceivingAsyncReponseFrom<
     T extends GameEventIdentifiers
   >(identifier: T, playerId?: PlayerId): Promise<ClientEventFinder<T>>;
 
+  //Server only
   public abstract getCardOwnerId(card: CardId): PlayerId | undefined;
+  //Server only
   public abstract trigger<T = never>(
     content: T extends never
       ? EventPicker<GameEventIdentifiers, WorkPlace.Server>
@@ -105,9 +107,14 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   public abstract get CurrentPlayerStage(): PlayerPhase | undefined;
-  public abstract get CurrentGameStage(): GameEventStage | undefined;
   public abstract get CurrentPlayer(): Player;
+  //Server only
   public abstract get Processor(): GameProcessor;
+  //Server only
+  public abstract syncGameCommonRules(
+    playerId: PlayerId,
+    updateActions: (user: Player) => void,
+  ): void;
 
   public abstract async useCard(
     content: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
@@ -120,7 +127,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return this.players.filter(player => !player.Dead);
   }
 
-  public getAlivePlayersFrom(playerId?: PlayerId, startsFromNext: boolean = false) {
+  public getAlivePlayersFrom(
+    playerId?: PlayerId,
+    startsFromNext: boolean = false,
+  ) {
     playerId = playerId === undefined ? this.CurrentPlayer.Id : playerId;
     const alivePlayers = this.AlivePlayers;
     const fromIndex = alivePlayers.findIndex(player => player.Id === playerId);
@@ -174,6 +184,29 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public getFixedSeatDistance(from: Player, to: Player) {
     const seatGap = from.getOffenseDistance() - to.getDefenseDistance();
     return this.onSeatDistance(from, to) + seatGap;
+  }
+
+  public isAvailableTarget(
+    cardId: CardId,
+    attacker: PlayerId,
+    target: PlayerId,
+  ) {
+    for (const skill of this.getPlayerById(target).getSkills<FilterSkill>(
+      'filter',
+    )) {
+      if (
+        !skill.canBeUsedCard(
+          cardId,
+          (this as unknown) as Room,
+          target,
+          attacker,
+        )
+      ) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   public clearFlags(player: PlayerId) {

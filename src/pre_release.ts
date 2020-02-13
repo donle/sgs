@@ -6,12 +6,12 @@ function preRelease() {
   const args = process.argv[2] || '--micro';
 
   let fileContent = fs.readFileSync(path.resolve(__dirname, './core/game/version.ts'), 'utf-8');
-  let [largeVersion, betaVersion, microVersion] = coreVersion
+  let [majorVersion, betaVersion, microVersion] = coreVersion
     .split('.')
     .map(versionStr => parseInt(versionStr, 10));
   switch (args) {
-    case '--large':
-      largeVersion++;
+    case '--major':
+      majorVersion++;
       betaVersion = 0;
       microVersion = 0;
       break;
@@ -26,7 +26,7 @@ function preRelease() {
       throw new Error(`Unknown parameter: ${args}`);
   }
 
-  const newVersion = `${largeVersion}.${betaVersion}.${microVersion}`;
+  const newVersion = `${majorVersion}.${betaVersion}.${microVersion}`;
   fileContent = fileContent.replace(coreVersion, newVersion);
   fs.writeFileSync(path.resolve(__dirname, './core/game/version.ts'), fileContent);
 }

@@ -90,9 +90,10 @@ export class JiZhi extends TriggerSkill {
 
       if (response.selectedOption === 'discard') {
         await room.dropCards([cardId], event.fromId);
-        const player = room.getPlayerById(event.fromId);
-        GameCommonRules.addAdditionalHoldCardNumber(player, 1);
-        player.addInvisibleMark(this.name, 1);
+        room.syncGameCommonRules(event.fromId, user => {
+          GameCommonRules.addAdditionalHoldCardNumber(user, 1);
+          user.addInvisibleMark(this.name, 1);
+        });
       }
     }
 
@@ -106,9 +107,11 @@ export class JiZhi extends TriggerSkill {
     owner: PlayerId,
   ) {
     if (fromPhase === PlayerPhase.FinishStage) {
-      const player = room.getPlayerById(owner);
-      const extraHold = player.getInvisibleMark(this.name);
-      GameCommonRules.addAdditionalHoldCardNumber(player, -extraHold);
+      room.syncGameCommonRules(owner, user => {
+        const extraHold = user.getInvisibleMark(this.name);
+        user.removeInvisibleMark(this.name);
+        GameCommonRules.addAdditionalHoldCardNumber(user, -extraHold);
+      });
     }
   }
 }

@@ -13,7 +13,7 @@ export type CardMatcherSocketPassenger = {
 } & CardMatcherProps;
 
 export class CardMatcher {
-  constructor(private matcher?: CardMatcherProps) {}
+  constructor(private matcher: CardMatcherProps) {}
 
   public static match(
     matcher: CardMatcherSocketPassenger | undefined,
@@ -69,10 +69,6 @@ export class CardMatcher {
   }
 
   public match(card: Card | CardMatcher) {
-    if (this.matcher === undefined) {
-      return false;
-    }
-
     return CardMatcher.match(
       {
         tag: 'card-matcher',

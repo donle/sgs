@@ -1,8 +1,8 @@
 import { CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { CharacterId } from 'core/characters/character';
-import { DamageType } from 'core/game/game_props';
-import { GameStartStage, PlayerPhase } from 'core/game/stage_processor';
+import { DamageType, GameCommonRuleObject } from 'core/game/game_props';
+import { PlayerPhase } from 'core/game/stage_processor';
 import {
   PlayerCardsArea,
   PlayerId,
@@ -135,6 +135,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.AskForWuXieKeJiEvent]: {
     fromId?: PlayerId;
     cardId: CardId;
+    cardUserId?: PlayerId;
   };
   [GameEventIdentifiers.AskForCardResponseEvent]: {
     carMatcher: CardMatcherSocketPassenger;
@@ -203,7 +204,11 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.AskForPlayCardsOrSkillsEvent]: {
     fromId: PlayerId;
-  }
+  };
+  [GameEventIdentifiers.SyncGameCommonRulesEvent]: {
+    toId: PlayerId;
+    commonRules: GameCommonRuleObject;
+  };
 }
 
 export type PinDianResultType = {
