@@ -180,10 +180,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           } else {
             this.notify(
               GameEventIdentifiers.AskForInvokeEvent,
-              {
-                invokeSkillNames: [skill.Name],
-                to: this.players[i].Id,
-              },
+              EventPacker.createIdentifierEvent(
+                GameEventIdentifiers.AskForInvokeEvent,
+                {
+                  invokeSkillNames: [skill.Name],
+                  to: this.players[i].Id,
+                },
+              ),
               this.players[i].Id,
             );
 
@@ -440,10 +443,16 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   ) {
     updateActions(this.getPlayerById(playerId));
 
-    this.broadcast(GameEventIdentifiers.SyncGameCommonRulesEvent, {
-      toId: playerId,
-      commonRules: GameCommonRules.toSocketObject(this.getPlayerById(playerId)),
-    });
+    this.notify(
+      GameEventIdentifiers.SyncGameCommonRulesEvent,
+      {
+        toId: playerId,
+        commonRules: GameCommonRules.toSocketObject(
+          this.getPlayerById(playerId),
+        ),
+      },
+      playerId,
+    );
   }
 
   public assignRoles(): PlayerInfo[] {

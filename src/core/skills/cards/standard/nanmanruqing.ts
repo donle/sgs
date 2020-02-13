@@ -65,13 +65,16 @@ export class NanManRuQingSkill extends ActiveSkill {
     for (const to of toIds!) {
       room.notify(
         GameEventIdentifiers.AskForCardResponseEvent,
-        {
-          carMatcher: new CardMatcher({
-            name: ['slash'],
-          }).toSocketPassenger(),
-          byCardId: cardId,
-          cardUserId: fromId,
-        },
+        EventPacker.createIdentifierEvent(
+          GameEventIdentifiers.AskForCardResponseEvent,
+          {
+            carMatcher: new CardMatcher({
+              name: ['slash'],
+            }).toSocketPassenger(),
+            byCardId: cardId,
+            cardUserId: fromId,
+          },
+        ),
         to,
       );
 

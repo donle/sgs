@@ -87,7 +87,7 @@ export const enum GameEventIdentifiers {
   AskForCardDropEvent,
   AskForPinDianCardEvent,
   AskForChoosingCardEvent,
-  AskForChoosPlayerEvent,
+  AskForChoosePlayerEvent,
   AskForChooseOptionsEvent,
   AskForChoosingCardFromPlayerEvent,
   AskForInvokeEvent,

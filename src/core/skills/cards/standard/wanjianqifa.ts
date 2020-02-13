@@ -61,13 +61,16 @@ export class WanJianQiFaSkill extends ActiveSkill {
     for (const to of toIds || []) {
       room.notify(
         GameEventIdentifiers.AskForCardResponseEvent,
-        {
-          carMatcher: new CardMatcher({
-            name: ['jink'],
-          }).toSocketPassenger(),
-          byCardId: cardId,
-          cardUserId: fromId,
-        },
+        EventPacker.createIdentifierEvent(
+          GameEventIdentifiers.AskForCardResponseEvent,
+          {
+            carMatcher: new CardMatcher({
+              name: ['jink'],
+            }).toSocketPassenger(),
+            byCardId: cardId,
+            cardUserId: fromId,
+          },
+        ),
         to,
       );
 

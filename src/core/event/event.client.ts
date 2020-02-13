@@ -114,7 +114,7 @@ export interface ClientEvent extends EventUtilities {
     askedBy?: PlayerId;
     fromId: PlayerId;
   };
-  [GameEventIdentifiers.AskForChoosPlayerEvent]: {
+  [GameEventIdentifiers.AskForChoosePlayerEvent]: {
     selectedPlayer?: PlayerId;
     fromId: PlayerId;
     askedBy?: PlayerId;

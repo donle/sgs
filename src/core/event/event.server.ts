@@ -185,7 +185,7 @@ export interface ServerEvent extends EventUtilities {
     options: string[];
     fromId: PlayerId;
   };
-  [GameEventIdentifiers.AskForChoosPlayerEvent]: {
+  [GameEventIdentifiers.AskForChoosePlayerEvent]: {
     players: PlayerId[];
     fromId: PlayerId;
   };

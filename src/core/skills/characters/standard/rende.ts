@@ -116,7 +116,7 @@ export class Rende extends ActiveSkill {
         }
 
         const choosePlayerEvent = EventPacker.createIdentifierEvent(
-          GameEventIdentifiers.AskForChoosPlayerEvent,
+          GameEventIdentifiers.AskForChoosePlayerEvent,
           {
             players: targets,
             fromId: from.Id,
@@ -127,13 +127,13 @@ export class Rende extends ActiveSkill {
         );
 
         room.notify(
-          GameEventIdentifiers.AskForChoosPlayerEvent,
+          GameEventIdentifiers.AskForChoosePlayerEvent,
           choosePlayerEvent,
           from.Id,
         );
 
         const choosePlayerResponse = await room.onReceivingAsyncReponseFrom(
-          GameEventIdentifiers.AskForChoosPlayerEvent,
+          GameEventIdentifiers.AskForChoosePlayerEvent,
           from.Id,
         );
 

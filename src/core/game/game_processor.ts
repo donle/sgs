@@ -74,7 +74,8 @@ export class GameProcessor {
       GameEventIdentifiers.AskForChooseCharacterEvent,
       lordInfo.Id,
     );
-    this.room.getPlayerById(lordInfo.Id).CharacterId = lordResponse.chosenCharacter;
+    this.room.getPlayerById(lordInfo.Id).CharacterId =
+      lordResponse.chosenCharacter;
     lordInfo.CharacterId = lordResponse.chosenCharacter;
 
     const characters = Sanguosha.getRandomCharacters(
@@ -707,12 +708,12 @@ export class GameProcessor {
       async stage => {
         if (stage === PinDianStage.PinDianEffect) {
           const { from, toIds } = event;
-          const askForPinDianEvent: EventPicker<
+          const askForPinDianEvent = EventPacker.createIdentifierEvent(
             GameEventIdentifiers.AskForPinDianCardEvent,
-            WorkPlace.Server
-          > = {
-            from,
-          };
+            {
+              from,
+            },
+          );
 
           this.room.notify(
             GameEventIdentifiers.AskForPinDianCardEvent,
@@ -720,10 +721,16 @@ export class GameProcessor {
             from,
           );
           toIds.forEach(to => {
-            askForPinDianEvent.from = to;
+            const askForPinDianEventForOthers = EventPacker.createIdentifierEvent(
+              GameEventIdentifiers.AskForPinDianCardEvent,
+              {
+                from: to,
+              },
+            );
+
             this.room.notify(
               GameEventIdentifiers.AskForPinDianCardEvent,
-              askForPinDianEvent,
+              askForPinDianEventForOthers,
               to,
             );
           });

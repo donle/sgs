@@ -288,6 +288,11 @@ export abstract class TriggerSkill extends Skill {
       GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.SkillUseEvent
     >,
   ): Promise<boolean>;
+  public abstract canUse(
+    room: Room,
+    owner: Player,
+    content: ServerEventFinder<GameEventIdentifiers>,
+  ): boolean;
 
   public async onUse(
     room: Room,
