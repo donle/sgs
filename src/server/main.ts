@@ -12,9 +12,10 @@ import {
 import { LobbySocketEvent, RoomInfo } from 'core/shares/types/server_types';
 import * as http from 'http';
 import * as https from 'https';
-import { AddressInfo } from 'net';
 import * as os from 'os';
 import SocketIO from 'socket.io';
+import { getLanguageDictionary, Languages } from './languages';
+import { serverConfig, ServerConfig } from './server_config';
 
 class App {
   private server: http.Server | https.Server;
@@ -43,21 +44,27 @@ class App {
       .pop()!.address;
   }
 
-  private log() {
-    const address = this.server.address() as AddressInfo;
-    // tslint:disable-next-line: no-console
-    console.info('----- Sanguosha server started -----');
+  private log(language: Languages) {
+    const translationDictionary = getLanguageDictionary(language);
     // tslint:disable-next-line: no-console
     console.info(
-      `----- ${this.config.protocal}://${this.getLocalExternalIP()}:${this.config.port} -----`,
+      `----- ${translationDictionary['Sanguosha Server Launched']} -----`,
     );
     // tslint:disable-next-line: no-console
-    console.info(`----- core version: ${Sanguosha.Version} -----`);
+    console.info(
+      `----- ${translationDictionary['Server Address']}: ${
+        this.config.protocal
+      }://${this.getLocalExternalIP()}:${this.config.port} -----`,
+    );
+    // tslint:disable-next-line: no-console
+    console.info(
+      `----- ${translationDictionary['Core Version']}: ${Sanguosha.Version} -----`,
+    );
   }
 
-  public start() {
+  public start(config: ServerConfig) {
     Sanguosha.initialize();
-    this.log();
+    this.log(config.language);
 
     this.lobbySocket.on('connection', socket => {
       socket
@@ -88,4 +95,4 @@ class App {
   };
 }
 
-new App((process.env.DEV_MODE as DevMode) || DevMode.Dev).start();
+new App((process.env.DEV_MODE as DevMode) || DevMode.Dev).start(serverConfig);

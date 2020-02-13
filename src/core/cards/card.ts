@@ -132,6 +132,9 @@ export class VirtualCard<T extends Card = Card> extends Card {
   protected cardNumber = 0;
   protected suit = CardSuit.NoSuit;
 
+  private viewAsBlackCard: boolean = true;
+  private viewAsRedCard: boolean = true;
+
   constructor(
     viewAsCardName: string,
     private cardIds: CardId[],
@@ -157,6 +160,31 @@ export class VirtualCard<T extends Card = Card> extends Card {
       const card = Sanguosha.getCardById(this.cardIds[0]);
       this.cardNumber = card.CardNumber;
       this.suit = card.Suit;
+      this.viewAsBlackCard =
+        this.suit === CardSuit.Spade || this.suit === CardSuit.Club;
+      this.viewAsRedCard =
+        this.suit === CardSuit.Heart || this.suit === CardSuit.Diamond;
+    } else {
+      let suit: CardSuit | undefined = CardSuit.NoSuit;
+      for (const cardId of this.cardIds) {
+        const cardSuit = Sanguosha.getCardById(cardId).Suit;
+        if (suit === CardSuit.NoSuit) {
+          suit = cardSuit;
+        } else if (suit !== cardSuit) {
+          suit = undefined;
+        }
+
+        this.viewAsBlackCard =
+          this.viewAsBlackCard &&
+          (cardSuit === CardSuit.Spade || cardSuit === CardSuit.Club);
+        this.viewAsRedCard =
+          this.viewAsRedCard &&
+          (cardSuit === CardSuit.Heart || cardSuit === CardSuit.Diamond);
+      }
+
+      if (suit !== undefined) {
+        this.suit = suit;
+      }
     }
   }
 
@@ -166,11 +194,7 @@ export class VirtualCard<T extends Card = Card> extends Card {
       parsedId.skillName !== undefined
         ? Sanguosha.getSkillBySkillName(parsedId.skillName)
         : undefined;
-    return VirtualCard.create(
-      parsedId.name,
-      parsedId.containedCardIds,
-      skill,
-    );
+    return VirtualCard.create(parsedId.name, parsedId.containedCardIds, skill);
   }
 
   public static create(
@@ -179,6 +203,14 @@ export class VirtualCard<T extends Card = Card> extends Card {
     skill?: Skill,
   ) {
     return new VirtualCard(viewAsCardName, cardIds, skill);
+  }
+
+  public isBlack() {
+    return this.viewAsBlackCard;
+  }
+
+  public isRed() {
+    return this.viewAsRedCard;
   }
 
   public get Id(): VirtualCardId {

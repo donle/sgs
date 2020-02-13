@@ -16,7 +16,7 @@ import {
   PlayerStageListEnum,
 } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerId } from 'core/player/player_props';
+import { PlayerId, PlayerRole } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
@@ -78,6 +78,12 @@ function skillPropertyWrapper(
     private shadowSkill: boolean;
     private uniqueSkill: boolean;
 
+    public canUse: (
+      room: Room,
+      owner: Player,
+      content?: ServerEventFinder<GameEventIdentifiers>,
+    ) => boolean;
+
     constructor() {
       super();
 
@@ -86,6 +92,14 @@ function skillPropertyWrapper(
       }
       if (options.lordSkill !== undefined) {
         this.lordSkill = options.lordSkill;
+        const canUseResult = this.canUse;
+
+        this.canUse = (
+          room: Room,
+          owner: Player,
+          content?: ServerEventFinder<GameEventIdentifiers>,
+        ) =>
+          owner.Role === PlayerRole.Lord && canUseResult(room, owner, content);
       }
       if (options.shadowSkill !== undefined) {
         this.shadowSkill = options.shadowSkill;
@@ -497,7 +511,7 @@ export abstract class RulesBreakerSkill extends Skill {
 
 export abstract class FilterSkill extends Skill {
   public canUse() {
-    return false;
+    return true;
   }
   public isRefreshAt() {
     return false;

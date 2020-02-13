@@ -391,7 +391,9 @@ export abstract class Player implements PlayerInfo {
       );
     }
 
-    const skills = this.playerCharacter.Skills;
+    const skills = this.playerCharacter.Skills.filter(skill =>
+      skill.isLordSkill() ? this.playerRole === PlayerRole.Lord : true,
+    );
     if (skillType === undefined) {
       return skills as T[];
     }
