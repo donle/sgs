@@ -347,6 +347,12 @@ export const enum RecoverEffectStage {
   AfterRecoverEffect,
 }
 
+export const enum LoseHpStage {
+  BeforeLoseHp,
+  LosingHp,
+  AfterLostHp,
+}
+
 export type GameEventStage =
   | PhaseChangeStage
   | GameStartStage
@@ -364,7 +370,8 @@ export type GameEventStage =
   | DamageEffectStage
   | AimStage
   | SkillUseStage
-  | SkillEffectStage;
+  | SkillEffectStage
+  | LoseHpStage;
 
 export type AllStage = PlayerStageListEnum | GameEventStage;
 

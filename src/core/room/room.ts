@@ -92,6 +92,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       : T,
     stage?: AllStage,
   ): void;
+  public abstract loseSkill(playerId: PlayerId, skillName: string): void;
+  public abstract obtainSkill(playerId: PlayerId, skillName: string): void;
 
   public getPlayerById(playerId: PlayerId) {
     const player = this.players.find(player => player.Id === playerId);

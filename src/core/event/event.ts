@@ -52,6 +52,9 @@ export const enum GameEventIdentifiers {
   PhaseChangeEvent,
   SyncGameCommonRulesEvent,
 
+  LoseSkillEvent,
+  ObtainSkillEvent,
+
   CardDropEvent,
   CardResponseEvent,
   CardUseEvent,
@@ -239,7 +242,7 @@ export class EventPacker {
     (event as any).terminate = true;
     return event;
   }
-  
+
   static recall<T extends EventPicker<GameEventIdentifiers, WorkPlace>>(
     event: T,
   ): T {

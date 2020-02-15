@@ -262,6 +262,50 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       );
     }
   }
+  public loseSkill(playerId: PlayerId, skillName: string) {
+    const player = this.getPlayerById(playerId);
+    player.loseSkill(skillName);
+    this.notify(
+      GameEventIdentifiers.LoseSkillEvent,
+      {
+        toId: playerId,
+        skillName,
+        translationsMessage: TranslationPack.translationJsonPatcher(
+          '{0} lost skill {1}',
+          player.Name,
+          skillName,
+        ),
+      },
+      playerId,
+    );
+  }
+  public obtainSkill(playerId: PlayerId, skillName: string) {
+    this.getPlayerById(playerId).obtainSkill(skillName);
+    this.notify(
+      GameEventIdentifiers.ObtainSkillEvent,
+      {
+        toId: playerId,
+        skillName,
+      },
+      playerId,
+    );
+  }
+
+  public loseHp(playerId: PlayerId, lostHp: number) {
+    const player = this.getPlayerById(playerId);
+    this.Processor.onHandleIncomingEvent(
+      GameEventIdentifiers.LoseHpEvent,
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.LoseHpEvent, {
+        toId: playerId,
+        lostHp,
+        translationsMessage: TranslationPack.translationJsonPatcher(
+          '{0} lost {1} hp',
+          player.Name,
+          lostHp,
+        ),
+      }),
+    );
+  }
 
   public getCards(numberOfCards: number, from: 'top' | 'bottom') {
     const cards: CardId[] = [];

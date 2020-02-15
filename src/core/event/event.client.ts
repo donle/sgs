@@ -40,7 +40,7 @@ export interface ClientEvent extends EventUtilities {
   };
   [GameEventIdentifiers.LoseHpEvent]: {
     lostHp: number;
-    who: PlayerId;
+    fromId: PlayerId;
   };
   [GameEventIdentifiers.DamageEvent]: {
     fromId?: PlayerId;
@@ -142,4 +142,6 @@ export interface ClientEvent extends EventUtilities {
       | ClientEvent[GameEventIdentifiers.CardUseEvent];
   };
   [GameEventIdentifiers.SyncGameCommonRulesEvent]: never;
+  [GameEventIdentifiers.LoseSkillEvent]: never;
+  [GameEventIdentifiers.ObtainSkillEvent]: never;
 }

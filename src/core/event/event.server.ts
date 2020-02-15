@@ -79,7 +79,7 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.LoseHpEvent]: {
     lostHp: number;
-    who: PlayerId;
+    toId: PlayerId;
   };
   [GameEventIdentifiers.DamageEvent]: {
     fromId?: PlayerId;
@@ -208,6 +208,14 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.SyncGameCommonRulesEvent]: {
     toId: PlayerId;
     commonRules: GameCommonRuleObject;
+  };
+  [GameEventIdentifiers.LoseSkillEvent]: {
+    skillName: string;
+    toId: PlayerId;
+  };
+  [GameEventIdentifiers.ObtainSkillEvent]: {
+    skillName: string;
+    toId: PlayerId;
   };
 }
 

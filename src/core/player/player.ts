@@ -385,40 +385,45 @@ export abstract class Player implements PlayerInfo {
       );
     }
 
-    const skills = this.playerCharacter.Skills.filter(skill =>
-      skill.isLordSkill() ? this.playerRole === PlayerRole.Lord : true,
-    );
     if (skillType === undefined) {
-      return skills as T[];
+      return this.playerSkills as T[];
     }
 
     switch (skillType) {
       case 'filter':
-        return skills.filter(skill => skill instanceof FilterSkill) as T[];
+        return this.playerSkills.filter(
+          skill => skill instanceof FilterSkill,
+        ) as T[];
       case 'active':
-        return skills.filter(skill => skill instanceof ActiveSkill) as T[];
+        return this.playerSkills.filter(
+          skill => skill instanceof ActiveSkill,
+        ) as T[];
       case 'trigger':
-        return skills.filter(skill => skill instanceof TriggerSkill) as T[];
+        return this.playerSkills.filter(
+          skill => skill instanceof TriggerSkill,
+        ) as T[];
       case 'breaker':
-        return skills.filter(
+        return this.playerSkills.filter(
           skill => skill instanceof RulesBreakerSkill,
         ) as T[];
       case 'transform':
-        return skills.filter(skill => skill instanceof TransformSkill) as T[];
+        return this.playerSkills.filter(
+          skill => skill instanceof TransformSkill,
+        ) as T[];
       case 'complusory':
-        return skills.filter(
+        return this.playerSkills.filter(
           skill => skill.SkillType === SkillType.Compulsory,
         ) as T[];
       case 'awaken':
-        return skills.filter(
+        return this.playerSkills.filter(
           skill => skill.SkillType === SkillType.Awaken,
         ) as T[];
       case 'limit':
-        return skills.filter(
+        return this.playerSkills.filter(
           skill => skill.SkillType === SkillType.Limit,
         ) as T[];
       case 'common':
-        return skills.filter(
+        return this.playerSkills.filter(
           skill => skill.SkillType === SkillType.Common,
         ) as T[];
       default:
@@ -431,6 +436,14 @@ export abstract class Player implements PlayerInfo {
       ...this.getEquipSkills<T>(skillType),
       ...this.getPlayerSkills<T>(skillType),
     ];
+  }
+
+  public loseSkill(skillName: string) {
+    this.playerSkills.filter(skill => skill.Name !== skillName);
+  }
+
+  public obtainSkill(skillName: string) {
+    this.playerSkills.push(Sanguosha.getSkillBySkillName(skillName));
   }
 
   public turnOver() {
@@ -488,7 +501,22 @@ export abstract class Player implements PlayerInfo {
   }
 
   public set CharacterId(characterId: CharacterId) {
+    if (this.playerCharacter !== undefined) {
+      this.playerSkills = this.playerSkills.filter(skill => {
+        if (this.playerCharacter!.Skills.includes(skill)) {
+          skill.onLoseSkill(this);
+          return false;
+        }
+
+        return true;
+      });
+    }
+
     this.playerCharacterId = characterId;
+    this.playerCharacter = Sanguosha.getCharacterById(this.playerCharacterId);
+    this.playerSkills = this.playerCharacter.Skills.filter(skill =>
+      skill.isLordSkill() ? this.playerRole === PlayerRole.Lord : true,
+    );
   }
   public get CharacterId() {
     if (this.playerCharacterId === undefined) {
