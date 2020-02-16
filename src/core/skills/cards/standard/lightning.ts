@@ -45,7 +45,7 @@ export class LightningSkill extends ActiveSkill {
   ) {
     for (const player of room.getAlivePlayersFrom(event.fromId)) {
       if (room.isAvailableTarget(event.cardId, event.fromId, player.Id)) {
-        room.moveCard(
+        await room.moveCard(
           event.cardId,
           event.fromId,
           player.Id,
@@ -72,17 +72,9 @@ export class LightningSkill extends ActiveSkill {
       cardId,
       judgeCardId: judgeCard,
       toId: toIds![0],
-      translationsMessage: TranslationPack.translationJsonPatcher(
-        '{0} got judged result of {1}',
-        room.getPlayerById(event.toIds![0]).Name,
-        TranslationPack.patchCardInTranslation(judgeCard),
-      ),
     };
 
-    await room.Processor.onHandleIncomingEvent(
-      GameEventIdentifiers.JudgeEvent,
-      judgeEvent,
-    );
+    await room.judge(judgeEvent);
 
     const card = Sanguosha.getCardById(judgeEvent.judgeCardId);
     if (
@@ -94,17 +86,9 @@ export class LightningSkill extends ActiveSkill {
         damageType: DamageType.Thunder,
         damage: 3,
         toId: judgeEvent.toId,
-        translationsMessage: TranslationPack.translationJsonPatcher(
-          '{0} got hurt for {1} hp',
-          room.getPlayerById(judgeEvent.toId).Name,
-          3,
-        ),
       };
 
-      await room.Processor.onHandleIncomingEvent(
-        GameEventIdentifiers.DamageEvent,
-        damageEvent,
-      );
+      await room.damage(damageEvent);
     } else {
       while (true) {
         const player = room.getNextPlayer(judgeEvent.toId);
@@ -113,7 +97,7 @@ export class LightningSkill extends ActiveSkill {
             continue;
           }
 
-          room.moveCard(
+          await room.moveCard(
             judgeEvent.cardId,
             judgeEvent.toId,
             player.Id,

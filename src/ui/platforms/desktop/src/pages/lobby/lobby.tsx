@@ -22,19 +22,33 @@ export class Lobby extends React.Component<LobbyProps> {
   constructor(props: LobbyProps) {
     super(props);
 
-    this.props.socket.on(
-      LobbySocketEvent.QueryRoomList,
-      mobx.action(
-        (content: LobbySocketEventPicker<LobbySocketEvent.QueryRoomList>) => {
-          this.roomList = content;
-        },
-      ),
-    );
+    this.props.socket
+      .on(
+        LobbySocketEvent.VersionMismatch.toString(),
+        mobx.action(
+          (
+            matched: LobbySocketEventPicker<LobbySocketEvent.VersionMismatch>,
+          ) => {
+            // tslint:disable-next-line:no-console
+            console.log(matched);
+            //TODO: stop loading room list.
+          },
+        ),
+      )
+      .on(
+        LobbySocketEvent.QueryRoomList.toString(),
+        mobx.action(
+          (content: LobbySocketEventPicker<LobbySocketEvent.QueryRoomList>) => {
+            this.roomList = content;
+          },
+        ),
+      );
   }
 
   @mobx.action
   componentWillMount() {
-    this.props.socket.emit(LobbySocketEvent.QueryRoomList);
+    this.props.socket.emit(LobbySocketEvent.QueryRoomList.toString());
+    this.props.socket.emit(LobbySocketEvent.QueryVersion.toString());
   }
 
   private getTranslatePackName = (...packages: GameCharacterExtensions[]) => {
@@ -42,18 +56,31 @@ export class Lobby extends React.Component<LobbyProps> {
     return packages.join(',');
   };
 
+  createRoomDialog() {
+    return (
+      <div className={styles.createRoomBox}>
+        <span>
+          <input type="checkbox" />
+          Standard
+        </span>
+      </div>
+    );
+  }
+
   render() {
     return (
       <div className={styles.board}>
-        <span>Lobby</span>
         <div className={styles.roomList}>
-          {this.roomList.map((roomInfo, index) => (<li className={styles.roomInfo} key={index}>
-          <span>{roomInfo.name}</span>
-          <span>{this.getTranslatePackName(...roomInfo.packages)}</span>
-          <span>{`${roomInfo.activePlayers}/${roomInfo.totalPlayers}`}</span>
-          {/* TODO: statuc needs to be translated */}
-          <span>{roomInfo.status}</span>
-          </li>))}
+          {this.roomList.length === 0 && <span>No rooms at the moment</span>}
+          {this.roomList.map((roomInfo, index) => (
+            <li className={styles.roomInfo} key={index}>
+              <span>{roomInfo.name}</span>
+              <span>{this.getTranslatePackName(...roomInfo.packages)}</span>
+              <span>{`${roomInfo.activePlayers}/${roomInfo.totalPlayers}`}</span>
+              {/* TODO: statuc needs to be translated */}
+              <span>{roomInfo.status}</span>
+            </li>
+          ))}
         </div>
       </div>
     );

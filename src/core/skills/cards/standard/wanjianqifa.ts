@@ -99,10 +99,7 @@ export class WanJianQiFaSkill extends ActiveSkill {
           },
         );
 
-        await room.Processor.onHandleIncomingEvent(
-          GameEventIdentifiers.DamageEvent,
-          eventContent,
-        );
+        await room.damage(eventContent);
       } else {
         const cardResponsedEvent = EventPacker.createIdentifierEvent(
           GameEventIdentifiers.CardResponseEvent,
@@ -112,10 +109,7 @@ export class WanJianQiFaSkill extends ActiveSkill {
           },
         );
 
-        await room.Processor.onHandleIncomingEvent(
-          GameEventIdentifiers.CardResponseEvent,
-          cardResponsedEvent,
-        );
+        await room.responseCard(cardResponsedEvent);
       }
     }
 

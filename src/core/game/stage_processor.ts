@@ -193,12 +193,10 @@ const gameEventStageList: {
     JudgeEffectStage.AfterJudgeEffect,
   ],
   [GameEventIdentifiers.PlayerDyingEvent]: [
-    PlayerDyingStage.BeforePlayerDying,
     PlayerDyingStage.PlayerDying,
     PlayerDyingStage.AfterPlayerDying,
   ],
   [GameEventIdentifiers.PlayerDiedEvent]: [
-    PlayerDiedStage.BeforePlayerDied,
     PlayerDiedStage.PlayerDied,
     PlayerDiedStage.AfterPlayerDied,
   ],
@@ -320,12 +318,10 @@ export const enum PinDianStage {
 }
 
 export const enum PlayerDyingStage {
-  BeforePlayerDying,
   PlayerDying,
   AfterPlayerDying,
 }
 export const enum PlayerDiedStage {
-  BeforePlayerDied,
   PlayerDied,
   AfterPlayerDied,
 }

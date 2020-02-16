@@ -457,7 +457,9 @@ export abstract class ViewAsSkill extends Skill {
       throw new Error(`Invalid view as virtual card in ${this.name}`);
     }
 
-    await room.Processor.onHandleIncomingEvent(identifier, cardUseEvent);
+    identifier === GameEventIdentifiers.CardUseEvent
+      ? await room.useCard(cardUseEvent)
+      : await room.responseCard(cardUseEvent);
     return true;
   }
 }

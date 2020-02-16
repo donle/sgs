@@ -4,6 +4,7 @@ import {
   EventPicker,
   GameEventIdentifiers,
   RoomEvent,
+  ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
 import { Socket } from 'core/network/socket';
@@ -84,6 +85,24 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   >(identifier: T, playerId?: PlayerId): Promise<ClientEventFinder<T>>;
 
   //Server only
+  public abstract async damage(
+    event: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
+  ): Promise<void>;
+  //Server only
+  public abstract async recover(
+    event: ServerEventFinder<GameEventIdentifiers.RecoverEvent>,
+  ): Promise<void>;
+  //Server only
+  public abstract async judge(
+    event: ServerEventFinder<GameEventIdentifiers.JudgeEvent>,
+  ): Promise<void>;
+  //Server only
+  public abstract async responseCard(
+    event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>,
+  ): Promise<void>;
+  //Server only
+
+  //Server only
   public abstract getCardOwnerId(card: CardId): PlayerId | undefined;
   //Server only
   public abstract trigger<T = never>(
@@ -110,8 +129,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public abstract get CurrentPlayerStage(): PlayerPhase | undefined;
   public abstract get CurrentPlayer(): Player;
-  //Server only
-  public abstract get Processor(): GameProcessor;
   //Server only
   public abstract syncGameCommonRules(
     playerId: PlayerId,

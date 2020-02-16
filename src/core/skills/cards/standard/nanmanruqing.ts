@@ -49,10 +49,7 @@ export class NanManRuQingSkill extends ActiveSkill {
       TranslationPack.patchCardInTranslation(event.cardId),
     );
 
-    await room.Processor.onHandleIncomingEvent(
-      GameEventIdentifiers.CardUseEvent,
-      event,
-    );
+    await room.useCard(event);
     return true;
   }
 
@@ -93,20 +90,10 @@ export class NanManRuQingSkill extends ActiveSkill {
             damageType: DamageType.Normal,
             cardIds: [event.cardId],
             triggeredBySkillName: this.name,
-            translationsMessage: TranslationPack.translationJsonPatcher(
-              '{0} hits {1} for {2} {3} hp',
-              room.getPlayerById(fromId!).Name,
-              room.getPlayerById(to).Name,
-              1,
-              DamageType.Normal,
-            ),
           },
         );
 
-        await room.Processor.onHandleIncomingEvent(
-          GameEventIdentifiers.DamageEvent,
-          eventContent,
-        );
+        await room.damage(eventContent);
       } else {
         const cardResponsedEvent: ServerEventFinder<GameEventIdentifiers.CardResponseEvent> = EventPacker.createIdentifierEvent(
           GameEventIdentifiers.CardResponseEvent,
@@ -116,10 +103,7 @@ export class NanManRuQingSkill extends ActiveSkill {
           },
         );
 
-        await room.Processor.onHandleIncomingEvent(
-          GameEventIdentifiers.CardResponseEvent,
-          cardResponsedEvent,
-        );
+        await room.responseCard(cardResponsedEvent);
       }
     }
     return true;

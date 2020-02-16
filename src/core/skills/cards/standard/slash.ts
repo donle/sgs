@@ -119,10 +119,7 @@ export class SlashSkill extends ActiveSkill {
           },
         );
 
-        await room.Processor.onHandleIncomingEvent(
-          GameEventIdentifiers.DamageEvent,
-          damageEvent,
-        );
+        await room.damage(damageEvent);
       }
     }
 

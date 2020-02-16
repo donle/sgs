@@ -217,7 +217,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       const from = this.getPlayerById(content.fromId);
       from.useCard(content.cardId);
     }
-    await this.Processor.onHandleIncomingEvent(
+    await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.CardUseEvent,
       content,
     );
@@ -231,13 +231,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         }
       : undefined;
     if (!EventPacker.isTerminated(content) && cardAimEvent !== undefined) {
-      await this.Processor.onHandleIncomingEvent(
+      await this.gameProcessor.onHandleIncomingEvent(
         GameEventIdentifiers.AimEvent,
         cardAimEvent,
       );
     }
     if (cardAimEvent && !EventPacker.isTerminated(cardAimEvent)) {
-      await this.Processor.onHandleIncomingEvent(
+      await this.gameProcessor.onHandleIncomingEvent(
         GameEventIdentifiers.CardEffectEvent,
         EventPacker.recall(content),
       );
@@ -251,12 +251,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       const from = this.getPlayerById(content.fromId);
       from.useSkill(content.skillName);
     }
-    await this.Processor.onHandleIncomingEvent(
+    await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.SkillUseEvent,
       content,
     );
     if (!EventPacker.isTerminated(content)) {
-      await this.Processor.onHandleIncomingEvent(
+      await this.gameProcessor.onHandleIncomingEvent(
         GameEventIdentifiers.SkillEffectEvent,
         content,
       );
@@ -293,7 +293,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public loseHp(playerId: PlayerId, lostHp: number) {
     const player = this.getPlayerById(playerId);
-    this.Processor.onHandleIncomingEvent(
+    this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.LoseHpEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.LoseHpEvent, {
         toId: playerId,
@@ -334,7 +334,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       playerId: playerId || this.CurrentPlayer.Id,
     };
 
-    await this.Processor.onHandleIncomingEvent(
+    await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.DrawCardEvent,
       EventPacker.createIdentifierEvent(
         GameEventIdentifiers.DrawCardEvent,
@@ -358,7 +358,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       fromId: playerId || this.CurrentPlayer.Id,
     };
 
-    await this.Processor.onHandleIncomingEvent(
+    await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.CardDropEvent,
       EventPacker.createIdentifierEvent(
         GameEventIdentifiers.CardDropEvent,
@@ -379,7 +379,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         fromId,
       },
     );
-    await this.Processor.onHandleIncomingEvent(
+    await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.ObtainCardEvent,
       obtainCardEvent,
     );
@@ -417,7 +417,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       to.getCardIds(toArea).push(cardId);
 
       if (toArea === PlayerCardsArea.HandArea) {
-        await this.Processor.onHandleIncomingEvent(
+        await this.gameProcessor.onHandleIncomingEvent(
           GameEventIdentifiers.ObtainCardEvent,
           EventPacker.createIdentifierEvent(
             GameEventIdentifiers.ObtainCardEvent,
@@ -450,6 +450,93 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         );
       }
     }
+  }
+
+  public async damage(
+    event: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
+  ): Promise<void> {
+    event.translationsMessage =
+      event.fromId === undefined
+        ? TranslationPack.translationJsonPatcher(
+            '{0} got {1} hp {2} hurt',
+            this.getPlayerById(event.toId).Character.Name,
+            event.damage,
+            event.damageType,
+          )
+        : TranslationPack.translationJsonPatcher(
+            '{0} hits {1} {2} hp of damage type {3}',
+            this.getPlayerById(event.fromId).Character.Name,
+            this.getPlayerById(event.toId).Character.Name,
+            event.damage,
+            event.damageType,
+          );
+
+    await this.gameProcessor.onHandleIncomingEvent(
+      GameEventIdentifiers.DamageEvent,
+      EventPacker.createIdentifierEvent(
+        GameEventIdentifiers.DamageEvent,
+        event,
+      ),
+    );
+  }
+
+  public async recover(
+    event: ServerEventFinder<GameEventIdentifiers.RecoverEvent>,
+  ): Promise<void> {
+    event.translationsMessage =
+      event.recoverBy !== undefined
+        ? TranslationPack.translationJsonPatcher(
+            '{0} recovered {1} for {2} hp',
+            this.getPlayerById(event.recoverBy).Character.Name,
+            this.getPlayerById(event.toId).Character.Name,
+            event.recoveredHp,
+          )
+        : TranslationPack.translationJsonPatcher(
+            '{0} recovered {1} hp',
+            this.getPlayerById(event.toId).Character.Name,
+            event.recoveredHp,
+          );
+
+    await this.gameProcessor.onHandleIncomingEvent(
+      GameEventIdentifiers.RecoverEvent,
+      EventPacker.createIdentifierEvent(
+        GameEventIdentifiers.RecoverEvent,
+        event,
+      ),
+    );
+  }
+
+  public async responseCard(
+    event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>,
+  ): Promise<void> {
+    event.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} responsed card {1}',
+      this.getPlayerById(event.fromId).Character.Name,
+      TranslationPack.patchCardInTranslation(event.cardId),
+    );
+
+    await this.gameProcessor.onHandleIncomingEvent(
+      GameEventIdentifiers.CardResponseEvent,
+      EventPacker.createIdentifierEvent(
+        GameEventIdentifiers.CardResponseEvent,
+        event,
+      ),
+    );
+  }
+
+  public async judge(
+    event: ServerEventFinder<GameEventIdentifiers.JudgeEvent>,
+  ): Promise<void> {
+    event.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} starts a judge of {1}',
+      this.getPlayerById(event.toId).Character.Name,
+      TranslationPack.patchCardInTranslation(event.cardId),
+    );
+
+    await this.gameProcessor.onHandleIncomingEvent(
+      GameEventIdentifiers.JudgeEvent,
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.JudgeEvent, event),
+    );
   }
 
   public onLoseCard(player: Player, cardId: CardId) {
@@ -550,9 +637,5 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public get CurrentPlayer(): Player {
     return this.gameProcessor.CurrentPlayer;
-  }
-
-  public get Processor() {
-    return this.gameProcessor;
   }
 }

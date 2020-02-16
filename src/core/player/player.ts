@@ -525,6 +525,14 @@ export abstract class Player implements PlayerInfo {
     return this.playerCharacterId;
   }
 
+  public get Character(): Character {
+    if (this.playerCharacter === undefined) {
+      throw new Error('Uninitialized player character');
+    }
+
+    return this.playerCharacter;
+  }
+
   public get Id() {
     return this.playerId;
   }
@@ -546,5 +554,15 @@ export abstract class Player implements PlayerInfo {
 
   public get Dead() {
     return this.dead;
+  }
+
+  public getPlayerInfo(): PlayerInfo {
+    return {
+      Id: this.playerId,
+      Name: this.playerName,
+      Position: this.position,
+      CharacterId: this.playerCharacterId,
+      Role: this.playerRole,
+    };
   }
 }

@@ -87,11 +87,21 @@ class App {
 
     this.lobbySocket.on('connection', socket => {
       socket
-        .on(LobbySocketEvent.GameCreated, this.onGameCreated)
-        .on(LobbySocketEvent.SocketConfig, this.onQuerySocketConfig(socket))
-        .on(LobbySocketEvent.QueryRoomList, this.onQueryRoomsInfo);
+        .on(LobbySocketEvent.GameCreated.toString(), this.onGameCreated)
+        .on(LobbySocketEvent.SocketConfig.toString(), this.onQuerySocketConfig(socket))
+        .on(LobbySocketEvent.QueryRoomList.toString(), this.onQueryRoomsInfo)
+        .on(LobbySocketEvent.QueryVersion.toString(), this.matchCoreVersion(socket));
     });
   }
+
+  private readonly matchCoreVersion = (socket: SocketIO.Socket) => (content: {
+    version: string;
+  }) => {
+    socket.emit(
+      LobbySocketEvent.VersionMismatch.toString(),
+      content.version === Sanguosha.Version,
+    );
+  };
 
   private readonly onGameCreated = (content: GameInfo) => {
     const roomSocket = new ServerSocket(this.config, this.rooms.length);
@@ -106,7 +116,7 @@ class App {
   };
 
   private readonly onQuerySocketConfig = (socket: SocketIO.Socket) => () => {
-    socket.emit(LobbySocketEvent.SocketConfig, this.config);
+    socket.emit(LobbySocketEvent.SocketConfig.toString(), this.config);
   };
 
   private readonly onQueryRoomsInfo = (): RoomInfo[] => {

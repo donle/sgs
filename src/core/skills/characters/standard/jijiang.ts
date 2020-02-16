@@ -191,11 +191,8 @@ export class JiJiangShadow extends ResponsiveSkill {
         );
 
         identifier === GameEventIdentifiers.AskForCardUseEvent
-          ? room.useCard(useCardEvent)
-          : room.Processor.onHandleIncomingEvent(
-              GameEventIdentifiers.CardResponseEvent,
-              useCardEvent,
-            );
+          ? await room.useCard(useCardEvent)
+          : await room.responseCard(useCardEvent);
       }
     }
 

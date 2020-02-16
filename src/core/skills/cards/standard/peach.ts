@@ -39,6 +39,10 @@ export class PeachSkill extends ActiveSkill {
     room: Room,
     event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
   ) {
+    if (!event.toIds) {
+      event.toIds = [event.fromId];
+    }
+    
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} uses card {1}',
       room.CurrentPlayer.Name,
@@ -67,10 +71,7 @@ export class PeachSkill extends ActiveSkill {
       },
     );
 
-    await room.Processor.onHandleIncomingEvent(
-      GameEventIdentifiers.RecoverEvent,
-      recoverContent,
-    );
+    await room.recover(recoverContent);
 
     return true;
   }

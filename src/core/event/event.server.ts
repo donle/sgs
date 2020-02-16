@@ -124,13 +124,17 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.PlayerLeaveEvent]: {
     playerId: PlayerId;
   };
+  [GameEventIdentifiers.PlayerDyingEvent]: {
+    dying: PlayerId;
+    killedBy?: PlayerId;
+  };
   [GameEventIdentifiers.PlayerDiedEvent]: {
     playerInfo: PlayerInfo;
+    killedBy?: PlayerId;
   };
 
   [GameEventIdentifiers.AskForPeachEvent]: {
     fromId: PlayerId;
-    amount: number;
   };
   [GameEventIdentifiers.AskForWuXieKeJiEvent]: {
     fromId?: PlayerId;

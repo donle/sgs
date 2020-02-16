@@ -73,10 +73,7 @@ export class ZhiHeng extends ActiveSkill {
       },
     );
 
-    await room.Processor.onHandleIncomingEvent(
-      GameEventIdentifiers.CardDropEvent,
-      dropCardEvent,
-    );
+    await room.dropCards(skillUseEvent.cardIds, skillUseEvent.fromId);
 
     let drawAdditionalCards = 0;
     if (

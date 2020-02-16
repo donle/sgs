@@ -1,16 +1,19 @@
-import { GameCharacterExtensions } from 'core/game/game_props';
+import { GameCharacterExtensions, GameInfo } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { HostConfigProps } from 'core/shares/types/host_config';
 
 export const enum LobbySocketEvent {
-  QueryRoomList = 'room-list',
-  GameCreated = 'create-room',
-  SocketConfig = 'config',
+  QueryRoomList,
+  GameCreated,
+  SocketConfig,
+
+  QueryVersion,
+  VersionMismatch,
 }
 
 export const enum RoomSocketEvent {
-  GameStart = 'game-start',
-  PlayerReady = 'player-ready',
+  CreatRoom,
+  PlayerReady,
 }
 
 export type RoomInfo = {
@@ -21,21 +24,35 @@ export type RoomInfo = {
   packages: GameCharacterExtensions[];
 };
 
-export type RoomSocketEventPicker<
-  E extends RoomSocketEvent
-> = E extends RoomSocketEvent.GameStart
-  ? {}
-  : E extends RoomSocketEvent.PlayerReady
-  ? {
-      playerId: PlayerId;
-      ready: boolean;
-    }
-  : never;
+type RoomEventUtilities = {
+  [K in keyof typeof LobbySocketEvent]: any;
+};
+
+export type RoomSocketEventPicker<E extends RoomSocketEvent> = RoomEventList[E];
+
+interface RoomEventList extends RoomEventUtilities {
+  [RoomSocketEvent.CreatRoom]: {
+    roomInfo: GameInfo;
+  };
+  [RoomSocketEvent.PlayerReady]: {
+    playerId: PlayerId;
+    ready: boolean;
+  };
+}
 
 export type LobbySocketEventPicker<
   E extends LobbySocketEvent
-> = E extends LobbySocketEvent.QueryRoomList
-  ? RoomInfo[]
-  : E extends LobbySocketEvent.SocketConfig
-  ? HostConfigProps
-  : never;
+> = LobbyEventList[E];
+
+type LobbyEventUtilities = {
+  [K in keyof typeof LobbySocketEvent]: any;
+};
+
+interface LobbyEventList extends LobbyEventUtilities {
+  [LobbySocketEvent.QueryRoomList]: RoomInfo[];
+  [LobbySocketEvent.SocketConfig]: HostConfigProps;
+  [LobbySocketEvent.QueryVersion]: {
+    version: string;
+  };
+  [LobbySocketEvent.VersionMismatch]: boolean;
+}
