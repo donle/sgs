@@ -36,7 +36,7 @@ export class SkillLoader {
   }
 
   public getAllSkills() {
-    return this.skills;
+    return [...this.skills, ...this.shadowSkills];
   }
 
   public getSkillByName<S extends Skill = Skill>(skillName: string): S {

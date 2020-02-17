@@ -1,6 +1,10 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
-import { Languages } from 'server/languages';
+
+export const enum Languages {
+  ZH_CN = 'zh_cn',
+  EN_AU = 'en_au',
+}
 
 const translationObjectSign = '@@translate:';
 

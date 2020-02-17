@@ -1,4 +1,8 @@
-import { GameCharacterExtensions } from 'core/game/game_props';
+import {
+  GameCardExtensions,
+  GameCharacterExtensions,
+  GameInfo,
+} from 'core/game/game_props';
 import {
   LobbySocketEvent,
   LobbySocketEventPicker,
@@ -6,6 +10,7 @@ import {
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
+import { useHistory } from 'react-router-dom';
 import { RoomList } from 'types/lobby_types';
 import { PagePropsWithHostConfig } from 'types/page_props';
 import styles from './lobby.module.css';
@@ -19,21 +24,19 @@ export class Lobby extends React.Component<LobbyProps> {
   @mobx.observable.shallow
   private roomList: RoomList[] = [];
 
+  private useHistory = useHistory();
+
   constructor(props: LobbyProps) {
     super(props);
 
     this.props.socket
       .on(
         LobbySocketEvent.VersionMismatch.toString(),
-        mobx.action(
-          (
-            matched: LobbySocketEventPicker<LobbySocketEvent.VersionMismatch>,
-          ) => {
-            // tslint:disable-next-line:no-console
-            console.log(matched);
-            //TODO: stop loading room list.
-          },
-        ),
+        (matched: LobbySocketEventPicker<LobbySocketEvent.VersionMismatch>) => {
+          // tslint:disable-next-line:no-console
+          console.log(matched);
+          //TODO: stop loading room list if returns false.
+        },
       )
       .on(
         LobbySocketEvent.QueryRoomList.toString(),
@@ -42,6 +45,15 @@ export class Lobby extends React.Component<LobbyProps> {
             this.roomList = content;
           },
         ),
+      )
+      .on(
+        LobbySocketEvent.QueryRoomList.toString(),
+        (event: LobbySocketEventPicker<LobbySocketEvent.GameCreated>) => {
+          const { roomInfo, roomId } = event;
+          // tslint:disable-next-line: no-console
+          console.log(roomInfo);
+          this.useHistory.push(roomId.toString());
+        },
       );
   }
 
@@ -56,13 +68,26 @@ export class Lobby extends React.Component<LobbyProps> {
     return packages.join(',');
   };
 
+  private readonly onCreateRoom = () => {
+    const roomInfo: GameInfo = {
+      characterExtensions: [GameCharacterExtensions.Standard],
+      cardExtensions: [GameCardExtensions.Standard],
+      numberOfPlayers: 2,
+      roomName: 'test room name',
+    };
+
+    this.props.socket.emit(LobbySocketEvent.GameCreated.toString(), roomInfo);
+  };
+
   createRoomDialog() {
     return (
-      <div className={styles.createRoomBox}>
+      <div className={styles.createRoomBoard}>
         <span>
-          <input type="checkbox" />
+          <input type="checkbox" defaultChecked={true} />
           Standard
         </span>
+
+        <button onClick={this.onCreateRoom}>Create a room</button>
       </div>
     );
   }
@@ -82,6 +107,7 @@ export class Lobby extends React.Component<LobbyProps> {
             </li>
           ))}
         </div>
+        {this.createRoomDialog()}
       </div>
     );
   }

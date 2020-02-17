@@ -20,7 +20,7 @@ export const App: React.FC = () => {
         <Route path="/">
           <Redirect to={'lobby'} />
         </Route>
-        <Route path={'/lobby'}>
+        <Route path={'/lobby'} exact={true}>
           <Lobby config={config} socket={socket} />
         </Route>
       </Switch>

@@ -1,4 +1,4 @@
-import { Languages } from './languages';
+import { Languages } from 'core/translations/translation_json_tool';
 
 export type ServerConfig = {
   language: Languages;

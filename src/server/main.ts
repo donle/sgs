@@ -10,12 +10,15 @@ import {
   HostConfigProps,
 } from 'core/shares/types/host_config';
 import { LobbySocketEvent, RoomInfo } from 'core/shares/types/server_types';
-import { Translation } from 'core/translations/translation_json_tool';
+import {
+  Languages,
+  Translation,
+} from 'core/translations/translation_json_tool';
 import * as http from 'http';
 import * as https from 'https';
 import * as os from 'os';
 import SocketIO from 'socket.io';
-import { getLanguageDictionary, Languages } from './languages';
+import { getLanguageDictionary } from './languages';
 import { serverConfig, ServerConfig } from './server_config';
 
 class App {
@@ -87,23 +90,35 @@ class App {
 
     this.lobbySocket.on('connection', socket => {
       socket
-        .on(LobbySocketEvent.GameCreated.toString(), this.onGameCreated)
-        .on(LobbySocketEvent.SocketConfig.toString(), this.onQuerySocketConfig(socket))
-        .on(LobbySocketEvent.QueryRoomList.toString(), this.onQueryRoomsInfo)
-        .on(LobbySocketEvent.QueryVersion.toString(), this.matchCoreVersion(socket));
+        .on(LobbySocketEvent.GameCreated.toString(), this.onGameCreated(socket))
+        .on(
+          LobbySocketEvent.SocketConfig.toString(),
+          this.onQuerySocketConfig(socket),
+        )
+        .on(
+          LobbySocketEvent.QueryRoomList.toString(),
+          this.onQueryRoomsInfo(socket),
+        )
+        .on(
+          LobbySocketEvent.QueryVersion.toString(),
+          this.matchCoreVersion(socket),
+        );
     });
   }
 
   private readonly matchCoreVersion = (socket: SocketIO.Socket) => (content: {
     version: string;
   }) => {
+    console.log(content.version);
     socket.emit(
       LobbySocketEvent.VersionMismatch.toString(),
       content.version === Sanguosha.Version,
     );
   };
 
-  private readonly onGameCreated = (content: GameInfo) => {
+  private readonly onGameCreated = (socket: SocketIO.Socket) => (
+    content: GameInfo,
+  ) => {
     const roomSocket = new ServerSocket(this.config, this.rooms.length);
     const room = new ServerRoom(
       this.rooms.length,
@@ -113,14 +128,22 @@ class App {
     );
     this.rooms.push(room);
     this.roomsPathList.push(roomSocket.RoomPath);
+
+    console.log('created');
+
+    socket.emit(LobbySocketEvent.GameCreated.toString(), {
+      roomId: this.rooms.length,
+      roomInfo: content,
+    });
   };
 
   private readonly onQuerySocketConfig = (socket: SocketIO.Socket) => () => {
     socket.emit(LobbySocketEvent.SocketConfig.toString(), this.config);
   };
 
-  private readonly onQueryRoomsInfo = (): RoomInfo[] => {
-    return this.rooms.map(room => room.getRoomInfo());
+  private readonly onQueryRoomsInfo = (socket: SocketIO.Socket) => () => {
+    const roomsInfo = this.rooms.map(room => room.getRoomInfo());
+    socket.emit(LobbySocketEvent.QueryRoomList.toString(), roomsInfo);
   };
 }
 
