@@ -1,4 +1,4 @@
-import { skillList } from 'core/skills';
+import * as SkillList from 'core/skills';
 import { Skill, SkillPrototype } from 'core/skills/skill';
 
 export class SkillLoader {
@@ -12,7 +12,7 @@ export class SkillLoader {
   public static getInstance() {
     if (!this.instance) {
       this.instance = new SkillLoader();
-      this.instance.addSkills(...skillList);
+      this.instance.addSkills(...Object.values(SkillList));
     }
 
     return this.instance;

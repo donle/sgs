@@ -1,37 +1,17 @@
-import { JinkSkill } from './cards/standard/jink';
-import { NanManRuQingSkill } from './cards/standard/nanmanruqing';
-import { PeachSkill } from './cards/standard/peach';
-import { SlashSkill } from './cards/standard/slash';
-import { WanJianQiFaSkill } from './cards/standard/wanjianqifa';
-import { ZhuGeLianNuSlashSkill } from './cards/standard/zhugeliannu_slash';
-import { ZiXinSkill } from './cards/standard/zixin';
-import { Hujia } from './characters/standard/hujia';
-import { JianXiong } from './characters/standard/jianxiong';
-import { JiJiang, JiJiangShadow } from './characters/standard/jijiang';
-import { JiuYuan } from './characters/standard/jiuyuan';
-import { JiZhi } from './characters/standard/jizhi';
-import { QiCai } from './characters/standard/qicai';
-import { Rende } from './characters/standard/rende';
-import { ZhiHeng } from './characters/standard/zhiheng';
-import { HongYan } from './characters/wind/hongyan';
-
-export const skillList = [
-  SlashSkill,
-  PeachSkill,
-  JinkSkill,
-  ZiXinSkill,
-  ZhuGeLianNuSlashSkill,
-  NanManRuQingSkill,
-  WanJianQiFaSkill,
-
-  ZhiHeng,
-  JiuYuan,
-  Hujia,
-  JianXiong,
-  JiJiang,
-  JiJiangShadow,
-  JiZhi,
-  QiCai,
-  Rende,
-  HongYan,
-];
+export { JinkSkill } from './cards/standard/jink';
+export { NanManRuQingSkill } from './cards/standard/nanmanruqing';
+export { PeachSkill } from './cards/standard/peach';
+export { SlashSkill } from './cards/standard/slash';
+export { WanJianQiFaSkill } from './cards/standard/wanjianqifa';
+export { ZhuGeLianNuSlashSkill } from './cards/standard/zhugeliannu_slash';
+export { ZiXinSkill } from './cards/standard/zixin';
+export { QingGangSkill } from './cards/standard/qinggang';
+export { Hujia } from './characters/standard/hujia';
+export { JianXiong } from './characters/standard/jianxiong';
+export { JiJiang, JiJiangShadow } from './characters/standard/jijiang';
+export { JiuYuan } from './characters/standard/jiuyuan';
+export { JiZhi } from './characters/standard/jizhi';
+export { QiCai } from './characters/standard/qicai';
+export { Rende } from './characters/standard/rende';
+export { ZhiHeng } from './characters/standard/zhiheng';
+export { HongYan } from './characters/wind/hongyan';
