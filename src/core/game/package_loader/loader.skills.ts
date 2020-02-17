@@ -1,17 +1,38 @@
-import { Skill } from 'core/skills/skill';
-import { SkillsList } from 'core/skills/skills_list';
+import { skillList } from 'core/skills';
+import { Skill, SkillPrototype } from 'core/skills/skill';
 
 export class SkillLoader {
-  private constructor(private skills: Skill[] = SkillsList) {}
+  private constructor(
+    private skills: Skill[] = [],
+    private shadowSkills: Skill[] = [],
+  ) {}
 
   private static instance: SkillLoader;
 
   public static getInstance() {
     if (!this.instance) {
       this.instance = new SkillLoader();
+      this.instance.addSkills(...skillList);
     }
 
     return this.instance;
+  }
+
+  public addSkills(...skills: SkillPrototype<Skill>[]) {
+    for (const skillProto of skills) {
+      const skill = new skillProto();
+      if (skill.isShadowSkill()) {
+        if (this.shadowSkills.find(s => s.Name === skill.Name)) {
+          throw new Error(`Duplicate shadow skill instance of ${skill.Name}`);
+        }
+        this.shadowSkills.push(skill);
+      } else {
+        if (this.skills.find(s => s.Name === skill.Name)) {
+          throw new Error(`Duplicate skill instance of ${skill.Name}`);
+        }
+        this.skills.push(skill);
+      }
+    }
   }
 
   public getAllSkills() {
@@ -27,11 +48,12 @@ export class SkillLoader {
     return skill as S;
   }
   public getSkillsByName<S extends Skill = Skill>(skillName: string): S[] {
-    const skill = this.skills.filter(skill => skill.Name === skillName);
-    if (skill === undefined) {
-      throw new Error(`Unable to get skill ${skillName}`);
+    const skills: S[] = [this.getSkillByName(skillName)];
+    const skill = this.skills.find(skill => skill.Name === skillName);
+    if (skill !== undefined) {
+      skills.push(skill as S);
     }
 
-    return skill as S[];
+    return skills;
   }
 }

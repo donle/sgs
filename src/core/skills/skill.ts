@@ -184,6 +184,8 @@ export function TriggerableTimes<T extends Skill>(times: number) {
   };
 }
 
+export type SkillPrototype<T extends Skill> = new () => T;
+
 export abstract class Skill {
   private skillType: SkillType = SkillType.Common;
   private shadowSkill = false;

@@ -1,7 +1,6 @@
 import { JinkSkill } from './cards/standard/jink';
 import { NanManRuQingSkill } from './cards/standard/nanmanruqing';
 import { PeachSkill } from './cards/standard/peach';
-import { QingGangSkill } from './cards/standard/qinggang';
 import { SlashSkill } from './cards/standard/slash';
 import { WanJianQiFaSkill } from './cards/standard/wanjianqifa';
 import { ZhuGeLianNuSlashSkill } from './cards/standard/zhugeliannu_slash';
@@ -16,24 +15,23 @@ import { Rende } from './characters/standard/rende';
 import { ZhiHeng } from './characters/standard/zhiheng';
 import { HongYan } from './characters/wind/hongyan';
 
-export const SkillsList = [
-  new SlashSkill(),
-  new PeachSkill(),
-  new JinkSkill(),
-  new ZiXinSkill(),
-  new ZhuGeLianNuSlashSkill(),
-  new QingGangSkill(),
-  new NanManRuQingSkill(),
-  new WanJianQiFaSkill(),
+export const skillList = [
+  SlashSkill,
+  PeachSkill,
+  JinkSkill,
+  ZiXinSkill,
+  ZhuGeLianNuSlashSkill,
+  NanManRuQingSkill,
+  WanJianQiFaSkill,
 
-  new ZhiHeng(),
-  new JiuYuan(),
-  new Hujia(),
-  new JianXiong(),
-  new JiJiang(),
-  new JiJiangShadow(),
-  new JiZhi(),
-  new QiCai(),
-  new Rende(),
-  new HongYan(),
+  ZhiHeng,
+  JiuYuan,
+  Hujia,
+  JianXiong,
+  JiJiang,
+  JiJiangShadow,
+  JiZhi,
+  QiCai,
+  Rende,
+  HongYan,
 ];
