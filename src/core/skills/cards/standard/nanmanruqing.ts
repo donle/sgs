@@ -2,10 +2,8 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import {
   ClientEventFinder,
   EventPacker,
-  EventPicker,
   GameEventIdentifiers,
   ServerEventFinder,
-  WorkPlace,
 } from 'core/event/event';
 import { DamageType, INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
@@ -44,7 +42,7 @@ export class NanManRuQingSkill extends ActiveSkill {
       player => player.Id !== event.fromId,
     ).map(player => player.Id);
     event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} uses card ${1}',
+      '{0} uses card {1}',
       room.getPlayerById(event.fromId).Name,
       TranslationPack.patchCardInTranslation(event.cardId),
     );

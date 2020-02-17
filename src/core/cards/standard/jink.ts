@@ -1,4 +1,3 @@
-import { Sanguosha } from 'core/game/engine';
 import { GameCardExtensions } from 'core/game/game_props';
 import { SkillLoader } from 'core/game/package_loader/loader.skills';
 import { JinkSkill } from 'core/skills/cards/standard/jink';

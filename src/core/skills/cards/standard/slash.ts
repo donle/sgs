@@ -112,7 +112,7 @@ export class SlashSkill extends ActiveSkill {
                   this.damageType,
                 )
               : TranslationPack.translationJsonPatcher(
-                  '${0} got hurt ${1} hp',
+                  '{0} got hurt {1} hp',
                   room.getPlayerById(toId).Name,
                   1,
                 ),

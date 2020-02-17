@@ -1,7 +1,6 @@
 import { CharacterNationality } from 'core/characters/character';
 import {
   ClientEventFinder,
-  EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';

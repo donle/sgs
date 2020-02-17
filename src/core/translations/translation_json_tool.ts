@@ -128,7 +128,7 @@ export class TranslationPack {
       if (translateObject.params.length > 0) {
         for (let i = 0; i < translateObject.params.length; i++) {
           target = target.replace(
-            new RegExp(`/\{${i}\}/`, 'g'),
+            new RegExp(`/{${i}}/`, 'g'),
             translateObject.params[i].toString(),
           );
         }

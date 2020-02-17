@@ -1,3 +1,4 @@
+import { Sanguosha } from 'core/game/engine';
 import {
   GameCardExtensions,
   GameCharacterExtensions,
@@ -24,8 +25,6 @@ export class Lobby extends React.Component<LobbyProps> {
   @mobx.observable.shallow
   private roomList: RoomList[] = [];
 
-  private useHistory = useHistory();
-
   constructor(props: LobbyProps) {
     super(props);
 
@@ -49,10 +48,11 @@ export class Lobby extends React.Component<LobbyProps> {
       .on(
         LobbySocketEvent.QueryRoomList.toString(),
         (event: LobbySocketEventPicker<LobbySocketEvent.GameCreated>) => {
+          const history = useHistory();
           const { roomInfo, roomId } = event;
           // tslint:disable-next-line: no-console
           console.log(roomInfo);
-          this.useHistory.push(roomId.toString());
+          history.push(roomId.toString());
         },
       );
   }
@@ -60,7 +60,9 @@ export class Lobby extends React.Component<LobbyProps> {
   @mobx.action
   componentWillMount() {
     this.props.socket.emit(LobbySocketEvent.QueryRoomList.toString());
-    this.props.socket.emit(LobbySocketEvent.QueryVersion.toString());
+    this.props.socket.emit(LobbySocketEvent.QueryVersion.toString(), {
+      version: Sanguosha.Version,
+    });
   }
 
   private getTranslatePackName = (...packages: GameCharacterExtensions[]) => {

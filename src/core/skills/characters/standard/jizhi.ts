@@ -69,7 +69,7 @@ export class JiZhi extends TriggerSkill {
         options: ['discard', 'keep'],
         fromId: event.fromId,
         translationsMessage: TranslationPack.translationJsonPatcher(
-          'do you wanna discard ${0}',
+          'do you wanna discard {0}',
           TranslationPack.patchCardInTranslation(cardId),
         ),
       });

@@ -422,7 +422,6 @@ export abstract class ViewAsSkill extends Skill {
   ): boolean {
     let validTarget = false;
     for (const cardName of this.canViewAs()) {
-      const card = Sanguosha.getCardByName(cardName);
       validTarget =
         validTarget ||
         this.isAvailableTargetFor(cardName, room, target, selectedTargets);

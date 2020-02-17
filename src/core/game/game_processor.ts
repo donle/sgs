@@ -479,7 +479,7 @@ export class GameProcessor {
           const to = this.room.getPlayerById(event.toId);
           // to.obtainCardIds(...event.cardIds);
           event.translationsMessage = TranslationPack.translationJsonPatcher(
-            '{0} obtains {1} cards' + event.fromId ? ' from ${2}' : '',
+            '{0} obtains {1} cards' + event.fromId ? ' from {2}' : '',
             to.Name,
             event.cardIds.length,
             event.fromId ? this.room.getPlayerById(event.fromId).Name : '',
