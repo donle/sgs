@@ -51,6 +51,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     protected players: Player[] = [],
   ) {
     super();
+    this.init();
   }
 
   protected init() {

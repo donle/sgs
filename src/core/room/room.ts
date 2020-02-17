@@ -15,7 +15,6 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { GameInfo } from 'core/game/game_props';
 import { AllStage, PlayerPhase } from 'core/game/stage_processor';
 import { FilterSkill } from 'core/skills/skill';
-import { GameProcessor } from '../game/game_processor';
 
 export type RoomId = number;
 
@@ -24,10 +23,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected abstract gameInfo: GameInfo;
   protected abstract players: Player[];
   protected abstract roomId: RoomId;
-
-  constructor() {
-    this.init();
-  }
 
   protected abstract init(): void;
 

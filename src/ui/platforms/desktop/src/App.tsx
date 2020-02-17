@@ -1,6 +1,7 @@
 import { Sanguosha } from 'core/game/engine';
 import { DevMode, hostConfig } from 'core/shares/types/host_config';
 import { createBrowserHistory } from 'history';
+import { RoomPage } from 'pages/room/room';
 import * as React from 'react';
 import { Redirect, Route, Router, Switch } from 'react-router-dom';
 import SocketIOClient from 'socket.io-client';
@@ -17,8 +18,10 @@ export const App: React.FC = () => {
       path: '/lobby',
     },
   );
+  const history = createBrowserHistory();
+
   return (
-    <Router history={createBrowserHistory()}>
+    <Router history={history}>
       <div>
         <Switch>
           <Route path="/" exact>
@@ -27,6 +30,10 @@ export const App: React.FC = () => {
           <Route path={'/lobby'}>
             <Lobby config={config} socket={socket} />
           </Route>
+          <Route
+            path={'/room/:slug'}
+            render={({ match }) => <RoomPage match={match} history={history} />}
+          ></Route>
         </Switch>
       </div>
     </Router>

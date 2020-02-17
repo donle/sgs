@@ -109,7 +109,6 @@ class App {
   private readonly matchCoreVersion = (socket: SocketIO.Socket) => (content: {
     version: string;
   }) => {
-    console.log(content.version);
     socket.emit(
       LobbySocketEvent.VersionMismatch.toString(),
       content.version === Sanguosha.Version,
@@ -128,8 +127,6 @@ class App {
     );
     this.rooms.push(room);
     this.roomsPathList.push(roomSocket.RoomPath);
-
-    console.log('created');
 
     socket.emit(LobbySocketEvent.GameCreated.toString(), {
       roomId: this.rooms.length,

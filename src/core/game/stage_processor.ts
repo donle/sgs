@@ -148,101 +148,6 @@ const playerStagesList: {
   ],
 };
 
-const gameEventStageList: {
-  [K in GameEventIdentifiers]?: GameEventStage[];
-} = {
-  [GameEventIdentifiers.GameStartEvent]: [
-    GameStartStage.BeforeGameStart,
-    GameStartStage.GameStarting,
-    GameStartStage.AfterGameStarted,
-  ],
-  [GameEventIdentifiers.CardUseEvent]: [
-    CardUseStage.BeforeCardUseEffect,
-    CardUseStage.CardUsing,
-    CardUseStage.AfterCardUseEffect,
-  ],
-  [GameEventIdentifiers.CardEffectEvent]: [
-    CardEffectStage.BeforeCardEffect,
-    CardEffectStage.CardEffecting,
-    CardEffectStage.AfterCardEffect,
-  ],
-  [GameEventIdentifiers.CardResponseEvent]: [
-    CardResponseStage.BeforeCardResponseEffect,
-    CardResponseStage.CardResponsing,
-    CardResponseStage.AfterCardResponseEffect,
-  ],
-  [GameEventIdentifiers.DrawCardEvent]: [
-    DrawCardStage.BeforeDrawCardEffect,
-    DrawCardStage.CardDrawing,
-    DrawCardStage.AfterDrawCardEffect,
-  ],
-  [GameEventIdentifiers.CardDropEvent]: [
-    CardDropStage.BeforeCardDropEffect,
-    CardDropStage.CardDropping,
-    CardDropStage.AfterCardDropEffect,
-  ],
-  [GameEventIdentifiers.DamageEvent]: [
-    DamageEffectStage.DamageEffect,
-    DamageEffectStage.DamagedEffect,
-    DamageEffectStage.AfterDamageEffect,
-    DamageEffectStage.AfterDamagedEffect,
-  ],
-  [GameEventIdentifiers.JudgeEvent]: [
-    JudgeEffectStage.OnJudge,
-    JudgeEffectStage.JudgeEffect,
-    JudgeEffectStage.AfterJudgeEffect,
-  ],
-  [GameEventIdentifiers.PlayerDyingEvent]: [
-    PlayerDyingStage.PlayerDying,
-    PlayerDyingStage.AfterPlayerDying,
-  ],
-  [GameEventIdentifiers.PlayerDiedEvent]: [
-    PlayerDiedStage.PlayerDied,
-    PlayerDiedStage.AfterPlayerDied,
-  ],
-  [GameEventIdentifiers.SkillUseEvent]: [
-    SkillUseStage.BeforeSkillUse,
-    SkillUseStage.SkillUsing,
-    SkillUseStage.AfterSkillUsed,
-  ],
-  [GameEventIdentifiers.SkillEffectEvent]: [
-    SkillEffectStage.BeforeSkillEffect,
-    SkillEffectStage.SkillEffecting,
-    SkillEffectStage.AfterSkillEffected,
-  ],
-  [GameEventIdentifiers.RecoverEvent]: [
-    RecoverEffectStage.BeforeRecoverEffect,
-    RecoverEffectStage.RecoverEffecting,
-    RecoverEffectStage.AfterRecoverEffect,
-  ],
-  [GameEventIdentifiers.DrawCardEvent]: [
-    DrawCardStage.BeforeDrawCardEffect,
-    DrawCardStage.CardDrawing,
-    DrawCardStage.AfterDrawCardEffect,
-  ],
-  [GameEventIdentifiers.ObtainCardEvent]: [
-    ObtainCardStage.BeforeObtainCardEffect,
-    ObtainCardStage.CardObtaining,
-    ObtainCardStage.AfterObtainCardEffect,
-  ],
-  [GameEventIdentifiers.PinDianEvent]: [
-    PinDianStage.BeforePinDianEffect,
-    PinDianStage.PinDianEffect,
-    PinDianStage.AfterPinDianEffect,
-  ],
-  [GameEventIdentifiers.AimEvent]: [
-    AimStage.OnAim,
-    AimStage.OnAimmed,
-    AimStage.AfterAim,
-    AimStage.AfterAimmed,
-  ],
-  [GameEventIdentifiers.PhaseChangeEvent]: [
-    PhaseChangeStage.BeforePhaseChange,
-    PhaseChangeStage.PhaseChanged,
-    PhaseChangeStage.AfterPhaseChanged,
-  ],
-};
-
 export const enum PhaseChangeStage {
   BeforePhaseChange,
   PhaseChanged,
@@ -370,6 +275,101 @@ export type GameEventStage =
   | LoseHpStage;
 
 export type AllStage = PlayerStageListEnum | GameEventStage;
+
+const gameEventStageList: {
+  [K in GameEventIdentifiers]?: GameEventStage[];
+} = {
+  [GameEventIdentifiers.GameStartEvent]: [
+    GameStartStage.BeforeGameStart,
+    GameStartStage.GameStarting,
+    GameStartStage.AfterGameStarted,
+  ],
+  [GameEventIdentifiers.CardUseEvent]: [
+    CardUseStage.BeforeCardUseEffect,
+    CardUseStage.CardUsing,
+    CardUseStage.AfterCardUseEffect,
+  ],
+  [GameEventIdentifiers.CardEffectEvent]: [
+    CardEffectStage.BeforeCardEffect,
+    CardEffectStage.CardEffecting,
+    CardEffectStage.AfterCardEffect,
+  ],
+  [GameEventIdentifiers.CardResponseEvent]: [
+    CardResponseStage.BeforeCardResponseEffect,
+    CardResponseStage.CardResponsing,
+    CardResponseStage.AfterCardResponseEffect,
+  ],
+  [GameEventIdentifiers.DrawCardEvent]: [
+    DrawCardStage.BeforeDrawCardEffect,
+    DrawCardStage.CardDrawing,
+    DrawCardStage.AfterDrawCardEffect,
+  ],
+  [GameEventIdentifiers.CardDropEvent]: [
+    CardDropStage.BeforeCardDropEffect,
+    CardDropStage.CardDropping,
+    CardDropStage.AfterCardDropEffect,
+  ],
+  [GameEventIdentifiers.DamageEvent]: [
+    DamageEffectStage.DamageEffect,
+    DamageEffectStage.DamagedEffect,
+    DamageEffectStage.AfterDamageEffect,
+    DamageEffectStage.AfterDamagedEffect,
+  ],
+  [GameEventIdentifiers.JudgeEvent]: [
+    JudgeEffectStage.OnJudge,
+    JudgeEffectStage.JudgeEffect,
+    JudgeEffectStage.AfterJudgeEffect,
+  ],
+  [GameEventIdentifiers.PlayerDyingEvent]: [
+    PlayerDyingStage.PlayerDying,
+    PlayerDyingStage.AfterPlayerDying,
+  ],
+  [GameEventIdentifiers.PlayerDiedEvent]: [
+    PlayerDiedStage.PlayerDied,
+    PlayerDiedStage.AfterPlayerDied,
+  ],
+  [GameEventIdentifiers.SkillUseEvent]: [
+    SkillUseStage.BeforeSkillUse,
+    SkillUseStage.SkillUsing,
+    SkillUseStage.AfterSkillUsed,
+  ],
+  [GameEventIdentifiers.SkillEffectEvent]: [
+    SkillEffectStage.BeforeSkillEffect,
+    SkillEffectStage.SkillEffecting,
+    SkillEffectStage.AfterSkillEffected,
+  ],
+  [GameEventIdentifiers.RecoverEvent]: [
+    RecoverEffectStage.BeforeRecoverEffect,
+    RecoverEffectStage.RecoverEffecting,
+    RecoverEffectStage.AfterRecoverEffect,
+  ],
+  [GameEventIdentifiers.DrawCardEvent]: [
+    DrawCardStage.BeforeDrawCardEffect,
+    DrawCardStage.CardDrawing,
+    DrawCardStage.AfterDrawCardEffect,
+  ],
+  [GameEventIdentifiers.ObtainCardEvent]: [
+    ObtainCardStage.BeforeObtainCardEffect,
+    ObtainCardStage.CardObtaining,
+    ObtainCardStage.AfterObtainCardEffect,
+  ],
+  [GameEventIdentifiers.PinDianEvent]: [
+    PinDianStage.BeforePinDianEffect,
+    PinDianStage.PinDianEffect,
+    PinDianStage.AfterPinDianEffect,
+  ],
+  [GameEventIdentifiers.AimEvent]: [
+    AimStage.OnAim,
+    AimStage.OnAimmed,
+    AimStage.AfterAim,
+    AimStage.AfterAimmed,
+  ],
+  [GameEventIdentifiers.PhaseChangeEvent]: [
+    PhaseChangeStage.BeforePhaseChange,
+    PhaseChangeStage.PhaseChanged,
+    PhaseChangeStage.AfterPhaseChanged,
+  ],
+};
 
 export class StageProcessor {
   private gameEventStageList: GameEventStage[] = [];

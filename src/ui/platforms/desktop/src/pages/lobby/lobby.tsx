@@ -46,7 +46,7 @@ export class Lobby extends React.Component<LobbyProps> {
         ),
       )
       .on(
-        LobbySocketEvent.QueryRoomList.toString(),
+        LobbySocketEvent.GameCreated.toString(),
         (event: LobbySocketEventPicker<LobbySocketEvent.GameCreated>) => {
           const history = useHistory();
           const { roomInfo, roomId } = event;
