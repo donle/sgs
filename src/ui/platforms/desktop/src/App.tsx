@@ -1,6 +1,11 @@
 import { Sanguosha } from 'core/game/engine';
 import { DevMode, hostConfig } from 'core/shares/types/host_config';
+import {
+  Languages,
+  Translation,
+} from 'core/translations/translation_json_tool';
 import { createBrowserHistory } from 'history';
+import { SimplifiedChinese } from 'languages';
 import { RoomPage } from 'pages/room/room';
 import * as React from 'react';
 import { Redirect, Route, Router, Switch } from 'react-router-dom';
@@ -19,6 +24,10 @@ export const App: React.FC = () => {
     },
   );
   const history = createBrowserHistory();
+  const translator = Translation.setup(Languages.ZH_CN, [
+    Languages.ZH_CN,
+    SimplifiedChinese,
+  ]);
 
   return (
     <Router history={history}>
@@ -28,12 +37,9 @@ export const App: React.FC = () => {
             <Redirect to={'lobby'} />
           </Route>
           <Route path={'/lobby'}>
-            <Lobby config={config} socket={socket} />
+            <Lobby config={config} socket={socket} translator={translator} />
           </Route>
-          <Route
-            path={'/room/:slug'}
-            render={({ match }) => <RoomPage match={match} history={history} />}
-          ></Route>
+          <Route path={'/room/:slug'} component={RoomPage}></Route>
         </Switch>
       </div>
     </Router>

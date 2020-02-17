@@ -8,23 +8,23 @@ import {
   LobbySocketEvent,
   LobbySocketEventPicker,
 } from 'core/shares/types/server_types';
+import { Translation } from 'core/translations/translation_json_tool';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
 import { RoomList } from 'types/lobby_types';
 import { PagePropsWithHostConfig } from 'types/page_props';
 import styles from './lobby.module.css';
 
 type LobbyProps = PagePropsWithHostConfig<{
   socket: SocketIOClient.Socket;
+  translator: Translation;
 }>;
 
 @mobxReact.observer
 export class Lobby extends React.Component<LobbyProps> {
   @mobx.observable.shallow
   private roomList: RoomList[] = [];
-
   constructor(props: LobbyProps) {
     super(props);
 
@@ -48,11 +48,9 @@ export class Lobby extends React.Component<LobbyProps> {
       .on(
         LobbySocketEvent.GameCreated.toString(),
         (event: LobbySocketEventPicker<LobbySocketEvent.GameCreated>) => {
-          const history = useHistory();
-          const { roomInfo, roomId } = event;
+          const { roomInfo } = event;
           // tslint:disable-next-line: no-console
           console.log(roomInfo);
-          history.push(roomId.toString());
         },
       );
   }
@@ -66,8 +64,9 @@ export class Lobby extends React.Component<LobbyProps> {
   }
 
   private getTranslatePackName = (...packages: GameCharacterExtensions[]) => {
-    //TODO: TBC
-    return packages.join(',');
+    return packages
+      .map(pack => this.props.translator.tr(pack))
+      .join(this.props.translator.tr(','));
   };
 
   private readonly onCreateRoom = () => {
@@ -86,10 +85,12 @@ export class Lobby extends React.Component<LobbyProps> {
       <div className={styles.createRoomBoard}>
         <span>
           <input type="checkbox" defaultChecked={true} />
-          Standard
+          {this.props.translator.tr(GameCardExtensions.Standard)}
         </span>
 
-        <button onClick={this.onCreateRoom}>Create a room</button>
+        <button onClick={this.onCreateRoom}>
+          {this.props.translator.tr('Create a room')}
+        </button>
       </div>
     );
   }
@@ -98,14 +99,16 @@ export class Lobby extends React.Component<LobbyProps> {
     return (
       <div className={styles.board}>
         <div className={styles.roomList}>
-          {this.roomList.length === 0 && <span>No rooms at the moment</span>}
+          {this.roomList.length === 0 && (
+            <span>{this.props.translator.tr('No rooms at the moment')}</span>
+          )}
           {this.roomList.map((roomInfo, index) => (
             <li className={styles.roomInfo} key={index}>
               <span>{roomInfo.name}</span>
               <span>{this.getTranslatePackName(...roomInfo.packages)}</span>
               <span>{`${roomInfo.activePlayers}/${roomInfo.totalPlayers}`}</span>
               {/* TODO: statuc needs to be translated */}
-              <span>{roomInfo.status}</span>
+              <span>{this.props.translator.tr(roomInfo.status)}</span>
             </li>
           ))}
         </div>

@@ -1,4 +1,4 @@
-export const translations = {
+const gameMessageTranslations = {
   standard_character_package: '标准版',
   standard_card_package: '标准包',
   slash: '杀',
@@ -9,7 +9,8 @@ export const translations = {
   sunquan: '孙权',
   zhiheng: '制衡',
   '{0} hurts {1} for {2} {3} hp': '{0} 对 {1} 造成了 {2} 点【{3}】伤害',
-  '{0} got hits from {1} by {2} {3} hp': '{0} 受到了来自 {1} 的 {2} 点【{3}】伤害',
+  '{0} got hits from {1} by {2} {3} hp':
+    '{0} 受到了来自 {1} 的 {2} 点【{3}】伤害',
   '{0} got hits by {1} {2} hp': '{0} 受到了 {1} 点【{2}】伤害',
   '{0} droppes cards {1}': '{0} 弃置了 {1}',
   '{0} cards are dropped': '{0} 进入了弃牌堆',
@@ -22,8 +23,21 @@ export const translations = {
     '是否对 {0} 的【{1}】使用【无懈可击】',
   '{0} asks for a peach': '{0} 处于濒死阶段，是否对其使用一个【桃】？',
   '{0} recovers {1} hp': '{0} 恢复了 {1} 点体力',
-  joint_symbol: '，',
+  ',': '，',
   normal_propery: '普通',
   thunder_propery: '雷属性',
   fire_propery: '火属性',
+};
+
+const gameUITranslations = {
+  'No rooms at the moment': '还没有玩家创建房间',
+  'Create a room': '创建信房间',
+  'standard': '标准',
+  'waiting': '等待',
+  'playing': '游戏中',
+};
+
+export const translations = {
+  ...gameMessageTranslations,
+  ...gameUITranslations,
 };

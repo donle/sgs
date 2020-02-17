@@ -30,18 +30,38 @@ type TranslationDictionary = {
 };
 
 export class Translation {
-  private constructor(private readonly dictionary?: TranslationDictionary) {}
+  private readonly dictionary: Map<
+    Languages,
+    TranslationDictionary
+  > = new Map();
+  private currentLanguage: Languages;
+  private constructor(...dictionaries: [Languages, TranslationDictionary][]) {
+    for (const subDictionary of dictionaries) {
+      this.dictionary.set(subDictionary[0], subDictionary[1]);
+    }
+  }
 
-  public static setup(dictionary?: TranslationDictionary) {
-    return new Translation(dictionary);
+  public static setup(
+    currentLanguage: Languages,
+    ...dictionaries: [Languages, TranslationDictionary][]
+  ) {
+    const translator = new Translation(...dictionaries);
+    translator.currentLanguage = currentLanguage;
+
+    return translator;
   }
 
   public tr(rawText: string) {
-    if (this.dictionary && this.dictionary[rawText]) {
-      return this.dictionary[rawText];
+    const targetDictionary = this.dictionary.get(this.currentLanguage);
+    if (targetDictionary && targetDictionary[rawText]) {
+      return targetDictionary[rawText];
     }
 
     return rawText;
+  }
+
+  public set Language(lang: Languages) {
+    this.currentLanguage = lang;
   }
 }
 

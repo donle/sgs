@@ -9,7 +9,7 @@ import {
   hostConfig,
   HostConfigProps,
 } from 'core/shares/types/host_config';
-import { LobbySocketEvent, RoomInfo } from 'core/shares/types/server_types';
+import { LobbySocketEvent } from 'core/shares/types/server_types';
 import {
   Languages,
   Translation,
@@ -18,7 +18,7 @@ import * as http from 'http';
 import * as https from 'https';
 import * as os from 'os';
 import SocketIO from 'socket.io';
-import { getLanguageDictionary } from './languages';
+import { SimplifiedChinese } from './languages';
 import { serverConfig, ServerConfig } from './server_config';
 
 class App {
@@ -78,8 +78,7 @@ class App {
   }
 
   private loadLanguages(language: Languages) {
-    const dictionary = getLanguageDictionary(language);
-    this.translator = Translation.setup(dictionary);
+    this.translator = Translation.setup(language, [Languages.ZH_CN, SimplifiedChinese]);
   }
 
   public start(config: ServerConfig) {
