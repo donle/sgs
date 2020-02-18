@@ -66,6 +66,10 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         })
         .on('disconnect', () => {
           this.clientIds.filter(id => id !== socket.id);
+          if (this.clientIds.length === 0) {
+            this.socket.close();
+            this.room && this.room.close();
+          }
         });
     });
   }

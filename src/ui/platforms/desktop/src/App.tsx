@@ -24,7 +24,7 @@ export const App: React.FC = () => {
     },
   );
   const history = createBrowserHistory();
-  const translator = Translation.setup(Languages.ZH_CN, [
+  const translator = Translation.setup(Languages.EN_AU, [
     Languages.ZH_CN,
     SimplifiedChinese,
   ]);

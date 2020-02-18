@@ -26,6 +26,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   protected abstract init(): void;
 
+  private onClosedCallback: () => void;
+
   //Server only
   public abstract notify<I extends GameEventIdentifiers>(
     type: I,
@@ -106,7 +108,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       : T,
     stage?: AllStage,
   ): void;
+  //Server only
   public abstract loseSkill(playerId: PlayerId, skillName: string): void;
+  //Server only
   public abstract obtainSkill(playerId: PlayerId, skillName: string): void;
 
   public getPlayerById(playerId: PlayerId) {
@@ -221,6 +225,14 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     }
 
     return true;
+  }
+
+  public close() {
+    this.onClosedCallback && this.onClosedCallback();
+  }
+
+  public onClosed(fn: () => void) {
+    this.onClosedCallback = fn;
   }
 
   public clearFlags(player: PlayerId) {

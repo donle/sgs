@@ -12,6 +12,7 @@ import { Translation } from 'core/translations/translation_json_tool';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
+import { Redirect } from 'react-router-dom';
 import { RoomList } from 'types/lobby_types';
 import { PagePropsWithHostConfig } from 'types/page_props';
 import styles from './lobby.module.css';
@@ -25,17 +26,24 @@ type LobbyProps = PagePropsWithHostConfig<{
 export class Lobby extends React.Component<LobbyProps> {
   @mobx.observable.shallow
   private roomList: RoomList[] = [];
+  @mobx.observable.ref
+  private targetRoomId: number | undefined;
+  @mobx.observable.ref
+  private unmatchedCoreVersion = false;
+
   constructor(props: LobbyProps) {
     super(props);
 
     this.props.socket
       .on(
         LobbySocketEvent.VersionMismatch.toString(),
-        (matched: LobbySocketEventPicker<LobbySocketEvent.VersionMismatch>) => {
-          // tslint:disable-next-line:no-console
-          console.log(matched);
-          //TODO: stop loading room list if returns false.
-        },
+        mobx.action(
+          (
+            matched: LobbySocketEventPicker<LobbySocketEvent.VersionMismatch>,
+          ) => {
+            this.unmatchedCoreVersion = !matched;
+          },
+        ),
       )
       .on(
         LobbySocketEvent.QueryRoomList.toString(),
@@ -47,11 +55,12 @@ export class Lobby extends React.Component<LobbyProps> {
       )
       .on(
         LobbySocketEvent.GameCreated.toString(),
-        (event: LobbySocketEventPicker<LobbySocketEvent.GameCreated>) => {
-          const { roomInfo } = event;
-          // tslint:disable-next-line: no-console
-          console.log(roomInfo);
-        },
+        mobx.action(
+          (event: LobbySocketEventPicker<LobbySocketEvent.GameCreated>) => {
+            const { roomId } = event;
+            this.targetRoomId = roomId;
+          },
+        ),
       );
   }
 
@@ -95,22 +104,39 @@ export class Lobby extends React.Component<LobbyProps> {
     );
   }
 
+  unmatchedView() {
+    //TODO: complete unmatched view;
+    return (
+      <div>
+        {this.props.translator.tr(
+          'Unmatched core version, please update your application',
+        )}
+      </div>
+    );
+  }
+
   render() {
+    if (this.targetRoomId !== undefined) {
+      return <Redirect to={`/room/${this.targetRoomId}`} />;
+    }
+
     return (
       <div className={styles.board}>
         <div className={styles.roomList}>
           {this.roomList.length === 0 && (
             <span>{this.props.translator.tr('No rooms at the moment')}</span>
           )}
-          {this.roomList.map((roomInfo, index) => (
-            <li className={styles.roomInfo} key={index}>
-              <span>{roomInfo.name}</span>
-              <span>{this.getTranslatePackName(...roomInfo.packages)}</span>
-              <span>{`${roomInfo.activePlayers}/${roomInfo.totalPlayers}`}</span>
-              {/* TODO: statuc needs to be translated */}
-              <span>{this.props.translator.tr(roomInfo.status)}</span>
-            </li>
-          ))}
+          {this.unmatchedCoreVersion
+            ? this.unmatchedView()
+            : this.roomList.map((roomInfo, index) => (
+                <li className={styles.roomInfo} key={index}>
+                  <span>{roomInfo.name}</span>
+                  <span>{this.getTranslatePackName(...roomInfo.packages)}</span>
+                  <span>{`${roomInfo.activePlayers}/${roomInfo.totalPlayers}`}</span>
+                  {/* TODO: statuc needs to be translated */}
+                  <span>{this.props.translator.tr(roomInfo.status)}</span>
+                </li>
+              ))}
         </div>
         {this.createRoomDialog()}
       </div>

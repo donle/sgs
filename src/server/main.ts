@@ -78,7 +78,10 @@ class App {
   }
 
   private loadLanguages(language: Languages) {
-    this.translator = Translation.setup(language, [Languages.ZH_CN, SimplifiedChinese]);
+    this.translator = Translation.setup(language, [
+      Languages.ZH_CN,
+      SimplifiedChinese,
+    ]);
   }
 
   public start(config: ServerConfig) {
@@ -117,18 +120,22 @@ class App {
   private readonly onGameCreated = (socket: SocketIO.Socket) => (
     content: GameInfo,
   ) => {
-    const roomSocket = new ServerSocket(this.config, this.rooms.length);
+    const roomId = Date.now();
+    const roomSocket = new ServerSocket(this.config, roomId);
     const room = new ServerRoom(
-      this.rooms.length,
+      roomId,
       content,
       roomSocket,
       new GameProcessor(new StageProcessor()),
     );
+
+    room.onClosed(() => {
+      this.rooms.filter(r => r !== room);
+    });
     this.rooms.push(room);
     this.roomsPathList.push(roomSocket.RoomPath);
-
     socket.emit(LobbySocketEvent.GameCreated.toString(), {
-      roomId: this.rooms.length,
+      roomId,
       roomInfo: content,
     });
   };

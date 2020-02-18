@@ -52,6 +52,13 @@ export class Translation {
   }
 
   public tr(rawText: string) {
+    if (rawText.startsWith(translationObjectSign)) {
+      return TranslationPack.translationJsonDispatcher(
+        rawText.slice(translationObjectSign.length),
+        this.dictionary.get(this.currentLanguage)!,
+      );
+    }
+
     const targetDictionary = this.dictionary.get(this.currentLanguage);
     if (targetDictionary && targetDictionary[rawText]) {
       return targetDictionary[rawText];
@@ -67,7 +74,6 @@ export class Translation {
 
 export class TranslationPack {
   private constructor(private translationJon: PatchedTranslationObject) {}
-
   private static emojiOrImageTextDict: EmojiOrImageTranslationDictionary = {};
 
   updateRawText(newText: string) {
@@ -85,7 +91,7 @@ export class TranslationPack {
   }
 
   toString() {
-    return JSON.stringify(this.translationJon);
+    return translationObjectSign + JSON.stringify(this.translationJon);
   }
 
   public static patchCardInTranslation(cardId: CardId) {
