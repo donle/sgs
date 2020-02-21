@@ -13,12 +13,12 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { Redirect } from 'react-router-dom';
+import SocketIOClient from 'socket.io-client';
 import { RoomList } from 'types/lobby_types';
 import { PagePropsWithHostConfig } from 'types/page_props';
 import styles from './lobby.module.css';
 
 type LobbyProps = PagePropsWithHostConfig<{
-  socket: SocketIOClient.Socket;
   translator: Translation;
 }>;
 
@@ -30,11 +30,14 @@ export class Lobby extends React.Component<LobbyProps> {
   private targetRoomId: number | undefined;
   @mobx.observable.ref
   private unmatchedCoreVersion = false;
+  private socket = SocketIOClient(
+    `${this.props.config.protocol}://${this.props.config.host}:${this.props.config.port}/lobby`,
+  );
 
   constructor(props: LobbyProps) {
     super(props);
 
-    this.props.socket
+    this.socket
       .on(
         LobbySocketEvent.VersionMismatch.toString(),
         mobx.action(
@@ -66,8 +69,8 @@ export class Lobby extends React.Component<LobbyProps> {
 
   @mobx.action
   componentWillMount() {
-    this.props.socket.emit(LobbySocketEvent.QueryRoomList.toString());
-    this.props.socket.emit(LobbySocketEvent.QueryVersion.toString(), {
+    this.socket.emit(LobbySocketEvent.QueryRoomList.toString());
+    this.socket.emit(LobbySocketEvent.QueryVersion.toString(), {
       version: Sanguosha.Version,
     });
   }
@@ -86,7 +89,7 @@ export class Lobby extends React.Component<LobbyProps> {
       roomName: 'test room name',
     };
 
-    this.props.socket.emit(LobbySocketEvent.GameCreated.toString(), roomInfo);
+    this.socket.emit(LobbySocketEvent.GameCreated.toString(), roomInfo);
   };
 
   createRoomDialog() {

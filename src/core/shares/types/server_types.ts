@@ -13,8 +13,9 @@ export const enum LobbySocketEvent {
 }
 
 export const enum RoomSocketEvent {
-  CreatRoom,
-  PlayerReady,
+  CreatRoom = 'create-room',
+  PlayerReady = 'player-ready',
+  JoinRoom = 'join-room',
 }
 
 export type RoomInfo = {
@@ -38,6 +39,9 @@ interface RoomEventList extends RoomEventUtilities {
   [RoomSocketEvent.PlayerReady]: {
     playerId: PlayerId;
     ready: boolean;
+  };
+  [RoomSocketEvent.JoinRoom]: {
+    roomId: string;
   };
 }
 

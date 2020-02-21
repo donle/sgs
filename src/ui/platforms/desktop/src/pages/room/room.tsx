@@ -4,6 +4,7 @@ import {
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
+import { RoomSocketEvent } from 'core/shares/types/server_types';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { useParams } from 'react-router-dom';
@@ -39,10 +40,7 @@ export const RoomPage = mobxReact.observer((props: PagePropsWithHostConfig) => {
   const { config } = props;
   const { slug } = useParams<{ slug: string }>();
   const socket = SocketIOClient(
-    `${config.protocol}://${config.host}:${config.port}`,
-    {
-      path: `/room-${slug}`,
-    },
+    `${config.protocol}://${config.host}:${config.port}/room`,
   );
 
   attachSocketListeners(socket, roomPresenter);
@@ -50,6 +48,9 @@ export const RoomPage = mobxReact.observer((props: PagePropsWithHostConfig) => {
     playerName: 'test',
   };
 
+  socket.emit(RoomSocketEvent.JoinRoom, {
+    roomId: slug,
+  });
   socket.emit(GameEventIdentifiers.PlayerEnterEvent.toString(), event);
 
   React.useEffect(() => {

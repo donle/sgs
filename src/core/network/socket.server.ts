@@ -14,7 +14,6 @@ import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { HostConfigProps } from 'core/shares/types/host_config';
-import { Server } from 'http';
 import IOSocketServer from 'socket.io';
 
 export class ServerSocket extends Socket<WorkPlace.Server> {
@@ -39,7 +38,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     this.roomId = roomId.toString();
 
     this.socket = socket;
-    this.socket.in(this.roomId).clients((error: any, clients: string[]) => {
+    this.socket.clients((error: any, clients: string[]) => {
       if (error) {
         throw new Error(error);
       }
@@ -47,8 +46,9 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       this.clientIds = clients;
     });
 
-    this.socket.in(this.roomId).on('connection', socket => {
+    this.socket.on('connection', socket => {
       logger.debug('User connected', ' ', socket.id);
+
       const gameEvent: string[] = createGameEventIdentifiersStringList();
       gameEvent.forEach(event => {
         socket.on(event, (content: unknown) => {
@@ -74,10 +74,10 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
           this.clientIds.push(socket.id);
         })
         .on('disconnect', () => {
-          logger.debug('User disconnected', ' ', socket.id);
           this.clientIds.filter(id => id !== socket.id);
           if (this.clientIds.length === 0) {
             socket.leave(this.roomId);
+            socket.disconnect();
             this.room && this.room.close();
           }
         });

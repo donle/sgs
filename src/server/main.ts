@@ -3,6 +3,8 @@ import { GameProcessor } from 'core/game/game_processor';
 import { GameInfo } from 'core/game/game_props';
 import { StageProcessor } from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
+import { PlayerId } from 'core/player/player_props';
+import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
 import {
@@ -10,7 +12,10 @@ import {
   hostConfig,
   HostConfigProps,
 } from 'core/shares/types/host_config';
-import { LobbySocketEvent } from 'core/shares/types/server_types';
+import {
+  LobbySocketEvent,
+  RoomSocketEvent,
+} from 'core/shares/types/server_types';
 import {
   Languages,
   Translation,
@@ -29,12 +34,16 @@ class App {
   private config: HostConfigProps;
   private translator: Translation;
 
+  private playersList: {
+    playerId: PlayerId;
+    roomId: string;
+  }[] = [];
+
   private lobbySocket: SocketIO.Server;
   constructor(mode: DevMode, private logger: Logger) {
     this.config = hostConfig[mode];
     this.server = http.createServer();
     this.lobbySocket = SocketIO.listen(this.server, {
-      path: '/lobby',
       origins: '*:*',
     });
     this.server.listen(this.config.port);
@@ -87,7 +96,7 @@ class App {
     Sanguosha.initialize();
     this.log();
 
-    this.lobbySocket.on('connection', socket => {
+    this.lobbySocket.of('/lobby').on('connect', socket => {
       socket
         .on(LobbySocketEvent.GameCreated.toString(), this.onGameCreated(socket))
         .on(
@@ -102,6 +111,25 @@ class App {
           LobbySocketEvent.QueryVersion.toString(),
           this.matchCoreVersion(socket),
         );
+    });
+    this.lobbySocket.of('/room').on('connect', socket => {
+      socket.on(RoomSocketEvent.JoinRoom, (event: { roomId: string }) => {
+        this.playersList.push({
+          playerId: socket.id,
+          roomId: event.roomId,
+        });
+        socket.join(event.roomId);
+      });
+
+      socket.on('disconnect', () => {
+        const playerInfo = this.playersList.find(
+          info => info.playerId === socket.id,
+        );
+        if (playerInfo) {
+          socket.disconnect();
+          socket.leave(playerInfo.roomId);
+        }
+      });
     });
   }
 
@@ -120,7 +148,7 @@ class App {
     const roomId = Date.now();
     const roomSocket = new ServerSocket(
       this.config,
-      this.lobbySocket.of('/room'),
+      this.lobbySocket.of('/room').in(roomId.toString()),
       roomId,
       this.logger,
     );
