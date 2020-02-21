@@ -1,6 +1,11 @@
 import { CharacterId } from 'core/characters/character';
 import { Player } from 'core/player/player';
-import { PlayerCards, PlayerCardsOutside, PlayerId } from './player_props';
+import {
+  PlayerCards,
+  PlayerCardsArea,
+  PlayerCardsOutside,
+  PlayerId,
+} from './player_props';
 
 export class ServerPlayer extends Player {
   constructor(
@@ -8,7 +13,9 @@ export class ServerPlayer extends Player {
     protected playerName: string,
     protected playerPosition: number,
     playerCharacterId?: CharacterId,
-    playerCards?: PlayerCards & PlayerCardsOutside,
+    playerCards?: PlayerCards & {
+      [PlayerCardsArea.OutsideArea]: PlayerCardsOutside;
+    },
   ) {
     super(playerCards, playerCharacterId);
   }

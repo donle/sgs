@@ -1,4 +1,5 @@
 import {
+  ClientEventFinder,
   createGameEventIdentifiersStringList,
   GameEventIdentifiers,
   ServerEventFinder,
@@ -8,34 +9,48 @@ import * as React from 'react';
 import { useParams } from 'react-router-dom';
 import SocketIOClient from 'socket.io-client';
 import { PagePropsWithHostConfig } from 'types/page_props';
+import { RoomPresenter } from './room.presenter';
+import { RoomEventProcessor } from './room_event_processor';
 
-const attachSocketListeners = (socket: SocketIOClient.Socket) => {
+const attachSocketListeners = (
+  socket: SocketIOClient.Socket,
+  presenter: RoomPresenter,
+) => {
   for (const identifier of createGameEventIdentifiersStringList()) {
     socket.on(
       identifier.toString(),
       (event: ServerEventFinder<GameEventIdentifiers>) => {
         const type = parseInt(identifier, 10) as GameEventIdentifiers;
-        onReceiveEvent(type, event);
+
+        RoomEventProcessor.Instance.onHandleIncomingEvent(
+          type,
+          event,
+          presenter,
+        );
       },
     );
   }
 };
 
-const onReceiveEvent = async <T extends GameEventIdentifiers>(
-  identifier: T,
-  event: ServerEventFinder<T>,
-) => {};
-
 export const RoomPage = mobxReact.observer((props: PagePropsWithHostConfig) => {
+  const roomPresenter = new RoomPresenter();
+  const roomStore = roomPresenter.createStore();
+
   const { config } = props;
   const { slug } = useParams<{ slug: string }>();
   const socket = SocketIOClient(
-    `${config.protocal}://${config.host}:${config.port}`,
+    `${config.protocol}://${config.host}:${config.port}`,
     {
       path: `/room-${slug}`,
     },
   );
-  attachSocketListeners(socket);
+
+  attachSocketListeners(socket, roomPresenter);
+  const event: ClientEventFinder<GameEventIdentifiers.PlayerEnterEvent> = {
+    playerName: 'test',
+  };
+
+  socket.emit(GameEventIdentifiers.PlayerEnterEvent.toString(), event);
 
   React.useEffect(() => {
     return () => {
@@ -44,5 +59,9 @@ export const RoomPage = mobxReact.observer((props: PagePropsWithHostConfig) => {
     };
   });
 
-  return <div>{slug}</div>;
+  return (
+    <div>
+      {slug} {roomStore.roomInfo}
+    </div>
+  );
 });

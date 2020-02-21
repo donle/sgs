@@ -64,7 +64,7 @@ class App {
     // tslint:disable-next-line: no-console
     console.info(
       `----- ${this.translator.tr('Server Address')}: ${
-        this.config.protocal
+        this.config.protocol
       }://${
         this.config.mode === DevMode.Dev
           ? this.getLocalExternalIP()

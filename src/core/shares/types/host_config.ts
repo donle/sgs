@@ -11,7 +11,7 @@ export type HostConfigProps = {
   mode: DevMode,
   port: number;
   host: string;
-  protocal: 'http' | 'https';
+  protocol: 'http' | 'https';
 };
 
 export const hostConfig: ServerConfigProps = {
@@ -19,12 +19,12 @@ export const hostConfig: ServerConfigProps = {
     mode: DevMode.Dev,
     port: 2020,
     host: '127.0.0.1',
-    protocal: 'http',
+    protocol: 'http',
   },
   [DevMode.Prod]: {
     mode: DevMode.Prod,
     port: 2020,
     host: '127.0.0.1',
-    protocal: 'http',
+    protocol: 'http',
   },
 };

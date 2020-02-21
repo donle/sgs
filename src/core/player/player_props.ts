@@ -4,9 +4,7 @@ import { CharacterId } from 'core/characters/character';
 export type PlayerId = string;
 
 export type PlayerCardsOutside = {
-  [S in PlayerCardsArea.OutsideArea]: {
-    [SkillName: string]: CardId[];
-  };
+  [SkillName: string]: CardId[];
 };
 
 export type PlayerCards = {
@@ -28,7 +26,6 @@ export const enum PlayerCardsArea {
   JudgeArea,
   EquipArea,
   HandArea,
-  HoldingArea,
   OutsideArea,
 }
 

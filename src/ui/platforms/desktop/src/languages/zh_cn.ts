@@ -11,9 +11,8 @@ function wordsToDictionary(words: Word[]): TranslationsDictionary {
   const dict: TranslationsDictionary = {};
 
   for (const word of words) {
-    dict[word.source] = dict[word.target];
+    dict[word.source] = word.target;
   }
-
   return dict;
 }
 
@@ -80,9 +79,13 @@ const gameUITranslations: Word[] = [
     source: 'Unmatched core version, please update your application',
     target: '内核版本不匹配，请升级你的客户端版本',
   },
+  {
+    source: 'New QSanguosha',
+    target: '新神杀',
+  },
 ];
 
-export const translations = {
+export const SimplifiedChinese = {
   ...wordsToDictionary(gameMessageTranslations),
   ...wordsToDictionary(gameUITranslations),
 };

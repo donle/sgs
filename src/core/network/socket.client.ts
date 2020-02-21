@@ -22,7 +22,7 @@ export class ClientSocket extends Socket<WorkPlace.Client> {
 
     this.roomPath = `/room-${roomId}`;
     this.socketIO = IOSocketClient(
-      `${config.protocal}://${config.host}:${config.port}`,
+      `${config.protocol}://${config.host}:${config.port}`,
       { path: this.roomPath },
     );
 

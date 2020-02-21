@@ -19,10 +19,9 @@
     "declaration": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "importHelpers": true,
+    "importHelpers": false,
     "target": "es2015",
     "typeRoots": ["node_modules/@types"],
-    "isolatedModules": false
   },
   "include": ["src"]
 }

@@ -1,1 +1,1 @@
-export { translations as SimplifiedChinese } from './zh_cn';
+export * from './zh_cn';

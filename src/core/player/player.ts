@@ -58,7 +58,8 @@ export abstract class Player implements PlayerInfo {
     [K: string]: number;
   }[] = [];
   private playerCharacter: Character | undefined;
-  protected playerCards: PlayerCards & PlayerCardsOutside;
+  protected playerCards: PlayerCards;
+  protected playerOutsideCards: PlayerCardsOutside;
 
   private flags: {
     [k: string]: any;
@@ -68,16 +69,26 @@ export abstract class Player implements PlayerInfo {
   } = {};
 
   constructor(
-    playerCards?: PlayerCards & PlayerCardsOutside,
+    playerCards?: PlayerCards & {
+      [PlayerCardsArea.OutsideArea]: PlayerCardsOutside;
+    },
     protected playerCharacterId?: CharacterId,
   ) {
-    this.playerCards = playerCards || {
-      [PlayerCardsArea.HandArea]: [],
-      [PlayerCardsArea.JudgeArea]: [],
-      [PlayerCardsArea.HoldingArea]: [],
-      [PlayerCardsArea.EquipArea]: [],
-      [PlayerCardsArea.OutsideArea]: {},
-    };
+    if (playerCards) {
+      this.playerCards = {
+        [PlayerCardsArea.HandArea]: playerCards[PlayerCardsArea.HandArea],
+        [PlayerCardsArea.JudgeArea]: playerCards[PlayerCardsArea.JudgeArea],
+        [PlayerCardsArea.EquipArea]: playerCards[PlayerCardsArea.EquipArea],
+      };
+      this.playerOutsideCards = playerCards[PlayerCardsArea.OutsideArea];
+    } else {
+      this.playerCards = {
+        [PlayerCardsArea.HandArea]: [],
+        [PlayerCardsArea.JudgeArea]: [],
+        [PlayerCardsArea.EquipArea]: [],
+      };
+      this.playerOutsideCards = {};
+    }
 
     if (this.playerCharacterId) {
       this.playerCharacter = Sanguosha.getCharacterById(this.playerCharacterId);
@@ -180,9 +191,9 @@ export abstract class Player implements PlayerInfo {
     outsideAreaName?: string,
   ): CardId[] {
     if (area === undefined) {
-      const [handCards, judgeCards, holdingCards, equipCards] = Object.values(
-        this.playerCards,
-      );
+      const [handCards, judgeCards, holdingCards, equipCards] = Object.values<
+        CardId[]
+      >(this.playerCards);
       return [...handCards, ...judgeCards, ...holdingCards, ...equipCards];
     }
 
@@ -193,7 +204,7 @@ export abstract class Player implements PlayerInfo {
         throw new Error('Unable to get undefined area cards');
       }
 
-      return this.playerCards[area][outsideAreaName];
+      return this.playerOutsideCards[outsideAreaName];
     }
   }
 
@@ -206,12 +217,7 @@ export abstract class Player implements PlayerInfo {
   }
 
   public cardFrom(cardId: CardId): PlayerCardsArea | undefined {
-    const {
-      [PlayerCardsArea.OutsideArea]: cards,
-      ...playerCardsInGame
-    } = this.playerCards;
-
-    for (const [area, cards] of Object.entries(playerCardsInGame) as [
+    for (const [area, cards] of Object.entries(this.playerCards) as [
       string,
       CardId[],
     ][]) {
@@ -232,7 +238,6 @@ export abstract class Player implements PlayerInfo {
     const playerCardsAreas = [
       PlayerCardsArea.EquipArea,
       PlayerCardsArea.HandArea,
-      PlayerCardsArea.HoldingArea,
       PlayerCardsArea.JudgeArea,
     ];
     const droppedCardIds: CardId[] = [];

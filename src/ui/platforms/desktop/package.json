@@ -64,7 +64,7 @@
     "style-loader": "1.0.0",
     "terser-webpack-plugin": "2.2.1",
     "ts-pnp": "1.1.5",
-    "typescript": "~3.7.2",
+    "typescript": "^3.8.2",
     "url-loader": "2.3.0",
     "webpack": "4.41.2",
     "webpack-dev-server": "3.9.0",
@@ -73,7 +73,7 @@
   },
   "scripts": {
     "patch": "ts-node -P ../../../../tsconfig.json ../../../pre_release.ts",
-    "sync:mac": "rm -rf ./core ./build && cp -R ../../../core ./src",
+    "sync:mac": "rm -rf ./src/core ./build && cp -R ../../../core ./src",
     "sync:win": "rimraf ./src/core ./build && xcopy ..\\..\\..\\core .\\src\\core /s /i",
     "start:mac": "yarn sync:mac && NODE_PATH=./src node scripts/start.js",
     "build:mac": "yarn sync:mac && NODE_PATH=./src node scripts/build.js",
