@@ -12,43 +12,52 @@ import { Socket } from 'core/network/socket';
 import { PlayerId } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
+import { Logger } from 'core/shares/libs/logger/logger';
 import { HostConfigProps } from 'core/shares/types/host_config';
+import { Server } from 'http';
 import IOSocketServer from 'socket.io';
 
 export class ServerSocket extends Socket<WorkPlace.Server> {
-  private socket: IOSocketServer.Server;
+  private socket: IOSocketServer.Namespace;
   private room?: ServerRoom;
   private clientIds: string[] = [];
-  protected roomPath: string;
+  protected roomId: string;
 
   private asyncResponseResolver: {
     [I in GameEventIdentifiers]: {
       [K in PlayerId]: ((res?: any) => void) | undefined;
     };
-  };
+  } = {} as any;
 
-  constructor(config: HostConfigProps, roomId: RoomId) {
+  constructor(
+    config: HostConfigProps,
+    socket: IOSocketServer.Namespace,
+    roomId: RoomId,
+    logger: Logger,
+  ) {
     super(WorkPlace.Server, config);
-    this.roomPath = `/room-${roomId}`;
+    this.roomId = roomId.toString();
 
-    this.socket = IOSocketServer();
-    this.socket.of(this.roomPath).clients((error: any, clients: string[]) => {
+    this.socket = socket;
+    this.socket.in(this.roomId).clients((error: any, clients: string[]) => {
       if (error) {
         throw new Error(error);
       }
 
       this.clientIds = clients;
     });
-    this.socket.of(this.roomPath).on('connection', socket => {
+
+    this.socket.in(this.roomId).on('connection', socket => {
+      logger.debug('User connected', ' ', socket.id);
       const gameEvent: string[] = createGameEventIdentifiersStringList();
       gameEvent.forEach(event => {
         socket.on(event, (content: unknown) => {
-          if (
-            EventPacker.isRoomEvent(event as GameEventIdentifiers | RoomEvent)
-          ) {
+          const identifier = parseInt(event, 10);
+          if (Number.isNaN(identifier)) {
             throw new Error("Server can't receive room event");
           }
-          const type = parseInt(event, 10) as GameEventIdentifiers;
+
+          const type = identifier as GameEventIdentifiers;
 
           const asyncResolver =
             this.asyncResponseResolver[type] &&
@@ -65,9 +74,10 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
           this.clientIds.push(socket.id);
         })
         .on('disconnect', () => {
+          logger.debug('User disconnected', ' ', socket.id);
           this.clientIds.filter(id => id !== socket.id);
           if (this.clientIds.length === 0) {
-            this.socket.close();
+            socket.leave(this.roomId);
             this.room && this.room.close();
           }
         });

@@ -11,19 +11,19 @@ import { HostConfigProps } from 'core/shares/types/host_config';
 import IOSocketClient from 'socket.io-client';
 
 export class ClientSocket extends Socket<WorkPlace.Client> {
-  protected roomPath: string;
+  protected roomId: string;
   private socketIO: SocketIOClient.Socket;
   //TODO: async message
   private asyncEventIdentifier: GameEventIdentifiers | undefined;
   private asyncResponseResolver: (res: any) => void;
 
-  constructor(config: HostConfigProps, roomId: string) {
+  constructor(config: HostConfigProps, roomId: number) {
     super(WorkPlace.Client, config);
 
-    this.roomPath = `/room-${roomId}`;
+    this.roomId = roomId.toString();
     this.socketIO = IOSocketClient(
       `${config.protocol}://${config.host}:${config.port}`,
-      { path: this.roomPath },
+      { path: '/room' },
     );
 
     const gameEvent: string[] = createGameEventIdentifiersStringList();

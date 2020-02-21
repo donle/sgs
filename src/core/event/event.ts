@@ -162,10 +162,6 @@ export type ServerEventFinder<I extends GameEventIdentifiers> = BaseGameEvent &
 export class EventPacker {
   private constructor() {}
 
-  public static isRoomEvent(event: GameEventIdentifiers | RoomEvent) {
-    return typeof event === 'string';
-  }
-
   static isDisresponsiveEvent = <T extends GameEventIdentifiers>(
     event: ServerEventFinder<T>,
   ) => {

@@ -4,6 +4,7 @@ import { GameInfo } from 'core/game/game_props';
 import { StageProcessor } from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
 import { ServerRoom } from 'core/room/room.server';
+import { Logger } from 'core/shares/libs/logger/logger';
 import {
   DevMode,
   hostConfig,
@@ -29,7 +30,7 @@ class App {
   private translator: Translation;
 
   private lobbySocket: SocketIO.Server;
-  constructor(mode: DevMode) {
+  constructor(mode: DevMode, private logger: Logger) {
     this.config = hostConfig[mode];
     this.server = http.createServer();
     this.lobbySocket = SocketIO.listen(this.server, {
@@ -57,24 +58,18 @@ class App {
   }
 
   private async log() {
-    // tslint:disable-next-line: no-console
-    console.info(
-      `----- ${this.translator.tr('Sanguosha Server Launched')} -----`,
-    );
-    // tslint:disable-next-line: no-console
-    console.info(
-      `----- ${this.translator.tr('Server Address')}: ${
-        this.config.protocol
-      }://${
+    this.logger.info('-----', 'Sanguosha Server Launched', '-----');
+    this.logger.info(
+      '-----',
+      'Server Address',
+      `${this.config.protocol}://${
         this.config.mode === DevMode.Dev
           ? this.getLocalExternalIP()
           : await this.getPublicExternalIp()
-      }:${this.config.port} -----`,
+      }:${this.config.port}`,
+      '-----',
     );
-    // tslint:disable-next-line: no-console
-    console.info(
-      `----- ${this.translator.tr('Core Version')}: ${Sanguosha.Version} -----`,
-    );
+    this.logger.info('-----', 'Core Version', Sanguosha.Version, '-----');
   }
 
   private loadLanguages(language: Languages) {
@@ -82,6 +77,8 @@ class App {
       Languages.ZH_CN,
       SimplifiedChinese,
     ]);
+
+    this.logger.Translator = this.translator;
   }
 
   public start(config: ServerConfig) {
@@ -121,7 +118,12 @@ class App {
     content: GameInfo,
   ) => {
     const roomId = Date.now();
-    const roomSocket = new ServerSocket(this.config, roomId);
+    const roomSocket = new ServerSocket(
+      this.config,
+      this.lobbySocket.of('/room'),
+      roomId,
+      this.logger,
+    );
     const room = new ServerRoom(
       roomId,
       content,
@@ -132,8 +134,9 @@ class App {
     room.onClosed(() => {
       this.rooms.filter(r => r !== room);
     });
+
     this.rooms.push(room);
-    this.roomsPathList.push(roomSocket.RoomPath);
+    this.roomsPathList.push(roomSocket.RoomId);
     socket.emit(LobbySocketEvent.GameCreated.toString(), {
       roomId,
       roomInfo: content,
@@ -150,4 +153,6 @@ class App {
   };
 }
 
-new App((process.env.DEV_MODE as DevMode) || DevMode.Dev).start(serverConfig);
+const mode = (process.env.DEV_MODE as DevMode) || DevMode.Dev;
+
+new App(mode, new Logger(mode)).start(serverConfig);

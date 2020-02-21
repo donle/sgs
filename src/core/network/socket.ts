@@ -21,7 +21,7 @@ export interface WebSocketMessageEvent {
 }
 
 export abstract class Socket<T extends WorkPlace> {
-  protected abstract roomPath: string;
+  protected abstract roomId: string;
 
   constructor(protected eventMode: T, protected hostConfig: HostConfigProps) {}
 
@@ -46,7 +46,7 @@ export abstract class Socket<T extends WorkPlace> {
     content: RoomEventFinder<T>,
   ): void;
 
-  public get RoomPath() {
-    return this.roomPath;
+  public get RoomId() {
+    return this.roomId;
   }
 }

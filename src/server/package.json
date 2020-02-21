@@ -5,10 +5,12 @@
   "author": "Shaun",
   "license": "MIT",
   "dependencies": {
+    "chalk": "^3.0.0",
     "express": "^4.17.1",
     "socket.io": "^2.3.0"
   },
   "devDependencies": {
+    "@types/chalk": "^2.2.0",
     "@types/express": "^4.17.2",
     "@types/socket.io": "^2.1.4",
     "cross-env": "^7.0.0",
