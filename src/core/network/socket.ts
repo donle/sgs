@@ -32,7 +32,7 @@ export abstract class Socket<T extends WorkPlace> {
     T extends WorkPlace.Client ? ServerEventFinder<I> : ClientEventFinder<I>
   >;
 
-  public abstract sendEvent<I extends GameEventIdentifiers>(
+  public abstract notify<I extends GameEventIdentifiers>(
     type: I,
     content: T extends WorkPlace.Client ? ClientEventFinder<I> : ServerEventFinder<I>,
     to?: PlayerId,

@@ -98,7 +98,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     content: ServerEventFinder<I>,
     to: PlayerId,
   ) {
-    this.socket.sendEvent(type, content, to);
+    this.socket.notify(type, content, to);
   }
 
   public broadcast<I extends GameEventIdentifiers>(
@@ -547,6 +547,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public get RoomId() {
     return this.roomId;
+  }
+
+  public get Info() {
+    return this.gameInfo;
   }
 
   public getRoomInfo(): RoomInfo {

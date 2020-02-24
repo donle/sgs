@@ -11,7 +11,11 @@ import {
 } from 'core/player/player_props';
 import { RoomId as _RoomId } from 'core/room/room';
 import { ClientRoom } from 'core/room/room.client';
-import { RoomInfo as _RoomInfo } from 'core/shares/types/server_types';
+import {
+  RoomInfo as _RoomInfo,
+  RoomSocketEvent,
+  RoomSocketEventResponser,
+} from 'core/shares/types/server_types';
 import * as mobx from 'mobx';
 
 export type PlayerId = _PlayerId;
@@ -24,6 +28,8 @@ export type GameStartInfo = _GameStartInfo;
 export class RoomStore {
   @mobx.observable.struct
   roomInfo: RoomInfo;
+  @mobx.observable.struct
+  gameInfo: GameInfo;
 
   @mobx.observable.shallow
   players: PlayerInfo[];
@@ -46,9 +52,10 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  setupRoomInfo(roomInfo: RoomInfo) {
+  setupRoomInfo(event: RoomSocketEventResponser<RoomSocketEvent.JoinRoom>) {
     this.tryToThrowUninitializedError();
-    this.store.roomInfo = roomInfo;
+    this.store.roomInfo = event.roomInfo;
+    this.store.gameInfo = event.gameInfo;
   }
 
   @mobx.action

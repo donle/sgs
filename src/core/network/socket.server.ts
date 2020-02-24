@@ -46,14 +46,6 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     this.roomId = roomId.toString();
 
     this.socket = socket;
-    this.socket.clients((error: any, clients: string[]) => {
-      if (error) {
-        throw new Error(error);
-      }
-
-      this.clientIds = clients;
-    });
-
     this.socket.on('connection', socket => {
       logger.info('User connected', socket.id);
 
@@ -66,11 +58,13 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
             event.playerName,
             room.Players.length,
           );
+          // this.clientIds.push(socket.id);
           room.addPlayer(player);
 
           this.socket.emit(RoomSocketEvent.JoinRoom, {
             roomInfo: room.getRoomInfo(),
             playersInfo: room.Players.map(player => player.getPlayerInfo()),
+            gameInfo: room.Info,
           });
 
           if (room.Players.length === room.getRoomInfo().totalPlayers) {
@@ -115,9 +109,9 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         })
         .on('disconnect', () => {
           this.clientIds.filter(id => id !== socket.id);
+          socket.leave(this.roomId);
+          socket.disconnect();
           if (this.clientIds.length === 0) {
-            socket.leave(this.roomId);
-            socket.disconnect();
             this.room && this.room.close();
           }
         });
@@ -130,7 +124,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     }
   }
 
-  public sendEvent<I extends GameEventIdentifiers>(
+  public notify<I extends GameEventIdentifiers>(
     type: I,
     content: ServerEventFinder<I>,
     to: PlayerId,
@@ -166,19 +160,6 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     }
 
     throw new Error(`Unable to find socket: ${id}`);
-  }
-
-  public notify(
-    type: GameEventIdentifiers,
-    content: EventPicker<typeof type, WorkPlace.Server>,
-    to: PlayerId,
-  ) {
-    const socket = this.getSocketById(to);
-    if (socket === undefined) {
-      throw new Error(`Unable to find socket for player ${to}`);
-    }
-
-    socket.emit(type.toString(), content);
   }
 
   public get ClientIds() {

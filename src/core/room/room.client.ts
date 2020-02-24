@@ -124,7 +124,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     content: ClientEventFinder<T>,
   ): void {
     //TODO:
-    this.socket.sendEvent(type, content);
+    this.socket.notify(type, content);
   };
 
   public get CurrentPlayerStage(): PlayerPhase {

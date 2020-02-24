@@ -1,23 +1,21 @@
 import {
   ClientEventFinder,
-  createGameEventIdentifiersStringList,
-  EventPicker,
   GameEventIdentifiers,
-  RoomEvent,
-  RoomEventFinder,
+  ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
 import { Socket } from 'core/network/socket';
 import { HostConfigProps } from 'core/shares/types/host_config';
-import { RoomSocketEvent, RoomSocketEventPicker } from 'core/shares/types/server_types';
+import {
+  RoomSocketEvent,
+  RoomSocketEventPicker,
+  RoomSocketEventResponser,
+} from 'core/shares/types/server_types';
 import IOSocketClient from 'socket.io-client';
 
 export class ClientSocket extends Socket<WorkPlace.Client> {
   protected roomId: string;
   private socketIO: SocketIOClient.Socket;
-  //TODO: async message
-  private asyncEventIdentifier: GameEventIdentifiers | undefined;
-  private asyncResponseResolver: (res: any) => void;
 
   constructor(config: HostConfigProps, roomId: number) {
     super(WorkPlace.Client, config);
@@ -27,49 +25,57 @@ export class ClientSocket extends Socket<WorkPlace.Client> {
       `${config.protocol}://${config.host}:${config.port}/room-${roomId}`,
     );
 
-    const gameEvent: string[] = createGameEventIdentifiersStringList();
-    gameEvent.forEach(event => {
-      this.socketIO.on(event, (content: unknown) => {
-        const type = parseInt(event, 10) as GameEventIdentifiers;
-        if (type === this.asyncEventIdentifier) {
-          this.asyncResponseResolver && this.asyncResponseResolver(content);
-          this.asyncEventIdentifier = undefined;
-        }
-      });
-    });
   }
 
-  public async waitForResponse<T>(identifier: GameEventIdentifiers) {
-    this.asyncEventIdentifier = identifier;
-    return await new Promise<T>(resolve => {
-      this.asyncResponseResolver = resolve;
-    });
-  }
-
-  public sendEvent<I extends GameEventIdentifiers>(
-    type: I,
-    content: ClientEventFinder<I>,
-  ) {
-    this.socketIO.emit(type.toString(), content);
-  }
-
-  public sendRoomEvent<I extends RoomSocketEvent>(
+  public notify<I extends RoomSocketEvent>(
     type: I,
     content: RoomSocketEventPicker<I>,
+  ): void;
+  public notify<I extends GameEventIdentifiers>(
+    type: I,
+    content: ClientEventFinder<I>,
+  ): void;
+  public notify<I extends GameEventIdentifiers | RoomSocketEvent>(
+    type: I,
+    content: I extends GameEventIdentifiers
+      ? ClientEventFinder<I>
+      : I extends RoomSocketEvent
+      ? RoomSocketEventPicker<I>
+      : never,
   ) {
     this.socketIO.emit(type.toString(), content);
   }
 
-  public broadcast<I extends GameEventIdentifiers>(
-    type: I,
-    content: ClientEventFinder<I>,
-  ) {
+  public on<T extends GameEventIdentifiers>(
+    type: T,
+    receiver: (event: ServerEventFinder<T>) => void,
+  ): ClientSocket;
+  public on<T extends RoomSocketEvent>(
+    type: T,
+    receiver: (event: RoomSocketEventResponser<T>) => void,
+  ): ClientSocket;
+  public on<T extends GameEventIdentifiers | RoomSocketEvent>(
+    type: T,
+    receiver: (
+      event: T extends GameEventIdentifiers
+        ? ServerEventFinder<T>
+        : T extends RoomSocketEvent
+        ? RoomSocketEventResponser<T>
+        : never,
+    ) => void,
+  ): ClientSocket {
+    this.socketIO.on(type.toString(), receiver);
+
+    return this;
+  }
+
+  public async waitForResponse(): Promise<any> {
+    throw new Error("Shouldn't call waitForResponse function in client socket");
+  }
+  public broadcast() {
     throw new Error("Shouldn't call broadcast function in client socket");
   }
-  public emitRoomStatus<T extends RoomEvent>(
-    type: T,
-    content: RoomEventFinder<T>,
-  ) {
+  public emitRoomStatus() {
     throw new Error("Shouldn't call emitRoomStatus function in client socket");
   }
 

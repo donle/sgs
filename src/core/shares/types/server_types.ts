@@ -44,6 +44,7 @@ interface RoomEventResponseList extends RoomEventUtilities {
   [RoomSocketEvent.JoinRoom]: {
     roomInfo: RoomInfo;
     playersInfo: PlayerInfo[];
+    gameInfo: GameInfo;
   };
   [RoomSocketEvent.GameStart]: {
     gameStartInfo: GameStartInfo;
