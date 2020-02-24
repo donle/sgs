@@ -112,25 +112,6 @@ class App {
           this.matchCoreVersion(socket),
         );
     });
-    this.lobbySocket.of('/room').on('connect', socket => {
-      socket.on(RoomSocketEvent.JoinRoom, (event: { roomId: string }) => {
-        this.playersList.push({
-          playerId: socket.id,
-          roomId: event.roomId,
-        });
-        socket.join(event.roomId);
-      });
-
-      socket.on('disconnect', () => {
-        const playerInfo = this.playersList.find(
-          info => info.playerId === socket.id,
-        );
-        if (playerInfo) {
-          socket.disconnect();
-          socket.leave(playerInfo.roomId);
-        }
-      });
-    });
   }
 
   private readonly matchCoreVersion = (socket: SocketIO.Socket) => (content: {
@@ -148,7 +129,7 @@ class App {
     const roomId = Date.now();
     const roomSocket = new ServerSocket(
       this.config,
-      this.lobbySocket.of('/room').in(roomId.toString()),
+      this.lobbySocket.of(`/room-${roomId}`),
       roomId,
       this.logger,
     );

@@ -9,7 +9,7 @@ export type PlayerId = _PlayerId;
 export type PlayerInfo = _PlayerInfo;
 export type RoomInfo = _RoomInfo;
 
-class RoomStore {
+export class RoomStore {
   @mobx.observable.struct
   roomInfo: RoomInfo;
 

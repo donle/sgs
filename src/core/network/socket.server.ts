@@ -9,11 +9,17 @@ import {
   WorkPlace,
 } from 'core/event/event';
 import { Socket } from 'core/network/socket';
+import { Player } from 'core/player/player';
+import { ServerPlayer } from 'core/player/player.server';
 import { PlayerId } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { HostConfigProps } from 'core/shares/types/host_config';
+import {
+  RoomSocketEvent,
+  RoomSocketEventPicker,
+} from 'core/shares/types/server_types';
 import IOSocketServer from 'socket.io';
 
 export class ServerSocket extends Socket<WorkPlace.Server> {
@@ -47,7 +53,30 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     });
 
     this.socket.on('connection', socket => {
-      logger.debug('User connected', ' ', socket.id);
+      logger.info('User connected', socket.id);
+
+      socket.on(
+        RoomSocketEvent.JoinRoom,
+        async (event: RoomSocketEventPicker<RoomSocketEvent.JoinRoom>) => {
+          const player = new ServerPlayer(
+            event.playerId,
+            event.playerName,
+            this.room!.Players.length,
+          );
+          this.room!.addPlayer(player);
+
+          this.socket.emit(RoomSocketEvent.JoinRoom, {
+            roomInfo: this.room!.getRoomInfo(),
+            playersInfo: this.room!.Players.map(player =>
+              player.getPlayerInfo(),
+            ),
+          });
+
+          if (this.room!.Players.length === this.room!.getRoomInfo().totalPlayers) {
+            await this.room!.gameStart();
+          }
+        },
+      );
 
       const gameEvent: string[] = createGameEventIdentifiersStringList();
       gameEvent.forEach(event => {

@@ -4,65 +4,89 @@ import {
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
-import { RoomSocketEvent } from 'core/shares/types/server_types';
+import {
+  RoomSocketEvent,
+  RoomSocketEventResponser,
+} from 'core/shares/types/server_types';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
-import { useParams } from 'react-router-dom';
+import { match } from 'react-router-dom';
 import SocketIOClient from 'socket.io-client';
 import { PagePropsWithHostConfig } from 'types/page_props';
-import { RoomPresenter } from './room.presenter';
+import { RoomPresenter, RoomStore } from './room.presenter';
 import { RoomEventProcessor } from './room_event_processor';
 
-const attachSocketListeners = (
-  socket: SocketIOClient.Socket,
-  presenter: RoomPresenter,
-) => {
-  for (const identifier of createGameEventIdentifiersStringList()) {
-    socket.on(
-      identifier.toString(),
-      (event: ServerEventFinder<GameEventIdentifiers>) => {
-        const type = parseInt(identifier, 10) as GameEventIdentifiers;
+@mobxReact.observer
+export class RoomPage extends React.Component<
+  PagePropsWithHostConfig<{
+    match: match<{ slug: string }>;
+  }>
+> {
+  private presenter: RoomPresenter;
+  private store: RoomStore;
+  private socket: SocketIOClient.Socket;
+  constructor(props: any) {
+    super(props);
 
-        RoomEventProcessor.Instance.onHandleIncomingEvent(
-          type,
-          event,
-          presenter,
-        );
+    const { config, match } = this.props;
+    this.presenter = new RoomPresenter();
+    this.store = this.presenter.createStore();
+    this.socket = SocketIOClient(
+      `${config.protocol}://${config.host}:${config.port}/room-${match.params.slug}`,
+    );
+  }
+
+  componentDidMount() {
+    this.attachSocketListeners(this.socket, this.presenter);
+    const event: ClientEventFinder<GameEventIdentifiers.PlayerEnterEvent> = {
+      playerName: 'test',
+    };
+
+    this.socket.emit(RoomSocketEvent.JoinRoom, {
+      roomId: this.props.match.params.slug,
+    });
+    this.socket.emit(GameEventIdentifiers.PlayerEnterEvent.toString(), event);
+
+    this.socket.on(
+      RoomSocketEvent.JoinRoom,
+      (event: RoomSocketEventResponser<RoomSocketEvent.JoinRoom>) => {
+        this.presenter.setupRoomInfo(event.roomInfo);
       },
     );
   }
-};
 
-export const RoomPage = mobxReact.observer((props: PagePropsWithHostConfig) => {
-  const roomPresenter = new RoomPresenter();
-  const roomStore = roomPresenter.createStore();
+  componentWillUnmount() {
+    this.socket.disconnect();
+    this.socket.close();
+  }
 
-  const { config } = props;
-  const { slug } = useParams<{ slug: string }>();
-  const socket = SocketIOClient(
-    `${config.protocol}://${config.host}:${config.port}/room`,
-  );
+  private readonly attachSocketListeners = (
+    socket: SocketIOClient.Socket,
+    presenter: RoomPresenter,
+  ) => {
+    for (const identifier of createGameEventIdentifiersStringList()) {
+      socket.on(
+        identifier.toString(),
+        (event: ServerEventFinder<GameEventIdentifiers>) => {
+          const type = parseInt(identifier, 10) as GameEventIdentifiers;
 
-  attachSocketListeners(socket, roomPresenter);
-  const event: ClientEventFinder<GameEventIdentifiers.PlayerEnterEvent> = {
-    playerName: 'test',
+          RoomEventProcessor.Instance.onHandleIncomingEvent(
+            type,
+            event,
+            presenter,
+          );
+        },
+      );
+    }
   };
 
-  socket.emit(RoomSocketEvent.JoinRoom, {
-    roomId: slug,
-  });
-  socket.emit(GameEventIdentifiers.PlayerEnterEvent.toString(), event);
-
-  React.useEffect(() => {
-    return () => {
-      socket.disconnect();
-      socket.close();
-    };
-  });
-
-  return (
-    <div>
-      {slug} {roomStore.roomInfo}
-    </div>
-  );
-});
+  render() {
+    const { match } = this.props;
+    return (
+      <div>
+        room Id: {match.params.slug}
+        <div>room Info: {JSON.stringify(this.store.roomInfo, null, 2)}</div>
+      </div>
+    );
+  }
+}

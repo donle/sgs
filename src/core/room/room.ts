@@ -145,6 +145,19 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return this.players.filter(player => !player.Dead);
   }
 
+  public get Players() {
+    return this.players;
+  }
+
+  public addPlayer(player: Player) {
+    this.players.push(player);
+    return this.players;
+  }
+
+  public removePlayer(playerId: PlayerId) {
+    this.players = this.players.filter(player => player.Id !== playerId);
+  }
+
   public getAlivePlayersFrom(
     playerId?: PlayerId,
     startsFromNext: boolean = false,

@@ -1,5 +1,5 @@
 import { GameCharacterExtensions, GameInfo } from 'core/game/game_props';
-import { PlayerId } from 'core/player/player_props';
+import { PlayerId, PlayerInfo } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { HostConfigProps } from 'core/shares/types/host_config';
 
@@ -31,6 +31,14 @@ type RoomEventUtilities = {
 };
 
 export type RoomSocketEventPicker<E extends RoomSocketEvent> = RoomEventList[E];
+export type RoomSocketEventResponser<
+  E extends RoomSocketEvent
+> = E extends RoomSocketEvent.JoinRoom
+  ? {
+      roomInfo: RoomInfo;
+      playersInfo: PlayerInfo[];
+    }
+  : never;
 
 interface RoomEventList extends RoomEventUtilities {
   [RoomSocketEvent.CreatRoom]: {
@@ -42,6 +50,8 @@ interface RoomEventList extends RoomEventUtilities {
   };
   [RoomSocketEvent.JoinRoom]: {
     roomId: string;
+    playerId: PlayerId;
+    playerName: string;
   };
 }
 

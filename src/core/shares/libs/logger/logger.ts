@@ -22,7 +22,7 @@ export class Logger {
 
   info(...args: any[]) {
     // tslint:disable-next-line: no-console
-    console.info(chalk.gray(...this.translate(args)));
+    console.info(chalk.blue(...this.translate(args)));
   }
 
   error(...args: any[]) {

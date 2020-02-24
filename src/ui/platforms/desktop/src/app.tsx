@@ -35,14 +35,14 @@ export const App = (props: { config: UIConfigTypes }) => {
             <Redirect to={'lobby'} />
           </Route>
           <Route path={'/lobby'}>
-            <Lobby
-              config={socketConfig}
-              translator={translator}
-            />
+            <Lobby config={socketConfig} translator={translator} />
           </Route>
-          <Route path={'/room/:slug'}>
-            <RoomPage config={socketConfig} />
-          </Route>
+          <Route
+            path={'/room/:slug'}
+            render={({ match }) => (
+              <RoomPage match={match} config={socketConfig} />
+            )}
+          />
         </Switch>
       </div>
     </Router>
