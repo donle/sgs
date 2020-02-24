@@ -1,4 +1,8 @@
-import { GameCharacterExtensions, GameInfo } from 'core/game/game_props';
+import {
+  GameCharacterExtensions,
+  GameInfo,
+  GameStartInfo,
+} from 'core/game/game_props';
 import { PlayerId, PlayerInfo } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { HostConfigProps } from 'core/shares/types/host_config';
@@ -16,6 +20,7 @@ export const enum RoomSocketEvent {
   CreatRoom = 'create-room',
   PlayerReady = 'player-ready',
   JoinRoom = 'join-room',
+  GameStart = 'game-start',
 }
 
 export type RoomInfo = {
@@ -33,12 +38,20 @@ type RoomEventUtilities = {
 export type RoomSocketEventPicker<E extends RoomSocketEvent> = RoomEventList[E];
 export type RoomSocketEventResponser<
   E extends RoomSocketEvent
-> = E extends RoomSocketEvent.JoinRoom
-  ? {
-      roomInfo: RoomInfo;
-      playersInfo: PlayerInfo[];
-    }
-  : never;
+> = RoomEventResponseList[E];
+
+interface RoomEventResponseList extends RoomEventUtilities {
+  [RoomSocketEvent.JoinRoom]: {
+    roomInfo: RoomInfo;
+    playersInfo: PlayerInfo[];
+  };
+  [RoomSocketEvent.GameStart]: {
+    gameStartInfo: GameStartInfo;
+    playersInfo: PlayerInfo[];
+  };
+  [RoomSocketEvent.CreatRoom]: never;
+  [RoomSocketEvent.PlayerReady]: never;
+}
 
 interface RoomEventList extends RoomEventUtilities {
   [RoomSocketEvent.CreatRoom]: {
@@ -50,9 +63,9 @@ interface RoomEventList extends RoomEventUtilities {
   };
   [RoomSocketEvent.JoinRoom]: {
     roomId: string;
-    playerId: PlayerId;
     playerName: string;
   };
+  [RoomSocketEvent.GameStart]: never;
 }
 
 export type LobbySocketEventPicker<

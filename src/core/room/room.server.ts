@@ -2,7 +2,6 @@ import { Card } from 'core/cards/card';
 import {
   ClientEventFinder,
   EventPacker,
-  EventPicker,
   GameEventIdentifiers,
   ServerEventFinder,
   WorkPlace,
@@ -36,11 +35,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   protected currentPlayer: Player | undefined;
 
   private loadedCharacters: Character[] = [];
-  private loadedCards: Card[] = [];
 
-  private cards: CardId[] = [];
-  private drawDile: CardId[] = [];
-  private dropDile: CardId[] = [];
+  private drawStack: CardId[] = [];
+  private dropStack: CardId[] = [];
   private gameStarted: boolean = false;
 
   constructor(
@@ -58,28 +55,27 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.loadedCharacters = CharacterLoader.getInstance().getPackages(
       ...this.gameInfo.characterExtensions,
     );
-    this.loadedCards = CardLoader.getInstance().getPackages(
-      ...this.gameInfo.cardExtensions,
-    );
-    this.drawDile = this.cards.slice();
-    this.dropDile = [];
+    this.drawStack = CardLoader.getInstance()
+      .getPackages(...this.gameInfo.cardExtensions)
+      .map(card => card.Id);
+    this.dropStack = [];
 
     this.socket.emit(this);
   }
 
   private shuffle() {
-    if (this.dropDile.length > 0) {
-      this.drawDile = this.drawDile.concat(this.dropDile);
-      this.dropDile = [];
+    if (this.dropStack.length > 0) {
+      this.drawStack = this.drawStack.concat(this.dropStack);
+      this.dropStack = [];
     }
 
-    for (let i = 0; i < this.drawDile.length - 1; i++) {
+    for (let i = 0; i < this.drawStack.length - 1; i++) {
       const swapCardIndex =
         Math.floor(Math.random() * (this.drawCards.length - i)) + i;
       if (swapCardIndex !== i) {
-        [this.drawDile[i], this.drawDile[swapCardIndex]] = [
-          this.drawDile[swapCardIndex],
-          this.drawDile[i],
+        [this.drawStack[i], this.drawStack[swapCardIndex]] = [
+          this.drawStack[swapCardIndex],
+          this.drawStack[i],
         ];
       }
     }
@@ -105,9 +101,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.socket.sendEvent(type, content, to);
   }
 
-  public broadcast<I extends GameEventIdentifiers = GameEventIdentifiers>(
+  public broadcast<I extends GameEventIdentifiers>(
     type: I,
-    content: EventPicker<I, WorkPlace.Server>,
+    content: ServerEventFinder<I>,
   ) {
     this.socket.ClientIds.forEach(clientId => {
       if (content.messages && typeof content.messages === 'string') {
@@ -214,10 +210,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   public async useCard(
     content: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
   ) {
-    if (content.fromId) {
-      const from = this.getPlayerById(content.fromId);
-      from.useCard(content.cardId);
-    }
+    await super.useCard(content);
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.CardUseEvent,
       content,
@@ -248,10 +241,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   public async useSkill(
     content: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
   ) {
-    if (content.fromId) {
-      const from = this.getPlayerById(content.fromId);
-      from.useSkill(content.skillName);
-    }
+    await super.useSkill(content);
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.SkillUseEvent,
       content,
@@ -311,13 +301,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   public getCards(numberOfCards: number, from: 'top' | 'bottom') {
     const cards: CardId[] = [];
     while (numberOfCards-- > 0) {
-      if (this.drawDile.length === 0) {
+      if (this.drawStack.length === 0) {
         this.shuffle();
       }
 
       const card = (from === 'top'
-        ? this.drawDile.shift()
-        : this.drawDile.pop()) as CardId;
+        ? this.drawStack.shift()
+        : this.drawStack.pop()) as CardId;
       cards.push(card);
     }
 
@@ -367,8 +357,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       ),
     );
 
-    this.dropDile.push(...cardIds);
-    this.drawDile.filter(cardId => !cardIds.includes(cardId));
+    this.dropStack.push(...cardIds);
+    this.drawStack.filter(cardId => !cardIds.includes(cardId));
   }
 
   public async obtainCards(cardIds: CardId[], to: PlayerId, fromId?: PlayerId) {
@@ -638,5 +628,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public get CurrentPlayer(): Player {
     return this.gameProcessor.CurrentPlayer;
+  }
+
+  public get DrawStack(): ReadonlyArray<CardId> {
+    return this.drawStack;
+  }
+  public get DropStack(): ReadonlyArray<CardId> {
+    return this.dropStack;
   }
 }

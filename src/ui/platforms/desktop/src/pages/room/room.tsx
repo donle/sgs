@@ -11,10 +11,9 @@ import {
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { match } from 'react-router-dom';
-import SocketIOClient from 'socket.io-client';
 import { PagePropsWithHostConfig } from 'types/page_props';
 import { RoomPresenter, RoomStore } from './room.presenter';
-import { RoomEventProcessor } from './room_event_processor';
+import { ClientSocket } from 'core/network/socket.client';
 
 @mobxReact.observer
 export class RoomPage extends React.Component<
@@ -24,61 +23,43 @@ export class RoomPage extends React.Component<
 > {
   private presenter: RoomPresenter;
   private store: RoomStore;
-  private socket: SocketIOClient.Socket;
+  private socket: ClientSocket;
   constructor(props: any) {
     super(props);
 
     const { config, match } = this.props;
+    const roomId = parseInt(this.props.match.params.slug, 10);
     this.presenter = new RoomPresenter();
     this.store = this.presenter.createStore();
-    this.socket = SocketIOClient(
-      `${config.protocol}://${config.host}:${config.port}/room-${match.params.slug}`,
-    );
+    this.socket = new ClientSocket(this.props.config, roomId);
   }
 
   componentDidMount() {
-    this.attachSocketListeners(this.socket, this.presenter);
+    const playerName = 'test';
     const event: ClientEventFinder<GameEventIdentifiers.PlayerEnterEvent> = {
-      playerName: 'test',
+      playerName,
     };
 
-    this.socket.emit(RoomSocketEvent.JoinRoom, {
+    this.socket.sendRoomEvent(RoomSocketEvent.JoinRoom, {
       roomId: this.props.match.params.slug,
+      playerName,
     });
-    this.socket.emit(GameEventIdentifiers.PlayerEnterEvent.toString(), event);
+    this.socket.sendEvent(GameEventIdentifiers.PlayerEnterEvent, event);
 
-    this.socket.on(
-      RoomSocketEvent.JoinRoom,
-      (event: RoomSocketEventResponser<RoomSocketEvent.JoinRoom>) => {
-        this.presenter.setupRoomInfo(event.roomInfo);
-      },
-    );
+    // TODO: make listner work on client socket;
+    // this.socket.on(
+    //   RoomSocketEvent.JoinRoom,
+    //   (event: RoomSocketEventResponser<RoomSocketEvent.JoinRoom>) => {
+    //     this.presenter.setupRoomInfo(event.roomInfo);
+    //   },
+    // ).on(RoomSocketEvent.GameStart, (event: RoomSocketEventResponser<RoomSocketEvent.GameStart>) => {
+    //   this.presenter.createClientRoom(parseInt(this.props.match.params.slug), this.socket)
+    // });
   }
 
   componentWillUnmount() {
     this.socket.disconnect();
-    this.socket.close();
   }
-
-  private readonly attachSocketListeners = (
-    socket: SocketIOClient.Socket,
-    presenter: RoomPresenter,
-  ) => {
-    for (const identifier of createGameEventIdentifiersStringList()) {
-      socket.on(
-        identifier.toString(),
-        (event: ServerEventFinder<GameEventIdentifiers>) => {
-          const type = parseInt(identifier, 10) as GameEventIdentifiers;
-
-          RoomEventProcessor.Instance.onHandleIncomingEvent(
-            type,
-            event,
-            presenter,
-          );
-        },
-      );
-    }
-  };
 
   render() {
     const { match } = this.props;

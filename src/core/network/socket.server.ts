@@ -6,6 +6,7 @@ import {
   GameEventIdentifiers,
   RoomEvent,
   RoomEventFinder,
+  ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
 import { Socket } from 'core/network/socket';
@@ -19,6 +20,7 @@ import { HostConfigProps } from 'core/shares/types/host_config';
 import {
   RoomSocketEvent,
   RoomSocketEventPicker,
+  RoomSocketEventResponser,
 } from 'core/shares/types/server_types';
 import IOSocketServer from 'socket.io';
 
@@ -58,22 +60,31 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       socket.on(
         RoomSocketEvent.JoinRoom,
         async (event: RoomSocketEventPicker<RoomSocketEvent.JoinRoom>) => {
+          const room = this.room as ServerRoom;
           const player = new ServerPlayer(
-            event.playerId,
+            socket.id,
             event.playerName,
-            this.room!.Players.length,
+            room.Players.length,
           );
-          this.room!.addPlayer(player);
+          room.addPlayer(player);
 
           this.socket.emit(RoomSocketEvent.JoinRoom, {
-            roomInfo: this.room!.getRoomInfo(),
-            playersInfo: this.room!.Players.map(player =>
-              player.getPlayerInfo(),
-            ),
+            roomInfo: room.getRoomInfo(),
+            playersInfo: room.Players.map(player => player.getPlayerInfo()),
           });
 
-          if (this.room!.Players.length === this.room!.getRoomInfo().totalPlayers) {
-            await this.room!.gameStart();
+          if (room.Players.length === room.getRoomInfo().totalPlayers) {
+            const event: RoomSocketEventResponser<RoomSocketEvent.GameStart> = {
+              gameStartInfo: {
+                numberOfDrawStack: room.DrawStack.length,
+                round: 0,
+                currentPlayerId: room.Players[0].Id,
+              },
+              playersInfo: room.Players.map(player => player.getPlayerInfo()),
+            };
+            this.socket.emit(RoomSocketEvent.GameStart, event);
+
+            await room.gameStart();
           }
         },
       );
@@ -119,9 +130,9 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     }
   }
 
-  public sendEvent(
-    type: GameEventIdentifiers,
-    content: EventPicker<typeof type, WorkPlace.Client>,
+  public sendEvent<I extends GameEventIdentifiers>(
+    type: I,
+    content: ServerEventFinder<I>,
     to: PlayerId,
   ) {
     const clientSocket = this.clientIds.find(clientId => clientId === to);
@@ -134,9 +145,9 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     this.socket.to(clientSocket).emit(type.toString(), content);
   }
 
-  broadcast(
-    type: GameEventIdentifiers,
-    content: EventPicker<typeof type, WorkPlace.Server>,
+  broadcast<I extends GameEventIdentifiers>(
+    type: I,
+    content: ServerEventFinder<I>,
   ) {
     this.socket.emit(type.toString(), content);
   }

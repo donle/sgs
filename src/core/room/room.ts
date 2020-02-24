@@ -19,12 +19,12 @@ import { FilterSkill } from 'core/skills/skill';
 export type RoomId = number;
 
 export abstract class Room<T extends WorkPlace = WorkPlace> {
-  protected abstract socket: Socket<T>;
-  protected abstract gameInfo: GameInfo;
-  protected abstract players: Player[];
-  protected abstract roomId: RoomId;
+  protected abstract readonly socket: Socket<T>;
+  protected abstract readonly gameInfo: GameInfo;
+  protected abstract readonly players: Player[];
+  protected abstract readonly roomId: RoomId;
 
-  protected abstract init(): void;
+  protected abstract init(...args: any[]): void;
 
   private onClosedCallback: () => void;
 
@@ -126,7 +126,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return this.roomId;
   }
 
-  public abstract get CurrentPlayerStage(): PlayerPhase | undefined;
+  public abstract get CurrentPlayerStage(): PlayerPhase;
   public abstract get CurrentPlayer(): Player;
   //Server only
   public abstract syncGameCommonRules(
@@ -134,12 +134,22 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     updateActions: (user: Player) => void,
   ): void;
 
-  public abstract async useCard(
+  public async useCard(
     content: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
-  ): Promise<void>;
-  public abstract async useSkill(
+  ): Promise<void> {
+    if (content.fromId) {
+      const from = this.getPlayerById(content.fromId);
+      from.useCard(content.cardId);
+    }
+  }
+  public async useSkill(
     content: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ): Promise<void>;
+  ): Promise<void> {
+    if (content.fromId) {
+      const from = this.getPlayerById(content.fromId);
+      from.useSkill(content.skillName);
+    }
+  }
 
   public get AlivePlayers() {
     return this.players.filter(player => !player.Dead);
@@ -155,7 +165,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   public removePlayer(playerId: PlayerId) {
-    this.players = this.players.filter(player => player.Id !== playerId);
+    const playerIndex = this.players.findIndex(player => player.Id === playerId);
+    if (playerIndex >= 0) {
+      this.players.splice(playerIndex, 1);
+    }
   }
 
   public getAlivePlayersFrom(

@@ -32,14 +32,14 @@ export abstract class Socket<T extends WorkPlace> {
     T extends WorkPlace.Client ? ServerEventFinder<I> : ClientEventFinder<I>
   >;
 
-  public abstract sendEvent(
-    type: GameEventIdentifiers,
-    content: EventPicker<typeof type, T extends T ? WorkPlace.Server : T>,
+  public abstract sendEvent<I extends GameEventIdentifiers>(
+    type: I,
+    content: T extends WorkPlace.Client ? ClientEventFinder<I> : ServerEventFinder<I>,
     to?: PlayerId,
   ): void;
-  public abstract broadcast(
-    type: GameEventIdentifiers,
-    content: EventPicker<typeof type, WorkPlace.Server>,
+  public abstract broadcast<I extends GameEventIdentifiers>(
+    type: I,
+    content: T extends WorkPlace.Client ? ClientEventFinder<I> : ServerEventFinder<I>
   ): void;
   public abstract emitRoomStatus<T extends RoomEvent>(
     type: T,

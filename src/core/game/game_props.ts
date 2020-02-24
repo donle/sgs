@@ -1,5 +1,5 @@
 import { CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
-import { PlayerRole } from 'core/player/player_props';
+import { PlayerId, PlayerRole } from 'core/player/player_props';
 
 export const INFINITE_TRIGGERING_TIMES = 1000;
 export const NONE_TRIGGERING_TIMES = -9999;
@@ -28,6 +28,12 @@ export type GameInfo = {
   roomName: string;
   multiCharacters?: boolean;
 };
+
+export type GameStartInfo = {
+  numberOfDrawStack: number;
+  round: number;
+  currentPlayerId: PlayerId;
+}
 
 export const enum DamageType {
   Normal = 'normal_property',

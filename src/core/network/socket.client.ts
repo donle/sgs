@@ -1,4 +1,5 @@
 import {
+  ClientEventFinder,
   createGameEventIdentifiersStringList,
   EventPicker,
   GameEventIdentifiers,
@@ -8,6 +9,7 @@ import {
 } from 'core/event/event';
 import { Socket } from 'core/network/socket';
 import { HostConfigProps } from 'core/shares/types/host_config';
+import { RoomSocketEvent, RoomSocketEventPicker } from 'core/shares/types/server_types';
 import IOSocketClient from 'socket.io-client';
 
 export class ClientSocket extends Socket<WorkPlace.Client> {
@@ -22,8 +24,7 @@ export class ClientSocket extends Socket<WorkPlace.Client> {
 
     this.roomId = roomId.toString();
     this.socketIO = IOSocketClient(
-      `${config.protocol}://${config.host}:${config.port}`,
-      { path: '/room' },
+      `${config.protocol}://${config.host}:${config.port}/room-${roomId}`,
     );
 
     const gameEvent: string[] = createGameEventIdentifiersStringList();
@@ -45,16 +46,23 @@ export class ClientSocket extends Socket<WorkPlace.Client> {
     });
   }
 
-  public sendEvent(
-    type: GameEventIdentifiers,
-    content: EventPicker<typeof type, WorkPlace.Server>,
+  public sendEvent<I extends GameEventIdentifiers>(
+    type: I,
+    content: ClientEventFinder<I>,
   ) {
     this.socketIO.emit(type.toString(), content);
   }
 
-  public broadcast(
-    type: GameEventIdentifiers,
-    content: EventPicker<typeof type, WorkPlace.Server>,
+  public sendRoomEvent<I extends RoomSocketEvent>(
+    type: I,
+    content: RoomSocketEventPicker<I>,
+  ) {
+    this.socketIO.emit(type.toString(), content);
+  }
+
+  public broadcast<I extends GameEventIdentifiers>(
+    type: I,
+    content: ClientEventFinder<I>,
   ) {
     throw new Error("Shouldn't call broadcast function in client socket");
   }
@@ -63,5 +71,10 @@ export class ClientSocket extends Socket<WorkPlace.Client> {
     content: RoomEventFinder<T>,
   ) {
     throw new Error("Shouldn't call emitRoomStatus function in client socket");
+  }
+
+  public disconnect() {
+    this.socketIO.disconnect();
+    this.socketIO.close();
   }
 }
