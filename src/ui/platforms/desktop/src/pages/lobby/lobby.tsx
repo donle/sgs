@@ -68,7 +68,7 @@ export class Lobby extends React.Component<LobbyProps> {
   }
 
   @mobx.action
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.socket.emit(LobbySocketEvent.QueryRoomList.toString());
     this.socket.emit(LobbySocketEvent.QueryVersion.toString(), {
       version: Sanguosha.Version,
@@ -136,7 +136,6 @@ export class Lobby extends React.Component<LobbyProps> {
                   <span>{roomInfo.name}</span>
                   <span>{this.getTranslatePackName(...roomInfo.packages)}</span>
                   <span>{`${roomInfo.activePlayers}/${roomInfo.totalPlayers}`}</span>
-                  {/* TODO: statuc needs to be translated */}
                   <span>{this.props.translator.tr(roomInfo.status)}</span>
                 </li>
               ))}

@@ -69,6 +69,7 @@ export class RoomPage extends React.Component<
       .on(
         GameEventIdentifiers.GameReadyEvent,
         (event: ServerEventFinder<GameEventIdentifiers.GameReadyEvent>) => {
+          //TODO: game start here
           this.showMessageFromEvent(event);
         },
       );
@@ -84,14 +85,14 @@ export class RoomPage extends React.Component<
   ) {
     if (translationsMessage) {
       messages.push(this.props.translator.tr(translationsMessage));
-      messages.forEach(message => {
-        this.presenter.addGameLog(message);
-      });
     }
+    messages.forEach(message => {
+      this.presenter.addGameLog(this.props.translator.tr(message));
+    });
   }
 
   private showMessageFromEvent(event: ServerEventFinder<GameEventIdentifiers>) {
-    const { messages = [], translationsMessage } = event;
+    const { messages, translationsMessage } = event;
     this.showMessage(messages, translationsMessage);
   }
 
