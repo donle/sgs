@@ -1,7 +1,6 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import {
   ClientEventFinder,
-  EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
@@ -45,7 +44,7 @@ export class NanManRuQingSkill extends ActiveSkill {
       '{0} uses card {1}',
       room.getPlayerById(event.fromId).Name,
       TranslationPack.patchCardInTranslation(event.cardId),
-    );
+    ).extract();
 
     await room.useCard(event);
     return true;
@@ -60,16 +59,13 @@ export class NanManRuQingSkill extends ActiveSkill {
     for (const to of toIds!) {
       room.notify(
         GameEventIdentifiers.AskForCardResponseEvent,
-        EventPacker.createIdentifierEvent(
-          GameEventIdentifiers.AskForCardResponseEvent,
-          {
-            carMatcher: new CardMatcher({
-              name: ['slash'],
-            }).toSocketPassenger(),
-            byCardId: cardId,
-            cardUserId: fromId,
-          },
-        ),
+        {
+          carMatcher: new CardMatcher({
+            name: ['slash'],
+          }).toSocketPassenger(),
+          byCardId: cardId,
+          cardUserId: fromId,
+        },
         to,
       );
 
@@ -79,27 +75,21 @@ export class NanManRuQingSkill extends ActiveSkill {
       );
 
       if (response.cardId === undefined) {
-        const eventContent = EventPacker.createIdentifierEvent(
-          GameEventIdentifiers.DamageEvent,
-          {
-            fromId,
-            toId: to,
-            damage: 1,
-            damageType: DamageType.Normal,
-            cardIds: [event.cardId],
-            triggeredBySkillName: this.name,
-          },
-        );
+        const eventContent = {
+          fromId,
+          toId: to,
+          damage: 1,
+          damageType: DamageType.Normal,
+          cardIds: [event.cardId],
+          triggeredBySkillName: this.name,
+        };
 
         await room.damage(eventContent);
       } else {
-        const cardResponsedEvent: ServerEventFinder<GameEventIdentifiers.CardResponseEvent> = EventPacker.createIdentifierEvent(
-          GameEventIdentifiers.CardResponseEvent,
-          {
-            fromId: to,
-            cardId: response.cardId,
-          },
-        );
+        const cardResponsedEvent: ServerEventFinder<GameEventIdentifiers.CardResponseEvent> = {
+          fromId: to,
+          cardId: response.cardId,
+        };
 
         await room.responseCard(cardResponsedEvent);
       }

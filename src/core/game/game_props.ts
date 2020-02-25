@@ -29,7 +29,7 @@ export type GameInfo = {
   multiCharacters?: boolean;
 };
 
-export type GameStartInfo = {
+export type GameRunningInfo = {
   numberOfDrawStack: number;
   round: number;
   currentPlayerId: PlayerId;

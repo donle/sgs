@@ -1,7 +1,12 @@
 import { CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { CharacterId } from 'core/characters/character';
-import { DamageType, GameCommonRuleObject } from 'core/game/game_props';
+import {
+  DamageType,
+  GameCommonRuleObject,
+  GameInfo,
+  GameRunningInfo,
+} from 'core/game/game_props';
 import { PlayerPhase } from 'core/game/stage_processor';
 import {
   PlayerCardsArea,
@@ -9,13 +14,13 @@ import {
   PlayerInfo,
   PlayerRole,
 } from 'core/player/player_props';
+import { RoomInfo } from 'core/shares/types/server_types';
 import {
   EventUtilities,
   GameEventIdentifiers,
   ServerEventFinder,
 } from './event';
 
-//@@todo: to be updated
 export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.CardUseEvent]: {
     fromId: PlayerId;
@@ -109,7 +114,11 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.UserMessageEvent]: {
     playerId: PlayerId;
   };
-
+  [GameEventIdentifiers.GameReadyEvent]: {
+    gameInfo: GameInfo;
+    gameStartInfo: GameRunningInfo;
+    playersInfo: PlayerInfo[];
+  };
   [GameEventIdentifiers.GameStartEvent]: {
     currentPlayer: PlayerInfo;
     otherPlayers: PlayerInfo[];
@@ -119,7 +128,10 @@ export interface ServerEvent extends EventUtilities {
   };
 
   [GameEventIdentifiers.PlayerEnterEvent]: {
-    playerInfo: PlayerInfo;
+    joiningPlayerName: string;
+    playersInfo: PlayerInfo[];
+    roomInfo: RoomInfo;
+    gameInfo: GameInfo;
   };
   [GameEventIdentifiers.PlayerLeaveEvent]: {
     playerId: PlayerId;

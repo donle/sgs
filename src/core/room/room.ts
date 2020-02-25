@@ -14,6 +14,7 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { GameInfo } from 'core/game/game_props';
 import { AllStage, PlayerPhase } from 'core/game/stage_processor';
+import { RoomInfo } from 'core/shares/types/server_types';
 import { FilterSkill } from 'core/skills/skill';
 
 export type RoomId = number;
@@ -23,6 +24,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected abstract readonly gameInfo: GameInfo;
   protected abstract readonly players: Player[];
   protected abstract readonly roomId: RoomId;
+
+  protected gameStarted: boolean = false;
 
   protected abstract init(...args: any[]): void;
 
@@ -113,6 +116,15 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract obtainSkill(playerId: PlayerId, skillName: string): void;
 
+  public abstract async gameStart(...args: any[]): Promise<void>;
+  public abstract get CurrentPlayerStage(): PlayerPhase;
+  public abstract get CurrentPlayer(): Player;
+  //Server only
+  public abstract syncGameCommonRules(
+    playerId: PlayerId,
+    updateActions: (user: Player) => void,
+  ): void;
+
   public getPlayerById(playerId: PlayerId) {
     const player = this.players.find(player => player.Id === playerId);
     if (player === undefined) {
@@ -121,18 +133,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
     return player;
   }
-
-  public get RoomId() {
-    return this.roomId;
-  }
-
-  public abstract get CurrentPlayerStage(): PlayerPhase;
-  public abstract get CurrentPlayer(): Player;
-  //Server only
-  public abstract syncGameCommonRules(
-    playerId: PlayerId,
-    updateActions: (user: Player) => void,
-  ): void;
 
   public async useCard(
     content: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
@@ -165,7 +165,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   public removePlayer(playerId: PlayerId) {
-    const playerIndex = this.players.findIndex(player => player.Id === playerId);
+    const playerIndex = this.players.findIndex(
+      player => player.Id === playerId,
+    );
     if (playerIndex >= 0) {
       this.players.splice(playerIndex, 1);
     }
@@ -317,5 +319,23 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
   getMark(player: PlayerId, name: string) {
     return this.getPlayerById(player).getMark(name);
+  }
+
+  public getRoomInfo(): RoomInfo {
+    return {
+      name: this.gameInfo.roomName,
+      activePlayers: this.players.length,
+      totalPlayers: this.gameInfo.numberOfPlayers,
+      packages: this.gameInfo.characterExtensions,
+      status: this.gameStarted ? 'playing' : 'waiting',
+    };
+  }
+
+  public get RoomId() {
+    return this.roomId;
+  }
+
+  public get Info() {
+    return this.gameInfo;
   }
 }

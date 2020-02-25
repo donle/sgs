@@ -68,6 +68,14 @@ const gameMessageTranslations: Word[] = [
     source: 'do you want to use nullification to {1} from {0}',
     target: '是否对 {0} 的【{1}】使用【无懈可击】',
   },
+  {
+    source: 'player {0} join in the room',
+    target: '玩家 {0} 进入了房间',
+  },
+  {
+    source: 'game will start within 3 seconds',
+    target: '游戏将在3秒后开始',
+  },
 ];
 
 const gameUITranslations: Word[] = [

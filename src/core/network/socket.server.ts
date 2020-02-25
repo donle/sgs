@@ -1,27 +1,21 @@
 import {
   ClientEventFinder,
-  createGameEventIdentifiersStringList,
-  EventPacker,
-  EventPicker,
   GameEventIdentifiers,
   RoomEvent,
   RoomEventFinder,
+  serverActiveListenerEvents,
   ServerEventFinder,
+  serverResponsiveListenerEvents,
   WorkPlace,
 } from 'core/event/event';
 import { Socket } from 'core/network/socket';
-import { Player } from 'core/player/player';
 import { ServerPlayer } from 'core/player/player.server';
 import { PlayerId } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { HostConfigProps } from 'core/shares/types/host_config';
-import {
-  RoomSocketEvent,
-  RoomSocketEventPicker,
-  RoomSocketEventResponser,
-} from 'core/shares/types/server_types';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 import IOSocketServer from 'socket.io';
 
 export class ServerSocket extends Socket<WorkPlace.Server> {
@@ -48,74 +42,84 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     this.socket = socket;
     this.socket.on('connection', socket => {
       logger.info('User connected', socket.id);
+      this.clientIds.push(socket.id);
 
-      socket.on(
-        RoomSocketEvent.JoinRoom,
-        async (event: RoomSocketEventPicker<RoomSocketEvent.JoinRoom>) => {
-          const room = this.room as ServerRoom;
-          const player = new ServerPlayer(
-            socket.id,
-            event.playerName,
-            room.Players.length,
-          );
-          // this.clientIds.push(socket.id);
-          room.addPlayer(player);
+      serverActiveListenerEvents().forEach(identifier => {
+        socket.on(
+          identifier.toString(),
+          (content: ClientEventFinder<typeof identifier>) => {
+            switch (identifier) {
+              case GameEventIdentifiers.PlayerEnterEvent:
+                this.onPlayerEnter(
+                  socket,
+                  identifier,
+                  content as ClientEventFinder<
+                    GameEventIdentifiers.PlayerEnterEvent
+                  >,
+                );
+                break;
+              case GameEventIdentifiers.PlayerLeaveEvent:
+              case GameEventIdentifiers.UserMessageEvent:
+              default:
+                logger.debug('Not implemented active listener', identifier);
+            }
+          },
+        );
+      });
 
-          this.socket.emit(RoomSocketEvent.JoinRoom, {
-            roomInfo: room.getRoomInfo(),
-            playersInfo: room.Players.map(player => player.getPlayerInfo()),
-            gameInfo: room.Info,
-          });
-
-          if (room.Players.length === room.getRoomInfo().totalPlayers) {
-            const event: RoomSocketEventResponser<RoomSocketEvent.GameStart> = {
-              gameStartInfo: {
-                numberOfDrawStack: room.DrawStack.length,
-                round: 0,
-                currentPlayerId: room.Players[0].Id,
-              },
-              playersInfo: room.Players.map(player => player.getPlayerInfo()),
-            };
-            this.socket.emit(RoomSocketEvent.GameStart, event);
-
-            await room.gameStart();
-          }
-        },
-      );
-
-      const gameEvent: string[] = createGameEventIdentifiersStringList();
-      gameEvent.forEach(event => {
-        socket.on(event, (content: unknown) => {
-          const identifier = parseInt(event, 10);
-          if (Number.isNaN(identifier)) {
-            throw new Error("Server can't receive room event");
-          }
-
-          const type = identifier as GameEventIdentifiers;
-
+      serverResponsiveListenerEvents().forEach(identifier => {
+        socket.on(identifier.toString(), (content: unknown) => {
           const asyncResolver =
-            this.asyncResponseResolver[type] &&
-            this.asyncResponseResolver[type][socket.id];
+            this.asyncResponseResolver[identifier] &&
+            this.asyncResponseResolver[identifier][socket.id];
           if (asyncResolver) {
             asyncResolver(content);
-            this.asyncResponseResolver[type][socket.id] = undefined;
+            this.asyncResponseResolver[identifier][socket.id] = undefined;
           }
         });
       });
 
-      socket
-        .on('connect', () => {
-          this.clientIds.push(socket.id);
-        })
-        .on('disconnect', () => {
-          this.clientIds.filter(id => id !== socket.id);
-          socket.leave(this.roomId);
-          socket.disconnect();
-          if (this.clientIds.length === 0) {
-            this.room && this.room.close();
-          }
-        });
+      socket.on('disconnect', () => {
+        logger.info('User disconnected', socket.id);
+        this.clientIds = this.clientIds.filter(id => id !== socket.id);
+        this.room!.removePlayer(socket.id);
+
+        socket.leave(this.roomId);
+        socket.disconnect();
+        if (this.clientIds.length === 0) {
+          this.room && this.room.close();
+        }
+      });
     });
+  }
+
+  private async onPlayerEnter(
+    socket: IOSocketServer.Socket,
+    identifier: GameEventIdentifiers.PlayerEnterEvent,
+    event: ClientEventFinder<typeof identifier>,
+  ) {
+    const room = this.room as ServerRoom;
+    const player = new ServerPlayer(
+      socket.id,
+      event.playerName,
+      room.Players.length,
+    );
+    room.addPlayer(player);
+
+    this.broadcast(GameEventIdentifiers.PlayerEnterEvent, {
+      joiningPlayerName: event.playerName,
+      roomInfo: room.getRoomInfo(),
+      playersInfo: room.Players.map(player => player.getPlayerInfo()),
+      gameInfo: room.Info,
+      translationsMessage: TranslationPack.translationJsonPatcher(
+        'player {0} join in the room',
+        event.playerName,
+      ).extract(),
+    });
+
+    if (room.Players.length === room.getRoomInfo().totalPlayers) {
+      await room.gameStart();
+    }
   }
 
   public emit(room: ServerRoom) {

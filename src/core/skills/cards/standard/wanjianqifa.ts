@@ -1,7 +1,6 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import {
   ClientEventFinder,
-  EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
@@ -45,7 +44,7 @@ export class WanJianQiFaSkill extends ActiveSkill {
       '{0} uses card {1}',
       room.getPlayerById(event.fromId).Name,
       TranslationPack.patchCardInTranslation(event.cardId),
-    );
+    ).extract();
 
     return true;
   }
@@ -59,16 +58,13 @@ export class WanJianQiFaSkill extends ActiveSkill {
     for (const to of toIds || []) {
       room.notify(
         GameEventIdentifiers.AskForCardResponseEvent,
-        EventPacker.createIdentifierEvent(
-          GameEventIdentifiers.AskForCardResponseEvent,
-          {
-            carMatcher: new CardMatcher({
-              name: ['jink'],
-            }).toSocketPassenger(),
-            byCardId: cardId,
-            cardUserId: fromId,
-          },
-        ),
+        {
+          carMatcher: new CardMatcher({
+            name: ['jink'],
+          }).toSocketPassenger(),
+          byCardId: cardId,
+          cardUserId: fromId,
+        },
         to,
       );
 
@@ -78,34 +74,28 @@ export class WanJianQiFaSkill extends ActiveSkill {
       );
 
       if (response.cardId === undefined) {
-        const eventContent = EventPacker.createIdentifierEvent(
-          GameEventIdentifiers.DamageEvent,
-          {
-            fromId,
-            toId: to,
-            damage: 1,
-            damageType: DamageType.Normal,
-            cardIds: [event.cardId],
-            triggeredBySkillName: this.name,
-            translationsMessage: TranslationPack.translationJsonPatcher(
-              '{0} hits {1} for {2} {3} hp',
-              room.getPlayerById(fromId!).Name,
-              room.getPlayerById(to).Name,
-              1,
-              DamageType.Normal,
-            ),
-          },
-        );
+        const eventContent = {
+          fromId,
+          toId: to,
+          damage: 1,
+          damageType: DamageType.Normal,
+          cardIds: [event.cardId],
+          triggeredBySkillName: this.name,
+          translationsMessage: TranslationPack.translationJsonPatcher(
+            '{0} hits {1} for {2} {3} hp',
+            room.getPlayerById(fromId!).Name,
+            room.getPlayerById(to).Name,
+            1,
+            DamageType.Normal,
+          ).extract(),
+        };
 
         await room.damage(eventContent);
       } else {
-        const cardResponsedEvent = EventPacker.createIdentifierEvent(
-          GameEventIdentifiers.CardResponseEvent,
-          {
-            fromId: to,
-            cardId: response.cardId,
-          },
-        );
+        const cardResponsedEvent = {
+          fromId: to,
+          cardId: response.cardId,
+        };
 
         await room.responseCard(cardResponsedEvent);
       }

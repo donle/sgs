@@ -1,5 +1,6 @@
+import { GameRunningInfo } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
-import { TranslationPack } from 'core/translations/translation_json_tool';
+import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
 import { ClientEvent } from './event.client';
 import { ServerEvent } from './event.server';
 
@@ -74,6 +75,7 @@ export const enum GameEventIdentifiers {
   RecoverEvent,
   JudgeEvent,
 
+  GameReadyEvent,
   GameStartEvent,
   GameOverEvent,
   PlayerEnterEvent,
@@ -115,23 +117,54 @@ export const isCardResponsiveIdentifier = (
   ].includes(identifier);
 };
 
-export const createGameEventIdentifiersStringList = () => {
-  const list: string[] = [
-    RoomEvent.SetFlagEvent,
-    RoomEvent.RemoveFlagEvent,
-    RoomEvent.ClearFlagEvent,
-    RoomEvent.AddMarkEvent,
-    RoomEvent.SetMarkEvent,
-    RoomEvent.RemoveMarkEvent,
-    RoomEvent.ClearMarkEvent,
-  ];
+export const serverActiveListenerEvents = (): [
+  GameEventIdentifiers.UserMessageEvent,
+  GameEventIdentifiers.PlayerEnterEvent,
+  GameEventIdentifiers.PlayerLeaveEvent,
+] => [
+  GameEventIdentifiers.UserMessageEvent,
+  GameEventIdentifiers.PlayerEnterEvent,
+  GameEventIdentifiers.PlayerLeaveEvent,
+];
 
-  for (let i = 0; i <= GameEventIdentifiers.AskForPlaceCardsInDileEvent; i++) {
-    list.push(i.toString());
-  }
+export const serverResponsiveListenerEvents = () => [
+  GameEventIdentifiers.SyncGameCommonRulesEvent,
 
-  return list;
-};
+  GameEventIdentifiers.CardDropEvent,
+  GameEventIdentifiers.CardResponseEvent,
+  GameEventIdentifiers.CardUseEvent,
+  GameEventIdentifiers.CardEffectEvent,
+  GameEventIdentifiers.CardDisplayEvent,
+  GameEventIdentifiers.DrawCardEvent,
+  GameEventIdentifiers.ObtainCardEvent,
+  GameEventIdentifiers.MoveCardEvent,
+
+  GameEventIdentifiers.AimEvent,
+
+  GameEventIdentifiers.SkillUseEvent,
+  GameEventIdentifiers.SkillEffectEvent,
+
+  GameEventIdentifiers.GameStartEvent,
+  GameEventIdentifiers.GameOverEvent,
+  GameEventIdentifiers.PlayerDyingEvent,
+  GameEventIdentifiers.PlayerDiedEvent,
+
+  GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
+  GameEventIdentifiers.AskForPeachEvent,
+  GameEventIdentifiers.AskForWuXieKeJiEvent,
+  GameEventIdentifiers.AskForCardResponseEvent,
+  GameEventIdentifiers.AskForCardUseEvent,
+  GameEventIdentifiers.AskForCardDisplayEvent,
+  GameEventIdentifiers.AskForCardDropEvent,
+  GameEventIdentifiers.AskForPinDianCardEvent,
+  GameEventIdentifiers.AskForChoosingCardEvent,
+  GameEventIdentifiers.AskForChoosePlayerEvent,
+  GameEventIdentifiers.AskForChooseOptionsEvent,
+  GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
+  GameEventIdentifiers.AskForInvokeEvent,
+  GameEventIdentifiers.AskForChooseCharacterEvent,
+  GameEventIdentifiers.AskForPlaceCardsInDileEvent,
+];
 
 export const enum WorkPlace {
   Client,
@@ -141,7 +174,7 @@ export const enum WorkPlace {
 export type BaseGameEvent = {
   triggeredBySkillName?: string;
   messages?: string[];
-  translationsMessage?: TranslationPack;
+  translationsMessage?: PatchedTranslationObject;
 };
 
 export type EventUtilities = {
@@ -161,6 +194,25 @@ export type ServerEventFinder<I extends GameEventIdentifiers> = BaseGameEvent &
 
 export class EventPacker {
   private constructor() {}
+
+  static wrapGameRunningInfo<T extends GameEventIdentifiers>(
+    event: ServerEventFinder<T>,
+    info: GameRunningInfo,
+  ): ServerEventFinder<T> {
+    return { ...event, ...info };
+  }
+
+  static getGameRunningInfo<T extends GameEventIdentifiers>(
+    event: ServerEventFinder<T>,
+  ): GameRunningInfo {
+    const { numberOfDrawStack, round, currentPlayerId } = event as any;
+
+    return {
+      numberOfDrawStack,
+      round,
+      currentPlayerId,
+    };
+  }
 
   static isDisresponsiveEvent = <T extends GameEventIdentifiers>(
     event: ServerEventFinder<T>,

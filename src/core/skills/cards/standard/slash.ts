@@ -2,7 +2,6 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import {
   ClientEventFinder,
-  EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
@@ -50,7 +49,7 @@ export class SlashSkill extends ActiveSkill {
       room.CurrentPlayer.Name,
       room.getPlayerById(event.toIds![0]).Name,
       this.name,
-    );
+    ).extract();
 
     return true;
   }
@@ -62,15 +61,12 @@ export class SlashSkill extends ActiveSkill {
     const { toIds, fromId, cardId } = event;
 
     for (const toId of toIds || []) {
-      const askForUseCardEvent = EventPacker.createIdentifierEvent(
-        GameEventIdentifiers.AskForCardUseEvent,
-        {
-          carMatcher: new CardMatcher({ name: ['jink'] }).toSocketPassenger(),
-          byCardId: cardId,
-          cardUserId: fromId,
-          triggeredBySkillName: this.name,
-        },
-      );
+      const askForUseCardEvent = {
+        carMatcher: new CardMatcher({ name: ['jink'] }).toSocketPassenger(),
+        byCardId: cardId,
+        cardUserId: fromId,
+        triggeredBySkillName: this.name,
+      };
 
       room.notify(
         GameEventIdentifiers.AskForCardUseEvent,
@@ -84,40 +80,32 @@ export class SlashSkill extends ActiveSkill {
       );
 
       if (response.cardId !== undefined) {
-        await room.useCard(
-          EventPacker.createIdentifierEvent<GameEventIdentifiers.CardUseEvent>(
-            GameEventIdentifiers.CardUseEvent,
-            {
-              fromId: toId,
-              cardId: response.cardId,
-            },
-          ),
-        );
+        await room.useCard({
+          fromId: toId,
+          cardId: response.cardId,
+        });
       } else {
-        const damageEvent = EventPacker.createIdentifierEvent(
-          GameEventIdentifiers.DamageEvent,
-          {
-            fromId,
-            toId,
-            damage: 1,
-            damageType: this.damageType,
-            cardIds: [cardId],
-            triggeredBySkillName: this.name,
-            translationsMessage: fromId
-              ? TranslationPack.translationJsonPatcher(
-                  '{0} hurts {1} for {2} {3} hp',
-                  room.getPlayerById(fromId).Name,
-                  room.getPlayerById(toId).Name,
-                  1,
-                  this.damageType,
-                )
-              : TranslationPack.translationJsonPatcher(
-                  '{0} got hurt {1} hp',
-                  room.getPlayerById(toId).Name,
-                  1,
-                ),
-          },
-        );
+        const damageEvent = {
+          fromId,
+          toId,
+          damage: 1,
+          damageType: this.damageType,
+          cardIds: [cardId],
+          triggeredBySkillName: this.name,
+          translationsMessage: fromId
+            ? TranslationPack.translationJsonPatcher(
+                '{0} hurts {1} for {2} {3} hp',
+                room.getPlayerById(fromId).Name,
+                room.getPlayerById(toId).Name,
+                1,
+                this.damageType,
+              ).extract()
+            : TranslationPack.translationJsonPatcher(
+                '{0} got hurt {1} hp',
+                room.getPlayerById(toId).Name,
+                1,
+              ).extract(),
+        };
 
         await room.damage(damageEvent);
       }

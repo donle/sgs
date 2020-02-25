@@ -3,15 +3,15 @@ import {
   GameEventIdentifiers,
   WorkPlace,
 } from 'core/event/event';
-import { GameInfo, GameStartInfo } from 'core/game/game_props';
+import { GameInfo, GameRunningInfo } from 'core/game/game_props';
 import { PlayerPhase } from 'core/game/stage_processor';
-import { Socket } from 'core/network/socket';
+import { ClientSocket } from 'core/network/socket.client';
 import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
 import { Room, RoomId } from './room';
 
 export class ClientRoom extends Room<WorkPlace.Client> {
-  protected readonly socket: Socket<WorkPlace.Client>;
+  protected readonly socket: ClientSocket;
   protected readonly gameInfo: GameInfo;
   protected readonly players: Player[];
   protected readonly roomId: RoomId;
@@ -23,10 +23,9 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   private numberOfDropStack: number = 0;
   constructor(
     roomId: RoomId,
-    socket: Socket<WorkPlace.Client>,
+    socket: ClientSocket,
     gameInfo: GameInfo,
     players: ClientPlayer[],
-    gameStartInfo: GameStartInfo,
   ) {
     super();
 
@@ -34,11 +33,9 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.socket = socket;
     this.gameInfo = gameInfo;
     this.players = players;
-
-    this.init(gameStartInfo);
   }
 
-  protected init(gameStartInfo: GameStartInfo): void {
+  protected init(gameStartInfo: GameRunningInfo): void {
     this.currentPlayer = this.getPlayerById(
       gameStartInfo.currentPlayerId,
     ) as ClientPlayer;
@@ -125,7 +122,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   ): void {
     //TODO:
     this.socket.notify(type, content);
-  };
+  }
 
   public get CurrentPlayerStage(): PlayerPhase {
     if (this.currentPlayerPhase === undefined) {
@@ -140,5 +137,33 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     }
 
     return this.currentPlayer;
+  }
+
+  public async gameStart(gameStartInfo: GameRunningInfo) {
+    this.gameStarted = true;
+
+    this.init(gameStartInfo);
+  }
+
+  public nextRound() {
+    this.round++;
+  }
+
+  public get Round() {
+    return this.round;
+  }
+
+  public set DrawStack(newAmount: number) {
+    this.numberOfDrawStack = newAmount;
+  }
+  public set DropStack(newAmount: number) {
+    this.numberOfDropStack = newAmount;
+  }
+
+  public get DrawStackAmount() {
+    return this.numberOfDrawStack;
+  }
+  public get DropStackAmount() {
+    return this.numberOfDropStack;
   }
 }

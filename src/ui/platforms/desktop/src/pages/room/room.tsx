@@ -1,9 +1,13 @@
-import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
+import {
+  ClientEventFinder,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from 'core/event/event';
 import { ClientSocket } from 'core/network/socket.client';
 import {
-  RoomSocketEvent,
-  RoomSocketEventResponser,
-} from 'core/shares/types/server_types';
+  PatchedTranslationObject,
+  Translation,
+} from 'core/translations/translation_json_tool';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { match } from 'react-router-dom';
@@ -14,6 +18,7 @@ import { RoomPresenter, RoomStore } from './room.presenter';
 export class RoomPage extends React.Component<
   PagePropsWithHostConfig<{
     match: match<{ slug: string }>;
+    translator: Translation;
   }>
 > {
   private presenter: RoomPresenter;
@@ -29,33 +34,42 @@ export class RoomPage extends React.Component<
   }
 
   componentDidMount() {
-    const playerName = 'test';
+    const playerName = 'test' + Date.now();
     const event: ClientEventFinder<GameEventIdentifiers.PlayerEnterEvent> = {
       playerName,
     };
 
-    this.socket.notify(RoomSocketEvent.JoinRoom, {
-      roomId: this.props.match.params.slug,
-      playerName,
-    });
     this.socket.notify(GameEventIdentifiers.PlayerEnterEvent, event);
 
     this.socket
       .on(
-        RoomSocketEvent.JoinRoom,
-        (event: RoomSocketEventResponser<RoomSocketEvent.JoinRoom>) => {
-          this.presenter.setupRoomInfo(event);
+        GameEventIdentifiers.PlayerEnterEvent,
+        (event: ServerEventFinder<GameEventIdentifiers.PlayerEnterEvent>) => {
+          if (event.joiningPlayerName === playerName) {
+            this.presenter.createClientRoom(
+              parseInt(this.props.match.params.slug, 10),
+              this.socket,
+              event.gameInfo,
+              event.playersInfo,
+            );
+          } else {
+            const playerInfo = event.playersInfo.find(
+              playerInfo => playerInfo.Name === event.joiningPlayerName,
+            );
+
+            if (!playerInfo) {
+              throw new Error(`Unknown player ${event.joiningPlayerName}`);
+            }
+
+            this.presenter.playerEnter(playerInfo);
+          }
+          this.showMessageFromEvent(event);
         },
       )
       .on(
-        RoomSocketEvent.GameStart,
-        (event: RoomSocketEventResponser<RoomSocketEvent.GameStart>) => {
-          this.presenter.createClientRoom(
-            parseInt(this.props.match.params.slug, 10),
-            this.socket,
-            this.store.gameInfo,
-            event.gameStartInfo,
-          );
+        GameEventIdentifiers.GameReadyEvent,
+        (event: ServerEventFinder<GameEventIdentifiers.GameReadyEvent>) => {
+          this.showMessageFromEvent(event);
         },
       );
   }
@@ -64,12 +78,42 @@ export class RoomPage extends React.Component<
     this.socket.disconnect();
   }
 
+  private showMessage(
+    messages: string[] = [],
+    translationsMessage?: PatchedTranslationObject,
+  ) {
+    if (translationsMessage) {
+      messages.push(this.props.translator.tr(translationsMessage));
+      messages.forEach(message => {
+        this.presenter.addGameLog(message);
+      });
+    }
+  }
+
+  private showMessageFromEvent(event: ServerEventFinder<GameEventIdentifiers>) {
+    const { messages = [], translationsMessage } = event;
+    this.showMessage(messages, translationsMessage);
+  }
+
   render() {
     const { match } = this.props;
     return (
       <div>
         room Id: {match.params.slug}
-        <div>room Info: {JSON.stringify(this.store.roomInfo, null, 2)}</div>
+        {this.store.room && (
+          <>
+            <div>
+              room Info:
+              {JSON.stringify(this.store.room.getRoomInfo(), null, 2)}
+            </div>
+            <div>
+              game Info: {JSON.stringify(this.store.room.Info, null, 2)}
+            </div>
+          </>
+        )}
+        {this.store.gameLog.map(log => (
+          <p>{log}</p>
+        ))}
       </div>
     );
   }

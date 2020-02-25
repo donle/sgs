@@ -4,7 +4,6 @@ import { GameInfo } from 'core/game/game_props';
 import { StageProcessor } from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
 import { PlayerId } from 'core/player/player_props';
-import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
 import {
@@ -14,7 +13,6 @@ import {
 } from 'core/shares/types/host_config';
 import {
   LobbySocketEvent,
-  RoomSocketEvent,
 } from 'core/shares/types/server_types';
 import {
   Languages,
@@ -138,10 +136,12 @@ class App {
       content,
       roomSocket,
       new GameProcessor(new StageProcessor()),
+      [],
+      this.logger,
     );
 
     room.onClosed(() => {
-      this.rooms.filter(r => r !== room);
+      this.rooms = this.rooms.filter(r => r !== room);
     });
 
     this.rooms.push(room);

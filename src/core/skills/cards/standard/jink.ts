@@ -25,7 +25,7 @@ export class JinkSkill extends ResponsiveSkill {
       '{0} uses card {1}',
       Sanguosha.getCardById(event.fromId).Name,
       this.name,
-    );
+    ).extract();
 
     return true;
   }

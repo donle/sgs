@@ -62,7 +62,7 @@ export class JiJiang extends ActiveSkill {
       '{0} activates skill {1}',
       room.getPlayerById(event.fromId).Name,
       this.name,
-    );
+    ).extract();
 
     return true;
   }
@@ -79,13 +79,10 @@ export class JiJiang extends ActiveSkill {
         continue;
       }
 
-      const jijiangEvent = EventPacker.createIdentifierEvent(
-        GameEventIdentifiers.AskForCardResponseEvent,
-        {
-          carMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
-          triggeredBySkillName: this.name,
-        },
-      );
+      const jijiangEvent = {
+        carMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
+        triggeredBySkillName: this.name,
+      };
 
       room.notify(
         GameEventIdentifiers.AskForCardResponseEvent,
@@ -98,14 +95,11 @@ export class JiJiang extends ActiveSkill {
         player.Id,
       );
       if (response.cardId !== undefined) {
-        const useCardEvent = EventPacker.createIdentifierEvent(
-          GameEventIdentifiers.CardUseEvent,
-          {
-            cardId: response.cardId,
-            fromId: skillUseEvent.fromId,
-            toIds: skillUseEvent.toIds,
-          },
-        );
+        const useCardEvent = {
+          cardId: response.cardId,
+          fromId: skillUseEvent.fromId,
+          toIds: skillUseEvent.toIds,
+        };
         room.useCard(useCardEvent);
       }
     }
@@ -133,7 +127,7 @@ export class JiJiangShadow extends ResponsiveSkill {
       '{0} activates skill {1}',
       room.getPlayerById(event.fromId).Name,
       this.name,
-    );
+    ).extract();
 
     return true;
   }
@@ -150,13 +144,10 @@ export class JiJiangShadow extends ResponsiveSkill {
         continue;
       }
 
-      const jijiangEvent = EventPacker.createIdentifierEvent(
-        GameEventIdentifiers.AskForCardResponseEvent,
-        {
-          carMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
-          triggeredBySkillName: this.name,
-        },
-      );
+      const jijiangEvent = {
+        carMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
+        triggeredBySkillName: this.name,
+      };
 
       room.notify(
         GameEventIdentifiers.AskForCardResponseEvent,
@@ -179,16 +170,11 @@ export class JiJiangShadow extends ResponsiveSkill {
         if (identifier === undefined) {
           throw new Error(`Unknown event identifier ${identifier}`);
         }
-        const useCardEvent = EventPacker.createIdentifierEvent(
-          identifier === GameEventIdentifiers.AskForCardUseEvent
-            ? GameEventIdentifiers.CardUseEvent
-            : GameEventIdentifiers.CardResponseEvent,
-          {
-            cardId: response.cardId,
-            fromId: skillUseEvent.fromId,
-            toIds: skillUseEvent.toIds,
-          },
-        );
+        const useCardEvent = {
+          cardId: response.cardId,
+          fromId: skillUseEvent.fromId,
+          toIds: skillUseEvent.toIds,
+        };
 
         identifier === GameEventIdentifiers.AskForCardUseEvent
           ? await room.useCard(useCardEvent)

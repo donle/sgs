@@ -52,7 +52,7 @@ export class JiZhi extends TriggerSkill {
       '{0} activates skill {1}',
       room.getPlayerById(event.fromId).Name,
       this.name,
-    );
+    ).extract();
 
     return true;
   }
@@ -71,15 +71,12 @@ export class JiZhi extends TriggerSkill {
         translationsMessage: TranslationPack.translationJsonPatcher(
           'do you wanna discard {0}',
           TranslationPack.patchCardInTranslation(cardId),
-        ),
+        ).extract(),
       });
 
       room.notify(
         GameEventIdentifiers.AskForChooseOptionsEvent,
-        EventPacker.createIdentifierEvent(
-          GameEventIdentifiers.AskForChooseOptionsEvent,
-          askForOptionsEvent,
-        ),
+        askForOptionsEvent,
         event.fromId,
       );
 

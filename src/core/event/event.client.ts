@@ -144,4 +144,5 @@ export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.SyncGameCommonRulesEvent]: never;
   [GameEventIdentifiers.LoseSkillEvent]: never;
   [GameEventIdentifiers.ObtainSkillEvent]: never;
+  [GameEventIdentifiers.GameReadyEvent]: never;
 }

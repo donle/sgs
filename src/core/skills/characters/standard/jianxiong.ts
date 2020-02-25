@@ -37,7 +37,7 @@ export class JianXiong extends TriggerSkill {
       '{0} activates skill {1}',
       room.getPlayerById(event.fromId).Name,
       this.name,
-    );
+    ).extract();
 
     return true;
   }

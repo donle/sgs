@@ -1,7 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
 import {
   ClientEventFinder,
-  EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
@@ -42,12 +41,12 @@ export class PeachSkill extends ActiveSkill {
     if (!event.toIds) {
       event.toIds = [event.fromId];
     }
-    
+
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} uses card {1}',
       room.CurrentPlayer.Name,
       TranslationPack.patchCardInTranslation(event.cardId),
-    );
+    ).extract();
 
     return true;
   }
@@ -56,8 +55,7 @@ export class PeachSkill extends ActiveSkill {
     room: Room,
     event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
   ) {
-    const recoverContent = EventPacker.createIdentifierEvent(
-      GameEventIdentifiers.RecoverEvent,
+    const recoverContent =
       {
         recoverBy: event.fromId,
         toId: event.toIds![0],
@@ -67,9 +65,8 @@ export class PeachSkill extends ActiveSkill {
           '{0} recovers {1} hp',
           room.getPlayerById(event.toIds![0]).Name,
           '1',
-        ),
-      },
-    );
+        ).extract(),
+      };
 
     await room.recover(recoverContent);
 

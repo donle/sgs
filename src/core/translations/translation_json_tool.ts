@@ -51,20 +51,37 @@ export class Translation {
     return translator;
   }
 
-  public tr(rawText: string) {
-    if (rawText.startsWith(translationObjectSign)) {
-      return TranslationPack.translationJsonDispatcher(
-        rawText.slice(translationObjectSign.length),
-        this.dictionary.get(this.currentLanguage)!,
-      );
-    }
+  public tr(rawText: string | PatchedTranslationObject) {
+    if (typeof rawText === 'object') {
+      if (
+        (rawText as TranslationPackPatchedObject).tag !== translationObjectSign
+      ) {
+        throw new Error(
+          `Unexpected translation object: ${JSON.stringify(rawText)}`,
+        );
+      }
 
-    const targetDictionary = this.dictionary.get(this.currentLanguage);
-    if (targetDictionary && targetDictionary[rawText]) {
-      return targetDictionary[rawText];
-    }
+      const dict = this.dictionary.get(this.currentLanguage);
+      return dict
+        ? TranslationPack.create(rawText).translateTo(dict)
+        : rawText.original;
+    } else if (rawText.startsWith(translationObjectSign)) {
+      const dict = this.dictionary.get(this.currentLanguage);
 
-    return rawText;
+      return dict
+        ? TranslationPack.translationJsonDispatcher(
+            rawText.slice(translationObjectSign.length),
+            dict,
+          )
+        : rawText.slice(translationObjectSign.length);
+    } else {
+      const targetDictionary = this.dictionary.get(this.currentLanguage);
+      if (targetDictionary && targetDictionary[rawText]) {
+        return targetDictionary[rawText];
+      }
+
+      return rawText;
+    }
   }
 
   public set Language(lang: Languages) {
@@ -75,6 +92,10 @@ export class Translation {
 export class TranslationPack {
   private constructor(private translationJon: PatchedTranslationObject) {}
   private static emojiOrImageTextDict: EmojiOrImageTranslationDictionary = {};
+
+  static create(translationJon: PatchedTranslationObject) {
+    return new TranslationPack(translationJon);
+  }
 
   updateRawText(newText: string) {
     this.translationJon.original = newText;
@@ -94,6 +115,31 @@ export class TranslationPack {
     return translationObjectSign + JSON.stringify(this.translationJon);
   }
 
+  public translateTo(translationsDictionary: TranslationsDictionary) {
+    let target = translationsDictionary[this.translationJon.original];
+
+    if (target === undefined) {
+      // tslint:disable-next-line: no-console
+      console.warn(`Translations Warning - Missing translation: ${target}`);
+      return this.translationJon.original;
+    }
+
+    if (this.translationJon.params.length > 0) {
+      for (let i = 0; i < this.translationJon.params.length; i++) {
+        target = target.replace(
+          new RegExp(`/{${i}}/`, 'g'),
+          this.translationJon.params[i].toString(),
+        );
+      }
+    }
+    for (const [rawText, path] of Object.entries(
+      TranslationPack.emojiOrImageTextDict,
+    )) {
+      target.replace(rawText, path);
+    }
+    return target;
+  }
+
   public static patchCardInTranslation(cardId: CardId) {
     const card = Sanguosha.getCardById(cardId);
     return `${TranslationPack.patchEmojiOrImageInTranslation(card.Suit)} ${
@@ -105,7 +151,7 @@ export class TranslationPack {
     return translationObjectSign + rawText;
   }
 
-  public addEmojiOrImageSymbolText(
+  public static addEmojiOrImageSymbolText(
     ...symbolTextPair: [string | number, string][]
   ) {
     for (const [rawText, translatePath] of symbolTextPair) {

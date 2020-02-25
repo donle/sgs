@@ -1,4 +1,3 @@
-import { Card } from 'core/cards/card';
 import {
   ClientEventFinder,
   EventPacker,
@@ -24,6 +23,7 @@ import { GameInfo, getRoles } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
 import { CardLoader } from 'core/game/package_loader/loader.cards';
 import { CharacterLoader } from 'core/game/package_loader/loader.characters';
+import { Logger } from 'core/shares/libs/logger/logger';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { TriggerSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
@@ -38,7 +38,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   private drawStack: CardId[] = [];
   private dropStack: CardId[] = [];
-  private gameStarted: boolean = false;
+  private round = 0;
 
   constructor(
     protected roomId: RoomId,
@@ -46,6 +46,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     protected socket: ServerSocket,
     protected gameProcessor: GameProcessor,
     protected players: Player[] = [],
+    private logger: Logger,
   ) {
     super();
     this.init();
@@ -71,7 +72,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     for (let i = 0; i < this.drawStack.length - 1; i++) {
       const swapCardIndex =
-        Math.floor(Math.random() * (this.drawCards.length - i)) + i;
+        Math.floor(Math.random() * (this.drawStack.length - i)) + i;
       if (swapCardIndex !== i) {
         [this.drawStack[i], this.drawStack[swapCardIndex]] = [
           this.drawStack[swapCardIndex],
@@ -81,10 +82,44 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
   }
 
-  // @@TODO: TBA here
+  private shuffleSeats() {
+    for (let i = 0; i < this.players.length; i++) {
+      const swapIndex =
+        Math.floor(Math.random() * (this.players.length - i)) + i;
+      if (swapIndex !== i) {
+        [this.players[i], this.players[swapIndex]] = [
+          this.players[swapIndex],
+          this.players[i],
+        ];
+        this.players[i].Position = i;
+      }
+    }
+  }
+
+  private readonly sleep = async (timeDuration: number) =>
+    new Promise(r => {
+      setTimeout(r, timeDuration);
+    });
+
   public async gameStart() {
     this.gameStarted = true;
+    this.shuffle();
+    this.shuffleSeats();
+    this.currentPlayer = this.players[0];
 
+    const event: ServerEventFinder<GameEventIdentifiers.GameReadyEvent> = {
+      gameStartInfo: {
+        numberOfDrawStack: this.DrawStack.length,
+        round: 0,
+        currentPlayerId: this.currentPlayer.Id,
+      },
+      gameInfo: this.Info,
+      playersInfo: this.Players.map(player => player.getPlayerInfo()),
+      messages: ['game will start within 3 seconds'],
+    };
+    this.broadcast(GameEventIdentifiers.GameReadyEvent, event);
+
+    await this.sleep(3000);
     await this.gameProcessor.gameStart(this);
   }
 
@@ -98,24 +133,27 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     content: ServerEventFinder<I>,
     to: PlayerId,
   ) {
-    this.socket.notify(type, content, to);
+    this.socket.notify(
+      type,
+      EventPacker.createIdentifierEvent(type, content),
+      to,
+    );
   }
 
   public broadcast<I extends GameEventIdentifiers>(
     type: I,
     content: ServerEventFinder<I>,
   ) {
-    this.socket.ClientIds.forEach(clientId => {
-      if (content.messages && typeof content.messages === 'string') {
-        content.messages = [content.messages];
-      }
-      if (content.translationsMessage) {
-        content.messages
-          ? content.messages.push(content.translationsMessage.toString())
-          : (content.messages = [content.translationsMessage.toString()]);
-      }
-      this.socket.getSocketById(clientId).emit(type.toString(), content);
+    content = EventPacker.wrapGameRunningInfo(content, {
+      numberOfDrawStack: this.drawStack.length,
+      round: this.round,
+      currentPlayerId: this.currentPlayer!.Id,
     });
+
+    this.socket.broadcast(
+      type,
+      EventPacker.createIdentifierEvent(type, content),
+    );
   }
 
   public async trigger<T = never>(
@@ -177,13 +215,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           } else {
             this.notify(
               GameEventIdentifiers.AskForInvokeEvent,
-              EventPacker.createIdentifierEvent(
-                GameEventIdentifiers.AskForInvokeEvent,
-                {
-                  invokeSkillNames: [skill.Name],
-                  to: this.players[i].Id,
-                },
-              ),
+              {
+                invokeSkillNames: [skill.Name],
+                to: this.players[i].Id,
+              },
               this.players[i].Id,
             );
 
@@ -265,7 +300,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           '{0} lost skill {1}',
           player.Name,
           skillName,
-        ),
+        ).extract(),
       },
       playerId,
     );
@@ -284,18 +319,15 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public loseHp(playerId: PlayerId, lostHp: number) {
     const player = this.getPlayerById(playerId);
-    this.gameProcessor.onHandleIncomingEvent(
-      GameEventIdentifiers.LoseHpEvent,
-      EventPacker.createIdentifierEvent(GameEventIdentifiers.LoseHpEvent, {
-        toId: playerId,
+    this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.LoseHpEvent, {
+      toId: playerId,
+      lostHp,
+      translationsMessage: TranslationPack.translationJsonPatcher(
+        '{0} lost {1} hp',
+        player.Name,
         lostHp,
-        translationsMessage: TranslationPack.translationJsonPatcher(
-          '{0} lost {1} hp',
-          player.Name,
-          lostHp,
-        ),
-      }),
-    );
+      ).extract(),
+    });
   }
 
   public getCards(numberOfCards: number, from: 'top' | 'bottom') {
@@ -327,10 +359,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.DrawCardEvent,
-      EventPacker.createIdentifierEvent(
-        GameEventIdentifiers.DrawCardEvent,
-        drawEvent,
-      ),
+      drawEvent,
       async stage => {
         if (stage === DrawCardStage.CardDrawing) {
           this.getPlayerById(drawEvent.playerId).obtainCardIds(...cardIds);
@@ -351,10 +380,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.CardDropEvent,
-      EventPacker.createIdentifierEvent(
-        GameEventIdentifiers.CardDropEvent,
-        dropEvent,
-      ),
+      dropEvent,
     );
 
     this.dropStack.push(...cardIds);
@@ -362,14 +388,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   public async obtainCards(cardIds: CardId[], to: PlayerId, fromId?: PlayerId) {
-    const obtainCardEvent = EventPacker.createIdentifierEvent(
-      GameEventIdentifiers.ObtainCardEvent,
-      {
-        cardIds,
-        toId: to,
-        fromId,
-      },
-    );
+    const obtainCardEvent = {
+      cardIds,
+      toId: to,
+      fromId,
+    };
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.ObtainCardEvent,
       obtainCardEvent,
@@ -410,19 +433,16 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       if (toArea === PlayerCardsArea.HandArea) {
         await this.gameProcessor.onHandleIncomingEvent(
           GameEventIdentifiers.ObtainCardEvent,
-          EventPacker.createIdentifierEvent(
-            GameEventIdentifiers.ObtainCardEvent,
-            {
-              fromId,
-              toId,
-              cardIds: [cardId],
-              translationsMessage: TranslationPack.translationJsonPatcher(
-                '{0} obtained cards {1}',
-                to.Name,
-                TranslationPack.patchCardInTranslation(cardId),
-              ),
-            },
-          ),
+          {
+            fromId,
+            toId,
+            cardIds: [cardId],
+            translationsMessage: TranslationPack.translationJsonPatcher(
+              '{0} obtained cards {1}',
+              to.Name,
+              TranslationPack.patchCardInTranslation(cardId),
+            ).extract(),
+          },
         );
       } else {
         this.broadcast<GameEventIdentifiers.MoveCardEvent>(
@@ -432,7 +452,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               '{0} obtains card {1}',
               to.Name,
               TranslationPack.patchCardInTranslation(cardId),
-            ),
+            ).extract(),
             fromId,
             toId,
             fromArea,
@@ -453,21 +473,18 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             this.getPlayerById(event.toId).Character.Name,
             event.damage,
             event.damageType,
-          )
+          ).extract()
         : TranslationPack.translationJsonPatcher(
             '{0} hits {1} {2} hp of damage type {3}',
             this.getPlayerById(event.fromId).Character.Name,
             this.getPlayerById(event.toId).Character.Name,
             event.damage,
             event.damageType,
-          );
+          ).extract();
 
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.DamageEvent,
-      EventPacker.createIdentifierEvent(
-        GameEventIdentifiers.DamageEvent,
-        event,
-      ),
+      event,
     );
   }
 
@@ -481,19 +498,16 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             this.getPlayerById(event.recoverBy).Character.Name,
             this.getPlayerById(event.toId).Character.Name,
             event.recoveredHp,
-          )
+          ).extract()
         : TranslationPack.translationJsonPatcher(
             '{0} recovered {1} hp',
             this.getPlayerById(event.toId).Character.Name,
             event.recoveredHp,
-          );
+          ).extract();
 
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.RecoverEvent,
-      EventPacker.createIdentifierEvent(
-        GameEventIdentifiers.RecoverEvent,
-        event,
-      ),
+      event,
     );
   }
 
@@ -504,14 +518,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       '{0} responsed card {1}',
       this.getPlayerById(event.fromId).Character.Name,
       TranslationPack.patchCardInTranslation(event.cardId),
-    );
+    ).extract();
 
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.CardResponseEvent,
-      EventPacker.createIdentifierEvent(
-        GameEventIdentifiers.CardResponseEvent,
-        event,
-      ),
+      event,
     );
   }
 
@@ -522,11 +533,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       '{0} starts a judge of {1}',
       this.getPlayerById(event.toId).Character.Name,
       TranslationPack.patchCardInTranslation(event.cardId),
-    );
+    ).extract();
 
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.JudgeEvent,
-      EventPacker.createIdentifierEvent(GameEventIdentifiers.JudgeEvent, event),
+      event,
     );
   }
 
@@ -543,24 +554,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         return player.Id;
       }
     }
-  }
-
-  public get RoomId() {
-    return this.roomId;
-  }
-
-  public get Info() {
-    return this.gameInfo;
-  }
-
-  public getRoomInfo(): RoomInfo {
-    return {
-      name: this.gameInfo.roomName,
-      activePlayers: this.players.length,
-      totalPlayers: this.gameInfo.numberOfPlayers,
-      packages: this.gameInfo.characterExtensions,
-      status: this.gameStarted ? 'playing' : 'waiting',
-    };
   }
 
   public syncGameCommonRules(
@@ -639,5 +632,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
   public get DropStack(): ReadonlyArray<CardId> {
     return this.dropStack;
+  }
+
+  public get Logger(): Readonly<Logger> {
+    return this.logger;
   }
 }

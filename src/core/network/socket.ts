@@ -1,6 +1,5 @@
 import {
   ClientEventFinder,
-  EventPicker,
   GameEventIdentifiers,
   RoomEvent,
   RoomEventFinder,

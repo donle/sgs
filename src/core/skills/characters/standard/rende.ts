@@ -3,7 +3,6 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import {
   ClientEventFinder,
-  EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
@@ -50,7 +49,7 @@ export class Rende extends ActiveSkill {
       room.getPlayerById(event.fromId).Name,
       this.name,
       room.getPlayerById(event.toIds![0]).Name,
-    );
+    ).extract();
 
     return true;
   }
@@ -85,14 +84,11 @@ export class Rende extends ActiveSkill {
         options.push('thunder_slash');
       }
 
-      const chooseEvent = EventPacker.createIdentifierEvent(
-        GameEventIdentifiers.AskForChooseOptionsEvent,
-        {
-          options,
-          fromId: skillUseEvent.fromId,
-          triggeredBySkillName: this.name,
-        },
-      );
+      const chooseEvent = {
+        options,
+        fromId: skillUseEvent.fromId,
+        triggeredBySkillName: this.name,
+      };
 
       room.notify(
         GameEventIdentifiers.AskForChooseOptionsEvent,
@@ -115,16 +111,13 @@ export class Rende extends ActiveSkill {
           targets.push(player.Id);
         }
 
-        const choosePlayerEvent = EventPacker.createIdentifierEvent(
-          GameEventIdentifiers.AskForChoosePlayerEvent,
-          {
-            players: targets,
-            fromId: from.Id,
-            translationsMessage: TranslationPack.translationJsonPatcher(
-              'Please choose your slash target',
-            ),
-          },
-        );
+        const choosePlayerEvent = {
+          players: targets,
+          fromId: from.Id,
+          translationsMessage: TranslationPack.translationJsonPatcher(
+            'Please choose your slash target',
+          ).extract(),
+        };
 
         room.notify(
           GameEventIdentifiers.AskForChoosePlayerEvent,
@@ -137,24 +130,18 @@ export class Rende extends ActiveSkill {
           from.Id,
         );
 
-        const slashUseEvent = EventPacker.createIdentifierEvent(
-          GameEventIdentifiers.CardUseEvent,
-          {
-            fromId: from.Id,
-            cardId: VirtualCard.create(response.selectedOption).Id,
-            toIds: [choosePlayerResponse.selectedPlayer!],
-          },
-        );
+        const slashUseEvent = {
+          fromId: from.Id,
+          cardId: VirtualCard.create(response.selectedOption).Id,
+          toIds: [choosePlayerResponse.selectedPlayer!],
+        };
 
         await room.useCard(slashUseEvent);
       } else {
-        const cardUseEvent = EventPacker.createIdentifierEvent(
-          GameEventIdentifiers.CardUseEvent,
-          {
-            fromId: from.Id,
-            cardId: VirtualCard.create(response.selectedOption!).Id,
-          },
-        );
+        const cardUseEvent = {
+          fromId: from.Id,
+          cardId: VirtualCard.create(response.selectedOption!).Id,
+        };
 
         await room.useCard(cardUseEvent);
       }

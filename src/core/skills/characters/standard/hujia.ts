@@ -60,7 +60,7 @@ export class Hujia extends TriggerSkill {
       '{0} activates skill {1}',
       room.getPlayerById(event.fromId).Name,
       this.name,
-    );
+    ).extract();
 
     return true;
   }
@@ -96,19 +96,14 @@ export class Hujia extends TriggerSkill {
         );
 
         if (response.cardId !== undefined) {
-          const eventIdentifier =
-            identifier === GameEventIdentifiers.AskForCardUseEvent
-              ? GameEventIdentifiers.CardUseEvent
-              : GameEventIdentifiers.CardResponseEvent;
-          const cardUseEvent = EventPacker.createIdentifierEvent(
-            eventIdentifier,
-            {
-              cardId: response.cardId,
-              fromId,
-            },
-          );
+          const cardUseEvent = {
+            cardId: response.cardId,
+            fromId,
+          };
 
-          await room.useCard(cardUseEvent);
+          identifier === GameEventIdentifiers.AskForCardUseEvent
+            ? await room.useCard(cardUseEvent)
+            : await room.responseCard(cardUseEvent);
           return !EventPacker.isTerminated(cardUseEvent);
         }
       }

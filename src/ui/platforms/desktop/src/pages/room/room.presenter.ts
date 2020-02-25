@@ -1,9 +1,12 @@
-import { WorkPlace } from 'core/event/event';
+import {
+  GameEventIdentifiers,
+  ServerEventFinder as _ServerEventFinder,
+} from 'core/event/event';
 import {
   GameInfo as _GameInfo,
-  GameStartInfo as _GameStartInfo,
+  GameRunningInfo as _GameRunningInfo,
 } from 'core/game/game_props';
-import { Socket } from 'core/network/socket';
+import { ClientSocket } from 'core/network/socket.client';
 import { ClientPlayer } from 'core/player/player.client';
 import {
   PlayerId as _PlayerId,
@@ -11,11 +14,7 @@ import {
 } from 'core/player/player_props';
 import { RoomId as _RoomId } from 'core/room/room';
 import { ClientRoom } from 'core/room/room.client';
-import {
-  RoomInfo as _RoomInfo,
-  RoomSocketEvent,
-  RoomSocketEventResponser,
-} from 'core/shares/types/server_types';
+import { RoomInfo as _RoomInfo } from 'core/shares/types/server_types';
 import * as mobx from 'mobx';
 
 export type PlayerId = _PlayerId;
@@ -23,19 +22,17 @@ export type PlayerInfo = _PlayerInfo;
 export type RoomInfo = _RoomInfo;
 export type RoomId = _RoomId;
 export type GameInfo = _GameInfo;
-export type GameStartInfo = _GameStartInfo;
+export type GameRunningInfo = _GameRunningInfo;
+export type ServerEventFinder<
+  I extends GameEventIdentifiers
+> = _ServerEventFinder<I>;
 
 export class RoomStore {
-  @mobx.observable.struct
-  roomInfo: RoomInfo;
-  @mobx.observable.struct
-  gameInfo: GameInfo;
-
-  @mobx.observable.shallow
-  players: PlayerInfo[];
-
   @mobx.observable.deep
   room: ClientRoom;
+
+  @mobx.observable.shallow
+  gameLog: string[] = [];
 }
 
 export class RoomPresenter {
@@ -52,52 +49,60 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  setupRoomInfo(event: RoomSocketEventResponser<RoomSocketEvent.JoinRoom>) {
-    this.tryToThrowUninitializedError();
-    this.store.roomInfo = event.roomInfo;
-    this.store.gameInfo = event.gameInfo;
+  setupRoomStatus(
+    event: ServerEventFinder<GameEventIdentifiers.PlayerEnterEvent>,
+  ) {
+    //TODO
+
   }
 
   @mobx.action
   playerEnter(playerInfo: PlayerInfo) {
     this.tryToThrowUninitializedError();
-    this.store.players.push(playerInfo);
+
+    const player = new ClientPlayer(
+      playerInfo.Id,
+      playerInfo.Name,
+      playerInfo.Position,
+      playerInfo.CharacterId,
+    );
+    this.store.room.addPlayer(player);
   }
 
   @mobx.action
   playerLeave(playerId: PlayerId) {
     this.tryToThrowUninitializedError();
-    const index = this.store.players.findIndex(
-      player => player.Id === playerId,
-    );
-    if (index >= 0) {
-      this.store.players.splice(index, 1);
-    }
+    this.store.room.removePlayer(playerId);
   }
 
   @mobx.action
   createClientRoom(
     roomId: RoomId,
-    socket: Socket<WorkPlace.Client>,
+    socket: ClientSocket,
     gameInfo: GameInfo,
-    gameStartInfo: GameStartInfo,
+    playersInfo: PlayerInfo[],
   ) {
     this.tryToThrowUninitializedError();
+    const players = playersInfo.map(
+      playerInfo =>
+        new ClientPlayer(
+          playerInfo.Id,
+          playerInfo.Name,
+          playerInfo.Position,
+          playerInfo.CharacterId,
+        ),
+    );
 
     this.store.room = new ClientRoom(
       roomId,
       socket,
       gameInfo,
-      this.store.players.map(
-        playerInfo =>
-          new ClientPlayer(
-            playerInfo.Id,
-            playerInfo.Name,
-            playerInfo.Position,
-            playerInfo.CharacterId,
-          ),
-      ),
-      gameStartInfo,
+      players,
     );
+  }
+
+  @mobx.action
+  addGameLog(log: string) {
+    this.store.gameLog.push(log);
   }
 }

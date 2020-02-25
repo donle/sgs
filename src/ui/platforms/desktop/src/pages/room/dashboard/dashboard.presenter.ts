@@ -8,7 +8,5 @@ export class DashboardPresenter {
   }
 
   @mobx.action
-  obtainCard() {
-
-  }
+  obtainCard() {}
 }

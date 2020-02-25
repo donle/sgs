@@ -40,7 +40,7 @@ export const App = (props: { config: UIConfigTypes }) => {
           <Route
             path={'/room/:slug'}
             render={({ match }) => (
-              <RoomPage match={match} config={socketConfig} />
+              <RoomPage match={match} config={socketConfig} translator={translator} />
             )}
           />
         </Switch>
