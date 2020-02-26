@@ -88,9 +88,9 @@ const playerStagesList: {
     PlayerStageListEnum.BeginPrepareStage,
     PlayerStageListEnum.PrepareStage,
     PlayerStageListEnum.EndPrepareStage,
-    PlayerStageListEnum.BeginDrawCardStageEnd,
-    PlayerStageListEnum.DrawCardStageEnd,
-    PlayerStageListEnum.EndDrawCardStageEnd,
+    PlayerStageListEnum.BeginPrepareStageEnd,
+    PlayerStageListEnum.PrepareStageEnd,
+    PlayerStageListEnum.EndPrepareStageEnd,
   ],
   [PlayerPhase.JudgeStage]: [
     PlayerStageListEnum.BeginJudgeStageStart,
@@ -99,9 +99,9 @@ const playerStagesList: {
     PlayerStageListEnum.BeginJudgeStage,
     PlayerStageListEnum.JudgeStage,
     PlayerStageListEnum.EndJudgeStage,
-    PlayerStageListEnum.BeginDrawCardStageEnd,
-    PlayerStageListEnum.DrawCardStageEnd,
-    PlayerStageListEnum.EndDrawCardStageEnd,
+    PlayerStageListEnum.BeginJudgeStageEnd,
+    PlayerStageListEnum.JudgeStageEnd,
+    PlayerStageListEnum.EndJudgeStageEnd,
   ],
   [PlayerPhase.DrawCardStage]: [
     PlayerStageListEnum.BeginDrawCardStageStart,
@@ -496,9 +496,9 @@ export class StageProcessor {
   public getInsidePlayerPhase(specificStage: PlayerStageListEnum): PlayerPhase {
     for (const [stage, stageList] of (Object.entries(
       playerStagesList,
-    ) as unknown) as [PlayerPhase, PlayerStageListEnum[]][]) {
+    ) as unknown) as [string, PlayerStageListEnum[]][]) {
       if (stageList.includes(specificStage)) {
-        return stage;
+        return parseInt(stage, 10) as PlayerPhase;
       }
     }
 

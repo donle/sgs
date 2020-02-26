@@ -126,9 +126,10 @@ export class TranslationPack {
 
     if (this.translationJon.params.length > 0) {
       for (let i = 0; i < this.translationJon.params.length; i++) {
+        const param = this.translationJon.params[i].toString();
         target = target.replace(
           new RegExp(`\\{${i}\\}`, 'g'),
-          this.translationJon.params[i].toString(),
+          translationsDictionary[param] || param,
         );
       }
     }
@@ -199,9 +200,10 @@ export class TranslationPack {
 
       if (translateObject.params.length > 0) {
         for (let i = 0; i < translateObject.params.length; i++) {
+          const param = translateObject.params[i].toString();
           target = target.replace(
             new RegExp(`\\{${i}\\}`, 'g'),
-            translateObject.params[i].toString(),
+            translationsDictionary[param] || param,
           );
         }
       }

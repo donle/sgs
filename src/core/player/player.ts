@@ -509,7 +509,11 @@ export abstract class Player implements PlayerInfo {
     this.playerRole = role;
   }
 
-  public set CharacterId(characterId: CharacterId) {
+  public set CharacterId(characterId: CharacterId | undefined) {
+    if (characterId === undefined) {
+      return;
+    }
+
     if (this.playerCharacter !== undefined) {
       this.playerSkills = this.playerSkills.filter(skill => {
         if (this.playerCharacter!.Skills.includes(skill)) {
@@ -527,10 +531,7 @@ export abstract class Player implements PlayerInfo {
       skill.isLordSkill() ? this.playerRole === PlayerRole.Lord : true,
     );
   }
-  public get CharacterId() {
-    if (this.playerCharacterId === undefined) {
-      throw new Error('No player character id initialized');
-    }
+  public get CharacterId(): CharacterId | undefined {
     return this.playerCharacterId;
   }
 

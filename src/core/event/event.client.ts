@@ -79,6 +79,7 @@ export interface ClientEvent extends EventUtilities {
 
   [GameEventIdentifiers.PlayerEnterEvent]: {
     playerName: string;
+    timestamp: number;
   };
   [GameEventIdentifiers.PlayerLeaveEvent]: {
     playerId: PlayerId;

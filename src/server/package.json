@@ -24,7 +24,7 @@
     "dev": "NODE_PATH=../ ts-node -P ./tsconfig.server.json ./main.ts",
     "build": "NODE_PATH=../ tsc -p ./tsconfig.server.json",
     "dev:win": "cross-env NODE_PATH=../ ts-node -P ./tsconfig.server.json ./main.ts",
-    "dev:win:watch": "cross-env NODE_PATH=../ nodemon ts-node -P ./tsconfig.server.json ./main.ts",
+    "dev:win:watch": "cross-env NODE_PATH=../ nodemon",
     "build:win": "cross-env NODE_PATH=../ tsc -p ./tsconfig.server.json",
     "start": "yarn build && NODE_PATH=./build DEV_MODE=prod node ./build/server/main.js"
   }

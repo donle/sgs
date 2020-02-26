@@ -36,4 +36,17 @@ export class Logger {
       console.log(chalk.green(...this.translate(args)));
     }
   }
+
+  async dump() {
+    process.stdin.setRawMode && process.stdin.setRawMode(true);
+    return new Promise(resolve =>
+      process.stdin.once('data', data => {
+        process.stdin.setRawMode && process.stdin.setRawMode(false);
+        if (data.toString().trim() === 'c') {
+          process.exit();
+        }
+        resolve();
+      }),
+    );
+  }
 }

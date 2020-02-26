@@ -16,7 +16,7 @@ export class Sanguosha {
 
   private static parseCoreVersion() {
     Sanguosha.version = coreVersion;
-    const [major,,] = coreVersion.split('.');
+    const [major, ,] = coreVersion.split('.');
     if (major === '0') {
       Sanguosha.version += ' Alpha';
     }
@@ -127,10 +127,11 @@ export class Sanguosha {
 
   public static getRandomCharacters(
     numberOfCharacters: number,
-    ...except: CharacterId[]
+    charactersPool: Character[] = this.characters,
+    except: CharacterId[]
   ) {
     const characterIndex: number[] = [];
-    const availableCharacters = this.characters.filter(
+    const availableCharacters = charactersPool.filter(
       character => !except.includes(character.Id),
     );
     for (let i = 0; i < availableCharacters.length; i++) {
@@ -152,8 +153,10 @@ export class Sanguosha {
     return selectedCharacterIndex.map(index => this.characters[index]);
   }
 
-  public static getLordCharacters() {
-    return this.characters.filter(character => character.isLord());
+  public static getLordCharacters(packages: GameCharacterExtensions[]) {
+    return this.characters.filter(
+      character => character.isLord() && packages.includes(character.Package),
+    );
   }
 
   public static isVirtualCardId(cardId: CardId) {

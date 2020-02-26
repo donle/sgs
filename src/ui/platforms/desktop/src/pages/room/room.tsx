@@ -50,10 +50,12 @@ export class RoomPage extends React.Component<
       playerName,
       socket: this.socket,
       roomId: this.roomId,
+      timestamp: Date.now(),
     });
 
     this.socket.notify(GameEventIdentifiers.PlayerEnterEvent, {
       playerName,
+      timestamp: this.store.clientRoomInfo.timestamp,
     });
 
     this.socket.on(GameEventIdentifiers.PlayerEnterRefusedEvent, () => {

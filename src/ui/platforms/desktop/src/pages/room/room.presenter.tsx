@@ -34,6 +34,7 @@ type ClientRoomInfo = {
   roomId: number;
   playerName: string;
   socket: ClientSocket;
+  timestamp: number;
 };
 
 export class RoomStore {

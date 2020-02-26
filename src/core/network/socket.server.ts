@@ -101,6 +101,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       socket.emit(GameEventIdentifiers.PlayerEnterRefusedEvent.toString(), {
         playerId: socket.id,
         playerName: event.playerName,
+        timestamp: event.timestamp,
       });
 
       socket.disconnect();
@@ -126,6 +127,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         'player {0} join in the room',
         event.playerName,
       ).extract(),
+      timestamp: event.timestamp,
     });
 
     if (room.Players.length === room.getRoomInfo().totalPlayers) {

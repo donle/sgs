@@ -56,7 +56,13 @@ export class GameClientProcessor {
   private onHandleGameStartEvent<T extends GameEventIdentifiers.GameStartEvent>(
     type: T,
     content: ServerEventFinder<T>,
-  ) {}
+  ) {
+    content.otherPlayers.forEach(playerInfo => {
+      this.store.room.getPlayerById(
+        playerInfo.Id,
+      ).CharacterId = playerInfo.CharacterId!;
+    });
+  }
 
   private async onHandleGameReadyEvent<
     T extends GameEventIdentifiers.GameReadyEvent
@@ -75,7 +81,10 @@ export class GameClientProcessor {
       throw new Error('Uninitialized Client room info');
     }
 
-    if (content.joiningPlayerName === this.store.clientRoomInfo.playerName) {
+    if (
+      content.joiningPlayerName === this.store.clientRoomInfo.playerName &&
+      content.timestamp === this.store.clientRoomInfo.timestamp
+    ) {
       this.presenter.createClientRoom(
         this.store.clientRoomInfo.roomId,
         this.store.clientRoomInfo.socket,
@@ -85,7 +94,7 @@ export class GameClientProcessor {
       this.presenter.setupClientPlayerId(content.joiningPlayerId);
     } else {
       const playerInfo = content.playersInfo.find(
-        playerInfo => playerInfo.Name === content.joiningPlayerName,
+        playerInfo => playerInfo.Id === content.joiningPlayerId,
       );
 
       if (!playerInfo) {

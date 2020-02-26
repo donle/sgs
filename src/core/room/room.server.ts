@@ -120,7 +120,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.broadcast(GameEventIdentifiers.GameReadyEvent, event);
 
     await this.sleep(3000);
-    await this.gameProcessor.gameStart(this);
+    await this.gameProcessor.gameStart(this, this.loadedCharacters);
   }
 
   public createPlayer(playerInfo: PlayerInfo) {

@@ -1,4 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
+import { Character, CharacterId } from 'core/characters/character';
 import {
   ClientEventFinder,
   EventPacker,
@@ -56,14 +57,17 @@ export class GameProcessor {
     }
   }
 
-  private async chooseCharacters(playersInfo: PlayerInfo[]) {
+  private async chooseCharacters(
+    playersInfo: PlayerInfo[],
+    selectableCharacters: Character[],
+  ) {
     const lordInfo = playersInfo[0];
     const gameStartEvent = EventPacker.createUncancellableEvent<
       GameEventIdentifiers.AskForChooseCharacterEvent
     >({
-      characterIds: Sanguosha.getLordCharacters().map(
-        character => character.Id,
-      ),
+      characterIds: Sanguosha.getLordCharacters(
+        this.room.Info.characterExtensions,
+      ).map(character => character.Id),
       role: lordInfo.Role,
       isGameStart: true,
       translationsMessage: TranslationPack.translationJsonPatcher(
@@ -85,21 +89,24 @@ export class GameProcessor {
       lordResponse.chosenCharacter;
     lordInfo.CharacterId = lordResponse.chosenCharacter;
 
-    const characters = Sanguosha.getRandomCharacters(
-      playersInfo.length - 1,
-      lordInfo.CharacterId,
-    );
-
     const sequentialAsyncResponse: Promise<
       ClientEventFinder<GameEventIdentifiers.AskForChooseCharacterEvent>
     >[] = [];
 
+    const selectedCharacters: CharacterId[] = [lordInfo.CharacterId];
     for (let i = 1; i < playersInfo.length; i++) {
+      const characters = Sanguosha.getRandomCharacters(
+        3,
+        selectableCharacters,
+        selectedCharacters,
+      );
+      characters.forEach(character => selectedCharacters.push(character.Id));
+
       const playerInfo = playersInfo[i];
       this.room.notify(
         GameEventIdentifiers.AskForChooseCharacterEvent,
         {
-          characterIds: [characters.pop()!.Id],
+          characterIds: characters.map(character => character.Id),
           lordInfo: {
             lordCharacter: lordInfo.CharacterId,
             lordId: lordInfo.Id,
@@ -151,12 +158,12 @@ export class GameProcessor {
     }
   }
 
-  public async gameStart(room: ServerRoom) {
+  public async gameStart(room: ServerRoom, selectableCharacters: Character[]) {
     this.room = room;
     this.playerPositionIndex = 0;
 
     const playersInfo = this.room.assignRoles();
-    await this.chooseCharacters(playersInfo);
+    await this.chooseCharacters(playersInfo, selectableCharacters);
 
     for (const player of playersInfo) {
       const gameStartEvent: ServerEventFinder<GameEventIdentifiers.GameStartEvent> = {
@@ -182,6 +189,7 @@ export class GameProcessor {
   private async onPhase(phase: PlayerPhase) {
     switch (phase) {
       case PlayerPhase.JudgeStage:
+        this.logger.debug('enter judge cards phase');
         const judgeCards = this.CurrentPlayer.getCardIds(
           PlayerCardsArea.JudgeArea,
         ).map(cardId => Sanguosha.getCardById(cardId));
@@ -192,11 +200,13 @@ export class GameProcessor {
           };
           await judgeCard.Skill.onEffect(this.room, cardEffectEvent);
         }
-        return;
+        break;
       case PlayerPhase.DrawCardStage:
+        this.logger.debug('enter draw cards phase');
         await this.room.drawCards(2, this.CurrentPlayer.Id);
-        return;
+        break;
       case PlayerPhase.PlayCardStage:
+        this.logger.debug('enter play cards phase');
         this.room.notify(
           GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
           {
@@ -239,8 +249,9 @@ export class GameProcessor {
             await this.room.useSkill(event);
           }
         } while (true);
-        return;
+        break;
       case PlayerPhase.DropCardStage:
+        this.logger.debug('enter drop cards phase');
         const maxCardHold =
           this.CurrentPlayer.MaxHp +
           GameCommonRules.getAdditionalHoldCardNumber(this.CurrentPlayer);
@@ -269,9 +280,9 @@ export class GameProcessor {
           await this.room.dropCards(response.droppedCards, response.fromId);
         }
 
-        return;
+        break;
       default:
-        return;
+        break;
     }
   }
 
@@ -440,8 +451,9 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
     processor?: (stage: GameEventStage) => Promise<void>,
   ) => {
-    let eventStage: GameEventStage | undefined = this.stageProcessor.involve(identifier);
-    this.logger.debug(identifier);
+    let eventStage: GameEventStage | undefined = this.stageProcessor.involve(
+      identifier,
+    );
     while (this.stageProcessor.isInsideEvent(identifier, eventStage)) {
       await this.room.trigger<typeof event>(event, eventStage!);
       if (EventPacker.isTerminated(event)) {

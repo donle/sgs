@@ -129,6 +129,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.PlayerEnterRefusedEvent]: {
     playerId: PlayerId;
     playerName: string;
+    timestamp: number;
   };
   [GameEventIdentifiers.PlayerEnterEvent]: {
     joiningPlayerName: string;
@@ -136,6 +137,7 @@ export interface ServerEvent extends EventUtilities {
     playersInfo: PlayerInfo[];
     roomInfo: RoomInfo;
     gameInfo: GameInfo;
+    timestamp: number;
   };
   [GameEventIdentifiers.PlayerLeaveEvent]: {
     playerId: PlayerId;

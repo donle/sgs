@@ -1,5 +1,5 @@
 {
-  "watch": ["../core", "./**/*.ts"],
+  "watch": ["../core/**/*.ts", "./**/*.ts"],
   "ignore": ["**/*.spec.ts"],
   "exec": "ts-node ./main.ts"
 }
