@@ -1,5 +1,5 @@
 import {
-  ClientEventFinder,
+  clientActiveListenerEvents,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
@@ -12,6 +12,7 @@ import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { match } from 'react-router-dom';
 import { PagePropsWithHostConfig } from 'types/page_props';
+import { GameClientProcessor } from './game_processor';
 import { RoomPresenter, RoomStore } from './room.presenter';
 
 @mobxReact.observer
@@ -24,55 +25,50 @@ export class RoomPage extends React.Component<
   private presenter: RoomPresenter;
   private store: RoomStore;
   private socket: ClientSocket;
+  private gameProcessor: GameClientProcessor;
+  private roomId: number;
+
   constructor(props: any) {
     super(props);
 
-    const roomId = parseInt(this.props.match.params.slug, 10);
+    this.roomId = parseInt(this.props.match.params.slug, 10);
     this.presenter = new RoomPresenter();
     this.store = this.presenter.createStore();
-    this.socket = new ClientSocket(this.props.config, roomId);
+    this.socket = new ClientSocket(this.props.config, this.roomId);
+
+    this.gameProcessor = new GameClientProcessor(
+      this.presenter,
+      this.store,
+      this.props.translator,
+    );
   }
 
   componentDidMount() {
     const playerName = 'test' + Date.now();
-    const event: ClientEventFinder<GameEventIdentifiers.PlayerEnterEvent> = {
+
+    this.presenter.setupRoomStatus({
       playerName,
-    };
+      socket: this.socket,
+      roomId: this.roomId,
+    });
 
-    this.socket.notify(GameEventIdentifiers.PlayerEnterEvent, event);
+    this.socket.notify(GameEventIdentifiers.PlayerEnterEvent, {
+      playerName,
+    });
 
-    this.socket
-      .on(
-        GameEventIdentifiers.PlayerEnterEvent,
-        (event: ServerEventFinder<GameEventIdentifiers.PlayerEnterEvent>) => {
-          if (event.joiningPlayerName === playerName) {
-            this.presenter.createClientRoom(
-              parseInt(this.props.match.params.slug, 10),
-              this.socket,
-              event.gameInfo,
-              event.playersInfo,
-            );
-          } else {
-            const playerInfo = event.playersInfo.find(
-              playerInfo => playerInfo.Name === event.joiningPlayerName,
-            );
+    this.socket.on(GameEventIdentifiers.PlayerEnterRefusedEvent, () => {
+      this.props.history.push('/lobby');
+    });
 
-            if (!playerInfo) {
-              throw new Error(`Unknown player ${event.joiningPlayerName}`);
-            }
-
-            this.presenter.playerEnter(playerInfo);
-          }
-          this.showMessageFromEvent(event);
-        },
-      )
-      .on(
-        GameEventIdentifiers.GameReadyEvent,
-        (event: ServerEventFinder<GameEventIdentifiers.GameReadyEvent>) => {
-          //TODO: game start here
-          this.showMessageFromEvent(event);
+    clientActiveListenerEvents().forEach(identifier => {
+      this.socket.on(
+        identifier,
+        (content: ServerEventFinder<GameEventIdentifiers>) => {
+          this.gameProcessor.onHandleIncomingEvent(identifier, content);
+          this.showMessageFromEvent(content);
         },
       );
+    });
   }
 
   componentWillUnmount() {
@@ -100,6 +96,7 @@ export class RoomPage extends React.Component<
     const { match } = this.props;
     return (
       <div>
+        {this.store.gameDialog}
         room Id: {match.params.slug}
         {this.store.room && (
           <>

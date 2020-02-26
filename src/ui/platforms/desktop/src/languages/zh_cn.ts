@@ -31,6 +31,29 @@ const gameMessageTranslations: Word[] = [
   { source: 'sunquan', target: '孙权' },
   { source: 'zhiheng', target: '制衡' },
   { source: 'jiuyuan', target: '救援' },
+  { source: 'huangyueying', target: '黄月英' },
+  { source: 'wei', target: '魏' },
+  { source: 'shu', target: '蜀' },
+  { source: 'wu', target: '吴' },
+  { source: 'qun', target: '群' },
+  { source: 'god', target: '神' },
+  { source: 'unknown', target: '未知' },
+  { source: 'lord', target: '主公' },
+  { source: 'loyalist', target: '忠诚' },
+  { source: 'rebel', target: '反贼' },
+  { source: 'renegade', target: '内奸' },
+  {
+    source: 'your role is {0}, please choose a lord',
+    target: '你的身份是 {0}, 请选择一主公',
+  },
+  {
+    source: 'lord is {0}, your role is {1}, please choose a character',
+    target: '主公是【{0}】, 你的身份是 {1}, 请选择一名武将',
+  },
+  {
+    source: 'please choose a character',
+    target: '请选择一名武将',
+  },
   { source: '{0} activates skill {1}', target: '{0} 发动了技能【{1}】' },
   {
     source: '{0} hurts {1} for {2} {3} hp',
@@ -71,6 +94,10 @@ const gameMessageTranslations: Word[] = [
   {
     source: 'player {0} join in the room',
     target: '玩家 {0} 进入了房间',
+  },
+  {
+    source: 'player {0} has left the room',
+    target: '玩家 {0} 退出了房间',
   },
   {
     source: 'game will start within 3 seconds',

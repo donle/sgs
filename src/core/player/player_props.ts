@@ -42,3 +42,8 @@ export const enum DistanceType {
   Defense,
   Attack,
 }
+
+export function getPlayerRoleRawText(role: PlayerRole) {
+  const playerRoleRawText = ['unknown', 'lord', 'loyalist', 'rebel', 'renegade'];
+  return playerRoleRawText[role];
+}

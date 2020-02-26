@@ -16,6 +16,15 @@ export const enum CharacterNationality {
   God,
 }
 
+export function getNationalityRawText(nationality: CharacterNationality) {
+  const rawNationalityText = ['wei', 'shu', 'wu', 'qun', 'shen'];
+  return rawNationalityText[nationality];
+}
+export function getGenderRawText(gender: CharacterGender) {
+  const rawGenderText = ['male', 'female', 'unknoun'];
+  return rawGenderText[gender];
+}
+
 export function Lord(constructor: new (...args: any[]) => any): any {
   return class extends constructor {
     private lord: boolean = true;

@@ -164,13 +164,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       throw new Error('current player is undefined');
     }
 
-    const start = this.players.length % this.CurrentPlayer.Position;
-    for (
-      let i = start;
-      i !== this.CurrentPlayer.Position;
-      i = this.players.length % (i + 1)
-    ) {
-      if (this.players[i].Dead) {
+    for (const player of this.getAlivePlayersFrom()) {
+      if (player.Dead) {
         continue;
       }
 
@@ -181,7 +176,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       const bySkill =
         triggeredBySkillName &&
         Sanguosha.getSkillBySkillName(triggeredBySkillName);
-      for (const equip of this.players[i].getCardIds(
+      for (const equip of player.getCardIds(
         PlayerCardsArea.EquipArea,
       )) {
         const equipCard = Sanguosha.getCardById(equip);
@@ -192,7 +187,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           canTriggerSkills.push(equipCard.Skill as TriggerSkill);
         }
       }
-      for (const skill of this.players[i].getPlayerSkills<TriggerSkill>(
+      for (const skill of player.getPlayerSkills<TriggerSkill>(
         'trigger',
       )) {
         if (bySkill && UniqueSkillRule.canUseSkillRule(bySkill, skill)) {
@@ -203,10 +198,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       for (const skill of canTriggerSkills) {
         if (
           skill.isTriggerable(content, stage) &&
-          skill.canUse(this, this.players[i], content)
+          skill.canUse(this, player, content)
         ) {
           const triggerSkillEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent> = {
-            fromId: this.players[i].Id,
+            fromId: player.Id,
             skillName: skill.Name,
             triggeredOnEvent: content,
           };
@@ -217,14 +212,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               GameEventIdentifiers.AskForInvokeEvent,
               {
                 invokeSkillNames: [skill.Name],
-                to: this.players[i].Id,
+                to: player.Id,
               },
-              this.players[i].Id,
+              player.Id,
             );
 
             const { invoke } = await this.onReceivingAsyncReponseFrom(
               GameEventIdentifiers.AskForInvokeEvent,
-              this.players[i].Id,
+              player.Id,
             );
             if (invoke) {
               await this.useSkill(triggerSkillEvent);
@@ -337,10 +332,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         this.shuffle();
       }
 
-      const card = (from === 'top'
-        ? this.drawStack.shift()
-        : this.drawStack.pop()) as CardId;
-      cards.push(card);
+      let card: CardId | undefined;
+      if (from === 'top') {
+        card = this.drawStack[0];
+        this.drawStack.shift();
+      } else {
+        card = this.drawStack.pop();
+      }
+      cards.push(card!);
     }
 
     return cards;
@@ -596,13 +595,19 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     });
 
     for (let i = 1; i < this.players.length; i++) {
-      const randomIndex = Math.floor(Math.random() * (i + 1));
-      [this.players[i], this.players[randomIndex]] = [
-        this.players[randomIndex],
-        this.players[i],
-      ];
-      const randomRoleIndex = Math.floor(Math.random() * (i + 1));
-      [roles[i], roles[randomRoleIndex]] = [roles[randomRoleIndex], roles[i]];
+      const randomIndex =
+        Math.floor(Math.random() * (this.players.length - i)) + i;
+      if (i !== randomIndex) {
+        [this.players[i], this.players[randomIndex]] = [
+          this.players[randomIndex],
+          this.players[i],
+        ];
+      }
+      const randomRoleIndex =
+        Math.floor(Math.random() * (roles.length - i)) + i;
+      if (i !== randomRoleIndex) {
+        [roles[i], roles[randomRoleIndex]] = [roles[randomRoleIndex], roles[i]];
+      }
 
       this.players[i].Position = i;
       this.players[i].Role = roles[i];

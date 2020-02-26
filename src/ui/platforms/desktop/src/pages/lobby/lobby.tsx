@@ -12,7 +12,6 @@ import { Translation } from 'core/translations/translation_json_tool';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
-import { Redirect } from 'react-router-dom';
 import SocketIOClient from 'socket.io-client';
 import { RoomList } from 'types/lobby_types';
 import { PagePropsWithHostConfig } from 'types/page_props';
@@ -26,8 +25,6 @@ type LobbyProps = PagePropsWithHostConfig<{
 export class Lobby extends React.Component<LobbyProps> {
   @mobx.observable.shallow
   private roomList: RoomList[] = [];
-  @mobx.observable.ref
-  private targetRoomId: number | undefined;
   @mobx.observable.ref
   private unmatchedCoreVersion = false;
   private socket = SocketIOClient(
@@ -61,7 +58,7 @@ export class Lobby extends React.Component<LobbyProps> {
         mobx.action(
           (event: LobbySocketEventPicker<LobbySocketEvent.GameCreated>) => {
             const { roomId } = event;
-            this.targetRoomId = roomId;
+            this.props.history.push(`/room/${roomId}`);
           },
         ),
       );
@@ -119,10 +116,6 @@ export class Lobby extends React.Component<LobbyProps> {
   }
 
   render() {
-    if (this.targetRoomId !== undefined) {
-      return <Redirect to={`/room/${this.targetRoomId}`} />;
-    }
-
     return (
       <div className={styles.board}>
         <div className={styles.roomList}>

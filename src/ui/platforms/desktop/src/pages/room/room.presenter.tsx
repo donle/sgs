@@ -17,6 +17,9 @@ import { ClientRoom } from 'core/room/room.client';
 import { RoomInfo as _RoomInfo } from 'core/shares/types/server_types';
 import * as mobx from 'mobx';
 
+import * as React from 'react';
+import styles from './room.module.css';
+
 export type PlayerId = _PlayerId;
 export type PlayerInfo = _PlayerInfo;
 export type RoomInfo = _RoomInfo;
@@ -27,9 +30,23 @@ export type ServerEventFinder<
   I extends GameEventIdentifiers
 > = _ServerEventFinder<I>;
 
+type ClientRoomInfo = {
+  roomId: number;
+  playerName: string;
+  socket: ClientSocket;
+};
+
 export class RoomStore {
+  @mobx.observable.ref
+  clientRoomInfo: ClientRoomInfo;
   @mobx.observable.deep
   room: ClientRoom;
+
+  @mobx.observable.ref
+  clientPlayerId: PlayerId;
+
+  @mobx.observable.ref
+  gameDialog: JSX.Element | undefined;
 
   @mobx.observable.shallow
   gameLog: string[] = [];
@@ -49,17 +66,18 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  setupRoomStatus(
-    event: ServerEventFinder<GameEventIdentifiers.PlayerEnterEvent>,
-  ) {
-    //TODO
+  setupRoomStatus(info: ClientRoomInfo) {
+    this.store.clientRoomInfo = info;
+  }
 
+  @mobx.action
+  setupClientPlayerId(playerId: PlayerId) {
+    this.store.clientPlayerId = playerId;
   }
 
   @mobx.action
   playerEnter(playerInfo: PlayerInfo) {
     this.tryToThrowUninitializedError();
-
     const player = new ClientPlayer(
       playerInfo.Id,
       playerInfo.Name,
@@ -72,7 +90,11 @@ export class RoomPresenter {
   @mobx.action
   playerLeave(playerId: PlayerId) {
     this.tryToThrowUninitializedError();
-    this.store.room.removePlayer(playerId);
+    if (this.store.room.isPlaying()) {
+      this.store.room.getPlayerById(playerId).offline();
+    } else {
+      this.store.room.removePlayer(playerId);
+    }
   }
 
   @mobx.action
@@ -93,16 +115,30 @@ export class RoomPresenter {
         ),
     );
 
-    this.store.room = new ClientRoom(
-      roomId,
-      socket,
-      gameInfo,
-      players,
-    );
+    this.store.room = new ClientRoom(roomId, socket, gameInfo, players);
   }
 
   @mobx.action
   addGameLog(log: string) {
     this.store.gameLog.push(log);
+  }
+
+  @mobx.action
+  createDialog(title: string | JSX.Element, content: JSX.Element) {
+    this.store.gameDialog = (
+      <div className={styles.gameDialog}>
+        {typeof title === 'string' ? (
+          <h4 dangerouslySetInnerHTML={{ __html: title }} />
+        ) : (
+          <h4>{title}</h4>
+        )}
+        {content}
+      </div>
+    );
+  }
+
+  @mobx.action
+  closeDialog() {
+    this.store.gameDialog = undefined;
   }
 }

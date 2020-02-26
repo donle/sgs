@@ -1,0 +1,23 @@
+.gameDialog {
+    position: absolute;
+    align-self: center;
+    align-content: center;
+    background: lightgrey;
+    border: 1px solid grey;
+
+    height: 35%;
+    min-height: 250px;
+    width: 35%;
+    min-width: 300px;
+    z-index: 999;
+}
+
+.characterSelector {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.characterSelectorItem {
+    flex: 1 1 20%;
+    margin: 6px;
+}

@@ -1,4 +1,5 @@
 import { GameEventIdentifiers } from 'core/event/event';
+import { Logger } from 'core/shares/libs/logger/logger';
 
 export const enum PlayerStageListEnum {
   BeginPrepareStageStart,
@@ -376,6 +377,8 @@ export class StageProcessor {
   private currentGameEventStage: GameEventStage | undefined;
   private processingGameEvent = false;
 
+  constructor(private logger: Logger) {}
+
   public involve(identifier: GameEventIdentifiers) {
     const stageList = gameEventStageList[identifier];
     if (stageList === undefined) {
@@ -388,7 +391,8 @@ export class StageProcessor {
       this.gameEventStageList = stageList.slice();
     }
 
-    this.currentGameEventStage = this.gameEventStageList.shift();
+    this.currentGameEventStage = this.gameEventStageList[0];
+    this.gameEventStageList.shift();
     this.processingGameEvent = true;
 
     return this.currentGameEventStage;
@@ -399,7 +403,8 @@ export class StageProcessor {
       return;
     }
 
-    this.currentGameEventStage = this.gameEventStageList.shift();
+    this.currentGameEventStage = this.gameEventStageList[0];
+    this.gameEventStageList.shift();
     if (this.currentGameEventStage === undefined) {
       this.processingGameEvent = false;
       return;

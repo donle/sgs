@@ -78,6 +78,7 @@ export const enum GameEventIdentifiers {
   GameReadyEvent,
   GameStartEvent,
   GameOverEvent,
+  PlayerEnterRefusedEvent,
   PlayerEnterEvent,
   PlayerLeaveEvent,
   PlayerDyingEvent,
@@ -116,6 +117,49 @@ export const isCardResponsiveIdentifier = (
     GameEventIdentifiers.AskForCardUseEvent,
   ].includes(identifier);
 };
+
+export const clientActiveListenerEvents = () => [
+  GameEventIdentifiers.UserMessageEvent,
+  GameEventIdentifiers.SyncGameCommonRulesEvent,
+
+  GameEventIdentifiers.CardDropEvent,
+  GameEventIdentifiers.CardResponseEvent,
+  GameEventIdentifiers.CardUseEvent,
+  GameEventIdentifiers.CardEffectEvent,
+  GameEventIdentifiers.CardDisplayEvent,
+  GameEventIdentifiers.DrawCardEvent,
+  GameEventIdentifiers.ObtainCardEvent,
+  GameEventIdentifiers.MoveCardEvent,
+
+  GameEventIdentifiers.AimEvent,
+
+  GameEventIdentifiers.SkillUseEvent,
+  GameEventIdentifiers.SkillEffectEvent,
+
+  GameEventIdentifiers.GameStartEvent,
+  GameEventIdentifiers.GameReadyEvent,
+  GameEventIdentifiers.GameOverEvent,
+  GameEventIdentifiers.PlayerDyingEvent,
+  GameEventIdentifiers.PlayerDiedEvent,
+  GameEventIdentifiers.PlayerEnterEvent,
+  GameEventIdentifiers.PlayerLeaveEvent,
+
+  GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
+  GameEventIdentifiers.AskForPeachEvent,
+  GameEventIdentifiers.AskForWuXieKeJiEvent,
+  GameEventIdentifiers.AskForCardResponseEvent,
+  GameEventIdentifiers.AskForCardUseEvent,
+  GameEventIdentifiers.AskForCardDisplayEvent,
+  GameEventIdentifiers.AskForCardDropEvent,
+  GameEventIdentifiers.AskForPinDianCardEvent,
+  GameEventIdentifiers.AskForChoosingCardEvent,
+  GameEventIdentifiers.AskForChoosePlayerEvent,
+  GameEventIdentifiers.AskForChooseOptionsEvent,
+  GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
+  GameEventIdentifiers.AskForInvokeEvent,
+  GameEventIdentifiers.AskForChooseCharacterEvent,
+  GameEventIdentifiers.AskForPlaceCardsInDileEvent,
+];
 
 export const serverActiveListenerEvents = (): [
   GameEventIdentifiers.UserMessageEvent,

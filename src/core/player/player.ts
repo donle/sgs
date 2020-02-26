@@ -1,3 +1,4 @@
+import { PlayerAI } from 'core/ai/ai';
 import { EquipCard, WeaponCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
@@ -45,6 +46,8 @@ export abstract class Player implements PlayerInfo {
   private chainLocked: boolean = false;
   private turnedOver: boolean = false;
   private playerSkills: Skill[] = [];
+  private online: boolean;
+  private ai: PlayerAI = PlayerAI.Instance;
 
   protected abstract playerId: PlayerId;
   protected abstract playerName: string;
@@ -98,6 +101,7 @@ export abstract class Player implements PlayerInfo {
     }
 
     this.dead = false;
+    this.online = true;
   }
 
   public clearFlags() {
@@ -569,5 +573,17 @@ export abstract class Player implements PlayerInfo {
       CharacterId: this.playerCharacterId,
       Role: this.playerRole,
     };
+  }
+
+  public offline() {
+    this.online = false;
+  }
+
+  public isOnline() {
+    return this.online;
+  }
+
+  public get AI() {
+    return this.ai;
   }
 }

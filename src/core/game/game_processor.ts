@@ -16,12 +16,12 @@ import {
   DamageEffectStage,
   DrawCardStage,
   GameEventStage,
+  GameStartStage,
   JudgeEffectStage,
   LoseHpStage,
   ObtainCardStage,
   PhaseChangeStage,
   PinDianStage,
-  PlayerDiedStage,
   PlayerDyingStage,
   PlayerPhase,
   PlayerStageListEnum,
@@ -30,11 +30,13 @@ import {
   StageProcessor,
 } from 'core/game/stage_processor';
 import {
+  getPlayerRoleRawText,
   PlayerCardsArea,
   PlayerId,
   PlayerInfo,
   PlayerRole,
 } from 'core/player/player_props';
+import { Logger } from 'core/shares/libs/logger/logger';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ServerRoom } from '../room/room.server';
 import { Sanguosha } from './engine';
@@ -46,7 +48,7 @@ export class GameProcessor {
   private currentPlayerStage: PlayerStageListEnum | undefined;
   private currentPlayerPhase: PlayerPhase | undefined;
 
-  constructor(private stageProcessor: StageProcessor) {}
+  constructor(private stageProcessor: StageProcessor, private logger: Logger) {}
 
   private tryToThrowNotStartedError() {
     if (!this.room || this.playerPositionIndex < 0) {
@@ -64,6 +66,10 @@ export class GameProcessor {
       ),
       role: lordInfo.Role,
       isGameStart: true,
+      translationsMessage: TranslationPack.translationJsonPatcher(
+        'your role is {0}, please choose a lord',
+        getPlayerRoleRawText(lordInfo.Role!),
+      ).extract(),
     });
     this.room.notify(
       GameEventIdentifiers.AskForChooseCharacterEvent,
@@ -100,6 +106,11 @@ export class GameProcessor {
           },
           role: playerInfo.Role,
           isGameStart: true,
+          translationsMessage: TranslationPack.translationJsonPatcher(
+            'lord is {0}, your role is {1}, please choose a character',
+            Sanguosha.getCharacterById(lordInfo.CharacterId).Name,
+            getPlayerRoleRawText(playerInfo.Role!),
+          ).extract(),
         },
         playerInfo.Id,
       );
@@ -142,6 +153,7 @@ export class GameProcessor {
 
   public async gameStart(room: ServerRoom) {
     this.room = room;
+    this.playerPositionIndex = 0;
 
     const playersInfo = this.room.assignRoles();
     await this.chooseCharacters(playersInfo);
@@ -160,8 +172,10 @@ export class GameProcessor {
     this.drawGameBeginsCards(playersInfo);
 
     while (this.room.AlivePlayers.length > 1) {
-      await this.play();
+      await this.play(this.playerPositionIndex);
       this.turnToNextPlayer();
+      this.playerPositionIndex =
+        (this.playerPositionIndex + 1) % this.room.AlivePlayers.length;
     }
   }
 
@@ -261,19 +275,17 @@ export class GameProcessor {
     }
   }
 
-  private async play() {
-    let lastPlayer = this.room.AlivePlayers[this.playerPositionIndex];
-    this.playerPositionIndex =
-      (this.playerPositionIndex + 1) % this.room.AlivePlayers.length;
+  private async play(playerPosition: number) {
+    let lastPlayer = this.room.AlivePlayers[playerPosition];
 
     const playerStages = this.stageProcessor.createPlayerStage();
 
     while (playerStages.length > 0) {
-      this.currentPlayerStage = playerStages.unshift();
+      this.currentPlayerStage = playerStages[0];
+      playerStages.shift();
       const nextPhase = this.stageProcessor.getInsidePlayerPhase(
         this.currentPlayerStage,
       );
-
       if (nextPhase !== this.currentPlayerPhase) {
         await this.onHandlePhaseChangeEvent(
           GameEventIdentifiers.PhaseChangeEvent,
@@ -286,7 +298,7 @@ export class GameProcessor {
           async stage => {
             if (stage === PhaseChangeStage.PhaseChanged) {
               this.currentPlayerPhase = nextPhase;
-              await this.onPhase(this.CurrentPlayerPhase);
+              await this.onPhase(this.currentPlayerPhase);
             }
 
             return true;
@@ -428,7 +440,8 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
     processor?: (stage: GameEventStage) => Promise<void>,
   ) => {
-    let eventStage = this.stageProcessor.involve(identifier);
+    let eventStage: GameEventStage | undefined = this.stageProcessor.involve(identifier);
+    this.logger.debug(identifier);
     while (this.stageProcessor.isInsideEvent(identifier, eventStage)) {
       await this.room.trigger<typeof event>(event, eventStage!);
       if (EventPacker.isTerminated(event)) {
@@ -932,7 +945,7 @@ export class GameProcessor {
       event,
       onActualExecuted,
       async stage => {
-        if (stage === PhaseChangeStage.PhaseChanged) {
+        if (stage === GameStartStage.GameStarting) {
           this.room.broadcast(GameEventIdentifiers.GameStartEvent, event);
         }
       },

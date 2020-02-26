@@ -126,9 +126,13 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.GameOverEvent]: {
     playersInfo: PlayerInfo[];
   };
-
+  [GameEventIdentifiers.PlayerEnterRefusedEvent]: {
+    playerId: PlayerId;
+    playerName: string;
+  };
   [GameEventIdentifiers.PlayerEnterEvent]: {
     joiningPlayerName: string;
+    joiningPlayerId: PlayerId;
     playersInfo: PlayerInfo[];
     roomInfo: RoomInfo;
     gameInfo: GameInfo;

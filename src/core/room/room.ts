@@ -338,4 +338,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public get Info() {
     return this.gameInfo;
   }
+
+  public isPlaying() {
+    return this.gameStarted;
+  }
 }

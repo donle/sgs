@@ -34,13 +34,28 @@ export const App = (props: { config: UIConfigTypes }) => {
           <Route path="/" exact>
             <Redirect to={'lobby'} />
           </Route>
-          <Route path={'/lobby'}>
-            <Lobby config={socketConfig} translator={translator} />
-          </Route>
+          <Route
+            path={'/lobby'}
+            render={({ match, location, history }) => (
+              <Lobby
+                config={socketConfig}
+                match={match}
+                translator={translator}
+                location={location}
+                history={history}
+              />
+            )}
+          ></Route>
           <Route
             path={'/room/:slug'}
-            render={({ match }) => (
-              <RoomPage match={match} config={socketConfig} translator={translator} />
+            render={({ match, location, history }) => (
+              <RoomPage
+                location={location}
+                history={history}
+                match={match}
+                config={socketConfig}
+                translator={translator}
+              />
             )}
           />
         </Switch>

@@ -135,7 +135,7 @@ class App {
       roomId,
       content,
       roomSocket,
-      new GameProcessor(new StageProcessor()),
+      new GameProcessor(new StageProcessor(this.logger), this.logger),
       [],
       this.logger,
     );
