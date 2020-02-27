@@ -121,7 +121,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       joiningPlayerName: event.playerName,
       joiningPlayerId: socket.id,
       roomInfo: room.getRoomInfo(),
-      playersInfo: room.Players.map(player => player.getPlayerInfo()),
+      playersInfo: room.Players.map(p => p.getPlayerInfo()),
       gameInfo: room.Info,
       translationsMessage: TranslationPack.translationJsonPatcher(
         'player {0} join in the room',

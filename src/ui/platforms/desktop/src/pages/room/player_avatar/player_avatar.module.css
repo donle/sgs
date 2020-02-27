@@ -1,8 +1,7 @@
 .playerCard {
     position: relative;
     height: 220px;
-    width: 200px;
-    display: flex;
+    width: 100%;
     border: 1px solid grey;
 }
 
@@ -17,9 +16,4 @@
     position: absolute;
     top: 4px;
     left: 4px;
-}
-
-.waiting {
-    align-self: center;
-    justify-self: center;
 }

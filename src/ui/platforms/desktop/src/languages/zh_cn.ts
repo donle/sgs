@@ -108,7 +108,7 @@ const gameMessageTranslations: Word[] = [
 const gameUITranslations: Word[] = [
   { source: 'No rooms at the moment', target: '还没有玩家创建房间' },
   { source: 'Create a room', target: '创建信房间' },
-  { source: 'waiting', target: '等待' },
+  { source: 'waiting', target: '等待中' },
   { source: 'playing', target: '游戏中' },
   {
     source: 'Unmatched core version, please update your application',
@@ -117,6 +117,18 @@ const gameUITranslations: Word[] = [
   {
     source: 'New QSanguosha',
     target: '新神杀',
+  },
+  {
+    source: 'confirm',
+    target: '确定',
+  },
+  {
+    source: 'cancel',
+    target: '取消',
+  },
+  {
+    source: 'finish',
+    target: '结束',
   },
 ];
 

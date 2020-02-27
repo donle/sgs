@@ -4,16 +4,20 @@ import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { PlayerCard } from '../player/player';
 import { RoomPresenter, RoomStore } from '../room.presenter';
+import styles from './seats_layout.module.css';
 
 type SeatsLayoutProps = {
   store: RoomStore;
   presenter: RoomPresenter;
   translator: Translation;
+  gamePad: JSX.Element;
+  updateFlag: boolean;
 };
 
 @mobxReact.observer
 export class SeatsLayout extends React.Component<SeatsLayoutProps> {
-  private numberOfPlayers: number = this.props.store.room.Players.length;
+  private numberOfPlayers: number =
+    this.props.store.room.Info.numberOfPlayers - 1;
   private sideNumberOfPlayers: number;
   private topNumberOfPlayers: number;
 
@@ -41,11 +45,11 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
   }
 
   private getTopPlayerOffsetPosition() {
-    const offset = this.sideNumberOfPlayers + 1;
-    if (offset > this.ClientPlayerPosition) {
-      return this.numberOfPlayers - (offset - this.ClientPlayerPosition);
+    const offset = this.ClientPlayerPosition - this.sideNumberOfPlayers - 1;
+    if (offset < 0) {
+      return this.numberOfPlayers + 1 + offset;
     } else {
-      return this.ClientPlayerPosition - offset;
+      return offset;
     }
   }
 
@@ -67,6 +71,8 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
       playerIndex = this.getLastPosition(playerIndex);
       numberOfPlayers--;
     }
+
+    return players;
   }
   private getRightPlayers() {
     let numberOfPlayers = this.sideNumberOfPlayers;
@@ -86,6 +92,8 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
       playerIndex = this.getNextPosition(playerIndex);
       numberOfPlayers--;
     }
+
+    return players;
   }
 
   private getTopPlayers() {
@@ -93,7 +101,9 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
     const players: JSX.Element[] = [];
 
     let numberOfPlayers = this.topNumberOfPlayers;
+    console.log(numberOfPlayers, playerIndex);
     while (numberOfPlayers > 0) {
+      console.log(playerIndex);
       players.push(
         <PlayerCard
           player={this.props.store.room.Players[playerIndex]}
@@ -103,5 +113,20 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
       playerIndex = this.getNextPosition(playerIndex);
       numberOfPlayers--;
     }
+
+    return players;
+  }
+
+  render() {
+    return (
+      <div className={styles.seatsLayout}>
+        <div className={styles.leftSeats}>{this.getLeftPlayers()}</div>
+        <div className={styles.central}>
+          <div className={styles.topSeats}>{this.getTopPlayers()}</div>
+          <div className={styles.gamePad}>{this.props.gamePad}</div>
+        </div>
+        <div className={styles.rightSeats}>{this.getRightPlayers()}</div>
+      </div>
+    );
   }
 }

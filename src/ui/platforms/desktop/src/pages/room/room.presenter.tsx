@@ -51,6 +51,9 @@ export class RoomStore {
 
   @mobx.observable.shallow
   gameLog: string[] = [];
+
+  @mobx.observable.ref
+  updateStatus: boolean = false;
 }
 
 export class RoomPresenter {
@@ -64,6 +67,11 @@ export class RoomPresenter {
     if (!this.store) {
       throw new Error('Uninitialized room store');
     }
+  }
+
+  @mobx.action
+  update() {
+    this.store.updateStatus = !this.store.updateStatus;
   }
 
   @mobx.action
@@ -86,6 +94,7 @@ export class RoomPresenter {
       playerInfo.CharacterId,
     );
     this.store.room.addPlayer(player);
+    this.update();
   }
 
   @mobx.action
@@ -117,6 +126,7 @@ export class RoomPresenter {
     );
 
     this.store.room = new ClientRoom(roomId, socket, gameInfo, players);
+    this.update();
   }
 
   @mobx.action

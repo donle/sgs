@@ -12,8 +12,13 @@ import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { match } from 'react-router-dom';
 import { PagePropsWithHostConfig } from 'types/page_props';
+import { Dashboard } from './dashboard/dashboard';
+import { GameDialog } from './game_dialog/game_dialog';
 import { GameClientProcessor } from './game_processor';
+import { PlayerAvatar } from './player_avatar/player_avatar';
+import styles from './room.module.css';
 import { RoomPresenter, RoomStore } from './room.presenter';
+import { SeatsLayout } from './seats_layout/seats_layout';
 
 @mobxReact.observer
 export class RoomPage extends React.Component<
@@ -94,12 +99,10 @@ export class RoomPage extends React.Component<
     this.showMessage(messages, translationsMessage);
   }
 
-  render() {
-    const { match } = this.props;
+  private getDummyCentralInfo() {
     return (
-      <div>
-        {this.store.gameDialog}
-        room Id: {match.params.slug}
+      <>
+        room Id: {this.props.match.params.slug}
         {this.store.room && (
           <>
             <div>
@@ -111,9 +114,44 @@ export class RoomPage extends React.Component<
             </div>
           </>
         )}
-        {this.store.gameLog.map(log => (
-          <p>{log}</p>
-        ))}
+      </>
+    );
+  }
+
+  render() {
+    return (
+      <div className={styles.room}>
+        {this.store.gameDialog}
+        {this.store.room && (
+          <div className={styles.roomBoard}>
+            <div className={styles.mainBoard}>
+              <SeatsLayout
+                updateFlag={this.store.updateStatus}
+                store={this.store}
+                presenter={this.presenter}
+                translator={this.props.translator}
+                gamePad={this.getDummyCentralInfo()}
+              />
+              <Dashboard
+                store={this.store}
+                presenter={this.presenter}
+                translator={this.props.translator}
+              />
+            </div>
+            <div className={styles.sideBoard}>
+              <GameDialog
+                store={this.store}
+                presenter={this.presenter}
+                translator={this.props.translator}
+              />
+              <PlayerAvatar
+                store={this.store}
+                presenter={this.presenter}
+                translator={this.props.translator}
+              />
+            </div>
+          </div>
+        )}
       </div>
     );
   }

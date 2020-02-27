@@ -30,7 +30,6 @@ export class CharacterCard extends React.Component<CharacterCardProps> {
           {translator.tr(getNationalityRawText(character.Nationality))}{' '}
           {translator.tr(character.Name)}
         </p>
-        <p>{translator.tr(character.Name)}</p>
       </div>
     );
   }

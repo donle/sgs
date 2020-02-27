@@ -54,7 +54,6 @@ export abstract class Player implements PlayerInfo {
   protected abstract playerPosition: number;
   protected playerRole: PlayerRole = PlayerRole.Unknown;
   protected nationality: CharacterNationality;
-  protected position: number = -1;
 
   private cardUseHistory: CardId[] = [];
   private skillUsedHistory: {
@@ -570,7 +569,7 @@ export abstract class Player implements PlayerInfo {
     return {
       Id: this.playerId,
       Name: this.playerName,
-      Position: this.position,
+      Position: this.playerPosition,
       CharacterId: this.playerCharacterId,
       Role: this.playerRole,
     };

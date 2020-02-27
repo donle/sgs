@@ -1,7 +1,6 @@
 .gameDialog {
     position: absolute;
     align-self: center;
-    align-content: center;
     background: lightgrey;
     border: 1px solid grey;
 
@@ -20,4 +19,33 @@
 .characterSelectorItem {
     flex: 1 1 20%;
     margin: 6px;
+}
+
+.room {
+    display: flex;
+    align-items: stretch;
+    height: 100vh;
+    width: 100vw;
+    justify-content: center;
+}
+
+.roomBoard {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+}
+
+.mainBoard {
+    min-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.sideBoard {
+    flex: auto;
+    flex-direction: column;
+    justify-content: stretch;
+    display: flex;
+    width: 220px;
 }

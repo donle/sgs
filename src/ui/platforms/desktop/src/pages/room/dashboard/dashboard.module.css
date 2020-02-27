@@ -1,0 +1,44 @@
+.equipCardItem {
+    width: 100%;
+    height: 25%;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+}
+
+.equipSection {
+    border: 1px solid grey;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+}
+
+.handBoard {
+    display: flex;
+    flex-direction: column;
+    flex: auto;
+}
+
+.userActionsButtons {
+    display: flex;
+    padding: 0 12px;
+    justify-content: flex-end;
+    align-items: center;
+    height: 30px;
+}
+.userActionsButtons button {
+    margin: 0 4px;
+    background: white;
+}
+
+.handCards {
+    justify-content: flex-start;
+    border: 1px solid grey;
+    height: 190px;
+}
+
+.dashboard {
+  display: flex;
+  align-items: stretch;
+  height: 220px;
+}

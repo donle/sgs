@@ -85,13 +85,13 @@ export class GameClientProcessor {
       content.joiningPlayerName === this.store.clientRoomInfo.playerName &&
       content.timestamp === this.store.clientRoomInfo.timestamp
     ) {
+      this.presenter.setupClientPlayerId(content.joiningPlayerId);
       this.presenter.createClientRoom(
         this.store.clientRoomInfo.roomId,
         this.store.clientRoomInfo.socket,
         content.gameInfo,
         content.playersInfo,
       );
-      this.presenter.setupClientPlayerId(content.joiningPlayerId);
     } else {
       const playerInfo = content.playersInfo.find(
         playerInfo => playerInfo.Id === content.joiningPlayerId,

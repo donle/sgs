@@ -1,0 +1,6 @@
+.gameDialog {
+  border: 1px solid grey;
+  flex: auto;
+  display: flex;
+  flex-direction: column;
+}
