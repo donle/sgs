@@ -1,27 +1,19 @@
-type Word = {
-  source: string;
-  target: string;
-};
+import { Word } from 'languages';
 
-type TranslationsDictionary = {
-  [k: string]: string;
-};
-
-function wordsToDictionary(words: Word[]): TranslationsDictionary {
-  const dict: TranslationsDictionary = {};
-
-  for (const word of words) {
-    dict[word.source] = word.target;
-  }
-  return dict;
-}
-
-const gameMessageTranslations: Word[] = [
-  { source: 'standard', target: '标准版' },
+export const cardDictionary: Word[] = [
   { source: 'slash', target: '杀' },
   { source: 'jink', target: '闪' },
   { source: 'peach', target: '桃' },
   { source: 'wine', target: '酒' },
+  { source: 'qinggang', target: '青钢剑' },
+  { source: 'zixin', target: '紫骍' },
+  { source: 'nanmanruqing', target: '南蛮入侵' },
+  { source: 'wanjianqifa', target: '万箭齐发' },
+  { source: 'lightning', target: '闪电' },
+  { source: 'zhugeliannu', target: '诸葛连弩' },
+];
+
+export const characterDictionary: Word[] = [
   { source: 'caocao', target: '曹操' },
   { source: 'hujia', target: '护驾' },
   { source: 'jianxiong', target: '奸雄' },
@@ -32,19 +24,16 @@ const gameMessageTranslations: Word[] = [
   { source: 'zhiheng', target: '制衡' },
   { source: 'jiuyuan', target: '救援' },
   { source: 'huangyueying', target: '黄月英' },
-  { source: 'wei', target: '魏' },
-  { source: 'shu', target: '蜀' },
-  { source: 'wu', target: '吴' },
-  { source: 'qun', target: '群' },
-  { source: 'god', target: '神' },
-  { source: 'unknown', target: '未知' },
-  { source: 'lord', target: '主公' },
-  { source: 'loyalist', target: '忠诚' },
-  { source: 'rebel', target: '反贼' },
-  { source: 'renegade', target: '内奸' },
+];
+
+export const eventDictionary: Word[] = [
+  {
+    source: '{0} draws {1} cards',
+    target: '{0} 摸了 {1} 张牌',
+  },
   {
     source: 'your role is {0}, please choose a lord',
-    target: '你的身份是 {0}, 请选择一主公',
+    target: '你的身份是 {0}, 请选择一名武将做为主公',
   },
   {
     source: 'lord is {0}, your role is {1}, please choose a character',
@@ -59,14 +48,17 @@ const gameMessageTranslations: Word[] = [
     source: '{0} hurts {1} for {2} {3} hp',
     target: '{0} 对 {1} 造成了 {2} 点【{3}】伤害',
   },
-
   {
     source: '{0} got hits by {1} {2} hp',
     target: '{0} 受到了 {1} 点【{2}】伤害',
   },
   { source: '{0} droppes cards {1}', target: '{0} 弃置了 {1}' },
   { source: '{0} cards are dropped', target: '{0} 进入了弃牌堆' },
-  { source: '{0} uses card {1}', target: '{0} 使用了一张【{1}】' },
+  { source: '{0} used card {1}', target: '{0} 使用了一张【{1}】' },
+  {
+    source: '{0} used card {1} to {2}',
+    target: '{0} 对 {2} 使用了一张【{1}】',
+  },
   { source: '{0} obtains card {1}', target: '{0} 获得了【{1}】' },
   {
     source: '{0} uses card {2} to {1}',
@@ -105,7 +97,7 @@ const gameMessageTranslations: Word[] = [
   },
 ];
 
-const gameUITranslations: Word[] = [
+export const UiDictionary: Word[] = [
   { source: 'No rooms at the moment', target: '还没有玩家创建房间' },
   { source: 'Create a room', target: '创建信房间' },
   { source: 'waiting', target: '等待中' },
@@ -131,8 +123,3 @@ const gameUITranslations: Word[] = [
     target: '结束',
   },
 ];
-
-export const SimplifiedChinese = {
-  ...wordsToDictionary(gameMessageTranslations),
-  ...wordsToDictionary(gameUITranslations),
-};

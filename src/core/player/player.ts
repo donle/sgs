@@ -101,6 +101,8 @@ export abstract class Player implements PlayerInfo {
 
     this.dead = false;
     this.online = true;
+
+    GameCommonRules.initPlayerCommonRules(this);
   }
 
   public clearFlags() {
@@ -309,7 +311,7 @@ export abstract class Player implements PlayerInfo {
   }
 
   public get AttackDistance() {
-    let attackDistance = this.getOffenseDistance();
+    let attackDistance = this.getOffenseDistance() + 1;
 
     for (const cardId of this.getCardIds(PlayerCardsArea.EquipArea)) {
       const card = Sanguosha.getCardById(cardId);
@@ -322,7 +324,7 @@ export abstract class Player implements PlayerInfo {
   }
 
   public getOffenseDistance() {
-    return GameCommonRules.getAdditionalOffenseDistance(this) + 1;
+    return GameCommonRules.getAdditionalOffenseDistance(this);
   }
 
   public getDefenseDistance() {
@@ -529,6 +531,9 @@ export abstract class Player implements PlayerInfo {
     this.playerSkills = this.playerCharacter.Skills.filter(skill =>
       skill.isLordSkill() ? this.playerRole === PlayerRole.Lord : true,
     );
+
+    this.hp = this.playerCharacter.MaxHp;
+    this.maxHp = this.playerCharacter.MaxHp;
   }
   public get CharacterId(): CharacterId | undefined {
     return this.playerCharacterId;

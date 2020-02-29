@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { getNationalityRawText } from 'core/characters/character';
 import { Player } from 'core/player/player';
 import { Translation } from 'core/translations/translation_json_tool';
@@ -9,10 +10,22 @@ import styles from './player.module.css';
 type PlayerCardProps = {
   player: Player | undefined;
   translator: Translation;
+  disabled?: boolean;
+  onClick?(selected: boolean): void;
 };
 
 @mobxReact.observer
 export class PlayerCard extends React.Component<PlayerCardProps> {
+  @mobx.observable.ref
+  selected: boolean = false;
+
+  private readonly onClick = mobx.action(() => {
+    if (this.props.disabled === false) {
+      this.selected = !this.selected;
+      this.props.onClick && this.props.onClick(this.selected);
+    }
+  });
+
   @mobx.computed
   get PlayerCharacter() {
     if (this.props.player === undefined) {
@@ -28,9 +41,21 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     }
   }
 
+  @mobx.action
+  componentDidUpdate() {
+    if (!!this.props.disabled) {
+      this.selected = false;
+    }
+  }
+
   render() {
     return (
-      <div className={styles.playerCard}>
+      <div
+        className={classNames(styles.playerCard, {
+          [styles.selected]: this.selected && !this.props.disabled,
+        })}
+        onClick={this.onClick}
+      >
         {this.props.player ? (
           <>
             <p>{this.props.player.Name}</p>
@@ -41,14 +66,20 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                     getNationalityRawText(this.PlayerCharacter.Nationality),
                   )}
                 </span>
-                <span>{this.PlayerCharacter.Name}</span>
+                <span>
+                  {this.props.translator.tr(this.PlayerCharacter.Name)}
+                </span>
                 <span>
                   {this.props.player.Hp}/{this.props.player.MaxHp}
                 </span>
               </div>
             )}
           </>
-        ) : (<p className={styles.waiting}>{this.props.translator.tr('waiting')}</p>)}
+        ) : (
+          <p className={styles.waiting}>
+            {this.props.translator.tr('waiting')}
+          </p>
+        )}
       </div>
     );
   }

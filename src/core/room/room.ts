@@ -204,7 +204,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     const endPosition =
       startPosition === from.Position ? to.Position : from.Position;
     let distance = 0;
-    for (let start = startPosition; start === endPosition; start++) {
+    for (let start = startPosition; start < endPosition; start++) {
       if (!this.players[start].Dead) {
         distance++;
       }

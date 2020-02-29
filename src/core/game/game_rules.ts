@@ -19,6 +19,10 @@ export class GameCommonRules {
       cardMatcher: new CardMatcher({ name: ['alcohol'] }),
       times: 1,
     },
+    {
+      cardMatcher: new CardMatcher({ name: ['jink'] }),
+      times: 0,
+    },
   ];
 
   private static userRules: {
@@ -38,7 +42,7 @@ export class GameCommonRules {
 
   private static preCheck(user: Player) {
     if (GameCommonRules.userRules[user.Id] === undefined) {
-      throw new Error(`Uninitialized player game rules of ${user.Id}`);
+      this.initPlayerCommonRules(user);
     }
   }
 
@@ -69,13 +73,13 @@ export class GameCommonRules {
   public static canUse(user: Player, card: Card | CardMatcher) {
     GameCommonRules.preCheck(user);
 
-    let availableUseTimes = 0;
+    let availableUseTimes = INFINITE_TRIGGERING_TIMES;
 
     const baseRule = GameCommonRules.commonCardUseRules.find(rule =>
       rule.cardMatcher.match(card),
     );
     if (baseRule) {
-      availableUseTimes += baseRule.times;
+      availableUseTimes = baseRule.times;
     }
 
     const additionalRule = GameCommonRules.userRules[user.Id].cards.find(rule =>

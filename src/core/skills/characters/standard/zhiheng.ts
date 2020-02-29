@@ -33,7 +33,7 @@ export class ZhiHeng extends ActiveSkill {
     return false;
   }
 
-  isAvailableCard(room: Room, cardId: CardId): boolean {
+  isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
     const cardFromArea = room.CurrentPlayer.cardFrom(cardId);
     return (
       cardFromArea !== undefined &&

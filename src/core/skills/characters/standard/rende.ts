@@ -31,12 +31,12 @@ export class Rende extends ActiveSkill {
     return cards.length > 0;
   }
 
-  isAvailableTarget(room: Room, target: PlayerId): boolean {
-    return room.CurrentPlayer.Id !== target;
+  isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
+    return owner !== target;
   }
 
-  isAvailableCard(room: Room, cardId: CardId): boolean {
-    const cardFromArea = room.CurrentPlayer.cardFrom(cardId);
+  isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
+    const cardFromArea = room.getPlayerById(owner).cardFrom(cardId);
     return cardFromArea !== PlayerCardsArea.HandArea;
   }
 

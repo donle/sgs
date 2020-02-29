@@ -36,8 +36,11 @@ export class SlashSkill extends ActiveSkill {
     return targets.length === 1;
   }
 
-  isAvailableTarget(room: Room, target: PlayerId) {
-    return room.canAttack(room.CurrentPlayer, room.getPlayerById(target));
+  isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId) {
+    return room.canAttack(
+      room.getPlayerById(owner),
+      room.getPlayerById(target),
+    );
   }
 
   async onUse(
@@ -59,7 +62,6 @@ export class SlashSkill extends ActiveSkill {
     event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
   ) {
     const { toIds, fromId, cardId } = event;
-
     for (const toId of toIds || []) {
       const askForUseCardEvent = {
         carMatcher: new CardMatcher({ name: ['jink'] }).toSocketPassenger(),

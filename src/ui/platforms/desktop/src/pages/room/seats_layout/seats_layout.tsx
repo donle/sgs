@@ -1,3 +1,4 @@
+import { Player } from 'core/player/player';
 import { Translation } from 'core/translations/translation_json_tool';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
@@ -12,6 +13,8 @@ type SeatsLayoutProps = {
   translator: Translation;
   gamePad: JSX.Element;
   updateFlag: boolean;
+  onClick?(player: Player, selected: boolean): void;
+  playerSelectableMatcher?(player: Player): boolean;
 };
 
 @mobxReact.observer
@@ -28,6 +31,10 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
     this.topNumberOfPlayers =
       this.sideNumberOfPlayers + Math.floor(this.numberOfPlayers % 3);
   }
+
+  private readonly onClick = (player: Player) => (selected: boolean) => {
+    this.props.onClick && this.props.onClick(player, selected);
+  };
 
   @mobx.computed
   private get ClientPlayerPosition() {
@@ -62,9 +69,17 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
 
     let playerIndex = this.getLastPosition();
     while (numberOfPlayers > 0) {
+      const player = this.props.store.room.Players[playerIndex];
+
       players.push(
         <PlayerCard
-          player={this.props.store.room.Players[playerIndex]}
+          key={playerIndex}
+          onClick={this.onClick(player)}
+          disabled={
+            !this.props.playerSelectableMatcher ||
+            !this.props.playerSelectableMatcher(player)
+          }
+          player={player}
           translator={this.props.translator}
         />,
       );
@@ -83,9 +98,17 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
 
     let playerIndex = this.getNextPosition();
     while (numberOfPlayers > 0) {
+      const player = this.props.store.room.Players[playerIndex];
+
       players.unshift(
         <PlayerCard
-          player={this.props.store.room.Players[playerIndex]}
+          key={playerIndex}
+          onClick={this.onClick(player)}
+          disabled={
+            !this.props.playerSelectableMatcher ||
+            !this.props.playerSelectableMatcher(player)
+          }
+          player={player}
           translator={this.props.translator}
         />,
       );
@@ -101,12 +124,18 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
     const players: JSX.Element[] = [];
 
     let numberOfPlayers = this.topNumberOfPlayers;
-    console.log(numberOfPlayers, playerIndex);
     while (numberOfPlayers > 0) {
-      console.log(playerIndex);
+      const player = this.props.store.room.Players[playerIndex];
+
       players.push(
         <PlayerCard
-          player={this.props.store.room.Players[playerIndex]}
+          key={playerIndex}
+          onClick={this.onClick(player)}
+          disabled={
+            !this.props.playerSelectableMatcher ||
+            !this.props.playerSelectableMatcher(player)
+          }
+          player={player}
           translator={this.props.translator}
         />,
       );

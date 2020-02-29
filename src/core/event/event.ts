@@ -49,7 +49,7 @@ type RoomEventUtilities = {
 export type RoomEventFinder<T extends RoomEvent> = RoomEventUtilities[T];
 
 export const enum GameEventIdentifiers {
-  UserMessageEvent,
+  UserMessageEvent = 100,
   PhaseChangeEvent,
   SyncGameCommonRulesEvent,
 
@@ -120,6 +120,7 @@ export const isCardResponsiveIdentifier = (
 
 export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.UserMessageEvent,
+  GameEventIdentifiers.PhaseChangeEvent,
   GameEventIdentifiers.SyncGameCommonRulesEvent,
 
   GameEventIdentifiers.CardDropEvent,
@@ -301,10 +302,13 @@ export class EventPacker {
     return event;
   };
 
-  static createIdentifierEvent = <T extends GameEventIdentifiers>(
+  static createIdentifierEvent = <
+    T extends GameEventIdentifiers,
+    E extends ServerEventFinder<T> | ClientEventFinder<T>
+  >(
     identifier: T,
-    event: ServerEventFinder<T>,
-  ): ServerEventFinder<T> => {
+    event: E,
+  ): E => {
     (event as any).identifier = identifier;
     return event;
   };

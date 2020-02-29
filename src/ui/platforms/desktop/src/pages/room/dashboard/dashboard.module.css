@@ -35,10 +35,17 @@
     justify-content: flex-start;
     border: 1px solid grey;
     height: 190px;
+    display: flex;
+    align-items: stretch;
 }
 
 .dashboard {
-  display: flex;
-  align-items: stretch;
-  height: 220px;
+    display: flex;
+    align-items: stretch;
+    height: 220px;
+}
+
+.handCard {
+    height: 100%;
+    width: 140px;
 }

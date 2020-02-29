@@ -46,7 +46,6 @@ export class NanManRuQingSkill extends ActiveSkill {
       TranslationPack.patchCardInTranslation(event.cardId),
     ).extract();
 
-    await room.useCard(event);
     return true;
   }
 

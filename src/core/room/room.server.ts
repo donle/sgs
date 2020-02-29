@@ -23,8 +23,8 @@ import { GameInfo, getRoles } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
 import { CardLoader } from 'core/game/package_loader/loader.cards';
 import { CharacterLoader } from 'core/game/package_loader/loader.characters';
+import { Algorithm } from 'core/shares/libs/algorithm';
 import { Logger } from 'core/shares/libs/logger/logger';
-import { RoomInfo } from 'core/shares/types/server_types';
 import { TriggerSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -32,8 +32,6 @@ import { GameProcessor } from '../game/game_processor';
 import { Room, RoomId } from './room';
 
 export class ServerRoom extends Room<WorkPlace.Server> {
-  protected currentPlayer: Player | undefined;
-
   private loadedCharacters: Character[] = [];
 
   private drawStack: CardId[] = [];
@@ -70,29 +68,29 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       this.dropStack = [];
     }
 
-    for (let i = 0; i < this.drawStack.length - 1; i++) {
-      const swapCardIndex =
-        Math.floor(Math.random() * (this.drawStack.length - i)) + i;
-      if (swapCardIndex !== i) {
-        [this.drawStack[i], this.drawStack[swapCardIndex]] = [
-          this.drawStack[swapCardIndex],
-          this.drawStack[i],
-        ];
-      }
-    }
+    Algorithm.shuffle(this.drawStack);
   }
 
   private shuffleSeats() {
+    Algorithm.shuffle(this.players);
     for (let i = 0; i < this.players.length; i++) {
-      const swapIndex =
-        Math.floor(Math.random() * (this.players.length - i)) + i;
-      if (swapIndex !== i) {
-        [this.players[i], this.players[swapIndex]] = [
-          this.players[swapIndex],
-          this.players[i],
-        ];
-        this.players[i].Position = i;
+      this.players[i].Position = i;
+    }
+
+    this.players.sort((playerA, playerB) => {
+      if (playerA.Position <= playerB.Position) {
+        return -1;
+      } else {
+        return 1;
       }
+    });
+  }
+
+  public assignRoles() {
+    const roles = getRoles(this.gameInfo.numberOfPlayers);
+    Algorithm.shuffle(roles);
+    for (let i = 0; i < this.players.length; i++) {
+      this.players[i].Role = roles[i];
     }
   }
 
@@ -102,16 +100,15 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     });
 
   public async gameStart() {
-    this.gameStarted = true;
     this.shuffle();
     this.shuffleSeats();
-    this.currentPlayer = this.players[0];
+    this.assignRoles();
 
     const event: ServerEventFinder<GameEventIdentifiers.GameReadyEvent> = {
       gameStartInfo: {
         numberOfDrawStack: this.DrawStack.length,
         round: 0,
-        currentPlayerId: this.currentPlayer.Id,
+        currentPlayerId: this.players[0].Id,
       },
       gameInfo: this.Info,
       playersInfo: this.Players.map(player => player.getPlayerInfo()),
@@ -119,6 +116,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     };
     this.broadcast(GameEventIdentifiers.GameReadyEvent, event);
 
+    this.gameStarted = true;
     await this.sleep(3000);
     await this.gameProcessor.gameStart(this, this.loadedCharacters);
   }
@@ -144,11 +142,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     type: I,
     content: ServerEventFinder<I>,
   ) {
-    content = EventPacker.wrapGameRunningInfo(content, {
-      numberOfDrawStack: this.drawStack.length,
-      round: this.round,
-      currentPlayerId: this.currentPlayer!.Id,
-    });
+    if (this.isPlaying()) {
+      content = EventPacker.wrapGameRunningInfo(content, {
+        numberOfDrawStack: this.drawStack.length,
+        round: this.round,
+        currentPlayerId: this.CurrentPlayer.Id,
+      });
+    }
 
     this.socket.broadcast(
       type,
@@ -176,9 +176,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       const bySkill =
         triggeredBySkillName &&
         Sanguosha.getSkillBySkillName(triggeredBySkillName);
-      for (const equip of player.getCardIds(
-        PlayerCardsArea.EquipArea,
-      )) {
+      for (const equip of player.getCardIds(PlayerCardsArea.EquipArea)) {
         const equipCard = Sanguosha.getCardById(equip);
         if (
           bySkill &&
@@ -187,9 +185,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           canTriggerSkills.push(equipCard.Skill as TriggerSkill);
         }
       }
-      for (const skill of player.getPlayerSkills<TriggerSkill>(
-        'trigger',
-      )) {
+      for (const skill of player.getPlayerSkills<TriggerSkill>('trigger')) {
         if (bySkill && UniqueSkillRule.canUseSkillRule(bySkill, skill)) {
           canTriggerSkills.push(skill);
         }
@@ -571,57 +567,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       },
       playerId,
     );
-  }
-
-  public assignRoles(): PlayerInfo[] {
-    const playerInfo: PlayerInfo[] = [];
-
-    const lordIndex = Math.floor(Math.random() * this.players.length);
-    [this.players[0], this.players[lordIndex]] = [
-      this.players[lordIndex],
-      this.players[0],
-    ];
-
-    const roles = getRoles(this.gameInfo.numberOfPlayers);
-
-    this.players[0].Role = roles[0];
-    this.players[0].Position = 0;
-    playerInfo.push({
-      Id: this.players[0].Id,
-      Name: this.players[0].Name,
-      Position: this.players[0].Position,
-      CharacterId: undefined,
-      Role: this.players[0].Role,
-    });
-
-    for (let i = 1; i < this.players.length; i++) {
-      const randomIndex =
-        Math.floor(Math.random() * (this.players.length - i)) + i;
-      if (i !== randomIndex) {
-        [this.players[i], this.players[randomIndex]] = [
-          this.players[randomIndex],
-          this.players[i],
-        ];
-      }
-      const randomRoleIndex =
-        Math.floor(Math.random() * (roles.length - i)) + i;
-      if (i !== randomRoleIndex) {
-        [roles[i], roles[randomRoleIndex]] = [roles[randomRoleIndex], roles[i]];
-      }
-
-      this.players[i].Position = i;
-      this.players[i].Role = roles[i];
-
-      playerInfo.push({
-        Id: this.players[i].Id,
-        Name: this.players[i].Name,
-        Position: this.players[i].Position,
-        CharacterId: undefined,
-        Role: this.players[i].Role,
-      });
-    }
-
-    return playerInfo;
   }
 
   public get CurrentPlayerStage() {

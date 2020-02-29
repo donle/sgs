@@ -1,3 +1,4 @@
+import { Card } from 'core/cards/card';
 import {
   GameEventIdentifiers,
   ServerEventFinder as _ServerEventFinder,
@@ -7,6 +8,7 @@ import {
   GameRunningInfo as _GameRunningInfo,
 } from 'core/game/game_props';
 import { ClientSocket } from 'core/network/socket.client';
+import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
 import {
   PlayerId as _PlayerId,
@@ -15,6 +17,7 @@ import {
 import { RoomId as _RoomId } from 'core/room/room';
 import { ClientRoom } from 'core/room/room.client';
 import { RoomInfo as _RoomInfo } from 'core/shares/types/server_types';
+import { Skill } from 'core/skills/skill';
 import * as mobx from 'mobx';
 
 import * as React from 'react';
@@ -53,7 +56,38 @@ export class RoomStore {
   gameLog: string[] = [];
 
   @mobx.observable.ref
-  updateStatus: boolean = false;
+  updateClientPlayerFlag: boolean = false;
+  @mobx.observable.ref
+  updateDahboardUIFlag: boolean = false;
+
+  @mobx.observable.ref
+  actionButtonStatus: {
+    confirm: boolean;
+    cancel: boolean;
+    finish: boolean;
+  } = {
+    confirm: false,
+    cancel: false,
+    finish: false,
+  };
+
+  @mobx.observable.ref
+  clientPlayerCardActionsMatcher: (card: Card) => boolean;
+  @mobx.observable.ref
+  onClickHandCardToPlay: (card: Card, selected: boolean) => void;
+  @mobx.observable.ref
+  playersSelectionMatcher: (player: Player) => boolean;
+  @mobx.observable.ref
+  onClickPlayer: (player: Player, selected: boolean) => void;
+  @mobx.observable.ref
+  onClickSkill: (skill: Skill, selected: boolean) => void;
+
+  @mobx.observable.ref
+  confirmButtonAction: (() => void) | undefined;
+  @mobx.observable.ref
+  cancelButtonAction: (() => void) | undefined;
+  @mobx.observable.ref
+  finishButtonAction: (() => void) | undefined;
 }
 
 export class RoomPresenter {
@@ -69,9 +103,19 @@ export class RoomPresenter {
     }
   }
 
+  @mobx.computed
+  get ClientPlayer(): Player | undefined {
+    return this.store.room?.getPlayerById(this.store.clientPlayerId);
+  }
+
   @mobx.action
-  update() {
-    this.store.updateStatus = !this.store.updateStatus;
+  updateClientPlayerUI() {
+    this.store.updateClientPlayerFlag = !this.store.updateClientPlayerFlag;
+  }
+
+  @mobx.action
+  updateDashboardUI() {
+    this.store.updateDahboardUIFlag = !this.store.updateDahboardUIFlag;
   }
 
   @mobx.action
@@ -85,6 +129,15 @@ export class RoomPresenter {
   }
 
   @mobx.action
+  enableActionButton(...buttons: ('confirm' | 'cancel' | 'finish')[]) {
+    buttons.forEach(btn => (this.store.actionButtonStatus[btn] = true));
+  }
+  @mobx.action
+  disableActionButton(...buttons: ('confirm' | 'cancel' | 'finish')[]) {
+    buttons.forEach(btn => (this.store.actionButtonStatus[btn] = false));
+  }
+
+  @mobx.action
   playerEnter(playerInfo: PlayerInfo) {
     this.tryToThrowUninitializedError();
     const player = new ClientPlayer(
@@ -94,7 +147,7 @@ export class RoomPresenter {
       playerInfo.CharacterId,
     );
     this.store.room.addPlayer(player);
-    this.update();
+    this.updateClientPlayerUI();
   }
 
   @mobx.action
@@ -126,7 +179,7 @@ export class RoomPresenter {
     );
 
     this.store.room = new ClientRoom(roomId, socket, gameInfo, players);
-    this.update();
+    this.updateClientPlayerUI();
   }
 
   @mobx.action
@@ -151,5 +204,52 @@ export class RoomPresenter {
   @mobx.action
   closeDialog() {
     this.store.gameDialog = undefined;
+  }
+
+  @mobx.action
+  setupClientPlayerCardActionsMatcher(matcher: (card: Card) => boolean) {
+    this.store.clientPlayerCardActionsMatcher = matcher;
+  }
+  @mobx.action
+  onClickPlayerCard(handler: (card: Card, selected: boolean) => void) {
+    this.store.onClickHandCardToPlay = handler;
+  }
+
+  @mobx.action
+  setupPlayersSelectionMatcher(matcher: (player: Player) => boolean) {
+    this.store.playersSelectionMatcher = matcher;
+  }
+  @mobx.action
+  onClickPlayer(handler: (player: Player, selected: boolean) => void) {
+    this.store.onClickPlayer = handler;
+  }
+  @mobx.action
+  onClickSkill(handler: (skill: Skill, selected: boolean) => void) {
+    this.store.onClickSkill = handler;
+  }
+
+  @mobx.action
+  defineConfirmButtonActions(handler: () => void) {
+    this.store.confirmButtonAction = mobx.action(() => {
+      handler();
+      this.store.actionButtonStatus.confirm = false;
+      this.store.confirmButtonAction = undefined;
+    });
+  }
+  @mobx.action
+  defineFinishButtonActions(handler: () => void) {
+    this.store.finishButtonAction = mobx.action(() => {
+      handler();
+      this.store.actionButtonStatus.finish = false;
+      this.store.finishButtonAction = undefined;
+    });
+  }
+  @mobx.action
+  defineCancelButtonActions(handler: () => void) {
+    this.store.cancelButtonAction = mobx.action(() => {
+      handler();
+      this.store.actionButtonStatus.cancel = false;
+      this.store.cancelButtonAction = undefined;
+    });
   }
 }

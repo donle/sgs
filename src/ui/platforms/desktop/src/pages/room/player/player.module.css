@@ -23,3 +23,6 @@
     align-self: center;
     justify-self: center;
 }
+.selected {
+    border-color: red;
+}

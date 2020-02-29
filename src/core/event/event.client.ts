@@ -138,11 +138,14 @@ export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.AskForPlayCardsOrSkillsEvent]: {
     fromId: PlayerId;
     end?: boolean;
-    event?:
+    eventName:
+      | GameEventIdentifiers.CardUseEvent
+      | GameEventIdentifiers.SkillUseEvent;
+    event:
       | ClientEvent[GameEventIdentifiers.SkillUseEvent]
       | ClientEvent[GameEventIdentifiers.CardUseEvent];
   };
-  [GameEventIdentifiers.PlayerEnterRefusedEvent]: never,
+  [GameEventIdentifiers.PlayerEnterRefusedEvent]: never;
   [GameEventIdentifiers.SyncGameCommonRulesEvent]: never;
   [GameEventIdentifiers.LoseSkillEvent]: never;
   [GameEventIdentifiers.ObtainSkillEvent]: never;

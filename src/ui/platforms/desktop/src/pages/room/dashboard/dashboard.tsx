@@ -13,90 +13,133 @@ export type DashboardProps = {
   store: RoomStore;
   presenter: RoomPresenter;
   translator: Translation;
+  updateFlag: boolean;
+  cardEnableMatcher?(card: Card): boolean;
+  onClick?(card: Card, selected: boolean): void;
+  onClickConfirmButton?(): void;
+  onClickCancelButton?(): void;
+  onClickFinishButton?(): void;
 };
 
-export const EquipCardItem = (props: {
-  disabled?: boolean;
-  card?: Card;
-  translator: Translation;
-  onClick?(card: Card): void;
-}) => {
-  const { disabled = true, card, onClick, translator } = props;
+export const EquipCardItem = mobxReact.observer(
+  (props: {
+    disabled?: boolean;
+    card?: Card;
+    translator: Translation;
+    onClick?(selected: boolean): void;
+  }) => {
+    const { disabled = true, card, onClick, translator } = props;
+    const selected = mobx.observable.box<boolean>(false);
+    const onCardClick = mobx.action(() => {
+      if (disabled === false) {
+        selected.set(!selected.get());
+        onClick && onClick(selected.get());
+      }
+    });
 
-  const onCardClick = () => {
-    !disabled && onClick && card && onClick(card);
-  };
-
-  return (
-    <div className={styles.equipCardItem} onClick={onCardClick}>
-      {card && translator.tr(card.Name)}
-    </div>
-  );
-};
+    return (
+      <div className={styles.equipCardItem} onClick={onCardClick}>
+        {card && translator.tr(card.Name)}
+      </div>
+    );
+  },
+);
 
 @mobxReact.observer
 export class Dashboard extends React.Component<DashboardProps> {
-  @mobx.computed
-  get ClientPlayer() {
-    return this.props.store.room.Players.find(
-      player => player.Id === this.props.store.clientPlayerId,
-    );
-  }
+  private readonly onClick = (card: Card) => (selected: boolean) => {
+    this.props.onClick && this.props.onClick(card, selected);
+  };
 
   getEquipCardsSection() {
     const equipCards: Card[] = new Array(4);
-    this.ClientPlayer &&
-      this.ClientPlayer.getCardIds(PlayerCardsArea.EquipArea).forEach(
-        cardId => {
-          const card = Sanguosha.getCardById(cardId);
-          if (card.is(CardType.Weapon)) {
-            equipCards[0] = card;
-          } else if (card.is(CardType.Armor)) {
-            equipCards[1] = card;
-          } else if (card.is(CardType.DefenseRide)) {
-            equipCards[2] = card;
-          } else if (card.is(CardType.OffenseRide)) {
-            equipCards[3] = card;
-          }
-        },
-      );
+    this.props.presenter.ClientPlayer?.getCardIds(
+      PlayerCardsArea.EquipArea,
+    ).forEach(cardId => {
+      const card = Sanguosha.getCardById(cardId);
+      if (card.is(CardType.Weapon)) {
+        equipCards[0] = card;
+      } else if (card.is(CardType.Armor)) {
+        equipCards[1] = card;
+      } else if (card.is(CardType.DefenseRide)) {
+        equipCards[2] = card;
+      } else if (card.is(CardType.OffenseRide)) {
+        equipCards[3] = card;
+      }
+    });
 
     return (
       <div className={styles.equipSection}>
         {equipCards.map(card => (
-          <EquipCardItem translator={this.props.translator} card={card} />
+          <EquipCardItem
+            translator={this.props.translator}
+            card={card}
+            onClick={this.onClick(card)}
+            disabled={
+              !this.props.cardEnableMatcher ||
+              !this.props.cardEnableMatcher(card)
+            }
+          />
         ))}
       </div>
     );
+  }
+
+  getAllClientHandCards() {
+    return this.props.presenter.ClientPlayer?.getCardIds(
+      PlayerCardsArea.HandArea,
+    ).map(cardId => {
+      const card = Sanguosha.getCardById(cardId);
+      return (
+        <ClientCard
+          key={cardId}
+          translator={this.props.translator}
+          card={card}
+          onSelected={this.onClick(card)}
+          className={styles.handCard}
+          disabled={
+            !this.props.cardEnableMatcher || !this.props.cardEnableMatcher(card)
+          }
+          image={''}
+        />
+      );
+    });
   }
 
   getPlayerHandBoard() {
     return (
       <div className={styles.handBoard}>
         <div className={styles.userActionsButtons}>
-          <button>{this.props.translator.tr('confirm')}</button>
-          <button>{this.props.translator.tr('cancel')}</button>
-          <button>{this.props.translator.tr('finish')}</button>
+          <button
+            disabled={!this.props.store.actionButtonStatus.confirm}
+            onClick={this.props.onClickConfirmButton}
+          >
+            {this.props.translator.tr('confirm')}
+          </button>
+          <button
+            disabled={!this.props.store.actionButtonStatus.cancel}
+            onClick={this.props.onClickCancelButton}
+          >
+            {this.props.translator.tr('cancel')}
+          </button>
+          <button
+            disabled={!this.props.store.actionButtonStatus.finish}
+            onClick={this.props.onClickFinishButton}
+          >
+            {this.props.translator.tr('finish')}
+          </button>
         </div>
-        <div className={styles.handCards}>
-          {this.ClientPlayer?.getCardIds(PlayerCardsArea.HandArea).map(
-            cardId => (
-              <ClientCard
-                translator={this.props.translator}
-                card={Sanguosha.getCardById(cardId)}
-                image={''}
-              />
-            ),
-          )}
-        </div>
+        <div className={styles.handCards}>{this.getAllClientHandCards()}</div>
       </div>
     );
   }
 
   render() {
-    return <div className={styles.dashboard}>
-      {this.getEquipCardsSection()}
-      {this.getPlayerHandBoard()}
-    </div>
+    return (
+      <div className={styles.dashboard}>
+        {this.getEquipCardsSection()}
+        {this.getPlayerHandBoard()}
+      </div>
+    );
   }
 }

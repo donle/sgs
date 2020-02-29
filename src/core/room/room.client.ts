@@ -8,6 +8,7 @@ import { PlayerPhase } from 'core/game/stage_processor';
 import { ClientSocket } from 'core/network/socket.client';
 import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
+import { PlayerId } from 'core/player/player_props';
 import { Room, RoomId } from './room';
 
 export class ClientRoom extends Room<WorkPlace.Client> {
@@ -120,7 +121,6 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     type: T,
     content: ClientEventFinder<T>,
   ): void {
-    //TODO:
     this.socket.notify(type, content);
   }
 
@@ -137,6 +137,15 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     }
 
     return this.currentPlayer;
+  }
+
+  public turnTo(playerId: PlayerId, phase: PlayerPhase) {
+    const index = this.players.findIndex(p => p.Id === playerId);
+    if (index < 0) {
+      throw new Error(`Unknown player in turnTo: ${playerId}`);
+    }
+    this.currentPlayer = this.players[index] as ClientPlayer;
+    this.currentPlayerPhase = phase;
   }
 
   public async gameStart(gameStartInfo: GameRunningInfo) {

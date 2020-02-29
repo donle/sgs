@@ -319,11 +319,13 @@ export abstract class ActiveSkill extends Skill {
   public abstract targetFilter(room: Room, targets: PlayerId[]): boolean;
   public abstract cardFilter(room: Room, cards: CardId[]): boolean;
   public abstract isAvailableCard(
+    owner: PlayerId | CardId,
     room: Room,
     cardId: CardId,
     selectedCards: CardId[],
   ): boolean;
   public abstract isAvailableTarget(
+    owner: PlayerId | CardId,
     room: Room,
     target: PlayerId,
     selectedTargets: PlayerId[],
@@ -370,6 +372,7 @@ export abstract class ViewAsSkill extends Skill {
   ): boolean;
   public abstract isAvailableCardFor(
     cardName: string,
+    owner: PlayerId,
     room: Room,
     pendingCardId: CardId,
     selectedCards: CardId[],
@@ -377,6 +380,7 @@ export abstract class ViewAsSkill extends Skill {
 
   public abstract isAvailableTargetFor(
     cardName: string,
+    owner: PlayerId,
     room: Room,
     pendingTargetId: PlayerId,
     selectedTargets: PlayerId[],
@@ -401,6 +405,7 @@ export abstract class ViewAsSkill extends Skill {
     return validCard;
   }
   public isAvailableCard(
+    owner: PlayerId,
     room: Room,
     cardId: CardId,
     selectedCards: CardId[],
@@ -409,13 +414,14 @@ export abstract class ViewAsSkill extends Skill {
     for (const cardName of this.canViewAs()) {
       validCard =
         validCard ||
-        this.isAvailableCardFor(cardName, room, cardId, selectedCards);
+        this.isAvailableCardFor(cardName, owner, room, cardId, selectedCards);
     }
 
     return validCard;
   }
 
   public isAvailableTarget(
+    owner: PlayerId,
     room: Room,
     target: PlayerId,
     selectedTargets: PlayerId[],
@@ -424,7 +430,13 @@ export abstract class ViewAsSkill extends Skill {
     for (const cardName of this.canViewAs()) {
       validTarget =
         validTarget ||
-        this.isAvailableTargetFor(cardName, room, target, selectedTargets);
+        this.isAvailableTargetFor(
+          cardName,
+          owner,
+          room,
+          target,
+          selectedTargets,
+        );
     }
 
     return validTarget;

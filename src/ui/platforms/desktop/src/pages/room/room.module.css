@@ -40,10 +40,10 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    flex: auto;
 }
 
 .sideBoard {
-    flex: auto;
     flex-direction: column;
     justify-content: stretch;
     display: flex;

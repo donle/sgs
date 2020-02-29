@@ -4,4 +4,24 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+  border: 1px solid grey;
+}
+
+.cardSuit {
+  height: 16px;
+  width: 16px;
+  margin-right: 8px;
+}
+
+.cornerTag {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.selected {
+  border-color: red;
 }

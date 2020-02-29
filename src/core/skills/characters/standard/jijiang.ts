@@ -46,11 +46,14 @@ export class JiJiang extends ActiveSkill {
     return cards.length === 0;
   }
 
-  isAvailableTarget(room: Room, targetId: PlayerId): boolean {
-    return room.canAttack(room.CurrentPlayer, room.getPlayerById(targetId));
+  isAvailableTarget(owner: PlayerId, room: Room, targetId: PlayerId): boolean {
+    return room.canAttack(
+      room.getPlayerById(owner),
+      room.getPlayerById(targetId),
+    );
   }
 
-  isAvailableCard(room: Room, cardId: CardId): boolean {
+  isAvailableCard(): boolean {
     return false;
   }
 
