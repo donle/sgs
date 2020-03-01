@@ -26,6 +26,20 @@ export const characterDictionary: Word[] = [
   { source: 'huangyueying', target: '黄月英' },
 ];
 
+export const generalDictionary: Word[] = [
+  { source: 'standard', target: '标准版' },
+  { source: 'wei', target: '魏' },
+  { source: 'shu', target: '蜀' },
+  { source: 'wu', target: '吴' },
+  { source: 'qun', target: '群' },
+  { source: 'god', target: '神' },
+  { source: 'unknown', target: '未知' },
+  { source: 'lord', target: '主公' },
+  { source: 'loyalist', target: '忠诚' },
+  { source: 'rebel', target: '反贼' },
+  { source: 'renegade', target: '内奸' },
+];
+
 export const eventDictionary: Word[] = [
   {
     source: '{0} draws {1} cards',

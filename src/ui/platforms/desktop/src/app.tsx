@@ -1,34 +1,23 @@
-import { Sanguosha } from 'core/game/engine';
-import { DevMode, hostConfig } from 'core/shares/types/host_config';
-import {
-  Languages,
-  Translation,
-} from 'core/translations/translation_json_tool';
+import { ClientConfigTypes } from 'client.config';
+import { Translation } from 'core/translations/translation_json_tool';
 import { createBrowserHistory } from 'history';
 import { RoomPage } from 'pages/room/room';
 import * as React from 'react';
 import { Redirect, Route, Router, Switch } from 'react-router-dom';
-import { UIConfigTypes } from 'ui.config';
-import { SimplifiedChinese } from './languages';
 import { Lobby } from './pages/lobby/lobby';
 
-const mode = (process.env.DEV_MODE as DevMode) || DevMode.Dev;
-
-export const App = (props: { config: UIConfigTypes }) => {
-  Sanguosha.initialize();
-  const socketConfig = hostConfig[mode];
-  const history = createBrowserHistory();
-  const translator = Translation.setup(props.config.language, [
-    Languages.ZH_CN,
-    SimplifiedChinese,
-  ]);
+export const App = (props: {
+  config: ClientConfigTypes;
+  translator: Translation;
+}) => {
+  const customHistory = createBrowserHistory();
 
   React.useEffect(() => {
-    document.title = translator.tr('New QSanguosha');
+    document.title = props.translator.tr('New QSanguosha');
   });
 
   return (
-    <Router history={history}>
+    <Router history={customHistory}>
       <div>
         <Switch>
           <Route path="/" exact>
@@ -38,9 +27,9 @@ export const App = (props: { config: UIConfigTypes }) => {
             path={'/lobby'}
             render={({ match, location, history }) => (
               <Lobby
-                config={socketConfig}
+                config={props.config.host}
                 match={match}
-                translator={translator}
+                translator={props.translator}
                 location={location}
                 history={history}
               />
@@ -53,8 +42,8 @@ export const App = (props: { config: UIConfigTypes }) => {
                 location={location}
                 history={history}
                 match={match}
-                config={socketConfig}
-                translator={translator}
+                config={props.config.host}
+                translator={props.translator}
               />
             )}
           />

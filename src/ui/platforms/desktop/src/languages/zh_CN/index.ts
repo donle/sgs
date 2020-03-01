@@ -1,5 +1,5 @@
 import { TranslationsDictionary, Word } from 'languages';
-import * as dictionary from './translations';
+import * as dictionaryBook from './translations';
 
 function wordsToDictionary(words: Word[]): TranslationsDictionary {
   const dict: TranslationsDictionary = {};
@@ -10,9 +10,7 @@ function wordsToDictionary(words: Word[]): TranslationsDictionary {
   return dict;
 }
 
-export const SimplifiedChinese = {
-  ...wordsToDictionary(dictionary.cardDictionary),
-  ...wordsToDictionary(dictionary.characterDictionary),
-  ...wordsToDictionary(dictionary.eventDictionary),
-  ...wordsToDictionary(dictionary.UiDictionary),
-};
+export const SimplifiedChinese: TranslationsDictionary = {};
+Object.values(dictionaryBook).forEach(dictionay => {
+  Object.assign(SimplifiedChinese, wordsToDictionary(dictionay));
+});
