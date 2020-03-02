@@ -31,6 +31,7 @@ import {
   SkillUseStage,
   StageProcessor,
 } from 'core/game/stage_processor';
+import { Player } from 'core/player/player';
 import {
   getPlayerRoleRawText,
   PlayerCardsArea,
@@ -49,6 +50,7 @@ export class GameProcessor {
   private room: ServerRoom;
   private currentPlayerStage: PlayerStageListEnum | undefined;
   private currentPlayerPhase: PlayerPhase | undefined;
+  private currentPhasePlayer: Player;
 
   constructor(private stageProcessor: StageProcessor, private logger: Logger) {}
 
@@ -179,7 +181,7 @@ export class GameProcessor {
     this.drawGameBeginsCards(playersInfo);
 
     while (this.room.AlivePlayers.length > 1) {
-      await this.play(this.playerPositionIndex);
+      await this.play(this.CurrentPlayer);
       this.turnToNextPlayer();
       this.playerPositionIndex =
         (this.playerPositionIndex + 1) % this.room.AlivePlayers.length;
@@ -285,10 +287,12 @@ export class GameProcessor {
     }
   }
 
-  private async play(playerPosition: number) {
-    let lastPlayer = this.room.AlivePlayers[playerPosition];
+  private async play(player: Player, specifiedStages?: PlayerStageListEnum[]) {
+    this.currentPhasePlayer = player;
 
-    const playerStages = this.stageProcessor.createPlayerStage();
+    const playerStages = specifiedStages
+      ? specifiedStages
+      : this.stageProcessor.createPlayerStage();
 
     while (playerStages.length > 0) {
       this.currentPlayerStage = playerStages[0];
@@ -302,11 +306,12 @@ export class GameProcessor {
           {
             from: this.currentPlayerPhase,
             to: nextPhase,
-            fromPlayer: lastPlayer.Id,
-            toPlayer: this.CurrentPlayer.Id,
+            fromPlayer: player.Id,
+            toPlayer: player.Id,
           },
           async stage => {
             if (stage === PhaseChangeStage.PhaseChanged) {
+              this.CurrentPlayer.resetCardUseHistory();
               this.currentPlayerPhase = nextPhase;
               await this.onPhase(this.currentPlayerPhase);
             }
@@ -315,8 +320,6 @@ export class GameProcessor {
           },
         );
       }
-
-      lastPlayer = this.room.AlivePlayers[this.playerPositionIndex];
     }
   }
 
@@ -1016,6 +1019,11 @@ export class GameProcessor {
   public get CurrentGameStage() {
     this.tryToThrowNotStartedError();
     return this.stageProcessor.CurrentGameEventStage;
+  }
+
+  public get CurrentPhasePlayer() {
+    this.tryToThrowNotStartedError();
+    return this.currentPhasePlayer!;
   }
 
   public get CurrentPlayerPhase() {

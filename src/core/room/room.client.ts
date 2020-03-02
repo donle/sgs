@@ -19,6 +19,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
 
   private round: number = 0;
   private currentPlayer: ClientPlayer;
+  private currentPhasePlayer: ClientPlayer;
   private currentPlayerPhase: PlayerPhase;
   private numberOfDrawStack: number = 0;
   private numberOfDropStack: number = 0;
@@ -139,13 +140,19 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     return this.currentPlayer;
   }
 
-  public turnTo(playerId: PlayerId, phase: PlayerPhase) {
-    const index = this.players.findIndex(p => p.Id === playerId);
-    if (index < 0) {
-      throw new Error(`Unknown player in turnTo: ${playerId}`);
+  public get CurrentPhasePlayer(): ClientPlayer {
+    if (this.currentPhasePlayer === undefined)  {
+      throw new Error('Uninitilizes client room with current phase player');
     }
-    this.currentPlayer = this.players[index] as ClientPlayer;
+
+    return this.currentPhasePlayer;
+  }
+
+  public turnTo(playerId: PlayerId, phase: PlayerPhase) {
+    this.currentPlayer = this.getPlayerById(playerId) as ClientPlayer;
     this.currentPlayerPhase = phase;
+    //TODO: currentPhasePlayer will not always euqal currentPlayer
+    this.currentPhasePlayer = this.currentPlayer;
   }
 
   public async gameStart(gameStartInfo: GameRunningInfo) {

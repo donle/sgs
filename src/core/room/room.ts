@@ -118,6 +118,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public abstract async gameStart(...args: any[]): Promise<void>;
   public abstract get CurrentPlayerStage(): PlayerPhase;
+  public abstract get CurrentPhasePlayer(): Player;
   public abstract get CurrentPlayer(): Player;
   //Server only
   public abstract syncGameCommonRules(

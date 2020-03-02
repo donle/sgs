@@ -569,6 +569,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     );
   }
 
+  public get CurrentPhasePlayer() {
+    return this.gameProcessor.CurrentPhasePlayer;
+  }
+
   public get CurrentPlayerStage() {
     return this.gameProcessor.CurrentPlayerPhase;
   }

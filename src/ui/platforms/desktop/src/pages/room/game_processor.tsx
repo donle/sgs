@@ -67,15 +67,24 @@ export class GameClientProcessor {
       case GameEventIdentifiers.AskForCardUseEvent:
         this.onHandleAskForCardUseEvent(e as any, content);
         break;
+      case GameEventIdentifiers.AskForCardResponseEvent:
+        this.onHandleAskForCardResponseEvent(e as any, content);
+        break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
     }
   }
 
+  private onHandleAskForCardResponseEvent<
+    T extends GameEventIdentifiers.AskForCardResponseEvent
+  >(type: T, content: ServerEventFinder<T>) {
+    this.actionHandler.onResponseCardAction(content);
+  }
+
   private onHandleAskForCardUseEvent<
     T extends GameEventIdentifiers.AskForCardUseEvent
   >(type: T, content: ServerEventFinder<T>) {
-    //TODO: finish the action
+    this.actionHandler.onResponsiveUseCard(content);
   }
 
   private onHandleCardUseEvent<T extends GameEventIdentifiers.CardUseEvent>(
@@ -201,7 +210,7 @@ export class GameClientProcessor {
   private onHandlePlayCardStage<
     T extends GameEventIdentifiers.AskForPlayCardsOrSkillsEvent
   >(type: T, content: ServerEventFinder<T>) {
-    this.actionHandler.onPlayAction(content);
+    this.actionHandler.onPlayAction(content.fromId);
     this.presenter.enableActionButton('finish');
   }
 
