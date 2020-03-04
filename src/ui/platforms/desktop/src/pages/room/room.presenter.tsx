@@ -43,7 +43,7 @@ type ClientRoomInfo = {
 export class RoomStore {
   @mobx.observable.ref
   clientRoomInfo: ClientRoomInfo;
-  @mobx.observable.deep
+  @mobx.observable.ref
   room: ClientRoom;
 
   @mobx.observable.ref

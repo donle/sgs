@@ -1,7 +1,10 @@
 import { getClientConfg, uiConfig } from 'client.config';
 import { Sanguosha } from 'core/game/engine';
 import { DevMode } from 'core/shares/types/host_config';
-import { Languages, Translation } from 'core/translations/translation_json_tool';
+import {
+  Languages,
+  Translation,
+} from 'core/translations/translation_json_tool';
 import { SimplifiedChinese } from 'languages';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -9,6 +12,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { App } from './app';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
+
+import './emoji_loader';
 
 const mode = (process.env.DEV_MODE as DevMode) || DevMode.Dev;
 

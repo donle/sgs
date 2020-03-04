@@ -1,10 +1,10 @@
 import { CardSuit } from 'core/cards/libs/card_props';
+import clubImage from 'pages/room/assets/images/suits/club.png';
+import diamondImage from 'pages/room/assets/images/suits/diamond.png';
+import heartImage from 'pages/room/assets/images/suits/heart.png';
+import nosuitImage from 'pages/room/assets/images/suits/no_suit.png';
+import spadeImage from 'pages/room/assets/images/suits/spade.png';
 import * as React from 'react';
-import clubImage from './images/club.png';
-import diamondImage from './images/diamond.png';
-import heartImage from './images/heart.png';
-import nosuitImage from './images/no_suit.png';
-import spadeImage from './images/spade.png';
 
 export const CardSuitItem = (props: { suit: CardSuit; className?: string }) => {
   switch (props.suit) {

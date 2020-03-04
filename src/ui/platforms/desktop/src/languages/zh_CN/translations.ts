@@ -111,7 +111,7 @@ export const eventDictionary: Word[] = [
   },
 ];
 
-export const UiDictionary: Word[] = [
+export const UiDictionary = [
   { source: 'No rooms at the moment', target: '还没有玩家创建房间' },
   { source: 'Create a room', target: '创建信房间' },
   { source: 'waiting', target: '等待中' },

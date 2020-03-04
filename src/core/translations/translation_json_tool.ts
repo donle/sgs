@@ -7,6 +7,7 @@ export const enum Languages {
 }
 
 const translationObjectSign = '@@translate:';
+const translateCardObjectSign = translationObjectSign + 'card:';
 
 export type PatchedTranslationObject = {
   original: string;
@@ -133,11 +134,7 @@ export class TranslationPack {
         );
       }
     }
-    for (const [rawText, path] of Object.entries(
-      TranslationPack.emojiOrImageTextDict,
-    )) {
-      target.replace(rawText, path);
-    }
+
     return target;
   }
 
@@ -148,8 +145,25 @@ export class TranslationPack {
     } ${card.Name}`;
   }
 
+  public static isCardObjectText(text: string) {
+    return text.startsWith(translateCardObjectSign);
+  }
+
+  public static translatePatchedCardText(
+    text: string,
+    dictionary: TranslationsDictionary,
+  ) {
+    const [cardSuitString, cardNumber, cardName] = text.split(' ');
+
+    return {
+      suitImageUrl: TranslationPack.emojiOrImageTextDict[cardSuitString],
+      cardNumber,
+      cardName: dictionary[cardName] || cardName,
+    };
+  }
+
   public static patchEmojiOrImageInTranslation(rawText: string | number) {
-    return translationObjectSign + rawText;
+    return translateCardObjectSign + rawText;
   }
 
   public static addEmojiOrImageSymbolText(
@@ -207,11 +221,7 @@ export class TranslationPack {
           );
         }
       }
-      for (const [rawText, path] of Object.entries(
-        TranslationPack.emojiOrImageTextDict,
-      )) {
-        target.replace(rawText, path);
-      }
+      //TODO: add emoji object in the return value;
       return target;
     } catch {
       return wrappedString;
