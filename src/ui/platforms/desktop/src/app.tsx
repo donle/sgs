@@ -1,5 +1,5 @@
 import { ClientConfigTypes } from 'client.config';
-import { Translation } from 'core/translations/translation_json_tool';
+import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { createBrowserHistory } from 'history';
 import { RoomPage } from 'pages/room/room';
 import * as React from 'react';
@@ -8,7 +8,7 @@ import { Lobby } from './pages/lobby/lobby';
 
 export const App = (props: {
   config: ClientConfigTypes;
-  translator: Translation;
+  translator: ClientTranslationModule;
 }) => {
   const customHistory = createBrowserHistory();
 

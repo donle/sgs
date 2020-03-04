@@ -1,7 +1,7 @@
 import { Card, CardType } from 'core/cards/card';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerCardsArea } from 'core/player/player_props';
-import { Translation } from 'core/translations/translation_json_tool';
+import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
@@ -12,7 +12,7 @@ import styles from './dashboard.module.css';
 export type DashboardProps = {
   store: RoomStore;
   presenter: RoomPresenter;
-  translator: Translation;
+  translator: ClientTranslationModule;
   updateFlag: boolean;
   cardEnableMatcher?(card: Card): boolean;
   onClick?(card: Card, selected: boolean): void;
@@ -25,7 +25,7 @@ export const EquipCardItem = mobxReact.observer(
   (props: {
     disabled?: boolean;
     card?: Card;
-    translator: Translation;
+    translator: ClientTranslationModule;
     onClick?(selected: boolean): void;
   }) => {
     const { disabled = true, card, onClick, translator } = props;

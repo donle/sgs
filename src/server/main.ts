@@ -11,13 +11,9 @@ import {
   hostConfig,
   HostConfigProps,
 } from 'core/shares/types/host_config';
-import {
-  LobbySocketEvent,
-} from 'core/shares/types/server_types';
-import {
-  Languages,
-  Translation,
-} from 'core/translations/translation_json_tool';
+import { LobbySocketEvent } from 'core/shares/types/server_types';
+import { Languages } from 'core/translations/translation_json_tool';
+import { TranslationModule } from 'core/translations/translation_module';
 import * as http from 'http';
 import * as https from 'https';
 import * as os from 'os';
@@ -30,7 +26,7 @@ class App {
   private rooms: ServerRoom[] = [];
   private roomsPathList: string[] = [];
   private config: HostConfigProps;
-  private translator: Translation;
+  private translator: TranslationModule;
 
   private playersList: {
     playerId: PlayerId;
@@ -80,7 +76,7 @@ class App {
   }
 
   private loadLanguages(language: Languages) {
-    this.translator = Translation.setup(language, [
+    this.translator = TranslationModule.setup(language, [
       Languages.ZH_CN,
       SimplifiedChinese,
     ]);

@@ -1,12 +1,12 @@
 import classNames from 'classnames';
 import { Character, getNationalityRawText } from 'core/characters/character';
-import { Translation } from 'core/translations/translation_json_tool';
+import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as React from 'react';
 import styles from './character.module.css';
 
 export type CharacterCardProps = {
   character: Character;
-  translator: Translation;
+  translator: ClientTranslationModule;
   onClick?(character: Character): void;
   disabled?: boolean;
   className?: string;

@@ -6,8 +6,9 @@ import {
 import { ClientSocket } from 'core/network/socket.client';
 import {
   PatchedTranslationObject,
-  Translation,
+  TranslationPack,
 } from 'core/translations/translation_json_tool';
+import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { match } from 'react-router-dom';
@@ -24,7 +25,7 @@ import { SeatsLayout } from './seats_layout/seats_layout';
 export class RoomPage extends React.Component<
   PagePropsWithHostConfig<{
     match: match<{ slug: string }>;
-    translator: Translation;
+    translator: ClientTranslationModule;
   }>
 > {
   private presenter: RoomPresenter;
@@ -86,11 +87,13 @@ export class RoomPage extends React.Component<
     messages: string[] = [],
     translationsMessage?: PatchedTranslationObject,
   ) {
+    const { translator } = this.props;
+
     if (translationsMessage) {
-      messages.push(this.props.translator.tr(translationsMessage));
+      messages.push(TranslationPack.create(translationsMessage).toString());
     }
     messages.forEach(message => {
-      this.presenter.addGameLog(this.props.translator.tr(message));
+      this.presenter.addGameLog(translator.trx(message));
     });
   }
 

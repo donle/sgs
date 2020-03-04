@@ -6,19 +6,16 @@ export const enum Languages {
   EN_AU = 'en_au',
 }
 
-const translationObjectSign = '@@translate:';
-const translateCardObjectSign = translationObjectSign + 'card:';
-
 export type PatchedTranslationObject = {
   original: string;
   params: (string | number)[];
 };
 
-type TranslationPackPatchedObject = PatchedTranslationObject & {
-  tag: typeof translationObjectSign;
+export type TranslationPackPatchedObject = PatchedTranslationObject & {
+  tag: typeof TranslationPack.translationObjectSign;
 };
 
-type TranslationsDictionary = {
+export type TranslationsDictionary = {
   [k: string]: string;
 };
 
@@ -26,73 +23,18 @@ type EmojiOrImageTranslationDictionary = {
   [k: string]: string;
 };
 
-type TranslationDictionary = {
-  [K: string]: string;
+export type TranslatedCardObject = {
+  suitImageUrl: string;
+  cardNumber: string;
+  cardName: string;
 };
-
-export class Translation {
-  private readonly dictionary: Map<
-    Languages,
-    TranslationDictionary
-  > = new Map();
-  private currentLanguage: Languages;
-  private constructor(...dictionaries: [Languages, TranslationDictionary][]) {
-    for (const subDictionary of dictionaries) {
-      this.dictionary.set(subDictionary[0], subDictionary[1]);
-    }
-  }
-
-  public static setup(
-    currentLanguage: Languages,
-    ...dictionaries: [Languages, TranslationDictionary][]
-  ) {
-    const translator = new Translation(...dictionaries);
-    translator.currentLanguage = currentLanguage;
-
-    return translator;
-  }
-
-  public tr(rawText: string | PatchedTranslationObject) {
-    if (typeof rawText === 'object') {
-      if (
-        (rawText as TranslationPackPatchedObject).tag !== translationObjectSign
-      ) {
-        throw new Error(
-          `Unexpected translation object: ${JSON.stringify(rawText)}`,
-        );
-      }
-
-      const dict = this.dictionary.get(this.currentLanguage);
-      return dict
-        ? TranslationPack.create(rawText).translateTo(dict)
-        : rawText.original;
-    } else if (rawText.startsWith(translationObjectSign)) {
-      const dict = this.dictionary.get(this.currentLanguage);
-
-      return dict
-        ? TranslationPack.translationJsonDispatcher(
-            rawText.slice(translationObjectSign.length),
-            dict,
-          )
-        : rawText.slice(translationObjectSign.length);
-    } else {
-      const targetDictionary = this.dictionary.get(this.currentLanguage);
-      if (targetDictionary && targetDictionary[rawText]) {
-        return targetDictionary[rawText];
-      }
-
-      return rawText;
-    }
-  }
-
-  public set Language(lang: Languages) {
-    this.currentLanguage = lang;
-  }
-}
 
 export class TranslationPack {
   private constructor(private translationJon: PatchedTranslationObject) {}
   private static emojiOrImageTextDict: EmojiOrImageTranslationDictionary = {};
+  public static readonly translationObjectSign = '@@translate:';
+  public static readonly translateCardObjectSign =
+    TranslationPack.translationObjectSign + 'card:';
 
   static create(translationJon: PatchedTranslationObject) {
     return new TranslationPack(translationJon);
@@ -113,7 +55,10 @@ export class TranslationPack {
   }
 
   toString() {
-    return translationObjectSign + JSON.stringify(this.translationJon);
+    return (
+      TranslationPack.translationObjectSign +
+      JSON.stringify(this.translationJon)
+    );
   }
 
   public translateTo(translationsDictionary: TranslationsDictionary) {
@@ -146,13 +91,13 @@ export class TranslationPack {
   }
 
   public static isCardObjectText(text: string) {
-    return text.startsWith(translateCardObjectSign);
+    return text.startsWith(TranslationPack.translateCardObjectSign);
   }
 
   public static translatePatchedCardText(
     text: string,
     dictionary: TranslationsDictionary,
-  ) {
+  ): TranslatedCardObject {
     const [cardSuitString, cardNumber, cardName] = text.split(' ');
 
     return {
@@ -163,7 +108,7 @@ export class TranslationPack {
   }
 
   public static patchEmojiOrImageInTranslation(rawText: string | number) {
-    return translateCardObjectSign + rawText;
+    return TranslationPack.translateCardObjectSign + rawText;
   }
 
   public static addEmojiOrImageSymbolText(
@@ -176,12 +121,30 @@ export class TranslationPack {
     }
   }
 
+  public static dispatch(wrappedString: string) {
+    try {
+      const translateObject: TranslationPackPatchedObject = JSON.parse(
+        wrappedString.slice(TranslationPack.translationObjectSign.length),
+      );
+      if (
+        !translateObject.tag ||
+        translateObject.tag !== TranslationPack.translationObjectSign
+      ) {
+        return;
+      }
+
+      return translateObject;
+    } catch {
+      return;
+    }
+  }
+
   public static translationJsonPatcher(
     originalText: string,
     ...stringParams: (string | number)[]
   ) {
     const translationJson: TranslationPackPatchedObject = {
-      tag: translationObjectSign,
+      tag: TranslationPack.translationObjectSign,
       original: originalText,
       params: stringParams,
     };
@@ -193,38 +156,29 @@ export class TranslationPack {
     wrappedString: string,
     translationsDictionary: TranslationsDictionary,
   ) {
-    try {
-      const translateObject: TranslationPackPatchedObject = JSON.parse(
-        wrappedString,
-      );
-      if (
-        !translateObject.tag ||
-        translateObject.tag !== translationObjectSign
-      ) {
-        return wrappedString;
-      }
-
-      let target = translationsDictionary[translateObject.original];
-
-      if (target === undefined) {
-        // tslint:disable-next-line: no-console
-        console.warn(`Translations Warning - Missing translation: ${target}`);
-        return wrappedString;
-      }
-
-      if (translateObject.params.length > 0) {
-        for (let i = 0; i < translateObject.params.length; i++) {
-          const param = translateObject.params[i].toString();
-          target = target.replace(
-            new RegExp(`\\{${i}\\}`, 'g'),
-            translationsDictionary[param] || param,
-          );
-        }
-      }
-      //TODO: add emoji object in the return value;
-      return target;
-    } catch {
+    const dispatchedTranslationObject = this.dispatch(wrappedString);
+    if (dispatchedTranslationObject === undefined) {
       return wrappedString;
     }
+
+    let target = translationsDictionary[dispatchedTranslationObject.original];
+
+    if (target === undefined) {
+      // tslint:disable-next-line: no-console
+      console.warn(`Translations Warning - Missing translation: ${target}`);
+      return wrappedString;
+    }
+
+    if (dispatchedTranslationObject.params.length > 0) {
+      for (let i = 0; i < dispatchedTranslationObject.params.length; i++) {
+        const param = dispatchedTranslationObject.params[i].toString();
+        target = target.replace(
+          new RegExp(`\\{${i}\\}`, 'g'),
+          translationsDictionary[param] || param,
+        );
+      }
+    }
+
+    return target;
   }
 }

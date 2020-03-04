@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { getNationalityRawText } from 'core/characters/character';
 import { Player } from 'core/player/player';
-import { Translation } from 'core/translations/translation_json_tool';
+import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
@@ -11,7 +11,7 @@ import styles from './player_avatar.module.css';
 type PlayerAvatarProps = {
   store: RoomStore;
   presenter: RoomPresenter;
-  translator: Translation;
+  translator: ClientTranslationModule;
   updateFlag: boolean;
   disabled?: boolean;
   onClick?(player: Player, selected: boolean): void;

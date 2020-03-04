@@ -1,12 +1,12 @@
 import chalk from 'chalk';
 import { DevMode } from 'core/shares/types/host_config';
-import { Translation } from 'core/translations/translation_json_tool';
+import { TranslationModule } from 'core/translations/translation_module';
 
 export class Logger {
-  private translator: Translation | undefined;
+  private translator: TranslationModule | undefined;
   constructor(private mode: DevMode = DevMode.Dev) {}
 
-  public set Translator(translator: Translation) {
+  public set Translator(translator: TranslationModule) {
     this.translator = translator;
   }
 

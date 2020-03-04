@@ -53,7 +53,7 @@ export class RoomStore {
   gameDialog: JSX.Element | undefined;
 
   @mobx.observable.shallow
-  gameLog: string[] = [];
+  gameLog: (string | JSX.Element)[] = [];
 
   @mobx.observable.ref
   updateClientPlayerFlag: boolean = false;
@@ -183,7 +183,7 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  addGameLog(log: string) {
+  addGameLog(log: string | JSX.Element) {
     this.store.gameLog.push(log);
   }
 

@@ -8,7 +8,7 @@ import {
   LobbySocketEvent,
   LobbySocketEventPicker,
 } from 'core/shares/types/server_types';
-import { Translation } from 'core/translations/translation_json_tool';
+import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
@@ -18,7 +18,7 @@ import { PagePropsWithHostConfig } from 'types/page_props';
 import styles from './lobby.module.css';
 
 type LobbyProps = PagePropsWithHostConfig<{
-  translator: Translation;
+  translator: ClientTranslationModule;
 }>;
 
 @mobxReact.observer

@@ -1,5 +1,5 @@
 import { Player } from 'core/player/player';
-import { Translation } from 'core/translations/translation_json_tool';
+import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
@@ -10,7 +10,7 @@ import styles from './seats_layout.module.css';
 type SeatsLayoutProps = {
   store: RoomStore;
   presenter: RoomPresenter;
-  translator: Translation;
+  translator: ClientTranslationModule;
   gamePad: JSX.Element;
   updateFlag: boolean;
   onClick?(player: Player, selected: boolean): void;

@@ -1,5 +1,8 @@
 .characterCard {
-  width: 180px;
-  height: 220px;
-  border: 1px solid grey;
+    width: 180px;
+    height: 220px;
+    border: 1px solid grey;
+    font-family: LiSu, STLiti, 'Microsoft YaHei', 微软雅黑, 'MicrosoftJhengHei',
+        华文细黑, STHeiti, MingLiu;
+    font-size: 24px;
 }

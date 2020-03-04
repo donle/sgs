@@ -6,3 +6,7 @@
   overflow-y: scroll;
   height: calc(100% - 220px);
 }
+
+.messageLine {
+  margin: 4px 0;
+}

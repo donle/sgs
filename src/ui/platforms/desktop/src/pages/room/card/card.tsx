@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { Card } from 'core/cards/card';
-import { Translation } from 'core/translations/translation_json_tool';
+import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
@@ -11,16 +11,10 @@ export type ClientCardProps = {
   card: Card;
   soundTracks?: string[];
   image: string;
-  translator: Translation;
+  translator: ClientTranslationModule;
   className?: string;
   disabled?: boolean;
   onSelected?(selected: boolean): void;
-};
-
-const uniquNumberOnCard = {
-  11: 'J',
-  12: 'Q',
-  13: 'K',
 };
 
 @mobxReact.observer
@@ -34,10 +28,6 @@ export class ClientCard extends React.Component<ClientCardProps> {
       this.props.onSelected && this.props.onSelected(this.selected);
     }
   });
-
-  getCardNumber(cardNumber: number): string {
-    return uniquNumberOnCard[cardNumber] || cardNumber.toString();
-  }
 
   playAudio(): string {
     const { soundTracks = [] } = this.props;
@@ -56,7 +46,7 @@ export class ClientCard extends React.Component<ClientCardProps> {
       >
         <div className={styles.cornerTag}>
           <CardSuitItem suit={card.Suit} className={styles.cardSuit} />
-          <span>{this.getCardNumber(card.CardNumber)}</span>
+          <span>{ClientTranslationModule.getCardNumber(card.CardNumber)}</span>
         </div>
         <span>{translator.tr(card.Name)}</span>
       </div>

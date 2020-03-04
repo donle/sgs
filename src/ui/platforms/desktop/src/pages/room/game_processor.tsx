@@ -5,7 +5,7 @@ import {
   ServerEventFinder,
 } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { Translation } from 'core/translations/translation_json_tool';
+import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as React from 'react';
 import { Action } from './action';
 import { CharacterCard } from './character/character';
@@ -17,7 +17,7 @@ export class GameClientProcessor {
   constructor(
     private presenter: RoomPresenter,
     private store: RoomStore,
-    private translator: Translation,
+    private translator: ClientTranslationModule,
   ) {
     this.actionHandler = new Action(this.store, this.presenter);
   }
@@ -79,12 +79,16 @@ export class GameClientProcessor {
     T extends GameEventIdentifiers.AskForCardResponseEvent
   >(type: T, content: ServerEventFinder<T>) {
     this.actionHandler.onResponseCardAction(content);
+    this.presenter.updateDashboardUI();
+    this.presenter.updateClientPlayerUI();
   }
 
   private onHandleAskForCardUseEvent<
     T extends GameEventIdentifiers.AskForCardUseEvent
   >(type: T, content: ServerEventFinder<T>) {
     this.actionHandler.onResponsiveUseCard(content);
+    this.presenter.updateDashboardUI();
+    this.presenter.updateClientPlayerUI();
   }
 
   private onHandleCardUseEvent<T extends GameEventIdentifiers.CardUseEvent>(
