@@ -160,6 +160,16 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return this.players;
   }
 
+  public sortPlayers() {
+    this.players.sort((playerA, playerB) => {
+      if (playerA.Position <= playerB.Position) {
+        return -1;
+      } else {
+        return 1;
+      }
+    });
+  }
+
   public addPlayer(player: Player) {
     this.players.push(player);
     return this.players;

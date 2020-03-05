@@ -2,8 +2,8 @@ import { CardId } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
 
 export const enum Languages {
-  ZH_CN = 'zh_cn',
-  EN_AU = 'en_au',
+  ZH_CN = 'zh-CN',
+  EN_US = 'en-US',
 }
 
 export type PatchedTranslationObject = {

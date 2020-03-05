@@ -10,13 +10,13 @@ export type UiConfigTypes = {
   language: Languages;
 };
 
-export const uiConfig: UiConfigTypes = {
-  language: Languages.ZH_CN,
-};
-
 export type ClientConfigTypes = {
   ui: UiConfigTypes;
   host: HostConfigProps;
+};
+
+const uiConfig: UiConfigTypes = {
+  language: Languages.EN_US,
 };
 
 export const getClientConfg = (mode: DevMode): ClientConfigTypes => ({

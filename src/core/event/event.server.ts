@@ -160,7 +160,7 @@ export interface ServerEvent extends EventUtilities {
     cardUserId?: PlayerId;
   };
   [GameEventIdentifiers.AskForCardResponseEvent]: {
-    carMatcher: CardMatcherSocketPassenger;
+    cardMatcher: CardMatcherSocketPassenger;
     byCardId?: CardId;
     cardUserId?: PlayerId;
   };
@@ -168,7 +168,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.AskForCardUseEvent]: {
     byCardId?: CardId;
     cardUserId?: PlayerId;
-    carMatcher: CardMatcherSocketPassenger;
+    cardMatcher: CardMatcherSocketPassenger;
   };
   [GameEventIdentifiers.AskForPinDianCardEvent]: {
     from: PlayerId;

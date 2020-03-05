@@ -64,7 +64,7 @@ export class SlashSkill extends ActiveSkill {
     const { toIds, fromId, cardId } = event;
     for (const toId of toIds || []) {
       const askForUseCardEvent = {
-        carMatcher: new CardMatcher({ name: ['jink'] }).toSocketPassenger(),
+        cardMatcher: new CardMatcher({ name: ['jink'] }).toSocketPassenger(),
         byCardId: cardId,
         cardUserId: fromId,
         triggeredBySkillName: this.name,

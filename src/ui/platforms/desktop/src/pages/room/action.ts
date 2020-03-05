@@ -71,7 +71,50 @@ export class Action {
     );
   };
 
-  private readonly activateConfirmButton = (player: PlayerId) => {
+  private createCardOrSkillUseEvent(
+    player: PlayerId,
+  ): ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> {
+    let useEvent:
+      | ClientEventFinder<
+          GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.SkillUseEvent
+        >
+      | undefined;
+    if (this.selectedAction === GameEventIdentifiers.CardUseEvent) {
+      useEvent = {
+        fromId: player,
+        cardId: this.selectedPlayCard!.Id,
+        toIds:
+          this.selectedTargets.length > 0
+            ? this.selectedTargets.map(p => p.Id)
+            : undefined,
+        toCardIds:
+          this.selectedActionCards.length > 0
+            ? this.selectedActionCards.map(c => c.Id)
+            : undefined,
+      };
+    } else {
+      useEvent = {
+        fromId: player,
+        skillName: this.selectSkill!.Name,
+        cardIds:
+          this.selectedActionCards.length > 0
+            ? this.selectedActionCards.map(c => c.Id)
+            : undefined,
+        toIds:
+          this.selectedTargets.length > 0
+            ? this.selectedTargets.map(p => p.Id)
+            : undefined,
+      };
+    }
+
+    return {
+      fromId: player,
+      eventName: this.selectedAction!,
+      event: useEvent,
+    };
+  }
+
+  private readonly definedPlayButtonConfirmHandler = (player: PlayerId) => {
     this.presenter.defineConfirmButtonActions(() => {
       if (!this.selectedAction) {
         // tslint:disable-next-line:no-console
@@ -79,48 +122,9 @@ export class Action {
         return;
       }
 
-      let useEvent:
-        | ClientEventFinder<
-            | GameEventIdentifiers.CardUseEvent
-            | GameEventIdentifiers.SkillUseEvent
-          >
-        | undefined;
-      if (this.selectedAction === GameEventIdentifiers.CardUseEvent) {
-        useEvent = {
-          fromId: player,
-          cardId: this.selectedPlayCard!.Id,
-          toIds:
-            this.selectedTargets.length > 0
-              ? this.selectedTargets.map(p => p.Id)
-              : undefined,
-          toCardIds:
-            this.selectedActionCards.length > 0
-              ? this.selectedActionCards.map(c => c.Id)
-              : undefined,
-        };
-      } else {
-        useEvent = {
-          fromId: player,
-          skillName: this.selectSkill!.Name,
-          cardIds:
-            this.selectedActionCards.length > 0
-              ? this.selectedActionCards.map(c => c.Id)
-              : undefined,
-          toIds:
-            this.selectedTargets.length > 0
-              ? this.selectedTargets.map(p => p.Id)
-              : undefined,
-        };
-      }
-
-      const event: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
-        fromId: player,
-        eventName: GameEventIdentifiers.CardUseEvent,
-        event: useEvent,
-      };
       this.store.room.broadcast(
         GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
-        event,
+        this.createCardOrSkillUseEvent(player),
       );
       this.endAction();
       this.presenter.disableActionButton('finish');
@@ -217,13 +221,57 @@ export class Action {
     });
   }
 
+  onReponseToUseWuXieKeJi(who: PlayerId) {
+    this.onPlayAction(who, new CardMatcher({ name: ['wuxiekeji'] }));
+
+    this.presenter.defineConfirmButtonActions(() => {
+      const cardUseEvent = this.createCardOrSkillUseEvent(who)
+        .event as ClientEventFinder<GameEventIdentifiers.CardUseEvent>;
+
+      const event: ClientEventFinder<GameEventIdentifiers.AskForWuXieKeJiEvent> = {
+        fromId: who,
+        cardId: cardUseEvent.cardId,
+      };
+
+      this.store.room.broadcast(
+        GameEventIdentifiers.AskForWuXieKeJiEvent,
+        EventPacker.createIdentifierEvent(
+          GameEventIdentifiers.AskForWuXieKeJiEvent,
+          event,
+        ),
+      );
+      this.endAction();
+      this.presenter.disableActionButton('cancel');
+    });
+
+    this.presenter.enableActionButton('cancel');
+  }
+
   onResponsiveUseCard(
     content: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>,
   ) {
-    this.onPlayAction(
-      this.presenter.ClientPlayer!.Id,
-      new CardMatcher(content.carMatcher),
-    );
+    const who = this.presenter.ClientPlayer!.Id;
+    this.onPlayAction(who, new CardMatcher(content.cardMatcher));
+
+    this.presenter.defineConfirmButtonActions(() => {
+      const cardUseEvent = this.createCardOrSkillUseEvent(who)
+        .event as ClientEventFinder<GameEventIdentifiers.CardUseEvent>;
+
+      const event: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> = {
+        fromId: cardUseEvent.fromId,
+        cardId: cardUseEvent.cardId,
+      };
+
+      this.store.room.broadcast(
+        GameEventIdentifiers.AskForCardUseEvent,
+        EventPacker.createIdentifierEvent(
+          GameEventIdentifiers.AskForCardUseEvent,
+          event,
+        ),
+      );
+      this.endAction();
+      this.presenter.disableActionButton('cancel');
+    });
 
     if (EventPacker.isUncancellabelEvent(content)) {
       this.presenter.disableActionButton('cancel');
@@ -232,7 +280,7 @@ export class Action {
 
       this.presenter.defineCancelButtonActions(() => {
         const event: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> = {
-          fromId: this.presenter.ClientPlayer!.Id,
+          fromId: who,
         };
         this.store.room.broadcast(
           GameEventIdentifiers.AskForCardUseEvent,
@@ -252,7 +300,7 @@ export class Action {
     const availableCardItemsSetter = cardMatcher
       ? this.playerResponsiveCardMatcher(cardMatcher)
       : this.playCardMatcher;
-    this.activateConfirmButton(who);
+    !cardMatcher && this.definedPlayButtonConfirmHandler(who);
 
     this.presenter.onClickSkill((skill: Skill, selected: boolean) => {
       if (selected && !this.selectSkill) {

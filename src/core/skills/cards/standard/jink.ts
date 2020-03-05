@@ -23,7 +23,7 @@ export class JinkSkill extends ResponsiveSkill {
   ) {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} uses card {1}',
-      Sanguosha.getCardById(event.fromId).Name,
+      Sanguosha.getCardById(event.cardId).Name,
       this.name,
     ).extract();
 

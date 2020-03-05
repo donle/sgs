@@ -326,8 +326,8 @@ export class EventPacker {
     return (event as any).identifier;
   };
 
-  static isUncancellabelEvent = (
-    event: ServerEventFinder<GameEventIdentifiers>,
+  static isUncancellabelEvent = <T extends GameEventIdentifiers>(
+    event: ServerEventFinder<T>,
   ) => {
     return !!(event as any).uncancellable;
   };

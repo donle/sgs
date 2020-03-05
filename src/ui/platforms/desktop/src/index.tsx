@@ -1,4 +1,4 @@
-import { getClientConfg, uiConfig } from 'client.config';
+import { getClientConfg } from 'client.config';
 import { Sanguosha } from 'core/game/engine';
 import { DevMode } from 'core/shares/types/host_config';
 import { Languages } from 'core/translations/translation_json_tool';
@@ -14,15 +14,14 @@ import * as serviceWorker from './serviceWorker';
 import './emoji_loader';
 
 const mode = (process.env.DEV_MODE as DevMode) || DevMode.Dev;
+const config = getClientConfg(mode);
 
-Sanguosha.initialize();
-
-const translator = ClientTranslationModule.setup(uiConfig.language, [
+const translator = ClientTranslationModule.setup(config.ui.language, [
   Languages.ZH_CN,
   SimplifiedChinese,
 ]);
 
-const config = getClientConfg(mode);
+Sanguosha.initialize();
 
 ReactDOM.render(
   <BrowserRouter>

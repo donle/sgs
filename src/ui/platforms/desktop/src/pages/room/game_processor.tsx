@@ -70,6 +70,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.AskForCardResponseEvent:
         this.onHandleAskForCardResponseEvent(e as any, content);
         break;
+      case GameEventIdentifiers.AskForWuXieKeJiEvent:
+        this.onHandleAskForWuXieKeJiEvent(e as any, content);
+        break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
     }
@@ -116,12 +119,12 @@ export class GameClientProcessor {
   private async onHandleGameReadyEvent<
     T extends GameEventIdentifiers.GameReadyEvent
   >(type: T, content: ServerEventFinder<T>) {
-    //TODO: fix the bug of player seats
     content.playersInfo.forEach(playerInfo => {
       const player = this.store.room.getPlayerById(playerInfo.Id);
       player.Position = playerInfo.Position;
       player.Role = playerInfo.Role!;
     });
+    this.store.room.sortPlayers();
     this.presenter.updateClientPlayerUI();
     this.presenter.updateDashboardUI();
     await this.store.room.gameStart(content.gameStartInfo);
@@ -216,6 +219,12 @@ export class GameClientProcessor {
   >(type: T, content: ServerEventFinder<T>) {
     this.actionHandler.onPlayAction(content.fromId);
     this.presenter.enableActionButton('finish');
+  }
+
+  private onHandleAskForWuXieKeJiEvent<
+    T extends GameEventIdentifiers.AskForWuXieKeJiEvent
+  >(type: T, content: ServerEventFinder<T>) {
+    this.actionHandler.onReponseToUseWuXieKeJi(this.presenter.ClientPlayer!.Id);
   }
 
   private getCharacterSelector(

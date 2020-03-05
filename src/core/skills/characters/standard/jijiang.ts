@@ -83,7 +83,7 @@ export class JiJiang extends ActiveSkill {
       }
 
       const jijiangEvent = {
-        carMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
+        cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
         triggeredBySkillName: this.name,
       };
 
@@ -148,7 +148,7 @@ export class JiJiangShadow extends ResponsiveSkill {
       }
 
       const jijiangEvent = {
-        carMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
+        cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
         triggeredBySkillName: this.name,
       };
 

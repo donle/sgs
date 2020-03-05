@@ -38,9 +38,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
 
   @mobx.computed
   private get ClientPlayerPosition() {
-    return this.props.store.room.Players.find(
-      player => player.Id === this.props.store.clientPlayerId,
-    )!.Position;
+    return this.props.presenter.ClientPlayer!.Position;
   }
 
   private getLastPosition(position: number = this.ClientPlayerPosition) {

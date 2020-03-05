@@ -76,14 +76,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     for (let i = 0; i < this.players.length; i++) {
       this.players[i].Position = i;
     }
-
-    this.players.sort((playerA, playerB) => {
-      if (playerA.Position <= playerB.Position) {
-        return -1;
-      } else {
-        return 1;
-      }
-    });
+    this.sortPlayers();
   }
 
   public assignRoles() {

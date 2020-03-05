@@ -43,9 +43,9 @@ export class Hujia extends TriggerSkill {
       | GameEventIdentifiers.AskForCardUseEvent
     >,
   ) {
-    const { carMatcher } = content;
+    const { cardMatcher } = content;
     return CardMatcher.match(
-      carMatcher,
+      cardMatcher,
       new CardMatcher({
         name: ['jink'],
       }),
