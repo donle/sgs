@@ -4,19 +4,18 @@ import {
   HostConfigProps,
 } from 'core/shares/types/host_config';
 import { Languages } from 'core/translations/translation_json_tool';
-export { hostConfig } from 'core/shares/types/host_config';
 
-export type UiConfigTypes = {
+type UiConfigTypes = {
   language: Languages;
+};
+
+const uiConfig: UiConfigTypes = {
+  language: Languages.ZH_CN,
 };
 
 export type ClientConfigTypes = {
   ui: UiConfigTypes;
   host: HostConfigProps;
-};
-
-const uiConfig: UiConfigTypes = {
-  language: Languages.EN_US,
 };
 
 export const getClientConfg = (mode: DevMode): ClientConfigTypes => ({

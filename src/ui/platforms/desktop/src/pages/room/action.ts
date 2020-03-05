@@ -1,5 +1,6 @@
 import { Card } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
+import { CardId } from 'core/cards/libs/card_props';
 import {
   ClientEventFinder,
   EventPacker,
@@ -7,6 +8,7 @@ import {
   ServerEventFinder,
 } from 'core/event/event';
 import { Player } from 'core/player/player';
+import { PlayerCardsArea } from 'core/player/player_props';
 import { ActiveSkill, ResponsiveSkill, Skill } from 'core/skills/skill';
 import { PlayerId, RoomPresenter, RoomStore } from './room.presenter';
 
@@ -28,7 +30,7 @@ export class Action {
     this.selectedActionCards = [];
     this.selectedTargets = [];
     this.presenter.setupPlayersSelectionMatcher(() => false);
-    this.presenter.setupClientPlayerCardActionsMatcher(() => false);
+    this.presenter.setupClientPlayerCardActionsMatcher(() => () => false);
     this.presenter.disableActionButton('confirm');
   };
 
@@ -66,7 +68,7 @@ export class Action {
   ) => {
     return (
       cardMatcher.match(card) &&
-      (!!this.presenter.ClientPlayer?.canUseCard(this.store.room!, card.Id) ||
+      (this.presenter.ClientPlayer?.canUseCard(this.store.room!, card.Id) ||
         card.Skill instanceof ResponsiveSkill)
     );
   };
@@ -92,6 +94,12 @@ export class Action {
             ? this.selectedActionCards.map(c => c.Id)
             : undefined,
       };
+      return {
+        fromId: player,
+        end: false,
+        eventName: this.selectedAction!,
+        event: useEvent,
+      };
     } else {
       useEvent = {
         fromId: player,
@@ -105,13 +113,13 @@ export class Action {
             ? this.selectedTargets.map(p => p.Id)
             : undefined,
       };
+      return {
+        fromId: player,
+        end: false,
+        eventName: this.selectedAction!,
+        event: useEvent,
+      };
     }
-
-    return {
-      fromId: player,
-      eventName: this.selectedAction!,
-      event: useEvent,
-    };
   }
 
   private readonly definedPlayButtonConfirmHandler = (player: PlayerId) => {
@@ -152,18 +160,84 @@ export class Action {
       );
     });
 
-    this.presenter.setupClientPlayerCardActionsMatcher((card: Card) => {
-      return (
-        card === this.selectedPlayCard ||
-        skill.isAvailableCard(
-          playerId,
-          this.store.room,
-          card.Id,
-          this.selectedActionCards.map(c => c.Id),
-        )
+    this.presenter.setupClientPlayerCardActionsMatcher(
+      (area: PlayerCardsArea) => (card: Card) => {
+        return (
+          card === this.selectedPlayCard ||
+          skill.isAvailableCard(
+            playerId,
+            this.store.room,
+            card.Id,
+            this.selectedActionCards.map(c => c.Id),
+          )
+        );
+      },
+    );
+  };
+
+  enableFinishButton(who: PlayerId) {
+    this.presenter.enableActionButton('finish');
+    this.presenter.defineFinishButtonActions(() => {
+      const event: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
+        fromId: who,
+        end: true,
+      };
+
+      this.store.room.broadcast(
+        GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
+        event,
       );
     });
-  };
+  }
+
+  onSelectCardAction<T extends GameEventIdentifiers>(
+    event: T,
+    from: PlayerCardsArea[],
+    requiredNumberOfCards: number,
+  ) {
+    const player = this.presenter.ClientPlayer!;
+    const selectedCards: CardId[] = [];
+    this.presenter.setupClientPlayerCardActionsMatcher(area => card => {
+      if (!from.includes(area)) {
+        return false;
+      }
+      return selectedCards.length !== requiredNumberOfCards;
+    });
+    this.presenter.onClickPlayerCard((card: Card, selected: boolean) => {
+      if (selected) {
+        selectedCards.push(card.Id);
+      } else {
+        const index = selectedCards.findIndex(cardId => card.Id !== cardId);
+        selectedCards.splice(index, 1);
+      }
+
+      if (requiredNumberOfCards === selectedCards.length) {
+        this.presenter.enableActionButton('confirm');
+      } else {
+        this.presenter.disableActionButton('confirm');
+      }
+      this.presenter.updateClientPlayerUI();
+    });
+
+    this.presenter.defineConfirmButtonActions(() => {
+      switch (event) {
+        case GameEventIdentifiers.AskForCardDisplayEvent:
+          const event: ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
+            droppedCards: selectedCards,
+            fromId: player.Id,
+          };
+          this.store.room.broadcast(
+            GameEventIdentifiers.AskForCardDropEvent,
+            EventPacker.createIdentifierEvent(
+              GameEventIdentifiers.AskForCardDropEvent,
+              event,
+            ),
+          );
+          break;
+        default:
+      }
+    });
+  }
 
   onResponseCardAction(
     content: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>,
@@ -222,15 +296,21 @@ export class Action {
   }
 
   onReponseToUseWuXieKeJi(who: PlayerId) {
+    this.presenter.enableActionButton('cancel');
+
     this.onPlayAction(who, new CardMatcher({ name: ['wuxiekeji'] }));
 
     this.presenter.defineConfirmButtonActions(() => {
-      const cardUseEvent = this.createCardOrSkillUseEvent(who)
-        .event as ClientEventFinder<GameEventIdentifiers.CardUseEvent>;
+      const playEvent = this.createCardOrSkillUseEvent(who);
+      const cardUseEvent = playEvent.end
+        ? undefined
+        : playEvent.eventName === GameEventIdentifiers.CardUseEvent
+        ? playEvent.event
+        : undefined;
 
       const event: ClientEventFinder<GameEventIdentifiers.AskForWuXieKeJiEvent> = {
         fromId: who,
-        cardId: cardUseEvent.cardId,
+        cardId: cardUseEvent && cardUseEvent.cardId,
       };
 
       this.store.room.broadcast(
@@ -244,7 +324,21 @@ export class Action {
       this.presenter.disableActionButton('cancel');
     });
 
-    this.presenter.enableActionButton('cancel');
+    this.presenter.defineCancelButtonActions(() => {
+      const event: ClientEventFinder<GameEventIdentifiers.AskForWuXieKeJiEvent> = {
+        fromId: who,
+      };
+
+      this.store.room.broadcast(
+        GameEventIdentifiers.AskForWuXieKeJiEvent,
+        EventPacker.createIdentifierEvent(
+          GameEventIdentifiers.AskForWuXieKeJiEvent,
+          event,
+        ),
+      );
+      this.endAction();
+      this.presenter.disableActionButton('cancel');
+    });
   }
 
   onResponsiveUseCard(
@@ -254,12 +348,16 @@ export class Action {
     this.onPlayAction(who, new CardMatcher(content.cardMatcher));
 
     this.presenter.defineConfirmButtonActions(() => {
-      const cardUseEvent = this.createCardOrSkillUseEvent(who)
-        .event as ClientEventFinder<GameEventIdentifiers.CardUseEvent>;
+      const playEvent = this.createCardOrSkillUseEvent(who);
+      const cardUseEvent = playEvent.end
+        ? undefined
+        : playEvent.eventName === GameEventIdentifiers.CardUseEvent
+        ? playEvent.event
+        : undefined;
 
       const event: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> = {
-        fromId: cardUseEvent.fromId,
-        cardId: cardUseEvent.cardId,
+        fromId: who,
+        cardId: cardUseEvent && cardUseEvent.cardId,
       };
 
       this.store.room.broadcast(
@@ -328,7 +426,7 @@ export class Action {
           if (this.selectedPlayCard === card) {
             this.endAction();
             this.presenter.setupClientPlayerCardActionsMatcher(
-              availableCardItemsSetter,
+              () => availableCardItemsSetter,
             );
           } else {
             this.selectedActionCards = this.selectedActionCards.filter(
@@ -377,7 +475,7 @@ export class Action {
     });
 
     this.presenter.setupClientPlayerCardActionsMatcher(
-      availableCardItemsSetter,
+      () => availableCardItemsSetter,
     );
     this.presenter.updateClientPlayerUI();
   }

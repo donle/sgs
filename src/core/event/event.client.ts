@@ -135,19 +135,30 @@ export interface ClientEvent extends EventUtilities {
     isGameStart?: boolean;
   };
   [GameEventIdentifiers.AskForPlaceCardsInDileEvent]: {};
-  [GameEventIdentifiers.AskForPlayCardsOrSkillsEvent]: {
-    fromId: PlayerId;
-    end?: boolean;
-    eventName:
-      | GameEventIdentifiers.CardUseEvent
-      | GameEventIdentifiers.SkillUseEvent;
-    event:
-      | ClientEvent[GameEventIdentifiers.SkillUseEvent]
-      | ClientEvent[GameEventIdentifiers.CardUseEvent];
-  };
+  [GameEventIdentifiers.AskForPlayCardsOrSkillsEvent]: PlayCardOrSkillEvent;
   [GameEventIdentifiers.PlayerEnterRefusedEvent]: never;
   [GameEventIdentifiers.SyncGameCommonRulesEvent]: never;
   [GameEventIdentifiers.LoseSkillEvent]: never;
   [GameEventIdentifiers.ObtainSkillEvent]: never;
   [GameEventIdentifiers.GameReadyEvent]: never;
 }
+
+type PlayCardOrSkillEvent =
+  | {
+      fromId: PlayerId;
+      end: true;
+    }
+  | ({
+      fromId: PlayerId;
+      end: false | undefined;
+    } & PlayerCardOrSkillInnerEvent);
+
+type PlayerCardOrSkillInnerEvent =
+  | {
+      eventName: GameEventIdentifiers.CardUseEvent;
+      event: ClientEvent[GameEventIdentifiers.CardUseEvent];
+    }
+  | {
+      eventName: GameEventIdentifiers.SkillUseEvent;
+      event: ClientEvent[GameEventIdentifiers.SkillUseEvent];
+    };

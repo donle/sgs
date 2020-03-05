@@ -1,4 +1,5 @@
 import { PlayerAI } from 'core/ai/ai';
+import { CardType } from 'core/cards/card';
 import { EquipCard, WeaponCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
@@ -26,6 +27,7 @@ import {
   SkillType,
   TransformSkill,
   TriggerSkill,
+  ViewAsSkill,
 } from 'core/skills/skill';
 
 type SkillStringType =
@@ -37,7 +39,8 @@ type SkillStringType =
   | 'active'
   | 'filter'
   | 'breaker'
-  | 'transform';
+  | 'transform'
+  | 'viewAs';
 
 export abstract class Player implements PlayerInfo {
   private hp: number;
@@ -184,6 +187,11 @@ export abstract class Player implements PlayerInfo {
 
   public useCard(cardId: CardId) {
     this.cardUseHistory.push(cardId);
+    const card = Sanguosha.getCardById<EquipCard>(cardId);
+    if (card.is(CardType.Equip)) {
+      this.equip(card);
+    }
+    this.dropCards(cardId);
   }
   public useSkill(skillName: string) {
     this.skillUsedHistory[skillName] !== undefined
@@ -275,12 +283,47 @@ export abstract class Player implements PlayerInfo {
     }
 
     this.playerCards[PlayerCardsArea.EquipArea].push(equipCard.Id);
-
+    this.dropCards(equipCard.Id);
+    //TODO: trigger drop cards event here.
     return lostEquipId;
   }
 
   public hasEquipped(cardId: CardId): boolean {
     return this.playerCards[PlayerCardsArea.EquipArea].includes(cardId);
+  }
+
+  public hasCard(cardMatcherOrId: CardId | CardMatcher) {
+    if (cardMatcherOrId instanceof CardMatcher) {
+      const findCard = this.getCardIds().find(cardId => {
+        const card = Sanguosha.getCardById(cardId);
+        return cardMatcherOrId.match(card);
+      });
+
+      if (findCard) {
+        return true;
+      }
+
+      const skill = this.getSkills<ViewAsSkill>('viewAs').find(skill => {
+        const viewAsCards = skill.canViewAs();
+        return CardMatcher.match(
+          CardMatcher.addTag({ name: viewAsCards }),
+          cardMatcherOrId,
+        );
+      });
+
+      return !!skill;
+    } else {
+      if (this.getCardId(cardMatcherOrId)) {
+        return true;
+      }
+
+      const card = Sanguosha.getCardById(cardMatcherOrId);
+      const skill = this.getSkills<ViewAsSkill>('viewAs').find(skill =>
+        skill.canViewAs().includes(card.GeneralName),
+      );
+
+      return !!skill;
+    }
   }
 
   public hasUsed(cardName: string): boolean {
@@ -291,11 +334,15 @@ export abstract class Player implements PlayerInfo {
     );
   }
   public cardUsedTimes(cardSkillName: CardId | CardMatcher): number {
+    const trendToUse =
+      cardSkillName instanceof CardMatcher
+        ? cardSkillName
+        : Sanguosha.getCardById(cardSkillName);
     return this.cardUseHistory.filter(cardId => {
       const card = Sanguosha.getCardById(cardId);
-      return cardSkillName instanceof CardMatcher
-        ? cardSkillName.match(card)
-        : card.GeneralName === cardSkillName;
+      return trendToUse instanceof CardMatcher
+        ? trendToUse.match(card)
+        : card.GeneralName === trendToUse.GeneralName;
     }).length;
   }
 
@@ -359,6 +406,8 @@ export abstract class Player implements PlayerInfo {
         return skills.filter(skill => skill instanceof FilterSkill) as T[];
       case 'active':
         return skills.filter(skill => skill instanceof ActiveSkill) as T[];
+      case 'viewAs':
+        return skills.filter(skill => skill instanceof ViewAsSkill) as T[];
       case 'trigger':
         return skills.filter(skill => skill instanceof TriggerSkill) as T[];
       case 'breaker':

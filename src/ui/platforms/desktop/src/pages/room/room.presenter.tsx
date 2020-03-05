@@ -11,6 +11,7 @@ import { ClientSocket } from 'core/network/socket.client';
 import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
 import {
+  PlayerCardsArea,
   PlayerId as _PlayerId,
   PlayerInfo as _PlayerInfo,
 } from 'core/player/player_props';
@@ -72,7 +73,7 @@ export class RoomStore {
   };
 
   @mobx.observable.ref
-  clientPlayerCardActionsMatcher: (card: Card) => boolean;
+  clientPlayerCardActionsMatcher: (area: PlayerCardsArea) => (card: Card) => boolean;
   @mobx.observable.ref
   onClickHandCardToPlay: (card: Card, selected: boolean) => void;
   @mobx.observable.ref
@@ -207,7 +208,7 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  setupClientPlayerCardActionsMatcher(matcher: (card: Card) => boolean) {
+  setupClientPlayerCardActionsMatcher(matcher: (area: PlayerCardsArea) => (card: Card) => boolean) {
     this.store.clientPlayerCardActionsMatcher = matcher;
   }
   @mobx.action

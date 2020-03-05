@@ -340,6 +340,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     from: 'top' | 'bottom' = 'top',
   ) {
     const cardIds = this.getCards(numberOfCards, from);
+    playerId && this.getPlayerById(playerId).obtainCardIds(...cardIds);
     const drawEvent: ServerEventFinder<GameEventIdentifiers.DrawCardEvent> = {
       cardIds,
       playerId: playerId || this.CurrentPlayer.Id,
@@ -372,7 +373,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     );
 
     this.dropStack.push(...cardIds);
-    this.drawStack.filter(cardId => !cardIds.includes(cardId));
+
+    const player = playerId ? this.getPlayerById(playerId) : this.CurrentPlayer;
+    player.dropCards(...cardIds);
   }
 
   public async obtainCards(cardIds: CardId[], to: PlayerId, fromId?: PlayerId) {

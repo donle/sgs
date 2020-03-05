@@ -15,6 +15,13 @@ export type CardMatcherSocketPassenger = {
 export class CardMatcher {
   constructor(private matcher: CardMatcherProps) {}
 
+  public static addTag(matcher: CardMatcherProps): CardMatcherSocketPassenger {
+    return {
+      tag: 'card-matcher',
+      ...matcher,
+    };
+  }
+
   public static match(
     matcher: CardMatcherSocketPassenger | undefined,
     card: Card | CardMatcher,

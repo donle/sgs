@@ -1,6 +1,7 @@
 import { Character, CharacterId } from 'core/characters/character';
 import {
   ClientEventFinder,
+  EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
@@ -70,6 +71,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.AskForCardResponseEvent:
         this.onHandleAskForCardResponseEvent(e as any, content);
         break;
+      case GameEventIdentifiers.AskForCardDropEvent:
+        this.onHandleAskForCardDropEvent(e as any, content);
+        break;
       case GameEventIdentifiers.AskForWuXieKeJiEvent:
         this.onHandleAskForWuXieKeJiEvent(e as any, content);
         break;
@@ -82,16 +86,35 @@ export class GameClientProcessor {
     T extends GameEventIdentifiers.AskForCardResponseEvent
   >(type: T, content: ServerEventFinder<T>) {
     this.actionHandler.onResponseCardAction(content);
-    this.presenter.updateDashboardUI();
-    this.presenter.updateClientPlayerUI();
+  }
+
+  private onHandleAskForCardDropEvent<
+    T extends GameEventIdentifiers.AskForCardDropEvent
+  >(type: T, content: ServerEventFinder<T>) {
+    this.actionHandler.onSelectCardAction(
+      type,
+      content.fromArea,
+      content.cardAmount,
+    );
+    if (!EventPacker.isUncancellabelEvent(content)) {
+      this.presenter.enableActionButton('cancel');
+      this.presenter.defineCancelButtonActions(() => {
+        const event: ClientEventFinder<T> = {
+          fromId: content.toId,
+          droppedCards: [],
+        };
+        this.store.room.broadcast(
+          type,
+          EventPacker.createIdentifierEvent(type, event),
+        );
+      });
+    }
   }
 
   private onHandleAskForCardUseEvent<
     T extends GameEventIdentifiers.AskForCardUseEvent
   >(type: T, content: ServerEventFinder<T>) {
     this.actionHandler.onResponsiveUseCard(content);
-    this.presenter.updateDashboardUI();
-    this.presenter.updateClientPlayerUI();
   }
 
   private onHandleCardUseEvent<T extends GameEventIdentifiers.CardUseEvent>(
@@ -99,7 +122,7 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     if (content.fromId === this.store.clientPlayerId) {
-      this.presenter.ClientPlayer?.dropCards(content.cardId);
+      this.store.room.useCard(content);
       this.presenter.updateClientPlayerUI();
     }
   }
@@ -217,8 +240,8 @@ export class GameClientProcessor {
   private onHandlePlayCardStage<
     T extends GameEventIdentifiers.AskForPlayCardsOrSkillsEvent
   >(type: T, content: ServerEventFinder<T>) {
+    this.actionHandler.enableFinishButton(content.fromId);
     this.actionHandler.onPlayAction(content.fromId);
-    this.presenter.enableActionButton('finish');
   }
 
   private onHandleAskForWuXieKeJiEvent<

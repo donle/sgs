@@ -14,7 +14,7 @@ export type DashboardProps = {
   presenter: RoomPresenter;
   translator: ClientTranslationModule;
   updateFlag: boolean;
-  cardEnableMatcher?(card: Card): boolean;
+  cardEnableMatcher?(area: PlayerCardsArea): (card: Card) => boolean;
   onClick?(card: Card, selected: boolean): void;
   onClickConfirmButton?(): void;
   onClickCancelButton?(): void;
@@ -77,7 +77,7 @@ export class Dashboard extends React.Component<DashboardProps> {
             onClick={this.onClick(card)}
             disabled={
               !this.props.cardEnableMatcher ||
-              !this.props.cardEnableMatcher(card)
+              !this.props.cardEnableMatcher(PlayerCardsArea.EquipArea)(card)
             }
           />
         ))}
@@ -98,7 +98,7 @@ export class Dashboard extends React.Component<DashboardProps> {
           onSelected={this.onClick(card)}
           className={styles.handCard}
           disabled={
-            !this.props.cardEnableMatcher || !this.props.cardEnableMatcher(card)
+            !this.props.cardEnableMatcher || !this.props.cardEnableMatcher(PlayerCardsArea.HandArea)(card)
           }
           image={''}
         />

@@ -1,5 +1,6 @@
 import { CardType } from 'core/cards/card';
-import { CardId } from 'core/cards/libs/card_props';
+import { CardMatcher } from 'core/cards/libs/card_matcher';
+import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { Character, CharacterId } from 'core/characters/character';
 import {
   ClientEventFinder,
@@ -254,7 +255,7 @@ export class GameProcessor {
       case PlayerPhase.DropCardStage:
         this.logger.debug('enter drop cards phase');
         const maxCardHold =
-          this.CurrentPlayer.MaxHp +
+          this.CurrentPlayer.Hp +
           GameCommonRules.getAdditionalHoldCardNumber(this.CurrentPlayer);
         const discardAmount =
           this.CurrentPlayer.getCardIds(PlayerCardsArea.HandArea).length -
@@ -755,8 +756,11 @@ export class GameProcessor {
         ) {
           for (const player of this.room.getAlivePlayersFrom(
             this.CurrentPlayer.Id,
-            true,
           )) {
+            if (!player.hasCard(new CardMatcher({ name: ['wuxiekeji'] }))) {
+              continue;
+            }
+
             const wuxiekejiEvent = {
               fromId: event.fromId,
               cardId: event.cardId,
@@ -818,16 +822,25 @@ export class GameProcessor {
       async stage => {
         if (stage === CardUseStage.CardUsing) {
           if (!event.translationsMessage) {
-            event.translationsMessage = TranslationPack.translationJsonPatcher(
-              '{0} used card {1}' + (event.toIds ? ' to {2}' : ''),
-              this.room.getPlayerById(event.fromId).Character.Name,
-              TranslationPack.patchCardInTranslation(event.cardId),
-              event.toIds
-                ? event.toIds
-                    .map(id => this.room.getPlayerById(id).Character.Name)
-                    .join(', ')
-                : '',
-            ).extract();
+            const card = Sanguosha.getCardById(event.cardId);
+            if (card.is(CardType.Equip)) {
+              event.translationsMessage = TranslationPack.translationJsonPatcher(
+                '{0} equipped {1}',
+                this.room.getPlayerById(event.fromId).Character.Name,
+                TranslationPack.patchCardInTranslation(event.cardId),
+              ).extract();
+            } else {
+              event.translationsMessage = TranslationPack.translationJsonPatcher(
+                '{0} used card {1}' + (event.toIds ? ' to {2}' : ''),
+                this.room.getPlayerById(event.fromId).Character.Name,
+                TranslationPack.patchCardInTranslation(event.cardId),
+                event.toIds
+                  ? event.toIds
+                      .map(id => this.room.getPlayerById(id).Character.Name)
+                      .join(', ')
+                  : '',
+              ).extract();
+            }
           }
           this.room.broadcast(identifier, event);
           await Sanguosha.getCardById(event.cardId).Skill.onUse(
