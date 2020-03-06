@@ -392,9 +392,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     );
 
     this.dropStack.push(...cardIds);
-
-    const player = playerId ? this.getPlayerById(playerId) : this.CurrentPlayer;
-    player.dropCards(...cardIds);
   }
 
   public async obtainCards(cardIds: CardId[], to: PlayerId, fromId?: PlayerId) {
@@ -433,11 +430,27 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     const to = this.getPlayerById(toId);
 
-    const card = Sanguosha.getCardById<EquipCard>(cardId);
     if (toArea === PlayerCardsArea.EquipArea) {
-      //TODO: refacter move card
-      // const lostCardId = to.equip(card);
-      // lostCardId !== undefined && this.loseCards(to, lostCardId);
+      const card = Sanguosha.getCardById<EquipCard>(cardId);
+      const equipped = to.hasEquipment(card.EquipType);
+      if (equipped !== undefined) {
+        const event: ServerEventFinder<GameEventIdentifiers.CardDropEvent> = {
+          fromId: to.Id,
+          cardIds: [equipped],
+        };
+        await this.gameProcessor.onHandleIncomingEvent(
+          GameEventIdentifiers.CardDropEvent,
+          event,
+        );
+      }
+
+      //TODO: refactor equip event trigger process if there are any skills triggered by wearing equipments
+      this.equip(card, to);
+      const equipEvent: ServerEventFinder<GameEventIdentifiers.EquipEvent> = {
+        fromId: to.Id,
+        cardId,
+      };
+      this.broadcast(GameEventIdentifiers.EquipEvent, equipEvent);
     } else {
       to.getCardIds(toArea).push(cardId);
 
@@ -454,11 +467,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         this.broadcast<GameEventIdentifiers.MoveCardEvent>(
           GameEventIdentifiers.MoveCardEvent,
           {
-            translationsMessage: TranslationPack.translationJsonPatcher(
-              '{0} obtains card {1}',
-              to.Name,
-              TranslationPack.patchCardInTranslation(cardId),
-            ).extract(),
             fromId,
             toId,
             fromArea,
