@@ -14,6 +14,7 @@ import { PinDianResultType } from 'core/event/event.server';
 import {
   CardDropStage,
   CardEffectStage,
+  CardLoseStage,
   CardResponseStage,
   CardUseStage,
   DamageEffectStage,
@@ -382,6 +383,13 @@ export class GameProcessor {
           onActualExecuted,
         );
         break;
+      case GameEventIdentifiers.CardLoseEvent:
+        await this.onHandleDropLoseEvent(
+          identifier as GameEventIdentifiers.CardLoseEvent,
+          event as any,
+          onActualExecuted,
+        );
+        break;
       case GameEventIdentifiers.CardDropEvent:
         await this.onHandleDropCardEvent(
           identifier as GameEventIdentifiers.CardDropEvent,
@@ -494,11 +502,12 @@ export class GameProcessor {
         if (stage === ObtainCardStage.CardObtaining) {
           event.toId = this.deadPlayerFilters(event.toId)[0];
           const to = this.room.getPlayerById(event.toId);
-          // to.obtainCardIds(...event.cardIds);
           event.translationsMessage = TranslationPack.translationJsonPatcher(
-            '{0} obtains {1} cards' + event.fromId ? ' from {2}' : '',
+            '{0} obtains cards {1} ' + event.fromId ? ' from {2}' : '',
             to.Name,
-            event.cardIds.length,
+            event.cardIds
+              .map(cardId => TranslationPack.patchCardInTranslation(cardId))
+              .join(','),
             event.fromId ? this.room.getPlayerById(event.fromId).Name : '',
           ).extract();
           this.room.broadcast(identifier, event);
@@ -543,7 +552,7 @@ export class GameProcessor {
   ) {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} drops {1} cards',
-      this.room.getPlayerById(event.fromId).Name,
+      this.room.getPlayerById(event.fromId).Character.Name,
       event.cardIds.length,
     ).extract();
 
@@ -553,6 +562,33 @@ export class GameProcessor {
       onActualExecuted,
       async stage => {
         if (stage === CardDropStage.CardDropping) {
+          const from = this.room.getPlayerById(event.fromId);
+          from.dropCards(...event.cardIds);
+          this.room.broadcast(identifier, event);
+        }
+      },
+    );
+  }
+
+  private async onHandleDropLoseEvent(
+    identifier: GameEventIdentifiers.CardLoseEvent,
+    event: ServerEventFinder<GameEventIdentifiers.CardLoseEvent>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
+  ) {
+    event.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} lost cards {1}',
+      this.room.getPlayerById(event.fromId).Character.Name,
+      event.cardIds
+        .map(cardId => TranslationPack.patchCardInTranslation(cardId))
+        .join(','),
+    ).extract();
+
+    return await this.iterateEachStage(
+      identifier,
+      event,
+      onActualExecuted,
+      async stage => {
+        if (stage === CardLoseStage.CardLosing) {
           const from = this.room.getPlayerById(event.fromId);
           from.dropCards(...event.cardIds);
           this.room.broadcast(identifier, event);

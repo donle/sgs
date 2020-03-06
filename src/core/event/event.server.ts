@@ -22,6 +22,10 @@ import {
 } from './event';
 
 export interface ServerEvent extends EventUtilities {
+  [GameEventIdentifiers.EquipEvent]: {
+    fromId: PlayerId;
+    cardId: CardId;
+  };
   [GameEventIdentifiers.CardUseEvent]: {
     fromId: PlayerId;
     cardId: CardId;
@@ -45,6 +49,10 @@ export interface ServerEvent extends EventUtilities {
     cardId: CardId;
   };
   [GameEventIdentifiers.CardDropEvent]: {
+    fromId: PlayerId;
+    cardIds: CardId[];
+  };
+  [GameEventIdentifiers.CardLoseEvent]: {
     fromId: PlayerId;
     cardIds: CardId[];
   };

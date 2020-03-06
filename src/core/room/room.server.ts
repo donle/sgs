@@ -226,10 +226,29 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return await this.socket.waitForResponse<T>(identifier, playerId);
   }
 
+  public async equip(card: EquipCard, player: Player) {
+    const prevEquipment = player.hasEquipment(card.EquipType);
+    if (prevEquipment !== undefined) {
+      await this.dropCards([prevEquipment], player.Id);
+    }
+
+    const event: ServerEventFinder<GameEventIdentifiers.EquipEvent> = {
+      fromId: player.Id,
+      cardId: card.Id,
+    };
+    this.broadcast(GameEventIdentifiers.EquipEvent, event);
+    player.equip(card);
+  }
+
   public async useCard(
     content: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
   ) {
     await super.useCard(content);
+    const card = Sanguosha.getCardById(content.cardId);
+    if (card instanceof EquipCard) {
+      await this.equip(card, this.getPlayerById(content.fromId));
+    }
+
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.CardUseEvent,
       content,
@@ -408,16 +427,17 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     toArea: PlayerCardsArea,
   ) {
     const from = fromId ? this.getPlayerById(fromId) : undefined;
-    if (from) {
-      this.onLoseCard(from, cardId);
+    if (from && fromArea !== PlayerCardsArea.JudgeArea) {
+      await this.loseCards(from, cardId);
     }
 
     const to = this.getPlayerById(toId);
 
     const card = Sanguosha.getCardById<EquipCard>(cardId);
     if (toArea === PlayerCardsArea.EquipArea) {
-      const lostCardId = to.equip(card);
-      lostCardId !== undefined && this.onLoseCard(to, lostCardId);
+      //TODO: refacter move card
+      // const lostCardId = to.equip(card);
+      // lostCardId !== undefined && this.loseCards(to, lostCardId);
     } else {
       to.getCardIds(toArea).push(cardId);
 
@@ -428,11 +448,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             fromId,
             toId,
             cardIds: [cardId],
-            translationsMessage: TranslationPack.translationJsonPatcher(
-              '{0} obtained cards {1}',
-              to.Name,
-              TranslationPack.patchCardInTranslation(cardId),
-            ).extract(),
           },
         );
       } else {
@@ -532,11 +547,21 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     );
   }
 
-  public onLoseCard(player: Player, cardId: CardId) {
-    const card = Sanguosha.getCardById(cardId);
-    card.Skill.onLoseSkill(player);
+  public async loseCards(player: Player, ...cardIds: CardId[]) {
+    for (const cardId of cardIds) {
+      const card = Sanguosha.getCardById(cardId);
+      card.Skill.onLoseSkill(player);
+    }
 
-    player.dropCards(cardId);
+    const event: ServerEventFinder<GameEventIdentifiers.CardLoseEvent> = {
+      fromId: player.Id,
+      cardIds,
+    };
+    await this.gameProcessor.onHandleIncomingEvent(
+      GameEventIdentifiers.CardLoseEvent,
+      event,
+    );
+    player.dropCards(...cardIds);
   }
 
   public getCardOwnerId(card: CardId) {

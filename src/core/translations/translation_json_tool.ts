@@ -83,11 +83,18 @@ export class TranslationPack {
     return target;
   }
 
-  public static patchCardInTranslation(cardId: CardId) {
-    const card = Sanguosha.getCardById(cardId);
-    return `${TranslationPack.patchEmojiOrImageInTranslation(card.Suit)} ${
-      card.CardNumber
-    } ${card.Name}`;
+  public static patchCardInTranslation(...cardIds: CardId[]) {
+    return (
+      TranslationPack.translateCardObjectSign +
+      JSON.stringify(
+        cardIds.map(cardId => {
+          const card = Sanguosha.getCardById(cardId);
+          return `${TranslationPack.patchEmojiOrImageInTranslation(
+            card.Suit,
+          )} ${card.CardNumber} ${card.Name}`;
+        }),
+      )
+    );
   }
 
   public static isCardObjectText(text: string) {
@@ -97,14 +104,22 @@ export class TranslationPack {
   public static translatePatchedCardText(
     text: string,
     dictionary: TranslationsDictionary,
-  ): TranslatedCardObject {
-    const [cardSuitString, cardNumber, cardName] = text.split(' ');
+  ): TranslatedCardObject[] {
+    const cardObjects: TranslatedCardObject[] = [];
+    const cardTextArray: string[] = JSON.parse(
+      text.slice(TranslationPack.translateCardObjectSign.length),
+    );
 
-    return {
-      suitImageUrl: TranslationPack.emojiOrImageTextDict[cardSuitString],
-      cardNumber,
-      cardName: dictionary[cardName] || cardName,
-    };
+    for (const cardText of cardTextArray) {
+      const [cardSuitString, cardNumber, cardName] = cardText.split(' ');
+      cardObjects.push({
+        suitImageUrl: TranslationPack.emojiOrImageTextDict[cardSuitString],
+        cardNumber,
+        cardName: dictionary[cardName] || cardName,
+      });
+    }
+
+    return cardObjects;
   }
 
   public static patchEmojiOrImageInTranslation(rawText: string | number) {

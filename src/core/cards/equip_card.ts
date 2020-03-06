@@ -13,6 +13,10 @@ export abstract class EquipCard extends Card {
     super();
     this.cardType.push(subType);
   }
+
+  public get EquipType() {
+    return this.cardType[1];
+  }
 }
 
 export abstract class WeaponCard extends EquipCard {

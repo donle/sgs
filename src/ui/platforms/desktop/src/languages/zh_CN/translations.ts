@@ -41,6 +41,8 @@ export const generalDictionary: Word[] = [
 ];
 
 export const eventDictionary: Word[] = [
+  { source: '[', target: '【' },
+  { source: ']', target: '】' },
   {
     source: '{0} draws {1} cards',
     target: '{0} 摸了 {1} 张牌',
@@ -68,18 +70,14 @@ export const eventDictionary: Word[] = [
   },
   { source: '{0} droppes cards {1}', target: '{0} 弃置了 {1}' },
   { source: '{0} cards are dropped', target: '{0} 进入了弃牌堆' },
-  { source: '{0} used card {1}', target: '{0} 使用了一张【{1}】' },
-  { source: '{0} equipped {1}', target: '{0} 装备了【{1}】' },
+  { source: '{0} used card {1}', target: '{0} 使用了一张 {1}' },
+  { source: '{0} equipped {1}', target: '{0} 装备了 {1}' },
   {
     source: '{0} used card {1} to {2}',
-    target: '{0} 对 {2} 使用了一张【{1}】',
+    target: '{0} 对 {2} 使用了一张 {1}',
   },
-  { source: '{0} obtains card {1}', target: '{0} 获得了【{1}】' },
-  {
-    source: '{0} uses card {2} to {1}',
-    target: '{0} 对 {1} 使用了一张【{2}】',
-  },
-  { source: '{0} responses card {1}', target: '{0} 打出了一张【{0}】' },
+  { source: '{0} obtains card {1}', target: '{0} 获得了 {1}' },
+  { source: '{0} responses card {1}', target: '{0} 打出了一张 {0}' },
   { source: 'please drop {0} cards', target: '请弃置 {0} 张牌' },
   {
     source: '{0} asks for a peach',
@@ -96,7 +94,7 @@ export const eventDictionary: Word[] = [
   },
   {
     source: 'do you want to use nullification to {1} from {0}',
-    target: '是否对 {0} 的【{1}】使用【无懈可击】',
+    target: '是否对 {0} 的 {1} 使用【无懈可击】',
   },
   {
     source: 'player {0} join in the room',

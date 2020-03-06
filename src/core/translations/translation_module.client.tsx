@@ -50,14 +50,14 @@ export class ClientTranslationModule extends TranslationModule {
     }
 
     const emojiStyle: React.CSSProperties = {
-      height: '12px',
-      width: '12px',
+      height: 12,
+      width: 12,
     };
     const commonTextStyle: React.CSSProperties = {
       padding: '0 4px',
     };
     const boldTextStyle: React.CSSProperties = {
-      fontWeight: 'bold',
+      fontWeight: 550,
     };
 
     const textCombinations: JSX.Element[] = dispatchedObject.params.map(
@@ -73,26 +73,32 @@ export class ClientTranslationModule extends TranslationModule {
           );
 
           return (
-            <span>
-              <img
-                style={emojiStyle}
-                src={translatedCardObject.suitImageUrl}
-                alt={translatedCardObject.cardName}
-              />
-              <span style={boldTextStyle}>
-                {ClientTranslationModule.getCardNumber(
-                  parseInt(translatedCardObject.cardNumber, 10),
-                )}
-              </span>
-              <span
-                style={{
-                  ...boldTextStyle,
-                  ...commonTextStyle,
-                }}
-              >
-                {translatedCardObject.cardName}
-              </span>
-            </span>
+            <>
+              {translatedCardObject.map((cardObject, index) => (
+                <span key={index}>
+                  <span>{this.tr('[')}</span>
+                  <img
+                    style={emojiStyle}
+                    src={cardObject.suitImageUrl}
+                    alt={cardObject.cardName}
+                  />
+                  <span style={boldTextStyle}>
+                    {ClientTranslationModule.getCardNumber(
+                      parseInt(cardObject.cardNumber, 10),
+                    )}
+                  </span>
+                  <span
+                    style={{
+                      ...boldTextStyle,
+                      ...commonTextStyle,
+                    }}
+                  >
+                    {cardObject.cardName}
+                  </span>
+                  <span>{this.tr(']')}</span>
+                </span>
+              ))}
+            </>
           );
         }
 

@@ -141,6 +141,8 @@ export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.LoseSkillEvent]: never;
   [GameEventIdentifiers.ObtainSkillEvent]: never;
   [GameEventIdentifiers.GameReadyEvent]: never;
+  [GameEventIdentifiers.EquipEvent]: never;
+  [GameEventIdentifiers.CardLoseEvent]: never;
 }
 
 type PlayCardOrSkillEvent =

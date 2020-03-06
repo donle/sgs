@@ -106,6 +106,7 @@ export const enum CardType {
   Armor,
   OffenseRide,
   DefenseRide,
+  Precious,
   Trick,
   DelayedTrick,
 }

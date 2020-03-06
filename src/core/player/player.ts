@@ -187,12 +187,9 @@ export abstract class Player implements PlayerInfo {
 
   public useCard(cardId: CardId) {
     this.cardUseHistory.push(cardId);
-    const card = Sanguosha.getCardById<EquipCard>(cardId);
-    if (card.is(CardType.Equip)) {
-      this.equip(card);
-    }
     this.dropCards(cardId);
   }
+
   public useSkill(skillName: string) {
     this.skillUsedHistory[skillName] !== undefined
       ? this.skillUsedHistory[skillName]++
@@ -271,7 +268,7 @@ export abstract class Player implements PlayerInfo {
     const currentEquipIndex = this.playerCards[
       PlayerCardsArea.EquipArea
     ].findIndex(card =>
-      Sanguosha.getCardById<EquipCard>(card).isSameType(equipCard),
+      Sanguosha.getCardById<EquipCard>(card).is(equipCard.EquipType),
     );
 
     let lostEquipId: CardId | undefined;
@@ -283,18 +280,22 @@ export abstract class Player implements PlayerInfo {
     }
 
     this.playerCards[PlayerCardsArea.EquipArea].push(equipCard.Id);
-    this.dropCards(equipCard.Id);
-    //TODO: trigger drop cards event here.
     return lostEquipId;
   }
 
-  public hasEquipped(cardId: CardId): boolean {
-    return this.playerCards[PlayerCardsArea.EquipArea].includes(cardId);
+  public hasEquipment(cardType: CardType): CardId | undefined {
+    return this.playerCards[PlayerCardsArea.EquipArea].find(cardId =>
+      Sanguosha.getCardById(cardId).is(cardType),
+    );
   }
 
-  public hasCard(cardMatcherOrId: CardId | CardMatcher) {
+  public hasCard(
+    cardMatcherOrId: CardId | CardMatcher,
+    areas?: PlayerCardsArea,
+    outsideName?: string,
+  ) {
     if (cardMatcherOrId instanceof CardMatcher) {
-      const findCard = this.getCardIds().find(cardId => {
+      const findCard = this.getCardIds(areas, outsideName).find(cardId => {
         const card = Sanguosha.getCardById(cardId);
         return cardMatcherOrId.match(card);
       });

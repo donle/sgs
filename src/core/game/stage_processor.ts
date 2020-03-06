@@ -204,6 +204,12 @@ export const enum CardDropStage {
   AfterCardDropEffect,
 }
 
+export const enum CardLoseStage {
+  BeforeCardLoseEffect,
+  CardLosing,
+  AfterCardLostEffect,
+}
+
 export const enum DamageEffectStage {
   DamageEffect,
   DamagedEffect,
@@ -259,6 +265,7 @@ export type GameEventStage =
   | PhaseChangeStage
   | GameStartStage
   | CardEffectStage
+  | CardLoseStage
   | CardUseStage
   | CardDropStage
   | CardResponseStage
