@@ -29,6 +29,14 @@ export class ClientCard extends React.Component<ClientCardProps> {
     }
   });
 
+  @mobx.action
+  getSelected() {
+    if (!!this.props.disabled) {
+      this.selected = false;
+    }
+    return this.selected;
+  }
+
   playAudio(): string {
     const { soundTracks = [] } = this.props;
     const randomIndex = Math.round(Math.random() * soundTracks.length);
@@ -40,7 +48,7 @@ export class ClientCard extends React.Component<ClientCardProps> {
     return (
       <div
         className={classNames(styles.clientCard, className, {
-          [styles.selected]: this.selected,
+          [styles.selected]: this.getSelected() && !this.props.disabled,
         })}
         onClick={this.onClick}
       >

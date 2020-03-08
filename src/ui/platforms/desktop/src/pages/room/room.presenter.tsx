@@ -57,9 +57,7 @@ export class RoomStore {
   gameLog: (string | JSX.Element)[] = [];
 
   @mobx.observable.ref
-  updateClientPlayerFlag: boolean = false;
-  @mobx.observable.ref
-  updateDahboardUIFlag: boolean = false;
+  updateUIFlag: boolean = false;
 
   @mobx.observable.ref
   actionButtonStatus: {
@@ -73,7 +71,9 @@ export class RoomStore {
   };
 
   @mobx.observable.ref
-  clientPlayerCardActionsMatcher: (area: PlayerCardsArea) => (card: Card) => boolean;
+  clientPlayerCardActionsMatcher: (
+    area: PlayerCardsArea,
+  ) => (card: Card) => boolean;
   @mobx.observable.ref
   onClickHandCardToPlay: (card: Card, selected: boolean) => void;
   @mobx.observable.ref
@@ -110,13 +110,8 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  updateClientPlayerUI() {
-    this.store.updateClientPlayerFlag = !this.store.updateClientPlayerFlag;
-  }
-
-  @mobx.action
-  updateDashboardUI() {
-    this.store.updateDahboardUIFlag = !this.store.updateDahboardUIFlag;
+  broadcastUIUpdate() {
+    this.store.updateUIFlag = !this.store.updateUIFlag;
   }
 
   @mobx.action
@@ -148,7 +143,7 @@ export class RoomPresenter {
       playerInfo.CharacterId,
     );
     this.store.room.addPlayer(player);
-    this.updateClientPlayerUI();
+    this.broadcastUIUpdate();
   }
 
   @mobx.action
@@ -180,7 +175,7 @@ export class RoomPresenter {
     );
 
     this.store.room = new ClientRoom(roomId, socket, gameInfo, players);
-    this.updateClientPlayerUI();
+    this.broadcastUIUpdate();
   }
 
   @mobx.action
@@ -208,7 +203,9 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  setupClientPlayerCardActionsMatcher(matcher: (area: PlayerCardsArea) => (card: Card) => boolean) {
+  setupClientPlayerCardActionsMatcher(
+    matcher: (area: PlayerCardsArea) => (card: Card) => boolean,
+  ) {
     this.store.clientPlayerCardActionsMatcher = matcher;
   }
   @mobx.action
@@ -232,25 +229,25 @@ export class RoomPresenter {
   @mobx.action
   defineConfirmButtonActions(handler: () => void) {
     this.store.confirmButtonAction = mobx.action(() => {
-      handler();
       this.store.actionButtonStatus.confirm = false;
       this.store.confirmButtonAction = undefined;
+      handler();
     });
   }
   @mobx.action
   defineFinishButtonActions(handler: () => void) {
     this.store.finishButtonAction = mobx.action(() => {
-      handler();
       this.store.actionButtonStatus.finish = false;
       this.store.finishButtonAction = undefined;
+      handler();
     });
   }
   @mobx.action
   defineCancelButtonActions(handler: () => void) {
     this.store.cancelButtonAction = mobx.action(() => {
-      handler();
       this.store.actionButtonStatus.cancel = false;
       this.store.cancelButtonAction = undefined;
+      handler();
     });
   }
 }

@@ -5,6 +5,7 @@
   flex-direction: column;
   overflow-y: scroll;
   height: calc(100% - 220px);
+  padding: 4px;
 }
 
 .messageLine {

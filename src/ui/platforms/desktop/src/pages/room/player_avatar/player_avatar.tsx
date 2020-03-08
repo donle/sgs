@@ -30,10 +30,11 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   });
 
   @mobx.action
-  componentDidUpdate() {
+  getSelected() {
     if (!!this.props.disabled) {
       this.selected = false;
     }
+    return this.selected;
   }
 
   render() {
@@ -45,7 +46,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     return (
       <div
         className={classNames(styles.playerCard, {
-          [styles.selected]: this.selected && !this.props.disabled,
+          [styles.selected]: this.getSelected() && !this.props.disabled,
         })}
         onClick={this.onClick}
       >

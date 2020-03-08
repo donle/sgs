@@ -173,9 +173,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         const equipCard = Sanguosha.getCardById(equip);
         if (
           bySkill &&
-          UniqueSkillRule.canTriggerCardSkillRule(bySkill, equipCard)
+          UniqueSkillRule.canTriggerCardSkillRule(bySkill, equipCard) &&
+          equipCard.Skill instanceof TriggerSkill
         ) {
-          canTriggerSkills.push(equipCard.Skill as TriggerSkill);
+          canTriggerSkills.push(equipCard.Skill);
         }
       }
       for (const skill of player.getPlayerSkills<TriggerSkill>('trigger')) {
@@ -244,9 +245,21 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     content: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
   ) {
     await super.useCard(content);
+    const from = this.getPlayerById(content.fromId);
     const card = Sanguosha.getCardById(content.cardId);
     if (card instanceof EquipCard) {
-      await this.equip(card, this.getPlayerById(content.fromId));
+      await this.equip(card, from);
+    } else {
+      const usedEvent: ServerEventFinder<GameEventIdentifiers.CardDropEvent> = {
+        fromId: content.fromId,
+        cardIds: [content.cardId],
+      };
+      this.notify(
+        GameEventIdentifiers.CardDropEvent,
+        usedEvent,
+        content.fromId,
+      );
+      from.dropCards(content.cardId);
     }
 
     await this.gameProcessor.onHandleIncomingEvent(
@@ -359,7 +372,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     from: 'top' | 'bottom' = 'top',
   ) {
     const cardIds = this.getCards(numberOfCards, from);
-    playerId && this.getPlayerById(playerId).obtainCardIds(...cardIds);
     const drawEvent: ServerEventFinder<GameEventIdentifiers.DrawCardEvent> = {
       cardIds,
       playerId: playerId || this.CurrentPlayer.Id,
@@ -368,13 +380,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.DrawCardEvent,
       drawEvent,
-      async stage => {
-        if (stage === DrawCardStage.CardDrawing) {
-          this.getPlayerById(drawEvent.playerId).obtainCardIds(...cardIds);
-        }
-
-        return true;
-      },
     );
 
     return cardIds;
@@ -508,7 +513,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     event.translationsMessage =
       event.recoverBy !== undefined
         ? TranslationPack.translationJsonPatcher(
-            '{0} recovered {1} for {2} hp',
+            '{0} recovered {2} hp for {1}',
             this.getPlayerById(event.recoverBy).Character.Name,
             this.getPlayerById(event.toId).Character.Name,
             event.recoveredHp,
@@ -528,12 +533,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   public async responseCard(
     event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>,
   ): Promise<void> {
-    event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} responsed card {1}',
-      this.getPlayerById(event.fromId).Character.Name,
-      TranslationPack.patchCardInTranslation(event.cardId),
-    ).extract();
-
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.CardResponseEvent,
       event,

@@ -16,7 +16,6 @@ import { PagePropsWithHostConfig } from 'types/page_props';
 import { Dashboard } from './dashboard/dashboard';
 import { GameDialog } from './game_dialog/game_dialog';
 import { GameClientProcessor } from './game_processor';
-import { PlayerAvatar } from './player_avatar/player_avatar';
 import styles from './room.module.css';
 import { RoomPresenter, RoomStore } from './room.presenter';
 import { SeatsLayout } from './seats_layout/seats_layout';
@@ -129,7 +128,7 @@ export class RoomPage extends React.Component<
           <div className={styles.roomBoard}>
             <div className={styles.mainBoard}>
               <SeatsLayout
-                updateFlag={this.store.updateDahboardUIFlag}
+                updateFlag={this.store.updateUIFlag}
                 store={this.store}
                 presenter={this.presenter}
                 translator={this.props.translator}
@@ -137,32 +136,25 @@ export class RoomPage extends React.Component<
                 playerSelectableMatcher={this.store.playersSelectionMatcher}
                 gamePad={this.getDummyCentralInfo()}
               />
-              <Dashboard
-                updateFlag={this.store.updateClientPlayerFlag}
-                store={this.store}
-                presenter={this.presenter}
-                translator={this.props.translator}
-                cardEnableMatcher={this.store.clientPlayerCardActionsMatcher}
-                onClickConfirmButton={this.store.confirmButtonAction}
-                onClickCancelButton={this.store.cancelButtonAction}
-                onClickFinishButton={this.store.finishButtonAction}
-                onClick={this.store.onClickHandCardToPlay}
-              />
+              <div className={styles.sideBoard}>
+                <GameDialog
+                  store={this.store}
+                  presenter={this.presenter}
+                  translator={this.props.translator}
+                />
+              </div>
             </div>
-            <div className={styles.sideBoard}>
-              <GameDialog
-                store={this.store}
-                presenter={this.presenter}
-                translator={this.props.translator}
-              />
-              <PlayerAvatar
-                updateFlag={this.store.updateClientPlayerFlag}
-                onClick={this.store.onClickPlayer}
-                store={this.store}
-                presenter={this.presenter}
-                translator={this.props.translator}
-              />
-            </div>
+            <Dashboard
+              updateFlag={this.store.updateUIFlag}
+              store={this.store}
+              presenter={this.presenter}
+              translator={this.props.translator}
+              cardEnableMatcher={this.store.clientPlayerCardActionsMatcher}
+              onClickConfirmButton={this.store.confirmButtonAction}
+              onClickCancelButton={this.store.cancelButtonAction}
+              onClickFinishButton={this.store.finishButtonAction}
+              onClick={this.store.onClickHandCardToPlay}
+            />
           </div>
         )}
       </div>

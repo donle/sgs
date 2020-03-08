@@ -1,7 +1,7 @@
 .playerCard {
     position: relative;
     height: 220px;
-    width: 100%;
+    width: 220px;
     border: 1px solid grey;
 }
 

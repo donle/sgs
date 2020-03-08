@@ -79,6 +79,10 @@
     "build:mac": "yarn sync:mac && NODE_PATH=./src node scripts/build.js",
     "start:win": "yarn sync:win && cross-env NODE_PATH=./src node scripts/start.js",
     "build:win": "yarn sync:win && cross-env NODE_PATH=./src node scripts/build.js",
+    "start:mac:cnpm": "cnpm run sync:mac && NODE_PATH=./src node scripts/start.js",
+    "build:mac:cnpm": "cnpm run sync:mac && NODE_PATH=./src node scripts/build.js",
+    "start:win:cnpm": "cnpm run sync:win && cross-env NODE_PATH=./src node scripts/start.js",
+    "build:win:cnpm": "cnpm run sync:win && cross-env NODE_PATH=./src node scripts/build.js",
     "test": "node scripts/test.js"
   },
   "eslintConfig": {

@@ -43,6 +43,9 @@ export const generalDictionary: Word[] = [
 export const eventDictionary: Word[] = [
   { source: '[', target: '【' },
   { source: ']', target: '】' },
+  { source: 'normal_property', target: '无属性' },
+  { source: 'fire_property', target: '火属性' },
+  { source: 'thunder_property', target: '雷属性' },
   {
     source: '{0} draws {1} cards',
     target: '{0} 摸了 {1} 张牌',
@@ -59,16 +62,24 @@ export const eventDictionary: Word[] = [
     source: 'please choose a character',
     target: '请选择一名武将',
   },
+  {
+    source: '{0} recovered {2} hp for {1}',
+    target: '{0} 使 {1} 回复了 {2} 点体力',
+  },
+  {
+    source: '{0} recovered {1} hp',
+    target: '{0} 回复了 {1} 点体力',
+  },
   { source: '{0} activates skill {1}', target: '{0} 发动了技能【{1}】' },
   {
-    source: '{0} hurts {1} for {2} {3} hp',
+    source: '{0} hits {1} {2} hp of damage type {3}',
     target: '{0} 对 {1} 造成了 {2} 点【{3}】伤害',
   },
   {
-    source: '{0} got hits by {1} {2} hp',
+    source: '{0} hits {1} for {2} {3} hp',
     target: '{0} 受到了 {1} 点【{2}】伤害',
   },
-  { source: '{0} droppes cards {1}', target: '{0} 弃置了 {1}' },
+  { source: '{0} drops cards {1}', target: '{0} 弃置了 {1}' },
   { source: '{0} cards are dropped', target: '{0} 进入了弃牌堆' },
   { source: '{0} used card {1}', target: '{0} 使用了一张 {1}' },
   { source: '{0} equipped {1}', target: '{0} 装备了 {1}' },
@@ -77,7 +88,7 @@ export const eventDictionary: Word[] = [
     target: '{0} 对 {2} 使用了一张 {1}',
   },
   { source: '{0} obtains card {1}', target: '{0} 获得了 {1}' },
-  { source: '{0} responses card {1}', target: '{0} 打出了一张 {0}' },
+  { source: '{0} responses card {1}', target: '{0} 打出了一张 {1}' },
   { source: 'please drop {0} cards', target: '请弃置 {0} 张牌' },
   {
     source: '{0} asks for a peach',

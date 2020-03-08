@@ -187,7 +187,6 @@ export abstract class Player implements PlayerInfo {
 
   public useCard(cardId: CardId) {
     this.cardUseHistory.push(cardId);
-    this.dropCards(cardId);
   }
 
   public useSkill(skillName: string) {
@@ -201,10 +200,10 @@ export abstract class Player implements PlayerInfo {
     outsideAreaName?: string,
   ): CardId[] {
     if (area === undefined) {
-      const [handCards, judgeCards, holdingCards, equipCards] = Object.values<
-        CardId[]
-      >(this.playerCards);
-      return [...handCards, ...judgeCards, ...holdingCards, ...equipCards];
+      const [handCards, judgeCards, equipCards] = Object.values<CardId[]>(
+        this.playerCards,
+      );
+      return [...handCards, ...judgeCards, ...equipCards];
     }
 
     if (area !== PlayerCardsArea.OutsideArea) {
@@ -232,7 +231,7 @@ export abstract class Player implements PlayerInfo {
       CardId[],
     ][]) {
       if (cards.find(card => card === cardId)) {
-        return (area as any) as PlayerCardsArea;
+        return parseInt(area, 10) as PlayerCardsArea;
       }
     }
   }
@@ -270,13 +269,22 @@ export abstract class Player implements PlayerInfo {
     ].findIndex(card =>
       Sanguosha.getCardById<EquipCard>(card).is(equipCard.EquipType),
     );
-
     let lostEquipId: CardId | undefined;
     if (currentEquipIndex >= 0) {
       lostEquipId = this.playerCards[PlayerCardsArea.EquipArea].splice(
         currentEquipIndex,
         1,
       )[0] as CardId;
+    }
+
+    const equipCardFromHandsIndex = this.playerCards[
+      PlayerCardsArea.HandArea
+    ].findIndex(cardId => equipCard.Id === cardId);
+    if (equipCardFromHandsIndex >= 0) {
+      this.playerCards[PlayerCardsArea.HandArea].splice(
+        equipCardFromHandsIndex,
+        1,
+      );
     }
 
     this.playerCards[PlayerCardsArea.EquipArea].push(equipCard.Id);
@@ -453,6 +461,10 @@ export abstract class Player implements PlayerInfo {
       case 'filter':
         return this.playerSkills.filter(
           skill => skill instanceof FilterSkill,
+        ) as T[];
+      case 'viewAs':
+        return this.playerSkills.filter(
+          skill => skill instanceof ViewAsSkill,
         ) as T[];
       case 'active':
         return this.playerSkills.filter(

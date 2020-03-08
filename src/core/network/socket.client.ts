@@ -6,11 +6,6 @@ import {
 } from 'core/event/event';
 import { Socket } from 'core/network/socket';
 import { HostConfigProps } from 'core/shares/types/host_config';
-import {
-  RoomSocketEvent,
-  RoomSocketEventPicker,
-  RoomSocketEventResponser,
-} from 'core/shares/types/server_types';
 import IOSocketClient from 'socket.io-client';
 
 export class ClientSocket extends Socket<WorkPlace.Client> {
@@ -24,24 +19,11 @@ export class ClientSocket extends Socket<WorkPlace.Client> {
     this.socketIO = IOSocketClient(
       `${config.protocol}://${config.host}:${config.port}/room-${roomId}`,
     );
-
   }
 
-  public notify<I extends RoomSocketEvent>(
-    type: I,
-    content: RoomSocketEventPicker<I>,
-  ): void;
   public notify<I extends GameEventIdentifiers>(
     type: I,
     content: ClientEventFinder<I>,
-  ): void;
-  public notify<I extends GameEventIdentifiers | RoomSocketEvent>(
-    type: I,
-    content: I extends GameEventIdentifiers
-      ? ClientEventFinder<I>
-      : I extends RoomSocketEvent
-      ? RoomSocketEventPicker<I>
-      : never,
   ) {
     this.socketIO.emit(type.toString(), content);
   }
@@ -49,20 +31,6 @@ export class ClientSocket extends Socket<WorkPlace.Client> {
   public on<T extends GameEventIdentifiers>(
     type: T,
     receiver: (event: ServerEventFinder<T>) => void,
-  ): ClientSocket;
-  public on<T extends RoomSocketEvent>(
-    type: T,
-    receiver: (event: RoomSocketEventResponser<T>) => void,
-  ): ClientSocket;
-  public on<T extends GameEventIdentifiers | RoomSocketEvent>(
-    type: T,
-    receiver: (
-      event: T extends GameEventIdentifiers
-        ? ServerEventFinder<T>
-        : T extends RoomSocketEvent
-        ? RoomSocketEventResponser<T>
-        : never,
-    ) => void,
   ): ClientSocket {
     this.socketIO.on(type.toString(), receiver);
 

@@ -1,4 +1,6 @@
+import classNames from 'classnames';
 import { Card, CardType } from 'core/cards/card';
+import { EquipCard } from 'core/cards/equip_card';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -6,6 +8,7 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { ClientCard } from '../card/card';
+import { PlayerAvatar } from '../player_avatar/player_avatar';
 import { RoomPresenter, RoomStore } from '../room.presenter';
 import styles from './dashboard.module.css';
 
@@ -38,7 +41,15 @@ export const EquipCardItem = mobxReact.observer(
     });
 
     return (
-      <div className={styles.equipCardItem} onClick={onCardClick}>
+      <div
+        className={classNames(styles.equipCardItem, {
+          [styles.weapon]: card?.is(CardType.Weapon),
+          [styles.armor]: card?.is(CardType.Armor),
+          [styles.defenseRide]: card?.is(CardType.DefenseRide),
+          [styles.offenseRide]: card?.is(CardType.OffenseRide),
+        })}
+        onClick={onCardClick}
+      >
         {card && translator.tr(card.Name)}
       </div>
     );
@@ -52,36 +63,28 @@ export class Dashboard extends React.Component<DashboardProps> {
   };
 
   getEquipCardsSection() {
-    const equipCards: Card[] = new Array(4);
-    this.props.presenter.ClientPlayer?.getCardIds(
+    const equipCards = this.props.presenter.ClientPlayer?.getCardIds(
       PlayerCardsArea.EquipArea,
-    ).forEach(cardId => {
-      const card = Sanguosha.getCardById(cardId);
-      if (card.is(CardType.Weapon)) {
-        equipCards[0] = card;
-      } else if (card.is(CardType.Armor)) {
-        equipCards[1] = card;
-      } else if (card.is(CardType.DefenseRide)) {
-        equipCards[2] = card;
-      } else if (card.is(CardType.OffenseRide)) {
-        equipCards[3] = card;
-      }
-    });
+    ).map(cardId => Sanguosha.getCardById<EquipCard>(cardId));
 
     return (
-      <div className={styles.equipSection}>
-        {equipCards.map(card => (
-          <EquipCardItem
-            translator={this.props.translator}
-            card={card}
-            onClick={this.onClick(card)}
-            disabled={
-              !this.props.cardEnableMatcher ||
-              !this.props.cardEnableMatcher(PlayerCardsArea.EquipArea)(card)
-            }
-          />
-        ))}
-      </div>
+      <>
+        {equipCards && (
+          <div className={styles.equipSection}>
+            {equipCards.map(card => (
+              <EquipCardItem
+                translator={this.props.translator}
+                card={card}
+                onClick={this.onClick(card)}
+                disabled={
+                  !this.props.cardEnableMatcher ||
+                  !this.props.cardEnableMatcher(PlayerCardsArea.EquipArea)(card)
+                }
+              />
+            ))}
+          </div>
+        )}
+      </>
     );
   }
 
@@ -98,7 +101,8 @@ export class Dashboard extends React.Component<DashboardProps> {
           onSelected={this.onClick(card)}
           className={styles.handCard}
           disabled={
-            !this.props.cardEnableMatcher || !this.props.cardEnableMatcher(PlayerCardsArea.HandArea)(card)
+            !this.props.cardEnableMatcher ||
+            !this.props.cardEnableMatcher(PlayerCardsArea.HandArea)(card)
           }
           image={''}
         />
@@ -139,6 +143,13 @@ export class Dashboard extends React.Component<DashboardProps> {
       <div className={styles.dashboard}>
         {this.getEquipCardsSection()}
         {this.getPlayerHandBoard()}
+        <PlayerAvatar
+          updateFlag={this.props.store.updateUIFlag}
+          onClick={this.props.store.onClickPlayer}
+          store={this.props.store}
+          presenter={this.props.presenter}
+          translator={this.props.translator}
+        />
       </div>
     );
   }

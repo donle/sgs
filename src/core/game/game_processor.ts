@@ -29,6 +29,7 @@ import {
   PlayerDyingStage,
   PlayerPhase,
   PlayerStageListEnum,
+  RecoverEffectStage,
   SkillEffectStage,
   SkillUseStage,
   StageProcessor,
@@ -160,6 +161,7 @@ export class GameProcessor {
       };
 
       this.room.broadcast(GameEventIdentifiers.DrawCardEvent, drawEvent);
+      this.room.getPlayerById(player.Id).obtainCardIds(...cardIds);
     }
   }
 
@@ -185,8 +187,6 @@ export class GameProcessor {
     while (this.room.AlivePlayers.length > 1) {
       await this.play(this.CurrentPlayer);
       this.turnToNextPlayer();
-      this.playerPositionIndex =
-        (this.playerPositionIndex + 1) % this.room.AlivePlayers.length;
     }
   }
 
@@ -261,7 +261,6 @@ export class GameProcessor {
         const discardAmount =
           this.CurrentPlayer.getCardIds(PlayerCardsArea.HandArea).length -
           maxCardHold;
-
         if (discardAmount > 0) {
           this.room.notify(
             GameEventIdentifiers.AskForCardDropEvent,
@@ -431,18 +430,28 @@ export class GameProcessor {
           event as any,
           onActualExecuted,
         );
+        break;
       case GameEventIdentifiers.ObtainCardEvent:
         await this.onHandleObtainCardEvent(
           identifier as GameEventIdentifiers.ObtainCardEvent,
           event as any,
           onActualExecuted,
         );
+        break;
       case GameEventIdentifiers.LoseHpEvent:
         await this.onHandleLoseHpEvent(
           identifier as GameEventIdentifiers.LoseHpEvent,
           event as any,
           onActualExecuted,
         );
+        break;
+      case GameEventIdentifiers.RecoverEvent:
+        await this.onHandleRecoverEvent(
+          identifier as GameEventIdentifiers.RecoverEvent,
+          event as any,
+          onActualExecuted,
+        );
+        break;
       default:
         throw new Error(`Unknown incoming event: ${identifier}`);
     }
@@ -523,7 +532,7 @@ export class GameProcessor {
   ) {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} draws {1} cards',
-      this.room.getPlayerById(event.playerId).Name,
+      this.room.getPlayerById(event.playerId).Character.Name,
       event.cardIds.length,
     ).extract();
 
@@ -537,7 +546,7 @@ export class GameProcessor {
 
           const { cardIds, playerId } = event;
           const to = this.room.getPlayerById(playerId);
-          //Question?: How about xuyou?
+          //TODO: How about xuyou?
           to.obtainCardIds(...cardIds);
           this.room.broadcast(identifier, event);
         }
@@ -551,9 +560,9 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} drops {1} cards',
+      '{0} drops cards {1}',
       this.room.getPlayerById(event.fromId).Character.Name,
-      event.cardIds.length,
+      TranslationPack.patchCardInTranslation(...event.cardIds),
     ).extract();
 
     return await this.iterateEachStage(
@@ -896,12 +905,21 @@ export class GameProcessor {
     >,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
+    if (!event.translationsMessage) {
+      event.translationsMessage = TranslationPack.translationJsonPatcher(
+        '{0} responses card {1}',
+        this.room.getPlayerById(event.fromId).Character.Name,
+        TranslationPack.patchCardInTranslation(event.cardId),
+      ).extract();
+    }
+
     return await this.iterateEachStage(
       identifier,
       event,
       onActualExecuted,
       async stage => {
         if (stage === CardResponseStage.CardResponsing) {
+          this.room.getPlayerById(event.fromId).dropCards(event.cardId);
           this.room.broadcast(identifier, event);
         }
       },
@@ -1047,6 +1065,11 @@ export class GameProcessor {
       async stage => {
         if (stage === LoseHpStage.LosingHp) {
           event.toId = this.deadPlayerFilters(event.toId)[0];
+          if (!event.toId) {
+            EventPacker.terminate(event);
+            return;
+          }
+
           this.room.getPlayerById(event.toId).onLoseHp(event.lostHp);
           this.room.broadcast(GameEventIdentifiers.LoseHpEvent, event);
         }
@@ -1054,15 +1077,49 @@ export class GameProcessor {
     );
   }
 
-  public turnToNextPlayer() {
+  private async onHandleRecoverEvent(
+    identifier: GameEventIdentifiers.RecoverEvent,
+    event: ServerEventFinder<GameEventIdentifiers.RecoverEvent>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
+  ) {
+    return await this.iterateEachStage(
+      identifier,
+      event,
+      onActualExecuted,
+      async stage => {
+        if (stage === RecoverEffectStage.RecoverEffecting) {
+          event.toId = this.deadPlayerFilters(event.toId)[0];
+          if (!event.toId) {
+            EventPacker.terminate(event);
+            return;
+          }
+
+          this.room.getPlayerById(event.toId).onRecoverHp(event.recoveredHp);
+          this.room.broadcast(GameEventIdentifiers.RecoverEvent, event);
+        }
+      },
+    );
+  }
+
+  public async turnToNextPlayer() {
     this.tryToThrowNotStartedError();
-    this.playerPositionIndex =
-      (this.playerPositionIndex + 1) % this.room.AlivePlayers.length;
+    const prevPlayer = this.CurrentPlayer;
+    do {
+      this.playerPositionIndex =
+        (this.playerPositionIndex + 1) % this.room.Players.length;
+    } while (this.room.Players[this.playerPositionIndex].Dead);
+
+    await this.onHandlePhaseChangeEvent(GameEventIdentifiers.PhaseChangeEvent, {
+      fromPlayer: prevPlayer.Id,
+      from: PlayerPhase.FinishStage,
+      toPlayer: this.CurrentPlayer.Id,
+      to: PlayerPhase.PrepareStage,
+    });
   }
 
   public get CurrentPlayer() {
     this.tryToThrowNotStartedError();
-    return this.room.AlivePlayers[this.playerPositionIndex];
+    return this.room.Players[this.playerPositionIndex];
   }
 
   public get CurrentGameStage() {

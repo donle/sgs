@@ -42,17 +42,18 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   }
 
   @mobx.action
-  componentDidUpdate() {
+  getSelected() {
     if (!!this.props.disabled) {
       this.selected = false;
     }
+    return this.selected;
   }
 
   render() {
     return (
       <div
         className={classNames(styles.playerCard, {
-          [styles.selected]: this.selected && !this.props.disabled,
+          [styles.selected]: this.getSelected() && !this.props.disabled,
         })}
         onClick={this.onClick}
       >

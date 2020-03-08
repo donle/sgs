@@ -68,7 +68,11 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
               case GameEventIdentifiers.UserMessageEvent:
               default:
                 //TODO: sometime lost listening on events
-                logger.info('Not implemented active listener', identifier, GameEventIdentifiers.PlayerEnterEvent);
+                logger.info(
+                  'Not implemented active listener',
+                  identifier,
+                  GameEventIdentifiers.PlayerEnterEvent,
+                );
             }
           },
         );
@@ -81,7 +85,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
             this.asyncResponseResolver[identifier][socket.id];
           if (asyncResolver) {
             asyncResolver(content);
-            this.asyncResponseResolver[identifier][socket.id] = undefined;
+            delete this.asyncResponseResolver[identifier][socket.id];
           }
         });
       });
@@ -178,7 +182,15 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
   ) {
     const toPlayer = this.room!.getPlayerById(to);
     if (!toPlayer.isOnline()) {
-      toPlayer.AI.onAction(type, content);
+      const result = toPlayer.AI.onAction(this.room!, type, content);
+      
+      const asyncResolver =
+      this.asyncResponseResolver[type] &&
+      this.asyncResponseResolver[type][to];
+    if (asyncResolver) {
+      asyncResolver(result);
+      delete this.asyncResponseResolver[type][to];
+    }
     } else {
       const clientSocket = this.clientIds.find(clientId => clientId === to);
       if (!clientSocket) {
@@ -198,7 +210,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     this.socket.emit(type.toString(), content);
     for (const player of this.room!.AlivePlayers) {
       if (!player.isOnline()) {
-        player.AI.onAction(type, content);
+        player.AI.onAction(this.room!, type, content);
       }
     }
   }

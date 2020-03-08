@@ -139,6 +139,14 @@ export const clientActiveListenerEvents = () => [
 
   GameEventIdentifiers.SkillUseEvent,
   GameEventIdentifiers.SkillEffectEvent,
+  GameEventIdentifiers.PinDianEvent,
+  GameEventIdentifiers.LoseHpEvent,
+  GameEventIdentifiers.DamageEvent,
+  GameEventIdentifiers.RecoverEvent,
+  GameEventIdentifiers.JudgeEvent,
+
+  GameEventIdentifiers.SkillUseEvent,
+  GameEventIdentifiers.SkillEffectEvent,
 
   GameEventIdentifiers.GameStartEvent,
   GameEventIdentifiers.GameReadyEvent,

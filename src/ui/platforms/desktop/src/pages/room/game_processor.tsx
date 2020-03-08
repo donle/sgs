@@ -1,3 +1,4 @@
+import { EquipCard } from 'core/cards/equip_card';
 import { Character, CharacterId } from 'core/characters/character';
 import {
   ClientEventFinder,
@@ -6,6 +7,7 @@ import {
   ServerEventFinder,
 } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
+import { PlayerPhase } from 'core/game/stage_processor';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as React from 'react';
 import { Action } from './action';
@@ -42,7 +44,7 @@ export class GameClientProcessor {
         this.onHandleGameReadyEvent(e as any, content);
         break;
       case GameEventIdentifiers.GameStartEvent:
-        await this.onHandleGameStartEvent(e as any, content);
+        this.onHandleGameStartEvent(e as any, content);
         break;
       case GameEventIdentifiers.PlayerEnterEvent:
         this.onHandlePlayerEnterEvent(e as any, content);
@@ -63,7 +65,22 @@ export class GameClientProcessor {
         this.onHandlePhaseChangeEvent(e as any, content);
         break;
       case GameEventIdentifiers.CardUseEvent:
-        this.onHandleCardUseEvent(e as any, content);
+        await this.onHandleCardUseEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.CardResponseEvent:
+        this.onHandleCardResponseEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.CardDropEvent:
+        this.onHandleCardDropEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.EquipEvent:
+        this.onHandleEquipEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.DamageEvent:
+        this.onHandleDamageEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.RecoverEvent:
+        this.onHandleRecoverEvent(e as any, content);
         break;
       case GameEventIdentifiers.AskForCardUseEvent:
         this.onHandleAskForCardUseEvent(e as any, content);
@@ -91,11 +108,6 @@ export class GameClientProcessor {
   private onHandleAskForCardDropEvent<
     T extends GameEventIdentifiers.AskForCardDropEvent
   >(type: T, content: ServerEventFinder<T>) {
-    this.actionHandler.onSelectCardAction(
-      type,
-      content.fromArea,
-      content.cardAmount,
-    );
     if (!EventPacker.isUncancellabelEvent(content)) {
       this.presenter.enableActionButton('cancel');
       this.presenter.defineCancelButtonActions(() => {
@@ -109,6 +121,19 @@ export class GameClientProcessor {
         );
       });
     }
+
+    this.actionHandler
+      .onSelectCardAction(content.fromArea, content.cardAmount)
+      .then(selectedCards => {
+        const event: ClientEventFinder<T> = {
+          fromId: content.toId,
+          droppedCards: selectedCards,
+        };
+        this.store.room.broadcast(
+          type,
+          EventPacker.createIdentifierEvent(type, event),
+        );
+      });
   }
 
   private onHandleAskForCardUseEvent<
@@ -117,14 +142,54 @@ export class GameClientProcessor {
     this.actionHandler.onResponsiveUseCard(content);
   }
 
-  private onHandleCardUseEvent<T extends GameEventIdentifiers.CardUseEvent>(
+  private onHandleCardResponseEvent<T extends GameEventIdentifiers.CardResponseEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    if (content.fromId === this.store.clientPlayerId) {
-      this.store.room.useCard(content);
-      this.presenter.updateClientPlayerUI();
-    }
+    //TODO: any animations on card response?
+    this.store.room.getPlayerById(content.fromId).dropCards(content.cardId);
+    this.presenter.broadcastUIUpdate();
+  }
+  private async onHandleCardUseEvent<T extends GameEventIdentifiers.CardUseEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.useCard(content);
+    this.presenter.broadcastUIUpdate();
+  }
+  private onHandleCardDropEvent<T extends GameEventIdentifiers.CardDropEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.presenter.ClientPlayer!.dropCards(...content.cardIds);
+    this.presenter.broadcastUIUpdate();
+  }
+
+  private onHandleEquipEvent<T extends GameEventIdentifiers.EquipEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const player = this.store.room.getPlayerById(content.fromId);
+    player.equip(Sanguosha.getCardById<EquipCard>(content.cardId));
+    this.presenter.broadcastUIUpdate();
+  }
+
+  private onHandleDamageEvent<T extends GameEventIdentifiers.DamageEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const player = this.store.room.getPlayerById(content.toId);
+    player.onDamage(content.damage);
+    this.presenter.broadcastUIUpdate();
+  }
+
+  private onHandleRecoverEvent<T extends GameEventIdentifiers.RecoverEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const player = this.store.room.getPlayerById(content.toId);
+    player.onRecoverHp(content.recoveredHp);
+    this.presenter.broadcastUIUpdate();
   }
 
   private onHandleGameStartEvent<T extends GameEventIdentifiers.GameStartEvent>(
@@ -136,7 +201,7 @@ export class GameClientProcessor {
         playerInfo.Id,
       ).CharacterId = playerInfo.CharacterId!;
     });
-    this.presenter.updateDashboardUI();
+    this.presenter.broadcastUIUpdate();
   }
 
   private async onHandleGameReadyEvent<
@@ -148,8 +213,7 @@ export class GameClientProcessor {
       player.Role = playerInfo.Role!;
     });
     this.store.room.sortPlayers();
-    this.presenter.updateClientPlayerUI();
-    this.presenter.updateDashboardUI();
+    this.presenter.broadcastUIUpdate();
     await this.store.room.gameStart(content.gameStartInfo);
   }
 
@@ -205,7 +269,7 @@ export class GameClientProcessor {
         fromId: this.store.clientPlayerId,
       };
       this.store.room.broadcast(type, response);
-      this.presenter.updateClientPlayerUI();
+      this.presenter.broadcastUIUpdate();
     };
 
     this.presenter.createDialog(
@@ -220,21 +284,23 @@ export class GameClientProcessor {
   ) {
     if (this.store.clientPlayerId === content.playerId) {
       this.presenter.ClientPlayer?.obtainCardIds(...content.cardIds);
-      this.presenter.updateClientPlayerUI();
     } else {
       this.store.room
         .getPlayerById(content.playerId)
         .obtainCardIds(...content.cardIds);
-      this.presenter.updateDashboardUI();
     }
+    this.presenter.broadcastUIUpdate();
   }
 
   private onHandlePhaseChangeEvent<
     T extends GameEventIdentifiers.PhaseChangeEvent
   >(type: T, content: ServerEventFinder<T>) {
     this.store.room.turnTo(content.toPlayer, content.to);
-    this.presenter.updateClientPlayerUI();
-    this.presenter.updateDashboardUI();
+    if (content.to === PlayerPhase.PrepareStage) {
+      content.fromPlayer &&
+        this.store.room.getPlayerById(content.fromPlayer).resetCardUseHistory();
+    }
+    this.presenter.broadcastUIUpdate();
   }
 
   private onHandlePlayCardStage<

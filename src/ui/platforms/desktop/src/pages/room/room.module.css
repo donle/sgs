@@ -35,13 +35,13 @@
 .roomBoard {
     display: flex;
     align-items: stretch;
+    flex-direction: column;
     width: 100%;
 }
 
 .mainBoard {
     min-width: 1200px;
     display: flex;
-    flex-direction: column;
     align-items: stretch;
     flex: auto;
 }
@@ -50,5 +50,6 @@
     flex-direction: column;
     justify-content: stretch;
     display: flex;
-    width: 220px;
+    width: 300px;
+    font-size: 13px;
 }

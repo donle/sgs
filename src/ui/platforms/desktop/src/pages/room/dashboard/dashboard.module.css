@@ -1,16 +1,19 @@
 .equipCardItem {
     width: 100%;
-    height: 25%;
+    height: 55px;
     display: flex;
     align-items: center;
     padding: 0 8px;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .equipSection {
     border: 1px solid grey;
     width: 200px;
-    display: flex;
-    flex-direction: column;
+    height: 100%;
+    position: relative;
 }
 
 .handBoard {
@@ -48,4 +51,17 @@
 .handCard {
     height: 100%;
     width: 140px;
+}
+
+.weapon {
+    top: 0;
+}
+.armor {
+    top: 25%;
+}
+.defenseRide {
+    top: 50%;
+}
+.offenseRide {
+    top: 75%;
 }
