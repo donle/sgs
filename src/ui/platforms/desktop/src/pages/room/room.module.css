@@ -53,3 +53,12 @@
     width: 300px;
     font-size: 13px;
 }
+
+.incomingConversation {
+    position: fixed;
+    bottom: 190px;
+    max-width: 768px;
+    justify-self: center;
+    display: flex;
+    padding: 4px;
+}

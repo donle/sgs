@@ -124,6 +124,10 @@ export class RoomPage extends React.Component<
     return (
       <div className={styles.room}>
         {this.store.gameDialog}
+
+        <div className={styles.incomingConversation}>
+          {this.store.incomingConversation}
+        </div>
         {this.store.room && (
           <div className={styles.roomBoard}>
             <div className={styles.mainBoard}>

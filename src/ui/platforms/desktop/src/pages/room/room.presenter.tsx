@@ -20,6 +20,7 @@ import { ClientRoom } from 'core/room/room.client';
 import { RoomInfo as _RoomInfo } from 'core/shares/types/server_types';
 import { Skill } from 'core/skills/skill';
 import * as mobx from 'mobx';
+import { Conversation, ConversationProps } from './conversation/conversaion';
 
 import * as React from 'react';
 import styles from './room.module.css';
@@ -52,6 +53,9 @@ export class RoomStore {
 
   @mobx.observable.ref
   gameDialog: JSX.Element | undefined;
+
+  @mobx.observable.ref
+  incomingConversation: JSX.Element | undefined;
 
   @mobx.observable.shallow
   gameLog: (string | JSX.Element)[] = [];
@@ -203,6 +207,26 @@ export class RoomPresenter {
   }
 
   @mobx.action
+  createIncomingConversation = (props: ConversationProps) => {
+    if (props.optionsActionHanlder) {
+      for (const [option, action] of Object.entries(
+        props.optionsActionHanlder,
+      )) {
+        props.optionsActionHanlder[option] = () => {
+          action();
+          this.closeIncomingConversation();
+        };
+      }
+    }
+    this.store.incomingConversation = <Conversation {...props} />;
+  };
+
+  @mobx.action
+  closeIncomingConversation() {
+    this.store.incomingConversation = undefined;
+  }
+
+  @mobx.action
   setupClientPlayerCardActionsMatcher(
     matcher: (area: PlayerCardsArea) => (card: Card) => boolean,
   ) {
@@ -228,6 +252,7 @@ export class RoomPresenter {
 
   @mobx.action
   defineConfirmButtonActions(handler: () => void) {
+    this.store.actionButtonStatus.confirm = true;
     this.store.confirmButtonAction = mobx.action(() => {
       this.store.actionButtonStatus.confirm = false;
       this.store.confirmButtonAction = undefined;
@@ -236,6 +261,7 @@ export class RoomPresenter {
   }
   @mobx.action
   defineFinishButtonActions(handler: () => void) {
+    this.store.actionButtonStatus.finish = true;
     this.store.finishButtonAction = mobx.action(() => {
       this.store.actionButtonStatus.finish = false;
       this.store.finishButtonAction = undefined;
@@ -244,6 +270,7 @@ export class RoomPresenter {
   }
   @mobx.action
   defineCancelButtonActions(handler: () => void) {
+    this.store.actionButtonStatus.cancel = true;
     this.store.cancelButtonAction = mobx.action(() => {
       this.store.actionButtonStatus.cancel = false;
       this.store.cancelButtonAction = undefined;

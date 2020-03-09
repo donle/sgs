@@ -511,12 +511,12 @@ export class GameProcessor {
         if (stage === ObtainCardStage.CardObtaining) {
           event.toId = this.deadPlayerFilters(event.toId)[0];
           const to = this.room.getPlayerById(event.toId);
+          to.obtainCardIds(...event.cardIds);
+
           event.translationsMessage = TranslationPack.translationJsonPatcher(
-            '{0} obtains cards {1} ' + event.fromId ? ' from {2}' : '',
-            to.Name,
-            event.cardIds
-              .map(cardId => TranslationPack.patchCardInTranslation(cardId))
-              .join(','),
+            '{0} obtains cards {1}' + (event.fromId ? ' from {2}' : ''),
+            to.Character.Name,
+            TranslationPack.patchCardInTranslation(...event.cardIds),
             event.fromId ? this.room.getPlayerById(event.fromId).Name : '',
           ).extract();
           this.room.broadcast(identifier, event);
@@ -734,12 +734,21 @@ export class GameProcessor {
     event: EventPicker<GameEventIdentifiers.SkillUseEvent, WorkPlace.Server>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
+    if (!event.translationsMessage) {
+      event.translationsMessage = TranslationPack.translationJsonPatcher(
+        '{0} used skill {1}',
+        this.room.getPlayerById(event.fromId).Character.Name,
+        event.skillName,
+      ).extract();
+    }
+
     return await this.iterateEachStage(
       identifier,
       event,
       onActualExecuted,
       async stage => {
         if (stage === SkillUseStage.SkillUsing) {
+          this.logger.debug('triggered');
           this.room.broadcast(identifier, event);
         }
       },
@@ -756,7 +765,6 @@ export class GameProcessor {
       onActualExecuted,
       async stage => {
         if (stage === SkillEffectStage.SkillEffecting) {
-          this.room.broadcast(identifier, event);
           const { skillName } = event;
           await Sanguosha.getSkillBySkillName(skillName).onEffect(
             this.room,

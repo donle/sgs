@@ -10,6 +10,8 @@ import {
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { ActiveSkill, ResponsiveSkill, Skill } from 'core/skills/skill';
+import { TranslationPack } from 'core/translations/translation_json_tool';
+import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { PlayerId, RoomPresenter, RoomStore } from './room.presenter';
 
 export class Action {
@@ -185,7 +187,6 @@ export class Action {
   };
 
   enableFinishButton(who: PlayerId) {
-    this.presenter.enableActionButton('finish');
     this.presenter.defineFinishButtonActions(() => {
       const event: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
         fromId: who,
@@ -245,7 +246,6 @@ export class Action {
     if (EventPacker.isUncancellabelEvent(content)) {
       this.presenter.disableActionButton('cancel');
     } else {
-      this.presenter.enableActionButton('cancel');
       this.presenter.defineCancelButtonActions(() => {
         const event: ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent> = {
           fromId: this.presenter.ClientPlayer!.Id,
@@ -303,8 +303,6 @@ export class Action {
   }
 
   onReponseToUseWuXieKeJi(who: PlayerId) {
-    this.presenter.enableActionButton('cancel');
-
     this.onPlayAction(who, new CardMatcher({ name: ['wuxiekeji'] }));
 
     this.presenter.defineConfirmButtonActions(() => {
@@ -381,8 +379,6 @@ export class Action {
     if (EventPacker.isUncancellabelEvent(content)) {
       this.presenter.disableActionButton('cancel');
     } else {
-      this.presenter.enableActionButton('cancel');
-
       this.presenter.defineCancelButtonActions(() => {
         const event: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> = {
           fromId: who,
@@ -482,5 +478,71 @@ export class Action {
       availableCardItemsSetter,
     );
     this.presenter.broadcastUIUpdate();
+  }
+
+  onInvokingSkills<T extends GameEventIdentifiers.AskForInvokeEvent>(
+    content: ServerEventFinder<T>,
+    translator: ClientTranslationModule,
+  ) {
+    const { invokeSkillNames, to } = content;
+    if (to !== this.presenter.ClientPlayer!.Id) {
+      return;
+    }
+
+    if (invokeSkillNames.length === 1) {
+      const skill = invokeSkillNames[0];
+      const translatedConversation = TranslationPack.translationJsonPatcher(
+        'do you want to trigger skill {0} ?',
+        skill,
+      ).extract();
+
+      this.presenter.createIncomingConversation({
+        conversation: translatedConversation,
+        translator,
+      });
+
+      const event: ClientEventFinder<T> = {
+        invoke: undefined,
+        fromId: to,
+      };
+      this.presenter.defineConfirmButtonActions(() => {
+        event.invoke = skill;
+        this.store.room.broadcast(
+          GameEventIdentifiers.AskForInvokeEvent,
+          event,
+        );
+        this.presenter.disableActionButton('cancel');
+        this.presenter.closeIncomingConversation();
+      });
+      this.presenter.defineCancelButtonActions(() => {
+        this.store.room.broadcast(
+          GameEventIdentifiers.AskForInvokeEvent,
+          event,
+        );
+        this.presenter.disableActionButton('confirm');
+        this.presenter.closeIncomingConversation();
+      });
+    } else {
+      const optionHandlers: any = {};
+      for (const skillName of content.invokeSkillNames) {
+        const event: ClientEventFinder<T> = {
+          invoke: skillName,
+          fromId: to,
+        };
+
+        optionHandlers[skillName] = () => {
+          this.store.room.broadcast(
+            GameEventIdentifiers.AskForInvokeEvent,
+            event,
+          );
+        };
+      }
+
+      this.presenter.createIncomingConversation({
+        conversation: 'select a skill to trigger',
+        optionsActionHanlder: {},
+        translator,
+      });
+    }
   }
 }

@@ -1,12 +1,7 @@
-import {
-  ClientEventFinder,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
-import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
 export class JianXiong extends TriggerSkill {
@@ -29,16 +24,7 @@ export class JianXiong extends TriggerSkill {
     return true;
   }
 
-  async onTrigger(
-    room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ) {
-    event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} activates skill {1}',
-      room.getPlayerById(event.fromId).Name,
-      this.name,
-    ).extract();
-
+  async onTrigger() {
     return true;
   }
 

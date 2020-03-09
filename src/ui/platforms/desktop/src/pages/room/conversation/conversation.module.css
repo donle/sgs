@@ -1,0 +1,17 @@
+.conversation {
+  display: flex;
+  flex-direction: column;
+}
+
+.conversationText {
+  font-family: LiSu, STLiti, 'Microsoft YaHei', 微软雅黑, 'MicrosoftJhengHei',
+}
+
+.actions {
+  display: flex;
+  justify-content: space-around;
+}
+
+.actionButton {
+  background-color: transparent;
+}

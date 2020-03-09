@@ -47,6 +47,10 @@ export const eventDictionary: Word[] = [
   { source: 'fire_property', target: '火属性' },
   { source: 'thunder_property', target: '雷属性' },
   {
+    source: 'do you want to trigger skill {0} ?',
+    target: '是否发动技能 【{0}】?',
+  },
+  {
     source: '{0} draws {1} cards',
     target: '{0} 摸了 {1} 张牌',
   },
@@ -70,7 +74,7 @@ export const eventDictionary: Word[] = [
     source: '{0} recovered {1} hp',
     target: '{0} 回复了 {1} 点体力',
   },
-  { source: '{0} activates skill {1}', target: '{0} 发动了技能【{1}】' },
+  { source: '{0} used skill {1}', target: '{0} 使用了技能【{1}】' },
   {
     source: '{0} hits {1} {2} hp of damage type {3}',
     target: '{0} 对 {1} 造成了 {2} 点【{3}】伤害',
@@ -78,6 +82,11 @@ export const eventDictionary: Word[] = [
   {
     source: '{0} hits {1} for {2} {3} hp',
     target: '{0} 受到了 {1} 点【{2}】伤害',
+  },
+  { source: '{0} obtains cards {1}', target: '{0} 获得了 {1} ' },
+  {
+    source: '{0} obtains cards {1} from {2}',
+    target: '{0} 从 {2} 获得了 {1} ',
   },
   { source: '{0} drops cards {1}', target: '{0} 弃置了 {1}' },
   { source: '{0} cards are dropped', target: '{0} 进入了弃牌堆' },

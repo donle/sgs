@@ -73,6 +73,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.CardDropEvent:
         this.onHandleCardDropEvent(e as any, content);
         break;
+      case GameEventIdentifiers.ObtainCardEvent:
+        this.onHandlObtainCardEvent(e as any, content);
+        break;
       case GameEventIdentifiers.EquipEvent:
         this.onHandleEquipEvent(e as any, content);
         break;
@@ -93,6 +96,12 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.AskForWuXieKeJiEvent:
         this.onHandleAskForWuXieKeJiEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.AskForInvokeEvent:
+        this.onHandleAskForInvokeEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.SkillUseEvent:
+        await this.onHandleSkillUseEvent(e as any, content);
         break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
@@ -142,19 +151,17 @@ export class GameClientProcessor {
     this.actionHandler.onResponsiveUseCard(content);
   }
 
-  private onHandleCardResponseEvent<T extends GameEventIdentifiers.CardResponseEvent>(
-    type: T,
-    content: ServerEventFinder<T>,
-  ) {
+  private onHandleCardResponseEvent<
+    T extends GameEventIdentifiers.CardResponseEvent
+  >(type: T, content: ServerEventFinder<T>) {
     //TODO: any animations on card response?
     this.store.room.getPlayerById(content.fromId).dropCards(content.cardId);
     this.presenter.broadcastUIUpdate();
   }
-  private async onHandleCardUseEvent<T extends GameEventIdentifiers.CardUseEvent>(
-    type: T,
-    content: ServerEventFinder<T>,
-  ) {
-    this.store.room.useCard(content);
+  private async onHandleCardUseEvent<
+    T extends GameEventIdentifiers.CardUseEvent
+  >(type: T, content: ServerEventFinder<T>) {
+    await this.store.room.useCard(content);
     this.presenter.broadcastUIUpdate();
   }
   private onHandleCardDropEvent<T extends GameEventIdentifiers.CardDropEvent>(
@@ -162,6 +169,15 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     this.presenter.ClientPlayer!.dropCards(...content.cardIds);
+    this.presenter.broadcastUIUpdate();
+  }
+
+  private onHandlObtainCardEvent<T extends GameEventIdentifiers.ObtainCardEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const { cardIds, toId } = content;
+    this.store.room.getPlayerById(toId).obtainCardIds(...cardIds);
     this.presenter.broadcastUIUpdate();
   }
 
@@ -278,6 +294,12 @@ export class GameClientProcessor {
     );
   }
 
+  private onHandleAskForInvokeEvent<
+    T extends GameEventIdentifiers.AskForInvokeEvent
+  >(type: T, content: ServerEventFinder<T>) {
+    this.actionHandler.onInvokingSkills(content, this.translator);
+  }
+
   private onHandleDrawCardsEvent<T extends GameEventIdentifiers.DrawCardEvent>(
     type: T,
     content: ServerEventFinder<T>,
@@ -314,6 +336,13 @@ export class GameClientProcessor {
     T extends GameEventIdentifiers.AskForWuXieKeJiEvent
   >(type: T, content: ServerEventFinder<T>) {
     this.actionHandler.onReponseToUseWuXieKeJi(this.presenter.ClientPlayer!.Id);
+  }
+
+  private async onHandleSkillUseEvent<
+    T extends GameEventIdentifiers.SkillUseEvent
+  >(type: T, content: ServerEventFinder<T>) {
+    await this.store.room.useSkill(content);
+    this.presenter.broadcastUIUpdate();
   }
 
   private getCharacterSelector(

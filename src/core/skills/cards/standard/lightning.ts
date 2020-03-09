@@ -14,7 +14,6 @@ import {
   FilterSkill,
   TriggerableTimes,
 } from 'core/skills/skill';
-import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
 @TriggerableTimes(INFINITE_TRIGGERING_TIMES)
