@@ -194,21 +194,24 @@ export class GameProcessor {
     switch (phase) {
       case PlayerPhase.JudgeStage:
         this.logger.debug('enter judge cards phase');
-        const judgeCards = this.CurrentPlayer.getCardIds(
+        const judgeCardIds = this.CurrentPlayer.getCardIds(
           PlayerCardsArea.JudgeArea,
-        ).map(cardId => Sanguosha.getCardById(cardId));
-        for (const judgeCard of judgeCards) {
+        );
+        for (const judgeCardId of judgeCardIds) {
           const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
-            cardId: judgeCard.Id,
+            cardId: judgeCardId,
             toIds: [this.CurrentPlayer.Id],
           };
-          await judgeCard.Skill.onEffect(this.room, cardEffectEvent);
+          await Sanguosha.getCardById(judgeCardId).Skill.onEffect(
+            this.room,
+            cardEffectEvent,
+          );
         }
-        break;
+        return;
       case PlayerPhase.DrawCardStage:
         this.logger.debug('enter draw cards phase');
         await this.room.drawCards(2, this.CurrentPlayer.Id);
-        break;
+        return;
       case PlayerPhase.PlayCardStage:
         this.logger.debug('enter play cards phase');
         this.room.notify(
@@ -252,7 +255,7 @@ export class GameProcessor {
             await this.room.useSkill(event);
           }
         } while (true);
-        break;
+        return;
       case PlayerPhase.DropCardStage:
         this.logger.debug('enter drop cards phase');
         const maxCardHold =
@@ -282,7 +285,7 @@ export class GameProcessor {
           await this.room.dropCards(response.droppedCards, response.fromId);
         }
 
-        break;
+        return;
       default:
         break;
     }
@@ -362,7 +365,7 @@ export class GameProcessor {
         );
         break;
       case GameEventIdentifiers.DamageEvent:
-        this.onHandleDamgeEvent(
+        await this.onHandleDamgeEvent(
           identifier as GameEventIdentifiers.DamageEvent,
           event as any,
           onActualExecuted,
@@ -748,7 +751,6 @@ export class GameProcessor {
       onActualExecuted,
       async stage => {
         if (stage === SkillUseStage.SkillUsing) {
-          this.logger.debug('triggered');
           this.room.broadcast(identifier, event);
         }
       },
@@ -948,10 +950,12 @@ export class GameProcessor {
           const { toId, cardId, judgeCardId } = event;
           event.translationsMessage = TranslationPack.translationJsonPatcher(
             '{0} got judged card {2} on card {1}',
-            this.room.getPlayerById(toId).Name,
+            this.room.getPlayerById(toId).Character.Name,
             TranslationPack.patchCardInTranslation(cardId),
             TranslationPack.patchCardInTranslation(judgeCardId),
           ).extract();
+
+          this.room.broadcast(identifier, event);
         }
       },
     );

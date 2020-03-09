@@ -1,4 +1,5 @@
 import { CardSuit } from 'core/cards/libs/card_props';
+import { Lightning } from 'core/cards/standard/lightning';
 import {
   ClientEventFinder,
   GameEventIdentifiers,
@@ -6,6 +7,7 @@ import {
 } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType, INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
+import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import {
@@ -22,8 +24,13 @@ export class LightningSkill extends ActiveSkill {
     super('lightning', 'lightning_description');
   }
 
-  public canUse() {
-    return true;
+  public canUse(room: Room, owner: Player) {
+    return (
+      owner
+        .getCardIds(PlayerCardsArea.JudgeArea)
+        .find(cardId => Sanguosha.getCardById(cardId) instanceof Lightning) ===
+      undefined
+    );
   }
 
   public targetFilter(room: Room, targets: PlayerId[]): boolean {
@@ -87,15 +94,38 @@ export class LightningSkill extends ActiveSkill {
         toId: judgeEvent.toId,
       };
 
+      //TODO: doesn't trigger jianxiong
       await room.damage(damageEvent);
+
+      room.notify(
+        GameEventIdentifiers.CardDropEvent,
+        {
+          fromId: judgeEvent.toId,
+          cardIds: [cardId],
+        },
+        judgeEvent.toId,
+      );
+      room.getPlayerById(judgeEvent.toId).dropCards(cardId);
     } else {
       while (true) {
         const player = room.getNextPlayer(judgeEvent.toId);
-        for (const skill of player.getSkills<FilterSkill>('filter')) {
-          if (!skill.canBeUsedCard(judgeEvent.cardId, room, player.Id)) {
-            continue;
-          }
+        const skip =
+          player
+            .getSkills<FilterSkill>('filter')
+            .find(
+              skill => !skill.canBeUsedCard(judgeEvent.cardId, room, player.Id),
+            ) !== undefined ||
+          player
+            .getCardIds(PlayerCardsArea.JudgeArea)
+            .find(
+              cardId => Sanguosha.getCardById(cardId) instanceof Lightning,
+            ) !== undefined;
 
+        if (skip && player.Id !== judgeEvent.toId) {
+          continue;
+        }
+
+        if (player.Id !== judgeEvent.toId) {
           await room.moveCard(
             judgeEvent.cardId,
             judgeEvent.toId,
@@ -103,8 +133,8 @@ export class LightningSkill extends ActiveSkill {
             PlayerCardsArea.JudgeArea,
             PlayerCardsArea.JudgeArea,
           );
-          break;
         }
+        break;
       }
     }
     return true;

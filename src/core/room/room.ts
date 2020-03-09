@@ -103,8 +103,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
 
   //Server only
-  public abstract getCardOwnerId(card: CardId): PlayerId | undefined;
-  //Server only
   public abstract trigger<T = never>(
     content: T extends never
       ? EventPicker<GameEventIdentifiers, WorkPlace.Server>
@@ -126,6 +124,14 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     updateActions: (user: Player) => void,
   ): void;
 
+  public getCardOwnerId(card: CardId) {
+    for (const player of this.AlivePlayers) {
+      if (player.getCardId(card) !== undefined) {
+        return player.Id;
+      }
+    }
+  }
+
   public getPlayerById(playerId: PlayerId) {
     const player = this.players.find(player => player.Id === playerId);
     if (player === undefined) {
@@ -143,6 +149,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       from.useCard(content.cardId);
     }
   }
+
   public async useSkill(
     content: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
   ): Promise<void> {

@@ -150,115 +150,121 @@ const playerStagesList: {
 };
 
 export const enum PhaseChangeStage {
-  BeforePhaseChange,
-  PhaseChanged,
-  AfterPhaseChanged,
+ BeforePhaseChange = 'BeforePhaseChange',
+ PhaseChanged = 'PhaseChanged',
+ AfterPhaseChanged = 'AfterPhaseChanged',
 }
 
 export const enum GameStartStage {
-  BeforeGameStart,
-  GameStarting,
-  AfterGameStarted,
+ BeforeGameStart = 'BeforeGameStart',
+ GameStarting = 'GameStarting',
+ AfterGameStarted = 'AfterGameStarted',
 }
 
 export const enum AimStage {
-  OnAim,
-  OnAimmed,
-  AfterAim,
-  AfterAimmed,
+ OnAim = 'OnAim',
+ OnAimmed = 'OnAimmed',
+ AfterAim = 'AfterAim',
+ AfterAimmed = 'AfterAimmed',
 }
 
 export const enum CardUseStage {
-  BeforeCardUseEffect,
-  CardUsing,
-  AfterCardUseEffect,
+ BeforeCardUseEffect = 'BeforeCardUseEffect',
+ CardUsing = 'CardUsing',
+ AfterCardUseEffect = 'AfterCardUseEffect',
 }
 
 export const enum CardEffectStage {
-  BeforeCardEffect,
-  CardEffecting,
-  AfterCardEffect,
+ BeforeCardEffect = 'BeforeCardEffect',
+ CardEffecting = 'CardEffecting',
+ AfterCardEffect = 'AfterCardEffect',
 }
 
 export const enum CardResponseStage {
-  BeforeCardResponseEffect,
-  CardResponsing,
-  AfterCardResponseEffect,
+ BeforeCardResponseEffect = 'BeforeCardResponseEffect',
+ CardResponsing = 'CardResponsing',
+ AfterCardResponseEffect = 'AfterCardResponseEffect',
 }
 
 export const enum DrawCardStage {
-  BeforeDrawCardEffect,
-  CardDrawing,
-  AfterDrawCardEffect,
+ BeforeDrawCardEffect = 'BeforeDrawCardEffect',
+ CardDrawing = 'CardDrawing',
+ AfterDrawCardEffect = 'AfterDrawCardEffect',
 }
 
 export const enum ObtainCardStage {
-  BeforeObtainCardEffect,
-  CardObtaining,
-  AfterObtainCardEffect,
+ BeforeObtainCardEffect = 'BeforeObtainCardEffect',
+ CardObtaining = 'CardObtaining',
+ AfterObtainCardEffect = 'AfterObtainCardEffect',
 }
 
 export const enum CardDropStage {
-  BeforeCardDropEffect,
-  CardDropping,
-  AfterCardDropEffect,
+ BeforeCardDropEffect = 'BeforeCardDropEffect',
+ CardDropping = 'CardDropping',
+ AfterCardDropEffect = 'AfterCardDropEffect',
 }
 
 export const enum CardLoseStage {
-  BeforeCardLoseEffect,
-  CardLosing,
-  AfterCardLostEffect,
+ BeforeCardLoseEffect = 'BeforeCardLoseEffect',
+ CardLosing = 'CardLosing',
+ AfterCardLostEffect = 'AfterCardLostEffect',
 }
 
 export const enum DamageEffectStage {
-  DamageEffect,
-  DamagedEffect,
-  AfterDamageEffect,
-  AfterDamagedEffect,
+ DamageEffect = 'DamageEffect',
+ DamagedEffect = 'DamagedEffect',
+ AfterDamageEffect = 'AfterDamageEffect',
+ AfterDamagedEffect = 'AfterDamagedEffect',
 }
 
 export const enum JudgeEffectStage {
-  OnJudge,
-  JudgeEffect,
-  AfterJudgeEffect,
+ OnJudge = 'OnJudge',
+ JudgeEffect = 'JudgeEffect',
+ AfterJudgeEffect = 'AfterJudgeEffect',
 }
 
 export const enum PinDianStage {
-  BeforePinDianEffect,
-  PinDianEffect,
-  AfterPinDianEffect,
+ BeforePinDianEffect = 'BeforePinDianEffect',
+ PinDianEffect = 'PinDianEffect',
+ AfterPinDianEffect = 'AfterPinDianEffect',
 }
 
 export const enum PlayerDyingStage {
-  PlayerDying,
-  AfterPlayerDying,
+ PlayerDying = 'PlayerDying',
+ AfterPlayerDying = 'AfterPlayerDying',
 }
 export const enum PlayerDiedStage {
-  PlayerDied,
-  AfterPlayerDied,
+ PlayerDied = 'PlayerDied',
+ AfterPlayerDied = 'AfterPlayerDied',
 }
 
 export const enum SkillUseStage {
-  BeforeSkillUse,
-  SkillUsing,
-  AfterSkillUsed,
+ BeforeSkillUse = 'BeforeSkillUse',
+ SkillUsing = 'SkillUsing',
+ AfterSkillUsed = 'AfterSkillUsed',
 }
 export const enum SkillEffectStage {
-  BeforeSkillEffect,
-  SkillEffecting,
-  AfterSkillEffected,
+ BeforeSkillEffect = 'BeforeSkillEffect',
+ SkillEffecting = 'SkillEffecting',
+ AfterSkillEffected = 'AfterSkillEffected',
 }
 
 export const enum RecoverEffectStage {
-  BeforeRecoverEffect,
-  RecoverEffecting,
-  AfterRecoverEffect,
+ BeforeRecoverEffect = 'BeforeRecoverEffect',
+ RecoverEffecting = 'RecoverEffecting',
+ AfterRecoverEffect = 'AfterRecoverEffect',
+}
+
+export const enum CardMoveStage {
+ BeforeCardMoving = 'BeforeCardMoving',
+ CardMoving = 'CardMoving',
+ AfterCardMoved = 'AfterCardMoved',
 }
 
 export const enum LoseHpStage {
-  BeforeLoseHp,
-  LosingHp,
-  AfterLostHp,
+ BeforeLoseHp = 'BeforeLoseHp',
+ LosingHp = 'LosingHp',
+ AfterLostHp = 'AfterLostHp',
 }
 
 export type GameEventStage =
@@ -280,7 +286,8 @@ export type GameEventStage =
   | AimStage
   | SkillUseStage
   | SkillEffectStage
-  | LoseHpStage;
+  | LoseHpStage
+  | CardMoveStage;
 
 export type AllStage = PlayerStageListEnum | GameEventStage;
 
@@ -466,7 +473,7 @@ export class StageProcessor {
     if (stageList === undefined) {
       throw new Error(`Can't find stage events of ${identifier}`);
     }
-
+    
     return stageList.includes(stage);
   }
 

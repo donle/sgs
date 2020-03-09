@@ -332,7 +332,7 @@ export abstract class ActiveSkill extends Skill {
   ): boolean;
 
   public isRefreshAt(stage: AllStage): boolean {
-    return stage === PlayerStageListEnum.FinishStageEnd;
+    return stage === PlayerStageListEnum.EndFinishStageEnd;
   }
 }
 

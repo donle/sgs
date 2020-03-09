@@ -110,9 +110,24 @@ export class Dashboard extends React.Component<DashboardProps> {
     });
   }
 
+  getPlayerJudgeCards() {
+    return (
+      <div className={styles.judges}>
+        {this.props.presenter.ClientPlayer?.getCardIds(
+          PlayerCardsArea.JudgeArea,
+        ).map(cardId => (
+          <span className={styles.judgeNames}>
+            {this.props.translator.tr(Sanguosha.getCardById(cardId).Name)}
+          </span>
+        ))}
+      </div>
+    );
+  }
+
   getPlayerHandBoard() {
     return (
       <div className={styles.handBoard}>
+        {this.getPlayerJudgeCards()}
         <div className={styles.userActionsButtons}>
           <button
             disabled={!this.props.store.actionButtonStatus.confirm}

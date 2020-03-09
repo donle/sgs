@@ -16,7 +16,8 @@
     "cross-env": "^7.0.0",
     "nodemon": "^2.0.2",
     "tsconfig": "^7.0.0",
-    "tsconfig-paths": "^3.9.0"
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "3.8.2"
   },
   "scripts": {
     "patch": "ts-node ../pre_release.ts",

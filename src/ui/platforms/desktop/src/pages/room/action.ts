@@ -8,11 +8,11 @@ import {
   ServerEventFinder,
 } from 'core/event/event';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { ActiveSkill, ResponsiveSkill, Skill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import { PlayerId, RoomPresenter, RoomStore } from './room.presenter';
+import { RoomPresenter, RoomStore } from './room.presenter';
 
 export class Action {
   private selectedTargets: Player[] = [];
@@ -505,6 +505,7 @@ export class Action {
         invoke: undefined,
         fromId: to,
       };
+      this.presenter.enableActionButton('confirm');
       this.presenter.defineConfirmButtonActions(() => {
         event.invoke = skill;
         this.store.room.broadcast(

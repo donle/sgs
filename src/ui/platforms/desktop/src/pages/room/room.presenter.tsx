@@ -1,23 +1,9 @@
 import { Card } from 'core/cards/card';
-import {
-  GameEventIdentifiers,
-  ServerEventFinder as _ServerEventFinder,
-} from 'core/event/event';
-import {
-  GameInfo as _GameInfo,
-  GameRunningInfo as _GameRunningInfo,
-} from 'core/game/game_props';
 import { ClientSocket } from 'core/network/socket.client';
 import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
-import {
-  PlayerCardsArea,
-  PlayerId as _PlayerId,
-  PlayerInfo as _PlayerInfo,
-} from 'core/player/player_props';
-import { RoomId as _RoomId } from 'core/room/room';
+import { PlayerCardsArea } from 'core/player/player_props';
 import { ClientRoom } from 'core/room/room.client';
-import { RoomInfo as _RoomInfo } from 'core/shares/types/server_types';
 import { Skill } from 'core/skills/skill';
 import * as mobx from 'mobx';
 import { Conversation, ConversationProps } from './conversation/conversaion';
@@ -25,15 +11,9 @@ import { Conversation, ConversationProps } from './conversation/conversaion';
 import * as React from 'react';
 import styles from './room.module.css';
 
-export type PlayerId = _PlayerId;
-export type PlayerInfo = _PlayerInfo;
-export type RoomInfo = _RoomInfo;
-export type RoomId = _RoomId;
-export type GameInfo = _GameInfo;
-export type GameRunningInfo = _GameRunningInfo;
-export type ServerEventFinder<
-  I extends GameEventIdentifiers
-> = _ServerEventFinder<I>;
+import type { GameInfo } from 'core/game/game_props';
+import type { PlayerId, PlayerInfo } from 'core/player/player_props';
+import type { RoomId } from 'core/room/room';
 
 type ClientRoomInfo = {
   roomId: number;
@@ -252,7 +232,6 @@ export class RoomPresenter {
 
   @mobx.action
   defineConfirmButtonActions(handler: () => void) {
-    this.store.actionButtonStatus.confirm = true;
     this.store.confirmButtonAction = mobx.action(() => {
       this.store.actionButtonStatus.confirm = false;
       this.store.confirmButtonAction = undefined;
@@ -264,6 +243,8 @@ export class RoomPresenter {
     this.store.actionButtonStatus.finish = true;
     this.store.finishButtonAction = mobx.action(() => {
       this.store.actionButtonStatus.finish = false;
+      this.store.actionButtonStatus.confirm = false;
+      this.store.actionButtonStatus.cancel = false;
       this.store.finishButtonAction = undefined;
       handler();
     });
@@ -273,6 +254,7 @@ export class RoomPresenter {
     this.store.actionButtonStatus.cancel = true;
     this.store.cancelButtonAction = mobx.action(() => {
       this.store.actionButtonStatus.cancel = false;
+      this.store.actionButtonStatus.confirm = false;
       this.store.cancelButtonAction = undefined;
       handler();
     });

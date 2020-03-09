@@ -23,6 +23,17 @@
     position: relative;
 }
 
+.judges {
+    position: absolute;
+    justify-self: start;
+    align-self: start;
+    padding-left: 8px;
+}
+
+.judgeNames {
+    padding: 0 4px;
+}
+
 .userActionsButtons {
     display: flex;
     padding: 0 12px;

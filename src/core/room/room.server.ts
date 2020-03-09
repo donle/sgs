@@ -5,7 +5,7 @@ import {
   ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
-import { AllStage, DrawCardStage } from 'core/game/stage_processor';
+import { AllStage } from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
 import { Player } from 'core/player/player';
 import { ServerPlayer } from 'core/player/player.server';
@@ -15,6 +15,7 @@ import {
   PlayerInfo,
 } from 'core/player/player_props';
 
+import { CardType } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardId } from 'core/cards/libs/card_props';
 import { Character } from 'core/characters/character';
@@ -184,7 +185,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           canTriggerSkills.push(skill);
         }
       }
-
       for (const skill of canTriggerSkills) {
         if (
           skill.isTriggerable(content, stage) &&
@@ -206,7 +206,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               },
               player.Id,
             );
-
             const { invoke } = await this.onReceivingAsyncReponseFrom(
               GameEventIdentifiers.AskForInvokeEvent,
               player.Id,
@@ -249,7 +248,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     const card = Sanguosha.getCardById(content.cardId);
     if (card instanceof EquipCard) {
       await this.equip(card, from);
-    } else {
+    } else if (!card.is(CardType.DelayedTrick)) {
       const usedEvent: ServerEventFinder<GameEventIdentifiers.CardDropEvent> = {
         fromId: content.fromId,
         cardIds: [content.cardId],
@@ -266,6 +265,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       GameEventIdentifiers.CardUseEvent,
       content,
     );
+
     const cardAimEvent:
       | ServerEventFinder<GameEventIdentifiers.AimEvent>
       | undefined = content.toIds
@@ -281,7 +281,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         cardAimEvent,
       );
     }
-    if (cardAimEvent && !EventPacker.isTerminated(cardAimEvent)) {
+
+    if (
+      cardAimEvent &&
+      !EventPacker.isTerminated(cardAimEvent) &&
+      !card.is(CardType.DelayedTrick)
+    ) {
       await this.gameProcessor.onHandleIncomingEvent(
         GameEventIdentifiers.CardEffectEvent,
         EventPacker.recall(content),
@@ -428,12 +433,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     fromArea: PlayerCardsArea,
     toArea: PlayerCardsArea,
   ) {
-    const from = fromId ? this.getPlayerById(fromId) : undefined;
-    if (from && fromArea !== PlayerCardsArea.JudgeArea) {
-      await this.loseCards(from, cardId);
-    }
-
     const to = this.getPlayerById(toId);
+    const from = fromId && this.getPlayerById(fromId);
 
     if (toArea === PlayerCardsArea.EquipArea) {
       const card = Sanguosha.getCardById<EquipCard>(cardId);
@@ -457,8 +458,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       };
       this.broadcast(GameEventIdentifiers.EquipEvent, equipEvent);
     } else {
-      to.getCardIds(toArea).push(cardId);
-
       if (toArea === PlayerCardsArea.HandArea) {
         await this.gameProcessor.onHandleIncomingEvent(
           GameEventIdentifiers.ObtainCardEvent,
@@ -476,8 +475,17 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             toId,
             fromArea,
             toArea,
+            cardId,
           },
         );
+
+        if (from) {
+          const fromAreaCards = from.getCardIds(fromArea);
+          const lostIndex = fromAreaCards.findIndex(id => id === cardId);
+          fromAreaCards.splice(lostIndex, 1);
+        }
+
+        to.getCardIds(toArea).push(cardId);
       }
     }
   }
@@ -488,7 +496,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     event.translationsMessage =
       event.fromId === undefined
         ? TranslationPack.translationJsonPatcher(
-            '{0} got {1} hp {2} hurt',
+            '{0} got hurt for {1} hp with {2} property',
             this.getPlayerById(event.toId).Character.Name,
             event.damage,
             event.damageType,
@@ -552,31 +560,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       GameEventIdentifiers.JudgeEvent,
       event,
     );
-  }
-
-  public async loseCards(player: Player, ...cardIds: CardId[]) {
-    for (const cardId of cardIds) {
-      const card = Sanguosha.getCardById(cardId);
-      card.Skill.onLoseSkill(player);
-    }
-
-    const event: ServerEventFinder<GameEventIdentifiers.CardLoseEvent> = {
-      fromId: player.Id,
-      cardIds,
-    };
-    await this.gameProcessor.onHandleIncomingEvent(
-      GameEventIdentifiers.CardLoseEvent,
-      event,
-    );
-    player.dropCards(...cardIds);
-  }
-
-  public getCardOwnerId(card: CardId) {
-    for (const player of this.AlivePlayers) {
-      if (player.getCardId(card) !== undefined) {
-        return player.Id;
-      }
-    }
   }
 
   public syncGameCommonRules(

@@ -70,6 +70,7 @@ export interface ServerEvent extends EventUtilities {
     toId: PlayerId;
     fromArea: PlayerCardsArea;
     toArea: PlayerCardsArea;
+    cardId: CardId;
   };
   [GameEventIdentifiers.CardDisplayEvent]: {
     displayCards: CardId[];

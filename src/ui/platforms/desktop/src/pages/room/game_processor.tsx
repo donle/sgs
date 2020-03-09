@@ -38,7 +38,6 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     this.tryToThrowNotReadyException(e);
-
     switch (e) {
       case GameEventIdentifiers.GameReadyEvent:
         this.onHandleGameReadyEvent(e as any, content);
@@ -102,6 +101,12 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.SkillUseEvent:
         await this.onHandleSkillUseEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.MoveCardEvent:
+        await this.onHandleMoveCardEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.JudgeEvent:
+        await this.onHandleJudgeEvent(e as any, content);
         break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
@@ -172,10 +177,9 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
-  private onHandlObtainCardEvent<T extends GameEventIdentifiers.ObtainCardEvent>(
-    type: T,
-    content: ServerEventFinder<T>,
-  ) {
+  private onHandlObtainCardEvent<
+    T extends GameEventIdentifiers.ObtainCardEvent
+  >(type: T, content: ServerEventFinder<T>) {
     const { cardIds, toId } = content;
     this.store.room.getPlayerById(toId).obtainCardIds(...cardIds);
     this.presenter.broadcastUIUpdate();
@@ -336,6 +340,37 @@ export class GameClientProcessor {
     T extends GameEventIdentifiers.AskForWuXieKeJiEvent
   >(type: T, content: ServerEventFinder<T>) {
     this.actionHandler.onReponseToUseWuXieKeJi(this.presenter.ClientPlayer!.Id);
+  }
+
+  private onHandleMoveCardEvent<T extends GameEventIdentifiers.MoveCardEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room
+      .getPlayerById(content.toId)
+      .getCardIds(content.toArea)
+      .push(content.cardId);
+
+    if (content.fromId) {
+      const areaCards = this.store.room
+        .getPlayerById(content.fromId)
+        .getCardIds(content.fromArea);
+      const lostIndex = areaCards.findIndex(
+        cardId => cardId === content.cardId,
+      );
+      areaCards.splice(lostIndex, 1);
+    }
+
+    this.presenter.broadcastUIUpdate();
+  }
+
+  private onHandleJudgeEvent<T extends GameEventIdentifiers.JudgeEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    //TODO: add animations here
+    // const { judgeCardId, toId, cardId } = content;
+    this.presenter.broadcastUIUpdate();
   }
 
   private async onHandleSkillUseEvent<

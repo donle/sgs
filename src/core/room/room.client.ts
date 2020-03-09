@@ -98,10 +98,6 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.responseCard.name);
   }
   //Server only
-  public getCardOwnerId(): any {
-    this.throwUntouchableError(this.getCardOwnerId.name);
-  }
-  //Server only
   public trigger(): void {
     this.throwUntouchableError(this.trigger.name);
   }
@@ -141,7 +137,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   }
 
   public get CurrentPhasePlayer(): ClientPlayer {
-    if (this.currentPhasePlayer === undefined)  {
+    if (this.currentPhasePlayer === undefined) {
       throw new Error('Uninitilizes client room with current phase player');
     }
 

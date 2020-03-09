@@ -86,6 +86,8 @@ export class SlashSkill extends ActiveSkill {
           fromId: toId,
           cardId: response.cardId,
         });
+
+        return false;
       } else {
         const damageEvent = {
           fromId,

@@ -1,5 +1,6 @@
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
+import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
@@ -20,8 +21,12 @@ export class JianXiong extends TriggerSkill {
     return stage === DamageEffectStage.AfterDamagedEffect;
   }
 
-  canUse() {
-    return true;
+  canUse(
+    room: Room,
+    owner: Player,
+    content: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
+  ) {
+    return owner.Id === content.toId;
   }
 
   async onTrigger() {

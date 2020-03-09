@@ -40,6 +40,10 @@ export const generalDictionary: Word[] = [
   { source: 'renegade', target: '内奸' },
 ];
 
+export const skillDescriptions: Word[] = [
+  { source: 'jianxiong_description', target: '这是奸雄的技能描述' },
+]
+
 export const eventDictionary: Word[] = [
   { source: '[', target: '【' },
   { source: ']', target: '】' },
@@ -66,6 +70,7 @@ export const eventDictionary: Word[] = [
     source: 'please choose a character',
     target: '请选择一名武将',
   },
+  { source:  '{0} got judged card {2} on card {1}', target: '{0} 的 {1} 判定结果为 {2}'},
   {
     source: '{0} recovered {2} hp for {1}',
     target: '{0} 使 {1} 回复了 {2} 点体力',
@@ -80,7 +85,7 @@ export const eventDictionary: Word[] = [
     target: '{0} 对 {1} 造成了 {2} 点【{3}】伤害',
   },
   {
-    source: '{0} hits {1} for {2} {3} hp',
+    source: '{0} got hurt for {1} hp with {2} property',
     target: '{0} 受到了 {1} 点【{2}】伤害',
   },
   { source: '{0} obtains cards {1}', target: '{0} 获得了 {1} ' },
@@ -105,9 +110,6 @@ export const eventDictionary: Word[] = [
   },
   { source: '{0} recovers {1} hp', target: '{0} 恢复了 {1} 点体力' },
   { source: ',', target: '，' },
-  { source: 'normal_propery', target: '普通' },
-  { source: 'thunder_propery', target: '雷属性' },
-  { source: 'fire_propery', target: '火属性' },
   {
     source: '{0} got hits from {1} by {2} {3} hp',
     target: '{0} 受到了来自 {1} 的 {2} 点【{3}】伤害',

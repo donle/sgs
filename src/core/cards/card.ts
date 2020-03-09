@@ -1,7 +1,5 @@
-import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { GameCardExtensions } from 'core/game/game_props';
-import { Room } from 'core/room/room';
 import { Skill, ViewAsSkill } from 'core/skills/skill';
 import {
   CardId,
@@ -86,16 +84,6 @@ export abstract class Card {
 
   public isVirtualCard() {
     return false;
-  }
-
-  public afterCardUsed(
-    room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
-  ) {
-    const ownerId = room.getCardOwnerId(this.id);
-    if (ownerId !== undefined && event.fromId === ownerId) {
-      room.dropCards([this.id]);
-    }
   }
 }
 
