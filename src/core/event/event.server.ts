@@ -100,6 +100,7 @@ export interface ServerEvent extends EventUtilities {
     cardIds?: CardId[];
     damage: number;
     damageType: DamageType;
+    triggeredBySkillName: string;
     toId: PlayerId;
   };
   [GameEventIdentifiers.RecoverEvent]: {

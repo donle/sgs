@@ -92,9 +92,9 @@ export class LightningSkill extends ActiveSkill {
         damageType: DamageType.Thunder,
         damage: 3,
         toId: judgeEvent.toId,
+        triggeredBySkillName: this.name,
       };
 
-      //TODO: doesn't trigger jianxiong
       await room.damage(damageEvent);
 
       room.notify(

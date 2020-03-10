@@ -113,6 +113,22 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   public syncGameCommonRules(): void {
     this.throwUntouchableError(this.syncGameCommonRules.name);
   }
+  //Server only
+  public getOnProcessingCard(): any {
+    this.throwUntouchableError(this.getOnProcessingCard.name);
+  }
+  //Server only
+  public clearOnProcessingCard(): any {
+    this.throwUntouchableError(this.clearOnProcessingCard.name);
+  }
+  //Server only
+  public bury(): void {
+    this.throwUntouchableError(this.bury.name);
+  }
+  //Server only
+  public isBuried(): any {
+    this.throwUntouchableError(this.isBuried.name);
+  }
 
   public broadcast<T extends GameEventIdentifiers>(
     type: T,
@@ -145,10 +161,12 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   }
 
   public turnTo(playerId: PlayerId, phase: PlayerPhase) {
-    this.currentPlayer = this.getPlayerById(playerId) as ClientPlayer;
+    if (phase === PlayerPhase.PrepareStage) {
+      this.currentPlayer = this.getPlayerById(playerId) as ClientPlayer;
+    }
+
     this.currentPlayerPhase = phase;
-    //TODO: currentPhasePlayer will not always euqal currentPlayer
-    this.currentPhasePlayer = this.currentPlayer;
+    this.currentPhasePlayer = this.getPlayerById(playerId) as ClientPlayer;
   }
 
   public async gameStart(gameStartInfo: GameRunningInfo) {

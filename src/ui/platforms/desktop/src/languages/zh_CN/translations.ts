@@ -109,7 +109,6 @@ export const eventDictionary: Word[] = [
     target: '{0} 处于濒死阶段，是否对其使用一个【桃】？',
   },
   { source: '{0} recovers {1} hp', target: '{0} 恢复了 {1} 点体力' },
-  { source: ',', target: '，' },
   {
     source: '{0} got hits from {1} by {2} {3} hp',
     target: '{0} 受到了来自 {1} 的 {2} 点【{3}】伤害',
@@ -134,7 +133,7 @@ export const eventDictionary: Word[] = [
 
 export const UiDictionary = [
   { source: 'No rooms at the moment', target: '还没有玩家创建房间' },
-  { source: 'Create a room', target: '创建信房间' },
+  { source: 'Create a room', target: '创建房间' },
   { source: 'waiting', target: '等待中' },
   { source: 'playing', target: '游戏中' },
   {

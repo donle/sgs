@@ -101,6 +101,13 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>,
   ): Promise<void>;
   //Server only
+  public abstract getOnProcessingCard(): CardId | undefined;
+  //Server only
+  public abstract clearOnProcessingCard(): void;
+  //Server only
+  public abstract bury(cardId?: CardId): void;
+  //Server only
+  public abstract isBuried(cardId: CardId): boolean;
 
   //Server only
   public abstract trigger<T = never>(

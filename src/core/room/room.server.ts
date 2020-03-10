@@ -5,7 +5,7 @@ import {
   ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
-import { AllStage } from 'core/game/stage_processor';
+import { AllStage, CardUseStage } from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
 import { Player } from 'core/player/player';
 import { ServerPlayer } from 'core/player/player.server';
@@ -38,6 +38,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   private drawStack: CardId[] = [];
   private dropStack: CardId[] = [];
   private round = 0;
+  private onProcessingCard: CardId | undefined;
 
   constructor(
     protected roomId: RoomId,
@@ -226,6 +227,20 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return await this.socket.waitForResponse<T>(identifier, playerId);
   }
 
+  public getOnProcessingCard(): CardId | undefined {
+    return this.onProcessingCard;
+  }
+  public clearOnProcessingCard(): void {
+    this.onProcessingCard = undefined;
+  }
+
+  public bury(cardId: CardId | undefined) {
+    cardId !== undefined && this.dropStack.push(cardId);
+  }
+  public isBuried(cardId: CardId): boolean {
+    return this.dropStack.includes(cardId);
+  }
+
   public async equip(card: EquipCard, player: Player) {
     const prevEquipment = player.hasEquipment(card.EquipType);
     if (prevEquipment !== undefined) {
@@ -261,37 +276,51 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       from.dropCards(content.cardId);
     }
 
-    await this.gameProcessor.onHandleIncomingEvent(
+    this.onProcessingCard = content.cardId;
+    return await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.CardUseEvent,
       content,
-    );
+      async stage => {
+        if (stage === CardUseStage.AfterCardUseEffect) {
+          const cardAimEvent:
+            | ServerEventFinder<GameEventIdentifiers.AimEvent>
+            | undefined = content.toIds
+            ? {
+                fromId: content.fromId,
+                byCardId: content.cardId,
+                toIds: content.toIds,
+              }
+            : undefined;
+          if (
+            !EventPacker.isTerminated(content) &&
+            cardAimEvent !== undefined
+          ) {
+            await this.gameProcessor.onHandleIncomingEvent(
+              GameEventIdentifiers.AimEvent,
+              cardAimEvent,
+            );
+          }
 
-    const cardAimEvent:
-      | ServerEventFinder<GameEventIdentifiers.AimEvent>
-      | undefined = content.toIds
-      ? {
-          fromId: content.fromId,
-          byCardId: content.cardId,
-          toIds: content.toIds,
+          if (
+            cardAimEvent &&
+            !EventPacker.isTerminated(cardAimEvent) &&
+            !card.is(CardType.DelayedTrick)
+          ) {
+            await this.gameProcessor.onHandleIncomingEvent(
+              GameEventIdentifiers.CardEffectEvent,
+              EventPacker.recall(content),
+            );
+          }
+        } else if (stage === CardUseStage.CardUseFinishedEffect) {
+          if (!card.is(CardType.Equip) && !card.is(CardType.DelayedTrick)) {
+            this.bury(this.onProcessingCard);
+          }
+          this.clearOnProcessingCard();
         }
-      : undefined;
-    if (!EventPacker.isTerminated(content) && cardAimEvent !== undefined) {
-      await this.gameProcessor.onHandleIncomingEvent(
-        GameEventIdentifiers.AimEvent,
-        cardAimEvent,
-      );
-    }
 
-    if (
-      cardAimEvent &&
-      !EventPacker.isTerminated(cardAimEvent) &&
-      !card.is(CardType.DelayedTrick)
-    ) {
-      await this.gameProcessor.onHandleIncomingEvent(
-        GameEventIdentifiers.CardEffectEvent,
-        EventPacker.recall(content),
-      );
-    }
+        return true;
+      },
+    );
   }
 
   public async useSkill(
@@ -560,6 +589,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       GameEventIdentifiers.JudgeEvent,
       event,
     );
+
+    if (this.getCardOwnerId(event.judgeCardId) === undefined) {
+      this.bury(event.judgeCardId);
+    }
   }
 
   public syncGameCommonRules(

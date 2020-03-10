@@ -108,6 +108,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.JudgeEvent:
         await this.onHandleJudgeEvent(e as any, content);
         break;
+      case GameEventIdentifiers.AskForPeachEvent:
+        await this.onHandleAskForPeachEvent(e as any, content);
+        break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
     }
@@ -371,6 +374,14 @@ export class GameClientProcessor {
     //TODO: add animations here
     // const { judgeCardId, toId, cardId } = content;
     this.presenter.broadcastUIUpdate();
+  }
+
+  private onHandleAskForPeachEvent<T extends GameEventIdentifiers.JudgeEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    //TODO
+    console.log(type, content);
   }
 
   private async onHandleSkillUseEvent<

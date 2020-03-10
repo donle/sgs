@@ -10,7 +10,7 @@
     "@types/socket.io": "^2.1.4",
     "@types/socket.io-client": "^1.4.32",
     "prettier": "^1.19.1",
-    "ts-node": "^8.5.2",
+    "ts-node": "^8.6.2",
     "tslint": "^5.20.1",
     "typescript": "3.8.2"
   },

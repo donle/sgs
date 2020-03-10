@@ -183,7 +183,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     const toPlayer = this.room!.getPlayerById(to);
     if (!toPlayer.isOnline()) {
       const result = toPlayer.AI.onAction(this.room!, type, content);
-      
+
       const asyncResolver =
       this.asyncResponseResolver[type] &&
       this.asyncResponseResolver[type][to];
