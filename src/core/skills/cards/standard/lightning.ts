@@ -109,19 +109,23 @@ export class LightningSkill extends ActiveSkill {
     } else {
       while (true) {
         const player = room.getNextPlayer(judgeEvent.toId);
+        if (player.Id === judgeEvent.toId) {
+          break;
+        }
+
         const skip =
-          player
+        player
             .getSkills<FilterSkill>('filter')
             .find(
               skill => !skill.canBeUsedCard(judgeEvent.cardId, room, player.Id),
             ) !== undefined ||
-          player
+            player
             .getCardIds(PlayerCardsArea.JudgeArea)
             .find(
               cardId => Sanguosha.getCardById(cardId) instanceof Lightning,
             ) !== undefined;
 
-        if (skip && player.Id !== judgeEvent.toId) {
+        if (skip) {
           continue;
         }
 

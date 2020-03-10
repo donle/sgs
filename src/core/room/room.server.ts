@@ -463,59 +463,38 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     toArea: PlayerCardsArea,
   ) {
     const to = this.getPlayerById(toId);
+
     const from = fromId && this.getPlayerById(fromId);
+    if (from) {
+      from.dropCards(cardId);
+
+      this.notify(
+        GameEventIdentifiers.CardLoseEvent,
+        {
+          fromId: from.Id,
+          cardIds: [cardId],
+        },
+        from.Id,
+      );
+    }
 
     if (toArea === PlayerCardsArea.EquipArea) {
-      const card = Sanguosha.getCardById<EquipCard>(cardId);
-      const equipped = to.hasEquipment(card.EquipType);
-      if (equipped !== undefined) {
-        const event: ServerEventFinder<GameEventIdentifiers.CardDropEvent> = {
-          fromId: to.Id,
-          cardIds: [equipped],
-        };
-        await this.gameProcessor.onHandleIncomingEvent(
-          GameEventIdentifiers.CardDropEvent,
-          event,
-        );
-      }
-
       //TODO: refactor equip event trigger process if there are any skills triggered by wearing equipments
-      this.equip(card, to);
-      const equipEvent: ServerEventFinder<GameEventIdentifiers.EquipEvent> = {
-        fromId: to.Id,
-        cardId,
-      };
-      this.broadcast(GameEventIdentifiers.EquipEvent, equipEvent);
+      await this.equip(Sanguosha.getCardById<EquipCard>(cardId), to);
+    } else if (toArea === PlayerCardsArea.HandArea) {
+      await this.obtainCards([cardId], toId, fromId);
     } else {
-      if (toArea === PlayerCardsArea.HandArea) {
-        await this.gameProcessor.onHandleIncomingEvent(
-          GameEventIdentifiers.ObtainCardEvent,
-          {
-            fromId,
-            toId,
-            cardIds: [cardId],
-          },
-        );
-      } else {
-        this.broadcast<GameEventIdentifiers.MoveCardEvent>(
-          GameEventIdentifiers.MoveCardEvent,
-          {
-            fromId,
-            toId,
-            fromArea,
-            toArea,
-            cardId,
-          },
-        );
-
-        if (from) {
-          const fromAreaCards = from.getCardIds(fromArea);
-          const lostIndex = fromAreaCards.findIndex(id => id === cardId);
-          fromAreaCards.splice(lostIndex, 1);
-        }
-
-        to.getCardIds(toArea).push(cardId);
-      }
+      this.broadcast<GameEventIdentifiers.MoveCardEvent>(
+        GameEventIdentifiers.MoveCardEvent,
+        {
+          fromId,
+          toId,
+          fromArea,
+          toArea,
+          cardId,
+        },
+      );
+      to.getCardIds(toArea).push(cardId);
     }
   }
 

@@ -7,6 +7,7 @@ import { Lightning } from './lightning';
 import { NanManRuQing } from './nanmanruqing';
 import { Peach } from './peach';
 import { QingGang } from './qinggang';
+import { ShunshouQianYang } from './shunshouqianyang';
 import { Slash } from './slash';
 import { WanJianQiFa } from './wanjianqifa';
 import { ZhuGeLianNu } from './zhugeliannu';
@@ -79,8 +80,17 @@ export const StandardCardPackage: (
     new Lightning(index++, 1, CardSuit.Spade),
 
     new GuoHeChaiQiao(index++, 3, CardSuit.Spade),
+    new GuoHeChaiQiao(index++, 4, CardSuit.Spade),
+    new GuoHeChaiQiao(index++, 12, CardSuit.Spade),
     new GuoHeChaiQiao(index++, 3, CardSuit.Club),
+    new GuoHeChaiQiao(index++, 4, CardSuit.Club),
     new GuoHeChaiQiao(index++, 12, CardSuit.Heart),
+
+    new ShunshouQianYang(index++, 3, CardSuit.Spade),
+    new ShunshouQianYang(index++, 4, CardSuit.Spade),
+    new ShunshouQianYang(index++, 11, CardSuit.Spade),
+    new ShunshouQianYang(index++, 3, CardSuit.Diamond),
+    new ShunshouQianYang(index++, 4, CardSuit.Diamond),
 
     new ZiXin(index++, 13, CardSuit.Diamond),
     new QingGang(index++, 6, CardSuit.Spade),

@@ -32,7 +32,7 @@ export class RoomStore {
   clientPlayerId: PlayerId;
 
   @mobx.observable.ref
-  gameDialog: JSX.Element | undefined;
+  selectorDialog: JSX.Element | undefined;
 
   @mobx.observable.ref
   incomingConversation: JSX.Element | undefined;
@@ -169,12 +169,12 @@ export class RoomPresenter {
 
   @mobx.action
   createDialog = (title: string | JSX.Element, content: JSX.Element) => {
-    this.store.gameDialog = (
-      <div className={styles.gameDialog}>
+    this.store.selectorDialog = (
+      <div className={styles.selectorDialog}>
         {typeof title === 'string' ? (
-          <h4 dangerouslySetInnerHTML={{ __html: title }} />
+          <h4 className={styles.selectorTitle} dangerouslySetInnerHTML={{ __html: title }} />
         ) : (
-          <h4>{title}</h4>
+          <h4 className={styles.selectorTitle}>{title}</h4>
         )}
         {content}
       </div>
@@ -183,7 +183,7 @@ export class RoomPresenter {
 
   @mobx.action
   closeDialog() {
-    this.store.gameDialog = undefined;
+    this.store.selectorDialog = undefined;
   }
 
   @mobx.action

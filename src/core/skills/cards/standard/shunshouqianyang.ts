@@ -12,9 +12,9 @@ import { ActiveSkill, CommonSkill, TriggerableTimes } from 'core/skills/skill';
 
 @CommonSkill
 @TriggerableTimes(INFINITE_TRIGGERING_TIMES)
-export class GuoHeChaiQiaoSkill extends ActiveSkill {
+export class ShunShouQianYangSkill extends ActiveSkill {
   constructor() {
-    super('guohechaiqiao', 'guohechaiqiao_description');
+    super('shunshouqianyang', 'shunshouqianyang_description');
   }
   public canUse() {
     return true;
@@ -87,20 +87,13 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill {
       ];
     }
 
-    const dropEvent: ServerEventFinder<GameEventIdentifiers.CardDropEvent> = {
-      fromId: chooseCardEvent.toId,
-      cardIds: [response.selectedCard],
-    };
-    if (response.fromArea !== PlayerCardsArea.JudgeArea) {
-      await room.dropCards([response.selectedCard], chooseCardEvent.toId);
-    } else {
-      room.getPlayerById(chooseCardEvent.toId).dropCards(response.selectedCard);
-      room.notify(
-        GameEventIdentifiers.CardDropEvent,
-        dropEvent,
-        chooseCardEvent.toId,
-      );
-    }
+    await room.moveCard(
+      response.selectedCard,
+      chooseCardEvent.toId,
+      chooseCardEvent.fromId,
+      response.fromArea,
+      PlayerCardsArea.HandArea,
+    );
     return true;
   }
 }

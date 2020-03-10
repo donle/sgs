@@ -130,6 +130,7 @@ export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.CardResponseEvent,
   GameEventIdentifiers.CardUseEvent,
   GameEventIdentifiers.CardEffectEvent,
+  GameEventIdentifiers.CardLoseEvent,
   GameEventIdentifiers.CardDisplayEvent,
   GameEventIdentifiers.DrawCardEvent,
   GameEventIdentifiers.ObtainCardEvent,

@@ -123,7 +123,7 @@ export class RoomPage extends React.Component<
   render() {
     return (
       <div className={styles.room}>
-        {this.store.gameDialog}
+        {this.store.selectorDialog}
 
         <div className={styles.incomingConversation}>
           {this.store.incomingConversation}

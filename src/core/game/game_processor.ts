@@ -520,7 +520,7 @@ export class GameProcessor {
             '{0} obtains cards {1}' + (event.fromId ? ' from {2}' : ''),
             to.Character.Name,
             TranslationPack.patchCardInTranslation(...event.cardIds),
-            event.fromId ? this.room.getPlayerById(event.fromId).Name : '',
+            event.fromId ? this.room.getPlayerById(event.fromId).Character.Name : '',
           ).extract();
           this.room.broadcast(identifier, event);
         }

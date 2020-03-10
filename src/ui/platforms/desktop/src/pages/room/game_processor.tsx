@@ -1,3 +1,4 @@
+import { Card } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardChoosingOptions } from 'core/cards/libs/card_props';
 import { Character, CharacterId } from 'core/characters/character';
@@ -9,15 +10,14 @@ import {
 } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
+import { PlayerCardsArea } from 'core/player/player_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as React from 'react';
 import { Action } from './action';
+import { ClientCard } from './card/card';
 import { CharacterCard } from './character/character';
 import styles from './room.module.css';
 import { RoomPresenter, RoomStore } from './room.presenter';
-import { Card } from 'core/cards/card';
-import { ClientCard } from './card/card';
-import { PlayerCardsArea } from 'core/player/player_props';
 
 export class GameClientProcessor {
   private actionHandler: Action;
@@ -77,7 +77,7 @@ export class GameClientProcessor {
         this.onHandleCardDropEvent(e as any, content);
         break;
       case GameEventIdentifiers.ObtainCardEvent:
-        this.onHandlObtainCardEvent(e as any, content);
+        this.onHandelObtainCardEvent(e as any, content);
         break;
       case GameEventIdentifiers.EquipEvent:
         this.onHandleEquipEvent(e as any, content);
@@ -117,6 +117,9 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.AskForChoosingCardFromPlayerEvent:
         await this.onHandleAskForChoosingCardFromPlayerEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.CardLoseEvent:
+        await this.onHandleCardLoseEvent(e as any, content);
         break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
@@ -183,11 +186,11 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.presenter.ClientPlayer!.dropCards(...content.cardIds);
+    this.store.room.getPlayerById(content.fromId).dropCards(...content.cardIds);
     this.presenter.broadcastUIUpdate();
   }
 
-  private onHandlObtainCardEvent<
+  private onHandelObtainCardEvent<
     T extends GameEventIdentifiers.ObtainCardEvent
   >(type: T, content: ServerEventFinder<T>) {
     const { cardIds, toId } = content;
@@ -318,13 +321,9 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    if (this.store.clientPlayerId === content.playerId) {
-      this.presenter.ClientPlayer?.obtainCardIds(...content.cardIds);
-    } else {
-      this.store.room
-        .getPlayerById(content.playerId)
-        .obtainCardIds(...content.cardIds);
-    }
+    this.store.room
+      .getPlayerById(content.playerId)
+      .obtainCardIds(...content.cardIds);
     this.presenter.broadcastUIUpdate();
   }
 
@@ -368,7 +367,9 @@ export class GameClientProcessor {
       const lostIndex = areaCards.findIndex(
         cardId => cardId === content.cardId,
       );
-      areaCards.splice(lostIndex, 1);
+      if (lostIndex >= 0) {
+        areaCards.splice(lostIndex, 1);
+      }
     }
 
     this.presenter.broadcastUIUpdate();
@@ -403,7 +404,6 @@ export class GameClientProcessor {
         selectedCard: card instanceof Card ? card.Id : undefined,
         selectedCardIndex: card instanceof Card ? undefined : card,
       };
-
       this.store.room.broadcast(type, event);
     };
 
@@ -411,6 +411,15 @@ export class GameClientProcessor {
       this.translator.tr('please choose a card'),
       this.getCardSelector(content.options, onSelectedCard),
     );
+  }
+
+  private onHandleCardLoseEvent<T extends GameEventIdentifiers.CardLoseEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const { fromId, cardIds } = content;
+    this.store.room.getPlayerById(fromId).dropCards(...cardIds);
+    this.presenter.broadcastUIUpdate();
   }
 
   private async onHandleSkillUseEvent<
@@ -431,13 +440,17 @@ export class GameClientProcessor {
       onClick?(card: Card | number, fromArea: PlayerCardsArea): void;
     }) => {
       const onSelected = (selected: boolean) => {
-        selected && props.onClick && props.onClick(props.card!, props.from);
+        selected &&
+          props.onClick &&
+          props.onClick(props.card || props.index!, props.from);
       };
 
       return (
         <ClientCard
+          className={styles.selectorCard}
           card={props.card}
           translator={this.translator}
+          disabled={false}
           onSelected={onSelected}
         />
       );
@@ -449,7 +462,12 @@ export class GameClientProcessor {
         const cardLine: JSX.Element[] = [];
         for (let i = 0; i < cardIds; i++) {
           cardLine.push(
-            <CardSlot from={parseInt(area, 10)} key={i} onClick={onClick} />,
+            <CardSlot
+              from={parseInt(area, 10)}
+              index={i}
+              key={i}
+              onClick={onClick}
+            />,
           );
         }
         optionCardsLine.push(
@@ -467,6 +485,7 @@ export class GameClientProcessor {
               from={parseInt(area, 10)}
               key={cardId}
               card={Sanguosha.getCardById(cardId)}
+              onClick={onClick}
             />,
           );
           optionCardsLine.push(

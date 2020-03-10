@@ -12,6 +12,7 @@ export const cardDictionary: Word[] = [
   { source: 'lightning', target: '闪电' },
   { source: 'zhugeliannu', target: '诸葛连弩' },
   { source: 'guohechaiqiao', target: '过河拆桥' },
+  { source: 'shunshouqianyang', target: '顺手牵羊' },
 ];
 
 export const characterDictionary: Word[] = [

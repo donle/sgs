@@ -250,14 +250,20 @@ export abstract class Player implements PlayerInfo {
       PlayerCardsArea.JudgeArea,
     ];
     const droppedCardIds: CardId[] = [];
+    let hasDropped = false;
     for (const playerCardsArea of playerCardsAreas) {
       const areaCards = this.getCardIds(playerCardsArea);
       for (const card of cards) {
         const index = areaCards.findIndex(areaCard => areaCard === card);
         if (index >= 0) {
           droppedCardIds.push(areaCards.splice(index, 1)[0]);
+          hasDropped = true;
         }
       }
+    }
+
+    if (!hasDropped) {
+      throw new Error(`Can't drop cards ${cards} from player ${this.Name}`);
     }
 
     return droppedCardIds;

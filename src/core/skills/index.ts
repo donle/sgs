@@ -8,6 +8,7 @@ export { ZiXinSkill } from './cards/standard/zixin';
 export { QingGangSkill } from './cards/standard/qinggang';
 export { LightningSkill } from './cards/standard/lightning';
 export { GuoHeChaiQiaoSkill } from './cards/standard/guohechaiqiao';
+export { ShunShouQianYangSkill } from './cards/standard/shunshouqianyang';
 export { Hujia } from './characters/standard/hujia';
 export { JianXiong } from './characters/standard/jianxiong';
 export { JiJiang, JiJiangShadow } from './characters/standard/jijiang';
