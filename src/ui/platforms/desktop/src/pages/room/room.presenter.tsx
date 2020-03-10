@@ -168,7 +168,7 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  createDialog(title: string | JSX.Element, content: JSX.Element) {
+  createDialog = (title: string | JSX.Element, content: JSX.Element) => {
     this.store.gameDialog = (
       <div className={styles.gameDialog}>
         {typeof title === 'string' ? (

@@ -8,9 +8,7 @@ import styles from './card.module.css';
 import { CardSuitItem } from './card_suit';
 
 export type ClientCardProps = {
-  card: Card;
-  soundTracks?: string[];
-  image: string;
+  card?: Card;
   translator: ClientTranslationModule;
   className?: string;
   disabled?: boolean;
@@ -21,6 +19,8 @@ export type ClientCardProps = {
 export class ClientCard extends React.Component<ClientCardProps> {
   @mobx.observable.ref
   private selected: boolean = false;
+
+  private soundTracks: string[] = [];
 
   readonly onClick = mobx.action(() => {
     if (this.props.disabled === false) {
@@ -38,9 +38,8 @@ export class ClientCard extends React.Component<ClientCardProps> {
   }
 
   playAudio(): string {
-    const { soundTracks = [] } = this.props;
-    const randomIndex = Math.round(Math.random() * soundTracks.length);
-    return soundTracks[randomIndex];
+    const randomIndex = Math.round(Math.random() * this.soundTracks.length);
+    return this.soundTracks[randomIndex];
   }
 
   render() {
@@ -52,11 +51,21 @@ export class ClientCard extends React.Component<ClientCardProps> {
         })}
         onClick={this.onClick}
       >
-        <div className={styles.cornerTag}>
-          <CardSuitItem suit={card.Suit} className={styles.cardSuit} />
-          <span>{ClientTranslationModule.getCardNumber(card.CardNumber)}</span>
-        </div>
-        <span>{translator.tr(card.Name)}</span>
+        {card ? (
+          <>
+            <div className={styles.cornerTag}>
+              <CardSuitItem suit={card.Suit} className={styles.cardSuit} />
+              <span>
+                {ClientTranslationModule.getCardNumber(card.CardNumber)}
+              </span>
+            </div>
+            <span>{translator.tr(card.Name)}</span>
+          </>
+        ) : (
+          <div className={styles.emptyCard}>
+            {this.props.translator.tr('New QSanguosha')}
+          </div>
+        )}
       </div>
     );
   }

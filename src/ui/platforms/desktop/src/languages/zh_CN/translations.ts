@@ -11,6 +11,7 @@ export const cardDictionary: Word[] = [
   { source: 'wanjianqifa', target: '万箭齐发' },
   { source: 'lightning', target: '闪电' },
   { source: 'zhugeliannu', target: '诸葛连弩' },
+  { source: 'guohechaiqiao', target: '过河拆桥' },
 ];
 
 export const characterDictionary: Word[] = [
@@ -42,7 +43,7 @@ export const generalDictionary: Word[] = [
 
 export const skillDescriptions: Word[] = [
   { source: 'jianxiong_description', target: '这是奸雄的技能描述' },
-]
+];
 
 export const eventDictionary: Word[] = [
   { source: '[', target: '【' },
@@ -70,7 +71,10 @@ export const eventDictionary: Word[] = [
     source: 'please choose a character',
     target: '请选择一名武将',
   },
-  { source:  '{0} got judged card {2} on card {1}', target: '{0} 的 {1} 判定结果为 {2}'},
+  {
+    source: '{0} got judged card {2} on card {1}',
+    target: '{0} 的 {1} 判定结果为 {2}',
+  },
   {
     source: '{0} recovered {2} hp for {1}',
     target: '{0} 使 {1} 回复了 {2} 点体力',
@@ -101,6 +105,7 @@ export const eventDictionary: Word[] = [
     source: '{0} used card {1} to {2}',
     target: '{0} 对 {2} 使用了一张 {1}',
   },
+  { source: 'please choose a card', target: '请选择一张卡牌' },
   { source: '{0} obtains card {1}', target: '{0} 获得了 {1}' },
   { source: '{0} responses card {1}', target: '{0} 打出了一张 {1}' },
   { source: 'please drop {0} cards', target: '请弃置 {0} 张牌' },

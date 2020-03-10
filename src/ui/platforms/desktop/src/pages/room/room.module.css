@@ -62,3 +62,10 @@
     display: flex;
     padding: 4px;
 }
+
+
+.cardLine {
+    margin: 8px;
+    display: flex;
+    justify-content: space-between;
+}

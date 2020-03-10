@@ -104,7 +104,6 @@ export class Dashboard extends React.Component<DashboardProps> {
             !this.props.cardEnableMatcher ||
             !this.props.cardEnableMatcher(PlayerCardsArea.HandArea)(card)
           }
-          image={''}
         />
       );
     });

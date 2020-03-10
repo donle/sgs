@@ -152,6 +152,7 @@ export class Action {
   };
 
   private readonly onActionOfActiveSkill = (
+    containerCard: Card,
     skill: ActiveSkill,
     playerId: PlayerId,
   ) => {
@@ -162,6 +163,7 @@ export class Action {
           this.store.room,
           player.Id,
           this.selectedTargets.map(p => p.Id),
+          containerCard.Id,
         ) &&
           !skill.targetFilter(
             this.store.room,
@@ -180,6 +182,7 @@ export class Action {
             this.store.room,
             card.Id,
             this.selectedActionCards.map(c => c.Id),
+            containerCard.Id,
           )
         );
       },
@@ -456,7 +459,7 @@ export class Action {
 
       const skill = this.selectedPlayCard?.Skill;
       if (skill instanceof ActiveSkill) {
-        this.onActionOfActiveSkill(skill, who);
+        this.onActionOfActiveSkill(this.selectedPlayCard!, skill, who);
       }
 
       this.presenter.broadcastUIUpdate();

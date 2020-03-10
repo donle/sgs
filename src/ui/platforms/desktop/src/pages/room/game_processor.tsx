@@ -1,4 +1,5 @@
 import { EquipCard } from 'core/cards/equip_card';
+import { CardChoosingOptions } from 'core/cards/libs/card_props';
 import { Character, CharacterId } from 'core/characters/character';
 import {
   ClientEventFinder,
@@ -14,6 +15,9 @@ import { Action } from './action';
 import { CharacterCard } from './character/character';
 import styles from './room.module.css';
 import { RoomPresenter, RoomStore } from './room.presenter';
+import { Card } from 'core/cards/card';
+import { ClientCard } from './card/card';
+import { PlayerCardsArea } from 'core/player/player_props';
 
 export class GameClientProcessor {
   private actionHandler: Action;
@@ -110,6 +114,9 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.AskForPeachEvent:
         await this.onHandleAskForPeachEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.AskForChoosingCardFromPlayerEvent:
+        await this.onHandleAskForChoosingCardFromPlayerEvent(e as any, content);
         break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
@@ -384,11 +391,93 @@ export class GameClientProcessor {
     console.log(type, content);
   }
 
+  private onHandleAskForChoosingCardFromPlayerEvent<
+    T extends GameEventIdentifiers.AskForChoosingCardFromPlayerEvent
+  >(type: T, content: ServerEventFinder<T>) {
+    //TODO: fix card selector not working issue
+    const onSelectedCard = (card: Card | number, fromArea: PlayerCardsArea) => {
+      this.presenter.closeDialog();
+
+      const event: ClientEventFinder<T> = {
+        fromArea,
+        selectedCard: card instanceof Card ? card.Id : undefined,
+        selectedCardIndex: card instanceof Card ? undefined : card,
+      };
+
+      this.store.room.broadcast(type, event);
+    };
+
+    this.presenter.createDialog(
+      this.translator.tr('please choose a card'),
+      this.getCardSelector(content.options, onSelectedCard),
+    );
+  }
+
   private async onHandleSkillUseEvent<
     T extends GameEventIdentifiers.SkillUseEvent
   >(type: T, content: ServerEventFinder<T>) {
     await this.store.room.useSkill(content);
     this.presenter.broadcastUIUpdate();
+  }
+
+  private getCardSelector(
+    options: CardChoosingOptions,
+    onClick: (card: Card | number, fromArea: PlayerCardsArea) => void,
+  ) {
+    const CardSlot = (props: {
+      from: PlayerCardsArea;
+      card?: Card;
+      index?: number;
+      onClick?(card: Card | number, fromArea: PlayerCardsArea): void;
+    }) => {
+      const onSelected = (selected: boolean) => {
+        selected && props.onClick && props.onClick(props.card!, props.from);
+      };
+
+      return (
+        <ClientCard
+          card={props.card}
+          translator={this.translator}
+          onSelected={onSelected}
+        />
+      );
+    };
+
+    const optionCardsLine: JSX.Element[] = [];
+    for (const [area, cardIds] of Object.entries(options)) {
+      if (typeof cardIds === 'number') {
+        const cardLine: JSX.Element[] = [];
+        for (let i = 0; i < cardIds; i++) {
+          cardLine.push(
+            <CardSlot from={parseInt(area, 10)} key={i} onClick={onClick} />,
+          );
+        }
+        optionCardsLine.push(
+          <div className={styles.cardLine} key={optionCardsLine.length}>
+            {cardLine}
+          </div>,
+        );
+      } else if (cardIds === undefined) {
+        continue;
+      } else {
+        const cardLine: JSX.Element[] = [];
+        for (const cardId of cardIds) {
+          cardLine.push(
+            <CardSlot
+              from={parseInt(area, 10)}
+              key={cardId}
+              card={Sanguosha.getCardById(cardId)}
+            />,
+          );
+          optionCardsLine.push(
+            <div className={styles.cardLine} key={optionCardsLine.length}>
+              {cardLine}
+            </div>,
+          );
+        }
+      }
+    }
+    return <div className={styles.cardSelector}>{optionCardsLine}</div>;
   }
 
   private getCharacterSelector(

@@ -319,16 +319,18 @@ export abstract class ActiveSkill extends Skill {
   public abstract targetFilter(room: Room, targets: PlayerId[]): boolean;
   public abstract cardFilter(room: Room, cards: CardId[]): boolean;
   public abstract isAvailableCard(
-    owner: PlayerId | CardId,
+    owner: PlayerId,
     room: Room,
     cardId: CardId,
     selectedCards: CardId[],
+    containerCard?: CardId,
   ): boolean;
   public abstract isAvailableTarget(
-    owner: PlayerId | CardId,
+    owner: PlayerId,
     room: Room,
     target: PlayerId,
     selectedTargets: PlayerId[],
+    containerCard?: CardId,
   ): boolean;
 
   public isRefreshAt(stage: AllStage): boolean {
@@ -376,6 +378,7 @@ export abstract class ViewAsSkill extends Skill {
     room: Room,
     pendingCardId: CardId,
     selectedCards: CardId[],
+    containerCard?: CardId,
   ): boolean;
 
   public abstract isAvailableTargetFor(
@@ -384,6 +387,7 @@ export abstract class ViewAsSkill extends Skill {
     room: Room,
     pendingTargetId: PlayerId,
     selectedTargets: PlayerId[],
+    containerCard?: CardId,
   ): boolean;
 
   public targetFilter(room: Room, targets: PlayerId[]): boolean {
@@ -409,12 +413,20 @@ export abstract class ViewAsSkill extends Skill {
     room: Room,
     cardId: CardId,
     selectedCards: CardId[],
+    containerCard?: CardId | undefined,
   ): boolean {
     let validCard = false;
     for (const cardName of this.canViewAs()) {
       validCard =
         validCard ||
-        this.isAvailableCardFor(cardName, owner, room, cardId, selectedCards);
+        this.isAvailableCardFor(
+          cardName,
+          owner,
+          room,
+          cardId,
+          selectedCards,
+          containerCard,
+        );
     }
 
     return validCard;
@@ -425,6 +437,7 @@ export abstract class ViewAsSkill extends Skill {
     room: Room,
     target: PlayerId,
     selectedTargets: PlayerId[],
+    containerCard?: CardId | undefined,
   ): boolean {
     let validTarget = false;
     for (const cardName of this.canViewAs()) {
@@ -436,6 +449,7 @@ export abstract class ViewAsSkill extends Skill {
           room,
           target,
           selectedTargets,
+          containerCard,
         );
     }
 

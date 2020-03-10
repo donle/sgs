@@ -188,7 +188,8 @@ export interface ServerEvent extends EventUtilities {
     cardIds: CardId[];
   };
   [GameEventIdentifiers.AskForChoosingCardFromPlayerEvent]: {
-    chooseFromId?: PlayerId;
+    fromId: PlayerId;
+    toId: PlayerId;
     options: CardChoosingOptions;
   };
   [GameEventIdentifiers.AskForInvokeEvent]: {

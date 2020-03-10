@@ -23,9 +23,9 @@ export const enum PlayerRole {
 }
 
 export const enum PlayerCardsArea {
-  JudgeArea,
-  EquipArea,
   HandArea,
+  EquipArea,
+  JudgeArea,
   OutsideArea,
 }
 
