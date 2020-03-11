@@ -204,11 +204,20 @@ export class Action {
     });
   }
 
-  async onSelectCardAction(
+  async onSelectCardAction<T extends GameEventIdentifiers>(
     from: PlayerCardsArea[],
     requiredNumberOfCards: number,
+    content: ServerEventFinder<T>,
   ) {
     return new Promise<CardId[]>((resolve, reject) => {
+      if (!EventPacker.isUncancellabelEvent(content)) {
+        this.presenter.enableActionButton('cancel');
+        this.presenter.defineCancelButtonActions(() => {
+          this.presenter.setupClientPlayerCardActionsMatcher(() => () => false);
+          resolve([]);
+        });
+      }
+
       const selectedCards: CardId[] = [];
       this.presenter.setupClientPlayerCardActionsMatcher(area => card => {
         if (!from.includes(area)) {
@@ -243,7 +252,13 @@ export class Action {
 
   onResponseCardAction(
     content: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>,
+    translator: ClientTranslationModule,
   ) {
+    this.presenter.createIncomingConversation({
+      conversation: content.conversation,
+      translator,
+    });
+
     let selectedCard: Card | undefined;
 
     if (EventPacker.isUncancellabelEvent(content)) {
@@ -261,6 +276,7 @@ export class Action {
           ),
         );
 
+        this.presenter.closeIncomingConversation();
         this.endAction();
       });
     }
@@ -288,6 +304,7 @@ export class Action {
         ),
       );
 
+      this.presenter.closeIncomingConversation();
       this.presenter.disableActionButton('cancel');
       this.endAction();
     });
@@ -305,55 +322,17 @@ export class Action {
     });
   }
 
-  onReponseToUseWuXieKeJi(who: PlayerId) {
-    this.onPlayAction(who, new CardMatcher({ name: ['wuxiekeji'] }));
-
-    this.presenter.defineConfirmButtonActions(() => {
-      const playEvent = this.createCardOrSkillUseEvent(who);
-      const cardUseEvent = playEvent.end
-        ? undefined
-        : playEvent.eventName === GameEventIdentifiers.CardUseEvent
-        ? playEvent.event
-        : undefined;
-
-      const event: ClientEventFinder<GameEventIdentifiers.AskForWuXieKeJiEvent> = {
-        fromId: who,
-        cardId: cardUseEvent && cardUseEvent.cardId,
-      };
-
-      this.store.room.broadcast(
-        GameEventIdentifiers.AskForWuXieKeJiEvent,
-        EventPacker.createIdentifierEvent(
-          GameEventIdentifiers.AskForWuXieKeJiEvent,
-          event,
-        ),
-      );
-
-      this.presenter.disableActionButton('cancel');
-      this.endAction();
-    });
-
-    this.presenter.defineCancelButtonActions(() => {
-      const event: ClientEventFinder<GameEventIdentifiers.AskForWuXieKeJiEvent> = {
-        fromId: who,
-      };
-
-      this.store.room.broadcast(
-        GameEventIdentifiers.AskForWuXieKeJiEvent,
-        EventPacker.createIdentifierEvent(
-          GameEventIdentifiers.AskForWuXieKeJiEvent,
-          event,
-        ),
-      );
-      this.endAction();
-    });
-  }
-
   onResponsiveUseCard(
     content: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>,
+    translator: ClientTranslationModule,
   ) {
     const who = this.presenter.ClientPlayer!.Id;
     this.onPlayAction(who, new CardMatcher(content.cardMatcher));
+
+    this.presenter.createIncomingConversation({
+      conversation: content.conversation,
+      translator,
+    })
 
     this.presenter.defineConfirmButtonActions(() => {
       const playEvent = this.createCardOrSkillUseEvent(who);
@@ -375,6 +354,7 @@ export class Action {
           event,
         ),
       );
+      this.presenter.closeIncomingConversation();
       this.presenter.disableActionButton('cancel');
       this.endAction();
     });
@@ -394,6 +374,7 @@ export class Action {
           ),
         );
 
+        this.presenter.closeIncomingConversation();
         this.endAction();
       });
     }

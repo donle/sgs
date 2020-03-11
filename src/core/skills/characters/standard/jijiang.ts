@@ -85,6 +85,12 @@ export class JiJiang extends ActiveSkill {
       const jijiangEvent = {
         cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
         triggeredBySkillName: this.name,
+        conversation: TranslationPack.translationJsonPatcher(
+          '{0} used skill {1} to you, please response a {2} card',
+          room.getPlayerById(skillUseEvent.fromId).Character.Name,
+          this.name,
+          'slash',
+        ).extract(),
       };
 
       room.notify(
@@ -150,6 +156,12 @@ export class JiJiangShadow extends ResponsiveSkill {
       const jijiangEvent = {
         cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
         triggeredBySkillName: this.name,
+        conversation: TranslationPack.translationJsonPatcher(
+          '{0} used skill {1} to you, please response a {2} card',
+          room.getPlayerById(skillUseEvent.fromId).Character.Name,
+          this.name,
+          'slash',
+        ).extract(),
       };
 
       room.notify(

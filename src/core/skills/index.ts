@@ -3,12 +3,14 @@ export { NanManRuQingSkill } from './cards/standard/nanmanruqing';
 export { PeachSkill } from './cards/standard/peach';
 export { SlashSkill } from './cards/standard/slash';
 export { WanJianQiFaSkill } from './cards/standard/wanjianqifa';
-export { ZhuGeLianNuSlashSkill } from './cards/standard/zhugeliannu_slash';
+export { ZhuGeLianNuSlashSkill } from './cards/standard/zhugeliannu';
 export { ZiXinSkill } from './cards/standard/zixin';
 export { QingGangSkill } from './cards/standard/qinggang';
 export { LightningSkill } from './cards/standard/lightning';
 export { GuoHeChaiQiaoSkill } from './cards/standard/guohechaiqiao';
 export { ShunShouQianYangSkill } from './cards/standard/shunshouqianyang';
+export { WuXieKeJiSkill } from './cards/standard/wuxiekeji';
+
 export { Hujia } from './characters/standard/hujia';
 export { JianXiong } from './characters/standard/jianxiong';
 export { JiJiang, JiJiangShadow } from './characters/standard/jijiang';

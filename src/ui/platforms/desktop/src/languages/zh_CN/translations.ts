@@ -13,6 +13,7 @@ export const cardDictionary: Word[] = [
   { source: 'zhugeliannu', target: '诸葛连弩' },
   { source: 'guohechaiqiao', target: '过河拆桥' },
   { source: 'shunshouqianyang', target: '顺手牵羊' },
+  { source: 'wuxiekeji', target: '无懈可击' }
 ];
 
 export const characterDictionary: Word[] = [
@@ -84,6 +85,14 @@ export const eventDictionary: Word[] = [
     source: '{0} recovered {1} hp',
     target: '{0} 回复了 {1} 点体力',
   },
+  {
+    source: '{0} used {1} to you, please use a {2} card',
+    target: '{0} 对你使用了 {1}, 使用一张 【{2}】来响应',
+  },
+  {
+    source: 'please use a {0} card to response {1}',
+    target: '使用一张【{1}】来响应 {0}',
+  },
   { source: '{0} used skill {1}', target: '{0} 使用了技能【{1}】' },
   {
     source: '{0} hits {1} {2} hp of damage type {3}',
@@ -98,6 +107,7 @@ export const eventDictionary: Word[] = [
     source: '{0} obtains cards {1} from {2}',
     target: '{0} 从 {2} 获得了 {1} ',
   },
+  { source: 'please drop {0} cards', target: '请弃置 {1} 张牌' },
   { source: '{0} drops cards {1}', target: '{0} 弃置了 {1}' },
   { source: '{0} cards are dropped', target: '{0} 进入了弃牌堆' },
   { source: '{0} used card {1}', target: '{0} 使用了一张 {1}' },
@@ -120,8 +130,21 @@ export const eventDictionary: Word[] = [
     target: '{0} 受到了来自 {1} 的 {2} 点【{3}】伤害',
   },
   {
-    source: 'do you want to use nullification to {1} from {0}',
-    target: '是否对 {0} 的 {1} 使用【无懈可击】',
+    source: 'do you wanna use {0} for {1} from {2}',
+    target: '是否对 {2} 的 {1} 使用 {0}',
+  },
+  {
+    source: 'do you wanna use {0} for {1}',
+    target: '是否对 {1} 使用 {0}',
+  },
+  {
+    source: '{0} used {1} to you, please use a {2} card',
+    target: '{0} 对你使用了 {1}, 打出一张 【{2}】来响应',
+  },
+  { source: 'please response a {0} card', target: '是否打出一张 【{0}】响应' },
+  {
+    source: '{0} used skill {1} to you, please response a {2} card',
+    target: '{0} 对你使用了 【{1}】, 打出一张 {2} 来响应',
   },
   {
     source: 'player {0} join in the room',

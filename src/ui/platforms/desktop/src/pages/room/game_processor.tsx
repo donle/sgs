@@ -11,6 +11,7 @@ import {
 import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { PlayerCardsArea } from 'core/player/player_props';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as React from 'react';
 import { Action } from './action';
@@ -95,10 +96,7 @@ export class GameClientProcessor {
         this.onHandleAskForCardResponseEvent(e as any, content);
         break;
       case GameEventIdentifiers.AskForCardDropEvent:
-        this.onHandleAskForCardDropEvent(e as any, content);
-        break;
-      case GameEventIdentifiers.AskForWuXieKeJiEvent:
-        this.onHandleAskForWuXieKeJiEvent(e as any, content);
+        await this.onHandleAskForCardDropEvent(e as any, content);
         break;
       case GameEventIdentifiers.AskForInvokeEvent:
         this.onHandleAskForInvokeEvent(e as any, content);
@@ -129,44 +127,41 @@ export class GameClientProcessor {
   private onHandleAskForCardResponseEvent<
     T extends GameEventIdentifiers.AskForCardResponseEvent
   >(type: T, content: ServerEventFinder<T>) {
-    this.actionHandler.onResponseCardAction(content);
+    this.actionHandler.onResponseCardAction(content, this.translator);
   }
 
-  private onHandleAskForCardDropEvent<
+  private async onHandleAskForCardDropEvent<
     T extends GameEventIdentifiers.AskForCardDropEvent
   >(type: T, content: ServerEventFinder<T>) {
-    if (!EventPacker.isUncancellabelEvent(content)) {
-      this.presenter.enableActionButton('cancel');
-      this.presenter.defineCancelButtonActions(() => {
-        const event: ClientEventFinder<T> = {
-          fromId: content.toId,
-          droppedCards: [],
-        };
-        this.store.room.broadcast(
-          type,
-          EventPacker.createIdentifierEvent(type, event),
-        );
-      });
-    }
+    this.presenter.createIncomingConversation({
+      conversation: TranslationPack.translationJsonPatcher(
+        'please drop {0} cards',
+        content.cardAmount,
+      ).extract(),
+      translator: this.translator,
+    });
 
-    this.actionHandler
-      .onSelectCardAction(content.fromArea, content.cardAmount)
-      .then(selectedCards => {
-        const event: ClientEventFinder<T> = {
-          fromId: content.toId,
-          droppedCards: selectedCards,
-        };
-        this.store.room.broadcast(
-          type,
-          EventPacker.createIdentifierEvent(type, event),
-        );
-      });
+    const selectedCards = await this.actionHandler.onSelectCardAction(
+      content.fromArea,
+      content.cardAmount,
+      content,
+    );
+
+    this.presenter.closeIncomingConversation();
+    const event: ClientEventFinder<T> = {
+      fromId: content.toId,
+      droppedCards: selectedCards,
+    };
+    this.store.room.broadcast(
+      type,
+      EventPacker.createIdentifierEvent(type, event),
+    );
   }
 
   private onHandleAskForCardUseEvent<
     T extends GameEventIdentifiers.AskForCardUseEvent
   >(type: T, content: ServerEventFinder<T>) {
-    this.actionHandler.onResponsiveUseCard(content);
+    this.actionHandler.onResponsiveUseCard(content, this.translator);
   }
 
   private onHandleCardResponseEvent<
@@ -343,12 +338,6 @@ export class GameClientProcessor {
   >(type: T, content: ServerEventFinder<T>) {
     this.actionHandler.enableFinishButton(content.fromId);
     this.actionHandler.onPlayAction(content.fromId);
-  }
-
-  private onHandleAskForWuXieKeJiEvent<
-    T extends GameEventIdentifiers.AskForWuXieKeJiEvent
-  >(type: T, content: ServerEventFinder<T>) {
-    this.actionHandler.onReponseToUseWuXieKeJi(this.presenter.ClientPlayer!.Id);
   }
 
   private onHandleMoveCardEvent<T extends GameEventIdentifiers.MoveCardEvent>(

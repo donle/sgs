@@ -18,7 +18,6 @@ import {
 import { Player } from 'core/player/player';
 import { PlayerId, PlayerRole } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { TranslationPack } from 'core/translations/translation_json_tool';
 
 export const enum SkillType {
   Common,
@@ -217,6 +216,15 @@ export abstract class Skill {
     content?: ServerEventFinder<GameEventIdentifiers>,
   ): boolean;
 
+  public async onEffectRejected(
+    room: Room,
+    event: ServerEventFinder<
+      | GameEventIdentifiers.SkillEffectEvent
+      | GameEventIdentifiers.CardEffectEvent
+    >,
+    // tslint:disable-next-line: no-empty
+  ) {}
+
   // tslint:disable-next-line: no-empty
   public onLoseSkill(owner: Player) {}
   public onPhaseChange(
@@ -273,7 +281,8 @@ export abstract class ResponsiveSkill extends Skill {
   public abstract onEffect(
     room: Room,
     event: ServerEventFinder<
-      GameEventIdentifiers.SkillEffectEvent | GameEventIdentifiers.CardUseEvent
+      | GameEventIdentifiers.SkillEffectEvent
+      | GameEventIdentifiers.CardEffectEvent
     >,
   ): Promise<boolean>;
 }
@@ -460,12 +469,6 @@ export abstract class ViewAsSkill extends Skill {
     room: Room,
     event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
   ): Promise<boolean> {
-    event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} activates skill {1}',
-      room.getPlayerById(event.fromId).Name,
-      this.name,
-    ).extract();
-
     return true;
   }
 

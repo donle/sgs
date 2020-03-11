@@ -38,7 +38,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   private drawStack: CardId[] = [];
   private dropStack: CardId[] = [];
   private round = 0;
-  private onProcessingCard: CardId | undefined;
+  private onProcessingCards: CardId[] = [];
 
   constructor(
     protected roomId: RoomId,
@@ -227,15 +227,26 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return await this.socket.waitForResponse<T>(identifier, playerId);
   }
 
-  public getOnProcessingCard(): CardId | undefined {
-    return this.onProcessingCard;
+  public isCardOnProcessing(cardId: CardId): boolean {
+    return this.onProcessingCards.includes(cardId);
   }
   public clearOnProcessingCard(): void {
-    this.onProcessingCard = undefined;
+    this.onProcessingCards = [];
   }
 
-  public bury(cardId: CardId | undefined) {
-    cardId !== undefined && this.dropStack.push(cardId);
+  public endProcessOnCard(card: CardId) {
+    const index = this.onProcessingCards.findIndex(
+      processingCard => processingCard !== card,
+    );
+    if (index >= 0) {
+      this.onProcessingCards.splice(index, 1);
+    }
+  }
+
+  public bury(...cardIds: CardId[]) {
+    for (const cardId of cardIds) {
+      this.dropStack.push(cardId);
+    }
   }
   public isBuried(cardId: CardId): boolean {
     return this.dropStack.includes(cardId);
@@ -264,58 +275,75 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (card instanceof EquipCard) {
       await this.equip(card, from);
     } else if (!card.is(CardType.DelayedTrick)) {
-      const usedEvent: ServerEventFinder<GameEventIdentifiers.CardDropEvent> = {
+      const dropEvent: ServerEventFinder<GameEventIdentifiers.CardDropEvent> = {
         fromId: content.fromId,
         cardIds: [content.cardId],
+        droppedBy: content.fromId,
       };
       this.notify(
         GameEventIdentifiers.CardDropEvent,
-        usedEvent,
+        dropEvent,
         content.fromId,
       );
       from.dropCards(content.cardId);
     }
 
-    this.onProcessingCard = content.cardId;
+    this.onProcessingCards.push(content.cardId);
     return await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.CardUseEvent,
       content,
       async stage => {
         if (stage === CardUseStage.AfterCardUseEffect) {
-          const cardAimEvent:
-            | ServerEventFinder<GameEventIdentifiers.AimEvent>
-            | undefined = content.toIds
-            ? {
-                fromId: content.fromId,
-                byCardId: content.cardId,
-                toIds: content.toIds,
-              }
-            : undefined;
-          if (
-            !EventPacker.isTerminated(content) &&
-            cardAimEvent !== undefined
-          ) {
+          if (EventPacker.isTerminated(content)) {
+            return false;
+          }
+
+          let newToIds: PlayerId[] = [];
+          for (const toId of content.toIds || []) {
+            const cardAimEvent: ServerEventFinder<GameEventIdentifiers.AimEvent> = {
+              fromId: content.fromId,
+              byCardId: content.cardId,
+              toIds: [toId],
+            };
+
             await this.gameProcessor.onHandleIncomingEvent(
               GameEventIdentifiers.AimEvent,
               cardAimEvent,
             );
-          }
 
-          if (
-            cardAimEvent &&
-            !EventPacker.isTerminated(cardAimEvent) &&
-            !card.is(CardType.DelayedTrick)
-          ) {
-            await this.gameProcessor.onHandleIncomingEvent(
-              GameEventIdentifiers.CardEffectEvent,
-              EventPacker.recall(content),
-            );
+            if (!EventPacker.isTerminated(cardAimEvent)) {
+              newToIds = [...newToIds, ...cardAimEvent.toIds];
+            }
+          }
+          content.toIds = newToIds;
+
+          if (content.toIds.length > 0) {
+            for (const toId of content.toIds) {
+              const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
+                ...content,
+                toIds: [toId],
+              };
+
+              if (!card.is(CardType.DelayedTrick)) {
+                await this.gameProcessor.onHandleIncomingEvent(
+                  GameEventIdentifiers.CardEffectEvent,
+                  EventPacker.recall(cardEffectEvent),
+                );
+              }
+            }
+          } else {
+            if (!card.is(CardType.DelayedTrick)) {
+              await this.gameProcessor.onHandleIncomingEvent(
+                GameEventIdentifiers.CardEffectEvent,
+                EventPacker.recall(content),
+              );
+            }
           }
         } else if (stage === CardUseStage.CardUseFinishedEffect) {
           if (!card.is(CardType.Equip) && !card.is(CardType.DelayedTrick)) {
-            this.bury(this.onProcessingCard);
+            this.bury(card.Id);
           }
-          this.clearOnProcessingCard();
+          this.endProcessOnCard(card.Id);
         }
 
         return true;
@@ -404,11 +432,15 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     numberOfCards: number,
     playerId?: PlayerId,
     from: 'top' | 'bottom' = 'top',
+    askedBy?: PlayerId,
   ) {
+    askedBy = askedBy || playerId || this.CurrentPlayer.Id;
+
     const cardIds = this.getCards(numberOfCards, from);
     const drawEvent: ServerEventFinder<GameEventIdentifiers.DrawCardEvent> = {
       cardIds,
       playerId: playerId || this.CurrentPlayer.Id,
+      askedBy,
     };
 
     await this.gameProcessor.onHandleIncomingEvent(
@@ -419,10 +451,17 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return cardIds;
   }
 
-  public async dropCards(cardIds: CardId[], playerId?: PlayerId) {
+  public async dropCards(
+    cardIds: CardId[],
+    playerId?: PlayerId,
+    droppedBy?: PlayerId,
+  ) {
+    droppedBy = droppedBy || playerId || this.CurrentPlayer.Id;
+
     const dropEvent: ServerEventFinder<GameEventIdentifiers.CardDropEvent> = {
       cardIds,
       fromId: playerId || this.CurrentPlayer.Id,
+      droppedBy,
     };
 
     await this.gameProcessor.onHandleIncomingEvent(
@@ -433,11 +472,18 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.dropStack.push(...cardIds);
   }
 
-  public async obtainCards(cardIds: CardId[], to: PlayerId, fromId?: PlayerId) {
+  public async obtainCards(
+    cardIds: CardId[],
+    to: PlayerId,
+    fromId?: PlayerId,
+    givenBy?: PlayerId,
+  ) {
+    givenBy = givenBy || fromId;
     const obtainCardEvent = {
       cardIds,
       toId: to,
       fromId,
+      givenBy,
     };
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.ObtainCardEvent,
@@ -461,6 +507,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     toId: PlayerId,
     fromArea: PlayerCardsArea,
     toArea: PlayerCardsArea,
+    proposer?: PlayerId,
   ) {
     const to = this.getPlayerById(toId);
 
@@ -473,6 +520,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         {
           fromId: from.Id,
           cardIds: [cardId],
+          droppedBy: proposer,
         },
         from.Id,
       );

@@ -36,10 +36,14 @@ export class ShunShouQianYangSkill extends ActiveSkill {
     selectedTargets: PlayerId[],
     containerCard: CardId,
   ): boolean {
+    const from = room.getPlayerById(owner);
+    const to = room.getPlayerById(target);
+
     return (
       target !== owner &&
-      room.getPlayerById(owner).canUseCardTo(room, containerCard, target) &&
-      room.getPlayerById(target).getCardIds().length > 0
+      from.canUseCardTo(room, containerCard, target) &&
+      to.getCardIds().length > 0 &&
+      room.distanceBetween(from, to) <= 1
     );
   }
 
@@ -93,6 +97,7 @@ export class ShunShouQianYangSkill extends ActiveSkill {
       chooseCardEvent.fromId,
       response.fromArea,
       PlayerCardsArea.HandArea,
+      chooseCardEvent.fromId,
     );
     return true;
   }

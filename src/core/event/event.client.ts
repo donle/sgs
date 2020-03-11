@@ -100,10 +100,6 @@ export interface ClientEvent extends EventUtilities {
     cardId?: CardId;
     fromId: PlayerId;
   };
-  [GameEventIdentifiers.AskForWuXieKeJiEvent]: {
-    cardId?: CardId;
-    fromId: PlayerId;
-  };
   [GameEventIdentifiers.AskForCardResponseEvent]: {
     cardId?: CardId;
     fromId: PlayerId;

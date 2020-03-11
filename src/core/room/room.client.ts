@@ -114,8 +114,8 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.syncGameCommonRules.name);
   }
   //Server only
-  public getOnProcessingCard(): any {
-    this.throwUntouchableError(this.getOnProcessingCard.name);
+  public isCardOnProcessing(): any {
+    this.throwUntouchableError(this.isCardOnProcessing.name);
   }
   //Server only
   public clearOnProcessingCard(): any {

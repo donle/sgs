@@ -1,4 +1,4 @@
-import { CardSuit } from 'core/cards/libs/card_props';
+import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { Lightning } from 'core/cards/standard/lightning';
 import {
   ClientEventFinder,
@@ -66,6 +66,45 @@ export class LightningSkill extends ActiveSkill {
     return true;
   }
 
+  public async moveToNextPlayer(
+    room: Room,
+    cardId: CardId,
+    currentPlayer: PlayerId,
+  ) {
+    while (true) {
+      const player = room.getNextPlayer(currentPlayer);
+      if (player.Id === currentPlayer) {
+        break;
+      }
+
+      const skip =
+        player
+          .getSkills<FilterSkill>('filter')
+          .find(skill => !skill.canBeUsedCard(cardId, room, player.Id)) !==
+          undefined ||
+        player
+          .getCardIds(PlayerCardsArea.JudgeArea)
+          .find(
+            cardId => Sanguosha.getCardById(cardId) instanceof Lightning,
+          ) !== undefined;
+
+      if (skip) {
+        continue;
+      }
+
+      if (player.Id !== currentPlayer) {
+        await room.moveCard(
+          cardId,
+          currentPlayer,
+          player.Id,
+          PlayerCardsArea.JudgeArea,
+          PlayerCardsArea.JudgeArea,
+        );
+      }
+      break;
+    }
+  }
+
   public async onEffect(
     room: Room,
     event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
@@ -107,40 +146,15 @@ export class LightningSkill extends ActiveSkill {
       );
       room.getPlayerById(judgeEvent.toId).dropCards(cardId);
     } else {
-      while (true) {
-        const player = room.getNextPlayer(judgeEvent.toId);
-        if (player.Id === judgeEvent.toId) {
-          break;
-        }
-
-        const skip =
-        player
-            .getSkills<FilterSkill>('filter')
-            .find(
-              skill => !skill.canBeUsedCard(judgeEvent.cardId, room, player.Id),
-            ) !== undefined ||
-            player
-            .getCardIds(PlayerCardsArea.JudgeArea)
-            .find(
-              cardId => Sanguosha.getCardById(cardId) instanceof Lightning,
-            ) !== undefined;
-
-        if (skip) {
-          continue;
-        }
-
-        if (player.Id !== judgeEvent.toId) {
-          await room.moveCard(
-            judgeEvent.cardId,
-            judgeEvent.toId,
-            player.Id,
-            PlayerCardsArea.JudgeArea,
-            PlayerCardsArea.JudgeArea,
-          );
-        }
-        break;
-      }
+      await this.moveToNextPlayer(room, judgeEvent.cardId, judgeEvent.toId);
     }
     return true;
+  }
+
+  public async onEffectRejected(
+    room: Room,
+    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
+  ) {
+    await this.moveToNextPlayer(room, event.cardId, event.toIds![0]);
   }
 }

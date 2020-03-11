@@ -10,6 +10,7 @@ import { QingGang } from './qinggang';
 import { ShunshouQianYang } from './shunshouqianyang';
 import { Slash } from './slash';
 import { WanJianQiFa } from './wanjianqifa';
+import { WuXieKeJi } from './wuxiekeji';
 import { ZhuGeLianNu } from './zhugeliannu';
 import { ZiXin } from './zixin';
 
@@ -91,6 +92,10 @@ export const StandardCardPackage: (
     new ShunshouQianYang(index++, 11, CardSuit.Spade),
     new ShunshouQianYang(index++, 3, CardSuit.Diamond),
     new ShunshouQianYang(index++, 4, CardSuit.Diamond),
+
+    new WuXieKeJi(index++, 11, CardSuit.Spade),
+    new WuXieKeJi(index++, 12, CardSuit.Club),
+    new WuXieKeJi(index++, 13, CardSuit.Club),
 
     new ZiXin(index++, 13, CardSuit.Diamond),
     new QingGang(index++, 6, CardSuit.Spade),

@@ -37,15 +37,7 @@ export class NanManRuQingSkill extends ActiveSkill {
     room: Room,
     event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
   ) {
-    event.toIds = room.AlivePlayers.filter(
-      player => player.Id !== event.fromId,
-    ).map(player => player.Id);
-    event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} uses card {1}',
-      room.getPlayerById(event.fromId).Name,
-      TranslationPack.patchCardInTranslation(event.cardId),
-    ).extract();
-
+    event.toIds = room.getOtherPlayers(event.fromId).map(player => player.Id);
     return true;
   }
 
@@ -61,6 +53,18 @@ export class NanManRuQingSkill extends ActiveSkill {
       }).toSocketPassenger(),
       byCardId: cardId,
       cardUserId: fromId,
+      conversation:
+        fromId !== undefined
+          ? TranslationPack.translationJsonPatcher(
+              '{0} used {1} to you, please response a {2} card',
+              room.getPlayerById(fromId).Character.Name,
+              TranslationPack.patchCardInTranslation(cardId),
+              'slash',
+            ).extract()
+          : TranslationPack.translationJsonPatcher(
+              'please response a {0} card',
+              'slash',
+            ).extract(),
     };
 
     for (const to of toIds!) {

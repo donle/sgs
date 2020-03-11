@@ -15,6 +15,7 @@ import {
   PlayerRole,
 } from 'core/player/player_props';
 import { RoomInfo } from 'core/shares/types/server_types';
+import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
 import {
   EventUtilities,
   GameEventIdentifiers,
@@ -31,12 +32,14 @@ export interface ServerEvent extends EventUtilities {
     cardId: CardId;
     toIds?: PlayerId[];
     toCardIds?: CardId[];
+    responseToEvent?: ServerEventFinder<GameEventIdentifiers>;
   };
   [GameEventIdentifiers.CardEffectEvent]: {
     fromId?: PlayerId;
     cardId: CardId;
     toIds?: PlayerId[];
     toCardIds?: CardId[];
+    responseToEvent?: ServerEventFinder<GameEventIdentifiers>;
   };
   [GameEventIdentifiers.AimEvent]: {
     fromId: string;
@@ -51,19 +54,23 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.CardDropEvent]: {
     fromId: PlayerId;
     cardIds: CardId[];
+    droppedBy: PlayerId;
   };
   [GameEventIdentifiers.CardLoseEvent]: {
     fromId: PlayerId;
     cardIds: CardId[];
+    droppedBy?: PlayerId;
   };
   [GameEventIdentifiers.DrawCardEvent]: {
     playerId: PlayerId;
     cardIds: CardId[];
+    askedBy: PlayerId;
   };
   [GameEventIdentifiers.ObtainCardEvent]: {
     fromId?: PlayerId;
     toId: PlayerId;
     cardIds: CardId[];
+    givenBy?: PlayerId;
   };
   [GameEventIdentifiers.MoveCardEvent]: {
     fromId?: PlayerId;
@@ -164,21 +171,18 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.AskForPeachEvent]: {
     fromId: PlayerId;
   };
-  [GameEventIdentifiers.AskForWuXieKeJiEvent]: {
-    fromId?: PlayerId;
-    cardId: CardId;
-    cardUserId?: PlayerId;
-  };
   [GameEventIdentifiers.AskForCardResponseEvent]: {
     cardMatcher: CardMatcherSocketPassenger;
     byCardId?: CardId;
     cardUserId?: PlayerId;
+    conversation: string | PatchedTranslationObject,
   };
 
   [GameEventIdentifiers.AskForCardUseEvent]: {
     byCardId?: CardId;
     cardUserId?: PlayerId;
     cardMatcher: CardMatcherSocketPassenger;
+    conversation: string | PatchedTranslationObject,
   };
   [GameEventIdentifiers.AskForPinDianCardEvent]: {
     from: PlayerId;

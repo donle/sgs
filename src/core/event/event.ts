@@ -88,7 +88,6 @@ export const enum GameEventIdentifiers {
 
   AskForPlayCardsOrSkillsEvent,
   AskForPeachEvent,
-  AskForWuXieKeJiEvent,
   AskForCardResponseEvent,
   AskForCardUseEvent,
   AskForCardDisplayEvent,
@@ -105,7 +104,6 @@ export const enum GameEventIdentifiers {
 
 export type CardResponsiveEventIdentifiers =
   | GameEventIdentifiers.AskForPeachEvent
-  | GameEventIdentifiers.AskForWuXieKeJiEvent
   | GameEventIdentifiers.AskForCardResponseEvent
   | GameEventIdentifiers.AskForCardUseEvent;
 
@@ -114,7 +112,6 @@ export const isCardResponsiveIdentifier = (
 ): identifier is CardResponsiveEventIdentifiers => {
   return [
     GameEventIdentifiers.AskForPeachEvent,
-    GameEventIdentifiers.AskForWuXieKeJiEvent,
     GameEventIdentifiers.AskForCardResponseEvent,
     GameEventIdentifiers.AskForCardUseEvent,
   ].includes(identifier);
@@ -159,7 +156,6 @@ export const clientActiveListenerEvents = () => [
 
   GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
   GameEventIdentifiers.AskForPeachEvent,
-  GameEventIdentifiers.AskForWuXieKeJiEvent,
   GameEventIdentifiers.AskForCardResponseEvent,
   GameEventIdentifiers.AskForCardUseEvent,
   GameEventIdentifiers.AskForCardDisplayEvent,
@@ -208,7 +204,6 @@ export const serverResponsiveListenerEvents = () => [
 
   GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
   GameEventIdentifiers.AskForPeachEvent,
-  GameEventIdentifiers.AskForWuXieKeJiEvent,
   GameEventIdentifiers.AskForCardResponseEvent,
   GameEventIdentifiers.AskForCardUseEvent,
   GameEventIdentifiers.AskForCardDisplayEvent,

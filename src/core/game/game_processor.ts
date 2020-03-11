@@ -153,6 +153,7 @@ export class GameProcessor {
       const drawEvent: ServerEventFinder<GameEventIdentifiers.DrawCardEvent> = {
         cardIds,
         playerId: player.Id,
+        askedBy: player.Id,
         translationsMessage: TranslationPack.translationJsonPatcher(
           '{0} draws {1} cards',
           player.Name,
@@ -202,8 +203,8 @@ export class GameProcessor {
             cardId: judgeCardId,
             toIds: [this.CurrentPlayer.Id],
           };
-          await Sanguosha.getCardById(judgeCardId).Skill.onEffect(
-            this.room,
+          await this.onHandleCardEffectEvent(
+            GameEventIdentifiers.CardEffectEvent,
             cardEffectEvent,
           );
         }
@@ -520,7 +521,9 @@ export class GameProcessor {
             '{0} obtains cards {1}' + (event.fromId ? ' from {2}' : ''),
             to.Character.Name,
             TranslationPack.patchCardInTranslation(...event.cardIds),
-            event.fromId ? this.room.getPlayerById(event.fromId).Character.Name : '',
+            event.fromId
+              ? this.room.getPlayerById(event.fromId).Character.Name
+              : '',
           ).extract();
           this.room.broadcast(identifier, event);
         }
@@ -782,13 +785,7 @@ export class GameProcessor {
     event: EventPicker<GameEventIdentifiers.AimEvent, WorkPlace.Server>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    if (event.byCardId !== undefined) {
-      const user = this.room.getPlayerById(event.fromId);
-      event.toIds = this.deadPlayerFilters(...event.toIds);
-      event.toIds = event.toIds.filter(to =>
-        user.canUseCardTo(this.room, event.byCardId!, to),
-      );
-    }
+    event.toIds = this.deadPlayerFilters(...event.toIds);
 
     return await this.iterateEachStage(identifier, event, onActualExecuted);
   }
@@ -816,43 +813,55 @@ export class GameProcessor {
               continue;
             }
 
-            const wuxiekejiEvent = {
-              fromId: event.fromId,
-              cardId: event.cardId,
+            const wuxiekejiEvent: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent> = {
+              conversation:
+                event.fromId !== undefined
+                  ? TranslationPack.translationJsonPatcher(
+                      'do you wanna use {0} for {1} from {2}',
+                      'wuxiekeji',
+                      TranslationPack.patchCardInTranslation(event.cardId),
+                      this.room.getPlayerById(event.fromId).Character.Name,
+                    ).extract()
+                  : TranslationPack.translationJsonPatcher(
+                      'do you wanna use {0} for {1}',
+                      'wuxiekeji',
+                      TranslationPack.patchCardInTranslation(event.cardId),
+                    ).extract(),
+              cardMatcher: new CardMatcher({
+                name: ['wuxiekeji'],
+              }).toSocketPassenger(),
+              byCardId: event.cardId,
               cardUserId: event.fromId,
-              translationsMessage: TranslationPack.translationJsonPatcher(
-                'do you wanna use {0} for {1}' + event.fromId
-                  ? ' from {2}'
-                  : '',
-                'wuxiekeji',
-                TranslationPack.patchCardInTranslation(event.cardId),
-                event.fromId ? this.room.getPlayerById(event.fromId).Name : '',
-              ).extract(),
             };
             this.room.notify(
-              GameEventIdentifiers.AskForWuXieKeJiEvent,
+              GameEventIdentifiers.AskForCardUseEvent,
               wuxiekejiEvent,
               player.Id,
             );
 
             const response = await this.room.onReceivingAsyncReponseFrom(
-              GameEventIdentifiers.AskForWuXieKeJiEvent,
+              GameEventIdentifiers.AskForCardUseEvent,
               player.Id,
             );
 
             if (response.cardId !== undefined) {
-              const cardUseEvent = {
+              const cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
                 fromId: response.fromId,
                 cardId: response.cardId,
                 toCardIds: [event.cardId],
+                responseToEvent: event,
               };
               await this.room.useCard(cardUseEvent);
               if (!EventPacker.isTerminated(cardUseEvent)) {
                 EventPacker.terminate(event);
               }
 
-              return;
+              break;
             }
+          }
+
+          if (EventPacker.isTerminated(event)) {
+            card.Skill.onEffectRejected(this.room, event);
           }
         }
 

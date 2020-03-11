@@ -90,6 +90,7 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill {
     const dropEvent: ServerEventFinder<GameEventIdentifiers.CardDropEvent> = {
       fromId: chooseCardEvent.toId,
       cardIds: [response.selectedCard],
+      droppedBy: chooseCardEvent.fromId,
     };
     if (response.fromArea !== PlayerCardsArea.JudgeArea) {
       await room.dropCards([response.selectedCard], chooseCardEvent.toId);

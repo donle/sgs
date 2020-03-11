@@ -1,4 +1,7 @@
-import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
+import {
+  PatchedTranslationObject,
+  TranslationPack,
+} from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
@@ -30,7 +33,11 @@ export class Conversation extends React.Component<ConversationProps> {
     return (
       <div className={styles.conversation}>
         <h3 className={styles.conversationText}>
-          {translator.tr(conversation)}
+          {translator.trx(
+            typeof conversation === 'string'
+              ? conversation
+              : TranslationPack.create(conversation).toString(),
+          )}
         </h3>
         <div className={styles.actions}>{this.getActions()}</div>
       </div>

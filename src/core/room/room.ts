@@ -70,6 +70,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     to: PlayerId,
     fromArea: PlayerCardsArea | undefined,
     toArea: PlayerCardsArea,
+    proposer?: PlayerId,
   ): Promise<void>;
   //Server only
   public abstract async moveCards(
@@ -101,11 +102,11 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>,
   ): Promise<void>;
   //Server only
-  public abstract getOnProcessingCard(): CardId | undefined;
+  public abstract isCardOnProcessing(cardId: CardId): boolean;
   //Server only
   public abstract clearOnProcessingCard(): void;
   //Server only
-  public abstract bury(cardId?: CardId): void;
+  public abstract bury(...cardIds: CardId[]): void;
   //Server only
   public abstract isBuried(cardId: CardId): boolean;
 
@@ -216,6 +217,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     ];
   }
 
+  public getOtherPlayers(playerId: PlayerId) {
+    return this.AlivePlayers.filter(player => player.Id !== playerId);
+  }
+
   public getNextPlayer(playerId: PlayerId) {
     const alivePlayers = this.AlivePlayers;
     const fromIndex = alivePlayers.findIndex(player => player.Id === playerId);
@@ -241,7 +246,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   public canAttack(from: Player, to: Player) {
-    const seatDistance = this.getFixedSeatDistance(from, to);
+    const seatDistance = this.distanceBetween(from, to);
     return (
       from.AttackDistance >= seatDistance &&
       from.canUseCardTo(
@@ -252,7 +257,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     );
   }
 
-  public getFixedSeatDistance(from: Player, to: Player) {
+  public distanceBetween(from: Player, to: Player) {
     const seatGap = from.getOffenseDistance() - to.getDefenseDistance();
     return this.onSeatDistance(from, to) + seatGap;
   }

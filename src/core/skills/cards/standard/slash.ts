@@ -74,6 +74,18 @@ export class SlashSkill extends ActiveSkill {
         byCardId: cardId,
         cardUserId: fromId,
         triggeredBySkillName: this.name,
+        conversation:
+          fromId !== undefined
+            ? TranslationPack.translationJsonPatcher(
+                '{0} used {1} to you, please use a {2} card',
+                room.getPlayerById(fromId).Character.Name,
+                TranslationPack.patchCardInTranslation(cardId),
+                'jink',
+              ).extract()
+            : TranslationPack.translationJsonPatcher(
+                'please use a {0} card to response {1}',
+                TranslationPack.patchCardInTranslation(cardId),
+              ).extract(),
       };
 
       room.notify(
