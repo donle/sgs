@@ -10,6 +10,7 @@ export { LightningSkill } from './cards/standard/lightning';
 export { GuoHeChaiQiaoSkill } from './cards/standard/guohechaiqiao';
 export { ShunShouQianYangSkill } from './cards/standard/shunshouqianyang';
 export { WuXieKeJiSkill } from './cards/standard/wuxiekeji';
+export { WuZhongShengYouSkill } from './cards/standard/wuzhongshengyou';
 
 export { Hujia } from './characters/standard/hujia';
 export { JianXiong } from './characters/standard/jianxiong';

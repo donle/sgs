@@ -185,6 +185,10 @@ export abstract class Player implements PlayerInfo {
     this.cardUseHistory = [];
   }
 
+  public resetSkillUseHistory(skillName: string) {
+    this.skillUsedHistory[skillName] = 0;
+  }
+
   public useCard(cardId: CardId) {
     this.cardUseHistory.push(cardId);
   }

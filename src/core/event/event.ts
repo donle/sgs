@@ -218,6 +218,21 @@ export const serverResponsiveListenerEvents = () => [
   GameEventIdentifiers.AskForPlaceCardsInDileEvent,
 ];
 
+export const enum CardLostReason {
+  CardUse,
+  CardResponse,
+  ActiveDrop,
+  PassiveDrop,
+  ActiveMove,
+  PassiveMove,
+}
+
+export const enum CardObtainedReason {
+  CardDraw,
+  ActivePrey,
+  PassiveObtained,
+}
+
 export const enum WorkPlace {
   Client,
   Server,

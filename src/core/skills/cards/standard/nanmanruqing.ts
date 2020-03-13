@@ -37,7 +37,17 @@ export class NanManRuQingSkill extends ActiveSkill {
     room: Room,
     event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
   ) {
-    event.toIds = room.getOtherPlayers(event.fromId).map(player => player.Id);
+    const others = room.getOtherPlayers(event.fromId);
+
+    event.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} used card {1} to {2}',
+      room.getPlayerById(event.fromId).Character.Name,
+      TranslationPack.patchCardInTranslation(event.cardId),
+      TranslationPack.wrapArrayParams(
+        ...others.map(target => target.Character.Name),
+      ),
+    ).extract();
+    event.toIds = others.map(player => player.Id);
     return true;
   }
 

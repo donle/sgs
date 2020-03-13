@@ -102,6 +102,22 @@ export class ClientTranslationModule extends TranslationModule {
           );
         }
 
+        if (
+          typeof param === 'string' &&
+          dictionary &&
+          TranslationPack.isTextArrayText(param)
+        ) {
+          if (TranslationPack.isTextArrayText(param)) {
+            param = param
+              .slice(TranslationPack.translateTextArraySign.length)
+              .split(',')
+              .map(subParam => dictionary[subParam] || subParam)
+              .join(',');
+          } else {
+            param = dictionary[param] || param;
+          }
+        }
+
         return (
           <span
             style={{

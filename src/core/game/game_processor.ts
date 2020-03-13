@@ -192,6 +192,9 @@ export class GameProcessor {
   }
 
   private async onPhase(phase: PlayerPhase) {
+    if (phase === undefined) {
+      throw new Error('Undefined phase');
+    }
     switch (phase) {
       case PlayerPhase.JudgeStage:
         this.logger.debug('enter judge cards phase');
@@ -215,18 +218,6 @@ export class GameProcessor {
         return;
       case PlayerPhase.PlayCardStage:
         this.logger.debug('enter play cards phase');
-        this.room.notify(
-          GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
-          {
-            fromId: this.CurrentPlayer.Id,
-          },
-          this.CurrentPlayer.Id,
-        );
-
-        let response:
-          | ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent>
-          | undefined;
-
         do {
           this.room.notify(
             GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
@@ -235,7 +226,7 @@ export class GameProcessor {
             },
             this.CurrentPlayer.Id,
           );
-          response = await this.room.onReceivingAsyncReponseFrom(
+          const response = await this.room.onReceivingAsyncReponseFrom(
             GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
             this.CurrentPlayer.Id,
           );
@@ -245,15 +236,17 @@ export class GameProcessor {
           }
 
           if (response.eventName === GameEventIdentifiers.CardUseEvent) {
-            const event = response.event as ClientEventFinder<
-              GameEventIdentifiers.CardUseEvent
-            >;
-            await this.room.useCard(event);
+            await this.room.useCard(
+              response.event as ClientEventFinder<
+                GameEventIdentifiers.CardUseEvent
+              >,
+            );
           } else {
-            const event = response.event as ClientEventFinder<
-              GameEventIdentifiers.SkillUseEvent
-            >;
-            await this.room.useSkill(event);
+            await this.room.useSkill(
+              response.event as ClientEventFinder<
+                GameEventIdentifiers.SkillUseEvent
+              >,
+            );
           }
         } while (true);
         return;
@@ -317,13 +310,15 @@ export class GameProcessor {
           async stage => {
             if (stage === PhaseChangeStage.PhaseChanged) {
               this.CurrentPlayer.resetCardUseHistory();
+              //TODO: to reset skills
               this.currentPlayerPhase = nextPhase;
-              await this.onPhase(this.currentPlayerPhase);
             }
 
             return true;
           },
         );
+
+        await this.onPhase(this.currentPlayerPhase!);
       }
     }
   }
@@ -498,6 +493,11 @@ export class GameProcessor {
         await processor(eventStage!);
       }
 
+      if (EventPacker.isTerminated(event)) {
+        this.stageProcessor.skipEventProcess(identifier);
+        break;
+      }
+
       eventStage = this.stageProcessor.nextInstantEvent();
     }
   };
@@ -517,14 +517,16 @@ export class GameProcessor {
           const to = this.room.getPlayerById(event.toId);
           to.obtainCardIds(...event.cardIds);
 
-          event.translationsMessage = TranslationPack.translationJsonPatcher(
-            '{0} obtains cards {1}' + (event.fromId ? ' from {2}' : ''),
-            to.Character.Name,
-            TranslationPack.patchCardInTranslation(...event.cardIds),
-            event.fromId
-              ? this.room.getPlayerById(event.fromId).Character.Name
-              : '',
-          ).extract();
+          if (!event.translationsMessage) {
+            event.translationsMessage = TranslationPack.translationJsonPatcher(
+              '{0} obtains cards {1}' + (event.fromId ? ' from {2}' : ''),
+              to.Character.Name,
+              TranslationPack.patchCardInTranslation(...event.cardIds),
+              event.fromId
+                ? this.room.getPlayerById(event.fromId).Character.Name
+                : '',
+            ).extract();
+          }
           this.room.broadcast(identifier, event);
         }
       },
@@ -536,11 +538,13 @@ export class GameProcessor {
     event: EventPicker<GameEventIdentifiers.DrawCardEvent, WorkPlace.Server>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} draws {1} cards',
-      this.room.getPlayerById(event.playerId).Character.Name,
-      event.cardIds.length,
-    ).extract();
+    if (!event.translationsMessage) {
+      event.translationsMessage = TranslationPack.translationJsonPatcher(
+        '{0} draws {1} cards',
+        this.room.getPlayerById(event.playerId).Character.Name,
+        event.cardIds.length,
+      ).extract();
+    }
 
     return await this.iterateEachStage(
       identifier,
@@ -565,11 +569,13 @@ export class GameProcessor {
     event: EventPicker<GameEventIdentifiers.CardDropEvent, WorkPlace.Server>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} drops cards {1}',
-      this.room.getPlayerById(event.fromId).Character.Name,
-      TranslationPack.patchCardInTranslation(...event.cardIds),
-    ).extract();
+    if (!event.translationsMessage) {
+      event.translationsMessage = TranslationPack.translationJsonPatcher(
+        '{0} drops cards {1}',
+        this.room.getPlayerById(event.fromId).Character.Name,
+        TranslationPack.patchCardInTranslation(...event.cardIds),
+      ).extract();
+    }
 
     return await this.iterateEachStage(
       identifier,
@@ -590,13 +596,15 @@ export class GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.CardLoseEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} lost cards {1}',
-      this.room.getPlayerById(event.fromId).Character.Name,
-      event.cardIds
-        .map(cardId => TranslationPack.patchCardInTranslation(cardId))
-        .join(','),
-    ).extract();
+    if (!event.translationsMessage) {
+      event.translationsMessage = TranslationPack.translationJsonPatcher(
+        '{0} lost cards {1}',
+        this.room.getPlayerById(event.fromId).Character.Name,
+        event.cardIds
+          .map(cardId => TranslationPack.patchCardInTranslation(cardId))
+          .join(','),
+      ).extract();
+    }
 
     return await this.iterateEachStage(
       identifier,
@@ -806,6 +814,10 @@ export class GameProcessor {
           card.is(CardType.Trick) &&
           stage == CardEffectStage.BeforeCardEffect
         ) {
+          let cardUseEvent:
+            | ServerEventFinder<GameEventIdentifiers.CardUseEvent>
+            | undefined;
+
           for (const player of this.room.getAlivePlayersFrom(
             this.CurrentPlayer.Id,
           )) {
@@ -845,19 +857,18 @@ export class GameProcessor {
             );
 
             if (response.cardId !== undefined) {
-              const cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
+              cardUseEvent = {
                 fromId: response.fromId,
                 cardId: response.cardId,
                 toCardIds: [event.cardId],
                 responseToEvent: event,
               };
-              await this.room.useCard(cardUseEvent);
-              if (!EventPacker.isTerminated(cardUseEvent)) {
-                EventPacker.terminate(event);
-              }
-
               break;
             }
+          }
+
+          if (cardUseEvent) {
+            await this.room.useCard(cardUseEvent);
           }
 
           if (EventPacker.isTerminated(event)) {
@@ -866,9 +877,7 @@ export class GameProcessor {
         }
 
         if (stage === CardEffectStage.CardEffecting) {
-          if (!(await card.Skill.onEffect(this.room, event))) {
-            this.stageProcessor.terminateEventProcess();
-          }
+          await card.Skill.onEffect(this.room, event);
         }
       },
     );
@@ -957,13 +966,14 @@ export class GameProcessor {
       async stage => {
         if (stage === JudgeEffectStage.JudgeEffect) {
           const { toId, cardId, judgeCardId } = event;
-          event.translationsMessage = TranslationPack.translationJsonPatcher(
-            '{0} got judged card {2} on card {1}',
-            this.room.getPlayerById(toId).Character.Name,
-            TranslationPack.patchCardInTranslation(cardId),
-            TranslationPack.patchCardInTranslation(judgeCardId),
-          ).extract();
-
+          if (!event.translationsMessage) {
+            event.translationsMessage = TranslationPack.translationJsonPatcher(
+              '{0} got judged card {2} on card {1}',
+              this.room.getPlayerById(toId).Character.Name,
+              TranslationPack.patchCardInTranslation(cardId),
+              TranslationPack.patchCardInTranslation(judgeCardId),
+            ).extract();
+          }
           this.room.broadcast(identifier, event);
         }
       },

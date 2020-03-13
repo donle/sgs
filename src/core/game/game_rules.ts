@@ -23,6 +23,10 @@ export class GameCommonRules {
       cardMatcher: new CardMatcher({ name: ['jink'] }),
       times: 0,
     },
+    {
+      cardMatcher: new CardMatcher({ name: ['wuxiekeji'] }),
+      times: 0,
+    },
   ];
 
   private static userRules: {

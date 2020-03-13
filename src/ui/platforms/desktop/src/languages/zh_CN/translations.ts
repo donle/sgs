@@ -13,7 +13,8 @@ export const cardDictionary: Word[] = [
   { source: 'zhugeliannu', target: '诸葛连弩' },
   { source: 'guohechaiqiao', target: '过河拆桥' },
   { source: 'shunshouqianyang', target: '顺手牵羊' },
-  { source: 'wuxiekeji', target: '无懈可击' }
+  { source: 'wuxiekeji', target: '无懈可击' },
+  { source: 'wuzhongshengyou', target: '无中生有' },
 ];
 
 export const characterDictionary: Word[] = [
@@ -111,6 +112,7 @@ export const eventDictionary: Word[] = [
   { source: '{0} drops cards {1}', target: '{0} 弃置了 {1}' },
   { source: '{0} cards are dropped', target: '{0} 进入了弃牌堆' },
   { source: '{0} used card {1}', target: '{0} 使用了一张 {1}' },
+  { source: '{0} used card {1} to {2}', target: '{0} 使用了一张 {1}，目标是 {2}' },
   { source: '{0} equipped {1}', target: '{0} 装备了 {1}' },
   {
     source: '{0} used card {1} to {2}',
@@ -138,7 +140,7 @@ export const eventDictionary: Word[] = [
     target: '是否对 {1} 使用 {0}',
   },
   {
-    source: '{0} used {1} to you, please use a {2} card',
+    source: '{0} used {1} to you, please response a {2} card',
     target: '{0} 对你使用了 {1}, 打出一张 【{2}】来响应',
   },
   { source: 'please response a {0} card', target: '是否打出一张 【{0}】响应' },

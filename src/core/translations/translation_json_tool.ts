@@ -35,6 +35,8 @@ export class TranslationPack {
   public static readonly translationObjectSign = '@@translate:';
   public static readonly translateCardObjectSign =
     TranslationPack.translationObjectSign + 'card:';
+  public static readonly translateTextArraySign =
+    TranslationPack.translationObjectSign + 'array:';
 
   static create(translationJon: PatchedTranslationObject) {
     return new TranslationPack(translationJon);
@@ -101,6 +103,10 @@ export class TranslationPack {
     return text.startsWith(TranslationPack.translateCardObjectSign);
   }
 
+  public static isTextArrayText(text: string) {
+    return text.startsWith(TranslationPack.translateTextArraySign);
+  }
+
   public static translatePatchedCardText(
     text: string,
     dictionary: TranslationsDictionary,
@@ -154,6 +160,10 @@ export class TranslationPack {
     }
   }
 
+  public static wrapArrayParams(...params: string[]) {
+    return TranslationPack.translateTextArraySign + params.join(',');
+  }
+
   public static translationJsonPatcher(
     originalText: string,
     ...stringParams: (string | number)[]
@@ -187,10 +197,18 @@ export class TranslationPack {
     if (dispatchedTranslationObject.params.length > 0) {
       for (let i = 0; i < dispatchedTranslationObject.params.length; i++) {
         const param = dispatchedTranslationObject.params[i].toString();
-        target = target.replace(
-          new RegExp(`\\{${i}\\}`, 'g'),
-          translationsDictionary[param] || param,
-        );
+        let parsedParam = param;
+        if (TranslationPack.isTextArrayText(param)) {
+          parsedParam = param
+            .slice(TranslationPack.translateTextArraySign.length)
+            .split(',')
+            .map(subParam => translationsDictionary[subParam] || subParam)
+            .join(',');
+        } else {
+          parsedParam = translationsDictionary[param] || param;
+        }
+
+        target = target.replace(new RegExp(`\\{${i}\\}`, 'g'), parsedParam);
       }
     }
 

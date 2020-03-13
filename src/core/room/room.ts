@@ -217,8 +217,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     ];
   }
 
-  public getOtherPlayers(playerId: PlayerId) {
-    return this.AlivePlayers.filter(player => player.Id !== playerId);
+  public getOtherPlayers(playerId: PlayerId, from?: PlayerId) {
+    return this.getAlivePlayersFrom(from).filter(
+      player => player.Id !== playerId,
+    );
   }
 
   public getNextPlayer(playerId: PlayerId) {
@@ -258,7 +260,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   public distanceBetween(from: Player, to: Player) {
-    const seatGap = from.getOffenseDistance() - to.getDefenseDistance();
+    const seatGap = to.getDefenseDistance() - from.getOffenseDistance();
     return this.onSeatDistance(from, to) + seatGap;
   }
 
