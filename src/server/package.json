@@ -17,7 +17,8 @@
     "nodemon": "^2.0.2",
     "tsconfig": "^7.0.0",
     "tsconfig-paths": "^3.9.0",
-    "typescript": "3.8.2"
+    "typescript": "3.8.2",
+    "ts-node": "^8.6.2"
   },
   "scripts": {
     "patch": "ts-node ../pre_release.ts",

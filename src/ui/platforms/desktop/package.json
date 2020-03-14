@@ -22,7 +22,7 @@
     "camelcase": "^5.3.1",
     "case-sensitive-paths-webpack-plugin": "2.2.0",
     "classnames": "^2.2.6",
-    "css-loader": "3.2.0",
+    "css-loader": "3.4.2",
     "dotenv": "8.2.0",
     "dotenv-expand": "5.1.0",
     "eslint": "^6.6.0",
@@ -53,7 +53,7 @@
     "postcss-safe-parser": "4.0.1",
     "react": "^16.12.0",
     "react-app-polyfill": "^1.0.5",
-    "react-dev-utils": "^10.0.0",
+    "react-dev-utils": "10.1.0",
     "react-dom": "^16.12.0",
     "react-router-dom": "^5.1.2",
     "resolve": "1.12.2",
@@ -106,6 +106,7 @@
     "@types/react-test-renderer": "^16.9.2",
     "@types/socket.io-client": "^1.4.32",
     "awesome-typescript-loader": "^5.2.1",
+    "create-react-app": "^3.4.0",
     "cross-env": "^6.0.3",
     "css-loader": "^3.4.2",
     "css-modules-typescript-loader": "^4.0.0",
@@ -114,6 +115,9 @@
     "rimraf": "^3.0.0",
     "ts-jest": "^24.2.1",
     "ts-loader": "^6.2.1"
+  },
+  "resolutions": {
+    "react-dev-utils": "10.1.0"
   },
   "jest": {
     "preset": "ts-jest",
