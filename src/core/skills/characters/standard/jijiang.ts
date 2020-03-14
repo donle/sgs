@@ -1,3 +1,4 @@
+import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { CharacterNationality } from 'core/characters/character';
@@ -7,6 +8,7 @@ import {
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -14,8 +16,8 @@ import {
   ActiveSkill,
   CommonSkill,
   LordSkill,
-  ResponsiveSkill,
   ShadowSkill,
+  TriggerSkill,
 } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
@@ -83,6 +85,7 @@ export class JiJiang extends ActiveSkill {
       }
 
       const jijiangEvent = {
+        toId: player.Id,
         cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
         triggeredBySkillName: this.name,
         conversation: TranslationPack.translationJsonPatcher(
@@ -93,23 +96,19 @@ export class JiJiang extends ActiveSkill {
         ).extract(),
       };
 
-      room.notify(
-        GameEventIdentifiers.AskForCardResponseEvent,
-        jijiangEvent,
-        player.Id,
-      );
+      const result = await room.askForCardResponse(jijiangEvent, player.Id);
+      const { terminated, responseEvent } = result;
 
-      const response = await room.onReceivingAsyncReponseFrom(
-        GameEventIdentifiers.AskForCardResponseEvent,
-        player.Id,
-      );
-      if (response.cardId !== undefined) {
+      if (terminated) {
+        return false;
+      }
+      else if (responseEvent && responseEvent.cardId !== undefined) {
         const useCardEvent = {
-          cardId: response.cardId,
+          cardId: responseEvent.cardId,
           fromId: skillUseEvent.fromId,
           toIds: skillUseEvent.toIds,
         };
-        room.useCard(useCardEvent);
+        await room.useCard(useCardEvent);
       }
     }
 
@@ -120,83 +119,130 @@ export class JiJiang extends ActiveSkill {
 @CommonSkill
 @ShadowSkill
 @LordSkill
-export class JiJiangShadow extends ResponsiveSkill {
+export class JiJiangShadow extends TriggerSkill {
+  public isAutoTrigger() {
+    return false;
+  }
+
+  public isTriggerable(
+    event: ServerEventFinder<
+      | GameEventIdentifiers.AskForCardResponseEvent
+      | GameEventIdentifiers.AskForCardUseEvent
+    >,
+  ) {
+    const identifier = EventPacker.getIdentifier(event);
+    return (
+      identifier === GameEventIdentifiers.AskForCardResponseEvent ||
+      identifier === GameEventIdentifiers.AskForCardUseEvent
+    );
+  }
+
   constructor() {
     super('jijiang', 'jijiang_description');
   }
-  public responsiveFor() {
-    return new CardMatcher({ name: ['slash'] });
+
+  canUse(
+    room: Room,
+    owner: Player,
+    content: ServerEventFinder<
+      | GameEventIdentifiers.AskForCardResponseEvent
+      | GameEventIdentifiers.AskForCardUseEvent
+    >,
+  ) {
+    const { cardMatcher } = content;
+    return (
+      owner.Id === content.toId &&
+      CardMatcher.match(
+        cardMatcher,
+        new CardMatcher({
+          name: ['slash'],
+        }),
+      )
+    );
   }
 
-  async onUse(
+  async onTrigger(
     room: Room,
     event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
   ) {
-    event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} activates skill {1}',
-      room.getPlayerById(event.fromId).Name,
-      this.name,
-    ).extract();
-
     return true;
   }
 
   async onEffect(
     room: Room,
-    skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
+    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ) {
-    for (const player of room.getAlivePlayersFrom()) {
-      if (
-        player === room.CurrentPlayer ||
-        player.Nationality !== CharacterNationality.Shu
-      ) {
-        continue;
-      }
+    const { triggeredOnEvent, fromId } = event;
+    const slashCardEvent = triggeredOnEvent as ServerEventFinder<
+      | GameEventIdentifiers.AskForCardUseEvent
+      | GameEventIdentifiers.AskForCardResponseEvent
+    >;
+    const identifier = EventPacker.getIdentifier<
+      | GameEventIdentifiers.AskForCardUseEvent
+      | GameEventIdentifiers.AskForCardResponseEvent
+    >(slashCardEvent);
 
-      const jijiangEvent = {
-        cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
-        triggeredBySkillName: this.name,
-        conversation: TranslationPack.translationJsonPatcher(
-          '{0} used skill {1} to you, please response a {2} card',
-          room.getPlayerById(skillUseEvent.fromId).Character.Name,
-          this.name,
-          'slash',
-        ).extract(),
-      };
-
-      room.notify(
-        GameEventIdentifiers.AskForCardResponseEvent,
-        jijiangEvent,
-        player.Id,
-      );
-
-      const response = await room.onReceivingAsyncReponseFrom(
-        GameEventIdentifiers.AskForCardResponseEvent,
-        player.Id,
-      );
-      if (response.cardId !== undefined) {
-        const { triggeredOnEvent } = skillUseEvent;
-        const identifier = EventPacker.getIdentifier(
-          triggeredOnEvent as ServerEventFinder<
-            | GameEventIdentifiers.AskForCardUseEvent
-            | GameEventIdentifiers.AskForCardResponseEvent
-          >,
-        );
-        if (identifier === undefined) {
-          throw new Error(`Unknown event identifier ${identifier}`);
-        }
-        const useCardEvent = {
-          cardId: response.cardId,
-          fromId: skillUseEvent.fromId,
-          toIds: skillUseEvent.toIds,
-        };
-
-        identifier === GameEventIdentifiers.AskForCardUseEvent
-          ? await room.useCard(useCardEvent)
-          : await room.responseCard(useCardEvent);
-      }
+    if (identifier === undefined) {
+      throw new Error(`Unwrapped event without identifier in ${this.name}`);
     }
 
+    for (const player of room.getAlivePlayersFrom()) {
+      if (
+        player.Nationality === CharacterNationality.Shu &&
+        player.Id !== fromId
+      ) {
+        room.notify(identifier, slashCardEvent, player.Id);
+
+        const response = await room.onReceivingAsyncReponseFrom(
+          identifier,
+          player.Id,
+        );
+
+        if (response.cardId !== undefined) {
+          const responseCard = Sanguosha.getCardById(response.cardId);
+
+          const cardUseEvent = {
+            cardId: VirtualCard.create({
+              cardName: responseCard.Name,
+              cardNumber: responseCard.CardNumber,
+              cardSuit: responseCard.Suit,
+            }).Id,
+            fromId,
+            responseToEvent: triggeredOnEvent,
+          };
+
+          if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
+            await room.useCard(
+              EventPacker.createIdentifierEvent(
+                GameEventIdentifiers.CardUseEvent,
+                { ...cardUseEvent, fromId: response.fromId },
+              ),
+            );
+            await room.useCard(
+              EventPacker.createIdentifierEvent(
+                GameEventIdentifiers.CardUseEvent,
+                cardUseEvent,
+              ),
+            );
+          } else {
+            await room.responseCard(
+              EventPacker.createIdentifierEvent(
+                GameEventIdentifiers.CardResponseEvent,
+                { ...cardUseEvent, fromId: response.fromId },
+              ),
+            );
+            await room.responseCard(
+              EventPacker.createIdentifierEvent(
+                GameEventIdentifiers.CardResponseEvent,
+                cardUseEvent,
+              ),
+            );
+          }
+
+          return !EventPacker.isTerminated(cardUseEvent);
+        }
+      }
+    }
     return true;
   }
 }

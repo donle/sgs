@@ -1,7 +1,6 @@
 import { Card, CardType } from './card';
 
 import { GameCardExtensions } from 'core/game/game_props';
-import { AllStage } from 'core/game/stage_processor';
 import { RulesBreakerSkill, Skill } from 'core/skills/skill';
 import { CardSuit, RealCardId } from './libs/card_props';
 
@@ -41,7 +40,6 @@ export abstract class WeaponCard extends EquipCard {
   }
 }
 export abstract class ArmorCard extends EquipCard {
-  protected abstract triggeredStage: AllStage;
   protected generalName: string;
 
   constructor(

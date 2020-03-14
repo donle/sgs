@@ -1,5 +1,5 @@
 import { PlayerAI } from 'core/ai/ai';
-import { CardType } from 'core/cards/card';
+import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard, WeaponCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
@@ -254,14 +254,20 @@ export abstract class Player implements PlayerInfo {
       PlayerCardsArea.JudgeArea,
     ];
     const droppedCardIds: CardId[] = [];
-    let hasDropped = false;
+    let hasDropped = cards.length === 0;
     for (const playerCardsArea of playerCardsAreas) {
       const areaCards = this.getCardIds(playerCardsArea);
       for (const card of cards) {
-        const index = areaCards.findIndex(areaCard => areaCard === card);
-        if (index >= 0) {
-          droppedCardIds.push(areaCards.splice(index, 1)[0]);
+        if (Card.isVirtualCardId(card)) {
+          const virtualCard = Sanguosha.getCardById<VirtualCard>(card);
+          this.dropCards(...virtualCard.ActualCardIds);
           hasDropped = true;
+        } else {
+          const index = areaCards.findIndex(areaCard => areaCard === card);
+          if (index >= 0) {
+            droppedCardIds.push(areaCards.splice(index, 1)[0]);
+            hasDropped = true;
+          }
         }
       }
     }
@@ -606,6 +612,7 @@ export abstract class Player implements PlayerInfo {
 
     this.hp = this.playerCharacter.MaxHp;
     this.maxHp = this.playerCharacter.MaxHp;
+    this.nationality = this.playerCharacter.Nationality;
   }
   public get CharacterId(): CharacterId | undefined {
     return this.playerCharacterId;

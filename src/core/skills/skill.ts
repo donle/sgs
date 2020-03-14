@@ -183,6 +183,27 @@ export function TriggerableTimes<T extends Skill>(times: number) {
   };
 }
 
+export function EquipCardSkilll<T extends Skill>(options?: {
+  onEquip?(): void;
+}) {
+  return (constructorFunction: SKillConstructor<T>) => {
+    const constructor = constructorFunction as any;
+
+    return class extends constructor implements IEquipCardSkill {
+      public isEquipCardSkill() {
+        return true;
+      }
+
+      // tslint:disable-next-line:no-empty
+      public readonly onEquip = (options && options.onEquip) || (() => {});
+    } as any;
+  };
+}
+export interface IEquipCardSkill {
+  onEquip(): void;
+  isEquipCardSkill(): boolean;
+}
+
 export type SkillPrototype<T extends Skill> = new () => T;
 
 export abstract class Skill {
@@ -190,6 +211,10 @@ export abstract class Skill {
   private shadowSkill = false;
   private lordSkill = false;
   private uniqueSkill = false;
+  
+  public isEquipCardSkill() {
+    return false;
+  };
 
   constructor(protected name: string, protected description: string) {}
   protected triggerableTimes: number = 0;
@@ -302,7 +327,7 @@ export abstract class TriggerSkill extends Skill {
   public abstract canUse(
     room: Room,
     owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers>,
+    content?: ServerEventFinder<GameEventIdentifiers>,
   ): boolean;
 
   public async onUse(

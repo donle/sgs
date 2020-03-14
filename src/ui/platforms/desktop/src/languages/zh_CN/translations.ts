@@ -15,6 +15,7 @@ export const cardDictionary: Word[] = [
   { source: 'shunshouqianyang', target: '顺手牵羊' },
   { source: 'wuxiekeji', target: '无懈可击' },
   { source: 'wuzhongshengyou', target: '无中生有' },
+  { source: 'baguazhen', target: '八卦阵' },
 ];
 
 export const characterDictionary: Word[] = [
@@ -73,6 +74,10 @@ export const eventDictionary: Word[] = [
   {
     source: 'please choose a character',
     target: '请选择一名武将',
+  },
+  {
+    source: '{0} starts a judge of {1}',
+    target: '{0} 开始了 {2} 的判定',
   },
   {
     source: '{0} got judged card {2} on card {1}',

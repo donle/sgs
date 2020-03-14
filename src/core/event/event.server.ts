@@ -50,6 +50,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.CardResponseEvent]: {
     fromId: PlayerId;
     cardId: CardId;
+    responseToEvent?: ServerEventFinder<GameEventIdentifiers>;
   };
   [GameEventIdentifiers.CardDropEvent]: {
     fromId: PlayerId;
@@ -172,17 +173,21 @@ export interface ServerEvent extends EventUtilities {
     fromId: PlayerId;
   };
   [GameEventIdentifiers.AskForCardResponseEvent]: {
+    toId: PlayerId;
     cardMatcher: CardMatcherSocketPassenger;
     byCardId?: CardId;
     cardUserId?: PlayerId;
-    conversation: string | PatchedTranslationObject,
+    conversation: string | PatchedTranslationObject;
+    triggeredOnEvent?: ServerEventFinder<GameEventIdentifiers>;
   };
 
   [GameEventIdentifiers.AskForCardUseEvent]: {
+    toId: PlayerId;
     byCardId?: CardId;
     cardUserId?: PlayerId;
     cardMatcher: CardMatcherSocketPassenger;
-    conversation: string | PatchedTranslationObject,
+    conversation: string | PatchedTranslationObject;
+    triggeredOnEvent?: ServerEventFinder<GameEventIdentifiers>;
   };
   [GameEventIdentifiers.AskForPinDianCardEvent]: {
     from: PlayerId;

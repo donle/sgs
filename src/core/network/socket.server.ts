@@ -185,12 +185,12 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       const result = toPlayer.AI.onAction(this.room!, type, content);
 
       const asyncResolver =
-      this.asyncResponseResolver[type] &&
-      this.asyncResponseResolver[type][to];
-    if (asyncResolver) {
-      asyncResolver(result);
-      delete this.asyncResponseResolver[type][to];
-    }
+        this.asyncResponseResolver[type] &&
+        this.asyncResponseResolver[type][to];
+      if (asyncResolver) {
+        asyncResolver(result);
+        delete this.asyncResponseResolver[type][to];
+      }
     } else {
       const clientSocket = this.clientIds.find(clientId => clientId === to);
       if (!clientSocket) {
@@ -233,6 +233,12 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
 
   public get ClientIds() {
     return this.clientIds;
+  }
+
+  public cleatSubscriber(identifier: GameEventIdentifiers, to: PlayerId) {
+    if (this.asyncResponseResolver[identifier]) {
+      delete this.asyncResponseResolver[identifier][to];
+    }
   }
 
   public async waitForResponse<T extends GameEventIdentifiers>(

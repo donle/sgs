@@ -1,6 +1,7 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import {
   ClientEventFinder,
+  EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
@@ -57,7 +58,7 @@ export class WanJianQiFaSkill extends ActiveSkill {
   ) {
     const { toIds, fromId, cardId } = event;
 
-    const askForCardEvent: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent> = {
+    const askForCardEvent = {
       cardMatcher: new CardMatcher({
         name: ['jink'],
       }).toSocketPassenger(),
@@ -75,21 +76,22 @@ export class WanJianQiFaSkill extends ActiveSkill {
               'please response a {0} card',
               'jink',
             ).extract(),
+      triggeredBySkillName: this.name,
     };
 
     for (const to of toIds || []) {
-      room.notify(
-        GameEventIdentifiers.AskForCardResponseEvent,
-        askForCardEvent,
+      const result = await room.askForCardResponse(
+        {
+          ...askForCardEvent,
+          toId: to,
+        },
         to,
       );
+      const { terminated, responseEvent } = result;
 
-      const response = await room.onReceivingAsyncReponseFrom(
-        GameEventIdentifiers.AskForCardResponseEvent,
-        to,
-      );
-
-      if (response.cardId === undefined) {
+      if (terminated) {
+        return false;
+      } else if (!responseEvent || responseEvent.cardId === undefined) {
         const eventContent = {
           fromId,
           toId: to,
@@ -110,8 +112,9 @@ export class WanJianQiFaSkill extends ActiveSkill {
       } else {
         const cardResponsedEvent = {
           fromId: to,
-          cardId: response.cardId,
+          cardId: responseEvent.cardId,
         };
+        EventPacker.terminate(event);
 
         await room.responseCard(cardResponsedEvent);
       }

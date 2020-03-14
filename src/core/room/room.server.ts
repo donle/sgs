@@ -1,11 +1,16 @@
 import {
+  CardResponsiveEventIdentifiers,
   ClientEventFinder,
   EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
-import { AllStage, CardUseStage } from 'core/game/stage_processor';
+import {
+  AllStage,
+  CardResponseStage,
+  CardUseStage,
+} from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
 import { Player } from 'core/player/player';
 import { ServerPlayer } from 'core/player/player.server';
@@ -13,6 +18,7 @@ import {
   PlayerCardsArea,
   PlayerId,
   PlayerInfo,
+  PlayerRole,
 } from 'core/player/player_props';
 
 import { CardType } from 'core/cards/card';
@@ -87,6 +93,19 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     for (let i = 0; i < this.players.length; i++) {
       this.players[i].Role = roles[i];
     }
+    const lordIndex = this.players.findIndex(
+      player => player.Role === PlayerRole.Lord,
+    );
+    if (lordIndex !== 0) {
+      [this.players[0], this.players[lordIndex]] = [
+        this.players[lordIndex],
+        this.players[0],
+      ];
+      [this.players[0].Position, this.players[lordIndex].Position] = [
+        this.players[lordIndex].Position,
+        this.players[0].Position,
+      ];
+    }
   }
 
   private readonly sleep = async (timeDuration: number) =>
@@ -119,6 +138,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   public createPlayer(playerInfo: PlayerInfo) {
     const { Id, Name, Position, CharacterId } = playerInfo;
     this.players.push(new ServerPlayer(Id, Name, Position, CharacterId));
+  }
+
+  public clearSocketSubscriber(identifier: GameEventIdentifiers, to: PlayerId) {
+    this.socket.cleatSubscriber(identifier, to);
   }
 
   public notify<I extends GameEventIdentifiers>(
@@ -168,9 +191,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         GameEventIdentifiers
       >;
       const canTriggerSkills: TriggerSkill[] = [];
-      const bySkill =
-        triggeredBySkillName &&
-        Sanguosha.getSkillBySkillName(triggeredBySkillName);
+      const bySkill = triggeredBySkillName
+        ? Sanguosha.getSkillBySkillName(triggeredBySkillName)
+        : undefined;
       for (const equip of player.getCardIds(PlayerCardsArea.EquipArea)) {
         const equipCard = Sanguosha.getCardById(equip);
         if (
@@ -181,6 +204,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           canTriggerSkills.push(equipCard.Skill);
         }
       }
+
       for (const skill of player.getPlayerSkills<TriggerSkill>('trigger')) {
         if (bySkill && UniqueSkillRule.canUseSkillRule(bySkill, skill)) {
           canTriggerSkills.push(skill);
@@ -266,9 +290,63 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     player.equip(card);
   }
 
+  public async askForCardUse(
+    event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>,
+    to: PlayerId,
+  ) {
+    EventPacker.createIdentifierEvent(
+      GameEventIdentifiers.AskForCardUseEvent,
+      event,
+    ),
+      await this.trigger<typeof event>(event);
+    if (EventPacker.isTerminated(event)) {
+      return {
+        terminated: true,
+      };
+    }
+
+    this.notify(GameEventIdentifiers.AskForCardUseEvent, event, to);
+
+    return {
+      responseEvent: await this.onReceivingAsyncReponseFrom(
+        GameEventIdentifiers.AskForCardUseEvent,
+        to,
+      ),
+    };
+  }
+  public async askForCardResponse(
+    event: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>,
+    to: PlayerId,
+  ) {
+    EventPacker.createIdentifierEvent(
+      GameEventIdentifiers.AskForCardResponseEvent,
+      event,
+    ),
+      await this.trigger<typeof event>(event);
+    if (EventPacker.isTerminated(event)) {
+      return {
+        terminated: true,
+      };
+    }
+
+    this.notify(GameEventIdentifiers.AskForCardResponseEvent, event, to);
+
+    return {
+      responseEvent: await this.onReceivingAsyncReponseFrom(
+        GameEventIdentifiers.AskForCardResponseEvent,
+        to,
+      ),
+    };
+  }
+
   public async useCard(
     content: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
   ) {
+    EventPacker.createIdentifierEvent(
+      GameEventIdentifiers.CardUseEvent,
+      content,
+    );
+
     await super.useCard(content);
     const from = this.getPlayerById(content.fromId);
     const card = Sanguosha.getCardById(content.cardId);
@@ -332,7 +410,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               }
             }
           } else {
-            if (!card.is(CardType.DelayedTrick)) {
+            if (!card.is(CardType.DelayedTrick) && !card.is(CardType.Equip)) {
               await this.gameProcessor.onHandleIncomingEvent(
                 GameEventIdentifiers.CardEffectEvent,
                 content,
@@ -472,6 +550,22 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.dropStack.push(...cardIds);
   }
 
+  public async loseCards(
+    cardIds: CardId[],
+    playerId?: PlayerId,
+    droppedBy?: PlayerId,
+  ) {
+    const loseEvent: ServerEventFinder<GameEventIdentifiers.CardLoseEvent> = {
+      cardIds,
+      fromId: playerId || this.CurrentPlayer.Id,
+      droppedBy,
+    };
+    await this.gameProcessor.onHandleIncomingEvent(
+      GameEventIdentifiers.CardLoseEvent,
+      loseEvent,
+    );
+  }
+
   public async obtainCards(
     cardIds: CardId[],
     to: PlayerId,
@@ -597,21 +691,29 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   public async responseCard(
     event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>,
   ): Promise<void> {
+    EventPacker.createIdentifierEvent(
+      GameEventIdentifiers.CardResponseEvent,
+      event,
+    );
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.CardResponseEvent,
       event,
+      async stage => {
+        if (stage === CardResponseStage.AfterCardResponseEffect) {
+          if (event.responseToEvent) {
+            EventPacker.terminate(event.responseToEvent);
+            return false;
+          }
+        }
+
+        return true;
+      },
     );
   }
 
   public async judge(
     event: ServerEventFinder<GameEventIdentifiers.JudgeEvent>,
   ): Promise<void> {
-    event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} starts a judge of {1}',
-      this.getPlayerById(event.toId).Character.Name,
-      TranslationPack.patchCardInTranslation(event.cardId),
-    ).extract();
-
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.JudgeEvent,
       event,

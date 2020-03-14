@@ -40,11 +40,10 @@ export class JinkSkill extends ResponsiveSkill {
     event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
   ) {
     const { responseToEvent } = event;
-    if (responseToEvent === undefined) {
-      throw new Error('Unavble to get slash use event when jin is on effect');
+    if (responseToEvent !== undefined) {
+      EventPacker.terminate(responseToEvent);
     }
 
-    EventPacker.terminate(responseToEvent);
     return true;
   }
 }

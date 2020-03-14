@@ -1,4 +1,4 @@
-import { Card } from 'core/cards/card';
+import { Card, CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import {
@@ -25,12 +25,14 @@ export class Action {
     | undefined;
   constructor(private store: RoomStore, private presenter: RoomPresenter) {}
 
-  private readonly endAction = () => {
+  public readonly endAction = () => {
     this.selectedAction = undefined;
     this.selectedPlayCard = undefined;
     this.selectSkill = undefined;
     this.selectedActionCards = [];
     this.selectedTargets = [];
+    this.presenter.closeDialog();
+    this.presenter.closeIncomingConversation();
     this.presenter.setupPlayersSelectionMatcher(() => false);
     this.presenter.setupClientPlayerCardActionsMatcher(() => () => false);
     this.presenter.disableActionButton('confirm');
@@ -38,8 +40,15 @@ export class Action {
   };
 
   private readonly updateClickActionStatus = () => {
+    let canActivateSkill = false;
     if (!this.selectedPlayCard) {
       return this.presenter.disableActionButton('confirm');
+    } else {
+      canActivateSkill =
+        this.presenter.ClientPlayer!.cardFrom(this.selectedPlayCard.Id) ===
+        PlayerCardsArea.EquipArea
+          ? false
+          : this.selectedPlayCard.is(CardType.Equip);
     }
 
     const { Skill: skill } = this.selectedPlayCard;
@@ -48,14 +57,15 @@ export class Action {
     }
 
     const canUse =
-      skill.cardFilter(
+      canActivateSkill ||
+      (skill.cardFilter(
         this.store.room,
         this.selectedActionCards.map(c => c.Id),
       ) &&
-      skill.targetFilter(
-        this.store.room,
-        this.selectedTargets.map(p => p.Id),
-      );
+        skill.targetFilter(
+          this.store.room,
+          this.selectedTargets.map(p => p.Id),
+        ));
 
     canUse
       ? this.presenter.enableActionButton('confirm')
@@ -332,7 +342,7 @@ export class Action {
     this.presenter.createIncomingConversation({
       conversation: content.conversation,
       translator,
-    })
+    });
 
     this.presenter.defineConfirmButtonActions(() => {
       const playEvent = this.createCardOrSkillUseEvent(who);

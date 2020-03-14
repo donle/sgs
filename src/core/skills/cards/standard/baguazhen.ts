@@ -1,6 +1,5 @@
 import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { CharacterNationality } from 'core/characters/character';
 import {
   ClientEventFinder,
   EventPacker,
@@ -10,11 +9,12 @@ import {
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { CommonSkill, LordSkill, TriggerSkill } from 'core/skills/skill';
+import { CommonSkill, EquipCardSkilll, TriggerSkill } from 'core/skills/skill';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
-@LordSkill
-export class Hujia extends TriggerSkill {
+@EquipCardSkilll()
+export class BaGuaZhenSkill extends TriggerSkill {
   public isAutoTrigger() {
     return false;
   }
@@ -33,17 +33,21 @@ export class Hujia extends TriggerSkill {
   }
 
   constructor() {
-    super('hujia', 'hujia_description');
+    super('baguazhen', 'baguazhen_description');
   }
 
   canUse(
     room: Room,
     owner: Player,
-    content: ServerEventFinder<
+    content?: ServerEventFinder<
       | GameEventIdentifiers.AskForCardResponseEvent
       | GameEventIdentifiers.AskForCardUseEvent
     >,
   ) {
+    if (!content) {
+      return true;
+    }
+
     const { cardMatcher } = content;
     return (
       owner.Id === content.toId &&
@@ -60,6 +64,12 @@ export class Hujia extends TriggerSkill {
     room: Room,
     event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
   ) {
+    event.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} used skill {1}',
+      room.getPlayerById(event.fromId).Character.Name,
+      this.name,
+    ).extract();
+
     return true;
   }
 
@@ -81,50 +91,44 @@ export class Hujia extends TriggerSkill {
       throw new Error(`Unwrapped event without identifier in ${this.name}`);
     }
 
-    for (const player of room.getAlivePlayersFrom()) {
-      if (
-        player.Nationality === CharacterNationality.Wei &&
-        player.Id !== fromId
-      ) {
-        room.notify(identifier, jinkCardEvent, player.Id);
+    const judgeCardId = room.getCards(1, 'top')[0];
+    const judgeEvent: ServerEventFinder<GameEventIdentifiers.JudgeEvent> = {
+      toId: event.fromId,
+      judgeCardId,
+      cardId: jinkCardEvent.byCardId!,
+    };
 
-        const response = await room.onReceivingAsyncReponseFrom(
-          identifier,
-          player.Id,
-        );
+    await room.judge(judgeEvent);
 
-        if (response.cardId !== undefined) {
-          const responseCard = Sanguosha.getCardById(response.cardId);
+    if (Sanguosha.getCardById(judgeCardId).isRed()) {
+      const jink = VirtualCard.create({
+        cardName: 'jink',
+      });
 
-          const cardUseEvent = {
-            cardId: VirtualCard.create({
-              cardName: responseCard.Name,
-              cardNumber: responseCard.CardNumber,
-              cardSuit: responseCard.Suit,
-            }).Id,
-            fromId,
-            responseToEvent: jinkCardEvent.triggeredOnEvent,
-          };
+      const cardUseEvent = {
+        cardId: jink.Id,
+        fromId,
+        responseToEvent: jinkCardEvent,
+      };
 
-          await room.responseCard(
-            EventPacker.createIdentifierEvent(
-              GameEventIdentifiers.CardResponseEvent,
-              { ...cardUseEvent, fromId: response.fromId },
-            ),
-          );
+      await room.responseCard(
+        EventPacker.createIdentifierEvent(
+          GameEventIdentifiers.CardResponseEvent,
+          { ...cardUseEvent, fromId: event.fromId },
+        ),
+      );
 
-          if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
-            await room.useCard(cardUseEvent);
-            EventPacker.terminate(jinkCardEvent);
-          } else {
-            await room.responseCard(cardUseEvent);
-            EventPacker.terminate(jinkCardEvent);
-          }
-
-          return !EventPacker.isTerminated(cardUseEvent);
-        }
+      if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
+        await room.useCard(cardUseEvent);
+        EventPacker.terminate(jinkCardEvent);
+      } else {
+        await room.responseCard(cardUseEvent);
+        EventPacker.terminate(jinkCardEvent);
       }
+
+      return !EventPacker.isTerminated(cardUseEvent);
     }
+
     return true;
   }
 }

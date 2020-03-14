@@ -6,7 +6,11 @@ import {
   PlayerId,
   PlayerInfo,
 } from 'core/player/player_props';
-import { EventUtilities, GameEventIdentifiers } from './event';
+import {
+  EventUtilities,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from './event';
 
 export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.CardUseEvent]: {
@@ -14,6 +18,7 @@ export interface ClientEvent extends EventUtilities {
     cardId: CardId;
     toIds?: PlayerId[];
     toCardIds?: CardId[];
+    responseToEvent?: ServerEventFinder<GameEventIdentifiers>;
   };
   [GameEventIdentifiers.CardEffectEvent]: {
     fromId?: PlayerId;

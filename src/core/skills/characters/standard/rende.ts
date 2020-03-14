@@ -132,7 +132,9 @@ export class Rende extends ActiveSkill {
 
         const slashUseEvent = {
           fromId: from.Id,
-          cardId: VirtualCard.create(response.selectedOption).Id,
+          cardId: VirtualCard.create({
+            cardName: response.selectedOption,
+          }).Id,
           toIds: [choosePlayerResponse.selectedPlayer!],
         };
 
@@ -140,7 +142,9 @@ export class Rende extends ActiveSkill {
       } else {
         const cardUseEvent = {
           fromId: from.Id,
-          cardId: VirtualCard.create(response.selectedOption!).Id,
+          cardId: VirtualCard.create({
+            cardName: response.selectedOption!,
+          }).Id,
         };
 
         await room.useCard(cardUseEvent);

@@ -12,7 +12,14 @@ export class HongYan extends TransformSkill {
   public forceToTransformCardTo(cardId: CardId) {
     const card = Sanguosha.getCardById(cardId);
     if (card.Suit === CardSuit.Spade) {
-      return VirtualCard.create(card.Name, [cardId]);
+      return VirtualCard.create(
+        {
+          cardName: card.Name,
+          cardNumber: card.CardNumber,
+          cardSuit: CardSuit.Heart,
+        },
+        [cardId],
+      );
     }
     return card;
   }

@@ -1,6 +1,7 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import {
   ClientEventFinder,
+  EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
@@ -57,7 +58,7 @@ export class NanManRuQingSkill extends ActiveSkill {
   ) {
     const { toIds, fromId, cardId } = event;
 
-    const askForCardEvent: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent> = {
+    const askForCardEvent = {
       cardMatcher: new CardMatcher({
         name: ['slash'],
       }).toSocketPassenger(),
@@ -75,21 +76,23 @@ export class NanManRuQingSkill extends ActiveSkill {
               'please response a {0} card',
               'slash',
             ).extract(),
+      triggeredBySkillName: this.name,
     };
 
     for (const to of toIds!) {
-      room.notify(
-        GameEventIdentifiers.AskForCardResponseEvent,
-        askForCardEvent,
+      const result = await room.askForCardResponse(
+        {
+          ...askForCardEvent,
+          toId: to,
+        },
         to,
       );
 
-      const response = await room.onReceivingAsyncReponseFrom(
-        GameEventIdentifiers.AskForCardResponseEvent,
-        to,
-      );
+      const { terminated, responseEvent } = result;
 
-      if (response.cardId === undefined) {
+      if (terminated) {
+        return false;
+      } else if (!responseEvent || responseEvent.cardId === undefined) {
         const eventContent = {
           fromId,
           toId: to,
@@ -103,8 +106,9 @@ export class NanManRuQingSkill extends ActiveSkill {
       } else {
         const cardResponsedEvent: ServerEventFinder<GameEventIdentifiers.CardResponseEvent> = {
           fromId: to,
-          cardId: response.cardId,
+          cardId: responseEvent.cardId,
         };
+        EventPacker.terminate(event);
 
         await room.responseCard(cardResponsedEvent);
       }

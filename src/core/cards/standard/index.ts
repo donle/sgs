@@ -1,6 +1,7 @@
 import { GameCardExtensions } from 'core/game/game_props';
 import { CardPackage } from 'core/game/package_loader/loader.cards';
 import { CardSuit } from '../libs/card_props';
+import { BaGuaZhen } from './baguazhen';
 import { GuoHeChaiQiao } from './guohechaiqiao';
 import { Jink } from './jink';
 import { Lightning } from './lightning';
@@ -98,10 +99,18 @@ export const StandardCardPackage: (
     new WuXieKeJi(index++, 12, CardSuit.Club),
     new WuXieKeJi(index++, 13, CardSuit.Club),
 
+    new WuXieKeJi(index++, 11, CardSuit.Spade),
+    new WuXieKeJi(index++, 12, CardSuit.Club),
+    new WuXieKeJi(index++, 13, CardSuit.Club),
+    new WuXieKeJi(index++, 12, CardSuit.Diamond),
+
     new WuZhongShengYou(index++, 7, CardSuit.Heart),
     new WuZhongShengYou(index++, 8, CardSuit.Heart),
     new WuZhongShengYou(index++, 9, CardSuit.Heart),
     new WuZhongShengYou(index++, 11, CardSuit.Heart),
+
+    new BaGuaZhen(index++, 2, CardSuit.Spade),
+    new BaGuaZhen(index++, 2, CardSuit.Club),
 
     new ZiXin(index++, 13, CardSuit.Diamond),
     new QingGang(index++, 6, CardSuit.Spade),

@@ -129,6 +129,14 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   public isBuried(): any {
     this.throwUntouchableError(this.isBuried.name);
   }
+  //Server only
+  public async askForCardUse(): Promise<any> {
+    this.throwUntouchableError(this.askForCardUse.name);
+  }
+  //Server only
+  public async askForCardResponse(): Promise<any> {
+    this.throwUntouchableError(this.askForCardResponse.name);
+  }
 
   public broadcast<T extends GameEventIdentifiers>(
     type: T,

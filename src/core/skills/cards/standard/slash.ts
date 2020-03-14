@@ -70,6 +70,7 @@ export class SlashSkill extends ActiveSkill {
     const { toIds, fromId, cardId } = event;
     for (const toId of toIds || []) {
       const askForUseCardEvent = {
+        toId,
         cardMatcher: new CardMatcher({ name: ['jink'] }).toSocketPassenger(),
         byCardId: cardId,
         cardUserId: fromId,
@@ -86,23 +87,18 @@ export class SlashSkill extends ActiveSkill {
                 'please use a {0} card to response {1}',
                 TranslationPack.patchCardInTranslation(cardId),
               ).extract(),
+        triggeredOnEvent: event,
       };
 
-      room.notify(
-        GameEventIdentifiers.AskForCardUseEvent,
-        askForUseCardEvent,
-        toId,
-      );
-
-      const response = await room.onReceivingAsyncReponseFrom(
-        GameEventIdentifiers.AskForCardUseEvent,
-        toId,
-      );
-
-      if (response.cardId !== undefined) {
+      const result = await room.askForCardUse(askForUseCardEvent, toId);
+      const { terminated, responseEvent } = result;
+      if (terminated) {
+        return false;
+      } else if (responseEvent && responseEvent.cardId !== undefined) {
         await room.useCard({
           fromId: toId,
-          cardId: response.cardId,
+          cardId: responseEvent.cardId,
+          responseToEvent: event,
         });
 
         return false;

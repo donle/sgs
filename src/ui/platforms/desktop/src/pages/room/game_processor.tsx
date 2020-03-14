@@ -38,11 +38,16 @@ export class GameClientProcessor {
     }
   }
 
+  private onClearPreviousActionStatus() {
+    this.actionHandler.endAction();
+  }
+
   async onHandleIncomingEvent<T extends GameEventIdentifiers>(
     e: T,
     content: ServerEventFinder<T>,
   ) {
     this.tryToThrowNotReadyException(e);
+    this.onClearPreviousActionStatus();
     switch (e) {
       case GameEventIdentifiers.GameReadyEvent:
         this.onHandleGameReadyEvent(e as any, content);

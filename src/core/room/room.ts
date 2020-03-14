@@ -19,6 +19,11 @@ import { FilterSkill } from 'core/skills/skill';
 
 export type RoomId = number;
 
+export type ResponsiveTriggeredResult<T extends GameEventIdentifiers> = {
+  terminated?: boolean;
+  responseEvent?: ClientEventFinder<T>;
+};
+
 export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected abstract readonly socket: Socket<T>;
   protected abstract readonly gameInfo: GameInfo;
@@ -131,6 +136,20 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     playerId: PlayerId,
     updateActions: (user: Player) => void,
   ): void;
+  //Server only
+  public abstract async askForCardUse<
+    T extends GameEventIdentifiers.AskForCardUseEvent
+  >(
+    event: ServerEventFinder<T>,
+    to: PlayerId,
+  ): Promise<ResponsiveTriggeredResult<T>>;
+  //Server only
+  public abstract async askForCardResponse<
+    T extends GameEventIdentifiers.AskForCardResponseEvent
+  >(
+    event: ServerEventFinder<T>,
+    to: PlayerId,
+  ): Promise<ResponsiveTriggeredResult<T>>;
 
   public getCardOwnerId(card: CardId) {
     for (const player of this.AlivePlayers) {

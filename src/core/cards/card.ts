@@ -85,6 +85,10 @@ export abstract class Card {
   public isVirtualCard() {
     return false;
   }
+
+  public static isVirtualCardId(id: CardId) {
+    return typeof id === 'string';
+  }
 }
 
 export const enum CardType {
@@ -124,15 +128,21 @@ export class VirtualCard<T extends Card = Card> extends Card {
   private viewAsRedCard: boolean = true;
 
   constructor(
-    viewAsCardName: string,
+    viewAsOptions: {
+      cardName: string;
+      cardSuit?: CardSuit;
+      cardNumber?: number;
+    },
     private cardIds: CardId[],
     skill?: Skill,
   ) {
     super();
 
-    const viewAsCard = Sanguosha.getCardByName(viewAsCardName) as T;
+    const { cardName, cardNumber, cardSuit } = viewAsOptions;
+
+    const viewAsCard = Sanguosha.getCardByName(cardName) as T;
     if (!viewAsCard) {
-      throw new Error(`Unable to init virtual card: ${viewAsCardName}`);
+      throw new Error(`Unable to init virtual card: ${cardName}`);
     }
 
     this.fromPackage = viewAsCard.Package;
@@ -144,7 +154,11 @@ export class VirtualCard<T extends Card = Card> extends Card {
     this.cardType = this.viewAs.Type;
     this.effectUseDistance = this.viewAs.EffectUseDistance;
 
-    if (this.cardIds.length === 1) {
+    this.cardNumber = cardNumber || 0;
+
+    if (cardSuit !== undefined) {
+      this.suit = cardSuit;
+    } else if (this.cardIds.length === 1) {
       const card = Sanguosha.getCardById(this.cardIds[0]);
       this.cardNumber = card.CardNumber;
       this.suit = card.Suit;
@@ -182,15 +196,27 @@ export class VirtualCard<T extends Card = Card> extends Card {
       parsedId.skillName !== undefined
         ? Sanguosha.getSkillBySkillName(parsedId.skillName)
         : undefined;
-    return VirtualCard.create(parsedId.name, parsedId.containedCardIds, skill);
+    return VirtualCard.create(
+      {
+        cardName: parsedId.name,
+        cardNumber: parsedId.cardNumber,
+        cardSuit: parsedId.cardSuit,
+      },
+      parsedId.containedCardIds,
+      skill,
+    );
   }
 
   public static create(
-    viewAsCardName: string,
+    viewAsOptions: {
+      cardName: string;
+      cardSuit?: CardSuit;
+      cardNumber?: number;
+    },
     cardIds: CardId[] = [],
     skill?: Skill,
   ) {
-    return new VirtualCard(viewAsCardName, cardIds, skill);
+    return new VirtualCard(viewAsOptions, cardIds, skill);
   }
 
   public isBlack() {
@@ -203,6 +229,8 @@ export class VirtualCard<T extends Card = Card> extends Card {
 
   public get Id(): VirtualCardId {
     const virtualCardIdJSONObject: VirtualCardIdProps = {
+      cardNumber: this.cardNumber,
+      cardSuit: this.suit,
       name: this.name,
       skillName: this.skill.Name,
       containedCardIds: this.cardIds,
