@@ -57,7 +57,7 @@ export class JiJiang extends ActiveSkill {
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     for (const player of room.getAlivePlayersFrom()) {
-      if (player === room.CurrentPlayer || player.Nationality !== CharacterNationality.Shu) {
+      if (player.Id === skillUseEvent.fromId || player.Nationality !== CharacterNationality.Shu) {
         continue;
       }
 

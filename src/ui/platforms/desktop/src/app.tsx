@@ -17,7 +17,7 @@ export const App = (props: { config: ClientConfigTypes; translator: ClientTransl
     <Router history={customHistory}>
       <div>
         <Switch>
-          <Route path='/' exact>
+          <Route path={'/'} exact>
             <Redirect to={'lobby'} />
           </Route>
           <Route

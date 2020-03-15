@@ -134,25 +134,6 @@ export function TriggerableTimes<T extends Skill>(times: number) {
   };
 }
 
-export function EquipCardSkilll<T extends Skill>(options?: { onEquip?(): void }) {
-  return (constructorFunction: SKillConstructor<T>) => {
-    const constructor = constructorFunction as any;
-
-    return class extends constructor implements IEquipCardSkill {
-      public isEquipCardSkill() {
-        return true;
-      }
-
-      // tslint:disable-next-line:no-empty
-      public readonly onEquip = (options && options.onEquip) || (() => {});
-    } as any;
-  };
-}
-export interface IEquipCardSkill {
-  onEquip(): void;
-  isEquipCardSkill(): boolean;
-}
-
 export type SkillPrototype<T extends Skill> = new () => T;
 
 export abstract class Skill {

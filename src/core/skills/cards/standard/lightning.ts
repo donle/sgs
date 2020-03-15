@@ -77,7 +77,7 @@ export class LightningSkill extends ActiveSkill {
     const judgeCard = room.getCards(1, 'top')[0];
 
     const judgeEvent: ServerEventFinder<GameEventIdentifiers.JudgeEvent> = {
-      cardId,
+      bySkill: this.name,
       judgeCardId: judgeCard,
       toId: toIds![0],
     };
@@ -105,7 +105,7 @@ export class LightningSkill extends ActiveSkill {
       );
       room.getPlayerById(judgeEvent.toId).dropCards(cardId);
     } else {
-      await this.moveToNextPlayer(room, judgeEvent.cardId, judgeEvent.toId);
+      await this.moveToNextPlayer(room, judgeEvent.judgeCardId, judgeEvent.toId);
     }
     return true;
   }

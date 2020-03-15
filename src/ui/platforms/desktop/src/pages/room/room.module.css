@@ -66,7 +66,7 @@
 .cardLine {
     margin: 16px 8px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
 }
 
 .selectorCard {

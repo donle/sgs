@@ -11,12 +11,13 @@ import { App } from './app';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
-import './emoji_loader';
+import { emojiLoader } from './emoji_loader/emoji_loader';
 
 const mode = (process.env.DEV_MODE as DevMode) || DevMode.Dev;
 const config = getClientConfg(mode);
 
 const translator = ClientTranslationModule.setup(config.ui.language, [Languages.ZH_CN, SimplifiedChinese]);
+emojiLoader(translator);
 
 Sanguosha.initialize();
 

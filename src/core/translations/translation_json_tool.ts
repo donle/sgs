@@ -1,4 +1,4 @@
-import { CardId } from 'core/cards/libs/card_props';
+import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
 
 export const enum Languages {
@@ -19,19 +19,8 @@ export type TranslationsDictionary = {
   [k: string]: string;
 };
 
-type EmojiOrImageTranslationDictionary = {
-  [k: string]: string;
-};
-
-export type TranslatedCardObject = {
-  suitImageUrl: string;
-  cardNumber: string;
-  cardName: string;
-};
-
 export class TranslationPack {
   private constructor(private translationJon: PatchedTranslationObject) {}
-  private static emojiOrImageTextDict: EmojiOrImageTranslationDictionary = {};
   public static readonly translationObjectSign = '@@translate:';
   public static readonly translateCardObjectSign = TranslationPack.translationObjectSign + 'card:';
   public static readonly translateTextArraySign = TranslationPack.translationObjectSign + 'array:';
@@ -83,7 +72,7 @@ export class TranslationPack {
       JSON.stringify(
         cardIds.map(cardId => {
           const card = Sanguosha.getCardById(cardId);
-          return `${TranslationPack.patchEmojiOrImageInTranslation(card.Suit)} ${card.CardNumber} ${card.Name}`;
+          return `${card.Name} ${TranslationPack.patchEmojiOrImageInTranslation(card.Suit)} ${card.CardNumber}`;
         }),
       )
     );
@@ -97,30 +86,12 @@ export class TranslationPack {
     return text.startsWith(TranslationPack.translateTextArraySign);
   }
 
-  public static translatePatchedCardText(text: string, dictionary: TranslationsDictionary): TranslatedCardObject[] {
-    const cardObjects: TranslatedCardObject[] = [];
-    const cardTextArray: string[] = JSON.parse(text.slice(TranslationPack.translateCardObjectSign.length));
-
-    for (const cardText of cardTextArray) {
-      const [cardSuitString, cardNumber, cardName] = cardText.split(' ');
-      cardObjects.push({
-        suitImageUrl: TranslationPack.emojiOrImageTextDict[cardSuitString],
-        cardNumber,
-        cardName: dictionary[cardName] || cardName,
-      });
-    }
-
-    return cardObjects;
-  }
-
   public static patchEmojiOrImageInTranslation(rawText: string | number) {
     return TranslationPack.translateCardObjectSign + rawText;
   }
 
-  public static addEmojiOrImageSymbolText(...symbolTextPair: [string | number, string][]) {
-    for (const [rawText, translatePath] of symbolTextPair) {
-      TranslationPack.emojiOrImageTextDict[TranslationPack.patchEmojiOrImageInTranslation(rawText)] = translatePath;
-    }
+  public static dispatchEmojiOrImageInTranslation(rawText: string): CardSuit {
+    return parseInt(rawText.slice(TranslationPack.translateCardObjectSign.length), 10);
   }
 
   public static dispatch(wrappedString: string) {

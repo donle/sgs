@@ -4,11 +4,10 @@ import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { CommonSkill, EquipCardSkilll, TriggerSkill } from 'core/skills/skill';
+import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
-@EquipCardSkilll()
 export class BaGuaZhenSkill extends TriggerSkill {
   public isAutoTrigger() {
     return false;
@@ -76,7 +75,7 @@ export class BaGuaZhenSkill extends TriggerSkill {
     const judgeEvent: ServerEventFinder<GameEventIdentifiers.JudgeEvent> = {
       toId: event.fromId,
       judgeCardId,
-      cardId: jinkCardEvent.byCardId!,
+      bySkill: this.name,
     };
 
     await room.judge(judgeEvent);
@@ -91,13 +90,6 @@ export class BaGuaZhenSkill extends TriggerSkill {
         fromId,
         responseToEvent: jinkCardEvent,
       };
-
-      await room.responseCard(
-        EventPacker.createIdentifierEvent(GameEventIdentifiers.CardResponseEvent, {
-          ...cardUseEvent,
-          fromId: event.fromId,
-        }),
-      );
 
       if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
         await room.useCard(cardUseEvent);

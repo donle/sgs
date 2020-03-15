@@ -57,8 +57,8 @@ export class RoomPage extends React.Component<
     });
 
     clientActiveListenerEvents().forEach(identifier => {
-      this.socket.on(identifier, (content: ServerEventFinder<GameEventIdentifiers>) => {
-        this.gameProcessor.onHandleIncomingEvent(identifier, content);
+      this.socket.on(identifier, async (content: ServerEventFinder<GameEventIdentifiers>) => {
+        await this.gameProcessor.onHandleIncomingEvent(identifier, content);
         this.showMessageFromEvent(content);
       });
     });

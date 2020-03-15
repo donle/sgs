@@ -34,27 +34,28 @@ export class GameClientProcessor {
   async onHandleIncomingEvent<T extends GameEventIdentifiers>(e: T, content: ServerEventFinder<T>) {
     this.tryToThrowNotReadyException(e);
     this.onClearPreviousActionStatus();
+    console.log(e, content);
     switch (e) {
       case GameEventIdentifiers.GameReadyEvent:
-        this.onHandleGameReadyEvent(e as any, content);
+        await this.onHandleGameReadyEvent(e as any, content);
         break;
       case GameEventIdentifiers.GameStartEvent:
-        this.onHandleGameStartEvent(e as any, content);
+        await this.onHandleGameStartEvent(e as any, content);
         break;
       case GameEventIdentifiers.PlayerEnterEvent:
-        this.onHandlePlayerEnterEvent(e as any, content);
+        await this.onHandlePlayerEnterEvent(e as any, content);
         break;
       case GameEventIdentifiers.PlayerLeaveEvent:
-        this.onHandlePlayerLeaveEvent(e as any, content);
+        await this.onHandlePlayerLeaveEvent(e as any, content);
         break;
       case GameEventIdentifiers.AskForChooseCharacterEvent:
-        this.onHandleChooseCharacterEvent(e as any, content);
+        await this.onHandleChooseCharacterEvent(e as any, content);
         break;
       case GameEventIdentifiers.DrawCardEvent:
-        this.onHandleDrawCardsEvent(e as any, content);
+        await this.onHandleDrawCardsEvent(e as any, content);
         break;
       case GameEventIdentifiers.AskForPlayCardsOrSkillsEvent:
-        this.onHandlePlayCardStage(e as any, content);
+        await this.onHandlePlayCardStage(e as any, content);
         break;
       case GameEventIdentifiers.PhaseChangeEvent:
         this.onHandlePhaseChangeEvent(e as any, content);
@@ -63,34 +64,34 @@ export class GameClientProcessor {
         await this.onHandleCardUseEvent(e as any, content);
         break;
       case GameEventIdentifiers.CardResponseEvent:
-        this.onHandleCardResponseEvent(e as any, content);
+        await this.onHandleCardResponseEvent(e as any, content);
         break;
       case GameEventIdentifiers.CardDropEvent:
-        this.onHandleCardDropEvent(e as any, content);
+        await this.onHandleCardDropEvent(e as any, content);
         break;
       case GameEventIdentifiers.ObtainCardEvent:
-        this.onHandelObtainCardEvent(e as any, content);
+        await this.onHandelObtainCardEvent(e as any, content);
         break;
       case GameEventIdentifiers.EquipEvent:
-        this.onHandleEquipEvent(e as any, content);
+        await this.onHandleEquipEvent(e as any, content);
         break;
       case GameEventIdentifiers.DamageEvent:
-        this.onHandleDamageEvent(e as any, content);
+        await this.onHandleDamageEvent(e as any, content);
         break;
       case GameEventIdentifiers.RecoverEvent:
-        this.onHandleRecoverEvent(e as any, content);
+        await this.onHandleRecoverEvent(e as any, content);
         break;
       case GameEventIdentifiers.AskForCardUseEvent:
-        this.onHandleAskForCardUseEvent(e as any, content);
+        await this.onHandleAskForCardUseEvent(e as any, content);
         break;
       case GameEventIdentifiers.AskForCardResponseEvent:
-        this.onHandleAskForCardResponseEvent(e as any, content);
+        await this.onHandleAskForCardResponseEvent(e as any, content);
         break;
       case GameEventIdentifiers.AskForCardDropEvent:
         await this.onHandleAskForCardDropEvent(e as any, content);
         break;
       case GameEventIdentifiers.AskForInvokeEvent:
-        this.onHandleAskForInvokeEvent(e as any, content);
+        await this.onHandleAskForInvokeEvent(e as any, content);
         break;
       case GameEventIdentifiers.SkillUseEvent:
         await this.onHandleSkillUseEvent(e as any, content);
@@ -413,7 +414,7 @@ export class GameClientProcessor {
             {cardLine}
           </div>,
         );
-      } else if (cardIds === undefined) {
+      } else if (cardIds === undefined || cardIds.length === 0) {
         continue;
       } else {
         const cardLine: JSX.Element[] = [];
@@ -421,12 +422,12 @@ export class GameClientProcessor {
           cardLine.push(
             <CardSlot from={parseInt(area, 10)} key={cardId} card={Sanguosha.getCardById(cardId)} onClick={onClick} />,
           );
-          optionCardsLine.push(
-            <div className={styles.cardLine} key={optionCardsLine.length}>
-              {cardLine}
-            </div>,
-          );
         }
+        optionCardsLine.push(
+          <div className={styles.cardLine} key={optionCardsLine.length}>
+            {cardLine}
+          </div>,
+        );
       }
     }
     return <div className={styles.cardSelector}>{optionCardsLine}</div>;

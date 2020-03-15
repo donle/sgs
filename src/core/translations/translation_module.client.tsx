@@ -1,8 +1,21 @@
+import { CardSuit } from 'core/cards/libs/card_props';
 import * as React from 'react';
 import { Languages, TranslationPack, TranslationsDictionary } from './translation_json_tool';
 import { TranslationModule } from './translation_module';
 
+export type TranslatedCardObject = {
+  cardSuit: CardSuit;
+  suitElement: JSX.Element;
+  cardNumber: string;
+  cardName: string;
+};
+type EmojiOrImageTranslationDictionary = {
+  [k: string]: JSX.Element;
+};
+
 export class ClientTranslationModule extends TranslationModule {
+  private emojiOrImageTextDict: EmojiOrImageTranslationDictionary = {};
+
   public static setup(currentLanguage: Languages, ...dictionaries: [Languages, TranslationsDictionary][]) {
     const translator = new ClientTranslationModule(...dictionaries);
     translator.currentLanguage = currentLanguage;
@@ -11,6 +24,7 @@ export class ClientTranslationModule extends TranslationModule {
   }
 
   private static readonly uniquNumberOnCard = {
+    0: '',
     1: 'A',
     11: 'J',
     12: 'Q',
@@ -18,7 +32,34 @@ export class ClientTranslationModule extends TranslationModule {
   };
 
   public static getCardNumber(cardNumber: number): string {
-    return ClientTranslationModule.uniquNumberOnCard[cardNumber] || cardNumber.toString();
+    const numberString = ClientTranslationModule.uniquNumberOnCard[cardNumber];
+    return numberString === undefined ? cardNumber.toString() : numberString;
+  }
+
+  public addEmojiOrImageSymbolText(...symbolTextPair: [string | number, JSX.Element][]) {
+    for (const [rawText, translatePath] of symbolTextPair) {
+      this.emojiOrImageTextDict[TranslationPack.patchEmojiOrImageInTranslation(rawText)] = translatePath;
+    }
+  }
+  public getEmojiOrImageSymbolText(symbolText: string | number) {
+    return this.emojiOrImageTextDict[symbolText];
+  }
+
+  public translatePatchedCardText(text: string, dictionary: TranslationsDictionary): TranslatedCardObject[] {
+    const cardObjects: TranslatedCardObject[] = [];
+    const cardTextArray: string[] = JSON.parse(text.slice(TranslationPack.translateCardObjectSign.length));
+
+    for (const cardText of cardTextArray) {
+      const [cardName, cardSuitString, cardNumber] = cardText.split(' ');
+      cardObjects.push({
+        cardSuit: TranslationPack.dispatchEmojiOrImageInTranslation(cardSuitString),
+        suitElement: this.getEmojiOrImageSymbolText(cardSuitString),
+        cardNumber,
+        cardName: dictionary[cardName] || cardName,
+      });
+    }
+
+    return cardObjects;
   }
 
   public trx(rawText: string): JSX.Element {
@@ -39,30 +80,32 @@ export class ClientTranslationModule extends TranslationModule {
       return <span>{this.tr(rawText)}</span>;
     }
 
-    const emojiStyle: React.CSSProperties = {
-      height: 12,
-      width: 12,
-    };
     const commonTextStyle: React.CSSProperties = {
       padding: '0 4px',
     };
     const boldTextStyle: React.CSSProperties = {
       fontWeight: 550,
     };
+    const getCardNumberStyle = (cardSuit: CardSuit): React.CSSProperties => {
+      const style: React.CSSProperties = boldTextStyle;
+      if (cardSuit === CardSuit.Heart || cardSuit === CardSuit.Diamond) {
+        return {
+          ...style,
+          color: 'red',
+        };
+      }
+      return style;
+    };
 
     const textCombinations: JSX.Element[] = dispatchedObject.params.map(param => {
       if (typeof param === 'string' && dictionary && TranslationPack.isCardObjectText(param)) {
-        const translatedCardObject = TranslationPack.translatePatchedCardText(param, dictionary);
+        const translatedCardObject = this.translatePatchedCardText(param, dictionary);
 
         return (
           <>
             {translatedCardObject.map((cardObject, index) => (
               <span key={index}>
                 <span>{this.tr('[')}</span>
-                <img style={emojiStyle} src={cardObject.suitImageUrl} alt={cardObject.cardName} />
-                <span style={boldTextStyle}>
-                  {ClientTranslationModule.getCardNumber(parseInt(cardObject.cardNumber, 10))}
-                </span>
                 <span
                   style={{
                     ...boldTextStyle,
@@ -70,6 +113,10 @@ export class ClientTranslationModule extends TranslationModule {
                   }}
                 >
                   {cardObject.cardName}
+                </span>
+                {cardObject.suitElement}
+                <span style={getCardNumberStyle(cardObject.cardSuit)}>
+                  {ClientTranslationModule.getCardNumber(parseInt(cardObject.cardNumber, 10))}
                 </span>
                 <span>{this.tr(']')}</span>
               </span>

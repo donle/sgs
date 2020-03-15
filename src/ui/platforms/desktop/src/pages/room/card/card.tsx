@@ -54,7 +54,7 @@ export class ClientCard extends React.Component<ClientCardProps> {
         {card ? (
           <>
             <div className={styles.cornerTag}>
-              <CardSuitItem suit={card.Suit} className={styles.cardSuit} />
+              <CardSuitItem suit={card.Suit} className={styles.cardSuit} translator={translator} />
               <span>{ClientTranslationModule.getCardNumber(card.CardNumber)}</span>
             </div>
             <span>{translator.tr(card.Name)}</span>

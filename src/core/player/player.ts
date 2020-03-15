@@ -330,7 +330,7 @@ export abstract class Player implements PlayerInfo {
   }
 
   public get AttackDistance() {
-    let attackDistance = this.getOffenseDistance() + 1;
+    let attackDistance = this.getOffenseDistance();
 
     for (const cardId of this.getCardIds(PlayerCardsArea.EquipArea)) {
       const card = Sanguosha.getCardById(cardId);
@@ -339,7 +339,7 @@ export abstract class Player implements PlayerInfo {
       }
     }
 
-    return attackDistance + GameCommonRules.getAdditionalAttackDistance(this);
+    return Math.max(attackDistance + GameCommonRules.getAdditionalAttackDistance(this), 1);
   }
 
   public getOffenseDistance() {

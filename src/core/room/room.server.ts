@@ -176,7 +176,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           canTriggerSkills.push(skill);
         }
       }
+
       for (const skill of canTriggerSkills) {
+        if (EventPacker.isTerminated(content)) {
+          break;
+        }
+
         if (skill.isTriggerable(content, stage) && skill.canUse(this, player, content)) {
           const triggerSkillEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent> = {
             fromId: player.Id,

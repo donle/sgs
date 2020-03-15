@@ -223,7 +223,7 @@ export class GameCommonRules {
     GameCommonRules.preCheck(user);
     let distance = GameCommonRules.userRules[user.Id].additionalDefenseDistance;
     user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
-      distance += skill.breakOffenseDistance();
+      distance += skill.breakDefenseDistance();
     });
 
     return distance;
