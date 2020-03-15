@@ -6,11 +6,7 @@ import { ServerSocket } from 'core/network/socket.server';
 import { PlayerId } from 'core/player/player_props';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
-import {
-  DevMode,
-  hostConfig,
-  HostConfigProps,
-} from 'core/shares/types/host_config';
+import { DevMode, hostConfig, HostConfigProps } from 'core/shares/types/host_config';
 import { LobbySocketEvent } from 'core/shares/types/server_types';
 import { Languages } from 'core/translations/translation_json_tool';
 import { TranslationModule } from 'core/translations/translation_module';
@@ -66,9 +62,7 @@ class App {
       '-----',
       'Server Address',
       `${this.config.protocol}://${
-        this.config.mode === DevMode.Dev
-          ? this.getLocalExternalIP()
-          : await this.getPublicExternalIp()
+        this.config.mode === DevMode.Dev ? this.getLocalExternalIP() : await this.getPublicExternalIp()
       }:${this.config.port}`,
       '-----',
     );
@@ -76,10 +70,7 @@ class App {
   }
 
   private loadLanguages(language: Languages) {
-    this.translator = TranslationModule.setup(language, [
-      Languages.ZH_CN,
-      SimplifiedChinese,
-    ]);
+    this.translator = TranslationModule.setup(language, [Languages.ZH_CN, SimplifiedChinese]);
 
     this.logger.Translator = this.translator;
   }
@@ -93,40 +84,19 @@ class App {
     this.lobbySocket.of('/lobby').on('connect', socket => {
       socket
         .on(LobbySocketEvent.GameCreated.toString(), this.onGameCreated(socket))
-        .on(
-          LobbySocketEvent.SocketConfig.toString(),
-          this.onQuerySocketConfig(socket),
-        )
-        .on(
-          LobbySocketEvent.QueryRoomList.toString(),
-          this.onQueryRoomsInfo(socket),
-        )
-        .on(
-          LobbySocketEvent.QueryVersion.toString(),
-          this.matchCoreVersion(socket),
-        );
+        .on(LobbySocketEvent.SocketConfig.toString(), this.onQuerySocketConfig(socket))
+        .on(LobbySocketEvent.QueryRoomList.toString(), this.onQueryRoomsInfo(socket))
+        .on(LobbySocketEvent.QueryVersion.toString(), this.matchCoreVersion(socket));
     });
   }
 
-  private readonly matchCoreVersion = (socket: SocketIO.Socket) => (content: {
-    version: string;
-  }) => {
-    socket.emit(
-      LobbySocketEvent.VersionMismatch.toString(),
-      content.version === Sanguosha.Version,
-    );
+  private readonly matchCoreVersion = (socket: SocketIO.Socket) => (content: { version: string }) => {
+    socket.emit(LobbySocketEvent.VersionMismatch.toString(), content.version === Sanguosha.Version);
   };
 
-  private readonly onGameCreated = (socket: SocketIO.Socket) => (
-    content: GameInfo,
-  ) => {
+  private readonly onGameCreated = (socket: SocketIO.Socket) => (content: GameInfo) => {
     const roomId = Date.now();
-    const roomSocket = new ServerSocket(
-      this.config,
-      this.lobbySocket.of(`/room-${roomId}`),
-      roomId,
-      this.logger,
-    );
+    const roomSocket = new ServerSocket(this.config, this.lobbySocket.of(`/room-${roomId}`), roomId, this.logger);
     const room = new ServerRoom(
       roomId,
       content,

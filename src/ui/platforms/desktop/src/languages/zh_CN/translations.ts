@@ -45,9 +45,7 @@ export const generalDictionary: Word[] = [
   { source: 'renegade', target: '内奸' },
 ];
 
-export const skillDescriptions: Word[] = [
-  { source: 'jianxiong_description', target: '这是奸雄的技能描述' },
-];
+export const skillDescriptions: Word[] = [{ source: 'jianxiong_description', target: '这是奸雄的技能描述' }];
 
 export const eventDictionary: Word[] = [
   { source: '[', target: '【' },
@@ -117,7 +115,10 @@ export const eventDictionary: Word[] = [
   { source: '{0} drops cards {1}', target: '{0} 弃置了 {1}' },
   { source: '{0} cards are dropped', target: '{0} 进入了弃牌堆' },
   { source: '{0} used card {1}', target: '{0} 使用了一张 {1}' },
-  { source: '{0} used card {1} to {2}', target: '{0} 使用了一张 {1}，目标是 {2}' },
+  {
+    source: '{0} used card {1} to {2}',
+    target: '{0} 使用了一张 {1}，目标是 {2}',
+  },
   { source: '{0} equipped {1}', target: '{0} 装备了 {1}' },
   {
     source: '{0} used card {1} to {2}',

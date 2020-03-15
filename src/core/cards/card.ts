@@ -1,13 +1,7 @@
 import { Sanguosha } from 'core/game/engine';
 import { GameCardExtensions } from 'core/game/game_props';
 import { Skill, ViewAsSkill } from 'core/skills/skill';
-import {
-  CardId,
-  CardSuit,
-  RealCardId,
-  VirtualCardId,
-  VirtualCardIdProps,
-} from './libs/card_props';
+import { CardId, CardSuit, RealCardId, VirtualCardId, VirtualCardIdProps } from './libs/card_props';
 
 export abstract class Card {
   protected abstract id: RealCardId;
@@ -66,9 +60,7 @@ export abstract class Card {
     return this.cardType.includes(type);
   }
   public isSameType(card: Card) {
-    return (
-      this.cardType.filter(subType => !card.Type.includes(subType)).length > 0
-    );
+    return this.cardType.filter(subType => !card.Type.includes(subType)).length > 0;
   }
 
   public isBlack() {
@@ -162,10 +154,8 @@ export class VirtualCard<T extends Card = Card> extends Card {
       const card = Sanguosha.getCardById(this.cardIds[0]);
       this.cardNumber = card.CardNumber;
       this.suit = card.Suit;
-      this.viewAsBlackCard =
-        this.suit === CardSuit.Spade || this.suit === CardSuit.Club;
-      this.viewAsRedCard =
-        this.suit === CardSuit.Heart || this.suit === CardSuit.Diamond;
+      this.viewAsBlackCard = this.suit === CardSuit.Spade || this.suit === CardSuit.Club;
+      this.viewAsRedCard = this.suit === CardSuit.Heart || this.suit === CardSuit.Diamond;
     } else {
       let suit: CardSuit | undefined = CardSuit.NoSuit;
       for (const cardId of this.cardIds) {
@@ -176,12 +166,8 @@ export class VirtualCard<T extends Card = Card> extends Card {
           suit = undefined;
         }
 
-        this.viewAsBlackCard =
-          this.viewAsBlackCard &&
-          (cardSuit === CardSuit.Spade || cardSuit === CardSuit.Club);
-        this.viewAsRedCard =
-          this.viewAsRedCard &&
-          (cardSuit === CardSuit.Heart || cardSuit === CardSuit.Diamond);
+        this.viewAsBlackCard = this.viewAsBlackCard && (cardSuit === CardSuit.Spade || cardSuit === CardSuit.Club);
+        this.viewAsRedCard = this.viewAsRedCard && (cardSuit === CardSuit.Heart || cardSuit === CardSuit.Diamond);
       }
 
       if (suit !== undefined) {
@@ -192,10 +178,7 @@ export class VirtualCard<T extends Card = Card> extends Card {
 
   public static parseId(cardId: VirtualCardId) {
     const parsedId = JSON.parse(cardId) as VirtualCardIdProps;
-    const skill =
-      parsedId.skillName !== undefined
-        ? Sanguosha.getSkillBySkillName(parsedId.skillName)
-        : undefined;
+    const skill = parsedId.skillName !== undefined ? Sanguosha.getSkillBySkillName(parsedId.skillName) : undefined;
     return VirtualCard.create(
       {
         cardName: parsedId.name,

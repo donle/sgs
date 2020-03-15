@@ -33,9 +33,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     }
 
     try {
-      return this.props.player.CharacterId
-        ? this.props.player.Character
-        : undefined;
+      return this.props.player.CharacterId ? this.props.player.Character : undefined;
     } catch {
       return undefined;
     }
@@ -63,13 +61,9 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
             {this.PlayerCharacter && (
               <div className={styles.playerCardInside}>
                 <span className={styles.nationality}>
-                  {this.props.translator.tr(
-                    getNationalityRawText(this.PlayerCharacter.Nationality),
-                  )}
+                  {this.props.translator.tr(getNationalityRawText(this.PlayerCharacter.Nationality))}
                 </span>
-                <span>
-                  {this.props.translator.tr(this.PlayerCharacter.Name)}
-                </span>
+                <span>{this.props.translator.tr(this.PlayerCharacter.Name)}</span>
                 <span>
                   {this.props.player.Hp}/{this.props.player.MaxHp}
                 </span>
@@ -77,9 +71,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
             )}
           </>
         ) : (
-          <p className={styles.waiting}>
-            {this.props.translator.tr('waiting')}
-          </p>
+          <p className={styles.waiting}>{this.props.translator.tr('waiting')}</p>
         )}
       </div>
     );

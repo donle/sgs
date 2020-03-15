@@ -1,13 +1,6 @@
 import { Sanguosha } from 'core/game/engine';
-import {
-  GameCardExtensions,
-  GameCharacterExtensions,
-  GameInfo,
-} from 'core/game/game_props';
-import {
-  LobbySocketEvent,
-  LobbySocketEventPicker,
-} from 'core/shares/types/server_types';
+import { GameCardExtensions, GameCharacterExtensions, GameInfo } from 'core/game/game_props';
+import { LobbySocketEvent, LobbySocketEventPicker } from 'core/shares/types/server_types';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
@@ -37,30 +30,22 @@ export class Lobby extends React.Component<LobbyProps> {
     this.socket
       .on(
         LobbySocketEvent.VersionMismatch.toString(),
-        mobx.action(
-          (
-            matched: LobbySocketEventPicker<LobbySocketEvent.VersionMismatch>,
-          ) => {
-            this.unmatchedCoreVersion = !matched;
-          },
-        ),
+        mobx.action((matched: LobbySocketEventPicker<LobbySocketEvent.VersionMismatch>) => {
+          this.unmatchedCoreVersion = !matched;
+        }),
       )
       .on(
         LobbySocketEvent.QueryRoomList.toString(),
-        mobx.action(
-          (content: LobbySocketEventPicker<LobbySocketEvent.QueryRoomList>) => {
-            this.roomList = content;
-          },
-        ),
+        mobx.action((content: LobbySocketEventPicker<LobbySocketEvent.QueryRoomList>) => {
+          this.roomList = content;
+        }),
       )
       .on(
         LobbySocketEvent.GameCreated.toString(),
-        mobx.action(
-          (event: LobbySocketEventPicker<LobbySocketEvent.GameCreated>) => {
-            const { roomId } = event;
-            this.props.history.push(`/room/${roomId}`);
-          },
-        ),
+        mobx.action((event: LobbySocketEventPicker<LobbySocketEvent.GameCreated>) => {
+          const { roomId } = event;
+          this.props.history.push(`/room/${roomId}`);
+        }),
       );
   }
 
@@ -73,9 +58,7 @@ export class Lobby extends React.Component<LobbyProps> {
   }
 
   private getTranslatePackName = (...packages: GameCharacterExtensions[]) => {
-    return packages
-      .map(pack => this.props.translator.tr(pack))
-      .join(this.props.translator.tr(','));
+    return packages.map(pack => this.props.translator.tr(pack)).join(this.props.translator.tr(','));
   };
 
   private readonly onCreateRoom = () => {
@@ -93,35 +76,25 @@ export class Lobby extends React.Component<LobbyProps> {
     return (
       <div className={styles.createRoomBoard}>
         <span>
-          <input type="checkbox" defaultChecked={true} />
+          <input type='checkbox' defaultChecked={true} />
           {this.props.translator.tr(GameCardExtensions.Standard)}
         </span>
 
-        <button onClick={this.onCreateRoom}>
-          {this.props.translator.tr('Create a room')}
-        </button>
+        <button onClick={this.onCreateRoom}>{this.props.translator.tr('Create a room')}</button>
       </div>
     );
   }
 
   unmatchedView() {
     //TODO: complete unmatched view;
-    return (
-      <div>
-        {this.props.translator.tr(
-          'Unmatched core version, please update your application',
-        )}
-      </div>
-    );
+    return <div>{this.props.translator.tr('Unmatched core version, please update your application')}</div>;
   }
 
   render() {
     return (
       <div className={styles.board}>
         <div className={styles.roomList}>
-          {this.roomList.length === 0 && (
-            <span>{this.props.translator.tr('No rooms at the moment')}</span>
-          )}
+          {this.roomList.length === 0 && <span>{this.props.translator.tr('No rooms at the moment')}</span>}
           {this.unmatchedCoreVersion
             ? this.unmatchedView()
             : this.roomList.map((roomInfo, index) => (

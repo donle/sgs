@@ -19,8 +19,7 @@ type SeatsLayoutProps = {
 
 @mobxReact.observer
 export class SeatsLayout extends React.Component<SeatsLayoutProps> {
-  private numberOfPlayers: number =
-    this.props.store.room.Info.numberOfPlayers - 1;
+  private numberOfPlayers: number = this.props.store.room.Info.numberOfPlayers - 1;
   private sideNumberOfPlayers: number;
   private topNumberOfPlayers: number;
 
@@ -28,8 +27,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
     super(props);
 
     this.sideNumberOfPlayers = Math.floor(this.numberOfPlayers / 3);
-    this.topNumberOfPlayers =
-      this.sideNumberOfPlayers + Math.floor(this.numberOfPlayers % 3);
+    this.topNumberOfPlayers = this.sideNumberOfPlayers + Math.floor(this.numberOfPlayers % 3);
   }
 
   private readonly onClick = (player: Player) => (selected: boolean) => {
@@ -73,10 +71,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
         <PlayerCard
           key={playerIndex}
           onClick={this.onClick(player)}
-          disabled={
-            !this.props.playerSelectableMatcher ||
-            !this.props.playerSelectableMatcher(player)
-          }
+          disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           player={player}
           translator={this.props.translator}
         />,
@@ -102,10 +97,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
         <PlayerCard
           key={playerIndex}
           onClick={this.onClick(player)}
-          disabled={
-            !this.props.playerSelectableMatcher ||
-            !this.props.playerSelectableMatcher(player)
-          }
+          disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           player={player}
           translator={this.props.translator}
         />,
@@ -129,10 +121,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
         <PlayerCard
           key={playerIndex}
           onClick={this.onClick(player)}
-          disabled={
-            !this.props.playerSelectableMatcher ||
-            !this.props.playerSelectableMatcher(player)
-          }
+          disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           player={player}
           translator={this.props.translator}
         />,

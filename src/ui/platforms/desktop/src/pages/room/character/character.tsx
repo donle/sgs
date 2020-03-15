@@ -22,13 +22,9 @@ export class CharacterCard extends React.Component<CharacterCardProps> {
   render() {
     const { character, translator, className } = this.props;
     return (
-      <div
-        className={classNames(styles.characterCard, className)}
-        onClick={this.onClick}
-      >
+      <div className={classNames(styles.characterCard, className)} onClick={this.onClick}>
         <p>
-          {translator.tr(getNationalityRawText(character.Nationality))}{' '}
-          {translator.tr(character.Name)}
+          {translator.tr(getNationalityRawText(character.Nationality))} {translator.tr(character.Name)}
         </p>
       </div>
     );

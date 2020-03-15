@@ -1,13 +1,6 @@
-import {
-  clientActiveListenerEvents,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { clientActiveListenerEvents, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { ClientSocket } from 'core/network/socket.client';
-import {
-  PatchedTranslationObject,
-  TranslationPack,
-} from 'core/translations/translation_json_tool';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
@@ -41,11 +34,7 @@ export class RoomPage extends React.Component<
     this.store = this.presenter.createStore();
     this.socket = new ClientSocket(this.props.config, this.roomId);
 
-    this.gameProcessor = new GameClientProcessor(
-      this.presenter,
-      this.store,
-      this.props.translator,
-    );
+    this.gameProcessor = new GameClientProcessor(this.presenter, this.store, this.props.translator);
   }
 
   componentDidMount() {
@@ -68,13 +57,10 @@ export class RoomPage extends React.Component<
     });
 
     clientActiveListenerEvents().forEach(identifier => {
-      this.socket.on(
-        identifier,
-        (content: ServerEventFinder<GameEventIdentifiers>) => {
-          this.gameProcessor.onHandleIncomingEvent(identifier, content);
-          this.showMessageFromEvent(content);
-        },
-      );
+      this.socket.on(identifier, (content: ServerEventFinder<GameEventIdentifiers>) => {
+        this.gameProcessor.onHandleIncomingEvent(identifier, content);
+        this.showMessageFromEvent(content);
+      });
     });
   }
 
@@ -82,10 +68,7 @@ export class RoomPage extends React.Component<
     this.socket.disconnect();
   }
 
-  private showMessage(
-    messages: string[] = [],
-    translationsMessage?: PatchedTranslationObject,
-  ) {
+  private showMessage(messages: string[] = [], translationsMessage?: PatchedTranslationObject) {
     const { translator } = this.props;
 
     if (translationsMessage) {
@@ -111,9 +94,7 @@ export class RoomPage extends React.Component<
               room Info:
               {JSON.stringify(this.store.room.getRoomInfo(), null, 2)}
             </div>
-            <div>
-              game Info: {JSON.stringify(this.store.room.Info, null, 2)}
-            </div>
+            <div>game Info: {JSON.stringify(this.store.room.Info, null, 2)}</div>
           </>
         )}
       </>
@@ -125,9 +106,7 @@ export class RoomPage extends React.Component<
       <div className={styles.room}>
         {this.store.selectorDialog}
 
-        <div className={styles.incomingConversation}>
-          {this.store.incomingConversation}
-        </div>
+        <div className={styles.incomingConversation}>{this.store.incomingConversation}</div>
         {this.store.room && (
           <div className={styles.roomBoard}>
             <div className={styles.mainBoard}>
@@ -141,11 +120,7 @@ export class RoomPage extends React.Component<
                 gamePad={this.getDummyCentralInfo()}
               />
               <div className={styles.sideBoard}>
-                <GameDialog
-                  store={this.store}
-                  presenter={this.presenter}
-                  translator={this.props.translator}
-                />
+                <GameDialog store={this.store} presenter={this.presenter} translator={this.props.translator} />
               </div>
             </div>
             <Dashboard

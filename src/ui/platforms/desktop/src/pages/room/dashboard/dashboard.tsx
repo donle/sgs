@@ -63,9 +63,9 @@ export class Dashboard extends React.Component<DashboardProps> {
   };
 
   getEquipCardsSection() {
-    const equipCards = this.props.presenter.ClientPlayer?.getCardIds(
-      PlayerCardsArea.EquipArea,
-    ).map(cardId => Sanguosha.getCardById<EquipCard>(cardId));
+    const equipCards = this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.EquipArea).map(cardId =>
+      Sanguosha.getCardById<EquipCard>(cardId),
+    );
 
     return (
       <>
@@ -77,8 +77,7 @@ export class Dashboard extends React.Component<DashboardProps> {
                 card={card}
                 onClick={this.onClick(card)}
                 disabled={
-                  !this.props.cardEnableMatcher ||
-                  !this.props.cardEnableMatcher(PlayerCardsArea.EquipArea)(card)
+                  !this.props.cardEnableMatcher || !this.props.cardEnableMatcher(PlayerCardsArea.EquipArea)(card)
                 }
               />
             ))}
@@ -89,9 +88,7 @@ export class Dashboard extends React.Component<DashboardProps> {
   }
 
   getAllClientHandCards() {
-    return this.props.presenter.ClientPlayer?.getCardIds(
-      PlayerCardsArea.HandArea,
-    ).map(cardId => {
+    return this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.HandArea).map(cardId => {
       const card = Sanguosha.getCardById(cardId);
       return (
         <ClientCard
@@ -100,10 +97,7 @@ export class Dashboard extends React.Component<DashboardProps> {
           card={card}
           onSelected={this.onClick(card)}
           className={styles.handCard}
-          disabled={
-            !this.props.cardEnableMatcher ||
-            !this.props.cardEnableMatcher(PlayerCardsArea.HandArea)(card)
-          }
+          disabled={!this.props.cardEnableMatcher || !this.props.cardEnableMatcher(PlayerCardsArea.HandArea)(card)}
         />
       );
     });
@@ -112,12 +106,8 @@ export class Dashboard extends React.Component<DashboardProps> {
   getPlayerJudgeCards() {
     return (
       <div className={styles.judges}>
-        {this.props.presenter.ClientPlayer?.getCardIds(
-          PlayerCardsArea.JudgeArea,
-        ).map(cardId => (
-          <span className={styles.judgeNames}>
-            {this.props.translator.tr(Sanguosha.getCardById(cardId).Name)}
-          </span>
+        {this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.JudgeArea).map(cardId => (
+          <span className={styles.judgeNames}>{this.props.translator.tr(Sanguosha.getCardById(cardId).Name)}</span>
         ))}
       </div>
     );
@@ -128,22 +118,13 @@ export class Dashboard extends React.Component<DashboardProps> {
       <div className={styles.handBoard}>
         {this.getPlayerJudgeCards()}
         <div className={styles.userActionsButtons}>
-          <button
-            disabled={!this.props.store.actionButtonStatus.confirm}
-            onClick={this.props.onClickConfirmButton}
-          >
+          <button disabled={!this.props.store.actionButtonStatus.confirm} onClick={this.props.onClickConfirmButton}>
             {this.props.translator.tr('confirm')}
           </button>
-          <button
-            disabled={!this.props.store.actionButtonStatus.cancel}
-            onClick={this.props.onClickCancelButton}
-          >
+          <button disabled={!this.props.store.actionButtonStatus.cancel} onClick={this.props.onClickCancelButton}>
             {this.props.translator.tr('cancel')}
           </button>
-          <button
-            disabled={!this.props.store.actionButtonStatus.finish}
-            onClick={this.props.onClickFinishButton}
-          >
+          <button disabled={!this.props.store.actionButtonStatus.finish} onClick={this.props.onClickFinishButton}>
             {this.props.translator.tr('finish')}
           </button>
         </div>

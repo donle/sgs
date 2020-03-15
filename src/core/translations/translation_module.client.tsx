@@ -1,16 +1,9 @@
 import * as React from 'react';
-import {
-  Languages,
-  TranslationPack,
-  TranslationsDictionary,
-} from './translation_json_tool';
+import { Languages, TranslationPack, TranslationsDictionary } from './translation_json_tool';
 import { TranslationModule } from './translation_module';
 
 export class ClientTranslationModule extends TranslationModule {
-  public static setup(
-    currentLanguage: Languages,
-    ...dictionaries: [Languages, TranslationsDictionary][]
-  ) {
+  public static setup(currentLanguage: Languages, ...dictionaries: [Languages, TranslationsDictionary][]) {
     const translator = new ClientTranslationModule(...dictionaries);
     translator.currentLanguage = currentLanguage;
 
@@ -25,10 +18,7 @@ export class ClientTranslationModule extends TranslationModule {
   };
 
   public static getCardNumber(cardNumber: number): string {
-    return (
-      ClientTranslationModule.uniquNumberOnCard[cardNumber] ||
-      cardNumber.toString()
-    );
+    return ClientTranslationModule.uniquNumberOnCard[cardNumber] || cardNumber.toString();
   }
 
   public trx(rawText: string): JSX.Element {
@@ -60,81 +50,60 @@ export class ClientTranslationModule extends TranslationModule {
       fontWeight: 550,
     };
 
-    const textCombinations: JSX.Element[] = dispatchedObject.params.map(
-      param => {
-        if (
-          typeof param === 'string' &&
-          dictionary &&
-          TranslationPack.isCardObjectText(param)
-        ) {
-          const translatedCardObject = TranslationPack.translatePatchedCardText(
-            param,
-            dictionary,
-          );
-
-          return (
-            <>
-              {translatedCardObject.map((cardObject, index) => (
-                <span key={index}>
-                  <span>{this.tr('[')}</span>
-                  <img
-                    style={emojiStyle}
-                    src={cardObject.suitImageUrl}
-                    alt={cardObject.cardName}
-                  />
-                  <span style={boldTextStyle}>
-                    {ClientTranslationModule.getCardNumber(
-                      parseInt(cardObject.cardNumber, 10),
-                    )}
-                  </span>
-                  <span
-                    style={{
-                      ...boldTextStyle,
-                      ...commonTextStyle,
-                    }}
-                  >
-                    {cardObject.cardName}
-                  </span>
-                  <span>{this.tr(']')}</span>
-                </span>
-              ))}
-            </>
-          );
-        }
-
-        if (
-          typeof param === 'string' &&
-          dictionary &&
-          TranslationPack.isTextArrayText(param)
-        ) {
-          if (TranslationPack.isTextArrayText(param)) {
-            param = param
-              .slice(TranslationPack.translateTextArraySign.length)
-              .split(',')
-              .map(subParam => dictionary[subParam] || subParam)
-              .join(',');
-          } else {
-            param = dictionary[param] || param;
-          }
-        }
+    const textCombinations: JSX.Element[] = dispatchedObject.params.map(param => {
+      if (typeof param === 'string' && dictionary && TranslationPack.isCardObjectText(param)) {
+        const translatedCardObject = TranslationPack.translatePatchedCardText(param, dictionary);
 
         return (
-          <span
-            style={{
-              ...boldTextStyle,
-              ...commonTextStyle,
-            }}
-          >
-            {dictionary ? dictionary[param] || param : param}
-          </span>
+          <>
+            {translatedCardObject.map((cardObject, index) => (
+              <span key={index}>
+                <span>{this.tr('[')}</span>
+                <img style={emojiStyle} src={cardObject.suitImageUrl} alt={cardObject.cardName} />
+                <span style={boldTextStyle}>
+                  {ClientTranslationModule.getCardNumber(parseInt(cardObject.cardNumber, 10))}
+                </span>
+                <span
+                  style={{
+                    ...boldTextStyle,
+                    ...commonTextStyle,
+                  }}
+                >
+                  {cardObject.cardName}
+                </span>
+                <span>{this.tr(']')}</span>
+              </span>
+            ))}
+          </>
         );
-      },
-    );
+      }
+
+      if (typeof param === 'string' && dictionary && TranslationPack.isTextArrayText(param)) {
+        if (TranslationPack.isTextArrayText(param)) {
+          param = param
+            .slice(TranslationPack.translateTextArraySign.length)
+            .split(',')
+            .map(subParam => dictionary[subParam] || subParam)
+            .join(',');
+        } else {
+          param = dictionary[param] || param;
+        }
+      }
+
+      return (
+        <span
+          style={{
+            ...boldTextStyle,
+            ...commonTextStyle,
+          }}
+        >
+          {dictionary ? dictionary[param] || param : param}
+        </span>
+      );
+    });
 
     const translatedReactComponents: JSX.Element[] = [];
-    const splitRawText = translatedOriginalText
-      .split(/\{[0-9]\}/)
-      .map(splitStr => splitStr.trim());
+    const splitRawText = translatedOriginalText.split(/\{[0-9]\}/).map(splitStr => splitStr.trim());
     for (let i = 0; i < splitRawText.length; i++) {
       if (splitRawText[i]) {
         translatedReactComponents.push(<span>{splitRawText[i]}</span>);

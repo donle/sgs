@@ -2,10 +2,7 @@ import * as SkillList from 'core/skills';
 import { Skill, SkillPrototype } from 'core/skills/skill';
 
 export class SkillLoader {
-  private constructor(
-    private skills: Skill[] = [],
-    private shadowSkills: Skill[] = [],
-  ) {}
+  private constructor(private skills: Skill[] = [], private shadowSkills: Skill[] = []) {}
 
   private static instance: SkillLoader;
 

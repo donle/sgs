@@ -1,10 +1,5 @@
 import { CardType } from 'core/cards/card';
-import {
-  ClientEventFinder,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { GameCommonRules } from 'core/game/game_rules';
 import { CardUseStage, PlayerPhase } from 'core/game/stage_processor';
@@ -24,30 +19,16 @@ export class JiZhi extends TriggerSkill {
     return true;
   }
 
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
-    stage: CardUseStage,
-  ) {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage: CardUseStage) {
     return stage === CardUseStage.CardUsing;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
-  ) {
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const card = Sanguosha.getCardById(content.cardId);
-    return (
-      content.fromId === owner.Id &&
-      card.is(CardType.Trick) &&
-      !card.is(CardType.DelayedTrick)
-    );
+    return content.fromId === owner.Id && card.is(CardType.Trick) && !card.is(CardType.DelayedTrick);
   }
 
-  async onTrigger(
-    room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ) {
+  async onTrigger(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} activates skill {1}',
       room.getPlayerById(event.fromId).Name,
@@ -57,15 +38,10 @@ export class JiZhi extends TriggerSkill {
     return true;
   }
 
-  async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ) {
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const cardId = (await room.drawCards(1, event.fromId))[0];
     if (Sanguosha.getCardById(cardId).is(CardType.Basic)) {
-      const askForOptionsEvent = EventPacker.createUncancellableEvent<
-        GameEventIdentifiers.AskForChooseOptionsEvent
-      >({
+      const askForOptionsEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChooseOptionsEvent>({
         options: ['discard', 'keep'],
         fromId: event.fromId,
         translationsMessage: TranslationPack.translationJsonPatcher(
@@ -74,11 +50,7 @@ export class JiZhi extends TriggerSkill {
         ).extract(),
       });
 
-      room.notify(
-        GameEventIdentifiers.AskForChooseOptionsEvent,
-        askForOptionsEvent,
-        event.fromId,
-      );
+      room.notify(GameEventIdentifiers.AskForChooseOptionsEvent, askForOptionsEvent, event.fromId);
 
       const response = await room.onReceivingAsyncReponseFrom(
         GameEventIdentifiers.AskForChooseOptionsEvent,
@@ -97,12 +69,7 @@ export class JiZhi extends TriggerSkill {
     return true;
   }
 
-  onPhaseChange(
-    fromPhase: PlayerPhase,
-    toPhase: PlayerPhase,
-    room: Room,
-    owner: PlayerId,
-  ) {
+  onPhaseChange(fromPhase: PlayerPhase, toPhase: PlayerPhase, room: Room, owner: PlayerId) {
     if (fromPhase === PlayerPhase.FinishStage) {
       room.syncGameCommonRules(owner, user => {
         const extraHold = user.getInvisibleMark(this.name);

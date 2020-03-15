@@ -8,7 +8,7 @@ export type ServerConfigProps = {
 };
 
 export type HostConfigProps = {
-  mode: DevMode,
+  mode: DevMode;
   port: number;
   host: string;
   protocol: 'http' | 'https';

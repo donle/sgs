@@ -33,10 +33,8 @@ export class TranslationPack {
   private constructor(private translationJon: PatchedTranslationObject) {}
   private static emojiOrImageTextDict: EmojiOrImageTranslationDictionary = {};
   public static readonly translationObjectSign = '@@translate:';
-  public static readonly translateCardObjectSign =
-    TranslationPack.translationObjectSign + 'card:';
-  public static readonly translateTextArraySign =
-    TranslationPack.translationObjectSign + 'array:';
+  public static readonly translateCardObjectSign = TranslationPack.translationObjectSign + 'card:';
+  public static readonly translateTextArraySign = TranslationPack.translationObjectSign + 'array:';
 
   static create(translationJon: PatchedTranslationObject) {
     return new TranslationPack(translationJon);
@@ -57,10 +55,7 @@ export class TranslationPack {
   }
 
   toString() {
-    return (
-      TranslationPack.translationObjectSign +
-      JSON.stringify(this.translationJon)
-    );
+    return TranslationPack.translationObjectSign + JSON.stringify(this.translationJon);
   }
 
   public translateTo(translationsDictionary: TranslationsDictionary) {
@@ -75,10 +70,7 @@ export class TranslationPack {
     if (this.translationJon.params.length > 0) {
       for (let i = 0; i < this.translationJon.params.length; i++) {
         const param = this.translationJon.params[i].toString();
-        target = target.replace(
-          new RegExp(`\\{${i}\\}`, 'g'),
-          translationsDictionary[param] || param,
-        );
+        target = target.replace(new RegExp(`\\{${i}\\}`, 'g'), translationsDictionary[param] || param);
       }
     }
 
@@ -91,9 +83,7 @@ export class TranslationPack {
       JSON.stringify(
         cardIds.map(cardId => {
           const card = Sanguosha.getCardById(cardId);
-          return `${TranslationPack.patchEmojiOrImageInTranslation(
-            card.Suit,
-          )} ${card.CardNumber} ${card.Name}`;
+          return `${TranslationPack.patchEmojiOrImageInTranslation(card.Suit)} ${card.CardNumber} ${card.Name}`;
         }),
       )
     );
@@ -107,14 +97,9 @@ export class TranslationPack {
     return text.startsWith(TranslationPack.translateTextArraySign);
   }
 
-  public static translatePatchedCardText(
-    text: string,
-    dictionary: TranslationsDictionary,
-  ): TranslatedCardObject[] {
+  public static translatePatchedCardText(text: string, dictionary: TranslationsDictionary): TranslatedCardObject[] {
     const cardObjects: TranslatedCardObject[] = [];
-    const cardTextArray: string[] = JSON.parse(
-      text.slice(TranslationPack.translateCardObjectSign.length),
-    );
+    const cardTextArray: string[] = JSON.parse(text.slice(TranslationPack.translateCardObjectSign.length));
 
     for (const cardText of cardTextArray) {
       const [cardSuitString, cardNumber, cardName] = cardText.split(' ');
@@ -132,13 +117,9 @@ export class TranslationPack {
     return TranslationPack.translateCardObjectSign + rawText;
   }
 
-  public static addEmojiOrImageSymbolText(
-    ...symbolTextPair: [string | number, string][]
-  ) {
+  public static addEmojiOrImageSymbolText(...symbolTextPair: [string | number, string][]) {
     for (const [rawText, translatePath] of symbolTextPair) {
-      TranslationPack.emojiOrImageTextDict[
-        TranslationPack.patchEmojiOrImageInTranslation(rawText)
-      ] = translatePath;
+      TranslationPack.emojiOrImageTextDict[TranslationPack.patchEmojiOrImageInTranslation(rawText)] = translatePath;
     }
   }
 
@@ -147,10 +128,7 @@ export class TranslationPack {
       const translateObject: TranslationPackPatchedObject = JSON.parse(
         wrappedString.slice(TranslationPack.translationObjectSign.length),
       );
-      if (
-        !translateObject.tag ||
-        translateObject.tag !== TranslationPack.translationObjectSign
-      ) {
+      if (!translateObject.tag || translateObject.tag !== TranslationPack.translationObjectSign) {
         return;
       }
 
@@ -164,10 +142,7 @@ export class TranslationPack {
     return TranslationPack.translateTextArraySign + params.join(',');
   }
 
-  public static translationJsonPatcher(
-    originalText: string,
-    ...stringParams: (string | number)[]
-  ) {
+  public static translationJsonPatcher(originalText: string, ...stringParams: (string | number)[]) {
     const translationJson: TranslationPackPatchedObject = {
       tag: TranslationPack.translationObjectSign,
       original: originalText,
@@ -177,10 +152,7 @@ export class TranslationPack {
     return new TranslationPack(translationJson);
   }
 
-  public static translationJsonDispatcher(
-    wrappedString: string,
-    translationsDictionary: TranslationsDictionary,
-  ) {
+  public static translationJsonDispatcher(wrappedString: string, translationsDictionary: TranslationsDictionary) {
     const dispatchedTranslationObject = this.dispatch(wrappedString);
     if (dispatchedTranslationObject === undefined) {
       return wrappedString;

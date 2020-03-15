@@ -18,6 +18,6 @@ export class BaGuaZhen extends ArmorCard {
   }
 
   public get Skill() {
-      return this.skill as BaGuaZhenSkill
+    return this.skill as BaGuaZhenSkill;
   }
 }

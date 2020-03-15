@@ -15,7 +15,7 @@
     "typescript": "3.8.2"
   },
   "scripts": {
-    "prettier": "prettier --write \"./**/*.{ts,css,json}\"",
+    "prettier": "prettier --write \"./**/*.{ts,tsx,css,json}\"",
     "build": "rm -rf build && tsc",
     "patch": "ts-node ./src/pre_release.ts"
   }

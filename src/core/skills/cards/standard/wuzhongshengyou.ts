@@ -1,8 +1,4 @@
-import {
-  ClientEventFinder,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -31,17 +27,11 @@ export class WuZhongShengYouSkill extends ActiveSkill {
   public isAvailableTarget(): boolean {
     return false;
   }
-  public async onUse(
-    room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
-  ) {
+  public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
-  ) {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     await room.drawCards(2, event.fromId!);
     return true;
   }

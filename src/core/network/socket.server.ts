@@ -30,12 +30,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     };
   } = {} as any;
 
-  constructor(
-    config: HostConfigProps,
-    socket: IOSocketServer.Namespace,
-    roomId: RoomId,
-    private logger: Logger,
-  ) {
+  constructor(config: HostConfigProps, socket: IOSocketServer.Namespace, roomId: RoomId, private logger: Logger) {
     super(WorkPlace.Server, config);
     this.roomId = roomId.toString();
 
@@ -43,46 +38,34 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     this.socket.on('connection', socket => {
       this.logger.info('User connected', socket.id);
       serverActiveListenerEvents().forEach(identifier => {
-        socket.on(
-          identifier.toString(),
-          (content: ClientEventFinder<typeof identifier>) => {
-            switch (identifier) {
-              case GameEventIdentifiers.PlayerEnterEvent:
-                this.onPlayerEnter(
-                  socket,
-                  identifier,
-                  content as ClientEventFinder<
-                    GameEventIdentifiers.PlayerEnterEvent
-                  >,
-                );
-                break;
-              case GameEventIdentifiers.PlayerLeaveEvent:
-                this.onPlayerLeave(
-                  socket,
-                  identifier,
-                  content as ClientEventFinder<
-                    GameEventIdentifiers.PlayerLeaveEvent
-                  >,
-                );
-                break;
-              case GameEventIdentifiers.UserMessageEvent:
-              default:
-                //TODO: sometime lost listening on events
-                logger.info(
-                  'Not implemented active listener',
-                  identifier,
-                  GameEventIdentifiers.PlayerEnterEvent,
-                );
-            }
-          },
-        );
+        socket.on(identifier.toString(), (content: ClientEventFinder<typeof identifier>) => {
+          switch (identifier) {
+            case GameEventIdentifiers.PlayerEnterEvent:
+              this.onPlayerEnter(
+                socket,
+                identifier,
+                content as ClientEventFinder<GameEventIdentifiers.PlayerEnterEvent>,
+              );
+              break;
+            case GameEventIdentifiers.PlayerLeaveEvent:
+              this.onPlayerLeave(
+                socket,
+                identifier,
+                content as ClientEventFinder<GameEventIdentifiers.PlayerLeaveEvent>,
+              );
+              break;
+            case GameEventIdentifiers.UserMessageEvent:
+            default:
+              //TODO: sometime lost listening on events
+              logger.info('Not implemented active listener', identifier, GameEventIdentifiers.PlayerEnterEvent);
+          }
+        });
       });
 
       serverResponsiveListenerEvents().forEach(identifier => {
         socket.on(identifier.toString(), (content: unknown) => {
           const asyncResolver =
-            this.asyncResponseResolver[identifier] &&
-            this.asyncResponseResolver[identifier][socket.id];
+            this.asyncResponseResolver[identifier] && this.asyncResponseResolver[identifier][socket.id];
           if (asyncResolver) {
             asyncResolver(content);
             delete this.asyncResponseResolver[identifier][socket.id];
@@ -114,11 +97,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       return;
     }
 
-    const player = new ServerPlayer(
-      socket.id,
-      event.playerName,
-      room.Players.length,
-    );
+    const player = new ServerPlayer(socket.id, event.playerName, room.Players.length);
     room.addPlayer(player);
     this.clientIds.push(socket.id);
 
@@ -175,18 +154,12 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     }
   }
 
-  public notify<I extends GameEventIdentifiers>(
-    type: I,
-    content: ServerEventFinder<I>,
-    to: PlayerId,
-  ) {
+  public notify<I extends GameEventIdentifiers>(type: I, content: ServerEventFinder<I>, to: PlayerId) {
     const toPlayer = this.room!.getPlayerById(to);
     if (!toPlayer.isOnline()) {
       const result = toPlayer.AI.onAction(this.room!, type, content);
 
-      const asyncResolver =
-        this.asyncResponseResolver[type] &&
-        this.asyncResponseResolver[type][to];
+      const asyncResolver = this.asyncResponseResolver[type] && this.asyncResponseResolver[type][to];
       if (asyncResolver) {
         asyncResolver(result);
         delete this.asyncResponseResolver[type][to];
@@ -194,19 +167,14 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     } else {
       const clientSocket = this.clientIds.find(clientId => clientId === to);
       if (!clientSocket) {
-        throw new Error(
-          `Unable to find player: ${to} in connected socket clients`,
-        );
+        throw new Error(`Unable to find player: ${to} in connected socket clients`);
       }
 
       this.socket.to(clientSocket).emit(type.toString(), content);
     }
   }
 
-  broadcast<I extends GameEventIdentifiers>(
-    type: I,
-    content: ServerEventFinder<I>,
-  ) {
+  broadcast<I extends GameEventIdentifiers>(type: I, content: ServerEventFinder<I>) {
     this.socket.emit(type.toString(), content);
     for (const player of this.room!.AlivePlayers) {
       if (!player.isOnline()) {
@@ -215,10 +183,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     }
   }
 
-  public emitRoomStatus(
-    type: RoomEvent,
-    content: RoomEventFinder<typeof type>,
-  ) {
+  public emitRoomStatus(type: RoomEvent, content: RoomEventFinder<typeof type>) {
     this.socket.emit(type, content);
   }
 
@@ -241,10 +206,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     }
   }
 
-  public async waitForResponse<T extends GameEventIdentifiers>(
-    identifier: T,
-    playerId: PlayerId,
-  ) {
+  public async waitForResponse<T extends GameEventIdentifiers>(identifier: T, playerId: PlayerId) {
     return await new Promise<ClientEventFinder<T>>(resolve => {
       if (!this.asyncResponseResolver[identifier]) {
         this.asyncResponseResolver[identifier] = {

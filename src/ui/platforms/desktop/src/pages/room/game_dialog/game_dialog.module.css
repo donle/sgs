@@ -1,13 +1,13 @@
 .gameDialog {
-  border: 1px solid grey;
-  flex: auto;
-  display: flex;
-  flex-direction: column;
-  overflow-y: scroll;
-  height: calc(100vh - 220px);
-  padding: 4px;
+    border: 1px solid grey;
+    flex: auto;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    height: calc(100vh - 220px);
+    padding: 4px;
 }
 
 .messageLine {
-  margin: 4px 0;
+    margin: 4px 0;
 }

@@ -1,9 +1,5 @@
 import { CharacterNationality } from 'core/characters/character';
-import {
-  ClientEventFinder,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { RecoverEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
@@ -21,34 +17,23 @@ export class JiuYuan extends TriggerSkill {
     super('jiuyuan', 'jiuyuan_description');
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.RecoverEvent>,
-  ) {
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.RecoverEvent>) {
     return (
       content.recoverBy !== undefined &&
       content.toId === owner.Id &&
       owner.Id !== content.recoverBy &&
-      room.getPlayerById(content.recoverBy).Nationality ===
-        CharacterNationality.Wu
+      room.getPlayerById(content.recoverBy).Nationality === CharacterNationality.Wu
     );
   }
 
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.RecoverEvent>,
-    stage: RecoverEffectStage,
-  ) {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.RecoverEvent>, stage: RecoverEffectStage) {
     return (
       // EventPacker.getIdentifier(event) === GameEventIdentifiers.RecoverEvent &&
       stage === RecoverEffectStage.BeforeRecoverEffect
     );
   }
 
-  async onTrigger(
-    room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ) {
+  async onTrigger(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} activates skill {1}',
       room.getPlayerById(event.fromId).Name,
@@ -58,19 +43,13 @@ export class JiuYuan extends TriggerSkill {
     return true;
   }
 
-  async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ) {
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = event;
-    const recoverEvent = triggeredOnEvent as ClientEventFinder<
-      GameEventIdentifiers.RecoverEvent
-    >;
+    const recoverEvent = triggeredOnEvent as ClientEventFinder<GameEventIdentifiers.RecoverEvent>;
     if (
       recoverEvent.recoverBy &&
       recoverEvent.toId !== recoverEvent.recoverBy &&
-      room.getPlayerById(recoverEvent.recoverBy).Nationality ===
-        CharacterNationality.Wu
+      room.getPlayerById(recoverEvent.recoverBy).Nationality === CharacterNationality.Wu
     ) {
       recoverEvent.recoveredHp++;
     }

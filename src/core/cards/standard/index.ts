@@ -16,9 +16,7 @@ import { WuZhongShengYou } from './wuzhongshengyou';
 import { ZhuGeLianNu } from './zhugeliannu';
 import { ZiXin } from './zixin';
 
-export const StandardCardPackage: (
-  index: number,
-) => CardPackage<GameCardExtensions.Standard> = index => ({
+export const StandardCardPackage: (index: number) => CardPackage<GameCardExtensions.Standard> = index => ({
   [GameCardExtensions.Standard]: [
     new Slash(index++, 7, CardSuit.Spade),
     new Slash(index++, 8, CardSuit.Spade),

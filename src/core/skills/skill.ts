@@ -10,11 +10,7 @@ import {
   WorkPlace,
 } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import {
-  AllStage,
-  PlayerPhase,
-  PlayerStageListEnum,
-} from 'core/game/stage_processor';
+import { AllStage, PlayerPhase, PlayerStageListEnum } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId, PlayerRole } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -26,33 +22,22 @@ export const enum SkillType {
   Limit,
 }
 
-type SKillConstructor<T extends Skill> = new (
-  name: string,
-  description: string,
-) => T;
-function onCalculatingSkillUsageWrapper(
-  skillType: SkillType,
-  constructor: new () => any,
-): any {
+type SKillConstructor<T extends Skill> = new (name: string, description: string) => T;
+function onCalculatingSkillUsageWrapper(skillType: SkillType, constructor: new () => any): any {
   return class extends constructor {
     protected skillType = skillType;
 
     constructor() {
       super();
 
-      if (
-        this.skillType === SkillType.Awaken ||
-        this.skillType === SkillType.Limit
-      ) {
+      if (this.skillType === SkillType.Awaken || this.skillType === SkillType.Limit) {
         this.triggeredTimes = 1;
       }
     }
 
     public async onUse(
       room: Room,
-      event: ClientEventFinder<
-        GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent
-      >,
+      event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent>,
     ) {
       const result = await super.onUse(room, event);
       room.getPlayerById(event.fromId).useSkill(this.name);
@@ -77,11 +62,7 @@ function skillPropertyWrapper(
     private shadowSkill: boolean;
     private uniqueSkill: boolean;
 
-    public canUse: (
-      room: Room,
-      owner: Player,
-      content?: ServerEventFinder<GameEventIdentifiers>,
-    ) => boolean;
+    public canUse: (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) => boolean;
 
     constructor() {
       super();
@@ -93,11 +74,7 @@ function skillPropertyWrapper(
         this.lordSkill = options.lordSkill;
         const canUseResult = this.canUse;
 
-        this.canUse = (
-          room: Room,
-          owner: Player,
-          content?: ServerEventFinder<GameEventIdentifiers>,
-        ) =>
+        this.canUse = (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) =>
           owner.Role === PlayerRole.Lord && canUseResult(room, owner, content);
       }
       if (options.shadowSkill !== undefined) {
@@ -110,41 +87,19 @@ function skillPropertyWrapper(
   } as any;
 }
 
-export function CommonSkill<T extends Skill>(
-  constructorFunction: SKillConstructor<T>,
-) {
-  return onCalculatingSkillUsageWrapper(
-    SkillType.Common,
-    constructorFunction as any,
-  );
+export function CommonSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
+  return onCalculatingSkillUsageWrapper(SkillType.Common, constructorFunction as any);
 }
-export function AwakeningSkill<T extends Skill>(
-  constructorFunction: SKillConstructor<T>,
-) {
-  return onCalculatingSkillUsageWrapper(
-    SkillType.Awaken,
-    constructorFunction as any,
-  );
+export function AwakeningSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
+  return onCalculatingSkillUsageWrapper(SkillType.Awaken, constructorFunction as any);
 }
-export function LimitSkill<T extends Skill>(
-  constructorFunction: SKillConstructor<T>,
-) {
-  return onCalculatingSkillUsageWrapper(
-    SkillType.Limit,
-    constructorFunction as any,
-  );
+export function LimitSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
+  return onCalculatingSkillUsageWrapper(SkillType.Limit, constructorFunction as any);
 }
-export function CompulsorySkill<T extends Skill>(
-  constructorFunction: SKillConstructor<T>,
-) {
-  return onCalculatingSkillUsageWrapper(
-    SkillType.Compulsory,
-    constructorFunction as any,
-  );
+export function CompulsorySkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
+  return onCalculatingSkillUsageWrapper(SkillType.Compulsory, constructorFunction as any);
 }
-export function LordSkill<T extends Skill>(
-  constructorFunction: SKillConstructor<T>,
-) {
+export function LordSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
   return skillPropertyWrapper(
     {
       lordSkill: true,
@@ -152,9 +107,7 @@ export function LordSkill<T extends Skill>(
     constructorFunction as any,
   );
 }
-export function ShadowSkill<T extends Skill>(
-  constructorFunction: SKillConstructor<T>,
-) {
+export function ShadowSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
   return skillPropertyWrapper(
     {
       shadowSkill: true,
@@ -162,9 +115,7 @@ export function ShadowSkill<T extends Skill>(
     constructorFunction as any,
   );
 }
-export function UniqueSkill<T extends Skill>(
-  constructorFunction: SKillConstructor<T>,
-) {
+export function UniqueSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
   return skillPropertyWrapper(
     {
       uniqueSkill: true,
@@ -183,9 +134,7 @@ export function TriggerableTimes<T extends Skill>(times: number) {
   };
 }
 
-export function EquipCardSkilll<T extends Skill>(options?: {
-  onEquip?(): void;
-}) {
+export function EquipCardSkilll<T extends Skill>(options?: { onEquip?(): void }) {
   return (constructorFunction: SKillConstructor<T>) => {
     const constructor = constructorFunction as any;
 
@@ -211,10 +160,10 @@ export abstract class Skill {
   private shadowSkill = false;
   private lordSkill = false;
   private uniqueSkill = false;
-  
+
   public isEquipCardSkill() {
     return false;
-  };
+  }
 
   constructor(protected name: string, protected description: string) {}
   protected triggerableTimes: number = 0;
@@ -222,31 +171,19 @@ export abstract class Skill {
 
   public abstract async onUse(
     room: Room,
-    event: ClientEventFinder<
-      GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent
-    >,
+    event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent>,
   ): Promise<boolean>;
 
   public abstract onEffect(
     room: Room,
-    event: ServerEventFinder<
-      | GameEventIdentifiers.SkillEffectEvent
-      | GameEventIdentifiers.CardEffectEvent
-    >,
+    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent | GameEventIdentifiers.CardEffectEvent>,
   ): Promise<boolean>;
 
-  public abstract canUse(
-    room: Room,
-    owner: Player,
-    content?: ServerEventFinder<GameEventIdentifiers>,
-  ): boolean;
+  public abstract canUse(room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>): boolean;
 
   public async onEffectRejected(
     room: Room,
-    event: ServerEventFinder<
-      | GameEventIdentifiers.SkillEffectEvent
-      | GameEventIdentifiers.CardEffectEvent
-    >,
+    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent | GameEventIdentifiers.CardEffectEvent>,
     // tslint:disable-next-line: no-empty
   ) {}
 
@@ -298,51 +235,32 @@ export abstract class ResponsiveSkill extends Skill {
 
   public abstract async onUse(
     room: Room,
-    event: ClientEventFinder<
-      GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent
-    >,
+    event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent>,
   ): Promise<boolean>;
 
   public abstract onEffect(
     room: Room,
-    event: ServerEventFinder<
-      | GameEventIdentifiers.SkillEffectEvent
-      | GameEventIdentifiers.CardEffectEvent
-    >,
+    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent | GameEventIdentifiers.CardEffectEvent>,
   ): Promise<boolean>;
 }
 
 export abstract class TriggerSkill extends Skill {
-  public abstract isTriggerable(
-    event: EventPicker<GameEventIdentifiers, WorkPlace>,
-    stage?: AllStage,
-  ): boolean;
+  public abstract isTriggerable(event: EventPicker<GameEventIdentifiers, WorkPlace>, stage?: AllStage): boolean;
   public abstract isAutoTrigger(): boolean;
   public abstract async onTrigger(
     room: Room,
-    event: ClientEventFinder<
-      GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.SkillUseEvent
-    >,
+    event: ClientEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.SkillUseEvent>,
   ): Promise<boolean>;
-  public abstract canUse(
-    room: Room,
-    owner: Player,
-    content?: ServerEventFinder<GameEventIdentifiers>,
-  ): boolean;
+  public abstract canUse(room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>): boolean;
 
   public async onUse(
     room: Room,
-    event: ClientEventFinder<
-      GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.SkillUseEvent
-    >,
+    event: ClientEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.SkillUseEvent>,
   ): Promise<boolean> {
     return await this.onTrigger(room, event);
   }
 
-  public abstract async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers>,
-  ): Promise<boolean>;
+  public abstract async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers>): Promise<boolean>;
 
   public isRefreshAt() {
     return false;
@@ -396,16 +314,8 @@ export abstract class ViewAsSkill extends Skill {
 
   public abstract canViewAs(): string[];
 
-  public abstract targetFilterFor(
-    cardName: string,
-    room: Room,
-    targets: PlayerId[],
-  ): boolean;
-  public abstract cardFilterFor(
-    cardName: string,
-    room: Room,
-    cards: CardId[],
-  ): boolean;
+  public abstract targetFilterFor(cardName: string, room: Room, targets: PlayerId[]): boolean;
+  public abstract cardFilterFor(cardName: string, room: Room, cards: CardId[]): boolean;
   public abstract isAvailableCardFor(
     cardName: string,
     owner: PlayerId,
@@ -427,8 +337,7 @@ export abstract class ViewAsSkill extends Skill {
   public targetFilter(room: Room, targets: PlayerId[]): boolean {
     let validTarget = false;
     for (const cardName of this.canViewAs()) {
-      validTarget =
-        validTarget || this.targetFilterFor(cardName, room, targets);
+      validTarget = validTarget || this.targetFilterFor(cardName, room, targets);
     }
 
     return validTarget;
@@ -451,16 +360,7 @@ export abstract class ViewAsSkill extends Skill {
   ): boolean {
     let validCard = false;
     for (const cardName of this.canViewAs()) {
-      validCard =
-        validCard ||
-        this.isAvailableCardFor(
-          cardName,
-          owner,
-          room,
-          cardId,
-          selectedCards,
-          containerCard,
-        );
+      validCard = validCard || this.isAvailableCardFor(cardName, owner, room, cardId, selectedCards, containerCard);
     }
 
     return validCard;
@@ -476,31 +376,17 @@ export abstract class ViewAsSkill extends Skill {
     let validTarget = false;
     for (const cardName of this.canViewAs()) {
       validTarget =
-        validTarget ||
-        this.isAvailableTargetFor(
-          cardName,
-          owner,
-          room,
-          target,
-          selectedTargets,
-          containerCard,
-        );
+        validTarget || this.isAvailableTargetFor(cardName, owner, room, target, selectedTargets, containerCard);
     }
 
     return validTarget;
   }
 
-  public async onUse(
-    room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ): Promise<boolean> {
+  public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { triggeredOnEvent } = event;
     const cardUseEvent = triggeredOnEvent as ClientEventFinder<
       GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent
@@ -535,32 +421,16 @@ export abstract class RulesBreakerSkill extends Skill {
     return true;
   }
 
-  public breakCardUsableTimes(
-    cardId: CardId,
-    room?: Room,
-    owner?: PlayerId,
-  ): number {
+  public breakCardUsableTimes(cardId: CardId, room?: Room, owner?: PlayerId): number {
     return 0;
   }
-  public breakCardUsableDistance(
-    cardId: CardId,
-    room?: Room,
-    owner?: PlayerId,
-  ): number {
+  public breakCardUsableDistance(cardId: CardId, room?: Room, owner?: PlayerId): number {
     return 0;
   }
-  public breakCardUsableTargets(
-    cardId: CardId,
-    room?: Room,
-    owner?: PlayerId,
-  ): number {
+  public breakCardUsableTargets(cardId: CardId, room?: Room, owner?: PlayerId): number {
     return 0;
   }
-  public breakAttackDistance(
-    cardId: CardId,
-    room?: Room,
-    owner?: PlayerId,
-  ): number {
+  public breakAttackDistance(cardId: CardId, room?: Room, owner?: PlayerId): number {
     return 0;
   }
   public breakOffenseDistance(room?: Room, owner?: PlayerId): number {
@@ -586,12 +456,7 @@ export abstract class FilterSkill extends Skill {
     return true;
   }
 
-  public abstract canUseCard(
-    cardId: CardId | CardMatcher,
-    room: Room,
-    owner: PlayerId,
-    target?: PlayerId,
-  ): boolean;
+  public abstract canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId, target?: PlayerId): boolean;
   public abstract canBeUsedCard(
     cardId: CardId | CardMatcher,
     room: Room,

@@ -1,12 +1,7 @@
 import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CharacterNationality } from 'core/characters/character';
-import {
-  ClientEventFinder,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
@@ -20,10 +15,7 @@ export class Hujia extends TriggerSkill {
   }
 
   public isTriggerable(
-    event: ServerEventFinder<
-      | GameEventIdentifiers.AskForCardResponseEvent
-      | GameEventIdentifiers.AskForCardUseEvent
-    >,
+    event: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent | GameEventIdentifiers.AskForCardUseEvent>,
   ) {
     const identifier = EventPacker.getIdentifier(event);
     return (
@@ -39,10 +31,7 @@ export class Hujia extends TriggerSkill {
   canUse(
     room: Room,
     owner: Player,
-    content: ServerEventFinder<
-      | GameEventIdentifiers.AskForCardResponseEvent
-      | GameEventIdentifiers.AskForCardUseEvent
-    >,
+    content: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent | GameEventIdentifiers.AskForCardUseEvent>,
   ) {
     const { cardMatcher } = content;
     return (
@@ -56,25 +45,17 @@ export class Hujia extends TriggerSkill {
     );
   }
 
-  async onTrigger(
-    room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ) {
+  async onTrigger(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     return true;
   }
 
-  async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ) {
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent, fromId } = event;
     const jinkCardEvent = triggeredOnEvent as ServerEventFinder<
-      | GameEventIdentifiers.AskForCardUseEvent
-      | GameEventIdentifiers.AskForCardResponseEvent
+      GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent
     >;
     const identifier = EventPacker.getIdentifier<
-      | GameEventIdentifiers.AskForCardUseEvent
-      | GameEventIdentifiers.AskForCardResponseEvent
+      GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent
     >(jinkCardEvent);
 
     if (identifier === undefined) {
@@ -82,16 +63,10 @@ export class Hujia extends TriggerSkill {
     }
 
     for (const player of room.getAlivePlayersFrom()) {
-      if (
-        player.Nationality === CharacterNationality.Wei &&
-        player.Id !== fromId
-      ) {
+      if (player.Nationality === CharacterNationality.Wei && player.Id !== fromId) {
         room.notify(identifier, jinkCardEvent, player.Id);
 
-        const response = await room.onReceivingAsyncReponseFrom(
-          identifier,
-          player.Id,
-        );
+        const response = await room.onReceivingAsyncReponseFrom(identifier, player.Id);
 
         if (response.cardId !== undefined) {
           const responseCard = Sanguosha.getCardById(response.cardId);
@@ -107,10 +82,10 @@ export class Hujia extends TriggerSkill {
           };
 
           await room.responseCard(
-            EventPacker.createIdentifierEvent(
-              GameEventIdentifiers.CardResponseEvent,
-              { ...cardUseEvent, fromId: response.fromId },
-            ),
+            EventPacker.createIdentifierEvent(GameEventIdentifiers.CardResponseEvent, {
+              ...cardUseEvent,
+              fromId: response.fromId,
+            }),
           );
 
           if (identifier === GameEventIdentifiers.AskForCardUseEvent) {

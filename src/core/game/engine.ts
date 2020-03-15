@@ -23,11 +23,7 @@ export class Sanguosha {
   }
 
   private static tryToThrowUninitializedError() {
-    if (
-      Sanguosha.skills === undefined ||
-      Sanguosha.cards === undefined ||
-      Sanguosha.characters === undefined
-    ) {
+    if (Sanguosha.skills === undefined || Sanguosha.cards === undefined || Sanguosha.characters === undefined) {
       throw new Error('Uninitialized game engine');
     }
   }
@@ -43,23 +39,16 @@ export class Sanguosha {
     return Sanguosha.cards.filter(card => cards.includes(card.Package));
   }
 
-  public static loadCharacters(
-    disabledCharacters: CharacterId[] = [],
-    ...characters: GameCharacterExtensions[]
-  ) {
+  public static loadCharacters(disabledCharacters: CharacterId[] = [], ...characters: GameCharacterExtensions[]) {
     return Sanguosha.characters.filter(
-      character =>
-        characters.includes(character.Package) &&
-        !disabledCharacters.includes(character.Id),
+      character => characters.includes(character.Package) && !disabledCharacters.includes(character.Id),
     );
   }
 
   public static getCharacterById(characterId: CharacterId) {
     this.tryToThrowUninitializedError();
 
-    const character = Sanguosha.characters.find(
-      character => character.Id === characterId,
-    );
+    const character = Sanguosha.characters.find(character => character.Id === characterId);
     if (!character) {
       throw new Error(`Unable to find character by id: ${characterId}`);
     }
@@ -67,9 +56,7 @@ export class Sanguosha {
     return character;
   }
 
-  public static getVirtualCardById<T extends Card>(
-    cardId: VirtualCardId,
-  ): VirtualCard<T> {
+  public static getVirtualCardById<T extends Card>(cardId: VirtualCardId): VirtualCard<T> {
     return VirtualCard.parseId(cardId) as VirtualCard<T>;
   }
   public static getCardById<T extends Card>(cardId: CardId): T {
@@ -79,9 +66,7 @@ export class Sanguosha {
       return this.getVirtualCardById<T>(cardId) as any;
     }
 
-    const card = Sanguosha.cards.find(card => card.Id === cardId) as
-      | T
-      | undefined;
+    const card = Sanguosha.cards.find(card => card.Id === cardId) as T | undefined;
     if (!card) {
       throw new Error(`Unable to find the card by id: ${cardId}`);
     }
@@ -91,9 +76,7 @@ export class Sanguosha {
   public static getCardByName<T extends Card>(cardName: string): T {
     this.tryToThrowUninitializedError();
 
-    const card = Sanguosha.cards.find(card => card.GeneralName === cardName) as
-      | T
-      | undefined;
+    const card = Sanguosha.cards.find(card => card.GeneralName === cardName) as T | undefined;
     if (!card) {
       throw new Error(`Unable to find the card by name: ${cardName}`);
     }
@@ -103,9 +86,7 @@ export class Sanguosha {
   public static getSkillBySkillName<T extends Skill = Skill>(name: string): T {
     this.tryToThrowUninitializedError();
 
-    const skill = Sanguosha.skills.find(skill => skill.Name === name) as
-      | T
-      | undefined;
+    const skill = Sanguosha.skills.find(skill => skill.Name === name) as T | undefined;
     if (!skill) {
       throw new Error(`Unable to find the skill by name: ${name}`);
     }
@@ -115,9 +96,7 @@ export class Sanguosha {
   public static getCharacterByCharaterName(name: string) {
     this.tryToThrowUninitializedError();
 
-    const character = Sanguosha.characters.find(
-      character => character.Name === name,
-    );
+    const character = Sanguosha.characters.find(character => character.Name === name);
     if (!character) {
       throw new Error(`Unable to find character by name: ${name}`);
     }
@@ -128,24 +107,17 @@ export class Sanguosha {
   public static getRandomCharacters(
     numberOfCharacters: number,
     charactersPool: Character[] = this.characters,
-    except: CharacterId[]
+    except: CharacterId[],
   ) {
     const characterIndex: number[] = [];
-    const availableCharacters = charactersPool.filter(
-      character => !except.includes(character.Id),
-    );
+    const availableCharacters = charactersPool.filter(character => !except.includes(character.Id));
     for (let i = 0; i < availableCharacters.length; i++) {
       characterIndex.push(i);
     }
 
     const selectedCharacterIndex: number[] = [];
     while (numberOfCharacters > 0) {
-      selectedCharacterIndex.push(
-        characterIndex.splice(
-          Math.floor(Math.random() * numberOfCharacters),
-          1,
-        )[0],
-      );
+      selectedCharacterIndex.push(characterIndex.splice(Math.floor(Math.random() * numberOfCharacters), 1)[0]);
 
       numberOfCharacters--;
     }
@@ -154,9 +126,7 @@ export class Sanguosha {
   }
 
   public static getLordCharacters(packages: GameCharacterExtensions[]) {
-    return this.characters.filter(
-      character => character.isLord() && packages.includes(character.Package),
-    );
+    return this.characters.filter(character => character.isLord() && packages.includes(character.Package));
   }
 
   public static isVirtualCardId(cardId: CardId) {

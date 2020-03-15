@@ -1,7 +1,4 @@
-import {
-  PatchedTranslationObject,
-  TranslationPack,
-} from 'core/translations/translation_json_tool';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
@@ -19,13 +16,11 @@ export type ConversationProps = {
 export class Conversation extends React.Component<ConversationProps> {
   private getActions = () => {
     const { optionsActionHanlder = {} } = this.props;
-    return Object.entries(optionsActionHanlder).map(
-      ([option, action], index) => (
-        <button key={index} className={styles.actionButton} onClick={action}>
-          {option}
-        </button>
-      ),
-    );
+    return Object.entries(optionsActionHanlder).map(([option, action], index) => (
+      <button key={index} className={styles.actionButton} onClick={action}>
+        {option}
+      </button>
+    ));
   };
 
   render() {
@@ -34,9 +29,7 @@ export class Conversation extends React.Component<ConversationProps> {
       <div className={styles.conversation}>
         <h3 className={styles.conversationText}>
           {translator.trx(
-            typeof conversation === 'string'
-              ? conversation
-              : TranslationPack.create(conversation).toString(),
+            typeof conversation === 'string' ? conversation : TranslationPack.create(conversation).toString(),
           )}
         </h3>
         <div className={styles.actions}>{this.getActions()}</div>

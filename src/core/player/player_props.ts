@@ -8,10 +8,7 @@ export type PlayerCardsOutside = {
 };
 
 export type PlayerCards = {
-  [K in Extract<
-    PlayerCardsArea,
-    Exclude<PlayerCardsArea, PlayerCardsArea.OutsideArea>
-  >]: CardId[];
+  [K in Extract<PlayerCardsArea, Exclude<PlayerCardsArea, PlayerCardsArea.OutsideArea>>]: CardId[];
 };
 
 export const enum PlayerRole {

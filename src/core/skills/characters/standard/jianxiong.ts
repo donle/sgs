@@ -14,18 +14,11 @@ export class JianXiong extends TriggerSkill {
     return false;
   }
 
-  isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
-    stage?: AllStage,
-  ) {
+  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
     return stage === DamageEffectStage.AfterDamagedEffect;
   }
 
-  canUse(
-    room: Room,
-    owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
-  ) {
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
     return owner.Id === content.toId;
   }
 
@@ -33,14 +26,9 @@ export class JianXiong extends TriggerSkill {
     return true;
   }
 
-  async onEffect(
-    room: Room,
-    skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ) {
+  async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
-    const damagedEvent = triggeredOnEvent as ServerEventFinder<
-      GameEventIdentifiers.DamageEvent
-    >;
+    const damagedEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
     if (damagedEvent.cardIds !== undefined && damagedEvent.cardIds.length > 0) {
       await room.obtainCards(damagedEvent.cardIds, damagedEvent.toId);
     }

@@ -30,9 +30,7 @@ type RoomEventUtilities = {
 };
 
 export type RoomSocketEventPicker<E extends RoomSocketEvent> = RoomEventList[E];
-export type RoomSocketEventResponser<
-  E extends RoomSocketEvent
-> = RoomEventResponseList[E];
+export type RoomSocketEventResponser<E extends RoomSocketEvent> = RoomEventResponseList[E];
 
 interface RoomEventResponseList extends RoomEventUtilities {
   [RoomSocketEvent.CreatRoom]: never;
@@ -49,9 +47,7 @@ interface RoomEventList extends RoomEventUtilities {
   };
 }
 
-export type LobbySocketEventPicker<
-  E extends LobbySocketEvent
-> = LobbyEventList[E];
+export type LobbySocketEventPicker<E extends LobbySocketEvent> = LobbyEventList[E];
 
 type LobbyEventUtilities = {
   [K in keyof typeof LobbySocketEvent]: any;

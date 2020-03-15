@@ -1,10 +1,5 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import {
-  ClientEventFinder,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { DamageType, INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -34,28 +29,20 @@ export class NanManRuQingSkill extends ActiveSkill {
   public isAvailableTarget(): boolean {
     return false;
   }
-  public async onUse(
-    room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
-  ) {
+  public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const others = room.getOtherPlayers(event.fromId);
 
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} used card {1} to {2}',
       room.getPlayerById(event.fromId).Character.Name,
       TranslationPack.patchCardInTranslation(event.cardId),
-      TranslationPack.wrapArrayParams(
-        ...others.map(target => target.Character.Name),
-      ),
+      TranslationPack.wrapArrayParams(...others.map(target => target.Character.Name)),
     ).extract();
     event.toIds = others.map(player => player.Id);
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
-  ) {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const { toIds, fromId, cardId } = event;
 
     const askForCardEvent = {
@@ -72,10 +59,7 @@ export class NanManRuQingSkill extends ActiveSkill {
               TranslationPack.patchCardInTranslation(cardId),
               'slash',
             ).extract()
-          : TranslationPack.translationJsonPatcher(
-              'please response a {0} card',
-              'slash',
-            ).extract(),
+          : TranslationPack.translationJsonPatcher('please response a {0} card', 'slash').extract(),
       triggeredBySkillName: this.name,
     };
 

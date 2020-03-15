@@ -248,16 +248,11 @@ export type EventUtilities = {
   [K in keyof typeof GameEventIdentifiers]: object;
 };
 
-export type EventPicker<
-  I extends GameEventIdentifiers,
-  E extends WorkPlace
-> = BaseGameEvent &
+export type EventPicker<I extends GameEventIdentifiers, E extends WorkPlace> = BaseGameEvent &
   (E extends WorkPlace.Client ? ClientEvent[I] : ServerEvent[I]);
 
-export type ClientEventFinder<I extends GameEventIdentifiers> = BaseGameEvent &
-  ClientEvent[I];
-export type ServerEventFinder<I extends GameEventIdentifiers> = BaseGameEvent &
-  ServerEvent[I];
+export type ClientEventFinder<I extends GameEventIdentifiers> = BaseGameEvent & ClientEvent[I];
+export type ServerEventFinder<I extends GameEventIdentifiers> = BaseGameEvent & ServerEvent[I];
 
 export class EventPacker {
   private constructor() {}
@@ -269,9 +264,7 @@ export class EventPacker {
     return { ...event, ...info };
   }
 
-  static getGameRunningInfo<T extends GameEventIdentifiers>(
-    event: ServerEventFinder<T>,
-  ): GameRunningInfo {
+  static getGameRunningInfo<T extends GameEventIdentifiers>(event: ServerEventFinder<T>): GameRunningInfo {
     const { numberOfDrawStack, round, currentPlayerId } = event as any;
 
     return {
@@ -281,9 +274,7 @@ export class EventPacker {
     };
   }
 
-  static isDisresponsiveEvent = <T extends GameEventIdentifiers>(
-    event: ServerEventFinder<T>,
-  ) => {
+  static isDisresponsiveEvent = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>) => {
     return EventPacker.hasFlag('disresponsive', event);
   };
 
@@ -302,10 +293,7 @@ export class EventPacker {
     return event;
   };
 
-  static hasFlag = <T extends GameEventIdentifiers>(
-    property: string,
-    event: ServerEventFinder<T>,
-  ): boolean => {
+  static hasFlag = <T extends GameEventIdentifiers>(property: string, event: ServerEventFinder<T>): boolean => {
     return property in event;
   };
 
@@ -335,35 +323,24 @@ export class EventPacker {
     return event;
   };
 
-  static hasIdentifier = <T extends GameEventIdentifiers>(
-    identifier: T,
-    event: ServerEventFinder<T>,
-  ): boolean => {
+  static hasIdentifier = <T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>): boolean => {
     return (event as any).identifier === identifier;
   };
 
-  static getIdentifier = <T extends GameEventIdentifiers>(
-    event: ServerEventFinder<T>,
-  ): T | undefined => {
+  static getIdentifier = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>): T | undefined => {
     return (event as any).identifier;
   };
 
-  static isUncancellabelEvent = <T extends GameEventIdentifiers>(
-    event: ServerEventFinder<T>,
-  ) => {
+  static isUncancellabelEvent = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>) => {
     return !!(event as any).uncancellable;
   };
 
-  static terminate<T extends EventPicker<GameEventIdentifiers, WorkPlace>>(
-    event: T,
-  ): T {
+  static terminate<T extends EventPicker<GameEventIdentifiers, WorkPlace>>(event: T): T {
     (event as any).terminate = true;
     return event;
   }
 
-  static recall<T extends EventPicker<GameEventIdentifiers, WorkPlace>>(
-    event: T,
-  ): T {
+  static recall<T extends EventPicker<GameEventIdentifiers, WorkPlace>>(event: T): T {
     (event as any).terminate = false;
     return event;
   }

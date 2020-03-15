@@ -1,9 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import {
-  ClientEventFinder,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -34,10 +30,7 @@ export class PeachSkill extends ActiveSkill {
     return false;
   }
 
-  async onUse(
-    room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
-  ) {
+  async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
     if (!event.toIds) {
       event.toIds = [event.fromId];
     }
@@ -51,22 +44,18 @@ export class PeachSkill extends ActiveSkill {
     return true;
   }
 
-  async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
-  ) {
-    const recoverContent =
-      {
-        recoverBy: event.fromId,
-        toId: event.toIds![0],
-        recoveredHp: 1,
-        triggeredBySkillName: this.name,
-        translationsMessage: TranslationPack.translationJsonPatcher(
-          '{0} recovers {1} hp',
-          room.getPlayerById(event.toIds![0]).Name,
-          '1',
-        ).extract(),
-      };
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
+    const recoverContent = {
+      recoverBy: event.fromId,
+      toId: event.toIds![0],
+      recoveredHp: 1,
+      triggeredBySkillName: this.name,
+      translationsMessage: TranslationPack.translationJsonPatcher(
+        '{0} recovers {1} hp',
+        room.getPlayerById(event.toIds![0]).Name,
+        '1',
+      ).extract(),
+    };
 
     await room.recover(recoverContent);
 

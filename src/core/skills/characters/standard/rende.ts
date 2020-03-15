@@ -1,11 +1,7 @@
 import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import {
-  ClientEventFinder,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -40,10 +36,7 @@ export class Rende extends ActiveSkill {
     return cardFromArea !== PlayerCardsArea.HandArea;
   }
 
-  async onUse(
-    room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ) {
+  async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} activates skill {1} to {2}',
       room.getPlayerById(event.fromId).Name,
@@ -54,13 +47,8 @@ export class Rende extends ActiveSkill {
     return true;
   }
 
-  async onEffect(
-    room: Room,
-    skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ) {
-    room
-      .getPlayerById(skillUseEvent.fromId)
-      .addInvisibleMark(this.name, skillUseEvent.cardIds!.length);
+  async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    room.getPlayerById(skillUseEvent.fromId).addInvisibleMark(this.name, skillUseEvent.cardIds!.length);
     room.moveCards(
       skillUseEvent.cardIds!,
       skillUseEvent.fromId,
@@ -72,10 +60,7 @@ export class Rende extends ActiveSkill {
     const from = room.getPlayerById(skillUseEvent.fromId);
     from.addInvisibleMark(this.name, skillUseEvent.cardIds!.length);
 
-    if (
-      from.getInvisibleMark(this.name) >= 2 &&
-      from.getInvisibleMark(this.name + '-used') === 0
-    ) {
+    if (from.getInvisibleMark(this.name) >= 2 && from.getInvisibleMark(this.name + '-used') === 0) {
       //TODO: add wine afterwards
       const options = ['peach'];
       if (from.canUseCard(room, new CardMatcher({ name: ['slash'] }))) {
@@ -90,11 +75,7 @@ export class Rende extends ActiveSkill {
         triggeredBySkillName: this.name,
       };
 
-      room.notify(
-        GameEventIdentifiers.AskForChooseOptionsEvent,
-        chooseEvent,
-        skillUseEvent.fromId,
-      );
+      room.notify(GameEventIdentifiers.AskForChooseOptionsEvent, chooseEvent, skillUseEvent.fromId);
       const response = await room.onReceivingAsyncReponseFrom(
         GameEventIdentifiers.AskForChooseOptionsEvent,
         skillUseEvent.fromId,
@@ -114,16 +95,10 @@ export class Rende extends ActiveSkill {
         const choosePlayerEvent = {
           players: targets,
           fromId: from.Id,
-          translationsMessage: TranslationPack.translationJsonPatcher(
-            'Please choose your slash target',
-          ).extract(),
+          translationsMessage: TranslationPack.translationJsonPatcher('Please choose your slash target').extract(),
         };
 
-        room.notify(
-          GameEventIdentifiers.AskForChoosePlayerEvent,
-          choosePlayerEvent,
-          from.Id,
-        );
+        room.notify(GameEventIdentifiers.AskForChoosePlayerEvent, choosePlayerEvent, from.Id);
 
         const choosePlayerResponse = await room.onReceivingAsyncReponseFrom(
           GameEventIdentifiers.AskForChoosePlayerEvent,
@@ -156,12 +131,7 @@ export class Rende extends ActiveSkill {
     return true;
   }
 
-  onPhaseChange(
-    from: PlayerPhase,
-    to: PlayerPhase,
-    room: Room,
-    playerId: PlayerId,
-  ) {
+  onPhaseChange(from: PlayerPhase, to: PlayerPhase, room: Room, playerId: PlayerId) {
     if (from === PlayerPhase.FinishStage) {
       const player = room.getPlayerById(playerId);
       player.removeInvisibleMark(this.name);

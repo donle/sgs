@@ -33,7 +33,7 @@ export type GameRunningInfo = {
   numberOfDrawStack: number;
   round: number;
   currentPlayerId: PlayerId;
-}
+};
 
 export const enum DamageType {
   Normal = 'normal_property',
@@ -68,20 +68,9 @@ export function getRoles(totalPlayers: number): PlayerRole[] {
     case 3:
       return [PlayerRole.Lord, PlayerRole.Rebel, PlayerRole.Rebel];
     case 4:
-      return [
-        PlayerRole.Lord,
-        PlayerRole.Rebel,
-        PlayerRole.Loyalist,
-        PlayerRole.Renegade,
-      ];
+      return [PlayerRole.Lord, PlayerRole.Rebel, PlayerRole.Loyalist, PlayerRole.Renegade];
     case 5:
-      return [
-        PlayerRole.Lord,
-        PlayerRole.Rebel,
-        PlayerRole.Rebel,
-        PlayerRole.Loyalist,
-        PlayerRole.Renegade,
-      ];
+      return [PlayerRole.Lord, PlayerRole.Rebel, PlayerRole.Rebel, PlayerRole.Loyalist, PlayerRole.Renegade];
     case 6:
       return [
         PlayerRole.Lord,

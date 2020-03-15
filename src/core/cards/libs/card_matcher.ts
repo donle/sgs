@@ -22,10 +22,7 @@ export class CardMatcher {
     };
   }
 
-  public static match(
-    matcher: CardMatcherSocketPassenger | undefined,
-    card: Card | CardMatcher,
-  ) {
+  public static match(matcher: CardMatcherSocketPassenger | undefined, card: Card | CardMatcher) {
     if (matcher === undefined) {
       return false;
     }
@@ -48,27 +45,21 @@ export class CardMatcher {
         matched = matched && name.includes(card.GeneralName);
       }
       if (type) {
-        matched =
-          matched && type.find(subType => card.is(subType)) !== undefined;
+        matched = matched && type.find(subType => card.is(subType)) !== undefined;
       }
     } else {
       matcher = card.toSocketPassenger();
       if (suit && matcher.suit) {
-        matched =
-          matched && matcher.suit.every(cardSuit => suit.includes(cardSuit));
+        matched = matched && matcher.suit.every(cardSuit => suit.includes(cardSuit));
       }
       if (cardNumber && matcher.cardNumber) {
-        matched =
-          matched &&
-          matcher.cardNumber.every(cardNum => cardNumber.includes(cardNum));
+        matched = matched && matcher.cardNumber.every(cardNum => cardNumber.includes(cardNum));
       }
       if (name && matcher.name) {
-        matched =
-          matched && matcher.name.every(cardName => name.includes(cardName));
+        matched = matched && matcher.name.every(cardName => name.includes(cardName));
       }
       if (type && matcher.type) {
-        matched =
-          matched && matcher.type.every(cardType => type.includes(cardType));
+        matched = matched && matcher.type.every(cardType => type.includes(cardType));
       }
     }
 

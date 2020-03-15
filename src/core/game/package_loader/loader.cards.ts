@@ -8,9 +8,7 @@ export type CardPackages = {
 export type CardPackage<Extension extends GameCardExtensions> = {
   [K in Extension]: Card[];
 };
-export type CardPackageLoader = (
-  index: number,
-) => CardPackage<GameCardExtensions>;
+export type CardPackageLoader = (index: number) => CardPackage<GameCardExtensions>;
 
 const allPackageLoaders: CardPackageLoader[] = [StandardCardPackage];
 
@@ -27,10 +25,7 @@ export class CardLoader {
 
     for (const loader of allPackageLoaders) {
       const packages = loader(index);
-      for (const [packageName, cards] of Object.entries(packages) as [
-        GameCardExtensions,
-        Card[],
-      ][]) {
+      for (const [packageName, cards] of Object.entries(packages) as [GameCardExtensions, Card[]][]) {
         this.cards[packageName] = cards;
 
         index += cards.length;
@@ -47,16 +42,10 @@ export class CardLoader {
   }
 
   public getAllCards() {
-    return Object.values(this.cards).reduce<Card[]>(
-      (addedCards, cards) => addedCards.concat(cards),
-      [],
-    );
+    return Object.values(this.cards).reduce<Card[]>((addedCards, cards) => addedCards.concat(cards), []);
   }
 
   public getPackages(...extensions: GameCardExtensions[]): Card[] {
-    return extensions.reduce<Card[]>(
-      (addedCards, extension) => addedCards.concat(this.cards[extension]),
-      [],
-    );
+    return extensions.reduce<Card[]>((addedCards, extension) => addedCards.concat(this.cards[extension]), []);
   }
 }

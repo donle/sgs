@@ -27,9 +27,7 @@ export abstract class Socket<T extends WorkPlace> {
   public abstract async waitForResponse<I extends GameEventIdentifiers>(
     identifier: I,
     playerId?: PlayerId,
-  ): Promise<
-    T extends WorkPlace.Client ? ServerEventFinder<I> : ClientEventFinder<I>
-  >;
+  ): Promise<T extends WorkPlace.Client ? ServerEventFinder<I> : ClientEventFinder<I>>;
 
   public abstract notify<I extends GameEventIdentifiers>(
     type: I,
@@ -38,12 +36,9 @@ export abstract class Socket<T extends WorkPlace> {
   ): void;
   public abstract broadcast<I extends GameEventIdentifiers>(
     type: I,
-    content: T extends WorkPlace.Client ? ClientEventFinder<I> : ServerEventFinder<I>
+    content: T extends WorkPlace.Client ? ClientEventFinder<I> : ServerEventFinder<I>,
   ): void;
-  public abstract emitRoomStatus<T extends RoomEvent>(
-    type: T,
-    content: RoomEventFinder<T>,
-  ): void;
+  public abstract emitRoomStatus<T extends RoomEvent>(type: T, content: RoomEventFinder<T>): void;
 
   public get RoomId() {
     return this.roomId;

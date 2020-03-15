@@ -1,8 +1,4 @@
-import {
-  ClientEventFinder,
-  GameEventIdentifiers,
-  WorkPlace,
-} from 'core/event/event';
+import { ClientEventFinder, GameEventIdentifiers, WorkPlace } from 'core/event/event';
 import { GameInfo, GameRunningInfo } from 'core/game/game_props';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { ClientSocket } from 'core/network/socket.client';
@@ -23,12 +19,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   private currentPlayerPhase: PlayerPhase;
   private numberOfDrawStack: number = 0;
   private numberOfDropStack: number = 0;
-  constructor(
-    roomId: RoomId,
-    socket: ClientSocket,
-    gameInfo: GameInfo,
-    players: ClientPlayer[],
-  ) {
+  constructor(roomId: RoomId, socket: ClientSocket, gameInfo: GameInfo, players: ClientPlayer[]) {
     super();
 
     this.roomId = roomId;
@@ -38,9 +29,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   }
 
   protected init(gameStartInfo: GameRunningInfo): void {
-    this.currentPlayer = this.getPlayerById(
-      gameStartInfo.currentPlayerId,
-    ) as ClientPlayer;
+    this.currentPlayer = this.getPlayerById(gameStartInfo.currentPlayerId) as ClientPlayer;
     this.numberOfDrawStack = gameStartInfo.numberOfDrawStack;
     this.round = gameStartInfo.round;
   }
@@ -138,10 +127,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.askForCardResponse.name);
   }
 
-  public broadcast<T extends GameEventIdentifiers>(
-    type: T,
-    content: ClientEventFinder<T>,
-  ): void {
+  public broadcast<T extends GameEventIdentifiers>(type: T, content: ClientEventFinder<T>): void {
     this.socket.notify(type, content);
   }
 

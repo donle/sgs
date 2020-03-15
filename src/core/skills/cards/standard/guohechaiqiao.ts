@@ -1,10 +1,5 @@
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
-import {
-  ClientEventFinder,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -43,23 +38,16 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill {
     );
   }
 
-  public async onUse(
-    room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
-  ) {
+  public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
-  ) {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const to = room.getPlayerById(event.toIds![0]);
     const options: CardChoosingOptions = {
       [PlayerCardsArea.JudgeArea]: to.getCardIds(PlayerCardsArea.JudgeArea),
       [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),
-      [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea)
-        .length,
+      [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea).length,
     };
 
     const chooseCardEvent = {
@@ -70,9 +58,7 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill {
 
     room.notify(
       GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-      EventPacker.createUncancellableEvent<
-        GameEventIdentifiers.AskForChoosingCardFromPlayerEvent
-      >(chooseCardEvent),
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(chooseCardEvent),
       event.fromId!,
     );
 
@@ -82,9 +68,7 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill {
     );
 
     if (response.selectedCard === undefined) {
-      response.selectedCard = to.getCardIds(PlayerCardsArea.HandArea)[
-        response.selectedCardIndex!
-      ];
+      response.selectedCard = to.getCardIds(PlayerCardsArea.HandArea)[response.selectedCardIndex!];
     }
 
     const dropEvent: ServerEventFinder<GameEventIdentifiers.CardDropEvent> = {
@@ -96,11 +80,7 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill {
       await room.dropCards([response.selectedCard], chooseCardEvent.toId);
     } else {
       room.getPlayerById(chooseCardEvent.toId).dropCards(response.selectedCard);
-      room.notify(
-        GameEventIdentifiers.CardDropEvent,
-        dropEvent,
-        chooseCardEvent.toId,
-      );
+      room.notify(GameEventIdentifiers.CardDropEvent, dropEvent, chooseCardEvent.toId);
     }
     return true;
   }

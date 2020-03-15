@@ -1,10 +1,6 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import {
-  ClientEventFinder,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { DamageType } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -36,23 +32,14 @@ export class SlashSkill extends ActiveSkill {
     return targets.length === 1;
   }
 
-  isAvailableTarget(
-    owner: PlayerId,
-    room: Room,
-    target: PlayerId,
-    selectedTargets: PlayerId[],
-    containerCard: CardId,
-  ) {
+  isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId, selectedTargets: PlayerId[], containerCard: CardId) {
     return (
       room.getPlayerById(owner).canUseCardTo(room, containerCard, target) &&
       room.canAttack(room.getPlayerById(owner), room.getPlayerById(target))
     );
   }
 
-  async onUse(
-    room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
-  ) {
+  async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} uses card {2} to {1}',
       room.CurrentPlayer.Name,
@@ -63,10 +50,7 @@ export class SlashSkill extends ActiveSkill {
     return true;
   }
 
-  async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
-  ) {
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const { toIds, fromId, cardId } = event;
     for (const toId of toIds || []) {
       const askForUseCardEvent = {
@@ -118,11 +102,7 @@ export class SlashSkill extends ActiveSkill {
                 1,
                 this.damageType,
               ).extract()
-            : TranslationPack.translationJsonPatcher(
-                '{0} got hurt {1} hp',
-                room.getPlayerById(toId).Name,
-                1,
-              ).extract(),
+            : TranslationPack.translationJsonPatcher('{0} got hurt {1} hp', room.getPlayerById(toId).Name, 1).extract(),
         };
 
         await room.damage(damageEvent);

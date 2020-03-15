@@ -39,9 +39,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
 
   render() {
     const clientPlayer = this.props.presenter.ClientPlayer;
-    const character = clientPlayer?.CharacterId
-      ? clientPlayer?.Character
-      : undefined;
+    const character = clientPlayer?.CharacterId ? clientPlayer?.Character : undefined;
 
     return (
       <div
@@ -54,9 +52,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
         {character && (
           <div className={styles.playerCardInside}>
             <span className={styles.nationality}>
-              {this.props.translator.tr(
-                getNationalityRawText(character.Nationality),
-              )}
+              {this.props.translator.tr(getNationalityRawText(character.Nationality))}
             </span>
             <span>{this.props.translator.tr(character.Name)}</span>
             <span>

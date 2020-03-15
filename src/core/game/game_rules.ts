@@ -79,16 +79,12 @@ export class GameCommonRules {
 
     let availableUseTimes = INFINITE_TRIGGERING_TIMES;
 
-    const baseRule = GameCommonRules.commonCardUseRules.find(rule =>
-      rule.cardMatcher.match(card),
-    );
+    const baseRule = GameCommonRules.commonCardUseRules.find(rule => rule.cardMatcher.match(card));
     if (baseRule) {
       availableUseTimes = baseRule.times;
     }
 
-    const additionalRule = GameCommonRules.userRules[user.Id].cards.find(rule =>
-      rule.cardMatcher.match(card),
-    );
+    const additionalRule = GameCommonRules.userRules[user.Id].cards.find(rule => rule.cardMatcher.match(card));
     if (additionalRule) {
       availableUseTimes += additionalRule.additionalUsableTimes;
     }
@@ -98,10 +94,7 @@ export class GameCommonRules {
       }
     }
 
-    return (
-      user.cardUsedTimes(card instanceof Card ? card.Id : card) <
-      availableUseTimes
-    );
+    return user.cardUsedTimes(card instanceof Card ? card.Id : card) < availableUseTimes;
   }
 
   public static addAdditionalHoldCardNumber(user: Player, addedNumber: number) {
@@ -115,33 +108,21 @@ export class GameCommonRules {
     return this.userRules[user.Id].additionalHold;
   }
 
-  public static addCardUsableTimes(
-    cardMatcher: CardMatcher,
-    times: number,
-    user: Player,
-  ) {
+  public static addCardUsableTimes(cardMatcher: CardMatcher, times: number, user: Player) {
     GameCommonRules.preCheck(user);
     this.userRules[user.Id].cards
       .filter(cardProp => cardProp.cardMatcher.match(cardMatcher))
       .map(rule => (rule.additionalUsableTimes += times));
   }
 
-  public static addCardUsableDistance(
-    cardMatcher: CardMatcher,
-    times: number,
-    user: Player,
-  ) {
+  public static addCardUsableDistance(cardMatcher: CardMatcher, times: number, user: Player) {
     GameCommonRules.preCheck(user);
     this.userRules[user.Id].cards
       .filter(cardProp => cardProp.cardMatcher.match(cardMatcher))
       .map(rule => (rule.additionalUsableDistance += times));
   }
 
-  public static addAdditionalUsableNumberOfTargets(
-    card: Card,
-    user: Player,
-    additional: number,
-  ) {
+  public static addAdditionalUsableNumberOfTargets(card: Card, user: Player, additional: number) {
     this.userRules[user.Id].cards
       .filter(rule => rule.cardMatcher.match(card))
       .map(rule => (rule.additionalTargets += additional));
@@ -160,15 +141,12 @@ export class GameCommonRules {
   }
 
   public static removeCardRules(cardMatcher: CardMatcher, user: Player) {
-    GameCommonRules.userRules[user.Id].cards = GameCommonRules.userRules[
-      user.Id
-    ].cards.filter(rule => rule.cardMatcher.match(cardMatcher));
+    GameCommonRules.userRules[user.Id].cards = GameCommonRules.userRules[user.Id].cards.filter(rule =>
+      rule.cardMatcher.match(cardMatcher),
+    );
   }
 
-  public static getCardAdditionalUsableTimes(
-    card: Card | CardMatcher,
-    user: Player,
-  ) {
+  public static getCardAdditionalUsableTimes(card: Card | CardMatcher, user: Player) {
     let times = 0;
     GameCommonRules.userRules[user.Id].cards
       .filter(rule => rule.cardMatcher.match(card))
@@ -184,10 +162,7 @@ export class GameCommonRules {
 
     return times;
   }
-  public static getCardAdditionalUsableDistance(
-    card: Card | CardMatcher,
-    user: Player,
-  ) {
+  public static getCardAdditionalUsableDistance(card: Card | CardMatcher, user: Player) {
     let times = 0;
     GameCommonRules.userRules[user.Id].cards
       .filter(rule => rule.cardMatcher.match(card))
@@ -203,10 +178,7 @@ export class GameCommonRules {
 
     return times;
   }
-  public static getCardAdditionalNumberOfTargets(
-    card: Card | CardMatcher,
-    user: Player,
-  ) {
+  public static getCardAdditionalNumberOfTargets(card: Card | CardMatcher, user: Player) {
     let times = 0;
     GameCommonRules.userRules[user.Id].cards
       .filter(rule => rule.cardMatcher.match(card))
@@ -274,10 +246,7 @@ export class GameCommonRules {
     };
   }
 
-  public static syncSocketObject(
-    user: Player,
-    ruleObject: GameCommonRuleObject,
-  ) {
+  public static syncSocketObject(user: Player, ruleObject: GameCommonRuleObject) {
     if (GameCommonRules.userRules[user.Id] === undefined) {
       GameCommonRules.initPlayerCommonRules(user);
     }

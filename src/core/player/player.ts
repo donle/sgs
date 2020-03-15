@@ -3,11 +3,7 @@ import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard, WeaponCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import {
-  Character,
-  CharacterId,
-  CharacterNationality,
-} from 'core/characters/character';
+import { Character, CharacterId, CharacterNationality } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { GameCommonRules } from 'core/game/game_rules';
 import {
@@ -149,11 +145,7 @@ export abstract class Player implements PlayerInfo {
     delete this.marks['#' + name];
   }
 
-  public canUseCardTo(
-    room: Room,
-    cardId: CardId | CardMatcher,
-    target: PlayerId,
-  ): boolean {
+  public canUseCardTo(room: Room, cardId: CardId | CardMatcher, target: PlayerId): boolean {
     const player = room.getPlayerById(target);
 
     const skills = player.getSkills<FilterSkill>('filter');
@@ -167,8 +159,7 @@ export abstract class Player implements PlayerInfo {
   }
 
   public canUseCard(room: Room, cardId: CardId | CardMatcher): boolean {
-    const card =
-      cardId instanceof CardMatcher ? undefined : Sanguosha.getCardById(cardId);
+    const card = cardId instanceof CardMatcher ? undefined : Sanguosha.getCardById(cardId);
     const ruleCardUse = GameCommonRules.canUse(
       this,
       cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId),
@@ -199,14 +190,9 @@ export abstract class Player implements PlayerInfo {
       : (this.skillUsedHistory[skillName] = 0);
   }
 
-  public getCardIds(
-    area?: PlayerCardsArea,
-    outsideAreaName?: string,
-  ): CardId[] {
+  public getCardIds(area?: PlayerCardsArea, outsideAreaName?: string): CardId[] {
     if (area === undefined) {
-      const [handCards, judgeCards, equipCards] = Object.values<CardId[]>(
-        this.playerCards,
-      );
+      const [handCards, judgeCards, equipCards] = Object.values<CardId[]>(this.playerCards);
       return [...handCards, ...judgeCards, ...equipCards];
     }
 
@@ -230,10 +216,7 @@ export abstract class Player implements PlayerInfo {
   }
 
   public cardFrom(cardId: CardId): PlayerCardsArea | undefined {
-    for (const [area, cards] of Object.entries(this.playerCards) as [
-      string,
-      CardId[],
-    ][]) {
+    for (const [area, cards] of Object.entries(this.playerCards) as [string, CardId[]][]) {
       if (cards.find(card => card === cardId)) {
         return parseInt(area, 10) as PlayerCardsArea;
       }
@@ -248,11 +231,7 @@ export abstract class Player implements PlayerInfo {
   }
 
   dropCards(...cards: CardId[]): CardId[] {
-    const playerCardsAreas = [
-      PlayerCardsArea.EquipArea,
-      PlayerCardsArea.HandArea,
-      PlayerCardsArea.JudgeArea,
-    ];
+    const playerCardsAreas = [PlayerCardsArea.EquipArea, PlayerCardsArea.HandArea, PlayerCardsArea.JudgeArea];
     const droppedCardIds: CardId[] = [];
     let hasDropped = cards.length === 0;
     for (const playerCardsArea of playerCardsAreas) {
@@ -280,27 +259,19 @@ export abstract class Player implements PlayerInfo {
   }
 
   public equip(equipCard: EquipCard) {
-    const currentEquipIndex = this.playerCards[
-      PlayerCardsArea.EquipArea
-    ].findIndex(card =>
+    const currentEquipIndex = this.playerCards[PlayerCardsArea.EquipArea].findIndex(card =>
       Sanguosha.getCardById<EquipCard>(card).is(equipCard.EquipType),
     );
     let lostEquipId: CardId | undefined;
     if (currentEquipIndex >= 0) {
-      lostEquipId = this.playerCards[PlayerCardsArea.EquipArea].splice(
-        currentEquipIndex,
-        1,
-      )[0] as CardId;
+      lostEquipId = this.playerCards[PlayerCardsArea.EquipArea].splice(currentEquipIndex, 1)[0] as CardId;
     }
 
-    const equipCardFromHandsIndex = this.playerCards[
-      PlayerCardsArea.HandArea
-    ].findIndex(cardId => equipCard.Id === cardId);
+    const equipCardFromHandsIndex = this.playerCards[PlayerCardsArea.HandArea].findIndex(
+      cardId => equipCard.Id === cardId,
+    );
     if (equipCardFromHandsIndex >= 0) {
-      this.playerCards[PlayerCardsArea.HandArea].splice(
-        equipCardFromHandsIndex,
-        1,
-      );
+      this.playerCards[PlayerCardsArea.HandArea].splice(equipCardFromHandsIndex, 1);
     }
 
     this.playerCards[PlayerCardsArea.EquipArea].push(equipCard.Id);
@@ -308,16 +279,10 @@ export abstract class Player implements PlayerInfo {
   }
 
   public hasEquipment(cardType: CardType): CardId | undefined {
-    return this.playerCards[PlayerCardsArea.EquipArea].find(cardId =>
-      Sanguosha.getCardById(cardId).is(cardType),
-    );
+    return this.playerCards[PlayerCardsArea.EquipArea].find(cardId => Sanguosha.getCardById(cardId).is(cardType));
   }
 
-  public hasCard(
-    cardMatcherOrId: CardId | CardMatcher,
-    areas?: PlayerCardsArea,
-    outsideName?: string,
-  ) {
+  public hasCard(cardMatcherOrId: CardId | CardMatcher, areas?: PlayerCardsArea, outsideName?: string) {
     if (cardMatcherOrId instanceof CardMatcher) {
       const findCard = this.getCardIds(areas, outsideName).find(cardId => {
         const card = Sanguosha.getCardById(cardId);
@@ -330,10 +295,7 @@ export abstract class Player implements PlayerInfo {
 
       const skill = this.getSkills<ViewAsSkill>('viewAs').find(skill => {
         const viewAsCards = skill.canViewAs();
-        return CardMatcher.match(
-          CardMatcher.addTag({ name: viewAsCards }),
-          cardMatcherOrId,
-        );
+        return CardMatcher.match(CardMatcher.addTag({ name: viewAsCards }), cardMatcherOrId);
       });
 
       return !!skill;
@@ -343,43 +305,28 @@ export abstract class Player implements PlayerInfo {
       }
 
       const card = Sanguosha.getCardById(cardMatcherOrId);
-      const skill = this.getSkills<ViewAsSkill>('viewAs').find(skill =>
-        skill.canViewAs().includes(card.GeneralName),
-      );
+      const skill = this.getSkills<ViewAsSkill>('viewAs').find(skill => skill.canViewAs().includes(card.GeneralName));
 
       return !!skill;
     }
   }
 
   public hasUsed(cardName: string): boolean {
-    return (
-      this.cardUseHistory.find(
-        cardId => Sanguosha.getCardById(cardId).Name === cardName,
-      ) !== undefined
-    );
+    return this.cardUseHistory.find(cardId => Sanguosha.getCardById(cardId).Name === cardName) !== undefined;
   }
   public cardUsedTimes(cardSkillName: CardId | CardMatcher): number {
-    const trendToUse =
-      cardSkillName instanceof CardMatcher
-        ? cardSkillName
-        : Sanguosha.getCardById(cardSkillName);
+    const trendToUse = cardSkillName instanceof CardMatcher ? cardSkillName : Sanguosha.getCardById(cardSkillName);
     return this.cardUseHistory.filter(cardId => {
       const card = Sanguosha.getCardById(cardId);
-      return trendToUse instanceof CardMatcher
-        ? trendToUse.match(card)
-        : card.GeneralName === trendToUse.GeneralName;
+      return trendToUse instanceof CardMatcher ? trendToUse.match(card) : card.GeneralName === trendToUse.GeneralName;
     }).length;
   }
 
   public hasUsedSkill(skillName: string): boolean {
-    return (
-      this.skillUsedHistory[skillName] && this.skillUsedHistory[skillName] > 0
-    );
+    return this.skillUsedHistory[skillName] && this.skillUsedHistory[skillName] > 0;
   }
   public hasUsedSkillTimes(skillName: string): number {
-    return this.skillUsedHistory[skillName] === undefined
-      ? 0
-      : this.skillUsedHistory[skillName];
+    return this.skillUsedHistory[skillName] === undefined ? 0 : this.skillUsedHistory[skillName];
   }
 
   public get AttackDistance() {
@@ -405,22 +352,16 @@ export abstract class Player implements PlayerInfo {
 
   public getCardUsableDistance(cardId: CardId) {
     const card = Sanguosha.getCardById(cardId);
-    return (
-      card.EffectUseDistance +
-      GameCommonRules.getCardAdditionalUsableDistance(card, this)
-    );
+    return card.EffectUseDistance + GameCommonRules.getCardAdditionalUsableDistance(card, this);
   }
 
   public getCardAdditionalUsableNumberOfTargets(cardId: CardId | CardMatcher) {
-    const card =
-      cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId);
+    const card = cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId);
     return GameCommonRules.getCardAdditionalNumberOfTargets(card, this);
   }
 
   public getEquipSkills<T extends Skill = Skill>(skillType?: SkillStringType) {
-    const equipCards = this.playerCards[PlayerCardsArea.EquipArea].map(card =>
-      Sanguosha.getCardById(card),
-    );
+    const equipCards = this.playerCards[PlayerCardsArea.EquipArea].map(card => Sanguosha.getCardById(card));
     const skills = equipCards.map(card => card.Skill);
     if (skillType === undefined) {
       return skills as T[];
@@ -436,37 +377,23 @@ export abstract class Player implements PlayerInfo {
       case 'trigger':
         return skills.filter(skill => skill instanceof TriggerSkill) as T[];
       case 'breaker':
-        return skills.filter(
-          skill => skill instanceof RulesBreakerSkill,
-        ) as T[];
+        return skills.filter(skill => skill instanceof RulesBreakerSkill) as T[];
       case 'complusory':
-        return skills.filter(
-          skill => skill.SkillType === SkillType.Compulsory,
-        ) as T[];
+        return skills.filter(skill => skill.SkillType === SkillType.Compulsory) as T[];
       case 'awaken':
-        return skills.filter(
-          skill => skill.SkillType === SkillType.Awaken,
-        ) as T[];
+        return skills.filter(skill => skill.SkillType === SkillType.Awaken) as T[];
       case 'limit':
-        return skills.filter(
-          skill => skill.SkillType === SkillType.Limit,
-        ) as T[];
+        return skills.filter(skill => skill.SkillType === SkillType.Limit) as T[];
       case 'common':
-        return skills.filter(
-          skill => skill.SkillType === SkillType.Common,
-        ) as T[];
+        return skills.filter(skill => skill.SkillType === SkillType.Common) as T[];
       default:
         throw new Error(`Unreachable error of skill type: ${skillType}`);
     }
   }
 
-  public getPlayerSkills<T extends Skill = Skill>(
-    skillType?: SkillStringType,
-  ): T[] {
+  public getPlayerSkills<T extends Skill = Skill>(skillType?: SkillStringType): T[] {
     if (!this.playerCharacter) {
-      throw new Error(
-        `Player ${this.playerName} has not been initialized with a character yet`,
-      );
+      throw new Error(`Player ${this.playerName} has not been initialized with a character yet`);
     }
 
     if (skillType === undefined) {
@@ -475,55 +402,32 @@ export abstract class Player implements PlayerInfo {
 
     switch (skillType) {
       case 'filter':
-        return this.playerSkills.filter(
-          skill => skill instanceof FilterSkill,
-        ) as T[];
+        return this.playerSkills.filter(skill => skill instanceof FilterSkill) as T[];
       case 'viewAs':
-        return this.playerSkills.filter(
-          skill => skill instanceof ViewAsSkill,
-        ) as T[];
+        return this.playerSkills.filter(skill => skill instanceof ViewAsSkill) as T[];
       case 'active':
-        return this.playerSkills.filter(
-          skill => skill instanceof ActiveSkill,
-        ) as T[];
+        return this.playerSkills.filter(skill => skill instanceof ActiveSkill) as T[];
       case 'trigger':
-        return this.playerSkills.filter(
-          skill => skill instanceof TriggerSkill,
-        ) as T[];
+        return this.playerSkills.filter(skill => skill instanceof TriggerSkill) as T[];
       case 'breaker':
-        return this.playerSkills.filter(
-          skill => skill instanceof RulesBreakerSkill,
-        ) as T[];
+        return this.playerSkills.filter(skill => skill instanceof RulesBreakerSkill) as T[];
       case 'transform':
-        return this.playerSkills.filter(
-          skill => skill instanceof TransformSkill,
-        ) as T[];
+        return this.playerSkills.filter(skill => skill instanceof TransformSkill) as T[];
       case 'complusory':
-        return this.playerSkills.filter(
-          skill => skill.SkillType === SkillType.Compulsory,
-        ) as T[];
+        return this.playerSkills.filter(skill => skill.SkillType === SkillType.Compulsory) as T[];
       case 'awaken':
-        return this.playerSkills.filter(
-          skill => skill.SkillType === SkillType.Awaken,
-        ) as T[];
+        return this.playerSkills.filter(skill => skill.SkillType === SkillType.Awaken) as T[];
       case 'limit':
-        return this.playerSkills.filter(
-          skill => skill.SkillType === SkillType.Limit,
-        ) as T[];
+        return this.playerSkills.filter(skill => skill.SkillType === SkillType.Limit) as T[];
       case 'common':
-        return this.playerSkills.filter(
-          skill => skill.SkillType === SkillType.Common,
-        ) as T[];
+        return this.playerSkills.filter(skill => skill.SkillType === SkillType.Common) as T[];
       default:
         throw new Error(`Unreachable error of skill type: ${skillType}`);
     }
   }
 
   public getSkills<T extends Skill = Skill>(skillType?: SkillStringType): T[] {
-    return [
-      ...this.getEquipSkills<T>(skillType),
-      ...this.getPlayerSkills<T>(skillType),
-    ];
+    return [...this.getEquipSkills<T>(skillType), ...this.getPlayerSkills<T>(skillType)];
   }
 
   public loseSkill(skillName: string) {

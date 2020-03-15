@@ -1,10 +1,5 @@
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
-import {
-  ClientEventFinder,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -47,23 +42,16 @@ export class ShunShouQianYangSkill extends ActiveSkill {
     );
   }
 
-  public async onUse(
-    room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
-  ) {
+  public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
-  ) {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const to = room.getPlayerById(event.toIds![0]);
     const options: CardChoosingOptions = {
       [PlayerCardsArea.JudgeArea]: to.getCardIds(PlayerCardsArea.JudgeArea),
       [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),
-      [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea)
-        .length,
+      [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea).length,
     };
 
     const chooseCardEvent = {
@@ -74,9 +62,7 @@ export class ShunShouQianYangSkill extends ActiveSkill {
 
     room.notify(
       GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-      EventPacker.createUncancellableEvent<
-        GameEventIdentifiers.AskForChoosingCardFromPlayerEvent
-      >(chooseCardEvent),
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(chooseCardEvent),
       event.fromId!,
     );
 
@@ -86,9 +72,7 @@ export class ShunShouQianYangSkill extends ActiveSkill {
     );
 
     if (response.selectedCard === undefined) {
-      response.selectedCard = to.getCardIds(PlayerCardsArea.HandArea)[
-        response.selectedCardIndex!
-      ];
+      response.selectedCard = to.getCardIds(PlayerCardsArea.HandArea)[response.selectedCardIndex!];
     }
 
     await room.moveCard(

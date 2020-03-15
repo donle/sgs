@@ -337,14 +337,8 @@ const gameEventStageList: {
     JudgeEffectStage.JudgeEffect,
     JudgeEffectStage.AfterJudgeEffect,
   ],
-  [GameEventIdentifiers.PlayerDyingEvent]: [
-    PlayerDyingStage.PlayerDying,
-    PlayerDyingStage.AfterPlayerDying,
-  ],
-  [GameEventIdentifiers.PlayerDiedEvent]: [
-    PlayerDiedStage.PlayerDied,
-    PlayerDiedStage.AfterPlayerDied,
-  ],
+  [GameEventIdentifiers.PlayerDyingEvent]: [PlayerDyingStage.PlayerDying, PlayerDyingStage.AfterPlayerDying],
+  [GameEventIdentifiers.PlayerDiedEvent]: [PlayerDiedStage.PlayerDied, PlayerDiedStage.AfterPlayerDied],
   [GameEventIdentifiers.SkillUseEvent]: [
     SkillUseStage.BeforeSkillUse,
     SkillUseStage.SkillUsing,
@@ -375,12 +369,7 @@ const gameEventStageList: {
     PinDianStage.PinDianEffect,
     PinDianStage.AfterPinDianEffect,
   ],
-  [GameEventIdentifiers.AimEvent]: [
-    AimStage.OnAim,
-    AimStage.OnAimmed,
-    AimStage.AfterAim,
-    AimStage.AfterAimmed,
-  ],
+  [GameEventIdentifiers.AimEvent]: [AimStage.OnAim, AimStage.OnAimmed, AimStage.AfterAim, AimStage.AfterAimmed],
   [GameEventIdentifiers.PhaseChangeEvent]: [
     PhaseChangeStage.BeforePhaseChange,
     PhaseChangeStage.PhaseChanged,
@@ -433,9 +422,7 @@ export class StageProcessor {
   }
 
   public skipEventProcess(identifier: GameEventIdentifiers) {
-    let lastStageIndex = gameEventStageList[identifier]?.findIndex(
-      stage => stage === this.currentGameEventStage,
-    );
+    let lastStageIndex = gameEventStageList[identifier]?.findIndex(stage => stage === this.currentGameEventStage);
     while (this.isInsideEvent(identifier, this.currentGameEventStage)) {
       this.nextInstantEvent();
 
@@ -443,11 +430,7 @@ export class StageProcessor {
         stage => stage === this.currentGameEventStage,
       );
 
-      if (
-        lastStageIndex !== undefined &&
-        currentStageIndex !== undefined &&
-        currentStageIndex < 0
-      ) {
+      if (lastStageIndex !== undefined && currentStageIndex !== undefined && currentStageIndex < 0) {
         break;
       }
 
@@ -472,10 +455,7 @@ export class StageProcessor {
     return this.processingGameEvent;
   }
 
-  public isInsideEvent(
-    identifier: GameEventIdentifiers,
-    stage?: GameEventStage,
-  ) {
+  public isInsideEvent(identifier: GameEventIdentifiers, stage?: GameEventStage) {
     if (stage === undefined) {
       return false;
     }
@@ -489,11 +469,7 @@ export class StageProcessor {
   }
 
   public getGameStartStage() {
-    return [
-      GameStartStage.BeforeGameStart,
-      GameStartStage.GameStarting,
-      GameStartStage.AfterGameStarted,
-    ];
+    return [GameStartStage.BeforeGameStart, GameStartStage.GameStarting, GameStartStage.AfterGameStarted];
   }
 
   public createPlayerStage(stage?: PlayerPhase) {
@@ -519,9 +495,10 @@ export class StageProcessor {
   }
 
   public getInsidePlayerPhase(specificStage: PlayerStageListEnum): PlayerPhase {
-    for (const [stage, stageList] of (Object.entries(
-      playerStagesList,
-    ) as unknown) as [string, PlayerStageListEnum[]][]) {
+    for (const [stage, stageList] of (Object.entries(playerStagesList) as unknown) as [
+      string,
+      PlayerStageListEnum[],
+    ][]) {
       if (stageList.includes(specificStage)) {
         return parseInt(stage, 10) as PlayerPhase;
       }

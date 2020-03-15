@@ -16,7 +16,9 @@ export class GameDialog extends React.Component<GameDialogProps> {
     return (
       <div className={styles.gameDialog}>
         {this.props.store.gameLog.map((log, index) => (
-          <p className={styles.messageLine} key={index}>{log}</p>
+          <p className={styles.messageLine} key={index}>
+            {log}
+          </p>
         ))}
       </div>
     );

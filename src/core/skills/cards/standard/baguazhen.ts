@@ -1,11 +1,6 @@
 import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import {
-  ClientEventFinder,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
@@ -20,10 +15,7 @@ export class BaGuaZhenSkill extends TriggerSkill {
   }
 
   public isTriggerable(
-    event: ServerEventFinder<
-      | GameEventIdentifiers.AskForCardResponseEvent
-      | GameEventIdentifiers.AskForCardUseEvent
-    >,
+    event: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent | GameEventIdentifiers.AskForCardUseEvent>,
   ) {
     const identifier = EventPacker.getIdentifier(event);
     return (
@@ -39,10 +31,7 @@ export class BaGuaZhenSkill extends TriggerSkill {
   canUse(
     room: Room,
     owner: Player,
-    content?: ServerEventFinder<
-      | GameEventIdentifiers.AskForCardResponseEvent
-      | GameEventIdentifiers.AskForCardUseEvent
-    >,
+    content?: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent | GameEventIdentifiers.AskForCardUseEvent>,
   ) {
     if (!content) {
       return true;
@@ -60,10 +49,7 @@ export class BaGuaZhenSkill extends TriggerSkill {
     );
   }
 
-  async onTrigger(
-    room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ) {
+  async onTrigger(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} used skill {1}',
       room.getPlayerById(event.fromId).Character.Name,
@@ -73,18 +59,13 @@ export class BaGuaZhenSkill extends TriggerSkill {
     return true;
   }
 
-  async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ) {
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent, fromId } = event;
     const jinkCardEvent = triggeredOnEvent as ServerEventFinder<
-      | GameEventIdentifiers.AskForCardUseEvent
-      | GameEventIdentifiers.AskForCardResponseEvent
+      GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent
     >;
     const identifier = EventPacker.getIdentifier<
-      | GameEventIdentifiers.AskForCardUseEvent
-      | GameEventIdentifiers.AskForCardResponseEvent
+      GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent
     >(jinkCardEvent);
 
     if (identifier === undefined) {
@@ -112,10 +93,10 @@ export class BaGuaZhenSkill extends TriggerSkill {
       };
 
       await room.responseCard(
-        EventPacker.createIdentifierEvent(
-          GameEventIdentifiers.CardResponseEvent,
-          { ...cardUseEvent, fromId: event.fromId },
-        ),
+        EventPacker.createIdentifierEvent(GameEventIdentifiers.CardResponseEvent, {
+          ...cardUseEvent,
+          fromId: event.fromId,
+        }),
       );
 
       if (identifier === GameEventIdentifiers.AskForCardUseEvent) {

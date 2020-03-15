@@ -1,10 +1,5 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import {
-  ClientEventFinder,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Room } from 'core/room/room';
 import { CommonSkill, ResponsiveSkill } from 'core/skills/skill';
 
@@ -20,17 +15,11 @@ export class WuXieKeJiSkill extends ResponsiveSkill {
     });
   }
 
-  async onUse(
-    room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>,
-  ) {
+  async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
     return true;
   }
 
-  async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
-  ) {
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const { responseToEvent } = event;
     if (responseToEvent === undefined) {
       throw new Error('Unavble to get slash use event when jin is on effect');

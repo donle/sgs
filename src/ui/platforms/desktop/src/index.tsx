@@ -16,10 +16,7 @@ import './emoji_loader';
 const mode = (process.env.DEV_MODE as DevMode) || DevMode.Dev;
 const config = getClientConfg(mode);
 
-const translator = ClientTranslationModule.setup(config.ui.language, [
-  Languages.ZH_CN,
-  SimplifiedChinese,
-]);
+const translator = ClientTranslationModule.setup(config.ui.language, [Languages.ZH_CN, SimplifiedChinese]);
 
 Sanguosha.initialize();
 

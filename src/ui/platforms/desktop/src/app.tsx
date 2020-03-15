@@ -6,10 +6,7 @@ import * as React from 'react';
 import { Redirect, Route, Router, Switch } from 'react-router-dom';
 import { Lobby } from './pages/lobby/lobby';
 
-export const App = (props: {
-  config: ClientConfigTypes;
-  translator: ClientTranslationModule;
-}) => {
+export const App = (props: { config: ClientConfigTypes; translator: ClientTranslationModule }) => {
   const customHistory = createBrowserHistory();
 
   React.useEffect(() => {
@@ -20,7 +17,7 @@ export const App = (props: {
     <Router history={customHistory}>
       <div>
         <Switch>
-          <Route path="/" exact>
+          <Route path='/' exact>
             <Redirect to={'lobby'} />
           </Route>
           <Route

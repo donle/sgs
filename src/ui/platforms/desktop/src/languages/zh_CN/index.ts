@@ -10,9 +10,6 @@ function wordsToDictionary(words: Word[]): TranslationsDictionary {
   return dict;
 }
 
-const translationWords = Object.values(dictionaryBook).reduce(
-  (prev, current) => prev.concat(current),
-  [],
-);
+const translationWords = Object.values(dictionaryBook).reduce((prev, current) => prev.concat(current), []);
 
 export const SimplifiedChinese = wordsToDictionary(translationWords);

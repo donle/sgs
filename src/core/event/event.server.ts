@@ -1,26 +1,12 @@
 import { CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { CharacterId } from 'core/characters/character';
-import {
-  DamageType,
-  GameCommonRuleObject,
-  GameInfo,
-  GameRunningInfo,
-} from 'core/game/game_props';
+import { DamageType, GameCommonRuleObject, GameInfo, GameRunningInfo } from 'core/game/game_props';
 import { PlayerPhase } from 'core/game/stage_processor';
-import {
-  PlayerCardsArea,
-  PlayerId,
-  PlayerInfo,
-  PlayerRole,
-} from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
-import {
-  EventUtilities,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from './event';
+import { EventUtilities, GameEventIdentifiers, ServerEventFinder } from './event';
 
 export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.EquipEvent]: {

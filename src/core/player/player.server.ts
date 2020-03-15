@@ -1,11 +1,6 @@
 import { CharacterId } from 'core/characters/character';
 import { Player } from 'core/player/player';
-import {
-  PlayerCards,
-  PlayerCardsArea,
-  PlayerCardsOutside,
-  PlayerId,
-} from './player_props';
+import { PlayerCards, PlayerCardsArea, PlayerCardsOutside, PlayerId } from './player_props';
 
 export class ServerPlayer extends Player {
   constructor(
