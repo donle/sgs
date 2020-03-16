@@ -60,7 +60,7 @@ export class WanJianQiFaSkill extends ActiveSkill {
               'jink',
             ).extract()
           : TranslationPack.translationJsonPatcher('please response a {0} card', 'jink').extract(),
-      triggeredBySkillName: this.name,
+      triggeredBySkillName: event.triggeredBySkillName || this.name,
     };
 
     for (const to of toIds || []) {
@@ -82,7 +82,7 @@ export class WanJianQiFaSkill extends ActiveSkill {
           damage: 1,
           damageType: DamageType.Normal,
           cardIds: [event.cardId],
-          triggeredBySkillName: this.name,
+          triggeredBySkillName: event.triggeredBySkillName || this.name,
           translationsMessage: TranslationPack.translationJsonPatcher(
             '{0} hits {1} for {2} {3} hp',
             room.getPlayerById(fromId!).Name,

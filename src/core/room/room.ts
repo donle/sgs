@@ -1,5 +1,7 @@
 import { CardId } from 'core/cards/libs/card_props';
 import {
+  CardLostReason,
+  CardObtainedReason,
   ClientEventFinder,
   EventPicker,
   GameEventIdentifiers,
@@ -45,16 +47,20 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract async drawCards(numberOfCards: number, player?: PlayerId, from?: 'top' | 'bottom'): Promise<CardId[]>;
   //Server only
-  public abstract async dropCards(cardIds: CardId[], player?: PlayerId): Promise<void>;
+  public abstract async dropCards(reason: CardLostReason, cardIds: CardId[], player?: PlayerId): Promise<void>;
   //Server only
-  public abstract async obtainCards(cardIds: CardId[], to: PlayerId): Promise<void>;
+  public abstract async loseCards(event: ServerEventFinder<GameEventIdentifiers.CardLostEvent>): Promise<void>;
+  //Server only
+  public abstract async obtainCards(event: ServerEventFinder<GameEventIdentifiers.ObtainCardEvent>): Promise<void>;
   //Server only
   public abstract async moveCard(
     cardId: CardId,
     from: PlayerId | undefined,
     to: PlayerId,
+    fromReason: CardLostReason,
     fromArea: PlayerCardsArea | undefined,
     toArea: PlayerCardsArea,
+    toReason?: CardObtainedReason,
     proposer?: PlayerId,
   ): Promise<void>;
   //Server only

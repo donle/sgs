@@ -1,13 +1,45 @@
-import { CompulsorySkill, Skill, UniqueSkill } from 'core/skills/skill';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
+import { AimStage, AllStage } from 'core/game/stage_processor';
+import { Player } from 'core/player/player';
+import { Room } from 'core/room/room';
+import { CompulsorySkill, TriggerSkill, UniqueSkill } from 'core/skills/skill';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @UniqueSkill
 @CompulsorySkill
-export class QingGangSkill extends Skill {
+export class QingGangSkill extends TriggerSkill {
   constructor() {
     super('qinggang', 'qinggang_description');
   }
 
-  canUse() {
+  isAutoTrigger() {
+    return true;
+  }
+
+  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage) {
+    return (
+      stage === AimStage.AfterAim &&
+      event.byCardId !== undefined &&
+      Sanguosha.getCardById(event.byCardId).GeneralName === 'slash'
+    );
+  }
+
+  canUse(room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
+    if (!content) {
+      return true;
+    }
+
+    return owner.Id === content.fromId;
+  }
+
+  async onTrigger(room: Room, content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    content.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} activated skill {1}',
+      room.getPlayerById(content.fromId).Character.Name,
+      this.name,
+    ).extract();
+
     return true;
   }
 
@@ -15,10 +47,11 @@ export class QingGangSkill extends Skill {
     return false;
   }
 
-  async onUse() {
-    return true;
-  }
-  async onEffect() {
+  async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    const { triggeredOnEvent } = skillUseEvent;
+    const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
+    aimEvent.triggeredBySkillName = this.name;
+
     return true;
   }
 }

@@ -200,7 +200,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     return this.clientIds;
   }
 
-  public cleatSubscriber(identifier: GameEventIdentifiers, to: PlayerId) {
+  public clearSubscriber(identifier: GameEventIdentifiers, to: PlayerId) {
     if (this.asyncResponseResolver[identifier]) {
       delete this.asyncResponseResolver[identifier][to];
     }

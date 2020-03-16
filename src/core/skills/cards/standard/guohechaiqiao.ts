@@ -1,9 +1,16 @@
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
-import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import {
+  CardLostReason,
+  ClientEventFinder,
+  EventPacker,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from 'core/event/event';
 import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill, TriggerableTimes } from 'core/skills/skill';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
 @TriggerableTimes(INFINITE_TRIGGERING_TIMES)
@@ -71,16 +78,20 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill {
       response.selectedCard = to.getCardIds(PlayerCardsArea.HandArea)[response.selectedCardIndex!];
     }
 
-    const dropEvent: ServerEventFinder<GameEventIdentifiers.CardDropEvent> = {
-      fromId: chooseCardEvent.toId,
-      cardIds: [response.selectedCard],
-      droppedBy: chooseCardEvent.fromId,
-    };
     if (response.fromArea !== PlayerCardsArea.JudgeArea) {
-      await room.dropCards([response.selectedCard], chooseCardEvent.toId);
+      await room.dropCards(CardLostReason.PassiveDrop, [response.selectedCard], chooseCardEvent.toId);
     } else {
-      room.getPlayerById(chooseCardEvent.toId).dropCards(response.selectedCard);
-      room.notify(GameEventIdentifiers.CardDropEvent, dropEvent, chooseCardEvent.toId);
+      const loseEvent: ServerEventFinder<GameEventIdentifiers.CardLostEvent> = {
+        fromId: chooseCardEvent.toId,
+        cardIds: [response.selectedCard],
+        droppedBy: chooseCardEvent.fromId,
+        reason: CardLostReason.PassiveDrop,
+        translationsMessage: TranslationPack.translationJsonPatcher(
+          '{0} is placed into drop stack',
+          TranslationPack.patchCardInTranslation(response.selectedCard),
+        ).extract(),
+      };
+      await room.loseCards(loseEvent);
     }
     return true;
   }

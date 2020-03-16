@@ -50,14 +50,19 @@ export type RoomEventFinder<T extends RoomEvent> = RoomEventUtilities[T];
 
 export const enum GameEventIdentifiers {
   UserMessageEvent = 100,
+  CustomGameDialog,
   PhaseChangeEvent,
   SyncGameCommonRulesEvent,
+
+  DrunkEvent,
+  ChainLinkedEvent,
+  TurnOverEvent,
 
   LoseSkillEvent,
   ObtainSkillEvent,
 
   EquipEvent,
-  CardLoseEvent,
+  CardLostEvent,
   CardDropEvent,
   CardResponseEvent,
   CardUseEvent,
@@ -121,13 +126,18 @@ export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.UserMessageEvent,
   GameEventIdentifiers.PhaseChangeEvent,
   GameEventIdentifiers.SyncGameCommonRulesEvent,
+  GameEventIdentifiers.CustomGameDialog,
+
+  GameEventIdentifiers.DrunkEvent,
+  GameEventIdentifiers.ChainLinkedEvent,
+  GameEventIdentifiers.TurnOverEvent,
 
   GameEventIdentifiers.EquipEvent,
   GameEventIdentifiers.CardDropEvent,
   GameEventIdentifiers.CardResponseEvent,
   GameEventIdentifiers.CardUseEvent,
   GameEventIdentifiers.CardEffectEvent,
-  GameEventIdentifiers.CardLoseEvent,
+  GameEventIdentifiers.CardLostEvent,
   GameEventIdentifiers.CardDisplayEvent,
   GameEventIdentifiers.DrawCardEvent,
   GameEventIdentifiers.ObtainCardEvent,
@@ -222,6 +232,7 @@ export const enum CardLostReason {
   PassiveDrop,
   ActiveMove,
   PassiveMove,
+  PlaceToDropStack,
 }
 
 export const enum CardObtainedReason {

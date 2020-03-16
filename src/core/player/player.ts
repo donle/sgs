@@ -48,6 +48,8 @@ export abstract class Player implements PlayerInfo {
   private online: boolean;
   private ai: PlayerAI = PlayerAI.Instance;
 
+  private drunk: number = 0;
+
   protected abstract playerId: PlayerId;
   protected abstract playerName: string;
   protected abstract playerPosition: number;
@@ -276,6 +278,16 @@ export abstract class Player implements PlayerInfo {
 
     this.playerCards[PlayerCardsArea.EquipArea].push(equipCard.Id);
     return lostEquipId;
+  }
+
+  public getDrunk() {
+    this.drunk++;
+  }
+  public hasDrunk() {
+    return this.drunk;
+  }
+  public clearHeaded() {
+    this.drunk = 0;
   }
 
   public hasEquipment(cardType: CardType): CardId | undefined {

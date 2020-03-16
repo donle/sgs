@@ -1,5 +1,12 @@
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
-import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import {
+  CardLostReason,
+  CardObtainedReason,
+  ClientEventFinder,
+  EventPacker,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from 'core/event/event';
 import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -79,8 +86,10 @@ export class ShunShouQianYangSkill extends ActiveSkill {
       response.selectedCard,
       chooseCardEvent.toId,
       chooseCardEvent.fromId,
+      CardLostReason.PassiveMove,
       response.fromArea,
       PlayerCardsArea.HandArea,
+      CardObtainedReason.ActivePrey,
       chooseCardEvent.fromId,
     );
     return true;

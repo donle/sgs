@@ -12,6 +12,8 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 export class SlashSkill extends ActiveSkill {
   protected damageType: DamageType = DamageType.Normal;
 
+  private playerDrunkLevel: number;
+
   constructor() {
     super('slash', 'slash_description');
   }
@@ -47,6 +49,8 @@ export class SlashSkill extends ActiveSkill {
       this.name,
     ).extract();
 
+    this.playerDrunkLevel = room.getPlayerById(event.fromId).hasDrunk();
+
     return true;
   }
 
@@ -58,7 +62,7 @@ export class SlashSkill extends ActiveSkill {
         cardMatcher: new CardMatcher({ name: ['jink'] }).toSocketPassenger(),
         byCardId: cardId,
         cardUserId: fromId,
-        triggeredBySkillName: this.name,
+        triggeredBySkillName: event.triggeredBySkillName || this.name,
         conversation:
           fromId !== undefined
             ? TranslationPack.translationJsonPatcher(
@@ -90,25 +94,17 @@ export class SlashSkill extends ActiveSkill {
         const damageEvent = {
           fromId,
           toId,
-          damage: 1,
+          damage: 1 + this.playerDrunkLevel,
           damageType: this.damageType,
           cardIds: [cardId],
-          triggeredBySkillName: this.name,
-          translationsMessage: fromId
-            ? TranslationPack.translationJsonPatcher(
-                '{0} hurts {1} for {2} {3} hp',
-                room.getPlayerById(fromId).Name,
-                room.getPlayerById(toId).Name,
-                1,
-                this.damageType,
-              ).extract()
-            : TranslationPack.translationJsonPatcher('{0} got hurt {1} hp', room.getPlayerById(toId).Name, 1).extract(),
+          triggeredBySkillName: event.triggeredBySkillName || this.name,
         };
 
         await room.damage(damageEvent);
       }
     }
 
+    this.playerDrunkLevel = 0;
     return true;
   }
 }

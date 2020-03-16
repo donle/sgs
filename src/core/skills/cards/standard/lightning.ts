@@ -1,6 +1,6 @@
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { Lightning } from 'core/cards/standard/lightning';
-import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardLostReason, ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType, INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { Player } from 'core/player/player';
@@ -37,7 +37,14 @@ export class LightningSkill extends ActiveSkill {
   public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
     for (const player of room.getAlivePlayersFrom(event.fromId)) {
       if (room.isAvailableTarget(event.cardId, event.fromId, player.Id)) {
-        await room.moveCard(event.cardId, event.fromId, player.Id, PlayerCardsArea.HandArea, PlayerCardsArea.JudgeArea);
+        await room.moveCard(
+          event.cardId,
+          event.fromId,
+          player.Id,
+          CardLostReason.PassiveMove,
+          PlayerCardsArea.HandArea,
+          PlayerCardsArea.JudgeArea,
+        );
         event.toIds = [player.Id];
         break;
       }
@@ -65,7 +72,14 @@ export class LightningSkill extends ActiveSkill {
       }
 
       if (player.Id !== currentPlayer) {
-        await room.moveCard(cardId, currentPlayer, player.Id, PlayerCardsArea.JudgeArea, PlayerCardsArea.JudgeArea);
+        await room.moveCard(
+          cardId,
+          currentPlayer,
+          player.Id,
+          CardLostReason.PassiveMove,
+          PlayerCardsArea.JudgeArea,
+          PlayerCardsArea.JudgeArea,
+        );
       }
       break;
     }
@@ -95,17 +109,13 @@ export class LightningSkill extends ActiveSkill {
 
       await room.damage(damageEvent);
 
-      room.notify(
-        GameEventIdentifiers.CardDropEvent,
-        {
-          fromId: judgeEvent.toId,
-          cardIds: [cardId],
-        },
-        judgeEvent.toId,
-      );
+      room.broadcast(GameEventIdentifiers.CardDropEvent, {
+        fromId: judgeEvent.toId,
+        cardIds: [cardId],
+      });
       room.getPlayerById(judgeEvent.toId).dropCards(cardId);
     } else {
-      await this.moveToNextPlayer(room, judgeEvent.judgeCardId, judgeEvent.toId);
+      await this.moveToNextPlayer(room, cardId, judgeEvent.toId);
     }
     return true;
   }

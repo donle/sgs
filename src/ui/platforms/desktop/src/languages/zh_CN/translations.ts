@@ -461,6 +461,7 @@ export const eventDictionary: Word[] = [
     source: 'please use a {0} card to response {1}',
     target: '使用一张【{1}】来响应 {0}',
   },
+  { source: '{0} activated skill {1}', target: '{0} 的 {1} 技能被触发' },
   { source: '{0} used skill {1}', target: '{0} 使用了技能【{1}】' },
   {
     source: '{0} hits {1} {2} hp of damage type {3}',
@@ -470,6 +471,7 @@ export const eventDictionary: Word[] = [
     source: '{0} got hurt for {1} hp with {2} property',
     target: '{0} 受到了 {1} 点【{2}】伤害',
   },
+  { source: 'please choose a card', target: '请选择一张卡牌' },
   { source: '{0} obtains cards {1}', target: '{0} 获得了 {1} ' },
   {
     source: '{0} obtains cards {1} from {2}',
@@ -478,6 +480,7 @@ export const eventDictionary: Word[] = [
   { source: 'please drop {0} cards', target: '请弃置 {1} 张牌' },
   { source: '{0} drops cards {1}', target: '{0} 弃置了 {1}' },
   { source: '{0} cards are dropped', target: '{0} 进入了弃牌堆' },
+  { source: '{0} lost card {1}', target: '{0} 失去了 {1}' },
   { source: '{0} used card {1}', target: '{0} 使用了一张 {1}' },
   {
     source: '{0} used card {1} to {2}',
@@ -488,8 +491,7 @@ export const eventDictionary: Word[] = [
     source: '{0} used card {1} to {2}',
     target: '{0} 对 {2} 使用了一张 {1}',
   },
-  { source: 'please choose a card', target: '请选择一张卡牌' },
-  { source: '{0} obtains card {1}', target: '{0} 获得了 {1}' },
+  { source: '{0} is placed into drop stack', target: '{0} 置入了弃牌堆' },
   { source: '{0} responses card {1}', target: '{0} 打出了一张 {1}' },
   { source: 'please drop {0} cards', target: '请弃置 {0} 张牌' },
   {

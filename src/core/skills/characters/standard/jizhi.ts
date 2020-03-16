@@ -1,5 +1,11 @@
 import { CardType } from 'core/cards/card';
-import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import {
+  CardLostReason,
+  ClientEventFinder,
+  EventPacker,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { GameCommonRules } from 'core/game/game_rules';
 import { CardUseStage, PlayerPhase } from 'core/game/stage_processor';
@@ -58,7 +64,7 @@ export class JiZhi extends TriggerSkill {
       );
 
       if (response.selectedOption === 'discard') {
-        await room.dropCards([cardId], event.fromId);
+        await room.dropCards(CardLostReason.ActiveDrop, [cardId], event.fromId);
         room.syncGameCommonRules(event.fromId, user => {
           GameCommonRules.addAdditionalHoldCardNumber(user, 1);
           user.addInvisibleMark(this.name, 1);

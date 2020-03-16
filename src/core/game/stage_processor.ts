@@ -205,7 +205,7 @@ export const enum CardDropStage {
   AfterCardDropEffect = 'AfterCardDropEffect',
 }
 
-export const enum CardLoseStage {
+export const enum CardLostStage {
   BeforeCardLoseEffect = 'BeforeCardLoseEffect',
   CardLosing = 'CardLosing',
   AfterCardLostEffect = 'AfterCardLostEffect',
@@ -272,7 +272,7 @@ export type GameEventStage =
   | PhaseChangeStage
   | GameStartStage
   | CardEffectStage
-  | CardLoseStage
+  | CardLostStage
   | CardUseStage
   | CardDropStage
   | CardResponseStage
@@ -374,6 +374,11 @@ const gameEventStageList: {
     PhaseChangeStage.BeforePhaseChange,
     PhaseChangeStage.PhaseChanged,
     PhaseChangeStage.AfterPhaseChanged,
+  ],
+  [GameEventIdentifiers.CardLostEvent]: [
+    CardLostStage.BeforeCardLoseEffect,
+    CardLostStage.CardLosing,
+    CardLostStage.AfterCardLostEffect,
   ],
 };
 

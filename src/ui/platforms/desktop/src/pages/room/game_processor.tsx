@@ -34,7 +34,6 @@ export class GameClientProcessor {
   async onHandleIncomingEvent<T extends GameEventIdentifiers>(e: T, content: ServerEventFinder<T>) {
     this.tryToThrowNotReadyException(e);
     this.onClearPreviousActionStatus();
-    console.log(e, content);
     switch (e) {
       case GameEventIdentifiers.GameReadyEvent:
         await this.onHandleGameReadyEvent(e as any, content);
@@ -108,8 +107,11 @@ export class GameClientProcessor {
       case GameEventIdentifiers.AskForChoosingCardFromPlayerEvent:
         await this.onHandleAskForChoosingCardFromPlayerEvent(e as any, content);
         break;
-      case GameEventIdentifiers.CardLoseEvent:
+      case GameEventIdentifiers.CardLostEvent:
         await this.onHandleCardLoseEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.AimEvent:
+        await this.onHandleAimEvent(e as any, content);
         break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
@@ -149,14 +151,6 @@ export class GameClientProcessor {
     this.actionHandler.onResponsiveUseCard(content, this.translator);
   }
 
-  private onHandleCardResponseEvent<T extends GameEventIdentifiers.CardResponseEvent>(
-    type: T,
-    content: ServerEventFinder<T>,
-  ) {
-    //TODO: any animations on card response?
-    this.store.room.getPlayerById(content.fromId).dropCards(content.cardId);
-    this.presenter.broadcastUIUpdate();
-  }
   private async onHandleCardUseEvent<T extends GameEventIdentifiers.CardUseEvent>(
     type: T,
     content: ServerEventFinder<T>,
@@ -164,10 +158,21 @@ export class GameClientProcessor {
     await this.store.room.useCard(content);
     this.presenter.broadcastUIUpdate();
   }
-  private onHandleCardDropEvent<T extends GameEventIdentifiers.CardDropEvent>(type: T, content: ServerEventFinder<T>) {
-    this.store.room.getPlayerById(content.fromId).dropCards(...content.cardIds);
-    this.presenter.broadcastUIUpdate();
-  }
+
+  // tslint:disable-next-line:no-empty
+  private onHandleAimEvent<T extends GameEventIdentifiers.AimEvent>(type: T, content: ServerEventFinder<T>) {}
+  private onHandleCardResponseEvent<T extends GameEventIdentifiers.CardResponseEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+    // tslint:disable-next-line:no-empty
+  ) {}
+  // tslint:disable-next-line:no-empty
+  private onHandleCardDropEvent<T extends GameEventIdentifiers.CardDropEvent>(type: T, content: ServerEventFinder<T>) {}
+  private onHandleDrawCardsEvent<T extends GameEventIdentifiers.DrawCardEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+    // tslint:disable-next-line:no-empty
+  ) {}
 
   private onHandelObtainCardEvent<T extends GameEventIdentifiers.ObtainCardEvent>(
     type: T,
@@ -289,11 +294,6 @@ export class GameClientProcessor {
     this.actionHandler.onInvokingSkills(content, this.translator);
   }
 
-  private onHandleDrawCardsEvent<T extends GameEventIdentifiers.DrawCardEvent>(type: T, content: ServerEventFinder<T>) {
-    this.store.room.getPlayerById(content.playerId).obtainCardIds(...content.cardIds);
-    this.presenter.broadcastUIUpdate();
-  }
-
   private onHandlePhaseChangeEvent<T extends GameEventIdentifiers.PhaseChangeEvent>(
     type: T,
     content: ServerEventFinder<T>,
@@ -332,7 +332,6 @@ export class GameClientProcessor {
 
   private onHandleJudgeEvent<T extends GameEventIdentifiers.JudgeEvent>(type: T, content: ServerEventFinder<T>) {
     //TODO: add animations here
-    // const { judgeCardId, toId, cardId } = content;
     this.presenter.broadcastUIUpdate();
   }
 
@@ -363,7 +362,7 @@ export class GameClientProcessor {
     );
   }
 
-  private onHandleCardLoseEvent<T extends GameEventIdentifiers.CardLoseEvent>(type: T, content: ServerEventFinder<T>) {
+  private onHandleCardLoseEvent<T extends GameEventIdentifiers.CardLostEvent>(type: T, content: ServerEventFinder<T>) {
     const { fromId, cardIds } = content;
     this.store.room.getPlayerById(fromId).dropCards(...cardIds);
     this.presenter.broadcastUIUpdate();

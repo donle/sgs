@@ -4,7 +4,7 @@ import { Skill, SkillType } from './skill';
 export class UniqueSkillRule {
   private constructor() {}
 
-  public static canUseSkillRule(bySkill: Skill, toSkill: Skill) {
+  public static prohibitedBySkillRule(bySkill: Skill, toSkill: Skill) {
     switch (bySkill.Name) {
       case 'tieji':
         return toSkill.SkillType === SkillType.Compulsory;

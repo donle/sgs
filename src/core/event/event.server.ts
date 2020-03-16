@@ -6,7 +6,7 @@ import { PlayerPhase } from 'core/game/stage_processor';
 import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
-import { EventUtilities, GameEventIdentifiers, ServerEventFinder } from './event';
+import { CardLostReason, CardObtainedReason, EventUtilities, GameEventIdentifiers, ServerEventFinder } from './event';
 
 export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.EquipEvent]: {
@@ -43,10 +43,11 @@ export interface ServerEvent extends EventUtilities {
     cardIds: CardId[];
     droppedBy: PlayerId;
   };
-  [GameEventIdentifiers.CardLoseEvent]: {
+  [GameEventIdentifiers.CardLostEvent]: {
     fromId: PlayerId;
     cardIds: CardId[];
     droppedBy?: PlayerId;
+    reason: CardLostReason;
   };
   [GameEventIdentifiers.DrawCardEvent]: {
     playerId: PlayerId;
@@ -58,6 +59,7 @@ export interface ServerEvent extends EventUtilities {
     toId: PlayerId;
     cardIds: CardId[];
     givenBy?: PlayerId;
+    reason: CardObtainedReason;
   };
   [GameEventIdentifiers.MoveCardEvent]: {
     fromId?: PlayerId;
@@ -245,6 +247,19 @@ export interface ServerEvent extends EventUtilities {
     skillName: string;
     toId: PlayerId;
   };
+  [GameEventIdentifiers.DrunkEvent]: {
+    fromId: PlayerId;
+    drunk: boolean;
+  };
+  [GameEventIdentifiers.ChainLinkedEvent]: {
+    fromId: PlayerId;
+    linked: boolean;
+  };
+  [GameEventIdentifiers.TurnOverEvent]: {
+    fromId: PlayerId;
+    turnedOver: boolean;
+  };
+  [GameEventIdentifiers.CustomGameDialog]: {};
 }
 
 export type PinDianResultType = {

@@ -60,7 +60,7 @@ export class NanManRuQingSkill extends ActiveSkill {
               'slash',
             ).extract()
           : TranslationPack.translationJsonPatcher('please response a {0} card', 'slash').extract(),
-      triggeredBySkillName: this.name,
+      triggeredBySkillName: event.triggeredBySkillName || this.name,
     };
 
     for (const to of toIds!) {
@@ -83,7 +83,7 @@ export class NanManRuQingSkill extends ActiveSkill {
           damage: 1,
           damageType: DamageType.Normal,
           cardIds: [event.cardId],
-          triggeredBySkillName: this.name,
+          triggeredBySkillName: event.triggeredBySkillName || this.name,
         };
 
         await room.damage(eventContent);

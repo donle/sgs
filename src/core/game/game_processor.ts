@@ -3,6 +3,8 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { Character, CharacterId } from 'core/characters/character';
 import {
+  CardLostReason,
+  CardObtainedReason,
   ClientEventFinder,
   EventPacker,
   EventPicker,
@@ -14,7 +16,7 @@ import { PinDianResultType } from 'core/event/event.server';
 import {
   CardDropStage,
   CardEffectStage,
-  CardLoseStage,
+  CardLostStage,
   CardResponseStage,
   CardUseStage,
   DamageEffectStage,
@@ -120,19 +122,26 @@ export class GameProcessor {
     }
   }
 
-  private drawGameBeginsCards(playersInfo: PlayerInfo[]) {
-    for (const player of playersInfo) {
-      const cardIds = this.room.getCards(4, 'top');
-      const drawEvent: ServerEventFinder<GameEventIdentifiers.DrawCardEvent> = {
-        cardIds,
-        playerId: player.Id,
-        askedBy: player.Id,
-        translationsMessage: TranslationPack.translationJsonPatcher('{0} draws {1} cards', player.Name, 4).extract(),
-      };
+  private async drawGameBeginsCards(playerId: PlayerId) {
+    const cardIds = this.room.getCards(4, 'top');
+    const drawEvent: ServerEventFinder<GameEventIdentifiers.DrawCardEvent> = {
+      cardIds,
+      playerId,
+      askedBy: playerId,
+      translationsMessage: TranslationPack.translationJsonPatcher(
+        '{0} draws {1} cards',
+        this.room.getPlayerById(playerId).Character.Name,
+        4,
+      ).extract(),
+    };
 
-      this.room.broadcast(GameEventIdentifiers.DrawCardEvent, drawEvent);
-      this.room.getPlayerById(player.Id).obtainCardIds(...cardIds);
-    }
+    this.room.broadcast(GameEventIdentifiers.DrawCardEvent, drawEvent);
+    this.room.broadcast(GameEventIdentifiers.ObtainCardEvent, {
+      reason: CardObtainedReason.CardDraw,
+      cardIds,
+      toId: playerId,
+    });
+    this.room.getPlayerById(playerId).obtainCardIds(...cardIds);
   }
 
   public async gameStart(room: ServerRoom, selectableCharacters: Character[]) {
@@ -147,9 +156,14 @@ export class GameProcessor {
         otherPlayers: playersInfo.filter(info => info.Id !== player.Id),
       };
 
-      await this.onHandleIncomingEvent(GameEventIdentifiers.GameStartEvent, gameStartEvent);
+      await this.onHandleIncomingEvent(GameEventIdentifiers.GameStartEvent, gameStartEvent, async stage => {
+        if (stage === GameStartStage.BeforeGameStart) {
+          await this.drawGameBeginsCards(player.Id);
+        }
+
+        return true;
+      });
     }
-    this.drawGameBeginsCards(playersInfo);
 
     while (this.room.AlivePlayers.length > 1) {
       await this.play(this.CurrentPlayer);
@@ -223,7 +237,7 @@ export class GameProcessor {
             this.CurrentPlayer.Id,
           );
 
-          await this.room.dropCards(response.droppedCards, response.fromId);
+          await this.room.dropCards(CardLostReason.ActiveDrop, response.droppedCards, response.fromId);
         }
 
         return;
@@ -313,9 +327,9 @@ export class GameProcessor {
           onActualExecuted,
         );
         break;
-      case GameEventIdentifiers.CardLoseEvent:
-        await this.onHandleDropLoseEvent(
-          identifier as GameEventIdentifiers.CardLoseEvent,
+      case GameEventIdentifiers.CardLostEvent:
+        await this.onHandleCardLostEvent(
+          identifier as GameEventIdentifiers.CardLostEvent,
           event as any,
           onActualExecuted,
         );
@@ -430,17 +444,6 @@ export class GameProcessor {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === ObtainCardStage.CardObtaining) {
         event.toId = this.deadPlayerFilters(event.toId)[0];
-        const to = this.room.getPlayerById(event.toId);
-        to.obtainCardIds(...event.cardIds);
-
-        if (!event.translationsMessage) {
-          event.translationsMessage = TranslationPack.translationJsonPatcher(
-            '{0} obtains cards {1}' + (event.fromId ? ' from {2}' : ''),
-            to.Character.Name,
-            TranslationPack.patchCardInTranslation(...event.cardIds),
-            event.fromId ? this.room.getPlayerById(event.fromId).Character.Name : '',
-          ).extract();
-        }
         this.room.broadcast(identifier, event);
       }
     });
@@ -462,11 +465,6 @@ export class GameProcessor {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === DrawCardStage.CardDrawing) {
         event.playerId = this.deadPlayerFilters(event.playerId)[0];
-
-        const { cardIds, playerId } = event;
-        const to = this.room.getPlayerById(playerId);
-        //TODO: How about xuyou?
-        to.obtainCardIds(...cardIds);
         this.room.broadcast(identifier, event);
       }
     });
@@ -488,27 +486,18 @@ export class GameProcessor {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === CardDropStage.CardDropping) {
         const from = this.room.getPlayerById(event.fromId);
-        from.dropCards(...event.cardIds);
         this.room.broadcast(identifier, event);
       }
     });
   }
 
-  private async onHandleDropLoseEvent(
-    identifier: GameEventIdentifiers.CardLoseEvent,
-    event: ServerEventFinder<GameEventIdentifiers.CardLoseEvent>,
+  private async onHandleCardLostEvent(
+    identifier: GameEventIdentifiers.CardLostEvent,
+    event: ServerEventFinder<GameEventIdentifiers.CardLostEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    if (!event.translationsMessage) {
-      event.translationsMessage = TranslationPack.translationJsonPatcher(
-        '{0} lost cards {1}',
-        this.room.getPlayerById(event.fromId).Character.Name,
-        event.cardIds.map(cardId => TranslationPack.patchCardInTranslation(cardId)).join(','),
-      ).extract();
-    }
-
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      if (stage === CardLoseStage.CardLosing) {
+      if (stage === CardLostStage.CardLosing) {
         const from = this.room.getPlayerById(event.fromId);
         from.dropCards(...event.cardIds);
         this.room.broadcast(identifier, event);
@@ -628,16 +617,15 @@ export class GameProcessor {
     event: EventPicker<GameEventIdentifiers.SkillUseEvent, WorkPlace.Server>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    if (!event.translationsMessage) {
-      event.translationsMessage = TranslationPack.translationJsonPatcher(
-        '{0} used skill {1}',
-        this.room.getPlayerById(event.fromId).Character.Name,
-        event.skillName,
-      ).extract();
-    }
-
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === SkillUseStage.SkillUsing) {
+        event.translationsMessage = TranslationPack.translationJsonPatcher(
+          '{0} used skill {1}',
+          this.room.getPlayerById(event.fromId).Character.Name,
+          event.skillName,
+        ).extract();
+
+        await Sanguosha.getSkillBySkillName(event.skillName).onUse(this.room, event);
         this.room.broadcast(identifier, event);
       }
     });
@@ -661,7 +649,6 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     event.toIds = this.deadPlayerFilters(...event.toIds);
-
     return await this.iterateEachStage(identifier, event, onActualExecuted);
   }
 
@@ -773,11 +760,12 @@ export class GameProcessor {
             ).extract();
           }
         }
-        this.room.broadcast(identifier, event);
 
         if (!card.is(CardType.Equip)) {
           await card.Skill.onUse(this.room, event);
         }
+
+        this.room.broadcast(identifier, event);
       }
     });
   }
@@ -797,7 +785,6 @@ export class GameProcessor {
 
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === CardResponseStage.CardResponsing) {
-        this.room.getPlayerById(event.fromId).dropCards(event.cardId);
         this.room.broadcast(identifier, event);
       }
     });
