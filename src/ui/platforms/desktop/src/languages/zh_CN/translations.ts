@@ -408,6 +408,17 @@ export const generalDictionary: Word[] = [
 ];
 
 export const eventDictionary: Word[] = [
+  { source: 'seat 0', target: '一号位' },
+  { source: 'seat 1', target: '二号位' },
+  { source: 'seat 2', target: '三号位' },
+  { source: 'seat 3', target: '四号位' },
+  { source: 'seat 4', target: '五号位' },
+  { source: 'seat 5', target: '六号位' },
+  { source: 'seat 6', target: '七号位' },
+  { source: 'seat 7', target: '八号位' },
+  { source: 'you', target: '你' },
+
+  { source: '({0})', target: '({0})' },
   { source: '[{0}]', target: '[{0}]' },
   { source: 'nosuit', target: '无色' },
   { source: 'red', target: '黑色' },
@@ -477,6 +488,7 @@ export const eventDictionary: Word[] = [
     source: '{0} obtains cards {1} from {2}',
     target: '{0} 从 {2} 获得了 {1} ',
   },
+  { source: '{0} obtains {1} cards', target: '{0} 获得了 {1} 张牌' },
   { source: 'please drop {0} cards', target: '请弃置 {1} 张牌' },
   { source: '{0} drops cards {1}', target: '{0} 弃置了 {1}' },
   { source: '{0} cards are dropped', target: '{0} 进入了弃牌堆' },

@@ -34,7 +34,7 @@ export class NanManRuQingSkill extends ActiveSkill {
 
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} used card {1} to {2}',
-      room.getPlayerById(event.fromId).Character.Name,
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
       TranslationPack.patchCardInTranslation(event.cardId),
       TranslationPack.wrapArrayParams(...others.map(target => target.Character.Name)),
     ).extract();
@@ -55,12 +55,12 @@ export class NanManRuQingSkill extends ActiveSkill {
         fromId !== undefined
           ? TranslationPack.translationJsonPatcher(
               '{0} used {1} to you, please response a {2} card',
-              room.getPlayerById(fromId).Character.Name,
+              TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
               TranslationPack.patchCardInTranslation(cardId),
               'slash',
             ).extract()
           : TranslationPack.translationJsonPatcher('please response a {0} card', 'slash').extract(),
-      triggeredBySkillName: event.triggeredBySkillName || this.name,
+      triggeredBySkillName: event.triggeredBySkills || this.name,
     };
 
     for (const to of toIds!) {
@@ -83,7 +83,7 @@ export class NanManRuQingSkill extends ActiveSkill {
           damage: 1,
           damageType: DamageType.Normal,
           cardIds: [event.cardId],
-          triggeredBySkillName: event.triggeredBySkillName || this.name,
+          triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
         };
 
         await room.damage(eventContent);

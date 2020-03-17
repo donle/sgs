@@ -51,7 +51,7 @@ export class BaGuaZhenSkill extends TriggerSkill {
   async onTrigger(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} used skill {1}',
-      room.getPlayerById(event.fromId).Character.Name,
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
       this.name,
     ).extract();
 

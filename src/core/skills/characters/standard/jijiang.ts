@@ -67,7 +67,7 @@ export class JiJiang extends ActiveSkill {
         triggeredBySkillName: this.name,
         conversation: TranslationPack.translationJsonPatcher(
           '{0} used skill {1} to you, please response a {2} card',
-          room.getPlayerById(skillUseEvent.fromId).Character.Name,
+          TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
           this.name,
           'slash',
         ).extract(),

@@ -157,22 +157,31 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         continue;
       }
 
-      const { triggeredBySkillName } = content as ServerEventFinder<GameEventIdentifiers>;
+      const { triggeredBySkills } = content as ServerEventFinder<GameEventIdentifiers>;
       const canTriggerSkills: TriggerSkill[] = [];
-      const bySkill = triggeredBySkillName ? Sanguosha.getSkillBySkillName(triggeredBySkillName) : undefined;
+      const bySkills = triggeredBySkills
+        ? triggeredBySkills.map(skillName => Sanguosha.getSkillBySkillName(skillName))
+        : undefined;
       for (const equip of player.getCardIds(PlayerCardsArea.EquipArea)) {
         const equipCard = Sanguosha.getCardById(equip);
         if (!(equipCard.Skill instanceof TriggerSkill)) {
           continue;
         }
 
-        if (bySkill ? UniqueSkillRule.canTriggerCardSkillRule(bySkill, equipCard) : true) {
+        const canTrigger = bySkills
+          ? bySkills.find(skill => !UniqueSkillRule.canTriggerCardSkillRule(skill, equipCard)) === undefined
+          : true;
+        if (canTrigger) {
           canTriggerSkills.push(equipCard.Skill);
         }
       }
 
       for (const skill of player.getPlayerSkills<TriggerSkill>('trigger')) {
-        if (bySkill && UniqueSkillRule.prohibitedBySkillRule(bySkill, skill)) {
+        const canTrigger = bySkills
+          ? bySkills.find(bySkill => !UniqueSkillRule.prohibitedBySkillRule(bySkill, skill)) === undefined
+          : true;
+
+        if (canTrigger) {
           canTriggerSkills.push(skill);
         }
       }
@@ -324,7 +333,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.AimEvent, cardAimEvent);
 
           if (!EventPacker.isTerminated(cardAimEvent)) {
-            content.triggeredBySkillName = cardAimEvent.triggeredBySkillName;
+            content.triggeredBySkills = cardAimEvent.triggeredBySkills;
             newToIds = [...newToIds, ...cardAimEvent.toIds];
           }
         }
@@ -505,20 +514,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (from) {
       let translationsMessage: PatchedTranslationObject | undefined;
       if (fromArea !== PlayerCardsArea.JudgeArea && fromId !== toId) {
-        translationsMessage = TranslationPack.translationJsonPatcher(
-          '{0} lost card {1}',
-          from.Character.Name,
-          TranslationPack.patchCardInTranslation(cardId),
-        ).extract();
+        if (toArea !== PlayerCardsArea.HandArea) {
+          translationsMessage = TranslationPack.translationJsonPatcher(
+            '{0} lost card {1}',
+            TranslationPack.patchPlayerInTranslation(from),
+            TranslationPack.patchCardInTranslation(cardId),
+          ).extract();
+        }
 
-        await this.loseCards({
-          fromId: from.Id,
-          cardIds: [cardId],
-          droppedBy: proposer,
-          reason: fromReason,
-          translationsMessage,
-        });
-      } else {
         this.broadcast(GameEventIdentifiers.CardLostEvent, {
           fromId: from.Id,
           cardIds: [cardId],
@@ -551,9 +554,15 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         fromId,
         translationsMessage: TranslationPack.translationJsonPatcher(
           '{0} obtains cards {1}' + (fromId ? ' from {2}' : ''),
-          to.Character.Name,
+          TranslationPack.patchPlayerInTranslation(to),
           TranslationPack.patchCardInTranslation(cardId),
-          fromId ? this.getPlayerById(fromId).Character.Name : '',
+          fromId ? TranslationPack.patchPlayerInTranslation(this.getPlayerById(fromId)) : '',
+        ).extract(),
+        unengagedMessage: TranslationPack.translationJsonPatcher(
+          '{0} obtains {1} cards' + (fromId ? ' from {2}' : ''),
+          TranslationPack.patchPlayerInTranslation(to),
+          1,
+          fromId ? TranslationPack.patchPlayerInTranslation(this.getPlayerById(fromId)) : '',
         ).extract(),
       });
     } else {
@@ -566,14 +575,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       event.fromId === undefined
         ? TranslationPack.translationJsonPatcher(
             '{0} got hurt for {1} hp with {2} property',
-            this.getPlayerById(event.toId).Character.Name,
+            TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.toId)),
             event.damage,
             event.damageType,
           ).extract()
         : TranslationPack.translationJsonPatcher(
             '{0} hits {1} {2} hp of damage type {3}',
-            this.getPlayerById(event.fromId).Character.Name,
-            this.getPlayerById(event.toId).Character.Name,
+            TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.fromId)),
+            TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.toId)),
             event.damage,
             event.damageType,
           ).extract();
@@ -586,13 +595,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       event.recoverBy !== undefined
         ? TranslationPack.translationJsonPatcher(
             '{0} recovered {2} hp for {1}',
-            this.getPlayerById(event.recoverBy).Character.Name,
-            this.getPlayerById(event.toId).Character.Name,
+            TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.recoverBy)),
+            TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.toId)),
             event.recoveredHp,
           ).extract()
         : TranslationPack.translationJsonPatcher(
             '{0} recovered {1} hp',
-            this.getPlayerById(event.toId).Character.Name,
+            TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.toId)),
             event.recoveredHp,
           ).extract();
 

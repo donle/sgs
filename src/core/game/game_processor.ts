@@ -1,6 +1,6 @@
 import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { CardId, CardSuit } from 'core/cards/libs/card_props';
+import { CardId } from 'core/cards/libs/card_props';
 import { Character, CharacterId } from 'core/characters/character';
 import {
   CardLostReason,
@@ -130,7 +130,7 @@ export class GameProcessor {
       askedBy: playerId,
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} draws {1} cards',
-        this.room.getPlayerById(playerId).Character.Name,
+        TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(playerId)),
         4,
       ).extract(),
     };
@@ -457,7 +457,7 @@ export class GameProcessor {
     if (!event.translationsMessage) {
       event.translationsMessage = TranslationPack.translationJsonPatcher(
         '{0} draws {1} cards',
-        this.room.getPlayerById(event.playerId).Character.Name,
+        TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.playerId)),
         event.cardIds.length,
       ).extract();
     }
@@ -478,7 +478,7 @@ export class GameProcessor {
     if (!event.translationsMessage) {
       event.translationsMessage = TranslationPack.translationJsonPatcher(
         '{0} drops cards {1}',
-        this.room.getPlayerById(event.fromId).Character.Name,
+        TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
         TranslationPack.patchCardInTranslation(...event.cardIds),
       ).extract();
     }
@@ -587,8 +587,8 @@ export class GameProcessor {
         killedBy,
         translationsMessage: TranslationPack.translationJsonPatcher(
           '{0} was killed' + killedBy === undefined ? '' : ' by {1}',
-          to.Character.Name,
-          killedBy ? this.room.getPlayerById(killedBy).Character.Name : '',
+          TranslationPack.patchPlayerInTranslation(to),
+          killedBy ? TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(killedBy)) : '',
         ).extract(),
       });
     }
@@ -621,7 +621,7 @@ export class GameProcessor {
       if (stage === SkillUseStage.SkillUsing) {
         event.translationsMessage = TranslationPack.translationJsonPatcher(
           '{0} used skill {1}',
-          this.room.getPlayerById(event.fromId).Character.Name,
+          TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
           event.skillName,
         ).extract();
 
@@ -680,7 +680,7 @@ export class GameProcessor {
                     'do you wanna use {0} for {1} from {2}',
                     'wuxiekeji',
                     TranslationPack.patchCardInTranslation(event.cardId),
-                    this.room.getPlayerById(event.fromId).Character.Name,
+                    TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
                   ).extract()
                 : TranslationPack.translationJsonPatcher(
                     'do you wanna use {0} for {1}',
@@ -748,15 +748,17 @@ export class GameProcessor {
           if (card.is(CardType.Equip)) {
             event.translationsMessage = TranslationPack.translationJsonPatcher(
               '{0} equipped {1}',
-              this.room.getPlayerById(event.fromId).Character.Name,
+              TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
               TranslationPack.patchCardInTranslation(event.cardId),
             ).extract();
           } else {
             event.translationsMessage = TranslationPack.translationJsonPatcher(
               '{0} used card {1}' + (event.toIds ? ' to {2}' : ''),
-              this.room.getPlayerById(event.fromId).Character.Name,
+              TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
               TranslationPack.patchCardInTranslation(event.cardId),
-              event.toIds ? event.toIds.map(id => this.room.getPlayerById(id).Character.Name).join(', ') : '',
+              event.toIds
+                ? TranslationPack.patchPlayerInTranslation(...event.toIds.map(id => this.room.getPlayerById(id)))
+                : '',
             ).extract();
           }
         }
@@ -778,7 +780,7 @@ export class GameProcessor {
     if (!event.translationsMessage) {
       event.translationsMessage = TranslationPack.translationJsonPatcher(
         '{0} responses card {1}',
-        this.room.getPlayerById(event.fromId).Character.Name,
+        TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
         TranslationPack.patchCardInTranslation(event.cardId),
       ).extract();
     }
@@ -799,14 +801,14 @@ export class GameProcessor {
       if (stage === JudgeEffectStage.OnJudge) {
         event.translationsMessage = TranslationPack.translationJsonPatcher(
           '{0} starts a judge of {1}',
-          this.room.getPlayerById(event.toId).Character.Name,
+          TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.toId)),
           event.bySkill,
         ).extract();
       } else if (stage === JudgeEffectStage.JudgeEffect) {
         const { toId, bySkill, judgeCardId } = event;
         event.translationsMessage = TranslationPack.translationJsonPatcher(
           '{0} got judged card {2} on {1}',
-          this.room.getPlayerById(toId).Character.Name,
+          TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(toId)),
           bySkill,
           TranslationPack.patchCardInTranslation(judgeCardId),
         ).extract();

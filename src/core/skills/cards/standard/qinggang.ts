@@ -36,7 +36,7 @@ export class QingGangSkill extends TriggerSkill {
   async onTrigger(room: Room, content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     content.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} activated skill {1}',
-      room.getPlayerById(content.fromId).Character.Name,
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(content.fromId)),
       this.name,
     ).extract();
 
@@ -50,7 +50,7 @@ export class QingGangSkill extends TriggerSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
     const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
-    aimEvent.triggeredBySkillName = this.name;
+    aimEvent.triggeredBySkills = aimEvent.triggeredBySkills ? [...aimEvent.triggeredBySkills, this.name] : [this.name];
 
     return true;
   }

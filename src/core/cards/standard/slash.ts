@@ -5,6 +5,8 @@ import { SlashSkill } from 'core/skills/cards/standard/slash';
 import { CardSuit, RealCardId } from '../libs/card_props';
 
 export class Slash extends BasicCard {
+  private playerDrunkLevel: number;
+
   constructor(id: RealCardId, cardNumber: number, suit: CardSuit) {
     super(
       id,
@@ -20,6 +22,18 @@ export class Slash extends BasicCard {
 
   public get Skill() {
     return this.skill as SlashSkill;
+  }
+
+  public getDrunkLevel() {
+    return this.playerDrunkLevel;
+  }
+
+  public setDrunkLevel(playerDrunkLevel: number) {
+    this.playerDrunkLevel = playerDrunkLevel;
+  }
+
+  public clearDrunkLevel() {
+    this.playerDrunkLevel = 0;
   }
 }
 

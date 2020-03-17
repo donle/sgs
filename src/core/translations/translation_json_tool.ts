@@ -1,5 +1,6 @@
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
+import { Player } from 'core/player/player';
 
 export const enum Languages {
   ZH_CN = 'zh-CN',
@@ -23,6 +24,7 @@ export class TranslationPack {
   private constructor(private translationJon: PatchedTranslationObject) {}
   public static readonly translationObjectSign = '@@translate:';
   public static readonly translateCardObjectSign = TranslationPack.translationObjectSign + 'card:';
+  public static readonly translatePlayerObjectSign = TranslationPack.translationObjectSign + 'player:';
   public static readonly translateTextArraySign = TranslationPack.translationObjectSign + 'array:';
 
   static create(translationJon: PatchedTranslationObject) {
@@ -78,12 +80,23 @@ export class TranslationPack {
     );
   }
 
+  public static patchPlayerInTranslation(...players: Player[]) {
+    return (
+      TranslationPack.translatePlayerObjectSign +
+      JSON.stringify(players.map(player => `${player.Character.Name} ${player.Position}`))
+    );
+  }
+
   public static isCardObjectText(text: string) {
     return text.startsWith(TranslationPack.translateCardObjectSign);
   }
 
   public static isTextArrayText(text: string) {
     return text.startsWith(TranslationPack.translateTextArraySign);
+  }
+
+  public static isPlayerObjectText(text: string) {
+    return text.startsWith(TranslationPack.translatePlayerObjectSign);
   }
 
   public static patchEmojiOrImageInTranslation(rawText: string | number) {

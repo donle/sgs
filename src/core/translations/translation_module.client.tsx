@@ -1,4 +1,5 @@
 import { CardSuit } from 'core/cards/libs/card_props';
+import { Player } from 'core/player/player';
 import * as React from 'react';
 import { Languages, TranslationPack, TranslationsDictionary } from './translation_json_tool';
 import { TranslationModule } from './translation_module';
@@ -14,6 +15,7 @@ type EmojiOrImageTranslationDictionary = {
 };
 
 export class ClientTranslationModule extends TranslationModule {
+  private currentPlayer: Player | undefined;
   private emojiOrImageTextDict: EmojiOrImageTranslationDictionary = {};
 
   public static setup(currentLanguage: Languages, ...dictionaries: [Languages, TranslationsDictionary][]) {
@@ -36,6 +38,10 @@ export class ClientTranslationModule extends TranslationModule {
     return numberString === undefined ? cardNumber.toString() : numberString;
   }
 
+  public setupPlayer(player?: Player) {
+    this.currentPlayer = player;
+  }
+
   public addEmojiOrImageSymbolText(...symbolTextPair: [string | number, JSX.Element][]) {
     for (const [rawText, translatePath] of symbolTextPair) {
       this.emojiOrImageTextDict[TranslationPack.patchEmojiOrImageInTranslation(rawText)] = translatePath;
@@ -46,20 +52,30 @@ export class ClientTranslationModule extends TranslationModule {
   }
 
   public translatePatchedCardText(text: string, dictionary: TranslationsDictionary): TranslatedCardObject[] {
-    const cardObjects: TranslatedCardObject[] = [];
     const cardTextArray: string[] = JSON.parse(text.slice(TranslationPack.translateCardObjectSign.length));
 
-    for (const cardText of cardTextArray) {
+    return cardTextArray.map(cardText => {
       const [cardName, cardSuitString, cardNumber] = cardText.split(' ');
-      cardObjects.push({
+      return {
         cardSuit: TranslationPack.dispatchEmojiOrImageInTranslation(cardSuitString),
         suitElement: this.getEmojiOrImageSymbolText(cardSuitString),
         cardNumber,
         cardName: dictionary[cardName] || cardName,
-      });
-    }
+      };
+    });
+  }
 
-    return cardObjects;
+  public translatePatchedPlayerText(text: string, dictionary: TranslationsDictionary): string[] {
+    const playerObjectArray: string[] = JSON.parse(text.slice(TranslationPack.translatePlayerObjectSign.length));
+
+    return playerObjectArray.map(playerText => {
+      const [characterName, position] = playerText.split(' ');
+      const formattedPosition = `seat ${position}`;
+      return (
+        `${dictionary[characterName] || characterName}(${dictionary[formattedPosition] || formattedPosition})` +
+        (this.currentPlayer && this.currentPlayer.Position.toString() === position ? `(${dictionary['you']})` : '')
+      );
+    });
   }
 
   public trx(rawText: string): JSX.Element {
@@ -86,6 +102,9 @@ export class ClientTranslationModule extends TranslationModule {
     const boldTextStyle: React.CSSProperties = {
       fontWeight: 550,
     };
+    const playerStyle: React.CSSProperties = {
+      color: '#C65719',
+    };
     const getCardNumberStyle = (cardSuit: CardSuit): React.CSSProperties => {
       const style: React.CSSProperties = boldTextStyle;
       if (cardSuit === CardSuit.Heart || cardSuit === CardSuit.Diamond) {
@@ -98,31 +117,46 @@ export class ClientTranslationModule extends TranslationModule {
     };
 
     const textCombinations: JSX.Element[] = dispatchedObject.params.map(param => {
-      if (typeof param === 'string' && dictionary && TranslationPack.isCardObjectText(param)) {
-        const translatedCardObject = this.translatePatchedCardText(param, dictionary);
+      if (typeof param === 'string' && dictionary) {
+        if (TranslationPack.isCardObjectText(param)) {
+          const translatedCardObject = this.translatePatchedCardText(param, dictionary);
 
-        return (
-          <>
-            {translatedCardObject.map((cardObject, index) => (
-              <span key={index}>
-                <span>{this.tr('[')}</span>
-                <span
-                  style={{
-                    ...boldTextStyle,
-                    ...commonTextStyle,
-                  }}
-                >
-                  {cardObject.cardName}
+          return (
+            <>
+              {translatedCardObject.map((cardObject, index) => (
+                <span key={index}>
+                  <span>{this.tr('[')}</span>
+                  <span
+                    style={{
+                      ...boldTextStyle,
+                      ...commonTextStyle,
+                    }}
+                  >
+                    {cardObject.cardName}
+                  </span>
+                  {cardObject.suitElement}
+                  <span style={getCardNumberStyle(cardObject.cardSuit)}>
+                    {ClientTranslationModule.getCardNumber(parseInt(cardObject.cardNumber, 10))}
+                  </span>
+                  <span>{this.tr(']')}</span>
                 </span>
-                {cardObject.suitElement}
-                <span style={getCardNumberStyle(cardObject.cardSuit)}>
-                  {ClientTranslationModule.getCardNumber(parseInt(cardObject.cardNumber, 10))}
-                </span>
-                <span>{this.tr(']')}</span>
-              </span>
-            ))}
-          </>
-        );
+              ))}
+            </>
+          );
+        } else if (TranslationPack.isPlayerObjectText(param)) {
+          const translatedPlayerObject = this.translatePatchedPlayerText(param, dictionary);
+          return (
+            <span
+              style={{
+                ...playerStyle,
+                ...boldTextStyle,
+                ...commonTextStyle,
+              }}
+            >
+              {translatedPlayerObject.join(',')}
+            </span>
+          );
+        }
       }
 
       if (typeof param === 'string' && dictionary && TranslationPack.isTextArrayText(param)) {

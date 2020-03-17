@@ -244,6 +244,7 @@ export class GameClientProcessor {
         content.gameInfo,
         content.playersInfo,
       );
+      this.translator.setupPlayer(this.presenter.ClientPlayer);
     } else {
       const playerInfo = content.playersInfo.find(playerInfo => playerInfo.Id === content.joiningPlayerId);
 

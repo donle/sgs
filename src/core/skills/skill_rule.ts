@@ -1,4 +1,5 @@
 import { Card, CardType } from 'core/cards/card';
+import { Player } from 'core/player/player';
 import { Skill, SkillType } from './skill';
 
 export class UniqueSkillRule {
@@ -21,4 +22,7 @@ export class UniqueSkillRule {
         return true;
     }
   }
+
+  // tslint:disable-next-line: no-empty
+  public static canTriggerSkillRule(skill: Skill, owner: Player) {}
 }

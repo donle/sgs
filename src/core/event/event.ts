@@ -247,7 +247,8 @@ export const enum WorkPlace {
 }
 
 export type BaseGameEvent = {
-  triggeredBySkillName?: string;
+  unengagedMessage?: PatchedTranslationObject;
+  triggeredBySkills?: string[];
   messages?: string[];
   translationsMessage?: PatchedTranslationObject;
 };

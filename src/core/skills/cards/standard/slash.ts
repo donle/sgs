@@ -1,6 +1,8 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
+import { Slash } from 'core/cards/standard/slash';
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -11,8 +13,6 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 @TriggerableTimes(1)
 export class SlashSkill extends ActiveSkill {
   protected damageType: DamageType = DamageType.Normal;
-
-  private playerDrunkLevel: number;
 
   constructor() {
     super('slash', 'slash_description');
@@ -42,14 +42,8 @@ export class SlashSkill extends ActiveSkill {
   }
 
   async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} uses card {2} to {1}',
-      room.CurrentPlayer.Name,
-      room.getPlayerById(event.toIds![0]).Name,
-      this.name,
-    ).extract();
-
-    this.playerDrunkLevel = room.getPlayerById(event.fromId).hasDrunk();
+    const slashCard = Sanguosha.getCardById<Slash>(event.cardId);
+    slashCard.setDrunkLevel(room.getPlayerById(event.fromId).hasDrunk());
 
     return true;
   }
@@ -62,12 +56,12 @@ export class SlashSkill extends ActiveSkill {
         cardMatcher: new CardMatcher({ name: ['jink'] }).toSocketPassenger(),
         byCardId: cardId,
         cardUserId: fromId,
-        triggeredBySkillName: event.triggeredBySkillName || this.name,
+        triggeredBySkillName: event.triggeredBySkills || this.name,
         conversation:
           fromId !== undefined
             ? TranslationPack.translationJsonPatcher(
                 '{0} used {1} to you, please use a {2} card',
-                room.getPlayerById(fromId).Character.Name,
+                TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
                 TranslationPack.patchCardInTranslation(cardId),
                 'jink',
               ).extract()
@@ -91,20 +85,21 @@ export class SlashSkill extends ActiveSkill {
 
         return false;
       } else {
+        const slashCard = Sanguosha.getCardById<Slash>(cardId);
         const damageEvent = {
           fromId,
           toId,
-          damage: 1 + this.playerDrunkLevel,
+          damage: 1 + slashCard.getDrunkLevel(),
           damageType: this.damageType,
           cardIds: [cardId],
-          triggeredBySkillName: event.triggeredBySkillName || this.name,
+          triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
         };
 
         await room.damage(damageEvent);
+        slashCard.clearDrunkLevel();
       }
     }
 
-    this.playerDrunkLevel = 0;
     return true;
   }
 }

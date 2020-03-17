@@ -34,7 +34,7 @@ export class JianXiong extends TriggerSkill {
       const { cardIds, toId } = damagedEvent;
       const translationsMessage = TranslationPack.translationJsonPatcher(
         '{0} obtains cards {1}',
-        room.getPlayerById(toId).Character.Name,
+        TranslationPack.patchPlayerInTranslation(room.getPlayerById(toId)),
         TranslationPack.patchCardInTranslation(...cardIds),
       ).extract();
       await room.obtainCards({

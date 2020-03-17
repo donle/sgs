@@ -34,7 +34,7 @@ export class WanJianQiFaSkill extends ActiveSkill {
 
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} used card {1} to {2}',
-      room.getPlayerById(event.fromId).Character.Name,
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
       TranslationPack.patchCardInTranslation(event.cardId),
       TranslationPack.wrapArrayParams(...others.map(target => target.Character.Name)),
     ).extract();
@@ -55,12 +55,12 @@ export class WanJianQiFaSkill extends ActiveSkill {
         fromId !== undefined
           ? TranslationPack.translationJsonPatcher(
               '{0} used {1} to you, please response a {2} card',
-              room.getPlayerById(fromId).Character.Name,
+              TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
               TranslationPack.patchCardInTranslation(cardId),
               'jink',
             ).extract()
           : TranslationPack.translationJsonPatcher('please response a {0} card', 'jink').extract(),
-      triggeredBySkillName: event.triggeredBySkillName || this.name,
+      triggeredBySkillName: event.triggeredBySkills || this.name,
     };
 
     for (const to of toIds || []) {
@@ -82,14 +82,7 @@ export class WanJianQiFaSkill extends ActiveSkill {
           damage: 1,
           damageType: DamageType.Normal,
           cardIds: [event.cardId],
-          triggeredBySkillName: event.triggeredBySkillName || this.name,
-          translationsMessage: TranslationPack.translationJsonPatcher(
-            '{0} hits {1} for {2} {3} hp',
-            room.getPlayerById(fromId!).Name,
-            room.getPlayerById(to).Name,
-            1,
-            DamageType.Normal,
-          ).extract(),
+          triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
         };
 
         await room.damage(eventContent);

@@ -35,12 +35,6 @@ export class PeachSkill extends ActiveSkill {
       event.toIds = [event.fromId];
     }
 
-    event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} uses card {1}',
-      room.CurrentPlayer.Name,
-      TranslationPack.patchCardInTranslation(event.cardId),
-    ).extract();
-
     return true;
   }
 
