@@ -53,8 +53,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract async obtainCards(event: ServerEventFinder<GameEventIdentifiers.ObtainCardEvent>): Promise<void>;
   //Server only
-  public abstract async moveCard(
-    cardId: CardId,
+  public abstract async moveCards(
+    cardIds: CardId[],
     from: PlayerId | undefined,
     to: PlayerId,
     fromReason: CardLostReason,
@@ -62,14 +62,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     toArea: PlayerCardsArea,
     toReason?: CardObtainedReason,
     proposer?: PlayerId,
-  ): Promise<void>;
-  //Server only
-  public abstract async moveCards(
-    cardIds: CardId[],
-    from: PlayerId | undefined,
-    to: PlayerId,
-    fromArea: PlayerCardsArea | undefined,
-    toArea: PlayerCardsArea,
   ): Promise<void>;
   //Server only
   public abstract async onReceivingAsyncReponseFrom<T extends GameEventIdentifiers>(

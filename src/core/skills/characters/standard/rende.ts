@@ -1,7 +1,13 @@
 import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import {
+  CardLostReason,
+  CardObtainedReason,
+  ClientEventFinder,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from 'core/event/event';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -53,8 +59,10 @@ export class Rende extends ActiveSkill {
       skillUseEvent.cardIds!,
       skillUseEvent.fromId,
       skillUseEvent.toIds![0],
+      CardLostReason.ActiveMove,
       PlayerCardsArea.HandArea,
       PlayerCardsArea.HandArea,
+      CardObtainedReason.PassiveObtained,
     );
 
     const from = room.getPlayerById(skillUseEvent.fromId);

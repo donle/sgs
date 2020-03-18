@@ -47,7 +47,7 @@ export class JiJiang extends ActiveSkill {
 
   async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} activates skill {1}',
+      '{0} used skill {1}',
       room.getPlayerById(event.fromId).Name,
       this.name,
     ).extract();

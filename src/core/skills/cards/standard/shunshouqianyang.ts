@@ -82,8 +82,8 @@ export class ShunShouQianYangSkill extends ActiveSkill {
       response.selectedCard = to.getCardIds(PlayerCardsArea.HandArea)[response.selectedCardIndex!];
     }
 
-    await room.moveCard(
-      response.selectedCard,
+    await room.moveCards(
+      [response.selectedCard],
       chooseCardEvent.toId,
       chooseCardEvent.fromId,
       CardLostReason.PassiveMove,

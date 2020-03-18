@@ -492,16 +492,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     cardIds: CardId[],
     fromId: PlayerId | undefined,
     toId: PlayerId,
-    fromArea: PlayerCardsArea,
-    toArea: PlayerCardsArea,
-  ) {
-    //TODO: fill this function
-  }
-
-  public async moveCard(
-    cardId: CardId,
-    fromId: PlayerId | undefined,
-    toId: PlayerId,
     fromReason: CardLostReason,
     fromArea: PlayerCardsArea,
     toArea: PlayerCardsArea,
@@ -518,44 +508,46 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           translationsMessage = TranslationPack.translationJsonPatcher(
             '{0} lost card {1}',
             TranslationPack.patchPlayerInTranslation(from),
-            TranslationPack.patchCardInTranslation(cardId),
+            TranslationPack.patchCardInTranslation(...cardIds),
           ).extract();
         }
 
         this.broadcast(GameEventIdentifiers.CardLostEvent, {
           fromId: from.Id,
-          cardIds: [cardId],
+          cardIds,
           droppedBy: proposer,
           reason: fromReason,
           translationsMessage,
         });
-        from.dropCards(cardId);
+        from.dropCards(...cardIds);
       }
     }
 
     if (toArea !== PlayerCardsArea.HandArea) {
-      this.broadcast<GameEventIdentifiers.MoveCardEvent>(GameEventIdentifiers.MoveCardEvent, {
+      this.broadcast(GameEventIdentifiers.MoveCardEvent, {
         fromId,
         toId,
         fromArea,
         toArea,
-        cardId,
+        cardIds,
       });
     }
 
     if (toArea === PlayerCardsArea.EquipArea) {
       //TODO: refactor equip event trigger process if there are any skills triggered by wearing equipments
-      await this.equip(Sanguosha.getCardById<EquipCard>(cardId), to);
+      for (const cardId of cardIds) {
+        await this.equip(Sanguosha.getCardById<EquipCard>(cardId), to);
+      }
     } else if (toArea === PlayerCardsArea.HandArea) {
       await this.obtainCards({
         reason: toReason,
-        cardIds: [cardId],
+        cardIds,
         toId,
         fromId,
         translationsMessage: TranslationPack.translationJsonPatcher(
           '{0} obtains cards {1}' + (fromId ? ' from {2}' : ''),
           TranslationPack.patchPlayerInTranslation(to),
-          TranslationPack.patchCardInTranslation(cardId),
+          TranslationPack.patchCardInTranslation(...cardIds),
           fromId ? TranslationPack.patchPlayerInTranslation(this.getPlayerById(fromId)) : '',
         ).extract(),
         unengagedMessage: TranslationPack.translationJsonPatcher(
@@ -566,7 +558,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         ).extract(),
       });
     } else {
-      to.getCardIds(toArea).push(cardId);
+      for (const cardId of cardIds) {
+        to.getCardIds(toArea).push(cardId);
+      }
     }
   }
 

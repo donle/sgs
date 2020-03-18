@@ -63,10 +63,6 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.loseCards.name);
   }
   //Server only
-  public async moveCard(): Promise<void> {
-    this.throwUntouchableError(this.moveCard.name);
-  }
-  //Server only
   public async moveCards(): Promise<void> {
     this.throwUntouchableError(this.moveCards.name);
   }

@@ -383,11 +383,25 @@ const gameEventStageList: {
 };
 
 export class StageProcessor {
-  private gameEventStageList: GameEventStage[] = [];
+  private gameEventStageList: GameEventStage[][] = [];
   private currentGameEventStage: GameEventStage | undefined;
   private processingGameEvent = false;
 
   constructor(private logger: Logger) {}
+
+  private popStage() {
+    if (this.gameEventStageList.length === 0) {
+      return;
+    }
+
+    const stage = this.gameEventStageList[0][0];
+    this.gameEventStageList[0].shift();
+    if (this.gameEventStageList[0].length === 0) {
+      this.gameEventStageList.shift();
+    }
+
+    return stage;
+  }
 
   public involve(identifier: GameEventIdentifiers) {
     const stageList = gameEventStageList[identifier];
@@ -395,13 +409,9 @@ export class StageProcessor {
       throw new Error(`Unable to get game event of ${identifier}`);
     }
 
-    if (this.gameEventStageList.length > 0) {
-      this.gameEventStageList = [...stageList, ...this.gameEventStageList];
-    } else {
-      this.gameEventStageList = stageList.slice();
-    }
+    this.gameEventStageList.unshift(stageList.slice());
 
-    this.currentGameEventStage = this.gameEventStageList[0];
+    this.currentGameEventStage = this.gameEventStageList[0][0];
     // this.gameEventStageList.shift();
     this.processingGameEvent = true;
 
@@ -412,12 +422,11 @@ export class StageProcessor {
     if (!this.gameEventStageList || !this.processingGameEvent) {
       return;
     }
-    if (this.gameEventStageList[0] === this.currentGameEventStage) {
-      this.gameEventStageList.shift();
+    if (this.gameEventStageList[0] && this.gameEventStageList[0][0] === this.currentGameEventStage) {
+      this.gameEventStageList[0].shift();
     }
 
-    this.currentGameEventStage = this.gameEventStageList[0];
-    this.gameEventStageList.shift();
+    this.currentGameEventStage = this.popStage();
     if (this.currentGameEventStage === undefined) {
       this.processingGameEvent = false;
       return;
@@ -426,21 +435,13 @@ export class StageProcessor {
     return this.currentGameEventStage;
   }
 
-  public skipEventProcess(identifier: GameEventIdentifiers) {
-    let lastStageIndex = gameEventStageList[identifier]?.findIndex(stage => stage === this.currentGameEventStage);
-    while (this.isInsideEvent(identifier, this.currentGameEventStage)) {
-      this.nextInstantEvent();
-
-      const currentStageIndex = gameEventStageList[identifier]?.findIndex(
-        stage => stage === this.currentGameEventStage,
-      );
-
-      if (lastStageIndex !== undefined && currentStageIndex !== undefined && currentStageIndex < 0) {
-        break;
-      }
-
-      lastStageIndex = currentStageIndex;
+  public skipEventProcess(currentIdentifier) {
+    if (!this.isInsideEvent(currentIdentifier, this.gameEventStageList[0] && this.gameEventStageList[0][0])) {
+      return;
     }
+
+    this.gameEventStageList.shift();
+    this.currentGameEventStage = undefined;
   }
 
   public terminateEventProcess() {

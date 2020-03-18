@@ -37,8 +37,8 @@ export class LightningSkill extends ActiveSkill {
   public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
     for (const player of room.getAlivePlayersFrom(event.fromId)) {
       if (room.isAvailableTarget(event.cardId, event.fromId, player.Id)) {
-        await room.moveCard(
-          event.cardId,
+        await room.moveCards(
+          [event.cardId],
           event.fromId,
           player.Id,
           CardLostReason.PassiveMove,
@@ -72,8 +72,8 @@ export class LightningSkill extends ActiveSkill {
       }
 
       if (player.Id !== currentPlayer) {
-        await room.moveCard(
-          cardId,
+        await room.moveCards(
+          [cardId],
           currentPlayer,
           player.Id,
           CardLostReason.PassiveMove,

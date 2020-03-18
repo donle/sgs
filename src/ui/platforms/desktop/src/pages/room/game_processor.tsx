@@ -315,16 +315,22 @@ export class GameClientProcessor {
   }
 
   private onHandleMoveCardEvent<T extends GameEventIdentifiers.MoveCardEvent>(type: T, content: ServerEventFinder<T>) {
-    this.store.room
-      .getPlayerById(content.toId)
-      .getCardIds(content.toArea)
-      .push(content.cardId);
+    for (const cardId of content.cardIds) {
+      this.store.room
+        .getPlayerById(content.toId)
+        .getCardIds(content.toArea)
+        .push(cardId);
+    }
 
     if (content.fromId) {
       const areaCards = this.store.room.getPlayerById(content.fromId).getCardIds(content.fromArea);
-      const lostIndex = areaCards.findIndex(cardId => cardId === content.cardId);
-      if (lostIndex >= 0) {
-        areaCards.splice(lostIndex, 1);
+      for (const cardId of content.cardIds) {
+        const lostIndex = areaCards.findIndex(areaCardId => areaCardId === cardId);
+        if (lostIndex >= 0) {
+          areaCards.splice(lostIndex, 1);
+        } else {
+          throw new Error(`Card ${cardId} doesn't exist in current area ${content.fromArea}`);
+        }
       }
     }
 

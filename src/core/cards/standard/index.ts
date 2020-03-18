@@ -97,11 +97,6 @@ export const StandardCardPackage: (index: number) => CardPackage<GameCardExtensi
     new WuXieKeJi(index++, 12, CardSuit.Club),
     new WuXieKeJi(index++, 13, CardSuit.Club),
 
-    new WuXieKeJi(index++, 11, CardSuit.Spade),
-    new WuXieKeJi(index++, 12, CardSuit.Club),
-    new WuXieKeJi(index++, 13, CardSuit.Club),
-    new WuXieKeJi(index++, 12, CardSuit.Diamond),
-
     new WuZhongShengYou(index++, 7, CardSuit.Heart),
     new WuZhongShengYou(index++, 8, CardSuit.Heart),
     new WuZhongShengYou(index++, 9, CardSuit.Heart),
