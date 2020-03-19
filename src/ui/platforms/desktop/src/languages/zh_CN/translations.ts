@@ -471,7 +471,7 @@ export const eventDictionary: Word[] = [
   },
   {
     source: 'please use a {0} card to response {1}',
-    target: '请使用一张【{1}】来响应 {0}',
+    target: '请使用一张【{0}】来响应 {1}',
   },
   { source: '{0} activates skill {1}', target: '{0} 的 {1} 技能被触发' },
   { source: '{0} used skill {1}', target: '{0} 使用了技能【{1}】' },

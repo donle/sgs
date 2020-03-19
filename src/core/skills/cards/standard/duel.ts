@@ -57,7 +57,7 @@ export class DuelSkill extends ActiveSkill {
           conversation: TranslationPack.translationJsonPatcher(
             'please use a {0} card to response {1}',
             'slash',
-            this.name,
+            TranslationPack.patchCardInTranslation(event.cardId),
           ).extract(),
         },
         targets[turn],

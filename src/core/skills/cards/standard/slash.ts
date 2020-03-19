@@ -67,6 +67,7 @@ export class SlashSkill extends ActiveSkill {
               ).extract()
             : TranslationPack.translationJsonPatcher(
                 'please use a {0} card to response {1}',
+                'jink',
                 TranslationPack.patchCardInTranslation(cardId),
               ).extract(),
         triggeredOnEvent: event,
