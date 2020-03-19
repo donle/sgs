@@ -37,7 +37,7 @@ export class DuelSkill extends ActiveSkill {
     selectedTargets: PlayerId[],
     containerCard: CardId,
   ): boolean {
-    return target !== owner;
+    return owner !== target && room.getPlayerById(owner).canUseCardTo(room, containerCard, target);
   }
 
   public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {

@@ -168,6 +168,12 @@ export abstract class Skill {
     // tslint:disable-next-line: no-empty
   ) {}
 
+  public async beforeEffect(
+    room: Room,
+    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent | GameEventIdentifiers.CardEffectEvent>,
+    // tslint:disable-next-line: no-empty
+  ) {}
+
   // tslint:disable-next-line: no-empty
   public onLoseSkill(owner: Player) {}
   public onPhaseChange(

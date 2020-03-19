@@ -17,6 +17,7 @@ export const cardDictionary: Word[] = [
   { source: 'wuzhongshengyou', target: '无中生有' },
   { source: 'baguazhen', target: '八卦阵' },
   { source: 'duel', target: '决斗' },
+  { source: 'lebusishu', target: '乐不思蜀' },
 ];
 
 export const characterDictionary: Word[] = [
@@ -455,7 +456,7 @@ export const eventDictionary: Word[] = [
   },
   {
     source: '{0} got judged card {2} on {1}',
-    target: '{0} 的 【{1}】 判定结果为 {2}',
+    target: '{0} 的 {1} 判定结果为 {2}',
   },
   {
     source: '{0} recovered {2} hp for {1}',
@@ -507,6 +508,7 @@ export const eventDictionary: Word[] = [
   { source: '{0} is placed into drop stack', target: '{0} 置入了弃牌堆' },
   { source: '{0} responses card {1}', target: '{0} 打出了一张 {1}' },
   { source: 'please drop {0} cards', target: '请弃置 {0} 张牌' },
+  { source: '{0} skipped play stage', target: '{0} 跳过了出牌阶段' },
   {
     source: '{0} asks for a peach',
     target: '{0} 处于濒死阶段，是否对其使用一个【桃】？',

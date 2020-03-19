@@ -41,7 +41,7 @@ export class LightningSkill extends ActiveSkill {
           [event.cardId],
           event.fromId,
           player.Id,
-          CardLostReason.PassiveMove,
+          CardLostReason.CardUse,
           PlayerCardsArea.HandArea,
           PlayerCardsArea.JudgeArea,
         );
@@ -91,7 +91,7 @@ export class LightningSkill extends ActiveSkill {
     const judgeCard = room.getCards(1, 'top')[0];
 
     const judgeEvent: ServerEventFinder<GameEventIdentifiers.JudgeEvent> = {
-      bySkill: this.name,
+      byCard: cardId,
       judgeCardId: judgeCard,
       toId: toIds![0],
     };
@@ -109,9 +109,10 @@ export class LightningSkill extends ActiveSkill {
 
       await room.damage(damageEvent);
 
-      room.broadcast(GameEventIdentifiers.CardDropEvent, {
+      room.broadcast(GameEventIdentifiers.CardLostEvent, {
         fromId: judgeEvent.toId,
         cardIds: [cardId],
+        reason: CardLostReason.PlaceToDropStack,
       });
       room.getPlayerById(judgeEvent.toId).dropCards(cardId);
     } else {

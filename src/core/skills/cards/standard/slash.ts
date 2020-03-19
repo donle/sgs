@@ -56,7 +56,7 @@ export class SlashSkill extends ActiveSkill {
         cardMatcher: new CardMatcher({ name: ['jink'] }).toSocketPassenger(),
         byCardId: cardId,
         cardUserId: fromId,
-        triggeredBySkillName: event.triggeredBySkills || this.name,
+        triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
         conversation:
           fromId !== undefined
             ? TranslationPack.translationJsonPatcher(

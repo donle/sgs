@@ -113,6 +113,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     to: PlayerId,
   ): Promise<ResponsiveTriggeredResult<T>>;
 
+  public abstract skip(player: PlayerId, phase?: PlayerPhase): void;
+
   public getCardOwnerId(card: CardId) {
     for (const player of this.AlivePlayers) {
       if (player.getCardId(card) !== undefined) {

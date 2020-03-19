@@ -113,6 +113,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.AimEvent:
         await this.onHandleAimEvent(e as any, content);
         break;
+      case GameEventIdentifiers.CustomGameDialog:
+        await this.onHandleCustomDialogEvent(e as any, content);
+        break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
     }
@@ -169,6 +172,11 @@ export class GameClientProcessor {
   // tslint:disable-next-line:no-empty
   private onHandleCardDropEvent<T extends GameEventIdentifiers.CardDropEvent>(type: T, content: ServerEventFinder<T>) {}
   private onHandleDrawCardsEvent<T extends GameEventIdentifiers.DrawCardEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+    // tslint:disable-next-line:no-empty
+  ) {}
+  private onHandleCustomDialogEvent<T extends GameEventIdentifiers.CustomGameDialog>(
     type: T,
     content: ServerEventFinder<T>,
     // tslint:disable-next-line:no-empty
@@ -320,18 +328,6 @@ export class GameClientProcessor {
         .getPlayerById(content.toId)
         .getCardIds(content.toArea)
         .push(cardId);
-    }
-
-    if (content.fromId) {
-      const areaCards = this.store.room.getPlayerById(content.fromId).getCardIds(content.fromArea);
-      for (const cardId of content.cardIds) {
-        const lostIndex = areaCards.findIndex(areaCardId => areaCardId === cardId);
-        if (lostIndex >= 0) {
-          areaCards.splice(lostIndex, 1);
-        } else {
-          throw new Error(`Card ${cardId} doesn't exist in current area ${content.fromArea}`);
-        }
-      }
     }
 
     this.presenter.broadcastUIUpdate();

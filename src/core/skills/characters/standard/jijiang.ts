@@ -64,7 +64,7 @@ export class JiJiang extends ActiveSkill {
       const jijiangEvent = {
         toId: player.Id,
         cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
-        triggeredBySkillName: this.name,
+        triggeredBySkills: [this.name],
         conversation: TranslationPack.translationJsonPatcher(
           '{0} used skill {1} to you, please response a {2} card',
           TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),

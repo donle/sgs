@@ -60,7 +60,7 @@ export class WanJianQiFaSkill extends ActiveSkill {
               'jink',
             ).extract()
           : TranslationPack.translationJsonPatcher('please response a {0} card', 'jink').extract(),
-      triggeredBySkillName: event.triggeredBySkills || this.name,
+      triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
     };
 
     for (const to of toIds || []) {

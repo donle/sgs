@@ -43,7 +43,7 @@ export class PeachSkill extends ActiveSkill {
       recoverBy: event.fromId,
       toId: event.toIds![0],
       recoveredHp: 1,
-      triggeredBySkillName: this.name,
+      triggeredBySkills: [this.name],
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} recovers {1} hp',
         room.getPlayerById(event.toIds![0]).Name,

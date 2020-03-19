@@ -7,7 +7,7 @@ import {
   ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
-import { AllStage, CardResponseStage, CardUseStage } from 'core/game/stage_processor';
+import { AllStage, CardResponseStage, CardUseStage, PlayerPhase } from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
 import { Player } from 'core/player/player';
 import { ServerPlayer } from 'core/player/player.server';
@@ -152,16 +152,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (!this.CurrentPlayer || !this.isPlaying()) {
       return;
     }
-    for (const player of this.getAlivePlayersFrom()) {
-      if (player.Dead) {
-        continue;
-      }
+    const { triggeredBySkills } = content as ServerEventFinder<GameEventIdentifiers>;
+    const bySkills = triggeredBySkills
+      ? triggeredBySkills.map(skillName => Sanguosha.getSkillBySkillName(skillName))
+      : undefined;
 
-      const { triggeredBySkills } = content as ServerEventFinder<GameEventIdentifiers>;
+    for (const player of this.getAlivePlayersFrom()) {
       const canTriggerSkills: TriggerSkill[] = [];
-      const bySkills = triggeredBySkills
-        ? triggeredBySkills.map(skillName => Sanguosha.getSkillBySkillName(skillName))
-        : undefined;
       for (const equip of player.getCardIds(PlayerCardsArea.EquipArea)) {
         const equipCard = Sanguosha.getCardById(equip);
         if (!(equipCard.Skill instanceof TriggerSkill)) {
@@ -333,7 +330,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.AimEvent, cardAimEvent);
 
           if (!EventPacker.isTerminated(cardAimEvent)) {
-            content.triggeredBySkills = cardAimEvent.triggeredBySkills;
+            if (cardAimEvent.triggeredBySkills) {
+              content.triggeredBySkills = content.triggeredBySkills
+                ? [...content.triggeredBySkills, ...cardAimEvent.triggeredBySkills]
+                : cardAimEvent.triggeredBySkills;
+            }
             newToIds = [...newToIds, ...cardAimEvent.toIds];
           }
         }
@@ -483,7 +484,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   public async loseCards(event: ServerEventFinder<GameEventIdentifiers.CardLostEvent>) {
-    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardLostEvent, event);
+    await this.gameProcessor.onHandleIncomingEvent(
+      GameEventIdentifiers.CardLostEvent,
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.CardLostEvent, event),
+    );
 
     this.dropStack.push(...event.cardIds);
   }
@@ -503,15 +507,26 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     const from = fromId && this.getPlayerById(fromId);
     if (from) {
       let translationsMessage: PatchedTranslationObject | undefined;
-      if (fromArea !== PlayerCardsArea.JudgeArea && fromId !== toId) {
-        if (toArea !== PlayerCardsArea.HandArea) {
-          translationsMessage = TranslationPack.translationJsonPatcher(
-            '{0} lost card {1}',
-            TranslationPack.patchPlayerInTranslation(from),
-            TranslationPack.patchCardInTranslation(...cardIds),
-          ).extract();
-        }
+      if (
+        fromArea !== PlayerCardsArea.JudgeArea &&
+        ![CardLostReason.CardResponse, CardLostReason.CardResponse].includes(fromReason)
+      ) {
+        translationsMessage = TranslationPack.translationJsonPatcher(
+          '{0} lost card {1}',
+          TranslationPack.patchPlayerInTranslation(from),
+          TranslationPack.patchCardInTranslation(...cardIds),
+        ).extract();
+      }
 
+      if (fromArea !== PlayerCardsArea.JudgeArea) {
+        await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardLostEvent, {
+          fromId: from.Id,
+          cardIds,
+          droppedBy: proposer,
+          reason: fromReason,
+          translationsMessage,
+        });
+      } else {
         this.broadcast(GameEventIdentifiers.CardLostEvent, {
           fromId: from.Id,
           cardIds,
@@ -629,6 +644,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     if (this.getCardOwnerId(event.judgeCardId) === undefined) {
       this.bury(event.judgeCardId);
+    }
+  }
+
+  public skip(player: PlayerId, phase?: PlayerPhase) {
+    if (this.CurrentPhasePlayer.Id === player) {
+      this.gameProcessor.skip(phase);
     }
   }
 

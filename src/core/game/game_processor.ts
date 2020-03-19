@@ -50,6 +50,7 @@ export class GameProcessor {
   private currentPlayerStage: PlayerStageListEnum | undefined;
   private currentPlayerPhase: PlayerPhase | undefined;
   private currentPhasePlayer: Player;
+  private playerStages: PlayerStageListEnum[] = [];
 
   constructor(private stageProcessor: StageProcessor, private logger: Logger) {}
 
@@ -179,7 +180,8 @@ export class GameProcessor {
       case PlayerPhase.JudgeStage:
         this.logger.debug('enter judge cards phase');
         const judgeCardIds = this.CurrentPlayer.getCardIds(PlayerCardsArea.JudgeArea);
-        for (const judgeCardId of judgeCardIds) {
+        for (let i = judgeCardIds.length - 1; i >= 0; i--) {
+          const judgeCardId = judgeCardIds[i];
           const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
             cardId: judgeCardId,
             toIds: [this.CurrentPlayer.Id],
@@ -246,14 +248,22 @@ export class GameProcessor {
     }
   }
 
+  public skip(phase?: PlayerPhase) {
+    if (phase === undefined) {
+      return [];
+    }
+
+    this.playerStages = this.playerStages.filter(stage => !this.stageProcessor.isInsidePlayerPhase(phase, stage));
+  }
+
   private async play(player: Player, specifiedStages?: PlayerStageListEnum[]) {
     this.currentPhasePlayer = player;
 
-    const playerStages = specifiedStages ? specifiedStages : this.stageProcessor.createPlayerStage();
+    this.playerStages = specifiedStages ? specifiedStages : this.stageProcessor.createPlayerStage();
 
-    while (playerStages.length > 0) {
-      this.currentPlayerStage = playerStages[0];
-      playerStages.shift();
+    while (this.playerStages.length > 0) {
+      this.currentPlayerStage = this.playerStages[0];
+      this.playerStages.shift();
       const nextPhase = this.stageProcessor.getInsidePlayerPhase(this.currentPlayerStage);
       if (nextPhase !== this.currentPlayerPhase) {
         await this.onHandlePhaseChangeEvent(
@@ -408,6 +418,11 @@ export class GameProcessor {
   ) => {
     let eventStage: GameEventStage | undefined = this.stageProcessor.involve(identifier);
     while (this.stageProcessor.isInsideEvent(identifier, eventStage)) {
+      if (EventPacker.isTerminated(event)) {
+        this.stageProcessor.skipEventProcess(identifier);
+        break;
+      }
+
       await this.room.trigger<typeof event>(event, eventStage);
       if (EventPacker.isTerminated(event)) {
         this.stageProcessor.skipEventProcess(identifier);
@@ -417,7 +432,6 @@ export class GameProcessor {
       if (onActualExecuted) {
         await onActualExecuted(eventStage!);
       }
-
       if (EventPacker.isTerminated(event)) {
         this.stageProcessor.skipEventProcess(identifier);
         break;
@@ -426,7 +440,6 @@ export class GameProcessor {
       if (processor) {
         await processor(eventStage!);
       }
-
       if (EventPacker.isTerminated(event)) {
         this.stageProcessor.skipEventProcess(identifier);
         break;
@@ -657,8 +670,10 @@ export class GameProcessor {
     event: EventPicker<GameEventIdentifiers.CardEffectEvent, WorkPlace.Server>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
+    const card = Sanguosha.getCardById(event.cardId);
+    await card.Skill.beforeEffect(this.room, event);
+
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      const card = Sanguosha.getCardById(event.cardId);
       if (
         !EventPacker.isDisresponsiveEvent(event) &&
         card.is(CardType.Trick) &&
@@ -798,18 +813,19 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      const { toId, bySkill, byCard, judgeCardId } = event;
+
       if (stage === JudgeEffectStage.OnJudge) {
         event.translationsMessage = TranslationPack.translationJsonPatcher(
           '{0} starts a judge of {1}',
           TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.toId)),
-          event.bySkill,
+          byCard ? TranslationPack.patchCardInTranslation(byCard) : bySkill!,
         ).extract();
       } else if (stage === JudgeEffectStage.JudgeEffect) {
-        const { toId, bySkill, judgeCardId } = event;
         event.translationsMessage = TranslationPack.translationJsonPatcher(
           '{0} got judged card {2} on {1}',
           TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(toId)),
-          bySkill,
+          byCard ? TranslationPack.patchCardInTranslation(byCard) : bySkill!,
           TranslationPack.patchCardInTranslation(judgeCardId),
         ).extract();
 
@@ -939,6 +955,7 @@ export class GameProcessor {
 
   public async turnToNextPlayer() {
     this.tryToThrowNotStartedError();
+    this.playerStages = [];
     const prevPlayer = this.CurrentPlayer;
     do {
       this.playerPositionIndex = (this.playerPositionIndex + 1) % this.room.Players.length;

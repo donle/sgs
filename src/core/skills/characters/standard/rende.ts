@@ -80,7 +80,7 @@ export class Rende extends ActiveSkill {
       const chooseEvent = {
         options,
         fromId: skillUseEvent.fromId,
-        triggeredBySkillName: this.name,
+        triggeredBySkills: [this.name],
       };
 
       room.notify(GameEventIdentifiers.AskForChooseOptionsEvent, chooseEvent, skillUseEvent.fromId);

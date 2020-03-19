@@ -126,6 +126,9 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   public async askForCardResponse(): Promise<any> {
     this.throwUntouchableError(this.askForCardResponse.name);
   }
+  public skip() {
+    this.throwUntouchableError(this.skip.name);
+  }
 
   public broadcast<T extends GameEventIdentifiers>(type: T, content: ClientEventFinder<T>): void {
     this.socket.notify(type, content);

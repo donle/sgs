@@ -500,6 +500,10 @@ export class StageProcessor {
     }
   }
 
+  public isInsidePlayerPhase(phase: PlayerPhase, stage: PlayerStageListEnum) {
+    return playerStagesList[phase].includes(stage);
+  }
+
   public getInsidePlayerPhase(specificStage: PlayerStageListEnum): PlayerPhase {
     for (const [stage, stageList] of (Object.entries(playerStagesList) as unknown) as [
       string,

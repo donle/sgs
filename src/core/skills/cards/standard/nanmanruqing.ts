@@ -60,7 +60,7 @@ export class NanManRuQingSkill extends ActiveSkill {
               'slash',
             ).extract()
           : TranslationPack.translationJsonPatcher('please response a {0} card', 'slash').extract(),
-      triggeredBySkillName: event.triggeredBySkills || this.name,
+      triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
     };
 
     for (const to of toIds!) {

@@ -16,6 +16,7 @@ import { WuXieKeJi } from './wuxiekeji';
 import { WuZhongShengYou } from './wuzhongshengyou';
 import { ZhuGeLianNu } from './zhugeliannu';
 import { ZiXin } from './zixin';
+import { LeBuSiShu } from './lebusishu';
 
 export const StandardCardPackage: (index: number) => CardPackage<GameCardExtensions.Standard> = index => ({
   [GameCardExtensions.Standard]: [
@@ -106,6 +107,9 @@ export const StandardCardPackage: (index: number) => CardPackage<GameCardExtensi
     new WuZhongShengYou(index++, 8, CardSuit.Heart),
     new WuZhongShengYou(index++, 9, CardSuit.Heart),
     new WuZhongShengYou(index++, 11, CardSuit.Heart),
+
+    new LeBuSiShu(index++, 6, CardSuit.Spade),
+    new LeBuSiShu(index++, 6, CardSuit.Club),
 
     new BaGuaZhen(index++, 2, CardSuit.Spade),
     new BaGuaZhen(index++, 2, CardSuit.Club),

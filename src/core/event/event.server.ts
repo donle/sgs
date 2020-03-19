@@ -107,7 +107,8 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.JudgeEvent]: {
     toId: PlayerId;
-    bySkill: string;
+    bySkill?: string;
+    byCard?: CardId;
     judgeCardId: CardId;
   };
   [GameEventIdentifiers.PinDianEvent]: {

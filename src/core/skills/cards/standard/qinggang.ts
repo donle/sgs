@@ -35,7 +35,7 @@ export class QingGangSkill extends TriggerSkill {
 
   async onTrigger(room: Room, content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     content.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} activated skill {1}',
+      '{0} activates skill {1}',
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(content.fromId)),
       this.name,
     ).extract();
