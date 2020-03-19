@@ -172,7 +172,9 @@ export abstract class Skill {
     room: Room,
     event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent | GameEventIdentifiers.CardEffectEvent>,
     // tslint:disable-next-line: no-empty
-  ) {}
+  ) {
+    return true;
+  }
 
   // tslint:disable-next-line: no-empty
   public onLoseSkill(owner: Player) {}

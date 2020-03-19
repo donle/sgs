@@ -18,6 +18,7 @@ export const cardDictionary: Word[] = [
   { source: 'baguazhen', target: '八卦阵' },
   { source: 'duel', target: '决斗' },
   { source: 'lebusishu', target: '乐不思蜀' },
+  { source: 'taoyuanjieyi', target: '桃园结义' },
 ];
 
 export const characterDictionary: Word[] = [

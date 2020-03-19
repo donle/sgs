@@ -5,18 +5,19 @@ import { BaGuaZhen } from './baguazhen';
 import { Duel } from './duel';
 import { GuoHeChaiQiao } from './guohechaiqiao';
 import { Jink } from './jink';
+import { LeBuSiShu } from './lebusishu';
 import { Lightning } from './lightning';
 import { NanManRuQing } from './nanmanruqing';
 import { Peach } from './peach';
 import { QingGang } from './qinggang';
 import { ShunshouQianYang } from './shunshouqianyang';
 import { Slash } from './slash';
+import { TaoYuanJieYi } from './taoyuanjieyi';
 import { WanJianQiFa } from './wanjianqifa';
 import { WuXieKeJi } from './wuxiekeji';
 import { WuZhongShengYou } from './wuzhongshengyou';
 import { ZhuGeLianNu } from './zhugeliannu';
 import { ZiXin } from './zixin';
-import { LeBuSiShu } from './lebusishu';
 
 export const StandardCardPackage: (index: number) => CardPackage<GameCardExtensions.Standard> = index => ({
   [GameCardExtensions.Standard]: [
@@ -110,6 +111,8 @@ export const StandardCardPackage: (index: number) => CardPackage<GameCardExtensi
 
     new LeBuSiShu(index++, 6, CardSuit.Spade),
     new LeBuSiShu(index++, 6, CardSuit.Club),
+
+    new TaoYuanJieYi(index++, 1, CardSuit.Heart),
 
     new BaGuaZhen(index++, 2, CardSuit.Spade),
     new BaGuaZhen(index++, 2, CardSuit.Club),
