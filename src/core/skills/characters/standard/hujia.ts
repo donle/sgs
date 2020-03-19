@@ -10,10 +10,6 @@ import { CommonSkill, LordSkill, TriggerSkill } from 'core/skills/skill';
 @CommonSkill
 @LordSkill
 export class Hujia extends TriggerSkill {
-  public isAutoTrigger() {
-    return false;
-  }
-
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent | GameEventIdentifiers.AskForCardUseEvent>,
   ) {

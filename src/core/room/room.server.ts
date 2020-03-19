@@ -170,7 +170,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
         const canTrigger = bySkills
           ? bySkills.find(skill => !UniqueSkillRule.canTriggerCardSkillRule(skill, equipCard)) === undefined
-          : true;
+          : UniqueSkillRule.canTriggerSkillRule(equipCard.Skill, player);
         if (canTrigger) {
           canTriggerSkills.push(equipCard.Skill);
         }
@@ -179,7 +179,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       for (const skill of player.getPlayerSkills<TriggerSkill>('trigger')) {
         const canTrigger = bySkills
           ? bySkills.find(bySkill => !UniqueSkillRule.prohibitedBySkillRule(bySkill, skill)) === undefined
-          : true;
+          : UniqueSkillRule.canTriggerSkillRule(skill, player);
 
         if (canTrigger) {
           canTriggerSkills.push(skill);
@@ -565,6 +565,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   public async damage(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>): Promise<void> {
+    EventPacker.createIdentifierEvent(GameEventIdentifiers.DamageEvent, event);
+
     event.translationsMessage =
       event.fromId === undefined
         ? TranslationPack.translationJsonPatcher(

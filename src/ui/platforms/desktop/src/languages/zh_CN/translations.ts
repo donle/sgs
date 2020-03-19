@@ -16,6 +16,7 @@ export const cardDictionary: Word[] = [
   { source: 'wuxiekeji', target: '无懈可击' },
   { source: 'wuzhongshengyou', target: '无中生有' },
   { source: 'baguazhen', target: '八卦阵' },
+  { source: 'duel', target: '决斗' },
 ];
 
 export const characterDictionary: Word[] = [
@@ -470,7 +471,7 @@ export const eventDictionary: Word[] = [
   },
   {
     source: 'please use a {0} card to response {1}',
-    target: '使用一张【{1}】来响应 {0}',
+    target: '请使用一张【{1}】来响应 {0}',
   },
   { source: '{0} activates skill {1}', target: '{0} 的 {1} 技能被触发' },
   { source: '{0} used skill {1}', target: '{0} 使用了技能【{1}】' },

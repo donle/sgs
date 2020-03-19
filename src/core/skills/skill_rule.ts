@@ -6,12 +6,7 @@ export class UniqueSkillRule {
   private constructor() {}
 
   public static prohibitedBySkillRule(bySkill: Skill, toSkill: Skill) {
-    switch (bySkill.Name) {
-      case 'tieji':
-        return toSkill.SkillType === SkillType.Compulsory;
-      default:
-        return true;
-    }
+    return true;
   }
 
   public static canTriggerCardSkillRule(bySkill: Skill, card: Card) {
@@ -23,6 +18,11 @@ export class UniqueSkillRule {
     }
   }
 
-  // tslint:disable-next-line: no-empty
-  public static canTriggerSkillRule(skill: Skill, owner: Player) {}
+  public static canTriggerSkillRule(skill: Skill, owner: Player) {
+    if (owner.getFlag<boolean>('jieji')) {
+      return skill.SkillType === SkillType.Compulsory;
+    }
+
+    return true;
+  }
 }

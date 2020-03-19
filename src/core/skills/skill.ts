@@ -12,7 +12,7 @@ import {
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, PlayerPhase, PlayerStageListEnum } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerId, PlayerRole } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 
 export const enum SkillType {
@@ -227,7 +227,9 @@ export abstract class ResponsiveSkill extends Skill {
 
 export abstract class TriggerSkill extends Skill {
   public abstract isTriggerable(event: EventPicker<GameEventIdentifiers, WorkPlace>, stage?: AllStage): boolean;
-  public abstract isAutoTrigger(): boolean;
+  public isAutoTrigger(): boolean {
+    return false;
+  }
   public abstract async onTrigger(
     room: Room,
     event: ClientEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.SkillUseEvent>,
@@ -284,6 +286,8 @@ export abstract class TransformSkill extends Skill {
   public async onUse() {
     return true;
   }
+
+  public abstract get Place(): PlayerCardsArea[] | undefined;
 
   public abstract forceToTransformCardTo(cardId: CardId): VirtualCard | Card;
 }

@@ -2,6 +2,7 @@ import { GameCardExtensions } from 'core/game/game_props';
 import { CardPackage } from 'core/game/package_loader/loader.cards';
 import { CardSuit } from '../libs/card_props';
 import { BaGuaZhen } from './baguazhen';
+import { Duel } from './duel';
 import { GuoHeChaiQiao } from './guohechaiqiao';
 import { Jink } from './jink';
 import { Lightning } from './lightning';
@@ -96,6 +97,10 @@ export const StandardCardPackage: (index: number) => CardPackage<GameCardExtensi
     new WuXieKeJi(index++, 11, CardSuit.Spade),
     new WuXieKeJi(index++, 12, CardSuit.Club),
     new WuXieKeJi(index++, 13, CardSuit.Club),
+
+    new Duel(index++, 1, CardSuit.Spade),
+    new Duel(index++, 1, CardSuit.Club),
+    new Duel(index++, 1, CardSuit.Diamond),
 
     new WuZhongShengYou(index++, 7, CardSuit.Heart),
     new WuZhongShengYou(index++, 8, CardSuit.Heart),

@@ -11,10 +11,6 @@ export class JianXiong extends TriggerSkill {
     super('jianxiong', 'jianxiong_description');
   }
 
-  isAutoTrigger() {
-    return false;
-  }
-
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
     return stage === DamageEffectStage.AfterDamagedEffect;
   }

@@ -12,6 +12,7 @@ export { ShunShouQianYangSkill } from './cards/standard/shunshouqianyang';
 export { WuXieKeJiSkill } from './cards/standard/wuxiekeji';
 export { WuZhongShengYouSkill } from './cards/standard/wuzhongshengyou';
 export { BaGuaZhenSkill } from './cards/standard/baguazhen';
+export { DuelSkill } from './cards/standard/duel';
 
 export { Hujia } from './characters/standard/hujia';
 export { JianXiong } from './characters/standard/jianxiong';

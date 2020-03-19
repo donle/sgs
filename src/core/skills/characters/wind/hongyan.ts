@@ -9,6 +9,10 @@ export class HongYan extends TransformSkill {
     super('hongyan', 'hongyan_description');
   }
 
+  public get Place(): undefined {
+    return undefined;
+  }
+
   public forceToTransformCardTo(cardId: CardId) {
     const card = Sanguosha.getCardById(cardId);
     if (card.Suit === CardSuit.Spade) {

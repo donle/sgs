@@ -48,7 +48,7 @@ export class JiJiang extends ActiveSkill {
   async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} used skill {1}',
-      room.getPlayerById(event.fromId).Name,
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
       this.name,
     ).extract();
 
@@ -168,7 +168,7 @@ export class JiJiangShadow extends TriggerSkill {
           };
 
           if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
-            await room.useCard(
+            await room.responseCard(
               EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, {
                 ...cardUseEvent,
                 fromId: response.fromId,
