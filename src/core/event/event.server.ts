@@ -174,6 +174,7 @@ export interface ServerEvent extends EventUtilities {
     toId: PlayerId;
     byCardId?: CardId;
     cardUserId?: PlayerId;
+    scopedTargets?: string[];
     cardMatcher: CardMatcherSocketPassenger;
     conversation: string | PatchedTranslationObject;
     triggeredOnEvent?: ServerEventFinder<GameEventIdentifiers>;

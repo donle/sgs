@@ -100,25 +100,16 @@ export class JiJiangShadow extends TriggerSkill {
     return false;
   }
 
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent | GameEventIdentifiers.AskForCardUseEvent>,
-  ) {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>) {
     const identifier = EventPacker.getIdentifier(event);
-    return (
-      identifier === GameEventIdentifiers.AskForCardResponseEvent ||
-      identifier === GameEventIdentifiers.AskForCardUseEvent
-    );
+    return identifier === GameEventIdentifiers.AskForCardResponseEvent;
   }
 
   constructor() {
     super('jijiang', 'jijiang_description');
   }
 
-  canUse(
-    room: Room,
-    owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent | GameEventIdentifiers.AskForCardUseEvent>,
-  ) {
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>) {
     const { cardMatcher } = content;
     return (
       owner.Id === content.toId &&
