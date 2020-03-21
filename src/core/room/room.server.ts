@@ -512,7 +512,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       if (
         fromArea !== PlayerCardsArea.JudgeArea &&
         fromReason !== undefined &&
-        ![CardLostReason.CardResponse, CardLostReason.CardResponse].includes(fromReason)
+        ![CardLostReason.CardResponse, CardLostReason.CardUse].includes(fromReason)
       ) {
         translationsMessage = TranslationPack.translationJsonPatcher(
           '{0} lost card {1}',
