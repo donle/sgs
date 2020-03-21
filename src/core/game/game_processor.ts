@@ -39,6 +39,7 @@ import {
 import { Player } from 'core/player/player';
 import { getPlayerRoleRawText, PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { Logger } from 'core/shares/libs/logger/logger';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ServerRoom } from '../room/room.server';
 import { Sanguosha } from './engine';
@@ -55,9 +56,7 @@ export class GameProcessor {
   constructor(private stageProcessor: StageProcessor, private logger: Logger) {}
 
   private tryToThrowNotStartedError() {
-    if (!this.room) {
-      throw new Error('Game is not started yet');
-    }
+    Precondition.assert(this.room !== undefined, 'Game is not started yet');
   }
 
   private async chooseCharacters(playersInfo: PlayerInfo[], selectableCharacters: Character[]) {
@@ -113,10 +112,10 @@ export class GameProcessor {
     }
 
     for (const response of await Promise.all(sequentialAsyncResponse)) {
-      const player = playersInfo.find(info => info.Id === response.fromId);
-      if (!player) {
-        throw new Error('Unexpected player id received');
-      }
+      const player = Precondition.exists(
+        playersInfo.find(info => info.Id === response.fromId),
+        'Unexpected player id received',
+      );
 
       this.room.getPlayerById(player.Id).CharacterId = response.chosenCharacter;
       player.CharacterId = response.chosenCharacter;
@@ -173,9 +172,8 @@ export class GameProcessor {
   }
 
   private async onPhase(phase: PlayerPhase) {
-    if (phase === undefined) {
-      throw new Error('Undefined phase');
-    }
+    Precondition.assert(phase !== undefined, 'Undefined phase');
+
     switch (phase) {
       case PlayerPhase.JudgeStage:
         this.logger.debug('enter judge cards phase');
@@ -186,7 +184,21 @@ export class GameProcessor {
             cardId: judgeCardId,
             toIds: [this.CurrentPlayer.Id],
           };
+
+          this.room.broadcast(GameEventIdentifiers.CardLostEvent, {
+            fromId: this.CurrentPlayer.Id,
+            cardIds: [judgeCardId],
+            reason: CardLostReason.PlaceToDropStack,
+          });
+          this.CurrentPlayer.dropCards(judgeCardId);
+          this.room.addProcessingCard(judgeCardId);
+
           await this.onHandleCardEffectEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
+
+          this.room.endProcessOnCard(judgeCardId);
+          if (this.room.getCardOwnerId(judgeCardId) !== undefined) {
+            this.room.bury(judgeCardId);
+          }
         }
         return;
       case PlayerPhase.DrawCardStage:
@@ -447,6 +459,7 @@ export class GameProcessor {
 
       eventStage = this.stageProcessor.nextInstantEvent();
     }
+    // console.log('finish ---- ', JSON.stringify(event, null, 2));
   };
 
   private async onHandleObtainCardEvent(

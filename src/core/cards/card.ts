@@ -1,7 +1,34 @@
 import { Sanguosha } from 'core/game/engine';
 import { GameCardExtensions } from 'core/game/game_props';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { Skill, ViewAsSkill } from 'core/skills/skill';
-import { CardId, CardSuit, RealCardId, VirtualCardId, VirtualCardIdProps } from './libs/card_props';
+import { CardId, CardSuit, CardTargetEnum, RealCardId, VirtualCardId, VirtualCardIdProps } from './libs/card_props';
+
+export function None<T extends Card>(constructor: new (...args: any) => any): any {
+  return (class extends constructor {
+    private cardTargetNumber = CardTargetEnum.None;
+  } as any) as T;
+}
+export function Single<T extends Card>(constructor: new (...args: any) => any): any {
+  return (class extends constructor {
+    private cardTargetNumber = CardTargetEnum.Single;
+  } as any) as T;
+}
+export function Multiple<T extends Card>(constructor: new (...args: any) => any): any {
+  return (class extends constructor {
+    private cardTargetNumber = CardTargetEnum.Multiple;
+  } as any) as T;
+}
+export function Others<T extends Card>(constructor: new (...args: any) => any): any {
+  return (class extends constructor {
+    private cardTargetNumber = CardTargetEnum.Others;
+  } as any) as T;
+}
+export function Globe<T extends Card>(constructor: new (...args: any) => any): any {
+  return (class extends constructor {
+    private cardTargetNumber = CardTargetEnum.Globe;
+  } as any) as T;
+}
 
 export abstract class Card {
   protected abstract id: RealCardId;
@@ -15,6 +42,8 @@ export abstract class Card {
   protected abstract effectUseDistance: number;
 
   protected abstract fromPackage: GameCardExtensions;
+
+  private cardTargetNumber: CardTargetEnum = CardTargetEnum.Single;
 
   public get Id(): CardId {
     return this.id;
@@ -72,6 +101,14 @@ export abstract class Card {
 
   public get Package() {
     return this.fromPackage;
+  }
+
+  public get AOE(): CardTargetEnum {
+    return this.cardTargetNumber;
+  }
+
+  public set AOE(targetNumber: CardTargetEnum) {
+    this.cardTargetNumber = targetNumber;
   }
 
   public isVirtualCard() {
@@ -133,9 +170,7 @@ export class VirtualCard<T extends Card = Card> extends Card {
     const { cardName, cardNumber, cardSuit } = viewAsOptions;
 
     const viewAsCard = Sanguosha.getCardByName(cardName) as T;
-    if (!viewAsCard) {
-      throw new Error(`Unable to init virtual card: ${cardName}`);
-    }
+    Precondition.assert(viewAsCard !== undefined, `Unable to init virtual card: ${cardName}`);
 
     this.fromPackage = viewAsCard.Package;
     this.viewAs = viewAsCard;
@@ -157,22 +192,15 @@ export class VirtualCard<T extends Card = Card> extends Card {
       this.viewAsBlackCard = this.suit === CardSuit.Spade || this.suit === CardSuit.Club;
       this.viewAsRedCard = this.suit === CardSuit.Heart || this.suit === CardSuit.Diamond;
     } else {
-      let suit: CardSuit | undefined = CardSuit.NoSuit;
       for (const cardId of this.cardIds) {
         const cardSuit = Sanguosha.getCardById(cardId).Suit;
-        if (suit === CardSuit.NoSuit) {
-          suit = cardSuit;
-        } else if (suit !== cardSuit) {
-          suit = undefined;
-        }
 
         this.viewAsBlackCard = this.viewAsBlackCard && (cardSuit === CardSuit.Spade || cardSuit === CardSuit.Club);
         this.viewAsRedCard = this.viewAsRedCard && (cardSuit === CardSuit.Heart || cardSuit === CardSuit.Diamond);
       }
 
-      if (suit !== undefined) {
-        this.suit = suit;
-      }
+      this.suit = CardSuit.NoSuit;
+      this.cardNumber = 0;
     }
   }
 

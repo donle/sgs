@@ -1,3 +1,4 @@
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import {
   Languages,
   PatchedTranslationObject,
@@ -24,9 +25,10 @@ export class TranslationModule {
 
   public tr(rawText: string | PatchedTranslationObject) {
     if (typeof rawText === 'object') {
-      if ((rawText as TranslationPackPatchedObject).tag !== TranslationPack.translationObjectSign) {
-        throw new Error(`Unexpected translation object: ${JSON.stringify(rawText)}`);
-      }
+      Precondition.assert(
+        (rawText as TranslationPackPatchedObject).tag === TranslationPack.translationObjectSign,
+        `Unexpected translation object: ${JSON.stringify(rawText)}`,
+      );
 
       const dict = this.dictionary.get(this.currentLanguage);
       return dict ? TranslationPack.create(rawText).translateTo(dict) : rawText.original;

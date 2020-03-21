@@ -31,3 +31,11 @@ export type VirtualCardIdProps = {
   skillName?: string;
   containedCardIds: CardId[];
 };
+
+export const enum CardTargetEnum {
+  None,
+  Single,
+  Multiple,
+  Others,
+  Globe,
+}

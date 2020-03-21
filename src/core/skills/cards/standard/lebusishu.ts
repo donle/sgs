@@ -83,22 +83,6 @@ export class LeBuSiShuSkill extends ActiveSkill {
 
       room.skip(toIds![0], PlayerPhase.PlayCardStage);
     }
-
-    room.broadcast(GameEventIdentifiers.CardLostEvent, {
-      fromId: judgeEvent.toId,
-      cardIds: [cardId],
-      reason: CardLostReason.PlaceToDropStack,
-    });
-    room.getPlayerById(judgeEvent.toId).dropCards(cardId);
     return true;
-  }
-
-  public async onEffectRejected(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
-    room.broadcast(GameEventIdentifiers.CardLostEvent, {
-      fromId: event.toIds![0],
-      cardIds: [event.cardId],
-      reason: CardLostReason.PlaceToDropStack,
-    });
-    room.getPlayerById(event.toIds![0]).dropCards(event.cardId);
   }
 }

@@ -6,6 +6,7 @@ import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder
 import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { PlayerCardsArea } from 'core/player/player_props';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as React from 'react';
@@ -237,9 +238,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    if (this.store.clientRoomInfo === undefined) {
-      throw new Error('Uninitialized Client room info');
-    }
+    Precondition.assert(this.store.clientRoomInfo !== undefined, 'Uninitialized Client room info');
 
     if (
       content.joiningPlayerName === this.store.clientRoomInfo.playerName &&
@@ -254,11 +253,10 @@ export class GameClientProcessor {
       );
       this.translator.setupPlayer(this.presenter.ClientPlayer);
     } else {
-      const playerInfo = content.playersInfo.find(playerInfo => playerInfo.Id === content.joiningPlayerId);
-
-      if (!playerInfo) {
-        throw new Error(`Unknown player ${content.joiningPlayerName}`);
-      }
+      const playerInfo = Precondition.exists(
+        content.playersInfo.find(playerInfo => playerInfo.Id === content.joiningPlayerId),
+        `Unknown player ${content.joiningPlayerName}`,
+      );
 
       this.presenter.playerEnter(playerInfo);
     }

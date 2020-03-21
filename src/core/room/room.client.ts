@@ -5,6 +5,7 @@ import { ClientSocket } from 'core/network/socket.client';
 import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
 import { PlayerId } from 'core/player/player_props';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { Room, RoomId } from './room';
 
 export class ClientRoom extends Room<WorkPlace.Client> {
@@ -103,14 +104,6 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.syncGameCommonRules.name);
   }
   //Server only
-  public isCardOnProcessing(): any {
-    this.throwUntouchableError(this.isCardOnProcessing.name);
-  }
-  //Server only
-  public clearOnProcessingCard(): any {
-    this.throwUntouchableError(this.clearOnProcessingCard.name);
-  }
-  //Server only
   public bury(): void {
     this.throwUntouchableError(this.bury.name);
   }
@@ -135,26 +128,14 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   }
 
   public get CurrentPlayerStage(): PlayerPhase {
-    if (this.currentPlayerPhase === undefined) {
-      throw new Error('Uninitilizes client room with current player stage');
-    }
-
-    return this.currentPlayerPhase;
+    return Precondition.exists(this.currentPlayerPhase, 'Uninitilizes client room with current player stage');
   }
   public get CurrentPlayer(): ClientPlayer {
-    if (this.currentPlayer === undefined) {
-      throw new Error('Uninitilizes client room with current player');
-    }
-
-    return this.currentPlayer;
+    return Precondition.exists(this.currentPlayer, 'Uninitilizes client room with current player');
   }
 
   public get CurrentPhasePlayer(): ClientPlayer {
-    if (this.currentPhasePlayer === undefined) {
-      throw new Error('Uninitilizes client room with current phase player');
-    }
-
-    return this.currentPhasePlayer;
+    return Precondition.exists(this.currentPhasePlayer, 'Uninitilizes client room with current phase player');
   }
 
   public turnTo(playerId: PlayerId, phase: PlayerPhase) {

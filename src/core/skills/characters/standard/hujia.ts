@@ -5,6 +5,7 @@ import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, LordSkill, TriggerSkill } from 'core/skills/skill';
 
 @CommonSkill
@@ -50,13 +51,12 @@ export class Hujia extends TriggerSkill {
     const jinkCardEvent = triggeredOnEvent as ServerEventFinder<
       GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent
     >;
-    const identifier = EventPacker.getIdentifier<
-      GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent
-    >(jinkCardEvent);
-
-    if (identifier === undefined) {
-      throw new Error(`Unwrapped event without identifier in ${this.name}`);
-    }
+    const identifier = Precondition.exists(
+      EventPacker.getIdentifier<GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent>(
+        jinkCardEvent,
+      ),
+      `Unwrapped event without identifier in ${this.name}`,
+    );
 
     for (const player of room.getAlivePlayersFrom()) {
       if (player.Nationality === CharacterNationality.Wei && player.Id !== fromId) {

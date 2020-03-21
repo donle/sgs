@@ -16,6 +16,7 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { GameInfo } from 'core/game/game_props';
 import { AllStage, PlayerPhase } from 'core/game/stage_processor';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { FilterSkill } from 'core/skills/skill';
 
@@ -33,6 +34,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected abstract readonly roomId: RoomId;
 
   protected gameStarted: boolean = false;
+  private onProcessingCards: CardId[] = [];
 
   protected abstract init(...args: any[]): void;
 
@@ -57,7 +59,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     cardIds: CardId[],
     from: PlayerId | undefined,
     to: PlayerId,
-    fromReason: CardLostReason,
+    fromReason: CardLostReason | undefined,
     fromArea: PlayerCardsArea | undefined,
     toArea: PlayerCardsArea,
     toReason?: CardObtainedReason,
@@ -77,10 +79,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract async judge(event: ServerEventFinder<GameEventIdentifiers.JudgeEvent>): Promise<void>;
   //Server only
   public abstract async responseCard(event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>): Promise<void>;
-  //Server only
-  public abstract isCardOnProcessing(cardId: CardId): boolean;
-  //Server only
-  public abstract clearOnProcessingCard(): void;
   //Server only
   public abstract bury(...cardIds: CardId[]): void;
   //Server only
@@ -115,6 +113,22 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public abstract skip(player: PlayerId, phase?: PlayerPhase): void;
 
+  public addProcessingCard(cardId: CardId) {
+    this.onProcessingCards.push(cardId);
+  }
+  public isCardOnProcessing(cardId: CardId): boolean {
+    return this.onProcessingCards.includes(cardId);
+  }
+  public clearOnProcessingCard(): void {
+    this.onProcessingCards = [];
+  }
+  public endProcessOnCard(card: CardId) {
+    const index = this.onProcessingCards.findIndex(processingCard => processingCard !== card);
+    if (index >= 0) {
+      this.onProcessingCards.splice(index, 1);
+    }
+  }
+
   public getCardOwnerId(card: CardId) {
     for (const player of this.AlivePlayers) {
       if (player.getCardId(card) !== undefined) {
@@ -124,12 +138,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   public getPlayerById(playerId: PlayerId) {
-    const player = this.players.find(player => player.Id === playerId);
-    if (player === undefined) {
-      throw new Error(`Unable to find player by player ID: ${playerId}`);
-    }
-
-    return player;
+    return Precondition.exists(
+      this.players.find(player => player.Id === playerId),
+      `Unable to find player by player ID: ${playerId}`,
+    );
   }
 
   public async useCard(content: ClientEventFinder<GameEventIdentifiers.CardUseEvent>): Promise<void> {
@@ -181,9 +193,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     const alivePlayers = this.AlivePlayers;
     const fromIndex = alivePlayers.findIndex(player => player.Id === playerId);
 
-    if (fromIndex < 0) {
-      throw new Error(`Player ${playerId} is dead or doesn't exist`);
-    }
+    Precondition.assert(fromIndex >= 0, `Player ${playerId} is dead or doesn't exist`);
 
     return [...alivePlayers.slice(startsFromNext ? fromIndex + 1 : fromIndex), ...alivePlayers.slice(0, fromIndex)];
   }

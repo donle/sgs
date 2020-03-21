@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import { Card, CardType } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { Sanguosha } from 'core/game/engine';
+import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
@@ -17,6 +18,8 @@ export type DashboardProps = {
   presenter: RoomPresenter;
   translator: ClientTranslationModule;
   updateFlag: boolean;
+  playerSelectableMatcher?(player: Player): boolean;
+  onClickPlayer?(player: Player, selected: boolean): void;
   cardEnableMatcher?(area: PlayerCardsArea): (card: Card) => boolean;
   onClick?(card: Card, selected: boolean): void;
   onClickConfirmButton?(): void;
@@ -133,14 +136,20 @@ export class Dashboard extends React.Component<DashboardProps> {
     );
   }
 
+  private readonly onClickPlayer = (player: Player, selected: boolean) => {
+    this.props.onClickPlayer && this.props.onClickPlayer(player, selected);
+  };
+
   render() {
+    const player = this.props.presenter.ClientPlayer!;
     return (
       <div className={styles.dashboard}>
         {this.getEquipCardsSection()}
         {this.getPlayerHandBoard()}
         <PlayerAvatar
           updateFlag={this.props.store.updateUIFlag}
-          onClick={this.props.store.onClickPlayer}
+          disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
+          onClick={this.onClickPlayer}
           store={this.props.store}
           presenter={this.props.presenter}
           translator={this.props.translator}

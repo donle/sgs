@@ -28,11 +28,12 @@ export class WuZhongShengYouSkill extends ActiveSkill {
     return false;
   }
   public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
+    event.toIds = [event.fromId];
     return true;
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
-    await room.drawCards(2, event.fromId!);
+    await room.drawCards(2, event.toIds![0]);
     return true;
   }
 }

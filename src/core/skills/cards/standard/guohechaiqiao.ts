@@ -92,6 +92,7 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill {
         ).extract(),
       };
       await room.loseCards(loseEvent);
+      room.bury(response.selectedCard);
     }
     return true;
   }

@@ -4,6 +4,7 @@ import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
@@ -63,13 +64,12 @@ export class BaGuaZhenSkill extends TriggerSkill {
     const jinkCardEvent = triggeredOnEvent as ServerEventFinder<
       GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent
     >;
-    const identifier = EventPacker.getIdentifier<
-      GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent
-    >(jinkCardEvent);
-
-    if (identifier === undefined) {
-      throw new Error(`Unwrapped event without identifier in ${this.name}`);
-    }
+    const identifier = Precondition.exists(
+      EventPacker.getIdentifier<GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent>(
+        jinkCardEvent,
+      ),
+      `Unwrapped event without identifier in ${this.name}`,
+    );
 
     const judgeCardId = room.getCards(1, 'top')[0];
     const judgeEvent: ServerEventFinder<GameEventIdentifiers.JudgeEvent> = {

@@ -1,9 +1,16 @@
 import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import {
+  CardLostReason,
+  CardObtainedReason,
+  ClientEventFinder,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from 'core/event/event';
 import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
-import { PlayerId } from 'core/player/player_props';
+import { Player } from 'core/player/player';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill, TriggerableTimes } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -15,8 +22,10 @@ export class JieDaoShaRenSkill extends ActiveSkill {
     super('jiedaosharen', 'ljiedaosharen_description');
   }
 
-  public canUse() {
-    return true;
+  public canUse(room: Room, owner: Player) {
+    return (
+      room.getOtherPlayers(owner.Id).find(player => player.getEquipment(CardType.Weapon) !== undefined) !== undefined
+    );
   }
 
   public targetFilter(room: Room, targets: PlayerId[]): boolean {
@@ -36,7 +45,7 @@ export class JieDaoShaRenSkill extends ActiveSkill {
     containerCard: CardId,
   ): boolean {
     if (selectedTargets.length === 0) {
-      return owner !== target && room.getPlayerById(target).hasEquipment(CardType.Weapon) !== undefined;
+      return owner !== target && room.getPlayerById(target).getEquipment(CardType.Weapon) !== undefined;
     } else {
       return room.getPlayerById(selectedTargets[0]).canUseCardTo(room, containerCard, target);
     }
@@ -48,11 +57,11 @@ export class JieDaoShaRenSkill extends ActiveSkill {
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const { toIds, cardId } = event;
-    const [attcker, target] = toIds!;
+    const [attacker, target] = toIds!;
 
     const result = await room.askForCardUse(
       {
-        toId: attcker,
+        toId: attacker,
         byCardId: cardId,
         cardUserId: event.fromId,
         scopedTargets: [target],
@@ -65,8 +74,44 @@ export class JieDaoShaRenSkill extends ActiveSkill {
         ).extract(),
         triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
       },
-      attcker,
+      attacker,
     );
+
+    if (result.terminated) {
+      return true;
+    }
+
+    if (result.responseEvent) {
+      if (result.responseEvent.cardId) {
+        const cardUseEvent = {
+          fromId: result.responseEvent.fromId,
+          cardId: result.responseEvent.cardId,
+          toIds: result.responseEvent.toIds,
+          triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
+        };
+
+        await room.useCard(cardUseEvent);
+      } else {
+        const weapon = room.getPlayerById(attacker).getEquipment(CardType.Weapon);
+        if (weapon === undefined) {
+          return true;
+        }
+
+        await room.moveCards(
+          [weapon],
+          attacker,
+          event.fromId!,
+          CardLostReason.PassiveMove,
+          PlayerCardsArea.EquipArea,
+          PlayerCardsArea.HandArea,
+          CardObtainedReason.ActivePrey,
+          event.fromId!,
+        );
+      }
+    } else {
+      throw new Error(`Unexcepte return type of asForCardUse in ${this.name}`);
+    }
+
     return true;
   }
 }

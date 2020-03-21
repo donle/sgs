@@ -14,6 +14,7 @@ import { AllStage, PlayerPhase, PlayerStageListEnum } from 'core/game/stage_proc
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 
 export const enum SkillType {
   Common,
@@ -387,9 +388,10 @@ export abstract class ViewAsSkill extends Skill {
 
     const identifier = EventPacker.getIdentifier(cardUseEvent);
     const card: VirtualCard = Sanguosha.getCardById(cardUseEvent.cardId);
-    if (!card.isVirtualCard() || identifier === undefined) {
-      throw new Error(`Invalid view as virtual card in ${this.name}`);
-    }
+    Precondition.assert(
+      card.isVirtualCard() && identifier !== undefined,
+      `Invalid view as virtual card in ${this.name}`,
+    );
 
     identifier === GameEventIdentifiers.CardUseEvent
       ? await room.useCard(cardUseEvent)

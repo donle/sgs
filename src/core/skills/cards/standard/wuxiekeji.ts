@@ -1,6 +1,7 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Room } from 'core/room/room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, ResponsiveSkill } from 'core/skills/skill';
 
 @CommonSkill
@@ -21,11 +22,8 @@ export class WuXieKeJiSkill extends ResponsiveSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const { responseToEvent } = event;
-    if (responseToEvent === undefined) {
-      throw new Error('Unavble to get slash use event when jin is on effect');
-    }
 
-    EventPacker.terminate(responseToEvent);
+    EventPacker.terminate(Precondition.exists(responseToEvent, 'Unable to get slash use event when jin is on effect'));
     return true;
   }
 }

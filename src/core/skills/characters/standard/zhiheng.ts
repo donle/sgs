@@ -3,6 +3,7 @@ import { CardLostReason, ClientEventFinder, GameEventIdentifiers, ServerEventFin
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, TriggerableTimes } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
@@ -45,9 +46,7 @@ export class ZhiHeng extends ActiveSkill {
   }
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    if (!skillUseEvent.cardIds) {
-      throw new Error('Unable to get zhiheng cards');
-    }
+    skillUseEvent.cardIds = Precondition.exists(skillUseEvent.cardIds, 'Unable to get zhiheng cards');
 
     await room.dropCards(CardLostReason.ActiveDrop, skillUseEvent.cardIds, skillUseEvent.fromId);
 

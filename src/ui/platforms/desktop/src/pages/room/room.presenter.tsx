@@ -14,6 +14,7 @@ import styles from './room.module.css';
 import type { GameInfo } from 'core/game/game_props';
 import type { PlayerId, PlayerInfo } from 'core/player/player_props';
 import type { RoomId } from 'core/room/room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 
 type ClientRoomInfo = {
   roomId: number;
@@ -83,9 +84,7 @@ export class RoomPresenter {
   }
 
   private tryToThrowUninitializedError() {
-    if (!this.store) {
-      throw new Error('Uninitialized room store');
-    }
+    Precondition.assert(this.store !== undefined, 'Uninitialized room store');
   }
 
   @mobx.computed

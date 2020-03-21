@@ -1,9 +1,9 @@
 import { CompulsorySkill, RulesBreakerSkill } from 'core/skills/skill';
 
 @CompulsorySkill
-export class ZiXinSkill extends RulesBreakerSkill {
+export class OffenseHorseSkill extends RulesBreakerSkill {
   constructor() {
-    super('zixin', 'zixin_description');
+    super('offense_horse', 'offense_horse_description');
   }
 
   public breakOffenseDistance() {

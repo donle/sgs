@@ -13,7 +13,7 @@ export class ZiXin extends OffenseRideCard {
       'zixin',
       'zixin_description',
       GameCardExtensions.Standard,
-      SkillLoader.getInstance().getSkillByName<RulesBreakerSkill>('zixin'),
+      SkillLoader.getInstance().getSkillByName<RulesBreakerSkill>('offense_horse'),
     );
   }
 }

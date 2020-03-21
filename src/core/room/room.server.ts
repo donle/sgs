@@ -15,7 +15,7 @@ import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/p
 
 import { CardType } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
-import { CardId } from 'core/cards/libs/card_props';
+import { CardId, CardTargetEnum } from 'core/cards/libs/card_props';
 import { Character } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { GameInfo, getRoles } from 'core/game/game_props';
@@ -24,6 +24,7 @@ import { CardLoader } from 'core/game/package_loader/loader.cards';
 import { CharacterLoader } from 'core/game/package_loader/loader.characters';
 import { Algorithm } from 'core/shares/libs/algorithm';
 import { Logger } from 'core/shares/libs/logger/logger';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { SkillType, TriggerSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
@@ -36,7 +37,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   private drawStack: CardId[] = [];
   private dropStack: CardId[] = [];
   private round = 0;
-  private onProcessingCards: CardId[] = [];
 
   constructor(
     protected roomId: RoomId,
@@ -225,20 +225,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return await this.socket.waitForResponse<T>(identifier, playerId);
   }
 
-  public isCardOnProcessing(cardId: CardId): boolean {
-    return this.onProcessingCards.includes(cardId);
-  }
-  public clearOnProcessingCard(): void {
-    this.onProcessingCards = [];
-  }
-
-  public endProcessOnCard(card: CardId) {
-    const index = this.onProcessingCards.findIndex(processingCard => processingCard !== card);
-    if (index >= 0) {
-      this.onProcessingCards.splice(index, 1);
-    }
-  }
-
   public bury(...cardIds: CardId[]) {
     for (const cardId of cardIds) {
       this.dropStack.push(cardId);
@@ -249,7 +235,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   public async equip(card: EquipCard, player: Player) {
-    const prevEquipment = player.hasEquipment(card.EquipType);
+    const prevEquipment = player.getEquipment(card.EquipType);
     if (prevEquipment !== undefined) {
       await this.dropCards(CardLostReason.PlaceToDropStack, [prevEquipment], player.Id);
     }
@@ -312,19 +298,22 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       });
     }
 
-    this.onProcessingCards.push(content.cardId);
+    this.addProcessingCard(content.cardId);
     return await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, content, async stage => {
       if (stage === CardUseStage.AfterCardUseEffect) {
         if (EventPacker.isTerminated(content)) {
           return false;
         }
 
-        let newToIds: PlayerId[] = [];
-        for (const toId of content.toIds || []) {
+        if (content.toIds === undefined && card.AOE === CardTargetEnum.Single) {
+          content.toIds = [content.fromId];
+        }
+
+        const onAim = async (...targets: PlayerId[]) => {
           const cardAimEvent: ServerEventFinder<GameEventIdentifiers.AimEvent> = {
             fromId: content.fromId,
             byCardId: content.cardId,
-            toIds: [toId],
+            toIds: targets,
           };
 
           await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.AimEvent, cardAimEvent);
@@ -335,12 +324,25 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                 ? [...content.triggeredBySkills, ...cardAimEvent.triggeredBySkills]
                 : cardAimEvent.triggeredBySkills;
             }
-            newToIds = [...newToIds, ...cardAimEvent.toIds];
+            return cardAimEvent.toIds;
           }
-        }
-        content.toIds = newToIds;
 
-        if (content.toIds.length > 0) {
+          return [];
+        };
+
+        if (card.AOE === CardTargetEnum.Single) {
+          content.toIds = await onAim(
+            ...Precondition.exists(content.toIds, `Invalid target number of card: ${card.Name}`),
+          );
+        } else {
+          let newToIds: PlayerId[] = [];
+          for (const toId of content.toIds || []) {
+            newToIds = [...(await onAim(toId)), ...newToIds];
+          }
+          content.toIds = newToIds;
+        }
+
+        if (content.toIds.length > 1 && card.AOE !== CardTargetEnum.Single) {
           for (const toId of content.toIds) {
             const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
               ...content,
@@ -357,10 +359,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           }
         }
       } else if (stage === CardUseStage.CardUseFinishedEffect) {
-        if (!card.is(CardType.Equip) && !card.is(CardType.DelayedTrick)) {
+        this.endProcessOnCard(card.Id);
+
+        if (this.getCardOwnerId(card.Id) === undefined) {
           this.bury(card.Id);
         }
-        this.endProcessOnCard(card.Id);
       }
 
       return true;
@@ -481,6 +484,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       fromId: playerId,
       droppedBy,
     });
+    this.bury(...cardIds);
   }
 
   public async loseCards(event: ServerEventFinder<GameEventIdentifiers.CardLostEvent>) {
@@ -488,18 +492,16 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       GameEventIdentifiers.CardLostEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.CardLostEvent, event),
     );
-
-    this.dropStack.push(...event.cardIds);
   }
 
   public async moveCards(
     cardIds: CardId[],
     fromId: PlayerId | undefined,
     toId: PlayerId,
-    fromReason: CardLostReason,
-    fromArea: PlayerCardsArea,
+    fromReason: CardLostReason | undefined,
+    fromArea: PlayerCardsArea | undefined,
     toArea: PlayerCardsArea,
-    toReason: CardObtainedReason,
+    toReason: CardObtainedReason | undefined,
     proposer?: PlayerId,
   ) {
     const to = this.getPlayerById(toId);
@@ -509,6 +511,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       let translationsMessage: PatchedTranslationObject | undefined;
       if (
         fromArea !== PlayerCardsArea.JudgeArea &&
+        fromReason !== undefined &&
         ![CardLostReason.CardResponse, CardLostReason.CardResponse].includes(fromReason)
       ) {
         translationsMessage = TranslationPack.translationJsonPatcher(
@@ -523,7 +526,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           fromId: from.Id,
           cardIds,
           droppedBy: proposer,
-          reason: fromReason,
+          reason: Precondition.exists(fromReason, 'Unknown card move from reason'),
           translationsMessage,
         });
       } else {
@@ -531,7 +534,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           fromId: from.Id,
           cardIds,
           droppedBy: proposer,
-          reason: fromReason,
+          reason: Precondition.exists(fromReason, 'Unknown card move from reason'),
           translationsMessage,
         });
         from.dropCards(...cardIds);
@@ -555,7 +558,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       }
     } else if (toArea === PlayerCardsArea.HandArea) {
       await this.obtainCards({
-        reason: toReason,
+        reason: toReason!,
         cardIds,
         toId,
         fromId,
@@ -637,6 +640,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       cardIds: [event.cardId],
       fromId: event.fromId,
     });
+    this.bury(event.cardId);
   }
 
   public async judge(event: ServerEventFinder<GameEventIdentifiers.JudgeEvent>): Promise<void> {

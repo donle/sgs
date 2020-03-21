@@ -109,6 +109,7 @@ export interface ClientEvent extends EventUtilities {
   };
   [GameEventIdentifiers.AskForCardUseEvent]: {
     cardId?: CardId;
+    toIds?: PlayerId[];
     fromId: PlayerId;
   };
   [GameEventIdentifiers.AskForChooseOptionsEvent]: {

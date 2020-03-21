@@ -64,7 +64,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.MoveCardEvent]: {
     fromId?: PlayerId;
     toId: PlayerId;
-    fromArea: PlayerCardsArea;
+    fromArea?: PlayerCardsArea;
     toArea: PlayerCardsArea;
     cardIds: CardId[];
   };

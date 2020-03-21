@@ -15,6 +15,7 @@ import {
   PlayerRole,
 } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import {
   ActiveSkill,
   FilterSkill,
@@ -201,9 +202,7 @@ export abstract class Player implements PlayerInfo {
     if (area !== PlayerCardsArea.OutsideArea) {
       return this.playerCards[area];
     } else {
-      if (outsideAreaName === undefined) {
-        throw new Error('Unable to get undefined area cards');
-      }
+      outsideAreaName = Precondition.exists(outsideAreaName, 'Unable to get undefined area cards');
 
       return this.playerOutsideCards[outsideAreaName];
     }
@@ -253,9 +252,7 @@ export abstract class Player implements PlayerInfo {
       }
     }
 
-    if (!hasDropped) {
-      throw new Error(`Can't drop cards ${cards} from player ${this.Name}`);
-    }
+    Precondition.assert(hasDropped, `Can't drop cards ${cards} from player ${this.Name}`);
 
     return droppedCardIds;
   }
@@ -290,7 +287,7 @@ export abstract class Player implements PlayerInfo {
     this.drunk = 0;
   }
 
-  public hasEquipment(cardType: CardType): CardId | undefined {
+  public getEquipment(cardType: CardType): CardId | undefined {
     return this.playerCards[PlayerCardsArea.EquipArea].find(cardId => Sanguosha.getCardById(cardId).is(cardType));
   }
 
@@ -398,15 +395,18 @@ export abstract class Player implements PlayerInfo {
         return skills.filter(skill => skill.SkillType === SkillType.Limit) as T[];
       case 'common':
         return skills.filter(skill => skill.SkillType === SkillType.Common) as T[];
+      case 'transform':
+        return skills.filter(skill => skill instanceof TransformSkill) as T[];
       default:
-        throw new Error(`Unreachable error of skill type: ${skillType}`);
+        throw Precondition.UnreachableError(skillType);
     }
   }
 
   public getPlayerSkills<T extends Skill = Skill>(skillType?: SkillStringType): T[] {
-    if (!this.playerCharacter) {
-      throw new Error(`Player ${this.playerName} has not been initialized with a character yet`);
-    }
+    Precondition.assert(
+      this.playerCharacter !== undefined,
+      `Player ${this.playerName} has not been initialized with a character yet`,
+    );
 
     if (skillType === undefined) {
       return this.playerSkills as T[];
@@ -434,7 +434,7 @@ export abstract class Player implements PlayerInfo {
       case 'common':
         return this.playerSkills.filter(skill => skill.SkillType === SkillType.Common) as T[];
       default:
-        throw new Error(`Unreachable error of skill type: ${skillType}`);
+        throw Precondition.UnreachableError(skillType);
     }
   }
 
@@ -478,10 +478,7 @@ export abstract class Player implements PlayerInfo {
   }
 
   public get Nationality() {
-    if (this.nationality === undefined) {
-      throw new Error('Uninitialized nationality');
-    }
-    return this.nationality;
+    return Precondition.exists(this.nationality, 'Uninitialized nationality');
   }
   public set Nationality(nationality: CharacterNationality) {
     this.nationality = nationality;
@@ -535,11 +532,7 @@ export abstract class Player implements PlayerInfo {
   }
 
   public get Character(): Character {
-    if (this.playerCharacter === undefined) {
-      throw new Error('Uninitialized player character');
-    }
-
-    return this.playerCharacter;
+    return Precondition.exists(this.playerCharacter, 'Uninitialized player character');
   }
 
   public get Id() {

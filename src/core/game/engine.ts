@@ -1,6 +1,7 @@
 import { Card, VirtualCard } from 'core/cards/card';
 import { CardId, VirtualCardId } from 'core/cards/libs/card_props';
 import { Character, CharacterId } from 'core/characters/character';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { Skill } from 'core/skills/skill';
 import { GameCardExtensions, GameCharacterExtensions } from './game_props';
 import { CardLoader } from './package_loader/loader.cards';
@@ -23,9 +24,7 @@ export class Sanguosha {
   }
 
   private static tryToThrowUninitializedError() {
-    if (Sanguosha.skills === undefined || Sanguosha.cards === undefined || Sanguosha.characters === undefined) {
-      throw new Error('Uninitialized game engine');
-    }
+    Precondition.assert(!!Sanguosha.skills && !!Sanguosha.cards && !!Sanguosha.characters, 'Uninitialized game engine');
   }
 
   public static initialize() {
@@ -49,11 +48,7 @@ export class Sanguosha {
     this.tryToThrowUninitializedError();
 
     const character = Sanguosha.characters.find(character => character.Id === characterId);
-    if (!character) {
-      throw new Error(`Unable to find character by id: ${characterId}`);
-    }
-
-    return character;
+    return Precondition.exists(character, `Unable to find character by id: ${characterId}`);
   }
 
   public static getVirtualCardById<T extends Card>(cardId: VirtualCardId): VirtualCard<T> {
@@ -67,41 +62,28 @@ export class Sanguosha {
     }
 
     const card = Sanguosha.cards.find(card => card.Id === cardId) as T | undefined;
-    if (!card) {
-      throw new Error(`Unable to find the card by id: ${cardId}`);
-    }
-    return card;
+    return Precondition.exists(card, `Unable to find the card by id: ${cardId}`);
   }
 
   public static getCardByName<T extends Card>(cardName: string): T {
     this.tryToThrowUninitializedError();
 
     const card = Sanguosha.cards.find(card => card.GeneralName === cardName) as T | undefined;
-    if (!card) {
-      throw new Error(`Unable to find the card by name: ${cardName}`);
-    }
-    return card;
+    return Precondition.exists(card, `Unable to find the card by name: ${cardName}`);
   }
 
   public static getSkillBySkillName<T extends Skill = Skill>(name: string): T {
     this.tryToThrowUninitializedError();
 
     const skill = Sanguosha.skills.find(skill => skill.Name === name) as T | undefined;
-    if (!skill) {
-      throw new Error(`Unable to find the skill by name: ${name}`);
-    }
-    return skill;
+    return Precondition.exists(skill, `Unable to find the skill by name: ${name}`);
   }
 
   public static getCharacterByCharaterName(name: string) {
     this.tryToThrowUninitializedError();
 
     const character = Sanguosha.characters.find(character => character.Name === name);
-    if (!character) {
-      throw new Error(`Unable to find character by name: ${name}`);
-    }
-
-    return character;
+    return Precondition.exists(character, `Unable to find character by name: ${name}`);
   }
 
   public static getRandomCharacters(

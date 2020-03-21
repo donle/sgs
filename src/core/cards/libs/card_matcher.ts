@@ -1,4 +1,5 @@
 import { Card, CardType } from 'core/cards/card';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CardSuit } from './card_props';
 
 export type CardMatcherProps = {
@@ -27,9 +28,7 @@ export class CardMatcher {
       return false;
     }
 
-    if (matcher.tag && matcher.tag !== 'card-matcher') {
-      throw new Error('Invalid card matcher props');
-    }
+    Precondition.assert(matcher.tag && matcher.tag === 'card-matcher', 'Invalid card matcher props');
 
     const { suit, cardNumber, name, type } = matcher;
     let matched = true;

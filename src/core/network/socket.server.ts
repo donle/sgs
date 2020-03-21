@@ -14,6 +14,7 @@ import { PlayerId } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { HostConfigProps } from 'core/shares/types/host_config';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import IOSocketServer from 'socket.io';
@@ -165,10 +166,10 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         delete this.asyncResponseResolver[type][to];
       }
     } else {
-      const clientSocket = this.clientIds.find(clientId => clientId === to);
-      if (!clientSocket) {
-        throw new Error(`Unable to find player: ${to} in connected socket clients`);
-      }
+      const clientSocket = Precondition.exists(
+        this.clientIds.find(clientId => clientId === to),
+        `Unable to find player: ${to} in connected socket clients`,
+      );
 
       this.socket.to(clientSocket).emit(type.toString(), content);
     }
@@ -188,12 +189,11 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
   }
 
   public getSocketById(id: PlayerId) {
-    const clientId = this.clientIds.find(clientId => clientId === id);
-    if (clientId !== undefined) {
-      return this.socket.to(clientId);
-    }
-
-    throw new Error(`Unable to find socket: ${id}`);
+    const clientId = Precondition.exists(
+      this.clientIds.find(clientId => clientId === id),
+      `Unable to find socket: ${id}`,
+    );
+    return this.socket.to(clientId);
   }
 
   public get ClientIds() {

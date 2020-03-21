@@ -3,25 +3,25 @@ import type { RealCardId } from 'core/cards/libs/card_props';
 import { TrickCard } from 'core/cards/trick_card';
 import { GameCardExtensions } from 'core/game/game_props';
 import { SkillLoader } from 'core/game/package_loader/loader.skills';
-import { WuXieKeJiSkill } from 'core/skills';
-import { None } from '../card';
+import { JieDaoShaRenSkill } from 'core/skills';
+import { Single } from '../card';
 
-@None
-export class WuXieKeJi extends TrickCard {
+@Single
+export class JieDaoShaRen extends TrickCard {
   constructor(id: RealCardId, cardNumber: number, suit: CardSuit) {
     super(
       id,
       cardNumber,
       suit,
       0,
-      'wuxiekeji',
-      'wuxiekeji_description',
+      'jiedaosharen',
+      'jiedaosharen_description',
       GameCardExtensions.Standard,
-      SkillLoader.getInstance().getSkillByName('wuxiekeji'),
+      SkillLoader.getInstance().getSkillByName('jiedaosharen'),
     );
   }
 
   get Skill() {
-    return this.skill as WuXieKeJiSkill;
+    return this.skill as JieDaoShaRenSkill;
   }
 }

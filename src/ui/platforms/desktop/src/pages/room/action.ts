@@ -127,8 +127,23 @@ export class Action {
     });
   };
 
-  private readonly onActionOfActiveSkill = (containerCard: Card, skill: ActiveSkill, playerId: PlayerId) => {
+  private readonly onActionOfActiveSkill = (
+    containerCard: Card,
+    skill: ActiveSkill,
+    playerId: PlayerId,
+    scopedTargets?: PlayerId[],
+  ) => {
     this.presenter.setupPlayersSelectionMatcher((player: Player) => {
+      if (scopedTargets) {
+        return (
+          scopedTargets.includes(player.Id) &&
+          !skill.targetFilter(
+            this.store.room,
+            this.selectedTargets.map(p => p.Id),
+          )
+        );
+      }
+
       return (
         (skill.isAvailableTarget(
           playerId,
@@ -283,7 +298,7 @@ export class Action {
     translator: ClientTranslationModule,
   ) {
     const who = this.presenter.ClientPlayer!.Id;
-    this.onPlayAction(who, new CardMatcher(content.cardMatcher));
+    this.onPlayAction(who, new CardMatcher(content.cardMatcher), content.scopedTargets);
 
     this.presenter.createIncomingConversation({
       conversation: content.conversation,
@@ -301,6 +316,7 @@ export class Action {
       const event: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> = {
         fromId: who,
         cardId: cardUseEvent && cardUseEvent.cardId,
+        toIds: this.selectedTargets.map(player => player.Id),
       };
 
       this.store.room.broadcast(
@@ -330,7 +346,7 @@ export class Action {
     }
   }
 
-  onPlayAction(who: PlayerId, cardMatcher?: CardMatcher) {
+  onPlayAction(who: PlayerId, cardMatcher?: CardMatcher, scopedTargets?: PlayerId[]) {
     const availableCardItemsSetter = cardMatcher ? this.playerResponsiveCardMatcher(cardMatcher) : this.playCardMatcher;
     !cardMatcher && this.definedPlayButtonConfirmHandler(who);
 
@@ -380,7 +396,7 @@ export class Action {
 
       const skill = this.selectedPlayCard?.Skill;
       if (skill instanceof ActiveSkill) {
-        this.onActionOfActiveSkill(this.selectedPlayCard!, skill, who);
+        this.onActionOfActiveSkill(this.selectedPlayCard!, skill, who, scopedTargets);
       }
 
       this.presenter.broadcastUIUpdate();

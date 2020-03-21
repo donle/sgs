@@ -6,7 +6,12 @@ export class UniqueSkillRule {
   private constructor() {}
 
   public static prohibitedBySkillRule(bySkill: Skill, toSkill: Skill) {
-    return true;
+    switch (bySkill.Name) {
+      case 'qinggang':
+        return toSkill.Name !== 'bazhen';
+      default:
+        return true;
+    }
   }
 
   public static canTriggerCardSkillRule(bySkill: Skill, card: Card) {

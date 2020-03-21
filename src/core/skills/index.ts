@@ -4,7 +4,7 @@ export { PeachSkill } from './cards/standard/peach';
 export { SlashSkill } from './cards/standard/slash';
 export { WanJianQiFaSkill } from './cards/standard/wanjianqifa';
 export { ZhuGeLianNuSlashSkill } from './cards/standard/zhugeliannu';
-export { ZiXinSkill } from './cards/standard/zixin';
+export { OffenseHorseSkill } from './cards/standard/offense_horse';
 export { QingGangSkill } from './cards/standard/qinggang';
 export { LightningSkill } from './cards/standard/lightning';
 export { GuoHeChaiQiaoSkill } from './cards/standard/guohechaiqiao';
@@ -15,6 +15,7 @@ export { BaGuaZhenSkill } from './cards/standard/baguazhen';
 export { DuelSkill } from './cards/standard/duel';
 export { LeBuSiShuSkill } from './cards/standard/lebusishu';
 export { TaoYuanJieYiSkill } from './cards/standard/taoyuanjieyi';
+export { JieDaoShaRenSkill } from './cards/standard/jiedaosharen';
 
 export { Hujia } from './characters/standard/hujia';
 export { JianXiong } from './characters/standard/jianxiong';

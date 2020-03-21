@@ -1,5 +1,6 @@
 import { GameEventIdentifiers } from 'core/event/event';
 import { Logger } from 'core/shares/libs/logger/logger';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 
 export const enum PlayerStageListEnum {
   BeginPrepareStageStart,
@@ -404,10 +405,7 @@ export class StageProcessor {
   }
 
   public involve(identifier: GameEventIdentifiers) {
-    const stageList = gameEventStageList[identifier];
-    if (stageList === undefined) {
-      throw new Error(`Unable to get game event of ${identifier}`);
-    }
+    const stageList = Precondition.exists(gameEventStageList[identifier], `Unable to get game event of ${identifier}`);
 
     this.gameEventStageList.unshift(stageList.slice());
 
@@ -466,11 +464,7 @@ export class StageProcessor {
       return false;
     }
 
-    const stageList = gameEventStageList[identifier];
-    if (stageList === undefined) {
-      throw new Error(`Can't find stage events of ${identifier}`);
-    }
-
+    const stageList = Precondition.exists(gameEventStageList[identifier], `Can't find stage events of ${identifier}`);
     return stageList.includes(stage);
   }
 
