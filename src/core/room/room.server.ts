@@ -643,12 +643,26 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.bury(event.cardId);
   }
 
-  public async judge(event: ServerEventFinder<GameEventIdentifiers.JudgeEvent>): Promise<void> {
+  public async judge(
+    to: PlayerId,
+    byCard?: CardId,
+    bySkill?: string,
+  ): Promise<ServerEventFinder<GameEventIdentifiers.JudgeEvent>> {
+    const judgeCardId = this.getCards(1, 'top')[0];
+    const event: ServerEventFinder<GameEventIdentifiers.JudgeEvent> = {
+      toId: to,
+      judgeCardId,
+      byCard,
+      bySkill,
+    };
+
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.JudgeEvent, event);
 
     if (this.getCardOwnerId(event.judgeCardId) === undefined) {
       this.bury(event.judgeCardId);
     }
+
+    return event;
   }
 
   public skip(player: PlayerId, phase?: PlayerPhase) {

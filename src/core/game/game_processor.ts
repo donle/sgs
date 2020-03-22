@@ -61,7 +61,7 @@ export class GameProcessor {
 
   private async chooseCharacters(playersInfo: PlayerInfo[], selectableCharacters: Character[]) {
     const lordInfo = playersInfo[0];
-    const gameStartEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChooseCharacterEvent>({
+    const gameStartEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCharacterEvent>({
       characterIds: Sanguosha.getLordCharacters(this.room.Info.characterExtensions).map(character => character.Id),
       role: lordInfo.Role,
       isGameStart: true,
@@ -70,16 +70,16 @@ export class GameProcessor {
         getPlayerRoleRawText(lordInfo.Role!),
       ).extract(),
     });
-    this.room.notify(GameEventIdentifiers.AskForChooseCharacterEvent, gameStartEvent, lordInfo.Id);
+    this.room.notify(GameEventIdentifiers.AskForChoosingCharacterEvent, gameStartEvent, lordInfo.Id);
 
     const lordResponse = await this.room.onReceivingAsyncReponseFrom(
-      GameEventIdentifiers.AskForChooseCharacterEvent,
+      GameEventIdentifiers.AskForChoosingCharacterEvent,
       lordInfo.Id,
     );
     this.room.getPlayerById(lordInfo.Id).CharacterId = lordResponse.chosenCharacter;
     lordInfo.CharacterId = lordResponse.chosenCharacter;
 
-    const sequentialAsyncResponse: Promise<ClientEventFinder<GameEventIdentifiers.AskForChooseCharacterEvent>>[] = [];
+    const sequentialAsyncResponse: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingCharacterEvent>>[] = [];
 
     const selectedCharacters: CharacterId[] = [lordInfo.CharacterId];
     for (let i = 1; i < playersInfo.length; i++) {
@@ -88,7 +88,7 @@ export class GameProcessor {
 
       const playerInfo = playersInfo[i];
       this.room.notify(
-        GameEventIdentifiers.AskForChooseCharacterEvent,
+        GameEventIdentifiers.AskForChoosingCharacterEvent,
         {
           characterIds: characters.map(character => character.Id),
           lordInfo: {
@@ -107,7 +107,7 @@ export class GameProcessor {
       );
 
       sequentialAsyncResponse.push(
-        this.room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChooseCharacterEvent, playerInfo.Id),
+        this.room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingCharacterEvent, playerInfo.Id),
       );
     }
 

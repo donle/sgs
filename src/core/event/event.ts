@@ -91,6 +91,9 @@ export const enum GameEventIdentifiers {
   PlayerDyingEvent,
   PlayerDiedEvent,
 
+  PlayerChainedEvent,
+  PlayerTurnOverEvent,
+
   AskForPlayCardsOrSkillsEvent,
   AskForPeachEvent,
   AskForCardResponseEvent,
@@ -99,12 +102,13 @@ export const enum GameEventIdentifiers {
   AskForCardDropEvent,
   AskForPinDianCardEvent,
   AskForChoosingCardEvent,
-  AskForChoosePlayerEvent,
-  AskForChooseOptionsEvent,
+  AskForChoosingPlayerEvent,
+  AskForChoosingOptionsEvent,
+  AskForChoosingCharacterEvent,
   AskForChoosingCardFromPlayerEvent,
   AskForInvokeEvent,
-  AskForChooseCharacterEvent,
   AskForPlaceCardsInDileEvent,
+  AskForWuGuFengDengEvent,
 }
 
 export type CardResponsiveEventIdentifiers =
@@ -161,6 +165,9 @@ export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.PlayerEnterEvent,
   GameEventIdentifiers.PlayerLeaveEvent,
 
+  GameEventIdentifiers.PlayerChainedEvent,
+  GameEventIdentifiers.PlayerTurnOverEvent,
+
   GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
   GameEventIdentifiers.AskForPeachEvent,
   GameEventIdentifiers.AskForCardResponseEvent,
@@ -169,12 +176,13 @@ export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.AskForCardDropEvent,
   GameEventIdentifiers.AskForPinDianCardEvent,
   GameEventIdentifiers.AskForChoosingCardEvent,
-  GameEventIdentifiers.AskForChoosePlayerEvent,
-  GameEventIdentifiers.AskForChooseOptionsEvent,
+  GameEventIdentifiers.AskForChoosingPlayerEvent,
+  GameEventIdentifiers.AskForChoosingOptionsEvent,
   GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
   GameEventIdentifiers.AskForInvokeEvent,
-  GameEventIdentifiers.AskForChooseCharacterEvent,
+  GameEventIdentifiers.AskForChoosingCharacterEvent,
   GameEventIdentifiers.AskForPlaceCardsInDileEvent,
+  GameEventIdentifiers.AskForWuGuFengDengEvent,
 ];
 
 export const serverActiveListenerEvents = (): [
@@ -217,11 +225,11 @@ export const serverResponsiveListenerEvents = () => [
   GameEventIdentifiers.AskForCardDropEvent,
   GameEventIdentifiers.AskForPinDianCardEvent,
   GameEventIdentifiers.AskForChoosingCardEvent,
-  GameEventIdentifiers.AskForChoosePlayerEvent,
-  GameEventIdentifiers.AskForChooseOptionsEvent,
+  GameEventIdentifiers.AskForChoosingPlayerEvent,
+  GameEventIdentifiers.AskForChoosingOptionsEvent,
+  GameEventIdentifiers.AskForChoosingCharacterEvent,
   GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
   GameEventIdentifiers.AskForInvokeEvent,
-  GameEventIdentifiers.AskForChooseCharacterEvent,
   GameEventIdentifiers.AskForPlaceCardsInDileEvent,
 ];
 

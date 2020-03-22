@@ -35,10 +35,7 @@ export class SlashSkill extends ActiveSkill {
   }
 
   isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId, selectedTargets: PlayerId[], containerCard: CardId) {
-    return (
-      room.getPlayerById(owner).canUseCardTo(room, containerCard, target) &&
-      room.canAttack(room.getPlayerById(owner), room.getPlayerById(target))
-    );
+    return room.canAttack(room.getPlayerById(owner), room.getPlayerById(target), containerCard);
   }
 
   async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {

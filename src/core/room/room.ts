@@ -76,7 +76,11 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract async recover(event: ServerEventFinder<GameEventIdentifiers.RecoverEvent>): Promise<void>;
   //Server only
-  public abstract async judge(event: ServerEventFinder<GameEventIdentifiers.JudgeEvent>): Promise<void>;
+  public abstract async judge(
+    to: PlayerId,
+    byCard?: CardId,
+    bySkill?: string,
+  ): Promise<ServerEventFinder<GameEventIdentifiers.JudgeEvent>>;
   //Server only
   public abstract async responseCard(event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>): Promise<void>;
   //Server only
@@ -223,10 +227,11 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return this.AlivePlayers.length / 2 <= distance ? distance : this.AlivePlayers.length - distance;
   }
 
-  public canAttack(from: Player, to: Player) {
+  public canAttack(from: Player, to: Player, slash?: CardId) {
     const seatDistance = this.distanceBetween(from, to);
     return (
-      from.AttackDistance >= seatDistance && from.canUseCardTo(this as any, new CardMatcher({ name: ['slash'] }), to.Id)
+      from.AttackDistance >= seatDistance &&
+      from.canUseCardTo(this as any, slash || new CardMatcher({ name: ['slash'] }), to.Id)
     );
   }
 

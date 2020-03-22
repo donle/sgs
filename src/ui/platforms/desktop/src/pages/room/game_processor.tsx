@@ -48,8 +48,8 @@ export class GameClientProcessor {
       case GameEventIdentifiers.PlayerLeaveEvent:
         await this.onHandlePlayerLeaveEvent(e as any, content);
         break;
-      case GameEventIdentifiers.AskForChooseCharacterEvent:
-        await this.onHandleChooseCharacterEvent(e as any, content);
+      case GameEventIdentifiers.AskForChoosingCharacterEvent:
+        await this.onHandleChoosingCharacterEvent(e as any, content);
         break;
       case GameEventIdentifiers.DrawCardEvent:
         await this.onHandleDrawCardsEvent(e as any, content);
@@ -269,7 +269,7 @@ export class GameClientProcessor {
     this.presenter.playerLeave(content.playerId);
   }
 
-  private onHandleChooseCharacterEvent<T extends GameEventIdentifiers.AskForChooseCharacterEvent>(
+  private onHandleChoosingCharacterEvent<T extends GameEventIdentifiers.AskForChoosingCharacterEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {

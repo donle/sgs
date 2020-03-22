@@ -83,9 +83,9 @@ export class Rende extends ActiveSkill {
         triggeredBySkills: [this.name],
       };
 
-      room.notify(GameEventIdentifiers.AskForChooseOptionsEvent, chooseEvent, skillUseEvent.fromId);
+      room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, chooseEvent, skillUseEvent.fromId);
       const response = await room.onReceivingAsyncReponseFrom(
-        GameEventIdentifiers.AskForChooseOptionsEvent,
+        GameEventIdentifiers.AskForChoosingOptionsEvent,
         skillUseEvent.fromId,
       );
 
@@ -106,10 +106,10 @@ export class Rende extends ActiveSkill {
           translationsMessage: TranslationPack.translationJsonPatcher('Please choose your slash target').extract(),
         };
 
-        room.notify(GameEventIdentifiers.AskForChoosePlayerEvent, choosePlayerEvent, from.Id);
+        room.notify(GameEventIdentifiers.AskForChoosingPlayerEvent, choosePlayerEvent, from.Id);
 
         const choosePlayerResponse = await room.onReceivingAsyncReponseFrom(
-          GameEventIdentifiers.AskForChoosePlayerEvent,
+          GameEventIdentifiers.AskForChoosingPlayerEvent,
           from.Id,
         );
 

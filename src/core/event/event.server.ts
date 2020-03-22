@@ -204,7 +204,7 @@ export interface ServerEvent extends EventUtilities {
     cardAmount: number;
     toId: PlayerId;
   };
-  [GameEventIdentifiers.AskForChooseCharacterEvent]: {
+  [GameEventIdentifiers.AskForChoosingCharacterEvent]: {
     characterIds: CharacterId[];
     lordInfo?: {
       lordId: PlayerId;
@@ -213,11 +213,12 @@ export interface ServerEvent extends EventUtilities {
     role?: PlayerRole;
     isGameStart?: boolean;
   };
-  [GameEventIdentifiers.AskForChooseOptionsEvent]: {
+  [GameEventIdentifiers.AskForChoosingOptionsEvent]: {
+    askedBy?: PlayerId;
     options: string[];
-    fromId: PlayerId;
+    toId: PlayerId;
   };
-  [GameEventIdentifiers.AskForChoosePlayerEvent]: {
+  [GameEventIdentifiers.AskForChoosingPlayerEvent]: {
     players: PlayerId[];
     fromId: PlayerId;
   };
@@ -260,6 +261,12 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.TurnOverEvent]: {
     fromId: PlayerId;
     turnedOver: boolean;
+  };
+  [GameEventIdentifiers.AskForWuGuFengDengEvent]: {
+    cardIds: CardId[];
+    selected: { card: CardId; player: PlayerId }[];
+    toId: PlayerId;
+    userId?: PlayerId;
   };
   [GameEventIdentifiers.CustomGameDialog]: {};
 }

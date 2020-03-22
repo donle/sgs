@@ -62,15 +62,7 @@ export class LeBuSiShuSkill extends ActiveSkill {
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const { toIds, cardId } = event;
 
-    const judgeCard = room.getCards(1, 'top')[0];
-
-    const judgeEvent: ServerEventFinder<GameEventIdentifiers.JudgeEvent> = {
-      byCard: cardId,
-      judgeCardId: judgeCard,
-      toId: toIds![0],
-    };
-
-    await room.judge(judgeEvent);
+    const judgeEvent = await room.judge(toIds![0], cardId, this.name);
 
     const card = Sanguosha.getCardById(judgeEvent.judgeCardId);
     if (card.Suit !== CardSuit.Heart) {

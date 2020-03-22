@@ -47,19 +47,19 @@ export class JiZhi extends TriggerSkill {
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const cardId = (await room.drawCards(1, event.fromId))[0];
     if (Sanguosha.getCardById(cardId).is(CardType.Basic)) {
-      const askForOptionsEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChooseOptionsEvent>({
+      const askForOptionsEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
         options: ['discard', 'keep'],
-        fromId: event.fromId,
+        toId: event.fromId,
         translationsMessage: TranslationPack.translationJsonPatcher(
           'do you wanna discard {0}',
           TranslationPack.patchCardInTranslation(cardId),
         ).extract(),
       });
 
-      room.notify(GameEventIdentifiers.AskForChooseOptionsEvent, askForOptionsEvent, event.fromId);
+      room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForOptionsEvent, event.fromId);
 
       const response = await room.onReceivingAsyncReponseFrom(
-        GameEventIdentifiers.AskForChooseOptionsEvent,
+        GameEventIdentifiers.AskForChoosingOptionsEvent,
         event.fromId,
       );
 

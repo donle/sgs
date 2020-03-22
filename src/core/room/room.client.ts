@@ -80,7 +80,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.recover.name);
   }
   //Server only
-  public async judge(): Promise<void> {
+  public async judge(): Promise<any> {
     this.throwUntouchableError(this.judge.name);
   }
   //Server only

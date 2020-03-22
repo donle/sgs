@@ -112,12 +112,12 @@ export interface ClientEvent extends EventUtilities {
     toIds?: PlayerId[];
     fromId: PlayerId;
   };
-  [GameEventIdentifiers.AskForChooseOptionsEvent]: {
+  [GameEventIdentifiers.AskForChoosingOptionsEvent]: {
     selectedOption?: string;
     askedBy?: PlayerId;
     fromId: PlayerId;
   };
-  [GameEventIdentifiers.AskForChoosePlayerEvent]: {
+  [GameEventIdentifiers.AskForChoosingPlayerEvent]: {
     selectedPlayer?: PlayerId;
     fromId: PlayerId;
     askedBy?: PlayerId;
@@ -131,10 +131,14 @@ export interface ClientEvent extends EventUtilities {
     droppedCards: CardId[];
     fromId: PlayerId;
   };
-  [GameEventIdentifiers.AskForChooseCharacterEvent]: {
+  [GameEventIdentifiers.AskForChoosingCharacterEvent]: {
     chosenCharacter: CharacterId;
     fromId: PlayerId;
     isGameStart?: boolean;
+  };
+  [GameEventIdentifiers.AskForWuGuFengDengEvent]: {
+    fromId: PlayerId;
+    selectedCard: CardId;
   };
   [GameEventIdentifiers.AskForPlaceCardsInDileEvent]: {};
   [GameEventIdentifiers.AskForPlayCardsOrSkillsEvent]: PlayCardOrSkillEvent;
