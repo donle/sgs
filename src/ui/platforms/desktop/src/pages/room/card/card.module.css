@@ -26,6 +26,14 @@
     align-items: center;
 }
 
+.cardTag {
+    position: absolute;
+    justify-content: center;
+    bottom: 4px;
+    font-size: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'MicrosoftYaHei';
+}
+
 .selected {
     border-color: red;
 }

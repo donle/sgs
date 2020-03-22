@@ -3,6 +3,7 @@ import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, ResponsiveSkill } from 'core/skills/skill';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
 export class WuXieKeJiSkill extends ResponsiveSkill {
@@ -17,6 +18,12 @@ export class WuXieKeJiSkill extends ResponsiveSkill {
   }
 
   async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
+    event.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} used card {1} to {2}',
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
+      TranslationPack.patchCardInTranslation(event.cardId),
+      TranslationPack.patchCardInTranslation(...(event.toCardIds || [])),
+    ).extract();
     return true;
   }
 

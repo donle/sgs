@@ -13,6 +13,7 @@ export type ClientCardProps = {
   className?: string;
   disabled?: boolean;
   onSelected?(selected: boolean): void;
+  tag?: string;
 };
 
 @mobxReact.observer
@@ -43,7 +44,7 @@ export class ClientCard extends React.Component<ClientCardProps> {
   }
 
   render() {
-    const { className, card, translator } = this.props;
+    const { className, card, translator, tag } = this.props;
     return (
       <div
         className={classNames(styles.clientCard, className, {
@@ -58,6 +59,7 @@ export class ClientCard extends React.Component<ClientCardProps> {
               <span>{ClientTranslationModule.getCardNumber(card.CardNumber)}</span>
             </div>
             <span>{translator.tr(card.Name)}</span>
+            {tag && <span className={styles.cardTag}>{translator.trx(tag)}</span>}
           </>
         ) : (
           <div className={styles.emptyCard}>{this.props.translator.tr('New QSanguosha')}</div>

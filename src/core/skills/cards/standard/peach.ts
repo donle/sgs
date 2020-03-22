@@ -3,6 +3,7 @@ import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
@@ -39,14 +40,15 @@ export class PeachSkill extends ActiveSkill {
   }
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
+    const toId = Precondition.exists(event.toIds, 'Unknown targets in peach')[0];
     const recoverContent = {
       recoverBy: event.fromId,
-      toId: event.toIds![0],
+      toId,
       recoveredHp: 1,
       triggeredBySkills: [this.name],
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} recovers {1} hp',
-        room.getPlayerById(event.toIds![0]).Name,
+        room.getPlayerById(toId).Name,
         '1',
       ).extract(),
     };

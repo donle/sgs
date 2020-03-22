@@ -15,6 +15,7 @@ import { ShunshouQianYang } from './shunshouqianyang';
 import { Slash } from './slash';
 import { TaoYuanJieYi } from './taoyuanjieyi';
 import { WanJianQiFa } from './wanjianqifa';
+import { WuGuFengDeng } from './wugufengdeng';
 import { WuXieKeJi } from './wuxiekeji';
 import { WuZhongShengYou } from './wuzhongshengyou';
 import { ZhuGeLianNu } from './zhugeliannu';
@@ -117,6 +118,9 @@ export const StandardCardPackage: (index: number) => CardPackage<GameCardExtensi
     new JieDaoShaRen(index++, 13, CardSuit.Club),
 
     new TaoYuanJieYi(index++, 1, CardSuit.Heart),
+
+    new WuGuFengDeng(index++, 3, CardSuit.Heart),
+    new WuGuFengDeng(index++, 4, CardSuit.Heart),
 
     new BaGuaZhen(index++, 2, CardSuit.Spade),
     new BaGuaZhen(index++, 2, CardSuit.Club),

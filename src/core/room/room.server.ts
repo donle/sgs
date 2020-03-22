@@ -298,7 +298,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       });
     }
 
-    this.addProcessingCard(content.cardId);
+    this.addProcessingCards(card.Id.toString(), card.Id);
     return await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, content, async stage => {
       if (stage === CardUseStage.AfterCardUseEffect) {
         if (EventPacker.isTerminated(content)) {
@@ -342,6 +342,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           content.toIds = newToIds;
         }
 
+        await card.Skill.beforeEffect(this, content);
         if (content.toIds.length > 1 && card.AOE !== CardTargetEnum.Single) {
           for (const toId of content.toIds) {
             const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
@@ -358,8 +359,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, content);
           }
         }
+        await card.Skill.afterEffect(this, content);
       } else if (stage === CardUseStage.CardUseFinishedEffect) {
-        this.endProcessOnCard(card.Id);
+        this.endProcessOnTag(card.Id.toString());
 
         if (this.getCardOwnerId(card.Id) === undefined) {
           this.bury(card.Id);
@@ -452,19 +454,26 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     };
 
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.DrawCardEvent, drawEvent);
-    await this.obtainCards({
+    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.ObtainCardEvent, {
       reason: CardObtainedReason.CardDraw,
       cardIds,
       toId: playerId,
     });
+
     return cardIds;
   }
 
   public async obtainCards(event: ServerEventFinder<GameEventIdentifiers.ObtainCardEvent>) {
     event.givenBy = event.givenBy || event.fromId;
+    event.translationsMessage =
+      event.translationsMessage ||
+      TranslationPack.translationJsonPatcher(
+        '{0} obtains cards {1}',
+        TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.toId)),
+        TranslationPack.patchCardInTranslation(...event.cardIds),
+      ).extract();
 
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.ObtainCardEvent, event);
-    this.getPlayerById(event.toId).obtainCardIds(...event.cardIds);
   }
 
   public async dropCards(reason: CardLostReason, cardIds: CardId[], playerId?: PlayerId, droppedBy?: PlayerId) {

@@ -2,6 +2,7 @@ import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core
 import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, TriggerableTimes } from 'core/skills/skill';
 
 @CommonSkill
@@ -33,7 +34,7 @@ export class WuZhongShengYouSkill extends ActiveSkill {
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
-    await room.drawCards(2, event.toIds![0]);
+    await room.drawCards(2, Precondition.exists(event.toIds, 'Unknown targets in wuzhongshengyou')[0]);
     return true;
   }
 }

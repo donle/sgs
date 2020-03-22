@@ -6,6 +6,7 @@ import { DamageType, INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, FilterSkill, TriggerableTimes } from 'core/skills/skill';
 
 @CommonSkill
@@ -81,7 +82,11 @@ export class LightningSkill extends ActiveSkill {
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const { toIds, cardId } = event;
 
-    const judgeEvent = await room.judge(toIds![0], cardId, this.name);
+    const judgeEvent = await room.judge(
+      Precondition.exists(toIds, 'Unknown targets in lightning')[0],
+      cardId,
+      this.name,
+    );
 
     const card = Sanguosha.getCardById(judgeEvent.judgeCardId);
     if (card.Suit === CardSuit.Spade && card.CardNumber >= 2 && card.CardNumber <= 9) {

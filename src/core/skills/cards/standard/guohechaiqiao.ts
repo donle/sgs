@@ -9,6 +9,7 @@ import {
 import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, TriggerableTimes } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
@@ -50,7 +51,7 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill {
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
-    const to = room.getPlayerById(event.toIds![0]);
+    const to = room.getPlayerById(Precondition.exists(event.toIds, 'Unknown targets in guohechaiqiao')[0]);
     const options: CardChoosingOptions = {
       [PlayerCardsArea.JudgeArea]: to.getCardIds(PlayerCardsArea.JudgeArea),
       [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),

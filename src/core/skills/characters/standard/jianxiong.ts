@@ -3,7 +3,6 @@ import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
-import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
 export class JianXiong extends TriggerSkill {
@@ -28,16 +27,10 @@ export class JianXiong extends TriggerSkill {
     const damagedEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
     if (damagedEvent.cardIds !== undefined && damagedEvent.cardIds.length > 0) {
       const { cardIds, toId } = damagedEvent;
-      const translationsMessage = TranslationPack.translationJsonPatcher(
-        '{0} obtains cards {1}',
-        TranslationPack.patchPlayerInTranslation(room.getPlayerById(toId)),
-        TranslationPack.patchCardInTranslation(...cardIds),
-      ).extract();
       await room.obtainCards({
         reason: CardObtainedReason.ActivePrey,
         cardIds,
         toId,
-        translationsMessage,
       });
     }
     await room.drawCards(1, damagedEvent.toId);

@@ -7,6 +7,7 @@ import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, TriggerableTimes } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
@@ -61,19 +62,20 @@ export class LeBuSiShuSkill extends ActiveSkill {
   }
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const { toIds, cardId } = event;
+    const to = Precondition.exists(toIds, 'Unknown targets in lebusishu')[0];
 
-    const judgeEvent = await room.judge(toIds![0], cardId, this.name);
+    const judgeEvent = await room.judge(to, cardId, this.name);
 
     const card = Sanguosha.getCardById(judgeEvent.judgeCardId);
     if (card.Suit !== CardSuit.Heart) {
       room.broadcast(GameEventIdentifiers.CustomGameDialog, {
         translationsMessage: TranslationPack.translationJsonPatcher(
           '{0} skipped play stage',
-          TranslationPack.patchPlayerInTranslation(room.getPlayerById(toIds![0])),
+          TranslationPack.patchPlayerInTranslation(room.getPlayerById(to)),
         ).extract(),
       });
 
-      room.skip(toIds![0], PlayerPhase.PlayCardStage);
+      room.skip(to, PlayerPhase.PlayCardStage);
     }
     return true;
   }

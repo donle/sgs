@@ -23,7 +23,7 @@ export class Action {
     this.selectSkill = undefined;
     this.selectedActionCards = [];
     this.selectedTargets = [];
-    this.presenter.closeDialog();
+    // this.presenter.closeDialog();
     this.presenter.closeIncomingConversation();
     this.presenter.setupPlayersSelectionMatcher(() => false);
     this.presenter.setupClientPlayerCardActionsMatcher(() => () => false);

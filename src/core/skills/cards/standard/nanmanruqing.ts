@@ -3,6 +3,7 @@ import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder
 import { DamageType, INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, TriggerableTimes } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
@@ -44,6 +45,7 @@ export class NanManRuQingSkill extends ActiveSkill {
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const { toIds, fromId, cardId } = event;
+    const to = Precondition.exists(toIds, 'Unknown targets in nanmanruqing')[0];
 
     const askForCardEvent = {
       cardMatcher: new CardMatcher({
@@ -63,40 +65,39 @@ export class NanManRuQingSkill extends ActiveSkill {
       triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
     };
 
-    for (const to of toIds!) {
-      const result = await room.askForCardResponse(
-        {
-          ...askForCardEvent,
-          toId: to,
-        },
-        to,
-      );
+    const result = await room.askForCardResponse(
+      {
+        ...askForCardEvent,
+        toId: to,
+      },
+      to,
+    );
 
-      const { terminated, responseEvent } = result;
+    const { terminated, responseEvent } = result;
 
-      if (terminated) {
-        return false;
-      } else if (!responseEvent || responseEvent.cardId === undefined) {
-        const eventContent = {
-          fromId,
-          toId: to,
-          damage: 1,
-          damageType: DamageType.Normal,
-          cardIds: [event.cardId],
-          triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
-        };
+    if (terminated) {
+      return false;
+    } else if (!responseEvent || responseEvent.cardId === undefined) {
+      const eventContent = {
+        fromId,
+        toId: to,
+        damage: 1,
+        damageType: DamageType.Normal,
+        cardIds: [event.cardId],
+        triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
+      };
 
-        await room.damage(eventContent);
-      } else {
-        const cardResponsedEvent: ServerEventFinder<GameEventIdentifiers.CardResponseEvent> = {
-          fromId: to,
-          cardId: responseEvent.cardId,
-        };
-        EventPacker.terminate(event);
+      await room.damage(eventContent);
+    } else {
+      const cardResponsedEvent: ServerEventFinder<GameEventIdentifiers.CardResponseEvent> = {
+        fromId: to,
+        cardId: responseEvent.cardId,
+      };
+      EventPacker.terminate(event);
 
-        await room.responseCard(cardResponsedEvent);
-      }
+      await room.responseCard(cardResponsedEvent);
     }
+
     return true;
   }
 }

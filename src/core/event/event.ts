@@ -109,6 +109,7 @@ export const enum GameEventIdentifiers {
   AskForInvokeEvent,
   AskForPlaceCardsInDileEvent,
   AskForWuGuFengDengEvent,
+  WuGuFengDengFinishEvent,
 }
 
 export type CardResponsiveEventIdentifiers =
@@ -183,6 +184,7 @@ export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.AskForChoosingCharacterEvent,
   GameEventIdentifiers.AskForPlaceCardsInDileEvent,
   GameEventIdentifiers.AskForWuGuFengDengEvent,
+  GameEventIdentifiers.WuGuFengDengFinishEvent,
 ];
 
 export const serverActiveListenerEvents = (): [
@@ -231,6 +233,7 @@ export const serverResponsiveListenerEvents = () => [
   GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
   GameEventIdentifiers.AskForInvokeEvent,
   GameEventIdentifiers.AskForPlaceCardsInDileEvent,
+  GameEventIdentifiers.AskForWuGuFengDengEvent,
 ];
 
 export const enum CardLostReason {
@@ -291,8 +294,8 @@ export class EventPacker {
     };
   }
 
-  static isDisresponsiveEvent = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>) => {
-    return EventPacker.hasFlag('disresponsive', event);
+  static isDisresponsiveEvent = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>): boolean => {
+    return (event as any).disresponsive;
   };
 
   static setDisresponsiveEvent = <T extends GameEventIdentifiers>(
@@ -302,23 +305,31 @@ export class EventPacker {
     return event;
   };
 
-  static addFlag = <T extends GameEventIdentifiers>(
-    property: string,
+  static addMiddleware = <T extends GameEventIdentifiers>(
+    middleware: {
+      tag: string;
+      data: any;
+    },
     event: ServerEventFinder<T>,
   ): ServerEventFinder<T> => {
-    (event as any)[property] = true;
+    (event as any).middlewares = (event as any).middlewares || {};
+    (event as any).middlewares[middleware.tag] = middleware.data;
     return event;
   };
-
-  static hasFlag = <T extends GameEventIdentifiers>(property: string, event: ServerEventFinder<T>): boolean => {
-    return property in event;
+  static getMiddleware = <DataType>(
+    tag: string,
+    event: ServerEventFinder<GameEventIdentifiers>,
+  ): DataType | undefined => {
+    return (event as any).middlewares && (event as any).middlewares[tag];
   };
 
-  static removeFlag = <T extends GameEventIdentifiers>(
-    property: string,
+  static removeMiddleware = <T extends GameEventIdentifiers>(
+    tag: string,
     event: ServerEventFinder<T>,
   ): ServerEventFinder<T> => {
-    delete event[property];
+    if ((event as any).middlewares && (event as any).middlewares[tag]) {
+      delete (event as any).middlewares[tag];
+    }
     return event;
   };
 

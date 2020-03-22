@@ -1,7 +1,6 @@
 import { Card } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
-import { CardChoosingOptions } from 'core/cards/libs/card_props';
-import { Character, CharacterId } from 'core/characters/character';
+import { Character } from 'core/characters/character';
 import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
@@ -11,9 +10,9 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as React from 'react';
 import { Action } from './action';
-import { ClientCard } from './card/card';
-import { CharacterCard } from './character/character';
-import styles from './room.module.css';
+import { CardSelectorDialog } from './dialog/card_selector_dialog/card_selector_dialog';
+import { CharacterSelectorDialog } from './dialog/character_selector_dialog/character_selector_dialog';
+import { WuGuFengDengDialog } from './dialog/wugufengdeng_dialog/wugufengdeng_dialog';
 import { RoomPresenter, RoomStore } from './room.presenter';
 
 export class GameClientProcessor {
@@ -116,6 +115,12 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.CustomGameDialog:
         await this.onHandleCustomDialogEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.AskForWuGuFengDengEvent:
+        await this.onHandleWuGuFengDengEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.WuGuFengDengFinishEvent:
+        await this.onHandleWuGuFengDengFinish(e as any, content);
         break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
@@ -289,8 +294,7 @@ export class GameClientProcessor {
     };
 
     this.presenter.createDialog(
-      this.translator.tr('please choose a character'),
-      this.getCharacterSelector(content.characterIds, onClick),
+      <CharacterSelectorDialog characterIds={content.characterIds} onClick={onClick} translator={this.translator} />,
     );
   }
 
@@ -358,8 +362,7 @@ export class GameClientProcessor {
     };
 
     this.presenter.createDialog(
-      this.translator.tr('please choose a card'),
-      this.getCardSelector(content.options, onSelectedCard),
+      <CardSelectorDialog options={content.options} onClick={onSelectedCard} translator={this.translator} />,
     );
   }
 
@@ -377,77 +380,44 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
-  private getCardSelector(
-    options: CardChoosingOptions,
-    onClick: (card: Card | number, fromArea: PlayerCardsArea) => void,
+  private async onHandleWuGuFengDengEvent<T extends GameEventIdentifiers.AskForWuGuFengDengEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
   ) {
-    const CardSlot = (props: {
-      from: PlayerCardsArea;
-      card?: Card;
-      index?: number;
-      onClick?(card: Card | number, fromArea: PlayerCardsArea): void;
-    }) => {
-      const onSelected = (selected: boolean) => {
-        selected && props.onClick && props.onClick(props.card || props.index!, props.from);
+    let selected = false;
+    const onClick = (card: Card) => {
+      if (selected) {
+        return;
+      }
+
+      selected = true;
+      const responseEvent: ClientEventFinder<T> = {
+        fromId: this.store.clientPlayerId,
+        selectedCard: card.Id,
       };
 
-      return (
-        <ClientCard
-          className={styles.selectorCard}
-          card={props.card}
-          translator={this.translator}
-          disabled={false}
-          onSelected={onSelected}
-        />
-      );
+      this.store.room.broadcast(type, responseEvent);
     };
 
-    const optionCardsLine: JSX.Element[] = [];
-    for (const [area, cardIds] of Object.entries(options)) {
-      if (typeof cardIds === 'number') {
-        const cardLine: JSX.Element[] = [];
-        for (let i = 0; i < cardIds; i++) {
-          cardLine.push(<CardSlot from={parseInt(area, 10)} index={i} key={i} onClick={onClick} />);
-        }
-        optionCardsLine.push(
-          <div className={styles.cardLine} key={optionCardsLine.length}>
-            {cardLine}
-          </div>,
-        );
-      } else if (cardIds === undefined || cardIds.length === 0) {
-        continue;
-      } else {
-        const cardLine: JSX.Element[] = [];
-        for (const cardId of cardIds) {
-          cardLine.push(
-            <CardSlot from={parseInt(area, 10)} key={cardId} card={Sanguosha.getCardById(cardId)} onClick={onClick} />,
-          );
-        }
-        optionCardsLine.push(
-          <div className={styles.cardLine} key={optionCardsLine.length}>
-            {cardLine}
-          </div>,
-        );
-      }
-    }
-    return <div className={styles.cardSelector}>{optionCardsLine}</div>;
+    this.presenter.createDialog(
+      <WuGuFengDengDialog
+        cards={content.cardIds}
+        selected={content.selected.map(selectedCard => ({
+          card: selectedCard.card,
+          playerObjectText: TranslationPack.patchPlayerInTranslation(
+            this.store.room.getPlayerById(selectedCard.player),
+          ),
+        }))}
+        translator={this.translator}
+        onClick={this.store.clientPlayerId === content.toId ? onClick : undefined}
+      />,
+    );
   }
 
-  private getCharacterSelector(characterIds: CharacterId[], onClick?: (character: Character) => void) {
-    const characters = characterIds.map(characterId => {
-      const character = Sanguosha.getCharacterById(characterId);
-
-      return (
-        <CharacterCard
-          translator={this.translator}
-          character={character}
-          key={characterId}
-          onClick={onClick}
-          className={styles.characterSelectorItem}
-        />
-      );
-    });
-
-    return <div className={styles.characterSelector}>{characters}</div>;
+  private async onHandleWuGuFengDengFinish<T extends GameEventIdentifiers.WuGuFengDengFinishEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.presenter.closeDialog();
   }
 }

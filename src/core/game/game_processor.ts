@@ -1,6 +1,6 @@
 import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { CardId } from 'core/cards/libs/card_props';
+import { CardId, CardTargetEnum } from 'core/cards/libs/card_props';
 import { Character, CharacterId } from 'core/characters/character';
 import {
   CardLostReason,
@@ -191,11 +191,11 @@ export class GameProcessor {
             reason: CardLostReason.PlaceToDropStack,
           });
           this.CurrentPlayer.dropCards(judgeCardId);
-          this.room.addProcessingCard(judgeCardId);
+          this.room.addProcessingCards(judgeCardId.toString(), judgeCardId);
 
           await this.onHandleCardEffectEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
 
-          this.room.endProcessOnCard(judgeCardId);
+          this.room.endProcessOnTag(judgeCardId.toString());
           if (this.room.getCardOwnerId(judgeCardId) !== undefined) {
             this.room.bury(judgeCardId);
           }
@@ -471,6 +471,7 @@ export class GameProcessor {
       if (stage === ObtainCardStage.CardObtaining) {
         event.toId = this.deadPlayerFilters(event.toId)[0];
         this.room.broadcast(identifier, event);
+        this.room.getPlayerById(event.toId).obtainCardIds(...event.cardIds);
       }
     });
   }
@@ -684,8 +685,6 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     const card = Sanguosha.getCardById(event.cardId);
-    await card.Skill.beforeEffect(this.room, event);
-
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (
         !EventPacker.isDisresponsiveEvent(event) &&

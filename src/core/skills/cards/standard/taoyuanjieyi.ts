@@ -1,7 +1,8 @@
-import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, TriggerableTimes } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
@@ -29,7 +30,7 @@ export class TaoYuanJieYiSkill extends ActiveSkill {
     return false;
   }
   public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    const others = room.getOtherPlayers(event.fromId);
+    const others = room.getAlivePlayersFrom();
 
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} used card {1} to {2}',
@@ -42,11 +43,10 @@ export class TaoYuanJieYiSkill extends ActiveSkill {
   }
 
   public async beforeEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
-    const player = room.getPlayerById(event.toIds![0]);
-    if (player.MaxHp === player.Hp) {
-      EventPacker.terminate(event);
-      return false;
-    }
+    event.toIds = event.toIds?.filter(to => {
+      const player = room.getPlayerById(to);
+      return player.Hp < player.MaxHp;
+    });
 
     return true;
   }
@@ -56,7 +56,7 @@ export class TaoYuanJieYiSkill extends ActiveSkill {
     await room.recover({
       cardIds: [cardId],
       recoveredHp: 1,
-      toId: toIds![0],
+      toId: Precondition.exists(toIds, 'Unknown targets in taoyuanjieyi')[0],
     });
 
     return true;

@@ -20,6 +20,7 @@ export const cardDictionary: Word[] = [
   { source: 'lebusishu', target: '乐不思蜀' },
   { source: 'jiedaosharen', target: '借刀杀人' },
   { source: 'taoyuanjieyi', target: '桃园结义' },
+  { source: 'wugufengdeng', target: '五谷丰登' },
 ];
 
 export const characterDictionary: Word[] = [
@@ -496,7 +497,7 @@ export const eventDictionary: Word[] = [
   { source: '{0} obtains {1} cards', target: '{0} 获得了 {1} 张牌' },
   { source: 'please drop {0} cards', target: '请弃置 {1} 张牌' },
   { source: '{0} drops cards {1}', target: '{0} 弃置了 {1}' },
-  { source: '{0} cards are dropped', target: '{0} 进入了弃牌堆' },
+  { source: '{0} has been placed into drop stack', target: '{0} 置入了弃牌堆' },
   { source: '{0} lost card {1}', target: '{0} 失去了 {1}' },
   { source: '{0} used card {1}', target: '{0} 使用了一张 {1}' },
   {
@@ -504,10 +505,6 @@ export const eventDictionary: Word[] = [
     target: '{0} 使用了一张 {1}，目标是 {2}',
   },
   { source: '{0} equipped {1}', target: '{0} 装备了 {1}' },
-  {
-    source: '{0} used card {1} to {2}',
-    target: '{0} 对 {2} 使用了一张 {1}',
-  },
   { source: '{0} is placed into drop stack', target: '{0} 置入了弃牌堆' },
   { source: '{0} responses card {1}', target: '{0} 打出了一张 {1}' },
   { source: 'please drop {0} cards', target: '请弃置 {0} 张牌' },

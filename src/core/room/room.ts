@@ -34,7 +34,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected abstract readonly roomId: RoomId;
 
   protected gameStarted: boolean = false;
-  private onProcessingCards: CardId[] = [];
+  private onProcessingCards: { [K: string]: CardId[] } = {};
 
   protected abstract init(...args: any[]): void;
 
@@ -117,19 +117,31 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public abstract skip(player: PlayerId, phase?: PlayerPhase): void;
 
-  public addProcessingCard(cardId: CardId) {
-    this.onProcessingCards.push(cardId);
+  public addProcessingCards(tag: string, ...cardIds: CardId[]) {
+    this.onProcessingCards[tag] = this.onProcessingCards[tag] || [];
+
+    for (const cardId of cardIds) {
+      this.onProcessingCards[tag].push(cardId);
+    }
+  }
+  public getProcessingCards(tag: string): CardId[] {
+    return this.onProcessingCards[tag] || [];
   }
   public isCardOnProcessing(cardId: CardId): boolean {
-    return this.onProcessingCards.includes(cardId);
+    return Object.values(this.onProcessingCards).find(cards => cards.includes(cardId)) !== undefined;
   }
   public clearOnProcessingCard(): void {
-    this.onProcessingCards = [];
+    this.onProcessingCards = {};
+  }
+  public endProcessOnTag(tag: string) {
+    delete this.onProcessingCards[tag];
   }
   public endProcessOnCard(card: CardId) {
-    const index = this.onProcessingCards.findIndex(processingCard => processingCard !== card);
-    if (index >= 0) {
-      this.onProcessingCards.splice(index, 1);
+    for (const cards of Object.values(this.onProcessingCards)) {
+      const cardIndex = cards.findIndex(inProcessingCard => card === inProcessingCard);
+      if (cardIndex >= 0) {
+        cards.splice(cardIndex, 1);
+      }
     }
   }
 

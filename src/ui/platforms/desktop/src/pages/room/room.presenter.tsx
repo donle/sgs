@@ -9,7 +9,6 @@ import * as mobx from 'mobx';
 import { Conversation, ConversationProps } from './conversation/conversaion';
 
 import * as React from 'react';
-import styles from './room.module.css';
 
 import type { GameInfo } from 'core/game/game_props';
 import type { PlayerId, PlayerInfo } from 'core/player/player_props';
@@ -167,17 +166,8 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  createDialog = (title: string | JSX.Element, content: JSX.Element) => {
-    this.store.selectorDialog = (
-      <div className={styles.selectorDialog}>
-        {typeof title === 'string' ? (
-          <h4 className={styles.selectorTitle} dangerouslySetInnerHTML={{ __html: title }} />
-        ) : (
-          <h4 className={styles.selectorTitle}>{title}</h4>
-        )}
-        {content}
-      </div>
-    );
+  createDialog = (dialog: JSX.Element) => {
+    this.store.selectorDialog = dialog;
   }
 
   @mobx.action

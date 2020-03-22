@@ -10,6 +10,7 @@ import {
 import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, TriggerableTimes } from 'core/skills/skill';
 
 @CommonSkill
@@ -54,7 +55,7 @@ export class ShunShouQianYangSkill extends ActiveSkill {
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
-    const to = room.getPlayerById(event.toIds![0]);
+    const to = room.getPlayerById(Precondition.exists(event.toIds, 'Unknown targets in shunshouqianyang')[0]);
     const options: CardChoosingOptions = {
       [PlayerCardsArea.JudgeArea]: to.getCardIds(PlayerCardsArea.JudgeArea),
       [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),

@@ -1,0 +1,13 @@
+.cardContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.cardLine {
+  display: flex;
+  margin: 4px 0;
+}
+
+.cardLine > * {
+  margin: 0 4px;
+}

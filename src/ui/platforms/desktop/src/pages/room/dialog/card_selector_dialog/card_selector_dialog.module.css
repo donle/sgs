@@ -1,0 +1,14 @@
+.cardLine {
+    margin: 16px 8px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.selectorCard {
+    height: 160px;
+    width: 120px;
+    margin: 0px 8px;
+}
+
+.selecterCardsItem {
+}
