@@ -122,8 +122,10 @@ export interface ClientEvent extends EventUtilities {
     fromId: PlayerId;
     askedBy?: PlayerId;
   };
-  [GameEventIdentifiers.AskForInvokeEvent]: {
+  [GameEventIdentifiers.AskForSkillUseEvent]: {
     invoke?: string;
+    cardIds?: CardId[];
+    toIds?: PlayerId[];
     fromId: PlayerId;
   };
   [GameEventIdentifiers.AskForCardDisplayEvent]: {};

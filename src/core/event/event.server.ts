@@ -191,7 +191,7 @@ export interface ServerEvent extends EventUtilities {
     toId: PlayerId;
     options: CardChoosingOptions;
   };
-  [GameEventIdentifiers.AskForInvokeEvent]: {
+  [GameEventIdentifiers.AskForSkillUseEvent]: {
     invokeSkillNames: string[];
     to: PlayerId;
   };

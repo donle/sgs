@@ -25,6 +25,16 @@ export class ClientTranslationModule extends TranslationModule {
     return translator;
   }
 
+  private commonTextStyle: React.CSSProperties = {
+    padding: '0 4px',
+  };
+  private boldTextStyle: React.CSSProperties = {
+    fontWeight: 550,
+  };
+  private playerStyle: React.CSSProperties = {
+    color: '#C65719',
+  };
+
   private static readonly uniquNumberOnCard = {
     0: '',
     1: 'A',
@@ -51,10 +61,20 @@ export class ClientTranslationModule extends TranslationModule {
     return this.emojiOrImageTextDict[symbolText];
   }
 
-  public translatePatchedCardText(text: string, dictionary: TranslationsDictionary): TranslatedCardObject[] {
+  public translatePatchedCardText(text: string, dictionary: TranslationsDictionary): JSX.Element {
+    const getCardNumberStyle = (cardSuit: CardSuit): React.CSSProperties => {
+      if (cardSuit === CardSuit.Heart || cardSuit === CardSuit.Diamond) {
+        return {
+          ...this.boldTextStyle,
+          color: 'red',
+        };
+      }
+      return this.boldTextStyle;
+    };
+
     const cardTextArray: string[] = JSON.parse(text.slice(TranslationPack.translateCardObjectSign.length));
 
-    return cardTextArray.map(cardText => {
+    const translatedCardObject = cardTextArray.map(cardText => {
       const [cardName, cardSuitString, cardNumber] = cardText.split(' ');
       return {
         cardSuit: TranslationPack.dispatchEmojiOrImageInTranslation(cardSuitString),
@@ -63,12 +83,35 @@ export class ClientTranslationModule extends TranslationModule {
         cardName: dictionary[cardName] || cardName,
       };
     });
+
+    return (
+      <>
+        {translatedCardObject.map((cardObject, index) => (
+          <span key={index}>
+            <span>{this.tr('[')}</span>
+            <span
+              style={{
+                ...this.boldTextStyle,
+                ...this.commonTextStyle,
+              }}
+            >
+              {cardObject.cardName}
+            </span>
+            {cardObject.suitElement}
+            <span style={getCardNumberStyle(cardObject.cardSuit)}>
+              {ClientTranslationModule.getCardNumber(parseInt(cardObject.cardNumber, 10))}
+            </span>
+            <span>{this.tr(']')}</span>
+          </span>
+        ))}
+      </>
+    );
   }
 
-  public translatePatchedPlayerText(text: string, dictionary: TranslationsDictionary): string[] {
+  public translatePatchedPlayerText(text: string, dictionary: TranslationsDictionary): JSX.Element {
     const playerObjectArray: string[] = JSON.parse(text.slice(TranslationPack.translatePlayerObjectSign.length));
 
-    return playerObjectArray.map(playerText => {
+    const translatedPlayerObject = playerObjectArray.map(playerText => {
       const [characterName, position] = playerText.split(' ');
       const formattedPosition = `seat ${position}`;
       return (
@@ -76,16 +119,36 @@ export class ClientTranslationModule extends TranslationModule {
         (this.currentPlayer && this.currentPlayer.Position.toString() === position ? `(${dictionary['you']})` : '')
       );
     });
+
+    return (
+      <span
+        style={{
+          ...this.playerStyle,
+          ...this.boldTextStyle,
+          ...this.commonTextStyle,
+        }}
+      >
+        {translatedPlayerObject.join(',')}
+      </span>
+    );
   }
 
   public trx(rawText: string): JSX.Element {
     const dispatchedObject = TranslationPack.dispatch(rawText);
+    const dictionary = this.dictionary.get(this.currentLanguage);
 
     if (!dispatchedObject) {
+      if (dictionary) {
+        if (TranslationPack.isCardObjectText(rawText)) {
+          return <span>{this.translatePatchedCardText(rawText, dictionary)}</span>;
+        } else if (TranslationPack.isPlayerObjectText(rawText)) {
+          return this.translatePatchedPlayerText(rawText, dictionary);
+        }
+      }
+
       return <span>{this.tr(rawText)}</span>;
     }
 
-    const dictionary = this.dictionary.get(this.currentLanguage);
     const translatedOriginalText = dictionary
       ? dictionary[dispatchedObject.original] || dispatchedObject.original
       : dispatchedObject.original;
@@ -96,66 +159,12 @@ export class ClientTranslationModule extends TranslationModule {
       return <span>{this.tr(rawText)}</span>;
     }
 
-    const commonTextStyle: React.CSSProperties = {
-      padding: '0 4px',
-    };
-    const boldTextStyle: React.CSSProperties = {
-      fontWeight: 550,
-    };
-    const playerStyle: React.CSSProperties = {
-      color: '#C65719',
-    };
-    const getCardNumberStyle = (cardSuit: CardSuit): React.CSSProperties => {
-      const style: React.CSSProperties = boldTextStyle;
-      if (cardSuit === CardSuit.Heart || cardSuit === CardSuit.Diamond) {
-        return {
-          ...style,
-          color: 'red',
-        };
-      }
-      return style;
-    };
-
     const textCombinations: JSX.Element[] = dispatchedObject.params.map(param => {
       if (typeof param === 'string' && dictionary) {
         if (TranslationPack.isCardObjectText(param)) {
-          const translatedCardObject = this.translatePatchedCardText(param, dictionary);
-
-          return (
-            <>
-              {translatedCardObject.map((cardObject, index) => (
-                <span key={index}>
-                  <span>{this.tr('[')}</span>
-                  <span
-                    style={{
-                      ...boldTextStyle,
-                      ...commonTextStyle,
-                    }}
-                  >
-                    {cardObject.cardName}
-                  </span>
-                  {cardObject.suitElement}
-                  <span style={getCardNumberStyle(cardObject.cardSuit)}>
-                    {ClientTranslationModule.getCardNumber(parseInt(cardObject.cardNumber, 10))}
-                  </span>
-                  <span>{this.tr(']')}</span>
-                </span>
-              ))}
-            </>
-          );
+          return this.translatePatchedCardText(param, dictionary);
         } else if (TranslationPack.isPlayerObjectText(param)) {
-          const translatedPlayerObject = this.translatePatchedPlayerText(param, dictionary);
-          return (
-            <span
-              style={{
-                ...playerStyle,
-                ...boldTextStyle,
-                ...commonTextStyle,
-              }}
-            >
-              {translatedPlayerObject.join(',')}
-            </span>
-          );
+          return this.translatePatchedPlayerText(param, dictionary);
         }
       }
 
@@ -174,8 +183,8 @@ export class ClientTranslationModule extends TranslationModule {
       return (
         <span
           style={{
-            ...boldTextStyle,
-            ...commonTextStyle,
+            ...this.boldTextStyle,
+            ...this.commonTextStyle,
           }}
         >
           {dictionary ? dictionary[param] || param : param}

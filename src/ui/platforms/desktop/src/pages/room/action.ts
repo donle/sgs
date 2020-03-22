@@ -2,9 +2,10 @@ import { Card, CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
-import { ActiveSkill, ResponsiveSkill, Skill } from 'core/skills/skill';
+import { ActiveSkill, ResponsiveSkill, Skill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { RoomPresenter, RoomStore } from './room.presenter';
@@ -24,7 +25,6 @@ export class Action {
     this.selectedActionCards = [];
     this.selectedTargets = [];
     // this.presenter.closeDialog();
-    this.presenter.closeIncomingConversation();
     this.presenter.setupPlayersSelectionMatcher(() => false);
     this.presenter.setupClientPlayerCardActionsMatcher(() => () => false);
     this.presenter.disableActionButton('confirm');
@@ -33,17 +33,19 @@ export class Action {
 
   private readonly updateClickActionStatus = () => {
     let canActivateSkill = false;
-    if (!this.selectedPlayCard) {
-      return this.presenter.disableActionButton('confirm');
-    } else {
+    if (this.selectedPlayCard) {
       canActivateSkill =
         this.presenter.ClientPlayer!.cardFrom(this.selectedPlayCard.Id) === PlayerCardsArea.EquipArea
           ? false
           : this.selectedPlayCard.is(CardType.Equip);
+    } else if (this.selectSkill) {
+      canActivateSkill = false;
+    } else {
+      return;
     }
 
-    const { Skill: skill } = this.selectedPlayCard;
-    if (!(skill instanceof ActiveSkill)) {
+    const skill = this.selectedPlayCard ? this.selectedPlayCard.Skill : this.selectSkill;
+    if (!(skill instanceof ActiveSkill) && !(skill instanceof TriggerSkill)) {
       return this.presenter.enableActionButton('confirm');
     }
 
@@ -128,9 +130,9 @@ export class Action {
   };
 
   private readonly onActionOfActiveSkill = (
-    containerCard: Card,
     skill: ActiveSkill,
     playerId: PlayerId,
+    containerCardId?: CardId,
     scopedTargets?: PlayerId[],
   ) => {
     this.presenter.setupPlayersSelectionMatcher((player: Player) => {
@@ -150,7 +152,7 @@ export class Action {
           this.store.room,
           player.Id,
           this.selectedTargets.map(p => p.Id),
-          containerCard.Id,
+          containerCardId,
         ) &&
           !skill.targetFilter(
             this.store.room,
@@ -168,7 +170,7 @@ export class Action {
           this.store.room,
           card.Id,
           this.selectedActionCards.map(c => c.Id),
-          containerCard.Id,
+          containerCardId,
         )
       );
     });
@@ -347,7 +349,12 @@ export class Action {
   }
 
   onPlayAction(who: PlayerId, cardMatcher?: CardMatcher, scopedTargets?: PlayerId[]) {
-    const availableCardItemsSetter = cardMatcher ? this.playerResponsiveCardMatcher(cardMatcher) : this.playCardMatcher;
+    const availableCardItemsSetter = cardMatcher
+      ? this.playerResponsiveCardMatcher(cardMatcher)
+      : this.selectSkill
+      ? () => () => false
+      : this.playCardMatcher;
+
     !cardMatcher && this.definedPlayButtonConfirmHandler(who);
 
     this.presenter.onClickSkill((skill: Skill, selected: boolean) => {
@@ -396,7 +403,7 @@ export class Action {
 
       const skill = this.selectedPlayCard?.Skill;
       if (skill instanceof ActiveSkill) {
-        this.onActionOfActiveSkill(this.selectedPlayCard!, skill, who, scopedTargets);
+        this.onActionOfActiveSkill(skill, who, this.selectedPlayCard!.Id, scopedTargets);
       }
 
       this.presenter.broadcastUIUpdate();
@@ -415,10 +422,11 @@ export class Action {
     });
 
     this.presenter.setupClientPlayerCardActionsMatcher(availableCardItemsSetter);
+    this.updateClickActionStatus();
     this.presenter.broadcastUIUpdate();
   }
 
-  onInvokingSkills<T extends GameEventIdentifiers.AskForInvokeEvent>(
+  onInvokingSkills<T extends GameEventIdentifiers.AskForSkillUseEvent>(
     content: ServerEventFinder<T>,
     translator: ClientTranslationModule,
   ) {
@@ -443,36 +451,40 @@ export class Action {
         invoke: undefined,
         fromId: to,
       };
-      this.presenter.enableActionButton('confirm');
+      this.selectSkill = Sanguosha.getSkillBySkillName(skill);
+      this.onPlayAction(to);
+
       this.presenter.defineConfirmButtonActions(() => {
         event.invoke = skill;
-        this.store.room.broadcast(GameEventIdentifiers.AskForInvokeEvent, event);
+        event.cardIds = this.selectedActionCards.map(card => card.Id);
+        event.toIds = this.selectedTargets.map(target => target.Id);
+        this.store.room.broadcast(GameEventIdentifiers.AskForSkillUseEvent, event);
         this.presenter.disableActionButton('cancel');
         this.presenter.closeIncomingConversation();
+        this.endAction();
       });
       this.presenter.defineCancelButtonActions(() => {
-        this.store.room.broadcast(GameEventIdentifiers.AskForInvokeEvent, event);
-        this.presenter.disableActionButton('confirm');
+        this.store.room.broadcast(GameEventIdentifiers.AskForSkillUseEvent, event);
         this.presenter.closeIncomingConversation();
+        this.endAction();
       });
     } else {
-      const optionHandlers: any = {};
-      for (const skillName of content.invokeSkillNames) {
-        const event: ClientEventFinder<T> = {
-          invoke: skillName,
-          fromId: to,
-        };
-
-        optionHandlers[skillName] = () => {
-          this.store.room.broadcast(GameEventIdentifiers.AskForInvokeEvent, event);
-        };
-      }
-
-      this.presenter.createIncomingConversation({
-        conversation: 'select a skill to trigger',
-        optionsActionHanlder: {},
-        translator,
-      });
+      //TODO: need to refactor
+      // const optionHandlers: any = {};
+      // for (const skillName of content.invokeSkillNames) {
+      //   const event: ClientEventFinder<T> = {
+      //     invoke: skillName,
+      //     fromId: to,
+      //   };
+      //   optionHandlers[skillName] = () => {
+      //     this.store.room.broadcast(GameEventIdentifiers.AskForSkillUseEvent, event);
+      //   };
+      // }
+      // this.presenter.createIncomingConversation({
+      //   conversation: 'select a skill to trigger',
+      //   optionsActionHanlder: {},
+      //   translator,
+      // });
     }
   }
 }

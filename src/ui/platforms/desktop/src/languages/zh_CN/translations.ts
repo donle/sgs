@@ -53,6 +53,7 @@ export const characterDictionary: Word[] = [
   { source: 'liubei', target: '刘备' },
   { source: 'rende', target: '仁德' },
   { source: 'jijiang', target: '激将' },
+  { source: '#jijiang', target: '激将' },
 
   { source: 'guanyu', target: '关羽' },
   { source: 'wusheng', target: '武圣' },

@@ -62,6 +62,7 @@ function skillPropertyWrapper(
     private lordSkill: boolean;
     private shadowSkill: boolean;
     private uniqueSkill: boolean;
+    private name: string;
 
     public canUse: (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) => boolean;
 
@@ -80,6 +81,7 @@ function skillPropertyWrapper(
       }
       if (options.shadowSkill !== undefined) {
         this.shadowSkill = options.shadowSkill;
+        this.name = '#' + this.name;
       }
       if (options.uniqueSkill !== undefined) {
         this.uniqueSkill = options.uniqueSkill;
@@ -242,6 +244,31 @@ export abstract class ResponsiveSkill extends Skill {
 }
 
 export abstract class TriggerSkill extends Skill {
+  public targetFilter(room: Room, targets: PlayerId[]): boolean {
+    return targets.length === 0;
+  }
+  public cardFilter(room: Room, cards: CardId[]): boolean {
+    return cards.length === 0;
+  }
+  public isAvailableCard(
+    owner: PlayerId,
+    room: Room,
+    cardId: CardId,
+    selectedCards: CardId[],
+    containerCard?: CardId,
+  ): boolean {
+    return false;
+  }
+  public isAvailableTarget(
+    owner: PlayerId,
+    room: Room,
+    target: PlayerId,
+    selectedTargets: PlayerId[],
+    containerCard?: CardId,
+  ): boolean {
+    return false;
+  }
+
   public abstract isTriggerable(event: EventPicker<GameEventIdentifiers, WorkPlace>, stage?: AllStage): boolean;
   public isAutoTrigger(): boolean {
     return false;

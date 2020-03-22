@@ -198,17 +198,19 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             await this.useSkill(triggerSkillEvent);
           } else {
             this.notify(
-              GameEventIdentifiers.AskForInvokeEvent,
+              GameEventIdentifiers.AskForSkillUseEvent,
               {
                 invokeSkillNames: [skill.Name],
                 to: player.Id,
               },
               player.Id,
             );
-            const { invoke } = await this.onReceivingAsyncReponseFrom(
-              GameEventIdentifiers.AskForInvokeEvent,
+            const { invoke, cardIds, toIds } = await this.onReceivingAsyncReponseFrom(
+              GameEventIdentifiers.AskForSkillUseEvent,
               player.Id,
             );
+            triggerSkillEvent.toIds = toIds;
+            triggerSkillEvent.cardIds = cardIds;
             if (invoke) {
               await this.useSkill(triggerSkillEvent);
             }
@@ -337,7 +339,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         } else {
           let newToIds: PlayerId[] = [];
           for (const toId of content.toIds || []) {
-            newToIds = [...(await onAim(toId)), ...newToIds];
+            newToIds = [...newToIds, ...(await onAim(toId))];
           }
           content.toIds = newToIds;
         }

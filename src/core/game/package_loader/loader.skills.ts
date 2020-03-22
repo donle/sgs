@@ -47,7 +47,7 @@ export class SkillLoader {
   }
   public getSkillsByName<S extends Skill = Skill>(skillName: string): S[] {
     const skills: S[] = [this.getSkillByName(skillName)];
-    const shadowSkills = this.shadowSkills.filter(skill => skill.Name === skillName) as S[];
+    const shadowSkills = this.shadowSkills.filter(skill => skill.Name === `#${skillName}`) as S[];
     if (shadowSkills.length > 0) {
       return [...skills, ...shadowSkills];
     }

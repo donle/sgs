@@ -89,8 +89,8 @@ export class GameClientProcessor {
       case GameEventIdentifiers.AskForCardDropEvent:
         await this.onHandleAskForCardDropEvent(e as any, content);
         break;
-      case GameEventIdentifiers.AskForInvokeEvent:
-        await this.onHandleAskForInvokeEvent(e as any, content);
+      case GameEventIdentifiers.AskForSkillUseEvent:
+        await this.onHandleAskForSkillUseEvent(e as any, content);
         break;
       case GameEventIdentifiers.SkillUseEvent:
         await this.onHandleSkillUseEvent(e as any, content);
@@ -298,7 +298,7 @@ export class GameClientProcessor {
     );
   }
 
-  private onHandleAskForInvokeEvent<T extends GameEventIdentifiers.AskForInvokeEvent>(
+  private onHandleAskForSkillUseEvent<T extends GameEventIdentifiers.AskForSkillUseEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -309,8 +309,9 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.store.room.turnTo(content.toPlayer, content.to);
+    this.store.room.onPhaseTo(content.toPlayer, content.to);
     if (content.to === PlayerPhase.PrepareStage) {
+      this.store.room.turnTo(content.toPlayer);
       content.fromPlayer && this.store.room.getPlayerById(content.fromPlayer).resetCardUseHistory();
     }
     this.presenter.broadcastUIUpdate();
