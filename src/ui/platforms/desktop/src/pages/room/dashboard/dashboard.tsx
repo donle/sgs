@@ -4,6 +4,7 @@ import { EquipCard } from 'core/cards/equip_card';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
+// import { Skill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
@@ -21,28 +22,44 @@ export type DashboardProps = {
   playerSelectableMatcher?(player: Player): boolean;
   onClickPlayer?(player: Player, selected: boolean): void;
   cardEnableMatcher?(area: PlayerCardsArea): (card: Card) => boolean;
+  cardSkillEnableMatcher?(card: Card): boolean;
   onClick?(card: Card, selected: boolean): void;
+  onClickEquipment?(card: Card, selected: boolean): void;
   onClickConfirmButton?(): void;
   onClickCancelButton?(): void;
   onClickFinishButton?(): void;
 };
 
-export const EquipCardItem = mobxReact.observer(
-  (props: {
-    disabled?: boolean;
-    card?: Card;
-    translator: ClientTranslationModule;
-    onClick?(selected: boolean): void;
-  }) => {
-    const { disabled = true, card, onClick, translator } = props;
-    const selected = mobx.observable.box<boolean>(false);
-    const onCardClick = mobx.action(() => {
-      if (disabled === false) {
-        selected.set(!selected.get());
-        onClick && onClick(selected.get());
-      }
-    });
+type EquipCardItemProps = {
+  disabled?: boolean;
+  card?: Card;
+  translator: ClientTranslationModule;
+  onClick?(selected: boolean): void;
+};
 
+@mobxReact.observer
+export class EquipCardItem extends React.Component<EquipCardItemProps> {
+  @mobx.observable.ref
+  selected: boolean = false;
+
+  @mobx.action
+  readonly onCardClick = () => {
+    if (this.props.disabled === false) {
+      this.selected = !this.selected;
+      this.props.onClick && this.props.onClick(this.selected);
+    }
+  };
+
+  @mobx.action
+  getSelected() {
+    if (!!this.props.disabled) {
+      this.selected = false;
+    }
+    return this.selected;
+  }
+
+  render() {
+    const { card, translator } = this.props;
     return (
       <div
         className={classNames(styles.equipCardItem, {
@@ -50,19 +67,23 @@ export const EquipCardItem = mobxReact.observer(
           [styles.armor]: card?.is(CardType.Armor),
           [styles.defenseRide]: card?.is(CardType.DefenseRide),
           [styles.offenseRide]: card?.is(CardType.OffenseRide),
+          [styles.selected]: this.getSelected() && !this.props.disabled,
         })}
-        onClick={onCardClick}
+        onClick={this.onCardClick}
       >
         {card && translator.tr(card.Name)}
       </div>
     );
-  },
-);
+  }
+}
 
 @mobxReact.observer
 export class Dashboard extends React.Component<DashboardProps> {
   private readonly onClick = (card: Card) => (selected: boolean) => {
     this.props.onClick && this.props.onClick(card, selected);
+  };
+  private readonly onClickEquipment = (card: Card) => (selected: boolean) => {
+    this.props.onClickEquipment && this.props.onClickEquipment(card, selected);
   };
 
   getEquipCardsSection() {
@@ -78,10 +99,8 @@ export class Dashboard extends React.Component<DashboardProps> {
               <EquipCardItem
                 translator={this.props.translator}
                 card={card}
-                onClick={this.onClick(card)}
-                disabled={
-                  !this.props.cardEnableMatcher || !this.props.cardEnableMatcher(PlayerCardsArea.EquipArea)(card)
-                }
+                onClick={this.onClickEquipment(card)}
+                disabled={!this.props.cardSkillEnableMatcher || !this.props.cardSkillEnableMatcher(card)}
               />
             ))}
           </div>

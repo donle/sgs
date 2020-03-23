@@ -6,7 +6,6 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
-import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
 export class BaGuaZhenSkill extends TriggerSkill {
@@ -50,12 +49,6 @@ export class BaGuaZhenSkill extends TriggerSkill {
   }
 
   async onTrigger(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
-    event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} used skill {1}',
-      TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
-      this.name,
-    ).extract();
-
     return true;
   }
 
@@ -64,6 +57,7 @@ export class BaGuaZhenSkill extends TriggerSkill {
     const jinkCardEvent = triggeredOnEvent as ServerEventFinder<
       GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent
     >;
+    
     const identifier = Precondition.exists(
       EventPacker.getIdentifier<GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent>(
         jinkCardEvent,
@@ -82,7 +76,7 @@ export class BaGuaZhenSkill extends TriggerSkill {
         cardId: jink.Id,
         fromId,
         toCardIds: jinkCardEvent.byCardId === undefined ? undefined : [],
-        responseToEvent: jinkCardEvent,
+        responseToEvent: jinkCardEvent.triggeredOnEvent,
       };
 
       if (identifier === GameEventIdentifiers.AskForCardUseEvent) {

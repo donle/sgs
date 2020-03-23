@@ -8,9 +8,13 @@ export type CharacterPackages = {
 export type CharacterPackage<Extension extends GameCharacterExtensions> = {
   [K in Extension]: Character[];
 };
-export type CharacterPackageLoader = (index: number) => CharacterPackage<GameCharacterExtensions>;
+export type CharacterPackageLoader = (index: number) => Character[];
 
-const allCharacterLoaders: CharacterPackageLoader[] = [StandardCharacterPackage];
+const allCharacterLoaders: {
+  [P in GameCharacterExtensions]: CharacterPackageLoader;
+} = {
+  [GameCharacterExtensions.Standard]: StandardCharacterPackage,
+};
 
 export class CharacterLoader {
   private static instance: CharacterLoader;
@@ -30,13 +34,11 @@ export class CharacterLoader {
 
   private loadCharacters() {
     let index = 0;
-    for (const loader of allCharacterLoaders) {
-      const packages = loader(index);
-      for (const [packageName, characters] of Object.entries(packages) as [GameCharacterExtensions, Character[]][]) {
-        this.characters[packageName] = characters;
+    for (const [packageName, loader] of Object.entries(allCharacterLoaders)) {
+      const characters = loader(index);
+      this.characters[packageName] = characters;
 
-        index += characters.length;
-      }
+      index += characters.length;
     }
   }
 

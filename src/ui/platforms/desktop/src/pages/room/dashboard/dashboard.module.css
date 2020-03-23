@@ -77,3 +77,7 @@
 .offenseRide {
     top: 75%;
 }
+
+.selected {
+    border: 1px solid red;
+}

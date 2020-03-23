@@ -130,7 +130,7 @@ export class Action {
   };
 
   private readonly onActionOfActiveSkill = (
-    skill: ActiveSkill,
+    skill: ActiveSkill | TriggerSkill,
     playerId: PlayerId,
     containerCardId?: CardId,
     scopedTargets?: PlayerId[],
@@ -300,7 +300,11 @@ export class Action {
     translator: ClientTranslationModule,
   ) {
     const who = this.presenter.ClientPlayer!.Id;
-    this.onPlayAction(who, new CardMatcher(content.cardMatcher), content.scopedTargets);
+    this.onPlayAction(
+      who,
+      this.playerResponsiveCardMatcher(new CardMatcher(content.cardMatcher)),
+      content.scopedTargets,
+    );
 
     this.presenter.createIncomingConversation({
       conversation: content.conversation,
@@ -348,14 +352,82 @@ export class Action {
     }
   }
 
-  onPlayAction(who: PlayerId, cardMatcher?: CardMatcher, scopedTargets?: PlayerId[]) {
-    const availableCardItemsSetter = cardMatcher
-      ? this.playerResponsiveCardMatcher(cardMatcher)
-      : this.selectSkill
-      ? () => () => false
-      : this.playCardMatcher;
+  onPlayCardActionFilter = (
+    cardActionSetter: (area: PlayerCardsArea) => (card: Card) => boolean,
+    card: Card,
+    selected: boolean,
+  ) => {
+    if (this.selectSkill) {
+      if (selected) {
+        this.selectedActionCards.push(card);
+      } else {
+        if (this.selectSkill === card.Skill) {
+          this.endAction();
+          this.presenter.setupClientPlayerCardActionsMatcher(cardActionSetter);
+        } else {
+          this.selectedActionCards = this.selectedActionCards.filter(actionCard => actionCard !== card);
+        }
+      }
+    } else if (this.selectedPlayCard) {
+      if (selected) {
+        this.selectedActionCards.push(card);
+      } else {
+        if (this.selectedPlayCard === card) {
+          this.endAction();
+          this.presenter.setupClientPlayerCardActionsMatcher(cardActionSetter);
+        } else {
+          this.selectedActionCards = this.selectedActionCards.filter(actionCard => actionCard !== card);
+        }
+      }
+    } else if (this.selectedPlayCard === undefined && this.selectSkill === undefined) {
+      if (selected) {
+        this.selectedPlayCard = card;
+        this.selectedAction = GameEventIdentifiers.CardUseEvent;
+      } else {
+        throw new Error('Undefined behaviour');
+      }
+    } else {
+      if (selected) {
+        this.selectedActionCards.push(card);
+      } else {
+        this.selectedActionCards = this.selectedActionCards.filter(actionCard => actionCard !== card);
+      }
+    }
+  };
 
-    !cardMatcher && this.definedPlayButtonConfirmHandler(who);
+  onPlayAction(
+    who: PlayerId,
+    customCardSelector?: (area: PlayerCardsArea) => (card: Card) => boolean,
+    scopedTargets?: PlayerId[],
+  ) {
+    const availableCardItemsSetter = customCardSelector || this.playCardMatcher;
+
+    !customCardSelector && this.definedPlayButtonConfirmHandler(who);
+
+    let equipSkillCardId: CardId | undefined;
+    if (this.selectSkill) {
+      equipSkillCardId = this.presenter
+        .ClientPlayer!.getCardIds(PlayerCardsArea.EquipArea)
+        .find(equip => Sanguosha.getCardById(equip).Skill === this.selectSkill);
+    }
+
+    this.presenter.setupCardSkillSelectionMatcher((card: Card): boolean => {
+      if (this.selectSkill) {
+        let onCardSkillAction = false;
+        if (this.selectSkill instanceof ActiveSkill || this.selectSkill instanceof TriggerSkill) {
+          onCardSkillAction = this.selectSkill.isAvailableCard(
+            this.store.clientPlayerId,
+            this.store.room,
+            card.Id,
+            this.selectedActionCards.map(c => c.Id),
+            equipSkillCardId,
+          );
+        }
+        return onCardSkillAction || (!customCardSelector && card.Skill === this.selectSkill);
+      } else {
+        return card.Skill instanceof ActiveSkill;
+      }
+    });
 
     this.presenter.onClickSkill((skill: Skill, selected: boolean) => {
       if (selected && !this.selectSkill) {
@@ -367,43 +439,27 @@ export class Action {
       }
     });
 
-    this.presenter.onClickPlayerCard((card: Card, selected: boolean) => {
-      if (this.selectSkill) {
-        if (selected) {
-          this.selectedActionCards.push(card);
-        } else {
-          this.selectedActionCards = this.selectedActionCards.filter(actionCard => actionCard !== card);
-        }
-      } else if (this.selectedPlayCard) {
-        if (selected) {
-          this.selectedActionCards.push(card);
-        } else {
-          if (this.selectedPlayCard === card) {
-            this.endAction();
-            this.presenter.setupClientPlayerCardActionsMatcher(availableCardItemsSetter);
-          } else {
-            this.selectedActionCards = this.selectedActionCards.filter(actionCard => actionCard !== card);
-          }
-        }
-      } else if (this.selectedPlayCard === undefined) {
-        if (selected) {
-          this.selectedPlayCard = card;
-          this.selectedAction = GameEventIdentifiers.CardUseEvent;
-        } else {
-          throw new Error('Undefined behaviour');
-        }
-      } else {
-        if (selected) {
-          this.selectedActionCards.push(card);
-        } else {
-          this.selectedActionCards = this.selectedActionCards.filter(actionCard => actionCard !== card);
-        }
-      }
+    this.presenter.onClickEquipment((card: Card, selected: boolean) => {
+      this.onPlayCardActionFilter(availableCardItemsSetter, card, selected);
       this.updateClickActionStatus();
 
-      const skill = this.selectedPlayCard?.Skill;
-      if (skill instanceof ActiveSkill) {
-        this.onActionOfActiveSkill(skill, who, this.selectedPlayCard!.Id, scopedTargets);
+      const skill = this.selectedPlayCard ? this.selectedPlayCard.Skill : this.selectSkill;
+      const containerCard = this.selectedPlayCard ? this.selectedPlayCard.Id : equipSkillCardId;
+      if (skill instanceof ActiveSkill || skill instanceof TriggerSkill) {
+        this.onActionOfActiveSkill(skill, who, containerCard, scopedTargets);
+      }
+
+      this.presenter.broadcastUIUpdate();
+    });
+
+    this.presenter.onClickPlayerCard((card: Card, selected: boolean) => {
+      this.onPlayCardActionFilter(availableCardItemsSetter, card, selected);
+      this.updateClickActionStatus();
+
+      const skill = this.selectedPlayCard ? this.selectedPlayCard.Skill : this.selectSkill;
+      const containerCard = this.selectedPlayCard ? this.selectedPlayCard.Id : equipSkillCardId;
+      if (skill instanceof ActiveSkill || skill instanceof TriggerSkill) {
+        this.onActionOfActiveSkill(skill, who, containerCard, scopedTargets);
       }
 
       this.presenter.broadcastUIUpdate();
@@ -452,7 +508,7 @@ export class Action {
         fromId: to,
       };
       this.selectSkill = Sanguosha.getSkillBySkillName(skill);
-      this.onPlayAction(to);
+      this.onPlayAction(to, () => () => true);
 
       this.presenter.defineConfirmButtonActions(() => {
         event.invoke = skill;

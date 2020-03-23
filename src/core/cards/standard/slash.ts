@@ -17,6 +17,10 @@ export class Slash extends BasicCard {
       SkillLoader.getInstance().getSkillByName('slash'),
     );
   }
+
+  public get Skill() {
+    return this.skill as SlashSkill;
+  }
 }
 
 export class ThunderSlash extends Slash {

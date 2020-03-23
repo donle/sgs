@@ -532,12 +532,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         ).extract();
       }
 
+      fromReason = Precondition.exists(fromReason, 'Unknown card move from reason');
       if (fromArea !== PlayerCardsArea.JudgeArea) {
         await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardLostEvent, {
           fromId: from.Id,
           cardIds,
           droppedBy: proposer,
-          reason: Precondition.exists(fromReason, 'Unknown card move from reason'),
+          reason: fromReason,
           translationsMessage,
         });
       } else {
@@ -545,7 +546,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           fromId: from.Id,
           cardIds,
           droppedBy: proposer,
-          reason: Precondition.exists(fromReason, 'Unknown card move from reason'),
+          reason: fromReason,
           translationsMessage,
         });
         from.dropCards(...cardIds);

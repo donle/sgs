@@ -61,7 +61,11 @@ export class RoomStore {
   @mobx.observable.ref
   onClickHandCardToPlay: (card: Card, selected: boolean) => void;
   @mobx.observable.ref
+  onClickEquipmentToDoAction: (card: Card, selected: boolean) => void;
+  @mobx.observable.ref
   playersSelectionMatcher: (player: Player) => boolean;
+  @mobx.observable.ref
+  cardSkillsSelectionMatcher: (card: Card) => boolean;
   @mobx.observable.ref
   onClickPlayer: (player: Player, selected: boolean) => void;
   @mobx.observable.ref
@@ -205,10 +209,18 @@ export class RoomPresenter {
   onClickPlayerCard(handler: (card: Card, selected: boolean) => void) {
     this.store.onClickHandCardToPlay = handler;
   }
+  @mobx.action
+  onClickEquipment(handler: (card: Card, selected: boolean) => void) {
+    this.store.onClickEquipmentToDoAction = handler;
+  }
 
   @mobx.action
   setupPlayersSelectionMatcher(matcher: (player: Player) => boolean) {
     this.store.playersSelectionMatcher = matcher;
+  }
+  @mobx.action
+  setupCardSkillSelectionMatcher(matcher: (card: Card) => boolean) {
+    this.store.cardSkillsSelectionMatcher = matcher;
   }
   @mobx.action
   onClickPlayer(handler: (player: Player, selected: boolean) => void) {

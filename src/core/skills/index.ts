@@ -17,6 +17,7 @@ export { LeBuSiShuSkill } from './cards/standard/lebusishu';
 export { TaoYuanJieYiSkill } from './cards/standard/taoyuanjieyi';
 export { JieDaoShaRenSkill } from './cards/standard/jiedaosharen';
 export { WuGuFengDengSkill } from './cards/standard/wugufengdeng';
+export { GuanShiFuSkill } from './cards/standard/guanshifu';
 
 export { Hujia } from './characters/standard/hujia';
 export { JianXiong } from './characters/standard/jianxiong';

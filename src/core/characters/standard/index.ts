@@ -1,17 +1,12 @@
-import { GameCharacterExtensions } from 'core/game/game_props';
-import { CharacterPackage } from 'core/game/package_loader/loader.characters';
+import { Character } from '../character';
 import { CaoCao } from './caocao';
 import { HuangYueYing } from './huangyueying';
 import { LiuBei } from './liubei';
 import { SunQuan } from './sunquan';
 
-export const StandardCharacterPackage: (
-  index: number,
-) => CharacterPackage<GameCharacterExtensions.Standard> = index => ({
-  [GameCharacterExtensions.Standard]: [
-    new SunQuan(index++),
-    new LiuBei(index++),
-    new CaoCao(index++),
-    new HuangYueYing(index++),
-  ],
-});
+export const StandardCharacterPackage: (index: number) => Character[] = index => [
+  new SunQuan(index++),
+  new LiuBei(index++),
+  new CaoCao(index++),
+  new HuangYueYing(index++),
+];

@@ -5,12 +5,13 @@ import { GameCardExtensions } from '../game_props';
 export type CardPackages = {
   [K in GameCardExtensions]: Card[];
 };
-export type CardPackage<Extension extends GameCardExtensions> = {
-  [K in Extension]: Card[];
-};
-export type CardPackageLoader = (index: number) => CardPackage<GameCardExtensions>;
+export type CardPackageLoader = (index: number) => Card[];
 
-const allPackageLoaders: CardPackageLoader[] = [StandardCardPackage];
+const allPackageLoaders: {
+  [P in GameCardExtensions]: CardPackageLoader;
+} = {
+  [GameCardExtensions.Standard]: StandardCardPackage,
+};
 
 export class CardLoader {
   private cards: CardPackages = {} as any;
@@ -23,13 +24,11 @@ export class CardLoader {
   private loadCards() {
     let index = 0;
 
-    for (const loader of allPackageLoaders) {
-      const packages = loader(index);
-      for (const [packageName, cards] of Object.entries(packages) as [GameCardExtensions, Card[]][]) {
-        this.cards[packageName] = cards;
+    for (const [packageName, loader] of Object.entries(allPackageLoaders)) {
+      const cards = loader(index);
+      this.cards[packageName] = cards;
 
-        index += cards.length;
-      }
+      index += cards.length;
     }
   }
 
