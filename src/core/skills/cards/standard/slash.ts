@@ -1,7 +1,7 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Slash } from 'core/cards/standard/slash';
-import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
@@ -38,9 +38,19 @@ export class SlashSkill extends ActiveSkill {
     return room.canAttack(room.getPlayerById(owner), room.getPlayerById(target), containerCard);
   }
 
+  private readonly DrunkTag = 'drunkLevel';
+
   async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    const slashCard = Sanguosha.getCardById<Slash>(event.cardId);
-    slashCard.setDrunkLevel(room.getPlayerById(event.fromId).hasDrunk());
+    const player = room.getPlayerById(event.fromId);
+    EventPacker.addMiddleware(
+      {
+        tag: this.DrunkTag,
+        data: player.hasDrunk(),
+      },
+      event,
+    );
+    //TODO: broadcast clearHeaded status
+    player.clearHeaded();
 
     return true;
   }
@@ -78,23 +88,23 @@ export class SlashSkill extends ActiveSkill {
         await room.useCard({
           fromId: toId,
           cardId: responseEvent.cardId,
+          toCardIds: [cardId],
           responseToEvent: event,
         });
 
         return false;
       } else {
-        const slashCard = Sanguosha.getCardById<Slash>(cardId);
+        const addtionalDrunkDamage = EventPacker.getMiddleware<number>(this.DrunkTag, event) || 0;
         const damageEvent = {
           fromId,
           toId,
-          damage: 1 + slashCard.getDrunkLevel(),
+          damage: 1 + addtionalDrunkDamage,
           damageType: this.damageType,
           cardIds: [cardId],
           triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
         };
 
         await room.damage(damageEvent);
-        slashCard.clearDrunkLevel();
       }
     }
 

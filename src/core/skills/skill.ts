@@ -330,7 +330,11 @@ export abstract class TransformSkill extends Skill {
     return true;
   }
 
-  public abstract get Place(): PlayerCardsArea[] | undefined;
+  public includesJudgeCard() {
+    return false;
+  }
+
+  public abstract get Place(): (PlayerCardsArea.HandArea | PlayerCardsArea.EquipArea)[];
 
   public abstract forceToTransformCardTo(cardId: CardId): VirtualCard | Card;
 }
