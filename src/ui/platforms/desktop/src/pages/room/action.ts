@@ -15,6 +15,7 @@ export class Action {
   private selectedPlayCard: Card | undefined;
   private selectSkill: Skill | undefined;
   private selectedActionCards: Card[] = [];
+  private onTriggered: boolean = false;
   private selectedAction: GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.SkillUseEvent | undefined;
   constructor(private store: RoomStore, private presenter: RoomPresenter) {}
 
@@ -24,6 +25,7 @@ export class Action {
     this.selectSkill = undefined;
     this.selectedActionCards = [];
     this.selectedTargets = [];
+    this.onTriggered = false;
     // this.presenter.closeDialog();
     this.presenter.setupPlayersSelectionMatcher(() => false);
     this.presenter.setupClientPlayerCardActionsMatcher(() => () => false);
@@ -135,6 +137,37 @@ export class Action {
     containerCardId?: CardId,
     scopedTargets?: PlayerId[],
   ) => {
+    let equipSkillCardId: CardId | undefined;
+    if (this.selectSkill) {
+      equipSkillCardId = this.presenter
+        .ClientPlayer!.getCardIds(PlayerCardsArea.EquipArea)
+        .find(equip => Sanguosha.getCardById(equip).Skill === this.selectSkill);
+    }
+
+    this.presenter.setupCardSkillSelectionMatcher((card: Card): boolean => {
+      if (this.selectSkill) {
+        let onCardSkillAction = false;
+        if (this.selectSkill instanceof ActiveSkill || this.selectSkill instanceof TriggerSkill) {
+          onCardSkillAction =
+            (this.selectSkill.isAvailableCard(
+              this.store.clientPlayerId,
+              this.store.room,
+              card.Id,
+              this.selectedActionCards.map(c => c.Id),
+              equipSkillCardId,
+            ) &&
+              !this.selectSkill.cardFilter(
+                this.store.room,
+                this.selectedActionCards.map(c => c.Id),
+              )) ||
+            this.selectedActionCards.includes(card);
+        }
+        return onCardSkillAction || (!this.onTriggered && card.Skill === this.selectSkill);
+      } else {
+        return card.Skill instanceof ActiveSkill;
+      }
+    });
+
     this.presenter.setupPlayersSelectionMatcher((player: Player) => {
       if (scopedTargets) {
         return (
@@ -411,24 +444,6 @@ export class Action {
         .find(equip => Sanguosha.getCardById(equip).Skill === this.selectSkill);
     }
 
-    this.presenter.setupCardSkillSelectionMatcher((card: Card): boolean => {
-      if (this.selectSkill) {
-        let onCardSkillAction = false;
-        if (this.selectSkill instanceof ActiveSkill || this.selectSkill instanceof TriggerSkill) {
-          onCardSkillAction = this.selectSkill.isAvailableCard(
-            this.store.clientPlayerId,
-            this.store.room,
-            card.Id,
-            this.selectedActionCards.map(c => c.Id),
-            equipSkillCardId,
-          );
-        }
-        return onCardSkillAction || (!customCardSelector && card.Skill === this.selectSkill);
-      } else {
-        return card.Skill instanceof ActiveSkill;
-      }
-    });
-
     this.presenter.onClickSkill((skill: Skill, selected: boolean) => {
       if (selected && !this.selectSkill) {
         this.selectSkill = skill;
@@ -490,6 +505,7 @@ export class Action {
     if (to !== this.presenter.ClientPlayer!.Id) {
       return;
     }
+    this.onTriggered = true;
 
     if (invokeSkillNames.length === 1) {
       const skill = invokeSkillNames[0];
@@ -507,8 +523,8 @@ export class Action {
         invoke: undefined,
         fromId: to,
       };
-      this.selectSkill = Sanguosha.getSkillBySkillName(skill);
-      this.onPlayAction(to, () => () => true);
+      this.selectSkill = Sanguosha.getSkillBySkillName<TriggerSkill>(skill);
+      this.onPlayAction(to, () => () => !(this.selectSkill as TriggerSkill).cardFilter(this.store.room, []));
 
       this.presenter.defineConfirmButtonActions(() => {
         event.invoke = skill;

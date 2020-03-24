@@ -174,6 +174,8 @@ export class VirtualCard<T extends Card = Card> extends Card {
 
     this.fromPackage = viewAsCard.Package;
     this.viewAs = viewAsCard;
+    this.cardType = viewAsCard.Type;
+    this.AOE = viewAsCard.AOE;
     this.name = this.viewAs.Name;
     this.generalName = this.viewAs.GeneralName;
     this.description = this.viewAs.Description;

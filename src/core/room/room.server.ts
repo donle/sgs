@@ -290,8 +290,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     await super.useCard(content);
     const from = this.getPlayerById(content.fromId);
     const card = Sanguosha.getCardById(content.cardId);
-    if (card instanceof EquipCard) {
-      await this.equip(card, from);
+    if (card.is(CardType.Equip)) {
+      await this.equip(card as EquipCard, from);
     } else if (!card.is(CardType.DelayedTrick)) {
       await this.loseCards({
         reason: CardLostReason.CardUse,

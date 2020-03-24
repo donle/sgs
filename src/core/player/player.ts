@@ -169,7 +169,7 @@ export abstract class Player implements PlayerInfo {
     );
 
     if (card) {
-      return ruleCardUse && card.Skill.canUse(room, this);
+      return ruleCardUse && (card.is(CardType.Equip) ? true : card.Skill.canUse(room, this));
     }
 
     return ruleCardUse;

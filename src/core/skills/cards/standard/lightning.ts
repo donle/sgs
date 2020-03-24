@@ -1,5 +1,4 @@
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
-import { Lightning } from 'core/cards/standard/lightning';
 import { CardLostReason, ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType, INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
@@ -18,8 +17,9 @@ export class LightningSkill extends ActiveSkill {
 
   public canUse(room: Room, owner: Player) {
     return (
-      owner.getCardIds(PlayerCardsArea.JudgeArea).find(cardId => Sanguosha.getCardById(cardId) instanceof Lightning) ===
-      undefined
+      owner
+        .getCardIds(PlayerCardsArea.JudgeArea)
+        .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'lightning') === undefined
     );
   }
 
@@ -66,7 +66,7 @@ export class LightningSkill extends ActiveSkill {
           undefined ||
         player
           .getCardIds(PlayerCardsArea.JudgeArea)
-          .find(cardId => Sanguosha.getCardById(cardId) instanceof Lightning) !== undefined;
+          .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'lightning') !== undefined;
 
       if (skip) {
         continue;

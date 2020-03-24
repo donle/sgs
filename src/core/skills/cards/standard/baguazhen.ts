@@ -75,7 +75,7 @@ export class BaGuaZhenSkill extends TriggerSkill {
       const cardUseEvent = {
         cardId: jink.Id,
         fromId,
-        toCardIds: jinkCardEvent.byCardId === undefined ? undefined : [],
+        toCardIds: jinkCardEvent.byCardId === undefined ? undefined : [jinkCardEvent.byCardId],
         responseToEvent: jinkCardEvent.triggeredOnEvent,
       };
 

@@ -26,11 +26,7 @@ export class QingGangSkill extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
-    if (!content) {
-      return true;
-    }
-
-    return owner.Id === content.fromId;
+    return !!content && owner.Id === content.fromId;
   }
 
   async onTrigger(room: Room, content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {

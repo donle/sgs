@@ -1,5 +1,4 @@
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
-import { LeBuSiShu } from 'core/cards/standard/lebusishu';
 import { CardLostReason, ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
@@ -44,7 +43,7 @@ export class LeBuSiShuSkill extends ActiveSkill {
       room
         .getPlayerById(target)
         .getCardIds(PlayerCardsArea.JudgeArea)
-        .find(cardId => Sanguosha.getCardById(cardId) instanceof LeBuSiShu) === undefined
+        .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'lebusishu') === undefined
     );
   }
 
