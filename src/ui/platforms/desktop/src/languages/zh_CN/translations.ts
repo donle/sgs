@@ -22,6 +22,7 @@ export const cardDictionary: Word[] = [
   { source: 'taoyuanjieyi', target: '桃园结义' },
   { source: 'wugufengdeng', target: '五谷丰登' },
   { source: 'guanshifu', target: '贯石斧' },
+  { source: 'zhangbashemao', target: '丈八蛇矛' },
 ];
 
 export const characterDictionary: Word[] = [
@@ -502,6 +503,12 @@ export const eventDictionary: Word[] = [
   { source: '{0} has been placed into drop stack', target: '{0} 置入了弃牌堆' },
   { source: '{0} lost card {1}', target: '{0} 失去了 {1}' },
   { source: '{0} used card {1}', target: '{0} 使用了一张 {1}' },
+  { source: '{0} used skill {1}, transformed {2} as {3} card to response', target: '{0} 使用了技能 {1} 将 {2} 当做 {3} 打出' },
+  { source: '{0} used skill {1}, transformed {2} as {3} card to use', target: '{0} 使用了技能 {1} 将 {2} 当做 {3} 使用' },
+  {
+    source: '{0} used skill {1}, transformed {2} as {3} card used to {4}',
+    target: '{0} 使用了技能 {1} 将 {2} 当做 {3} 使用，目标是 {4}',
+  },
   {
     source: '{0} used card {1} to {2}',
     target: '{0} 使用了一张 {1}，目标是 {2}',

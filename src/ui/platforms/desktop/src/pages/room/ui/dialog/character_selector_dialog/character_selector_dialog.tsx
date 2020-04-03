@@ -1,7 +1,7 @@
 import { Character, CharacterId } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import { CharacterCard } from 'pages/room/character/character';
+import { CharacterCard } from 'pages/room/ui/character/character';
 import * as React from 'react';
 import { BaseDialog } from '../base_dialog';
 import styles from './character_selector_dialog.module.css';

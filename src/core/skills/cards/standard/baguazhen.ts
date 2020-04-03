@@ -1,5 +1,6 @@
 import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
+import { Jink } from 'core/cards/standard/jink';
 import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
@@ -68,7 +69,7 @@ export class BaGuaZhenSkill extends TriggerSkill {
     const judgeEvent = await room.judge(event.fromId, jinkCardEvent.byCardId, this.name);
 
     if (Sanguosha.getCardById(judgeEvent.judgeCardId).isRed()) {
-      const jink = VirtualCard.create({
+      const jink = VirtualCard.create<Jink>({
         cardName: 'jink',
       });
 

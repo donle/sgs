@@ -1,6 +1,6 @@
 import * as mobxReact from 'mobx-react';
+import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
-import { RoomPresenter, RoomStore } from '../room.presenter';
 
 export type PlayerDialogProps = {
   store: RoomStore;

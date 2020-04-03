@@ -2,7 +2,7 @@ import { Card } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import { ClientCard } from 'pages/room/card/card';
+import { ClientCard } from 'pages/room/ui/card/card';
 import * as React from 'react';
 import { BaseDialog } from '../base_dialog';
 import styles from './wugufengdeng_dialog.module.css';

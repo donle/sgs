@@ -75,6 +75,10 @@ export class CardMatcher {
     );
   }
 
+  public get Matcher() {
+    return this.matcher;
+  }
+
   public toSocketPassenger(): CardMatcherSocketPassenger {
     return {
       ...this.matcher,

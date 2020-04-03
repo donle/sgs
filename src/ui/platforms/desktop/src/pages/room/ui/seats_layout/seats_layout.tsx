@@ -2,9 +2,9 @@ import { Player } from 'core/player/player';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
+import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
 import { PlayerCard } from '../player/player';
-import { RoomPresenter, RoomStore } from '../room.presenter';
 import styles from './seats_layout.module.css';
 
 type SeatsLayoutProps = {

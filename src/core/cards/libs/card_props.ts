@@ -29,6 +29,7 @@ export type VirtualCardIdProps = {
   cardSuit: CardSuit;
   name: string;
   skillName?: string;
+  bySkill?: string;
   containedCardIds: CardId[];
 };
 

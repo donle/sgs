@@ -1,6 +1,6 @@
-import { CardType } from 'core/cards/card';
+import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { CardId, CardTargetEnum } from 'core/cards/libs/card_props';
+import { CardId } from 'core/cards/libs/card_props';
 import { Character, CharacterId } from 'core/characters/character';
 import {
   CardLostReason,
@@ -471,7 +471,16 @@ export class GameProcessor {
       if (stage === ObtainCardStage.CardObtaining) {
         event.toId = this.deadPlayerFilters(event.toId)[0];
         this.room.broadcast(identifier, event);
-        this.room.getPlayerById(event.toId).obtainCardIds(...event.cardIds);
+        const obtainedCards = event.cardIds.reduce<CardId[]>((prevCardIds, cardId) => {
+          if (Card.isVirtualCardId(cardId)) {
+            Sanguosha.getCardById<VirtualCard>(cardId).ActualCardIds.forEach(actualId => prevCardIds.push(actualId));
+          } else {
+            prevCardIds.push(cardId);
+          }
+
+          return prevCardIds;
+        }, [] as CardId[]);
+        this.room.getPlayerById(event.toId).obtainCardIds(...obtainedCards);
       }
     });
   }
@@ -526,7 +535,16 @@ export class GameProcessor {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === CardLostStage.CardLosing) {
         const from = this.room.getPlayerById(event.fromId);
-        from.dropCards(...event.cardIds);
+        const lostCards = event.cardIds.reduce<CardId[]>((prevCardIds, cardId) => {
+          if (Card.isVirtualCardId(cardId)) {
+            Sanguosha.getCardById<VirtualCard>(cardId).ActualCardIds.forEach(actualId => prevCardIds.push(actualId));
+          } else {
+            prevCardIds.push(cardId);
+          }
+
+          return prevCardIds;
+        }, [] as CardId[]);
+        from.dropCards(...lostCards);
         this.room.broadcast(identifier, event);
       }
     });
@@ -779,14 +797,28 @@ export class GameProcessor {
               TranslationPack.patchCardInTranslation(event.cardId),
             ).extract();
           } else {
-            event.translationsMessage = TranslationPack.translationJsonPatcher(
-              '{0} used card {1}' + (event.toIds ? ' to {2}' : ''),
-              TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
-              TranslationPack.patchCardInTranslation(event.cardId),
-              event.toIds
-                ? TranslationPack.patchPlayerInTranslation(...event.toIds.map(id => this.room.getPlayerById(id)))
-                : '',
-            ).extract();
+            if (Card.isVirtualCardId(event.cardId)) {
+              const card = Sanguosha.getCardById<VirtualCard>(event.cardId);
+              event.translationsMessage = TranslationPack.translationJsonPatcher(
+                '{0} used skill {1}, transformed {2} as {3} card' + (event.toIds ? ' used to {4}' : ''),
+                TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
+                card.GeneratedBySkill || '',
+                TranslationPack.patchCardInTranslation(...card.ActualCardIds),
+                TranslationPack.patchCardInTranslation(card.Id),
+                event.toIds
+                  ? TranslationPack.patchPlayerInTranslation(...event.toIds.map(id => this.room.getPlayerById(id)))
+                  : '',
+              ).extract();
+            } else {
+              event.translationsMessage = TranslationPack.translationJsonPatcher(
+                '{0} used card {1}' + (event.toIds ? ' to {2}' : ''),
+                TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
+                TranslationPack.patchCardInTranslation(event.cardId),
+                event.toIds
+                  ? TranslationPack.patchPlayerInTranslation(...event.toIds.map(id => this.room.getPlayerById(id)))
+                  : '',
+              ).extract();
+            }
           }
         }
 
@@ -805,11 +837,22 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     if (!event.translationsMessage) {
-      event.translationsMessage = TranslationPack.translationJsonPatcher(
-        '{0} responses card {1}',
-        TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
-        TranslationPack.patchCardInTranslation(event.cardId),
-      ).extract();
+      if (Card.isVirtualCardId(event.cardId)) {
+        const card = Sanguosha.getCardById<VirtualCard>(event.cardId);
+        event.translationsMessage = TranslationPack.translationJsonPatcher(
+          '{0} used skill {1}, transformed {2} as {3} card to response',
+          TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
+          card.GeneratedBySkill || '',
+          TranslationPack.patchCardInTranslation(...card.ActualCardIds),
+          TranslationPack.patchCardInTranslation(card.Id),
+        ).extract();
+      } else {
+        event.translationsMessage = TranslationPack.translationJsonPatcher(
+          '{0} responses card {1}',
+          TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
+          TranslationPack.patchCardInTranslation(event.cardId),
+        ).extract();
+      }
     }
 
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {

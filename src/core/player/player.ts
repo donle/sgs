@@ -226,28 +226,25 @@ export abstract class Player implements PlayerInfo {
 
   public obtainCardIds(...cards: CardId[]) {
     const handCards = this.getCardIds(PlayerCardsArea.HandArea);
-    for (const card of cards) {
+    for (const card of Card.getActualCards(cards)) {
       handCards.push(card);
     }
   }
 
   dropCards(...cards: CardId[]): CardId[] {
-    const playerCardsAreas = [PlayerCardsArea.EquipArea, PlayerCardsArea.HandArea, PlayerCardsArea.JudgeArea];
     const droppedCardIds: CardId[] = [];
     let hasDropped = cards.length === 0;
-    for (const playerCardsArea of playerCardsAreas) {
-      const areaCards = this.getCardIds(playerCardsArea);
-      for (const card of cards) {
+    for (const area of [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea, PlayerCardsArea.JudgeArea]) {
+      const areaCards = this.getCardIds(area);
+      for (const card of Card.getActualCards(cards)) {
         if (Card.isVirtualCardId(card)) {
-          const virtualCard = Sanguosha.getCardById<VirtualCard>(card);
-          this.dropCards(...virtualCard.ActualCardIds);
+          continue;
+        }
+
+        const index = areaCards.findIndex(areaCard => areaCard === card);
+        if (index >= 0) {
+          droppedCardIds.push(areaCards.splice(index, 1)[0]);
           hasDropped = true;
-        } else {
-          const index = areaCards.findIndex(areaCard => areaCard === card);
-          if (index >= 0) {
-            droppedCardIds.push(areaCards.splice(index, 1)[0]);
-            hasDropped = true;
-          }
         }
       }
     }

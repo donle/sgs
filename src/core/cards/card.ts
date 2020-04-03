@@ -45,6 +45,19 @@ export abstract class Card {
 
   private cardTargetNumber: CardTargetEnum = CardTargetEnum.Single;
 
+  public static getActualCards(cards: CardId[]): CardId[] {
+    let result: CardId[] = [];
+    for (const card of cards) {
+      if (Card.isVirtualCardId(card)) {
+        result = result.concat(Card.getActualCards(Sanguosha.getCardById<VirtualCard>(card).ActualCardIds));
+      } else {
+        result.push(card);
+      }
+    }
+
+    return result;
+  }
+
   public get Id(): CardId {
     return this.id;
   }
@@ -148,6 +161,7 @@ export class VirtualCard<T extends Card = Card> extends Card {
   protected cardType: CardType[];
   protected fromPackage: GameCardExtensions;
   protected effectUseDistance: number;
+  protected bySkill: string | undefined;
 
   protected id = -1;
   protected cardNumber = 0;
@@ -161,17 +175,19 @@ export class VirtualCard<T extends Card = Card> extends Card {
       cardName: string;
       cardSuit?: CardSuit;
       cardNumber?: number;
+      bySkill?: string;
     },
     private cardIds: CardId[],
     skill?: Skill,
   ) {
     super();
 
-    const { cardName, cardNumber, cardSuit } = viewAsOptions;
+    const { cardName, cardNumber, cardSuit, bySkill } = viewAsOptions;
 
     const viewAsCard = Sanguosha.getCardByName(cardName) as T;
     Precondition.assert(viewAsCard !== undefined, `Unable to init virtual card: ${cardName}`);
 
+    this.bySkill = bySkill;
     this.fromPackage = viewAsCard.Package;
     this.viewAs = viewAsCard;
     this.cardType = viewAsCard.Type;
@@ -214,22 +230,24 @@ export class VirtualCard<T extends Card = Card> extends Card {
         cardName: parsedId.name,
         cardNumber: parsedId.cardNumber,
         cardSuit: parsedId.cardSuit,
+        bySkill: parsedId.bySkill,
       },
       parsedId.containedCardIds,
       skill,
     );
   }
 
-  public static create(
+  public static create<T extends Card>(
     viewAsOptions: {
       cardName: string;
       cardSuit?: CardSuit;
       cardNumber?: number;
+      bySkill?: string;
     },
     cardIds: CardId[] = [],
     skill?: Skill,
   ) {
-    return new VirtualCard(viewAsOptions, cardIds, skill);
+    return new VirtualCard<T>(viewAsOptions, cardIds, skill);
   }
 
   public isBlack() {
@@ -245,11 +263,16 @@ export class VirtualCard<T extends Card = Card> extends Card {
       cardNumber: this.cardNumber,
       cardSuit: this.suit,
       name: this.name,
+      bySkill: this.bySkill,
       skillName: this.skill.Name,
       containedCardIds: this.cardIds,
     };
 
     return JSON.stringify(virtualCardIdJSONObject);
+  }
+
+  public get GeneratedBySkill() {
+    return this.bySkill;
   }
 
   public get ActualCardIds() {
@@ -258,6 +281,10 @@ export class VirtualCard<T extends Card = Card> extends Card {
 
   public get Skill() {
     return this.skill;
+  }
+
+  public get ViewAsCard(): Readonly<T> {
+    return this.viewAs;
   }
 
   public isVirtualCard() {

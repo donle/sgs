@@ -6,12 +6,12 @@ import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { match } from 'react-router-dom';
 import { PagePropsWithHostConfig } from 'types/page_props';
-import { Dashboard } from './dashboard/dashboard';
-import { GameDialog } from './game_dialog/game_dialog';
 import { GameClientProcessor } from './game_processor';
 import styles from './room.module.css';
 import { RoomPresenter, RoomStore } from './room.presenter';
-import { SeatsLayout } from './seats_layout/seats_layout';
+import { Dashboard } from './ui/dashboard/dashboard';
+import { GameDialog } from './ui/game_dialog/game_dialog';
+import { SeatsLayout } from './ui/seats_layout/seats_layout';
 
 @mobxReact.observer
 export class RoomPage extends React.Component<

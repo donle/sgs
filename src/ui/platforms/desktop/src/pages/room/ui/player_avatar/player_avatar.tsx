@@ -4,8 +4,8 @@ import { Player } from 'core/player/player';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
+import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
-import { RoomPresenter, RoomStore } from '../room.presenter';
 import styles from './player_avatar.module.css';
 
 type PlayerAvatarProps = {

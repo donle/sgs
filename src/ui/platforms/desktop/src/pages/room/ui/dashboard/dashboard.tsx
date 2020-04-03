@@ -8,10 +8,10 @@ import { PlayerCardsArea } from 'core/player/player_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
+import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
 import { ClientCard } from '../card/card';
 import { PlayerAvatar } from '../player_avatar/player_avatar';
-import { RoomPresenter, RoomStore } from '../room.presenter';
 import styles from './dashboard.module.css';
 
 export type DashboardProps = {
@@ -21,7 +21,7 @@ export type DashboardProps = {
   updateFlag: boolean;
   playerSelectableMatcher?(player: Player): boolean;
   onClickPlayer?(player: Player, selected: boolean): void;
-  cardEnableMatcher?(area: PlayerCardsArea): (card: Card) => boolean;
+  cardEnableMatcher?(card: Card): boolean;
   cardSkillEnableMatcher?(card: Card): boolean;
   onClick?(card: Card, selected: boolean): void;
   onClickEquipment?(card: Card, selected: boolean): void;
@@ -119,7 +119,7 @@ export class Dashboard extends React.Component<DashboardProps> {
           card={card}
           onSelected={this.onClick(card)}
           className={styles.handCard}
-          disabled={!this.props.cardEnableMatcher || !this.props.cardEnableMatcher(PlayerCardsArea.HandArea)(card)}
+          disabled={!this.props.cardEnableMatcher || !this.props.cardEnableMatcher(card)}
         />
       );
     });

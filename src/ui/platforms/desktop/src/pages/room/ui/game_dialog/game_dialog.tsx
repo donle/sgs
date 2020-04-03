@@ -1,7 +1,7 @@
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobxReact from 'mobx-react';
+import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
-import { RoomPresenter, RoomStore } from '../room.presenter';
 import styles from './game_dialog.module.css';
 
 export type GameDialogProps = {

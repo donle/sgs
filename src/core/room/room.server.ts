@@ -13,7 +13,7 @@ import { Player } from 'core/player/player';
 import { ServerPlayer } from 'core/player/player.server';
 import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 
-import { CardType } from 'core/cards/card';
+import { Card, CardType } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardId, CardTargetEnum } from 'core/cards/libs/card_props';
 import { Character } from 'core/characters/character';
@@ -278,7 +278,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
 
     this.notify(GameEventIdentifiers.AskForCardResponseEvent, event, to);
-
     return {
       responseEvent: await this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForCardResponseEvent, to),
     };
@@ -472,7 +471,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       TranslationPack.translationJsonPatcher(
         '{0} obtains cards {1}',
         TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.toId)),
-        TranslationPack.patchCardInTranslation(...event.cardIds),
+        TranslationPack.patchCardInTranslation(...Card.getActualCards(event.cardIds)),
       ).extract();
 
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.ObtainCardEvent, event);
@@ -577,7 +576,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         translationsMessage: TranslationPack.translationJsonPatcher(
           '{0} obtains cards {1}' + (fromId ? ' from {2}' : ''),
           TranslationPack.patchPlayerInTranslation(to),
-          TranslationPack.patchCardInTranslation(...cardIds),
+          TranslationPack.patchCardInTranslation(...Card.getActualCards(cardIds)),
           fromId ? TranslationPack.patchPlayerInTranslation(this.getPlayerById(fromId)) : '',
         ).extract(),
         unengagedMessage: TranslationPack.translationJsonPatcher(

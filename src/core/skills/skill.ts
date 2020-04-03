@@ -345,95 +345,21 @@ export abstract class ViewAsSkill extends Skill {
   }
 
   public abstract canViewAs(): string[];
-
-  public abstract targetFilterFor(cardName: string, room: Room, targets: PlayerId[]): boolean;
-  public abstract cardFilterFor(cardName: string, room: Room, cards: CardId[]): boolean;
-  public abstract isAvailableCardFor(
-    cardName: string,
-    owner: PlayerId,
+  public abstract viewAs(cards: CardId[]): VirtualCard;
+  public abstract cardFilter(room: Room, owner: Player, cards: CardId[]): boolean;
+  public abstract isAvailableCard(
     room: Room,
+    owner: Player,
     pendingCardId: CardId,
     selectedCards: CardId[],
     containerCard?: CardId,
   ): boolean;
-
-  public abstract isAvailableTargetFor(
-    cardName: string,
-    owner: PlayerId,
-    room: Room,
-    pendingTargetId: PlayerId,
-    selectedTargets: PlayerId[],
-    containerCard?: CardId,
-  ): boolean;
-
-  public targetFilter(room: Room, targets: PlayerId[]): boolean {
-    let validTarget = false;
-    for (const cardName of this.canViewAs()) {
-      validTarget = validTarget || this.targetFilterFor(cardName, room, targets);
-    }
-
-    return validTarget;
-  }
-
-  public cardFilter(room: Room, cards: CardId[]): boolean {
-    let validCard = false;
-    for (const cardName of this.canViewAs()) {
-      validCard = validCard || this.cardFilterFor(cardName, room, cards);
-    }
-
-    return validCard;
-  }
-  public isAvailableCard(
-    owner: PlayerId,
-    room: Room,
-    cardId: CardId,
-    selectedCards: CardId[],
-    containerCard?: CardId | undefined,
-  ): boolean {
-    let validCard = false;
-    for (const cardName of this.canViewAs()) {
-      validCard = validCard || this.isAvailableCardFor(cardName, owner, room, cardId, selectedCards, containerCard);
-    }
-
-    return validCard;
-  }
-
-  public isAvailableTarget(
-    owner: PlayerId,
-    room: Room,
-    target: PlayerId,
-    selectedTargets: PlayerId[],
-    containerCard?: CardId | undefined,
-  ): boolean {
-    let validTarget = false;
-    for (const cardName of this.canViewAs()) {
-      validTarget =
-        validTarget || this.isAvailableTargetFor(cardName, owner, room, target, selectedTargets, containerCard);
-    }
-
-    return validTarget;
-  }
 
   public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     return true;
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
-    const { triggeredOnEvent } = event;
-    const cardUseEvent = triggeredOnEvent as ClientEventFinder<
-      GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent
-    >;
-
-    const identifier = EventPacker.getIdentifier(cardUseEvent);
-    const card: VirtualCard = Sanguosha.getCardById(cardUseEvent.cardId);
-    Precondition.assert(
-      card.isVirtualCard() && identifier !== undefined,
-      `Invalid view as virtual card in ${this.name}`,
-    );
-
-    identifier === GameEventIdentifiers.CardUseEvent
-      ? await room.useCard(cardUseEvent)
-      : await room.responseCard(cardUseEvent);
     return true;
   }
 }

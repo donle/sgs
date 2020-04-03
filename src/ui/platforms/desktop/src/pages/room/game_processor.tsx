@@ -9,17 +9,22 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as React from 'react';
-import { Action } from './action';
-import { CardSelectorDialog } from './dialog/card_selector_dialog/card_selector_dialog';
-import { CharacterSelectorDialog } from './dialog/character_selector_dialog/character_selector_dialog';
-import { WuGuFengDengDialog } from './dialog/wugufengdeng_dialog/wugufengdeng_dialog';
+import { CardResponseAction } from './actions/card_response_action';
+import { PlayPhaseAction } from './actions/play_phase_action';
+import { ResponsiveUseCardAction } from './actions/responsive_card_use_action';
+import { SelectCardAction } from './actions/select_card_action';
+import { SkillUseAction } from './actions/skill_use_action';
 import { RoomPresenter, RoomStore } from './room.presenter';
+import { CardSelectorDialog } from './ui/dialog/card_selector_dialog/card_selector_dialog';
+import { CharacterSelectorDialog } from './ui/dialog/character_selector_dialog/character_selector_dialog';
+import { WuGuFengDengDialog } from './ui/dialog/wugufengdeng_dialog/wugufengdeng_dialog';
 
 export class GameClientProcessor {
-  private actionHandler: Action;
-  constructor(private presenter: RoomPresenter, private store: RoomStore, private translator: ClientTranslationModule) {
-    this.actionHandler = new Action(this.store, this.presenter);
-  }
+  constructor(
+    private presenter: RoomPresenter,
+    private store: RoomStore,
+    private translator: ClientTranslationModule,
+  ) {}
 
   private tryToThrowNotReadyException(e: GameEventIdentifiers) {
     if (!this.store.room && e !== GameEventIdentifiers.PlayerEnterEvent) {
@@ -27,13 +32,8 @@ export class GameClientProcessor {
     }
   }
 
-  private onClearPreviousActionStatus() {
-    this.actionHandler.endAction();
-  }
-
   async onHandleIncomingEvent<T extends GameEventIdentifiers>(e: T, content: ServerEventFinder<T>) {
     this.tryToThrowNotReadyException(e);
-    this.onClearPreviousActionStatus();
     switch (e) {
       case GameEventIdentifiers.GameReadyEvent:
         await this.onHandleGameReadyEvent(e as any, content);
@@ -131,7 +131,8 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.actionHandler.onResponseCardAction(content, this.translator);
+    const action = new CardResponseAction(content.toId, this.store, this.presenter, content);
+    action.onPlay(this.translator);
   }
 
   private async onHandleAskForCardDropEvent<T extends GameEventIdentifiers.AskForCardDropEvent>(
@@ -142,8 +143,8 @@ export class GameClientProcessor {
       conversation: TranslationPack.translationJsonPatcher('please drop {0} cards', content.cardAmount).extract(),
       translator: this.translator,
     });
-
-    const selectedCards = await this.actionHandler.onSelectCardAction(content.fromArea, content.cardAmount, content);
+    const action = new SelectCardAction(content.toId, this.store, this.presenter, content);
+    const selectedCards = await action.onSelect(content.fromArea, content.cardAmount);
 
     this.presenter.closeIncomingConversation();
     const event: ClientEventFinder<T> = {
@@ -157,7 +158,8 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.actionHandler.onResponsiveUseCard(content, this.translator);
+    const action = new ResponsiveUseCardAction(content.toId, this.store, this.presenter, content);
+    action.onPlay(this.translator);
   }
 
   private async onHandleCardUseEvent<T extends GameEventIdentifiers.CardUseEvent>(
@@ -302,7 +304,8 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.actionHandler.onInvokingSkills(content, this.translator);
+    const action = new SkillUseAction(content.to, this.store, this.presenter, content);
+    action.onSelect(this.translator);
   }
 
   private onHandlePhaseChangeEvent<T extends GameEventIdentifiers.PhaseChangeEvent>(
@@ -321,8 +324,8 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.actionHandler.enableFinishButton(content.fromId);
-    this.actionHandler.onPlayAction(content.fromId);
+    const action = new PlayPhaseAction(content.fromId, this.store, this.presenter);
+    action.onPlay();
   }
 
   private onHandleMoveCardEvent<T extends GameEventIdentifiers.MoveCardEvent>(type: T, content: ServerEventFinder<T>) {
@@ -369,6 +372,7 @@ export class GameClientProcessor {
 
   private onHandleCardLoseEvent<T extends GameEventIdentifiers.CardLostEvent>(type: T, content: ServerEventFinder<T>) {
     const { fromId, cardIds } = content;
+
     this.store.room.getPlayerById(fromId).dropCards(...cardIds);
     this.presenter.broadcastUIUpdate();
   }

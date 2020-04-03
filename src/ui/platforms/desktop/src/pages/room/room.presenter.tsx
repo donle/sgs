@@ -1,19 +1,17 @@
 import { Card } from 'core/cards/card';
+import type { GameInfo } from 'core/game/game_props';
 import { ClientSocket } from 'core/network/socket.client';
 import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
 import { PlayerCardsArea } from 'core/player/player_props';
-import { ClientRoom } from 'core/room/room.client';
-import { Skill } from 'core/skills/skill';
-import * as mobx from 'mobx';
-import { Conversation, ConversationProps } from './conversation/conversaion';
-
-import * as React from 'react';
-
-import type { GameInfo } from 'core/game/game_props';
 import type { PlayerId, PlayerInfo } from 'core/player/player_props';
 import type { RoomId } from 'core/room/room';
+import { ClientRoom } from 'core/room/room.client';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { Skill } from 'core/skills/skill';
+import * as mobx from 'mobx';
+import * as React from 'react';
+import { Conversation, ConversationProps } from './ui/conversation/conversation';
 
 type ClientRoomInfo = {
   roomId: number;
@@ -55,9 +53,7 @@ export class RoomStore {
   };
 
   @mobx.observable.ref
-  clientPlayerCardActionsMatcher: (
-    area: PlayerCardsArea,
-  ) => (card: Card) => boolean;
+  clientPlayerCardActionsMatcher: (card: Card) => boolean;
   @mobx.observable.ref
   onClickHandCardToPlay: (card: Card, selected: boolean) => void;
   @mobx.observable.ref
@@ -201,7 +197,7 @@ export class RoomPresenter {
 
   @mobx.action
   setupClientPlayerCardActionsMatcher(
-    matcher: (area: PlayerCardsArea) => (card: Card) => boolean,
+    matcher: (card: Card) => boolean,
   ) {
     this.store.clientPlayerCardActionsMatcher = matcher;
   }

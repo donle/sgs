@@ -84,9 +84,11 @@ export class GameCommonRules {
       availableUseTimes = baseRule.times;
     }
 
-    const additionalRule = GameCommonRules.userRules[user.Id].cards.find(rule => rule.cardMatcher.match(card));
+    const additionalRule = GameCommonRules.userRules[user.Id].cards.filter(rule => rule.cardMatcher.match(card));
     if (additionalRule) {
-      availableUseTimes += additionalRule.additionalUsableTimes;
+      availableUseTimes = additionalRule.reduce((total, current) => {
+        return (total += current.additionalUsableTimes);
+      }, availableUseTimes);
     }
     if (card instanceof Card) {
       for (const skill of user.getSkills<RulesBreakerSkill>('breaker')) {

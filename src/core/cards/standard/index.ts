@@ -18,6 +18,7 @@ import { WanJianQiFa } from './wanjianqifa';
 import { WuGuFengDeng } from './wugufengdeng';
 import { WuXieKeJi } from './wuxiekeji';
 import { WuZhongShengYou } from './wuzhongshengyou';
+import { ZhangBaSheMao } from './zhangbashemao';
 import { ZhuGeLianNu } from './zhugeliannu';
 import { ZiXin } from './zixin';
 
@@ -129,4 +130,5 @@ export const StandardCardPackage: (index: number) => Card[] = index => [
   new ZhuGeLianNu(index++, 1, CardSuit.Club),
   new ZhuGeLianNu(index++, 1, CardSuit.Diamond),
   new GuanShiFu(index++, 5, CardSuit.Diamond),
+  new ZhangBaSheMao(index++, 12, CardSuit.Spade),
 ];
