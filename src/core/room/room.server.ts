@@ -355,7 +355,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
             }
           }
-        } else {
+        } else if (content.toIds.length > 0) {
           if (!card.is(CardType.DelayedTrick) && !card.is(CardType.Equip)) {
             await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, content);
           }

@@ -3,18 +3,15 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import {
   ClientEventFinder,
-  EventPacker,
   EventPicker,
   GameEventIdentifiers,
   ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
-import { Sanguosha } from 'core/game/engine';
 import { AllStage, PlayerPhase, PlayerStageListEnum } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { Precondition } from 'core/shares/libs/precondition/precondition';
 
 export const enum SkillType {
   Common,
