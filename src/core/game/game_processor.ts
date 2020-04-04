@@ -788,31 +788,47 @@ export class GameProcessor {
   ) {
     await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === CardUseStage.CardUsing) {
+        const from = this.room.getPlayerById(event.fromId);
         const card = Sanguosha.getCardById(event.cardId);
         if (!event.translationsMessage) {
           if (card.is(CardType.Equip)) {
             event.translationsMessage = TranslationPack.translationJsonPatcher(
               '{0} equipped {1}',
-              TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
+              TranslationPack.patchPlayerInTranslation(from),
               TranslationPack.patchCardInTranslation(event.cardId),
             ).extract();
           } else {
             if (Card.isVirtualCardId(event.cardId)) {
               const card = Sanguosha.getCardById<VirtualCard>(event.cardId);
-              event.translationsMessage = TranslationPack.translationJsonPatcher(
-                '{0} used skill {1}, transformed {2} as {3} card' + (event.toIds ? ' used to {4}' : ''),
-                TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
-                card.GeneratedBySkill || '',
-                TranslationPack.patchCardInTranslation(...card.ActualCardIds),
-                TranslationPack.patchCardInTranslation(card.Id),
-                event.toIds
-                  ? TranslationPack.patchPlayerInTranslation(...event.toIds.map(id => this.room.getPlayerById(id)))
-                  : '',
-              ).extract();
+              event.translationsMessage =
+                card.ActualCardIds.length === 0
+                  ? TranslationPack.translationJsonPatcher(
+                      '{0} used skill {1}, use card {2}' + (event.toIds ? ' to {3}' : ''),
+                      TranslationPack.patchPlayerInTranslation(from),
+                      card.GeneratedBySkill,
+                      TranslationPack.patchCardInTranslation(card.Id),
+                      event.toIds
+                        ? TranslationPack.patchPlayerInTranslation(
+                            ...event.toIds.map(id => this.room.getPlayerById(id)),
+                          )
+                        : '',
+                    ).extract()
+                  : TranslationPack.translationJsonPatcher(
+                      '{0} used skill {1}, transformed {2} as {3} card' + (event.toIds ? ' used to {4}' : ''),
+                      TranslationPack.patchPlayerInTranslation(from),
+                      card.GeneratedBySkill || '',
+                      TranslationPack.patchCardInTranslation(...card.ActualCardIds),
+                      TranslationPack.patchCardInTranslation(card.Id),
+                      event.toIds
+                        ? TranslationPack.patchPlayerInTranslation(
+                            ...event.toIds.map(id => this.room.getPlayerById(id)),
+                          )
+                        : '',
+                    ).extract();
             } else {
               event.translationsMessage = TranslationPack.translationJsonPatcher(
                 '{0} used card {1}' + (event.toIds ? ' to {2}' : ''),
-                TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
+                TranslationPack.patchPlayerInTranslation(from),
                 TranslationPack.patchCardInTranslation(event.cardId),
                 event.toIds
                   ? TranslationPack.patchPlayerInTranslation(...event.toIds.map(id => this.room.getPlayerById(id)))
@@ -839,13 +855,22 @@ export class GameProcessor {
     if (!event.translationsMessage) {
       if (Card.isVirtualCardId(event.cardId)) {
         const card = Sanguosha.getCardById<VirtualCard>(event.cardId);
-        event.translationsMessage = TranslationPack.translationJsonPatcher(
-          '{0} used skill {1}, transformed {2} as {3} card to response',
-          TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
-          card.GeneratedBySkill || '',
-          TranslationPack.patchCardInTranslation(...card.ActualCardIds),
-          TranslationPack.patchCardInTranslation(card.Id),
-        ).extract();
+        const from = this.room.getPlayerById(event.fromId);
+        event.translationsMessage =
+          card.ActualCardIds.length === 0
+            ? TranslationPack.translationJsonPatcher(
+                '{0} used skill {1}, response card {2}',
+                TranslationPack.patchPlayerInTranslation(from),
+                card.GeneratedBySkill,
+                TranslationPack.patchCardInTranslation(card.Id),
+              ).extract()
+            : TranslationPack.translationJsonPatcher(
+                '{0} used skill {1}, transformed {2} as {3} card to response',
+                TranslationPack.patchPlayerInTranslation(from),
+                card.GeneratedBySkill,
+                TranslationPack.patchCardInTranslation(...card.ActualCardIds),
+                TranslationPack.patchCardInTranslation(card.Id),
+              ).extract();
       } else {
         event.translationsMessage = TranslationPack.translationJsonPatcher(
           '{0} responses card {1}',

@@ -3,7 +3,6 @@ import type { GameInfo } from 'core/game/game_props';
 import { ClientSocket } from 'core/network/socket.client';
 import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
-import { PlayerCardsArea } from 'core/player/player_props';
 import type { PlayerId, PlayerInfo } from 'core/player/player_props';
 import type { RoomId } from 'core/room/room';
 import { ClientRoom } from 'core/room/room.client';

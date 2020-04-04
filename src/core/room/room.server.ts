@@ -344,7 +344,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         }
 
         await card.Skill.beforeEffect(this, content);
-        if (content.toIds.length > 1 && card.AOE !== CardTargetEnum.Single) {
+        if ([CardTargetEnum.Others, CardTargetEnum.Multiple, CardTargetEnum.Globe].includes(card.AOE)) {
           for (const toId of content.toIds) {
             const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
               ...content,
@@ -355,7 +355,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
             }
           }
-        } else if (content.toIds.length > 0) {
+        } else {
           if (!card.is(CardType.DelayedTrick) && !card.is(CardType.Equip)) {
             await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, content);
           }

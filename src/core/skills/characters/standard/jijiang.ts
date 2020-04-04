@@ -154,6 +154,7 @@ export class JiJiangShadow extends TriggerSkill {
               cardName: responseCard.Name,
               cardNumber: responseCard.CardNumber,
               cardSuit: responseCard.Suit,
+              bySkill: this.name,
             }).Id,
             fromId,
             responseToEvent: triggeredOnEvent,

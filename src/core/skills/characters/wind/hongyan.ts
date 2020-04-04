@@ -26,6 +26,7 @@ export class HongYan extends TransformSkill {
           cardName: card.Name,
           cardNumber: card.CardNumber,
           cardSuit: CardSuit.Heart,
+          bySkill: this.name,
         },
         [cardId],
       );

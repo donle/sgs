@@ -1,11 +1,15 @@
 import { Card } from '../card';
 import { CardSuit } from '../libs/card_props';
 import { BaGuaZhen } from './baguazhen';
+import { ChiTu } from './chitu';
+import { DaYuan } from './dayuan';
+import { DiLu } from './dilu';
 import { Duel } from './duel';
 import { GuanShiFu } from './guanshifu';
 import { GuoHeChaiQiao } from './guohechaiqiao';
 import { JieDaoShaRen } from './jiedaosharen';
 import { Jink } from './jink';
+import { JueYing } from './jueying';
 import { LeBuSiShu } from './lebusishu';
 import { Lightning } from './lightning';
 import { NanManRuQing } from './nanmanruqing';
@@ -19,6 +23,7 @@ import { WuGuFengDeng } from './wugufengdeng';
 import { WuXieKeJi } from './wuxiekeji';
 import { WuZhongShengYou } from './wuzhongshengyou';
 import { ZhangBaSheMao } from './zhangbashemao';
+import { ZhuaHuangFeiDian } from './zhuahuangfeidian';
 import { ZhuGeLianNu } from './zhugeliannu';
 import { ZiXin } from './zixin';
 
@@ -126,6 +131,12 @@ export const StandardCardPackage: (index: number) => Card[] = index => [
   new BaGuaZhen(index++, 2, CardSuit.Club),
 
   new ZiXin(index++, 13, CardSuit.Diamond),
+  new ChiTu(index++, 5, CardSuit.Heart),
+  new DaYuan(index++, 13, CardSuit.Spade),
+  new JueYing(index++, 5, CardSuit.Spade),
+  new DiLu(index++, 5, CardSuit.Club),
+  new ZhuaHuangFeiDian(index++, 13, CardSuit.Heart),
+
   new QingGang(index++, 6, CardSuit.Spade),
   new ZhuGeLianNu(index++, 1, CardSuit.Club),
   new ZhuGeLianNu(index++, 1, CardSuit.Diamond),

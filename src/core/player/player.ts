@@ -1,5 +1,5 @@
 import { PlayerAI } from 'core/ai/ai';
-import { Card, CardType, VirtualCard } from 'core/cards/card';
+import { Card, CardType } from 'core/cards/card';
 import { EquipCard, WeaponCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
@@ -233,10 +233,10 @@ export abstract class Player implements PlayerInfo {
 
   dropCards(...cards: CardId[]): CardId[] {
     const droppedCardIds: CardId[] = [];
-    let hasDropped = cards.length === 0;
+    const actualCards = Card.getActualCards(cards);
     for (const area of [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea, PlayerCardsArea.JudgeArea]) {
       const areaCards = this.getCardIds(area);
-      for (const card of Card.getActualCards(cards)) {
+      for (const card of actualCards) {
         if (Card.isVirtualCardId(card)) {
           continue;
         }
@@ -244,12 +244,14 @@ export abstract class Player implements PlayerInfo {
         const index = areaCards.findIndex(areaCard => areaCard === card);
         if (index >= 0) {
           droppedCardIds.push(areaCards.splice(index, 1)[0]);
-          hasDropped = true;
         }
       }
     }
 
-    Precondition.assert(hasDropped, `Can't drop cards ${cards} from player ${this.Name}`);
+    const untrackedCards = actualCards.filter(card => !droppedCardIds.includes(card));
+    if (untrackedCards.length > 0) {
+      throw new Error(`Can't drop card ${JSON.stringify(untrackedCards)} from player ${this.Name}`);
+    }
 
     return droppedCardIds;
   }

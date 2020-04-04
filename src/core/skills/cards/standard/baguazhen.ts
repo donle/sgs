@@ -71,6 +71,7 @@ export class BaGuaZhenSkill extends TriggerSkill {
     if (Sanguosha.getCardById(judgeEvent.judgeCardId).isRed()) {
       const jink = VirtualCard.create<Jink>({
         cardName: 'jink',
+        bySkill: this.name,
       });
 
       const cardUseEvent = {

@@ -1,4 +1,4 @@
-import { CardId, CardSuit, VirtualCardIdProps } from 'core/cards/libs/card_props';
+import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 

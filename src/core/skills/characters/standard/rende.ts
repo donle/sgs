@@ -117,6 +117,7 @@ export class Rende extends ActiveSkill {
           fromId: from.Id,
           cardId: VirtualCard.create({
             cardName: response.selectedOption,
+            bySkill: this.name,
           }).Id,
           toIds: [choosePlayerResponse.selectedPlayer!],
         };
@@ -127,6 +128,7 @@ export class Rende extends ActiveSkill {
           fromId: from.Id,
           cardId: VirtualCard.create({
             cardName: response.selectedOption!,
+            bySkill: this.name,
           }).Id,
         };
 

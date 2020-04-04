@@ -161,7 +161,7 @@ export class VirtualCard<T extends Card = Card> extends Card {
   protected cardType: CardType[];
   protected fromPackage: GameCardExtensions;
   protected effectUseDistance: number;
-  protected bySkill: string | undefined;
+  protected bySkill: string;
 
   protected id = -1;
   protected cardNumber = 0;
@@ -175,7 +175,7 @@ export class VirtualCard<T extends Card = Card> extends Card {
       cardName: string;
       cardSuit?: CardSuit;
       cardNumber?: number;
-      bySkill?: string;
+      bySkill: string;
     },
     private cardIds: CardId[],
     skill?: Skill,
@@ -242,7 +242,7 @@ export class VirtualCard<T extends Card = Card> extends Card {
       cardName: string;
       cardSuit?: CardSuit;
       cardNumber?: number;
-      bySkill?: string;
+      bySkill: string;
     },
     cardIds: CardId[] = [],
     skill?: Skill,

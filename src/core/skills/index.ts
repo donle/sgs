@@ -5,6 +5,7 @@ export { SlashSkill } from './cards/standard/slash';
 export { WanJianQiFaSkill } from './cards/standard/wanjianqifa';
 export { ZhuGeLianNuSlashSkill } from './cards/standard/zhugeliannu';
 export { OffenseHorseSkill } from './cards/standard/offense_horse';
+export { DefenseHorseSkill } from './cards/standard/defense_horse';
 export { QingGangSkill } from './cards/standard/qinggang';
 export { LightningSkill } from './cards/standard/lightning';
 export { GuoHeChaiQiaoSkill } from './cards/standard/guohechaiqiao';
