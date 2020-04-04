@@ -410,13 +410,13 @@ export class StageProcessor {
     this.gameEventStageList.unshift(stageList.slice());
 
     this.currentGameEventStage = this.gameEventStageList[0][0];
-    // this.gameEventStageList.shift();
+    this.gameEventStageList[0].shift();
     this.processingGameEvent = true;
 
     return this.currentGameEventStage;
   }
 
-  public nextInstantEvent(): GameEventStage | undefined {
+  public next(): GameEventStage | undefined {
     if (!this.gameEventStageList || !this.processingGameEvent) {
       return;
     }
@@ -424,13 +424,25 @@ export class StageProcessor {
       this.gameEventStageList[0].shift();
     }
 
-    this.currentGameEventStage = this.popStage();
-    if (this.currentGameEventStage === undefined) {
+    const nextStage = this.popStage();
+    if (nextStage === undefined) {
+      this.currentGameEventStage = undefined;
       this.processingGameEvent = false;
       return;
     }
 
-    return this.currentGameEventStage;
+    return nextStage;
+  }
+
+  public getNextStage(): GameEventStage | undefined {
+    if (this.gameEventStageList.length === 0) {
+      return;
+    }
+    if (this.gameEventStageList[0] && this.gameEventStageList[0][0] === this.currentGameEventStage) {
+      this.gameEventStageList[0].shift();
+    }
+
+    return this.gameEventStageList[0][0];
   }
 
   public skipEventProcess(currentIdentifier) {
@@ -449,6 +461,9 @@ export class StageProcessor {
 
   public get CurrentGameEventStage() {
     return this.currentGameEventStage;
+  }
+  public set CurrentGameEventStage(stage: GameEventStage | undefined) {
+    this.currentGameEventStage = stage;
   }
 
   public isCurrentGameEventDone() {

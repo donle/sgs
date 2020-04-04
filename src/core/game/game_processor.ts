@@ -429,7 +429,7 @@ export class GameProcessor {
     processor?: (stage: GameEventStage) => Promise<void>,
   ) => {
     let eventStage: GameEventStage | undefined = this.stageProcessor.involve(identifier);
-    while (this.stageProcessor.isInsideEvent(identifier, eventStage)) {
+    while (true) {
       if (EventPacker.isTerminated(event)) {
         this.stageProcessor.skipEventProcess(identifier);
         break;
@@ -457,9 +457,13 @@ export class GameProcessor {
         break;
       }
 
-      eventStage = this.stageProcessor.nextInstantEvent();
+      const nextStage = this.stageProcessor.getNextStage();
+      if (this.stageProcessor.isInsideEvent(identifier, nextStage)) {
+        eventStage = this.stageProcessor.next();
+      } else {
+        break;
+      }
     }
-    // console.log('finish ---- ', JSON.stringify(event, null, 2));
   };
 
   private async onHandleObtainCardEvent(
@@ -564,7 +568,6 @@ export class GameProcessor {
         event.toId = this.deadPlayerFilters(event.toId)[0];
         const { toId, damage } = event;
         const to = this.room.getPlayerById(toId);
-
         to.onDamage(damage);
         this.room.broadcast(identifier, event);
 

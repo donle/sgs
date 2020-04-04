@@ -102,7 +102,7 @@ export class SlashSkill extends ActiveSkill {
     }
 
     const addtionalDrunkDamage = EventPacker.getMiddleware<number>(this.DrunkTag, event) || 0;
-    const damageEvent = {
+    const damageEvent: ServerEventFinder<GameEventIdentifiers.DamageEvent> = {
       fromId,
       toId,
       damage: 1 + addtionalDrunkDamage,
