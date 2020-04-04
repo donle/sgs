@@ -28,6 +28,7 @@ export const cardDictionary: Word[] = [
   { source: 'wugufengdeng', target: '五谷丰登' },
   { source: 'guanshifu', target: '贯石斧' },
   { source: 'zhangbashemao', target: '丈八蛇矛' },
+  { source: 'fangtianhuaji', target: '方天画戟' },
 ];
 
 export const characterDictionary: Word[] = [

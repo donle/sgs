@@ -33,7 +33,14 @@ export class SlashSkill extends ActiveSkill {
     return targets.length === 1;
   }
 
-  isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId, selectedTargets: PlayerId[], containerCard: CardId) {
+  isAvailableTarget(
+    owner: PlayerId,
+    room: Room,
+    target: PlayerId,
+    selectedCards: CardId[],
+    selectedTargets: PlayerId[],
+    containerCard: CardId,
+  ) {
     return room.canAttack(room.getPlayerById(owner), room.getPlayerById(target), containerCard);
   }
 

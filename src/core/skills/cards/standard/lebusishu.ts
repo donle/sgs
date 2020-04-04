@@ -34,6 +34,7 @@ export class LeBuSiShuSkill extends ActiveSkill {
     owner: PlayerId,
     room: Room,
     target: PlayerId,
+    selectedCards: CardId[],
     selectedTargets: PlayerId[],
     containerCard: CardId,
   ): boolean {

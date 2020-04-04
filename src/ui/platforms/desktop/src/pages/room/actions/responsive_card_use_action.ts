@@ -41,8 +41,14 @@ export class ResponsiveUseCardAction extends BaseAction {
       const skill = this.selectedSkillToPlay;
       if (skill instanceof ActiveSkill) {
         return (
-          skill.isAvailableCard(this.playerId, this.store.room, card.Id, this.selectedCards, this.equipSkillCardId) &&
-          !skill.cardFilter(this.store.room, this.selectedCards)
+          skill.isAvailableCard(
+            this.playerId,
+            this.store.room,
+            card.Id,
+            this.selectedCards,
+            this.selectedTargets,
+            this.equipSkillCardId,
+          ) && !skill.cardFilter(this.store.room, this.selectedCards)
         );
       } else if (skill instanceof ViewAsSkill) {
         return (

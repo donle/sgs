@@ -5,8 +5,6 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { BaseAction } from './base_action';
 
 export class PlayPhaseAction extends BaseAction {
-  private selectedSkill?: string;
-
   private createCardOrSkillUseEvent(
     player: PlayerId,
   ): ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> {
@@ -27,7 +25,7 @@ export class PlayPhaseAction extends BaseAction {
     } else {
       useEvent = {
         fromId: player,
-        skillName: this.selectedSkill!,
+        skillName: this.selectedSkillToPlay!.Name,
         cardIds: this.selectedCards.length > 0 ? this.selectedCards : undefined,
         toIds: this.selectedTargets.length > 0 ? this.selectedTargets : undefined,
       };

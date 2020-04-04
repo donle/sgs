@@ -34,13 +34,19 @@ export class CardResponseAction extends BaseAction {
     ) {
       return true;
     }
-    
+
     if (this.selectedSkillToPlay !== undefined) {
       const skill = this.selectedSkillToPlay;
       if (skill instanceof TriggerSkill) {
         return (
-          skill.isAvailableCard(this.playerId, this.store.room, card.Id, this.selectedCards, this.equipSkillCardId) &&
-          !skill.cardFilter(this.store.room, this.selectedCards)
+          skill.isAvailableCard(
+            this.playerId,
+            this.store.room,
+            card.Id,
+            this.selectedCards,
+            this.selectedTargets,
+            this.equipSkillCardId,
+          ) && !skill.cardFilter(this.store.room, this.selectedCards)
         );
       } else if (skill instanceof ViewAsSkill) {
         const player = this.store.room.getPlayerById(this.playerId);

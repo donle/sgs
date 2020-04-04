@@ -46,7 +46,14 @@ export class GuanShiFuSkill extends TriggerSkill {
     );
   }
 
-  isAvailableCard(owner: PlayerId, room: Room, cardId: CardId, selectedCards: CardId[], containerCard?: CardId) {
+  isAvailableCard(
+    owner: PlayerId,
+    room: Room,
+    cardId: CardId,
+    selectedCards: CardId[],
+    selectedTargets: PlayerId[],
+    containerCard?: CardId,
+  ) {
     return cardId !== containerCard;
   }
 

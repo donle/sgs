@@ -6,27 +6,32 @@ import { CardId, CardSuit, CardTargetEnum, RealCardId, VirtualCardId, VirtualCar
 
 export function None<T extends Card>(constructor: new (...args: any) => any): any {
   return (class extends constructor {
-    private cardTargetNumber = CardTargetEnum.None;
+    private readonly cardTargetNumber = CardTargetEnum.None;
+    private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.None;
   } as any) as T;
 }
 export function Single<T extends Card>(constructor: new (...args: any) => any): any {
   return (class extends constructor {
-    private cardTargetNumber = CardTargetEnum.Single;
+    private readonly cardTargetNumber = CardTargetEnum.Single;
+    private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.Single;
   } as any) as T;
 }
 export function Multiple<T extends Card>(constructor: new (...args: any) => any): any {
   return (class extends constructor {
-    private cardTargetNumber = CardTargetEnum.Multiple;
+    private readonly cardTargetNumber = CardTargetEnum.Multiple;
+    private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.Multiple;
   } as any) as T;
 }
 export function Others<T extends Card>(constructor: new (...args: any) => any): any {
   return (class extends constructor {
-    private cardTargetNumber = CardTargetEnum.Others;
+    private readonly cardTargetNumber = CardTargetEnum.Others;
+    private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.Others;
   } as any) as T;
 }
 export function Globe<T extends Card>(constructor: new (...args: any) => any): any {
   return (class extends constructor {
-    private cardTargetNumber = CardTargetEnum.Globe;
+    private readonly cardTargetNumber = CardTargetEnum.Globe;
+    private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.Globe;
   } as any) as T;
 }
 
@@ -43,7 +48,8 @@ export abstract class Card {
 
   protected abstract fromPackage: GameCardExtensions;
 
-  private cardTargetNumber: CardTargetEnum = CardTargetEnum.Single;
+  private readonly cardTargetNumber: CardTargetEnum = CardTargetEnum.Single;
+  private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.Single;
 
   public static getActualCards(cards: CardId[]): CardId[] {
     let result: CardId[] = [];
@@ -117,11 +123,11 @@ export abstract class Card {
   }
 
   public get AOE(): CardTargetEnum {
-    return this.cardTargetNumber;
+    return this.manualSetCardTargetNumber;
   }
 
   public set AOE(targetNumber: CardTargetEnum) {
-    this.cardTargetNumber = targetNumber;
+    this.manualSetCardTargetNumber = targetNumber;
   }
 
   public isVirtualCard() {
@@ -130,6 +136,10 @@ export abstract class Card {
 
   public static isVirtualCardId(id: CardId) {
     return typeof id === 'string';
+  }
+
+  public reset() {
+    this.manualSetCardTargetNumber = this.cardTargetNumber;
   }
 }
 

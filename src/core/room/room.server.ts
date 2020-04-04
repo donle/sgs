@@ -362,6 +362,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         }
         await card.Skill.afterEffect(this, content);
       } else if (stage === CardUseStage.CardUseFinishedEffect) {
+        card.reset();
         this.endProcessOnTag(card.Id.toString());
 
         if (this.getCardOwnerId(card.Id) === undefined) {

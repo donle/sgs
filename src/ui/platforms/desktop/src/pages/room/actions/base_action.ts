@@ -112,6 +112,7 @@ export abstract class BaseAction {
           this.playerId,
           this.store.room,
           player.Id,
+          this.selectedCards,
           this.selectedTargets,
           this.selectedCardToPlay,
         ) && !skill.targetFilter(this.store.room, this.selectedTargets)
@@ -140,8 +141,14 @@ export abstract class BaseAction {
       const skill = this.selectedSkillToPlay;
       if (skill instanceof ActiveSkill || skill instanceof TriggerSkill) {
         return (
-          skill.isAvailableCard(player.Id, this.store.room, card.Id, this.selectedCards, this.equipSkillCardId) &&
-          !skill.cardFilter(this.store.room, this.selectedCards)
+          skill.isAvailableCard(
+            player.Id,
+            this.store.room,
+            card.Id,
+            this.selectedCards,
+            this.selectedTargets,
+            this.equipSkillCardId,
+          ) && !skill.cardFilter(this.store.room, this.selectedCards)
         );
       } else if (skill instanceof ViewAsSkill) {
         return (
@@ -154,7 +161,7 @@ export abstract class BaseAction {
         return false;
       }
     }
-    
+
     if (this.selectedCardToPlay === undefined) {
       if (fromArea === PlayerCardsArea.HandArea) {
         if (!ignoreCanUseCondition && !player.canUseCard(this.store.room, card.Id)) {
@@ -173,8 +180,14 @@ export abstract class BaseAction {
       const skill = card.Skill;
       if (skill instanceof ActiveSkill || skill instanceof TriggerSkill) {
         return (
-          skill.isAvailableCard(player.Id, this.store.room, card.Id, this.selectedCards, card.Id) &&
-          !skill.cardFilter(this.store.room, this.selectedCards)
+          skill.isAvailableCard(
+            player.Id,
+            this.store.room,
+            card.Id,
+            this.selectedCards,
+            this.selectedTargets,
+            card.Id,
+          ) && !skill.cardFilter(this.store.room, this.selectedCards)
         );
       } else if (skill instanceof ViewAsSkill) {
         return (

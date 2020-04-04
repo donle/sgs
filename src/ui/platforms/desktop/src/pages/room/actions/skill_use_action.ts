@@ -77,6 +77,7 @@ export class SkillUseAction extends BaseAction {
           this.store.room,
           card.Id,
           this.selectedCards,
+          this.selectedTargets,
           this.equipSkillCardId,
         ) &&
           !this.selectedSkillToPlay.cardFilter(this.store.room, this.selectedCards) &&

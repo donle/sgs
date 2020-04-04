@@ -252,6 +252,7 @@ export abstract class TriggerSkill extends Skill {
     room: Room,
     cardId: CardId,
     selectedCards: CardId[],
+    selectedTargets: PlayerId[],
     containerCard?: CardId,
   ): boolean {
     return false;
@@ -260,6 +261,7 @@ export abstract class TriggerSkill extends Skill {
     owner: PlayerId,
     room: Room,
     target: PlayerId,
+    selectedCards: CardId[],
     selectedTargets: PlayerId[],
     containerCard?: CardId,
   ): boolean {
@@ -298,12 +300,14 @@ export abstract class ActiveSkill extends Skill {
     room: Room,
     cardId: CardId,
     selectedCards: CardId[],
+    selectedTargets: PlayerId[],
     containerCard?: CardId,
   ): boolean;
   public abstract isAvailableTarget(
     owner: PlayerId,
     room: Room,
     target: PlayerId,
+    selectedCards: CardId[],
     selectedTargets: PlayerId[],
     containerCard?: CardId,
   ): boolean;

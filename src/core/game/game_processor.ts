@@ -472,6 +472,10 @@ export class GameProcessor {
         event.toId = this.deadPlayerFilters(event.toId)[0];
         this.room.broadcast(identifier, event);
         const obtainedCards = event.cardIds.reduce<CardId[]>((prevCardIds, cardId) => {
+          if (this.room.isCardOnProcessing(cardId) && this.room.getCardOwnerId(cardId) !== undefined) {
+            return prevCardIds;
+          }
+
           if (Card.isVirtualCardId(cardId)) {
             Sanguosha.getCardById<VirtualCard>(cardId).ActualCardIds.forEach(actualId => prevCardIds.push(actualId));
           } else {
