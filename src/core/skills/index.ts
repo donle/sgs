@@ -21,6 +21,7 @@ export { WuGuFengDengSkill } from './cards/standard/wugufengdeng';
 export { GuanShiFuSkill } from './cards/standard/guanshifu';
 export { ZhangBaSheMaoSkill } from './cards/standard/zhangbashemao';
 export { FangTianHuaJiSkill } from './cards/standard/fangtianhuaji';
+export { QingLongYanYueDaoSkill } from './cards/standard/qinglongdao';
 
 export { Hujia } from './characters/standard/hujia';
 export { JianXiong } from './characters/standard/jianxiong';

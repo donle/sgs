@@ -16,6 +16,7 @@ import { Lightning } from './lightning';
 import { NanManRuQing } from './nanmanruqing';
 import { Peach } from './peach';
 import { QingGang } from './qinggang';
+import { QingLongYanYueDao } from './qinglongdao';
 import { ShunshouQianYang } from './shunshouqianyang';
 import { Slash } from './slash';
 import { TaoYuanJieYi } from './taoyuanjieyi';
@@ -144,4 +145,5 @@ export const StandardCardPackage: (index: number) => Card[] = index => [
   new GuanShiFu(index++, 5, CardSuit.Diamond),
   new ZhangBaSheMao(index++, 12, CardSuit.Spade),
   new FangTianHuaJi(index++, 12, CardSuit.Diamond),
+  new QingLongYanYueDao(index++, 5, CardSuit.Spade),
 ];
