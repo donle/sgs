@@ -3,7 +3,7 @@ import { Card, CardType } from 'core/cards/card';
 import { EquipCard, WeaponCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { Character, CharacterId, CharacterNationality } from 'core/characters/character';
+import { Character, CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { GameCommonRules } from 'core/game/game_rules';
 import {
@@ -46,6 +46,7 @@ export abstract class Player implements PlayerInfo {
   private chainLocked: boolean = false;
   private turnedOver: boolean = false;
   private playerSkills: Skill[] = [];
+  private gender: CharacterGender;
   private online: boolean;
   private ai: PlayerAI = PlayerAI.Instance;
 
@@ -99,6 +100,7 @@ export abstract class Player implements PlayerInfo {
       this.hp = this.playerCharacter.MaxHp;
       this.maxHp = this.playerCharacter.MaxHp;
       this.nationality = this.playerCharacter.Nationality;
+      this.gender = this.playerCharacter.Gender;
     }
 
     this.dead = false;
@@ -469,6 +471,10 @@ export abstract class Player implements PlayerInfo {
     return this.hp;
   }
 
+  public get Gender() {
+    return this.gender;
+  }
+
   public get ChainLocked() {
     return this.chainLocked;
   }
@@ -525,6 +531,7 @@ export abstract class Player implements PlayerInfo {
     this.hp = this.playerCharacter.MaxHp;
     this.maxHp = this.playerCharacter.MaxHp;
     this.nationality = this.playerCharacter.Nationality;
+    this.gender = this.playerCharacter.Gender;
   }
   public get CharacterId(): CharacterId | undefined {
     return this.playerCharacterId;

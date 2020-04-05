@@ -47,7 +47,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract getCards(numberOfCards: number, from: 'top' | 'bottom'): CardId[];
   //Server only
-  public abstract async drawCards(numberOfCards: number, player?: PlayerId, from?: 'top' | 'bottom'): Promise<CardId[]>;
+  public abstract async drawCards(numberOfCards: number, player?: PlayerId, from?: 'top' | 'bottom'): Promise<void>;
   //Server only
   public abstract async dropCards(reason: CardLostReason, cardIds: CardId[], player?: PlayerId): Promise<void>;
   //Server only

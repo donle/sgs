@@ -15,10 +15,10 @@ export type ConversationProps = {
 @mobxReact.observer
 export class Conversation extends React.Component<ConversationProps> {
   private getActions = () => {
-    const { optionsActionHanlder = {} } = this.props;
+    const { optionsActionHanlder = {}, translator } = this.props;
     return Object.entries(optionsActionHanlder).map(([option, action], index) => (
       <button key={index} className={styles.actionButton} onClick={action}>
-        {option}
+        {translator.trx(option)}
       </button>
     ));
   };

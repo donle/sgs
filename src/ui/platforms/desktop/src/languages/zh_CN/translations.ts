@@ -31,6 +31,7 @@ export const cardDictionary: Word[] = [
   { source: 'fangtianhuaji', target: '方天画戟' },
   { source: 'qinglongyanyuedao', target: '青龙偃月刀' },
   { source: 'qilingong', target: '麒麟弓' },
+  { source: 'cixiongjian', target: '雌雄双股剑' },
 ];
 
 export const characterDictionary: Word[] = [
@@ -561,6 +562,11 @@ export const eventDictionary: Word[] = [
     source: '{0} used skill {1} to you, please response a {2} card',
     target: '{0} 对你使用了 【{1}】, 打出一张 {2} 来响应',
   },
+  { source: 'please choose', target: '请选择' },
+
+  { source: 'cixiongjian:drop-card', target: '弃置一张手牌' },
+  { source: 'cixiongjian:draw-card', target: '令其摸一张牌' },
+
   {
     source: 'player {0} join in the room',
     target: '玩家 {0} 进入了房间',

@@ -125,8 +125,8 @@ export class GameProcessor {
   private async drawGameBeginsCards(playerId: PlayerId) {
     const cardIds = this.room.getCards(4, 'top');
     const drawEvent: ServerEventFinder<GameEventIdentifiers.DrawCardEvent> = {
-      cardIds,
-      playerId,
+      drawAmount: cardIds.length,
+      fromId: playerId,
       askedBy: playerId,
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} draws {1} cards',
@@ -501,14 +501,14 @@ export class GameProcessor {
     if (!event.translationsMessage) {
       event.translationsMessage = TranslationPack.translationJsonPatcher(
         '{0} draws {1} cards',
-        TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.playerId)),
-        event.cardIds.length,
+        TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
+        event.drawAmount,
       ).extract();
     }
 
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === DrawCardStage.CardDrawing) {
-        event.playerId = this.deadPlayerFilters(event.playerId)[0];
+        event.fromId = this.deadPlayerFilters(event.fromId)[0];
         this.room.broadcast(identifier, event);
       }
     });

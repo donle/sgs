@@ -1,9 +1,11 @@
 .conversation {
+    flex:auto;
     display: flex;
     flex-direction: column;
 }
 
 .conversationText {
+    text-align: center;
     font-family: LiSu, STLiti, 'Microsoft YaHei', 微软雅黑, 'MicrosoftJhengHei';
 }
 

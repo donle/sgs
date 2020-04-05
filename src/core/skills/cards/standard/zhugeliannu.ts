@@ -9,7 +9,7 @@ export class ZhuGeLianNuSlashSkill extends RulesBreakerSkill {
     super('zhugeliannu', 'zhugeliannu_description');
   }
   public breakCardUsableTimes(cardId: CardId) {
-    if (Sanguosha.getCardById(cardId).GeneralName === 'lightning') {
+    if (Sanguosha.getCardById(cardId).GeneralName === 'slash') {
       return INFINITE_TRIGGERING_TIMES;
     } else {
       return 0;

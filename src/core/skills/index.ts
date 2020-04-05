@@ -1,3 +1,4 @@
+export { CiXiongJianSkill } from './cards/standard/cixiongjian';
 export { JinkSkill } from './cards/standard/jink';
 export { NanManRuQingSkill } from './cards/standard/nanmanruqing';
 export { PeachSkill } from './cards/standard/peach';

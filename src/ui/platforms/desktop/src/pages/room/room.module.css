@@ -37,4 +37,6 @@
     justify-self: center;
     display: flex;
     padding: 4px;
+    width: 100%;
+    z-index: 2;
 }

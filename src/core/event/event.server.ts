@@ -50,8 +50,8 @@ export interface ServerEvent extends EventUtilities {
     reason: CardLostReason;
   };
   [GameEventIdentifiers.DrawCardEvent]: {
-    playerId: PlayerId;
-    cardIds: CardId[];
+    fromId: PlayerId;
+    drawAmount: number;
     askedBy: PlayerId;
   };
   [GameEventIdentifiers.ObtainCardEvent]: {
@@ -216,6 +216,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.AskForChoosingOptionsEvent]: {
     askedBy?: PlayerId;
     options: string[];
+    conversation: string | PatchedTranslationObject;
     toId: PlayerId;
   };
   [GameEventIdentifiers.AskForChoosingPlayerEvent]: {

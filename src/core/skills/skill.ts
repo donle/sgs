@@ -1,13 +1,7 @@
 import { Card, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import {
-  ClientEventFinder,
-  EventPicker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-  WorkPlace,
-} from 'core/event/event';
+import { ClientEventFinder, EventPicker, GameEventIdentifiers, ServerEventFinder, WorkPlace } from 'core/event/event';
 import { AllStage, PlayerPhase, PlayerStageListEnum } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
@@ -397,6 +391,9 @@ export abstract class RulesBreakerSkill extends Skill {
     return 0;
   }
   public breakDefenseDistance(room?: Room, owner?: PlayerId): number {
+    return 0;
+  }
+  public breakCardHoldNumber(room?: Room, owner?: PlayerId): number {
     return 0;
   }
 }

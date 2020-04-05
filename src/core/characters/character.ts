@@ -78,6 +78,10 @@ export abstract class Character {
     return this.fromPackage;
   }
 
+  public get Gender() {
+    return this.gender;
+  }
+
   public turnOver() {
     this.turnedOver = !this.turnedOver;
   }

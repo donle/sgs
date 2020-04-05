@@ -122,6 +122,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.WuGuFengDengFinishEvent:
         await this.onHandleWuGuFengDengFinish(e as any, content);
         break;
+      case GameEventIdentifiers.AskForChoosingOptionsEvent:
+        await this.onHandleAskForChoosingOptionsEvent(e as any, content);
+        break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
     }
@@ -353,7 +356,6 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    //TODO: fix card selector not working issue
     const onSelectedCard = (card: Card | number, fromArea: PlayerCardsArea) => {
       this.presenter.closeDialog();
 
@@ -375,6 +377,43 @@ export class GameClientProcessor {
 
     this.store.room.getPlayerById(fromId).dropCards(...cardIds);
     this.presenter.broadcastUIUpdate();
+  }
+
+  private onHandleAskForChoosingOptionsEvent<T extends GameEventIdentifiers.AskForChoosingOptionsEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const { options, conversation, toId } = content;
+    const actionHandlers = {};
+    options.forEach(option => {
+      actionHandlers[option] = () => {
+        const response: ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
+          fromId: toId,
+          selectedOption: option,
+        };
+
+        this.store.room.broadcast(GameEventIdentifiers.AskForChoosingOptionsEvent, response);
+        this.presenter.disableActionButton('cancel');
+      };
+    });
+
+    this.presenter.createIncomingConversation({
+      optionsActionHanlder: actionHandlers,
+      translator: this.translator,
+      conversation,
+    });
+
+    if (!EventPacker.isUncancellabelEvent(content)) {
+      this.presenter.enableActionButton('cancel');
+      this.presenter.defineCancelButtonActions(() => {
+        const response: ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
+          fromId: toId,
+        };
+
+        this.store.room.broadcast(GameEventIdentifiers.AskForChoosingOptionsEvent, response);
+        this.presenter.disableActionButton('cancel');
+      });
+    }
   }
 
   private async onHandleSkillUseEvent<T extends GameEventIdentifiers.SkillUseEvent>(

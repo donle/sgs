@@ -7,7 +7,7 @@ import {
   ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
-import { AllStage, CardResponseStage, CardUseStage, PlayerPhase } from 'core/game/stage_processor';
+import { AllStage, CardResponseStage, CardUseStage, DrawCardStage, PlayerPhase } from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
 import { Player } from 'core/player/player';
 import { ServerPlayer } from 'core/player/player.server';
@@ -194,7 +194,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             skillName: skill.Name,
             triggeredOnEvent: content,
           };
-          if (skill.isAutoTrigger() || skill.SkillType === SkillType.Compulsory) {
+          if (
+            skill.isAutoTrigger() ||
+            skill.SkillType === SkillType.Compulsory ||
+            skill.SkillType === SkillType.Awaken
+          ) {
             await this.useSkill(triggerSkillEvent);
           } else {
             this.notify(
@@ -448,21 +452,24 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     askedBy = askedBy || playerId || this.CurrentPlayer.Id;
     playerId = playerId || this.CurrentPlayer.Id;
 
-    const cardIds = this.getCards(numberOfCards, from);
     const drawEvent: ServerEventFinder<GameEventIdentifiers.DrawCardEvent> = {
-      cardIds,
-      playerId,
+      drawAmount: numberOfCards,
+      fromId: playerId,
       askedBy,
     };
 
-    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.DrawCardEvent, drawEvent);
-    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.ObtainCardEvent, {
-      reason: CardObtainedReason.CardDraw,
-      cardIds,
-      toId: playerId,
-    });
+    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.DrawCardEvent, drawEvent, async stage => {
+      if (stage === DrawCardStage.CardDrawing) {
+        const cardIds = this.getCards(drawEvent.drawAmount, from);
+        await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.ObtainCardEvent, {
+          reason: CardObtainedReason.CardDraw,
+          cardIds,
+          toId: drawEvent.fromId,
+        });
+      }
 
-    return cardIds;
+      return true;
+    });
   }
 
   public async obtainCards(event: ServerEventFinder<GameEventIdentifiers.ObtainCardEvent>) {

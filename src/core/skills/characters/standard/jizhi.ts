@@ -50,7 +50,7 @@ export class JiZhi extends TriggerSkill {
       const askForOptionsEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
         options: ['discard', 'keep'],
         toId: event.fromId,
-        translationsMessage: TranslationPack.translationJsonPatcher(
+        conversation: TranslationPack.translationJsonPatcher(
           'do you wanna discard {0}',
           TranslationPack.patchCardInTranslation(cardId),
         ).extract(),
