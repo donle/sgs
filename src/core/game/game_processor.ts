@@ -671,11 +671,13 @@ export class GameProcessor {
   ) {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === SkillUseStage.SkillUsing) {
-        event.translationsMessage = TranslationPack.translationJsonPatcher(
-          '{0} used skill {1}',
-          TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
-          event.skillName,
-        ).extract();
+        if (!event.translationsMessage && !Sanguosha.isShadowSkillName(event.skillName)) {
+          event.translationsMessage = TranslationPack.translationJsonPatcher(
+            '{0} used skill {1}',
+            TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
+            event.skillName,
+          ).extract();
+        }
 
         await Sanguosha.getSkillBySkillName(event.skillName).onUse(this.room, event);
         this.room.broadcast(identifier, event);
@@ -1043,17 +1045,9 @@ export class GameProcessor {
   public async turnToNextPlayer() {
     this.tryToThrowNotStartedError();
     this.playerStages = [];
-    const prevPlayer = this.CurrentPlayer;
     do {
       this.playerPositionIndex = (this.playerPositionIndex + 1) % this.room.Players.length;
     } while (this.room.Players[this.playerPositionIndex].Dead);
-
-    await this.onHandlePhaseChangeEvent(GameEventIdentifiers.PhaseChangeEvent, {
-      fromPlayer: prevPlayer.Id,
-      from: PlayerPhase.FinishStage,
-      toPlayer: this.CurrentPlayer.Id,
-      to: PlayerPhase.PrepareStage,
-    });
   }
 
   public get CurrentPlayer() {

@@ -88,6 +88,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'huangyueying', target: '黄月英' },
   { source: 'jizhi', target: '集智' },
+  { source: '#jizhi', target: '集智' },
   { source: 'qicai', target: '奇才' },
 
   { source: 'yiji', target: '伊籍' },
@@ -566,6 +567,9 @@ export const eventDictionary: Word[] = [
 
   { source: 'cixiongjian:drop-card', target: '弃置一张手牌' },
   { source: 'cixiongjian:draw-card', target: '令其摸一张牌' },
+  { source: 'jizhi:discard', target: '弃置' },
+  { source: 'jizhi:keep', target: '保留' },
+  { source: 'do you wanna discard {0}', target: '是否弃置 {0} 增加一手牌上限' },
 
   {
     source: 'player {0} join in the room',

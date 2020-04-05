@@ -2,7 +2,7 @@ import { Card, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { ClientEventFinder, EventPicker, GameEventIdentifiers, ServerEventFinder, WorkPlace } from 'core/event/event';
-import { AllStage, PlayerPhase, PlayerStageListEnum } from 'core/game/stage_processor';
+import { AllStage, PlayerStageListEnum } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -179,13 +179,6 @@ export abstract class Skill {
 
   // tslint:disable-next-line: no-empty
   public onLoseSkill(owner: Player) {}
-  public onPhaseChange(
-    fromPhase: PlayerPhase,
-    toPhase: PlayerPhase,
-    room: Room,
-    owner: PlayerId,
-    // tslint:disable-next-line: no-empty
-  ) {}
 
   public get Description() {
     return this.description;

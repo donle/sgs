@@ -133,21 +133,23 @@ export abstract class Player implements PlayerInfo {
   }
   addMark(name: string, value: number) {
     if (this.marks[name] === undefined) {
-      this.marks[name] = 0;
+      this.marks[name] = value;
+    } else {
+      this.marks[name] += value;
     }
-    return (this.marks[name] += value);
+    return this.marks[name];
   }
   getMark(name: string) {
-    return this.marks[name];
+    return this.marks[name] || 0;
   }
   addInvisibleMark(name: string, value: number) {
     return this.addMark('#' + name, value);
   }
   getInvisibleMark(name: string) {
-    return this.marks['#' + name];
+    return this.getMark('#' + name);
   }
   removeInvisibleMark(name: string) {
-    delete this.marks['#' + name];
+    this.removeMark('#' + name);
   }
 
   public canUseCardTo(room: Room, cardId: CardId | CardMatcher, target: PlayerId): boolean {

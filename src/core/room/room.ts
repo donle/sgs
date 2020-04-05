@@ -14,7 +14,9 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 
 import { CardMatcher } from 'core/cards/libs/card_matcher';
+import { Sanguosha } from 'core/game/engine';
 import { GameInfo } from 'core/game/game_props';
+import { GameCommonRules } from 'core/game/game_rules';
 import { AllStage, PlayerPhase } from 'core/game/stage_processor';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { RoomInfo } from 'core/shares/types/server_types';
@@ -47,7 +49,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract getCards(numberOfCards: number, from: 'top' | 'bottom'): CardId[];
   //Server only
-  public abstract async drawCards(numberOfCards: number, player?: PlayerId, from?: 'top' | 'bottom'): Promise<void>;
+  public abstract async drawCards(numberOfCards: number, player?: PlayerId, from?: 'top' | 'bottom'): Promise<CardId[]>;
   //Server only
   public abstract async dropCards(reason: CardLostReason, cardIds: CardId[], player?: PlayerId): Promise<void>;
   //Server only
@@ -250,6 +252,11 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public distanceBetween(from: Player, to: Player) {
     const seatGap = to.getDefenseDistance() - from.getOffenseDistance();
     return this.onSeatDistance(from, to) + seatGap;
+  }
+  public cardUseDistanceBetween(cardId: CardId, from: Player, to: Player) {
+    const card = Sanguosha.getCardById(cardId);
+
+    return Math.min(this.distanceBetween(from, to) - GameCommonRules.getCardAdditionalUsableDistance(card, from), 1);
   }
 
   public isAvailableTarget(cardId: CardId, attacker: PlayerId, target: PlayerId) {

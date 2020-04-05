@@ -21,7 +21,7 @@ export type TranslationsDictionary = {
 };
 
 export class TranslationPack {
-  private constructor(private translationJon: PatchedTranslationObject) {}
+  private constructor(private translationJson: PatchedTranslationObject) {}
   public static readonly translationObjectSign = '@@translate:';
   public static readonly translateCardObjectSign = TranslationPack.translationObjectSign + 'card:';
   public static readonly translatePlayerObjectSign = TranslationPack.translationObjectSign + 'player:';
@@ -32,35 +32,35 @@ export class TranslationPack {
   }
 
   updateRawText(newText: string) {
-    this.translationJon.original = newText;
+    this.translationJson.original = newText;
     return this;
   }
 
   updateParams(newParams: string[]) {
-    this.translationJon.params = newParams;
+    this.translationJson.params = newParams;
     return this;
   }
 
   extract() {
-    return this.translationJon;
+    return this.translationJson;
   }
 
   toString() {
-    return TranslationPack.translationObjectSign + JSON.stringify(this.translationJon);
+    return TranslationPack.translationObjectSign + JSON.stringify(this.translationJson);
   }
 
   public translateTo(translationsDictionary: TranslationsDictionary) {
-    let target = translationsDictionary[this.translationJon.original];
+    let target = translationsDictionary[this.translationJson.original];
 
     if (target === undefined) {
       // tslint:disable-next-line: no-console
       console.warn(`Translations Warning - Missing translation: ${target}`);
-      return this.translationJon.original;
+      return this.translationJson.original;
     }
 
-    if (this.translationJon.params.length > 0) {
-      for (let i = 0; i < this.translationJon.params.length; i++) {
-        const param = this.translationJon.params[i].toString();
+    if (this.translationJson.params.length > 0) {
+      for (let i = 0; i < this.translationJson.params.length; i++) {
+        const param = this.translationJson.params[i].toString();
         target = target.replace(new RegExp(`\\{${i}\\}`, 'g'), translationsDictionary[param] || param);
       }
     }

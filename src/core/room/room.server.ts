@@ -385,6 +385,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.SkillEffectEvent, content);
     }
   }
+
   public loseSkill(playerId: PlayerId, skillName: string) {
     const player = this.getPlayerById(playerId);
     player.loseSkill(skillName);
@@ -458,18 +459,21 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       askedBy,
     };
 
+    let drawedCards: CardId[] = [];
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.DrawCardEvent, drawEvent, async stage => {
       if (stage === DrawCardStage.CardDrawing) {
-        const cardIds = this.getCards(drawEvent.drawAmount, from);
+        drawedCards = this.getCards(drawEvent.drawAmount, from);
         await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.ObtainCardEvent, {
           reason: CardObtainedReason.CardDraw,
-          cardIds,
+          cardIds: drawedCards,
           toId: drawEvent.fromId,
         });
       }
 
       return true;
     });
+
+    return drawedCards;
   }
 
   public async obtainCards(event: ServerEventFinder<GameEventIdentifiers.ObtainCardEvent>) {
@@ -691,13 +695,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   public syncGameCommonRules(playerId: PlayerId, updateActions: (user: Player) => void) {
-    updateActions(this.getPlayerById(playerId));
-
+    const player = this.getPlayerById(playerId);
+    updateActions(player);
     this.notify(
       GameEventIdentifiers.SyncGameCommonRulesEvent,
       {
         toId: playerId,
-        commonRules: GameCommonRules.toSocketObject(this.getPlayerById(playerId)),
+        commonRules: GameCommonRules.toSocketObject(player),
       },
       playerId,
     );

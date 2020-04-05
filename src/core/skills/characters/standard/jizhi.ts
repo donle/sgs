@@ -8,11 +8,11 @@ import {
 } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { GameCommonRules } from 'core/game/game_rules';
-import { CardUseStage, PlayerPhase } from 'core/game/stage_processor';
+import { CardUseStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { CommonSkill, TriggerSkill } from 'core/skills/skill';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { CommonSkill, CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
@@ -26,7 +26,7 @@ export class JiZhi extends TriggerSkill {
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage: CardUseStage) {
-    return stage === CardUseStage.CardUsing;
+    return stage === CardUseStage.AfterCardUseEffect;
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
@@ -37,7 +37,7 @@ export class JiZhi extends TriggerSkill {
   async onTrigger(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} activates skill {1}',
-      room.getPlayerById(event.fromId).Name,
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
       this.name,
     ).extract();
 
@@ -48,7 +48,7 @@ export class JiZhi extends TriggerSkill {
     const cardId = (await room.drawCards(1, event.fromId))[0];
     if (Sanguosha.getCardById(cardId).is(CardType.Basic)) {
       const askForOptionsEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
-        options: ['discard', 'keep'],
+        options: ['jizhi:discard', 'jizhi:keep'],
         toId: event.fromId,
         conversation: TranslationPack.translationJsonPatcher(
           'do you wanna discard {0}',
@@ -63,25 +63,55 @@ export class JiZhi extends TriggerSkill {
         event.fromId,
       );
 
-      if (response.selectedOption === 'discard') {
+      if (response.selectedOption === 'jizhi:discard') {
         await room.dropCards(CardLostReason.ActiveDrop, [cardId], event.fromId);
         room.syncGameCommonRules(event.fromId, user => {
-          GameCommonRules.addAdditionalHoldCardNumber(user, 1);
           user.addInvisibleMark(this.name, 1);
+          GameCommonRules.addAdditionalHoldCardNumber(user, 1);
         });
       }
     }
 
     return true;
   }
+}
 
-  onPhaseChange(fromPhase: PlayerPhase, toPhase: PlayerPhase, room: Room, owner: PlayerId) {
-    if (fromPhase === PlayerPhase.FinishStage) {
-      room.syncGameCommonRules(owner, user => {
-        const extraHold = user.getInvisibleMark(this.name);
-        user.removeInvisibleMark(this.name);
+@CompulsorySkill
+@ShadowSkill
+export class JizhiShadow extends TriggerSkill {
+  public isAutoTrigger() {
+    return true;
+  }
+
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: PhaseChangeStage) {
+    return stage === PhaseChangeStage.AfterPhaseChanged && event.from === PlayerPhase.FinishStage;
+  }
+
+  constructor() {
+    super('jizhi', 'jizhi_description');
+  }
+
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
+    return true;
+  }
+
+  async onTrigger(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    return true;
+  }
+
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    const { triggeredOnEvent } = event;
+    const phaseChangeEvent = Precondition.exists(
+      triggeredOnEvent,
+      'Unknown phase change event in jizhi',
+    ) as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
+
+    phaseChangeEvent.fromPlayer &&
+      room.syncGameCommonRules(phaseChangeEvent.fromPlayer, user => {
+        const extraHold = user.getMark(this.name);
+        user.removeMark(this.name);
         GameCommonRules.addAdditionalHoldCardNumber(user, -extraHold);
       });
-    }
+    return true;
   }
 }

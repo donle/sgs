@@ -39,7 +39,7 @@ export class GameCommonRules {
       }[];
       additionalOffenseDistance: number;
       additionalDefenseDistance: number;
-      additionalHold: number; // server only
+      additionalHold: number;
       additionalAttackDistance: number;
     };
   } = {};
@@ -101,9 +101,9 @@ export class GameCommonRules {
 
   public static addAdditionalHoldCardNumber(user: Player, addedNumber: number) {
     GameCommonRules.preCheck(user);
-
     this.userRules[user.Id].additionalHold += addedNumber;
   }
+
   public static getAdditionalHoldCardNumber(user: Player) {
     GameCommonRules.preCheck(user);
 

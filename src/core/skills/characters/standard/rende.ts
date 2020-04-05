@@ -8,7 +8,7 @@ import {
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
-import { PlayerPhase } from 'core/game/stage_processor';
+import { PlayerPhase, PlayerStageListEnum } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -19,6 +19,10 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 export class Rende extends ActiveSkill {
   constructor() {
     super('rende', 'rende_description');
+  }
+
+  public isRefreshAt(stage: PlayerStageListEnum) {
+    return stage === PlayerStageListEnum.EndFinishStageEnd;
   }
 
   public canUse(room: Room, owner: Player) {

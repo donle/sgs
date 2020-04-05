@@ -29,7 +29,7 @@ export { Hujia } from './characters/standard/hujia';
 export { JianXiong } from './characters/standard/jianxiong';
 export { JiJiang, JiJiangShadow } from './characters/standard/jijiang';
 export { JiuYuan } from './characters/standard/jiuyuan';
-export { JiZhi } from './characters/standard/jizhi';
+export { JiZhi, JizhiShadow } from './characters/standard/jizhi';
 export { QiCai } from './characters/standard/qicai';
 export { Rende } from './characters/standard/rende';
 export { ZhiHeng } from './characters/standard/zhiheng';

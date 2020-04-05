@@ -87,7 +87,7 @@ export class Sanguosha {
 
   public static isShadowSkillName(name: string): boolean {
     this.tryToThrowUninitializedError();
-    return !name.startsWith('#');
+    return name.startsWith('#');
   }
 
   public static getCharacterByCharaterName(name: string) {
@@ -115,7 +115,7 @@ export class Sanguosha {
       numberOfCharacters--;
     }
 
-    return selectedCharacterIndex.map(index => this.characters[index]);
+    return selectedCharacterIndex.map(index => availableCharacters[index]);
   }
 
   public static getLordCharacters(packages: GameCharacterExtensions[]) {

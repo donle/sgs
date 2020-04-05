@@ -57,7 +57,7 @@ export type GameCommonRuleObject = {
   }[];
   additionalOffenseDistance: number;
   additionalDefenseDistance: number;
-  additionalHold: number; // server only
+  additionalHold: number;
   additionalAttackDistance: number;
 };
 

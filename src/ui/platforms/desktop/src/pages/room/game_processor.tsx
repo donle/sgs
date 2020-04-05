@@ -3,6 +3,7 @@ import { EquipCard } from 'core/cards/equip_card';
 import { Character } from 'core/characters/character';
 import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
+import { GameCommonRules } from 'core/game/game_rules';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
@@ -49,6 +50,9 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.AskForChoosingCharacterEvent:
         await this.onHandleChoosingCharacterEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.SyncGameCommonRulesEvent:
+        await this.onHandleSyncGameCommonRulesEvent(e as any, content);
         break;
       case GameEventIdentifiers.DrawCardEvent:
         await this.onHandleDrawCardsEvent(e as any, content);
@@ -301,6 +305,15 @@ export class GameClientProcessor {
     this.presenter.createDialog(
       <CharacterSelectorDialog characterIds={content.characterIds} onClick={onClick} translator={this.translator} />,
     );
+  }
+
+  private onHandleSyncGameCommonRulesEvent<T extends GameEventIdentifiers.SyncGameCommonRulesEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const { commonRules, toId } = content;
+    console.log(content);
+    GameCommonRules.syncSocketObject(this.store.room.getPlayerById(toId), commonRules);
   }
 
   private onHandleAskForSkillUseEvent<T extends GameEventIdentifiers.AskForSkillUseEvent>(
