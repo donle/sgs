@@ -6,10 +6,10 @@ import styles from './emoji_loader.module.css';
 
 export function emojiLoader(translator: ClientTranslationModule) {
   translator.addEmojiOrImageSymbolText(
-    [CardSuit.Club, <CardSuitItem translator={translator} suit={CardSuit.Club} className={styles.cardSuit} />],
-    [CardSuit.Diamond, <CardSuitItem translator={translator} suit={CardSuit.Diamond} className={styles.cardSuit} />],
-    [CardSuit.Heart, <CardSuitItem translator={translator} suit={CardSuit.Heart} className={styles.cardSuit} />],
-    [CardSuit.Spade, <CardSuitItem translator={translator} suit={CardSuit.Spade} className={styles.cardSuit} />],
-    [CardSuit.NoSuit, <CardSuitItem translator={translator} suit={CardSuit.NoSuit} className={styles.cardSuit} />],
+    [CardSuit.Club, <CardSuitItem suit={CardSuit.Club} className={styles.cardSuit} />],
+    [CardSuit.Diamond, <CardSuitItem suit={CardSuit.Diamond} className={styles.cardSuit} />],
+    [CardSuit.Heart, <CardSuitItem suit={CardSuit.Heart} className={styles.cardSuit} />],
+    [CardSuit.Spade, <CardSuitItem suit={CardSuit.Spade} className={styles.cardSuit} />],
+    [CardSuit.NoSuit, <CardSuitItem suit={CardSuit.NoSuit} className={styles.cardSuit} />],
   );
 }

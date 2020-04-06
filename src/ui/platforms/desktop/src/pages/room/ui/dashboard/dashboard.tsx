@@ -66,6 +66,7 @@ export class EquipCardItem extends React.Component<EquipCardItemProps> {
           [styles.armor]: card?.is(CardType.Armor),
           [styles.defenseRide]: card?.is(CardType.DefenseRide),
           [styles.offenseRide]: card?.is(CardType.OffenseRide),
+          [styles.precious]: card?.is(CardType.Precious),
           [styles.selected]: this.getSelected() && !this.props.disabled,
         })}
         onClick={this.onCardClick}

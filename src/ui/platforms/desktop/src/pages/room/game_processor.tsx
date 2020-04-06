@@ -312,7 +312,6 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     const { commonRules, toId } = content;
-    console.log(content);
     GameCommonRules.syncSocketObject(this.store.room.getPlayerById(toId), commonRules);
   }
 

@@ -1,10 +1,14 @@
 import classNames from 'classnames';
+import { CardType } from 'core/cards/card';
 import { getNationalityRawText } from 'core/characters/character';
+import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
+import { PlayerCardsArea } from 'core/player/player_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
+import { FlatClientCard } from '../card/flat_card';
 import styles from './player.module.css';
 
 type PlayerCardProps = {
@@ -47,6 +51,32 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     return this.selected;
   }
 
+  getPlayerEquips() {
+    const { player, translator } = this.props;
+    const equips = player?.getCardIds(PlayerCardsArea.EquipArea).map(cardId => Sanguosha.getCardById(cardId));
+    if (!equips) {
+      return;
+    }
+
+    return (
+      <div className={styles.playerEquips}>
+        {equips.map(equip => (
+            <FlatClientCard
+              card={equip}
+              translator={translator}
+              className={classNames(styles.playerEquip, {
+                [styles.weapon]: equip?.is(CardType.Weapon),
+                [styles.armor]: equip?.is(CardType.Armor),
+                [styles.defenseRide]: equip?.is(CardType.DefenseRide),
+                [styles.offenseRide]: equip?.is(CardType.OffenseRide),
+                [styles.precious]: equip?.is(CardType.Precious),
+              })}
+            />
+        ))}
+      </div>
+    );
+  }
+
   render() {
     return (
       <div
@@ -57,7 +87,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
       >
         {this.props.player ? (
           <>
-            <p>{this.props.player.Name}</p>
+            <p className={styles.playerName}>{this.props.player.Name}</p>
             {this.PlayerCharacter && (
               <div className={styles.playerCardInside}>
                 <span className={styles.nationality}>
@@ -67,6 +97,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                 <span>
                   {this.props.player.Hp}/{this.props.player.MaxHp}
                 </span>
+                {this.getPlayerEquips()}
               </div>
             )}
           </>

@@ -14,6 +14,14 @@
     /* animation: glow 1s ease-in-out infinite alternate; */
 }
 
+.flatCard .cardSuit {
+    font-size: 20px;
+}
+
+.cardNumber {
+    font-size: 14px;
+}
+
 .redCard {
     color: red;
 }
@@ -36,6 +44,16 @@
 
 .selected {
     border-color: red;
+}
+
+.flatCard {
+    display: flex;
+    justify-content: flex-end;
+}
+.equipName {
+    justify-self: flex-start;
+    flex: auto;
+    font-size: 14px;
 }
 
 @keyframes glow {

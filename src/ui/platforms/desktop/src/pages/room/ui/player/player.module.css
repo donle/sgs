@@ -11,6 +11,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    width: 100%;
 }
 
 .nationality {
@@ -25,4 +26,45 @@
 }
 .selected {
     border-color: red;
+}
+.playerName {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    margin: 0;
+}
+.playerEquips {
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    padding: 0 8px;
+}
+
+.playerEquip {
+    height: 25%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    position: absolute;
+    left: 0;
+    padding: 0 8px;
+}
+
+.weapon {
+    top: 0;
+}
+.armor {
+    top: 25%;
+}
+.defenseRide {
+    top: 50%;
+}
+.offenseRide {
+    top: 75%;
+}
+.precious {
+    /* TBC */
 }

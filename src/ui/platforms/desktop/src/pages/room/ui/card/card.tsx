@@ -5,6 +5,7 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import styles from './card.module.css';
+import { CardNumberItem } from './card_number';
 import { CardSuitItem } from './card_suit';
 
 export type ClientCardProps = {
@@ -55,14 +56,14 @@ export class ClientCard extends React.Component<ClientCardProps> {
         {card ? (
           <>
             <div className={styles.cornerTag}>
-              <CardSuitItem suit={card.Suit} className={styles.cardSuit} translator={translator} />
-              <span>{ClientTranslationModule.getCardNumber(card.CardNumber)}</span>
+              <CardSuitItem suit={card.Suit} />
+              <CardNumberItem cardNumber={card.CardNumber} />
             </div>
             <span>{translator.tr(card.Name)}</span>
             {tag && <span className={styles.cardTag}>{translator.trx(tag)}</span>}
           </>
         ) : (
-          <div className={styles.emptyCard}>{this.props.translator.tr('New QSanguosha')}</div>
+          <div className={styles.emptyCard}>{translator.tr('New QSanguosha')}</div>
         )}
       </div>
     );
