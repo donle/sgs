@@ -3,12 +3,22 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
-import { TriggerSkill, ViewAsSkill } from 'core/skills/skill';
+import { Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { RoomPresenter, RoomStore } from '../room.presenter';
 import { BaseAction } from './base_action';
 
 export class CardResponseAction extends BaseAction {
+  public static isSkillsOnCardResponseDisabled = (matcher: CardMatcher) => (skill: Skill) => {
+    if (skill instanceof TriggerSkill) {
+      return false;
+    } else if (skill instanceof ViewAsSkill) {
+      return !new CardMatcher({ name: skill.canViewAs() }).match(matcher);
+    }
+
+    return true;
+  };
+
   private askForEvent: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>;
 
   constructor(
@@ -46,7 +56,7 @@ export class CardResponseAction extends BaseAction {
             this.selectedCards,
             this.selectedTargets,
             this.equipSkillCardId,
-          ) && !skill.cardFilter(this.store.room, this.selectedCards)
+          ) && skill.cardFilter(this.store.room, [...this.selectedCards, card.Id])
         );
       } else if (skill instanceof ViewAsSkill) {
         const player = this.store.room.getPlayerById(this.playerId);
@@ -100,6 +110,8 @@ export class CardResponseAction extends BaseAction {
       this.presenter.disableActionButton('confirm');
       this.resetActionHandlers();
       this.resetAction();
+      this.presenter.isSkillDisabled(BaseAction.disableSkills);
+      this.presenter.resetSelectedSkill();
     });
     this.presenter.defineCancelButtonActions(() => {
       const event: ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent> = {
@@ -108,6 +120,8 @@ export class CardResponseAction extends BaseAction {
       this.store.room.broadcast(GameEventIdentifiers.AskForCardResponseEvent, event);
       this.resetActionHandlers();
       this.resetAction();
+      this.presenter.isSkillDisabled(BaseAction.disableSkills);
+      this.presenter.resetSelectedSkill();
     });
 
     this.presenter.setupPlayersSelectionMatcher(() => false);

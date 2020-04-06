@@ -1,5 +1,6 @@
 import { Card } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
+import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { Character } from 'core/characters/character';
 import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -139,6 +140,8 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     const action = new CardResponseAction(content.toId, this.store, this.presenter, content);
+    this.presenter.isSkillDisabled(CardResponseAction.isSkillsOnCardResponseDisabled(new CardMatcher(content.cardMatcher)));
+
     action.onPlay(this.translator);
   }
 
@@ -166,6 +169,10 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     const action = new ResponsiveUseCardAction(content.toId, this.store, this.presenter, content);
+    this.presenter.isSkillDisabled(
+      ResponsiveUseCardAction.isSkillsOnResponsiveCardUseDisabled(new CardMatcher(content.cardMatcher)),
+    );
+
     action.onPlay(this.translator);
   }
 
@@ -292,7 +299,6 @@ export class GameClientProcessor {
         this.presenter.ClientPlayer.CharacterId = character.Id;
       }
       this.presenter.closeDialog();
-
       const response: ClientEventFinder<T> = {
         isGameStart: content.isGameStart,
         chosenCharacter: character.Id,
@@ -329,7 +335,12 @@ export class GameClientProcessor {
   ) {
     this.store.room.onPhaseTo(content.toPlayer, content.to);
     if (content.to === PlayerPhase.PrepareStage) {
+      content.fromPlayer && this.presenter.isSkillDisabled(PlayPhaseAction.disableSkills);
       this.store.room.turnTo(content.toPlayer);
+      this.presenter.isSkillDisabled(
+        PlayPhaseAction.isPlayPhaseSkillsDisabled(this.store.room, this.presenter.ClientPlayer!),
+      );
+
       content.fromPlayer && this.store.room.getPlayerById(content.fromPlayer).resetCardUseHistory();
     }
     this.presenter.broadcastUIUpdate();

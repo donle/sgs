@@ -37,7 +37,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     }
 
     try {
-      return this.props.player.CharacterId ? this.props.player.Character : undefined;
+      return this.props.player.CharacterId !== undefined ? this.props.player.Character : undefined;
     } catch {
       return undefined;
     }

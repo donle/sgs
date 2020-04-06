@@ -3,12 +3,22 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
-import { ActiveSkill, ViewAsSkill } from 'core/skills/skill';
+import { ActiveSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { RoomPresenter, RoomStore } from '../room.presenter';
 import { BaseAction } from './base_action';
 
 export class ResponsiveUseCardAction extends BaseAction {
+  public static isSkillsOnResponsiveCardUseDisabled = (matcher: CardMatcher) => (skill: Skill) => {
+    if (skill instanceof TriggerSkill) {
+      return false;
+    } else if (skill instanceof ViewAsSkill) {
+      return !new CardMatcher({ name: skill.canViewAs() }).match(matcher);
+    }
+
+    return true;
+  };
+
   private askForEvent: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
 
   constructor(
@@ -48,7 +58,7 @@ export class ResponsiveUseCardAction extends BaseAction {
             this.selectedCards,
             this.selectedTargets,
             this.equipSkillCardId,
-          ) && !skill.cardFilter(this.store.room, this.selectedCards)
+          ) && skill.cardFilter(this.store.room, [...this.selectedCards, card.Id])
         );
       } else if (skill instanceof ViewAsSkill) {
         return (
@@ -92,6 +102,8 @@ export class ResponsiveUseCardAction extends BaseAction {
       this.store.room.broadcast(GameEventIdentifiers.AskForCardUseEvent, event);
       this.resetActionHandlers();
       this.resetAction();
+      this.presenter.isSkillDisabled(BaseAction.disableSkills);
+      this.presenter.resetSelectedSkill();
     });
     this.presenter.defineCancelButtonActions(() => {
       const event: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> = {
@@ -100,6 +112,8 @@ export class ResponsiveUseCardAction extends BaseAction {
       this.store.room.broadcast(GameEventIdentifiers.AskForCardUseEvent, event);
       this.resetActionHandlers();
       this.resetAction();
+      this.presenter.isSkillDisabled(BaseAction.disableSkills);
+      this.presenter.resetSelectedSkill();
     });
 
     this.presenter.setupPlayersSelectionMatcher((player: Player) => this.isPlayerEnabled(player));

@@ -8,6 +8,14 @@ import { ActiveSkill, ResponsiveSkill, Skill, TriggerSkill, ViewAsSkill } from '
 import { RoomPresenter, RoomStore } from '../room.presenter';
 
 export abstract class BaseAction {
+  public static disableSkills = (skill: Skill) => {
+    if (skill instanceof TriggerSkill) {
+      return false;
+    }
+
+    return true;
+  };
+
   protected selectedCards: CardId[] = [];
   protected selectedCardToPlay?: CardId;
   protected selectedSkillToPlay?: Skill;
@@ -148,7 +156,7 @@ export abstract class BaseAction {
             this.selectedCards,
             this.selectedTargets,
             this.equipSkillCardId,
-          ) && !skill.cardFilter(this.store.room, this.selectedCards)
+          ) && skill.cardFilter(this.store.room, [...this.selectedCards, card.Id])
         );
       } else if (skill instanceof ViewAsSkill) {
         return (
@@ -270,6 +278,7 @@ export abstract class BaseAction {
 
     if (this.selectedSkillToPlay === undefined) {
       this.selectedSkillToPlay = skill;
+      this.store.selectedSkill = skill;
       this.equipSkillCardId = this.store.room
         .getPlayerById(this.playerId)
         .getCardIds(PlayerCardsArea.EquipArea)
@@ -279,6 +288,7 @@ export abstract class BaseAction {
   protected unselectSkill(skill: Skill) {
     if (this.selectedSkillToPlay === skill) {
       this.selectedSkillToPlay = undefined;
+      this.store.selectedSkill = undefined;
     }
   }
 
@@ -313,16 +323,6 @@ export abstract class BaseAction {
     }
 
     return false;
-  }
-
-  isSkillEnabled(skill: Skill) {
-    const player = this.store.room.getPlayerById(this.playerId);
-    let canUse = skill.canUse(this.store.room, player);
-    if (skill instanceof ViewAsSkill) {
-      canUse = canUse && player.canUseCard(this.store.room, new CardMatcher({ name: skill.canViewAs() }));
-    }
-
-    return canUse;
   }
 
   public abstract onPlay(...args: any): void;

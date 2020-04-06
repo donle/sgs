@@ -21,3 +21,17 @@
 .selected {
     border-color: red;
 }
+
+.playerSkills {
+    display: flex;
+    flex-wrap: wrap;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.playerSkill {
+    min-width: 50%;
+    background: transparent;
+    box-shadow: transparent;
+}

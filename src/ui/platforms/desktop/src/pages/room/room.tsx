@@ -137,6 +137,8 @@ export class RoomPage extends React.Component<
               onClickPlayer={this.store.onClickPlayer}
               cardSkillEnableMatcher={this.store.cardSkillsSelectionMatcher}
               playerSelectableMatcher={this.store.playersSelectionMatcher}
+              onClickSkill={this.store.onClickSkill}
+              isSkillDisabled={this.store.isSkillDisabled}
             />
           </div>
         )}

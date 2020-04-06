@@ -4,6 +4,7 @@ import { EquipCard } from 'core/cards/equip_card';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
+import { Skill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
@@ -27,6 +28,8 @@ export type DashboardProps = {
   onClickConfirmButton?(): void;
   onClickCancelButton?(): void;
   onClickFinishButton?(): void;
+  onClickSkill?(skill: Skill, selected: boolean): void;
+  isSkillDisabled(skill: Skill): boolean;
 };
 
 type EquipCardItemProps = {
@@ -155,10 +158,6 @@ export class Dashboard extends React.Component<DashboardProps> {
     );
   }
 
-  private readonly onClickPlayer = (player: Player, selected: boolean) => {
-    this.props.onClickPlayer && this.props.onClickPlayer(player, selected);
-  };
-
   render() {
     const player = this.props.presenter.ClientPlayer!;
     return (
@@ -168,10 +167,12 @@ export class Dashboard extends React.Component<DashboardProps> {
         <PlayerAvatar
           updateFlag={this.props.store.updateUIFlag}
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
-          onClick={this.onClickPlayer}
+          onClick={this.props.onClickPlayer}
           store={this.props.store}
           presenter={this.props.presenter}
           translator={this.props.translator}
+          onClickSkill={this.props.onClickSkill}
+          isSkillDisabled={this.props.isSkillDisabled}
         />
       </div>
     );

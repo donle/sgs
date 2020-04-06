@@ -52,6 +52,9 @@ export class RoomStore {
   };
 
   @mobx.observable.ref
+  selectedSkill: Skill | undefined;
+
+  @mobx.observable.ref
   clientPlayerCardActionsMatcher: (card: Card) => boolean;
   @mobx.observable.ref
   onClickHandCardToPlay: (card: Card, selected: boolean) => void;
@@ -65,6 +68,8 @@ export class RoomStore {
   onClickPlayer: (player: Player, selected: boolean) => void;
   @mobx.observable.ref
   onClickSkill: (skill: Skill, selected: boolean) => void;
+  @mobx.observable.ref
+  isSkillDisabled: (skill: Skill) => boolean = () => false;
 
   @mobx.observable.ref
   confirmButtonAction: (() => void) | undefined;
@@ -224,6 +229,16 @@ export class RoomPresenter {
   @mobx.action
   onClickSkill(handler: (skill: Skill, selected: boolean) => void) {
     this.store.onClickSkill = handler;
+  }
+
+  @mobx.action
+  isSkillDisabled(handler: (skill: Skill) => boolean) {
+    this.store.isSkillDisabled = handler;
+  }
+
+  @mobx.action
+  resetSelectedSkill() {
+    this.store.selectedSkill = undefined;
   }
 
   @mobx.action

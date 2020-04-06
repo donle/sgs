@@ -194,7 +194,7 @@ export abstract class Player implements PlayerInfo {
   public useSkill(skillName: string) {
     this.skillUsedHistory[skillName] !== undefined
       ? this.skillUsedHistory[skillName]++
-      : (this.skillUsedHistory[skillName] = 0);
+      : (this.skillUsedHistory[skillName] = 1);
   }
 
   public getCardIds(area?: PlayerCardsArea, outsideAreaName?: string): CardId[] {
