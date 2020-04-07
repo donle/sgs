@@ -8,11 +8,12 @@ import {
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
-import { PlayerPhase } from 'core/game/stage_processor';
+import { PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { ActiveSkill, CommonSkill } from 'core/skills/skill';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { ActiveSkill, CommonSkill, CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
@@ -38,24 +39,15 @@ export class Rende extends ActiveSkill {
   }
 
   isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
-    const cardFromArea = room.getPlayerById(owner).cardFrom(cardId);
-    return cardFromArea !== PlayerCardsArea.HandArea;
+    return room.getPlayerById(owner).cardFrom(cardId) === PlayerCardsArea.HandArea;
   }
 
   async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
-    event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} activates skill {1} to {2}',
-      room.getPlayerById(event.fromId).Name,
-      this.name,
-      room.getPlayerById(event.toIds![0]).Name,
-    ).extract();
-
     return true;
   }
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    room.getPlayerById(skillUseEvent.fromId).addInvisibleMark(this.name, skillUseEvent.cardIds!.length);
-    room.moveCards(
+    await room.moveCards(
       skillUseEvent.cardIds!,
       skillUseEvent.fromId,
       skillUseEvent.toIds![0],
@@ -69,17 +61,26 @@ export class Rende extends ActiveSkill {
     from.addInvisibleMark(this.name, skillUseEvent.cardIds!.length);
 
     if (from.getInvisibleMark(this.name) >= 2 && from.getInvisibleMark(this.name + '-used') === 0) {
+      const options: string[] = [];
       //TODO: add wine afterwards
-      const options = ['peach'];
+      if (from.canUseCard(room, new CardMatcher({ name: ['peach'] }))) {
+        options.push('peach');
+      }
       if (from.canUseCard(room, new CardMatcher({ name: ['slash'] }))) {
         options.push('slash');
         options.push('fire_slash');
         options.push('thunder_slash');
       }
 
-      const chooseEvent = {
+      if (options.length === 0) {
+        return true;
+      }
+
+      const chooseEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
         options,
-        fromId: skillUseEvent.fromId,
+        askedBy: skillUseEvent.fromId,
+        conversation: 'please choose a basic card to use',
+        toId: skillUseEvent.fromId,
         triggeredBySkills: [this.name],
       };
 
@@ -89,7 +90,9 @@ export class Rende extends ActiveSkill {
         skillUseEvent.fromId,
       );
 
-      if (response.selectedOption === 'slash') {
+      if (!response.selectedOption) {
+        return true;
+      } else if (response.selectedOption === 'slash') {
         const targets: PlayerId[] = [];
 
         for (const player of room.AlivePlayers) {
@@ -100,9 +103,10 @@ export class Rende extends ActiveSkill {
           targets.push(player.Id);
         }
 
-        const choosePlayerEvent = {
+        const choosePlayerEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
           players: targets,
           fromId: from.Id,
+          requiredAmount: 1,
           translationsMessage: TranslationPack.translationJsonPatcher('Please choose your slash target').extract(),
         };
 
@@ -140,12 +144,43 @@ export class Rende extends ActiveSkill {
 
     return true;
   }
+}
 
-  onPhaseChange(from: PlayerPhase, to: PlayerPhase, room: Room, playerId: PlayerId) {
-    if (from === PlayerPhase.FinishStage) {
-      const player = room.getPlayerById(playerId);
-      player.removeInvisibleMark(this.name);
-      player.removeInvisibleMark(this.name + '-used');
+@CompulsorySkill
+@ShadowSkill
+export class RenDeShadow extends TriggerSkill {
+  public isAutoTrigger() {
+    return true;
+  }
+
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: PhaseChangeStage) {
+    return stage === PhaseChangeStage.AfterPhaseChanged && event.from === PlayerPhase.PlayCardStage;
+  }
+
+  constructor() {
+    super('rende', 'rende_description');
+  }
+
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
+    return content.fromPlayer === owner.Id;
+  }
+
+  async onTrigger(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    return true;
+  }
+
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    const { triggeredOnEvent } = event;
+    const phaseChangeEvent = Precondition.exists(
+      triggeredOnEvent,
+      'Unknown phase change event in rende',
+    ) as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
+
+    if (phaseChangeEvent.fromPlayer) {
+      const player = room.getPlayerById(phaseChangeEvent.fromPlayer);
+      player.removeMark(this.name);
+      player.removeMark(this.name + '-used');
     }
+    return true;
   }
 }

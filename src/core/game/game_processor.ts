@@ -40,7 +40,6 @@ import { Player } from 'core/player/player';
 import { getPlayerRoleRawText, PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { Skill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ServerRoom } from '../room/room.server';
 import { Sanguosha } from './engine';
@@ -553,7 +552,9 @@ export class GameProcessor {
         const from = this.room.getPlayerById(event.fromId);
         const lostCards = event.cardIds.reduce<CardId[]>((prevCardIds, cardId) => {
           if (Card.isVirtualCardId(cardId)) {
-            Sanguosha.getCardById<VirtualCard>(cardId).ActualCardIds.forEach(actualId => prevCardIds.push(actualId));
+            for (const actualId of Sanguosha.getCardById<VirtualCard>(cardId).ActualCardIds) {
+              prevCardIds.push(actualId);
+            }
           } else {
             prevCardIds.push(cardId);
           }

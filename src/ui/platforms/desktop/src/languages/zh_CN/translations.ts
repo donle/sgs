@@ -493,6 +493,7 @@ export const eventDictionary: Word[] = [
   { source: 'please use a {0} to player {1} to response {2}', target: '请对 {1} 使用一张【{0}】来响应 {2}' },
   { source: '{0} activates skill {1}', target: '{0} 的 {1} 技能被触发' },
   { source: '{0} used skill {1}', target: '{0} 使用了技能【{1}】' },
+  { source: '{0} used skill {1} to {2}', target: '{0} 使用了技能【{1}】, 目标是 {2}' },
   {
     source: '{0} hits {1} {2} hp of damage type {3}',
     target: '{0} 对 {1} 造成了 {2} 点【{3}】伤害',
@@ -570,6 +571,7 @@ export const eventDictionary: Word[] = [
   { source: 'jizhi:discard', target: '弃置' },
   { source: 'jizhi:keep', target: '保留' },
   { source: 'do you wanna discard {0}', target: '是否弃置 {0} 增加一手牌上限' },
+  { source: 'please choose a basic card to use', target: '请选择一张基本卡使用' },
 
   {
     source: 'player {0} join in the room',

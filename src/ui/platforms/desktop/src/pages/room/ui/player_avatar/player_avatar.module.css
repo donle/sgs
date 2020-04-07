@@ -34,4 +34,5 @@
     min-width: 50%;
     background: transparent;
     box-shadow: transparent;
+    flex: auto;
 }

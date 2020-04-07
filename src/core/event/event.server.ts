@@ -222,6 +222,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.AskForChoosingPlayerEvent]: {
     players: PlayerId[];
     fromId: PlayerId;
+    requiredAmount: number;
   };
   [GameEventIdentifiers.AskForPlaceCardsInDileEvent]: {
     drawPendingCards?: CardId[];

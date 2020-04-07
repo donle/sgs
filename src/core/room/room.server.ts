@@ -296,14 +296,18 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (card.is(CardType.Equip)) {
       await this.equip(card as EquipCard, from);
     } else if (!card.is(CardType.DelayedTrick)) {
-      await this.loseCards({
-        reason: CardLostReason.CardUse,
-        cardIds: [content.cardId],
-        fromId: content.fromId,
-      });
+      if (!this.getProcessingCards(content.cardId.toString()).includes(content.cardId)) {
+        await this.loseCards({
+          reason: CardLostReason.CardUse,
+          cardIds: [content.cardId],
+          fromId: content.fromId,
+        });
+      }
     }
 
-    this.addProcessingCards(card.Id.toString(), card.Id);
+    if (this.getProcessingCards(card.Id.toString()).length === 0) {
+      this.addProcessingCards(card.Id.toString(), card.Id);
+    }
     return await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, content, async stage => {
       if (stage === CardUseStage.AfterCardUseEffect) {
         if (EventPacker.isTerminated(content)) {
@@ -658,12 +662,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       return true;
     });
 
-    await this.loseCards({
-      reason: CardLostReason.CardResponse,
-      cardIds: [event.cardId],
-      fromId: event.fromId,
-    });
-    this.bury(event.cardId);
+    if (!this.getProcessingCards(event.cardId.toString()).includes(event.cardId)) {
+      await this.loseCards({
+        reason: CardLostReason.CardResponse,
+        cardIds: [event.cardId],
+        fromId: event.fromId,
+      });
+      this.bury(event.cardId);
+    }
   }
 
   public async judge(

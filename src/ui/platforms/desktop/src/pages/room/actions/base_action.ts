@@ -105,7 +105,7 @@ export abstract class BaseAction {
 
     let skill: Skill | undefined;
 
-    if (this.selectedCardToPlay) {
+    if (this.selectedCardToPlay !== undefined) {
       skill = Sanguosha.getCardById(this.selectedCardToPlay).Skill;
     } else if (this.selectedSkillToPlay !== undefined) {
       skill = this.selectedSkillToPlay;
@@ -272,7 +272,7 @@ export abstract class BaseAction {
   }
 
   protected selectSkill(skill: Skill) {
-    if (this.selectedCardToPlay) {
+    if (this.selectedCardToPlay !== undefined) {
       return;
     }
 
@@ -293,7 +293,7 @@ export abstract class BaseAction {
   }
 
   protected enableToCallAction() {
-    if (this.selectedCardToPlay) {
+    if (this.selectedCardToPlay !== undefined) {
       const card = Sanguosha.getCardById(this.selectedCardToPlay);
       if (card.is(CardType.Equip)) {
         return true;
@@ -309,7 +309,7 @@ export abstract class BaseAction {
       } else {
         return false;
       }
-    } else if (this.selectedSkillToPlay) {
+    } else if (this.selectedSkillToPlay !== undefined) {
       const skill = this.selectedSkillToPlay;
 
       if (skill instanceof TriggerSkill || skill instanceof ActiveSkill) {
@@ -328,7 +328,7 @@ export abstract class BaseAction {
   public abstract onPlay(...args: any): void;
 
   protected onClickCard(card: Card, selected: boolean): void {
-    if (this.selectedSkillToPlay) {
+    if (this.selectedSkillToPlay !== undefined) {
       if (
         this.selectedSkillToPlay instanceof ViewAsSkill &&
         this.selectedSkillToPlay.cardFilter(

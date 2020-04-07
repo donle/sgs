@@ -445,6 +445,7 @@ export class GameClientProcessor {
 
         this.store.room.broadcast(GameEventIdentifiers.AskForChoosingOptionsEvent, response);
         this.presenter.disableActionButton('cancel');
+        this.presenter.closeIncomingConversation();
       });
     }
   }

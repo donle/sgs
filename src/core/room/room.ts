@@ -256,7 +256,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public cardUseDistanceBetween(cardId: CardId, from: Player, to: Player) {
     const card = Sanguosha.getCardById(cardId);
 
-    return Math.min(this.distanceBetween(from, to) - GameCommonRules.getCardAdditionalUsableDistance(card, from), 1);
+    return Math.max(this.distanceBetween(from, to) - GameCommonRules.getCardAdditionalUsableDistance(card, from), 1);
   }
 
   public isAvailableTarget(cardId: CardId, attacker: PlayerId, target: PlayerId) {

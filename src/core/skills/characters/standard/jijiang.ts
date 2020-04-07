@@ -2,7 +2,13 @@ import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { CharacterNationality } from 'core/characters/character';
-import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import {
+  CardLostReason,
+  ClientEventFinder,
+  EventPacker,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
@@ -39,7 +45,7 @@ export class JiJiang extends ActiveSkill {
   }
 
   isAvailableTarget(owner: PlayerId, room: Room, targetId: PlayerId): boolean {
-    return room.canAttack(room.getPlayerById(owner), room.getPlayerById(targetId));
+    return owner !== targetId && room.canAttack(room.getPlayerById(owner), room.getPlayerById(targetId));
   }
 
   isAvailableCard(): boolean {
@@ -51,9 +57,8 @@ export class JiJiang extends ActiveSkill {
       '{0} used skill {1} to {2}',
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
       this.name,
-      TranslationPack.patchPlayerInTranslation(...event.toIds!.map(toId => room.getPlayerById(toId))),
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.toIds![0])),
     ).extract();
-
     return true;
   }
 
@@ -81,6 +86,17 @@ export class JiJiang extends ActiveSkill {
       if (terminated) {
         return false;
       } else if (responseEvent && responseEvent.cardId !== undefined) {
+        room.addProcessingCards(responseEvent.cardId.toString(), responseEvent.cardId);
+        await room.responseCard({
+          fromId: responseEvent.fromId,
+          cardId: responseEvent.cardId!,
+        });
+        await room.loseCards({
+          fromId: responseEvent.fromId,
+          cardIds: [responseEvent.cardId!],
+          reason: CardLostReason.CardResponse,
+        });
+
         const useCardEvent = {
           cardId: responseEvent.cardId,
           fromId: skillUseEvent.fromId,
@@ -125,6 +141,11 @@ export class JiJiangShadow extends TriggerSkill {
   }
 
   async onTrigger(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    event.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} used skill {1}',
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
+      this.name,
+    ).extract();
     return true;
   }
 
@@ -142,10 +163,24 @@ export class JiJiangShadow extends TriggerSkill {
 
     for (const player of room.getAlivePlayersFrom()) {
       if (player.Nationality === CharacterNationality.Shu && player.Id !== fromId) {
-        room.notify(identifier, slashCardEvent, player.Id);
+        room.notify(
+          identifier,
+          {
+            toId: player.Id,
+            fromId: event.fromId,
+            cardMatcher: slashCardEvent.cardMatcher,
+            triggeredBySkills: [this.name],
+            conversation: TranslationPack.translationJsonPatcher(
+              '{0} used skill {1} to you, please response a {2} card',
+              TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
+              this.name,
+              'slash',
+            ).extract(),
+          },
+          player.Id,
+        );
 
         const response = await room.onReceivingAsyncReponseFrom(identifier, player.Id);
-
         if (response.cardId !== undefined) {
           const responseCard = Sanguosha.getCardById(response.cardId);
 
@@ -160,24 +195,15 @@ export class JiJiangShadow extends TriggerSkill {
             responseToEvent: triggeredOnEvent,
           };
 
+          await room.responseCard({
+            cardId: response.cardId,
+            fromId: response.fromId,
+          });
+
           if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
-            await room.responseCard(
-              EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, {
-                ...cardUseEvent,
-                fromId: response.fromId,
-              }),
-            );
-            await room.useCard(EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, cardUseEvent));
+            await room.useCard(cardUseEvent);
           } else {
-            await room.responseCard(
-              EventPacker.createIdentifierEvent(GameEventIdentifiers.CardResponseEvent, {
-                ...cardUseEvent,
-                fromId: response.fromId,
-              }),
-            );
-            await room.responseCard(
-              EventPacker.createIdentifierEvent(GameEventIdentifiers.CardResponseEvent, cardUseEvent),
-            );
+            await room.responseCard(cardUseEvent);
           }
 
           return !EventPacker.isTerminated(cardUseEvent);
