@@ -1,6 +1,6 @@
 import { clientActiveListenerEvents, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { ClientSocket } from 'core/network/socket.client';
-import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
@@ -68,7 +68,8 @@ export class RoomPage extends React.Component<
     this.socket.disconnect();
   }
 
-  private showMessage(messages: string[] = [], translationsMessage?: PatchedTranslationObject) {
+  private showMessageFromEvent(event: ServerEventFinder<GameEventIdentifiers>) {
+    const { messages = [], translationsMessage } = event;
     const { translator } = this.props;
 
     if (translationsMessage) {
@@ -77,11 +78,6 @@ export class RoomPage extends React.Component<
     messages.forEach(message => {
       this.presenter.addGameLog(translator.trx(message));
     });
-  }
-
-  private showMessageFromEvent(event: ServerEventFinder<GameEventIdentifiers>) {
-    const { messages, translationsMessage } = event;
-    this.showMessage(messages, translationsMessage);
   }
 
   private getDummyCentralInfo() {

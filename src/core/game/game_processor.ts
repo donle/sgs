@@ -40,6 +40,7 @@ import { Player } from 'core/player/player';
 import { getPlayerRoleRawText, PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { Skill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ServerRoom } from '../room/room.server';
 import { Sanguosha } from './engine';
@@ -289,7 +290,14 @@ export class GameProcessor {
           async stage => {
             if (stage === PhaseChangeStage.PhaseChanged) {
               this.CurrentPlayer.resetCardUseHistory();
-              //TODO: to reset skills
+              for (const player of this.room.AlivePlayers) {
+                for (const skill of player.getSkills()) {
+                  if (skill.isRefreshAt(nextPhase)) {
+                    player.resetSkillUseHistory(skill.Name);
+                  }
+                }
+              }
+
               this.currentPlayerPhase = nextPhase;
             }
 

@@ -2,7 +2,7 @@ import { Card, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { ClientEventFinder, EventPicker, GameEventIdentifiers, ServerEventFinder, WorkPlace } from 'core/event/event';
-import { AllStage, PlayerStageListEnum } from 'core/game/stage_processor';
+import { AllStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -142,7 +142,7 @@ export abstract class Skill {
 
   constructor(protected name: string, protected description: string) {}
   protected triggerableTimes: number = 0;
-  protected abstract isRefreshAt(stage: AllStage): boolean;
+  public  abstract isRefreshAt(stage: PlayerPhase): boolean;
 
   public abstract async onUse(
     room: Room,
@@ -210,7 +210,7 @@ export abstract class ResponsiveSkill extends Skill {
     return true;
   }
 
-  protected isRefreshAt() {
+  public isRefreshAt() {
     return false;
   }
 
@@ -299,8 +299,8 @@ export abstract class ActiveSkill extends Skill {
     containerCard?: CardId,
   ): boolean;
 
-  public isRefreshAt(stage: AllStage): boolean {
-    return stage === PlayerStageListEnum.EndFinishStageEnd;
+  public isRefreshAt(phase: PlayerPhase) {
+    return phase === PlayerPhase.PrepareStage;
   }
 }
 
