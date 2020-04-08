@@ -122,9 +122,8 @@ export interface ClientEvent extends EventUtilities {
     fromId: PlayerId;
   };
   [GameEventIdentifiers.AskForChoosingPlayerEvent]: {
-    selectedPlayer?: PlayerId;
+    selectedPlayers?: PlayerId[];
     fromId: PlayerId;
-    askedBy?: PlayerId;
   };
   [GameEventIdentifiers.AskForSkillUseEvent]: {
     invoke?: string;

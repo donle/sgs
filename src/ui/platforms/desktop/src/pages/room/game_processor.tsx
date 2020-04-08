@@ -14,7 +14,7 @@ import * as React from 'react';
 import { CardResponseAction } from './actions/card_response_action';
 import { PlayPhaseAction } from './actions/play_phase_action';
 import { ResponsiveUseCardAction } from './actions/responsive_card_use_action';
-import { SelectCardAction } from './actions/select_card_action';
+import { SelectAction } from './actions/select_action';
 import { SkillUseAction } from './actions/skill_use_action';
 import { RoomPresenter, RoomStore } from './room.presenter';
 import { CardSelectorDialog } from './ui/dialog/card_selector_dialog/card_selector_dialog';
@@ -133,6 +133,12 @@ export class GameClientProcessor {
       case GameEventIdentifiers.AskForChoosingOptionsEvent:
         await this.onHandleAskForChoosingOptionsEvent(e as any, content);
         break;
+      case GameEventIdentifiers.AskForChoosingPlayerEvent:
+        await this.onHandleAskForChoosingPlayerEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.PlayerDyingEvent:
+        await this.onHandlePlayerDyingEvent(e as any, content);
+        break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
     }
@@ -160,8 +166,9 @@ export class GameClientProcessor {
         : TranslationPack.translationJsonPatcher('please drop {0} cards', content.cardAmount).extract(),
       translator: this.translator,
     });
-    const action = new SelectCardAction(content.toId, this.store, this.presenter, content);
-    const selectedCards = await action.onSelect(content.fromArea, content.cardAmount, content.except);
+
+    const action = new SelectAction(content.toId, this.store, this.presenter, content);
+    const selectedCards = await action.onSelectCard(content.fromArea, content.cardAmount, content.except);
 
     this.presenter.closeIncomingConversation();
     const event: ClientEventFinder<T> = {
@@ -206,6 +213,11 @@ export class GameClientProcessor {
     // tslint:disable-next-line:no-empty
   ) {}
   private onHandleCustomDialogEvent<T extends GameEventIdentifiers.CustomGameDialog>(
+    type: T,
+    content: ServerEventFinder<T>,
+    // tslint:disable-next-line:no-empty
+  ) {}
+  private onHandlePlayerDyingEvent<T extends GameEventIdentifiers.PlayerDyingEvent>(
     type: T,
     content: ServerEventFinder<T>,
     // tslint:disable-next-line:no-empty
@@ -387,9 +399,26 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
-  private onHandleAskForPeachEvent<T extends GameEventIdentifiers.JudgeEvent>(type: T, content: ServerEventFinder<T>) {
-    //TODO
-    console.log(type, content);
+  private async onHandleAskForPeachEvent<T extends GameEventIdentifiers.AskForPeachEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const { conversation, fromId } = content;
+    this.presenter.createIncomingConversation({
+      conversation,
+      translator: this.translator,
+    });
+
+    const action = new SelectAction(fromId, this.store, this.presenter, content, new CardMatcher({ name: ['peach'] }));
+    const peaches = await action.onSelectCard([PlayerCardsArea.HandArea], 1);
+
+    const responseEvent: ClientEventFinder<T> = {
+      fromId,
+      cardId: peaches[0],
+    };
+
+    this.presenter.closeIncomingConversation();
+    this.store.room.broadcast(type, responseEvent);
   }
 
   private onHandleAskForChoosingCardFromPlayerEvent<T extends GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(
@@ -482,6 +511,27 @@ export class GameClientProcessor {
   ) {
     await this.store.room.useSkill(content);
     this.presenter.broadcastUIUpdate();
+  }
+
+  private async onHandleAskForChoosingPlayerEvent<T extends GameEventIdentifiers.AskForChoosingPlayerEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const { players, requiredAmount, conversation } = content;
+    this.presenter.createIncomingConversation({
+      conversation,
+      translator: this.translator,
+    });
+    const action = new SelectAction(content.fromId, this.store, this.presenter, content);
+    const selectedPlayers = await action.onSelectPlayer(requiredAmount, players);
+
+    const choosePlayerEvent: ClientEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
+      fromId: content.fromId,
+      selectedPlayers,
+    };
+
+    this.store.room.broadcast(GameEventIdentifiers.AskForChoosingPlayerEvent, choosePlayerEvent);
+    this.presenter.closeIncomingConversation();
   }
 
   private async onHandleWuGuFengDengEvent<T extends GameEventIdentifiers.AskForWuGuFengDengEvent>(

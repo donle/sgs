@@ -116,7 +116,11 @@ export class ResponsiveUseCardAction extends BaseAction {
       this.presenter.resetSelectedSkill();
     });
 
-    this.presenter.setupPlayersSelectionMatcher((player: Player) => this.isPlayerEnabled(player));
+    if (this.scopedTargets && this.scopedTargets.length === 1) {
+      this.selectedTargets = this.scopedTargets.slice();
+    } else {
+      this.presenter.setupPlayersSelectionMatcher((player: Player) => this.isPlayerEnabled(player));
+    }
     this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
       this.isCardEnabledOnResponsiveUse(card, PlayerCardsArea.HandArea, new CardMatcher(this.askForEvent.cardMatcher)),
     );

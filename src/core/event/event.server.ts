@@ -160,6 +160,8 @@ export interface ServerEvent extends EventUtilities {
 
   [GameEventIdentifiers.AskForPeachEvent]: {
     fromId: PlayerId;
+    toId: PlayerId;
+    conversation: string | PatchedTranslationObject;
   };
   [GameEventIdentifiers.AskForCardResponseEvent]: {
     toId: PlayerId;
@@ -226,6 +228,7 @@ export interface ServerEvent extends EventUtilities {
     players: PlayerId[];
     fromId: PlayerId;
     requiredAmount: number;
+    conversation: string | PatchedTranslationObject;
   };
   [GameEventIdentifiers.AskForPlaceCardsInDileEvent]: {
     movableCards?: CardId[];

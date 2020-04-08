@@ -142,7 +142,7 @@ export abstract class Skill {
 
   constructor(protected name: string, protected description: string) {}
   protected triggerableTimes: number = 0;
-  public  abstract isRefreshAt(stage: PlayerPhase): boolean;
+  public abstract isRefreshAt(stage: PlayerPhase): boolean;
 
   public abstract async onUse(
     room: Room,
@@ -229,9 +229,10 @@ export abstract class ResponsiveSkill extends Skill {
 
 export abstract class TriggerSkill extends Skill {
   public abstract isTriggerable(event: EventPicker<GameEventIdentifiers, WorkPlace>, stage?: AllStage): boolean;
-  public isAutoTrigger(): boolean {
+  public isAutoTrigger(event: ServerEventFinder<GameEventIdentifiers>): boolean {
     return false;
   }
+
   public abstract async onTrigger(
     room: Room,
     event: ClientEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.SkillUseEvent>,

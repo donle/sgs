@@ -212,6 +212,10 @@ export abstract class Player implements PlayerInfo {
     }
   }
 
+  public getPlayerCards(): CardId[] {
+    return [...this.playerCards[PlayerCardsArea.EquipArea], ...this.playerCards[PlayerCardsArea.HandArea]];
+  }
+
   public getWeaponCardId(): CardId | undefined {
     return this.playerCards[PlayerCardsArea.EquipArea].find(card => Sanguosha.getCardById(card).is(CardType.Weapon));
   }

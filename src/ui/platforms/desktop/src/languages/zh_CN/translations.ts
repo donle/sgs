@@ -515,8 +515,9 @@ export const eventDictionary: Word[] = [
   { source: '{0} lost card {1}', target: '{0} 失去了 {1}' },
   { source: '{0} used card {1}', target: '{0} 使用了一张 {1}' },
   { source: '{0} used skill {1}, response card {2}', target: '{0} 使用了技能 {1}，打出了一张 {2}' },
-  { source: '{0} used skill {1}, use card {2}', target: '{0} 使用了技能 {1}，使用了了一张 {2}' },
-  { source: '{0} used skill {1}, use card {2} to {3}', target: '{0} 使用了技能 {1}，使用了了一张 {2}，目标是 {3}' },
+  { source: '{0} used skill {1}, use card {2}', target: '{0} 使用了技能 {1}，使用了一张 {2}' },
+  { source: '{0} used skill {1}, use card {2} to {3}', target: '{0} 使用了技能 {1}，使用了一张 {2}，目标是 {3}' },
+  { source: 'Please choose your slash target', target: '请选择【杀】的目标' },
   {
     source: '{0} used skill {1}, transformed {2} as {3} card to response',
     target: '{0} 使用了技能 {1} 将 {2} 当做 {3} 打出',
@@ -538,6 +539,7 @@ export const eventDictionary: Word[] = [
   { source: '{0} responses card {1}', target: '{0} 打出了一张 {1}' },
   { source: 'please drop {0} cards', target: '请弃置 {0} 张牌' },
   { source: '{0} skipped play stage', target: '{0} 跳过了出牌阶段' },
+  { source: '{0} is dying', target: '{0} 进入了濒死阶段' },
   {
     source: '{0} asks for a peach',
     target: '{0} 处于濒死阶段，是否对其使用一个【桃】？',

@@ -2,11 +2,12 @@ import { Card } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { RoomPresenter, RoomStore } from '../room.presenter';
 import { BaseAction } from './base_action';
 
-export class SelectCardAction<T extends GameEventIdentifiers> extends BaseAction {
+export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
   private askForEvent: ServerEventFinder<T>;
 
   constructor(
@@ -19,7 +20,49 @@ export class SelectCardAction<T extends GameEventIdentifiers> extends BaseAction
     super(playerId, store, presenter, undefined);
   }
 
-  onSelect(fromArea: PlayerCardsArea[], cardAmount: number, except: CardId[] = []) {
+  onSelectPlayer(requiredAmount: number, scopedTargets: PlayerId[]) {
+    return new Promise<PlayerId[] | undefined>(resolve => {
+      if (!EventPacker.isUncancellabelEvent(this.event)) {
+        this.presenter.enableActionButton('cancel');
+        this.presenter.defineCancelButtonActions(() => {
+          resolve();
+          this.resetAction();
+        });
+      }
+
+      const selectedPlayers: PlayerId[] = scopedTargets.length === 1 ? scopedTargets.slice() : [];
+      this.presenter.setupPlayersSelectionMatcher(
+        (player: Player) =>
+          (scopedTargets.includes(player.Id) && selectedPlayers.length < requiredAmount) ||
+          selectedPlayers.includes(player.Id),
+      );
+      if (selectedPlayers.length === requiredAmount) {
+        this.presenter.enableActionButton('confirm');
+      }
+
+      this.presenter.onClickPlayer((player: Player, selected: boolean) => {
+        if (selected) {
+          selectedPlayers.push(player.Id);
+        } else {
+          const index = selectedPlayers.findIndex(playerId => player.Id === playerId);
+          if (index >= 0) {
+            selectedPlayers.splice(index, 1);
+          }
+        }
+
+        if (selectedPlayers.length === requiredAmount) {
+          this.presenter.enableActionButton('confirm');
+        } else {
+          this.presenter.disableActionButton('confirm');
+        }
+        this.presenter.broadcastUIUpdate();
+      });
+
+      this.presenter.defineConfirmButtonActions(() => resolve(selectedPlayers));
+    });
+  }
+
+  onSelectCard(fromArea: PlayerCardsArea[], cardAmount: number, except: CardId[] = []) {
     return new Promise<CardId[]>((resolve, reject) => {
       if (!EventPacker.isUncancellabelEvent(this.event)) {
         this.presenter.enableActionButton('cancel');
@@ -56,7 +99,9 @@ export class SelectCardAction<T extends GameEventIdentifiers> extends BaseAction
           selectedCards.push(card.Id);
         } else {
           const index = selectedCards.findIndex(cardId => card.Id === cardId);
-          selectedCards.splice(index, 1);
+          if (index >= 0) {
+            selectedCards.splice(index, 1);
+          }
         }
 
         if (cardAmount === selectedCards.length) {
@@ -65,14 +110,12 @@ export class SelectCardAction<T extends GameEventIdentifiers> extends BaseAction
           this.presenter.disableActionButton('confirm');
         }
         this.presenter.broadcastUIUpdate();
-      }
+      };
 
       this.presenter.onClickPlayerCard(onClickCard);
       this.presenter.onClickEquipment(onClickCard);
 
-      this.presenter.defineConfirmButtonActions(() => {
-        resolve(selectedCards);
-      });
+      this.presenter.defineConfirmButtonActions(() => resolve(selectedCards));
     });
   }
 

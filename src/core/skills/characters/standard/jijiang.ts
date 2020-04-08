@@ -114,20 +114,30 @@ export class JiJiang extends ActiveSkill {
 @ShadowSkill
 @LordSkill
 export class JiJiangShadow extends TriggerSkill {
-  public isAutoTrigger() {
-    return false;
+  public isAutoTrigger(
+    event: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent | GameEventIdentifiers.AskForCardUseEvent>,
+  ) {
+    const identifier = EventPacker.getIdentifier(event);
+    return identifier === GameEventIdentifiers.AskForCardUseEvent ? true : false;
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>) {
     const identifier = EventPacker.getIdentifier(event);
-    return identifier === GameEventIdentifiers.AskForCardResponseEvent;
+    return (
+      identifier === GameEventIdentifiers.AskForCardResponseEvent ||
+      identifier === GameEventIdentifiers.AskForCardUseEvent
+    );
   }
 
   constructor() {
     super('jijiang', 'jijiang_description');
   }
 
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>) {
+  canUse(
+    room: Room,
+    owner: Player,
+    content: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent | GameEventIdentifiers.AskForCardUseEvent>,
+  ) {
     const { cardMatcher } = content;
     return (
       owner.Id === content.toId &&
@@ -140,12 +150,58 @@ export class JiJiangShadow extends TriggerSkill {
     );
   }
 
-  async onTrigger(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+  async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    const { triggeredOnEvent } = event;
+    const identifier = EventPacker.getIdentifier(
+      triggeredOnEvent! as ServerEventFinder<
+        GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent
+      >,
+    );
+    if (identifier === undefined) {
+      EventPacker.terminate(event);
+      return false;
+    }
+
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} used skill {1}',
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
       this.name,
     ).extract();
+
+    if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
+      const { scopedTargets } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
+      const from = room.getPlayerById(event.fromId);
+      const slashMatcher = new CardMatcher({
+        name: ['slash'],
+      });
+      const chooseTargetEvent = {
+        fromId: event.fromId,
+        players:
+          scopedTargets ||
+          room.AlivePlayers.filter(player => from.canUseCardTo(room, slashMatcher, player.Id)).map(player => player.Id),
+        requiredAmount: 1,
+        conversation: TranslationPack.translationJsonPatcher('do you want to trigger skill {0} ?', this.name).extract(),
+      };
+
+      room.notify(GameEventIdentifiers.AskForChoosingPlayerEvent, chooseTargetEvent, event.fromId);
+      const response = await room.onReceivingAsyncReponseFrom(
+        GameEventIdentifiers.AskForChoosingPlayerEvent,
+        event.fromId,
+      );
+      if (response.selectedPlayers === undefined) {
+        EventPacker.terminate(event);
+        return false;
+      }
+
+      EventPacker.addMiddleware(
+        {
+          tag: this.name,
+          data: response.selectedPlayers[0],
+        },
+        event,
+      );
+    }
+
     return true;
   }
 
@@ -164,7 +220,7 @@ export class JiJiangShadow extends TriggerSkill {
     for (const player of room.getAlivePlayersFrom()) {
       if (player.Nationality === CharacterNationality.Shu && player.Id !== fromId) {
         room.notify(
-          identifier,
+          GameEventIdentifiers.AskForCardResponseEvent,
           {
             toId: player.Id,
             fromId: event.fromId,
@@ -180,10 +236,12 @@ export class JiJiangShadow extends TriggerSkill {
           player.Id,
         );
 
-        const response = await room.onReceivingAsyncReponseFrom(identifier, player.Id);
+        const response = await room.onReceivingAsyncReponseFrom(
+          GameEventIdentifiers.AskForCardResponseEvent,
+          player.Id,
+        );
         if (response.cardId !== undefined) {
           const responseCard = Sanguosha.getCardById(response.cardId);
-
           const cardUseEvent = {
             cardId: VirtualCard.create({
               cardName: responseCard.Name,
@@ -201,7 +259,15 @@ export class JiJiangShadow extends TriggerSkill {
           });
 
           if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
-            await room.useCard(cardUseEvent);
+            const target = Precondition.exists(
+              EventPacker.getMiddleware<PlayerId>(this.name, event),
+              'Unexpected jijiang target',
+            );
+            await room.useCard({
+              ...cardUseEvent,
+              toIds: [target],
+            });
+            EventPacker.terminate(slashCardEvent);
           } else {
             await room.responseCard(cardUseEvent);
           }

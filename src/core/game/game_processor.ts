@@ -600,6 +600,13 @@ export class GameProcessor {
       if (stage === PlayerDyingStage.PlayerDying) {
         const { dying } = event;
         const to = this.room.getPlayerById(dying);
+        this.room.broadcast(GameEventIdentifiers.PlayerDyingEvent, {
+          dying: to.Id,
+          translationsMessage: TranslationPack.translationJsonPatcher(
+            '{0} is dying',
+            TranslationPack.patchPlayerInTranslation(to),
+          ).extract(),
+        });
 
         if (to.Hp <= 0) {
           for (const player of this.room.getAlivePlayersFrom()) {
@@ -610,14 +617,19 @@ export class GameProcessor {
               this.room.notify(
                 GameEventIdentifiers.AskForPeachEvent,
                 {
-                  fromId: to.Id,
+                  fromId: player.Id,
+                  toId: to.Id,
+                  conversation: TranslationPack.translationJsonPatcher(
+                    '{0} asks for a peach',
+                    TranslationPack.patchPlayerInTranslation(to),
+                  ).extract(),
                 },
                 player.Id,
               );
 
               const response = await this.room.onReceivingAsyncReponseFrom(
                 GameEventIdentifiers.AskForPeachEvent,
-                to.Id,
+                player.Id,
               );
 
               if (response.cardId) {

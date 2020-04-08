@@ -14,7 +14,6 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
-import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
 export class Rende extends ActiveSkill {
@@ -107,7 +106,7 @@ export class Rende extends ActiveSkill {
           players: targets,
           fromId: from.Id,
           requiredAmount: 1,
-          translationsMessage: TranslationPack.translationJsonPatcher('Please choose your slash target').extract(),
+          conversation:  'Please choose your slash target',
         };
 
         room.notify(GameEventIdentifiers.AskForChoosingPlayerEvent, choosePlayerEvent, from.Id);
@@ -123,7 +122,7 @@ export class Rende extends ActiveSkill {
             cardName: response.selectedOption,
             bySkill: this.name,
           }).Id,
-          toIds: [choosePlayerResponse.selectedPlayer!],
+          toIds: choosePlayerResponse.selectedPlayers,
         };
 
         await room.useCard(slashUseEvent);
