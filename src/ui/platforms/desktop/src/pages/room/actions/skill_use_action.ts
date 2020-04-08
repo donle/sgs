@@ -2,7 +2,7 @@ import { Card } from 'core/cards/card';
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { PlayerId } from 'core/player/player_props';
 import { TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -69,33 +69,9 @@ export class SkillUseAction extends BaseAction {
     }
   }
 
-  isCardEnabledOnSkillTriggered(card: Card, fromArea: PlayerCardsArea) {
-    if (this.selectedSkillToPlay instanceof TriggerSkill) {
-      return (
-        (this.selectedSkillToPlay.isAvailableCard(
-          this.playerId,
-          this.store.room,
-          card.Id,
-          this.selectedCards,
-          this.selectedTargets,
-          this.equipSkillCardId,
-        ) &&
-          !this.selectedSkillToPlay.cardFilter(this.store.room, this.selectedCards) &&
-          card.Id !== this.equipSkillCardId) ||
-        this.selectedCards.includes(card.Id)
-      );
-    }
-
-    return false;
-  }
-
   onPlay() {
-    this.presenter.setupPlayersSelectionMatcher((player: Player) => this.isPlayerEnabled(player));
-    this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
-      this.isCardEnabledOnSkillTriggered(card, PlayerCardsArea.HandArea),
-    );
-    this.presenter.setupCardSkillSelectionMatcher((card: Card) =>
-      this.isCardEnabledOnSkillTriggered(card, PlayerCardsArea.EquipArea),
-    );
+    this.presenter.setupPlayersSelectionMatcher((player: Player) => false);
+    this.presenter.setupClientPlayerCardActionsMatcher((card: Card) => false);
+    this.presenter.setupCardSkillSelectionMatcher((card: Card) => false);
   }
 }

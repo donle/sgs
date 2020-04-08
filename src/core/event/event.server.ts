@@ -184,7 +184,8 @@ export interface ServerEvent extends EventUtilities {
     otherTargets?: PlayerId[];
   };
   [GameEventIdentifiers.AskForChoosingCardEvent]: {
-    cardIds: CardId[];
+    cardIds: CardId[] | number;
+    toId: PlayerId;
   };
   [GameEventIdentifiers.AskForChoosingCardFromPlayerEvent]: {
     fromId: PlayerId;
@@ -200,9 +201,11 @@ export interface ServerEvent extends EventUtilities {
     cardAmount?: number;
   };
   [GameEventIdentifiers.AskForCardDropEvent]: {
-    fromArea: [PlayerCardsArea];
+    fromArea: PlayerCardsArea[];
+    except?: CardId[];
     cardAmount: number;
     toId: PlayerId;
+    conversation?: string | PatchedTranslationObject;
   };
   [GameEventIdentifiers.AskForChoosingCharacterEvent]: {
     characterIds: CharacterId[];
@@ -225,11 +228,9 @@ export interface ServerEvent extends EventUtilities {
     requiredAmount: number;
   };
   [GameEventIdentifiers.AskForPlaceCardsInDileEvent]: {
-    drawPendingCards?: CardId[];
-    drawCards?: CardId[];
-    placeCardsOnTop?: CardId[];
-    placeCardsAtBottom?: CardId[];
-    putCards?: CardId[];
+    movableCards?: CardId[];
+    top: number;
+    bottom: number;
   };
   [GameEventIdentifiers.PhaseChangeEvent]: {
     from: PlayerPhase | undefined;

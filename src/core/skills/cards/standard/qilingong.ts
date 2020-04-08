@@ -51,27 +51,22 @@ export class QiLinGongSkill extends TriggerSkill {
     >;
     const to = room.getPlayerById(event.toId);
 
-    const options = {
-      [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea).filter(cardId => {
+    const chooseCardEvent = {
+      toId: to.Id,
+      cardIds: to.getCardIds(PlayerCardsArea.EquipArea).filter(cardId => {
         const card = Sanguosha.getCardById(cardId);
         return card.is(CardType.OffenseRide) || card.is(CardType.DefenseRide);
       }),
     };
 
-    const chooseCardEvent = {
-      fromId: event.fromId!,
-      toId: to.Id,
-      options,
-    };
-
     room.notify(
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(chooseCardEvent),
+      GameEventIdentifiers.AskForChoosingCardEvent,
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardEvent>(chooseCardEvent),
       event.fromId!,
     );
 
     const response = await room.onReceivingAsyncReponseFrom(
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
+      GameEventIdentifiers.AskForChoosingCardEvent,
       event.fromId!,
     );
 
@@ -82,7 +77,7 @@ export class QiLinGongSkill extends TriggerSkill {
     const loseEvent: ServerEventFinder<GameEventIdentifiers.CardLostEvent> = {
       fromId: chooseCardEvent.toId,
       cardIds: [response.selectedCard],
-      droppedBy: chooseCardEvent.fromId,
+      droppedBy: skillUseEvent.fromId,
       reason: CardLostReason.PassiveDrop,
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} is placed into drop stack',

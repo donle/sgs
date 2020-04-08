@@ -47,18 +47,7 @@ export class CardResponseAction extends BaseAction {
 
     if (this.selectedSkillToPlay !== undefined) {
       const skill = this.selectedSkillToPlay;
-      if (skill instanceof TriggerSkill) {
-        return (
-          skill.isAvailableCard(
-            this.playerId,
-            this.store.room,
-            card.Id,
-            this.selectedCards,
-            this.selectedTargets,
-            this.equipSkillCardId,
-          ) && skill.cardFilter(this.store.room, [...this.selectedCards, card.Id])
-        );
-      } else if (skill instanceof ViewAsSkill) {
+      if (skill instanceof ViewAsSkill) {
         const player = this.store.room.getPlayerById(this.playerId);
         return (
           skill.isAvailableCard(this.store.room, player, card.Id, this.pendingCards, this.equipSkillCardId) &&

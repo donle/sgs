@@ -112,6 +112,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.AskForChoosingCardFromPlayerEvent:
         await this.onHandleAskForChoosingCardFromPlayerEvent(e as any, content);
         break;
+      case GameEventIdentifiers.AskForChoosingCardEvent:
+        await this.onHandleAskForChoosingCardEvent(e as any, content);
+        break;
       case GameEventIdentifiers.CardLostEvent:
         await this.onHandleCardLoseEvent(e as any, content);
         break;
@@ -140,7 +143,9 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     const action = new CardResponseAction(content.toId, this.store, this.presenter, content);
-    this.presenter.isSkillDisabled(CardResponseAction.isSkillsOnCardResponseDisabled(new CardMatcher(content.cardMatcher)));
+    this.presenter.isSkillDisabled(
+      CardResponseAction.isSkillsOnCardResponseDisabled(new CardMatcher(content.cardMatcher)),
+    );
 
     action.onPlay(this.translator);
   }
@@ -150,11 +155,13 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     this.presenter.createIncomingConversation({
-      conversation: TranslationPack.translationJsonPatcher('please drop {0} cards', content.cardAmount).extract(),
+      conversation: content.conversation
+        ? content.conversation
+        : TranslationPack.translationJsonPatcher('please drop {0} cards', content.cardAmount).extract(),
       translator: this.translator,
     });
     const action = new SelectCardAction(content.toId, this.store, this.presenter, content);
-    const selectedCards = await action.onSelect(content.fromArea, content.cardAmount);
+    const selectedCards = await action.onSelect(content.fromArea, content.cardAmount, content.except);
 
     this.presenter.closeIncomingConversation();
     const event: ClientEventFinder<T> = {
@@ -402,6 +409,25 @@ export class GameClientProcessor {
 
     this.presenter.createDialog(
       <CardSelectorDialog options={content.options} onClick={onSelectedCard} translator={this.translator} />,
+    );
+  }
+
+  private onHandleAskForChoosingCardEvent<T extends GameEventIdentifiers.AskForChoosingCardEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const onSelectedCard = (card: Card | number) => {
+      this.presenter.closeDialog();
+
+      const event: ClientEventFinder<T> = {
+        fromId: content.toId,
+        selectedCard: card instanceof Card ? card.Id : undefined,
+      };
+      this.store.room.broadcast(type, event);
+    };
+
+    this.presenter.createDialog(
+      <CardSelectorDialog options={content.cardIds} onClick={onSelectedCard} translator={this.translator} />,
     );
   }
 

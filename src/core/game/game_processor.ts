@@ -689,6 +689,7 @@ export class GameProcessor {
         }
 
         await Sanguosha.getSkillBySkillName(event.skillName).onUse(this.room, event);
+      } else if (stage === SkillUseStage.AfterSkillUsed) {
         this.room.broadcast(identifier, event);
       }
     });
@@ -859,7 +860,6 @@ export class GameProcessor {
         if (!card.is(CardType.Equip)) {
           await card.Skill.onUse(this.room, event);
         }
-
         this.room.broadcast(identifier, event);
       }
     });

@@ -212,6 +212,10 @@ export abstract class Player implements PlayerInfo {
     }
   }
 
+  public getWeaponCardId(): CardId | undefined {
+    return this.playerCards[PlayerCardsArea.EquipArea].find(card => Sanguosha.getCardById(card).is(CardType.Weapon));
+  }
+
   public getCardId(cardId: CardId): CardId | undefined {
     for (const card of Object.values(this.getCardIds())) {
       if (card === cardId) {
@@ -312,7 +316,7 @@ export abstract class Player implements PlayerInfo {
 
       return !!skill;
     } else {
-      if (this.getCardId(cardMatcherOrId)) {
+      if (this.getCardId(cardMatcherOrId) !== undefined) {
         return true;
       }
 

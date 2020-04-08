@@ -228,33 +228,6 @@ export abstract class ResponsiveSkill extends Skill {
 }
 
 export abstract class TriggerSkill extends Skill {
-  public targetFilter(room: Room, targets: PlayerId[]): boolean {
-    return targets.length === 0;
-  }
-  public cardFilter(room: Room, cards: CardId[]): boolean {
-    return cards.length === 0;
-  }
-  public isAvailableCard(
-    owner: PlayerId,
-    room: Room,
-    cardId: CardId,
-    selectedCards: CardId[],
-    selectedTargets: PlayerId[],
-    containerCard?: CardId,
-  ): boolean {
-    return false;
-  }
-  public isAvailableTarget(
-    owner: PlayerId,
-    room: Room,
-    target: PlayerId,
-    selectedCards: CardId[],
-    selectedTargets: PlayerId[],
-    containerCard?: CardId,
-  ): boolean {
-    return false;
-  }
-
   public abstract isTriggerable(event: EventPicker<GameEventIdentifiers, WorkPlace>, stage?: AllStage): boolean;
   public isAutoTrigger(): boolean {
     return false;

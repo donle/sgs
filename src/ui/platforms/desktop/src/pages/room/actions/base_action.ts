@@ -114,7 +114,7 @@ export abstract class BaseAction {
     if (skill === undefined) {
       return false;
     }
-    if (skill instanceof TriggerSkill || skill instanceof ActiveSkill) {
+    if (skill instanceof ActiveSkill) {
       return (
         skill.isAvailableTarget(
           this.playerId,
@@ -147,7 +147,7 @@ export abstract class BaseAction {
 
     if (this.selectedSkillToPlay) {
       const skill = this.selectedSkillToPlay;
-      if (skill instanceof ActiveSkill || skill instanceof TriggerSkill) {
+      if (skill instanceof ActiveSkill) {
         return (
           skill.isAvailableCard(
             player.Id,
@@ -186,7 +186,7 @@ export abstract class BaseAction {
       }
     } else {
       const skill = card.Skill;
-      if (skill instanceof ActiveSkill || skill instanceof TriggerSkill) {
+      if (skill instanceof ActiveSkill) {
         return (
           skill.isAvailableCard(
             player.Id,
@@ -299,12 +299,12 @@ export abstract class BaseAction {
         return true;
       }
 
-      if (card.Skill instanceof TriggerSkill || card.Skill instanceof ActiveSkill) {
+      if (card.Skill instanceof ActiveSkill) {
         return (
           card.Skill.cardFilter(this.store.room, this.selectedCards) &&
           card.Skill.targetFilter(this.store.room, this.selectedTargets)
         );
-      } else if (card.Skill instanceof ResponsiveSkill) {
+      } else if (card.Skill instanceof ResponsiveSkill || card.Skill instanceof TriggerSkill) {
         return true;
       } else {
         return false;
@@ -312,11 +312,13 @@ export abstract class BaseAction {
     } else if (this.selectedSkillToPlay !== undefined) {
       const skill = this.selectedSkillToPlay;
 
-      if (skill instanceof TriggerSkill || skill instanceof ActiveSkill) {
+      if (skill instanceof ActiveSkill) {
         return (
           skill.cardFilter(this.store.room, this.selectedCards) &&
           skill.targetFilter(this.store.room, this.selectedTargets)
         );
+      } else if (skill instanceof ResponsiveSkill || skill instanceof TriggerSkill) {
+        return true;
       } else {
         return false;
       }

@@ -19,7 +19,7 @@ export class SelectCardAction<T extends GameEventIdentifiers> extends BaseAction
     super(playerId, store, presenter, undefined);
   }
 
-  onSelect(fromArea: PlayerCardsArea[], cardAmount: number) {
+  onSelect(fromArea: PlayerCardsArea[], cardAmount: number, except: CardId[] = []) {
     return new Promise<CardId[]>((resolve, reject) => {
       if (!EventPacker.isUncancellabelEvent(this.event)) {
         this.presenter.enableActionButton('cancel');
@@ -31,7 +31,11 @@ export class SelectCardAction<T extends GameEventIdentifiers> extends BaseAction
 
       const selectedCards: CardId[] = [];
       this.presenter.setupClientPlayerCardActionsMatcher(card => {
-        if (!fromArea.includes(PlayerCardsArea.HandArea) || (this.customSelector && !this.customSelector.match(card))) {
+        if (
+          !fromArea.includes(PlayerCardsArea.HandArea) ||
+          (this.customSelector && !this.customSelector.match(card)) ||
+          except.includes(card.Id)
+        ) {
           return false;
         }
         return selectedCards.length !== cardAmount || selectedCards.includes(card.Id);
@@ -39,14 +43,15 @@ export class SelectCardAction<T extends GameEventIdentifiers> extends BaseAction
       this.presenter.setupCardSkillSelectionMatcher(card => {
         if (
           !fromArea.includes(PlayerCardsArea.EquipArea) ||
-          (this.customSelector && !this.customSelector.match(card))
+          (this.customSelector && !this.customSelector.match(card)) ||
+          except.includes(card.Id)
         ) {
           return false;
         }
         return selectedCards.length !== cardAmount || selectedCards.includes(card.Id);
       });
 
-      this.presenter.onClickPlayerCard((card: Card, selected: boolean) => {
+      const onClickCard = (card: Card, selected: boolean) => {
         if (selected) {
           selectedCards.push(card.Id);
         } else {
@@ -60,7 +65,10 @@ export class SelectCardAction<T extends GameEventIdentifiers> extends BaseAction
           this.presenter.disableActionButton('confirm');
         }
         this.presenter.broadcastUIUpdate();
-      });
+      }
+
+      this.presenter.onClickPlayerCard(onClickCard);
+      this.presenter.onClickEquipment(onClickCard);
 
       this.presenter.defineConfirmButtonActions(() => {
         resolve(selectedCards);

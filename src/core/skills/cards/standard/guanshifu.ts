@@ -9,15 +9,16 @@ import {
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardUseStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerId } from 'core/player/player_props';
+import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
 export class GuanShiFuSkill extends TriggerSkill {
   public isAutoTrigger() {
-    return false;
+    return true;
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage?: AllStage) {
@@ -46,27 +47,43 @@ export class GuanShiFuSkill extends TriggerSkill {
     );
   }
 
-  isAvailableCard(
-    owner: PlayerId,
-    room: Room,
-    cardId: CardId,
-    selectedCards: CardId[],
-    selectedTargets: PlayerId[],
-    containerCard?: CardId,
-  ) {
-    return cardId !== containerCard;
-  }
-
-  cardFilter(room: Room, cards: CardId[]) {
-    return cards.length === 2;
-  }
-
   async onTrigger(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    const cardDropEvent: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
+      fromArea: [PlayerCardsArea.EquipArea, PlayerCardsArea.HandArea],
+      except: [room.getPlayerById(event.fromId).getWeaponCardId()!],
+      cardAmount: 2,
+      toId: event.fromId,
+      conversation: TranslationPack.translationJsonPatcher('do you want to trigger skill {0} ?', this.name).extract(),
+    };
+
+    room.notify(GameEventIdentifiers.AskForCardDropEvent, cardDropEvent, event.fromId);
+    const { droppedCards } = await room.onReceivingAsyncReponseFrom(
+      GameEventIdentifiers.AskForCardDropEvent,
+      event.fromId,
+    );
+
+    if (droppedCards.length === 0) {
+      EventPacker.terminate(event);
+      return false;
+    }
+
+    EventPacker.addMiddleware(
+      {
+        tag: this.name,
+        data: droppedCards,
+      },
+      event,
+    );
     return true;
   }
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    event.cardIds && (await room.dropCards(CardLostReason.ActiveDrop, event.cardIds, event.fromId));
+    const cards = EventPacker.getMiddleware<CardId[]>(this.name, event);
+    if (!cards) {
+      return false;
+    }
+
+    await room.dropCards(CardLostReason.ActiveDrop, cards, event.fromId);
     const { triggeredOnEvent } = event;
     const jinkEvent = Precondition.exists(triggeredOnEvent, 'Unable to get jink event') as ServerEventFinder<
       GameEventIdentifiers.CardUseEvent
