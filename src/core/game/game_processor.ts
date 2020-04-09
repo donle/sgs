@@ -690,8 +690,20 @@ export class GameProcessor {
 
       const winners = this.room.getGameWinners();
       if (winners) {
+        let winner = winners.find(player => player.Role === PlayerRole.Lord);
+        if (winner === undefined) {
+          winner = winners.find(player => player.Role === PlayerRole.Rebel);
+        }
+        if (winner === undefined) {
+          winner = winners.find(player => player.Role === PlayerRole.Renegade);
+        }
+
         this.stageProcessor.clearProcess();
         this.room.broadcast(GameEventIdentifiers.GameOverEvent, {
+          translationsMessage: TranslationPack.translationJsonPatcher(
+            'game over, winner is {0}',
+            getPlayerRoleRawText(winner!.Role),
+          ).extract(),
           winnerIds: winners.map(winner => winner.Id),
           loserIds: this.room.Players.filter(player => !winners.includes(player)).map(player => player.Id),
         });
