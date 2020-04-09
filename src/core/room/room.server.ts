@@ -7,13 +7,20 @@ import {
   ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
-import { AllStage, CardResponseStage, CardUseStage, DrawCardStage, PlayerPhase } from 'core/game/stage_processor';
+import {
+  AllStage,
+  CardDropStage,
+  CardResponseStage,
+  CardUseStage,
+  DrawCardStage,
+  PlayerPhase,
+} from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
 import { Player } from 'core/player/player';
 import { ServerPlayer } from 'core/player/player.server';
 import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 
-import { Card, CardType } from 'core/cards/card';
+import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardId, CardTargetEnum } from 'core/cards/libs/card_props';
 import { Character } from 'core/characters/character';
@@ -233,6 +240,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public bury(...cardIds: CardId[]) {
     for (const cardId of cardIds) {
+      if (Card.isVirtualCardId(cardId)) {
+        this.bury(...Sanguosha.getCardById<VirtualCard>(cardId).ActualCardIds);
+      }
       this.dropStack.push(cardId);
     }
   }
@@ -503,14 +513,19 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       droppedBy,
     };
 
-    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardDropEvent, dropEvent);
-    await this.loseCards({
-      reason,
-      cardIds,
-      fromId: playerId,
-      droppedBy,
+    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardDropEvent, dropEvent, async stage => {
+      if (stage === CardDropStage.CardDropping) {
+        await this.loseCards({
+          reason,
+          cardIds,
+          fromId: playerId!,
+          droppedBy,
+        });
+        this.bury(...cardIds);
+      }
+
+      return true;
     });
-    this.bury(...cardIds);
   }
 
   public async loseCards(event: ServerEventFinder<GameEventIdentifiers.CardLostEvent>) {

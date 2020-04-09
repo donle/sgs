@@ -31,7 +31,7 @@ export class CiXiongJianSkill extends TriggerSkill {
     super('cixiongjian', 'cixiongjian_description');
   }
 
-  canUse(room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
     if (!content) {
       return false;
     }

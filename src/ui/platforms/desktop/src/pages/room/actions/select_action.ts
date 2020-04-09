@@ -8,8 +8,6 @@ import { RoomPresenter, RoomStore } from '../room.presenter';
 import { BaseAction } from './base_action';
 
 export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
-  private askForEvent: ServerEventFinder<T>;
-
   constructor(
     playerId: PlayerId,
     store: RoomStore,

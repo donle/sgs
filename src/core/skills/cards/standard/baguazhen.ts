@@ -31,7 +31,7 @@ export class BaGuaZhenSkill extends TriggerSkill {
   canUse(
     room: Room,
     owner: Player,
-    content?: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent | GameEventIdentifiers.AskForCardUseEvent>,
+    content: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent | GameEventIdentifiers.AskForCardUseEvent>,
   ) {
     if (!content) {
       return true;

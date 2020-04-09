@@ -106,7 +106,7 @@ export class Rende extends ActiveSkill {
           players: targets,
           fromId: from.Id,
           requiredAmount: 1,
-          conversation:  'Please choose your slash target',
+          conversation: 'Please choose your slash target',
         };
 
         room.notify(GameEventIdentifiers.AskForChoosingPlayerEvent, choosePlayerEvent, from.Id);
@@ -116,16 +116,18 @@ export class Rende extends ActiveSkill {
           from.Id,
         );
 
-        const slashUseEvent = {
-          fromId: from.Id,
-          cardId: VirtualCard.create({
-            cardName: response.selectedOption,
-            bySkill: this.name,
-          }).Id,
-          toIds: choosePlayerResponse.selectedPlayers,
-        };
+        if (choosePlayerResponse.selectedPlayers !== undefined) {
+          const slashUseEvent = {
+            fromId: from.Id,
+            cardId: VirtualCard.create({
+              cardName: response.selectedOption,
+              bySkill: this.name,
+            }).Id,
+            toIds: choosePlayerResponse.selectedPlayers,
+          };
 
-        await room.useCard(slashUseEvent);
+          await room.useCard(slashUseEvent);
+        }
       } else {
         const cardUseEvent = {
           fromId: from.Id,

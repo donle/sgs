@@ -19,7 +19,7 @@ export class QiLinGongSkill extends TriggerSkill {
     return stage === DamageEffectStage.DamageEffect;
   }
 
-  canUse(room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
     if (!content) {
       return false;
     }

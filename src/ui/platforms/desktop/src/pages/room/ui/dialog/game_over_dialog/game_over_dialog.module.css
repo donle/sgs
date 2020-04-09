@@ -8,12 +8,12 @@
 }
 
 .winners, .losers {
-  margin: 32px;
+  margin: 24px 0;
 }
 
 .title {
   font-size: 20px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   display: block;
 }
 

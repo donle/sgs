@@ -4,10 +4,9 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { ActiveSkill, CommonSkill, TriggerableTimes } from 'core/skills/skill';
+import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
 @CommonSkill
-@TriggerableTimes(1)
 export class ZhiHeng extends ActiveSkill {
   constructor() {
     super('zhiheng', 'zhiheng_description');

@@ -6,11 +6,10 @@ import {
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
-import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { ActiveSkill, CommonSkill, TriggerableTimes } from 'core/skills/skill';
+import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 type SelectedCard = {
@@ -19,7 +18,6 @@ type SelectedCard = {
 };
 
 @CommonSkill
-@TriggerableTimes(INFINITE_TRIGGERING_TIMES)
 export class WuGuFengDengSkill extends ActiveSkill {
   constructor() {
     super('wugufengdeng', 'wugufengdeng_description');
@@ -43,6 +41,7 @@ export class WuGuFengDengSkill extends ActiveSkill {
   }
   public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const all = room.getAlivePlayersFrom();
+    const from = room.getPlayerById(event.fromId);
 
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} used card {1} to {2}',
@@ -50,7 +49,7 @@ export class WuGuFengDengSkill extends ActiveSkill {
       TranslationPack.patchCardInTranslation(event.cardId),
       TranslationPack.wrapArrayParams(...room.getAlivePlayersFrom(event.fromId).map(target => target.Character.Name)),
     ).extract();
-    event.toIds = all.map(player => player.Id);
+    event.toIds = all.filter(player => from.canUseCardTo(room, event.cardId, player.Id)).map(player => player.Id);
 
     return true;
   }

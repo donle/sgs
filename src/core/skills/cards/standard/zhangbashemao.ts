@@ -2,13 +2,11 @@ import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Slash } from 'core/cards/standard/slash';
-import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { CommonSkill, TriggerableTimes, ViewAsSkill } from 'core/skills/skill';
+import { CommonSkill, ViewAsSkill } from 'core/skills/skill';
 
 @CommonSkill
-@TriggerableTimes(INFINITE_TRIGGERING_TIMES)
 export class ZhangBaSheMaoSkill extends ViewAsSkill {
   constructor() {
     super('zhangbashemao', 'zhangbashemao_description');

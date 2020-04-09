@@ -21,11 +21,7 @@ export class QingLongYanYueDaoSkill extends TriggerSkill {
     return stage === CardEffectStage.AfterCardEffect;
   }
 
-  canUse(room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
-    if (!content) {
-      return false;
-    }
-
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const { responseToEvent } = content;
     if (!responseToEvent) {
       return false;

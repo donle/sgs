@@ -29,11 +29,7 @@ export class GuanShiFuSkill extends TriggerSkill {
     super('guanshifu', 'guanshifu_description');
   }
 
-  canUse(room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    if (!content) {
-      return false;
-    }
-
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const { responseToEvent } = content;
     if (!responseToEvent) {
       return false;

@@ -115,6 +115,11 @@ export abstract class BaseAction {
       return false;
     }
     if (skill instanceof ActiveSkill) {
+      const isAvailableInRoom =
+        this.selectedCardToPlay === undefined
+          ? true
+          : this.store.room.isAvailableTarget(this.selectedCardToPlay, this.playerId, player.Id);
+
       return (
         skill.isAvailableTarget(
           this.playerId,
@@ -123,7 +128,9 @@ export abstract class BaseAction {
           this.selectedCards,
           this.selectedTargets,
           this.selectedCardToPlay,
-        ) && !skill.targetFilter(this.store.room, this.selectedTargets)
+        ) &&
+        isAvailableInRoom &&
+        !skill.targetFilter(this.store.room, this.selectedTargets)
       );
     } else {
       return false;
@@ -179,7 +186,11 @@ export abstract class BaseAction {
         if (card.Skill instanceof ViewAsSkill) {
           return player.canUseCard(this.store.room, new CardMatcher({ name: card.Skill.canViewAs() }));
         } else if (card.Skill instanceof ActiveSkill) {
-          return card.Skill.canUse(this.store.room, player);
+          let canSelfUse = false;
+          if (card.Skill.isSelfTargetSkill()) {
+            canSelfUse = player.canUseCardTo(this.store.room, card.Id, player.Id);
+          }
+          return card.Skill.canUse(this.store.room, player) && canSelfUse;
         }
 
         return false;

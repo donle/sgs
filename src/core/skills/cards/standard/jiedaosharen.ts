@@ -8,16 +8,14 @@ import {
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
-import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { ActiveSkill, CommonSkill, TriggerableTimes } from 'core/skills/skill';
+import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
-@TriggerableTimes(INFINITE_TRIGGERING_TIMES)
 export class JieDaoShaRenSkill extends ActiveSkill {
   constructor() {
     super('jiedaosharen', 'ljiedaosharen_description');

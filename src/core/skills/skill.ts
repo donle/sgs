@@ -43,16 +43,16 @@ function skillPropertyWrapper(
   options: {
     lordSkill?: boolean;
     shadowSkill?: boolean;
-    triggerableTimes?: number;
     uniqueSkill?: boolean;
+    selfTargetSkill?: boolean;
   },
   constructor: new () => any,
 ): any {
   return class extends constructor {
-    private triggerableTimes: number;
     private lordSkill: boolean;
     private shadowSkill: boolean;
     private uniqueSkill: boolean;
+    private selfTargetSkill: boolean;
     private name: string;
 
     public canUse: (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) => boolean;
@@ -60,9 +60,6 @@ function skillPropertyWrapper(
     constructor() {
       super();
 
-      if (options.triggerableTimes !== undefined) {
-        this.triggerableTimes = options.triggerableTimes;
-      }
       if (options.lordSkill !== undefined) {
         this.lordSkill = options.lordSkill;
         const canUseResult = this.canUse;
@@ -76,6 +73,9 @@ function skillPropertyWrapper(
       }
       if (options.uniqueSkill !== undefined) {
         this.uniqueSkill = options.uniqueSkill;
+      }
+      if (options.selfTargetSkill !== undefined) {
+        this.selfTargetSkill = options.selfTargetSkill;
       }
     }
   } as any;
@@ -101,6 +101,14 @@ export function LordSkill<T extends Skill>(constructorFunction: SKillConstructor
     constructorFunction as any,
   );
 }
+export function SelfTargetSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
+  return skillPropertyWrapper(
+    {
+      selfTargetSkill: true,
+    },
+    constructorFunction as any,
+  );
+}
 export function ShadowSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
   return skillPropertyWrapper(
     {
@@ -117,16 +125,6 @@ export function UniqueSkill<T extends Skill>(constructorFunction: SKillConstruct
     constructorFunction as any,
   );
 }
-export function TriggerableTimes<T extends Skill>(times: number) {
-  return (constructorFunction: SKillConstructor<T>) => {
-    return skillPropertyWrapper(
-      {
-        triggerableTimes: times,
-      },
-      constructorFunction as any,
-    );
-  };
-}
 
 export type SkillPrototype<T extends Skill> = new () => T;
 
@@ -135,13 +133,9 @@ export abstract class Skill {
   private shadowSkill = false;
   private lordSkill = false;
   private uniqueSkill = false;
-
-  public isEquipCardSkill() {
-    return false;
-  }
+  private selfTargetSkill = false;
 
   constructor(protected name: string, protected description: string) {}
-  protected triggerableTimes: number = 0;
   public abstract isRefreshAt(stage: PlayerPhase): boolean;
 
   public abstract async onUse(
@@ -154,7 +148,11 @@ export abstract class Skill {
     event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent | GameEventIdentifiers.CardEffectEvent>,
   ): Promise<boolean>;
 
-  public abstract canUse(room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>): boolean;
+  public abstract canUse(
+    room: Room,
+    owner: Player,
+    contentOrContainerCard?: ServerEventFinder<GameEventIdentifiers> | CardId,
+  ): boolean;
 
   public async onEffectRejected(
     room: Room,
@@ -200,6 +198,10 @@ export abstract class Skill {
     return this.uniqueSkill;
   }
 
+  public isSelfTargetSkill() {
+    return this.selfTargetSkill;
+  }
+
   public get SkillType() {
     return this.skillType;
   }
@@ -237,7 +239,7 @@ export abstract class TriggerSkill extends Skill {
     room: Room,
     event: ClientEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.SkillUseEvent>,
   ): Promise<boolean>;
-  public abstract canUse(room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>): boolean;
+  public abstract canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers>): boolean;
 
   public async onUse(
     room: Room,
@@ -256,6 +258,7 @@ export abstract class TriggerSkill extends Skill {
 export abstract class ActiveSkill extends Skill {
   public abstract targetFilter(room: Room, targets: PlayerId[]): boolean;
   public abstract cardFilter(room: Room, cards: CardId[]): boolean;
+  public abstract canUse(room: Room, owner: Player): boolean;
   public abstract isAvailableCard(
     owner: PlayerId,
     room: Room,

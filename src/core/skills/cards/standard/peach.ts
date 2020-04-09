@@ -4,10 +4,11 @@ import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { ActiveSkill, CommonSkill } from 'core/skills/skill';
+import { ActiveSkill, CommonSkill, SelfTargetSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
+@SelfTargetSkill
 export class PeachSkill extends ActiveSkill {
   constructor() {
     super('peach', 'peach_skill_description');

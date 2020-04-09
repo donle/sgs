@@ -2,14 +2,12 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { ActiveSkill, CommonSkill, TriggerableTimes } from 'core/skills/skill';
+import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
 @CommonSkill
-@TriggerableTimes(INFINITE_TRIGGERING_TIMES)
 export class FangTianHuaJiSkill extends ActiveSkill {
   constructor() {
     super('fangtianhuaji', 'fangtianhuaji_description');

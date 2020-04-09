@@ -25,7 +25,7 @@ export class QingGangSkill extends TriggerSkill {
     );
   }
 
-  canUse(room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
     return !!content && owner.Id === content.fromId;
   }
 
