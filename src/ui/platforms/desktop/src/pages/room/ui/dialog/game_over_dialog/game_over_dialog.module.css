@@ -1,0 +1,38 @@
+.gameOverBoard {
+    position: absolute;
+    align-self: center;
+    background: lightgrey;
+    border: 1px solid grey;
+    padding: 16px;
+    z-index: 999;
+}
+
+.winners, .losers {
+  margin: 32px;
+}
+
+.title {
+  font-size: 20px;
+  margin-bottom: 24px;
+  display: block;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.players {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 480px;
+}
+
+.player {
+  flex: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding-bottom: 8px;
+}

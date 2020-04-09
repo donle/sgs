@@ -574,6 +574,10 @@ export abstract class Player implements PlayerInfo {
     return this.dead;
   }
 
+  public bury() {
+    this.dead = true;
+  }
+
   public getPlayerInfo(): PlayerInfo {
     return {
       Id: this.playerId,

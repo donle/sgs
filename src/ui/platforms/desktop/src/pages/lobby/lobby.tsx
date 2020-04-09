@@ -76,7 +76,7 @@ export class Lobby extends React.Component<LobbyProps> {
     return (
       <div className={styles.createRoomBoard}>
         <span>
-          <input type='checkbox' defaultChecked={true} />
+          <input type="checkbox" defaultChecked={true} />
           {this.props.translator.tr(GameCardExtensions.Standard)}
         </span>
 

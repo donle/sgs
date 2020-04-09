@@ -11,7 +11,7 @@ import {
 } from 'core/event/event';
 import { Socket } from 'core/network/socket';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
 
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { Sanguosha } from 'core/game/engine';
@@ -355,5 +355,45 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public isPlaying() {
     return this.gameStarted;
+  }
+
+  public getGameWinners(): Player[] | undefined {
+    const rebellion: Player[] = [];
+    let renegade: Player | undefined;
+    const loyalist: Player[] = [];
+    let lordDied = false;
+
+    for (const player of this.players) {
+      if (player.Dead) {
+        if (player.Role === PlayerRole.Lord) {
+          lordDied = true;
+        }
+        continue;
+      }
+
+      switch (player.Role) {
+        case PlayerRole.Lord:
+        case PlayerRole.Loyalist:
+          loyalist.push(player);
+          break;
+        case PlayerRole.Rebel:
+          rebellion.push(player);
+          break;
+        case PlayerRole.Renegade:
+          renegade = player;
+          break;
+        default:
+      }
+    }
+
+    if (lordDied) {
+      if (rebellion.length > 0) {
+        return this.players.filter(player => player.Role === PlayerRole.Rebel);
+      } else if (renegade) {
+        return [renegade];
+      }
+    } else if (renegade === undefined && rebellion.length === 0) {
+      return this.players.filter(player => player.Role === PlayerRole.Lord || player.Role === PlayerRole.Loyalist);
+    }
   }
 }

@@ -19,6 +19,7 @@ import { SkillUseAction } from './actions/skill_use_action';
 import { RoomPresenter, RoomStore } from './room.presenter';
 import { CardSelectorDialog } from './ui/dialog/card_selector_dialog/card_selector_dialog';
 import { CharacterSelectorDialog } from './ui/dialog/character_selector_dialog/character_selector_dialog';
+import { GameOverDialog } from './ui/dialog/game_over_dialog/game_over_dialog';
 import { WuGuFengDengDialog } from './ui/dialog/wugufengdeng_dialog/wugufengdeng_dialog';
 
 export class GameClientProcessor {
@@ -139,6 +140,12 @@ export class GameClientProcessor {
       case GameEventIdentifiers.PlayerDyingEvent:
         await this.onHandlePlayerDyingEvent(e as any, content);
         break;
+      case GameEventIdentifiers.PlayerDiedEvent:
+        await this.onHandlePlayerDiedEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.GameOverEvent:
+        await this.onHandleGameOverEvent(e as any, content);
+        break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
     }
@@ -222,6 +229,13 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
     // tslint:disable-next-line:no-empty
   ) {}
+  private onHandlePlayerDiedEvent<T extends GameEventIdentifiers.PlayerDiedEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const { playerId } = content;
+    this.store.room.getPlayerById(playerId).bury();
+  }
 
   private onHandelObtainCardEvent<T extends GameEventIdentifiers.ObtainCardEvent>(
     type: T,
@@ -511,6 +525,16 @@ export class GameClientProcessor {
   ) {
     await this.store.room.useSkill(content);
     this.presenter.broadcastUIUpdate();
+  }
+
+  private async onHandleGameOverEvent<T extends GameEventIdentifiers.GameOverEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const { winnerIds, loserIds } = content;
+    const winners = winnerIds.map(id => this.store.room.getPlayerById(id));
+    const losers = loserIds.map(id => this.store.room.getPlayerById(id));
+    this.presenter.createDialog(<GameOverDialog translator={this.translator} winners={winners} losers={losers} />);
   }
 
   private async onHandleAskForChoosingPlayerEvent<T extends GameEventIdentifiers.AskForChoosingPlayerEvent>(

@@ -131,7 +131,8 @@ export interface ServerEvent extends EventUtilities {
     otherPlayers: PlayerInfo[];
   };
   [GameEventIdentifiers.GameOverEvent]: {
-    playersInfo: PlayerInfo[];
+    loserIds: PlayerId[];
+    winnerIds: PlayerId[];
   };
   [GameEventIdentifiers.PlayerEnterRefusedEvent]: {
     playerId: PlayerId;
@@ -154,7 +155,7 @@ export interface ServerEvent extends EventUtilities {
     killedBy?: PlayerId;
   };
   [GameEventIdentifiers.PlayerDiedEvent]: {
-    playerInfo: PlayerInfo;
+    playerId: PlayerId;
     killedBy?: PlayerId;
   };
 

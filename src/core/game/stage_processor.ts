@@ -445,6 +445,12 @@ export class StageProcessor {
     return this.gameEventStageList[0][0];
   }
 
+  public clearProcess() {
+    this.gameEventStageList = [];
+    this.currentGameEventStage = undefined;
+    this.processingGameEvent = false;
+  }
+
   public skipEventProcess(currentIdentifier) {
     if (!this.isInsideEvent(currentIdentifier, this.gameEventStageList[0] && this.gameEventStageList[0][0])) {
       return;

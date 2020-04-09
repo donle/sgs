@@ -423,9 +423,6 @@ export const generalDictionary: Word[] = [
   { source: 'loyalist', target: '忠诚' },
   { source: 'rebel', target: '反贼' },
   { source: 'renegade', target: '内奸' },
-];
-
-export const eventDictionary: Word[] = [
   { source: 'seat 0', target: '一号位' },
   { source: 'seat 1', target: '二号位' },
   { source: 'seat 2', target: '三号位' },
@@ -435,6 +432,14 @@ export const eventDictionary: Word[] = [
   { source: 'seat 6', target: '七号位' },
   { source: 'seat 7', target: '八号位' },
   { source: 'you', target: '你' },
+];
+
+export const eventDictionary: Word[] = [
+  { source: 'dead', target: '阵亡' },
+  { source: 'alive', target: '存活' },
+  { source: 'winners', target: '胜利玩家' },
+  { source: 'losers', target: '战败玩家' },
+  { source: 'back to lobby', target: '返回大厅' },
 
   { source: '({0})', target: '({0})' },
   { source: '[{0}]', target: '[{0}]' },
@@ -544,6 +549,9 @@ export const eventDictionary: Word[] = [
     source: '{0} asks for a peach',
     target: '{0} 处于濒死阶段，是否对其使用一个【桃】？',
   },
+  { source: '{0} was killed', target: '{0} 已阵亡，死于天灾' },
+  { source: '{0} was killed by {1}', target: '{0} 已阵亡，凶手是 {1}' },
+  { source: 'the role of {0} is {1}', target: '{0} 的身份是 {1}' },
   { source: '{0} recovers {1} hp', target: '{0} 恢复了 {1} 点体力' },
   {
     source: '{0} got hits from {1} by {2} {3} hp',

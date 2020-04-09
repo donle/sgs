@@ -57,7 +57,6 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
               break;
             case GameEventIdentifiers.UserMessageEvent:
             default:
-              //TODO: sometime lost listening on events
               logger.info('Not implemented active listener', identifier, GameEventIdentifiers.PlayerEnterEvent);
           }
         });

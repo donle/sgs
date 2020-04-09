@@ -28,6 +28,7 @@ import {
   ObtainCardStage,
   PhaseChangeStage,
   PinDianStage,
+  PlayerDiedStage,
   PlayerDyingStage,
   PlayerPhase,
   PlayerStageListEnum,
@@ -574,8 +575,9 @@ export class GameProcessor {
   ) {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async (stage: GameEventStage) => {
       if (stage === DamageEffectStage.DamagedEffect) {
-        event.toId = this.deadPlayerFilters(event.toId)[0];
-        const { toId, damage } = event;
+        const { toId, damage, fromId } = event;
+        event.toId = this.deadPlayerFilters(toId)[0];
+        event.fromId = fromId && this.deadPlayerFilters(fromId)[0];
         const to = this.room.getPlayerById(toId);
         to.onDamage(damage);
         this.room.broadcast(identifier, event);
@@ -595,8 +597,7 @@ export class GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    let result: void;
-    result = await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+    await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === PlayerDyingStage.PlayerDying) {
         const { dying } = event;
         const to = this.room.getPlayerById(dying);
@@ -655,18 +656,23 @@ export class GameProcessor {
     const { dying, killedBy } = event;
     const to = this.room.getPlayerById(dying);
     if (to.Hp <= 0) {
-      result = await this.onHandlePlayerDiedEvent(GameEventIdentifiers.PlayerDiedEvent, {
-        playerInfo: to.getPlayerInfo(),
+      await this.onHandlePlayerDiedEvent(GameEventIdentifiers.PlayerDiedEvent, {
+        playerId: dying,
         killedBy,
+        messages: [
+          TranslationPack.translationJsonPatcher(
+            '{0} was killed' + (killedBy === undefined ? '' : ' by {1}'),
+            TranslationPack.patchPlayerInTranslation(to),
+            killedBy ? TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(killedBy)) : '',
+          ).toString(),
+        ],
         translationsMessage: TranslationPack.translationJsonPatcher(
-          '{0} was killed' + killedBy === undefined ? '' : ' by {1}',
+          'the role of {0} is {1}',
           TranslationPack.patchPlayerInTranslation(to),
-          killedBy ? TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(killedBy)) : '',
+          getPlayerRoleRawText(to.Role),
         ).extract(),
       });
     }
-
-    return result;
   }
 
   private async onHandlePlayerDiedEvent(
@@ -674,15 +680,35 @@ export class GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    let result: void;
-    result = await this.iterateEachStage(identifier, event, onActualExecuted);
-    const { killedBy, playerInfo } = event;
-    //TODO: check game over
-    if (playerInfo.Role === PlayerRole.Rebel && killedBy) {
-      await this.room.drawCards(3, killedBy);
-    }
+    let isGameOver = false;
+    await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      if (stage === PlayerDiedStage.PlayerDied) {
+        this.room.broadcast(identifier, event);
+        const deadPlayer = this.room.getPlayerById(event.playerId);
+        deadPlayer.bury();
+      }
 
-    return result;
+      const winners = this.room.getGameWinners();
+      if (winners) {
+        this.stageProcessor.clearProcess();
+        this.room.broadcast(GameEventIdentifiers.GameOverEvent, {
+          winnerIds: winners.map(winner => winner.Id),
+          loserIds: this.room.Players.filter(player => !winners.includes(player)).map(player => player.Id),
+        });
+        isGameOver = true;
+      }
+    });
+
+    if (!isGameOver) {
+      const { killedBy, playerId } = event;
+      const deadPlayer = this.room.getPlayerById(playerId);
+      const allCards = deadPlayer.getPlayerCards();
+      await this.room.dropCards(CardLostReason.ActiveDrop, allCards, playerId);
+
+      if (deadPlayer.Role === PlayerRole.Rebel && killedBy) {
+        await this.room.drawCards(3, killedBy);
+      }
+    }
   }
 
   private async onHandleSkillUseEvent(
