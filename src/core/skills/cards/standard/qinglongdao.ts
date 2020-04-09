@@ -14,7 +14,7 @@ export class QingLongYanYueDaoSkill extends TriggerSkill {
   }
 
   isAutoTrigger() {
-    return true;
+    return false;
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>, stage?: AllStage) {
@@ -39,49 +39,36 @@ export class QingLongYanYueDaoSkill extends TriggerSkill {
   }
 
   async onTrigger(room: Room, content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
-    const jinkEffectEvent = content.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>;
-
-    const askForSlash: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent> = {
-      toId: content.fromId,
-      scopedTargets: [jinkEffectEvent.fromId!],
-      cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
-      conversation: TranslationPack.translationJsonPatcher('do you want to trigger skill {0} ?', this.name).extract(),
-    };
-
-    room.notify(GameEventIdentifiers.AskForCardUseEvent, askForSlash, content.fromId);
-    const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForCardUseEvent, content.fromId);
-    if (response.cardId === undefined) {
-      EventPacker.terminate(content);
-      return false;
-    }
-
-    const slashEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
-      fromId: response.fromId,
-      cardId: response.cardId,
-      toIds: [jinkEffectEvent.fromId!],
-    };
-
-    EventPacker.addMiddleware(
-      {
-        tag: this.name,
-        data: slashEvent,
-      },
-      content,
-    );
-
     return true;
   }
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const slashEvent = EventPacker.getMiddleware<ServerEventFinder<GameEventIdentifiers.CardUseEvent>>(
-      this.name,
-      skillUseEvent,
-    );
-    if (!slashEvent) {
+    const jinkEffectEvent = skillUseEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>;
+
+    const askForSlash: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent> = {
+      toId: skillUseEvent.fromId,
+      scopedTargets: [jinkEffectEvent.fromId!],
+      cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
+      conversation: TranslationPack.translationJsonPatcher('please select to use a {0}', 'slash').extract(),
+    };
+
+    const response = await room.askForCardUse(askForSlash, skillUseEvent.fromId);
+    if (response.terminated) {
+      EventPacker.terminate(skillUseEvent);
+      return false;
+    } else if (response.responseEvent && response.responseEvent.cardId !== undefined) {
+      const slashEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
+        fromId: response.responseEvent.fromId,
+        cardId: response.responseEvent.cardId!,
+        toIds: [jinkEffectEvent.fromId!],
+      };
+
+      await room.useCard(slashEvent);
+    } else {
+      EventPacker.terminate(skillUseEvent);
       return false;
     }
 
-    await room.useCard(slashEvent);
     return true;
   }
 }
