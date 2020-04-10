@@ -15,6 +15,8 @@ export type ClientCardProps = {
   disabled?: boolean;
   onSelected?(selected: boolean): void;
   tag?: string;
+  width?: number;
+  offset?: number;
 };
 
 @mobxReact.observer
@@ -44,6 +46,16 @@ export class ClientCard extends React.Component<ClientCardProps> {
     return this.soundTracks[randomIndex];
   }
 
+  getCardRatioSize(): React.CSSProperties {
+    const { width = 120, offset } = this.props;
+    const height = (width * 4) / 3;
+    return {
+      width,
+      height,
+      transform: `translateX(${offset}px)`,
+    };
+  }
+
   render() {
     const { className, card, translator, tag } = this.props;
     return (
@@ -51,17 +63,18 @@ export class ClientCard extends React.Component<ClientCardProps> {
         className={classNames(styles.clientCard, className, {
           [styles.selected]: this.getSelected() && !this.props.disabled,
         })}
+        style={this.getCardRatioSize()}
         onClick={this.onClick}
       >
         {card ? (
-          <>
+          <div className={styles.innerCard}>
             <div className={styles.cornerTag}>
               <CardSuitItem suit={card.Suit} />
               <CardNumberItem cardNumber={card.CardNumber} />
             </div>
             <span>{translator.tr(card.Name)}</span>
             {tag && <span className={styles.cardTag}>{translator.trx(tag)}</span>}
-          </>
+          </div>
         ) : (
           <div className={styles.emptyCard}>{translator.tr('New QSanguosha')}</div>
         )}

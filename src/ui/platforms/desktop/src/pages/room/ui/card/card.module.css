@@ -1,11 +1,22 @@
 .clientCard {
-    height: 160px;
-    width: 120px;
+    position: relative;
+    border: 1px solid grey;
+    transition: all 0.15s;
+    background: white;
+}
+.clientCard:hover {
+    z-index: 2;
+}
+
+.innerCard {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    position: relative;
-    border: 1px solid grey;
 }
 
 .cardSuit {
@@ -20,6 +31,8 @@
 
 .cardNumber {
     font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'MicrosoftYaHei';
+    font-weight: 500;
 }
 
 .redCard {
@@ -27,11 +40,11 @@
 }
 
 .cornerTag {
-    position: absolute;
-    top: 8px;
-    left: 8px;
+    top: 0;
+    left: 4px;
     display: flex;
     align-items: center;
+    position: absolute;
 }
 
 .cardTag {
@@ -45,6 +58,9 @@
 .selected {
     border-color: red;
 }
+.clientCard.selected {
+    margin-top: -16px;
+}
 
 .flatCard {
     display: flex;
@@ -54,6 +70,12 @@
     justify-self: flex-start;
     flex: auto;
     font-size: 14px;
+}
+.emptyCard {
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
 }
 
 @keyframes glow {

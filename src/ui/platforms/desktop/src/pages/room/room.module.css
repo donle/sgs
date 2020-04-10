@@ -40,3 +40,18 @@
     width: 100%;
     z-index: 2;
 }
+
+.displayedCards {
+    display: flex;
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    justify-content: center;
+    align-items: center;
+    height: 160px;
+}
+
+.displayedCard {
+    margin: 2px;
+    position: absolute;
+}

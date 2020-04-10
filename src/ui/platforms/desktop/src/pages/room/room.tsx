@@ -2,6 +2,7 @@ import { clientActiveListenerEvents, GameEventIdentifiers, ServerEventFinder } f
 import { ClientSocket } from 'core/network/socket.client';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { match } from 'react-router-dom';
@@ -9,6 +10,7 @@ import { PagePropsWithHostConfig } from 'types/page_props';
 import { GameClientProcessor } from './game_processor';
 import styles from './room.module.css';
 import { RoomPresenter, RoomStore } from './room.presenter';
+import { ClientCard } from './ui/card/card';
 import { Dashboard } from './ui/dashboard/dashboard';
 import { GameDialog } from './ui/game_dialog/game_dialog';
 import { SeatsLayout } from './ui/seats_layout/seats_layout';
@@ -25,6 +27,12 @@ export class RoomPage extends React.Component<
   private socket: ClientSocket;
   private gameProcessor: GameClientProcessor;
   private roomId: number;
+
+  private displayedCardsRef = React.createRef<HTMLDivElement>();
+  private readonly cardWidth = 120;
+  private readonly cardMargin = 2;
+  @mobx.observable.ref
+  private cardOffset = 0;
 
   constructor(props: any) {
     super(props);
@@ -80,20 +88,37 @@ export class RoomPage extends React.Component<
     });
   }
 
-  private getDummyCentralInfo() {
+  private calculateDisplayedCardOffset(totalCards: number, index: number) {
+    const container = this.displayedCardsRef.current;
+    if (!container) {
+      return this.cardMargin;
+    }
+
+    const containerWidth = container.clientWidth;
+    const innerOffset =
+      Math.min(this.cardWidth * totalCards + this.cardMargin * (totalCards + 1), containerWidth) / 2 -
+      this.cardWidth / 2;
+    if (containerWidth < totalCards * (this.cardWidth + this.cardMargin)) {
+      const offset = (totalCards * (this.cardWidth + this.cardMargin) - containerWidth) / (totalCards - 1);
+      return (totalCards - index - 1) * (this.cardMargin + this.cardWidth - offset) - innerOffset;
+    } else {
+      return (totalCards - index - 1) * (this.cardMargin + this.cardWidth) + this.cardMargin * 2 - innerOffset;
+    }
+  }
+
+  private getDisplayedCard() {
     return (
-      <>
-        room Id: {this.props.match.params.slug}
-        {this.store.room && (
-          <>
-            <div>
-              room Info:
-              {JSON.stringify(this.store.room.getRoomInfo(), null, 2)}
-            </div>
-            <div>game Info: {JSON.stringify(this.store.room.Info, null, 2)}</div>
-          </>
-        )}
-      </>
+      <div className={styles.displayedCards} ref={this.displayedCardsRef}>
+        {this.store.displayedCards.map((card, index) => (
+          <ClientCard
+            card={card}
+            width={this.cardWidth}
+            offset={this.calculateDisplayedCardOffset(this.store.displayedCards.length, index)}
+            translator={this.props.translator}
+            className={styles.displayedCard}
+          />
+        ))}
+      </div>
     );
   }
 
@@ -113,7 +138,7 @@ export class RoomPage extends React.Component<
                 translator={this.props.translator}
                 onClick={this.store.onClickPlayer}
                 playerSelectableMatcher={this.store.playersSelectionMatcher}
-                gamePad={this.getDummyCentralInfo()}
+                gamePad={this.getDisplayedCard()}
               />
               <div className={styles.sideBoard}>
                 <GameDialog store={this.store} presenter={this.presenter} translator={this.props.translator} />

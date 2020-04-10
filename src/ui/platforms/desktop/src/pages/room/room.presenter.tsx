@@ -37,6 +37,9 @@ export class RoomStore {
   @mobx.observable.shallow
   gameLog: (string | JSX.Element)[] = [];
 
+  @mobx.observable.shallow
+  displayedCards: Card[] = [];
+
   @mobx.observable.ref
   updateUIFlag: boolean = false;
 
@@ -167,6 +170,17 @@ export class RoomPresenter {
   @mobx.action
   addGameLog(log: string | JSX.Element) {
     this.store.gameLog.push(log);
+  }
+
+  @mobx.action
+  showCards(...cards: Card[]) {
+    if (this.store.displayedCards.length >= 7) {
+      this.store.displayedCards = [];
+    }
+
+    for (const card of cards) {
+      !this.store.displayedCards.includes(card) && this.store.displayedCards.push(card);
+    }
   }
 
   @mobx.action

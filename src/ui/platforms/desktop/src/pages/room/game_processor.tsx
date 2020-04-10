@@ -202,18 +202,22 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     await this.store.room.useCard(content);
+    this.presenter.showCards(...Card.getActualCards([content.cardId]).map(cardId => Sanguosha.getCardById(cardId)));
     this.presenter.broadcastUIUpdate();
+  }
+
+  private onHandleCardResponseEvent<T extends GameEventIdentifiers.CardResponseEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.presenter.showCards(...Card.getActualCards([content.cardId]).map(cardId => Sanguosha.getCardById(cardId)));
+  }
+  private onHandleCardDropEvent<T extends GameEventIdentifiers.CardDropEvent>(type: T, content: ServerEventFinder<T>) {
+    this.presenter.showCards(...Card.getActualCards(content.cardIds).map(cardId => Sanguosha.getCardById(cardId)));
   }
 
   // tslint:disable-next-line:no-empty
   private onHandleAimEvent<T extends GameEventIdentifiers.AimEvent>(type: T, content: ServerEventFinder<T>) {}
-  private onHandleCardResponseEvent<T extends GameEventIdentifiers.CardResponseEvent>(
-    type: T,
-    content: ServerEventFinder<T>,
-    // tslint:disable-next-line:no-empty
-  ) {}
-  // tslint:disable-next-line:no-empty
-  private onHandleCardDropEvent<T extends GameEventIdentifiers.CardDropEvent>(type: T, content: ServerEventFinder<T>) {}
   private onHandleDrawCardsEvent<T extends GameEventIdentifiers.DrawCardEvent>(
     type: T,
     content: ServerEventFinder<T>,
@@ -478,6 +482,12 @@ export class GameClientProcessor {
     const { fromId, cardIds } = content;
 
     this.store.room.getPlayerById(fromId).dropCards(...cardIds);
+
+    this.presenter.showCards(
+      ...content.cardIds
+        .filter(cardId => this.store.room.getCardOwnerId(cardId) === undefined)
+        .map(cardId => Sanguosha.getCardById(cardId)),
+    );
     this.presenter.broadcastUIUpdate();
   }
 

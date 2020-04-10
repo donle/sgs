@@ -89,6 +89,27 @@ export class Dashboard extends React.Component<DashboardProps> {
     this.props.onClickEquipment && this.props.onClickEquipment(card, selected);
   };
 
+  @mobx.observable.ref
+  private cardOffset: number = 0;
+
+  private handBoardRef = React.createRef<HTMLDivElement>();
+  private readonly handCardWidth = 120;
+  private readonly cardMargin = 2;
+
+  @mobx.action
+  componentDidUpdate() {
+    const { presenter } = this.props;
+    if (this.handBoardRef.current && presenter.ClientPlayer) {
+      const width = this.handBoardRef.current.clientWidth;
+      const numOfHandCards = presenter.ClientPlayer.getCardIds(PlayerCardsArea.HandArea).length;
+      if (width < numOfHandCards * (this.handCardWidth + this.cardMargin)) {
+        this.cardOffset = -(numOfHandCards * (this.handCardWidth + this.cardMargin) - width) / (numOfHandCards - 1);
+      } else {
+        this.cardOffset = this.cardMargin;
+      }
+    }
+  }
+
   getEquipCardsSection() {
     const equipCards = this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.EquipArea).map(cardId =>
       Sanguosha.getCardById<EquipCard>(cardId),
@@ -113,11 +134,14 @@ export class Dashboard extends React.Component<DashboardProps> {
   }
 
   getAllClientHandCards() {
-    return this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.HandArea).map(cardId => {
+    return this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.HandArea).map((cardId, index) => {
       const card = Sanguosha.getCardById(cardId);
+      const leftOffset = index * (this.handCardWidth + this.cardOffset);
       return (
         <ClientCard
           key={cardId}
+          width={this.handCardWidth}
+          offset={leftOffset}
           translator={this.props.translator}
           card={card}
           onSelected={this.onClick(card)}
@@ -140,7 +164,7 @@ export class Dashboard extends React.Component<DashboardProps> {
 
   getPlayerHandBoard() {
     return (
-      <div className={styles.handBoard}>
+      <div className={styles.handBoard} ref={this.handBoardRef}>
         {this.getPlayerJudgeCards()}
         <div className={styles.userActionsButtons}>
           <button disabled={!this.props.store.actionButtonStatus.confirm} onClick={this.props.onClickConfirmButton}>

@@ -699,6 +699,7 @@ export class GameProcessor {
         }
 
         this.stageProcessor.clearProcess();
+        this.playerStages = [];
         this.room.broadcast(GameEventIdentifiers.GameOverEvent, {
           translationsMessage: TranslationPack.translationJsonPatcher(
             'game over, winner is {0}',
