@@ -535,6 +535,17 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     );
   }
 
+  public async turnOver(playerId: PlayerId) {
+    const turnOverEvent: ServerEventFinder<GameEventIdentifiers.PlayerTurnOverEvent> = {
+      fromId: playerId,
+    };
+
+    await this.gameProcessor.onHandleIncomingEvent(
+      GameEventIdentifiers.PlayerTurnOverEvent,
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerTurnOverEvent, turnOverEvent),
+    );
+  }
+
   public async moveCards(
     cardIds: CardId[],
     fromId: PlayerId | undefined,

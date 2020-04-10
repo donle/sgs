@@ -107,6 +107,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.JudgeEvent:
         await this.onHandleJudgeEvent(e as any, content);
         break;
+      case GameEventIdentifiers.PlayerTurnOverEvent:
+        await this.onHandlePlayerTurnOverEvent(e as any, content);
+        break;
       case GameEventIdentifiers.AskForPeachEvent:
         await this.onHandleAskForPeachEvent(e as any, content);
         break;
@@ -125,11 +128,11 @@ export class GameClientProcessor {
       case GameEventIdentifiers.CustomGameDialog:
         await this.onHandleCustomDialogEvent(e as any, content);
         break;
-      case GameEventIdentifiers.AskForWuGuFengDengEvent:
-        await this.onHandleWuGuFengDengEvent(e as any, content);
+      case GameEventIdentifiers.AskForContinuouslyChoosingCardEvent:
+        await this.onHandleContinuouslyChoosingCard(e as any, content);
         break;
-      case GameEventIdentifiers.WuGuFengDengFinishEvent:
-        await this.onHandleWuGuFengDengFinish(e as any, content);
+      case GameEventIdentifiers.ContinuouslyChoosingCardFinishEvent:
+        await this.onHandleContinuouslyChoosingCardFinish(e as any, content);
         break;
       case GameEventIdentifiers.AskForChoosingOptionsEvent:
         await this.onHandleAskForChoosingOptionsEvent(e as any, content);
@@ -417,6 +420,14 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
+  private onHandlePlayerTurnOverEvent<T extends GameEventIdentifiers.PlayerTurnOverEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.getPlayerById(content.fromId).turnOver();
+    this.presenter.broadcastUIUpdate();
+  }
+
   private async onHandleAskForPeachEvent<T extends GameEventIdentifiers.AskForPeachEvent>(
     type: T,
     content: ServerEventFinder<T>,
@@ -568,7 +579,7 @@ export class GameClientProcessor {
     this.presenter.closeIncomingConversation();
   }
 
-  private async onHandleWuGuFengDengEvent<T extends GameEventIdentifiers.AskForWuGuFengDengEvent>(
+  private async onHandleContinuouslyChoosingCard<T extends GameEventIdentifiers.AskForContinuouslyChoosingCardEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -592,9 +603,9 @@ export class GameClientProcessor {
         cards={content.cardIds}
         selected={content.selected.map(selectedCard => ({
           card: selectedCard.card,
-          playerObjectText: TranslationPack.patchPlayerInTranslation(
-            this.store.room.getPlayerById(selectedCard.player),
-          ),
+          playerObjectText:
+            selectedCard.player &&
+            TranslationPack.patchPlayerInTranslation(this.store.room.getPlayerById(selectedCard.player)),
         }))}
         translator={this.translator}
         onClick={this.store.clientPlayerId === content.toId ? onClick : undefined}
@@ -602,10 +613,9 @@ export class GameClientProcessor {
     );
   }
 
-  private async onHandleWuGuFengDengFinish<T extends GameEventIdentifiers.WuGuFengDengFinishEvent>(
-    type: T,
-    content: ServerEventFinder<T>,
-  ) {
+  private async onHandleContinuouslyChoosingCardFinish<
+    T extends GameEventIdentifiers.ContinuouslyChoosingCardFinishEvent
+  >(type: T, content: ServerEventFinder<T>) {
     this.presenter.closeDialog();
   }
 }

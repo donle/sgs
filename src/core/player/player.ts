@@ -465,6 +465,10 @@ export abstract class Player implements PlayerInfo {
     this.turnedOver = !this.turnedOver;
   }
 
+  public isFaceUp() {
+    return !this.turnedOver;
+  }
+
   public onDamage(hit: number) {
     this.hp -= hit;
   }

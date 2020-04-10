@@ -23,6 +23,7 @@ export type RoomInfo = {
   totalPlayers: number;
   status: 'playing' | 'waiting';
   packages: GameCharacterExtensions[];
+  id: RoomId;
 };
 
 type RoomEventUtilities = {

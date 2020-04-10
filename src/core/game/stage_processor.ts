@@ -263,6 +263,11 @@ export const enum CardMoveStage {
   AfterCardMoved = 'AfterCardMoved',
 }
 
+export const enum TurnOverStage {
+  TurningOver = 'TurningOver',
+  TurnedOver = 'TurnedOver',
+}
+
 export const enum LoseHpStage {
   BeforeLoseHp = 'BeforeLoseHp',
   LosingHp = 'LosingHp',
@@ -289,7 +294,8 @@ export type GameEventStage =
   | SkillUseStage
   | SkillEffectStage
   | LoseHpStage
-  | CardMoveStage;
+  | CardMoveStage
+  | TurnOverStage;
 
 export type AllStage = PlayerStageListEnum | GameEventStage;
 
@@ -381,6 +387,7 @@ const gameEventStageList: {
     CardLostStage.CardLosing,
     CardLostStage.AfterCardLostEffect,
   ],
+  [GameEventIdentifiers.PlayerTurnOverEvent]: [TurnOverStage.TurningOver, TurnOverStage.TurnedOver],
 };
 
 export class StageProcessor {

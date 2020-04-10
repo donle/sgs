@@ -9,7 +9,7 @@ import styles from './wugufengdeng_dialog.module.css';
 
 type SelectedCardProps = {
   card: CardId;
-  playerObjectText: string;
+  playerObjectText?: string;
 };
 
 type WuGuFengDengDialogProps = {

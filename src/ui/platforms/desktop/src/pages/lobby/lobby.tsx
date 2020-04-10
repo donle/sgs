@@ -1,12 +1,11 @@
 import { Sanguosha } from 'core/game/engine';
 import { GameCardExtensions, GameCharacterExtensions, GameInfo } from 'core/game/game_props';
-import { LobbySocketEvent, LobbySocketEventPicker } from 'core/shares/types/server_types';
+import { LobbySocketEvent, LobbySocketEventPicker, RoomInfo } from 'core/shares/types/server_types';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import SocketIOClient from 'socket.io-client';
-import { RoomList } from 'types/lobby_types';
 import { PagePropsWithHostConfig } from 'types/page_props';
 import styles from './lobby.module.css';
 
@@ -17,7 +16,7 @@ type LobbyProps = PagePropsWithHostConfig<{
 @mobxReact.observer
 export class Lobby extends React.Component<LobbyProps> {
   @mobx.observable.shallow
-  private roomList: RoomList[] = [];
+  private roomList: RoomInfo[] = [];
   @mobx.observable.ref
   private unmatchedCoreVersion = false;
   private socket = SocketIOClient(
@@ -90,6 +89,10 @@ export class Lobby extends React.Component<LobbyProps> {
     return <div>{this.props.translator.tr('Unmatched core version, please update your application')}</div>;
   }
 
+  private readonly enterRoom = (roomInfo: RoomInfo) => () => {
+    this.props.history.push(`/room/${roomInfo.id}`);
+  };
+
   render() {
     return (
       <div className={styles.board}>
@@ -98,7 +101,7 @@ export class Lobby extends React.Component<LobbyProps> {
           {this.unmatchedCoreVersion
             ? this.unmatchedView()
             : this.roomList.map((roomInfo, index) => (
-                <li className={styles.roomInfo} key={index}>
+                <li className={styles.roomInfo} key={index} onClick={this.enterRoom(roomInfo)}>
                   <span>{roomInfo.name}</span>
                   <span>{this.getTranslatePackName(...roomInfo.packages)}</span>
                   <span>{`${roomInfo.activePlayers}/${roomInfo.totalPlayers}`}</span>

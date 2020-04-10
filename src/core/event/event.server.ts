@@ -232,7 +232,7 @@ export interface ServerEvent extends EventUtilities {
     conversation: string | PatchedTranslationObject;
   };
   [GameEventIdentifiers.AskForPlaceCardsInDileEvent]: {
-    movableCards?: CardId[];
+    movableCards: CardId[];
     top: number;
     bottom: number;
   };
@@ -265,15 +265,14 @@ export interface ServerEvent extends EventUtilities {
     fromId: PlayerId;
     linked: boolean;
   };
-  [GameEventIdentifiers.TurnOverEvent]: {
-    fromId: PlayerId;
-    turnedOver: boolean;
-  };
-  [GameEventIdentifiers.AskForWuGuFengDengEvent]: {
+  [GameEventIdentifiers.AskForContinuouslyChoosingCardEvent]: {
     cardIds: CardId[];
-    selected: { card: CardId; player: PlayerId }[];
+    selected: { card: CardId; player?: PlayerId }[];
     toId: PlayerId;
     userId?: PlayerId;
+  };
+  [GameEventIdentifiers.PlayerTurnOverEvent]: {
+    fromId: PlayerId;
   };
   [GameEventIdentifiers.CustomGameDialog]: {};
 }

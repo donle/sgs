@@ -36,6 +36,7 @@ import {
   SkillEffectStage,
   SkillUseStage,
   StageProcessor,
+  TurnOverStage,
 } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { getPlayerRoleRawText, PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
@@ -415,6 +416,13 @@ export class GameProcessor {
       case GameEventIdentifiers.RecoverEvent:
         await this.onHandleRecoverEvent(
           identifier as GameEventIdentifiers.RecoverEvent,
+          event as any,
+          onActualExecuted,
+        );
+        break;
+      case GameEventIdentifiers.PlayerTurnOverEvent:
+        await this.onHandlePlayerTurnOverEvent(
+          identifier as GameEventIdentifiers.PlayerTurnOverEvent,
           event as any,
           onActualExecuted,
         );
@@ -1077,6 +1085,14 @@ export class GameProcessor {
           return;
         }
 
+        if (event.translationsMessage === undefined) {
+          event.translationsMessage = TranslationPack.translationJsonPatcher(
+            '{0} lost {1} hp',
+            TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.toId)),
+            event.lostHp,
+          ).extract();
+        }
+
         this.room.getPlayerById(event.toId).onLoseHp(event.lostHp);
         this.room.broadcast(GameEventIdentifiers.LoseHpEvent, event);
       }
@@ -1102,11 +1118,39 @@ export class GameProcessor {
     });
   }
 
+  private async onHandlePlayerTurnOverEvent(
+    identifier: GameEventIdentifiers.PlayerTurnOverEvent,
+    event: ServerEventFinder<GameEventIdentifiers.PlayerTurnOverEvent>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
+  ) {
+    return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      if (stage === TurnOverStage.TurningOver) {
+        const player = this.room.getPlayerById(event.fromId);
+        player.turnOver();
+
+        if (event.translationsMessage === undefined) {
+          event.translationsMessage = TranslationPack.translationJsonPatcher(
+            '{0} turned over, who is ' + (player.isFaceUp() ? 'face up' : 'turn overed'),
+            TranslationPack.patchPlayerInTranslation(player),
+          ).extract();
+        }
+
+        this.room.broadcast(identifier, event);
+      }
+    });
+  }
+
   public async turnToNextPlayer() {
     this.tryToThrowNotStartedError();
     this.playerStages = [];
     do {
       this.playerPositionIndex = (this.playerPositionIndex + 1) % this.room.Players.length;
+      if (!this.room.Players[this.playerPositionIndex].isFaceUp()) {
+        await this.onHandlePlayerTurnOverEvent(GameEventIdentifiers.PlayerTurnOverEvent, {
+          fromId: this.room.Players[this.playerPositionIndex].Id,
+        });
+        continue;
+      }
     } while (this.room.Players[this.playerPositionIndex].Dead);
   }
 

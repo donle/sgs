@@ -441,6 +441,7 @@ export const eventDictionary: Word[] = [
   { source: 'losers', target: '战败玩家' },
   { source: 'back to lobby', target: '返回大厅' },
   { source: 'game over, winner is {0}', target: '游戏结束，{0} 胜利' },
+  { source: 'turn overed', target: '翻面' },
 
   { source: '({0})', target: '({0})' },
   { source: '[{0}]', target: '[{0}]' },
@@ -487,6 +488,10 @@ export const eventDictionary: Word[] = [
   {
     source: '{0} recovered {1} hp',
     target: '{0} 回复了 {1} 点体力',
+  },
+  {
+    source: '{0} lost {1} hp',
+    target: '{0} 失去了 {1} 点体力',
   },
   {
     source: '{0} used {1} to you, please use a {2} card',

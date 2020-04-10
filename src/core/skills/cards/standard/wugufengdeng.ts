@@ -14,7 +14,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 type SelectedCard = {
   card: CardId;
-  player: PlayerId;
+  player?: PlayerId;
 };
 
 @CommonSkill
@@ -65,14 +65,14 @@ export class WuGuFengDengSkill extends ActiveSkill {
       event,
     );
 
-    const wugufengdengEvent: ServerEventFinder<GameEventIdentifiers.AskForWuGuFengDengEvent> = {
+    const wugufengdengEvent: ServerEventFinder<GameEventIdentifiers.AskForContinuouslyChoosingCardEvent> = {
       cardIds: event.toCardIds!,
       selected: [],
       toId: '',
       userId: event.fromId,
     };
 
-    room.broadcast(GameEventIdentifiers.AskForWuGuFengDengEvent, wugufengdengEvent);
+    room.broadcast(GameEventIdentifiers.AskForContinuouslyChoosingCardEvent, wugufengdengEvent);
 
     return true;
   }
@@ -84,15 +84,18 @@ export class WuGuFengDengSkill extends ActiveSkill {
       'Unable to get wugufengdeng cards',
     );
 
-    const wugufengdengEvent: ServerEventFinder<GameEventIdentifiers.AskForWuGuFengDengEvent> = {
+    const wugufengdengEvent: ServerEventFinder<GameEventIdentifiers.AskForContinuouslyChoosingCardEvent> = {
       cardIds: event.toCardIds!,
       selected: selectedCards,
       toId,
       userId: event.fromId,
     };
 
-    room.broadcast(GameEventIdentifiers.AskForWuGuFengDengEvent, wugufengdengEvent);
-    const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForWuGuFengDengEvent, toId);
+    room.broadcast(GameEventIdentifiers.AskForContinuouslyChoosingCardEvent, wugufengdengEvent);
+    const response = await room.onReceivingAsyncReponseFrom(
+      GameEventIdentifiers.AskForContinuouslyChoosingCardEvent,
+      toId,
+    );
     selectedCards.push({
       card: response.selectedCard,
       player: toId,
@@ -120,7 +123,7 @@ export class WuGuFengDengSkill extends ActiveSkill {
       }
     }
 
-    room.broadcast(GameEventIdentifiers.WuGuFengDengFinishEvent, {
+    room.broadcast(GameEventIdentifiers.ContinuouslyChoosingCardFinishEvent, {
       translationsMessage:
         droppedCards.length > 0
           ? TranslationPack.translationJsonPatcher(

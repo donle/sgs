@@ -131,7 +131,10 @@ export interface ClientEvent extends EventUtilities {
     toIds?: PlayerId[];
     fromId: PlayerId;
   };
-  [GameEventIdentifiers.AskForCardDisplayEvent]: {};
+  [GameEventIdentifiers.AskForCardDisplayEvent]: {
+    selectedCards: CardId[];
+    fromId: PlayerId;
+  };
   [GameEventIdentifiers.AskForCardDropEvent]: {
     droppedCards: CardId[];
     fromId: PlayerId;
@@ -141,11 +144,14 @@ export interface ClientEvent extends EventUtilities {
     fromId: PlayerId;
     isGameStart?: boolean;
   };
-  [GameEventIdentifiers.AskForWuGuFengDengEvent]: {
+  [GameEventIdentifiers.AskForContinuouslyChoosingCardEvent]: {
     fromId: PlayerId;
     selectedCard: CardId;
   };
-  [GameEventIdentifiers.AskForPlaceCardsInDileEvent]: {};
+  [GameEventIdentifiers.AskForPlaceCardsInDileEvent]: {
+    top: CardId[];
+    bottom: CardId[];
+  };
   [GameEventIdentifiers.AskForPlayCardsOrSkillsEvent]: PlayCardOrSkillEvent;
   [GameEventIdentifiers.PlayerEnterRefusedEvent]: never;
   [GameEventIdentifiers.SyncGameCommonRulesEvent]: never;

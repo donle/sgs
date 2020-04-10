@@ -16,6 +16,10 @@
 .roomInfo:last-of-type {
     border-bottom: 0;
 }
+.roomInfo:hover {
+    border: 1px solid lightgrey;
+    cursor: pointer;
+}
 
 .gameInfo {
     display: flex;

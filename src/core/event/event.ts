@@ -56,7 +56,6 @@ export const enum GameEventIdentifiers {
 
   DrunkEvent,
   ChainLinkedEvent,
-  TurnOverEvent,
 
   LoseSkillEvent,
   ObtainSkillEvent,
@@ -108,8 +107,8 @@ export const enum GameEventIdentifiers {
   AskForChoosingCardFromPlayerEvent,
   AskForSkillUseEvent,
   AskForPlaceCardsInDileEvent,
-  AskForWuGuFengDengEvent,
-  WuGuFengDengFinishEvent,
+  AskForContinuouslyChoosingCardEvent,
+  ContinuouslyChoosingCardFinishEvent,
 }
 
 export type CardResponsiveEventIdentifiers =
@@ -135,7 +134,6 @@ export const clientActiveListenerEvents = () => [
 
   GameEventIdentifiers.DrunkEvent,
   GameEventIdentifiers.ChainLinkedEvent,
-  GameEventIdentifiers.TurnOverEvent,
 
   GameEventIdentifiers.EquipEvent,
   GameEventIdentifiers.CardDropEvent,
@@ -183,8 +181,8 @@ export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.AskForSkillUseEvent,
   GameEventIdentifiers.AskForChoosingCharacterEvent,
   GameEventIdentifiers.AskForPlaceCardsInDileEvent,
-  GameEventIdentifiers.AskForWuGuFengDengEvent,
-  GameEventIdentifiers.WuGuFengDengFinishEvent,
+  GameEventIdentifiers.AskForContinuouslyChoosingCardEvent,
+  GameEventIdentifiers.ContinuouslyChoosingCardFinishEvent,
 ];
 
 export const serverActiveListenerEvents = (): [
@@ -233,7 +231,7 @@ export const serverResponsiveListenerEvents = () => [
   GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
   GameEventIdentifiers.AskForSkillUseEvent,
   GameEventIdentifiers.AskForPlaceCardsInDileEvent,
-  GameEventIdentifiers.AskForWuGuFengDengEvent,
+  GameEventIdentifiers.AskForContinuouslyChoosingCardEvent,
 ];
 
 export const enum CardLostReason {

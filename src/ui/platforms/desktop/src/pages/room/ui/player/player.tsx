@@ -61,17 +61,17 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     return (
       <div className={styles.playerEquips}>
         {equips.map(equip => (
-            <FlatClientCard
-              card={equip}
-              translator={translator}
-              className={classNames(styles.playerEquip, {
-                [styles.weapon]: equip?.is(CardType.Weapon),
-                [styles.armor]: equip?.is(CardType.Armor),
-                [styles.defenseRide]: equip?.is(CardType.DefenseRide),
-                [styles.offenseRide]: equip?.is(CardType.OffenseRide),
-                [styles.precious]: equip?.is(CardType.Precious),
-              })}
-            />
+          <FlatClientCard
+            card={equip}
+            translator={translator}
+            className={classNames(styles.playerEquip, {
+              [styles.weapon]: equip?.is(CardType.Weapon),
+              [styles.armor]: equip?.is(CardType.Armor),
+              [styles.defenseRide]: equip?.is(CardType.DefenseRide),
+              [styles.offenseRide]: equip?.is(CardType.OffenseRide),
+              [styles.precious]: equip?.is(CardType.Precious),
+            })}
+          />
         ))}
       </div>
     );
@@ -93,7 +93,10 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                 <span className={styles.nationality}>
                   {this.props.translator.tr(getNationalityRawText(this.PlayerCharacter.Nationality))}
                 </span>
-                <span>{this.props.translator.tr(this.PlayerCharacter.Name)}</span>
+                <span>
+                  {this.props.translator.tr(this.PlayerCharacter.Name)}
+                  {!this.props.player.isFaceUp() && `(${this.props.translator.tr('turn overed')})`}
+                </span>
                 <span>
                   {this.props.player.Hp}/{this.props.player.MaxHp}
                 </span>
