@@ -1,0 +1,40 @@
+.cardSlots {
+    display: flex;
+    padding: 16px;
+    flex-direction: column;
+    position: relative;
+}
+
+.topSlots,
+.bottomSlots {
+    display: flex;
+}
+
+.topCards,
+.bottomCards {
+    position: absolute;
+}
+
+.topCards {
+    display: flex;
+    z-index: 2;
+    font-size: 14px;
+}
+
+.bottomCards {
+    margin-top: 184px;
+}
+.bottomSlots {
+    margin-top: 20px;
+}
+
+.guanxingCard {
+    position: absolute;
+    cursor: pointer;
+    user-select: none;
+}
+
+.guanxingCard,
+.cardSlot {
+    margin: 2px;
+}

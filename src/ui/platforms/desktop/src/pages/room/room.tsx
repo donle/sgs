@@ -2,7 +2,6 @@ import { clientActiveListenerEvents, GameEventIdentifiers, ServerEventFinder } f
 import { ClientSocket } from 'core/network/socket.client';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { match } from 'react-router-dom';
@@ -31,8 +30,6 @@ export class RoomPage extends React.Component<
   private displayedCardsRef = React.createRef<HTMLDivElement>();
   private readonly cardWidth = 120;
   private readonly cardMargin = 2;
-  @mobx.observable.ref
-  private cardOffset = 0;
 
   constructor(props: any) {
     super(props);
@@ -73,6 +70,9 @@ export class RoomPage extends React.Component<
   }
 
   componentWillUnmount() {
+    this.socket.notify(GameEventIdentifiers.PlayerLeaveEvent, {
+      playerId: this.store.clientPlayerId,
+    });
     this.socket.disconnect();
   }
 
@@ -113,7 +113,7 @@ export class RoomPage extends React.Component<
           <ClientCard
             card={card}
             width={this.cardWidth}
-            offset={this.calculateDisplayedCardOffset(this.store.displayedCards.length, index)}
+            offsetLeft={this.calculateDisplayedCardOffset(this.store.displayedCards.length, index)}
             translator={this.props.translator}
             className={styles.displayedCard}
           />

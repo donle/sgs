@@ -151,6 +151,7 @@ export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.AskForPlaceCardsInDileEvent]: {
     top: CardId[];
     bottom: CardId[];
+    fromId: PlayerId;
   };
   [GameEventIdentifiers.AskForPlayCardsOrSkillsEvent]: PlayCardOrSkillEvent;
   [GameEventIdentifiers.PlayerEnterRefusedEvent]: never;

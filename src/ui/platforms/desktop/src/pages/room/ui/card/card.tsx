@@ -16,7 +16,13 @@ export type ClientCardProps = {
   onSelected?(selected: boolean): void;
   tag?: string;
   width?: number;
-  offset?: number;
+  offsetLeft?: number;
+  offsetTop?: number;
+  style?: React.CSSProperties;
+  onMouseUp?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
+  onMouseDown?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
+  onMouseMove?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
+  onMouseLeave?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
 };
 
 @mobxReact.observer
@@ -47,24 +53,31 @@ export class ClientCard extends React.Component<ClientCardProps> {
   }
 
   getCardRatioSize(): React.CSSProperties {
-    const { width = 120, offset } = this.props;
+    const { width = 120, offsetLeft = 0, offsetTop = 0 } = this.props;
     const height = (width * 4) / 3;
     return {
       width,
       height,
-      transform: `translateX(${offset}px)`,
+      transform: `translate(${offsetLeft}px, ${offsetTop}px)`,
     };
   }
 
   render() {
-    const { className, card, translator, tag } = this.props;
+    const { className, card, translator, tag, style = {} } = this.props;
     return (
       <div
         className={classNames(styles.clientCard, className, {
           [styles.selected]: this.getSelected() && !this.props.disabled,
         })}
-        style={this.getCardRatioSize()}
+        style={{
+          ...this.getCardRatioSize(),
+          ...style,
+        }}
         onClick={this.onClick}
+        onMouseDown={this.props.onMouseDown}
+        onMouseUp={this.props.onMouseUp}
+        onMouseMove={this.props.onMouseMove}
+        onMouseLeave={this.props.onMouseLeave}
       >
         {card ? (
           <div className={styles.innerCard}>

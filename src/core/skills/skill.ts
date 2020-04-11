@@ -383,11 +383,10 @@ export abstract class FilterSkill extends Skill {
     return true;
   }
 
-  public abstract canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId, target?: PlayerId): boolean;
-  public abstract canBeUsedCard(
-    cardId: CardId | CardMatcher,
-    room: Room,
-    owner: PlayerId,
-    attacker?: PlayerId,
-  ): boolean;
+  public canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId, target?: PlayerId): boolean {
+    return true;
+  }
+  public canBeUsedCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId, attacker?: PlayerId): boolean {
+    return true;
+  }
 }

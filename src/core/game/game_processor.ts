@@ -27,11 +27,12 @@ import {
   LoseHpStage,
   ObtainCardStage,
   PhaseChangeStage,
+  PhaseStageChangeStage,
   PinDianStage,
   PlayerDiedStage,
   PlayerDyingStage,
   PlayerPhase,
-  PlayerStageListEnum,
+  PlayerPhaseStages,
   RecoverEffectStage,
   SkillEffectStage,
   SkillUseStage,
@@ -50,10 +51,10 @@ import { GameCommonRules } from './game_rules';
 export class GameProcessor {
   private playerPositionIndex = 0;
   private room: ServerRoom;
-  private currentPlayerStage: PlayerStageListEnum | undefined;
+  private currentPlayerStage: PlayerPhaseStages | undefined;
   private currentPlayerPhase: PlayerPhase | undefined;
   private currentPhasePlayer: Player;
-  private playerStages: PlayerStageListEnum[] = [];
+  private playerStages: PlayerPhaseStages[] = [];
 
   constructor(private stageProcessor: StageProcessor, private logger: Logger) {}
 
@@ -270,7 +271,7 @@ export class GameProcessor {
     this.playerStages = this.playerStages.filter(stage => !this.stageProcessor.isInsidePlayerPhase(phase, stage));
   }
 
-  private async play(player: Player, specifiedStages?: PlayerStageListEnum[]) {
+  private async play(player: Player, specifiedStages?: PlayerPhaseStages[]) {
     this.currentPhasePlayer = player;
 
     this.playerStages = specifiedStages ? specifiedStages : this.stageProcessor.createPlayerStage();
@@ -308,6 +309,11 @@ export class GameProcessor {
 
         await this.onPhase(this.currentPlayerPhase!);
       }
+
+      await this.onHandlePhaseStageChangeEvent(GameEventIdentifiers.PhaseStageChangeEvent, {
+        toStage: this.currentPlayerStage,
+        playerId: this.CurrentPlayer.Id,
+      });
     }
   }
 
@@ -320,6 +326,13 @@ export class GameProcessor {
       case GameEventIdentifiers.PhaseChangeEvent:
         await this.onHandlePhaseChangeEvent(
           identifier as GameEventIdentifiers.PhaseChangeEvent,
+          event as any,
+          onActualExecuted,
+        );
+        break;
+      case GameEventIdentifiers.PhaseStageChangeEvent:
+        await this.onHandlePhaseStageChangeEvent(
+          identifier as GameEventIdentifiers.PhaseStageChangeEvent,
           event as any,
           onActualExecuted,
         );
@@ -1060,6 +1073,18 @@ export class GameProcessor {
     });
   }
 
+  private async onHandlePhaseStageChangeEvent(
+    identifier: GameEventIdentifiers.PhaseStageChangeEvent,
+    event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
+  ) {
+    return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      if (stage === PhaseStageChangeStage.StageChanged) {
+        this.room.broadcast(GameEventIdentifiers.PhaseStageChangeEvent, event);
+      }
+    });
+  }
+
   private async onHandleGameStartEvent(
     identifier: GameEventIdentifiers.GameStartEvent,
     event: ServerEventFinder<GameEventIdentifiers.GameStartEvent>,
@@ -1157,11 +1182,6 @@ export class GameProcessor {
   public get CurrentPlayer() {
     this.tryToThrowNotStartedError();
     return this.room.Players[this.playerPositionIndex];
-  }
-
-  public get CurrentGameStage() {
-    this.tryToThrowNotStartedError();
-    return this.stageProcessor.CurrentGameEventStage;
   }
 
   public get CurrentPhasePlayer() {

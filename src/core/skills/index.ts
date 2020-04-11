@@ -34,3 +34,5 @@ export { QiCai } from './characters/standard/qicai';
 export { Rende, RenDeShadow } from './characters/standard/rende';
 export { ZhiHeng } from './characters/standard/zhiheng';
 export { HongYan } from './characters/wind/hongyan';
+export { GuanXing } from './characters/standard/guanxing';
+export { KongCheng } from './characters/standard/kongcheng';

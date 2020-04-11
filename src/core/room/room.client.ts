@@ -1,6 +1,6 @@
 import { ClientEventFinder, GameEventIdentifiers, WorkPlace } from 'core/event/event';
 import { GameInfo, GameRunningInfo } from 'core/game/game_props';
-import { PlayerPhase } from 'core/game/stage_processor';
+import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { ClientSocket } from 'core/network/socket.client';
 import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
@@ -17,6 +17,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   private round: number = 0;
   private currentPlayer: ClientPlayer;
   private currentPhasePlayer: ClientPlayer;
+  private currentPlayerStage: PlayerPhaseStages;
   private currentPlayerPhase: PlayerPhase;
   private numberOfDrawStack: number = 0;
   private numberOfDropStack: number = 0;
@@ -46,6 +47,10 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   //Server only
   public getCards(): any {
     this.throwUntouchableError(this.getCards.name);
+  }
+  //Server only
+  public putCards(): any {
+    this.throwUntouchableError(this.putCards.name);
   }
   //Server only
   public async drawCards(): Promise<any> {
@@ -127,7 +132,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.socket.notify(type, content);
   }
 
-  public get CurrentPlayerStage(): PlayerPhase {
+  public get CurrentPlayerPhase(): PlayerPhase {
     return Precondition.exists(this.currentPlayerPhase, 'Uninitilizes client room with current player stage');
   }
   public get CurrentPlayer(): ClientPlayer {
@@ -173,5 +178,13 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   }
   public get DropStackAmount() {
     return this.numberOfDropStack;
+  }
+
+  public set CurrentPlayerStage(stage: PlayerPhaseStages) {
+    this.currentPlayerStage = stage;
+  }
+
+  public get CurrentPlayerStage() {
+    return this.currentPlayerStage;
   }
 }

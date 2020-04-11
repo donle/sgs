@@ -2,7 +2,7 @@ import { CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { CharacterId } from 'core/characters/character';
 import { DamageType, GameCommonRuleObject, GameInfo, GameRunningInfo } from 'core/game/game_props';
-import { PlayerPhase } from 'core/game/stage_processor';
+import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
@@ -235,12 +235,17 @@ export interface ServerEvent extends EventUtilities {
     movableCards: CardId[];
     top: number;
     bottom: number;
+    fromId: PlayerId;
   };
   [GameEventIdentifiers.PhaseChangeEvent]: {
     from: PlayerPhase | undefined;
     to: PlayerPhase;
     fromPlayer: PlayerId | undefined;
     toPlayer: PlayerId;
+  };
+  [GameEventIdentifiers.PhaseStageChangeEvent]: {
+    toStage: PlayerPhaseStages;
+    playerId: PlayerId;
   };
   [GameEventIdentifiers.AskForPlayCardsOrSkillsEvent]: {
     fromId: PlayerId;

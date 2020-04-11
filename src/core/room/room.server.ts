@@ -57,6 +57,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.init();
   }
 
+  private onClosedCallback: () => void;
+
   protected init() {
     this.loadedCharacters = CharacterLoader.getInstance().getPackages(...this.gameInfo.characterExtensions);
     this.drawStack = CardLoader.getInstance()
@@ -242,12 +244,33 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     for (const cardId of cardIds) {
       if (Card.isVirtualCardId(cardId)) {
         this.bury(...Sanguosha.getCardById<VirtualCard>(cardId).ActualCardIds);
+      } else {
+        this.dropStack.push(cardId);
       }
-      this.dropStack.push(cardId);
     }
   }
   public isBuried(cardId: CardId): boolean {
     return this.dropStack.includes(cardId);
+  }
+
+  public putCards(place: 'top' | 'bottom', ...cardIds: CardId[]) {
+    if (place === 'top') {
+      for (let i = cardIds.length - 1; i >= 0; i--) {
+        const cardId = cardIds[i];
+        if (Card.isVirtualCardId(cardId)) {
+          this.putCards(place, ...Sanguosha.getCardById<VirtualCard>(cardId).ActualCardIds);
+        }
+        this.drawStack.unshift(cardId);
+      }
+    } else {
+      for (const cardId of cardIds) {
+        if (Card.isVirtualCardId(cardId)) {
+          this.putCards(place, ...Sanguosha.getCardById<VirtualCard>(cardId).ActualCardIds);
+        } else {
+          this.drawStack.push(cardId);
+        }
+      }
+    }
   }
 
   public async equip(card: EquipCard, player: Player) {
@@ -499,6 +522,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.toId)),
         TranslationPack.patchCardInTranslation(...Card.getActualCards(event.cardIds)),
       ).extract();
+    event.cardIds = Card.getActualCards(event.cardIds);
+
+    if (event.cardIds.length === 0) {
+      return;
+    }
 
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.ObtainCardEvent, event);
   }
@@ -743,8 +771,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return this.gameProcessor.CurrentPhasePlayer;
   }
 
-  public get CurrentPlayerStage() {
+  public get CurrentPlayerPhase() {
     return this.gameProcessor.CurrentPlayerPhase;
+  }
+
+  public get CurrentPlayerStage() {
+    return this.gameProcessor.CurrentPlayerStage;
   }
 
   public get CurrentPlayer(): Player {
@@ -760,5 +792,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public get Logger(): Readonly<Logger> {
     return this.logger;
+  }
+
+  public close() {
+    this.onClosedCallback && this.onClosedCallback();
+  }
+
+  public onClosed(fn: () => void) {
+    this.onClosedCallback = fn;
   }
 }

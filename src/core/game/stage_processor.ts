@@ -2,66 +2,31 @@ import { GameEventIdentifiers } from 'core/event/event';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 
-export const enum PlayerStageListEnum {
-  BeginPrepareStageStart,
+export const enum PlayerPhaseStages {
   PrepareStageStart,
-  EndPrepareStageStart,
-  BeginPrepareStage,
   PrepareStage,
-  EndPrepareStage,
-  BeginPrepareStageEnd,
   PrepareStageEnd,
   EndPrepareStageEnd,
 
-  BeginJudgeStageStart,
   JudgeStageStart,
-  EndJudgeStageStart,
-  BeginJudgeStage,
   JudgeStage,
-  EndJudgeStage,
-  BeginJudgeStageEnd,
   JudgeStageEnd,
-  EndJudgeStageEnd,
 
-  BeginDrawCardStageStart,
   DrawCardStageStart,
-  EndDrawCardStageStart,
-  BeginDrawCardStage,
   DrawCardStage,
-  EndDrawCardStage,
-  BeginDrawCardStageEnd,
   DrawCardStageEnd,
-  EndDrawCardStageEnd,
 
-  BeginPlayCardStageStart,
   PlayCardStageStart,
-  EndPlayCardStageStart,
-  BeginPlayCardStage,
   PlayCardStage,
-  EndPlayCardStage,
-  BeginPlayCardStageEnd,
   PlayCardStageEnd,
-  EndPlayCardStageEnd,
 
-  BeginDropCardStageStart,
   DropCardStageStart,
-  EndDropCardStageStart,
-  BeginDropCardStage,
   DropCardStage,
-  EndDropCardStage,
-  BeginDropCardStageEnd,
   DropCardStageEnd,
-  EndDropCardStageEnd,
 
-  BeginFinishStageStart,
   FinishStageStart,
-  EndFinishStageStart,
-  BeginFinishStage,
   FinishStage,
-  EndFinishStage,
-  BeginFinishStageEnd,
   FinishStageEnd,
-  EndFinishStageEnd,
 }
 
 export const enum StagePriority {
@@ -80,73 +45,37 @@ export const enum PlayerPhase {
 }
 
 const playerStagesList: {
-  [K in PlayerPhase]: PlayerStageListEnum[];
+  [K in PlayerPhase]: PlayerPhaseStages[];
 } = {
   [PlayerPhase.PrepareStage]: [
-    PlayerStageListEnum.BeginPrepareStageStart,
-    PlayerStageListEnum.PrepareStageStart,
-    PlayerStageListEnum.EndPrepareStageStart,
-    PlayerStageListEnum.BeginPrepareStage,
-    PlayerStageListEnum.PrepareStage,
-    PlayerStageListEnum.EndPrepareStage,
-    PlayerStageListEnum.BeginPrepareStageEnd,
-    PlayerStageListEnum.PrepareStageEnd,
-    PlayerStageListEnum.EndPrepareStageEnd,
+    PlayerPhaseStages.PrepareStageStart,
+    PlayerPhaseStages.PrepareStage,
+    PlayerPhaseStages.PrepareStageEnd,
   ],
   [PlayerPhase.JudgeStage]: [
-    PlayerStageListEnum.BeginJudgeStageStart,
-    PlayerStageListEnum.JudgeStageStart,
-    PlayerStageListEnum.EndJudgeStageStart,
-    PlayerStageListEnum.BeginJudgeStage,
-    PlayerStageListEnum.JudgeStage,
-    PlayerStageListEnum.EndJudgeStage,
-    PlayerStageListEnum.BeginJudgeStageEnd,
-    PlayerStageListEnum.JudgeStageEnd,
-    PlayerStageListEnum.EndJudgeStageEnd,
+    PlayerPhaseStages.JudgeStageStart,
+    PlayerPhaseStages.JudgeStage,
+    PlayerPhaseStages.JudgeStageEnd,
   ],
   [PlayerPhase.DrawCardStage]: [
-    PlayerStageListEnum.BeginDrawCardStageStart,
-    PlayerStageListEnum.DrawCardStageStart,
-    PlayerStageListEnum.EndDrawCardStageStart,
-    PlayerStageListEnum.BeginDrawCardStage,
-    PlayerStageListEnum.DrawCardStage,
-    PlayerStageListEnum.EndDrawCardStage,
-    PlayerStageListEnum.BeginDrawCardStageEnd,
-    PlayerStageListEnum.DrawCardStageEnd,
-    PlayerStageListEnum.EndDrawCardStageEnd,
+    PlayerPhaseStages.DrawCardStageStart,
+    PlayerPhaseStages.DrawCardStage,
+    PlayerPhaseStages.DrawCardStageEnd,
   ],
   [PlayerPhase.PlayCardStage]: [
-    PlayerStageListEnum.BeginPlayCardStageStart,
-    PlayerStageListEnum.PlayCardStageStart,
-    PlayerStageListEnum.EndPlayCardStageStart,
-    PlayerStageListEnum.BeginPlayCardStage,
-    PlayerStageListEnum.PlayCardStage,
-    PlayerStageListEnum.EndPlayCardStage,
-    PlayerStageListEnum.BeginPlayCardStageEnd,
-    PlayerStageListEnum.PlayCardStageEnd,
-    PlayerStageListEnum.EndPlayCardStageEnd,
+    PlayerPhaseStages.PlayCardStageStart,
+    PlayerPhaseStages.PlayCardStage,
+    PlayerPhaseStages.PlayCardStageEnd,
   ],
   [PlayerPhase.DropCardStage]: [
-    PlayerStageListEnum.BeginDropCardStageStart,
-    PlayerStageListEnum.DropCardStageStart,
-    PlayerStageListEnum.EndDropCardStageStart,
-    PlayerStageListEnum.BeginDropCardStage,
-    PlayerStageListEnum.DropCardStage,
-    PlayerStageListEnum.EndDropCardStage,
-    PlayerStageListEnum.BeginDropCardStageEnd,
-    PlayerStageListEnum.DropCardStageEnd,
-    PlayerStageListEnum.EndDropCardStageEnd,
+    PlayerPhaseStages.DropCardStageStart,
+    PlayerPhaseStages.DropCardStage,
+    PlayerPhaseStages.DropCardStageEnd,
   ],
   [PlayerPhase.FinishStage]: [
-    PlayerStageListEnum.BeginFinishStageStart,
-    PlayerStageListEnum.FinishStageStart,
-    PlayerStageListEnum.EndFinishStageStart,
-    PlayerStageListEnum.BeginFinishStage,
-    PlayerStageListEnum.FinishStage,
-    PlayerStageListEnum.EndFinishStage,
-    PlayerStageListEnum.BeginFinishStageEnd,
-    PlayerStageListEnum.FinishStageEnd,
-    PlayerStageListEnum.EndFinishStageEnd,
+    PlayerPhaseStages.FinishStageStart,
+    PlayerPhaseStages.FinishStage,
+    PlayerPhaseStages.FinishStageEnd,
   ],
 };
 
@@ -154,6 +83,12 @@ export const enum PhaseChangeStage {
   BeforePhaseChange = 'BeforePhaseChange',
   PhaseChanged = 'PhaseChanged',
   AfterPhaseChanged = 'AfterPhaseChanged',
+}
+
+export const enum PhaseStageChangeStage {
+  BeforeStageChange = 'BeforeStageChange',
+  StageChanged = 'StageChanged',
+  AfterStageChanged = 'AfterStageChanged',
 }
 
 export const enum GameStartStage {
@@ -276,6 +211,7 @@ export const enum LoseHpStage {
 
 export type GameEventStage =
   | PhaseChangeStage
+  | PhaseStageChangeStage
   | GameStartStage
   | CardEffectStage
   | CardLostStage
@@ -297,7 +233,7 @@ export type GameEventStage =
   | CardMoveStage
   | TurnOverStage;
 
-export type AllStage = PlayerStageListEnum | GameEventStage;
+export type AllStage = PlayerPhaseStages | GameEventStage;
 
 const gameEventStageList: {
   [K in GameEventIdentifiers]?: GameEventStage[];
@@ -381,6 +317,11 @@ const gameEventStageList: {
     PhaseChangeStage.BeforePhaseChange,
     PhaseChangeStage.PhaseChanged,
     PhaseChangeStage.AfterPhaseChanged,
+  ],
+  [GameEventIdentifiers.PhaseStageChangeEvent]: [
+    PhaseStageChangeStage.BeforeStageChange,
+    PhaseStageChangeStage.StageChanged,
+    PhaseStageChangeStage.AfterStageChanged,
   ],
   [GameEventIdentifiers.CardLostEvent]: [
     CardLostStage.BeforeCardLoseEffect,
@@ -513,7 +454,7 @@ export class StageProcessor {
         PlayerPhase.FinishStage,
       ];
 
-      let createdStages: PlayerStageListEnum[] = [];
+      let createdStages: PlayerPhaseStages[] = [];
       for (const stage of stages) {
         createdStages = [...createdStages, ...playerStagesList[stage].slice()];
       }
@@ -522,14 +463,14 @@ export class StageProcessor {
     }
   }
 
-  public isInsidePlayerPhase(phase: PlayerPhase, stage: PlayerStageListEnum) {
+  public isInsidePlayerPhase(phase: PlayerPhase, stage: PlayerPhaseStages) {
     return playerStagesList[phase].includes(stage);
   }
 
-  public getInsidePlayerPhase(specificStage: PlayerStageListEnum): PlayerPhase {
+  public getInsidePlayerPhase(specificStage: PlayerPhaseStages): PlayerPhase {
     for (const [stage, stageList] of (Object.entries(playerStagesList) as unknown) as [
       string,
-      PlayerStageListEnum[],
+      PlayerPhaseStages[],
     ][]) {
       if (stageList.includes(specificStage)) {
         return parseInt(stage, 10) as PlayerPhase;

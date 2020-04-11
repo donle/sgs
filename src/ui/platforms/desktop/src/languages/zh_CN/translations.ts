@@ -534,6 +534,10 @@ export const eventDictionary: Word[] = [
   { source: '{0} used skill {1}, use card {2} to {3}', target: '{0} 使用了技能 {1}，使用了一张 {2}，目标是 {3}' },
   { source: 'Please choose your slash target', target: '请选择【杀】的目标' },
   {
+    source: 'guanxing finished, {0} cards placed on the top and {1} cards placed at the bottom',
+    target: '观星结束，结果为 {0} 上 {1} 下',
+  },
+  {
     source: '{0} used skill {1}, transformed {2} as {3} card to response',
     target: '{0} 使用了技能 {1} 将 {2} 当做 {3} 打出',
   },

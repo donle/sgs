@@ -17,7 +17,7 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { Sanguosha } from 'core/game/engine';
 import { GameInfo } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
-import { AllStage, PlayerPhase } from 'core/game/stage_processor';
+import { AllStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { FilterSkill } from 'core/skills/skill';
@@ -39,15 +39,14 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   private onProcessingCards: { [K: string]: CardId[] } = {};
 
   protected abstract init(...args: any[]): void;
-
-  private onClosedCallback: () => void;
-
   //Server only
-  public abstract notify<I extends GameEventIdentifiers>(type: I, content: EventPicker<I, T>, pleyer: PlayerId): void;
+  public abstract notify<I extends GameEventIdentifiers>(type: I, content: EventPicker<I, T>, player: PlayerId): void;
   public abstract broadcast(type: GameEventIdentifiers, content: EventPicker<typeof type, WorkPlace>): void;
 
   //Server only
   public abstract getCards(numberOfCards: number, from: 'top' | 'bottom'): CardId[];
+  //Server only
+  public abstract putCards(from: 'top' | 'bottom', ...cardIds: CardId[]): void;
   //Server only
   public abstract async drawCards(numberOfCards: number, player?: PlayerId, from?: 'top' | 'bottom'): Promise<CardId[]>;
   //Server only
@@ -101,7 +100,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract obtainSkill(playerId: PlayerId, skillName: string): void;
 
   public abstract async gameStart(...args: any[]): Promise<void>;
-  public abstract get CurrentPlayerStage(): PlayerPhase;
+  public abstract get CurrentPlayerStage(): PlayerPhaseStages;
+  public abstract get CurrentPlayerPhase(): PlayerPhase;
   public abstract get CurrentPhasePlayer(): Player;
   public abstract get CurrentPlayer(): Player;
   //Server only
@@ -267,14 +267,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     }
 
     return true;
-  }
-
-  public close() {
-    this.onClosedCallback && this.onClosedCallback();
-  }
-
-  public onClosed(fn: () => void) {
-    this.onClosedCallback = fn;
   }
 
   public clearFlags(player: PlayerId) {

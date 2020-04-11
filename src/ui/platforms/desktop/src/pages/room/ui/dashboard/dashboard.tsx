@@ -141,7 +141,7 @@ export class Dashboard extends React.Component<DashboardProps> {
         <ClientCard
           key={cardId}
           width={this.handCardWidth}
-          offset={leftOffset}
+          offsetLeft={leftOffset}
           translator={this.props.translator}
           card={card}
           onSelected={this.onClick(card)}

@@ -25,7 +25,7 @@ export class JianXiong extends TriggerSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
     const damagedEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-    if (damagedEvent.cardIds !== undefined && damagedEvent.cardIds.length > 0) {
+    if (damagedEvent.cardIds !== undefined) {
       const { cardIds, toId } = damagedEvent;
       await room.obtainCards({
         reason: CardObtainedReason.ActivePrey,

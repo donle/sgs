@@ -21,6 +21,7 @@ import { CardSelectorDialog } from './ui/dialog/card_selector_dialog/card_select
 import { CharacterSelectorDialog } from './ui/dialog/character_selector_dialog/character_selector_dialog';
 import { GameOverDialog } from './ui/dialog/game_over_dialog/game_over_dialog';
 import { WuGuFengDengDialog } from './ui/dialog/wugufengdeng_dialog/wugufengdeng_dialog';
+import { GuanXingDialog } from './ui/dialog/guanxing_dialog/guanxing_dialog';
 
 export class GameClientProcessor {
   constructor(
@@ -64,6 +65,9 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.PhaseChangeEvent:
         this.onHandlePhaseChangeEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.PhaseStageChangeEvent:
+        this.onHandlePhaseStageChangeEvent(e as any, content);
         break;
       case GameEventIdentifiers.CardUseEvent:
         await this.onHandleCardUseEvent(e as any, content);
@@ -127,6 +131,9 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.CustomGameDialog:
         await this.onHandleCustomDialogEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.AskForPlaceCardsInDileEvent:
+        await this.onHandlePlaceCardsInDileEvent(e as any, content);
         break;
       case GameEventIdentifiers.AskForContinuouslyChoosingCardEvent:
         await this.onHandleContinuouslyChoosingCard(e as any, content);
@@ -369,6 +376,13 @@ export class GameClientProcessor {
     action.onSelect(this.translator);
   }
 
+  private onHandlePhaseStageChangeEvent<T extends GameEventIdentifiers.PhaseStageChangeEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.CurrentPlayerStage = content.toStage;
+  }
+
   private onHandlePhaseChangeEvent<T extends GameEventIdentifiers.PhaseChangeEvent>(
     type: T,
     content: ServerEventFinder<T>,
@@ -577,6 +591,37 @@ export class GameClientProcessor {
 
     this.store.room.broadcast(GameEventIdentifiers.AskForChoosingPlayerEvent, choosePlayerEvent);
     this.presenter.closeIncomingConversation();
+  }
+
+  private async onHandlePlaceCardsInDileEvent<T extends GameEventIdentifiers.AskForPlaceCardsInDileEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const { movableCards, top, bottom, fromId } = content;
+    const cards = movableCards.map(cardId => Sanguosha.getCardById(cardId));
+
+    const onConfirm = (top: Card[], bottom: Card[]) => () => {
+      const responseEvent: ClientEventFinder<T> = {
+        top: top.map(card => card.Id),
+        bottom: bottom.map(card => card.Id),
+        fromId,
+      };
+
+      this.presenter.closeDialog();
+      this.store.room.broadcast(GameEventIdentifiers.AskForPlaceCardsInDileEvent, responseEvent);
+    };
+
+    this.presenter.createDialog(
+      <GuanXingDialog
+        top={top}
+        bottom={bottom}
+        translator={this.translator}
+        cards={cards}
+        presenter={this.presenter}
+        onConfirm={onConfirm}
+        title={'guanxing'}
+      />,
+    );
   }
 
   private async onHandleContinuouslyChoosingCard<T extends GameEventIdentifiers.AskForContinuouslyChoosingCardEvent>(

@@ -52,6 +52,7 @@ export const enum GameEventIdentifiers {
   UserMessageEvent = 100,
   CustomGameDialog,
   PhaseChangeEvent,
+  PhaseStageChangeEvent,
   SyncGameCommonRulesEvent,
 
   DrunkEvent,
@@ -129,6 +130,7 @@ export const isCardResponsiveIdentifier = (
 export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.UserMessageEvent,
   GameEventIdentifiers.PhaseChangeEvent,
+  GameEventIdentifiers.PhaseStageChangeEvent,
   GameEventIdentifiers.SyncGameCommonRulesEvent,
   GameEventIdentifiers.CustomGameDialog,
 
