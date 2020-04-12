@@ -261,7 +261,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       }
     }
 
-    return this.AlivePlayers.length / 2 <= distance ? distance : this.AlivePlayers.length - distance;
+    return this.AlivePlayers.length / 2 >= distance ? distance : this.AlivePlayers.length - distance;
   }
 
   public canAttack(from: Player, to: Player, slash?: CardId) {

@@ -26,8 +26,8 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
   constructor(props: SeatsLayoutProps) {
     super(props);
 
-    this.sideNumberOfPlayers = Math.floor(this.numberOfPlayers / 3);
-    this.topNumberOfPlayers = this.sideNumberOfPlayers + Math.floor(this.numberOfPlayers % 3);
+    this.sideNumberOfPlayers = Math.floor(Math.floor(this.numberOfPlayers / 3) / 2 + 0.49);
+    this.topNumberOfPlayers = this.numberOfPlayers - this.sideNumberOfPlayers * 2;
   }
 
   private readonly onClick = (player: Player) => (selected: boolean) => {
@@ -40,17 +40,17 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
   }
 
   private getLastPosition(position: number = this.ClientPlayerPosition) {
-    return --position < 0 ? this.numberOfPlayers - 1 : position;
+    return --position < 0 ? this.numberOfPlayers : position;
   }
 
   private getNextPosition(position: number = this.ClientPlayerPosition) {
-    return ++position >= this.numberOfPlayers ? 0 : position;
+    return ++position > this.numberOfPlayers ? 0 : position;
   }
 
   private getTopPlayerOffsetPosition() {
-    const offset = this.ClientPlayerPosition - this.sideNumberOfPlayers - 1;
-    if (offset < 0) {
-      return this.numberOfPlayers + 1 + offset;
+    const offset = this.ClientPlayerPosition + this.sideNumberOfPlayers + 1;
+    if (offset > this.numberOfPlayers) {
+      return offset - this.numberOfPlayers - 1;
     } else {
       return offset;
     }
@@ -76,7 +76,9 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           translator={this.props.translator}
         />,
       );
-      playerIndex = this.getLastPosition(playerIndex);
+      do {
+        playerIndex = this.getLastPosition(playerIndex);
+      } while (playerIndex === this.ClientPlayerPosition);
       numberOfPlayers--;
     }
 
@@ -102,7 +104,9 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           translator={this.props.translator}
         />,
       );
-      playerIndex = this.getNextPosition(playerIndex);
+      do {
+        playerIndex = this.getNextPosition(playerIndex);
+      } while (playerIndex === this.ClientPlayerPosition);
       numberOfPlayers--;
     }
 
@@ -117,7 +121,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
     while (numberOfPlayers > 0) {
       const player = this.props.store.room.Players[playerIndex];
 
-      players.push(
+      players.unshift(
         <PlayerCard
           key={playerIndex}
           onClick={this.onClick(player)}
@@ -126,7 +130,10 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           translator={this.props.translator}
         />,
       );
-      playerIndex = this.getNextPosition(playerIndex);
+      
+      do {
+        playerIndex = this.getNextPosition(playerIndex);
+      } while (playerIndex === this.ClientPlayerPosition);
       numberOfPlayers--;
     }
 

@@ -66,7 +66,7 @@ export function getRoles(totalPlayers: number): PlayerRole[] {
     case 2:
       return [PlayerRole.Lord, PlayerRole.Rebel];
     case 3:
-      return [PlayerRole.Lord, PlayerRole.Rebel, PlayerRole.Rebel];
+      return [PlayerRole.Lord, PlayerRole.Rebel, PlayerRole.Renegade];
     case 4:
       return [PlayerRole.Lord, PlayerRole.Rebel, PlayerRole.Loyalist, PlayerRole.Renegade];
     case 5:
