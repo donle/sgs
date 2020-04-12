@@ -40,3 +40,5 @@ export { YingZi } from './characters/standard/yingzi';
 export { FanJian } from './characters/standard/fanjian';
 export { GuiCai } from './characters/standard/guicai';
 export { FanKui } from './characters/standard/fankui';
+export { TianDu} from './characters/standard/tiandu';
+export { YiJi, YiJiShadow } from './characters/standard/yiji';

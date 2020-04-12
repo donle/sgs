@@ -114,7 +114,7 @@ export abstract class BaseAction {
     if (skill === undefined) {
       return false;
     }
-    if (skill instanceof ActiveSkill) {
+    if (skill instanceof ActiveSkill || skill instanceof TriggerSkill) {
       const isAvailableInRoom =
         this.selectedCardToPlay === undefined
           ? true
@@ -310,12 +310,12 @@ export abstract class BaseAction {
         return true;
       }
 
-      if (card.Skill instanceof ActiveSkill) {
+      if (card.Skill instanceof ActiveSkill || card.Skill instanceof TriggerSkill) {
         return (
           card.Skill.cardFilter(this.store.room, this.selectedCards) &&
           card.Skill.targetFilter(this.store.room, this.selectedTargets)
         );
-      } else if (card.Skill instanceof ResponsiveSkill || card.Skill instanceof TriggerSkill) {
+      } else if (card.Skill instanceof ResponsiveSkill) {
         return true;
       } else {
         return false;
@@ -323,12 +323,12 @@ export abstract class BaseAction {
     } else if (this.selectedSkillToPlay !== undefined) {
       const skill = this.selectedSkillToPlay;
 
-      if (skill instanceof ActiveSkill) {
+      if (skill instanceof ActiveSkill || skill instanceof TriggerSkill) {
         return (
           skill.cardFilter(this.store.room, this.selectedCards) &&
           skill.targetFilter(this.store.room, this.selectedTargets)
         );
-      } else if (skill instanceof ResponsiveSkill || skill instanceof TriggerSkill) {
+      } else if (skill instanceof ResponsiveSkill) {
         return true;
       } else {
         return false;

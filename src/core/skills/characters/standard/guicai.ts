@@ -1,7 +1,6 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardLostReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, JudgeEffectStage } from 'core/game/stage_processor';
-import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
@@ -17,7 +16,7 @@ export class GuiCai extends TriggerSkill {
     return stage === JudgeEffectStage.BeforeJudgeEffect;
   }
 
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
+  canUse() {
     return true;
   }
 

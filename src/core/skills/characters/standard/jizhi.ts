@@ -108,8 +108,8 @@ export class JizhiShadow extends TriggerSkill {
 
     phaseChangeEvent.fromPlayer &&
       room.syncGameCommonRules(phaseChangeEvent.fromPlayer, user => {
-        const extraHold = user.getMark(this.name);
-        user.removeMark(this.name);
+        const extraHold = user.getInvisibleMark(this.GeneralName);
+        user.removeInvisibleMark(this.GeneralName);
         GameCommonRules.addAdditionalHoldCardNumber(user, -extraHold);
       });
     return true;

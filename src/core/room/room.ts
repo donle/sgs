@@ -49,13 +49,30 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract putCards(from: 'top' | 'bottom', ...cardIds: CardId[]): void;
   //Server only
-  public abstract async drawCards(numberOfCards: number, player?: PlayerId, from?: 'top' | 'bottom'): Promise<CardId[]>;
+  public abstract async drawCards(
+    numberOfCards: number,
+    player?: PlayerId,
+    from?: 'top' | 'bottom',
+    askedBy?: PlayerId,
+    byReason?: string,
+  ): Promise<CardId[]>;
   //Server only
-  public abstract async dropCards(reason: CardLostReason, cardIds: CardId[], player?: PlayerId): Promise<void>;
+  public abstract async dropCards(
+    reason: CardLostReason,
+    cardIds: CardId[],
+    player?: PlayerId,
+    byReason?: string,
+  ): Promise<void>;
   //Server only
-  public abstract async loseCards(event: ServerEventFinder<GameEventIdentifiers.CardLostEvent>, doBroadcast?: boolean): Promise<void>;
+  public abstract async loseCards(
+    event: ServerEventFinder<GameEventIdentifiers.CardLostEvent>,
+    doBroadcast?: boolean,
+  ): Promise<void>;
   //Server only
-  public abstract async obtainCards(event: ServerEventFinder<GameEventIdentifiers.ObtainCardEvent>, doBroadcast?: boolean): Promise<void>;
+  public abstract async obtainCards(
+    event: ServerEventFinder<GameEventIdentifiers.ObtainCardEvent>,
+    doBroadcast?: boolean,
+  ): Promise<void>;
   //Server only
   public abstract async moveCards(
     cardIds: CardId[],
@@ -66,6 +83,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     toArea: PlayerCardsArea,
     toReason?: CardObtainedReason,
     proposer?: PlayerId,
+    moveReasion?: string,
   ): Promise<void>;
   //Server only
   public abstract async onReceivingAsyncReponseFrom<T extends GameEventIdentifiers>(

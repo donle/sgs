@@ -186,6 +186,10 @@ export abstract class Skill {
     return this.name;
   }
 
+  public get GeneralName() {
+    return this.name.replace(/^#+/, '');
+  }
+
   public isLordSkill() {
     return this.lordSkill;
   }
@@ -251,6 +255,33 @@ export abstract class TriggerSkill extends Skill {
   public abstract async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers>): Promise<boolean>;
 
   public isRefreshAt() {
+    return false;
+  }
+  
+  public targetFilter(room: Room, targets: PlayerId[]): boolean {
+    return targets.length === 0;
+  };
+  public cardFilter(room: Room, cards: CardId[]): boolean {
+    return cards.length === 0;
+  }
+  public isAvailableCard(
+    owner: PlayerId,
+    room: Room,
+    cardId: CardId,
+    selectedCards: CardId[],
+    selectedTargets: PlayerId[],
+    containerCard?: CardId,
+  ): boolean {
+    return false;
+  };
+  public isAvailableTarget(
+    owner: PlayerId,
+    room: Room,
+    target: PlayerId,
+    selectedCards: CardId[],
+    selectedTargets: PlayerId[],
+    containerCard?: CardId,
+  ): boolean {
     return false;
   }
 }

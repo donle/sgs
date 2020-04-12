@@ -56,6 +56,7 @@ export const characterDictionary: Word[] = [
   { source: 'guojia', target: '郭嘉' },
   { source: 'tiandu', target: '天妒' },
   { source: 'yiji', target: '遗计' },
+  { source: '#yiji', target: '遗计' },
 
   { source: 'zhenji', target: '甄姬' },
   { source: 'luoshen', target: '洛神' },
@@ -91,7 +92,7 @@ export const characterDictionary: Word[] = [
   { source: '#jizhi', target: '集智' },
   { source: 'qicai', target: '奇才' },
 
-  { source: 'yiji', target: '伊籍' },
+  { source: 'yiji_c', target: '伊籍' },
   { source: 'jijie', target: '机捷' },
   { source: 'jiyuan', target: '急援' },
 
@@ -478,10 +479,6 @@ export const eventDictionary: Word[] = [
     target: '请选择一名武将',
   },
   {
-    source: '{0} starts a judge of 【{1}】',
-    target: '{0} 开始了 {1} 的判定',
-  },
-  {
     source: '{0} got judged card {2} on {1}',
     target: '{0} 的 {1} 判定结果为 {2}',
   },
@@ -551,7 +548,7 @@ export const eventDictionary: Word[] = [
     source: '{0} responsed card {1} to replace judge card {2}',
     target: '{0} 打出了 {1} 替换了判定牌 {2}'
   },
-  { source: '{0} starts a judge of {1}, judge card is {2}', target: '{0} 开始了 {1}，判定牌为 {2}'},
+  { source: '{0} starts a judge of {1}, judge card is {2}', target: '{0} 开始了 {1} 的判定，判定牌为 {2}'},
   {
     source: 'guanxing finished, {0} cards placed on the top and {1} cards placed at the bottom',
     target: '观星结束，结果为 {0} 上 {1} 下',

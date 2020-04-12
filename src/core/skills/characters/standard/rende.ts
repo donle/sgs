@@ -180,8 +180,8 @@ export class RenDeShadow extends TriggerSkill {
 
     if (phaseChangeEvent.fromPlayer) {
       const player = room.getPlayerById(phaseChangeEvent.fromPlayer);
-      player.removeMark(this.name);
-      player.removeMark(this.name + '-used');
+      player.removeInvisibleMark(this.GeneralName);
+      player.removeInvisibleMark(this.GeneralName + '-used');
     }
     return true;
   }
