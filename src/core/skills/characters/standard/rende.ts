@@ -62,6 +62,7 @@ export class Rende extends ActiveSkill {
     if (from.getInvisibleMark(this.name) >= 2 && from.getInvisibleMark(this.name + '-used') === 0) {
       const options: string[] = [];
       //TODO: add wine afterwards
+      
       if (from.canUseCard(room, new CardMatcher({ name: ['peach'] }))) {
         options.push('peach');
       }
@@ -104,7 +105,7 @@ export class Rende extends ActiveSkill {
 
         const choosePlayerEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
           players: targets,
-          fromId: from.Id,
+          toId: from.Id,
           requiredAmount: 1,
           conversation: 'Please choose your slash target',
         };

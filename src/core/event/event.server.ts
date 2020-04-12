@@ -113,9 +113,7 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.PinDianEvent]: {
     attackerId: PlayerId;
-    displayedCardIdByAttacker: CardId;
-    targetId: PlayerId;
-    displayedCardIdByTarget: CardId;
+    result: PinDianResultType;
   };
 
   [GameEventIdentifiers.UserMessageEvent]: {
@@ -183,8 +181,8 @@ export interface ServerEvent extends EventUtilities {
     triggeredOnEvent?: ServerEventFinder<GameEventIdentifiers>;
   };
   [GameEventIdentifiers.AskForPinDianCardEvent]: {
-    from: PlayerId;
-    otherTargets?: PlayerId[];
+    fromId: PlayerId;
+    toIds: PlayerId[];
   };
   [GameEventIdentifiers.AskForChoosingCardEvent]: {
     cardIds: CardId[] | number;
@@ -197,12 +195,12 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.AskForSkillUseEvent]: {
     invokeSkillNames: string[];
-    to: PlayerId;
+    toId: PlayerId;
   };
   [GameEventIdentifiers.AskForCardDisplayEvent]: {
     cardMatcher: CardMatcherSocketPassenger;
     cardAmount: number;
-    fromId: PlayerId;
+    toId: PlayerId;
     conversation: string | PatchedTranslationObject;
   };
   [GameEventIdentifiers.AskForCardDropEvent]: {
@@ -229,7 +227,7 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.AskForChoosingPlayerEvent]: {
     players: PlayerId[];
-    fromId: PlayerId;
+    toId: PlayerId;
     requiredAmount: number;
     conversation: string | PatchedTranslationObject;
   };
@@ -239,7 +237,7 @@ export interface ServerEvent extends EventUtilities {
     topStackName: string;
     bottom: number;
     bottomStackName: string;
-    fromId: PlayerId;
+    toId: PlayerId;
   };
   [GameEventIdentifiers.PhaseChangeEvent]: {
     from: PlayerPhase | undefined;
@@ -252,7 +250,7 @@ export interface ServerEvent extends EventUtilities {
     playerId: PlayerId;
   };
   [GameEventIdentifiers.AskForPlayCardsOrSkillsEvent]: {
-    fromId: PlayerId;
+    toId: PlayerId;
   };
   [GameEventIdentifiers.SyncGameCommonRulesEvent]: {
     toId: PlayerId;
@@ -267,11 +265,11 @@ export interface ServerEvent extends EventUtilities {
     toId: PlayerId;
   };
   [GameEventIdentifiers.DrunkEvent]: {
-    fromId: PlayerId;
+    toId: PlayerId;
     drunk: boolean;
   };
   [GameEventIdentifiers.ChainLinkedEvent]: {
-    fromId: PlayerId;
+    toId: PlayerId;
     linked: boolean;
   };
   [GameEventIdentifiers.AskForContinuouslyChoosingCardEvent]: {
@@ -281,12 +279,15 @@ export interface ServerEvent extends EventUtilities {
     userId?: PlayerId;
   };
   [GameEventIdentifiers.PlayerTurnOverEvent]: {
-    fromId: PlayerId;
+    toId: PlayerId;
   };
   [GameEventIdentifiers.CustomGameDialog]: {};
 }
 
 export type PinDianResultType = {
   winner: PlayerId | undefined;
-  pindianCards: CardId[];
+  pindianCards: {
+    fromId: PlayerId;
+    cardId: CardId;
+  }[];
 };

@@ -29,6 +29,14 @@ export class GameCommonRules {
     },
   ];
 
+  private static isBannedBySideRules = (player: Player, matcher: CardMatcher) => {
+    if (matcher.match(new CardMatcher({ name: ['peach'] }))) {
+      return player.Hp >= player.MaxHp;
+    }
+
+    return false;
+  };
+
   private static userRules: {
     [K in PlayerId]: {
       cards: {
@@ -94,6 +102,8 @@ export class GameCommonRules {
       for (const skill of user.getSkills<RulesBreakerSkill>('breaker')) {
         availableUseTimes += skill.breakCardUsableTimes(card.Id);
       }
+    } else if (GameCommonRules.isBannedBySideRules(user, card)) {
+      return false;
     }
 
     return user.cardUsedTimes(card instanceof Card ? card.Id : card) < availableUseTimes;

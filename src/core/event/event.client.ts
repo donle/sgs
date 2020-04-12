@@ -90,7 +90,7 @@ export interface ClientEvent extends EventUtilities {
   };
   [GameEventIdentifiers.AskForPinDianCardEvent]: {
     pindianCard: CardId;
-    from: PlayerId;
+    fromId: PlayerId;
   };
 
   [GameEventIdentifiers.AskForPeachEvent]: {

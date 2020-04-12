@@ -14,6 +14,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
 
 import { CardMatcher } from 'core/cards/libs/card_matcher';
+import { PinDianResultType } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { GameInfo } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
@@ -100,6 +101,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract loseSkill(playerId: PlayerId, skillName: string, broadcast?: boolean): void;
   //Server only
   public abstract obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean): void;
+  //Server only
+  public abstract async pindian(fromId: PlayerId, toIds: PlayerId[]): Promise<PinDianResultType | undefined>;
 
   public abstract async gameStart(...args: any[]): Promise<void>;
   public abstract get CurrentPlayerStage(): PlayerPhaseStages;

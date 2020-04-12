@@ -85,6 +85,10 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.loseHp.name);
   }
   //Server only
+  public async pindian(): Promise<any> {
+    this.throwUntouchableError(this.pindian.name);
+  }
+  //Server only
   public async recover(): Promise<void> {
     this.throwUntouchableError(this.recover.name);
   }

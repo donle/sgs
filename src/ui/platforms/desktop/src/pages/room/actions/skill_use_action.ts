@@ -23,8 +23,8 @@ export class SkillUseAction extends BaseAction {
   }
 
   onSelect(translator: ClientTranslationModule) {
-    const { invokeSkillNames, to } = this.askForEvent;
-    if (to !== this.presenter.ClientPlayer!.Id) {
+    const { invokeSkillNames, toId } = this.askForEvent;
+    if (toId !== this.presenter.ClientPlayer!.Id) {
       return;
     }
 
@@ -42,7 +42,7 @@ export class SkillUseAction extends BaseAction {
 
       const event: ClientEventFinder<GameEventIdentifiers.AskForSkillUseEvent> = {
         invoke: undefined,
-        fromId: to,
+        fromId: toId,
       };
       const skill = Sanguosha.getSkillBySkillName<TriggerSkill>(skillName);
       this.selectSkill(skill);

@@ -454,11 +454,14 @@ export abstract class Player implements PlayerInfo {
   }
 
   public loseSkill(skillName: string) {
-    this.playerSkills.filter(skill => skill.Name !== skillName);
+    this.playerSkills = this.playerSkills.filter(skill => !skill.Name.endsWith(skillName));
   }
 
   public obtainSkill(skillName: string) {
     this.playerSkills.push(Sanguosha.getSkillBySkillName(skillName));
+    for (const shadowSkill of Sanguosha.getShadowSkillsBySkillName(skillName)) {
+      this.playerSkills.push(shadowSkill);
+    }
   }
 
   public turnOver() {

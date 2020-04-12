@@ -13,6 +13,7 @@ import {
   CardResponseStage,
   CardUseStage,
   DrawCardStage,
+  PinDianStage,
   PlayerPhase,
 } from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
@@ -24,6 +25,7 @@ import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardId, CardTargetEnum } from 'core/cards/libs/card_props';
 import { Character } from 'core/characters/character';
+import { PinDianResultType } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { GameInfo, getRoles } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
@@ -214,7 +216,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               GameEventIdentifiers.AskForSkillUseEvent,
               {
                 invokeSkillNames: [skill.Name],
-                to: player.Id,
+                toId: player.Id,
               },
               player.Id,
             );
@@ -431,11 +433,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       {
         toId: playerId,
         skillName,
-        translationsMessage: broadcast ? TranslationPack.translationJsonPatcher(
-          '{0} lost skill {1}',
-          player.Name,
-          skillName,
-        ).extract() : undefined,
+        translationsMessage: broadcast
+          ? TranslationPack.translationJsonPatcher('{0} lost skill {1}', player.Name, skillName).extract()
+          : undefined,
       },
       playerId,
     );
@@ -448,11 +448,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       {
         toId: playerId,
         skillName,
-        translationsMessage: broadcast ? TranslationPack.translationJsonPatcher(
-          '{0} obtained skill {1}',
-          player.Name,
-          skillName,
-        ).extract() : undefined,
+        translationsMessage: broadcast
+          ? TranslationPack.translationJsonPatcher('{0} obtained skill {1}', player.Name, skillName).extract()
+          : undefined,
       },
       playerId,
     );
@@ -569,7 +567,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async turnOver(playerId: PlayerId) {
     const turnOverEvent: ServerEventFinder<GameEventIdentifiers.PlayerTurnOverEvent> = {
-      fromId: playerId,
+      toId: playerId,
     };
 
     await this.gameProcessor.onHandleIncomingEvent(
@@ -750,6 +748,71 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
 
     return event;
+  }
+
+  public async pindian(fromId: PlayerId, toIds: PlayerId[]) {
+    let pindianResult: PinDianResultType | undefined;
+    await this.gameProcessor.onHandleIncomingEvent(
+      GameEventIdentifiers.AskForPinDianCardEvent,
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForPinDianCardEvent, { fromId, toIds }),
+      async stage => {
+        if (stage === PinDianStage.PinDianEffect) {
+          const targets = [fromId, ...toIds];
+          for (const target of targets) {
+            this.notify(
+              GameEventIdentifiers.AskForPinDianCardEvent,
+              {
+                fromId,
+                toIds: targets,
+              },
+              target,
+            );
+          }
+
+          const responses = await Promise.all(
+            targets.map(to => this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForPinDianCardEvent, to)),
+          );
+
+          let winner: PlayerId | undefined;
+          let largestCardNumber = 0;
+          const pindianCards: {
+            fromId: string;
+            cardId: CardId;
+          }[] = [];
+
+          for (const result of responses) {
+            const pindianCard = Sanguosha.getCardById(result.pindianCard);
+            if (pindianCard.CardNumber > largestCardNumber) {
+              largestCardNumber = pindianCard.CardNumber;
+              winner = result.fromId;
+            } else if (pindianCard.CardNumber === largestCardNumber) {
+              winner = undefined;
+            }
+
+            pindianCards.push({
+              fromId: result.fromId,
+              cardId: result.pindianCard,
+            });
+          }
+
+          pindianResult = {
+            winner,
+            pindianCards,
+          };
+        }
+
+        return true;
+      },
+    );
+
+    if (pindianResult !== undefined) {
+      const pindianResultEvent: ServerEventFinder<GameEventIdentifiers.PinDianEvent> = {
+        attackerId: fromId,
+        result: pindianResult,
+      };
+      this.broadcast(GameEventIdentifiers.PinDianEvent, pindianResultEvent);
+    }
+    return pindianResult;
   }
 
   public skip(player: PlayerId, phase?: PlayerPhase) {

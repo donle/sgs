@@ -69,6 +69,12 @@ export class GameClientProcessor {
       case GameEventIdentifiers.PhaseStageChangeEvent:
         this.onHandlePhaseStageChangeEvent(e as any, content);
         break;
+      case GameEventIdentifiers.LoseSkillEvent:
+        await this.onHandleLoseSkillEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.ObtainSkillEvent:
+        await this.onHandleObtainSkillEvent(e as any, content);
+        break;
       case GameEventIdentifiers.CardUseEvent:
         await this.onHandleCardUseEvent(e as any, content);
         break;
@@ -208,19 +214,19 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const { cardMatcher, cardAmount, fromId, conversation } = content;
+    const { cardMatcher, cardAmount, toId, conversation } = content;
 
     this.presenter.createIncomingConversation({
       conversation,
       translator: this.translator,
     });
 
-    const action = new SelectAction(fromId, this.store, this.presenter, content, new CardMatcher(cardMatcher));
+    const action = new SelectAction(toId, this.store, this.presenter, content, new CardMatcher(cardMatcher));
     const selectedCards = await action.onSelectCard([PlayerCardsArea.HandArea], cardAmount);
 
     this.presenter.closeIncomingConversation();
     const displayEvent: ClientEventFinder<T> = {
-      fromId,
+      fromId: toId,
       selectedCards,
     };
     this.store.room.broadcast(type, EventPacker.createIdentifierEvent(type, displayEvent));
@@ -416,7 +422,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const action = new SkillUseAction(content.to, this.store, this.presenter, content);
+    const action = new SkillUseAction(content.toId, this.store, this.presenter, content);
     action.onSelect(this.translator);
   }
 
@@ -425,6 +431,20 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     this.store.room.CurrentPlayerStage = content.toStage;
+  }
+
+  private onHandleLoseSkillEvent<T extends GameEventIdentifiers.LoseSkillEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.getPlayerById(content.toId).loseSkill(content.skillName);
+  }
+
+  private onHandleObtainSkillEvent<T extends GameEventIdentifiers.ObtainSkillEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.getPlayerById(content.toId).obtainSkill(content.skillName);
   }
 
   private onHandlePhaseChangeEvent<T extends GameEventIdentifiers.PhaseChangeEvent>(
@@ -458,7 +478,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const action = new PlayPhaseAction(content.fromId, this.store, this.presenter);
+    const action = new PlayPhaseAction(content.toId, this.store, this.presenter);
     action.onPlay();
   }
 
@@ -482,7 +502,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.store.room.getPlayerById(content.fromId).turnOver();
+    this.store.room.getPlayerById(content.toId).turnOver();
     this.presenter.broadcastUIUpdate();
   }
 
@@ -625,11 +645,11 @@ export class GameClientProcessor {
       conversation,
       translator: this.translator,
     });
-    const action = new SelectAction(content.fromId, this.store, this.presenter, content);
+    const action = new SelectAction(content.toId, this.store, this.presenter, content);
     const selectedPlayers = await action.onSelectPlayer(requiredAmount, players);
 
     const choosePlayerEvent: ClientEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
-      fromId: content.fromId,
+      fromId: content.toId,
       selectedPlayers,
     };
 
@@ -641,14 +661,14 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const { movableCards, top, bottom, fromId, topStackName, bottomStackName } = content;
+    const { movableCards, top, bottom, toId, topStackName, bottomStackName } = content;
     const cards = movableCards.map(cardId => Sanguosha.getCardById(cardId));
 
     const onConfirm = (top: Card[], bottom: Card[]) => () => {
       const responseEvent: ClientEventFinder<T> = {
         top: top.map(card => card.Id),
         bottom: bottom.map(card => card.Id),
-        fromId,
+        fromId: toId,
       };
 
       this.presenter.closeDialog();

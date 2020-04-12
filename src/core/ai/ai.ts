@@ -19,7 +19,7 @@ export class PlayerAI {
   onAction<T extends GameEventIdentifiers>(room: Room, e: T, content: ServerEventFinder<T>): ClientEventFinder<T> {
     switch (e) {
       case GameEventIdentifiers.AskForPlayCardsOrSkillsEvent:
-        const { fromId } = content as ServerEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent>;
+        const { toId: fromId } = content as ServerEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent>;
         const endEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
           fromId,
           end: true,

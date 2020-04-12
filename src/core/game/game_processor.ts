@@ -12,7 +12,6 @@ import {
   ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
-import { PinDianResultType } from 'core/event/event.server';
 import {
   CardDropStage,
   CardEffectStage,
@@ -214,7 +213,7 @@ export class GameProcessor {
           this.room.notify(
             GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
             {
-              fromId: this.CurrentPlayer.Id,
+              toId: this.CurrentPlayer.Id,
             },
             this.CurrentPlayer.Id,
           );
@@ -358,8 +357,8 @@ export class GameProcessor {
         await this.onHandleDamgeEvent(identifier as GameEventIdentifiers.DamageEvent, event as any, onActualExecuted);
         break;
       case GameEventIdentifiers.PinDianEvent:
-        await this.onHandlePinDianEvent(
-          identifier as GameEventIdentifiers.PinDianEvent,
+        await this.onHandleAskForPinDianEvent(
+          identifier as GameEventIdentifiers.AskForPinDianCardEvent,
           event as any,
           onActualExecuted,
         );
@@ -1003,61 +1002,12 @@ export class GameProcessor {
     });
   }
 
-  private async onHandlePinDianEvent(
-    identifier: GameEventIdentifiers.PinDianEvent,
-    event: EventPicker<GameEventIdentifiers.PinDianEvent, WorkPlace.Client>,
+  private async onHandleAskForPinDianEvent(
+    identifier: GameEventIdentifiers.AskForPinDianCardEvent,
+    event: ServerEventFinder<GameEventIdentifiers.AskForPinDianCardEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    let pindianResult: PinDianResultType | undefined;
-
-    return await this.iterateEachStage(identifier, (pindianResult as any) || event, onActualExecuted, async stage => {
-      if (stage === PinDianStage.PinDianEffect) {
-        const { from, toIds } = event;
-        this.room.notify(
-          GameEventIdentifiers.AskForPinDianCardEvent,
-          {
-            from,
-          },
-          from,
-        );
-        toIds.forEach(to => {
-          this.room.notify(
-            GameEventIdentifiers.AskForPinDianCardEvent,
-
-            {
-              from: to,
-            },
-            to,
-          );
-        });
-
-        const responses = await Promise.all([
-          this.room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForPinDianCardEvent, from),
-          ...toIds.map(to => this.room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForPinDianCardEvent, to)),
-        ]);
-
-        let winner: PlayerId | undefined;
-        let largestCardNumber = 0;
-        const pindianCards: CardId[] = [];
-
-        for (const result of responses) {
-          const pindianCard = Sanguosha.getCardById(result.pindianCard);
-          if (pindianCard.CardNumber > largestCardNumber) {
-            largestCardNumber = pindianCard.CardNumber;
-            winner = result.from;
-          } else if (pindianCard.CardNumber === largestCardNumber) {
-            winner = undefined;
-          }
-
-          pindianCards.push(result.pindianCard);
-        }
-
-        pindianResult = {
-          winner,
-          pindianCards,
-        };
-      }
-    });
+    return await this.iterateEachStage(identifier, event, onActualExecuted);
   }
 
   private async onHandlePhaseChangeEvent(
@@ -1149,7 +1099,7 @@ export class GameProcessor {
   ) {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === TurnOverStage.TurningOver) {
-        const player = this.room.getPlayerById(event.fromId);
+        const player = this.room.getPlayerById(event.toId);
         player.turnOver();
 
         if (event.translationsMessage === undefined) {
@@ -1171,7 +1121,7 @@ export class GameProcessor {
       this.playerPositionIndex = (this.playerPositionIndex + 1) % this.room.Players.length;
       if (!this.room.Players[this.playerPositionIndex].isFaceUp()) {
         await this.onHandlePlayerTurnOverEvent(GameEventIdentifiers.PlayerTurnOverEvent, {
-          fromId: this.room.Players[this.playerPositionIndex].Id,
+          toId: this.room.Players[this.playerPositionIndex].Id,
         });
         continue;
       }
