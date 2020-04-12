@@ -8,6 +8,12 @@
     top: 0;
     left: 0;
 }
+.equipCardName{
+    flex: auto;
+}
+.equipCardSuit, .equipCardNumber{
+    margin: 0 4px;
+}
 
 .equipSection {
     border: 1px solid grey;
@@ -31,7 +37,7 @@
 }
 
 .judgeNames {
-    padding: 0 4px;
+    margin: 0 4px;
 }
 
 .userActionsButtons {

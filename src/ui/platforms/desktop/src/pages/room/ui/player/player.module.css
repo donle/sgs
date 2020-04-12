@@ -4,6 +4,14 @@
     width: 200px;
     display: flex;
     border: 1px solid grey;
+    justify-content: flex-end;
+}
+
+.judgeIcons {
+    position: absolute;
+    bottom: -12px;
+    right: 8px;
+    background: white;
 }
 
 .playerCardInside {
@@ -51,6 +59,42 @@
     position: absolute;
     left: 0;
     padding: 0 8px;
+}
+
+.handCardsNumberBg {
+    position: absolute;
+    left: 9px;
+    width: 16px;
+    height: 24px;
+    border: 1px solid grey;
+    text-align: center;
+    background: white;
+    z-index: 2;
+    transform: rotate(10deg);
+}
+.handCardsNumberBg:before {
+    content: '';
+    width: 16px;
+    height: 24px;
+    border: 1px solid grey;
+    display: block;
+    position: absolute;
+    box-sizing: border-box;
+    transform: rotate(-30deg);
+    background: white;
+    top: 0px;
+    left: -4px;
+}
+
+.handCardsNumber {
+    z-index: 100;
+    position: absolute;
+    transform: rotate(-10deg);
+    left: 0;
+}
+
+.judgeNames {
+    margin: 0 2px;
 }
 
 .weapon {

@@ -1,0 +1,14 @@
+.delayedTrickIcon {
+  transform: rotate(45deg);
+  border: 1px solid;
+  border-radius: 2px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardInitialWord {
+  transform: rotate(-45deg);
+}

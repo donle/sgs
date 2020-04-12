@@ -109,7 +109,7 @@ export class Sanguosha {
 
     const selectedCharacterIndex: number[] = [];
     while (numberOfCharacters > 0) {
-      selectedCharacterIndex.push(characterIndex.splice(Math.floor(Math.random() * numberOfCharacters), 1)[0]);
+      selectedCharacterIndex.push(characterIndex.splice(Math.floor(Math.random() * characterIndex.length), 1)[0]);
 
       numberOfCharacters--;
     }

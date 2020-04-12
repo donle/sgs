@@ -11,6 +11,8 @@ import * as mobxReact from 'mobx-react';
 import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
 import { ClientCard } from '../card/card';
+import { CardSuitItem } from '../card/card_suit';
+import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
 import { PlayerAvatar } from '../player_avatar/player_avatar';
 import styles from './dashboard.module.css';
 
@@ -74,7 +76,9 @@ export class EquipCardItem extends React.Component<EquipCardItemProps> {
         })}
         onClick={this.onCardClick}
       >
-        {card && translator.tr(card.Name)}
+        <span className={styles.equipCardName}>{card && translator.tr(card.Name)}</span>
+        {card && <CardSuitItem className={styles.equipCardSuit} suit={card.Suit} />}
+        <span className={styles.equipCardNumber}>{card && ClientTranslationModule.getCardNumber(card.CardNumber)}</span>
       </div>
     );
   }
@@ -156,7 +160,12 @@ export class Dashboard extends React.Component<DashboardProps> {
     return (
       <div className={styles.judges}>
         {this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.JudgeArea).map(cardId => (
-          <span className={styles.judgeNames}>{this.props.translator.tr(Sanguosha.getCardById(cardId).Name)}</span>
+          <DelayedTrickIcon
+            key={cardId}
+            card={Sanguosha.getCardById(cardId)}
+            translator={this.props.translator}
+            className={styles.judgeNames}
+          />
         ))}
       </div>
     );

@@ -1,4 +1,5 @@
 import { VirtualCard } from 'core/cards/card';
+import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { CharacterGender } from 'core/characters/character';
 import { CardLostReason, ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -18,14 +19,21 @@ export class LiJian extends ActiveSkill {
   }
 
   targetFilter(room: Room, targets: PlayerId[]): boolean {
-    return targets.length === 2;
+    return (
+      targets.length === 2 &&
+      room.getPlayerById(targets[1]).canUseCardTo(room, new CardMatcher({ name: ['duek'] }), targets[0])
+    );
   }
 
   cardFilter(room: Room, cards: CardId[]): boolean {
     return cards.length === 1;
   }
 
-  isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
+  isAvailableTarget(
+    owner: PlayerId,
+    room: Room,
+    target: PlayerId,
+  ): boolean {
     return room.getPlayerById(target).Gender === CharacterGender.Male;
   }
 

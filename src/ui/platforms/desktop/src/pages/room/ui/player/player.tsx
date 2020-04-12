@@ -9,6 +9,7 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { FlatClientCard } from '../card/flat_card';
+import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
 import styles from './player.module.css';
 
 type PlayerCardProps = {
@@ -77,6 +78,20 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     );
   }
 
+  getPlayerJudgeCards() {
+    return (
+      <div className={styles.judgeIcons}>
+        {this.props.player?.getCardIds(PlayerCardsArea.JudgeArea).map(cardId => (
+          <DelayedTrickIcon
+            card={Sanguosha.getCardById(cardId)}
+            translator={this.props.translator}
+            className={styles.judgeNames}
+          />
+        ))}
+      </div>
+    );
+  }
+
   render() {
     return (
       <div
@@ -100,9 +115,13 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                 <span>
                   {this.props.player.Hp}/{this.props.player.MaxHp}
                 </span>
+                <span className={styles.handCardsNumberBg}>
+                  <span className={styles.handCardsNumber}>{this.props.player.getCardIds(PlayerCardsArea.HandArea).length}</span>
+                </span>
                 {this.getPlayerEquips()}
               </div>
             )}
+            {this.getPlayerJudgeCards()}
           </>
         ) : (
           <p className={styles.waiting}>{this.props.translator.tr('waiting')}</p>
