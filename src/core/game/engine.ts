@@ -78,11 +78,10 @@ export class Sanguosha {
     const skill = Sanguosha.skills.find(skill => skill.Name === name) as T | undefined;
     return Precondition.exists(skill, `Unable to find the skill by name: ${name}`);
   }
-  public static getShadowSkillBySkillName<T extends Skill = Skill>(name: string): T {
+  public static getShadowSkillsBySkillName<T extends Skill = Skill>(name: string): T[] {
     this.tryToThrowUninitializedError();
 
-    const skill = Sanguosha.skills.find(skill => skill.Name === `#${name}`) as T | undefined;
-    return Precondition.exists(skill, `Unable to find the shadow skill by name: ${name}`);
+    return Sanguosha.skills.filter(skill => skill.Name.replace(/#+/, '') === name) as T[];
   }
 
   public static isShadowSkillName(name: string): boolean {

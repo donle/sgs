@@ -57,12 +57,14 @@ export class SkillUseAction extends BaseAction {
         this.presenter.closeIncomingConversation();
         this.resetActionHandlers();
         this.resetAction();
+        this.presenter.resetSelectedSkill();
       });
       this.presenter.defineCancelButtonActions(() => {
         this.store.room.broadcast(GameEventIdentifiers.AskForSkillUseEvent, event);
         this.presenter.closeIncomingConversation();
         this.resetActionHandlers();
         this.resetAction();
+        this.presenter.resetSelectedSkill();
       });
     } else {
       //TODO: need to refactor

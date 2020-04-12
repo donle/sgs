@@ -29,7 +29,9 @@ export class GuanXing extends TriggerSkill {
     const guanxingEvent: ServerEventFinder<GameEventIdentifiers.AskForPlaceCardsInDileEvent> = {
       movableCards: cards,
       top: guanxingAmount,
+      topStackName: 'draw stack top',
       bottom: guanxingAmount,
+      bottomStackName: 'draw stack bottom',
       fromId: skillUseEvent.fromId,
     };
 

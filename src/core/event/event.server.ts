@@ -200,8 +200,10 @@ export interface ServerEvent extends EventUtilities {
     to: PlayerId;
   };
   [GameEventIdentifiers.AskForCardDisplayEvent]: {
-    cardMatcher?: CardMatcherSocketPassenger;
-    cardAmount?: number;
+    cardMatcher: CardMatcherSocketPassenger;
+    cardAmount: number;
+    fromId: PlayerId;
+    conversation: string | PatchedTranslationObject;
   };
   [GameEventIdentifiers.AskForCardDropEvent]: {
     fromArea: PlayerCardsArea[];
@@ -234,7 +236,9 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.AskForPlaceCardsInDileEvent]: {
     movableCards: CardId[];
     top: number;
+    topStackName: string;
     bottom: number;
+    bottomStackName: string;
     fromId: PlayerId;
   };
   [GameEventIdentifiers.PhaseChangeEvent]: {

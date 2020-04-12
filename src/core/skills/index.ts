@@ -36,3 +36,5 @@ export { ZhiHeng } from './characters/standard/zhiheng';
 export { HongYan } from './characters/wind/hongyan';
 export { GuanXing } from './characters/standard/guanxing';
 export { KongCheng } from './characters/standard/kongcheng';
+export { YingZi } from './characters/standard/yingzi';
+export { FanJian } from './characters/standard/fanjian';

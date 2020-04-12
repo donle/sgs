@@ -198,27 +198,6 @@ export const serverActiveListenerEvents = (): [
 ];
 
 export const serverResponsiveListenerEvents = () => [
-  GameEventIdentifiers.SyncGameCommonRulesEvent,
-
-  GameEventIdentifiers.CardDropEvent,
-  GameEventIdentifiers.CardResponseEvent,
-  GameEventIdentifiers.CardUseEvent,
-  GameEventIdentifiers.CardEffectEvent,
-  GameEventIdentifiers.CardDisplayEvent,
-  GameEventIdentifiers.DrawCardEvent,
-  GameEventIdentifiers.ObtainCardEvent,
-  GameEventIdentifiers.MoveCardEvent,
-
-  GameEventIdentifiers.AimEvent,
-
-  GameEventIdentifiers.SkillUseEvent,
-  GameEventIdentifiers.SkillEffectEvent,
-
-  GameEventIdentifiers.GameStartEvent,
-  GameEventIdentifiers.GameOverEvent,
-  GameEventIdentifiers.PlayerDyingEvent,
-  GameEventIdentifiers.PlayerDiedEvent,
-
   GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
   GameEventIdentifiers.AskForPeachEvent,
   GameEventIdentifiers.AskForCardResponseEvent,

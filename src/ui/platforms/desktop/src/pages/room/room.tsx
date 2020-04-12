@@ -67,13 +67,19 @@ export class RoomPage extends React.Component<
         this.showMessageFromEvent(content);
       });
     });
+
+    window.addEventListener('beforeunload', () => this.disconnect());
   }
 
-  componentWillUnmount() {
+  private readonly disconnect = () => {
     this.socket.notify(GameEventIdentifiers.PlayerLeaveEvent, {
       playerId: this.store.clientPlayerId,
     });
     this.socket.disconnect();
+  };
+
+  componentWillUnmount() {
+    this.disconnect();
   }
 
   private showMessageFromEvent(event: ServerEventFinder<GameEventIdentifiers>) {

@@ -432,6 +432,10 @@ export const generalDictionary: Word[] = [
   { source: 'seat 6', target: '七号位' },
   { source: 'seat 7', target: '八号位' },
   { source: 'you', target: '你' },
+  { source: 'heart', target: '红桃' },
+  { source: 'spade', target: '黑桃' },
+  { source: 'club', target: '梅花' },
+  { source: 'diamond', target: '方块' },
 ];
 
 export const eventDictionary: Word[] = [
@@ -533,6 +537,12 @@ export const eventDictionary: Word[] = [
   { source: '{0} used skill {1}, use card {2}', target: '{0} 使用了技能 {1}，使用了一张 {2}' },
   { source: '{0} used skill {1}, use card {2} to {3}', target: '{0} 使用了技能 {1}，使用了一张 {2}，目标是 {3}' },
   { source: 'Please choose your slash target', target: '请选择【杀】的目标' },
+  { source: 'draw stack top', target: '置于牌堆顶的牌' },
+  { source: 'draw stack bottom', target: '置于牌堆底的牌' },
+  { source: '{0} used skill {1} to you, please choose', target: '{0} 对你使用了技能 {1}，请选择' },
+  { source: 'lose a hp', target: '失去一点体力' },
+  { source: 'drop all {0} cards', target: '弃置所有 {0} 牌' },
+  { source: '{0} displayed cards {1}', target: '{0} 展示了 {1}' },
   {
     source: 'guanxing finished, {0} cards placed on the top and {1} cards placed at the bottom',
     target: '观星结束，结果为 {0} 上 {1} 下',

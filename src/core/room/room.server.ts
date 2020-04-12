@@ -423,7 +423,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
   }
 
-  public loseSkill(playerId: PlayerId, skillName: string) {
+  public loseSkill(playerId: PlayerId, skillName: string, broadcast?: boolean) {
     const player = this.getPlayerById(playerId);
     player.loseSkill(skillName);
     this.notify(
@@ -431,33 +431,37 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       {
         toId: playerId,
         skillName,
-        translationsMessage: TranslationPack.translationJsonPatcher(
+        translationsMessage: broadcast ? TranslationPack.translationJsonPatcher(
           '{0} lost skill {1}',
           player.Name,
           skillName,
-        ).extract(),
+        ).extract() : undefined,
       },
       playerId,
     );
   }
-  public obtainSkill(playerId: PlayerId, skillName: string) {
-    this.getPlayerById(playerId).obtainSkill(skillName);
+  public obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean) {
+    const player = this.getPlayerById(playerId);
+    player.obtainSkill(skillName);
     this.notify(
       GameEventIdentifiers.ObtainSkillEvent,
       {
         toId: playerId,
         skillName,
+        translationsMessage: broadcast ? TranslationPack.translationJsonPatcher(
+          '{0} obtained skill {1}',
+          player.Name,
+          skillName,
+        ).extract() : undefined,
       },
       playerId,
     );
   }
 
-  public loseHp(playerId: PlayerId, lostHp: number) {
-    const player = this.getPlayerById(playerId);
-    this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.LoseHpEvent, {
+  public async loseHp(playerId: PlayerId, lostHp: number) {
+    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.LoseHpEvent, {
       toId: playerId,
       lostHp,
-      translationsMessage: TranslationPack.translationJsonPatcher('{0} lost {1} hp', player.Name, lostHp).extract(),
     });
   }
 

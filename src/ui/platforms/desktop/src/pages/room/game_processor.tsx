@@ -20,8 +20,8 @@ import { RoomPresenter, RoomStore } from './room.presenter';
 import { CardSelectorDialog } from './ui/dialog/card_selector_dialog/card_selector_dialog';
 import { CharacterSelectorDialog } from './ui/dialog/character_selector_dialog/character_selector_dialog';
 import { GameOverDialog } from './ui/dialog/game_over_dialog/game_over_dialog';
-import { WuGuFengDengDialog } from './ui/dialog/wugufengdeng_dialog/wugufengdeng_dialog';
 import { GuanXingDialog } from './ui/dialog/guanxing_dialog/guanxing_dialog';
+import { WuGuFengDengDialog } from './ui/dialog/wugufengdeng_dialog/wugufengdeng_dialog';
 
 export class GameClientProcessor {
   constructor(
@@ -78,6 +78,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.CardDropEvent:
         await this.onHandleCardDropEvent(e as any, content);
         break;
+      case GameEventIdentifiers.CardDisplayEvent:
+        await this.onHandleCardDisplayEvent(e as any, content);
+        break;
       case GameEventIdentifiers.ObtainCardEvent:
         await this.onHandelObtainCardEvent(e as any, content);
         break;
@@ -86,6 +89,9 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.DamageEvent:
         await this.onHandleDamageEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.LoseHpEvent:
+        await this.onHandleLoseHpEvent(e as any, content);
         break;
       case GameEventIdentifiers.RecoverEvent:
         await this.onHandleRecoverEvent(e as any, content);
@@ -98,6 +104,9 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.AskForCardDropEvent:
         await this.onHandleAskForCardDropEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.AskForCardDisplayEvent:
+        await this.onHandleAskForCardDisplayEvent(e as any, content);
         break;
       case GameEventIdentifiers.AskForSkillUseEvent:
         await this.onHandleAskForSkillUseEvent(e as any, content);
@@ -195,6 +204,28 @@ export class GameClientProcessor {
     this.store.room.broadcast(type, EventPacker.createIdentifierEvent(type, event));
   }
 
+  private async onHandleAskForCardDisplayEvent<T extends GameEventIdentifiers.AskForCardDisplayEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const { cardMatcher, cardAmount, fromId, conversation } = content;
+
+    this.presenter.createIncomingConversation({
+      conversation,
+      translator: this.translator,
+    });
+
+    const action = new SelectAction(fromId, this.store, this.presenter, content, new CardMatcher(cardMatcher));
+    const selectedCards = await action.onSelectCard([PlayerCardsArea.HandArea], cardAmount);
+
+    this.presenter.closeIncomingConversation();
+    const displayEvent: ClientEventFinder<T> = {
+      fromId,
+      selectedCards,
+    };
+    this.store.room.broadcast(type, EventPacker.createIdentifierEvent(type, displayEvent));
+  }
+
   private onHandleAskForCardUseEvent<T extends GameEventIdentifiers.AskForCardUseEvent>(
     type: T,
     content: ServerEventFinder<T>,
@@ -224,6 +255,13 @@ export class GameClientProcessor {
   }
   private onHandleCardDropEvent<T extends GameEventIdentifiers.CardDropEvent>(type: T, content: ServerEventFinder<T>) {
     this.presenter.showCards(...Card.getActualCards(content.cardIds).map(cardId => Sanguosha.getCardById(cardId)));
+  }
+
+  private onHandleCardDisplayEvent<T extends GameEventIdentifiers.CardDisplayEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.presenter.showCards(...Card.getActualCards(content.displayCards).map(cardId => Sanguosha.getCardById(cardId)));
   }
 
   // tslint:disable-next-line:no-empty
@@ -269,6 +307,12 @@ export class GameClientProcessor {
   private onHandleDamageEvent<T extends GameEventIdentifiers.DamageEvent>(type: T, content: ServerEventFinder<T>) {
     const player = this.store.room.getPlayerById(content.toId);
     player.onDamage(content.damage);
+    this.presenter.broadcastUIUpdate();
+  }
+
+  private onHandleLoseHpEvent<T extends GameEventIdentifiers.LoseHpEvent>(type: T, content: ServerEventFinder<T>) {
+    const player = this.store.room.getPlayerById(content.toId);
+    player.onLoseHp(content.lostHp);
     this.presenter.broadcastUIUpdate();
   }
 
@@ -597,7 +641,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const { movableCards, top, bottom, fromId } = content;
+    const { movableCards, top, bottom, fromId, topStackName, bottomStackName } = content;
     const cards = movableCards.map(cardId => Sanguosha.getCardById(cardId));
 
     const onConfirm = (top: Card[], bottom: Card[]) => () => {
@@ -614,7 +658,9 @@ export class GameClientProcessor {
     this.presenter.createDialog(
       <GuanXingDialog
         top={top}
+        topStackName={topStackName}
         bottom={bottom}
+        bottomStackName={bottomStackName}
         translator={this.translator}
         cards={cards}
         presenter={this.presenter}

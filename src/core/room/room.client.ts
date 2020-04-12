@@ -81,6 +81,10 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.damage.name);
   }
   //Server only
+  public async loseHp(): Promise<void> {
+    this.throwUntouchableError(this.loseHp.name);
+  }
+  //Server only
   public async recover(): Promise<void> {
     this.throwUntouchableError(this.recover.name);
   }

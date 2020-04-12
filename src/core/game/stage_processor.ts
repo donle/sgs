@@ -328,6 +328,7 @@ const gameEventStageList: {
     CardLostStage.CardLosing,
     CardLostStage.AfterCardLostEffect,
   ],
+  [GameEventIdentifiers.LoseHpEvent]: [LoseHpStage.BeforeLoseHp, LoseHpStage.LosingHp, LoseHpStage.AfterLostHp],
   [GameEventIdentifiers.PlayerTurnOverEvent]: [TurnOverStage.TurningOver, TurnOverStage.TurnedOver],
 };
 
@@ -468,10 +469,7 @@ export class StageProcessor {
   }
 
   public getInsidePlayerPhase(specificStage: PlayerPhaseStages): PlayerPhase {
-    for (const [stage, stageList] of (Object.entries(playerStagesList) as unknown) as [
-      string,
-      PlayerPhaseStages[],
-    ][]) {
+    for (const [stage, stageList] of (Object.entries(playerStagesList) as unknown) as [string, PlayerPhaseStages[]][]) {
       if (stageList.includes(specificStage)) {
         return parseInt(stage, 10) as PlayerPhase;
       }

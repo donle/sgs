@@ -14,16 +14,18 @@ export type GuanXingDialogProps = {
   cards: Card[];
   translator: ClientTranslationModule;
   top: number;
+  topStackName: string;
   bottom: number;
+  bottomStackName: string;
   presenter: RoomPresenter;
   onConfirm(top: Card[], bottom: Card[]): () => void;
   title?: string;
 };
 
-const EmptyCardSlots = (props: { length: number; translator: ClientTranslationModule }) => {
+const EmptyCardSlots = (props: { slotName: string, length: number; translator: ClientTranslationModule }) => {
   const slots: JSX.Element[] = [];
   for (let i = 0; i < props.length; i++) {
-    slots.push(<CardSlot className={styles.cardSlot} key={i} translator={props.translator} />);
+    slots.push(<CardSlot slotName={props.slotName} className={styles.cardSlot} key={i} translator={props.translator} />);
   }
 
   return <>{slots}</>;
@@ -236,7 +238,7 @@ export class GuanXingCardSlots extends React.Component<GuanXingDialogProps> {
   };
 
   render() {
-    const { top, bottom, cards, translator } = this.props;
+    const { top, bottom, cards, translator, topStackName, bottomStackName } = this.props;
 
     return (
       <div className={styles.cardSlots}>
@@ -259,11 +261,11 @@ export class GuanXingCardSlots extends React.Component<GuanXingDialogProps> {
         </div>
 
         <div className={styles.topSlots}>
-          <EmptyCardSlots length={top} translator={translator} />
+          <EmptyCardSlots length={top} slotName={topStackName} translator={translator} />
         </div>
         {bottom && (
           <div className={styles.bottomSlots}>
-            <EmptyCardSlots length={bottom} translator={translator} />
+            <EmptyCardSlots length={bottom} slotName={bottomStackName} translator={translator} />
           </div>
         )}
       </div>
