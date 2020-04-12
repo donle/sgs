@@ -47,7 +47,7 @@ export class JieDaoShaRenSkill extends ActiveSkill {
     if (selectedTargets.length === 0) {
       return owner !== target && room.getPlayerById(target).getEquipment(CardType.Weapon) !== undefined;
     } else {
-      return room.getPlayerById(selectedTargets[0]).canUseCardTo(room, containerCard, target);
+      return room.canUseCardTo(room, containerCard, target);
     }
   }
 

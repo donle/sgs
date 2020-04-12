@@ -235,7 +235,9 @@ export class GameProcessor {
         return;
       case PlayerPhase.DropCardStage:
         this.logger.debug('enter drop cards phase');
-        const maxCardHold = this.CurrentPlayer.Hp + GameCommonRules.getAdditionalHoldCardNumber(this.CurrentPlayer);
+        const maxCardHold =
+          GameCommonRules.getBaseHoldCardNumber(this.room, this.CurrentPlayer) +
+          GameCommonRules.getAdditionalHoldCardNumber(this.room, this.CurrentPlayer);
         const discardAmount = this.CurrentPlayer.getCardIds(PlayerCardsArea.HandArea).length - maxCardHold;
         if (discardAmount > 0) {
           this.room.notify(

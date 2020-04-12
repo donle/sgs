@@ -106,7 +106,6 @@ export class YiJiShadow extends TriggerSkill {
   }
 
   async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
-    //  ['please hands over maximun 2 cards to 1 or 2 players'];
     return true;
   }
 

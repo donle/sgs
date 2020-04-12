@@ -12,6 +12,7 @@
     bottom: -12px;
     right: 8px;
     background: white;
+    display: flex;
 }
 
 .playerCardInside {
@@ -95,6 +96,7 @@
 
 .judgeNames {
     margin: 0 2px;
+    margin-right: 8px;
 }
 
 .weapon {

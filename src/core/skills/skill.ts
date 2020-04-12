@@ -394,7 +394,7 @@ export abstract class RulesBreakerSkill extends Skill {
   public breakDefenseDistance(room?: Room, owner?: PlayerId): number {
     return 0;
   }
-  public breakCardHoldNumber(room?: Room, owner?: PlayerId): number {
+  public breakCardHoldNumber(room: Room, owner: Player): number {
     return 0;
   }
 }

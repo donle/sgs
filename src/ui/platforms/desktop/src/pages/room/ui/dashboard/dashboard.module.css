@@ -34,10 +34,11 @@
     justify-self: start;
     align-self: start;
     padding-left: 8px;
+    display: flex;
 }
 
 .judgeNames {
-    margin: 0 4px;
+    margin-right: 12px;
 }
 
 .userActionsButtons {

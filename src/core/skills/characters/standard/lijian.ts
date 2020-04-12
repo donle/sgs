@@ -19,10 +19,7 @@ export class LiJian extends ActiveSkill {
   }
 
   targetFilter(room: Room, targets: PlayerId[]): boolean {
-    return (
-      targets.length === 2 &&
-      room.getPlayerById(targets[1]).canUseCardTo(room, new CardMatcher({ name: ['duek'] }), targets[0])
-    );
+    return targets.length === 2;
   }
 
   cardFilter(room: Room, cards: CardId[]): boolean {
@@ -33,8 +30,15 @@ export class LiJian extends ActiveSkill {
     owner: PlayerId,
     room: Room,
     target: PlayerId,
+    selectedCards: CardId[],
+    selectedTargets: PlayerId[],
   ): boolean {
-    return room.getPlayerById(target).Gender === CharacterGender.Male;
+    let canUse = room.getPlayerById(target).Gender === CharacterGender.Male;
+    if (selectedTargets.length === 0) {
+      canUse = canUse && room.canUseCardTo(room, new CardMatcher({ name: ['duel'] }), target);
+    }
+
+    return canUse;
   }
 
   isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {

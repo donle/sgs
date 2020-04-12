@@ -41,15 +41,13 @@ export class WuGuFengDengSkill extends ActiveSkill {
   }
   public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const all = room.getAlivePlayersFrom();
-    const from = room.getPlayerById(event.fromId);
-
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} used card {1} to {2}',
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
       TranslationPack.patchCardInTranslation(event.cardId),
       TranslationPack.wrapArrayParams(...room.getAlivePlayersFrom(event.fromId).map(target => target.Character.Name)),
     ).extract();
-    event.toIds = all.filter(player => from.canUseCardTo(room, event.cardId, player.Id)).map(player => player.Id);
+    event.toIds = all.filter(player => room.canUseCardTo(room, event.cardId, player.Id)).map(player => player.Id);
 
     return true;
   }

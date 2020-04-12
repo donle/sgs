@@ -43,7 +43,7 @@ export class ZhiHeng extends ActiveSkill {
     await room.dropCards(CardLostReason.ActiveDrop, skillUseEvent.cardIds, skillUseEvent.fromId);
 
     let drawAdditionalCards = 0;
-    if (room.getPlayerById(skillUseEvent.fromId).getPlayerCards().length === 0) {
+    if (room.getPlayerById(skillUseEvent.fromId).getCardIds(PlayerCardsArea.HandArea).length === 0) {
       drawAdditionalCards++;
     }
 

@@ -18,7 +18,7 @@ export class KongCheng extends FilterSkill {
     }
 
     if (cardId instanceof CardMatcher) {
-      return !cardId.match(new CardMatcher({ name: ['slash', 'duel'] }));
+      return !new CardMatcher({ name: ['slash', 'duel'] }).match(cardId);
     } else {
       const cardName = Sanguosha.getCardById(cardId).GeneralName;
       return cardName !== 'slash' && cardName !== 'duel';

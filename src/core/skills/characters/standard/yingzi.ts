@@ -2,16 +2,12 @@ import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, DrawCardStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { CommonSkill, TriggerSkill } from 'core/skills/skill';
+import { CompulsorySkill, RulesBreakerSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CompulsorySkill
 export class YingZi extends TriggerSkill {
   constructor() {
     super('yingzi', 'yingzi_description');
-  }
-
-  isAutoTrigger() {
-    return false;
   }
 
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>, stage?: AllStage) {
@@ -32,5 +28,17 @@ export class YingZi extends TriggerSkill {
     drawCardEvent.drawAmount += 1;
 
     return true;
+  }
+}
+
+@CompulsorySkill
+@ShadowSkill
+export class YingZiShadow extends RulesBreakerSkill {
+  constructor() {
+    super('yingzi', 'yingzi_description');
+  }
+
+  public breakCardHoldNumber(room: Room, owner: Player) {
+    return owner.MaxHp;
   }
 }

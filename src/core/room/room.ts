@@ -268,7 +268,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     const seatDistance = this.distanceBetween(from, to);
     return (
       from.AttackDistance >= seatDistance &&
-      from.canUseCardTo(this as any, slash || new CardMatcher({ name: ['slash'] }), to.Id)
+      this.canUseCardTo(this as any, slash || new CardMatcher({ name: ['slash'] }), to.Id)
     );
   }
 
@@ -285,6 +285,19 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public isAvailableTarget(cardId: CardId, attacker: PlayerId, target: PlayerId) {
     for (const skill of this.getPlayerById(target).getSkills<FilterSkill>('filter')) {
       if (!skill.canBeUsedCard(cardId, (this as unknown) as Room, target, attacker)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  public canUseCardTo(room: Room, cardId: CardId | CardMatcher, target: PlayerId): boolean {
+    const player = room.getPlayerById(target);
+
+    const skills = player.getSkills<FilterSkill>('filter');
+    for (const skill of skills) {
+      if (!skill.canBeUsedCard(cardId, room, target)) {
         return false;
       }
     }

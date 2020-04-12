@@ -2,6 +2,7 @@ import { Card } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
+import { Room } from 'core/room/room';
 import { RulesBreakerSkill } from 'core/skills/skill';
 import { GameCommonRuleObject, INFINITE_TRIGGERING_TIMES } from './game_props';
 
@@ -114,15 +115,22 @@ export class GameCommonRules {
     this.userRules[user.Id].additionalHold += addedNumber;
   }
 
-  public static getAdditionalHoldCardNumber(user: Player) {
-    GameCommonRules.preCheck(user);
-
-    let cardHoldNumber = this.userRules[user.Id].additionalHold;
+  public static getBaseHoldCardNumber(room: Room, user: Player) {
+    let cardHoldNumber = user.Hp;
     user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
-      cardHoldNumber += skill.breakCardHoldNumber();
+      const newCardHoldNumber = skill.breakCardHoldNumber(room, user);
+      if (newCardHoldNumber > cardHoldNumber) {
+        cardHoldNumber = newCardHoldNumber;
+      }
     });
 
     return cardHoldNumber;
+  }
+
+  public static getAdditionalHoldCardNumber(room: Room, user: Player) {
+    GameCommonRules.preCheck(user);
+
+    return this.userRules[user.Id].additionalHold;
   }
 
   public static addCardUsableTimes(cardMatcher: CardMatcher, times: number, user: Player) {

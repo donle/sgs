@@ -43,7 +43,7 @@ export class ShunShouQianYangSkill extends ActiveSkill {
 
     return (
       target !== owner &&
-      from.canUseCardTo(room, containerCard, target) &&
+      room.canUseCardTo(room, containerCard, target) &&
       to.getCardIds().length > 0 &&
       room.cardUseDistanceBetween(containerCard, from, to) <= 1
     );

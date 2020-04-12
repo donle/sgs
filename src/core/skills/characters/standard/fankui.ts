@@ -23,7 +23,11 @@ export class FanKui extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
-    return owner.Id === content.toId;
+    return (
+      owner.Id === content.toId &&
+      content.fromId !== undefined &&
+      room.getPlayerById(content.fromId).getPlayerCards().length > 0
+    );
   }
 
   async onTrigger() {

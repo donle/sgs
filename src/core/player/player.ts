@@ -152,19 +152,6 @@ export abstract class Player implements PlayerInfo {
     this.removeMark('#' + name);
   }
 
-  public canUseCardTo(room: Room, cardId: CardId | CardMatcher, target: PlayerId): boolean {
-    const player = room.getPlayerById(target);
-
-    const skills = player.getSkills<FilterSkill>('filter');
-    for (const skill of skills) {
-      if (!skill.canBeUsedCard(cardId, room, target)) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
   public canUseCard(room: Room, cardId: CardId | CardMatcher): boolean {
     const card = cardId instanceof CardMatcher ? undefined : Sanguosha.getCardById(cardId);
     const ruleCardUse = GameCommonRules.canUse(

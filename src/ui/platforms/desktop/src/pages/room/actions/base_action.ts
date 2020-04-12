@@ -96,7 +96,7 @@ export abstract class BaseAction {
   };
 
   isPlayerEnabled(player: Player): boolean {
-    if (this.scopedTargets && !this.scopedTargets.includes(player.Id)) {
+    if ((this.scopedTargets && !this.scopedTargets.includes(player.Id)) || player.Dead) {
       return false;
     }
     if (this.selectedTargets.includes(player.Id)) {
@@ -188,7 +188,7 @@ export abstract class BaseAction {
         } else if (card.Skill instanceof ActiveSkill) {
           let canSelfUse = false;
           if (card.Skill.isSelfTargetSkill()) {
-            canSelfUse = player.canUseCardTo(this.store.room, card.Id, player.Id);
+            canSelfUse = this.store.room.canUseCardTo(this.store.room, card.Id, player.Id);
           }
           return card.Skill.canUse(this.store.room, player) && canSelfUse;
         }
