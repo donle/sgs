@@ -984,11 +984,14 @@ export class GameProcessor {
       const { toId, bySkill, byCard, judgeCardId } = event;
 
       if (stage === JudgeEffectStage.OnJudge) {
-        event.translationsMessage = TranslationPack.translationJsonPatcher(
-          '{0} starts a judge of {1}',
-          TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.toId)),
-          byCard ? TranslationPack.patchCardInTranslation(byCard) : bySkill!,
-        ).extract();
+        this.room.broadcast(GameEventIdentifiers.CustomGameDialog, {
+          translationsMessage: TranslationPack.translationJsonPatcher(
+            '{0} starts a judge of {1}, judge card is {2}',
+            TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.toId)),
+            byCard ? TranslationPack.patchCardInTranslation(byCard) : bySkill!,
+            TranslationPack.patchCardInTranslation(event.judgeCardId),
+          ).extract(),
+        });
       } else if (stage === JudgeEffectStage.JudgeEffect) {
         event.translationsMessage = TranslationPack.translationJsonPatcher(
           '{0} got judged card {2} on {1}',

@@ -57,11 +57,14 @@ export class CardResponseAction extends BaseAction {
         return false;
       }
     }
-
+    this.askForEvent.fromArea = this.askForEvent.fromArea || [PlayerCardsArea.HandArea];
     if (this.selectedCardToPlay === undefined) {
-      if (fromArea === PlayerCardsArea.HandArea) {
+      if (fromArea === PlayerCardsArea.HandArea && this.askForEvent.fromArea.includes(PlayerCardsArea.HandArea)) {
         return matcher.match(card);
-      } else if (fromArea === PlayerCardsArea.EquipArea) {
+      } else if (
+        fromArea === PlayerCardsArea.EquipArea &&
+        this.askForEvent.fromArea.includes(PlayerCardsArea.HandArea)
+      ) {
         if (card.Skill instanceof ViewAsSkill) {
           return new CardMatcher({ name: card.Skill.canViewAs() }).match(new CardMatcher(this.askForEvent.cardMatcher));
         }

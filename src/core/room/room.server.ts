@@ -515,15 +515,20 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return drawedCards;
   }
 
-  public async obtainCards(event: ServerEventFinder<GameEventIdentifiers.ObtainCardEvent>) {
+  public async obtainCards(
+    event: ServerEventFinder<GameEventIdentifiers.ObtainCardEvent>,
+    doBroadcast: boolean = false,
+  ) {
     event.givenBy = event.givenBy || event.fromId;
     event.translationsMessage =
       event.translationsMessage ||
-      TranslationPack.translationJsonPatcher(
-        '{0} obtains cards {1}',
-        TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.toId)),
-        TranslationPack.patchCardInTranslation(...Card.getActualCards(event.cardIds)),
-      ).extract();
+      (doBroadcast
+        ? TranslationPack.translationJsonPatcher(
+            '{0} obtains cards {1}',
+            TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.toId)),
+            TranslationPack.patchCardInTranslation(...Card.getActualCards(event.cardIds)),
+          ).extract()
+        : undefined);
     event.cardIds = Card.getActualCards(event.cardIds);
 
     if (event.cardIds.length === 0) {
@@ -558,7 +563,17 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     });
   }
 
-  public async loseCards(event: ServerEventFinder<GameEventIdentifiers.CardLostEvent>) {
+  public async loseCards(event: ServerEventFinder<GameEventIdentifiers.CardLostEvent>, doBroadcast: boolean = false) {
+    event.translationsMessage =
+      event.translationsMessage ||
+      (doBroadcast
+        ? (event.translationsMessage = TranslationPack.translationJsonPatcher(
+            '{0} lost card {1}',
+            TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.fromId)),
+            TranslationPack.patchCardInTranslation(...Card.getActualCards(event.cardIds)),
+          ).extract())
+        : undefined);
+
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.CardLostEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.CardLostEvent, event),

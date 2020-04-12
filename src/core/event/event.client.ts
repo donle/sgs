@@ -153,6 +153,10 @@ export interface ClientEvent extends EventUtilities {
     bottom: CardId[];
     fromId: PlayerId;
   };
+  [GameEventIdentifiers.AskForCardEvent]: {
+    selectedCards: CardId[];
+    fromId: PlayerId;
+  };
   [GameEventIdentifiers.AskForPlayCardsOrSkillsEvent]: PlayCardOrSkillEvent;
   [GameEventIdentifiers.PlayerEnterRefusedEvent]: never;
   [GameEventIdentifiers.SyncGameCommonRulesEvent]: never;

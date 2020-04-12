@@ -102,6 +102,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.RecoverEvent:
         await this.onHandleRecoverEvent(e as any, content);
         break;
+      case GameEventIdentifiers.AskForCardEvent:
+        await this.onHandleAskForCardEvent(e as any, content);
+        break;
       case GameEventIdentifiers.AskForCardUseEvent:
         await this.onHandleAskForCardUseEvent(e as any, content);
         break;
@@ -230,6 +233,27 @@ export class GameClientProcessor {
       selectedCards,
     };
     this.store.room.broadcast(type, EventPacker.createIdentifierEvent(type, displayEvent));
+  }
+
+  private async onHandleAskForCardEvent<T extends GameEventIdentifiers.AskForCardEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const { cardMatcher, cardAmount, conversation, fromArea, toId } = content;
+    this.presenter.createIncomingConversation({
+      conversation,
+      translator: this.translator,
+    });
+
+    const action = new SelectAction(toId, this.store, this.presenter, content, new CardMatcher(cardMatcher));
+    const selectedCards = await action.onSelectCard(fromArea, cardAmount);
+
+    this.presenter.closeIncomingConversation();
+    const askForCardEvent: ClientEventFinder<GameEventIdentifiers.AskForCardEvent> = {
+      fromId: toId,
+      selectedCards,
+    }
+    this.store.room.broadcast(type, askForCardEvent);
   }
 
   private onHandleAskForCardUseEvent<T extends GameEventIdentifiers.AskForCardUseEvent>(

@@ -167,6 +167,7 @@ export interface ServerEvent extends EventUtilities {
     cardMatcher: CardMatcherSocketPassenger;
     byCardId?: CardId;
     cardUserId?: PlayerId;
+    fromArea?: PlayerCardsArea[];
     conversation: string | PatchedTranslationObject;
     triggeredOnEvent?: ServerEventFinder<GameEventIdentifiers>;
   };
@@ -280,6 +281,14 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.PlayerTurnOverEvent]: {
     toId: PlayerId;
+  };
+  [GameEventIdentifiers.AskForCardEvent]: {
+    toId: PlayerId;
+    cardMatcher: CardMatcherSocketPassenger;
+    cardAmount: number;
+    reason: string;
+    fromArea: PlayerCardsArea[];
+    conversation: string | PatchedTranslationObject;
   };
   [GameEventIdentifiers.CustomGameDialog]: {};
 }

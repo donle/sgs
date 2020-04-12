@@ -156,6 +156,7 @@ export const enum DamageEffectStage {
 
 export const enum JudgeEffectStage {
   OnJudge = 'OnJudge',
+  BeforeJudgeEffect = 'BeforeJudgeEffect',
   JudgeEffect = 'JudgeEffect',
   AfterJudgeEffect = 'AfterJudgeEffect',
 }
@@ -277,6 +278,7 @@ const gameEventStageList: {
   ],
   [GameEventIdentifiers.JudgeEvent]: [
     JudgeEffectStage.OnJudge,
+    JudgeEffectStage.BeforeJudgeEffect,
     JudgeEffectStage.JudgeEffect,
     JudgeEffectStage.AfterJudgeEffect,
   ],

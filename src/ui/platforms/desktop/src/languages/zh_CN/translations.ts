@@ -404,7 +404,7 @@ export const skillDescriptions: Word[] = [
     target:
       '当你使用或打出【闪】或【闪电】时，你可以进行判定；当你的判定牌生效后（除“暴虐”的判定外），若判定结果为：黑桃，你选择一名其他角色，对其造成2点雷电伤害；梅花，你回复1点体力，然后你选择一名其他角色，对其造成1点雷电伤害。',
   },
-  { source: '<b>guidao_description', target: '锁定技</b>，你的黑桃牌或你的黑桃判定牌的花色视为红桃。' },
+  { source: '<b>guidao_description', target: '<b>锁定技</b>，你的黑桃牌或你的黑桃判定牌的花色视为红桃。' },
   {
     source: 'huangtian_description',
     target: '当一名角色因另一名角色的弃置或获得而失去手牌后，你可以失去1点体力。若如此做，失去手牌的角色摸两张牌。',
@@ -543,6 +543,15 @@ export const eventDictionary: Word[] = [
   { source: 'lose a hp', target: '失去一点体力' },
   { source: 'drop all {0} cards', target: '弃置所有 {0} 牌' },
   { source: '{0} displayed cards {1}', target: '{0} 展示了 {1}' },
+  {
+    source: 'please response a card to replace judge card {0} from {1}',
+    target: '请打出一张手牌替换 {1} 的判定牌 {0}',
+  },
+  {
+    source: '{0} responsed card {1} to replace judge card {2}',
+    target: '{0} 打出了 {1} 替换了判定牌 {2}'
+  },
+  { source: '{0} starts a judge of {1}, judge card is {2}', target: '{0} 开始了 {1}，判定牌为 {2}'},
   {
     source: 'guanxing finished, {0} cards placed on the top and {1} cards placed at the bottom',
     target: '观星结束，结果为 {0} 上 {1} 下',
