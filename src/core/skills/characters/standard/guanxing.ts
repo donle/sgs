@@ -1,5 +1,5 @@
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
+import { AllStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
@@ -16,10 +16,23 @@ export class GuanXing extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    return PlayerPhaseStages.PrepareStage === content.toStage && owner.Id === content.playerId;
+    if (owner.Id !== content.playerId) {
+      return false;
+    }
+
+    if (room.CurrentPlayerPhase === PlayerPhase.FinishStage) {
+      if (owner.getInvisibleMark(this.name) === 0) {
+        return false;
+      } else {
+        owner.removeInvisibleMark(this.name);
+        return true;
+      }
+    }
+
+    return PlayerPhaseStages.PrepareStage === content.toStage;
   }
 
-  async onTrigger() {
+  async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     return true;
   }
 
@@ -52,6 +65,10 @@ export class GuanXing extends TriggerSkill {
 
     room.putCards('top', ...top);
     room.putCards('bottom', ...bottom);
+
+    if (top.length === 0 && room.CurrentPlayerPhase === PlayerPhase.PrepareStage) {
+      room.getPlayerById(skillUseEvent.fromId).addInvisibleMark(this.name, 1);
+    }
 
     return true;
   }

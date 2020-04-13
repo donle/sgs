@@ -23,7 +23,7 @@ export class CiXiongJianSkill extends TriggerSkill {
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage) {
     return (
-      stage === AimStage.AfterAim && !!event.byCardId && Sanguosha.getCardById(event.byCardId).GeneralName === 'slash'
+      stage === AimStage.AfterAim && event.byCardId !== undefined && Sanguosha.getCardById(event.byCardId).GeneralName === 'slash'
     );
   }
 

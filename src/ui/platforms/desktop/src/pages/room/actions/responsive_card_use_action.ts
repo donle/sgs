@@ -36,6 +36,10 @@ export class ResponsiveUseCardAction extends BaseAction {
   }
 
   isCardEnabledOnResponsiveUse(card: Card, fromArea: PlayerCardsArea, matcher: CardMatcher) {
+    if (EventPacker.isDisresponsiveEvent(this.askForEvent)) {
+      return false;
+    }
+
     if (
       card.Id === this.selectedCardToPlay ||
       card.Id === this.equipSkillCardId ||
@@ -124,12 +128,8 @@ export class ResponsiveUseCardAction extends BaseAction {
     this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
       this.isCardEnabledOnResponsiveUse(card, PlayerCardsArea.HandArea, new CardMatcher(this.askForEvent.cardMatcher)),
     );
-    this.presenter.setupCardSkillSelectionMatcher((card: Card) => {
-      return this.isCardEnabledOnResponsiveUse(
-        card,
-        PlayerCardsArea.EquipArea,
-        new CardMatcher(this.askForEvent.cardMatcher),
-      );
-    });
+    this.presenter.setupCardSkillSelectionMatcher((card: Card) =>
+      this.isCardEnabledOnResponsiveUse(card, PlayerCardsArea.EquipArea, new CardMatcher(this.askForEvent.cardMatcher)),
+    );
   }
 }

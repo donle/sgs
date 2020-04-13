@@ -36,6 +36,10 @@ export class CardResponseAction extends BaseAction {
   }
 
   isCardEnabledOnResponse(card: Card, fromArea: PlayerCardsArea, matcher: CardMatcher) {
+    if (EventPacker.isDisresponsiveEvent(this.askForEvent)) {
+      return false;
+    }
+
     if (
       card.Id === this.selectedCardToPlay ||
       card.Id === this.equipSkillCardId ||

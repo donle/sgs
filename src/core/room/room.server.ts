@@ -19,7 +19,7 @@ import {
 import { ServerSocket } from 'core/network/socket.server';
 import { Player } from 'core/player/player';
 import { ServerPlayer } from 'core/player/player.server';
-import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
+import { getPlayerRoleRawText, PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
@@ -521,6 +521,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     event: ServerEventFinder<GameEventIdentifiers.ObtainCardEvent>,
     doBroadcast: boolean = false,
   ) {
+    if (event.cardIds.length === 0) {
+      return;
+    }
+
     event.givenBy = event.givenBy || event.fromId;
     event.translationsMessage =
       event.translationsMessage ||
@@ -534,10 +538,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     event.cardIds = Card.getActualCards(event.cardIds);
     EventPacker.createIdentifierEvent(GameEventIdentifiers.ObtainCardEvent, event);
 
-    if (event.cardIds.length === 0) {
-      return;
-    }
-
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.ObtainCardEvent, event);
   }
 
@@ -548,6 +548,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     droppedBy?: PlayerId,
     byReason?: string,
   ) {
+    if (cardIds.length === 0) {
+      return;
+    }
+
     droppedBy = droppedBy || playerId || this.CurrentPlayer.Id;
     playerId = playerId || this.CurrentPlayer.Id;
 
@@ -866,6 +870,86 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       },
       playerId,
     );
+  }
+
+  public async kill(deadPlayer: Player, killedBy?: PlayerId) {
+    const playerDiedEvent: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent> = {
+      playerId: deadPlayer.Id,
+      killedBy,
+      messages: [
+        TranslationPack.translationJsonPatcher(
+          '{0} was killed' + (killedBy === undefined ? '' : ' by {1}'),
+          TranslationPack.patchPlayerInTranslation(deadPlayer),
+          killedBy ? TranslationPack.patchPlayerInTranslation(this.getPlayerById(killedBy)) : '',
+        ).toString(),
+      ],
+      translationsMessage: TranslationPack.translationJsonPatcher(
+        'the role of {0} is {1}',
+        TranslationPack.patchPlayerInTranslation(deadPlayer),
+        getPlayerRoleRawText(deadPlayer.Role),
+      ).extract(),
+    };
+
+    await this.gameProcessor.onHandleIncomingEvent(
+      GameEventIdentifiers.PlayerDiedEvent,
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerDiedEvent, playerDiedEvent),
+    );
+  }
+
+  public clearFlags(player: PlayerId) {
+    this.broadcast(GameEventIdentifiers.ClearFlagEvent, {
+      to: player,
+    });
+    super.clearFlags(player);
+  }
+  public removeFlag(player: PlayerId, name: string) {
+    this.broadcast(GameEventIdentifiers.RemoveFlagEvent, {
+      to: player,
+      name,
+    });
+    super.removeFlag(player, name);
+  }
+  public setFlag<T>(player: PlayerId, name: string, value: T, invisible: boolean = true): T {
+    this.broadcast(GameEventIdentifiers.SetFlagEvent, {
+      to: player,
+      value,
+      name,
+      invisible,
+    });
+    return super.setFlag(player, name, value);
+  }
+  public getFlag<T>(player: PlayerId, name: string): T {
+    return this.getPlayerById(player).getFlag(name);
+  }
+
+  public clearMarks(player: PlayerId) {
+    this.broadcast(GameEventIdentifiers.ClearMarkEvent, {
+      to: player,
+    });
+    super.clearMarks(player);
+  }
+  public removeMark(player: PlayerId, name: string) {
+    this.broadcast(GameEventIdentifiers.RemoveMarkEvent, {
+      to: player,
+      name,
+    });
+    super.removeMark(player, name);
+  }
+  public setMark(player: PlayerId, name: string, value: number) {
+    this.broadcast(GameEventIdentifiers.SetMarkEvent, {
+      to: player,
+      name,
+      value,
+    });
+    return super.setMark(player, name, value);
+  }
+  public addMark(player: PlayerId, name: string, value: number) {
+    this.broadcast(GameEventIdentifiers.AddMarkEvent, {
+      to: player,
+      value,
+      name,
+    });
+    return super.addMark(player, name, value);
   }
 
   public get CurrentPhasePlayer() {

@@ -1,12 +1,13 @@
 import { Card, CardType } from 'core/cards/card';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { CardSuit } from './card_props';
+import { CardId, CardSuit } from './card_props';
 
 export type CardMatcherProps = {
   suit?: CardSuit[];
   cardNumber?: number[];
   name?: string[];
   type?: CardType[];
+  cards?: CardId[];
 };
 
 export type CardMatcherSocketPassenger = {
@@ -30,7 +31,7 @@ export class CardMatcher {
 
     Precondition.assert(matcher.tag && matcher.tag === 'card-matcher', 'Invalid card matcher props');
 
-    const { suit, cardNumber, name, type } = matcher;
+    const { suit, cardNumber, name, type, cards } = matcher;
     let matched = true;
 
     if (card instanceof Card) {
@@ -46,6 +47,9 @@ export class CardMatcher {
       if (type) {
         matched = matched && type.find(subType => card.is(subType)) !== undefined;
       }
+      if (cards) {
+        matched = matched && cards.includes(card.Id);
+      }
     } else {
       matcher = card.toSocketPassenger();
       if (suit && matcher.suit) {
@@ -59,6 +63,9 @@ export class CardMatcher {
       }
       if (type && matcher.type) {
         matched = matched && matcher.type.every(cardType => type.includes(cardType));
+      }
+      if (cards && matcher.cards) {
+        matched = matched && matcher.cards.every(innerCard => cards.includes(innerCard));
       }
     }
 

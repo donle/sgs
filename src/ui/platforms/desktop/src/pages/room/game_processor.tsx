@@ -39,6 +39,27 @@ export class GameClientProcessor {
   async onHandleIncomingEvent<T extends GameEventIdentifiers>(e: T, content: ServerEventFinder<T>) {
     this.tryToThrowNotReadyException(e);
     switch (e) {
+      case GameEventIdentifiers.SetFlagEvent:
+        this.onHandleSetFlagEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.RemoveFlagEvent:
+        this.onHandleRemoveFlagEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.ClearFlagEvent:
+        this.onHandleClearFlagEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.AddMarkEvent:
+        this.onHandleAddMarkEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.SetMarkEvent:
+        this.onHandleSetMarkEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.RemoveMarkEvent:
+        this.onHandleRemoveMarkEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.ClearMarkEvent:
+        this.onHandleClearMarkEvent(e as any, content);
+        break;
       case GameEventIdentifiers.GameReadyEvent:
         await this.onHandleGameReadyEvent(e as any, content);
         break;
@@ -179,6 +200,49 @@ export class GameClientProcessor {
     }
   }
 
+  private async onHandleSetFlagEvent<T extends GameEventIdentifiers.SetFlagEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.getPlayerById(content.to).setFlag(content.name, content.value);
+  }
+  private async onHandleRemoveFlagEvent<T extends GameEventIdentifiers.RemoveFlagEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.getPlayerById(content.to).removeFlag(content.name);
+  }
+  private async onHandleClearFlagEvent<T extends GameEventIdentifiers.ClearFlagEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.getPlayerById(content.to).clearFlags();
+  }
+  private async onHandleAddMarkEvent<T extends GameEventIdentifiers.AddMarkEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.getPlayerById(content.to).addMark(content.name, content.value);
+  }
+  private async onHandleSetMarkEvent<T extends GameEventIdentifiers.SetMarkEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.getPlayerById(content.to).setMark(content.name, content.value);
+  }
+  private async onHandleRemoveMarkEvent<T extends GameEventIdentifiers.RemoveMarkEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.getPlayerById(content.to).removeMark(content.name);
+  }
+  private async onHandleClearMarkEvent<T extends GameEventIdentifiers.ClearMarkEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.getPlayerById(content.to).clearMarks();
+  }
+
   private onHandleAskForCardResponseEvent<T extends GameEventIdentifiers.AskForCardResponseEvent>(
     type: T,
     content: ServerEventFinder<T>,
@@ -252,7 +316,7 @@ export class GameClientProcessor {
     const askForCardEvent: ClientEventFinder<GameEventIdentifiers.AskForCardEvent> = {
       fromId: toId,
       selectedCards,
-    }
+    };
     this.store.room.broadcast(type, askForCardEvent);
   }
 
@@ -316,7 +380,7 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     const { playerId } = content;
-    this.store.room.getPlayerById(playerId).bury();
+    this.store.room.kill(this.store.room.getPlayerById(playerId));
   }
 
   private onHandelObtainCardEvent<T extends GameEventIdentifiers.ObtainCardEvent>(

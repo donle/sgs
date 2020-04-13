@@ -1,8 +1,6 @@
 import {
   ClientEventFinder,
   GameEventIdentifiers,
-  RoomEvent,
-  RoomEventFinder,
   serverActiveListenerEvents,
   ServerEventFinder,
   serverResponsiveListenerEvents,
@@ -181,10 +179,6 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         player.AI.onAction(this.room!, type, content);
       }
     }
-  }
-
-  public emitRoomStatus(type: RoomEvent, content: RoomEventFinder<typeof type>) {
-    this.socket.emit(type, content);
   }
 
   public getSocketById(id: PlayerId) {

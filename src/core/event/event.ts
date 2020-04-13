@@ -1,52 +1,7 @@
 import { GameRunningInfo } from 'core/game/game_props';
-import { PlayerId } from 'core/player/player_props';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
 import { ClientEvent } from './event.client';
 import { ServerEvent } from './event.server';
-
-export const enum RoomEvent {
-  SetFlagEvent = 'setFlag',
-  RemoveFlagEvent = 'removeFlag',
-  ClearFlagEvent = 'clearFlag',
-  AddMarkEvent = 'addMark',
-  SetMarkEvent = 'setMark',
-  RemoveMarkEvent = 'removeMark',
-  ClearMarkEvent = 'clearMark',
-}
-
-type RoomEventUtilities = {
-  [RoomEvent.SetFlagEvent]: {
-    name: string;
-    value: any;
-    to: PlayerId;
-  };
-  [RoomEvent.RemoveFlagEvent]: {
-    name: string;
-    to: PlayerId;
-  };
-  [RoomEvent.ClearFlagEvent]: {
-    to: PlayerId;
-  };
-  [RoomEvent.AddMarkEvent]: {
-    name: string;
-    value: number;
-    to: PlayerId;
-  };
-  [RoomEvent.SetMarkEvent]: {
-    name: string;
-    value: number;
-    to: PlayerId;
-  };
-  [RoomEvent.RemoveMarkEvent]: {
-    name: string;
-    to: PlayerId;
-  };
-  [RoomEvent.ClearMarkEvent]: {
-    to: PlayerId;
-  };
-};
-
-export type RoomEventFinder<T extends RoomEvent> = RoomEventUtilities[T];
 
 export const enum GameEventIdentifiers {
   UserMessageEvent = 100,
@@ -54,6 +9,14 @@ export const enum GameEventIdentifiers {
   PhaseChangeEvent,
   PhaseStageChangeEvent,
   SyncGameCommonRulesEvent,
+  
+  SetFlagEvent,
+  RemoveFlagEvent,
+  ClearFlagEvent,
+  AddMarkEvent,
+  SetMarkEvent,
+  RemoveMarkEvent,
+  ClearMarkEvent,
 
   DrunkEvent,
   ChainLinkedEvent,
@@ -129,6 +92,14 @@ export const isCardResponsiveIdentifier = (
 };
 
 export const clientActiveListenerEvents = () => [
+  GameEventIdentifiers.SetFlagEvent,
+  GameEventIdentifiers.RemoveFlagEvent,
+  GameEventIdentifiers.ClearFlagEvent,
+  GameEventIdentifiers.AddMarkEvent,
+  GameEventIdentifiers.SetMarkEvent,
+  GameEventIdentifiers.RemoveMarkEvent,
+  GameEventIdentifiers.ClearMarkEvent,
+
   GameEventIdentifiers.UserMessageEvent,
   GameEventIdentifiers.PhaseChangeEvent,
   GameEventIdentifiers.PhaseStageChangeEvent,

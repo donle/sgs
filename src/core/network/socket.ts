@@ -1,8 +1,6 @@
 import {
   ClientEventFinder,
   GameEventIdentifiers,
-  RoomEvent,
-  RoomEventFinder,
   ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
@@ -38,7 +36,6 @@ export abstract class Socket<T extends WorkPlace> {
     type: I,
     content: T extends WorkPlace.Client ? ClientEventFinder<I> : ServerEventFinder<I>,
   ): void;
-  public abstract emitRoomStatus<T extends RoomEvent>(type: T, content: RoomEventFinder<T>): void;
 
   public get RoomId() {
     return this.roomId;

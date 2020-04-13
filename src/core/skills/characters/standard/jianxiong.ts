@@ -31,7 +31,7 @@ export class JianXiong extends TriggerSkill {
         reason: CardObtainedReason.ActivePrey,
         cardIds,
         toId,
-      });
+      }, true);
     }
     await room.drawCards(1, damagedEvent.toId);
     return true;

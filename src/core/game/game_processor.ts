@@ -441,6 +441,13 @@ export class GameProcessor {
           onActualExecuted,
         );
         break;
+      case GameEventIdentifiers.PlayerDiedEvent:
+        await this.onHandlePlayerDiedEvent(
+          identifier as GameEventIdentifiers.PlayerDiedEvent,
+          event as any,
+          onActualExecuted,
+        );
+        break;
       default:
         throw new Error(`Unknown incoming event: ${identifier}`);
     }
@@ -654,7 +661,7 @@ export class GameProcessor {
                 player.Id,
               );
 
-              if (response.cardId) {
+              if (response.cardId !== undefined) {
                 hasResponse = true;
                 const cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
                   fromId: response.fromId,
@@ -677,22 +684,8 @@ export class GameProcessor {
     const { dying, killedBy } = event;
     const to = this.room.getPlayerById(dying);
     if (to.Hp <= 0) {
-      await this.onHandlePlayerDiedEvent(GameEventIdentifiers.PlayerDiedEvent, {
-        playerId: dying,
-        killedBy,
-        messages: [
-          TranslationPack.translationJsonPatcher(
-            '{0} was killed' + (killedBy === undefined ? '' : ' by {1}'),
-            TranslationPack.patchPlayerInTranslation(to),
-            killedBy ? TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(killedBy)) : '',
-          ).toString(),
-        ],
-        translationsMessage: TranslationPack.translationJsonPatcher(
-          'the role of {0} is {1}',
-          TranslationPack.patchPlayerInTranslation(to),
-          getPlayerRoleRawText(to.Role),
-        ).extract(),
-      });
+      await this.room.kill(to, killedBy);
+      EventPacker.terminate(event);
     }
   }
 
@@ -720,6 +713,7 @@ export class GameProcessor {
         }
 
         this.stageProcessor.clearProcess();
+        EventPacker.terminate(event);
         this.playerStages = [];
         this.room.broadcast(GameEventIdentifiers.GameOverEvent, {
           translationsMessage: TranslationPack.translationJsonPatcher(
@@ -736,11 +730,21 @@ export class GameProcessor {
     if (!isGameOver) {
       const { killedBy, playerId } = event;
       const deadPlayer = this.room.getPlayerById(playerId);
-      const allCards = deadPlayer.getPlayerCards();
-      await this.room.dropCards(CardLostReason.ActiveDrop, allCards, playerId);
+      const allCards = deadPlayer.getCardIds();
+      await this.room.dropCards(CardLostReason.PlaceToDropStack, allCards, playerId);
+      if (this.room.CurrentPlayer.Id === playerId) {
+        this.room.skip(playerId);
+      }
 
-      if (deadPlayer.Role === PlayerRole.Rebel && killedBy) {
-        await this.room.drawCards(3, killedBy);
+      if (killedBy) {
+        const killer = this.room.getPlayerById(killedBy);
+
+        if (deadPlayer.Role === PlayerRole.Rebel) {
+          await this.room.drawCards(3, killedBy);
+        } else if (deadPlayer.Role === PlayerRole.Loyalist && killer.Role === PlayerRole.Lord) {
+          const lordCards = killer.getPlayerCards();
+          await this.room.dropCards(CardLostReason.PlaceToDropStack, lordCards, killedBy);
+        }
       }
     }
   }

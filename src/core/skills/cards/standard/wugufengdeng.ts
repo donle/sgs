@@ -104,7 +104,7 @@ export class WuGuFengDengSkill extends ActiveSkill {
       toId,
       reason: CardObtainedReason.ActivePrey,
       cardIds: [response.selectedCard],
-    });
+    }, true);
 
     return true;
   }

@@ -34,7 +34,7 @@ export class Rende extends ActiveSkill {
   }
 
   isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
-    return owner !== target;
+    return owner !== target && !room.getPlayerById(target).getFlag<boolean>(this.name);
   }
 
   isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
@@ -56,13 +56,15 @@ export class Rende extends ActiveSkill {
       CardObtainedReason.PassiveObtained,
     );
 
+    room.setFlag(skillUseEvent.toIds![0], this.name, true);
+
     const from = room.getPlayerById(skillUseEvent.fromId);
     from.addInvisibleMark(this.name, skillUseEvent.cardIds!.length);
 
     if (from.getInvisibleMark(this.name) >= 2 && from.getInvisibleMark(this.name + '-used') === 0) {
       const options: string[] = [];
       //TODO: add wine afterwards
-      
+
       if (from.canUseCard(room, new CardMatcher({ name: ['peach'] }))) {
         options.push('peach');
       }
@@ -182,6 +184,10 @@ export class RenDeShadow extends TriggerSkill {
       const player = room.getPlayerById(phaseChangeEvent.fromPlayer);
       player.removeInvisibleMark(this.GeneralName);
       player.removeInvisibleMark(this.GeneralName + '-used');
+
+      for (const player of room.getOtherPlayers(phaseChangeEvent.fromPlayer)) {
+        room.removeFlag(player.Id, this.GeneralName);
+      }
     }
     return true;
   }

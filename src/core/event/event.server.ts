@@ -9,6 +9,37 @@ import { PatchedTranslationObject } from 'core/translations/translation_json_too
 import { CardLostReason, CardObtainedReason, EventUtilities, GameEventIdentifiers, ServerEventFinder } from './event';
 
 export interface ServerEvent extends EventUtilities {
+  [GameEventIdentifiers.SetFlagEvent]: {
+    name: string;
+    value: any;
+    to: PlayerId;
+    invisible: boolean;
+  };
+  [GameEventIdentifiers.RemoveFlagEvent]: {
+    name: string;
+    to: PlayerId;
+  };
+  [GameEventIdentifiers.ClearFlagEvent]: {
+    to: PlayerId;
+  };
+  [GameEventIdentifiers.AddMarkEvent]: {
+    name: string;
+    value: number;
+    to: PlayerId;
+  };
+  [GameEventIdentifiers.SetMarkEvent]: {
+    name: string;
+    value: number;
+    to: PlayerId;
+  };
+  [GameEventIdentifiers.RemoveMarkEvent]: {
+    name: string;
+    to: PlayerId;
+  };
+  [GameEventIdentifiers.ClearMarkEvent]: {
+    to: PlayerId;
+  };
+
   [GameEventIdentifiers.EquipEvent]: {
     fromId: PlayerId;
     cardId: CardId;
