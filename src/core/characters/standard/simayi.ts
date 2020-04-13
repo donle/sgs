@@ -6,7 +6,7 @@ const skillLoaderInstance = SkillLoader.getInstance();
 
 export class SiMaYi extends Character {
   constructor(id: number) {
-    super(id, 'simayi', CharacterGender.Male, CharacterNationality.Wei, 3, GameCharacterExtensions.Standard, [
+    super(id, 'simayi', CharacterGender.Male, CharacterNationality.Wei, 3, 3, GameCharacterExtensions.Standard, [
       skillLoaderInstance.getSkillByName('guicai'),
       skillLoaderInstance.getSkillByName('fankui'),
     ]);

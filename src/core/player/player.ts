@@ -475,6 +475,9 @@ export abstract class Player implements PlayerInfo {
   public get Hp() {
     return this.hp;
   }
+  public set Hp(hp: number) {
+    this.hp = hp;
+  }
 
   public get Gender() {
     return this.gender;
@@ -533,7 +536,7 @@ export abstract class Player implements PlayerInfo {
       skill.isLordSkill() ? this.playerRole === PlayerRole.Lord : true,
     );
 
-    this.hp = this.playerCharacter.MaxHp;
+    this.hp = this.playerCharacter.Hp;
     this.maxHp = this.playerCharacter.MaxHp;
     this.nationality = this.playerCharacter.Nationality;
     this.gender = this.playerCharacter.Gender;

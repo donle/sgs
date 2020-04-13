@@ -84,7 +84,12 @@ export class GameProcessor {
       GameEventIdentifiers.AskForChoosingCharacterEvent,
       lordInfo.Id,
     );
-    this.room.getPlayerById(lordInfo.Id).CharacterId = lordResponse.chosenCharacter;
+    const lord = this.room.getPlayerById(lordInfo.Id);
+    lord.CharacterId = lordResponse.chosenCharacter;
+    if (playersInfo.length >= 5) {
+      lord.MaxHp++;
+      lord.Hp++;
+    }
     lordInfo.CharacterId = lordResponse.chosenCharacter;
 
     const sequentialAsyncResponse: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingCharacterEvent>>[] = [];

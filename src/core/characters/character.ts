@@ -42,6 +42,7 @@ export abstract class Character {
     protected gender: CharacterGender,
     protected nationality: CharacterNationality,
     protected maxHp: number,
+    protected hp: number,
     protected fromPackage: GameCharacterExtensions,
     protected skills: Skill[],
   ) {}
@@ -60,6 +61,10 @@ export abstract class Character {
 
   public get MaxHp() {
     return this.maxHp;
+  }
+
+  public get Hp() {
+    return this.hp;
   }
 
   public get Nationality() {
