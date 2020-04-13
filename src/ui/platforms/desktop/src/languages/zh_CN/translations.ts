@@ -546,9 +546,9 @@ export const eventDictionary: Word[] = [
   },
   {
     source: '{0} responsed card {1} to replace judge card {2}',
-    target: '{0} 打出了 {1} 替换了判定牌 {2}'
+    target: '{0} 打出了 {1} 替换了判定牌 {2}',
   },
-  { source: '{0} starts a judge of {1}, judge card is {2}', target: '{0} 开始了 {1} 的判定，判定牌为 {2}'},
+  { source: '{0} starts a judge of {1}, judge card is {2}', target: '{0} 开始了 {1} 的判定，判定牌为 {2}' },
   {
     source: 'guanxing finished, {0} cards placed on the top and {1} cards placed at the bottom',
     target: '观星结束，结果为 {0} 上 {1} 下',
@@ -612,6 +612,8 @@ export const eventDictionary: Word[] = [
   { source: 'jizhi:keep', target: '保留' },
   { source: 'do you wanna discard {0}', target: '是否弃置 {0} 增加一手牌上限' },
   { source: 'please choose a basic card to use', target: '请选择一张基本卡使用' },
+  { source: 'jieyin:drop', target: '弃置此牌' },
+  { source: 'jieyin:move', target: '置于其装备区' },
 
   {
     source: 'player {0} join in the room',

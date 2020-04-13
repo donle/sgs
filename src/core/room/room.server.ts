@@ -726,6 +726,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   public async recover(event: ServerEventFinder<GameEventIdentifiers.RecoverEvent>): Promise<void> {
+    const to = this.getPlayerById(event.toId);
+    if (to.Hp === to.MaxHp) {
+      return;
+    }
+
     event.translationsMessage =
       event.recoverBy !== undefined
         ? TranslationPack.translationJsonPatcher(

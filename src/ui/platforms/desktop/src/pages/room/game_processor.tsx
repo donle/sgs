@@ -543,9 +543,6 @@ export class GameClientProcessor {
     if (content.to === PlayerPhase.PrepareStage) {
       content.fromPlayer && this.presenter.isSkillDisabled(PlayPhaseAction.disableSkills);
       this.store.room.turnTo(content.toPlayer);
-      this.presenter.isSkillDisabled(
-        PlayPhaseAction.isPlayPhaseSkillsDisabled(this.store.room, this.presenter.ClientPlayer!),
-      );
 
       if (content.fromPlayer) {
         this.store.room.getPlayerById(content.fromPlayer).resetCardUseHistory();

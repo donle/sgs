@@ -113,7 +113,8 @@ export abstract class Card {
     return this.cardType.includes(type);
   }
   public isSameType(card: Card) {
-    return this.cardType.filter(subType => !card.Type.includes(subType)).length > 0;
+    const intersectionTypes = this.cardType.filter(subType => card.Type.includes(subType));
+    return intersectionTypes.length === card.Type.length || intersectionTypes.length === this.cardType.length;
   }
 
   public isBlack() {

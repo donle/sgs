@@ -38,7 +38,7 @@ export class YingZiShadow extends RulesBreakerSkill {
     super('yingzi', 'yingzi_description');
   }
 
-  public breakCardHoldNumber(room: Room, owner: Player) {
+  public breakBaseCardHoldNumber(room: Room, owner: Player) {
     return owner.MaxHp;
   }
 }

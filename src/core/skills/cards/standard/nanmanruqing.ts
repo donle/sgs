@@ -31,12 +31,6 @@ export class NanManRuQingSkill extends ActiveSkill {
   }
   public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const others = room.getOtherPlayers(event.fromId);
-    event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} used card {1} to {2}',
-      TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
-      TranslationPack.patchCardInTranslation(event.cardId),
-      TranslationPack.wrapArrayParams(...others.map(target => target.Character.Name)),
-    ).extract();
     event.toIds = others.filter(player => room.canUseCardTo(room, event.cardId, player.Id)).map(player => player.Id);
     return true;
   }

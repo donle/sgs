@@ -44,3 +44,5 @@ export { TianDu} from './characters/standard/tiandu';
 export { YiJi, YiJiShadow } from './characters/standard/yiji';
 export { BiYue } from './characters/standard/biyue';
 export { LiJian } from './characters/standard/lijian';
+export { JieYin } from './characters/standard/jieyin';
+export { XiaoJi } from './characters/standard/xiaoji';

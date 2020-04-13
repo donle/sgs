@@ -64,7 +64,7 @@ export class Lobby extends React.Component<LobbyProps> {
     const roomInfo: GameInfo = {
       characterExtensions: [GameCharacterExtensions.Standard],
       cardExtensions: [GameCardExtensions.Standard],
-      numberOfPlayers: 2,
+      numberOfPlayers: 3,
       roomName: 'test room name',
     };
 

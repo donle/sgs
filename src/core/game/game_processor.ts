@@ -63,8 +63,14 @@ export class GameProcessor {
 
   private async chooseCharacters(playersInfo: PlayerInfo[], selectableCharacters: Character[]) {
     const lordInfo = playersInfo[0];
+    const lordCharacters = Sanguosha.getLordCharacters(this.room.Info.characterExtensions).map(
+      character => character.Id,
+    );
     const gameStartEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCharacterEvent>({
-      characterIds: Sanguosha.getLordCharacters(this.room.Info.characterExtensions).map(character => character.Id),
+      characterIds: [
+        ...lordCharacters,
+        ...Sanguosha.getRandomCharacters(2, selectableCharacters, lordCharacters).map(character => character.Id),
+      ],
       role: lordInfo.Role,
       isGameStart: true,
       translationsMessage: TranslationPack.translationJsonPatcher(
@@ -758,9 +764,12 @@ export class GameProcessor {
       if (stage === SkillUseStage.SkillUsing) {
         if (!event.translationsMessage && !Sanguosha.isShadowSkillName(event.skillName)) {
           event.translationsMessage = TranslationPack.translationJsonPatcher(
-            '{0} used skill {1}',
+            '{0} used skill {1}' + (event.toIds && event.toIds.length > 0 ? ' to {2}' : ''),
             TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
             event.skillName,
+            event.toIds
+              ? TranslationPack.patchPlayerInTranslation(...event.toIds!.map(to => this.room.getPlayerById(to)))
+              : '',
           ).extract();
         }
 
