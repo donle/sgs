@@ -376,22 +376,22 @@ export abstract class RulesBreakerSkill extends Skill {
     return true;
   }
 
-  public breakCardUsableTimes(cardId: CardId, room?: Room, owner?: PlayerId): number {
+  public breakCardUsableTimes(cardId: CardId, room: Room, owner: Player): number {
     return 0;
   }
-  public breakCardUsableDistance(cardId: CardId, room?: Room, owner?: PlayerId): number {
+  public breakCardUsableDistance(cardId: CardId, room: Room, owner: Player): number {
     return 0;
   }
-  public breakCardUsableTargets(cardId: CardId, room?: Room, owner?: PlayerId): number {
+  public breakCardUsableTargets(cardId: CardId, room: Room, owner: Player): number {
     return 0;
   }
-  public breakAttackDistance(cardId: CardId, room?: Room, owner?: PlayerId): number {
+  public breakAttackDistance(cardId: CardId | undefined, room: Room, owner: Player): number {
     return 0;
   }
-  public breakOffenseDistance(room?: Room, owner?: PlayerId): number {
+  public breakOffenseDistance(room: Room, owner: Player): number {
     return 0;
   }
-  public breakDefenseDistance(room?: Room, owner?: PlayerId): number {
+  public breakDefenseDistance(room: Room, owner: Player): number {
     return 0;
   }
   public breakCardHoldNumber(room: Room, owner: Player): number {

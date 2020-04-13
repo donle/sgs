@@ -1,7 +1,7 @@
 import { CardSuit } from 'core/cards/libs/card_props';
 import type { RealCardId } from 'core/cards/libs/card_props';
 import { DelayedTrick, TrickCard } from 'core/cards/trick_card';
-import { GameCardExtensions } from 'core/game/game_props';
+import { GameCardExtensions, INFINITE_DISTANCE } from 'core/game/game_props';
 import { SkillLoader } from 'core/game/package_loader/loader.skills';
 import { LeBuSiShuSkill } from 'core/skills';
 
@@ -12,7 +12,7 @@ export class LeBuSiShu extends TrickCard {
       id,
       cardNumber,
       suit,
-      0,
+      INFINITE_DISTANCE,
       'lebusishu',
       'lebusishu_description',
       GameCardExtensions.Standard,

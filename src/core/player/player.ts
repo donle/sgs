@@ -155,6 +155,7 @@ export abstract class Player implements PlayerInfo {
   public canUseCard(room: Room, cardId: CardId | CardMatcher): boolean {
     const card = cardId instanceof CardMatcher ? undefined : Sanguosha.getCardById(cardId);
     const ruleCardUse = GameCommonRules.canUse(
+      room,
       this,
       cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId),
     );
@@ -336,8 +337,8 @@ export abstract class Player implements PlayerInfo {
     return this.skillUsedHistory[skillName] === undefined ? 0 : this.skillUsedHistory[skillName];
   }
 
-  public get AttackDistance() {
-    let attackDistance = this.getOffenseDistance();
+  public getAttackDistance(room: Room) {
+    let attackDistance = this.getOffenseDistance(room);
 
     for (const cardId of this.getCardIds(PlayerCardsArea.EquipArea)) {
       const card = Sanguosha.getCardById(cardId);
@@ -349,22 +350,22 @@ export abstract class Player implements PlayerInfo {
     return Math.max(attackDistance + GameCommonRules.getAdditionalAttackDistance(this), 1);
   }
 
-  public getOffenseDistance() {
-    return GameCommonRules.getAdditionalOffenseDistance(this);
+  public getOffenseDistance(room: Room) {
+    return GameCommonRules.getAdditionalOffenseDistance(room, this);
   }
 
-  public getDefenseDistance() {
-    return GameCommonRules.getAdditionalDefenseDistance(this);
+  public getDefenseDistance(room: Room) {
+    return GameCommonRules.getAdditionalDefenseDistance(room, this);
   }
 
-  public getCardUsableDistance(cardId: CardId) {
+  public getCardUsableDistance(room: Room, cardId: CardId) {
     const card = Sanguosha.getCardById(cardId);
-    return card.EffectUseDistance + GameCommonRules.getCardAdditionalUsableDistance(card, this);
+    return card.EffectUseDistance + GameCommonRules.getCardAdditionalUsableDistance(room, this, card);
   }
 
-  public getCardAdditionalUsableNumberOfTargets(cardId: CardId | CardMatcher) {
+  public getCardAdditionalUsableNumberOfTargets(room: Room, cardId: CardId | CardMatcher) {
     const card = cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId);
-    return GameCommonRules.getCardAdditionalNumberOfTargets(card, this);
+    return GameCommonRules.getCardAdditionalNumberOfTargets(room, this, card);
   }
 
   public getEquipSkills<T extends Skill = Skill>(skillType?: SkillStringType) {

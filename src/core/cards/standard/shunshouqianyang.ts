@@ -11,7 +11,7 @@ export class ShunshouQianYang extends TrickCard {
       id,
       cardNumber,
       suit,
-      0,
+      1,
       'shunshouqianyang',
       'shunshouqianyang_description',
       GameCardExtensions.Standard,

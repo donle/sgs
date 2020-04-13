@@ -32,6 +32,7 @@ export class JiJiang extends ActiveSkill {
     return (
       targets.length ===
       room.CurrentPlayer.getCardAdditionalUsableNumberOfTargets(
+        room,
         new CardMatcher({
           name: ['slash'],
         }),

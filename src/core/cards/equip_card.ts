@@ -63,14 +63,6 @@ export abstract class RideCard extends EquipCard {
   public get Skill(): RulesBreakerSkill {
     return this.skill;
   }
-
-  public get OffenseDistance() {
-    return this.skill.breakOffenseDistance();
-  }
-
-  public get DefenseDistance() {
-    return this.skill.breakDefenseDistance();
-  }
 }
 
 export class DefenseRideCard extends RideCard {

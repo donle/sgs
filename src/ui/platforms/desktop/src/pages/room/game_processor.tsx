@@ -567,6 +567,9 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     const action = new PlayPhaseAction(content.toId, this.store, this.presenter);
+    this.presenter.isSkillDisabled(
+      PlayPhaseAction.isPlayPhaseSkillsDisabled(this.store.room, this.presenter.ClientPlayer!),
+    );
     action.onPlay();
   }
 

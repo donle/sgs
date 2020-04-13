@@ -83,7 +83,7 @@ export class GameCommonRules {
     GameCommonRules.preCheck(user);
   }
 
-  public static canUse(user: Player, card: Card | CardMatcher) {
+  public static canUse(room: Room, user: Player, card: Card | CardMatcher) {
     GameCommonRules.preCheck(user);
 
     let availableUseTimes = INFINITE_TRIGGERING_TIMES;
@@ -101,12 +101,11 @@ export class GameCommonRules {
     }
     if (card instanceof Card) {
       for (const skill of user.getSkills<RulesBreakerSkill>('breaker')) {
-        availableUseTimes += skill.breakCardUsableTimes(card.Id);
+        availableUseTimes += skill.breakCardUsableTimes(card.Id, room, user);
       }
     } else if (GameCommonRules.isBannedBySideRules(user, card)) {
       return false;
     }
-
     return user.cardUsedTimes(card instanceof Card ? card.Id : card) < availableUseTimes;
   }
 
@@ -171,23 +170,7 @@ export class GameCommonRules {
     );
   }
 
-  public static getCardAdditionalUsableTimes(card: Card | CardMatcher, user: Player) {
-    let times = 0;
-    GameCommonRules.userRules[user.Id].cards
-      .filter(rule => rule.cardMatcher.match(card))
-      .forEach(rule => {
-        times += rule.additionalUsableTimes;
-      });
-
-    if (card instanceof Card) {
-      user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
-        times += skill.breakCardUsableTimes(card.Id);
-      });
-    }
-
-    return times;
-  }
-  public static getCardAdditionalUsableDistance(card: Card | CardMatcher, user: Player) {
+  public static getCardAdditionalUsableDistance(room: Room, user: Player, card: Card | CardMatcher) {
     let times = 0;
     GameCommonRules.userRules[user.Id].cards
       .filter(rule => rule.cardMatcher.match(card))
@@ -197,13 +180,13 @@ export class GameCommonRules {
 
     if (card instanceof Card) {
       user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
-        times += skill.breakCardUsableDistance(card.Id);
+        times += skill.breakCardUsableDistance(card.Id, room, user);
       });
     }
 
     return times;
   }
-  public static getCardAdditionalNumberOfTargets(card: Card | CardMatcher, user: Player) {
+  public static getCardAdditionalNumberOfTargets(room: Room, user: Player, card: Card | CardMatcher) {
     let times = 0;
     GameCommonRules.userRules[user.Id].cards
       .filter(rule => rule.cardMatcher.match(card))
@@ -213,7 +196,7 @@ export class GameCommonRules {
 
     if (card instanceof Card) {
       user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
-        times += skill.breakCardUsableTargets(card.Id);
+        times += skill.breakCardUsableTargets(card.Id, room, user);
       });
     }
 
@@ -225,30 +208,30 @@ export class GameCommonRules {
     return GameCommonRules.userRules[user.Id].additionalAttackDistance;
   }
 
-  public static getCardAdditionalAttackDistance(card: Card, user: Player) {
+  public static getCardAdditionalAttackDistance(room: Room, user: Player, card?: Card) {
     GameCommonRules.preCheck(user);
     let distance = GameCommonRules.userRules[user.Id].additionalAttackDistance;
     user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
-      distance += skill.breakAttackDistance(card.Id);
+      distance += skill.breakAttackDistance(card?.Id, room, user);
     });
 
     return distance;
   }
 
-  public static getAdditionalOffenseDistance(user: Player) {
+  public static getAdditionalOffenseDistance(room: Room, user: Player) {
     GameCommonRules.preCheck(user);
     let distance = GameCommonRules.userRules[user.Id].additionalOffenseDistance;
     user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
-      distance += skill.breakOffenseDistance();
+      distance += skill.breakOffenseDistance(room, user);
     });
 
     return distance;
   }
-  public static getAdditionalDefenseDistance(user: Player) {
+  public static getAdditionalDefenseDistance(room: Room, user: Player) {
     GameCommonRules.preCheck(user);
     let distance = GameCommonRules.userRules[user.Id].additionalDefenseDistance;
     user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
-      distance += skill.breakDefenseDistance();
+      distance += skill.breakDefenseDistance(room, user);
     });
 
     return distance;

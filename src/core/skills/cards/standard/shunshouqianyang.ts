@@ -7,6 +7,7 @@ import {
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
@@ -45,7 +46,7 @@ export class ShunShouQianYangSkill extends ActiveSkill {
       target !== owner &&
       room.canUseCardTo(room, containerCard, target) &&
       to.getCardIds().length > 0 &&
-      room.cardUseDistanceBetween(containerCard, from, to) <= 1
+      room.cardUseDistanceBetween(room, containerCard, from, to) <= Sanguosha.getCardById(containerCard).EffectUseDistance
     );
   }
 

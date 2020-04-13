@@ -230,6 +230,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public getAlivePlayersFrom(playerId?: PlayerId, startsFromNext: boolean = false) {
     playerId = playerId === undefined ? this.CurrentPlayer.Id : playerId;
+    while (this.getPlayerById(playerId).Dead) {
+      playerId = this.getNextAlivePlayer(playerId).Id;
+    }
+
     const alivePlayers = this.AlivePlayers;
     const fromIndex = alivePlayers.findIndex(player => player.Id === playerId);
 
@@ -243,11 +247,19 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   public getNextPlayer(playerId: PlayerId) {
-    const alivePlayers = this.AlivePlayers;
-    const fromIndex = alivePlayers.findIndex(player => player.Id === playerId);
-    const nextIndex = (fromIndex + 1) % alivePlayers.length;
+    const fromIndex = this.players.findIndex(player => player.Id === playerId);
+    const nextIndex = (fromIndex + 1) % this.players.length;
 
-    return alivePlayers[nextIndex];
+    return this.players[nextIndex];
+  }
+
+  public getNextAlivePlayer(playerId: PlayerId) {
+    let nextIndex = this.players.findIndex(player => player.Id === playerId);
+    do {
+      nextIndex = (nextIndex + 1) % this.players.length;
+    } while (this.players[nextIndex].Dead);
+
+    return this.players[nextIndex];
   }
 
   private onSeatDistance(from: Player, to: Player) {
@@ -264,21 +276,35 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   public canAttack(from: Player, to: Player, slash?: CardId) {
+    if (to.Id === from.Id) {
+      return false;
+    }
     const seatDistance = this.distanceBetween(from, to);
+    let additionalAttackDistance = 0;
+    if (slash) {
+      additionalAttackDistance = GameCommonRules.getCardAdditionalAttackDistance(
+        this,
+        from,
+        Sanguosha.getCardById(slash),
+      );
+    }
     return (
-      from.AttackDistance >= seatDistance &&
+      from.getAttackDistance(this) + additionalAttackDistance >= seatDistance &&
       this.canUseCardTo(this as any, slash || new CardMatcher({ name: ['slash'] }), to.Id)
     );
   }
 
   public distanceBetween(from: Player, to: Player) {
-    const seatGap = to.getDefenseDistance() - from.getOffenseDistance();
+    const seatGap = to.getDefenseDistance(this) - from.getOffenseDistance(this);
     return this.onSeatDistance(from, to) + seatGap;
   }
-  public cardUseDistanceBetween(cardId: CardId, from: Player, to: Player) {
+  public cardUseDistanceBetween(room: Room, cardId: CardId, from: Player, to: Player) {
     const card = Sanguosha.getCardById(cardId);
 
-    return Math.max(this.distanceBetween(from, to) - GameCommonRules.getCardAdditionalUsableDistance(card, from), 1);
+    return Math.max(
+      this.distanceBetween(from, to) - GameCommonRules.getCardAdditionalUsableDistance(room, from, card),
+      1,
+    );
   }
 
   public isAvailableTarget(cardId: CardId, attacker: PlayerId, target: PlayerId) {

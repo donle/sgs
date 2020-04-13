@@ -186,11 +186,11 @@ export abstract class BaseAction {
         if (card.Skill instanceof ViewAsSkill) {
           return player.canUseCard(this.store.room, new CardMatcher({ name: card.Skill.canViewAs() }));
         } else if (card.Skill instanceof ActiveSkill) {
-          let canSelfUse = false;
+          let canSelfUse = true;
           if (card.Skill.isSelfTargetSkill()) {
             canSelfUse = this.store.room.canUseCardTo(this.store.room, card.Id, player.Id);
           }
-          return card.Skill.canUse(this.store.room, player) && canSelfUse;
+          return canSelfUse && card.Skill.canUse(this.store.room, player);
         }
 
         return false;

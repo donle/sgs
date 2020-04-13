@@ -56,7 +56,7 @@ export class LightningSkill extends ActiveSkill {
 
   public async moveToNextPlayer(room: Room, cardId: CardId, currentPlayer: PlayerId) {
     while (true) {
-      const player = room.getNextPlayer(currentPlayer);
+      const player = room.getNextAlivePlayer(currentPlayer);
       if (player.Id === currentPlayer) {
         break;
       }
