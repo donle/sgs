@@ -8,7 +8,9 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
+import { Badge } from '../badge/badge';
 import { FlatClientCard } from '../card/flat_card';
+import { Hp } from '../hp/hp';
 import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
 import styles from './player.module.css';
 
@@ -82,17 +84,15 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     return (
       <div className={styles.judgeIcons}>
         {this.props.player?.getCardIds(PlayerCardsArea.JudgeArea).map(cardId => (
-          <DelayedTrickIcon
-            card={Sanguosha.getCardById(cardId)}
-            translator={this.props.translator}
-            className={styles.judgeNames}
-          />
+          <DelayedTrickIcon card={Sanguosha.getCardById(cardId)} translator={this.props.translator} />
         ))}
       </div>
     );
   }
 
   render() {
+    const nationalityText = this.PlayerCharacter && getNationalityRawText(this.PlayerCharacter.Nationality);
+
     return (
       <div
         className={classNames(styles.playerCard, {
@@ -102,24 +102,28 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
       >
         {this.props.player ? (
           <>
-            <p className={styles.playerName}>{this.props.player.Name}</p>
+            <p
+              className={classNames(styles.playerName, {
+                [styles.aligned]: this.PlayerCharacter !== undefined,
+              })}
+            >
+              {this.props.player.Name}
+            </p>
             {this.PlayerCharacter && (
-              <div className={styles.playerCardInside}>
-                <span className={styles.nationality}>
-                  {this.props.translator.tr(getNationalityRawText(this.PlayerCharacter.Nationality))}
-                </span>
-                <span>
+              <>
+                <Badge className={styles.playerCharacter} vertical={true} variant={nationalityText as any} translator={this.props.translator} blur={true}>
                   {this.props.translator.tr(this.PlayerCharacter.Name)}
-                  {!this.props.player.isFaceUp() && `(${this.props.translator.tr('turn overed')})`}
-                </span>
-                <span>
-                  {this.props.player.Hp}/{this.props.player.MaxHp}
-                </span>
-                <span className={styles.handCardsNumberBg}>
-                  <span className={styles.handCardsNumber}>{this.props.player.getCardIds(PlayerCardsArea.HandArea).length}</span>
-                </span>
+                </Badge>
                 {this.getPlayerEquips()}
-              </div>
+                <div className={styles.playerHp}>
+                  <Hp hp={this.props.player.Hp} maxHp={this.props.player.MaxHp} size="small" />
+                </div>
+                <span className={styles.handCardsNumberBg}>
+                  <span className={styles.handCardsNumber}>
+                    {this.props.player.getCardIds(PlayerCardsArea.HandArea).length}
+                  </span>
+                </span>
+              </>
             )}
             {this.getPlayerJudgeCards()}
           </>

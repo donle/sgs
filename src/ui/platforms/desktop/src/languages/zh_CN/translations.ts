@@ -421,7 +421,7 @@ export const generalDictionary: Word[] = [
   { source: 'god', target: '神' },
   { source: 'unknown', target: '未知' },
   { source: 'lord', target: '主公' },
-  { source: 'loyalist', target: '忠诚' },
+  { source: 'loyalist', target: '忠臣' },
   { source: 'rebel', target: '反贼' },
   { source: 'renegade', target: '内奸' },
   { source: 'seat 0', target: '一号位' },
@@ -629,7 +629,7 @@ export const eventDictionary: Word[] = [
   },
 ];
 
-export const UiDictionary = [
+export const UiDictionary: Word[] = [
   { source: 'No rooms at the moment', target: '还没有玩家创建房间' },
   { source: 'Create a room', target: '创建房间' },
   { source: 'waiting', target: '等待中' },
@@ -638,6 +638,8 @@ export const UiDictionary = [
     source: 'Unmatched core version, please update your application',
     target: '内核版本不匹配，请升级你的客户端版本',
   },
+  { source: 'lobby', target: '大厅' },
+  { source: 'room id', target: '房间号' },
   {
     source: 'New QSanguosha',
     target: '新神杀',

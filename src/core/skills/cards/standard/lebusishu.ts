@@ -38,7 +38,7 @@ export class LeBuSiShuSkill extends ActiveSkill {
   ): boolean {
     return (
       owner !== target &&
-      room.canUseCardTo(room, containerCard, target) &&
+      room.getPlayerById(owner).canUseCardTo(room, containerCard, target) &&
       room
         .getPlayerById(target)
         .getCardIds(PlayerCardsArea.JudgeArea)

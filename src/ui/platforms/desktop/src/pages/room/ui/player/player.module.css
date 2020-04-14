@@ -1,37 +1,38 @@
+@value gridLine from '../metrics/metrics.css';
+@value halfGridLine from '../metrics/metrics.css';
+
 .playerCard {
     position: relative;
-    height: 220px;
-    width: 200px;
+    height: 200px;
+    width: 160px;
     display: flex;
     border: 1px solid grey;
-    justify-content: flex-end;
+    justify-content: space-between;
 }
 
 .judgeIcons {
     position: absolute;
-    bottom: -12px;
-    right: 8px;
-    background: white;
+    bottom: -10px;
+    right: gridLine;
     display: flex;
 }
 
-.playerCardInside {
+.playerCharacter {
+    position: absolute;
+}
+
+.playerHp {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-}
-
-.nationality {
-    position: absolute;
-    top: 4px;
-    left: 4px;
+    justify-content: flex-end;
+    max-width: 24px;
+    justify-self: flex-end;
 }
 
 .waiting {
     align-self: center;
-    justify-self: center;
+    flex: auto;
+    text-align: center;
 }
 .selected {
     border-color: red;
@@ -41,15 +42,30 @@
     width: 100%;
     text-align: center;
     margin: 0;
+    text-shadow: 0px 0px 2px rgb(255, 255, 255), 0px 0px 2px rgb(255, 255, 255), 0px 0px 2px rgb(255, 255, 255);
+    background: rgba(0, 0, 0, 0.2);
+    font-weight: 550;
+    font-size: 14px;
+    height: calc(gridLine * 3);
+    line-height: calc(gridLine * 3);
+    color: rgb(130, 54, 0);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 0 gridLine;
+}
+.playerName.aligned {
+    padding-left: calc(gridLine * 4);
 }
 .playerEquips {
-    height: 100px;
+    height: calc(11 * gridLine);
     display: flex;
     flex-direction: column;
-    position: absolute;
+    align-self: flex-end;
     width: 100%;
     bottom: 0;
-    padding: 0 8px;
+    position: relative;
+    left: 0;
 }
 
 .playerEquip {
@@ -57,26 +73,27 @@
     width: 100%;
     display: flex;
     align-items: center;
-    position: absolute;
     left: 0;
-    padding: 0 8px;
+    position: absolute;
+    padding: 0 gridLine;
 }
 
 .handCardsNumberBg {
     position: absolute;
-    left: 9px;
-    width: 16px;
-    height: 24px;
+    left: gridLine;
+    width: calc(gridLine * 1.5);
+    height: calc(gridLine * 2);
     border: 1px solid grey;
     text-align: center;
     background: white;
     z-index: 2;
     transform: rotate(10deg);
+    align-self: center;
 }
 .handCardsNumberBg:before {
     content: '';
-    width: 16px;
-    height: 24px;
+    width: calc(gridLine * 1.5);
+    height: calc(gridLine * 2);
     border: 1px solid grey;
     display: block;
     position: absolute;
@@ -92,11 +109,8 @@
     position: absolute;
     transform: rotate(-10deg);
     left: 0;
-}
-
-.judgeNames {
-    margin: 0 2px;
-    margin-right: 8px;
+    font-size: 13px;
+    font-weight: 550;
 }
 
 .weapon {

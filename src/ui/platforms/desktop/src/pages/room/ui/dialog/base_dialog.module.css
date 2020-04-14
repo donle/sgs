@@ -5,11 +5,11 @@
     border: 1px solid grey;
     padding: 16px;
     z-index: 999;
-    font-size: 24px;
 }
 
 .selectorTitle {
-    font-family: LiSu, STLiti, 'Microsoft YaHei', 微软雅黑, 'MicrosoftJhengHei', 华文细黑, STHeiti, MingLiu;
+    font-size: 24px;
+    font-family: LiSu, -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', 微软雅黑;
     margin-bottom: 16px;
     margin-top: 0;
 }

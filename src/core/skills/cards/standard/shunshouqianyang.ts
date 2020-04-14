@@ -44,9 +44,10 @@ export class ShunShouQianYangSkill extends ActiveSkill {
 
     return (
       target !== owner &&
-      room.canUseCardTo(room, containerCard, target) &&
+      room.getPlayerById(owner).canUseCardTo(room, containerCard, target) &&
       to.getCardIds().length > 0 &&
-      room.cardUseDistanceBetween(room, containerCard, from, to) <= Sanguosha.getCardById(containerCard).EffectUseDistance
+      room.cardUseDistanceBetween(room, containerCard, from, to) <=
+        Sanguosha.getCardById(containerCard).EffectUseDistance
     );
   }
 

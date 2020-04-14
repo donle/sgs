@@ -41,7 +41,8 @@ export class WuGuFengDengSkill extends ActiveSkill {
   }
   public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const all = room.getAlivePlayersFrom();
-    event.toIds = all.filter(player => room.canUseCardTo(room, event.cardId, player.Id)).map(player => player.Id);
+    const from = room.getPlayerById(event.fromId);
+    event.toIds = all.filter(player => from.canUseCardTo(room, event.cardId, player.Id)).map(player => player.Id);
 
     return true;
   }
@@ -94,11 +95,14 @@ export class WuGuFengDengSkill extends ActiveSkill {
     });
     room.endProcessOnCard(response.selectedCard);
 
-    await room.obtainCards({
-      toId,
-      reason: CardObtainedReason.ActivePrey,
-      cardIds: [response.selectedCard],
-    }, true);
+    await room.obtainCards(
+      {
+        toId,
+        reason: CardObtainedReason.ActivePrey,
+        cardIds: [response.selectedCard],
+      },
+      true,
+    );
 
     return true;
   }

@@ -1,0 +1,12 @@
+.banner {
+  padding: 4px 8px;
+  display: flex;
+  border: 1px solid lightgrey;
+  border-radius: 4px;
+}
+
+.breadcrumb {
+    display: flex;
+    flex: auto;
+    align-items: center;
+}

@@ -7,9 +7,9 @@
 .leftSeats {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
-    padding: 8px;
+    justify-content: space-evenly;
     min-width: 200px;
+    align-items: center;
 }
 
 .central {
@@ -20,8 +20,9 @@
 
 .topSeats {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly;
     align-items: center;
+    padding-top: 16px;
 }
 
 .gamePad {

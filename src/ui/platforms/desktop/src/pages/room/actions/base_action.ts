@@ -130,7 +130,8 @@ export abstract class BaseAction {
           this.selectedCardToPlay,
         ) &&
         isAvailableInRoom &&
-        !skill.targetFilter(this.store.room, this.selectedTargets)
+        (!skill.targetFilter(this.store.room, this.selectedTargets) ||
+          skill.targetFilter(this.store.room, [...this.selectedTargets, player.Id]))
       );
     } else {
       return false;
@@ -163,12 +164,15 @@ export abstract class BaseAction {
             this.selectedCards,
             this.selectedTargets,
             this.equipSkillCardId,
-          ) && skill.cardFilter(this.store.room, [...this.selectedCards, card.Id])
+          ) &&
+          (!skill.cardFilter(this.store.room, this.selectedCards) ||
+            skill.cardFilter(this.store.room, [...this.selectedCards, card.Id]))
         );
       } else if (skill instanceof ViewAsSkill) {
         return (
           skill.isAvailableCard(this.store.room, player, card.Id, this.pendingCards, this.equipSkillCardId) &&
-          !skill.cardFilter(this.store.room, player, this.pendingCards)
+          (!skill.cardFilter(this.store.room, player, this.pendingCards) ||
+            skill.cardFilter(this.store.room, player, [...this.pendingCards, card.Id]))
         );
       } else if (skill instanceof ResponsiveSkill) {
         return this.selectedCardToPlay === undefined;
@@ -188,7 +192,7 @@ export abstract class BaseAction {
         } else if (card.Skill instanceof ActiveSkill) {
           let canSelfUse = true;
           if (card.Skill.isSelfTargetSkill()) {
-            canSelfUse = this.store.room.canUseCardTo(this.store.room, card.Id, player.Id);
+            canSelfUse = player.canUseCardTo(this.store.room, card.Id, player.Id);
           }
           return canSelfUse && card.Skill.canUse(this.store.room, player);
         }
@@ -206,7 +210,9 @@ export abstract class BaseAction {
             this.selectedCards,
             this.selectedTargets,
             card.Id,
-          ) && !skill.cardFilter(this.store.room, this.selectedCards)
+          ) &&
+          (!skill.cardFilter(this.store.room, this.selectedCards) ||
+            skill.cardFilter(this.store.room, [...this.selectedCards, card.Id]))
         );
       } else if (skill instanceof ViewAsSkill) {
         return (
@@ -216,7 +222,9 @@ export abstract class BaseAction {
             card.Id,
             this.pendingCards,
             this.equipSkillCardId,
-          ) && !skill.cardFilter(this.store.room, this.presenter.ClientPlayer!, this.pendingCards)
+          ) &&
+          (!skill.cardFilter(this.store.room, this.presenter.ClientPlayer!, this.pendingCards) ||
+            skill.cardFilter(this.store.room, this.presenter.ClientPlayer!, [...this.pendingCards, card.Id]))
         );
       } else {
         return false;

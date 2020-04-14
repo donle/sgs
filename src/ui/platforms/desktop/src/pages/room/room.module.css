@@ -13,13 +13,13 @@
     align-items: stretch;
     flex-direction: column;
     width: 100%;
+    overflow: hidden;
 }
 
 .mainBoard {
-    min-width: 1200px;
     display: flex;
     align-items: stretch;
-    flex: auto;
+    height: calc(100% - 233px);
 }
 
 .sideBoard {
@@ -54,4 +54,14 @@
 .displayedCard {
     margin: 2px;
     position: absolute;
+}
+
+.roomBanner {
+    flex: auto;
+}
+
+@media(max-width: 1199px) {
+    .sideBoard {
+        display: none;
+    }
 }

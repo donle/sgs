@@ -7,6 +7,8 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
+import { Badge } from '../badge/badge';
+import { Hp } from '../hp/hp';
 import styles from './player_avatar.module.css';
 
 type PlayerAvatarProps = {
@@ -101,19 +103,21 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
         })}
         onClick={this.onClick}
       >
-        <p>{clientPlayer?.Name}</p>
+        <span className={styles.playerName}>{clientPlayer?.Name}</span>
         {character && (
-          <div className={styles.playerCardInside}>
-            <span className={styles.nationality}>
-              {this.props.translator.tr(getNationalityRawText(character.Nationality))}
-            </span>
-            <span>{this.props.translator.tr(character.Name)}</span>
-            <span>
-              {clientPlayer?.Hp}/{clientPlayer?.MaxHp}
-            </span>
-          </div>
+          <Badge
+            translator={this.props.translator}
+            variant={getNationalityRawText(character.Nationality) as any}
+            blur={true}
+            className={styles.playCharacterName}
+          >
+            {this.props.translator.tr(character.Name)}
+          </Badge>
         )}
         {this.getSkillButtons()}
+        {clientPlayer && (
+          <Hp hp={clientPlayer.Hp} className={styles.playerHp} maxHp={clientPlayer.MaxHp} size="regular" />
+        )}
       </div>
     );
   }

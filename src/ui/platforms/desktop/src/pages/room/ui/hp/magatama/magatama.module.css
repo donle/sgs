@@ -1,0 +1,42 @@
+.magatama {
+    display: flex;
+    width: 100%;
+    border-radius: 50%;
+}
+
+.regular {
+    height: 18px;
+    width: 18px;
+    margin: 4px 2px;
+}
+.small {
+    height: 16px;
+    width: 16px;
+    margin: 2px;
+}
+
+.dying {
+    background: #ff5613;
+}
+
+.danger {
+    background: #e48205;
+}
+
+.damaged {
+    border: 1px solid #7c7d7c;
+    background: transparent;
+}
+.damaged.dying {
+    border: 1px solid #ff5613;
+}
+.damaged.danger {
+    border: 1px solid #e48205;
+}
+.damaged.healthy {
+    border: 1px solid #1f9824;
+}
+
+.healthy {
+    background: #1f9824;
+}

@@ -1,0 +1,117 @@
+@value gridLine from '../metrics/metrics.css';
+@value halfGridLine from '../metrics/metrics.css';
+
+@value SanguoshaFont from '../metrics/metrics.css';
+
+@value wuColor from '../metrics/metrics.css';
+@value weiColor from '../metrics/metrics.css';
+@value shuColor from '../metrics/metrics.css';
+@value qunColor from '../metrics/metrics.css';
+@value godColor from '../metrics/metrics.css';
+@value wuDarkColor from '../metrics/metrics.css';
+@value weiDarkColor from '../metrics/metrics.css';
+@value shuDarkColor from '../metrics/metrics.css';
+@value qunDarkColor from '../metrics/metrics.css';
+@value godDarkColor from '../metrics/metrics.css';
+
+.badge {
+    height: calc(gridLine * 3);
+    min-width: calc(gridLine * 12);
+    font-family: SanguoshaFont;
+    position: relative;
+    font-size: 20px;
+    color: white;
+    padding-left: calc(gridLine * 3);
+    text-shadow: 0px 0px 3px rgba(50, 50, 50, 0.87), 0px 0px 5px rgba(50, 50, 50, 0.87),
+        0px 0px 7px rgba(50, 50, 50, 0.87);
+}
+.vertical {
+    word-wrap: break-word;
+    height: calc(gridLine * 15);
+    width: calc(gridLine * 3.5);
+    min-width: initial;
+    padding-top: gridLine;
+    line-height: calc(gridLine * 2);
+    top: 0;
+    padding-top: calc(gridLine * 3.5);
+    padding-left: 0;
+    text-align: center;
+}
+
+.nationality {
+    position: absolute;
+    left: -4px;
+    font-size: 22px;
+    text-shadow: 0px 0px 3px rgba(255, 255, 255, 0.87), 0px 0px 5px rgba(255, 255, 255, 0.87),
+        0px 0px 5px rgba(255, 255, 255, 0.87), 0px 0px 5px rgba(255, 255, 255, 0.87);
+}
+
+.vertical .nationality {
+    left: 2px;
+    top: 2px;
+    font-size: 22px;
+}
+
+.wei .nationality {
+    color: weiDarkColor;
+}
+.shu .nationality {
+    color: shuDarkColor;
+}
+.wu .nationality {
+    color: wuDarkColor;
+}
+.qun .nationality {
+    color: qunDarkColor;
+}
+.god .nationality {
+    color: godDarkColor;
+}
+
+.wei {
+    background: weiColor;
+}
+.shu {
+    background: shuColor;
+}
+.wu {
+    background: wuColor;
+}
+.qun {
+    background: qunColor;
+}
+.god {
+    background: godColor;
+}
+
+.wei.blur {
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, weiColor 10%, weiColor 50%, rgba(0, 0, 0, 0) 90%);
+}
+.shu.blur {
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, shuColor 10%, shuColor 50%, rgba(0, 0, 0, 0) 90%);
+}
+.wu.blur {
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, wuColor 10%, wuColor 50%, rgba(0, 0, 0, 0) 90%);
+}
+.qun.blur {
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, qunColor 10%, qunColor 50%, rgba(0, 0, 0, 0) 90%);
+}
+.god.blur {
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, godColor 10%, godColor 50%, rgba(0, 0, 0, 0) 90%);
+}
+
+.vertical.wei.blur {
+    background: linear-gradient(180deg, weiColor 50%, rgba(0, 0, 0, 0) 90%);
+}
+.vertical.shu.blur {
+    background: linear-gradient(180deg, shuColor 50%, rgba(0, 0, 0, 0) 90%);
+}
+.vertical.wu.blur {
+    background: linear-gradient(180deg, wuColor 50%, rgba(0, 0, 0, 0) 90%);
+}
+.vertical.qun.blur {
+    background: linear-gradient(180deg, qunColor 50%, rgba(0, 0, 0, 0) 90%);
+}
+.vertical.god.blur {
+    background: linear-gradient(180deg, godColor 50%, rgba(0, 0, 0, 0) 90%);
+}

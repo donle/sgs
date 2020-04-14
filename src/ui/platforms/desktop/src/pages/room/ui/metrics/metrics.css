@@ -1,0 +1,15 @@
+@value gridLine: 8px;
+@value halfGridLine: 4px;
+@value wuColor: rgb(81, 199, 21);
+@value weiColor: rgb(63, 113, 166);
+@value shuColor: rgb(235, 140, 56);
+@value qunColor: rgb(165, 161, 158);
+@value godColor: rgb(192, 179, 74);
+
+@value wuDarkColor: rgb(81, 149, 21);
+@value weiDarkColor: rgb(46, 93, 142);
+@value shuDarkColor: rgb(187, 111, 44);
+@value qunDarkColor: rgb(130, 127, 126);
+@value godDarkColor: rgb(154, 144, 60);
+
+@value SanguoshaFont: LiSu, -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', 微软雅黑;

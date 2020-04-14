@@ -40,7 +40,7 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill {
   ): boolean {
     return (
       target !== owner &&
-      room.canUseCardTo(room, containerCard, target) &&
+      room.getPlayerById(owner).canUseCardTo(room, containerCard, target) &&
       room.getPlayerById(target).getCardIds().length > 0
     );
   }

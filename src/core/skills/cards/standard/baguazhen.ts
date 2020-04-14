@@ -19,8 +19,9 @@ export class BaGuaZhenSkill extends TriggerSkill {
   ) {
     const identifier = EventPacker.getIdentifier(event);
     return (
-      identifier === GameEventIdentifiers.AskForCardResponseEvent ||
-      identifier === GameEventIdentifiers.AskForCardUseEvent
+      !EventPacker.isDisresponsiveEvent(event) &&
+      (identifier === GameEventIdentifiers.AskForCardResponseEvent ||
+        identifier === GameEventIdentifiers.AskForCardUseEvent)
     );
   }
 
@@ -58,7 +59,7 @@ export class BaGuaZhenSkill extends TriggerSkill {
     const jinkCardEvent = triggeredOnEvent as ServerEventFinder<
       GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent
     >;
-    
+
     const identifier = Precondition.exists(
       EventPacker.getIdentifier<GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent>(
         jinkCardEvent,

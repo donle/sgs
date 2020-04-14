@@ -26,7 +26,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
   constructor(props: SeatsLayoutProps) {
     super(props);
 
-    this.sideNumberOfPlayers = Math.floor(Math.floor(this.numberOfPlayers / 3) / 2 + 0.49);
+    this.sideNumberOfPlayers = Math.floor(this.numberOfPlayers / 3);
     this.topNumberOfPlayers = this.numberOfPlayers - this.sideNumberOfPlayers * 2;
   }
 

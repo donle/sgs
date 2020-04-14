@@ -17,7 +17,7 @@ export const enum CharacterNationality {
 }
 
 export function getNationalityRawText(nationality: CharacterNationality) {
-  const rawNationalityText = ['wei', 'shu', 'wu', 'qun', 'shen'];
+  const rawNationalityText = ['wei', 'shu', 'wu', 'qun', 'god'];
   return rawNationalityText[nationality];
 }
 export function getGenderRawText(gender: CharacterGender) {

@@ -286,6 +286,19 @@ export abstract class Player implements PlayerInfo {
     this.drunk = 0;
   }
 
+  public canUseCardTo(room: Room, cardId: CardId | CardMatcher, target: PlayerId): boolean {
+    const player = room.getPlayerById(target);
+
+    const skills = player.getSkills<FilterSkill>('filter');
+    for (const skill of skills) {
+      if (!skill.canBeUsedCard(cardId, room, target, this.Id)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   public getEquipment(cardType: CardType): CardId | undefined {
     return this.playerCards[PlayerCardsArea.EquipArea].find(cardId => Sanguosha.getCardById(cardId).is(cardType));
   }

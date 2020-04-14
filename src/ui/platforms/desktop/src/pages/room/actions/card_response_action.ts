@@ -55,7 +55,8 @@ export class CardResponseAction extends BaseAction {
         const player = this.store.room.getPlayerById(this.playerId);
         return (
           skill.isAvailableCard(this.store.room, player, card.Id, this.pendingCards, this.equipSkillCardId) &&
-          !skill.cardFilter(this.store.room, player, this.pendingCards)
+          (!skill.cardFilter(this.store.room, player, this.pendingCards) ||
+            skill.cardFilter(this.store.room, player, [...this.pendingCards, card.Id]))
         );
       } else {
         return false;

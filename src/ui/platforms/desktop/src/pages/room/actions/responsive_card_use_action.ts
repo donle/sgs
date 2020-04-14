@@ -62,12 +62,15 @@ export class ResponsiveUseCardAction extends BaseAction {
             this.selectedCards,
             this.selectedTargets,
             this.equipSkillCardId,
-          ) && skill.cardFilter(this.store.room, [...this.selectedCards, card.Id])
+          ) &&
+          (!skill.cardFilter(this.store.room, this.selectedCards) ||
+            skill.cardFilter(this.store.room, [...this.selectedCards, card.Id]))
         );
       } else if (skill instanceof ViewAsSkill) {
         return (
           skill.isAvailableCard(this.store.room, player, card.Id, this.pendingCards, this.equipSkillCardId) &&
-          !skill.cardFilter(this.store.room, player, this.pendingCards)
+          (!skill.cardFilter(this.store.room, player, this.pendingCards) ||
+            skill.cardFilter(this.store.room, player, [...this.pendingCards, card.Id]))
         );
       } else {
         return false;

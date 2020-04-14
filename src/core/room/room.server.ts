@@ -412,9 +412,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         card.reset();
         this.endProcessOnTag(card.Id.toString());
 
-        if (this.getCardOwnerId(card.Id) === undefined) {
-          this.bury(card.Id);
-        }
+        this.bury(card.Id);
       }
 
       return true;
@@ -785,10 +783,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     };
 
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.JudgeEvent, event);
-
-    if (this.getCardOwnerId(event.judgeCardId) === undefined) {
-      this.bury(event.judgeCardId);
-    }
+    this.bury(event.judgeCardId);
 
     return event;
   }

@@ -587,21 +587,12 @@ export class GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.CardLostEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
+    const from = this.room.getPlayerById(event.fromId);
+    event.cardIds = Card.getActualCards(event.cardIds);
+
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === CardLostStage.CardLosing) {
-        const from = this.room.getPlayerById(event.fromId);
-        const lostCards = event.cardIds.reduce<CardId[]>((prevCardIds, cardId) => {
-          if (Card.isVirtualCardId(cardId)) {
-            for (const actualId of Sanguosha.getCardById<VirtualCard>(cardId).ActualCardIds) {
-              prevCardIds.push(actualId);
-            }
-          } else {
-            prevCardIds.push(cardId);
-          }
-
-          return prevCardIds;
-        }, [] as CardId[]);
-        from.dropCards(...lostCards);
+        from.dropCards(...event.cardIds);
         this.room.broadcast(identifier, event);
       }
     });

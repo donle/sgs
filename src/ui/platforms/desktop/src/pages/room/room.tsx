@@ -9,6 +9,7 @@ import { PagePropsWithHostConfig } from 'types/page_props';
 import { GameClientProcessor } from './game_processor';
 import styles from './room.module.css';
 import { RoomPresenter, RoomStore } from './room.presenter';
+import { Banner } from './ui/banner/banner';
 import { ClientCard } from './ui/card/card';
 import { Dashboard } from './ui/dashboard/dashboard';
 import { GameDialog } from './ui/game_dialog/game_dialog';
@@ -136,6 +137,12 @@ export class RoomPage extends React.Component<
         <div className={styles.incomingConversation}>{this.store.incomingConversation}</div>
         {this.store.room && (
           <div className={styles.roomBoard}>
+            <Banner
+              roomIndex={this.roomId}
+              translator={this.props.translator}
+              roomName={this.store.room.getRoomInfo().name}
+              className={styles.roomBanner}
+            />
             <div className={styles.mainBoard}>
               <SeatsLayout
                 updateFlag={this.store.updateUIFlag}

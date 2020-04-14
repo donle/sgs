@@ -54,6 +54,10 @@ export class Lobby extends React.Component<LobbyProps> {
     this.socket.emit(LobbySocketEvent.QueryVersion.toString(), {
       version: Sanguosha.Version,
     });
+
+    if (window.innerWidth < 1200) {
+      window.screen.orientation.lock('landscape');
+    }
   }
 
   private getTranslatePackName = (...packages: GameCharacterExtensions[]) => {
@@ -64,7 +68,7 @@ export class Lobby extends React.Component<LobbyProps> {
     const roomInfo: GameInfo = {
       characterExtensions: [GameCharacterExtensions.Standard],
       cardExtensions: [GameCardExtensions.Standard],
-      numberOfPlayers: 4,
+      numberOfPlayers: 3,
       roomName: 'test room name',
     };
 

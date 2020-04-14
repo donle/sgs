@@ -35,7 +35,7 @@ export class LiJian extends ActiveSkill {
   ): boolean {
     let canUse = room.getPlayerById(target).Gender === CharacterGender.Male;
     if (selectedTargets.length === 0) {
-      canUse = canUse && room.canUseCardTo(room, new CardMatcher({ name: ['duel'] }), target);
+      canUse = canUse && room.getPlayerById(owner).canUseCardTo(room, new CardMatcher({ name: ['duel'] }), target);
     }
 
     return canUse;

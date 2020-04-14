@@ -31,7 +31,8 @@ export class NanManRuQingSkill extends ActiveSkill {
   }
   public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const others = room.getOtherPlayers(event.fromId);
-    event.toIds = others.filter(player => room.canUseCardTo(room, event.cardId, player.Id)).map(player => player.Id);
+    const from = room.getPlayerById(event.fromId);
+    event.toIds = others.filter(player => from.canUseCardTo(room, event.cardId, player.Id)).map(player => player.Id);
     return true;
   }
 
