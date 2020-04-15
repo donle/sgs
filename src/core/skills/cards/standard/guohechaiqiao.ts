@@ -81,17 +81,17 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill {
     if (response.fromArea !== PlayerCardsArea.JudgeArea) {
       await room.dropCards(CardLostReason.PassiveDrop, [response.selectedCard], chooseCardEvent.toId);
     } else {
-      const loseEvent: ServerEventFinder<GameEventIdentifiers.CardLostEvent> = {
-        fromId: chooseCardEvent.toId,
-        cardIds: [response.selectedCard],
-        droppedBy: chooseCardEvent.fromId,
-        reason: CardLostReason.PassiveDrop,
-        translationsMessage: TranslationPack.translationJsonPatcher(
+      await room.loseCards(
+        [response.selectedCard],
+        chooseCardEvent.toId,
+        CardLostReason.PassiveDrop,
+        chooseCardEvent.fromId,
+        undefined,
+        TranslationPack.translationJsonPatcher(
           '{0} is placed into drop stack',
           TranslationPack.patchCardInTranslation(response.selectedCard),
         ).extract(),
-      };
-      await room.loseCards(loseEvent);
+      );
       room.bury(response.selectedCard);
     }
     return true;

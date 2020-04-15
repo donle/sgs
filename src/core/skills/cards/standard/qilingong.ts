@@ -74,17 +74,17 @@ export class QiLinGongSkill extends TriggerSkill {
       return true;
     }
 
-    const loseEvent: ServerEventFinder<GameEventIdentifiers.CardLostEvent> = {
-      fromId: chooseCardEvent.toId,
-      cardIds: [response.selectedCard],
-      droppedBy: skillUseEvent.fromId,
-      reason: CardLostReason.PassiveDrop,
-      translationsMessage: TranslationPack.translationJsonPatcher(
+    await room.loseCards(
+      [response.selectedCard],
+      chooseCardEvent.toId,
+      CardLostReason.PassiveDrop,
+      skillUseEvent.fromId,
+      undefined,
+      TranslationPack.translationJsonPatcher(
         '{0} is placed into drop stack',
         TranslationPack.patchCardInTranslation(response.selectedCard),
       ).extract(),
-    };
-    await room.loseCards(loseEvent);
+    );
     room.bury(response.selectedCard);
     return true;
   }

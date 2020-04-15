@@ -76,7 +76,10 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.CardLostEvent]: {
     fromId: PlayerId;
-    cardIds: CardId[];
+    cards: {
+      fromArea?: PlayerCardsArea;
+      cardId: CardId;
+    }[];
     droppedBy?: PlayerId;
     reason: CardLostReason;
   };

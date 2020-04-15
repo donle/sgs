@@ -163,7 +163,7 @@ export class GameClientProcessor {
         await this.onHandleAskForChoosingCardEvent(e as any, content);
         break;
       case GameEventIdentifiers.CardLostEvent:
-        await this.onHandleCardLoseEvent(e as any, content);
+        await this.onHandleCardLostEvent(e as any, content);
         break;
       case GameEventIdentifiers.AimEvent:
         await this.onHandleAimEvent(e as any, content);
@@ -655,13 +655,13 @@ export class GameClientProcessor {
     );
   }
 
-  private onHandleCardLoseEvent<T extends GameEventIdentifiers.CardLostEvent>(type: T, content: ServerEventFinder<T>) {
-    const { fromId, cardIds } = content;
-
+  private onHandleCardLostEvent<T extends GameEventIdentifiers.CardLostEvent>(type: T, content: ServerEventFinder<T>) {
+    const { fromId, cards } = content;
+    const cardIds = cards.map(card => card.cardId);
     this.store.room.getPlayerById(fromId).dropCards(...cardIds);
 
     this.presenter.showCards(
-      ...content.cardIds
+      ...cardIds
         .filter(cardId => this.store.room.getCardOwnerId(cardId) === undefined)
         .map(cardId => Sanguosha.getCardById(cardId)),
     );
@@ -720,7 +720,9 @@ export class GameClientProcessor {
     const { winnerIds, loserIds } = content;
     const winners = winnerIds.map(id => this.store.room.getPlayerById(id));
     const losers = loserIds.map(id => this.store.room.getPlayerById(id));
+    this.store.room.gameOver();
     this.presenter.createDialog(<GameOverDialog translator={this.translator} winners={winners} losers={losers} />);
+    this.presenter.broadcastUIUpdate();
   }
 
   private async onHandleAskForChoosingPlayerEvent<T extends GameEventIdentifiers.AskForChoosingPlayerEvent>(

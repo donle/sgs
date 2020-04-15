@@ -5,7 +5,6 @@ import { ClientSocket } from 'core/network/socket.client';
 import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
 import { PlayerId } from 'core/player/player_props';
-import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { Room, RoomId } from './room';
 
 export class ClientRoom extends Room<WorkPlace.Client> {
@@ -164,6 +163,18 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.gameStarted = true;
 
     this.init(gameStartInfo);
+  }
+
+  public gameOver() {
+    this.gameStarted = false;
+
+    for (const player of this.AlivePlayers) {
+      this.kill(player);
+    }
+    this.currentPlayerPhase = undefined as any;
+    this.currentPlayer = undefined as any;
+    this.currentPlayerStage = undefined as any;
+    this.currentPhasePlayer = undefined as any;
   }
 
   public nextRound() {

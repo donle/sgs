@@ -21,6 +21,7 @@ import { AllStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_proces
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { FilterSkill } from 'core/skills/skill';
+import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
 
 export type RoomId = number;
 
@@ -64,7 +65,12 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   ): Promise<void>;
   //Server only
   public abstract async loseCards(
-    event: ServerEventFinder<GameEventIdentifiers.CardLostEvent>,
+    cardIds: CardId[],
+    from: PlayerId,
+    reason: CardLostReason,
+    droppedBy?: PlayerId,
+    moveReaon?: string,
+    customMessmage?: PatchedTranslationObject,
     doBroadcast?: boolean,
   ): Promise<void>;
   //Server only

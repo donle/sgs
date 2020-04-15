@@ -201,7 +201,12 @@ export class GameProcessor {
 
           this.room.broadcast(GameEventIdentifiers.CardLostEvent, {
             fromId: this.CurrentPlayer.Id,
-            cardIds: [judgeCardId],
+            cards: [
+              {
+                fromArea: PlayerCardsArea.JudgeArea,
+                cardId: judgeCardId,
+              },
+            ],
             reason: CardLostReason.PlaceToDropStack,
           });
           this.CurrentPlayer.dropCards(judgeCardId);
@@ -589,11 +594,10 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     const from = this.room.getPlayerById(event.fromId);
-    event.cardIds = Card.getActualCards(event.cardIds);
 
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === CardLostStage.CardLosing) {
-        from.dropCards(...event.cardIds);
+        from.dropCards(...event.cards.map(card => card.cardId));
         this.room.broadcast(identifier, event);
       }
     });
@@ -697,38 +701,38 @@ export class GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
+    let isGameOver = false;
     await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === PlayerDiedStage.PlayerDied) {
         this.room.broadcast(identifier, event);
         const deadPlayer = this.room.getPlayerById(event.playerId);
         deadPlayer.bury();
+
+        const winners = this.room.getGameWinners();
+        if (winners) {
+          let winner = winners.find(player => player.Role === PlayerRole.Lord);
+          if (winner === undefined) {
+            winner = winners.find(player => player.Role === PlayerRole.Rebel);
+          }
+          if (winner === undefined) {
+            winner = winners.find(player => player.Role === PlayerRole.Renegade);
+          }
+
+          this.stageProcessor.clearProcess();
+          EventPacker.terminate(event);
+          this.playerStages = [];
+          this.room.broadcast(GameEventIdentifiers.GameOverEvent, {
+            translationsMessage: TranslationPack.translationJsonPatcher(
+              'game over, winner is {0}',
+              Functional.getPlayerRoleRawText(winner!.Role),
+            ).extract(),
+            winnerIds: winners.map(winner => winner.Id),
+            loserIds: this.room.Players.filter(player => !winners.includes(player)).map(player => player.Id),
+          });
+          isGameOver = true;
+        }
       }
     });
-
-    let isGameOver = false;
-    const winners = this.room.getGameWinners();
-    if (winners) {
-      let winner = winners.find(player => player.Role === PlayerRole.Lord);
-      if (winner === undefined) {
-        winner = winners.find(player => player.Role === PlayerRole.Rebel);
-      }
-      if (winner === undefined) {
-        winner = winners.find(player => player.Role === PlayerRole.Renegade);
-      }
-
-      this.stageProcessor.clearProcess();
-      EventPacker.terminate(event);
-      this.playerStages = [];
-      this.room.broadcast(GameEventIdentifiers.GameOverEvent, {
-        translationsMessage: TranslationPack.translationJsonPatcher(
-          'game over, winner is {0}',
-          Functional.getPlayerRoleRawText(winner!.Role),
-        ).extract(),
-        winnerIds: winners.map(winner => winner.Id),
-        loserIds: this.room.Players.filter(player => !winners.includes(player)).map(player => player.Id),
-      });
-      isGameOver = true;
-    }
 
     if (!isGameOver) {
       const { killedBy, playerId } = event;

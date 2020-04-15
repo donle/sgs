@@ -257,23 +257,20 @@ export abstract class Player implements PlayerInfo {
   }
 
   public equip(equipCard: EquipCard) {
-    const currentEquipIndex = this.playerCards[PlayerCardsArea.EquipArea].findIndex(card =>
-      Sanguosha.getCardById<EquipCard>(card).is(equipCard.EquipType),
+    Precondition.assert(
+      !this.playerCards[PlayerCardsArea.EquipArea].find(card =>
+        Sanguosha.getCardById<EquipCard>(card).is(equipCard.EquipType),
+      ),
+      'Unexpected existing equip card in equip area',
     );
-    let lostEquipId: CardId | undefined;
-    if (currentEquipIndex >= 0) {
-      lostEquipId = this.playerCards[PlayerCardsArea.EquipArea].splice(currentEquipIndex, 1)[0] as CardId;
-    }
 
-    const equipCardFromHandsIndex = this.playerCards[PlayerCardsArea.HandArea].findIndex(
-      cardId => equipCard.Id === cardId,
+    Precondition.assert(
+      !this.playerCards[PlayerCardsArea.HandArea].find(cardId => equipCard.Id === cardId),
+      'Unexpected existing equip card in hand area',
     );
-    if (equipCardFromHandsIndex >= 0) {
-      this.playerCards[PlayerCardsArea.HandArea].splice(equipCardFromHandsIndex, 1);
-    }
 
     this.playerCards[PlayerCardsArea.EquipArea].push(equipCard.Id);
-    return lostEquipId;
+    return equipCard.Id;
   }
 
   public getDrunk() {

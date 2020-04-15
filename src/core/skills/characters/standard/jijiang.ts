@@ -86,11 +86,7 @@ export class JiJiang extends ActiveSkill {
           fromId: responseEvent.fromId,
           cardId: responseEvent.cardId!,
         });
-        await room.loseCards({
-          fromId: responseEvent.fromId,
-          cardIds: [responseEvent.cardId!],
-          reason: CardLostReason.CardResponse,
-        });
+        await room.loseCards([responseEvent.cardId!], responseEvent.fromId, CardLostReason.CardResponse);
 
         const useCardEvent = {
           cardId: responseEvent.cardId,

@@ -12,7 +12,7 @@ export class XiaoJi extends TriggerSkill {
   }
 
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardLostEvent>, stage?: AllStage) {
-    return stage === CardLostStage.AfterCardLostEffect || stage === CardLostStage.BeforeCardLoseEffect;
+    return stage === CardLostStage.AfterCardLostEffect;
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardLostEvent>) {
@@ -20,13 +20,10 @@ export class XiaoJi extends TriggerSkill {
       return false;
     }
 
-    if (owner.getInvisibleMark(this.name) > 0) {
-      return true;
-    }
-
-    const equipCards = content.cardIds.filter(cardId => owner.cardFrom(cardId) === PlayerCardsArea.EquipArea);
+    const equipCards = content.cards.filter(card => card.fromArea === PlayerCardsArea.EquipArea);
     if (equipCards.length > 0) {
       owner.addInvisibleMark(this.name, equipCards.length * 2);
+      return true;
     }
 
     return false;
