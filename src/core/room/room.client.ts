@@ -141,14 +141,14 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   }
 
   public get CurrentPlayerPhase(): PlayerPhase {
-    return Precondition.exists(this.currentPlayerPhase, 'Uninitilizes client room with current player stage');
+    return this.currentPlayerPhase;
   }
   public get CurrentPlayer(): ClientPlayer {
-    return Precondition.exists(this.currentPlayer, 'Uninitilizes client room with current player');
+    return this.currentPlayer;
   }
 
   public get CurrentPhasePlayer(): ClientPlayer {
-    return Precondition.exists(this.currentPhasePlayer, 'Uninitilizes client room with current phase player');
+    return this.currentPhasePlayer;
   }
 
   public turnTo(playerId: PlayerId) {

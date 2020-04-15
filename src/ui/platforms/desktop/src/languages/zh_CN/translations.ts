@@ -437,6 +437,13 @@ export const generalDictionary: Word[] = [
   { source: 'spade', target: '黑桃' },
   { source: 'club', target: '梅花' },
   { source: 'diamond', target: '方块' },
+
+  { source: 'prepare stage', target: '准备阶段' },
+  { source: 'judge stage', target: '判定阶段' },
+  { source: 'draw stage', target: '摸牌阶段' },
+  { source: 'play stage', target: '出牌阶段' },
+  { source: 'drop stage', target: '弃牌阶段' },
+  { source: 'finish stage', target: '结束阶段' },
 ];
 
 export const eventDictionary: Word[] = [

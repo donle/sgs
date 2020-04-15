@@ -19,7 +19,7 @@ import {
 import { ServerSocket } from 'core/network/socket.server';
 import { Player } from 'core/player/player';
 import { ServerPlayer } from 'core/player/player.server';
-import { getPlayerRoleRawText, PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
@@ -32,11 +32,12 @@ import { GameCommonRules } from 'core/game/game_rules';
 import { CardLoader } from 'core/game/package_loader/loader.cards';
 import { CharacterLoader } from 'core/game/package_loader/loader.characters';
 import { Algorithm } from 'core/shares/libs/algorithm';
+import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { SkillType, TriggerSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
-import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 import { GameProcessor } from '../game/game_processor';
 import { Room, RoomId } from './room';
 
@@ -693,6 +694,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           1,
           fromId ? TranslationPack.patchPlayerInTranslation(this.getPlayerById(fromId)) : '',
         ).extract(),
+        engagedPlayerIds: fromId !== undefined ? [toId, fromId] : [toId],
       });
     } else {
       for (const cardId of cardIds) {
@@ -886,7 +888,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       translationsMessage: TranslationPack.translationJsonPatcher(
         'the role of {0} is {1}',
         TranslationPack.patchPlayerInTranslation(deadPlayer),
-        getPlayerRoleRawText(deadPlayer.Role),
+        Functional.getPlayerRoleRawText(deadPlayer.Role),
       ).extract(),
     };
 

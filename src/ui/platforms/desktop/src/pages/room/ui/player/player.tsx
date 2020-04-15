@@ -2,20 +2,23 @@ import classNames from 'classnames';
 import { CardType } from 'core/cards/card';
 import { getNationalityRawText } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
+import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerRole } from 'core/player/player_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
-import { Badge } from '../badge/badge';
+import { NationalityBadge, PlayerPhaseBadge } from '../badge/badge';
 import { FlatClientCard } from '../card/flat_card';
 import { Hp } from '../hp/hp';
 import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
+import { Mask } from '../mask/mask';
 import styles from './player.module.css';
 
 type PlayerCardProps = {
   player: Player | undefined;
+  playerPhase?: PlayerPhase;
   translator: ClientTranslationModule;
   disabled?: boolean;
   onClick?(selected: boolean): void;
@@ -92,44 +95,57 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
 
   render() {
     const nationalityText = this.PlayerCharacter && getNationalityRawText(this.PlayerCharacter.Nationality);
-
+    const { disabled, translator, player, playerPhase } = this.props;
     return (
       <div
         className={classNames(styles.playerCard, {
-          [styles.selected]: this.getSelected() && !this.props.disabled,
+          [styles.selected]: this.getSelected() && !disabled,
+          [styles.highlighted]: playerPhase !== undefined,
         })}
         onClick={this.onClick}
       >
-        {this.props.player ? (
+        {player ? (
           <>
             <p
               className={classNames(styles.playerName, {
                 [styles.aligned]: this.PlayerCharacter !== undefined,
               })}
             >
-              {this.props.player.Name}
+              {player.Name}
             </p>
             {this.PlayerCharacter && (
               <>
-                <Badge className={styles.playerCharacter} vertical={true} variant={nationalityText as any} translator={this.props.translator} blur={true}>
-                  {this.props.translator.tr(this.PlayerCharacter.Name)}
-                </Badge>
+                <NationalityBadge
+                  className={styles.playerCharacter}
+                  vertical={true}
+                  variant={nationalityText as any}
+                  translator={translator}
+                >
+                  {translator.tr(this.PlayerCharacter.Name)}
+                </NationalityBadge>
+                {player.Role !== PlayerRole.Unknown && (
+                  <Mask
+                    className={styles.playerRole}
+                    translator={translator}
+                    lockedRole={player.Dead || player.Role === PlayerRole.Lord ? player.Role : undefined}
+                    disabled={player.Dead || player.Role === PlayerRole.Lord}
+                  />
+                )}
                 {this.getPlayerEquips()}
                 <div className={styles.playerHp}>
-                  <Hp hp={this.props.player.Hp} maxHp={this.props.player.MaxHp} size="small" />
+                  <Hp hp={player.Hp} maxHp={player.MaxHp} size="small" />
                 </div>
                 <span className={styles.handCardsNumberBg}>
-                  <span className={styles.handCardsNumber}>
-                    {this.props.player.getCardIds(PlayerCardsArea.HandArea).length}
-                  </span>
+                  <span className={styles.handCardsNumber}>{player.getCardIds(PlayerCardsArea.HandArea).length}</span>
                 </span>
               </>
             )}
             {this.getPlayerJudgeCards()}
           </>
         ) : (
-          <p className={styles.waiting}>{this.props.translator.tr('waiting')}</p>
+          <p className={styles.waiting}>{translator.tr('waiting')}</p>
         )}
+        {playerPhase !== undefined && <PlayerPhaseBadge stage={playerPhase} translator={translator} className={styles.playerPhaseBadge} />}
       </div>
     );
   }

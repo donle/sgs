@@ -1,14 +1,16 @@
 import classNames from 'classnames';
 import { getNationalityRawText } from 'core/characters/character';
 import { Player } from 'core/player/player';
+import { PlayerRole } from 'core/player/player_props';
 import { Skill, TriggerSkill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
-import { Badge } from '../badge/badge';
+import { NationalityBadge } from '../badge/badge';
 import { Hp } from '../hp/hp';
+import { Mask } from '../mask/mask';
 import styles from './player_avatar.module.css';
 
 type PlayerAvatarProps = {
@@ -105,14 +107,21 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
       >
         <span className={styles.playerName}>{clientPlayer?.Name}</span>
         {character && (
-          <Badge
+          <NationalityBadge
             translator={this.props.translator}
             variant={getNationalityRawText(character.Nationality) as any}
-            blur={true}
             className={styles.playCharacterName}
           >
             {this.props.translator.tr(character.Name)}
-          </Badge>
+          </NationalityBadge>
+        )}
+        {clientPlayer && clientPlayer.Role !== PlayerRole.Unknown && (
+          <Mask
+            className={styles.playerRole}
+            translator={this.props.translator}
+            displayedRole={clientPlayer.Role}
+            disabled={true}
+          />
         )}
         {this.getSkillButtons()}
         {clientPlayer && (

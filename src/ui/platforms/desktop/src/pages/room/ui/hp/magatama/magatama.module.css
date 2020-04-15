@@ -18,9 +18,11 @@
 .dying {
     background: #ff5613;
 }
-
 .danger {
     background: #e48205;
+}
+.healthy {
+    background: #1f9824;
 }
 
 .damaged {
@@ -35,8 +37,4 @@
 }
 .damaged.healthy {
     border: 1px solid #1f9824;
-}
-
-.healthy {
-    background: #1f9824;
 }

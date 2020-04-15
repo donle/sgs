@@ -1,0 +1,58 @@
+@value SanguoshaFont from '../metrics/metrics.css';
+@value lordColor from '../metrics/metrics.css';
+@value loyalistColor from '../metrics/metrics.css';
+@value rebelColor from '../metrics/metrics.css';
+@value renegadeColor from '../metrics/metrics.css';
+
+.oneMask,
+.displayedRole {
+    width: 30px;
+    height: 40px;
+    border: 1px solid grey;
+    border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+    color: #333333;
+    font-family: SanguoshaFont;
+    position: absolute;
+    background: white;
+    transition: transform 0.15s;
+    right: 0;
+    word-wrap: break-word;
+    line-height: 16px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+.oneMask {
+    top: 0;
+}
+.displayedRole {
+    z-index: 2;
+}
+
+.lord {
+    color: lordColor;
+}
+.loyalist {
+    color: loyalistColor;
+}
+.rebel {
+    color: rebelColor;
+}
+.renegade {
+    color: renegadeColor;
+}
+
+.oneMask.loyalist.opened {
+    transform: translateY(40px);
+}
+.oneMask.rebel.opened {
+    transform: translateY(80px);
+}
+.oneMask.renegade.opened {
+    transform: translateY(120px);
+}
+.oneMask.unknown.opened {
+    transform: translateY(160px);
+}

@@ -39,7 +39,8 @@ import {
   TurnOverStage,
 } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { getPlayerRoleRawText, PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
+import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -75,7 +76,7 @@ export class GameProcessor {
       isGameStart: true,
       translationsMessage: TranslationPack.translationJsonPatcher(
         'your role is {0}, please choose a lord',
-        getPlayerRoleRawText(lordInfo.Role!),
+        Functional.getPlayerRoleRawText(lordInfo.Role!),
       ).extract(),
     });
     this.room.notify(GameEventIdentifiers.AskForChoosingCharacterEvent, gameStartEvent, lordInfo.Id);
@@ -113,7 +114,7 @@ export class GameProcessor {
           translationsMessage: TranslationPack.translationJsonPatcher(
             'lord is {0}, your role is {1}, please choose a character',
             Sanguosha.getCharacterById(lordInfo.CharacterId).Name,
-            getPlayerRoleRawText(playerInfo.Role!),
+            Functional.getPlayerRoleRawText(playerInfo.Role!),
           ).extract(),
         },
         playerInfo.Id,
@@ -696,38 +697,38 @@ export class GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    let isGameOver = false;
     await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === PlayerDiedStage.PlayerDied) {
         this.room.broadcast(identifier, event);
         const deadPlayer = this.room.getPlayerById(event.playerId);
         deadPlayer.bury();
       }
-
-      const winners = this.room.getGameWinners();
-      if (winners) {
-        let winner = winners.find(player => player.Role === PlayerRole.Lord);
-        if (winner === undefined) {
-          winner = winners.find(player => player.Role === PlayerRole.Rebel);
-        }
-        if (winner === undefined) {
-          winner = winners.find(player => player.Role === PlayerRole.Renegade);
-        }
-
-        this.stageProcessor.clearProcess();
-        EventPacker.terminate(event);
-        this.playerStages = [];
-        this.room.broadcast(GameEventIdentifiers.GameOverEvent, {
-          translationsMessage: TranslationPack.translationJsonPatcher(
-            'game over, winner is {0}',
-            getPlayerRoleRawText(winner!.Role),
-          ).extract(),
-          winnerIds: winners.map(winner => winner.Id),
-          loserIds: this.room.Players.filter(player => !winners.includes(player)).map(player => player.Id),
-        });
-        isGameOver = true;
-      }
     });
+
+    let isGameOver = false;
+    const winners = this.room.getGameWinners();
+    if (winners) {
+      let winner = winners.find(player => player.Role === PlayerRole.Lord);
+      if (winner === undefined) {
+        winner = winners.find(player => player.Role === PlayerRole.Rebel);
+      }
+      if (winner === undefined) {
+        winner = winners.find(player => player.Role === PlayerRole.Renegade);
+      }
+
+      this.stageProcessor.clearProcess();
+      EventPacker.terminate(event);
+      this.playerStages = [];
+      this.room.broadcast(GameEventIdentifiers.GameOverEvent, {
+        translationsMessage: TranslationPack.translationJsonPatcher(
+          'game over, winner is {0}',
+          Functional.getPlayerRoleRawText(winner!.Role),
+        ).extract(),
+        winnerIds: winners.map(winner => winner.Id),
+        loserIds: this.room.Players.filter(player => !winners.includes(player)).map(player => player.Id),
+      });
+      isGameOver = true;
+    }
 
     if (!isGameOver) {
       const { killedBy, playerId } = event;

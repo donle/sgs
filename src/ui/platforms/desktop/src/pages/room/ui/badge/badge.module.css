@@ -28,17 +28,17 @@
 .vertical {
     word-wrap: break-word;
     height: calc(gridLine * 15);
-    width: calc(gridLine * 3.5);
+    width: calc(gridLine * 3);
     min-width: initial;
-    padding-top: gridLine;
+    text-align: center;
+    display: flex;
+    align-items: center;
     line-height: calc(gridLine * 2);
     top: 0;
-    padding-top: calc(gridLine * 3.5);
     padding-left: 0;
-    text-align: center;
 }
 
-.nationality {
+.content {
     position: absolute;
     left: -4px;
     font-size: 22px;
@@ -46,25 +46,36 @@
         0px 0px 5px rgba(255, 255, 255, 0.87), 0px 0px 5px rgba(255, 255, 255, 0.87);
 }
 
-.vertical .nationality {
+.playerPhase {
+    width: 180px;
+    text-align: center;
+}
+.playerPhase .content {
+    width: 100%;
+    padding: 0;
+    text-shadow: 0px 0px 3px rgba(50, 50, 50, 0.87), 0px 0px 5px rgba(50, 50, 50, 0.87),
+        0px 0px 7px rgba(50, 50, 50, 0.87);
+}
+
+.vertical .content {
     left: 2px;
     top: 2px;
     font-size: 22px;
 }
 
-.wei .nationality {
+.wei .content {
     color: weiDarkColor;
 }
-.shu .nationality {
+.shu .content {
     color: shuDarkColor;
 }
-.wu .nationality {
+.wu .content {
     color: wuDarkColor;
 }
-.qun .nationality {
+.qun .content {
     color: qunDarkColor;
 }
-.god .nationality {
+.god .content {
     color: godDarkColor;
 }
 
@@ -84,34 +95,53 @@
     background: godColor;
 }
 
-.wei.blur {
+.wei {
     background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, weiColor 10%, weiColor 50%, rgba(0, 0, 0, 0) 90%);
 }
-.shu.blur {
+.shu {
     background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, shuColor 10%, shuColor 50%, rgba(0, 0, 0, 0) 90%);
 }
-.wu.blur {
+.wu {
     background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, wuColor 10%, wuColor 50%, rgba(0, 0, 0, 0) 90%);
 }
-.qun.blur {
+.qun {
     background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, qunColor 10%, qunColor 50%, rgba(0, 0, 0, 0) 90%);
 }
-.god.blur {
+.god {
     background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, godColor 10%, godColor 50%, rgba(0, 0, 0, 0) 90%);
 }
 
-.vertical.wei.blur {
+.vertical.wei {
     background: linear-gradient(180deg, weiColor 50%, rgba(0, 0, 0, 0) 90%);
 }
-.vertical.shu.blur {
+.vertical.shu {
     background: linear-gradient(180deg, shuColor 50%, rgba(0, 0, 0, 0) 90%);
 }
-.vertical.wu.blur {
+.vertical.wu {
     background: linear-gradient(180deg, wuColor 50%, rgba(0, 0, 0, 0) 90%);
 }
-.vertical.qun.blur {
+.vertical.qun {
     background: linear-gradient(180deg, qunColor 50%, rgba(0, 0, 0, 0) 90%);
 }
-.vertical.god.blur {
+.vertical.god {
     background: linear-gradient(180deg, godColor 50%, rgba(0, 0, 0, 0) 90%);
+}
+
+.prepareStage {
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, #c61ea1 30%, #c61ea1 70%, rgba(0, 0, 0, 0) 100%);
+}
+.judgeStage {
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, #5929d6 30%, #5929d6 70%, rgba(0, 0, 0, 0) 100%);
+}
+.drawStage {
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, #c6971e 30%, #c6971e 70%, rgba(0, 0, 0, 0) 100%);
+}
+.playStage {
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, #1ec643 30%, #1ec643 70%, rgba(0, 0, 0, 0) 100%);
+}
+.dropStage {
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, #a6d629 30%, #a6d629 70%, rgba(0, 0, 0, 0) 100%);
+}
+.finishStage {
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, #1e4dc6 30%, #1e4dc6 70%, rgba(0, 0, 0, 0) 100%);
 }

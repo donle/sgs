@@ -40,7 +40,7 @@ export const Hp = (props: { hp: number; maxHp: number; size: 'regular' | 'small'
     <span>{`${hp}/${maxHp}`}</span>
   ) : (
     <div className={className}>
-      {getMagatama(maxHp - hp, size, 'damaged', status)}
+      {getMagatama(Math.min(maxHp, maxHp - hp), size, 'damaged', status)}
       {getMagatama(hp, size, status)}
     </div>
   );

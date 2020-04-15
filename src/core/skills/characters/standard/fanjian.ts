@@ -1,4 +1,3 @@
-import { getCardSuitRawText } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
 import {
   CardLostReason,
@@ -12,6 +11,7 @@ import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Functional } from 'core/shares/libs/functional';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
@@ -63,7 +63,7 @@ export class FanJian extends ActiveSkill {
     const chooseOptionEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
       toId,
       options: [
-        TranslationPack.translationJsonPatcher('drop all {0} cards', getCardSuitRawText(moveCard.Suit)).toString(),
+        TranslationPack.translationJsonPatcher('drop all {0} cards', Functional.getCardSuitRawText(moveCard.Suit)).toString(),
         'lose a hp',
       ],
       conversation: TranslationPack.translationJsonPatcher(

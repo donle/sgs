@@ -4,11 +4,6 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { Skill, ViewAsSkill } from 'core/skills/skill';
 import { CardId, CardSuit, CardTargetEnum, RealCardId, VirtualCardId, VirtualCardIdProps } from './libs/card_props';
 
-export function getCardSuitRawText(suit: CardSuit) {
-  const cardSuitRawText = ['nosuit', 'spade', 'heart', 'club', 'diamond'];
-  return cardSuitRawText[suit];
-}
-
 export function None<T extends Card>(constructor: new (...args: any) => any): any {
   return (class extends constructor {
     private readonly cardTargetNumber = CardTargetEnum.None;

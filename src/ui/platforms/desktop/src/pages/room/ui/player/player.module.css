@@ -1,13 +1,16 @@
 @value gridLine from '../metrics/metrics.css';
 @value halfGridLine from '../metrics/metrics.css';
 
+@value shuColor from '../metrics/metrics.css';
+
 .playerCard {
     position: relative;
     height: 200px;
-    width: 160px;
+    width: 180px;
     display: flex;
     border: 1px solid grey;
     justify-content: space-between;
+    transition: box-shadow 0.15s;
 }
 
 .judgeIcons {
@@ -28,6 +31,10 @@
     max-width: 24px;
     justify-self: flex-end;
 }
+.playerRole {
+    right: 0;
+    top: 0;
+}
 
 .waiting {
     align-self: center;
@@ -36,6 +43,9 @@
 }
 .selected {
     border-color: red;
+}
+.highlighted {
+    box-shadow: 0px 0px 5px 2px shuColor;
 }
 .playerName {
     position: absolute;
@@ -55,7 +65,7 @@
     padding: 0 gridLine;
 }
 .playerName.aligned {
-    padding-left: calc(gridLine * 4);
+    padding: 0 calc(gridLine * 4);
 }
 .playerEquips {
     height: calc(11 * gridLine);
@@ -111,6 +121,11 @@
     left: 0;
     font-size: 13px;
     font-weight: 550;
+}
+
+.playerPhaseBadge {
+    position: absolute;
+    bottom: -12px;
 }
 
 .weapon {

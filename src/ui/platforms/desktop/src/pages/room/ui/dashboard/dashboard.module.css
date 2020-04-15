@@ -76,6 +76,17 @@
     align-items: stretch;
     height: 200px;
     min-width: 880px;
+    justify-content: center;
+}
+
+.playerPhaseStage {
+    position: absolute;
+    z-index: -1;
+    justify-self: center;
+    display: flex;
+    padding: 0;
+    opacity: 0.9;
+    left: 220px;
 }
 
 .weapon {

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { Player } from 'core/player/player';
-import { getPlayerRoleRawText } from 'core/player/player_props';
+import { Functional } from 'core/shares/libs/functional';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
@@ -13,7 +13,7 @@ const PlayerInfoTable = (props: { translator: ClientTranslationModule; players: 
         <div className={styles.player}>
           <span>{player.Name}</span>
           <span>{props.translator.tr(player.Character.Name)}</span>
-          <span>{props.translator.tr(getPlayerRoleRawText(player.Role))}</span>
+          <span>{props.translator.tr(Functional.getPlayerRoleRawText(player.Role))}</span>
           <span>{props.translator.tr(player.Dead ? 'dead' : 'alive')}</span>
         </div>
       ))}

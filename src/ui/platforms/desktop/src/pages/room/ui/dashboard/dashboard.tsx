@@ -10,6 +10,7 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
+import { PlayerPhaseBadge } from '../badge/badge';
 import { ClientCard } from '../card/card';
 import { CardSuitItem } from '../card/card_suit';
 import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
@@ -196,6 +197,14 @@ export class Dashboard extends React.Component<DashboardProps> {
     return (
       <div className={styles.dashboard}>
         {this.getEquipCardsSection()}
+
+        {this.props.store.room.CurrentPlayer === player && (
+          <PlayerPhaseBadge
+            stage={this.props.store.room.CurrentPlayerPhase}
+            translator={this.props.translator}
+            className={styles.playerPhaseStage}
+          />
+        )}
         {this.getPlayerHandBoard()}
         <PlayerAvatar
           updateFlag={this.props.store.updateUIFlag}

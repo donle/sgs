@@ -12,4 +12,9 @@
 @value qunDarkColor: rgb(130, 127, 126);
 @value godDarkColor: rgb(154, 144, 60);
 
+@value lordColor: rgb(181, 2, 2);
+@value loyalistColor: shuDarkColor;
+@value rebelColor: rgb(62, 134, 0);
+@value renegadeColor: weiDarkColor;
+
 @value SanguoshaFont: LiSu, -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', 微软雅黑;

@@ -39,6 +39,12 @@
     align-self: flex-end;
 }
 
+.playerRole {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
 .selected {
     border-color: red;
 }
