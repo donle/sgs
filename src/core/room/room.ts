@@ -433,4 +433,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       return this.players.filter(player => player.Role === PlayerRole.Lord || player.Role === PlayerRole.Loyalist);
     }
   }
+
+  public gameOver() {
+    this.gameStarted = false;
+  }
 }

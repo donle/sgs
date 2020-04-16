@@ -96,7 +96,11 @@ export abstract class BaseAction {
   };
 
   isPlayerEnabled(player: Player): boolean {
-    if ((this.scopedTargets && !this.scopedTargets.includes(player.Id)) || player.Dead) {
+    if (
+      (this.scopedTargets && !this.scopedTargets.includes(player.Id)) ||
+      player.Dead ||
+      !this.store.room.isPlaying()
+    ) {
       return false;
     }
     if (this.selectedTargets.includes(player.Id)) {
@@ -144,6 +148,9 @@ export abstract class BaseAction {
     fromArea: PlayerCardsArea = PlayerCardsArea.HandArea,
     ignoreCanUseCondition: boolean = false,
   ): boolean {
+    if (!this.store.room.isPlaying()) {
+      return false;
+    }
     if (
       card.Id === this.selectedCardToPlay ||
       card.Id === this.equipSkillCardId ||

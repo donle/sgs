@@ -108,7 +108,7 @@ export class RoomPage extends React.Component<
     const { messages = [], translationsMessage, unengagedMessage, engagedPlayerIds } = event;
     const { translator } = this.props;
 
-    if (unengagedMessage && engagedPlayerIds && engagedPlayerIds.includes(this.store.clientPlayerId)) {
+    if (unengagedMessage && engagedPlayerIds && !engagedPlayerIds.includes(this.store.clientPlayerId)) {
       messages.push(TranslationPack.create(unengagedMessage).toString());
     } else if (translationsMessage) {
       messages.push(TranslationPack.create(translationsMessage).toString());

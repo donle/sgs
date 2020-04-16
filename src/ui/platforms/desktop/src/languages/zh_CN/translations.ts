@@ -481,7 +481,7 @@ export const eventDictionary: Word[] = [
     source: '{0} draws {1} cards',
     target: '{0} 摸了 {1} 张牌',
   },
-  { source: '{0} is lord, waiting for selecting a character', target: '{0} 是<b>主公</b>，正在等待其选将' },
+  { source: '{0} is {1}, waiting for selecting a character', target: '{0} 是 {1}，正在等待其选将' },
   {
     source: 'your role is {0}, please choose a lord',
     target: '你的身份是 {0}, 请选择一名武将做为主公',
@@ -543,6 +543,10 @@ export const eventDictionary: Word[] = [
   {
     source: '{0} obtains cards {1} from {2}',
     target: '{0} 从 {2} 获得了 {1} ',
+  },
+  {
+    source: '{0} obtains {1} cards from {2}',
+    target: '{0} 从 {2} 获得了 {1} 张牌',
   },
   { source: '{0} obtains {1} cards', target: '{0} 获得了 {1} 张牌' },
   { source: 'please drop {0} cards', target: '请弃置 {1} 张牌' },

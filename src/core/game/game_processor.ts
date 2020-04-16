@@ -69,8 +69,9 @@ export class GameProcessor {
     );
     this.room.broadcast(GameEventIdentifiers.CustomGameDialog, {
       translationsMessage: TranslationPack.translationJsonPatcher(
-        '{0} is lord, waiting for selecting a character',
+        '{0} is {1}, waiting for selecting a character',
         lordInfo.Name,
+        Functional.getPlayerRoleRawText(PlayerRole.Lord),
       ).extract(),
     });
     const gameStartEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCharacterEvent>({

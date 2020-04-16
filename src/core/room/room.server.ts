@@ -700,7 +700,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         unengagedMessage: TranslationPack.translationJsonPatcher(
           '{0} obtains {1} cards' + (fromId ? ' from {2}' : ''),
           TranslationPack.patchPlayerInTranslation(to),
-          1,
+          cardIds.length,
           fromId ? TranslationPack.patchPlayerInTranslation(this.getPlayerById(fromId)) : '',
         ).extract(),
         engagedPlayerIds: fromId !== undefined ? [toId, fromId] : [toId],

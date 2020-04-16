@@ -791,10 +791,12 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.presenter.createIncomingConversation({
-      conversation: 'please choose a card',
-      translator: this.translator,
-    });
+    if (content.toId === this.store.clientPlayerId) {
+      this.presenter.createIncomingConversation({
+        conversation: 'please choose a card',
+        translator: this.translator,
+      });
+    }
 
     let selected = false;
     const onClick = (card: Card) => {

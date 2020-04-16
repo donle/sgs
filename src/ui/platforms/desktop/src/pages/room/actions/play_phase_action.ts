@@ -9,6 +9,10 @@ import { BaseAction } from './base_action';
 
 export class PlayPhaseAction extends BaseAction {
   public static isPlayPhaseSkillsDisabled = (room: Room, player: Player) => (skill: Skill) => {
+    if (!room.isPlaying()) {
+      return false;
+    }
+
     if (skill instanceof TriggerSkill) {
       return false;
     } else if (skill instanceof ActiveSkill) {
