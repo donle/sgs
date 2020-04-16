@@ -2,7 +2,6 @@ import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import {
   CardLostReason,
   CardObtainedReason,
-  ClientEventFinder,
   EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
@@ -51,7 +50,7 @@ export class ShunShouQianYangSkill extends ActiveSkill {
     );
   }
 
-  public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
+  public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     return true;
   }
 

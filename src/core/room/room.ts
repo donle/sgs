@@ -190,14 +190,14 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     );
   }
 
-  public async useCard(content: ClientEventFinder<GameEventIdentifiers.CardUseEvent>): Promise<void> {
+  public async useCard(content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): Promise<void> {
     if (content.fromId) {
       const from = this.getPlayerById(content.fromId);
       from.useCard(content.cardId);
     }
   }
 
-  public async useSkill(content: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<void> {
+  public async useSkill(content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<void> {
     if (content.fromId) {
       const from = this.getPlayerById(content.fromId);
       from.useSkill(content.skillName);

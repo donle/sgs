@@ -10,5 +10,11 @@ module.exports = {
         tabWidth: 4,
       },
     },
+    {
+      files: ['*.ts', '*.tsx'],
+      options: {
+        tabWidth: 2,
+      },
+    },
   ],
 };

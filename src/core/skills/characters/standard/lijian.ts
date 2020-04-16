@@ -45,7 +45,16 @@ export class LiJian extends ActiveSkill {
     return room.CurrentPlayer.cardFrom(cardId) === PlayerCardsArea.HandArea;
   }
 
+  public getAnimationSteps(event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    const { fromId, toIds } = event;
+    return [
+      { from: fromId, tos: [toIds![1]] },
+      { from: toIds![1], tos: [toIds![0]] },
+    ];
+  }
+
   async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    event.animation = this.getAnimationSteps(event);
     return true;
   }
 

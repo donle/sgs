@@ -1,5 +1,5 @@
 import { CharacterNationality } from 'core/characters/character';
-import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { RecoverEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
@@ -33,7 +33,7 @@ export class JiuYuan extends TriggerSkill {
     );
   }
 
-  async onTrigger(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+  async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} activates skill {1}',
       room.getPlayerById(event.fromId).Name,
@@ -45,7 +45,7 @@ export class JiuYuan extends TriggerSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = event;
-    const recoverEvent = triggeredOnEvent as ClientEventFinder<GameEventIdentifiers.RecoverEvent>;
+    const recoverEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.RecoverEvent>;
     if (
       recoverEvent.recoverBy &&
       recoverEvent.toId !== recoverEvent.recoverBy &&

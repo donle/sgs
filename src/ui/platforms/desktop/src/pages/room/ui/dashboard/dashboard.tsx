@@ -195,7 +195,7 @@ export class Dashboard extends React.Component<DashboardProps> {
   render() {
     const player = this.props.presenter.ClientPlayer!;
     return (
-      <div className={styles.dashboard}>
+      <div className={styles.dashboard} id={this.props.store.clientPlayerId}>
         {this.getEquipCardsSection()}
 
         {this.props.store.room.CurrentPlayer === player && (

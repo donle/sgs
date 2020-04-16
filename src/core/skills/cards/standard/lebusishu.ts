@@ -1,5 +1,5 @@
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
-import { CardLostReason, ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardLostReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -46,7 +46,7 @@ export class LeBuSiShuSkill extends ActiveSkill {
     );
   }
 
-  public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
+  public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     await room.moveCards(
       [event.cardId],
       event.fromId,

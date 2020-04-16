@@ -200,7 +200,12 @@ export abstract class BaseAction {
         return false;
       }
     } else {
-      const skill = card.Skill;
+      const playingCard = Sanguosha.getCardById(this.selectedCardToPlay);
+      if (playingCard.is(CardType.Equip)) {
+        return false;
+      }
+      const skill = playingCard.Skill;
+
       if (skill instanceof ActiveSkill) {
         return (
           skill.isAvailableCard(

@@ -1,5 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -32,7 +32,7 @@ export class PeachSkill extends ActiveSkill {
     return false;
   }
 
-  async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
+  async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     if (!event.toIds) {
       event.toIds = [event.fromId];
     }

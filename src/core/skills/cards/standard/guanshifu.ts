@@ -1,7 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
 import {
   CardLostReason,
-  ClientEventFinder,
   EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
@@ -42,7 +41,7 @@ export class GuanShiFuSkill extends TriggerSkill {
     );
   }
 
-  async onTrigger(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+  async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     const cardDropEvent: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
       fromArea: [PlayerCardsArea.EquipArea, PlayerCardsArea.HandArea],
       except: [room.getPlayerById(event.fromId).getWeaponCardId()!],

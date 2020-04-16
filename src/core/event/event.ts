@@ -10,7 +10,7 @@ export const enum GameEventIdentifiers {
   PhaseChangeEvent,
   PhaseStageChangeEvent,
   SyncGameCommonRulesEvent,
-  
+
   SetFlagEvent,
   RemoveFlagEvent,
   ClearFlagEvent,
@@ -220,7 +220,13 @@ export type BaseGameEvent = {
   triggeredBySkills?: string[];
   messages?: string[];
   translationsMessage?: PatchedTranslationObject;
+  animation?: {
+    from: PlayerId;
+    tos: PlayerId[];
+  }[];
 };
+
+export type EventProcessSteps = { from: PlayerId; tos: PlayerId[] }[];
 
 export type EventUtilities = {
   [K in keyof typeof GameEventIdentifiers]: object;

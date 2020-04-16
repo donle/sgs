@@ -280,12 +280,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
   }
 
-  public async equip(card: EquipCard, player: Player) {
+  public async equip(card: EquipCard, player: Player, passiveEquip?: boolean) {
     const prevEquipment = player.getEquipment(card.EquipType);
     if (prevEquipment !== undefined) {
       await this.dropCards(CardLostReason.PlaceToDropStack, [prevEquipment], player.Id);
     }
-    await this.loseCards([card.Id], player.Id, CardLostReason.CardUse);
+    if (!passiveEquip) {
+      await this.loseCards([card.Id], player.Id, CardLostReason.CardUse);
+    }
 
     const event: ServerEventFinder<GameEventIdentifiers.EquipEvent> = {
       fromId: player.Id,
@@ -328,7 +330,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     };
   }
 
-  public async useCard(content: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
+  public async useCard(content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, content);
 
     await super.useCard(content);
@@ -417,7 +419,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     });
   }
 
-  public async useSkill(content: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+  public async useSkill(content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     await super.useSkill(content);
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.SkillUseEvent, content);
     if (!EventPacker.isTerminated(content)) {
@@ -636,8 +638,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     moveReasion?: string,
   ) {
     const to = this.getPlayerById(toId);
-
     const from = fromId && this.getPlayerById(fromId);
+
     if (from) {
       let doBroadcast = false;
       if (
@@ -679,7 +681,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     if (toArea === PlayerCardsArea.EquipArea) {
       for (const cardId of cardIds) {
-        await this.equip(Sanguosha.getCardById<EquipCard>(cardId), to);
+        await this.equip(Sanguosha.getCardById<EquipCard>(cardId), to, from !== to);
       }
     } else if (toArea === PlayerCardsArea.HandArea) {
       await this.obtainCards({

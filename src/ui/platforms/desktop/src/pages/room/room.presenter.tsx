@@ -10,6 +10,7 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { Skill } from 'core/skills/skill';
 import * as mobx from 'mobx';
 import * as React from 'react';
+import { AnimationPosition } from './animations/position';
 import { Conversation, ConversationProps } from './ui/conversation/conversation';
 
 type ClientRoomInfo = {
@@ -42,6 +43,9 @@ export class RoomStore {
 
   @mobx.observable.ref
   updateUIFlag: boolean = false;
+
+  @mobx.observable.ref
+  animationPosition = new AnimationPosition();
 
   @mobx.observable.ref
   actionButtonStatus: {

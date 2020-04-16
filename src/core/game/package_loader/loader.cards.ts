@@ -22,7 +22,7 @@ export class CardLoader {
   }
 
   private loadCards() {
-    let index = 0;
+    let index = 1;
 
     for (const [packageName, loader] of Object.entries(allPackageLoaders)) {
       const cards = loader(index);

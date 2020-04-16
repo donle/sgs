@@ -1,5 +1,5 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, ResponsiveSkill } from 'core/skills/skill';
@@ -17,7 +17,7 @@ export class WuXieKeJiSkill extends ResponsiveSkill {
     });
   }
 
-  async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
+  async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} used card {1} to {2}',
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),

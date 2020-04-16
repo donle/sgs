@@ -1,12 +1,12 @@
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
-import { CardLostReason, ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardLostReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { ActiveSkill, CommonSkill, FilterSkill, SelfTargetSkill } from 'core/skills/skill';
+import { ActiveSkill, CommonSkill, SelfTargetSkill } from 'core/skills/skill';
 
 @CommonSkill
 @SelfTargetSkill
@@ -35,7 +35,7 @@ export class LightningSkill extends ActiveSkill {
   public isAvailableTarget(): boolean {
     return false;
   }
-  public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
+  public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     for (const player of room.getAlivePlayersFrom(event.fromId)) {
       if (room.isAvailableTarget(event.cardId, event.fromId, player.Id)) {
         await room.moveCards(
@@ -55,15 +55,15 @@ export class LightningSkill extends ActiveSkill {
   }
 
   public async moveToNextPlayer(room: Room, cardId: CardId, currentPlayer: PlayerId) {
+    let player: Player | undefined;
     while (true) {
-      const player = room.getNextAlivePlayer(currentPlayer);
+      player = room.getNextAlivePlayer(player ? player.Id : currentPlayer);
       if (player.Id === currentPlayer) {
         break;
       }
 
       const skip =
-        player.getSkills<FilterSkill>('filter').find(skill => !skill.canBeUsedCard(cardId, room, player.Id)) !==
-          undefined ||
+        !room.canUseCardTo(cardId, player.Id) ||
         player
           .getCardIds(PlayerCardsArea.JudgeArea)
           .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'lightning') !== undefined;

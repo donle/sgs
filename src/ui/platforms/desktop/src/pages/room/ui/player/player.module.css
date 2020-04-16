@@ -42,7 +42,7 @@
     text-align: center;
 }
 .selected {
-    border-color: red;
+    box-shadow: 0px 0px 5px 2px red;
 }
 .highlighted {
     box-shadow: 0px 0px 5px 2px shuColor;

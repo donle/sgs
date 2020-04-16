@@ -61,7 +61,8 @@ export class Sanguosha {
       return this.getVirtualCardById<T>(cardId) as any;
     }
 
-    const card = Sanguosha.cards.find(card => card.Id === cardId) as T | undefined;
+    // const card = Sanguosha.cards.find(card => card.Id === cardId) as T | undefined;
+    const card = Sanguosha.cards[cardId - 1] as T;
     return Precondition.exists(card, `Unable to find the card by id: ${cardId}`);
   }
 

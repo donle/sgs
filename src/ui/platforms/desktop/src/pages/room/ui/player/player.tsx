@@ -98,6 +98,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     const { disabled, translator, player, playerPhase } = this.props;
     return (
       <div
+        id={player && player.Id}
         className={classNames(styles.playerCard, {
           [styles.selected]: this.getSelected() && !disabled,
           [styles.highlighted]: playerPhase !== undefined,

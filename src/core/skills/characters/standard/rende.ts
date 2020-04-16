@@ -4,7 +4,6 @@ import { CardId } from 'core/cards/libs/card_props';
 import {
   CardLostReason,
   CardObtainedReason,
-  ClientEventFinder,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
@@ -41,7 +40,7 @@ export class Rende extends ActiveSkill {
     return room.getPlayerById(owner).cardFrom(cardId) === PlayerCardsArea.HandArea;
   }
 
-  async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+  async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     return true;
   }
 
@@ -169,7 +168,7 @@ export class RenDeShadow extends TriggerSkill {
     return content.fromPlayer === owner.Id;
   }
 
-  async onTrigger(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+  async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     return true;
   }
 

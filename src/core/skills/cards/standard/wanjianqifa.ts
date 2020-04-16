@@ -1,5 +1,5 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { DamageType } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -29,7 +29,7 @@ export class WanJianQiFaSkill extends ActiveSkill {
   public isAvailableTarget(): boolean {
     return false;
   }
-  public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
+  public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const others = room.getOtherPlayers(event.fromId);
     const from = room.getPlayerById(event.fromId);
     event.toIds = others.filter(player => from.canUseCardTo(room, event.cardId, player.Id)).map(player => player.Id);

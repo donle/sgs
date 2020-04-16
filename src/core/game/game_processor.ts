@@ -773,8 +773,9 @@ export class GameProcessor {
               : '',
           ).extract();
         }
-
-        await Sanguosha.getSkillBySkillName(event.skillName).onUse(this.room, event);
+        const skill = Sanguosha.getSkillBySkillName(event.skillName);
+        await skill.onUse(this.room, event);
+        event.animation = event.animation || skill.getAnimationSteps(event);
       } else if (stage === SkillUseStage.AfterSkillUsed) {
         this.room.broadcast(identifier, event);
       }
@@ -888,7 +889,7 @@ export class GameProcessor {
 
   private async onHandleCardUseEvent(
     identifier: GameEventIdentifiers.CardUseEvent,
-    event: EventPicker<GameEventIdentifiers.CardUseEvent, WorkPlace.Client>,
+    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
@@ -945,6 +946,7 @@ export class GameProcessor {
 
         if (!card.is(CardType.Equip)) {
           await card.Skill.onUse(this.room, event);
+          event.animation = event.animation || card.Skill.getAnimationSteps(event);
         }
         this.room.broadcast(identifier, event);
       }

@@ -1,7 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
 import {
   CardObtainedReason,
-  ClientEventFinder,
   EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
@@ -39,7 +38,7 @@ export class WuGuFengDengSkill extends ActiveSkill {
   public isAvailableTarget(): boolean {
     return false;
   }
-  public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
+  public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const all = room.getAlivePlayersFrom();
     const from = room.getPlayerById(event.fromId);
     event.toIds = all.filter(player => from.canUseCardTo(room, event.cardId, player.Id)).map(player => player.Id);

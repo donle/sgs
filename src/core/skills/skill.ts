@@ -1,7 +1,14 @@
 import { Card, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { ClientEventFinder, EventPicker, GameEventIdentifiers, ServerEventFinder, WorkPlace } from 'core/event/event';
+import {
+  ClientEventFinder,
+  EventPicker,
+  EventProcessSteps,
+  GameEventIdentifiers,
+  ServerEventFinder,
+  WorkPlace,
+} from 'core/event/event';
 import { AllStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
@@ -29,7 +36,7 @@ function onCalculatingSkillUsageWrapper(skillType: SkillType, constructor: new (
 
     public async onUse(
       room: Room,
-      event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent>,
+      event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent>,
     ) {
       const result = await super.onUse(room, event);
       room.getPlayerById(event.fromId).useSkill(this.name);
@@ -140,7 +147,7 @@ export abstract class Skill {
 
   public abstract async onUse(
     room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent>,
+    event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent>,
   ): Promise<boolean>;
 
   public abstract onEffect(
@@ -177,6 +184,11 @@ export abstract class Skill {
 
   // tslint:disable-next-line: no-empty
   public onLoseSkill(owner: Player) {}
+  public getAnimationSteps(
+    event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent>,
+  ): EventProcessSteps {
+    return event.toIds ? [{ from: event.fromId, tos: event.toIds }] : [];
+  }
 
   public get Description() {
     return this.description;
@@ -257,10 +269,10 @@ export abstract class TriggerSkill extends Skill {
   public isRefreshAt() {
     return false;
   }
-  
+
   public targetFilter(room: Room, targets: PlayerId[]): boolean {
     return targets.length === 0;
-  };
+  }
   public cardFilter(room: Room, cards: CardId[]): boolean {
     return cards.length === 0;
   }
@@ -273,7 +285,7 @@ export abstract class TriggerSkill extends Skill {
     containerCard?: CardId,
   ): boolean {
     return false;
-  };
+  }
   public isAvailableTarget(
     owner: PlayerId,
     room: Room,

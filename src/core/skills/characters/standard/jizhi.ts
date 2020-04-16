@@ -1,7 +1,6 @@
 import { CardType } from 'core/cards/card';
 import {
   CardLostReason,
-  ClientEventFinder,
   EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
@@ -34,7 +33,7 @@ export class JiZhi extends TriggerSkill {
     return content.fromId === owner.Id && card.is(CardType.Trick) && !card.is(CardType.DelayedTrick);
   }
 
-  async onTrigger(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+  async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} activates skill {1}',
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
@@ -95,7 +94,7 @@ export class JizhiShadow extends TriggerSkill {
     return true;
   }
 
-  async onTrigger(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+  async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     return true;
   }
 

@@ -407,7 +407,7 @@ export class GameClientProcessor {
   private onHandleLoseHpEvent<T extends GameEventIdentifiers.LoseHpEvent>(type: T, content: ServerEventFinder<T>) {
     const player = this.store.room.getPlayerById(content.toId);
     player.onLoseHp(content.lostHp);
-    this.presenter.broadcastUIUpdate();
+    this.presenter.broadcastUIUpdate(); 
   }
 
   private onHandleRecoverEvent<T extends GameEventIdentifiers.RecoverEvent>(type: T, content: ServerEventFinder<T>) {
@@ -458,12 +458,14 @@ export class GameClientProcessor {
         content.playersInfo,
       );
       this.translator.setupPlayer(this.presenter.ClientPlayer);
+      this.store.animationPosition.insertPlayer(content.joiningPlayerId);
     } else {
       const playerInfo = Precondition.exists(
         content.playersInfo.find(playerInfo => playerInfo.Id === content.joiningPlayerId),
         `Unknown player ${content.joiningPlayerName}`,
       );
 
+      this.store.animationPosition.insertPlayer(playerInfo.Id);
       this.presenter.playerEnter(playerInfo);
     }
   }

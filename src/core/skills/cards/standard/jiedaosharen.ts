@@ -1,13 +1,7 @@
 import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import {
-  CardLostReason,
-  CardObtainedReason,
-  ClientEventFinder,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { CardLostReason, CardObtainedReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -51,7 +45,16 @@ export class JieDaoShaRenSkill extends ActiveSkill {
     }
   }
 
-  public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.CardUseEvent>) {
+  public getAnimationSteps(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
+    const { fromId, toIds } = event;
+    return [
+      { from: fromId, tos: [toIds![0]] },
+      { from: toIds![0], tos: [toIds![1]] },
+    ];
+  }
+
+  public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
+    event.animation = this.getAnimationSteps(event);
     return true;
   }
 
