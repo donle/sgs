@@ -1,3 +1,4 @@
+import { CardId } from 'core/cards/libs/card_props';
 import { CardObtainedReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
@@ -24,19 +25,42 @@ export class LuoShen extends TriggerSkill {
   }
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    while (true) {
-      const judgeEvent = await room.judge(skillUseEvent.fromId,undefined,this.name);
+    const luoshenCards: CardId[] = [];
+    do {
+      const judgeEvent = await room.judge(skillUseEvent.fromId, undefined, this.name);
       const card = Sanguosha.getCardById(judgeEvent.judgeCardId);
       if (card.isBlack()) {
-        await room.obtainCards({
-          cardIds: [judgeEvent.judgeCardId],
-          toId: skillUseEvent.fromId,
-          reason: CardObtainedReason.ActivePrey,
-        }, true);
+        luoshenCards.push(card.Id);
+        if (!this.isAutoTrigger()) {
+          room.notify(
+            GameEventIdentifiers.AskForSkillUseEvent,
+            {
+              invokeSkillNames: [this.name],
+              toId: skillUseEvent.fromId,
+            },
+            skillUseEvent.fromId,
+          );
+          const { invoke } = await room.onReceivingAsyncReponseFrom(
+            GameEventIdentifiers.AskForSkillUseEvent,
+            skillUseEvent.fromId,
+          );
+          if (!invoke) {
+            break;
+          }
+        }
       } else {
         break;
       }
-    }
+    } while (true);
+
+    await room.obtainCards(
+      {
+        cardIds: luoshenCards,
+        toId: skillUseEvent.fromId,
+        reason: CardObtainedReason.ActivePrey,
+      },
+      true,
+    );
     return true;
   }
 }

@@ -3,8 +3,8 @@ import { PlayerPhase } from 'core/game/stage_processor';
 import { PlayerRole } from 'core/player/player_props';
 import { Precondition } from '../precondition/precondition';
 
-export namespace Functional {
-  export function getPlayerPhaseRarText(stage: PlayerPhase) {
+export abstract class Functional {
+  static getPlayerPhaseRarText(stage: PlayerPhase) {
     switch (stage) {
       case PlayerPhase.PrepareStage:
         return 'prepare stage';
@@ -23,12 +23,12 @@ export namespace Functional {
     }
   }
 
-  export function getCardSuitRawText(suit: CardSuit) {
+  static getCardSuitRawText(suit: CardSuit) {
     const cardSuitRawText = ['nosuit', 'spade', 'heart', 'club', 'diamond'];
     return cardSuitRawText[suit];
   }
 
-  export function getPlayerRoleRawText(role: PlayerRole) {
+  static getPlayerRoleRawText(role: PlayerRole) {
     const playerRoleRawText = ['unknown', 'lord', 'loyalist', 'rebel', 'renegade'];
     return playerRoleRawText[role];
   }

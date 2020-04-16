@@ -207,7 +207,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             triggeredOnEvent: content,
           };
           if (
-            skill.isAutoTrigger(content) ||
+            skill.isAutoTrigger() ||
             skill.SkillType === SkillType.Compulsory ||
             skill.SkillType === SkillType.Awaken
           ) {
