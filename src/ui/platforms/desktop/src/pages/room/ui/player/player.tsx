@@ -142,11 +142,14 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
               </>
             )}
             {this.getPlayerJudgeCards()}
+            <p className={styles.playerSeats}>{translator.tr(`number ${player.Position}`)}</p>
           </>
         ) : (
           <p className={styles.waiting}>{translator.tr('waiting')}</p>
         )}
-        {playerPhase !== undefined && <PlayerPhaseBadge stage={playerPhase} translator={translator} className={styles.playerPhaseBadge} />}
+        {playerPhase !== undefined && (
+          <PlayerPhaseBadge stage={playerPhase} translator={translator} className={styles.playerPhaseBadge} />
+        )}
       </div>
     );
   }

@@ -669,7 +669,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       }
     }
 
-    if (toArea !== PlayerCardsArea.HandArea) {
+    if (toArea == PlayerCardsArea.JudgeArea) {
       this.broadcast(GameEventIdentifiers.MoveCardEvent, {
         fromId,
         toId,
@@ -677,9 +677,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         toArea,
         cardIds,
       });
-    }
-
-    if (toArea === PlayerCardsArea.EquipArea) {
+      for (const cardId of cardIds) {
+        to.getCardIds(toArea).push(cardId);
+      }
+    } else if (toArea === PlayerCardsArea.EquipArea) {
       for (const cardId of cardIds) {
         await this.equip(Sanguosha.getCardById<EquipCard>(cardId), to, from !== to);
       }
@@ -705,6 +706,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         engagedPlayerIds: fromId !== undefined ? [toId, fromId] : [toId],
       });
     } else {
+      //TODO: refactor if there are any needs for outside area
       for (const cardId of cardIds) {
         to.getCardIds(toArea).push(cardId);
       }

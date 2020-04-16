@@ -23,11 +23,15 @@ export class GameDialog extends React.Component<GameDialogProps> {
   render() {
     return (
       <div className={styles.gameDialog} ref={this.dialogElementRef}>
-        {this.props.store.gameLog.map((log, index) => (
-          <p className={styles.messageLine} key={index}>
-            {log}
-          </p>
-        ))}
+        {this.props.store.gameLog.map((log, index) =>
+          typeof log === 'string' ? (
+            <p className={styles.messageLine} key={index} dangerouslySetInnerHTML={{ __html: log }} />
+          ) : (
+            <p className={styles.messageLine} key={index}>
+              {log}
+            </p>
+          ),
+        )}
       </div>
     );
   }

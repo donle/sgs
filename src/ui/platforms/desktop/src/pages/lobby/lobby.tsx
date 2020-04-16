@@ -19,9 +19,14 @@ export class Lobby extends React.Component<LobbyProps> {
   private roomList: RoomInfo[] = [];
   @mobx.observable.ref
   private unmatchedCoreVersion = false;
+  @mobx.observable.ref
+  private openUsernameDialog = false;
+
   private socket = SocketIOClient(
     `${this.props.config.protocol}://${this.props.config.host}:${this.props.config.port}/lobby`,
   );
+
+  private username: string | null;
 
   constructor(props: LobbyProps) {
     super(props);
@@ -49,6 +54,14 @@ export class Lobby extends React.Component<LobbyProps> {
   }
 
   @mobx.action
+  componentDidMount() {
+    this.username = localStorage.getItem('username');
+    if (!this.username) {
+      this.openUsernameDialog = true;
+    }
+  }
+
+  @mobx.action
   UNSAFE_componentWillMount() {
     this.socket.emit(LobbySocketEvent.QueryRoomList.toString());
     this.socket.emit(LobbySocketEvent.QueryVersion.toString(), {
@@ -68,7 +81,7 @@ export class Lobby extends React.Component<LobbyProps> {
     const roomInfo: GameInfo = {
       characterExtensions: [GameCharacterExtensions.Standard],
       cardExtensions: [GameCardExtensions.Standard],
-      numberOfPlayers: 3,
+      numberOfPlayers: 4,
       roomName: 'test room name',
     };
 
@@ -99,22 +112,25 @@ export class Lobby extends React.Component<LobbyProps> {
 
   render() {
     return (
-      <div className={styles.board}>
-        <div className={styles.roomList}>
-          {this.roomList.length === 0 && <span>{this.props.translator.tr('No rooms at the moment')}</span>}
-          {this.unmatchedCoreVersion
-            ? this.unmatchedView()
-            : this.roomList.map((roomInfo, index) => (
-                <li className={styles.roomInfo} key={index} onClick={this.enterRoom(roomInfo)}>
-                  <span>{roomInfo.name}</span>
-                  <span>{this.getTranslatePackName(...roomInfo.packages)}</span>
-                  <span>{`${roomInfo.activePlayers}/${roomInfo.totalPlayers}`}</span>
-                  <span>{this.props.translator.tr(roomInfo.status)}</span>
-                </li>
-              ))}
+      <>
+        <div className={styles.board}>
+          <div className={styles.roomList}>
+            {this.roomList.length === 0 && <span>{this.props.translator.tr('No rooms at the moment')}</span>}
+            {this.unmatchedCoreVersion
+              ? this.unmatchedView()
+              : this.roomList.map((roomInfo, index) => (
+                  <li className={styles.roomInfo} key={index} onClick={this.enterRoom(roomInfo)}>
+                    <span>{roomInfo.name}</span>
+                    <span>{this.getTranslatePackName(...roomInfo.packages)}</span>
+                    <span>{`${roomInfo.activePlayers}/${roomInfo.totalPlayers}`}</span>
+                    <span>{this.props.translator.tr(roomInfo.status)}</span>
+                  </li>
+                ))}
+          </div>
+          {this.createRoomDialog()}
         </div>
-        {this.createRoomDialog()}
-      </div>
+        {this.openUsernameDialog && <></>}
+      </>
     );
   }
 }

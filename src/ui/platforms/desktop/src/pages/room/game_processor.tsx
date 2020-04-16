@@ -407,7 +407,7 @@ export class GameClientProcessor {
   private onHandleLoseHpEvent<T extends GameEventIdentifiers.LoseHpEvent>(type: T, content: ServerEventFinder<T>) {
     const player = this.store.room.getPlayerById(content.toId);
     player.onLoseHp(content.lostHp);
-    this.presenter.broadcastUIUpdate(); 
+    this.presenter.broadcastUIUpdate();
   }
 
   private onHandleRecoverEvent<T extends GameEventIdentifiers.RecoverEvent>(type: T, content: ServerEventFinder<T>) {
@@ -481,6 +481,12 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
+    if (content.lordInfo) {
+      const lord = this.store.room.getPlayerById(content.lordInfo.lordId);
+      lord.CharacterId = content.lordInfo.lordCharacter;
+      this.presenter.broadcastUIUpdate();
+    }
+
     const onClick = (character: Character) => {
       if (this.presenter.ClientPlayer) {
         this.presenter.ClientPlayer.CharacterId = character.Id;
@@ -785,12 +791,18 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
+    this.presenter.createIncomingConversation({
+      conversation: 'please choose a card',
+      translator: this.translator,
+    });
+
     let selected = false;
     const onClick = (card: Card) => {
       if (selected) {
         return;
       }
 
+      this.presenter.closeIncomingConversation();
       selected = true;
       const responseEvent: ClientEventFinder<T> = {
         fromId: this.store.clientPlayerId,

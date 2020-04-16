@@ -67,6 +67,12 @@ export class GameProcessor {
     const lordCharacters = Sanguosha.getLordCharacters(this.room.Info.characterExtensions).map(
       character => character.Id,
     );
+    this.room.broadcast(GameEventIdentifiers.CustomGameDialog, {
+      translationsMessage: TranslationPack.translationJsonPatcher(
+        '{0} is lord, waiting for selecting a character',
+        lordInfo.Name,
+      ).extract(),
+    });
     const gameStartEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCharacterEvent>({
       characterIds: [
         ...lordCharacters,
@@ -215,9 +221,7 @@ export class GameProcessor {
           await this.onHandleCardEffectEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
 
           this.room.endProcessOnTag(judgeCardId.toString());
-          if (this.room.getCardOwnerId(judgeCardId) !== undefined) {
-            this.room.bury(judgeCardId);
-          }
+          this.room.bury(judgeCardId);
         }
         return;
       case PlayerPhase.DrawCardStage:

@@ -105,12 +105,15 @@ export class RoomPage extends React.Component<
   }
 
   private showMessageFromEvent(event: ServerEventFinder<GameEventIdentifiers>) {
-    const { messages = [], translationsMessage } = event;
+    const { messages = [], translationsMessage, unengagedMessage, engagedPlayerIds } = event;
     const { translator } = this.props;
 
-    if (translationsMessage) {
+    if (unengagedMessage && engagedPlayerIds && engagedPlayerIds.includes(this.store.clientPlayerId)) {
+      messages.push(TranslationPack.create(unengagedMessage).toString());
+    } else if (translationsMessage) {
       messages.push(TranslationPack.create(translationsMessage).toString());
     }
+
     messages.forEach(message => {
       this.presenter.addGameLog(translator.trx(message));
     });
