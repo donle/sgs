@@ -1,10 +1,5 @@
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
-import {
-  CardLostReason,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { CardLostReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
@@ -78,7 +73,13 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill {
     }
 
     if (response.fromArea !== PlayerCardsArea.JudgeArea) {
-      await room.dropCards(CardLostReason.PassiveDrop, [response.selectedCard], chooseCardEvent.toId);
+      await room.dropCards(
+        CardLostReason.PassiveDrop,
+        [response.selectedCard],
+        chooseCardEvent.toId,
+        chooseCardEvent.fromId,
+        this.name,
+      );
     } else {
       await room.loseCards(
         [response.selectedCard],

@@ -61,6 +61,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     reason: CardLostReason,
     cardIds: CardId[],
     player?: PlayerId,
+    droppedBy?: PlayerId,
     byReason?: string,
   ): Promise<void>;
   //Server only

@@ -582,9 +582,10 @@ export class GameProcessor {
   ) {
     if (!event.translationsMessage) {
       event.translationsMessage = TranslationPack.translationJsonPatcher(
-        '{0} drops cards {1}',
+        '{0} drops cards {1}' + (event.droppedBy === event.fromId ? '' : ' by {2}'),
         TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
         TranslationPack.patchCardInTranslation(...event.cardIds),
+        TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.droppedBy)),
       ).extract();
     }
 
