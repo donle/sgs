@@ -1,10 +1,10 @@
-import { CardType, VirtualCard } from 'core/cards/card';
+import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
-import { CardObtainedReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardLostReason, CardObtainedReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
-import { PlayerId } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Functional } from 'core/shares/libs/functional';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
@@ -94,20 +94,37 @@ export class Cheat extends ActiveSkill {
       diamond: CardSuit.Diamond,
     };
 
+    const from = room.getPlayerById(skillUseEvent.fromId);
     const cards = Sanguosha.getCardsByMatcher(
       new CardMatcher({
         name: selectedName ? [selectedName] : undefined,
         type: type === undefined ? undefined : [type],
         suit: selectedSuit === undefined ? undefined : [suitMap[selectedSuit]],
       }),
-    );
+    ).filter(card => from.getCardId(card.Id) === undefined);
 
     if (cards.length > 0) {
-      await room.obtainCards({
-        toId: skillUseEvent.fromId,
-        cardIds: [cards[0].Id],
-        reason: CardObtainedReason.ActivePrey,
-      });
+      const fromOthers = room.getCardOwnerId(cards[0].Id);
+      const owner = fromOthers ? room.getPlayerById(fromOthers) : undefined;
+      if (owner === undefined) {
+        await room.obtainCards({
+          toId: skillUseEvent.fromId,
+          cardIds: [cards[0].Id],
+          reason: CardObtainedReason.ActivePrey,
+        });
+      } else {
+        await room.moveCards(
+          [cards[0].Id],
+          fromOthers,
+          skillUseEvent.fromId,
+          CardLostReason.PassiveMove,
+          owner.cardFrom(cards[0].Id),
+          PlayerCardsArea.HandArea,
+          CardObtainedReason.ActivePrey,
+          skillUseEvent.fromId,
+          this.name,
+        );
+      }
     }
 
     return true;
