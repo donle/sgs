@@ -40,14 +40,24 @@ export class ZhiHeng extends ActiveSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     skillUseEvent.cardIds = Precondition.exists(skillUseEvent.cardIds, 'Unable to get zhiheng cards');
 
-    await room.dropCards(CardLostReason.ActiveDrop, skillUseEvent.cardIds, skillUseEvent.fromId);
-
-    let drawAdditionalCards = 0;
-    if (room.getPlayerById(skillUseEvent.fromId).getCardIds(PlayerCardsArea.HandArea).length === 0) {
-      drawAdditionalCards++;
+    const handCards = room.getPlayerById(skillUseEvent.fromId).getCardIds(PlayerCardsArea.HandArea);
+    let additionalCardDraw = 0;
+    if (
+      skillUseEvent.cardIds.filter(zhihengCard => handCards.includes(zhihengCard)).length ===
+      skillUseEvent.cardIds.length
+    ) {
+      additionalCardDraw++;
     }
 
-    await room.drawCards(skillUseEvent.cardIds.length + drawAdditionalCards);
+    await room.dropCards(
+      CardLostReason.ActiveDrop,
+      skillUseEvent.cardIds,
+      skillUseEvent.fromId,
+      skillUseEvent.fromId,
+      this.name,
+    );
+
+    await room.drawCards(skillUseEvent.cardIds.length + additionalCardDraw);
 
     return true;
   }
