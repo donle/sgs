@@ -1,3 +1,5 @@
+@value SanguoshaFont from '../metrics/metrics.css';
+
 .selectorDialog {
     position: absolute;
     align-self: center;
@@ -9,7 +11,7 @@
 
 .selectorTitle {
     font-size: 24px;
-    font-family: LiSu, -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', 微软雅黑;
+    font-family: SanguoshaFont;
     margin-bottom: 16px;
     margin-top: 0;
 }

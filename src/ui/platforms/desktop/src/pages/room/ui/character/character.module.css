@@ -1,7 +1,9 @@
+@value SanguoshaFont from '../metrics/metrics.css';
+
 .characterCard {
     min-width: 160px;
     height: 200px;
     border: 1px solid grey;
-    font-family: LiSu, -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', 微软雅黑;
+    font-family: SanguoshaFont;
     font-size: 24px;
 }

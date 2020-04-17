@@ -414,6 +414,8 @@ export const skillDescriptions: Word[] = [
 ];
 
 export const generalDictionary: Word[] = [
+  { source: 'cheat', target: '作弊' },
+  { source: 'cheat_description', target: '可以获得任意牌（仅用于测试）' },
   { source: 'standard', target: '标准版' },
   { source: 'wei', target: '魏' },
   { source: 'shu', target: '蜀' },
@@ -453,6 +455,16 @@ export const generalDictionary: Word[] = [
   { source: 'play stage', target: '出牌阶段' },
   { source: 'drop stage', target: '弃牌阶段' },
   { source: 'finish stage', target: '结束阶段' },
+
+  { source: 'basic card', target: '基本牌' },
+  { source: 'equip card', target: '装备牌' },
+  { source: 'trick card', target: '锦囊牌' },
+  { source: 'delayed trick card', target: '延时锦囊牌' },
+  { source: 'armor card', target: '防具牌' },
+  { source: 'weapon card', target: '武器牌' },
+  { source: 'defense ride card', target: '防御马' },
+  { source: 'offense ride card', target: '进攻马' },
+  { source: 'precious card', target: '宝物牌' },
 ];
 
 export const eventDictionary: Word[] = [

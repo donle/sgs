@@ -1,4 +1,5 @@
 import { Card, VirtualCard } from 'core/cards/card';
+import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, VirtualCardId } from 'core/cards/libs/card_props';
 import { Character, CharacterId } from 'core/characters/character';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
@@ -64,6 +65,10 @@ export class Sanguosha {
     // const card = Sanguosha.cards.find(card => card.Id === cardId) as T | undefined;
     const card = Sanguosha.cards[cardId - 1] as T;
     return Precondition.exists(card, `Unable to find the card by id: ${cardId}`);
+  }
+
+  public static getCardsByMatcher(matcher: CardMatcher) {
+    return Sanguosha.cards.filter(card => matcher.match(card));
   }
 
   public static getCardByName<T extends Card>(cardName: string): T {
