@@ -2,11 +2,11 @@ import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Jink } from 'core/cards/standard/jink';
+import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, ViewAsSkill } from 'core/skills/skill';
-import { Sanguosha } from 'core/game/engine';
 
 @CommonSkill
 export class QingGuo extends ViewAsSkill {
@@ -24,13 +24,7 @@ export class QingGuo extends ViewAsSkill {
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return cards.length === 1;
   }
-  public isAvailableCard(
-    room: Room,
-    owner: Player,
-    pendingCardId: CardId,
-    selectedCards: CardId[],
-    containerCard?: CardId | undefined,
-  ): boolean {
+  public isAvailableCard(room: Room, owner: Player, pendingCardId: CardId): boolean {
     return Sanguosha.getCardById(pendingCardId).isBlack() && owner.cardFrom(pendingCardId) === PlayerCardsArea.HandArea;
   }
 
