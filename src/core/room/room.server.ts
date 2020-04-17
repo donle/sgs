@@ -537,6 +537,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.ObtainCardEvent, event);
 
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.ObtainCardEvent, event);
+    // this.dropStack = this.dropStack.filter(cardId => !event.cardIds.includes(cardId));
+    // this.drawStack = this.drawStack.filter(cardId => !event.cardIds.includes(cardId));
   }
 
   public async dropCards(
@@ -790,7 +792,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       bySkill,
     };
 
-    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.JudgeEvent, event);
+    await this.gameProcessor.onHandleIncomingEvent(
+      GameEventIdentifiers.JudgeEvent,
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.JudgeEvent, event),
+    );
     this.bury(event.judgeCardId);
 
     return event;

@@ -60,6 +60,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'zhenji', target: '甄姬' },
   { source: 'luoshen', target: '洛神' },
+  { source: '#luoshen', target: '洛神' },
   { source: 'qingguo', target: '倾国' },
 
   { source: 'liubei', target: '刘备' },

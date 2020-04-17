@@ -47,4 +47,4 @@ export { LiJian } from './characters/standard/lijian';
 export { JieYin } from './characters/standard/jieyin';
 export { XiaoJi } from './characters/standard/xiaoji';
 export { TuXi } from './characters/standard/tuxi';
-export { LuoShen } from './characters/standard/luoshen';
+export { LuoShen, LuoShenShadow } from './characters/standard/luoshen';

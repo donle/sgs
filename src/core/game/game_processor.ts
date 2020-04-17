@@ -333,10 +333,13 @@ export class GameProcessor {
         await this.onPhase(this.currentPlayerPhase!);
       }
 
-      await this.onHandlePhaseStageChangeEvent(GameEventIdentifiers.PhaseStageChangeEvent, {
-        toStage: this.currentPlayerStage,
-        playerId: this.CurrentPlayer.Id,
-      });
+      await this.onHandlePhaseStageChangeEvent(
+        GameEventIdentifiers.PhaseStageChangeEvent,
+        EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseStageChangeEvent, {
+          toStage: this.currentPlayerStage,
+          playerId: this.CurrentPlayer.Id,
+        }),
+      );
     }
   }
 
