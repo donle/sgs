@@ -49,5 +49,6 @@ export { XiaoJi } from './characters/standard/xiaoji';
 export { TuXi } from './characters/standard/tuxi';
 export { QingGuo } from './characters/standard/qingguo';
 export { LuoShen, LuoShenShadow } from './characters/standard/luoshen';
+export { GangLie } from './characters/standard/ganglie';
 
 export { Cheat } from './system/cheat';
