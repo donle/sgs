@@ -1005,6 +1005,12 @@ export class GameProcessor {
         ).extract();
       }
     }
+    this.room.broadcast(GameEventIdentifiers.CustomGameDialog, { translationsMessage: event.translationsMessage });
+    event.translationsMessage = undefined;
+
+    if (!this.room.getProcessingCards(event.cardId.toString()).includes(event.cardId)) {
+      await this.room.loseCards([event.cardId], event.fromId, CardLostReason.CardResponse);
+    }
 
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === CardResponseStage.CardResponsing) {

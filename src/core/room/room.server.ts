@@ -760,10 +760,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       return true;
     });
 
-    if (!this.getProcessingCards(event.cardId.toString()).includes(event.cardId)) {
-      await this.loseCards([event.cardId], event.fromId, CardLostReason.CardResponse);
-      this.bury(event.cardId);
-    }
+    this.bury(event.cardId);
   }
 
   public async judge(
