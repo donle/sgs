@@ -30,9 +30,15 @@ export class GameCommonRules {
     },
   ];
 
-  private static isBannedBySideRules = (player: Player, matcher: CardMatcher) => {
-    if (matcher.match(new CardMatcher({ name: ['peach'] }))) {
-      return player.Hp >= player.MaxHp;
+  private static isBannedBySideRules = (player: Player, cardOrMatcher: Card | CardMatcher) => {
+    if (cardOrMatcher instanceof Card) {
+      if (cardOrMatcher.GeneralName === 'peach') {
+        return player.Hp >= player.MaxHp;
+      }
+    } else {
+      if (cardOrMatcher.match(new CardMatcher({ name: ['peach'] }))) {
+        return player.Hp >= player.MaxHp;
+      }
     }
 
     return false;
@@ -99,11 +105,11 @@ export class GameCommonRules {
         return (total += current.additionalUsableTimes);
       }, availableUseTimes);
     }
-    if (card instanceof Card) {
-      for (const skill of user.getSkills<RulesBreakerSkill>('breaker')) {
-        availableUseTimes += skill.breakCardUsableTimes(card.Id, room, user);
-      }
-    } else if (GameCommonRules.isBannedBySideRules(user, card)) {
+    for (const skill of user.getSkills<RulesBreakerSkill>('breaker')) {
+      availableUseTimes += skill.breakCardUsableTimes(card instanceof Card ? card.Id : card, room, user);
+    }
+
+    if (GameCommonRules.isBannedBySideRules(user, card)) {
       return false;
     }
     return user.cardUsedTimes(card instanceof Card ? card.Id : card) < availableUseTimes;
@@ -178,11 +184,9 @@ export class GameCommonRules {
         times += rule.additionalUsableDistance;
       });
 
-    if (card instanceof Card) {
-      user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
-        times += skill.breakCardUsableDistance(card.Id, room, user);
-      });
-    }
+    user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
+      times += skill.breakCardUsableDistance(card instanceof Card ? card.Id : card, room, user);
+    });
 
     return times;
   }
@@ -194,11 +198,9 @@ export class GameCommonRules {
         times += rule.additionalTargets;
       });
 
-    if (card instanceof Card) {
-      user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
-        times += skill.breakCardUsableTargets(card.Id, room, user);
-      });
-    }
+    user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
+      times += skill.breakCardUsableTargets(card instanceof Card ? card.Id : card, room, user);
+    });
 
     return times;
   }
@@ -208,11 +210,11 @@ export class GameCommonRules {
     return GameCommonRules.userRules[user.Id].additionalAttackDistance;
   }
 
-  public static getCardAdditionalAttackDistance(room: Room, user: Player, card?: Card) {
+  public static getCardAdditionalAttackDistance(room: Room, user: Player, card?: Card | CardMatcher) {
     GameCommonRules.preCheck(user);
     let distance = GameCommonRules.userRules[user.Id].additionalAttackDistance;
     user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
-      distance += skill.breakAttackDistance(card?.Id, room, user);
+      distance += skill.breakAttackDistance(card instanceof Card ? card.Id : card, room, user);
     });
 
     return distance;

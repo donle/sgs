@@ -253,13 +253,13 @@ export abstract class TriggerSkill extends Skill {
 
   public abstract async onTrigger(
     room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.SkillUseEvent>,
+    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.SkillUseEvent>,
   ): Promise<boolean>;
   public abstract canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers>): boolean;
 
   public async onUse(
     room: Room,
-    event: ClientEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.SkillUseEvent>,
+    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.SkillUseEvent>,
   ): Promise<boolean> {
     return await this.onTrigger(room, event);
   }
@@ -395,16 +395,16 @@ export abstract class RulesBreakerSkill extends Skill {
     return true;
   }
 
-  public breakCardUsableTimes(cardId: CardId, room: Room, owner: Player): number {
+  public breakCardUsableTimes(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
     return 0;
   }
-  public breakCardUsableDistance(cardId: CardId, room: Room, owner: Player): number {
+  public breakCardUsableDistance(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
     return 0;
   }
-  public breakCardUsableTargets(cardId: CardId, room: Room, owner: Player): number {
+  public breakCardUsableTargets(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
     return 0;
   }
-  public breakAttackDistance(cardId: CardId | undefined, room: Room, owner: Player): number {
+  public breakAttackDistance(cardId: CardId | CardMatcher | undefined, room: Room, owner: Player): number {
     return 0;
   }
   public breakOffenseDistance(room: Room, owner: Player): number {
