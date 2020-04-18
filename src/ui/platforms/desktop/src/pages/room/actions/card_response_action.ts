@@ -20,6 +20,7 @@ export class CardResponseAction extends BaseAction {
   };
 
   private askForEvent: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>;
+  private matcher: CardMatcher;
 
   constructor(
     playerId: PlayerId,
@@ -29,6 +30,7 @@ export class CardResponseAction extends BaseAction {
   ) {
     super(playerId, store, presenter, undefined);
     this.askForEvent = askForEvent;
+    this.matcher = new CardMatcher(this.askForEvent.cardMatcher);
 
     if (!EventPacker.isUncancellabelEvent(this.askForEvent)) {
       this.presenter.enableActionButton('cancel');
@@ -54,7 +56,14 @@ export class CardResponseAction extends BaseAction {
       if (skill instanceof ViewAsSkill) {
         const player = this.store.room.getPlayerById(this.playerId);
         return (
-          skill.isAvailableCard(this.store.room, player, card.Id, this.pendingCards, this.equipSkillCardId) &&
+          skill.isAvailableCard(
+            this.store.room,
+            player,
+            card.Id,
+            this.pendingCards,
+            this.equipSkillCardId,
+            this.matcher,
+          ) &&
           (!skill.cardFilter(this.store.room, player, this.pendingCards) ||
             skill.cardFilter(this.store.room, player, [...this.pendingCards, card.Id]))
         );

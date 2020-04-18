@@ -1,6 +1,6 @@
 import { Card } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
+import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -8,7 +8,11 @@ import { ActiveSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill
 import { BaseAction } from './base_action';
 
 export class PlayPhaseAction extends BaseAction {
-  public static isPlayPhaseSkillsDisabled = (room: Room, player: Player) => (skill: Skill) => {
+  public static isPlayPhaseSkillsDisabled = (
+    room: Room,
+    player: Player,
+    event: ServerEventFinder<GameEventIdentifiers>,
+  ) => (skill: Skill) => {
     if (!room.isPlaying()) {
       return false;
     }
@@ -18,7 +22,9 @@ export class PlayPhaseAction extends BaseAction {
     } else if (skill instanceof ActiveSkill) {
       return !skill.canUse(room, player);
     } else if (skill instanceof ViewAsSkill) {
-      return !player.canUseCard(room, new CardMatcher({ name: skill.canViewAs() }));
+      return (
+        !player.canUseCard(room, new CardMatcher({ name: skill.canViewAs() })) || !skill.canUse(room, player, event)
+      );
     }
 
     return true;

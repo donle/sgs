@@ -225,7 +225,7 @@ export abstract class Skill {
 
 export abstract class ResponsiveSkill extends Skill {
   public canUse() {
-    return true;
+    return false;
   }
 
   public isRefreshAt() {
@@ -352,6 +352,12 @@ export abstract class ViewAsSkill extends Skill {
     return false;
   }
 
+  public abstract canUse(
+    room: Room,
+    owner: Player,
+    contentOrContainerCard?: ServerEventFinder<GameEventIdentifiers> | CardId,
+  ): boolean;
+
   public abstract canViewAs(): string[];
   public abstract viewAs(cards: CardId[]): VirtualCard;
   public abstract cardFilter(room: Room, owner: Player, cards: CardId[]): boolean;
@@ -361,6 +367,7 @@ export abstract class ViewAsSkill extends Skill {
     pendingCardId: CardId,
     selectedCards: CardId[],
     containerCard?: CardId,
+    cardMatcher?: CardMatcher,
   ): boolean;
 
   public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {

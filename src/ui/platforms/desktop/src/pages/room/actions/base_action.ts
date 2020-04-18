@@ -195,7 +195,10 @@ export abstract class BaseAction {
         }
       } else if (fromArea === PlayerCardsArea.EquipArea) {
         if (card.Skill instanceof ViewAsSkill) {
-          return player.canUseCard(this.store.room, new CardMatcher({ name: card.Skill.canViewAs() }));
+          return (
+            player.canUseCard(this.store.room, new CardMatcher({ name: card.Skill.canViewAs() })) &&
+            card.Skill.canUse(this.store.room, player)
+          );
         } else if (card.Skill instanceof ActiveSkill) {
           let canSelfUse = true;
           if (card.Skill.isSelfTargetSkill()) {

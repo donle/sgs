@@ -20,7 +20,7 @@ export class ResponsiveUseCardAction extends BaseAction {
   };
 
   private askForEvent: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
-
+  private matcher: CardMatcher;
   constructor(
     playerId: PlayerId,
     store: RoomStore,
@@ -29,6 +29,7 @@ export class ResponsiveUseCardAction extends BaseAction {
   ) {
     super(playerId, store, presenter, askForEvent.scopedTargets);
     this.askForEvent = askForEvent;
+    this.matcher = new CardMatcher(this.askForEvent.cardMatcher);
 
     if (!EventPacker.isUncancellabelEvent(this.askForEvent)) {
       this.presenter.enableActionButton('cancel');
@@ -68,7 +69,14 @@ export class ResponsiveUseCardAction extends BaseAction {
         );
       } else if (skill instanceof ViewAsSkill) {
         return (
-          skill.isAvailableCard(this.store.room, player, card.Id, this.pendingCards, this.equipSkillCardId) &&
+          skill.isAvailableCard(
+            this.store.room,
+            player,
+            card.Id,
+            this.pendingCards,
+            this.equipSkillCardId,
+            this.matcher,
+          ) &&
           (!skill.cardFilter(this.store.room, player, this.pendingCards) ||
             skill.cardFilter(this.store.room, player, [...this.pendingCards, card.Id]))
         );
