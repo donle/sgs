@@ -12,11 +12,13 @@ import { ZhaoYun } from './zhaoyun';
 import { ZhenJi } from './zhenji';
 import { ZhouYu } from './zhouyu';
 import { ZhuGeLiang } from './zhugeliang';
+import { HuangGai } from './huanggai';
 
 export const StandardCharacterPackage: (index: number) => Character[] = index => [
   new SunQuan(index++),
   new ZhouYu(index++),
   new SunShangXiang(index++),
+  new HuangGai(index++),
 
   new LiuBei(index++),
   new HuangYueYing(index++),
