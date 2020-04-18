@@ -32,7 +32,7 @@ export class YaJiao extends TriggerSkill {
 
   async onTrigger() {
     return true;
-  }b 
+  }
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
@@ -78,27 +78,21 @@ export class YaJiao extends TriggerSkill {
     const lostCard = Sanguosha.getCardById(cardUseOrResponseEvent.cards[0].cardId);
     const obtainedCard = Sanguosha.getCardById(card[0]);
     if (lostCard.BaseType !== obtainedCard.BaseType) {
-      const dropEvent: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
-        fromArea: [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
-        toId: skillUseEvent.fromId,
-        cardAmount: 1,
-      };
-      room.notify(
-        GameEventIdentifiers.AskForCardDropEvent,
-        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForCardDropEvent>(dropEvent),
+      const { responseEvent } = await room.askForCardDrop(
         skillUseEvent.fromId,
+        1,
+        [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
+        true,
       );
-      const { droppedCards } = await room.onReceivingAsyncReponseFrom(
-        GameEventIdentifiers.AskForCardDropEvent,
-        skillUseEvent.fromId,
-      );
-      await room.dropCards(
-        CardLostReason.ActiveDrop,
-        droppedCards,
-        skillUseEvent.fromId,
-        skillUseEvent.fromId,
-        this.name,
-      );
+      if (responseEvent) {
+        await room.dropCards(
+          CardLostReason.ActiveDrop,
+          responseEvent.droppedCards,
+          skillUseEvent.fromId,
+          skillUseEvent.fromId,
+          this.name,
+        );
+      }
     }
 
     return true;

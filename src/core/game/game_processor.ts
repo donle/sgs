@@ -263,22 +263,15 @@ export class GameProcessor {
           GameCommonRules.getAdditionalHoldCardNumber(this.room, this.CurrentPlayer);
         const discardAmount = this.CurrentPlayer.getCardIds(PlayerCardsArea.HandArea).length - maxCardHold;
         if (discardAmount > 0) {
-          this.room.notify(
-            GameEventIdentifiers.AskForCardDropEvent,
-            EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForCardDropEvent>({
-              cardAmount: discardAmount,
-              fromArea: [PlayerCardsArea.HandArea],
-              toId: this.CurrentPlayer.Id,
-            }),
+          const { terminated, responseEvent } = await this.room.askForCardDrop(
             this.CurrentPlayer.Id,
+            discardAmount,
+            [PlayerCardsArea.HandArea],
+            true,
           );
-
-          const response = await this.room.onReceivingAsyncReponseFrom(
-            GameEventIdentifiers.AskForCardDropEvent,
-            this.CurrentPlayer.Id,
-          );
-
-          await this.room.dropCards(CardLostReason.ActiveDrop, response.droppedCards, response.fromId);
+          if (responseEvent) {
+            await this.room.dropCards(CardLostReason.ActiveDrop, responseEvent.droppedCards, responseEvent.fromId);
+          }
         }
 
         return;

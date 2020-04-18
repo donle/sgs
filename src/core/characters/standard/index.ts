@@ -2,6 +2,7 @@ import { Character } from '../character';
 import { CaoCao } from './caocao';
 import { DiaoChan } from './diaochan';
 import { GuoJia } from './guojia';
+import { HuangGai } from './huanggai';
 import { HuangYueYing } from './huangyueying';
 import { LiuBei } from './liubei';
 import { SiMaYi } from './simayi';
@@ -12,7 +13,6 @@ import { ZhaoYun } from './zhaoyun';
 import { ZhenJi } from './zhenji';
 import { ZhouYu } from './zhouyu';
 import { ZhuGeLiang } from './zhugeliang';
-import { HuangGai } from './huanggai';
 
 export const StandardCharacterPackage: (index: number) => Character[] = index => [
   new SunQuan(index++),

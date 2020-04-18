@@ -23,7 +23,9 @@ export class CiXiongJianSkill extends TriggerSkill {
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage) {
     return (
-      stage === AimStage.AfterAim && event.byCardId !== undefined && Sanguosha.getCardById(event.byCardId).GeneralName === 'slash'
+      stage === AimStage.AfterAim &&
+      event.byCardId !== undefined &&
+      Sanguosha.getCardById(event.byCardId).GeneralName === 'slash'
     );
   }
 
@@ -96,20 +98,10 @@ export class CiXiongJianSkill extends TriggerSkill {
       const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, toId);
       response.selectedOption = response.selectedOption || 'cixiongjian:draw-card';
       if (response.selectedOption === 'cixiongjian:drop-card') {
-        const dropEvent: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
-          fromArea: [PlayerCardsArea.HandArea],
-          cardAmount: 1,
-          toId,
-        };
-
-        room.notify(
-          GameEventIdentifiers.AskForCardDropEvent,
-          EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForCardDropEvent>(dropEvent),
-          toId,
-        );
-
-        const dropResponse = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForCardDropEvent, toId);
-        await room.dropCards(CardLostReason.ActiveDrop, dropResponse.droppedCards, toId);
+        const { responseEvent } = await room.askForCardDrop(toId, 1, [PlayerCardsArea.HandArea], true);
+        if (responseEvent) {
+          await room.dropCards(CardLostReason.ActiveDrop, responseEvent.droppedCards, toId);
+        }
       } else {
         await room.drawCards(1, fromId);
       }

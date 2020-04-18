@@ -1,9 +1,18 @@
+import { CardId } from 'core/cards/libs/card_props';
 import { CardObtainedReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AllStage, JudgeEffectStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
+import { GameCommonRules } from 'core/game/game_rules';
+import {
+  AllStage,
+  JudgeEffectStage,
+  PhaseStageChangeStage,
+  PlayerPhase,
+  PlayerPhaseStages,
+} from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
+import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { CommonSkill, TriggerSkill } from 'core/skills/skill';
+import { CommonSkill, CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 
 @CommonSkill
 export class LuoShen extends TriggerSkill {
@@ -80,6 +89,11 @@ export class LuoShen extends TriggerSkill {
       } while (true);
     } else if (identifier === GameEventIdentifiers.JudgeEvent) {
       const judgeEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.JudgeEvent>;
+      const player = room.getPlayerById(skillUseEvent.fromId);
+      const luoshenCards = player.getFlag<CardId[]>(this.name) || [];
+      luoshenCards.push(judgeEvent.judgeCardId);
+      player.setFlag<CardId[]>(this.name, luoshenCards);
+
       if (Sanguosha.getCardById(judgeEvent.judgeCardId).isBlack()) {
         await room.obtainCards(
           {
@@ -90,6 +104,51 @@ export class LuoShen extends TriggerSkill {
           true,
         );
       }
+    }
+
+    return true;
+  }
+}
+
+@CompulsorySkill
+@ShadowSkill
+export class LuoShenShadow extends TriggerSkill {
+  constructor() {
+    super('luoshen', 'luoshen_description');
+  }
+
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent>): boolean {
+    return EventPacker.getIdentifier(event) === GameEventIdentifiers.AskForCardDropEvent;
+  }
+
+  public canUse(room: Room, owner: Player) {
+    return room.CurrentPlayerPhase === PlayerPhase.DropCardStage && room.CurrentPhasePlayer.Id === owner.Id;
+  }
+
+  public async onTrigger(): Promise<boolean> {
+    return true;
+  }
+
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
+    const { triggeredOnEvent } = event;
+    const askForCardDropEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent>;
+    const player = room.getPlayerById(askForCardDropEvent.toId);
+    const luoshenCards = player.getFlag<CardId[]>(this.GeneralName);
+    player.removeFlag(this.GeneralName);
+
+    const maxHold =
+      GameCommonRules.getBaseHoldCardNumber(room, player) + GameCommonRules.getAdditionalHoldCardNumber(room, player);
+
+    const otherHandCards = player.getCardIds(PlayerCardsArea.HandArea).filter(card => !luoshenCards.includes(card));
+    const discardAmount = otherHandCards.length - maxHold;
+
+    if (discardAmount <= 0) {
+      EventPacker.terminate(askForCardDropEvent);
+    } else {
+      askForCardDropEvent.cardAmount = discardAmount;
+      askForCardDropEvent.except = askForCardDropEvent.except
+        ? [...askForCardDropEvent.except, ...luoshenCards]
+        : luoshenCards;
     }
 
     return true;

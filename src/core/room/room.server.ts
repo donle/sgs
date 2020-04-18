@@ -295,6 +295,38 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     player.equip(card);
   }
 
+  public async askForCardDrop(
+    playerId: PlayerId,
+    discardAmount: number,
+    fromArea: PlayerCardsArea[],
+    uncancellable?: boolean,
+    except?: CardId[],
+  ) {
+    const event = EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForCardDropEvent, {
+      cardAmount: discardAmount,
+      fromArea,
+      toId: this.CurrentPlayer.Id,
+      except,
+    });
+    if (uncancellable) {
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForCardDropEvent>(event);
+    }
+    await this.trigger(event);
+    if (EventPacker.isTerminated(event)) {
+      return {
+        terminated: true,
+      };
+    }
+    this.notify(GameEventIdentifiers.AskForCardDropEvent, event, playerId);
+
+    return {
+      responseEvent: await this.onReceivingAsyncReponseFrom(
+        GameEventIdentifiers.AskForCardDropEvent,
+        this.CurrentPlayer.Id,
+      ),
+    };
+  }
+
   public async askForCardUse(event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>, to: PlayerId) {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForCardUseEvent, event);
     await this.trigger<typeof event>(event);

@@ -136,6 +136,14 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract syncGameCommonRules(playerId: PlayerId, updateActions: (user: Player) => void): void;
   //Server only
+  public abstract async askForCardDrop<T extends GameEventIdentifiers.AskForCardDropEvent>(
+    playerId: PlayerId,
+    discardAmount: number,
+    fromArea: PlayerCardsArea[],
+    uncancellable?: boolean,
+    except?: CardId[],
+  ): Promise<ResponsiveTriggeredResult<T>>;
+  //Server only
   public abstract async askForCardUse<T extends GameEventIdentifiers.AskForCardUseEvent>(
     event: ServerEventFinder<T>,
     to: PlayerId,
