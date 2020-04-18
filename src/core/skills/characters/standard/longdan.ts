@@ -34,14 +34,14 @@ export class LongDan extends ViewAsSkill {
     cardMatcher?: CardMatcher,
   ): boolean {
     if (cardMatcher) {
+      let canUse = false;
       if (cardMatcher.Matcher.name?.includes('jink')) {
-        return (
-          Sanguosha.getCardById(pendingCardId).GeneralName === 'slash' &&
-          owner.cardFrom(pendingCardId) === PlayerCardsArea.HandArea
-        );
-      } else {
-        return false;
+        canUse = Sanguosha.getCardById(pendingCardId).GeneralName === 'slash';
+      } else if (cardMatcher.Matcher.name?.includes('slash')) {
+        canUse = Sanguosha.getCardById(pendingCardId).GeneralName === 'jink';
       }
+
+      return canUse && owner.cardFrom(pendingCardId) === PlayerCardsArea.HandArea;
     } else {
       return (
         Sanguosha.getCardById(pendingCardId).GeneralName === 'jink' &&

@@ -1,5 +1,4 @@
 import { Card } from 'core/cards/card';
-import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -22,9 +21,7 @@ export class PlayPhaseAction extends BaseAction {
     } else if (skill instanceof ActiveSkill) {
       return !skill.canUse(room, player);
     } else if (skill instanceof ViewAsSkill) {
-      return (
-        !player.canUseCard(room, new CardMatcher({ name: skill.canViewAs() })) || !skill.canUse(room, player, event)
-      );
+      return !skill.canUse(room, player, event);
     }
 
     return true;

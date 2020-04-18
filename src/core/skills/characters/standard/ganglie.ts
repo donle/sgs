@@ -72,6 +72,7 @@ export class GangLie extends TriggerSkill {
         [response.selectedCard],
         chooseCardEvent.toId,
         skillUseEvent.fromId,
+        this.name,
       );
     } else if (Sanguosha.getCardById(judge.judgeCardId).isRed()) {
       await room.damage({

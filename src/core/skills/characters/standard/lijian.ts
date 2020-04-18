@@ -59,7 +59,13 @@ export class LiJian extends ActiveSkill {
   }
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    await room.dropCards(CardLostReason.ActiveDrop, skillUseEvent.cardIds!, skillUseEvent.fromId, this.name);
+    await room.dropCards(
+      CardLostReason.ActiveDrop,
+      skillUseEvent.cardIds!,
+      skillUseEvent.fromId,
+      skillUseEvent.fromId,
+      this.name,
+    );
     const duel = VirtualCard.create({
       cardName: 'duel',
       bySkill: this.name,

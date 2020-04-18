@@ -1,4 +1,5 @@
 import { Card, CardType, VirtualCard } from 'core/cards/card';
+import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Character, CharacterId } from 'core/characters/character';
@@ -901,62 +902,72 @@ export class GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
+    const from = this.room.getPlayerById(event.fromId);
+    const card = Sanguosha.getCardById(event.cardId);
+
+    if (!event.translationsMessage) {
+      if (card.is(CardType.Equip)) {
+        event.translationsMessage = TranslationPack.translationJsonPatcher(
+          '{0} equipped {1}',
+          TranslationPack.patchPlayerInTranslation(from),
+          TranslationPack.patchCardInTranslation(event.cardId),
+        ).extract();
+      } else {
+        if (Card.isVirtualCardId(event.cardId)) {
+          const card = Sanguosha.getCardById<VirtualCard>(event.cardId);
+          event.translationsMessage =
+            card.ActualCardIds.length === 0
+              ? TranslationPack.translationJsonPatcher(
+                  '{0} used skill {1}, use card {2}' + (event.toIds ? ' to {3}' : ''),
+                  TranslationPack.patchPlayerInTranslation(from),
+                  card.GeneratedBySkill,
+                  TranslationPack.patchCardInTranslation(card.Id),
+                  event.toIds
+                    ? TranslationPack.patchPlayerInTranslation(...event.toIds.map(id => this.room.getPlayerById(id)))
+                    : '',
+                ).extract()
+              : TranslationPack.translationJsonPatcher(
+                  '{0} used skill {1}, transformed {2} as {3} card' + (event.toIds ? ' used to {4}' : ' to use'),
+                  TranslationPack.patchPlayerInTranslation(from),
+                  card.GeneratedBySkill || '',
+                  TranslationPack.patchCardInTranslation(...card.ActualCardIds),
+                  TranslationPack.patchCardInTranslation(card.Id),
+                  event.toIds
+                    ? TranslationPack.patchPlayerInTranslation(...event.toIds.map(id => this.room.getPlayerById(id)))
+                    : '',
+                ).extract();
+        } else {
+          event.translationsMessage = TranslationPack.translationJsonPatcher(
+            '{0} used card {1}' + (event.toIds ? ' to {2}' : ''),
+            TranslationPack.patchPlayerInTranslation(from),
+            TranslationPack.patchCardInTranslation(event.cardId),
+            event.toIds
+              ? TranslationPack.patchPlayerInTranslation(...event.toIds.map(id => this.room.getPlayerById(id)))
+              : '',
+          ).extract();
+        }
+      }
+    }
+
+    this.room.broadcast(GameEventIdentifiers.CustomGameDialog, { translationsMessage: event.translationsMessage });
+    event.translationsMessage = undefined;
+
+    await this.room.loseCards([event.cardId], event.fromId, CardLostReason.CardUse);
+
     await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === CardUseStage.CardUsing) {
-        const from = this.room.getPlayerById(event.fromId);
-        const card = Sanguosha.getCardById(event.cardId);
-        if (!event.translationsMessage) {
-          if (card.is(CardType.Equip)) {
-            event.translationsMessage = TranslationPack.translationJsonPatcher(
-              '{0} equipped {1}',
-              TranslationPack.patchPlayerInTranslation(from),
-              TranslationPack.patchCardInTranslation(event.cardId),
-            ).extract();
-          } else {
-            if (Card.isVirtualCardId(event.cardId)) {
-              const card = Sanguosha.getCardById<VirtualCard>(event.cardId);
-              event.translationsMessage =
-                card.ActualCardIds.length === 0
-                  ? TranslationPack.translationJsonPatcher(
-                      '{0} used skill {1}, use card {2}' + (event.toIds ? ' to {3}' : ''),
-                      TranslationPack.patchPlayerInTranslation(from),
-                      card.GeneratedBySkill,
-                      TranslationPack.patchCardInTranslation(card.Id),
-                      event.toIds
-                        ? TranslationPack.patchPlayerInTranslation(
-                            ...event.toIds.map(id => this.room.getPlayerById(id)),
-                          )
-                        : '',
-                    ).extract()
-                  : TranslationPack.translationJsonPatcher(
-                      '{0} used skill {1}, transformed {2} as {3} card' + (event.toIds ? ' used to {4}' : ''),
-                      TranslationPack.patchPlayerInTranslation(from),
-                      card.GeneratedBySkill || '',
-                      TranslationPack.patchCardInTranslation(...card.ActualCardIds),
-                      TranslationPack.patchCardInTranslation(card.Id),
-                      event.toIds
-                        ? TranslationPack.patchPlayerInTranslation(
-                            ...event.toIds.map(id => this.room.getPlayerById(id)),
-                          )
-                        : '',
-                    ).extract();
-            } else {
-              event.translationsMessage = TranslationPack.translationJsonPatcher(
-                '{0} used card {1}' + (event.toIds ? ' to {2}' : ''),
-                TranslationPack.patchPlayerInTranslation(from),
-                TranslationPack.patchCardInTranslation(event.cardId),
-                event.toIds
-                  ? TranslationPack.patchPlayerInTranslation(...event.toIds.map(id => this.room.getPlayerById(id)))
-                  : '',
-              ).extract();
-            }
-          }
-        }
-
         if (!card.is(CardType.Equip)) {
           await card.Skill.onUse(this.room, event);
           event.animation = event.animation || card.Skill.getAnimationSteps(event);
+
+          if (card.is(CardType.DelayedTrick)) {
+            EventPacker.terminate(event);
+          }
+        } else {
+          await this.room.equip(card as EquipCard, from);
+          EventPacker.terminate(event);
         }
+
         this.room.broadcast(identifier, event);
       }
     });

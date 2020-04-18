@@ -117,10 +117,10 @@ export class JieYin extends ActiveSkill {
           this.name,
         );
       } else {
-        await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, this.name);
+        await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, fromId, this.name);
       }
     } else {
-      await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, this.name);
+      await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, fromId, this.name);
     }
 
     const weaker = from.Hp > to.Hp ? to : to.Hp > from.Hp ? from : undefined;

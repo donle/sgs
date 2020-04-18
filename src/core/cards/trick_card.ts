@@ -55,6 +55,10 @@ export abstract class TrickCard extends Card {
     this.generalName = generalName || this.name;
   }
 
+  public get BaseType() {
+    return CardType.Trick;
+  }
+
   public isDelayedTrick() {
     return this.cardType.includes(CardType.DelayedTrick);
   }

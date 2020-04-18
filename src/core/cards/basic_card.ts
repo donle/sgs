@@ -4,6 +4,9 @@ import { Card, CardType } from './card';
 import { CardSuit, RealCardId } from './libs/card_props';
 
 export abstract class BasicCard extends Card {
+  public get BaseType() {
+    return CardType.Basic;
+  }
   protected cardType = [CardType.Basic];
   protected generalName: string;
 

@@ -578,6 +578,8 @@ export const eventDictionary: Word[] = [
   { source: 'lose a hp', target: '失去一点体力' },
   { source: 'drop all {0} cards', target: '弃置所有 {0} 牌' },
   { source: '{0} displayed cards {1}', target: '{0} 展示了 {1}' },
+  { source: '{0} displayed cards {1} from top of draw stack', target: '{0} 展示了牌堆顶的一张 {1}' },
+  { source: 'please choose another player or click cancel', target: '请选择一名其他角色或点击取消' },
   {
     source: 'please response a card to replace judge card {0} from {1}',
     target: '请打出一张手牌替换 {1} 的判定牌 {0}',
@@ -643,6 +645,7 @@ export const eventDictionary: Word[] = [
     target: '{0} 对你使用了 【{1}】, 打出一张 {2} 来响应',
   },
   { source: 'please choose', target: '请选择' },
+  { source: 'please choose a player', target: '请选择一名角色' },
 
   { source: 'cixiongjian:drop-card', target: '弃置一张手牌' },
   { source: 'cixiongjian:draw-card', target: '令其摸一张牌' },

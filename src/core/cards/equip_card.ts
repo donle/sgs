@@ -13,6 +13,10 @@ export abstract class EquipCard extends Card {
     this.cardType.push(subType);
   }
 
+  public get BaseType() {
+    return CardType.Equip;
+  }
+
   public get EquipType() {
     return this.cardType[1];
   }

@@ -88,6 +88,8 @@ export abstract class Card {
     return this.description;
   }
 
+  public abstract get BaseType(): CardType;
+
   public get Type() {
     return this.cardType;
   }
@@ -267,6 +269,10 @@ export class VirtualCard<T extends Card = Card> extends Card {
 
   public isRed() {
     return this.viewAsRedCard;
+  }
+
+  public get BaseType() {
+    return this.viewAs.BaseType;
   }
 
   public get Id(): VirtualCardId {

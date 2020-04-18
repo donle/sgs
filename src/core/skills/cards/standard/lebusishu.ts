@@ -49,10 +49,10 @@ export class LeBuSiShuSkill extends ActiveSkill {
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     await room.moveCards(
       [event.cardId],
-      event.fromId,
+      undefined,
       event.toIds![0],
       CardLostReason.CardUse,
-      PlayerCardsArea.HandArea,
+      undefined,
       PlayerCardsArea.JudgeArea,
     );
 

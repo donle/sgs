@@ -280,13 +280,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
   }
 
-  public async equip(card: EquipCard, player: Player, passiveEquip?: boolean) {
+  public async equip(card: EquipCard, player: Player) {
     const prevEquipment = player.getEquipment(card.EquipType);
     if (prevEquipment !== undefined) {
       await this.dropCards(CardLostReason.PlaceToDropStack, [prevEquipment], player.Id);
-    }
-    if (!passiveEquip) {
-      await this.loseCards([card.Id], player.Id, CardLostReason.CardUse);
     }
 
     const event: ServerEventFinder<GameEventIdentifiers.EquipEvent> = {
@@ -330,37 +327,29 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     };
   }
 
-  public async useCard(content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, content);
+  public async useCard(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
+    EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, event);
 
-    await super.useCard(content);
-    const from = this.getPlayerById(content.fromId);
-    const card = Sanguosha.getCardById(content.cardId);
-    if (card.is(CardType.Equip)) {
-      await this.equip(card as EquipCard, from);
-    } else if (!card.is(CardType.DelayedTrick)) {
-      if (!this.getProcessingCards(content.cardId.toString()).includes(content.cardId)) {
-        await this.loseCards([content.cardId], content.fromId, CardLostReason.CardUse);
-      }
-    }
+    await super.useCard(event);
+    const card = Sanguosha.getCardById(event.cardId);
 
     if (this.getProcessingCards(card.Id.toString()).length === 0) {
       this.addProcessingCards(card.Id.toString(), card.Id);
     }
-    return await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, content, async stage => {
+    return await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, event, async stage => {
       if (stage === CardUseStage.AfterCardUseEffect) {
-        if (EventPacker.isTerminated(content)) {
+        if (EventPacker.isTerminated(event)) {
           return false;
         }
 
-        if (content.toIds === undefined && card.AOE === CardTargetEnum.Single) {
-          content.toIds = [content.fromId];
+        if (event.toIds === undefined && card.AOE === CardTargetEnum.Single) {
+          event.toIds = [event.fromId];
         }
 
         const onAim = async (...targets: PlayerId[]) => {
           const cardAimEvent: ServerEventFinder<GameEventIdentifiers.AimEvent> = {
-            fromId: content.fromId,
-            byCardId: content.cardId,
+            fromId: event.fromId,
+            byCardId: event.cardId,
             toIds: targets,
           };
 
@@ -368,8 +357,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
           if (!EventPacker.isTerminated(cardAimEvent)) {
             if (cardAimEvent.triggeredBySkills) {
-              content.triggeredBySkills = content.triggeredBySkills
-                ? [...content.triggeredBySkills, ...cardAimEvent.triggeredBySkills]
+              event.triggeredBySkills = event.triggeredBySkills
+                ? [...event.triggeredBySkills, ...cardAimEvent.triggeredBySkills]
                 : cardAimEvent.triggeredBySkills;
             }
             return cardAimEvent.toIds;
@@ -379,35 +368,33 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         };
 
         if (card.AOE === CardTargetEnum.Single) {
-          content.toIds = await onAim(
-            ...Precondition.exists(content.toIds, `Invalid target number of card: ${card.Name}`),
-          );
+          event.toIds = await onAim(...Precondition.exists(event.toIds, `Invalid target number of card: ${card.Name}`));
         } else {
           let newToIds: PlayerId[] = [];
-          for (const toId of content.toIds || []) {
+          for (const toId of event.toIds || []) {
             newToIds = [...newToIds, ...(await onAim(toId))];
           }
-          content.toIds = newToIds;
+          event.toIds = newToIds;
         }
 
-        await card.Skill.beforeEffect(this, content);
+        if (card.is(CardType.Equip) || card.is(CardType.DelayedTrick)) {
+          return true;
+        }
+
+        await card.Skill.beforeEffect(this, event);
         if ([CardTargetEnum.Others, CardTargetEnum.Multiple, CardTargetEnum.Globe].includes(card.AOE)) {
-          for (const toId of content.toIds) {
+          for (const toId of event.toIds) {
             const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
-              ...content,
+              ...event,
               toIds: [toId],
             };
 
-            if (!card.is(CardType.DelayedTrick)) {
-              await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
-            }
+            await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
           }
         } else {
-          if (!card.is(CardType.DelayedTrick) && !card.is(CardType.Equip)) {
-            await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, content);
-          }
+          await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, event);
         }
-        await card.Skill.afterEffect(this, content);
+        await card.Skill.afterEffect(this, event);
       } else if (stage === CardUseStage.CardUseFinishedEffect) {
         card.reset();
         this.endProcessOnTag(card.Id.toString());
@@ -684,7 +671,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       }
     } else if (toArea === PlayerCardsArea.EquipArea) {
       for (const cardId of cardIds) {
-        await this.equip(Sanguosha.getCardById<EquipCard>(cardId), to, from !== to);
+        await this.equip(Sanguosha.getCardById<EquipCard>(cardId), to);
       }
     } else if (toArea === PlayerCardsArea.HandArea) {
       await this.obtainCards({

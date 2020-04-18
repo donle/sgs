@@ -40,10 +40,10 @@ export class LightningSkill extends ActiveSkill {
       if (room.isAvailableTarget(event.cardId, event.fromId, player.Id)) {
         await room.moveCards(
           [event.cardId],
-          event.fromId,
+          undefined,
           player.Id,
           CardLostReason.CardUse,
-          PlayerCardsArea.HandArea,
+          undefined,
           PlayerCardsArea.JudgeArea,
         );
         event.toIds = [player.Id];
