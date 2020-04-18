@@ -187,7 +187,7 @@ export class GameProcessor {
       });
     }
 
-    while (this.room.AlivePlayers.length > 1) {
+    while (this.room.isPlaying()) {
       await this.play(this.CurrentPlayer);
       this.turnToNextPlayer();
     }
@@ -717,6 +717,8 @@ export class GameProcessor {
         this.room.broadcast(identifier, event);
         const deadPlayer = this.room.getPlayerById(event.playerId);
         deadPlayer.bury();
+        EventPacker.terminate(event);
+        this.playerStages = [];
 
         const winners = this.room.getGameWinners();
         if (winners) {
@@ -729,8 +731,7 @@ export class GameProcessor {
           }
 
           this.stageProcessor.clearProcess();
-          EventPacker.terminate(event);
-          this.playerStages = [];
+          this.room.gameOver();
           this.room.broadcast(GameEventIdentifiers.GameOverEvent, {
             translationsMessage: TranslationPack.translationJsonPatcher(
               'game over, winner is {0}',
@@ -1063,6 +1064,11 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      if (this.room.getPlayerById(event.toPlayer).Dead) {
+        EventPacker.terminate(event);
+        return;
+      }
+
       if (stage === PhaseChangeStage.PhaseChanged) {
         this.room.broadcast(GameEventIdentifiers.PhaseChangeEvent, event);
       }
@@ -1075,6 +1081,11 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      if (this.room.getPlayerById(event.playerId).Dead) {
+        EventPacker.terminate(event);
+        return;
+      }
+
       if (stage === PhaseStageChangeStage.StageChanged) {
         this.room.broadcast(GameEventIdentifiers.PhaseStageChangeEvent, event);
       }

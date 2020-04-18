@@ -252,6 +252,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       if (Card.isVirtualCardId(cardId)) {
         this.bury(...Sanguosha.getCardById<VirtualCard>(cardId).ActualCardIds);
       } else {
+        Sanguosha.getCardById(cardId).reset();
         this.dropStack.push(cardId);
       }
     }
@@ -333,9 +334,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     await super.useCard(event);
     const card = Sanguosha.getCardById(event.cardId);
 
-    if (this.getProcessingCards(card.Id.toString()).length === 0) {
-      this.addProcessingCards(card.Id.toString(), card.Id);
-    }
+    this.addProcessingCards(card.Id.toString(), card.Id);
     return await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, event, async stage => {
       if (stage === CardUseStage.AfterCardUseEffect) {
         if (EventPacker.isTerminated(event)) {
@@ -396,10 +395,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         }
         await card.Skill.afterEffect(this, event);
       } else if (stage === CardUseStage.CardUseFinishedEffect) {
-        card.reset();
-        this.endProcessOnTag(card.Id.toString());
-
-        this.bury(card.Id);
+        if (this.isCardOnProcessing(card.Id)) {
+          this.endProcessOnTag(card.Id.toString());
+          this.bury(card.Id);
+        }
       }
 
       return true;
@@ -749,6 +748,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async responseCard(event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>): Promise<void> {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.CardResponseEvent, event);
+    this.addProcessingCards(event.cardId.toString(), event.cardId);
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardResponseEvent, event, async stage => {
       if (stage === CardResponseStage.AfterCardResponseEffect) {
         if (event.responseToEvent) {
@@ -760,7 +760,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       return true;
     });
 
-    this.bury(event.cardId);
+    if (this.isCardOnProcessing(event.cardId)) {
+      this.endProcessOnTag(event.cardId.toString());
+      this.bury(event.cardId);
+    }
   }
 
   public async judge(
