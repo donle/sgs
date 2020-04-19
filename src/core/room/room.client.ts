@@ -88,6 +88,10 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.pindian.name);
   }
   //Server only
+  public async loseMaxHp(): Promise<void> {
+    this.throwUntouchableError(this.loseMaxHp.name);
+  }
+  //Server only
   public async recover(): Promise<void> {
     this.throwUntouchableError(this.recover.name);
   }

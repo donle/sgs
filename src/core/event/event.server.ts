@@ -125,6 +125,10 @@ export interface ServerEvent extends EventUtilities {
     lostHp: number;
     toId: PlayerId;
   };
+  [GameEventIdentifiers.LoseMaxHpEvent]: {
+    lostMaxHp: number;
+    toId: PlayerId;
+  };
   [GameEventIdentifiers.DamageEvent]: {
     fromId?: PlayerId;
     cardIds?: CardId[];
@@ -222,6 +226,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.AskForChoosingCardEvent]: {
     cardIds: CardId[] | number;
     toId: PlayerId;
+    cardMatcher?: CardMatcherSocketPassenger;
   };
   [GameEventIdentifiers.AskForChoosingCardFromPlayerEvent]: {
     fromId: PlayerId;

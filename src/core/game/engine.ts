@@ -87,7 +87,7 @@ export class Sanguosha {
   public static getShadowSkillsBySkillName<T extends Skill = Skill>(name: string): T[] {
     this.tryToThrowUninitializedError();
 
-    return Sanguosha.skills.filter(skill => skill.Name.replace(/#+/, '') === name) as T[];
+    return Sanguosha.skills.filter(skill => skill.Name.match(new RegExp(`#+${name}`))) as T[];
   }
 
   public static isShadowSkillName(name: string): boolean {

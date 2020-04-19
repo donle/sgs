@@ -5,6 +5,7 @@ import { GuoJia } from './guojia';
 import { HuangGai } from './huanggai';
 import { HuangYueYing } from './huangyueying';
 import { LiuBei } from './liubei';
+import { LvMeng } from './lvmeng';
 import { SiMaYi } from './simayi';
 import { SunQuan } from './sunquan';
 import { SunShangXiang } from './sunshangxiang';
@@ -19,6 +20,7 @@ export const StandardCharacterPackage: (index: number) => Character[] = index =>
   new ZhouYu(index++),
   new SunShangXiang(index++),
   new HuangGai(index++),
+  new LvMeng(index++),
 
   new LiuBei(index++),
   new HuangYueYing(index++),

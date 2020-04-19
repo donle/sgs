@@ -12,6 +12,7 @@ type CardSelectorProps = {
   translator: ClientTranslationModule;
   options: CardChoosingOptions | CardId[] | number;
   onClick(card: Card | number, fromArea: PlayerCardsArea): void;
+  isCardDisabled?(card: Card): boolean;
 };
 
 const CardSlot = (props: {
@@ -20,6 +21,7 @@ const CardSlot = (props: {
   card?: Card;
   index?: number;
   onClick?(card: Card | number, fromArea?: PlayerCardsArea): void;
+  isCardDisabled?(card: Card): boolean;
 }) => {
   const onSelected = (selected: boolean) => {
     selected && props.onClick && props.onClick(props.card || props.index!, props.from);
@@ -30,26 +32,34 @@ const CardSlot = (props: {
       className={styles.selectorCard}
       card={props.card}
       translator={props.translator}
-      disabled={false}
+      disabled={props.card ? props.isCardDisabled && props.isCardDisabled(props.card) : false}
       onSelected={onSelected}
     />
   );
 };
 
 const CardSelector = (props: CardSelectorProps) => {
-  const { options, onClick, translator } = props;
+  const { options, onClick, translator, isCardDisabled } = props;
 
   const optionCardsLine: JSX.Element[] = [];
   if (options instanceof Array || typeof options === 'number') {
     const cardLine: JSX.Element[] = [];
     if (typeof options === 'number') {
       for (let i = 0; i < options; i++) {
-        cardLine.push(<CardSlot translator={translator} index={i} key={i} onClick={onClick} />);
+        cardLine.push(
+          <CardSlot translator={translator} index={i} key={i} onClick={onClick} isCardDisabled={isCardDisabled} />,
+        );
       }
     } else {
       for (const cardId of options) {
         cardLine.push(
-          <CardSlot key={cardId} translator={translator} card={Sanguosha.getCardById(cardId)} onClick={onClick} />,
+          <CardSlot
+            key={cardId}
+            translator={translator}
+            card={Sanguosha.getCardById(cardId)}
+            onClick={onClick}
+            isCardDisabled={isCardDisabled}
+          />,
         );
       }
     }
@@ -69,7 +79,14 @@ const CardSelector = (props: CardSelectorProps) => {
       if (typeof cardIds === 'number') {
         for (let i = 0; i < cardIds; i++) {
           cardLine.push(
-            <CardSlot from={parseInt(area, 10)} translator={translator} index={i} key={i} onClick={onClick} />,
+            <CardSlot
+              from={parseInt(area, 10)}
+              translator={translator}
+              index={i}
+              key={i}
+              onClick={onClick}
+              isCardDisabled={isCardDisabled}
+            />,
           );
         }
       } else {
@@ -81,6 +98,7 @@ const CardSelector = (props: CardSelectorProps) => {
               translator={translator}
               card={Sanguosha.getCardById(cardId)}
               onClick={onClick}
+              isCardDisabled={isCardDisabled}
             />,
           );
         }
@@ -100,4 +118,5 @@ export const CardSelectorDialog = (props: {
   translator: ClientTranslationModule;
   options: CardChoosingOptions | CardId[] | number;
   onClick(card: Card | number, fromArea?: PlayerCardsArea): void;
+  isCardDisabled?(card: Card): boolean;
 }) => <BaseDialog title={props.translator.tr('please choose a card')}>{<CardSelector {...props} />}</BaseDialog>;

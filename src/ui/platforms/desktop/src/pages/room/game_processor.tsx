@@ -120,6 +120,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.LoseHpEvent:
         await this.onHandleLoseHpEvent(e as any, content);
         break;
+      case GameEventIdentifiers.LoseMaxHpEvent:
+        await this.onHandleLoseMaxHpEvent(e as any, content);
+        break;
       case GameEventIdentifiers.RecoverEvent:
         await this.onHandleRecoverEvent(e as any, content);
         break;
@@ -410,6 +413,18 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
+  private onHandleLoseMaxHpEvent<T extends GameEventIdentifiers.LoseMaxHpEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const player = this.store.room.getPlayerById(content.toId);
+    player.MaxHp--;
+    if (player.Hp > player.MaxHp) {
+      player.Hp = player.MaxHp;
+    }
+    this.presenter.broadcastUIUpdate();
+  }
+
   private onHandleRecoverEvent<T extends GameEventIdentifiers.RecoverEvent>(type: T, content: ServerEventFinder<T>) {
     const player = this.store.room.getPlayerById(content.toId);
     player.onRecoverHp(content.recoveredHp);
@@ -658,9 +673,29 @@ export class GameClientProcessor {
       this.store.room.broadcast(type, event);
     };
 
+    const matcher = content.cardMatcher && new CardMatcher(content.cardMatcher);
+    const isCardDisabled = matcher ? (card: Card) => !matcher.match(card) : undefined;
+
     this.presenter.createDialog(
-      <CardSelectorDialog options={content.cardIds} onClick={onSelectedCard} translator={this.translator} />,
+      <CardSelectorDialog
+        options={content.cardIds}
+        onClick={onSelectedCard}
+        translator={this.translator}
+        isCardDisabled={isCardDisabled}
+      />,
     );
+
+    if (!EventPacker.isUncancellabelEvent(content)) {
+      this.presenter.enableActionButton('cancel');
+      this.presenter.defineCancelButtonActions(() => {
+        this.presenter.closeDialog();
+
+        const event: ClientEventFinder<T> = {
+          fromId: content.toId,
+        };
+        this.store.room.broadcast(type, event);
+      });
+    }
   }
 
   private onHandleCardLostEvent<T extends GameEventIdentifiers.CardLostEvent>(type: T, content: ServerEventFinder<T>) {

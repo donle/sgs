@@ -18,5 +18,5 @@ code {
 
 @font-face {
     font-family: LiSu;
-    src: url('./shared/fonts/SIMLI.TTF');
+    src: url('./shared/fonts/SIMLI.TTF') format('truetype');
 }

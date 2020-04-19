@@ -16,11 +16,14 @@ export class GuanXing extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    if (owner.Id !== content.playerId) {
+    if (
+      owner.Id !== content.playerId ||
+      ![PlayerPhaseStages.PrepareStage, PlayerPhaseStages.FinishStage].includes(content.toStage)
+    ) {
       return false;
     }
 
-    if (room.CurrentPlayerPhase === PlayerPhase.FinishStage) {
+    if (content.toStage === PlayerPhaseStages.FinishStage) {
       if (owner.getInvisibleMark(this.name) === 0) {
         return false;
       } else {
@@ -29,7 +32,7 @@ export class GuanXing extends TriggerSkill {
       }
     }
 
-    return PlayerPhaseStages.PrepareStage === content.toStage;
+    return true;
   }
 
   async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {

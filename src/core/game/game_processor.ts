@@ -282,10 +282,10 @@ export class GameProcessor {
 
   public skip(phase?: PlayerPhase) {
     if (phase === undefined) {
-      return [];
+      this.playerStages = [];
+    } else {
+      this.playerStages = this.playerStages.filter(stage => !this.stageProcessor.isInsidePlayerPhase(phase, stage));
     }
-
-    this.playerStages = this.playerStages.filter(stage => !this.stageProcessor.isInsidePlayerPhase(phase, stage));
   }
 
   private async play(player: Player, specifiedStages?: PlayerPhaseStages[]) {
@@ -294,38 +294,39 @@ export class GameProcessor {
     this.playerStages = specifiedStages ? specifiedStages : this.stageProcessor.createPlayerStage();
 
     while (this.playerStages.length > 0) {
-      this.currentPlayerStage = this.playerStages[0];
-      this.playerStages.shift();
-      const nextPhase = this.stageProcessor.getInsidePlayerPhase(this.currentPlayerStage);
+      const nextPhase = this.stageProcessor.getInsidePlayerPhase(this.playerStages[0]);
       if (nextPhase !== this.currentPlayerPhase) {
-        await this.onHandlePhaseChangeEvent(
-          GameEventIdentifiers.PhaseChangeEvent,
-          {
-            from: this.currentPlayerPhase,
-            to: nextPhase,
-            fromPlayer: player.Id,
-            toPlayer: player.Id,
-          },
-          async stage => {
-            if (stage === PhaseChangeStage.PhaseChanged) {
-              this.CurrentPlayer.resetCardUseHistory();
-              for (const player of this.room.AlivePlayers) {
-                for (const skill of player.getSkills()) {
-                  if (skill.isRefreshAt(nextPhase)) {
-                    player.resetSkillUseHistory(skill.Name);
-                  }
+        const phaseChangeEvent = EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseChangeEvent, {
+          from: this.currentPlayerPhase,
+          to: nextPhase,
+          fromPlayer: player.Id,
+          toPlayer: player.Id,
+        });
+        await this.onHandlePhaseChangeEvent(GameEventIdentifiers.PhaseChangeEvent, phaseChangeEvent, async stage => {
+          if (stage === PhaseChangeStage.BeforePhaseChange) {
+            this.CurrentPlayer.resetCardUseHistory();
+            for (const player of this.room.AlivePlayers) {
+              for (const skill of player.getSkills()) {
+                if (skill.isRefreshAt(nextPhase)) {
+                  player.resetSkillUseHistory(skill.Name);
                 }
               }
-
-              this.currentPlayerPhase = nextPhase;
             }
+          } else if (stage === PhaseChangeStage.PhaseChanged) {
+            this.currentPlayerPhase = this.stageProcessor.getInsidePlayerPhase(this.playerStages[0]);
+          }
 
-            return true;
-          },
-        );
+          return true;
+        });
+        if (EventPacker.isTerminated(phaseChangeEvent)) {
+          continue;
+        }
 
         await this.onPhase(this.currentPlayerPhase!);
       }
+
+      this.currentPlayerStage = this.playerStages[0];
+      this.playerStages.shift();
 
       await this.onHandlePhaseStageChangeEvent(
         GameEventIdentifiers.PhaseStageChangeEvent,
@@ -647,45 +648,43 @@ export class GameProcessor {
           ).extract(),
         });
 
-        if (to.Hp <= 0) {
-          for (const player of this.room.getAlivePlayersFrom()) {
-            let hasResponse = false;
-            do {
-              hasResponse = false;
+        for (const player of this.room.getAlivePlayersFrom()) {
+          let hasResponse = false;
+          do {
+            hasResponse = false;
 
-              this.room.notify(
-                GameEventIdentifiers.AskForPeachEvent,
-                {
-                  fromId: player.Id,
-                  toId: to.Id,
-                  conversation: TranslationPack.translationJsonPatcher(
-                    '{0} asks for a peach',
-                    TranslationPack.patchPlayerInTranslation(to),
-                  ).extract(),
-                },
-                player.Id,
-              );
+            this.room.notify(
+              GameEventIdentifiers.AskForPeachEvent,
+              {
+                fromId: player.Id,
+                toId: to.Id,
+                conversation: TranslationPack.translationJsonPatcher(
+                  '{0} asks for a peach',
+                  TranslationPack.patchPlayerInTranslation(to),
+                ).extract(),
+              },
+              player.Id,
+            );
 
-              const response = await this.room.onReceivingAsyncReponseFrom(
-                GameEventIdentifiers.AskForPeachEvent,
-                player.Id,
-              );
+            const response = await this.room.onReceivingAsyncReponseFrom(
+              GameEventIdentifiers.AskForPeachEvent,
+              player.Id,
+            );
 
-              if (response.cardId !== undefined) {
-                hasResponse = true;
-                const cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
-                  fromId: response.fromId,
-                  cardId: response.cardId,
-                  toIds: [to.Id],
-                };
+            if (response.cardId !== undefined) {
+              hasResponse = true;
+              const cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
+                fromId: response.fromId,
+                cardId: response.cardId,
+                toIds: [to.Id],
+              };
 
-                await this.room.useCard(cardUseEvent);
-              }
-            } while (hasResponse && to.Hp <= 0);
-
-            if (to.Hp > 0) {
-              break;
+              await this.room.useCard(cardUseEvent);
             }
+          } while (hasResponse && to.Hp <= 0);
+
+          if (to.Hp > 0) {
+            break;
           }
         }
       }
@@ -1058,11 +1057,9 @@ export class GameProcessor {
   ) {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (this.room.getPlayerById(event.toPlayer).Dead) {
+        this.skip();
         EventPacker.terminate(event);
-        return;
-      }
-
-      if (stage === PhaseChangeStage.PhaseChanged) {
+      } else if (stage === PhaseChangeStage.PhaseChanged) {
         this.room.broadcast(GameEventIdentifiers.PhaseChangeEvent, event);
       }
     });
@@ -1075,11 +1072,9 @@ export class GameProcessor {
   ) {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (this.room.getPlayerById(event.playerId).Dead) {
+        this.skip();
         EventPacker.terminate(event);
-        return;
-      }
-
-      if (stage === PhaseStageChangeStage.StageChanged) {
+      } else if (stage === PhaseStageChangeStage.StageChanged) {
         this.room.broadcast(GameEventIdentifiers.PhaseStageChangeEvent, event);
       }
     });
@@ -1110,16 +1105,24 @@ export class GameProcessor {
           return;
         }
 
+        const victim = this.room.getPlayerById(event.toId);
+
         if (event.translationsMessage === undefined) {
           event.translationsMessage = TranslationPack.translationJsonPatcher(
             '{0} lost {1} hp',
-            TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.toId)),
+            TranslationPack.patchPlayerInTranslation(victim),
             event.lostHp,
           ).extract();
         }
 
-        this.room.getPlayerById(event.toId).onLoseHp(event.lostHp);
+        victim.onLoseHp(event.lostHp);
         this.room.broadcast(GameEventIdentifiers.LoseHpEvent, event);
+
+        if (victim.Hp <= 0) {
+          await this.onHandleDyingEvent(GameEventIdentifiers.PlayerDyingEvent, {
+            dying: victim.Id,
+          });
+        }
       }
     });
   }

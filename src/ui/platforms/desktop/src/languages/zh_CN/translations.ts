@@ -147,6 +147,10 @@ export const characterDictionary: Word[] = [
   { source: 'yuanshu', target: '袁术' },
   { source: 'wangzun', target: '妄尊' },
   { source: 'tongji', target: '同疾' },
+  
+  { source: 'god_lvmeng', target: '神吕蒙' },
+  { source: 'gongxin', target: '攻心' },
+  { source: 'shelie', target: '涉猎' },
 
   { source: 'xiahouyuan', target: '夏侯渊' },
   { source: 'shensu', target: '神速' },
@@ -411,6 +415,11 @@ export const skillDescriptions: Word[] = [
     source: 'huangtian_description',
     target: '当一名角色因另一名角色的弃置或获得而失去手牌后，你可以失去1点体力。若如此做，失去手牌的角色摸两张牌。',
   },
+  {
+    source: 'gongxin_description',
+    target:
+      '出牌阶段限一次，你可以观看一名其他角色的手牌，然后你可以展示其中一张红桃牌，选择一项：1.弃置此牌；2.将此牌置于牌堆顶。',
+  },
 ];
 
 export const generalDictionary: Word[] = [
@@ -541,6 +550,7 @@ export const eventDictionary: Word[] = [
   },
   { source: 'please use a {0} to player {1} to response {2}', target: '请对 {1} 使用一张【{0}】来响应 {2}' },
   { source: '{0} activates skill {1}', target: '{0} 的 {1} 技能被触发' },
+  { source: '{0} activates awakening skill {1}', target: '{0} 的觉醒技 {1} 技能被触发' },
   { source: '{0} used skill {1}', target: '{0} 使用了技能【{1}】' },
   { source: '{0} used skill {1} to {2}', target: '{0} 使用了技能【{1}】, 目标是 {2}' },
   {
@@ -644,8 +654,11 @@ export const eventDictionary: Word[] = [
     source: '{0} used skill {1} to you, please response a {2} card',
     target: '{0} 对你使用了 【{1}】, 打出一张 {2} 来响应',
   },
+  { source: '{0} display hand card {1} from {2}', target: '{0} 展示了 {2} 的一张 {1}' },
+  { source: '{0} lost {1} hand card', target: '{0} 失去了 {1} 张手牌' },
   { source: 'please choose', target: '请选择' },
   { source: 'please choose a player', target: '请选择一名角色' },
+  { source: '{0} place card {1} from {2} on the top of draw stack', target: '{0} 将 {2} 的 {1} 置于了牌堆顶' },
 
   { source: 'cixiongjian:drop-card', target: '弃置一张手牌' },
   { source: 'cixiongjian:draw-card', target: '令其摸一张牌' },
@@ -655,6 +668,8 @@ export const eventDictionary: Word[] = [
   { source: 'please choose a basic card to use', target: '请选择一张基本卡使用' },
   { source: 'jieyin:drop', target: '弃置此牌' },
   { source: 'jieyin:move', target: '置于其装备区' },
+  { source: 'gongxin:putcard', target: '置于牌堆顶' },
+  { source: 'gongxin:dropcard', target: '弃置此牌' },
 
   {
     source: 'player {0} join in the room',

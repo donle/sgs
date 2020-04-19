@@ -320,10 +320,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.notify(GameEventIdentifiers.AskForCardDropEvent, event, playerId);
 
     return {
-      responseEvent: await this.onReceivingAsyncReponseFrom(
-        GameEventIdentifiers.AskForCardDropEvent,
-        playerId,
-      ),
+      responseEvent: await this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForCardDropEvent, playerId),
     };
   }
 
@@ -473,6 +470,24 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       toId: playerId,
       lostHp,
     });
+  }
+
+  public async loseMaxHp(playerId: PlayerId, lostMaxHp: number) {
+    const lostMaxHpEvent: ServerEventFinder<GameEventIdentifiers.LoseMaxHpEvent> = {
+      toId: playerId,
+      lostMaxHp,
+    };
+    this.broadcast(GameEventIdentifiers.LoseMaxHpEvent, lostMaxHpEvent);
+
+    const player = this.getPlayerById(playerId);
+    player.MaxHp--;
+    if (player.Hp > player.MaxHp) {
+      player.Hp = player.MaxHp;
+    }
+
+    if (player.MaxHp <= 0) {
+      await this.kill(player);
+    }
   }
 
   public getCards(numberOfCards: number, from: 'top' | 'bottom') {

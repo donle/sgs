@@ -30,7 +30,10 @@ function onCalculatingSkillUsageWrapper(skillType: SkillType, constructor: new (
       super();
 
       if (this.skillType === SkillType.Awaken || this.skillType === SkillType.Limit) {
-        this.triggeredTimes = 1;
+        this.isRefreshAt = () => false;
+        const canUseResult = this.canUse;
+        this.canUse = (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) =>
+          !owner.hasUsedSkill(this.name) && canUseResult(room, owner, content);
       }
     }
 

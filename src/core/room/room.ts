@@ -100,6 +100,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract async loseHp(player: PlayerId, lostHp: number): Promise<void>;
   //Server only
+  public abstract async loseMaxHp(player: PlayerId, lostMaxHp: number): Promise<void>;
+  //Server only
   public abstract async damage(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>): Promise<void>;
   //Server only
   public abstract async recover(event: ServerEventFinder<GameEventIdentifiers.RecoverEvent>): Promise<void>;

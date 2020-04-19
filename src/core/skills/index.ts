@@ -52,5 +52,8 @@ export { LuoShen, LuoShenShadow } from './characters/standard/luoshen';
 export { GangLie } from './characters/standard/ganglie';
 export { LongDan } from './characters/standard/longdan';
 export { YaJiao } from './characters/standard/yajiao';
+export { KeJi } from './characters/standard/keji';
+export { QinXue } from './characters/standard/qinxue';
+export { GongXin } from './characters/standard/gongxin';
 
 export { Cheat } from './system/cheat';
