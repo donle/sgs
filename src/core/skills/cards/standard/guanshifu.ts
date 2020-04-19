@@ -41,7 +41,7 @@ export class GuanShiFuSkill extends TriggerSkill {
       PlayerCardsArea.HandArea,
     ]);
 
-    if (terminated || responseEvent?.droppedCards.length === 0) {
+    if (responseEvent?.droppedCards.length === 0) {
       EventPacker.terminate(event);
       return false;
     }
@@ -51,6 +51,14 @@ export class GuanShiFuSkill extends TriggerSkill {
         {
           tag: this.name,
           data: responseEvent!.droppedCards,
+        },
+        event,
+      );
+    } else if (terminated) {
+      EventPacker.addMiddleware(
+        {
+          tag: this.name,
+          data: [],
         },
         event,
       );

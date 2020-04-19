@@ -263,7 +263,7 @@ export class GameProcessor {
           GameCommonRules.getAdditionalHoldCardNumber(this.room, this.CurrentPlayer);
         const discardAmount = this.CurrentPlayer.getCardIds(PlayerCardsArea.HandArea).length - maxCardHold;
         if (discardAmount > 0) {
-          const { terminated, responseEvent } = await this.room.askForCardDrop(
+          const { responseEvent } = await this.room.askForCardDrop(
             this.CurrentPlayer.Id,
             discardAmount,
             [PlayerCardsArea.HandArea],
