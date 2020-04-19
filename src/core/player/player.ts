@@ -599,6 +599,8 @@ export abstract class Player implements PlayerInfo {
       Position: this.playerPosition,
       CharacterId: this.playerCharacterId,
       Role: this.playerRole,
+      Hp: this.hp,
+      MaxHp: this.maxHp,
     };
   }
 

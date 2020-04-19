@@ -436,7 +436,10 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     content.otherPlayers.forEach(playerInfo => {
-      this.store.room.getPlayerById(playerInfo.Id).CharacterId = playerInfo.CharacterId!;
+      const player = this.store.room.getPlayerById(playerInfo.Id)
+      player.CharacterId = playerInfo.CharacterId!;
+      player.MaxHp = playerInfo.MaxHp;
+      player.Hp = playerInfo.Hp;
     });
     this.presenter.broadcastUIUpdate();
   }

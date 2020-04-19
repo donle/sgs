@@ -96,10 +96,16 @@ export class GameProcessor {
     );
     const lord = this.room.getPlayerById(lordInfo.Id);
     lord.CharacterId = lordResponse.chosenCharacter;
+    lordInfo.MaxHp = lord.MaxHp;
+    lordInfo.Hp = lord.Hp;
+
     if (playersInfo.length >= 5) {
+      lordInfo.MaxHp++;
       lord.MaxHp++;
+      lordInfo.Hp++;
       lord.Hp++;
     }
+
     lordInfo.CharacterId = lordResponse.chosenCharacter;
 
     const sequentialAsyncResponse: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingCharacterEvent>>[] = [];
@@ -135,13 +141,16 @@ export class GameProcessor {
     }
 
     for (const response of await Promise.all(sequentialAsyncResponse)) {
-      const player = Precondition.exists(
+      const playerInfo = Precondition.exists(
         playersInfo.find(info => info.Id === response.fromId),
         'Unexpected player id received',
       );
 
-      this.room.getPlayerById(player.Id).CharacterId = response.chosenCharacter;
+      const player = this.room.getPlayerById(playerInfo.Id);
       player.CharacterId = response.chosenCharacter;
+      playerInfo.CharacterId = response.chosenCharacter;
+      playerInfo.MaxHp = player.MaxHp;
+      playerInfo.Hp = player.Hp;
     }
   }
 

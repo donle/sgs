@@ -32,6 +32,8 @@ export interface PlayerInfo {
   Position: number;
   CharacterId: CharacterId | undefined;
   Role: PlayerRole | undefined;
+  Hp: number;
+  MaxHp: number;
 }
 
 export const enum DistanceType {

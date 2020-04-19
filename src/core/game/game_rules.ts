@@ -63,6 +63,9 @@ export class GameCommonRules {
     if (GameCommonRules.userRules[user.Id] === undefined) {
       this.initPlayerCommonRules(user);
     }
+    if (GameCommonRules.userRules[user.Id].cards === undefined) {
+      this.userRules[user.Id].cards = [];
+    }
   }
 
   public static availableUseTimes(card: Card) {
@@ -177,6 +180,7 @@ export class GameCommonRules {
   }
 
   public static getCardAdditionalUsableDistance(room: Room, user: Player, card: Card | CardMatcher) {
+    GameCommonRules.preCheck(user);
     let times = 0;
     GameCommonRules.userRules[user.Id].cards
       .filter(rule => rule.cardMatcher.match(card))
@@ -191,6 +195,7 @@ export class GameCommonRules {
     return times;
   }
   public static getCardAdditionalNumberOfTargets(room: Room, user: Player, card: Card | CardMatcher) {
+    GameCommonRules.preCheck(user);
     let times = 0;
     GameCommonRules.userRules[user.Id].cards
       .filter(rule => rule.cardMatcher.match(card))
