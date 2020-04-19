@@ -34,7 +34,7 @@ export class QinXue extends TriggerSkill {
   }
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    room.loseMaxHp(skillUseEvent.fromId, 1);
+    room.changeMaxHp(skillUseEvent.fromId, -1);
     room.obtainSkill(skillUseEvent.fromId, 'gongxin');
     return true;
   }

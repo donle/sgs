@@ -120,8 +120,8 @@ export class GameClientProcessor {
       case GameEventIdentifiers.LoseHpEvent:
         await this.onHandleLoseHpEvent(e as any, content);
         break;
-      case GameEventIdentifiers.LoseMaxHpEvent:
-        await this.onHandleLoseMaxHpEvent(e as any, content);
+      case GameEventIdentifiers.ChangeMaxHpEvent:
+        await this.onHandleChangeMaxHpEvent(e as any, content);
         break;
       case GameEventIdentifiers.RecoverEvent:
         await this.onHandleRecoverEvent(e as any, content);
@@ -413,12 +413,12 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
-  private onHandleLoseMaxHpEvent<T extends GameEventIdentifiers.LoseMaxHpEvent>(
+  private onHandleChangeMaxHpEvent<T extends GameEventIdentifiers.ChangeMaxHpEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
     const player = this.store.room.getPlayerById(content.toId);
-    player.MaxHp--;
+    player.MaxHp += content.additionalMaxHp;
     if (player.Hp > player.MaxHp) {
       player.Hp = player.MaxHp;
     }

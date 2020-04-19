@@ -472,15 +472,20 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     });
   }
 
-  public async loseMaxHp(playerId: PlayerId, lostMaxHp: number) {
-    const lostMaxHpEvent: ServerEventFinder<GameEventIdentifiers.LoseMaxHpEvent> = {
+  public async changeMaxHp(playerId: PlayerId, additionalMaxHp: number) {
+    const lostMaxHpEvent: ServerEventFinder<GameEventIdentifiers.ChangeMaxHpEvent> = {
       toId: playerId,
-      lostMaxHp,
+      additionalMaxHp,
+      translationsMessage: TranslationPack.translationJsonPatcher(
+        `{0} ${additionalMaxHp >= 0 ? 'obtained' : 'lost'} {1} max hp`,
+        TranslationPack.patchPlayerInTranslation(this.getPlayerById(playerId)),
+        Math.abs(additionalMaxHp),
+      ).extract(),
     };
-    this.broadcast(GameEventIdentifiers.LoseMaxHpEvent, lostMaxHpEvent);
+    this.broadcast(GameEventIdentifiers.ChangeMaxHpEvent, lostMaxHpEvent);
 
     const player = this.getPlayerById(playerId);
-    player.MaxHp--;
+    player.MaxHp += additionalMaxHp;
     if (player.Hp > player.MaxHp) {
       player.Hp = player.MaxHp;
     }

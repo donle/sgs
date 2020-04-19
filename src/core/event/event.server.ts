@@ -125,8 +125,8 @@ export interface ServerEvent extends EventUtilities {
     lostHp: number;
     toId: PlayerId;
   };
-  [GameEventIdentifiers.LoseMaxHpEvent]: {
-    lostMaxHp: number;
+  [GameEventIdentifiers.ChangeMaxHpEvent]: {
+    additionalMaxHp: number;
     toId: PlayerId;
   };
   [GameEventIdentifiers.DamageEvent]: {

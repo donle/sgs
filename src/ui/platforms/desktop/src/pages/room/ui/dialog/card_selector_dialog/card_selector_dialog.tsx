@@ -32,7 +32,7 @@ const CardSlot = (props: {
       className={styles.selectorCard}
       card={props.card}
       translator={props.translator}
-      disabled={props.card ? props.isCardDisabled && props.isCardDisabled(props.card) : false}
+      disabled={props.card && props.isCardDisabled ? props.isCardDisabled(props.card) : false}
       onSelected={onSelected}
     />
   );
