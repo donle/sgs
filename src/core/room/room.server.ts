@@ -322,7 +322,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return {
       responseEvent: await this.onReceivingAsyncReponseFrom(
         GameEventIdentifiers.AskForCardDropEvent,
-        this.CurrentPlayer.Id,
+        playerId,
       ),
     };
   }

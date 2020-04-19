@@ -71,6 +71,7 @@ export class YaJiao extends TriggerSkill {
         toId: selectedPlayer,
         reason: CardObtainedReason.PassiveObtained,
         cardIds: card,
+        givenBy: skillUseEvent.fromId,
       },
       true,
     );
@@ -84,6 +85,7 @@ export class YaJiao extends TriggerSkill {
         [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
         true,
       );
+
       if (responseEvent) {
         await room.dropCards(
           CardLostReason.ActiveDrop,
