@@ -111,7 +111,7 @@ export class LuoShen extends TriggerSkill {
 }
 
 @CompulsorySkill
-@ShadowSkill
+@ShadowSkill()
 export class LuoShenShadow extends TriggerSkill {
   constructor() {
     super('luoshen', 'luoshen_description');

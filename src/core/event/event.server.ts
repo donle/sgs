@@ -299,6 +299,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.LoseSkillEvent]: {
     skillName: string;
     toId: PlayerId;
+    includeStatusSkill?: boolean;
   };
   [GameEventIdentifiers.ObtainSkillEvent]: {
     skillName: string;

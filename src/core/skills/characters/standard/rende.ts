@@ -150,7 +150,7 @@ export class Rende extends ActiveSkill {
 }
 
 @CompulsorySkill
-@ShadowSkill
+@ShadowSkill()
 export class RenDeShadow extends TriggerSkill {
   public isAutoTrigger() {
     return true;

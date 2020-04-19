@@ -102,7 +102,7 @@ export class JiJiang extends ActiveSkill {
 }
 
 @CommonSkill
-@ShadowSkill
+@ShadowSkill()
 @LordSkill
 export class JiJiangShadow extends TriggerSkill {
   public isAutoTrigger(

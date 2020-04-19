@@ -548,7 +548,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.store.room.getPlayerById(content.toId).loseSkill(content.skillName);
+    this.store.room.getPlayerById(content.toId).loseSkill(content.skillName, content.includeStatusSkill);
   }
 
   private onHandleObtainSkillEvent<T extends GameEventIdentifiers.ObtainSkillEvent>(

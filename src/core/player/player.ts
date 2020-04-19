@@ -451,8 +451,10 @@ export abstract class Player implements PlayerInfo {
     return [...this.getEquipSkills<T>(skillType), ...this.getPlayerSkills<T>(skillType)];
   }
 
-  public loseSkill(skillName: string) {
-    this.playerSkills = this.playerSkills.filter(skill => !skill.Name.endsWith(skillName));
+  public loseSkill(skillName: string, includeStatusSkill?: boolean) {
+    this.playerSkills = this.playerSkills.filter(
+      skill => !skill.Name.endsWith(skillName) && (includeStatusSkill ? skill.isStatusSkill() : true),
+    );
   }
 
   public obtainSkill(skillName: string) {
@@ -460,6 +462,10 @@ export abstract class Player implements PlayerInfo {
     for (const shadowSkill of Sanguosha.getShadowSkillsBySkillName(skillName)) {
       this.playerSkills.push(shadowSkill);
     }
+  }
+
+  public hasSkill(skillName: string) {
+    return this.playerSkills.find(skill => skill.Name === skillName) !== undefined;
   }
 
   public turnOver() {

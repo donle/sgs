@@ -32,7 +32,7 @@ export class YingZi extends TriggerSkill {
 }
 
 @CompulsorySkill
-@ShadowSkill
+@ShadowSkill()
 export class YingZiShadow extends RulesBreakerSkill {
   constructor() {
     super('yingzi', 'yingzi_description');

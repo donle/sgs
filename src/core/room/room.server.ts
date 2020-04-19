@@ -442,12 +442,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
   }
 
-  public loseSkill(playerId: PlayerId, skillName: string, broadcast?: boolean) {
+  public loseSkill(playerId: PlayerId, skillName: string, includeStatusSkill?: boolean, broadcast?: boolean) {
     const player = this.getPlayerById(playerId);
-    player.loseSkill(skillName);
+    player.loseSkill(skillName, includeStatusSkill);
     this.broadcast(GameEventIdentifiers.LoseSkillEvent, {
       toId: playerId,
       skillName,
+      includeStatusSkill,
       translationsMessage: broadcast
         ? TranslationPack.translationJsonPatcher('{0} lost skill {1}', player.Name, skillName).extract()
         : undefined,

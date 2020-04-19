@@ -39,7 +39,7 @@ export class YiJi extends TriggerSkill {
 }
 
 @CommonSkill
-@ShadowSkill
+@ShadowSkill()
 export class YiJiShadow extends TriggerSkill {
   constructor() {
     super('yiji', 'yiji_description');

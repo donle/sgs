@@ -44,6 +44,7 @@ import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/p
 import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { Skill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ServerRoom } from '../room/room.server';
 import { Sanguosha } from './engine';
@@ -335,6 +336,18 @@ export class GameProcessor {
           playerId: this.CurrentPlayer.Id,
         }),
       );
+    }
+
+    const statusSkills: Skill[] = [];
+    const visibleSkills: Skill[] = [];
+    for (const skill of this.CurrentPlayer.getPlayerSkills()) {
+      skill.isStatusSkill() ? statusSkills.push(skill) : visibleSkills.push(skill);
+    }
+
+    for (const statusSkill of statusSkills) {
+      if (!visibleSkills.find(skill => skill.Name === statusSkill.GeneralName)) {
+        this.room.loseSkill(this.CurrentPlayer.Id, statusSkill.Name, true);
+      }
     }
   }
 

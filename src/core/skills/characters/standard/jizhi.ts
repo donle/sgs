@@ -71,7 +71,7 @@ export class JiZhi extends TriggerSkill {
 }
 
 @CompulsorySkill
-@ShadowSkill
+@ShadowSkill()
 export class JizhiShadow extends TriggerSkill {
   public isAutoTrigger() {
     return true;

@@ -52,6 +52,7 @@ function onCalculatingSkillUsageWrapper(skillType: SkillType, constructor: new (
 function skillPropertyWrapper(
   options: {
     lordSkill?: boolean;
+    statusSkill?: boolean;
     shadowSkill?: boolean;
     uniqueSkill?: boolean;
     selfTargetSkill?: boolean;
@@ -63,6 +64,7 @@ function skillPropertyWrapper(
     private shadowSkill: boolean;
     private uniqueSkill: boolean;
     private selfTargetSkill: boolean;
+    private statusSkill: boolean;
     private name: string;
 
     public canUse: (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) => boolean;
@@ -80,6 +82,9 @@ function skillPropertyWrapper(
       if (options.shadowSkill !== undefined) {
         this.shadowSkill = options.shadowSkill;
         this.name = '#' + this.name;
+        if (options.statusSkill) {
+          this.statusSkill = true;
+        }
       }
       if (options.uniqueSkill !== undefined) {
         this.uniqueSkill = options.uniqueSkill;
@@ -119,14 +124,17 @@ export function SelfTargetSkill<T extends Skill>(constructorFunction: SKillConst
     constructorFunction as any,
   );
 }
-export function ShadowSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
+export const ShadowSkill = (props?: { remainStatus: boolean }) => <T extends Skill>(
+  constructorFunction: SKillConstructor<T>,
+) => {
   return skillPropertyWrapper(
     {
       shadowSkill: true,
+      statusSkill: props?.remainStatus,
     },
     constructorFunction as any,
   );
-}
+};
 export function UniqueSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
   return skillPropertyWrapper(
     {
@@ -141,6 +149,7 @@ export type SkillPrototype<T extends Skill> = new () => T;
 export abstract class Skill {
   private skillType: SkillType = SkillType.Common;
   private shadowSkill = false;
+  private statusSkill = false;
   private lordSkill = false;
   private uniqueSkill = false;
   private selfTargetSkill = false;
@@ -211,6 +220,9 @@ export abstract class Skill {
 
   public isShadowSkill() {
     return this.shadowSkill;
+  }
+  public isStatusSkill() {
+    return this.statusSkill;
   }
 
   public isUniqueSkill() {
