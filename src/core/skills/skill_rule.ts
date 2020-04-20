@@ -5,12 +5,12 @@ import { Skill, SkillType } from './skill';
 export class UniqueSkillRule {
   private constructor() {}
 
-  public static prohibitedBySkillRule(bySkill: Skill, toSkill: Skill) {
+  public static isProhibitedBySkillRule(bySkill: Skill, toSkill: Skill) {
     switch (bySkill.Name) {
       case 'qinggang':
-        return toSkill.Name !== 'bazhen';
+        return toSkill.Name === 'bazhen';
       default:
-        return true;
+        return false;
     }
   }
 
@@ -23,11 +23,11 @@ export class UniqueSkillRule {
     }
   }
 
-  public static canTriggerSkillRule(skill: Skill, owner: Player) {
-    if (owner.getFlag<boolean>('jieji')) {
-      return skill.SkillType === SkillType.Compulsory;
+  public static isProhibited(skill: Skill, owner: Player) {
+    if (owner.getFlag<boolean>('tieji') || owner.getFlag<boolean>('yijue')) {
+      return skill.SkillType !== SkillType.Compulsory;
     }
 
-    return true;
+    return false;
   }
 }

@@ -252,7 +252,10 @@ export class GameClientProcessor {
   ) {
     const action = new CardResponseAction(content.toId, this.store, this.presenter, content);
     this.presenter.isSkillDisabled(
-      CardResponseAction.isSkillsOnCardResponseDisabled(new CardMatcher(content.cardMatcher)),
+      CardResponseAction.isSkillsOnCardResponseDisabled(
+        new CardMatcher(content.cardMatcher),
+        this.store.room.getPlayerById(content.toId),
+      ),
     );
 
     action.onPlay(this.translator);
@@ -329,7 +332,10 @@ export class GameClientProcessor {
   ) {
     const action = new ResponsiveUseCardAction(content.toId, this.store, this.presenter, content);
     this.presenter.isSkillDisabled(
-      ResponsiveUseCardAction.isSkillsOnResponsiveCardUseDisabled(new CardMatcher(content.cardMatcher)),
+      ResponsiveUseCardAction.isSkillsOnResponsiveCardUseDisabled(
+        new CardMatcher(content.cardMatcher),
+        this.store.room.getPlayerById(content.toId),
+      ),
     );
 
     action.onPlay(this.translator);
@@ -436,7 +442,7 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     content.otherPlayers.forEach(playerInfo => {
-      const player = this.store.room.getPlayerById(playerInfo.Id)
+      const player = this.store.room.getPlayerById(playerInfo.Id);
       player.CharacterId = playerInfo.CharacterId!;
       player.MaxHp = playerInfo.MaxHp;
       player.Hp = playerInfo.Hp;

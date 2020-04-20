@@ -281,7 +281,7 @@ export abstract class TriggerSkill extends Skill {
 
   public abstract async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers>): Promise<boolean>;
 
-  public isRefreshAt() {
+  public isRefreshAt(stage: PlayerPhase) {
     return false;
   }
 

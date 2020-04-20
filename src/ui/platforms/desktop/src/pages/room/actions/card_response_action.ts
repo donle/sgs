@@ -2,14 +2,20 @@ import { Card } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
+import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
+import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { RoomPresenter, RoomStore } from '../room.presenter';
 import { BaseAction } from './base_action';
 
 export class CardResponseAction extends BaseAction {
-  public static isSkillsOnCardResponseDisabled = (matcher: CardMatcher) => (skill: Skill) => {
+  public static isSkillsOnCardResponseDisabled = (matcher: CardMatcher, player: Player) => (skill: Skill) => {
+    if (UniqueSkillRule.isProhibited(skill, player)) {
+      return false;
+    }
+
     if (skill instanceof TriggerSkill) {
       return false;
     } else if (skill instanceof ViewAsSkill) {

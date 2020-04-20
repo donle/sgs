@@ -173,8 +173,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       const canTriggerSkills: TriggerSkill[] = [];
       for (const skill of player.getPlayerSkills<TriggerSkill>('trigger')) {
         const canTrigger = bySkills
-          ? bySkills.find(bySkill => !UniqueSkillRule.prohibitedBySkillRule(bySkill, skill)) === undefined
-          : UniqueSkillRule.canTriggerSkillRule(skill, player);
+          ? bySkills.find(bySkill => !UniqueSkillRule.isProhibitedBySkillRule(bySkill, skill)) === undefined
+          : !UniqueSkillRule.isProhibited(skill, player);
 
         if (canTrigger) {
           canTriggerSkills.push(skill);
@@ -189,7 +189,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
         const canTrigger = bySkills
           ? bySkills.find(skill => !UniqueSkillRule.canTriggerCardSkillRule(skill, equipCard)) === undefined
-          : UniqueSkillRule.canTriggerSkillRule(equipCard.Skill, player);
+          : !UniqueSkillRule.isProhibited(equipCard.Skill, player);
         if (canTrigger) {
           canTriggerSkills.push(equipCard.Skill);
         }
