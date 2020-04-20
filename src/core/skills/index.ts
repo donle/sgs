@@ -58,5 +58,7 @@ export { QinXue } from './characters/standard/qinxue';
 export { GongXin } from './characters/standard/gongxin';
 export { TieJi, TieJiShadow } from './characters/standard/tieji';
 export { MaShu } from './characters/standard/mashu';
+export { GuoSe } from './characters/standard/guose';
+export { LiuLi } from './characters/standard/liuli';
 
 export { Cheat } from './system/cheat';
