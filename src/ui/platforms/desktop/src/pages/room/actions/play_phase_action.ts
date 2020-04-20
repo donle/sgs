@@ -14,7 +14,7 @@ export class PlayPhaseAction extends BaseAction {
     event: ServerEventFinder<GameEventIdentifiers>,
   ) => (skill: Skill) => {
     if (!room.isPlaying() || UniqueSkillRule.isProhibited(skill, player)) {
-      return false;
+      return true;
     }
 
     if (skill instanceof TriggerSkill) {

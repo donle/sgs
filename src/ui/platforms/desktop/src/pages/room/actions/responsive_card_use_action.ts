@@ -12,7 +12,7 @@ import { BaseAction } from './base_action';
 export class ResponsiveUseCardAction extends BaseAction {
   public static isSkillsOnResponsiveCardUseDisabled = (matcher: CardMatcher, player: Player) => (skill: Skill) => {
     if (UniqueSkillRule.isProhibited(skill, player)) {
-      return false;
+      return true;
     }
 
     if (skill instanceof TriggerSkill) {

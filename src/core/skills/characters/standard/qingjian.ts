@@ -1,15 +1,15 @@
-import { CommonSkill, TriggerSkill, ShadowSkill } from 'core/skills/skill';
-import { ServerEventFinder, GameEventIdentifiers, CardLostReason, CardObtainedReason } from 'core/event/event';
-import { AllStage, ObtainCardStage, PlayerPhase, PhaseChangeStage } from 'core/game/stage_processor';
-import { Room } from 'core/room/room';
-import { Player } from 'core/player/player';
-import { PlayerId, PlayerCardsArea } from 'core/player/player_props';
-import { CardId } from 'core/cards/libs/card_props';
-import { GameCommonRules } from 'core/game/game_rules';
-import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { TranslationPack } from 'core/translations/translation_json_tool';
 import { CardType } from 'core/cards/card';
+import { CardId } from 'core/cards/libs/card_props';
+import { CardLostReason, CardObtainedReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
+import { GameCommonRules } from 'core/game/game_rules';
+import { AllStage, ObtainCardStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
+import { Player } from 'core/player/player';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { Room } from 'core/room/room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill
 export class QingJian extends TriggerSkill {
@@ -17,18 +17,11 @@ export class QingJian extends TriggerSkill {
     super('qingjian', 'qingjian_description');
   }
 
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.ObtainCardEvent>,
-    stage?: AllStage,
-  ): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.ObtainCardEvent>, stage?: AllStage): boolean {
     return stage === ObtainCardStage.AfterObtainCardEffect;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.ObtainCardEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.ObtainCardEvent>): boolean {
     return (
       owner.Id === content.toId &&
       room.CurrentPlayerPhase !== PlayerPhase.DrawCardStage &&
@@ -50,7 +43,10 @@ export class QingJian extends TriggerSkill {
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
-    return room.getPlayerById(owner).getPlayerCards().includes(cardId);
+    return room
+      .getPlayerById(owner)
+      .getPlayerCards()
+      .includes(cardId);
   }
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
@@ -67,18 +63,17 @@ export class QingJian extends TriggerSkill {
       return false;
     }
 
-    let types: CardType[] = [CardType.Basic, CardType.Trick, CardType.Equip]
+    const types: CardType[] = [];
     for (const cardId of cardIds) {
-      if (types.length === 0) {
-        break;
-      }
       const card = Sanguosha.getCardById(cardId);
-      types = types.filter(type => !card.is(type));
+      if (!types.includes(card.BaseType)) {
+        types.push(card.BaseType);
+      }
     }
 
     const from = room.getPlayerById(fromId);
     const displayEvent: ServerEventFinder<GameEventIdentifiers.CardDisplayEvent> = {
-      fromId: fromId,
+      fromId,
       displayCards: cardIds!,
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} displayed cards {1}',
@@ -101,15 +96,15 @@ export class QingJian extends TriggerSkill {
     );
 
     room.syncGameCommonRules(room.CurrentPlayer.Id, user => {
-        user.addInvisibleMark(this.name, 3 - types.length);
-        GameCommonRules.addAdditionalHoldCardNumber(user, 3 - types.length);
+      user.addInvisibleMark(this.name, types.length);
+      GameCommonRules.addAdditionalHoldCardNumber(user, types.length);
     });
     return true;
   }
 }
 
 @CommonSkill
-@ShadowSkill()
+@ShadowSkill({ remainStatus: true })
 export class QingJianShadow extends TriggerSkill {
   constructor() {
     super('qingjian', 'qingjian_description');
@@ -137,7 +132,7 @@ export class QingJianShadow extends TriggerSkill {
       triggeredOnEvent,
       'Unknown phase change event in qingjian',
     ) as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-    
+
     phaseChangeEvent.fromPlayer &&
       room.syncGameCommonRules(phaseChangeEvent.fromPlayer, user => {
         const extraHold = user.getInvisibleMark(this.GeneralName);

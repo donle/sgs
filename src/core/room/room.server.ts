@@ -172,9 +172,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     for (const player of this.getAlivePlayersFrom()) {
       const canTriggerSkills: TriggerSkill[] = [];
       for (const skill of player.getPlayerSkills<TriggerSkill>('trigger')) {
+        if (UniqueSkillRule.isProhibited(skill, player)) {
+          continue;
+        }
+
         const canTrigger = bySkills
-          ? bySkills.find(bySkill => !UniqueSkillRule.isProhibitedBySkillRule(bySkill, skill)) === undefined
-          : !UniqueSkillRule.isProhibited(skill, player);
+          ? bySkills.find(bySkill => UniqueSkillRule.isProhibitedBySkillRule(bySkill, skill)) === undefined
+          : true;
 
         if (canTrigger) {
           canTriggerSkills.push(skill);
@@ -183,13 +187,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
       for (const equip of player.getCardIds(PlayerCardsArea.EquipArea)) {
         const equipCard = Sanguosha.getCardById(equip);
-        if (!(equipCard.Skill instanceof TriggerSkill)) {
+        if (!(equipCard.Skill instanceof TriggerSkill) || UniqueSkillRule.isProhibited(equipCard.Skill, player)) {
           continue;
         }
 
         const canTrigger = bySkills
           ? bySkills.find(skill => !UniqueSkillRule.canTriggerCardSkillRule(skill, equipCard)) === undefined
-          : !UniqueSkillRule.isProhibited(equipCard.Skill, player);
+          : true;
         if (canTrigger) {
           canTriggerSkills.push(equipCard.Skill);
         }
@@ -374,12 +378,15 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           event.toIds = [event.fromId];
         }
 
+        const isDisresponsive = EventPacker.isDisresponsiveEvent(event);
+
         const onAim = async (...targets: PlayerId[]) => {
           const cardAimEvent: ServerEventFinder<GameEventIdentifiers.AimEvent> = {
             fromId: event.fromId,
             byCardId: event.cardId,
             toIds: targets,
           };
+          isDisresponsive && EventPacker.setDisresponsiveEvent(cardAimEvent);
 
           await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.AimEvent, cardAimEvent);
 
@@ -389,18 +396,31 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                 ? [...event.triggeredBySkills, ...cardAimEvent.triggeredBySkills]
                 : cardAimEvent.triggeredBySkills;
             }
-            return cardAimEvent.toIds;
           }
 
-          return [];
+          return cardAimEvent;
         };
 
+        const disresponsiveTargets: PlayerId[] = [];
         if (card.AOE === CardTargetEnum.Single) {
-          event.toIds = await onAim(...Precondition.exists(event.toIds, `Invalid target number of card: ${card.Name}`));
+          const response = await onAim(
+            ...Precondition.exists(event.toIds, `Invalid target number of card: ${card.Name}`),
+          );
+          event.toIds = response.toIds;
+          EventPacker.isTerminated(response) && EventPacker.terminate(event);
+          EventPacker.isDisresponsiveEvent(response) && EventPacker.setDisresponsiveEvent(event);
         } else {
           let newToIds: PlayerId[] = [];
           for (const toId of event.toIds || []) {
-            newToIds = [...newToIds, ...(await onAim(toId))];
+            const response = await onAim(toId);
+            if (EventPacker.isTerminated(response)) {
+              continue;
+            }
+            if (EventPacker.isDisresponsiveEvent(response)) {
+              disresponsiveTargets.push(toId);
+            }
+
+            newToIds = [...newToIds, ...response.toIds];
           }
           event.toIds = newToIds;
         }
@@ -416,6 +436,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               ...event,
               toIds: [toId],
             };
+            if (disresponsiveTargets.includes(toId)) {
+              EventPacker.setDisresponsiveEvent(cardEffectEvent);
+            }
 
             await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
           }

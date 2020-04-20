@@ -56,5 +56,7 @@ export { YaJiao } from './characters/standard/yajiao';
 export { KeJi } from './characters/standard/keji';
 export { QinXue } from './characters/standard/qinxue';
 export { GongXin } from './characters/standard/gongxin';
+export { TieJi, TieJiShadow } from './characters/standard/tieji';
+export { MaShu } from './characters/standard/mashu';
 
 export { Cheat } from './system/cheat';

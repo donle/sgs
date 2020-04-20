@@ -299,6 +299,7 @@ export class GameProcessor {
   }
 
   private async play(player: Player, specifiedStages?: PlayerPhaseStages[]) {
+    let lastPlayer = this.currentPhasePlayer;
     this.currentPhasePlayer = player;
 
     this.playerStages = specifiedStages ? specifiedStages : this.stageProcessor.createPlayerStage();
@@ -309,7 +310,7 @@ export class GameProcessor {
         const phaseChangeEvent = EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseChangeEvent, {
           from: this.currentPlayerPhase,
           to: nextPhase,
-          fromPlayer: player.Id,
+          fromPlayer: lastPlayer?.Id,
           toPlayer: player.Id,
         });
         await this.onHandlePhaseChangeEvent(GameEventIdentifiers.PhaseChangeEvent, phaseChangeEvent, async stage => {
@@ -345,6 +346,10 @@ export class GameProcessor {
           playerId: this.CurrentPlayer.Id,
         }),
       );
+
+      if (lastPlayer !== this.currentPhasePlayer) {
+        lastPlayer = this.currentPhasePlayer;
+      }
     }
 
     const statusSkills: Skill[] = [];

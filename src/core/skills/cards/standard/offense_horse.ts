@@ -2,8 +2,8 @@ import { CompulsorySkill, RulesBreakerSkill } from 'core/skills/skill';
 
 @CompulsorySkill
 export class OffenseHorseSkill extends RulesBreakerSkill {
-  constructor() {
-    super('offense_horse', 'offense_horse_description');
+  constructor(name = 'offense_horse', description = 'offense_horse_description') {
+    super(name, description);
   }
 
   public breakOffenseDistance() {

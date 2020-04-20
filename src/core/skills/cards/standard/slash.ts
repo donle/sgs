@@ -62,57 +62,59 @@ export class SlashSkill extends ActiveSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const { toIds, fromId, cardId } = event;
-    const toId = Precondition.exists(toIds, 'Unable to get slash target')[0];
+    const targets = Precondition.exists(toIds, 'Unable to get slash target');
 
-    if (!EventPacker.isDisresponsiveEvent(event)) {
-      const askForUseCardEvent = {
+    for (const toId of targets) {
+      if (!EventPacker.isDisresponsiveEvent(event)) {
+        const askForUseCardEvent = {
+          toId,
+          cardMatcher: new CardMatcher({ name: ['jink'] }).toSocketPassenger(),
+          byCardId: cardId,
+          cardUserId: fromId,
+          triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
+          conversation:
+            fromId !== undefined
+              ? TranslationPack.translationJsonPatcher(
+                  '{0} used {1} to you, please use a {2} card',
+                  TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
+                  TranslationPack.patchCardInTranslation(cardId),
+                  'jink',
+                ).extract()
+              : TranslationPack.translationJsonPatcher(
+                  'please use a {0} card to response {1}',
+                  'jink',
+                  TranslationPack.patchCardInTranslation(cardId),
+                ).extract(),
+          triggeredOnEvent: event,
+        };
+
+        const result = await room.askForCardUse(askForUseCardEvent, toId);
+        const { responseEvent } = result;
+        if (responseEvent && responseEvent.cardId !== undefined) {
+          await room.useCard({
+            fromId: toId,
+            cardId: responseEvent.cardId,
+            toCardIds: [cardId],
+            responseToEvent: event,
+          });
+        }
+        if (EventPacker.isTerminated(event)) {
+          return false;
+        }
+      }
+
+      const addtionalDrunkDamage = EventPacker.getMiddleware<number>(this.DrunkTag, event) || 0;
+      const damageEvent: ServerEventFinder<GameEventIdentifiers.DamageEvent> = {
+        fromId,
         toId,
-        cardMatcher: new CardMatcher({ name: ['jink'] }).toSocketPassenger(),
-        byCardId: cardId,
-        cardUserId: fromId,
+        damage: 1 + addtionalDrunkDamage,
+        damageType: this.damageType,
+        cardIds: [cardId],
         triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
-        conversation:
-          fromId !== undefined
-            ? TranslationPack.translationJsonPatcher(
-                '{0} used {1} to you, please use a {2} card',
-                TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
-                TranslationPack.patchCardInTranslation(cardId),
-                'jink',
-              ).extract()
-            : TranslationPack.translationJsonPatcher(
-                'please use a {0} card to response {1}',
-                'jink',
-                TranslationPack.patchCardInTranslation(cardId),
-              ).extract(),
-        triggeredOnEvent: event,
       };
 
-      const result = await room.askForCardUse(askForUseCardEvent, toId);
-      const { responseEvent } = result;
-      if (responseEvent && responseEvent.cardId !== undefined) {
-        await room.useCard({
-          fromId: toId,
-          cardId: responseEvent.cardId,
-          toCardIds: [cardId],
-          responseToEvent: event,
-        });
-      }
-      if (EventPacker.isTerminated(event)) {
-        return false;
-      }
+      await room.damage(damageEvent);
     }
-
-    const addtionalDrunkDamage = EventPacker.getMiddleware<number>(this.DrunkTag, event) || 0;
-    const damageEvent: ServerEventFinder<GameEventIdentifiers.DamageEvent> = {
-      fromId,
-      toId,
-      damage: 1 + addtionalDrunkDamage,
-      damageType: this.damageType,
-      cardIds: [cardId],
-      triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
-    };
-
-    await room.damage(damageEvent);
 
     return true;
   }

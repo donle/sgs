@@ -22,12 +22,12 @@ export const enum SkillType {
 }
 
 type SKillConstructor<T extends Skill> = new (name: string, description: string) => T;
-function onCalculatingSkillUsageWrapper(skillType: SkillType, constructor: new () => any): any {
+function onCalculatingSkillUsageWrapper(skillType: SkillType, constructor: new (name?: string, description?: string) => any): any {
   return class extends constructor {
     protected skillType = skillType;
 
-    constructor() {
-      super();
+    constructor(name?: string, description?: string) {
+      super(name, description);
 
       if (this.skillType === SkillType.Awaken || this.skillType === SkillType.Limit) {
         this.isRefreshAt = () => false;
@@ -57,7 +57,7 @@ function skillPropertyWrapper(
     uniqueSkill?: boolean;
     selfTargetSkill?: boolean;
   },
-  constructor: new () => any,
+  constructor: new (name?: string, description?: string) => any,
 ): any {
   return class extends constructor {
     private lordSkill: boolean;
@@ -69,8 +69,8 @@ function skillPropertyWrapper(
 
     public canUse: (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) => boolean;
 
-    constructor() {
-      super();
+    constructor(name?: string, description?: string) {
+      super(name, description);
 
       if (options.lordSkill !== undefined) {
         this.lordSkill = options.lordSkill;
