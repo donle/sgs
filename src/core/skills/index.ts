@@ -50,6 +50,7 @@ export { TuXi } from './characters/standard/tuxi';
 export { QingGuo } from './characters/standard/qingguo';
 export { LuoShen, LuoShenShadow } from './characters/standard/luoshen';
 export { GangLie } from './characters/standard/ganglie';
+export { QingJian, QingJianShadow } from './characters/standard/qingjian';
 export { LongDan } from './characters/standard/longdan';
 export { YaJiao } from './characters/standard/yajiao';
 export { KeJi } from './characters/standard/keji';
