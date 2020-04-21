@@ -399,11 +399,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         const isDisresponsive = EventPacker.isDisresponsiveEvent(event);
 
         const onAim = async (...targets: PlayerId[]) => {
-          const cardAimEvent: ServerEventFinder<GameEventIdentifiers.AimEvent> = {
-            fromId: event.fromId,
-            byCardId: event.cardId,
-            toIds: targets,
-          };
+          const cardAimEvent: ServerEventFinder<GameEventIdentifiers.AimEvent> = EventPacker.createIdentifierEvent(
+            GameEventIdentifiers.AimEvent,
+            {
+              fromId: event.fromId,
+              byCardId: event.cardId,
+              toIds: targets,
+            },
+          );
           isDisresponsive && EventPacker.setDisresponsiveEvent(cardAimEvent);
 
           await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.AimEvent, cardAimEvent);

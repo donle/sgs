@@ -123,7 +123,6 @@ export abstract class BaseAction {
         this.selectedCardToPlay === undefined
           ? true
           : this.store.room.isAvailableTarget(this.selectedCardToPlay, this.playerId, player.Id);
-
       return (
         skill.isAvailableTarget(
           this.playerId,

@@ -143,13 +143,13 @@ export abstract class Player implements PlayerInfo {
     return this.marks[name] || 0;
   }
   addInvisibleMark(name: string, value: number) {
-    return this.addMark('#' + name, value);
+    return this.addMark('!' + name, value);
   }
   getInvisibleMark(name: string) {
-    return this.getMark('#' + name);
+    return this.getMark('!' + name);
   }
   removeInvisibleMark(name: string) {
-    this.removeMark('#' + name);
+    this.removeMark('!' + name);
   }
 
   public canUseCard(room: Room, cardId: CardId | CardMatcher): boolean {
@@ -343,8 +343,11 @@ export abstract class Player implements PlayerInfo {
   }
 
   public getAttackDistance(room: Room) {
-    let attackDistance = this.getOffenseDistance(room);
+    return Math.max(this.getOffenseDistance(room) + this.getAttackRange(room), 1);
+  }
 
+  public getAttackRange(room: Room) {
+    let attackDistance = 0;
     for (const cardId of this.getCardIds(PlayerCardsArea.EquipArea)) {
       const card = Sanguosha.getCardById(cardId);
       if (card instanceof WeaponCard) {
@@ -352,7 +355,7 @@ export abstract class Player implements PlayerInfo {
       }
     }
 
-    return Math.max(attackDistance + GameCommonRules.getAdditionalAttackDistance(this), 1);
+    return attackDistance + GameCommonRules.getAdditionalAttackDistance(this);
   }
 
   public getOffenseDistance(room: Room) {

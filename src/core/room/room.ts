@@ -299,12 +299,12 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     const seatDistance = this.distanceBetween(from, to);
     let additionalAttackDistance = 0;
     if (slash) {
-      additionalAttackDistance = GameCommonRules.getCardAdditionalAttackDistance(
-        this,
-        from,
-        Sanguosha.getCardById(slash),
-      );
+      additionalAttackDistance =
+        GameCommonRules.getCardAdditionalAttackDistance(this, from, Sanguosha.getCardById(slash)) +
+        from.getCardUsableDistance(this, slash) -
+        Sanguosha.getCardById(slash).EffectUseDistance;
     }
+
     return (
       from.getAttackDistance(this) + additionalAttackDistance >= seatDistance &&
       this.canUseCardTo(slash || new CardMatcher({ name: ['slash'] }), to.Id)

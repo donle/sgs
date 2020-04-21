@@ -62,5 +62,7 @@ export { GuoSe } from './characters/standard/guose';
 export { LiuLi } from './characters/standard/liuli';
 export { QiXi } from './characters/standard/qixi';
 export { FenWei } from './characters/standard/fenwei';
+export { PaoXiao } from './characters/standard/paoxiao';
+export { TiShen, TiShenShadow } from './characters/standard/tishen';
 
 export { Cheat } from './system/cheat';

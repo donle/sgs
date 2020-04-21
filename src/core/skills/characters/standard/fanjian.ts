@@ -60,27 +60,35 @@ export class FanJian extends ActiveSkill {
 
     const moveCard = Sanguosha.getCardById(skillUseEvent.cardIds![0]);
     const from = room.getPlayerById(skillUseEvent.fromId);
-    const chooseOptionEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
-      toId,
-      options: [
-        TranslationPack.translationJsonPatcher('drop all {0} cards', Functional.getCardSuitRawText(moveCard.Suit)).toString(),
-        'lose a hp',
-      ],
-      conversation: TranslationPack.translationJsonPatcher(
-        '{0} used skill {1} to you, please choose',
-        TranslationPack.patchPlayerInTranslation(from),
-        this.name,
-      ).extract(),
-      askedBy: skillUseEvent.fromId,
-    };
-    room.notify(
-      GameEventIdentifiers.AskForChoosingOptionsEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(chooseOptionEvent),
-      toId,
-    );
-    const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, toId);
+    const to = room.getPlayerById(toId);
+    let selectedOption: string | undefined;
+    if (to.getPlayerCards().length > 0) {
+      const chooseOptionEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
+        toId,
+        options: [
+          TranslationPack.translationJsonPatcher(
+            'drop all {0} cards',
+            Functional.getCardSuitRawText(moveCard.Suit),
+          ).toString(),
+          'lose a hp',
+        ],
+        conversation: TranslationPack.translationJsonPatcher(
+          '{0} used skill {1} to you, please choose',
+          TranslationPack.patchPlayerInTranslation(from),
+          this.name,
+        ).extract(),
+        askedBy: skillUseEvent.fromId,
+      };
+      room.notify(
+        GameEventIdentifiers.AskForChoosingOptionsEvent,
+        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(chooseOptionEvent),
+        toId,
+      );
+      const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, toId);
+      selectedOption = response.selectedOption;
+    }
 
-    if (response.selectedOption === 'lose a hp') {
+    if (!selectedOption || selectedOption === 'lose a hp') {
       await room.loseHp(toId, 1);
     } else {
       const to = room.getPlayerById(toId);
