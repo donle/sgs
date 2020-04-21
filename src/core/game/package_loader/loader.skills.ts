@@ -16,7 +16,7 @@ export class SkillLoader {
     return this.instance;
   }
 
-  public addSkills(...skills: SkillPrototype<Skill>[]) {
+  private addSkills(...skills: SkillPrototype<Skill>[]) {
     for (const skillProto of skills) {
       const skill = new skillProto();
       if (skill.isShadowSkill()) {

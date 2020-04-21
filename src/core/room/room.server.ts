@@ -378,6 +378,24 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           event.toIds = [event.fromId];
         }
 
+        event.toIds?.sort((prev, next) => {
+          let prevPosition = this.getPlayerById(prev).Position;
+          let nextPosition = this.getPlayerById(next).Position;
+          if (prevPosition < this.CurrentPlayer.Position) {
+            prevPosition += this.Players.length;
+          }
+          if (nextPosition < this.CurrentPlayer.Position) {
+            nextPosition += this.Players.length;
+          }
+
+          if (prevPosition < nextPosition) {
+            return -1;
+          } else if (prevPosition === nextPosition) {
+            return 0;
+          }
+          return 1;
+        });
+
         const isDisresponsive = EventPacker.isDisresponsiveEvent(event);
 
         const onAim = async (...targets: PlayerId[]) => {
@@ -401,28 +419,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           return cardAimEvent;
         };
 
-        const disresponsiveTargets: PlayerId[] = [];
-        if (card.AOE === CardTargetEnum.Single) {
+        if (event.toIds) {
           const response = await onAim(
             ...Precondition.exists(event.toIds, `Invalid target number of card: ${card.Name}`),
           );
           event.toIds = response.toIds;
           EventPacker.isTerminated(response) && EventPacker.terminate(event);
           EventPacker.isDisresponsiveEvent(response) && EventPacker.setDisresponsiveEvent(event);
-        } else {
-          let newToIds: PlayerId[] = [];
-          for (const toId of event.toIds || []) {
-            const response = await onAim(toId);
-            if (EventPacker.isTerminated(response)) {
-              continue;
-            }
-            if (EventPacker.isDisresponsiveEvent(response)) {
-              disresponsiveTargets.push(toId);
-            }
-
-            newToIds = [...newToIds, ...response.toIds];
-          }
-          event.toIds = newToIds;
         }
 
         if (card.is(CardType.Equip) || card.is(CardType.DelayedTrick)) {
@@ -431,14 +434,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
         await card.Skill.beforeEffect(this, event);
         if ([CardTargetEnum.Others, CardTargetEnum.Multiple, CardTargetEnum.Globe].includes(card.AOE)) {
-          for (const toId of event.toIds) {
+          for (const toId of event.toIds!) {
             const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
               ...event,
               toIds: [toId],
             };
-            if (disresponsiveTargets.includes(toId)) {
-              EventPacker.setDisresponsiveEvent(cardEffectEvent);
-            }
 
             await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
           }
@@ -459,6 +459,17 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async useSkill(content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     await super.useSkill(content);
+    content.toIds?.sort((prev, next) => {
+      const prevPosition = this.getPlayerById(prev).Position;
+      const nextPosition = this.getPlayerById(next).Position;
+      if (prevPosition < nextPosition) {
+        return -1;
+      } else if (prevPosition === nextPosition) {
+        return 0;
+      }
+      return 1;
+    });
+
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.SkillUseEvent, content);
     if (!EventPacker.isTerminated(content)) {
       await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.SkillEffectEvent, content);

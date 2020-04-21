@@ -22,18 +22,22 @@ export const enum SkillType {
 }
 
 type SKillConstructor<T extends Skill> = new (name: string, description: string) => T;
-function onCalculatingSkillUsageWrapper(skillType: SkillType, constructor: new (name?: string, description?: string) => any): any {
+function onCalculatingSkillUsageWrapper(
+  skillType: SkillType,
+  constructor: new (name?: string, description?: string) => any,
+): any {
   return class extends constructor {
     protected skillType = skillType;
+    private canUseEntity: (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) => boolean;
 
     constructor(name?: string, description?: string) {
       super(name, description);
 
       if (this.skillType === SkillType.Awaken || this.skillType === SkillType.Limit) {
         this.isRefreshAt = () => false;
-        const canUseResult = this.canUse;
+        this.canUseEntity = this.canUse;
         this.canUse = (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) =>
-          !owner.hasUsedSkill(this.name) && canUseResult(room, owner, content);
+          !owner.hasUsedSkill(this.name) && this.canUseEntity(room, owner, content);
       }
     }
 
