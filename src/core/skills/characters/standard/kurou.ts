@@ -1,5 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { GameEventIdentifiers, ServerEventFinder, CardLostReason } from 'core/event/event';
+import { CardLostReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -37,7 +37,10 @@ export class KuRou extends ActiveSkill {
     return true;
   }
 
-  public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
+  public async onEffect(
+    room: Room,
+    skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
+  ): Promise<boolean> {
     await room.dropCards(
       CardLostReason.ActiveDrop,
       skillUseEvent.cardIds!,
@@ -45,8 +48,8 @@ export class KuRou extends ActiveSkill {
       skillUseEvent.fromId,
       this.name,
     );
-    
-    await room.loseHp(skillUseEvent.fromId,1);
+
+    await room.loseHp(skillUseEvent.fromId, 1);
 
     return true;
   }
