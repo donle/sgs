@@ -73,26 +73,49 @@ export class CardMatcher {
   }
 
   public with(matcher: CardMatcher) {
-    const { suit = [], cardNumber = [], name = [], type = [], cards = [] } = matcher.Matcher;
+    const { suit, cardNumber, name, type, cards } = matcher.Matcher;
     const {} = this.matcher;
-    this.matcher.suit = this.matcher.suit ? [...this.matcher.suit, ...suit] : suit;
-    this.matcher.cardNumber = this.matcher.cardNumber ? [...this.matcher.cardNumber, ...cardNumber] : cardNumber;
-    this.matcher.name = this.matcher.name ? [...this.matcher.name, ...name] : name;
-    this.matcher.type = this.matcher.type ? [...this.matcher.type, ...type] : type;
-    this.matcher.cards = this.matcher.cards ? [...this.matcher.cards, ...cards] : cards;
+    this.matcher.suit = !this.matcher.suit ? suit : suit ? [...this.matcher.suit, ...suit] : this.matcher.suit;
+    this.matcher.cardNumber = !this.matcher.cardNumber
+      ? cardNumber
+      : cardNumber
+      ? [...this.matcher.cardNumber, ...cardNumber]
+      : this.matcher.cardNumber;
+    this.matcher.name = !this.matcher.name ? name : name ? [...this.matcher.name, ...name] : this.matcher.name;
+    this.matcher.type = !this.matcher.type ? type : type ? [...this.matcher.type, ...type] : this.matcher.type;
+    this.matcher.cards = !this.matcher.cards ? cards : cards ? [...this.matcher.cards, ...cards] : this.matcher.cards;
+
     return this;
   }
 
   public without(matcher: CardMatcher) {
-    const { suit = [], cardNumber = [], name = [], type = [], cards = [] } = matcher.Matcher;
+    const { suit, cardNumber, name, type, cards } = matcher.Matcher;
     const {} = this.matcher;
-    this.matcher.suit = !this.matcher.suit ? [] : this.matcher.suit.filter(s => !suit.includes(s));
+    this.matcher.suit = !this.matcher.suit
+      ? undefined
+      : suit
+      ? this.matcher.suit.filter(s => !suit.includes(s))
+      : this.matcher.suit;
     this.matcher.cardNumber = !this.matcher.cardNumber
-      ? []
-      : this.matcher.cardNumber.filter(s => !cardNumber.includes(s));
-    this.matcher.name = !this.matcher.name ? [] : this.matcher.name.filter(s => !name.includes(s));
-    this.matcher.type = !this.matcher.type ? [] : this.matcher.type.filter(s => !type.includes(s));
-    this.matcher.cards = !this.matcher.cards ? [] : this.matcher.cards.filter(s => !cards.includes(s));
+      ? undefined
+      : cardNumber
+      ? this.matcher.cardNumber.filter(s => !cardNumber.includes(s))
+      : this.matcher.cardNumber;
+    this.matcher.name = !this.matcher.name
+      ? undefined
+      : name
+      ? this.matcher.name.filter(s => !name.includes(s))
+      : this.matcher.name;
+    this.matcher.type = !this.matcher.type
+      ? undefined
+      : type
+      ? this.matcher.type.filter(s => !type.includes(s))
+      : this.matcher.type;
+    this.matcher.cards = !this.matcher.cards
+      ? undefined
+      : cards
+      ? this.matcher.cards.filter(s => !cards.includes(s))
+      : this.matcher.cards;
 
     return this;
   }
