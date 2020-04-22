@@ -53,19 +53,20 @@ export class CardMatcher {
     } else {
       matcher = card.toSocketPassenger();
       if (suit && matcher.suit) {
-        matched = matched && matcher.suit.every(cardSuit => suit.includes(cardSuit));
+        matched = matched && matcher.suit.length > 0 && matcher.suit.every(cardSuit => suit.includes(cardSuit));
       }
       if (cardNumber && matcher.cardNumber) {
-        matched = matched && matcher.cardNumber.every(cardNum => cardNumber.includes(cardNum));
+        matched =
+          matched && matcher.cardNumber.length > 0 && matcher.cardNumber.every(cardNum => cardNumber.includes(cardNum));
       }
       if (name && matcher.name) {
-        matched = matched && matcher.name.every(cardName => name.includes(cardName));
+        matched = matched && matcher.name.length > 0 && matcher.name.every(cardName => name.includes(cardName));
       }
       if (type && matcher.type) {
-        matched = matched && matcher.type.every(cardType => type.includes(cardType));
+        matched = matched && matcher.type.length > 0 && matcher.type.every(cardType => type.includes(cardType));
       }
       if (cards && matcher.cards) {
-        matched = matched && matcher.cards.every(innerCard => cards.includes(innerCard));
+        matched = matched && matcher.cards.length > 0 && matcher.cards.every(innerCard => cards.includes(innerCard));
       }
     }
 
