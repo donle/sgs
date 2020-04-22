@@ -13,14 +13,10 @@ import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill
+@CommonSkill({ name: 'gongxin', description: 'gongxin_description' })
 export class GongXin extends ActiveSkill {
-  constructor() {
-    super('gongxin', 'gongxin_description');
-  }
-
   public canUse(room: Room, owner: Player) {
-    return !owner.hasUsedSkill(this.name);
+    return !owner.hasUsedSkill(this.Name);
   }
 
   targetFilter(room: Room, targets: PlayerId[]): boolean {
@@ -93,7 +89,7 @@ export class GongXin extends ActiveSkill {
     );
     if (selectedOption === 'gongxin:putcard') {
       room.putCards('top', selectedCard);
-      await room.loseCards([selectedCard], to.Id, CardLostReason.PassiveMove, fromId, this.name, undefined, true);
+      await room.loseCards([selectedCard], to.Id, CardLostReason.PassiveMove, fromId, this.Name, undefined, true);
       room.broadcast(GameEventIdentifiers.CustomGameDialog, {
         translationsMessage: TranslationPack.translationJsonPatcher(
           '{0} place card {1} from {2} on the top of draw stack',
@@ -103,7 +99,7 @@ export class GongXin extends ActiveSkill {
         ).extract(),
       });
     } else {
-      await room.dropCards(CardLostReason.PassiveDrop, [selectedCard], to.Id, fromId, this.name);
+      await room.dropCards(CardLostReason.PassiveDrop, [selectedCard], to.Id, fromId, this.Name);
     }
 
     return true;

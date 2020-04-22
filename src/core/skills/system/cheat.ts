@@ -9,12 +9,8 @@ import { Room } from 'core/room/room';
 import { Functional } from 'core/shares/libs/functional';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'cheat', description: 'cheat_description' })
 export class Cheat extends ActiveSkill {
-  constructor() {
-    super('cheat', 'cheat_description');
-  }
-
   public canUse(room: Room, owner: Player) {
     return true;
   }
@@ -122,7 +118,7 @@ export class Cheat extends ActiveSkill {
           PlayerCardsArea.HandArea,
           CardObtainedReason.ActivePrey,
           skillUseEvent.fromId,
-          this.name,
+          this.Name,
         );
       }
     }

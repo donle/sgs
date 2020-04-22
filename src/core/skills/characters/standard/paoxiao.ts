@@ -6,12 +6,8 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CompulsorySkill, RulesBreakerSkill } from 'core/skills/skill';
 
-@CompulsorySkill
+@CompulsorySkill({ name: 'paoxiao', description: 'paoxiao_description' })
 export class PaoXiao extends RulesBreakerSkill {
-  constructor() {
-    super('paoxiao', 'paoxiao_description');
-  }
-
   public breakCardUsableDistance(cardId: CardId | CardMatcher, room: Room, owner: Player) {
     if (!owner.hasUsed('slash')) {
       return 0;

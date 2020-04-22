@@ -11,12 +11,8 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill
+@CommonSkill({ name: 'qingjian', description: 'qingjian_description' })
 export class QingJian extends TriggerSkill {
-  constructor() {
-    super('qingjian', 'qingjian_description');
-  }
-
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.ObtainCardEvent>, stage?: AllStage): boolean {
     return stage === ObtainCardStage.AfterObtainCardEffect;
   }
@@ -25,7 +21,7 @@ export class QingJian extends TriggerSkill {
     return (
       owner.Id === content.toId &&
       room.CurrentPlayerPhase !== PlayerPhase.DrawCardStage &&
-      !owner.hasUsedSkill(this.name) &&
+      !owner.hasUsedSkill(this.Name) &&
       owner.getPlayerCards().length !== 0
     );
   }
@@ -96,20 +92,16 @@ export class QingJian extends TriggerSkill {
     );
 
     room.syncGameCommonRules(room.CurrentPlayer.Id, user => {
-      user.addInvisibleMark(this.name, types.length);
+      user.addInvisibleMark(this.Name, types.length);
       GameCommonRules.addAdditionalHoldCardNumber(user, types.length);
     });
     return true;
   }
 }
 
-@CommonSkill
 @ShadowSkill({ remainStatus: true })
+@CommonSkill({ name: 'qingjian', description: 'qingjian_description' })
 export class QingJianShadow extends TriggerSkill {
-  constructor() {
-    super('qingjian', 'qingjian_description');
-  }
-
   public isAutoTrigger() {
     return true;
   }

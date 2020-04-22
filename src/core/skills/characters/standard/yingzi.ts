@@ -4,12 +4,8 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CompulsorySkill, RulesBreakerSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 
-@CompulsorySkill
+@CompulsorySkill({ name: 'yingzi', description: 'yingzi_description' })
 export class YingZi extends TriggerSkill {
-  constructor() {
-    super('yingzi', 'yingzi_description');
-  }
-
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>, stage?: AllStage) {
     return stage === DrawCardStage.CardDrawing;
   }
@@ -31,11 +27,11 @@ export class YingZi extends TriggerSkill {
   }
 }
 
-@CompulsorySkill
 @ShadowSkill()
+@CompulsorySkill({ name: YingZi.GeneralName, description: YingZi.Description })
 export class YingZiShadow extends RulesBreakerSkill {
   constructor() {
-    super('yingzi', 'yingzi_description');
+    super();
   }
 
   public breakBaseCardHoldNumber(room: Room, owner: Player) {

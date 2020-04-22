@@ -7,12 +7,8 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'liuli', description: 'liuli_description' })
 export class LiuLi extends TriggerSkill {
-  constructor() {
-    super('liuli', 'liuli_description');
-  }
-
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage) {
     return (
       stage === AimStage.AfterAimmed &&
@@ -22,7 +18,7 @@ export class LiuLi extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
-    room.setFlag(owner.Id, this.name, event.fromId);
+    room.setFlag(owner.Id, this.Name, event.fromId);
     return event.toIds.includes(owner.Id);
   }
 
@@ -39,7 +35,7 @@ export class LiuLi extends TriggerSkill {
   public isAvailableTarget(owner: PlayerId, room: Room, targetId: PlayerId): boolean {
     const from = room.getPlayerById(owner);
     const to = room.getPlayerById(targetId);
-    const userId = from.getFlag<PlayerId>(this.name);
+    const userId = from.getFlag<PlayerId>(this.Name);
     return room.canAttack(from, to) && targetId !== userId;
   }
 
@@ -51,7 +47,7 @@ export class LiuLi extends TriggerSkill {
     const { triggeredOnEvent, cardIds, toIds, fromId } = skillUseEvent;
     const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
 
-    await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, fromId, this.name);
+    await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, fromId, this.Name);
 
     aimEvent.toIds = aimEvent.toIds.filter(toId => toId !== fromId);
     aimEvent.toIds.push(toIds![0]);

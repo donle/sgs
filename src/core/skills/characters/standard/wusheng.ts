@@ -8,12 +8,8 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CommonSkill, CompulsorySkill, RulesBreakerSkill, ShadowSkill, ViewAsSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'wusheng', description: 'wusheng_description' })
 export class WuSheng extends ViewAsSkill {
-  constructor() {
-    super('wusheng', 'wusheng_description');
-  }
-
   public canViewAs(): string[] {
     return ['slash'];
   }
@@ -44,20 +40,16 @@ export class WuSheng extends ViewAsSkill {
     return VirtualCard.create<Slash>(
       {
         cardName: 'slash',
-        bySkill: this.name,
+        bySkill: this.Name,
       },
       selectedCards,
     );
   }
 }
 
-@CompulsorySkill
 @ShadowSkill({ remainStatus: true })
+@CompulsorySkill({ name: WuSheng.GeneralName, description: WuSheng.Description })
 export class WuShengShadow extends RulesBreakerSkill {
-  constructor() {
-    super('wusheng', 'wusheng_description');
-  }
-
   breakCardUsableDistance(cardId: CardId | CardMatcher, room: Room, owner: Player) {
     if (cardId instanceof CardMatcher) {
       return cardId.match(new CardMatcher({ name: ['slash'], suit: [CardSuit.Diamond] })) ? INFINITE_DISTANCE : 0;

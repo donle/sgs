@@ -9,12 +9,8 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill
+@CommonSkill({ name: 'qilingong', description: 'qilingong_description' })
 export class QiLinGongSkill extends TriggerSkill {
-  constructor() {
-    super('qilingong', 'qilingong_description');
-  }
-
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
     return stage === DamageEffectStage.DamageEffect;
   }

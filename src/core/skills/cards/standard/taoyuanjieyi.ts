@@ -4,12 +4,8 @@ import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'taoyuanjieyi', description: 'taoyuanjieyi_description' })
 export class TaoYuanJieYiSkill extends ActiveSkill {
-  constructor() {
-    super('taoyuanjieyi', 'taoyuanjieyi_description');
-  }
-
   public canUse() {
     return true;
   }

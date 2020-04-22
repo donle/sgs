@@ -6,12 +6,8 @@ import { Room } from 'core/room/room';
 import { AwakeningSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@AwakeningSkill
+@AwakeningSkill({ name: 'qinxue', description: 'qinxue_description' })
 export class QinXue extends TriggerSkill {
-  constructor() {
-    super('qinxue', 'qinxue_description');
-  }
-
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.StageChanged && event.toStage === PlayerPhaseStages.PrepareStage;
   }
@@ -27,7 +23,7 @@ export class QinXue extends TriggerSkill {
     skillUseEvent.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} activates awakening skill {1}',
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
-      this.name,
+      this.Name,
     ).extract();
 
     return true;

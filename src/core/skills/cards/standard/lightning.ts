@@ -8,13 +8,9 @@ import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, SelfTargetSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'lightning', description: 'lightning_description' })
 @SelfTargetSkill
 export class LightningSkill extends ActiveSkill {
-  constructor() {
-    super('lightning', 'lightning_description');
-  }
-
   public canUse(room: Room, owner: Player) {
     return (
       owner
@@ -85,7 +81,7 @@ export class LightningSkill extends ActiveSkill {
     const judgeEvent = await room.judge(
       Precondition.exists(toIds, 'Unknown targets in lightning')[0],
       cardId,
-      this.name,
+      this.Name,
     );
 
     const card = Sanguosha.getCardById(judgeEvent.judgeCardId);
@@ -95,7 +91,7 @@ export class LightningSkill extends ActiveSkill {
         damage: 3,
         toId: judgeEvent.toId,
         cardIds: [event.cardId],
-        triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
+        triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
       };
 
       await room.damage(damageEvent);

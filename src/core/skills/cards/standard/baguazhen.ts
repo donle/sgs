@@ -8,7 +8,7 @@ import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'baguazhen', description: 'baguazhen_description' })
 export class BaGuaZhenSkill extends TriggerSkill {
   public isAutoTrigger() {
     return false;
@@ -23,10 +23,6 @@ export class BaGuaZhenSkill extends TriggerSkill {
       (identifier === GameEventIdentifiers.AskForCardResponseEvent ||
         identifier === GameEventIdentifiers.AskForCardUseEvent)
     );
-  }
-
-  constructor() {
-    super('baguazhen', 'baguazhen_description');
   }
 
   canUse(
@@ -64,15 +60,15 @@ export class BaGuaZhenSkill extends TriggerSkill {
       EventPacker.getIdentifier<GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent>(
         jinkCardEvent,
       ),
-      `Unwrapped event without identifier in ${this.name}`,
+      `Unwrapped event without identifier in ${this.Name}`,
     );
 
-    const judgeEvent = await room.judge(event.fromId, jinkCardEvent.byCardId, this.name);
+    const judgeEvent = await room.judge(event.fromId, jinkCardEvent.byCardId, this.Name);
 
     if (Sanguosha.getCardById(judgeEvent.judgeCardId).isRed()) {
       const jink = VirtualCard.create<Jink>({
         cardName: 'jink',
-        bySkill: this.name,
+        bySkill: this.Name,
       });
 
       const cardUseEvent = {

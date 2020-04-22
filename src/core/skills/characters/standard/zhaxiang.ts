@@ -1,20 +1,20 @@
-import { CardSuit, CardId } from 'core/cards/libs/card_props';
+import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE } from 'core/game/game_props';
-import { AllStage, LoseHpStage, PhaseChangeStage, PlayerPhase, AimStage } from 'core/game/stage_processor';
+import { AimStage, AllStage, LoseHpStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { TriggerSkill, CompulsorySkill, ShadowSkill, RulesBreakerSkill } from 'core/skills/skill';
+import { CompulsorySkill, RulesBreakerSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 
-@CompulsorySkill
+@CompulsorySkill({ name: 'zhaxiang', description: 'zhaxiang_description' })
 export class ZhaXiang extends TriggerSkill {
   private check: boolean = false;
 
   constructor() {
-    super('zhaxiang', 'zhaxiang_description');
+    super();
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.LoseHpEvent>, stage?: AllStage): boolean {
@@ -45,13 +45,9 @@ export class ZhaXiang extends TriggerSkill {
   }
 }
 
-@CompulsorySkill
 @ShadowSkill({ remainStatus: true })
+@CompulsorySkill({ name: ZhaXiang.GeneralName, description: ZhaXiang.Description })
 export class ZhaXiangShadow extends TriggerSkill {
-  constructor() {
-    super('zhaxiang', 'zhaxiang_description');
-  }
-
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.AimEvent>,
     stage: AllStage,
@@ -114,13 +110,9 @@ export class ZhaXiangShadow extends TriggerSkill {
   }
 }
 
-@CompulsorySkill
 @ShadowSkill({ remainStatus: true })
+@CompulsorySkill({ name: '#zhaxiang', description: ZhaXiang.Description })
 export class ZhaXiangDistance extends RulesBreakerSkill {
-  constructor() {
-    super('#zhaxiang', 'zhaxiang_description');
-  }
-
   public breakCardUsableDistance(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
     if (room.CurrentPlayer !== owner || room.getMark(owner.Id, '!zhaxiang') === 0) {
       return 0;

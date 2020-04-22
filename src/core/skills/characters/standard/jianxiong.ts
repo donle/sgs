@@ -4,12 +4,8 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'jianxiong', description: 'jianxiong_description' })
 export class JianXiong extends TriggerSkill {
-  constructor() {
-    super('jianxiong', 'jianxiong_description');
-  }
-
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
     return stage === DamageEffectStage.AfterDamagedEffect;
   }
@@ -27,11 +23,14 @@ export class JianXiong extends TriggerSkill {
     const damagedEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
     if (damagedEvent.cardIds !== undefined) {
       const { cardIds, toId } = damagedEvent;
-      await room.obtainCards({
-        reason: CardObtainedReason.ActivePrey,
-        cardIds,
-        toId,
-      }, true);
+      await room.obtainCards(
+        {
+          reason: CardObtainedReason.ActivePrey,
+          cardIds,
+          toId,
+        },
+        true,
+      );
     }
     await room.drawCards(1, damagedEvent.toId);
     return true;

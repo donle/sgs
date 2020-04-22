@@ -7,11 +7,8 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'fangtianhuaji', description: 'fangtianhuaji_description' })
 export class FangTianHuaJiSkill extends ActiveSkill {
-  constructor() {
-    super('fangtianhuaji', 'fangtianhuaji_description');
-  }
   public canUse(room: Room, owner: Player) {
     const lastCards = owner.getCardIds(PlayerCardsArea.HandArea);
     return (

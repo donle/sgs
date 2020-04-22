@@ -11,10 +11,10 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'tuxi', description: 'tuxi_description' })
 export class TuXi extends TriggerSkill {
   constructor() {
-    super('tuxi', 'tuxi_description');
+    super();
   }
 
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>, stage?: AllStage) {
@@ -22,20 +22,20 @@ export class TuXi extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>) {
-    if (owner.getFlag<number>(this.name) !== undefined) {
-      room.removeFlag(owner.Id, this.name);
+    if (owner.getFlag<number>(this.Name) !== undefined) {
+      room.removeFlag(owner.Id, this.Name);
     }
 
     const canUse = owner.Id === content.fromId && room.CurrentPlayerPhase === PlayerPhase.DrawCardStage;
     if (canUse) {
-      room.setFlag(owner.Id, this.name, content.drawAmount);
+      room.setFlag(owner.Id, this.Name, content.drawAmount);
     }
 
     return canUse;
   }
 
   public targetFilter(room: Room, targets: PlayerId[]): boolean {
-    return targets.length > 0 && targets.length <= room.CurrentPhasePlayer.getFlag<number>(this.name);
+    return targets.length > 0 && targets.length <= room.CurrentPhasePlayer.getFlag<number>(this.Name);
   }
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
@@ -50,7 +50,7 @@ export class TuXi extends TriggerSkill {
     const { triggeredOnEvent, toIds, fromId } = skillUseEvent;
     const drawCardEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DrawCardEvent>;
     drawCardEvent.drawAmount -= toIds!.length;
-    room.removeFlag(fromId, this.name);
+    room.removeFlag(fromId, this.Name);
 
     for (const toId of toIds!) {
       const cardIds = room.getPlayerById(toId).getCardIds(PlayerCardsArea.HandArea);
@@ -60,7 +60,7 @@ export class TuXi extends TriggerSkill {
         options: {
           [PlayerCardsArea.HandArea]: cardIds.length,
         },
-        triggeredBySkills: [this.name],
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(
@@ -83,7 +83,7 @@ export class TuXi extends TriggerSkill {
         PlayerCardsArea.HandArea,
         CardObtainedReason.ActivePrey,
         fromId,
-        this.name,
+        this.Name,
       );
     }
 

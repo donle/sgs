@@ -1,5 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import {  GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, JudgeEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -7,12 +7,8 @@ import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill
+@CommonSkill({ name: 'guicai', description: 'guicai_description' })
 export class GuiCai extends TriggerSkill {
-  constructor() {
-    super('guicai', 'guicai_description');
-  }
-
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.JudgeEvent>, stage?: AllStage) {
     return stage === JudgeEffectStage.BeforeJudgeEffect;
   }
@@ -24,11 +20,7 @@ export class GuiCai extends TriggerSkill {
   public cardFilter(room: Room, cards: CardId[]): boolean {
     return cards.length === 1;
   }
-  public isAvailableCard(
-    owner: PlayerId,
-    room: Room,
-    cardId: CardId,
-  ): boolean {
+  public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
     return room.getPlayerById(owner).cardFrom(cardId) === PlayerCardsArea.HandArea;
   }
 

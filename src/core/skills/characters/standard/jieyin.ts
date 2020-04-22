@@ -16,14 +16,10 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'jieyin', description: 'jieyin_description' })
 export class JieYin extends ActiveSkill {
-  constructor() {
-    super('jieyin', 'jieyin_description');
-  }
-
   public canUse(room: Room, owner: Player) {
-    return !owner.hasUsedSkill(this.name);
+    return !owner.hasUsedSkill(this.Name);
   }
 
   targetFilter(room: Room, targets: PlayerId[]): boolean {
@@ -114,13 +110,13 @@ export class JieYin extends ActiveSkill {
           PlayerCardsArea.EquipArea,
           CardObtainedReason.PassiveObtained,
           fromId,
-          this.name,
+          this.Name,
         );
       } else {
-        await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, fromId, this.name);
+        await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, fromId, this.Name);
       }
     } else {
-      await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, fromId, this.name);
+      await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, fromId, this.Name);
     }
 
     const weaker = from.Hp > to.Hp ? to : to.Hp > from.Hp ? from : undefined;
@@ -130,7 +126,7 @@ export class JieYin extends ActiveSkill {
         toId: weaker.Id,
       });
       const stronger = from === weaker ? to : from;
-      await room.drawCards(1, stronger.Id, 'top', undefined, this.name);
+      await room.drawCards(1, stronger.Id, 'top', undefined, this.Name);
     }
 
     return true;

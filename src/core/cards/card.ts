@@ -180,11 +180,11 @@ export class VirtualCard<T extends Card = Card> extends Card {
   protected cardNumber = 0;
   protected suit = CardSuit.NoSuit;
 
-  private viewAsBlackCard: boolean = true;
-  private viewAsRedCard: boolean = true;
+  private viewAsBlackCard: boolean = false;
+  private viewAsRedCard: boolean = false;
 
   constructor(
-    viewAsOptions: {
+    viewAsOptions: {  
       cardName: string;
       cardSuit?: CardSuit;
       cardNumber?: number;

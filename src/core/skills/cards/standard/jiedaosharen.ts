@@ -9,12 +9,8 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill
+@CommonSkill({ name: 'jiedaosharen', description: 'ljiedaosharen_description' })
 export class JieDaoShaRenSkill extends ActiveSkill {
-  constructor() {
-    super('jiedaosharen', 'ljiedaosharen_description');
-  }
-
   public canUse(room: Room, owner: Player) {
     return (
       room.getOtherPlayers(owner.Id).find(player => player.getEquipment(CardType.Weapon) !== undefined) !== undefined
@@ -75,7 +71,7 @@ export class JieDaoShaRenSkill extends ActiveSkill {
           TranslationPack.patchPlayerInTranslation(room.getPlayerById(target)),
           TranslationPack.patchCardInTranslation(cardId),
         ).extract(),
-        triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
+        triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
       },
       attacker,
     );
@@ -90,7 +86,7 @@ export class JieDaoShaRenSkill extends ActiveSkill {
           fromId: result.responseEvent.fromId,
           cardId: result.responseEvent.cardId,
           toIds: result.responseEvent.toIds,
-          triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
+          triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
         };
 
         await room.useCard(cardUseEvent);
@@ -112,7 +108,7 @@ export class JieDaoShaRenSkill extends ActiveSkill {
         );
       }
     } else {
-      throw new Error(`Unexcepte return type of asForCardUse in ${this.name}`);
+      throw new Error(`Unexcepte return type of asForCardUse in ${this.Name}`);
     }
 
     return true;

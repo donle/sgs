@@ -21,12 +21,8 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CommonSkill, CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'tishen', description: 'tishen_description' })
 export class TiShen extends TriggerSkill {
-  constructor() {
-    super('tishen', 'tishen_description');
-  }
-
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.StageChanged;
   }
@@ -48,19 +44,15 @@ export class TiShen extends TriggerSkill {
         return card.is(CardType.OffenseRide) || card.is(CardType.DefenseRide) || card.is(CardType.Trick);
       });
 
-    await room.dropCards(CardLostReason.ActiveDrop, cards, skillUseEvent.fromId, skillUseEvent.fromId, this.name);
-    room.getPlayerById(skillUseEvent.fromId).addInvisibleMark(this.name, 1);
+    await room.dropCards(CardLostReason.ActiveDrop, cards, skillUseEvent.fromId, skillUseEvent.fromId, this.Name);
+    room.getPlayerById(skillUseEvent.fromId).addInvisibleMark(this.Name, 1);
     return true;
   }
 }
 
-@CompulsorySkill
 @ShadowSkill({ remainStatus: true })
+@CompulsorySkill({ name: TiShen.GeneralName, description: TiShen.Description })
 export class TiShenShadow extends TriggerSkill {
-  constructor() {
-    super('tishen', 'tishen_description');
-  }
-
   isTriggerable(
     event: ServerEventFinder<
       | GameEventIdentifiers.AimEvent
@@ -124,10 +116,10 @@ export class TiShenShadow extends TriggerSkill {
 
     const identifier = EventPacker.getIdentifier(event);
     if (identifier === GameEventIdentifiers.AimEvent) {
-      player.setFlag(this.name, true);
+      player.setFlag(this.Name, true);
     } else if (identifier === GameEventIdentifiers.CardUseEvent) {
-      if (player.getFlag<boolean>(this.name)) {
-        player.removeFlag(this.name);
+      if (player.getFlag<boolean>(this.Name)) {
+        player.removeFlag(this.Name);
         const { cardId } = event as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
         await room.obtainCards(
           {
@@ -139,7 +131,7 @@ export class TiShenShadow extends TriggerSkill {
         );
       }
     } else if (identifier === GameEventIdentifiers.DamageEvent) {
-      player.removeFlag(this.name);
+      player.removeFlag(this.Name);
     } else if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
       player.removeInvisibleMark(this.GeneralName);
     }

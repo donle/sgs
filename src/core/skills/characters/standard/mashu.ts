@@ -1,7 +1,5 @@
 import { OffenseHorseSkill } from 'core/skills/cards/standard/offense_horse';
+import { CompulsorySkill } from 'core/skills/skill';
 
-export class MaShu extends OffenseHorseSkill {
-  constructor() {
-    super('mashu', 'mashu_description');
-  }
-}
+@CompulsorySkill({ name: 'mashu', description: 'mashu_description' })
+export class MaShu extends OffenseHorseSkill {}

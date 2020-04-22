@@ -21,17 +21,28 @@ export const enum SkillType {
   Limit,
 }
 
-type SKillConstructor<T extends Skill> = new (name: string, description: string) => T;
+type SKillConstructor<T extends Skill> = new () => T;
 function onCalculatingSkillUsageWrapper(
   skillType: SkillType,
-  constructor: new (name?: string, description?: string) => any,
+  name: string,
+  description: string,
+  constructor: new () => any,
 ): any {
-  return class extends constructor {
+  return class WrappedSkillConstructor extends constructor {
     protected skillType = skillType;
     private canUseEntity: (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) => boolean;
+    private description = description;
+    private skillName = name;
 
-    constructor(name?: string, description?: string) {
-      super(name, description);
+    public static get Description() {
+      return description;
+    }
+    public static get GeneralName() {
+      return name.replace(/#+/, '');
+    }
+
+    constructor() {
+      super();
 
       if (this.skillType === SkillType.Awaken || this.skillType === SkillType.Limit) {
         this.isRefreshAt = () => false;
@@ -61,20 +72,18 @@ function skillPropertyWrapper(
     uniqueSkill?: boolean;
     selfTargetSkill?: boolean;
   },
-  constructor: new (name?: string, description?: string) => any,
+  constructor: new () => any,
 ): any {
-  return class extends constructor {
+  return class WrappedSkillConstructor extends constructor {
     private lordSkill: boolean;
     private shadowSkill: boolean;
     private uniqueSkill: boolean;
     private selfTargetSkill: boolean;
     private statusSkill: boolean;
-    private name: string;
-
     public canUse: (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) => boolean;
 
-    constructor(name?: string, description?: string) {
-      super(name, description);
+    constructor() {
+      super();
 
       if (options.lordSkill !== undefined) {
         this.lordSkill = options.lordSkill;
@@ -85,7 +94,7 @@ function skillPropertyWrapper(
       }
       if (options.shadowSkill !== undefined) {
         this.shadowSkill = options.shadowSkill;
-        this.name = '#' + this.name;
+        this.skillName = '#' + this.skillName;
         if (options.statusSkill) {
           this.statusSkill = true;
         }
@@ -100,18 +109,31 @@ function skillPropertyWrapper(
   } as any;
 }
 
-export function CommonSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
-  return onCalculatingSkillUsageWrapper(SkillType.Common, constructorFunction as any);
-}
-export function AwakeningSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
-  return onCalculatingSkillUsageWrapper(SkillType.Awaken, constructorFunction as any);
-}
-export function LimitSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
-  return onCalculatingSkillUsageWrapper(SkillType.Limit, constructorFunction as any);
-}
-export function CompulsorySkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
-  return onCalculatingSkillUsageWrapper(SkillType.Compulsory, constructorFunction as any);
-}
+export const CommonSkill = (skill: { name: string; description: string }) => <T extends Skill>(
+  constructorFunction: SKillConstructor<T>,
+) => {
+  return onCalculatingSkillUsageWrapper(SkillType.Common, skill.name, skill.description, constructorFunction as any);
+};
+export const AwakeningSkill = (skill: { name: string; description: string }) => <T extends Skill>(
+  constructorFunction: SKillConstructor<T>,
+) => {
+  return onCalculatingSkillUsageWrapper(SkillType.Awaken, skill.name, skill.description, constructorFunction as any);
+};
+export const LimitSkill = (skill: { name: string; description: string }) => <T extends Skill>(
+  constructorFunction: SKillConstructor<T>,
+) => {
+  return onCalculatingSkillUsageWrapper(SkillType.Limit, skill.name, skill.description, constructorFunction as any);
+};
+export const CompulsorySkill = (skill: { name: string; description: string }) => <T extends Skill>(
+  constructorFunction: SKillConstructor<T>,
+) => {
+  return onCalculatingSkillUsageWrapper(
+    SkillType.Compulsory,
+    skill.name,
+    skill.description,
+    constructorFunction as any,
+  );
+};
 export function LordSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
   return skillPropertyWrapper(
     {
@@ -157,8 +179,9 @@ export abstract class Skill {
   private lordSkill = false;
   private uniqueSkill = false;
   private selfTargetSkill = false;
+  private description: string;
+  private skillName: string;
 
-  constructor(protected name: string, protected description: string) {}
   public abstract isRefreshAt(stage: PlayerPhase): boolean;
 
   public abstract async onUse(
@@ -211,11 +234,18 @@ export abstract class Skill {
   }
 
   public get Name() {
-    return this.name;
+    return this.skillName;
   }
 
   public get GeneralName() {
-    return this.name.replace(/^#+/, '');
+    return this.skillName.replace(/#+/, '');
+  }
+
+  public static get Description() {
+    return '';
+  }
+  public static get GeneralName() {
+    return '';
   }
 
   public isLordSkill() {

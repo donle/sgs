@@ -8,12 +8,8 @@ import { Functional } from 'core/shares/libs/functional';
 import { CommonSkill, CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill
+@CommonSkill({ name: 'tieji', description: 'tieji_description' })
 export class TieJi extends TriggerSkill {
-  constructor() {
-    super('tieji', 'tieji_description');
-  }
-
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage) {
     return (
       stage === AimStage.AfterAim &&
@@ -33,10 +29,10 @@ export class TieJi extends TriggerSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
     const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
-    room.setFlag(aimEvent.toIds[0], this.name, true, true);
+    room.setFlag(aimEvent.toIds[0], this.Name, true, true);
     const to = room.getPlayerById(aimEvent.toIds[0]);
 
-    const judge = await room.judge(skillUseEvent.fromId, undefined, this.name);
+    const judge = await room.judge(skillUseEvent.fromId, undefined, this.Name);
     const judgeCard = Sanguosha.getCardById(judge.judgeCardId);
 
     const askForCardDrop: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
@@ -44,7 +40,7 @@ export class TieJi extends TriggerSkill {
       toId: aimEvent.toIds[0],
       cardAmount: 1,
       except: to.getPlayerCards().filter(cardId => Sanguosha.getCardById(cardId).Suit !== judgeCard.Suit),
-      triggeredBySkills: [this.name],
+      triggeredBySkills: [this.Name],
       conversation: TranslationPack.translationJsonPatcher(
         "please drop a {0} card, otherwise you can't do response of slash",
         Functional.getCardSuitRawText(judgeCard.Suit),
@@ -65,7 +61,7 @@ export class TieJi extends TriggerSkill {
         droppedCards,
         aimEvent.toIds[0],
         skillUseEvent.fromId,
-        this.name,
+        this.Name,
       );
     }
 
@@ -73,13 +69,9 @@ export class TieJi extends TriggerSkill {
   }
 }
 
-@CompulsorySkill
 @ShadowSkill({ remainStatus: true })
+@CompulsorySkill({ name: TieJi.GeneralName, description: TieJi.Description })
 export class TieJiShadow extends TriggerSkill {
-  constructor() {
-    super('tieji', 'tieji_description');
-  }
-
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: PhaseChangeStage) {
     return stage === PhaseChangeStage.AfterPhaseChanged && event.from === PlayerPhase.FinishStage;
   }

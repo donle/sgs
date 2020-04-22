@@ -5,13 +5,12 @@ import { AimStage, AllStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { CommonSkill, LimitSkill, TriggerSkill } from 'core/skills/skill';
+import { LimitSkill, TriggerSkill } from 'core/skills/skill';
 
-@CommonSkill
-@LimitSkill
+@LimitSkill({ name: 'fenwei', description: 'fenwei_description' })
 export class FenWei extends TriggerSkill {
   constructor() {
-    super('fenwei', 'fenwei_description');
+    super();
   }
 
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage) {
@@ -19,7 +18,7 @@ export class FenWei extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
-    room.setFlag(owner.Id, this.name, event.toIds);
+    room.setFlag(owner.Id, this.Name, event.toIds);
     return event.toIds.includes(owner.Id);
   }
 
@@ -28,7 +27,7 @@ export class FenWei extends TriggerSkill {
   }
 
   public isAvailableTarget(owner: PlayerId, room: Room, targetId: PlayerId): boolean {
-    const cardTargets = room.getPlayerById(owner).getFlag<PlayerId[]>(this.name);
+    const cardTargets = room.getPlayerById(owner).getFlag<PlayerId[]>(this.Name);
     return cardTargets.includes(targetId);
   }
 

@@ -5,12 +5,8 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, ResponsiveSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill
+@CommonSkill({ name: 'wuxiekeji', description: 'wuxiekeji_description' })
 export class WuXieKeJiSkill extends ResponsiveSkill {
-  constructor() {
-    super('wuxiekeji', 'wuxiekeji_description');
-  }
-
   public responsiveFor() {
     return new CardMatcher({
       name: ['wuxiekeji'],

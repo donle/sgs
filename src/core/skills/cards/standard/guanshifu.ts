@@ -8,7 +8,7 @@ import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'guanshifu', description: 'guanshifu_description' })
 export class GuanShiFuSkill extends TriggerSkill {
   public isAutoTrigger() {
     return true;
@@ -19,7 +19,7 @@ export class GuanShiFuSkill extends TriggerSkill {
   }
 
   constructor() {
-    super('guanshifu', 'guanshifu_description');
+    super();
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
@@ -49,7 +49,7 @@ export class GuanShiFuSkill extends TriggerSkill {
     if (responseEvent) {
       EventPacker.addMiddleware(
         {
-          tag: this.name,
+          tag: this.Name,
           data: responseEvent!.droppedCards,
         },
         event,
@@ -57,7 +57,7 @@ export class GuanShiFuSkill extends TriggerSkill {
     } else if (terminated) {
       EventPacker.addMiddleware(
         {
-          tag: this.name,
+          tag: this.Name,
           data: [],
         },
         event,
@@ -67,7 +67,7 @@ export class GuanShiFuSkill extends TriggerSkill {
   }
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const cards = EventPacker.getMiddleware<CardId[]>(this.name, event);
+    const cards = EventPacker.getMiddleware<CardId[]>(this.Name, event);
     if (!cards) {
       return false;
     }

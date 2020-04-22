@@ -7,13 +7,9 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, SelfTargetSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill
+@CommonSkill({ name: 'peach', description: 'peach_skill_description' })
 @SelfTargetSkill
 export class PeachSkill extends ActiveSkill {
-  constructor() {
-    super('peach', 'peach_skill_description');
-  }
-
   canUse(room: Room, owner: Player) {
     return owner.Hp < owner.MaxHp;
   }
@@ -46,7 +42,7 @@ export class PeachSkill extends ActiveSkill {
       recoverBy: event.fromId,
       toId,
       recoveredHp: 1,
-      triggeredBySkills: [this.name],
+      triggeredBySkills: [this.Name],
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} recovers {1} hp',
         room.getPlayerById(toId).Name,

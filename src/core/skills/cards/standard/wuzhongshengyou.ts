@@ -4,13 +4,9 @@ import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, SelfTargetSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'wuzhongshengyou', description: 'wuzhongshengyou_description' })
 @SelfTargetSkill
 export class WuZhongShengYouSkill extends ActiveSkill {
-  constructor() {
-    super('wuzhongshengyou', 'wuzhongshengyou_description');
-  }
-
   public canUse() {
     return true;
   }

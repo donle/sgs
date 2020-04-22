@@ -16,14 +16,10 @@ import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill, CompulsorySkill, FilterSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill
+@CommonSkill({ name: 'yijue', description: 'yijue_description' })
 export class YiJue extends ActiveSkill {
-  constructor() {
-    super('yijue', 'yijue_description');
-  }
-
   public canUse(room: Room, owner: Player) {
-    return !owner.hasUsedSkill(this.name);
+    return !owner.hasUsedSkill(this.Name);
   }
 
   targetFilter(room: Room, targets: PlayerId[]): boolean {
@@ -51,17 +47,17 @@ export class YiJue extends ActiveSkill {
     const from = room.getPlayerById(fromId);
     const to = room.getPlayerById(toIds![0]);
 
-    await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, fromId, this.name);
+    await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, fromId, this.Name);
 
     const askForDisplayCardEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForCardDisplayEvent>({
       cardMatcher: new CardMatcher({}).toSocketPassenger(),
       cardAmount: 1,
       toId: to.Id,
-      triggeredBySkills: [this.name],
+      triggeredBySkills: [this.Name],
       conversation: TranslationPack.translationJsonPatcher(
         '{0} used skill {1} to you, please present a hand card',
         TranslationPack.patchPlayerInTranslation(from),
-        this.name,
+        this.Name,
       ).extract(),
     });
     room.notify(GameEventIdentifiers.AskForCardDisplayEvent, askForDisplayCardEvent, to.Id);
@@ -82,9 +78,9 @@ export class YiJue extends ActiveSkill {
 
     const card = Sanguosha.getCardById(selectedCards[0]);
     if (card.isBlack()) {
-      room.obtainSkill(to.Id, `#${this.name}Blocker`);
-      from.addInvisibleMark(this.name, 1);
-      room.setFlag(to.Id, this.name, true);
+      room.obtainSkill(to.Id, YiJueBlocker.GeneralName);
+      from.addInvisibleMark(this.Name, 1);
+      room.setFlag(to.Id, this.Name, true);
     } else {
       await room.moveCards(
         selectedCards,
@@ -95,7 +91,7 @@ export class YiJue extends ActiveSkill {
         PlayerCardsArea.HandArea,
         CardObtainedReason.ActivePrey,
         from.Id,
-        this.name,
+        this.Name,
       );
 
       const askForChooseEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
@@ -125,13 +121,9 @@ export class YiJue extends ActiveSkill {
   }
 }
 
-@CompulsorySkill
 @ShadowSkill({ remainStatus: true })
+@CompulsorySkill({ name: YiJue.GeneralName, description: YiJue.Description })
 export class YiJueShadow extends TriggerSkill {
-  constructor() {
-    super('yijue', 'yijue_description');
-  }
-
   isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.DamageEvent | GameEventIdentifiers.PhaseChangeEvent>,
     stage?: AllStage,
@@ -173,8 +165,8 @@ export class YiJueShadow extends TriggerSkill {
       room.getPlayerById(fromId).removeInvisibleMark(this.GeneralName);
       for (const player of room.AlivePlayers) {
         room.removeFlag(player.Id, this.GeneralName);
-        if (player.hasSkill(`${this.name}Blocker`)) {
-          room.loseSkill(player.Id, `${this.name}Blocker`);
+        if (player.hasSkill(YiJueBlocker.GeneralName)) {
+          room.loseSkill(player.Id, YiJueBlocker.GeneralName);
         }
       }
     }
@@ -182,11 +174,11 @@ export class YiJueShadow extends TriggerSkill {
   }
 }
 
-@CompulsorySkill
 @ShadowSkill()
+@CompulsorySkill({ name: 'yijueBlocker', description: 'yijueBlocker_description' })
 export class YiJueBlocker extends FilterSkill {
   constructor() {
-    super('yijueBlocker', 'yijueBlocker_description');
+    super();
   }
 
   canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId) {

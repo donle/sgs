@@ -4,11 +4,8 @@ import { Sanguosha } from 'core/game/engine';
 import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { CommonSkill, RulesBreakerSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'zhugeliannu', description: 'zhugeliannu_description' })
 export class ZhuGeLianNuSlashSkill extends RulesBreakerSkill {
-  constructor() {
-    super('zhugeliannu', 'zhugeliannu_description');
-  }
   public breakCardUsableTimes(cardId: CardId | CardMatcher) {
     let match = false;
     if (cardId instanceof CardMatcher) {

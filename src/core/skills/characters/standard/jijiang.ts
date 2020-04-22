@@ -17,13 +17,9 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, LordSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill
+@CommonSkill({ name: 'jijiang', description: 'jijiang_description' })
 @LordSkill
 export class JiJiang extends ActiveSkill {
-  constructor() {
-    super('jijiang', 'jijiang_description');
-  }
-
   public canUse(room: Room, owner: Player) {
     return owner.canUseCard(room, new CardMatcher({ name: ['slash'] }));
   }
@@ -66,11 +62,11 @@ export class JiJiang extends ActiveSkill {
       const jijiangEvent = {
         toId: player.Id,
         cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
-        triggeredBySkills: [this.name],
+        triggeredBySkills: [this.Name],
         conversation: TranslationPack.translationJsonPatcher(
           '{0} used skill {1} to you, please response a {2} card',
           TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
-          this.name,
+          this.Name,
           'slash',
         ).extract(),
       };
@@ -101,8 +97,8 @@ export class JiJiang extends ActiveSkill {
   }
 }
 
-@CommonSkill
 @ShadowSkill()
+@CommonSkill({ name: 'jijiang', description: 'jijiang_description' })
 @LordSkill
 export class JiJiangShadow extends TriggerSkill {
   public isAutoTrigger(
@@ -118,10 +114,6 @@ export class JiJiangShadow extends TriggerSkill {
       identifier === GameEventIdentifiers.AskForCardResponseEvent ||
       identifier === GameEventIdentifiers.AskForCardUseEvent
     );
-  }
-
-  constructor() {
-    super('jijiang', 'jijiang_description');
   }
 
   canUse(
@@ -156,7 +148,7 @@ export class JiJiangShadow extends TriggerSkill {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} used skill {1}',
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
-      this.name,
+      this.Name,
     ).extract();
 
     if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
@@ -171,7 +163,7 @@ export class JiJiangShadow extends TriggerSkill {
           scopedTargets ||
           room.AlivePlayers.filter(player => from.canUseCardTo(room, slashMatcher, player.Id)).map(player => player.Id),
         requiredAmount: 1,
-        conversation: TranslationPack.translationJsonPatcher('do you want to trigger skill {0} ?', this.name).extract(),
+        conversation: TranslationPack.translationJsonPatcher('do you want to trigger skill {0} ?', this.Name).extract(),
       };
 
       room.notify(GameEventIdentifiers.AskForChoosingPlayerEvent, chooseTargetEvent, event.fromId);
@@ -186,7 +178,7 @@ export class JiJiangShadow extends TriggerSkill {
 
       EventPacker.addMiddleware(
         {
-          tag: this.name,
+          tag: this.Name,
           data: response.selectedPlayers[0],
         },
         event,
@@ -205,7 +197,7 @@ export class JiJiangShadow extends TriggerSkill {
       EventPacker.getIdentifier<GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent>(
         slashCardEvent,
       ),
-      `Unwrapped event without identifier in ${this.name}`,
+      `Unwrapped event without identifier in ${this.Name}`,
     );
 
     for (const player of room.getAlivePlayersFrom()) {
@@ -216,11 +208,11 @@ export class JiJiangShadow extends TriggerSkill {
             toId: player.Id,
             fromId: event.fromId,
             cardMatcher: slashCardEvent.cardMatcher,
-            triggeredBySkills: [this.name],
+            triggeredBySkills: [this.Name],
             conversation: TranslationPack.translationJsonPatcher(
               '{0} used skill {1} to you, please response a {2} card',
               TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
-              this.name,
+              this.Name,
               'slash',
             ).extract(),
           },
@@ -238,7 +230,7 @@ export class JiJiangShadow extends TriggerSkill {
               cardName: responseCard.Name,
               cardNumber: responseCard.CardNumber,
               cardSuit: responseCard.Suit,
-              bySkill: this.name,
+              bySkill: this.Name,
             }).Id,
             fromId,
             responseToEvent: triggeredOnEvent,
@@ -251,7 +243,7 @@ export class JiJiangShadow extends TriggerSkill {
 
           if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
             const target = Precondition.exists(
-              EventPacker.getMiddleware<PlayerId>(this.name, event),
+              EventPacker.getMiddleware<PlayerId>(this.Name, event),
               'Unexpected jijiang target',
             );
             await room.useCard({

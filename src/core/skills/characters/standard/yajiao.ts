@@ -13,12 +13,8 @@ import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill
+@CommonSkill({ name: 'yajiao', description: 'yajiao_description' })
 export class YaJiao extends TriggerSkill {
-  constructor() {
-    super('yajiao', 'yajiao_description');
-  }
-
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardLostEvent>, stage?: AllStage) {
     return (
       stage === CardLostStage.AfterCardLostEffect &&
@@ -54,7 +50,7 @@ export class YaJiao extends TriggerSkill {
       requiredAmount: 1,
       conversation: 'please choose a player',
       toId: skillUseEvent.fromId,
-      triggeredBySkills: [this.name],
+      triggeredBySkills: [this.Name],
     };
     room.notify(
       GameEventIdentifiers.AskForChoosingPlayerEvent,
@@ -92,7 +88,7 @@ export class YaJiao extends TriggerSkill {
           responseEvent.droppedCards,
           skillUseEvent.fromId,
           skillUseEvent.fromId,
-          this.name,
+          this.Name,
         );
       }
     }
