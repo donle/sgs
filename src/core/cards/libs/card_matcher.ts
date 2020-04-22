@@ -72,6 +72,28 @@ export class CardMatcher {
     return matched;
   }
 
+  public with(matcher: CardMatcher) {
+    const { suit = [], cardNumber = [], name = [], type = [], cards = [] } = matcher.Matcher;
+    const {} = this.matcher;
+    this.matcher.suit = this.matcher.suit ? [...this.matcher.suit, ...suit] : suit;
+    this.matcher.cardNumber = this.matcher.cardNumber ? [...this.matcher.cardNumber, ...cardNumber] : cardNumber;
+    this.matcher.name = this.matcher.name ? [...this.matcher.name, ...name] : name;
+    this.matcher.type = this.matcher.type ? [...this.matcher.type, ...type] : type;
+    this.matcher.cards = this.matcher.cards ? [...this.matcher.cards, ...cards] : cards;
+  }
+
+  public without(matcher: CardMatcher) {
+    const { suit = [], cardNumber = [], name = [], type = [], cards = [] } = matcher.Matcher;
+    const {} = this.matcher;
+    this.matcher.suit = !this.matcher.suit ? [] : this.matcher.suit.filter(s => !suit.includes(s));
+    this.matcher.cardNumber = !this.matcher.cardNumber
+      ? []
+      : this.matcher.cardNumber.filter(s => !cardNumber.includes(s));
+    this.matcher.name = !this.matcher.name ? [] : this.matcher.name.filter(s => !name.includes(s));
+    this.matcher.type = !this.matcher.type ? [] : this.matcher.type.filter(s => !type.includes(s));
+    this.matcher.cards = !this.matcher.cards ? [] : this.matcher.cards.filter(s => !cards.includes(s));
+  }
+
   public match(card: Card | CardMatcher) {
     return CardMatcher.match(
       {
