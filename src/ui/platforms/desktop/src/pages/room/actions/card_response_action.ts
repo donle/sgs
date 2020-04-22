@@ -4,7 +4,7 @@ import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
-import { Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
+import { FilterSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { RoomPresenter, RoomStore } from '../room.presenter';
@@ -44,6 +44,13 @@ export class CardResponseAction extends BaseAction {
   }
 
   isCardEnabledOnResponse(card: Card, fromArea: PlayerCardsArea, matcher: CardMatcher) {
+    const player = this.store.room.getPlayerById(this.playerId);
+    for (const skill of player.getSkills<FilterSkill>('filter')) {
+      if (!skill.canUseCard(card.Id, this.store.room, this.playerId)) {
+        return false;
+      }
+    }
+
     if (EventPacker.isDisresponsiveEvent(this.askForEvent)) {
       return false;
     }
@@ -60,7 +67,6 @@ export class CardResponseAction extends BaseAction {
     if (this.selectedSkillToPlay !== undefined) {
       const skill = this.selectedSkillToPlay;
       if (skill instanceof ViewAsSkill) {
-        const player = this.store.room.getPlayerById(this.playerId);
         return (
           skill.isAvailableCard(
             this.store.room,

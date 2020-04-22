@@ -66,5 +66,7 @@ export { PaoXiao } from './characters/standard/paoxiao';
 export { TiShen, TiShenShadow } from './characters/standard/tishen';
 export { KuRou } from './characters/standard/kurou';
 export { ZhaXiang, ZhaXiangShadow, ZhaXiangDistance } from './characters/standard/zhaxiang';
+export { WuSheng, WuShengShadow } from './characters/standard/wusheng';
+export { YiJue, YiJueShadow, YiJueBlocker } from './characters/standard/yijue';
 
 export { Cheat } from './system/cheat';

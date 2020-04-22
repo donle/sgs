@@ -152,7 +152,7 @@ export abstract class Player implements PlayerInfo {
     this.removeMark('!' + name);
   }
 
-  public canUseCard(room: Room, cardId: CardId | CardMatcher): boolean {
+  public canUseCard(room: Room, cardId: CardId | CardMatcher, onResponse?: CardMatcher): boolean {
     const card = cardId instanceof CardMatcher ? undefined : Sanguosha.getCardById(cardId);
     const ruleCardUse = GameCommonRules.canUse(
       room,
@@ -161,14 +161,21 @@ export abstract class Player implements PlayerInfo {
     );
 
     if (card) {
-      return ruleCardUse && (card.is(CardType.Equip) ? true : card.Skill.canUse(room, this));
+      return (
+        ruleCardUse &&
+        (card.is(CardType.Equip) ? true : onResponse ? onResponse.match(card) : card.Skill.canUse(room, this))
+      );
     }
 
     return ruleCardUse;
   }
 
-  public resetCardUseHistory() {
-    this.cardUseHistory = [];
+  public resetCardUseHistory(cardName?: string) {
+    if (cardName !== undefined) {
+      this.cardUseHistory = this.cardUseHistory.filter(card => Sanguosha.getCardById(card).GeneralName !== cardName);
+    } else {
+      this.cardUseHistory = [];
+    }
   }
 
   public resetSkillUseHistory(skillName: string) {
@@ -281,9 +288,13 @@ export abstract class Player implements PlayerInfo {
   public canUseCardTo(room: Room, cardId: CardId | CardMatcher, target: PlayerId): boolean {
     const player = room.getPlayerById(target);
 
-    const skills = player.getSkills<FilterSkill>('filter');
-    for (const skill of skills) {
+    for (const skill of player.getSkills<FilterSkill>('filter')) {
       if (!skill.canBeUsedCard(cardId, room, target, this.Id)) {
+        return false;
+      }
+    }
+    for (const skill of this.getSkills<FilterSkill>('filter')) {
+      if (!skill.canUseCard(cardId, room, this.Id, target)) {
         return false;
       }
     }

@@ -3,7 +3,7 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { RulesBreakerSkill } from 'core/skills/skill';
+import { FilterSkill, RulesBreakerSkill } from 'core/skills/skill';
 import { GameCommonRuleObject, INFINITE_TRIGGERING_TIMES } from './game_props';
 
 export class GameCommonRules {
@@ -19,14 +19,6 @@ export class GameCommonRules {
     {
       cardMatcher: new CardMatcher({ name: ['alcohol'] }),
       times: 1,
-    },
-    {
-      cardMatcher: new CardMatcher({ name: ['jink'] }),
-      times: 0,
-    },
-    {
-      cardMatcher: new CardMatcher({ name: ['wuxiekeji'] }),
-      times: 0,
     },
   ];
 
@@ -94,6 +86,13 @@ export class GameCommonRules {
 
   public static canUse(room: Room, user: Player, card: Card | CardMatcher) {
     GameCommonRules.preCheck(user);
+
+    const filterSkills = user.getSkills<FilterSkill>('filter');
+    for (const skill of filterSkills) {
+      if (!skill.canUseCard(card instanceof Card ? card.Id : card, room, user.Id)) {
+        return false;
+      }
+    }
 
     let availableUseTimes = INFINITE_TRIGGERING_TIMES;
 

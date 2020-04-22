@@ -577,10 +577,14 @@ export class GameClientProcessor {
       this.store.room.turnTo(content.toPlayer);
 
       if (content.fromPlayer) {
-        this.store.room.getPlayerById(content.fromPlayer).resetCardUseHistory();
-
         for (const player of this.store.room.AlivePlayers) {
           for (const skill of player.getSkills()) {
+            if (this.store.room.CurrentPlayerPhase === PlayerPhase.PrepareStage) {
+              player.resetCardUseHistory();
+            } else {
+              player.resetCardUseHistory('slash');
+            }
+
             if (skill.isRefreshAt(content.to)) {
               player.resetSkillUseHistory(skill.Name);
             }

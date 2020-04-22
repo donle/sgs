@@ -91,6 +91,10 @@ export class ResponsiveUseCardAction extends BaseAction {
     }
 
     if (this.selectedCardToPlay === undefined) {
+      if (!this.store.room.getPlayerById(this.playerId).canUseCard(this.store.room, card.Id, matcher)) {
+        return false;
+      }
+
       if (fromArea === PlayerCardsArea.HandArea) {
         return matcher.match(card);
       } else if (fromArea === PlayerCardsArea.EquipArea) {

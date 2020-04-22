@@ -42,7 +42,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected abstract init(...args: any[]): void;
   //Server only
   public abstract notify<I extends GameEventIdentifiers>(type: I, content: EventPicker<I, T>, player: PlayerId): void;
-  public abstract broadcast(type: GameEventIdentifiers, content: EventPicker<typeof type, WorkPlace>): void;
+  public abstract broadcast<I extends GameEventIdentifiers>(type: I, content: EventPicker<I, T>): void;
 
   //Server only
   public abstract getCards(numberOfCards: number, from: 'top' | 'bottom'): CardId[];
@@ -204,7 +204,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public async useCard(content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): Promise<void> {
     if (content.fromId) {
       const from = this.getPlayerById(content.fromId);
-      from.useCard(content.cardId);
+      if (this.CurrentPlayer.Id === content.fromId) {
+        from.useCard(content.cardId);
+      }
     }
   }
 

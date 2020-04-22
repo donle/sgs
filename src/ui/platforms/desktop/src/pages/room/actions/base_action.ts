@@ -189,7 +189,10 @@ export abstract class BaseAction {
 
     if (this.selectedCardToPlay === undefined) {
       if (fromArea === PlayerCardsArea.HandArea) {
-        if (!ignoreCanUseCondition && !player.canUseCard(this.store.room, card.Id)) {
+        if (
+          card.Skill instanceof ResponsiveSkill ||
+          (!ignoreCanUseCondition && !player.canUseCard(this.store.room, card.Id))
+        ) {
           return false;
         }
       } else if (fromArea === PlayerCardsArea.EquipArea) {

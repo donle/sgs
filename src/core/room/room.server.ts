@@ -793,23 +793,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async damage(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>): Promise<void> {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.DamageEvent, event);
-
-    event.translationsMessage =
-      event.fromId === undefined
-        ? TranslationPack.translationJsonPatcher(
-            '{0} got hurt for {1} hp with {2} property',
-            TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.toId)),
-            event.damage,
-            event.damageType,
-          ).extract()
-        : TranslationPack.translationJsonPatcher(
-            '{0} hits {1} {2} hp of damage type {3}',
-            TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.fromId)),
-            TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.toId)),
-            event.damage,
-            event.damageType,
-          ).extract();
-
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.DamageEvent, event);
   }
 

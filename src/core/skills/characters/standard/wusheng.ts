@@ -3,9 +3,10 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { Slash } from 'core/cards/standard/slash';
 import { Sanguosha } from 'core/game/engine';
+import { INFINITE_DISTANCE } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { CommonSkill, ViewAsSkill } from 'core/skills/skill';
+import { CommonSkill, CompulsorySkill, RulesBreakerSkill, ShadowSkill, ViewAsSkill } from 'core/skills/skill';
 
 @CommonSkill
 export class WuSheng extends ViewAsSkill {
@@ -22,7 +23,7 @@ export class WuSheng extends ViewAsSkill {
   }
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
-    return cards.length == 1;
+    return cards.length === 1;
   }
 
   public isAvailableCard(
@@ -46,9 +47,23 @@ export class WuSheng extends ViewAsSkill {
         bySkill: this.name,
       },
       selectedCards,
-      this,
     );
   }
 }
 
-//! Shadow skill will be created as long as distance skill are perfectly supported.
+@CompulsorySkill
+@ShadowSkill({ remainStatus: true })
+export class WuShengShadow extends RulesBreakerSkill {
+  constructor() {
+    super('wusheng', 'wusheng_description');
+  }
+
+  breakCardUsableDistance(cardId: CardId | CardMatcher, room: Room, owner: Player) {
+    if (cardId instanceof CardMatcher) {
+      return cardId.match(new CardMatcher({ name: ['slash'], suit: [CardSuit.Diamond] })) ? INFINITE_DISTANCE : 0;
+    } else {
+      const card = Sanguosha.getCardById(cardId);
+      return card.GeneralName === 'slash' && card.Suit === CardSuit.Diamond ? INFINITE_DISTANCE : 0;
+    }
+  }
+}

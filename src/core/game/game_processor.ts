@@ -315,9 +315,14 @@ export class GameProcessor {
         });
         await this.onHandlePhaseChangeEvent(GameEventIdentifiers.PhaseChangeEvent, phaseChangeEvent, async stage => {
           if (stage === PhaseChangeStage.BeforePhaseChange) {
-            this.CurrentPlayer.resetCardUseHistory();
             for (const player of this.room.AlivePlayers) {
               for (const skill of player.getSkills()) {
+                if (this.currentPlayerPhase === PlayerPhase.PrepareStage) {
+                  player.resetCardUseHistory();
+                } else {
+                  player.resetCardUseHistory('slash');
+                }
+
                 if (skill.isRefreshAt(nextPhase)) {
                   player.resetSkillUseHistory(skill.Name);
                 }
@@ -641,9 +646,25 @@ export class GameProcessor {
   ) {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async (stage: GameEventStage) => {
       if (stage === DamageEffectStage.DamagedEffect) {
-        const { toId, damage, fromId } = event;
-        event.toId = this.deadPlayerFilters(toId)[0];
+        const { toId, damage, fromId, damageType } = event;
         event.fromId = fromId && this.deadPlayerFilters(fromId)[0];
+
+        event.translationsMessage =
+          event.fromId === undefined
+            ? TranslationPack.translationJsonPatcher(
+                '{0} got hurt for {1} hp with {2} property',
+                TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(toId)),
+                damage,
+                damageType,
+              ).extract()
+            : TranslationPack.translationJsonPatcher(
+                '{0} hits {1} {2} hp of damage type {3}',
+                TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
+                TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(toId)),
+                damage,
+                damageType,
+              ).extract();
+
         const to = this.room.getPlayerById(toId);
         to.onDamage(damage);
         this.room.broadcast(identifier, event);
