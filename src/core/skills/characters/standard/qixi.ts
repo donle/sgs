@@ -7,12 +7,8 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CommonSkill, ViewAsSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'qixi', description: 'qixi_description' })
 export class QiXi extends ViewAsSkill {
-  constructor() {
-    super('qixi', 'qixi_description');
-  }
-
   public canViewAs(): string[] {
     return ['guohechaiqiao'];
   }
@@ -37,7 +33,7 @@ export class QiXi extends ViewAsSkill {
     return VirtualCard.create<Slash>(
       {
         cardName: 'guohechaiqiao',
-        bySkill: this.name,
+        bySkill: this.Name,
       },
       selectedCards,
     );

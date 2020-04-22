@@ -9,12 +9,8 @@ import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, ViewAsSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'longdan', description: 'longdan_description' })
 export class LongDan extends ViewAsSkill {
-  constructor() {
-    super('longdan', 'longdan_description');
-  }
-
   public canViewAs(): string[] {
     return ['jink', 'slash'];
   }
@@ -56,7 +52,7 @@ export class LongDan extends ViewAsSkill {
       return VirtualCard.create<Jink>(
         {
           cardName: 'jink',
-          bySkill: this.name,
+          bySkill: this.Name,
         },
         selectedCards,
       );
@@ -64,7 +60,7 @@ export class LongDan extends ViewAsSkill {
       return VirtualCard.create<Slash>(
         {
           cardName: 'slash',
-          bySkill: this.name,
+          bySkill: this.Name,
         },
         selectedCards,
       );

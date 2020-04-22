@@ -7,14 +7,10 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'guose', description: 'guose_description' })
 export class GuoSe extends ActiveSkill {
-  constructor() {
-    super('guose', 'guose_description');
-  }
-
   public canUse(room: Room, owner: Player) {
-    return !owner.hasUsedSkill(this.name);
+    return !owner.hasUsedSkill(this.Name);
   }
 
   public cardFilter(room: Room, cards: CardId[]): boolean {
@@ -57,8 +53,8 @@ export class GuoSe extends ActiveSkill {
       .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'lebusishu');
 
     if (hasLeBuSiShu) {
-      await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, fromId, this.name);
-      await room.dropCards(CardLostReason.PassiveDrop, [hasLeBuSiShu], toIds![0], fromId, this.name);
+      await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, fromId, this.Name);
+      await room.dropCards(CardLostReason.PassiveDrop, [hasLeBuSiShu], toIds![0], fromId, this.Name);
     } else {
       const realCard = Sanguosha.getCardById(cardIds![0]);
       const lebusishuCard = VirtualCard.create(
@@ -66,7 +62,7 @@ export class GuoSe extends ActiveSkill {
           cardName: 'lebusishu',
           cardNumber: realCard.CardNumber,
           cardSuit: realCard.Suit,
-          bySkill: this.name,
+          bySkill: this.Name,
         },
         cardIds!,
       );
@@ -74,7 +70,7 @@ export class GuoSe extends ActiveSkill {
         fromId,
         toIds,
         cardId: lebusishuCard.Id,
-        triggeredBySkills: [this.name],
+        triggeredBySkills: [this.Name],
       });
     }
     return true;

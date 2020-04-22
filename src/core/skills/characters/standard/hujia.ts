@@ -8,7 +8,7 @@ import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, LordSkill, TriggerSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'hujia', description: 'hujia_description' })
 @LordSkill
 export class Hujia extends TriggerSkill {
   public isTriggerable(
@@ -19,10 +19,6 @@ export class Hujia extends TriggerSkill {
       identifier === GameEventIdentifiers.AskForCardResponseEvent ||
       identifier === GameEventIdentifiers.AskForCardUseEvent
     );
-  }
-
-  constructor() {
-    super('hujia', 'hujia_description');
   }
 
   canUse(
@@ -55,7 +51,7 @@ export class Hujia extends TriggerSkill {
       EventPacker.getIdentifier<GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent>(
         jinkCardEvent,
       ),
-      `Unwrapped event without identifier in ${this.name}`,
+      `Unwrapped event without identifier in ${this.Name}`,
     );
 
     for (const player of room.getAlivePlayersFrom()) {
@@ -72,7 +68,7 @@ export class Hujia extends TriggerSkill {
               cardName: responseCard.Name,
               cardNumber: responseCard.CardNumber,
               cardSuit: responseCard.Suit,
-              bySkill: this.name,
+              bySkill: this.Name,
             }).Id,
             fromId,
             responseToEvent: jinkCardEvent.triggeredOnEvent,

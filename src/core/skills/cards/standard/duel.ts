@@ -8,11 +8,8 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill
+@CommonSkill({ name: 'duel', description: 'duel_description' })
 export class DuelSkill extends ActiveSkill {
-  constructor() {
-    super('duel', 'duel_description');
-  }
   public canUse() {
     return true;
   }
@@ -84,7 +81,7 @@ export class DuelSkill extends ActiveSkill {
           damage: 1,
           damageType: DamageType.Normal,
           toId: targets[turn],
-          triggeredBySkills: [this.name],
+          triggeredBySkills: [this.Name],
         });
         break;
       }

@@ -12,12 +12,8 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'yiji', description: 'yiji_description' })
 export class YiJi extends TriggerSkill {
-  constructor() {
-    super('yiji', 'yiji_description');
-  }
-
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
     return stage === DamageEffectStage.AfterDamagedEffect;
   }
@@ -33,18 +29,14 @@ export class YiJi extends TriggerSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
     const damagedEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-    await room.drawCards(2, damagedEvent.toId, 'top', damagedEvent.toId, this.name);
+    await room.drawCards(2, damagedEvent.toId, 'top', damagedEvent.toId, this.Name);
     return true;
   }
 }
 
-@CommonSkill
 @ShadowSkill()
+@CommonSkill({ name: YiJi.GeneralName, description: YiJi.Description })
 export class YiJiShadow extends TriggerSkill {
-  constructor() {
-    super('yiji', 'yiji_description');
-  }
-
   isAutoTrigger() {
     return false;
   }

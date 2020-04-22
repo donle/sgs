@@ -6,11 +6,8 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill
+@CommonSkill({ name: 'guohechaiqiao', description: 'guohechaiqiao_description' })
 export class GuoHeChaiQiaoSkill extends ActiveSkill {
-  constructor() {
-    super('guohechaiqiao', 'guohechaiqiao_description');
-  }
   public canUse() {
     return true;
   }
@@ -78,7 +75,7 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill {
         [response.selectedCard],
         chooseCardEvent.toId,
         chooseCardEvent.fromId,
-        this.name,
+        this.Name,
       );
     } else {
       await room.loseCards(

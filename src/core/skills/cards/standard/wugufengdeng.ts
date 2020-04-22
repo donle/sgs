@@ -1,10 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import {
-  CardObtainedReason,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { CardObtainedReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
@@ -16,12 +11,8 @@ type SelectedCard = {
   player?: PlayerId;
 };
 
-@CommonSkill
+@CommonSkill({ name: 'wugufengdeng', description: 'wugufengdeng_description' })
 export class WuGuFengDengSkill extends ActiveSkill {
-  constructor() {
-    super('wugufengdeng', 'wugufengdeng_description');
-  }
-
   public canUse() {
     return true;
   }

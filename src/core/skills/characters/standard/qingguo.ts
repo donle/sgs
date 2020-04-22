@@ -8,12 +8,8 @@ import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, ViewAsSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'qingguo', description: 'qingguo_description' })
 export class QingGuo extends ViewAsSkill {
-  constructor() {
-    super('qingguo', 'qingguo_description');
-  }
-
   public canViewAs(): string[] {
     return ['jink'];
   }
@@ -32,7 +28,7 @@ export class QingGuo extends ViewAsSkill {
     return VirtualCard.create<Jink>(
       {
         cardName: 'jink',
-        bySkill: this.name,
+        bySkill: this.Name,
       },
       selectedCards,
     );

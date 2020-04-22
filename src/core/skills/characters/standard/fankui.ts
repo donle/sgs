@@ -12,12 +12,8 @@ import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'fankui', description: 'fankui_description' })
 export class FanKui extends TriggerSkill {
-  constructor() {
-    super('fankui', 'fankui_description');
-  }
-
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
     return stage === DamageEffectStage.AfterDamagedEffect;
   }

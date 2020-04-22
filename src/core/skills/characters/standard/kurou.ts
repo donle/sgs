@@ -5,16 +5,12 @@ import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'kurou', description: 'kurou_description' })
 export class KuRou extends ActiveSkill {
-  constructor() {
-    super('kurou', 'kurou_description');
-  }
-
   public canUse(room: Room, owner: Player): boolean {
     const handCards = owner.getCardIds(PlayerCardsArea.HandArea);
     const equipmentCards = owner.getCardIds(PlayerCardsArea.EquipArea);
-    return !owner.hasUsedSkill(this.name) && handCards.length + equipmentCards.length > 0;
+    return !owner.hasUsedSkill(this.Name) && handCards.length + equipmentCards.length > 0;
   }
 
   public targetFilter(): boolean {
@@ -46,7 +42,7 @@ export class KuRou extends ActiveSkill {
       skillUseEvent.cardIds!,
       skillUseEvent.fromId,
       skillUseEvent.fromId,
-      this.name,
+      this.Name,
     );
 
     await room.loseHp(skillUseEvent.fromId, 1);

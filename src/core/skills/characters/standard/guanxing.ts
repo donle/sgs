@@ -5,12 +5,8 @@ import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill
+@CommonSkill({ name: 'guanxing', description: 'guanxing_description' })
 export class GuanXing extends TriggerSkill {
-  constructor() {
-    super('guanxing', 'guanxing_description');
-  }
-
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.StageChanged;
   }
@@ -24,10 +20,10 @@ export class GuanXing extends TriggerSkill {
     }
 
     if (content.toStage === PlayerPhaseStages.FinishStage) {
-      if (owner.getInvisibleMark(this.name) === 0) {
+      if (owner.getInvisibleMark(this.Name) === 0) {
         return false;
       } else {
-        owner.removeInvisibleMark(this.name);
+        owner.removeInvisibleMark(this.Name);
         return true;
       }
     }
@@ -70,7 +66,7 @@ export class GuanXing extends TriggerSkill {
     room.putCards('bottom', ...bottom);
 
     if (top.length === 0 && room.CurrentPlayerPhase === PlayerPhase.PrepareStage) {
-      room.getPlayerById(skillUseEvent.fromId).addInvisibleMark(this.name, 1);
+      room.getPlayerById(skillUseEvent.fromId).addInvisibleMark(this.Name, 1);
     }
 
     return true;

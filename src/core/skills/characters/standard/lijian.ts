@@ -8,14 +8,10 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'lijian', description: 'lijian_description' })
 export class LiJian extends ActiveSkill {
-  constructor() {
-    super('lijian', 'lijian_description');
-  }
-
   public canUse(room: Room, owner: Player) {
-    return !owner.hasUsedSkill(this.name);
+    return !owner.hasUsedSkill(this.Name);
   }
 
   targetFilter(room: Room, targets: PlayerId[]): boolean {
@@ -64,11 +60,11 @@ export class LiJian extends ActiveSkill {
       skillUseEvent.cardIds!,
       skillUseEvent.fromId,
       skillUseEvent.fromId,
-      this.name,
+      this.Name,
     );
     const duel = VirtualCard.create({
       cardName: 'duel',
-      bySkill: this.name,
+      bySkill: this.Name,
     });
 
     await room.useCard({

@@ -6,14 +6,10 @@ import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'zhiheng', description: 'zhiheng_description' })
 export class ZhiHeng extends ActiveSkill {
-  constructor() {
-    super('zhiheng', 'zhiheng_description');
-  }
-
   public canUse(room: Room, owner: Player) {
-    return !owner.hasUsedSkill(this.name);
+    return !owner.hasUsedSkill(this.Name);
   }
 
   targetFilter(room: Room, targets: PlayerId[]): boolean {
@@ -54,7 +50,7 @@ export class ZhiHeng extends ActiveSkill {
       skillUseEvent.cardIds,
       skillUseEvent.fromId,
       skillUseEvent.fromId,
-      this.name,
+      this.Name,
     );
 
     await room.drawCards(skillUseEvent.cardIds.length + additionalCardDraw);

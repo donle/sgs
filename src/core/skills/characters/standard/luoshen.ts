@@ -14,12 +14,8 @@ import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'luoshen', description: 'luoshen_description' })
 export class LuoShen extends TriggerSkill {
-  constructor() {
-    super('luoshen', 'luoshen_description');
-  }
-
   isAutoTrigger(
     event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent | GameEventIdentifiers.JudgeEvent>,
   ) {
@@ -66,12 +62,12 @@ export class LuoShen extends TriggerSkill {
     const identifier = triggeredOnEvent && EventPacker.getIdentifier(triggeredOnEvent);
     if (identifier === GameEventIdentifiers.PhaseStageChangeEvent) {
       do {
-        const judge = await room.judge(skillUseEvent.fromId, undefined, this.name);
+        const judge = await room.judge(skillUseEvent.fromId, undefined, this.Name);
         if (Sanguosha.getCardById(judge.judgeCardId).isBlack()) {
           room.notify(
             GameEventIdentifiers.AskForSkillUseEvent,
             {
-              invokeSkillNames: [this.name],
+              invokeSkillNames: [this.Name],
               toId: skillUseEvent.fromId,
             },
             skillUseEvent.fromId,
@@ -90,9 +86,9 @@ export class LuoShen extends TriggerSkill {
     } else if (identifier === GameEventIdentifiers.JudgeEvent) {
       const judgeEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.JudgeEvent>;
       const player = room.getPlayerById(skillUseEvent.fromId);
-      const luoshenCards = player.getFlag<CardId[]>(this.name) || [];
+      const luoshenCards = player.getFlag<CardId[]>(this.Name) || [];
       luoshenCards.push(judgeEvent.judgeCardId);
-      player.setFlag<CardId[]>(this.name, luoshenCards);
+      player.setFlag<CardId[]>(this.Name, luoshenCards);
 
       if (Sanguosha.getCardById(judgeEvent.judgeCardId).isBlack()) {
         await room.obtainCards(
@@ -110,13 +106,9 @@ export class LuoShen extends TriggerSkill {
   }
 }
 
-@CompulsorySkill
 @ShadowSkill()
+@CompulsorySkill({ name: 'luoshen', description: 'luoshen_description' })
 export class LuoShenShadow extends TriggerSkill {
-  constructor() {
-    super('luoshen', 'luoshen_description');
-  }
-
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent>): boolean {
     return EventPacker.getIdentifier(event) === GameEventIdentifiers.AskForCardDropEvent;
   }

@@ -4,12 +4,8 @@ import { Sanguosha } from 'core/game/engine';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { CompulsorySkill, TransformSkill } from 'core/skills/skill';
 
-@CompulsorySkill
+@CompulsorySkill({ name: 'hongyan', description: 'hongyan_description' })
 export class HongYan extends TransformSkill {
-  constructor() {
-    super('hongyan', 'hongyan_description');
-  }
-
   public get Place(): (PlayerCardsArea.HandArea | PlayerCardsArea.EquipArea)[] {
     return [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea];
   }
@@ -26,7 +22,7 @@ export class HongYan extends TransformSkill {
           cardName: card.Name,
           cardNumber: card.CardNumber,
           cardSuit: CardSuit.Heart,
-          bySkill: this.name,
+          bySkill: this.Name,
         },
         [cardId],
       );

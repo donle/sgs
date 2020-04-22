@@ -3,12 +3,8 @@ import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder
 import { Room } from 'core/room/room';
 import { CommonSkill, ResponsiveSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'jink', description: 'jink_description' })
 export class JinkSkill extends ResponsiveSkill {
-  constructor() {
-    super('jink', 'jink_description');
-  }
-
   public responsiveFor() {
     return new CardMatcher({
       name: ['jink'],

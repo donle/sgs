@@ -5,12 +5,8 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'keji', description: 'keji_description'})
 export class KeJi extends TriggerSkill {
-  constructor() {
-    super('keji', 'keji_description');
-  }
-
   isAutoTrigger(
     content: ServerEventFinder<
       GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent
@@ -47,8 +43,8 @@ export class KeJi extends TriggerSkill {
     const identifier = EventPacker.getIdentifier(content);
     if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
       content = content as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-      const enabled = !owner.getFlag(this.name);
-      owner.removeFlag(this.name);
+      const enabled = !owner.getFlag(this.Name);
+      owner.removeFlag(this.Name);
 
       return enabled && content.to === PlayerPhase.DropCardStage && owner.Id === content.toPlayer;
     } else {
@@ -79,13 +75,13 @@ export class KeJi extends TriggerSkill {
         GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent
       >;
       if (Sanguosha.getCardById(cardId).GeneralName === 'slash') {
-        player.setFlag(this.name, true);
+        player.setFlag(this.Name, true);
       }
     } else if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
-      if (!player.getFlag<boolean>(this.name)) {
+      if (!player.getFlag<boolean>(this.Name)) {
         room.skip(player.Id, PlayerPhase.DropCardStage);
       } else {
-        player.removeFlag(this.name);
+        player.removeFlag(this.Name);
       }
     }
 

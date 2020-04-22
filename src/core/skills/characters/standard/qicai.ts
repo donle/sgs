@@ -5,11 +5,8 @@ import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE } from 'core/game/game_props';
 import { CompulsorySkill, RulesBreakerSkill } from 'core/skills/skill';
 
-@CompulsorySkill
+@CompulsorySkill({ name: 'qicai', description: 'qicai_description' })
 export class QiCai extends RulesBreakerSkill {
-  constructor() {
-    super('qicai', 'qicai_description');
-  }
   public breakCardUsableDistance(cardId: CardId | CardMatcher) {
     let match = false;
     if (cardId instanceof CardMatcher) {

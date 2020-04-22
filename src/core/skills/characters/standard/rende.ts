@@ -1,12 +1,7 @@
 import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import {
-  CardLostReason,
-  CardObtainedReason,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { CardLostReason, CardObtainedReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -14,12 +9,8 @@ import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'rende', description: 'rende_description' })
 export class Rende extends ActiveSkill {
-  constructor() {
-    super('rende', 'rende_description');
-  }
-
   public canUse(room: Room, owner: Player) {
     return true;
   }
@@ -33,7 +24,7 @@ export class Rende extends ActiveSkill {
   }
 
   isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
-    return owner !== target && !room.getPlayerById(target).getFlag<boolean>(this.name);
+    return owner !== target && !room.getPlayerById(target).getFlag<boolean>(this.Name);
   }
 
   isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
@@ -55,12 +46,12 @@ export class Rende extends ActiveSkill {
       CardObtainedReason.PassiveObtained,
     );
 
-    room.setFlag(skillUseEvent.toIds![0], this.name, true);
+    room.setFlag(skillUseEvent.toIds![0], this.Name, true);
 
     const from = room.getPlayerById(skillUseEvent.fromId);
-    from.addInvisibleMark(this.name, skillUseEvent.cardIds!.length);
+    from.addInvisibleMark(this.Name, skillUseEvent.cardIds!.length);
 
-    if (from.getInvisibleMark(this.name) >= 2 && from.getInvisibleMark(this.name + '-used') === 0) {
+    if (from.getInvisibleMark(this.Name) >= 2 && from.getInvisibleMark(this.Name + '-used') === 0) {
       const options: string[] = [];
       //TODO: add wine afterwards
 
@@ -82,7 +73,7 @@ export class Rende extends ActiveSkill {
         askedBy: skillUseEvent.fromId,
         conversation: 'please choose a basic card to use',
         toId: skillUseEvent.fromId,
-        triggeredBySkills: [this.name],
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, chooseEvent, skillUseEvent.fromId);
@@ -123,7 +114,7 @@ export class Rende extends ActiveSkill {
             fromId: from.Id,
             cardId: VirtualCard.create({
               cardName: response.selectedOption,
-              bySkill: this.name,
+              bySkill: this.Name,
             }).Id,
             toIds: choosePlayerResponse.selectedPlayers,
           };
@@ -135,22 +126,22 @@ export class Rende extends ActiveSkill {
           fromId: from.Id,
           cardId: VirtualCard.create({
             cardName: response.selectedOption!,
-            bySkill: this.name,
+            bySkill: this.Name,
           }).Id,
         };
 
         await room.useCard(cardUseEvent);
       }
 
-      from.addInvisibleMark(this.name + '-used', 1);
+      from.addInvisibleMark(this.Name + '-used', 1);
     }
 
     return true;
   }
 }
 
-@CompulsorySkill
 @ShadowSkill()
+@CompulsorySkill({ name: Rende.GeneralName, description: Rende.Description })
 export class RenDeShadow extends TriggerSkill {
   public isAutoTrigger() {
     return true;
@@ -158,10 +149,6 @@ export class RenDeShadow extends TriggerSkill {
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: PhaseChangeStage) {
     return stage === PhaseChangeStage.AfterPhaseChanged && event.from === PlayerPhase.PlayCardStage;
-  }
-
-  constructor() {
-    super('rende', 'rende_description');
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {

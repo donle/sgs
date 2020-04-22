@@ -7,12 +7,8 @@ import { CompulsorySkill, TriggerSkill, UniqueSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @UniqueSkill
-@CompulsorySkill
+@CompulsorySkill({ name: 'qinggang', description: 'qinggang_description' })
 export class QingGangSkill extends TriggerSkill {
-  constructor() {
-    super('qinggang', 'qinggang_description');
-  }
-
   isAutoTrigger() {
     return true;
   }
@@ -33,7 +29,7 @@ export class QingGangSkill extends TriggerSkill {
     content.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} activates skill {1}',
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(content.fromId)),
-      this.name,
+      this.Name,
     ).extract();
 
     return true;
@@ -46,7 +42,7 @@ export class QingGangSkill extends TriggerSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
     const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
-    aimEvent.triggeredBySkills = aimEvent.triggeredBySkills ? [...aimEvent.triggeredBySkills, this.name] : [this.name];
+    aimEvent.triggeredBySkills = aimEvent.triggeredBySkills ? [...aimEvent.triggeredBySkills, this.Name] : [this.Name];
 
     return true;
   }

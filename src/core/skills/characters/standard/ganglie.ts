@@ -8,12 +8,8 @@ import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'ganglie', description: 'ganglie_description' })
 export class GangLie extends TriggerSkill {
-  constructor() {
-    super('ganglie', 'ganglie_description');
-  }
-
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
     return stage === DamageEffectStage.AfterDamagedEffect;
   }
@@ -27,7 +23,7 @@ export class GangLie extends TriggerSkill {
   }
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const judge = await room.judge(skillUseEvent.fromId, undefined, this.name);
+    const judge = await room.judge(skillUseEvent.fromId, undefined, this.Name);
 
     const { triggeredOnEvent } = skillUseEvent;
     const { fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
@@ -72,7 +68,7 @@ export class GangLie extends TriggerSkill {
         [response.selectedCard],
         chooseCardEvent.toId,
         skillUseEvent.fromId,
-        this.name,
+        this.Name,
       );
     } else if (Sanguosha.getCardById(judge.judgeCardId).isRed()) {
       await room.damage({
@@ -80,7 +76,7 @@ export class GangLie extends TriggerSkill {
         damage: 1,
         damageType: DamageType.Normal,
         toId: damageFrom.Id,
-        triggeredBySkills: [this.name],
+        triggeredBySkills: [this.Name],
       });
     }
 

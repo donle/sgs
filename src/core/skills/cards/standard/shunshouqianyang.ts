@@ -12,11 +12,8 @@ import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'shunshouqianyang', description: 'shunshouqianyang_description' })
 export class ShunShouQianYangSkill extends ActiveSkill {
-  constructor() {
-    super('shunshouqianyang', 'shunshouqianyang_description');
-  }
   public canUse() {
     return true;
   }

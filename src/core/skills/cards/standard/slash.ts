@@ -8,13 +8,9 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill
+@CommonSkill({ name: 'slash', description: 'slash_description' })
 export class SlashSkill extends ActiveSkill {
   protected damageType: DamageType = DamageType.Normal;
-
-  constructor() {
-    super('slash', 'slash_description');
-  }
 
   public canUse() {
     return true;
@@ -71,7 +67,7 @@ export class SlashSkill extends ActiveSkill {
           cardMatcher: new CardMatcher({ name: ['jink'] }).toSocketPassenger(),
           byCardId: cardId,
           cardUserId: fromId,
-          triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
+          triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
           conversation:
             fromId !== undefined
               ? TranslationPack.translationJsonPatcher(
@@ -110,7 +106,7 @@ export class SlashSkill extends ActiveSkill {
         damage: 1 + addtionalDrunkDamage,
         damageType: this.damageType,
         cardIds: [cardId],
-        triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
+        triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
       };
 
       await room.damage(damageEvent);

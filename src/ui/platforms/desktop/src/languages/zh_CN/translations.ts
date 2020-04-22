@@ -665,6 +665,9 @@ export const eventDictionary: Word[] = [
   { source: 'please choose', target: '请选择' },
   { source: 'please choose a player', target: '请选择一名角色' },
   { source: '{0} place card {1} from {2} on the top of draw stack', target: '{0} 将 {2} 的 {1} 置于了牌堆顶' },
+  { source: 'recover {0} hp for {1}', target: '是否回复 {1} {0} 点体力' },
+  { source: '{0} used skill {1}, damage increases to {2}', target: '{0} 使用了技能 {1}，伤害增加至 {2} 点' },
+  { source: '{0} used skill {1} to you, please present a hand card', target: '{0} 使用了技能 {1}，请展示一张手牌' },
 
   { source: 'cixiongjian:drop-card', target: '弃置一张手牌' },
   { source: 'cixiongjian:draw-card', target: '令其摸一张牌' },
@@ -676,6 +679,8 @@ export const eventDictionary: Word[] = [
   { source: 'jieyin:move', target: '置于其装备区' },
   { source: 'gongxin:putcard', target: '置于牌堆顶' },
   { source: 'gongxin:dropcard', target: '弃置此牌' },
+  { source: 'yijue:recover', target: '令其回复一点体力' },
+  { source: 'yijue:cancel', target: '取消' },
 
   {
     source: 'player {0} join in the room',

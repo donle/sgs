@@ -5,12 +5,8 @@ import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CompulsorySkill, TriggerSkill } from 'core/skills/skill';
 
-@CompulsorySkill
+@CompulsorySkill({ name: 'xiaoji', description: 'xiaoji_description' })
 export class XiaoJi extends TriggerSkill {
-  constructor() {
-    super('xiaoji', 'xiaoji_description');
-  }
-
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardLostEvent>, stage?: AllStage) {
     return stage === CardLostStage.AfterCardLostEffect;
   }
@@ -22,7 +18,7 @@ export class XiaoJi extends TriggerSkill {
 
     const equipCards = content.cards.filter(card => card.fromArea === PlayerCardsArea.EquipArea);
     if (equipCards.length > 0) {
-      owner.addInvisibleMark(this.name, equipCards.length * 2);
+      owner.addInvisibleMark(this.Name, equipCards.length * 2);
       return true;
     }
 
@@ -37,10 +33,10 @@ export class XiaoJi extends TriggerSkill {
     const { triggeredOnEvent } = skillUseEvent;
     const { fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardLostEvent>;
     const from = room.getPlayerById(fromId);
-    const drawAmount = from.getInvisibleMark(this.name);
-    from.removeInvisibleMark(this.name);
+    const drawAmount = from.getInvisibleMark(this.Name);
+    from.removeInvisibleMark(this.Name);
 
-    await room.drawCards(drawAmount, fromId, 'top', undefined, this.name);
+    await room.drawCards(drawAmount, fromId, 'top', undefined, this.Name);
     return true;
   }
 }

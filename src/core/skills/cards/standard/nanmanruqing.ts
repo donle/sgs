@@ -7,12 +7,8 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill
+@CommonSkill({ name: 'nanmanruqing', description: 'nanmanruqing_description' })
 export class NanManRuQingSkill extends ActiveSkill {
-  constructor() {
-    super('nanmanruqing', 'nanmanruqing_description');
-  }
-
   public canUse() {
     return true;
   }
@@ -55,7 +51,7 @@ export class NanManRuQingSkill extends ActiveSkill {
               'slash',
             ).extract()
           : TranslationPack.translationJsonPatcher('please response a {0} card', 'slash').extract(),
-      triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
+      triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
     };
 
     const result = await room.askForCardResponse(
@@ -77,7 +73,7 @@ export class NanManRuQingSkill extends ActiveSkill {
         damage: 1,
         damageType: DamageType.Normal,
         cardIds: [event.cardId],
-        triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.name] : [this.name],
+        triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
       };
 
       await room.damage(eventContent);

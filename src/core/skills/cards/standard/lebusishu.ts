@@ -9,12 +9,8 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill
+@CommonSkill({ name: 'lebusishu', description: 'lebusishu_description' })
 export class LeBuSiShuSkill extends ActiveSkill {
-  constructor() {
-    super('lebusishu', 'lebusishu_description');
-  }
-
   public canUse(room: Room, owner: Player) {
     return true;
   }
@@ -62,7 +58,7 @@ export class LeBuSiShuSkill extends ActiveSkill {
     const { toIds, cardId } = event;
     const to = Precondition.exists(toIds, 'Unknown targets in lebusishu')[0];
 
-    const judgeEvent = await room.judge(to, cardId, this.name);
+    const judgeEvent = await room.judge(to, cardId, this.Name);
 
     const card = Sanguosha.getCardById(judgeEvent.judgeCardId);
     if (card.Suit !== CardSuit.Heart) {

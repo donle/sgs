@@ -15,14 +15,10 @@ import { Functional } from 'core/shares/libs/functional';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill
+@CommonSkill({ name: 'fanjian', description: 'fanjian_description' })
 export class FanJian extends ActiveSkill {
-  constructor() {
-    super('fanjian', 'fanjian_description');
-  }
-
   public canUse(room: Room, owner: Player) {
-    return !owner.hasUsedSkill(this.name);
+    return !owner.hasUsedSkill(this.Name);
   }
 
   targetFilter(room: Room, targets: PlayerId[]): boolean {
@@ -75,7 +71,7 @@ export class FanJian extends ActiveSkill {
         conversation: TranslationPack.translationJsonPatcher(
           '{0} used skill {1} to you, please choose',
           TranslationPack.patchPlayerInTranslation(from),
-          this.name,
+          this.Name,
         ).extract(),
         askedBy: skillUseEvent.fromId,
       };

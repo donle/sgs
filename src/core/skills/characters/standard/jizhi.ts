@@ -9,12 +9,8 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill
+@CommonSkill({ name: 'jizhi', description: 'jizhi_description' })
 export class JiZhi extends TriggerSkill {
-  constructor() {
-    super('jizhi', 'jizhi_description');
-  }
-
   public isAutoTrigger() {
     return true;
   }
@@ -32,7 +28,7 @@ export class JiZhi extends TriggerSkill {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} activates skill {1}',
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
-      this.name,
+      this.Name,
     ).extract();
 
     return true;
@@ -58,9 +54,9 @@ export class JiZhi extends TriggerSkill {
       );
 
       if (response.selectedOption === 'jizhi:discard') {
-        await room.dropCards(CardLostReason.ActiveDrop, [cardId], event.fromId, event.fromId, this.name);
+        await room.dropCards(CardLostReason.ActiveDrop, [cardId], event.fromId, event.fromId, this.Name);
         room.syncGameCommonRules(event.fromId, user => {
-          user.addInvisibleMark(this.name, 1);
+          user.addInvisibleMark(this.Name, 1);
           GameCommonRules.addAdditionalHoldCardNumber(user, 1);
         });
       }
@@ -70,8 +66,8 @@ export class JiZhi extends TriggerSkill {
   }
 }
 
-@CompulsorySkill
 @ShadowSkill()
+@CompulsorySkill({ name: 'jizhi', description: 'jizhi_description' })
 export class JizhiShadow extends TriggerSkill {
   public isAutoTrigger() {
     return true;
@@ -79,10 +75,6 @@ export class JizhiShadow extends TriggerSkill {
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: PhaseChangeStage) {
     return stage === PhaseChangeStage.AfterPhaseChanged && event.from === PlayerPhase.FinishStage;
-  }
-
-  constructor() {
-    super('jizhi', 'jizhi_description');
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {

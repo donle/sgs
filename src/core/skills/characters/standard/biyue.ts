@@ -5,21 +5,14 @@ import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'biyue', description: 'biyue_description' })
 export class BiYue extends TriggerSkill {
-  constructor() {
-    super('biyue', 'biyue_description');
-  }
-
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.BeforeStageChange;
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    return (
-      owner.Id === content.playerId &&
-      PlayerPhaseStages.FinishStageStart === content.toStage
-    );
+    return owner.Id === content.playerId && PlayerPhaseStages.FinishStageStart === content.toStage;
   }
 
   async onTrigger() {

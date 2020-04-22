@@ -4,12 +4,8 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'tiandu', description: 'tiandu_description' })
 export class TianDu extends TriggerSkill {
-  constructor() {
-    super('tiandu', 'tiandu_description');
-  }
-
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.JudgeEvent>, stage?: AllStage) {
     return stage === JudgeEffectStage.AfterJudgeEffect;
   }
@@ -25,11 +21,14 @@ export class TianDu extends TriggerSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
     const judgeEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.JudgeEvent>;
-    await room.obtainCards({
-      cardIds: [judgeEvent.judgeCardId],
-      toId: skillUseEvent.fromId,
-      reason: CardObtainedReason.ActivePrey,
-    }, true);
+    await room.obtainCards(
+      {
+        cardIds: [judgeEvent.judgeCardId],
+        toId: skillUseEvent.fromId,
+        reason: CardObtainedReason.ActivePrey,
+      },
+      true,
+    );
 
     return true;
   }

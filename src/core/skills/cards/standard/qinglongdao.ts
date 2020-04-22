@@ -7,12 +7,8 @@ import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill
+@CommonSkill({ name: 'qinglongyanyuedao', description: 'qinglongyanyuedao_description' })
 export class QingLongYanYueDaoSkill extends TriggerSkill {
-  constructor() {
-    super('qinglongyanyuedao', 'qinglongyanyuedao_description');
-  }
-
   isAutoTrigger() {
     return false;
   }

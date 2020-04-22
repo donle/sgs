@@ -15,7 +15,7 @@ import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
-@CommonSkill
+@CommonSkill({ name: 'cixiongjian', description: 'cixiongjian_description' })
 export class CiXiongJianSkill extends TriggerSkill {
   public isAutoTrigger() {
     return false;
@@ -28,11 +28,6 @@ export class CiXiongJianSkill extends TriggerSkill {
       Sanguosha.getCardById(event.byCardId).GeneralName === 'slash'
     );
   }
-
-  constructor() {
-    super('cixiongjian', 'cixiongjian_description');
-  }
-
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
     if (!content) {
       return false;

@@ -6,15 +6,11 @@ import { Room } from 'core/room/room';
 import { CompulsorySkill, LordSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CompulsorySkill
+@CompulsorySkill({ name: 'jiuyuan', description: 'jiuyuan_description' })
 @LordSkill
 export class JiuYuan extends TriggerSkill {
   public isAutoTrigger() {
     return true;
-  }
-
-  constructor() {
-    super('jiuyuan', 'jiuyuan_description');
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.RecoverEvent>) {
@@ -37,7 +33,7 @@ export class JiuYuan extends TriggerSkill {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} activates skill {1}',
       room.getPlayerById(event.fromId).Name,
-      this.name,
+      this.Name,
     ).extract();
 
     return true;
