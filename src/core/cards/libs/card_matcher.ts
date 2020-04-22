@@ -80,6 +80,7 @@ export class CardMatcher {
     this.matcher.name = this.matcher.name ? [...this.matcher.name, ...name] : name;
     this.matcher.type = this.matcher.type ? [...this.matcher.type, ...type] : type;
     this.matcher.cards = this.matcher.cards ? [...this.matcher.cards, ...cards] : cards;
+    return this;
   }
 
   public without(matcher: CardMatcher) {
@@ -92,6 +93,8 @@ export class CardMatcher {
     this.matcher.name = !this.matcher.name ? [] : this.matcher.name.filter(s => !name.includes(s));
     this.matcher.type = !this.matcher.type ? [] : this.matcher.type.filter(s => !type.includes(s));
     this.matcher.cards = !this.matcher.cards ? [] : this.matcher.cards.filter(s => !cards.includes(s));
+
+    return this;
   }
 
   public match(card: Card | CardMatcher) {
