@@ -1,8 +1,8 @@
-import { CardSuit, CardId } from 'core/cards/libs/card_props';
+import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE } from 'core/game/game_props';
-import { AllStage, LoseHpStage, PhaseChangeStage, PlayerPhase, AimStage } from 'core/game/stage_processor';
+import { AllStage, LoseHpStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { TriggerSkill, CompulsorySkill, ShadowSkill, RulesBreakerSkill } from 'core/skills/skill';
@@ -38,7 +38,9 @@ export class ZhaXiang extends TriggerSkill {
 
     while (hp--) {
       await room.drawCards(3, skillUseEvent.fromId);
-      room.addMark(skillUseEvent.fromId, '!zhaxiang', 1);
+      const num = room.getFlag<number>(skillUseEvent.fromId, this.GeneralName) || 0;
+
+      room.setFlag<number>(skillUseEvent.fromId, this.GeneralName, num + 1);
     }
 
     return true;
@@ -53,20 +55,19 @@ export class ZhaXiangShadow extends TriggerSkill {
   }
 
   public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.AimEvent>,
+    event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.AskForCardUseEvent>,
     stage: AllStage,
   ): boolean {
     const identifier = EventPacker.getIdentifier(event);
     if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
-      const current_event = event as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-      return current_event.from === PlayerPhase.FinishStage && stage === PhaseChangeStage.AfterPhaseChanged;
+      const currentEvent = event as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
+      return currentEvent.from === PlayerPhase.FinishStage && stage === PhaseChangeStage.AfterPhaseChanged;
     } else {
-      const current_event = event as ServerEventFinder<GameEventIdentifiers.AimEvent>;
+      const currentEvent = event as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
       return (
-        stage === AimStage.AfterAim &&
-        current_event.byCardId !== undefined &&
-        Sanguosha.getCardById(current_event.byCardId).GeneralName === 'slash' &&
-        Sanguosha.getCardById(current_event.byCardId).isRed()
+        currentEvent.byCardId !== undefined &&
+        Sanguosha.getCardById(currentEvent.byCardId).GeneralName === 'slash' &&
+        Sanguosha.getCardById(currentEvent.byCardId).isRed()
       );
     }
   }
@@ -74,16 +75,16 @@ export class ZhaXiangShadow extends TriggerSkill {
   public canUse(
     room: Room,
     owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.AimEvent>,
+    event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.AskForCardUseEvent>,
   ): boolean {
-    if (room.getMark(owner.Id, '!zhaxiang') === 0) {
+    if (room.getFlag<number>(owner.Id, this.GeneralName) === 0) {
       return false;
     }
 
     const identifier = EventPacker.getIdentifier(event);
-    if (identifier === GameEventIdentifiers.AimEvent) {
-      const current_event = event as ServerEventFinder<GameEventIdentifiers.AimEvent>;
-      return owner.Id === current_event.fromId;
+    if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
+      const currentEvent = event as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
+      return owner.Id === currentEvent.cardUserId;
     }
 
     return true;
@@ -96,17 +97,18 @@ export class ZhaXiangShadow extends TriggerSkill {
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { triggeredOnEvent } = event;
     const unknownEvent = triggeredOnEvent as ServerEventFinder<
-      GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.AimEvent
+      GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.AskForCardUseEvent
     >;
     const identifier = EventPacker.getIdentifier(unknownEvent);
 
     if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
-      const current_event = unknownEvent as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-      current_event.fromPlayer && room.removeMark(current_event.fromPlayer, '!zhaxiang');
-    } else if (identifier === GameEventIdentifiers.AimEvent) {
-      const current_event = unknownEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
-      if (room.getMark(current_event.fromId, '!zhaxiang') > 0) {
-        EventPacker.setDisresponsiveEvent(current_event);
+      const currentEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
+      currentEvent.fromPlayer && room.setFlag(currentEvent.fromPlayer, this.GeneralName, 0);
+    } else if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
+      const currentEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
+      if (room.getFlag<number>(currentEvent.cardUserId!, this.GeneralName) > 0) {
+        const cardMatcher = new CardMatcher({ name: ['jink'] }).without(new CardMatcher({ name: ['jink'] }));
+        currentEvent.cardMatcher = cardMatcher.toSocketPassenger();
       }
     }
 
@@ -122,7 +124,7 @@ export class ZhaXiangDistance extends RulesBreakerSkill {
   }
 
   public breakCardUsableDistance(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
-    if (room.CurrentPlayer !== owner || room.getMark(owner.Id, '!zhaxiang') === 0) {
+    if (room.CurrentPlayer !== owner || !room.getFlag<number>(owner.Id, this.GeneralName)) {
       return 0;
     }
 
@@ -142,8 +144,8 @@ export class ZhaXiangDistance extends RulesBreakerSkill {
   }
 
   public breakCardUsableTimes(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
-    const extra = room.CurrentPlayer === owner ? room.getMark(owner.Id, '!zhaxiang') : 0;
-    if (extra === 0) {
+    const extra = room.getFlag<number>(owner.Id, this.GeneralName);
+    if (room.CurrentPlayer !== owner || !extra) {
       return 0;
     }
 
