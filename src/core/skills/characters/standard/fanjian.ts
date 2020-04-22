@@ -17,10 +17,6 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'fanjian', description: 'fanjian_description' })
 export class FanJian extends ActiveSkill {
-  constructor() {
-    super();
-  }
-
   public canUse(room: Room, owner: Player) {
     return !owner.hasUsedSkill(this.Name);
   }

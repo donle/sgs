@@ -18,10 +18,6 @@ export class GuanShiFuSkill extends TriggerSkill {
     return stage === CardUseStage.AfterCardUseEffect;
   }
 
-  constructor() {
-    super();
-  }
-
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const { responseToEvent } = content;
     if (!responseToEvent) {

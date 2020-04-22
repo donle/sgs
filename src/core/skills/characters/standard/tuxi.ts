@@ -13,10 +13,6 @@ import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'tuxi', description: 'tuxi_description' })
 export class TuXi extends TriggerSkill {
-  constructor() {
-    super();
-  }
-
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>, stage?: AllStage) {
     return stage === DrawCardStage.CardDrawing;
   }

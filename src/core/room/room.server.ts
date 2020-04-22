@@ -378,7 +378,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           event.toIds = [event.fromId];
         }
 
-        event.toIds?.sort((prev, next) => {
+        card.AOE !== CardTargetEnum.Single && event.toIds?.sort((prev, next) => {
           let prevPosition = this.getPlayerById(prev).Position;
           let nextPosition = this.getPlayerById(next).Position;
           if (prevPosition < this.CurrentPlayer.Position) {

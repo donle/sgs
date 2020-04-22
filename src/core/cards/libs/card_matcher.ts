@@ -75,7 +75,6 @@ export class CardMatcher {
 
   public with(matcher: CardMatcher) {
     const { suit, cardNumber, name, type, cards } = matcher.Matcher;
-    const {} = this.matcher;
     this.matcher.suit = !this.matcher.suit ? suit : suit ? [...this.matcher.suit, ...suit] : this.matcher.suit;
     this.matcher.cardNumber = !this.matcher.cardNumber
       ? cardNumber
@@ -91,7 +90,6 @@ export class CardMatcher {
 
   public without(matcher: CardMatcher) {
     const { suit, cardNumber, name, type, cards } = matcher.Matcher;
-    const {} = this.matcher;
     this.matcher.suit = !this.matcher.suit
       ? undefined
       : suit

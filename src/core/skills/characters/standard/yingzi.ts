@@ -30,10 +30,6 @@ export class YingZi extends TriggerSkill {
 @ShadowSkill()
 @CompulsorySkill({ name: YingZi.GeneralName, description: YingZi.Description })
 export class YingZiShadow extends RulesBreakerSkill {
-  constructor() {
-    super();
-  }
-
   public breakBaseCardHoldNumber(room: Room, owner: Player) {
     return owner.MaxHp;
   }

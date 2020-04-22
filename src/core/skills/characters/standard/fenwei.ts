@@ -9,10 +9,6 @@ import { LimitSkill, TriggerSkill } from 'core/skills/skill';
 
 @LimitSkill({ name: 'fenwei', description: 'fenwei_description' })
 export class FenWei extends TriggerSkill {
-  constructor() {
-    super();
-  }
-
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage) {
     return stage === AimStage.AfterAim && Sanguosha.getCardById(event.byCardId!).AOE !== CardTargetEnum.Single;
   }

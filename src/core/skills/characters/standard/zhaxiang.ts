@@ -13,10 +13,6 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 export class ZhaXiang extends TriggerSkill {
   private check: boolean = false;
 
-  constructor() {
-    super();
-  }
-
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.LoseHpEvent>, stage?: AllStage): boolean {
     return stage === LoseHpStage.AfterLostHp;
   }

@@ -161,6 +161,15 @@ export class YiJueShadow extends TriggerSkill {
       if (card?.GeneralName === 'slash' && card.isRed()) {
         content.damage = content.damage + 1;
       }
+      content.messages = content.messages || [];
+      content.messages.push(
+        TranslationPack.translationJsonPatcher(
+          '{0} used skill {1}, damage increases to {2}',
+          TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
+          this.Name,
+          content.damage,
+        ).toString(),
+      );
     } else if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
       room.getPlayerById(fromId).removeInvisibleMark(this.GeneralName);
       for (const player of room.AlivePlayers) {
@@ -177,10 +186,6 @@ export class YiJueShadow extends TriggerSkill {
 @ShadowSkill()
 @CompulsorySkill({ name: 'yijueBlocker', description: 'yijueBlocker_description' })
 export class YiJueBlocker extends FilterSkill {
-  constructor() {
-    super();
-  }
-
   canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId) {
     return false;
   }
