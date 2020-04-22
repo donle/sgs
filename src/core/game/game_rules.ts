@@ -170,6 +170,7 @@ export class GameCommonRules {
     },
     user: Player,
   ) {
+    GameCommonRules.preCheck(user);
     GameCommonRules.userRules[user.Id].cards.push(rule);
   }
 
