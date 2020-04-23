@@ -99,8 +99,9 @@ export class ZhaXiangShadow extends TriggerSkill {
     } else if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
       const currentEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
       if (room.getFlag<number>(currentEvent.cardUserId!, this.GeneralName) > 0) {
-        const cardMatcher = new CardMatcher({ name: ['jink'] }).without(new CardMatcher({ name: ['jink'] }));
-        currentEvent.cardMatcher = cardMatcher.toSocketPassenger();
+        currentEvent.cardMatcher = new CardMatcher(currentEvent.cardMatcher)
+          .without({ name: ['jink'] })
+          .toSocketPassenger();
       }
     }
 
@@ -124,11 +125,7 @@ export class ZhaXiangDistance extends RulesBreakerSkill {
       match = card.GeneralName === 'slash' && card.isRed();
     }
 
-    if (match) {
-      return INFINITE_DISTANCE;
-    } else {
-      return 0;
-    }
+    return match ? INFINITE_DISTANCE : 0;
   }
 
   public breakCardUsableTimes(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
@@ -144,10 +141,6 @@ export class ZhaXiangDistance extends RulesBreakerSkill {
       match = Sanguosha.getCardById(cardId).GeneralName === 'slash';
     }
 
-    if (match) {
-      return extra;
-    } else {
-      return 0;
-    }
+    return match ? INFINITE_DISTANCE : 0;
   }
 }

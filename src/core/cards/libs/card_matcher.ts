@@ -12,10 +12,18 @@ export type CardMatcherProps = {
 
 export type CardMatcherSocketPassenger = {
   tag: 'card-matcher';
+  reverseMatch?: boolean;
 } & CardMatcherProps;
 
 export class CardMatcher {
-  constructor(private matcher: CardMatcherProps) {}
+  private matchAll: boolean;
+  private reverseMatch: boolean = false;
+
+  constructor(private matcher: CardMatcherProps) {
+    if (Object.keys(this.matcher).length === 0) {
+      this.matchAll = true;
+    }
+  }
 
   public static addTag(matcher: CardMatcherProps): CardMatcherSocketPassenger {
     return {
@@ -31,7 +39,7 @@ export class CardMatcher {
 
     Precondition.assert(matcher.tag && matcher.tag === 'card-matcher', 'Invalid card matcher props');
 
-    const { suit, cardNumber, name, type, cards } = matcher;
+    const { suit, cardNumber, name, type, cards, reverseMatch } = matcher;
     let matched = true;
 
     if (card instanceof Card) {
@@ -70,11 +78,21 @@ export class CardMatcher {
       }
     }
 
-    return matched;
+    return reverseMatch ? !matched : matched;
   }
 
-  public with(matcher: CardMatcher) {
-    const { suit, cardNumber, name, type, cards } = matcher.Matcher;
+  public static notMatch(matcher: CardMatcherSocketPassenger | undefined, card: Card | CardMatcher) {
+    return !this.match(matcher, card);
+  }
+
+  public with(matcher: CardMatcher | CardMatcherProps) {
+    if (this.matchAll) {
+      return this;
+    }
+
+    matcher = matcher instanceof CardMatcher ? matcher.Matcher : matcher;
+    const { suit, cardNumber, name, type, cards } = matcher;
+
     this.matcher.suit = !this.matcher.suit ? suit : suit ? [...this.matcher.suit, ...suit] : this.matcher.suit;
     this.matcher.cardNumber = !this.matcher.cardNumber
       ? cardNumber
@@ -85,11 +103,25 @@ export class CardMatcher {
     this.matcher.type = !this.matcher.type ? type : type ? [...this.matcher.type, ...type] : this.matcher.type;
     this.matcher.cards = !this.matcher.cards ? cards : cards ? [...this.matcher.cards, ...cards] : this.matcher.cards;
 
+    this.matchAll = Object.keys(this.matcher).length === 0;
+
     return this;
   }
 
-  public without(matcher: CardMatcher) {
-    const { suit, cardNumber, name, type, cards } = matcher.Matcher;
+  public without(matcher: CardMatcher | CardMatcherProps) {
+    if (this.matchAll) {
+      this.reverseMatch = true;
+      for (const [key, value] of Object.entries(matcher)) {
+        this.matcher[key] = value;
+      }
+      this.matchAll = Object.keys(this.matcher).length === 0;
+
+      return this;
+    }
+
+    matcher = matcher instanceof CardMatcher ? matcher.Matcher : matcher;
+    const { suit, cardNumber, name, type, cards } = matcher;
+
     this.matcher.suit = !this.matcher.suit
       ? undefined
       : suit
@@ -116,6 +148,8 @@ export class CardMatcher {
       ? this.matcher.cards.filter(s => !cards.includes(s))
       : this.matcher.cards;
 
+    this.matchAll = Object.keys(this.matcher).length === 0;
+
     return this;
   }
 
@@ -123,10 +157,15 @@ export class CardMatcher {
     return CardMatcher.match(
       {
         tag: 'card-matcher',
+        reverseMatch: this.reverseMatch,
         ...this.matcher,
       },
       card,
     );
+  }
+
+  public notMatch(card: Card | CardMatcher) {
+    return !this.match(card);
   }
 
   public get Matcher() {
