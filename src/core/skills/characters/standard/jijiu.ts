@@ -12,7 +12,7 @@ export class JiJiu extends ViewAsSkill {
     return ['peach'];
   }
 
-  public canUse(room: Room, owner: Player) {
+  public canUse(room: Room, owner: Player): boolean {
     return room.CurrentPlayer !== owner;
   }
 
@@ -24,7 +24,7 @@ export class JiJiu extends ViewAsSkill {
     return Sanguosha.getCardById(pendingCardId).isRed();
   }
 
-  public viewAs(selectedCards: CardId[]) {
+  public viewAs(selectedCards: CardId[]): VirtualCard {
     return VirtualCard.create<Peach>(
       {
         cardName: 'peach',
