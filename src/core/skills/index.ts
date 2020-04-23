@@ -70,5 +70,6 @@ export { WuSheng, WuShengShadow } from './characters/standard/wusheng';
 export { YiJue, YiJueShadow, YiJueBlocker } from './characters/standard/yijue';
 export { YiCong } from './characters/standard/yicong';
 export { QiaoMeng } from './characters/standard/qiaomeng';
+export { JiJiu } from './characters/standard/jijiu';
 
 export { Cheat } from './system/cheat';
