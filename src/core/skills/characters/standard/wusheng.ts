@@ -54,7 +54,7 @@ export class WuSheng extends ViewAsSkill {
 @CompulsorySkill({ name: WuSheng.GeneralName, description: WuSheng.Description })
 export class WuShengShadow extends RulesBreakerSkill implements OnDefineReleaseTiming {
   onLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage && room.CurrentPlayer.Id === playerId;
+    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 
   breakCardUsableDistance(cardId: CardId | CardMatcher, room: Room, owner: Player) {

@@ -48,7 +48,7 @@ export class ZhaXiang extends TriggerSkill {
 @CompulsorySkill({ name: ZhaXiang.GeneralName, description: ZhaXiang.Description })
 export class ZhaXiangShadow extends TriggerSkill implements OnDefineReleaseTiming {
   onLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage && room.CurrentPlayer.Id === playerId;
+    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 
   public isTriggerable(
@@ -118,7 +118,7 @@ export class ZhaXiangShadow extends TriggerSkill implements OnDefineReleaseTimin
 @CompulsorySkill({ name: ZhaXiangShadow.Name, description: ZhaXiang.Description })
 export class ZhaXiangDistance extends RulesBreakerSkill implements OnDefineReleaseTiming {
   onLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage && room.CurrentPlayer.Id === playerId;
+    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 
   public breakCardUsableDistance(cardId: CardId | CardMatcher, room: Room, owner: Player): number {

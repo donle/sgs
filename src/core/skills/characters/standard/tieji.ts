@@ -74,9 +74,9 @@ export class TieJi extends TriggerSkill {
 @CompulsorySkill({ name: TieJi.GeneralName, description: TieJi.Description })
 export class TieJiShadow extends TriggerSkill implements OnDefineReleaseTiming {
   onLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage && room.CurrentPlayer.Id === playerId;
+    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
-  onDeath(room: Room) {
+  onDeath(room: Room, playerId: PlayerId) {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 

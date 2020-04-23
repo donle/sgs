@@ -176,7 +176,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
       if (hookedSkill.onLosingSkill && hookedSkill.onLosingSkill(this, player.Id)) {
         await skill.onEffect(this, { fromId: player.Id, skillName: skill.Name, triggeredOnEvent: content });
-        player.removeSkill(skill);
         executedHookedSkillsIndex.push(i);
       }
       if (hookedSkill.onDeath && hookedSkill.onDeath(this, player.Id)) {
@@ -516,7 +515,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     for (const skill of lostSkill) {
       if (SkillHooks.isHookedUpOnLosingSkill(skill)) {
         this.hookedSkills.push({ player, skill });
-        player.addSkill(skill);
       }
     }
   }

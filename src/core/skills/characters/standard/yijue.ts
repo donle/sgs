@@ -129,7 +129,7 @@ export class YiJueShadow extends TriggerSkill implements OnDefineReleaseTiming {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
   onLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage && room.CurrentPlayer.Id === playerId;
+    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 
   isTriggerable(
