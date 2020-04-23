@@ -71,6 +71,7 @@ export const characterDictionary: Word[] = [
   { source: 'guanyu', target: '关羽' },
   { source: 'wusheng', target: '武圣' },
   { source: 'yijue', target: '义绝' },
+  { source: '#yijue', target: '义绝' },
 
   { source: 'zhangfei', target: '张飞' },
   { source: 'paoxiao', target: '咆哮' },
@@ -147,6 +148,10 @@ export const characterDictionary: Word[] = [
   { source: 'yuanshu', target: '袁术' },
   { source: 'wangzun', target: '妄尊' },
   { source: 'tongji', target: '同疾' },
+
+  { source: 'gongsunzan', target: '公孙瓒' },
+  { source: 'qiaomeng', target: '趫猛' },
+  { source: 'yicong', target: '义从' },
 
   { source: 'god_lvmeng', target: '神吕蒙' },
   { source: 'gongxin', target: '攻心' },
@@ -419,6 +424,15 @@ export const skillDescriptions: Word[] = [
     source: 'gongxin_description',
     target:
       '出牌阶段限一次，你可以观看一名其他角色的手牌，然后你可以展示其中一张红桃牌，选择一项：1.弃置此牌；2.将此牌置于牌堆顶。',
+  },
+  {
+    source: 'qiaomeng_description',
+    target: '当你使用的黑色【杀】对一名角色造成伤害后，你可弃置其装备区里的一张牌。若此牌为坐骑牌，你获得之。',
+  },
+  {
+    source: 'yicong_description',
+    target:
+      '义从——锁定技，若你的体力值大于2，你计算与其他角色的距离-1；若你的体力值不大于2，其他角色计算与你的距离+1。',
   },
 ];
 

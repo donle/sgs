@@ -68,5 +68,7 @@ export { KuRou } from './characters/standard/kurou';
 export { ZhaXiang, ZhaXiangShadow, ZhaXiangDistance } from './characters/standard/zhaxiang';
 export { WuSheng, WuShengShadow } from './characters/standard/wusheng';
 export { YiJue, YiJueShadow, YiJueBlocker } from './characters/standard/yijue';
+export { YiCong } from './characters/standard/yicong';
+export { QiaoMeng } from './characters/standard/qiaomeng';
 
 export { Cheat } from './system/cheat';

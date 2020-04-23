@@ -40,6 +40,9 @@ function onCalculatingSkillUsageWrapper(
     public static get GeneralName() {
       return name.replace(/#+/, '');
     }
+    public static get Name() {
+      return name;
+    }
 
     constructor() {
       super();
@@ -153,13 +156,19 @@ export function SelfTargetSkill<T extends Skill>(constructorFunction: SKillConst
 export const ShadowSkill = (props?: { remainStatus: boolean }) => <T extends Skill>(
   constructorFunction: SKillConstructor<T>,
 ) => {
-  return skillPropertyWrapper(
+  const WrappedConstructor = skillPropertyWrapper(
     {
       shadowSkill: true,
       statusSkill: props?.remainStatus,
     },
-    constructorFunction as any,
+    constructorFunction as new () => any,
   );
+
+  return class extends WrappedConstructor {
+    public static get Name() {
+      return '#' + super.Name;
+    }
+  } as any;
 };
 export function UniqueSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
   return skillPropertyWrapper(
@@ -245,6 +254,9 @@ export abstract class Skill {
     return '';
   }
   public static get GeneralName() {
+    return '';
+  }
+  public static get Name() {
     return '';
   }
 

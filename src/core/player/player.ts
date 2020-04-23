@@ -476,6 +476,9 @@ export abstract class Player implements PlayerInfo {
   public hasSkill(skillName: string) {
     return this.playerSkills.find(skill => skill.Name === skillName) !== undefined;
   }
+  public hasShadowSkill(skillName: string) {
+    return this.playerSkills.find(skill => skill.Name.endsWith(skillName)) !== undefined;
+  }
 
   public turnOver() {
     this.turnedOver = !this.turnedOver;

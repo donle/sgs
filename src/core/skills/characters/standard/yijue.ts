@@ -78,7 +78,7 @@ export class YiJue extends ActiveSkill {
 
     const card = Sanguosha.getCardById(selectedCards[0]);
     if (card.isBlack()) {
-      room.obtainSkill(to.Id, YiJueBlocker.GeneralName);
+      room.obtainSkill(to.Id, YiJueBlocker.Name);
       from.addInvisibleMark(this.Name, 1);
       room.setFlag(to.Id, this.Name, true);
     } else {
@@ -159,7 +159,7 @@ export class YiJueShadow extends TriggerSkill {
       const content = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
       const card = content.cardIds && Sanguosha.getCardById(content.cardIds[0]);
       if (card?.GeneralName === 'slash' && card.isRed()) {
-        content.damage = content.damage + 1;
+        content.damage++;
       }
       content.messages = content.messages || [];
       content.messages.push(
@@ -174,8 +174,8 @@ export class YiJueShadow extends TriggerSkill {
       room.getPlayerById(fromId).removeInvisibleMark(this.GeneralName);
       for (const player of room.AlivePlayers) {
         room.removeFlag(player.Id, this.GeneralName);
-        if (player.hasSkill(YiJueBlocker.GeneralName)) {
-          room.loseSkill(player.Id, YiJueBlocker.GeneralName);
+        if (player.hasShadowSkill(YiJueBlocker.Name)) {
+          room.loseSkill(player.Id, YiJueBlocker.Name);
         }
       }
     }

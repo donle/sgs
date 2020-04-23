@@ -3,6 +3,7 @@ import { CaoCao } from './caocao';
 import { DaQiao } from './daqiao';
 import { DiaoChan } from './diaochan';
 import { GanNing } from './ganning';
+import { GongSunZan } from './gongsunzan';
 import { GuanYu } from './guanyu';
 import { GuoJia } from './guojia';
 import { HuangGai } from './huanggai';
@@ -46,4 +47,5 @@ export const StandardCharacterPackage: (index: number) => Character[] = index =>
   new XiaHouDun(index++),
 
   new DiaoChan(index++),
+  new GongSunZan(index++),
 ];

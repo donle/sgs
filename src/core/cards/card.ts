@@ -184,7 +184,7 @@ export class VirtualCard<T extends Card = Card> extends Card {
   private viewAsRedCard: boolean = false;
 
   constructor(
-    viewAsOptions: {  
+    viewAsOptions: {
       cardName: string;
       cardSuit?: CardSuit;
       cardNumber?: number;
@@ -216,6 +216,8 @@ export class VirtualCard<T extends Card = Card> extends Card {
 
     if (cardSuit !== undefined) {
       this.suit = cardSuit;
+      this.viewAsBlackCard = this.suit === CardSuit.Spade || this.suit === CardSuit.Club;
+      this.viewAsRedCard = this.suit === CardSuit.Heart || this.suit === CardSuit.Diamond;
     } else if (this.cardIds.length === 1) {
       const card = Sanguosha.getCardById(this.cardIds[0]);
       this.cardNumber = card.CardNumber;
