@@ -106,7 +106,7 @@ export class LuoShen extends TriggerSkill {
   }
 }
 
-@ShadowSkill()
+@ShadowSkill
 @CompulsorySkill({ name: 'luoshen', description: 'luoshen_description' })
 export class LuoShenShadow extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent>): boolean {

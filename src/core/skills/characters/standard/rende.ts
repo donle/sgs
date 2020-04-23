@@ -140,7 +140,7 @@ export class Rende extends ActiveSkill {
   }
 }
 
-@ShadowSkill()
+@ShadowSkill
 @CompulsorySkill({ name: Rende.GeneralName, description: Rende.Description })
 export class RenDeShadow extends TriggerSkill {
   public isAutoTrigger() {

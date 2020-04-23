@@ -8,7 +8,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { CommonSkill, OnDefineReleaseTiming, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'qingjian', description: 'qingjian_description' })
@@ -99,9 +99,13 @@ export class QingJian extends TriggerSkill {
   }
 }
 
-@ShadowSkill({ remainStatus: true })
+@ShadowSkill
 @CommonSkill({ name: 'qingjian', description: 'qingjian_description' })
-export class QingJianShadow extends TriggerSkill {
+export class QingJianShadow extends TriggerSkill implements OnDefineReleaseTiming {
+  onLosingSkill(room: Room, playerId: PlayerId) {
+    return room.CurrentPlayerPhase === PlayerPhase.FinishStage && room.CurrentPlayer.Id === playerId;
+  }
+
   public isAutoTrigger() {
     return true;
   }

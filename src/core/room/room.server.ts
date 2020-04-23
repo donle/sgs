@@ -35,7 +35,7 @@ import { Algorithm } from 'core/shares/libs/algorithm';
 import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { SkillType, TriggerSkill } from 'core/skills/skill';
+import { OnDefineReleaseTiming, Skill, SkillHooks, SkillType, TriggerSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 import { GameProcessor } from '../game/game_processor';
@@ -47,6 +47,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   private drawStack: CardId[] = [];
   private dropStack: CardId[] = [];
   private round = 0;
+
+  private hookedSkills: {
+    player: Player;
+    skill: Skill;
+  }[] = [];
 
   constructor(
     protected roomId: RoomId,
@@ -164,6 +169,23 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (!this.CurrentPlayer || !this.isPlaying()) {
       return;
     }
+
+    const executedHookedSkillsIndex: number[] = [];
+    for (let i = 0; i < this.hookedSkills.length; i++) {
+      const { skill, player } = this.hookedSkills[i];
+      const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+      if (hookedSkill.onLosingSkill && hookedSkill.onLosingSkill(this, player.Id)) {
+        await skill.onEffect(this, { fromId: player.Id, skillName: skill.Name, triggeredOnEvent: content });
+        player.removeSkill(skill);
+        executedHookedSkillsIndex.push(i);
+      }
+      if (hookedSkill.onDeath && hookedSkill.onDeath(this, player.Id)) {
+        executedHookedSkillsIndex.push(i);
+        await skill.onEffect(this, { fromId: player.Id, skillName: skill.Name, triggeredOnEvent: content });
+      }
+    }
+    this.hookedSkills = this.hookedSkills.filter((hookedSkill, index) => !executedHookedSkillsIndex.includes(index));
+
     const { triggeredBySkills } = content as ServerEventFinder<GameEventIdentifiers>;
     const bySkills = triggeredBySkills
       ? triggeredBySkills.map(skillName => Sanguosha.getSkillBySkillName(skillName))
@@ -378,23 +400,24 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           event.toIds = [event.fromId];
         }
 
-        card.AOE !== CardTargetEnum.Single && event.toIds?.sort((prev, next) => {
-          let prevPosition = this.getPlayerById(prev).Position;
-          let nextPosition = this.getPlayerById(next).Position;
-          if (prevPosition < this.CurrentPlayer.Position) {
-            prevPosition += this.Players.length;
-          }
-          if (nextPosition < this.CurrentPlayer.Position) {
-            nextPosition += this.Players.length;
-          }
+        card.AOE !== CardTargetEnum.Single &&
+          event.toIds?.sort((prev, next) => {
+            let prevPosition = this.getPlayerById(prev).Position;
+            let nextPosition = this.getPlayerById(next).Position;
+            if (prevPosition < this.CurrentPlayer.Position) {
+              prevPosition += this.Players.length;
+            }
+            if (nextPosition < this.CurrentPlayer.Position) {
+              nextPosition += this.Players.length;
+            }
 
-          if (prevPosition < nextPosition) {
-            return -1;
-          } else if (prevPosition === nextPosition) {
-            return 0;
-          }
-          return 1;
-        });
+            if (prevPosition < nextPosition) {
+              return -1;
+            } else if (prevPosition === nextPosition) {
+              return 0;
+            }
+            return 1;
+          });
 
         const isDisresponsive = EventPacker.isDisresponsiveEvent(event);
 
@@ -479,17 +502,23 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
   }
 
-  public loseSkill(playerId: PlayerId, skillName: string, includeStatusSkill?: boolean, broadcast?: boolean) {
+  public loseSkill(playerId: PlayerId, skillName: string, broadcast?: boolean) {
     const player = this.getPlayerById(playerId);
-    player.loseSkill(skillName, includeStatusSkill);
+    const lostSkill = player.loseSkill(skillName);
     this.broadcast(GameEventIdentifiers.LoseSkillEvent, {
       toId: playerId,
       skillName,
-      includeStatusSkill,
       translationsMessage: broadcast
         ? TranslationPack.translationJsonPatcher('{0} lost skill {1}', player.Name, skillName).extract()
         : undefined,
     });
+
+    for (const skill of lostSkill) {
+      if (SkillHooks.isHookedUpOnLosingSkill(skill)) {
+        this.hookedSkills.push({ player, skill });
+        player.addSkill(skill);
+      }
+    }
   }
   public obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean) {
     const player = this.getPlayerById(playerId);
@@ -967,6 +996,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       GameEventIdentifiers.PlayerDiedEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerDiedEvent, playerDiedEvent),
     );
+
+    for (const skill of deadPlayer.getPlayerSkills()) {
+      if (SkillHooks.isHookedUpOnDeath(skill)) {
+        this.hookedSkills.push({ player: deadPlayer, skill });
+      }
+    }
   }
 
   public clearFlags(player: PlayerId) {

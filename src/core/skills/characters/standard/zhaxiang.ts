@@ -1,13 +1,14 @@
+import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE } from 'core/game/game_props';
 import { AllStage, LoseHpStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
+import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CompulsorySkill, RulesBreakerSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
-
-import { CardMatcher } from 'core/cards/libs/card_matcher';
+import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 
 @CompulsorySkill({ name: 'zhaxiang', description: 'zhaxiang_description' })
 export class ZhaXiang extends TriggerSkill {
@@ -43,9 +44,13 @@ export class ZhaXiang extends TriggerSkill {
   }
 }
 
-@ShadowSkill({ remainStatus: true })
+@ShadowSkill
 @CompulsorySkill({ name: ZhaXiang.GeneralName, description: ZhaXiang.Description })
-export class ZhaXiangShadow extends TriggerSkill {
+export class ZhaXiangShadow extends TriggerSkill implements OnDefineReleaseTiming {
+  onLosingSkill(room: Room, playerId: PlayerId) {
+    return room.CurrentPlayerPhase === PlayerPhase.FinishStage && room.CurrentPlayer.Id === playerId;
+  }
+
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.AskForCardUseEvent>,
     stage: AllStage,
@@ -109,9 +114,13 @@ export class ZhaXiangShadow extends TriggerSkill {
   }
 }
 
-@ShadowSkill({ remainStatus: true })
-@CompulsorySkill({ name:  ZhaXiangShadow.Name, description: ZhaXiang.Description })
-export class ZhaXiangDistance extends RulesBreakerSkill {
+@ShadowSkill
+@CompulsorySkill({ name: ZhaXiangShadow.Name, description: ZhaXiang.Description })
+export class ZhaXiangDistance extends RulesBreakerSkill implements OnDefineReleaseTiming {
+  onLosingSkill(room: Room, playerId: PlayerId) {
+    return room.CurrentPlayerPhase === PlayerPhase.FinishStage && room.CurrentPlayer.Id === playerId;
+  }
+
   public breakCardUsableDistance(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
     if (room.CurrentPlayer !== owner || !room.getFlag<number>(owner.Id, this.GeneralName)) {
       return 0;

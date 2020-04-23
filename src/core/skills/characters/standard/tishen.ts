@@ -18,8 +18,10 @@ import {
   PlayerPhaseStages,
 } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
+import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 
 @CommonSkill({ name: 'tishen', description: 'tishen_description' })
 export class TiShen extends TriggerSkill {
@@ -50,9 +52,13 @@ export class TiShen extends TriggerSkill {
   }
 }
 
-@ShadowSkill({ remainStatus: true })
+@ShadowSkill
 @CompulsorySkill({ name: TiShen.GeneralName, description: TiShen.Description })
-export class TiShenShadow extends TriggerSkill {
+export class TiShenShadow extends TriggerSkill implements OnDefineReleaseTiming {
+  onLosingSkill(room: Room, playerId: PlayerId) {
+    return room.CurrentPlayerPhase === PlayerPhase.PrepareStage && room.CurrentPlayer.Id === playerId;
+  }
+
   isTriggerable(
     event: ServerEventFinder<
       | GameEventIdentifiers.AimEvent

@@ -34,7 +34,7 @@ export class YiJi extends TriggerSkill {
   }
 }
 
-@ShadowSkill()
+@ShadowSkill
 @CommonSkill({ name: YiJi.GeneralName, description: YiJi.Description })
 export class YiJiShadow extends TriggerSkill {
   isAutoTrigger() {

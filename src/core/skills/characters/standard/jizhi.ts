@@ -66,7 +66,7 @@ export class JiZhi extends TriggerSkill {
   }
 }
 
-@ShadowSkill()
+@ShadowSkill
 @CompulsorySkill({ name: 'jizhi', description: 'jizhi_description' })
 export class JizhiShadow extends TriggerSkill {
   public isAutoTrigger() {

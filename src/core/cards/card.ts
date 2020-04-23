@@ -225,9 +225,10 @@ export class VirtualCard<T extends Card = Card> extends Card {
       this.viewAsBlackCard = this.suit === CardSuit.Spade || this.suit === CardSuit.Club;
       this.viewAsRedCard = this.suit === CardSuit.Heart || this.suit === CardSuit.Diamond;
     } else {
+      this.viewAsBlackCard = true;
+      this.viewAsRedCard = true;
       for (const cardId of this.cardIds) {
         const cardSuit = Sanguosha.getCardById(cardId).Suit;
-
         this.viewAsBlackCard = this.viewAsBlackCard && (cardSuit === CardSuit.Spade || cardSuit === CardSuit.Club);
         this.viewAsRedCard = this.viewAsRedCard && (cardSuit === CardSuit.Heart || cardSuit === CardSuit.Diamond);
       }
@@ -244,7 +245,7 @@ export class VirtualCard<T extends Card = Card> extends Card {
       {
         cardName: parsedId.name,
         cardNumber: parsedId.cardNumber,
-        cardSuit: parsedId.cardSuit,
+        cardSuit: parsedId.cardSuit === CardSuit.NoSuit ? undefined : parsedId.cardSuit,
         bySkill: parsedId.bySkill,
       },
       parsedId.containedCardIds,

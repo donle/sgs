@@ -14,6 +14,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill, CompulsorySkill, FilterSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'yijue', description: 'yijue_description' })
@@ -121,9 +122,16 @@ export class YiJue extends ActiveSkill {
   }
 }
 
-@ShadowSkill({ remainStatus: true })
+@ShadowSkill
 @CompulsorySkill({ name: YiJue.GeneralName, description: YiJue.Description })
-export class YiJueShadow extends TriggerSkill {
+export class YiJueShadow extends TriggerSkill implements OnDefineReleaseTiming {
+  onDeath(room: Room) {
+    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+  }
+  onLosingSkill(room: Room, playerId: PlayerId) {
+    return room.CurrentPlayerPhase === PlayerPhase.FinishStage && room.CurrentPlayer.Id === playerId;
+  }
+
   isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.DamageEvent | GameEventIdentifiers.PhaseChangeEvent>,
     stage?: AllStage,
@@ -183,7 +191,7 @@ export class YiJueShadow extends TriggerSkill {
   }
 }
 
-@ShadowSkill()
+@ShadowSkill
 @CompulsorySkill({ name: 'yijueBlocker', description: 'yijueBlocker_description' })
 export class YiJueBlocker extends FilterSkill {
   canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId) {

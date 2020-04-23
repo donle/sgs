@@ -97,7 +97,7 @@ export class JiJiang extends ActiveSkill {
   }
 }
 
-@ShadowSkill()
+@ShadowSkill
 @CommonSkill({ name: 'jijiang', description: 'jijiang_description' })
 @LordSkill
 export class JiJiangShadow extends TriggerSkill {

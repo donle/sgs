@@ -356,18 +356,6 @@ export class GameProcessor {
         lastPlayer = this.currentPhasePlayer;
       }
     }
-
-    const statusSkills: Skill[] = [];
-    const visibleSkills: Skill[] = [];
-    for (const skill of this.CurrentPlayer.getPlayerSkills()) {
-      skill.isStatusSkill() ? statusSkills.push(skill) : visibleSkills.push(skill);
-    }
-
-    for (const statusSkill of statusSkills) {
-      if (!visibleSkills.find(skill => skill.Name === statusSkill.GeneralName)) {
-        this.room.loseSkill(this.CurrentPlayer.Id, statusSkill.Name, true);
-      }
-    }
   }
 
   public async onHandleIncomingEvent<T extends GameEventIdentifiers, E extends ServerEventFinder<T>>(

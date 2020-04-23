@@ -2,10 +2,11 @@ import { CardLostReason, EventPacker, GameEventIdentifiers, ServerEventFinder } 
 import { Sanguosha } from 'core/game/engine';
 import { AimStage, AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Functional } from 'core/shares/libs/functional';
 import { CommonSkill, CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'tieji', description: 'tieji_description' })
@@ -69,9 +70,16 @@ export class TieJi extends TriggerSkill {
   }
 }
 
-@ShadowSkill({ remainStatus: true })
+@ShadowSkill
 @CompulsorySkill({ name: TieJi.GeneralName, description: TieJi.Description })
-export class TieJiShadow extends TriggerSkill {
+export class TieJiShadow extends TriggerSkill implements OnDefineReleaseTiming {
+  onLosingSkill(room: Room, playerId: PlayerId) {
+    return room.CurrentPlayerPhase === PlayerPhase.FinishStage && room.CurrentPlayer.Id === playerId;
+  }
+  onDeath(room: Room) {
+    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+  }
+
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: PhaseChangeStage) {
     return stage === PhaseChangeStage.AfterPhaseChanged && event.from === PlayerPhase.FinishStage;
   }

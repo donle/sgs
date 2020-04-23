@@ -460,10 +460,19 @@ export abstract class Player implements PlayerInfo {
     return [...this.getEquipSkills<T>(skillType), ...this.getPlayerSkills<T>(skillType)];
   }
 
-  public loseSkill(skillName: string, includeStatusSkill?: boolean) {
-    this.playerSkills = this.playerSkills.filter(
-      skill => !skill.Name.endsWith(skillName) && (includeStatusSkill ? skill.isStatusSkill() : true),
-    );
+  public loseSkill(skillName: string) {
+    const lostSkill: Skill[] = [];
+    const existSkill: Skill[] = [];
+    for (const skill of this.playerSkills) {
+      if (skill.Name.endsWith(skillName)) {
+        lostSkill.push(skill);
+      } else {
+        existSkill.push(skill);
+      }
+    }
+
+    this.playerSkills = existSkill;
+    return lostSkill;
   }
 
   public obtainSkill(skillName: string) {
@@ -471,6 +480,13 @@ export abstract class Player implements PlayerInfo {
     for (const shadowSkill of Sanguosha.getShadowSkillsBySkillName(skillName)) {
       this.playerSkills.push(shadowSkill);
     }
+  }
+
+  public addSkill(skill: Skill) {
+    this.playerSkills.push(skill);
+  }
+  public removeSkill(skill: Skill) {
+    this.playerSkills = this.playerSkills.filter(existSkill => existSkill !== skill);
   }
 
   public hasSkill(skillName: string) {
@@ -551,7 +567,6 @@ export abstract class Player implements PlayerInfo {
     if (this.playerCharacter !== undefined) {
       this.playerSkills = this.playerSkills.filter(skill => {
         if (this.playerCharacter!.Skills.includes(skill)) {
-          skill.onLoseSkill(this);
           return false;
         }
 
