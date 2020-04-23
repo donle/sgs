@@ -174,7 +174,7 @@ export class YiJueShadow extends TriggerSkill {
       room.getPlayerById(fromId).removeInvisibleMark(this.GeneralName);
       for (const player of room.AlivePlayers) {
         room.removeFlag(player.Id, this.GeneralName);
-        if (player.hasShadowSkill(YiJueBlocker.Name)) {
+        if (player.hasSkill(YiJueBlocker.Name)) {
           room.loseSkill(player.Id, YiJueBlocker.Name);
         }
       }

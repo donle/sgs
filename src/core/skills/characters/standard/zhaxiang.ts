@@ -110,7 +110,7 @@ export class ZhaXiangShadow extends TriggerSkill {
 }
 
 @ShadowSkill({ remainStatus: true })
-@CompulsorySkill({ name: '#zhaxiang', description: ZhaXiang.Description })
+@CompulsorySkill({ name:  ZhaXiangShadow.Name, description: ZhaXiang.Description })
 export class ZhaXiangDistance extends RulesBreakerSkill {
   public breakCardUsableDistance(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
     if (room.CurrentPlayer !== owner || !room.getFlag<number>(owner.Id, this.GeneralName)) {
