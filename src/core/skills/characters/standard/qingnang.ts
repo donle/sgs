@@ -6,13 +6,14 @@ import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill, ShadowSkill, CompulsorySkill, TriggerSkill } from 'core/skills/skill';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, PlayerPhase, PhaseChangeStage } from 'core/game/stage_processor';
+import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 
 @CommonSkill({ name: 'qingnang', description: 'qingnang_description' })
 export class QingNang extends ActiveSkill {
-  private exUse = 'QingNang_ExUse';
+  public static readonly exUse = 'QingNang_ExUse';
 
   public canUse(room: Room, owner: Player) {
-    return !owner.hasUsedSkill(this.Name) || room.getFlag<boolean>(owner.Id, this.exUse) === true;
+    return !owner.hasUsedSkill(this.Name) || room.getFlag<boolean>(owner.Id, QingNang.exUse) === true;
   }
 
   public targetFilter(room: Room, targets: PlayerId[]): boolean {
@@ -67,26 +68,28 @@ export class QingNang extends ActiveSkill {
     room.setFlag<boolean>(skillUseEvent.toIds![0], this.Name, true);
 
     if (Sanguosha.getCardById(skillUseEvent.cardIds![0]).isRed()) {
-      room.setFlag<boolean>(skillUseEvent.fromId, this.exUse, true);
+      room.setFlag<boolean>(skillUseEvent.fromId, QingNang.exUse, true);
     } else {
-      room.setFlag<boolean>(skillUseEvent.fromId, this.exUse, false);
+      room.setFlag<boolean>(skillUseEvent.fromId, QingNang.exUse, false);
     }
 
     return true;
   }
 }
 
-@ShadowSkill({ remainStatus: true })
+@ShadowSkill
 @CompulsorySkill({ name: QingNang.GeneralName, description: QingNang.Description })
-export class QingNangShadow extends TriggerSkill {
-  private exUse = 'QingNang_ExUse';
+export class QingNangShadow extends TriggerSkill implements OnDefineReleaseTiming {
+  onLosingSkill(room: Room, playerId: PlayerId) {
+    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+  }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: AllStage): boolean {
     return event.from === PlayerPhase.FinishStage && stage === PhaseChangeStage.AfterPhaseChanged;
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
-    return room.getFlag<boolean>(owner.Id, this.exUse) !== undefined;
+    return room.getFlag<boolean>(owner.Id, QingNang.exUse) !== undefined;
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -97,7 +100,7 @@ export class QingNangShadow extends TriggerSkill {
     const { triggeredOnEvent } = event;
     const phaseChangeEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
 
-    phaseChangeEvent.fromPlayer && room.removeFlag(phaseChangeEvent.fromPlayer, this.exUse);
+    phaseChangeEvent.fromPlayer && room.removeFlag(phaseChangeEvent.fromPlayer, QingNang.exUse);
     for (const player of room.AlivePlayers) {
       room.removeFlag(player.Id, this.GeneralName);
     }
