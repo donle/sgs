@@ -1,9 +1,4 @@
-import {
-  ClientEventFinder,
-  GameEventIdentifiers,
-  ServerEventFinder,
-  WorkPlace,
-} from 'core/event/event';
+import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder, WorkPlace } from 'core/event/event';
 import { PlayerId } from 'core/player/player_props';
 import { HostConfigProps } from 'core/shares/types/host_config';
 

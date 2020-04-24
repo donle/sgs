@@ -44,14 +44,14 @@ class App {
 
     return ([] as os.NetworkInterfaceInfo[])
       .concat(...Object.values(networkInterfaces()))
-      .filter(details => details.family === 'IPv4' && !details.internal)
+      .filter((details) => details.family === 'IPv4' && !details.internal)
       .pop()!.address;
   }
 
   private async getPublicExternalIp() {
-    return await new Promise(resolve => {
-      http.get('http://bot.whatismyipaddress.com/', res => {
-        res.on('data', ip => resolve(ip));
+    return await new Promise((resolve) => {
+      http.get('http://bot.whatismyipaddress.com/', (res) => {
+        res.on('data', (ip) => resolve(ip));
       });
     });
   }
@@ -81,7 +81,7 @@ class App {
     Sanguosha.initialize();
     this.log();
 
-    this.lobbySocket.of('/lobby').on('connect', socket => {
+    this.lobbySocket.of('/lobby').on('connect', (socket) => {
       socket
         .on(LobbySocketEvent.GameCreated.toString(), this.onGameCreated(socket))
         .on(LobbySocketEvent.SocketConfig.toString(), this.onQuerySocketConfig(socket))
@@ -107,7 +107,7 @@ class App {
     );
 
     room.onClosed(() => {
-      this.rooms = this.rooms.filter(r => r !== room);
+      this.rooms = this.rooms.filter((r) => r !== room);
     });
 
     this.rooms.push(room);
@@ -123,7 +123,7 @@ class App {
   };
 
   private readonly onQueryRoomsInfo = (socket: SocketIO.Socket) => () => {
-    const roomsInfo = this.rooms.map(room => room.getRoomInfo());
+    const roomsInfo = this.rooms.map((room) => room.getRoomInfo());
     socket.emit(LobbySocketEvent.QueryRoomList.toString(), roomsInfo);
   };
 }

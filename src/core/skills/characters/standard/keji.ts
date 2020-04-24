@@ -5,7 +5,7 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
-@CommonSkill({ name: 'keji', description: 'keji_description'})
+@CommonSkill({ name: 'keji', description: 'keji_description' })
 export class KeJi extends TriggerSkill {
   isAutoTrigger(
     content: ServerEventFinder<

@@ -46,7 +46,7 @@ export class JieYin extends ActiveSkill {
       const sameTypeEquip =
         targetPlayer
           .getCardIds(PlayerCardsArea.EquipArea)
-          .find(equip => Sanguosha.getCardById<EquipCard>(equip).isSameType(card)) !== undefined;
+          .find((equip) => Sanguosha.getCardById<EquipCard>(equip).isSameType(card)) !== undefined;
 
       if (sameTypeEquip) {
         return false;
@@ -73,7 +73,7 @@ export class JieYin extends ActiveSkill {
     const from = room.getPlayerById(fromId);
     if (
       card.is(CardType.Equip) &&
-      to.getCardIds(PlayerCardsArea.EquipArea).find(equip => Sanguosha.getCardById(equip).isSameType(card)) ===
+      to.getCardIds(PlayerCardsArea.EquipArea).find((equip) => Sanguosha.getCardById(equip).isSameType(card)) ===
         undefined
     ) {
       const fromArea = from.cardFrom(card.Id);

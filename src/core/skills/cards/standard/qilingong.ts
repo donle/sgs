@@ -22,7 +22,7 @@ export class QiLinGongSkill extends TriggerSkill {
 
     const { cardIds, fromId, toId } = content;
     const to = room.getPlayerById(toId);
-    const horses = to.getCardIds(PlayerCardsArea.EquipArea).filter(cardId => {
+    const horses = to.getCardIds(PlayerCardsArea.EquipArea).filter((cardId) => {
       const card = Sanguosha.getCardById(cardId);
       return card.is(CardType.OffenseRide) || card.is(CardType.DefenseRide);
     });
@@ -49,7 +49,7 @@ export class QiLinGongSkill extends TriggerSkill {
 
     const chooseCardEvent = {
       toId: to.Id,
-      cardIds: to.getCardIds(PlayerCardsArea.EquipArea).filter(cardId => {
+      cardIds: to.getCardIds(PlayerCardsArea.EquipArea).filter((cardId) => {
         const card = Sanguosha.getCardById(cardId);
         return card.is(CardType.OffenseRide) || card.is(CardType.DefenseRide);
       }),

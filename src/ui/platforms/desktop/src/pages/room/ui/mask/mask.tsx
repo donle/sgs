@@ -44,12 +44,7 @@ const AllMasks = (props: {
   const { onClick, opened, translator } = props;
 
   const masks: JSX.Element[] = [];
-  for (const role of [
-    PlayerRole.Loyalist,
-    PlayerRole.Rebel,
-    PlayerRole.Renegade,
-    PlayerRole.Unknown,
-  ]) {
+  for (const role of [PlayerRole.Loyalist, PlayerRole.Rebel, PlayerRole.Renegade, PlayerRole.Unknown]) {
     masks.push(
       <OneMask
         role={role}

@@ -19,7 +19,7 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
   }
 
   onSelectPlayer(requiredAmount: number, scopedTargets: PlayerId[]) {
-    return new Promise<PlayerId[] | undefined>(resolve => {
+    return new Promise<PlayerId[] | undefined>((resolve) => {
       if (!EventPacker.isUncancellabelEvent(this.event)) {
         this.presenter.enableActionButton('cancel');
         this.presenter.defineCancelButtonActions(() => {
@@ -42,7 +42,7 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
         if (selected) {
           selectedPlayers.push(player.Id);
         } else {
-          const index = selectedPlayers.findIndex(playerId => player.Id === playerId);
+          const index = selectedPlayers.findIndex((playerId) => player.Id === playerId);
           if (index >= 0) {
             selectedPlayers.splice(index, 1);
           }
@@ -71,7 +71,7 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
       }
 
       const selectedCards: CardId[] = [];
-      this.presenter.setupClientPlayerCardActionsMatcher(card => {
+      this.presenter.setupClientPlayerCardActionsMatcher((card) => {
         if (
           !fromArea.includes(PlayerCardsArea.HandArea) ||
           (this.customSelector && !this.customSelector.match(card)) ||
@@ -81,7 +81,7 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
         }
         return selectedCards.length !== cardAmount || selectedCards.includes(card.Id);
       });
-      this.presenter.setupCardSkillSelectionMatcher(card => {
+      this.presenter.setupCardSkillSelectionMatcher((card) => {
         if (
           !fromArea.includes(PlayerCardsArea.EquipArea) ||
           (this.customSelector && !this.customSelector.match(card)) ||
@@ -96,7 +96,7 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
         if (selected) {
           selectedCards.push(card.Id);
         } else {
-          const index = selectedCards.findIndex(cardId => card.Id === cardId);
+          const index = selectedCards.findIndex((cardId) => card.Id === cardId);
           if (index >= 0) {
             selectedCards.splice(index, 1);
           }

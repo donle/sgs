@@ -74,7 +74,7 @@ export class Lobby extends React.Component<LobbyProps> {
   }
 
   private getTranslatePackName = (...packages: GameCharacterExtensions[]) => {
-    return packages.map(pack => this.props.translator.tr(pack)).join(this.props.translator.tr(','));
+    return packages.map((pack) => this.props.translator.tr(pack)).join(this.props.translator.tr(','));
   };
 
   private readonly onCreateRoom = () => {

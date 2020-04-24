@@ -59,14 +59,14 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
 
   getPlayerEquips() {
     const { player, translator } = this.props;
-    const equips = player?.getCardIds(PlayerCardsArea.EquipArea).map(cardId => Sanguosha.getCardById(cardId));
+    const equips = player?.getCardIds(PlayerCardsArea.EquipArea).map((cardId) => Sanguosha.getCardById(cardId));
     if (!equips) {
       return;
     }
 
     return (
       <div className={styles.playerEquips}>
-        {equips.map(equip => (
+        {equips.map((equip) => (
           <FlatClientCard
             card={equip}
             translator={translator}
@@ -86,7 +86,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   getPlayerJudgeCards() {
     return (
       <div className={styles.judgeIcons}>
-        {this.props.player?.getCardIds(PlayerCardsArea.JudgeArea).map(cardId => (
+        {this.props.player?.getCardIds(PlayerCardsArea.JudgeArea).map((cardId) => (
           <DelayedTrickIcon card={Sanguosha.getCardById(cardId)} translator={this.props.translator} />
         ))}
       </div>

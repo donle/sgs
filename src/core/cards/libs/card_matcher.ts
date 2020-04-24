@@ -53,7 +53,7 @@ export class CardMatcher {
         matched = matched && name.includes(card.GeneralName);
       }
       if (type) {
-        matched = matched && type.find(subType => card.is(subType)) !== undefined;
+        matched = matched && type.find((subType) => card.is(subType)) !== undefined;
       }
       if (cards) {
         matched = matched && cards.includes(card.Id);
@@ -61,20 +61,22 @@ export class CardMatcher {
     } else {
       matcher = card.toSocketPassenger();
       if (suit && matcher.suit) {
-        matched = matched && matcher.suit.length > 0 && matcher.suit.every(cardSuit => suit.includes(cardSuit));
+        matched = matched && matcher.suit.length > 0 && matcher.suit.every((cardSuit) => suit.includes(cardSuit));
       }
       if (cardNumber && matcher.cardNumber) {
         matched =
-          matched && matcher.cardNumber.length > 0 && matcher.cardNumber.every(cardNum => cardNumber.includes(cardNum));
+          matched &&
+          matcher.cardNumber.length > 0 &&
+          matcher.cardNumber.every((cardNum) => cardNumber.includes(cardNum));
       }
       if (name && matcher.name) {
-        matched = matched && matcher.name.length > 0 && matcher.name.every(cardName => name.includes(cardName));
+        matched = matched && matcher.name.length > 0 && matcher.name.every((cardName) => name.includes(cardName));
       }
       if (type && matcher.type) {
-        matched = matched && matcher.type.length > 0 && matcher.type.every(cardType => type.includes(cardType));
+        matched = matched && matcher.type.length > 0 && matcher.type.every((cardType) => type.includes(cardType));
       }
       if (cards && matcher.cards) {
-        matched = matched && matcher.cards.length > 0 && matcher.cards.every(innerCard => cards.includes(innerCard));
+        matched = matched && matcher.cards.length > 0 && matcher.cards.every((innerCard) => cards.includes(innerCard));
       }
     }
 
@@ -125,27 +127,27 @@ export class CardMatcher {
     this.matcher.suit = !this.matcher.suit
       ? undefined
       : suit
-      ? this.matcher.suit.filter(s => !suit.includes(s))
+      ? this.matcher.suit.filter((s) => !suit.includes(s))
       : this.matcher.suit;
     this.matcher.cardNumber = !this.matcher.cardNumber
       ? undefined
       : cardNumber
-      ? this.matcher.cardNumber.filter(s => !cardNumber.includes(s))
+      ? this.matcher.cardNumber.filter((s) => !cardNumber.includes(s))
       : this.matcher.cardNumber;
     this.matcher.name = !this.matcher.name
       ? undefined
       : name
-      ? this.matcher.name.filter(s => !name.includes(s))
+      ? this.matcher.name.filter((s) => !name.includes(s))
       : this.matcher.name;
     this.matcher.type = !this.matcher.type
       ? undefined
       : type
-      ? this.matcher.type.filter(s => !type.includes(s))
+      ? this.matcher.type.filter((s) => !type.includes(s))
       : this.matcher.type;
     this.matcher.cards = !this.matcher.cards
       ? undefined
       : cards
-      ? this.matcher.cards.filter(s => !cards.includes(s))
+      ? this.matcher.cards.filter((s) => !cards.includes(s))
       : this.matcher.cards;
 
     this.matchAll = Object.keys(this.matcher).length === 0;

@@ -131,7 +131,7 @@ export class LuoShenShadow extends TriggerSkill {
     const maxHold =
       GameCommonRules.getBaseHoldCardNumber(room, player) + GameCommonRules.getAdditionalHoldCardNumber(room, player);
 
-    const otherHandCards = player.getCardIds(PlayerCardsArea.HandArea).filter(card => !luoshenCards.includes(card));
+    const otherHandCards = player.getCardIds(PlayerCardsArea.HandArea).filter((card) => !luoshenCards.includes(card));
     const discardAmount = otherHandCards.length - maxHold;
 
     if (discardAmount <= 0) {

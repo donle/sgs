@@ -7,32 +7,33 @@
     z-index: 999;
 }
 
-.winners, .losers {
-  margin: 24px 0;
+.winners,
+.losers {
+    margin: 24px 0;
 }
 
 .title {
-  font-size: 20px;
-  margin-bottom: 16px;
-  display: block;
+    font-size: 20px;
+    margin-bottom: 16px;
+    display: block;
 }
 
 .actionButtons {
-  display: flex;
-  justify-content: flex-end;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .players {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  min-width: 480px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 480px;
 }
 
 .player {
-  flex: auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding-bottom: 8px;
+    flex: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding-bottom: 8px;
 }

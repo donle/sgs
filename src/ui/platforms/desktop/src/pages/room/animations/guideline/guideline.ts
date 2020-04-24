@@ -26,22 +26,22 @@ export class GuideLine {
   async animate() {
     for (const step of this.steps) {
       const lines = this.render(step);
-      this.rooElement.append(...lines.map(line => line[0]));
+      this.rooElement.append(...lines.map((line) => line[0]));
       this.playAsyncAnimation(lines);
       await this.pause();
     }
   }
 
   private async pause() {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       setTimeout(() => resolve(), this.animationTime + this.defaultAnimationTime);
     });
   }
 
   private async playAsyncAnimation(lines: [HTMLElement, number][]) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       for (const [element, length] of lines) {
-        this.createAsyncAnimation(element, length).then(delayedElement => this.asyncAnimationOff(delayedElement));
+        this.createAsyncAnimation(element, length).then((delayedElement) => this.asyncAnimationOff(delayedElement));
       }
 
       setTimeout(async () => {
@@ -54,7 +54,7 @@ export class GuideLine {
   }
 
   private asyncAnimationOff(element: HTMLElement) {
-    return new Promise<HTMLElement>(resolve => {
+    return new Promise<HTMLElement>((resolve) => {
       setTimeout(() => {
         element.style.transition = `opacity ${this.defaultAnimationTime * 2}ms`;
         element.style.opacity = '0';
@@ -64,7 +64,7 @@ export class GuideLine {
   }
 
   private async createAsyncAnimation(element: HTMLElement, length: number) {
-    return new Promise<HTMLElement>(resolve => {
+    return new Promise<HTMLElement>((resolve) => {
       setTimeout(() => {
         element.style.transition = `width ${this.animationTime}ms, opacity ${this.defaultAnimationTime}ms`;
         element.style.width = `${length}px`;

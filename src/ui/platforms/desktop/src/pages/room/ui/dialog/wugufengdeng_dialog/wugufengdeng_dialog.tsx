@@ -31,7 +31,7 @@ const getCardsContainerLines = ({ cards, selected, translator, onClick }: WuGuFe
     const cardLine: JSX.Element[] = [];
     for (let i = index; i < Math.min(cards.length, maxCardsPerLine + index); i++) {
       const card = Sanguosha.getCardById(cards[i]);
-      const isSelected = selected.find(selectedCard => selectedCard.card === card.Id);
+      const isSelected = selected.find((selectedCard) => selectedCard.card === card.Id);
 
       cardLine.push(
         <ClientCard

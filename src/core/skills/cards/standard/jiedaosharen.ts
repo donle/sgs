@@ -13,7 +13,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 export class JieDaoShaRenSkill extends ActiveSkill {
   public canUse(room: Room, owner: Player) {
     return (
-      room.getOtherPlayers(owner.Id).find(player => player.getEquipment(CardType.Weapon) !== undefined) !== undefined
+      room.getOtherPlayers(owner.Id).find((player) => player.getEquipment(CardType.Weapon) !== undefined) !== undefined
     );
   }
 

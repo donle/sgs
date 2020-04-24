@@ -37,7 +37,7 @@ export class CiXiongJianSkill extends TriggerSkill {
 
     return (
       fromId === owner.Id &&
-      toIds.find(targetId => {
+      toIds.find((targetId) => {
         const target = room.getPlayerById(targetId);
         return (
           target.Gender !== owner.Gender &&

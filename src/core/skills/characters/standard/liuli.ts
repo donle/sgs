@@ -49,7 +49,7 @@ export class LiuLi extends TriggerSkill {
 
     await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, fromId, this.Name);
 
-    aimEvent.toIds = aimEvent.toIds.filter(toId => toId !== fromId);
+    aimEvent.toIds = aimEvent.toIds.filter((toId) => toId !== fromId);
     aimEvent.toIds.push(toIds![0]);
 
     return true;

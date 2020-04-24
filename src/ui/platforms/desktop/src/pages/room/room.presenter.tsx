@@ -119,22 +119,17 @@ export class RoomPresenter {
 
   @mobx.action
   enableActionButton(...buttons: ('confirm' | 'cancel' | 'finish')[]) {
-    buttons.forEach(btn => (this.store.actionButtonStatus[btn] = true));
+    buttons.forEach((btn) => (this.store.actionButtonStatus[btn] = true));
   }
   @mobx.action
   disableActionButton(...buttons: ('confirm' | 'cancel' | 'finish')[]) {
-    buttons.forEach(btn => (this.store.actionButtonStatus[btn] = false));
+    buttons.forEach((btn) => (this.store.actionButtonStatus[btn] = false));
   }
 
   @mobx.action
   playerEnter(playerInfo: PlayerInfo) {
     this.tryToThrowUninitializedError();
-    const player = new ClientPlayer(
-      playerInfo.Id,
-      playerInfo.Name,
-      playerInfo.Position,
-      playerInfo.CharacterId,
-    );
+    const player = new ClientPlayer(playerInfo.Id, playerInfo.Name, playerInfo.Position, playerInfo.CharacterId);
     this.store.room.addPlayer(player);
     this.broadcastUIUpdate();
   }
@@ -150,21 +145,10 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  createClientRoom(
-    roomId: RoomId,
-    socket: ClientSocket,
-    gameInfo: GameInfo,
-    playersInfo: PlayerInfo[],
-  ) {
+  createClientRoom(roomId: RoomId, socket: ClientSocket, gameInfo: GameInfo, playersInfo: PlayerInfo[]) {
     this.tryToThrowUninitializedError();
     const players = playersInfo.map(
-      playerInfo =>
-        new ClientPlayer(
-          playerInfo.Id,
-          playerInfo.Name,
-          playerInfo.Position,
-          playerInfo.CharacterId,
-        ),
+      (playerInfo) => new ClientPlayer(playerInfo.Id, playerInfo.Name, playerInfo.Position, playerInfo.CharacterId),
     );
 
     this.store.room = new ClientRoom(roomId, socket, gameInfo, players);
@@ -190,7 +174,7 @@ export class RoomPresenter {
   @mobx.action
   createDialog = (dialog: JSX.Element) => {
     this.store.selectorDialog = dialog;
-  }
+  };
 
   @mobx.action
   closeDialog() {
@@ -200,9 +184,7 @@ export class RoomPresenter {
   @mobx.action
   createIncomingConversation = (props: ConversationProps) => {
     if (props.optionsActionHanlder) {
-      for (const [option, action] of Object.entries(
-        props.optionsActionHanlder,
-      )) {
+      for (const [option, action] of Object.entries(props.optionsActionHanlder)) {
         props.optionsActionHanlder[option] = () => {
           action();
           this.closeIncomingConversation();
@@ -218,9 +200,7 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  setupClientPlayerCardActionsMatcher(
-    matcher: (card: Card) => boolean,
-  ) {
+  setupClientPlayerCardActionsMatcher(matcher: (card: Card) => boolean) {
     this.store.clientPlayerCardActionsMatcher = matcher;
   }
   @mobx.action

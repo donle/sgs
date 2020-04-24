@@ -41,7 +41,7 @@ export class TiShen extends TriggerSkill {
     const cards = room
       .getPlayerById(skillUseEvent.fromId)
       .getPlayerCards()
-      .filter(cardId => {
+      .filter((cardId) => {
         const card = Sanguosha.getCardById(cardId);
         return card.is(CardType.OffenseRide) || card.is(CardType.DefenseRide) || card.is(CardType.Trick);
       });

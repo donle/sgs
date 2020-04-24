@@ -12,7 +12,7 @@ export class Logger {
 
   translate(args: any[]) {
     if (this.translator) {
-      return args.map(arg => {
+      return args.map((arg) => {
         return typeof arg === 'string' ? this.translator!.tr(arg) : arg;
       });
     }
@@ -39,9 +39,9 @@ export class Logger {
 
   async dump() {
     process.stdin.setRawMode && process.stdin.setRawMode(true);
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       process.stdin.resume();
-      process.stdin.once('data', data => {
+      process.stdin.once('data', (data) => {
         process.stdin.setRawMode && process.stdin.setRawMode(false);
         const command = data.toString().trim();
         if (command === 'c') {

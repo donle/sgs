@@ -39,10 +39,7 @@ export class QingJian extends TriggerSkill {
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
-    return room
-      .getPlayerById(owner)
-      .getPlayerCards()
-      .includes(cardId);
+    return room.getPlayerById(owner).getPlayerCards().includes(cardId);
   }
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
@@ -91,7 +88,7 @@ export class QingJian extends TriggerSkill {
       this.GeneralName,
     );
 
-    room.syncGameCommonRules(room.CurrentPlayer.Id, user => {
+    room.syncGameCommonRules(room.CurrentPlayer.Id, (user) => {
       user.addInvisibleMark(this.Name, types.length);
       GameCommonRules.addAdditionalHoldCardNumber(user, types.length);
     });
@@ -130,7 +127,7 @@ export class QingJianShadow extends TriggerSkill implements OnDefineReleaseTimin
     ) as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
 
     phaseChangeEvent.fromPlayer &&
-      room.syncGameCommonRules(phaseChangeEvent.fromPlayer, user => {
+      room.syncGameCommonRules(phaseChangeEvent.fromPlayer, (user) => {
         const extraHold = user.getInvisibleMark(this.GeneralName);
         user.removeInvisibleMark(this.GeneralName);
         GameCommonRules.addAdditionalHoldCardNumber(user, -extraHold);

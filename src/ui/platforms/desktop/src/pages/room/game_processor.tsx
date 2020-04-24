@@ -346,7 +346,7 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     await this.store.room.useCard(content);
-    this.presenter.showCards(...Card.getActualCards([content.cardId]).map(cardId => Sanguosha.getCardById(cardId)));
+    this.presenter.showCards(...Card.getActualCards([content.cardId]).map((cardId) => Sanguosha.getCardById(cardId)));
     this.presenter.broadcastUIUpdate();
   }
 
@@ -354,17 +354,19 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.presenter.showCards(...Card.getActualCards([content.cardId]).map(cardId => Sanguosha.getCardById(cardId)));
+    this.presenter.showCards(...Card.getActualCards([content.cardId]).map((cardId) => Sanguosha.getCardById(cardId)));
   }
   private onHandleCardDropEvent<T extends GameEventIdentifiers.CardDropEvent>(type: T, content: ServerEventFinder<T>) {
-    this.presenter.showCards(...Card.getActualCards(content.cardIds).map(cardId => Sanguosha.getCardById(cardId)));
+    this.presenter.showCards(...Card.getActualCards(content.cardIds).map((cardId) => Sanguosha.getCardById(cardId)));
   }
 
   private onHandleCardDisplayEvent<T extends GameEventIdentifiers.CardDisplayEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.presenter.showCards(...Card.getActualCards(content.displayCards).map(cardId => Sanguosha.getCardById(cardId)));
+    this.presenter.showCards(
+      ...Card.getActualCards(content.displayCards).map((cardId) => Sanguosha.getCardById(cardId)),
+    );
   }
 
   // tslint:disable-next-line:no-empty
@@ -441,7 +443,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    content.otherPlayers.forEach(playerInfo => {
+    content.otherPlayers.forEach((playerInfo) => {
       const player = this.store.room.getPlayerById(playerInfo.Id);
       player.CharacterId = playerInfo.CharacterId!;
       player.MaxHp = playerInfo.MaxHp;
@@ -454,7 +456,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    content.playersInfo.forEach(playerInfo => {
+    content.playersInfo.forEach((playerInfo) => {
       const player = this.store.room.getPlayerById(playerInfo.Id);
       player.Position = playerInfo.Position;
       player.Role = playerInfo.Role!;
@@ -485,7 +487,7 @@ export class GameClientProcessor {
       this.store.animationPosition.insertPlayer(content.joiningPlayerId);
     } else {
       const playerInfo = Precondition.exists(
-        content.playersInfo.find(playerInfo => playerInfo.Id === content.joiningPlayerId),
+        content.playersInfo.find((playerInfo) => playerInfo.Id === content.joiningPlayerId),
         `Unknown player ${content.joiningPlayerName}`,
       );
 
@@ -608,10 +610,7 @@ export class GameClientProcessor {
 
   private onHandleMoveCardEvent<T extends GameEventIdentifiers.MoveCardEvent>(type: T, content: ServerEventFinder<T>) {
     for (const cardId of content.cardIds) {
-      this.store.room
-        .getPlayerById(content.toId)
-        .getCardIds(content.toArea)
-        .push(cardId);
+      this.store.room.getPlayerById(content.toId).getCardIds(content.toArea).push(cardId);
     }
 
     this.presenter.broadcastUIUpdate();
@@ -713,13 +712,13 @@ export class GameClientProcessor {
 
   private onHandleCardLostEvent<T extends GameEventIdentifiers.CardLostEvent>(type: T, content: ServerEventFinder<T>) {
     const { fromId, cards } = content;
-    const cardIds = cards.map(card => card.cardId);
+    const cardIds = cards.map((card) => card.cardId);
     this.store.room.getPlayerById(fromId).dropCards(...cardIds);
 
     this.presenter.showCards(
       ...cardIds
-        .filter(cardId => this.store.room.getCardOwnerId(cardId) === undefined)
-        .map(cardId => Sanguosha.getCardById(cardId)),
+        .filter((cardId) => this.store.room.getCardOwnerId(cardId) === undefined)
+        .map((cardId) => Sanguosha.getCardById(cardId)),
     );
     this.presenter.broadcastUIUpdate();
   }
@@ -730,7 +729,7 @@ export class GameClientProcessor {
   ) {
     const { options, conversation, toId } = content;
     const actionHandlers = {};
-    options.forEach(option => {
+    options.forEach((option) => {
       actionHandlers[option] = () => {
         const response: ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
           fromId: toId,
@@ -774,8 +773,8 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     const { winnerIds, loserIds } = content;
-    const winners = winnerIds.map(id => this.store.room.getPlayerById(id));
-    const losers = loserIds.map(id => this.store.room.getPlayerById(id));
+    const winners = winnerIds.map((id) => this.store.room.getPlayerById(id));
+    const losers = loserIds.map((id) => this.store.room.getPlayerById(id));
     this.store.room.gameOver();
     this.presenter.createDialog(<GameOverDialog translator={this.translator} winners={winners} losers={losers} />);
     this.presenter.broadcastUIUpdate();
@@ -807,12 +806,12 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     const { movableCards, top, bottom, toId, topStackName, bottomStackName } = content;
-    const cards = movableCards.map(cardId => Sanguosha.getCardById(cardId));
+    const cards = movableCards.map((cardId) => Sanguosha.getCardById(cardId));
 
     const onConfirm = (top: Card[], bottom: Card[]) => () => {
       const responseEvent: ClientEventFinder<T> = {
-        top: top.map(card => card.Id),
-        bottom: bottom.map(card => card.Id),
+        top: top.map((card) => card.Id),
+        bottom: bottom.map((card) => card.Id),
         fromId: toId,
       };
 
@@ -865,7 +864,7 @@ export class GameClientProcessor {
     this.presenter.createDialog(
       <WuGuFengDengDialog
         cards={content.cardIds}
-        selected={content.selected.map(selectedCard => ({
+        selected={content.selected.map((selectedCard) => ({
           card: selectedCard.card,
           playerObjectText:
             selectedCard.player &&

@@ -16,7 +16,7 @@ export class XiaoJi extends TriggerSkill {
       return false;
     }
 
-    const equipCards = content.cards.filter(card => card.fromArea === PlayerCardsArea.EquipArea);
+    const equipCards = content.cards.filter((card) => card.fromArea === PlayerCardsArea.EquipArea);
     if (equipCards.length > 0) {
       owner.addInvisibleMark(this.Name, equipCards.length * 2);
       return true;

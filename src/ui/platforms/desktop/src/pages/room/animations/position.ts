@@ -23,7 +23,7 @@ export class AnimationPosition {
       y: playerOffset.top + playerCardElement.clientHeight / 2,
     };
 
-    const existingPosition = this.positions.find(position => position.playerId === playerId);
+    const existingPosition = this.positions.find((position) => position.playerId === playerId);
     if (existingPosition) {
       existingPosition.position = position;
     } else {
@@ -45,7 +45,7 @@ export class AnimationPosition {
       y: playerOffset.top + 12,
     };
 
-    const existingPosition = this.positions.find(position => position.playerId === playerId);
+    const existingPosition = this.positions.find((position) => position.playerId === playerId);
     if (existingPosition) {
       existingPosition.position = position;
     } else {
@@ -55,7 +55,7 @@ export class AnimationPosition {
       });
     }
   }
-  
+
   private getOffset(el: HTMLElement) {
     const rect = el.getBoundingClientRect();
     return {
@@ -68,7 +68,7 @@ export class AnimationPosition {
     isCurrentPlayer ? this.calculateCurrentPlayerPosition(playerId) : this.calculatePlayerPosition(playerId);
 
     return Precondition.exists(
-      this.positions.find(position => position.playerId === playerId),
+      this.positions.find((position) => position.playerId === playerId),
       `player ${playerId} not found`,
     ).position!;
   }

@@ -8,7 +8,7 @@ export class XiaHouDun extends Character {
   constructor(id: number) {
     super(id, 'xiahoudun', CharacterGender.Male, CharacterNationality.Wei, 4, 4, GameCharacterExtensions.Standard, [
       skillLoaderInstance.getSkillByName('ganglie'),
-      ...skillLoaderInstance.getSkillsByName('qingjian')
+      ...skillLoaderInstance.getSkillsByName('qingjian'),
     ]);
   }
 }

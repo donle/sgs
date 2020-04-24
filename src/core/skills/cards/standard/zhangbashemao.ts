@@ -6,7 +6,7 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CommonSkill, ViewAsSkill } from 'core/skills/skill';
 
-@CommonSkill({ name: 'zhangbashemao', description: 'zhangbashemao_description'})
+@CommonSkill({ name: 'zhangbashemao', description: 'zhangbashemao_description' })
 export class ZhangBaSheMaoSkill extends ViewAsSkill {
   public canViewAs(): string[] {
     return ['slash'];

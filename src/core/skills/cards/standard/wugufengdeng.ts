@@ -32,7 +32,7 @@ export class WuGuFengDengSkill extends ActiveSkill {
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const all = room.getAlivePlayersFrom();
     const from = room.getPlayerById(event.fromId);
-    event.toIds = all.filter(player => from.canUseCardTo(room, event.cardId, player.Id)).map(player => player.Id);
+    event.toIds = all.filter((player) => from.canUseCardTo(room, event.cardId, player.Id)).map((player) => player.Id);
 
     return true;
   }

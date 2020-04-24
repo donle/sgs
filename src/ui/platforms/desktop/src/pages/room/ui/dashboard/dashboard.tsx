@@ -116,7 +116,7 @@ export class Dashboard extends React.Component<DashboardProps> {
   }
 
   getEquipCardsSection() {
-    const equipCards = this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.EquipArea).map(cardId =>
+    const equipCards = this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.EquipArea).map((cardId) =>
       Sanguosha.getCardById<EquipCard>(cardId),
     );
 
@@ -124,7 +124,7 @@ export class Dashboard extends React.Component<DashboardProps> {
       <>
         {equipCards && (
           <div className={styles.equipSection}>
-            {equipCards.map(card => (
+            {equipCards.map((card) => (
               <EquipCardItem
                 translator={this.props.translator}
                 card={card}
@@ -160,7 +160,7 @@ export class Dashboard extends React.Component<DashboardProps> {
   getPlayerJudgeCards() {
     return (
       <div className={styles.judges}>
-        {this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.JudgeArea).map(cardId => (
+        {this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.JudgeArea).map((cardId) => (
           <DelayedTrickIcon
             key={cardId}
             card={Sanguosha.getCardById(cardId)}

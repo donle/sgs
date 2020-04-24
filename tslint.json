@@ -1,6 +1,6 @@
 {
   "linterOptions": {
-    "exclude": ["**/*.json"]
+    "exclude": ["**/*.json", "**/node_modules/**"]
   },
   "rules": {
     "adjacent-overload-signatures": true,

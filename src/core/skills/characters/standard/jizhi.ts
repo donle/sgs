@@ -55,7 +55,7 @@ export class JiZhi extends TriggerSkill {
 
       if (response.selectedOption === 'jizhi:discard') {
         await room.dropCards(CardLostReason.ActiveDrop, [cardId], event.fromId, event.fromId, this.Name);
-        room.syncGameCommonRules(event.fromId, user => {
+        room.syncGameCommonRules(event.fromId, (user) => {
           user.addInvisibleMark(this.Name, 1);
           GameCommonRules.addAdditionalHoldCardNumber(user, 1);
         });
@@ -93,7 +93,7 @@ export class JizhiShadow extends TriggerSkill {
     ) as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
 
     phaseChangeEvent.fromPlayer &&
-      room.syncGameCommonRules(phaseChangeEvent.fromPlayer, user => {
+      room.syncGameCommonRules(phaseChangeEvent.fromPlayer, (user) => {
         const extraHold = user.getInvisibleMark(this.GeneralName);
         user.removeInvisibleMark(this.GeneralName);
         GameCommonRules.addAdditionalHoldCardNumber(user, -extraHold);

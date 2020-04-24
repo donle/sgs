@@ -75,12 +75,12 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     const { presenter, translator, isSkillDisabled } = this.props;
     const skills =
       presenter.ClientPlayer && presenter.ClientPlayer.CharacterId !== undefined
-        ? presenter.ClientPlayer.getPlayerSkills().filter(skill => !skill.isShadowSkill())
+        ? presenter.ClientPlayer.getPlayerSkills().filter((skill) => !skill.isShadowSkill())
         : [];
 
     return (
       <div className={styles.playerSkills}>
-        {skills.map(skill => (
+        {skills.map((skill) => (
           <button
             className={classNames(styles.playerSkill, {
               [styles.selected]: this.getSkillSelected() && this.props.store.selectedSkill === skill,

@@ -64,7 +64,7 @@ export class Cheat extends ActiveSkill {
       new CardMatcher({
         type: type === undefined ? undefined : [type],
       }),
-    ).map(card => card.Name);
+    ).map((card) => card.Name);
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChoose, skillUseEvent.fromId);
     const { selectedOption: selectedName } = await room.onReceivingAsyncReponseFrom(
       GameEventIdentifiers.AskForChoosingOptionsEvent,
@@ -76,7 +76,7 @@ export class Cheat extends ActiveSkill {
         type: type === undefined ? undefined : [type],
         name: selectedName === undefined ? undefined : [selectedName],
       }),
-    ).map(card => Functional.getCardSuitRawText(card.Suit));
+    ).map((card) => Functional.getCardSuitRawText(card.Suit));
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChoose, skillUseEvent.fromId);
     const { selectedOption: selectedSuit } = await room.onReceivingAsyncReponseFrom(
       GameEventIdentifiers.AskForChoosingOptionsEvent,
@@ -97,7 +97,7 @@ export class Cheat extends ActiveSkill {
         type: type === undefined ? undefined : [type],
         suit: selectedSuit === undefined ? undefined : [suitMap[selectedSuit]],
       }),
-    ).filter(card => from.getCardId(card.Id) === undefined);
+    ).filter((card) => from.getCardId(card.Id) === undefined);
 
     if (cards.length > 0) {
       const fromOthers = room.getCardOwnerId(cards[0].Id);

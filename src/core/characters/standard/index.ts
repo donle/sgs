@@ -22,7 +22,7 @@ import { ZhenJi } from './zhenji';
 import { ZhouYu } from './zhouyu';
 import { ZhuGeLiang } from './zhugeliang';
 
-export const StandardCharacterPackage: (index: number) => Character[] = index => [
+export const StandardCharacterPackage: (index: number) => Character[] = (index) => [
   new SunQuan(index++),
   new ZhouYu(index++),
   new SunShangXiang(index++),

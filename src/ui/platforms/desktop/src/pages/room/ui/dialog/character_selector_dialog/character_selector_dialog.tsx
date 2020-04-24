@@ -14,7 +14,7 @@ type CharacterSelectorDialogProps = {
 
 export const CharacterSelectorDialog = (props: CharacterSelectorDialogProps) => {
   const { translator, onClick, characterIds } = props;
-  const characters = characterIds.map(characterId => {
+  const characters = characterIds.map((characterId) => {
     const character = Sanguosha.getCharacterById(characterId);
 
     return (

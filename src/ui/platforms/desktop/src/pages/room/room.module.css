@@ -1,5 +1,3 @@
-
-
 .room {
     display: flex;
     align-items: stretch;
@@ -60,7 +58,7 @@
     flex: auto;
 }
 
-@media(max-width: 1199px) {
+@media (max-width: 1199px) {
     .sideBoard {
         display: none;
     }

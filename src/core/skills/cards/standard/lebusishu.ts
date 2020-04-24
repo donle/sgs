@@ -38,7 +38,7 @@ export class LeBuSiShuSkill extends ActiveSkill {
       room
         .getPlayerById(target)
         .getCardIds(PlayerCardsArea.JudgeArea)
-        .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'lebusishu') === undefined
+        .find((cardId) => Sanguosha.getCardById(cardId).GeneralName === 'lebusishu') === undefined
     );
   }
 

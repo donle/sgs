@@ -48,7 +48,7 @@ export abstract class Character {
   ) {}
 
   protected getSkillsDescrption() {
-    return this.skills.map(skill => skill.Description);
+    return this.skills.map((skill) => skill.Description);
   }
 
   public isLord() {

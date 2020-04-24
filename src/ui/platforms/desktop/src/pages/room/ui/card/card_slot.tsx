@@ -3,7 +3,12 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import * as React from 'react';
 import styles from './card.module.css';
 
-export const CardSlot = (props: { width?: number; slotName: string; translator: ClientTranslationModule; className?: string }) => {
+export const CardSlot = (props: {
+  width?: number;
+  slotName: string;
+  translator: ClientTranslationModule;
+  className?: string;
+}) => {
   const { width = 120, slotName } = props;
   const height = (width / 3) * 4;
   return (

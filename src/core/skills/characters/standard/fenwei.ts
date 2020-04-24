@@ -35,7 +35,7 @@ export class FenWei extends TriggerSkill {
     const { triggeredOnEvent, toIds } = skillUseEvent;
     const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
 
-    aimEvent.toIds = aimEvent.toIds.filter(toId => !toIds!.includes(toId));
+    aimEvent.toIds = aimEvent.toIds.filter((toId) => !toIds!.includes(toId));
 
     return true;
   }

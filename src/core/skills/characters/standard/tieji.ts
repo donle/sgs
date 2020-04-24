@@ -40,7 +40,7 @@ export class TieJi extends TriggerSkill {
       fromArea: [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
       toId: aimEvent.toIds[0],
       cardAmount: 1,
-      except: to.getPlayerCards().filter(cardId => Sanguosha.getCardById(cardId).Suit !== judgeCard.Suit),
+      except: to.getPlayerCards().filter((cardId) => Sanguosha.getCardById(cardId).Suit !== judgeCard.Suit),
       triggeredBySkills: [this.Name],
       conversation: TranslationPack.translationJsonPatcher(
         "please drop a {0} card, otherwise you can't do response of slash",

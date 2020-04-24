@@ -33,7 +33,7 @@ export class PlayerAI {
             cardId: room
               .getPlayerById(toId)
               .getCardIds(PlayerCardsArea.HandArea)
-              .find(cardId => CardMatcher.match(cardMatcher, Sanguosha.getCardById(cardId))),
+              .find((cardId) => CardMatcher.match(cardMatcher, Sanguosha.getCardById(cardId))),
           };
           return cardResponse as ClientEventFinder<T>;
         } else {
@@ -48,7 +48,6 @@ export class PlayerAI {
         break;
       }
       default:
-        
     }
     return {} as any;
   }
