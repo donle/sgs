@@ -70,18 +70,7 @@ export class QiLinGongSkill extends TriggerSkill {
       return true;
     }
 
-    await room.loseCards(
-      [response.selectedCard],
-      chooseCardEvent.toId,
-      CardLostReason.PassiveDrop,
-      skillUseEvent.fromId,
-      undefined,
-      TranslationPack.translationJsonPatcher(
-        '{0} is placed into drop stack',
-        TranslationPack.patchCardInTranslation(response.selectedCard),
-      ).extract(),
-    );
-    room.bury(response.selectedCard);
+    await room.dropCards(CardLostReason.PassiveDrop, [response.selectedCard], to.Id, skillUseEvent.fromId, this.Name);
     return true;
   }
 }

@@ -67,7 +67,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
     while (numberOfPlayers > 0) {
       const player = this.props.store.room.Players[playerIndex];
 
-      players.push(
+      players.unshift(
         <PlayerCard
           key={playerIndex}
           onClick={this.onClick(player)}
