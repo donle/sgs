@@ -7,7 +7,6 @@ import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
-import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'qilingong', description: 'qilingong_description' })
 export class QiLinGongSkill extends TriggerSkill {
