@@ -695,6 +695,8 @@ export const eventDictionary: Word[] = [
   { source: 'gongxin:dropcard', target: '弃置此牌' },
   { source: 'yijue:recover', target: '令其回复一点体力' },
   { source: 'yijue:cancel', target: '取消' },
+  { source: 'yaowu:recover', target: '回复1点体力' },
+  { source: 'yaowu:draw', target: '摸一张牌' },
 
   {
     source: 'player {0} join in the room',
