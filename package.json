@@ -18,6 +18,8 @@
     "prettier": "prettier --write \"./**/*.{ts,tsx,css,json}\"",
     "tslint": "tslint ./src/**/*.{ts,tsx} --fix",
     "build": "rm -rf build && tsc",
+    "transpile": "cd ./src/server && yarn install && yarn build",
+    "transpile:client": "cd ./src/ui/platforms/desktop && yarn install && yarn build:mac",
     "patch": "ts-node ./src/pre_release.ts"
   }
 }
