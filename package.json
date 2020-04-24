@@ -16,8 +16,10 @@
   },
   "scripts": {
     "prettier": "prettier --write \"./**/*.{ts,tsx,css,json}\"",
-    "tslint": "tslint ./src/**/*.{ts,tsx} --fix",
+    "tslint": "tslint -c ./tslint.json ./src/**/*.{ts,tsx}",
     "build": "rm -rf build && tsc",
+    "transpile": "cd ./src/server && yarn install && yarn build",
+    "transpile:client": "cd ./src/ui/platforms/desktop && yarn install && yarn build:mac",
     "patch": "ts-node ./src/pre_release.ts"
   }
 }
