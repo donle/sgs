@@ -11,6 +11,7 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as React from 'react';
+import { AskForPeachAction } from './actions/ask_for_peach_action';
 import { CardResponseAction } from './actions/card_response_action';
 import { PlayPhaseAction } from './actions/play_phase_action';
 import { ResponsiveUseCardAction } from './actions/responsive_card_use_action';
@@ -633,22 +634,15 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const { conversation, fromId } = content;
-    this.presenter.createIncomingConversation({
-      conversation,
-      translator: this.translator,
-    });
-
-    const action = new SelectAction(fromId, this.store, this.presenter, content, new CardMatcher({ name: ['peach'] }));
-    const peaches = await action.onSelectCard([PlayerCardsArea.HandArea], 1);
-
-    const responseEvent: ClientEventFinder<T> = {
-      fromId,
-      cardId: peaches[0],
-    };
-
-    this.presenter.closeIncomingConversation();
-    this.store.room.broadcast(type, responseEvent);
+    const askForPeachMatcher = new CardMatcher({ name: ['peach'] });
+    this.presenter.isSkillDisabled(
+      ResponsiveUseCardAction.isSkillsOnResponsiveCardUseDisabled(
+        askForPeachMatcher,
+        this.store.room.getPlayerById(content.fromId),
+      ),
+    );
+    const action = new AskForPeachAction(content.fromId, this.store, this.presenter, content, askForPeachMatcher);
+    action.onPlay(this.translator);
   }
 
   private onHandleAskForChoosingCardFromPlayerEvent<T extends GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(
