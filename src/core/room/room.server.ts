@@ -71,7 +71,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.loadedCharacters = CharacterLoader.getInstance().getPackages(...this.gameInfo.characterExtensions);
     this.drawStack = CardLoader.getInstance()
       .getPackages(...this.gameInfo.cardExtensions)
-      .map((card) => card.Id);
+      .map(card => card.Id);
     this.dropStack = [];
 
     this.socket.emit(this);
@@ -100,7 +100,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     for (let i = 0; i < this.players.length; i++) {
       this.players[i].Role = roles[i];
     }
-    const lordIndex = this.players.findIndex((player) => player.Role === PlayerRole.Lord);
+    const lordIndex = this.players.findIndex(player => player.Role === PlayerRole.Lord);
     if (lordIndex !== 0) {
       [this.players[0], this.players[lordIndex]] = [this.players[lordIndex], this.players[0]];
       [this.players[0].Position, this.players[lordIndex].Position] = [
@@ -111,7 +111,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   private readonly sleep = async (timeDuration: number) =>
-    new Promise((r) => {
+    new Promise(r => {
       setTimeout(r, timeDuration);
     });
 
@@ -127,7 +127,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         currentPlayerId: this.players[0].Id,
       },
       gameInfo: this.Info,
-      playersInfo: this.Players.map((player) => player.getPlayerInfo()),
+      playersInfo: this.Players.map(player => player.getPlayerInfo()),
       messages: ['game will start within 3 seconds'],
     };
     this.broadcast(GameEventIdentifiers.GameReadyEvent, event);
@@ -187,7 +187,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     const { triggeredBySkills } = content as ServerEventFinder<GameEventIdentifiers>;
     const bySkills = triggeredBySkills
-      ? triggeredBySkills.map((skillName) => Sanguosha.getSkillBySkillName(skillName))
+      ? triggeredBySkills.map(skillName => Sanguosha.getSkillBySkillName(skillName))
       : undefined;
 
     for (const player of this.getAlivePlayersFrom()) {
@@ -198,7 +198,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         }
 
         const canTrigger = bySkills
-          ? bySkills.find((bySkill) => UniqueSkillRule.isProhibitedBySkillRule(bySkill, skill)) === undefined
+          ? bySkills.find(bySkill => UniqueSkillRule.isProhibitedBySkillRule(bySkill, skill)) === undefined
           : true;
 
         if (canTrigger) {
@@ -213,7 +213,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         }
 
         const canTrigger = bySkills
-          ? bySkills.find((skill) => !UniqueSkillRule.canTriggerCardSkillRule(skill, equipCard)) === undefined
+          ? bySkills.find(skill => !UniqueSkillRule.canTriggerCardSkillRule(skill, equipCard)) === undefined
           : true;
         if (canTrigger) {
           canTriggerSkills.push(equipCard.Skill);
@@ -389,7 +389,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     const card = Sanguosha.getCardById(event.cardId);
 
     this.addProcessingCards(card.Id.toString(), card.Id);
-    return await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, event, async (stage) => {
+    return await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, event, async stage => {
       if (stage === CardUseStage.AfterCardUseEffect) {
         if (EventPacker.isTerminated(event)) {
           return false;
@@ -484,16 +484,18 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async useSkill(content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     await super.useSkill(content);
-    content.toIds?.sort((prev, next) => {
-      const prevPosition = this.getPlayerById(prev).Position;
-      const nextPosition = this.getPlayerById(next).Position;
-      if (prevPosition < nextPosition) {
-        return -1;
-      } else if (prevPosition === nextPosition) {
-        return 0;
-      }
-      return 1;
-    });
+    if (Sanguosha.getSkillBySkillName(content.skillName).getAnimationSteps(content).length <= 1) {
+      content.toIds?.sort((prev, next) => {
+        const prevPosition = this.getPlayerById(prev).Position;
+        const nextPosition = this.getPlayerById(next).Position;
+        if (prevPosition < nextPosition) {
+          return -1;
+        } else if (prevPosition === nextPosition) {
+          return 0;
+        }
+        return 1;
+      });
+    }
 
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.SkillUseEvent, content);
     if (!EventPacker.isTerminated(content)) {
@@ -601,7 +603,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.DrawCardEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.DrawCardEvent, drawEvent),
-      async (stage) => {
+      async stage => {
         if (stage === DrawCardStage.CardDrawing) {
           drawedCards = this.getCards(drawEvent.drawAmount, from);
           await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.ObtainCardEvent, {
@@ -640,8 +642,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.ObtainCardEvent, event);
 
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.ObtainCardEvent, event);
-    this.dropStack = this.dropStack.filter((cardId) => !event.cardIds.includes(cardId));
-    this.drawStack = this.drawStack.filter((cardId) => !event.cardIds.includes(cardId));
+    this.dropStack = this.dropStack.filter(cardId => !event.cardIds.includes(cardId));
+    this.drawStack = this.drawStack.filter(cardId => !event.cardIds.includes(cardId));
   }
 
   public async dropCards(
@@ -668,7 +670,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.CardDropEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.CardDropEvent, dropEvent),
-      async (stage) => {
+      async stage => {
         if (stage === CardDropStage.CardDropping) {
           await this.loseCards(cardIds, playerId!, reason, droppedBy);
           this.bury(...cardIds);
@@ -695,7 +697,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     const actualCards = Card.getActualCards(cardIds);
 
     const event: ServerEventFinder<GameEventIdentifiers.CardLostEvent> = {
-      cards: actualCards.map((cardId) => ({ cardId, fromArea: player.cardFrom(cardId) })),
+      cards: actualCards.map(cardId => ({ cardId, fromArea: player.cardFrom(cardId) })),
       reason,
       fromId: from,
       droppedBy,
@@ -761,7 +763,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       } else {
         this.broadcast(GameEventIdentifiers.CardLostEvent, {
           fromId: from.Id,
-          cards: cardIds.map((cardId) => ({ cardId })),
+          cards: cardIds.map(cardId => ({ cardId })),
           droppedBy: proposer,
           reason: fromReason,
           translationsMessage: TranslationPack.translationJsonPatcher(
@@ -849,7 +851,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   public async responseCard(event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>): Promise<void> {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.CardResponseEvent, event);
     this.addProcessingCards(event.cardId.toString(), event.cardId);
-    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardResponseEvent, event, async (stage) => {
+    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardResponseEvent, event, async stage => {
       if (stage === CardResponseStage.AfterCardResponseEffect) {
         if (event.responseToEvent) {
           EventPacker.terminate(event.responseToEvent);
@@ -893,7 +895,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.AskForPinDianCardEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForPinDianCardEvent, { fromId, toIds }),
-      async (stage) => {
+      async stage => {
         if (stage === PinDianStage.PinDianEffect) {
           const targets = [fromId, ...toIds];
           for (const target of targets) {
@@ -908,7 +910,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           }
 
           const responses = await Promise.all(
-            targets.map((to) => this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForPinDianCardEvent, to)),
+            targets.map(to => this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForPinDianCardEvent, to)),
           );
 
           let winner: PlayerId | undefined;

@@ -211,7 +211,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'luoyi_description',
     target:
-      '摸牌阶段开始时，你亮出牌堆顶三张牌，然后你可以获得其中的基本牌、武器牌或【决斗】。若如此做，你放弃摸牌，且你为伤害来源的【杀】或【决斗】造成的伤害+1直到你的下回合开始。',
+      '摸牌阶段开始时，你亮出牌堆顶三张牌，然后你可以获得其中的基本牌、武器牌和【决斗】。若如此做，你放弃摸牌，且你为伤害来源的【杀】或【决斗】造成的伤害+1直到你的下回合开始。',
   },
   { source: 'tiandu_description', target: '当你的判定牌生效后，你可以获得此牌。' },
   {
@@ -682,6 +682,14 @@ export const eventDictionary: Word[] = [
   { source: 'recover {0} hp for {1}', target: '是否回复 {1} {0} 点体力' },
   { source: '{0} used skill {1}, damage increases to {2}', target: '{0} 使用了技能 {1}，伤害增加至 {2} 点' },
   { source: '{0} used skill {1} to you, please present a hand card', target: '{0} 使用了技能 {1}，请展示一张手牌' },
+  {
+    source: 'Obtain Basic Card, Equip Card and Duel in display cards?',
+    target: '裸衣：是否放弃摸牌，然后获取展示牌中的基本牌、装备牌和【决斗】',
+  },
+  {
+    source: '{0} used skill {1}, display cards: {2}',
+    target: '{0} 使用技能 {1}，展示了：{2}',
+  },
 
   { source: 'cixiongjian:drop-card', target: '弃置一张手牌' },
   { source: 'cixiongjian:draw-card', target: '令其摸一张牌' },
@@ -697,6 +705,8 @@ export const eventDictionary: Word[] = [
   { source: 'yijue:cancel', target: '取消' },
   { source: 'yaowu:recover', target: '回复1点体力' },
   { source: 'yaowu:draw', target: '摸一张牌' },
+  { source: 'luoyi:obtain', target: '是' },
+  { source: 'luoyi:cancel', target: '否' },
 
   {
     source: 'player {0} join in the room',

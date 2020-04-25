@@ -1,3 +1,4 @@
+import { CardType } from 'core/cards/card';
 import { CardTargetEnum } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -10,12 +11,17 @@ import { LimitSkill, TriggerSkill } from 'core/skills/skill';
 @LimitSkill({ name: 'fenwei', description: 'fenwei_description' })
 export class FenWei extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage) {
-    return stage === AimStage.AfterAim && Sanguosha.getCardById(event.byCardId!).AOE !== CardTargetEnum.Single;
+    return (
+      stage === AimStage.AfterAim &&
+      Sanguosha.getCardById(event.byCardId!).AOE !== CardTargetEnum.Single &&
+      Sanguosha.getCardById(event.byCardId!).is(CardType.Trick) &&
+      event.toIds.length > 1
+    );
   }
 
   canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
     room.setFlag(owner.Id, this.Name, event.toIds);
-    return event.toIds.includes(owner.Id);
+    return true;
   }
 
   public targetFilter(room: Room, targets: PlayerId[]) {
@@ -35,7 +41,7 @@ export class FenWei extends TriggerSkill {
     const { triggeredOnEvent, toIds } = skillUseEvent;
     const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
 
-    aimEvent.toIds = aimEvent.toIds.filter((toId) => !toIds!.includes(toId));
+    aimEvent.toIds = aimEvent.toIds.filter(toId => !toIds!.includes(toId));
 
     return true;
   }

@@ -25,7 +25,7 @@ $ npm install
 # cwd is <working_directory>
 # Start server
 $ cd src/server
-$ npm run dev #start:dev:win if you're using Windows.
+$ npm run dev #dev:win if you're using Windows.
 # Start client
 $ cd ./ui/platforms/desktop
 $ npm run start:mac #start:win if you're using Windows.

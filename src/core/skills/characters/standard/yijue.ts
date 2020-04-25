@@ -80,7 +80,6 @@ export class YiJue extends ActiveSkill {
     const card = Sanguosha.getCardById(selectedCards[0]);
     if (card.isBlack()) {
       room.obtainSkill(to.Id, YiJueBlocker.Name);
-      from.addInvisibleMark(this.Name, 1);
       room.setFlag(to.Id, this.Name, true);
     } else {
       await room.moveCards(
@@ -146,7 +145,8 @@ export class YiJueShadow extends TriggerSkill implements OnDefineReleaseTiming {
   ) {
     const identifier = EventPacker.getIdentifier(content);
     if (identifier === GameEventIdentifiers.DamageEvent) {
-      return owner.Id === (content as ServerEventFinder<GameEventIdentifiers.DamageEvent>).fromId;
+      content = content as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
+      return room.getPlayerById(content.toId).getFlag<boolean>(this.GeneralName) && owner.Id === content.fromId;
     } else if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
       content = content as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
       return owner.Id === content.fromPlayer && content.from === PlayerPhase.FinishStage;
@@ -179,7 +179,6 @@ export class YiJueShadow extends TriggerSkill implements OnDefineReleaseTiming {
         ).toString(),
       );
     } else if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
-      room.getPlayerById(fromId).removeInvisibleMark(this.GeneralName);
       for (const player of room.AlivePlayers) {
         room.removeFlag(player.Id, this.GeneralName);
         if (player.hasSkill(YiJueBlocker.Name)) {

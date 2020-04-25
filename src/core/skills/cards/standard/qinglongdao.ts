@@ -40,6 +40,7 @@ export class QingLongYanYueDaoSkill extends TriggerSkill {
     const askForSlash: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent> = {
       toId: skillUseEvent.fromId,
       scopedTargets: [jinkEffectEvent.fromId!],
+      extraUse: true,
       cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
       conversation: TranslationPack.translationJsonPatcher('please select to use a {0}', 'slash').extract(),
     };
