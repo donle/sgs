@@ -150,6 +150,6 @@ export class ZhaXiangDistance extends RulesBreakerSkill implements OnDefineRelea
       match = Sanguosha.getCardById(cardId).GeneralName === 'slash';
     }
 
-    return match ? INFINITE_DISTANCE : 0;
+    return match ? extra : 0;
   }
 }

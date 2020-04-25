@@ -9,7 +9,11 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import { RoomPresenter, RoomStore } from '../room.presenter';
 import { BaseAction } from './base_action';
 
-export class ResponsiveUseCardAction extends BaseAction {
+export class ResponsiveUseCardAction<
+  T extends
+    | GameEventIdentifiers.AskForCardUseEvent
+    | GameEventIdentifiers.AskForPeachEvent = GameEventIdentifiers.AskForCardUseEvent
+> extends BaseAction {
   public static isSkillsOnResponsiveCardUseDisabled = (matcher: CardMatcher, player: Player) => (skill: Skill) => {
     if (UniqueSkillRule.isProhibited(skill, player)) {
       return true;
@@ -24,20 +28,22 @@ export class ResponsiveUseCardAction extends BaseAction {
     return true;
   };
 
-  protected askForEvent: ServerEventFinder<
-    GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForPeachEvent
-  >;
+  protected askForEvent: ServerEventFinder<T>;
   protected matcher: CardMatcher;
+
+  private extraUse: boolean;
+
   constructor(
     playerId: PlayerId,
     store: RoomStore,
     presenter: RoomPresenter,
-    askForEvent: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForPeachEvent>,
+    askForEvent: ServerEventFinder<T>,
     cardMatcher?: CardMatcher,
   ) {
     const dynamicEvent = askForEvent as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
     super(playerId, store, presenter, dynamicEvent.scopedTargets);
     this.askForEvent = askForEvent;
+    this.extraUse = !!dynamicEvent.extraUse;
     this.matcher = cardMatcher || new CardMatcher(dynamicEvent.cardMatcher);
 
     if (!EventPacker.isUncancellabelEvent(this.askForEvent)) {
@@ -95,7 +101,10 @@ export class ResponsiveUseCardAction extends BaseAction {
     }
 
     if (this.selectedCardToPlay === undefined) {
-      if (!this.store.room.getPlayerById(this.playerId).canUseCard(this.store.room, card.Id, matcher)) {
+      if (
+        !this.extraUse &&
+        !this.store.room.getPlayerById(this.playerId).canUseCard(this.store.room, card.Id, matcher)
+      ) {
         return false;
       }
 
