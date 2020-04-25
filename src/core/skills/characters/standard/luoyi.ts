@@ -1,19 +1,13 @@
-import { CommonSkill, TriggerSkill, ShadowSkill, CompulsorySkill, OnDefineReleaseTiming } from 'core/skills/skill';
-import {
-  ServerEventFinder,
-  GameEventIdentifiers,
-  EventPacker,
-  CardObtainedReason,
-  CardLostReason,
-} from 'core/event/event';
-import { AllStage, DrawCardStage, PlayerPhase, PhaseChangeStage, DamageEffectStage } from 'core/game/stage_processor';
-import { Room } from 'core/room/room';
-import { Player } from 'core/player/player';
-import { TranslationPack } from 'core/translations/translation_json_tool';
-import { CardId } from 'core/cards/libs/card_props';
-import { Sanguosha } from 'core/game/engine';
 import { CardType } from 'core/cards/card';
+import { CardId } from 'core/cards/libs/card_props';
+import { CardObtainedReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
+import { AllStage, DamageEffectStage, DrawCardStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
+import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
+import { Room } from 'core/room/room';
+import { CommonSkill, CompulsorySkill, OnDefineReleaseTiming, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'luoyi', description: 'luoyi_description' })
 export class LuoYi extends TriggerSkill {
@@ -39,26 +33,28 @@ export class LuoYi extends TriggerSkill {
   ): Promise<boolean> {
     const displayCards = room.getCards(3, 'top');
     const cardDisplayEvent: ServerEventFinder<GameEventIdentifiers.CardDisplayEvent> = {
-      displayCards: displayCards,
+      displayCards,
       fromId: skillUseEvent.fromId,
       translationsMessage: TranslationPack.translationJsonPatcher(
-        'luoyi display: {0}',
+        '{0} used skill {1}, display cards: {2}',
+        TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId!)),
+        this.Name,
         TranslationPack.patchCardInTranslation(...displayCards),
       ).extract(),
     };
     room.broadcast(GameEventIdentifiers.CardDisplayEvent, cardDisplayEvent);
 
     let luoyiObtain: CardId[] = [];
-    for (let cardId of displayCards) {
+    for (const cardId of displayCards) {
       const card = Sanguosha.getCardById(cardId);
       if (card.is(CardType.Basic) || card.is(CardType.Equip) || card.GeneralName === 'duel') {
-        luoyiObtain.unshift(cardId);
+        luoyiObtain.push(cardId);
       }
     }
 
     if (luoyiObtain.length > 0) {
       const askForChooseOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
-        options: ['Obtain', 'Cancel'],
+        options: ['luoyi:obtain', 'luoyi:cancel'],
         toId: skillUseEvent.fromId,
         conversation: 'Obtain Basic Card, Equip Card and Duel in display cards?',
       };
@@ -74,7 +70,7 @@ export class LuoYi extends TriggerSkill {
         skillUseEvent.fromId,
       );
 
-      if (selectedOption === 'Obtain') {
+      if (selectedOption === 'luoyi:obtain') {
         const { triggeredOnEvent } = skillUseEvent;
         const drawCardEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DrawCardEvent>;
         drawCardEvent.drawAmount = 0;
@@ -93,14 +89,7 @@ export class LuoYi extends TriggerSkill {
         luoyiObtain = [];
       }
     }
-
-    await room.dropCards(
-      CardLostReason.PlaceToDropStack,
-      room.getProcessingCards(this.Name).filter(id => !luoyiObtain.includes(id)),
-      undefined,
-      undefined,
-      this.Name,
-    );
+    room.bury(...displayCards.filter(id => !luoyiObtain.includes(id)));
 
     return true;
   }
@@ -167,7 +156,16 @@ export class LuoYiShadow extends TriggerSkill implements OnDefineReleaseTiming {
       currentEvent.toPlayer && room.removeFlag(currentEvent.toPlayer, this.GeneralName);
     } else if (identifier === GameEventIdentifiers.DamageEvent) {
       const damgeEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-      damgeEvent.damage += 1;
+      damgeEvent.damage++;
+      damgeEvent.messages = damgeEvent.messages || [];
+      damgeEvent.messages.push(
+        TranslationPack.translationJsonPatcher(
+          '{0} used skill {1}, damage increases to {2}',
+          TranslationPack.patchPlayerInTranslation(room.getPlayerById(damgeEvent.fromId!)),
+          this.Name,
+          damgeEvent.damage,
+        ).toString(),
+      );
     }
 
     return true;
