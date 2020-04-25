@@ -125,13 +125,13 @@ export class LuoShenShadow extends TriggerSkill {
     const { triggeredOnEvent } = event;
     const askForCardDropEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent>;
     const player = room.getPlayerById(askForCardDropEvent.toId);
-    const luoshenCards = player.getFlag<CardId[]>(this.GeneralName);
+    const luoshenCards = player.getFlag<CardId[]>(this.GeneralName) || [];
     player.removeFlag(this.GeneralName);
 
     const maxHold =
       GameCommonRules.getBaseHoldCardNumber(room, player) + GameCommonRules.getAdditionalHoldCardNumber(room, player);
 
-    const otherHandCards = player.getCardIds(PlayerCardsArea.HandArea).filter((card) => !luoshenCards.includes(card));
+    const otherHandCards = player.getCardIds(PlayerCardsArea.HandArea).filter(card => !luoshenCards.includes(card));
     const discardAmount = otherHandCards.length - maxHold;
 
     if (discardAmount <= 0) {
