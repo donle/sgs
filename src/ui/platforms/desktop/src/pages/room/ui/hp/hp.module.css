@@ -1,0 +1,25 @@
+@value dyingColor from './magatama/magatama.module.css';
+@value dangerColor from './magatama/magatama.module.css';
+@value healthyColor from './magatama/magatama.module.css';
+
+.textHpLabel {
+  display: flex;
+  flex-direction: column;
+}
+
+.textHp {
+    writing-mode: vertical-lr;
+    text-orientation: upright;
+    font-size: 18px;
+    font-weight: 550;
+}
+
+.dying {
+  color: dyingColor;
+}
+.danger {
+  color: dangerColor;
+}
+.healthy {
+  color: healthyColor;
+}

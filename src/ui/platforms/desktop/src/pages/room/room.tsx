@@ -28,6 +28,7 @@ export class RoomPage extends React.Component<
   private socket: ClientSocket;
   private gameProcessor: GameClientProcessor;
   private roomId: number;
+  private playerName = window.localStorage.getItem('username') || 'unknown';
 
   private displayedCardsRef = React.createRef<HTMLDivElement>();
   private readonly cardWidth = 120;
@@ -45,17 +46,15 @@ export class RoomPage extends React.Component<
   }
 
   componentDidMount() {
-    const playerName = 'test' + Date.now();
-
     this.presenter.setupRoomStatus({
-      playerName,
+      playerName: this.playerName,
       socket: this.socket,
       roomId: this.roomId,
       timestamp: Date.now(),
     });
 
     this.socket.notify(GameEventIdentifiers.PlayerEnterEvent, {
-      playerName,
+      playerName: this.playerName,
       timestamp: this.store.clientRoomInfo.timestamp,
     });
 
@@ -63,7 +62,7 @@ export class RoomPage extends React.Component<
       this.props.history.push('/lobby');
     });
 
-    clientActiveListenerEvents().forEach((identifier) => {
+    clientActiveListenerEvents().forEach(identifier => {
       this.socket.on(identifier, async (content: ServerEventFinder<GameEventIdentifiers>) => {
         await this.gameProcessor.onHandleIncomingEvent(identifier, content);
         this.showMessageFromEvent(content);
@@ -91,9 +90,7 @@ export class RoomPage extends React.Component<
     if (animation) {
       for (const { from, tos } of animation) {
         const fromPont = this.store.animationPosition.getPosition(from, from === this.store.clientPlayerId);
-        const toPoints = tos.map((to) =>
-          this.store.animationPosition.getPosition(to, to === this.store.clientPlayerId),
-        );
+        const toPoints = tos.map(to => this.store.animationPosition.getPosition(to, to === this.store.clientPlayerId));
         steps.push([fromPont, toPoints]);
       }
     }
@@ -116,7 +113,7 @@ export class RoomPage extends React.Component<
       messages.push(TranslationPack.create(translationsMessage).toString());
     }
 
-    messages.forEach((message) => {
+    messages.forEach(message => {
       this.presenter.addGameLog(translator.trx(message));
     });
   }

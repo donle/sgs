@@ -1,10 +1,28 @@
+@value gridLine from '../../base/metrics/metrics.css';
+
+.lobby {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow-x: auto;
+    justify-content: center;
+}
+
+.logo {
+    margin-bottom: calc(gridLine * 4);
+    max-width: calc(gridLine * 32);
+    align-self: center;
+}
+
 .board {
     display: flex;
+    width: 50%;
+    padding: calc(gridLine * 2);
+    flex-direction: column;
 }
 
 .roomList {
     list-style: none;
-    margin: 0;
     padding: 0;
 }
 
@@ -16,21 +34,26 @@
 .roomInfo:last-of-type {
     border-bottom: 0;
 }
-.roomInfo:hover {
-    border: 1px solid lightgrey;
-    cursor: pointer;
-}
 
 .gameInfo {
     display: flex;
-    padding: 24px;
+    padding: calc(gridLine * 4);
 }
 
 .actionPlace {
     display: flex;
-    padding: 24px;
+    padding: calc(gridLine * 4);
     border-top: 1px solid black;
 }
-.createRoomBoard {
-    padding: 16px;
+.functionBoard {
+    padding: calc(gridLine * 2);
+    display: flex;
+    justify-content: flex-end;
 }
+
+.roomActions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.chatInfo {}

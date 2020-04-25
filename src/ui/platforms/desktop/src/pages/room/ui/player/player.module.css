@@ -1,8 +1,8 @@
-@value gridLine from '../metrics/metrics.css';
-@value halfGridLine from '../metrics/metrics.css';
-@value SanguoshaFont from '../metrics/metrics.css';
+@value gridLine from '../../../../base/metrics/metrics.css';
+@value halfGridLine from '../../../../base/metrics/metrics.css';
+@value SanguoshaFont from '../../../../base/metrics/metrics.css';
 
-@value shuColor from '../metrics/metrics.css';
+@value shuColor from '../../../../base/metrics/metrics.css';
 
 .playerCard {
     position: relative;

@@ -1,4 +1,4 @@
-@value gridLine from '../metrics/metrics.css';
+@value gridLine from '../../../../base/metrics/metrics.css';
 
 .playerCard {
     position: relative;

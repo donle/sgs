@@ -1,4 +1,4 @@
-@value SanguoshaFont from '../metrics/metrics.css';
+@value SanguoshaFont from '../../../../base/metrics/metrics.css';
 
 .selectorDialog {
     position: absolute;

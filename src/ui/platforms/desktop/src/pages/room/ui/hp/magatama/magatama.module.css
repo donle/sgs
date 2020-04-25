@@ -1,3 +1,7 @@
+@value dyingColor: #ff5613;
+@value dangerColor: #e48205;
+@value healthyColor: #1f9824;
+
 .magatama {
     display: flex;
     width: 100%;
@@ -16,13 +20,13 @@
 }
 
 .dying {
-    background: #ff5613;
+    background: dyingColor;
 }
 .danger {
-    background: #e48205;
+    background: dangerColor;
 }
 .healthy {
-    background: #1f9824;
+    background: healthyColor;
 }
 
 .damaged {
@@ -30,11 +34,11 @@
     background: transparent;
 }
 .damaged.dying {
-    border: 1px solid #ff5613;
+    border: 1px solid dyingColor;
 }
 .damaged.danger {
-    border: 1px solid #e48205;
+    border: 1px solid dangerColor;
 }
 .damaged.healthy {
-    border: 1px solid #1f9824;
+    border: 1px solid healthyColor;
 }

@@ -1,5 +1,6 @@
+import logoImage from 'assets/images/lobby/logo.png';
 import { Sanguosha } from 'core/game/engine';
-import { GameCardExtensions, GameCharacterExtensions, GameInfo } from 'core/game/game_props';
+import { GameCardExtensions, GameCharacterExtensions } from 'core/game/game_props';
 import { LobbySocketEvent, LobbySocketEventPicker, RoomInfo } from 'core/shares/types/server_types';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
@@ -8,6 +9,8 @@ import * as React from 'react';
 import SocketIOClient from 'socket.io-client';
 import { PagePropsWithHostConfig } from 'types/page_props';
 import styles from './lobby.module.css';
+import { CreatRoomDialog, TemporaryRoomCreationInfo } from './ui/create_room_dialog/create_room_dialog';
+import { UsernameData, UsernameDialog } from './ui/username_dialog/username_dialog';
 
 type LobbyProps = PagePropsWithHostConfig<{
   translator: ClientTranslationModule;
@@ -21,6 +24,8 @@ export class Lobby extends React.Component<LobbyProps> {
   private unmatchedCoreVersion = false;
   @mobx.observable.ref
   private openUsernameDialog = false;
+  @mobx.observable.ref
+  private openRoomCreationDialog = false;
 
   private socket = SocketIOClient(
     `${this.props.config.protocol}://${this.props.config.host}:${this.props.config.port}/lobby`,
@@ -74,32 +79,22 @@ export class Lobby extends React.Component<LobbyProps> {
   }
 
   private getTranslatePackName = (...packages: GameCharacterExtensions[]) => {
-    return packages.map((pack) => this.props.translator.tr(pack)).join(this.props.translator.tr(','));
+    return packages.map(pack => this.props.translator.tr(pack)).join(this.props.translator.tr(','));
   };
 
+  @mobx.action
   private readonly onCreateRoom = () => {
-    const roomInfo: GameInfo = {
-      characterExtensions: [GameCharacterExtensions.Standard],
-      cardExtensions: [GameCardExtensions.Standard],
-      numberOfPlayers: 8,
-      roomName: 'test room name',
-    };
-
-    this.socket.emit(LobbySocketEvent.GameCreated.toString(), roomInfo);
+    this.openRoomCreationDialog = true;
   };
 
-  createRoomDialog() {
-    return (
-      <div className={styles.createRoomBoard}>
-        <span>
-          <input type="checkbox" defaultChecked={true} />
-          {this.props.translator.tr(GameCardExtensions.Standard)}
-        </span>
+  private readonly onClickRefresh = () => {
+    this.socket.emit(LobbySocketEvent.QueryRoomList.toString());
+  };
 
-        <button onClick={this.onCreateRoom}>{this.props.translator.tr('Create a room')}</button>
-      </div>
-    );
-  }
+  @mobx.action
+  private readonly onChangeUsername = () => {
+    this.openUsernameDialog = true;
+  };
 
   unmatchedView() {
     //TODO: complete unmatched view;
@@ -110,27 +105,65 @@ export class Lobby extends React.Component<LobbyProps> {
     this.props.history.push(`/room/${roomInfo.id}`);
   };
 
+  @mobx.action
+  private readonly onUsernameDialogSubmit = (data: UsernameData) => {
+    this.openUsernameDialog = false;
+    window.localStorage.setItem('username', data.username);
+  };
+
+  @mobx.action
+  private readonly onRoomCreated = (roomInfo: TemporaryRoomCreationInfo) => {
+    this.openRoomCreationDialog = false;
+
+    this.socket.emit(LobbySocketEvent.GameCreated.toString(), {
+      characterExtensions: [GameCharacterExtensions.Standard],
+      cardExtensions: [GameCardExtensions.Standard],
+      ...roomInfo,
+    });
+  };
+
   render() {
     return (
-      <>
+      <div className={styles.lobby}>
         <div className={styles.board}>
+          <img className={styles.logo} src={logoImage} alt={'logo'} />
+          <div className={styles.functionBoard}>
+            <button onClick={this.onCreateRoom} disabled={!window.localStorage.getItem('username')}>
+              {this.props.translator.tr('Create a room')}
+            </button>
+            <button onClick={this.onClickRefresh}>{this.props.translator.tr('Refresh room list')}</button>
+            <button onClick={this.onChangeUsername}>{this.props.translator.tr('Change username')}</button>
+          </div>
           <div className={styles.roomList}>
             {this.roomList.length === 0 && <span>{this.props.translator.tr('No rooms at the moment')}</span>}
             {this.unmatchedCoreVersion
               ? this.unmatchedView()
               : this.roomList.map((roomInfo, index) => (
-                  <li className={styles.roomInfo} key={index} onClick={this.enterRoom(roomInfo)}>
+                  <li className={styles.roomInfo} key={index}>
                     <span>{roomInfo.name}</span>
                     <span>{this.getTranslatePackName(...roomInfo.packages)}</span>
                     <span>{`${roomInfo.activePlayers}/${roomInfo.totalPlayers}`}</span>
                     <span>{this.props.translator.tr(roomInfo.status)}</span>
+                    <span className={styles.roomActions}>
+                      <button
+                        onClick={this.enterRoom(roomInfo)}
+                        disabled={roomInfo.activePlayers === roomInfo.totalPlayers}
+                      >
+                        {this.props.translator.tr('Join')}
+                      </button>
+                    </span>
                   </li>
                 ))}
           </div>
-          {this.createRoomDialog()}
         </div>
-        {this.openUsernameDialog && <></>}
-      </>
+        <div className={styles.chatInfo}></div>
+        {this.openUsernameDialog && (
+          <UsernameDialog translator={this.props.translator} onSubmit={this.onUsernameDialogSubmit} />
+        )}
+        {this.openRoomCreationDialog && (
+          <CreatRoomDialog translator={this.props.translator} onSubmit={this.onRoomCreated} />
+        )}
+      </div>
     );
   }
 }
