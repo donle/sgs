@@ -1,9 +1,9 @@
-import { CompulsorySkill, TriggerSkill } from 'core/skills/skill';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
-import { Room } from 'core/room/room';
-import { Player } from 'core/player/player';
 import { Sanguosha } from 'core/game/engine';
+import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
+import { Player } from 'core/player/player';
+import { Room } from 'core/room/room';
+import { CompulsorySkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'yaowu', description: 'yaowu_description' })
@@ -22,7 +22,7 @@ export class YaoWu extends TriggerSkill {
       return false;
     }
 
-    const card = Sanguosha.getCardById(cardIds[0])
+    const card = Sanguosha.getCardById(cardIds[0]);
     if (card.isRed() && (!fromId || room.getPlayerById(fromId).Dead)) {
       return false;
     }
@@ -49,10 +49,7 @@ export class YaoWu extends TriggerSkill {
       if (source.Hp < source.MaxHp) {
         const chooseOptionEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
           toId: fromId,
-          options: [
-            'yaowu:recover',
-            'yaowu:draw',
-          ],
+          options: ['yaowu:recover', 'yaowu:draw'],
           conversation: TranslationPack.translationJsonPatcher(
             '{0} used skill {1} to you, please choose',
             TranslationPack.patchPlayerInTranslation(from),
@@ -65,7 +62,10 @@ export class YaoWu extends TriggerSkill {
           EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(chooseOptionEvent),
           fromId,
         );
-        const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
+        const response = await room.onReceivingAsyncReponseFrom(
+          GameEventIdentifiers.AskForChoosingOptionsEvent,
+          fromId,
+        );
         selectedOption = response.selectedOption;
       }
 
