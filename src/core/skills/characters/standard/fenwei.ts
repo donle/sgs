@@ -11,11 +11,10 @@ import { LimitSkill, TriggerSkill } from 'core/skills/skill';
 @LimitSkill({ name: 'fenwei', description: 'fenwei_description' })
 export class FenWei extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage) {
-    const card = Sanguosha.getCardById(event.byCardId!);
     return (
       stage === AimStage.AfterAim &&
-      card.AOE !== CardTargetEnum.Single &&
-      card.is(CardType.Trick) &&
+      Sanguosha.getCardById(event.byCardId!).AOE !== CardTargetEnum.Single &&
+      Sanguosha.getCardById(event.byCardId!).is(CardType.Trick) &&
       event.toIds.length > 1
     );
   }
