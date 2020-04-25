@@ -8,7 +8,7 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import { BaseAction } from './base_action';
 import { ResponsiveUseCardAction } from './responsive_card_use_action';
 
-export class AskForPeachAction extends ResponsiveUseCardAction {
+export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifiers.AskForPeachEvent> {
   isCardEnabledOnAskingForPeach(card: Card, fromArea: PlayerCardsArea) {
     if (EventPacker.isDisresponsiveEvent(this.askForEvent)) {
       return false;
