@@ -134,7 +134,7 @@ export class LuoYiShadow extends TriggerSkill implements OnDefineReleaseTiming {
     const identifier = EventPacker.getIdentifier(event);
     if (identifier === GameEventIdentifiers.DamageEvent) {
       const currentEvent = event as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-      return !!currentEvent.fromId && currentEvent.fromId == owner.Id;
+      return !!currentEvent.fromId && currentEvent.fromId === owner.Id;
     }
 
     return true;
