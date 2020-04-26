@@ -159,6 +159,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'xiahouyuan', target: '夏侯渊' },
   { source: 'shensu', target: '神速' },
+  { source: 'shebian', target: '设变' },
 
   { source: 'caoren', target: '曹仁' },
   { source: 'jushou', target: '据守' },
@@ -187,6 +188,36 @@ export const characterDictionary: Word[] = [
   { source: 'yuji', target: '于吉' },
   { source: 'guhuo', target: '蛊惑' },
   { source: 'chanyuan', target: '缠怨' },
+
+  { source: 'dianwei', target: '典韦' },
+  { source: 'guhuo', target: '强袭' },
+
+  { source: 'xunyu', target: '荀彧' },
+  { source: 'quhu', target: '驱虎' },
+  { source: 'jieming', target: '节命' },
+
+  { source: 'pangtong', target: '庞统' },
+  { source: 'lianhuan', target: '连环' },
+  { source: 'niepan', target: '涅槃' },
+
+  { source: 'wolong', target: '诸葛亮' },
+  { source: 'bazhen', target: '八阵' },
+  { source: 'huoji', target: '火计' },
+  { source: 'kanpo', target: '看破' },
+  { source: 'cangzhuo', target: '藏拙' },
+
+  { source: 'taishici', target: '太史慈' },
+  { source: 'tianyi', target: '天义' },
+
+  { source: 'pangde', target: '庞德' },
+  { source: 'jianchu', target: '鞬出' },
+
+  { source: 'yanliangwenchou', target: '颜良文丑' },
+  { source: 'shuangxiong', target: '双雄' },
+
+  { source: 'yuanshao', target: '袁绍' },
+  { source: 'luanji', target: '乱击' },
+  { source: 'xueyi', target: '血裔' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -288,8 +319,8 @@ export const skillDescriptions: Word[] = [
   },
   { source: 'qixi_description', target: '你可以将一张黑色牌当【过河拆桥】使用。' },
   {
-    source: '<b>fenwei_description',
-    target: '限定技</b>，当一张锦囊牌指定多个目标后，你可令此牌对其中至少一个目标无效。',
+    source: 'fenwei_description',
+    target: '<b>限定技</b>，当一张锦囊牌指定多个目标后，你可令此牌对其中至少一个目标无效。',
   },
   {
     source: 'qinxue_description',
@@ -369,8 +400,23 @@ export const skillDescriptions: Word[] = [
     target:
       '<b>锁定技</b>，若你的手牌数大于你的体力值，则攻击范围内含有你的角色使用【杀】，不能指定除你外的角色为目标。',
   },
+  {
+    source: 'yicong_description',
+    target:
+      '<b>锁定技</b>，若你的体力值大于2，你计算与其他角色的距离-1；若你的体力值不大于2，其他角色计算与你的距离+1。',
+  },
+  {
+    source: 'qiaomeng_description',
+    target: '当你使用黑色【杀】对一名角色造成伤害后，你可弃置其装备区里的一张牌。若此牌为坐骑牌，你获得之。',
+  },
   { source: 'jijie_description', target: '出牌阶段限一次，你可以观看牌堆底一张牌，然后交给一名角色。' },
   { source: 'jiyuan_description', target: '当一名角色进入濒死状态或你交给一名其他角色牌时，你可以令其摸一张牌。' },
+  {
+    source: 'shensu_description',
+    target:
+      '你可以做出如下选择：1.跳过判定阶段和摸牌阶段；2.跳过出牌阶段并弃置一张装备牌；3.跳过弃牌阶段并翻面。你每选择一项，便视为你使用一张无距离限制的【杀】。',
+  },
+  { source: 'shebian_description', target: '当你翻面后，你可以移动场上一张装备牌。' },
   {
     source: 'jushou_description',
     target: '结束阶段开始时，你可以翻面并摸四张牌，然后选择一项：1.弃置一张非装备牌；2.使用一张装备牌。',
@@ -388,7 +434,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'kuanggu_description',
     target:
-      '当你对距离1以内的角色造成1点伤害后，若你与其的距离于其因受到此伤害而扣减体力前不大于1，你可以回复1点体力或摸一张牌。',
+      '当你对一名角色造成1点伤害后，若你与其的距离于其因受到此伤害而扣减体力前不大于1，你可以回复1点体力或摸一张牌。',
   },
   {
     source: 'qimou_description',
@@ -400,7 +446,7 @@ export const skillDescriptions: Word[] = [
     target:
       '当你受到伤害时，你可以弃置一张红桃手牌，防止此伤害并选择一名其他角色，然后你选择一项：1.令其受到1点伤害，然后摸X张牌（X为其已损失体力值且至多为5）；2.令其失去1点体力，然后其获得你弃置的牌。',
   },
-  { source: '<b>hongyan_description', target: '锁定技</b>，你的黑桃牌或你的黑桃判定牌的花色视为红桃。' },
+  { source: 'hongyan_description', target: '<b>锁定技</b>，你的黑桃牌或你的黑桃判定牌的花色视为红桃。' },
   {
     source: 'buqu_description',
     target:
@@ -408,31 +454,92 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'fenji_description',
-    target: '当一名角色因另一名角色的弃置或获得而失去手牌后，你可以失去1点体力。若如此做，失去手牌的角色摸两张牌。',
+    target:
+      '当一名角色因另一名角色的弃置或获得而失去手牌后，你可以失去1点体力。若如此做，失去手牌的角色摸两张牌。',
   },
   {
     source: 'leiji_description',
     target:
-      '当你使用或打出【闪】或【闪电】时，你可以进行判定；当你的判定牌生效后（除“暴虐”的判定外），若判定结果为：黑桃，你选择一名其他角色，对其造成2点雷电伤害；梅花，你回复1点体力，然后你选择一名其他角色，对其造成1点雷电伤害。',
+      '当你使用或打出【闪】或【闪电】时，你可以进行判定；当你的判定牌生效后，若判定结果为：黑桃，你可以选择一名其他角色，对其造成2点雷电伤害；梅花，你回复1点体力，然后你可以选择一名其他角色，对其造成1点雷电伤害。',
   },
-  { source: '<b>guidao_description', target: '<b>锁定技</b>，你的黑桃牌或你的黑桃判定牌的花色视为红桃。' },
+  {
+    source: 'guidao_description',
+    target:
+      '当一名角色的判定牌生效前，你可以打出一张黑色牌替换之。若你打出的牌为黑桃2-9，则你摸一张牌。',
+  },
   {
     source: 'huangtian_description',
-    target: '当一名角色因另一名角色的弃置或获得而失去手牌后，你可以失去1点体力。若如此做，失去手牌的角色摸两张牌。',
+    target:
+      '<b>主公技</b>，其他群势力角色的出牌阶段限一次，其可以将一张【闪】或【闪电】交给你。',
+  },
+  {
+    source: 'guhuo_description',
+    target:
+      '每回合限一次，你可以扣置一张手牌当任意一张基本牌或普通锦囊牌使用或打出。其他角色可同时进行质疑并翻开此牌：若为假则此牌作废，且质疑者各摸一张牌；若为真，则质疑者依次弃置一张牌或失去1点体力，并获得"缠怨"。',
+  },
+  { source: 'chanyuan_description', target: '<b>锁定技</b>，你不能质疑“蛊惑”；若你的体力值为1，则你的其他技能失效。' },
+  {
+    source: 'qiangxi_description',
+    target:
+      '出牌阶段限两次，你可以失去1点体力或弃置一张武器牌，并对一名未以此法指定过的其他角色造成1点伤害。',
+  },
+  {
+    source: 'quhu_description',
+    target:
+      '出牌阶段限一次，你可以与体力值大于你的一名角色拼点，若你：赢，你令该角色对其攻击范围内由你选择的一名角色造成1点伤害；没赢，其对你造成1点伤害。',
+  },
+  {
+    source: 'jieming_description',
+    target:
+      '当你受到1点伤害后，你可以令一名角色摸两张牌，然后若其手牌数不大于其体力上限，你摸一张牌。',
+  },
+  {
+    source: 'lianhuan_description',
+    target:
+      '你可以将一张梅花手牌当【铁索连环】使用或重铸；你使用【铁索连环】的目标上限+1。',
+  },
+  {
+    source: 'niepan_description',
+    target:
+      '<b>限定技</b>，当你处于濒死状态时，你可以弃置你区域里的所有牌，然后复原你的武将牌，摸三张牌并将体力回复至3点。然后你从“八阵”、“火计”、“看破”中选择一个获得。',
+  },
+  { source: 'bazhen_description', target: '<b>锁定技</b>，若你的装备区里没有防具牌，则视为你装备【八卦阵】。' },
+  { source: 'huoji_description', target: '你可以将一张红色牌当【火攻】使用。' },
+  { source: 'kanpo_description', target: '你可以将一张黑色牌当【无懈可击】使用。' },
+  {
+    source: 'cangzhuo_description',
+    target:
+      '<b>锁定技</b>，弃牌阶段开始时，若你本回合未使用过锦囊牌，则你的锦囊牌于本回合内不计入手牌上限。',
+  },
+  {
+    source: 'tianyi_description',
+    target:
+      '出牌阶段限一次，你可以与一名角色拼点，若你：赢，直到回合结束，你使用【杀】无距离限制且次数上限和目标上限+1；没赢，本回合你不能使用【杀】。',
+  },
+  {
+    source: 'jianchu_description',
+    target:
+      '当你使用【杀】指定一名角色为目标后，你可以弃置其一张牌，若你以此法弃置的牌：为装备牌，此【杀】不可被【闪】响应；不为装备牌，该角色获得此【杀】。',
+  },
+  {
+    source: 'shuangxiong_description',
+    target:
+      '摸牌阶段，你可以改为亮出牌堆顶两张牌，并获得其中一张牌，然后本回合内你可以将与此牌颜色不同的一张手牌当【决斗】使用；当你因“双雄”而受到伤害后，你可以获得本次【决斗】中其他角色打出的【杀】。',
+  },
+  {
+    source: 'luanji_description',
+    target:
+      '你可以将两张花色相同的手牌当【万箭齐发】使用；你使用【万箭齐发】可以少选一个目标。',
+  },
+  {
+    source: 'xueyi_description',
+    target:
+      '<b>主公技</b>，游戏开始时，你获得X枚“裔”标记（X为群雄势力角色数）；回合开始时，你可以移除一枚"裔"并摸一张牌；你每有一枚"裔"，手牌上限便+2。',
   },
   {
     source: 'gongxin_description',
     target:
       '出牌阶段限一次，你可以观看一名其他角色的手牌，然后你可以展示其中一张红桃牌，选择一项：1.弃置此牌；2.将此牌置于牌堆顶。',
-  },
-  {
-    source: 'qiaomeng_description',
-    target: '当你使用的黑色【杀】对一名角色造成伤害后，你可弃置其装备区里的一张牌。若此牌为坐骑牌，你获得之。',
-  },
-  {
-    source: 'yicong_description',
-    target:
-      '义从——锁定技，若你的体力值大于2，你计算与其他角色的距离-1；若你的体力值不大于2，其他角色计算与你的距离+1。',
   },
 ];
 
