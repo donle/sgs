@@ -29,6 +29,8 @@ export class Hujia extends TriggerSkill {
     const { cardMatcher } = content;
     return (
       owner.Id === content.toId &&
+      room.AlivePlayers.filter(player => player !== owner && player.Nationality === CharacterNationality.Wei).length >
+        0 &&
       CardMatcher.match(
         cardMatcher,
         new CardMatcher({

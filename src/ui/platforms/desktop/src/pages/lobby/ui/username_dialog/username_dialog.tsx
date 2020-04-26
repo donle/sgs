@@ -8,7 +8,8 @@ export type UsernameData = {
 
 export const UsernameDialog = (props: { translator: ClientTranslationModule; onSubmit(data: UsernameData): void }) => {
   const [username, setUsername] = React.useState<string>(window.localStorage.getItem('username') || '');
-  const onSubmit = () => {
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     props.onSubmit({ username });
   };
 

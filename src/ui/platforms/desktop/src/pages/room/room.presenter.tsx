@@ -141,6 +141,7 @@ export class RoomPresenter {
       this.store.room.getPlayerById(playerId).offline();
     } else {
       this.store.room.removePlayer(playerId);
+      this.broadcastUIUpdate();
     }
   }
 

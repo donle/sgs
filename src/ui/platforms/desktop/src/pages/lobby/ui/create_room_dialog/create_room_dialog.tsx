@@ -18,7 +18,8 @@ export const CreatRoomDialog = (props: {
   const [roomName, setRoomName] = React.useState<string>(
     username ? props.translator.tr(TranslationPack.translationJsonPatcher("{0}'s room", username).extract()) : '',
   );
-  const onSubmit = () => {
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     props.onSubmit({ numberOfPlayers, roomName });
   };
 

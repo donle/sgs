@@ -50,7 +50,7 @@ export class GuoSe extends ActiveSkill {
     const hasLeBuSiShu = room
       .getPlayerById(toIds![0])
       .getCardIds(PlayerCardsArea.JudgeArea)
-      .find((cardId) => Sanguosha.getCardById(cardId).GeneralName === 'lebusishu');
+      .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'lebusishu');
 
     if (hasLeBuSiShu) {
       await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, fromId, this.Name);
@@ -73,6 +73,8 @@ export class GuoSe extends ActiveSkill {
         triggeredBySkills: [this.Name],
       });
     }
+
+    await room.drawCards(1, fromId, 'top', undefined, this.Name);
     return true;
   }
 }

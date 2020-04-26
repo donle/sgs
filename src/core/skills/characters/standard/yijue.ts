@@ -1,5 +1,5 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { CardId } from 'core/cards/libs/card_props';
+import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import {
   CardLostReason,
   CardObtainedReason,
@@ -166,18 +166,18 @@ export class YiJueShadow extends TriggerSkill implements OnDefineReleaseTiming {
     if (identifier === GameEventIdentifiers.DamageEvent) {
       const content = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
       const card = content.cardIds && Sanguosha.getCardById(content.cardIds[0]);
-      if (card?.GeneralName === 'slash' && card.isRed()) {
+      if (card?.GeneralName === 'slash' && card.Suit === CardSuit.Heart) {
         content.damage++;
+        content.messages = content.messages || [];
+        content.messages.push(
+          TranslationPack.translationJsonPatcher(
+            '{0} used skill {1}, damage increases to {2}',
+            TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
+            this.Name,
+            content.damage,
+          ).toString(),
+        );
       }
-      content.messages = content.messages || [];
-      content.messages.push(
-        TranslationPack.translationJsonPatcher(
-          '{0} used skill {1}, damage increases to {2}',
-          TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
-          this.Name,
-          content.damage,
-        ).toString(),
-      );
     } else if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
       for (const player of room.AlivePlayers) {
         room.removeFlag(player.Id, this.GeneralName);
