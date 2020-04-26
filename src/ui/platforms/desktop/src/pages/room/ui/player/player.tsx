@@ -9,6 +9,7 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
+import { Tooltip } from 'ui/tooltip/tooltip';
 import { NationalityBadge, PlayerPhaseBadge } from '../badge/badge';
 import { FlatClientCard } from '../card/flat_card';
 import { Hp } from '../hp/hp';
@@ -28,6 +29,9 @@ type PlayerCardProps = {
 export class PlayerCard extends React.Component<PlayerCardProps> {
   @mobx.observable.ref
   selected: boolean = false;
+  @mobx.observable.ref
+  onTooltipOpened: boolean = false;
+  private onTooltipOpeningTimer: NodeJS.Timer;
 
   private readonly onClick = mobx.action(() => {
     if (this.props.disabled === false) {
@@ -59,14 +63,14 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
 
   getPlayerEquips() {
     const { player, translator } = this.props;
-    const equips = player?.getCardIds(PlayerCardsArea.EquipArea).map((cardId) => Sanguosha.getCardById(cardId));
+    const equips = player?.getCardIds(PlayerCardsArea.EquipArea).map(cardId => Sanguosha.getCardById(cardId));
     if (!equips) {
       return;
     }
 
     return (
       <div className={styles.playerEquips}>
-        {equips.map((equip) => (
+        {equips.map(equip => (
           <FlatClientCard
             card={equip}
             translator={translator}
@@ -86,11 +90,39 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   getPlayerJudgeCards() {
     return (
       <div className={styles.judgeIcons}>
-        {this.props.player?.getCardIds(PlayerCardsArea.JudgeArea).map((cardId) => (
+        {this.props.player?.getCardIds(PlayerCardsArea.JudgeArea).map(cardId => (
           <DelayedTrickIcon card={Sanguosha.getCardById(cardId)} translator={this.props.translator} />
         ))}
       </div>
     );
+  }
+
+  @mobx.action
+  private readonly openTooltip = () => {
+    this.onTooltipOpeningTimer = setTimeout(() => {
+      this.onTooltipOpened = true;
+    }, 1500);
+  };
+  @mobx.action
+  private readonly closeTooltip = () => {
+    this.onTooltipOpeningTimer && clearTimeout(this.onTooltipOpeningTimer);
+    this.onTooltipOpened = false;
+  };
+
+  createTooltipContent() {
+    const { player, translator } = this.props;
+    const skills = player?.CharacterId ? player.getPlayerSkills().filter(skill => !skill.isShadowSkill()) : [];
+    return skills.map(skill => (
+      <div className={styles.skillInfo}>
+        <div className={styles.skillItem}>
+          <span className={styles.skillName}>{translator.trx(skill.Name)}</span>
+          <span
+            className={styles.skillDescription}
+            dangerouslySetInnerHTML={{ __html: translator.tr(skill.Description) }}
+          />
+        </div>
+      </div>
+    ));
   }
 
   render() {
@@ -104,6 +136,8 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
           [styles.highlighted]: playerPhase !== undefined,
         })}
         onClick={this.onClick}
+        onMouseEnter={this.openTooltip}
+        onMouseLeave={this.closeTooltip}
       >
         {player ? (
           <>
@@ -149,6 +183,9 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
         )}
         {playerPhase !== undefined && (
           <PlayerPhaseBadge stage={playerPhase} translator={translator} className={styles.playerPhaseBadge} />
+        )}
+        {this.onTooltipOpened && this.PlayerCharacter && (
+          <Tooltip position={['top']}>{this.createTooltipContent()}</Tooltip>
         )}
       </div>
     );

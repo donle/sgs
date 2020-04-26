@@ -1,4 +1,4 @@
-@value gridLine from '../../../../base/metrics/metrics.css';
+@value gridLine from '../../../../ui/metrics/metrics.css';
 
 .playerCard {
     position: relative;
@@ -61,4 +61,18 @@
     background: transparent;
     box-shadow: transparent;
     flex: auto;
+}
+
+.skillInfo {
+    display: flex;
+    flex-direction: column;
+}
+.skillItem {
+    display: flex;
+    margin-bottom: calc(gridLine * 2);
+}
+.skillName {
+    flex: auto;
+    margin-right: gridLine;
+    min-width: calc(gridLine * 4);
 }

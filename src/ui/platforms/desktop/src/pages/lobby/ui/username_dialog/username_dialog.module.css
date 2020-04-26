@@ -1,4 +1,4 @@
-@value gridLine from '../../../../base/metrics/metrics.css';
+@value gridLine from '../../../../ui/metrics/metrics.css';
 
 .usernameDialog {
     padding: calc(gridLine * 3);

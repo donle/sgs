@@ -11,6 +11,7 @@ export type TemporaryRoomCreationInfo = {
 export const CreatRoomDialog = (props: {
   translator: ClientTranslationModule;
   onSubmit(data: TemporaryRoomCreationInfo): void;
+  onCancel(): void;
 }) => {
   const username = window.localStorage.getItem('username');
   const [numberOfPlayers, setNumberOfPlayers] = React.useState<number>(2);
@@ -54,6 +55,9 @@ export const CreatRoomDialog = (props: {
         </div>
         <div className={styles.submitSection}>
           <button type="submit">{props.translator.tr('confirm')}</button>
+          <button type="button" onClick={props.onCancel}>
+            {props.translator.tr('cancel')}
+          </button>
         </div>
       </form>
     </div>

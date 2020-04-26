@@ -1,8 +1,8 @@
-@value gridLine from '../../../../base/metrics/metrics.css';
-@value halfGridLine from '../../../../base/metrics/metrics.css';
-@value SanguoshaFont from '../../../../base/metrics/metrics.css';
+@value gridLine from '../../../../ui/metrics/metrics.css';
+@value halfGridLine from '../../../../ui/metrics/metrics.css';
+@value SanguoshaFont from '../../../../ui/metrics/metrics.css';
 
-@value shuColor from '../../../../base/metrics/metrics.css';
+@value shuColor from '../../../../ui/metrics/metrics.css';
 
 .playerCard {
     position: relative;
@@ -59,7 +59,7 @@
 .selected {
     box-shadow: 0px 0px 5px 2px red;
 }
-.highlighted {
+.highlighted:not(.selected) {
     box-shadow: 0px 0px 5px 2px shuColor;
 }
 .playerName {
@@ -157,4 +157,18 @@
 }
 .precious {
     /* TBC */
+}
+
+.skillInfo {
+    display: flex;
+    flex-direction: column;
+}
+.skillItem {
+    display: flex;
+    margin-bottom: calc(gridLine * 2);
+}
+.skillName {
+    flex: auto;
+    margin-right: gridLine;
+    min-width: calc(gridLine * 4);
 }

@@ -1,0 +1,26 @@
+@value gridLine from '../metrics/metrics.css';
+
+.tooltip {
+    position: absolute;
+    padding: calc(gridLine * 2);
+    z-index: 99;
+    width: calc(gridLine * 32);
+    background: white;
+    border: 1px solid grey;
+}
+
+.top {
+    top: 0;
+}
+
+.bottom {
+    bottom: 0;
+}
+
+.left {
+    left: 0;
+}
+
+.right {
+    right: 0;
+}

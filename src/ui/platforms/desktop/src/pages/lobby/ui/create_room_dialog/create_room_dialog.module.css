@@ -1,4 +1,4 @@
-@value gridLine from '../../../../base/metrics/metrics.css';
+@value gridLine from '../../../../ui/metrics/metrics.css';
 
 .createRoomDialog {
     padding: calc(gridLine * 3);

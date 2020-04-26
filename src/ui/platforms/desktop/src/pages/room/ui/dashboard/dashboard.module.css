@@ -1,5 +1,5 @@
-@value gridLine from '../../../../base/metrics/metrics.css';
-@value halfGridLine from '../../../../base/metrics/metrics.css';
+@value gridLine from '../../../../ui/metrics/metrics.css';
+@value halfGridLine from '../../../../ui/metrics/metrics.css';
 
 .equipCardItem {
     width: 100%;

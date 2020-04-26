@@ -1,8 +1,8 @@
-@value SanguoshaFont from '../../../../base/metrics/metrics.css';
-@value lordColor from '../../../../base/metrics/metrics.css';
-@value loyalistColor from '../../../../base/metrics/metrics.css';
-@value rebelColor from '../../../../base/metrics/metrics.css';
-@value renegadeColor from '../../../../base/metrics/metrics.css';
+@value SanguoshaFont from '../../../../ui/metrics/metrics.css';
+@value lordColor from '../../../../ui/metrics/metrics.css';
+@value loyalistColor from '../../../../ui/metrics/metrics.css';
+@value rebelColor from '../../../../ui/metrics/metrics.css';
+@value renegadeColor from '../../../../ui/metrics/metrics.css';
 
 .oneMask,
 .displayedRole {

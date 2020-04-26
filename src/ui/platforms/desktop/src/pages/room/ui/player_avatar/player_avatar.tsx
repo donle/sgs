@@ -8,6 +8,7 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
+import { Tooltip } from 'ui/tooltip/tooltip';
 import { NationalityBadge } from '../badge/badge';
 import { Hp } from '../hp/hp';
 import { Mask } from '../mask/mask';
@@ -30,6 +31,9 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   selected: boolean = false;
   @mobx.observable.ref
   skillSelected: boolean = false;
+  @mobx.observable.ref
+  onTooltipOpened: boolean = false;
+  private onTooltipOpeningTimer: NodeJS.Timer;
 
   @mobx.action
   private readonly onClick = () => {
@@ -75,12 +79,12 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     const { presenter, translator, isSkillDisabled } = this.props;
     const skills =
       presenter.ClientPlayer && presenter.ClientPlayer.CharacterId !== undefined
-        ? presenter.ClientPlayer.getPlayerSkills().filter((skill) => !skill.isShadowSkill())
+        ? presenter.ClientPlayer.getPlayerSkills().filter(skill => !skill.isShadowSkill())
         : [];
 
     return (
       <div className={styles.playerSkills}>
-        {skills.map((skill) => (
+        {skills.map(skill => (
           <button
             className={classNames(styles.playerSkill, {
               [styles.selected]: this.getSkillSelected() && this.props.store.selectedSkill === skill,
@@ -95,6 +99,35 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     );
   }
 
+  @mobx.action
+  private readonly openTooltip = () => {
+    this.onTooltipOpeningTimer = setTimeout(() => {
+      this.onTooltipOpened = true;
+    }, 1500);
+  };
+  @mobx.action
+  private readonly closeTooltip = () => {
+    this.onTooltipOpeningTimer && clearTimeout(this.onTooltipOpeningTimer);
+    this.onTooltipOpened = false;
+  };
+  createTooltipContent() {
+    const { translator, presenter } = this.props;
+    const skills = presenter.ClientPlayer?.CharacterId
+      ? presenter.ClientPlayer.getPlayerSkills().filter(skill => !skill.isShadowSkill())
+      : [];
+    return skills.map(skill => (
+      <div className={styles.skillInfo}>
+        <div className={styles.skillItem}>
+          <span className={styles.skillName}>{translator.trx(skill.Name)}</span>
+          <span
+            className={styles.skillDescription}
+            dangerouslySetInnerHTML={{ __html: translator.tr(skill.Description) }}
+          />
+        </div>
+      </div>
+    ));
+  }
+
   render() {
     const clientPlayer = this.props.presenter.ClientPlayer;
     const character = clientPlayer?.CharacterId !== undefined ? clientPlayer?.Character : undefined;
@@ -104,6 +137,8 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           [styles.selected]: this.getSelected() && !this.props.disabled,
         })}
         onClick={this.onClick}
+        onMouseEnter={this.openTooltip}
+        onMouseLeave={this.closeTooltip}
       >
         <span className={styles.playerName}>{clientPlayer?.Name}</span>
         {character && (
@@ -126,6 +161,9 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
         {this.getSkillButtons()}
         {clientPlayer && (
           <Hp hp={clientPlayer.Hp} className={styles.playerHp} maxHp={clientPlayer.MaxHp} size="regular" />
+        )}
+        {this.onTooltipOpened && clientPlayer?.CharacterId && (
+          <Tooltip position={['bottom', 'right']}>{this.createTooltipContent()}</Tooltip>
         )}
       </div>
     );

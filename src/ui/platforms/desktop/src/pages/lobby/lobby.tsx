@@ -122,6 +122,11 @@ export class Lobby extends React.Component<LobbyProps> {
     });
   };
 
+  @mobx.action
+  private readonly onRoomCreationCancelled = () => {
+    this.openRoomCreationDialog = false;
+  }
+
   render() {
     return (
       <div className={styles.lobby}>
@@ -161,7 +166,7 @@ export class Lobby extends React.Component<LobbyProps> {
           <UsernameDialog translator={this.props.translator} onSubmit={this.onUsernameDialogSubmit} />
         )}
         {this.openRoomCreationDialog && (
-          <CreatRoomDialog translator={this.props.translator} onSubmit={this.onRoomCreated} />
+          <CreatRoomDialog translator={this.props.translator} onSubmit={this.onRoomCreated} onCancel={this.onRoomCreationCancelled} />
         )}
       </div>
     );

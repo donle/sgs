@@ -1,18 +1,18 @@
-@value gridLine from '../../../../base/metrics/metrics.css';
-@value halfGridLine from '../../../../base/metrics/metrics.css';
+@value gridLine from '../../../../ui/metrics/metrics.css';
+@value halfGridLine from '../../../../ui/metrics/metrics.css';
 
-@value SanguoshaFont from '../../../../base/metrics/metrics.css';
+@value SanguoshaFont from '../../../../ui/metrics/metrics.css';
 
-@value wuColor from '../../../../base/metrics/metrics.css';
-@value weiColor from '../../../../base/metrics/metrics.css';
-@value shuColor from '../../../../base/metrics/metrics.css';
-@value qunColor from '../../../../base/metrics/metrics.css';
-@value godColor from '../../../../base/metrics/metrics.css';
-@value wuDarkColor from '../../../../base/metrics/metrics.css';
-@value weiDarkColor from '../../../../base/metrics/metrics.css';
-@value shuDarkColor from '../../../../base/metrics/metrics.css';
-@value qunDarkColor from '../../../../base/metrics/metrics.css';
-@value godDarkColor from '../../../../base/metrics/metrics.css';
+@value wuColor from '../../../../ui/metrics/metrics.css';
+@value weiColor from '../../../../ui/metrics/metrics.css';
+@value shuColor from '../../../../ui/metrics/metrics.css';
+@value qunColor from '../../../../ui/metrics/metrics.css';
+@value godColor from '../../../../ui/metrics/metrics.css';
+@value wuDarkColor from '../../../../ui/metrics/metrics.css';
+@value weiDarkColor from '../../../../ui/metrics/metrics.css';
+@value shuDarkColor from '../../../../ui/metrics/metrics.css';
+@value qunDarkColor from '../../../../ui/metrics/metrics.css';
+@value godDarkColor from '../../../../ui/metrics/metrics.css';
 
 .badge {
     height: calc(gridLine * 3);
