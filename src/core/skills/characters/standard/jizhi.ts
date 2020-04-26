@@ -16,12 +16,12 @@ export class JiZhi extends TriggerSkill {
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage: CardUseStage) {
-    return stage === CardUseStage.AfterCardUseEffect;
+    return stage === CardUseStage.CardUsing;
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const card = Sanguosha.getCardById(content.cardId);
-    return content.fromId === owner.Id && card.is(CardType.Trick) && !card.is(CardType.DelayedTrick);
+    return content.fromId === owner.Id && card.is(CardType.Trick);
   }
 
   async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {

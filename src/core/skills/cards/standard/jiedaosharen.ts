@@ -13,7 +13,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 export class JieDaoShaRenSkill extends ActiveSkill {
   public canUse(room: Room, owner: Player) {
     return (
-      room.getOtherPlayers(owner.Id).find((player) => player.getEquipment(CardType.Weapon) !== undefined) !== undefined
+      room.getOtherPlayers(owner.Id).find(player => player.getEquipment(CardType.Weapon) !== undefined) !== undefined
     );
   }
 
@@ -37,7 +37,7 @@ export class JieDaoShaRenSkill extends ActiveSkill {
     if (selectedTargets.length === 0) {
       return owner !== target && room.getPlayerById(target).getEquipment(CardType.Weapon) !== undefined;
     } else {
-      return room.getPlayerById(owner).canUseCardTo(room, new CardMatcher({ name: ['slash'] }), target);
+      return room.canAttack(room.getPlayerById(selectedTargets[0]), room.getPlayerById(target));
     }
   }
 

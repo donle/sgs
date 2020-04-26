@@ -112,7 +112,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   };
   createTooltipContent() {
     const { translator, presenter } = this.props;
-    const skills = presenter.ClientPlayer?.CharacterId
+    const skills = presenter.ClientPlayer?.CharacterId !== undefined
       ? presenter.ClientPlayer.getPlayerSkills().filter(skill => !skill.isShadowSkill())
       : [];
     return skills.map(skill => (

@@ -50,6 +50,7 @@ export interface ServerEvent extends EventUtilities {
     toIds?: PlayerId[];
     toCardIds?: CardId[];
     responseToEvent?: ServerEventFinder<GameEventIdentifiers>;
+    skipDrop?: boolean;
   };
   [GameEventIdentifiers.CardEffectEvent]: {
     fromId?: PlayerId;

@@ -2,13 +2,7 @@ import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { CharacterNationality } from 'core/characters/character';
-import {
-  CardLostReason,
-  ClientEventFinder,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
@@ -82,12 +76,12 @@ export class JiJiang extends ActiveSkill {
           fromId: responseEvent.fromId,
           cardId: responseEvent.cardId!,
         });
-        await room.loseCards([responseEvent.cardId!], responseEvent.fromId, CardLostReason.CardResponse);
 
         const useCardEvent = {
           cardId: responseEvent.cardId,
           fromId: skillUseEvent.fromId,
           toIds: skillUseEvent.toIds,
+          skipDrop: true,
         };
         await room.useCard(useCardEvent);
       }
@@ -161,9 +155,7 @@ export class JiJiangShadow extends TriggerSkill {
         fromId: event.fromId,
         players:
           scopedTargets ||
-          room.AlivePlayers.filter((player) => from.canUseCardTo(room, slashMatcher, player.Id)).map(
-            (player) => player.Id,
-          ),
+          room.AlivePlayers.filter(player => from.canUseCardTo(room, slashMatcher, player.Id)).map(player => player.Id),
         requiredAmount: 1,
         conversation: TranslationPack.translationJsonPatcher('do you want to trigger skill {0} ?', this.Name).extract(),
       };

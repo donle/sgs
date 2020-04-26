@@ -697,7 +697,7 @@ export const eventDictionary: Word[] = [
   { source: '{0} obtains {1} cards', target: '{0} 获得了 {1} 张牌' },
   { source: 'please drop {0} cards', target: '请弃置 {1} 张牌' },
   { source: '{0} drops cards {1}', target: '{0} 弃置了 {1}' },
-  { source: '{0} drops cards {1} by {2}', target: '{0} 弃置了 {2} 的一张 {1}' },
+  { source: '{0} drops cards {1} by {2}', target: '{2} 弃置了 {0} 的一张 {1}' },
   { source: '{0} has been placed into drop stack', target: '{0} 置入了弃牌堆' },
   { source: '{0} lost card {1}', target: '{0} 失去了 {1}' },
   { source: '{0} used card {1}', target: '{0} 使用了一张 {1}' },
