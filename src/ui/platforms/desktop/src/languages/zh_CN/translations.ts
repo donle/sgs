@@ -218,6 +218,10 @@ export const characterDictionary: Word[] = [
   { source: 'yuanshao', target: '袁绍' },
   { source: 'luanji', target: '乱击' },
   { source: 'xueyi', target: '血裔' },
+
+  { source: 'god_caocao', target: '神曹操' },
+  { source: 'guixin', target: '归心' },
+  { source: 'feiying', target: '飞影' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -454,8 +458,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'fenji_description',
-    target:
-      '当一名角色因另一名角色的弃置或获得而失去手牌后，你可以失去1点体力。若如此做，失去手牌的角色摸两张牌。',
+    target: '当一名角色因另一名角色的弃置或获得而失去手牌后，你可以失去1点体力。若如此做，失去手牌的角色摸两张牌。',
   },
   {
     source: 'leiji_description',
@@ -464,13 +467,11 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'guidao_description',
-    target:
-      '当一名角色的判定牌生效前，你可以打出一张黑色牌替换之。若你打出的牌为黑桃2-9，则你摸一张牌。',
+    target: '当一名角色的判定牌生效前，你可以打出一张黑色牌替换之。若你打出的牌为黑桃2-9，则你摸一张牌。',
   },
   {
     source: 'huangtian_description',
-    target:
-      '<b>主公技</b>，其他群势力角色的出牌阶段限一次，其可以将一张【闪】或【闪电】交给你。',
+    target: '<b>主公技</b>，其他群势力角色的出牌阶段限一次，其可以将一张【闪】或【闪电】交给你。',
   },
   {
     source: 'guhuo_description',
@@ -480,8 +481,7 @@ export const skillDescriptions: Word[] = [
   { source: 'chanyuan_description', target: '<b>锁定技</b>，你不能质疑“蛊惑”；若你的体力值为1，则你的其他技能失效。' },
   {
     source: 'qiangxi_description',
-    target:
-      '出牌阶段限两次，你可以失去1点体力或弃置一张武器牌，并对一名未以此法指定过的其他角色造成1点伤害。',
+    target: '出牌阶段限两次，你可以失去1点体力或弃置一张武器牌，并对一名未以此法指定过的其他角色造成1点伤害。',
   },
   {
     source: 'quhu_description',
@@ -490,13 +490,11 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'jieming_description',
-    target:
-      '当你受到1点伤害后，你可以令一名角色摸两张牌，然后若其手牌数不大于其体力上限，你摸一张牌。',
+    target: '当你受到1点伤害后，你可以令一名角色摸两张牌，然后若其手牌数不大于其体力上限，你摸一张牌。',
   },
   {
     source: 'lianhuan_description',
-    target:
-      '你可以将一张梅花手牌当【铁索连环】使用或重铸；你使用【铁索连环】的目标上限+1。',
+    target: '你可以将一张梅花手牌当【铁索连环】使用或重铸；你使用【铁索连环】的目标上限+1。',
   },
   {
     source: 'niepan_description',
@@ -508,8 +506,7 @@ export const skillDescriptions: Word[] = [
   { source: 'kanpo_description', target: '你可以将一张黑色牌当【无懈可击】使用。' },
   {
     source: 'cangzhuo_description',
-    target:
-      '<b>锁定技</b>，弃牌阶段开始时，若你本回合未使用过锦囊牌，则你的锦囊牌于本回合内不计入手牌上限。',
+    target: '<b>锁定技</b>，弃牌阶段开始时，若你本回合未使用过锦囊牌，则你的锦囊牌于本回合内不计入手牌上限。',
   },
   {
     source: 'tianyi_description',
@@ -528,8 +525,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'luanji_description',
-    target:
-      '你可以将两张花色相同的手牌当【万箭齐发】使用；你使用【万箭齐发】可以少选一个目标。',
+    target: '你可以将两张花色相同的手牌当【万箭齐发】使用；你使用【万箭齐发】可以少选一个目标。',
   },
   {
     source: 'xueyi_description',
@@ -540,6 +536,14 @@ export const skillDescriptions: Word[] = [
     source: 'gongxin_description',
     target:
       '出牌阶段限一次，你可以观看一名其他角色的手牌，然后你可以展示其中一张红桃牌，选择一项：1.弃置此牌；2.将此牌置于牌堆顶。',
+  },
+  {
+    source: 'guixin_description',
+    target: '当你受到1点伤害后，你可以随机获得每名其他角色区域里的一张牌，然后你翻面。',
+  },
+  {
+    source: 'feiying_description',
+    target: '<b>锁定技</b>，其他角色计算与你的距离+1。',
   },
 ];
 
@@ -680,6 +684,12 @@ export const eventDictionary: Word[] = [
     source: '{0} hits {1} {2} hp of damage type {3}',
     target: '{0} 对 {1} 造成了 {2} 点【{3}】伤害',
   },
+  {
+    source: '{0} turned over the charactor card, who is {1} right now',
+    target: '{0} 将武将牌翻面，现在是 {1}',
+  },
+  { source: 'facing up', target: '正面朝上' },
+  { source: 'turning over', target: '背面朝上' },
   {
     source: '{0} got hurt for {1} hp with {2} property',
     target: '{0} 受到了 {1} 点【{2}】伤害',

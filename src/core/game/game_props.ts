@@ -13,7 +13,7 @@ export const enum GameCharacterExtensions {
   // Hill,
   // SP,
   // NewStandard,
-  // God,
+  God = 'god',
 }
 
 export const enum GameCardExtensions {

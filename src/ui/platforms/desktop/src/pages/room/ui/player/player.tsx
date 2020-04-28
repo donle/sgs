@@ -111,7 +111,8 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
 
   createTooltipContent() {
     const { player, translator } = this.props;
-    const skills = player?.CharacterId !== undefined ? player.getPlayerSkills().filter(skill => !skill.isShadowSkill()) : [];
+    const skills =
+      player?.CharacterId !== undefined ? player.getPlayerSkills().filter(skill => !skill.isShadowSkill()) : [];
     return skills.map(skill => (
       <div className={styles.skillInfo}>
         <div className={styles.skillItem}>
@@ -176,6 +177,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
               </>
             )}
             {this.getPlayerJudgeCards()}
+            {!player.isFaceUp() && <p className={styles.status}>{translator.tr('turn overed')}</p>}
             <p className={styles.playerSeats}>{translator.tr(`number ${player.Position}`)}</p>
           </>
         ) : (

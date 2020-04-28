@@ -5,11 +5,11 @@ import { Character, CharacterGender, CharacterNationality, Lord } from '../chara
 const skillLoaderInstance = SkillLoader.getInstance();
 
 @Lord
-export class LiuBei extends Character {
+export class GodCaoCao extends Character {
   constructor(id: number) {
-    super(id, 'liubei', CharacterGender.Male, CharacterNationality.Shu, 4, 4, GameCharacterExtensions.Standard, [
-      ...skillLoaderInstance.getSkillsByName('rende'),
-      ...skillLoaderInstance.getSkillsByName('jijiang'),
+    super(id, 'god_caocao', CharacterGender.Male, CharacterNationality.God, 3, 3, GameCharacterExtensions.God, [
+      skillLoaderInstance.getSkillByName('guixin'),
+      skillLoaderInstance.getSkillByName('feiying'),
     ]);
   }
 }

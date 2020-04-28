@@ -116,7 +116,7 @@ export class Lobby extends React.Component<LobbyProps> {
     this.openRoomCreationDialog = false;
 
     this.socket.emit(LobbySocketEvent.GameCreated.toString(), {
-      characterExtensions: [GameCharacterExtensions.Standard],
+      characterExtensions: [GameCharacterExtensions.Standard, GameCharacterExtensions.God],
       cardExtensions: [GameCardExtensions.Standard],
       ...roomInfo,
     });

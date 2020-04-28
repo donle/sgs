@@ -51,6 +51,7 @@
     top: 0;
 }
 
+.status,
 .waiting {
     align-self: center;
     flex: auto;

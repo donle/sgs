@@ -3,7 +3,6 @@ import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, ResponsiveSkill } from 'core/skills/skill';
-import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'wuxiekeji', description: 'wuxiekeji_description' })
 export class WuXieKeJiSkill extends ResponsiveSkill {

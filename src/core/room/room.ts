@@ -129,6 +129,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean): void;
   //Server only
   public abstract async pindian(fromId: PlayerId, toIds: PlayerId[]): Promise<PinDianResultType | undefined>;
+  public abstract async turnOver(playerId: PlayerId): Promise<void>;
 
   public abstract async gameStart(...args: any[]): Promise<void>;
   public abstract get CurrentPlayerStage(): PlayerPhaseStages;

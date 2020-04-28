@@ -1,4 +1,5 @@
 import { Character } from 'core/characters/character';
+import { GodCharacterPackage } from 'core/characters/god';
 import { StandardCharacterPackage } from 'core/characters/standard';
 import { GameCharacterExtensions } from 'core/game/game_props';
 
@@ -14,6 +15,7 @@ const allCharacterLoaders: {
   [P in GameCharacterExtensions]: CharacterPackageLoader;
 } = {
   [GameCharacterExtensions.Standard]: StandardCharacterPackage,
+  [GameCharacterExtensions.God]: GodCharacterPackage,
 };
 
 export class CharacterLoader {

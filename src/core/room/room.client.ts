@@ -139,6 +139,10 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   public async askForCardResponse(): Promise<any> {
     this.throwUntouchableError(this.askForCardResponse.name);
   }
+  //Server only
+  public async turnOver(playerId: PlayerId) {
+    this.throwUntouchableError(this.turnOver.name);
+  }
   public skip() {
     this.throwUntouchableError(this.skip.name);
   }

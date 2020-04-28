@@ -1198,8 +1198,9 @@ export class GameProcessor {
 
         if (event.translationsMessage === undefined) {
           event.translationsMessage = TranslationPack.translationJsonPatcher(
-            '{0} turned over, who is ' + (player.isFaceUp() ? 'face up' : 'turn overed'),
+            '{0} turned over the charactor card, who is {1} right now',
             TranslationPack.patchPlayerInTranslation(player),
+            player.isFaceUp() ? 'facing up' : 'turning over',
           ).extract();
         }
 
@@ -1211,15 +1212,16 @@ export class GameProcessor {
   public async turnToNextPlayer() {
     this.tryToThrowNotStartedError();
     this.playerStages = [];
+    let chosen = false;
     do {
       this.playerPositionIndex = (this.playerPositionIndex + 1) % this.room.Players.length;
+      chosen = !this.room.Players[this.playerPositionIndex].Dead;
       if (!this.room.Players[this.playerPositionIndex].isFaceUp()) {
-        await this.onHandlePlayerTurnOverEvent(GameEventIdentifiers.PlayerTurnOverEvent, {
-          toId: this.room.Players[this.playerPositionIndex].Id,
-        });
+        await this.room.turnOver(this.room.Players[this.playerPositionIndex].Id);
+        chosen = false;
         continue;
       }
-    } while (this.room.Players[this.playerPositionIndex].Dead);
+    } while (!chosen);
   }
 
   public get CurrentPlayer() {
