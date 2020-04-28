@@ -97,11 +97,17 @@ export interface ServerEvent extends EventUtilities {
     reason: CardObtainedReason;
   };
   [GameEventIdentifiers.MoveCardEvent]: {
-    fromId?: PlayerId;
-    toId: PlayerId;
-    fromArea?: PlayerCardsArea;
-    toArea: PlayerCardsArea;
     cardIds: CardId[];
+    fromId?: PlayerId;
+    fromReason?: CardLostReason;
+    fromArea?: PlayerCardsArea;
+    toId: PlayerId;
+    toArea: PlayerCardsArea;
+    toReason?: CardObtainedReason;
+    proposer?: PlayerId;
+    toOutsideArea?: string;
+    isOutsideAreaInPublic?: boolean;
+    moveReason?: string;
   };
   [GameEventIdentifiers.CardDisplayEvent]: {
     displayCards: CardId[];

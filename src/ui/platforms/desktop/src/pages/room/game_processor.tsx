@@ -608,12 +608,13 @@ export class GameClientProcessor {
   }
 
   private onHandleMoveCardEvent<T extends GameEventIdentifiers.MoveCardEvent>(type: T, content: ServerEventFinder<T>) {
+    const to = this.store.room.getPlayerById(content.toId);
     for (const cardId of content.cardIds) {
-      this.store.room
-        .getPlayerById(content.toId)
-        .getCardIds(content.toArea)
-        .push(cardId);
+      to.getCardIds(content.toArea).push(cardId);
     }
+    content.toOutsideArea !== undefined &&
+      content.isOutsideAreaInPublic &&
+      to.setVisibleOutsideArea(content.toOutsideArea);
 
     this.presenter.broadcastUIUpdate();
   }
