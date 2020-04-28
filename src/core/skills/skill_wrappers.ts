@@ -34,7 +34,7 @@ function onCalculatingSkillUsageWrapper(
         this.isRefreshAt = () => false;
         this.canUseEntity = this.canUse;
         this.canUse = (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) =>
-          !owner.hasUsedSkill(this.name) && this.canUseEntity(room, owner, content);
+          !owner.hasUsedSkill(this.Name) && this.canUseEntity(room, owner, content);
       }
     }
 

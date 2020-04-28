@@ -51,6 +51,7 @@ const playerStagesList: {
     PlayerPhaseStages.PrepareStageStart,
     PlayerPhaseStages.PrepareStage,
     PlayerPhaseStages.PrepareStageEnd,
+    PlayerPhaseStages.EndPrepareStageEnd,
   ],
   [PlayerPhase.JudgeStage]: [
     PlayerPhaseStages.JudgeStageStart,
