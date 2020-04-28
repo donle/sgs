@@ -84,6 +84,7 @@ export class JiJiang extends ActiveSkill {
           skipDrop: true,
         };
         await room.useCard(useCardEvent);
+        break;
       }
     }
 

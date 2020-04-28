@@ -14,12 +14,6 @@ export class WuXieKeJiSkill extends ResponsiveSkill {
   }
 
   async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} used card {1} to {2}',
-      TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
-      TranslationPack.patchCardInTranslation(event.cardId),
-      TranslationPack.patchCardInTranslation(...(event.toCardIds || [])),
-    ).extract();
     return true;
   }
 

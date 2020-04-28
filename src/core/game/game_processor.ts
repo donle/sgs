@@ -967,11 +967,13 @@ export class GameProcessor {
                 ).extract();
         } else {
           event.translationsMessage = TranslationPack.translationJsonPatcher(
-            '{0} used card {1}' + (event.toIds ? ' to {2}' : ''),
+            '{0} used card {1}' + (event.toIds || event.toCardIds ? ' to {2}' : ''),
             TranslationPack.patchPlayerInTranslation(from),
             TranslationPack.patchCardInTranslation(event.cardId),
             event.toIds
               ? TranslationPack.patchPlayerInTranslation(...event.toIds.map(id => this.room.getPlayerById(id)))
+              : event.toCardIds
+              ? TranslationPack.patchCardInTranslation(...event.toCardIds)
               : '',
           ).extract();
         }
