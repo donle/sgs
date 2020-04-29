@@ -42,6 +42,10 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill {
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const to = room.getPlayerById(Precondition.exists(event.toIds, 'Unknown targets in guohechaiqiao')[0]);
+    if (to.getCardIds().length === 0) {
+      return true;
+    }
+
     const options: CardChoosingOptions = {
       [PlayerCardsArea.JudgeArea]: to.getCardIds(PlayerCardsArea.JudgeArea),
       [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),

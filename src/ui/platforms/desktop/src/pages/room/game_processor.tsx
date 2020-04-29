@@ -610,7 +610,7 @@ export class GameClientProcessor {
   private onHandleMoveCardEvent<T extends GameEventIdentifiers.MoveCardEvent>(type: T, content: ServerEventFinder<T>) {
     const to = this.store.room.getPlayerById(content.toId);
     for (const cardId of content.cardIds) {
-      to.getCardIds(content.toArea).push(cardId);
+      to.getCardIds(content.toArea, content.toOutsideArea).push(cardId);
     }
     content.toOutsideArea !== undefined &&
       content.isOutsideAreaInPublic &&

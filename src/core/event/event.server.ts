@@ -57,6 +57,7 @@ export interface ServerEvent extends EventUtilities {
     cardId: CardId;
     toIds?: PlayerId[];
     toCardIds?: CardId[];
+    allTargets?: PlayerId[];
     responseToEvent?: ServerEventFinder<GameEventIdentifiers>;
   };
   [GameEventIdentifiers.AimEvent]: {

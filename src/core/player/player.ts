@@ -201,8 +201,8 @@ export abstract class Player implements PlayerInfo {
     if (area !== PlayerCardsArea.OutsideArea) {
       return this.playerCards[area];
     } else {
-      outsideAreaName = Precondition.exists(outsideAreaName, 'Unable to get undefined area cards');
-
+      outsideAreaName = Precondition.exists(outsideAreaName, `Unable to get ${outsideAreaName} area cards`);
+      this.playerOutsideCards[outsideAreaName] = this.playerOutsideCards[outsideAreaName] || [];
       return this.playerOutsideCards[outsideAreaName];
     }
   }
@@ -243,18 +243,16 @@ export abstract class Player implements PlayerInfo {
     for (const area of [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea, PlayerCardsArea.JudgeArea]) {
       const areaCards = this.getCardIds(area);
       for (const card of cards) {
-        const index = areaCards.findIndex(areaCard => areaCard === card);
+        let index = areaCards.findIndex(areaCard => areaCard === card);
         if (index >= 0) {
           droppedCardIds.push(areaCards.splice(index, 1)[0]);
-        }
-      }
-    }
-
-    for (const outsideArea of Object.values(this.playerOutsideCards)) {
-      for (const card of outsideArea) {
-        const index = outsideArea.findIndex(areaCard => areaCard === card);
-        if (index >= 0) {
-          droppedCardIds.push(outsideArea.splice(index, 1)[0]);
+        } else {
+          for (const outsideArea of Object.values(this.playerOutsideCards)) {
+            index = outsideArea.findIndex(areaCard => areaCard === card);
+            if (index >= 0) {
+              droppedCardIds.push(outsideArea.splice(index, 1)[0]);
+            }
+          }
         }
       }
     }
