@@ -7,6 +7,7 @@
     width: calc(gridLine * 32);
     background: white;
     border: 1px solid grey;
+    font-size: 14px;
 }
 
 .top {

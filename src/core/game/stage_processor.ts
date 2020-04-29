@@ -331,6 +331,11 @@ const gameEventStageList: {
     CardLostStage.CardLosing,
     CardLostStage.AfterCardLostEffect,
   ],
+  [GameEventIdentifiers.MoveCardEvent]: [
+    CardMoveStage.BeforeCardMoving,
+    CardMoveStage.CardMoving,
+    CardMoveStage.AfterCardMoved,
+  ],
   [GameEventIdentifiers.LoseHpEvent]: [LoseHpStage.BeforeLoseHp, LoseHpStage.LosingHp, LoseHpStage.AfterLostHp],
   [GameEventIdentifiers.PlayerTurnOverEvent]: [TurnOverStage.TurningOver, TurnOverStage.TurnedOver],
 };

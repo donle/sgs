@@ -51,6 +51,11 @@
     top: 0;
 }
 
+.status {
+    position: absolute;
+    width: 100%;
+}
+
 .status,
 .waiting {
     align-self: center;

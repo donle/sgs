@@ -218,4 +218,8 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   public get CurrentPlayerStage() {
     return this.currentPlayerStage;
   }
+
+  public getPlayerById(playerId: PlayerId) {
+    return super.getPlayerById(playerId) as ClientPlayer;
+  }
 }

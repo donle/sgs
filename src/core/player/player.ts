@@ -51,7 +51,6 @@ export abstract class Player implements PlayerInfo {
   private ai: PlayerAI = PlayerAI.Instance;
 
   private drunk: number = 0;
-  private visibleOutsideAreas: string[] = [];
 
   protected abstract playerId: PlayerId;
   protected abstract playerName: string;
@@ -151,13 +150,6 @@ export abstract class Player implements PlayerInfo {
   }
   removeInvisibleMark(name: string) {
     this.removeMark('!' + name);
-  }
-
-  setVisibleOutsideArea(areaName: string) {
-    this.visibleOutsideAreas.push(areaName);
-  }
-  isOutsideAreaVisible(areaName: string) {
-    return this.visibleOutsideAreas.includes(areaName);
   }
 
   public canUseCard(room: Room, cardId: CardId | CardMatcher, onResponse?: CardMatcher): boolean {

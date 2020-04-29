@@ -76,3 +76,11 @@
     margin-right: gridLine;
     min-width: calc(gridLine * 4);
 }
+
+.status {
+    align-self: center;
+    flex: auto;
+    text-align: center;
+    position: absolute;
+    width: 100%;
+}

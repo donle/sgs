@@ -50,7 +50,6 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     }
 
     if (skill instanceof TriggerSkill) {
-      //TODO: callback to record trigger skill auto trigger status
       return;
     }
 
@@ -79,12 +78,12 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     const { presenter, translator, isSkillDisabled } = this.props;
     const skills =
       presenter.ClientPlayer && presenter.ClientPlayer.CharacterId !== undefined
-        ? presenter.ClientPlayer.getPlayerSkills().filter(skill => !skill.isShadowSkill())
+        ? presenter.ClientPlayer.getPlayerSkills().filter((skill) => !skill.isShadowSkill())
         : [];
 
     return (
       <div className={styles.playerSkills}>
-        {skills.map(skill => (
+        {skills.map((skill) => (
           <button
             className={classNames(styles.playerSkill, {
               [styles.selected]: this.getSkillSelected() && this.props.store.selectedSkill === skill,
@@ -103,7 +102,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   private readonly openTooltip = () => {
     this.onTooltipOpeningTimer = setTimeout(() => {
       this.onTooltipOpened = true;
-    }, 1500);
+    }, 2500);
   };
   @mobx.action
   private readonly closeTooltip = () => {
@@ -112,10 +111,11 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   };
   createTooltipContent() {
     const { translator, presenter } = this.props;
-    const skills = presenter.ClientPlayer?.CharacterId !== undefined
-      ? presenter.ClientPlayer.getPlayerSkills().filter(skill => !skill.isShadowSkill())
-      : [];
-    return skills.map(skill => (
+    const skills =
+      presenter.ClientPlayer?.CharacterId !== undefined
+        ? presenter.ClientPlayer.getPlayerSkills().filter((skill) => !skill.isShadowSkill())
+        : [];
+    return skills.map((skill) => (
       <div className={styles.skillInfo}>
         <div className={styles.skillItem}>
           <span className={styles.skillName}>{translator.trx(skill.Name)}</span>
@@ -158,6 +158,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
             disabled={true}
           />
         )}
+        {!clientPlayer?.isFaceUp() && <p className={styles.status}>{this.props.translator.tr('turn overed')}</p>}
         {this.getSkillButtons()}
         {clientPlayer && (
           <Hp hp={clientPlayer.Hp} className={styles.playerHp} maxHp={clientPlayer.MaxHp} size="regular" />
