@@ -76,6 +76,9 @@ export abstract class Skill {
   ): EventProcessSteps {
     return event.toIds ? [{ from: event.fromId, tos: event.toIds }] : [];
   }
+  public nominateForwardTarget(targets?: PlayerId[]) {
+    return targets;
+  }
 
   public get Description() {
     return this.description;

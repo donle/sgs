@@ -49,6 +49,10 @@ export class JieDaoShaRenSkill extends ActiveSkill {
     ];
   }
 
+  public nominateForwardTarget(targets: PlayerId[]) {
+    return [targets[0]];
+  }
+
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     event.animation = this.getAnimationSteps(event);
     return true;

@@ -216,6 +216,7 @@ export class GameProcessor {
           const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
             cardId: judgeCardId,
             toIds: [this.CurrentPlayer.Id],
+            allTargets: Sanguosha.getCardById(judgeCardId).Skill.nominateForwardTarget([this.CurrentPlayer.Id]),
           };
 
           this.room.broadcast(GameEventIdentifiers.CardLostEvent, {

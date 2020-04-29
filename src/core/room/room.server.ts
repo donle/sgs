@@ -463,13 +463,18 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
               ...event,
               toIds: [toId],
-              allTargets: event.toIds,
+              allTargets: card.Skill.nominateForwardTarget(event.toIds),
             };
 
             await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
           }
         } else {
-          await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, event);
+          const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
+            ...event,
+            toIds: event.toIds,
+            allTargets: card.Skill.nominateForwardTarget(event.toIds),
+          };
+          await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
         }
         await card.Skill.afterEffect(this, event);
       } else if (stage === CardUseStage.CardUseFinishedEffect) {
