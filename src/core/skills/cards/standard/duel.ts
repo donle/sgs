@@ -67,6 +67,7 @@ export class DuelSkill extends ActiveSkill {
           await room.responseCard({
             fromId: targets[turn],
             cardId: responseCard,
+            responseToEvent: event,
           });
         }
 
