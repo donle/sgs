@@ -12,6 +12,7 @@ import { HuaTuo } from './huatuo';
 import { HuaXiong } from './huaxiong';
 import { LiuBei } from './liubei';
 import { LuXun } from './luxun';
+import { LvBu } from './lvbu';
 import { LvMeng } from './lvmeng';
 import { MaChao } from './machao';
 import { SiMaYi } from './simayi';
@@ -58,4 +59,5 @@ export const StandardCharacterPackage: (index: number) => Character[] = index =>
   new GongSunZan(index++),
   new HuaTuo(index++),
   new HuaXiong(index++),
+  new LvBu(index++),
 ];
