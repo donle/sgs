@@ -156,7 +156,7 @@ export class WuShuangShadow extends TriggerSkill {
       const result = await room.askForCardResponse(askForResponseCardEvent, slashEvent.fromId);
       const { responseEvent } = result;
       if (!responseEvent || responseEvent.cardId === undefined) {
-        EventPacker.recall(slashEvent);
+        EventPacker.terminate(slashEvent);
       } else {
         await room.responseCard({
           fromId: slashEvent.fromId,
