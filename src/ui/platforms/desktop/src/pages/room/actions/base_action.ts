@@ -99,7 +99,8 @@ export abstract class BaseAction {
     if (
       (this.scopedTargets && !this.scopedTargets.includes(player.Id)) ||
       player.Dead ||
-      !this.store.room.isPlaying()
+      !this.store.room.isPlaying() ||
+      this.store.room.isGameOver()
     ) {
       return false;
     }
@@ -147,7 +148,7 @@ export abstract class BaseAction {
     fromArea: PlayerCardsArea = PlayerCardsArea.HandArea,
     ignoreCanUseCondition: boolean = false,
   ): boolean {
-    if (!this.store.room.isPlaying()) {
+    if (!this.store.room.isPlaying() || this.store.room.isGameOver()) {
       return false;
     }
     if (
@@ -253,7 +254,7 @@ export abstract class BaseAction {
 
   protected unselectePlayer(player: Player) {
     if (this.selectedTargets.includes(player.Id)) {
-      const index = this.selectedTargets.findIndex((target) => target === player.Id);
+      const index = this.selectedTargets.findIndex(target => target === player.Id);
       if (index >= 0) {
         this.selectedTargets.splice(index, 1);
       }
@@ -296,11 +297,11 @@ export abstract class BaseAction {
     if (this.selectedCardToPlay === cardId) {
       this.selectedCardToPlay = undefined;
     } else {
-      let index = this.selectedCards.findIndex((selectedCard) => selectedCard === cardId);
+      let index = this.selectedCards.findIndex(selectedCard => selectedCard === cardId);
       if (index >= 0) {
         this.selectedCards.splice(index, 1);
       }
-      index = this.pendingCards.findIndex((pendingCard) => pendingCard === cardId);
+      index = this.pendingCards.findIndex(pendingCard => pendingCard === cardId);
       if (index >= 0) {
         this.pendingCards.splice(index, 1);
       }
@@ -318,7 +319,7 @@ export abstract class BaseAction {
       this.equipSkillCardId = this.store.room
         .getPlayerById(this.playerId)
         .getCardIds(PlayerCardsArea.EquipArea)
-        .find((cardId) => Sanguosha.getCardById(cardId).Skill === skill);
+        .find(cardId => Sanguosha.getCardById(cardId).Skill === skill);
     }
   }
   protected unselectSkill(skill: Skill) {

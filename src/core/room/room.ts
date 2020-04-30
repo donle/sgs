@@ -36,7 +36,15 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected abstract readonly players: Player[];
   protected abstract readonly roomId: RoomId;
 
+  protected awaitResponseEvent:
+    | {
+        identifier: GameEventIdentifiers;
+        content: EventPicker<GameEventIdentifiers, T>;
+      }
+    | undefined;
+
   protected gameStarted: boolean = false;
+  protected gameOvered: boolean = false;
   private onProcessingCards: { [K: string]: CardId[] } = {};
 
   protected abstract init(...args: any[]): void;
@@ -451,6 +459,24 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   public gameOver() {
-    this.gameStarted = false;
+    this.gameOvered = true;
+  }
+
+  public isGameOver() {
+    return this.gameOvered;
+  }
+
+  public get AwaitingResponseEvent() {
+    return this.awaitResponseEvent;
+  }
+
+  public setAwaitingResponseEvent(identifier: GameEventIdentifiers, content: EventPicker<GameEventIdentifiers, T>) {
+    this.awaitResponseEvent = {
+      identifier,
+      content,
+    };
+  }
+  public unsetAwaitingResponseEvent() {
+    this.awaitResponseEvent = undefined;
   }
 }

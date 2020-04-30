@@ -231,6 +231,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.AskForPinDianCardEvent]: {
     fromId: PlayerId;
     toIds: PlayerId[];
+    currentTargetId: PlayerId;
   };
   [GameEventIdentifiers.AskForChoosingCardEvent]: {
     cardIds: CardId[] | number;
@@ -265,6 +266,7 @@ export interface ServerEvent extends EventUtilities {
       lordId: PlayerId;
       lordCharacter: CharacterId;
     };
+    toId: PlayerId;
     role?: PlayerRole;
     isGameStart?: boolean;
   };

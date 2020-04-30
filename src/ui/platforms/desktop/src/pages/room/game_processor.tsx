@@ -656,6 +656,7 @@ export class GameClientProcessor {
       this.presenter.closeDialog();
 
       const event: ClientEventFinder<T> = {
+        fromId: content.fromId,
         fromArea,
         selectedCard: card instanceof Card ? card.Id : undefined,
         selectedCardIndex: card instanceof Card ? undefined : card,

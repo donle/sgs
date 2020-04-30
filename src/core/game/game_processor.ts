@@ -82,6 +82,7 @@ export class GameProcessor {
         ...lordCharacters,
         ...Sanguosha.getRandomCharacters(2, selectableCharacters, lordCharacters).map(character => character.Id),
       ],
+      toId: lordInfo.Id,
       role: lordInfo.Role,
       isGameStart: true,
       translationsMessage: TranslationPack.translationJsonPatcher(
@@ -125,6 +126,7 @@ export class GameProcessor {
             lordCharacter: lordInfo.CharacterId,
             lordId: lordInfo.Id,
           },
+          toId: playerInfo.Id,
           role: playerInfo.Role,
           isGameStart: true,
           translationsMessage: TranslationPack.translationJsonPatcher(
@@ -198,7 +200,7 @@ export class GameProcessor {
       });
     }
 
-    while (this.room.isPlaying()) {
+    while (this.room.isPlaying() && !this.room.isGameOver() && !this.room.isClosed()) {
       await this.play(this.CurrentPlayer);
       this.turnToNextPlayer();
     }
@@ -206,6 +208,9 @@ export class GameProcessor {
 
   private async onPhase(phase: PlayerPhase) {
     Precondition.assert(phase !== undefined, 'Undefined phase');
+    if (this.room.isClosed() || !this.room.isPlaying() || this.room.isGameOver()) {
+      return;
+    }
 
     switch (phase) {
       case PlayerPhase.JudgeStage:
@@ -232,7 +237,7 @@ export class GameProcessor {
           this.CurrentPlayer.dropCards(judgeCardId);
           this.room.addProcessingCards(judgeCardId.toString(), judgeCardId);
 
-          await this.onHandleCardEffectEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
+          await this.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
 
           this.room.endProcessOnTag(judgeCardId.toString());
           this.room.bury(judgeCardId);
@@ -315,7 +320,7 @@ export class GameProcessor {
           fromPlayer: lastPlayer?.Id,
           toPlayer: player.Id,
         });
-        await this.onHandlePhaseChangeEvent(GameEventIdentifiers.PhaseChangeEvent, phaseChangeEvent, async stage => {
+        await this.onHandleIncomingEvent(GameEventIdentifiers.PhaseChangeEvent, phaseChangeEvent, async stage => {
           if (stage === PhaseChangeStage.BeforePhaseChange) {
             for (const player of this.room.AlivePlayers) {
               for (const skill of player.getSkills()) {
@@ -346,7 +351,7 @@ export class GameProcessor {
       this.currentPlayerStage = this.playerStages[0];
       this.playerStages.shift();
 
-      await this.onHandlePhaseStageChangeEvent(
+      await this.onHandleIncomingEvent(
         GameEventIdentifiers.PhaseStageChangeEvent,
         EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseStageChangeEvent, {
           toStage: this.currentPlayerStage,
@@ -365,6 +370,10 @@ export class GameProcessor {
     event: E,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ): Promise<void> {
+    if (this.room.isClosed() || !this.room.isPlaying() || this.room.isGameOver()) {
+      return;
+    }
+
     switch (identifier) {
       case GameEventIdentifiers.PhaseChangeEvent:
         await this.onHandlePhaseChangeEvent(
@@ -497,6 +506,12 @@ export class GameProcessor {
           onActualExecuted,
         );
         break;
+      case GameEventIdentifiers.PlayerDyingEvent:
+        await this.onHandleDyingEvent(
+          identifier as GameEventIdentifiers.PlayerDyingEvent,
+          event as any,
+          onActualExecuted,
+        );
       default:
         throw new Error(`Unknown incoming event: ${identifier}`);
     }
@@ -666,7 +681,7 @@ export class GameProcessor {
         this.room.broadcast(identifier, event);
 
         if (to.Hp <= 0) {
-          await this.onHandleDyingEvent(GameEventIdentifiers.PlayerDyingEvent, {
+          await this.onHandleIncomingEvent(GameEventIdentifiers.PlayerDyingEvent, {
             dying: to.Id,
             killedBy: event.fromId,
           });
@@ -1284,7 +1299,7 @@ export class GameProcessor {
         this.room.broadcast(GameEventIdentifiers.LoseHpEvent, event);
 
         if (victim.Hp <= 0) {
-          await this.onHandleDyingEvent(GameEventIdentifiers.PlayerDyingEvent, {
+          await this.onHandleIncomingEvent(GameEventIdentifiers.PlayerDyingEvent, {
             dying: victim.Id,
           });
         }
