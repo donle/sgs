@@ -418,8 +418,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             return 1;
           });
 
-        const isDisresponsive = EventPacker.isDisresponsiveEvent(event);
-
         const onAim = async (...targets: PlayerId[]) => {
           const cardAimEvent: ServerEventFinder<GameEventIdentifiers.AimEvent> = EventPacker.createIdentifierEvent(
             GameEventIdentifiers.AimEvent,
@@ -429,7 +427,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               toIds: targets,
             },
           );
-          isDisresponsive && EventPacker.setDisresponsiveEvent(cardAimEvent);
+          EventPacker.copyPropertiesTo(event, cardAimEvent);
 
           await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.AimEvent, cardAimEvent);
 
@@ -449,8 +447,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             ...Precondition.exists(event.toIds, `Invalid target number of card: ${card.Name}`),
           );
           event.toIds = response.toIds;
-          EventPacker.isTerminated(response) && EventPacker.terminate(event);
-          EventPacker.isDisresponsiveEvent(response) && EventPacker.setDisresponsiveEvent(event);
+          EventPacker.copyPropertiesTo(response, event);
         }
 
         if (card.is(CardType.Equip) || card.is(CardType.DelayedTrick)) {
@@ -465,6 +462,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               toIds: [toId],
               allTargets: card.Skill.nominateForwardTarget(event.toIds),
             };
+            EventPacker.copyPropertiesTo(event, cardEffectEvent);
 
             await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
           }
@@ -474,6 +472,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             toIds: event.toIds,
             allTargets: card.Skill.nominateForwardTarget(event.toIds),
           };
+          EventPacker.copyPropertiesTo(event, cardEffectEvent);
+
           await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
         }
         await card.Skill.afterEffect(this, event);
@@ -700,7 +700,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       return;
     }
     const player = this.getPlayerById(from);
-    const actualCards = Card.getActualCards(cardIds);
+    let actualCards: CardId[] = [];
+    for (const cardId of cardIds) {
+      if (player.cardFrom(cardId) !== PlayerCardsArea.JudgeArea) {
+        actualCards = actualCards.concat(Card.getActualCards([cardId]));
+      } else {
+        actualCards.push(cardId);
+      }
+    }
 
     const event: ServerEventFinder<GameEventIdentifiers.CardLostEvent> = {
       cards: actualCards.map(cardId => ({ cardId, fromArea: player.cardFrom(cardId) })),

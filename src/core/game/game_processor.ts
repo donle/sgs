@@ -608,14 +608,13 @@ export class GameProcessor {
       event.translationsMessage = TranslationPack.translationJsonPatcher(
         '{0} drops cards {1}' + (event.droppedBy === event.fromId ? '' : ' by {2}'),
         TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
-        TranslationPack.patchCardInTranslation(...event.cardIds),
+        TranslationPack.patchCardInTranslation(...Card.getActualCards(event.cardIds)),
         TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.droppedBy)),
       ).extract();
     }
 
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === CardDropStage.CardDropping) {
-        const from = this.room.getPlayerById(event.fromId);
         this.room.broadcast(identifier, event);
       }
     });
