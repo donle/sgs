@@ -820,6 +820,18 @@ export const eventDictionary: Word[] = [
     source: 'jijie:Please choose a target to obtain the card you show',
     target: '机捷：请选择一名角色获得你观看的牌',
   },
+  {
+    source: 'wushuang: please use extral jink',
+    target: '无双：请额外使用一张 【闪】',
+  },
+  {
+    source: 'wushuang: please use extral slash',
+    target: '无双：请额外打出一张 【杀】',
+  },
+  {
+    source: 'liyu: please choose a player, as target of {0} duel',
+    target: '利驭：请选择一名角色作为 {0} 决斗的目标',
+  },
 
   { source: 'cixiongjian:drop-card', target: '弃置一张手牌' },
   { source: 'cixiongjian:draw-card', target: '令其摸一张牌' },

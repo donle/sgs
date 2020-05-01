@@ -14,6 +14,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'liyu', description: 'liyu_description' })
 export class LiYu extends TriggerSkill {
@@ -28,11 +29,9 @@ export class LiYu extends TriggerSkill {
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>): boolean {
     const to = room.getPlayerById(content.toId);
-    const handCards = to.getCardIds(PlayerCardsArea.HandArea);
-    const equipmentCards = to.getCardIds(PlayerCardsArea.EquipArea);
-    const judgeCards = to.getCardIds(PlayerCardsArea.JudgeArea);
+    const cards = to.getCardIds();
 
-    return owner.Id === content.fromId && handCards.length + equipmentCards.length + judgeCards.length > 0;
+    return owner.Id === content.fromId && cards.length > 0;
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -84,6 +83,7 @@ export class LiYu extends TriggerSkill {
       PlayerCardsArea.HandArea,
       CardObtainedReason.ActivePrey,
       chooseCardEvent.fromId,
+      this.Name,
     );
 
     const responseCard = Sanguosha.getCardById(response.selectedCard);
@@ -96,7 +96,10 @@ export class LiYu extends TriggerSkill {
         const choosePlayerEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
           players: targets,
           requiredAmount: 1,
-          conversation: "please choose a player, as target of lvbu's duel",
+          conversation: TranslationPack.translationJsonPatcher(
+            'liyu: please choose a player, as target of {0} duel',
+            TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
+          ).extract(),
           toId: chooseCardEvent.toId,
           triggeredBySkills: [this.Name],
         };
