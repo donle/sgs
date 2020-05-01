@@ -9,7 +9,7 @@ export const enum GameCharacterExtensions {
   Standard = 'standard',
   // Wind,
   // Forest,
-  // Fire,
+  Fire = 'fire',
   // Hill,
   // SP,
   // NewStandard,
