@@ -465,7 +465,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             };
             EventPacker.copyPropertiesTo(event, cardEffectEvent);
 
-            await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
+            await this.gameProcessor.onHandleIncomingEvent(
+              GameEventIdentifiers.CardEffectEvent,
+              EventPacker.createIdentifierEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent),
+            );
           }
         } else {
           const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
@@ -475,7 +478,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           };
           EventPacker.copyPropertiesTo(event, cardEffectEvent);
 
-          await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
+          await this.gameProcessor.onHandleIncomingEvent(
+            GameEventIdentifiers.CardEffectEvent,
+            EventPacker.createIdentifierEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent),
+          );
         }
         await card.Skill.afterEffect(this, event);
       } else if (stage === CardUseStage.CardUseFinishedEffect) {
@@ -1016,6 +1022,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       name,
     });
     return super.addMark(player, name, value);
+  }
+
+  public isCardInDropStack(cardId: CardId): boolean {
+    return this.dropStack.includes(cardId);
+  }
+  public isCardInDrawStack(cardId: CardId): boolean {
+    return this.drawStack.includes(cardId);
   }
 
   public get CurrentPhasePlayer() {
