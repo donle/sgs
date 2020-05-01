@@ -260,9 +260,7 @@ export class TrustAI extends PlayerAI {
     room: Room,
   ) {
     const { toId, cardIds, selected } = content;
-    const selectedCard = cardIds.find(
-      cardId => selected.find(selectedCard => selectedCard.card === cardId) === undefined,
-    )!;
+    const selectedCard = cardIds.find(cardId => !selected.find(selectCard => selectCard.card === cardId))!;
     const chooseCard: ClientEventFinder<T> = {
       selectedCard,
       fromId: toId,

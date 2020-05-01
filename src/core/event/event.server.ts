@@ -202,7 +202,10 @@ export interface ServerEvent extends EventUtilities {
     playerId: PlayerId;
     killedBy?: PlayerId;
   };
-
+  [GameEventIdentifiers.ObserveCardsEvent]: {
+    cardIds: CardId[];
+    selected: { card: CardId; player?: PlayerId }[];
+  };
   [GameEventIdentifiers.AskForPeachEvent]: {
     fromId: PlayerId;
     toId: PlayerId;

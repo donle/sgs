@@ -512,6 +512,7 @@ export class GameProcessor {
           event as any,
           onActualExecuted,
         );
+        break;
       default:
         throw new Error(`Unknown incoming event: ${identifier}`);
     }
@@ -890,15 +891,21 @@ export class GameProcessor {
             conversation:
               event.fromId !== undefined
                 ? TranslationPack.translationJsonPatcher(
-                    'do you wanna use {0} for {1} from {2}',
+                    'do you wanna use {0} for {1} from {2}' + (event.toIds ? ' to {3}' : ''),
                     'wuxiekeji',
                     TranslationPack.patchCardInTranslation(event.cardId),
                     TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
+                    event.toIds
+                      ? TranslationPack.wrapArrayParams(...event.toIds.map(toId => this.room.getPlayerById(toId).Character.Name))
+                      : '',
                   ).extract()
                 : TranslationPack.translationJsonPatcher(
-                    'do you wanna use {0} for {1}',
+                    'do you wanna use {0} for {1}' + (event.toIds ? ' to {2}' : ''),
                     'wuxiekeji',
                     TranslationPack.patchCardInTranslation(event.cardId),
+                    event.toIds
+                      ? TranslationPack.wrapArrayParams(...event.toIds.map(toId => this.room.getPlayerById(toId).Character.Name))
+                      : '',
                   ).extract(),
             cardMatcher: new CardMatcher({
               name: ['wuxiekeji'],

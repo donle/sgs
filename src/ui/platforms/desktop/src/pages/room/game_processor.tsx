@@ -199,6 +199,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.GameOverEvent:
         await this.onHandleGameOverEvent(e as any, content);
         break;
+      case GameEventIdentifiers.ObserveCardsEvent:
+        await this.onHandleObserveCardsEvent(e as any, content);
+        break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
     }
@@ -838,12 +841,10 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    if (content.toId === this.store.clientPlayerId) {
-      this.presenter.createIncomingConversation({
-        conversation: 'please choose a card',
-        translator: this.translator,
-      });
-    }
+    this.presenter.createIncomingConversation({
+      conversation: 'please choose a card',
+      translator: this.translator,
+    });
 
     let selected = false;
     const onClick = (card: Card) => {
@@ -872,6 +873,23 @@ export class GameClientProcessor {
         }))}
         translator={this.translator}
         onClick={this.store.clientPlayerId === content.toId ? onClick : undefined}
+      />,
+    );
+  }
+  private async onHandleObserveCardsEvent<T extends GameEventIdentifiers.ObserveCardsEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.presenter.createDialog(
+      <WuGuFengDengDialog
+        cards={content.cardIds}
+        selected={content.selected.map(selectedCard => ({
+          card: selectedCard.card,
+          playerObjectText:
+            selectedCard.player &&
+            TranslationPack.patchPlayerInTranslation(this.store.room.getPlayerById(selectedCard.player)),
+        }))}
+        translator={this.translator}
       />,
     );
   }
