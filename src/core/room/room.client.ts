@@ -143,8 +143,17 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   public async turnOver(playerId: PlayerId) {
     this.throwUntouchableError(this.turnOver.name);
   }
+  //Server only
   public skip() {
     this.throwUntouchableError(this.skip.name);
+  }
+  //Server only
+  public isCardInDropStack(): any {
+    this.throwUntouchableError(this.isCardInDropStack.name);
+  }
+  //Server only
+  public isCardInDrawStack(): any {
+    this.throwUntouchableError(this.isCardInDrawStack.name);
   }
 
   public broadcast<T extends GameEventIdentifiers>(type: T, content: ClientEventFinder<T>): void {

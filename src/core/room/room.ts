@@ -166,6 +166,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     event: ServerEventFinder<T>,
     to: PlayerId,
   ): Promise<ResponsiveTriggeredResult<T>>;
+  public abstract isCardInDropStack(cardId: CardId): boolean;
+  public abstract isCardInDrawStack(cardId: CardId): boolean;
 
   public abstract skip(player: PlayerId, phase?: PlayerPhase): void;
 
