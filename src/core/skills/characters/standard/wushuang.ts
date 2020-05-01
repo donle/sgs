@@ -1,15 +1,11 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AimStage, AllStage, CardResponseStage, CardUseStage } from 'core/game/stage_processor';
+import { AimStage, AllStage, CardEffectStage, CardResponseStage, CardUseStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { Logger } from 'core/shares/libs/logger/logger';
 import { CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
-import { TranslationPack } from 'core/translations/translation_json_tool';
-
-const log = new Logger();
 
 @CompulsorySkill({ name: 'wushuang', description: 'wushuang_description' })
 export class WuShuang extends TriggerSkill {
@@ -53,11 +49,8 @@ export class WuShuang extends TriggerSkill {
       }
     }
 
-    /* debug */ log.info(skillUseEvent.fromId);
-    /* debug */ log.info(toids.length);
     for (const id of toids) {
       room.setFlag<boolean>(id, this.Name, true);
-      /* debug */ log.info(id);
     }
 
     return true;
@@ -79,31 +72,29 @@ export class WuShuangShadow extends TriggerSkill {
     owner: Player,
     event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent>,
   ): boolean {
+    const identifier = EventPacker.getIdentifier(event);
     const { responseToEvent } = event;
-    /* debug */ log.info(event.fromId);
-    /* debug */ log.info('flag: ' + room.getFlag<boolean>(event.fromId, this.GeneralName));
-    /* debug */ log.info(!!responseToEvent);
-    if (!responseToEvent || room.getFlag<boolean>(event.fromId, this.GeneralName) !== true) {
+    if (!responseToEvent || !event.fromId || room.getFlag<boolean>(event.fromId, this.GeneralName) !== true) {
       return false;
     }
 
-    const identifier = EventPacker.getIdentifier(event);
     if (identifier === GameEventIdentifiers.CardUseEvent) {
-      const wushuangSourceEvent = responseToEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
-      return wushuangSourceEvent.fromId === owner.Id && Sanguosha.getCardById(event.cardId).GeneralName === 'jink';
+      const cardUseEvent = event as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
+      return Sanguosha.getCardById(cardUseEvent.cardId).GeneralName === 'jink';
     } else {
-      /* debug */ log.info(EventPacker.getIdentifier(responseToEvent));
       const wushuangSourceEvent = responseToEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
       return !!wushuangSourceEvent.cardId && Sanguosha.getCardById(wushuangSourceEvent.cardId).GeneralName === 'duel';
     }
   }
 
-  async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+  async onTrigger(): Promise<boolean> {
     return true;
   }
 
-  async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    /* debug */ log.info('effect');
+  async onEffect(
+    room: Room,
+    skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
+  ): Promise<boolean> {
     const { triggeredOnEvent } = skillUseEvent;
     const unknownEvent = triggeredOnEvent as ServerEventFinder<
       GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent
@@ -120,8 +111,8 @@ export class WuShuangShadow extends TriggerSkill {
         cardMatcher: new CardMatcher({ name: ['jink'] }).toSocketPassenger(),
         byCardId: slashEvent.cardId,
         cardUserId: slashEvent.fromId,
-        triggeredBySkills: ['slash'],
-        conversation: 'I don,t know say what',
+        triggeredBySkills: [Sanguosha.getCardById(slashEvent.cardId).Skill.Name],
+        conversation: 'wushuang: please use extral jink',
         triggeredOnEvent: skillUseEvent,
       };
 
@@ -130,6 +121,7 @@ export class WuShuangShadow extends TriggerSkill {
       if (!responseEvent || responseEvent.cardId === undefined) {
         responseToEvent && EventPacker.recall(responseToEvent);
       } else {
+        room.removeFlag(jinkEvent.fromId, this.GeneralName);
         await room.useCard({
           fromId: jinkEvent.fromId,
           cardId: responseEvent.cardId,
@@ -137,8 +129,8 @@ export class WuShuangShadow extends TriggerSkill {
           responseToEvent,
         });
       }
-      room.removeFlag(skillUseEvent.fromId, this.GeneralName);
-    } else {
+    } else if (identifier === GameEventIdentifiers.CardResponseEvent) {
+      //can,t solve
       const slashEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.CardResponseEvent>;
       const { responseToEvent } = slashEvent;
       const duelEvent = responseToEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
@@ -147,24 +139,21 @@ export class WuShuangShadow extends TriggerSkill {
         cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
         byCardId: duelEvent.cardId,
         cardUserId: duelEvent.fromId,
-        conversation: TranslationPack.translationJsonPatcher(
-          'please use a {0} card to response {1}',
-          'slash',
-          TranslationPack.patchCardInTranslation(duelEvent.cardId),
-        ).extract(),
+        conversation: 'wushuang: please use extral slash',
       };
       const result = await room.askForCardResponse(askForResponseCardEvent, slashEvent.fromId);
       const { responseEvent } = result;
       if (!responseEvent || responseEvent.cardId === undefined) {
         EventPacker.terminate(slashEvent);
       } else {
+        room.removeFlag(slashEvent.fromId, this.GeneralName);
         await room.responseCard({
           fromId: slashEvent.fromId,
           cardId: responseEvent.cardId,
-          responseToEvent,
+          responseToEvent: duelEvent,
         });
+        room.setFlag<boolean>(slashEvent.fromId, this.GeneralName, true);
       }
-      room.removeFlag(skillUseEvent.fromId, this.GeneralName);
     }
     return true;
   }
