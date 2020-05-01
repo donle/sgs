@@ -1,7 +1,7 @@
 import { Character } from 'core/characters/character';
+import { FireCharacterPackage } from 'core/characters/fire';
 import { GodCharacterPackage } from 'core/characters/god';
 import { StandardCharacterPackage } from 'core/characters/standard';
-import { FireCharacterPackage } from 'core/characters/fire';
 import { GameCharacterExtensions } from 'core/game/game_props';
 
 export type CharacterPackages = {
