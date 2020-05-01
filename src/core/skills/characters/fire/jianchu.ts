@@ -1,3 +1,5 @@
+import { CardType } from 'core/cards/card';
+import { CardChoosingOptions } from 'core/cards/libs/card_props';
 import { CardLostReason, CardObtainedReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AimStage, AllStage } from 'core/game/stage_processor';
@@ -5,8 +7,6 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
-import { CardChoosingOptions } from 'core/cards/libs/card_props';
-import { CardType } from 'core/cards/card';
 
 @CommonSkill({name: 'jianchu', description: 'jianchu_description'})
 export class Jianchu extends TriggerSkill {
