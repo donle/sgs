@@ -76,6 +76,8 @@ export { YaoWu } from './characters/standard/yaowu';
 export { LuoYi, LuoYiShadow } from './characters/standard/luoyi';
 export { LianYing } from './characters/standard/lianying';
 export { QianXun, QianXunShadow } from './characters/standard/qianxun';
+export { JiJie } from './characters/standard/jijie';
+export { JiYuan } from './characters/standard/jiyuan';
 
 export { FeiYing } from './characters/god/feiying';
 export { GuiXin } from './characters/god/guixin';
