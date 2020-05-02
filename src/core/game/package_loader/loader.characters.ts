@@ -1,4 +1,5 @@
 import { Character } from 'core/characters/character';
+import { FireCharacterPackage } from 'core/characters/fire';
 import { GodCharacterPackage } from 'core/characters/god';
 import { StandardCharacterPackage } from 'core/characters/standard';
 import { GameCharacterExtensions } from 'core/game/game_props';
@@ -15,6 +16,7 @@ const allCharacterLoaders: {
   [P in GameCharacterExtensions]: CharacterPackageLoader;
 } = {
   [GameCharacterExtensions.Standard]: StandardCharacterPackage,
+  [GameCharacterExtensions.Fire]: FireCharacterPackage,
   [GameCharacterExtensions.God]: GodCharacterPackage,
 };
 
