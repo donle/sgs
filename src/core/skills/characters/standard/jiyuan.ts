@@ -11,7 +11,7 @@ export class JiYuan extends TriggerSkill {
     event: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent | GameEventIdentifiers.MoveCardEvent>,
     stage?: AllStage,
   ): boolean {
-    return stage === PlayerDyingStage.PlayerDying || stage === CardMoveStage.CardMoving;
+    return stage === PlayerDyingStage.PlayerDying || stage === CardMoveStage.AfterCardMoved;
   }
 
   public canUse(
