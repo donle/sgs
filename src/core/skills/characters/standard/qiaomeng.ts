@@ -49,20 +49,14 @@ export class QiaoMeng extends TriggerSkill {
 
     if (selectedCard) {
       const card = Sanguosha.getCardById(selectedCard);
-      if (card.is(CardType.DefenseRide) || card.is(CardType.OffenseRide)) {
-        await room.moveCards(
-          [selectedCard],
+      await room.dropCards(CardLostReason.PassiveDrop, [selectedCard], toId, fromId, this.Name);
+
+      if ((card.is(CardType.DefenseRide) || card.is(CardType.OffenseRide)) && room.isCardInDropStack(card.Id)) {
+        await room.obtainCards({
           toId,
-          fromId!,
-          CardLostReason.PassiveMove,
-          PlayerCardsArea.EquipArea,
-          PlayerCardsArea.HandArea,
-          CardObtainedReason.ActivePrey,
-          fromId,
-          this.Name,
-        );
-      } else {
-        await room.dropCards(CardLostReason.PassiveDrop, [selectedCard], toId, fromId, this.Name);
+          cardIds: [selectedCard],
+          reason: CardObtainedReason.ActivePrey,
+        });
       }
     }
 

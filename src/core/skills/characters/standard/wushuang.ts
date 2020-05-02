@@ -31,7 +31,7 @@ export class WuShuang extends TriggerSkill {
     if (Sanguosha.getCardById(event.byCardId!).GeneralName === 'slash') {
       return owner.Id === event.fromId;
     }
-    return owner.Id === event.fromId || event.toIds.includes(owner.Id);
+    return owner.Id === event.fromId || event.toId === owner.Id;
   }
 
   public async onTrigger(): Promise<boolean> {

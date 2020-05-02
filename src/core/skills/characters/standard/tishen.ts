@@ -41,7 +41,7 @@ export class TiShen extends TriggerSkill {
     const cards = room
       .getPlayerById(skillUseEvent.fromId)
       .getPlayerCards()
-      .filter((cardId) => {
+      .filter(cardId => {
         const card = Sanguosha.getCardById(cardId);
         return card.is(CardType.OffenseRide) || card.is(CardType.DefenseRide) || card.is(CardType.Trick);
       });
@@ -92,7 +92,7 @@ export class TiShenShadow extends TriggerSkill implements OnDefineReleaseTiming 
 
     const identifier = EventPacker.getIdentifier(content);
     if (identifier === GameEventIdentifiers.AimEvent) {
-      return (content as ServerEventFinder<GameEventIdentifiers.AimEvent>).toIds.includes(owner.Id);
+      return (content as ServerEventFinder<GameEventIdentifiers.AimEvent>).toId === owner.Id;
     } else if (identifier === GameEventIdentifiers.CardUseEvent) {
       content = content as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
       return !!content.toIds?.includes(owner.Id) && Sanguosha.getCardById(content.cardId).GeneralName === 'slash';

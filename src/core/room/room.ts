@@ -294,6 +294,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return this.players[nextIndex];
   }
 
+  public deadPlayerFilters(playerIds: PlayerId[]) {
+    return playerIds.filter(playerId => !this.getPlayerById(playerId).Dead);
+  }
+
   private onSeatDistance(from: Player, to: Player) {
     const startPosition = Math.min(from.Position, to.Position);
     const endPosition = startPosition === from.Position ? to.Position : from.Position;

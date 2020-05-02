@@ -419,13 +419,15 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             return 1;
           });
 
-        const onAim = async (...targets: PlayerId[]) => {
+        const onAim = async (toId: PlayerId, allTargets: PlayerId[], nullifiedTargets: PlayerId[]) => {
           const cardAimEvent: ServerEventFinder<GameEventIdentifiers.AimEvent> = EventPacker.createIdentifierEvent(
             GameEventIdentifiers.AimEvent,
             {
               fromId: event.fromId,
               byCardId: event.cardId,
-              toIds: targets,
+              toId,
+              nullifiedTargets,
+              allTargets,
             },
           );
           EventPacker.copyPropertiesTo(event, cardAimEvent);
@@ -443,47 +445,63 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           return cardAimEvent;
         };
 
-        if (event.toIds) {
-          const response = await onAim(
-            ...Precondition.exists(event.toIds, `Invalid target number of card: ${card.Name}`),
-          );
-          event.toIds = response.toIds;
-          EventPacker.copyPropertiesTo(response, event);
+        const aimEventCollaborators: { [player: string]: ServerEventFinder<GameEventIdentifiers.AimEvent> } = {};
+        let nullifiedTargets: PlayerId[] = event.nullifiedTargets || [];
+        const toIds = card.Skill.nominateForwardTarget(event.toIds);
+        if (toIds) {
+          for (const toId of toIds) {
+            const response = await onAim(toId, toIds, nullifiedTargets);
+            aimEventCollaborators[toId] = response;
+            nullifiedTargets = response.nullifiedTargets;
+          }
         }
 
         if (card.is(CardType.Equip) || card.is(CardType.DelayedTrick)) {
           return true;
         }
 
-        await card.Skill.beforeEffect(this, event);
+        const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
+          ...event,
+          toIds: event.toIds,
+          nullifiedTargets,
+          allTargets: toIds ? this.deadPlayerFilters(toIds) : undefined,
+        };
+
+        await card.Skill.beforeEffect(this, cardEffectEvent);
+
         if ([CardTargetEnum.Others, CardTargetEnum.Multiple, CardTargetEnum.Globe].includes(card.AOE)) {
-          for (const toId of event.toIds!) {
-            const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
-              ...event,
-              toIds: [toId],
-              allTargets: card.Skill.nominateForwardTarget(event.toIds),
-            };
-            EventPacker.copyPropertiesTo(event, cardEffectEvent);
+          for (const toId of toIds || []) {
+            if (nullifiedTargets.includes(toId)) {
+              continue;
+            }
+
+            const singleCardEffectEvent = { ...cardEffectEvent, toIds: [toId] };
+            if (aimEventCollaborators[toId]) {
+              EventPacker.copyPropertiesTo(aimEventCollaborators[toId], singleCardEffectEvent);
+            }
 
             await this.gameProcessor.onHandleIncomingEvent(
               GameEventIdentifiers.CardEffectEvent,
-              EventPacker.createIdentifierEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent),
+              EventPacker.createIdentifierEvent(GameEventIdentifiers.CardEffectEvent, singleCardEffectEvent),
             );
           }
         } else {
-          const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
-            ...event,
-            toIds: event.toIds,
-            allTargets: card.Skill.nominateForwardTarget(event.toIds),
-          };
-          EventPacker.copyPropertiesTo(event, cardEffectEvent);
+          if (cardEffectEvent.allTargets && aimEventCollaborators[cardEffectEvent.allTargets[0]]) {
+            EventPacker.copyPropertiesTo(aimEventCollaborators[cardEffectEvent.allTargets[0]], cardEffectEvent);
+          }
 
-          await this.gameProcessor.onHandleIncomingEvent(
-            GameEventIdentifiers.CardEffectEvent,
-            EventPacker.createIdentifierEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent),
-          );
+          const canEffect =
+            cardEffectEvent.allTargets && cardEffectEvent.allTargets.length > 0
+              ? !nullifiedTargets.includes(cardEffectEvent.allTargets[0])
+              : true;
+
+          canEffect &&
+            (await this.gameProcessor.onHandleIncomingEvent(
+              GameEventIdentifiers.CardEffectEvent,
+              EventPacker.createIdentifierEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent),
+            ));
         }
-        await card.Skill.afterEffect(this, event);
+        await card.Skill.afterEffect(this, cardEffectEvent);
       } else if (stage === CardUseStage.CardUseFinishedEffect) {
         if (this.isCardOnProcessing(card.Id)) {
           this.endProcessOnTag(card.Id.toString());

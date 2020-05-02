@@ -19,7 +19,7 @@ export class LiuLi extends TriggerSkill {
 
   canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
     room.setFlag(owner.Id, this.Name, event.fromId);
-    return event.toIds.includes(owner.Id);
+    return event.toId === owner.Id;
   }
 
   public targetFilter(room: Room, targets: PlayerId[]) {
@@ -49,8 +49,9 @@ export class LiuLi extends TriggerSkill {
 
     await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, fromId, this.Name);
 
-    aimEvent.toIds = aimEvent.toIds.filter((toId) => toId !== fromId);
-    aimEvent.toIds.push(toIds![0]);
+    aimEvent.allTargets = aimEvent.allTargets.filter((toId) => toId !== fromId);
+    aimEvent.allTargets.push(toIds![0]);
+    aimEvent.toId = toIds![0];
 
     return true;
   }

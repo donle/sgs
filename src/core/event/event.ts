@@ -344,11 +344,21 @@ export class EventPacker {
   static isTerminated(event: EventPicker<GameEventIdentifiers, WorkPlace>) {
     return !!(event as any).terminate;
   }
-
-  static copyPropertiesTo<T extends GameEventIdentifiers, Y extends GameEventIdentifiers>(fromEvent: ServerEventFinder<T>, toEvent: ServerEventFinder<Y>) {
-    (toEvent as any).terminate = (fromEvent as any).terminate;
-    (toEvent as any).uncancellable = (fromEvent as any).uncancellable;
-    (toEvent as any).middlewares = (fromEvent as any).middlewares;
-    (toEvent as any).disresponsive = (fromEvent as any).disresponsive;
+  static copyPropertiesTo<T extends GameEventIdentifiers, Y extends GameEventIdentifiers>(
+    fromEvent: ServerEventFinder<T>,
+    toEvent: ServerEventFinder<Y>,
+  ) {
+    if ((toEvent as any).terminate !== undefined) {
+      (toEvent as any).terminate = (fromEvent as any).terminate;
+    }
+    if ((toEvent as any).uncancellable !== undefined) {
+      (toEvent as any).uncancellable = (fromEvent as any).uncancellable;
+    }
+    if ((toEvent as any).middlewares !== undefined) {
+      (toEvent as any).middlewares = { ...(toEvent as any).middlewares, ...(fromEvent as any).middlewares };
+    }
+    if ((toEvent as any).disresponsive !== undefined) {
+      (toEvent as any).disresponsive = (fromEvent as any).disresponsive;
+    }
   }
 }
