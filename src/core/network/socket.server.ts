@@ -34,9 +34,9 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     this.roomId = roomId.toString();
 
     this.socket = socket;
-    this.socket.on('connection', (socket) => {
+    this.socket.on('connection', socket => {
       this.logger.info('User connected', socket.id);
-      serverActiveListenerEvents().forEach((identifier) => {
+      serverActiveListenerEvents().forEach(identifier => {
         socket.on(identifier.toString(), (content: ClientEventFinder<typeof identifier>) => {
           switch (identifier) {
             case GameEventIdentifiers.PlayerEnterEvent:
@@ -60,7 +60,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         });
       });
 
-      serverResponsiveListenerEvents().forEach((identifier) => {
+      serverResponsiveListenerEvents().forEach(identifier => {
         socket.on(identifier.toString(), (content: unknown) => {
           const asyncResolver =
             this.asyncResponseResolver[identifier] && this.asyncResponseResolver[identifier][socket.id];
@@ -103,7 +103,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       joiningPlayerName: event.playerName,
       joiningPlayerId: socket.id,
       roomInfo: room.getRoomInfo(),
-      playersInfo: room.Players.map((p) => p.getPlayerInfo()),
+      playersInfo: room.Players.map(p => p.getPlayerInfo()),
       gameInfo: room.Info,
       translationsMessage: TranslationPack.translationJsonPatcher(
         'player {0} join in the room',
@@ -124,7 +124,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
   ) {
     const room = this.room as ServerRoom;
     room.getPlayerById(event.playerId).offline();
-    this.clientIds = this.clientIds.filter((id) => id !== event.playerId);
+    this.clientIds = this.clientIds.filter(id => id !== event.playerId);
 
     socket.leave(this.roomId);
     socket.disconnect();
@@ -143,6 +143,17 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
 
     if (!room.isPlaying()) {
       room.removePlayer(socket.id);
+    } else if (this.room?.AwaitingResponseEvent) {
+      const { identifier: awaitIdentifier, content } = this.room?.AwaitingResponseEvent;
+      if ((content as any).toId !== event.playerId) {
+        return;
+      }
+      const toPlayer = room.getPlayerById(event.playerId);
+      const result = toPlayer.AI.onAction(this.room!, awaitIdentifier, content);
+      if (this.asyncResponseResolver[awaitIdentifier][event.playerId]) {
+        this.asyncResponseResolver[awaitIdentifier][event.playerId]!(result);
+        delete this.asyncResponseResolver[awaitIdentifier][event.playerId];
+      }
     }
   }
 
@@ -156,15 +167,17 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     const toPlayer = this.room!.getPlayerById(to);
     if (!toPlayer.isOnline()) {
       const result = toPlayer.AI.onAction(this.room!, type, content);
-
-      const asyncResolver = this.asyncResponseResolver[type] && this.asyncResponseResolver[type][to];
-      if (asyncResolver) {
-        asyncResolver(result);
-        delete this.asyncResponseResolver[type][to];
-      }
+      setTimeout(() => {
+        const asyncResolver = this.asyncResponseResolver[type] && this.asyncResponseResolver[type][to];
+        if (asyncResolver) {
+          asyncResolver(result);
+          delete this.asyncResponseResolver[type][to];
+        }
+      }, 100);
     } else {
+      this.room?.setAwaitingResponseEvent(type, content);
       const clientSocket = Precondition.exists(
-        this.clientIds.find((clientId) => clientId === to),
+        this.clientIds.find(clientId => clientId === to),
         `Unable to find player: ${to} in connected socket clients`,
       );
 
@@ -174,16 +187,11 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
 
   broadcast<I extends GameEventIdentifiers>(type: I, content: ServerEventFinder<I>) {
     this.socket.emit(type.toString(), content);
-    for (const player of this.room!.AlivePlayers) {
-      if (!player.isOnline()) {
-        player.AI.onAction(this.room!, type, content);
-      }
-    }
   }
 
   public getSocketById(id: PlayerId) {
     const clientId = Precondition.exists(
-      this.clientIds.find((clientId) => clientId === id),
+      this.clientIds.find(clientId => clientId === id),
       `Unable to find socket: ${id}`,
     );
     return this.socket.to(clientId);
@@ -200,7 +208,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
   }
 
   public async waitForResponse<T extends GameEventIdentifiers>(identifier: T, playerId: PlayerId) {
-    return await new Promise<ClientEventFinder<T>>((resolve) => {
+    return await new Promise<ClientEventFinder<T>>(resolve => {
       if (!this.asyncResponseResolver[identifier]) {
         this.asyncResponseResolver[identifier] = {
           [playerId]: resolve,
@@ -211,6 +219,9 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         };
         identifierResolvers[playerId] = resolve;
       }
+    }).then(response => {
+      this.room?.unsetAwaitingResponseEvent();
+      return response;
     });
   }
 }

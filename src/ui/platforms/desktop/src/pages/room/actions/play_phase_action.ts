@@ -13,7 +13,7 @@ export class PlayPhaseAction extends BaseAction {
     player: Player,
     event: ServerEventFinder<GameEventIdentifiers>,
   ) => (skill: Skill) => {
-    if (!room.isPlaying() || UniqueSkillRule.isProhibited(skill, player)) {
+    if (!room.isPlaying() || room.isGameOver() || UniqueSkillRule.isProhibited(skill, player)) {
       return true;
     }
 

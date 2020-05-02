@@ -66,6 +66,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   private onClosedCallback: () => void;
+  private roomClosed = false;
 
   protected init() {
     this.loadedCharacters = CharacterLoader.getInstance().getPackages(...this.gameInfo.characterExtensions);
@@ -418,8 +419,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             return 1;
           });
 
-        const isDisresponsive = EventPacker.isDisresponsiveEvent(event);
-
         const onAim = async (...targets: PlayerId[]) => {
           const cardAimEvent: ServerEventFinder<GameEventIdentifiers.AimEvent> = EventPacker.createIdentifierEvent(
             GameEventIdentifiers.AimEvent,
@@ -429,7 +428,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               toIds: targets,
             },
           );
-          isDisresponsive && EventPacker.setDisresponsiveEvent(cardAimEvent);
+          EventPacker.copyPropertiesTo(event, cardAimEvent);
 
           await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.AimEvent, cardAimEvent);
 
@@ -449,8 +448,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             ...Precondition.exists(event.toIds, `Invalid target number of card: ${card.Name}`),
           );
           event.toIds = response.toIds;
-          EventPacker.isTerminated(response) && EventPacker.terminate(event);
-          EventPacker.isDisresponsiveEvent(response) && EventPacker.setDisresponsiveEvent(event);
+          EventPacker.copyPropertiesTo(response, event);
         }
 
         if (card.is(CardType.Equip) || card.is(CardType.DelayedTrick)) {
@@ -465,6 +463,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               toIds: [toId],
               allTargets: card.Skill.nominateForwardTarget(event.toIds),
             };
+            EventPacker.copyPropertiesTo(event, cardEffectEvent);
 
             await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
           }
@@ -474,6 +473,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             toIds: event.toIds,
             allTargets: card.Skill.nominateForwardTarget(event.toIds),
           };
+          EventPacker.copyPropertiesTo(event, cardEffectEvent);
+
           await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
         }
         await card.Skill.afterEffect(this, event);
@@ -700,7 +701,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       return;
     }
     const player = this.getPlayerById(from);
-    const actualCards = Card.getActualCards(cardIds);
+    let actualCards: CardId[] = [];
+    for (const cardId of cardIds) {
+      if (player.cardFrom(cardId) !== PlayerCardsArea.JudgeArea) {
+        actualCards = actualCards.concat(Card.getActualCards([cardId]));
+      } else {
+        actualCards.push(cardId);
+      }
+    }
 
     const event: ServerEventFinder<GameEventIdentifiers.CardLostEvent> = {
       cards: actualCards.map(cardId => ({ cardId, fromArea: player.cardFrom(cardId) })),
@@ -841,58 +849,56 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async pindian(fromId: PlayerId, toIds: PlayerId[]) {
     let pindianResult: PinDianResultType | undefined;
-    await this.gameProcessor.onHandleIncomingEvent(
-      GameEventIdentifiers.AskForPinDianCardEvent,
-      EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForPinDianCardEvent, { fromId, toIds }),
-      async stage => {
-        if (stage === PinDianStage.PinDianEffect) {
-          const targets = [fromId, ...toIds];
-          for (const target of targets) {
-            this.notify(
-              GameEventIdentifiers.AskForPinDianCardEvent,
-              {
-                fromId,
-                toIds: targets,
-              },
-              target,
+    const targets = [fromId, ...toIds];
+    for (const target of targets) {
+      const pindianEvent = EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForPinDianCardEvent, {
+        fromId,
+        toIds: targets,
+        currentTargetId: target,
+      } as any);
+      this.notify(GameEventIdentifiers.AskForPinDianCardEvent, pindianEvent, target);
+
+      await this.gameProcessor.onHandleIncomingEvent(
+        GameEventIdentifiers.AskForPinDianCardEvent,
+        pindianEvent,
+        async stage => {
+          if (stage === PinDianStage.PinDianEffect) {
+            const responses = await Promise.all(
+              targets.map(to => this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForPinDianCardEvent, to)),
             );
-          }
 
-          const responses = await Promise.all(
-            targets.map(to => this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForPinDianCardEvent, to)),
-          );
+            let winner: PlayerId | undefined;
+            let largestCardNumber = 0;
+            const pindianCards: {
+              fromId: string;
+              cardId: CardId;
+            }[] = [];
 
-          let winner: PlayerId | undefined;
-          let largestCardNumber = 0;
-          const pindianCards: {
-            fromId: string;
-            cardId: CardId;
-          }[] = [];
+            for (const result of responses) {
+              const pindianCard = Sanguosha.getCardById(result.pindianCard);
+              if (pindianCard.CardNumber > largestCardNumber) {
+                largestCardNumber = pindianCard.CardNumber;
+                winner = result.fromId;
+              } else if (pindianCard.CardNumber === largestCardNumber) {
+                winner = undefined;
+              }
 
-          for (const result of responses) {
-            const pindianCard = Sanguosha.getCardById(result.pindianCard);
-            if (pindianCard.CardNumber > largestCardNumber) {
-              largestCardNumber = pindianCard.CardNumber;
-              winner = result.fromId;
-            } else if (pindianCard.CardNumber === largestCardNumber) {
-              winner = undefined;
+              pindianCards.push({
+                fromId: result.fromId,
+                cardId: result.pindianCard,
+              });
             }
 
-            pindianCards.push({
-              fromId: result.fromId,
-              cardId: result.pindianCard,
-            });
+            pindianResult = {
+              winner,
+              pindianCards,
+            };
           }
 
-          pindianResult = {
-            winner,
-            pindianCards,
-          };
-        }
-
-        return true;
-      },
-    );
+          return true;
+        },
+      );
+    }
 
     if (pindianResult !== undefined) {
       const pindianResultEvent: ServerEventFinder<GameEventIdentifiers.PinDianEvent> = {
@@ -1038,6 +1044,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public close() {
     this.onClosedCallback && this.onClosedCallback();
+    this.roomClosed = true;
+  }
+
+  public isClosed() {
+    return this.roomClosed;
   }
 
   public onClosed(fn: () => void) {

@@ -780,8 +780,16 @@ export const eventDictionary: Word[] = [
     target: '是否对 {2} 的 {1} 使用 {0}',
   },
   {
+    source: 'do you wanna use {0} for {1} from {2} to {3}',
+    target: '是否对 {2} 对 {3} 使用 的 {1} 使用 {0}',
+  },
+  {
     source: 'do you wanna use {0} for {1}',
     target: '是否对 {1} 使用 {0}',
+  },
+  {
+    source: 'do you wanna use {0} for {1} to {2}',
+    target: '是否对目标为 {2} 的 {1} 使用 {0}',
   },
   {
     source: '{0} used {1} to you, please response a {2} card',

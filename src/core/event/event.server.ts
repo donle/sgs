@@ -202,7 +202,10 @@ export interface ServerEvent extends EventUtilities {
     playerId: PlayerId;
     killedBy?: PlayerId;
   };
-
+  [GameEventIdentifiers.ObserveCardsEvent]: {
+    cardIds: CardId[];
+    selected: { card: CardId; player?: PlayerId }[];
+  };
   [GameEventIdentifiers.AskForPeachEvent]: {
     fromId: PlayerId;
     toId: PlayerId;
@@ -231,6 +234,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.AskForPinDianCardEvent]: {
     fromId: PlayerId;
     toIds: PlayerId[];
+    currentTargetId: PlayerId;
   };
   [GameEventIdentifiers.AskForChoosingCardEvent]: {
     cardIds: CardId[] | number;
@@ -265,6 +269,7 @@ export interface ServerEvent extends EventUtilities {
       lordId: PlayerId;
       lordCharacter: CharacterId;
     };
+    toId: PlayerId;
     role?: PlayerRole;
     isGameStart?: boolean;
   };

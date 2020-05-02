@@ -1,4 +1,5 @@
 import { PlayerAI } from 'core/ai/ai';
+import { TrustAI } from 'core/ai/trust_ai';
 import { Card, CardType } from 'core/cards/card';
 import { EquipCard, WeaponCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
@@ -48,7 +49,7 @@ export abstract class Player implements PlayerInfo {
   private playerSkills: Skill[] = [];
   private gender: CharacterGender;
   private online: boolean;
-  private ai: PlayerAI = PlayerAI.Instance;
+  private ai: PlayerAI = TrustAI.Instance;
 
   private drunk: number = 0;
 
