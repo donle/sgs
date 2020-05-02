@@ -681,11 +681,16 @@ export class GameProcessor {
         to.onDamage(damage);
         this.room.broadcast(identifier, event);
 
+        const dyingEvent: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent> = {
+          dying: to.Id,
+          killedBy: event.fromId,
+        };
+
         if (to.Hp <= 0) {
-          await this.onHandleIncomingEvent(GameEventIdentifiers.PlayerDyingEvent, {
-            dying: to.Id,
-            killedBy: event.fromId,
-          });
+          await this.onHandleIncomingEvent(
+            GameEventIdentifiers.PlayerDyingEvent,
+            EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerDyingEvent, dyingEvent),
+          );
         }
       }
     });
@@ -896,7 +901,9 @@ export class GameProcessor {
                     TranslationPack.patchCardInTranslation(event.cardId),
                     TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
                     event.toIds
-                      ? TranslationPack.wrapArrayParams(...event.toIds.map(toId => this.room.getPlayerById(toId).Character.Name))
+                      ? TranslationPack.wrapArrayParams(
+                          ...event.toIds.map(toId => this.room.getPlayerById(toId).Character.Name),
+                        )
                       : '',
                   ).extract()
                 : TranslationPack.translationJsonPatcher(
@@ -904,7 +911,9 @@ export class GameProcessor {
                     'wuxiekeji',
                     TranslationPack.patchCardInTranslation(event.cardId),
                     event.toIds
-                      ? TranslationPack.wrapArrayParams(...event.toIds.map(toId => this.room.getPlayerById(toId).Character.Name))
+                      ? TranslationPack.wrapArrayParams(
+                          ...event.toIds.map(toId => this.room.getPlayerById(toId).Character.Name),
+                        )
                       : '',
                   ).extract(),
             cardMatcher: new CardMatcher({
@@ -1305,10 +1314,15 @@ export class GameProcessor {
         victim.onLoseHp(event.lostHp);
         this.room.broadcast(GameEventIdentifiers.LoseHpEvent, event);
 
+        const dyingEvent: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent> = {
+          dying: victim.Id,
+        };
+
         if (victim.Hp <= 0) {
-          await this.onHandleIncomingEvent(GameEventIdentifiers.PlayerDyingEvent, {
-            dying: victim.Id,
-          });
+          await this.onHandleIncomingEvent(
+            GameEventIdentifiers.PlayerDyingEvent,
+            EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerDyingEvent, dyingEvent),
+          );
         }
       }
     });

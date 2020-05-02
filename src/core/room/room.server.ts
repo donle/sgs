@@ -774,7 +774,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       isOutsideAreaInPublic,
     };
 
-    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.MoveCardEvent, moveEvent);
+    await this.gameProcessor.onHandleIncomingEvent(
+      GameEventIdentifiers.MoveCardEvent,
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.MoveCardEvent, moveEvent),
+    );
   }
 
   public async damage(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>): Promise<void> {
