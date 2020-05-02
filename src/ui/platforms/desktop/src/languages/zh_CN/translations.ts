@@ -816,6 +816,10 @@ export const eventDictionary: Word[] = [
     source: '{0} used skill {1}, display cards: {2}',
     target: '{0} 使用技能 {1}，展示了：{2}',
   },
+  {
+    source: 'jijie:Please choose a target to obtain the card you show',
+    target: '机捷：请选择一名角色获得你观看的牌',
+  },
 
   { source: 'cixiongjian:drop-card', target: '弃置一张手牌' },
   { source: 'cixiongjian:draw-card', target: '令其摸一张牌' },
