@@ -87,7 +87,7 @@ export class Jianchu extends TriggerSkill {
     } else if (aimEvent.byCardId) {
       await room.obtainCards(
         {
-          reason: CardObtainedReason.ActivePrey,
+          reason: CardObtainedReason.PassiveObtained,
           cardIds: [aimEvent.byCardId],
           toId: to.Id,
         },
