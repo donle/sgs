@@ -401,6 +401,19 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return this.getPlayerById(player).getMark(name);
   }
 
+  public sortPlayersByPosition(players: PlayerId[]) {
+    return players.sort((prev, next) => {
+      const prevPosition = this.getPlayerById(prev).Position;
+      const nextPosition = this.getPlayerById(next).Position;
+      if (prevPosition < nextPosition) {
+        return -1;
+      } else if (prevPosition === nextPosition) {
+        return 0;
+      }
+      return 1;
+    });
+  }
+
   public getRoomInfo(): RoomInfo {
     return {
       name: this.gameInfo.roomName,

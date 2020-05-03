@@ -400,25 +400,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           event.toIds = [event.fromId];
         }
 
-        card.AOE !== CardTargetEnum.Single &&
-          event.toIds?.sort((prev, next) => {
-            let prevPosition = this.getPlayerById(prev).Position;
-            let nextPosition = this.getPlayerById(next).Position;
-            if (prevPosition < this.CurrentPlayer.Position) {
-              prevPosition += this.Players.length;
-            }
-            if (nextPosition < this.CurrentPlayer.Position) {
-              nextPosition += this.Players.length;
-            }
-
-            if (prevPosition < nextPosition) {
-              return -1;
-            } else if (prevPosition === nextPosition) {
-              return 0;
-            }
-            return 1;
-          });
-
         const onAim = async (toId: PlayerId, allTargets: PlayerId[], nullifiedTargets: PlayerId[]) => {
           const cardAimEvent: ServerEventFinder<GameEventIdentifiers.AimEvent> = EventPacker.createIdentifierEvent(
             GameEventIdentifiers.AimEvent,
@@ -448,12 +429,16 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         const aimEventCollaborators: { [player: string]: ServerEventFinder<GameEventIdentifiers.AimEvent> } = {};
         let nullifiedTargets: PlayerId[] = event.nullifiedTargets || [];
         const toIds = card.Skill.nominateForwardTarget(event.toIds);
+        let cardEffectToIds: PlayerId[] | undefined = toIds;
+
         if (toIds) {
           for (const toId of toIds) {
             const response = await onAim(toId, toIds, nullifiedTargets);
             aimEventCollaborators[toId] = response;
+            cardEffectToIds = response.allTargets;
             nullifiedTargets = response.nullifiedTargets;
           }
+          this.sortPlayersByPosition(cardEffectToIds!);
         }
 
         if (card.is(CardType.Equip) || card.is(CardType.DelayedTrick)) {
@@ -462,20 +447,24 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
         const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
           ...event,
-          toIds: event.toIds,
+          toIds: cardEffectToIds,
           nullifiedTargets,
-          allTargets: toIds ? this.deadPlayerFilters(toIds) : undefined,
+          allTargets: event.toIds,
         };
 
         await card.Skill.beforeEffect(this, cardEffectEvent);
 
         if ([CardTargetEnum.Others, CardTargetEnum.Multiple, CardTargetEnum.Globe].includes(card.AOE)) {
-          for (const toId of toIds || []) {
+          for (const toId of cardEffectToIds || []) {
             if (nullifiedTargets.includes(toId)) {
               continue;
             }
 
-            const singleCardEffectEvent = { ...cardEffectEvent, toIds: [toId] };
+            const singleCardEffectEvent = {
+              ...cardEffectEvent,
+              toIds: [toId],
+              allTargets: cardEffectToIds,
+            };
             if (aimEventCollaborators[toId]) {
               EventPacker.copyPropertiesTo(aimEventCollaborators[toId], singleCardEffectEvent);
             }
@@ -516,16 +505,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   public async useSkill(content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     await super.useSkill(content);
     if (Sanguosha.getSkillBySkillName(content.skillName).getAnimationSteps(content).length <= 1) {
-      content.toIds?.sort((prev, next) => {
-        const prevPosition = this.getPlayerById(prev).Position;
-        const nextPosition = this.getPlayerById(next).Position;
-        if (prevPosition < nextPosition) {
-          return -1;
-        } else if (prevPosition === nextPosition) {
-          return 0;
-        }
-        return 1;
-      });
+      content.toIds && this.sortPlayersByPosition(content.toIds);
     }
 
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.SkillUseEvent, content);
