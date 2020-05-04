@@ -113,6 +113,10 @@ export class WuShuangShadow extends TriggerSkill implements OnDefineReleaseTimin
 
     if (identifier === GameEventIdentifiers.CardUseEvent) {
       const jinkEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
+      if (EventPacker.getMiddleware<boolean>(this.Name, jinkEvent)) {
+        return true;
+      }
+
       const { responseToEvent } = jinkEvent;
       const slashEvent = responseToEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
 
@@ -145,16 +149,17 @@ export class WuShuangShadow extends TriggerSkill implements OnDefineReleaseTimin
         EventPacker.terminate(jinkEvent);
       } else {
         EventPacker.removeMiddleware(this.GeneralName, slashEvent);
-        await room.useCard({
+        const useJinkEvent = {
           fromId: jinkEvent.fromId,
           cardId: responseEvent.cardId,
-        });
+          responseToEvent,
+        };
+        EventPacker.addMiddleware({ tag: this.Name, data: true }, useJinkEvent);
+        await room.useCard(useJinkEvent);
       }
     } else {
       const duelResponseEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.CardResponseEvent>;
-      const responser = room.getPlayerById(duelResponseEvent.fromId);
-      if (responser.getFlag<boolean>(this.GeneralName)) {
-        responser.removeFlag(this.GeneralName);
+      if (EventPacker.getMiddleware<boolean>(this.Name, duelResponseEvent)) {
         return true;
       }
 
@@ -176,12 +181,13 @@ export class WuShuangShadow extends TriggerSkill implements OnDefineReleaseTimin
       if (!responseEvent || responseEvent.cardId === undefined) {
         EventPacker.terminate(duelResponseEvent);
       } else {
-        responser.setFlag(this.GeneralName, true);
-        await room.responseCard({
+        const responseCardEvent = {
           fromId: duelResponseEvent.fromId,
           cardId: responseEvent.cardId,
           responseToEvent: duelEvent,
-        });
+        };
+        EventPacker.addMiddleware({ tag: this.Name, data: true }, responseCardEvent);
+        await room.responseCard(responseCardEvent);
       }
     }
     return true;

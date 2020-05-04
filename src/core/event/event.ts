@@ -348,16 +348,16 @@ export class EventPacker {
     fromEvent: ServerEventFinder<T>,
     toEvent: ServerEventFinder<Y>,
   ) {
-    if ((toEvent as any).terminate !== undefined) {
+    if ((fromEvent as any).terminate !== undefined) {
       (toEvent as any).terminate = (fromEvent as any).terminate;
     }
-    if ((toEvent as any).uncancellable !== undefined) {
+    if ((fromEvent as any).uncancellable !== undefined) {
       (toEvent as any).uncancellable = (fromEvent as any).uncancellable;
     }
-    if ((toEvent as any).middlewares !== undefined) {
+    if ((fromEvent as any).middlewares !== undefined) {
       (toEvent as any).middlewares = { ...(toEvent as any).middlewares, ...(fromEvent as any).middlewares };
     }
-    if ((toEvent as any).disresponsive !== undefined) {
+    if ((fromEvent as any).disresponsive !== undefined) {
       (toEvent as any).disresponsive = (fromEvent as any).disresponsive;
     }
   }

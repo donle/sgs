@@ -27,6 +27,7 @@ export class QingLongYanYueDaoSkill extends TriggerSkill {
       slashEvent.fromId === owner.Id &&
       Sanguosha.getCardById(content.cardId).GeneralName === 'jink' &&
       !EventPacker.isTerminated(content) &&
+      EventPacker.isTerminated(slashEvent) &&
       Sanguosha.getCardById(slashEvent.cardId).GeneralName === 'slash'
     );
   }
