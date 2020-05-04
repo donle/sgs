@@ -837,6 +837,8 @@ export const eventDictionary: Word[] = [
   { source: 'yaowu:draw', target: '摸一张牌' },
   { source: 'luoyi:obtain', target: '是' },
   { source: 'luoyi:cancel', target: '否' },
+  { source: 'kuanggu:draw', target: '摸一张牌'},
+  { source: 'kuanggu:recover', target: '回复1点体力'},
 
   {
     source: 'player {0} join in the room',

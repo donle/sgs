@@ -1,4 +1,5 @@
 import { Character } from '../character';
+import { Weiyan } from '../wind/weiyan';
 import { CaoCao } from './caocao';
 import { DaQiao } from './daqiao';
 import { DiaoChan } from './diaochan';
@@ -58,4 +59,6 @@ export const StandardCharacterPackage: (index: number) => Character[] = index =>
   new GongSunZan(index++),
   new HuaTuo(index++),
   new HuaXiong(index++),
+
+  new Weiyan(index++),
 ];
