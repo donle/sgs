@@ -13,7 +13,7 @@ export class Kuanggu extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
-    return owner.Id === content.fromId/* && owner.getFlag<boolean>(this.GeneralName) === true*/;
+    return owner.Id === content.fromId && owner.getFlag<boolean>(this.GeneralName) === true;
   }
 
   async onTrigger() {
@@ -111,9 +111,6 @@ export class KuangguShadow extends TriggerSkill {
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const weiyan = room.getPlayerById(event.fromId);
     weiyan.setFlag<boolean>(Kuanggu.GeneralName, true);
-    //begin for test
-    await room.drawCards(2, event.fromId);
-    //end for test
     return true;
   }
 }
