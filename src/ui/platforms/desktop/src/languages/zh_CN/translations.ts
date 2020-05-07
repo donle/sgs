@@ -551,6 +551,10 @@ export const generalDictionary: Word[] = [
   { source: 'cheat', target: '作弊' },
   { source: 'cheat_description', target: '可以获得任意牌（仅用于测试）' },
   { source: 'standard', target: '标准版' },
+  { source: 'wind', target: '风'},
+  { source: 'forest', target: '林'},
+  { source: 'fire', target: '火'},
+  { source: 'hill', target: '山'},
   { source: 'wei', target: '魏' },
   { source: 'shu', target: '蜀' },
   { source: 'wu', target: '吴' },
@@ -837,6 +841,8 @@ export const eventDictionary: Word[] = [
   { source: 'yaowu:draw', target: '摸一张牌' },
   { source: 'luoyi:obtain', target: '是' },
   { source: 'luoyi:cancel', target: '否' },
+  { source: 'kuanggu:draw', target: '摸一张牌'},
+  { source: 'kuanggu:recover', target: '回复1点体力'},
 
   {
     source: 'player {0} join in the room',

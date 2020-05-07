@@ -84,4 +84,6 @@ export { Jianchu } from './characters/fire/jianchu';
 export { FeiYing } from './characters/god/feiying';
 export { GuiXin } from './characters/god/guixin';
 
+export { Kuanggu, KuangguShadow } from './characters/wind/kuanggu';
+
 export { Cheat } from './system/cheat';

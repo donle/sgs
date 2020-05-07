@@ -2,6 +2,7 @@ import { Character } from 'core/characters/character';
 import { FireCharacterPackage } from 'core/characters/fire';
 import { GodCharacterPackage } from 'core/characters/god';
 import { StandardCharacterPackage } from 'core/characters/standard';
+import { WindCharacterPackage } from 'core/characters/wind';
 import { GameCharacterExtensions } from 'core/game/game_props';
 
 export type CharacterPackages = {
@@ -16,6 +17,7 @@ const allCharacterLoaders: {
   [P in GameCharacterExtensions]: CharacterPackageLoader;
 } = {
   [GameCharacterExtensions.Standard]: StandardCharacterPackage,
+  [GameCharacterExtensions.Wind]: WindCharacterPackage,
   [GameCharacterExtensions.Fire]: FireCharacterPackage,
   [GameCharacterExtensions.God]: GodCharacterPackage,
 };
