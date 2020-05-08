@@ -116,7 +116,11 @@ export class Lobby extends React.Component<LobbyProps> {
     this.openRoomCreationDialog = false;
 
     this.socket.emit(LobbySocketEvent.GameCreated.toString(), {
-      characterExtensions: [GameCharacterExtensions.Standard, GameCharacterExtensions.God],
+      characterExtensions: [
+        GameCharacterExtensions.Standard,
+        GameCharacterExtensions.Wind,
+        GameCharacterExtensions.God,
+      ],
       cardExtensions: [GameCardExtensions.Standard],
       ...roomInfo,
     });
@@ -125,7 +129,7 @@ export class Lobby extends React.Component<LobbyProps> {
   @mobx.action
   private readonly onRoomCreationCancelled = () => {
     this.openRoomCreationDialog = false;
-  }
+  };
 
   render() {
     return (
@@ -166,7 +170,11 @@ export class Lobby extends React.Component<LobbyProps> {
           <UsernameDialog translator={this.props.translator} onSubmit={this.onUsernameDialogSubmit} />
         )}
         {this.openRoomCreationDialog && (
-          <CreatRoomDialog translator={this.props.translator} onSubmit={this.onRoomCreated} onCancel={this.onRoomCreationCancelled} />
+          <CreatRoomDialog
+            translator={this.props.translator}
+            onSubmit={this.onRoomCreated}
+            onCancel={this.onRoomCreationCancelled}
+          />
         )}
       </div>
     );
