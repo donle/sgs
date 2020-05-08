@@ -1,16 +1,15 @@
 import { VirtualCard } from 'core/cards/card';
-import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { WuXieKeJi } from 'core/cards/standard/wuxiekeji';
 import {
   CardLostReason,
   CardObtainedReason,
+  ClientEventFinder,
   EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
-import { Sanguosha } from 'core/game/engine';
 import { AllStage, TurnOverStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -50,13 +49,10 @@ export class JieWei extends ViewAsSkill {
 }
 
 @ShadowSkill
-@CommonSkill({ name: 'jiewei', description: 'jjiewei_description' })
+@CommonSkill({ name: JieWei.GeneralName, description: JieWei.Description })
 export class JieWeiShadow extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PlayerTurnOverEvent>, stage: AllStage): boolean {
-    if (stage === TurnOverStage.TurnedOver) {
-      return true;
-    }
-    return false;
+    return stage === TurnOverStage.TurnedOver;
   }
 
   public canUse(
@@ -76,7 +72,7 @@ export class JieWeiShadow extends TriggerSkill {
   }
 
   public targetFilter(room: Room, targets: PlayerId[]): boolean {
-    return /* targets.length === 0 || */ targets.length === 2;
+    return targets.length === 2;
   }
 
   public isAvailableTarget(
@@ -93,28 +89,32 @@ export class JieWeiShadow extends TriggerSkill {
     if (selectedTargets.length === 0) {
       return equiprCardIds.length + judgeCardIds.length > 0;
     } else if (selectedTargets.length === 1) {
+      let canBeTarget: boolean = false;
       const from = room.getPlayerById(selectedTargets[0]);
 
-      const fromEquipArea = from
-        .getCardIds(PlayerCardsArea.EquipArea)
-        .map(id => Sanguosha.getCardById(id) as EquipCard);
-      for (const card of fromEquipArea) {
-        const equipment = room.getPlayerById(target).getEquipment(card.EquipType);
-        if (equipment === undefined) {
-          return true;
-        }
-      }
+      const fromEquipArea = from.getCardIds(PlayerCardsArea.EquipArea);
+      canBeTarget = canBeTarget || fromEquipArea.find(id => room.canPlaceCardTo(id, target)) !== undefined;
 
-      const fromJudgeArea = from.getCardIds(PlayerCardsArea.JudgeArea).map(id => Sanguosha.getCardById(id).GeneralName);
-      const toJudgeArea = judgeCardIds.map(id => Sanguosha.getCardById(id).GeneralName);
-      for (const cardName of fromJudgeArea) {
-        if (!toJudgeArea.includes(cardName)) {
-          return true;
-        }
-      }
+      const fromJudgeArea = from.getCardIds(PlayerCardsArea.JudgeArea);
+      canBeTarget = canBeTarget || fromJudgeArea.find(id => room.canPlaceCardTo(id, target)) !== undefined;
+
+      return canBeTarget;
     }
 
     return false;
+  }
+
+  public getAnimationSteps(event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    const { fromId, toIds } = event;
+    return [
+      { from: fromId, tos: [toIds![0]] },
+      { from: toIds![0], tos: [toIds![1]] },
+    ];
+  }
+
+  async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    event.animation = this.getAnimationSteps(event);
+    return true;
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -132,31 +132,16 @@ export class JieWeiShadow extends TriggerSkill {
       skillUseEvent.fromId,
       this.Name,
     );
-
     const moveFrom = room.getPlayerById(skillUseEvent.toIds![0]);
     const moveTo = room.getPlayerById(skillUseEvent.toIds![1]);
     const canMovedEquipCardIds: CardId[] = [];
     const canMovedJudgeCardIds: CardId[] = [];
 
-    const fromEquipArea = moveFrom
-      .getCardIds(PlayerCardsArea.EquipArea)
-      .map(id => Sanguosha.getCardById(id) as EquipCard);
+    const fromEquipArea = moveFrom.getCardIds(PlayerCardsArea.EquipArea);
+    canMovedEquipCardIds.push(...fromEquipArea.filter(id => room.canPlaceCardTo(id, moveTo.Id)));
 
-    for (const card of fromEquipArea) {
-      const equipment = moveTo.getEquipment(card.EquipType);
-      if (equipment === undefined) {
-        canMovedEquipCardIds.push(card.Id);
-      }
-    }
-
-    const fromJudgeArea = moveFrom.getCardIds(PlayerCardsArea.JudgeArea).map(id => Sanguosha.getCardById(id));
-    const toJudgeArea = moveTo.getCardIds(PlayerCardsArea.JudgeArea).map(id => Sanguosha.getCardById(id).GeneralName);
-
-    for (const card of fromJudgeArea) {
-      if (!toJudgeArea.includes(card.GeneralName)) {
-        canMovedJudgeCardIds.push(card.Id);
-      }
-    }
+    const fromJudgeArea = moveFrom.getCardIds(PlayerCardsArea.JudgeArea);
+    canMovedJudgeCardIds.push(...fromJudgeArea.filter(id => room.canPlaceCardTo(id, moveTo.Id)));
 
     const options: CardChoosingOptions = {
       [PlayerCardsArea.JudgeArea]: canMovedJudgeCardIds,
@@ -182,8 +167,8 @@ export class JieWeiShadow extends TriggerSkill {
 
     await room.moveCards(
       [response.selectedCard!],
-      skillUseEvent.toIds![0],
-      skillUseEvent.toIds![1],
+      moveFrom.Id,
+      moveTo.Id,
       CardLostReason.PassiveMove,
       response.fromArea,
       response.fromArea!,
