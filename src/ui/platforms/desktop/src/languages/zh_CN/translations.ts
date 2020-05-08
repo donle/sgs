@@ -164,6 +164,7 @@ export const characterDictionary: Word[] = [
   { source: 'caoren', target: '曹仁' },
   { source: 'jushou', target: '据守' },
   { source: 'jiewei', target: '解围' },
+  { source: '#jiewei', target: '解围' },
 
   { source: 'huangzhong', target: '黄忠' },
   { source: 'liegong', target: '烈弓' },

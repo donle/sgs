@@ -79,6 +79,9 @@ export { QianXun, QianXunShadow } from './characters/standard/qianxun';
 export { JiJie } from './characters/standard/jijie';
 export { JiYuan } from './characters/standard/jiyuan';
 
+export { JuShou } from './characters/wind/jushou';
+export { JieWei, JieWeiShadow } from './characters/wind/jiewei';
+
 export { Jianchu } from './characters/fire/jianchu';
 
 export { FeiYing } from './characters/god/feiying';
