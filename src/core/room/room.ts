@@ -12,6 +12,8 @@ import { Socket } from 'core/network/socket';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
 
+import { CardType } from 'core/cards/card';
+import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { PinDianResultType } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
@@ -364,6 +366,21 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     }
 
     return true;
+  }
+
+  public canPlaceCardTo(cardId: CardId, target: PlayerId): boolean {
+    const player = this.getPlayerById(target);
+    const card = Sanguosha.getCardById(cardId);
+
+    if (card.is(CardType.Equip)) {
+      const equipCard = card as EquipCard;
+      return player.getEquipment(equipCard.EquipType) === undefined;
+    } else if (card.is(CardType.DelayedTrick)) {
+      const toJudgeArea = player.getCardIds(PlayerCardsArea.JudgeArea).map(id => Sanguosha.getCardById(id).GeneralName);
+      return !toJudgeArea.includes(card.GeneralName) && this.canUseCardTo(cardId, target);
+    }
+
+    return false;
   }
 
   public clearFlags(player: PlayerId) {
