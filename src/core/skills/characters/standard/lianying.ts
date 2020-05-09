@@ -14,7 +14,7 @@ export class LianYing extends TriggerSkill {
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardLostEvent>) {
     const lostCards = content.cards.filter(({ fromArea }) => fromArea === PlayerCardsArea.HandArea);
-    room.setFlag(owner.Id, this.Name, Math.max(1, lostCards.length));
+    room.setFlag(owner.Id, this.Name, lostCards.length);
 
     return (
       owner.Id === content.fromId && lostCards.length > 0 && owner.getCardIds(PlayerCardsArea.HandArea).length === 0
