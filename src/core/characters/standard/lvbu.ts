@@ -11,7 +11,7 @@ export class LvBu extends Character {
       skillLoaderInstance.getSkillByName('liyu'),
       ...skillLoaderInstance.getSkillsByName('wushuang'),
       skillLoaderInstance.getSkillByName('cheat'),
-      skillLoaderInstance.getSkillByName('rende'),
+      ...skillLoaderInstance.getSkillsByName('rende'),
     ]);
   }
 }

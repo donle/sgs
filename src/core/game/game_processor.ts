@@ -202,7 +202,7 @@ export class GameProcessor {
 
     while (this.room.isPlaying() && !this.room.isGameOver() && !this.room.isClosed()) {
       await this.play(this.CurrentPlayer);
-      this.turnToNextPlayer();
+      await this.turnToNextPlayer();
     }
   }
 

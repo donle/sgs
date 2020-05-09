@@ -416,7 +416,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     const card = Sanguosha.getCardById(event.cardId);
 
     this.addProcessingCards(card.Id.toString(), card.Id);
-    return await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, event, async stage => {
+    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, event, async stage => {
       if (stage === CardUseStage.AfterCardUseEffect) {
         event.toIds = event.toIds || [event.fromId];
 
@@ -488,15 +488,17 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           EventPacker.copyPropertiesTo(cardEffectEvent, event);
         }
         await card.Skill.afterEffect(this, cardEffectEvent);
-      } else if (stage === CardUseStage.CardUseFinishedEffect) {
-        if (this.isCardOnProcessing(card.Id)) {
-          this.endProcessOnTag(card.Id.toString());
-          this.bury(card.Id);
-        }
       }
 
       return true;
     });
+
+    await this.trigger(event, CardUseStage.CardUseFinishedEffect);
+
+    if (this.isCardOnProcessing(card.Id)) {
+      this.endProcessOnTag(card.Id.toString());
+      this.bury(card.Id);
+    }
   }
 
   public async useSkill(content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {

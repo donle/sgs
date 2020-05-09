@@ -249,7 +249,6 @@ const gameEventStageList: {
     CardUseStage.BeforeCardUseEffect,
     CardUseStage.CardUsing,
     CardUseStage.AfterCardUseEffect,
-    CardUseStage.CardUseFinishedEffect,
   ],
   [GameEventIdentifiers.CardEffectEvent]: [
     CardEffectStage.BeforeCardEffect,
