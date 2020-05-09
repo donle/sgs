@@ -1,6 +1,6 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { DamageType } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -64,10 +64,24 @@ export class DuelSkill extends ActiveSkill {
       const responseCard = result.responseEvent?.cardId;
       if (result.terminated || responseCard !== undefined) {
         if (responseCard !== undefined) {
-          await room.responseCard({
+          const responseEvent = {
             fromId: targets[turn],
             cardId: responseCard,
-          });
+            responseToEvent: event,
+          };
+          await room.responseCard(responseEvent);
+
+          if (EventPacker.isTerminated(responseEvent)) {
+            await room.damage({
+              fromId: targets[(turn + 1) % targets.length],
+              cardIds: [event.cardId],
+              damage: 1,
+              damageType: DamageType.Normal,
+              toId: targets[turn],
+              triggeredBySkills: [this.Name],
+            });
+            break;
+          }
         }
 
         turn = (turn + 1) % targets.length;
@@ -76,7 +90,7 @@ export class DuelSkill extends ActiveSkill {
 
       if (!result.terminated && responseCard === undefined) {
         await room.damage({
-          fromId: event.fromId,
+          fromId: targets[(turn + 1) % targets.length],
           cardIds: [event.cardId],
           damage: 1,
           damageType: DamageType.Normal,

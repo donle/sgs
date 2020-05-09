@@ -30,15 +30,15 @@ export class TieJi extends TriggerSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
     const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
-    room.setFlag(aimEvent.toIds[0], this.Name, true, true);
-    const to = room.getPlayerById(aimEvent.toIds[0]);
+    room.setFlag(aimEvent.toId, this.Name, true, true);
+    const to = room.getPlayerById(aimEvent.toId);
 
     const judge = await room.judge(skillUseEvent.fromId, undefined, this.Name);
     const judgeCard = Sanguosha.getCardById(judge.judgeCardId);
 
     const askForCardDrop: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
       fromArea: [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
-      toId: aimEvent.toIds[0],
+      toId: aimEvent.toId,
       cardAmount: 1,
       except: to.getPlayerCards().filter((cardId) => Sanguosha.getCardById(cardId).Suit !== judgeCard.Suit),
       triggeredBySkills: [this.Name],
@@ -48,10 +48,10 @@ export class TieJi extends TriggerSkill {
       ).extract(),
     };
 
-    room.notify(GameEventIdentifiers.AskForCardDropEvent, askForCardDrop, aimEvent.toIds[0]);
+    room.notify(GameEventIdentifiers.AskForCardDropEvent, askForCardDrop, aimEvent.toId);
     const { droppedCards } = await room.onReceivingAsyncReponseFrom(
       GameEventIdentifiers.AskForCardDropEvent,
-      aimEvent.toIds[0],
+      aimEvent.toId,
     );
 
     if (!droppedCards || droppedCards.length === 0) {
@@ -60,7 +60,7 @@ export class TieJi extends TriggerSkill {
       await room.dropCards(
         CardLostReason.PassiveDrop,
         droppedCards,
-        aimEvent.toIds[0],
+        aimEvent.toId,
         skillUseEvent.fromId,
         this.Name,
       );

@@ -42,7 +42,8 @@ export class GuanShiFuSkill extends TriggerSkill {
     return (
       slashEvent.fromId === owner.Id &&
       Sanguosha.getCardById(content.cardId).GeneralName === 'jink' &&
-      Sanguosha.getCardById(slashEvent.cardId).GeneralName === 'slash'
+      Sanguosha.getCardById(slashEvent.cardId).GeneralName === 'slash' &&
+      EventPacker.isTerminated(slashEvent)
     );
   }
 

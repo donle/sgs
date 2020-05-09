@@ -59,8 +59,8 @@ export class JieDaoShaRenSkill extends ActiveSkill {
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
-    const { toIds, cardId } = event;
-    const [attacker, target] = Precondition.exists(toIds, 'Unknown targets in jiedaosharen');
+    const { allTargets, cardId } = event;
+    const [attacker, target] = Precondition.exists(allTargets, 'Unknown targets in jiedaosharen');
 
     const result = await room.askForCardUse(
       {

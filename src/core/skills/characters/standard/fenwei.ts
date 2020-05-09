@@ -15,12 +15,12 @@ export class FenWei extends TriggerSkill {
       stage === AimStage.AfterAim &&
       Sanguosha.getCardById(event.byCardId!).AOE !== CardTargetEnum.Single &&
       Sanguosha.getCardById(event.byCardId!).is(CardType.Trick) &&
-      event.toIds.length > 1
+      event.allTargets.length > 1
     );
   }
 
   canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
-    room.setFlag(owner.Id, this.Name, event.toIds);
+    room.setFlag(owner.Id, this.Name, event.allTargets);
     return true;
   }
 
@@ -41,7 +41,7 @@ export class FenWei extends TriggerSkill {
     const { triggeredOnEvent, toIds } = skillUseEvent;
     const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
 
-    aimEvent.toIds = aimEvent.toIds.filter(toId => !toIds!.includes(toId));
+    aimEvent.nullifiedTargets = [...aimEvent.nullifiedTargets, ...toIds!];
 
     return true;
   }

@@ -1,7 +1,7 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AllStage, CardEffectStage } from 'core/game/stage_processor';
+import { AllStage, CardUseStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
@@ -13,11 +13,11 @@ export class QingLongYanYueDaoSkill extends TriggerSkill {
     return false;
   }
 
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>, stage?: AllStage) {
-    return stage === CardEffectStage.AfterCardEffect;
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage?: AllStage) {
+    return stage === CardUseStage.CardUseFinishedEffect;
   }
 
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const { responseToEvent } = content;
     if (!responseToEvent) {
       return false;
@@ -26,6 +26,8 @@ export class QingLongYanYueDaoSkill extends TriggerSkill {
     return (
       slashEvent.fromId === owner.Id &&
       Sanguosha.getCardById(content.cardId).GeneralName === 'jink' &&
+      !EventPacker.isTerminated(content) &&
+      EventPacker.isTerminated(slashEvent) &&
       Sanguosha.getCardById(slashEvent.cardId).GeneralName === 'slash'
     );
   }

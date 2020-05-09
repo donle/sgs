@@ -23,7 +23,12 @@ export class QianXun extends TriggerSkill {
       return false;
     }
 
-    return !!content.allTargets && content.allTargets.length === 1 && content.allTargets.includes(owner.Id);
+    return (
+      !!content.allTargets &&
+      content.allTargets.length === 1 &&
+      content.fromId !== owner.Id &&
+      content.allTargets.includes(owner.Id)
+    );
   }
 
   async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {

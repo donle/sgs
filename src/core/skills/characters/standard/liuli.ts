@@ -5,6 +5,7 @@ import { AimStage, AllStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'liuli', description: 'liuli_description' })
@@ -19,7 +20,7 @@ export class LiuLi extends TriggerSkill {
 
   canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
     room.setFlag(owner.Id, this.Name, event.fromId);
-    return event.toIds.includes(owner.Id);
+    return event.toId === owner.Id;
   }
 
   public targetFilter(room: Room, targets: PlayerId[]) {
@@ -49,8 +50,11 @@ export class LiuLi extends TriggerSkill {
 
     await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, fromId, this.Name);
 
-    aimEvent.toIds = aimEvent.toIds.filter((toId) => toId !== fromId);
-    aimEvent.toIds.push(toIds![0]);
+    const index = aimEvent.allTargets.findIndex(toId => toId === fromId);
+    Precondition.assert(index >= 0, `Unable to find source player of ${this.Name}`);
+    aimEvent.allTargets.splice(index, 1);
+    aimEvent.allTargets.push(toIds![0]);
+    aimEvent.toId = toIds![0];
 
     return true;
   }

@@ -1,12 +1,9 @@
-import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { DamageType } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
-import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'slash', description: 'slash_description' })
 export class SlashSkill extends ActiveSkill {
@@ -58,59 +55,17 @@ export class SlashSkill extends ActiveSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const { toIds, fromId, cardId } = event;
-    const targets = Precondition.exists(toIds, 'Unable to get slash target');
+    const addtionalDrunkDamage = EventPacker.getMiddleware<number>(this.DrunkTag, event) || 0;
+    const damageEvent: ServerEventFinder<GameEventIdentifiers.DamageEvent> = {
+      fromId,
+      toId: toIds![0],
+      damage: 1 + addtionalDrunkDamage,
+      damageType: this.damageType,
+      cardIds: [cardId],
+      triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
+    };
 
-    for (const toId of targets) {
-      if (!EventPacker.isDisresponsiveEvent(event)) {
-        const askForUseCardEvent = {
-          toId,
-          cardMatcher: new CardMatcher({ name: ['jink'] }).toSocketPassenger(),
-          byCardId: cardId,
-          cardUserId: fromId,
-          triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
-          conversation:
-            fromId !== undefined
-              ? TranslationPack.translationJsonPatcher(
-                  '{0} used {1} to you, please use a {2} card',
-                  TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
-                  TranslationPack.patchCardInTranslation(cardId),
-                  'jink',
-                ).extract()
-              : TranslationPack.translationJsonPatcher(
-                  'please use a {0} card to response {1}',
-                  'jink',
-                  TranslationPack.patchCardInTranslation(cardId),
-                ).extract(),
-          triggeredOnEvent: event,
-        };
-
-        const result = await room.askForCardUse(askForUseCardEvent, toId);
-        const { responseEvent } = result;
-        if (responseEvent && responseEvent.cardId !== undefined) {
-          await room.useCard({
-            fromId: toId,
-            cardId: responseEvent.cardId,
-            toCardIds: [cardId],
-            responseToEvent: event,
-          });
-        }
-        if (EventPacker.isTerminated(event)) {
-          return false;
-        }
-      }
-
-      const addtionalDrunkDamage = EventPacker.getMiddleware<number>(this.DrunkTag, event) || 0;
-      const damageEvent: ServerEventFinder<GameEventIdentifiers.DamageEvent> = {
-        fromId,
-        toId,
-        damage: 1 + addtionalDrunkDamage,
-        damageType: this.damageType,
-        cardIds: [cardId],
-        triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
-      };
-
-      await room.damage(damageEvent);
-    }
+    await room.damage(damageEvent);
 
     return true;
   }

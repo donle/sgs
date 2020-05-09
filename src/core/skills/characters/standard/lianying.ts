@@ -13,14 +13,11 @@ export class LianYing extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardLostEvent>) {
-    const lostCards = content.cards
-      .filter(({ fromArea }) => fromArea === PlayerCardsArea.HandArea)
-      .map(({ cardId }) => cardId);
-    const handCards = owner.getCardIds(PlayerCardsArea.HandArea);
-    room.setFlag(owner.Id, this.Name, Math.max(1, handCards.length));
+    const lostCards = content.cards.filter(({ fromArea }) => fromArea === PlayerCardsArea.HandArea);
+    room.setFlag(owner.Id, this.Name, lostCards.length);
 
     return (
-      owner.Id === content.fromId && handCards.filter(card => lostCards.includes(card)).length === handCards.length
+      owner.Id === content.fromId && lostCards.length > 0 && owner.getCardIds(PlayerCardsArea.HandArea).length === 0
     );
   }
 

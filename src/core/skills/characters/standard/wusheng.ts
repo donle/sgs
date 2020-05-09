@@ -33,11 +33,8 @@ export class WuSheng extends ViewAsSkill {
     containerCard?: CardId,
     cardMatcher?: CardMatcher,
   ): boolean {
-    if (cardMatcher) {
-      return cardMatcher.match(new CardMatcher({ name: ['slash'] }));
-    } else {
-      return Sanguosha.getCardById(pendingCardId).isRed();
-    }
+    const isAvailable = cardMatcher ? cardMatcher.match(new CardMatcher({ name: ['slash'] })) : true;
+    return isAvailable && Sanguosha.getCardById(pendingCardId).isRed();
   }
   public viewAs(selectedCards: CardId[]): VirtualCard {
     return VirtualCard.create<Slash>(

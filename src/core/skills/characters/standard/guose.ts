@@ -1,4 +1,5 @@
 import { VirtualCard } from 'core/cards/card';
+import { CardMatcher, CardMatcherProps } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { CardLostReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -27,7 +28,12 @@ export class GuoSe extends ActiveSkill {
     selectedTargets: PlayerId[],
     containerCard?: CardId,
   ): boolean {
-    return target !== owner;
+    const guoseCard = selectedCards.length > 0 ? Sanguosha.getCardById(selectedCards[0]) : undefined;
+    const matcherProps: CardMatcherProps = { name: ['lebusishu'] };
+    if (guoseCard) {
+      matcherProps.suit = [guoseCard.Suit];
+    }
+    return target !== owner && room.getPlayerById(owner).canUseCardTo(room, new CardMatcher(matcherProps), target);
   }
 
   public isAvailableCard(

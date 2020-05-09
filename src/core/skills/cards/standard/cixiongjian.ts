@@ -33,11 +33,11 @@ export class CiXiongJianSkill extends TriggerSkill {
       return false;
     }
 
-    const { fromId, toIds } = content;
+    const { fromId, allTargets: toIds } = content;
 
     return (
       fromId === owner.Id &&
-      toIds.find((targetId) => {
+      toIds.find(targetId => {
         const target = room.getPlayerById(targetId);
         return (
           target.Gender !== owner.Gender &&
@@ -67,39 +67,38 @@ export class CiXiongJianSkill extends TriggerSkill {
     >;
 
     const from = room.getPlayerById(fromId);
-    for (const toId of aimEvent.toIds) {
-      const to = room.getPlayerById(toId);
-      if (to.Gender === from.Gender) {
-        continue;
-      }
+    const { toId } = aimEvent;
+    const to = room.getPlayerById(toId);
+    if (to.Gender === from.Gender) {
+      return false;
+    }
 
-      if (to.getCardIds(PlayerCardsArea.HandArea).length === 0) {
-        await room.drawCards(1, fromId);
-        continue;
-      }
+    if (to.getCardIds(PlayerCardsArea.HandArea).length === 0) {
+      await room.drawCards(1, fromId);
+      return true;
+    }
 
-      const askForOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
-        options: ['cixiongjian:drop-card', 'cixiongjian:draw-card'],
-        conversation: 'please choose',
-        toId,
-        askedBy: fromId,
-      };
+    const askForOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
+      options: ['cixiongjian:drop-card', 'cixiongjian:draw-card'],
+      conversation: 'please choose',
+      toId,
+      askedBy: fromId,
+    };
 
-      room.notify(
-        GameEventIdentifiers.AskForChoosingOptionsEvent,
-        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(askForOptionsEvent),
-        toId,
-      );
-      const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, toId);
-      response.selectedOption = response.selectedOption || 'cixiongjian:draw-card';
-      if (response.selectedOption === 'cixiongjian:drop-card') {
-        const { responseEvent } = await room.askForCardDrop(toId, 1, [PlayerCardsArea.HandArea], true);
-        if (responseEvent) {
-          await room.dropCards(CardLostReason.ActiveDrop, responseEvent.droppedCards, toId);
-        }
-      } else {
-        await room.drawCards(1, fromId);
+    room.notify(
+      GameEventIdentifiers.AskForChoosingOptionsEvent,
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(askForOptionsEvent),
+      toId,
+    );
+    const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, toId);
+    response.selectedOption = response.selectedOption || 'cixiongjian:draw-card';
+    if (response.selectedOption === 'cixiongjian:drop-card') {
+      const { responseEvent } = await room.askForCardDrop(toId, 1, [PlayerCardsArea.HandArea], true);
+      if (responseEvent) {
+        await room.dropCards(CardLostReason.ActiveDrop, responseEvent.droppedCards, toId);
       }
+    } else {
+      await room.drawCards(1, fromId);
     }
     return true;
   }

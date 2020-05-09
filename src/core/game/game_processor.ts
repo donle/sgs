@@ -221,6 +221,7 @@ export class GameProcessor {
           const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
             cardId: judgeCardId,
             toIds: [this.CurrentPlayer.Id],
+            nullifiedTargets: [],
             allTargets: Sanguosha.getCardById(judgeCardId).Skill.nominateForwardTarget([this.CurrentPlayer.Id]),
           };
 
@@ -361,6 +362,135 @@ export class GameProcessor {
 
       if (lastPlayer !== this.currentPhasePlayer) {
         lastPlayer = this.currentPhasePlayer;
+      }
+    }
+  }
+
+  private async doCardEffect(
+    identifier: GameEventIdentifiers.CardEffectEvent,
+    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
+  ) {
+    const card = Sanguosha.getCardById(event.cardId);
+    if (card.is(CardType.Trick)) {
+      const pendingResponses: {
+        [k in PlayerId]: Promise<ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent>>;
+      } = {};
+      for (const player of this.room.getAlivePlayersFrom(this.CurrentPlayer.Id)) {
+        if (!player.hasCard(new CardMatcher({ name: ['wuxiekeji'] }))) {
+          continue;
+        }
+
+        const wuxiekejiEvent = {
+          toId: player.Id,
+          conversation:
+            event.fromId !== undefined
+              ? TranslationPack.translationJsonPatcher(
+                  'do you wanna use {0} for {1} from {2}' + (event.toIds ? ' to {3}' : ''),
+                  'wuxiekeji',
+                  TranslationPack.patchCardInTranslation(event.cardId),
+                  TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
+                  event.toIds
+                    ? TranslationPack.wrapArrayParams(
+                        ...event.toIds.map(toId => this.room.getPlayerById(toId).Character.Name),
+                      )
+                    : '',
+                ).extract()
+              : TranslationPack.translationJsonPatcher(
+                  'do you wanna use {0} for {1}' + (event.toIds ? ' to {2}' : ''),
+                  'wuxiekeji',
+                  TranslationPack.patchCardInTranslation(event.cardId),
+                  event.toIds
+                    ? TranslationPack.wrapArrayParams(
+                        ...event.toIds.map(toId => this.room.getPlayerById(toId).Character.Name),
+                      )
+                    : '',
+                ).extract(),
+          cardMatcher: new CardMatcher({
+            name: ['wuxiekeji'],
+          }).toSocketPassenger(),
+          byCardId: event.cardId,
+          cardUserId: event.fromId,
+        };
+        this.room.notify(GameEventIdentifiers.AskForCardUseEvent, wuxiekejiEvent, player.Id);
+
+        pendingResponses[player.Id] = this.room.onReceivingAsyncReponseFrom(
+          GameEventIdentifiers.AskForCardUseEvent,
+          player.Id,
+        );
+      }
+
+      let cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> | undefined;
+      while (Object.keys(pendingResponses).length > 0) {
+        const response = await Promise.race(Object.values(pendingResponses));
+        if (response.cardId !== undefined) {
+          cardUseEvent = {
+            fromId: response.fromId,
+            cardId: response.cardId,
+            toCardIds: [event.cardId],
+            responseToEvent: event,
+          };
+          break;
+        } else {
+          delete pendingResponses[response.fromId];
+        }
+      }
+
+      for (const player of this.room.getAlivePlayersFrom(this.CurrentPlayer.Id)) {
+        this.room.clearSocketSubscriber(identifier, player.Id);
+      }
+
+      if (cardUseEvent) {
+        await this.room.useCard(cardUseEvent);
+      }
+
+      if (EventPacker.isTerminated(event)) {
+        card.Skill.onEffectRejected(this.room, event);
+      }
+    } else if (card.GeneralName === 'slash') {
+      const { toIds, fromId, cardId } = event;
+      const targets = Precondition.exists(toIds, 'Unable to get slash target');
+      Precondition.assert(targets.length === 1, 'slash effect target should be only one target');
+      const toId = targets[0];
+
+      if (!EventPacker.isDisresponsiveEvent(event)) {
+        const askForUseCardEvent = {
+          toId,
+          cardMatcher: new CardMatcher({ name: ['jink'] }).toSocketPassenger(),
+          byCardId: cardId,
+          cardUserId: fromId,
+          triggeredBySkills: event.triggeredBySkills
+            ? [...event.triggeredBySkills, card.GeneralName]
+            : [card.GeneralName],
+          conversation:
+            fromId !== undefined
+              ? TranslationPack.translationJsonPatcher(
+                  '{0} used {1} to you, please use a {2} card',
+                  TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(fromId)),
+                  TranslationPack.patchCardInTranslation(cardId),
+                  'jink',
+                ).extract()
+              : TranslationPack.translationJsonPatcher(
+                  'please use a {0} card to response {1}',
+                  'jink',
+                  TranslationPack.patchCardInTranslation(cardId),
+                ).extract(),
+          triggeredOnEvent: event,
+        };
+
+        const result = await this.room.askForCardUse(askForUseCardEvent, toId);
+        const { responseEvent } = result;
+        if (responseEvent && responseEvent.cardId !== undefined) {
+          const jinkUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
+            fromId: toId,
+            cardId: responseEvent.cardId,
+            toCardIds: [cardId],
+            responseToEvent: event,
+          };
+          await this.room.useCard(jinkUseEvent);
+          if (!EventPacker.isTerminated(jinkUseEvent)) {
+            EventPacker.terminate(event);
+          }
+        }
       }
     }
   }
@@ -520,10 +650,6 @@ export class GameProcessor {
     return;
   }
 
-  private deadPlayerFilters(...playerIds: PlayerId[]) {
-    return playerIds.filter(playerId => !this.room.getPlayerById(playerId).Dead);
-  }
-
   private iterateEachStage = async <T extends GameEventIdentifiers>(
     identifier: T,
     event: EventPicker<GameEventIdentifiers, WorkPlace.Server>,
@@ -573,9 +699,14 @@ export class GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.ObtainCardEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
+    const to = this.room.getPlayerById(event.toId);
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      if (to.Dead) {
+        EventPacker.terminate(event);
+        return;
+      }
+
       if (stage === ObtainCardStage.CardObtaining) {
-        event.toId = this.deadPlayerFilters(event.toId)[0];
         this.room.broadcast(identifier, event);
         const obtainedCards = event.cardIds.reduce<CardId[]>((prevCardIds, cardId) => {
           if (this.room.isCardOnProcessing(cardId) && this.room.getCardOwnerId(cardId) !== undefined) {
@@ -590,7 +721,7 @@ export class GameProcessor {
 
           return prevCardIds;
         }, [] as CardId[]);
-        this.room.getPlayerById(event.toId).obtainCardIds(...obtainedCards);
+        to.obtainCardIds(...obtainedCards);
       }
     });
   }
@@ -600,16 +731,21 @@ export class GameProcessor {
     event: EventPicker<GameEventIdentifiers.DrawCardEvent, WorkPlace.Server>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
+    const from = this.room.getPlayerById(event.fromId);
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      if (from.Dead) {
+        EventPacker.terminate(event);
+        return;
+      }
+
       if (stage === DrawCardStage.CardDrawing) {
         if (!event.translationsMessage) {
           event.translationsMessage = TranslationPack.translationJsonPatcher(
             '{0} draws {1} cards',
-            TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
+            TranslationPack.patchPlayerInTranslation(from),
             event.drawAmount,
           ).extract();
         }
-        event.fromId = this.deadPlayerFilters(event.fromId)[0];
         this.room.broadcast(identifier, event);
       }
     });
@@ -656,28 +792,33 @@ export class GameProcessor {
     event: EventPicker<GameEventIdentifiers.DamageEvent, WorkPlace.Server>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
+    const to = this.room.getPlayerById(event.toId);
+    const from = event.fromId ? this.room.getPlayerById(event.fromId) : undefined;
     return await this.iterateEachStage(identifier, event, onActualExecuted, async (stage: GameEventStage) => {
+      if (to.Dead) {
+        EventPacker.terminate(event);
+        return;
+      }
+
       if (stage === DamageEffectStage.DamagedEffect) {
-        const { toId, damage, fromId, damageType } = event;
-        event.fromId = fromId && this.deadPlayerFilters(fromId)[0];
+        const { toId, damage, damageType } = event;
+        event.fromId = from?.Dead ? undefined : from?.Id;
 
-        event.translationsMessage =
-          event.fromId === undefined
-            ? TranslationPack.translationJsonPatcher(
-                '{0} got hurt for {1} hp with {2} property',
-                TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(toId)),
-                damage,
-                damageType,
-              ).extract()
-            : TranslationPack.translationJsonPatcher(
-                '{0} hits {1} {2} hp of damage type {3}',
-                TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
-                TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(toId)),
-                damage,
-                damageType,
-              ).extract();
+        event.translationsMessage = !from
+          ? TranslationPack.translationJsonPatcher(
+              '{0} got hurt for {1} hp with {2} property',
+              TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(toId)),
+              damage,
+              damageType,
+            ).extract()
+          : TranslationPack.translationJsonPatcher(
+              '{0} hits {1} {2} hp of damage type {3}',
+              TranslationPack.patchPlayerInTranslation(from),
+              TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(toId)),
+              damage,
+              damageType,
+            ).extract();
 
-        const to = this.room.getPlayerById(toId);
         to.onDamage(damage);
         this.room.broadcast(identifier, event);
 
@@ -830,6 +971,7 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      event.toIds = event.toIds && this.room.deadPlayerFilters(event.toIds);
       if (stage === SkillUseStage.SkillUsing) {
         if (!event.translationsMessage && !Sanguosha.isShadowSkillName(event.skillName)) {
           event.translationsMessage = TranslationPack.translationJsonPatcher(
@@ -855,6 +997,7 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      event.toIds = event.toIds && this.room.deadPlayerFilters(event.toIds);
       if (stage === SkillEffectStage.SkillEffecting) {
         const { skillName } = event;
         await Sanguosha.getSkillBySkillName(skillName).onEffect(this.room, event);
@@ -867,8 +1010,13 @@ export class GameProcessor {
     event: EventPicker<GameEventIdentifiers.AimEvent, WorkPlace.Server>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    event.toIds = this.deadPlayerFilters(...event.toIds);
-    return await this.iterateEachStage(identifier, event, onActualExecuted);
+    return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      event.allTargets = this.room.deadPlayerFilters(event.allTargets);
+      if (this.room.getPlayerById(event.toId).Dead) {
+        EventPacker.terminate(event);
+      }
+      return;
+    });
   }
 
   private async onHandleCardEffectEvent(
@@ -878,84 +1026,13 @@ export class GameProcessor {
   ) {
     const card = Sanguosha.getCardById(event.cardId);
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      if (
-        !EventPacker.isDisresponsiveEvent(event) &&
-        card.is(CardType.Trick) &&
-        stage == CardEffectStage.BeforeCardEffect
-      ) {
-        const pendingResponses: {
-          [k in PlayerId]: Promise<ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent>>;
-        } = {};
-        for (const player of this.room.getAlivePlayersFrom(this.CurrentPlayer.Id)) {
-          if (!player.hasCard(new CardMatcher({ name: ['wuxiekeji'] }))) {
-            continue;
-          }
+      event.toIds = event.toIds && this.room.deadPlayerFilters(event.toIds);
+      event.allTargets = event.allTargets && this.room.deadPlayerFilters(event.allTargets);
 
-          const wuxiekejiEvent = {
-            toId: player.Id,
-            conversation:
-              event.fromId !== undefined
-                ? TranslationPack.translationJsonPatcher(
-                    'do you wanna use {0} for {1} from {2}' + (event.toIds ? ' to {3}' : ''),
-                    'wuxiekeji',
-                    TranslationPack.patchCardInTranslation(event.cardId),
-                    TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
-                    event.toIds
-                      ? TranslationPack.wrapArrayParams(
-                          ...event.toIds.map(toId => this.room.getPlayerById(toId).Character.Name),
-                        )
-                      : '',
-                  ).extract()
-                : TranslationPack.translationJsonPatcher(
-                    'do you wanna use {0} for {1}' + (event.toIds ? ' to {2}' : ''),
-                    'wuxiekeji',
-                    TranslationPack.patchCardInTranslation(event.cardId),
-                    event.toIds
-                      ? TranslationPack.wrapArrayParams(
-                          ...event.toIds.map(toId => this.room.getPlayerById(toId).Character.Name),
-                        )
-                      : '',
-                  ).extract(),
-            cardMatcher: new CardMatcher({
-              name: ['wuxiekeji'],
-            }).toSocketPassenger(),
-            byCardId: event.cardId,
-            cardUserId: event.fromId,
-          };
-          this.room.notify(GameEventIdentifiers.AskForCardUseEvent, wuxiekejiEvent, player.Id);
-
-          pendingResponses[player.Id] = this.room.onReceivingAsyncReponseFrom(
-            GameEventIdentifiers.AskForCardUseEvent,
-            player.Id,
-          );
-        }
-
-        let cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> | undefined;
-        while (Object.keys(pendingResponses).length > 0) {
-          const response = await Promise.race(Object.values(pendingResponses));
-          if (response.cardId !== undefined) {
-            cardUseEvent = {
-              fromId: response.fromId,
-              cardId: response.cardId,
-              toCardIds: [event.cardId],
-              responseToEvent: event,
-            };
-            break;
-          } else {
-            delete pendingResponses[response.fromId];
-          }
-        }
-
-        for (const player of this.room.getAlivePlayersFrom(this.CurrentPlayer.Id)) {
-          this.room.clearSocketSubscriber(identifier, player.Id);
-        }
-
-        if (cardUseEvent) {
-          await this.room.useCard(cardUseEvent);
-        }
-
+      if (stage == CardEffectStage.BeforeCardEffect) {
+        await this.doCardEffect(identifier, event);
         if (EventPacker.isTerminated(event)) {
-          card.Skill.onEffectRejected(this.room, event);
+          return;
         }
       }
 
@@ -1027,6 +1104,7 @@ export class GameProcessor {
     }
 
     await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      event.toIds = event.toIds && this.room.deadPlayerFilters(event.toIds);
       if (stage === CardUseStage.CardUsing) {
         if (!card.is(CardType.Equip)) {
           await card.Skill.onUse(this.room, event);
@@ -1293,16 +1371,14 @@ export class GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.LoseHpEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
+    const victim = this.room.getPlayerById(event.toId);
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      if (victim.Dead) {
+        EventPacker.terminate(event);
+        return;
+      }
+
       if (stage === LoseHpStage.LosingHp) {
-        event.toId = this.deadPlayerFilters(event.toId)[0];
-        if (!event.toId) {
-          EventPacker.terminate(event);
-          return;
-        }
-
-        const victim = this.room.getPlayerById(event.toId);
-
         if (event.translationsMessage === undefined) {
           event.translationsMessage = TranslationPack.translationJsonPatcher(
             '{0} lost {1} hp',
@@ -1333,15 +1409,15 @@ export class GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.RecoverEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
+    const to = this.room.getPlayerById(event.toId);
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      if (stage === RecoverEffectStage.RecoverEffecting) {
-        event.toId = this.deadPlayerFilters(event.toId)[0];
-        if (!event.toId) {
-          EventPacker.terminate(event);
-          return;
-        }
+      if (to.Dead) {
+        EventPacker.terminate(event);
+        return;
+      }
 
-        this.room.getPlayerById(event.toId).onRecoverHp(event.recoveredHp);
+      if (stage === RecoverEffectStage.RecoverEffecting) {
+        to.onRecoverHp(event.recoveredHp);
         this.room.broadcast(GameEventIdentifiers.RecoverEvent, event);
       }
     });
