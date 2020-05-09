@@ -23,20 +23,10 @@ export class TaoYuanJieYiSkill extends ActiveSkill {
     return false;
   }
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    const others = room.getAlivePlayersFrom();
     const from = room.getPlayerById(event.fromId);
-    event.toIds = others
-      .filter((player) => from.canUseCardTo(room, event.cardId, player.Id))
-      .map((player) => player.Id);
-    return true;
-  }
-
-  public async beforeEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
-    event.toIds = event.toIds?.filter((to) => {
-      const player = room.getPlayerById(to);
-      return player.Hp < player.MaxHp;
-    });
-
+    const allPlayers = room.getAlivePlayersFrom().filter(player => from.canUseCardTo(room, event.cardId, player.Id));
+    event.toIds = allPlayers.map(player => player.Id);
+    event.nullifiedTargets = allPlayers.filter(player => player.Hp === player.MaxHp).map(player => player.Id);
     return true;
   }
 

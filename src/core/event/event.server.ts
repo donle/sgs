@@ -51,6 +51,7 @@ export interface ServerEvent extends EventUtilities {
     toCardIds?: CardId[];
     responseToEvent?: ServerEventFinder<GameEventIdentifiers>;
     skipDrop?: boolean;
+    nullifiedTargets?: PlayerId[];
   };
   [GameEventIdentifiers.CardEffectEvent]: {
     fromId?: PlayerId;
@@ -59,12 +60,15 @@ export interface ServerEvent extends EventUtilities {
     toCardIds?: CardId[];
     allTargets?: PlayerId[];
     responseToEvent?: ServerEventFinder<GameEventIdentifiers>;
+    nullifiedTargets: PlayerId[];
   };
   [GameEventIdentifiers.AimEvent]: {
     fromId: string;
     bySkill?: string;
     byCardId?: CardId;
-    toIds: PlayerId[];
+    allTargets: PlayerId[];
+    toId: PlayerId;
+    nullifiedTargets: PlayerId[];
   };
   [GameEventIdentifiers.CardResponseEvent]: {
     fromId: PlayerId;

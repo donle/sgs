@@ -31,7 +31,7 @@ export class WuShuang extends TriggerSkill {
     if (Sanguosha.getCardById(event.byCardId!).GeneralName === 'slash') {
       return owner.Id === event.fromId;
     }
-    return owner.Id === event.fromId || event.toIds.includes(owner.Id);
+    return owner.Id === event.fromId || event.toId === owner.Id;
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -67,7 +67,7 @@ export class WuShuangShadow extends TriggerSkill implements OnDefineReleaseTimin
     event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent>,
     stage?: AllStage,
   ): boolean {
-    return stage === CardUseStage.CardUseFinishedEffect || stage === CardResponseStage.AfterCardResponseEffect;
+    return stage === CardUseStage.AfterCardUseEffect || stage === CardResponseStage.AfterCardResponseEffect;
   }
 
   public canUse(
@@ -82,19 +82,28 @@ export class WuShuangShadow extends TriggerSkill implements OnDefineReleaseTimin
     }
 
     let canUse = false;
-    if (identifier === GameEventIdentifiers.CardUseEvent) {
-      const jinkEvent = event as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
-      const { responseToEvent } = jinkEvent;
-      const slashEvent = responseToEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
-      canUse =
-        Sanguosha.getCardById(jinkEvent.cardId).GeneralName === 'jink' &&
-        slashEvent &&
-        Sanguosha.getCardById(slashEvent.cardId).GeneralName === 'slash';
-    } else if (identifier === GameEventIdentifiers.CardResponseEvent) {
-      const slashEvent = event as ServerEventFinder<GameEventIdentifiers.CardResponseEvent>;
-      const { responseToEvent } = slashEvent;
-      const duelEvent = responseToEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
-      canUse = Sanguosha.getCardById(duelEvent.cardId).GeneralName === 'duel' && slashEvent.fromId !== owner.Id;
+    switch (identifier) {
+      case GameEventIdentifiers.CardUseEvent: {
+        const jinkEvent = event as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
+        const { responseToEvent } = jinkEvent;
+        const slashEvent = responseToEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
+        canUse =
+          Sanguosha.getCardById(jinkEvent.cardId).GeneralName === 'jink' &&
+          slashEvent &&
+          Sanguosha.getCardById(slashEvent.cardId).GeneralName === 'slash' &&
+          !EventPacker.getMiddleware<boolean>(this.Name, jinkEvent);
+        break;
+      }
+      case GameEventIdentifiers.CardResponseEvent: {
+        const slashEvent = event as ServerEventFinder<GameEventIdentifiers.CardResponseEvent>;
+        const { responseToEvent } = slashEvent;
+        const duelEvent = responseToEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
+        canUse = Sanguosha.getCardById(duelEvent.cardId).GeneralName === 'duel' && slashEvent.fromId !== owner.Id;
+
+        break;
+      }
+      default:
+        return false;
     }
 
     return canUse && !!EventPacker.getMiddleware<boolean>(this.GeneralName, responseToEvent);
@@ -115,6 +124,7 @@ export class WuShuangShadow extends TriggerSkill implements OnDefineReleaseTimin
       const jinkEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
       const { responseToEvent } = jinkEvent;
       const slashEvent = responseToEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
+      EventPacker.removeMiddleware(this.GeneralName, slashEvent);
 
       const askForUseCardEvent = {
         toId: jinkEvent.fromId,
@@ -135,26 +145,28 @@ export class WuShuangShadow extends TriggerSkill implements OnDefineReleaseTimin
                 'jink',
                 TranslationPack.patchCardInTranslation(slashEvent.cardId),
               ).extract(),
-        triggeredOnEvent: skillUseEvent,
+        triggeredOnEvent: slashEvent,
       };
 
       const result = await room.askForCardUse(askForUseCardEvent, jinkEvent.fromId);
       const { responseEvent } = result;
       if (!responseEvent || responseEvent.cardId === undefined) {
-        responseToEvent && EventPacker.recall(responseToEvent);
+        responseToEvent && EventPacker.recall(slashEvent);
         EventPacker.terminate(jinkEvent);
       } else {
-        EventPacker.removeMiddleware(this.GeneralName, slashEvent);
-        await room.useCard({
+        EventPacker.terminate(jinkEvent);
+        const useJinkEvent = {
           fromId: jinkEvent.fromId,
           cardId: responseEvent.cardId,
-        });
+          toCardIds: jinkEvent.toCardIds,
+          responseToEvent: slashEvent,
+        };
+        EventPacker.addMiddleware({ tag: this.Name, data: true }, useJinkEvent);
+        await room.useCard(useJinkEvent);
       }
     } else {
       const duelResponseEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.CardResponseEvent>;
-      const responser = room.getPlayerById(duelResponseEvent.fromId);
-      if (responser.getFlag<boolean>(this.GeneralName)) {
-        responser.removeFlag(this.GeneralName);
+      if (EventPacker.getMiddleware<boolean>(this.Name, duelResponseEvent)) {
         return true;
       }
 
@@ -176,12 +188,13 @@ export class WuShuangShadow extends TriggerSkill implements OnDefineReleaseTimin
       if (!responseEvent || responseEvent.cardId === undefined) {
         EventPacker.terminate(duelResponseEvent);
       } else {
-        responser.setFlag(this.GeneralName, true);
-        await room.responseCard({
+        const responseCardEvent = {
           fromId: duelResponseEvent.fromId,
           cardId: responseEvent.cardId,
           responseToEvent: duelEvent,
-        });
+        };
+        EventPacker.addMiddleware({ tag: this.Name, data: true }, responseCardEvent);
+        await room.responseCard(responseCardEvent);
       }
     }
     return true;
