@@ -27,15 +27,10 @@ export class Jianchu extends TriggerSkill {
     if (!event) {
       return false;
     }
-    const { fromId, toIds } = event;
+    const { fromId, toId } = event;
+    const target = room.getPlayerById(toId);
 
-    return (
-      fromId === owner.Id &&
-      toIds.find(targetId => {
-        const target = room.getPlayerById(targetId);
-        return !target.Dead && target.getPlayerCards().length > 0;
-      }) !== undefined
-    );
+    return fromId === owner.Id && !target.Dead && target.getPlayerCards().length > 0;
   }
 
   async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
@@ -46,7 +41,7 @@ export class Jianchu extends TriggerSkill {
     const { triggeredOnEvent } = skillUseEvent;
     const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
 
-    const to = room.getPlayerById(aimEvent.toIds[0]);
+    const to = room.getPlayerById(aimEvent.toId);
 
     const options: CardChoosingOptions = {
       [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),
