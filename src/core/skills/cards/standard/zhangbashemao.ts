@@ -3,6 +3,7 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Slash } from 'core/cards/standard/slash';
 import { Player } from 'core/player/player';
+import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, ViewAsSkill } from 'core/skills/skill';
 
@@ -25,7 +26,7 @@ export class ZhangBaSheMaoSkill extends ViewAsSkill {
     selectedCards: CardId[],
     containerCard?: CardId | undefined,
   ): boolean {
-    return pendingCardId !== containerCard;
+    return pendingCardId !== containerCard && owner.cardFrom(pendingCardId) === PlayerCardsArea.HandArea;
   }
 
   public viewAs(selectedCards: CardId[]) {
