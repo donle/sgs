@@ -613,7 +613,6 @@ export class GameClientProcessor {
       to &&
       ![CardMoveArea.DrawStack, CardMoveArea.DropStack, CardMoveArea.ProcessingArea].includes(toArea as CardMoveArea)
     ) {
-      console.log(cardIds, toArea);
       if (toArea === CardMoveArea.OutsideArea) {
         to.getCardIds((toArea as unknown) as PlayerCardsArea, toOutsideArea).push(...cardIds);
       } else {
