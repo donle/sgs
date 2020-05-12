@@ -41,7 +41,7 @@ export class YaJiao extends TriggerSkill {
     room.broadcast(GameEventIdentifiers.CardDisplayEvent, cardDisplayEvent);
 
     const choosePlayerEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
-      players: room.AlivePlayers.map((p) => p.Id),
+      players: room.AlivePlayers.map(p => p.Id),
       requiredAmount: 1,
       conversation: 'please choose a player',
       toId: skillUseEvent.fromId,
