@@ -111,6 +111,10 @@ export class JieWeiShadow extends TriggerSkill {
     ];
   }
 
+  public nominateForwardTarget(targets: PlayerId[]) {
+    return [targets[0]];
+  }
+
   async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     event.animation = this.getAnimationSteps(event);
     return true;

@@ -403,6 +403,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         const aimEventCollaborators: { [player: string]: ServerEventFinder<GameEventIdentifiers.AimEvent> } = {};
         let nullifiedTargets: PlayerId[] = event.nullifiedTargets || [];
         const toIds = card.Skill.nominateForwardTarget(event.toIds);
+        toIds === event.toIds && this.sortPlayersByPosition(toIds!);
+
         const nonTargetToIds = toIds === event.toIds ? [] : event.toIds?.filter(id => !toIds?.includes(id));
         let cardEffectToIds: PlayerId[] | undefined = toIds;
 
@@ -416,7 +418,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             }
             nullifiedTargets = response.nullifiedTargets;
           }
-          this.sortPlayersByPosition(cardEffectToIds!);
         }
 
         if (card.is(CardType.Equip) || card.is(CardType.DelayedTrick)) {
