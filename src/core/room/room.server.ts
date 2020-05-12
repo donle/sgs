@@ -1,6 +1,6 @@
 import {
-  CardLostReason,
-  CardObtainedReason,
+  CardMoveArea,
+  CardMoveReason,
   ClientEventFinder,
   EventPacker,
   GameEventIdentifiers,
@@ -22,7 +22,6 @@ import { ServerPlayer } from 'core/player/player.server';
 import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 
 import { Card, CardType, VirtualCard } from 'core/cards/card';
-import { EquipCard } from 'core/cards/equip_card';
 import { CardId, CardTargetEnum } from 'core/cards/libs/card_props';
 import { Character } from 'core/characters/character';
 import { PinDianResultType } from 'core/event/event.server';
@@ -36,7 +35,7 @@ import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { OnDefineReleaseTiming, Skill, SkillHooks, SkillType, TriggerSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
-import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 import { GameProcessor } from '../game/game_processor';
 import { Room, RoomId } from './room';
 
@@ -300,20 +299,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         }
       }
     }
-  }
-
-  public async equip(card: EquipCard, player: Player) {
-    const prevEquipment = player.getEquipment(card.EquipType);
-    if (prevEquipment !== undefined) {
-      await this.dropCards(CardLostReason.PlaceToDropStack, [prevEquipment], player.Id);
-    }
-
-    const event: ServerEventFinder<GameEventIdentifiers.EquipEvent> = {
-      fromId: player.Id,
-      cardId: card.Id,
-    };
-    this.broadcast(GameEventIdentifiers.EquipEvent, event);
-    player.equip(card);
   }
 
   public async askForCardDrop(
@@ -610,10 +595,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       async stage => {
         if (stage === DrawCardStage.CardDrawing) {
           drawedCards = this.getCards(drawEvent.drawAmount, from);
-          await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.ObtainCardEvent, {
-            reason: CardObtainedReason.CardDraw,
-            cardIds: drawedCards,
+          await this.moveCards({
+            movingCards: drawedCards.map(cardId => ({ card: cardId, fromArea: CardMoveArea.DrawStack })),
             toId: drawEvent.fromId,
+            toArea: CardMoveArea.HandArea,
+            moveReason: CardMoveReason.CardDraw,
+            hideBroadcast: true,
           });
         }
 
@@ -624,34 +611,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return drawedCards;
   }
 
-  public async obtainCards(
-    event: ServerEventFinder<GameEventIdentifiers.ObtainCardEvent>,
-    doBroadcast: boolean = false,
-  ) {
-    if (event.cardIds.length === 0) {
-      return;
-    }
-
-    event.givenBy = event.givenBy || event.fromId;
-    event.translationsMessage =
-      event.translationsMessage ||
-      (doBroadcast
-        ? TranslationPack.translationJsonPatcher(
-            '{0} obtains cards {1}',
-            TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.toId)),
-            TranslationPack.patchCardInTranslation(...Card.getActualCards(event.cardIds)),
-          ).extract()
-        : undefined);
-    event.cardIds = Card.getActualCards(event.cardIds);
-    EventPacker.createIdentifierEvent(GameEventIdentifiers.ObtainCardEvent, event);
-
-    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.ObtainCardEvent, event);
-    this.dropStack = this.dropStack.filter(cardId => !event.cardIds.includes(cardId));
-    this.drawStack = this.drawStack.filter(cardId => !event.cardIds.includes(cardId));
-  }
-
   public async dropCards(
-    reason: CardLostReason,
+    moveReason: CardMoveReason,
     cardIds: CardId[],
     playerId?: PlayerId,
     droppedBy?: PlayerId,
@@ -663,6 +624,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     droppedBy = droppedBy || playerId || this.CurrentPlayer.Id;
     playerId = playerId || this.CurrentPlayer.Id;
+    const player = this.getPlayerById(playerId);
 
     const dropEvent: ServerEventFinder<GameEventIdentifiers.CardDropEvent> = {
       cardIds,
@@ -676,60 +638,16 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       EventPacker.createIdentifierEvent(GameEventIdentifiers.CardDropEvent, dropEvent),
       async stage => {
         if (stage === CardDropStage.CardDropping) {
-          await this.loseCards(cardIds, playerId!, reason, droppedBy);
-          this.bury(...cardIds);
+          await this.moveCards({
+            movingCards: cardIds.map(card => ({ card, fromArea: player.cardFrom(card) })),
+            toArea: CardMoveArea.DropStack,
+            moveReason,
+            hideBroadcast: true,
+          });
         }
 
         return true;
       },
-    );
-  }
-
-  public async loseCards(
-    cardIds: CardId[],
-    from: PlayerId,
-    reason: CardLostReason,
-    droppedBy?: PlayerId,
-    moveReason?: string,
-    customMessmage?: PatchedTranslationObject,
-    doBroadcast: boolean = false,
-  ) {
-    if (cardIds.length === 0) {
-      return;
-    }
-    const player = this.getPlayerById(from);
-    let actualCards: CardId[] = [];
-    for (const cardId of cardIds) {
-      if (player.cardFrom(cardId) !== PlayerCardsArea.JudgeArea) {
-        actualCards = actualCards.concat(Card.getActualCards([cardId]));
-      } else {
-        actualCards.push(cardId);
-      }
-    }
-
-    const event: ServerEventFinder<GameEventIdentifiers.CardLostEvent> = {
-      cards: actualCards.map(cardId => ({ cardId, fromArea: player.cardFrom(cardId) })),
-      reason,
-      fromId: from,
-      droppedBy,
-      translationsMessage: customMessmage,
-      triggeredBySkills: moveReason ? [moveReason] : undefined,
-    };
-
-    event.translationsMessage =
-      event.translationsMessage ||
-      (doBroadcast
-        ? (event.translationsMessage = TranslationPack.translationJsonPatcher(
-            '{0} lost card {1}',
-            TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.fromId)),
-            TranslationPack.patchCardInTranslation(...Card.getActualCards(cardIds)),
-          ).extract())
-        : undefined);
-    EventPacker.createIdentifierEvent(GameEventIdentifiers.CardLostEvent, event);
-
-    await this.gameProcessor.onHandleIncomingEvent(
-      GameEventIdentifiers.CardLostEvent,
-      EventPacker.createIdentifierEvent(GameEventIdentifiers.CardLostEvent, event),
     );
   }
 
@@ -744,36 +662,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     );
   }
 
-  public async moveCards(
-    cardIds: CardId[],
-    fromId: PlayerId | undefined,
-    toId: PlayerId,
-    fromReason: CardLostReason | undefined,
-    fromArea: PlayerCardsArea | undefined,
-    toArea: PlayerCardsArea,
-    toReason: CardObtainedReason | undefined,
-    proposer?: PlayerId,
-    moveReason?: string,
-    toOutsideArea?: string,
-    isOutsideAreaInPublic?: boolean,
-  ) {
-    const moveEvent: ServerEventFinder<GameEventIdentifiers.MoveCardEvent> = {
-      cardIds,
-      fromId,
-      toId,
-      fromReason,
-      fromArea,
-      toArea,
-      toReason,
-      proposer,
-      moveReason,
-      toOutsideArea,
-      isOutsideAreaInPublic,
-    };
-
+  public async moveCards(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.MoveCardEvent,
-      EventPacker.createIdentifierEvent(GameEventIdentifiers.MoveCardEvent, moveEvent),
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.MoveCardEvent, event),
     );
   }
 
@@ -1020,6 +912,15 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
   public isCardInDrawStack(cardId: CardId): boolean {
     return this.drawStack.includes(cardId);
+  }
+
+  public getCardFromDropStack(cardId: CardId): CardId | undefined {
+    const index = this.dropStack.findIndex(card => card === cardId);
+    return index < 0 ? undefined : this.dropStack.splice(index, 1)[0];
+  }
+  public getCardFromDrawStack(cardId: CardId): CardId | undefined {
+    const index = this.drawStack.findIndex(card => card === cardId);
+    return index < 0 ? undefined : this.drawStack.splice(index, 1)[0];
   }
 
   public get CurrentPhasePlayer() {

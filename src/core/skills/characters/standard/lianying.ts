@@ -1,6 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { AllStage, CardLostStage } from 'core/game/stage_processor';
+import { AllStage, CardMoveStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -8,12 +8,12 @@ import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'lianying', description: 'lianying_description' })
 export class LianYing extends TriggerSkill {
-  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardLostEvent>, stage?: AllStage) {
-    return stage === CardLostStage.AfterCardLostEffect;
+  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>, stage?: AllStage) {
+    return stage === CardMoveStage.AfterCardMoved;
   }
 
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardLostEvent>) {
-    const lostCards = content.cards.filter(({ fromArea }) => fromArea === PlayerCardsArea.HandArea);
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
+    const lostCards = content.movingCards.filter(({ fromArea }) => fromArea === PlayerCardsArea.HandArea);
     room.setFlag(owner.Id, this.Name, lostCards.length);
 
     return (

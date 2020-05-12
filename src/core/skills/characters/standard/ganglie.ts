@@ -1,5 +1,5 @@
 import { CardChoosingOptions } from 'core/cards/libs/card_props';
-import { CardLostReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
@@ -64,7 +64,7 @@ export class GangLie extends TriggerSkill {
       }
 
       await room.dropCards(
-        CardLostReason.PassiveDrop,
+        CardMoveReason.PassiveDrop,
         [response.selectedCard],
         chooseCardEvent.toId,
         skillUseEvent.fromId,

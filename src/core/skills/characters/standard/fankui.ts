@@ -1,11 +1,5 @@
 import { CardChoosingOptions } from 'core/cards/libs/card_props';
-import {
-  CardLostReason,
-  CardObtainedReason,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
@@ -58,16 +52,15 @@ export class FanKui extends TriggerSkill {
         response.selectedCard = damageFrom.getCardIds(PlayerCardsArea.HandArea)[response.selectedCardIndex!];
       }
 
-      await room.moveCards(
-        [response.selectedCard],
-        chooseCardEvent.toId,
-        chooseCardEvent.fromId,
-        CardLostReason.PassiveMove,
-        response.fromArea,
-        PlayerCardsArea.HandArea,
-        CardObtainedReason.ActivePrey,
-        chooseCardEvent.fromId,
-      );
+      await room.moveCards({
+        movingCards: [{ card: response.selectedCard, fromArea: response.fromArea }],
+        fromId: chooseCardEvent.toId,
+        toId: chooseCardEvent.fromId,
+        toArea: CardMoveArea.HandArea,
+        moveReason: CardMoveReason.ActivePrey,
+        proposer: chooseCardEvent.fromId,
+        movedByReason: this.Name,
+      });
     }
     return true;
   }

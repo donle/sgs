@@ -1,11 +1,5 @@
 import { CardType } from 'core/cards/card';
-import {
-  CardLostReason,
-  CardObtainedReason,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import {
   AimStage,
@@ -46,7 +40,7 @@ export class TiShen extends TriggerSkill {
         return card.is(CardType.OffenseRide) || card.is(CardType.DefenseRide) || card.is(CardType.Trick);
       });
 
-    await room.dropCards(CardLostReason.ActiveDrop, cards, skillUseEvent.fromId, skillUseEvent.fromId, this.Name);
+    await room.dropCards(CardMoveReason.SelfDrop, cards, skillUseEvent.fromId, skillUseEvent.fromId, this.Name);
     room.getPlayerById(skillUseEvent.fromId).addInvisibleMark(this.Name, 1);
     return true;
   }
@@ -127,14 +121,12 @@ export class TiShenShadow extends TriggerSkill implements OnDefineReleaseTiming 
       if (player.getFlag<boolean>(this.Name)) {
         player.removeFlag(this.Name);
         const { cardId } = event as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
-        await room.obtainCards(
-          {
-            toId: fromId,
-            cardIds: [cardId],
-            reason: CardObtainedReason.ActivePrey,
-          },
-          true,
-        );
+        await room.moveCards({
+          movingCards: [{ card: cardId, fromArea: CardMoveArea.ProcessingArea }],
+          toId: fromId,
+          moveReason: CardMoveReason.ActivePrey,
+          toArea: CardMoveArea.HandArea,
+        });
       }
     } else if (identifier === GameEventIdentifiers.DamageEvent) {
       player.removeFlag(this.Name);

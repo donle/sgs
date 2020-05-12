@@ -30,7 +30,6 @@ export interface ClientEvent extends EventUtilities {
     playerId: PlayerId;
     numberOfCards: number;
   };
-  [GameEventIdentifiers.ObtainCardEvent]: {};
   [GameEventIdentifiers.MoveCardEvent]: {};
 
   [GameEventIdentifiers.SkillUseEvent]: {
@@ -164,8 +163,6 @@ export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.LoseSkillEvent]: never;
   [GameEventIdentifiers.ObtainSkillEvent]: never;
   [GameEventIdentifiers.GameReadyEvent]: never;
-  [GameEventIdentifiers.EquipEvent]: never;
-  [GameEventIdentifiers.CardLostEvent]: never;
 }
 
 type PlayCardOrSkillEvent =

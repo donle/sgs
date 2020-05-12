@@ -1,7 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
 import {
-  CardLostReason,
-  CardObtainedReason,
+  CardMoveReason,
   ClientEventFinder,
   EventPicker,
   GameEventIdentifiers,
@@ -23,7 +22,6 @@ import { AllStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_proces
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { FilterSkill } from 'core/skills/skill';
-import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
 
 export type RoomId = number;
 
@@ -68,41 +66,14 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   ): Promise<CardId[]>;
   //Server only
   public abstract async dropCards(
-    reason: CardLostReason,
+    moveReason: CardMoveReason,
     cardIds: CardId[],
     player?: PlayerId,
     droppedBy?: PlayerId,
     byReason?: string,
   ): Promise<void>;
   //Server only
-  public abstract async loseCards(
-    cardIds: CardId[],
-    from: PlayerId,
-    reason: CardLostReason,
-    droppedBy?: PlayerId,
-    moveReaon?: string,
-    customMessmage?: PatchedTranslationObject,
-    doBroadcast?: boolean,
-  ): Promise<void>;
-  //Server only
-  public abstract async obtainCards(
-    event: ServerEventFinder<GameEventIdentifiers.ObtainCardEvent>,
-    doBroadcast?: boolean,
-  ): Promise<void>;
-  //Server only
-  public abstract async moveCards(
-    cardIds: CardId[],
-    from: PlayerId | undefined,
-    to: PlayerId,
-    fromReason: CardLostReason | undefined,
-    fromArea: PlayerCardsArea | undefined,
-    toArea: PlayerCardsArea,
-    toReason?: CardObtainedReason,
-    proposer?: PlayerId,
-    moveReasion?: string,
-    toOutsideArea?: string,
-    isOutsideAreaInPublic?: boolean,
-  ): Promise<void>;
+  public abstract async moveCards(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): Promise<void>;
   //Server only
   public abstract async onReceivingAsyncReponseFrom<T extends GameEventIdentifiers>(
     identifier: T,
@@ -184,7 +155,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return this.onProcessingCards[tag] || [];
   }
   public isCardOnProcessing(cardId: CardId): boolean {
-    return Object.values(this.onProcessingCards).find((cards) => cards.includes(cardId)) !== undefined;
+    return Object.values(this.onProcessingCards).find(cards => cards.includes(cardId)) !== undefined;
   }
   public clearOnProcessingCard(): void {
     this.onProcessingCards = {};
@@ -194,7 +165,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
   public endProcessOnCard(card: CardId) {
     for (const cards of Object.values(this.onProcessingCards)) {
-      const cardIndex = cards.findIndex((inProcessingCard) => card === inProcessingCard);
+      const cardIndex = cards.findIndex(inProcessingCard => card === inProcessingCard);
       if (cardIndex >= 0) {
         cards.splice(cardIndex, 1);
       }
@@ -211,7 +182,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public getPlayerById(playerId: PlayerId) {
     return Precondition.exists(
-      this.players.find((player) => player.Id === playerId),
+      this.players.find(player => player.Id === playerId),
       `Unable to find player by player ID: ${playerId}`,
     );
   }
@@ -233,7 +204,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   public get AlivePlayers() {
-    return this.players.filter((player) => !player.Dead);
+    return this.players.filter(player => !player.Dead);
   }
 
   public get Players() {
@@ -256,7 +227,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   public removePlayer(playerId: PlayerId) {
-    const playerIndex = this.players.findIndex((player) => player.Id === playerId);
+    const playerIndex = this.players.findIndex(player => player.Id === playerId);
     if (playerIndex >= 0) {
       this.players.splice(playerIndex, 1);
     }
@@ -269,7 +240,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     }
 
     const alivePlayers = this.AlivePlayers;
-    const fromIndex = alivePlayers.findIndex((player) => player.Id === playerId);
+    const fromIndex = alivePlayers.findIndex(player => player.Id === playerId);
 
     Precondition.assert(fromIndex >= 0, `Player ${playerId} is dead or doesn't exist`);
 
@@ -277,18 +248,18 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   public getOtherPlayers(playerId: PlayerId, from?: PlayerId) {
-    return this.getAlivePlayersFrom(from).filter((player) => player.Id !== playerId);
+    return this.getAlivePlayersFrom(from).filter(player => player.Id !== playerId);
   }
 
   public getNextPlayer(playerId: PlayerId) {
-    const fromIndex = this.players.findIndex((player) => player.Id === playerId);
+    const fromIndex = this.players.findIndex(player => player.Id === playerId);
     const nextIndex = (fromIndex + 1) % this.players.length;
 
     return this.players[nextIndex];
   }
 
   public getNextAlivePlayer(playerId: PlayerId) {
-    let nextIndex = this.players.findIndex((player) => player.Id === playerId);
+    let nextIndex = this.players.findIndex(player => player.Id === playerId);
     do {
       nextIndex = (nextIndex + 1) % this.players.length;
     } while (this.players[nextIndex].Dead);
@@ -297,7 +268,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   public deadPlayerFilters(playerIds: PlayerId[]) {
-    return playerIds.filter((playerId) => !this.getPlayerById(playerId).Dead);
+    return playerIds.filter(playerId => !this.getPlayerById(playerId).Dead);
   }
 
   private onSeatDistance(from: Player, to: Player) {
@@ -430,7 +401,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       return 1;
     });
 
-    if (players.find((playerId) => this.getPlayerById(playerId).Position >= this.CurrentPlayer.Position)) {
+    if (players.find(playerId => this.getPlayerById(playerId).Position >= this.CurrentPlayer.Position)) {
       while (this.getPlayerById(players[0]).Position < this.CurrentPlayer.Position) {
         const topPlayer = players.shift();
         players.push(topPlayer!);
@@ -492,12 +463,12 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
     if (lordDied) {
       if (rebellion.length > 0) {
-        return this.players.filter((player) => player.Role === PlayerRole.Rebel);
+        return this.players.filter(player => player.Role === PlayerRole.Rebel);
       } else if (renegade) {
         return [renegade];
       }
     } else if (renegade === undefined && rebellion.length === 0) {
-      return this.players.filter((player) => player.Role === PlayerRole.Lord || player.Role === PlayerRole.Loyalist);
+      return this.players.filter(player => player.Role === PlayerRole.Lord || player.Role === PlayerRole.Loyalist);
     }
   }
 

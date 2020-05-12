@@ -1,11 +1,5 @@
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
-import {
-  CardLostReason,
-  CardObtainedReason,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -84,16 +78,14 @@ export class ShunShouQianYangSkill extends ActiveSkill {
       response.selectedCard = to.getCardIds(PlayerCardsArea.HandArea)[response.selectedCardIndex!];
     }
 
-    await room.moveCards(
-      [response.selectedCard],
-      chooseCardEvent.toId,
-      chooseCardEvent.fromId,
-      CardLostReason.PassiveMove,
-      response.fromArea,
-      PlayerCardsArea.HandArea,
-      CardObtainedReason.ActivePrey,
-      chooseCardEvent.fromId,
-    );
+    await room.moveCards({
+      movingCards: [{ card: response.selectedCard, fromArea: response.fromArea }],
+      fromId: chooseCardEvent.toId,
+      toId: chooseCardEvent.fromId,
+      moveReason: CardMoveReason.ActivePrey,
+      toArea: CardMoveArea.HandArea,
+      proposer: chooseCardEvent.fromId,
+    });
     return true;
   }
 }

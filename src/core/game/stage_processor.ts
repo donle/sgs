@@ -132,22 +132,10 @@ export const enum DrawCardStage {
   AfterDrawCardEffect = 'AfterDrawCardEffect',
 }
 
-export const enum ObtainCardStage {
-  BeforeObtainCardEffect = 'BeforeObtainCardEffect',
-  CardObtaining = 'CardObtaining',
-  AfterObtainCardEffect = 'AfterObtainCardEffect',
-}
-
 export const enum CardDropStage {
   BeforeCardDropEffect = 'BeforeCardDropEffect',
   CardDropping = 'CardDropping',
   AfterCardDropEffect = 'AfterCardDropEffect',
-}
-
-export const enum CardLostStage {
-  BeforeCardLoseEffect = 'BeforeCardLoseEffect',
-  CardLosing = 'CardLosing',
-  AfterCardLostEffect = 'AfterCardLostEffect',
 }
 
 export const enum DamageEffectStage {
@@ -218,12 +206,10 @@ export type GameEventStage =
   | PhaseStageChangeStage
   | GameStartStage
   | CardEffectStage
-  | CardLostStage
   | CardUseStage
   | CardDropStage
   | CardResponseStage
   | DrawCardStage
-  | ObtainCardStage
   | JudgeEffectStage
   | RecoverEffectStage
   | PinDianStage
@@ -308,11 +294,6 @@ const gameEventStageList: {
     DrawCardStage.CardDrawing,
     DrawCardStage.AfterDrawCardEffect,
   ],
-  [GameEventIdentifiers.ObtainCardEvent]: [
-    ObtainCardStage.BeforeObtainCardEffect,
-    ObtainCardStage.CardObtaining,
-    ObtainCardStage.AfterObtainCardEffect,
-  ],
   [GameEventIdentifiers.PinDianEvent]: [
     PinDianStage.BeforePinDianEffect,
     PinDianStage.PinDianEffect,
@@ -328,11 +309,6 @@ const gameEventStageList: {
     PhaseStageChangeStage.BeforeStageChange,
     PhaseStageChangeStage.StageChanged,
     PhaseStageChangeStage.AfterStageChanged,
-  ],
-  [GameEventIdentifiers.CardLostEvent]: [
-    CardLostStage.BeforeCardLoseEffect,
-    CardLostStage.CardLosing,
-    CardLostStage.AfterCardLostEffect,
   ],
   [GameEventIdentifiers.MoveCardEvent]: [
     CardMoveStage.BeforeCardMoving,

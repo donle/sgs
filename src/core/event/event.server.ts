@@ -6,7 +6,7 @@ import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
-import { CardLostReason, CardObtainedReason, EventUtilities, GameEventIdentifiers, ServerEventFinder } from './event';
+import { CardMoveArea, CardMoveReason, EventUtilities, GameEventIdentifiers, ServerEventFinder } from './event';
 
 export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.SetFlagEvent]: {
@@ -38,11 +38,6 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.ClearMarkEvent]: {
     to: PlayerId;
-  };
-
-  [GameEventIdentifiers.EquipEvent]: {
-    fromId: PlayerId;
-    cardId: CardId;
   };
   [GameEventIdentifiers.CardUseEvent]: {
     fromId: PlayerId;
@@ -81,39 +76,26 @@ export interface ServerEvent extends EventUtilities {
     cardIds: CardId[];
     droppedBy: PlayerId;
   };
-  [GameEventIdentifiers.CardLostEvent]: {
-    fromId: PlayerId;
-    cards: {
-      fromArea?: PlayerCardsArea;
-      cardId: CardId;
-    }[];
-    droppedBy?: PlayerId;
-    reason: CardLostReason;
-  };
   [GameEventIdentifiers.DrawCardEvent]: {
     fromId: PlayerId;
     drawAmount: number;
     askedBy: PlayerId;
   };
-  [GameEventIdentifiers.ObtainCardEvent]: {
-    fromId?: PlayerId;
-    toId: PlayerId;
-    cardIds: CardId[];
-    givenBy?: PlayerId;
-    reason: CardObtainedReason;
-  };
   [GameEventIdentifiers.MoveCardEvent]: {
-    cardIds: CardId[];
+    movingCards: {
+      card: CardId;
+      fromArea?: CardMoveArea | PlayerCardsArea;
+    }[];
     fromId?: PlayerId;
-    fromReason?: CardLostReason;
-    fromArea?: PlayerCardsArea;
-    toId: PlayerId;
-    toArea: PlayerCardsArea;
-    toReason?: CardObtainedReason;
+    moveReason: CardMoveReason;
+    toId?: PlayerId;
+    toArea: CardMoveArea | PlayerCardsArea;
     proposer?: PlayerId;
     toOutsideArea?: string;
     isOutsideAreaInPublic?: boolean;
-    moveReason?: string;
+    movedByReason?: string;
+    hideBroadcast?: boolean;
+    placeAtTheBottomOfDrawStack?: boolean;
   };
   [GameEventIdentifiers.CardDisplayEvent]: {
     displayCards: CardId[];

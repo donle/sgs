@@ -1,5 +1,5 @@
 import { CardType } from 'core/cards/card';
-import { CardLostReason, CardObtainedReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -49,13 +49,14 @@ export class QiaoMeng extends TriggerSkill {
 
     if (selectedCard) {
       const card = Sanguosha.getCardById(selectedCard);
-      await room.dropCards(CardLostReason.PassiveDrop, [selectedCard], toId, fromId, this.Name);
+      await room.dropCards(CardMoveReason.PassiveDrop, [selectedCard], toId, fromId, this.Name);
 
       if ((card.is(CardType.DefenseRide) || card.is(CardType.OffenseRide)) && room.isCardInDropStack(card.Id)) {
-        await room.obtainCards({
+        await room.moveCards({
+          movingCards: [{ card: selectedCard, fromArea: CardMoveArea.DropStack }],
+          moveReason: CardMoveReason.ActivePrey,
           toId,
-          cardIds: [selectedCard],
-          reason: CardObtainedReason.ActivePrey,
+          toArea: CardMoveArea.HandArea,
         });
       }
     }

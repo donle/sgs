@@ -3,8 +3,8 @@ import { EquipCard } from 'core/cards/equip_card';
 import { CardId } from 'core/cards/libs/card_props';
 import { CharacterGender } from 'core/characters/character';
 import {
-  CardLostReason,
-  CardObtainedReason,
+  CardMoveArea,
+  CardMoveReason,
   ClientEventFinder,
   EventPacker,
   GameEventIdentifiers,
@@ -46,7 +46,7 @@ export class JieYin extends ActiveSkill {
       const sameTypeEquip =
         targetPlayer
           .getCardIds(PlayerCardsArea.EquipArea)
-          .find((equip) => Sanguosha.getCardById<EquipCard>(equip).isSameType(card)) !== undefined;
+          .find(equip => Sanguosha.getCardById<EquipCard>(equip).isSameType(card)) !== undefined;
 
       if (sameTypeEquip) {
         return false;
@@ -73,7 +73,7 @@ export class JieYin extends ActiveSkill {
     const from = room.getPlayerById(fromId);
     if (
       card.is(CardType.Equip) &&
-      to.getCardIds(PlayerCardsArea.EquipArea).find((equip) => Sanguosha.getCardById(equip).isSameType(card)) ===
+      to.getCardIds(PlayerCardsArea.EquipArea).find(equip => Sanguosha.getCardById(equip).isSameType(card)) ===
         undefined
     ) {
       const fromArea = from.cardFrom(card.Id);
@@ -101,22 +101,20 @@ export class JieYin extends ActiveSkill {
       }
 
       if (moveCard) {
-        await room.moveCards(
-          cardIds!,
+        await room.moveCards({
+          movingCards: cardIds!.map(card => ({ card, fromArea: from.cardFrom(card) })),
           fromId,
-          to.Id,
-          CardLostReason.ActiveMove,
-          fromArea,
-          PlayerCardsArea.EquipArea,
-          CardObtainedReason.PassiveObtained,
-          fromId,
-          this.Name,
-        );
+          toId: to.Id,
+          toArea: CardMoveArea.EquipArea,
+          moveReason: CardMoveReason.ActiveMove,
+          movedByReason: this.Name,
+          proposer: fromId,
+        });
       } else {
-        await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, fromId, this.Name);
+        await room.dropCards(CardMoveReason.SelfDrop, cardIds!, fromId, fromId, this.Name);
       }
     } else {
-      await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, fromId, this.Name);
+      await room.dropCards(CardMoveReason.SelfDrop, cardIds!, fromId, fromId, this.Name);
     }
 
     const weaker = from.Hp > to.Hp ? to : to.Hp > from.Hp ? from : undefined;

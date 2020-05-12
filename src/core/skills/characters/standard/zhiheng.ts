@@ -1,5 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { CardLostReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -43,7 +43,7 @@ export class ZhiHeng extends ActiveSkill {
     }
 
     await room.dropCards(
-      CardLostReason.ActiveDrop,
+      CardMoveReason.SelfDrop,
       skillUseEvent.cardIds,
       skillUseEvent.fromId,
       skillUseEvent.fromId,

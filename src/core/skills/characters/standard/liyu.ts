@@ -1,13 +1,7 @@
 import { CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions } from 'core/cards/libs/card_props';
-import {
-  CardLostReason,
-  CardObtainedReason,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -74,17 +68,15 @@ export class LiYu extends TriggerSkill {
       response.selectedCard = to.getCardIds(PlayerCardsArea.HandArea)[response.selectedCardIndex!];
     }
 
-    await room.moveCards(
-      [response.selectedCard],
-      chooseCardEvent.toId,
-      chooseCardEvent.fromId,
-      CardLostReason.PassiveMove,
-      response.fromArea,
-      PlayerCardsArea.HandArea,
-      CardObtainedReason.ActivePrey,
-      chooseCardEvent.fromId,
-      this.Name,
-    );
+    await room.moveCards({
+      movingCards: [{ card: response.selectedCard, fromArea: response.fromArea }],
+      fromId: chooseCardEvent.toId,
+      toId: chooseCardEvent.fromId,
+      toArea: CardMoveArea.HandArea,
+      moveReason: CardMoveReason.ActivePrey,
+      proposer: chooseCardEvent.fromId,
+      movedByReason: this.Name,
+    });
 
     const responseCard = Sanguosha.getCardById(response.selectedCard);
     if (responseCard.is(CardType.Equip)) {

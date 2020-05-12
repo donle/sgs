@@ -1,10 +1,4 @@
-import {
-  CardLostReason,
-  CardObtainedReason,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, DrawCardStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -66,21 +60,21 @@ export class TuXi extends TriggerSkill {
         ),
         fromId,
       );
-      const { selectedCard } = await room.onReceivingAsyncReponseFrom(
+      let { selectedCard } = await room.onReceivingAsyncReponseFrom(
         GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
         fromId,
       );
-      await room.moveCards(
-        [selectedCard ? selectedCard : cardIds[Math.floor(Math.random() * cardIds.length)]],
-        toId,
-        fromId,
-        CardLostReason.PassiveMove,
-        PlayerCardsArea.HandArea,
-        PlayerCardsArea.HandArea,
-        CardObtainedReason.ActivePrey,
-        fromId,
-        this.Name,
-      );
+      selectedCard = selectedCard !== undefined ? selectedCard : cardIds[Math.floor(Math.random() * cardIds.length)];
+
+      await room.moveCards({
+        movingCards: [{ card: selectedCard, fromArea: CardMoveArea.HandArea }],
+        fromId: toId,
+        toId: fromId,
+        toArea: CardMoveArea.HandArea,
+        moveReason: CardMoveReason.ActivePrey,
+        proposer: fromId,
+        movedByReason: this.Name,
+      });
     }
 
     return true;

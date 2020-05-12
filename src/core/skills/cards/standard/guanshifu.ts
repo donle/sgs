@@ -1,5 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { CardLostReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -47,7 +47,7 @@ export class GuanShiFuSkill extends TriggerSkill {
       return false;
     }
 
-    await room.dropCards(CardLostReason.ActiveDrop, cardIds, event.fromId);
+    await room.dropCards(CardMoveReason.SelfDrop, cardIds, event.fromId);
     const { triggeredOnEvent } = event;
     const slashEvent = Precondition.exists(triggeredOnEvent, 'Unable to get slash event') as ServerEventFinder<
       GameEventIdentifiers.CardEffectEvent

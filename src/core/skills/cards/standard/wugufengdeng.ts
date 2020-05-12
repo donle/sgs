@@ -1,5 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { CardObtainedReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
@@ -84,14 +84,12 @@ export class WuGuFengDengSkill extends ActiveSkill {
     room.broadcast(GameEventIdentifiers.ObserveCardsEvent, wugufengdengEvent);
     room.endProcessOnCard(response.selectedCard);
 
-    await room.obtainCards(
-      {
-        toId,
-        reason: CardObtainedReason.ActivePrey,
-        cardIds: [response.selectedCard],
-      },
-      true,
-    );
+    await room.moveCards({
+      movingCards: [{ card: response.selectedCard, fromArea: CardMoveArea.ProcessingArea }],
+      toId,
+      toArea: CardMoveArea.HandArea,
+      moveReason: CardMoveReason.ActivePrey,
+    });
 
     return true;
   }

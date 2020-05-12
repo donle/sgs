@@ -1,7 +1,7 @@
 import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { CardLostReason, CardObtainedReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -36,15 +36,15 @@ export class Rende extends ActiveSkill {
   }
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    await room.moveCards(
-      skillUseEvent.cardIds!,
-      skillUseEvent.fromId,
-      skillUseEvent.toIds![0],
-      CardLostReason.ActiveMove,
-      PlayerCardsArea.HandArea,
-      PlayerCardsArea.HandArea,
-      CardObtainedReason.PassiveObtained,
-    );
+    await room.moveCards({
+      movingCards: skillUseEvent.cardIds!.map(card => ({ card, fromArea: CardMoveArea.HandArea })),
+      fromId: skillUseEvent.fromId,
+      toId: skillUseEvent.toIds![0],
+      toArea: CardMoveArea.HandArea,
+      moveReason: CardMoveReason.ActiveMove,
+      proposer: skillUseEvent.fromId,
+      movedByReason: this.Name,
+    });
 
     room.setFlag(skillUseEvent.toIds![0], this.Name, true);
 

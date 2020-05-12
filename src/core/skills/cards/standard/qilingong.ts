@@ -1,5 +1,5 @@
 import { CardType } from 'core/cards/card';
-import { CardLostReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -69,7 +69,7 @@ export class QiLinGongSkill extends TriggerSkill {
       return true;
     }
 
-    await room.dropCards(CardLostReason.PassiveDrop, [response.selectedCard], to.Id, skillUseEvent.fromId, this.Name);
+    await room.dropCards(CardMoveReason.PassiveDrop, [response.selectedCard], to.Id, skillUseEvent.fromId, this.Name);
     return true;
   }
 }

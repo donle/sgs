@@ -1,4 +1,4 @@
-import { CardObtainedReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, JudgeEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
@@ -21,14 +21,14 @@ export class TianDu extends TriggerSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
     const judgeEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.JudgeEvent>;
-    await room.obtainCards(
-      {
-        cardIds: [judgeEvent.judgeCardId],
-        toId: skillUseEvent.fromId,
-        reason: CardObtainedReason.ActivePrey,
-      },
-      true,
-    );
+    await room.moveCards({
+      movingCards: [{ card: judgeEvent.judgeCardId, fromArea: CardMoveArea.ProcessingArea }],
+      toArea: CardMoveArea.HandArea,
+      toId: skillUseEvent.fromId,
+      moveReason: CardMoveReason.ActivePrey,
+      proposer: skillUseEvent.fromId,
+      movedByReason: this.GeneralName,
+    });
 
     return true;
   }
