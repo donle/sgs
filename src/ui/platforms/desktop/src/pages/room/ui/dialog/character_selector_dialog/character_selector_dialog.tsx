@@ -1,6 +1,8 @@
 import { Character, CharacterId } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import * as mobx from 'mobx';
+import * as mobxReact from 'mobx-react';
 import { CharacterCard } from 'pages/room/ui/character/character';
 import * as React from 'react';
 import { Tooltip } from 'ui/tooltip/tooltip';
@@ -13,30 +15,31 @@ type CharacterSelectorDialogProps = {
   onClick?(character: Character): void;
 };
 
-export const CharacterSelectorDialog = (props: CharacterSelectorDialogProps) => {
-  const { translator, onClick, characterIds } = props;
-  const [tooltipOpened, setTooltipStatus] = React.useState(new Array<boolean>(characterIds.length).fill(false));
+@mobxReact.observer
+export class CharacterSelectorDialog extends React.Component<CharacterSelectorDialogProps> {
+  @mobx.observable.shallow
+  private tooltipOpened: boolean[] = new Array<boolean>(this.props.characterIds.length).fill(false);
+  private tooltipTimer: NodeJS.Timer | undefined;
 
-  const onOpenTooltip = (index: number) => () => {
-    tooltipTimer = setTimeout(() => {
-      const newTooltipOpened = [...tooltipOpened];
-      newTooltipOpened[index] = true;
-      setTooltipStatus(newTooltipOpened);
-    }, 1500);
+  private readonly onOpenTooltip = (index: number) => () => {
+    this.tooltipTimer = setTimeout(
+      mobx.action(() => {
+        this.tooltipOpened[index] = true;
+      }),
+      1500,
+    );
   };
-  const onCloseTooltip = (index: number) => () => {
-    tooltipTimer && clearTimeout(tooltipTimer);
+  private readonly onCloseTooltip = (index: number) =>
+    mobx.action(() => {
+      this.tooltipTimer && clearTimeout(this.tooltipTimer);
+      this.tooltipOpened[index] = false;
+    });
 
-    const newTooltipOpened = [...tooltipOpened];
-    newTooltipOpened[index] = false;
-    setTooltipStatus(newTooltipOpened);
-  };
-  let tooltipTimer: NodeJS.Timer | undefined;
-
-  const createTooltipContent = (character: Character) => {
+  private readonly createTooltipContent = (character: Character) => {
+    const { translator } = this.props;
     const skills = character.Skills.filter(skill => !skill.isShadowSkill());
-    return skills.map(skill => (
-      <div className={styles.skillInfo}>
+    return skills.map((skill, index) => (
+      <div className={styles.skillInfo} key={index}>
         <div className={styles.skillItem}>
           <span className={styles.skillName}>{translator.tr(skill.Name)}</span>
           <span
@@ -47,24 +50,32 @@ export const CharacterSelectorDialog = (props: CharacterSelectorDialogProps) => 
       </div>
     ));
   };
-  const characters = characterIds.map((characterId, index) => {
+  private readonly characters = this.props.characterIds.map((characterId, index) => {
     const character = Sanguosha.getCharacterById(characterId);
 
     return (
       <div
         className={styles.characterSelectorItem}
-        onMouseLeave={onCloseTooltip(index)}
-        onMouseEnter={onOpenTooltip(index)}
+        onMouseLeave={this.onCloseTooltip(index)}
+        onMouseEnter={this.onOpenTooltip(index)}
+        key={index}
       >
-        <CharacterCard translator={translator} character={character} key={characterId} onClick={onClick} />
-        {tooltipOpened[index] && <Tooltip position={['top']}>{createTooltipContent(character)}</Tooltip>}
+        <CharacterCard
+          translator={this.props.translator}
+          character={character}
+          key={characterId}
+          onClick={this.props.onClick}
+        />
+        {this.tooltipOpened[index] && <Tooltip position={['top']}>{this.createTooltipContent(character)}</Tooltip>}
       </div>
     );
   });
 
-  return (
-    <BaseDialog title={translator.tr('please choose a character')}>
-      <div className={styles.characterSelector}>{characters}</div>
-    </BaseDialog>
-  );
-};
+  render() {
+    return (
+      <BaseDialog title={this.props.translator.tr('please choose a character')}>
+        <div className={styles.characterSelector}>{this.characters}</div>
+      </BaseDialog>
+    );
+  }
+}
