@@ -1,7 +1,7 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { CardLostReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AllStage, CardUseStage } from 'core/game/stage_processor';
+import { AllStage, CardEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -14,8 +14,8 @@ export class GuanShiFuSkill extends TriggerSkill {
     return false;
   }
 
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage?: AllStage) {
-    return stage === CardUseStage.CardUseFinishedEffect;
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>, stage?: AllStage) {
+    return stage === CardEffectStage.CardEffectCancelledOut;
   }
 
   public cardFilter(room: Room, cards: CardId[]): boolean {
@@ -33,18 +33,8 @@ export class GuanShiFuSkill extends TriggerSkill {
     return cardId !== containerCard;
   }
 
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    const { responseToEvent } = content;
-    if (!responseToEvent) {
-      return false;
-    }
-    const slashEvent = responseToEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
-    return (
-      slashEvent.fromId === owner.Id &&
-      Sanguosha.getCardById(content.cardId).GeneralName === 'jink' &&
-      Sanguosha.getCardById(slashEvent.cardId).GeneralName === 'slash' &&
-      EventPacker.isTerminated(slashEvent)
-    );
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
+    return content.fromId === owner.Id && Sanguosha.getCardById(content.cardId).GeneralName === 'slash';
   }
 
   async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
@@ -59,11 +49,10 @@ export class GuanShiFuSkill extends TriggerSkill {
 
     await room.dropCards(CardLostReason.ActiveDrop, cardIds, event.fromId);
     const { triggeredOnEvent } = event;
-    const jinkEvent = Precondition.exists(triggeredOnEvent, 'Unable to get jink event') as ServerEventFinder<
-      GameEventIdentifiers.CardUseEvent
+    const slashEvent = Precondition.exists(triggeredOnEvent, 'Unable to get slash event') as ServerEventFinder<
+      GameEventIdentifiers.CardEffectEvent
     >;
-    const { responseToEvent } = jinkEvent;
-    responseToEvent && EventPacker.recall(responseToEvent);
+    slashEvent.isCancelledOut = false;
     return true;
   }
 }

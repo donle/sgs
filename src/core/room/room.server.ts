@@ -34,7 +34,6 @@ import { CharacterLoader } from 'core/game/package_loader/loader.characters';
 import { Algorithm } from 'core/shares/libs/algorithm';
 import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
-import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { OnDefineReleaseTiming, Skill, SkillHooks, SkillType, TriggerSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
@@ -222,10 +221,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       }
 
       for (const skill of canTriggerSkills) {
-        if (EventPacker.isTerminated(content)) {
-          break;
-        }
-
         if (skill.isTriggerable(content, stage) && skill.canUse(this, player, content)) {
           const triggerSkillEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent> = {
             fromId: player.Id,
@@ -484,21 +479,18 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             GameEventIdentifiers.CardEffectEvent,
             EventPacker.createIdentifierEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent),
           );
-
           EventPacker.copyPropertiesTo(cardEffectEvent, event);
         }
         await card.Skill.afterEffect(this, cardEffectEvent);
+      } else if (stage === CardUseStage.CardUseFinishedEffect) {
+        if (this.isCardOnProcessing(card.Id)) {
+          this.endProcessOnTag(card.Id.toString());
+          this.bury(card.Id);
+        }
       }
 
       return true;
     });
-
-    await this.trigger(event, CardUseStage.CardUseFinishedEffect);
-
-    if (this.isCardOnProcessing(card.Id)) {
-      this.endProcessOnTag(card.Id.toString());
-      this.bury(card.Id);
-    }
   }
 
   public async useSkill(content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {

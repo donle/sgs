@@ -113,9 +113,11 @@ export const enum CardUseStage {
 }
 
 export const enum CardEffectStage {
+  PreCardEffect = 'PreCardEffect',
   BeforeCardEffect = 'BeforeCardEffect',
   CardEffecting = 'CardEffecting',
   AfterCardEffect = 'AfterCardEffect',
+  CardEffectCancelledOut = 'CardEffectCancelledOut',
 }
 
 export const enum CardResponseStage {
@@ -249,8 +251,10 @@ const gameEventStageList: {
     CardUseStage.BeforeCardUseEffect,
     CardUseStage.CardUsing,
     CardUseStage.AfterCardUseEffect,
+    CardUseStage.CardUseFinishedEffect,
   ],
   [GameEventIdentifiers.CardEffectEvent]: [
+    CardEffectStage.PreCardEffect,
     CardEffectStage.BeforeCardEffect,
     CardEffectStage.CardEffecting,
     CardEffectStage.AfterCardEffect,

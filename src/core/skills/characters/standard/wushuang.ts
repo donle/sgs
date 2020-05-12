@@ -125,6 +125,7 @@ export class WuShuangShadow extends TriggerSkill implements OnDefineReleaseTimin
       const { responseToEvent } = jinkEvent;
       const slashEvent = responseToEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
       EventPacker.removeMiddleware(this.GeneralName, slashEvent);
+      EventPacker.terminate(jinkEvent);
 
       const askForUseCardEvent = {
         toId: jinkEvent.fromId,
@@ -150,11 +151,7 @@ export class WuShuangShadow extends TriggerSkill implements OnDefineReleaseTimin
 
       const result = await room.askForCardUse(askForUseCardEvent, jinkEvent.fromId);
       const { responseEvent } = result;
-      if (!responseEvent || responseEvent.cardId === undefined) {
-        responseToEvent && EventPacker.recall(slashEvent);
-        EventPacker.terminate(jinkEvent);
-      } else {
-        EventPacker.terminate(jinkEvent);
+      if (responseEvent && responseEvent.cardId !== undefined) {
         const useJinkEvent = {
           fromId: jinkEvent.fromId,
           cardId: responseEvent.cardId,
@@ -163,6 +160,9 @@ export class WuShuangShadow extends TriggerSkill implements OnDefineReleaseTimin
         };
         EventPacker.addMiddleware({ tag: this.Name, data: true }, useJinkEvent);
         await room.useCard(useJinkEvent);
+        if (!EventPacker.isTerminated(useJinkEvent)) {
+          EventPacker.recall(jinkEvent);
+        }
       }
     } else {
       const duelResponseEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.CardResponseEvent>;
