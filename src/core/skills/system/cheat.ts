@@ -113,6 +113,7 @@ export class Cheat extends ActiveSkill {
               : CardMoveArea.DrawStack,
           },
         ],
+        fromId: fromOthers,
         toId: skillUseEvent.fromId,
         toArea: CardMoveArea.HandArea,
         moveReason: CardMoveReason.ActivePrey,

@@ -44,7 +44,8 @@ export class FanJian extends ActiveSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const toId = skillUseEvent.toIds![0];
     await room.moveCards({
-      movingCards: [{ card: skillUseEvent.fromId, fromArea: CardMoveArea.HandArea }],
+      movingCards: [{ card: skillUseEvent.cardIds![0], fromArea: CardMoveArea.HandArea }],
+      fromId: skillUseEvent.fromId,
       toId,
       toArea: CardMoveArea.HandArea,
       moveReason: CardMoveReason.ActiveMove,
@@ -98,7 +99,7 @@ export class FanJian extends ActiveSkill {
       room.broadcast(GameEventIdentifiers.CardDisplayEvent, displayEvent);
       await room.dropCards(
         CardMoveReason.PassiveDrop,
-        to.getPlayerCards().filter(card => Sanguosha.getCardById(card).Suit === moveCard.Suit),
+        to.getPlayerCards().filter((card) => Sanguosha.getCardById(card).Suit === moveCard.Suit),
         toId,
       );
     }
