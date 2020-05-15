@@ -1050,7 +1050,6 @@ export class GameProcessor {
 
     if (!event.skipDrop) {
       await this.room.moveCards({
-        fromId: event.fromId,
         movingCards: [
           {
             card: event.cardId,
