@@ -854,13 +854,11 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     let isGameOver = false;
+    const deadPlayer = this.room.getPlayerById(event.playerId);
     await this.iterateEachStage(identifier, event, onActualExecuted, async (stage) => {
       if (stage === PlayerDiedStage.PlayerDied) {
         this.room.broadcast(identifier, event);
-        const deadPlayer = this.room.getPlayerById(event.playerId);
         deadPlayer.bury();
-        EventPacker.terminate(event);
-        this.playerStages = [];
 
         const winners = this.room.getGameWinners();
         if (winners) {
@@ -873,6 +871,7 @@ export class GameProcessor {
           }
 
           this.stageProcessor.clearProcess();
+          this.playerStages = [];
           this.room.gameOver();
           this.room.broadcast(GameEventIdentifiers.GameOverEvent, {
             translationsMessage: TranslationPack.translationJsonPatcher(
@@ -889,10 +888,10 @@ export class GameProcessor {
 
     if (!isGameOver) {
       const { killedBy, playerId } = event;
-      const deadPlayer = this.room.getPlayerById(playerId);
       const allCards = deadPlayer.getCardIds();
       await this.room.moveCards({
         moveReason: CardMoveReason.PlaceToDropStack,
+        fromId: playerId,
         movingCards: allCards.map((cardId) => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
         toArea: CardMoveArea.DropStack,
       });
@@ -908,7 +907,8 @@ export class GameProcessor {
         } else if (deadPlayer.Role === PlayerRole.Loyalist && killer.Role === PlayerRole.Lord) {
           const lordCards = Card.getActualCards(killer.getPlayerCards());
           await this.room.moveCards({
-            moveReason: CardMoveReason.PlaceToDropStack,
+            moveReason: CardMoveReason.SelfDrop,
+            fromId: killer.Id,
             movingCards: lordCards.map((cardId) => ({ card: cardId, fromArea: killer.cardFrom(cardId) })),
             toArea: CardMoveArea.DropStack,
           });
