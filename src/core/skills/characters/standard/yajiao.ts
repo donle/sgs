@@ -12,6 +12,7 @@ export class YaJiao extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>, stage?: AllStage) {
     return (
       stage === CardMoveStage.AfterCardMoved &&
+      event.movingCards.find(cardInfo => cardInfo.fromArea === CardMoveArea.HandArea) !== undefined &&
       [CardMoveReason.CardResponse, CardMoveReason.CardUse].includes(event.moveReason)
     );
   }
@@ -40,7 +41,7 @@ export class YaJiao extends TriggerSkill {
     room.broadcast(GameEventIdentifiers.CardDisplayEvent, cardDisplayEvent);
 
     const choosePlayerEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
-      players: room.AlivePlayers.map(p => p.Id),
+      players: room.AlivePlayers.map((p) => p.Id),
       requiredAmount: 1,
       conversation: 'please choose a player',
       toId: skillUseEvent.fromId,
@@ -57,7 +58,7 @@ export class YaJiao extends TriggerSkill {
     );
     const selectedPlayer = selectedPlayers ? selectedPlayers[0] : skillUseEvent.fromId;
     await room.moveCards({
-      movingCards: card.map(cardId => ({ card: cardId, fromArea: CardMoveArea.ProcessingArea })),
+      movingCards: card.map((cardId) => ({ card: cardId, fromArea: CardMoveArea.ProcessingArea })),
       proposer: skillUseEvent.fromId,
       toId: selectedPlayer,
       toArea: CardMoveArea.HandArea,

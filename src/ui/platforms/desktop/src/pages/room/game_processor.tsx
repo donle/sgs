@@ -364,7 +364,9 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.presenter.showCards(...Card.getActualCards(content.displayCards).map(cardId => Sanguosha.getCardById(cardId)));
+    this.presenter.showCards(
+      ...Card.getActualCards(content.displayCards).map(cardId => Sanguosha.getCardById(cardId)),
+    );
   }
 
   // tslint:disable-next-line:no-empty
@@ -594,7 +596,7 @@ export class GameClientProcessor {
   private onHandleMoveCardEvent<T extends GameEventIdentifiers.MoveCardEvent>(type: T, content: ServerEventFinder<T>) {
     const { toArea, toId, fromId, toOutsideArea, movingCards, isOutsideAreaInPublic } = content;
     const to = toId && this.store.room.getPlayerById(toId);
-    const from = fromId && this.store.room.getPlayerById(fromId);
+    const from = fromId ? this.store.room.getPlayerById(fromId) : undefined;
 
     for (const { card, fromArea } of movingCards) {
       if (

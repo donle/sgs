@@ -394,8 +394,16 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     await super.useCard(event);
     const card = Sanguosha.getCardById(event.cardId);
+    const realCards = Card.getActualCards([event.cardId]);
+    const from = this.getPlayerById(event.fromId);
 
-    this.addProcessingCards(card.Id.toString(), card.Id);
+    await this.moveCards({
+      movingCards: realCards.map(card => ({ card, fromArea: from.cardFrom(card) })),
+      toArea: CardMoveArea.ProcessingArea,
+      fromId: from.Id,
+      moveReason: CardMoveReason.CardUse,
+    });
+
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, event, async stage => {
       if (stage === CardUseStage.AfterCardUseEffect) {
         event.toIds = event.toIds || [event.fromId];
@@ -641,6 +649,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         if (stage === CardDropStage.CardDropping) {
           await this.moveCards({
             movingCards: cardIds.map(card => ({ card, fromArea: player.cardFrom(card) })),
+            fromId: playerId,
             toArea: CardMoveArea.DropStack,
             moveReason,
             hideBroadcast: true,

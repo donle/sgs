@@ -164,10 +164,13 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     delete this.onProcessingCards[tag];
   }
   public endProcessOnCard(card: CardId) {
-    for (const cards of Object.values(this.onProcessingCards)) {
+    for (const [tag, cards] of Object.entries(this.onProcessingCards)) {
       const cardIndex = cards.findIndex(inProcessingCard => card === inProcessingCard);
       if (cardIndex >= 0) {
         cards.splice(cardIndex, 1);
+      }
+      if (this.onProcessingCards[tag].length === 0) {
+        delete this.onProcessingCards[tag];
       }
     }
   }
@@ -353,7 +356,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       const equipCard = card as EquipCard;
       return player.getEquipment(equipCard.EquipType) === undefined;
     } else if (card.is(CardType.DelayedTrick)) {
-      const toJudgeArea = player.getCardIds(PlayerCardsArea.JudgeArea).map(id => Sanguosha.getCardById(id).GeneralName);
+      const toJudgeArea = player
+        .getCardIds(PlayerCardsArea.JudgeArea)
+        .map(id => Sanguosha.getCardById(id).GeneralName);
       return !toJudgeArea.includes(card.GeneralName) && this.canUseCardTo(cardId, target);
     }
 
