@@ -58,7 +58,7 @@ export class TieJi extends TriggerSkill {
       EventPacker.setDisresponsiveEvent(aimEvent);
     } else {
       await room.dropCards(
-        CardMoveReason.PassiveDrop,
+        CardMoveReason.SelfDrop,
         droppedCards,
         aimEvent.toId,
         skillUseEvent.fromId,

@@ -75,7 +75,7 @@ export class Jianchu extends TriggerSkill {
       EventPacker.setDisresponsiveEvent(aimEvent);
     } else if (aimEvent.byCardId && room.isCardInDropStack(aimEvent.byCardId)) {
       await room.moveCards({
-        movingCards: [{ card: aimEvent.byCardId, fromArea: CardMoveArea.DropStack }],
+        movingCards: [{ card: aimEvent.byCardId, fromArea: CardMoveArea.ProcessingArea }],
         moveReason: CardMoveReason.ActivePrey,
         toArea: CardMoveArea.HandArea,
         toId: to.Id,

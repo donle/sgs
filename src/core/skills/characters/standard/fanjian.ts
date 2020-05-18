@@ -98,7 +98,7 @@ export class FanJian extends ActiveSkill {
       };
       room.broadcast(GameEventIdentifiers.CardDisplayEvent, displayEvent);
       await room.dropCards(
-        CardMoveReason.PassiveDrop,
+        CardMoveReason.SelfDrop,
         to.getPlayerCards().filter((card) => Sanguosha.getCardById(card).Suit === moveCard.Suit),
         toId,
       );

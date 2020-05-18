@@ -1048,7 +1048,7 @@ export class GameProcessor {
     this.room.broadcast(GameEventIdentifiers.CustomGameDialog, { translationsMessage: event.translationsMessage });
     event.translationsMessage = undefined;
 
-    if (!event.skipDrop) {
+    if (!event.skipDrop && !card.is(CardType.Equip)) {
       await this.room.moveCards({
         movingCards: [
           {
@@ -1073,13 +1073,21 @@ export class GameProcessor {
             EventPacker.terminate(event);
           }
         } else {
+          const existingEquipId = from.getEquipment((card as EquipCard).EquipType);
+          if (existingEquipId !== undefined) {
+            await this.room.moveCards({
+              fromId: from.Id,
+              moveReason: CardMoveReason.PlaceToDropStack,
+              toArea: CardMoveArea.DropStack,
+              movingCards: [{ card: existingEquipId, fromArea: CardMoveArea.EquipArea }],
+            });
+          }
           await this.room.moveCards({
-            movingCards: [{ card: card.Id, fromArea: from.cardFrom(card.Id) }],
+            movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
             moveReason: CardMoveReason.CardUse,
             toId: from.Id,
             toArea: CardMoveArea.EquipArea,
           });
-          EventPacker.terminate(event);
         }
 
         this.room.broadcast(identifier, event);
@@ -1168,28 +1176,28 @@ export class GameProcessor {
         if (lostCards.length > 0 && fromId !== toId) {
           event.messages.push(
             TranslationPack.translationJsonPatcher(
-              '{0} lost cards {1}',
+              '{0} lost card {1}',
               TranslationPack.patchPlayerInTranslation(from),
               TranslationPack.patchCardInTranslation(...Card.getActualCards(lostCards)),
             ).toString(),
           );
-        } else {
-          const moveOwnedCards = movingCards
-            .filter(cardInfo => cardInfo.fromArea === CardMoveArea.HandArea)
-            .map(cardInfo => cardInfo.card);
-          if (
-            ![CardMoveReason.CardUse, CardMoveReason.CardResponse].includes(moveReason) &&
-            moveOwnedCards.length > 0 &&
-            fromId !== toId
-          ) {
-            event.messages.push(
-              TranslationPack.translationJsonPatcher(
-                '{0} lost {1} cards',
-                TranslationPack.patchPlayerInTranslation(from),
-                moveOwnedCards.length,
-              ).toString(),
-            );
-          }
+        }
+
+        const moveOwnedCards = movingCards
+          .filter(cardInfo => cardInfo.fromArea === CardMoveArea.HandArea)
+          .map(cardInfo => cardInfo.card);
+        if (
+          ![CardMoveReason.CardUse, CardMoveReason.CardResponse].includes(moveReason) &&
+          moveOwnedCards.length > 0 &&
+          fromId !== toId
+        ) {
+          event.messages.push(
+            TranslationPack.translationJsonPatcher(
+              '{0} lost {1} cards',
+              TranslationPack.patchPlayerInTranslation(from),
+              moveOwnedCards.length,
+            ).toString(),
+          );
         }
       }
       if (to && toArea === PlayerCardsArea.HandArea) {
@@ -1232,22 +1240,17 @@ export class GameProcessor {
         } else if (toArea === CardMoveArea.DropStack) {
           this.room.bury(...cardIds);
         } else if (toArea === CardMoveArea.ProcessingArea) {
-          this.room.addProcessingCards(cardIds.sort().join('+'), ...cardIds);
+          this.room.addProcessingCards(cardIds.join('+'), ...cardIds);
         } else {
           if (to) {
             if (toArea === CardMoveArea.EquipArea) {
               for (const cardId of cardIds) {
                 const card = Sanguosha.getCardById<EquipCard>(cardId);
                 const existingEquip = to.getEquipment(card.EquipType);
-                if (existingEquip !== undefined) {
-                  await this.room.moveCards({
-                    fromId: to.Id,
-                    moveReason: CardMoveReason.PlaceToDropStack,
-                    toArea: CardMoveArea.DropStack,
-                    movingCards: [{ card: existingEquip, fromArea: CardMoveArea.EquipArea }],
-                  });
-                }
-
+                Precondition.assert(
+                  existingEquip === undefined,
+                  `Cannot move card ${cardId} to equip area since there is an existing same type of equip`,
+                );
                 to.equip(card);
               }
             } else if (toArea === CardMoveArea.OutsideArea) {

@@ -96,6 +96,7 @@ export class LuoShen extends TriggerSkill {
           moveReason: CardMoveReason.ActivePrey,
           toId: skillUseEvent.fromId,
           toArea: CardMoveArea.HandArea,
+          movedByReason: this.Name,
         });
       }
     }

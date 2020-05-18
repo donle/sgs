@@ -76,13 +76,13 @@
     "sync:mac": "rm -rf ./src/core ./build && cp -R ../../../core ./src",
     "sync:win": "rimraf ./src/core ./build && xcopy ..\\..\\..\\core .\\src\\core /s /i",
     "start:mac": "yarn sync:mac && NODE_PATH=./src node scripts/start.js",
-    "build:mac": "yarn sync:mac && NODE_PATH=./src node scripts/build.js",
-    "start:win": "yarn sync:win && set DEV_MODE=\"prod\" && cross-env NODE_PATH=./src node scripts/start.js",
-    "build:win": "yarn sync:win && cross-env NODE_PATH=./src node scripts/build.js",
+    "build:mac": "yarn sync:mac && GENERATE_SOURCEMAP=false DEV_MODE=prod NODE_PATH=./src node scripts/build.js",
+    "start:win": "yarn sync:win && cross-env NODE_PATH=./src node scripts/start.js",
+    "build:win": "yarn sync:win && cross-env NODE_PATH=./src GENERATE_SOURCEMAP=false DEV_MODE=prod node scripts/build.js",
     "start:mac:cnpm": "cnpm run sync:mac && NODE_PATH=./src node scripts/start.js",
     "build:mac:cnpm": "cnpm run sync:mac && NODE_PATH=./src node scripts/build.js",
     "start:win:cnpm": "cnpm run sync:win && cross-env NODE_PATH=./src node scripts/start.js",
-    "build:win:cnpm": "cnpm run sync:win && cross-env NODE_PATH=./src node scripts/build.js",
+    "build:win:cnpm": "cnpm run sync:win && cross-env NODE_PATH=./src GENERATE_SOURCEMAP=false DEV_MODE=prod node scripts/build.js",
     "test": "node scripts/test.js"
   },
   "eslintConfig": {

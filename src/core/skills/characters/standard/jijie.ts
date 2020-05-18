@@ -38,7 +38,7 @@ export class JiJie extends ActiveSkill {
       cardIds: displayCards,
       selected: [],
     };
-    room.broadcast(GameEventIdentifiers.ObserveCardsEvent, observeCardsEvent);
+    room.notify(GameEventIdentifiers.ObserveCardsEvent, observeCardsEvent, skillUseEvent.fromId);
 
     const choosePlayerEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
       players: room.getAlivePlayersFrom().map(p => p.Id),
@@ -58,7 +58,7 @@ export class JiJie extends ActiveSkill {
         ? skillUseEvent.fromId
         : choosePlayerResponse.selectedPlayers[0];
 
-    room.broadcast(GameEventIdentifiers.ContinuouslyChoosingCardFinishEvent, {});
+    room.notify(GameEventIdentifiers.ContinuouslyChoosingCardFinishEvent, {}, skillUseEvent.fromId);
     await room.moveCards({
       movingCards: displayCards.map(card => ({ card, fromArea: CardMoveArea.ProcessingArea })),
       toId: target,

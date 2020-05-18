@@ -225,11 +225,11 @@ export abstract class Player implements PlayerInfo {
   }
 
   public cardFrom(cardId: CardId): PlayerCardsArea | undefined {
-    const realdCardId = Card.getActualCards([cardId]);
-    if (realdCardId.length > 1) {
+    const realCardId = Card.getActualCards([cardId]);
+    if (realCardId.length > 1) {
       return;
     } else {
-      cardId = realdCardId[0];
+      cardId = realCardId[0];
     }
 
     for (const [area, cards] of Object.entries(this.playerCards) as [string, CardId[]][]) {
