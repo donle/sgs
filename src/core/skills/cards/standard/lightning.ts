@@ -1,5 +1,5 @@
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
-import { CardLostReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
 import { Player } from 'core/player/player';
@@ -15,7 +15,7 @@ export class LightningSkill extends ActiveSkill {
     return (
       owner
         .getCardIds(PlayerCardsArea.JudgeArea)
-        .find((cardId) => Sanguosha.getCardById(cardId).GeneralName === 'lightning') === undefined
+        .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'lightning') === undefined
     );
   }
 
@@ -34,14 +34,12 @@ export class LightningSkill extends ActiveSkill {
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     for (const player of room.getAlivePlayersFrom(event.fromId)) {
       if (room.isAvailableTarget(event.cardId, event.fromId, player.Id)) {
-        await room.moveCards(
-          [event.cardId],
-          undefined,
-          player.Id,
-          CardLostReason.CardUse,
-          undefined,
-          PlayerCardsArea.JudgeArea,
-        );
+        await room.moveCards({
+          movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
+          toId: player.Id,
+          toArea: CardMoveArea.JudgeArea,
+          moveReason: CardMoveReason.CardUse,
+        });
         event.toIds = [player.Id];
         break;
       }
@@ -62,14 +60,19 @@ export class LightningSkill extends ActiveSkill {
         !room.canUseCardTo(cardId, player.Id) ||
         player
           .getCardIds(PlayerCardsArea.JudgeArea)
-          .find((cardId) => Sanguosha.getCardById(cardId).GeneralName === 'lightning') !== undefined;
+          .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'lightning') !== undefined;
 
       if (skip) {
         continue;
       }
 
       if (player.Id !== currentPlayer) {
-        await room.moveCards([cardId], undefined, player.Id, undefined, undefined, PlayerCardsArea.JudgeArea);
+        await room.moveCards({
+          movingCards: [{ card: cardId, fromArea: CardMoveArea.JudgeArea }],
+          toArea: CardMoveArea.JudgeArea,
+          toId: player.Id,
+          moveReason: CardMoveReason.PassiveMove,
+        });
       }
       break;
     }

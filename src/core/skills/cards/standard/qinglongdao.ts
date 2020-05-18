@@ -1,5 +1,5 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';

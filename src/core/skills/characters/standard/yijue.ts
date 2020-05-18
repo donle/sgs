@@ -1,8 +1,8 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import {
-  CardLostReason,
-  CardObtainedReason,
+  CardMoveArea,
+  CardMoveReason,
   ClientEventFinder,
   EventPacker,
   GameEventIdentifiers,
@@ -48,7 +48,7 @@ export class YiJue extends ActiveSkill {
     const from = room.getPlayerById(fromId);
     const to = room.getPlayerById(toIds![0]);
 
-    await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, fromId, this.Name);
+    await room.dropCards(CardMoveReason.SelfDrop, cardIds!, fromId, fromId, this.Name);
 
     const askForDisplayCardEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForCardDisplayEvent>({
       cardMatcher: new CardMatcher({}).toSocketPassenger(),
@@ -82,17 +82,15 @@ export class YiJue extends ActiveSkill {
       room.obtainSkill(to.Id, YiJueBlocker.Name);
       room.setFlag(to.Id, this.Name, true);
     } else {
-      await room.moveCards(
-        selectedCards,
-        to.Id,
-        from.Id,
-        CardLostReason.PassiveMove,
-        PlayerCardsArea.HandArea,
-        PlayerCardsArea.HandArea,
-        CardObtainedReason.ActivePrey,
-        from.Id,
-        this.Name,
-      );
+      await room.moveCards({
+        movingCards: selectedCards.map(card => ({ card, fromArea: CardMoveArea.HandArea })),
+        fromId: to.Id,
+        toArea: CardMoveArea.HandArea,
+        toId: from.Id,
+        proposer: from.Id,
+        moveReason: CardMoveReason.PassiveMove,
+        movedByReason: this.Name,
+      });
 
       const askForChooseEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
         options: ['yijue:recover', 'yijue:cancel'],

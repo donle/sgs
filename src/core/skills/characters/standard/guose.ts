@@ -1,7 +1,7 @@
 import { VirtualCard } from 'core/cards/card';
 import { CardMatcher, CardMatcherProps } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
-import { CardLostReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -59,8 +59,8 @@ export class GuoSe extends ActiveSkill {
       .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'lebusishu');
 
     if (hasLeBuSiShu) {
-      await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, fromId, this.Name);
-      await room.dropCards(CardLostReason.PassiveDrop, [hasLeBuSiShu], toIds![0], fromId, this.Name);
+      await room.dropCards(CardMoveReason.SelfDrop, cardIds!, fromId, fromId, this.Name);
+      await room.dropCards(CardMoveReason.PassiveDrop, [hasLeBuSiShu], toIds![0], fromId, this.Name);
     } else {
       const realCard = Sanguosha.getCardById(cardIds![0]);
       const lebusishuCard = VirtualCard.create(

@@ -1,7 +1,7 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { CharacterGender } from 'core/characters/character';
 import {
-  CardLostReason,
+  CardMoveReason,
   ClientEventFinder,
   EventPacker,
   GameEventIdentifiers,
@@ -95,7 +95,7 @@ export class CiXiongJianSkill extends TriggerSkill {
     if (response.selectedOption === 'cixiongjian:drop-card') {
       const { responseEvent } = await room.askForCardDrop(toId, 1, [PlayerCardsArea.HandArea], true);
       if (responseEvent) {
-        await room.dropCards(CardLostReason.ActiveDrop, responseEvent.droppedCards, toId);
+        await room.dropCards(CardMoveReason.SelfDrop, responseEvent.droppedCards, toId);
       }
     } else {
       await room.drawCards(1, fromId);

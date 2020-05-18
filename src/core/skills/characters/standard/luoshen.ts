@@ -1,5 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { CardObtainedReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { GameCommonRules } from 'core/game/game_rules';
 import {
@@ -91,14 +91,13 @@ export class LuoShen extends TriggerSkill {
       player.setFlag<CardId[]>(this.Name, luoshenCards);
 
       if (Sanguosha.getCardById(judgeEvent.judgeCardId).isBlack()) {
-        await room.obtainCards(
-          {
-            toId: skillUseEvent.fromId,
-            cardIds: [judgeEvent.judgeCardId],
-            reason: CardObtainedReason.ActivePrey,
-          },
-          true,
-        );
+        await room.moveCards({
+          movingCards: [{ card: judgeEvent.judgeCardId, fromArea: CardMoveArea.ProcessingArea }],
+          moveReason: CardMoveReason.ActivePrey,
+          toId: skillUseEvent.fromId,
+          toArea: CardMoveArea.HandArea,
+          movedByReason: this.Name,
+        });
       }
     }
 

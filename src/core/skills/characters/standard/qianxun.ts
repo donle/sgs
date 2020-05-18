@@ -1,5 +1,5 @@
 import { CardType } from 'core/cards/card';
-import { CardLostReason, CardObtainedReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardEffectStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -45,18 +45,16 @@ export class QianXun extends TriggerSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId } = skillUseEvent;
     const from = room.getPlayerById(fromId);
-    await room.moveCards(
-      from.getCardIds(PlayerCardsArea.HandArea).slice(),
+    await room.moveCards({
+      movingCards: from.getCardIds(PlayerCardsArea.HandArea).map(card => ({ card, fromArea: CardMoveArea.HandArea })),
       fromId,
-      fromId,
-      CardLostReason.ActiveMove,
-      PlayerCardsArea.HandArea,
-      PlayerCardsArea.OutsideArea,
-      CardObtainedReason.PassiveObtained,
-      fromId,
-      this.Name,
-      this.Name,
-    );
+      toId: fromId,
+      toArea: PlayerCardsArea.OutsideArea,
+      moveReason: CardMoveReason.ActiveMove,
+      toOutsideArea: this.Name,
+      proposer: fromId,
+      movedByReason: this.Name,
+    });
 
     return true;
   }
@@ -89,17 +87,15 @@ export class QianXunShadow extends TriggerSkill implements OnDefineReleaseTiming
     const { fromId } = skillUseEvent;
     const from = room.getPlayerById(fromId);
     const qianxunCards = from.getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName).slice();
-    await room.moveCards(
-      qianxunCards,
+    await room.moveCards({
+      movingCards: qianxunCards.map(card => ({ card, fromArea: CardMoveArea.OutsideArea })),
       fromId,
-      fromId,
-      CardLostReason.ActiveMove,
-      PlayerCardsArea.OutsideArea,
-      PlayerCardsArea.HandArea,
-      CardObtainedReason.ActivePrey,
-      fromId,
-      this.GeneralName,
-    );
+      toId: fromId,
+      toArea: CardMoveArea.HandArea,
+      moveReason: CardMoveReason.ActiveMove,
+      proposer: fromId,
+      movedByReason: this.GeneralName,
+    });
     return true;
   }
 }

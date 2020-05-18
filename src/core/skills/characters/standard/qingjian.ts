@@ -1,11 +1,11 @@
 import { CardType } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
-import { CardLostReason, CardObtainedReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { GameCommonRules } from 'core/game/game_rules';
-import { AllStage, ObtainCardStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
+import { AllStage, CardMoveStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, OnDefineReleaseTiming, ShadowSkill, TriggerSkill } from 'core/skills/skill';
@@ -13,13 +13,14 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'qingjian', description: 'qingjian_description' })
 export class QingJian extends TriggerSkill {
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.ObtainCardEvent>, stage?: AllStage): boolean {
-    return stage === ObtainCardStage.AfterObtainCardEffect;
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>, stage?: AllStage): boolean {
+    return stage === CardMoveStage.AfterCardMoved;
   }
 
-  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.ObtainCardEvent>): boolean {
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): boolean {
     return (
       owner.Id === content.toId &&
+      content.toArea === CardMoveArea.HandArea &&
       room.CurrentPlayerPhase !== PlayerPhase.DrawCardStage &&
       !owner.hasUsedSkill(this.Name) &&
       owner.getPlayerCards().length !== 0
@@ -39,7 +40,10 @@ export class QingJian extends TriggerSkill {
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
-    return room.getPlayerById(owner).getPlayerCards().includes(cardId);
+    return room
+      .getPlayerById(owner)
+      .getPlayerCards()
+      .includes(cardId);
   }
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
@@ -64,6 +68,7 @@ export class QingJian extends TriggerSkill {
       }
     }
 
+    const to = room.getPlayerById(toIds![0]);
     const from = room.getPlayerById(fromId);
     const displayEvent: ServerEventFinder<GameEventIdentifiers.CardDisplayEvent> = {
       fromId,
@@ -76,19 +81,17 @@ export class QingJian extends TriggerSkill {
     };
     room.broadcast(GameEventIdentifiers.CardDisplayEvent, displayEvent);
 
-    await room.moveCards(
-      cardIds!,
+    await room.moveCards({
+      movingCards: cardIds!.map(card => ({ card, fromArea: to.cardFrom(card) })),
       fromId,
-      toIds![0],
-      CardLostReason.ActiveMove,
-      undefined,
-      PlayerCardsArea.HandArea,
-      CardObtainedReason.PassiveObtained,
-      fromId,
-      this.GeneralName,
-    );
+      toId: to.Id,
+      toArea: CardMoveArea.HandArea,
+      moveReason: CardMoveReason.ActiveMove,
+      proposer: fromId,
+      movedByReason: this.GeneralName,
+    });
 
-    room.syncGameCommonRules(room.CurrentPlayer.Id, (user) => {
+    room.syncGameCommonRules(room.CurrentPlayer.Id, user => {
       user.addInvisibleMark(this.Name, types.length);
       GameCommonRules.addAdditionalHoldCardNumber(user, types.length);
     });
@@ -127,7 +130,7 @@ export class QingJianShadow extends TriggerSkill implements OnDefineReleaseTimin
     ) as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
 
     phaseChangeEvent.fromPlayer &&
-      room.syncGameCommonRules(phaseChangeEvent.fromPlayer, (user) => {
+      room.syncGameCommonRules(phaseChangeEvent.fromPlayer, user => {
         const extraHold = user.getInvisibleMark(this.GeneralName);
         user.removeInvisibleMark(this.GeneralName);
         GameCommonRules.addAdditionalHoldCardNumber(user, -extraHold);

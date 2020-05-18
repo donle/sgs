@@ -1,5 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { CardLostReason, ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -50,7 +50,7 @@ export class QingNang extends ActiveSkill {
     skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     await room.dropCards(
-      CardLostReason.ActiveDrop,
+      CardMoveReason.SelfDrop,
       skillUseEvent.cardIds!,
       skillUseEvent.fromId,
       skillUseEvent.fromId,

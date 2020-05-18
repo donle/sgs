@@ -1,10 +1,10 @@
 import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
-import { CardLostReason, CardObtainedReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Functional } from 'core/shares/libs/functional';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
@@ -64,7 +64,7 @@ export class Cheat extends ActiveSkill {
       new CardMatcher({
         type: type === undefined ? undefined : [type],
       }),
-    ).map((card) => card.Name);
+    ).map(card => card.Name);
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChoose, skillUseEvent.fromId);
     const { selectedOption: selectedName } = await room.onReceivingAsyncReponseFrom(
       GameEventIdentifiers.AskForChoosingOptionsEvent,
@@ -76,7 +76,7 @@ export class Cheat extends ActiveSkill {
         type: type === undefined ? undefined : [type],
         name: selectedName === undefined ? undefined : [selectedName],
       }),
-    ).map((card) => Functional.getCardSuitRawText(card.Suit));
+    ).map(card => Functional.getCardSuitRawText(card.Suit));
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChoose, skillUseEvent.fromId);
     const { selectedOption: selectedSuit } = await room.onReceivingAsyncReponseFrom(
       GameEventIdentifiers.AskForChoosingOptionsEvent,
@@ -97,30 +97,29 @@ export class Cheat extends ActiveSkill {
         type: type === undefined ? undefined : [type],
         suit: selectedSuit === undefined ? undefined : [suitMap[selectedSuit]],
       }),
-    ).filter((card) => from.getCardId(card.Id) === undefined);
+    ).filter(card => from.getCardId(card.Id) === undefined);
 
     if (cards.length > 0) {
       const fromOthers = room.getCardOwnerId(cards[0].Id);
       const owner = fromOthers ? room.getPlayerById(fromOthers) : undefined;
-      if (owner === undefined) {
-        await room.obtainCards({
-          toId: skillUseEvent.fromId,
-          cardIds: [cards[0].Id],
-          reason: CardObtainedReason.ActivePrey,
-        });
-      } else {
-        await room.moveCards(
-          [cards[0].Id],
-          fromOthers,
-          skillUseEvent.fromId,
-          CardLostReason.PassiveMove,
-          owner.cardFrom(cards[0].Id),
-          PlayerCardsArea.HandArea,
-          CardObtainedReason.ActivePrey,
-          skillUseEvent.fromId,
-          this.Name,
-        );
-      }
+      await room.moveCards({
+        movingCards: [
+          {
+            card: cards[0].Id,
+            fromArea: owner
+              ? owner.cardFrom(cards[0].Id)
+              : room.isCardInDropStack(cards[0].Id)
+              ? CardMoveArea.DropStack
+              : CardMoveArea.DrawStack,
+          },
+        ],
+        fromId: fromOthers,
+        toId: skillUseEvent.fromId,
+        toArea: CardMoveArea.HandArea,
+        moveReason: CardMoveReason.ActivePrey,
+        proposer: skillUseEvent.fromId,
+        movedByReason: this.Name,
+      });
     }
 
     return true;

@@ -1,6 +1,6 @@
 import { CardType } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
-import { CardObtainedReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, DamageEffectStage, DrawCardStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -75,14 +75,12 @@ export class LuoYi extends TriggerSkill {
         const drawCardEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DrawCardEvent>;
         drawCardEvent.drawAmount = 0;
 
-        await room.obtainCards(
-          {
-            toId: skillUseEvent.fromId,
-            reason: CardObtainedReason.ActivePrey,
-            cardIds: luoyiObtain,
-          },
-          true,
-        );
+        await room.moveCards({
+          movingCards: luoyiObtain.map(card => ({ card, fromArea: CardMoveArea.ProcessingArea })),
+          toId: skillUseEvent.fromId,
+          toArea: CardMoveArea.HandArea,
+          moveReason: CardMoveReason.ActivePrey,
+        });
 
         room.setFlag<boolean>(skillUseEvent.fromId, this.Name, true);
       } else {

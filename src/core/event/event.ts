@@ -25,15 +25,12 @@ export const enum GameEventIdentifiers {
   LoseSkillEvent,
   ObtainSkillEvent,
 
-  EquipEvent,
-  CardLostEvent,
   CardDropEvent,
   CardResponseEvent,
   CardUseEvent,
   CardEffectEvent,
   CardDisplayEvent,
   DrawCardEvent,
-  ObtainCardEvent,
   MoveCardEvent,
   ObserveCardsEvent,
 
@@ -112,15 +109,12 @@ export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.DrunkEvent,
   GameEventIdentifiers.ChainLinkedEvent,
 
-  GameEventIdentifiers.EquipEvent,
   GameEventIdentifiers.CardDropEvent,
   GameEventIdentifiers.CardResponseEvent,
   GameEventIdentifiers.CardUseEvent,
   GameEventIdentifiers.CardEffectEvent,
-  GameEventIdentifiers.CardLostEvent,
   GameEventIdentifiers.CardDisplayEvent,
   GameEventIdentifiers.DrawCardEvent,
-  GameEventIdentifiers.ObtainCardEvent,
   GameEventIdentifiers.MoveCardEvent,
   GameEventIdentifiers.ObserveCardsEvent,
 
@@ -197,20 +191,27 @@ export const serverResponsiveListenerEvents = () => [
   GameEventIdentifiers.AskForContinuouslyChoosingCardEvent,
 ];
 
-export const enum CardLostReason {
-  CardUse,
-  CardResponse,
-  ActiveDrop,
-  PassiveDrop,
-  ActiveMove,
-  PassiveMove,
-  PlaceToDropStack,
-}
-
-export const enum CardObtainedReason {
+export const enum CardMoveReason {
   CardDraw,
   ActivePrey,
-  PassiveObtained,
+  ActiveMove,
+  PassiveMove,
+  SelfDrop,
+  PassiveDrop,
+  PlaceToDropStack,
+  PlaceToDrawStack,
+  CardUse,
+  CardResponse,
+}
+
+export const enum CardMoveArea {
+  HandArea,
+  EquipArea,
+  JudgeArea,
+  OutsideArea,
+  DropStack,
+  DrawStack,
+  ProcessingArea,
 }
 
 export const enum WorkPlace {

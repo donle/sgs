@@ -1,5 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { CardLostReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AimStage, AllStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -48,7 +48,7 @@ export class LiuLi extends TriggerSkill {
     const { triggeredOnEvent, cardIds, toIds, fromId } = skillUseEvent;
     const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
 
-    await room.dropCards(CardLostReason.ActiveDrop, cardIds!, fromId, fromId, this.Name);
+    await room.dropCards(CardMoveReason.SelfDrop, cardIds!, fromId, fromId, this.Name);
 
     const index = aimEvent.allTargets.findIndex(toId => toId === fromId);
     Precondition.assert(index >= 0, `Unable to find source player of ${this.Name}`);

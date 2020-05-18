@@ -1,6 +1,5 @@
-import { CardObtainedReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
@@ -39,7 +38,7 @@ export class JiJie extends ActiveSkill {
       cardIds: displayCards,
       selected: [],
     };
-    room.broadcast(GameEventIdentifiers.ObserveCardsEvent, observeCardsEvent);
+    room.notify(GameEventIdentifiers.ObserveCardsEvent, observeCardsEvent, skillUseEvent.fromId);
 
     const choosePlayerEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
       players: room.getAlivePlayersFrom().map(p => p.Id),
@@ -59,18 +58,15 @@ export class JiJie extends ActiveSkill {
         ? skillUseEvent.fromId
         : choosePlayerResponse.selectedPlayers[0];
 
-    room.broadcast(GameEventIdentifiers.ContinuouslyChoosingCardFinishEvent, {});
-    await room.moveCards(
-      displayCards,
-      undefined,
-      target,
-      undefined,
-      undefined,
-      PlayerCardsArea.HandArea,
-      CardObtainedReason.PassiveObtained,
-      skillUseEvent.fromId,
-      this.Name,
-    );
+    room.notify(GameEventIdentifiers.ContinuouslyChoosingCardFinishEvent, {}, skillUseEvent.fromId);
+    await room.moveCards({
+      movingCards: displayCards.map(card => ({ card, fromArea: CardMoveArea.ProcessingArea })),
+      toId: target,
+      toArea: CardMoveArea.HandArea,
+      moveReason: CardMoveReason.ActivePrey,
+      proposer: skillUseEvent.fromId,
+      movedByReason: this.Name,
+    });
 
     return true;
   }

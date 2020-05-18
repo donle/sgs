@@ -1,11 +1,5 @@
 import { CardChoosingOptions } from 'core/cards/libs/card_props';
-import {
-  CardLostReason,
-  CardObtainedReason,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -60,17 +54,15 @@ export class GuiXin extends TriggerSkill {
       );
       const moveCard =
         selectedCard !== undefined ? selectedCard : player.getCardIds(PlayerCardsArea.HandArea)[selectedCardIndex!];
-      await room.moveCards(
-        [moveCard],
-        player.Id,
-        caocao,
-        CardLostReason.PassiveMove,
-        fromArea,
-        PlayerCardsArea.HandArea,
-        CardObtainedReason.ActivePrey,
-        caocao,
-        this.Name,
-      );
+      await room.moveCards({
+        movingCards: [{ card: moveCard, fromArea }],
+        fromId: player.Id,
+        toId: caocao,
+        moveReason: CardMoveReason.ActivePrey,
+        toArea: CardMoveArea.HandArea,
+        proposer: caocao,
+        movedByReason: this.Name,
+      });
     }
     await room.turnOver(caocao);
   }

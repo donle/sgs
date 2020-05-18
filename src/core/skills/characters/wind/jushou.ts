@@ -1,5 +1,5 @@
 import { CardType } from 'core/cards/card';
-import { CardLostReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -62,7 +62,7 @@ export class JuShou extends TriggerSkill {
       await room.useCard(cardUseEvent);
     } else {
       await room.dropCards(
-        CardLostReason.ActiveDrop,
+        CardMoveReason.SelfDrop,
         [selectedCard!],
         skillUseEvent.fromId,
         skillUseEvent.fromId,

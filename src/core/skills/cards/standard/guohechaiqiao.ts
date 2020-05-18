@@ -1,10 +1,9 @@
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
-import { CardLostReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
-import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'guohechaiqiao', description: 'guohechaiqiao_description' })
 export class GuoHeChaiQiaoSkill extends ActiveSkill {
@@ -75,25 +74,24 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill {
 
     if (response.fromArea !== PlayerCardsArea.JudgeArea) {
       await room.dropCards(
-        CardLostReason.PassiveDrop,
+        CardMoveReason.PassiveDrop,
         [response.selectedCard],
         chooseCardEvent.toId,
         chooseCardEvent.fromId,
         this.Name,
       );
     } else {
-      await room.loseCards(
-        [response.selectedCard],
-        chooseCardEvent.toId,
-        CardLostReason.PassiveDrop,
-        chooseCardEvent.fromId,
-        undefined,
-        TranslationPack.translationJsonPatcher(
-          '{0} is placed into drop stack',
-          TranslationPack.patchCardInTranslation(response.selectedCard),
-        ).extract(),
-      );
-      room.bury(response.selectedCard);
+      await room.moveCards({
+        movingCards: [
+          {
+            card: response.selectedCard!,
+            fromArea: to.cardFrom(response.selectedCard!),
+          },
+        ],
+        moveReason: CardMoveReason.PassiveDrop,
+        fromId: to.Id,
+        toArea: CardMoveArea.DropStack,
+      });
     }
     return true;
   }

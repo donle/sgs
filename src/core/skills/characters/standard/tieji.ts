@@ -1,4 +1,4 @@
-import { CardLostReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AimStage, AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -58,7 +58,7 @@ export class TieJi extends TriggerSkill {
       EventPacker.setDisresponsiveEvent(aimEvent);
     } else {
       await room.dropCards(
-        CardLostReason.PassiveDrop,
+        CardMoveReason.SelfDrop,
         droppedCards,
         aimEvent.toId,
         skillUseEvent.fromId,

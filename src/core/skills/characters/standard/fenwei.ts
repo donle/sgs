@@ -10,6 +10,8 @@ import { LimitSkill, TriggerSkill } from 'core/skills/skill';
 
 @LimitSkill({ name: 'fenwei', description: 'fenwei_description' })
 export class FenWei extends TriggerSkill {
+  private readonly hasSkillAskedTag = 'fenwei-asked';
+
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage) {
     return (
       stage === AimStage.AfterAim &&
@@ -20,7 +22,12 @@ export class FenWei extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
+    if (room.getFlag<typeof event>(owner.Id, this.hasSkillAskedTag) === event) {
+      return false;
+    }
+
     room.setFlag(owner.Id, this.Name, event.allTargets);
+    room.setFlag(owner.Id, this.hasSkillAskedTag, event);
     return true;
   }
 

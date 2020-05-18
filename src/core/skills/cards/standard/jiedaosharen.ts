@@ -1,9 +1,9 @@
 import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { CardLostReason, CardObtainedReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
@@ -100,16 +100,14 @@ export class JieDaoShaRenSkill extends ActiveSkill {
           return true;
         }
 
-        await room.moveCards(
-          [weapon],
-          attacker,
-          event.fromId!,
-          CardLostReason.PassiveMove,
-          PlayerCardsArea.EquipArea,
-          PlayerCardsArea.HandArea,
-          CardObtainedReason.ActivePrey,
-          event.fromId!,
-        );
+        await room.moveCards({
+          movingCards: [{ card: weapon, fromArea: CardMoveArea.EquipArea }],
+          fromId: attacker,
+          toId: event.fromId,
+          toArea: CardMoveArea.HandArea,
+          moveReason: CardMoveReason.ActivePrey,
+          proposer: event.fromId,
+        });
       }
     } else {
       throw new Error(`Unexcepte return type of asForCardUse in ${this.Name}`);

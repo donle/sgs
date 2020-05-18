@@ -1,5 +1,5 @@
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
-import { CardLostReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -38,19 +38,17 @@ export class LeBuSiShuSkill extends ActiveSkill {
       room
         .getPlayerById(target)
         .getCardIds(PlayerCardsArea.JudgeArea)
-        .find((cardId) => Sanguosha.getCardById(cardId).GeneralName === 'lebusishu') === undefined
+        .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'lebusishu') === undefined
     );
   }
 
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    await room.moveCards(
-      [event.cardId],
-      undefined,
-      event.toIds![0],
-      CardLostReason.CardUse,
-      undefined,
-      PlayerCardsArea.JudgeArea,
-    );
+    await room.moveCards({
+      movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
+      toId: event.toIds![0],
+      toArea: CardMoveArea.JudgeArea,
+      moveReason: CardMoveReason.CardUse,
+    });
 
     return true;
   }

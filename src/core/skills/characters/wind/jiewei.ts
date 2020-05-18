@@ -3,8 +3,7 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { WuXieKeJi } from 'core/cards/standard/wuxiekeji';
 import {
-  CardLostReason,
-  CardObtainedReason,
+  CardMoveReason,
   ClientEventFinder,
   EventPacker,
   GameEventIdentifiers,
@@ -112,6 +111,10 @@ export class JieWeiShadow extends TriggerSkill {
     ];
   }
 
+  public nominateForwardTarget(targets: PlayerId[]) {
+    return [targets[0]];
+  }
+
   async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     event.animation = this.getAnimationSteps(event);
     return true;
@@ -126,7 +129,7 @@ export class JieWeiShadow extends TriggerSkill {
     skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     await room.dropCards(
-      CardLostReason.ActiveDrop,
+      CardMoveReason.SelfDrop,
       skillUseEvent.cardIds!,
       skillUseEvent.fromId,
       skillUseEvent.fromId,
@@ -165,17 +168,15 @@ export class JieWeiShadow extends TriggerSkill {
       skillUseEvent.fromId,
     );
 
-    await room.moveCards(
-      [response.selectedCard!],
-      moveFrom.Id,
-      moveTo.Id,
-      CardLostReason.PassiveMove,
-      response.fromArea,
-      response.fromArea!,
-      CardObtainedReason.PassiveObtained,
-      chooseCardEvent.fromId,
-      this.Name,
-    );
+    await room.moveCards({
+      movingCards: [{ card: response.selectedCard!, fromArea: response.fromArea }],
+      moveReason: CardMoveReason.PassiveMove,
+      toId: moveTo.Id,
+      fromId: moveFrom.Id,
+      toArea: response.fromArea!,
+      proposer: chooseCardEvent.fromId,
+      movedByReason: this.Name,
+    });
 
     return true;
   }

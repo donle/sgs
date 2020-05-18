@@ -1,4 +1,4 @@
-import { CardObtainedReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, CardMoveStage, PlayerDyingStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -23,9 +23,9 @@ export class JiYuan extends TriggerSkill {
     if (identifier === GameEventIdentifiers.MoveCardEvent) {
       const moveEvent = content as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
       return (
+        moveEvent.toId !== undefined &&
         moveEvent.toId !== owner.Id &&
         moveEvent.proposer === owner.Id &&
-        moveEvent.toReason === CardObtainedReason.PassiveObtained &&
         moveEvent.toArea === PlayerCardsArea.HandArea
       );
     } else if (identifier === GameEventIdentifiers.PlayerDyingEvent) {
@@ -50,7 +50,7 @@ export class JiYuan extends TriggerSkill {
 
     if (identifier === GameEventIdentifiers.MoveCardEvent) {
       const moveEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
-      target = moveEvent.toId;
+      target = moveEvent.toId!;
     } else {
       const dyingEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>;
       target = dyingEvent.dying;

@@ -1,12 +1,6 @@
 import { CardType } from 'core/cards/card';
 import { CardChoosingOptions } from 'core/cards/libs/card_props';
-import {
-  CardLostReason,
-  CardObtainedReason,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AimStage, AllStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -70,7 +64,7 @@ export class Jianchu extends TriggerSkill {
     }
 
     await room.dropCards(
-      CardLostReason.PassiveDrop,
+      CardMoveReason.PassiveDrop,
       [response.selectedCard],
       chooseCardEvent.toId,
       chooseCardEvent.fromId,
@@ -79,15 +73,13 @@ export class Jianchu extends TriggerSkill {
 
     if (Sanguosha.getCardById(response.selectedCard!).is(CardType.Equip)) {
       EventPacker.setDisresponsiveEvent(aimEvent);
-    } else if (aimEvent.byCardId) {
-      await room.obtainCards(
-        {
-          reason: CardObtainedReason.PassiveObtained,
-          cardIds: [aimEvent.byCardId],
-          toId: to.Id,
-        },
-        true,
-      );
+    } else if (aimEvent.byCardId && room.isCardInDropStack(aimEvent.byCardId)) {
+      await room.moveCards({
+        movingCards: [{ card: aimEvent.byCardId, fromArea: CardMoveArea.ProcessingArea }],
+        moveReason: CardMoveReason.ActivePrey,
+        toArea: CardMoveArea.HandArea,
+        toId: to.Id,
+      });
     }
 
     return true;

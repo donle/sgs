@@ -225,8 +225,16 @@ export abstract class Player implements PlayerInfo {
   }
 
   public cardFrom(cardId: CardId): PlayerCardsArea | undefined {
+    const realCardId = Card.getActualCards([cardId]);
+    if (realCardId.length > 1) {
+      return;
+    } else {
+      cardId = realCardId[0];
+    }
+
     for (const [area, cards] of Object.entries(this.playerCards) as [string, CardId[]][]) {
-      if (cards.find(card => card === cardId)) {
+      const realCards = Card.getActualCards(cards);
+      if (realCards.find(card => card === cardId)) {
         return parseInt(area, 10) as PlayerCardsArea;
       }
     }
@@ -241,9 +249,14 @@ export abstract class Player implements PlayerInfo {
 
   dropCards(...cards: CardId[]): CardId[] {
     const droppedCardIds: CardId[] = [];
+    const allCards = this.getCardIds();
     for (const area of [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea, PlayerCardsArea.JudgeArea]) {
       const areaCards = this.getCardIds(area);
       for (const card of cards) {
+        if (!allCards.includes(card) && Card.isVirtualCardId(card)) {
+          this.dropCards(...Card.getActualCards([card]));
+        }
+
         let index = areaCards.findIndex(areaCard => areaCard === card);
         if (index >= 0) {
           droppedCardIds.push(areaCards.splice(index, 1)[0]);

@@ -1,7 +1,8 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import {
-  CardLostReason,
+  CardMoveArea,
+  CardMoveReason,
   ClientEventFinder,
   EventPacker,
   GameEventIdentifiers,
@@ -88,8 +89,16 @@ export class GongXin extends ActiveSkill {
       fromId,
     );
     if (selectedOption === 'gongxin:putcard') {
-      room.putCards('top', selectedCard);
-      await room.loseCards([selectedCard], to.Id, CardLostReason.PassiveMove, fromId, this.Name, undefined, true);
+      await room.moveCards({
+        movingCards: [{ card: selectedCard, fromArea: CardMoveArea.HandArea }],
+        fromId,
+        toId: to.Id,
+        moveReason: CardMoveReason.PassiveMove,
+        toArea: CardMoveArea.DrawStack,
+        proposer: fromId,
+        movedByReason: this.Name,
+      });
+
       room.broadcast(GameEventIdentifiers.CustomGameDialog, {
         translationsMessage: TranslationPack.translationJsonPatcher(
           '{0} place card {1} from {2} on the top of draw stack',
@@ -99,7 +108,7 @@ export class GongXin extends ActiveSkill {
         ).extract(),
       });
     } else {
-      await room.dropCards(CardLostReason.PassiveDrop, [selectedCard], to.Id, fromId, this.Name);
+      await room.dropCards(CardMoveReason.PassiveDrop, [selectedCard], to.Id, fromId, this.Name);
     }
 
     return true;

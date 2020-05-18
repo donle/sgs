@@ -1,8 +1,13 @@
 import { Card } from 'core/cards/card';
-import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { Character } from 'core/characters/character';
-import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import {
+  CardMoveArea,
+  ClientEventFinder,
+  EventPacker,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { GameCommonRules } from 'core/game/game_rules';
 import { PlayerPhase } from 'core/game/stage_processor';
@@ -109,12 +114,6 @@ export class GameClientProcessor {
       case GameEventIdentifiers.CardDisplayEvent:
         await this.onHandleCardDisplayEvent(e as any, content);
         break;
-      case GameEventIdentifiers.ObtainCardEvent:
-        await this.onHandelObtainCardEvent(e as any, content);
-        break;
-      case GameEventIdentifiers.EquipEvent:
-        await this.onHandleEquipEvent(e as any, content);
-        break;
       case GameEventIdentifiers.DamageEvent:
         await this.onHandleDamageEvent(e as any, content);
         break;
@@ -165,9 +164,6 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.AskForChoosingCardEvent:
         await this.onHandleAskForChoosingCardEvent(e as any, content);
-        break;
-      case GameEventIdentifiers.CardLostEvent:
-        await this.onHandleCardLostEvent(e as any, content);
         break;
       case GameEventIdentifiers.AimEvent:
         await this.onHandleAimEvent(e as any, content);
@@ -368,7 +364,9 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.presenter.showCards(...Card.getActualCards(content.displayCards).map(cardId => Sanguosha.getCardById(cardId)));
+    this.presenter.showCards(
+      ...Card.getActualCards(content.displayCards).map(cardId => Sanguosha.getCardById(cardId)),
+    );
   }
 
   // tslint:disable-next-line:no-empty
@@ -394,21 +392,6 @@ export class GameClientProcessor {
   ) {
     const { playerId } = content;
     this.store.room.kill(this.store.room.getPlayerById(playerId));
-  }
-
-  private onHandelObtainCardEvent<T extends GameEventIdentifiers.ObtainCardEvent>(
-    type: T,
-    content: ServerEventFinder<T>,
-  ) {
-    const { cardIds, toId } = content;
-    this.store.room.getPlayerById(toId).obtainCardIds(...cardIds);
-    this.presenter.broadcastUIUpdate();
-  }
-
-  private onHandleEquipEvent<T extends GameEventIdentifiers.EquipEvent>(type: T, content: ServerEventFinder<T>) {
-    const player = this.store.room.getPlayerById(content.fromId);
-    player.equip(Sanguosha.getCardById<EquipCard>(content.cardId));
-    this.presenter.broadcastUIUpdate();
   }
 
   private onHandleDamageEvent<T extends GameEventIdentifiers.DamageEvent>(type: T, content: ServerEventFinder<T>) {
@@ -611,13 +594,35 @@ export class GameClientProcessor {
   }
 
   private onHandleMoveCardEvent<T extends GameEventIdentifiers.MoveCardEvent>(type: T, content: ServerEventFinder<T>) {
-    const to = this.store.room.getPlayerById(content.toId);
-    for (const cardId of content.cardIds) {
-      to.getCardIds(content.toArea, content.toOutsideArea).push(cardId);
+    const { toArea, toId, fromId, toOutsideArea, movingCards, isOutsideAreaInPublic } = content;
+    const to = toId && this.store.room.getPlayerById(toId);
+    const from = fromId ? this.store.room.getPlayerById(fromId) : undefined;
+
+    for (const { card, fromArea } of movingCards) {
+      if (
+        from &&
+        fromArea !== undefined &&
+        ![CardMoveArea.DrawStack, CardMoveArea.DropStack, CardMoveArea.ProcessingArea].includes(
+          fromArea as CardMoveArea,
+        )
+      ) {
+        from.dropCards(card);
+      }
     }
-    content.toOutsideArea !== undefined &&
-      content.isOutsideAreaInPublic &&
-      to.setVisibleOutsideArea(content.toOutsideArea);
+
+    const cardIds = movingCards.map(cardInfo => cardInfo.card);
+    if (
+      to &&
+      ![CardMoveArea.DrawStack, CardMoveArea.DropStack, CardMoveArea.ProcessingArea].includes(toArea as CardMoveArea)
+    ) {
+      if (toArea === CardMoveArea.OutsideArea) {
+        to.getCardIds((toArea as unknown) as PlayerCardsArea, toOutsideArea).push(...cardIds);
+      } else {
+        to.getCardIds(toArea as PlayerCardsArea).push(...cardIds);
+      }
+    }
+
+    toOutsideArea !== undefined && isOutsideAreaInPublic && to && to.setVisibleOutsideArea(toOutsideArea);
 
     this.presenter.broadcastUIUpdate();
   }
@@ -709,21 +714,6 @@ export class GameClientProcessor {
         this.store.room.broadcast(type, event);
       });
     }
-  }
-
-  private onHandleCardLostEvent<T extends GameEventIdentifiers.CardLostEvent>(type: T, content: ServerEventFinder<T>) {
-    const { fromId, cards, translationsMessage } = content;
-    const cardIds = cards.map(card => card.cardId);
-    this.store.room.getPlayerById(fromId).dropCards(...cardIds);
-
-    if (translationsMessage) {
-      this.presenter.showCards(
-        ...cardIds
-          .filter(cardId => this.store.room.getCardOwnerId(cardId) === undefined)
-          .map(cardId => Sanguosha.getCardById(cardId)),
-      );
-    }
-    this.presenter.broadcastUIUpdate();
   }
 
   private onHandleAskForChoosingOptionsEvent<T extends GameEventIdentifiers.AskForChoosingOptionsEvent>(

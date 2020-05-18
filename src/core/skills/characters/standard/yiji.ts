@@ -1,12 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
-import {
-  CardLostReason,
-  CardObtainedReason,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
-import { AllStage, CardLostStage, DamageEffectStage, DrawCardStage } from 'core/game/stage_processor';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { AllStage, CardMoveStage, DamageEffectStage, DrawCardStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -42,29 +36,39 @@ export class YiJiShadow extends TriggerSkill {
   }
 
   isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.DrawCardEvent | GameEventIdentifiers.CardLostEvent>,
+    event: ServerEventFinder<GameEventIdentifiers.DrawCardEvent | GameEventIdentifiers.MoveCardEvent>,
     stage?: AllStage,
   ) {
-    return stage === DrawCardStage.AfterDrawCardEffect || stage === CardLostStage.AfterCardLostEffect;
+    return stage === DrawCardStage.AfterDrawCardEffect || stage === CardMoveStage.AfterCardMoved;
   }
 
   canUse(
     room: Room,
     owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.DrawCardEvent | GameEventIdentifiers.CardLostEvent>,
+    content: ServerEventFinder<GameEventIdentifiers.DrawCardEvent | GameEventIdentifiers.MoveCardEvent>,
   ) {
     const identifier = EventPacker.getIdentifier(content);
     if (identifier === GameEventIdentifiers.DrawCardEvent) {
       return owner.Id === content.fromId && !!content.triggeredBySkills?.includes(this.GeneralName);
-    } else if (identifier === GameEventIdentifiers.CardLostEvent) {
-      const from = room.getPlayerById(content.fromId);
+    } else if (identifier === GameEventIdentifiers.MoveCardEvent) {
+      content = content as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
+      const from = content.fromId && room.getPlayerById(content.fromId);
+      if (!from) {
+        return false;
+      }
+
       const usedTimes = from.getInvisibleMark(this.GeneralName);
       if (usedTimes >= 2) {
         from.removeInvisibleMark(this.GeneralName);
         return false;
       }
 
-      return owner.Id === content.fromId && !!content.triggeredBySkills?.includes(this.GeneralName) && usedTimes < 2;
+      return (
+        owner.Id === content.fromId &&
+        content.toArea === CardMoveArea.HandArea &&
+        !!content.triggeredBySkills?.includes(this.GeneralName) &&
+        usedTimes < 2
+      );
     }
 
     return false;
@@ -110,17 +114,15 @@ export class YiJiShadow extends TriggerSkill {
 
     from.addInvisibleMark(this.GeneralName, cardIds!.length);
 
-    await room.moveCards(
-      cardIds!,
+    await room.moveCards({
+      movingCards: cardIds!.map(card => ({ card, fromArea: CardMoveArea.HandArea })),
       fromId,
-      toIds![0],
-      CardLostReason.ActiveMove,
-      PlayerCardsArea.HandArea,
-      PlayerCardsArea.HandArea,
-      CardObtainedReason.PassiveObtained,
-      fromId,
-      this.GeneralName,
-    );
+      toId: toIds![0],
+      toArea: CardMoveArea.HandArea,
+      moveReason: CardMoveReason.ActiveMove,
+      proposer: fromId,
+      movedByReason: this.GeneralName,
+    });
     return true;
   }
 }

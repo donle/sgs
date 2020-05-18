@@ -1,7 +1,7 @@
 import { CardId } from 'core/cards/libs/card_props';
 import {
-  CardLostReason,
-  CardObtainedReason,
+  CardMoveArea,
+  CardMoveReason,
   ClientEventFinder,
   EventPacker,
   GameEventIdentifiers,
@@ -43,16 +43,14 @@ export class FanJian extends ActiveSkill {
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const toId = skillUseEvent.toIds![0];
-    await room.moveCards(
-      skillUseEvent.cardIds!,
-      skillUseEvent.fromId,
+    await room.moveCards({
+      movingCards: [{ card: skillUseEvent.cardIds![0], fromArea: CardMoveArea.HandArea }],
+      fromId: skillUseEvent.fromId,
       toId,
-      CardLostReason.ActiveMove,
-      PlayerCardsArea.HandArea,
-      PlayerCardsArea.HandArea,
-      CardObtainedReason.PassiveObtained,
-      skillUseEvent.fromId,
-    );
+      toArea: CardMoveArea.HandArea,
+      moveReason: CardMoveReason.ActiveMove,
+      proposer: skillUseEvent.fromId,
+    });
 
     const moveCard = Sanguosha.getCardById(skillUseEvent.cardIds![0]);
     const from = room.getPlayerById(skillUseEvent.fromId);
@@ -100,7 +98,7 @@ export class FanJian extends ActiveSkill {
       };
       room.broadcast(GameEventIdentifiers.CardDisplayEvent, displayEvent);
       await room.dropCards(
-        CardLostReason.PassiveDrop,
+        CardMoveReason.SelfDrop,
         to.getPlayerCards().filter((card) => Sanguosha.getCardById(card).Suit === moveCard.Suit),
         toId,
       );

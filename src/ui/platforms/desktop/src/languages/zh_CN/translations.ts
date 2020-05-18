@@ -522,7 +522,10 @@ export const skillDescriptions: Word[] = [
     target:
       '当你受到伤害时，你可以弃置一张红桃手牌，防止此伤害并选择一名其他角色，然后你选择一项：1.令其受到1点伤害，然后摸X张牌（X为其已损失体力值且至多为5）；2.令其失去1点体力，然后其获得你弃置的牌。',
   },
-  { source: 'hongyan_description', target: '<b>锁定技</b>，你的黑桃牌或你的黑桃判定牌的花色视为红桃；当你于回合外失去红桃牌后，你摸一张牌。' },
+  {
+    source: 'hongyan_description',
+    target: '<b>锁定技</b>，你的黑桃牌或你的黑桃判定牌的花色视为红桃；当你于回合外失去红桃牌后，你摸一张牌。',
+  },
   {
     source: 'buqu_description',
     target:
@@ -612,13 +615,11 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'songwei_description',
-    target:
-      '<b>主公技</b>，当其他魏势力的黑色判定牌生效后，其可以令你摸一张牌。',
+    target: '<b>主公技</b>，当其他魏势力的黑色判定牌生效后，其可以令你摸一张牌。',
   },
   {
     source: 'duanliang_description',
-    target:
-      '你可以将一张黑色基本或装备牌当【兵粮寸断】使用；你对手牌数不小于你的角色使用【兵粮寸断】无距离限制。',
+    target: '你可以将一张黑色基本或装备牌当【兵粮寸断】使用；你对手牌数不小于你的角色使用【兵粮寸断】无距离限制。',
   },
   { source: 'jiezi_description', target: '<b>锁定技</b>，当其他角色跳过摸牌阶段后，你摸一张牌。' },
   {
@@ -633,13 +634,11 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'juxiang_description',
-    target:
-      '<b>锁定技</b>，【南蛮入侵】对你无效；当其他角色使用的【南蛮入侵】结算结束后，你获得之。',
+    target: '<b>锁定技</b>，【南蛮入侵】对你无效；当其他角色使用的【南蛮入侵】结算结束后，你获得之。',
   },
   {
     source: 'lieren_description',
-    target:
-      '当你使用【杀】指定目标后，你可以与目标角色拼点，若你：赢，你获得其一张牌；没赢，你与其交换拼点牌。',
+    target: '当你使用【杀】指定目标后，你可以与目标角色拼点，若你：赢，你获得其一张牌；没赢，你与其交换拼点牌。',
   },
   {
     source: 'haoshi_description',
@@ -658,13 +657,11 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'polu_description',
-    target:
-      '当你杀死一名其他角色后或你死亡时，你可以令至少一名角色各摸X张牌（X为你本局游戏发动过此技能的次数+1）。',
+    target: '当你杀死一名其他角色后或你死亡时，你可以令至少一名角色各摸X张牌（X为你本局游戏发动过此技能的次数+1）。',
   },
   {
     source: 'jiuchi_description',
-    target:
-      '你可以将一张黑桃手牌当【酒】使用；你使用【酒】【杀】造成伤害后，本回合内你的“崩坏”无效。',
+    target: '你可以将一张黑桃手牌当【酒】使用；你使用【酒】【杀】造成伤害后，本回合内你的“崩坏”无效。',
   },
   {
     source: 'roulin_description',
@@ -673,18 +670,15 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'benghuai_description',
-    target:
-      '<b>锁定技</b>，结束阶段开始时，若你不为体力值最小的角色，你选择一项：1.失去1点体力；2.减1点体力上限。',
+    target: '<b>锁定技</b>，结束阶段开始时，若你不为体力值最小的角色，你选择一项：1.失去1点体力；2.减1点体力上限。',
   },
   {
     source: 'baonve_description',
-    target:
-      '<b>主公技</b>，当其他群势力角色造成伤害后，其可以令你进行判定，若结果为黑桃，你回复1点体力。',
+    target: '<b>主公技</b>，当其他群势力角色造成伤害后，其可以令你进行判定，若结果为黑桃，你回复1点体力。',
   },
   {
     source: 'wansha_description',
-    target:
-      '<b>锁定技</b>，你的回合内，除处于濒死状态的角色外的其他角色不能使用【桃】。',
+    target: '<b>锁定技</b>，你的回合内，除处于濒死状态的角色外的其他角色不能使用【桃】。',
   },
   {
     source: 'luanwu_description',
@@ -693,8 +687,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'weimu_description',
-    target:
-      '<b>锁定技</b>，你不能成为黑色锦囊牌的目标。',
+    target: '<b>锁定技</b>，你不能成为黑色锦囊牌的目标。',
   },
   {
     source: 'tuntian_description',
@@ -703,8 +696,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'zaoxian_description',
-    target:
-      '<b>觉醒技</b>，准备阶段开始时，若你有不少于三张“田”，你减一点体力上限并获得“急袭”。',
+    target: '<b>觉醒技</b>，准备阶段开始时，若你有不少于三张“田”，你减一点体力上限并获得“急袭”。',
   },
   { source: 'jixi_description', target: '你可以将一张“田”当【顺手牵羊】使用。' },
   {
@@ -714,8 +706,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'tiaoxin_description',
-    target:
-      '出牌阶段限一次，你可以令一名其他角色选择一项：1.对包括你在内的角色使用一张【杀】；2.令你弃置其一张牌。',
+    target: '出牌阶段限一次，你可以令一名其他角色选择一项：1.对包括你在内的角色使用一张【杀】；2.令你弃置其一张牌。',
   },
   {
     source: 'zhiji_description',
@@ -724,8 +715,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'xiangle_description',
-    target:
-      '<b>锁定技</b>，当你成为【杀】的目标后，你令使用者选择一项：1.弃置一张基本牌；2.此【杀】对你无效。',
+    target: '<b>锁定技</b>，当你成为【杀】的目标后，你令使用者选择一项：1.弃置一张基本牌；2.此【杀】对你无效。',
   },
   {
     source: 'fangquan_description',
@@ -739,18 +729,15 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'sishu_description',
-    target:
-      '出牌阶段开始时，你可以令一名角色于本局游戏中的【乐不思蜀】判定效果反转。',
+    target: '出牌阶段开始时，你可以令一名角色于本局游戏中的【乐不思蜀】判定效果反转。',
   },
   {
     source: 'jiang_description',
-    target:
-      '当你使用【决斗】或红色【杀】指定目标后，或成为【决斗】或红色【杀】的目标后，你可以摸一张牌。',
+    target: '当你使用【决斗】或红色【杀】指定目标后，或成为【决斗】或红色【杀】的目标后，你可以摸一张牌。',
   },
   {
     source: 'hunzi_description',
-    target:
-      '<b>觉醒技</b>，准备阶段开始时，若你的体力值不大于2，你减1点体力上限并获得“英魂”和“英姿”。',
+    target: '<b>觉醒技</b>，准备阶段开始时，若你的体力值不大于2，你减1点体力上限并获得“英魂”和“英姿”。',
   },
   {
     source: 'zhiba_description',
@@ -798,10 +785,10 @@ export const generalDictionary: Word[] = [
   { source: 'cheat', target: '作弊' },
   { source: 'cheat_description', target: '可以获得任意牌（仅用于测试）' },
   { source: 'standard', target: '标准版' },
-  { source: 'wind', target: '风'},
-  { source: 'forest', target: '林'},
-  { source: 'fire', target: '火'},
-  { source: 'hill', target: '山'},
+  { source: 'wind', target: '风' },
+  { source: 'forest', target: '林' },
+  { source: 'fire', target: '火' },
+  { source: 'hill', target: '山' },
   { source: 'wei', target: '魏' },
   { source: 'shu', target: '蜀' },
   { source: 'wu', target: '吴' },
@@ -961,6 +948,7 @@ export const eventDictionary: Word[] = [
   { source: '{0} drops cards {1} by {2}', target: '{2} 弃置了 {0} 的一张 {1}' },
   { source: '{0} has been placed into drop stack', target: '{0} 置入了弃牌堆' },
   { source: '{0} lost card {1}', target: '{0} 失去了 {1}' },
+  { source: '{0} lost {1} cards', target: '{0} 失去了 {1} 张牌' },
   { source: '{0} used card {1}', target: '{0} 使用了一张 {1}' },
   { source: '{0} used skill {1}, response card {2}', target: '{0} 使用了技能 {1}，打出了一张 {2}' },
   { source: '{0} used skill {1}, use card {2}', target: '{0} 使用了技能 {1}，使用了一张 {2}' },
@@ -1100,8 +1088,8 @@ export const eventDictionary: Word[] = [
   { source: 'yaowu:draw', target: '摸一张牌' },
   { source: 'luoyi:obtain', target: '是' },
   { source: 'luoyi:cancel', target: '否' },
-  { source: 'kuanggu:draw', target: '摸一张牌'},
-  { source: 'kuanggu:recover', target: '回复1点体力'},
+  { source: 'kuanggu:draw', target: '摸一张牌' },
+  { source: 'kuanggu:recover', target: '回复1点体力' },
 
   {
     source: 'player {0} join in the room',
