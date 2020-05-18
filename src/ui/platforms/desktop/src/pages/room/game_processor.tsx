@@ -428,7 +428,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    content.otherPlayers.forEach(playerInfo => {
+    content.players.forEach(playerInfo => {
       const player = this.store.room.getPlayerById(playerInfo.Id);
       player.CharacterId = playerInfo.CharacterId!;
       player.MaxHp = playerInfo.MaxHp;
@@ -552,6 +552,7 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     this.store.room.getPlayerById(content.toId).obtainSkill(content.skillName);
+    this.presenter.broadcastUIUpdate();
   }
 
   private onHandlePhaseChangeEvent<T extends GameEventIdentifiers.PhaseChangeEvent>(

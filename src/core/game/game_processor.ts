@@ -184,19 +184,13 @@ export class GameProcessor {
     const playersInfo = this.room.Players.map(player => player.getPlayerInfo());
     await this.chooseCharacters(playersInfo, selectableCharacters);
 
+    const gameStartEvent: ServerEventFinder<GameEventIdentifiers.GameStartEvent> = {
+      players: playersInfo,
+    };
+
+    await this.onHandleIncomingEvent(GameEventIdentifiers.GameStartEvent, gameStartEvent);
     for (const player of playersInfo) {
-      const gameStartEvent: ServerEventFinder<GameEventIdentifiers.GameStartEvent> = {
-        currentPlayer: player,
-        otherPlayers: playersInfo.filter(info => info.Id !== player.Id),
-      };
-
-      await this.onHandleIncomingEvent(GameEventIdentifiers.GameStartEvent, gameStartEvent, async stage => {
-        if (stage === GameStartStage.BeforeGameStart) {
-          await this.drawGameBeginsCards(player.Id);
-        }
-
-        return true;
-      });
+      await this.drawGameBeginsCards(player.Id);
     }
 
     while (this.room.isPlaying() && !this.room.isGameOver() && !this.room.isClosed()) {
@@ -1339,11 +1333,8 @@ export class GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.GameStartEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      if (stage === GameStartStage.GameStarting) {
-        this.room.broadcast(GameEventIdentifiers.GameStartEvent, event);
-      }
-    });
+    this.room.broadcast(GameEventIdentifiers.GameStartEvent, event);
+    return await this.iterateEachStage(identifier, event, onActualExecuted);
   }
 
   private async onHandleLoseHpEvent(

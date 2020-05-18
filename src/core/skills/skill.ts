@@ -29,6 +29,7 @@ export abstract class Skill {
   private lordSkill = false;
   private uniqueSkill = false;
   private selfTargetSkill = false;
+  private sideEffectSkill = false;
   private description: string;
   private skillName: string;
 
@@ -89,7 +90,7 @@ export abstract class Skill {
   }
 
   public get GeneralName() {
-    return this.skillName.replace(/#+/, '');
+    return this.skillName.replace(/(#|~)+/, '');
   }
 
   public static get Description() {
@@ -116,6 +117,9 @@ export abstract class Skill {
 
   public isSelfTargetSkill() {
     return this.selfTargetSkill;
+  }
+  public isSideEffectSkill() {
+    return this.sideEffectSkill;
   }
 
   public get SkillType() {

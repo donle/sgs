@@ -158,8 +158,7 @@ export interface ServerEvent extends EventUtilities {
     playersInfo: PlayerInfo[];
   };
   [GameEventIdentifiers.GameStartEvent]: {
-    currentPlayer: PlayerInfo;
-    otherPlayers: PlayerInfo[];
+    players: PlayerInfo[];
   };
   [GameEventIdentifiers.GameOverEvent]: {
     loserIds: PlayerId[];

@@ -83,12 +83,12 @@ export { LiYu } from './characters/standard/liyu';
 
 export { JuShou } from './characters/wind/jushou';
 export { JieWei, JieWeiShadow } from './characters/wind/jiewei';
+export { Kuanggu, KuangguShadow } from './characters/wind/kuanggu';
+export { HuangTian, HuangTianGiveCard } from './characters/wind/huangtian';
 
 export { Jianchu } from './characters/fire/jianchu';
 
 export { FeiYing } from './characters/god/feiying';
 export { GuiXin } from './characters/god/guixin';
-
-export { Kuanggu, KuangguShadow } from './characters/wind/kuanggu';
 
 export { Cheat } from './system/cheat';

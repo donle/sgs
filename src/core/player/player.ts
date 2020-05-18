@@ -497,7 +497,12 @@ export abstract class Player implements PlayerInfo {
   }
 
   public obtainSkill(skillName: string) {
-    this.playerSkills.push(Sanguosha.getSkillBySkillName(skillName));
+    const skill = Sanguosha.getSkillBySkillName(skillName);
+    if (this.playerSkills.includes(skill)) {
+      return;
+    }
+
+    this.playerSkills.push(skill);
     for (const shadowSkill of Sanguosha.getShadowSkillsBySkillName(skillName)) {
       this.playerSkills.push(shadowSkill);
     }
