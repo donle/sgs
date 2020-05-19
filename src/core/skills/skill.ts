@@ -151,7 +151,7 @@ export abstract class ResponsiveSkill extends Skill {
 
 export abstract class TriggerSkill extends Skill {
   public abstract isTriggerable(event: EventPicker<GameEventIdentifiers, WorkPlace>, stage?: AllStage): boolean;
-  public isAutoTrigger(event?: ServerEventFinder<GameEventIdentifiers>): boolean {
+  public isAutoTrigger(room: Room, event?: ServerEventFinder<GameEventIdentifiers>): boolean {
     return false;
   }
 

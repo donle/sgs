@@ -82,7 +82,7 @@ export class QingJian extends TriggerSkill {
     room.broadcast(GameEventIdentifiers.CardDisplayEvent, displayEvent);
 
     await room.moveCards({
-      movingCards: cardIds!.map(card => ({ card, fromArea: to.cardFrom(card) })),
+      movingCards: cardIds!.map(card => ({ card, fromArea: from.cardFrom(card) })),
       fromId,
       toId: to.Id,
       toArea: CardMoveArea.HandArea,
