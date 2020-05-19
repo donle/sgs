@@ -97,6 +97,7 @@ export class JiJiang extends ActiveSkill {
 @LordSkill
 export class JiJiangShadow extends TriggerSkill {
   public isAutoTrigger(
+    room: Room,
     event?: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent | GameEventIdentifiers.AskForCardUseEvent>,
   ) {
     const identifier = event && EventPacker.getIdentifier(event);

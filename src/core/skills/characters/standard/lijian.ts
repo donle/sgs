@@ -4,7 +4,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { CharacterGender } from 'core/characters/character';
 import { CardMoveReason, ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
@@ -38,7 +38,7 @@ export class LiJian extends ActiveSkill {
   }
 
   isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
-    return room.CurrentPlayer.cardFrom(cardId) === PlayerCardsArea.HandArea;
+    return true;
   }
 
   public getAnimationSteps(event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {

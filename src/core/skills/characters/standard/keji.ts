@@ -8,6 +8,7 @@ import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 @CommonSkill({ name: 'keji', description: 'keji_description' })
 export class KeJi extends TriggerSkill {
   isAutoTrigger(
+    room: Room,
     content: ServerEventFinder<
       GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent
     >,

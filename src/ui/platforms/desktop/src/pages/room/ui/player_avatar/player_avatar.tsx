@@ -78,24 +78,50 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     const { presenter, translator, isSkillDisabled } = this.props;
     const skills =
       presenter.ClientPlayer && presenter.ClientPlayer.CharacterId !== undefined
-        ? presenter.ClientPlayer.getPlayerSkills().filter((skill) => !skill.isShadowSkill())
+        ? presenter.ClientPlayer.getPlayerSkills().filter(skill => !skill.isShadowSkill() && !skill.isSideEffectSkill())
         : [];
 
     return (
-      <div className={styles.playerSkills}>
-        {skills.map((skill) => (
-          <button
-            className={classNames(styles.playerSkill, {
-              [styles.selected]: this.getSkillSelected() && this.props.store.selectedSkill === skill,
-            })}
-            onClick={this.onClickSkill(skill)}
-            disabled={isSkillDisabled(skill)}
-          >
-            {translator.tr(skill.Name)}
-          </button>
-        ))}
-      </div>
+      <>
+        <div className={styles.playerSkills}>
+          {skills.map(skill => (
+            <button
+              className={classNames(styles.playerSkill, {
+                [styles.selected]: this.getSkillSelected() && this.props.store.selectedSkill === skill,
+              })}
+              onClick={this.onClickSkill(skill)}
+              disabled={isSkillDisabled(skill)}
+            >
+              {translator.tr(skill.Name)}
+            </button>
+          ))}
+        </div>
+        <div className={styles.userSideEffectSkillList}>{this.getSideEffectSkills()}</div>
+      </>
     );
+  }
+
+  getSideEffectSkills() {
+    const player = this.props.presenter.ClientPlayer;
+    if (player === undefined || player.CharacterId === undefined) {
+      return;
+    }
+
+    const sideEffectSkills = player.getSkills().filter(skill => skill.isSideEffectSkill());
+    return sideEffectSkills.map((skill, index) => {
+      return (
+        <button
+          key={index}
+          className={classNames(styles.playerSkill, {
+            [styles.selected]: this.getSkillSelected() && this.props.store.selectedSkill === skill,
+          })}
+          disabled={!skill.canUse(this.props.store.room, player)}
+          onClick={this.onClickSkill(skill)}
+        >
+          {this.props.translator.tr(skill.Name)}
+        </button>
+      );
+    });
   }
 
   @mobx.action
@@ -113,9 +139,9 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     const { translator, presenter } = this.props;
     const skills =
       presenter.ClientPlayer?.CharacterId !== undefined
-        ? presenter.ClientPlayer.getPlayerSkills().filter((skill) => !skill.isShadowSkill())
+        ? presenter.ClientPlayer.getPlayerSkills().filter(skill => !skill.isShadowSkill())
         : [];
-    return skills.map((skill) => (
+    return skills.map(skill => (
       <div className={styles.skillInfo}>
         <div className={styles.skillItem}>
           <span className={styles.skillName}>{translator.trx(skill.Name)}</span>

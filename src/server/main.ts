@@ -13,7 +13,7 @@ import { TranslationModule } from 'core/translations/translation_module';
 import * as http from 'http';
 import * as https from 'https';
 import * as os from 'os';
-import SocketIO from 'socket.io';
+import * as SocketIO from 'socket.io';
 import { SimplifiedChinese } from './languages';
 import { serverConfig, ServerConfig } from './server_config';
 
@@ -23,12 +23,6 @@ class App {
   private roomsPathList: string[] = [];
   private config: HostConfigProps;
   private translator: TranslationModule;
-
-  private playersList: {
-    playerId: PlayerId;
-    roomId: string;
-  }[] = [];
-
   private lobbySocket: SocketIO.Server;
   constructor(mode: DevMode, private logger: Logger) {
     this.config = hostConfig[mode];

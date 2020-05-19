@@ -92,26 +92,28 @@ export class YiJue extends ActiveSkill {
         movedByReason: this.Name,
       });
 
-      const askForChooseEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
-        options: ['yijue:recover', 'yijue:cancel'],
-        toId: from.Id,
-        conversation: TranslationPack.translationJsonPatcher(
-          'recover {0} hp for {1}',
-          1,
-          TranslationPack.patchPlayerInTranslation(to),
-        ).extract(),
-      };
-      room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, from.Id);
-      const { selectedOption } = await room.onReceivingAsyncReponseFrom(
-        GameEventIdentifiers.AskForChoosingOptionsEvent,
-        from.Id,
-      );
-      if (selectedOption === 'yijue:recover') {
-        await room.recover({
-          recoveredHp: 1,
-          recoverBy: from.Id,
-          toId: to.Id,
-        });
+      if (to.MaxHp > to.Hp) {
+        const askForChooseEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
+          options: ['yijue:recover', 'yijue:cancel'],
+          toId: from.Id,
+          conversation: TranslationPack.translationJsonPatcher(
+            'recover {0} hp for {1}',
+            1,
+            TranslationPack.patchPlayerInTranslation(to),
+          ).extract(),
+        };
+        room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, from.Id);
+        const { selectedOption } = await room.onReceivingAsyncReponseFrom(
+          GameEventIdentifiers.AskForChoosingOptionsEvent,
+          from.Id,
+        );
+        if (selectedOption === 'yijue:recover') {
+          await room.recover({
+            recoveredHp: 1,
+            recoverBy: from.Id,
+            toId: to.Id,
+          });
+        }
       }
     }
 
@@ -192,6 +194,8 @@ export class YiJueShadow extends TriggerSkill implements OnDefineReleaseTiming {
 @CompulsorySkill({ name: 'yijueBlocker', description: 'yijueBlocker_description' })
 export class YiJueBlocker extends FilterSkill {
   canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId) {
-    return false;
+    return cardId instanceof CardMatcher
+      ? false
+      : room.getPlayerById(owner).cardFrom(cardId) !== PlayerCardsArea.HandArea;
   }
 }

@@ -227,7 +227,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             triggeredOnEvent: content,
           };
           if (
-            skill.isAutoTrigger(content) ||
+            skill.isAutoTrigger(this, content) ||
             skill.SkillType === SkillType.Compulsory ||
             skill.SkillType === SkillType.Awaken
           ) {
@@ -733,6 +733,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     bySkill?: string,
   ): Promise<ServerEventFinder<GameEventIdentifiers.JudgeEvent>> {
     const judgeCardId = this.getCards(1, 'top')[0];
+    this.addProcessingCards(judgeCardId.toString(), judgeCardId);
     const event: ServerEventFinder<GameEventIdentifiers.JudgeEvent> = {
       toId: to,
       judgeCardId,
@@ -744,6 +745,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       GameEventIdentifiers.JudgeEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.JudgeEvent, event),
     );
+    this.endProcessOnTag(judgeCardId.toString());
     this.bury(event.judgeCardId);
 
     return event;

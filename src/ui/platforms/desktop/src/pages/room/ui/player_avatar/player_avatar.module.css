@@ -56,10 +56,19 @@
     width: 100%;
 }
 
+.userSideEffectSkillList {
+    position: absolute;
+    top: calc(gridLine * 5);
+    left: calc(gridLine * -7);
+    display: flex;
+    flex-direction: column;
+    margin-bottom: gridLine;
+}
+
 .playerSkill {
     min-width: 50%;
-    background: transparent;
-    box-shadow: transparent;
+    background: white;
+    box-shadow: none;
     flex: auto;
 }
 

@@ -1,5 +1,6 @@
-import { CardId } from 'core/cards/libs/card_props';
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardId, CardSuit } from 'core/cards/libs/card_props';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { AllStage, JudgeEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -7,8 +8,8 @@ import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill({ name: 'guicai', description: 'guicai_description' })
-export class GuiCai extends TriggerSkill {
+@CommonSkill({ name: 'guidao', description: 'guidao_description' })
+export class GuiDao extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.JudgeEvent>, stage?: AllStage) {
     return stage === JudgeEffectStage.BeforeJudgeEffect;
   }
@@ -21,7 +22,7 @@ export class GuiCai extends TriggerSkill {
     return cards.length === 1;
   }
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
-    return true;
+    return Sanguosha.getCardById(cardId).isBlack();
   }
 
   async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
@@ -42,7 +43,22 @@ export class GuiCai extends TriggerSkill {
         TranslationPack.patchCardInTranslation(judgeEvent.judgeCardId),
       ).extract(),
     });
+    await room.moveCards({
+      moveReason: CardMoveReason.ActiveMove,
+      movingCards: [{ card: judgeEvent.judgeCardId, fromArea: CardMoveArea.ProcessingArea }],
+      toId: skillUseEvent.fromId,
+      toArea: PlayerCardsArea.HandArea,
+      proposer: skillUseEvent.fromId,
+      movedByReason: this.Name,
+    });
+
     judgeEvent.judgeCardId = cardIds![0];
+    room.addProcessingCards(judgeEvent.judgeCardId.toString(), cardIds![0]);
+
+    const guidaoCard = Sanguosha.getCardById(judgeEvent.judgeCardId);
+    if (guidaoCard.Suit === CardSuit.Spade && guidaoCard.CardNumber >= 2 && guidaoCard.CardNumber <= 9) {
+      await room.drawCards(1, skillUseEvent.fromId, 'top', undefined, this.Name);
+    }
 
     return true;
   }

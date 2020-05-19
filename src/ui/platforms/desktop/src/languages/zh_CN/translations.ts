@@ -183,8 +183,10 @@ export const characterDictionary: Word[] = [
 
   { source: 'zhangjiao', target: '张角' },
   { source: 'leiji', target: '雷击' },
+  { source: '#leiji', target: '雷击' },
   { source: 'guidao', target: '鬼道' },
   { source: 'huangtian', target: '黄天' },
+  { source: '~huangtian', target: '黄天' },
 
   { source: 'yuji', target: '于吉' },
   { source: 'guhuo', target: '蛊惑' },

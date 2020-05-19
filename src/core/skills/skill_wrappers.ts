@@ -57,6 +57,7 @@ function skillPropertyWrapper(
     shadowSkill?: boolean;
     uniqueSkill?: boolean;
     selfTargetSkill?: boolean;
+    sideEffectSkill?: boolean;
   },
   constructor: new () => any,
 ): any {
@@ -65,6 +66,7 @@ function skillPropertyWrapper(
     private shadowSkill: boolean;
     private uniqueSkill: boolean;
     private selfTargetSkill: boolean;
+    private sideEffectSkill: boolean;
     public canUse: (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) => boolean;
 
     constructor() {
@@ -86,6 +88,10 @@ function skillPropertyWrapper(
       }
       if (options.selfTargetSkill !== undefined) {
         this.selfTargetSkill = options.selfTargetSkill;
+      }
+      if (options.sideEffectSkill !== undefined) {
+        this.sideEffectSkill = options.sideEffectSkill;
+        this.skillName = '~' + this.skillName;
       }
     }
   } as any;
@@ -153,6 +159,20 @@ export function UniqueSkill<T extends Skill>(constructorFunction: SKillConstruct
     },
     constructorFunction as any,
   );
+}
+export function SideEffectSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
+  const WrappedConstructor = skillPropertyWrapper(
+    {
+      sideEffectSkill: true,
+    },
+    constructorFunction as any,
+  );
+
+  return class extends WrappedConstructor {
+    public static get Name() {
+      return '~' + super.Name;
+    }
+  } as any;
 }
 
 export type SkillPrototype<T extends Skill> = new () => T;

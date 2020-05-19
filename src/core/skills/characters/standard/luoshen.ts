@@ -17,6 +17,7 @@ import { CommonSkill, CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/sk
 @CommonSkill({ name: 'luoshen', description: 'luoshen_description' })
 export class LuoShen extends TriggerSkill {
   isAutoTrigger(
+    room: Room,
     event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent | GameEventIdentifiers.JudgeEvent>,
   ) {
     const identifier = EventPacker.getIdentifier(event);
