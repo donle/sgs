@@ -55,7 +55,7 @@ export class QiaoMeng extends TriggerSkill {
         await room.moveCards({
           movingCards: [{ card: selectedCard, fromArea: CardMoveArea.DropStack }],
           moveReason: CardMoveReason.ActivePrey,
-          toId,
+          fromId,
           toArea: CardMoveArea.HandArea,
         });
       }
