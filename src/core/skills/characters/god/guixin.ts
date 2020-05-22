@@ -16,6 +16,10 @@ export class GuiXin extends TriggerSkill {
     return owner.Id === content.toId;
   }
 
+  triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
+    return event.damage;
+  }
+
   async onTrigger() {
     return true;
   }
@@ -69,24 +73,9 @@ export class GuiXin extends TriggerSkill {
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
-    const { damage, toId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
+    const { toId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
     await this.doGuiXin(room, toId);
 
-    let triggerTimes = damage - 1;
-    while (triggerTimes-- > 0) {
-      const continuouslyTrigger: ServerEventFinder<GameEventIdentifiers.AskForSkillUseEvent> = {
-        invokeSkillNames: [this.Name],
-        toId,
-      };
-      room.notify(GameEventIdentifiers.AskForSkillUseEvent, continuouslyTrigger, toId);
-
-      const { invoke } = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForSkillUseEvent, toId);
-      if (!invoke) {
-        break;
-      }
-
-      await this.doGuiXin(room, toId);
-    }
     return true;
   }
 }

@@ -17,6 +17,10 @@ export class FanKui extends TriggerSkill {
     return owner.Id === content.toId && damageFrom && damageFrom.getPlayerCards().length > 0 && !damageFrom.Dead;
   }
 
+  triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
+    return event.damage;
+  }
+
   async onTrigger() {
     return true;
   }

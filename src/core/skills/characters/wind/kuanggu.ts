@@ -6,7 +6,7 @@ import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
 
-@CommonSkill({ name: 'kuanggu', description: 'kuanggu_description'})
+@CommonSkill({ name: 'kuanggu', description: 'kuanggu_description' })
 export class Kuanggu extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
     return stage === DamageEffectStage.AfterDamageEffect;
@@ -14,6 +14,10 @@ export class Kuanggu extends TriggerSkill {
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
     return owner.Id === content.fromId && owner.getFlag<boolean>(this.GeneralName) === true;
+  }
+
+  triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
+    return event.damage;
   }
 
   async onTrigger() {
@@ -29,69 +33,43 @@ export class Kuanggu extends TriggerSkill {
       options.push('kuanggu:recover');
     }
 
-    const askForChooseEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent> ({
+    const askForChooseEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
       options,
       conversation: 'please choose',
       toId: weiyanId,
     });
 
-    room.notify(
-      GameEventIdentifiers.AskForChoosingOptionsEvent,
-      askForChooseEvent,
-      weiyanId,
-    );
+    room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, weiyanId);
 
-    const response = await room.onReceivingAsyncReponseFrom(
-      GameEventIdentifiers.AskForChoosingOptionsEvent, 
-      weiyanId
-    );
+    const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, weiyanId);
 
     response.selectedOption = response.selectedOption || 'kuanggu:draw';
     if (response.selectedOption === 'kuanggu:draw') {
       await room.drawCards(1, weiyanId);
-    } else  {
+    } else {
       await room.recover({
         recoveredHp: 1,
         recoverBy: weiyanId,
         toId: weiyanId,
       });
     }
-
   }
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
-    const { damage, fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
+    const { fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
     const weiyan = room.getPlayerById(skillUseEvent.fromId);
     weiyan.removeFlag(this.GeneralName);
 
     if (fromId !== undefined) {
       await this.doKuanggu(room, fromId);
-
-      let triggerTimes = damage - 1;
-      while (triggerTimes-- > 0) {
-        const continuouslyTrigger: ServerEventFinder<GameEventIdentifiers.AskForSkillUseEvent> = {
-          invokeSkillNames: [this.Name],
-          toId: fromId
-        }
-
-        room.notify(GameEventIdentifiers.AskForSkillUseEvent, continuouslyTrigger, fromId);
-
-        const { invoke } = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForSkillUseEvent, fromId);
-        if (!invoke) {
-          break;
-        }
-
-        await this.doKuanggu(room, fromId);
-      }
     }
-    
     return true;
-  }  
+  }
 }
 
 @ShadowSkill
-@CompulsorySkill({name: Kuanggu.GeneralName, description: Kuanggu.Description})
+@CompulsorySkill({ name: Kuanggu.GeneralName, description: Kuanggu.Description })
 export class KuangguShadow extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage: DamageEffectStage) {
     return stage === DamageEffectStage.DamageEffect;

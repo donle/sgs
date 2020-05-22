@@ -16,6 +16,10 @@ export class YiJi extends TriggerSkill {
     return owner.Id === content.toId;
   }
 
+  triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
+    return event.damage;
+  }
+
   async onTrigger() {
     return true;
   }

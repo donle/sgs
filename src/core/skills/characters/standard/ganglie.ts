@@ -18,6 +18,10 @@ export class GangLie extends TriggerSkill {
     return owner.Id === content.toId && content.fromId !== undefined;
   }
 
+  triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
+    return event.damage;
+  }
+
   async onTrigger() {
     return true;
   }

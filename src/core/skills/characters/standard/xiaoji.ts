@@ -1,4 +1,4 @@
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, CardMoveStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -20,6 +20,10 @@ export class XiaoJi extends TriggerSkill {
     return owner.Id === content.fromId && equipCards.length > 0;
   }
 
+  triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
+    return event.movingCards.filter(card => card.fromArea === CardMoveArea.EquipArea).length;
+  }
+
   async onTrigger() {
     return true;
   }
@@ -30,24 +34,9 @@ export class XiaoJi extends TriggerSkill {
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
-    const { fromId, movingCards } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
+    const { fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
 
-    const equipCards = movingCards.filter(card => card.fromArea === PlayerCardsArea.EquipArea);
-    let times = equipCards.length;
-    const skillInvoke: ServerEventFinder<GameEventIdentifiers.AskForSkillUseEvent> = {
-      invokeSkillNames: [this.Name],
-      toId: fromId!,
-    };
     await this.doDrawCards(room, fromId!);
-    while (--times > 0) {
-      room.notify(GameEventIdentifiers.AskForSkillUseEvent, skillInvoke, fromId!);
-      const { invoke } = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForSkillUseEvent, fromId!);
-      if (!invoke) {
-        break;
-      }
-
-      await this.doDrawCards(room, fromId!);
-    }
 
     return true;
   }

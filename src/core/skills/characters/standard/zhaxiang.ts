@@ -22,6 +22,10 @@ export class ZhaXiang extends TriggerSkill {
     return owner.Id === content.toId;
   }
 
+  triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.LoseHpEvent>) {
+    return event.lostHp;
+  }
+
   public async onTrigger(): Promise<boolean> {
     return true;
   }
@@ -30,15 +34,9 @@ export class ZhaXiang extends TriggerSkill {
     room: Room,
     skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
-    const event = skillUseEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.LoseHpEvent>;
-    let hp = event.lostHp;
-
-    while (hp--) {
-      await room.drawCards(3, skillUseEvent.fromId);
-      const num = room.getFlag<number>(skillUseEvent.fromId, this.GeneralName) || 0;
-
-      room.setFlag<number>(skillUseEvent.fromId, this.GeneralName, num + 1);
-    }
+    await room.drawCards(3, skillUseEvent.fromId);
+    const num = room.getFlag<number>(skillUseEvent.fromId, this.GeneralName) || 0;
+    room.setFlag<number>(skillUseEvent.fromId, this.GeneralName, num + 1);
 
     return true;
   }

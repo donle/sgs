@@ -170,6 +170,10 @@ export abstract class TriggerSkill extends Skill {
 
   public abstract async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers>): Promise<boolean>;
 
+  public triggerableTimes(event: ServerEventFinder<GameEventIdentifiers>): number {
+    return 1;
+  }
+
   public isRefreshAt(stage: PlayerPhase) {
     return false;
   }

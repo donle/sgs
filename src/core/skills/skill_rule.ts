@@ -25,7 +25,7 @@ export class UniqueSkillRule {
 
   public static isProhibited(skill: Skill, owner: Player) {
     if (owner.getFlag<boolean>('tieji') || owner.getFlag<boolean>('yijue')) {
-      return skill.SkillType !== SkillType.Compulsory;
+      return skill.SkillType !== SkillType.Compulsory && owner.getPlayerSkills().includes(skill);
     }
 
     return false;
