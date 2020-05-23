@@ -123,7 +123,7 @@ export class GameCommonRules {
   }
 
   public static getBaseHoldCardNumber(room: Room, user: Player) {
-    let cardHoldNumber = user.Hp;
+    let cardHoldNumber = 0;
     user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
       const newCardHoldNumber = skill.breakBaseCardHoldNumber(room, user);
       if (newCardHoldNumber > cardHoldNumber) {
@@ -131,7 +131,7 @@ export class GameCommonRules {
       }
     });
 
-    return cardHoldNumber;
+    return cardHoldNumber || user.Hp;
   }
 
   public static getAdditionalHoldCardNumber(room: Room, user: Player) {
