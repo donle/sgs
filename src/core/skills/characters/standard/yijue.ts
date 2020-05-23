@@ -182,7 +182,7 @@ export class YiJueShadow extends TriggerSkill implements OnDefineReleaseTiming {
       for (const player of room.AlivePlayers) {
         room.removeFlag(player.Id, this.GeneralName);
         if (player.hasSkill(YiJueBlocker.Name)) {
-          room.loseSkill(player.Id, YiJueBlocker.Name);
+          await room.loseSkill(player.Id, YiJueBlocker.Name);
         }
       }
     }

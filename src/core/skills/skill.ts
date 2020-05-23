@@ -303,6 +303,18 @@ export abstract class RulesBreakerSkill extends Skill {
     return true;
   }
 
+  public breakDistanceTo(room: Room, owner: Player, target: Player): number {
+    return 0;
+  }
+
+  public breakCardUsableTimesTo(cardId: CardId | CardMatcher, room: Room, owner: Player, target: Player): number {
+    return 0;
+  }
+
+  public canUseCardTo(cardId: CardId | CardMatcher, room: Room, owner: Player, target: Player): boolean | undefined {
+    return;
+  }
+
   public breakCardUsableTimes(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
     return 0;
   }
