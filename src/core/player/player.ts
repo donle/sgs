@@ -643,6 +643,9 @@ export abstract class Player implements PlayerInfo {
   }
 
   public bury() {
+    this.turnedOver = false;
+    this.chainLocked = false;
+    this.clearHeaded();
     this.dead = true;
   }
 

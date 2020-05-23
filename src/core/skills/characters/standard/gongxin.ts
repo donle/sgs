@@ -91,8 +91,7 @@ export class GongXin extends ActiveSkill {
     if (selectedOption === 'gongxin:putcard') {
       await room.moveCards({
         movingCards: [{ card: selectedCard, fromArea: CardMoveArea.HandArea }],
-        fromId,
-        toId: to.Id,
+        fromId: to.Id,
         moveReason: CardMoveReason.PassiveMove,
         toArea: CardMoveArea.DrawStack,
         proposer: fromId,

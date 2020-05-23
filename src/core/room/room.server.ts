@@ -333,6 +333,21 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     };
   }
 
+  public async askForPeach(event: ServerEventFinder<GameEventIdentifiers.AskForPeachEvent>) {
+    EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForPeachEvent, event);
+    await this.trigger(event);
+    if (EventPacker.isTerminated(event)) {
+      return {
+        terminated: true,
+      };
+    }
+    this.notify(GameEventIdentifiers.AskForPeachEvent, event, event.fromId);
+
+    return {
+      responseEvent: await this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForPeachEvent, event.fromId),
+    };
+  }
+
   public async askForCardUse(event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>, to: PlayerId) {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForCardUseEvent, event);
     await this.trigger<typeof event>(event);

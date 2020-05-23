@@ -475,7 +475,7 @@ export class GameProcessor {
         };
 
         const result = await this.room.askForCardUse(askForUseCardEvent, toId);
-        const { responseEvent } = result;
+        const { responseEvent, terminated } = result;
         if (responseEvent && responseEvent.cardId !== undefined) {
           const jinkUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
             fromId: toId,
@@ -484,7 +484,7 @@ export class GameProcessor {
             responseToEvent: event,
           };
           await this.room.useCard(jinkUseEvent);
-          if (!EventPacker.isTerminated(jinkUseEvent)) {
+          if (!EventPacker.isTerminated(jinkUseEvent) || terminated) {
             event.isCancelledOut = true;
             await this.room.trigger(event, CardEffectStage.CardEffectCancelledOut);
             event.isCancelledOut ? EventPacker.terminate(event) : EventPacker.recall(event);
@@ -796,30 +796,24 @@ export class GameProcessor {
           let hasResponse = false;
           do {
             hasResponse = false;
+            const { terminated, responseEvent } = await this.room.askForPeach({
+              fromId: player.Id,
+              toId: to.Id,
+              conversation: TranslationPack.translationJsonPatcher(
+                '{0} asks for a peach',
+                TranslationPack.patchPlayerInTranslation(to),
+              ).extract(),
+            });
 
-            this.room.notify(
-              GameEventIdentifiers.AskForPeachEvent,
-              {
-                fromId: player.Id,
-                toId: to.Id,
-                conversation: TranslationPack.translationJsonPatcher(
-                  '{0} asks for a peach',
-                  TranslationPack.patchPlayerInTranslation(to),
-                ).extract(),
-              },
-              player.Id,
-            );
+            if (terminated) {
+              continue;
+            }
 
-            const response = await this.room.onReceivingAsyncReponseFrom(
-              GameEventIdentifiers.AskForPeachEvent,
-              player.Id,
-            );
-
-            if (response.cardId !== undefined) {
+            if (responseEvent && responseEvent.cardId !== undefined) {
               hasResponse = true;
               const cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
-                fromId: response.fromId,
-                cardId: response.cardId,
+                fromId: responseEvent.fromId,
+                cardId: responseEvent.cardId,
                 toIds: [to.Id],
               };
 
@@ -1195,9 +1189,12 @@ export class GameProcessor {
         }
       }
       if (to && toArea === PlayerCardsArea.HandArea) {
-        event.engagedPlayerIds = [];
-        fromId && event.engagedPlayerIds.push(fromId);
-        toId && event.engagedPlayerIds.push(toId);
+        const isPrivateCardMoving = !!movingCards.find(({ fromArea }) => fromArea === CardMoveArea.HandArea);
+        if (isPrivateCardMoving) {
+          event.engagedPlayerIds = [];
+          fromId && event.engagedPlayerIds.push(fromId);
+          toId && event.engagedPlayerIds.push(toId);
+        }
 
         event.translationsMessage = TranslationPack.translationJsonPatcher(
           '{0} obtains cards {1}' + (fromId ? ' from {2}' : ''),
@@ -1249,8 +1246,10 @@ export class GameProcessor {
               }
             } else if (toArea === CardMoveArea.OutsideArea) {
               to.getCardIds((toArea as unknown) as PlayerCardsArea, toOutsideArea).push(...cardIds);
+            } else if (toArea === CardMoveArea.HandArea) {
+              to.getCardIds((toArea as unknown) as PlayerCardsArea).push(...Card.getActualCards(cardIds));
             } else {
-              to.getCardIds(toArea as PlayerCardsArea).push(...cardIds);
+              to.getCardIds((toArea as unknown) as PlayerCardsArea).push(...cardIds);
             }
           }
         }

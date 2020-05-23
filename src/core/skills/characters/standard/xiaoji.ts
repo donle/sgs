@@ -28,16 +28,11 @@ export class XiaoJi extends TriggerSkill {
     return true;
   }
 
-  async doDrawCards(room: Room, fromId: PlayerId) {
-    await room.drawCards(2, fromId, 'top', undefined, this.Name);
-  }
-
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
     const { fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
 
-    await this.doDrawCards(room, fromId!);
-
+    await room.drawCards(2, fromId, 'top', undefined, this.Name);
     return true;
   }
 }
