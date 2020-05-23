@@ -3,7 +3,7 @@ module.exports = {
   singleQuote: true,
   trailingComma: 'all',
   jsxSingleQuote: false,
-  arrowParens: 'always',
+  arrowParens: 'avoid',
   overrides: [
     {
       files: '*.css',

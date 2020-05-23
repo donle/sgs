@@ -356,9 +356,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       const equipCard = card as EquipCard;
       return player.getEquipment(equipCard.EquipType) === undefined;
     } else if (card.is(CardType.DelayedTrick)) {
-      const toJudgeArea = player
-        .getCardIds(PlayerCardsArea.JudgeArea)
-        .map(id => Sanguosha.getCardById(id).GeneralName);
+      const toJudgeArea = player.getCardIds(PlayerCardsArea.JudgeArea).map(id => Sanguosha.getCardById(id).GeneralName);
       return !toJudgeArea.includes(card.GeneralName) && this.canUseCardTo(cardId, target);
     }
 

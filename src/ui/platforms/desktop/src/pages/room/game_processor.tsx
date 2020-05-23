@@ -364,9 +364,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.presenter.showCards(
-      ...Card.getActualCards(content.displayCards).map(cardId => Sanguosha.getCardById(cardId)),
-    );
+    this.presenter.showCards(...Card.getActualCards(content.displayCards).map(cardId => Sanguosha.getCardById(cardId)));
   }
 
   // tslint:disable-next-line:no-empty

@@ -522,9 +522,7 @@ export abstract class Player implements PlayerInfo {
   }
 
   public hasShadowSkill(skillName: string) {
-    return (
-      this.playerSkills.find(skill => skill.Name.startsWith('#') && skill.Name.endsWith(skillName)) !== undefined
-    );
+    return this.playerSkills.find(skill => skill.Name.startsWith('#') && skill.Name.endsWith(skillName)) !== undefined;
   }
 
   public turnOver() {

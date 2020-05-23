@@ -65,9 +65,7 @@ export class CardMatcher {
       }
       if (cardNumber && matcher.cardNumber) {
         matched =
-          matched &&
-          matcher.cardNumber.length > 0 &&
-          matcher.cardNumber.every(cardNum => cardNumber.includes(cardNum));
+          matched && matcher.cardNumber.length > 0 && matcher.cardNumber.every(cardNum => cardNumber.includes(cardNum));
       }
       if (name && matcher.name) {
         matched = matched && matcher.name.length > 0 && matcher.name.every(cardName => name.includes(cardName));
