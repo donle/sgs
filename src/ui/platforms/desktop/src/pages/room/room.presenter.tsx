@@ -119,11 +119,11 @@ export class RoomPresenter {
 
   @mobx.action
   enableActionButton(...buttons: ('confirm' | 'cancel' | 'finish')[]) {
-    buttons.forEach((btn) => (this.store.actionButtonStatus[btn] = true));
+    buttons.forEach(btn => (this.store.actionButtonStatus[btn] = true));
   }
   @mobx.action
   disableActionButton(...buttons: ('confirm' | 'cancel' | 'finish')[]) {
-    buttons.forEach((btn) => (this.store.actionButtonStatus[btn] = false));
+    buttons.forEach(btn => (this.store.actionButtonStatus[btn] = false));
   }
 
   @mobx.action
@@ -149,7 +149,7 @@ export class RoomPresenter {
   createClientRoom(roomId: RoomId, socket: ClientSocket, gameInfo: GameInfo, playersInfo: PlayerInfo[]) {
     this.tryToThrowUninitializedError();
     const players = playersInfo.map(
-      (playerInfo) => new ClientPlayer(playerInfo.Id, playerInfo.Name, playerInfo.Position, playerInfo.CharacterId),
+      playerInfo => new ClientPlayer(playerInfo.Id, playerInfo.Name, playerInfo.Position, playerInfo.CharacterId),
     );
 
     this.store.room = new ClientRoom(roomId, socket, gameInfo, players);

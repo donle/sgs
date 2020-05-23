@@ -157,7 +157,9 @@ export class JiJiangShadow extends TriggerSkill {
         fromId: event.fromId,
         players:
           scopedTargets ||
-          room.AlivePlayers.filter(player => from.canUseCardTo(room, slashMatcher, player.Id)).map(player => player.Id),
+          room.AlivePlayers.filter(player => from.canUseCardTo(room, slashMatcher, player.Id)).map(
+            player => player.Id,
+          ),
         requiredAmount: 1,
         conversation: TranslationPack.translationJsonPatcher('do you want to trigger skill {0} ?', this.Name).extract(),
       };

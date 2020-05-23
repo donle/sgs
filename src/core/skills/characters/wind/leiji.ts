@@ -88,7 +88,7 @@ export class LeiJiShadow extends TriggerSkill {
     const judgeCard = Sanguosha.getCardById(judgeEvent.judgeCardId);
     const from = room.getPlayerById(skillUseEvent.fromId);
     const target = room.getFlag<PlayerId>(skillUseEvent.fromId, this.GeneralName) || skillUseEvent.toIds![0];
-    
+
     if (judgeCard.Suit === CardSuit.Club) {
       if (from.Hp < from.MaxHp) {
         await room.recover({ recoveredHp: 1, recoverBy: from.Id, toId: from.Id, triggeredBySkills: [this.Name] });

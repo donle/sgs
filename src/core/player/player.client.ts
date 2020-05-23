@@ -21,7 +21,7 @@ export class ClientPlayer extends Player {
     this.visibleOutsideAreas.push(areaName);
   }
   unsetVisibleOutsideArea(areaName: string) {
-    const index = this.visibleOutsideAreas.findIndex((area) => area === areaName);
+    const index = this.visibleOutsideAreas.findIndex(area => area === areaName);
     if (index >= 0) {
       this.visibleOutsideAreas.splice(index, 1);
     }

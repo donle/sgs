@@ -90,7 +90,9 @@ export class RoomPage extends React.Component<
     if (animation) {
       for (const { from, tos } of animation) {
         const fromPont = this.store.animationPosition.getPosition(from, from === this.store.clientPlayerId);
-        const toPoints = tos.map(to => this.store.animationPosition.getPosition(to, to === this.store.clientPlayerId));
+        const toPoints = tos.map(to =>
+          this.store.animationPosition.getPosition(to, to === this.store.clientPlayerId),
+        );
         steps.push([fromPont, toPoints]);
       }
     }

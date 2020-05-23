@@ -74,7 +74,7 @@ export class ClientTranslationModule extends TranslationModule {
 
     const cardTextArray: string[] = JSON.parse(text.slice(TranslationPack.translateCardObjectSign.length));
 
-    const translatedCardObject = cardTextArray.map((cardText) => {
+    const translatedCardObject = cardTextArray.map(cardText => {
       const [cardName, cardSuitString, cardNumber] = cardText.split(' ');
       return {
         cardSuit: TranslationPack.dispatchEmojiOrImageInTranslation(cardSuitString),
@@ -111,7 +111,7 @@ export class ClientTranslationModule extends TranslationModule {
   public translatePatchedPlayerText(text: string, dictionary: TranslationsDictionary): JSX.Element {
     const playerObjectArray: string[] = JSON.parse(text.slice(TranslationPack.translatePlayerObjectSign.length));
 
-    const translatedPlayerObject = playerObjectArray.map((playerText) => {
+    const translatedPlayerObject = playerObjectArray.map(playerText => {
       const [characterName, position] = playerText.split(' ');
       const formattedPosition = `seat ${position}`;
       return (
@@ -154,12 +154,12 @@ export class ClientTranslationModule extends TranslationModule {
       : dispatchedObject.original;
     const paramIndex = translatedOriginalText
       .match(/\{[0-9]\}/g)
-      ?.map((indexString) => parseInt(indexString.replace(/(\{|\})/g, ''), 10));
+      ?.map(indexString => parseInt(indexString.replace(/(\{|\})/g, ''), 10));
     if (!paramIndex) {
       return <span>{this.tr(rawText)}</span>;
     }
 
-    const textCombinations: JSX.Element[] = dispatchedObject.params.map((param) => {
+    const textCombinations: JSX.Element[] = dispatchedObject.params.map(param => {
       if (typeof param === 'string' && dictionary) {
         if (TranslationPack.isCardObjectText(param)) {
           return this.translatePatchedCardText(param, dictionary);
@@ -173,7 +173,7 @@ export class ClientTranslationModule extends TranslationModule {
           param = param
             .slice(TranslationPack.translateTextArraySign.length)
             .split(',')
-            .map((subParam) => dictionary[subParam] || subParam)
+            .map(subParam => dictionary[subParam] || subParam)
             .join(',');
         } else {
           param = dictionary[param] || param;
@@ -193,7 +193,7 @@ export class ClientTranslationModule extends TranslationModule {
     });
 
     const translatedReactComponents: JSX.Element[] = [];
-    const splitRawText = translatedOriginalText.split(/\{[0-9]\}/).map((splitStr) => splitStr.trim());
+    const splitRawText = translatedOriginalText.split(/\{[0-9]\}/).map(splitStr => splitStr.trim());
     for (let i = 0; i < splitRawText.length; i++) {
       if (splitRawText[i]) {
         translatedReactComponents.push(<span>{splitRawText[i]}</span>);

@@ -327,7 +327,7 @@ export abstract class Player implements PlayerInfo {
     return this.playerCards[PlayerCardsArea.EquipArea].find(cardId => Sanguosha.getCardById(cardId).is(cardType));
   }
 
-  public hasCard(cardMatcherOrId: CardId | CardMatcher, areas?: PlayerCardsArea, outsideName?: string) {
+  public hasCard(room: Room, cardMatcherOrId: CardId | CardMatcher, areas?: PlayerCardsArea, outsideName?: string) {
     if (cardMatcherOrId instanceof CardMatcher) {
       const findCard = this.getCardIds(areas, outsideName).find(cardId => {
         const card = Sanguosha.getCardById(cardId);
@@ -340,7 +340,9 @@ export abstract class Player implements PlayerInfo {
 
       const skill = this.getSkills<ViewAsSkill>('viewAs').find(skill => {
         const viewAsCards = skill.canViewAs();
-        return CardMatcher.match(CardMatcher.addTag({ name: viewAsCards }), cardMatcherOrId);
+        return (
+          skill.canUse(room, this) && CardMatcher.match(CardMatcher.addTag({ name: viewAsCards }), cardMatcherOrId)
+        );
       });
 
       return !!skill;
@@ -520,7 +522,9 @@ export abstract class Player implements PlayerInfo {
   }
 
   public hasShadowSkill(skillName: string) {
-    return this.playerSkills.find(skill => skill.Name.startsWith('#') && skill.Name.endsWith(skillName)) !== undefined;
+    return (
+      this.playerSkills.find(skill => skill.Name.startsWith('#') && skill.Name.endsWith(skillName)) !== undefined
+    );
   }
 
   public turnOver() {

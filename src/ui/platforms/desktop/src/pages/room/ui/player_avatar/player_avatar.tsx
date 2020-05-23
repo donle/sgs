@@ -78,7 +78,9 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     const { presenter, translator, isSkillDisabled } = this.props;
     const skills =
       presenter.ClientPlayer && presenter.ClientPlayer.CharacterId !== undefined
-        ? presenter.ClientPlayer.getPlayerSkills().filter(skill => !skill.isShadowSkill() && !skill.isSideEffectSkill())
+        ? presenter.ClientPlayer.getPlayerSkills().filter(
+            skill => !skill.isShadowSkill() && !skill.isSideEffectSkill(),
+          )
         : [];
 
     return (

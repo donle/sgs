@@ -9,7 +9,7 @@ import styles from './game_over_dialog.module.css';
 const PlayerInfoTable = (props: { translator: ClientTranslationModule; players: Player[]; className?: string }) => {
   return (
     <div className={classNames(styles.players, props.className)}>
-      {props.players.map((player) => (
+      {props.players.map(player => (
         <div className={styles.player}>
           <span>{player.Name}</span>
           <span>{props.translator.tr(player.Character.Name)}</span>

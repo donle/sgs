@@ -21,14 +21,14 @@ export class SkillLoader {
       const skill = new skillProto();
       if (skill.isShadowSkill()) {
         Precondition.assert(
-          this.shadowSkills.find((s) => s.Name === skill.Name) === undefined,
+          this.shadowSkills.find(s => s.Name === skill.Name) === undefined,
           `Duplicate shadow skill instance of ${skill.Name}`,
         );
 
         this.shadowSkills.push(skill);
       } else {
         Precondition.assert(
-          this.skills.find((s) => s.Name === skill.Name) === undefined,
+          this.skills.find(s => s.Name === skill.Name) === undefined,
           `Duplicate skill instance of ${skill.Name}`,
         );
 
@@ -42,12 +42,12 @@ export class SkillLoader {
   }
 
   public getSkillByName<S extends Skill = Skill>(skillName: string): S {
-    const skill = this.skills.find((skill) => skill.Name === skillName);
+    const skill = this.skills.find(skill => skill.Name === skillName);
     return Precondition.exists(skill, `Unable to get skill ${skillName}`) as S;
   }
   public getSkillsByName<S extends Skill = Skill>(skillName: string): S[] {
     const skills: S[] = [this.getSkillByName(skillName)];
-    const shadowSkills = this.shadowSkills.filter((skill) => skill.GeneralName === skillName) as S[];
+    const shadowSkills = this.shadowSkills.filter(skill => skill.GeneralName === skillName) as S[];
     if (shadowSkills.length > 0) {
       return [...skills, ...shadowSkills];
     }

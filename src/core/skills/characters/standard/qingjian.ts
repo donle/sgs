@@ -40,10 +40,7 @@ export class QingJian extends TriggerSkill {
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
-    return room
-      .getPlayerById(owner)
-      .getPlayerCards()
-      .includes(cardId);
+    return room.getPlayerById(owner).getPlayerCards().includes(cardId);
   }
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {

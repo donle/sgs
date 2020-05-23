@@ -72,7 +72,7 @@ export class TranslationPack {
     return (
       TranslationPack.translateCardObjectSign +
       JSON.stringify(
-        cardIds.map((cardId) => {
+        cardIds.map(cardId => {
           const card = Sanguosha.getCardById(cardId);
           return `${card.Name} ${TranslationPack.patchEmojiOrImageInTranslation(card.Suit)} ${card.CardNumber}`;
         }),
@@ -83,7 +83,7 @@ export class TranslationPack {
   public static patchPlayerInTranslation(...players: Player[]) {
     return (
       TranslationPack.translatePlayerObjectSign +
-      JSON.stringify(players.map((player) => `${player.Character.Name} ${player.Position}`))
+      JSON.stringify(players.map(player => `${player.Character.Name} ${player.Position}`))
     );
   }
 
@@ -158,7 +158,7 @@ export class TranslationPack {
           parsedParam = param
             .slice(TranslationPack.translateTextArraySign.length)
             .split(',')
-            .map((subParam) => translationsDictionary[subParam] || subParam)
+            .map(subParam => translationsDictionary[subParam] || subParam)
             .join(',');
         } else {
           parsedParam = translationsDictionary[param] || param;

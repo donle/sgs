@@ -70,7 +70,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.loadedCharacters = CharacterLoader.getInstance().getPackages(...this.gameInfo.characterExtensions);
     this.drawStack = CardLoader.getInstance()
       .getPackages(...this.gameInfo.cardExtensions)
-      .map((card) => card.Id);
+      .map(card => card.Id);
     this.dropStack = [];
 
     this.socket.emit(this);
@@ -99,7 +99,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     for (let i = 0; i < this.players.length; i++) {
       this.players[i].Role = roles[i];
     }
-    const lordIndex = this.players.findIndex((player) => player.Role === PlayerRole.Lord);
+    const lordIndex = this.players.findIndex(player => player.Role === PlayerRole.Lord);
     if (lordIndex !== 0) {
       [this.players[0], this.players[lordIndex]] = [this.players[lordIndex], this.players[0]];
       [this.players[0].Position, this.players[lordIndex].Position] = [
@@ -110,7 +110,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   private readonly sleep = async (timeDuration: number) =>
-    new Promise((r) => {
+    new Promise(r => {
       setTimeout(r, timeDuration);
     });
 
@@ -126,7 +126,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         currentPlayerId: this.players[0].Id,
       },
       gameInfo: this.Info,
-      playersInfo: this.Players.map((player) => player.getPlayerInfo()),
+      playersInfo: this.Players.map(player => player.getPlayerInfo()),
       messages: ['game will start within 3 seconds'],
     };
     this.broadcast(GameEventIdentifiers.GameReadyEvent, event);
@@ -187,7 +187,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     const { triggeredBySkills } = content as ServerEventFinder<GameEventIdentifiers>;
     const bySkills = triggeredBySkills
-      ? triggeredBySkills.map((skillName) => Sanguosha.getSkillBySkillName(skillName))
+      ? triggeredBySkills.map(skillName => Sanguosha.getSkillBySkillName(skillName))
       : undefined;
 
     for (const player of this.getAlivePlayersFrom()) {
@@ -198,7 +198,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         }
 
         const canTrigger = bySkills
-          ? bySkills.find((bySkill) => UniqueSkillRule.isProhibitedBySkillRule(bySkill, skill)) === undefined
+          ? bySkills.find(bySkill => UniqueSkillRule.isProhibitedBySkillRule(bySkill, skill)) === undefined
           : true;
 
         if (canTrigger) {
@@ -213,7 +213,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         }
 
         const canTrigger = bySkills
-          ? bySkills.find((skill) => !UniqueSkillRule.canTriggerCardSkillRule(skill, equipCard)) === undefined
+          ? bySkills.find(skill => !UniqueSkillRule.canTriggerCardSkillRule(skill, equipCard)) === undefined
           : true;
         if (canTrigger) {
           canTriggerSkills.push(equipCard.Skill);
@@ -416,13 +416,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     const from = this.getPlayerById(event.fromId);
 
     await this.moveCards({
-      movingCards: realCards.map((card) => ({ card, fromArea: from.cardFrom(card) })),
+      movingCards: realCards.map(card => ({ card, fromArea: from.cardFrom(card) })),
       toArea: CardMoveArea.ProcessingArea,
       fromId: from.Id,
       moveReason: CardMoveReason.CardUse,
     });
 
-    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, event, async (stage) => {
+    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, event, async stage => {
       if (stage === CardUseStage.AfterCardUseEffect) {
         event.toIds = event.toIds || [event.fromId];
 
@@ -431,7 +431,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         const toIds = card.Skill.nominateForwardTarget(event.toIds);
         toIds === event.toIds && this.sortPlayersByPosition(toIds!);
 
-        const nonTargetToIds = toIds === event.toIds ? [] : event.toIds?.filter((id) => !toIds?.includes(id));
+        const nonTargetToIds = toIds === event.toIds ? [] : event.toIds?.filter(id => !toIds?.includes(id));
         let cardEffectToIds: PlayerId[] | undefined = toIds;
 
         if (toIds) {
@@ -536,7 +536,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         this.hookedSkills.push({ player, skill });
       } else if (outsideCards) {
         await this.moveCards({
-          movingCards: outsideCards.map((card) => ({ card, fromArea: PlayerCardsArea.OutsideArea })),
+          movingCards: outsideCards.map(card => ({ card, fromArea: PlayerCardsArea.OutsideArea })),
           fromId: player.Id,
           toArea: CardMoveArea.DropStack,
           moveReason: CardMoveReason.PlaceToDropStack,
@@ -627,11 +627,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.DrawCardEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.DrawCardEvent, drawEvent),
-      async (stage) => {
+      async stage => {
         if (stage === DrawCardStage.CardDrawing) {
           drawedCards = this.getCards(drawEvent.drawAmount, from);
           await this.moveCards({
-            movingCards: drawedCards.map((cardId) => ({ card: cardId, fromArea: CardMoveArea.DrawStack })),
+            movingCards: drawedCards.map(cardId => ({ card: cardId, fromArea: CardMoveArea.DrawStack })),
             toId: drawEvent.fromId,
             toArea: CardMoveArea.HandArea,
             moveReason: CardMoveReason.CardDraw,
@@ -671,10 +671,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.CardDropEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.CardDropEvent, dropEvent),
-      async (stage) => {
+      async stage => {
         if (stage === CardDropStage.CardDropping) {
           await this.moveCards({
-            movingCards: cardIds.map((card) => ({ card, fromArea: player.cardFrom(card) })),
+            movingCards: cardIds.map(card => ({ card, fromArea: player.cardFrom(card) })),
             fromId: playerId,
             toArea: CardMoveArea.DropStack,
             moveReason,
@@ -736,7 +736,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   public async responseCard(event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>): Promise<void> {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.CardResponseEvent, event);
     this.addProcessingCards(event.cardId.toString(), event.cardId);
-    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardResponseEvent, event, async (stage) => {
+    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardResponseEvent, event, async stage => {
       if (stage === CardResponseStage.AfterCardResponseEffect) {
         if (event.responseToEvent) {
           EventPacker.terminate(event.responseToEvent);
@@ -791,10 +791,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       await this.gameProcessor.onHandleIncomingEvent(
         GameEventIdentifiers.AskForPinDianCardEvent,
         pindianEvent,
-        async (stage) => {
+        async stage => {
           if (stage === PinDianStage.PinDianEffect) {
             const responses = await Promise.all(
-              targets.map((to) => this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForPinDianCardEvent, to)),
+              targets.map(to => this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForPinDianCardEvent, to)),
             );
 
             let winner: PlayerId | undefined;
@@ -953,11 +953,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   public getCardFromDropStack(cardId: CardId): CardId | undefined {
-    const index = this.dropStack.findIndex((card) => card === cardId);
+    const index = this.dropStack.findIndex(card => card === cardId);
     return index < 0 ? undefined : this.dropStack.splice(index, 1)[0];
   }
   public getCardFromDrawStack(cardId: CardId): CardId | undefined {
-    const index = this.drawStack.findIndex((card) => card === cardId);
+    const index = this.drawStack.findIndex(card => card === cardId);
     return index < 0 ? undefined : this.drawStack.splice(index, 1)[0];
   }
 

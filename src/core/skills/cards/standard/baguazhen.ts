@@ -63,7 +63,7 @@ export class BaGuaZhenSkill extends TriggerSkill {
       `Unwrapped event without identifier in ${this.Name}`,
     );
 
-    const judgeEvent = await room.judge(event.fromId, jinkCardEvent.byCardId, this.Name);
+    const judgeEvent = await room.judge(event.fromId, undefined, this.Name);
 
     if (Sanguosha.getCardById(judgeEvent.judgeCardId).isRed()) {
       const jink = VirtualCard.create<Jink>({

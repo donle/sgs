@@ -3,8 +3,8 @@
 @value healthyColor from './magatama/magatama.module.css';
 
 .textHpLabel {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .textHp {
@@ -15,11 +15,11 @@
 }
 
 .dying {
-  color: dyingColor;
+    color: dyingColor;
 }
 .danger {
-  color: dangerColor;
+    color: dangerColor;
 }
 .healthy {
-  color: healthyColor;
+    color: healthyColor;
 }

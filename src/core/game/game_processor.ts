@@ -370,7 +370,7 @@ export class GameProcessor {
         [k in PlayerId]: Promise<ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent>>;
       } = {};
       for (const player of this.room.getAlivePlayersFrom(this.CurrentPlayer.Id)) {
-        if (!player.hasCard(new CardMatcher({ name: ['wuxiekeji'] }))) {
+        if (!player.hasCard(this.room, new CardMatcher({ name: ['wuxiekeji'] }))) {
           continue;
         }
 

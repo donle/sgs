@@ -162,12 +162,12 @@ export class GuanXingCardSlots extends React.Component<GuanXingDialogProps> {
     if (place === 'top') {
       if (place !== this.getCardStack(card)) {
         this.topCards.splice(index, 0, card);
-        const deleteIndex = this.bottomCards.findIndex((seekingCard) => seekingCard === card);
+        const deleteIndex = this.bottomCards.findIndex(seekingCard => seekingCard === card);
         if (deleteIndex >= 0) {
           this.bottomCards.splice(deleteIndex, 1);
         }
       } else {
-        const swapIndex = this.topCards.findIndex((seekingCard) => seekingCard === card);
+        const swapIndex = this.topCards.findIndex(seekingCard => seekingCard === card);
         if (swapIndex >= 0) {
           [this.topCards[swapIndex], this.topCards[index]] = [this.topCards[index], this.topCards[swapIndex]];
         }
@@ -175,12 +175,12 @@ export class GuanXingCardSlots extends React.Component<GuanXingDialogProps> {
     } else {
       if (place !== this.getCardStack(card)) {
         this.bottomCards.push(card);
-        const deleteIndex = this.topCards.findIndex((seekingCard) => seekingCard === card);
+        const deleteIndex = this.topCards.findIndex(seekingCard => seekingCard === card);
         if (deleteIndex >= 0) {
           this.topCards.splice(deleteIndex, 1);
         }
       } else {
-        const swapIndex = this.bottomCards.findIndex((seekingCard) => seekingCard === card);
+        const swapIndex = this.bottomCards.findIndex(seekingCard => seekingCard === card);
         if (swapIndex >= 0) {
           [this.bottomCards[swapIndex], this.bottomCards[index]] = [
             this.bottomCards[index],

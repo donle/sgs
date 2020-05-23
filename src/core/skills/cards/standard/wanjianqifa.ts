@@ -29,8 +29,8 @@ export class WanJianQiFaSkill extends ActiveSkill {
     const others = room.getOtherPlayers(event.fromId);
     const from = room.getPlayerById(event.fromId);
     event.toIds = others
-      .filter((player) => from.canUseCardTo(room, event.cardId, player.Id))
-      .map((player) => player.Id);
+      .filter(player => from.canUseCardTo(room, event.cardId, player.Id))
+      .map(player => player.Id);
     return true;
   }
 

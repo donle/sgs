@@ -10,10 +10,16 @@ export type TooltipProps = {
 
 export const Tooltip = (props: TooltipProps) => {
   const { children, position, className } = props;
-  return <div className={classNames(styles.tooltip, className, {
-    [styles.top]: position.includes('top'),
-    [styles.bottom]: position.includes('bottom'),
-    [styles.left]: position.includes('left'),
-    [styles.right]: position.includes('right'),
-  })}>{children}</div>;
+  return (
+    <div
+      className={classNames(styles.tooltip, className, {
+        [styles.top]: position.includes('top'),
+        [styles.bottom]: position.includes('bottom'),
+        [styles.left]: position.includes('left'),
+        [styles.right]: position.includes('right'),
+      })}
+    >
+      {children}
+    </div>
+  );
 };

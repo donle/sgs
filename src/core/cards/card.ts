@@ -110,7 +110,7 @@ export abstract class Card {
     return this.cardType.includes(type);
   }
   public isSameType(card: Card) {
-    const intersectionTypes = this.cardType.filter((subType) => card.Type.includes(subType));
+    const intersectionTypes = this.cardType.filter(subType => card.Type.includes(subType));
     return intersectionTypes.length === card.Type.length || intersectionTypes.length === this.cardType.length;
   }
 
