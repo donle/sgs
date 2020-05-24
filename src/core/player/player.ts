@@ -538,16 +538,8 @@ export abstract class Player implements PlayerInfo {
     return !this.turnedOver;
   }
 
-  public onDamage(hit: number) {
-    this.hp -= hit;
-  }
-
-  public onLoseHp(lostHp: number) {
-    this.hp -= lostHp;
-  }
-
-  public onRecoverHp(recover: number) {
-    this.hp += recover;
+  public changeHp(amount: number) {
+    this.hp += amount;
   }
 
   public get Hp() {

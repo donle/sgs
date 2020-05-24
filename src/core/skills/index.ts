@@ -90,6 +90,7 @@ export { GuiDao } from './characters/wind/guidao';
 export { BuQu, BuQuShadow, BuQuClear } from './characters/wind/buqu';
 export { FenJi } from './characters/wind/fenji';
 export { HongYan, HongYanShadow } from './characters/wind/hongyan';
+export { TianXiang } from './characters/wind/tianxiang';
 
 export { Jianchu } from './characters/fire/jianchu';
 

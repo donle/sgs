@@ -851,6 +851,8 @@ export const eventDictionary: Word[] = [
   { source: 'back to lobby', target: '返回大厅' },
   { source: 'game over, winner is {0}', target: '游戏结束，{0} 胜利' },
   { source: 'turn overed', target: '翻面' },
+  { source: 'option-one', target: '选项一' },
+  { source: 'option-two', target: '选项二' },
 
   { source: '({0})', target: '({0})' },
   { source: '[{0}]', target: '[{0}]' },
@@ -951,6 +953,11 @@ export const eventDictionary: Word[] = [
   { source: '{0} drops cards {1}', target: '{0} 弃置了 {1}' },
   { source: '{0} drops cards {1} by {2}', target: '{2} 弃置了 {0} 的一张 {1}' },
   { source: '{0} has been placed into drop stack', target: '{0} 置入了弃牌堆' },
+  { source: '{0} has been placed on the top of draw stack', target: '{0} 置入了牌堆顶' },
+  { source: '{0} has been placed on the bottom of draw stack', target: '{0} 置入了牌堆底' },
+  { source: '{0} has been placed into drop stack from {1}', target: '{1} 将 {0} 置入了弃牌堆' },
+  { source: '{0} has been placed on the top of draw stack from {1}', target: '{1} 将 {0} 置入了牌堆顶' },
+  { source: '{0} has been placed on the bottom of draw stack from {1}', target: '{1} 将 {0} 置入了牌堆底' },
   { source: '{0} lost card {1}', target: '{0} 失去了 {1}' },
   { source: '{0} lost {1} cards', target: '{0} 失去了 {1} 张牌' },
   { source: '{0} used card {1}', target: '{0} 使用了一张 {1}' },
@@ -1094,7 +1101,10 @@ export const eventDictionary: Word[] = [
   { source: 'luoyi:cancel', target: '否' },
   { source: 'kuanggu:draw', target: '摸一张牌' },
   { source: 'kuanggu:recover', target: '回复1点体力' },
-
+  {
+    source: 'please choose tianxiang options:{0}',
+    target: '请选择：1.令其受到1点伤害，然后摸 {0} 张牌。2.令其失去1点体力，然后其获得你弃置的牌',
+  },
   {
     source: 'player {0} join in the room',
     target: '玩家 {0} 进入了房间',

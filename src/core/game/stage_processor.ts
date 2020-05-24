@@ -201,6 +201,12 @@ export const enum LoseHpStage {
   AfterLostHp = 'AfterLostHp',
 }
 
+export const enum HpChangeStage {
+  BeforeHpChange = 'BeforeHpChange',
+  HpChanging = 'HpChanging',
+  AtferHpChange = 'AtferHpChange',
+}
+
 export type GameEventStage =
   | PhaseChangeStage
   | PhaseStageChangeStage
@@ -221,7 +227,8 @@ export type GameEventStage =
   | SkillEffectStage
   | LoseHpStage
   | CardMoveStage
-  | TurnOverStage;
+  | TurnOverStage
+  | HpChangeStage;
 
 export type AllStage = PlayerPhaseStages | GameEventStage;
 
@@ -314,6 +321,11 @@ const gameEventStageList: {
     CardMoveStage.BeforeCardMoving,
     CardMoveStage.CardMoving,
     CardMoveStage.AfterCardMoved,
+  ],
+  [GameEventIdentifiers.HpChangeEvent]: [
+    HpChangeStage.BeforeHpChange,
+    HpChangeStage.HpChanging,
+    HpChangeStage.AtferHpChange,
   ],
   [GameEventIdentifiers.LoseHpEvent]: [LoseHpStage.BeforeLoseHp, LoseHpStage.LosingHp, LoseHpStage.AfterLostHp],
   [GameEventIdentifiers.PlayerTurnOverEvent]: [TurnOverStage.TurningOver, TurnOverStage.TurnedOver],
@@ -423,10 +435,6 @@ export class StageProcessor {
 
     const stageList = Precondition.exists(gameEventStageList[identifier], `Can't find stage events of ${identifier}`);
     return stageList.includes(stage);
-  }
-
-  public getGameStartStage() {
-    return [GameStartStage.BeforeGameStart, GameStartStage.GameStarting, GameStartStage.AfterGameStarted];
   }
 
   public createPlayerStage(stage?: PlayerPhase) {

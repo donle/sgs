@@ -394,13 +394,13 @@ export class GameClientProcessor {
 
   private onHandleDamageEvent<T extends GameEventIdentifiers.DamageEvent>(type: T, content: ServerEventFinder<T>) {
     const player = this.store.room.getPlayerById(content.toId);
-    player.onDamage(content.damage);
+    player.changeHp(-content.damage);
     this.presenter.broadcastUIUpdate();
   }
 
   private onHandleLoseHpEvent<T extends GameEventIdentifiers.LoseHpEvent>(type: T, content: ServerEventFinder<T>) {
     const player = this.store.room.getPlayerById(content.toId);
-    player.onLoseHp(content.lostHp);
+    player.changeHp(-content.lostHp);
     this.presenter.broadcastUIUpdate();
   }
 
@@ -418,7 +418,7 @@ export class GameClientProcessor {
 
   private onHandleRecoverEvent<T extends GameEventIdentifiers.RecoverEvent>(type: T, content: ServerEventFinder<T>) {
     const player = this.store.room.getPlayerById(content.toId);
-    player.onRecoverHp(content.recoveredHp);
+    player.changeHp(content.recoveredHp);
     this.presenter.broadcastUIUpdate();
   }
 
@@ -600,7 +600,6 @@ export class GameClientProcessor {
     for (const { card, fromArea } of movingCards) {
       if (
         from &&
-        fromArea !== undefined &&
         ![CardMoveArea.DrawStack, CardMoveArea.DropStack, CardMoveArea.ProcessingArea].includes(
           fromArea as CardMoveArea,
         )

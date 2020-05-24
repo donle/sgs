@@ -22,7 +22,7 @@ import {
   DamageEffectStage,
   DrawCardStage,
   GameEventStage,
-  GameStartStage,
+  HpChangeStage,
   JudgeEffectStage,
   LoseHpStage,
   PhaseChangeStage,
@@ -43,7 +43,6 @@ import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/p
 import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { Skill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ServerRoom } from '../room/room.server';
 import { Sanguosha } from './engine';
@@ -633,6 +632,13 @@ export class GameProcessor {
           onActualExecuted,
         );
         break;
+      case GameEventIdentifiers.HpChangeEvent:
+        await this.onHandleHpChangeEvent(
+          identifier as GameEventIdentifiers.HpChangeEvent,
+          event as any,
+          onActualExecuted,
+        );
+        break;
       default:
         throw new Error(`Unknown incoming event: ${identifier}`);
     }
@@ -762,8 +768,21 @@ export class GameProcessor {
               damageType,
             ).extract();
 
-        to.onDamage(damage);
-        this.room.broadcast(identifier, event);
+        const hpChangeEvent: ServerEventFinder<GameEventIdentifiers.HpChangeEvent> = {
+          toId,
+          amount: damage,
+          byReaon: 'damage',
+        };
+        await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async stage => {
+          if (stage === HpChangeStage.HpChanging) {
+            this.room.broadcast(identifier, event);
+          }
+          return true;
+        });
+        EventPacker.copyPropertiesTo(hpChangeEvent, event);
+        if (EventPacker.isTerminated(event)) {
+          return;
+        }
 
         const dyingEvent: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent> = {
           dying: to.Id,
@@ -1066,7 +1085,12 @@ export class GameProcessor {
             EventPacker.terminate(event);
           }
         } else {
-          const existingEquipId = from.getEquipment((card as EquipCard).EquipType);
+          let existingEquipId = from.getEquipment((card as EquipCard).EquipType);
+          if (card.isVirtualCard()) {
+            const actualEquip = Sanguosha.getCardById<EquipCard>((card as VirtualCard).ActualCardIds[0]);
+            existingEquipId = from.getEquipment(actualEquip.EquipType);
+          }
+
           if (existingEquipId !== undefined) {
             await this.room.moveCards({
               fromId: from.Id,
@@ -1168,13 +1192,31 @@ export class GameProcessor {
           .filter(cardInfo => cardInfo.fromArea === CardMoveArea.EquipArea)
           .map(cardInfo => cardInfo.card);
         if (lostCards.length > 0 && fromId !== toId) {
-          event.messages.push(
-            TranslationPack.translationJsonPatcher(
-              '{0} lost card {1}',
-              TranslationPack.patchPlayerInTranslation(from),
-              TranslationPack.patchCardInTranslation(...Card.getActualCards(lostCards)),
-            ).toString(),
-          );
+          if (moveReason === CardMoveReason.PlaceToDropStack) {
+            event.messages.push(
+              TranslationPack.translationJsonPatcher(
+                '{0} has been placed into drop stack from {1}',
+                TranslationPack.patchCardInTranslation(...Card.getActualCards(lostCards)),
+                TranslationPack.patchPlayerInTranslation(from),
+              ).toString(),
+            );
+          } else if (moveReason === CardMoveReason.PlaceToDrawStack) {
+            event.messages.push(
+              TranslationPack.translationJsonPatcher(
+                `{0} has been placed on the ${placeAtTheBottomOfDrawStack ? 'bottom' : 'top'} of draw stack from {1}`,
+                TranslationPack.patchCardInTranslation(...Card.getActualCards(lostCards)),
+                TranslationPack.patchPlayerInTranslation(from),
+              ).toString(),
+            );
+          } else {
+            event.messages.push(
+              TranslationPack.translationJsonPatcher(
+                '{0} lost card {1}',
+                TranslationPack.patchPlayerInTranslation(from),
+                TranslationPack.patchCardInTranslation(...Card.getActualCards(lostCards)),
+              ).toString(),
+            );
+          }
         }
 
         const moveOwnedCards = movingCards
@@ -1272,7 +1314,7 @@ export class GameProcessor {
                     card.CardNumber = originalCard.CardNumber;
                   }
                   return card.Id;
-                }
+                } 
 
                 return cardId;
               });
@@ -1387,8 +1429,21 @@ export class GameProcessor {
           ).extract();
         }
 
-        victim.onLoseHp(event.lostHp);
-        this.room.broadcast(GameEventIdentifiers.LoseHpEvent, event);
+        const hpChangeEvent: ServerEventFinder<GameEventIdentifiers.HpChangeEvent> = {
+          toId: victim.Id,
+          amount: event.lostHp,
+          byReaon: 'lostHp',
+        };
+        await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async stage => {
+          if (stage === HpChangeStage.HpChanging) {
+            this.room.broadcast(identifier, event);
+          }
+          return true;
+        });
+        EventPacker.copyPropertiesTo(hpChangeEvent, event);
+        if (EventPacker.isTerminated(event)) {
+          return;
+        }
 
         const dyingEvent: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent> = {
           dying: victim.Id,
@@ -1399,6 +1454,23 @@ export class GameProcessor {
             GameEventIdentifiers.PlayerDyingEvent,
             EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerDyingEvent, dyingEvent),
           );
+        }
+      }
+    });
+  }
+
+  private async onHandleHpChangeEvent(
+    identifier: GameEventIdentifiers.HpChangeEvent,
+    event: ServerEventFinder<GameEventIdentifiers.HpChangeEvent>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
+  ) {
+    const to = this.room.getPlayerById(event.toId);
+    return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      if (stage === HpChangeStage.HpChanging) {
+        if (event.byReaon === 'recover') {
+          to.changeHp(event.amount);
+        } else {
+          to.changeHp(0 - event.amount);
         }
       }
     });
@@ -1417,8 +1489,18 @@ export class GameProcessor {
       }
 
       if (stage === RecoverEffectStage.RecoverEffecting) {
-        to.onRecoverHp(event.recoveredHp);
-        this.room.broadcast(GameEventIdentifiers.RecoverEvent, event);
+        const hpChangeEvent: ServerEventFinder<GameEventIdentifiers.HpChangeEvent> = {
+          toId: to.Id,
+          amount: event.recoveredHp,
+          byReaon: 'recover',
+        };
+        await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async stage => {
+          if (stage === HpChangeStage.HpChanging) {
+            this.room.broadcast(identifier, event);
+          }
+          return true;
+        });
+        EventPacker.copyPropertiesTo(hpChangeEvent, event);
       }
     });
   }

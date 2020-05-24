@@ -6,7 +6,8 @@ import { AllStage, CardMoveStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CompulsorySkill, ShadowSkill, TransformSkill } from 'core/skills/skill';
-import { CommonSkill, TriggerSkill } from 'core/skills/skill';
+import { TriggerSkill } from 'core/skills/skill';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'hongyan', description: 'hongyan_description' })
 export class HongYan extends TransformSkill {
@@ -34,7 +35,7 @@ export class HongYan extends TransformSkill {
 }
 
 @ShadowSkill
-@CommonSkill({ name: HongYan.Name, description: HongYan.Description })
+@CompulsorySkill({ name: HongYan.Name, description: HongYan.Description })
 export class HongYanShadow extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>, stage?: AllStage) {
     return (
@@ -51,7 +52,12 @@ export class HongYanShadow extends TriggerSkill {
     return owner.Id === content.fromId && room.CurrentPlayer.Id !== owner.Id;
   }
 
-  async onTrigger() {
+  async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    skillUseEvent.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} used skill {1}',
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
+      this.GeneralName,
+    ).extract();
     return true;
   }
 

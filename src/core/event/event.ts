@@ -43,6 +43,7 @@ export const enum GameEventIdentifiers {
   ChangeMaxHpEvent,
   DamageEvent,
   RecoverEvent,
+  HpChangeEvent,
   JudgeEvent,
 
   GameReadyEvent,
