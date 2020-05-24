@@ -250,13 +250,18 @@ export abstract class Player implements PlayerInfo {
   dropCards(...cards: CardId[]): CardId[] {
     const droppedCardIds: CardId[] = [];
     const allCards = this.getCardIds();
+    const droppingCards = cards.reduce<CardId[]>((dropping, card) => {
+      if (!allCards.includes(card) && Card.isVirtualCardId(card)) {
+        dropping.push(...Card.getActualCards([card]));
+      } else {
+        dropping.push(card);
+      }
+      return dropping;
+    }, []);
+
     for (const area of [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea, PlayerCardsArea.JudgeArea]) {
       const areaCards = this.getCardIds(area);
-      for (const card of cards) {
-        if (!allCards.includes(card) && Card.isVirtualCardId(card)) {
-          this.dropCards(...Card.getActualCards([card]));
-        }
-
+      for (const card of droppingCards) {
         let index = areaCards.findIndex(areaCard => areaCard === card);
         if (index >= 0) {
           droppedCardIds.push(areaCards.splice(index, 1)[0]);
@@ -271,7 +276,7 @@ export abstract class Player implements PlayerInfo {
       }
     }
 
-    const untrackedCards = cards.filter(card => !droppedCardIds.includes(card));
+    const untrackedCards = droppingCards.filter(card => !droppedCardIds.includes(card));
     if (untrackedCards.length > 0) {
       throw new Error(`Can't drop card ${JSON.stringify(untrackedCards)} from player ${this.Name}`);
     }

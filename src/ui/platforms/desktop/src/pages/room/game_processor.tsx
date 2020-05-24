@@ -1,4 +1,4 @@
-import { Card } from 'core/cards/card';
+import { Card, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { Character } from 'core/characters/character';
 import {
@@ -614,10 +614,38 @@ export class GameClientProcessor {
       to &&
       ![CardMoveArea.DrawStack, CardMoveArea.DropStack, CardMoveArea.ProcessingArea].includes(toArea as CardMoveArea)
     ) {
+      const actualCardIds = Card.getActualCards(cardIds);
       if (toArea === CardMoveArea.OutsideArea) {
-        to.getCardIds((toArea as unknown) as PlayerCardsArea, toOutsideArea).push(...cardIds);
+        to.getCardIds((toArea as unknown) as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
+      } else if (toArea === CardMoveArea.JudgeArea) {
+        const transformedDelayedTricks = cardIds.map(cardId => {
+          if (!Card.isVirtualCardId(cardId)) {
+            return cardId;
+          }
+
+          const card = Sanguosha.getCardById<VirtualCard>(cardId);
+          if (card.ActualCardIds.length === 1) {
+            const originalCard = Sanguosha.getCardById(card.ActualCardIds[0]);
+            if (card.Suit !== originalCard.Suit) {
+              card.Suit = originalCard.Suit;
+            }
+            if (card.CardNumber !== originalCard.CardNumber) {
+              card.CardNumber = originalCard.CardNumber;
+            }
+
+            return card.Id;
+          }
+
+          return cardId;
+        });
+        to.getCardIds(PlayerCardsArea.JudgeArea).push(...transformedDelayedTricks);
       } else {
-        to.getCardIds(toArea as PlayerCardsArea).push(...cardIds);
+        this.store.room.transformCard(
+          to,
+          actualCardIds,
+          toArea as PlayerCardsArea.HandArea | PlayerCardsArea.EquipArea,
+        );
+        to.getCardIds(toArea as PlayerCardsArea).push(...actualCardIds);
       }
     }
 

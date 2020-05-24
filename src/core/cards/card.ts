@@ -274,6 +274,21 @@ export class VirtualCard<T extends Card = Card> extends Card {
     return this.viewAsRedCard;
   }
 
+  public get Suit() {
+    return this.suit;
+  }
+  public set Suit(suit: CardSuit) {
+    this.suit = suit;
+  }
+
+  public get CardNumber() {
+    return this.cardNumber;
+  }
+
+  public set CardNumber(cardNumber: number) {
+    this.cardNumber = cardNumber;
+  }
+
   public get BaseType() {
     return this.viewAs.BaseType;
   }

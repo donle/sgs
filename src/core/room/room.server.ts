@@ -33,7 +33,7 @@ import { CharacterLoader } from 'core/game/package_loader/loader.characters';
 import { Algorithm } from 'core/shares/libs/algorithm';
 import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
-import { OnDefineReleaseTiming, Skill, SkillHooks, SkillType, TriggerSkill } from 'core/skills/skill';
+import { OnDefineReleaseTiming, Skill, SkillHooks, SkillType, TransformSkill, TriggerSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { GameProcessor } from '../game/game_processor';
@@ -412,11 +412,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     await super.useCard(event);
     const card = Sanguosha.getCardById(event.cardId);
-    const realCards = Card.getActualCards([event.cardId]);
     const from = this.getPlayerById(event.fromId);
 
     await this.moveCards({
-      movingCards: realCards.map(card => ({ card, fromArea: from.cardFrom(card) })),
+      movingCards: [{ card: event.cardId, fromArea: from.cardFrom(event.cardId) }],
       toArea: CardMoveArea.ProcessingArea,
       fromId: from.Id,
       moveReason: CardMoveReason.CardUse,

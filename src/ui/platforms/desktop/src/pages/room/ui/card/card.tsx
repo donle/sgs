@@ -64,6 +64,7 @@ export class ClientCard extends React.Component<ClientCardProps> {
 
   render() {
     const { className, card, translator, tag, style = {} } = this.props;
+
     return (
       <div
         className={classNames(styles.clientCard, className, {

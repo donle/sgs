@@ -1,3 +1,6 @@
+import { Card, CardType, VirtualCard } from 'core/cards/card';
+import { EquipCard } from 'core/cards/equip_card';
+import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import {
   CardMoveReason,
@@ -7,21 +10,17 @@ import {
   ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
-import { Socket } from 'core/network/socket';
-import { Player } from 'core/player/player';
-import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
-
-import { CardType } from 'core/cards/card';
-import { EquipCard } from 'core/cards/equip_card';
-import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { PinDianResultType } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { GameInfo } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
 import { AllStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
+import { Socket } from 'core/network/socket';
+import { Player } from 'core/player/player';
+import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { RoomInfo } from 'core/shares/types/server_types';
-import { FilterSkill } from 'core/skills/skill';
+import { FilterSkill, TransformSkill } from 'core/skills/skill';
 
 export type RoomId = number;
 
@@ -408,6 +407,46 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       while (this.getPlayerById(players[0]).Position < this.CurrentPlayer.Position) {
         const topPlayer = players.shift();
         players.push(topPlayer!);
+      }
+    }
+  }
+
+  public transformCard(
+    player: Player,
+    cardIds: CardId[],
+    toArea: PlayerCardsArea.EquipArea | PlayerCardsArea.HandArea,
+  ): void;
+  public transformCard(player: Player, judgeEvent: ServerEventFinder<GameEventIdentifiers.JudgeEvent>): void;
+  public transformCard(
+    player: Player,
+    judgeEventOrCards: ServerEventFinder<GameEventIdentifiers.JudgeEvent> | CardId[],
+    toArea?: PlayerCardsArea.EquipArea | PlayerCardsArea.HandArea,
+  ) {
+    const transformSkills = player.getSkills<TransformSkill>('transform');
+    if (!(judgeEventOrCards instanceof Array)) {
+      const judgeEvent = judgeEventOrCards as ServerEventFinder<GameEventIdentifiers.JudgeEvent>;
+      for (const skill of transformSkills.filter(skill => skill.includesJudgeCard())) {
+        if (!Card.isVirtualCardId(judgeEvent.judgeCardId) && skill.canTransform(judgeEvent.judgeCardId)) {
+          judgeEvent.judgeCardId = skill.forceToTransformCardTo(judgeEvent.judgeCardId).Id;
+          break;
+        }
+      }
+      return;
+    }
+
+    const cards = judgeEventOrCards as CardId[];
+    for (const skill of transformSkills) {
+      for (let i = 0; i < cards.length; i++) {
+        if (
+          Card.isVirtualCardId(cards[i]) &&
+          Sanguosha.getCardById<VirtualCard>(cards[i]).GeneratedBySkill === skill.GeneralName
+        ) {
+          continue;
+        }
+
+        if (skill.canTransform(cards[i], toArea)) {
+          cards[i] = skill.forceToTransformCardTo(cards[i]).Id;
+        }
       }
     }
   }

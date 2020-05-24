@@ -33,7 +33,6 @@ export { JiZhi, JizhiShadow } from './characters/standard/jizhi';
 export { QiCai } from './characters/standard/qicai';
 export { Rende, RenDeShadow } from './characters/standard/rende';
 export { ZhiHeng } from './characters/standard/zhiheng';
-export { HongYan } from './characters/wind/hongyan';
 export { GuanXing } from './characters/standard/guanxing';
 export { KongCheng } from './characters/standard/kongcheng';
 export { YingZi, YingZiShadow } from './characters/standard/yingzi';
@@ -90,6 +89,7 @@ export { LeiJi, LeiJiShadow } from './characters/wind/leiji';
 export { GuiDao } from './characters/wind/guidao';
 export { BuQu, BuQuShadow, BuQuClear } from './characters/wind/buqu';
 export { FenJi } from './characters/wind/fenji';
+export { HongYan, HongYanShadow } from './characters/wind/hongyan';
 
 export { Jianchu } from './characters/fire/jianchu';
 

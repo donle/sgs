@@ -157,6 +157,8 @@ export class GameProcessor {
 
   private async drawGameBeginsCards(playerId: PlayerId) {
     const cardIds = this.room.getCards(4, 'top');
+    this.room.transformCard(this.room.getPlayerById(playerId), cardIds, PlayerCardsArea.HandArea);
+
     const drawEvent: ServerEventFinder<GameEventIdentifiers.DrawCardEvent> = {
       drawAmount: cardIds.length,
       fromId: playerId,
@@ -175,7 +177,10 @@ export class GameProcessor {
       toArea: CardMoveArea.HandArea,
       toId: playerId,
     });
-    this.room.getPlayerById(playerId).obtainCardIds(...cardIds);
+    this.room
+      .getPlayerById(playerId)
+      .getCardIds(PlayerCardsArea.HandArea)
+      .push(...cardIds);
   }
 
   public async gameStart(room: ServerRoom, selectableCharacters: Character[]) {
@@ -1121,7 +1126,7 @@ export class GameProcessor {
 
     if (this.room.getProcessingCards(event.cardId.toString()).includes(event.cardId)) {
       await this.room.moveCards({
-        movingCards: Card.getActualCards([event.cardId]).map(card => ({ card, fromArea: from.cardFrom(card) })),
+        movingCards: [{ card: event.cardId, fromArea: from.cardFrom(event.cardId) }],
         toArea: CardMoveArea.DropStack,
         fromId: event.fromId,
         moveReason: CardMoveReason.CardResponse,
@@ -1154,6 +1159,7 @@ export class GameProcessor {
     const to = toId && this.room.getPlayerById(toId);
     const from = fromId && this.room.getPlayerById(fromId);
     const cardIds = movingCards.map(cardInfo => cardInfo.card);
+    const actualCardIds = Card.getActualCards(cardIds);
 
     if (!hideBroadcast) {
       if (from) {
@@ -1199,7 +1205,7 @@ export class GameProcessor {
         event.translationsMessage = TranslationPack.translationJsonPatcher(
           '{0} obtains cards {1}' + (fromId ? ' from {2}' : ''),
           TranslationPack.patchPlayerInTranslation(to),
-          TranslationPack.patchCardInTranslation(...Card.getActualCards(cardIds)),
+          TranslationPack.patchCardInTranslation(...actualCardIds),
           fromId ? TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(fromId)) : '',
         ).extract();
 
@@ -1227,7 +1233,7 @@ export class GameProcessor {
         }
 
         if (toArea === CardMoveArea.DrawStack) {
-          this.room.putCards(placeAtTheBottomOfDrawStack ? 'bottom' : 'top', ...cardIds);
+          this.room.putCards(placeAtTheBottomOfDrawStack ? 'bottom' : 'top', ...actualCardIds);
         } else if (toArea === CardMoveArea.DropStack) {
           this.room.bury(...cardIds);
         } else if (toArea === CardMoveArea.ProcessingArea) {
@@ -1235,7 +1241,8 @@ export class GameProcessor {
         } else {
           if (to) {
             if (toArea === CardMoveArea.EquipArea) {
-              for (const cardId of cardIds) {
+              this.room.transformCard(to, actualCardIds, PlayerCardsArea.EquipArea);
+              for (const cardId of actualCardIds) {
                 const card = Sanguosha.getCardById<EquipCard>(cardId);
                 const existingEquip = to.getEquipment(card.EquipType);
                 Precondition.assert(
@@ -1245,11 +1252,31 @@ export class GameProcessor {
                 to.equip(card);
               }
             } else if (toArea === CardMoveArea.OutsideArea) {
-              to.getCardIds((toArea as unknown) as PlayerCardsArea, toOutsideArea).push(...cardIds);
+              to.getCardIds((toArea as unknown) as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
             } else if (toArea === CardMoveArea.HandArea) {
-              to.getCardIds((toArea as unknown) as PlayerCardsArea).push(...Card.getActualCards(cardIds));
+              this.room.transformCard(to, actualCardIds, PlayerCardsArea.HandArea);
+              to.getCardIds((toArea as unknown) as PlayerCardsArea).push(...actualCardIds);
             } else {
-              to.getCardIds((toArea as unknown) as PlayerCardsArea).push(...cardIds);
+              const transformedDelayedTricks = cardIds.map(cardId => {
+                if (!Card.isVirtualCardId(cardId)) {
+                  return cardId;
+                }
+
+                const card = Sanguosha.getCardById<VirtualCard>(cardId);
+                if (card.ActualCardIds.length === 1) {
+                  const originalCard = Sanguosha.getCardById(card.ActualCardIds[0]);
+                  if (card.Suit !== originalCard.Suit) {
+                    card.Suit = originalCard.Suit;
+                  }
+                  if (card.CardNumber !== originalCard.CardNumber) {
+                    card.CardNumber = originalCard.CardNumber;
+                  }
+                  return card.Id;
+                }
+
+                return cardId;
+              });
+              to.getCardIds((toArea as unknown) as PlayerCardsArea).push(...transformedDelayedTricks);
             }
           }
         }
@@ -1277,9 +1304,12 @@ export class GameProcessor {
           ).extract(),
         });
       } else if (stage === JudgeEffectStage.JudgeEffect) {
+        const to = this.room.getPlayerById(toId);
+        this.room.transformCard(to, event);
+
         event.translationsMessage = TranslationPack.translationJsonPatcher(
           '{0} got judged card {2} on {1}',
-          TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(toId)),
+          TranslationPack.patchPlayerInTranslation(to),
           byCard ? TranslationPack.patchCardInTranslation(byCard) : bySkill!,
           TranslationPack.patchCardInTranslation(judgeCardId),
         ).extract();
