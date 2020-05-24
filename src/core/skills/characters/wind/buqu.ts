@@ -16,7 +16,9 @@ export class BuQu extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.AskForPeachEvent>): boolean {
-    return !room.getFlag(owner.Id, this.GeneralName) && content.fromId === owner.Id && content.toId === owner.Id;
+    return (
+      !room.getFlag<boolean>(owner.Id, this.GeneralName) && content.fromId === owner.Id && content.toId === owner.Id
+    );
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -30,17 +32,18 @@ export class BuQu extends TriggerSkill {
     const event = skillUseEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AskForPeachEvent>;
     const from = room.getPlayerById(skillUseEvent.fromId);
     const chuang = room.getCards(1, 'top');
-    const chuangCards = from
+    const overload = from
       .getCardIds(PlayerCardsArea.OutsideArea, BuQu.buquPile)
-      .map(id => Sanguosha.getCardById(id).CardNumber);
-    const overload = !!chuang.find(id => chuangCards.includes(Sanguosha.getCardById(id).CardNumber));
+      .map(id => Sanguosha.getCardById(id).CardNumber)
+      .includes(Sanguosha.getCardById(chuang[0]).CardNumber);
 
     await room.moveCards({
-      movingCards: chuang.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
+      movingCards: chuang.map(card => ({ card, fromArea: CardMoveArea.ProcessingArea })),
       toId: overload ? undefined : skillUseEvent.fromId,
       toArea: overload ? CardMoveArea.DropStack : PlayerCardsArea.OutsideArea,
       moveReason: overload ? CardMoveReason.PlaceToDropStack : CardMoveReason.ActiveMove,
       toOutsideArea: BuQu.buquPile,
+      isOutsideAreaInPublic: true,
       proposer: skillUseEvent.fromId,
       movedByReason: this.Name,
     });
@@ -55,14 +58,14 @@ export class BuQu extends TriggerSkill {
       EventPacker.terminate(event);
     }
 
-    room.setFlag(skillUseEvent.fromId, this.GeneralName, true);
+    room.setFlag<boolean>(skillUseEvent.fromId, this.GeneralName, true);
 
     return true;
   }
 }
 
 @ShadowSkill
-@CompulsorySkill({ name: BuQu.GeneralName, description: BuQu.Description })
+@CompulsorySkill({ name: BuQu.Name, description: BuQu.Description })
 export class BuQuShadow extends RulesBreakerSkill {
   public breakBaseCardHoldNumber(room: Room, owner: Player) {
     return owner.getCardIds(PlayerCardsArea.OutsideArea, BuQu.buquPile).length;
@@ -70,14 +73,14 @@ export class BuQuShadow extends RulesBreakerSkill {
 }
 
 @ShadowSkill
-@CompulsorySkill({ name: '#' + BuQu.GeneralName, description: BuQu.Description })
+@CompulsorySkill({ name: BuQuShadow.Name, description: BuQu.Description })
 export class BuQuClear extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>, stage?: AllStage): boolean {
     return stage === PlayerDyingStage.AfterPlayerDying;
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>): boolean {
-    return !!room.getFlag(owner.Id, this.GeneralName) && content.dying === owner.Id;
+    return room.getFlag<boolean>(owner.Id, this.GeneralName) && content.dying === owner.Id;
   }
 
   public async onTrigger(): Promise<boolean> {
