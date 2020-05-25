@@ -1,5 +1,6 @@
 import { Card } from 'core/cards/card';
 import type { GameInfo } from 'core/game/game_props';
+import { RecordAnalytics } from 'core/game/record_analytics';
 import { ClientSocket } from 'core/network/socket.client';
 import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
@@ -152,7 +153,7 @@ export class RoomPresenter {
       playerInfo => new ClientPlayer(playerInfo.Id, playerInfo.Name, playerInfo.Position, playerInfo.CharacterId),
     );
 
-    this.store.room = new ClientRoom(roomId, socket, gameInfo, players);
+    this.store.room = new ClientRoom(roomId, socket, gameInfo, players, new RecordAnalytics());
     this.broadcastUIUpdate();
   }
 

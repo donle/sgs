@@ -197,7 +197,13 @@ export class GameProcessor {
       await this.drawGameBeginsCards(player.Id);
     }
 
+    let lastPlayerPosition = this.playerPositionIndex;
     while (this.room.isPlaying() && !this.room.isGameOver() && !this.room.isClosed()) {
+      if (this.playerPositionIndex < lastPlayerPosition) {
+        this.room.nextRound();
+      }
+      lastPlayerPosition = this.playerPositionIndex;
+
       await this.play(this.CurrentPlayer);
       await this.turnToNextPlayer();
     }
@@ -336,6 +342,7 @@ export class GameProcessor {
             }
           } else if (stage === PhaseChangeStage.PhaseChanged) {
             this.currentPlayerPhase = this.stageProcessor.getInsidePlayerPhase(this.playerStages[0]);
+            this.room.Analytics.turnTo(this.CurrentPlayer.Id);
           }
 
           return true;
@@ -1314,7 +1321,7 @@ export class GameProcessor {
                     card.CardNumber = originalCard.CardNumber;
                   }
                   return card.Id;
-                } 
+                }
 
                 return cardId;
               });

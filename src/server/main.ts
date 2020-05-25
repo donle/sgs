@@ -1,9 +1,9 @@
 import { Sanguosha } from 'core/game/engine';
 import { GameProcessor } from 'core/game/game_processor';
 import { GameInfo } from 'core/game/game_props';
+import { RecordAnalytics } from 'core/game/record_analytics';
 import { StageProcessor } from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
-import { PlayerId } from 'core/player/player_props';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { DevMode, hostConfig, HostConfigProps } from 'core/shares/types/host_config';
@@ -96,6 +96,7 @@ class App {
       content,
       roomSocket,
       new GameProcessor(new StageProcessor(this.logger), this.logger),
+      new RecordAnalytics(),
       [],
       this.logger,
     );

@@ -31,6 +31,7 @@ export type GameInfo = {
 
 export type GameRunningInfo = {
   numberOfDrawStack: number;
+  numberOfDropStack: number;
   round: number;
   currentPlayerId: PlayerId;
 };

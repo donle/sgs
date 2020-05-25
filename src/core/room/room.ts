@@ -14,6 +14,7 @@ import { PinDianResultType } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { GameInfo } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
+import { AnalyticsActions, RecordAnalytics } from 'core/game/record_analytics';
 import { AllStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Socket } from 'core/network/socket';
 import { Player } from 'core/player/player';
@@ -30,10 +31,13 @@ export type ResponsiveTriggeredResult<T extends GameEventIdentifiers> = {
 };
 
 export abstract class Room<T extends WorkPlace = WorkPlace> {
+  protected abstract readonly analytics: RecordAnalytics;
+
   protected abstract readonly socket: Socket<T>;
   protected abstract readonly gameInfo: GameInfo;
   protected abstract readonly players: Player[];
   protected abstract readonly roomId: RoomId;
+  protected round: number = 0;
 
   protected awaitResponseEvent:
     | {
@@ -468,6 +472,21 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public get Info() {
     return this.gameInfo;
+  }
+
+  public get Analytics(): AnalyticsActions {
+    return this.analytics;
+  }
+
+  public nextRound() {
+    this.round++;
+  }
+
+  public get Round() {
+    return this.round;
+  }
+  public set Round(round: number) {
+    this.round = round;
   }
 
   public isPlaying() {

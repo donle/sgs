@@ -30,10 +30,11 @@ import { GameInfo, getRoles } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
 import { CardLoader } from 'core/game/package_loader/loader.cards';
 import { CharacterLoader } from 'core/game/package_loader/loader.characters';
+import { RecordAnalytics } from 'core/game/record_analytics';
 import { Algorithm } from 'core/shares/libs/algorithm';
 import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
-import { OnDefineReleaseTiming, Skill, SkillHooks, SkillType, TransformSkill, TriggerSkill } from 'core/skills/skill';
+import { OnDefineReleaseTiming, Skill, SkillHooks, SkillType, TriggerSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { GameProcessor } from '../game/game_processor';
@@ -44,7 +45,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   private drawStack: CardId[] = [];
   private dropStack: CardId[] = [];
-  private round = 0;
 
   private hookedSkills: {
     player: Player;
@@ -56,6 +56,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     protected gameInfo: GameInfo,
     protected socket: ServerSocket,
     protected gameProcessor: GameProcessor,
+    protected analytics: RecordAnalytics,
     protected players: Player[] = [],
     private logger: Logger,
   ) {
@@ -122,6 +123,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     const event: ServerEventFinder<GameEventIdentifiers.GameReadyEvent> = {
       gameStartInfo: {
         numberOfDrawStack: this.DrawStack.length,
+        numberOfDropStack: this.DropStack.length,
         round: 0,
         currentPlayerId: this.players[0].Id,
       },
@@ -153,11 +155,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (this.isPlaying()) {
       content = EventPacker.wrapGameRunningInfo(content, {
         numberOfDrawStack: this.drawStack.length,
+        numberOfDropStack: this.dropStack.length,
         round: this.round,
         currentPlayerId: this.CurrentPlayer.Id,
       });
     }
 
+    this.analytics.record(content);
     this.socket.broadcast(type, EventPacker.createIdentifierEvent(type, content));
   }
 

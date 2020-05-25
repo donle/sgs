@@ -36,7 +36,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     this.socket = socket;
     this.socket.on('connection', socket => {
       this.logger.info('User connected', socket.id);
-      serverActiveListenerEvents().forEach(identifier => {
+      serverActiveListenerEvents.forEach(identifier => {
         socket.on(identifier.toString(), (content: ClientEventFinder<typeof identifier>) => {
           switch (identifier) {
             case GameEventIdentifiers.PlayerEnterEvent:
@@ -60,7 +60,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         });
       });
 
-      serverResponsiveListenerEvents().forEach(identifier => {
+      serverResponsiveListenerEvents.forEach(identifier => {
         socket.on(identifier.toString(), (content: unknown) => {
           const asyncResolver =
             this.asyncResponseResolver[identifier] && this.asyncResponseResolver[identifier][socket.id];

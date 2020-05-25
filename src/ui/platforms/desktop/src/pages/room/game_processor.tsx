@@ -7,6 +7,7 @@ import {
   EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
+  serverResponsiveListenerEvents,
 } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { GameCommonRules } from 'core/game/game_rules';
@@ -42,8 +43,22 @@ export class GameClientProcessor {
     }
   }
 
+  private record<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
+    if (identifier !== GameEventIdentifiers.PlayerEnterEvent) {
+      this.store.room.Analytics.record(event);
+      if (this.store.room.isPlaying()) {
+        const { round, numberOfDrawStack, numberOfDropStack } = EventPacker.getGameRunningInfo(event);
+        this.store.room.Round = round;
+        this.store.room.DrawStack = numberOfDrawStack;
+        this.store.room.DropStack = numberOfDropStack;
+      }
+    }
+  }
+
   async onHandleIncomingEvent<T extends GameEventIdentifiers>(e: T, content: ServerEventFinder<T>) {
     this.tryToThrowNotReadyException(e);
+    this.record(e, content);
+
     switch (e) {
       case GameEventIdentifiers.SetFlagEvent:
         this.onHandleSetFlagEvent(e as any, content);
@@ -561,6 +576,7 @@ export class GameClientProcessor {
     if (content.to === PlayerPhase.PrepareStage) {
       content.fromPlayer && this.presenter.isSkillDisabled(PlayPhaseAction.disableSkills);
       this.store.room.turnTo(content.toPlayer);
+      this.store.room.Analytics.turnTo(content.toPlayer);
 
       if (content.fromPlayer) {
         for (const player of this.store.room.AlivePlayers) {

@@ -163,17 +163,13 @@ export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.ContinuouslyChoosingCardFinishEvent,
 ];
 
-export const serverActiveListenerEvents = (): [
-  GameEventIdentifiers.UserMessageEvent,
-  GameEventIdentifiers.PlayerEnterEvent,
-  GameEventIdentifiers.PlayerLeaveEvent,
-] => [
+export const serverActiveListenerEvents = [
   GameEventIdentifiers.UserMessageEvent,
   GameEventIdentifiers.PlayerEnterEvent,
   GameEventIdentifiers.PlayerLeaveEvent,
 ];
 
-export const serverResponsiveListenerEvents = () => [
+export const serverResponsiveListenerEvents = [
   GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
   GameEventIdentifiers.AskForPeachEvent,
   GameEventIdentifiers.AskForCardResponseEvent,
@@ -255,10 +251,11 @@ export class EventPacker {
   }
 
   static getGameRunningInfo<T extends GameEventIdentifiers>(event: ServerEventFinder<T>): GameRunningInfo {
-    const { numberOfDrawStack, round, currentPlayerId } = event as any;
+    const { numberOfDrawStack, numberOfDropStack, round, currentPlayerId } = event as any;
 
     return {
       numberOfDrawStack,
+      numberOfDropStack,
       round,
       currentPlayerId,
     };

@@ -1,5 +1,6 @@
 import { ClientEventFinder, GameEventIdentifiers, WorkPlace } from 'core/event/event';
 import { GameInfo, GameRunningInfo } from 'core/game/game_props';
+import { RecordAnalytics } from 'core/game/record_analytics';
 import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { ClientSocket } from 'core/network/socket.client';
 import { Player } from 'core/player/player';
@@ -13,14 +14,19 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   protected readonly players: Player[];
   protected readonly roomId: RoomId;
 
-  private round: number = 0;
   private currentPlayer: ClientPlayer;
   private currentPhasePlayer: ClientPlayer;
   private currentPlayerStage: PlayerPhaseStages;
   private currentPlayerPhase: PlayerPhase;
   private numberOfDrawStack: number = 0;
   private numberOfDropStack: number = 0;
-  constructor(roomId: RoomId, socket: ClientSocket, gameInfo: GameInfo, players: ClientPlayer[]) {
+  constructor(
+    roomId: RoomId,
+    socket: ClientSocket,
+    gameInfo: GameInfo,
+    players: ClientPlayer[],
+    protected analytics: RecordAnalytics,
+  ) {
     super();
 
     this.roomId = roomId;
@@ -190,12 +196,8 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.currentPhasePlayer = undefined as any;
   }
 
-  public nextRound() {
-    this.round++;
-  }
-
-  public get Round() {
-    return this.round;
+  public get Analytics(): RecordAnalytics {
+    return this.analytics;
   }
 
   public set DrawStack(newAmount: number) {

@@ -921,7 +921,7 @@ export const eventDictionary: Word[] = [
   },
   { source: 'please use a {0} to player {1} to response {2}', target: '请对 {1} 使用一张【{0}】来响应 {2}' },
   { source: '{0} activates skill {1}', target: '{0} 的 {1} 技能被触发' },
-  { source: '{0} activates awakening skill {1}', target: '{0} 的觉醒技 {1} 技能被触发' },
+  { source: '{0} activates awakening skill {1}', target: '{0} 的觉醒技 【{1}】 技能被触发' },
   { source: '{0} used skill {1}', target: '{0} 使用了技能【{1}】' },
   { source: '{0} used skill {1} to {2}', target: '{0} 使用了技能【{1}】, 目标是 {2}' },
   {
