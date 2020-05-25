@@ -56,6 +56,9 @@ export class GameProcessor {
   private currentPhasePlayer: Player;
   private playerStages: PlayerPhaseStages[] = [];
 
+  private playRoundInsertions: PlayerId[] = [];
+  private dumpedLastPlayerPositionIndex: number = -1;
+
   constructor(private stageProcessor: StageProcessor, private logger: Logger) {}
 
   private tryToThrowNotStartedError() {
@@ -311,6 +314,11 @@ export class GameProcessor {
   }
 
   private async play(player: Player, specifiedStages?: PlayerPhaseStages[]) {
+    if (!player.isFaceUp()) {
+      await this.room.turnOver(player.Id);
+      return;
+    }
+
     let lastPlayer = this.currentPhasePlayer;
     this.currentPhasePlayer = player;
 
@@ -342,7 +350,9 @@ export class GameProcessor {
             }
           } else if (stage === PhaseChangeStage.PhaseChanged) {
             this.currentPlayerPhase = this.stageProcessor.getInsidePlayerPhase(this.playerStages[0]);
-            this.room.Analytics.turnTo(this.CurrentPlayer.Id);
+            if (this.currentPlayerPhase === PlayerPhase.PrepareStage) {
+              this.room.Analytics.turnTo(this.CurrentPlayer.Id);
+            }
           }
 
           return true;
@@ -1535,19 +1545,37 @@ export class GameProcessor {
     });
   }
 
+  public insertPlayerRound(player: PlayerId) {
+    this.playRoundInsertions.push(player);
+  }
+
   public async turnToNextPlayer() {
     this.tryToThrowNotStartedError();
     this.playerStages = [];
     let chosen = false;
-    do {
-      this.playerPositionIndex = (this.playerPositionIndex + 1) % this.room.Players.length;
-      chosen = !this.room.Players[this.playerPositionIndex].Dead;
-      if (!this.room.Players[this.playerPositionIndex].isFaceUp()) {
-        await this.room.turnOver(this.room.Players[this.playerPositionIndex].Id);
-        chosen = false;
-        continue;
+
+    if (this.playRoundInsertions.length > 0) {
+      while (this.playRoundInsertions.length > 0 && !chosen) {
+        const player = this.room.getPlayerById(this.playRoundInsertions.shift()!);
+        if (player.Dead) {
+          continue;
+        } else {
+          this.dumpedLastPlayerPositionIndex = this.playerPositionIndex;
+          this.playerPositionIndex = player.Position;
+          chosen = true;
+          break;
+        }
       }
-    } while (!chosen);
+    }
+
+    while (!chosen) {
+      const nextIndex =
+        (this.dumpedLastPlayerPositionIndex >= 0 ? this.dumpedLastPlayerPositionIndex : this.playerPositionIndex) + 1;
+      this.dumpedLastPlayerPositionIndex = -1;
+
+      this.playerPositionIndex = nextIndex % this.room.Players.length;
+      chosen = !this.room.Players[this.playerPositionIndex].Dead;
+    }
   }
 
   public get CurrentPlayer() {

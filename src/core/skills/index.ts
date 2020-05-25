@@ -53,6 +53,7 @@ export { QingJian, QingJianShadow } from './characters/standard/qingjian';
 export { LongDan } from './characters/standard/longdan';
 export { YaJiao } from './characters/standard/yajiao';
 export { KeJi } from './characters/standard/keji';
+export { BoTu } from './characters/standard/botu';
 export { QinXue } from './characters/standard/qinxue';
 export { GongXin } from './characters/standard/gongxin';
 export { TieJi, TieJiShadow } from './characters/standard/tieji';

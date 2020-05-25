@@ -46,6 +46,10 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   }
 
   //Server only
+  public insertPlayerRound(): void {
+    this.throwUntouchableError(this.insertPlayerRound.name);
+  }
+  //Server only
   public notify(): void {
     this.throwUntouchableError(this.notify.name);
   }

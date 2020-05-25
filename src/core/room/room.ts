@@ -82,7 +82,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     identifier: T,
     playerId?: PlayerId,
   ): Promise<ClientEventFinder<T>>;
-
+  public abstract insertPlayerRound(player: PlayerId): void;
   //Server only
   public abstract async loseHp(player: PlayerId, lostHp: number): Promise<void>;
   //Server only

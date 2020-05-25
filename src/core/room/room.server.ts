@@ -110,6 +110,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
   }
 
+  public insertPlayerRound(player: PlayerId) {
+    this.gameProcessor.insertPlayerRound(player);
+  }
+
   private readonly sleep = async (timeDuration: number) =>
     new Promise(r => {
       setTimeout(r, timeDuration);
@@ -554,7 +558,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       toId: playerId,
       skillName,
       translationsMessage: broadcast
-        ? TranslationPack.translationJsonPatcher('{0} obtained skill {1}', player.Name, skillName).extract()
+        ? TranslationPack.translationJsonPatcher(
+            '{0} obtained skill {1}',
+            TranslationPack.patchPlayerInTranslation(player),
+            skillName,
+          ).extract()
         : undefined,
     });
   }

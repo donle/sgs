@@ -409,7 +409,10 @@ export const skillDescriptions: Word[] = [
       '<b>觉醒技</b>，准备阶段，若你的手牌数与你的体力值之差不小于3（若游戏人数不小于7则改为2），你减1点体力上限，然后获得"攻心"。',
   },
   { source: 'keji_description', target: '若你未于出牌阶段内使用或打出过【杀】，则你可以跳过弃牌阶段。' },
-  { source: 'botu_description', target: '回合结束后，若你于出牌阶段内使用过四种花色的牌，则你可以获得一个额外的回合。' },
+  {
+    source: 'botu_description',
+    target: '回合结束后，若你于出牌阶段内使用过四种花色的牌，则你可以获得一个额外的回合。',
+  },
   { source: 'kurou_description', target: '出牌阶段限一次，你可以弃置一张牌，然后失去1点体力。' },
   {
     source: 'zhaxiang_description',
@@ -916,6 +919,10 @@ export const eventDictionary: Word[] = [
   {
     source: 'please use a {0} card to response {1}',
     target: '请使用一张【{0}】来响应 {1}',
+  },
+  {
+    source: '{0} obtained skill {1}',
+    target: '{0} 获得了技能 【{1}】',
   },
   {
     source: 'please select to use a {0}',
