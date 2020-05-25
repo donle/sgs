@@ -71,7 +71,7 @@ export interface AnalyticsActions {
   getLostHp(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]): number;
   getUsedCard(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]): CardId[];
   getResponsedCard(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]): CardId[];
-  getLostCard(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]): CardId[];
+  getLostCard(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]): MovingCardType[];
   getObtainedCard(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]): CardId[];
   getDrawedCard(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]): CardId[];
   getDroppedCard(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]): CardId[];
@@ -256,7 +256,7 @@ export class RecordAnalytics implements AnalyticsActions {
     return this.getRecordEvents<GameEventIdentifiers.MoveCardEvent>(
       event =>
         EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
-        event.toId === player &&
+        event.fromId === player &&
         (event.moveReason === CardMoveReason.SelfDrop || event.moveReason === CardMoveReason.PassiveDrop),
       player,
       currentRound,
@@ -313,8 +313,8 @@ export class RecordAnalytics implements AnalyticsActions {
     }, []);
   }
   public getLostCard(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]) {
-    return this.getCardLostRecord(player, currentRound, inPhase).reduce<CardId[]>((allCards, event) => {
-      allCards.push(...event.movingCards.map(cardInfo => cardInfo.card));
+    return this.getCardLostRecord(player, currentRound, inPhase).reduce<MovingCardType[]>((allCards, event) => {
+      allCards.push(...event.movingCards);
       return allCards;
     }, []);
   }
