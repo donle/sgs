@@ -13,10 +13,10 @@ export class KeJi extends TriggerSkill {
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
     const canKeJi =
-      !room.Analytics.getUsedCard(owner.Id, true).find(
+      !room.Analytics.getUsedCard(owner.Id, true, [PlayerPhase.PlayCardStage]).find(
         cardId => Sanguosha.getCardById(cardId).GeneralName === 'slash',
       ) &&
-      !room.Analytics.getResponsedCard(owner.Id, true).find(
+      !room.Analytics.getResponsedCard(owner.Id, true, [PlayerPhase.PlayCardStage]).find(
         cardId => Sanguosha.getCardById(cardId).GeneralName === 'slash',
       );
 

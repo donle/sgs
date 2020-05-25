@@ -7,7 +7,6 @@ import {
   EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
-  serverResponsiveListenerEvents,
 } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { GameCommonRules } from 'core/game/game_rules';
@@ -45,7 +44,7 @@ export class GameClientProcessor {
 
   private record<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
     if (identifier !== GameEventIdentifiers.PlayerEnterEvent) {
-      this.store.room.Analytics.record(event);
+      this.store.room.Analytics.record(event, this.store.room.CurrentPlayerPhase);
       if (this.store.room.isPlaying()) {
         const { round, numberOfDrawStack, numberOfDropStack } = EventPacker.getGameRunningInfo(event);
         this.store.room.Round = round;

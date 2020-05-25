@@ -161,7 +161,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       });
     }
 
-    this.analytics.record(content);
+    this.analytics.record(content, this.isPlaying() ? this.CurrentPlayerPhase : undefined);
     this.socket.broadcast(type, EventPacker.createIdentifierEvent(type, content));
   }
 
