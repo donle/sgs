@@ -1073,6 +1073,8 @@ export const eventDictionary: Word[] = [
   { source: 'recover {0} hp for {1}', target: '是否回复 {1} {0} 点体力' },
   { source: '{0} used skill {1}, damage increases to {2}', target: '{0} 使用了技能 【{1}】，伤害增加至 {2} 点' },
   { source: '{0} used skill {1} to you, please present a hand card', target: '{0} 使用了技能 【{1}】，请展示一张手牌' },
+  { source: '{0} move cards {1} onto the top of character card', target: '{0} 将 {1} 置于了武将牌上'},
+  { source: '{0} move {1} cards onto the top of character card', target: '{0} 将 {1} 张牌置于了武将牌上'},
   {
     source: 'Obtain Basic Card, Equip Card and Duel in display cards?',
     target: '裸衣：是否放弃摸牌，然后获取展示牌中的基本牌、装备牌和【决斗】',

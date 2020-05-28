@@ -160,6 +160,7 @@ export class GuHuoShadow extends TriggerSkill {
         if (response.selectedOption === 'guhuo:doubt') {
           await room.loseHp(response.fromId, 1);
           room.obtainSkill(response.fromId, ChanYuan.Name, true);
+          room.setFlag(response.fromId, ChanYuan.Name, true);
         }
       } else {
         if (response.selectedOption === 'guhuo:doubt') {

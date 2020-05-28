@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import { CardType } from 'core/cards/card';
+import { CardId } from 'core/cards/libs/card_props';
 import { getNationalityRawText } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
@@ -8,10 +9,12 @@ import { PlayerCardsArea, PlayerRole } from 'core/player/player_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
+import { RoomPresenter } from 'pages/room/room.presenter';
 import * as React from 'react';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import { NationalityBadge, PlayerPhaseBadge } from '../badge/badge';
 import { FlatClientCard } from '../card/flat_card';
+import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
 import { Hp } from '../hp/hp';
 import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
 import { Mask } from '../mask/mask';
@@ -21,6 +24,7 @@ type PlayerCardProps = {
   player: Player | undefined;
   playerPhase?: PlayerPhase;
   translator: ClientTranslationModule;
+  presenter: RoomPresenter;
   disabled?: boolean;
   onClick?(selected: boolean): void;
 };
@@ -32,6 +36,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   @mobx.observable.ref
   onTooltipOpened: boolean = false;
   private onTooltipOpeningTimer: NodeJS.Timer;
+  private openedDialog: string | undefined;
 
   private readonly onClick = mobx.action(() => {
     if (this.props.disabled === false) {
@@ -108,6 +113,53 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     this.onTooltipOpeningTimer && clearTimeout(this.onTooltipOpeningTimer);
     this.onTooltipOpened = false;
   };
+
+  private getSkillTags() {
+    const { translator, player } = this.props;
+    const flags = player && Object.keys(player.getAllFlags());
+    return (
+      flags && (
+        <div className={styles.skillTags}>
+          {flags.map((flag, index) => (
+            <span key={index} className={styles.skillTag}>
+              {translator.tr(flag)}
+            </span>
+          ))}
+        </div>
+      )
+    );
+  }
+
+  private readonly onOutsideAreaTagClicked = (name: string, cards: CardId[]) => () => {
+    if (this.openedDialog === name) {
+      this.openedDialog = undefined;
+      this.props.presenter.closeDialog();
+    } else {
+      this.openedDialog = name;
+      this.props.presenter.createDialog(<CardSelectorDialog options={cards} translator={this.props.translator} />);
+    }
+  };
+
+  private getOutsideAreaCards() {
+    const { translator, player } = this.props;
+    const cards = player?.getOutsideAreaCards();
+    return (
+      cards && (
+        <div className={styles.outsideArea}>
+          {Object.entries<CardId[]>(cards).map(([areaName, cards], index) => (
+            <span
+              key={index}
+              className={classNames(styles.skillTag, styles.clickableSkillTag)}
+              onClick={this.onOutsideAreaTagClicked(areaName, cards)}
+            >
+              [{translator.tr(areaName)}
+              {cards.length}]
+            </span>
+          ))}
+        </div>
+      )
+    );
+  }
 
   createTooltipContent() {
     const { player, translator } = this.props;
@@ -186,6 +238,10 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
         {playerPhase !== undefined && (
           <PlayerPhaseBadge stage={playerPhase} translator={translator} className={styles.playerPhaseBadge} />
         )}
+        <div className={styles.playerTags}>
+          {this.getSkillTags()}
+          {this.getOutsideAreaCards()}
+        </div>
         {this.onTooltipOpened && this.PlayerCharacter && (
           <Tooltip position={['top']}>{this.createTooltipContent()}</Tooltip>
         )}

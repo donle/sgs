@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { CardId } from 'core/cards/libs/card_props';
 import { getNationalityRawText } from 'core/characters/character';
 import { Player } from 'core/player/player';
 import { PlayerRole } from 'core/player/player_props';
@@ -10,6 +11,7 @@ import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import { NationalityBadge } from '../badge/badge';
+import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
 import { Hp } from '../hp/hp';
 import { Mask } from '../mask/mask';
 import styles from './player_avatar.module.css';
@@ -34,6 +36,8 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   @mobx.observable.ref
   onTooltipOpened: boolean = false;
   private onTooltipOpeningTimer: NodeJS.Timer;
+
+  private openedDialog: string | undefined;
 
   @mobx.action
   private readonly onClick = () => {
@@ -100,6 +104,53 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
         </div>
         <div className={styles.userSideEffectSkillList}>{this.getSideEffectSkills()}</div>
       </>
+    );
+  }
+
+  private getSkillTags() {
+    const { translator, presenter } = this.props;
+    const flags = presenter.ClientPlayer && Object.keys(presenter.ClientPlayer.getAllFlags());
+    return (
+      flags && (
+        <div className={styles.skillTags}>
+          {flags.map((flag, index) => (
+            <span key={index} className={styles.skillTag}>
+              {translator.tr(flag)}
+            </span>
+          ))}
+        </div>
+      )
+    );
+  }
+
+  private readonly onOutsideAreaTagClicked = (name: string, cards: CardId[]) => () => {
+    if (this.openedDialog === name) {
+      this.openedDialog = undefined;
+      this.props.presenter.closeDialog();
+    } else {
+      this.openedDialog = name;
+      this.props.presenter.createDialog(<CardSelectorDialog options={cards} translator={this.props.translator} />);
+    }
+  };
+
+  private getOutsideAreaCards() {
+    const { translator, presenter } = this.props;
+    const cards = presenter.ClientPlayer?.getOutsideAreaCards();
+    return (
+      cards && (
+        <div className={styles.outsideArea}>
+          {Object.entries<CardId[]>(cards).map(([areaName, cards], index) => (
+            <span
+              key={index}
+              className={classNames(styles.skillTag, styles.clickableSkillTag)}
+              onClick={this.onOutsideAreaTagClicked(areaName, cards)}
+            >
+              [{translator.tr(areaName)}
+              {cards.length}]
+            </span>
+          ))}
+        </div>
+      )
     );
   }
 
@@ -191,6 +242,10 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
         {clientPlayer && (
           <Hp hp={clientPlayer.Hp} className={styles.playerHp} maxHp={clientPlayer.MaxHp} size="regular" />
         )}
+        <div className={styles.playerTags}>
+          {this.getSkillTags()}
+          {this.getOutsideAreaCards()}
+        </div>
         {this.onTooltipOpened && clientPlayer?.CharacterId && (
           <Tooltip position={['bottom', 'right']}>{this.createTooltipContent()}</Tooltip>
         )}

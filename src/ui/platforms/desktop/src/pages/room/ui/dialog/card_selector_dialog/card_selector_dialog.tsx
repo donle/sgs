@@ -11,7 +11,7 @@ import styles from './card_selector_dialog.module.css';
 type CardSelectorProps = {
   translator: ClientTranslationModule;
   options: CardChoosingOptions | CardId[] | number;
-  onClick(card: Card | number, fromArea: PlayerCardsArea): void;
+  onClick?(card: Card | number, fromArea: PlayerCardsArea): void;
   isCardDisabled?(card: Card): boolean;
 };
 
@@ -117,6 +117,10 @@ const CardSelector = (props: CardSelectorProps) => {
 export const CardSelectorDialog = (props: {
   translator: ClientTranslationModule;
   options: CardChoosingOptions | CardId[] | number;
-  onClick(card: Card | number, fromArea?: PlayerCardsArea): void;
+  onClick?(card: Card | number, fromArea?: PlayerCardsArea): void;
   isCardDisabled?(card: Card): boolean;
-}) => <BaseDialog title={props.translator.tr('please choose a card')}>{<CardSelector {...props} />}</BaseDialog>;
+}) => (
+  <BaseDialog title={props.translator.tr('please choose a card')}>
+    <CardSelector {...props} />
+  </BaseDialog>
+);

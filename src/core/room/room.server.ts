@@ -202,10 +202,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     for (const player of this.getAlivePlayersFrom()) {
       const canTriggerSkills: TriggerSkill[] = [];
       for (const skill of player.getPlayerSkills<TriggerSkill>('trigger')) {
-        if (UniqueSkillRule.isProhibited(skill, player)) {
-          continue;
-        }
-
         const canTrigger = bySkills
           ? bySkills.find(bySkill => UniqueSkillRule.isProhibitedBySkillRule(bySkill, skill)) === undefined
           : true;
@@ -352,18 +348,26 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (this.getPlayerById(event.toId).Hp > 0) {
       return;
     }
+    const player = this.getPlayerById(event.fromId);
 
     let responseEvent: ClientEventFinder<GameEventIdentifiers.AskForPeachEvent> | undefined;
     do {
       this.notify(GameEventIdentifiers.AskForPeachEvent, event, event.fromId);
       responseEvent = await this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForPeachEvent, event.fromId);
-      if (
-        responseEvent.cardId === undefined ||
-        (await this.preUseCard({ fromId: responseEvent.fromId, cardId: responseEvent.cardId, toIds: [event.toId] }))
-      ) {
+      const preUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
+        fromId: responseEvent.fromId,
+        toIds: [event.toId],
+        cardId: responseEvent.cardId!,
+      };
+
+      if (responseEvent.cardId === undefined || (await this.preUseCard(preUseEvent))) {
+        responseEvent.cardId = preUseEvent.cardId;
+        responseEvent.fromId = preUseEvent.fromId;
         break;
+      } else {
+        responseEvent.cardId = undefined;
       }
-    } while (true);
+    } while (player.hasCard(this, new CardMatcher({ name: ['peach'] })));
 
     return responseEvent;
   }
@@ -504,7 +508,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   public async useCard(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, event);
 
-    const onAim = async (toId: PlayerId, allTargets: PlayerId[], nullifiedTargets: PlayerId[]) => {
+    const onAim = async (
+      toId: PlayerId,
+      allTargets: PlayerId[],
+      nullifiedTargets: PlayerId[],
+      isFirstTarget?: boolean,
+    ) => {
       const cardAimEvent: ServerEventFinder<GameEventIdentifiers.AimEvent> = EventPacker.createIdentifierEvent(
         GameEventIdentifiers.AimEvent,
         {
@@ -513,6 +522,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           toId,
           nullifiedTargets,
           allTargets,
+          isFirstTarget,
         },
       );
       EventPacker.copyPropertiesTo(event, cardAimEvent);
@@ -547,7 +557,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
         if (toIds) {
           for (const toId of toIds) {
-            const response = await onAim(toId, toIds, nullifiedTargets);
+            const response = await onAim(toId, toIds, nullifiedTargets, toId === toIds[0]);
             aimEventCollaborators[toId] = response;
             cardEffectToIds = response.allTargets;
             if (event.toIds && nonTargetToIds && nonTargetToIds.length > 0) {

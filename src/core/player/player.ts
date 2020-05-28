@@ -123,6 +123,9 @@ export abstract class Player implements PlayerInfo {
   getFlag<T>(name: string): T {
     return this.flags[name];
   }
+  getAllFlags() {
+    return this.flags;
+  }
 
   public clearMarks() {
     this.marks = {};
@@ -143,6 +146,9 @@ export abstract class Player implements PlayerInfo {
   }
   getMark(name: string) {
     return this.marks[name] || 0;
+  }
+  getAllMarks() {
+    return this.marks;
   }
   addInvisibleMark(name: string, value: number) {
     return this.addMark('!' + name, value);
@@ -207,6 +213,10 @@ export abstract class Player implements PlayerInfo {
       this.playerOutsideCards[outsideAreaName] = this.playerOutsideCards[outsideAreaName] || [];
       return this.playerOutsideCards[outsideAreaName];
     }
+  }
+
+  public getOutsideAreaCards() {
+    return this.playerOutsideCards;
   }
 
   public getPlayerCards(): CardId[] {

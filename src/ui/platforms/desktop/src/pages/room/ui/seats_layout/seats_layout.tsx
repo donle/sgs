@@ -74,6 +74,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           player={player}
           translator={this.props.translator}
+          presenter={this.props.presenter}
           playerPhase={
             this.props.store.room.CurrentPlayer === player ? this.props.store.room.CurrentPlayerPhase : undefined
           }
@@ -105,6 +106,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           player={player}
           translator={this.props.translator}
+          presenter={this.props.presenter}
           playerPhase={
             this.props.store.room.CurrentPlayer === player ? this.props.store.room.CurrentPlayerPhase : undefined
           }
@@ -134,6 +136,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           player={player}
           translator={this.props.translator}
+          presenter={this.props.presenter}
           playerPhase={
             this.props.store.room.CurrentPlayer === player ? this.props.store.room.CurrentPlayerPhase : undefined
           }

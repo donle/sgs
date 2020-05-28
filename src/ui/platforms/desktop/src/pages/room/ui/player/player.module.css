@@ -178,3 +178,29 @@
     margin-right: gridLine;
     min-width: calc(gridLine * 4);
 }
+
+.playerTags {
+    position: absolute;
+    top: calc(gridLine * 3);
+    left: calc(gridLine * 3);
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+}
+
+.skillTags,
+.outsideArea {
+    display: flex;
+}
+
+.skillTags {
+    margin-bottom: 4px;
+}
+
+.skillTag {
+    background-color: grey;
+    margin: 0px 4px;
+}
+.clickableSkillTag {
+    cursor: pointer;
+}

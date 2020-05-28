@@ -88,7 +88,7 @@ export { QiMou, QiMouShadow, QiMouBlocker } from './characters/wind/qimou';
 export { HuangTian, HuangTianGiveCard } from './characters/wind/huangtian';
 export { LeiJi, LeiJiShadow } from './characters/wind/leiji';
 export { GuiDao } from './characters/wind/guidao';
-export { BuQu, BuQuShadow, BuQuClear } from './characters/wind/buqu';
+export { BuQu, BuQuShadow } from './characters/wind/buqu';
 export { FenJi } from './characters/wind/fenji';
 export { HongYan, HongYanShadow } from './characters/wind/hongyan';
 export { TianXiang } from './characters/wind/tianxiang';

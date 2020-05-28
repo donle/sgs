@@ -93,3 +93,29 @@
     position: absolute;
     width: 100%;
 }
+
+.playerTags {
+    position: absolute;
+    left: gridLine;
+    top: calc(gridLine * 2);
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+}
+
+.skillTags,
+.outsideArea {
+    display: flex;
+}
+
+.skillTags {
+    margin-bottom: 4px;
+}
+
+.skillTag {
+    background-color: grey;
+    margin: 0px 4px;
+}
+.clickableSkillTag {
+    cursor: pointer;
+}
