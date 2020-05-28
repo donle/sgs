@@ -5,8 +5,8 @@ import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, LordSkill, TriggerSkill } from 'core/skills/skill';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'hujia', description: 'hujia_description' })
 @LordSkill
@@ -41,60 +41,62 @@ export class Hujia extends TriggerSkill {
   }
 
   async onTrigger(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    event.toIds = room
+      .getAlivePlayersFrom()
+      .filter(player => player.Nationality === CharacterNationality.Wei && player.Id !== event.fromId)
+      .map(player => player.Id);
     return true;
   }
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const { triggeredOnEvent, fromId } = event;
+    const { triggeredOnEvent, fromId, toIds } = event;
     const jinkCardEvent = triggeredOnEvent as ServerEventFinder<
       GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent
     >;
-    const identifier = Precondition.exists(
-      EventPacker.getIdentifier<GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent>(
-        jinkCardEvent,
-      ),
-      `Unwrapped event without identifier in ${this.Name}`,
-    );
+    const from = room.getPlayerById(fromId);
 
-    for (const player of room.getAlivePlayersFrom()) {
-      if (player.Nationality === CharacterNationality.Wei && player.Id !== fromId) {
-        room.notify(identifier, jinkCardEvent, player.Id);
+    for (const playerId of toIds!) {
+      const responseJinkEvent: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent> = {
+        cardMatcher: new CardMatcher({ name: ['jink'] }).toSocketPassenger(),
+        toId: playerId,
+        conversation: TranslationPack.translationJsonPatcher(
+          'do you wanna response a {0} card for skill {1} from {2}',
+          'jink',
+          this.Name,
+          TranslationPack.patchPlayerInTranslation(from),
+        ).extract(),
+      };
+      room.notify(GameEventIdentifiers.AskForCardResponseEvent, responseJinkEvent, playerId);
 
-        const response = await room.onReceivingAsyncReponseFrom(identifier, player.Id);
+      const response = await room.askForCardResponse(responseJinkEvent, playerId);
+      if (response.cardId !== undefined) {
+        const responseCard = Sanguosha.getCardById(response.cardId);
 
-        if (response.cardId !== undefined) {
-          const responseCard = Sanguosha.getCardById(response.cardId);
+        const cardUseEvent: ClientEventFinder<
+          GameEventIdentifiers.AskForCardResponseEvent | GameEventIdentifiers.AskForCardUseEvent
+        > = {
+          cardId: VirtualCard.create({
+            cardName: responseCard.Name,
+            cardNumber: responseCard.CardNumber,
+            cardSuit: responseCard.Suit,
+            bySkill: this.Name,
+          }).Id,
+          fromId,
+        };
 
-          const cardUseEvent = {
-            cardId: VirtualCard.create({
-              cardName: responseCard.Name,
-              cardNumber: responseCard.CardNumber,
-              cardSuit: responseCard.Suit,
-              bySkill: this.Name,
-            }).Id,
-            fromId,
-            responseToEvent: jinkCardEvent.triggeredOnEvent,
-          };
+        await room.responseCard(
+          EventPacker.createIdentifierEvent(GameEventIdentifiers.CardResponseEvent, {
+            cardId: responseCard.Id,
+            fromId: playerId,
+            responseToEvent: responseJinkEvent,
+          }),
+        );
 
-          await room.responseCard(
-            EventPacker.createIdentifierEvent(GameEventIdentifiers.CardResponseEvent, {
-              ...cardUseEvent,
-              fromId: response.fromId,
-            }),
-          );
-
-          if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
-            await room.useCard(cardUseEvent);
-            EventPacker.terminate(jinkCardEvent);
-          } else {
-            await room.responseCard(cardUseEvent);
-            EventPacker.terminate(jinkCardEvent);
-          }
-
-          return !EventPacker.isTerminated(cardUseEvent);
-        }
+        jinkCardEvent.responsedEvent = cardUseEvent;
+        break;
       }
     }
+
     return true;
   }
 }

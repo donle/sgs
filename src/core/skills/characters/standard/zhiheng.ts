@@ -50,7 +50,7 @@ export class ZhiHeng extends ActiveSkill {
       this.Name,
     );
 
-    await room.drawCards(skillUseEvent.cardIds.length + additionalCardDraw);
+    await room.drawCards(skillUseEvent.cardIds.length + additionalCardDraw, skillUseEvent.fromId);
 
     return true;
   }

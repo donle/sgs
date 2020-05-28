@@ -4,6 +4,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { RoomPresenter, RoomStore } from '../room.presenter';
 import { BaseAction } from './base_action';
 
@@ -12,10 +13,11 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
     playerId: PlayerId,
     store: RoomStore,
     presenter: RoomPresenter,
+    translator: ClientTranslationModule,
     private event: ServerEventFinder<T>,
     private customSelector?: CardMatcher,
   ) {
-    super(playerId, store, presenter, undefined);
+    super(playerId, store, presenter, translator);
   }
 
   onSelectPlayer(requiredAmount: number, scopedTargets: PlayerId[]) {

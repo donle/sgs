@@ -3,6 +3,7 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { Room } from 'core/room/room';
 import { ActiveSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -14,7 +15,9 @@ export class ResponsiveUseCardAction<
     | GameEventIdentifiers.AskForCardUseEvent
     | GameEventIdentifiers.AskForPeachEvent = GameEventIdentifiers.AskForCardUseEvent
 > extends BaseAction {
-  public static isSkillsOnResponsiveCardUseDisabled = (matcher: CardMatcher, player: Player) => (skill: Skill) => {
+  public static isSkillsOnResponsiveCardUseDisabled = (room: Room, matcher: CardMatcher, player: Player) => (
+    skill: Skill,
+  ) => {
     if (UniqueSkillRule.isProhibited(skill, player)) {
       return true;
     }
@@ -22,7 +25,7 @@ export class ResponsiveUseCardAction<
     if (skill instanceof TriggerSkill) {
       return false;
     } else if (skill instanceof ViewAsSkill) {
-      return !new CardMatcher({ name: skill.canViewAs() }).match(matcher);
+      return !new CardMatcher({ name: skill.canViewAs() }).match(matcher) || !skill.canUse(room, player);
     }
 
     return true;
@@ -38,10 +41,11 @@ export class ResponsiveUseCardAction<
     store: RoomStore,
     presenter: RoomPresenter,
     askForEvent: ServerEventFinder<T>,
+    translator: ClientTranslationModule,
     cardMatcher?: CardMatcher,
   ) {
     const dynamicEvent = askForEvent as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
-    super(playerId, store, presenter, dynamicEvent.scopedTargets);
+    super(playerId, store, presenter, translator, dynamicEvent.scopedTargets);
     this.askForEvent = askForEvent;
     this.extraUse = !!dynamicEvent.extraUse;
     this.matcher = cardMatcher || new CardMatcher(dynamicEvent.cardMatcher);
@@ -117,6 +121,13 @@ export class ResponsiveUseCardAction<
       }
     }
     return false;
+  }
+
+  protected onClickCard(card: Card, selected: boolean): void {
+    super.onClickCard(card, selected, this.matcher);
+  }
+  protected onClickSkill(skill: Skill, selected: boolean): void {
+    super.onClickSkill(skill, selected, this.matcher);
   }
 
   onResetAction() {

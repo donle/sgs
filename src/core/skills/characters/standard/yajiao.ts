@@ -68,22 +68,20 @@ export class YaJiao extends TriggerSkill {
     const lostCard = Sanguosha.getCardById(cardUseOrResponseEvent.movingCards[0].card);
     const obtainedCard = Sanguosha.getCardById(card[0]);
     if (lostCard.BaseType !== obtainedCard.BaseType) {
-      const { responseEvent } = await room.askForCardDrop(
+      const response = await room.askForCardDrop(
         skillUseEvent.fromId,
         1,
         [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
         true,
       );
 
-      if (responseEvent) {
-        await room.dropCards(
-          CardMoveReason.SelfDrop,
-          responseEvent.droppedCards,
-          skillUseEvent.fromId,
-          skillUseEvent.fromId,
-          this.Name,
-        );
-      }
+      await room.dropCards(
+        CardMoveReason.SelfDrop,
+        response.droppedCards,
+        skillUseEvent.fromId,
+        skillUseEvent.fromId,
+        this.Name,
+      );
     }
 
     return true;

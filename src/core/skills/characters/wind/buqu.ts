@@ -29,7 +29,6 @@ export class BuQu extends TriggerSkill {
     room: Room,
     skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
-    const event = skillUseEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AskForPeachEvent>;
     const from = room.getPlayerById(skillUseEvent.fromId);
     const chuang = room.getCards(1, 'top');
     const overload = from
@@ -54,8 +53,6 @@ export class BuQu extends TriggerSkill {
         recoverBy: skillUseEvent.fromId,
         toId: skillUseEvent.fromId,
       });
-
-      EventPacker.terminate(event);
     }
 
     room.setFlag<boolean>(skillUseEvent.fromId, this.GeneralName, true);

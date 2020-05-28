@@ -141,6 +141,10 @@ export abstract class Card {
     return typeof id === 'string';
   }
 
+  public equals(card: Readonly<Card>) {
+    return this.cardNumber === card.CardNumber && this.suit === card.Suit && this.name === card.Name;
+  }
+
   public reset() {
     this.manualSetCardTargetNumber = this.cardTargetNumber;
   }
@@ -175,10 +179,11 @@ export class VirtualCard<T extends Card = Card> extends Card {
   protected fromPackage: GameCardExtensions;
   protected effectUseDistance: number;
   protected bySkill: string;
+  protected hideActualCard = false;
 
   protected id = -1;
-  protected cardNumber = 0;
-  protected suit = CardSuit.NoSuit;
+  protected cardNumber: number;
+  protected suit: CardSuit;
 
   private viewAsBlackCard: boolean = false;
   private viewAsRedCard: boolean = false;
@@ -189,13 +194,14 @@ export class VirtualCard<T extends Card = Card> extends Card {
       cardSuit?: CardSuit;
       cardNumber?: number;
       bySkill: string;
+      hideActualCard?: boolean;
     },
     private cardIds: CardId[],
     skill?: Skill,
   ) {
     super();
 
-    const { cardName, cardNumber, cardSuit, bySkill } = viewAsOptions;
+    const { cardName, cardNumber, cardSuit, bySkill, hideActualCard } = viewAsOptions;
 
     const viewAsCard = Sanguosha.getCardByName(cardName) as T;
     Precondition.assert(viewAsCard !== undefined, `Unable to init virtual card: ${cardName}`);
@@ -211,8 +217,9 @@ export class VirtualCard<T extends Card = Card> extends Card {
     this.skill = skill ? skill : this.viewAs.Skill;
     this.cardType = this.viewAs.Type;
     this.effectUseDistance = this.viewAs.EffectUseDistance;
+    this.hideActualCard = !!hideActualCard;
 
-    this.cardNumber = cardNumber || 0;
+    this.cardNumber = cardNumber!;
 
     if (cardSuit !== undefined) {
       this.suit = cardSuit;
@@ -232,9 +239,6 @@ export class VirtualCard<T extends Card = Card> extends Card {
         this.viewAsBlackCard = this.viewAsBlackCard && (cardSuit === CardSuit.Spade || cardSuit === CardSuit.Club);
         this.viewAsRedCard = this.viewAsRedCard && (cardSuit === CardSuit.Heart || cardSuit === CardSuit.Diamond);
       }
-
-      this.suit = CardSuit.NoSuit;
-      this.cardNumber = 0;
     }
   }
 
@@ -245,8 +249,9 @@ export class VirtualCard<T extends Card = Card> extends Card {
       {
         cardName: parsedId.name,
         cardNumber: parsedId.cardNumber,
-        cardSuit: parsedId.cardSuit === CardSuit.NoSuit ? undefined : parsedId.cardSuit,
+        cardSuit: parsedId.cardSuit,
         bySkill: parsedId.bySkill,
+        hideActualCard: parsedId.hideActualCard,
       },
       parsedId.containedCardIds,
       skill,
@@ -259,6 +264,7 @@ export class VirtualCard<T extends Card = Card> extends Card {
       cardSuit?: CardSuit;
       cardNumber?: number;
       bySkill: string;
+      hideActualCard?: boolean;
     },
     cardIds: CardId[] = [],
     skill?: Skill,
@@ -274,15 +280,19 @@ export class VirtualCard<T extends Card = Card> extends Card {
     return this.viewAsRedCard;
   }
 
+  public isActualCardHidden() {
+    return this.hideActualCard;
+  }
+
   public get Suit() {
-    return this.suit;
+    return this.suit === undefined ? CardSuit.NoSuit : this.suit;
   }
   public set Suit(suit: CardSuit) {
     this.suit = suit;
   }
 
   public get CardNumber() {
-    return this.cardNumber;
+    return this.cardNumber === undefined ? 0 : this.cardNumber;
   }
 
   public set CardNumber(cardNumber: number) {
@@ -301,6 +311,7 @@ export class VirtualCard<T extends Card = Card> extends Card {
       bySkill: this.bySkill,
       skillName: this.skill.Name,
       containedCardIds: this.cardIds,
+      hideActualCard: this.hideActualCard,
     };
 
     return JSON.stringify(virtualCardIdJSONObject);

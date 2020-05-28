@@ -93,10 +93,8 @@ export class CiXiongJianSkill extends TriggerSkill {
     const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, toId);
     response.selectedOption = response.selectedOption || 'cixiongjian:draw-card';
     if (response.selectedOption === 'cixiongjian:drop-card') {
-      const { responseEvent } = await room.askForCardDrop(toId, 1, [PlayerCardsArea.HandArea], true);
-      if (responseEvent) {
-        await room.dropCards(CardMoveReason.SelfDrop, responseEvent.droppedCards, toId);
-      }
+      const response = await room.askForCardDrop(toId, 1, [PlayerCardsArea.HandArea], true, undefined, this.Name);
+      await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toId);
     } else {
       await room.drawCards(1, fromId);
     }

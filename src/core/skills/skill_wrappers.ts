@@ -1,6 +1,5 @@
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
-import { PlayerRole } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Skill, SkillType } from './skill';
 
@@ -16,6 +15,7 @@ function onCalculatingSkillUsageWrapper(
     private canUseEntity: (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) => boolean;
     private description = description;
     private skillName = name;
+    private canUse: (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) => boolean;
 
     public static get Description() {
       return description;
@@ -35,6 +35,7 @@ function onCalculatingSkillUsageWrapper(
         this.canUseEntity = this.canUse;
         this.canUse = (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) =>
           !owner.hasUsedSkill(this.Name) && this.canUseEntity(room, owner, content);
+        Object.bind(this, this.canUse);
       }
     }
 
@@ -74,10 +75,6 @@ function skillPropertyWrapper(
 
       if (options.lordSkill !== undefined) {
         this.lordSkill = options.lordSkill;
-        const canUseResult = this.canUse;
-
-        this.canUse = (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) =>
-          owner.Role === PlayerRole.Lord && canUseResult(room, owner, content);
       }
       if (options.shadowSkill !== undefined) {
         this.shadowSkill = options.shadowSkill;

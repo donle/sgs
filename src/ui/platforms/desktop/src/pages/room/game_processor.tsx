@@ -264,9 +264,10 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const action = new CardResponseAction(content.toId, this.store, this.presenter, content);
+    const action = new CardResponseAction(content.toId, this.store, this.presenter, content, this.translator);
     this.presenter.isSkillDisabled(
       CardResponseAction.isSkillsOnCardResponseDisabled(
+        this.store.room,
         new CardMatcher(content.cardMatcher),
         this.store.room.getPlayerById(content.toId),
       ),
@@ -279,6 +280,15 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
+    if (content.cardAmount === 0) {
+      const event: ClientEventFinder<T> = {
+        fromId: content.toId,
+        droppedCards: [],
+      };
+      this.store.room.broadcast(type, EventPacker.createIdentifierEvent(type, event));
+      return;
+    }
+
     this.presenter.createIncomingConversation({
       conversation: content.conversation
         ? content.conversation
@@ -286,7 +296,7 @@ export class GameClientProcessor {
       translator: this.translator,
     });
 
-    const action = new SelectAction(content.toId, this.store, this.presenter, content);
+    const action = new SelectAction(content.toId, this.store, this.presenter, this.translator, content);
     const selectedCards = await action.onSelectCard(content.fromArea, content.cardAmount, content.except);
 
     this.presenter.closeIncomingConversation();
@@ -308,7 +318,14 @@ export class GameClientProcessor {
       translator: this.translator,
     });
 
-    const action = new SelectAction(toId, this.store, this.presenter, content, new CardMatcher(cardMatcher));
+    const action = new SelectAction(
+      toId,
+      this.store,
+      this.presenter,
+      this.translator,
+      content,
+      new CardMatcher(cardMatcher),
+    );
     const selectedCards = await action.onSelectCard([PlayerCardsArea.HandArea], cardAmount);
 
     this.presenter.closeIncomingConversation();
@@ -329,7 +346,14 @@ export class GameClientProcessor {
       translator: this.translator,
     });
 
-    const action = new SelectAction(toId, this.store, this.presenter, content, new CardMatcher(cardMatcher));
+    const action = new SelectAction(
+      toId,
+      this.store,
+      this.presenter,
+      this.translator,
+      content,
+      new CardMatcher(cardMatcher),
+    );
     const selectedCards = await action.onSelectCard(fromArea, cardAmount);
 
     this.presenter.closeIncomingConversation();
@@ -344,9 +368,10 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const action = new ResponsiveUseCardAction(content.toId, this.store, this.presenter, content);
+    const action = new ResponsiveUseCardAction(content.toId, this.store, this.presenter, content, this.translator);
     this.presenter.isSkillDisabled(
       ResponsiveUseCardAction.isSkillsOnResponsiveCardUseDisabled(
+        this.store.room,
         new CardMatcher(content.cardMatcher),
         this.store.room.getPlayerById(content.toId),
       ),
@@ -541,7 +566,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const action = new SkillUseAction(content.toId, this.store, this.presenter, content);
+    const action = new SkillUseAction(content.toId, this.store, this.presenter, content, this.translator);
     action.onSelect(this.translator);
   }
 
@@ -600,7 +625,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const action = new PlayPhaseAction(content.toId, this.store, this.presenter);
+    const action = new PlayPhaseAction(content.toId, this.store, this.presenter, this.translator);
     this.presenter.isSkillDisabled(
       PlayPhaseAction.isPlayPhaseSkillsDisabled(this.store.room, this.presenter.ClientPlayer!, content),
     );
@@ -689,11 +714,19 @@ export class GameClientProcessor {
     const askForPeachMatcher = new CardMatcher({ name: ['peach'] });
     this.presenter.isSkillDisabled(
       ResponsiveUseCardAction.isSkillsOnResponsiveCardUseDisabled(
+        this.store.room,
         askForPeachMatcher,
         this.store.room.getPlayerById(content.fromId),
       ),
     );
-    const action = new AskForPeachAction(content.fromId, this.store, this.presenter, content, askForPeachMatcher);
+    const action = new AskForPeachAction(
+      content.fromId,
+      this.store,
+      this.presenter,
+      content,
+      this.translator,
+      askForPeachMatcher,
+    );
     action.onPlay(this.translator);
   }
 
@@ -823,7 +856,7 @@ export class GameClientProcessor {
       conversation,
       translator: this.translator,
     });
-    const action = new SelectAction(content.toId, this.store, this.presenter, content);
+    const action = new SelectAction(content.toId, this.store, this.presenter, this.translator, content);
     const selectedPlayers = await action.onSelectPlayer(requiredAmount, players);
 
     const choosePlayerEvent: ClientEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {

@@ -196,7 +196,7 @@ export const characterDictionary: Word[] = [
   { source: 'chanyuan', target: '缠怨' },
 
   { source: 'dianwei', target: '典韦' },
-  { source: 'guhuo', target: '强袭' },
+  { source: 'qiangxi', target: '强袭' },
 
   { source: 'xunyu', target: '荀彧' },
   { source: 'quhu', target: '驱虎' },
@@ -533,7 +533,8 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'hongyan_description',
-    target: '<b>锁定技</b>，你的黑桃牌或你的黑桃判定牌的花色视为红桃；当你于回合外失去红桃牌后，你摸一张牌。',
+    target:
+      '<b>锁定技</b>，你的黑桃牌或你的黑桃判定牌的花色视为红桃；当你于回合外失去红桃牌时，若你的手牌小于体力值，你摸一张牌。',
   },
   {
     source: 'buqu_description',
@@ -980,6 +981,7 @@ export const eventDictionary: Word[] = [
   { source: 'lose a hp', target: '失去一点体力' },
   { source: 'drop all {0} cards', target: '弃置所有 {0} 牌' },
   { source: '{0} displayed cards {1}', target: '{0} 展示了 {1}' },
+  { source: '{0} displayed guhuo cards {1}', target: '{0} 展示了蛊惑牌 {1}' },
   { source: '{0} displayed cards {1} from top of draw stack', target: '{0} 展示了牌堆顶的一张 {1}' },
   { source: 'please choose another player or click cancel', target: '请选择一名其他角色或点击取消' },
   {
@@ -1052,12 +1054,16 @@ export const eventDictionary: Word[] = [
   },
   {
     source: '{0} used {1} to you, please response a {2} card',
-    target: '{0} 对你使用了 {1}, 打出一张 【{2}】来响应',
+    target: '{0} 对你使用了 {1}, 打出一张 【{2}】 来响应',
   },
-  { source: 'please response a {0} card', target: '是否打出一张 【{0}】响应' },
+  { source: 'please response a {0} card', target: '是否打出一张 【{0}】 响应' },
   {
     source: '{0} used skill {1} to you, please response a {2} card',
     target: '{0} 对你使用了 【{1}】, 打出一张 {2} 来响应',
+  },
+  {
+    source: 'do you wanna response a {0} card for skill {1} from {2}',
+    target: '是否打出一张 【{0}】 来响应 {2} 的 【{1}】',
   },
   { source: '{0} display hand card {1} from {2}', target: '{0} 展示了 {2} 的一张 {1}' },
   { source: '{0} lost {1} hand card', target: '{0} 失去了 {1} 张手牌' },
@@ -1110,6 +1116,10 @@ export const eventDictionary: Word[] = [
   { source: 'luoyi:cancel', target: '否' },
   { source: 'kuanggu:draw', target: '摸一张牌' },
   { source: 'kuanggu:recover', target: '回复1点体力' },
+  { source: 'guhuo:doubt', target: '质疑' },
+  { source: 'guhuo:no-doubt', target: '不质疑' },
+  { source: 'do you doubt the pre-use of {0} from {1}', target: '是否质疑 {1} 使用的 {0}' },
+  { source: '{0} selected {1}', target: '{0} 选择了 {1}' },
   {
     source: 'please choose tianxiang options:{0}',
     target: '请选择：1.令其受到1点伤害，然后摸 {0} 张牌。2.令其失去1点体力，然后其获得你弃置的牌',

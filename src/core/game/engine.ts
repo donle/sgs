@@ -1,4 +1,4 @@
-import { Card, VirtualCard } from 'core/cards/card';
+import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, VirtualCardId } from 'core/cards/libs/card_props';
 import { Character, CharacterId } from 'core/characters/character';
@@ -17,6 +17,9 @@ export class Sanguosha {
   private static cards: Card[];
   private static characters: Character[];
   private static version: string;
+  private static cardCategories: {
+    [K: string]: CardType[];
+  } = {} as any;
 
   private static parseCoreVersion() {
     Sanguosha.version = coreVersion;
@@ -38,6 +41,27 @@ export class Sanguosha {
     Sanguosha.cards = CardLoader.getInstance().getAllCards();
     Sanguosha.characters = CharacterLoader.getInstance().getAllCharacters();
     Sanguosha.parseCoreVersion();
+
+    for (const card of this.cards) {
+      if (!(card.Name in this.cardCategories)) {
+        this.cardCategories[card.Name] = card.Type;
+      }
+    }
+  }
+
+  public static getCardTypeByName(cardName: string) {
+    return this.cardCategories[cardName];
+  }
+
+  public static getCardNameByType(finder: (types: CardType[]) => boolean) {
+    const results: string[] = [];
+    for (const [cardName, types] of Object.entries(this.cardCategories)) {
+      if (finder(types)) {
+        results.push(cardName);
+      }
+    }
+
+    return results;
   }
 
   public static loadCards(...cards: GameCardExtensions[]) {

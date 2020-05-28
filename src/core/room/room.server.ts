@@ -22,6 +22,7 @@ import { ServerPlayer } from 'core/player/player.server';
 import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 
 import { Card, CardType, VirtualCard } from 'core/cards/card';
+import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardTargetEnum } from 'core/cards/libs/card_props';
 import { Character } from 'core/characters/character';
 import { PinDianResultType } from 'core/event/event.server';
@@ -36,7 +37,7 @@ import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { OnDefineReleaseTiming, Skill, SkillHooks, SkillType, TriggerSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
-import { TranslationPack } from 'core/translations/translation_json_tool';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 import { GameProcessor } from '../game/game_processor';
 import { Room, RoomId } from './room';
 
@@ -318,75 +319,186 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     fromArea: PlayerCardsArea[],
     uncancellable?: boolean,
     except?: CardId[],
+    bySkill?: string,
+    conversation?: string | PatchedTranslationObject,
   ) {
-    const event = EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForCardDropEvent, {
-      cardAmount: discardAmount,
-      fromArea,
-      toId: this.CurrentPlayer.Id,
-      except,
-    });
+    const event: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent> = EventPacker.createIdentifierEvent(
+      GameEventIdentifiers.AskForCardDropEvent,
+      {
+        cardAmount: discardAmount,
+        fromArea,
+        toId: this.CurrentPlayer.Id,
+        except,
+        triggeredBySkills: bySkill ? [bySkill] : undefined,
+        conversation,
+      },
+    );
     if (uncancellable) {
       EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForCardDropEvent>(event);
     }
     await this.trigger(event);
-    if (EventPacker.isTerminated(event)) {
-      return {
-        terminated: true,
-      };
+    if (event.responsedEvent) {
+      EventPacker.terminate(event);
+      return event.responsedEvent;
     }
-    this.notify(GameEventIdentifiers.AskForCardDropEvent, event, playerId);
 
-    return {
-      responseEvent: await this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForCardDropEvent, playerId),
-    };
+    this.notify(GameEventIdentifiers.AskForCardDropEvent, event, playerId);
+    return await this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForCardDropEvent, playerId);
   }
 
   public async askForPeach(event: ServerEventFinder<GameEventIdentifiers.AskForPeachEvent>) {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForPeachEvent, event);
     await this.trigger(event);
-    if (EventPacker.isTerminated(event)) {
-      return {
-        terminated: true,
-      };
+    if (this.getPlayerById(event.toId).Hp > 0) {
+      return;
     }
-    this.notify(GameEventIdentifiers.AskForPeachEvent, event, event.fromId);
 
-    return {
-      responseEvent: await this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForPeachEvent, event.fromId),
-    };
+    let responseEvent: ClientEventFinder<GameEventIdentifiers.AskForPeachEvent> | undefined;
+    do {
+      this.notify(GameEventIdentifiers.AskForPeachEvent, event, event.fromId);
+      responseEvent = await this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForPeachEvent, event.fromId);
+      if (
+        responseEvent.cardId === undefined ||
+        (await this.preUseCard({ fromId: responseEvent.fromId, cardId: responseEvent.cardId, toIds: [event.toId] }))
+      ) {
+        break;
+      }
+    } while (true);
+
+    return responseEvent;
   }
 
   public async askForCardUse(event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>, to: PlayerId) {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForCardUseEvent, event);
     await this.trigger<typeof event>(event);
-    if (EventPacker.isTerminated(event)) {
-      return {
-        terminated: true,
-      };
+    if (event.responsedEvent) {
+      EventPacker.terminate(event);
+      return event.responsedEvent;
     }
+    const player = this.getPlayerById(to);
 
-    this.notify(GameEventIdentifiers.AskForCardUseEvent, event, to);
+    let responseEvent: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> | undefined;
+    do {
+      this.notify(GameEventIdentifiers.AskForCardUseEvent, event, to);
+      responseEvent = await this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForCardUseEvent, to);
+      const preUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
+        fromId: to,
+        toIds: responseEvent.toIds,
+        cardId: responseEvent.cardId!,
+      };
 
-    return {
-      responseEvent: await this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForCardUseEvent, to),
-    };
+      if (responseEvent.cardId === undefined || (await this.preUseCard(preUseEvent))) {
+        responseEvent.cardId = preUseEvent.cardId;
+        responseEvent.toIds = preUseEvent.toIds;
+        responseEvent.fromId = preUseEvent.fromId;
+        break;
+      } else {
+        responseEvent.cardId = undefined;
+      }
+    } while (player.hasCard(this, new CardMatcher(event.cardMatcher)));
+
+    return responseEvent;
   }
+
   public async askForCardResponse(
     event: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>,
     to: PlayerId,
   ) {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForCardResponseEvent, event);
     await this.trigger<typeof event>(event);
-    if (EventPacker.isTerminated(event)) {
-      return {
-        terminated: true,
+    if (event.responsedEvent) {
+      EventPacker.terminate(event);
+      return event.responsedEvent;
+    }
+    const player = this.getPlayerById(to);
+
+    let responseEvent: ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent> | undefined;
+    do {
+      this.notify(GameEventIdentifiers.AskForCardResponseEvent, event, to);
+      responseEvent = await this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForCardResponseEvent, to);
+      const preResponseEvent: ServerEventFinder<GameEventIdentifiers.CardResponseEvent> = {
+        fromId: to,
+        cardId: responseEvent.cardId!,
       };
+
+      if (responseEvent.cardId === undefined || (await this.preResponseCard(preResponseEvent))) {
+        responseEvent.cardId = preResponseEvent.cardId;
+        responseEvent.fromId = preResponseEvent.fromId;
+        break;
+      }
+    } while (player.hasCard(this, new CardMatcher(event.cardMatcher)));
+
+    return responseEvent;
+  }
+
+  public async preUseCard(cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): Promise<boolean> {
+    EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, cardUseEvent);
+    if (cardUseEvent.cardId !== undefined && Card.isVirtualCardId(cardUseEvent.cardId)) {
+      const from = this.getPlayerById(cardUseEvent.fromId);
+      const card = Sanguosha.getCardById<VirtualCard>(cardUseEvent.cardId);
+      await card.Skill.onUse(this, cardUseEvent);
+      await this.useSkill({
+        fromId: cardUseEvent.fromId,
+        skillName: card.GeneratedBySkill,
+        toIds: cardUseEvent.toIds,
+        animation: card.Skill.getAnimationSteps(cardUseEvent),
+        translationsMessage:
+          card.ActualCardIds.length === 0 || card.isActualCardHidden()
+            ? TranslationPack.translationJsonPatcher(
+                '{0} used skill {1}, use card {2}' + (cardUseEvent.toIds ? ' to {3}' : ''),
+                TranslationPack.patchPlayerInTranslation(from),
+                card.GeneratedBySkill,
+                TranslationPack.patchCardInTranslation(card.Id),
+                cardUseEvent.toIds
+                  ? TranslationPack.patchPlayerInTranslation(...cardUseEvent.toIds.map(id => this.getPlayerById(id)))
+                  : '',
+              ).extract()
+            : TranslationPack.translationJsonPatcher(
+                '{0} used skill {1}, transformed {2} as {3} card' + (cardUseEvent.toIds ? ' used to {4}' : ' to use'),
+                TranslationPack.patchPlayerInTranslation(from),
+                card.GeneratedBySkill || '',
+                TranslationPack.patchCardInTranslation(...card.ActualCardIds),
+                TranslationPack.patchCardInTranslation(card.Id),
+                cardUseEvent.toIds
+                  ? TranslationPack.patchPlayerInTranslation(...cardUseEvent.toIds.map(id => this.getPlayerById(id)))
+                  : '',
+              ).extract(),
+      });
     }
 
-    this.notify(GameEventIdentifiers.AskForCardResponseEvent, event, to);
-    return {
-      responseEvent: await this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForCardResponseEvent, to),
-    };
+    await this.trigger(cardUseEvent, CardUseStage.PreCardUse);
+    return !EventPacker.isTerminated(cardUseEvent);
+  }
+  public async preResponseCard(
+    cardResponseEvent: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>,
+  ): Promise<boolean> {
+    EventPacker.createIdentifierEvent(GameEventIdentifiers.CardResponseEvent, cardResponseEvent);
+    if (cardResponseEvent.cardId !== undefined && Card.isVirtualCardId(cardResponseEvent.cardId)) {
+      const from = this.getPlayerById(cardResponseEvent.fromId);
+      const card = Sanguosha.getCardById<VirtualCard>(cardResponseEvent.cardId);
+      await this.useSkill({
+        fromId: cardResponseEvent.fromId,
+        skillName: card.GeneratedBySkill,
+        translationsMessage:
+          card.ActualCardIds.length === 0 || card.isActualCardHidden()
+            ? TranslationPack.translationJsonPatcher(
+                '{0} used skill {1}, response card {2}',
+                TranslationPack.patchPlayerInTranslation(from),
+                card.GeneratedBySkill,
+                TranslationPack.patchCardInTranslation(card.Id),
+              ).extract()
+            : TranslationPack.translationJsonPatcher(
+                '{0} used skill {1}, transformed {2} as {3} card to response',
+                TranslationPack.patchPlayerInTranslation(from),
+                card.GeneratedBySkill,
+                TranslationPack.patchCardInTranslation(...card.ActualCardIds),
+                TranslationPack.patchCardInTranslation(card.Id),
+              ).extract(),
+      });
+    }
+
+    await this.trigger(cardResponseEvent, CardResponseStage.PreCardResponse);
+    return !EventPacker.isTerminated(cardResponseEvent);
   }
 
   public async useCard(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
@@ -420,14 +532,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     await super.useCard(event);
     const card = Sanguosha.getCardById(event.cardId);
-    const from = this.getPlayerById(event.fromId);
-
-    await this.moveCards({
-      movingCards: [{ card: event.cardId, fromArea: from.cardFrom(event.cardId) }],
-      toArea: CardMoveArea.ProcessingArea,
-      fromId: from.Id,
-      moveReason: CardMoveReason.CardUse,
-    });
 
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, event, async stage => {
       if (stage === CardUseStage.AfterCardUseEffect) {
@@ -501,11 +605,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           EventPacker.copyPropertiesTo(cardEffectEvent, event);
         }
         await card.Skill.afterEffect(this, cardEffectEvent);
-      } else if (stage === CardUseStage.CardUseFinishedEffect) {
-        if (this.isCardOnProcessing(card.Id)) {
-          this.endProcessOnTag(card.Id.toString());
-          this.bury(card.Id);
-        }
       }
 
       return true;
@@ -632,6 +731,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       fromId: playerId,
       askedBy,
       triggeredBySkills: byReason ? [byReason] : undefined,
+      from,
     };
 
     let drawedCards: CardId[] = [];
@@ -640,14 +740,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       EventPacker.createIdentifierEvent(GameEventIdentifiers.DrawCardEvent, drawEvent),
       async stage => {
         if (stage === DrawCardStage.CardDrawing) {
-          drawedCards = this.getCards(drawEvent.drawAmount, from);
-          await this.moveCards({
-            movingCards: drawedCards.map(cardId => ({ card: cardId, fromArea: CardMoveArea.DrawStack })),
-            toId: drawEvent.fromId,
-            toArea: CardMoveArea.HandArea,
-            moveReason: CardMoveReason.CardDraw,
-            hideBroadcast: true,
-          });
+          drawedCards = this.drawStack.slice(0, drawEvent.drawAmount);
         }
 
         return true;
@@ -690,6 +783,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             toArea: CardMoveArea.DropStack,
             moveReason,
             hideBroadcast: true,
+            movedByReason: byReason,
           });
         }
 
@@ -746,7 +840,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async responseCard(event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>): Promise<void> {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.CardResponseEvent, event);
-    this.addProcessingCards(event.cardId.toString(), event.cardId);
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardResponseEvent, event, async stage => {
       if (stage === CardResponseStage.AfterCardResponseEffect) {
         if (event.responseToEvent) {
@@ -757,11 +850,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
       return true;
     });
-
-    if (this.isCardOnProcessing(event.cardId)) {
-      this.endProcessOnTag(event.cardId.toString());
-      this.bury(event.cardId);
-    }
   }
 
   public async judge(
@@ -770,7 +858,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     bySkill?: string,
   ): Promise<ServerEventFinder<GameEventIdentifiers.JudgeEvent>> {
     const judgeCardId = this.getCards(1, 'top')[0];
-    this.addProcessingCards(judgeCardId.toString(), judgeCardId);
     const event: ServerEventFinder<GameEventIdentifiers.JudgeEvent> = {
       toId: to,
       judgeCardId,
@@ -782,8 +869,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       GameEventIdentifiers.JudgeEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.JudgeEvent, event),
     );
-    this.endProcessOnTag(judgeCardId.toString());
-    this.bury(event.judgeCardId);
 
     return event;
   }

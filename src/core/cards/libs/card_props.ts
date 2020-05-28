@@ -31,6 +31,7 @@ export type VirtualCardIdProps = {
   skillName?: string;
   bySkill: string;
   containedCardIds: CardId[];
+  hideActualCard?: boolean;
 };
 
 export const enum CardTargetEnum {

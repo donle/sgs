@@ -4,6 +4,7 @@ import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { Room } from 'core/room/room';
 import { FilterSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -11,7 +12,9 @@ import { RoomPresenter, RoomStore } from '../room.presenter';
 import { BaseAction } from './base_action';
 
 export class CardResponseAction extends BaseAction {
-  public static isSkillsOnCardResponseDisabled = (matcher: CardMatcher, player: Player) => (skill: Skill) => {
+  public static isSkillsOnCardResponseDisabled = (room: Room, matcher: CardMatcher, player: Player) => (
+    skill: Skill,
+  ) => {
     if (UniqueSkillRule.isProhibited(skill, player)) {
       return true;
     }
@@ -19,7 +22,7 @@ export class CardResponseAction extends BaseAction {
     if (skill instanceof TriggerSkill) {
       return false;
     } else if (skill instanceof ViewAsSkill) {
-      return !new CardMatcher({ name: skill.canViewAs() }).match(matcher);
+      return !new CardMatcher({ name: skill.canViewAs() }).match(matcher) || !skill.canUse(room, player);
     }
 
     return true;
@@ -33,8 +36,9 @@ export class CardResponseAction extends BaseAction {
     store: RoomStore,
     presenter: RoomPresenter,
     askForEvent: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>,
+    translator: ClientTranslationModule,
   ) {
-    super(playerId, store, presenter, undefined);
+    super(playerId, store, presenter, translator);
     this.askForEvent = askForEvent;
     this.matcher = new CardMatcher(this.askForEvent.cardMatcher);
 
@@ -98,6 +102,13 @@ export class CardResponseAction extends BaseAction {
     }
 
     return false;
+  }
+
+  protected onClickCard(card: Card, selected: boolean): void {
+    super.onClickCard(card, selected, this.matcher);
+  }
+  protected onClickSkill(skill: Skill, selected: boolean): void {
+    super.onClickSkill(skill, selected, this.matcher);
   }
 
   enableToCallAction() {

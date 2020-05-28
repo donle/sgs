@@ -62,7 +62,7 @@ export class JieDaoShaRenSkill extends ActiveSkill {
     const { allTargets, cardId } = event;
     const [attacker, target] = Precondition.exists(allTargets, 'Unknown targets in jiedaosharen');
 
-    const result = await room.askForCardUse(
+    const response = await room.askForCardUse(
       {
         toId: attacker,
         byCardId: cardId,
@@ -80,37 +80,29 @@ export class JieDaoShaRenSkill extends ActiveSkill {
       attacker,
     );
 
-    if (result.terminated) {
-      return true;
-    }
+    if (response.cardId !== undefined) {
+      const cardUseEvent = {
+        fromId: response.fromId,
+        cardId: response.cardId,
+        toIds: response.toIds,
+        triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
+      };
 
-    if (result.responseEvent) {
-      if (result.responseEvent.cardId) {
-        const cardUseEvent = {
-          fromId: result.responseEvent.fromId,
-          cardId: result.responseEvent.cardId,
-          toIds: result.responseEvent.toIds,
-          triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
-        };
-
-        await room.useCard(cardUseEvent);
-      } else {
-        const weapon = room.getPlayerById(attacker).getEquipment(CardType.Weapon);
-        if (weapon === undefined) {
-          return true;
-        }
-
-        await room.moveCards({
-          movingCards: [{ card: weapon, fromArea: CardMoveArea.EquipArea }],
-          fromId: attacker,
-          toId: event.fromId,
-          toArea: CardMoveArea.HandArea,
-          moveReason: CardMoveReason.ActivePrey,
-          proposer: event.fromId,
-        });
-      }
+      await room.useCard(cardUseEvent);
     } else {
-      throw new Error(`Unexcepte return type of asForCardUse in ${this.Name}`);
+      const weapon = room.getPlayerById(attacker).getEquipment(CardType.Weapon);
+      if (weapon === undefined) {
+        return true;
+      }
+
+      await room.moveCards({
+        movingCards: [{ card: weapon, fromArea: CardMoveArea.EquipArea }],
+        fromId: attacker,
+        toId: event.fromId,
+        toArea: CardMoveArea.HandArea,
+        moveReason: CardMoveReason.ActivePrey,
+        proposer: event.fromId,
+      });
     }
 
     return true;

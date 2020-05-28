@@ -4,6 +4,7 @@ import { CardMoveArea, GameEventIdentifiers, ServerEventFinder } from 'core/even
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardMoveStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
+import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CompulsorySkill, ShadowSkill, TransformSkill } from 'core/skills/skill';
 import { TriggerSkill } from 'core/skills/skill';
@@ -49,7 +50,11 @@ export class HongYanShadow extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
-    return owner.Id === content.fromId && room.CurrentPlayer.Id !== owner.Id;
+    return (
+      owner.Id === content.fromId &&
+      room.CurrentPlayer.Id !== owner.Id &&
+      owner.getCardIds(PlayerCardsArea.HandArea).length < owner.Hp
+    );
   }
 
   async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {

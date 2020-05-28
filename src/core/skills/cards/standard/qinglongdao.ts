@@ -10,7 +10,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 @CommonSkill({ name: 'qinglongyanyuedao', description: 'qinglongyanyuedao_description' })
 export class QingLongYanYueDaoSkill extends TriggerSkill {
   isAutoTrigger() {
-    return false;
+    return true;
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>, stage?: AllStage) {
@@ -22,33 +22,39 @@ export class QingLongYanYueDaoSkill extends TriggerSkill {
   }
 
   async onTrigger(room: Room, content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    content.translationsMessage = undefined;
     return true;
   }
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const slashEffectEvent = skillUseEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>;
-
+    const from = room.getPlayerById(skillUseEvent.fromId);
     const askForSlash: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent> = {
       toId: slashEffectEvent.fromId!,
       scopedTargets: slashEffectEvent.toIds,
       extraUse: true,
       cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
-      conversation: TranslationPack.translationJsonPatcher('please select to use a {0}', 'slash').extract(),
+      conversation: TranslationPack.translationJsonPatcher('do you want to trigger skill {0} ?', this.Name).extract(),
     };
 
     const response = await room.askForCardUse(askForSlash, slashEffectEvent.fromId!);
-    if (response.responseEvent && response.responseEvent.cardId !== undefined) {
+    if (response.cardId !== undefined) {
       const slashEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
-        fromId: response.responseEvent.fromId,
-        cardId: response.responseEvent.cardId!,
+        fromId: response.fromId,
+        cardId: response.cardId,
         toIds: slashEffectEvent.toIds,
       };
 
+      room.broadcast(GameEventIdentifiers.CustomGameDialog, {
+        translationsMessage: TranslationPack.translationJsonPatcher(
+          '{0} used skill {1}',
+          TranslationPack.patchPlayerInTranslation(from),
+          this.Name,
+        ).extract(),
+      });
       await room.useCard(slashEvent);
-    } else {
-      return true;
     }
 
-    return true;
+    return response.cardId !== undefined;
   }
 }

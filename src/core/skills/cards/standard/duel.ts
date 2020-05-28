@@ -1,6 +1,6 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { DamageType } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -46,7 +46,7 @@ export class DuelSkill extends ActiveSkill {
 
     let turn = 0;
     while (true) {
-      const result = await room.askForCardResponse(
+      const response = await room.askForCardResponse(
         {
           toId: targets[turn],
           cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
@@ -61,34 +61,17 @@ export class DuelSkill extends ActiveSkill {
         targets[turn],
       );
 
-      const responseCard = result.responseEvent?.cardId;
-      if (result.terminated || responseCard !== undefined) {
-        if (responseCard !== undefined) {
-          const responseEvent = {
-            fromId: targets[turn],
-            cardId: responseCard,
-            responseToEvent: event,
-          };
-          await room.responseCard(responseEvent);
-
-          if (EventPacker.isTerminated(responseEvent)) {
-            await room.damage({
-              fromId: targets[(turn + 1) % targets.length],
-              cardIds: [event.cardId],
-              damage: 1,
-              damageType: DamageType.Normal,
-              toId: targets[turn],
-              triggeredBySkills: [this.Name],
-            });
-            break;
-          }
-        }
+      if (response.cardId !== undefined) {
+        const responseEvent = {
+          fromId: targets[turn],
+          cardId: response.cardId,
+          responseToEvent: event,
+        };
+        await room.responseCard(responseEvent);
 
         turn = (turn + 1) % targets.length;
         continue;
-      }
-
-      if (!result.terminated && responseCard === undefined) {
+      } else {
         await room.damage({
           fromId: targets[(turn + 1) % targets.length],
           cardIds: [event.cardId],

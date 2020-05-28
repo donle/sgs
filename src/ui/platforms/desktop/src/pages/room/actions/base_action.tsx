@@ -1,11 +1,14 @@
-import { Card, CardType } from 'core/cards/card';
+import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { ActiveSkill, ResponsiveSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
+import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import * as React from 'react';
 import { RoomPresenter, RoomStore } from '../room.presenter';
+import { CardCategoryDialog } from '../ui/dialog/card_category_dialog/card_category_dialog';
 
 export abstract class BaseAction {
   public static disableSkills = (skill: Skill) => {
@@ -23,29 +26,36 @@ export abstract class BaseAction {
   protected equipSkillCardId?: CardId;
   protected pendingCards: CardId[] = [];
 
+  private inProcessDialog = false;
+
   constructor(
     protected playerId: PlayerId,
     protected store: RoomStore,
     protected presenter: RoomPresenter,
+    protected translator: ClientTranslationModule,
     protected scopedTargets?: PlayerId[],
   ) {
     this.presenter.onClickPlayer((player: Player, selected: boolean) => {
+      if (this.inProcessDialog) {
+        this.presenter.closeDialog();
+      }
+
       selected ? this.selectPlayer(player) : this.unselectePlayer(player);
       this.onClickPlayer(player, selected);
-      this.enableToCallAction()
-        ? this.presenter.enableActionButton('confirm')
-        : this.presenter.disableActionButton('confirm');
-      this.presenter.broadcastUIUpdate();
     });
     this.presenter.onClickPlayerCard((card: Card, selected: boolean) => {
+      if (this.inProcessDialog) {
+        this.presenter.closeDialog();
+      }
+
       selected ? this.selectCard(card.Id) : this.unselectCard(card.Id);
       this.onClickCard(card, selected);
-      this.enableToCallAction()
-        ? this.presenter.enableActionButton('confirm')
-        : this.presenter.disableActionButton('confirm');
-      this.presenter.broadcastUIUpdate();
     });
     this.presenter.onClickEquipment((card: Card, selected: boolean) => {
+      if (this.inProcessDialog) {
+        this.presenter.closeDialog();
+      }
+
       if (this.selectedCardToPlay === undefined && this.selectedSkillToPlay === undefined) {
         if (card.Skill instanceof ActiveSkill || card.Skill instanceof ViewAsSkill) {
           if (selected) {
@@ -60,19 +70,14 @@ export abstract class BaseAction {
       //TODO:
       selected ? this.selectCard(card.Id) : this.unselectCard(card.Id);
       this.onClickCard(card, selected);
-
-      this.enableToCallAction()
-        ? this.presenter.enableActionButton('confirm')
-        : this.presenter.disableActionButton('confirm');
-      this.presenter.broadcastUIUpdate();
     });
     this.presenter.onClickSkill((skill: Skill, selected: boolean) => {
+      if (this.inProcessDialog) {
+        this.presenter.closeDialog();
+      }
+
       selected ? this.selectSkill(skill) : this.unselectSkill(skill);
       this.onClickSkill(skill, selected);
-      this.enableToCallAction()
-        ? this.presenter.enableActionButton('confirm')
-        : this.presenter.disableActionButton('confirm');
-      this.presenter.broadcastUIUpdate();
     });
   }
 
@@ -329,6 +334,13 @@ export abstract class BaseAction {
     }
   }
 
+  private callToActionCheck() {
+    this.enableToCallAction()
+      ? this.presenter.enableActionButton('confirm')
+      : this.presenter.disableActionButton('confirm');
+    this.presenter.broadcastUIUpdate();
+  }
+
   protected enableToCallAction() {
     if (this.selectedCardToPlay !== undefined) {
       const card = Sanguosha.getCardById(this.selectedCardToPlay);
@@ -366,7 +378,8 @@ export abstract class BaseAction {
 
   public abstract onPlay(...args: any): void;
 
-  protected onClickCard(card: Card, selected: boolean): void {
+  protected onClickCard(card: Card, selected: boolean, matcher?: CardMatcher): void {
+    const player = this.store.room.getPlayerById(this.playerId);
     if (this.selectedSkillToPlay !== undefined) {
       if (
         this.selectedSkillToPlay instanceof ViewAsSkill &&
@@ -376,16 +389,91 @@ export abstract class BaseAction {
           this.pendingCards,
         )
       ) {
-        this.selectedCardToPlay = this.selectedSkillToPlay.viewAs(this.pendingCards).Id;
+        const canViewAs = this.selectedSkillToPlay.canViewAs().filter(cardName => {
+          if (!matcher) {
+            return (
+              !(Sanguosha.getCardByName(cardName).Skill instanceof ResponsiveSkill) &&
+              player.canUseCard(
+                this.store.room,
+                VirtualCard.create({ cardName, bySkill: this.selectedSkillToPlay!.Name }).Id,
+              )
+            );
+          } else {
+            return matcher.Matcher.name ? matcher.Matcher.name.includes(cardName) : false;
+          }
+        });
+
+        if (canViewAs.length > 1) {
+          const skill = this.selectedSkillToPlay as ViewAsSkill;
+          this.inProcessDialog = true;
+          const onClickDemoCard = (selectedCardName: string) => {
+            this.inProcessDialog = false;
+            this.presenter.closeDialog();
+            this.selectedCardToPlay = skill.viewAs(this.pendingCards, selectedCardName).Id;
+            this.callToActionCheck();
+          };
+
+          this.presenter.createDialog(
+            <CardCategoryDialog translator={this.translator} cardNames={canViewAs} onClick={onClickDemoCard} />,
+          );
+        } else {
+          this.selectedCardToPlay = this.selectedSkillToPlay.viewAs(this.pendingCards, canViewAs[0]).Id;
+        }
       } else {
         this.selectedCardToPlay = undefined;
       }
     }
+    this.callToActionCheck();
   }
-  // tslint:disable-next-line:no-empty
-  protected onClickPlayer(player: Player, selected: boolean): void {}
-  // tslint:disable-next-line:no-empty
-  protected onClickSkill(skill: Skill, selected: boolean): void {}
+
+  protected onClickSkill(skill: Skill, selected: boolean, matcher?: CardMatcher): void {
+    const player = this.store.room.getPlayerById(this.playerId);
+    if (
+      this.selectedSkillToPlay &&
+      this.selectedSkillToPlay instanceof ViewAsSkill &&
+      this.selectedSkillToPlay.cardFilter(
+        this.store.room,
+        this.store.room.getPlayerById(this.playerId),
+        this.pendingCards,
+      )
+    ) {
+      const canViewAs = this.selectedSkillToPlay.canViewAs().filter(cardName => {
+        if (!matcher) {
+          return (
+            !(Sanguosha.getCardByName(cardName).Skill instanceof ResponsiveSkill) &&
+            player.canUseCard(
+              this.store.room,
+              VirtualCard.create({ cardName, bySkill: this.selectedSkillToPlay!.Name }).Id,
+            )
+          );
+        } else {
+          return matcher.Matcher.name ? matcher.Matcher.name.includes(cardName) : false;
+        }
+      });
+
+      if (canViewAs.length > 1) {
+        const skill = this.selectedSkillToPlay as ViewAsSkill;
+        this.inProcessDialog = true;
+        const onClickDemoCard = (selectedCardName: string) => {
+          this.inProcessDialog = false;
+          this.presenter.closeDialog();
+          this.selectedCardToPlay = skill.viewAs(this.pendingCards, selectedCardName).Id;
+          this.callToActionCheck();
+        };
+
+        this.presenter.createDialog(
+          <CardCategoryDialog translator={this.translator} cardNames={canViewAs} onClick={onClickDemoCard} />,
+        );
+      } else {
+        this.selectedCardToPlay = this.selectedSkillToPlay.viewAs(this.pendingCards, canViewAs[0]).Id;
+      }
+    }
+    this.callToActionCheck();
+  }
+
+  protected onClickPlayer(player: Player, selected: boolean): void {
+    this.callToActionCheck();
+  }
   // tslint:disable-next-line:no-empty
   protected onResetAction() {}
 }

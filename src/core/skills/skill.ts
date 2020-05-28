@@ -256,7 +256,7 @@ export abstract class TransformSkill extends Skill {
 }
 
 export abstract class ViewAsSkill extends Skill {
-  public isRefreshAt() {
+  public isRefreshAt(phase: PlayerPhase) {
     return false;
   }
 
@@ -267,7 +267,7 @@ export abstract class ViewAsSkill extends Skill {
   ): boolean;
 
   public abstract canViewAs(): string[];
-  public abstract viewAs(cards: CardId[]): VirtualCard;
+  public abstract viewAs(cards: CardId[], viewAs?: string): VirtualCard;
   public abstract cardFilter(room: Room, owner: Player, cards: CardId[]): boolean;
   public abstract isAvailableCard(
     room: Room,

@@ -106,6 +106,7 @@ export const enum AimStage {
 }
 
 export const enum CardUseStage {
+  PreCardUse = 'PreCardUse',
   BeforeCardUseEffect = 'BeforeCardUseEffect',
   CardUsing = 'CardUsing',
   AfterCardUseEffect = 'AfterCardUseEffect',
@@ -121,6 +122,7 @@ export const enum CardEffectStage {
 }
 
 export const enum CardResponseStage {
+  PreCardResponse = 'PreCardResponse',
   BeforeCardResponseEffect = 'BeforeCardResponseEffect',
   CardResponsing = 'CardResponsing',
   AfterCardResponseEffect = 'AfterCardResponseEffect',

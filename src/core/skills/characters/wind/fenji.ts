@@ -35,8 +35,8 @@ export class FenJi extends TriggerSkill {
   ): Promise<boolean> {
     const { triggeredOnEvent } = skillUseEvent;
     const moveCardEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
-    await room.drawCards(2, moveCardEvent.fromId, 'top', undefined, this.Name);
     await room.loseHp(skillUseEvent.fromId, 1);
+    await room.drawCards(2, moveCardEvent.fromId, 'top', undefined, this.Name);
 
     return true;
   }

@@ -1,0 +1,23 @@
+.cardCategoryDialog {
+  max-width: 600px;
+}
+
+.cardListName {
+  margin-top: 0;
+  width: 100%;
+}
+
+.cardList {
+    display: flex;
+    flex-direction: column;
+}
+
+.demoCardList {
+    margin: 8px 0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.flatCard {
+  margin: 2px;
+}

@@ -54,7 +54,7 @@ export class NanManRuQingSkill extends ActiveSkill {
       triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
     };
 
-    const result = await room.askForCardResponse(
+    const response = await room.askForCardResponse(
       {
         ...askForCardEvent,
         toId: to,
@@ -62,11 +62,7 @@ export class NanManRuQingSkill extends ActiveSkill {
       to,
     );
 
-    const { terminated, responseEvent } = result;
-
-    if (terminated) {
-      return false;
-    } else if (!responseEvent || responseEvent.cardId === undefined) {
+    if (response.cardId === undefined) {
       const eventContent = {
         fromId,
         toId: to,
@@ -80,7 +76,7 @@ export class NanManRuQingSkill extends ActiveSkill {
     } else {
       const cardResponsedEvent: ServerEventFinder<GameEventIdentifiers.CardResponseEvent> = {
         fromId: to,
-        cardId: responseEvent.cardId,
+        cardId: response.cardId,
       };
       EventPacker.terminate(event);
 

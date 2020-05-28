@@ -5,7 +5,6 @@ import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'baguazhen', description: 'baguazhen_description' })
@@ -55,14 +54,6 @@ export class BaGuaZhenSkill extends TriggerSkill {
     const jinkCardEvent = triggeredOnEvent as ServerEventFinder<
       GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent
     >;
-
-    const identifier = Precondition.exists(
-      EventPacker.getIdentifier<GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent>(
-        jinkCardEvent,
-      ),
-      `Unwrapped event without identifier in ${this.Name}`,
-    );
-
     const judgeEvent = await room.judge(event.fromId, undefined, this.Name);
 
     if (Sanguosha.getCardById(judgeEvent.judgeCardId).isRed()) {
@@ -78,15 +69,7 @@ export class BaGuaZhenSkill extends TriggerSkill {
         responseToEvent: jinkCardEvent.triggeredOnEvent,
       };
 
-      if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
-        await room.useCard(cardUseEvent);
-        EventPacker.terminate(jinkCardEvent);
-      } else {
-        await room.responseCard(cardUseEvent);
-        EventPacker.terminate(jinkCardEvent);
-      }
-
-      return !EventPacker.isTerminated(cardUseEvent);
+      jinkCardEvent.responsedEvent = cardUseEvent;
     }
 
     return true;

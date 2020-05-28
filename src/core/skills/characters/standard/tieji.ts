@@ -36,28 +36,29 @@ export class TieJi extends TriggerSkill {
     const judge = await room.judge(skillUseEvent.fromId, undefined, this.Name);
     const judgeCard = Sanguosha.getCardById(judge.judgeCardId);
 
-    const askForCardDrop: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
-      fromArea: [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
-      toId: aimEvent.toId,
-      cardAmount: 1,
-      except: to.getPlayerCards().filter(cardId => Sanguosha.getCardById(cardId).Suit !== judgeCard.Suit),
-      triggeredBySkills: [this.Name],
-      conversation: TranslationPack.translationJsonPatcher(
+    const response = await room.askForCardDrop(
+      aimEvent.toId,
+      1,
+      [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
+      false,
+      to.getPlayerCards().filter(cardId => Sanguosha.getCardById(cardId).Suit !== judgeCard.Suit),
+      this.Name,
+      TranslationPack.translationJsonPatcher(
         "please drop a {0} card, otherwise you can't do response of slash",
         Functional.getCardSuitRawText(judgeCard.Suit),
       ).extract(),
-    };
-
-    room.notify(GameEventIdentifiers.AskForCardDropEvent, askForCardDrop, aimEvent.toId);
-    const { droppedCards } = await room.onReceivingAsyncReponseFrom(
-      GameEventIdentifiers.AskForCardDropEvent,
-      aimEvent.toId,
     );
 
-    if (!droppedCards || droppedCards.length === 0) {
+    if (response.droppedCards.length === 0) {
       EventPacker.setDisresponsiveEvent(aimEvent);
     } else {
-      await room.dropCards(CardMoveReason.SelfDrop, droppedCards, aimEvent.toId, skillUseEvent.fromId, this.Name);
+      await room.dropCards(
+        CardMoveReason.SelfDrop,
+        response.droppedCards,
+        aimEvent.toId,
+        skillUseEvent.fromId,
+        this.Name,
+      );
     }
 
     return true;

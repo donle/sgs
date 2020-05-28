@@ -71,6 +71,18 @@
     flex: auto;
     font-size: 14px;
 }
+.flatDemoCard {
+    display: flex;
+    justify-content: center;
+    min-width: 120px;
+    padding: 8px 0;
+    align-items: center;
+    border: 1px solid grey;
+    background: white;
+}
+.flatCardName {
+    font-size: 14px;
+}
 .emptyCard {
     display: flex;
     height: 100%;

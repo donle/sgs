@@ -6,7 +6,14 @@ import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
-import { CardMoveArea, CardMoveReason, EventUtilities, GameEventIdentifiers, ServerEventFinder } from './event';
+import {
+  CardMoveArea,
+  CardMoveReason,
+  ClientEventFinder,
+  EventUtilities,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from './event';
 
 export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.SetFlagEvent]: {
@@ -70,6 +77,7 @@ export interface ServerEvent extends EventUtilities {
     fromId: PlayerId;
     cardId: CardId;
     responseToEvent?: ServerEventFinder<GameEventIdentifiers>;
+    skipDrop?: boolean;
   };
   [GameEventIdentifiers.CardDropEvent]: {
     fromId: PlayerId;
@@ -80,6 +88,7 @@ export interface ServerEvent extends EventUtilities {
     fromId: PlayerId;
     drawAmount: number;
     askedBy: PlayerId;
+    from?: 'top' | 'bottom';
   };
   [GameEventIdentifiers.MoveCardEvent]: {
     movingCards: {
@@ -125,6 +134,7 @@ export interface ServerEvent extends EventUtilities {
     toId: PlayerId;
   };
   [GameEventIdentifiers.HpChangeEvent]: {
+    fromId?: PlayerId;
     toId: PlayerId;
     amount: number;
     byReaon: 'damage' | 'lostHp' | 'recover';
@@ -210,6 +220,7 @@ export interface ServerEvent extends EventUtilities {
     fromArea?: PlayerCardsArea[];
     conversation: string | PatchedTranslationObject;
     triggeredOnEvent?: ServerEventFinder<GameEventIdentifiers>;
+    responsedEvent?: ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent>;
   };
 
   [GameEventIdentifiers.AskForCardUseEvent]: {
@@ -221,6 +232,7 @@ export interface ServerEvent extends EventUtilities {
     cardMatcher: CardMatcherSocketPassenger;
     conversation: string | PatchedTranslationObject;
     triggeredOnEvent?: ServerEventFinder<GameEventIdentifiers>;
+    responsedEvent?: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
   };
   [GameEventIdentifiers.AskForPinDianCardEvent]: {
     fromId: PlayerId;
@@ -253,6 +265,7 @@ export interface ServerEvent extends EventUtilities {
     cardAmount: number;
     toId: PlayerId;
     conversation?: string | PatchedTranslationObject;
+    responsedEvent?: ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent>;
   };
   [GameEventIdentifiers.AskForChoosingCharacterEvent]: {
     characterIds: CharacterId[];

@@ -1,5 +1,5 @@
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
+import { AllStage, DamageEffectStage, HpChangeStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -71,11 +71,11 @@ export class Kuanggu extends TriggerSkill {
 @ShadowSkill
 @CompulsorySkill({ name: Kuanggu.GeneralName, description: Kuanggu.Description })
 export class KuangguShadow extends TriggerSkill {
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage: DamageEffectStage) {
-    return stage === DamageEffectStage.DamageEffect;
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.HpChangeEvent>, stage: AllStage) {
+    return stage === HpChangeStage.HpChanging;
   }
 
-  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.HpChangeEvent>) {
     return owner.Id === content.fromId && room.distanceBetween(owner, room.getPlayerById(content.toId)) <= 1;
   }
 

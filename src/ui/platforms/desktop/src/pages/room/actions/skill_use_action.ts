@@ -17,8 +17,9 @@ export class SkillUseAction extends BaseAction {
     store: RoomStore,
     presenter: RoomPresenter,
     askForEvent: ServerEventFinder<GameEventIdentifiers.AskForSkillUseEvent>,
+    translator: ClientTranslationModule,
   ) {
-    super(playerId, store, presenter);
+    super(playerId, store, presenter, translator);
     this.askForEvent = askForEvent;
   }
 

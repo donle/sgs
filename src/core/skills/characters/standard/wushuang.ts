@@ -149,12 +149,11 @@ export class WuShuangShadow extends TriggerSkill implements OnDefineReleaseTimin
         triggeredOnEvent: slashEvent,
       };
 
-      const result = await room.askForCardUse(askForUseCardEvent, jinkEvent.fromId);
-      const { responseEvent } = result;
-      if (responseEvent && responseEvent.cardId !== undefined) {
+      const response = await room.askForCardUse(askForUseCardEvent, jinkEvent.fromId);
+      if (response.cardId !== undefined) {
         const useJinkEvent = {
           fromId: jinkEvent.fromId,
-          cardId: responseEvent.cardId,
+          cardId: response.cardId,
           toCardIds: jinkEvent.toCardIds,
           responseToEvent: slashEvent,
         };
@@ -183,14 +182,13 @@ export class WuShuangShadow extends TriggerSkill implements OnDefineReleaseTimin
           TranslationPack.patchCardInTranslation(duelEvent.cardId),
         ).extract(),
       };
-      const result = await room.askForCardResponse(askForResponseCardEvent, duelResponseEvent.fromId);
-      const { responseEvent } = result;
-      if (!responseEvent || responseEvent.cardId === undefined) {
+      const response = await room.askForCardResponse(askForResponseCardEvent, duelResponseEvent.fromId);
+      if (response.cardId === undefined) {
         EventPacker.terminate(duelResponseEvent);
       } else {
         const responseCardEvent = {
           fromId: duelResponseEvent.fromId,
-          cardId: responseEvent.cardId,
+          cardId: response.cardId,
           responseToEvent: duelEvent,
         };
         EventPacker.addMiddleware({ tag: this.Name, data: true }, responseCardEvent);

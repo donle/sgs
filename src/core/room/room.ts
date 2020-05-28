@@ -22,13 +22,9 @@ import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props'
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { FilterSkill, TransformSkill } from 'core/skills/skill';
+import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
 
 export type RoomId = number;
-
-export type ResponsiveTriggeredResult<T extends GameEventIdentifiers> = {
-  terminated?: boolean;
-  responseEvent?: ClientEventFinder<T>;
-};
 
 export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected abstract readonly analytics: RecordAnalytics;
@@ -125,23 +121,25 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract syncGameCommonRules(playerId: PlayerId, updateActions: (user: Player) => void): void;
   //Server only
-  public abstract async askForCardDrop<T extends GameEventIdentifiers.AskForCardDropEvent>(
+  public abstract async askForCardDrop(
     playerId: PlayerId,
     discardAmount: number,
     fromArea: PlayerCardsArea[],
     uncancellable?: boolean,
     except?: CardId[],
-  ): Promise<ResponsiveTriggeredResult<T>>;
+    bySkill?: string,
+    conversation?: string | PatchedTranslationObject,
+  ): Promise<ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent>>;
   //Server only
-  public abstract async askForCardUse<T extends GameEventIdentifiers.AskForCardUseEvent>(
-    event: ServerEventFinder<T>,
+  public abstract async askForCardUse(
+    event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>,
     to: PlayerId,
-  ): Promise<ResponsiveTriggeredResult<T>>;
+  ): Promise<ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent>>;
   //Server only
-  public abstract async askForCardResponse<T extends GameEventIdentifiers.AskForCardResponseEvent>(
-    event: ServerEventFinder<T>,
+  public abstract async askForCardResponse(
+    event: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>,
     to: PlayerId,
-  ): Promise<ResponsiveTriggeredResult<T>>;
+  ): Promise<ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent>>;
   public abstract isCardInDropStack(cardId: CardId): boolean;
   public abstract isCardInDrawStack(cardId: CardId): boolean;
 
@@ -151,6 +149,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     this.onProcessingCards[tag] = this.onProcessingCards[tag] || [];
 
     for (const cardId of cardIds) {
+      if (!cardId) {
+        continue;
+      }
       this.onProcessingCards[tag].push(cardId);
     }
   }

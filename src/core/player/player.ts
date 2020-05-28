@@ -1,6 +1,6 @@
 import { PlayerAI } from 'core/ai/ai';
 import { TrustAI } from 'core/ai/trust_ai';
-import { Card, CardType } from 'core/cards/card';
+import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard, WeaponCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
@@ -27,6 +27,7 @@ import {
   TriggerSkill,
   ViewAsSkill,
 } from 'core/skills/skill';
+import { UniqueSkillRule } from 'core/skills/skill_rule';
 
 type SkillStringType =
   | 'trigger'
@@ -388,7 +389,10 @@ export abstract class Player implements PlayerInfo {
   public getAttackRange(room: Room) {
     let attackDistance = 0;
     for (const cardId of this.getCardIds(PlayerCardsArea.EquipArea)) {
-      const card = Sanguosha.getCardById(cardId);
+      const card = Card.isVirtualCardId(cardId)
+        ? Sanguosha.getCardById<VirtualCard<WeaponCard>>(cardId).ViewAsCard
+        : Sanguosha.getCardById(cardId);
+
       if (card instanceof WeaponCard) {
         attackDistance += card.AttackDistance;
       }
@@ -454,31 +458,32 @@ export abstract class Player implements PlayerInfo {
       `Player ${this.playerName} has not been initialized with a character yet`,
     );
 
+    const skills = this.playerSkills.filter(skill => !UniqueSkillRule.isProhibited(skill, this));
     if (skillType === undefined) {
-      return this.playerSkills as T[];
+      return skills as T[];
     }
 
     switch (skillType) {
       case 'filter':
-        return this.playerSkills.filter(skill => skill instanceof FilterSkill) as T[];
+        return skills.filter(skill => skill instanceof FilterSkill) as T[];
       case 'viewAs':
-        return this.playerSkills.filter(skill => skill instanceof ViewAsSkill) as T[];
+        return skills.filter(skill => skill instanceof ViewAsSkill) as T[];
       case 'active':
-        return this.playerSkills.filter(skill => skill instanceof ActiveSkill) as T[];
+        return skills.filter(skill => skill instanceof ActiveSkill) as T[];
       case 'trigger':
-        return this.playerSkills.filter(skill => skill instanceof TriggerSkill) as T[];
+        return skills.filter(skill => skill instanceof TriggerSkill) as T[];
       case 'breaker':
-        return this.playerSkills.filter(skill => skill instanceof RulesBreakerSkill) as T[];
+        return skills.filter(skill => skill instanceof RulesBreakerSkill) as T[];
       case 'transform':
-        return this.playerSkills.filter(skill => skill instanceof TransformSkill) as T[];
+        return skills.filter(skill => skill instanceof TransformSkill) as T[];
       case 'complusory':
-        return this.playerSkills.filter(skill => skill.SkillType === SkillType.Compulsory) as T[];
+        return skills.filter(skill => skill.SkillType === SkillType.Compulsory) as T[];
       case 'awaken':
-        return this.playerSkills.filter(skill => skill.SkillType === SkillType.Awaken) as T[];
+        return skills.filter(skill => skill.SkillType === SkillType.Awaken) as T[];
       case 'limit':
-        return this.playerSkills.filter(skill => skill.SkillType === SkillType.Limit) as T[];
+        return skills.filter(skill => skill.SkillType === SkillType.Limit) as T[];
       case 'common':
-        return this.playerSkills.filter(skill => skill.SkillType === SkillType.Common) as T[];
+        return skills.filter(skill => skill.SkillType === SkillType.Common) as T[];
       default:
         throw Precondition.UnreachableError(skillType);
     }
