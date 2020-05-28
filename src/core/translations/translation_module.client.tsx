@@ -69,7 +69,10 @@ export class ClientTranslationModule extends TranslationModule {
           color: 'red',
         };
       }
-      return this.boldTextStyle;
+      return {
+        ...this.boldTextStyle,
+        color: 'black',
+      };
     };
 
     const cardTextArray: string[] = JSON.parse(text.slice(TranslationPack.translateCardObjectSign.length));
@@ -98,7 +101,7 @@ export class ClientTranslationModule extends TranslationModule {
               {cardObject.cardName}
             </span>
             {cardObject.suitElement}
-            <span style={getCardNumberStyle(cardObject.cardSuit)}>
+            <span style={getCardNumberStyle(cardObject.cardSuit)} className={'textShadow'}>
               {ClientTranslationModule.getCardNumber(parseInt(cardObject.cardNumber, 10))}
             </span>
             <span>{this.tr(']')}</span>

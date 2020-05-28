@@ -72,6 +72,7 @@ export class PlayPhaseAction extends BaseAction {
     this.presenter.defineCancelButtonActions(() => this.resetAction());
 
     this.presenter.defineFinishButtonActions(() => {
+      this.presenter.closeDialog();
       const event: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
         fromId: this.playerId,
         end: true,

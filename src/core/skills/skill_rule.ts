@@ -28,7 +28,7 @@ export class UniqueSkillRule {
       return skill.GeneralName !== 'chanyuan';
     }
     if (owner.getFlag<boolean>('tieji') || owner.getFlag<boolean>('yijue')) {
-      return skill.SkillType !== SkillType.Compulsory && owner.getPlayerSkills().includes(skill);
+      return skill.SkillType !== SkillType.Compulsory && owner.hasSkill(skill.Name);
     }
 
     return false;
