@@ -21,7 +21,7 @@ export class FenWei extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
-    room.setFlag(owner.Id, this.Name, event.allTargets);
+    owner.setFlag(this.Name, event.allTargets);
     return true;
   }
 
