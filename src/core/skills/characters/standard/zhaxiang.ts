@@ -98,7 +98,7 @@ export class ZhaXiangShadow extends TriggerSkill implements OnDefineReleaseTimin
 
     if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
       const currentEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-      currentEvent.fromPlayer && room.setFlag(currentEvent.fromPlayer, this.GeneralName, 0);
+      currentEvent.fromPlayer && room.removeFlag(currentEvent.fromPlayer, this.GeneralName);
     } else if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
       const currentEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
       if (room.getFlag<number>(currentEvent.cardUserId!, this.GeneralName) > 0) {

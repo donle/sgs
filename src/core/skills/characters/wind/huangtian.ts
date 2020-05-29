@@ -8,6 +8,7 @@ import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, LordSkill, SideEffectSkill } from 'core/skills/skill';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @LordSkill
 @CommonSkill({ name: 'huangtian', description: 'huangtian_description' })
@@ -81,6 +82,12 @@ export class HuangTianGiveCard extends ActiveSkill {
       toArea: CardMoveArea.HandArea,
       proposer: fromId,
       movedByReason: this.GeneralName,
+      translationsMessage: TranslationPack.translationJsonPatcher(
+        '{0} obtains cards {1} from {2}',
+        TranslationPack.patchPlayerInTranslation(room.getPlayerById(toIds![0])),
+        TranslationPack.patchCardInTranslation(...cardIds!),
+        TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
+      ).extract(),
     });
 
     return true;

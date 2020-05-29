@@ -24,7 +24,7 @@ export class UniqueSkillRule {
   }
 
   public static isProhibited(skill: Skill, owner: Player) {
-    if (owner.hasSkill('chanyuan') && owner.Hp === 1) {
+    if (owner.hasSkill('chanyuan') && owner.Hp <= 1) {
       return skill.GeneralName !== 'chanyuan' && owner.hasSkill(skill.Name);
     }
     if (owner.getFlag<boolean>('tieji') || owner.getFlag<boolean>('yijue')) {

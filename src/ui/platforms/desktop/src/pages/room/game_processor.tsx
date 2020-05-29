@@ -221,7 +221,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.store.room.getPlayerById(content.to).setFlag(content.name, content.value);
+    this.store.room.getPlayerById(content.to).setFlag(content.name, content.value, content.invisible);
   }
   private async onHandleRemoveFlagEvent<T extends GameEventIdentifiers.RemoveFlagEvent>(
     type: T,

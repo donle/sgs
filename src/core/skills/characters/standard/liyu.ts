@@ -76,6 +76,12 @@ export class LiYu extends TriggerSkill {
       moveReason: CardMoveReason.ActivePrey,
       proposer: chooseCardEvent.fromId,
       movedByReason: this.Name,
+      translationsMessage: TranslationPack.translationJsonPatcher(
+        '{0} obtains cards {1} from {2}',
+        TranslationPack.patchPlayerInTranslation(room.getPlayerById(chooseCardEvent.fromId)),
+        TranslationPack.patchCardInTranslation(response.selectedCard),
+        TranslationPack.patchPlayerInTranslation(room.getPlayerById(chooseCardEvent.toId)),
+      ).extract(),
     });
 
     const responseCard = Sanguosha.getCardById(response.selectedCard);

@@ -4,6 +4,7 @@ import { PlayerCards, PlayerCardsArea, PlayerCardsOutside, PlayerId } from './pl
 
 export class ClientPlayer extends Player {
   private visibleOutsideAreas: string[] = [];
+  private visiblePlayerTags: string[] = [];
 
   constructor(
     protected playerId: PlayerId,
@@ -17,6 +18,22 @@ export class ClientPlayer extends Player {
     super(playerCards, playerCharacterId);
   }
 
+  setFlag<T>(name: string, value: T, invisible?: boolean): T {
+    if (!invisible) {
+      this.visiblePlayerTags.push(name);
+    }
+
+    return super.setFlag(name, value);
+  }
+  public clearFlags() {
+    this.visiblePlayerTags = [];
+    super.clearFlags();
+  }
+  removeFlag(name: string) {
+    this.visiblePlayerTags = this.visiblePlayerTags.filter(tag => tag !== name);
+    super.removeFlag(name);
+  }
+
   setVisibleOutsideArea(areaName: string) {
     this.visibleOutsideAreas.push(areaName);
   }
@@ -28,5 +45,8 @@ export class ClientPlayer extends Player {
   }
   isOutsideAreaVisible(areaName: string) {
     return this.visibleOutsideAreas.includes(areaName);
+  }
+  getAllVisibleTags() {
+    return this.visiblePlayerTags;
   }
 }

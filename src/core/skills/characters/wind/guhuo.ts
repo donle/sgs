@@ -57,6 +57,10 @@ export class GuHuo extends ViewAsSkill {
       selectedCards,
     );
   }
+
+  nominateForwardTarget() {
+    return [];
+  }
 }
 
 @ShadowSkill
@@ -155,12 +159,48 @@ export class GuHuoShadow extends TriggerSkill {
     });
 
     let success = true;
+    const chooseOptions: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = EventPacker.createUncancellableEvent<
+      GameEventIdentifiers.AskForChoosingOptionsEvent
+    >({
+      options: ['guhuo:lose-hp', 'guhuo:drop-card'],
+      toId: '',
+      conversation: 'please choose',
+    });
     for (const response of responses) {
       if (preuseCard.Name === realCard.Name) {
         if (response.selectedOption === 'guhuo:doubt') {
-          await room.loseHp(response.fromId, 1);
+          const player = room.getPlayerById(response.fromId);
+          if (player.getPlayerCards().length > 0) {
+            chooseOptions.toId = response.fromId;
+            room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, chooseOptions, response.fromId);
+            const { selectedOption } = await room.onReceivingAsyncReponseFrom(
+              GameEventIdentifiers.AskForChoosingOptionsEvent,
+              response.fromId,
+            );
+            if (selectedOption === 'guhuo:loseHp') {
+              await room.loseHp(response.fromId, 1);
+            } else {
+              const dropResponse = await room.askForCardDrop(
+                response.fromId,
+                1,
+                [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
+                true,
+                undefined,
+                this.Name,
+              );
+              await room.dropCards(
+                CardMoveReason.SelfDrop,
+                dropResponse.droppedCards,
+                response.fromId,
+                response.fromId,
+                this.Name,
+              );
+            }
+          } else {
+            await room.loseHp(response.fromId, 1);
+          }
           room.obtainSkill(response.fromId, ChanYuan.Name, true);
-          room.setFlag(response.fromId, ChanYuan.Name, true);
+          room.setFlag(response.fromId, ChanYuan.Name, true, true);
         }
       } else {
         if (response.selectedOption === 'guhuo:doubt') {

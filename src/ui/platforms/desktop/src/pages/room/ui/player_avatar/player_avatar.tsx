@@ -109,7 +109,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
 
   private getSkillTags() {
     const { translator, presenter } = this.props;
-    const flags = presenter.ClientPlayer && Object.keys(presenter.ClientPlayer.getAllFlags());
+    const flags = presenter.ClientPlayer && Object.keys(presenter.ClientPlayer.getAllVisibleTags());
     return (
       flags && (
         <div className={styles.skillTags}>
@@ -139,16 +139,22 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     return (
       cards && (
         <div className={styles.outsideArea}>
-          {Object.entries<CardId[]>(cards).map(([areaName, cards], index) => (
-            <span
-              key={index}
-              className={classNames(styles.skillTag, styles.clickableSkillTag)}
-              onClick={this.onOutsideAreaTagClicked(areaName, cards)}
-            >
-              [{translator.tr(areaName)}
-              {cards.length}]
-            </span>
-          ))}
+          {Object.entries<CardId[]>(cards)
+            .map(([areaName, cards], index) =>
+              cards.length === 0 ? (
+                undefined
+              ) : (
+                <span
+                  key={index}
+                  className={classNames(styles.skillTag, styles.clickableSkillTag)}
+                  onClick={this.onOutsideAreaTagClicked(areaName, cards)}
+                >
+                  [{translator.tr(areaName)}
+                  {cards.length}]
+                </span>
+              ),
+            )
+            .filter(Boolean)}
         </div>
       )
     );

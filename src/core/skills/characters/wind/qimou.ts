@@ -61,7 +61,7 @@ export class QiMou extends ActiveSkill {
 
     await room.loseHp(fromId, lostHp);
     await room.drawCards(lostHp, fromId);
-    room.setFlag(fromId, this.Name, lostHp);
+    room.setFlag(fromId, this.Name, lostHp, true);
 
     return true;
   }

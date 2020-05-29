@@ -1,4 +1,4 @@
-import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, CardMoveStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
@@ -20,6 +20,8 @@ export class FenJi extends TriggerSkill {
       return !!event.fromId && !!event.toId && event.fromId !== event.toId;
     } else if (event.moveReason === CardMoveReason.PassiveDrop) {
       return !!event.fromId;
+    } else if (event.moveReason === CardMoveReason.PassiveMove) {
+      return !!event.toId && event.toArea === CardMoveArea.HandArea;
     }
 
     return false;

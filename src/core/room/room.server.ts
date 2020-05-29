@@ -582,7 +582,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
         if ([CardTargetEnum.Others, CardTargetEnum.Multiple, CardTargetEnum.Globe].includes(card.AOE)) {
           for (const toId of cardEffectToIds || []) {
-            if (nullifiedTargets.includes(toId)) {
+            if (nullifiedTargets.includes(toId) || this.getPlayerById(toId).Dead) {
               continue;
             }
 
@@ -604,7 +604,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           if (toIds && aimEventCollaborators[toIds[0]]) {
             EventPacker.copyPropertiesTo(aimEventCollaborators[toIds[0]], cardEffectEvent);
           }
-          if (cardEffectToIds && nullifiedTargets.includes(cardEffectToIds[0])) {
+          if (
+            cardEffectToIds &&
+            (nullifiedTargets.includes(cardEffectToIds[0]) || this.getPlayerById(cardEffectToIds[0]).Dead)
+          ) {
             EventPacker.terminate(cardEffectEvent);
           }
 
@@ -1008,12 +1011,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     });
     super.removeFlag(player, name);
   }
-  public setFlag<T>(player: PlayerId, name: string, value: T, invisible: boolean = true): T {
+  public setFlag<T>(player: PlayerId, name: string, value: T, playerTag?: boolean): T {
     this.broadcast(GameEventIdentifiers.SetFlagEvent, {
       to: player,
       value,
       name,
-      invisible,
+      invisible: !playerTag,
     });
     return super.setFlag(player, name, value);
   }

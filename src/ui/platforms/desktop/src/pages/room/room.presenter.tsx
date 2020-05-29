@@ -99,7 +99,7 @@ export class RoomPresenter {
   }
 
   @mobx.computed
-  get ClientPlayer(): Player | undefined {
+  get ClientPlayer(): ClientPlayer | undefined {
     return this.store.room?.getPlayerById(this.store.clientPlayerId);
   }
 

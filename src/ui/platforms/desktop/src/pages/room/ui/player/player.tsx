@@ -4,7 +4,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { getNationalityRawText } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
-import { Player } from 'core/player/player';
+import { ClientPlayer } from 'core/player/player.client';
 import { PlayerCardsArea, PlayerRole } from 'core/player/player_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
@@ -21,7 +21,7 @@ import { Mask } from '../mask/mask';
 import styles from './player.module.css';
 
 type PlayerCardProps = {
-  player: Player | undefined;
+  player: ClientPlayer | undefined;
   playerPhase?: PlayerPhase;
   translator: ClientTranslationModule;
   presenter: RoomPresenter;
@@ -116,7 +116,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
 
   private getSkillTags() {
     const { translator, player } = this.props;
-    const flags = player && Object.keys(player.getAllFlags());
+    const flags = player && Object.keys(player.getAllVisibleTags());
     return (
       flags && (
         <div className={styles.skillTags}>
@@ -146,16 +146,26 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     return (
       cards && (
         <div className={styles.outsideArea}>
-          {Object.entries<CardId[]>(cards).map(([areaName, cards], index) => (
-            <span
-              key={index}
-              className={classNames(styles.skillTag, styles.clickableSkillTag)}
-              onClick={this.onOutsideAreaTagClicked(areaName, cards)}
-            >
-              [{translator.tr(areaName)}
-              {cards.length}]
-            </span>
-          ))}
+          {Object.entries<CardId[]>(cards)
+            .map(([areaName, cards], index) =>
+              cards.length === 0 ? (
+                undefined
+              ) : (
+                <span
+                  key={index}
+                  className={classNames(styles.skillTag, {
+                    [styles.clickableSkillTag]: player!.isOutsideAreaVisible(areaName),
+                  })}
+                  onClick={
+                    player!.isOutsideAreaVisible(areaName) ? this.onOutsideAreaTagClicked(areaName, cards) : undefined
+                  }
+                >
+                  [{translator.tr(areaName)}
+                  {cards.length}]
+                </span>
+              ),
+            )
+            .filter(Boolean)}
         </div>
       )
     );

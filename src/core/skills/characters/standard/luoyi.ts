@@ -82,7 +82,7 @@ export class LuoYi extends TriggerSkill {
           moveReason: CardMoveReason.ActivePrey,
         });
 
-        room.setFlag<boolean>(skillUseEvent.fromId, this.Name, true);
+        room.setFlag<boolean>(skillUseEvent.fromId, this.Name, true, true);
       } else {
         luoyiObtain = [];
       }

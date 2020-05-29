@@ -1,4 +1,5 @@
 import { Player } from 'core/player/player';
+import { ClientPlayer } from 'core/player/player.client';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
@@ -65,7 +66,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
 
     let playerIndex = this.getLastPosition();
     while (numberOfPlayers > 0) {
-      const player = this.props.store.room.Players[playerIndex];
+      const player = this.props.store.room.Players[playerIndex] as ClientPlayer;
 
       players.unshift(
         <PlayerCard
@@ -97,7 +98,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
 
     let playerIndex = this.getNextPosition();
     while (numberOfPlayers > 0) {
-      const player = this.props.store.room.Players[playerIndex];
+      const player = this.props.store.room.Players[playerIndex] as ClientPlayer;
 
       players.unshift(
         <PlayerCard
@@ -127,7 +128,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
 
     let numberOfPlayers = this.topNumberOfPlayers;
     while (numberOfPlayers > 0) {
-      const player = this.props.store.room.Players[playerIndex];
+      const player = this.props.store.room.Players[playerIndex] as ClientPlayer;
 
       players.unshift(
         <PlayerCard

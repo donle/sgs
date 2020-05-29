@@ -563,7 +563,7 @@ export const skillDescriptions: Word[] = [
     target:
       '每回合限一次，你可以扣置一张手牌当任意一张基本牌或普通锦囊牌使用或打出。其他角色可同时进行质疑并翻开此牌：若为假则此牌作废，且质疑者各摸一张牌；若为真，则质疑者依次弃置一张牌或失去1点体力，并获得"缠怨"。',
   },
-  { source: 'chanyuan_description', target: '<b>锁定技</b>，你不能质疑“蛊惑”；若你的体力值为1，则你的其他技能失效。' },
+  { source: 'chanyuan_description', target: '<b>锁定技</b>，你不能质疑“蛊惑”；若你的体力值小于等于1，则你的其他技能失效。' },
   {
     source: 'qiangxi_description',
     target: '出牌阶段限两次，你可以失去1点体力或弃置一张武器牌，并对一名未以此法指定过的其他角色造成1点伤害。',
@@ -952,11 +952,11 @@ export const eventDictionary: Word[] = [
   { source: '{0} obtains cards {1}', target: '{0} 获得了 {1} ' },
   {
     source: '{0} obtains cards {1} from {2}',
-    target: '{0} 从 {2} 获得了 {1} ',
+    target: '{0} 获得了 {2} 的一张 {1} ',
   },
   {
     source: '{0} obtains {1} cards from {2}',
-    target: '{0} 从 {2} 获得了 {1} 张牌',
+    target: '{0} 获得了 {2} 的 {1} 张牌',
   },
   { source: '{0} obtains {1} cards', target: '{0} 获得了 {1} 张牌' },
   { source: 'please drop {0} cards', target: '请弃置 {1} 张牌' },

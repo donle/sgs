@@ -80,7 +80,7 @@ export class YiJue extends ActiveSkill {
     const card = Sanguosha.getCardById(selectedCards[0]);
     if (card.isBlack()) {
       room.obtainSkill(to.Id, YiJueBlocker.Name);
-      room.setFlag(to.Id, this.Name, true);
+      room.setFlag(to.Id, this.Name, true, true);
     } else {
       await room.moveCards({
         movingCards: selectedCards.map(card => ({ card, fromArea: CardMoveArea.HandArea })),

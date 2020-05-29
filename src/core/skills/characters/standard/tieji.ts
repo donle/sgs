@@ -80,7 +80,7 @@ export class TieJiShadow extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
-    return content.fromPlayer === owner.Id;
+    return room.AlivePlayers.find(player => player.getFlag<boolean>(this.GeneralName)) !== undefined;
   }
 
   async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {

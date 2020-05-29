@@ -1240,7 +1240,7 @@ export class GameProcessor {
           );
         }
       }
-      if (to) {
+      if (!event.translationsMessage && to) {
         if (toArea === PlayerCardsArea.HandArea) {
           const isPrivateCardMoving = !!movingCards.find(({ fromArea }) => fromArea === CardMoveArea.HandArea);
           if (isPrivateCardMoving) {
