@@ -68,6 +68,13 @@
     padding-right: 64px;
 }
 
+.playBar {
+    max-width: calc(gridLine * 30);
+    width: 100%;
+    position: absolute;
+    align-self: center;
+}
+
 .handCard {
     position: absolute;
 }

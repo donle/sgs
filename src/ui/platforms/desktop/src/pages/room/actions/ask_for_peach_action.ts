@@ -70,40 +70,44 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
     return false;
   }
 
-  onPlay(translator: ClientTranslationModule) {
-    this.presenter.createIncomingConversation({
-      conversation: this.askForEvent.conversation,
-      translator,
-    });
+  async onPlay(translator: ClientTranslationModule) {
+    await new Promise<void>(resolve => {
+      this.presenter.createIncomingConversation({
+        conversation: this.askForEvent.conversation,
+        translator,
+      });
 
-    this.presenter.defineConfirmButtonActions(() => {
-      const event: ClientEventFinder<GameEventIdentifiers.AskForPeachEvent> = {
-        cardId: this.selectedCardToPlay,
-        fromId: this.playerId,
-      };
-      this.store.room.broadcast(GameEventIdentifiers.AskForPeachEvent, event);
-      this.resetActionHandlers();
-      this.resetAction();
-      this.presenter.isSkillDisabled(BaseAction.disableSkills);
-      this.presenter.resetSelectedSkill();
-    });
-    this.presenter.defineCancelButtonActions(() => {
-      const event: ClientEventFinder<GameEventIdentifiers.AskForPeachEvent> = {
-        fromId: this.playerId,
-      };
-      this.store.room.broadcast(GameEventIdentifiers.AskForPeachEvent, event);
-      this.resetActionHandlers();
-      this.resetAction();
-      this.presenter.isSkillDisabled(BaseAction.disableSkills);
-      this.presenter.resetSelectedSkill();
-    });
+      this.presenter.defineConfirmButtonActions(() => {
+        const event: ClientEventFinder<GameEventIdentifiers.AskForPeachEvent> = {
+          cardId: this.selectedCardToPlay,
+          fromId: this.playerId,
+        };
+        this.store.room.broadcast(GameEventIdentifiers.AskForPeachEvent, event);
+        this.resetActionHandlers();
+        this.resetAction();
+        this.presenter.isSkillDisabled(BaseAction.disableSkills);
+        this.presenter.resetSelectedSkill();
+        resolve();
+      });
+      this.presenter.defineCancelButtonActions(() => {
+        const event: ClientEventFinder<GameEventIdentifiers.AskForPeachEvent> = {
+          fromId: this.playerId,
+        };
+        this.store.room.broadcast(GameEventIdentifiers.AskForPeachEvent, event);
+        this.resetActionHandlers();
+        this.resetAction();
+        this.presenter.isSkillDisabled(BaseAction.disableSkills);
+        this.presenter.resetSelectedSkill();
+        resolve();
+      });
 
-    this.presenter.setupPlayersSelectionMatcher((player: Player) => false);
-    this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
-      this.isCardEnabledOnAskingForPeach(card, PlayerCardsArea.HandArea),
-    );
-    this.presenter.setupCardSkillSelectionMatcher((card: Card) =>
-      this.isCardEnabledOnAskingForPeach(card, PlayerCardsArea.EquipArea),
-    );
+      this.presenter.setupPlayersSelectionMatcher((player: Player) => false);
+      this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
+        this.isCardEnabledOnAskingForPeach(card, PlayerCardsArea.HandArea),
+      );
+      this.presenter.setupCardSkillSelectionMatcher((card: Card) =>
+        this.isCardEnabledOnAskingForPeach(card, PlayerCardsArea.EquipArea),
+      );
+    });
   }
 }

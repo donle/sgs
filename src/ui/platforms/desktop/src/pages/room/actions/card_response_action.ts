@@ -124,41 +124,45 @@ export class CardResponseAction extends BaseAction {
     this.presenter.closeIncomingConversation();
   }
 
-  onPlay(translator: ClientTranslationModule) {
-    this.presenter.createIncomingConversation({
-      conversation: this.askForEvent.conversation,
-      translator,
-    });
+  async onPlay(translator: ClientTranslationModule) {
+    return new Promise<void>(resolve => {
+      this.presenter.createIncomingConversation({
+        conversation: this.askForEvent.conversation,
+        translator,
+      });
 
-    this.presenter.defineConfirmButtonActions(() => {
-      const event: ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent> = {
-        fromId: this.playerId,
-        cardId: this.selectedCardToPlay,
-      };
-      this.store.room.broadcast(GameEventIdentifiers.AskForCardResponseEvent, event);
-      this.presenter.disableActionButton('confirm');
-      this.resetActionHandlers();
-      this.resetAction();
-      this.presenter.isSkillDisabled(BaseAction.disableSkills);
-      this.presenter.resetSelectedSkill();
-    });
-    this.presenter.defineCancelButtonActions(() => {
-      const event: ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent> = {
-        fromId: this.playerId,
-      };
-      this.store.room.broadcast(GameEventIdentifiers.AskForCardResponseEvent, event);
-      this.resetActionHandlers();
-      this.resetAction();
-      this.presenter.isSkillDisabled(BaseAction.disableSkills);
-      this.presenter.resetSelectedSkill();
-    });
+      this.presenter.defineConfirmButtonActions(() => {
+        const event: ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent> = {
+          fromId: this.playerId,
+          cardId: this.selectedCardToPlay,
+        };
+        this.store.room.broadcast(GameEventIdentifiers.AskForCardResponseEvent, event);
+        this.presenter.disableActionButton('confirm');
+        this.resetActionHandlers();
+        this.resetAction();
+        this.presenter.isSkillDisabled(BaseAction.disableSkills);
+        this.presenter.resetSelectedSkill();
+        resolve();
+      });
+      this.presenter.defineCancelButtonActions(() => {
+        const event: ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent> = {
+          fromId: this.playerId,
+        };
+        this.store.room.broadcast(GameEventIdentifiers.AskForCardResponseEvent, event);
+        this.resetActionHandlers();
+        this.resetAction();
+        this.presenter.isSkillDisabled(BaseAction.disableSkills);
+        this.presenter.resetSelectedSkill();
+        resolve();
+      });
 
-    this.presenter.setupPlayersSelectionMatcher(() => false);
-    this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
-      this.isCardEnabledOnResponse(card, PlayerCardsArea.HandArea, new CardMatcher(this.askForEvent.cardMatcher)),
-    );
-    this.presenter.setupCardSkillSelectionMatcher((card: Card) =>
-      this.isCardEnabledOnResponse(card, PlayerCardsArea.EquipArea, new CardMatcher(this.askForEvent.cardMatcher)),
-    );
+      this.presenter.setupPlayersSelectionMatcher(() => false);
+      this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
+        this.isCardEnabledOnResponse(card, PlayerCardsArea.HandArea, new CardMatcher(this.askForEvent.cardMatcher)),
+      );
+      this.presenter.setupCardSkillSelectionMatcher((card: Card) =>
+        this.isCardEnabledOnResponse(card, PlayerCardsArea.EquipArea, new CardMatcher(this.askForEvent.cardMatcher)),
+      );
+    });
   }
 }

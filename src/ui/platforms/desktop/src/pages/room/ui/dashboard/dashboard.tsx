@@ -15,6 +15,7 @@ import { ClientCard } from '../card/card';
 import { CardSuitItem } from '../card/card_suit';
 import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
 import { PlayerAvatar } from '../player_avatar/player_avatar';
+import { PlayingBar } from '../playing_bar/playing_bar';
 import styles from './dashboard.module.css';
 
 export type DashboardProps = {
@@ -175,6 +176,7 @@ export class Dashboard extends React.Component<DashboardProps> {
   getPlayerHandBoard() {
     return (
       <div className={styles.handBoard} ref={this.handBoardRef}>
+        {this.props.store.inAction && <PlayingBar className={styles.playBar} />}
         {this.getPlayerJudgeCards()}
         <div className={styles.userActionsButtons}>
           <button disabled={!this.props.store.actionButtonStatus.confirm} onClick={this.props.onClickConfirmButton}>

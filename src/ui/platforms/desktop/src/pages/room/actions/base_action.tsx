@@ -376,7 +376,7 @@ export abstract class BaseAction {
     return false;
   }
 
-  public abstract onPlay(...args: any): void;
+  public abstract async onPlay(...args: any): Promise<void>;
 
   protected onClickCard(card: Card, selected: boolean, matcher?: CardMatcher): void {
     const player = this.store.room.getPlayerById(this.playerId);

@@ -1,4 +1,5 @@
 import { Card } from 'core/cards/card';
+import type { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import type { GameInfo } from 'core/game/game_props';
 import { RecordAnalytics } from 'core/game/record_analytics';
 import { ClientSocket } from 'core/network/socket.client';
@@ -61,6 +62,15 @@ export class RoomStore {
 
   @mobx.observable.ref
   selectedSkill: Skill | undefined;
+
+  @mobx.observable.ref
+  awaitingResponseEvent: {
+    identifier: GameEventIdentifiers;
+    event: ServerEventFinder<GameEventIdentifiers>;
+  } = {} as any;
+
+  @mobx.observable.ref
+  inAction: boolean;
 
   @mobx.observable.ref
   clientPlayerCardActionsMatcher: (card: Card) => boolean;
@@ -269,5 +279,23 @@ export class RoomPresenter {
       this.store.cancelButtonAction = undefined;
       handler();
     });
+  }
+
+  @mobx.action
+  endAction() {
+    this.store.inAction = false;
+    delete this.store.awaitingResponseEvent.identifier;
+    delete this.store.awaitingResponseEvent.event;
+  }
+  @mobx.action
+  startAction(identifier: GameEventIdentifiers, event: ServerEventFinder<GameEventIdentifiers>) {
+    this.store.inAction = true;
+    this.store.awaitingResponseEvent = {
+      identifier,
+      event,
+    }
+  }
+  getAwaitingAction() {
+    return this.store.awaitingResponseEvent;
   }
 }

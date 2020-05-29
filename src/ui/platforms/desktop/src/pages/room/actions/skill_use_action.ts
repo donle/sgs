@@ -24,52 +24,56 @@ export class SkillUseAction extends BaseAction {
   }
 
   onSelect(translator: ClientTranslationModule) {
-    const { invokeSkillNames, toId } = this.askForEvent;
-    if (toId !== this.presenter.ClientPlayer!.Id) {
-      return;
-    }
+    return new Promise<void>(resolve => {
+      const { invokeSkillNames, toId } = this.askForEvent;
+      if (toId !== this.presenter.ClientPlayer!.Id) {
+        return;
+      }
 
-    if (invokeSkillNames.length === 1) {
-      const skillName = invokeSkillNames[0];
-      const translatedConversation = TranslationPack.translationJsonPatcher(
-        'do you want to trigger skill {0} ?',
-        skillName,
-      ).extract();
+      if (invokeSkillNames.length === 1) {
+        const skillName = invokeSkillNames[0];
+        const translatedConversation = TranslationPack.translationJsonPatcher(
+          'do you want to trigger skill {0} ?',
+          skillName,
+        ).extract();
 
-      this.presenter.createIncomingConversation({
-        conversation: translatedConversation,
-        translator,
-      });
+        this.presenter.createIncomingConversation({
+          conversation: translatedConversation,
+          translator,
+        });
 
-      const event: ClientEventFinder<GameEventIdentifiers.AskForSkillUseEvent> = {
-        invoke: undefined,
-        fromId: toId,
-      };
-      const skill = Sanguosha.getSkillBySkillName<TriggerSkill>(skillName);
-      this.selectSkill(skill);
-      this.onPlay();
-      this.enableToCallAction() && this.presenter.enableActionButton('confirm');
+        const event: ClientEventFinder<GameEventIdentifiers.AskForSkillUseEvent> = {
+          invoke: undefined,
+          fromId: toId,
+        };
+        const skill = Sanguosha.getSkillBySkillName<TriggerSkill>(skillName);
+        this.selectSkill(skill);
+        this.onPlay();
+        this.enableToCallAction() && this.presenter.enableActionButton('confirm');
 
-      this.presenter.defineConfirmButtonActions(() => {
-        event.invoke = skillName;
-        event.cardIds = this.selectedCards;
-        event.toIds = this.selectedTargets;
-        this.store.room.broadcast(GameEventIdentifiers.AskForSkillUseEvent, event);
-        this.presenter.closeIncomingConversation();
-        this.resetActionHandlers();
-        this.resetAction();
-        this.presenter.resetSelectedSkill();
-      });
-      this.presenter.defineCancelButtonActions(() => {
-        this.store.room.broadcast(GameEventIdentifiers.AskForSkillUseEvent, event);
-        this.presenter.closeIncomingConversation();
-        this.resetActionHandlers();
-        this.resetAction();
-        this.presenter.resetSelectedSkill();
-      });
-    } else {
-      //TODO: need to refactor, when multiple skills triggered at the same time
-    }
+        this.presenter.defineConfirmButtonActions(() => {
+          event.invoke = skillName;
+          event.cardIds = this.selectedCards;
+          event.toIds = this.selectedTargets;
+          this.store.room.broadcast(GameEventIdentifiers.AskForSkillUseEvent, event);
+          this.presenter.closeIncomingConversation();
+          this.resetActionHandlers();
+          this.resetAction();
+          this.presenter.resetSelectedSkill();
+          resolve();
+        });
+        this.presenter.defineCancelButtonActions(() => {
+          this.store.room.broadcast(GameEventIdentifiers.AskForSkillUseEvent, event);
+          this.presenter.closeIncomingConversation();
+          this.resetActionHandlers();
+          this.resetAction();
+          this.presenter.resetSelectedSkill();
+          resolve();
+        });
+      } else {
+        //TODO: need to refactor, when multiple skills triggered at the same time
+      }
+    });
   }
 
   isCardEnabledOnSkillTriggered(card: Card, fromArea: PlayerCardsArea) {
@@ -93,7 +97,7 @@ export class SkillUseAction extends BaseAction {
     return false;
   }
 
-  onPlay() {
+  async onPlay() {
     this.presenter.setupPlayersSelectionMatcher((player: Player) => this.isPlayerEnabled(player));
     this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
       this.isCardEnabledOnSkillTriggered(card, PlayerCardsArea.HandArea),

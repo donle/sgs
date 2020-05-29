@@ -25,8 +25,8 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
       if (!EventPacker.isUncancellabelEvent(this.event)) {
         this.presenter.enableActionButton('cancel');
         this.presenter.defineCancelButtonActions(() => {
-          resolve();
           this.resetAction();
+          resolve();
         });
       }
 
@@ -120,5 +120,5 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
   }
 
   // tslint:disable-next-line:no-empty
-  onPlay() {}
+  async onPlay() {}
 }
