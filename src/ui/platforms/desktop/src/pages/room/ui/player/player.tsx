@@ -116,7 +116,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
 
   private getSkillTags() {
     const { translator, player } = this.props;
-    const flags = player && Object.keys(player.getAllVisibleTags());
+    const flags = player && player.getAllVisibleTags();
     return (
       flags && (
         <div className={styles.skillTags}>

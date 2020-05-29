@@ -109,7 +109,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
 
   private getSkillTags() {
     const { translator, presenter } = this.props;
-    const flags = presenter.ClientPlayer && Object.keys(presenter.ClientPlayer.getAllVisibleTags());
+    const flags = presenter.ClientPlayer && presenter.ClientPlayer.getAllVisibleTags();
     return (
       flags && (
         <div className={styles.skillTags}>
