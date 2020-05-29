@@ -563,7 +563,10 @@ export const skillDescriptions: Word[] = [
     target:
       '每回合限一次，你可以扣置一张手牌当任意一张基本牌或普通锦囊牌使用或打出。其他角色可同时进行质疑并翻开此牌：若为假则此牌作废，且质疑者各摸一张牌；若为真，则质疑者依次弃置一张牌或失去1点体力，并获得"缠怨"。',
   },
-  { source: 'chanyuan_description', target: '<b>锁定技</b>，你不能质疑“蛊惑”；若你的体力值小于等于1，则你的其他技能失效。' },
+  {
+    source: 'chanyuan_description',
+    target: '<b>锁定技</b>，你不能质疑“蛊惑”；若你的体力值小于等于1，则你的其他技能失效。',
+  },
   {
     source: 'qiangxi_description',
     target: '出牌阶段限两次，你可以失去1点体力或弃置一张武器牌，并对一名未以此法指定过的其他角色造成1点伤害。',
@@ -1073,8 +1076,8 @@ export const eventDictionary: Word[] = [
   { source: 'recover {0} hp for {1}', target: '是否回复 {1} {0} 点体力' },
   { source: '{0} used skill {1}, damage increases to {2}', target: '{0} 使用了技能 【{1}】，伤害增加至 {2} 点' },
   { source: '{0} used skill {1} to you, please present a hand card', target: '{0} 使用了技能 【{1}】，请展示一张手牌' },
-  { source: '{0} move cards {1} onto the top of character card', target: '{0} 将 {1} 置于了武将牌上'},
-  { source: '{0} move {1} cards onto the top of character card', target: '{0} 将 {1} 张牌置于了武将牌上'},
+  { source: '{0} move cards {1} onto the top of character card', target: '{0} 将 {1} 置于了武将牌上' },
+  { source: '{0} move {1} cards onto the top of character card', target: '{0} 将 {1} 张牌置于了武将牌上' },
   {
     source: 'Obtain Basic Card, Equip Card and Duel in display cards?',
     target: '裸衣：是否放弃摸牌，然后获取展示牌中的基本牌、装备牌和【决斗】',
@@ -1122,6 +1125,9 @@ export const eventDictionary: Word[] = [
   { source: 'guhuo:no-doubt', target: '不质疑' },
   { source: 'do you doubt the pre-use of {0} from {1}', target: '是否质疑 {1} 使用的 {0}' },
   { source: '{0} selected {1}', target: '{0} 选择了 {1}' },
+  { source: 'guhuo:lose-hp', target: '失去一点体力' },
+  { source: 'guhuo:drop-card', target: '弃置一张牌' },
+  { source: 'please choose the amount of hp to lose', target: '请选择要失去的体力值' },
   {
     source: 'please choose tianxiang options:{0}',
     target: '请选择：1.令其受到1点伤害，然后摸 {0} 张牌。2.令其失去1点体力，然后其获得你弃置的牌',

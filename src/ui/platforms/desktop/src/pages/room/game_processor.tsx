@@ -80,7 +80,7 @@ export class GameClientProcessor {
       clearTimeout(this.onPlayTrustedActionTimer);
       this.onPlayTrustedActionTimer = undefined;
     }
-    this.presenter.endAction();
+    this.store.inAction && this.presenter.endAction();
   }
 
   async onHandleIncomingEvent<T extends GameEventIdentifiers>(e: T, content: ServerEventFinder<T>) {
