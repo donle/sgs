@@ -18,7 +18,7 @@ export class WuSheng extends ViewAsSkill {
   }
 
   public canUse(room: Room, owner: Player): boolean {
-    return owner.canUseCard(room, new CardMatcher({ name: ['slash'], suit: [CardSuit.Heart, CardSuit.Diamond] }));
+    return owner.canUseCard(room, new CardMatcher({ name: ['slash'] }));
   }
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {

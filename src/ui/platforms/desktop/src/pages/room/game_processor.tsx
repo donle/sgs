@@ -969,6 +969,7 @@ export class GameClientProcessor {
       };
 
       this.store.room.broadcast(type, responseEvent);
+      this.endAction();
     };
 
     this.presenter.createDialog(
