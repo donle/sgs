@@ -7,7 +7,7 @@ import {
   ServerEventFinder,
 } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AllStage, HpChangeStage, DamageEffectStage } from 'core/game/stage_processor';
+import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
