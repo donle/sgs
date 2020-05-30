@@ -39,7 +39,7 @@ export class HanBingJianSkill extends TriggerSkill {
     const to = room.getPlayerById(damageEvent.toId);
 
     EventPacker.terminate(damageEvent);
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < Math.min(to.getPlayerCards().length, 2); i++) {
       const options: CardChoosingOptions = {
         [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea).length,
         [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),
