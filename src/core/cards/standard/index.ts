@@ -9,6 +9,7 @@ import { Duel } from './duel';
 import { FangTianHuaJi } from './fangtianhuaji';
 import { GuanShiFu } from './guanshifu';
 import { GuoHeChaiQiao } from './guohechaiqiao';
+import { HanBingJian } from './hanbingjian';
 import { JieDaoShaRen } from './jiedaosharen';
 import { Jink } from './jink';
 import { JueYing } from './jueying';
@@ -154,4 +155,5 @@ export const StandardCardPackage: (index: number) => Card[] = index => [
   new QingLongYanYueDao(index++, 5, CardSuit.Spade),
   new QiLinGong(index++, 5, CardSuit.Heart),
   new CiXiongJian(index++, 2, CardSuit.Spade),
+  new HanBingJian(index++, 2, CardSuit.Spade),
 ];
