@@ -19,6 +19,7 @@ import { Peach } from './peach';
 import { QiLinGong } from './qilingong';
 import { QingGang } from './qinggang';
 import { QingLongYanYueDao } from './qinglongdao';
+import { RenWangDun } from './renwangdun';
 import { ShunshouQianYang } from './shunshouqianyang';
 import { Slash } from './slash';
 import { TaoYuanJieYi } from './taoyuanjieyi';
@@ -110,6 +111,7 @@ export const StandardCardPackage: (index: number) => Card[] = index => [
   new WuXieKeJi(index++, 11, CardSuit.Spade),
   new WuXieKeJi(index++, 12, CardSuit.Club),
   new WuXieKeJi(index++, 13, CardSuit.Club),
+  new WuXieKeJi(index++, 12, CardSuit.Diamond),
 
   new Duel(index++, 1, CardSuit.Spade),
   new Duel(index++, 1, CardSuit.Club),
@@ -133,6 +135,8 @@ export const StandardCardPackage: (index: number) => Card[] = index => [
 
   new BaGuaZhen(index++, 2, CardSuit.Spade),
   new BaGuaZhen(index++, 2, CardSuit.Club),
+
+  new RenWangDun(index++, 2, CardSuit.Club),
 
   new ZiXin(index++, 13, CardSuit.Diamond),
   new ChiTu(index++, 5, CardSuit.Heart),

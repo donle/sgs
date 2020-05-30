@@ -1020,8 +1020,18 @@ export class GameProcessor {
       event.toIds = event.toIds && this.room.deadPlayerFilters(event.toIds);
       event.allTargets = event.allTargets && this.room.deadPlayerFilters(event.allTargets);
 
+      if (event.toIds && (event.toIds.length === 0 || event.nullifiedTargets!.includes(event.toIds[0]))) {
+        EventPacker.terminate(event);
+        return;
+      }
+
       if (stage == CardEffectStage.PreCardEffect) {
         await this.doCardEffect(identifier, event);
+      }
+
+      if (event.toIds && (event.toIds.length === 0 || event.nullifiedTargets!.includes(event.toIds[0]))) {
+        EventPacker.terminate(event);
+        return;
       }
 
       if (stage === CardEffectStage.CardEffecting) {

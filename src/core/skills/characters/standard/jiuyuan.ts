@@ -31,7 +31,7 @@ export class JiuYuan extends TriggerSkill {
 
   async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} activates skill {1}',
+      '{0} activated skill {1}',
       room.getPlayerById(event.fromId).Name,
       this.Name,
     ).extract();
