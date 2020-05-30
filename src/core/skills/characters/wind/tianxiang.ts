@@ -46,15 +46,15 @@ export class TianXiang extends TriggerSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent, fromId, cardIds, toIds } = skillUseEvent;
     await room.dropCards(CardMoveReason.SelfDrop, cardIds!, fromId, fromId, this.Name);
-    const hpChangeEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.HpChangeEvent>;
-    EventPacker.terminate(hpChangeEvent);
+    const damageEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
+    EventPacker.terminate(damageEvent);
 
     const chooseOptions: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
       options: ['option-one', 'option-two'],
       toId: fromId,
       conversation: TranslationPack.translationJsonPatcher(
         'please choose tianxiang options:{0}',
-        hpChangeEvent.amount,
+        damageEvent.damage,
       ).extract(),
     };
     room.notify(
