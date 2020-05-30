@@ -24,7 +24,7 @@ const CardSlot = (props: {
   isCardDisabled?(card: Card): boolean;
 }) => {
   const onSelected = (selected: boolean) => {
-    selected && props.onClick && props.onClick(props.card || props.index!, props.from);
+    props.onClick && props.onClick(props.card || props.index!, props.from);
   };
 
   return (

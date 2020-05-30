@@ -16,10 +16,19 @@ type WuGuFengDengDialogProps = {
   translator: ClientTranslationModule;
   cards: CardId[];
   selected: SelectedCardProps[];
+  unselectable?: boolean;
+  disabled?: boolean;
   onClick?(card: Card): void;
 };
 
-const getCardsContainerLines = ({ cards, selected, translator, onClick }: WuGuFengDengDialogProps) => {
+const getCardsContainerLines = ({
+  cards,
+  selected,
+  translator,
+  onClick,
+  unselectable,
+  disabled,
+}: WuGuFengDengDialogProps) => {
   const onSelected = (card: Card) => (selected: boolean) => {
     onClick && onClick(card);
   };
@@ -38,7 +47,8 @@ const getCardsContainerLines = ({ cards, selected, translator, onClick }: WuGuFe
           card={card}
           key={i}
           translator={translator}
-          disabled={isSelected !== undefined}
+          unselectable={unselectable}
+          disabled={disabled || isSelected !== undefined}
           onSelected={onSelected(card)}
           tag={isSelected?.playerObjectText}
         />,

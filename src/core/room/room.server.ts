@@ -795,8 +795,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             fromId: playerId,
             toArea: CardMoveArea.DropStack,
             moveReason,
-            hideBroadcast: true,
             movedByReason: byReason,
+            proposer: droppedBy,
           });
         }
 
@@ -1084,6 +1084,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public get CurrentPlayer(): Player {
     return this.gameProcessor.CurrentPlayer;
+  }
+
+  public get CurrentProcessingStage() {
+    return this.gameProcessor.CurrentProcessingStage;
   }
 
   public get DrawStack(): ReadonlyArray<CardId> {

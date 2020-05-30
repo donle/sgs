@@ -1,5 +1,6 @@
 import { Card, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
+import type { CardId } from 'core/cards/libs/card_props';
 import { Character } from 'core/characters/character';
 import {
   CardMoveArea,
@@ -795,12 +796,33 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
+    const selectedCards: CardId[] = [];
+    const selectedCardsIndex: number[] = [];
     const onSelectedCard = (card: Card | number) => {
-      this.presenter.closeDialog();
+      if (card instanceof Card) {
+        const index = selectedCards.findIndex(cardId => cardId === card.Id);
+        if (index >= 0) {
+          selectedCards.splice(index, 1);
+        } else {
+          selectedCards.push(card.Id);
+        }
+      } else {
+        const index = selectedCardsIndex.findIndex(cardIndex => cardIndex === card);
+        if (index >= 0) {
+          selectedCardsIndex.splice(index, 1);
+        } else {
+          selectedCardsIndex.push(card);
+        }
+      }
+
+      if (selectedCards.length + selectedCardsIndex.length === content.amount) {
+        this.presenter.closeDialog();
+      }
 
       const event: ClientEventFinder<T> = {
         fromId: content.toId,
-        selectedCard: card instanceof Card ? card.Id : undefined,
+        selectedCards,
+        selectedCardsIndex,
       };
       this.store.room.broadcast(type, event);
       this.endAction();
@@ -917,8 +939,8 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const { movableCards, top, bottom, toId, topStackName, bottomStackName } = content;
-    const cards = movableCards.map(cardId => Sanguosha.getCardById(cardId));
+    const { cardIds, top, bottom, toId, topStackName, bottomStackName, movable, topMaxCard, topMinCard, bottomMaxCard, bottomMinCard } = content;
+    const cards = cardIds.map(cardId => Sanguosha.getCardById(cardId));
 
     const onConfirm = (top: Card[], bottom: Card[]) => () => {
       const responseEvent: ClientEventFinder<T> = {
@@ -929,18 +951,24 @@ export class GameClientProcessor {
 
       this.presenter.closeDialog();
       this.store.room.broadcast(GameEventIdentifiers.AskForPlaceCardsInDileEvent, responseEvent);
+      this.endAction();
     };
 
     this.presenter.createDialog(
       <GuanXingDialog
         top={top}
         topStackName={topStackName}
+        topMaxCard={topMaxCard}
+        topMinCard={topMinCard}
         bottom={bottom}
         bottomStackName={bottomStackName}
+        bottomMaxCard={bottomMaxCard}
+        bottomMinCard={bottomMinCard}
         translator={this.translator}
         cards={cards}
         presenter={this.presenter}
         onConfirm={onConfirm}
+        movable={movable}
         title={'guanxing'}
       />,
     );
@@ -993,6 +1021,7 @@ export class GameClientProcessor {
     this.presenter.createDialog(
       <WuGuFengDengDialog
         cards={content.cardIds}
+        unselectable={true}
         selected={content.selected.map(selectedCard => ({
           card: selectedCard.card,
           playerObjectText:

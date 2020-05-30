@@ -40,6 +40,7 @@ export class JuShou extends TriggerSkill {
     const askForChooseCardEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardEvent> = {
       toId: skillUseEvent.fromId,
       cardIds: handCards,
+      amount: 1,
     };
 
     room.notify(
@@ -48,22 +49,22 @@ export class JuShou extends TriggerSkill {
       skillUseEvent.fromId,
     );
 
-    const { selectedCard } = await room.onReceivingAsyncReponseFrom(
+    const { selectedCards } = await room.onReceivingAsyncReponseFrom(
       GameEventIdentifiers.AskForChoosingCardEvent,
       skillUseEvent.fromId,
     );
 
-    const card = Sanguosha.getCardById(selectedCard!);
+    const card = Sanguosha.getCardById(selectedCards![0]);
     if (card.is(CardType.Equip)) {
       const cardUseEvent = {
         fromId: skillUseEvent.fromId,
-        cardId: selectedCard!,
+        cardId: selectedCards![0],
       };
       await room.useCard(cardUseEvent);
     } else {
       await room.dropCards(
         CardMoveReason.SelfDrop,
-        [selectedCard!],
+        selectedCards!,
         skillUseEvent.fromId,
         skillUseEvent.fromId,
         this.Name,

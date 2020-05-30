@@ -95,6 +95,7 @@ export class QianXunShadow extends TriggerSkill implements OnDefineReleaseTiming
       moveReason: CardMoveReason.ActiveMove,
       proposer: fromId,
       movedByReason: this.GeneralName,
+      hideBroadcast: true,
     });
     return true;
   }

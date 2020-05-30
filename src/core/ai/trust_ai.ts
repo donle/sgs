@@ -172,15 +172,15 @@ export class TrustAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
-    const { cardIds, cardMatcher, toId } = content;
+    const { cardIds, cardMatcher, toId, amount } = content;
     const chooseCard: ClientEventFinder<T> = {
       fromId: toId,
-      selectedCardIndex: typeof cardIds === 'number' ? 0 : undefined,
-      selectedCard:
+      selectedCardIndex: typeof cardIds === 'number' ? new Array(amount).fill(0).map((n, index) => index) : undefined,
+      selectedCards:
         cardIds instanceof Array
-          ? cardIds.find(cardId =>
-              cardMatcher ? CardMatcher.match(cardMatcher, Sanguosha.getCardById(cardId)) : cardId,
-            )
+          ? cardIds
+              .filter(cardId => (cardMatcher ? CardMatcher.match(cardMatcher, Sanguosha.getCardById(cardId)) : cardId))
+              .slice(0, amount)
           : undefined,
     };
 
@@ -248,8 +248,8 @@ export class TrustAI extends PlayerAI {
     room: Room,
   ) {
     const placeCards: ClientEventFinder<T> = {
-      top: content.movableCards.slice(0, content.top),
-      bottom: content.movableCards.slice(content.top, content.top + content.bottom),
+      top: content.cardIds.slice(0, content.top),
+      bottom: content.cardIds.slice(content.top, content.top + content.bottom),
       fromId: content.toId,
     };
 

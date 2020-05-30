@@ -82,6 +82,8 @@ export { JiJie } from './characters/standard/jijie';
 export { JiYuan } from './characters/standard/jiyuan';
 export { WuShuang, WuShuangShadow } from './characters/standard/wushuang';
 export { LiYu } from './characters/standard/liyu';
+export { XunXun } from './characters/standard/xunxun';
+export { WangXi } from './characters/standard/wangxi';
 
 export { JuShou } from './characters/wind/jushou';
 export { JieWei, JieWeiShadow } from './characters/wind/jiewei';

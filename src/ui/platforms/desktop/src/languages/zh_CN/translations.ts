@@ -66,6 +66,10 @@ export const characterDictionary: Word[] = [
   { source: '#luoshen', target: '洛神' },
   { source: 'qingguo', target: '倾国' },
 
+  { source: 'lidian', target: '李典' },
+  { source: 'xunxun', target: '恂恂' },
+  { source: 'wangxi', target: '忘隙' },
+
   { source: 'liubei', target: '刘备' },
   { source: 'rende', target: '仁德' },
   { source: 'jijiang', target: '激将' },
@@ -342,6 +346,16 @@ export const skillDescriptions: Word[] = [
     source: 'rende_description',
     target:
       '出牌阶段，你可以将至少一张手牌交给一名本阶段未获得过“仁德”牌的其他角色。当你于本阶段给出第二张“仁德”牌时，你可以视为使用一张基本牌。',
+  },
+  {
+    source: 'xunxun_description',
+    target:
+      '摸牌阶段开始时，你可以观看牌堆顶四张牌，将其中两张牌置于牌堆顶，其余两张牌置于牌堆底。',
+  },
+  {
+    source: 'wangxi_description',
+    target:
+      '当你对其他角色造成1点伤害或受到其他角色造成的1点伤害后，若其存活，你可以与其各摸一张牌。',
   },
   {
     source: 'jijiang_description',

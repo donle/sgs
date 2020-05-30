@@ -15,7 +15,7 @@ import { Sanguosha } from 'core/game/engine';
 import { GameInfo } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
 import { AnalyticsActions, RecordAnalytics } from 'core/game/record_analytics';
-import { AllStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
+import { AllStage, GameEventStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Socket } from 'core/network/socket';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
@@ -118,6 +118,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract get CurrentPlayerPhase(): PlayerPhase;
   public abstract get CurrentPhasePlayer(): Player;
   public abstract get CurrentPlayer(): Player;
+  //Server only
+  public abstract get CurrentProcessingStage(): GameEventStage | undefined;
   //Server only
   public abstract syncGameCommonRules(playerId: PlayerId, updateActions: (user: Player) => void): void;
   //Server only

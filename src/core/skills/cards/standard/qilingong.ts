@@ -52,6 +52,7 @@ export class QiLinGongSkill extends TriggerSkill {
         const card = Sanguosha.getCardById(cardId);
         return card.is(CardType.OffenseRide) || card.is(CardType.DefenseRide);
       }),
+      amount: 1,
     };
 
     room.notify(
@@ -65,11 +66,11 @@ export class QiLinGongSkill extends TriggerSkill {
       event.fromId!,
     );
 
-    if (response.selectedCard === undefined) {
+    if (response.selectedCards === undefined) {
       return true;
     }
 
-    await room.dropCards(CardMoveReason.PassiveDrop, [response.selectedCard], to.Id, skillUseEvent.fromId, this.Name);
+    await room.dropCards(CardMoveReason.PassiveDrop, response.selectedCards, to.Id, skillUseEvent.fromId, this.Name);
     return true;
   }
 }

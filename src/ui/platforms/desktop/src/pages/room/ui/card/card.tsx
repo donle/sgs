@@ -13,6 +13,7 @@ export type ClientCardProps = {
   translator: ClientTranslationModule;
   className?: string;
   disabled?: boolean;
+  unselectable?: boolean;
   onSelected?(selected: boolean): void;
   tag?: string;
   width?: number;
@@ -34,7 +35,9 @@ export class ClientCard extends React.Component<ClientCardProps> {
 
   readonly onClick = mobx.action(() => {
     if (this.props.disabled === false) {
-      this.selected = !this.selected;
+      if (!this.props.unselectable) {
+        this.selected = !this.selected;
+      }
       this.props.onSelected && this.props.onSelected(this.selected);
     }
   });

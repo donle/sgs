@@ -465,7 +465,10 @@ export class StageProcessor {
     return playerStagesList[phase].includes(stage);
   }
 
-  public getInsidePlayerPhase(specificStage: PlayerPhaseStages): PlayerPhase {
+  public getInsidePlayerPhase(specificStage: PlayerPhaseStages | undefined): PlayerPhase {
+    if (specificStage === undefined) {
+      return PlayerPhase.PrepareStage;
+    }
     for (const [stage, stageList] of (Object.entries(playerStagesList) as unknown) as [string, PlayerPhaseStages[]][]) {
       if (stageList.includes(specificStage)) {
         return parseInt(stage, 10) as PlayerPhase;

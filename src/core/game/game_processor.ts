@@ -54,6 +54,7 @@ export class GameProcessor {
   private currentPlayerStage: PlayerPhaseStages | undefined;
   private currentPlayerPhase: PlayerPhase | undefined;
   private currentPhasePlayer: Player;
+  private currentProcessingStage: GameEventStage | undefined;
   private playerStages: PlayerPhaseStages[] = [];
 
   private playRoundInsertions: PlayerId[] = [];
@@ -316,6 +317,15 @@ export class GameProcessor {
     }
   }
 
+  private readonly processingPhaseStages = [
+    PlayerPhaseStages.PrepareStage,
+    PlayerPhaseStages.JudgeStage,
+    PlayerPhaseStages.DrawCardStage,
+    PlayerPhaseStages.PlayCardStage,
+    PlayerPhaseStages.DropCardStage,
+    PlayerPhaseStages.FinishStage,
+  ];
+
   private async play(player: Player, specifiedStages?: PlayerPhaseStages[]) {
     if (!player.isFaceUp()) {
       await this.room.turnOver(player.Id);
@@ -329,13 +339,14 @@ export class GameProcessor {
 
     while (this.playerStages.length > 0) {
       const nextPhase = this.stageProcessor.getInsidePlayerPhase(this.playerStages[0]);
+
+      const phaseChangeEvent = EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseChangeEvent, {
+        from: this.currentPlayerPhase,
+        to: nextPhase,
+        fromPlayer: lastPlayer?.Id,
+        toPlayer: player.Id,
+      });
       if (nextPhase !== this.currentPlayerPhase) {
-        const phaseChangeEvent = EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseChangeEvent, {
-          from: this.currentPlayerPhase,
-          to: nextPhase,
-          fromPlayer: lastPlayer?.Id,
-          toPlayer: player.Id,
-        });
         await this.onHandleIncomingEvent(GameEventIdentifiers.PhaseChangeEvent, phaseChangeEvent, async stage => {
           if (stage === PhaseChangeStage.BeforePhaseChange) {
             for (const player of this.room.AlivePlayers) {
@@ -364,23 +375,36 @@ export class GameProcessor {
           continue;
         }
 
-        await this.onPhase(this.currentPlayerPhase!);
+        do {
+          if (this.playerStages.length === 0) {
+            break;
+          }
+
+          await this.onHandleIncomingEvent(
+            GameEventIdentifiers.PhaseStageChangeEvent,
+            EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseStageChangeEvent, {
+              toStage: this.currentPlayerStage!,
+              playerId: this.CurrentPlayer.Id,
+            }),
+            async stage => {
+              if (
+                stage === PhaseStageChangeStage.StageChanged &&
+                this.processingPhaseStages.includes(this.currentPlayerStage!)
+              ) {
+                await this.onPhase(this.currentPlayerPhase!);
+              }
+              return true;
+            },
+          );
+
+          this.currentPlayerStage = this.playerStages.shift();
+        } while (
+          this.currentPlayerStage !== undefined &&
+          this.stageProcessor.isInsidePlayerPhase(this.currentPlayerPhase!, this.currentPlayerStage)
+        );
       }
 
-      this.currentPlayerStage = this.playerStages[0];
-      this.playerStages.shift();
-
-      await this.onHandleIncomingEvent(
-        GameEventIdentifiers.PhaseStageChangeEvent,
-        EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseStageChangeEvent, {
-          toStage: this.currentPlayerStage,
-          playerId: this.CurrentPlayer.Id,
-        }),
-      );
-
-      if (lastPlayer !== this.currentPhasePlayer) {
-        lastPlayer = this.currentPhasePlayer;
-      }
+      lastPlayer = this.currentPhasePlayer;
     }
   }
 
@@ -667,21 +691,21 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
     processor?: (stage: GameEventStage) => Promise<void>,
   ) => {
-    let eventStage: GameEventStage | undefined = this.stageProcessor.involve(identifier);
+    this.currentProcessingStage = this.stageProcessor.involve(identifier);
     while (true) {
       if (EventPacker.isTerminated(event)) {
         this.stageProcessor.skipEventProcess(identifier);
         break;
       }
 
-      await this.room.trigger<typeof event>(event, eventStage);
+      await this.room.trigger<typeof event>(event, this.currentProcessingStage);
       if (EventPacker.isTerminated(event)) {
         this.stageProcessor.skipEventProcess(identifier);
         break;
       }
 
       if (onActualExecuted) {
-        await onActualExecuted(eventStage!);
+        await onActualExecuted(this.currentProcessingStage!);
       }
       if (EventPacker.isTerminated(event)) {
         this.stageProcessor.skipEventProcess(identifier);
@@ -689,7 +713,7 @@ export class GameProcessor {
       }
 
       if (processor) {
-        await processor(eventStage!);
+        await processor(this.currentProcessingStage!);
       }
       if (EventPacker.isTerminated(event)) {
         this.stageProcessor.skipEventProcess(identifier);
@@ -698,7 +722,7 @@ export class GameProcessor {
 
       const nextStage = this.stageProcessor.getNextStage();
       if (this.stageProcessor.isInsideEvent(identifier, nextStage)) {
-        eventStage = this.stageProcessor.next();
+        this.currentProcessingStage = this.stageProcessor.next();
       } else {
         break;
       }
@@ -717,7 +741,7 @@ export class GameProcessor {
         return;
       }
 
-      if (stage === DrawCardStage.CardDrawing) {
+      if (stage === DrawCardStage.CardDrawing && event.drawAmount > 0) {
         if (!event.translationsMessage) {
           event.translationsMessage = TranslationPack.translationJsonPatcher(
             '{0} draws {1} cards',
@@ -1187,6 +1211,7 @@ export class GameProcessor {
       hideBroadcast,
       placeAtTheBottomOfDrawStack,
       isOutsideAreaInPublic,
+      proposer,
     } = event;
     let to = toId && this.room.getPlayerById(toId);
     if (to && to.Dead) {
@@ -1237,7 +1262,16 @@ export class GameProcessor {
         const moveOwnedCards = movingCards
           .filter(cardInfo => cardInfo.fromArea === CardMoveArea.HandArea)
           .map(cardInfo => cardInfo.card);
-        if (
+        if ([CardMoveReason.SelfDrop, CardMoveReason.PassiveDrop].includes(moveReason)) {
+          event.messages.push(
+            TranslationPack.translationJsonPatcher(
+              '{0} drops cards {1}' + (proposer !== undefined && proposer !== fromId ? ' by {2}' : ''),
+              TranslationPack.patchPlayerInTranslation(from),
+              TranslationPack.patchCardInTranslation(...moveOwnedCards),
+              proposer !== undefined ? TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(proposer)) : '',
+            ).toString(),
+          );
+        } else if (
           ![CardMoveReason.CardUse, CardMoveReason.CardResponse].includes(moveReason) &&
           moveOwnedCards.length > 0 &&
           fromId !== toId
@@ -1618,5 +1652,10 @@ export class GameProcessor {
   public get CurrentPlayerStage() {
     this.tryToThrowNotStartedError();
     return this.currentPlayerStage!;
+  }
+
+  public get CurrentProcessingStage() {
+    this.tryToThrowNotStartedError();
+    return this.currentProcessingStage;
   }
 }

@@ -245,6 +245,7 @@ export interface ServerEvent extends EventUtilities {
     cardIds: CardId[] | number;
     toId: PlayerId;
     cardMatcher?: CardMatcherSocketPassenger;
+    amount: number;
   };
   [GameEventIdentifiers.AskForChoosingCardFromPlayerEvent]: {
     fromId: PlayerId;
@@ -292,12 +293,17 @@ export interface ServerEvent extends EventUtilities {
     conversation: string | PatchedTranslationObject;
   };
   [GameEventIdentifiers.AskForPlaceCardsInDileEvent]: {
-    movableCards: CardId[];
+    cardIds: CardId[];
     top: number;
     topStackName: string;
     bottom: number;
     bottomStackName: string;
     toId: PlayerId;
+    movable: boolean;
+    topMaxCard?: number; 
+    topMinCard?: number;
+    bottomMaxCard?: number;
+    bottomMinCard?: number;
   };
   [GameEventIdentifiers.PhaseChangeEvent]: {
     from: PlayerPhase | undefined;

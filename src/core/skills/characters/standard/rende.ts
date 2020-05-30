@@ -60,8 +60,8 @@ export class Rende extends ActiveSkill {
       }
       if (from.canUseCard(room, new CardMatcher({ name: ['slash'] }))) {
         options.push('slash');
-        options.push('fire_slash');
-        options.push('thunder_slash');
+        // options.push('fire_slash');
+        // options.push('thunder_slash');
       }
 
       if (options.length === 0) {

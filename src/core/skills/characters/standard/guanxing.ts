@@ -39,12 +39,13 @@ export class GuanXing extends TriggerSkill {
     const guanxingAmount = room.AlivePlayers.length >= 4 ? 5 : 3;
     const cards = room.getCards(guanxingAmount, 'top');
     const guanxingEvent: ServerEventFinder<GameEventIdentifiers.AskForPlaceCardsInDileEvent> = {
-      movableCards: cards,
+      cardIds: cards,
       top: guanxingAmount,
       topStackName: 'draw stack top',
       bottom: guanxingAmount,
       bottomStackName: 'draw stack bottom',
       toId: skillUseEvent.fromId,
+      movable: true,
     };
 
     room.notify(GameEventIdentifiers.AskForPlaceCardsInDileEvent, guanxingEvent, skillUseEvent.fromId);

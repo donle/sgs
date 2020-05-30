@@ -45,6 +45,9 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     throw new Error(`Shouldn't call ${functionName} in client room`);
   }
 
+  public get CurrentProcessingStage(): any {
+    return this.throwUntouchableError(this.CurrentProcessingStage.name);
+  }
   //Server only
   public insertPlayerRound(): void {
     this.throwUntouchableError(this.insertPlayerRound.name);

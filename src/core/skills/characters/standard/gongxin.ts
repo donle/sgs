@@ -50,25 +50,26 @@ export class GongXin extends ActiveSkill {
       toId: fromId,
       cardIds: handCards,
       cardMatcher: new CardMatcher({ suit: [CardSuit.Heart] }).toSocketPassenger(),
+      amount: 1,
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingCardEvent, askForChooseCardEvent, fromId);
-    const { selectedCard } = await room.onReceivingAsyncReponseFrom(
+    const { selectedCards } = await room.onReceivingAsyncReponseFrom(
       GameEventIdentifiers.AskForChoosingCardEvent,
       fromId,
     );
 
-    if (selectedCard === undefined) {
+    if (selectedCards === undefined) {
       return true;
     }
 
     const showCardEvent: ServerEventFinder<GameEventIdentifiers.CardDisplayEvent> = {
-      displayCards: [selectedCard],
+      displayCards: selectedCards,
       fromId: toIds![0],
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} display hand card {1} from {2}',
         TranslationPack.patchPlayerInTranslation(from),
-        TranslationPack.patchCardInTranslation(selectedCard),
+        TranslationPack.patchCardInTranslation(...selectedCards),
         TranslationPack.patchPlayerInTranslation(to),
       ).extract(),
     };
@@ -90,7 +91,7 @@ export class GongXin extends ActiveSkill {
     );
     if (selectedOption === 'gongxin:putcard') {
       await room.moveCards({
-        movingCards: [{ card: selectedCard, fromArea: CardMoveArea.HandArea }],
+        movingCards: selectedCards.map(card => ({ card, fromArea: CardMoveArea.HandArea })),
         fromId: to.Id,
         moveReason: CardMoveReason.PassiveMove,
         toArea: CardMoveArea.DrawStack,
@@ -102,12 +103,12 @@ export class GongXin extends ActiveSkill {
         translationsMessage: TranslationPack.translationJsonPatcher(
           '{0} place card {1} from {2} on the top of draw stack',
           TranslationPack.patchPlayerInTranslation(from),
-          TranslationPack.patchCardInTranslation(selectedCard),
+          TranslationPack.patchCardInTranslation(...selectedCards),
           TranslationPack.patchPlayerInTranslation(to),
         ).extract(),
       });
     } else {
-      await room.dropCards(CardMoveReason.PassiveDrop, [selectedCard], to.Id, fromId, this.Name);
+      await room.dropCards(CardMoveReason.PassiveDrop, selectedCards, to.Id, fromId, this.Name);
     }
 
     return true;

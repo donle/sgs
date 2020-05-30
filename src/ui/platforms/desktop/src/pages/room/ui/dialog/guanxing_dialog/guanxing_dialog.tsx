@@ -20,6 +20,11 @@ export type GuanXingDialogProps = {
   presenter: RoomPresenter;
   onConfirm(top: Card[], bottom: Card[]): () => void;
   title?: string;
+  movable?: boolean;
+  topMaxCard?: number;
+  topMinCard?: number;
+  bottomMaxCard?: number;
+  bottomMinCard?: number;
 };
 
 const EmptyCardSlots = (props: { slotName: string; length: number; translator: ClientTranslationModule }) => {
@@ -69,6 +74,10 @@ export class GuanXingCardSlots extends React.Component<GuanXingDialogProps> {
       };
     }
   }
+
+  // componentDidMount() {
+  //   this.canConfirm();
+  // }
 
   @mobx.action
   private updateCardOffset(movingCard: Card, to: 'top' | 'bottom', targetIndex: number) {
@@ -239,8 +248,56 @@ export class GuanXingCardSlots extends React.Component<GuanXingDialogProps> {
     };
   };
 
+  getInsertIndex = (card: Card, from: 'top' | 'bottom') => {
+    const { cards } = this.props;
+    const currentCards = from === 'top' ? this.topCards : this.bottomCards;
+    const originalIndex = cards.findIndex(originalCard => originalCard === card);
+    for (let i = 0; i < currentCards.length; i++) {
+      const cardIndex = cards.findIndex(originalCard => originalCard === currentCards[i]);
+      if (cardIndex > originalIndex) {
+        return i;
+      }
+    }
+
+    return currentCards.length;
+  };
+
+  onClick = (card: Card, index: number) => () => {
+    const cardIndex = this.topCards.findIndex(topCard => card === topCard);
+    if (cardIndex >= 0 && this.bottomCards.length < 2) {
+      const targetIndex = this.getInsertIndex(card, 'bottom');
+      this.addToStack(card, 'bottom', index);
+      this.updateCardOffset(card, 'bottom', targetIndex);
+    } else if (cardIndex < 0) {
+      const targetIndex = this.getInsertIndex(card, 'top');
+      this.addToStack(card, 'top', index);
+      this.updateCardOffset(card, 'top', targetIndex);
+    }
+  };
+
+  private canConfirm() {
+    const { presenter, topMaxCard, topMinCard, bottomMaxCard, bottomMinCard } = this.props;
+    let canConfirm = true;
+    if (topMaxCard !== undefined && this.topCards.length > topMaxCard) {
+      canConfirm = false;
+    }
+    if (topMinCard !== undefined && this.topCards.length < topMinCard) {
+      canConfirm = false;
+    }
+    if (bottomMaxCard !== undefined && this.bottomCards.length > bottomMaxCard) {
+      canConfirm = false;
+    }
+    if (bottomMinCard !== undefined && this.bottomCards.length < bottomMinCard) {
+      canConfirm = false;
+    }
+
+    canConfirm ? presenter.enableActionButton('confirm') : presenter.disableActionButton('confirm');
+    presenter.broadcastUIUpdate();
+  }
+
   render() {
-    const { top, bottom, cards, translator, topStackName, bottomStackName } = this.props;
+    const { top, bottom, cards, translator, topStackName, bottomStackName, movable } = this.props;
+    this.canConfirm();
 
     return (
       <div className={styles.cardSlots}>
@@ -250,10 +307,13 @@ export class GuanXingCardSlots extends React.Component<GuanXingDialogProps> {
               key={index}
               card={card}
               translator={translator}
-              onMouseUp={this.onMouseUp(card, index)}
-              onMouseDown={this.onMouseDown(card, index)}
-              onMouseMove={this.onDrag(card, index)}
-              onMouseLeave={this.onMouseLeave(card, index)}
+              disabled={movable}
+              unselectable={true}
+              onSelected={!movable ? this.onClick(card, index) : undefined}
+              onMouseUp={movable ? this.onMouseUp(card, index) : undefined}
+              onMouseDown={movable ? this.onMouseDown(card, index) : undefined}
+              onMouseMove={movable ? this.onDrag(card, index) : undefined}
+              onMouseLeave={movable ? this.onMouseLeave(card, index) : undefined}
               offsetLeft={this.cardPositions[card.Id] && this.cardPositions[card.Id].left}
               offsetTop={this.cardPositions[card.Id] && this.cardPositions[card.Id].top}
               className={styles.guanxingCard}
@@ -276,9 +336,7 @@ export class GuanXingCardSlots extends React.Component<GuanXingDialogProps> {
 }
 
 export const GuanXingDialog = (props: GuanXingDialogProps) => {
-  const { translator, presenter, title } = props;
-
-  presenter.enableActionButton('confirm');
+  const { translator, title } = props;
 
   return (
     <BaseDialog title={title && translator.trx(title)}>

@@ -72,27 +72,14 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill {
       response.selectedCard = to.getCardIds(PlayerCardsArea.HandArea)[response.selectedCardIndex!];
     }
 
-    if (response.fromArea !== PlayerCardsArea.JudgeArea) {
-      await room.dropCards(
-        CardMoveReason.PassiveDrop,
-        [response.selectedCard],
-        chooseCardEvent.toId,
-        chooseCardEvent.fromId,
-        this.Name,
-      );
-    } else {
-      await room.moveCards({
-        movingCards: [
-          {
-            card: response.selectedCard!,
-            fromArea: to.cardFrom(response.selectedCard!),
-          },
-        ],
-        moveReason: CardMoveReason.PassiveDrop,
-        fromId: to.Id,
-        toArea: CardMoveArea.DropStack,
-      });
-    }
+    await room.dropCards(
+      CardMoveReason.PassiveDrop,
+      [response.selectedCard],
+      chooseCardEvent.toId,
+      chooseCardEvent.fromId,
+      this.Name,
+    );
+
     return true;
   }
 }
