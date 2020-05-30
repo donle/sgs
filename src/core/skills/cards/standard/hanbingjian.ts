@@ -18,7 +18,7 @@ export class HanBingJianSkill extends TriggerSkill {
       return false;
     }
 
-    return room.getPlayerById(event.toId).getPlayerCards().length > 0;
+    return event.fromId === owner.Id && room.getPlayerById(event.toId).getPlayerCards().length > 0;
   }
 
   async onTrigger(): Promise<boolean> {
