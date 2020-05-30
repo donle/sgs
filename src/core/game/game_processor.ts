@@ -798,6 +798,7 @@ export class GameProcessor {
           toId,
           amount: damage,
           byReaon: 'damage',
+          byCardIds: event.cardIds,
         };
         await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async stage => {
           if (stage === HpChangeStage.HpChanging) {
@@ -1531,6 +1532,7 @@ export class GameProcessor {
           toId: to.Id,
           amount: event.recoveredHp,
           byReaon: 'recover',
+          byCardIds: event.cardIds,
         };
         await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async stage => {
           if (stage === HpChangeStage.HpChanging) {

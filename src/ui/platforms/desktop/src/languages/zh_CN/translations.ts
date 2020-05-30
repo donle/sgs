@@ -33,6 +33,7 @@ export const cardDictionary: Word[] = [
   { source: 'qilingong', target: '麒麟弓' },
   { source: 'cixiongjian', target: '雌雄双股剑' },
   { source: 'renwangdun', target: '仁王盾' },
+  { source: 'hanbingjian', target: '寒冰剑' },
 ];
 
 export const characterDictionary: Word[] = [

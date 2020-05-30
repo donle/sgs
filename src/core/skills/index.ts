@@ -25,6 +25,7 @@ export { FangTianHuaJiSkill } from './cards/standard/fangtianhuaji';
 export { QingLongYanYueDaoSkill } from './cards/standard/qinglongdao';
 export { QiLinGongSkill } from './cards/standard/qilingong';
 export { RenWangDunSkill } from './cards/standard/renwangdun';
+export { HanBingJianSkill } from './cards/standard/hanbingjian';
 
 export { Hujia } from './characters/standard/hujia';
 export { JianXiong } from './characters/standard/jianxiong';
