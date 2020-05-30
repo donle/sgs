@@ -23,17 +23,15 @@ export class HanBingJianSkill extends TriggerSkill {
     if (!event.cardIds || Sanguosha.getCardById(event.cardIds[0]).GeneralName !== 'slash') {
       return false;
     }
-    const to = room.getPlayerById(event.toId);
-    const handCardsNum = to.getCardIds(PlayerCardsArea.HandArea).length;
-    const equipCardsNum = to.getCardIds(PlayerCardsArea.EquipArea).length;
-    return handCardsNum + equipCardsNum > 0;
+
+    return room.getPlayerById(event.toId).getPlayerCards().length > 0;
   }
 
-  async onTrigger(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+  async onTrigger(): Promise<boolean> {
     return true;
   }
 
-  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { triggeredOnEvent } = event;
     const damageEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
     const to = room.getPlayerById(damageEvent.toId);
@@ -63,7 +61,8 @@ export class HanBingJianSkill extends TriggerSkill {
       );
 
       if (response.selectedCard === undefined) {
-        response.selectedCard = to.getCardIds(PlayerCardsArea.HandArea)[response.selectedCardIndex!];
+        const handCardIds = to.getCardIds(PlayerCardsArea.HandArea);
+        response.selectedCard = handCardIds[Math.floor(Math.random() * handCardIds.length)];
       }
 
       await room.dropCards(
@@ -73,12 +72,6 @@ export class HanBingJianSkill extends TriggerSkill {
         chooseCardEvent.fromId,
         this.Name,
       );
-
-      const handCardsNum = to.getCardIds(PlayerCardsArea.HandArea).length;
-      const equipCardsNum = to.getCardIds(PlayerCardsArea.EquipArea).length;
-      if (handCardsNum + equipCardsNum === 0) {
-        break;
-      }
     }
 
     return true;
