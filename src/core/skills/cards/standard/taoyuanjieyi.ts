@@ -1,5 +1,4 @@
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
@@ -10,9 +9,10 @@ export class TaoYuanJieYiSkill extends ActiveSkill {
     return true;
   }
 
-  public targetFilter(room: Room, targets: PlayerId[]): boolean {
-    return targets.length === 0;
+  public numberOfTargets() {
+    return 0;
   }
+
   public cardFilter(): boolean {
     return true;
   }

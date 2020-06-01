@@ -1,5 +1,5 @@
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
@@ -11,9 +11,10 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill {
     return true;
   }
 
-  public targetFilter(room: Room, targets: PlayerId[]): boolean {
-    return targets.length === 1;
+  public numberOfTargets() {
+    return 1;
   }
+  
   public cardFilter(): boolean {
     return true;
   }

@@ -14,8 +14,8 @@ export class LiJian extends ActiveSkill {
     return !owner.hasUsedSkill(this.Name);
   }
 
-  targetFilter(room: Room, targets: PlayerId[]): boolean {
-    return targets.length === 2;
+  public numberOfTargets() {
+    return 2;
   }
 
   cardFilter(room: Room, cards: CardId[]): boolean {

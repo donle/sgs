@@ -13,8 +13,8 @@ export class KuRou extends ActiveSkill {
     return !owner.hasUsedSkill(this.Name) && handCards.length + equipmentCards.length > 0;
   }
 
-  public targetFilter(): boolean {
-    return true;
+  public numberOfTargets() {
+    return 0;
   }
 
   public cardFilter(room: Room, cards: CardId[]): boolean {

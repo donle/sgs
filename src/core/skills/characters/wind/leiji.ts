@@ -32,7 +32,7 @@ export class LeiJi extends TriggerSkill {
     return owner !== target;
   }
 
-  targetFilter(room: Room, targets: PlayerId[]) {
+  targetFilter(room: Room, owner: Player, targets: PlayerId[]) {
     return targets.length === 1;
   }
 
@@ -67,7 +67,7 @@ export class LeiJiShadow extends TriggerSkill {
     return room.getFlag<PlayerId>(owner, this.GeneralName) ? false : owner !== target;
   }
 
-  targetFilter(room: Room, targets: PlayerId[]) {
+  targetFilter(room: Room, owner: Player, targets: PlayerId[]) {
     return targets.length === 1;
   }
 

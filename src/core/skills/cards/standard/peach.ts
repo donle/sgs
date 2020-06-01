@@ -1,7 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
-import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, SelfTargetSkill } from 'core/skills/skill';
@@ -17,8 +16,9 @@ export class PeachSkill extends ActiveSkill {
   cardFilter(room: Room, cards: CardId[]) {
     return cards.length === 0;
   }
-  targetFilter(room: Room, targets: PlayerId[]): boolean {
-    return targets.length === 0;
+
+  public numberOfTargets() {
+    return 0;
   }
 
   isAvailableCard() {

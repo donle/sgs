@@ -21,7 +21,7 @@ export class LianYing extends TriggerSkill {
     );
   }
 
-  targetFilter(room: Room, targets: PlayerId[]) {
+  targetFilter(room: Room, owner: Player, targets: PlayerId[]) {
     return targets.length > 0;
   }
 

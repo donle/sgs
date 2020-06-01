@@ -31,7 +31,7 @@ export class QingJian extends TriggerSkill {
     return phase === PlayerPhase.PrepareStage;
   }
 
-  public targetFilter(room: Room, targets: PlayerId[]): boolean {
+  public targetFilter(room: Room, owner: Player, targets: PlayerId[]): boolean {
     return targets.length === 1;
   }
 

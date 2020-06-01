@@ -31,7 +31,7 @@ export class XunXun extends TriggerSkill {
       topMinCard: 2,
       bottomMaxCard: 2,
       bottomMinCard: 2,
-      movable: false,
+      movable: true,
     };
 
     room.notify(GameEventIdentifiers.AskForPlaceCardsInDileEvent, askForChooseCards, skillUseEvent.fromId);

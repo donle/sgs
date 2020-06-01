@@ -13,10 +13,11 @@ export class DuelSkill extends ActiveSkill {
   public canUse() {
     return true;
   }
-
-  public targetFilter(room: Room, targets: PlayerId[]): boolean {
-    return targets.length === 1;
+  
+  public numberOfTargets() {
+    return 1;
   }
+  
   public cardFilter(): boolean {
     return true;
   }

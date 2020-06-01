@@ -23,8 +23,6 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
       return true;
     }
 
-    const player = this.store.room.getPlayerById(this.playerId);
-
     if (this.selectedSkillToPlay !== undefined) {
       const skill = this.selectedSkillToPlay;
       if (skill instanceof ActiveSkill) {
@@ -44,14 +42,14 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
         return (
           skill.isAvailableCard(
             this.store.room,
-            player,
+            this.player,
             card.Id,
             this.pendingCards,
             this.equipSkillCardId,
             this.matcher,
           ) &&
-          (!skill.cardFilter(this.store.room, player, this.pendingCards) ||
-            skill.cardFilter(this.store.room, player, [...this.pendingCards, card.Id]))
+          (!skill.cardFilter(this.store.room, this.player, this.pendingCards) ||
+            skill.cardFilter(this.store.room, this.player, [...this.pendingCards, card.Id]))
         );
       } else {
         return false;

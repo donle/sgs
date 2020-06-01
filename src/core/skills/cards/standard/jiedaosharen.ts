@@ -17,9 +17,10 @@ export class JieDaoShaRenSkill extends ActiveSkill {
     );
   }
 
-  public targetFilter(room: Room, targets: PlayerId[]): boolean {
-    return targets.length === 2;
+  public numberOfTargets() {
+    return 2;
   }
+  
   public cardFilter(): boolean {
     return true;
   }

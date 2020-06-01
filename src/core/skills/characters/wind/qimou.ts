@@ -16,8 +16,8 @@ export class QiMou extends ActiveSkill {
     return !owner.hasUsedSkill(this.Name);
   }
 
-  targetFilter(room: Room, targets: PlayerId[]): boolean {
-    return targets.length === 0;
+  public numberOfTargets() {
+    return 0;
   }
 
   cardFilter(room: Room, cards: CardId[]): boolean {

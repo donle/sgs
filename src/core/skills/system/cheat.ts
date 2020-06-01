@@ -15,8 +15,8 @@ export class Cheat extends ActiveSkill {
     return true;
   }
 
-  targetFilter(room: Room, targets: PlayerId[]): boolean {
-    return targets.length === 0;
+  numberOfTargets() {
+    return 0;
   }
 
   cardFilter(room: Room, cards: CardId[]): boolean {

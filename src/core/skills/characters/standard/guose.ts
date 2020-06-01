@@ -17,9 +17,10 @@ export class GuoSe extends ActiveSkill {
   public cardFilter(room: Room, cards: CardId[]): boolean {
     return cards.length === 1;
   }
-  public targetFilter(room: Room, targets: PlayerId[]): boolean {
-    return targets.length === 1;
+  public numberOfTargets() {
+    return 1;
   }
+  
   public isAvailableTarget(
     owner: PlayerId,
     room: Room,

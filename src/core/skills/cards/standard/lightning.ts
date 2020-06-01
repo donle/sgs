@@ -19,9 +19,10 @@ export class LightningSkill extends ActiveSkill {
     );
   }
 
-  public targetFilter(room: Room, targets: PlayerId[]): boolean {
-    return targets.length === 0;
+  public numberOfTargets() {
+    return 0;
   }
+
   public cardFilter(): boolean {
     return true;
   }

@@ -25,7 +25,7 @@ export class FenWei extends TriggerSkill {
     return true;
   }
 
-  public targetFilter(room: Room, targets: PlayerId[]) {
+  public targetFilter(room: Room, owner: Player, targets: PlayerId[]) {
     return targets.length > 0;
   }
 

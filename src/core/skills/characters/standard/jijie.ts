@@ -9,6 +9,9 @@ export class JiJie extends ActiveSkill {
     return !owner.hasUsedSkill(this.Name);
   }
 
+  public numberOfTargets() {
+    return 0;
+  }
   public targetFilter(): boolean {
     return true;
   }

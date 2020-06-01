@@ -24,7 +24,7 @@ export class TianXiang extends TriggerSkill {
     return owner !== target;
   }
 
-  targetFilter(room: Room, targets: PlayerId[]): boolean {
+  targetFilter(room: Room, owner: Player, targets: PlayerId[]): boolean {
     return targets.length === 1;
   }
 

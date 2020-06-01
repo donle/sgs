@@ -23,7 +23,7 @@ export class LiuLi extends TriggerSkill {
     return event.toId === owner.Id;
   }
 
-  public targetFilter(room: Room, targets: PlayerId[]) {
+  public targetFilter(room: Room, owner: Player, targets: PlayerId[]) {
     return targets.length === 1;
   }
 

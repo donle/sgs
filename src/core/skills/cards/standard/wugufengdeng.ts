@@ -17,9 +17,10 @@ export class WuGuFengDengSkill extends ActiveSkill {
     return true;
   }
 
-  public targetFilter(room: Room, targets: PlayerId[]): boolean {
-    return targets.length === 0;
+  public numberOfTargets() {
+    return 0;
   }
+  
   public cardFilter(): boolean {
     return true;
   }

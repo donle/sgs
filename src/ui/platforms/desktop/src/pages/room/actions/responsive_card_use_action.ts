@@ -107,7 +107,7 @@ export class ResponsiveUseCardAction<
     if (this.selectedCardToPlay === undefined) {
       if (
         !this.extraUse &&
-        !this.store.room.getPlayerById(this.playerId).canUseCard(this.store.room, card.Id, matcher)
+        !this.player.canUseCard(this.store.room, card.Id, matcher)
       ) {
         return false;
       }

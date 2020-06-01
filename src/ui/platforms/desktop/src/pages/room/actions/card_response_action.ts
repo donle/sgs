@@ -48,8 +48,7 @@ export class CardResponseAction extends BaseAction {
   }
 
   isCardEnabledOnResponse(card: Card, fromArea: PlayerCardsArea, matcher: CardMatcher) {
-    const player = this.store.room.getPlayerById(this.playerId);
-    for (const skill of player.getSkills<FilterSkill>('filter')) {
+    for (const skill of this.player.getSkills<FilterSkill>('filter')) {
       if (!skill.canUseCard(card.Id, this.store.room, this.playerId)) {
         return false;
       }
@@ -74,14 +73,14 @@ export class CardResponseAction extends BaseAction {
         return (
           skill.isAvailableCard(
             this.store.room,
-            player,
+            this.player,
             card.Id,
             this.pendingCards,
             this.equipSkillCardId,
             this.matcher,
           ) &&
-          (!skill.cardFilter(this.store.room, player, this.pendingCards) ||
-            skill.cardFilter(this.store.room, player, [...this.pendingCards, card.Id]))
+          (!skill.cardFilter(this.store.room, this.player, this.pendingCards) ||
+            skill.cardFilter(this.store.room, this.player, [...this.pendingCards, card.Id]))
         );
       } else {
         return false;

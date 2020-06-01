@@ -100,13 +100,12 @@ export class PlayPhaseAction extends BaseAction {
         resolve();
       });
 
-      const player = this.store.room.getPlayerById(this.playerId);
       this.presenter.setupPlayersSelectionMatcher((player: Player) => this.isPlayerEnabled(player));
       this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
-        this.isCardEnabled(card, player, PlayerCardsArea.HandArea),
+        this.isCardEnabled(card, this.player, PlayerCardsArea.HandArea),
       );
       this.presenter.setupCardSkillSelectionMatcher((card: Card) =>
-        this.isCardEnabled(card, player, PlayerCardsArea.EquipArea),
+        this.isCardEnabled(card, this.player, PlayerCardsArea.EquipArea),
       );
     });
   }

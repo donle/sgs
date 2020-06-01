@@ -15,8 +15,8 @@ export class Rende extends ActiveSkill {
     return true;
   }
 
-  targetFilter(room: Room, targets: PlayerId[]): boolean {
-    return targets.length === 1;
+  public numberOfTargets() {
+    return 1;
   }
 
   cardFilter(room: Room, cards: CardId[]): boolean {

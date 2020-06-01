@@ -21,7 +21,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { RoomInfo } from 'core/shares/types/server_types';
-import { FilterSkill, TransformSkill } from 'core/skills/skill';
+import { FilterSkill, RulesBreakerSkill, TransformSkill } from 'core/skills/skill';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
 
 export type RoomId = number;
@@ -313,6 +313,13 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   public distanceBetween(from: Player, to: Player) {
+    for (const skill of from.getPlayerSkills<RulesBreakerSkill>('breaker')) {
+      const breakDistance = skill.breakDistanceTo(this, from, to);
+      if (breakDistance > 0) {
+        return breakDistance;
+      }
+    }
+
     const seatGap = to.getDefenseDistance(this) - from.getOffenseDistance(this);
     return this.onSeatDistance(from, to) + seatGap;
   }

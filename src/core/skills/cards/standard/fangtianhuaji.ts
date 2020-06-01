@@ -1,49 +1,32 @@
+import { Card } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { ActiveSkill, CommonSkill } from 'core/skills/skill';
+import { CommonSkill, RulesBreakerSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'fangtianhuaji', description: 'fangtianhuaji_description' })
-export class FangTianHuaJiSkill extends ActiveSkill {
-  public canUse(room: Room, owner: Player) {
-    const lastCards = owner.getCardIds(PlayerCardsArea.HandArea);
-    return (
-      owner.canUseCard(room, new CardMatcher({ name: ['slash'] })) &&
-      lastCards.length === 1 &&
-      Sanguosha.getCardById(lastCards[0]).GeneralName === 'slash'
-    );
-  }
+export class FangTianHuaJiSkill extends RulesBreakerSkill {
+  breakCardUsableTargets(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
+    console.log(cardId);
+    if (cardId instanceof CardMatcher) {
+      return 0;
+    }
 
-  public targetFilter(room: Room, targets: PlayerId[]): boolean {
-    return targets.length > 0 && targets.length <= 3;
-  }
-  public cardFilter(room: Room, cards: CardId[]): boolean {
-    return cards.length === 1;
-  }
-  public isAvailableCard(owner: PlayerId, room: Room, card: CardId): boolean {
-    return room.getPlayerById(owner).cardFrom(card) === PlayerCardsArea.HandArea;
-  }
-  public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId, selectedCards: CardId[]): boolean {
-    return target !== owner && room.canAttack(room.getPlayerById(owner), room.getPlayerById(target), selectedCards[0]);
-  }
+    const handCards = owner.getCardIds(PlayerCardsArea.HandArea);
+    if (handCards.length !== 1) {
+      return 0;
+    }
 
-  public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
-    return true;
-  }
+    const realCards = Card.getActualCards([cardId]);
+    console.log(realCards, handCards);
+    const isSlash = realCards.length === 1 ? realCards[0] === handCards[0] : false;
+    if (isSlash && Sanguosha.getCardById(cardId).GeneralName === 'slash') {
+      return 2;
+    }
 
-  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const { fromId, toIds, cardIds } = event;
-    const useSlashEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
-      fromId: fromId!,
-      toIds,
-      cardId: cardIds![0],
-    };
-
-    await room.useCard(useSlashEvent);
-    return true;
+    return 0;
   }
 }

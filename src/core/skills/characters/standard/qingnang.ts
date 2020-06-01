@@ -16,10 +16,10 @@ export class QingNang extends ActiveSkill {
     return !owner.hasUsedSkill(this.Name) || room.getFlag<boolean>(owner.Id, QingNang.exUse) === true;
   }
 
-  public targetFilter(room: Room, targets: PlayerId[]): boolean {
-    return targets.length === 1;
+  public numberOfTargets() {
+    return 1;
   }
-
+  
   public cardFilter(room: Room, cards: CardId[]): boolean {
     return cards.length === 1;
   }

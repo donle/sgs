@@ -78,7 +78,7 @@ export class YiJiShadow extends TriggerSkill {
     return false;
   }
 
-  public targetFilter(room: Room, targets: PlayerId[]): boolean {
+  public targetFilter(room: Room, owner: Player, targets: PlayerId[]): boolean {
     return targets.length === 1;
   }
   public cardFilter(room: Room, cards: CardId[]): boolean {

@@ -70,7 +70,7 @@ export class JieWeiShadow extends TriggerSkill {
     return true;
   }
 
-  public targetFilter(room: Room, targets: PlayerId[]): boolean {
+  public targetFilter(room: Room, owner: Player, targets: PlayerId[]): boolean {
     return targets.length === 2;
   }
 

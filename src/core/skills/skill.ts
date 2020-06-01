@@ -178,9 +178,10 @@ export abstract class TriggerSkill extends Skill {
     return false;
   }
 
-  public targetFilter(room: Room, targets: PlayerId[]): boolean {
+  public targetFilter(room: Room, owner: Player, targets: PlayerId[]): boolean {
     return targets.length === 0;
   }
+
   public cardFilter(room: Room, cards: CardId[]): boolean {
     return cards.length === 0;
   }
@@ -207,7 +208,34 @@ export abstract class TriggerSkill extends Skill {
 }
 
 export abstract class ActiveSkill extends Skill {
-  public abstract targetFilter(room: Room, targets: PlayerId[]): boolean;
+  public abstract numberOfTargets(): number[] | number;
+  private additionalNumberOfTargets(room: Room, owner: Player, cardId?: CardId): number {
+    if (cardId === undefined) {
+      return 0;
+    } else {
+      return owner.getCardAdditionalUsableNumberOfTargets(room, cardId);
+    }
+  }
+
+  public targetFilter(room: Room, owner: Player, targets: PlayerId[], cardId?: CardId): boolean {
+    const availableNumOfTargets = this.numberOfTargets();
+    const additionalNumberOfTargets = this.additionalNumberOfTargets(room, owner, cardId);
+    if (availableNumOfTargets instanceof Array) {
+      return (
+        targets.length <= availableNumOfTargets[1] + additionalNumberOfTargets &&
+        targets.length >= availableNumOfTargets[0]
+      );
+    } else {
+      if (additionalNumberOfTargets > 0) {
+        return (
+          targets.length >= availableNumOfTargets && targets.length <= availableNumOfTargets + additionalNumberOfTargets
+        );
+      } else {
+        return targets.length === availableNumOfTargets;
+      }
+    }
+  }
+
   public abstract cardFilter(room: Room, cards: CardId[]): boolean;
   public abstract canUse(room: Room, owner: Player): boolean;
   public abstract isAvailableCard(
@@ -309,10 +337,6 @@ export abstract class RulesBreakerSkill extends Skill {
 
   public breakCardUsableTimesTo(cardId: CardId | CardMatcher, room: Room, owner: Player, target: Player): number {
     return 0;
-  }
-
-  public canUseCardTo(cardId: CardId | CardMatcher, room: Room, owner: Player, target: Player): boolean | undefined {
-    return;
   }
 
   public breakCardUsableTimes(cardId: CardId | CardMatcher, room: Room, owner: Player): number {

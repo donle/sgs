@@ -27,6 +27,7 @@ export abstract class BaseAction {
   protected pendingCards: CardId[] = [];
 
   private inProcessDialog = false;
+  protected player: Player;
 
   constructor(
     protected playerId: PlayerId,
@@ -35,6 +36,7 @@ export abstract class BaseAction {
     protected translator: ClientTranslationModule,
     protected scopedTargets?: PlayerId[],
   ) {
+    this.player = this.store.room.getPlayerById(this.playerId);
     this.presenter.onClickPlayer((player: Player, selected: boolean) => {
       if (this.inProcessDialog) {
         this.presenter.closeDialog();
@@ -139,8 +141,8 @@ export abstract class BaseAction {
           this.selectedCardToPlay,
         ) &&
         isAvailableInRoom &&
-        (!skill.targetFilter(this.store.room, this.selectedTargets) ||
-          skill.targetFilter(this.store.room, [...this.selectedTargets, player.Id]))
+        (!skill.targetFilter(this.store.room, this.player, this.selectedTargets, this.selectedCardToPlay) ||
+          skill.targetFilter(this.store.room, this.player, [...this.selectedTargets, player.Id], this.selectedCardToPlay))
       );
     } else {
       return false;
@@ -321,8 +323,7 @@ export abstract class BaseAction {
     if (this.selectedSkillToPlay === undefined) {
       this.selectedSkillToPlay = skill;
       this.store.selectedSkill = skill;
-      this.equipSkillCardId = this.store.room
-        .getPlayerById(this.playerId)
+      this.equipSkillCardId = this.player
         .getCardIds(PlayerCardsArea.EquipArea)
         .find(cardId => Sanguosha.getCardById(cardId).Skill === skill);
     }
@@ -351,7 +352,7 @@ export abstract class BaseAction {
       if (card.Skill instanceof ActiveSkill || card.Skill instanceof TriggerSkill) {
         return (
           card.Skill.cardFilter(this.store.room, this.selectedCards) &&
-          card.Skill.targetFilter(this.store.room, this.selectedTargets)
+          card.Skill.targetFilter(this.store.room, this.player, this.selectedTargets, this.selectedCardToPlay)
         );
       } else if (card.Skill instanceof ResponsiveSkill) {
         return true;
@@ -364,7 +365,7 @@ export abstract class BaseAction {
       if (skill instanceof ActiveSkill || skill instanceof TriggerSkill) {
         return (
           skill.cardFilter(this.store.room, this.selectedCards) &&
-          skill.targetFilter(this.store.room, this.selectedTargets)
+          skill.targetFilter(this.store.room, this.player, this.selectedTargets, this.selectedCardToPlay)
         );
       } else if (skill instanceof ResponsiveSkill) {
         return true;
@@ -379,21 +380,16 @@ export abstract class BaseAction {
   public abstract async onPlay(...args: any): Promise<void>;
 
   protected onClickCard(card: Card, selected: boolean, matcher?: CardMatcher): void {
-    const player = this.store.room.getPlayerById(this.playerId);
     if (this.selectedSkillToPlay !== undefined) {
       if (
         this.selectedSkillToPlay instanceof ViewAsSkill &&
-        this.selectedSkillToPlay.cardFilter(
-          this.store.room,
-          this.store.room.getPlayerById(this.playerId),
-          this.pendingCards,
-        )
+        this.selectedSkillToPlay.cardFilter(this.store.room, this.player, this.pendingCards)
       ) {
         const canViewAs = this.selectedSkillToPlay.canViewAs().filter(cardName => {
           if (!matcher) {
             return (
               !(Sanguosha.getCardByName(cardName).Skill instanceof ResponsiveSkill) &&
-              player.canUseCard(
+              this.player.canUseCard(
                 this.store.room,
                 VirtualCard.create({ cardName, bySkill: this.selectedSkillToPlay!.Name }).Id,
               )
@@ -427,21 +423,16 @@ export abstract class BaseAction {
   }
 
   protected onClickSkill(skill: Skill, selected: boolean, matcher?: CardMatcher): void {
-    const player = this.store.room.getPlayerById(this.playerId);
     if (
       this.selectedSkillToPlay &&
       this.selectedSkillToPlay instanceof ViewAsSkill &&
-      this.selectedSkillToPlay.cardFilter(
-        this.store.room,
-        this.store.room.getPlayerById(this.playerId),
-        this.pendingCards,
-      )
+      this.selectedSkillToPlay.cardFilter(this.store.room, this.player, this.pendingCards)
     ) {
       const canViewAs = this.selectedSkillToPlay.canViewAs().filter(cardName => {
         if (!matcher) {
           return (
             !(Sanguosha.getCardByName(cardName).Skill instanceof ResponsiveSkill) &&
-            player.canUseCard(
+            this.player.canUseCard(
               this.store.room,
               VirtualCard.create({ cardName, bySkill: this.selectedSkillToPlay!.Name }).Id,
             )

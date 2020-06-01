@@ -24,7 +24,7 @@ export class TuXi extends TriggerSkill {
     return canUse;
   }
 
-  public targetFilter(room: Room, targets: PlayerId[]): boolean {
+  public targetFilter(room: Room, owner: Player, targets: PlayerId[]): boolean {
     return targets.length > 0 && targets.length <= room.CurrentPhasePlayer.getFlag<number>(this.Name);
   }
 
