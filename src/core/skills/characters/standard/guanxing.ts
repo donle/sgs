@@ -46,6 +46,7 @@ export class GuanXing extends TriggerSkill {
       bottomStackName: 'draw stack bottom',
       toId: skillUseEvent.fromId,
       movable: true,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(GameEventIdentifiers.AskForPlaceCardsInDileEvent, guanxingEvent, skillUseEvent.fromId);

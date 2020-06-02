@@ -18,7 +18,7 @@ export class GuiDao extends TriggerSkill {
     return owner.getCardIds(PlayerCardsArea.HandArea).length > 0;
   }
 
-  public cardFilter(room: Room, cards: CardId[]): boolean {
+  public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return cards.length === 1;
   }
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {

@@ -142,7 +142,12 @@ export abstract class BaseAction {
         ) &&
         isAvailableInRoom &&
         (!skill.targetFilter(this.store.room, this.player, this.selectedTargets, this.selectedCardToPlay) ||
-          skill.targetFilter(this.store.room, this.player, [...this.selectedTargets, player.Id], this.selectedCardToPlay))
+          skill.targetFilter(
+            this.store.room,
+            this.player,
+            [...this.selectedTargets, player.Id],
+            this.selectedCardToPlay,
+          ))
       );
     } else {
       return false;
@@ -179,8 +184,8 @@ export abstract class BaseAction {
             this.selectedTargets,
             this.equipSkillCardId,
           ) &&
-          (!skill.cardFilter(this.store.room, this.selectedCards) ||
-            skill.cardFilter(this.store.room, [...this.selectedCards, card.Id]))
+          (!skill.cardFilter(this.store.room, player, this.selectedCards) ||
+            skill.cardFilter(this.store.room, player, [...this.selectedCards, card.Id]))
         );
       } else if (skill instanceof ViewAsSkill) {
         return (
@@ -236,8 +241,8 @@ export abstract class BaseAction {
             this.selectedTargets,
             card.Id,
           ) &&
-          (!skill.cardFilter(this.store.room, this.selectedCards) ||
-            skill.cardFilter(this.store.room, [...this.selectedCards, card.Id]))
+          (!skill.cardFilter(this.store.room, this.presenter.ClientPlayer!, this.selectedCards) ||
+            skill.cardFilter(this.store.room, this.presenter.ClientPlayer!, [...this.selectedCards, card.Id]))
         );
       } else if (skill instanceof ViewAsSkill) {
         return (
@@ -351,7 +356,7 @@ export abstract class BaseAction {
 
       if (card.Skill instanceof ActiveSkill || card.Skill instanceof TriggerSkill) {
         return (
-          card.Skill.cardFilter(this.store.room, this.selectedCards) &&
+          card.Skill.cardFilter(this.store.room, this.player, this.selectedCards) &&
           card.Skill.targetFilter(this.store.room, this.player, this.selectedTargets, this.selectedCardToPlay)
         );
       } else if (card.Skill instanceof ResponsiveSkill) {
@@ -364,7 +369,7 @@ export abstract class BaseAction {
 
       if (skill instanceof ActiveSkill || skill instanceof TriggerSkill) {
         return (
-          skill.cardFilter(this.store.room, this.selectedCards) &&
+          skill.cardFilter(this.store.room, this.player, this.selectedCards) &&
           skill.targetFilter(this.store.room, this.player, this.selectedTargets, this.selectedCardToPlay)
         );
       } else if (skill instanceof ResponsiveSkill) {

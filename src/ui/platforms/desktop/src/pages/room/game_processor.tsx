@@ -81,6 +81,7 @@ export class GameClientProcessor {
       clearTimeout(this.onPlayTrustedActionTimer);
       this.onPlayTrustedActionTimer = undefined;
     }
+    this.presenter.disableActionButton('finish');
     this.store.inAction && this.presenter.endAction();
   }
 
@@ -151,9 +152,6 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.CardResponseEvent:
         await this.onHandleCardResponseEvent(e as any, content);
-        break;
-      case GameEventIdentifiers.CardDropEvent:
-        await this.onHandleCardDropEvent(e as any, content);
         break;
       case GameEventIdentifiers.CardDisplayEvent:
         await this.onHandleCardDisplayEvent(e as any, content);
@@ -430,9 +428,6 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     this.presenter.showCards(...Card.getActualCards([content.cardId]).map(cardId => Sanguosha.getCardById(cardId)));
-  }
-  private onHandleCardDropEvent<T extends GameEventIdentifiers.CardDropEvent>(type: T, content: ServerEventFinder<T>) {
-    this.presenter.showCards(...Card.getActualCards(content.cardIds).map(cardId => Sanguosha.getCardById(cardId)));
   }
 
   private onHandleCardDisplayEvent<T extends GameEventIdentifiers.CardDisplayEvent>(
@@ -725,6 +720,8 @@ export class GameClientProcessor {
         );
         to.getCardIds(toArea as PlayerCardsArea).push(...actualCardIds);
       }
+    } else if (toArea === CardMoveArea.DropStack) {   
+      this.presenter.showCards(...Card.getActualCards(cardIds).map(cardId => Sanguosha.getCardById(cardId)));
     }
 
     toOutsideArea !== undefined && isOutsideAreaInPublic && to && to.setVisibleOutsideArea(toOutsideArea);
@@ -969,7 +966,7 @@ export class GameClientProcessor {
         presenter={this.presenter}
         onConfirm={onConfirm}
         movable={movable}
-        title={'guanxing'}
+        title={content.triggeredBySkills && content.triggeredBySkills[0]}
       />,
     );
   }

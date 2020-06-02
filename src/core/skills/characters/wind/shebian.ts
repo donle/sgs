@@ -1,7 +1,4 @@
-import { VirtualCard } from 'core/cards/card';
-import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
-import { WuXieKeJi } from 'core/cards/standard/wuxiekeji';
 import {
   CardMoveReason,
   ClientEventFinder,
@@ -13,43 +10,10 @@ import { AllStage, TurnOverStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { CommonSkill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
-import { ShadowSkill } from 'core/skills/skill_wrappers';
+import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
-@CommonSkill({ name: 'jiewei', description: 'jiewei_description' })
-export class JieWei extends ViewAsSkill {
-  public canViewAs(): string[] {
-    return ['wuxiekeji'];
-  }
-
-  public canUse(room: Room, owner: Player): boolean {
-    return (
-      owner.canUseCard(room, new CardMatcher({ name: ['wuxiekeji'] })) &&
-      owner.getCardIds(PlayerCardsArea.EquipArea).length > 0
-    );
-  }
-
-  public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
-    return cards.length === 1;
-  }
-  public isAvailableCard(room: Room, owner: Player, pendingCardId: CardId): boolean {
-    return owner.cardFrom(pendingCardId) === PlayerCardsArea.EquipArea;
-  }
-
-  public viewAs(selectedCards: CardId[]) {
-    return VirtualCard.create<WuXieKeJi>(
-      {
-        cardName: 'wuxiekeji',
-        bySkill: this.Name,
-      },
-      selectedCards,
-    );
-  }
-}
-
-@ShadowSkill
-@CommonSkill({ name: JieWei.GeneralName, description: JieWei.Description })
-export class JieWeiShadow extends TriggerSkill {
+@CommonSkill({ name: 'shebian', description: 'shebian_description' })
+export class SheBian extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PlayerTurnOverEvent>, stage: AllStage): boolean {
     return stage === TurnOverStage.TurnedOver;
   }
@@ -59,15 +23,7 @@ export class JieWeiShadow extends TriggerSkill {
     owner: Player,
     event: ServerEventFinder<GameEventIdentifiers.PlayerTurnOverEvent>,
   ): boolean {
-    return owner.Id === event.toId && owner.isFaceUp();
-  }
-
-  public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
-    return cards.length === 1;
-  }
-
-  public isAvailableCard(): boolean {
-    return true;
+    return owner.Id === event.toId;
   }
 
   public targetFilter(room: Room, owner: Player, targets: PlayerId[]): boolean {
@@ -128,13 +84,6 @@ export class JieWeiShadow extends TriggerSkill {
     room: Room,
     skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
-    await room.dropCards(
-      CardMoveReason.SelfDrop,
-      skillUseEvent.cardIds!,
-      skillUseEvent.fromId,
-      skillUseEvent.fromId,
-      this.Name,
-    );
     const moveFrom = room.getPlayerById(skillUseEvent.toIds![0]);
     const moveTo = room.getPlayerById(skillUseEvent.toIds![1]);
     const canMovedEquipCardIds: CardId[] = [];

@@ -75,10 +75,6 @@ export class GuanXingCardSlots extends React.Component<GuanXingDialogProps> {
     }
   }
 
-  // componentDidMount() {
-  //   this.canConfirm();
-  // }
-
   @mobx.action
   private updateCardOffset(movingCard: Card, to: 'top' | 'bottom', targetIndex: number) {
     const originalIndex = this.getCardPositionIndex(movingCard);
@@ -217,6 +213,22 @@ export class GuanXingCardSlots extends React.Component<GuanXingDialogProps> {
   };
 
   onMouseDown = (card: Card, index: number) => (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    const { topMaxCard, bottomMaxCard } = this.props;
+
+    let canMove = true;
+    if (this.bottomCards.includes(card)) {
+      if (topMaxCard !== undefined && this.topCards.length === topMaxCard) {
+        canMove = false;
+      }
+    } else {
+      if (bottomMaxCard !== undefined && this.bottomCards.length === bottomMaxCard) {
+        canMove = false;
+      }
+    }
+    if (!canMove) {
+      return false;
+    }
+
     this.movingCardPosition = {
       x: e.clientX,
       y: e.clientY,
@@ -226,8 +238,12 @@ export class GuanXingCardSlots extends React.Component<GuanXingDialogProps> {
   };
 
   onMouseUp = (card: Card, index: number) => (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    const left = e.clientX - this.movingCardPosition!.x;
-    const top = e.clientY - this.movingCardPosition!.y;
+    if (this.movingCardPosition === undefined || this.focusedCard !== card) {
+      return;
+    }
+
+    const left = e.clientX - this.movingCardPosition.x;
+    const top = e.clientY - this.movingCardPosition.y;
     const { to: place, index: targetIndex } = this.calculateMovingPosition(card, top, left);
     this.addToStack(card, place, targetIndex);
     this.updateCardOffset(card, place, targetIndex);

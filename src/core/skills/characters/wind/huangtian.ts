@@ -49,7 +49,7 @@ export class HuangTianGiveCard extends ActiveSkill {
     return 1;
   }
 
-  public cardFilter(room: Room, cards: CardId[]): boolean {
+  public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return cards.length === 1;
   }
 

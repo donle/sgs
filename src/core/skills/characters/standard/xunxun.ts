@@ -24,14 +24,13 @@ export class XunXun extends TriggerSkill {
       toId: skillUseEvent.fromId,
       cardIds: cards,
       top: 4,
-      topStackName: 'draw stack top',
+      topStackName: 'draw stack bottom',
       bottom: 2,
-      bottomStackName: 'draw stack bottom',
-      topMaxCard: 2,
-      topMinCard: 2,
+      bottomStackName: 'draw stack top',
       bottomMaxCard: 2,
       bottomMinCard: 2,
       movable: true,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(GameEventIdentifiers.AskForPlaceCardsInDileEvent, askForChooseCards, skillUseEvent.fromId);
@@ -39,8 +38,8 @@ export class XunXun extends TriggerSkill {
       GameEventIdentifiers.AskForPlaceCardsInDileEvent,
       skillUseEvent.fromId,
     );
-    room.putCards('top', ...top);
-    room.putCards('bottom', ...bottom);
+    room.putCards('top', ...bottom);
+    room.putCards('bottom', ...top);
 
     return true;
   }

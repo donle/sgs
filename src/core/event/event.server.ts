@@ -80,11 +80,6 @@ export interface ServerEvent extends EventUtilities {
     responseToEvent?: ServerEventFinder<GameEventIdentifiers>;
     skipDrop?: boolean;
   };
-  [GameEventIdentifiers.CardDropEvent]: {
-    fromId: PlayerId;
-    cardIds: CardId[];
-    droppedBy: PlayerId;
-  };
   [GameEventIdentifiers.DrawCardEvent]: {
     fromId: PlayerId;
     drawAmount: number;

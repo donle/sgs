@@ -27,7 +27,7 @@ export class YiJue extends ActiveSkill {
     return 1;
   }
 
-  cardFilter(room: Room, cards: CardId[]): boolean {
+  cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return cards.length === 1;
   }
 

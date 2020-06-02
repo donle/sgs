@@ -178,11 +178,37 @@ export abstract class TriggerSkill extends Skill {
     return false;
   }
 
-  public targetFilter(room: Room, owner: Player, targets: PlayerId[]): boolean {
-    return targets.length === 0;
+  public numberOfTargets(): number[] | number {
+    return 0;
+  }
+  protected additionalNumberOfTargets(room: Room, owner: Player, cardId?: CardId | CardMatcher): number {
+    if (cardId === undefined) {
+      return 0;
+    } else {
+      return owner.getCardAdditionalUsableNumberOfTargets(room, cardId);
+    }
   }
 
-  public cardFilter(room: Room, cards: CardId[]): boolean {
+  public targetFilter(room: Room, owner: Player, targets: PlayerId[]): boolean {
+    const availableNumOfTargets = this.numberOfTargets();
+    const additionalNumberOfTargets = this.additionalNumberOfTargets(room, owner);
+    if (availableNumOfTargets instanceof Array) {
+      return (
+        targets.length <= availableNumOfTargets[1] + additionalNumberOfTargets &&
+        targets.length >= availableNumOfTargets[0]
+      );
+    } else {
+      if (additionalNumberOfTargets > 0) {
+        return (
+          targets.length >= availableNumOfTargets && targets.length <= availableNumOfTargets + additionalNumberOfTargets
+        );
+      } else {
+        return targets.length === availableNumOfTargets;
+      }
+    }
+  }
+
+  public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return cards.length === 0;
   }
   public isAvailableCard(
@@ -236,7 +262,7 @@ export abstract class ActiveSkill extends Skill {
     }
   }
 
-  public abstract cardFilter(room: Room, cards: CardId[]): boolean;
+  public abstract cardFilter(room: Room, owner: Player, cards: CardId[]): boolean;
   public abstract canUse(room: Room, owner: Player): boolean;
   public abstract isAvailableCard(
     owner: PlayerId,

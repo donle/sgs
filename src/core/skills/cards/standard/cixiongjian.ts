@@ -52,7 +52,7 @@ export class CiXiongJianSkill extends TriggerSkill {
     return false;
   }
 
-  cardFilter(room: Room, cards: CardId[]) {
+  cardFilter(room: Room, owner: Player, cards: CardId[]) {
     return cards.length === 0;
   }
 

@@ -146,6 +146,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract isCardInDrawStack(cardId: CardId): boolean;
 
   public abstract skip(player: PlayerId, phase?: PlayerPhase): void;
+  public abstract endPhase(phase: PlayerPhase): void;
 
   public addProcessingCards(tag: string, ...cardIds: CardId[]) {
     this.onProcessingCards[tag] = this.onProcessingCards[tag] || [];

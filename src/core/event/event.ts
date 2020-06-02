@@ -25,7 +25,6 @@ export const enum GameEventIdentifiers {
   LoseSkillEvent,
   ObtainSkillEvent,
 
-  CardDropEvent,
   CardResponseEvent,
   CardUseEvent,
   CardEffectEvent,
@@ -110,7 +109,6 @@ export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.DrunkEvent,
   GameEventIdentifiers.ChainLinkedEvent,
 
-  GameEventIdentifiers.CardDropEvent,
   GameEventIdentifiers.CardResponseEvent,
   GameEventIdentifiers.CardUseEvent,
   GameEventIdentifiers.CardEffectEvent,

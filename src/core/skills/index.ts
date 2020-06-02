@@ -99,6 +99,8 @@ export { TianXiang } from './characters/wind/tianxiang';
 export { GuHuo, GuHuoShadow } from './characters/wind/guhuo';
 export { ChanYuan } from './characters/wind/chanyuan';
 export { LieGong, LieGongDamage, LieGongShadow } from './characters/wind/liegong';
+export { ShenSu } from './characters/wind/shensu';
+export { SheBian } from './characters/wind/shebian';
 
 export { Jianchu } from './characters/fire/jianchu';
 

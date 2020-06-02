@@ -73,6 +73,42 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
 
       socket.on('disconnect', () => {
         logger.info('User disconnected', socket.id);
+        socket.leave(this.roomId);
+
+        if (this.room && this.room.Players.find(player => player.Id === socket.id) === undefined) {
+          return;
+        }
+
+        this.clientIds = this.clientIds.filter(id => id !== socket.id);
+        const room = this.room as ServerRoom;
+        room.getPlayerById(socket.id).offline();
+        if (this.clientIds.length === 0) {
+          this.room && this.room.close();
+        }
+
+        const playerLeaveEvent: ServerEventFinder<GameEventIdentifiers.PlayerLeaveEvent> = {
+          playerId: socket.id,
+          translationsMessage: TranslationPack.translationJsonPatcher(
+            'player {0} has left the room',
+            room.getPlayerById(socket.id).Name,
+          ).extract(),
+        };
+        this.broadcast(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent);
+
+        if (!room.isPlaying()) {
+          room.removePlayer(socket.id);
+        } else if (this.room?.AwaitingResponseEvent) {
+          const { identifier: awaitIdentifier, content } = this.room?.AwaitingResponseEvent;
+          if ((content as any).toId !== socket.id) {
+            return;
+          }
+          const toPlayer = room.getPlayerById(socket.id);
+          const result = toPlayer.AI.onAction(this.room!, awaitIdentifier, content);
+          if (this.asyncResponseResolver[awaitIdentifier][socket.id]) {
+            this.asyncResponseResolver[awaitIdentifier][socket.id]!(result);
+            delete this.asyncResponseResolver[awaitIdentifier][socket.id];
+          }
+        }
       });
     });
   }
@@ -91,7 +127,6 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       });
 
       socket.disconnect();
-      socket.leave(this.roomId);
       return;
     }
 
@@ -126,35 +161,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     room.getPlayerById(event.playerId).offline();
     this.clientIds = this.clientIds.filter(id => id !== event.playerId);
 
-    socket.leave(this.roomId);
     socket.disconnect();
-    if (this.clientIds.length === 0) {
-      this.room && this.room.close();
-    }
-
-    const playerLeaveEvent: ServerEventFinder<typeof identifier> = {
-      playerId: event.playerId,
-      translationsMessage: TranslationPack.translationJsonPatcher(
-        'player {0} has left the room',
-        room.getPlayerById(event.playerId).Name,
-      ).extract(),
-    };
-    this.broadcast(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent);
-
-    if (!room.isPlaying()) {
-      room.removePlayer(socket.id);
-    } else if (this.room?.AwaitingResponseEvent) {
-      const { identifier: awaitIdentifier, content } = this.room?.AwaitingResponseEvent;
-      if ((content as any).toId !== event.playerId) {
-        return;
-      }
-      const toPlayer = room.getPlayerById(event.playerId);
-      const result = toPlayer.AI.onAction(this.room!, awaitIdentifier, content);
-      if (this.asyncResponseResolver[awaitIdentifier][event.playerId]) {
-        this.asyncResponseResolver[awaitIdentifier][event.playerId]!(result);
-        delete this.asyncResponseResolver[awaitIdentifier][event.playerId];
-      }
-    }
   }
 
   public emit(room: ServerRoom) {

@@ -14,7 +14,6 @@ import {
   WorkPlace,
 } from 'core/event/event';
 import {
-  CardDropStage,
   CardEffectStage,
   CardMoveStage,
   CardResponseStage,
@@ -57,6 +56,7 @@ export class GameProcessor {
   private currentProcessingStage: GameEventStage | undefined;
   private playerStages: PlayerPhaseStages[] = [];
 
+  private toEndPhase: boolean = false;
   private playRoundInsertions: PlayerId[] = [];
   private dumpedLastPlayerPositionIndex: number = -1;
 
@@ -246,6 +246,11 @@ export class GameProcessor {
           this.CurrentPlayer.dropCards(judgeCardId);
 
           await this.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
+
+          if (this.toEndPhase === true) {
+            this.toEndPhase = false;
+            break;
+          }
         }
         return;
       case PlayerPhase.DrawCardStage:
@@ -284,6 +289,10 @@ export class GameProcessor {
           if (this.CurrentPlayer.Dead) {
             break;
           }
+          if (this.toEndPhase === true) {
+            this.toEndPhase = false;
+            break;
+          }
         } while (true);
         return;
       case PlayerPhase.DropCardStage:
@@ -317,6 +326,11 @@ export class GameProcessor {
     }
   }
 
+  public endPhase(phase: PlayerPhase) {
+    this.toEndPhase = true;
+    this.playerStages = this.playerStages.filter(stage => !this.stageProcessor.isInsidePlayerPhase(phase, stage));
+  }
+
   private readonly processingPhaseStages = [
     PlayerPhaseStages.PrepareStage,
     PlayerPhaseStages.JudgeStage,
@@ -348,6 +362,12 @@ export class GameProcessor {
       });
       if (nextPhase !== this.currentPlayerPhase) {
         await this.onHandleIncomingEvent(GameEventIdentifiers.PhaseChangeEvent, phaseChangeEvent, async stage => {
+          if (this.toEndPhase) {
+            EventPacker.terminate(phaseChangeEvent);
+            this.toEndPhase = false;
+            return false;
+          }
+
           if (stage === PhaseChangeStage.BeforePhaseChange) {
             for (const player of this.room.AlivePlayers) {
               for (const skill of player.getSkills()) {
@@ -595,13 +615,6 @@ export class GameProcessor {
           onActualExecuted,
         );
         break;
-      case GameEventIdentifiers.CardDropEvent:
-        await this.onHandleDropCardEvent(
-          identifier as GameEventIdentifiers.CardDropEvent,
-          event as any,
-          onActualExecuted,
-        );
-        break;
       case GameEventIdentifiers.CardEffectEvent:
         await this.onHandleCardEffectEvent(
           identifier as GameEventIdentifiers.CardEffectEvent,
@@ -760,27 +773,6 @@ export class GameProcessor {
           hideBroadcast: true,
           movedByReason: event.triggeredBySkills ? event.triggeredBySkills[0] : undefined,
         });
-      }
-    });
-  }
-
-  private async onHandleDropCardEvent(
-    identifier: GameEventIdentifiers.CardDropEvent,
-    event: EventPicker<GameEventIdentifiers.CardDropEvent, WorkPlace.Server>,
-    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
-  ) {
-    if (!event.translationsMessage) {
-      event.translationsMessage = TranslationPack.translationJsonPatcher(
-        '{0} drops cards {1}' + (event.droppedBy === event.fromId ? '' : ' by {2}'),
-        TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
-        TranslationPack.patchCardInTranslation(...Card.getActualCards(event.cardIds)),
-        TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.droppedBy)),
-      ).extract();
-    }
-
-    return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      if (stage === CardDropStage.CardDropping) {
-        this.room.broadcast(identifier, event);
       }
     });
   }

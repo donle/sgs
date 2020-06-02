@@ -22,10 +22,6 @@ export interface ClientEvent extends EventUtilities {
     fromId: PlayerId;
     cardId: CardId;
   };
-  [GameEventIdentifiers.CardDropEvent]: {
-    fromId: PlayerId;
-    cardIds: CardId[];
-  };
   [GameEventIdentifiers.DrawCardEvent]: {
     playerId: PlayerId;
     numberOfCards: number;

@@ -17,7 +17,7 @@ export class KuRou extends ActiveSkill {
     return 0;
   }
 
-  public cardFilter(room: Room, cards: CardId[]): boolean {
+  public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return cards.length === 1;
   }
 

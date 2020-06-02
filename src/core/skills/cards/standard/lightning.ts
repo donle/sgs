@@ -61,20 +61,19 @@ export class LightningSkill extends ActiveSkill {
         !room.canUseCardTo(cardId, player.Id) ||
         player
           .getCardIds(PlayerCardsArea.JudgeArea)
-          .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'lightning') !== undefined;
+          .find(cardId => Sanguosha.getCardById(cardId).GeneralName === this.Name) !== undefined;
 
       if (skip) {
         continue;
       }
 
-      if (player.Id !== currentPlayer) {
-        await room.moveCards({
-          movingCards: [{ card: cardId, fromArea: CardMoveArea.JudgeArea }],
-          toArea: CardMoveArea.JudgeArea,
-          toId: player.Id,
-          moveReason: CardMoveReason.PassiveMove,
-        });
-      }
+      await room.moveCards({
+        fromId: currentPlayer,
+        movingCards: [{ card: cardId, fromArea: CardMoveArea.JudgeArea }],
+        toArea: CardMoveArea.JudgeArea,
+        toId: player.Id,
+        moveReason: CardMoveReason.PassiveMove,
+      });
       break;
     }
   }

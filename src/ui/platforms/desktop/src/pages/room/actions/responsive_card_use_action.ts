@@ -69,8 +69,6 @@ export class ResponsiveUseCardAction<
       return true;
     }
 
-    const player = this.store.room.getPlayerById(this.playerId);
-
     if (this.selectedSkillToPlay !== undefined) {
       const skill = this.selectedSkillToPlay;
       if (skill instanceof ActiveSkill) {
@@ -83,21 +81,21 @@ export class ResponsiveUseCardAction<
             this.selectedTargets,
             this.equipSkillCardId,
           ) &&
-          (!skill.cardFilter(this.store.room, this.selectedCards) ||
-            skill.cardFilter(this.store.room, [...this.selectedCards, card.Id]))
+          (!skill.cardFilter(this.store.room, this.player, this.selectedCards) ||
+            skill.cardFilter(this.store.room, this.player, [...this.selectedCards, card.Id]))
         );
       } else if (skill instanceof ViewAsSkill) {
         return (
           skill.isAvailableCard(
             this.store.room,
-            player,
+            this.player,
             card.Id,
             this.pendingCards,
             this.equipSkillCardId,
             this.matcher,
           ) &&
-          (!skill.cardFilter(this.store.room, player, this.pendingCards) ||
-            skill.cardFilter(this.store.room, player, [...this.pendingCards, card.Id]))
+          (!skill.cardFilter(this.store.room, this.player, this.pendingCards) ||
+            skill.cardFilter(this.store.room, this.player, [...this.pendingCards, card.Id]))
         );
       } else {
         return false;
@@ -105,10 +103,7 @@ export class ResponsiveUseCardAction<
     }
 
     if (this.selectedCardToPlay === undefined) {
-      if (
-        !this.extraUse &&
-        !this.player.canUseCard(this.store.room, card.Id, matcher)
-      ) {
+      if (!this.extraUse && !this.player.canUseCard(this.store.room, card.Id, matcher)) {
         return false;
       }
 

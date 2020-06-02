@@ -1,6 +1,7 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { DamageType } from 'core/game/game_props';
+import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
@@ -17,7 +18,7 @@ export class SlashSkill extends ActiveSkill {
     return false;
   }
 
-  cardFilter(room: Room, cards: CardId[]) {
+  cardFilter(room: Room, owner: Player, cards: CardId[]) {
     return cards.length === 0;
   }
 

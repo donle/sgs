@@ -35,7 +35,7 @@ export class QingJian extends TriggerSkill {
     return targets.length === 1;
   }
 
-  public cardFilter(room: Room, cards: CardId[]): boolean {
+  public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return cards.length > 0;
   }
 

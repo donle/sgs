@@ -13,7 +13,7 @@ export class PeachSkill extends ActiveSkill {
     return owner.Hp < owner.MaxHp;
   }
 
-  cardFilter(room: Room, cards: CardId[]) {
+  cardFilter(room: Room, owner: Player, cards: CardId[]) {
     return cards.length === 0;
   }
 

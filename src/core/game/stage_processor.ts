@@ -134,12 +134,6 @@ export const enum DrawCardStage {
   AfterDrawCardEffect = 'AfterDrawCardEffect',
 }
 
-export const enum CardDropStage {
-  BeforeCardDropEffect = 'BeforeCardDropEffect',
-  CardDropping = 'CardDropping',
-  AfterCardDropEffect = 'AfterCardDropEffect',
-}
-
 export const enum DamageEffectStage {
   DamageEffect = 'DamageEffect',
   DamagedEffect = 'DamagedEffect',
@@ -215,7 +209,6 @@ export type GameEventStage =
   | GameStartStage
   | CardEffectStage
   | CardUseStage
-  | CardDropStage
   | CardResponseStage
   | DrawCardStage
   | JudgeEffectStage
@@ -263,11 +256,6 @@ const gameEventStageList: {
     DrawCardStage.BeforeDrawCardEffect,
     DrawCardStage.CardDrawing,
     DrawCardStage.AfterDrawCardEffect,
-  ],
-  [GameEventIdentifiers.CardDropEvent]: [
-    CardDropStage.BeforeCardDropEffect,
-    CardDropStage.CardDropping,
-    CardDropStage.AfterCardDropEffect,
   ],
   [GameEventIdentifiers.DamageEvent]: [
     DamageEffectStage.DamageEffect,

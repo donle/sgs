@@ -19,7 +19,7 @@ export class Cheat extends ActiveSkill {
     return 0;
   }
 
-  cardFilter(room: Room, cards: CardId[]): boolean {
+  cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return cards.length === 0;
   }
 

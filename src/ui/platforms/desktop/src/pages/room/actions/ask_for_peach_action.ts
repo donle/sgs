@@ -35,8 +35,8 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
             this.selectedTargets,
             this.equipSkillCardId,
           ) &&
-          (!skill.cardFilter(this.store.room, this.selectedCards) ||
-            skill.cardFilter(this.store.room, [...this.selectedCards, card.Id]))
+          (!skill.cardFilter(this.store.room, this.player, this.selectedCards) ||
+            skill.cardFilter(this.store.room, this.player, [...this.selectedCards, card.Id]))
         );
       } else if (skill instanceof ViewAsSkill) {
         return (

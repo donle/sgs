@@ -9,7 +9,6 @@ import {
 } from 'core/event/event';
 import {
   AllStage,
-  CardDropStage,
   CardResponseStage,
   CardUseStage,
   DrawCardStage,
@@ -778,31 +777,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     playerId = playerId || this.CurrentPlayer.Id;
     const player = this.getPlayerById(playerId);
 
-    const dropEvent: ServerEventFinder<GameEventIdentifiers.CardDropEvent> = {
-      cardIds,
+    await this.moveCards({
+      movingCards: cardIds.map(card => ({ card, fromArea: player.cardFrom(card) })),
       fromId: playerId,
-      droppedBy,
-      triggeredBySkills: byReason ? [byReason] : undefined,
-    };
-
-    await this.gameProcessor.onHandleIncomingEvent(
-      GameEventIdentifiers.CardDropEvent,
-      EventPacker.createIdentifierEvent(GameEventIdentifiers.CardDropEvent, dropEvent),
-      async stage => {
-        if (stage === CardDropStage.CardDropping) {
-          await this.moveCards({
-            movingCards: cardIds.map(card => ({ card, fromArea: player.cardFrom(card) })),
-            fromId: playerId,
-            toArea: CardMoveArea.DropStack,
-            moveReason,
-            movedByReason: byReason,
-            proposer: droppedBy,
-          });
-        }
-
-        return true;
-      },
-    );
+      toArea: CardMoveArea.DropStack,
+      moveReason,
+      movedByReason: byReason,
+      proposer: droppedBy,
+    });
   }
 
   public async turnOver(playerId: PlayerId) {
@@ -953,6 +935,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (this.CurrentPhasePlayer.Id === player) {
       this.gameProcessor.skip(phase);
     }
+  }
+
+  public endPhase(phase: PlayerPhase) {
+    this.gameProcessor.endPhase(phase);
   }
 
   public syncGameCommonRules(playerId: PlayerId, updateActions: (user: Player) => void) {

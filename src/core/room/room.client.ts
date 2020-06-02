@@ -153,6 +153,10 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.skip.name);
   }
   //Server only
+  public endPhase(phase: PlayerPhase): void {
+    this.throwUntouchableError(this.endPhase.name);
+  }
+  //Server only
   public isCardInDropStack(): any {
     this.throwUntouchableError(this.isCardInDropStack.name);
   }
