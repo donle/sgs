@@ -10,7 +10,6 @@ import { CommonSkill, RulesBreakerSkill } from 'core/skills/skill';
 @CommonSkill({ name: 'fangtianhuaji', description: 'fangtianhuaji_description' })
 export class FangTianHuaJiSkill extends RulesBreakerSkill {
   breakCardUsableTargets(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
-    console.log(cardId);
     if (cardId instanceof CardMatcher) {
       return 0;
     }
@@ -21,7 +20,6 @@ export class FangTianHuaJiSkill extends RulesBreakerSkill {
     }
 
     const realCards = Card.getActualCards([cardId]);
-    console.log(realCards, handCards);
     const isSlash = realCards.length === 1 ? realCards[0] === handCards[0] : false;
     if (isSlash && Sanguosha.getCardById(cardId).GeneralName === 'slash') {
       return 2;
