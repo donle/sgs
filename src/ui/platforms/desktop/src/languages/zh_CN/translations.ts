@@ -70,6 +70,9 @@ export const characterDictionary: Word[] = [
   { source: 'xunxun', target: '恂恂' },
   { source: 'wangxi', target: '忘隙' },
 
+  { source: 'caozhang', target: '曹彰' },
+  { source: 'jiangchi', target: '将驰' },
+
   { source: 'liubei', target: '刘备' },
   { source: 'rende', target: '仁德' },
   { source: 'jijiang', target: '激将' },
@@ -343,19 +346,22 @@ export const skillDescriptions: Word[] = [
   },
   { source: 'qingguo_description', target: '你可以将一张黑色手牌当【闪】使用或打出。' },
   {
+    source: 'jiangchi_description',
+    target:
+      '摸牌阶段结束时，你可以选择一项：1.摸一张牌，然后本回合你不能使用或打出【杀】；2.弃置一张牌，然后本回合你使用【杀】无距离限制且可以多使用一张【杀】。',
+  },
+  {
     source: 'rende_description',
     target:
       '出牌阶段，你可以将至少一张手牌交给一名本阶段未获得过“仁德”牌的其他角色。当你于本阶段给出第二张“仁德”牌时，你可以视为使用一张基本牌。',
   },
   {
     source: 'xunxun_description',
-    target:
-      '摸牌阶段开始时，你可以观看牌堆顶四张牌，将其中两张牌置于牌堆顶，其余两张牌置于牌堆底。',
+    target: '摸牌阶段开始时，你可以观看牌堆顶四张牌，将其中两张牌置于牌堆顶，其余两张牌置于牌堆底。',
   },
   {
     source: 'wangxi_description',
-    target:
-      '当你对其他角色造成1点伤害或受到其他角色造成的1点伤害后，若其存活，你可以与其各摸一张牌。',
+    target: '当你对其他角色造成1点伤害或受到其他角色造成的1点伤害后，若其存活，你可以与其各摸一张牌。',
   },
   {
     source: 'jijiang_description',
@@ -1118,6 +1124,10 @@ export const eventDictionary: Word[] = [
     source: 'liyu: please choose a player, as target of {0} duel',
     target: '利驭：请选择一名角色作为 {0} 决斗的目标',
   },
+  {
+    source: 'please choose jiangchi options',
+    target: '请选择：1.额外摸一张牌，本回合【杀】无距离限制且使用次数+1 2.弃置一张牌，本回合不可使用或打出【杀】',
+  },
 
   { source: 'cixiongjian:drop-card', target: '弃置一张手牌' },
   { source: 'cixiongjian:draw-card', target: '令其摸一张牌' },
@@ -1135,6 +1145,8 @@ export const eventDictionary: Word[] = [
   { source: 'yaowu:draw', target: '摸一张牌' },
   { source: 'luoyi:obtain', target: '是' },
   { source: 'luoyi:cancel', target: '否' },
+  { source: 'jiangchi:draw', target: '摸一张牌' },
+  { source: 'jiangchi:drop', target: '弃一张牌' },
   { source: 'kuanggu:draw', target: '摸一张牌' },
   { source: 'kuanggu:recover', target: '回复1点体力' },
   { source: 'guhuo:doubt', target: '质疑' },
