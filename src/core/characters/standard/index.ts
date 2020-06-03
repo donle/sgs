@@ -1,5 +1,6 @@
 import { Character } from '../character';
 import { CaoCao } from './caocao';
+import { CaoZhang } from './caozhang';
 import { DaQiao } from './daqiao';
 import { DiaoChan } from './diaochan';
 import { GanNing } from './ganning';
@@ -56,6 +57,7 @@ export const StandardCharacterPackage: (index: number) => Character[] = index =>
   new XiaHouDun(index++),
   new XuChu(index++),
   new LiDian(index++),
+  new CaoZhang(index++),
 
   new DiaoChan(index++),
   new GongSunZan(index++),
