@@ -20,6 +20,7 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import {
   ActiveSkill,
   FilterSkill,
+  GlobalFilterSkill,
   RulesBreakerSkill,
   Skill,
   SkillType,
@@ -37,6 +38,7 @@ type SkillStringType =
   | 'complusory'
   | 'active'
   | 'filter'
+  | 'globalFilter'
   | 'breaker'
   | 'transform'
   | 'viewAs';
@@ -439,6 +441,8 @@ export abstract class Player implements PlayerInfo {
     switch (skillType) {
       case 'filter':
         return skills.filter(skill => skill instanceof FilterSkill) as T[];
+      case 'globalFilter':
+        return skills.filter(skill => skill instanceof GlobalFilterSkill) as T[];
       case 'active':
         return skills.filter(skill => skill instanceof ActiveSkill) as T[];
       case 'viewAs':
@@ -476,6 +480,8 @@ export abstract class Player implements PlayerInfo {
     switch (skillType) {
       case 'filter':
         return skills.filter(skill => skill instanceof FilterSkill) as T[];
+      case 'globalFilter':
+        return skills.filter(skill => skill instanceof GlobalFilterSkill) as T[];
       case 'viewAs':
         return skills.filter(skill => skill instanceof ViewAsSkill) as T[];
       case 'active':

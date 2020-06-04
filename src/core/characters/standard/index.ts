@@ -23,6 +23,7 @@ import { SunShangXiang } from './sunshangxiang';
 import { XiaHouDun } from './xiahoudun';
 import { XuChu } from './xuchu';
 import { YiJi } from './yiji_c';
+import { YuanShu } from './yuanshu';
 import { ZhangFei } from './zhangfei';
 import { ZhangLiao } from './zhangliao';
 import { ZhaoYun } from './zhaoyun';
@@ -64,4 +65,5 @@ export const StandardCharacterPackage: (index: number) => Character[] = index =>
   new HuaTuo(index++),
   new HuaXiong(index++),
   new LvBu(index++),
+  new YuanShu(index++),
 ];

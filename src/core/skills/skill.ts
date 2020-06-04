@@ -409,4 +409,19 @@ export abstract class FilterSkill extends Skill {
   public canBeUsedCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId, attacker?: PlayerId): boolean {
     return true;
   }
+  public canDropCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId): boolean {
+    return true;
+  }
+}
+
+export abstract class GlobalFilterSkill extends FilterSkill {
+  public canUseCardTo(
+    cardId: CardId | CardMatcher,
+    room: Room,
+    owner: Player,
+    attacker: Player,
+    target: Player,
+  ): boolean {
+    return true;
+  }
 }

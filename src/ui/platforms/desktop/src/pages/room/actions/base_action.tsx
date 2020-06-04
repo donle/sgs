@@ -4,7 +4,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
-import { ActiveSkill, ResponsiveSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
+import { ActiveSkill, GlobalFilterSkill, ResponsiveSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as React from 'react';
 import { RoomPresenter, RoomStore } from '../room.presenter';
@@ -113,6 +113,15 @@ export abstract class BaseAction {
     }
     if (this.selectedTargets.includes(player.Id)) {
       return true;
+    }
+    if (this.selectedCardToPlay !== undefined) {
+      for (const skillOwner of this.store.room.getAlivePlayersFrom()) {
+        for (const skill of skillOwner.getSkills<GlobalFilterSkill>('globalFilter')) {
+          if (!skill.canUseCardTo(this.selectedCardToPlay, this.store.room, skillOwner, this.player, player)) {
+            return false;
+          }
+        }
+      }
     }
 
     let skill: Skill | undefined;
