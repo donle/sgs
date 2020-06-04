@@ -383,7 +383,7 @@ export class GameProcessor {
               }
             }
           } else if (stage === PhaseChangeStage.PhaseChanged) {
-            this.currentPlayerPhase = this.stageProcessor.getInsidePlayerPhase(this.playerStages[0]);
+            this.currentPlayerPhase = nextPhase;
             if (this.currentPlayerPhase === PlayerPhase.PrepareStage) {
               this.room.Analytics.turnTo(this.CurrentPlayer.Id);
             }
@@ -704,13 +704,14 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
     processor?: (stage: GameEventStage) => Promise<void>,
   ) => {
-    this.currentProcessingStage = this.stageProcessor.involve(identifier);
-    while (true) {
+    let processingStage: GameEventStage | undefined = this.stageProcessor.involve(identifier);
+    while (processingStage !== undefined) {
       if (EventPacker.isTerminated(event)) {
         this.stageProcessor.skipEventProcess(identifier);
         break;
       }
 
+      this.currentProcessingStage = processingStage;
       await this.room.trigger<typeof event>(event, this.currentProcessingStage);
       if (EventPacker.isTerminated(event)) {
         this.stageProcessor.skipEventProcess(identifier);
@@ -718,7 +719,9 @@ export class GameProcessor {
       }
 
       if (onActualExecuted) {
-        await onActualExecuted(this.currentProcessingStage!);
+        this.currentProcessingStage = processingStage;
+        await onActualExecuted(processingStage);
+        this.currentProcessingStage = processingStage;
       }
       if (EventPacker.isTerminated(event)) {
         this.stageProcessor.skipEventProcess(identifier);
@@ -726,19 +729,15 @@ export class GameProcessor {
       }
 
       if (processor) {
-        await processor(this.currentProcessingStage!);
+        this.currentProcessingStage = processingStage;
+        await processor(processingStage);
       }
       if (EventPacker.isTerminated(event)) {
         this.stageProcessor.skipEventProcess(identifier);
         break;
       }
 
-      const nextStage = this.stageProcessor.getNextStage();
-      if (this.stageProcessor.isInsideEvent(identifier, nextStage)) {
-        this.currentProcessingStage = this.stageProcessor.next();
-      } else {
-        break;
-      }
+      processingStage = this.stageProcessor.next();
     }
   };
 
@@ -816,8 +815,8 @@ export class GameProcessor {
           byReaon: 'damage',
           byCardIds: event.cardIds,
         };
-        await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async stage => {
-          if (stage === HpChangeStage.HpChanging) {
+        await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async hpChangeStage => {
+          if (hpChangeStage === HpChangeStage.HpChanging) {
             this.room.broadcast(identifier, event);
           }
           return true;

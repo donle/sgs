@@ -1,23 +1,23 @@
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { AllStage, DamageEffectStage, HpChangeStage } from 'core/game/stage_processor';
+import { AllStage, HpChangeStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
-import { CommonSkill, CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import { CommonSkill } from 'core/skills/skill_wrappers';
 
 @CommonSkill({ name: 'kuanggu', description: 'kuanggu_description' })
 export class Kuanggu extends TriggerSkill {
-  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
-    return stage === DamageEffectStage.AfterDamageEffect;
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.HpChangeEvent>, stage: AllStage) {
+    return stage === HpChangeStage.AtferHpChange && event.byReaon === 'damage';
   }
 
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
-    return owner.Id === content.fromId && owner.getFlag<boolean>(this.GeneralName) === true;
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.HpChangeEvent>) {
+    return owner.Id === content.fromId && room.distanceBetween(owner, room.getPlayerById(content.toId)) <= 1;
   }
 
-  triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
-    return event.damage;
+  triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.HpChangeEvent>) {
+    return event.amount;
   }
 
   async onTrigger() {
@@ -57,35 +57,11 @@ export class Kuanggu extends TriggerSkill {
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
-    const { fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-    const weiyan = room.getPlayerById(skillUseEvent.fromId);
-    weiyan.removeFlag(this.GeneralName);
+    const { fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.HpChangeEvent>;
 
     if (fromId !== undefined) {
       await this.doKuanggu(room, fromId);
     }
-    return true;
-  }
-}
-
-@ShadowSkill
-@CompulsorySkill({ name: Kuanggu.GeneralName, description: Kuanggu.Description })
-export class KuangguShadow extends TriggerSkill {
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.HpChangeEvent>, stage: AllStage) {
-    return stage === HpChangeStage.HpChanging;
-  }
-
-  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.HpChangeEvent>) {
-    return owner.Id === content.fromId && room.distanceBetween(owner, room.getPlayerById(content.toId)) <= 1;
-  }
-
-  async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
-    return true;
-  }
-
-  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const weiyan = room.getPlayerById(event.fromId);
-    weiyan.setFlag<boolean>(Kuanggu.GeneralName, true);
     return true;
   }
 }

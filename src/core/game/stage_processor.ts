@@ -328,27 +328,11 @@ export class StageProcessor {
 
   constructor(private logger: Logger) {}
 
-  private popStage() {
-    if (this.gameEventStageList.length === 0) {
-      return;
-    }
-
-    const stage = this.gameEventStageList[0][0];
-    this.gameEventStageList[0].shift();
-    if (this.gameEventStageList[0].length === 0) {
-      this.gameEventStageList.shift();
-    }
-
-    return stage;
-  }
-
   public involve(identifier: GameEventIdentifiers) {
     const stageList = Precondition.exists(gameEventStageList[identifier], `Unable to get game event of ${identifier}`);
-
     this.gameEventStageList.unshift(stageList.slice());
 
     this.currentGameEventStage = this.gameEventStageList[0][0];
-    this.gameEventStageList[0].shift();
     this.processingGameEvent = true;
 
     return this.currentGameEventStage;
@@ -358,26 +342,17 @@ export class StageProcessor {
     if (!this.gameEventStageList || !this.processingGameEvent) {
       return;
     }
-    if (this.gameEventStageList[0] && this.gameEventStageList[0][0] === this.currentGameEventStage) {
+
+    if (this.gameEventStageList[0] && this.gameEventStageList[0].length > 0) {
       this.gameEventStageList[0].shift();
     }
-
-    const nextStage = this.popStage();
-    if (nextStage === undefined) {
+    if (this.gameEventStageList[0] && this.gameEventStageList[0].length === 0) {
+      this.gameEventStageList.shift();
+    }
+    if (this.gameEventStageList.length === 0) {
       this.currentGameEventStage = undefined;
       this.processingGameEvent = false;
       return;
-    }
-
-    return nextStage;
-  }
-
-  public getNextStage(): GameEventStage | undefined {
-    if (this.gameEventStageList.length === 0) {
-      return;
-    }
-    if (this.gameEventStageList[0] && this.gameEventStageList[0][0] === this.currentGameEventStage) {
-      this.gameEventStageList[0].shift();
     }
 
     return this.gameEventStageList[0][0];
