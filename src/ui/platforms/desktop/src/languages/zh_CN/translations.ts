@@ -885,6 +885,8 @@ export const eventDictionary: Word[] = [
   { source: 'option-one', target: '选项一' },
   { source: 'option-two', target: '选项二' },
 
+  { source: 'yes', target: '是' },
+  { source: 'no', target: '否' },
   { source: '({0})', target: '({0})' },
   { source: '[{0}]', target: '[{0}]' },
   { source: 'nosuit', target: '无色' },
@@ -1160,6 +1162,7 @@ export const eventDictionary: Word[] = [
     source: 'please choose tianxiang options:{0}',
     target: '请选择：1.令其受到1点伤害，然后摸 {0} 张牌。2.令其失去1点体力，然后其获得你弃置的牌',
   },
+  { source: 'do you wanna transfer the card {0} target to {1}', target: '是否将【{0}】的使用目标改为【1】' },
   {
     source: 'player {0} join in the room',
     target: '玩家 {0} 进入了房间',

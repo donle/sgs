@@ -1,53 +1,61 @@
 import { CharacterNationality } from 'core/characters/character';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { RecoverEffectStage } from 'core/game/stage_processor';
+import { Sanguosha } from 'core/game/engine';
+import { AimStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { CompulsorySkill, LordSkill, TriggerSkill } from 'core/skills/skill';
+import { LordSkill, TriggerSkill } from 'core/skills/skill';
+import { CommonSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CompulsorySkill({ name: 'jiuyuan', description: 'jiuyuan_description' })
+@CommonSkill({ name: 'jiuyuan', description: 'jiuyuan_description' })
 @LordSkill
 export class JiuYuan extends TriggerSkill {
-  public isAutoTrigger() {
+  isAutoTrigger() {
     return true;
   }
 
-  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.RecoverEvent>) {
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
+    const user = room.getPlayerById(content.fromId);
     return (
-      content.recoverBy !== undefined &&
-      content.toId === owner.Id &&
-      owner.Id !== content.recoverBy &&
-      room.getPlayerById(content.recoverBy).Nationality === CharacterNationality.Wu
+      content.byCardId !== undefined &&
+      Sanguosha.getCardById(content.byCardId).GeneralName === 'peach' &&
+      content.toId === content.fromId &&
+      user.Hp > owner.Hp &&
+      user.Nationality === CharacterNationality.Wu
     );
   }
 
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.RecoverEvent>, stage: RecoverEffectStage) {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage: AimStage) {
     return (
       // EventPacker.getIdentifier(event) === GameEventIdentifiers.RecoverEvent &&
-      stage === RecoverEffectStage.BeforeRecoverEffect
+      stage === AimStage.OnAim
     );
   }
 
   async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
-    event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} activated skill {1}',
-      room.getPlayerById(event.fromId).Name,
-      this.Name,
-    ).extract();
-
     return true;
   }
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = event;
-    const recoverEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.RecoverEvent>;
-    if (
-      recoverEvent.recoverBy &&
-      recoverEvent.toId !== recoverEvent.recoverBy &&
-      room.getPlayerById(recoverEvent.recoverBy).Nationality === CharacterNationality.Wu
-    ) {
-      recoverEvent.recoveredHp++;
+    const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
+    const askForInvokeSkill: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
+      toId: aimEvent.fromId,
+      options: ['yes', 'no'],
+      conversation: TranslationPack.translationJsonPatcher(
+        'do you wanna transfer the card {0} target to {1}',
+        TranslationPack.patchCardInTranslation(aimEvent.byCardId!),
+        TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
+      ).extract(),
+    };
+    room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForInvokeSkill, aimEvent.fromId);
+    const { selectedOption } = await room.onReceivingAsyncReponseFrom(
+      GameEventIdentifiers.AskForChoosingOptionsEvent,
+      aimEvent.fromId,
+    );
+    if (selectedOption === 'yes') {
+      aimEvent.toId = event.fromId;
     }
 
     return true;
