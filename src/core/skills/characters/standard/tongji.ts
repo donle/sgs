@@ -20,7 +20,7 @@ export class TongJi extends GlobalFilterSkill {
       }
     }
 
-    if (owner.getCardIds(PlayerCardsArea.HandArea).length <= owner.Hp) {
+    if (attacker === owner || owner.getCardIds(PlayerCardsArea.HandArea).length <= owner.Hp) {
       return true;
     }
 

@@ -68,8 +68,7 @@ export class LightningSkill extends ActiveSkill {
       }
 
       await room.moveCards({
-        fromId: currentPlayer,
-        movingCards: [{ card: cardId, fromArea: CardMoveArea.JudgeArea }],
+        movingCards: [{ card: cardId, fromArea: CardMoveArea.ProcessingArea }],
         toArea: CardMoveArea.JudgeArea,
         toId: player.Id,
         moveReason: CardMoveReason.PassiveMove,

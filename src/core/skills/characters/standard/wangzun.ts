@@ -44,10 +44,11 @@ export class WangZunShadow extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    return (
-      PlayerPhaseStages.FinishStageEnd === content.toStage &&
-      room.getPlayerById(content.playerId).Role === PlayerRole.Lord
-    );
+    if (PlayerPhaseStages.FinishStageEnd !== content.toStage) {
+      return false;
+    }
+    const lord = room.getPlayerById(content.playerId);
+    return lord.Role === PlayerRole.Lord && lord.getInvisibleMark(this.GeneralName) > 0;
   }
 
   async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
@@ -62,9 +63,8 @@ export class WangZunShadow extends TriggerSkill {
     ) as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
 
     room.syncGameCommonRules(phaseChangeEvent.playerId, user => {
-      const extraHold = user.getInvisibleMark(this.GeneralName);
       user.removeInvisibleMark(this.GeneralName);
-      GameCommonRules.addAdditionalHoldCardNumber(user, -extraHold);
+      GameCommonRules.addAdditionalHoldCardNumber(user, 1);
     });
     return true;
   }
