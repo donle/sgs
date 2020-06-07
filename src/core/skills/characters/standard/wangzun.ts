@@ -63,8 +63,9 @@ export class WangZunShadow extends TriggerSkill {
     ) as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
 
     room.syncGameCommonRules(phaseChangeEvent.playerId, user => {
+      const extraHold = user.getInvisibleMark(this.GeneralName);
       user.removeInvisibleMark(this.GeneralName);
-      GameCommonRules.addAdditionalHoldCardNumber(user, 1);
+      GameCommonRules.addAdditionalHoldCardNumber(user, extraHold);
     });
     return true;
   }
