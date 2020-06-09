@@ -1,16 +1,17 @@
-export type Point = {
-  x: number;
-  y: number;
-};
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { RoomStore } from 'pages/room/room.presenter';
+import { UiAnimation } from '../animation';
+import { Point } from '../position';
 
 export type Step = [Point, Point[]];
 
-export class GuideLine {
-  constructor(private steps: Step[], private animationTime: number, private remainTime: number) {}
-  private readonly defaultAnimationTime = 150;
+export class GuideLine extends UiAnimation {
+  constructor(private store: RoomStore, private animationTime: number, private remainTime: number) {
+    super();
+  }
   private readonly rooElement = document.getElementById('root')!;
 
-  calculateAngle(from: Point, to: Point) {
+  private calculateAngle(from: Point, to: Point) {
     const xrad = Math.atan2(to.x - from.x, to.y - from.y);
     const rotation = (xrad / Math.PI) * 180;
     let angle = 360 - rotation + 90;
@@ -19,59 +20,50 @@ export class GuideLine {
     return angle - 360;
   }
 
-  calulateLength(from: Point, to: Point) {
+  private calulateLength(from: Point, to: Point) {
     return Math.sqrt(Math.pow(Math.abs(from.x - to.x), 2) + Math.pow(Math.abs(from.y - to.y), 2));
   }
 
-  async animate() {
-    for (const step of this.steps) {
+  private createAnimationGuidelineSteps(event: ServerEventFinder<GameEventIdentifiers>) {
+    const steps: Step[] = [];
+    const { animation } = event;
+    if (animation) {
+      for (const { from, tos } of animation) {
+        const fromPont = this.store.animationPosition.getPosition(from, from === this.store.clientPlayerId);
+        const toPoints = tos.map(to => this.store.animationPosition.getPosition(to, to === this.store.clientPlayerId));
+        steps.push([fromPont, toPoints]);
+      }
+    }
+
+    return steps;
+  }
+
+  async animate(event: ServerEventFinder<GameEventIdentifiers>) {
+    const steps = this.createAnimationGuidelineSteps(event);
+
+    for (const step of steps) {
       const lines = this.render(step);
       this.rooElement.append(...lines.map(line => line[0]));
-      this.playAsyncAnimation(lines);
-      await this.pause();
-    }
-  }
-
-  private async pause() {
-    return new Promise(resolve => {
-      setTimeout(() => resolve(), this.animationTime + this.defaultAnimationTime);
-    });
-  }
-
-  private async playAsyncAnimation(lines: [HTMLElement, number][]) {
-    return new Promise(resolve => {
       for (const [element, length] of lines) {
-        this.createAsyncAnimation(element, length).then(delayedElement => this.asyncAnimationOff(delayedElement));
+        this.play(100, () => {
+          element.style.transition = `width ${this.animationTime}ms, opacity ${this.defaultAnimationTime}ms`;
+          element.style.width = `${length}px`;
+          element.style.opacity = '1';
+        });
+        this.play(this.remainTime - this.defaultAnimationTime * 2 - 10, () => {
+          element.style.transition = `opacity ${this.defaultAnimationTime * 2}ms`;
+          element.style.opacity = '0';
+        });
       }
 
-      setTimeout(async () => {
+      this.play(this.remainTime, () => {
         for (const line of lines) {
           line[0].remove();
         }
-        resolve();
-      }, this.remainTime);
-    });
-  }
+      });
 
-  private asyncAnimationOff(element: HTMLElement) {
-    return new Promise<HTMLElement>(resolve => {
-      setTimeout(() => {
-        element.style.transition = `opacity ${this.defaultAnimationTime * 2}ms`;
-        element.style.opacity = '0';
-        resolve(element);
-      }, this.remainTime - this.defaultAnimationTime * 2 - 10);
-    });
-  }
-
-  private async createAsyncAnimation(element: HTMLElement, length: number) {
-    return new Promise<HTMLElement>(resolve => {
-      setTimeout(() => {
-        element.style.transition = `width ${this.animationTime}ms, opacity ${this.defaultAnimationTime}ms`;
-        element.style.width = `${length}px`;
-        element.style.opacity = '1';
-        resolve(element);
-      }, 10);
-    });
+      await this.play(this.animationTime + this.defaultAnimationTime);
+    }
   }
 
   private render(step: Step) {

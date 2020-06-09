@@ -6,8 +6,8 @@ import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { match } from 'react-router-dom';
 import { PagePropsWithHostConfig } from 'types/page_props';
-import { GuideLine, Step } from './animations/guideline/guideline';
 import { GameClientProcessor } from './game_processor';
+import { installService, RoomBaseService } from './install_service';
 import styles from './room.module.css';
 import { RoomPresenter, RoomStore } from './room.presenter';
 import { Banner } from './ui/banner/banner';
@@ -29,6 +29,7 @@ export class RoomPage extends React.Component<
   private gameProcessor: GameClientProcessor;
   private roomId: number;
   private playerName = window.localStorage.getItem('username') || 'unknown';
+  private baseService: RoomBaseService;
 
   private displayedCardsRef = React.createRef<HTMLDivElement>();
   private readonly cardWidth = 120;
@@ -41,6 +42,7 @@ export class RoomPage extends React.Component<
     this.presenter = new RoomPresenter();
     this.store = this.presenter.createStore();
     this.socket = new ClientSocket(this.props.config, this.roomId);
+    this.baseService = installService(this.props.flavor, this.props.translator, this.store);
 
     this.gameProcessor = new GameClientProcessor(this.presenter, this.store, this.props.translator);
   }
@@ -66,7 +68,7 @@ export class RoomPage extends React.Component<
       this.socket.on(identifier, async (content: ServerEventFinder<GameEventIdentifiers>) => {
         await this.gameProcessor.onHandleIncomingEvent(identifier, content);
         this.showMessageFromEvent(content);
-        this.animation(content);
+        this.animation(identifier, content);
       });
     });
 
@@ -84,23 +86,13 @@ export class RoomPage extends React.Component<
     this.disconnect();
   }
 
-  private createAnimationGuidelineSteps(event: ServerEventFinder<GameEventIdentifiers>): Step[] {
-    const { animation } = event;
-    const steps: Step[] = [];
-    if (animation) {
-      for (const { from, tos } of animation) {
-        const fromPont = this.store.animationPosition.getPosition(from, from === this.store.clientPlayerId);
-        const toPoints = tos.map(to => this.store.animationPosition.getPosition(to, to === this.store.clientPlayerId));
-        steps.push([fromPont, toPoints]);
-      }
+  private animation<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
+    this.baseService.Animation.GuideLineAnimation.animate(event);
+    if (identifier === GameEventIdentifiers.MoveCardEvent) {
+      this.baseService.Animation.MoveCardAnimation.animate(
+        event as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>,
+      );
     }
-
-    return steps;
-  }
-
-  private animation(event: ServerEventFinder<GameEventIdentifiers>) {
-    const guideAnimation = this.createAnimationGuidelineSteps(event);
-    guideAnimation.length > 0 && new GuideLine(guideAnimation, 500, 2000).animate();
   }
 
   private showMessageFromEvent(event: ServerEventFinder<GameEventIdentifiers>) {

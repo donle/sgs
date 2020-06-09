@@ -224,37 +224,44 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         }
       }
 
+      const skillsInPriorities: [TriggerSkill[], TriggerSkill[], TriggerSkill[]] = [[], [], []];
       for (const skill of canTriggerSkills) {
-        if (skill.isTriggerable(content, stage) && skill.canUse(this, player, content)) {
-          for (let i = 0; i < skill.triggerableTimes(content); i++) {
-            const triggerSkillEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent> = {
-              fromId: player.Id,
-              skillName: skill.Name,
-              triggeredOnEvent: content,
-            };
-            if (
-              skill.isAutoTrigger(this, content) ||
-              skill.SkillType === SkillType.Compulsory ||
-              skill.SkillType === SkillType.Awaken
-            ) {
-              await this.useSkill(triggerSkillEvent);
-            } else {
-              this.notify(
-                GameEventIdentifiers.AskForSkillUseEvent,
-                {
-                  invokeSkillNames: [skill.Name],
-                  toId: player.Id,
-                },
-                player.Id,
-              );
-              const { invoke, cardIds, toIds } = await this.onReceivingAsyncReponseFrom(
-                GameEventIdentifiers.AskForSkillUseEvent,
-                player.Id,
-              );
-              triggerSkillEvent.toIds = toIds;
-              triggerSkillEvent.cardIds = cardIds;
-              if (invoke) {
+        skillsInPriorities[skill.Priority].push(skill);
+      }
+
+      for (const skills of skillsInPriorities) {
+        for (const skill of skills) {
+          if (skill.isTriggerable(content, stage) && skill.canUse(this, player, content)) {
+            for (let i = 0; i < skill.triggerableTimes(content); i++) {
+              const triggerSkillEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent> = {
+                fromId: player.Id,
+                skillName: skill.Name,
+                triggeredOnEvent: content,
+              };
+              if (
+                skill.isAutoTrigger(this, content) ||
+                skill.SkillType === SkillType.Compulsory ||
+                skill.SkillType === SkillType.Awaken
+              ) {
                 await this.useSkill(triggerSkillEvent);
+              } else {
+                this.notify(
+                  GameEventIdentifiers.AskForSkillUseEvent,
+                  {
+                    invokeSkillNames: [skill.Name],
+                    toId: player.Id,
+                  },
+                  player.Id,
+                );
+                const { invoke, cardIds, toIds } = await this.onReceivingAsyncReponseFrom(
+                  GameEventIdentifiers.AskForSkillUseEvent,
+                  player.Id,
+                );
+                triggerSkillEvent.toIds = toIds;
+                triggerSkillEvent.cardIds = cardIds;
+                if (invoke) {
+                  await this.useSkill(triggerSkillEvent);
+                }
               }
             }
           }

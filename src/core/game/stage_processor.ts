@@ -30,9 +30,9 @@ export const enum PlayerPhaseStages {
 }
 
 export const enum StagePriority {
-  Low,
-  Medium,
   High,
+  Medium,
+  Low,
 }
 
 export const enum PlayerPhase {

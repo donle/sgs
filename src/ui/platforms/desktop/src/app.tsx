@@ -1,7 +1,7 @@
-import { ClientConfigTypes } from 'client.config';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { createBrowserHistory } from 'history';
 import { RoomPage } from 'pages/room/room';
+import { ClientConfigTypes } from 'props/config_props';
 import * as React from 'react';
 import { Redirect, Route, Router, Switch } from 'react-router-dom';
 import { Lobby } from './pages/lobby/lobby';
@@ -24,6 +24,7 @@ export const App = (props: { config: ClientConfigTypes; translator: ClientTransl
             path={'/lobby'}
             render={({ match, location, history }) => (
               <Lobby
+                flavor={props.config.flavor}
                 config={props.config.host}
                 match={match}
                 translator={props.translator}
@@ -36,6 +37,7 @@ export const App = (props: { config: ClientConfigTypes; translator: ClientTransl
             path={'/room/:slug'}
             render={({ match, location, history }) => (
               <RoomPage
+                flavor={props.config.flavor}
                 location={location}
                 history={history}
                 match={match}

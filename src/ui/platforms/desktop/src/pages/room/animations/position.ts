@@ -1,14 +1,27 @@
 import { PlayerId } from 'core/player/player_props';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { Point } from './guideline/guideline';
+
+export type Point = {
+  x: number;
+  y: number;
+};
 
 export class AnimationPosition {
-  private positions: {
-    playerId: PlayerId;
-    position?: Point;
-  }[] = [];
+  private positions:
+    | {
+        playerId: PlayerId;
+        position?: Point;
+      }[]
+    | undefined;
+
+  constructor() {
+    document.addEventListener('resize', () => {
+      this.positions = undefined;
+    });
+  }
 
   insertPlayer(playerId: PlayerId) {
+    this.positions = this.positions || [];
     this.positions.push({ playerId });
   }
 
@@ -23,6 +36,7 @@ export class AnimationPosition {
       y: playerOffset.top + playerCardElement.clientHeight / 2,
     };
 
+    this.positions = this.positions || [];
     const existingPosition = this.positions.find(position => position.playerId === playerId);
     if (existingPosition) {
       existingPosition.position = position;
@@ -45,6 +59,7 @@ export class AnimationPosition {
       y: playerOffset.top + 12,
     };
 
+    this.positions = this.positions || [];
     const existingPosition = this.positions.find(position => position.playerId === playerId);
     if (existingPosition) {
       existingPosition.position = position;
@@ -68,7 +83,7 @@ export class AnimationPosition {
     isCurrentPlayer ? this.calculateCurrentPlayerPosition(playerId) : this.calculatePlayerPosition(playerId);
 
     return Precondition.exists(
-      this.positions.find(position => position.playerId === playerId),
+      this.positions!.find(position => position.playerId === playerId),
       `player ${playerId} not found`,
     ).position!;
   }

@@ -9,7 +9,7 @@ import {
   ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
-import { AllStage, PlayerPhase } from 'core/game/stage_processor';
+import { AllStage, PlayerPhase, StagePriority } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -153,6 +153,10 @@ export abstract class TriggerSkill extends Skill {
   public abstract isTriggerable(event: EventPicker<GameEventIdentifiers, WorkPlace>, stage?: AllStage): boolean;
   public isAutoTrigger(room: Room, event?: ServerEventFinder<GameEventIdentifiers>): boolean {
     return false;
+  }
+
+  public get Priority() {
+    return StagePriority.Medium;
   }
 
   public abstract async onTrigger(

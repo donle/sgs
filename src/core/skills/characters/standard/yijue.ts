@@ -9,7 +9,7 @@ import {
   ServerEventFinder,
 } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AllStage, DamageEffectStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
+import { AllStage, DamageEffectStage, PhaseChangeStage, PlayerPhase, StagePriority } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -129,6 +129,10 @@ export class YiJueShadow extends TriggerSkill implements OnDefineReleaseTiming {
   }
   onLosingSkill(room: Room, playerId: PlayerId) {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+  }
+
+  public get Priority() {
+    return StagePriority.High;
   }
 
   isTriggerable(

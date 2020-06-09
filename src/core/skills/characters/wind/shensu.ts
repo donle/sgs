@@ -25,7 +25,10 @@ export class ShenSu extends TriggerSkill {
     if (content.to === PlayerPhase.PlayCardStage) {
       room.setFlag(owner.Id, this.Name, content.to);
       return owner.getPlayerCards().length > 0;
+    } else if (owner.getFlag<boolean>(this.Name)) {
+      room.removeFlag(owner.Id, this.Name);
     }
+
     return true;
   }
 

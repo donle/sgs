@@ -2,7 +2,14 @@ import { CardType } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AllStage, DamageEffectStage, DrawCardStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
+import {
+  AllStage,
+  DamageEffectStage,
+  DrawCardStage,
+  PhaseChangeStage,
+  PlayerPhase,
+  StagePriority,
+} from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -98,6 +105,10 @@ export class LuoYi extends TriggerSkill {
 export class LuoYiShadow extends TriggerSkill implements OnDefineReleaseTiming {
   onLosingSkill(room: Room, playerId: PlayerId) {
     return room.CurrentPlayer === room.getPlayerById(playerId) && room.CurrentPlayerPhase === PlayerPhase.PrepareStage;
+  }
+
+  public get Priority() {
+    return StagePriority.High;
   }
 
   public isTriggerable(
