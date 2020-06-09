@@ -1,4 +1,5 @@
 import { Card } from 'core/cards/card';
+import { LegionFightCardPackage } from 'core/cards/legion_fight';
 import { StandardCardPackage } from 'core/cards/standard';
 import { GameCardExtensions } from '../game_props';
 
@@ -11,6 +12,7 @@ const allPackageLoaders: {
   [P in GameCardExtensions]: CardPackageLoader;
 } = {
   [GameCardExtensions.Standard]: StandardCardPackage,
+  [GameCardExtensions.LegionFight]: LegionFightCardPackage,
 };
 
 export class CardLoader {
