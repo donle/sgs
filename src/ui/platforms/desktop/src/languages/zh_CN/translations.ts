@@ -34,6 +34,10 @@ export const cardDictionary: Word[] = [
   { source: 'cixiongjian', target: '雌雄双股剑' },
   { source: 'renwangdun', target: '仁王盾' },
   { source: 'hanbingjian', target: '寒冰剑' },
+  { source: 'huogong', target: '火攻' },
+  { source: 'bingliangcunduan', target: '兵粮寸断' },
+  { source: 'tengjia', target: '藤甲' },
+  { source: 'baiyinshizi', target: '白银狮子' },
 ];
 
 export const characterDictionary: Word[] = [
@@ -820,6 +824,7 @@ export const generalDictionary: Word[] = [
   { source: 'cheat', target: '作弊' },
   { source: 'cheat_description', target: '可以获得任意牌（仅用于测试）' },
   { source: 'standard', target: '标准版' },
+  { source: 'legion_fight', target: '军争篇' },
   { source: 'wind', target: '风' },
   { source: 'forest', target: '林' },
   { source: 'fire', target: '火' },
@@ -1048,6 +1053,7 @@ export const eventDictionary: Word[] = [
   { source: '{0} is placed into drop stack', target: '{0} 置入了弃牌堆' },
   { source: '{0} responses card {1}', target: '{0} 打出了一张 {1}' },
   { source: 'please drop {0} cards', target: '请弃置 {0} 张牌' },
+  { source: '{0} skipped draw stage', target: '{0} 跳过了摸牌阶段' },
   { source: '{0} skipped play stage', target: '{0} 跳过了出牌阶段' },
   { source: '{0} is dying', target: '{0} 进入了濒死阶段' },
   {
@@ -1093,15 +1099,23 @@ export const eventDictionary: Word[] = [
     target: '是否打出一张 【{0}】 来响应 {2} 的 【{1}】',
   },
   { source: '{0} display hand card {1} from {2}', target: '{0} 展示了 {2} 的一张 {1}' },
+  { source: '{0} display hand card {1}', target: '{0} 展示了 {1}' },
   { source: '{0} lost {1} hand card', target: '{0} 失去了 {1} 张手牌' },
   { source: 'please choose', target: '请选择' },
   { source: 'please choose a player', target: '请选择一名角色' },
   { source: '{0} place card {1} from {2} on the top of draw stack', target: '{0} 将 {2} 的 {1} 置于了牌堆顶' },
   { source: 'recover {0} hp for {1}', target: '是否回复 {1} {0} 点体力' },
   { source: '{0} used skill {1}, damage increases to {2}', target: '{0} 使用了技能 【{1}】，伤害增加至 {2} 点' },
+  { source: '{0} activated skill {1}, damage reduces to {2}', target: '{0} 触发了技能 【{1}】，伤害减少至 1 点' },
   { source: '{0} used skill {1} to you, please present a hand card', target: '{0} 使用了技能 【{1}】，请展示一张手牌' },
+  { source: '{0} used {1} to you, please present a hand card', target: '{0} 对你使用了 {1}，请展示一张手牌' },
   { source: '{0} move cards {1} onto the top of character card', target: '{0} 将 {1} 置于了武将牌上' },
   { source: '{0} move {1} cards onto the top of character card', target: '{0} 将 {1} 张牌置于了武将牌上' },
+  { source: '{0}: please present a hand card', target: '你成为了 {0} 的目标，请展示一张手牌' },
+  {
+    source: 'please drop a {0} hand card to hit {1} 1 hp of damage type fire',
+    target: '请弃置一张 {0} 手牌，对 {1} 造成1点火焰伤害',
+  },
   {
     source: 'Obtain Basic Card, Equip Card and Duel in display cards?',
     target: '裸衣：是否放弃摸牌，然后获取展示牌中的基本牌、装备牌和【决斗】',
