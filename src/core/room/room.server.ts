@@ -441,6 +441,21 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return responseEvent;
   }
 
+  public async reforge(cardId: CardId, from: Player) {
+    await this.moveCards({
+      movingCards: [{ card: cardId, fromArea: CardMoveArea.ProcessingArea }],
+      moveReason: CardMoveReason.PlaceToDropStack,
+      toArea: CardMoveArea.DropStack,
+      proposer: from.Id,
+      translationsMessage: TranslationPack.translationJsonPatcher(
+        '{0} reforged card {1}',
+        TranslationPack.patchPlayerInTranslation(from),
+        TranslationPack.patchCardInTranslation(cardId),
+      ).extract(),
+    });
+    await this.drawCards(1, from.Id);
+  }
+
   public async preUseCard(cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): Promise<boolean> {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, cardUseEvent);
     const card = Sanguosha.getCardById<VirtualCard>(cardUseEvent.cardId);

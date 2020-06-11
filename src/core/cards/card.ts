@@ -51,7 +51,7 @@ export abstract class Card {
   private readonly cardTargetNumber: CardTargetEnum = CardTargetEnum.Single;
   private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.Single;
 
-  protected canReforge() {
+  public get Reforgeable() {
     return false;
   }
 
