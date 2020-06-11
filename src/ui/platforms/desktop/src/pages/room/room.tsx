@@ -90,7 +90,7 @@ export class RoomPage extends React.Component<
     this.baseService.Animation.GuideLineAnimation.animate(event);
     if (identifier === GameEventIdentifiers.MoveCardEvent) {
       this.baseService.Animation.MoveCardAnimation.animate(
-        event as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>,
+        (event as unknown) as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>,
       );
     }
   }
