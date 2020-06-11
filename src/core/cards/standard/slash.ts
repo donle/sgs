@@ -24,18 +24,3 @@ export class Slash extends BasicCard {
     return this.skill as SlashSkill;
   }
 }
-
-export class ThunderSlash extends Slash {
-  constructor(id: RealCardId, cardNumber: number, suit: CardSuit) {
-    super(id, cardNumber, suit);
-
-    this.skill = SkillLoader.getInstance().getSkillByName('thunder_slash');
-  }
-}
-export class FireSlash extends Slash {
-  constructor(id: RealCardId, cardNumber: number, suit: CardSuit) {
-    super(id, cardNumber, suit);
-
-    this.skill = SkillLoader.getInstance().getSkillByName('fire_slash');
-  }
-}

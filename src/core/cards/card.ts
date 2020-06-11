@@ -51,6 +51,10 @@ export abstract class Card {
   private readonly cardTargetNumber: CardTargetEnum = CardTargetEnum.Single;
   private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.Single;
 
+  protected canReforge() {
+    return false;
+  }
+
   public static getActualCards(cards: CardId[]): CardId[] {
     let result: CardId[] = [];
     for (const card of cards) {

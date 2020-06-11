@@ -34,10 +34,13 @@ export const cardDictionary: Word[] = [
   { source: 'cixiongjian', target: '雌雄双股剑' },
   { source: 'renwangdun', target: '仁王盾' },
   { source: 'hanbingjian', target: '寒冰剑' },
+  { source: 'fire_slash', target: '火杀' },
+  { source: 'thunder_slash', target: '雷杀' },
   { source: 'huogong', target: '火攻' },
   { source: 'bingliangcunduan', target: '兵粮寸断' },
   { source: 'tengjia', target: '藤甲' },
   { source: 'baiyinshizi', target: '白银狮子' },
+  { source: 'hualiu', target: '骅骝' },
 ];
 
 export const characterDictionary: Word[] = [

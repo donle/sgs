@@ -71,11 +71,3 @@ export class SlashSkill extends ActiveSkill {
     return true;
   }
 }
-
-export class ThunderSlashSkill extends SlashSkill {
-  protected damageType = DamageType.Thunder;
-}
-
-export class FireSlashSkill extends SlashSkill {
-  protected damageType = DamageType.Fire;
-}
