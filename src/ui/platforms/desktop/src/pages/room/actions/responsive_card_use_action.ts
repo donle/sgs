@@ -44,7 +44,7 @@ export class ResponsiveUseCardAction<
     translator: ClientTranslationModule,
     cardMatcher?: CardMatcher,
   ) {
-    const dynamicEvent = askForEvent as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
+    const dynamicEvent = (askForEvent as unknown) as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
     super(playerId, store, presenter, translator, dynamicEvent.scopedTargets);
     this.askForEvent = askForEvent;
     this.extraUse = !!dynamicEvent.extraUse;
