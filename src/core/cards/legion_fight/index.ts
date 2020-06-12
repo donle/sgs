@@ -5,20 +5,26 @@ import { Peach } from '../standard/peach';
 import { WuXieKeJi } from '../standard/wuxiekeji';
 import { BaiYinShiZi } from './baiyinshizi';
 import { BingLiangCunDuan } from './bingliangcunduan';
+import { FireAttack } from './fire_attack';
 import { FireSlash } from './fire_slash';
+import { GuDingDao } from './gudingdao';
 import { HuaLiu } from './hualiu';
-import { HuoGong } from './huogong';
 import { TengJia } from './tengjia';
 import { ThunderSlash } from './thunder_slash';
 import { TieSuoLianHuan } from './tiesuolianhuan';
+import { ZhuQueYuShan } from './zhuqueyushan';
 
 export const LegionFightCardPackage: (index: number) => Card[] = index => [
-  new HuoGong(index++, 2, CardSuit.Heart),
-  new HuoGong(index++, 3, CardSuit.Heart),
-  new HuoGong(index++, 12, CardSuit.Diamond),
+  new FireAttack(index++, 2, CardSuit.Heart),
+  new FireAttack(index++, 3, CardSuit.Heart),
+  new FireAttack(index++, 12, CardSuit.Diamond),
 
   new BingLiangCunDuan(index++, 10, CardSuit.Spade),
   new BingLiangCunDuan(index++, 4, CardSuit.Club),
+
+  new GuDingDao(index++, 1, CardSuit.Spade),
+
+  new ZhuQueYuShan(index++, 1, CardSuit.Diamond),
 
   new TengJia(index++, 2, CardSuit.Spade),
   new TengJia(index++, 2, CardSuit.Club),

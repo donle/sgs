@@ -10,8 +10,8 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill({ name: 'huogong', description: 'huogong_description' })
-export class HuoGongSkill extends ActiveSkill {
+@CommonSkill({ name: 'fire_attack', description: 'fire_attack_description' })
+export class FireAttackSkill extends ActiveSkill {
   public canUse() {
     return true;
   }
@@ -47,7 +47,7 @@ export class HuoGongSkill extends ActiveSkill {
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const { toIds, fromId } = event;
-    const toId = Precondition.exists(toIds, 'Unknown targets in huogong')[0];
+    const toId = Precondition.exists(toIds, 'Unknown targets in fire_attack')[0];
     const to = room.getPlayerById(toId);
     if (to.getCardIds(PlayerCardsArea.HandArea).length === 0) {
       return false;

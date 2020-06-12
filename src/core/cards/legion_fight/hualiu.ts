@@ -12,7 +12,7 @@ export class HuaLiu extends DefenseRideCard {
       suit,
       'hualiu',
       'hualiu_description',
-      GameCardExtensions.Standard,
+      GameCardExtensions.LegionFight,
       SkillLoader.getInstance().getSkillByName<RulesBreakerSkill>('defense_horse'),
     );
   }

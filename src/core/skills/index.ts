@@ -29,8 +29,10 @@ export { HanBingJianSkill } from './cards/standard/hanbingjian';
 
 export { ThunderSlashSkill } from './cards/legion_fight/thunder_slash';
 export { FireSlashSkill } from './cards/legion_fight/fire_slash';
-export { HuoGongSkill } from './cards/legion_fight/huogong';
+export { FireAttackSkill } from './cards/legion_fight/fire_attack';
 export { BingLiangCunDuanSkill } from './cards/legion_fight/bingliangcunduan';
+export { GuDingDaoSkill } from './cards/legion_fight/gudingdao';
+export { ZhuQueYuShanSkill } from './cards/legion_fight/zhuqueyushan';
 export { TengJiaSkill } from './cards/legion_fight/tengjia';
 export { BaiYinShiZiSkill } from './cards/legion_fight/baiyinshizi';
 export { TieSuoLianHuanSkill } from './cards/legion_fight/tiesuolianhuan';
