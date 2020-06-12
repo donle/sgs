@@ -20,7 +20,7 @@ export const enum GameEventIdentifiers {
   ClearMarkEvent,
 
   DrunkEvent,
-  ChainLinkedEvent,
+  ChainLockedEvent,
 
   LoseSkillEvent,
   ObtainSkillEvent,
@@ -107,7 +107,7 @@ export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.CustomGameDialog,
 
   GameEventIdentifiers.DrunkEvent,
-  GameEventIdentifiers.ChainLinkedEvent,
+  GameEventIdentifiers.ChainLockedEvent,
 
   GameEventIdentifiers.CardResponseEvent,
   GameEventIdentifiers.CardUseEvent,

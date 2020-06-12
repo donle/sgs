@@ -330,7 +330,7 @@ export interface ServerEvent extends EventUtilities {
     toId: PlayerId;
     drunk: boolean;
   };
-  [GameEventIdentifiers.ChainLinkedEvent]: {
+  [GameEventIdentifiers.ChainLockedEvent]: {
     toId: PlayerId;
     linked: boolean;
   };

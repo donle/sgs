@@ -41,6 +41,7 @@ export const cardDictionary: Word[] = [
   { source: 'tengjia', target: '藤甲' },
   { source: 'baiyinshizi', target: '白银狮子' },
   { source: 'hualiu', target: '骅骝' },
+  { source: 'tiesuolianhuan', target: '铁索连环' },
 ];
 
 export const characterDictionary: Word[] = [
@@ -1019,6 +1020,10 @@ export const eventDictionary: Word[] = [
   { source: '{0} displayed guhuo cards {1}', target: '{0} 展示了蛊惑牌 {1}' },
   { source: '{0} displayed cards {1} from top of draw stack', target: '{0} 展示了牌堆顶的一张 {1}' },
   { source: 'please choose another player or click cancel', target: '请选择一名其他角色或点击取消' },
+  { source: '{0} reforged card {1}', target: '{0} 重铸了 {1}' },
+  { source: '{0} {1} character card', target: '{0} {1} 了武将牌' },
+  { source: 'rotate', target: '横置' },
+  { source: 'reset', target: '重置' },
   {
     source: "please drop a {0} card, otherwise you can't do response of slash",
     target: '请弃置一张 {0} 牌，否则此杀不可被响应',

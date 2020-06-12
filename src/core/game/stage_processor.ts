@@ -191,6 +191,12 @@ export const enum TurnOverStage {
   TurnedOver = 'TurnedOver',
 }
 
+export const enum ChainLockStage {
+  BeforeChainingOn = 'BeforeChainingOn',
+  Chaining = 'Chaining',
+  AfterChainedOn = 'AfterChainedOn',
+}
+
 export const enum LoseHpStage {
   BeforeLoseHp = 'BeforeLoseHp',
   LosingHp = 'LosingHp',
@@ -223,7 +229,8 @@ export type GameEventStage =
   | LoseHpStage
   | CardMoveStage
   | TurnOverStage
-  | HpChangeStage;
+  | HpChangeStage
+  | ChainLockStage;
 
 export type AllStage = PlayerPhaseStages | GameEventStage;
 
@@ -316,6 +323,11 @@ const gameEventStageList: {
     HpChangeStage.BeforeHpChange,
     HpChangeStage.HpChanging,
     HpChangeStage.AtferHpChange,
+  ],
+  [GameEventIdentifiers.ChainLockedEvent]: [
+    ChainLockStage.BeforeChainingOn,
+    ChainLockStage.Chaining,
+    ChainLockStage.AfterChainedOn,
   ],
   [GameEventIdentifiers.LoseHpEvent]: [LoseHpStage.BeforeLoseHp, LoseHpStage.LosingHp, LoseHpStage.AfterLostHp],
   [GameEventIdentifiers.PlayerTurnOverEvent]: [TurnOverStage.TurningOver, TurnOverStage.TurnedOver],

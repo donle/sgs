@@ -18,6 +18,7 @@ import {
   CardMoveStage,
   CardResponseStage,
   CardUseStage,
+  ChainLockStage,
   DamageEffectStage,
   DrawCardStage,
   GameEventStage,
@@ -687,6 +688,13 @@ export class GameProcessor {
       case GameEventIdentifiers.HpChangeEvent:
         await this.onHandleHpChangeEvent(
           identifier as GameEventIdentifiers.HpChangeEvent,
+          event as any,
+          onActualExecuted,
+        );
+        break;
+      case GameEventIdentifiers.ChainLockedEvent:
+        await this.onHandleChainLockedEvent(
+          identifier as GameEventIdentifiers.ChainLockedEvent,
           event as any,
           onActualExecuted,
         );
@@ -1572,6 +1580,20 @@ export class GameProcessor {
           return true;
         });
         EventPacker.copyPropertiesTo(hpChangeEvent, event);
+      }
+    });
+  }
+
+  private async onHandleChainLockedEvent(
+    identifier: GameEventIdentifiers.ChainLockedEvent,
+    event: ServerEventFinder<GameEventIdentifiers.ChainLockedEvent>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
+  ) {
+    return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      if (stage === ChainLockStage.Chaining) {
+        const player = this.room.getPlayerById(event.toId);
+        player.ChainLocked = event.linked;
+        this.room.broadcast(identifier, event);
       }
     });
   }

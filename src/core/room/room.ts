@@ -96,6 +96,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract async responseCard(event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>): Promise<void>;
   //Server only
+  public abstract async chainedOn(playerId: PlayerId): Promise<void>;
+  //Server only
   public abstract bury(...cardIds: CardId[]): void;
   //Server only
   public abstract isBuried(cardId: CardId): boolean;

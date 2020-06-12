@@ -242,6 +242,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.ObserveCardsEvent:
         await this.onHandleObserveCardsEvent(e as any, content);
         break;
+      case GameEventIdentifiers.ChainLockedEvent:
+        await this.onHandleChainLockedEvent(e as any, content);
+        break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
     }
@@ -922,6 +925,15 @@ export class GameClientProcessor {
     this.presenter.createDialog(<GameOverDialog translator={this.translator} winners={winners} losers={losers} />);
     this.presenter.broadcastUIUpdate();
     this.store.room.gameOver();
+  }
+
+  private async onHandleChainLockedEvent<T extends GameEventIdentifiers.ChainLockedEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const { toId, linked } = content;
+    this.store.room.getPlayerById(toId).ChainLocked = linked;
+    this.presenter.broadcastUIUpdate();
   }
 
   private async onHandleAskForChoosingPlayerEvent<T extends GameEventIdentifiers.AskForChoosingPlayerEvent>(

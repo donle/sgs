@@ -315,6 +315,23 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
   }
 
+  public async chainedOn(playerId: PlayerId) {
+    const player = this.getPlayerById(playerId);
+    const linked = !player.ChainLocked;
+    await this.gameProcessor.onHandleIncomingEvent(
+      GameEventIdentifiers.ChainLockedEvent,
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.ChainLockedEvent, {
+        toId: playerId,
+        linked,
+        translationsMessage: TranslationPack.translationJsonPatcher(
+          '{0} {1} character card',
+          TranslationPack.patchPlayerInTranslation(player),
+          linked ? 'rotate' : 'reset',
+        ).extract(),
+      }),
+    );
+  }
+
   public async askForCardDrop(
     playerId: PlayerId,
     discardAmount: number,
@@ -443,7 +460,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async reforge(cardId: CardId, from: Player) {
     await this.moveCards({
-      movingCards: [{ card: cardId, fromArea: CardMoveArea.ProcessingArea }],
+      fromId: from.Id,
+      movingCards: [{ card: cardId, fromArea: CardMoveArea.HandArea }],
       moveReason: CardMoveReason.PlaceToDropStack,
       toArea: CardMoveArea.DropStack,
       proposer: from.Id,

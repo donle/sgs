@@ -10,6 +10,7 @@ import { HuaLiu } from './hualiu';
 import { HuoGong } from './huogong';
 import { TengJia } from './tengjia';
 import { ThunderSlash } from './thunder_slash';
+import { TieSuoLianHuan } from './tiesuolianhuan';
 
 export const LegionFightCardPackage: (index: number) => Card[] = index => [
   new HuoGong(index++, 2, CardSuit.Heart),
@@ -57,6 +58,13 @@ export const LegionFightCardPackage: (index: number) => Card[] = index => [
   new FireSlash(index++, 10, CardSuit.Heart),
   new FireSlash(index++, 4, CardSuit.Diamond),
   new FireSlash(index++, 5, CardSuit.Diamond),
+
+  new TieSuoLianHuan(index++, 11, CardSuit.Spade),
+  new TieSuoLianHuan(index++, 12, CardSuit.Spade),
+  new TieSuoLianHuan(index++, 10, CardSuit.Club),
+  new TieSuoLianHuan(index++, 11, CardSuit.Club),
+  new TieSuoLianHuan(index++, 12, CardSuit.Club),
+  new TieSuoLianHuan(index++, 13, CardSuit.Club),
 
   new HuaLiu(index++, 13, CardSuit.Diamond),
 ];

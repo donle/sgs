@@ -33,6 +33,7 @@ export { HuoGongSkill } from './cards/legion_fight/huogong';
 export { BingLiangCunDuanSkill } from './cards/legion_fight/bingliangcunduan';
 export { TengJiaSkill } from './cards/legion_fight/tengjia';
 export { BaiYinShiZiSkill } from './cards/legion_fight/baiyinshizi';
+export { TieSuoLianHuanSkill } from './cards/legion_fight/tiesuolianhuan';
 
 export { Hujia } from './characters/standard/hujia';
 export { JianXiong } from './characters/standard/jianxiong';
