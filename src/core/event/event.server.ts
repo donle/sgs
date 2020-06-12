@@ -143,6 +143,8 @@ export interface ServerEvent extends EventUtilities {
     damageType: DamageType;
     triggeredBySkills: string[];
     toId: PlayerId;
+    isFromChainedDamage?: boolean;
+    beginnerOfTheDamage?: PlayerId;
   };
   [GameEventIdentifiers.RecoverEvent]: {
     recoverBy?: PlayerId;

@@ -46,6 +46,7 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ServerRoom } from '../room/room.server';
 import { Sanguosha } from './engine';
+import { DamageType } from './game_props';
 import { GameCommonRules } from './game_rules';
 
 export class GameProcessor {
@@ -852,8 +853,30 @@ export class GameProcessor {
             EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerDyingEvent, dyingEvent),
           );
         }
+
+        if (to.ChainLocked && event.damageType !== DamageType.Normal) {
+          await this.room.chainedOn(to.Id);
+          await this.onChainedDamage(event);
+        }
       }
     });
+  }
+
+  private async onChainedDamage(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
+    if (event.isFromChainedDamage) {
+      return;
+    }
+
+    for (const player of this.room.getAlivePlayersFrom()) {
+      if (player.ChainLocked) {
+        await this.room.damage({
+          ...event,
+          toId: player.Id,
+          isFromChainedDamage: true,
+          beginnerOfTheDamage: event.fromId,
+        });
+      }
+    }
   }
 
   private async onHandleDyingEvent(
