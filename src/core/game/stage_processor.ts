@@ -108,6 +108,8 @@ export const enum AimStage {
 export const enum CardUseStage {
   PreCardUse = 'PreCardUse',
   BeforeCardUseEffect = 'BeforeCardUseEffect',
+  AfterCardUseDeclared = 'AfterCardUseDeclared',
+  AfterCardTargetDeclared = 'AfterCardTargetDeclared',
   CardUsing = 'CardUsing',
   AfterCardUseEffect = 'AfterCardUseEffect',
   CardUseFinishedEffect = 'CardUseFinishedEffect',
@@ -244,6 +246,8 @@ const gameEventStageList: {
   ],
   [GameEventIdentifiers.CardUseEvent]: [
     CardUseStage.BeforeCardUseEffect,
+    CardUseStage.AfterCardUseDeclared,
+    CardUseStage.AfterCardTargetDeclared,
     CardUseStage.CardUsing,
     CardUseStage.AfterCardUseEffect,
     CardUseStage.CardUseFinishedEffect,

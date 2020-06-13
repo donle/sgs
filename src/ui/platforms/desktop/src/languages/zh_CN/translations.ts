@@ -601,7 +601,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'qiangxi_description',
-    target: '出牌阶段限两次，你可以失去1点体力或弃置一张武器牌，并对一名未以此法指定过的其他角色造成1点伤害。',
+    target: '出牌阶段限两次，你可以失去1点体力或弃置一张武器牌，并对本回合内你未以此法指定过的一名其他角色造成1点伤害。',
   },
   {
     source: 'quhu_description',
