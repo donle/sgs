@@ -134,14 +134,10 @@ export class LuoShenShadow extends TriggerSkill {
     const otherHandCards = player.getCardIds(PlayerCardsArea.HandArea).filter(card => !luoshenCards.includes(card));
     const discardAmount = otherHandCards.length - maxHold;
 
-    if (discardAmount <= 0) {
-      EventPacker.terminate(askForCardDropEvent);
-    } else {
-      askForCardDropEvent.cardAmount = discardAmount;
-      askForCardDropEvent.except = askForCardDropEvent.except
-        ? [...askForCardDropEvent.except, ...luoshenCards]
-        : luoshenCards;
-    }
+    askForCardDropEvent.cardAmount = discardAmount;
+    askForCardDropEvent.except = askForCardDropEvent.except
+      ? [...askForCardDropEvent.except, ...luoshenCards]
+      : luoshenCards;
 
     return true;
   }

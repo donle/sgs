@@ -454,8 +454,8 @@ export class GameProcessor {
                   TranslationPack.patchCardInTranslation(event.cardId),
                   TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
                   event.toIds
-                    ? TranslationPack.wrapArrayParams(
-                        ...event.toIds.map(toId => this.room.getPlayerById(toId).Character.Name),
+                    ? TranslationPack.patchPlayerInTranslation(
+                        ...event.toIds.map(toId => this.room.getPlayerById(toId)),
                       )
                     : '',
                 ).extract()
@@ -464,8 +464,8 @@ export class GameProcessor {
                   'wuxiekeji',
                   TranslationPack.patchCardInTranslation(event.cardId),
                   event.toIds
-                    ? TranslationPack.wrapArrayParams(
-                        ...event.toIds.map(toId => this.room.getPlayerById(toId).Character.Name),
+                    ? TranslationPack.patchPlayerInTranslation(
+                        ...event.toIds.map(toId => this.room.getPlayerById(toId)),
                       )
                     : '',
                 ).extract(),
@@ -604,8 +604,8 @@ export class GameProcessor {
         await this.onHandleDamgeEvent(identifier as GameEventIdentifiers.DamageEvent, event as any, onActualExecuted);
         break;
       case GameEventIdentifiers.PinDianEvent:
-        await this.onHandleAskForPinDianEvent(
-          identifier as GameEventIdentifiers.AskForPinDianCardEvent,
+        await this.onHandlePinDianEvent(
+          identifier as GameEventIdentifiers.PinDianEvent,
           event as any,
           onActualExecuted,
         );
@@ -1461,12 +1461,12 @@ export class GameProcessor {
     this.room.bury(event.judgeCardId);
   }
 
-  private async onHandleAskForPinDianEvent(
-    identifier: GameEventIdentifiers.AskForPinDianCardEvent,
-    event: ServerEventFinder<GameEventIdentifiers.AskForPinDianCardEvent>,
+  private async onHandlePinDianEvent(
+    identifier: GameEventIdentifiers.PinDianEvent,
+    event: ServerEventFinder<GameEventIdentifiers.PinDianEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    return await this.iterateEachStage(identifier, event, onActualExecuted);
+    return await this.iterateEachStage(GameEventIdentifiers.PinDianEvent, event, onActualExecuted);
   }
 
   private async onHandlePhaseChangeEvent(

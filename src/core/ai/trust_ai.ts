@@ -162,8 +162,8 @@ export class TrustAI extends PlayerAI {
     room: Room,
   ) {
     const pindianEvent: ClientEventFinder<T> = {
-      fromId: content.currentTargetId,
-      pindianCard: room.getPlayerById(content.currentTargetId).getCardIds(PlayerCardsArea.HandArea)[0],
+      fromId: content.toId,
+      pindianCard: room.getPlayerById(content.toId).getCardIds(PlayerCardsArea.HandArea)[0],
     };
 
     return pindianEvent;

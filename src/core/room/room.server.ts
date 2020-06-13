@@ -913,65 +913,130 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   public async pindian(fromId: PlayerId, toIds: PlayerId[]) {
+    const from = this.getPlayerById(fromId);
+    const askForEvent = EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForPinDianCardEvent, {
+      fromId,
+      toIds,
+      toId: '',
+      conversation: TranslationPack.translationJsonPatcher(
+        '{0} proposed a pindian event, please choose a hand card to pindian',
+        TranslationPack.patchPlayerInTranslation(from),
+      ).extract(),
+    });
     let pindianResult: PinDianResultType | undefined;
-    const targets = [fromId, ...toIds];
-    for (const target of targets) {
-      const pindianEvent = EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForPinDianCardEvent, {
-        fromId,
-        toIds: targets,
-        currentTargetId: target,
-      } as any);
-      this.notify(GameEventIdentifiers.AskForPinDianCardEvent, pindianEvent, target);
 
-      await this.gameProcessor.onHandleIncomingEvent(
-        GameEventIdentifiers.AskForPinDianCardEvent,
-        pindianEvent,
-        async stage => {
-          if (stage === PinDianStage.PinDianEffect) {
-            const responses = await Promise.all(
-              targets.map(to => this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForPinDianCardEvent, to)),
-            );
+    const pindianEvent: ServerEventFinder<GameEventIdentifiers.PinDianEvent> = {
+      attackerId: fromId,
+      toIds: [fromId, ...toIds],
+    };
 
-            let winner: PlayerId | undefined;
-            let largestCardNumber = 0;
-            const pindianCards: {
-              fromId: string;
-              cardId: CardId;
-            }[] = [];
+    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.PinDianEvent, pindianEvent, async stage => {
+      if (stage === PinDianStage.PinDianEffect) {
+        if (pindianEvent.toIds.length <= 1) {
+          EventPacker.terminate(askForEvent);
+          return false;
+        }
 
-            for (const result of responses) {
-              const pindianCard = Sanguosha.getCardById(result.pindianCard);
-              if (pindianCard.CardNumber > largestCardNumber) {
-                largestCardNumber = pindianCard.CardNumber;
-                winner = result.fromId;
-              } else if (pindianCard.CardNumber === largestCardNumber) {
-                winner = undefined;
-              }
+        for (const target of pindianEvent.toIds) {
+          this.notify(
+            GameEventIdentifiers.AskForPinDianCardEvent,
+            {
+              ...askForEvent,
+              toId: target,
+            },
+            target,
+          );
+        }
 
-              pindianCards.push({
-                fromId: result.fromId,
-                cardId: result.pindianCard,
-              });
-            }
+        const responses = await Promise.all(
+          pindianEvent.toIds.map(to =>
+            this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForPinDianCardEvent, to),
+          ),
+        );
 
-            pindianResult = {
-              winner,
-              pindianCards,
-            };
+        const winners: PlayerId[] = [];
+        const pindianCards: {
+          fromId: string;
+          cardId: CardId;
+        }[] = [];
+        const pindianResults: {
+          fromId: string;
+          cardNumber: number;
+        }[] = [];
+        let proposerCardNumber: number | undefined;
+
+        for (const result of responses) {
+          const pindianCard = Sanguosha.getCardById(result.pindianCard);
+          if (result.fromId === pindianEvent.attackerId) {
+            proposerCardNumber = pindianCard.CardNumber;
+          } else {
+            pindianResults.push({ fromId: result.fromId, cardNumber: pindianCard.CardNumber });
           }
+          pindianCards.push({
+            fromId: result.fromId,
+            cardId: result.pindianCard,
+          });
+          await this.moveCards({
+            movingCards: [{ card: result.pindianCard, fromArea: PlayerCardsArea.HandArea }],
+            fromId: result.fromId,
+            toArea: CardMoveArea.ProcessingArea,
+            moveReason: CardMoveReason.ActiveMove,
+          });
+        }
 
-          return true;
-        },
-      );
+        for (const { fromId, cardNumber } of pindianResults) {
+          if (cardNumber > proposerCardNumber!) {
+            !winners.includes(fromId) && winners.push(fromId);
+          } else if (cardNumber < proposerCardNumber!) {
+            !winners.includes(pindianEvent.attackerId) && winners.push(pindianEvent.attackerId);
+          }
+        }
+        pindianResult = {
+          winners,
+          pindianCards,
+        };
+
+        this.broadcast(GameEventIdentifiers.ObserveCardsEvent, {
+          cardIds: pindianCards.map(pindianCard => pindianCard.cardId),
+          selected: pindianCards.map(pindianCard => ({ card: pindianCard.cardId, player: pindianCard.fromId })),
+          messages: pindianCards.map(pindianCard =>
+            TranslationPack.translationJsonPatcher(
+              '{0} used {1} to respond pindian',
+              TranslationPack.patchPlayerInTranslation(this.getPlayerById(pindianCard.fromId)),
+              TranslationPack.patchCardInTranslation(pindianCard.cardId),
+            ).toString(),
+          ),
+          translationsMessage: TranslationPack.translationJsonPatcher(
+            'pindian result:' + (pindianResult.winners.length > 0 ? '{0} win' : 'draw'),
+            TranslationPack.patchPlayerInTranslation(
+              ...pindianResult.winners.map(winner => this.getPlayerById(winner)),
+            ),
+          ).extract(),
+        });
+        await this.sleep(1500);
+        this.broadcast(GameEventIdentifiers.ContinuouslyChoosingCardFinishEvent, {});
+      }
+
+      return true;
+    });
+
+    if (pindianResult) {
+      const droppedCards: CardId[] = [];
+      for (const { cardId } of pindianResult.pindianCards) {
+        if (this.isCardOnProcessing(cardId)) {
+          this.endProcessOnCard(cardId);
+          this.getCardOwnerId(cardId) === undefined && droppedCards.push(cardId);
+        }
+      }
+
+      droppedCards.length > 0 &&
+        (await this.moveCards({
+          movingCards: droppedCards.map(card => ({ card, fromArea: CardMoveArea.ProcessingArea })),
+          toArea: CardMoveArea.DropStack,
+          moveReason: CardMoveReason.PlaceToDropStack,
+        }));
     }
 
-    if (pindianResult !== undefined) {
-      const pindianResultEvent: ServerEventFinder<GameEventIdentifiers.PinDianEvent> = {
-        attackerId: fromId,
-        result: pindianResult,
-      };
-      this.broadcast(GameEventIdentifiers.PinDianEvent, pindianResultEvent);
-    }
     return pindianResult;
   }
 

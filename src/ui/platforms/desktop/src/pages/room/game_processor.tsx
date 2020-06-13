@@ -230,6 +230,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.AskForChoosingPlayerEvent:
         await this.onHandleAskForChoosingPlayerEvent(e as any, content);
         break;
+      case GameEventIdentifiers.AskForPinDianCardEvent:
+        await this.onHandleAskForPinDianCardEvent(e as any, content);
+        break;
       case GameEventIdentifiers.PlayerDyingEvent:
         await this.onHandlePlayerDyingEvent(e as any, content);
         break;
@@ -307,6 +310,27 @@ export class GameClientProcessor {
     );
 
     await action.onPlay(this.translator);
+    this.endAction();
+  }
+
+  private async onHandleAskForPinDianCardEvent<T extends GameEventIdentifiers.AskForPinDianCardEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.presenter.createIncomingConversation({
+      conversation: content.conversation,
+      translator: this.translator,
+    });
+
+    const action = new SelectAction<GameEventIdentifiers.AskForPinDianCardEvent>(content.toId, this.store, this.presenter, this.translator, content);
+    const selectedCards = await action.onSelectCard([PlayerCardsArea.HandArea], 1);
+
+    this.presenter.closeIncomingConversation();
+    const event: ClientEventFinder<T> = {
+      fromId: content.toId,
+      pindianCard: selectedCards[0],
+    };
+    this.store.room.broadcast(type, EventPacker.createIdentifierEvent(type, event));
     this.endAction();
   }
 

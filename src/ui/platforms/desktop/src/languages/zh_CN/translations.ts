@@ -1027,6 +1027,13 @@ export const eventDictionary: Word[] = [
   { source: 'rotate', target: '横置' },
   { source: 'reset', target: '重置' },
   {
+    source: '{0} proposed a pindian event, please choose a hand card to pindian',
+    target: '{0} 对你发起了拼点，请选择一张手牌用于拼点',
+  },
+  { source: '{0} used {1} to respond pindian', target: '{0} 展示了拼点牌 {1}'},
+  { source: 'pindian result:{0} win', target:'拼点结果为 {0} 赢' },
+  { source: 'pindian result:draw', target:'拼点结果为 平局<' },
+  {
     source: "please drop a {0} card, otherwise you can't do response of slash",
     target: '请弃置一张 {0} 牌，否则此杀不可被响应',
   },

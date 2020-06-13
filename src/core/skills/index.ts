@@ -117,6 +117,8 @@ export { SheBian } from './characters/wind/shebian';
 
 export { Jianchu } from './characters/fire/jianchu';
 export { QiangXi, QiangXiShadow } from './characters/fire/qiangxi';
+export { QuHu } from './characters/fire/quhu';
+export { JieMing } from './characters/fire/jieming';
 
 export { FeiYing } from './characters/god/feiying';
 export { GuiXin } from './characters/god/guixin';

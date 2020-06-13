@@ -160,7 +160,7 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.PinDianEvent]: {
     attackerId: PlayerId;
-    result: PinDianResultType;
+    toIds: PlayerId[];
   };
 
   [GameEventIdentifiers.UserMessageEvent]: {
@@ -236,7 +236,8 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.AskForPinDianCardEvent]: {
     fromId: PlayerId;
     toIds: PlayerId[];
-    currentTargetId: PlayerId;
+    toId: PlayerId;
+    conversation: string | PatchedTranslationObject;
   };
   [GameEventIdentifiers.AskForChoosingCardEvent]: {
     cardIds: CardId[] | number;
@@ -357,7 +358,7 @@ export interface ServerEvent extends EventUtilities {
 }
 
 export type PinDianResultType = {
-  winner: PlayerId | undefined;
+  winners: PlayerId[];
   pindianCards: {
     fromId: PlayerId;
     cardId: CardId;
