@@ -221,7 +221,7 @@ export class GameClientProcessor {
       case GameEventIdentifiers.AskForContinuouslyChoosingCardEvent:
         await this.onHandleContinuouslyChoosingCard(e as any, content);
         break;
-      case GameEventIdentifiers.ContinuouslyChoosingCardFinishEvent:
+      case GameEventIdentifiers.ObserveCardFinishEvent:
         await this.onHandleContinuouslyChoosingCardFinish(e as any, content);
         break;
       case GameEventIdentifiers.AskForChoosingOptionsEvent:
@@ -1097,7 +1097,7 @@ export class GameClientProcessor {
   }
 
   private async onHandleContinuouslyChoosingCardFinish<
-    T extends GameEventIdentifiers.ContinuouslyChoosingCardFinishEvent
+    T extends GameEventIdentifiers.ObserveCardFinishEvent
   >(type: T, content: ServerEventFinder<T>) {
     this.presenter.closeDialog();
   }

@@ -61,7 +61,7 @@ export class JiJie extends ActiveSkill {
         ? skillUseEvent.fromId
         : choosePlayerResponse.selectedPlayers[0];
 
-    room.notify(GameEventIdentifiers.ContinuouslyChoosingCardFinishEvent, {}, skillUseEvent.fromId);
+    room.notify(GameEventIdentifiers.ObserveCardFinishEvent, {}, skillUseEvent.fromId);
     await room.moveCards({
       movingCards: displayCards.map(card => ({ card, fromArea: CardMoveArea.ProcessingArea })),
       toId: target,

@@ -11,8 +11,8 @@ export class JieMing extends TriggerSkill {
     return stage === DamageEffectStage.AfterDamagedEffect;
   }
 
-  canUse() {
-    return true;
+  canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
+    return owner.Id === event.toId;
   }
 
   triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {

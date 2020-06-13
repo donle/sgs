@@ -950,7 +950,16 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
         const responses = await Promise.all(
           pindianEvent.toIds.map(to =>
-            this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForPinDianCardEvent, to),
+            this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForPinDianCardEvent, to).then(async result => {
+              await this.moveCards({
+                movingCards: [{ card: result.pindianCard, fromArea: PlayerCardsArea.HandArea }],
+                fromId: result.fromId,
+                toArea: CardMoveArea.ProcessingArea,
+                moveReason: CardMoveReason.ActiveMove,
+              });
+
+              return result;
+            }),
           ),
         );
 
@@ -975,12 +984,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           pindianCards.push({
             fromId: result.fromId,
             cardId: result.pindianCard,
-          });
-          await this.moveCards({
-            movingCards: [{ card: result.pindianCard, fromArea: PlayerCardsArea.HandArea }],
-            fromId: result.fromId,
-            toArea: CardMoveArea.ProcessingArea,
-            moveReason: CardMoveReason.ActiveMove,
           });
         }
 
@@ -1013,8 +1016,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             ),
           ).extract(),
         });
-        await this.sleep(1500);
-        this.broadcast(GameEventIdentifiers.ContinuouslyChoosingCardFinishEvent, {});
+        await this.sleep(2000);
+        this.broadcast(GameEventIdentifiers.ObserveCardFinishEvent, {});
       }
 
       return true;

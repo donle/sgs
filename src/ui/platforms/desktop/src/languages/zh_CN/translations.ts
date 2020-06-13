@@ -601,7 +601,8 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'qiangxi_description',
-    target: '出牌阶段限两次，你可以失去1点体力或弃置一张武器牌，并对本回合内你未以此法指定过的一名其他角色造成1点伤害。',
+    target:
+      '出牌阶段限两次，你可以失去1点体力或弃置一张武器牌，并对本回合内你未以此法指定过的一名其他角色造成1点伤害。',
   },
   {
     source: 'quhu_description',
@@ -1030,9 +1031,9 @@ export const eventDictionary: Word[] = [
     source: '{0} proposed a pindian event, please choose a hand card to pindian',
     target: '{0} 对你发起了拼点，请选择一张手牌用于拼点',
   },
-  { source: '{0} used {1} to respond pindian', target: '{0} 展示了拼点牌 {1}'},
-  { source: 'pindian result:{0} win', target:'拼点结果为 {0} 赢' },
-  { source: 'pindian result:draw', target:'拼点结果为 平局<' },
+  { source: '{0} used {1} to respond pindian', target: '{0} 展示了拼点牌 {1}' },
+  { source: 'pindian result:{0} win', target: '拼点结果为 {0} 赢' },
+  { source: 'pindian result:draw', target: '拼点结果为 平局<' },
   {
     source: "please drop a {0} card, otherwise you can't do response of slash",
     target: '请弃置一张 {0} 牌，否则此杀不可被响应',
@@ -1134,6 +1135,7 @@ export const eventDictionary: Word[] = [
     source: 'please drop a {0} hand card to hit {1} 1 hp of damage type fire',
     target: '请弃置一张 {0} 手牌，对 {1} 造成1点火焰伤害',
   },
+  { source: 'please choose a player to get a damage from {0}', target: '请选择一名角色受到来自 {0} 的 1 点伤害' },
   {
     source: 'Obtain Basic Card, Equip Card and Duel in display cards?',
     target: '裸衣：是否放弃摸牌，然后获取展示牌中的基本牌、装备牌和【决斗】',
