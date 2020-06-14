@@ -307,6 +307,10 @@ export class VirtualCard<T extends Card = Card> extends Card {
     return this.viewAs.BaseType;
   }
 
+  public get Reforgeable() {
+    return this.viewAs.Reforgeable;
+  }
+
   public get Id(): VirtualCardId {
     const virtualCardIdJSONObject: VirtualCardIdProps = {
       cardNumber: this.cardNumber,
