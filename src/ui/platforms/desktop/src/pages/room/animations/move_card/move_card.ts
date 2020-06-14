@@ -76,12 +76,13 @@ export class MoveCard extends UiAnimation {
 
     if (this.from) {
       const position = this.store.animationPosition.getPosition(this.from, this.from === this.store.clientPlayerId);
-      cardsElement.style.transform = `translate(${position.x - this.cardWidth / 2}px, ${position.y -
-        this.cardHeight / 2}px)`;
+      cardsElement.style.transform = `translate(${position.x - this.cardWidth / 2}px, ${
+        position.y - this.cardHeight / 2
+      }px)`;
     } else {
-      cardsElement.style.transform = `translate(${this.CentralPosition.x - this.cardWidth / 2}px, ${this.CentralPosition
-        .y -
-        this.cardHeight / 2}px)`;
+      cardsElement.style.transform = `translate(${this.CentralPosition.x - this.cardWidth / 2}px, ${
+        this.CentralPosition.y - this.cardHeight / 2
+      }px)`;
     }
 
     return cardsElement;
@@ -90,12 +91,32 @@ export class MoveCard extends UiAnimation {
   async animate(content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
     this.from = content.fromId;
     this.to = content.toId;
-    this.cards = content.movingCards.map(cardInfo => ({
-      cardId: cardInfo.card,
-      public: cardInfo.fromArea !== CardMoveArea.HandArea,
-    }));
+    this.cards = content.movingCards
+      .filter(cardInfo => {
+        if (
+          (this.from === undefined && this.to === undefined) ||
+          this.from === this.to ||
+          content.toArea === CardMoveArea.ProcessingArea ||
+          (cardInfo.fromArea === CardMoveArea.ProcessingArea && content.toArea === CardMoveArea.EquipArea)
+        ) {
+          return false;
+        }
 
-    if ((this.from === undefined && this.to === undefined) || this.from === this.to) {
+        return true;
+      })
+      .map(cardInfo => {
+        return {
+          cardId: cardInfo.card,
+          public: cardInfo.fromArea !== CardMoveArea.HandArea,
+        };
+      });
+
+    if (
+      (this.from === undefined && this.to === undefined) ||
+      this.from === this.to ||
+      content.toArea === CardMoveArea.ProcessingArea ||
+      content.toArea === CardMoveArea.EquipArea
+    ) {
       return;
     }
 

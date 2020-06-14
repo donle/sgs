@@ -511,40 +511,41 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return !EventPacker.isTerminated(cardResponseEvent);
   }
 
+  private readonly onAim = async (
+    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
+    toId: PlayerId,
+    allTargets: PlayerId[],
+    nullifiedTargets: PlayerId[],
+    isFirstTarget?: boolean,
+  ) => {
+    const cardAimEvent: ServerEventFinder<GameEventIdentifiers.AimEvent> = EventPacker.createIdentifierEvent(
+      GameEventIdentifiers.AimEvent,
+      {
+        fromId: event.fromId,
+        byCardId: event.cardId,
+        toId,
+        nullifiedTargets,
+        allTargets,
+        isFirstTarget,
+      },
+    );
+    EventPacker.copyPropertiesTo(event, cardAimEvent);
+
+    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.AimEvent, cardAimEvent);
+
+    if (!EventPacker.isTerminated(cardAimEvent)) {
+      if (cardAimEvent.triggeredBySkills) {
+        event.triggeredBySkills = event.triggeredBySkills
+          ? [...event.triggeredBySkills, ...cardAimEvent.triggeredBySkills]
+          : cardAimEvent.triggeredBySkills;
+      }
+    }
+
+    return cardAimEvent;
+  };
+
   public async useCard(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, event);
-
-    const onAim = async (
-      toId: PlayerId,
-      allTargets: PlayerId[],
-      nullifiedTargets: PlayerId[],
-      isFirstTarget?: boolean,
-    ) => {
-      const cardAimEvent: ServerEventFinder<GameEventIdentifiers.AimEvent> = EventPacker.createIdentifierEvent(
-        GameEventIdentifiers.AimEvent,
-        {
-          fromId: event.fromId,
-          byCardId: event.cardId,
-          toId,
-          nullifiedTargets,
-          allTargets,
-          isFirstTarget,
-        },
-      );
-      EventPacker.copyPropertiesTo(event, cardAimEvent);
-
-      await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.AimEvent, cardAimEvent);
-
-      if (!EventPacker.isTerminated(cardAimEvent)) {
-        if (cardAimEvent.triggeredBySkills) {
-          event.triggeredBySkills = event.triggeredBySkills
-            ? [...event.triggeredBySkills, ...cardAimEvent.triggeredBySkills]
-            : cardAimEvent.triggeredBySkills;
-        }
-      }
-
-      return cardAimEvent;
-    };
 
     await super.useCard(event);
     const card = Sanguosha.getCardById(event.cardId);
@@ -563,7 +564,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
         if (toIds) {
           for (const toId of toIds) {
-            const response = await onAim(toId, toIds, nullifiedTargets, toId === toIds[0]);
+            const response = await this.onAim(event, toId, toIds, nullifiedTargets, toId === toIds[0]);
             aimEventCollaborators[toId] = response;
             cardEffectToIds = response.allTargets;
             if (event.toIds && nonTargetToIds && nonTargetToIds.length > 0) {
