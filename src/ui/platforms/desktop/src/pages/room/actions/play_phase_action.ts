@@ -1,5 +1,6 @@
 import { Card } from 'core/cards/card';
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -28,11 +29,23 @@ export class PlayPhaseAction extends BaseAction {
     return true;
   };
 
-  private createCardOrSkillUseEvent(
+  private createPlayOrSkillUseEvent(
     player: PlayerId,
   ): ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> {
     let useEvent: ClientEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.SkillUseEvent> | undefined;
     if (this.selectedCardToPlay !== undefined) {
+      const card = Sanguosha.getCardById(this.selectedCardToPlay);
+      if (card.Reforgeable && this.selectedTargets.length === 0) {
+        return {
+          fromId: player,
+          end: false,
+          eventName: GameEventIdentifiers.ReforgeEvent,
+          event: {
+            fromId: player,
+            cardId: this.selectedCardToPlay,
+          },
+        };
+      }
       useEvent = {
         fromId: player,
         cardId: this.selectedCardToPlay!,
@@ -65,6 +78,32 @@ export class PlayPhaseAction extends BaseAction {
     this.presenter.disableActionButton('cancel');
   }
 
+  private reforgeableCheck() {
+    const card = this.selectedCardToPlay && Sanguosha.getCardById(this.selectedCardToPlay);
+    if (card && card.Reforgeable && this.selectedTargets.length === 0) {
+      this.presenter.enableCardReforgeStatus();
+      this.presenter.enableActionButton('reforge');
+    } else {
+      this.presenter.disableCardReforgeStatus();
+      this.presenter.disableActionButton('reforge');
+    }
+  }
+
+  protected onClickCard(card: Card, selected: boolean): void {
+    this.reforgeableCheck();
+    super.onClickCard(card, selected);
+  }
+
+  protected onClickPlayer(player: Player, selected: boolean) {
+    this.reforgeableCheck();
+    super.onClickPlayer(player, selected);
+  }
+
+  protected onClickSkill(skill: Skill, selected: boolean) {
+    this.reforgeableCheck();
+    super.onClickSkill(skill, selected);
+  }
+
   async onPlay() {
     return new Promise<void>(resolve => {
       this.selectedSkillToPlay || this.selectedCardToPlay
@@ -87,10 +126,24 @@ export class PlayPhaseAction extends BaseAction {
         resolve();
       });
 
+      this.presenter.defineReforgeButtonActions(() => {
+        this.presenter.closeDialog();
+        this.store.room.broadcast(
+          GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
+          this.createPlayOrSkillUseEvent(this.playerId),
+        );
+
+        this.presenter.disableActionButton('finish');
+        this.resetActionHandlers();
+        this.resetAction();
+        this.presenter.resetSelectedSkill();
+        resolve();
+      });
+
       this.presenter.defineConfirmButtonActions(() => {
         this.store.room.broadcast(
           GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
-          this.createCardOrSkillUseEvent(this.playerId),
+          this.createPlayOrSkillUseEvent(this.playerId),
         );
 
         this.presenter.disableActionButton('finish');

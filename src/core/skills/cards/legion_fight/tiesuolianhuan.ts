@@ -11,7 +11,7 @@ export class TieSuoLianHuanSkill extends ActiveSkill {
   }
 
   public numberOfTargets() {
-    return [0, 2];
+    return [1, 2];
   }
 
   public cardFilter(): boolean {

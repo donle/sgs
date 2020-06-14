@@ -25,6 +25,7 @@ export const enum GameEventIdentifiers {
   LoseSkillEvent,
   ObtainSkillEvent,
 
+  ReforgeEvent,
   CardResponseEvent,
   CardUseEvent,
   CardEffectEvent,

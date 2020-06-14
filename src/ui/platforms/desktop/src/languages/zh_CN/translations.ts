@@ -1239,6 +1239,10 @@ export const UiDictionary: Word[] = [
     target: '确定',
   },
   {
+    source: 'reforge',
+    target: '重铸',
+  },
+  {
     source: 'cancel',
     target: '取消',
   },

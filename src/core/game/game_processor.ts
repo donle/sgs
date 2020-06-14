@@ -284,8 +284,11 @@ export class GameProcessor {
             if (await this.room.preUseCard(event)) {
               await this.room.useCard(event);
             }
-          } else {
+          } else if (response.eventName === GameEventIdentifiers.SkillUseEvent) {
             await this.room.useSkill(response.event as ClientEventFinder<GameEventIdentifiers.SkillUseEvent>);
+          } else {
+            const reforgeEvent = response.event as ClientEventFinder<GameEventIdentifiers.ReforgeEvent>;
+            await this.room.reforge(reforgeEvent.cardId, this.room.getPlayerById(reforgeEvent.fromId));
           }
 
           if (this.CurrentPlayer.Dead) {

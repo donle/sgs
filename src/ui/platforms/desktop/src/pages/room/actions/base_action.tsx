@@ -92,6 +92,8 @@ export abstract class BaseAction {
     this.pendingCards = [];
 
     this.presenter.disableActionButton('confirm');
+    this.presenter.disableActionButton('reforge');
+    this.presenter.disableCardReforgeStatus();
     this.onResetAction();
     this.presenter.broadcastUIUpdate();
   };
