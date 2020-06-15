@@ -49,6 +49,7 @@ export class BingLiangCunDuanSkill extends ActiveSkill {
 
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     await room.moveCards({
+      fromId: event.fromId,
       movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
       toId: event.toIds![0],
       toArea: CardMoveArea.JudgeArea,

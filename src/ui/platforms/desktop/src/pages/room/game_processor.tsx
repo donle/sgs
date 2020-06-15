@@ -338,7 +338,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    if (content.cardAmount === 0) {
+    if (content.cardAmount <= 0) {
       const event: ClientEventFinder<T> = {
         fromId: content.toId,
         droppedCards: [],

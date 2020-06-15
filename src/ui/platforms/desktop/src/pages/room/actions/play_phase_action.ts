@@ -90,18 +90,18 @@ export class PlayPhaseAction extends BaseAction {
   }
 
   protected onClickCard(card: Card, selected: boolean): void {
-    this.reforgeableCheck();
     super.onClickCard(card, selected);
+    this.reforgeableCheck();
   }
 
   protected onClickPlayer(player: Player, selected: boolean) {
-    this.reforgeableCheck();
     super.onClickPlayer(player, selected);
+    this.reforgeableCheck();
   }
 
   protected onClickSkill(skill: Skill, selected: boolean) {
-    this.reforgeableCheck();
     super.onClickSkill(skill, selected);
+    this.reforgeableCheck();
   }
 
   async onPlay() {
