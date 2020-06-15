@@ -1,6 +1,6 @@
 import { VirtualCard } from 'core/cards/card';
+import { FireSlash } from 'core/cards/legion_fight/fire_slash';
 import { CardId } from 'core/cards/libs/card_props';
-import { Slash } from 'core/cards/standard/slash';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardUseStage } from 'core/game/stage_processor';
@@ -35,7 +35,7 @@ export class ZhuQueYuShanSkill extends TriggerSkill {
       subcards.push(cardId);
     }
 
-    const fireSlash = VirtualCard.create<Slash>(
+    const fireSlash = VirtualCard.create<FireSlash>(
       {
         cardName: 'fire_slash',
         bySkill: this.Name,

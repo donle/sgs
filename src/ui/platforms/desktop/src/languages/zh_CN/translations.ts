@@ -225,7 +225,7 @@ export const characterDictionary: Word[] = [
   { source: 'lianhuan', target: '连环' },
   { source: 'niepan', target: '涅槃' },
 
-  { source: 'wolong', target: '诸葛亮' },
+  { source: 'wolong', target: '卧龙诸葛亮' },
   { source: 'bazhen', target: '八阵' },
   { source: 'huoji', target: '火计' },
   { source: 'kanpo', target: '看破' },
