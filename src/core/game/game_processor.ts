@@ -1127,7 +1127,7 @@ export class GameProcessor {
       }
     }
 
-    this.room.broadcast(GameEventIdentifiers.CustomGameDialog, { translationsMessage: event.translationsMessage });
+    this.room.broadcast(GameEventIdentifiers.CardUseEvent, event);
     event.translationsMessage = undefined;
 
     if (!this.room.isCardOnProcessing(event.cardId) && !card.is(CardType.DelayedTrick)) {
