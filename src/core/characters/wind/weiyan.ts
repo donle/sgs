@@ -9,7 +9,6 @@ export class Weiyan extends Character {
     super(id, 'weiyan', CharacterGender.Male, CharacterNationality.Shu, 4, 4, GameCharacterExtensions.Wind, [
       skillLoaderInstance.getSkillByName('kuanggu'),
       ...skillLoaderInstance.getSkillsByName('qimou'),
-      skillLoaderInstance.getSkillByName('cheat'),
     ]);
   }
 }
