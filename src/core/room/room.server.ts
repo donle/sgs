@@ -443,10 +443,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async preUseCard(cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): Promise<boolean> {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, cardUseEvent);
-    if (cardUseEvent.cardId !== undefined && Card.isVirtualCardId(cardUseEvent.cardId)) {
+    const card = Sanguosha.getCardById<VirtualCard>(cardUseEvent.cardId);
+    await card.Skill.onUse(this, cardUseEvent);
+
+    if (Card.isVirtualCardId(cardUseEvent.cardId)) {
       const from = this.getPlayerById(cardUseEvent.fromId);
-      const card = Sanguosha.getCardById<VirtualCard>(cardUseEvent.cardId);
-      await card.Skill.onUse(this, cardUseEvent);
+
       await this.useSkill({
         fromId: cardUseEvent.fromId,
         skillName: card.GeneratedBySkill,

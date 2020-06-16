@@ -36,7 +36,8 @@ export class LightningSkill extends ActiveSkill {
     for (const player of room.getAlivePlayersFrom(event.fromId)) {
       if (room.isAvailableTarget(event.cardId, event.fromId, player.Id)) {
         await room.moveCards({
-          movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
+          fromId: event.fromId,
+          movingCards: [{ card: event.cardId, fromArea: CardMoveArea.HandArea }],
           toId: player.Id,
           toArea: CardMoveArea.JudgeArea,
           moveReason: CardMoveReason.CardUse,
@@ -54,6 +55,12 @@ export class LightningSkill extends ActiveSkill {
     while (true) {
       player = room.getNextAlivePlayer(player ? player.Id : currentPlayer);
       if (player.Id === currentPlayer) {
+        await room.moveCards({
+          movingCards: [{ card: cardId, fromArea: CardMoveArea.ProcessingArea }],
+          toArea: CardMoveArea.JudgeArea,
+          toId: currentPlayer,
+          moveReason: CardMoveReason.PassiveMove,
+        });
         break;
       }
 

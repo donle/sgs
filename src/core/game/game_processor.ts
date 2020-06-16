@@ -1095,7 +1095,7 @@ export class GameProcessor {
     this.room.broadcast(GameEventIdentifiers.CustomGameDialog, { translationsMessage: event.translationsMessage });
     event.translationsMessage = undefined;
 
-    if (!this.room.isCardOnProcessing(event.cardId)) {
+    if (!this.room.isCardOnProcessing(event.cardId) && !card.is(CardType.DelayedTrick)) {
       this.room.addProcessingCards(event.cardId.toString(), event.cardId);
       await this.room.moveCards({
         movingCards: [{ card: event.cardId, fromArea: from.cardFrom(event.cardId) }],
@@ -1109,7 +1109,6 @@ export class GameProcessor {
       event.toIds = event.toIds && this.room.deadPlayerFilters(event.toIds);
       if (stage === CardUseStage.CardUsing) {
         if (!card.is(CardType.Equip)) {
-          await card.Skill.onUse(this.room, event);
           event.animation = event.animation || card.Skill.getAnimationSteps(event);
 
           if (card.is(CardType.DelayedTrick)) {
