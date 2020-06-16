@@ -2,6 +2,7 @@ import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameCardExtensions } from 'core/game/game_props';
 import { PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -52,16 +53,22 @@ export class Rende extends ActiveSkill {
     from.addInvisibleMark(this.Name, skillUseEvent.cardIds!.length);
 
     if (from.getInvisibleMark(this.Name) >= 2 && from.getInvisibleMark(this.Name + '-used') === 0) {
+      const hasLegionFightExt = room.Info.cardExtensions.includes(GameCardExtensions.LegionFight);
+
       const options: string[] = [];
-      //TODO: add wine afterwards
 
       if (from.canUseCard(room, new CardMatcher({ name: ['peach'] }))) {
         options.push('peach');
       }
+      if (hasLegionFightExt && from.canUseCard(room, new CardMatcher({ name: ['alcohol'] }))) {
+        options.push('alcohol');
+      }
       if (from.canUseCard(room, new CardMatcher({ name: ['slash'] }))) {
         options.push('slash');
-        // options.push('fire_slash');
-        // options.push('thunder_slash');
+        if (hasLegionFightExt) {
+          options.push('fire_slash');
+          options.push('thunder_slash');
+        }
       }
 
       if (options.length === 0) {

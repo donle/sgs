@@ -3,6 +3,7 @@ import { CardSuit } from '../libs/card_props';
 import { Jink } from '../standard/jink';
 import { Peach } from '../standard/peach';
 import { WuXieKeJi } from '../standard/wuxiekeji';
+import { Alcohol } from './alcohol';
 import { BaiYinShiZi } from './baiyinshizi';
 import { BingLiangCunDuan } from './bingliangcunduan';
 import { FireAttack } from './fire_attack';
@@ -71,6 +72,12 @@ export const LegionFightCardPackage: (index: number) => Card[] = index => [
   new TieSuoLianHuan(index++, 11, CardSuit.Club),
   new TieSuoLianHuan(index++, 12, CardSuit.Club),
   new TieSuoLianHuan(index++, 13, CardSuit.Club),
+
+  new Alcohol(index++, 3, CardSuit.Spade),
+  new Alcohol(index++, 9, CardSuit.Spade),
+  new Alcohol(index++, 3, CardSuit.Club),
+  new Alcohol(index++, 9, CardSuit.Club),
+  new Alcohol(index++, 9, CardSuit.Diamond),
 
   new HuaLiu(index++, 13, CardSuit.Diamond),
 ];

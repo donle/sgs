@@ -13,6 +13,7 @@ import { AllStage, PlayerPhase, StagePriority } from 'core/game/stage_processor'
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 export * from './skill_wrappers';
 export * from './skill_hooks';
 
@@ -153,6 +154,10 @@ export abstract class TriggerSkill extends Skill {
   public abstract isTriggerable(event: EventPicker<GameEventIdentifiers, WorkPlace>, stage?: AllStage): boolean;
   public isAutoTrigger(room: Room, event?: ServerEventFinder<GameEventIdentifiers>): boolean {
     return false;
+  }
+
+  public get SkillLog() {
+    return TranslationPack.translationJsonPatcher('do you want to trigger skill {0} ?', this.Name).extract();
   }
 
   public get Priority() {

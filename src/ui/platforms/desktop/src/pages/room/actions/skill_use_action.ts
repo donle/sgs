@@ -32,13 +32,9 @@ export class SkillUseAction extends BaseAction {
 
       if (invokeSkillNames.length === 1) {
         const skillName = invokeSkillNames[0];
-        const translatedConversation = TranslationPack.translationJsonPatcher(
-          'do you want to trigger skill {0} ?',
-          skillName,
-        ).extract();
-
+        const skill = Sanguosha.getSkillBySkillName<TriggerSkill>(skillName);
         this.presenter.createIncomingConversation({
-          conversation: translatedConversation,
+          conversation: skill.SkillLog,
           translator,
         });
 
@@ -46,7 +42,6 @@ export class SkillUseAction extends BaseAction {
           invoke: undefined,
           fromId: toId,
         };
-        const skill = Sanguosha.getSkillBySkillName<TriggerSkill>(skillName);
         this.selectSkill(skill);
         this.onPlay();
         this.enableToCallAction() && this.presenter.enableActionButton('confirm');

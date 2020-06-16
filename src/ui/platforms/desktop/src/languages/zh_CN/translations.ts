@@ -4,7 +4,7 @@ export const cardDictionary: Word[] = [
   { source: 'slash', target: '杀' },
   { source: 'jink', target: '闪' },
   { source: 'peach', target: '桃' },
-  { source: 'wine', target: '酒' },
+  { source: 'alcohol', target: '酒' },
   { source: 'qinggang', target: '青釭剑' },
   { source: 'zixin', target: '紫骍' },
   { source: 'dayuan', target: '大宛' },
@@ -189,6 +189,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'huangzhong', target: '黄忠' },
   { source: 'liegong', target: '烈弓' },
+  { source: '#liegong', target: '烈弓' },
 
   { source: 'weiyan', target: '魏延' },
   { source: 'kuanggu', target: '狂骨' },

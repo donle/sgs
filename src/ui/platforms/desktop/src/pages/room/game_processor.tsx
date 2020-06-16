@@ -1,6 +1,6 @@
 import { Card, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import type { CardId } from 'core/cards/libs/card_props';
+import { CardId } from 'core/cards/libs/card_props';
 import { Character } from 'core/characters/character';
 import {
   CardMoveArea,
@@ -248,6 +248,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.ChainLockedEvent:
         await this.onHandleChainLockedEvent(e as any, content);
         break;
+      case GameEventIdentifiers.DrunkEvent:
+        await this.onHandleDrunkEvent(e as any, content);
+        break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
     }
@@ -322,7 +325,13 @@ export class GameClientProcessor {
       translator: this.translator,
     });
 
-    const action = new SelectAction<GameEventIdentifiers.AskForPinDianCardEvent>(content.toId, this.store, this.presenter, this.translator, content);
+    const action = new SelectAction<GameEventIdentifiers.AskForPinDianCardEvent>(
+      content.toId,
+      this.store,
+      this.presenter,
+      this.translator,
+      content,
+    );
     const selectedCards = await action.onSelectCard([PlayerCardsArea.HandArea], 1);
 
     this.presenter.closeIncomingConversation();
@@ -960,6 +969,13 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
+  private async onHandleDrunkEvent<T extends GameEventIdentifiers.DrunkEvent>(type: T, content: ServerEventFinder<T>) {
+    content.drunk
+      ? this.store.room.getPlayerById(content.toId).getDrunk()
+      : this.store.room.getPlayerById(content.toId).clearHeaded();
+    this.presenter.broadcastUIUpdate();
+  }
+
   private async onHandleAskForChoosingPlayerEvent<T extends GameEventIdentifiers.AskForChoosingPlayerEvent>(
     type: T,
     content: ServerEventFinder<T>,
@@ -1096,9 +1112,10 @@ export class GameClientProcessor {
     );
   }
 
-  private async onHandleContinuouslyChoosingCardFinish<
-    T extends GameEventIdentifiers.ObserveCardFinishEvent
-  >(type: T, content: ServerEventFinder<T>) {
+  private async onHandleContinuouslyChoosingCardFinish<T extends GameEventIdentifiers.ObserveCardFinishEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
     this.presenter.closeDialog();
   }
 }

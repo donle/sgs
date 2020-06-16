@@ -48,8 +48,7 @@ export class SlashSkill extends ActiveSkill {
       },
       event,
     );
-    //TODO: broadcast clearHeaded status
-    player.clearHeaded();
+    room.clearHead(player.Id);
 
     return true;
   }
