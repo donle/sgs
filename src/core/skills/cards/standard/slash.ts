@@ -48,7 +48,7 @@ export class SlashSkill extends ActiveSkill {
       },
       event,
     );
-    room.clearHead(player.Id);
+    room.clearHeaded(player.Id);
 
     return true;
   }

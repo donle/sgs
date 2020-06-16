@@ -80,8 +80,8 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   public async onReceivingAsyncReponseFrom(): Promise<any> {
     this.throwUntouchableError(this.onReceivingAsyncReponseFrom.name);
   }
-  public clearHead() {
-    this.throwUntouchableError(this.clearHead.name);
+  public clearHeaded() {
+    this.throwUntouchableError(this.clearHeaded.name);
   }
   //Server only
   public async chainedOn(): Promise<void> {

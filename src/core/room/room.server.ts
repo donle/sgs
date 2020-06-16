@@ -151,7 +151,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.socket.clearSubscriber(identifier, to);
   }
 
-  public clearHead(toId: PlayerId) {
+  public clearHeaded(toId: PlayerId) {
     this.getPlayerById(toId).clearHeaded();
     this.broadcast(GameEventIdentifiers.DrunkEvent, { toId, drunk: false });
   }

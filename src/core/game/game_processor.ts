@@ -378,6 +378,7 @@ export class GameProcessor {
               for (const skill of player.getSkills()) {
                 if (this.currentPlayerPhase === PlayerPhase.PrepareStage) {
                   player.resetCardUseHistory();
+                  player.hasDrunk() && this.room.clearHeaded(player.Id);
                 } else {
                   player.resetCardUseHistory('slash');
                 }
