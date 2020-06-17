@@ -1200,7 +1200,7 @@ export class GameProcessor {
         TranslationPack.patchCardInTranslation(event.cardId),
       ).extract();
     }
-    this.room.broadcast(GameEventIdentifiers.CustomGameDialog, { translationsMessage: event.translationsMessage });
+    this.room.broadcast(GameEventIdentifiers.CardResponseEvent, event);
     event.translationsMessage = undefined;
 
     if (!this.room.isCardOnProcessing(event.cardId)) {
