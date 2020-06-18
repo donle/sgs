@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { Card } from 'core/cards/card';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
@@ -11,6 +12,7 @@ import { CardSuitItem } from './card_suit';
 export type ClientCardProps = {
   card?: Card;
   translator: ClientTranslationModule;
+  imageLoader: ImageLoader;
   className?: string;
   disabled?: boolean;
   unselectable?: boolean;
@@ -24,12 +26,15 @@ export type ClientCardProps = {
   onMouseDown?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onMouseMove?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onMouseLeave?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
+  ref?: string | ((instance: HTMLDivElement | null) => void) | React.RefObject<HTMLDivElement>;
 };
 
 @mobxReact.observer
 export class ClientCard extends React.Component<ClientCardProps> {
   @mobx.observable.ref
   private selected: boolean = false;
+  @mobx.observable.ref
+  private cardComponent: JSX.Element | undefined;
 
   private soundTracks: string[] = [];
 
@@ -65,11 +70,48 @@ export class ClientCard extends React.Component<ClientCardProps> {
     };
   }
 
+  componentDidMount() {
+    this.getCardComponent().then(
+      mobx.action(component => {
+        this.cardComponent = component;
+      }),
+    );
+  }
+
+  async getCardComponent() {
+    const { card, translator, imageLoader, tag } = this.props;
+    if (!card) {
+      const cardBack = await imageLoader.getCardBack();
+      return (
+        <div className={styles.emptyCard}>
+          <img src={cardBack.src} className={styles.cardImage} alt={translator.tr(cardBack.alt)} />
+        </div>
+      );
+    }
+
+    const image = await imageLoader.getCardImage(card.Name);
+    return (
+      <div className={styles.innerCard}>
+        <div className={styles.cornerTag}>
+          <CardNumberItem cardNumber={card.CardNumber} />
+          <CardSuitItem suit={card.Suit} />
+        </div>
+        {image.src ? (
+          <img className={styles.cardImage} src={image.src} alt={card.Name} />
+        ) : (
+          <span>{translator.tr(card.Name)}</span>
+        )}
+        {tag && <span className={styles.cardTag}>{translator.trx(tag)}</span>}
+      </div>
+    );
+  }
+
   render() {
-    const { className, card, translator, tag, style = {} } = this.props;
+    const { className, style = {} } = this.props;
 
     return (
       <div
+        ref={this.props.ref}
         className={classNames(styles.clientCard, className, {
           [styles.selected]: this.getSelected() && !this.props.disabled,
         })}
@@ -83,18 +125,7 @@ export class ClientCard extends React.Component<ClientCardProps> {
         onMouseMove={this.props.onMouseMove}
         onMouseLeave={this.props.onMouseLeave}
       >
-        {card ? (
-          <div className={styles.innerCard}>
-            <div className={styles.cornerTag}>
-              <CardSuitItem suit={card.Suit} />
-              <CardNumberItem cardNumber={card.CardNumber} />
-            </div>
-            <span>{translator.tr(card.Name)}</span>
-            {tag && <span className={styles.cardTag}>{translator.trx(tag)}</span>}
-          </div>
-        ) : (
-          <div className={styles.emptyCard}>{translator.tr('New QSanguosha')}</div>
-        )}
+        {this.cardComponent}
       </div>
     );
   }

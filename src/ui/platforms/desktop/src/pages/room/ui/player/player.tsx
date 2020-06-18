@@ -7,6 +7,7 @@ import { PlayerPhase } from 'core/game/stage_processor';
 import { ClientPlayer } from 'core/player/player.client';
 import { PlayerCardsArea, PlayerRole } from 'core/player/player_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter } from 'pages/room/room.presenter';
@@ -25,6 +26,7 @@ type PlayerCardProps = {
   playerPhase?: PlayerPhase;
   translator: ClientTranslationModule;
   presenter: RoomPresenter;
+  imageLoader: ImageLoader;
   disabled?: boolean;
   onClick?(selected: boolean): void;
 };
@@ -136,7 +138,9 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
       this.props.presenter.closeDialog();
     } else {
       this.openedDialog = name;
-      this.props.presenter.createDialog(<CardSelectorDialog options={cards} translator={this.props.translator} />);
+      this.props.presenter.createDialog(
+        <CardSelectorDialog imageLoader={this.props.imageLoader} options={cards} translator={this.props.translator} />,
+      );
     }
   };
 
@@ -148,9 +152,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
         <div className={styles.outsideArea}>
           {Object.entries<CardId[]>(cards)
             .map(([areaName, cards], index) =>
-              cards.length === 0 ? (
-                undefined
-              ) : (
+              cards.length === 0 ? undefined : (
                 <span
                   key={index}
                   className={classNames(styles.skillTag, {

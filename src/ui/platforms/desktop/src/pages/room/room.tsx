@@ -2,6 +2,7 @@ import { clientActiveListenerEvents, GameEventIdentifiers, ServerEventFinder } f
 import { ClientSocket } from 'core/network/socket.client';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { getImageLoader } from 'image_loader/image_loader_util';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { match } from 'react-router-dom';
@@ -30,6 +31,7 @@ export class RoomPage extends React.Component<
   private roomId: number;
   private playerName = window.localStorage.getItem('username') || 'unknown';
   private baseService: RoomBaseService;
+  private imageLoader = getImageLoader(this.props.flavor);
 
   private displayedCardsRef = React.createRef<HTMLDivElement>();
   private readonly cardWidth = 120;
@@ -42,9 +44,9 @@ export class RoomPage extends React.Component<
     this.presenter = new RoomPresenter();
     this.store = this.presenter.createStore();
     this.socket = new ClientSocket(this.props.config, this.roomId);
-    this.baseService = installService(this.props.flavor, this.props.translator, this.store);
+    this.baseService = installService(this.props.translator, this.store, this.imageLoader);
 
-    this.gameProcessor = new GameClientProcessor(this.presenter, this.store, this.props.translator);
+    this.gameProcessor = new GameClientProcessor(this.presenter, this.store, this.props.translator, this.imageLoader);
   }
 
   componentDidMount() {
@@ -133,6 +135,7 @@ export class RoomPage extends React.Component<
       <div className={styles.displayedCards} ref={this.displayedCardsRef}>
         {this.store.displayedCards.map((card, index) => (
           <ClientCard
+            imageLoader={this.imageLoader}
             card={card}
             width={this.cardWidth}
             offsetLeft={this.calculateDisplayedCardOffset(this.store.displayedCards.length, index)}
@@ -160,6 +163,7 @@ export class RoomPage extends React.Component<
             />
             <div className={styles.mainBoard}>
               <SeatsLayout
+                imageLoader={this.imageLoader}
                 updateFlag={this.store.updateUIFlag}
                 store={this.store}
                 presenter={this.presenter}
@@ -177,6 +181,7 @@ export class RoomPage extends React.Component<
               store={this.store}
               presenter={this.presenter}
               translator={this.props.translator}
+              imageLoader={this.imageLoader}
               cardEnableMatcher={this.store.clientPlayerCardActionsMatcher}
               onClickConfirmButton={this.store.confirmButtonAction}
               onClickCancelButton={this.store.cancelButtonAction}

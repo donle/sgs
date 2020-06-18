@@ -6,8 +6,12 @@ import { PlayerId } from 'core/player/player_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
 import { RoomStore } from 'pages/room/room.presenter';
-import { UiAnimation } from '../animation';
+import { ClientCard } from 'pages/room/ui/card/card';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { Point } from '../position';
+import { UiAnimation } from '../ui_animation';
+import styles from './move_card.module.css';
 
 export class MoveCard extends UiAnimation {
   private cards: { cardId: CardId; public: boolean }[] = [];
@@ -30,59 +34,22 @@ export class MoveCard extends UiAnimation {
   }
 
   private createCard(card?: Card, offset: number = 0) {
-    const cardElement = document.createElement('div');
-    const cardImageProps = card && this.imageLoader.getCardImage(card.Name);
-    if (cardImageProps) {
-      const imageElement = document.createElement('img');
-      imageElement.setAttribute('src', cardImageProps.src!);
-      imageElement.setAttribute('alt', this.translator.tr(cardImageProps.alt));
-      cardElement.append(imageElement);
-    } else {
-      const cardBackElement = document.createElement('span');
-      cardBackElement.innerText = this.translator.tr('New QSanguosha');
-      cardElement.append(cardBackElement);
-    }
-
-    cardElement.style.transform = `translate(${-offset * 24}px, 0)`;
-    cardElement.style.width = `${this.cardWidth}px`;
-    cardElement.style.height = `${this.cardHeight}px`;
-    cardElement.style.border = '1px solid grey';
-    cardElement.style.display = 'flex';
-    cardElement.style.background = 'white';
-    cardElement.style.justifyContent = 'center';
-    cardElement.style.alignItems = 'center';
-    cardElement.style.position = 'absolute';
-
-    return cardElement;
+    const style: React.CSSProperties = {
+      transform: `translate(${-offset * 24}px, 0)`,
+      height: 136,
+      width: 104,
+    };
+    return <ClientCard imageLoader={this.imageLoader} card={card} translator={this.translator} style={style} />;
   }
 
   private createCards() {
-    const cardsElement = document.createElement('div');
+    const cardsElement: JSX.Element[] = [];
     for (let i = 0; i < this.cards.length; i++) {
       const card = this.cards[i];
 
-      cardsElement.append(
+      cardsElement.push(
         this.createCard(card.public ? Sanguosha.getCardById(card.cardId) : undefined, i - this.cards.length / 2),
       );
-    }
-
-    cardsElement.style.position = 'fixed';
-    cardsElement.style.transition = 'transform 0.5s ease-in-out, opacity 0.15s ease';
-    cardsElement.style.transform = 'translate(0, 0)';
-    cardsElement.style.display = 'flex';
-    cardsElement.style.left = '0';
-    cardsElement.style.top = '0';
-    cardsElement.style.opacity = '0';
-
-    if (this.from) {
-      const position = this.store.animationPosition.getPosition(this.from, this.from === this.store.clientPlayerId);
-      cardsElement.style.transform = `translate(${position.x - this.cardWidth / 2}px, ${
-        position.y - this.cardHeight / 2
-      }px)`;
-    } else {
-      cardsElement.style.transform = `translate(${this.CentralPosition.x - this.cardWidth / 2}px, ${
-        this.CentralPosition.y - this.cardHeight / 2
-      }px)`;
     }
 
     return cardsElement;
@@ -122,19 +89,54 @@ export class MoveCard extends UiAnimation {
 
     const elements = this.createCards();
 
-    const toPosition = this.to
-      ? this.store.animationPosition.getPosition(this.to, this.to === this.store.clientPlayerId)
-      : this.CentralPosition;
-    document.getElementById('root')?.append(elements);
+    const animationStyles: React.CSSProperties = {};
+
+    if (this.from) {
+      const position = this.store.animationPosition.getPosition(this.from, this.from === this.store.clientPlayerId);
+      animationStyles.transform = `translate(${position.x - this.cardWidth / 2}px, ${
+        position.y - this.cardHeight / 2
+      }px)`;
+    } else {
+      animationStyles.transform = `translate(${this.CentralPosition.x - this.cardWidth / 2}px, ${
+        this.CentralPosition.y - this.cardHeight / 2
+      }px)`;
+    }
+
+    const container = document.createElement('div');
+    document.getElementById('root')?.append(container);
+    ReactDOM.render(
+      <div className={styles.movingCards} style={animationStyles}>
+        {elements}
+      </div>,
+      container,
+    );
+
     await this.play(100, () => {
-      elements.style.opacity = '1';
-      elements.style.transform = `translate(${toPosition.x}px, ${toPosition.y}px)`;
+      const toPosition = this.to
+        ? this.store.animationPosition.getPosition(this.to, this.to === this.store.clientPlayerId)
+        : this.CentralPosition;
+
+      ReactDOM.render(
+        <div
+          className={styles.movingCards}
+          style={{ opacity: 1, transform: `translate(${toPosition.x}px, ${toPosition.y}px)` }}
+        >
+          {elements}
+        </div>,
+        container,
+      );
     });
     await this.play(1000, () => {
-      elements.style.opacity = '0';
+      ReactDOM.render(
+        <div className={styles.movingCards} style={{ opacity: 0 }}>
+          {elements}
+        </div>,
+        container,
+      );
     });
-    await this.play(100, () => {
-      elements.remove();
+
+    await this.play(150, () => {
+      container.remove();
     });
   }
 }

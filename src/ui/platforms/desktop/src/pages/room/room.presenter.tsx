@@ -293,7 +293,7 @@ export class RoomPresenter {
     this.store.awaitingResponseEvent = {
       identifier,
       event,
-    }
+    };
   }
   getAwaitingAction() {
     return this.store.awaitingResponseEvent;

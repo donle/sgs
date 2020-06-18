@@ -19,9 +19,14 @@
     align-items: center;
 }
 
+.cardImage {
+    height: 100%;
+    width: 100%;
+}
+
 .cardSuit {
     font-size: 28px;
-    line-height: 100%;
+    line-height: 20px;
     text-shadow: 0px 0px 2px white, 0px 0px 2px white, 0px 0px 4px white, 0px 0px 4px white;
 }
 

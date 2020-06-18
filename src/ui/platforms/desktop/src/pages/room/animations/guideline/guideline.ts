@@ -1,7 +1,7 @@
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { RoomStore } from 'pages/room/room.presenter';
-import { UiAnimation } from '../animation';
 import { Point } from '../position';
+import { UiAnimation } from '../ui_animation';
 
 export type Step = [Point, Point[]];
 

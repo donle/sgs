@@ -1,15 +1,19 @@
 import { ImageLoader } from './image_loader';
 
 export class DevImageLoader implements ImageLoader {
-  public getCardImage(name: string) {
+  public async getCardImage(name: string) {
     return {
       alt: name,
     };
   }
 
-  public getCharacterImage(name: string) {
+  public async getCharacterImage(name: string) {
     return {
       alt: name,
     };
+  }
+
+  public async getCardBack() {
+    return { alt: 'New QSanguosha' };
   }
 }

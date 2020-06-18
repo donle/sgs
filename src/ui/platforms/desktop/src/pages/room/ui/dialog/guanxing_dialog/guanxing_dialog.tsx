@@ -1,6 +1,7 @@
 import { Card } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter } from 'pages/room/room.presenter';
@@ -18,6 +19,7 @@ export type GuanXingDialogProps = {
   bottom: number;
   bottomStackName: string;
   presenter: RoomPresenter;
+  imageLoader: ImageLoader;
   onConfirm(top: Card[], bottom: Card[]): () => void;
   title?: string;
   movable?: boolean;
@@ -312,7 +314,7 @@ export class GuanXingCardSlots extends React.Component<GuanXingDialogProps> {
   }
 
   render() {
-    const { top, bottom, cards, translator, topStackName, bottomStackName, movable } = this.props;
+    const { top, bottom, cards, translator, topStackName, bottomStackName, movable, imageLoader } = this.props;
     this.canConfirm();
 
     return (
@@ -322,6 +324,7 @@ export class GuanXingCardSlots extends React.Component<GuanXingDialogProps> {
             <ClientCard
               key={index}
               card={card}
+              imageLoader={imageLoader}
               translator={translator}
               disabled={movable}
               unselectable={true}

@@ -1,6 +1,7 @@
 import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
@@ -14,6 +15,7 @@ type SeatsLayoutProps = {
   translator: ClientTranslationModule;
   gamePad: JSX.Element;
   updateFlag: boolean;
+  imageLoader: ImageLoader;
   onClick?(player: Player, selected: boolean): void;
   playerSelectableMatcher?(player: Player): boolean;
 };
@@ -71,6 +73,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
       players.unshift(
         <PlayerCard
           key={playerIndex}
+          imageLoader={this.props.imageLoader}
           onClick={this.onClick(player)}
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           player={player}
@@ -103,6 +106,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
       players.unshift(
         <PlayerCard
           key={playerIndex}
+          imageLoader={this.props.imageLoader}
           onClick={this.onClick(player)}
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           player={player}
@@ -133,6 +137,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
       players.unshift(
         <PlayerCard
           key={playerIndex}
+          imageLoader={this.props.imageLoader}
           onClick={this.onClick(player)}
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           player={player}

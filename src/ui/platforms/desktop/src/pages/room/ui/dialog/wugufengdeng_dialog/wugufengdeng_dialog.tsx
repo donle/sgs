@@ -2,6 +2,7 @@ import { Card } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ImageLoader } from 'image_loader/image_loader';
 import { ClientCard } from 'pages/room/ui/card/card';
 import * as React from 'react';
 import { BaseDialog } from '../base_dialog';
@@ -16,6 +17,7 @@ type WuGuFengDengDialogProps = {
   translator: ClientTranslationModule;
   cards: CardId[];
   selected: SelectedCardProps[];
+  imageLoader: ImageLoader;
   unselectable?: boolean;
   disabled?: boolean;
   onClick?(card: Card): void;
@@ -28,6 +30,7 @@ const getCardsContainerLines = ({
   onClick,
   unselectable,
   disabled,
+  imageLoader
 }: WuGuFengDengDialogProps) => {
   const onSelected = (card: Card) => (selected: boolean) => {
     onClick && onClick(card);
@@ -46,6 +49,7 @@ const getCardsContainerLines = ({
         <ClientCard
           card={card}
           key={i}
+          imageLoader={imageLoader}
           translator={translator}
           unselectable={unselectable}
           disabled={disabled || isSelected !== undefined}

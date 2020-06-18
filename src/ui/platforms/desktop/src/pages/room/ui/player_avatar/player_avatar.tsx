@@ -5,6 +5,7 @@ import { Player } from 'core/player/player';
 import { PlayerRole } from 'core/player/player_props';
 import { Skill, TriggerSkill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
@@ -21,6 +22,7 @@ type PlayerAvatarProps = {
   presenter: RoomPresenter;
   translator: ClientTranslationModule;
   updateFlag: boolean;
+  imageLoader: ImageLoader;
   disabled?: boolean;
   onClick?(player: Player, selected: boolean): void;
   onClickSkill?(skill: Skill, selected: boolean): void;
@@ -129,7 +131,8 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
       this.props.presenter.closeDialog();
     } else {
       this.openedDialog = name;
-      this.props.presenter.createDialog(<CardSelectorDialog options={cards} translator={this.props.translator} />);
+      this.props.presenter.createDialog(<CardSelectorDialog 
+        imageLoader={this.props.imageLoader} options={cards} translator={this.props.translator} />);
     }
   };
 

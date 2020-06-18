@@ -17,6 +17,7 @@ import { PlayerCardsArea } from 'core/player/player_props';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
 import { AskForPeachAction } from './actions/ask_for_peach_action';
 import { CardResponseAction } from './actions/card_response_action';
@@ -38,6 +39,7 @@ export class GameClientProcessor {
     private presenter: RoomPresenter,
     private store: RoomStore,
     private translator: ClientTranslationModule,
+    private imageLoader: ImageLoader,
   ) {}
 
   private tryToThrowNotReadyException(e: GameEventIdentifiers) {
@@ -785,7 +787,12 @@ export class GameClientProcessor {
     };
 
     this.presenter.createDialog(
-      <CardSelectorDialog options={content.options} onClick={onSelectedCard} translator={this.translator} />,
+      <CardSelectorDialog
+        imageLoader={this.imageLoader}
+        options={content.options}
+        onClick={onSelectedCard}
+        translator={this.translator}
+      />,
     );
   }
 
@@ -834,6 +841,7 @@ export class GameClientProcessor {
         onClick={onSelectedCard}
         translator={this.translator}
         isCardDisabled={isCardDisabled}
+        imageLoader={this.imageLoader}
       />,
     );
 
@@ -961,6 +969,7 @@ export class GameClientProcessor {
         bottomStackName={bottomStackName}
         bottomMaxCard={bottomMaxCard}
         bottomMinCard={bottomMinCard}
+        imageLoader={this.imageLoader}
         translator={this.translator}
         cards={cards}
         presenter={this.presenter}
@@ -999,6 +1008,7 @@ export class GameClientProcessor {
 
     this.presenter.createDialog(
       <WuGuFengDengDialog
+        imageLoader={this.imageLoader}
         cards={content.cardIds}
         selected={content.selected.map(selectedCard => ({
           card: selectedCard.card,
@@ -1017,6 +1027,7 @@ export class GameClientProcessor {
   ) {
     this.presenter.createDialog(
       <WuGuFengDengDialog
+        imageLoader={this.imageLoader}
         cards={content.cardIds}
         unselectable={true}
         selected={content.selected.map(selectedCard => ({

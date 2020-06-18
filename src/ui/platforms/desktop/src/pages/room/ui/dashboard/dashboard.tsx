@@ -6,6 +6,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Skill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
@@ -23,6 +24,7 @@ export type DashboardProps = {
   presenter: RoomPresenter;
   translator: ClientTranslationModule;
   updateFlag: boolean;
+  imageLoader: ImageLoader;
   playerSelectableMatcher?(player: Player): boolean;
   onClickPlayer?(player: Player, selected: boolean): void;
   cardEnableMatcher?(card: Card): boolean;
@@ -145,6 +147,7 @@ export class Dashboard extends React.Component<DashboardProps> {
       const leftOffset = index * (this.handCardWidth + this.cardOffset);
       return (
         <ClientCard
+          imageLoader={this.props.imageLoader}
           key={cardId}
           width={this.handCardWidth}
           offsetLeft={leftOffset}
@@ -209,6 +212,7 @@ export class Dashboard extends React.Component<DashboardProps> {
         )}
         {this.getPlayerHandBoard()}
         <PlayerAvatar
+        imageLoader={this.props.imageLoader}
           updateFlag={this.props.store.updateUIFlag}
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           onClick={this.props.onClickPlayer}
