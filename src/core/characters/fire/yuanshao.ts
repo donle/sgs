@@ -9,6 +9,7 @@ export class YuanShao extends Character {
   constructor(id: number) {
     super(id, 'yuanshao', CharacterGender.Male, CharacterNationality.Qun, 4, 4, GameCharacterExtensions.Fire, [
       ...skillLoaderInstance.getSkillsByName('luanji'),
+      ...skillLoaderInstance.getSkillsByName('xueyi'),
     ]);
   }
 }

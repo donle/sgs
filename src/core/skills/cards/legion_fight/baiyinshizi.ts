@@ -18,7 +18,7 @@ export class BaiYinShiZiSkill extends TriggerSkill {
     const identifier = EventPacker.getIdentifier(content);
     if (identifier === GameEventIdentifiers.DamageEvent) {
       const damageEvent = content as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-      return damageEvent.damage > 1;
+      return damageEvent.toId === owner.Id && damageEvent.damage > 1;
     } else if (identifier === GameEventIdentifiers.MoveCardEvent) {
       const moveEvent = content as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
       const equipCards = moveEvent.movingCards

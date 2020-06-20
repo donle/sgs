@@ -27,7 +27,7 @@ export class TengJiaSkill extends TriggerSkill {
       );
     } else if (identifier === GameEventIdentifiers.DamageEvent) {
       const damageEvent = content as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-      return damageEvent.damageType === DamageType.Fire;
+      return damageEvent.toId === owner.Id && damageEvent.damageType === DamageType.Fire;
     }
     return false;
   }

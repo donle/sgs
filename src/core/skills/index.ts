@@ -124,9 +124,12 @@ export { BaZhen } from './characters/fire/bazhen';
 export { HuoJi } from './characters/fire/huoji';
 export { KanPo } from './characters/fire/kanpo';
 export { CangZhuo, CangZhuoShadow } from './characters/fire/cangzhuo';
-export { LianHuan } from './characters/fire/lianhuan';
+export { LianHuan, LianHuanShadow } from './characters/fire/lianhuan';
 export { NiePan } from './characters/fire/niepan';
 export { LuanJi, LuanJiShadow } from './characters/fire/luanji';
+export { XueYi, XueYiShadow, XueYiBuff } from './characters/fire/xueyi';
+export { TianYi, TianYiRemove, TianYiExtra, TianYiBlock } from './characters/fire/tianyi';
+export { ShuangXiong, ShuangXiongShadow, ShuangXiongRemove } from './characters/fire/shuangxiong';
 
 export { FeiYing } from './characters/god/feiying';
 export { GuiXin } from './characters/god/guixin';

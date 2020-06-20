@@ -234,16 +234,23 @@ export const characterDictionary: Word[] = [
 
   { source: 'taishici', target: '太史慈' },
   { source: 'tianyi', target: '天义' },
+  { source: 'tianyi_win', target: '天义[赢]' },
+  { source: 'tianyi_lose', target: '天义[没赢]' },
 
   { source: 'pangde', target: '庞德' },
   { source: 'jianchu', target: '鞬出' },
 
   { source: 'yanliangwenchou', target: '颜良文丑' },
   { source: 'shuangxiong', target: '双雄' },
+  { source: '#shuangxiong', target: '双雄' },
+  { source: 'shuangxiong_red', target: '双雄[非红]' },
+  { source: 'shuangxiong_black', target: '双雄[非黑]' },
 
   { source: 'yuanshao', target: '袁绍' },
   { source: 'luanji', target: '乱击' },
+  { source: '#luanji', target: '乱击' },
   { source: 'xueyi', target: '血裔' },
+  { source: '#xueyi', target: '血裔' },
 
   { source: 'caopi', target: '曹丕' },
   { source: 'xingshang', target: '行殇' },
