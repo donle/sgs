@@ -8,5 +8,5 @@ export type BackgroundProps = {
 
 export const Background = ({ imageLoader }: BackgroundProps) => {
   const image = imageLoader.getBackgroundImage();
-  return <img className={styles.bg} {...image} />;
+  return <img className={styles.bg} alt={image.alt} src={image.src} />;
 };
