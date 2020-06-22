@@ -2,11 +2,21 @@
 
 .playerCard {
     position: relative;
-    height: 200px;
-    width: 200px;
-    border: 1px solid grey;
+    height: 230px;
+    width: 170px;
     align-items: flex-end;
     display: flex;
+}
+
+.playerRoleCard {
+    position: absolute;
+    z-index: -1;
+    flex: auto;
+    align-self: center;
+}
+
+.dead {
+    filter: grayscale(100%);
 }
 
 .playerName {
@@ -14,9 +24,8 @@
     position: absolute;
     width: 100%;
     text-align: center;
-    margin: 0;
+    margin-top: calc(gridLine * 2);
     text-shadow: 0px 0px 2px rgb(255, 255, 255), 0px 0px 2px rgb(255, 255, 255), 0px 0px 2px rgb(255, 255, 255);
-    background: rgba(0, 0, 0, 0.2);
     font-weight: 550;
     font-size: 14px;
     height: calc(gridLine * 3);
@@ -25,8 +34,17 @@
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    padding: 0 8px;
+    padding: 0 gridLine;
     align-self: flex-start;
+}
+
+.playerImage {
+    flex: auto;
+    position: absolute;
+    width: calc(100% + 40px);
+    margin-left: -20px;
+    height: 100%;
+    z-index: -2;
 }
 
 .playCharacterName {
@@ -45,7 +63,7 @@
     right: 0;
 }
 
-.selected {
+.playerCard.selected {
     border-color: red;
 }
 

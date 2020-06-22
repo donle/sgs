@@ -4,10 +4,11 @@
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
-    height: calc(100vh - 220px);
+    height: calc(100vh - 270px);
     padding: 4px;
 }
 
 .messageLine {
     margin: 4px 0;
+    color: #fbd000;
 }

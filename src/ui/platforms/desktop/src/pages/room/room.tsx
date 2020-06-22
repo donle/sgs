@@ -11,6 +11,7 @@ import { GameClientProcessor } from './game_processor';
 import { installService, RoomBaseService } from './install_service';
 import styles from './room.module.css';
 import { RoomPresenter, RoomStore } from './room.presenter';
+import { Background } from './ui/background/background';
 import { Banner } from './ui/banner/banner';
 import { ClientCard } from './ui/card/card';
 import { Dashboard } from './ui/dashboard/dashboard';
@@ -150,6 +151,7 @@ export class RoomPage extends React.Component<
   render() {
     return (
       <div className={styles.room}>
+        <Background imageLoader={this.imageLoader} />
         {this.store.selectorDialog}
 
         <div className={styles.incomingConversation}>{this.store.incomingConversation}</div>

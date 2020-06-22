@@ -462,6 +462,7 @@ export class GameClientProcessor {
   ) {
     const { playerId } = content;
     this.store.room.kill(this.store.room.getPlayerById(playerId));
+    this.presenter.broadcastUIUpdate();
   }
 
   private onHandleDamageEvent<T extends GameEventIdentifiers.DamageEvent>(type: T, content: ServerEventFinder<T>) {

@@ -22,8 +22,9 @@
 .equipSection {
     border: 1px solid grey;
     width: 200px;
-    height: 100%;
+    height: 200px;
     position: relative;
+    align-self: flex-end;
 }
 
 .handBoard {
@@ -50,7 +51,7 @@
     padding-right: calc(gridLine * 12);
     justify-content: flex-end;
     align-items: center;
-    height: 30px;
+    height: 64px;
 }
 .userActionsButtons button {
     margin: 0 halfGridLine;
@@ -59,8 +60,12 @@
 
 .handCards {
     justify-content: flex-start;
-    border: 1px solid grey;
-    height: 190px;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(0, 0, 0, 0.53) 41%,
+        rgba(0, 0, 0, 1) 100%
+    );
     display: flex;
     align-items: center;
     padding: halfGridLine;
@@ -82,7 +87,6 @@
 .dashboard {
     display: flex;
     align-items: stretch;
-    height: 200px;
     min-width: 880px;
     justify-content: center;
 }

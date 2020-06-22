@@ -1,25 +1,30 @@
 import classNames from 'classnames';
 import { PlayerRole } from 'core/player/player_props';
-import { Functional } from 'core/shares/libs/functional';
-import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as React from 'react';
+import lordMask from './images/lord.png';
+import loyalistMask from './images/loyalist.png';
+import rebelMask from './images/rebel.png';
+import renegadeMask from './images/renegade.png';
+import unknownMask from './images/unknown.png';
 import styles from './mask.module.css';
+
+const maskImages: { [K in PlayerRole]: string } = {
+  [PlayerRole.Lord]: lordMask,
+  [PlayerRole.Rebel]: rebelMask,
+  [PlayerRole.Loyalist]: loyalistMask,
+  [PlayerRole.Renegade]: renegadeMask,
+  [PlayerRole.Unknown]: unknownMask,
+};
 
 export type MaskProps = {
   displayedRole?: PlayerRole;
   disabled?: boolean;
-  translator: ClientTranslationModule;
   className?: string;
   lockedRole?: PlayerRole;
 };
 
-const OneMask = (props: {
-  text?: string;
-  role: PlayerRole;
-  onClick?(role: PlayerRole): () => void;
-  className?: string;
-}) => {
-  const { text, role, onClick, className } = props;
+const OneMask = (props: { role: PlayerRole; onClick?(role: PlayerRole): () => void; className?: string }) => {
+  const { role, onClick, className } = props;
   return (
     <div
       className={classNames(styles.oneMask, className, {
@@ -31,17 +36,13 @@ const OneMask = (props: {
       })}
       onClick={onClick && onClick(role)}
     >
-      {text}
+      <img className={styles.maskImage} alt={''} src={maskImages[role]} />
     </div>
   );
 };
 
-const AllMasks = (props: {
-  onClick?(role: PlayerRole): () => void;
-  opened: boolean;
-  translator: ClientTranslationModule;
-}) => {
-  const { onClick, opened, translator } = props;
+const AllMasks = (props: { onClick?(role: PlayerRole): () => void; opened: boolean }) => {
+  const { onClick, opened } = props;
 
   const masks: JSX.Element[] = [];
   for (const role of [PlayerRole.Loyalist, PlayerRole.Rebel, PlayerRole.Renegade, PlayerRole.Unknown]) {
@@ -49,7 +50,6 @@ const AllMasks = (props: {
       <OneMask
         role={role}
         key={role}
-        text={translator.tr(Functional.getPlayerRoleRawText(role))}
         onClick={onClick}
         className={classNames({
           [styles.opened]: opened,
@@ -62,7 +62,7 @@ const AllMasks = (props: {
 };
 
 export const Mask = (props: MaskProps) => {
-  const { translator, disabled, displayedRole = PlayerRole.Unknown, className, lockedRole } = props;
+  const { disabled, displayedRole = PlayerRole.Unknown, className, lockedRole } = props;
   const [maskSwitch, setMaskSwitch] = React.useState(false);
   const [role, setRole] = React.useState(displayedRole);
 
@@ -83,19 +83,15 @@ export const Mask = (props: MaskProps) => {
     <div className={className} onClick={onMaskClick}>
       <div
         className={classNames(styles.displayedRole, {
-          [styles.lord]: lockedRole !== undefined ? lockedRole === PlayerRole.Lord : role === PlayerRole.Lord,
-          [styles.loyalist]:
-            lockedRole !== undefined ? lockedRole === PlayerRole.Loyalist : role === PlayerRole.Loyalist,
-          [styles.rebel]: lockedRole !== undefined ? lockedRole === PlayerRole.Rebel : role === PlayerRole.Rebel,
-          [styles.renegade]:
-            lockedRole !== undefined ? lockedRole === PlayerRole.Renegade : role === PlayerRole.Renegade,
+          [styles.lord]: lockedRole === PlayerRole.Lord || role === PlayerRole.Lord,
+          [styles.loyalist]: lockedRole === PlayerRole.Loyalist || role === PlayerRole.Loyalist,
+          [styles.rebel]: lockedRole === PlayerRole.Rebel || role === PlayerRole.Rebel,
+          [styles.renegade]: lockedRole === PlayerRole.Renegade || role === PlayerRole.Renegade,
         })}
       >
-        {lockedRole !== undefined
-          ? translator.tr(Functional.getPlayerRoleRawText(lockedRole))
-          : role !== PlayerRole.Unknown && translator.tr(Functional.getPlayerRoleRawText(role))}
+        <img className={styles.maskImage} alt={''} src={maskImages[lockedRole || role]} />
       </div>
-      <AllMasks onClick={disabled ? undefined : onClick} opened={maskSwitch} translator={translator} />
+      <AllMasks onClick={disabled ? undefined : onClick} opened={maskSwitch} />
     </div>
   );
 };

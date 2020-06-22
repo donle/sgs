@@ -1,9 +1,9 @@
 import classNames from 'classnames';
 import * as React from 'react';
 import styles from './hp.module.css';
-import { DamagedMagatama, Magatama, StatusType } from './magatama/magatama';
+import { DamagedMagatama, HealthyStatusType, Magatama } from './magatama/magatama';
 
-const getStatus = (hp: number, maxHp: number): StatusType => {
+const getStatus = (hp: number, maxHp: number): HealthyStatusType => {
   if (maxHp === hp) {
     return 'healthy';
   } else if (hp === 1) {
@@ -15,20 +15,11 @@ const getStatus = (hp: number, maxHp: number): StatusType => {
   return 'healthy';
 };
 
-const getMagatama = (
-  amount: number,
-  size: 'regular' | 'small',
-  status: StatusType,
-  playerStatus: StatusType = status,
-) => {
+const getMagatama = (amount: number, size: 'regular' | 'small', status: HealthyStatusType) => {
   const magatamas: JSX.Element[] = [];
   for (let i = 0; i < amount; i++) {
     magatamas.push(
-      status === 'damaged' ? (
-        <DamagedMagatama key={i} size={size} playerStatus={playerStatus} />
-      ) : (
-        <Magatama key={i} size={size} status={status} />
-      ),
+      status === 'damaged' ? <DamagedMagatama key={i} size={size} /> : <Magatama key={i} size={size} status={status} />,
     );
   }
   return <>{magatamas}</>;
@@ -51,7 +42,7 @@ export const Hp = (props: { hp: number; maxHp: number; size: 'regular' | 'small'
     </div>
   ) : (
     <div className={className}>
-      {getMagatama(Math.min(maxHp, maxHp - hp), size, 'damaged', status)}
+      {getMagatama(Math.min(maxHp, maxHp - hp), size, 'damaged')}
       {getMagatama(hp, size, status)}
     </div>
   );

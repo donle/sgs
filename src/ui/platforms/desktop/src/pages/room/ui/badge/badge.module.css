@@ -34,7 +34,7 @@
     display: flex;
     align-items: center;
     line-height: calc(gridLine * 2);
-    top: 0;
+    top: 16px;
     padding-left: 0;
 }
 

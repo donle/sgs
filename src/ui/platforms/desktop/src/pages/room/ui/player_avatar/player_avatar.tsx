@@ -38,6 +38,11 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   @mobx.observable.ref
   onTooltipOpened: boolean = false;
   private onTooltipOpeningTimer: NodeJS.Timer;
+  @mobx.observable.ref
+  PlayerRoleCard: () => JSX.Element;
+
+  @mobx.observable.ref
+  PlayerImage: () => JSX.Element;
 
   private openedDialog: string | undefined;
 
@@ -131,8 +136,9 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
       this.props.presenter.closeDialog();
     } else {
       this.openedDialog = name;
-      this.props.presenter.createDialog(<CardSelectorDialog 
-        imageLoader={this.props.imageLoader} options={cards} translator={this.props.translator} />);
+      this.props.presenter.createDialog(
+        <CardSelectorDialog imageLoader={this.props.imageLoader} options={cards} translator={this.props.translator} />,
+      );
     }
   };
 
@@ -144,9 +150,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
         <div className={styles.outsideArea}>
           {Object.entries<CardId[]>(cards)
             .map(([areaName, cards], index) =>
-              cards.length === 0 ? (
-                undefined
-              ) : (
+              cards.length === 0 ? undefined : (
                 <span
                   key={index}
                   className={classNames(styles.skillTag, styles.clickableSkillTag)}
@@ -216,6 +220,37 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     ));
   }
 
+  async componentDidUpdate() {
+    if (
+      this.PlayerImage === undefined &&
+      this.props.presenter.ClientPlayer &&
+      this.props.presenter.ClientPlayer.CharacterId
+    ) {
+      const image = await this.props.imageLoader.getCharacterImage(this.props.presenter.ClientPlayer.Character.Name);
+      mobx.runInAction(() => {
+        this.PlayerImage = () => (
+          <img
+            className={classNames(styles.playerImage, {
+              [styles.dead]: this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead,
+            })}
+            alt={image.alt}
+            src={image.src}
+          />
+        );
+      });
+    } else if (
+      this.PlayerRoleCard === undefined &&
+      this.props.presenter.ClientPlayer &&
+      this.props.presenter.ClientPlayer.Dead &&
+      this.props.presenter.ClientPlayer.Role !== PlayerRole.Unknown
+    ) {
+      const image = await this.props.imageLoader.getPlayerRoleCard(this.props.presenter.ClientPlayer.Role);
+      mobx.runInAction(() => {
+        this.PlayerRoleCard = () => <img className={styles.playerRoleCard} alt={image.alt} src={image.src} />;
+      });
+    }
+  }
+
   render() {
     const clientPlayer = this.props.presenter.ClientPlayer;
     const character = clientPlayer?.CharacterId !== undefined ? clientPlayer?.Character : undefined;
@@ -229,6 +264,8 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
         onMouseLeave={this.closeTooltip}
       >
         <span className={styles.playerName}>{clientPlayer?.Name}</span>
+        {this.PlayerImage !== undefined && <this.PlayerImage />}
+        {this.PlayerRoleCard !== undefined && <this.PlayerRoleCard />}
         {character && (
           <NationalityBadge
             translator={this.props.translator}
@@ -239,12 +276,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           </NationalityBadge>
         )}
         {clientPlayer && clientPlayer.Role !== PlayerRole.Unknown && (
-          <Mask
-            className={styles.playerRole}
-            translator={this.props.translator}
-            displayedRole={clientPlayer.Role}
-            disabled={true}
-          />
+          <Mask className={styles.playerRole} displayedRole={clientPlayer.Role} disabled={true} />
         )}
         {!clientPlayer?.isFaceUp() && <p className={styles.status}>{this.props.translator.tr('turn overed')}</p>}
         {this.getSkillButtons()}

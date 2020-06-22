@@ -37,6 +37,11 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   selected: boolean = false;
   @mobx.observable.ref
   onTooltipOpened: boolean = false;
+  @mobx.observable.ref
+  PlayerImage: () => JSX.Element;
+  @mobx.observable.ref
+  PlayerRoleCard: () => JSX.Element;
+
   private onTooltipOpeningTimer: NodeJS.Timer;
   private openedDialog: string | undefined;
 
@@ -190,6 +195,33 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     ));
   }
 
+  async componentDidUpdate() {
+    if (this.PlayerImage === undefined && this.PlayerCharacter) {
+      const image = await this.props.imageLoader.getCharacterImage(this.PlayerCharacter.Name);
+      mobx.runInAction(() => {
+        this.PlayerImage = () => (
+          <img
+            className={classNames(styles.playerImage, {
+              [styles.dead]: this.props.player && this.props.player.Dead,
+            })}
+            alt={image.alt}
+            src={image.src}
+          />
+        );
+      });
+    } else if (
+      this.PlayerRoleCard === undefined &&
+      this.props.player &&
+      this.props.player.Dead &&
+      this.props.player.Role !== PlayerRole.Unknown
+    ) {
+      const image = await this.props.imageLoader.getPlayerRoleCard(this.props.player.Role);
+      mobx.runInAction(() => {
+        this.PlayerRoleCard = () => <img className={styles.playerRoleCard} alt={image.alt} src={image.src} />;
+      });
+    }
+  }
+
   render() {
     const nationalityText = this.PlayerCharacter && getNationalityRawText(this.PlayerCharacter.Nationality);
     const { disabled, translator, player, playerPhase } = this.props;
@@ -213,8 +245,10 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
             >
               {player.Name}
             </p>
-            {this.PlayerCharacter && (
+            {this.PlayerCharacter ? (
               <>
+                {this.PlayerImage !== undefined && <this.PlayerImage />}
+                {this.PlayerRoleCard !== undefined && <this.PlayerRoleCard />}
                 <NationalityBadge
                   className={styles.playerCharacter}
                   vertical={true}
@@ -226,7 +260,6 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                 {player.Role !== PlayerRole.Unknown && (
                   <Mask
                     className={styles.playerRole}
-                    translator={translator}
                     lockedRole={player.Dead || player.Role === PlayerRole.Lord ? player.Role : undefined}
                     disabled={player.Dead || player.Role === PlayerRole.Lord}
                   />
@@ -239,13 +272,23 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                   <span className={styles.handCardsNumber}>{player.getCardIds(PlayerCardsArea.HandArea).length}</span>
                 </span>
               </>
+            ) : (
+              <img
+                className={classNames(styles.playerImage, styles.playerUnknownImage)}
+                alt={translator.tr('waiting')}
+                src={this.props.imageLoader.getUnknownCharacterImage().src}
+              />
             )}
             {this.getPlayerJudgeCards()}
             {!player.isFaceUp() && <p className={styles.status}>{translator.tr('turn overed')}</p>}
             <p className={styles.playerSeats}>{translator.tr(`number ${player.Position}`)}</p>
           </>
         ) : (
-          <p className={styles.waiting}>{translator.tr('waiting')}</p>
+          <img
+            className={classNames(styles.playerImage, styles.playerUnknownImage)}
+            alt={translator.tr('waiting')}
+            src={this.props.imageLoader.getUnknownCharacterImage().src}
+          />
         )}
         {playerPhase !== undefined && (
           <PlayerPhaseBadge stage={playerPhase} translator={translator} className={styles.playerPhaseBadge} />

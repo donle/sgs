@@ -17,7 +17,7 @@
 .mainBoard {
     display: flex;
     align-items: stretch;
-    height: calc(100% - 233px);
+    height: calc(100% - 263px);
 }
 
 .sideBoard {
