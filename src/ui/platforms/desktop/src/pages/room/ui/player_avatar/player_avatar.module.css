@@ -50,7 +50,7 @@
 .playCharacterName {
     position: absolute;
     top: 0;
-    left: calc(-9 * gridLine);
+    left: 0;
 }
 
 .playerHp {

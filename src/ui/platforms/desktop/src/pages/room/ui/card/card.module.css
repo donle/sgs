@@ -1,6 +1,5 @@
 .clientCard {
     position: relative;
-    border: 1px solid grey;
     transition: all 0.15s;
     background: white;
 }

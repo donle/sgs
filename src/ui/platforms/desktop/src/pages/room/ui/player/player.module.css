@@ -134,42 +134,31 @@
 
 .handCardsNumberBg {
     position: absolute;
-    left: gridLine;
-    width: calc(gridLine * 1.5);
-    height: calc(gridLine * 2);
-    border: 1px solid grey;
     text-align: center;
-    background: white;
     z-index: 2;
-    transform: rotate(10deg);
+    margin-top: gridLine;
     align-self: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: calc(gridLine * 3);
 }
-.handCardsNumberBg:before {
-    content: '';
-    width: calc(gridLine * 1.5);
-    height: calc(gridLine * 2);
-    border: 1px solid grey;
-    display: block;
-    position: absolute;
-    box-sizing: border-box;
-    transform: rotate(-30deg);
-    background: white;
-    top: 0px;
-    left: -4px;
+.handCardsNumberBgImage {
+    width: calc(gridLine * 4);
 }
-
 .handCardsNumber {
     z-index: 100;
     position: absolute;
-    transform: rotate(-10deg);
-    left: 0;
     font-size: 13px;
     font-weight: 550;
+    color: white;
+    text-shadow: 0px 0px 2px black, 0px 0px 2px black, 0px 0px 4px black, 0px 0px 4px black;
 }
 
 .playerPhaseBadge {
     position: absolute;
-    bottom: -12px;
+    bottom: calc(gridLine * -1.5);
+    height: calc(gridLine * 3);
 }
 
 .weapon {

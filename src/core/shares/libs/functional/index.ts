@@ -1,5 +1,6 @@
 import { CardType } from 'core/cards/card';
 import { CardSuit } from 'core/cards/libs/card_props';
+import { CharacterNationality } from 'core/characters/character';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { PlayerRole } from 'core/player/player_props';
 import { Precondition } from '../precondition/precondition';
@@ -20,7 +21,7 @@ export abstract class Functional {
       case PlayerPhase.FinishStage:
         return 'finish stage';
       default:
-        Precondition.UnreachableError(stage);
+        throw Precondition.UnreachableError(stage);
     }
   }
 
@@ -32,6 +33,10 @@ export abstract class Functional {
   static getPlayerRoleRawText(role: PlayerRole) {
     const playerRoleRawText = ['unknown', 'lord', 'loyalist', 'rebel', 'renegade'];
     return playerRoleRawText[role];
+  }
+  static getPlayerNationalityText(nationality: CharacterNationality) {
+    const playerRoleRawText = ['wei', 'shu', 'wu', 'qun', 'god'];
+    return playerRoleRawText[nationality];
   }
 
   static getCardTypeRawText(type: CardType) {

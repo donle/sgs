@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import { CardType } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
-import { getNationalityRawText } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { ClientPlayer } from 'core/player/player.client';
@@ -223,7 +222,6 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   }
 
   render() {
-    const nationalityText = this.PlayerCharacter && getNationalityRawText(this.PlayerCharacter.Nationality);
     const { disabled, translator, player, playerPhase } = this.props;
     return (
       <div
@@ -249,14 +247,11 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
               <>
                 {this.PlayerImage !== undefined && <this.PlayerImage />}
                 {this.PlayerRoleCard !== undefined && <this.PlayerRoleCard />}
-                <NationalityBadge
-                  className={styles.playerCharacter}
-                  vertical={true}
-                  variant={nationalityText as any}
-                  translator={translator}
-                >
-                  {translator.tr(this.PlayerCharacter.Name)}
-                </NationalityBadge>
+                {this.PlayerCharacter && (
+                  <NationalityBadge className={styles.playerCharacter} nationality={this.PlayerCharacter.Nationality}>
+                    {translator.tr(this.PlayerCharacter.Name)}
+                  </NationalityBadge>
+                )}
                 {player.Role !== PlayerRole.Unknown && (
                   <Mask
                     className={styles.playerRole}
@@ -269,6 +264,11 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                   <Hp hp={player.Hp} maxHp={player.MaxHp} size="small" />
                 </div>
                 <span className={styles.handCardsNumberBg}>
+                  <img
+                    className={styles.handCardsNumberBgImage}
+                    src={this.props.imageLoader.getCardNumberBgImage().src}
+                    alt={''}
+                  />
                   <span className={styles.handCardsNumber}>{player.getCardIds(PlayerCardsArea.HandArea).length}</span>
                 </span>
               </>
@@ -291,7 +291,11 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
           />
         )}
         {playerPhase !== undefined && (
-          <PlayerPhaseBadge stage={playerPhase} translator={translator} className={styles.playerPhaseBadge} />
+          <PlayerPhaseBadge
+            stage={playerPhase}
+            translator={this.props.translator}
+            className={styles.playerPhaseBadge}
+          />
         )}
         <div className={styles.playerTags}>
           {this.getSkillTags()}

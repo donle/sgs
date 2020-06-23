@@ -6,4 +6,8 @@ export namespace Algorithm {
     }
     return a;
   }
+
+  export function randomInt(from: number, to: number) {
+    return Math.round(Math.random() * (to - from)) + from;
+  }
 }

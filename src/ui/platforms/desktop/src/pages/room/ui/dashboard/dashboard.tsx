@@ -203,7 +203,7 @@ export class Dashboard extends React.Component<DashboardProps> {
       <div className={styles.dashboard} id={this.props.store.clientPlayerId}>
         {this.getEquipCardsSection()}
 
-        {this.props.store.room.CurrentPlayer === player && (
+        {this.props.store.room.CurrentPlayer === player && this.props.store.room.CurrentPlayerPhase !== undefined && (
           <PlayerPhaseBadge
             stage={this.props.store.room.CurrentPlayerPhase}
             translator={this.props.translator}
@@ -212,7 +212,7 @@ export class Dashboard extends React.Component<DashboardProps> {
         )}
         {this.getPlayerHandBoard()}
         <PlayerAvatar
-        imageLoader={this.props.imageLoader}
+          imageLoader={this.props.imageLoader}
           updateFlag={this.props.store.updateUIFlag}
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           onClick={this.props.onClickPlayer}

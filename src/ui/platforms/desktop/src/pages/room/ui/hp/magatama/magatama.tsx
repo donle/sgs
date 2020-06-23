@@ -30,6 +30,7 @@ export const Magatama = (props: MagatamaProps) => {
         [styles.small]: size === 'small',
       })}
       src={magatamaImageMap[status]}
+      alt={''}
     />
   );
 };

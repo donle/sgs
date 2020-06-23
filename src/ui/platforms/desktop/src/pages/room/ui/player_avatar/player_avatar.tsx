@@ -1,6 +1,5 @@
 import classNames from 'classnames';
 import { CardId } from 'core/cards/libs/card_props';
-import { getNationalityRawText } from 'core/characters/character';
 import { Player } from 'core/player/player';
 import { PlayerRole } from 'core/player/player_props';
 import { Skill, TriggerSkill } from 'core/skills/skill';
@@ -267,11 +266,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
         {this.PlayerImage !== undefined && <this.PlayerImage />}
         {this.PlayerRoleCard !== undefined && <this.PlayerRoleCard />}
         {character && (
-          <NationalityBadge
-            translator={this.props.translator}
-            variant={getNationalityRawText(character.Nationality) as any}
-            className={styles.playCharacterName}
-          >
+          <NationalityBadge nationality={character.Nationality} className={styles.playCharacterName}>
             {this.props.translator.tr(character.Name)}
           </NationalityBadge>
         )}

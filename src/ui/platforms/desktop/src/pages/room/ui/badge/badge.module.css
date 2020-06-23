@@ -15,8 +15,6 @@
 @value godDarkColor from '../../../../ui/metrics/metrics.css';
 
 .badge {
-    height: calc(gridLine * 3);
-    min-width: calc(gridLine * 12);
     font-family: SanguoshaFont;
     position: relative;
     font-size: 20px;
@@ -24,8 +22,6 @@
     padding-left: calc(gridLine * 3);
     text-shadow: 0px 0px 3px rgba(50, 50, 50, 0.87), 0px 0px 5px rgba(50, 50, 50, 0.87),
         0px 0px 7px rgba(50, 50, 50, 0.87);
-}
-.vertical {
     word-wrap: break-word;
     height: calc(gridLine * 15);
     width: calc(gridLine * 3);
@@ -33,17 +29,16 @@
     text-align: center;
     display: flex;
     align-items: center;
+    justify-content: center;
     line-height: calc(gridLine * 2);
-    top: 16px;
     padding-left: 0;
 }
-
-.content {
+.nationalityBadge {
     position: absolute;
-    left: -4px;
-    font-size: 22px;
-    text-shadow: 0px 0px 3px rgba(255, 255, 255, 0.87), 0px 0px 5px rgba(255, 255, 255, 0.87),
-        0px 0px 5px rgba(255, 255, 255, 0.87), 0px 0px 5px rgba(255, 255, 255, 0.87);
+    top: 0;
+    left: -5px;
+    height: 100%;
+    z-index: -1;
 }
 
 .playerPhase {
@@ -55,76 +50,6 @@
     padding: 0;
     text-shadow: 0px 0px 3px rgba(50, 50, 50, 0.87), 0px 0px 5px rgba(50, 50, 50, 0.87),
         0px 0px 7px rgba(50, 50, 50, 0.87);
-}
-
-.vertical .content {
-    left: 2px;
-    top: 2px;
-    font-size: 22px;
-}
-
-.wei .content {
-    color: weiDarkColor;
-}
-.shu .content {
-    color: shuDarkColor;
-}
-.wu .content {
-    color: wuDarkColor;
-}
-.qun .content {
-    color: qunDarkColor;
-}
-.god .content {
-    color: godDarkColor;
-}
-
-.wei {
-    background: weiColor;
-}
-.shu {
-    background: shuColor;
-}
-.wu {
-    background: wuColor;
-}
-.qun {
-    background: qunColor;
-}
-.god {
-    background: godColor;
-}
-
-.wei {
-    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, weiColor 10%, weiColor 50%, rgba(0, 0, 0, 0) 90%);
-}
-.shu {
-    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, shuColor 10%, shuColor 50%, rgba(0, 0, 0, 0) 90%);
-}
-.wu {
-    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, wuColor 10%, wuColor 50%, rgba(0, 0, 0, 0) 90%);
-}
-.qun {
-    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, qunColor 10%, qunColor 50%, rgba(0, 0, 0, 0) 90%);
-}
-.god {
-    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, godColor 10%, godColor 50%, rgba(0, 0, 0, 0) 90%);
-}
-
-.vertical.wei {
-    background: linear-gradient(180deg, weiColor 50%, rgba(0, 0, 0, 0) 90%);
-}
-.vertical.shu {
-    background: linear-gradient(180deg, shuColor 50%, rgba(0, 0, 0, 0) 90%);
-}
-.vertical.wu {
-    background: linear-gradient(180deg, wuColor 50%, rgba(0, 0, 0, 0) 90%);
-}
-.vertical.qun {
-    background: linear-gradient(180deg, qunColor 50%, rgba(0, 0, 0, 0) 90%);
-}
-.vertical.god {
-    background: linear-gradient(180deg, godColor 50%, rgba(0, 0, 0, 0) 90%);
 }
 
 .prepareStage {

@@ -37,4 +37,8 @@ export class DevImageLoader implements ImageLoader {
   async getSlimCard(cardName: string) {
     return { alt: '' };
   }
+
+  getCardNumberBgImage() {
+    return { alt: '' };
+  }
 }

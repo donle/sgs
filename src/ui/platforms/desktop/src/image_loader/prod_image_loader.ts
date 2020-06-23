@@ -1,6 +1,7 @@
 import { PlayerRole } from 'core/player/player_props';
 import { Functional } from 'core/shares/libs/functional';
 import backgroundImage from './images/system/background.jpg';
+import cardNumberBg from './images/system/cardNumBg.png';
 import unknownCharacterImage from './images/system/empty_seat.png';
 import { ImageLoader } from './image_loader';
 
@@ -24,6 +25,10 @@ export class ProdImageLoader implements ImageLoader {
 
   public getUnknownCharacterImage() {
     return { src: unknownCharacterImage, alt: '' };
+  }
+
+  public getCardNumberBgImage() {
+    return { src: cardNumberBg, alt: '' };
   }
 
   public async getPlayerRoleCard(role: PlayerRole) {

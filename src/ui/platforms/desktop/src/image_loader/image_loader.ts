@@ -11,4 +11,5 @@ export interface ImageLoader {
 
   getBackgroundImage(): ImageProps;
   getUnknownCharacterImage(): ImageProps;
+  getCardNumberBgImage(): ImageProps;
 }
