@@ -1,6 +1,7 @@
 import { Character, CharacterId } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { CharacterCard } from 'pages/room/ui/character/character';
@@ -11,6 +12,7 @@ import styles from './character_selector_dialog.module.css';
 
 type CharacterSelectorDialogProps = {
   translator: ClientTranslationModule;
+  imageLoader: ImageLoader;
   characterIds: CharacterId[];
   onClick?(character: Character): void;
 };
@@ -61,6 +63,7 @@ export class CharacterSelectorDialog extends React.Component<CharacterSelectorDi
         key={index}
       >
         <CharacterCard
+          imageLoader={this.props.imageLoader}
           translator={this.props.translator}
           character={character}
           key={characterId}

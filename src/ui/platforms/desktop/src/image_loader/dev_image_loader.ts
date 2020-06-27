@@ -15,15 +15,21 @@ export class DevImageLoader implements ImageLoader {
     };
   }
 
-  public async getCardBack() {
+  public getCardBack() {
     return { alt: 'New QSanguosha' };
   }
 
   public async getPlayerRoleCard(role: PlayerRole) {
     return { alt: Functional.getPlayerRoleRawText(role) };
   }
+  public async getOthersEquipCard(cardName: string) {
+    return { alt: cardName };
+  }
 
   public getBackgroundImage() {
+    return { alt: '' };
+  }
+  public getEmptySeatImage() {
     return { alt: '' };
   }
   public getUnknownCharacterImage() {
@@ -39,6 +45,10 @@ export class DevImageLoader implements ImageLoader {
   }
 
   getCardNumberBgImage() {
+    return { alt: '' };
+  }
+
+  getTurnedOverCover() {
     return { alt: '' };
   }
 }

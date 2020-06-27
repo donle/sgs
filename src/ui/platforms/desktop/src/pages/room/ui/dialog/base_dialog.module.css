@@ -5,6 +5,8 @@
     align-self: center;
     background: lightgrey;
     border: 1px solid grey;
+    background-color: #1b1b1b;
+    color: white;
     padding: 16px;
     z-index: 999;
 }

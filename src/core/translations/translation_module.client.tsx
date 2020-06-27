@@ -29,7 +29,7 @@ export class ClientTranslationModule extends TranslationModule {
     padding: '0 4px',
   };
   private boldTextStyle: React.CSSProperties = {
-    fontWeight: 550,
+    fontWeight: 600,
   };
   private playerStyle: React.CSSProperties = {
     color: '#C65719',
@@ -64,7 +64,7 @@ export class ClientTranslationModule extends TranslationModule {
   public translatePatchedCardText(text: string, dictionary: TranslationsDictionary): JSX.Element {
     const getCardNumberStyle = (cardSuit: CardSuit): React.CSSProperties => {
       if (cardSuit === CardSuit.Heart || cardSuit === CardSuit.Diamond) {
-        return {
+        return { 
           ...this.boldTextStyle,
           color: 'red',
         };

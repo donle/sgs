@@ -19,6 +19,11 @@ import { PlayerAvatar } from '../player_avatar/player_avatar';
 import { PlayingBar } from '../playing_bar/playing_bar';
 import styles from './dashboard.module.css';
 
+import armorSlot from './images/armor.png';
+import defenseHorseSlot from './images/defense_horse.png';
+import offenseHorseSlot from './images/offense_horse.png';
+import weaponSlot from './images/weapon.png';
+
 export type DashboardProps = {
   store: RoomStore;
   presenter: RoomPresenter;
@@ -40,7 +45,8 @@ export type DashboardProps = {
 
 type EquipCardItemProps = {
   disabled?: boolean;
-  card?: Card;
+  card: Card;
+  imageLoader: ImageLoader;
   translator: ClientTranslationModule;
   onClick?(selected: boolean): void;
 };
@@ -49,6 +55,8 @@ type EquipCardItemProps = {
 export class EquipCardItem extends React.Component<EquipCardItemProps> {
   @mobx.observable.ref
   selected: boolean = false;
+  @mobx.observable.ref
+  equipCardImage: string | undefined;
 
   @mobx.action
   readonly onCardClick = () => {
@@ -66,6 +74,11 @@ export class EquipCardItem extends React.Component<EquipCardItemProps> {
     return this.selected;
   }
 
+  @mobx.action
+  async componentDidMount() {
+    this.equipCardImage = (await this.props.imageLoader.getSlimEquipCard(this.props.card.Name)).src;
+  }
+
   render() {
     const { card, translator } = this.props;
     return (
@@ -80,9 +93,17 @@ export class EquipCardItem extends React.Component<EquipCardItemProps> {
         })}
         onClick={this.onCardClick}
       >
-        <span className={styles.equipCardName}>{card && translator.tr(card.Name)}</span>
-        {card && <CardSuitItem className={styles.equipCardSuit} suit={card.Suit} />}
-        <span className={styles.equipCardNumber}>{card && ClientTranslationModule.getCardNumber(card.CardNumber)}</span>
+        {this.equipCardImage ? (
+          <img src={this.equipCardImage} className={styles.equipCardImage} alt="" />
+        ) : (
+          <>
+            <span className={styles.equipCardName}>{card && translator.tr(card.Name)}</span>
+            {card && <CardSuitItem className={styles.equipCardSuit} suit={card.Suit} />}
+            <span className={styles.equipCardNumber}>
+              {card && ClientTranslationModule.getCardNumber(card.CardNumber)}
+            </span>
+          </>
+        )}
       </div>
     );
   }
@@ -124,20 +145,23 @@ export class Dashboard extends React.Component<DashboardProps> {
     );
 
     return (
-      <>
-        {equipCards && (
-          <div className={styles.equipSection}>
-            {equipCards.map(card => (
-              <EquipCardItem
-                translator={this.props.translator}
-                card={card}
-                onClick={this.onClickEquipment(card)}
-                disabled={!this.props.cardSkillEnableMatcher || !this.props.cardSkillEnableMatcher(card)}
-              />
-            ))}
-          </div>
-        )}
-      </>
+      <div className={styles.equipSection}>
+        <div className={styles.equipSlots}>
+          <img className={styles.weaponSlot} src={weaponSlot} alt="" />
+          <img className={styles.armorSlot} src={armorSlot} alt="" />
+          <img className={styles.defenseHorseSlot} src={defenseHorseSlot} alt="" />
+          <img className={styles.offenseHorseSlot} src={offenseHorseSlot} alt="" />
+        </div>
+        {equipCards?.map(card => (
+          <EquipCardItem
+            imageLoader={this.props.imageLoader}
+            translator={this.props.translator}
+            card={card}
+            onClick={this.onClickEquipment(card)}
+            disabled={!this.props.cardSkillEnableMatcher || !this.props.cardSkillEnableMatcher(card)}
+          />
+        ))}
+      </div>
     );
   }
 

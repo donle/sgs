@@ -223,7 +223,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     if (
       this.PlayerImage === undefined &&
       this.props.presenter.ClientPlayer &&
-      this.props.presenter.ClientPlayer.CharacterId
+      this.props.presenter.ClientPlayer.CharacterId !== undefined
     ) {
       const image = await this.props.imageLoader.getCharacterImage(this.props.presenter.ClientPlayer.Character.Name);
       mobx.runInAction(() => {
@@ -264,7 +264,6 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
       >
         <span className={styles.playerName}>{clientPlayer?.Name}</span>
         {this.PlayerImage !== undefined && <this.PlayerImage />}
-        {this.PlayerRoleCard !== undefined && <this.PlayerRoleCard />}
         {character && (
           <NationalityBadge nationality={character.Nationality} className={styles.playCharacterName}>
             {this.props.translator.tr(character.Name)}
@@ -273,7 +272,10 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
         {clientPlayer && clientPlayer.Role !== PlayerRole.Unknown && (
           <Mask className={styles.playerRole} displayedRole={clientPlayer.Role} disabled={true} />
         )}
-        {!clientPlayer?.isFaceUp() && <p className={styles.status}>{this.props.translator.tr('turn overed')}</p>}
+        {!clientPlayer?.isFaceUp() && (
+          <img className={styles.status} src={this.props.imageLoader.getTurnedOverCover().src} alt="" />
+        )}
+        {this.PlayerRoleCard !== undefined && <this.PlayerRoleCard />}
         {this.getSkillButtons()}
         {clientPlayer && (
           <Hp hp={clientPlayer.Hp} className={styles.playerHp} maxHp={clientPlayer.MaxHp} size="regular" />
@@ -282,7 +284,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           {this.getSkillTags()}
           {this.getOutsideAreaCards()}
         </div>
-        {this.onTooltipOpened && clientPlayer?.CharacterId && (
+        {this.onTooltipOpened && clientPlayer?.CharacterId !== undefined && (
           <Tooltip position={['bottom', 'right']}>{this.createTooltipContent()}</Tooltip>
         )}
       </div>

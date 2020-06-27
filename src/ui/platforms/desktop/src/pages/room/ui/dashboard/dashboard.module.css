@@ -3,10 +3,8 @@
 
 .equipCardItem {
     width: 100%;
-    height: 55px;
     display: flex;
     align-items: center;
-    padding: 0 gridLine;
     position: absolute;
     top: 0;
     left: 0;
@@ -17,14 +15,6 @@
 .equipCardSuit,
 .equipCardNumber {
     margin: 0 halfGridLine;
-}
-
-.equipSection {
-    border: 1px solid grey;
-    width: 200px;
-    height: 200px;
-    position: relative;
-    align-self: flex-end;
 }
 
 .handBoard {
@@ -60,12 +50,7 @@
 
 .handCards {
     justify-content: flex-start;
-    background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0) 0%,
-        rgba(0, 0, 0, 0.53) 41%,
-        rgba(0, 0, 0, 1) 100%
-    );
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.53) 41%, rgba(0, 0, 0, 1) 100%);
     display: flex;
     align-items: center;
     padding: halfGridLine;
@@ -98,8 +83,25 @@
     padding: 0;
     opacity: 0.9;
     left: 220px;
-    height: calc(gridLine * 3);
+    height: calc(gridLine * 4);
     top: 16px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.equipSection {
+    width: 210px;
+    height: 176px;
+    position: relative;
+    align-self: flex-end;
+}
+.equipSlots {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.53) 41%, rgba(0, 0, 0, 1) 100%);
+    position: absolute;
+}
+
+.equipCardImage {
+    width: 100%;
 }
 
 .weapon {

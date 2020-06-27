@@ -34,7 +34,7 @@ export class ClientCard extends React.Component<ClientCardProps> {
   @mobx.observable.ref
   private selected: boolean = false;
   @mobx.observable.ref
-  private cardComponent: JSX.Element | undefined;
+  private cardImage: string | undefined;
 
   private soundTracks: string[] = [];
 
@@ -70,34 +70,30 @@ export class ClientCard extends React.Component<ClientCardProps> {
     };
   }
 
-  componentDidMount() {
-    this.getCardComponent().then(
-      mobx.action(component => {
-        this.cardComponent = component;
-      }),
-    );
+  @mobx.action
+  async componentDidMount() {
+    const { card, imageLoader } = this.props;
+    this.cardImage = card && (await imageLoader.getCardImage(card.Name)).src;
   }
 
-  async getCardComponent() {
+  getCardComponent() {
     const { card, translator, imageLoader, tag } = this.props;
     if (!card) {
-      const cardBack = await imageLoader.getCardBack();
+      const cardBack = imageLoader.getCardBack();
       return (
         <div className={styles.emptyCard}>
           <img src={cardBack.src} className={styles.cardImage} alt={translator.tr(cardBack.alt)} />
         </div>
       );
     }
-
-    const image = await imageLoader.getCardImage(card.Name);
     return (
       <div className={styles.innerCard}>
         <div className={styles.cornerTag}>
-          <CardNumberItem cardNumber={card.CardNumber} />
+          <CardNumberItem cardNumber={card.CardNumber} isRed={card.isRed()} />
           <CardSuitItem suit={card.Suit} />
         </div>
-        {image.src ? (
-          <img className={styles.cardImage} src={image.src} alt={card.Name} />
+        {this.cardImage ? (
+          <img className={styles.cardImage} src={this.cardImage} alt={card.Name} />
         ) : (
           <span>{translator.tr(card.Name)}</span>
         )}
@@ -125,7 +121,7 @@ export class ClientCard extends React.Component<ClientCardProps> {
         onMouseMove={this.props.onMouseMove}
         onMouseLeave={this.props.onMouseLeave}
       >
-        {this.cardComponent}
+        {this.getCardComponent()}
       </div>
     );
   }

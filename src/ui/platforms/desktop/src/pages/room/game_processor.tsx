@@ -585,7 +585,12 @@ export class GameClientProcessor {
     };
 
     this.presenter.createDialog(
-      <CharacterSelectorDialog characterIds={content.characterIds} onClick={onClick} translator={this.translator} />,
+      <CharacterSelectorDialog
+        imageLoader={this.imageLoader}
+        characterIds={content.characterIds}
+        onClick={onClick}
+        translator={this.translator}
+      />,
     );
   }
 
@@ -723,7 +728,7 @@ export class GameClientProcessor {
         );
         to.getCardIds(toArea as PlayerCardsArea).push(...actualCardIds);
       }
-    } else if (toArea === CardMoveArea.DropStack) {   
+    } else if (toArea === CardMoveArea.DropStack) {
       this.presenter.showCards(...Card.getActualCards(cardIds).map(cardId => Sanguosha.getCardById(cardId)));
     }
 
@@ -945,7 +950,19 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const { cardIds, top, bottom, toId, topStackName, bottomStackName, movable, topMaxCard, topMinCard, bottomMaxCard, bottomMinCard } = content;
+    const {
+      cardIds,
+      top,
+      bottom,
+      toId,
+      topStackName,
+      bottomStackName,
+      movable,
+      topMaxCard,
+      topMinCard,
+      bottomMaxCard,
+      bottomMinCard,
+    } = content;
     const cards = cardIds.map(cardId => Sanguosha.getCardById(cardId));
 
     const onConfirm = (top: Card[], bottom: Card[]) => () => {
@@ -1037,6 +1054,7 @@ export class GameClientProcessor {
             selectedCard.player &&
             TranslationPack.patchPlayerInTranslation(this.store.room.getPlayerById(selectedCard.player)),
         }))}
+        
         translator={this.translator}
       />,
     );

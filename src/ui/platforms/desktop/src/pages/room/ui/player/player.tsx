@@ -73,7 +73,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   }
 
   getPlayerEquips() {
-    const { player, translator } = this.props;
+    const { player, translator, imageLoader } = this.props;
     const equips = player?.getCardIds(PlayerCardsArea.EquipArea).map(cardId => Sanguosha.getCardById(cardId));
     if (!equips) {
       return;
@@ -84,6 +84,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
         {equips.map(equip => (
           <FlatClientCard
             card={equip}
+            imageLoader={imageLoader}
             translator={translator}
             className={classNames(styles.playerEquip, {
               [styles.weapon]: equip?.is(CardType.Weapon),
@@ -275,19 +276,21 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
             ) : (
               <img
                 className={classNames(styles.playerImage, styles.playerUnknownImage)}
-                alt={translator.tr('waiting')}
+                alt={player.Name}
                 src={this.props.imageLoader.getUnknownCharacterImage().src}
               />
             )}
             {this.getPlayerJudgeCards()}
-            {!player.isFaceUp() && <p className={styles.status}>{translator.tr('turn overed')}</p>}
+            {!player.isFaceUp() && (
+              <img className={styles.status} src={this.props.imageLoader.getTurnedOverCover().src} alt="" />
+            )}
             <p className={styles.playerSeats}>{translator.tr(`number ${player.Position}`)}</p>
           </>
         ) : (
           <img
             className={classNames(styles.playerImage, styles.playerUnknownImage)}
             alt={translator.tr('waiting')}
-            src={this.props.imageLoader.getUnknownCharacterImage().src}
+            src={this.props.imageLoader.getEmptySeatImage().src}
           />
         )}
         {playerPhase !== undefined && (

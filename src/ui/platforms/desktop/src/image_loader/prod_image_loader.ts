@@ -1,8 +1,11 @@
 import { PlayerRole } from 'core/player/player_props';
 import { Functional } from 'core/shares/libs/functional';
+import cardBackImage from './images/cards/cardback.webp';
 import backgroundImage from './images/system/background.jpg';
 import cardNumberBg from './images/system/cardNumBg.png';
-import unknownCharacterImage from './images/system/empty_seat.png';
+import emptySeatImage from './images/system/empty_seat.png';
+import unknownCharacterImage from './images/system/player_seat.png';
+import turnedOverCoverImage from './images/system/turn_over.png';
 import { ImageLoader } from './image_loader';
 
 export class ProdImageLoader implements ImageLoader {
@@ -14,21 +17,32 @@ export class ProdImageLoader implements ImageLoader {
     };
   }
 
-  public async getCardBack() {
-    const image: string = (await import('./images/cards/cardback.webp')).default;
-    return { alt: 'New QSanguosha', src: image };
+  public getCardBack() {
+    return { alt: 'New QSanguosha', src: cardBackImage };
   }
 
   public getBackgroundImage() {
     return { src: backgroundImage, alt: '' };
   }
 
-  public getUnknownCharacterImage() {
+  getUnknownCharacterImage() {
     return { src: unknownCharacterImage, alt: '' };
+  }
+  public getEmptySeatImage() {
+    return { src: emptySeatImage, alt: '' };
   }
 
   public getCardNumberBgImage() {
     return { src: cardNumberBg, alt: '' };
+  }
+
+  getTurnedOverCover() {
+    return { src: turnedOverCoverImage, alt: '' };
+  }
+
+  public async getOthersEquipCard(cardName: string) {
+    const image: string = (await import(`./images/others_equips/${cardName}.png`)).default;
+    return { alt: cardName, src: image };
   }
 
   public async getPlayerRoleCard(role: PlayerRole) {

@@ -12,10 +12,10 @@ body * {
     box-sizing: border-box;
 }
 
-code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-}
-
 .textShadow {
     text-shadow: 0px 0px 2px white, 0px 0px 2px white, 0px 0px 4px white, 0px 0px 4px white;
+}
+
+img {
+    pointer-events: none;
 }

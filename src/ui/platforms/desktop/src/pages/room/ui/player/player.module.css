@@ -78,6 +78,8 @@
 .status {
     position: absolute;
     width: 100%;
+    height: 100%;
+    z-index: -2;
 }
 
 .status,
@@ -157,8 +159,8 @@
 
 .playerPhaseBadge {
     position: absolute;
-    bottom: calc(gridLine * -1.5);
-    height: calc(gridLine * 3);
+    bottom: calc(gridLine * -2);
+    height: calc(gridLine * 4);
 }
 
 .weapon {

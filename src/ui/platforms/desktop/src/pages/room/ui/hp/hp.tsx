@@ -1,6 +1,8 @@
 import classNames from 'classnames';
+import { Character } from 'core/characters/character';
 import * as React from 'react';
 import styles from './hp.module.css';
+import { CharaterMagatama } from './magatama/character_magatama';
 import { DamagedMagatama, HealthyStatusType, Magatama } from './magatama/magatama';
 
 const getStatus = (hp: number, maxHp: number): HealthyStatusType => {
@@ -46,4 +48,26 @@ export const Hp = (props: { hp: number; maxHp: number; size: 'regular' | 'small'
       {getMagatama(hp, size, status)}
     </div>
   );
+};
+
+export const CharacterHp = (props: { character: Character; className?: string }) => {
+  const { character, className } = props;
+
+  const getMagatama = () => {
+    const magatamas: JSX.Element[] = [];
+    for (let i = 0; i < character.MaxHp; i++) {
+      magatamas.push(
+        <CharaterMagatama
+          key={i}
+          className={styles.characterMagatama}
+          isLord={character.isLord()}
+          nationality={character.Nationality}
+        />,
+      );
+    }
+
+    return magatamas;
+  };
+
+  return <div className={classNames(styles.characterHpLabel, className)}>{getMagatama()}</div>;
 };
