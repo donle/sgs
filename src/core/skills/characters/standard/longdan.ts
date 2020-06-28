@@ -11,8 +11,26 @@ import { CommonSkill, ViewAsSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'longdan', description: 'longdan_description' })
 export class LongDan extends ViewAsSkill {
-  public canViewAs(): string[] {
-    return ['jink', 'slash'];
+  public canViewAs(room: Room, owner: Player, selectedCards?: CardId[]): string[] {
+    if (!selectedCards) {
+      return ['jink', 'slash', 'alcohol', 'peach'];
+    } else {
+      const card = Sanguosha.getCardById(selectedCards[0]);
+      if (card.GeneralName === 'slash') {
+        return ['jink'];
+      }
+      if (card.GeneralName === 'jink') {
+        return ['slash'];
+      }
+      if (card.GeneralName === 'alcohol') {
+        return ['peach'];
+      }
+      if (card.GeneralName === 'peach') {
+        return ['alcohol'];
+      }
+
+      return [];
+    }
   }
   public canUse(room: Room, owner: Player) {
     return owner.canUseCard(room, new CardMatcher({ name: ['slash'] }));
