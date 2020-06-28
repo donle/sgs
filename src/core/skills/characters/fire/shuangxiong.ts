@@ -1,4 +1,4 @@
-import { VirtualCard } from 'core/cards/card';
+import { Card, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Duel } from 'core/cards/standard/duel';
@@ -40,10 +40,9 @@ export class ShuangXiong extends ViewAsSkill implements OnDefineReleaseTiming {
 
   public isAvailableCard(room: Room, owner: Player, pendingCardId: CardId): boolean {
     return (
-      ((room.getFlag<boolean>(owner.Id, ShuangXiong.Red) === true &&
-        !Sanguosha.getCardById(pendingCardId).isRed()) ||
-      (room.getFlag<boolean>(owner.Id, ShuangXiong.Black) === true &&
-        !Sanguosha.getCardById(pendingCardId).isBlack())) &&
+      ((room.getFlag<boolean>(owner.Id, ShuangXiong.Red) === true && !Sanguosha.getCardById(pendingCardId).isRed()) ||
+        (room.getFlag<boolean>(owner.Id, ShuangXiong.Black) === true &&
+          !Sanguosha.getCardById(pendingCardId).isBlack())) &&
       owner.cardFrom(pendingCardId) === PlayerCardsArea.HandArea
     );
   }
@@ -64,80 +63,75 @@ export class ShuangXiong extends ViewAsSkill implements OnDefineReleaseTiming {
 export class ShuangXiongShadow extends TriggerSkill {
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.DrawCardEvent | GameEventIdentifiers.DamageEvent>,
-    stage: AllStage
+    stage: AllStage,
   ): boolean {
-    const unknownEvent =  EventPacker.getIdentifier(event);
+    const unknownEvent = EventPacker.getIdentifier(event);
     return (
-      (unknownEvent === GameEventIdentifiers.DrawCardEvent &&
-        stage === DrawCardStage.BeforeDrawCardEffect) ||
-      (unknownEvent === GameEventIdentifiers.DamageEvent &&
-        stage === DamageEffectStage.AfterDamagedEffect)
+      (unknownEvent === GameEventIdentifiers.DrawCardEvent && stage === DrawCardStage.BeforeDrawCardEffect) ||
+      (unknownEvent === GameEventIdentifiers.DamageEvent && stage === DamageEffectStage.AfterDamagedEffect)
     );
   }
 
   private findSlash(room: Room, fromId: string): CardId[] {
-    const toObtain = room.Analytics.getCardResponseRecord(fromId, true).reduce<CardId[]>(
-      (toObtain, responseEvent) => {
-        if (
-          responseEvent.responseToEvent &&
-          EventPacker.getIdentifier(responseEvent.responseToEvent) === GameEventIdentifiers.CardEffectEvent
-        ) {
-          const cardEffectEvent = responseEvent.responseToEvent as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>;
+    return room.Analytics.getRecordEvents<GameEventIdentifiers.CardResponseEvent>(
+      (event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>) => {
+        if (EventPacker.getIdentifier(event) !== GameEventIdentifiers.CardResponseEvent) {
+          return false;
+        }
+
+        const { responseToEvent } = event;
+
+        if (responseToEvent && EventPacker.getIdentifier(responseToEvent) === GameEventIdentifiers.CardEffectEvent) {
+          const cardEffectEvent = responseToEvent as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>;
           const card = Sanguosha.getCardById(cardEffectEvent.cardId);
           if (card.GeneralName === 'duel' && card.isVirtualCard()) {
             const shuangxiongCard = card as VirtualCard;
 
-            let responseCardIds: CardId[] = [];
-            const responseCard = Sanguosha.getCardById(responseEvent.cardId);
-            if (responseCard.GeneralName === 'slash') {
-              if (responseCard.isVirtualCard()) {
-                const responseVirtualCard = responseCard as VirtualCard;
-                const subcards =  responseVirtualCard.ActualCardIds;
-                responseCardIds = subcards;
-              } else {
-                responseCardIds.push(responseEvent.cardId);
-              }
-            }
+            const responseCard = Sanguosha.getCardById(event.cardId);
+            const hasRealResponseCard = responseCard.isVirtualCard()
+              ? (responseCard as VirtualCard).ActualCardIds.length > 0
+              : true;
 
-            if (responseCardIds.length > 0 && shuangxiongCard.GeneratedBySkill === this.GeneralName) {
-              for (const cardId in responseCardIds) {
-                if (!toObtain.includes(cardId) && room.isCardInDropStack(cardId)) {
-                  toObtain.push(cardId);
-                }
-              }
-            }
+            return hasRealResponseCard && shuangxiongCard.GeneratedBySkill === this.GeneralName;
           }
         }
 
-        return toObtain;
+        return false;
       },
-      []
+    ).reduce<CardId[]>(
+      (cards, event) => [
+        ...cards,
+        ...Card.getActualCards([event.cardId]).filter(
+          cardId => room.isCardInDropStack(cardId) && !cards.includes(cardId),
+        ),
+      ],
+      [],
     );
-
-    return toObtain;
   }
 
   public canUse(
     room: Room,
     owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.DrawCardEvent | GameEventIdentifiers.DamageEvent>
+    event: ServerEventFinder<GameEventIdentifiers.DrawCardEvent | GameEventIdentifiers.DamageEvent>,
   ): boolean {
-    const unknownEvent =  EventPacker.getIdentifier(event);
+    const unknownEvent = EventPacker.getIdentifier(event);
     if (unknownEvent === GameEventIdentifiers.DrawCardEvent) {
       const drawEvent = event as ServerEventFinder<GameEventIdentifiers.DrawCardEvent>;
       return owner.Id === drawEvent.fromId && room.CurrentPlayerPhase === PlayerPhase.DrawCardStage;
     } else if (unknownEvent === GameEventIdentifiers.DamageEvent) {
       const damageEvent = event as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-      if (damageEvent.cardIds &&
+      if (
+        damageEvent.cardIds &&
         damageEvent.cardIds.length === 1 &&
-        Sanguosha.getCardById(damageEvent.cardIds[0]).isVirtualCard()) {
+        Sanguosha.getCardById(damageEvent.cardIds[0]).isVirtualCard()
+      ) {
         const damageCard = Sanguosha.getCardById(damageEvent.cardIds[0]) as VirtualCard;
-        
+
         return (
           owner.Id === damageEvent.toId &&
           damageCard.GeneratedBySkill === this.GeneralName &&
           damageEvent.fromId !== undefined &&
-          this.findSlash(room, damageEvent.fromId).length > 0
+          this.findSlash(room, owner.Id).length > 0
         );
       }
     }
@@ -178,17 +172,14 @@ export class ShuangXiongShadow extends TriggerSkill {
         cardIds: displayCards,
         amount: 1,
       };
-  
+
       room.notify(
         GameEventIdentifiers.AskForChoosingCardEvent,
         EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardEvent>(chooseCardEvent),
         fromId,
       );
-  
-      const response = await room.onReceivingAsyncReponseFrom(
-        GameEventIdentifiers.AskForChoosingCardEvent,
-        fromId,
-      );
+
+      const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingCardEvent, fromId);
 
       if (response.selectedCards === undefined) {
         response.selectedCards = [displayCards[0]];

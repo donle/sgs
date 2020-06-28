@@ -30,18 +30,18 @@ export class RecordAnalytics {
 
   public getRecordEvents<T extends GameEventIdentifiers>(
     matcherFunction: (event: ServerEventFinder<T>) => boolean,
-    player: PlayerId,
+    player?: PlayerId,
     currentRound?: boolean,
     inPhase?: PlayerPhase[],
   ): ServerEventFinder<T>[] {
     if (currentRound) {
       if (inPhase !== undefined) {
-        const events = inPhase.reduce<ServerEventFinder<T>[]>((events, phase) => {
+        const events = inPhase.reduce<ServerEventFinder<T>[]>((selectedEvents, phase) => {
           const phaseEvents = this.currentRoundEvents[phase] as ServerEventFinder<T>[];
-          phaseEvents && events.push(...phaseEvents);
-          return events;
+          phaseEvents && selectedEvents.push(...phaseEvents);
+          return selectedEvents;
         }, []);
-        return events.filter(event => matcherFunction(event) && player === this.currentPlayerId);
+        return events.filter(event => matcherFunction(event) && (!player || player === this.currentPlayerId));
       } else {
         const events = Object.values(this.currentRoundEvents).reduce<ServerEventFinder<T>[]>(
           (allEvents, phaseEvents) => {
@@ -50,7 +50,7 @@ export class RecordAnalytics {
           },
           [],
         );
-        return events.filter(event => matcherFunction(event) && player === this.currentPlayerId);
+        return events.filter(event => matcherFunction(event) && (!player || player === this.currentPlayerId));
       }
     } else {
       return (this.events as any).filter(matcherFunction);

@@ -402,10 +402,6 @@ export class GameProcessor {
         }
 
         do {
-          if (this.playerStages.length === 0) {
-            break;
-          }
-
           await this.onHandleIncomingEvent(
             GameEventIdentifiers.PhaseStageChangeEvent,
             EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseStageChangeEvent, {

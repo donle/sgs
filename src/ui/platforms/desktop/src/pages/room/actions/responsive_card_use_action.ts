@@ -111,7 +111,7 @@ export class ResponsiveUseCardAction<
         return matcher.match(card);
       } else if (fromArea === PlayerCardsArea.EquipArea) {
         if (card.Skill instanceof ViewAsSkill) {
-          return new CardMatcher({ name: card.Skill.canViewAs(this.store.room, this.player, this.selectedCards) }).match(this.matcher);
+          return new CardMatcher({ name: card.Skill.canViewAs(this.store.room, this.player, this.pendingCards) }).match(this.matcher);
         }
       }
     }
