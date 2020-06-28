@@ -68,7 +68,7 @@ export class LieGongDamage extends TriggerSkill {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} used skill {1}, damage increases to {2}',
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
-      this.Name,
+      this.GeneralName,
       damageEvent.damage + 1,
     ).extract();
     return true;

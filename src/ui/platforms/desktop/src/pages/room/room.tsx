@@ -188,6 +188,7 @@ export class RoomPage extends React.Component<
               onClickConfirmButton={this.store.confirmButtonAction}
               onClickCancelButton={this.store.cancelButtonAction}
               onClickFinishButton={this.store.finishButtonAction}
+              onClickReforgeButton={this.store.reforgeButtonAction}
               onClick={this.store.onClickHandCardToPlay}
               onClickEquipment={this.store.onClickEquipmentToDoAction}
               onClickPlayer={this.store.onClickPlayer}

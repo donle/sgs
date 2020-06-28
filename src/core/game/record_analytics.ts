@@ -8,84 +8,12 @@ type MovingCardType = {
   fromArea?: CardMoveArea | PlayerCardsArea;
 };
 
-export interface AnalyticsActions {
-  getRecoveredHpReord(
-    player: PlayerId,
-    currentRound?: boolean,
-    inPhase?: PlayerPhase[],
-  ): ServerEventFinder<GameEventIdentifiers.RecoverEvent>[];
-  getDamageReord(
-    player: PlayerId,
-    currentRound?: boolean,
-    inPhase?: PlayerPhase[],
-  ): ServerEventFinder<GameEventIdentifiers.DamageEvent>[];
-  getDamagedReord(
-    player: PlayerId,
-    currentRound?: boolean,
-    inPhase?: PlayerPhase[],
-  ): ServerEventFinder<GameEventIdentifiers.DamageEvent>[];
-  getLostHpReord(
-    player: PlayerId,
-    currentRound?: boolean,
-    inPhase?: PlayerPhase[],
-  ): ServerEventFinder<GameEventIdentifiers.LoseHpEvent>[];
-  getCardUseRecord(
-    player: PlayerId,
-    currentRound?: boolean,
-    inPhase?: PlayerPhase[],
-  ): ServerEventFinder<GameEventIdentifiers.CardUseEvent>[];
-  getCardResponseRecord(
-    player: PlayerId,
-    currentRound?: boolean,
-    inPhase?: PlayerPhase[],
-  ): ServerEventFinder<GameEventIdentifiers.CardResponseEvent>[];
-  getCardLostRecord(
-    player: PlayerId,
-    currentRound?: boolean,
-    inPhase?: PlayerPhase[],
-  ): ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[];
-  getCardObtainedRecord(
-    player: PlayerId,
-    currentRound?: boolean,
-    inPhase?: PlayerPhase[],
-  ): ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[];
-  getCardDrawRecord(
-    player: PlayerId,
-    currentRound?: boolean,
-    inPhase?: PlayerPhase[],
-  ): ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[];
-  getCardDropRecord(
-    player: PlayerId,
-    currentRound?: boolean,
-    inPhase?: PlayerPhase[],
-  ): ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[];
-  getCardMoveRecord(
-    player: PlayerId,
-    currentRound?: boolean,
-    inPhase?: PlayerPhase[],
-  ): ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[];
-
-  getRecoveredHp(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]): number;
-  getDamage(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]): number;
-  getDamaged(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]): number;
-  getLostHp(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]): number;
-  getUsedCard(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]): CardId[];
-  getResponsedCard(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]): CardId[];
-  getLostCard(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]): MovingCardType[];
-  getObtainedCard(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]): CardId[];
-  getDrawedCard(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]): CardId[];
-  getDroppedCard(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]): CardId[];
-  getMovedCard(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]): MovingCardType[];
-
-  turnTo(currentPlayer: PlayerId): void;
-}
-
-export class RecordAnalytics implements AnalyticsActions {
-  public events: ServerEventFinder<GameEventIdentifiers>[] = [];
-  public currentRoundEvents: {
+export class RecordAnalytics {
+  private events: ServerEventFinder<GameEventIdentifiers>[] = [];
+  private currentRoundEvents: {
     [P in PlayerPhase]?: ServerEventFinder<GameEventIdentifiers>[];
   } = {};
-  public currentPlayerId: PlayerId;
+  private currentPlayerId: PlayerId;
 
   public turnTo(currentPlayer: PlayerId) {
     this.currentRoundEvents = {};
@@ -100,29 +28,29 @@ export class RecordAnalytics implements AnalyticsActions {
     }
   }
 
-  private getRecordEvents<T extends GameEventIdentifiers>(
+  public getRecordEvents<T extends GameEventIdentifiers>(
     matcherFunction: (event: ServerEventFinder<T>) => boolean,
-    player: PlayerId,
+    player?: PlayerId,
     currentRound?: boolean,
     inPhase?: PlayerPhase[],
   ): ServerEventFinder<T>[] {
     if (currentRound) {
       if (inPhase !== undefined) {
-        const events = inPhase.reduce<ServerEventFinder<GameEventIdentifiers>[]>((events, phase) => {
-          const phaseEvents = this.currentRoundEvents[phase];
-          phaseEvents && events.push(...phaseEvents);
-          return events;
+        const events = inPhase.reduce<ServerEventFinder<T>[]>((selectedEvents, phase) => {
+          const phaseEvents = this.currentRoundEvents[phase] as ServerEventFinder<T>[];
+          phaseEvents && selectedEvents.push(...phaseEvents);
+          return selectedEvents;
         }, []);
-        return (events as any[]).filter(event => matcherFunction(event) && player === this.currentPlayerId);
+        return events.filter(event => matcherFunction(event) && (!player || player === this.currentPlayerId));
       } else {
-        const events = Object.values(this.currentRoundEvents).reduce<ServerEventFinder<GameEventIdentifiers>[]>(
+        const events = Object.values(this.currentRoundEvents).reduce<ServerEventFinder<T>[]>(
           (allEvents, phaseEvents) => {
-            phaseEvents && allEvents.push(...phaseEvents);
+            phaseEvents && allEvents.push(...(phaseEvents as ServerEventFinder<T>[]));
             return allEvents;
           },
           [],
         );
-        return (events as any[]).filter(event => matcherFunction(event) && player === this.currentPlayerId);
+        return events.filter(event => matcherFunction(event) && (!player || player === this.currentPlayerId));
       }
     } else {
       return (this.events as any).filter(matcherFunction);

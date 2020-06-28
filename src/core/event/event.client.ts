@@ -34,6 +34,10 @@ export interface ClientEvent extends EventUtilities {
     cardIds?: CardId[];
     toIds?: PlayerId[];
   };
+  [GameEventIdentifiers.ReforgeEvent]: {
+    fromId: PlayerId;
+    cardId: CardId;
+  }
   [GameEventIdentifiers.LoseHpEvent]: {
     lostHp: number;
     fromId: PlayerId;
@@ -179,4 +183,8 @@ type PlayerCardOrSkillInnerEvent =
   | {
       eventName: GameEventIdentifiers.SkillUseEvent;
       event: ClientEvent[GameEventIdentifiers.SkillUseEvent];
+    }
+  | {
+      eventName: GameEventIdentifiers.ReforgeEvent;
+      event: ClientEvent[GameEventIdentifiers.ReforgeEvent];
     };

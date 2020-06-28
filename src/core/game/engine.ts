@@ -103,7 +103,7 @@ export class Sanguosha {
   public static getCardByName<T extends Card>(cardName: string): T {
     this.tryToThrowUninitializedError();
 
-    const card = Sanguosha.cards.find(card => card.GeneralName === cardName) as T | undefined;
+    const card = Sanguosha.cards.find(card => card.Name === cardName) as T | undefined;
     return Precondition.exists(card, `Unable to find the card by name: ${cardName}`);
   }
 

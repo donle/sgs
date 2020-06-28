@@ -27,6 +27,17 @@ export { QiLinGongSkill } from './cards/standard/qilingong';
 export { RenWangDunSkill } from './cards/standard/renwangdun';
 export { HanBingJianSkill } from './cards/standard/hanbingjian';
 
+export { ThunderSlashSkill } from './cards/legion_fight/thunder_slash';
+export { FireSlashSkill } from './cards/legion_fight/fire_slash';
+export { FireAttackSkill } from './cards/legion_fight/fire_attack';
+export { BingLiangCunDuanSkill } from './cards/legion_fight/bingliangcunduan';
+export { GuDingDaoSkill } from './cards/legion_fight/gudingdao';
+export { ZhuQueYuShanSkill } from './cards/legion_fight/zhuqueyushan';
+export { TengJiaSkill } from './cards/legion_fight/tengjia';
+export { BaiYinShiZiSkill } from './cards/legion_fight/baiyinshizi';
+export { TieSuoLianHuanSkill } from './cards/legion_fight/tiesuolianhuan';
+export { AlcoholSkill } from './cards/legion_fight/alcohol';
+
 export { Hujia } from './characters/standard/hujia';
 export { JianXiong } from './characters/standard/jianxiong';
 export { JiJiang, JiJiangShadow } from './characters/standard/jijiang';
@@ -64,8 +75,8 @@ export { GuoSe } from './characters/standard/guose';
 export { LiuLi } from './characters/standard/liuli';
 export { QiXi } from './characters/standard/qixi';
 export { FenWei } from './characters/standard/fenwei';
-export { PaoXiao } from './characters/standard/paoxiao';
-export { TiShen, TiShenShadow } from './characters/standard/tishen';
+export { PaoXiao, PaoXiaoShadow, PaoXiaoRemove } from './characters/standard/paoxiao';
+export { TiShen } from './characters/standard/tishen';
 export { KuRou } from './characters/standard/kurou';
 export { ZhaXiang, ZhaXiangShadow, ZhaXiangDistance } from './characters/standard/zhaxiang';
 export { WuSheng, WuShengShadow } from './characters/standard/wusheng';
@@ -106,6 +117,19 @@ export { ShenSu } from './characters/wind/shensu';
 export { SheBian } from './characters/wind/shebian';
 
 export { Jianchu } from './characters/fire/jianchu';
+export { QiangXi, QiangXiShadow } from './characters/fire/qiangxi';
+export { QuHu } from './characters/fire/quhu';
+export { JieMing } from './characters/fire/jieming';
+export { BaZhen } from './characters/fire/bazhen';
+export { HuoJi } from './characters/fire/huoji';
+export { KanPo } from './characters/fire/kanpo';
+export { CangZhuo, CangZhuoShadow } from './characters/fire/cangzhuo';
+export { LianHuan, LianHuanShadow } from './characters/fire/lianhuan';
+export { NiePan } from './characters/fire/niepan';
+export { LuanJi, LuanJiShadow } from './characters/fire/luanji';
+export { XueYi, XueYiShadow, XueYiBuff } from './characters/fire/xueyi';
+export { TianYi, TianYiRemove, TianYiExtra, TianYiBlock } from './characters/fire/tianyi';
+export { ShuangXiong, ShuangXiongShadow, ShuangXiongRemove } from './characters/fire/shuangxiong';
 
 export { FeiYing } from './characters/god/feiying';
 export { GuiXin } from './characters/god/guixin';

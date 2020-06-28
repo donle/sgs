@@ -44,6 +44,9 @@ export class RoomStore {
   displayedCards: Card[] = [];
 
   @mobx.observable.ref
+  canReforge: boolean = false;
+
+  @mobx.observable.ref
   updateUIFlag: boolean = false;
 
   @mobx.observable.ref
@@ -54,10 +57,12 @@ export class RoomStore {
     confirm: boolean;
     cancel: boolean;
     finish: boolean;
+    reforge: boolean;
   } = {
     confirm: false,
     cancel: false,
     finish: false,
+    reforge: false,
   };
 
   @mobx.observable.ref
@@ -95,6 +100,8 @@ export class RoomStore {
   cancelButtonAction: (() => void) | undefined;
   @mobx.observable.ref
   finishButtonAction: (() => void) | undefined;
+  @mobx.observable.ref
+  reforgeButtonAction: (() => void) | undefined;
 }
 
 export class RoomPresenter {
@@ -129,11 +136,11 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  enableActionButton(...buttons: ('confirm' | 'cancel' | 'finish')[]) {
+  enableActionButton(...buttons: ('confirm' | 'cancel' | 'finish' | 'reforge')[]) {
     buttons.forEach(btn => (this.store.actionButtonStatus[btn] = true));
   }
   @mobx.action
-  disableActionButton(...buttons: ('confirm' | 'cancel' | 'finish')[]) {
+  disableActionButton(...buttons: ('confirm' | 'cancel' | 'finish' | 'reforge')[]) {
     buttons.forEach(btn => (this.store.actionButtonStatus[btn] = false));
   }
 
@@ -207,6 +214,15 @@ export class RoomPresenter {
   };
 
   @mobx.action
+  enableCardReforgeStatus() {
+    this.store.canReforge = true;
+  }
+  @mobx.action
+  disableCardReforgeStatus() {
+    this.store.canReforge = false;
+  }
+
+  @mobx.action
   closeIncomingConversation() {
     this.store.incomingConversation = undefined;
   }
@@ -259,6 +275,17 @@ export class RoomPresenter {
       handler();
     });
   }
+
+  @mobx.action
+  defineReforgeButtonActions(handler: () => void) {
+    this.store.reforgeButtonAction = mobx.action(() => {
+      this.store.actionButtonStatus.reforge = false;
+      this.store.actionButtonStatus.confirm = false;
+      this.store.reforgeButtonAction = undefined;
+      handler();
+    });
+  }
+
   @mobx.action
   defineFinishButtonActions(handler: () => void) {
     this.store.actionButtonStatus.finish = true;
@@ -266,6 +293,7 @@ export class RoomPresenter {
       this.store.actionButtonStatus.finish = false;
       this.store.actionButtonStatus.confirm = false;
       this.store.actionButtonStatus.cancel = false;
+      this.store.actionButtonStatus.reforge = false;
       this.store.finishButtonAction = undefined;
       handler();
     });
@@ -276,6 +304,7 @@ export class RoomPresenter {
     this.store.cancelButtonAction = mobx.action(() => {
       this.store.actionButtonStatus.cancel = false;
       this.store.actionButtonStatus.confirm = false;
+      this.store.actionButtonStatus.reforge = false;
       this.store.cancelButtonAction = undefined;
       handler();
     });

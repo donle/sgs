@@ -108,6 +108,8 @@ export const enum AimStage {
 export const enum CardUseStage {
   PreCardUse = 'PreCardUse',
   BeforeCardUseEffect = 'BeforeCardUseEffect',
+  AfterCardUseDeclared = 'AfterCardUseDeclared',
+  AfterCardTargetDeclared = 'AfterCardTargetDeclared',
   CardUsing = 'CardUsing',
   AfterCardUseEffect = 'AfterCardUseEffect',
   CardUseFinishedEffect = 'CardUseFinishedEffect',
@@ -191,6 +193,12 @@ export const enum TurnOverStage {
   TurnedOver = 'TurnedOver',
 }
 
+export const enum ChainLockStage {
+  BeforeChainingOn = 'BeforeChainingOn',
+  Chaining = 'Chaining',
+  AfterChainedOn = 'AfterChainedOn',
+}
+
 export const enum LoseHpStage {
   BeforeLoseHp = 'BeforeLoseHp',
   LosingHp = 'LosingHp',
@@ -223,7 +231,8 @@ export type GameEventStage =
   | LoseHpStage
   | CardMoveStage
   | TurnOverStage
-  | HpChangeStage;
+  | HpChangeStage
+  | ChainLockStage;
 
 export type AllStage = PlayerPhaseStages | GameEventStage;
 
@@ -237,6 +246,8 @@ const gameEventStageList: {
   ],
   [GameEventIdentifiers.CardUseEvent]: [
     CardUseStage.BeforeCardUseEffect,
+    CardUseStage.AfterCardUseDeclared,
+    CardUseStage.AfterCardTargetDeclared,
     CardUseStage.CardUsing,
     CardUseStage.AfterCardUseEffect,
     CardUseStage.CardUseFinishedEffect,
@@ -316,6 +327,11 @@ const gameEventStageList: {
     HpChangeStage.BeforeHpChange,
     HpChangeStage.HpChanging,
     HpChangeStage.AtferHpChange,
+  ],
+  [GameEventIdentifiers.ChainLockedEvent]: [
+    ChainLockStage.BeforeChainingOn,
+    ChainLockStage.Chaining,
+    ChainLockStage.AfterChainedOn,
   ],
   [GameEventIdentifiers.LoseHpEvent]: [LoseHpStage.BeforeLoseHp, LoseHpStage.LosingHp, LoseHpStage.AfterLostHp],
   [GameEventIdentifiers.PlayerTurnOverEvent]: [TurnOverStage.TurningOver, TurnOverStage.TurnedOver],

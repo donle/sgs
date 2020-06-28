@@ -4,7 +4,6 @@ import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { TriggerSkill } from 'core/skills/skill';
-import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { RoomPresenter, RoomStore } from '../room.presenter';
 import { BaseAction } from './base_action';
@@ -32,13 +31,9 @@ export class SkillUseAction extends BaseAction {
 
       if (invokeSkillNames.length === 1) {
         const skillName = invokeSkillNames[0];
-        const translatedConversation = TranslationPack.translationJsonPatcher(
-          'do you want to trigger skill {0} ?',
-          skillName,
-        ).extract();
-
+        const skill = Sanguosha.getSkillBySkillName<TriggerSkill>(skillName);
         this.presenter.createIncomingConversation({
-          conversation: translatedConversation,
+          conversation: skill.SkillLog,
           translator,
         });
 
@@ -46,7 +41,6 @@ export class SkillUseAction extends BaseAction {
           invoke: undefined,
           fromId: toId,
         };
-        const skill = Sanguosha.getSkillBySkillName<TriggerSkill>(skillName);
         this.selectSkill(skill);
         this.onPlay();
         this.enableToCallAction() && this.presenter.enableActionButton('confirm');
