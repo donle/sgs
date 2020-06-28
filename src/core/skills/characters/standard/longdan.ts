@@ -34,7 +34,7 @@ export class LongDan extends ViewAsSkill {
       return [];
     }
   }
-  
+
   public canUse(room: Room, owner: Player) {
     return (
       owner.canUseCard(room, new CardMatcher({ name: ['slash'] })) ||
@@ -68,12 +68,17 @@ export class LongDan extends ViewAsSkill {
 
       return canUse && owner.cardFrom(pendingCardId) === PlayerCardsArea.HandArea;
     } else {
-      return (
-        (Sanguosha.getCardById(pendingCardId).GeneralName === 'jink' ||
-        Sanguosha.getCardById(pendingCardId).GeneralName === 'peach' ||
-        Sanguosha.getCardById(pendingCardId).GeneralName === 'alcohol') &&
-        owner.cardFrom(pendingCardId) === PlayerCardsArea.HandArea
-      );
+      const fromHandArea = owner.cardFrom(pendingCardId) === PlayerCardsArea.HandArea;
+      const card = Sanguosha.getCardById(pendingCardId);
+      if (card.GeneralName === 'jink') {
+        return fromHandArea && owner.canUseCard(room, new CardMatcher({ name: ['slash'] }));
+      } else if (card.GeneralName === 'alcohol') {
+        return fromHandArea && owner.canUseCard(room, new CardMatcher({ name: ['peach'] }));
+      } else if (card.GeneralName === 'peach') {
+        return fromHandArea && owner.canUseCard(room, new CardMatcher({ name: ['alcohol'] }));
+      }
+
+      return false;
     }
   }
 

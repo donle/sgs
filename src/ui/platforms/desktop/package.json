@@ -79,7 +79,7 @@
     "sync:win": "rimraf ./src/core ./build && xcopy ..\\..\\..\\core .\\src\\core /s /i",
     "start:mac": "yarn sync:mac && NODE_PATH=./src node scripts/start.js",
     "build:mac": "yarn sync:mac && GENERATE_SOURCEMAP=false DEV_MODE=prod NODE_PATH=./src node scripts/build.js",
-    "start:win": "yarn sync:win && cross-env NODE_PATH=./src DEV_MODE=prod node scripts/start.js",
+    "start:win": "yarn sync:win && cross-env NODE_PATH=./src node scripts/start.js",
     "build:win": "yarn sync:win && cross-env NODE_PATH=./src GENERATE_SOURCEMAP=false DEV_MODE=prod node scripts/build.js",
     "electron:win": "yarn build:win && cross-env tsc ./tools/electron --outDir ./build/ && cross-env NODE_ENV=production electron .",
     "electron:mac": "yarn build:mac && NODE_ENV=production electron .",

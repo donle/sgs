@@ -399,8 +399,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'tishen_description',
-    target:
-      '准备阶段开始时，你可以将体力回复至体力上限，然后摸X张牌（X为你以此法回复的体力值）。',
+    target: '<b>限定技</b>，准备阶段开始时，你可以将体力回复至体力上限，然后摸X张牌（X为你以此法回复的体力值）。',
   },
   {
     source: 'guanxing_description',
@@ -408,11 +407,14 @@ export const skillDescriptions: Word[] = [
       '准备阶段，你可以观看牌堆顶的五张牌（存活人数小于四时改为三张），然后以任意顺序放回牌堆顶或牌堆底。若你将这些牌均放至牌堆底，则结束阶段开始时你可以再发动一次“观星”。',
   },
   { source: 'kongcheng_description', target: '<b>锁定技</b>，若你没有手牌，你不能成为【杀】或【决斗】的目标。' },
-  { source: 'longdan_description', target: '你可以将一张【杀】当【闪】、【闪】当【杀】、【桃】当【酒】、【酒】当【桃】使用或打出。' },
+  {
+    source: 'longdan_description',
+    target: '你可以将一张【杀】当【闪】、【闪】当【杀】、【桃】当【酒】、【酒】当【桃】使用或打出。',
+  },
   {
     source: 'yajiao_description',
     target:
-      '当你于回合外使用或打出手牌时，你可以展示牌堆顶一张牌，若此牌与你使用或打出的牌类别：相同，你可以将之交给一名角色；不同，你可以弃置攻击范围内含有你的角色区域内的一张牌。',
+      '当你于回合外使用或打出手牌时，你可以展示牌堆顶一张牌，若此牌与你使用或打出的牌类别：相同，你可以将之交给一名角色；不同，你可以弃置攻击范围内含有你的一名角色区域内的一张牌。',
   },
   { source: 'mashu_description', target: '<b>锁定技</b>，你计算与其他角色的距离-1。' },
   {
@@ -516,8 +518,7 @@ export const skillDescriptions: Word[] = [
   { source: 'biyue_description', target: '结束阶段开始时，你可以摸一张牌。若你没有手牌，则改为摸两张牌。' },
   {
     source: 'yaowu_description',
-    target:
-      '<b>锁定技</b>，当你受到【杀】造成的伤害时，若此【杀】：为红色，伤害来源回复1点体力或摸一张牌；不为红色，则你摸一张牌。',
+    target: '<b>锁定技</b>，当你受到伤害时，若造成伤害的牌：为红色，伤害来源摸一张牌；不为红色，你摸一张牌。',
   },
   { source: 'wangzun_description', target: '主公的准备阶段开始时，你可以摸一张牌，并令其本回合内手牌上限-1。' },
   {
@@ -1139,7 +1140,7 @@ export const eventDictionary: Word[] = [
   { source: '{0} move {1} cards onto the top of character card', target: '{0} 将 {1} 张牌置于了武将牌上' },
   { source: '{0}: please present a hand card', target: '你成为了 {0} 的目标，请展示一张手牌' },
   { source: '{0} used skill {1}, transfrom {2} into {3}', target: '{0} 使用了技能 【{1}】，将 {2} 改为了 {3} 使用' },
-  { source: '{0}: please choose a player to obtain {1}', target: '{0}：你可以将 【{1}】 交给一名角色' },
+  { source: '{0}: please choose a player to obtain {1}', target: '{0}：你可以将 {1} 交给一名角色' },
   { source: '{0}: please choose a player to drop', target: '{0}：你可以弃置攻击范围内含有你的一名角色区域内的一张牌' },
   {
     source: 'please drop a {0} hand card to hit {1} 1 hp of damage type fire',
