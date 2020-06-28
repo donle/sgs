@@ -1,3 +1,4 @@
+import { CardChoosingOptions } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardMoveStage } from 'core/game/stage_processor';
@@ -26,62 +27,122 @@ export class YaJiao extends TriggerSkill {
   }
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const { triggeredOnEvent } = skillUseEvent;
+    const { fromId, triggeredOnEvent } = skillUseEvent;
     const cardUseOrResponseEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
     const card = room.getCards(1, 'top');
     const cardDisplayEvent: ServerEventFinder<GameEventIdentifiers.CardDisplayEvent> = {
-      fromId: skillUseEvent.fromId,
+      fromId,
       displayCards: card,
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} displayed cards {1} from top of draw stack',
-        TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
+        TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
         TranslationPack.patchCardInTranslation(...card),
       ).extract(),
     };
     room.broadcast(GameEventIdentifiers.CardDisplayEvent, cardDisplayEvent);
 
-    const choosePlayerEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
-      players: room.AlivePlayers.map(p => p.Id),
-      requiredAmount: 1,
-      conversation: 'please choose a player',
-      toId: skillUseEvent.fromId,
-      triggeredBySkills: [this.Name],
-    };
-    room.notify(
-      GameEventIdentifiers.AskForChoosingPlayerEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingPlayerEvent>(choosePlayerEvent),
-      skillUseEvent.fromId,
-    );
-    const { selectedPlayers } = await room.onReceivingAsyncReponseFrom(
-      GameEventIdentifiers.AskForChoosingPlayerEvent,
-      skillUseEvent.fromId,
-    );
-    const selectedPlayer = selectedPlayers && selectedPlayers.length > 0 ? selectedPlayers[0] : skillUseEvent.fromId;
-    await room.moveCards({
-      movingCards: card.map(cardId => ({ card: cardId, fromArea: CardMoveArea.ProcessingArea })),
-      proposer: skillUseEvent.fromId,
-      toId: selectedPlayer,
-      toArea: CardMoveArea.HandArea,
-      moveReason: CardMoveReason.ActivePrey,
-    });
-
     const lostCard = Sanguosha.getCardById(cardUseOrResponseEvent.movingCards[0].card);
     const obtainedCard = Sanguosha.getCardById(card[0]);
-    if (lostCard.BaseType !== obtainedCard.BaseType) {
-      const response = await room.askForCardDrop(
-        skillUseEvent.fromId,
-        1,
-        [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
-        true,
-      );
+    const sameType = lostCard.BaseType === obtainedCard.BaseType;
 
-      await room.dropCards(
-        CardMoveReason.SelfDrop,
-        response.droppedCards,
-        skillUseEvent.fromId,
-        skillUseEvent.fromId,
-        this.Name,
-      );
+    const from = room.getPlayerById(fromId);
+    const targets = room.AlivePlayers
+      .filter(
+        player => player.getAttackDistance(room) >= room.distanceBetween(player, from) &&
+        player !== from &&
+        player.getCardIds().length > 0
+      ).map(p => p.Id);
+
+    if (!sameType && targets.length < 1) {
+      room.bury(...card);
+      return false;
+    }
+
+    const choosePlayerEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
+      players: sameType
+        ? room.AlivePlayers.map(p => p.Id)
+        : targets,
+      requiredAmount: 1,
+      conversation: sameType
+        ? TranslationPack.translationJsonPatcher(
+            '{0}: please choose a player to obtain {1}',
+            this.Name,
+            TranslationPack.patchCardInTranslation(card[0]),
+          ).extract()
+        : TranslationPack.translationJsonPatcher(
+            '{0}: please choose a player to drop',
+            this.Name,
+          ).extract(),
+      toId: fromId,
+      triggeredBySkills: [this.Name],
+    };
+
+    room.notify(
+      GameEventIdentifiers.AskForChoosingPlayerEvent,
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForChoosingPlayerEvent, choosePlayerEvent),
+      fromId,
+    );
+
+    const { selectedPlayers } = await room.onReceivingAsyncReponseFrom(
+      GameEventIdentifiers.AskForChoosingPlayerEvent,
+      fromId,
+    );
+
+    if (selectedPlayers && selectedPlayers.length === 1) {
+      if (sameType) {
+        await room.moveCards({
+          movingCards: card.map(cardId => ({ card: cardId, fromArea: CardMoveArea.ProcessingArea })),
+          proposer: fromId,
+          toId: selectedPlayers[0],
+          toArea: CardMoveArea.HandArea,
+          moveReason: CardMoveReason.ActiveMove,
+          movedByReason: this.Name,
+        });
+      } else {
+        const to = room.getPlayerById(selectedPlayers[0]);
+        if (to.getCardIds().length === 0) {
+          return false;
+        }
+    
+        const options: CardChoosingOptions = {
+          [PlayerCardsArea.JudgeArea]: to.getCardIds(PlayerCardsArea.JudgeArea),
+          [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),
+          [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea).length,
+        };
+    
+        const chooseCardEvent = {
+          fromId,
+          toId: to.Id,
+          options,
+        };
+    
+        room.notify(
+          GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
+          EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(chooseCardEvent),
+          fromId,
+        );
+    
+        const response = await room.onReceivingAsyncReponseFrom(
+          GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
+          fromId,
+        );
+    
+        if (response.selectedCard === undefined) {
+          response.selectedCard = to.getCardIds(PlayerCardsArea.HandArea)[response.selectedCardIndex!];
+        }
+    
+        await room.dropCards(
+          CardMoveReason.PassiveDrop,
+          [response.selectedCard],
+          chooseCardEvent.toId,
+          chooseCardEvent.fromId,
+          this.Name,
+        );
+
+        room.bury(...card);
+      }
+    } else {
+      room.bury(...card);
     }
 
     return true;
