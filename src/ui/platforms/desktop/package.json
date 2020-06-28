@@ -108,7 +108,7 @@
     "@types/socket.io-client": "^1.4.32",
     "awesome-typescript-loader": "^5.2.1",
     "create-react-app": "^3.4.0",
-    "cross-env": "^6.0.3",
+    "cross-env": "^7.0.2",
     "css-loader": "^3.4.2",
     "css-modules-typescript-loader": "^4.0.0",
     "electron": "^9.0.0",

@@ -6,8 +6,13 @@ const uiConfig: UiConfigTypes = {
   language: Languages.ZH_CN,
 };
 
+const clientFlavorMap: { [M in DevMode]: ClientFlavor } = {
+  [DevMode.Dev]: ClientFlavor.Dev,
+  [DevMode.Prod]: ClientFlavor.Prod,
+};
+
 export const getClientConfg = (mode: DevMode): ClientConfigTypes => ({
   ui: uiConfig,
   host: hostConfig[mode],
-  flavor: ClientFlavor.Dev,
+  flavor: clientFlavorMap[mode],
 });

@@ -195,7 +195,7 @@
 
 .playerTags {
     position: absolute;
-    top: calc(gridLine * 3);
+    top: calc(gridLine * 4);
     left: calc(gridLine * 3);
     font-size: 14px;
     font-weight: 600;
