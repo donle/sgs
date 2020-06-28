@@ -24,7 +24,6 @@
         "variable-declaration": "onespace"
       }
     ],
-    "ban-single-arg-parens": true,
     "curly": true,
     "label-position": true,
     "no-arg": true,

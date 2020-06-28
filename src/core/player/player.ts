@@ -357,7 +357,7 @@ export abstract class Player implements PlayerInfo {
       }
 
       const skill = this.getSkills<ViewAsSkill>('viewAs').find(skill => {
-        const viewAsCards = skill.canViewAs();
+        const viewAsCards = skill.canViewAs(room, this);
         return (
           skill.canUse(room, this) && CardMatcher.match(CardMatcher.addTag({ name: viewAsCards }), cardMatcherOrId)
         );
@@ -370,7 +370,7 @@ export abstract class Player implements PlayerInfo {
       }
 
       const card = Sanguosha.getCardById(cardMatcherOrId);
-      const skill = this.getSkills<ViewAsSkill>('viewAs').find(skill => skill.canViewAs().includes(card.GeneralName));
+      const skill = this.getSkills<ViewAsSkill>('viewAs').find(skill => skill.canViewAs(room, this).includes(card.GeneralName));
 
       return !!skill;
     }

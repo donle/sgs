@@ -37,6 +37,7 @@ export type DashboardProps = {
   onClick?(card: Card, selected: boolean): void;
   onClickEquipment?(card: Card, selected: boolean): void;
   onClickConfirmButton?(): void;
+  onClickReforgeButton?(): void;
   onClickCancelButton?(): void;
   onClickFinishButton?(): void;
   onClickSkill?(skill: Skill, selected: boolean): void;
@@ -206,9 +207,16 @@ export class Dashboard extends React.Component<DashboardProps> {
         {this.props.store.inAction && <PlayingBar className={styles.playBar} />}
         {this.getPlayerJudgeCards()}
         <div className={styles.userActionsButtons}>
-          <button disabled={!this.props.store.actionButtonStatus.confirm} onClick={this.props.onClickConfirmButton}>
-            {this.props.translator.tr('confirm')}
-          </button>
+          {!this.props.store.canReforge && (
+            <button disabled={!this.props.store.actionButtonStatus.confirm} onClick={this.props.onClickConfirmButton}>
+              {this.props.translator.tr('confirm')}
+            </button>
+          )}
+          {this.props.store.canReforge && (
+            <button disabled={!this.props.store.actionButtonStatus.reforge} onClick={this.props.onClickReforgeButton}>
+              {this.props.translator.tr('reforge')}
+            </button>
+          )}
           <button disabled={!this.props.store.actionButtonStatus.cancel} onClick={this.props.onClickCancelButton}>
             {this.props.translator.tr('cancel')}
           </button>

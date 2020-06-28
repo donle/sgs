@@ -18,6 +18,7 @@ import {
   CardMoveStage,
   CardResponseStage,
   CardUseStage,
+  ChainLockStage,
   DamageEffectStage,
   DrawCardStage,
   GameEventStage,
@@ -45,6 +46,7 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ServerRoom } from '../room/room.server';
 import { Sanguosha } from './engine';
+import { DamageType } from './game_props';
 import { GameCommonRules } from './game_rules';
 
 export class GameProcessor {
@@ -282,8 +284,11 @@ export class GameProcessor {
             if (await this.room.preUseCard(event)) {
               await this.room.useCard(event);
             }
-          } else {
+          } else if (response.eventName === GameEventIdentifiers.SkillUseEvent) {
             await this.room.useSkill(response.event as ClientEventFinder<GameEventIdentifiers.SkillUseEvent>);
+          } else {
+            const reforgeEvent = response.event as ClientEventFinder<GameEventIdentifiers.ReforgeEvent>;
+            await this.room.reforge(reforgeEvent.cardId, this.room.getPlayerById(reforgeEvent.fromId));
           }
 
           if (this.CurrentPlayer.Dead) {
@@ -373,6 +378,7 @@ export class GameProcessor {
               for (const skill of player.getSkills()) {
                 if (this.currentPlayerPhase === PlayerPhase.PrepareStage) {
                   player.resetCardUseHistory();
+                  player.hasDrunk() && this.room.clearHeaded(player.Id);
                 } else {
                   player.resetCardUseHistory('slash');
                 }
@@ -396,10 +402,6 @@ export class GameProcessor {
         }
 
         do {
-          if (this.playerStages.length === 0) {
-            break;
-          }
-
           await this.onHandleIncomingEvent(
             GameEventIdentifiers.PhaseStageChangeEvent,
             EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseStageChangeEvent, {
@@ -452,8 +454,8 @@ export class GameProcessor {
                   TranslationPack.patchCardInTranslation(event.cardId),
                   TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(event.fromId)),
                   event.toIds
-                    ? TranslationPack.wrapArrayParams(
-                        ...event.toIds.map(toId => this.room.getPlayerById(toId).Character.Name),
+                    ? TranslationPack.patchPlayerInTranslation(
+                        ...event.toIds.map(toId => this.room.getPlayerById(toId)),
                       )
                     : '',
                 ).extract()
@@ -462,8 +464,8 @@ export class GameProcessor {
                   'wuxiekeji',
                   TranslationPack.patchCardInTranslation(event.cardId),
                   event.toIds
-                    ? TranslationPack.wrapArrayParams(
-                        ...event.toIds.map(toId => this.room.getPlayerById(toId).Character.Name),
+                    ? TranslationPack.patchPlayerInTranslation(
+                        ...event.toIds.map(toId => this.room.getPlayerById(toId)),
                       )
                     : '',
                 ).extract(),
@@ -602,8 +604,8 @@ export class GameProcessor {
         await this.onHandleDamgeEvent(identifier as GameEventIdentifiers.DamageEvent, event as any, onActualExecuted);
         break;
       case GameEventIdentifiers.PinDianEvent:
-        await this.onHandleAskForPinDianEvent(
-          identifier as GameEventIdentifiers.AskForPinDianCardEvent,
+        await this.onHandlePinDianEvent(
+          identifier as GameEventIdentifiers.PinDianEvent,
           event as any,
           onActualExecuted,
         );
@@ -687,6 +689,13 @@ export class GameProcessor {
       case GameEventIdentifiers.HpChangeEvent:
         await this.onHandleHpChangeEvent(
           identifier as GameEventIdentifiers.HpChangeEvent,
+          event as any,
+          onActualExecuted,
+        );
+        break;
+      case GameEventIdentifiers.ChainLockedEvent:
+        await this.onHandleChainLockedEvent(
+          identifier as GameEventIdentifiers.ChainLockedEvent,
           event as any,
           onActualExecuted,
         );
@@ -844,8 +853,30 @@ export class GameProcessor {
             EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerDyingEvent, dyingEvent),
           );
         }
+
+        if (to.ChainLocked && event.damageType !== DamageType.Normal) {
+          await this.room.chainedOn(to.Id);
+          await this.onChainedDamage(event);
+        }
       }
     });
+  }
+
+  private async onChainedDamage(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
+    if (event.isFromChainedDamage) {
+      return;
+    }
+
+    for (const player of this.room.getAlivePlayersFrom()) {
+      if (player.ChainLocked) {
+        await this.room.damage({
+          ...event,
+          toId: player.Id,
+          isFromChainedDamage: true,
+          beginnerOfTheDamage: event.fromId,
+        });
+      }
+    }
   }
 
   private async onHandleDyingEvent(
@@ -1092,7 +1123,7 @@ export class GameProcessor {
       }
     }
 
-    this.room.broadcast(GameEventIdentifiers.CustomGameDialog, { translationsMessage: event.translationsMessage });
+    this.room.broadcast(GameEventIdentifiers.CardUseEvent, event);
     event.translationsMessage = undefined;
 
     if (!this.room.isCardOnProcessing(event.cardId) && !card.is(CardType.DelayedTrick)) {
@@ -1165,7 +1196,7 @@ export class GameProcessor {
         TranslationPack.patchCardInTranslation(event.cardId),
       ).extract();
     }
-    this.room.broadcast(GameEventIdentifiers.CustomGameDialog, { translationsMessage: event.translationsMessage });
+    this.room.broadcast(GameEventIdentifiers.CardResponseEvent, event);
     event.translationsMessage = undefined;
 
     if (!this.room.isCardOnProcessing(event.cardId)) {
@@ -1430,12 +1461,12 @@ export class GameProcessor {
     this.room.bury(event.judgeCardId);
   }
 
-  private async onHandleAskForPinDianEvent(
-    identifier: GameEventIdentifiers.AskForPinDianCardEvent,
-    event: ServerEventFinder<GameEventIdentifiers.AskForPinDianCardEvent>,
+  private async onHandlePinDianEvent(
+    identifier: GameEventIdentifiers.PinDianEvent,
+    event: ServerEventFinder<GameEventIdentifiers.PinDianEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    return await this.iterateEachStage(identifier, event, onActualExecuted);
+    return await this.iterateEachStage(GameEventIdentifiers.PinDianEvent, event, onActualExecuted);
   }
 
   private async onHandlePhaseChangeEvent(
@@ -1572,6 +1603,20 @@ export class GameProcessor {
           return true;
         });
         EventPacker.copyPropertiesTo(hpChangeEvent, event);
+      }
+    });
+  }
+
+  private async onHandleChainLockedEvent(
+    identifier: GameEventIdentifiers.ChainLockedEvent,
+    event: ServerEventFinder<GameEventIdentifiers.ChainLockedEvent>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
+  ) {
+    return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      if (stage === ChainLockStage.Chaining) {
+        const player = this.room.getPlayerById(event.toId);
+        player.ChainLocked = event.linked;
+        this.room.broadcast(identifier, event);
       }
     });
   }

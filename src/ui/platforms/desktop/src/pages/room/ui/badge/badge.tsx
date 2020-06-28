@@ -13,9 +13,13 @@ import judgePhaseBadge from './images/judge_phase.png';
 import playPhaseBadge from './images/play_phase.png';
 import preparePhaseBadge from './images/prepare_phase.png';
 import qunBadge from './images/qun.png';
+import qunLordBadge from './images/qun_lord.png';
 import shuBadge from './images/shu.png';
+import shuLordBadge from './images/shu_lord.png';
 import weiBadge from './images/wei.png';
+import weiLordBadge from './images/wei_lord.png';
 import wuBadge from './images/wu.png';
+import wuLordBadge from './images/wu_lord.png';
 
 const nationalityBadgeImageMap: { [K in CharacterNationality]: string } = {
   [CharacterNationality.Wei]: weiBadge,
@@ -23,6 +27,12 @@ const nationalityBadgeImageMap: { [K in CharacterNationality]: string } = {
   [CharacterNationality.Wu]: wuBadge,
   [CharacterNationality.Qun]: qunBadge,
   [CharacterNationality.God]: godBadge,
+};
+const lordNationalityBadgeImageMap: { [K in CharacterNationality]?: string } = {
+  [CharacterNationality.Wei]: weiLordBadge,
+  [CharacterNationality.Shu]: shuLordBadge,
+  [CharacterNationality.Wu]: wuLordBadge,
+  [CharacterNationality.Qun]: qunLordBadge,
 };
 const phaseBadgeImageMap: { [K in PlayerPhase]: string } = {
   [PlayerPhase.PrepareStage]: preparePhaseBadge,
@@ -32,6 +42,12 @@ const phaseBadgeImageMap: { [K in PlayerPhase]: string } = {
   [PlayerPhase.PlayCardStage]: playPhaseBadge,
   [PlayerPhase.FinishStage]: finishPhaseBadge,
 };
+
+function getNationalityBadge(nationality: CharacterNationality, isLord?: boolean) {
+  return isLord
+    ? lordNationalityBadgeImageMap[nationality] || nationalityBadgeImageMap[nationality]
+    : nationalityBadgeImageMap[nationality];
+}
 
 export type BadgeProps = {
   className?: string;
@@ -45,10 +61,11 @@ export const Badge = (props: BadgeProps) => {
 
 export type NationalityBadgeProps = BadgeProps & {
   nationality: CharacterNationality;
+  isLord?: boolean;
 };
 
 export const NationalityBadge = (props: NationalityBadgeProps) => {
-  const { nationality, className, children, ...badgeProps } = props;
+  const { nationality, className, children, isLord, ...badgeProps } = props;
   return (
     <Badge
       {...badgeProps}
@@ -61,7 +78,7 @@ export const NationalityBadge = (props: NationalityBadgeProps) => {
       })}
     >
       <span className={styles.badgeContext}>{children}</span>
-      <img className={styles.nationalityBadge} src={nationalityBadgeImageMap[nationality]} alt={''} />
+      <img className={styles.nationalityBadge} src={getNationalityBadge(nationality, isLord)} alt={''} />
     </Badge>
   );
 };
@@ -74,7 +91,11 @@ export const PlayerPhaseBadge = (props: {
   const { stage, className, translator } = props;
   return (
     <Badge className={classNames(styles.playerPhase, className)}>
-      <img className={styles.playerPhaseBadge} src={phaseBadgeImageMap[stage]} alt={translator.tr(Functional.getPlayerPhaseRarText(stage))} />
+      <img
+        className={styles.playerPhaseBadge}
+        src={phaseBadgeImageMap[stage]}
+        alt={translator.tr(Functional.getPlayerPhaseRarText(stage))}
+      />
     </Badge>
   );
 };

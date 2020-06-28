@@ -92,6 +92,8 @@ export abstract class BaseAction {
     this.pendingCards = [];
 
     this.presenter.disableActionButton('confirm');
+    this.presenter.disableActionButton('reforge');
+    this.presenter.disableCardReforgeStatus();
     this.onResetAction();
     this.presenter.broadcastUIUpdate();
   };
@@ -220,7 +222,7 @@ export abstract class BaseAction {
       } else if (fromArea === PlayerCardsArea.EquipArea) {
         if (card.Skill instanceof ViewAsSkill) {
           return (
-            player.canUseCard(this.store.room, new CardMatcher({ name: card.Skill.canViewAs() })) &&
+            player.canUseCard(this.store.room, new CardMatcher({ name: card.Skill.canViewAs(this.store.room, player, this.pendingCards) })) &&
             card.Skill.canUse(this.store.room, player)
           );
         } else if (card.Skill instanceof ActiveSkill) {
@@ -399,7 +401,7 @@ export abstract class BaseAction {
         this.selectedSkillToPlay instanceof ViewAsSkill &&
         this.selectedSkillToPlay.cardFilter(this.store.room, this.player, this.pendingCards)
       ) {
-        const canViewAs = this.selectedSkillToPlay.canViewAs().filter(cardName => {
+        const canViewAs = this.selectedSkillToPlay.canViewAs(this.store.room, this.player, this.pendingCards).filter(cardName => {
           if (!matcher) {
             return (
               !(Sanguosha.getCardByName(cardName).Skill instanceof ResponsiveSkill) &&
@@ -442,7 +444,7 @@ export abstract class BaseAction {
       this.selectedSkillToPlay instanceof ViewAsSkill &&
       this.selectedSkillToPlay.cardFilter(this.store.room, this.player, this.pendingCards)
     ) {
-      const canViewAs = this.selectedSkillToPlay.canViewAs().filter(cardName => {
+      const canViewAs = this.selectedSkillToPlay.canViewAs(this.store.room, this.player, this.pendingCards).filter(cardName => {
         if (!matcher) {
           return (
             !(Sanguosha.getCardByName(cardName).Skill instanceof ResponsiveSkill) &&
@@ -480,5 +482,5 @@ export abstract class BaseAction {
     this.callToActionCheck();
   }
   // tslint:disable-next-line:no-empty
-  protected onResetAction() {}
+  protected onResetAction() { }
 }

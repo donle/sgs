@@ -1,4 +1,4 @@
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -27,10 +27,16 @@ export class YaoWu extends TriggerSkill {
       return false;
     }
 
-    return owner.Id === toId && card.GeneralName === 'slash';
+    return owner.Id === toId;
   }
 
   public async onTrigger(room: Room, content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    content.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} activated skill {1}',
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(content.fromId)),
+      this.Name,
+    ).extract();
+
     return true;
   }
 
@@ -39,47 +45,11 @@ export class YaoWu extends TriggerSkill {
     const { fromId, cardIds } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
 
     if (Sanguosha.getCardById(cardIds![0]).isRed()) {
-      let selectedOption: string | undefined;
-
-      if (fromId === undefined) {
-        return false;
-      }
-      const source = room.getPlayerById(fromId);
-      const from = room.getPlayerById(skillUseEvent.fromId);
-      if (source.Hp < source.MaxHp) {
-        const chooseOptionEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
-          toId: fromId,
-          options: ['yaowu:recover', 'yaowu:draw'],
-          conversation: TranslationPack.translationJsonPatcher(
-            '{0} used skill {1} to you, please choose',
-            TranslationPack.patchPlayerInTranslation(from),
-            this.Name,
-          ).extract(),
-          askedBy: skillUseEvent.fromId,
-        };
-        room.notify(
-          GameEventIdentifiers.AskForChoosingOptionsEvent,
-          EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(chooseOptionEvent),
-          fromId,
-        );
-        const response = await room.onReceivingAsyncReponseFrom(
-          GameEventIdentifiers.AskForChoosingOptionsEvent,
-          fromId,
-        );
-        selectedOption = response.selectedOption;
-      }
-
-      if (!selectedOption || selectedOption === 'yaowu:draw') {
-        await room.drawCards(1, fromId, 'top', undefined, this.Name);
-      } else {
-        await room.recover({
-          recoveredHp: 1,
-          toId: fromId,
-        });
-      }
+      await room.drawCards(1, fromId, 'top', undefined, this.Name);
     } else {
       await room.drawCards(1, skillUseEvent.fromId, 'top', undefined, this.Name);
     }
+
     return true;
   }
 }

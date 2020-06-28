@@ -136,8 +136,12 @@ export class GameCommonRules {
 
   public static getAdditionalHoldCardNumber(room: Room, user: Player) {
     GameCommonRules.preCheck(user);
+    let additionalCardHold = this.userRules[user.Id].additionalHold;
+    user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
+      additionalCardHold += skill.breakAdditionalCardHoldNumber(room, user);
+    });
 
-    return this.userRules[user.Id].additionalHold;
+    return additionalCardHold;
   }
 
   public static addCardUsableTimes(cardMatcher: CardMatcher, times: number, user: Player) {

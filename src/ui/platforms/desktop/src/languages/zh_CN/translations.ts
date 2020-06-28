@@ -4,7 +4,7 @@ export const cardDictionary: Word[] = [
   { source: 'slash', target: '杀' },
   { source: 'jink', target: '闪' },
   { source: 'peach', target: '桃' },
-  { source: 'wine', target: '酒' },
+  { source: 'alcohol', target: '酒' },
   { source: 'qinggang', target: '青釭剑' },
   { source: 'zixin', target: '紫骍' },
   { source: 'dayuan', target: '大宛' },
@@ -34,6 +34,16 @@ export const cardDictionary: Word[] = [
   { source: 'cixiongjian', target: '雌雄双股剑' },
   { source: 'renwangdun', target: '仁王盾' },
   { source: 'hanbingjian', target: '寒冰剑' },
+  { source: 'fire_slash', target: '火杀' },
+  { source: 'thunder_slash', target: '雷杀' },
+  { source: 'fire_attack', target: '火攻' },
+  { source: 'bingliangcunduan', target: '兵粮寸断' },
+  { source: 'gudingdao', target: '古锭刀' },
+  { source: 'zhuqueyushan', target: '朱雀羽扇' },
+  { source: 'tengjia', target: '藤甲' },
+  { source: 'baiyinshizi', target: '白银狮子' },
+  { source: 'hualiu', target: '骅骝' },
+  { source: 'tiesuolianhuan', target: '铁索连环' },
 ];
 
 export const characterDictionary: Word[] = [
@@ -179,6 +189,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'huangzhong', target: '黄忠' },
   { source: 'liegong', target: '烈弓' },
+  { source: '#liegong', target: '烈弓' },
 
   { source: 'weiyan', target: '魏延' },
   { source: 'kuanggu', target: '狂骨' },
@@ -215,7 +226,7 @@ export const characterDictionary: Word[] = [
   { source: 'lianhuan', target: '连环' },
   { source: 'niepan', target: '涅槃' },
 
-  { source: 'wolong', target: '诸葛亮' },
+  { source: 'wolong', target: '卧龙诸葛亮' },
   { source: 'bazhen', target: '八阵' },
   { source: 'huoji', target: '火计' },
   { source: 'kanpo', target: '看破' },
@@ -223,16 +234,23 @@ export const characterDictionary: Word[] = [
 
   { source: 'taishici', target: '太史慈' },
   { source: 'tianyi', target: '天义' },
+  { source: 'tianyi_win', target: '天义[赢]' },
+  { source: 'tianyi_lose', target: '天义[没赢]' },
 
   { source: 'pangde', target: '庞德' },
   { source: 'jianchu', target: '鞬出' },
 
   { source: 'yanliangwenchou', target: '颜良文丑' },
   { source: 'shuangxiong', target: '双雄' },
+  { source: '#shuangxiong', target: '双雄' },
+  { source: 'shuangxiong_red', target: '双雄[非红]' },
+  { source: 'shuangxiong_black', target: '双雄[非黑]' },
 
   { source: 'yuanshao', target: '袁绍' },
   { source: 'luanji', target: '乱击' },
+  { source: '#luanji', target: '乱击' },
   { source: 'xueyi', target: '血裔' },
+  { source: '#xueyi', target: '血裔' },
 
   { source: 'caopi', target: '曹丕' },
   { source: 'xingshang', target: '行殇' },
@@ -377,12 +395,11 @@ export const skillDescriptions: Word[] = [
   {
     source: 'paoxiao_description',
     target:
-      '<b>锁定技</b>，你使用【杀】无次数限制；出牌阶段，若你于此阶段内使用过【杀】，你于此阶段使用【杀】无距离限制。',
+      '<b>锁定技</b>，你使用【杀】无次数限制；若你使用的【杀】被抵消，则当你于此回合内使用【杀】造成下一次伤害时，此伤害+1。',
   },
   {
     source: 'tishen_description',
-    target:
-      '出牌阶段结束时，你可以弃置所有锦囊牌和坐骑牌，然后直到你的下回合开始，获得所有以你为目标且未对你造成伤害的【杀】。',
+    target: '<b>限定技</b>，准备阶段开始时，你可以将体力回复至体力上限，然后摸X张牌（X为你以此法回复的体力值）。',
   },
   {
     source: 'guanxing_description',
@@ -390,11 +407,14 @@ export const skillDescriptions: Word[] = [
       '准备阶段，你可以观看牌堆顶的五张牌（存活人数小于四时改为三张），然后以任意顺序放回牌堆顶或牌堆底。若你将这些牌均放至牌堆底，则结束阶段开始时你可以再发动一次“观星”。',
   },
   { source: 'kongcheng_description', target: '<b>锁定技</b>，若你没有手牌，你不能成为【杀】或【决斗】的目标。' },
-  { source: 'longdan_description', target: '你可以将一张【杀】当【闪】、【闪】当【杀】使用或打出。' },
+  {
+    source: 'longdan_description',
+    target: '你可以将一张【杀】当【闪】、【闪】当【杀】、【桃】当【酒】、【酒】当【桃】使用或打出。',
+  },
   {
     source: 'yajiao_description',
     target:
-      '当你于回合外使用或打出手牌时，你可以展示牌堆顶一张牌并将其交给一名角色。若这两张牌类别不同，你弃置一张牌。',
+      '当你于回合外使用或打出手牌时，你可以展示牌堆顶一张牌，若此牌与你使用或打出的牌类别：相同，你可以将之交给一名角色；不同，你可以弃置攻击范围内含有你的一名角色区域内的一张牌。',
   },
   { source: 'mashu_description', target: '<b>锁定技</b>，你计算与其他角色的距离-1。' },
   {
@@ -498,8 +518,7 @@ export const skillDescriptions: Word[] = [
   { source: 'biyue_description', target: '结束阶段开始时，你可以摸一张牌。若你没有手牌，则改为摸两张牌。' },
   {
     source: 'yaowu_description',
-    target:
-      '<b>锁定技</b>，当你受到【杀】造成的伤害时，若此【杀】：为红色，伤害来源回复1点体力或摸一张牌；不为红色，则你摸一张牌。',
+    target: '<b>锁定技</b>，当你受到伤害时，若造成伤害的牌：为红色，伤害来源摸一张牌；不为红色，你摸一张牌。',
   },
   { source: 'wangzun_description', target: '主公的准备阶段开始时，你可以摸一张牌，并令其本回合内手牌上限-1。' },
   {
@@ -591,7 +610,8 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'qiangxi_description',
-    target: '出牌阶段限两次，你可以失去1点体力或弃置一张武器牌，并对一名未以此法指定过的其他角色造成1点伤害。',
+    target:
+      '出牌阶段限两次，你可以失去1点体力或弃置一张武器牌，并对本回合内你未以此法指定过的一名其他角色造成1点伤害。',
   },
   {
     source: 'quhu_description',
@@ -820,6 +840,7 @@ export const generalDictionary: Word[] = [
   { source: 'cheat', target: '作弊' },
   { source: 'cheat_description', target: '可以获得任意牌（仅用于测试）' },
   { source: 'standard', target: '标准版' },
+  { source: 'legion_fight', target: '军争篇' },
   { source: 'wind', target: '风' },
   { source: 'forest', target: '林' },
   { source: 'fire', target: '火' },
@@ -1011,6 +1032,17 @@ export const eventDictionary: Word[] = [
   { source: '{0} displayed guhuo cards {1}', target: '{0} 展示了蛊惑牌 {1}' },
   { source: '{0} displayed cards {1} from top of draw stack', target: '{0} 展示了牌堆顶的一张 {1}' },
   { source: 'please choose another player or click cancel', target: '请选择一名其他角色或点击取消' },
+  { source: '{0} reforged card {1}', target: '{0} 重铸了 {1}' },
+  { source: '{0} {1} character card', target: '{0} {1} 了武将牌' },
+  { source: 'rotate', target: '横置' },
+  { source: 'reset', target: '重置' },
+  {
+    source: '{0} proposed a pindian event, please choose a hand card to pindian',
+    target: '{0} 对你发起了拼点，请选择一张手牌用于拼点',
+  },
+  { source: '{0} used {1} to respond pindian', target: '{0} 展示了拼点牌 {1}' },
+  { source: 'pindian result:{0} win', target: '拼点结果为 {0} 赢' },
+  { source: 'pindian result:draw', target: '拼点结果为 平局<' },
   {
     source: "please drop a {0} card, otherwise you can't do response of slash",
     target: '请弃置一张 {0} 牌，否则此杀不可被响应',
@@ -1048,6 +1080,7 @@ export const eventDictionary: Word[] = [
   { source: '{0} is placed into drop stack', target: '{0} 置入了弃牌堆' },
   { source: '{0} responses card {1}', target: '{0} 打出了一张 {1}' },
   { source: 'please drop {0} cards', target: '请弃置 {0} 张牌' },
+  { source: '{0} skipped draw stage', target: '{0} 跳过了摸牌阶段' },
   { source: '{0} skipped play stage', target: '{0} 跳过了出牌阶段' },
   { source: '{0} is dying', target: '{0} 进入了濒死阶段' },
   {
@@ -1093,15 +1126,27 @@ export const eventDictionary: Word[] = [
     target: '是否打出一张 【{0}】 来响应 {2} 的 【{1}】',
   },
   { source: '{0} display hand card {1} from {2}', target: '{0} 展示了 {2} 的一张 {1}' },
+  { source: '{0} display hand card {1}', target: '{0} 展示了 {1}' },
   { source: '{0} lost {1} hand card', target: '{0} 失去了 {1} 张手牌' },
   { source: 'please choose', target: '请选择' },
   { source: 'please choose a player', target: '请选择一名角色' },
   { source: '{0} place card {1} from {2} on the top of draw stack', target: '{0} 将 {2} 的 {1} 置于了牌堆顶' },
   { source: 'recover {0} hp for {1}', target: '是否回复 {1} {0} 点体力' },
   { source: '{0} used skill {1}, damage increases to {2}', target: '{0} 使用了技能 【{1}】，伤害增加至 {2} 点' },
+  { source: '{0} activated skill {1}, damage reduces to {2}', target: '{0} 触发了技能 【{1}】，伤害减少至 {2} 点' },
   { source: '{0} used skill {1} to you, please present a hand card', target: '{0} 使用了技能 【{1}】，请展示一张手牌' },
+  { source: '{0} used {1} to you, please present a hand card', target: '{0} 对你使用了 {1}，请展示一张手牌' },
   { source: '{0} move cards {1} onto the top of character card', target: '{0} 将 {1} 置于了武将牌上' },
   { source: '{0} move {1} cards onto the top of character card', target: '{0} 将 {1} 张牌置于了武将牌上' },
+  { source: '{0}: please present a hand card', target: '你成为了 {0} 的目标，请展示一张手牌' },
+  { source: '{0} used skill {1}, transfrom {2} into {3}', target: '{0} 使用了技能 【{1}】，将 {2} 改为了 {3} 使用' },
+  { source: '{0}: please choose a player to obtain {1}', target: '{0}：你可以将 {1} 交给一名角色' },
+  { source: '{0}: please choose a player to drop', target: '{0}：你可以弃置攻击范围内含有你的一名角色区域内的一张牌' },
+  {
+    source: 'please drop a {0} hand card to hit {1} 1 hp of damage type fire',
+    target: '请弃置一张 {0} 手牌，对 {1} 造成1点火焰伤害',
+  },
+  { source: 'please choose a player to get a damage from {0}', target: '请选择一名角色受到来自 {0} 的 1 点伤害' },
   {
     source: 'Obtain Basic Card, Equip Card and Duel in display cards?',
     target: '裸衣：是否放弃摸牌，然后获取展示牌中的基本牌、装备牌和【决斗】',
@@ -1203,6 +1248,10 @@ export const UiDictionary: Word[] = [
   {
     source: 'confirm',
     target: '确定',
+  },
+  {
+    source: 'reforge',
+    target: '重铸',
   },
   {
     source: 'cancel',

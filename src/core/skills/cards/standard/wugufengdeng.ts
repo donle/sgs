@@ -107,7 +107,7 @@ export class WuGuFengDengSkill extends ActiveSkill {
       }
     }
 
-    room.broadcast(GameEventIdentifiers.ContinuouslyChoosingCardFinishEvent, {
+    room.broadcast(GameEventIdentifiers.ObserveCardFinishEvent, {
       translationsMessage:
         droppedCards.length > 0
           ? TranslationPack.translationJsonPatcher(

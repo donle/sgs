@@ -14,7 +14,7 @@ import { PinDianResultType } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { GameInfo } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
-import { AnalyticsActions, RecordAnalytics } from 'core/game/record_analytics';
+import { RecordAnalytics } from 'core/game/record_analytics';
 import { AllStage, GameEventStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Socket } from 'core/network/socket';
 import { Player } from 'core/player/player';
@@ -96,6 +96,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract async responseCard(event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>): Promise<void>;
   //Server only
+  public abstract async chainedOn(playerId: PlayerId): Promise<void>;
+  //Server only
   public abstract bury(...cardIds: CardId[]): void;
   //Server only
   public abstract isBuried(cardId: CardId): boolean;
@@ -112,6 +114,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract async pindian(fromId: PlayerId, toIds: PlayerId[]): Promise<PinDianResultType | undefined>;
   public abstract async turnOver(playerId: PlayerId): Promise<void>;
+
+  //Server only
+  public abstract clearHeaded(toId: PlayerId): void;
 
   public abstract async gameStart(...args: any[]): Promise<void>;
   public abstract get CurrentPlayerStage(): PlayerPhaseStages;
@@ -485,7 +490,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return this.gameInfo;
   }
 
-  public get Analytics(): AnalyticsActions {
+  public get Analytics(): RecordAnalytics {
     return this.analytics;
   }
 

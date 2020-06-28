@@ -51,6 +51,10 @@ export abstract class Card {
   private readonly cardTargetNumber: CardTargetEnum = CardTargetEnum.Single;
   private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.Single;
 
+  public get Reforgeable() {
+    return false;
+  }
+
   public static getActualCards(cards: CardId[]): CardId[] {
     let result: CardId[] = [];
     for (const card of cards) {
@@ -301,6 +305,10 @@ export class VirtualCard<T extends Card = Card> extends Card {
 
   public get BaseType() {
     return this.viewAs.BaseType;
+  }
+
+  public get Reforgeable() {
+    return this.viewAs.Reforgeable;
   }
 
   public get Id(): VirtualCardId {

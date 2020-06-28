@@ -70,6 +70,7 @@ export class JieDaoShaRenSkill extends ActiveSkill {
         cardUserId: event.fromId,
         scopedTargets: [target],
         cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
+        extraUse: true,
         conversation: TranslationPack.translationJsonPatcher(
           'please use a {0} to player {1} to response {2}',
           'slash',
