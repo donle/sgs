@@ -153,4 +153,5 @@
     height: calc(100% - calc(gridLine * 2));
     background-color: #cc1b0d;
     opacity: 0.3;
+    z-index: -1;
 }
