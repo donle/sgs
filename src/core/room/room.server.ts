@@ -391,11 +391,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       if (responseEvent.cardId === undefined || (await this.preUseCard(preUseEvent))) {
         responseEvent.cardId = preUseEvent.cardId;
         responseEvent.fromId = preUseEvent.fromId;
+        EventPacker.copyPropertiesTo(preUseEvent, responseEvent);
         break;
       } else {
         responseEvent.cardId = undefined;
       }
-    } while (player.hasCard(this, new CardMatcher({ name: ['peach'] })));
+    } while (
+      player.hasCard(this, new CardMatcher({ name: event.fromId === event.toId ? ['peach', 'alcohol'] : ['peach'] }))
+    );
 
     return responseEvent;
   }

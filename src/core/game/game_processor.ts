@@ -916,6 +916,7 @@ export class GameProcessor {
                 cardId: response.cardId,
                 toIds: [to.Id],
               };
+              EventPacker.copyPropertiesTo(response, cardUseEvent);
 
               await this.room.useCard(cardUseEvent);
             }

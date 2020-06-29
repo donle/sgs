@@ -34,8 +34,8 @@
 .playerImage {
     flex: auto;
     position: absolute;
-    width: calc(100% + 38px);
-    margin-left: -20px;
+    width: calc(100% + 34px);
+    margin-left: -17px;
     height: 100%;
     z-index: -2;
 }

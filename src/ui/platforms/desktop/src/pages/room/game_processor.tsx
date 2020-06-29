@@ -791,7 +791,9 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const askForPeachMatcher = new CardMatcher({ name: ['peach'] });
+    const askForPeachMatcher = new CardMatcher({
+      name: content.fromId === content.toId ? ['peach', 'alcohol'] : ['peach'],
+    });
     this.presenter.isSkillDisabled(
       ResponsiveUseCardAction.isSkillsOnResponsiveCardUseDisabled(
         this.store.room,
@@ -957,6 +959,7 @@ export class GameClientProcessor {
     const losers = loserIds.map(id => this.store.room.getPlayerById(id));
     this.presenter.createDialog(<GameOverDialog translator={this.translator} winners={winners} losers={losers} />);
     this.presenter.broadcastUIUpdate();
+    this.endAction();
     this.store.room.gameOver();
   }
 
@@ -1106,7 +1109,6 @@ export class GameClientProcessor {
             selectedCard.player &&
             TranslationPack.patchPlayerInTranslation(this.store.room.getPlayerById(selectedCard.player)),
         }))}
-
         translator={this.translator}
       />,
     );

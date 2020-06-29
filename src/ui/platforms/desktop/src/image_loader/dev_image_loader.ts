@@ -24,7 +24,11 @@ export class DevImageLoader implements ImageLoader {
   }
 
   public async getPlayerRoleCard(roleName: PlayerRole) {
-    return { src: `${remoteRoot}/images/system/death/${roleName}.png`, alt: Functional.getPlayerRoleRawText(roleName) };
+    const roleText = Functional.getPlayerRoleRawText(roleName);
+    return {
+      src: `${remoteRoot}/images/system/death/${roleText}.png`,
+      alt: roleText,
+    };
   }
   public async getOthersEquipCard(cardName: string) {
     return { src: `${remoteRoot}/images/others_equips/${cardName}.png`, alt: cardName };

@@ -8,6 +8,7 @@
     position: absolute;
     top: 0;
     left: 0;
+    height: 25%;
 }
 .equipCardName {
     flex: auto;
@@ -90,14 +91,19 @@
 }
 
 .equipSection {
-    width: 210px;
-    height: 176px;
+    width: 200px;
+    height: 166px;
     position: relative;
     align-self: flex-end;
 }
 .equipSlots {
     background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.53) 41%, rgba(0, 0, 0, 1) 100%);
     position: absolute;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: space-between;
 }
 
 .equipCardImage {

@@ -205,9 +205,6 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   public gameOver() {
     super.gameOver();
 
-    for (const player of this.AlivePlayers) {
-      this.kill(player);
-    }
     this.currentPlayerPhase = undefined as any;
     this.currentPlayer = undefined as any;
     this.currentPlayerStage = undefined as any;
