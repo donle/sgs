@@ -75,7 +75,7 @@ export class GameClientProcessor {
       this.presenter.closeIncomingConversation();
       this.presenter.endAction();
 
-      this.onPlayTrustedActionTimer = undefined;
+      this.endAction();
     }, 60 * 1000);
   }
   public endAction() {
@@ -1106,7 +1106,7 @@ export class GameClientProcessor {
             selectedCard.player &&
             TranslationPack.patchPlayerInTranslation(this.store.room.getPlayerById(selectedCard.player)),
         }))}
-        
+
         translator={this.translator}
       />,
     );
