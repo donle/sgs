@@ -74,7 +74,9 @@ export class MoveCard extends UiAnimation {
       .map(cardInfo => {
         return {
           cardId: cardInfo.card,
-          public: cardInfo.fromArea !== CardMoveArea.HandArea && content.moveReason !== CardMoveReason.CardDraw,
+          public:
+            !(cardInfo.fromArea === CardMoveArea.HandArea && content.toArea === CardMoveArea.HandArea) &&
+            content.moveReason !== CardMoveReason.CardDraw,
         };
       });
 

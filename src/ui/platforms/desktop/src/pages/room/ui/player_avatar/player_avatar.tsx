@@ -272,10 +272,17 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
         {clientPlayer && clientPlayer.Role !== PlayerRole.Unknown && (
           <Mask className={styles.playerRole} displayedRole={clientPlayer.Role} disabled={true} />
         )}
+
         {!clientPlayer?.isFaceUp() && (
           <img className={styles.status} src={this.props.imageLoader.getTurnedOverCover().src} alt="" />
         )}
+        {clientPlayer && clientPlayer.hasDrunk() > 0 && <div className={styles.drunk} />}
+        {clientPlayer && clientPlayer.ChainLocked && (
+          <img className={styles.chain} src={this.props.imageLoader.getChainImage().src} alt="" />
+        )}
+
         {this.PlayerRoleCard !== undefined && <this.PlayerRoleCard />}
+
         {this.getSkillButtons()}
         {clientPlayer && (
           <Hp hp={clientPlayer.Hp} className={styles.playerHp} maxHp={clientPlayer.MaxHp} size="regular" />

@@ -15,4 +15,5 @@ export interface ImageLoader {
   getUnknownCharacterImage(): ImageProps;
   getCardNumberBgImage(): ImageProps;
   getTurnedOverCover(): ImageProps;
+  getChainImage(): ImageProps;
 }

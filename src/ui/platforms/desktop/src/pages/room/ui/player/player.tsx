@@ -284,6 +284,11 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
             {!player.isFaceUp() && (
               <img className={styles.status} src={this.props.imageLoader.getTurnedOverCover().src} alt="" />
             )}
+            {player.hasDrunk() > 0 && <div className={styles.drunk} />}
+            {player.ChainLocked && (
+              <img className={styles.chain} src={this.props.imageLoader.getChainImage().src} alt="" />
+            )}
+    
             <p className={styles.playerSeats}>{translator.tr(`number ${player.Position}`)}</p>
           </>
         ) : (

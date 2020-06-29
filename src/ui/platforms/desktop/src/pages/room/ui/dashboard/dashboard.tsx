@@ -58,6 +58,7 @@ export class EquipCardItem extends React.Component<EquipCardItemProps> {
   selected: boolean = false;
   @mobx.observable.ref
   equipCardImage: string | undefined;
+  private cardName: string = this.props.card.Name;
 
   @mobx.action
   readonly onCardClick = () => {
@@ -78,6 +79,14 @@ export class EquipCardItem extends React.Component<EquipCardItemProps> {
   @mobx.action
   async componentDidMount() {
     this.equipCardImage = (await this.props.imageLoader.getSlimEquipCard(this.props.card.Name)).src;
+  }
+
+  @mobx.action
+  async componentDidUpdate() {
+    if (this.cardName !== this.props.card.Name) {
+      this.cardName = this.props.card.Name;
+      this.equipCardImage = (await this.props.imageLoader.getSlimEquipCard(this.props.card.Name)).src;
+    }
   }
 
   render() {

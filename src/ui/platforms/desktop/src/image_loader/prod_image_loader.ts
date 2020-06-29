@@ -3,6 +3,7 @@ import { Functional } from 'core/shares/libs/functional';
 import cardBackImage from './images/cards/cardback.webp';
 import backgroundImage from './images/system/background.jpg';
 import cardNumberBg from './images/system/cardNumBg.png';
+import chainImage from './images/system/chain.png';
 import emptySeatImage from './images/system/empty_seat.png';
 import unknownCharacterImage from './images/system/player_seat.png';
 import turnedOverCoverImage from './images/system/turn_over.png';
@@ -38,6 +39,10 @@ export class ProdImageLoader implements ImageLoader {
 
   getTurnedOverCover() {
     return { src: turnedOverCoverImage, alt: '' };
+  }
+
+  public getChainImage() {
+    return { alt: '', src: chainImage };
   }
 
   public async getOthersEquipCard(cardName: string) {

@@ -30,8 +30,12 @@ export class DevImageLoader implements ImageLoader {
     return { src: `${remoteRoot}/images/others_equips/${cardName}.png`, alt: cardName };
   }
 
+  public getChainImage() {
+    return { alt: '', src: `${remoteRoot}/images/system/chain.png` };
+  }
+
   public getBackgroundImage() {
-    return { alt: '' };
+    return { alt: '', src: 'https://s1.ax1x.com/2020/06/20/NM7tQs.jpg' };
   }
 
   public getEmptySeatImage() {

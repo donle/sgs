@@ -41,7 +41,7 @@
 .playerImage {
     flex: auto;
     position: absolute;
-    width: calc(100% + 40px);
+    width: calc(100% + 38px);
     margin-left: -20px;
     height: 100%;
     z-index: -2;
@@ -137,4 +137,19 @@
 }
 .clickableSkillTag {
     cursor: pointer;
+}
+
+.chain {
+    position: absolute;
+    align-self: center;
+    width: 100%;
+}
+
+.drunk {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: calc(100% - calc(gridLine * 2));
+    background-color: #cc1b0d;
+    opacity: 0.3;
 }
