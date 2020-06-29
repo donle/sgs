@@ -18,13 +18,13 @@ export const hostConfig: ServerConfigProps = {
   [DevMode.Dev]: {
     mode: DevMode.Dev,
     port: 2020,
-    host: '127.0.0.1',
+    host: 'localhost',
     protocol: 'http',
   },
   [DevMode.Prod]: {
     mode: DevMode.Prod,
     port: 2020,
-    host: '127.0.0.1',
+    host: '134.175.232.188',
     protocol: 'http',
   },
 };

@@ -1,17 +1,25 @@
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder, WorkPlace } from 'core/event/event';
 import { Socket } from 'core/network/socket';
 import { HostConfigProps } from 'core/shares/types/host_config';
-import IOSocketClient from 'socket.io-client';
+import IOSocketClient, { Manager } from 'socket.io-client';
 
 export class ClientSocket extends Socket<WorkPlace.Client> {
   protected roomId: string;
   private socketIO: SocketIOClient.Socket;
+  private manager: SocketIOClient.Manager;
 
   constructor(config: HostConfigProps, roomId: number) {
     super(WorkPlace.Client, config);
 
     this.roomId = roomId.toString();
-    this.socketIO = IOSocketClient(`${config.protocol}://${config.host}:${config.port}/room-${roomId}`);
+    const endpoint = `${config.protocol}://${config.host}:${config.port}/room-${roomId}`;
+    this.socketIO = IOSocketClient(endpoint);
+    this.manager = new Manager(endpoint, {
+      reconnection: true,
+      reconnectionAttempts: 3,
+      timeout: 60000,
+    });
+    this.manager.open();
   }
 
   public notify<I extends GameEventIdentifiers>(type: I, content: ClientEventFinder<I>) {

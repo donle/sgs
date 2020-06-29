@@ -23,6 +23,14 @@ if (config.flavor === ClientFlavor.Prod) {
   import('./index.module.css');
 }
 
+const header = document.getElementsByTagName('head')[0];
+const baseDirElement = document.createElement('base');
+baseDirElement.setAttribute(
+  'href',
+  `${config.host.protocol}://${config.host.host}${config.flavor === ClientFlavor.Dev ? ':3000' : ''}/`,
+);
+header.append(baseDirElement);
+
 Sanguosha.initialize();
 
 ReactDOM.render(

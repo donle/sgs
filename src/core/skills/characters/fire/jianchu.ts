@@ -73,7 +73,7 @@ export class Jianchu extends TriggerSkill {
 
     if (Sanguosha.getCardById(response.selectedCard!).is(CardType.Equip)) {
       EventPacker.setDisresponsiveEvent(aimEvent);
-    } else if (aimEvent.byCardId && room.isCardInDropStack(aimEvent.byCardId)) {
+    } else if (aimEvent.byCardId && room.getCardOwnerId(aimEvent.byCardId) === undefined) {
       await room.moveCards({
         movingCards: [{ card: aimEvent.byCardId, fromArea: CardMoveArea.ProcessingArea }],
         moveReason: CardMoveReason.ActivePrey,
