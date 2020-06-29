@@ -1,6 +1,6 @@
 import { Card } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
-import { CardMoveArea, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, GameEventIdentifiers, ServerEventFinder, CardMoveReason } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerId } from 'core/player/player_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -74,7 +74,7 @@ export class MoveCard extends UiAnimation {
       .map(cardInfo => {
         return {
           cardId: cardInfo.card,
-          public: cardInfo.fromArea !== CardMoveArea.HandArea && cardInfo.fromArea !== CardMoveArea.DrawStack,
+          public: cardInfo.fromArea !== CardMoveArea.HandArea && content.moveReason !== CardMoveReason.CardDraw,
         };
       });
 
