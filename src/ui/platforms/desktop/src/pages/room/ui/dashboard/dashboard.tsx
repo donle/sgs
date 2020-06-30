@@ -19,6 +19,7 @@ import { PlayerAvatar } from '../player_avatar/player_avatar';
 import { PlayingBar } from '../playing_bar/playing_bar';
 import styles from './dashboard.module.css';
 
+import { Button } from 'ui/button/button';
 import armorSlot from './images/armor.png';
 import defenseHorseSlot from './images/defense_horse.png';
 import offenseHorseSlot from './images/offense_horse.png';
@@ -217,21 +218,21 @@ export class Dashboard extends React.Component<DashboardProps> {
         {this.getPlayerJudgeCards()}
         <div className={styles.userActionsButtons}>
           {!this.props.store.canReforge && (
-            <button disabled={!this.props.store.actionButtonStatus.confirm} onClick={this.props.onClickConfirmButton}>
+            <Button variant="primaryStatic" disabled={!this.props.store.actionButtonStatus.confirm} onClick={this.props.onClickConfirmButton}>
               {this.props.translator.tr('confirm')}
-            </button>
+            </Button>
           )}
           {this.props.store.canReforge && (
-            <button disabled={!this.props.store.actionButtonStatus.reforge} onClick={this.props.onClickReforgeButton}>
+            <Button variant="primaryStatic" disabled={!this.props.store.actionButtonStatus.reforge} onClick={this.props.onClickReforgeButton}>
               {this.props.translator.tr('reforge')}
-            </button>
+            </Button>
           )}
-          <button disabled={!this.props.store.actionButtonStatus.cancel} onClick={this.props.onClickCancelButton}>
+          <Button variant="primaryStatic" disabled={!this.props.store.actionButtonStatus.cancel} onClick={this.props.onClickCancelButton}>
             {this.props.translator.tr('cancel')}
-          </button>
-          <button disabled={!this.props.store.actionButtonStatus.finish} onClick={this.props.onClickFinishButton}>
+          </Button>
+          <Button variant="secondaryStatic" disabled={!this.props.store.actionButtonStatus.finish} onClick={this.props.onClickFinishButton}>
             {this.props.translator.tr('finish')}
-          </button>
+          </Button>
         </div>
         <div className={styles.handCards}>{this.getAllClientHandCards()}</div>
       </div>

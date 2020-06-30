@@ -1,5 +1,6 @@
 import { PlayerRole } from 'core/player/player_props';
 import { Functional } from 'core/shares/libs/functional';
+import { SkillType } from 'core/skills/skill';
 import { ImageLoader } from './image_loader';
 
 const remoteRoot: string = 'http://doublebit.gitee.io/pictest/backup_remote';
@@ -21,6 +22,10 @@ export class DevImageLoader implements ImageLoader {
 
   public getCardBack() {
     return { src: `${remoteRoot}/images/cards/cardback.webp`, alt: 'New QSanguosha' };
+  }
+
+  public getSkillButtonImage(skillType: SkillType) {
+    return undefined;
   }
 
   public async getPlayerRoleCard(roleName: PlayerRole) {

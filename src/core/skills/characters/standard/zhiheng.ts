@@ -38,7 +38,10 @@ export class ZhiHeng extends ActiveSkill {
 
     const handCards = room.getPlayerById(skillUseEvent.fromId).getCardIds(PlayerCardsArea.HandArea);
     let additionalCardDraw = 0;
-    if (skillUseEvent.cardIds.filter(zhihengCard => handCards.includes(zhihengCard)).length === handCards.length) {
+    if (
+      skillUseEvent.cardIds.filter(zhihengCard => handCards.includes(zhihengCard)).length === handCards.length &&
+      handCards.length > 0
+    ) {
       additionalCardDraw++;
     }
 

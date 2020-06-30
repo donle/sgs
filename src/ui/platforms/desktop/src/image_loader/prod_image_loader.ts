@@ -1,5 +1,7 @@
 import { PlayerRole } from 'core/player/player_props';
 import { Functional } from 'core/shares/libs/functional';
+import { SkillType } from 'core/skills/skill';
+import { getSkillButtonImages } from './button_image_loader';
 import cardBackImage from './images/cards/cardback.webp';
 import backgroundImage from './images/system/background.jpg';
 import cardNumberBg from './images/system/cardNumBg.png';
@@ -43,6 +45,10 @@ export class ProdImageLoader implements ImageLoader {
 
   public getChainImage() {
     return { alt: '', src: chainImage };
+  }
+
+  public getSkillButtonImage(skillType: SkillType, size: 'wide' | 'normal') {
+    return getSkillButtonImages(skillType, size);
   }
 
   public async getOthersEquipCard(cardName: string) {

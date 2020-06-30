@@ -2,6 +2,7 @@ import { PatchedTranslationObject, TranslationPack } from 'core/translations/tra
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
+import { Button } from 'ui/button/button';
 import styles from './conversation.module.css';
 
 export type ConversationProps = {
@@ -17,9 +18,9 @@ export class Conversation extends React.Component<ConversationProps> {
   private getActions = () => {
     const { optionsActionHanlder = {}, translator } = this.props;
     return Object.entries(optionsActionHanlder).map(([option, action], index) => (
-      <button key={index} className={styles.actionButton} onClick={action}>
+      <Button variant="option" key={index} className={styles.actionButton} onClick={action}>
         {translator.trx(option)}
-      </button>
+      </Button>
     ));
   };
 

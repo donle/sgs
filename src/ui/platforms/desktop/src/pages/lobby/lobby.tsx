@@ -8,6 +8,7 @@ import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import SocketIOClient from 'socket.io-client';
 import { PagePropsWithHostConfig } from 'types/page_props';
+import { Button } from 'ui/button/button';
 import styles from './lobby.module.css';
 import { CreatRoomDialog, TemporaryRoomCreationInfo } from './ui/create_room_dialog/create_room_dialog';
 import { UsernameData, UsernameDialog } from './ui/username_dialog/username_dialog';
@@ -122,10 +123,7 @@ export class Lobby extends React.Component<LobbyProps> {
         GameCharacterExtensions.God,
         GameCharacterExtensions.Fire,
       ],
-      cardExtensions: [
-        GameCardExtensions.Standard,
-        GameCardExtensions.LegionFight,
-      ],
+      cardExtensions: [GameCardExtensions.Standard, GameCardExtensions.LegionFight],
       ...roomInfo,
     });
   };
@@ -141,11 +139,20 @@ export class Lobby extends React.Component<LobbyProps> {
         <div className={styles.board}>
           <img className={styles.logo} src={logoImage} alt={'logo'} />
           <div className={styles.functionBoard}>
-            <button onClick={this.onCreateRoom} disabled={!window.localStorage.getItem('username')}>
+            <Button
+              variant="primary"
+              className={styles.button}
+              onClick={this.onCreateRoom}
+              disabled={!window.localStorage.getItem('username')}
+            >
               {this.props.translator.tr('Create a room')}
-            </button>
-            <button onClick={this.onClickRefresh}>{this.props.translator.tr('Refresh room list')}</button>
-            <button onClick={this.onChangeUsername}>{this.props.translator.tr('Change username')}</button>
+            </Button>
+            <Button variant="primary" className={styles.button} onClick={this.onClickRefresh}>
+              {this.props.translator.tr('Refresh room list')}
+            </Button>
+            <Button variant="primary" className={styles.button} onClick={this.onChangeUsername}>
+              {this.props.translator.tr('Change username')}
+            </Button>
           </div>
           <div className={styles.roomList}>
             {this.roomList.length === 0 && <span>{this.props.translator.tr('No rooms at the moment')}</span>}

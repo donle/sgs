@@ -58,7 +58,13 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
         this.presenter.broadcastUIUpdate();
       });
 
-      this.presenter.defineConfirmButtonActions(() => resolve(selectedPlayers));
+      this.presenter.defineConfirmButtonActions(() => {
+        this.resetActionHandlers();
+        this.resetAction();
+        this.presenter.isSkillDisabled(BaseAction.disableSkills);
+        this.presenter.resetSelectedSkill();
+        resolve(selectedPlayers);
+      });
     });
   }
 
@@ -115,7 +121,13 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
       this.presenter.onClickPlayerCard(onClickCard);
       this.presenter.onClickEquipment(onClickCard);
 
-      this.presenter.defineConfirmButtonActions(() => resolve(selectedCards));
+      this.presenter.defineConfirmButtonActions(() => {
+        this.resetActionHandlers();
+        this.resetAction();
+        this.presenter.isSkillDisabled(BaseAction.disableSkills);
+        this.presenter.resetSelectedSkill();
+        resolve(selectedCards);
+      });
     });
   }
 

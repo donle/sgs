@@ -110,6 +110,7 @@ export class ClientCard extends React.Component<ClientCardProps> {
         ref={this.props.ref}
         className={classNames(styles.clientCard, className, {
           [styles.selected]: this.getSelected() && !this.props.disabled,
+          [styles.disabled]: this.props.disabled,
         })}
         style={{
           ...this.getCardRatioSize(),

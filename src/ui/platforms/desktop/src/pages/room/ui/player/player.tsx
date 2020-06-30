@@ -203,6 +203,8 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
           <img
             className={classNames(styles.playerImage, {
               [styles.dead]: this.props.player && this.props.player.Dead,
+              [styles.disabled]:
+                !(this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead) && this.props.disabled,
             })}
             alt={image.alt}
             src={image.src}
@@ -288,7 +290,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
             {player.ChainLocked && (
               <img className={styles.chain} src={this.props.imageLoader.getChainImage().src} alt="" />
             )}
-    
+
             <p className={styles.playerSeats}>{translator.tr(`number ${player.Position}`)}</p>
           </>
         ) : (

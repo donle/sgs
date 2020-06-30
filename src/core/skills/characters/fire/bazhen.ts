@@ -3,9 +3,9 @@ import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { BaGuaZhenSkill } from 'core/skills/cards/standard/baguazhen';
-import { CommonSkill } from 'core/skills/skill';
+import { CompulsorySkill } from 'core/skills/skill_wrappers';
 
-@CommonSkill({ name: 'bazhen', description: 'bazhen_description' })
+@CompulsorySkill({ name: 'bazhen', description: 'bazhen_description' })
 export class BaZhen extends BaGuaZhenSkill {
   public canUse(
     room: Room,

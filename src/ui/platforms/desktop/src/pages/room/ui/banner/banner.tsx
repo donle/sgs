@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
+import { Button } from 'ui/button/button';
 import styles from './banner.module.css';
 
 export type BannerProps = {
@@ -37,7 +38,9 @@ export const Banner = (props: BannerProps) => {
     <div className={classNames(styles.banner, props.className)}>
       <BreadCrumb content={breadcrumb} />
       <div className={styles.controlButtons}>
-        <button onClick={onClick}>{translator.tr('back to lobby')}</button>
+        <Button variant="primary" onClick={onClick}>
+          {translator.tr('back to lobby')}
+        </Button>
       </div>
     </div>
   );

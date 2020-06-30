@@ -16,7 +16,7 @@ export class ZhuQueYuShanSkill extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): boolean {
-    return Sanguosha.getCardById(event.cardId).Name === 'slash';
+    return Sanguosha.getCardById(event.cardId).Name === 'slash' && owner.Id === event.fromId;
   }
 
   async onTrigger(): Promise<boolean> {

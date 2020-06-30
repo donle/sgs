@@ -1,8 +1,11 @@
 .banner {
     padding: 4px 8px;
     display: flex;
-    border: 1px solid lightgrey;
-    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.64);
+    font-weight: 550;
+    text-shadow: 0 0 2px #1f1f1f, 0 0 2px #1f1f1f, 0 0 4px white, 0 0 4px white;
+    color: #c7c7c7;
+    box-shadow: 0 0px 5px 5px rgba(0, 0, 0, 0.4);
 }
 
 .breadcrumb {

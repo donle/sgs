@@ -1,5 +1,7 @@
 import { PlayerRole } from 'core/player/player_props';
+import { SkillType } from 'core/skills/skill';
 import { ImageProps } from 'props/image_props';
+import { SkillButtonImageProps } from './button_image_loader';
 
 export interface ImageLoader {
   getCardImage(name: string): Promise<ImageProps>;
@@ -8,6 +10,8 @@ export interface ImageLoader {
   getSlimEquipCard(cardName: string): Promise<ImageProps>;
   getSlimCard(cardName: string): Promise<ImageProps>;
   getPlayerRoleCard(role: PlayerRole): Promise<ImageProps>;
+
+  getSkillButtonImage(skillType: SkillType, size: 'wide' | 'normal'): SkillButtonImageProps | undefined;
 
   getCardBack(): ImageProps;
   getBackgroundImage(): ImageProps;

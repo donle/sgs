@@ -12,9 +12,9 @@ import { BaseAction } from './base_action';
 
 export class ResponsiveUseCardAction<
   T extends
-  | GameEventIdentifiers.AskForCardUseEvent
-  | GameEventIdentifiers.AskForPeachEvent = GameEventIdentifiers.AskForCardUseEvent
-  > extends BaseAction {
+    | GameEventIdentifiers.AskForCardUseEvent
+    | GameEventIdentifiers.AskForPeachEvent = GameEventIdentifiers.AskForCardUseEvent
+> extends BaseAction {
   public static isSkillsOnResponsiveCardUseDisabled = (room: Room, matcher: CardMatcher, player: Player) => (
     skill: Skill,
   ) => {
@@ -111,7 +111,9 @@ export class ResponsiveUseCardAction<
         return matcher.match(card);
       } else if (fromArea === PlayerCardsArea.EquipArea) {
         if (card.Skill instanceof ViewAsSkill) {
-          return new CardMatcher({ name: card.Skill.canViewAs(this.store.room, this.player, this.pendingCards) }).match(this.matcher);
+          return new CardMatcher({ name: card.Skill.canViewAs(this.store.room, this.player, this.pendingCards) }).match(
+            this.matcher,
+          );
         }
       }
     }

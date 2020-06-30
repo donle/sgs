@@ -21,6 +21,11 @@
     flex-direction: column;
 }
 
+.button {
+    margin-left: 4px;
+    align-self: center;
+}
+
 .roomList {
     list-style: none;
     padding: 0;

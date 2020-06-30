@@ -7,8 +7,8 @@
 
 .oneMask,
 .displayedRole {
-    width: 30px;
-    height: 35px;
+    width: 34px;
+    height: 39px;
     position: absolute;
     transition: transform 0.15s;
     right: 0;
@@ -34,14 +34,14 @@
 }
 
 .oneMask.loyalist.opened {
-    transform: translateY(30px);
+    transform: translateY(34px);
 }
 .oneMask.rebel.opened {
-    transform: translateY(60px);
+    transform: translateY(68px);
 }
 .oneMask.renegade.opened {
-    transform: translateY(90px);
+    transform: translateY(102px);
 }
 .oneMask.unknown.opened {
-    transform: translateY(120px);
+    transform: translateY(136px);
 }

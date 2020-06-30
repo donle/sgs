@@ -9,6 +9,7 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
+import { SkillButton } from 'ui/button/skill_button';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import { NationalityBadge } from '../badge/badge';
 import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
@@ -85,7 +86,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   }
 
   private getSkillButtons() {
-    const { presenter, translator, isSkillDisabled } = this.props;
+    const { presenter, translator, isSkillDisabled, imageLoader } = this.props;
     const skills =
       presenter.ClientPlayer && presenter.ClientPlayer.CharacterId !== undefined
         ? presenter.ClientPlayer.getPlayerSkills(undefined, true).filter(
@@ -96,16 +97,17 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     return (
       <>
         <div className={styles.playerSkills}>
-          {skills.map(skill => (
-            <button
-              className={classNames(styles.playerSkill, {
-                [styles.selected]: this.getSkillSelected() && this.props.store.selectedSkill === skill,
-              })}
+          {skills.map((skill, index) => (
+            <SkillButton
+              imageLoader={imageLoader}
+              translator={translator}
+              skill={skill}
+              selected={this.getSkillSelected() && this.props.store.selectedSkill === skill}
+              size={skills.length % 2 === 0 ? 'normal' : index === skills.length - 1 ? 'wide' : 'normal'}
+              className={styles.playerSkill}
               onClick={this.onClickSkill(skill)}
               disabled={isSkillDisabled(skill)}
-            >
-              {translator.tr(skill.Name)}
-            </button>
+            />
           ))}
         </div>
         <div className={styles.userSideEffectSkillList}>{this.getSideEffectSkills()}</div>
@@ -167,6 +169,8 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   }
 
   getSideEffectSkills() {
+    const { translator, imageLoader } = this.props;
+
     const player = this.props.presenter.ClientPlayer;
     if (player === undefined || player.CharacterId === undefined) {
       return;
@@ -175,16 +179,17 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     const sideEffectSkills = player.getSkills().filter(skill => skill.isSideEffectSkill());
     return sideEffectSkills.map((skill, index) => {
       return (
-        <button
+        <SkillButton
+          imageLoader={imageLoader}
+          translator={translator}
+          skill={skill}
+          selected={this.getSkillSelected() && this.props.store.selectedSkill === skill}
+          size="normal"
           key={index}
-          className={classNames(styles.playerSkill, {
-            [styles.selected]: this.getSkillSelected() && this.props.store.selectedSkill === skill,
-          })}
+          className={styles.playerSkill}
           disabled={!skill.canUse(this.props.store.room, player)}
           onClick={this.onClickSkill(skill)}
-        >
-          {this.props.translator.tr(skill.Name)}
-        </button>
+        />
       );
     });
   }
@@ -231,6 +236,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           <img
             className={classNames(styles.playerImage, {
               [styles.dead]: this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead,
+              [styles.disabled]: this.props.disabled,
             })}
             alt={image.alt}
             src={image.src}

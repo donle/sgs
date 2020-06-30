@@ -84,6 +84,8 @@ export class RoomStore {
   @mobx.observable.ref
   onClickEquipmentToDoAction: (card: Card, selected: boolean) => void;
   @mobx.observable.ref
+  playersHighlightedMatcher: (player: Player) => boolean;
+  @mobx.observable.ref
   playersSelectionMatcher: (player: Player) => boolean;
   @mobx.observable.ref
   cardSkillsSelectionMatcher: (card: Card) => boolean;
@@ -240,6 +242,10 @@ export class RoomPresenter {
     this.store.onClickEquipmentToDoAction = handler;
   }
 
+  @mobx.action
+  setupPlayersHighlightedStatus(matcher: (player: Player) => boolean) {
+    this.store.playersHighlightedMatcher = matcher;
+  }
   @mobx.action
   setupPlayersSelectionMatcher(matcher: (player: Player) => boolean) {
     this.store.playersSelectionMatcher = matcher;

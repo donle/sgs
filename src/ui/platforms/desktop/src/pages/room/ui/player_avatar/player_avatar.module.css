@@ -64,6 +64,9 @@
     right: 0;
 }
 
+.disabled {
+    filter: brightness(0.5);
+}
 .playerCard.selected {
     box-shadow: 0px 0px 5px 2px red;
 }
@@ -71,8 +74,9 @@
 .playerSkills {
     display: flex;
     flex-wrap: wrap;
-    bottom: 0;
     width: 100%;
+    margin-left: 14px;
+    margin-bottom: 4px;
 }
 
 .userSideEffectSkillList {
@@ -86,7 +90,6 @@
 
 .playerSkill {
     min-width: 50%;
-    background: white;
     box-shadow: none;
     flex: auto;
 }
