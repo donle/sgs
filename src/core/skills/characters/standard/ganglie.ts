@@ -15,7 +15,7 @@ export class GangLie extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
-    return owner.Id === content.toId && content.fromId !== undefined;
+    return owner.Id === content.toId;
   }
 
   triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
@@ -64,7 +64,8 @@ export class GangLie extends TriggerSkill {
       );
 
       if (response.selectedCard === undefined) {
-        response.selectedCard = damageFrom.getCardIds(PlayerCardsArea.HandArea)[response.selectedCardIndex!];
+        const cardIds = damageFrom.getCardIds(PlayerCardsArea.HandArea);
+        response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
       }
 
       await room.dropCards(

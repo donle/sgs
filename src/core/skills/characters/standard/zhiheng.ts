@@ -8,32 +8,35 @@ import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'zhiheng', description: 'zhiheng_description' })
 export class ZhiHeng extends ActiveSkill {
-  public canUse(room: Room, owner: Player) {
+  public canUse(room: Room, owner: Player): boolean {
     return !owner.hasUsedSkill(this.Name);
   }
 
-  public numberOfTargets() {
+  public numberOfTargets(): number {
     return 0;
   }
 
-  cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
+  public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return cards.length > 0;
   }
 
-  isAvailableTarget(): boolean {
+  public isAvailableTarget(): boolean {
     return false;
   }
 
-  isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
+  public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
     const cardFromArea = room.getPlayerById(owner).cardFrom(cardId);
     return cardFromArea !== undefined && [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea].includes(cardFromArea);
   }
 
-  async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+  public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     return true;
   }
 
-  async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+  public async onEffect(
+    room: Room,
+    skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
+  ): Promise<boolean> {
     skillUseEvent.cardIds = Precondition.exists(skillUseEvent.cardIds, 'Unable to get zhiheng cards');
 
     const handCards = room.getPlayerById(skillUseEvent.fromId).getCardIds(PlayerCardsArea.HandArea);
