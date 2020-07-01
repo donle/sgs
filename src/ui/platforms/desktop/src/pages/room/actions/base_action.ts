@@ -6,9 +6,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { ActiveSkill, GlobalFilterSkill, ResponsiveSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import * as React from 'react';
 import { RoomPresenter, RoomStore } from '../room.presenter';
-import { CardCategoryDialog } from '../ui/dialog/card_category_dialog/card_category_dialog';
 
 export abstract class BaseAction {
   public static disableSkills = (skill: Skill) => {
@@ -429,9 +427,11 @@ export abstract class BaseAction {
             this.callToActionCheck();
           };
 
-          this.presenter.createDialog(
-            <CardCategoryDialog translator={this.translator} cardNames={canViewAs} onClick={onClickDemoCard} />,
-          );
+          this.presenter.createCardCategoryDialog({
+            translator: this.translator,
+            cardNames: canViewAs,
+            onClick: onClickDemoCard,
+          });
         } else {
           this.selectedCardToPlay = this.selectedSkillToPlay.viewAs(this.pendingCards, canViewAs[0]).Id;
         }
@@ -474,9 +474,11 @@ export abstract class BaseAction {
           this.callToActionCheck();
         };
 
-        this.presenter.createDialog(
-          <CardCategoryDialog translator={this.translator} cardNames={canViewAs} onClick={onClickDemoCard} />,
-        );
+        this.presenter.createCardCategoryDialog({
+          translator: this.translator,
+          cardNames: canViewAs,
+          onClick: onClickDemoCard,
+        });
       } else {
         this.selectedCardToPlay = this.selectedSkillToPlay.viewAs(this.pendingCards, canViewAs[0]).Id;
       }

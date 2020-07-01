@@ -42,7 +42,7 @@ export class RoomPage extends React.Component<
     super(props);
 
     this.roomId = parseInt(this.props.match.params.slug, 10);
-    this.presenter = new RoomPresenter();
+    this.presenter = new RoomPresenter(this.imageLoader);
     this.store = this.presenter.createStore();
     this.socket = new ClientSocket(this.props.config, this.roomId);
     this.baseService = installService(this.props.translator, this.store, this.imageLoader);

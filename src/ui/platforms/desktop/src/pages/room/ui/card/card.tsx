@@ -1,5 +1,6 @@
 import classNames from 'classnames';
-import { Card } from 'core/cards/card';
+import { Card, VirtualCard } from 'core/cards/card';
+import { Sanguosha } from 'core/game/engine';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
@@ -35,6 +36,8 @@ export class ClientCard extends React.Component<ClientCardProps> {
   private selected: boolean = false;
   @mobx.observable.ref
   private cardImage: string | undefined;
+  @mobx.observable.ref
+  private realFlatCardImage: string | undefined;
 
   private soundTracks: string[] = [];
 
@@ -73,7 +76,17 @@ export class ClientCard extends React.Component<ClientCardProps> {
   @mobx.action
   async componentDidMount() {
     const { card, imageLoader } = this.props;
-    this.cardImage = card && (await imageLoader.getCardImage(card.Name)).src;
+    if (!card) {
+      return;
+    }
+
+    if (card.isVirtualCard() && (card as VirtualCard).ActualCardIds.length === 1) {
+      const realCardName = Sanguosha.getCardById((card as VirtualCard).ActualCardIds[0]).Name;
+      this.realFlatCardImage = (await imageLoader.getSlimCard(card.Name)).src;
+      this.cardImage = card && (await imageLoader.getCardImage(realCardName)).src;
+    } else {
+      this.cardImage = card && (await imageLoader.getCardImage(card.Name)).src;
+    }
   }
 
   getCardComponent() {
@@ -96,6 +109,9 @@ export class ClientCard extends React.Component<ClientCardProps> {
           <img className={styles.cardImage} src={this.cardImage} alt={card.Name} />
         ) : (
           <span>{translator.tr(card.Name)}</span>
+        )}
+        {this.realFlatCardImage && (
+          <img className={styles.innterFlatCardImage} src={this.realFlatCardImage} alt={card.Name} />
         )}
         {tag && <span className={styles.cardTag}>{translator.trx(tag)}</span>}
       </div>

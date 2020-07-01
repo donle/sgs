@@ -1,4 +1,5 @@
 import { SkillType } from 'core/skills/skill';
+import { SkillButtonImageSize } from './image_loader';
 
 import compulsoryDisabledImage from './images/skills/compulsory_disabled.png';
 import compulsoryDownImage from './images/skills/compulsory_down.png';
@@ -35,18 +36,6 @@ import wideLimitDisabledImage from './images/skills/wide_limit_disabled.png';
 import wideLimitDownImage from './images/skills/wide_limit_down.png';
 import wideLimitHoverImage from './images/skills/wide_limit_hover.png';
 import wideLimitImage from './images/skills/wide_limit_normal.png';
-
-type SkillButtonImageSize = {
-  wide: SkillButtonImageProps;
-  normal: SkillButtonImageProps;
-};
-
-export type SkillButtonImageProps = {
-  default: string;
-  hover: string;
-  down: string;
-  disabled: string;
-};
 
 const skillButtons: {
   [T in SkillType]: SkillButtonImageSize;

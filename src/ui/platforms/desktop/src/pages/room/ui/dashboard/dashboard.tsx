@@ -202,6 +202,7 @@ export class Dashboard extends React.Component<DashboardProps> {
         {this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.JudgeArea).map(cardId => (
           <DelayedTrickIcon
             key={cardId}
+            imageLoader={this.props.imageLoader}
             card={Sanguosha.getCardById(cardId)}
             translator={this.props.translator}
             className={styles.judgeNames}
@@ -218,19 +219,35 @@ export class Dashboard extends React.Component<DashboardProps> {
         {this.getPlayerJudgeCards()}
         <div className={styles.userActionsButtons}>
           {!this.props.store.canReforge && (
-            <Button variant="primaryStatic" disabled={!this.props.store.actionButtonStatus.confirm} onClick={this.props.onClickConfirmButton}>
+            <Button
+              variant="primaryStatic"
+              disabled={!this.props.store.actionButtonStatus.confirm}
+              onClick={this.props.onClickConfirmButton}
+            >
               {this.props.translator.tr('confirm')}
             </Button>
           )}
           {this.props.store.canReforge && (
-            <Button variant="primaryStatic" disabled={!this.props.store.actionButtonStatus.reforge} onClick={this.props.onClickReforgeButton}>
+            <Button
+              variant="primaryStatic"
+              disabled={!this.props.store.actionButtonStatus.reforge}
+              onClick={this.props.onClickReforgeButton}
+            >
               {this.props.translator.tr('reforge')}
             </Button>
           )}
-          <Button variant="primaryStatic" disabled={!this.props.store.actionButtonStatus.cancel} onClick={this.props.onClickCancelButton}>
+          <Button
+            variant="primaryStatic"
+            disabled={!this.props.store.actionButtonStatus.cancel}
+            onClick={this.props.onClickCancelButton}
+          >
             {this.props.translator.tr('cancel')}
           </Button>
-          <Button variant="secondaryStatic" disabled={!this.props.store.actionButtonStatus.finish} onClick={this.props.onClickFinishButton}>
+          <Button
+            variant="secondaryStatic"
+            disabled={!this.props.store.actionButtonStatus.finish}
+            onClick={this.props.onClickFinishButton}
+          >
             {this.props.translator.tr('finish')}
           </Button>
         </div>

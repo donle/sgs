@@ -103,7 +103,11 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     return (
       <div className={styles.judgeIcons}>
         {this.props.player?.getCardIds(PlayerCardsArea.JudgeArea).map(cardId => (
-          <DelayedTrickIcon card={Sanguosha.getCardById(cardId)} translator={this.props.translator} />
+          <DelayedTrickIcon
+            imageLoader={this.props.imageLoader}
+            card={Sanguosha.getCardById(cardId)}
+            translator={this.props.translator}
+          />
         ))}
       </div>
     );

@@ -10,10 +10,12 @@ import type { RoomId } from 'core/room/room';
 import { ClientRoom } from 'core/room/room.client';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { Skill } from 'core/skills/skill';
+import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as React from 'react';
 import { AnimationPosition } from './animations/position';
 import { Conversation, ConversationProps } from './ui/conversation/conversation';
+import { CardCategoryDialog, CardCategoryDialogProps } from './ui/dialog/card_category_dialog/card_category_dialog';
 
 type ClientRoomInfo = {
   roomId: number;
@@ -107,6 +109,8 @@ export class RoomStore {
 }
 
 export class RoomPresenter {
+  constructor(private imageLoader: ImageLoader) {}
+
   private store: RoomStore;
   public createStore() {
     this.store = new RoomStore();
@@ -195,6 +199,13 @@ export class RoomPresenter {
   @mobx.action
   createDialog = (dialog: JSX.Element) => {
     this.store.selectorDialog = dialog;
+  };
+
+  @mobx.action
+  createCardCategoryDialog = (
+    props: Pick<CardCategoryDialogProps, Exclude<keyof CardCategoryDialogProps, 'imageLoader'>>,
+  ) => {
+    this.store.selectorDialog = <CardCategoryDialog imageLoader={this.imageLoader} {...props} />;
   };
 
   @mobx.action

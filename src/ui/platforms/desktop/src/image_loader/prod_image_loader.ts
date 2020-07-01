@@ -1,15 +1,19 @@
 import { PlayerRole } from 'core/player/player_props';
 import { Functional } from 'core/shares/libs/functional';
 import { SkillType } from 'core/skills/skill';
-import { getSkillButtonImages } from './button_image_loader';
+import { ImageLoader } from './image_loader';
+import { getSkillButtonImages } from './prod_button_image_loader';
+
 import cardBackImage from './images/cards/cardback.webp';
+import BingLiangCunDuanIcon from './images/delayed_tricks/bingliangcunduan.png';
+import LeBuSiShuIcon from './images/delayed_tricks/lebusishu.png';
+import LightningIcon from './images/delayed_tricks/lightning.png';
 import backgroundImage from './images/system/background.jpg';
 import cardNumberBg from './images/system/cardNumBg.png';
 import chainImage from './images/system/chain.png';
 import emptySeatImage from './images/system/empty_seat.png';
 import unknownCharacterImage from './images/system/player_seat.png';
 import turnedOverCoverImage from './images/system/turn_over.png';
-import { ImageLoader } from './image_loader';
 
 export class ProdImageLoader implements ImageLoader {
   public async getCardImage(name: string) {
@@ -45,6 +49,20 @@ export class ProdImageLoader implements ImageLoader {
 
   public getChainImage() {
     return { alt: '', src: chainImage };
+  }
+
+  public getDelayedTricksImage(cardName: string) {
+    if (cardName === 'lebusishu') {
+      return { alt: cardName, src: LeBuSiShuIcon };
+    }
+    if (cardName === 'bingliangcunduan') {
+      return { alt: cardName, src: BingLiangCunDuanIcon };
+    }
+    if (cardName === 'lightning') {
+      return { alt: cardName, src: LightningIcon };
+    }
+
+    return { alt: cardName };
   }
 
   public getSkillButtonImage(skillType: SkillType, size: 'wide' | 'normal') {

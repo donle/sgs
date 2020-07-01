@@ -2,6 +2,7 @@ import { CardType } from 'core/cards/card';
 import { Sanguosha } from 'core/game/engine';
 import { Functional } from 'core/shares/libs/functional';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
 import { FlatDemoCard } from '../../card/flat_demo_card';
 import { BaseDialog } from '../base_dialog';
@@ -11,6 +12,7 @@ export type CardCategoryDialogProps = {
   translator: ClientTranslationModule;
   cardNames: string[];
   onClick(sleectedCardName: string): void;
+  imageLoader: ImageLoader;
 };
 
 const DemoCardList = (props: CardCategoryDialogProps & { type: CardType }) => {
@@ -20,7 +22,14 @@ const DemoCardList = (props: CardCategoryDialogProps & { type: CardType }) => {
       {props.cardNames
         .filter(cardName => Sanguosha.getCardTypeByName(cardName).includes(props.type))
         .map((cardName, index) => (
-          <FlatDemoCard translator={props.translator} cardName={cardName} onClick={props.onClick} key={index} className={styles.flatCard} />
+          <FlatDemoCard
+            translator={props.translator}
+            cardName={cardName}
+            imageLoader={props.imageLoader}
+            onClick={props.onClick}
+            key={index}
+            className={styles.flatCard}
+          />
         ))}
     </div>
   );

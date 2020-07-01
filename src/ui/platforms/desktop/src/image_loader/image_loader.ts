@@ -1,8 +1,18 @@
 import { PlayerRole } from 'core/player/player_props';
 import { SkillType } from 'core/skills/skill';
 import { ImageProps } from 'props/image_props';
-import { SkillButtonImageProps } from './button_image_loader';
 
+export type SkillButtonImageSize = {
+  wide: SkillButtonImageProps;
+  normal: SkillButtonImageProps;
+};
+
+export type SkillButtonImageProps = {
+  default: string;
+  hover: string;
+  down: string;
+  disabled: string;
+};
 export interface ImageLoader {
   getCardImage(name: string): Promise<ImageProps>;
   getCharacterImage(name: string): Promise<ImageProps>;
@@ -20,4 +30,5 @@ export interface ImageLoader {
   getCardNumberBgImage(): ImageProps;
   getTurnedOverCover(): ImageProps;
   getChainImage(): ImageProps;
+  getDelayedTricksImage(cardName: string): ImageProps;
 }

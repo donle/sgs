@@ -94,13 +94,23 @@
     display: flex;
     justify-content: center;
     min-width: 120px;
-    padding: 8px 0;
     align-items: center;
     border: 1px solid grey;
     background: white;
+    position: relative;
+    cursor: pointer;
+}
+.flatDemoCard:hover {
+    filter: brightness(1.3);
 }
 .flatCardName {
     font-size: 14px;
+}
+.flatCardImage {
+    height: 32px;
+}
+.innterFlatCardImage {
+    position: absolute;
 }
 .emptyCard {
     display: flex;
