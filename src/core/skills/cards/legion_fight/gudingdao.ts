@@ -10,7 +10,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 @CompulsorySkill({ name: 'gudingdao', description: 'gudingdao_description' })
 export class GuDingDaoSkill extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage): boolean {
-    return stage === DamageEffectStage.DamageEffect;
+    return stage === DamageEffectStage.DamageEffect && event.isFromChainedDamage !== true;
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.DamageEvent>): boolean {

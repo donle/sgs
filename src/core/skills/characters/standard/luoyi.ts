@@ -126,7 +126,8 @@ export class LuoYiShadow extends TriggerSkill implements OnDefineReleaseTiming {
         !!currentEvent.cardIds &&
         currentEvent.cardIds.length === 1 &&
         (Sanguosha.getCardById(currentEvent.cardIds[0]).GeneralName === 'slash' ||
-          Sanguosha.getCardById(currentEvent.cardIds[0]).GeneralName === 'duel')
+          Sanguosha.getCardById(currentEvent.cardIds[0]).GeneralName === 'duel') &&
+        currentEvent.isFromChainedDamage !== true
       );
     }
   }

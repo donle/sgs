@@ -10,7 +10,7 @@ import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 @CommonSkill({ name: 'hanbingjian', description: 'hanbingjian_description' })
 export class HanBingJianSkill extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage): boolean {
-    return stage === DamageEffectStage.DamageEffect;
+    return stage === DamageEffectStage.DamageEffect && event.isFromChainedDamage !== true;
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.DamageEvent>): boolean {
