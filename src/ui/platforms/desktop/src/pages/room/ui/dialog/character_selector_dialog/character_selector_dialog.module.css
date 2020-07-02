@@ -1,14 +1,28 @@
 @value gridLine from '../../../../../ui/metrics/metrics.css';
 
+.innerDialog {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
 .characterSelector {
     display: flex;
     flex-wrap: wrap;
-    max-width: 800px;
+    max-width: 700px;
+    justify-content: space-between;
 }
 
 .characterSelectorItem {
     margin: 2px;
     position: relative;
+}
+
+.tooltip {
+    position: absolute;
+    left: 100%;
+    top: initial;
+    margin-top: calc(gridLine * -2.5);
 }
 
 .skillInfo {
@@ -22,5 +36,8 @@
 .skillName {
     flex: auto;
     margin-right: gridLine;
-    min-width: calc(gridLine * 4);
+    min-width: calc(gridLine * 6);
+    font-weight: 600;
+    font-size: calc(gridLine * 2);
+    color: #fbd000;
 }

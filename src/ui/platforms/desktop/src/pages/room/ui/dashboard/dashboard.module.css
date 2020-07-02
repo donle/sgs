@@ -10,6 +10,7 @@
     left: 0;
     height: 25%;
     justify-content: flex-end;
+    transition: left 0.15s;
 }
 .equipCardName {
     flex: auto;
@@ -133,5 +134,5 @@
 }
 
 .selected {
-    border: 1px solid red;
+    left: 16px;
 }

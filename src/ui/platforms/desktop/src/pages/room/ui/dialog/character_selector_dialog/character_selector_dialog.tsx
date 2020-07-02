@@ -19,22 +19,16 @@ type CharacterSelectorDialogProps = {
 
 @mobxReact.observer
 export class CharacterSelectorDialog extends React.Component<CharacterSelectorDialogProps> {
-  @mobx.observable.shallow
-  private tooltipOpened: boolean[] = new Array<boolean>(this.props.characterIds.length).fill(false);
-  private tooltipTimer: NodeJS.Timer | undefined;
+  @mobx.observable.ref
+  private tooltipCharacter: Character | undefined;
 
-  private readonly onOpenTooltip = (index: number) => () => {
-    this.tooltipTimer = setTimeout(
-      mobx.action(() => {
-        this.tooltipOpened[index] = true;
-      }),
-      1500,
-    );
-  };
-  private readonly onCloseTooltip = (index: number) =>
+  private readonly onOpenTooltip = (character: Character) =>
     mobx.action(() => {
-      this.tooltipTimer && clearTimeout(this.tooltipTimer);
-      this.tooltipOpened[index] = false;
+      this.tooltipCharacter = character;
+    });
+  private readonly onCloseTooltip = () =>
+    mobx.action(() => {
+      this.tooltipCharacter = undefined;
     });
 
   private readonly createTooltipContent = (character: Character) => {
@@ -54,12 +48,11 @@ export class CharacterSelectorDialog extends React.Component<CharacterSelectorDi
   };
   private readonly characters = this.props.characterIds.map((characterId, index) => {
     const character = Sanguosha.getCharacterById(characterId);
-
     return (
       <div
         className={styles.characterSelectorItem}
-        onMouseLeave={this.onCloseTooltip(index)}
-        onMouseEnter={this.onOpenTooltip(index)}
+        onMouseLeave={this.onCloseTooltip()}
+        onMouseEnter={this.onOpenTooltip(character)}
         key={index}
       >
         <CharacterCard
@@ -69,7 +62,6 @@ export class CharacterSelectorDialog extends React.Component<CharacterSelectorDi
           key={characterId}
           onClick={this.props.onClick}
         />
-        {this.tooltipOpened[index] && <Tooltip position={['top']}>{this.createTooltipContent(character)}</Tooltip>}
       </div>
     );
   });
@@ -77,7 +69,14 @@ export class CharacterSelectorDialog extends React.Component<CharacterSelectorDi
   render() {
     return (
       <BaseDialog title={this.props.translator.tr('please choose a character')}>
-        <div className={styles.characterSelector}>{this.characters}</div>
+        <div className={styles.innerDialog}>
+          <div className={styles.characterSelector}>{this.characters}</div>
+          {this.tooltipCharacter && (
+            <Tooltip position={['top']} className={styles.tooltip}>
+              {this.createTooltipContent(this.tooltipCharacter)}
+            </Tooltip>
+          )}
+        </div>
       </BaseDialog>
     );
   }
