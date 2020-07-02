@@ -111,6 +111,15 @@
 }
 .innterFlatCardImage {
     position: absolute;
+    width: 100%;
+}
+.flatCardNumber {
+    position: absolute;
+    width: 100%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    padding: 0 4px;
 }
 .emptyCard {
     display: flex;

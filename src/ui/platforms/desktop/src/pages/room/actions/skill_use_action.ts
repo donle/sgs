@@ -3,12 +3,22 @@ import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
-import { TriggerSkill } from 'core/skills/skill';
+import { Skill, TriggerSkill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { RoomPresenter, RoomStore } from '../room.presenter';
 import { BaseAction } from './base_action';
 
 export class SkillUseAction extends BaseAction {
+  public static isSkillDisabled = (event: ServerEventFinder<GameEventIdentifiers.AskForSkillUseEvent>) => (
+    skill: Skill,
+  ) => {
+    if (skill instanceof TriggerSkill && event.invokeSkillNames.includes(skill.Name)) {
+      return false;
+    } 
+
+    return true;
+  };
+
   private askForEvent: ServerEventFinder<GameEventIdentifiers.AskForSkillUseEvent>;
 
   constructor(

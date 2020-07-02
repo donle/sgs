@@ -19,6 +19,7 @@ type WuGuFengDengDialogProps = {
   selected: SelectedCardProps[];
   imageLoader: ImageLoader;
   unselectable?: boolean;
+  highlight?: boolean;
   disabled?: boolean;
   onClick?(card: Card): void;
 };
@@ -30,7 +31,8 @@ const getCardsContainerLines = ({
   onClick,
   unselectable,
   disabled,
-  imageLoader
+  highlight,
+  imageLoader,
 }: WuGuFengDengDialogProps) => {
   const onSelected = (card: Card) => (selected: boolean) => {
     onClick && onClick(card);
@@ -52,6 +54,7 @@ const getCardsContainerLines = ({
           imageLoader={imageLoader}
           translator={translator}
           unselectable={unselectable}
+          highlight={highlight || (!disabled && isSelected === undefined)}
           disabled={disabled || isSelected !== undefined}
           onSelected={onSelected(card)}
           tag={isSelected?.playerObjectText}

@@ -541,6 +541,7 @@ export class GameClientProcessor {
       player.MaxHp = playerInfo.MaxHp;
       player.Hp = playerInfo.Hp;
     });
+    this.presenter.isSkillDisabled(() => true);
     this.presenter.broadcastUIUpdate();
   }
 
@@ -643,6 +644,8 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     const action = new SkillUseAction(content.toId, this.store, this.presenter, content, this.translator);
+    this.presenter.isSkillDisabled(SkillUseAction.isSkillDisabled(content));
+    this.presenter.broadcastUIUpdate();
     await action.onSelect(this.translator);
     this.endAction();
   }
@@ -675,7 +678,7 @@ export class GameClientProcessor {
   ) {
     this.store.room.onPhaseTo(content.toPlayer, content.to);
     if (content.to === PlayerPhase.PrepareStage) {
-      content.fromPlayer && this.presenter.isSkillDisabled(PlayPhaseAction.disableSkills);
+      // content.fromPlayer && this.presenter.isSkillDisabled(PlayPhaseAction.disableSkills);
       this.store.room.turnTo(content.toPlayer);
       this.store.room.Analytics.turnTo(content.toPlayer);
 
@@ -706,6 +709,7 @@ export class GameClientProcessor {
     this.presenter.isSkillDisabled(
       PlayPhaseAction.isPlayPhaseSkillsDisabled(this.store.room, this.presenter.ClientPlayer!, content),
     );
+    this.presenter.broadcastUIUpdate();
     await action.onPlay();
     this.endAction();
   }
@@ -1103,6 +1107,7 @@ export class GameClientProcessor {
         imageLoader={this.imageLoader}
         cards={content.cardIds}
         unselectable={true}
+        highlight={true}
         selected={content.selected.map(selectedCard => ({
           card: selectedCard.card,
           playerObjectText:

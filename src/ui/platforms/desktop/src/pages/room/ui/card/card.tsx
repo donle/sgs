@@ -16,6 +16,7 @@ export type ClientCardProps = {
   imageLoader: ImageLoader;
   className?: string;
   disabled?: boolean;
+  highlight?: boolean;
   unselectable?: boolean;
   onSelected?(selected: boolean): void;
   tag?: string;
@@ -38,6 +39,8 @@ export class ClientCard extends React.Component<ClientCardProps> {
   private cardImage: string | undefined;
   @mobx.observable.ref
   private realFlatCardImage: string | undefined;
+  @mobx.observable.ref
+  private originalCard: Card | undefined;
 
   private soundTracks: string[] = [];
 
@@ -81,11 +84,12 @@ export class ClientCard extends React.Component<ClientCardProps> {
     }
 
     if (card.isVirtualCard() && (card as VirtualCard).ActualCardIds.length === 1) {
-      const realCardName = Sanguosha.getCardById((card as VirtualCard).ActualCardIds[0]).Name;
+      this.originalCard = Sanguosha.getCardById((card as VirtualCard).ActualCardIds[0]);
       this.realFlatCardImage = (await imageLoader.getSlimCard(card.Name)).src;
-      this.cardImage = card && (await imageLoader.getCardImage(realCardName)).src;
+      this.cardImage = (await imageLoader.getCardImage(this.originalCard.Name)).src;
     } else {
-      this.cardImage = card && (await imageLoader.getCardImage(card.Name)).src;
+      this.originalCard = this.props.card;
+      this.cardImage = (await imageLoader.getCardImage(card.Name)).src;
     }
   }
 
@@ -99,19 +103,28 @@ export class ClientCard extends React.Component<ClientCardProps> {
         </div>
       );
     }
+
     return (
       <div className={styles.innerCard}>
-        <div className={styles.cornerTag}>
-          <CardNumberItem cardNumber={card.CardNumber} isRed={card.isRed()} />
-          <CardSuitItem suit={card.Suit} />
-        </div>
+        {this.originalCard && (
+          <div className={styles.cornerTag}>
+            <CardNumberItem cardNumber={this.originalCard.CardNumber} isRed={this.originalCard.isRed()} />
+            <CardSuitItem suit={this.originalCard.Suit} />
+          </div>
+        )}
         {this.cardImage ? (
           <img className={styles.cardImage} src={this.cardImage} alt={card.Name} />
         ) : (
           <span>{translator.tr(card.Name)}</span>
         )}
         {this.realFlatCardImage && (
-          <img className={styles.innterFlatCardImage} src={this.realFlatCardImage} alt={card.Name} />
+          <>
+            <div className={styles.flatCardNumber}>
+              <CardSuitItem suit={card.Suit} />
+              <CardNumberItem cardNumber={card.CardNumber} isRed={card.isRed()} />
+            </div>
+            <img className={styles.innterFlatCardImage} src={this.realFlatCardImage} alt={card.Name} />
+          </>
         )}
         {tag && <span className={styles.cardTag}>{translator.trx(tag)}</span>}
       </div>
@@ -119,14 +132,14 @@ export class ClientCard extends React.Component<ClientCardProps> {
   }
 
   render() {
-    const { className, style = {} } = this.props;
+    const { className, style = {}, highlight } = this.props;
 
     return (
       <div
         ref={this.props.ref}
         className={classNames(styles.clientCard, className, {
           [styles.selected]: this.getSelected() && !this.props.disabled,
-          [styles.disabled]: this.props.disabled,
+          [styles.disabled]: highlight === undefined ? this.props.disabled : !highlight,
         })}
         style={{
           ...this.getCardRatioSize(),

@@ -13,6 +13,7 @@ import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
 import { PlayerPhaseBadge } from '../badge/badge';
 import { ClientCard } from '../card/card';
+import { CardNumberItem } from '../card/card_number';
 import { CardSuitItem } from '../card/card_suit';
 import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
 import { PlayerAvatar } from '../player_avatar/player_avatar';
@@ -107,14 +108,12 @@ export class EquipCardItem extends React.Component<EquipCardItemProps> {
         {this.equipCardImage ? (
           <img src={this.equipCardImage} className={styles.equipCardImage} alt="" />
         ) : (
-          <>
-            <span className={styles.equipCardName}>{card && translator.tr(card.Name)}</span>
-            {card && <CardSuitItem className={styles.equipCardSuit} suit={card.Suit} />}
-            <span className={styles.equipCardNumber}>
-              {card && ClientTranslationModule.getCardNumber(card.CardNumber)}
-            </span>
-          </>
+          <span className={styles.equipCardName}>{card && translator.tr(card.Name)}</span>
         )}
+        <>
+          {card && <CardSuitItem className={styles.equipCardSuit} suit={card.Suit} />}
+          <CardNumberItem className={styles.equipCardNumber} cardNumber={card.CardNumber} isRed={card.isRed()} />
+        </>
       </div>
     );
   }

@@ -20,7 +20,7 @@ export class CardResponseAction extends BaseAction {
     }
 
     if (skill instanceof TriggerSkill) {
-      return false;
+      return true;
     } else if (skill instanceof ViewAsSkill) {
       return !new CardMatcher({ name: skill.canViewAs(room, player) }).match(matcher) || !skill.canUse(room, player);
     }

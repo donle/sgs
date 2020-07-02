@@ -327,6 +327,7 @@ export class GuanXingCardSlots extends React.Component<GuanXingDialogProps> {
               imageLoader={imageLoader}
               translator={translator}
               disabled={movable}
+              highlight={!!movable}
               unselectable={true}
               onSelected={!movable ? this.onClick(card, index) : undefined}
               onMouseUp={movable ? this.onMouseUp(card, index) : undefined}
