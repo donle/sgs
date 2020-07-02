@@ -23,8 +23,8 @@
     text-shadow: 0px 0px 3px rgba(50, 50, 50, 0.87), 0px 0px 5px rgba(50, 50, 50, 0.87),
         0px 0px 7px rgba(50, 50, 50, 0.87);
     word-wrap: break-word;
-    height: calc(gridLine * 15);
-    width: calc(gridLine * 3);
+    height: calc(gridLine * 18);
+    width: calc(gridLine * 4);
     min-width: initial;
     text-align: center;
     display: flex;

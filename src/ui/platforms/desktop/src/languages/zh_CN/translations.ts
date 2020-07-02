@@ -1241,6 +1241,8 @@ export const UiDictionary: Word[] = [
   { source: 'Join', target: '加入' },
   { source: 'lobby', target: '大厅' },
   { source: 'room id', target: '房间号' },
+  { source: 'round {0}', target: '第 {0} 轮' },
+  { source: '{0} draw cards left', target: '剩余 {0} 牌' },
   {
     source: 'New QSanguosha',
     target: '新神杀',

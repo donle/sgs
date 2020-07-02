@@ -40,11 +40,7 @@ export class CharacterCard extends React.Component<CharacterCardProps> {
       <div className={classNames(styles.characterCard, className)} onClick={this.onClick}>
         {this.characterImage ? (
           <>
-            <NationalityBadge
-              nationality={character.Nationality}
-              isLord={character.isLord()}
-              className={styles.characterTag}
-            >
+            <NationalityBadge nationality={character.Nationality} isLord={character.isLord()}>
               {translator.tr(character.Name)}
             </NationalityBadge>
             <CharacterHp character={character} className={styles.characterHp} />

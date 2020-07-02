@@ -90,7 +90,7 @@
     padding: 0;
     opacity: 0.9;
     left: 220px;
-    height: calc(gridLine * 4);
+    height: calc(gridLine * 3.5);
     top: 16px;
     display: flex;
     justify-content: flex-start;

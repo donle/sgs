@@ -10,15 +10,14 @@
 
 .characterImage {
     height: 100%;
-}
-
-.characterTag {
-    left: 4px;
+    position: absolute;
+    top: 0;
+    z-index: -2;
 }
 
 .characterHp {
     top: 16px;
-    left: 40px;
+    left: 48px;
     display: flex;
 }
 

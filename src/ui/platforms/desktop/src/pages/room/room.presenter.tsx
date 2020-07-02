@@ -80,6 +80,11 @@ export class RoomStore {
   inAction: boolean;
 
   @mobx.observable.ref
+  numberOfDrawStack: number;
+  @mobx.observable.ref
+  currentRound: number = -1;
+
+  @mobx.observable.ref
   clientPlayerCardActionsMatcher: (card: Card) => boolean;
   @mobx.observable.ref
   onClickHandCardToPlay: (card: Card, selected: boolean) => void;
@@ -341,7 +346,18 @@ export class RoomPresenter {
       event,
     };
   }
-  getAwaitingAction() {
-    return this.store.awaitingResponseEvent;
+
+  @mobx.action
+  updateNumberOfDrawStack(numberOfDrawStack: number) {
+    if (numberOfDrawStack !== undefined) {
+      this.store.numberOfDrawStack = numberOfDrawStack;
+    }
+  }
+
+  @mobx.action
+  updateGameRound(round: number) {
+    if (round !== undefined) {
+      this.store.currentRound = round;
+    }
   }
 }

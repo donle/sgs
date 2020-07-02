@@ -61,6 +61,8 @@
 
 .playerCharacter {
     position: absolute;
+    left: calc(gridLine * -1.5);
+    z-index: 2;
 }
 
 .playerHp {
@@ -141,20 +143,21 @@
     position: absolute;
     text-align: center;
     z-index: 2;
-    margin-top: gridLine;
-    align-self: center;
+    margin-top: 8px;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: calc(gridLine * 3);
+    width: calc(8px * 5);
+    left: calc(8px * -2.5);
+    bottom: 0;
 }
 .handCardsNumberBgImage {
-    width: calc(gridLine * 4);
+    width: 100%;
 }
 .handCardsNumber {
     z-index: 100;
     position: absolute;
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 550;
     color: white;
     text-shadow: 0px 0px 2px black, 0px 0px 2px black, 0px 0px 4px black, 0px 0px 4px black;
@@ -163,7 +166,7 @@
 .playerPhaseBadge {
     position: absolute;
     bottom: calc(gridLine * -2);
-    height: calc(gridLine * 4);
+    height: calc(gridLine * 3.5);
 }
 
 .weapon {

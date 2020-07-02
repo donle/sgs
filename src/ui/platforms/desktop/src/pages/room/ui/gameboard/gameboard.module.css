@@ -1,0 +1,57 @@
+@value XinWeiFont from '../../../../ui/metrics/metrics.css';
+@value gridLine from '../../../../ui/metrics/metrics.css';
+
+@value lordColor from '../../../../ui/metrics/metrics.css';
+@value loyalistColor from '../../../../ui/metrics/metrics.css';
+@value rebelColor from '../../../../ui/metrics/metrics.css';
+@value renegadeColor from '../../../../ui/metrics/metrics.css';
+
+.gameboard {
+    max-height: calc(gridLine * 50);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: 1px solid grey;
+}
+
+.gameStatus {
+    display: flex;
+    justify-content: space-evenly;
+    margin-bottom: 8px;
+    width: 100%;
+}
+
+.currentRound,
+.numberOfDrawStack {
+    font-family: XinWeiFont;
+    font-size: 20px;
+    font-weight: 550;
+}
+
+.players {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.alivePlayer {
+    font-family: XinWeiFont;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.lord {
+    color: lordColor;
+}
+.loyalist {
+    color: loyalistColor;
+}
+.rebel {
+    color: rebelColor;
+}
+.renegade {
+    color: renegadeColor;
+}

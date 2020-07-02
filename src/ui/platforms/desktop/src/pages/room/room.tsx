@@ -1,4 +1,4 @@
-import { clientActiveListenerEvents, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { clientActiveListenerEvents, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { ClientSocket } from 'core/network/socket.client';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -15,6 +15,7 @@ import { Background } from './ui/background/background';
 import { Banner } from './ui/banner/banner';
 import { ClientCard } from './ui/card/card';
 import { Dashboard } from './ui/dashboard/dashboard';
+import { GameBoard } from './ui/gameboard/gameboard';
 import { GameDialog } from './ui/game_dialog/game_dialog';
 import { SeatsLayout } from './ui/seats_layout/seats_layout';
 
@@ -72,6 +73,7 @@ export class RoomPage extends React.Component<
         await this.gameProcessor.onHandleIncomingEvent(identifier, content);
         this.showMessageFromEvent(content);
         this.animation(identifier, content);
+        this.updateGameStatus(content);
       });
     });
 
@@ -87,6 +89,12 @@ export class RoomPage extends React.Component<
 
   componentWillUnmount() {
     this.disconnect();
+  }
+
+  private updateGameStatus(event: ServerEventFinder<GameEventIdentifiers>) {
+    const info = EventPacker.getGameRunningInfo(event);
+    this.presenter.updateNumberOfDrawStack(info.numberOfDrawStack);
+    this.presenter.updateGameRound(info.round);
   }
 
   private animation<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
@@ -175,6 +183,7 @@ export class RoomPage extends React.Component<
                 gamePad={this.getDisplayedCard()}
               />
               <div className={styles.sideBoard}>
+                <GameBoard store={this.store} translator={this.props.translator} />
                 <GameDialog store={this.store} presenter={this.presenter} translator={this.props.translator} />
               </div>
             </div>

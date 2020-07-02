@@ -1,4 +1,4 @@
-import { Card, VirtualCard } from 'core/cards/card';
+import { Card } from 'core/cards/card';
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
@@ -28,13 +28,10 @@ export class PlayPhaseAction extends BaseAction {
       }
 
       const canViewAs = skill.canViewAs(room, player).filter(cardName => {
-        return (
-          !(Sanguosha.getCardByName(cardName).Skill instanceof ResponsiveSkill) &&
-          player.canUseCard(room, VirtualCard.create({ cardName, bySkill: skill.Name }).Id)
-        );
+        return !(Sanguosha.getCardByName(cardName).Skill instanceof ResponsiveSkill);
       });
 
-      return canViewAs.length > 0;
+      return canViewAs.length <= 0;
     }
 
     return true;

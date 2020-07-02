@@ -1,9 +1,11 @@
+@value XinWeiFont from '../metrics/metrics.css';
+
 .buttonOuter {
     border-radius: 4px;
 }
 
 .button {
-    text-shadow: 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black;
+    text-shadow: 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black;
     border: 0;
     border-radius: 4px;
     padding: 4px 8px;
@@ -11,8 +13,11 @@
     box-shadow: inset 0px 0px 10px 0px rgba(23, 23, 23, 0.75);
     outline: none;
     color: #eaeaea;
-    font-weight: 550;
     position: relative;
+    font-family: XinWeiFont;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 2px;
 }
 .button.imageButton {
     background: transparent;
@@ -82,5 +87,5 @@
     align-items: center;
     justify-content: center;
     padding-left: 24px;
-    padding-bottom: 6px;
+    padding-bottom: 4px;
 }

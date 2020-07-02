@@ -1,14 +1,20 @@
 .gameDialog {
     border: 1px solid grey;
+    border-radius: 4px;
     flex: auto;
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
     height: calc(100vh - 270px);
-    padding: 4px;
+    padding: 8px;
+}
+.gameDialog::-webkit-scrollbar {
+    display: none;
 }
 
 .messageLine {
-    margin: 4px 0;
+    margin: 0;
+    margin-bottom: 4px;
     color: #fbd000;
+    line-height: 16px;
 }
