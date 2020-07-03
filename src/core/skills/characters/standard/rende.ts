@@ -91,7 +91,11 @@ export class Rende extends ActiveSkill {
 
       if (!response.selectedOption) {
         return true;
-      } else if (response.selectedOption === 'slash') {
+      } else if (
+        response.selectedOption === 'slash' ||
+        response.selectedOption === 'thunder_slash' ||
+        response.selectedOption === 'fire_slash'
+      ) {
         const targets: PlayerId[] = [];
 
         for (const player of room.AlivePlayers) {

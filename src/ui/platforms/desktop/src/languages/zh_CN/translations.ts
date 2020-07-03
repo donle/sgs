@@ -1042,7 +1042,7 @@ export const eventDictionary: Word[] = [
   },
   { source: '{0} used {1} to respond pindian', target: '{0} 展示了拼点牌 {1}' },
   { source: 'pindian result:{0} win', target: '拼点结果为 {0} 赢' },
-  { source: 'pindian result:draw', target: '拼点结果为 平局<' },
+  { source: 'pindian result:draw', target: '拼点结果为 平局' },
   {
     source: "please drop a {0} card, otherwise you can't do response of slash",
     target: '请弃置一张 {0} 牌，否则此杀不可被响应',

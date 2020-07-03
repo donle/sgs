@@ -856,6 +856,27 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     );
   }
 
+  public async asyncMoveCards(events: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[]) {
+    events.sort((prev, next) => {
+      if (prev.fromId === undefined) {
+        return -1;
+      } else if (next.fromId === undefined) {
+        return 1;
+      }
+
+      const prevPosition = this.getPlayerById(prev.fromId).Position;
+      const nextPosition = this.getPlayerById(next.fromId).Position;
+      if (prevPosition < nextPosition) {
+        return -1;
+      } else if (prevPosition === nextPosition) {
+        return 0;
+      }
+      return 1;
+    });
+
+    await this.gameProcessor.onHandleAsyncMoveCardEvent(events);
+  }
+
   public async damage(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>): Promise<void> {
     event.beginnerOfTheDamage = event.beginnerOfTheDamage || event.fromId;
     EventPacker.createIdentifierEvent(GameEventIdentifiers.DamageEvent, event);

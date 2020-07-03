@@ -18,8 +18,8 @@ export class ClientSocket extends Socket<WorkPlace.Client> {
       reconnection: true,
       reconnectionAttempts: 3,
       timeout: 60000,
+      autoConnect: true,
     });
-    this.manager.open();
   }
 
   public notify<I extends GameEventIdentifiers>(type: I, content: ClientEventFinder<I>) {
