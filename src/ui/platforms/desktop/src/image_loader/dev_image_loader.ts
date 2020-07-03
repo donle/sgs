@@ -26,7 +26,7 @@ export class DevImageLoader implements ImageLoader {
   }
 
   getDelayedTricksImage(cardName: string) {
-    return { src: `${remoteRoot}/images/delayed_tricks/${cardName}`, alt: cardName };
+    return { src: `${remoteRoot}/images/delayed_tricks/${cardName}.png`, alt: cardName };
   }
 
   public getSkillButtonImage(skillType: SkillType, size: 'wide' | 'normal') {
