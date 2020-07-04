@@ -136,6 +136,7 @@ export { RouLin, RouLinShadow } from './characters/forest/roulin';
 export { BengHuai } from './characters/forest/benghuai';
 export { JuXiang } from './characters/forest/juxiang';
 export { YingHun } from './characters/forest/yinghun';
+export { Fangzhu } from './characters/forest/fangzhu';
 
 export { FeiYing } from './characters/god/feiying';
 export { GuiXin } from './characters/god/guixin';
