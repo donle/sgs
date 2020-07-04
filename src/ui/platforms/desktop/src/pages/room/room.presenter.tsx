@@ -78,6 +78,8 @@ export class RoomStore {
 
   @mobx.observable.ref
   inAction: boolean;
+  @mobx.observable.shallow
+  notifiedPlayers: PlayerId[] = [];
 
   @mobx.observable.ref
   numberOfDrawStack: number;
@@ -345,6 +347,15 @@ export class RoomPresenter {
       identifier,
       event,
     };
+  }
+
+  @mobx.action
+  notify(toIds: PlayerId[]) {
+    this.store.notifiedPlayers.push(...toIds);
+  }
+  @mobx.action
+  clearNotifiers() {
+    this.store.notifiedPlayers.splice(0, this.store.notifiedPlayers.length);
   }
 
   @mobx.action

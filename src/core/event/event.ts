@@ -6,6 +6,7 @@ import { ServerEvent } from './event.server';
 
 export const enum GameEventIdentifiers {
   UserMessageEvent = 100,
+  NotifyEvent,
   CustomGameDialog,
   PhaseChangeEvent,
   PhaseStageChangeEvent,
@@ -106,6 +107,7 @@ export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.PhaseStageChangeEvent,
   GameEventIdentifiers.SyncGameCommonRulesEvent,
   GameEventIdentifiers.CustomGameDialog,
+  GameEventIdentifiers.NotifyEvent,
 
   GameEventIdentifiers.DrunkEvent,
   GameEventIdentifiers.ChainLockedEvent,

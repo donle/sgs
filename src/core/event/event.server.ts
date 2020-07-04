@@ -355,6 +355,9 @@ export interface ServerEvent extends EventUtilities {
     conversation: string | PatchedTranslationObject;
   };
   [GameEventIdentifiers.CustomGameDialog]: {};
+  [GameEventIdentifiers.NotifyEvent]: {
+    toIds: PlayerId[];
+  }
 }
 
 export type PinDianResultType = {

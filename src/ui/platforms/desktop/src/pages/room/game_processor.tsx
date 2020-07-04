@@ -73,7 +73,6 @@ export class GameClientProcessor {
       this.store.room.broadcast(identifier, result);
       this.presenter.closeDialog();
       this.presenter.closeIncomingConversation();
-      this.presenter.endAction();
 
       this.endAction();
     }, 60 * 1000);
@@ -89,6 +88,7 @@ export class GameClientProcessor {
 
   async onHandleIncomingEvent<T extends GameEventIdentifiers>(e: T, content: ServerEventFinder<T>) {
     this.tryToThrowNotReadyException(e);
+    this.presenter.clearNotifiers();
     this.record(e, content);
 
     switch (e) {
@@ -250,6 +250,9 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.DrunkEvent:
         await this.onHandleDrunkEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.NotifyEvent:
+        await this.onHandleNotifyEvent(e as any, content);
         break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
@@ -492,6 +495,10 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
     // tslint:disable-next-line:no-empty
   ) {}
+  private onHandleNotifyEvent<T extends GameEventIdentifiers.NotifyEvent>(type: T, content: ServerEventFinder<T>) {
+    this.presenter.notify(content.toIds);
+    this.presenter.broadcastUIUpdate();
+  }
   private onHandlePlayerDiedEvent<T extends GameEventIdentifiers.PlayerDiedEvent>(
     type: T,
     content: ServerEventFinder<T>,

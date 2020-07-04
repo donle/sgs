@@ -40,7 +40,9 @@
 }
 
 .badgeContext {
-    margin-top: calc(gridLine * 5);
+    align-items: center;
+    padding-top: calc(8px * 5);
+    display: flex;
 }
 
 .playerPhase {

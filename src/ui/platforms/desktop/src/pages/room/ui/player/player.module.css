@@ -243,3 +243,9 @@
     opacity: 0.3;
     z-index: -1;
 }
+
+.playBar {
+    position: absolute;
+    bottom: calc(8px * -2.5);
+    width: 100%;
+}

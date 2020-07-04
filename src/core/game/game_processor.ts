@@ -83,7 +83,7 @@ export class GameProcessor {
     const gameStartEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCharacterEvent>({
       characterIds: [
         ...lordCharacters,
-        ...Sanguosha.getRandomCharacters(2, selectableCharacters, lordCharacters).map(character => character.Id),
+        ...Sanguosha.getRandomCharacters(4, selectableCharacters, lordCharacters).map(character => character.Id),
       ],
       toId: lordInfo.Id,
       role: lordInfo.Role,
@@ -116,8 +116,9 @@ export class GameProcessor {
     const sequentialAsyncResponse: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingCharacterEvent>>[] = [];
 
     const selectedCharacters: CharacterId[] = [lordInfo.CharacterId];
+    const notifyOtherPlayer: PlayerId[] = [];
     for (let i = 1; i < playersInfo.length; i++) {
-      const characters = Sanguosha.getRandomCharacters(3, selectableCharacters, selectedCharacters);
+      const characters = Sanguosha.getRandomCharacters(5, selectableCharacters, selectedCharacters);
       characters.forEach(character => selectedCharacters.push(character.Id));
 
       const playerInfo = playersInfo[i];
@@ -139,13 +140,16 @@ export class GameProcessor {
           ).extract(),
         },
         playerInfo.Id,
+        true,
       );
 
+      notifyOtherPlayer.push(playerInfo.Id);
       sequentialAsyncResponse.push(
         this.room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingCharacterEvent, playerInfo.Id),
       );
     }
 
+    this.room.doNotify(...notifyOtherPlayer);
     for (const response of await Promise.all(sequentialAsyncResponse)) {
       const playerInfo = Precondition.exists(
         playersInfo.find(info => info.Id === response.fromId),
@@ -439,7 +443,10 @@ export class GameProcessor {
       const pendingResponses: {
         [k in PlayerId]: Promise<ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent>>;
       } = {};
+
+      const notifierAllPlayers: PlayerId[] = [];
       for (const player of this.room.getAlivePlayersFrom(this.CurrentPlayer.Id)) {
+        notifierAllPlayers.push(player.Id);
         if (!player.hasCard(this.room, new CardMatcher({ name: ['wuxiekeji'] }))) {
           continue;
         }
@@ -475,9 +482,10 @@ export class GameProcessor {
           byCardId: event.cardId,
           cardUserId: event.fromId,
         };
-        pendingResponses[player.Id] = this.room.askForCardUse(wuxiekejiEvent, player.Id);
+        pendingResponses[player.Id] = this.room.askForCardUse(wuxiekejiEvent, player.Id, true);
       }
 
+      this.room.doNotify(...notifierAllPlayers);
       let cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> | undefined;
       while (Object.keys(pendingResponses).length > 0) {
         const response = await Promise.race(Object.values(pendingResponses));
@@ -500,6 +508,7 @@ export class GameProcessor {
 
       if (cardUseEvent) {
         await this.room.useCard(cardUseEvent);
+        await this.room.sleep(1500);
         if (!EventPacker.isTerminated(cardUseEvent)) {
           event.isCancelledOut = true;
           await this.room.trigger(event, CardEffectStage.CardEffectCancelledOut);
@@ -1124,7 +1133,7 @@ export class GameProcessor {
       }
     }
 
-    this.room.broadcast(GameEventIdentifiers.CardUseEvent, event);
+    this.room.broadcast(identifier, event);
     event.translationsMessage = undefined;
 
     if (!this.room.isCardOnProcessing(event.cardId) && !card.is(CardType.DelayedTrick)) {
@@ -1168,8 +1177,6 @@ export class GameProcessor {
             toArea: CardMoveArea.EquipArea,
           });
         }
-
-        this.room.broadcast(identifier, event);
       }
     });
 

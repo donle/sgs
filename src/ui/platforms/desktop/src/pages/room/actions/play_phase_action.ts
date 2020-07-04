@@ -24,7 +24,7 @@ export class PlayPhaseAction extends BaseAction {
       return !skill.canUse(room, player);
     } else if (skill instanceof ViewAsSkill) {
       if (!skill.canUse(room, player, event)) {
-        return false;
+        return true;
       }
 
       const canViewAs = skill.canViewAs(room, player).filter(cardName => {

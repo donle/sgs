@@ -56,6 +56,9 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   public notify(): void {
     this.throwUntouchableError(this.notify.name);
   }
+  public doNotify(): void {
+    this.throwUntouchableError(this.doNotify.name);
+  }
   //Server only
   public getCards(): any {
     this.throwUntouchableError(this.getCards.name);

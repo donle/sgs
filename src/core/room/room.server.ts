@@ -114,7 +114,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.gameProcessor.insertPlayerRound(player);
   }
 
-  private readonly sleep = async (timeDuration: number) =>
+  public readonly sleep = async (timeDuration: number) =>
     new Promise(r => {
       setTimeout(r, timeDuration);
     });
@@ -156,8 +156,18 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.broadcast(GameEventIdentifiers.DrunkEvent, { toId, drunk: false });
   }
 
-  public notify<I extends GameEventIdentifiers>(type: I, content: ServerEventFinder<I>, to: PlayerId) {
+  public notify<I extends GameEventIdentifiers>(
+    type: I,
+    content: ServerEventFinder<I>,
+    to: PlayerId,
+    hideBroadcast?: boolean,
+  ) {
     this.socket.notify(type, EventPacker.createIdentifierEvent(type, content), to);
+    !hideBroadcast && this.socket.broadcast(GameEventIdentifiers.NotifyEvent, { toIds: [to] });
+  }
+
+  public doNotify(...toIds: PlayerId[]) {
+    this.socket.broadcast(GameEventIdentifiers.NotifyEvent, { toIds });
   }
 
   public broadcast<I extends GameEventIdentifiers>(type: I, content: ServerEventFinder<I>) {
@@ -403,7 +413,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return responseEvent;
   }
 
-  public async askForCardUse(event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>, to: PlayerId) {
+  public async askForCardUse(
+    event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>,
+    to: PlayerId,
+    hideBroadcast?: boolean,
+  ) {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForCardUseEvent, event);
     await this.trigger<typeof event>(event);
     if (event.responsedEvent) {
@@ -414,7 +428,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     let responseEvent: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> | undefined;
     do {
-      this.notify(GameEventIdentifiers.AskForCardUseEvent, event, to);
+      this.notify(GameEventIdentifiers.AskForCardUseEvent, event, to, hideBroadcast);
       responseEvent = await this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForCardUseEvent, to);
       const preUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
         fromId: to,
@@ -675,6 +689,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   public async useSkill(content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    const skill = Sanguosha.getSkillBySkillName(content.skillName);
+    if (!(await skill.beforeUse(this, content))) {
+      return;
+    }
+
     await super.useSkill(content);
     const acutalTargets =
       content.toIds && Sanguosha.getSkillBySkillName(content.skillName).nominateForwardTarget(content.toIds);
@@ -1045,7 +1064,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             ),
           ).extract(),
         });
-        await this.sleep(2000);
+        await this.sleep(3000);
         this.broadcast(GameEventIdentifiers.ObserveCardFinishEvent, {});
       }
 

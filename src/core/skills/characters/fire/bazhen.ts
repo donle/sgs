@@ -7,6 +7,17 @@ import { CompulsorySkill } from 'core/skills/skill_wrappers';
 
 @CompulsorySkill({ name: 'bazhen', description: 'bazhen_description' })
 export class BaZhen extends BaGuaZhenSkill {
+  async beforeUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    const askForInvoke: ServerEventFinder<GameEventIdentifiers.AskForSkillUseEvent> = {
+      toId: event.fromId,
+      invokeSkillNames: [this.Name],
+      translationsMessage: super.getSkillLog(room, event),
+    };
+    room.notify(GameEventIdentifiers.AskForSkillUseEvent, askForInvoke, event.fromId);
+    const { invoke } = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForSkillUseEvent, event.fromId);
+    return invoke !== undefined;
+  }
+
   public canUse(
     room: Room,
     owner: Player,

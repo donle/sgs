@@ -18,6 +18,7 @@ import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector
 import { Hp } from '../hp/hp';
 import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
 import { Mask } from '../mask/mask';
+import { PlayingBar } from '../playing_bar/playing_bar';
 import styles from './player.module.css';
 
 type PlayerCardProps = {
@@ -26,6 +27,7 @@ type PlayerCardProps = {
   translator: ClientTranslationModule;
   presenter: RoomPresenter;
   imageLoader: ImageLoader;
+  inAction: boolean;
   disabled?: boolean;
   onClick?(selected: boolean): void;
 };
@@ -226,7 +228,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   }
 
   render() {
-    const { disabled, translator, player, playerPhase } = this.props;
+    const { disabled, translator, inAction, player, playerPhase, imageLoader } = this.props;
     return (
       <div
         id={player && player.Id}
@@ -270,7 +272,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                 <span className={styles.handCardsNumberBg}>
                   <img
                     className={styles.handCardsNumberBgImage}
-                    src={this.props.imageLoader.getCardNumberBgImage().src}
+                    src={imageLoader.getCardNumberBgImage().src}
                     alt={''}
                   />
                   <span className={styles.handCardsNumber}>{player.getCardIds(PlayerCardsArea.HandArea).length}</span>
@@ -280,17 +282,13 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
               <img
                 className={classNames(styles.playerImage, styles.playerUnknownImage)}
                 alt={player.Name}
-                src={this.props.imageLoader.getUnknownCharacterImage().src}
+                src={imageLoader.getUnknownCharacterImage().src}
               />
             )}
             {this.getPlayerJudgeCards()}
-            {!player.isFaceUp() && (
-              <img className={styles.status} src={this.props.imageLoader.getTurnedOverCover().src} alt="" />
-            )}
+            {!player.isFaceUp() && <img className={styles.status} src={imageLoader.getTurnedOverCover().src} alt="" />}
             {player.hasDrunk() > 0 && <div className={styles.drunk} />}
-            {player.ChainLocked && (
-              <img className={styles.chain} src={this.props.imageLoader.getChainImage().src} alt="" />
-            )}
+            {player.ChainLocked && <img className={styles.chain} src={imageLoader.getChainImage().src} alt="" />}
 
             <p className={styles.playerSeats}>{translator.tr(`number ${player.Position}`)}</p>
           </>
@@ -298,20 +296,17 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
           <img
             className={classNames(styles.playerImage, styles.playerUnknownImage)}
             alt={translator.tr('waiting')}
-            src={this.props.imageLoader.getEmptySeatImage().src}
+            src={imageLoader.getEmptySeatImage().src}
           />
         )}
         {playerPhase !== undefined && (
-          <PlayerPhaseBadge
-            stage={playerPhase}
-            translator={this.props.translator}
-            className={styles.playerPhaseBadge}
-          />
+          <PlayerPhaseBadge stage={playerPhase} translator={translator} className={styles.playerPhaseBadge} />
         )}
         <div className={styles.playerTags}>
           {this.getSkillTags()}
           {this.getOutsideAreaCards()}
         </div>
+        {inAction && <PlayingBar className={styles.playBar} />}
         {this.onTooltipOpened && this.PlayerCharacter && (
           <Tooltip position={['top']}>{this.createTooltipContent()}</Tooltip>
         )}
