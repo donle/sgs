@@ -8,8 +8,8 @@ export const INFINITE_DISTANCE = 1000;
 export const enum GameCharacterExtensions {
   Standard = 'standard',
   Wind = 'wind',
-  // Forest,
   Fire = 'fire',
+  Forest = 'forest',
   // Hill,
   // SP,
   // NewStandard,

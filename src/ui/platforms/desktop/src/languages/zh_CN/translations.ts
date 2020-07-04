@@ -279,6 +279,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'dongzhuo', target: '董卓' },
   { source: 'jiuchi', target: '酒池' },
+  { source: 'jiuchi_used', target: '崩坏失效' },
   { source: 'roulin', target: '肉林' },
   { source: 'benghuai', target: '崩坏' },
   { source: 'baonve', target: '暴虐' },
@@ -1202,6 +1203,8 @@ export const eventDictionary: Word[] = [
   { source: '{0} selected {1}', target: '{0} 选择了 {1}' },
   { source: 'guhuo:lose-hp', target: '失去一点体力' },
   { source: 'guhuo:drop-card', target: '弃置一张牌' },
+  { source: 'benghuai:hp', target: '失去1点体力' },
+  { source: 'benghuai:maxhp', target: '减1点体力上限' },
   { source: 'please choose the amount of hp to lose', target: '请选择要失去的体力值' },
   {
     source: 'please choose tianxiang options:{0}',

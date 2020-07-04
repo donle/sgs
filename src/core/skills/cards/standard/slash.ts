@@ -65,6 +65,14 @@ export class SlashSkill extends ActiveSkill {
       triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
     };
 
+    EventPacker.addMiddleware(
+      {
+        tag: this.DrunkTag,
+        data: addtionalDrunkDamage,
+      },
+      damageEvent,
+    );
+
     await room.damage(damageEvent);
 
     return true;
