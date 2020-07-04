@@ -347,7 +347,7 @@ export const characterDictionary: Word[] = [
   { source: 'wumou', target: '无谋' },
   { source: 'wuqian', target: '无前' },
   { source: 'shenfen', target: '神愤' },
- 
+
   { source: 'god_simayi', target: '神司马懿' },
   { source: 'renjie', target: '忍戒' },
   { source: 'baiyin', target: '拜印' },
@@ -699,7 +699,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'fangzhu_description',
     target:
-      '当你受到伤害后，你可以令伤害来源选择一项：1.摸X张牌并翻面；2.弃置X张牌并失去1点体力（X为你已损失的体力值）。',
+      '当你受到伤害后，你可以令一名其他角色选择一项：1.摸X张牌并翻面；2.弃置X张牌并失去1点体力（X为你已损失的体力值）。',
   },
   {
     source: 'songwei_description',
@@ -915,23 +915,21 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'wuqian_description',
-    target: 
+    target:
       '出牌阶段，你可以移去2枚“暴怒”标记并选择本回合内你未以此法选择过的一名其他角色，然后直到回合结束，你拥有“无双”且该角色的防具失效。',
   },
   {
     source: 'shenfen_description',
-    target: 
+    target:
       '出牌阶段限一次，你可以移去6枚“暴怒”标记并对所有其他角色造成1点伤害，然后这些角色弃置装备区里的所有牌，再弃置四张手牌，最后你翻面。',
   },
   {
     source: 'renjie_description',
-    target: 
-      '<b>锁定技</b>，当你受到伤害后，或于弃牌阶段内弃置手牌后，你获得X枚“忍”标记（X为伤害值或弃置的手牌数）。',
+    target: '<b>锁定技</b>，当你受到伤害后，或于弃牌阶段内弃置手牌后，你获得X枚“忍”标记（X为伤害值或弃置的手牌数）。',
   },
   {
     source: 'baiyin_description',
-    target:
-      '<b>觉醒技</b>，准备阶段开始时，若你拥有不少于3枚“忍”标记，你减1点体力上限并获得技能“极略”。',
+    target: '<b>觉醒技</b>，准备阶段开始时，若你拥有不少于3枚“忍”标记，你减1点体力上限并获得技能“极略”。',
   },
   {
     source: 'jilve_description',
@@ -947,7 +945,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'longhun_description',
-    target: 
+    target:
       '你可以将一至两张同花色的牌按如下规则使用或打出：红桃当【桃】；方块当火【杀】；梅花当【闪】；黑桃当【无懈可击】。若你以此法使用或打出的两张牌为：红色，此牌的伤害值或回复值+1；黑色，你弃置当前回合角色的一张牌。',
   },
 ];
