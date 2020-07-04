@@ -136,6 +136,13 @@ export { WuHun, WuHunDied } from './characters/god/wuhun';
 export { SheLie } from './characters/god/shelie';
 export { QinYin } from './characters/god/qinyin';
 export { YeYan } from './characters/god/yeyan';
+
+export { JiuChi, JiuChiShadow, JiuChiRemove } from './characters/forest/jiuchi';
+export { RouLin, RouLinShadow } from './characters/forest/roulin';
+export { BengHuai } from './characters/forest/benghuai';
+export { JuXiang } from './characters/forest/juxiang';
+export { YingHun } from './characters/forest/yinghun';
+
 export { FeiYing } from './characters/god/feiying';
 export { GuiXin } from './characters/god/guixin';
 
