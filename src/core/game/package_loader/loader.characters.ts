@@ -1,5 +1,6 @@
 import { Character } from 'core/characters/character';
 import { FireCharacterPackage } from 'core/characters/fire';
+import { ForestCharacterPackage } from 'core/characters/forest';
 import { GodCharacterPackage } from 'core/characters/god';
 import { StandardCharacterPackage } from 'core/characters/standard';
 import { WindCharacterPackage } from 'core/characters/wind';
@@ -19,6 +20,7 @@ const allCharacterLoaders: {
   [GameCharacterExtensions.Standard]: StandardCharacterPackage,
   [GameCharacterExtensions.Wind]: WindCharacterPackage,
   [GameCharacterExtensions.Fire]: FireCharacterPackage,
+  [GameCharacterExtensions.Forest]: ForestCharacterPackage,
   [GameCharacterExtensions.God]: GodCharacterPackage,
 };
 
