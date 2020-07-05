@@ -348,11 +348,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return true;
   }
 
-  public async kill(deadPlayer: Player): Promise<void> {
-    deadPlayer.clearMarks();
-    deadPlayer.clearFlags();
-    deadPlayer.bury();
-  }
+  public abstract async kill(deadPlayer: Player, killedBy?: PlayerId): Promise<void>;
 
   public canUseCardTo(cardId: CardId | CardMatcher, target: PlayerId): boolean {
     const player = this.getPlayerById(target);

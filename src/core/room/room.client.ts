@@ -240,4 +240,10 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   public getPlayerById(playerId: PlayerId) {
     return super.getPlayerById(playerId) as ClientPlayer;
   }
+
+  public async kill(deadPlayer: Player): Promise<void> {
+    deadPlayer.clearMarks();
+    deadPlayer.clearFlags();
+    deadPlayer.bury();
+  }
 }

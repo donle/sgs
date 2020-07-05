@@ -1092,16 +1092,16 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       ).extract(),
     };
 
-    await this.gameProcessor.onHandleIncomingEvent(
-      GameEventIdentifiers.PlayerDiedEvent,
-      EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerDiedEvent, playerDiedEvent),
-    );
-
     for (const skill of deadPlayer.getPlayerSkills()) {
       if (SkillHooks.isHookedUpOnDeath(skill)) {
         this.hookedSkills.push({ player: deadPlayer, skill });
       }
     }
+
+    await this.gameProcessor.onHandleIncomingEvent(
+      GameEventIdentifiers.PlayerDiedEvent,
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerDiedEvent, playerDiedEvent),
+    );
   }
 
   public clearFlags(player: PlayerId) {
