@@ -1030,6 +1030,10 @@ export const eventDictionary: Word[] = [
     target: '是否发动技能 【{0}】?',
   },
   {
+    source: 'do you want to trigger skill {0} from {1} ?',
+    target: '是否发动 {1} 的技能 【{0}】？',
+  },
+  {
     source: '{0} draws {1} cards',
     target: '{0} 摸了 {1} 张牌',
   },
