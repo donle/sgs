@@ -24,13 +24,15 @@ export class Xingshang extends TriggerSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
     const { playerId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>;
+    const fromId = skillUseEvent.fromId;
     const dead = room.getPlayerById(playerId);
-    const caopi = room.getPlayerById(skillUseEvent.fromId);
+    const caopi = room.getPlayerById(fromId);
 
     if (dead.getPlayerCards().length <= 0) {
       room.recover({
         recoveredHp: 1,
-        toId: skillUseEvent.fromId,
+        toId: fromId,
+        recoverBy: fromId,
       });
     } else if (caopi.Hp >= caopi.MaxHp) {
       const heritage = Card.getActualCards(dead.getPlayerCards());
@@ -38,30 +40,31 @@ export class Xingshang extends TriggerSkill {
         movingCards: heritage.map(cardId => ({card: cardId, fromArea: dead.cardFrom(cardId)})),
         fromId: playerId,
         moveReason: CardMoveReason.ActivePrey,
-        toId: skillUseEvent.fromId,
+        toId: fromId,
         toArea: CardMoveArea.HandArea,
-        proposer: skillUseEvent.fromId,
+        proposer: fromId,
         movedByReason: this.Name,
       });
     } else {
       const askForOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
         options: ['xingshang:recover', 'xingshang:pickup'],
         conversation: 'please choose',
-        toId: skillUseEvent.fromId,
+        toId: fromId,
       };
 
       room.notify(
         GameEventIdentifiers.AskForChoosingOptionsEvent,
         EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(askForOptionsEvent),
-        skillUseEvent.fromId,
+        fromId,
       );
 
-      const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, skillUseEvent.fromId);
+      const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
       response.selectedOption = response.selectedOption || 'xingshang:pickup';
       if (response.selectedOption === 'xingshang:recover') {
         room.recover({
           recoveredHp: 1,
-          toId: skillUseEvent.fromId,
+          toId: fromId,
+          recoverBy: fromId,
         });
       } else {
         const heritage = Card.getActualCards(dead.getPlayerCards());
@@ -69,9 +72,9 @@ export class Xingshang extends TriggerSkill {
           movingCards: heritage.map(cardId => ({card: cardId, fromArea: dead.cardFrom(cardId)})),
           fromId: playerId,
           moveReason: CardMoveReason.ActivePrey,
-          toId: skillUseEvent.fromId,
+          toId: fromId,
           toArea: CardMoveArea.HandArea,
-          proposer: skillUseEvent.fromId,
+          proposer: fromId,
           movedByReason: this.Name,
         });
       }

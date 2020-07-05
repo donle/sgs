@@ -1315,6 +1315,8 @@ export const eventDictionary: Word[] = [
   { source: 'guhuo:drop-card', target: '弃置一张牌' },
   { source: 'benghuai:hp', target: '失去1点体力' },
   { source: 'benghuai:maxhp', target: '减1点体力上限' },
+  { source: 'xingshang:recover', target: '回复1点体力' },
+  { source: 'xingshang:pickup', target: '获得阵亡角色的所有牌' },
   { source: 'please choose the amount of hp to lose', target: '请选择要失去的体力值' },
   {
     source: 'please choose tianxiang options:{0}',

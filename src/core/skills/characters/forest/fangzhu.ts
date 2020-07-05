@@ -38,34 +38,33 @@ export class Fangzhu extends TriggerSkill {
     if (to.getPlayerCards().length < lostHp) {
       await room.turnOver(toIds![0]);
       await room.drawCards(lostHp, toIds![0]);
-      return true;
-    }
-
-    const askForOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
-      options: ['option-one', 'option-two'],
-      conversation: TranslationPack.translationJsonPatcher(
-        'please choose fangzhu options:{0}',
-        lostHp,
-      ).extract(),
-      toId: toIds![0],
-      askedBy: fromId
-    };
-
-    room.notify(
-      GameEventIdentifiers.AskForChoosingOptionsEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(askForOptionsEvent),
-      toIds![0]
-    );
-
-    const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, toIds![0]);
-    response.selectedOption = response.selectedOption || 'option-one';
-    if (response.selectedOption === 'option-one') {
-      await room.turnOver(toIds![0]);
-      await room.drawCards(lostHp, toIds![0], undefined, fromId, this.GeneralName);
     } else {
-      const response = await room.askForCardDrop(toIds![0], lostHp, [PlayerCardsArea.HandArea], true, undefined, this.Name);
-      await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toIds![0]);
-      room.loseHp(toIds![0], 1);
+      const askForOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
+        options: ['option-one', 'option-two'],
+        conversation: TranslationPack.translationJsonPatcher(
+          'please choose fangzhu options:{0}',
+          lostHp,
+        ).extract(),
+        toId: toIds![0],
+        askedBy: fromId
+      };
+  
+      room.notify(
+        GameEventIdentifiers.AskForChoosingOptionsEvent,
+        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(askForOptionsEvent),
+        toIds![0]
+      );
+  
+      const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, toIds![0]);
+      response.selectedOption = response.selectedOption || 'option-one';
+      if (response.selectedOption === 'option-one') {
+        await room.turnOver(toIds![0]);
+        await room.drawCards(lostHp, toIds![0], undefined, fromId, this.GeneralName);
+      } else {
+        const response = await room.askForCardDrop(toIds![0], lostHp, [PlayerCardsArea.HandArea], true, undefined, this.Name);
+        await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toIds![0]);
+        room.loseHp(toIds![0], 1);
+      }
     }
 
     return true;
