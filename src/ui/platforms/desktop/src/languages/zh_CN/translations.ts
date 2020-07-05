@@ -1176,6 +1176,10 @@ export const eventDictionary: Word[] = [
     source: 'please choose jiangchi options',
     target: '请选择：1.额外摸一张牌，本回合【杀】无距离限制且使用次数+1 2.弃置一张牌，本回合不可使用或打出【杀】',
   },
+  {
+    source: 'wuhun:Please choose a target to die with you',
+    target: '请选择一名角色进行【武魂】的判定，若结果不为【桃】或【桃园结义】，其立即死亡',
+  },
 
   { source: 'cixiongjian:drop-card', target: '弃置一张手牌' },
   { source: 'cixiongjian:draw-card', target: '令其摸一张牌' },
