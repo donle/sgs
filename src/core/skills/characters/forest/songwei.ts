@@ -38,7 +38,7 @@ export class Songwei extends TriggerSkill {
       conversation: TranslationPack.translationJsonPatcher(
         'do you want to trigger skill {0} from {1} ?',
         this.GeneralName,
-        TranslationPack.patchPlayerInTranslation(room.getPlayerById(judgeEvent.toId))
+        TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId))
       ).extract(),
     };
 
