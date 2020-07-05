@@ -49,7 +49,7 @@ export class Songwei extends TriggerSkill {
     );
 
     if (selectedOption === 'yes') {
-      await room.drawCards(1, skillUseEvent.fromId);
+      await room.drawCards(1, skillUseEvent.fromId, undefined, skillUseEvent.fromId, this.GeneralName);
     }
 
     return true;

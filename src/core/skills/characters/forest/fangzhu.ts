@@ -5,6 +5,7 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({name: 'fangzhu', description: 'fangzhu_description'})
 export class Fangzhu extends TriggerSkill {
@@ -41,8 +42,11 @@ export class Fangzhu extends TriggerSkill {
     }
 
     const askForOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
-      options: ['fangzhu:turnover', 'fangzhu:losehp'],
-      conversation: 'please choose',
+      options: ['option-one', 'option-two'],
+      conversation: TranslationPack.translationJsonPatcher(
+        'please choose fangzhu options:{0}',
+        lostHp,
+      ).extract(),
       toId: toIds![0],
       askedBy: fromId
     };
@@ -54,10 +58,10 @@ export class Fangzhu extends TriggerSkill {
     );
 
     const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, toIds![0]);
-    response.selectedOption = response.selectedOption || 'fangzhu:turnover';
-    if (response.selectedOption === 'fangzhu:turnover') {
+    response.selectedOption = response.selectedOption || 'option-one';
+    if (response.selectedOption === 'option-one') {
       await room.turnOver(toIds![0]);
-      await room.drawCards(lostHp, toIds![0]);
+      await room.drawCards(lostHp, toIds![0], undefined, fromId, this.GeneralName);
     } else {
       const response = await room.askForCardDrop(toIds![0], lostHp, [PlayerCardsArea.HandArea], true, undefined, this.Name);
       await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toIds![0]);
