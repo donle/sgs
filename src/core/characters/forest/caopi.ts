@@ -7,7 +7,7 @@ const skillLoaderInstance = SkillLoader.getInstance();
 @Lord
 export class CaoPi extends Character {
   constructor(id: number) {
-    super(id, 'caopi', CharacterGender.Male, CharacterNationality.Wei, 3, 3, GameCharacterExtensions.Standard, [
+    super(id, 'caopi', CharacterGender.Male, CharacterNationality.Wei, 3, 3, GameCharacterExtensions.Forest, [
       skillLoaderInstance.getSkillByName('fangzhu'),
       skillLoaderInstance.getSkillByName('xingshang'),
       skillLoaderInstance.getSkillByName('songwei'),
