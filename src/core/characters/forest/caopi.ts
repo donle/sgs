@@ -10,6 +10,7 @@ export class CaoPi extends Character {
     super(id, 'caopi', CharacterGender.Male, CharacterNationality.Wei, 3, 3, GameCharacterExtensions.Standard, [
       skillLoaderInstance.getSkillByName('fangzhu'),
       skillLoaderInstance.getSkillByName('xingshang'),
+      skillLoaderInstance.getSkillByName('songwei'),
     ]);
   }
 }
