@@ -24,11 +24,14 @@ export class WuHun extends TriggerSkill {
     return event.damage;
   }
 
-  async onTrigger() {
+  public async onTrigger(): Promise<boolean> {
     return true;
   }
 
-  async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+  public async onEffect(
+    room: Room,
+    skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
+  ): Promise<boolean> {
     const { triggeredOnEvent } = skillUseEvent;
     const damageEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
     room.addMark(damageEvent.fromId!, WuHun.Nightmare, 1);
