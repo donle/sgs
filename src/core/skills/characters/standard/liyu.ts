@@ -65,7 +65,8 @@ export class LiYu extends TriggerSkill {
     );
 
     if (response.selectedCard === undefined) {
-      response.selectedCard = to.getCardIds(PlayerCardsArea.HandArea)[response.selectedCardIndex!];
+      const cardIds = to.getCardIds(PlayerCardsArea.HandArea);
+      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
     }
 
     await room.moveCards({
