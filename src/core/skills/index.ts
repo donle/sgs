@@ -131,6 +131,8 @@ export { XueYi, XueYiShadow, XueYiBuff } from './characters/fire/xueyi';
 export { TianYi, TianYiRemove, TianYiExtra, TianYiBlock } from './characters/fire/tianyi';
 export { ShuangXiong, ShuangXiongShadow, ShuangXiongRemove } from './characters/fire/shuangxiong';
 
+export { WuShen, WuShenShadow } from './characters/god/wushen';
+export { WuHun, WuHunDied } from './characters/god/wuhun';
 export { FeiYing } from './characters/god/feiying';
 export { GuiXin } from './characters/god/guixin';
 

@@ -161,6 +161,7 @@ export const enum PlayerDyingStage {
   AfterPlayerDying = 'AfterPlayerDying',
 }
 export const enum PlayerDiedStage {
+  PrePlayerDied = 'PrePlayerDie',
   PlayerDied = 'PlayerDied',
   AfterPlayerDied = 'AfterPlayerDied',
 }
@@ -281,7 +282,11 @@ const gameEventStageList: {
     JudgeEffectStage.AfterJudgeEffect,
   ],
   [GameEventIdentifiers.PlayerDyingEvent]: [PlayerDyingStage.PlayerDying, PlayerDyingStage.AfterPlayerDying],
-  [GameEventIdentifiers.PlayerDiedEvent]: [PlayerDiedStage.PlayerDied, PlayerDiedStage.AfterPlayerDied],
+  [GameEventIdentifiers.PlayerDiedEvent]: [
+    PlayerDiedStage.PrePlayerDied,
+    PlayerDiedStage.PlayerDied,
+    PlayerDiedStage.AfterPlayerDied,
+  ],
   [GameEventIdentifiers.SkillUseEvent]: [
     SkillUseStage.BeforeSkillUse,
     SkillUseStage.SkillUsing,

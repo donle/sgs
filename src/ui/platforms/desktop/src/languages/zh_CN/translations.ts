@@ -1,4 +1,5 @@
 import { Word } from 'languages';
+import { Marks } from '../mark_list';
 
 export const cardDictionary: Word[] = [
   { source: 'slash', target: '杀' },
@@ -323,10 +324,16 @@ export const characterDictionary: Word[] = [
   { source: 'beige', target: '悲歌' },
   { source: 'duanchang', target: '断肠' },
 
+  { source: 'god_guanyu', target: '神关羽' },
+  { source: 'wushen', target: '武神' },
+  { source: 'wuhun', target: '武魂' },
+
   { source: 'god_caocao', target: '神曹操' },
   { source: 'guixin', target: '归心' },
   { source: 'feiying', target: '飞影' },
 ];
+
+export const markDictionary: Word[] = [{ source: Marks.Nightmare, target: '梦魇' }];
 
 export const skillDescriptions: Word[] = [
   { source: 'jianxiong_description', target: '当你受到伤害后，你可以获得对你造成伤害的牌并摸一张牌。' },
@@ -827,6 +834,15 @@ export const skillDescriptions: Word[] = [
       '出牌阶段限一次，你可以观看一名其他角色的手牌，然后你可以展示其中一张红桃牌，选择一项：1.弃置此牌；2.将此牌置于牌堆顶。',
   },
   {
+    source: 'wushen_description',
+    target: '锁定技，你的红桃手牌视为【杀】；你使用红桃【杀】无距离限制。',
+  },
+  {
+    source: 'wuhun_description',
+    target:
+      '锁定技，当你受到1点伤害后，你令伤害来源获得1枚“梦魇”标记；当你死亡时，你令拥有最多“梦魇”标记的一名其他角色判定，若结果不为【桃】或【桃园结义】，则该角色死亡。',
+  },
+  {
     source: 'guixin_description',
     target: '当你受到1点伤害后，你可以随机获得每名其他角色区域里的一张牌，然后你翻面。',
   },
@@ -1096,6 +1112,7 @@ export const eventDictionary: Word[] = [
     target: '{0} 受到了来自 {1} 的 {2} 点【{3}】伤害',
   },
   { source: '{0} moved all hand cards out of the game', target: '{0} 将所有手牌移出了游戏' },
+  { source: '{0} use skill {1}, bring {2} to hell', target: '{0} 使用了技能 {1}，杀死了 {2}' },
   {
     source: 'do you wanna use {0} for {1} from {2}',
     target: '是否对 {2} 的 {1} 使用 {0}',
@@ -1174,6 +1191,10 @@ export const eventDictionary: Word[] = [
   {
     source: 'please choose jiangchi options',
     target: '请选择：1.弃置一张牌，本回合【杀】无距离限制且使用次数+1 2.额外摸一张牌，本回合不可使用或打出【杀】',
+  },
+  {
+    source: 'wuhun:Please choose a target to die with you',
+    target: '请选择一名角色进行【武魂】的判定，若结果不为【桃】或【桃园结义】，其立即死亡',
   },
 
   { source: 'cixiongjian:drop-card', target: '弃置一张手牌' },

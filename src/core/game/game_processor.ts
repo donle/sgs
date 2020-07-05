@@ -120,7 +120,6 @@ export class GameProcessor {
     for (let i = 1; i < playersInfo.length; i++) {
       const characters = Sanguosha.getRandomCharacters(5, selectableCharacters, selectedCharacters);
       characters.forEach(character => selectedCharacters.push(character.Id));
-
       const playerInfo = playersInfo[i];
       this.room.notify(
         GameEventIdentifiers.AskForChoosingCharacterEvent,
@@ -954,7 +953,7 @@ export class GameProcessor {
     let isGameOver = false;
     const deadPlayer = this.room.getPlayerById(event.playerId);
     await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      if (stage === PlayerDiedStage.PlayerDied) {
+      if (stage === PlayerDiedStage.PrePlayerDied) {
         this.room.broadcast(identifier, event);
         deadPlayer.bury();
 
