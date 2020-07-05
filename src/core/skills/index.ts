@@ -132,6 +132,7 @@ export { TianYi, TianYiRemove, TianYiExtra, TianYiBlock } from './characters/fir
 export { ShuangXiong, ShuangXiongShadow, ShuangXiongRemove } from './characters/fire/shuangxiong';
 
 export { Fangzhu } from './characters/forest/fangzhu';
+export { Xingshang } from './characters/forest/xingshang';
 
 export { FeiYing } from './characters/god/feiying';
 export { GuiXin } from './characters/god/guixin';

@@ -33,8 +33,8 @@ export class Fangzhu extends TriggerSkill {
     const to = room.getPlayerById(toIds![0]);
     const from = room.getPlayerById(fromId);
 
-    const lostHp = from.MaxHp - from.Hp
-    if (to.getCardIds(PlayerCardsArea.HandArea).length + to.getCardIds(PlayerCardsArea.EquipArea).length < lostHp) {
+    const lostHp = from.MaxHp - from.Hp;
+    if (to.getPlayerCards().length < lostHp) {
       await room.turnOver(toIds![0]);
       await room.drawCards(lostHp, toIds![0]);
       return true;
@@ -67,3 +67,4 @@ export class Fangzhu extends TriggerSkill {
     return true;
   }
 }
+
