@@ -13,7 +13,8 @@ export class Xingshang extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>) {
-    return owner.Id !== content.playerId;
+    const to = room.getPlayerById(content.playerId);
+    return owner.Id !== content.playerId && !(owner.Hp >= owner.MaxHp && to.getPlayerCards().length <= 0);
   }
 
   async onTrigger() {
@@ -30,6 +31,17 @@ export class Xingshang extends TriggerSkill {
       room.recover({
         recoveredHp: 1,
         toId: skillUseEvent.fromId,
+      });
+    } else if (caopi.Hp >= caopi.MaxHp) {
+      const heritage = Card.getActualCards(dead.getPlayerCards());
+      await room.moveCards({
+        movingCards: heritage.map(cardId => ({card: cardId, fromArea: dead.cardFrom(cardId)})),
+        fromId: playerId,
+        moveReason: CardMoveReason.ActivePrey,
+        toId: skillUseEvent.fromId,
+        toArea: CardMoveArea.HandArea,
+        proposer: skillUseEvent.fromId,
+        movedByReason: this.Name,
       });
     } else {
       const askForOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
