@@ -108,7 +108,12 @@ export class WuHunDied extends TriggerSkill implements OnDefineReleaseTiming {
     const judgeCard = Sanguosha.getCardById(judge.judgeCardId);
     if (judgeCard.GeneralName !== 'peach' && judgeCard.GeneralName !== 'taoyuanjieyi') {
       room.broadcast(GameEventIdentifiers.CustomGameDialog, {
-        translationsMessage: TranslationPack.translationJsonPatcher('wuhunkill').extract(),
+        translationsMessage: TranslationPack.translationJsonPatcher(
+          '{0} use skill {1}, carry {2} to hell',
+          TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
+          this.GeneralName,
+          TranslationPack.patchPlayerInTranslation(room.getPlayerById(sacrificer.Id)),
+        ).extract(),
       });
 
       await room.kill(sacrificer, skillUseEvent.fromId);

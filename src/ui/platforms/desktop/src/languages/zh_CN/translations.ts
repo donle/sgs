@@ -1096,6 +1096,7 @@ export const eventDictionary: Word[] = [
     target: '{0} 受到了来自 {1} 的 {2} 点【{3}】伤害',
   },
   { source: '{0} moved all hand cards out of the game', target: '{0} 将所有手牌移出了游戏' },
+  { source: '{0} use skill {1}, carry {2} to hell', target: '{0} 使用了技能 {1}，杀死了 {2}' },
   {
     source: 'do you wanna use {0} for {1} from {2}',
     target: '是否对 {2} 的 {1} 使用 {0}',
