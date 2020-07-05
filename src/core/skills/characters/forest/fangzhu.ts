@@ -67,4 +67,3 @@ export class Fangzhu extends TriggerSkill {
     return true;
   }
 }
-
