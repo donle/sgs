@@ -175,10 +175,6 @@ export const characterDictionary: Word[] = [
   { source: 'qiaomeng', target: '趫猛' },
   { source: 'yicong', target: '义从' },
 
-  { source: 'god_lvmeng', target: '神吕蒙' },
-  { source: 'gongxin', target: '攻心' },
-  { source: 'shelie', target: '涉猎' },
-
   { source: 'xiahouyuan', target: '夏侯渊' },
   { source: 'shensu', target: '神速' },
   { source: 'shebian', target: '设变' },
@@ -327,6 +323,10 @@ export const characterDictionary: Word[] = [
   { source: 'god_guanyu', target: '神关羽' },
   { source: 'wushen', target: '武神' },
   { source: 'wuhun', target: '武魂' },
+
+  { source: 'god_lvmeng', target: '神吕蒙' },
+  { source: 'gongxin', target: '攻心' },
+  { source: 'shelie', target: '涉猎' },
 
   { source: 'god_caocao', target: '神曹操' },
   { source: 'guixin', target: '归心' },
@@ -841,6 +841,10 @@ export const skillDescriptions: Word[] = [
     source: 'wuhun_description',
     target:
       '锁定技，当你受到1点伤害后，你令伤害来源获得1枚“梦魇”标记；当你死亡时，你令拥有最多“梦魇”标记的一名其他角色判定，若结果不为【桃】或【桃园结义】，则该角色死亡。',
+  },
+  {
+    source: 'shelie_description',
+    target: '摸牌阶段，你可以改为亮出牌堆顶的五张牌，然后获得其中每种花色的牌各一张。',
   },
   {
     source: 'guixin_description',
