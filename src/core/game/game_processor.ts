@@ -1132,6 +1132,9 @@ export class GameProcessor {
       }
     }
 
+    if (!card.is(CardType.Equip)) {
+      event.animation = event.animation || card.Skill.getAnimationSteps(event);
+    }
     this.room.broadcast(identifier, event);
     event.translationsMessage = undefined;
 
@@ -1148,13 +1151,9 @@ export class GameProcessor {
     await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       event.toIds = event.toIds && this.room.deadPlayerFilters(event.toIds);
       if (stage === CardUseStage.CardUsing) {
-        if (!card.is(CardType.Equip)) {
-          event.animation = event.animation || card.Skill.getAnimationSteps(event);
-
-          if (card.is(CardType.DelayedTrick)) {
-            EventPacker.terminate(event);
-          }
-        } else {
+        if (card.is(CardType.DelayedTrick)) {
+          EventPacker.terminate(event);
+        } else if (card.is(CardType.Equip)) {
           let existingEquipId = from.getEquipment((card as EquipCard).EquipType);
           if (card.isVirtualCard()) {
             const actualEquip = Sanguosha.getCardById<EquipCard>((card as VirtualCard).ActualCardIds[0]);

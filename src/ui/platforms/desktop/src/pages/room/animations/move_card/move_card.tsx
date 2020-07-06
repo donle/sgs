@@ -55,7 +55,11 @@ export class MoveCard extends UiAnimation {
     return cardsElement;
   }
 
-  async animate(content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
+  async animate<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
+    if (identifier !== GameEventIdentifiers.MoveCardEvent) {
+      return;
+    }
+    const content = event as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
     this.from = content.fromId;
     this.to = content.toId;
     this.cards = content.movingCards

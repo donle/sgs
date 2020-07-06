@@ -1,9 +1,4 @@
-import {
-  clientActiveListenerEvents,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { clientActiveListenerEvents, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { ClientSocket } from 'core/network/socket.client';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -103,12 +98,8 @@ export class RoomPage extends React.Component<
   }
 
   private animation<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
-    this.baseService.Animation.GuideLineAnimation.animate(event);
-    if (identifier === GameEventIdentifiers.MoveCardEvent) {
-      this.baseService.Animation.MoveCardAnimation.animate(
-        (event as unknown) as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>,
-      );
-    }
+    this.baseService.Animation.GuideLineAnimation.animate(identifier, event);
+    this.baseService.Animation.MoveCardAnimation.animate(identifier, event);
   }
 
   private showMessageFromEvent(event: ServerEventFinder<GameEventIdentifiers>) {

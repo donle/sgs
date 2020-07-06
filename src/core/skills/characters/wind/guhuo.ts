@@ -128,14 +128,15 @@ export class GuHuoShadow extends TriggerSkill {
     });
 
     const askingResponses: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent>>[] = [];
-    for (const player of room
+    const askForPlayers = room
       .getAlivePlayersFrom()
-      .filter(player => !player.hasSkill(ChanYuan.Name) && player.Id !== cardEvent.fromId)) {
-      chooseOptionEvent.toId = player.Id;
-      room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, chooseOptionEvent, player.Id);
-      askingResponses.push(
-        room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, player.Id),
-      );
+      .filter(player => !player.hasSkill(ChanYuan.Name) && player.Id !== cardEvent.fromId)
+      .map(player => player.Id);
+    room.doNotify(...askForPlayers);
+    for (const playerId of askForPlayers) {
+      chooseOptionEvent.toId = playerId;
+      room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, chooseOptionEvent, playerId, true);
+      askingResponses.push(room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, playerId));
     }
 
     const responses = await Promise.all(askingResponses);
