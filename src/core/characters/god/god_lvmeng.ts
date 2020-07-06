@@ -7,7 +7,7 @@ const skillLoaderInstance = SkillLoader.getInstance();
 export class GodLvMeng extends Character {
   constructor(id: number) {
     super(id, 'god_lvmeng', CharacterGender.Male, CharacterNationality.God, 4, 4, GameCharacterExtensions.God, [
-      ...skillLoaderInstance.getSkillsByName('shelie'),
+      skillLoaderInstance.getSkillByName('shelie'),
       skillLoaderInstance.getSkillByName('gongxin'),
     ]);
   }
