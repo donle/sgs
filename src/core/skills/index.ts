@@ -133,6 +133,7 @@ export { ShuangXiong, ShuangXiongShadow, ShuangXiongRemove } from './characters/
 
 export { WuShen, WuShenShadow } from './characters/god/wushen';
 export { WuHun, WuHunDied } from './characters/god/wuhun';
+export { SheLie } from './characters/god/shelie';
 export { FeiYing } from './characters/god/feiying';
 export { GuiXin } from './characters/god/guixin';
 
