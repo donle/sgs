@@ -35,7 +35,7 @@ export class Xingshang extends TriggerSkill {
         recoverBy: fromId,
       });
     } else if (caopi.Hp >= caopi.MaxHp) {
-      const heritage = Card.getActualCards(dead.getPlayerCards());
+      const heritage = dead.getPlayerCards();
       await room.moveCards({
         movingCards: heritage.map(cardId => ({card: cardId, fromArea: dead.cardFrom(cardId)})),
         fromId: playerId,
@@ -67,7 +67,7 @@ export class Xingshang extends TriggerSkill {
           recoverBy: fromId,
         });
       } else {
-        const heritage = Card.getActualCards(dead.getPlayerCards());
+        const heritage = dead.getPlayerCards();
         await room.moveCards({
           movingCards: heritage.map(cardId => ({card: cardId, fromArea: dead.cardFrom(cardId)})),
           fromId: playerId,

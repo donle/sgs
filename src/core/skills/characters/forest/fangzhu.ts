@@ -37,7 +37,7 @@ export class Fangzhu extends TriggerSkill {
     const lostHp = from.MaxHp - from.Hp;
     if (to.getPlayerCards().length < lostHp) {
       await room.turnOver(toIds![0]);
-      await room.drawCards(lostHp, toIds![0]);
+      await room.drawCards(lostHp, toIds![0], undefined, fromId, this.Name);
     } else {
       const askForOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
         options: ['option-one', 'option-two'],
@@ -59,9 +59,9 @@ export class Fangzhu extends TriggerSkill {
       response.selectedOption = response.selectedOption || 'option-one';
       if (response.selectedOption === 'option-one') {
         await room.turnOver(toIds![0]);
-        await room.drawCards(lostHp, toIds![0], undefined, fromId, this.GeneralName);
+        await room.drawCards(lostHp, toIds![0], undefined, fromId, this.Name);
       } else {
-        const response = await room.askForCardDrop(toIds![0], lostHp, [PlayerCardsArea.HandArea], true, undefined, this.Name);
+        const response = await room.askForCardDrop(toIds![0], lostHp, [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea], true, undefined, this.Name);
         await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toIds![0]);
         room.loseHp(toIds![0], 1);
       }
