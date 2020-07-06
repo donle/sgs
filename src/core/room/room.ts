@@ -55,7 +55,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     hideBroadcast?: boolean,
   ): void;
   //Server only
-  public abstract doNotify(...toIds: PlayerId[]): void;
+  public abstract doNotify(toIds: PlayerId[], notificationTime?: number): void;
 
   public abstract broadcast<I extends GameEventIdentifiers>(type: I, content: EventPicker<I, T>): void;
 

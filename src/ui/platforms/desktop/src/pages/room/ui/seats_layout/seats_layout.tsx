@@ -82,6 +82,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           playerPhase={
             this.props.store.room.CurrentPlayer === player ? this.props.store.room.CurrentPlayerPhase : undefined
           }
+          actionTimeLimit={this.props.store.notificationTime}
           inAction={player !== undefined && this.props.store.notifiedPlayers.includes(player.Id)}
         />,
       );
@@ -116,6 +117,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           playerPhase={
             this.props.store.room.CurrentPlayer === player ? this.props.store.room.CurrentPlayerPhase : undefined
           }
+          actionTimeLimit={this.props.store.notificationTime}
           inAction={player !== undefined && this.props.store.notifiedPlayers.includes(player.Id)}
         />,
       );
@@ -148,6 +150,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           playerPhase={
             this.props.store.room.CurrentPlayer === player ? this.props.store.room.CurrentPlayerPhase : undefined
           }
+          actionTimeLimit={this.props.store.notificationTime}
           inAction={player !== undefined && this.props.store.notifiedPlayers.includes(player.Id)}
         />,
       );

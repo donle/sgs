@@ -87,6 +87,9 @@ export class RoomStore {
   currentRound: number = -1;
 
   @mobx.observable.ref
+  notificationTime: number = 60;
+
+  @mobx.observable.ref
   clientPlayerCardActionsMatcher: (card: Card) => boolean;
   @mobx.observable.ref
   onClickHandCardToPlay: (card: Card, selected: boolean) => void;
@@ -350,8 +353,9 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  notify(toIds: PlayerId[]) {
+  notify(toIds: PlayerId[], notificationTime: number) {
     this.store.notifiedPlayers.push(...toIds);
+    this.store.notificationTime = notificationTime;
   }
   @mobx.action
   clearNotifiers() {

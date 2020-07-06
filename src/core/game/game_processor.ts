@@ -148,7 +148,7 @@ export class GameProcessor {
       );
     }
 
-    this.room.doNotify(...notifyOtherPlayer);
+    this.room.doNotify(notifyOtherPlayer);
     for (const response of await Promise.all(sequentialAsyncResponse)) {
       const playerInfo = Precondition.exists(
         playersInfo.find(info => info.Id === response.fromId),
@@ -484,7 +484,8 @@ export class GameProcessor {
         pendingResponses[player.Id] = this.room.askForCardUse(wuxiekejiEvent, player.Id, true);
       }
 
-      this.room.doNotify(...notifierAllPlayers);
+      //TODO: enable to custom wuxiekeji response time limit
+      this.room.doNotify(notifierAllPlayers, 15);
       let cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> | undefined;
       while (Object.keys(pendingResponses).length > 0) {
         const response = await Promise.race(Object.values(pendingResponses));

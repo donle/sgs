@@ -132,7 +132,7 @@ export class GuHuoShadow extends TriggerSkill {
       .getAlivePlayersFrom()
       .filter(player => !player.hasSkill(ChanYuan.Name) && player.Id !== cardEvent.fromId)
       .map(player => player.Id);
-    room.doNotify(...askForPlayers);
+    room.doNotify(askForPlayers);
     for (const playerId of askForPlayers) {
       chooseOptionEvent.toId = playerId;
       room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, chooseOptionEvent, playerId, true);

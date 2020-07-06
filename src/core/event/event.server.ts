@@ -357,6 +357,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.CustomGameDialog]: {};
   [GameEventIdentifiers.NotifyEvent]: {
     toIds: PlayerId[];
+    notificationTime: number;
   }
 }
 

@@ -214,7 +214,7 @@ export class Dashboard extends React.Component<DashboardProps> {
   getPlayerHandBoard() {
     return (
       <div className={styles.handBoard} ref={this.handBoardRef}>
-        {this.props.store.inAction && <PlayingBar className={styles.playBar} />}
+        {this.props.store.inAction && <PlayingBar className={styles.playBar} playTime={this.props.store.notificationTime} />}
         {this.getPlayerJudgeCards()}
         <div className={styles.userActionsButtons}>
           {!this.props.store.canReforge && (

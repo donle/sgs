@@ -28,6 +28,7 @@ type PlayerCardProps = {
   presenter: RoomPresenter;
   imageLoader: ImageLoader;
   inAction: boolean;
+  actionTimeLimit?: number;
   disabled?: boolean;
   onClick?(selected: boolean): void;
 };
@@ -306,7 +307,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
           {this.getSkillTags()}
           {this.getOutsideAreaCards()}
         </div>
-        {inAction && <PlayingBar className={styles.playBar} />}
+        {inAction && <PlayingBar className={styles.playBar} playTime={this.props.actionTimeLimit} />}
         {this.onTooltipOpened && this.PlayerCharacter && (
           <Tooltip position={['top']}>{this.createTooltipContent()}</Tooltip>
         )}

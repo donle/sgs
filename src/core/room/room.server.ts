@@ -161,13 +161,15 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     content: ServerEventFinder<I>,
     to: PlayerId,
     hideBroadcast?: boolean,
+    notificationTime: number = 60,
   ) {
     this.socket.notify(type, EventPacker.createIdentifierEvent(type, content), to);
-    !hideBroadcast && this.socket.broadcast(GameEventIdentifiers.NotifyEvent, { toIds: [to] });
+    !hideBroadcast && this.socket.broadcast(GameEventIdentifiers.NotifyEvent, { toIds: [to], notificationTime });
   }
 
-  public doNotify(...toIds: PlayerId[]) {
-    this.socket.broadcast(GameEventIdentifiers.NotifyEvent, { toIds });
+  //TODO: enable to custom response time limit
+  public doNotify(toIds: PlayerId[], notificationTime: number = 60) {
+    this.socket.broadcast(GameEventIdentifiers.NotifyEvent, { toIds, notificationTime });
   }
 
   public broadcast<I extends GameEventIdentifiers>(type: I, content: ServerEventFinder<I>) {

@@ -75,7 +75,7 @@ export class GameClientProcessor {
       this.presenter.closeIncomingConversation();
 
       this.endAction();
-    }, 60 * 1000);
+    }, this.store.notificationTime * 1000);
   }
   public endAction() {
     if (this.onPlayTrustedActionTimer !== undefined) {
@@ -496,7 +496,7 @@ export class GameClientProcessor {
     // tslint:disable-next-line:no-empty
   ) {}
   private onHandleNotifyEvent<T extends GameEventIdentifiers.NotifyEvent>(type: T, content: ServerEventFinder<T>) {
-    this.presenter.notify(content.toIds);
+    this.presenter.notify(content.toIds, content.notificationTime);
     this.presenter.broadcastUIUpdate();
   }
   private onHandlePlayerDiedEvent<T extends GameEventIdentifiers.PlayerDiedEvent>(

@@ -11,7 +11,6 @@ export class BaZhen extends BaGuaZhenSkill {
     const askForInvoke: ServerEventFinder<GameEventIdentifiers.AskForSkillUseEvent> = {
       toId: event.fromId,
       invokeSkillNames: [this.Name],
-      translationsMessage: super.getSkillLog(room, event),
     };
     room.notify(GameEventIdentifiers.AskForSkillUseEvent, askForInvoke, event.fromId);
     const { invoke } = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForSkillUseEvent, event.fromId);
