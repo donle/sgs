@@ -809,12 +809,7 @@ export class GameProcessor {
     const to = this.room.getPlayerById(event.toId);
     const from = event.fromId ? this.room.getPlayerById(event.fromId) : undefined;
     return await this.iterateEachStage(identifier, event, onActualExecuted, async (stage: GameEventStage) => {
-      if (to.Dead) {
-        EventPacker.terminate(event);
-        return;
-      }
-
-      if (stage === DamageEffectStage.DamagedEffect) {
+      if (stage === DamageEffectStage.DamagedEffect && !to.Dead) {
         const { toId, damage, damageType, fromId } = event;
         event.fromId = from?.Dead ? undefined : from?.Id;
 
@@ -839,6 +834,7 @@ export class GameProcessor {
           amount: damage,
           byReaon: 'damage',
           byCardIds: event.cardIds,
+          byEvent: event,
         };
         await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async hpChangeStage => {
           if (hpChangeStage === HpChangeStage.HpChanging) {
@@ -862,9 +858,8 @@ export class GameProcessor {
             EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerDyingEvent, dyingEvent),
           );
         }
-
-        if (to.ChainLocked && event.damageType !== DamageType.Normal) {
-          await this.room.chainedOn(to.Id);
+      } else if (stage === DamageEffectStage.AfterDamagedEffect) {
+        if (event.beginnerOfTheDamage === to.Id) {
           await this.onChainedDamage(event);
         }
       }
@@ -882,7 +877,6 @@ export class GameProcessor {
           ...event,
           toId: player.Id,
           isFromChainedDamage: true,
-          beginnerOfTheDamage: event.fromId,
         });
       }
     }
@@ -1591,6 +1585,7 @@ export class GameProcessor {
           toId: victim.Id,
           amount: event.lostHp,
           byReaon: 'lostHp',
+          byEvent: event,
         };
         await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async stage => {
           if (stage === HpChangeStage.HpChanging) {
@@ -1623,6 +1618,14 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     const to = this.room.getPlayerById(event.toId);
+    if (event.byReaon === 'damage' && event.byEvent) {
+      const damageEvent = event.byEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
+      if (to.ChainLocked && damageEvent.damageType != DamageType.Normal) {
+        await this.room.chainedOn(to.Id);
+        damageEvent.beginnerOfTheDamage = damageEvent.beginnerOfTheDamage || to.Id;
+      }
+    }
+
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === HpChangeStage.HpChanging) {
         if (event.byReaon === 'recover') {
@@ -1653,6 +1656,7 @@ export class GameProcessor {
           amount: event.recoveredHp,
           byReaon: 'recover',
           byCardIds: event.cardIds,
+          byEvent: event,
         };
         await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async stage => {
           if (stage === HpChangeStage.HpChanging) {
