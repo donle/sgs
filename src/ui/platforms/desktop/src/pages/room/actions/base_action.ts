@@ -92,6 +92,8 @@ export abstract class BaseAction {
     this.presenter.disableActionButton('confirm');
     this.presenter.disableActionButton('reforge');
     this.presenter.disableCardReforgeStatus();
+    this.presenter.delightPlayers(false);
+    this.presenter.highlightCards(true);
     this.onResetAction();
     this.presenter.broadcastUIUpdate();
   };
@@ -351,6 +353,14 @@ export abstract class BaseAction {
     }
   }
 
+  protected delightItems() {
+    if (this.selectedCardToPlay || this.selectedSkillToPlay) {
+      this.presenter.delightPlayers(true);
+    } else {
+      this.presenter.delightPlayers(false);
+    }
+  }
+
   private callToActionCheck() {
     this.enableToCallAction()
       ? this.presenter.enableActionButton('confirm')
@@ -439,6 +449,7 @@ export abstract class BaseAction {
         this.selectedCardToPlay = undefined;
       }
     }
+    this.delightItems();
     this.callToActionCheck();
   }
 
@@ -483,6 +494,7 @@ export abstract class BaseAction {
         this.selectedCardToPlay = this.selectedSkillToPlay.viewAs(this.pendingCards, canViewAs[0]).Id;
       }
     }
+    this.delightItems();
     this.callToActionCheck();
   }
 

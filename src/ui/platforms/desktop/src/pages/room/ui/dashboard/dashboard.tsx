@@ -187,6 +187,7 @@ export class Dashboard extends React.Component<DashboardProps> {
           offsetLeft={leftOffset}
           translator={this.props.translator}
           card={card}
+          highlight={this.props.store.highlightedCards}
           onSelected={this.onClick(card)}
           className={styles.handCard}
           disabled={!this.props.cardEnableMatcher || !this.props.cardEnableMatcher(card)}
@@ -214,7 +215,9 @@ export class Dashboard extends React.Component<DashboardProps> {
   getPlayerHandBoard() {
     return (
       <div className={styles.handBoard} ref={this.handBoardRef}>
-        {this.props.store.inAction && <PlayingBar className={styles.playBar} playTime={this.props.store.notificationTime} />}
+        {this.props.store.inAction && (
+          <PlayingBar className={styles.playBar} playTime={this.props.store.notificationTime} />
+        )}
         {this.getPlayerJudgeCards()}
         <div className={styles.userActionsButtons}>
           {!this.props.store.canReforge && (
@@ -272,6 +275,7 @@ export class Dashboard extends React.Component<DashboardProps> {
         <PlayerAvatar
           imageLoader={this.props.imageLoader}
           updateFlag={this.props.store.updateUIFlag}
+          delight={this.props.store.delightedPlayers !== undefined ? this.props.store.delightedPlayers : undefined}
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           onClick={this.props.onClickPlayer}
           store={this.props.store}

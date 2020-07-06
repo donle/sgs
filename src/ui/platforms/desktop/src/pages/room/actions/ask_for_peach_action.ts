@@ -70,6 +70,8 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
 
   async onPlay(translator: ClientTranslationModule) {
     await new Promise<void>(resolve => {
+      this.delightItems();
+      this.presenter.highlightCards();
       this.presenter.createIncomingConversation({
         conversation: this.askForEvent.conversation,
         translator,

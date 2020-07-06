@@ -24,6 +24,7 @@ type PlayerAvatarProps = {
   updateFlag: boolean;
   imageLoader: ImageLoader;
   disabled?: boolean;
+  delight?: boolean;
   onClick?(player: Player, selected: boolean): void;
   onClickSkill?(skill: Skill, selected: boolean): void;
   isSkillDisabled(skill: Skill): boolean;
@@ -233,7 +234,11 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           <img
             className={classNames(styles.playerImage, {
               [styles.dead]: this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead,
-              [styles.disabled]: this.props.disabled,
+              [styles.disabled]:
+                this.props.delight === false
+                  ? false
+                  : !(this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead) &&
+                    this.props.disabled,
             })}
             alt={image.alt}
             src={image.src}
@@ -258,14 +263,17 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     const character = clientPlayer?.CharacterId !== undefined ? clientPlayer?.Character : undefined;
     return (
       <div
-        className={classNames(styles.playerCard, {
-          [styles.selected]: this.getSelected() && !this.props.disabled,
-        })}
+        className={classNames(styles.playerCard)}
         onClick={this.onClick}
         onMouseEnter={this.openTooltip}
         onMouseLeave={this.closeTooltip}
       >
         <span className={styles.playerName}>{clientPlayer?.Name}</span>
+        <span
+          className={classNames(styles.highlightBorder, {
+            [styles.selected]: this.getSelected() && !this.props.disabled,
+          })}
+        />
         {this.PlayerImage !== undefined && <this.PlayerImage />}
         {character && (
           <NationalityBadge nationality={character.Nationality} className={styles.playCharacterName}>

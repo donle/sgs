@@ -125,6 +125,7 @@ export class CardResponseAction extends BaseAction {
 
   async onPlay(translator: ClientTranslationModule) {
     return new Promise<void>(resolve => {
+      this.presenter.highlightCards();
       this.presenter.createIncomingConversation({
         conversation: this.askForEvent.conversation,
         translator,

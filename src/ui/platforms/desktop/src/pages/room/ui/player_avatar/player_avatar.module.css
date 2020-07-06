@@ -6,7 +6,6 @@
     width: 170px;
     align-items: flex-end;
     display: flex;
-    transition: box-shadow 0.15s;
 }
 
 .playerRoleCard {
@@ -39,6 +38,20 @@
     align-self: flex-start;
 }
 
+.highlightBorder {
+    height: 216px;
+    width: 100%;
+    left: 0;
+    z-index: -2;
+    transition: box-shadow 0.15s;
+    position: absolute;
+    bottom: 0;
+    border-radius: calc(gridLine * 1.5);
+}
+.highlightBorder.selected {
+    box-shadow: 0px 0px 5px 2px red;
+}
+
 .playerImage {
     flex: auto;
     position: absolute;
@@ -64,11 +77,8 @@
     right: 0;
 }
 
-.disabled {
+.disabled:not(.dead) {
     filter: brightness(0.5);
-}
-.playerCard.selected {
-    box-shadow: 0px 0px 5px 2px red;
 }
 
 .playerSkills {

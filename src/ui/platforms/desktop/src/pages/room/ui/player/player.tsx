@@ -30,6 +30,7 @@ type PlayerCardProps = {
   inAction: boolean;
   actionTimeLimit?: number;
   disabled?: boolean;
+  delight?: boolean;
   onClick?(selected: boolean): void;
 };
 
@@ -208,7 +209,10 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
             className={classNames(styles.playerImage, {
               [styles.dead]: this.props.player && this.props.player.Dead,
               [styles.disabled]:
-                !(this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead) && this.props.disabled,
+                this.props.delight === false
+                  ? false
+                  : !(this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead) &&
+                    this.props.disabled,
             })}
             alt={image.alt}
             src={image.src}
@@ -233,10 +237,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     return (
       <div
         id={player && player.Id}
-        className={classNames(styles.playerCard, {
-          [styles.selected]: this.getSelected() && !disabled,
-          [styles.highlighted]: playerPhase !== undefined,
-        })}
+        className={styles.playerCard}
         onClick={this.onClick}
         onMouseEnter={this.openTooltip}
         onMouseLeave={this.closeTooltip}
@@ -252,6 +253,12 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
             </p>
             {this.PlayerCharacter ? (
               <>
+                <span
+                  className={classNames(styles.highlightBorder, {
+                    [styles.selected]: this.getSelected() && !disabled,
+                    [styles.highlighted]: playerPhase !== undefined,
+                  })}
+                />
                 {this.PlayerImage !== undefined && <this.PlayerImage />}
                 {this.PlayerRoleCard !== undefined && <this.PlayerRoleCard />}
                 {this.PlayerCharacter && (

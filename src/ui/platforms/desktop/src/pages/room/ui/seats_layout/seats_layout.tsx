@@ -75,6 +75,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           key={playerIndex}
           imageLoader={this.props.imageLoader}
           onClick={this.onClick(player)}
+          delight={this.props.store.delightedPlayers !== undefined ? this.props.store.delightedPlayers : undefined}
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           player={player}
           translator={this.props.translator}
@@ -110,6 +111,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           key={playerIndex}
           imageLoader={this.props.imageLoader}
           onClick={this.onClick(player)}
+          delight={this.props.store.delightedPlayers !== undefined ? this.props.store.delightedPlayers : undefined}
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           player={player}
           translator={this.props.translator}
@@ -143,6 +145,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           key={playerIndex}
           imageLoader={this.props.imageLoader}
           onClick={this.onClick(player)}
+          delight={this.props.store.delightedPlayers !== undefined ? this.props.store.delightedPlayers : undefined}
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           player={player}
           translator={this.props.translator}

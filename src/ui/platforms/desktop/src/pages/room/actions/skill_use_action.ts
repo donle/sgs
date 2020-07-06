@@ -102,6 +102,8 @@ export class SkillUseAction extends BaseAction {
   }
 
   async onPlay() {
+    this.delightItems();
+    this.presenter.highlightCards();
     this.presenter.setupPlayersSelectionMatcher((player: Player) => this.isPlayerEnabled(player));
     this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
       this.isCardEnabledOnSkillTriggered(card, PlayerCardsArea.HandArea),

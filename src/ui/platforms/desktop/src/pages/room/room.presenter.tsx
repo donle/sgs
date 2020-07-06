@@ -90,6 +90,11 @@ export class RoomStore {
   notificationTime: number = 60;
 
   @mobx.observable.ref
+  delightedPlayers: boolean | undefined = false;
+  @mobx.observable.ref
+  highlightedCards: boolean | undefined = true;
+
+  @mobx.observable.ref
   clientPlayerCardActionsMatcher: (card: Card) => boolean;
   @mobx.observable.ref
   onClickHandCardToPlay: (card: Card, selected: boolean) => void;
@@ -374,5 +379,14 @@ export class RoomPresenter {
     if (round !== undefined) {
       this.store.currentRound = round;
     }
+  }
+
+  @mobx.action
+  delightPlayers(delight?: boolean) {
+    this.store.delightedPlayers = delight;
+  }
+  @mobx.action
+  highlightCards(highlight?: boolean) {
+    this.store.highlightedCards = highlight;
   }
 }

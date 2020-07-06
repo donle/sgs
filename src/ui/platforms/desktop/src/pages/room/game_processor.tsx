@@ -48,7 +48,7 @@ export class GameClientProcessor {
     }
   }
 
-  private record<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
+  private eventFilter<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
     if (identifier !== GameEventIdentifiers.PlayerEnterEvent) {
       this.store.room.Analytics.record(event, this.store.room.CurrentPlayerPhase);
       if (this.store.room.isPlaying()) {
@@ -58,7 +58,12 @@ export class GameClientProcessor {
         this.store.room.DropStack = numberOfDropStack;
       }
     }
+    if (identifier !== GameEventIdentifiers.UserMessageEvent) {
+      this.presenter.clearNotifiers();
+    }
+  }
 
+  private record<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
     if (serverResponsiveListenerEvents.includes(identifier)) {
       this.presenter.startAction(identifier, event);
       this.onPlayTrustedAction(identifier, event);
@@ -88,7 +93,7 @@ export class GameClientProcessor {
 
   async onHandleIncomingEvent<T extends GameEventIdentifiers>(e: T, content: ServerEventFinder<T>) {
     this.tryToThrowNotReadyException(e);
-    this.presenter.clearNotifiers();
+    this.eventFilter(e, content);
     this.record(e, content);
 
     switch (e) {

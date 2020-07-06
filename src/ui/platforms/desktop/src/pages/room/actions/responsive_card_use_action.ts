@@ -134,6 +134,8 @@ export class ResponsiveUseCardAction<
 
   onPlay(translator: ClientTranslationModule) {
     return new Promise<void>(resolve => {
+      this.delightItems();
+      this.presenter.highlightCards();
       this.presenter.createIncomingConversation({
         conversation: this.askForEvent.conversation,
         translator,

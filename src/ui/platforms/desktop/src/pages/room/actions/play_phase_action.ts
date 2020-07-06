@@ -114,6 +114,8 @@ export class PlayPhaseAction extends BaseAction {
 
   async onPlay() {
     return new Promise<void>(resolve => {
+      this.delightItems();
+      this.presenter.highlightCards();
       this.selectedSkillToPlay || this.selectedCardToPlay
         ? this.presenter.enableActionButton('cancel')
         : this.presenter.disableActionButton('cancel');
