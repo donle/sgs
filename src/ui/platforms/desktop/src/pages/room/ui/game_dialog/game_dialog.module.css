@@ -13,6 +13,7 @@
     flex-direction: column;
     height: 100%;
     position: relative;
+    height: calc(100% - 32px);
 }
 
 .gameLogDialog {
