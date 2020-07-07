@@ -328,6 +328,10 @@ export const characterDictionary: Word[] = [
   { source: 'gongxin', target: '攻心' },
   { source: 'shelie', target: '涉猎' },
 
+  { source: 'god_zhouyu', target: '神周瑜' },
+  { source: 'qinyin', target: '琴音' },
+  { source: 'yeyan', target: '业炎' },
+
   { source: 'god_caocao', target: '神曹操' },
   { source: 'guixin', target: '归心' },
   { source: 'feiying', target: '飞影' },
@@ -847,6 +851,16 @@ export const skillDescriptions: Word[] = [
     target: '摸牌阶段，你可以改为亮出牌堆顶的五张牌，然后获得其中每种花色的牌各一张。',
   },
   {
+    source: 'qinyin_description',
+    target:
+      '弃牌阶段结束时，若你于此阶段内弃置过你的至少两张手牌，则你可以选择一项：1. 令所有角色各回复1点体力；2. 令所有角色各失去1点体力。',
+  },
+  {
+    source: 'yeyan_description',
+    target:
+      '限定技，出牌阶段，你可以选择至多三名角色，对这些角色造成共计至多3点火焰伤害，若你将对一名角色分配2点或更多火焰伤害，你须先弃置四张花色各不相同的手牌并失去3点体力。',
+  },
+  {
     source: 'guixin_description',
     target: '当你受到1点伤害后，你可以随机获得每名其他角色区域里的一张牌，然后你翻面。',
   },
@@ -1232,7 +1246,7 @@ export const eventDictionary: Word[] = [
     source: 'please choose tianxiang options:{0}',
     target: '请选择：1.令其受到1点伤害，然后摸 {0} 张牌。2.令其失去1点体力，然后其获得你弃置的牌',
   },
-  { source: 'do you wanna transfer the card {0} target to {1}', target: '是否将【{0}】的使用目标改为【1】' },
+  { source: 'do you wanna transfer the card {0} target to {1}', target: '是否将【{0}】的使用目标改为【{1}】' },
   {
     source: 'player {0} join in the room',
     target: '玩家 {0} 进入了房间',
