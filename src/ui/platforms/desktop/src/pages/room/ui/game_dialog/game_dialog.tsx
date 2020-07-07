@@ -69,6 +69,7 @@ export class GameDialog extends React.Component<GameDialogProps> {
     height = Math.max(this.textMessageMinHeight, Math.min(this.textMessageMaxHeight, height));
     this.userMessageDialogStyles = {
       minHeight: height,
+      maxHeight: height,
     };
     this.borderStyles = {
       bottom: height,
