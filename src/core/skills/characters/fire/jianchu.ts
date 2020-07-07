@@ -54,7 +54,7 @@ export class Jianchu extends TriggerSkill {
       aimEvent.fromId,
     );
 
-    const response = await room.onReceivingAsyncReponseFrom(
+    const response = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
       aimEvent.fromId!,
     );

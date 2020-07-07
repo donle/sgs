@@ -82,7 +82,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract async moveCards(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): Promise<void>;
   //Server only
-  public abstract async onReceivingAsyncReponseFrom<T extends GameEventIdentifiers>(
+  public abstract async onReceivingAsyncResponseFrom<T extends GameEventIdentifiers>(
     identifier: T,
     playerId?: PlayerId,
   ): Promise<ClientEventFinder<T>>;

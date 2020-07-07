@@ -13,7 +13,7 @@ export class BaZhen extends BaGuaZhenSkill {
       invokeSkillNames: [this.Name],
     };
     room.notify(GameEventIdentifiers.AskForSkillUseEvent, askForInvoke, event.fromId);
-    const { invoke } = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForSkillUseEvent, event.fromId);
+    const { invoke } = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForSkillUseEvent, event.fromId);
     return invoke !== undefined;
   }
 

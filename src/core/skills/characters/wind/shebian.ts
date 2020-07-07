@@ -112,7 +112,7 @@ export class SheBian extends TriggerSkill {
       skillUseEvent.fromId,
     );
 
-    const response = await room.onReceivingAsyncReponseFrom(
+    const response = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
       skillUseEvent.fromId,
     );

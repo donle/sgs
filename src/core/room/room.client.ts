@@ -80,8 +80,8 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.moveCards.name);
   }
   //Server only
-  public async onReceivingAsyncReponseFrom(): Promise<any> {
-    this.throwUntouchableError(this.onReceivingAsyncReponseFrom.name);
+  public async onReceivingAsyncResponseFrom(): Promise<any> {
+    this.throwUntouchableError(this.onReceivingAsyncResponseFrom.name);
   }
   public clearHeaded() {
     this.throwUntouchableError(this.clearHeaded.name);

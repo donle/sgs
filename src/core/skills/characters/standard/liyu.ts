@@ -59,7 +59,7 @@ export class LiYu extends TriggerSkill {
       damageEvent.fromId!,
     );
 
-    const response = await room.onReceivingAsyncReponseFrom(
+    const response = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
       damageEvent.fromId!,
     );
@@ -109,7 +109,7 @@ export class LiYu extends TriggerSkill {
           chooseCardEvent.toId,
         );
 
-        const choosePlayerResponse = await room.onReceivingAsyncReponseFrom(
+        const choosePlayerResponse = await room.onReceivingAsyncResponseFrom(
           GameEventIdentifiers.AskForChoosingPlayerEvent,
           chooseCardEvent.toId,
         );

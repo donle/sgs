@@ -49,7 +49,7 @@ export class JuShou extends TriggerSkill {
       skillUseEvent.fromId,
     );
 
-    const { selectedCards } = await room.onReceivingAsyncReponseFrom(
+    const { selectedCards } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingCardEvent,
       skillUseEvent.fromId,
     );

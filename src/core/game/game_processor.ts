@@ -95,7 +95,7 @@ export class GameProcessor {
     });
     this.room.notify(GameEventIdentifiers.AskForChoosingCharacterEvent, gameStartEvent, lordInfo.Id);
 
-    const lordResponse = await this.room.onReceivingAsyncReponseFrom(
+    const lordResponse = await this.room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingCharacterEvent,
       lordInfo.Id,
     );
@@ -144,7 +144,7 @@ export class GameProcessor {
 
       notifyOtherPlayer.push(playerInfo.Id);
       sequentialAsyncResponse.push(
-        this.room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingCharacterEvent, playerInfo.Id),
+        this.room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingCharacterEvent, playerInfo.Id),
       );
     }
 
@@ -272,7 +272,7 @@ export class GameProcessor {
             },
             this.CurrentPlayer.Id,
           );
-          const response = await this.room.onReceivingAsyncReponseFrom(
+          const response = await this.room.onReceivingAsyncResponseFrom(
             GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
             this.CurrentPlayer.Id,
           );

@@ -938,6 +938,7 @@ export class GameClientProcessor {
       };
     });
 
+    this.presenter.highlightCards();
     this.presenter.createIncomingConversation({
       optionsActionHanlder: actionHandlers,
       translator: this.translator,

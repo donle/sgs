@@ -62,7 +62,7 @@ export class YiJue extends ActiveSkill {
       ).extract(),
     });
     room.notify(GameEventIdentifiers.AskForCardDisplayEvent, askForDisplayCardEvent, to.Id);
-    const { selectedCards } = await room.onReceivingAsyncReponseFrom(
+    const { selectedCards } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForCardDisplayEvent,
       to.Id,
     );
@@ -103,7 +103,7 @@ export class YiJue extends ActiveSkill {
           ).extract(),
         };
         room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, from.Id);
-        const { selectedOption } = await room.onReceivingAsyncReponseFrom(
+        const { selectedOption } = await room.onReceivingAsyncResponseFrom(
           GameEventIdentifiers.AskForChoosingOptionsEvent,
           from.Id,
         );

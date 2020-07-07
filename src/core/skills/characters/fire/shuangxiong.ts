@@ -179,7 +179,7 @@ export class ShuangXiongShadow extends TriggerSkill {
         fromId,
       );
 
-      const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingCardEvent, fromId);
+      const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingCardEvent, fromId);
 
       if (response.selectedCards === undefined) {
         response.selectedCards = [displayCards[0]];

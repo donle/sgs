@@ -72,7 +72,7 @@ export class LuoYi extends TriggerSkill {
         skillUseEvent.fromId,
       );
 
-      const { selectedOption } = await room.onReceivingAsyncReponseFrom(
+      const { selectedOption } = await room.onReceivingAsyncResponseFrom(
         GameEventIdentifiers.AskForChoosingOptionsEvent,
         skillUseEvent.fromId,
       );

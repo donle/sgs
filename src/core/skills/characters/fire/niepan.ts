@@ -61,7 +61,7 @@ export class NiePan extends TriggerSkill {
 
       room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, fromId);
 
-      const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
+      const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
 
       response.selectedOption = response.selectedOption || options[0];
       room.obtainSkill(fromId, response.selectedOption, true);

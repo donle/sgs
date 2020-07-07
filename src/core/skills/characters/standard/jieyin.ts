@@ -91,7 +91,7 @@ export class JieYin extends ActiveSkill {
           EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(askForChoose),
           fromId,
         );
-        const response = await room.onReceivingAsyncReponseFrom(
+        const response = await room.onReceivingAsyncResponseFrom(
           GameEventIdentifiers.AskForChoosingOptionsEvent,
           fromId,
         );

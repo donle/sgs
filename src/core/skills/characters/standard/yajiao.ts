@@ -78,7 +78,7 @@ export class YaJiao extends TriggerSkill {
       fromId,
     );
 
-    const { selectedPlayers } = await room.onReceivingAsyncReponseFrom(
+    const { selectedPlayers } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingPlayerEvent,
       fromId,
     );
@@ -117,7 +117,7 @@ export class YaJiao extends TriggerSkill {
           fromId,
         );
 
-        const response = await room.onReceivingAsyncReponseFrom(
+        const response = await room.onReceivingAsyncResponseFrom(
           GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
           fromId,
         );

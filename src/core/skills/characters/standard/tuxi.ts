@@ -60,7 +60,7 @@ export class TuXi extends TriggerSkill {
         ),
         fromId,
       );
-      let { selectedCard } = await room.onReceivingAsyncReponseFrom(
+      let { selectedCard } = await room.onReceivingAsyncResponseFrom(
         GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
         fromId,
       );

@@ -217,6 +217,10 @@ export abstract class TriggerSkill extends Skill {
     }
   }
 
+  public numberOfCards(): number[] | undefined {
+    return;
+  }
+
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return cards.length === 0;
   }
@@ -250,6 +254,10 @@ export abstract class ActiveSkill extends Skill {
     } else {
       return owner.getCardAdditionalUsableNumberOfTargets(room, cardId);
     }
+  }
+
+  public numberOfCards(): number[] | undefined {
+    return;
   }
 
   public targetFilter(room: Room, owner: Player, targets: PlayerId[], cardId?: CardId): boolean {

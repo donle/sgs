@@ -51,7 +51,7 @@ export class GuanXing extends TriggerSkill {
 
     room.notify(GameEventIdentifiers.AskForPlaceCardsInDileEvent, guanxingEvent, skillUseEvent.fromId);
 
-    const { top, bottom } = await room.onReceivingAsyncReponseFrom(
+    const { top, bottom } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForPlaceCardsInDileEvent,
       skillUseEvent.fromId,
     );

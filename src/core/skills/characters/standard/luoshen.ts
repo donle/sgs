@@ -73,7 +73,7 @@ export class LuoShen extends TriggerSkill {
             },
             skillUseEvent.fromId,
           );
-          const { invoke } = await room.onReceivingAsyncReponseFrom(
+          const { invoke } = await room.onReceivingAsyncResponseFrom(
             GameEventIdentifiers.AskForSkillUseEvent,
             skillUseEvent.fromId,
           );

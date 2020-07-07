@@ -56,7 +56,7 @@ export class QiMou extends ActiveSkill {
       fromId,
     );
 
-    const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
+    const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
     const lostHp = parseInt(response.selectedOption!, 10);
 
     await room.loseHp(fromId, lostHp);

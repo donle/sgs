@@ -97,7 +97,7 @@ export class WuHunDied extends TriggerSkill implements OnDefineReleaseTiming {
         skillUseEvent.fromId,
       );
 
-      const choosePlayerResponse = await room.onReceivingAsyncReponseFrom(
+      const choosePlayerResponse = await room.onReceivingAsyncResponseFrom(
         GameEventIdentifiers.AskForChoosingPlayerEvent,
         skillUseEvent.fromId,
       );

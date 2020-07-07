@@ -70,7 +70,7 @@ export class ShunShouQianYangSkill extends ActiveSkill {
       event.fromId!,
     );
 
-    const response = await room.onReceivingAsyncReponseFrom(
+    const response = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
       event.fromId!,
     );

@@ -270,7 +270,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                   },
                   player.Id,
                 );
-                const { invoke, cardIds, toIds } = await this.onReceivingAsyncReponseFrom(
+                const { invoke, cardIds, toIds } = await this.onReceivingAsyncResponseFrom(
                   GameEventIdentifiers.AskForSkillUseEvent,
                   player.Id,
                 );
@@ -287,7 +287,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
   }
 
-  public async onReceivingAsyncReponseFrom<T extends GameEventIdentifiers>(
+  public async onReceivingAsyncResponseFrom<T extends GameEventIdentifiers>(
     identifier: T,
     playerId: PlayerId,
   ): Promise<ClientEventFinder<T>> {
@@ -379,7 +379,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
 
     this.notify(GameEventIdentifiers.AskForCardDropEvent, event, playerId);
-    return await this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForCardDropEvent, playerId);
+    return await this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardDropEvent, playerId);
   }
 
   public async askForPeach(event: ServerEventFinder<GameEventIdentifiers.AskForPeachEvent>) {
@@ -393,7 +393,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     let responseEvent: ClientEventFinder<GameEventIdentifiers.AskForPeachEvent> | undefined;
     do {
       this.notify(GameEventIdentifiers.AskForPeachEvent, event, event.fromId);
-      responseEvent = await this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForPeachEvent, event.fromId);
+      responseEvent = await this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForPeachEvent, event.fromId);
       const preUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
         fromId: responseEvent.fromId,
         toIds: [event.toId],
@@ -431,7 +431,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     let responseEvent: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> | undefined;
     do {
       this.notify(GameEventIdentifiers.AskForCardUseEvent, event, to, hideBroadcast);
-      responseEvent = await this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForCardUseEvent, to);
+      responseEvent = await this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardUseEvent, to);
       const preUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
         fromId: to,
         toIds: responseEvent.toIds,
@@ -466,7 +466,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     let responseEvent: ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent> | undefined;
     do {
       this.notify(GameEventIdentifiers.AskForCardResponseEvent, event, to);
-      responseEvent = await this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForCardResponseEvent, to);
+      responseEvent = await this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardResponseEvent, to);
       const preResponseEvent: ServerEventFinder<GameEventIdentifiers.CardResponseEvent> = {
         fromId: to,
         cardId: responseEvent.cardId!,
@@ -1000,7 +1000,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
         const responses = await Promise.all(
           pindianEvent.toIds.map(to =>
-            this.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForPinDianCardEvent, to).then(async result => {
+            this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForPinDianCardEvent, to).then(async result => {
               await this.moveCards({
                 movingCards: [{ card: result.pindianCard, fromArea: PlayerCardsArea.HandArea }],
                 fromId: result.fromId,

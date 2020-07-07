@@ -186,6 +186,13 @@ export abstract class BaseAction {
     if (this.selectedSkillToPlay) {
       const skill = this.selectedSkillToPlay;
       if (skill instanceof ActiveSkill) {
+        const selectedCardsRange = skill.numberOfCards();
+        if (
+          selectedCardsRange !== undefined &&
+          this.selectedCards.length < selectedCardsRange[selectedCardsRange.length - 1]
+        ) {
+          return true;
+        }
         return (
           skill.isAvailableCard(
             player.Id,
@@ -245,6 +252,14 @@ export abstract class BaseAction {
       const skill = playingCard.Skill;
 
       if (skill instanceof ActiveSkill) {
+        const selectedCardsRange = skill.numberOfCards();
+        if (
+          selectedCardsRange !== undefined &&
+          this.selectedCards.length < selectedCardsRange[selectedCardsRange.length - 1]
+        ) {
+          return true;
+        }
+
         return (
           skill.isAvailableCard(
             player.Id,
