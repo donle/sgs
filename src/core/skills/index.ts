@@ -139,6 +139,7 @@ export { YingHun } from './characters/forest/yinghun';
 export { Fangzhu } from './characters/forest/fangzhu';
 export { Xingshang } from './characters/forest/xingshang';
 export { Songwei } from './characters/forest/songwei'
+export { Dimeng } from './characters/forest/dimeng';
 
 export { FeiYing } from './characters/god/feiying';
 export { GuiXin } from './characters/god/guixin';
