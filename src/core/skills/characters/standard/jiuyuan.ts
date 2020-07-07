@@ -56,6 +56,7 @@ export class JiuYuan extends TriggerSkill {
     );
     if (selectedOption === 'yes') {
       aimEvent.toId = event.fromId;
+      await room.drawCards(1, aimEvent.fromId, undefined, undefined, this.Name);
     }
 
     return true;
