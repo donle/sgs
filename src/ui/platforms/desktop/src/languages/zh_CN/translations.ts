@@ -1042,6 +1042,10 @@ export const eventDictionary: Word[] = [
     target: '是否发动技能 【{0}】?',
   },
   {
+    source: 'do you want to trigger skill {0} from {1} ?',
+    target: '是否发动 {1} 的技能 【{0}】？',
+  },
+  {
     source: '{0} draws {1} cards',
     target: '{0} 摸了 {1} 张牌',
   },
@@ -1372,12 +1376,18 @@ export const eventDictionary: Word[] = [
   { source: 'guhuo:drop-card', target: '弃置一张牌' },
   { source: 'benghuai:hp', target: '失去1点体力' },
   { source: 'benghuai:maxhp', target: '减1点体力上限' },
+  { source: 'xingshang:recover', target: '回复1点体力' },
+  { source: 'xingshang:pickup', target: '获得阵亡角色的所有牌' },
   { source: 'please choose the amount of hp to lose', target: '请选择要失去的体力值' },
   {
     source: 'please choose tianxiang options:{0}',
     target: '请选择：1.令其受到1点伤害，然后摸 {0} 张牌。2.令其失去1点体力，然后其获得你弃置的牌',
   },
   { source: 'do you wanna transfer the card {0} target to {1}', target: '是否将【{0}】的使用目标改为【{1}】' },
+  {
+    source: 'please choose fangzhu options:{0}',
+    target: '请选择：1.摸{0}张牌并翻面；2.弃置{0}张牌并失去1点体力',
+  },
   {
     source: 'player {0} join in the room',
     target: '玩家 {0} 进入了房间',
