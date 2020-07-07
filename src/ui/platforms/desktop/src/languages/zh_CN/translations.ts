@@ -1274,6 +1274,12 @@ export const UiDictionary: Word[] = [
   { source: 'please enter your text here', target: '在此输入聊天内容' },
   { source: 'send', target: '发送' },
   { source: '{0} {1} says: {2}', target: '{0} {1} 说：{2}' },
+  { source: 'player name', target: '玩家名' },
+  { source: 'character name', target: '武将' },
+  { source: 'role', target: '身份' },
+  { source: 'status', target: '状态' },
+  { source: 'handcards', target: '手牌' },
+  { source: 'check', target: '查看' },
   {
     source: 'New QSanguosha',
     target: '新神杀',

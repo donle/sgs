@@ -7,9 +7,10 @@
 
 .innerBar {
     display: block;
-    width: 0;
+    width: 100%;
     background-image: linear-gradient(to left bottom, #e10000, #e41a17, #e72a27, #e93735, #eb4242);
     border-radius: 4px;
+    animation-timing-function: linear;
     animation: processing;
     height: 100%;
 }

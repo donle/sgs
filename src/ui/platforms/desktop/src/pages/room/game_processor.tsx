@@ -988,7 +988,9 @@ export class GameClientProcessor {
     const { winnerIds, loserIds } = content;
     const winners = winnerIds.map(id => this.store.room.getPlayerById(id));
     const losers = loserIds.map(id => this.store.room.getPlayerById(id));
-    this.presenter.createDialog(<GameOverDialog translator={this.translator} winners={winners} losers={losers} />);
+    this.presenter.createDialog(
+      <GameOverDialog imageLoader={this.imageLoader} translator={this.translator} winners={winners} losers={losers} />,
+    );
     this.presenter.broadcastUIUpdate();
     this.endAction();
     this.store.room.gameOver();

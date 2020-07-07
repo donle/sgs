@@ -9,11 +9,11 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
+import { NationalityBadge } from 'ui/badge/badge';
 import { SkillButton } from 'ui/button/skill_button';
+import { Hp } from 'ui/hp/hp';
 import { Tooltip } from 'ui/tooltip/tooltip';
-import { NationalityBadge } from '../badge/badge';
 import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
-import { Hp } from '../hp/hp';
 import { Mask } from '../mask/mask';
 import styles from './player_avatar.module.css';
 

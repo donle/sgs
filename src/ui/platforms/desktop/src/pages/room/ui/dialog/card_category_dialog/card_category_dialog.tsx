@@ -4,7 +4,7 @@ import { Functional } from 'core/shares/libs/functional';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
-import { FlatDemoCard } from '../../card/flat_demo_card';
+import { FlatDemoCard } from 'ui/card/flat_demo_card';
 import { BaseDialog } from '../base_dialog';
 import styles from './card_category_dialog.module.css';
 

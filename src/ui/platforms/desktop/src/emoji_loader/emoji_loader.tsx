@@ -1,7 +1,7 @@
 import { CardSuit } from 'core/cards/libs/card_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import { CardSuitItem } from 'pages/room/ui/card/card_suit';
 import * as React from 'react';
+import { CardSuitItem } from 'ui/card/card_suit';
 import styles from './emoji_loader.module.css';
 
 export function emojiLoader(translator: ClientTranslationModule) {

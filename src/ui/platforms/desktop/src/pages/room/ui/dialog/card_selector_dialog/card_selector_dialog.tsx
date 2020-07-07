@@ -4,8 +4,8 @@ import { Sanguosha } from 'core/game/engine';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
-import { ClientCard } from 'pages/room/ui/card/card';
 import * as React from 'react';
+import { ClientCard } from 'ui/card/card';
 import { BaseDialog } from '../base_dialog';
 import styles from './card_selector_dialog.module.css';
 
