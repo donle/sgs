@@ -29,8 +29,17 @@ export class Dimeng extends ActiveSkill {
     if (selectedTargets.length === 0) {
       return owner !== target;
     }
-    const selected = room.getPlayerById(selectedTargets![0]);
-    return owner !== target;
+
+    const first = room.getPlayerById(selectedTargets![0]);
+    const second = room.getPlayerById(target);
+    const firstHandcardNum = first.getCardIds(PlayerCardsArea.HandArea).length;
+    const secondHandcardNum = second.getCardIds(PlayerCardsArea.HandArea).length;
+
+    return (
+      owner !== target 
+      && !(firstHandcardNum <= 0 && secondHandcardNum <= 0)
+      && selectedCards.length === Math.abs(firstHandcardNum - secondHandcardNum)
+    );
   }
 
   isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
@@ -55,25 +64,43 @@ export class Dimeng extends ActiveSkill {
     const fromId = skillUseEvent.fromId;
     const firstId = skillUseEvent.toIds![0];
     const secondId = skillUseEvent.toIds![1];
-    const from = room.getPlayerById(fromId);
     const first = room.getPlayerById(firstId);
     const second = room.getPlayerById(secondId);
 
-    room.moveCards({
+    const firstCards = first.getCardIds(PlayerCardsArea.HandArea);
+    const secondCards = second.getCardIds(PlayerCardsArea.HandArea);
+
+    await room.moveCards({
         moveReason: CardMoveReason.PassiveMove,
-        movingCards: first.getCardIds(PlayerCardsArea.HandArea).map(cardId => ({card: cardId, fromArea: PlayerCardsArea.HandArea})),
+        movingCards: firstCards.map(cardId => ({card: cardId, fromArea: CardMoveArea.HandArea})),
         fromId: firstId,
-        toId: secondId,
-        toArea: CardMoveArea.HandArea,
+        toArea: CardMoveArea.ProcessingArea,
         proposer: fromId,
         movedByReason: this.Name,
     });
-    
+
     await room.moveCards({
       moveReason: CardMoveReason.PassiveMove,
-      movingCards: second.getCardIds(PlayerCardsArea.HandArea).map(cardId => ({card: cardId, fromArea: PlayerCardsArea.HandArea})),
-      fromId: second.Id,
-      toId: first.Id,
+      movingCards: secondCards.map(cardId => ({card: cardId, fromArea: CardMoveArea.HandArea})),
+      fromId: secondId,
+      toArea: CardMoveArea.ProcessingArea,
+      proposer: fromId,
+      movedByReason: this.Name,
+    });
+
+    await room.moveCards({
+      moveReason: CardMoveReason.PassiveMove,
+      movingCards: secondCards.map(cardId => ({card: cardId, fromArea: CardMoveArea.ProcessingArea})),
+      toId: firstId,
+      toArea: CardMoveArea.HandArea,
+      proposer: fromId,
+      movedByReason: this.Name,
+    });
+
+    await room.moveCards({
+      moveReason: CardMoveReason.PassiveMove,
+      movingCards: firstCards.map(cardId => ({card: cardId, fromArea: CardMoveArea.ProcessingArea})),
+      toId: secondId,
       toArea: CardMoveArea.HandArea,
       proposer: fromId,
       movedByReason: this.Name,
