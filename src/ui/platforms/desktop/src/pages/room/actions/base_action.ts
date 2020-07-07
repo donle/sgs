@@ -391,7 +391,12 @@ export abstract class BaseAction {
       }
 
       if (card.Skill instanceof ActiveSkill || card.Skill instanceof TriggerSkill) {
+        const canUse =
+          card.Skill.numberOfCards() === undefined
+            ? true
+            : card.Skill.numberOfCards()!.includes(this.selectedCards.length);
         return (
+          canUse &&
           card.Skill.cardFilter(this.store.room, this.player, this.selectedCards) &&
           card.Skill.targetFilter(this.store.room, this.player, this.selectedTargets, this.selectedCardToPlay)
         );
@@ -404,7 +409,10 @@ export abstract class BaseAction {
       const skill = this.selectedSkillToPlay;
 
       if (skill instanceof ActiveSkill || skill instanceof TriggerSkill) {
+        const canUse =
+          skill.numberOfCards() === undefined ? true : skill.numberOfCards()!.includes(this.selectedCards.length);
         return (
+          canUse &&
           skill.cardFilter(this.store.room, this.player, this.selectedCards) &&
           skill.targetFilter(this.store.room, this.player, this.selectedTargets, this.selectedCardToPlay)
         );

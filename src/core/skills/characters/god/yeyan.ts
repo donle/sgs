@@ -32,8 +32,12 @@ export class YeYan extends ActiveSkill {
     return [1, 3];
   }
 
+  public numberOfCards() {
+    return [0, 4];
+  }
+
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
-    return cards.length === 0 /* || cards.length === 4 */;
+    return cards.length <= 4;
   }
 
   public isAvailableCard(
