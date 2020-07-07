@@ -4,13 +4,19 @@
     flex: auto;
     display: flex;
     flex-direction: column;
-    overflow-y: scroll;
-    height: calc(100vh - 270px);
     padding: 8px;
+    height: calc(100vh - 330px);
+}
+
+.dialogs {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
 }
 
 .gameLogDialog {
-    overflow: hidden;
+    overflow: auto;
     flex: auto;
     padding: 4px 0;
     display: flex;
@@ -24,8 +30,6 @@
 }
 .messageDialog {
     display: flex;
-    min-height: 144px;
-    border-top: 1px dashed grey;
     flex-direction: column;
     padding: 4px 0;
     overflow: auto;
@@ -34,7 +38,6 @@
     width: 100%;
     display: flex;
     align-items: center;
-    align-self: flex-end;
 }
 .chatInput {
     flex: auto;
@@ -50,4 +53,27 @@
     margin-bottom: 4px;
     color: #fbd000;
     line-height: 16px;
+}
+.dragBorder {
+    height: 1px;
+    border-top: 1px dashed grey;
+    cursor: row-resize;
+    position: absolute;
+    left: 0;
+    width: calc(100% - 16px);
+    margin-left: 8px;
+}
+.dragBorder::before {
+    position: absolute;
+    content: '';
+    height: 8px;
+    width: 100%;
+    top: -9px;
+}
+.dragBorder::after {
+    position: absolute;
+    content: '';
+    height: 8px;
+    width: 100%;
+    bottom: -9px;
 }

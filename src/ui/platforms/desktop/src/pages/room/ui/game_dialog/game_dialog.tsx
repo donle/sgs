@@ -17,13 +17,27 @@ export type GameDialogProps = {
 @mobxReact.observer
 export class GameDialog extends React.Component<GameDialogProps> {
   private dialogElementRef = React.createRef<HTMLDivElement>();
+  private userMessageDialogElementRef = React.createRef<HTMLDivElement>();
+  private borderElementRef = React.createRef<HTMLDivElement>();
+
+  private readonly textMessageMinHeight = 160;
+  private readonly textMessageMaxHeight = 360;
+  private textMessageStartTopPosition: number | undefined;
+  private textMessageTopOffset: number = 0;
 
   @mobx.observable.ref
   private textMessage: string | undefined;
+  @mobx.observable.ref
+  private userMessageDialogStyles: React.CSSProperties = { height: this.textMessageMinHeight };
+  @mobx.observable.ref
+  private borderStyles: React.CSSProperties = { bottom: this.textMessageMinHeight };
 
   componentDidUpdate() {
     if (this.dialogElementRef.current) {
       this.dialogElementRef.current.scrollTop = this.dialogElementRef.current.scrollHeight;
+    }
+    if (this.userMessageDialogElementRef.current) {
+      this.userMessageDialogElementRef.current.scrollTop = this.userMessageDialogElementRef.current.scrollHeight;
     }
   }
 
@@ -40,30 +54,69 @@ export class GameDialog extends React.Component<GameDialogProps> {
     this.onMessageChange('');
   };
 
+  private readonly onBorderDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    this.textMessageStartTopPosition = event.clientY;
+    this.textMessageTopOffset = this.borderStyles.bottom as number;
+    window.addEventListener('mousemove', this.onBorderMove);
+  };
+  @mobx.action
+  private readonly onBorderMove = (e: MouseEvent) => {
+    if (this.textMessageStartTopPosition === undefined) {
+      return;
+    }
+
+    let height = this.textMessageStartTopPosition - e.clientY + this.textMessageTopOffset;
+    height = Math.max(this.textMessageMinHeight, Math.min(this.textMessageMaxHeight, height));
+    this.userMessageDialogStyles = {
+      minHeight: height,
+    };
+    this.borderStyles = {
+      bottom: height,
+    };
+  };
+
+  private readonly onBorderLeave = () => {
+    this.textMessageStartTopPosition = undefined;
+    window.removeEventListener('mousemove', this.onBorderMove);
+  };
+
   render() {
     return (
       <div className={styles.gameDialog}>
-        <div className={styles.gameLogDialog} ref={this.dialogElementRef}>
-          {this.props.store.gameLog.map((log, index) =>
-            typeof log === 'string' ? (
-              <p className={styles.messageLine} key={index} dangerouslySetInnerHTML={{ __html: log }} />
-            ) : (
-              <p className={styles.messageLine} key={index}>
-                {log}
-              </p>
-            ),
-          )}
-        </div>
-        <div className={styles.messageDialog}>
-          {this.props.store.messageLog.map((log, index) =>
-            typeof log === 'string' ? (
-              <p className={styles.messageLine} key={index} dangerouslySetInnerHTML={{ __html: log }} />
-            ) : (
-              <p className={styles.messageLine} key={index}>
-                {log}
-              </p>
-            ),
-          )}
+        <div className={styles.dialogs}>
+          <div className={styles.gameLogDialog} ref={this.dialogElementRef}>
+            {this.props.store.gameLog.map((log, index) =>
+              typeof log === 'string' ? (
+                <p className={styles.messageLine} key={index} dangerouslySetInnerHTML={{ __html: log }} />
+              ) : (
+                <p className={styles.messageLine} key={index}>
+                  {log}
+                </p>
+              ),
+            )}
+          </div>
+          <div
+            ref={this.borderElementRef}
+            className={styles.dragBorder}
+            style={this.borderStyles}
+            onMouseDown={this.onBorderDown}
+            onMouseUp={this.onBorderLeave}
+          />
+          <div
+            className={styles.messageDialog}
+            style={this.userMessageDialogStyles}
+            ref={this.userMessageDialogElementRef}
+          >
+            {this.props.store.messageLog.map((log, index) =>
+              typeof log === 'string' ? (
+                <p className={styles.messageLine} key={index} dangerouslySetInnerHTML={{ __html: log }} />
+              ) : (
+                <p className={styles.messageLine} key={index}>
+                  {log}
+                </p>
+              ),
+            )}
+          </div>
         </div>
         <form className={styles.inputLabel}>
           <Input

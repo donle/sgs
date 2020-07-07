@@ -252,7 +252,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
           <Tooltip
             className={styles.incomingMessage}
             position={['top']}
-            closeAfter={5}
+            closeAfter={3}
             closeCallback={this.onCloseIncomingMessageCallback}
           >
             {incomingMessage}

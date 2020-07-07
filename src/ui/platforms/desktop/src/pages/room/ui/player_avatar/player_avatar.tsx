@@ -278,7 +278,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           <Tooltip
             className={styles.incomingMessage}
             position={['top']}
-            closeAfter={5}
+            closeAfter={3}
             closeCallback={this.onCloseIncomingMessageCallback}
           >
             {this.props.incomingMessage}
