@@ -28,6 +28,8 @@ type PlayerCardProps = {
   presenter: RoomPresenter;
   imageLoader: ImageLoader;
   inAction: boolean;
+  incomingMessage?: string;
+  onCloseIncomingMessage?(): void;
   actionTimeLimit?: number;
   disabled?: boolean;
   delight?: boolean;
@@ -232,8 +234,12 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     }
   }
 
+  private readonly onCloseIncomingMessageCallback = () => {
+    this.props.onCloseIncomingMessage && this.props.onCloseIncomingMessage();
+  };
+
   render() {
-    const { disabled, translator, inAction, player, playerPhase, imageLoader } = this.props;
+    const { disabled, translator, inAction, player, playerPhase, imageLoader, incomingMessage } = this.props;
     return (
       <div
         id={player && player.Id}
@@ -242,6 +248,16 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
         onMouseEnter={this.openTooltip}
         onMouseLeave={this.closeTooltip}
       >
+        {incomingMessage && (
+          <Tooltip
+            className={styles.incomingMessage}
+            position={['top']}
+            closeAfter={5}
+            closeCallback={this.onCloseIncomingMessageCallback}
+          >
+            {incomingMessage}
+          </Tooltip>
+        )}
         {player ? (
           <>
             <p

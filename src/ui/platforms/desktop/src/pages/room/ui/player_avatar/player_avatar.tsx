@@ -23,6 +23,8 @@ type PlayerAvatarProps = {
   translator: ClientTranslationModule;
   updateFlag: boolean;
   imageLoader: ImageLoader;
+  incomingMessage?: string;
+  onCloseIncomingMessage?(): void;
   disabled?: boolean;
   delight?: boolean;
   onClick?(player: Player, selected: boolean): void;
@@ -258,6 +260,10 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     }
   }
 
+  private readonly onCloseIncomingMessageCallback = () => {
+    this.props.onCloseIncomingMessage && this.props.onCloseIncomingMessage();
+  };
+
   render() {
     const clientPlayer = this.props.presenter.ClientPlayer;
     const character = clientPlayer?.CharacterId !== undefined ? clientPlayer?.Character : undefined;
@@ -268,6 +274,16 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
         onMouseEnter={this.openTooltip}
         onMouseLeave={this.closeTooltip}
       >
+        {this.props.incomingMessage && (
+          <Tooltip
+            className={styles.incomingMessage}
+            position={['top']}
+            closeAfter={5}
+            closeCallback={this.onCloseIncomingMessageCallback}
+          >
+            {this.props.incomingMessage}
+          </Tooltip>
+        )}
         <span className={styles.playerName}>{clientPlayer?.Name}</span>
         <span
           className={classNames(styles.highlightBorder, {

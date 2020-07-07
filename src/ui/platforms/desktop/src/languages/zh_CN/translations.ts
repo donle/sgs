@@ -938,6 +938,9 @@ export const eventDictionary: Word[] = [
   { source: 'normal_property', target: '无属性' },
   { source: 'fire_property', target: '火属性' },
   { source: 'thunder_property', target: '雷属性' },
+  { source: 'obtained', target: '获得' },
+  { source: 'lost', target: '失去' },
+  { source: '{0} {1} {2} {3} marks', target: '{0} {1}了 {2} 枚 {3} 标记' },
   {
     source: 'do you want to trigger skill {0} ?',
     target: '是否发动技能 【{0}】?',
@@ -1268,6 +1271,9 @@ export const UiDictionary: Word[] = [
   { source: 'room id', target: '房间号' },
   { source: 'round {0}', target: '第 {0} 轮' },
   { source: '{0} draw cards left', target: '剩余 {0} 牌' },
+  { source: 'please enter your text here', target: '在此输入聊天内容' },
+  { source: 'send', target: '发送' },
+  { source: '{0} {1} says: {2}', target: '{0} {1} 说：{2}' },
   {
     source: 'New QSanguosha',
     target: '新神杀',

@@ -37,6 +37,11 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
     this.props.onClick && player && this.props.onClick(player, selected);
   };
 
+  private readonly onCloseIncomingMessage = (player: Player) => () => {
+    this.props.presenter.onIncomingMessage(player.Id);
+    this.forceUpdate();
+  };
+
   @mobx.computed
   private get ClientPlayerPosition() {
     return this.props.presenter.ClientPlayer!.Position;
@@ -68,7 +73,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
 
     let playerIndex = this.getLastPosition();
     while (numberOfPlayers > 0) {
-      const player = this.props.store.room.Players[playerIndex] as ClientPlayer;
+      const player = this.props.store.room.Players[playerIndex] as ClientPlayer | undefined;
 
       players.unshift(
         <PlayerCard
@@ -85,6 +90,8 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           }
           actionTimeLimit={this.props.store.notificationTime}
           inAction={player !== undefined && this.props.store.notifiedPlayers.includes(player.Id)}
+          incomingMessage={player && this.props.store.incomingUserMessages[player.Id]}
+          onCloseIncomingMessage={player && this.onCloseIncomingMessage(player)}
         />,
       );
       do {
@@ -121,6 +128,8 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           }
           actionTimeLimit={this.props.store.notificationTime}
           inAction={player !== undefined && this.props.store.notifiedPlayers.includes(player.Id)}
+          incomingMessage={player && this.props.store.incomingUserMessages[player.Id]}
+          onCloseIncomingMessage={player && this.onCloseIncomingMessage(player)}
         />,
       );
       do {
@@ -155,6 +164,8 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           }
           actionTimeLimit={this.props.store.notificationTime}
           inAction={player !== undefined && this.props.store.notifiedPlayers.includes(player.Id)}
+          incomingMessage={player && this.props.store.incomingUserMessages[player.Id]}
+          onCloseIncomingMessage={player && this.onCloseIncomingMessage(player)}
         />,
       );
 

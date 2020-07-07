@@ -180,7 +180,11 @@ export class RoomPage extends React.Component<
               />
               <div className={styles.sideBoard}>
                 <GameBoard store={this.store} translator={this.props.translator} />
-                <GameDialog store={this.store} presenter={this.presenter} translator={this.props.translator} />
+                <GameDialog
+                  store={this.store}
+                  presenter={this.presenter}
+                  translator={this.props.translator}
+                />
               </div>
             </div>
             <Dashboard

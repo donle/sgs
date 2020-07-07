@@ -41,6 +41,8 @@ export class RoomStore {
 
   @mobx.observable.shallow
   gameLog: (string | JSX.Element)[] = [];
+  @mobx.observable.shallow
+  messageLog: (string | JSX.Element)[] = [];
 
   @mobx.observable.shallow
   displayedCards: Card[] = [];
@@ -93,6 +95,11 @@ export class RoomStore {
   delightedPlayers: boolean | undefined = false;
   @mobx.observable.ref
   highlightedCards: boolean | undefined = true;
+
+  @mobx.observable.ref
+  incomingUserMessages: {
+    [K in PlayerId]: string;
+  } = {};
 
   @mobx.observable.ref
   clientPlayerCardActionsMatcher: (card: Card) => boolean;
@@ -198,6 +205,10 @@ export class RoomPresenter {
   @mobx.action
   addGameLog(log: string | JSX.Element) {
     this.store.gameLog.push(log);
+  }
+  @mobx.action
+  addUserMessage(text: string | JSX.Element) {
+    this.store.messageLog.push(text);
   }
 
   @mobx.action
@@ -388,5 +399,14 @@ export class RoomPresenter {
   @mobx.action
   highlightCards(highlight?: boolean) {
     this.store.highlightedCards = highlight;
+  }
+
+  @mobx.action
+  onIncomingMessage(player: PlayerId, message?: string) {
+    if (message === undefined) {
+      delete this.store.incomingUserMessages[player];
+    } else {
+      this.store.incomingUserMessages[player] = message;
+    }
   }
 }

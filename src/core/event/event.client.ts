@@ -67,6 +67,7 @@ export interface ClientEvent extends EventUtilities {
 
   [GameEventIdentifiers.UserMessageEvent]: {
     playerId: PlayerId;
+    message: string;
   };
 
   [GameEventIdentifiers.GameStartEvent]: {

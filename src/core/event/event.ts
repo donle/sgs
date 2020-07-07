@@ -171,6 +171,7 @@ export const serverActiveListenerEvents = [
 ];
 
 export const serverResponsiveListenerEvents = [
+  GameEventIdentifiers.UserMessageEvent,
   GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
   GameEventIdentifiers.AskForPeachEvent,
   GameEventIdentifiers.AskForCardResponseEvent,

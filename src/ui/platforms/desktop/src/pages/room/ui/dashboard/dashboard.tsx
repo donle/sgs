@@ -258,6 +258,11 @@ export class Dashboard extends React.Component<DashboardProps> {
     );
   }
 
+  private readonly onCloseIncomingMessage = (player: Player) => () => {
+    this.props.presenter.onIncomingMessage(player.Id);
+    this.forceUpdate();
+  };
+
   render() {
     const player = this.props.presenter.ClientPlayer!;
     return (
@@ -283,6 +288,8 @@ export class Dashboard extends React.Component<DashboardProps> {
           translator={this.props.translator}
           onClickSkill={this.props.onClickSkill}
           isSkillDisabled={this.props.isSkillDisabled}
+          incomingMessage={this.props.store.incomingUserMessages[player.Id]}
+          onCloseIncomingMessage={this.onCloseIncomingMessage(player)}
         />
       </div>
     );

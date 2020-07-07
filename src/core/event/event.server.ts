@@ -165,6 +165,8 @@ export interface ServerEvent extends EventUtilities {
 
   [GameEventIdentifiers.UserMessageEvent]: {
     playerId: PlayerId;
+    message: string;
+    originalMessage: string;
   };
   [GameEventIdentifiers.GameReadyEvent]: {
     gameInfo: GameInfo;
@@ -298,7 +300,7 @@ export interface ServerEvent extends EventUtilities {
     bottomStackName: string;
     toId: PlayerId;
     movable: boolean;
-    topMaxCard?: number; 
+    topMaxCard?: number;
     topMinCard?: number;
     bottomMaxCard?: number;
     bottomMinCard?: number;
@@ -358,7 +360,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.NotifyEvent]: {
     toIds: PlayerId[];
     notificationTime: number;
-  }
+  };
 }
 
 export type PinDianResultType = {

@@ -35,6 +35,8 @@ import { WuGuFengDengDialog } from './ui/dialog/wugufengdeng_dialog/wugufengdeng
 export class GameClientProcessor {
   private onPlayTrustedActionTimer: NodeJS.Timer | undefined;
 
+  private excludedResponsiveEvents: GameEventIdentifiers[] = [GameEventIdentifiers.UserMessageEvent];
+
   constructor(
     private presenter: RoomPresenter,
     private store: RoomStore,
@@ -64,7 +66,7 @@ export class GameClientProcessor {
   }
 
   private record<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
-    if (serverResponsiveListenerEvents.includes(identifier)) {
+    if (serverResponsiveListenerEvents.includes(identifier) && !this.excludedResponsiveEvents.includes(identifier)) {
       this.presenter.startAction(identifier, event);
       this.onPlayTrustedAction(identifier, event);
     }
@@ -97,6 +99,9 @@ export class GameClientProcessor {
     this.record(e, content);
 
     switch (e) {
+      case GameEventIdentifiers.UserMessageEvent:
+        this.onHandleUserMessageEvent(e as any, content);
+        break;
       case GameEventIdentifiers.SetFlagEvent:
         this.onHandleSetFlagEvent(e as any, content);
         break;
@@ -262,6 +267,15 @@ export class GameClientProcessor {
       default:
         throw new Error(`Unhandled Game event: ${e}`);
     }
+  }
+
+  private async onHandleUserMessageEvent<T extends GameEventIdentifiers.UserMessageEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.presenter.addUserMessage(this.translator.trx(content.message));
+    this.presenter.onIncomingMessage(content.playerId, content.originalMessage);
+    this.presenter.broadcastUIUpdate();
   }
 
   private async onHandleSetFlagEvent<T extends GameEventIdentifiers.SetFlagEvent>(
