@@ -267,14 +267,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               ) {
                 await this.useSkill(triggerSkillEvent);
               } else {
-                this.notify(
-                  GameEventIdentifiers.AskForSkillUseEvent,
-                  {
-                    invokeSkillNames: [skill.Name],
-                    toId: player.Id,
-                  },
-                  player.Id,
-                );
+                const event = {
+                  invokeSkillNames: [skill.Name],
+                  toId: player.Id,
+                };
+                if (skill.isUncancellable(this, content)) {
+                  EventPacker.createUncancellableEvent(event);
+                }
+                this.notify(GameEventIdentifiers.AskForSkillUseEvent, event, player.Id);
                 const { invoke, cardIds, toIds } = await this.onReceivingAsyncResponseFrom(
                   GameEventIdentifiers.AskForSkillUseEvent,
                   player.Id,

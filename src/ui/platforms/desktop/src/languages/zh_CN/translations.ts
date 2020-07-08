@@ -1345,6 +1345,7 @@ export const eventDictionary: Word[] = [
     source: 'please assign x damage for {0}, and {1} will get (3 - x) damage',
     target: '请为 {0} 分配 x 点伤害，{1} 将会分配到 (3 - x) 点伤害',
   },
+  { source: 'haoshi:please choose handcards and a target', target: '请选择交给的手牌与一名目标角色' },
 
   { source: 'cixiongjian:drop-card', target: '弃置一张手牌' },
   { source: 'cixiongjian:draw-card', target: '令其摸一张牌' },
