@@ -47,11 +47,7 @@ export class QinYin extends TriggerSkill {
     skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     const options = ['qinyin: loseHp'];
-    room.getAlivePlayersFrom().forEach(player => {
-      if (player.isDamaged()) {
-        options.push('qinyin: recoverHp');
-      }
-    });
+    room.getAlivePlayersFrom().find(player => player.isInjured()) && options.push('qinyin: recoverHp');
     const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
       options,
       toId: skillUseEvent.fromId,

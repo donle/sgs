@@ -314,7 +314,7 @@ export abstract class Player implements PlayerInfo {
     return equipCard.Id;
   }
 
-  public isDamaged() {
+  public isInjured() {
     return this.Hp < this.MaxHp;
   }
 
