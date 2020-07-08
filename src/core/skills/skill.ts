@@ -217,8 +217,8 @@ export abstract class TriggerSkill extends Skill {
     }
   }
 
-  public numberOfCards(): number[] | undefined {
-    return;
+  public numberOfCards(): number[] {
+    return [];
   }
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
@@ -256,8 +256,8 @@ export abstract class ActiveSkill extends Skill {
     }
   }
 
-  public numberOfCards(): number[] | undefined {
-    return;
+  public numberOfCards(): number[] {
+    return [];
   }
 
   public targetFilter(room: Room, owner: Player, targets: PlayerId[], cardId?: CardId): boolean {

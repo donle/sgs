@@ -187,12 +187,14 @@ export abstract class BaseAction {
       const skill = this.selectedSkillToPlay;
       if (skill instanceof ActiveSkill) {
         const selectedCardsRange = skill.numberOfCards();
-        if (
-          selectedCardsRange !== undefined &&
-          this.selectedCards.length < selectedCardsRange[selectedCardsRange.length - 1]
-        ) {
+        const usableCardNumbers = selectedCardsRange.findIndex(
+          cardNumbers => cardNumbers === this.selectedCards.length,
+        );
+
+        if (usableCardNumbers >= 0 && usableCardNumbers !== selectedCardsRange.length - 1) {
           return true;
         }
+
         return (
           skill.isAvailableCard(
             player.Id,
@@ -253,10 +255,11 @@ export abstract class BaseAction {
 
       if (skill instanceof ActiveSkill) {
         const selectedCardsRange = skill.numberOfCards();
-        if (
-          selectedCardsRange !== undefined &&
-          this.selectedCards.length < selectedCardsRange[selectedCardsRange.length - 1]
-        ) {
+        const usableCardNumbers = selectedCardsRange.findIndex(
+          cardNumbers => cardNumbers === this.selectedCards.length,
+        );
+
+        if (usableCardNumbers >= 0 && usableCardNumbers !== selectedCardsRange.length - 1) {
           return true;
         }
 
@@ -391,7 +394,10 @@ export abstract class BaseAction {
       }
 
       if (card.Skill instanceof ActiveSkill || card.Skill instanceof TriggerSkill) {
+        const canUse =
+          card.Skill.numberOfCards().length === 0 || card.Skill.numberOfCards().includes(this.selectedCards.length);
         return (
+          canUse &&
           card.Skill.cardFilter(this.store.room, this.player, this.selectedCards) &&
           card.Skill.targetFilter(this.store.room, this.player, this.selectedTargets, this.selectedCardToPlay)
         );
@@ -404,7 +410,10 @@ export abstract class BaseAction {
       const skill = this.selectedSkillToPlay;
 
       if (skill instanceof ActiveSkill || skill instanceof TriggerSkill) {
+        const canUse =
+          skill.numberOfCards().length === 0 || skill.numberOfCards().includes(this.selectedCards.length);
         return (
+          canUse &&
           skill.cardFilter(this.store.room, this.player, this.selectedCards) &&
           skill.targetFilter(this.store.room, this.player, this.selectedTargets, this.selectedCardToPlay)
         );
