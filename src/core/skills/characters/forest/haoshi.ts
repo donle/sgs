@@ -1,5 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { GameEventIdentifiers, ServerEventFinder, CardMoveArea, CardMoveReason } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, DrawCardStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -36,10 +36,6 @@ export class Haoshi extends TriggerSkill {
 @ShadowSkill
 @CommonSkill({ name: Haoshi.GeneralName, description: Haoshi.Description })
 export class HaoshiShadow extends TriggerSkill {
-  isAutoTrigger() {
-    return true;
-  }
-
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.BeforeStageChange;
   }
@@ -52,8 +48,8 @@ export class HaoshiShadow extends TriggerSkill {
     );
   }
 
-  public targetFilter(room: Room, owner: Player, targets: PlayerId[]) {
-    return targets.length === 1;
+  public numberOfTargets() {
+    return 1;
   }
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId) {
@@ -82,9 +78,7 @@ export class HaoshiShadow extends TriggerSkill {
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { toIds, cardIds, fromId } = skillUseEvent;
-    room.removeFlag(fromId, this.GeneralName);
 
-    const from = room.getPlayerById(fromId);
     await room.moveCards({
       movingCards: cardIds!.map(card => ({ card, fromArea: CardMoveArea.HandArea })),
       fromId,
