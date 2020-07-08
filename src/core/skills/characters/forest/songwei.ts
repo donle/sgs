@@ -10,7 +10,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @LordSkill
 @CommonSkill({name: 'songwei', description: 'songwei_description'})
-export class Songwei extends TriggerSkill {
+export class SongWei extends TriggerSkill {
   isAutoTrigger() {
     return true;
   }
@@ -43,7 +43,7 @@ export class Songwei extends TriggerSkill {
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForInvokeSkill, judgeEvent.toId);
-    const { selectedOption } = await room.onReceivingAsyncReponseFrom(
+    const { selectedOption } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingOptionsEvent,
       judgeEvent.toId
     );
