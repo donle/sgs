@@ -11,7 +11,6 @@ import { PatchedTranslationObject, TranslationPack } from 'core/translations/tra
 
 @LimitSkill({ name: 'yeyan', description: 'yeyan_description' })
 export class YeYan extends ActiveSkill {
-  room: any;
   public canUse(): boolean {
     return true;
   }
