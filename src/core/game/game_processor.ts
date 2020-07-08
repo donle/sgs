@@ -62,6 +62,9 @@ export class GameProcessor {
   private playRoundInsertions: PlayerId[] = [];
   private dumpedLastPlayerPositionIndex: number = -1;
 
+  private readonly DamageTypeTag = 'damageType';
+  private readonly BeginnerTag = 'beginnerOfTheDamage';
+
   constructor(private stageProcessor: StageProcessor, private logger: Logger) {}
 
   private tryToThrowNotStartedError() {
@@ -834,14 +837,29 @@ export class GameProcessor {
           amount: damage,
           byReaon: 'damage',
           byCardIds: event.cardIds,
-          byEvent: event,
         };
+        EventPacker.addMiddleware(
+          {
+            tag: this.DamageTypeTag,
+            data: event.damageType,
+          },
+          hpChangeEvent,
+        );
+        EventPacker.addMiddleware(
+          {
+            tag: this.BeginnerTag,
+            data: event.beginnerOfTheDamage,
+          },
+          hpChangeEvent,
+        );
+
         await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async hpChangeStage => {
           if (hpChangeStage === HpChangeStage.HpChanging) {
             this.room.broadcast(identifier, event);
           }
           return true;
         });
+        event.beginnerOfTheDamage = hpChangeEvent.beginnerOfTheDamage;
         EventPacker.copyPropertiesTo(hpChangeEvent, event);
         if (EventPacker.isTerminated(event)) {
           return;
@@ -1585,7 +1603,6 @@ export class GameProcessor {
           toId: victim.Id,
           amount: event.lostHp,
           byReaon: 'lostHp',
-          byEvent: event,
         };
         await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async stage => {
           if (stage === HpChangeStage.HpChanging) {
@@ -1618,13 +1635,17 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     const to = this.room.getPlayerById(event.toId);
-    if (event.byReaon === 'damage' && event.byEvent) {
-      const damageEvent = event.byEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-      if (to.ChainLocked && damageEvent.damageType != DamageType.Normal) {
+    if (event.byReaon === 'damage') {
+      if (
+        to.ChainLocked &&
+        EventPacker.getMiddleware<DamageType>(this.DamageTypeTag, event) != DamageType.Normal
+      ) {
         await this.room.chainedOn(to.Id);
-        damageEvent.beginnerOfTheDamage = damageEvent.beginnerOfTheDamage || to.Id;
+        event.beginnerOfTheDamage = EventPacker.getMiddleware<string>(this.BeginnerTag, event) || to.Id;
       }
     }
+    EventPacker.removeMiddleware(this.DamageTypeTag, event);
+    EventPacker.removeMiddleware(this.BeginnerTag, event);
 
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === HpChangeStage.HpChanging) {
@@ -1656,7 +1677,6 @@ export class GameProcessor {
           amount: event.recoveredHp,
           byReaon: 'recover',
           byCardIds: event.cardIds,
-          byEvent: event,
         };
         await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async stage => {
           if (stage === HpChangeStage.HpChanging) {
