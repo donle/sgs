@@ -46,8 +46,14 @@ export class QinYin extends TriggerSkill {
     room: Room,
     skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
+    const options = ['qinyin: loseHp'];
+    room.getAlivePlayersFrom().forEach(player => {
+      if (player.isDamaged()) {
+        options.push('qinyin: recoverHp');
+      }
+    });
     const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
-      options: ['qinyin: loseHp', 'qinyin: recoverHp'],
+      options,
       toId: skillUseEvent.fromId,
       conversation: 'qinyin: please choose a choice to make everyone lose hp or recover hp',
     };
@@ -63,11 +69,11 @@ export class QinYin extends TriggerSkill {
       skillUseEvent.fromId,
     );
 
-    if (selectedOption === 'qinyin:loseHp') {
+    if (selectedOption === 'qinyin: loseHp') {
       for (const player of room.getAlivePlayersFrom()) {
         await room.loseHp(player.Id, 1);
       }
-    } else if (selectedOption === 'qinyin:recoverHp') {
+    } else if (selectedOption === 'qinyin: recoverHp') {
       for (const player of room.getAlivePlayersFrom()) {
         await room.recover({ recoveredHp: 1, recoverBy: skillUseEvent.fromId, toId: player.Id });
       }

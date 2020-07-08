@@ -314,6 +314,10 @@ export abstract class Player implements PlayerInfo {
     return equipCard.Id;
   }
 
+  public isDamaged() {
+    return this.Hp < this.MaxHp;
+  }
+
   public getDrunk() {
     this.drunk++;
   }
@@ -370,7 +374,9 @@ export abstract class Player implements PlayerInfo {
       }
 
       const card = Sanguosha.getCardById(cardMatcherOrId);
-      const skill = this.getSkills<ViewAsSkill>('viewAs').find(skill => skill.canViewAs(room, this).includes(card.GeneralName));
+      const skill = this.getSkills<ViewAsSkill>('viewAs').find(skill =>
+        skill.canViewAs(room, this).includes(card.GeneralName),
+      );
 
       return !!skill;
     }
