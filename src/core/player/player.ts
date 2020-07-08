@@ -598,6 +598,10 @@ export abstract class Player implements PlayerInfo {
     }
   }
 
+  public get LostHp() {
+    return this.maxHp - this.hp;
+  }
+
   public get Role() {
     return this.playerRole;
   }
