@@ -101,7 +101,7 @@ export { TongJi } from './characters/standard/tongji';
 
 export { JuShou } from './characters/wind/jushou';
 export { JieWei, JieWeiShadow } from './characters/wind/jiewei';
-export { Kuanggu } from './characters/wind/kuanggu';
+export { KuangGu, KuangGuShadow } from './characters/wind/kuanggu';
 export { QiMou, QiMouShadow, QiMouBlocker } from './characters/wind/qimou';
 export { HuangTian, HuangTianGiveCard } from './characters/wind/huangtian';
 export { LeiJi, LeiJiShadow } from './characters/wind/leiji';
