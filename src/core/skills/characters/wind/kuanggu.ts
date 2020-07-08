@@ -46,7 +46,7 @@ export class KuangGu extends TriggerSkill {
 
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, weiyanId);
 
-    const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, weiyanId);
+    const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, weiyanId);
 
     response.selectedOption = response.selectedOption || 'kuanggu:draw';
     if (response.selectedOption === 'kuanggu:draw') {
