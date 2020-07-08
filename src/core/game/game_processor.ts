@@ -62,6 +62,9 @@ export class GameProcessor {
   private playRoundInsertions: PlayerId[] = [];
   private dumpedLastPlayerPositionIndex: number = -1;
 
+  private readonly DamageTypeTag = 'damageType';
+  private readonly BeginnerTag = 'beginnerOfTheDamage';
+
   constructor(private stageProcessor: StageProcessor, private logger: Logger) {}
 
   private tryToThrowNotStartedError() {
@@ -809,12 +812,7 @@ export class GameProcessor {
     const to = this.room.getPlayerById(event.toId);
     const from = event.fromId ? this.room.getPlayerById(event.fromId) : undefined;
     return await this.iterateEachStage(identifier, event, onActualExecuted, async (stage: GameEventStage) => {
-      if (to.Dead) {
-        EventPacker.terminate(event);
-        return;
-      }
-
-      if (stage === DamageEffectStage.DamagedEffect) {
+      if (stage === DamageEffectStage.DamagedEffect && !to.Dead) {
         const { toId, damage, damageType, fromId } = event;
         event.fromId = from?.Dead ? undefined : from?.Id;
 
@@ -840,12 +838,28 @@ export class GameProcessor {
           byReaon: 'damage',
           byCardIds: event.cardIds,
         };
+        EventPacker.addMiddleware(
+          {
+            tag: this.DamageTypeTag,
+            data: event.damageType,
+          },
+          hpChangeEvent,
+        );
+        EventPacker.addMiddleware(
+          {
+            tag: this.BeginnerTag,
+            data: event.beginnerOfTheDamage,
+          },
+          hpChangeEvent,
+        );
+
         await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async hpChangeStage => {
           if (hpChangeStage === HpChangeStage.HpChanging) {
             this.room.broadcast(identifier, event);
           }
           return true;
         });
+        event.beginnerOfTheDamage = hpChangeEvent.beginnerOfTheDamage;
         EventPacker.copyPropertiesTo(hpChangeEvent, event);
         if (EventPacker.isTerminated(event)) {
           return;
@@ -862,9 +876,8 @@ export class GameProcessor {
             EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerDyingEvent, dyingEvent),
           );
         }
-
-        if (to.ChainLocked && event.damageType !== DamageType.Normal) {
-          await this.room.chainedOn(to.Id);
+      } else if (stage === DamageEffectStage.AfterDamagedEffect) {
+        if (event.beginnerOfTheDamage === to.Id) {
           await this.onChainedDamage(event);
         }
       }
@@ -882,7 +895,6 @@ export class GameProcessor {
           ...event,
           toId: player.Id,
           isFromChainedDamage: true,
-          beginnerOfTheDamage: event.fromId,
         });
       }
     }
@@ -1623,6 +1635,18 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     const to = this.room.getPlayerById(event.toId);
+    if (event.byReaon === 'damage') {
+      if (
+        to.ChainLocked &&
+        EventPacker.getMiddleware<DamageType>(this.DamageTypeTag, event) != DamageType.Normal
+      ) {
+        await this.room.chainedOn(to.Id);
+        event.beginnerOfTheDamage = EventPacker.getMiddleware<string>(this.BeginnerTag, event) || to.Id;
+      }
+    }
+    EventPacker.removeMiddleware(this.DamageTypeTag, event);
+    EventPacker.removeMiddleware(this.BeginnerTag, event);
+
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === HpChangeStage.HpChanging) {
         if (event.byReaon === 'recover') {

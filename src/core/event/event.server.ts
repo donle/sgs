@@ -135,6 +135,7 @@ export interface ServerEvent extends EventUtilities {
     amount: number;
     byReaon: 'damage' | 'lostHp' | 'recover';
     byCardIds?: CardId[];
+    beginnerOfTheDamage?: PlayerId;
   };
   [GameEventIdentifiers.DamageEvent]: {
     fromId?: PlayerId;

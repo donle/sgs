@@ -899,7 +899,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   public async damage(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>): Promise<void> {
-    event.beginnerOfTheDamage = event.beginnerOfTheDamage || event.fromId;
     EventPacker.createIdentifierEvent(GameEventIdentifiers.DamageEvent, event);
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.DamageEvent, event);
   }
