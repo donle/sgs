@@ -1,11 +1,17 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { CardMoveArea, CardMoveReason, ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import {
+  CardMoveArea,
+  CardMoveReason,
+  ClientEventFinder,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from 'core/event/event';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
-@CommonSkill({name: 'dimeng', description: 'dimeng_description'})
+@CommonSkill({ name: 'dimeng', description: 'dimeng_description' })
 export class Dimeng extends ActiveSkill {
   public canUse(room: Room, owner: Player) {
     return !owner.hasUsedSkill(this.Name);
@@ -36,9 +42,9 @@ export class Dimeng extends ActiveSkill {
     const secondHandcardNum = second.getCardIds(PlayerCardsArea.HandArea).length;
 
     return (
-      owner !== target 
-      && !(firstHandcardNum <= 0 && secondHandcardNum <= 0)
-      && selectedCards.length === Math.abs(firstHandcardNum - secondHandcardNum)
+      owner !== target &&
+      !(firstHandcardNum <= 0 && secondHandcardNum <= 0) &&
+      selectedCards.length === Math.abs(firstHandcardNum - secondHandcardNum)
     );
   }
 
@@ -67,45 +73,48 @@ export class Dimeng extends ActiveSkill {
     const first = room.getPlayerById(firstId);
     const second = room.getPlayerById(secondId);
 
-    const firstCards = first.getCardIds(PlayerCardsArea.HandArea);
-    const secondCards = second.getCardIds(PlayerCardsArea.HandArea);
-
-    await room.moveCards({
+    const firstCards = first.getCardIds(PlayerCardsArea.HandArea).slice();
+    const secondCards = second.getCardIds(PlayerCardsArea.HandArea).slice();
+    await room.asyncMoveCards([
+      {
         moveReason: CardMoveReason.PassiveMove,
-        movingCards: firstCards.map(cardId => ({card: cardId, fromArea: CardMoveArea.HandArea})),
+        movingCards: firstCards.map(cardId => ({ card: cardId, fromArea: CardMoveArea.HandArea })),
         fromId: firstId,
         toArea: CardMoveArea.ProcessingArea,
         proposer: fromId,
         movedByReason: this.Name,
-    });
+      },
+      {
+        moveReason: CardMoveReason.PassiveMove,
+        movingCards: secondCards.map(cardId => ({ card: cardId, fromArea: CardMoveArea.HandArea })),
+        fromId: secondId,
+        toArea: CardMoveArea.ProcessingArea,
+        proposer: fromId,
+        movedByReason: this.Name,
+      },
+    ]);
 
-    await room.moveCards({
-      moveReason: CardMoveReason.PassiveMove,
-      movingCards: secondCards.map(cardId => ({card: cardId, fromArea: CardMoveArea.HandArea})),
-      fromId: secondId,
-      toArea: CardMoveArea.ProcessingArea,
-      proposer: fromId,
-      movedByReason: this.Name,
-    });
+    await room.asyncMoveCards([
+      {
+        moveReason: CardMoveReason.PassiveMove,
+        movingCards: secondCards.map(cardId => ({ card: cardId, fromArea: CardMoveArea.ProcessingArea })),
+        toId: firstId,
+        toArea: CardMoveArea.HandArea,
+        proposer: fromId,
+        movedByReason: this.Name,
+        engagedPlayerIds: [firstId, secondId],
+      },
+      {
+        moveReason: CardMoveReason.PassiveMove,
+        movingCards: firstCards.map(cardId => ({ card: cardId, fromArea: CardMoveArea.ProcessingArea })),
+        toId: secondId,
+        toArea: CardMoveArea.HandArea,
+        proposer: fromId,
+        movedByReason: this.Name,
+        engagedPlayerIds: [firstId, secondId],
+      },
+    ]);
 
-    await room.moveCards({
-      moveReason: CardMoveReason.PassiveMove,
-      movingCards: secondCards.map(cardId => ({card: cardId, fromArea: CardMoveArea.ProcessingArea})),
-      toId: firstId,
-      toArea: CardMoveArea.HandArea,
-      proposer: fromId,
-      movedByReason: this.Name,
-    });
-
-    await room.moveCards({
-      moveReason: CardMoveReason.PassiveMove,
-      movingCards: firstCards.map(cardId => ({card: cardId, fromArea: CardMoveArea.ProcessingArea})),
-      toId: secondId,
-      toArea: CardMoveArea.HandArea,
-      proposer: fromId,
-      movedByReason: this.Name,
-    });
-    
     return true;
   }
 }
