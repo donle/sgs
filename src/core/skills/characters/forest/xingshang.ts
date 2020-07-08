@@ -1,4 +1,3 @@
-import { Card } from 'core/cards/card';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PlayerDiedStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -7,7 +6,7 @@ import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 
 @CommonSkill({name: 'xingshang', description: 'xingshang_description'})
-export class Xingshang extends TriggerSkill {
+export class XingShang extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>, stage?: AllStage) {
     return stage === PlayerDiedStage.PlayerDied;
   }
@@ -58,7 +57,7 @@ export class Xingshang extends TriggerSkill {
         fromId,
       );
 
-      const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
+      const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
       response.selectedOption = response.selectedOption || 'xingshang:pickup';
       if (response.selectedOption === 'xingshang:recover') {
         room.recover({

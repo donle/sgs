@@ -8,7 +8,7 @@ import { CommonSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({name: 'fangzhu', description: 'fangzhu_description'})
-export class Fangzhu extends TriggerSkill {
+export class FangZhu extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
     return stage === DamageEffectStage.AfterDamageEffect;
   }
@@ -55,7 +55,7 @@ export class Fangzhu extends TriggerSkill {
         toIds![0]
       );
   
-      const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, toIds![0]);
+      const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, toIds![0]);
       response.selectedOption = response.selectedOption || 'option-one';
       if (response.selectedOption === 'option-one') {
         await room.turnOver(toIds![0]);
