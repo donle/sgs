@@ -144,7 +144,8 @@ export { JuXiang } from './characters/forest/juxiang';
 export { YingHun } from './characters/forest/yinghun';
 export { Fangzhu } from './characters/forest/fangzhu';
 export { Xingshang } from './characters/forest/xingshang';
-export { Songwei } from './characters/forest/songwei'
+export { Songwei } from './characters/forest/songwei';
+export { Haoshi, HaoshiShadow } from './characters/forest/haoshi';
 export { Dimeng } from './characters/forest/dimeng';
 
 export { FeiYing } from './characters/god/feiying';
