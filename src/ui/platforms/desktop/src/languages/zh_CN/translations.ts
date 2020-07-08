@@ -1214,6 +1214,50 @@ export const eventDictionary: Word[] = [
     source: 'wuhun:Please choose a target to die with you',
     target: '请选择一名角色进行【武魂】的判定，若结果不为【桃】或【桃园结义】，其立即死亡',
   },
+  {
+    source: 'qinyin: loseHp',
+    target: '失去体力',
+  },
+  {
+    source: 'qinyin: recoverHp',
+    target: '回复体力',
+  },
+  {
+    source: 'qinyin: please choose a choice to make everyone lose hp or recover hp',
+    target: '琴音：你可以令全场角色依次失去 1 点体力或回复 1 点体力',
+  },
+  {
+    source: 'yeyan: 1 point',
+    target: '1 点',
+  },
+  {
+    source: 'yeyan: 2 point',
+    target: '2 点',
+  },
+  {
+    source: 'yeyan: 3 point',
+    target: '3 点',
+  },
+  {
+    source: 'yeyan: cancel',
+    target: '取消',
+  },
+  {
+    source: 'please assign damage for {0}',
+    target: '请为 {0} 分配伤害点数',
+  },
+  {
+    source: 'please assign damage for {0}, {1}',
+    target: '请为 {0}、{1} 分配伤害点数',
+  },
+  {
+    source: 'please assign damage for {0}, {1}, {2}',
+    target: '请为 {0}、{1}、{2} 分配伤害点数',
+  },
+  {
+    source: 'please assign x damage for {0}, and {1} will get (3 - x) damage',
+    target: '请为 {0} 分配 x 点伤害，{1} 将会分配到 (3 - x) 点伤害',
+  },
 
   { source: 'cixiongjian:drop-card', target: '弃置一张手牌' },
   { source: 'cixiongjian:draw-card', target: '令其摸一张牌' },

@@ -47,7 +47,7 @@ export class QinYin extends TriggerSkill {
     skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
-      options: ['qinyin:loseHp', 'qinyin:recoverHp'],
+      options: ['qinyin: loseHp', 'qinyin: recoverHp'],
       toId: skillUseEvent.fromId,
       conversation: 'qinyin: please choose a choice to make everyone lose hp or recover hp',
     };

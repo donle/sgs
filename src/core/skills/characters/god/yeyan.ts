@@ -1,25 +1,13 @@
-/* 
-业炎可能规则集讲了一大堆，反正就是
-①选了牌不能指定到三名角色，选了三名角色不能选牌；
-②没选牌目标无论多少都是依次打1，选牌第一个目标先选打1还是2，第二个目标就是3-前一个选的数 
-
-选牌且只选一个目标的时候就是选2和3了
-
-反正就是选了牌，就至少有一个目标要被分配2点或以上, 否则不满足弃牌的条件
-*/
-
 import { CardId } from 'core/cards/libs/card_props';
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
+import { DamageType } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { Logger } from 'core/shares/libs/logger/logger';
 import { ActiveSkill } from 'core/skills/skill';
 import { LimitSkill } from 'core/skills/skill_wrappers';
-import { TranslationPack } from 'core/translations/translation_json_tool';
-
-const log = new Logger();
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
 @LimitSkill({ name: 'yeyan', description: 'yeyan_description' })
 export class YeYan extends ActiveSkill {
@@ -50,11 +38,20 @@ export class YeYan extends ActiveSkill {
     if (selectedTargets.length === 3) {
       return false;
     }
-    //here may have some problems
+
     return !selectedCards.find(id => Sanguosha.getCardById(id).Suit === Sanguosha.getCardById(cardId).Suit);
   }
 
-  public isAvailableTarget(): boolean {
+  public isAvailableTarget(
+    owner: PlayerId,
+    room: Room,
+    target: PlayerId,
+    selectedCards: CardId[],
+    selectedTargets: PlayerId[],
+  ): boolean {
+    if (selectedCards.length === 4) {
+      return selectedTargets.length < 2;
+    }
     return true;
   }
 
@@ -62,26 +59,74 @@ export class YeYan extends ActiveSkill {
     room: Room,
     skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
   ): Promise<boolean> {
-    const options: string[] = [];
-    // just test if the TranslationPack can be used here, to ensure users can get enough info by tips .
-    for (const target of skillUseEvent.toIds!) {
-      options.push(
-        TranslationPack.translationJsonPatcher(
-          '{0} : {1} Point damage',
-          TranslationPack.patchPlayerInTranslation(room.getPlayerById(target)),
-          '999',
-        ).toString(),
-      );
+    let options: string[] = [];
+    let conversation: string | PatchedTranslationObject = '';
+
+    const targets = skillUseEvent.toIds!;
+    if (!skillUseEvent.cardIds) {
+      options = ['yeyan: 1 point'];
+      conversation = TranslationPack.translationJsonPatcher(
+        'please assign damage for {0}' + (targets.length > 1 ? ', {1}' : '') + (targets.length > 2 ? ', {2}' : ''),
+        TranslationPack.patchPlayerInTranslation(room.getPlayerById(targets[0])),
+        targets.length > 1 ? TranslationPack.patchPlayerInTranslation(room.getPlayerById(targets[1])) : '',
+        targets.length > 2 ? TranslationPack.patchPlayerInTranslation(room.getPlayerById(targets[2])) : '',
+      ).extract();
+    } else {
+      if (targets.length === 1) {
+        options = ['yeyan: 2 point', 'yeyan: 3 point'];
+        conversation = TranslationPack.translationJsonPatcher(
+          'please assign damage for {0}',
+          TranslationPack.patchPlayerInTranslation(room.getPlayerById(targets[0])),
+        ).extract();
+      } else if (targets.length === 2) {
+        options = ['yeyan: 1 point', 'yeyan: 2 point'];
+        conversation = TranslationPack.translationJsonPatcher(
+          'please assign x damage for {0}, and {1} will get (3 - x) damage',
+          TranslationPack.patchPlayerInTranslation(room.getPlayerById(targets[0])),
+          TranslationPack.patchPlayerInTranslation(room.getPlayerById(targets[1])),
+        ).extract();
+      }
     }
+    options.push('yeyan: cancel');
 
     const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
       options,
       toId: skillUseEvent.fromId,
-      conversation: 'just test',
+      conversation,
     };
 
-    room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChoosingOptionsEvent, skillUseEvent.fromId);
+    room.notify(
+      GameEventIdentifiers.AskForChoosingOptionsEvent,
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(askForChoosingOptionsEvent),
+      skillUseEvent.fromId,
+    );
 
+    const { selectedOption } = await room.onReceivingAsyncResponseFrom(
+      GameEventIdentifiers.AskForChoosingOptionsEvent,
+      skillUseEvent.fromId,
+    );
+
+    if (selectedOption === 'yeyan: 1 point') {
+      if (!!skillUseEvent.cardIds) {
+        targets.forEach(target => {
+          EventPacker.addMiddleware({ tag: target, data: 1 }, skillUseEvent);
+        });
+      } else {
+        EventPacker.addMiddleware({ tag: targets[0], data: 1 }, skillUseEvent);
+        EventPacker.addMiddleware({ tag: targets[1], data: 2 }, skillUseEvent);
+      }
+    } else if (selectedOption === 'yeyan: 2 point') {
+      if (targets.length === 1) {
+        EventPacker.addMiddleware({ tag: targets[0], data: 2 }, skillUseEvent);
+      } else {
+        EventPacker.addMiddleware({ tag: targets[0], data: 2 }, skillUseEvent);
+        EventPacker.addMiddleware({ tag: targets[1], data: 1 }, skillUseEvent);
+      }
+    } else if (selectedOption === 'yeyan: 3 point') {
+      EventPacker.addMiddleware({ tag: targets[0], data: 3 }, skillUseEvent);
+    } else {
+      return false;
+    }
     return true;
   }
 
@@ -93,7 +138,28 @@ export class YeYan extends ActiveSkill {
     room: Room,
     skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
   ): Promise<boolean> {
-    log.info('triggered');
+    if (skillUseEvent.cardIds && skillUseEvent.cardIds.length === 4) {
+      await room.dropCards(
+        CardMoveReason.SelfDrop,
+        skillUseEvent.cardIds!,
+        skillUseEvent.fromId,
+        skillUseEvent.fromId,
+        this.Name,
+      );
+
+      await room.loseHp(skillUseEvent.fromId, 3);
+    }
+
+    const targets = skillUseEvent.toIds!;
+    for (const target of targets) {
+      await room.damage({
+        fromId: skillUseEvent.fromId,
+        toId: target,
+        damage: EventPacker.getMiddleware(target, skillUseEvent) as number,
+        damageType: DamageType.Fire,
+        triggeredBySkills: [this.Name],
+      });
+    }
 
     return true;
   }
