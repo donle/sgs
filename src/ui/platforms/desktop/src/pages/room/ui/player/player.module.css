@@ -263,3 +263,12 @@
 .incomingMessage {
     width: 100%;
 }
+
+.playerStatus {
+    position: absolute;
+    right: 0;
+    top: calc(gridLine * 8);
+    background-color: #424242;
+    color: white;
+    font-weight: 600;
+}

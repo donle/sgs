@@ -6,6 +6,7 @@ import { ServerEvent } from './event.server';
 
 export const enum GameEventIdentifiers {
   UserMessageEvent = 100,
+  PlayerStatusEvent,
   NotifyEvent,
   CustomGameDialog,
   PhaseChangeEvent,
@@ -108,6 +109,7 @@ export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.SyncGameCommonRulesEvent,
   GameEventIdentifiers.CustomGameDialog,
   GameEventIdentifiers.NotifyEvent,
+  GameEventIdentifiers.PlayerStatusEvent,
 
   GameEventIdentifiers.DrunkEvent,
   GameEventIdentifiers.ChainLockedEvent,
@@ -168,10 +170,10 @@ export const serverActiveListenerEvents = [
   GameEventIdentifiers.UserMessageEvent,
   GameEventIdentifiers.PlayerEnterEvent,
   GameEventIdentifiers.PlayerLeaveEvent,
+  GameEventIdentifiers.PlayerStatusEvent,
 ];
 
 export const serverResponsiveListenerEvents = [
-  GameEventIdentifiers.UserMessageEvent,
   GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
   GameEventIdentifiers.AskForPeachEvent,
   GameEventIdentifiers.AskForCardResponseEvent,
@@ -230,6 +232,10 @@ export type BaseGameEvent = {
   }[];
 };
 
+export type ClientBaseEvent = {
+  status?: 'online' | 'offline' | 'trusted' | 'player';
+};
+
 export type EventProcessSteps = { from: PlayerId; tos: PlayerId[] }[];
 
 export type EventUtilities = {
@@ -239,7 +245,7 @@ export type EventUtilities = {
 export type EventPicker<I extends GameEventIdentifiers, E extends WorkPlace> = BaseGameEvent &
   (E extends WorkPlace.Client ? ClientEvent[I] : ServerEvent[I]);
 
-export type ClientEventFinder<I extends GameEventIdentifiers> = BaseGameEvent & ClientEvent[I];
+export type ClientEventFinder<I extends GameEventIdentifiers> = BaseGameEvent & ClientBaseEvent & ClientEvent[I];
 export type ServerEventFinder<I extends GameEventIdentifiers> = BaseGameEvent & ServerEvent[I];
 
 export class EventPacker {
@@ -332,17 +338,17 @@ export class EventPacker {
     return !!(event as any).uncancellable;
   };
 
-  static terminate<T extends EventPicker<GameEventIdentifiers, WorkPlace>>(event: T): T {
+  static terminate<T extends GameEventIdentifiers>(event: ServerEventFinder<T>): ServerEventFinder<T> {
     (event as any).terminate = true;
     return event;
   }
 
-  static recall<T extends EventPicker<GameEventIdentifiers, WorkPlace>>(event: T): T {
+  static recall<T extends GameEventIdentifiers>(event: ServerEventFinder<T>): ServerEventFinder<T> {
     (event as any).terminate = false;
     return event;
   }
 
-  static isTerminated(event: EventPicker<GameEventIdentifiers, WorkPlace>) {
+  static isTerminated(event: ServerEventFinder<GameEventIdentifiers>) {
     return !!(event as any).terminate;
   }
   static copyPropertiesTo<T extends GameEventIdentifiers, Y extends GameEventIdentifiers>(

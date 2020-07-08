@@ -28,7 +28,7 @@ export class GameDialog extends React.Component<GameDialogProps> {
   @mobx.observable.ref
   private textMessage: string | undefined;
   @mobx.observable.ref
-  private userMessageDialogStyles: React.CSSProperties = { height: this.textMessageMinHeight };
+  private userMessageDialogStyles: React.CSSProperties = { minHeight: this.textMessageMinHeight };
   @mobx.observable.ref
   private borderStyles: React.CSSProperties = { bottom: this.textMessageMinHeight };
 

@@ -8,10 +8,8 @@ import {
   CardMoveReason,
   ClientEventFinder,
   EventPacker,
-  EventPicker,
   GameEventIdentifiers,
   ServerEventFinder,
-  WorkPlace,
 } from 'core/event/event';
 import {
   CardEffectStage,
@@ -721,7 +719,7 @@ export class GameProcessor {
 
   private iterateEachStage = async <T extends GameEventIdentifiers>(
     identifier: T,
-    event: EventPicker<GameEventIdentifiers, WorkPlace.Server>,
+    event: ServerEventFinder<GameEventIdentifiers>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
     processor?: (stage: GameEventStage) => Promise<void>,
   ) => {
@@ -771,7 +769,7 @@ export class GameProcessor {
 
   private async onHandleDrawCardEvent(
     identifier: GameEventIdentifiers.DrawCardEvent,
-    event: EventPicker<GameEventIdentifiers.DrawCardEvent, WorkPlace.Server>,
+    event: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     const from = this.room.getPlayerById(event.fromId);
@@ -806,7 +804,7 @@ export class GameProcessor {
 
   private async onHandleDamgeEvent(
     identifier: GameEventIdentifiers.DamageEvent,
-    event: EventPicker<GameEventIdentifiers.DamageEvent, WorkPlace.Server>,
+    event: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     const to = this.room.getPlayerById(event.toId);
@@ -1034,7 +1032,7 @@ export class GameProcessor {
 
   private async onHandleSkillUseEvent(
     identifier: GameEventIdentifiers.SkillUseEvent,
-    event: EventPicker<GameEventIdentifiers.SkillUseEvent, WorkPlace.Server>,
+    event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
@@ -1060,7 +1058,7 @@ export class GameProcessor {
   }
   private async onHandleSkillEffectEvent(
     identifier: GameEventIdentifiers.SkillEffectEvent,
-    event: EventPicker<GameEventIdentifiers.SkillEffectEvent, WorkPlace.Server>,
+    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
@@ -1074,7 +1072,7 @@ export class GameProcessor {
 
   private async onHandleAimEvent(
     identifier: GameEventIdentifiers.AimEvent,
-    event: EventPicker<GameEventIdentifiers.AimEvent, WorkPlace.Server>,
+    event: ServerEventFinder<GameEventIdentifiers.AimEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
@@ -1088,7 +1086,7 @@ export class GameProcessor {
 
   private async onHandleCardEffectEvent(
     identifier: GameEventIdentifiers.CardEffectEvent,
-    event: EventPicker<GameEventIdentifiers.CardEffectEvent, WorkPlace.Server>,
+    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     const card = Sanguosha.getCardById(event.cardId);
@@ -1203,7 +1201,7 @@ export class GameProcessor {
 
   private async onHandleCardResponseEvent(
     identifier: GameEventIdentifiers.CardResponseEvent,
-    event: EventPicker<GameEventIdentifiers.CardResponseEvent, WorkPlace.Server>,
+    event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     const from = this.room.getPlayerById(event.fromId);
@@ -1636,10 +1634,7 @@ export class GameProcessor {
   ) {
     const to = this.room.getPlayerById(event.toId);
     if (event.byReaon === 'damage') {
-      if (
-        to.ChainLocked &&
-        EventPacker.getMiddleware<DamageType>(this.DamageTypeTag, event) != DamageType.Normal
-      ) {
+      if (to.ChainLocked && EventPacker.getMiddleware<DamageType>(this.DamageTypeTag, event) != DamageType.Normal) {
         await this.room.chainedOn(to.Id);
         event.beginnerOfTheDamage = EventPacker.getMiddleware<string>(this.BeginnerTag, event) || to.Id;
       }

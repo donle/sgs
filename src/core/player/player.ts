@@ -52,6 +52,7 @@ export abstract class Player implements PlayerInfo {
   private playerSkills: Skill[] = [];
   private gender: CharacterGender;
   private online: boolean;
+  private trusted: boolean;
   private ai: PlayerAI = TrustAI.Instance;
 
   private drunk: number = 0;
@@ -687,7 +688,10 @@ export abstract class Player implements PlayerInfo {
     };
   }
 
-  public offline() {
+  public setOffline() {
+    this.online = false;
+  }
+  public setOnline() {
     this.online = false;
   }
 
@@ -697,5 +701,21 @@ export abstract class Player implements PlayerInfo {
 
   public get AI() {
     return this.ai;
+  }
+
+  public delegateOnTrusted(trusted: boolean) {
+    this.trusted = trusted;
+  }
+
+  public isTrusted() {
+    return this.trusted;
+  }
+
+  public getPlayerStatus() {
+    if (!this.online) {
+      return 'offline';
+    } else if (this.trusted) {
+      return 'trusted';
+    }
   }
 }

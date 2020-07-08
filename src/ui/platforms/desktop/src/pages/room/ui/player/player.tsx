@@ -239,7 +239,16 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   };
 
   render() {
-    const { disabled, translator, inAction, player, playerPhase, imageLoader, incomingMessage } = this.props;
+    const {
+      disabled,
+      translator,
+      inAction,
+      player,
+      playerPhase,
+      imageLoader,
+      incomingMessage,
+      actionTimeLimit,
+    } = this.props;
     return (
       <div
         id={player && player.Id}
@@ -330,7 +339,8 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
           {this.getSkillTags()}
           {this.getOutsideAreaCards()}
         </div>
-        {inAction && <PlayingBar className={styles.playBar} playTime={this.props.actionTimeLimit} />}
+        {player && <span className={styles.playerStatus}>{translator.tr(player.getPlayerStatus() || '')}</span>}
+        {inAction && <PlayingBar className={styles.playBar} playTime={actionTimeLimit} />}
         {this.onTooltipOpened && this.PlayerCharacter && (
           <Tooltip position={['top']}>{this.createTooltipContent()}</Tooltip>
         )}

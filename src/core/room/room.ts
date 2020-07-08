@@ -162,6 +162,26 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract skip(player: PlayerId, phase?: PlayerPhase): void;
   public abstract endPhase(phase: PlayerPhase): void;
 
+  public updatePlayerStatus(status: 'online' | 'offline' | 'trusted' | 'player', toId: PlayerId) {
+    const to = this.getPlayerById(toId);
+    switch (status) {
+      case 'online':
+        to.setOnline();
+        break;
+      case 'offline':
+        to.setOffline();
+        break;
+      case 'trusted':
+        to.delegateOnTrusted(true);
+        break;
+      case 'player':
+        to.delegateOnTrusted(false);
+        break;
+      default:
+        throw Precondition.UnreachableError(status);
+    }
+  }
+
   public addProcessingCards(tag: string, ...cardIds: CardId[]) {
     this.onProcessingCards[tag] = this.onProcessingCards[tag] || [];
 

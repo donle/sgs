@@ -1,13 +1,13 @@
 .playingBar {
     border-radius: 4px;
-    border: 1px solid #8c510e;
+    border: 2px solid #c74f00;
     height: 12px;
     opacity: 0.9;
 }
 
 .innerBar {
     display: block;
-    width: 100%;
+    width: 0;
     background-image: linear-gradient(to left bottom, #e10000, #e41a17, #e72a27, #e93735, #eb4242);
     border-radius: 4px;
     animation-timing-function: linear;
@@ -17,9 +17,9 @@
 
 @keyframes processing {
     from {
-        width: 0;
+        width: 100%;
     }
     to {
-        width: 100%;
+        width: 0;
     }
 }

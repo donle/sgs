@@ -253,7 +253,16 @@ export class Dashboard extends React.Component<DashboardProps> {
             {this.props.translator.tr('finish')}
           </Button>
         </div>
-        <div className={styles.handCards}>{this.getAllClientHandCards()}</div>
+        <div className={styles.handCards}>
+          {this.getAllClientHandCards()}
+          <div
+            className={classNames(styles.trustedCover, {
+              [styles.hide]: !this.props.presenter.ClientPlayer!.isTrusted(),
+            })}
+          >
+            {this.props.translator.tr('in trusted')}
+          </div>
+        </div>
       </div>
     );
   }
@@ -263,10 +272,27 @@ export class Dashboard extends React.Component<DashboardProps> {
     this.forceUpdate();
   };
 
+  private readonly onTrusted = () => {
+    const player = this.props.presenter.ClientPlayer!;
+    if (player.isTrusted()) {
+      this.props.store.room.emitStatus('player', player.Id);
+    } else {
+      this.props.store.room.emitStatus('trusted', player.Id);
+    }
+  };
+
   render() {
     const player = this.props.presenter.ClientPlayer!;
     return (
       <div className={styles.dashboard} id={this.props.store.clientPlayerId}>
+        <Button
+          variant="primary"
+          className={styles.trustedButton}
+          onClick={this.onTrusted}
+          disabled={!this.props.store.room.isPlaying() || this.props.store.room.isGameOver()}
+        >
+          {this.props.translator.tr(player.isTrusted() ? 'cancel trusted' : 'trusted')}
+        </Button>
         {this.getEquipCardsSection()}
 
         {this.props.store.room.CurrentPlayer === player && this.props.store.room.CurrentPlayerPhase !== undefined && (

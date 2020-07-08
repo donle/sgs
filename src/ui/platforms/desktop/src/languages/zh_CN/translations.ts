@@ -1338,6 +1338,10 @@ export const UiDictionary: Word[] = [
   { source: 'status', target: '状态' },
   { source: 'handcards', target: '手牌' },
   { source: 'check', target: '查看' },
+  { source: 'offline', target: '离线' },
+  { source: 'trusted', target: '托管' },
+  { source: 'cancel trusted', target: '取消托管' },
+  { source: 'in trusted', target: '托管中···' },
   {
     source: 'New QSanguosha',
     target: '新神杀',

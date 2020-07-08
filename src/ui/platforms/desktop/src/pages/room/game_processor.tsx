@@ -77,6 +77,7 @@ export class GameClientProcessor {
       const result = this.presenter.ClientPlayer!.AI.onAction(this.store.room, identifier, event) as ClientEventFinder<
         T
       >;
+      result.status = 'trusted';
       this.store.room.broadcast(identifier, result);
       this.presenter.closeDialog();
       this.presenter.closeIncomingConversation();
@@ -101,6 +102,9 @@ export class GameClientProcessor {
     switch (e) {
       case GameEventIdentifiers.UserMessageEvent:
         this.onHandleUserMessageEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.PlayerStatusEvent:
+        this.onHandlePlayerStatusEvent(e as any, content);
         break;
       case GameEventIdentifiers.SetFlagEvent:
         this.onHandleSetFlagEvent(e as any, content);
@@ -267,6 +271,14 @@ export class GameClientProcessor {
       default:
         throw new Error(`Unhandled Game event: ${e}`);
     }
+  }
+
+  private async onHandlePlayerStatusEvent<T extends GameEventIdentifiers.PlayerStatusEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.updatePlayerStatus(content.status, content.toId);
+    this.presenter.broadcastUIUpdate();
   }
 
   private async onHandleUserMessageEvent<T extends GameEventIdentifiers.UserMessageEvent>(
@@ -620,6 +632,7 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     this.presenter.playerLeave(content.playerId);
+    this.presenter.broadcastUIUpdate();
   }
 
   private onHandleChoosingCharacterEvent<T extends GameEventIdentifiers.AskForChoosingCharacterEvent>(

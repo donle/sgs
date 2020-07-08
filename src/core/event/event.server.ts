@@ -362,6 +362,10 @@ export interface ServerEvent extends EventUtilities {
     toIds: PlayerId[];
     notificationTime: number;
   };
+  [GameEventIdentifiers.PlayerStatusEvent]: {
+    status: 'online' | 'offline' | 'trusted' | 'player';
+    toId: PlayerId;
+  };
 }
 
 export type PinDianResultType = {
