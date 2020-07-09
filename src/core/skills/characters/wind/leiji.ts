@@ -28,22 +28,12 @@ export class LeiJi extends TriggerSkill {
     return owner.Id === content.fromId && (card.GeneralName === 'jink' || card.GeneralName === 'lightning');
   }
 
-  isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId) {
-    return owner !== target;
-  }
-
-  targetFilter(room: Room, owner: Player, targets: PlayerId[]) {
-    return targets.length === 1;
-  }
-
   async onTrigger() {
     return true;
   }
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    room.setFlag(skillUseEvent.fromId, this.Name, skillUseEvent.toIds![0]);
     await room.judge(skillUseEvent.fromId, undefined, this.Name);
-    room.removeFlag(skillUseEvent.fromId, this.Name);
     return true;
   }
 }
@@ -51,10 +41,6 @@ export class LeiJi extends TriggerSkill {
 @ShadowSkill
 @CommonSkill({ name: LeiJi.Name, description: LeiJi.Description })
 export class LeiJiShadow extends TriggerSkill {
-  isAutoTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.JudgeEvent>) {
-    return room.getFlag<PlayerId>(event.toId, this.GeneralName) !== undefined;
-  }
-
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.JudgeEvent>, stage?: AllStage) {
     return stage === JudgeEffectStage.AfterJudgeEffect && Sanguosha.getCardById(event.judgeCardId).isBlack();
   }
@@ -64,7 +50,7 @@ export class LeiJiShadow extends TriggerSkill {
   }
 
   isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId) {
-    return room.getFlag<PlayerId>(owner, this.GeneralName) ? false : owner !== target;
+    return owner !== target;
   }
 
   targetFilter(room: Room, owner: Player, targets: PlayerId[]) {
@@ -72,7 +58,7 @@ export class LeiJiShadow extends TriggerSkill {
   }
 
   async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
-    const target = room.getFlag<PlayerId>(skillUseEvent.fromId, this.GeneralName) || skillUseEvent.toIds![0];
+    const target = skillUseEvent.toIds![0];
     skillUseEvent.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} used skill {1} to {2}',
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
@@ -87,7 +73,7 @@ export class LeiJiShadow extends TriggerSkill {
     const judgeEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.JudgeEvent>;
     const judgeCard = Sanguosha.getCardById(judgeEvent.judgeCardId);
     const from = room.getPlayerById(skillUseEvent.fromId);
-    const target = room.getFlag<PlayerId>(skillUseEvent.fromId, this.GeneralName) || skillUseEvent.toIds![0];
+    const target = skillUseEvent.toIds![0];
 
     if (judgeCard.Suit === CardSuit.Club) {
       if (from.Hp < from.MaxHp) {
