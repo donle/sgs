@@ -1196,8 +1196,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       value,
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} {1} {2} {3} marks',
-        value > 0 ? 'obtained' : 'lost',
         TranslationPack.patchPlayerInTranslation(this.getPlayerById(player)),
+        value > 0 ? 'obtained' : 'lost',
         value < 0 ? -value : value,
         name,
       ).extract(),
@@ -1209,6 +1209,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       to: player,
       value,
       name,
+      translationsMessage: TranslationPack.translationJsonPatcher(
+        '{0} {1} {2} {3} marks',
+        TranslationPack.patchPlayerInTranslation(this.getPlayerById(player)),
+        value > 0 ? 'obtained' : 'lost',
+        value < 0 ? -value : value,
+        name,
+      ).extract(),
     });
     return super.addMark(player, name, value);
   }
