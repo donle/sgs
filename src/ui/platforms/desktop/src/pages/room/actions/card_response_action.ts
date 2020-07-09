@@ -79,8 +79,20 @@ export class CardResponseAction extends BaseAction {
             this.equipSkillCardId,
             this.matcher,
           ) &&
-          (!skill.cardFilter(this.store.room, this.player, this.pendingCards) ||
-            skill.cardFilter(this.store.room, this.player, [...this.pendingCards, card.Id]))
+          (!skill.cardFilter(
+            this.store.room,
+            this.player,
+            this.pendingCards,
+            this.selectedTargets,
+            this.selectedCardToPlay,
+          ) ||
+            skill.cardFilter(
+              this.store.room,
+              this.player,
+              [...this.pendingCards, card.Id],
+              this.selectedTargets,
+              this.selectedCardToPlay,
+            ))
         );
       } else {
         return false;

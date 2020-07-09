@@ -49,7 +49,7 @@ export class YingHun extends TriggerSkill {
 
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, fromId);
 
-    const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
+    const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
 
     response.selectedOption = response.selectedOption || 'yinghun:discard';
     if (response.selectedOption === 'yinghun:discard') {
@@ -74,7 +74,7 @@ export class YingHun extends TriggerSkill {
 
       await room.drawCards(x, toIds![0], 'top', fromId, this.Name);
     }
-    
+
     return true;
   }
 }
