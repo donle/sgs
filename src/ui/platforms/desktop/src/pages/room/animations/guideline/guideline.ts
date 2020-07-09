@@ -9,6 +9,11 @@ export class GuideLine extends UiAnimation {
   constructor(private store: RoomStore, private animationTime: number, private remainTime: number) {
     super();
   }
+  private readonly includedEvents: ReadonlyArray<GameEventIdentifiers> = [
+    GameEventIdentifiers.CardUseEvent,
+    GameEventIdentifiers.SkillUseEvent,
+  ];
+
   private readonly rooElement = document.getElementById('root')!;
 
   private calculateAngle(from: Point, to: Point) {
@@ -38,9 +43,12 @@ export class GuideLine extends UiAnimation {
     return steps;
   }
 
-  async animate(event: ServerEventFinder<GameEventIdentifiers>) {
-    const steps = this.createAnimationGuidelineSteps(event);
+  async animate(identifier: GameEventIdentifiers, event: ServerEventFinder<GameEventIdentifiers>) {
+    if (!this.includedEvents.includes(identifier)) {
+      return;
+    }
 
+    const steps = this.createAnimationGuidelineSteps(event);
     for (const step of steps) {
       const lines = this.render(step);
       this.rooElement.append(...lines.map(line => line[0]));

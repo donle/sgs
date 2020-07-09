@@ -34,7 +34,7 @@ export class XunXun extends TriggerSkill {
     };
 
     room.notify(GameEventIdentifiers.AskForPlaceCardsInDileEvent, askForChooseCards, skillUseEvent.fromId);
-    const { top, bottom } = await room.onReceivingAsyncReponseFrom(
+    const { top, bottom } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForPlaceCardsInDileEvent,
       skillUseEvent.fromId,
     );

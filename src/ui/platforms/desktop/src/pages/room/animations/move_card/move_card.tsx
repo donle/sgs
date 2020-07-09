@@ -6,9 +6,9 @@ import { PlayerId } from 'core/player/player_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
 import { RoomStore } from 'pages/room/room.presenter';
-import { ClientCard } from 'pages/room/ui/card/card';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { ClientCard } from 'ui/card/card';
 import { Point } from '../position';
 import { UiAnimation } from '../ui_animation';
 import styles from './move_card.module.css';
@@ -55,7 +55,11 @@ export class MoveCard extends UiAnimation {
     return cardsElement;
   }
 
-  async animate(content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
+  async animate<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
+    if (identifier !== GameEventIdentifiers.MoveCardEvent) {
+      return;
+    }
+    const content = event as unknown as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
     this.from = content.fromId;
     this.to = content.toId;
     this.cards = content.movingCards

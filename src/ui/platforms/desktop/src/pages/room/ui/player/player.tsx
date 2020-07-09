@@ -11,13 +11,14 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter } from 'pages/room/room.presenter';
 import * as React from 'react';
+import { NationalityBadge, PlayerPhaseBadge } from 'ui/badge/badge';
+import { FlatClientCard } from 'ui/card/flat_card';
+import { Hp } from 'ui/hp/hp';
 import { Tooltip } from 'ui/tooltip/tooltip';
-import { NationalityBadge, PlayerPhaseBadge } from '../badge/badge';
-import { FlatClientCard } from '../card/flat_card';
 import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
-import { Hp } from '../hp/hp';
 import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
 import { Mask } from '../mask/mask';
+import { PlayingBar } from '../playing_bar/playing_bar';
 import styles from './player.module.css';
 
 type PlayerCardProps = {
@@ -26,7 +27,12 @@ type PlayerCardProps = {
   translator: ClientTranslationModule;
   presenter: RoomPresenter;
   imageLoader: ImageLoader;
+  inAction: boolean;
+  incomingMessage?: string;
+  onCloseIncomingMessage?(): void;
+  actionTimeLimit?: number;
   disabled?: boolean;
+  delight?: boolean;
   onClick?(selected: boolean): void;
 };
 
@@ -205,7 +211,10 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
             className={classNames(styles.playerImage, {
               [styles.dead]: this.props.player && this.props.player.Dead,
               [styles.disabled]:
-                !(this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead) && this.props.disabled,
+                this.props.delight === false
+                  ? false
+                  : !(this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead) &&
+                    this.props.disabled,
             })}
             alt={image.alt}
             src={image.src}
@@ -225,19 +234,39 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     }
   }
 
+  private readonly onCloseIncomingMessageCallback = () => {
+    this.props.onCloseIncomingMessage && this.props.onCloseIncomingMessage();
+  };
+
   render() {
-    const { disabled, translator, player, playerPhase } = this.props;
+    const {
+      disabled,
+      translator,
+      inAction,
+      player,
+      playerPhase,
+      imageLoader,
+      incomingMessage,
+      actionTimeLimit,
+    } = this.props;
     return (
       <div
         id={player && player.Id}
-        className={classNames(styles.playerCard, {
-          [styles.selected]: this.getSelected() && !disabled,
-          [styles.highlighted]: playerPhase !== undefined,
-        })}
+        className={styles.playerCard}
         onClick={this.onClick}
         onMouseEnter={this.openTooltip}
         onMouseLeave={this.closeTooltip}
       >
+        {incomingMessage && (
+          <Tooltip
+            className={styles.incomingMessage}
+            position={['top']}
+            closeAfter={3}
+            closeCallback={this.onCloseIncomingMessageCallback}
+          >
+            {incomingMessage}
+          </Tooltip>
+        )}
         {player ? (
           <>
             <p
@@ -249,6 +278,12 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
             </p>
             {this.PlayerCharacter ? (
               <>
+                <span
+                  className={classNames(styles.highlightBorder, {
+                    [styles.selected]: this.getSelected() && !disabled,
+                    [styles.highlighted]: playerPhase !== undefined,
+                  })}
+                />
                 {this.PlayerImage !== undefined && <this.PlayerImage />}
                 {this.PlayerRoleCard !== undefined && <this.PlayerRoleCard />}
                 {this.PlayerCharacter && (
@@ -270,7 +305,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                 <span className={styles.handCardsNumberBg}>
                   <img
                     className={styles.handCardsNumberBgImage}
-                    src={this.props.imageLoader.getCardNumberBgImage().src}
+                    src={imageLoader.getCardNumberBgImage().src}
                     alt={''}
                   />
                   <span className={styles.handCardsNumber}>{player.getCardIds(PlayerCardsArea.HandArea).length}</span>
@@ -280,17 +315,13 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
               <img
                 className={classNames(styles.playerImage, styles.playerUnknownImage)}
                 alt={player.Name}
-                src={this.props.imageLoader.getUnknownCharacterImage().src}
+                src={imageLoader.getUnknownCharacterImage().src}
               />
             )}
             {this.getPlayerJudgeCards()}
-            {!player.isFaceUp() && (
-              <img className={styles.status} src={this.props.imageLoader.getTurnedOverCover().src} alt="" />
-            )}
+            {!player.isFaceUp() && <img className={styles.status} src={imageLoader.getTurnedOverCover().src} alt="" />}
             {player.hasDrunk() > 0 && <div className={styles.drunk} />}
-            {player.ChainLocked && (
-              <img className={styles.chain} src={this.props.imageLoader.getChainImage().src} alt="" />
-            )}
+            {player.ChainLocked && <img className={styles.chain} src={imageLoader.getChainImage().src} alt="" />}
 
             <p className={styles.playerSeats}>{translator.tr(`number ${player.Position}`)}</p>
           </>
@@ -298,20 +329,18 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
           <img
             className={classNames(styles.playerImage, styles.playerUnknownImage)}
             alt={translator.tr('waiting')}
-            src={this.props.imageLoader.getEmptySeatImage().src}
+            src={imageLoader.getEmptySeatImage().src}
           />
         )}
         {playerPhase !== undefined && (
-          <PlayerPhaseBadge
-            stage={playerPhase}
-            translator={this.props.translator}
-            className={styles.playerPhaseBadge}
-          />
+          <PlayerPhaseBadge stage={playerPhase} translator={translator} className={styles.playerPhaseBadge} />
         )}
         <div className={styles.playerTags}>
           {this.getSkillTags()}
           {this.getOutsideAreaCards()}
         </div>
+        {player && <span className={styles.playerStatus}>{translator.tr(player.getPlayerStatus() || '')}</span>}
+        {inAction && <PlayingBar className={styles.playBar} playTime={actionTimeLimit} />}
         {this.onTooltipOpened && this.PlayerCharacter && (
           <Tooltip position={['top']}>{this.createTooltipContent()}</Tooltip>
         )}

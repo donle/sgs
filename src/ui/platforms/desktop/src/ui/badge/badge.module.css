@@ -1,18 +1,18 @@
-@value gridLine from '../../../../ui/metrics/metrics.css';
-@value halfGridLine from '../../../../ui/metrics/metrics.css';
+@value gridLine from '../metrics/metrics.css';
+@value halfGridLine from '../metrics/metrics.css';
 
-@value SanguoshaFont from '../../../../ui/metrics/metrics.css';
+@value SanguoshaFont from '../metrics/metrics.css';
 
-@value wuColor from '../../../../ui/metrics/metrics.css';
-@value weiColor from '../../../../ui/metrics/metrics.css';
-@value shuColor from '../../../../ui/metrics/metrics.css';
-@value qunColor from '../../../../ui/metrics/metrics.css';
-@value godColor from '../../../../ui/metrics/metrics.css';
-@value wuDarkColor from '../../../../ui/metrics/metrics.css';
-@value weiDarkColor from '../../../../ui/metrics/metrics.css';
-@value shuDarkColor from '../../../../ui/metrics/metrics.css';
-@value qunDarkColor from '../../../../ui/metrics/metrics.css';
-@value godDarkColor from '../../../../ui/metrics/metrics.css';
+@value wuColor from '../metrics/metrics.css';
+@value weiColor from '../metrics/metrics.css';
+@value shuColor from '../metrics/metrics.css';
+@value qunColor from '../metrics/metrics.css';
+@value godColor from '../metrics/metrics.css';
+@value wuDarkColor from '../metrics/metrics.css';
+@value weiDarkColor from '../metrics/metrics.css';
+@value shuDarkColor from '../metrics/metrics.css';
+@value qunDarkColor from '../metrics/metrics.css';
+@value godDarkColor from '../metrics/metrics.css';
 
 .badge {
     font-family: SanguoshaFont;
@@ -40,7 +40,9 @@
 }
 
 .badgeContext {
-    margin-top: calc(gridLine * 5);
+    align-items: center;
+    padding-top: calc(8px * 5);
+    display: flex;
 }
 
 .playerPhase {

@@ -78,7 +78,7 @@ export class FanJian extends ActiveSkill {
         EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(chooseOptionEvent),
         toId,
       );
-      const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, toId);
+      const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, toId);
       selectedOption = response.selectedOption;
     }
 

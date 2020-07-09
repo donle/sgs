@@ -95,7 +95,9 @@ export class CardResponseAction extends BaseAction {
         this.askForEvent.fromArea.includes(PlayerCardsArea.HandArea)
       ) {
         if (card.Skill instanceof ViewAsSkill) {
-          return new CardMatcher({ name: card.Skill.canViewAs(this.store.room, this.player, this.pendingCards) }).match(new CardMatcher(this.askForEvent.cardMatcher));
+          return new CardMatcher({ name: card.Skill.canViewAs(this.store.room, this.player, this.pendingCards) }).match(
+            new CardMatcher(this.askForEvent.cardMatcher),
+          );
         }
       }
     }
@@ -125,6 +127,7 @@ export class CardResponseAction extends BaseAction {
 
   async onPlay(translator: ClientTranslationModule) {
     return new Promise<void>(resolve => {
+      this.presenter.highlightCards();
       this.presenter.createIncomingConversation({
         conversation: this.askForEvent.conversation,
         translator,

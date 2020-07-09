@@ -1,21 +1,50 @@
+@value XinWeiFont from '../../../../../ui/metrics/metrics.css';
+
 .gameOverBoard {
     position: absolute;
     align-self: center;
-    background: lightgrey;
-    border: 1px solid grey;
+    background: rgba(0, 0, 0, 0.7);
+    color: #ddd;
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.7);
     padding: 16px;
     z-index: 999;
+    font-family: XinWeiFont;
 }
 
 .winners,
 .losers {
     margin: 24px 0;
+    font-size: 16px;
 }
 
 .title {
-    font-size: 20px;
     margin-bottom: 16px;
-    display: block;
+    display: flex;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.player span,
+.title span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.username {
+    width: 35%;
+}
+.characterName {
+    width: 20%;
+}
+.role {
+    width: 15%;
+}
+.status {
+    width: 15%;
+}
+.handcards {
+    width: 15%;
 }
 
 .actionButtons {
@@ -37,3 +66,10 @@
     justify-content: space-around;
     padding-bottom: 8px;
 }
+
+.tooltip {
+    display: flex;
+    width: 352px;
+    flex-wrap: wrap;
+}
+

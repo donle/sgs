@@ -1,23 +1,28 @@
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { AllStage, HpChangeStage } from 'core/game/stage_processor';
+import { AllStage, DamageEffectStage, HpChangeStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
-import { CommonSkill } from 'core/skills/skill_wrappers';
+import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 
 @CommonSkill({ name: 'kuanggu', description: 'kuanggu_description' })
-export class Kuanggu extends TriggerSkill {
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.HpChangeEvent>, stage: AllStage) {
-    return stage === HpChangeStage.AtferHpChange && event.byReaon === 'damage';
+export class KuangGu extends TriggerSkill {
+  public static readonly KuangGuTag = 'kuangGuTag';
+
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
+    return stage === DamageEffectStage.AfterDamagedEffect;
   }
 
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.HpChangeEvent>) {
-    return owner.Id === content.fromId && room.distanceBetween(owner, room.getPlayerById(content.toId)) <= 1;
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
+    return (
+      owner.Id === content.fromId &&
+      EventPacker.getMiddleware<boolean>(KuangGu.KuangGuTag, content) === true
+    );
   }
 
-  triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.HpChangeEvent>) {
-    return event.amount;
+  triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
+    return event.damage;
   }
 
   async onTrigger() {
@@ -41,7 +46,7 @@ export class Kuanggu extends TriggerSkill {
 
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, weiyanId);
 
-    const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, weiyanId);
+    const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, weiyanId);
 
     response.selectedOption = response.selectedOption || 'kuanggu:draw';
     if (response.selectedOption === 'kuanggu:draw') {
@@ -57,11 +62,48 @@ export class Kuanggu extends TriggerSkill {
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
-    const { fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.HpChangeEvent>;
+    const { fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
 
     if (fromId !== undefined) {
       await this.doKuanggu(room, fromId);
     }
+    return true;
+  }
+}
+
+@ShadowSkill
+@CommonSkill({ name: KuangGu.Name, description: KuangGu.Description })
+export class KuangGuShadow extends TriggerSkill {
+  public isAutoTrigger() {
+    return true;
+  }
+
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.HpChangeEvent>, stage?: AllStage) {
+    return event.byReaon === 'damage' && stage === HpChangeStage.BeforeHpChange;
+  }
+
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.HpChangeEvent>) {
+    return (
+      owner.Id === content.fromId &&
+      room.distanceBetween(owner, room.getPlayerById(content.toId)) <= 1
+    );
+  }
+
+  async onTrigger() {
+    return true;
+  }
+
+  async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    const { triggeredOnEvent } = skillUseEvent;
+
+    triggeredOnEvent && EventPacker.addMiddleware(
+      {
+        tag: KuangGu.KuangGuTag,
+        data: true,
+      },
+      triggeredOnEvent,
+    );
+
     return true;
   }
 }

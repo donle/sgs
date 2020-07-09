@@ -5,9 +5,9 @@ import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter } from 'pages/room/room.presenter';
-import { ClientCard } from 'pages/room/ui/card/card';
-import { CardSlot } from 'pages/room/ui/card/card_slot';
 import * as React from 'react';
+import { ClientCard } from 'ui/card/card';
+import { CardSlot } from 'ui/card/card_slot';
 import { BaseDialog } from '../base_dialog';
 import styles from './guanxing_dialog.module.css';
 

@@ -1,0 +1,16 @@
+@value XinWeiFont from '../metrics/metrics.css';
+@value gridLine from '../metrics/metrics.css';
+
+.input {
+    border-radius: calc(gridLine / 2);
+    min-height: calc(gridLine * 4);
+    padding: calc(gridLine / 2);
+    font-size: 14px;
+    color: #fbd000;
+    outline: none;
+}
+
+.input::placeholder {
+    color: lightgray;
+    font-size: 14px;
+}

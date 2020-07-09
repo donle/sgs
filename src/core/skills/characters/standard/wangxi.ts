@@ -1,6 +1,7 @@
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
+import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
@@ -12,9 +13,18 @@ export class WangXi extends TriggerSkill {
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
     if (room.CurrentProcessingStage === DamageEffectStage.AfterDamagedEffect) {
-      return content.toId === owner.Id && content.fromId !== undefined && !room.getPlayerById(content.fromId).Dead;
+      return (
+        content.fromId !== undefined &&
+        content.fromId !== owner.Id &&
+        content.toId === owner.Id &&
+        !room.getPlayerById(content.fromId).Dead
+      );
     } else {
-      return content.fromId === owner.Id && !room.getPlayerById(content.toId).Dead;
+      return (
+        content.fromId === owner.Id &&
+        content.toId !== owner.Id &&
+        !room.getPlayerById(content.toId).Dead
+      );
     }
   }
 
@@ -29,14 +39,13 @@ export class WangXi extends TriggerSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
     const { fromId, toId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-    await room.drawCards(1, skillUseEvent.fromId, undefined, skillUseEvent.fromId, this.Name);
-    await room.drawCards(
-      1,
-      skillUseEvent.fromId === fromId ? toId : fromId,
-      undefined,
-      skillUseEvent.fromId,
-      this.Name,
-    );
+    
+    const players: PlayerId[] = [fromId!, toId];
+    room.sortPlayersByPosition(players);
+    for (const playerId of players) {
+      await room.drawCards(1, playerId, 'top', skillUseEvent.fromId, this.Name);
+    }
+
     return true;
   }
 }

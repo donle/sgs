@@ -61,7 +61,7 @@ export class QiLinGongSkill extends TriggerSkill {
       event.fromId!,
     );
 
-    const response = await room.onReceivingAsyncReponseFrom(
+    const response = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingCardEvent,
       event.fromId!,
     );

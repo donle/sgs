@@ -9,11 +9,11 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
+import { NationalityBadge } from 'ui/badge/badge';
 import { SkillButton } from 'ui/button/skill_button';
+import { Hp } from 'ui/hp/hp';
 import { Tooltip } from 'ui/tooltip/tooltip';
-import { NationalityBadge } from '../badge/badge';
 import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
-import { Hp } from '../hp/hp';
 import { Mask } from '../mask/mask';
 import styles from './player_avatar.module.css';
 
@@ -23,7 +23,10 @@ type PlayerAvatarProps = {
   translator: ClientTranslationModule;
   updateFlag: boolean;
   imageLoader: ImageLoader;
+  incomingMessage?: string;
+  onCloseIncomingMessage?(): void;
   disabled?: boolean;
+  delight?: boolean;
   onClick?(player: Player, selected: boolean): void;
   onClickSkill?(skill: Skill, selected: boolean): void;
   isSkillDisabled(skill: Skill): boolean;
@@ -233,7 +236,11 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           <img
             className={classNames(styles.playerImage, {
               [styles.dead]: this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead,
-              [styles.disabled]: this.props.disabled,
+              [styles.disabled]:
+                this.props.delight === false
+                  ? false
+                  : !(this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead) &&
+                    this.props.disabled,
             })}
             alt={image.alt}
             src={image.src}
@@ -253,19 +260,36 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     }
   }
 
+  private readonly onCloseIncomingMessageCallback = () => {
+    this.props.onCloseIncomingMessage && this.props.onCloseIncomingMessage();
+  };
+
   render() {
     const clientPlayer = this.props.presenter.ClientPlayer;
     const character = clientPlayer?.CharacterId !== undefined ? clientPlayer?.Character : undefined;
     return (
       <div
-        className={classNames(styles.playerCard, {
-          [styles.selected]: this.getSelected() && !this.props.disabled,
-        })}
+        className={classNames(styles.playerCard)}
         onClick={this.onClick}
         onMouseEnter={this.openTooltip}
         onMouseLeave={this.closeTooltip}
       >
+        {this.props.incomingMessage && (
+          <Tooltip
+            className={styles.incomingMessage}
+            position={['top']}
+            closeAfter={3}
+            closeCallback={this.onCloseIncomingMessageCallback}
+          >
+            {this.props.incomingMessage}
+          </Tooltip>
+        )}
         <span className={styles.playerName}>{clientPlayer?.Name}</span>
+        <span
+          className={classNames(styles.highlightBorder, {
+            [styles.selected]: this.getSelected() && !this.props.disabled,
+          })}
+        />
         {this.PlayerImage !== undefined && <this.PlayerImage />}
         {character && (
           <NationalityBadge nationality={character.Nationality} className={styles.playCharacterName}>

@@ -52,6 +52,7 @@ export abstract class Player implements PlayerInfo {
   private playerSkills: Skill[] = [];
   private gender: CharacterGender;
   private online: boolean;
+  private trusted: boolean;
   private ai: PlayerAI = TrustAI.Instance;
 
   private drunk: number = 0;
@@ -314,6 +315,10 @@ export abstract class Player implements PlayerInfo {
     return equipCard.Id;
   }
 
+  public isInjured() {
+    return this.Hp < this.MaxHp;
+  }
+
   public getDrunk() {
     this.drunk++;
   }
@@ -370,7 +375,9 @@ export abstract class Player implements PlayerInfo {
       }
 
       const card = Sanguosha.getCardById(cardMatcherOrId);
-      const skill = this.getSkills<ViewAsSkill>('viewAs').find(skill => skill.canViewAs(room, this).includes(card.GeneralName));
+      const skill = this.getSkills<ViewAsSkill>('viewAs').find(skill =>
+        skill.canViewAs(room, this).includes(card.GeneralName),
+      );
 
       return !!skill;
     }
@@ -681,7 +688,10 @@ export abstract class Player implements PlayerInfo {
     };
   }
 
-  public offline() {
+  public setOffline() {
+    this.online = false;
+  }
+  public setOnline() {
     this.online = false;
   }
 
@@ -691,5 +701,21 @@ export abstract class Player implements PlayerInfo {
 
   public get AI() {
     return this.ai;
+  }
+
+  public delegateOnTrusted(trusted: boolean) {
+    this.trusted = trusted;
+  }
+
+  public isTrusted() {
+    return this.trusted;
+  }
+
+  public getPlayerStatus() {
+    if (!this.online) {
+      return 'offline';
+    } else if (this.trusted) {
+      return 'trusted';
+    }
   }
 }

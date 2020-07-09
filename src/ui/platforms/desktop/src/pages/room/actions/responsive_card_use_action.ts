@@ -72,6 +72,14 @@ export class ResponsiveUseCardAction<
     if (this.selectedSkillToPlay !== undefined) {
       const skill = this.selectedSkillToPlay;
       if (skill instanceof ActiveSkill) {
+        const selectedCardsRange = skill.numberOfCards();
+        if (
+          selectedCardsRange !== undefined &&
+          this.selectedCards.length < selectedCardsRange[selectedCardsRange.length - 1]
+        ) {
+          return true;
+        }
+
         return (
           skill.isAvailableCard(
             this.playerId,
@@ -134,6 +142,8 @@ export class ResponsiveUseCardAction<
 
   onPlay(translator: ClientTranslationModule) {
     return new Promise<void>(resolve => {
+      this.delightItems();
+      this.presenter.highlightCards();
       this.presenter.createIncomingConversation({
         conversation: this.askForEvent.conversation,
         translator,

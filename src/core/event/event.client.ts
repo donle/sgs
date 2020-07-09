@@ -37,7 +37,7 @@ export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.ReforgeEvent]: {
     fromId: PlayerId;
     cardId: CardId;
-  }
+  };
   [GameEventIdentifiers.LoseHpEvent]: {
     lostHp: number;
     fromId: PlayerId;
@@ -67,6 +67,7 @@ export interface ClientEvent extends EventUtilities {
 
   [GameEventIdentifiers.UserMessageEvent]: {
     playerId: PlayerId;
+    message: string;
   };
 
   [GameEventIdentifiers.GameStartEvent]: {
@@ -156,6 +157,10 @@ export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.AskForCardEvent]: {
     selectedCards: CardId[];
     fromId: PlayerId;
+  };
+  [GameEventIdentifiers.PlayerStatusEvent]: {
+    status: 'online' | 'offline' | 'trusted' | 'player';
+    toId: PlayerId;
   };
   [GameEventIdentifiers.AskForPlayCardsOrSkillsEvent]: PlayCardOrSkillEvent;
   [GameEventIdentifiers.PlayerEnterRefusedEvent]: never;

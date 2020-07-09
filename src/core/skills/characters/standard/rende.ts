@@ -84,7 +84,7 @@ export class Rende extends ActiveSkill {
       };
 
       room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, chooseEvent, skillUseEvent.fromId);
-      const response = await room.onReceivingAsyncReponseFrom(
+      const response = await room.onReceivingAsyncResponseFrom(
         GameEventIdentifiers.AskForChoosingOptionsEvent,
         skillUseEvent.fromId,
       );
@@ -115,7 +115,7 @@ export class Rende extends ActiveSkill {
 
         room.notify(GameEventIdentifiers.AskForChoosingPlayerEvent, choosePlayerEvent, from.Id);
 
-        const choosePlayerResponse = await room.onReceivingAsyncReponseFrom(
+        const choosePlayerResponse = await room.onReceivingAsyncResponseFrom(
           GameEventIdentifiers.AskForChoosingPlayerEvent,
           from.Id,
         );

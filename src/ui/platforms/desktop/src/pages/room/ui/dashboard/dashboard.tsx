@@ -11,10 +11,10 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
-import { PlayerPhaseBadge } from '../badge/badge';
-import { ClientCard } from '../card/card';
-import { CardNumberItem } from '../card/card_number';
-import { CardSuitItem } from '../card/card_suit';
+import { PlayerPhaseBadge } from 'ui/badge/badge';
+import { ClientCard } from 'ui/card/card';
+import { CardNumberItem } from 'ui/card/card_number';
+import { CardSuitItem } from 'ui/card/card_suit';
 import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
 import { PlayerAvatar } from '../player_avatar/player_avatar';
 import { PlayingBar } from '../playing_bar/playing_bar';
@@ -187,6 +187,7 @@ export class Dashboard extends React.Component<DashboardProps> {
           offsetLeft={leftOffset}
           translator={this.props.translator}
           card={card}
+          highlight={this.props.store.highlightedCards}
           onSelected={this.onClick(card)}
           className={styles.handCard}
           disabled={!this.props.cardEnableMatcher || !this.props.cardEnableMatcher(card)}
@@ -214,7 +215,9 @@ export class Dashboard extends React.Component<DashboardProps> {
   getPlayerHandBoard() {
     return (
       <div className={styles.handBoard} ref={this.handBoardRef}>
-        {this.props.store.inAction && <PlayingBar className={styles.playBar} />}
+        {this.props.store.inAction && (
+          <PlayingBar className={styles.playBar} playTime={this.props.store.notificationTime} />
+        )}
         {this.getPlayerJudgeCards()}
         <div className={styles.userActionsButtons}>
           {!this.props.store.canReforge && (
@@ -250,15 +253,46 @@ export class Dashboard extends React.Component<DashboardProps> {
             {this.props.translator.tr('finish')}
           </Button>
         </div>
-        <div className={styles.handCards}>{this.getAllClientHandCards()}</div>
+        <div className={styles.handCards}>
+          {this.getAllClientHandCards()}
+          <div
+            className={classNames(styles.trustedCover, {
+              [styles.hide]: !this.props.presenter.ClientPlayer!.isTrusted(),
+            })}
+          >
+            {this.props.translator.tr('in trusted')}
+          </div>
+        </div>
       </div>
     );
   }
+
+  private readonly onCloseIncomingMessage = (player: Player) => () => {
+    this.props.presenter.onIncomingMessage(player.Id);
+    this.forceUpdate();
+  };
+
+  private readonly onTrusted = () => {
+    const player = this.props.presenter.ClientPlayer!;
+    if (player.isTrusted()) {
+      this.props.store.room.emitStatus('player', player.Id);
+    } else {
+      this.props.store.room.emitStatus('trusted', player.Id);
+    }
+  };
 
   render() {
     const player = this.props.presenter.ClientPlayer!;
     return (
       <div className={styles.dashboard} id={this.props.store.clientPlayerId}>
+        <Button
+          variant="primary"
+          className={styles.trustedButton}
+          onClick={this.onTrusted}
+          disabled={!this.props.store.room.isPlaying() || this.props.store.room.isGameOver()}
+        >
+          {this.props.translator.tr(player.isTrusted() ? 'cancel trusted' : 'trusted')}
+        </Button>
         {this.getEquipCardsSection()}
 
         {this.props.store.room.CurrentPlayer === player && this.props.store.room.CurrentPlayerPhase !== undefined && (
@@ -272,6 +306,7 @@ export class Dashboard extends React.Component<DashboardProps> {
         <PlayerAvatar
           imageLoader={this.props.imageLoader}
           updateFlag={this.props.store.updateUIFlag}
+          delight={this.props.store.delightedPlayers !== undefined ? this.props.store.delightedPlayers : undefined}
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           onClick={this.props.onClickPlayer}
           store={this.props.store}
@@ -279,6 +314,8 @@ export class Dashboard extends React.Component<DashboardProps> {
           translator={this.props.translator}
           onClickSkill={this.props.onClickSkill}
           isSkillDisabled={this.props.isSkillDisabled}
+          incomingMessage={this.props.store.incomingUserMessages[player.Id]}
+          onCloseIncomingMessage={this.onCloseIncomingMessage(player)}
         />
       </div>
     );

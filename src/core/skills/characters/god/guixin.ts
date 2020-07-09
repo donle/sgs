@@ -52,7 +52,7 @@ export class GuiXin extends TriggerSkill {
         caocao,
       );
 
-      const { selectedCard, selectedCardIndex, fromArea } = await room.onReceivingAsyncReponseFrom(
+      const { selectedCard, selectedCardIndex, fromArea } = await room.onReceivingAsyncResponseFrom(
         GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
         caocao,
       );

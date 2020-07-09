@@ -50,7 +50,7 @@ export class JiuYuan extends TriggerSkill {
       ).extract(),
     };
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForInvokeSkill, aimEvent.fromId);
-    const { selectedOption } = await room.onReceivingAsyncReponseFrom(
+    const { selectedOption } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingOptionsEvent,
       aimEvent.fromId,
     );

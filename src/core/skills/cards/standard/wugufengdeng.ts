@@ -74,7 +74,7 @@ export class WuGuFengDengSkill extends ActiveSkill {
     };
 
     room.notify(GameEventIdentifiers.AskForContinuouslyChoosingCardEvent, wugufengdengEvent, toId);
-    const response = await room.onReceivingAsyncReponseFrom(
+    const response = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForContinuouslyChoosingCardEvent,
       toId,
     );

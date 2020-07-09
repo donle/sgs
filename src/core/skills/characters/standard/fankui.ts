@@ -47,13 +47,14 @@ export class FanKui extends TriggerSkill {
         skillUseEvent.fromId,
       );
 
-      const response = await room.onReceivingAsyncReponseFrom(
+      const response = await room.onReceivingAsyncResponseFrom(
         GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
         skillUseEvent.fromId,
       );
 
       if (response.selectedCard === undefined) {
-        response.selectedCard = damageFrom.getCardIds(PlayerCardsArea.HandArea)[response.selectedCardIndex!];
+        const cardIds = damageFrom.getCardIds(PlayerCardsArea.HandArea);
+        response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
       }
 
       await room.moveCards({

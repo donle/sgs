@@ -72,7 +72,7 @@ export class FireAttackSkill extends ActiveSkill {
     });
 
     room.notify(GameEventIdentifiers.AskForCardDisplayEvent, askForDisplayCardEvent, toId);
-    const { selectedCards } = await room.onReceivingAsyncReponseFrom(
+    const { selectedCards } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForCardDisplayEvent,
       toId,
     );

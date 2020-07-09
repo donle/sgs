@@ -2,7 +2,7 @@
 @value halfGridLine from '../../../../ui/metrics/metrics.css';
 @value SanguoshaFont from '../../../../ui/metrics/metrics.css';
 
-@value shuColor from '../../../../ui/metrics/metrics.css';
+@value wuColor from '../../../../ui/metrics/metrics.css';
 
 .playerCard {
     position: relative;
@@ -10,7 +10,23 @@
     width: 170px;
     display: flex;
     justify-content: space-between;
+}
+
+.highlightBorder {
+    height: 216px;
+    width: 100%;
+    left: 0;
+    z-index: -2;
     transition: box-shadow 0.15s;
+    position: absolute;
+    bottom: 0;
+    border-radius: calc(gridLine * 1.5);
+}
+.selected {
+    box-shadow: 0px 0px 10px 5px red;
+}
+.highlighted:not(.selected) {
+    box-shadow: 0px 0px 10px 5px wuColor;
 }
 
 .dead {
@@ -90,14 +106,8 @@
     flex: auto;
     text-align: center;
 }
-.disabled {
+.disabled:not(.dead) {
     filter: brightness(0.5);
-}
-.selected {
-    box-shadow: 0px 0px 5px 2px red;
-}
-.highlighted:not(.selected) {
-    box-shadow: 0px 0px 5px 2px shuColor;
 }
 .playerName {
     position: absolute;
@@ -242,4 +252,23 @@
     background-color: #cc1b0d;
     opacity: 0.3;
     z-index: -1;
+}
+
+.playBar {
+    position: absolute;
+    bottom: calc(8px * -2.5);
+    width: 100%;
+}
+
+.incomingMessage {
+    width: 100%;
+}
+
+.playerStatus {
+    position: absolute;
+    right: 0;
+    top: calc(gridLine * 8);
+    background-color: #424242;
+    color: white;
+    font-weight: 600;
 }

@@ -1,5 +1,6 @@
 import { Card } from 'core/cards/card';
-import type { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import type { ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers } from 'core/event/event';
 import type { GameInfo } from 'core/game/game_props';
 import { RecordAnalytics } from 'core/game/record_analytics';
 import { ClientSocket } from 'core/network/socket.client';
@@ -41,6 +42,8 @@ export class RoomStore {
 
   @mobx.observable.shallow
   gameLog: (string | JSX.Element)[] = [];
+  @mobx.observable.shallow
+  messageLog: (string | JSX.Element)[] = [];
 
   @mobx.observable.shallow
   displayedCards: Card[] = [];
@@ -78,11 +81,26 @@ export class RoomStore {
 
   @mobx.observable.ref
   inAction: boolean;
+  @mobx.observable.shallow
+  notifiedPlayers: PlayerId[] = [];
 
   @mobx.observable.ref
   numberOfDrawStack: number;
   @mobx.observable.ref
   currentRound: number = -1;
+
+  @mobx.observable.ref
+  notificationTime: number = 60;
+
+  @mobx.observable.ref
+  delightedPlayers: boolean | undefined = false;
+  @mobx.observable.ref
+  highlightedCards: boolean | undefined = true;
+
+  @mobx.observable.ref
+  incomingUserMessages: {
+    [K in PlayerId]: string;
+  } = {};
 
   @mobx.observable.ref
   clientPlayerCardActionsMatcher: (card: Card) => boolean;
@@ -167,7 +185,7 @@ export class RoomPresenter {
   playerLeave(playerId: PlayerId) {
     this.tryToThrowUninitializedError();
     if (this.store.room.isPlaying()) {
-      this.store.room.getPlayerById(playerId).offline();
+      this.store.room.getPlayerById(playerId).setOffline();
     } else {
       this.store.room.removePlayer(playerId);
       this.broadcastUIUpdate();
@@ -188,6 +206,10 @@ export class RoomPresenter {
   @mobx.action
   addGameLog(log: string | JSX.Element) {
     this.store.gameLog.push(log);
+  }
+  @mobx.action
+  addUserMessage(text: string | JSX.Element) {
+    this.store.messageLog.push(text);
   }
 
   @mobx.action
@@ -348,6 +370,16 @@ export class RoomPresenter {
   }
 
   @mobx.action
+  notify(toIds: PlayerId[], notificationTime: number) {
+    this.store.notifiedPlayers.push(...toIds);
+    this.store.notificationTime = notificationTime;
+  }
+  @mobx.action
+  clearNotifiers() {
+    this.store.notifiedPlayers.splice(0, this.store.notifiedPlayers.length);
+  }
+
+  @mobx.action
   updateNumberOfDrawStack(numberOfDrawStack: number) {
     if (numberOfDrawStack !== undefined) {
       this.store.numberOfDrawStack = numberOfDrawStack;
@@ -358,6 +390,24 @@ export class RoomPresenter {
   updateGameRound(round: number) {
     if (round !== undefined) {
       this.store.currentRound = round;
+    }
+  }
+
+  @mobx.action
+  delightPlayers(delight?: boolean) {
+    this.store.delightedPlayers = delight;
+  }
+  @mobx.action
+  highlightCards(highlight?: boolean) {
+    this.store.highlightedCards = highlight;
+  }
+
+  @mobx.action
+  onIncomingMessage(player: PlayerId, message?: string) {
+    if (message === undefined) {
+      delete this.store.incomingUserMessages[player];
+    } else {
+      this.store.incomingUserMessages[player] = message;
     }
   }
 }

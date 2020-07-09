@@ -7,13 +7,13 @@ import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { match } from 'react-router-dom';
 import { PagePropsWithHostConfig } from 'types/page_props';
+import { ClientCard } from 'ui/card/card';
 import { GameClientProcessor } from './game_processor';
 import { installService, RoomBaseService } from './install_service';
 import styles from './room.module.css';
 import { RoomPresenter, RoomStore } from './room.presenter';
 import { Background } from './ui/background/background';
 import { Banner } from './ui/banner/banner';
-import { ClientCard } from './ui/card/card';
 import { Dashboard } from './ui/dashboard/dashboard';
 import { GameBoard } from './ui/gameboard/gameboard';
 import { GameDialog } from './ui/game_dialog/game_dialog';
@@ -98,12 +98,8 @@ export class RoomPage extends React.Component<
   }
 
   private animation<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
-    this.baseService.Animation.GuideLineAnimation.animate(event);
-    if (identifier === GameEventIdentifiers.MoveCardEvent) {
-      this.baseService.Animation.MoveCardAnimation.animate(
-        (event as unknown) as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>,
-      );
-    }
+    this.baseService.Animation.GuideLineAnimation.animate(identifier, event);
+    this.baseService.Animation.MoveCardAnimation.animate(identifier, event);
   }
 
   private showMessageFromEvent(event: ServerEventFinder<GameEventIdentifiers>) {
@@ -184,7 +180,11 @@ export class RoomPage extends React.Component<
               />
               <div className={styles.sideBoard}>
                 <GameBoard store={this.store} translator={this.props.translator} />
-                <GameDialog store={this.store} presenter={this.presenter} translator={this.props.translator} />
+                <GameDialog
+                  store={this.store}
+                  presenter={this.presenter}
+                  translator={this.props.translator}
+                />
               </div>
             </div>
             <Dashboard

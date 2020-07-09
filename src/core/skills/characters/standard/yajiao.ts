@@ -46,12 +46,12 @@ export class YaJiao extends TriggerSkill {
     const sameType = lostCard.BaseType === obtainedCard.BaseType;
 
     const from = room.getPlayerById(fromId);
-    const targets = room.AlivePlayers
-      .filter(
-        player => player.getAttackDistance(room) >= room.distanceBetween(player, from) &&
+    const targets = room.AlivePlayers.filter(
+      player =>
+        player.getAttackDistance(room) >= room.distanceBetween(player, from) &&
         player !== from &&
-        player.getCardIds().length > 0
-      ).map(p => p.Id);
+        player.getCardIds().length > 0,
+    ).map(p => p.Id);
 
     if (!sameType && targets.length < 1) {
       room.bury(...card);
@@ -59,9 +59,7 @@ export class YaJiao extends TriggerSkill {
     }
 
     const choosePlayerEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
-      players: sameType
-        ? room.AlivePlayers.map(p => p.Id)
-        : targets,
+      players: sameType ? room.AlivePlayers.map(p => p.Id) : targets,
       requiredAmount: 1,
       conversation: sameType
         ? TranslationPack.translationJsonPatcher(
@@ -69,10 +67,7 @@ export class YaJiao extends TriggerSkill {
             this.Name,
             TranslationPack.patchCardInTranslation(card[0]),
           ).extract()
-        : TranslationPack.translationJsonPatcher(
-            '{0}: please choose a player to drop',
-            this.Name,
-          ).extract(),
+        : TranslationPack.translationJsonPatcher('{0}: please choose a player to drop', this.Name).extract(),
       toId: fromId,
       triggeredBySkills: [this.Name],
     };
@@ -83,7 +78,7 @@ export class YaJiao extends TriggerSkill {
       fromId,
     );
 
-    const { selectedPlayers } = await room.onReceivingAsyncReponseFrom(
+    const { selectedPlayers } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingPlayerEvent,
       fromId,
     );
@@ -103,34 +98,35 @@ export class YaJiao extends TriggerSkill {
         if (to.getCardIds().length === 0) {
           return false;
         }
-    
+
         const options: CardChoosingOptions = {
           [PlayerCardsArea.JudgeArea]: to.getCardIds(PlayerCardsArea.JudgeArea),
           [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),
           [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea).length,
         };
-    
+
         const chooseCardEvent = {
           fromId,
           toId: to.Id,
           options,
         };
-    
+
         room.notify(
           GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
           EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(chooseCardEvent),
           fromId,
         );
-    
-        const response = await room.onReceivingAsyncReponseFrom(
+
+        const response = await room.onReceivingAsyncResponseFrom(
           GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
           fromId,
         );
-    
+
         if (response.selectedCard === undefined) {
-          response.selectedCard = to.getCardIds(PlayerCardsArea.HandArea)[response.selectedCardIndex!];
+          const cardIds = to.getCardIds(PlayerCardsArea.HandArea);
+          response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
         }
-    
+
         await room.dropCards(
           CardMoveReason.PassiveDrop,
           [response.selectedCard],

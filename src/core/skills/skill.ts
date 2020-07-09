@@ -1,19 +1,12 @@
 import { Card, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import {
-  ClientEventFinder,
-  EventPicker,
-  EventProcessSteps,
-  GameEventIdentifiers,
-  ServerEventFinder,
-  WorkPlace,
-} from 'core/event/event';
+import { ClientEventFinder, EventProcessSteps, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PlayerPhase, StagePriority } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { TranslationPack } from 'core/translations/translation_json_tool';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 export * from './skill_wrappers';
 export * from './skill_hooks';
 
@@ -35,6 +28,13 @@ export abstract class Skill {
   private skillName: string;
 
   public abstract isRefreshAt(stage: PlayerPhase): boolean;
+
+  public async beforeUse(
+    room: Room,
+    event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent>,
+  ): Promise<boolean> {
+    return true;
+  }
 
   public abstract async onUse(
     room: Room,
@@ -151,12 +151,16 @@ export abstract class ResponsiveSkill extends Skill {
 }
 
 export abstract class TriggerSkill extends Skill {
-  public abstract isTriggerable(event: EventPicker<GameEventIdentifiers, WorkPlace>, stage?: AllStage): boolean;
+  public abstract isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean;
   public isAutoTrigger(room: Room, event?: ServerEventFinder<GameEventIdentifiers>): boolean {
     return false;
   }
 
-  public get SkillLog() {
+  public isUncancellable(room: Room, event?: ServerEventFinder<GameEventIdentifiers>): boolean {
+    return false;
+  }
+
+  public getSkillLog(room: Room, event: ServerEventFinder<GameEventIdentifiers>): PatchedTranslationObject | string {
     return TranslationPack.translationJsonPatcher('do you want to trigger skill {0} ?', this.Name).extract();
   }
 
@@ -217,6 +221,10 @@ export abstract class TriggerSkill extends Skill {
     }
   }
 
+  public numberOfCards(): number[] {
+    return [];
+  }
+
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return cards.length === 0;
   }
@@ -250,6 +258,10 @@ export abstract class ActiveSkill extends Skill {
     } else {
       return owner.getCardAdditionalUsableNumberOfTargets(room, cardId);
     }
+  }
+
+  public numberOfCards(): number[] {
+    return [];
   }
 
   public targetFilter(room: Room, owner: Player, targets: PlayerId[], cardId?: CardId): boolean {

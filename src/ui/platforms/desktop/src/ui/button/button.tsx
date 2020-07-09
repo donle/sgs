@@ -12,6 +12,8 @@ import secondaryStaticDown from './images/secondary_static_down.png';
 import secondaryStaticHover from './images/secondary_static_hover.png';
 
 export type OptionButtonProps = {
+  onMouseEnter?(): void;
+  onMouseLeave?(): void;
   onClick?(): void;
   disabled?: boolean;
   className?: string;
@@ -20,7 +22,7 @@ export type OptionButtonProps = {
 };
 
 export const Button = (props: OptionButtonProps) => {
-  const { onClick, disabled, className, children, variant } = props;
+  const { onClick, disabled, className, children, variant, onMouseEnter: mouseEnter, onMouseLeave: mouseLeave } = props;
   const onClickButton = () => {
     if (!disabled && onClick) {
       onClick();
@@ -71,14 +73,19 @@ export const Button = (props: OptionButtonProps) => {
   const [imageUrl, setImageUrl] = React.useState(getDefaultImage());
 
   const onMouseEnter = () => {
+    if (!disabled) {
+      mouseEnter && mouseEnter();
+    }
     if (disabled || !imageUrl) {
       return;
     }
-
     setImageUrl(getHoverImage());
   };
 
   const onMouseLeave = () => {
+    if (!disabled) {
+      mouseLeave && mouseLeave();
+    }
     if (disabled || !imageUrl) {
       return;
     }

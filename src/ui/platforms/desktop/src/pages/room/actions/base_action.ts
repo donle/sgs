@@ -92,6 +92,8 @@ export abstract class BaseAction {
     this.presenter.disableActionButton('confirm');
     this.presenter.disableActionButton('reforge');
     this.presenter.disableCardReforgeStatus();
+    this.presenter.delightPlayers(false);
+    this.presenter.highlightCards(true);
     this.onResetAction();
     this.presenter.broadcastUIUpdate();
   };
@@ -184,6 +186,15 @@ export abstract class BaseAction {
     if (this.selectedSkillToPlay) {
       const skill = this.selectedSkillToPlay;
       if (skill instanceof ActiveSkill) {
+        const selectedCardsRange = skill.numberOfCards();
+        const usableCardNumbers = selectedCardsRange.findIndex(
+          cardNumbers => cardNumbers === this.selectedCards.length,
+        );
+
+        if (usableCardNumbers >= 0 && usableCardNumbers !== selectedCardsRange.length - 1) {
+          return true;
+        }
+
         return (
           skill.isAvailableCard(
             player.Id,
@@ -243,6 +254,15 @@ export abstract class BaseAction {
       const skill = playingCard.Skill;
 
       if (skill instanceof ActiveSkill) {
+        const selectedCardsRange = skill.numberOfCards();
+        const usableCardNumbers = selectedCardsRange.findIndex(
+          cardNumbers => cardNumbers === this.selectedCards.length,
+        );
+
+        if (usableCardNumbers >= 0 && usableCardNumbers !== selectedCardsRange.length - 1) {
+          return true;
+        }
+
         return (
           skill.isAvailableCard(
             player.Id,
@@ -351,6 +371,14 @@ export abstract class BaseAction {
     }
   }
 
+  protected delightItems() {
+    if (this.selectedCardToPlay || this.selectedSkillToPlay) {
+      this.presenter.delightPlayers(true);
+    } else {
+      this.presenter.delightPlayers(false);
+    }
+  }
+
   private callToActionCheck() {
     this.enableToCallAction()
       ? this.presenter.enableActionButton('confirm')
@@ -366,7 +394,10 @@ export abstract class BaseAction {
       }
 
       if (card.Skill instanceof ActiveSkill || card.Skill instanceof TriggerSkill) {
+        const canUse =
+          card.Skill.numberOfCards().length === 0 || card.Skill.numberOfCards().includes(this.selectedCards.length);
         return (
+          canUse &&
           card.Skill.cardFilter(this.store.room, this.player, this.selectedCards) &&
           card.Skill.targetFilter(this.store.room, this.player, this.selectedTargets, this.selectedCardToPlay)
         );
@@ -379,7 +410,10 @@ export abstract class BaseAction {
       const skill = this.selectedSkillToPlay;
 
       if (skill instanceof ActiveSkill || skill instanceof TriggerSkill) {
+        const canUse =
+          skill.numberOfCards().length === 0 || skill.numberOfCards().includes(this.selectedCards.length);
         return (
+          canUse &&
           skill.cardFilter(this.store.room, this.player, this.selectedCards) &&
           skill.targetFilter(this.store.room, this.player, this.selectedTargets, this.selectedCardToPlay)
         );
@@ -439,6 +473,7 @@ export abstract class BaseAction {
         this.selectedCardToPlay = undefined;
       }
     }
+    this.delightItems();
     this.callToActionCheck();
   }
 
@@ -483,6 +518,7 @@ export abstract class BaseAction {
         this.selectedCardToPlay = this.selectedSkillToPlay.viewAs(this.pendingCards, canViewAs[0]).Id;
       }
     }
+    this.delightItems();
     this.callToActionCheck();
   }
 

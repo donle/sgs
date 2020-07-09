@@ -35,6 +35,8 @@ import { WuGuFengDengDialog } from './ui/dialog/wugufengdeng_dialog/wugufengdeng
 export class GameClientProcessor {
   private onPlayTrustedActionTimer: NodeJS.Timer | undefined;
 
+  private excludedResponsiveEvents: GameEventIdentifiers[] = [GameEventIdentifiers.UserMessageEvent];
+
   constructor(
     private presenter: RoomPresenter,
     private store: RoomStore,
@@ -48,7 +50,7 @@ export class GameClientProcessor {
     }
   }
 
-  private record<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
+  private eventFilter<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
     if (identifier !== GameEventIdentifiers.PlayerEnterEvent) {
       this.store.room.Analytics.record(event, this.store.room.CurrentPlayerPhase);
       if (this.store.room.isPlaying()) {
@@ -58,8 +60,13 @@ export class GameClientProcessor {
         this.store.room.DropStack = numberOfDropStack;
       }
     }
+    if (identifier !== GameEventIdentifiers.UserMessageEvent) {
+      this.presenter.clearNotifiers();
+    }
+  }
 
-    if (serverResponsiveListenerEvents.includes(identifier)) {
+  private record<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
+    if (serverResponsiveListenerEvents.includes(identifier) && !this.excludedResponsiveEvents.includes(identifier)) {
       this.presenter.startAction(identifier, event);
       this.onPlayTrustedAction(identifier, event);
     }
@@ -70,13 +77,13 @@ export class GameClientProcessor {
       const result = this.presenter.ClientPlayer!.AI.onAction(this.store.room, identifier, event) as ClientEventFinder<
         T
       >;
+      result.status = 'trusted';
       this.store.room.broadcast(identifier, result);
       this.presenter.closeDialog();
       this.presenter.closeIncomingConversation();
-      this.presenter.endAction();
 
       this.endAction();
-    }, 60 * 1000);
+    }, this.store.notificationTime * 1000);
   }
   public endAction() {
     if (this.onPlayTrustedActionTimer !== undefined) {
@@ -89,9 +96,16 @@ export class GameClientProcessor {
 
   async onHandleIncomingEvent<T extends GameEventIdentifiers>(e: T, content: ServerEventFinder<T>) {
     this.tryToThrowNotReadyException(e);
+    this.eventFilter(e, content);
     this.record(e, content);
 
     switch (e) {
+      case GameEventIdentifiers.UserMessageEvent:
+        this.onHandleUserMessageEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.PlayerStatusEvent:
+        this.onHandlePlayerStatusEvent(e as any, content);
+        break;
       case GameEventIdentifiers.SetFlagEvent:
         this.onHandleSetFlagEvent(e as any, content);
         break;
@@ -251,9 +265,29 @@ export class GameClientProcessor {
       case GameEventIdentifiers.DrunkEvent:
         await this.onHandleDrunkEvent(e as any, content);
         break;
+      case GameEventIdentifiers.NotifyEvent:
+        await this.onHandleNotifyEvent(e as any, content);
+        break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
     }
+  }
+
+  private async onHandlePlayerStatusEvent<T extends GameEventIdentifiers.PlayerStatusEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.updatePlayerStatus(content.status, content.toId);
+    this.presenter.broadcastUIUpdate();
+  }
+
+  private async onHandleUserMessageEvent<T extends GameEventIdentifiers.UserMessageEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.presenter.addUserMessage(this.translator.trx(content.message));
+    this.presenter.onIncomingMessage(content.playerId, content.originalMessage);
+    this.presenter.broadcastUIUpdate();
   }
 
   private async onHandleSetFlagEvent<T extends GameEventIdentifiers.SetFlagEvent>(
@@ -492,6 +526,10 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
     // tslint:disable-next-line:no-empty
   ) {}
+  private onHandleNotifyEvent<T extends GameEventIdentifiers.NotifyEvent>(type: T, content: ServerEventFinder<T>) {
+    this.presenter.notify(content.toIds, content.notificationTime);
+    this.presenter.broadcastUIUpdate();
+  }
   private onHandlePlayerDiedEvent<T extends GameEventIdentifiers.PlayerDiedEvent>(
     type: T,
     content: ServerEventFinder<T>,
@@ -594,6 +632,7 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     this.presenter.playerLeave(content.playerId);
+    this.presenter.broadcastUIUpdate();
   }
 
   private onHandleChoosingCharacterEvent<T extends GameEventIdentifiers.AskForChoosingCharacterEvent>(
@@ -645,7 +684,6 @@ export class GameClientProcessor {
   ) {
     const action = new SkillUseAction(content.toId, this.store, this.presenter, content, this.translator);
     this.presenter.isSkillDisabled(SkillUseAction.isSkillDisabled(content));
-    this.presenter.broadcastUIUpdate();
     await action.onSelect(this.translator);
     this.endAction();
   }
@@ -926,6 +964,7 @@ export class GameClientProcessor {
       };
     });
 
+    this.presenter.highlightCards();
     this.presenter.createIncomingConversation({
       optionsActionHanlder: actionHandlers,
       translator: this.translator,
@@ -961,7 +1000,9 @@ export class GameClientProcessor {
     const { winnerIds, loserIds } = content;
     const winners = winnerIds.map(id => this.store.room.getPlayerById(id));
     const losers = loserIds.map(id => this.store.room.getPlayerById(id));
-    this.presenter.createDialog(<GameOverDialog translator={this.translator} winners={winners} losers={losers} />);
+    this.presenter.createDialog(
+      <GameOverDialog imageLoader={this.imageLoader} translator={this.translator} winners={winners} losers={losers} />,
+    );
     this.presenter.broadcastUIUpdate();
     this.endAction();
     this.store.room.gameOver();
