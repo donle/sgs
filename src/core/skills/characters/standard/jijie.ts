@@ -51,7 +51,7 @@ export class JiJie extends ActiveSkill {
     };
     room.notify(GameEventIdentifiers.AskForChoosingPlayerEvent, choosePlayerEvent, skillUseEvent.fromId);
 
-    const choosePlayerResponse = await room.onReceivingAsyncReponseFrom(
+    const choosePlayerResponse = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingPlayerEvent,
       skillUseEvent.fromId,
     );

@@ -1,10 +1,16 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { AllStage, DrawCardStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
+import {
+  AllStage,
+  DrawCardStage,
+  PhaseStageChangeStage,
+  PlayerPhase,
+  PlayerPhaseStages,
+} from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { CommonSkill, ShadowSkill ,TriggerSkill } from 'core/skills/skill';
+import { CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'haoshi', description: 'haoshi_description' })
 export class Haoshi extends TriggerSkill {
@@ -40,8 +46,13 @@ export class HaoshiShadow extends TriggerSkill {
     return stage === PhaseStageChangeStage.BeforeStageChange;
   }
 
+  isUncancellable() {
+    return true;
+  }
+
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    return (owner.Id === content.playerId &&
+    return (
+      owner.Id === content.playerId &&
       content.toStage === PlayerPhaseStages.DrawCardStageEnd &&
       owner.hasUsedSkill(this.GeneralName) &&
       owner.getCardIds(PlayerCardsArea.HandArea).length > 5
@@ -52,9 +63,16 @@ export class HaoshiShadow extends TriggerSkill {
     return 1;
   }
 
+  public get SkillLog() {
+    return 'haoshi:please choose handcards and a target';
+  }
+
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId) {
     const handcardsNum = room.getPlayerById(target).getCardIds(PlayerCardsArea.HandArea).length;
-    return target !== owner && !room.getOtherPlayers(owner).find(player => player.getCardIds(PlayerCardsArea.HandArea).length < handcardsNum);
+    return (
+      target !== owner &&
+      !room.getOtherPlayers(owner).find(player => player.getCardIds(PlayerCardsArea.HandArea).length < handcardsNum)
+    );
   }
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]) {
@@ -86,7 +104,8 @@ export class HaoshiShadow extends TriggerSkill {
       toArea: CardMoveArea.HandArea,
       moveReason: CardMoveReason.ActiveMove,
       proposer: fromId,
-      movedByReason: this.GeneralName
+      movedByReason: this.GeneralName,
+      engagedPlayerIds: [toIds![0], fromId],
     });
 
     return true;

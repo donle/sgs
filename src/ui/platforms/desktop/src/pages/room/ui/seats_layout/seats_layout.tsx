@@ -17,7 +17,7 @@ type SeatsLayoutProps = {
   updateFlag: boolean;
   imageLoader: ImageLoader;
   onClick?(player: Player, selected: boolean): void;
-  playerSelectableMatcher?(player: Player): boolean;
+  playerSelectableMatcher?(player?: Player): boolean;
 };
 
 @mobxReact.observer
@@ -33,8 +33,13 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
     this.topNumberOfPlayers = this.numberOfPlayers - this.sideNumberOfPlayers * 2;
   }
 
-  private readonly onClick = (player: Player) => (selected: boolean) => {
-    this.props.onClick && this.props.onClick(player, selected);
+  private readonly onClick = (player?: Player) => (selected: boolean) => {
+    this.props.onClick && player && this.props.onClick(player, selected);
+  };
+
+  private readonly onCloseIncomingMessage = (player: Player) => () => {
+    this.props.presenter.onIncomingMessage(player.Id);
+    this.forceUpdate();
   };
 
   @mobx.computed
@@ -68,13 +73,14 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
 
     let playerIndex = this.getLastPosition();
     while (numberOfPlayers > 0) {
-      const player = this.props.store.room.Players[playerIndex] as ClientPlayer;
+      const player = this.props.store.room.Players[playerIndex] as ClientPlayer | undefined;
 
       players.unshift(
         <PlayerCard
           key={playerIndex}
           imageLoader={this.props.imageLoader}
           onClick={this.onClick(player)}
+          delight={this.props.store.delightedPlayers !== undefined ? this.props.store.delightedPlayers : undefined}
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           player={player}
           translator={this.props.translator}
@@ -82,6 +88,10 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           playerPhase={
             this.props.store.room.CurrentPlayer === player ? this.props.store.room.CurrentPlayerPhase : undefined
           }
+          actionTimeLimit={this.props.store.notificationTime}
+          inAction={player !== undefined && this.props.store.notifiedPlayers.includes(player.Id)}
+          incomingMessage={player && this.props.store.incomingUserMessages[player.Id]}
+          onCloseIncomingMessage={player && this.onCloseIncomingMessage(player)}
         />,
       );
       do {
@@ -101,13 +111,14 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
 
     let playerIndex = this.getNextPosition();
     while (numberOfPlayers > 0) {
-      const player = this.props.store.room.Players[playerIndex] as ClientPlayer;
+      const player = this.props.store.room.Players[playerIndex] as ClientPlayer | undefined;
 
       players.unshift(
         <PlayerCard
           key={playerIndex}
           imageLoader={this.props.imageLoader}
           onClick={this.onClick(player)}
+          delight={this.props.store.delightedPlayers !== undefined ? this.props.store.delightedPlayers : undefined}
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           player={player}
           translator={this.props.translator}
@@ -115,6 +126,10 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           playerPhase={
             this.props.store.room.CurrentPlayer === player ? this.props.store.room.CurrentPlayerPhase : undefined
           }
+          actionTimeLimit={this.props.store.notificationTime}
+          inAction={player !== undefined && this.props.store.notifiedPlayers.includes(player.Id)}
+          incomingMessage={player && this.props.store.incomingUserMessages[player.Id]}
+          onCloseIncomingMessage={player && this.onCloseIncomingMessage(player)}
         />,
       );
       do {
@@ -132,13 +147,14 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
 
     let numberOfPlayers = this.topNumberOfPlayers;
     while (numberOfPlayers > 0) {
-      const player = this.props.store.room.Players[playerIndex] as ClientPlayer;
+      const player = this.props.store.room.Players[playerIndex] as ClientPlayer | undefined;
 
       players.unshift(
         <PlayerCard
           key={playerIndex}
           imageLoader={this.props.imageLoader}
           onClick={this.onClick(player)}
+          delight={this.props.store.delightedPlayers !== undefined ? this.props.store.delightedPlayers : undefined}
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           player={player}
           translator={this.props.translator}
@@ -146,6 +162,10 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           playerPhase={
             this.props.store.room.CurrentPlayer === player ? this.props.store.room.CurrentPlayerPhase : undefined
           }
+          actionTimeLimit={this.props.store.notificationTime}
+          inAction={player !== undefined && this.props.store.notifiedPlayers.includes(player.Id)}
+          incomingMessage={player && this.props.store.incomingUserMessages[player.Id]}
+          onCloseIncomingMessage={player && this.onCloseIncomingMessage(player)}
         />,
       );
 

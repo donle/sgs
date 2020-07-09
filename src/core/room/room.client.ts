@@ -56,6 +56,9 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   public notify(): void {
     this.throwUntouchableError(this.notify.name);
   }
+  public doNotify(): void {
+    this.throwUntouchableError(this.doNotify.name);
+  }
   //Server only
   public getCards(): any {
     this.throwUntouchableError(this.getCards.name);
@@ -77,12 +80,11 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.moveCards.name);
   }
   //Server only
+  public async onReceivingAsyncResponseFrom(): Promise<any> {
+    this.throwUntouchableError(this.onReceivingAsyncResponseFrom.name);
+  }
   public async asyncMoveCards(): Promise<void> {
     this.throwUntouchableError(this.asyncMoveCards.name);
-  }
-  //Server only
-  public async onReceivingAsyncReponseFrom(): Promise<any> {
-    this.throwUntouchableError(this.onReceivingAsyncReponseFrom.name);
   }
   public clearHeaded() {
     this.throwUntouchableError(this.clearHeaded.name);
@@ -243,5 +245,15 @@ export class ClientRoom extends Room<WorkPlace.Client> {
 
   public getPlayerById(playerId: PlayerId) {
     return super.getPlayerById(playerId) as ClientPlayer;
+  }
+
+  public async kill(deadPlayer: Player): Promise<void> {
+    deadPlayer.clearMarks();
+    deadPlayer.clearFlags();
+    deadPlayer.bury();
+  }
+
+  public emitStatus(status: 'offline' | 'online' | 'trusted' | 'player', toId: PlayerId) {
+    this.broadcast(GameEventIdentifiers.PlayerStatusEvent, { status, toId });
   }
 }

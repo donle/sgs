@@ -42,7 +42,7 @@ export class QiaoMeng extends TriggerSkill {
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingCardFromPlayerEvent, askForChooseCardEvent, fromId!);
-    const { selectedCard } = await room.onReceivingAsyncReponseFrom(
+    const { selectedCard } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
       fromId!,
     );

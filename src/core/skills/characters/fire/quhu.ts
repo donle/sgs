@@ -61,7 +61,7 @@ export class QuHu extends ActiveSkill {
         EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingPlayerEvent>(askForChoosingPlayer),
         fromId,
       );
-      const { selectedPlayers } = await room.onReceivingAsyncReponseFrom(
+      const { selectedPlayers } = await room.onReceivingAsyncResponseFrom(
         GameEventIdentifiers.AskForChoosingPlayerEvent,
         fromId,
       );

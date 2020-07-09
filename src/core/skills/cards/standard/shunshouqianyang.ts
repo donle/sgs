@@ -70,13 +70,14 @@ export class ShunShouQianYangSkill extends ActiveSkill {
       event.fromId!,
     );
 
-    const response = await room.onReceivingAsyncReponseFrom(
+    const response = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
       event.fromId!,
     );
 
     if (response.selectedCard === undefined) {
-      response.selectedCard = to.getCardIds(PlayerCardsArea.HandArea)[response.selectedCardIndex!];
+      const cardIds = to.getCardIds(PlayerCardsArea.HandArea);
+      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
     }
 
     await room.moveCards({

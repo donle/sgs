@@ -1,4 +1,5 @@
 import { Word } from 'languages';
+import { Marks } from '../mark_list';
 
 export const cardDictionary: Word[] = [
   { source: 'slash', target: '杀' },
@@ -325,8 +326,8 @@ export const characterDictionary: Word[] = [
   { source: 'wuhun', target: '武魂' },
 
   { source: 'god_lvmeng', target: '神吕蒙' },
-  { source: 'shelie', target: '涉猎' },
   { source: 'gongxin', target: '攻心' },
+  { source: 'shelie', target: '涉猎' },
 
   { source: 'god_zhouyu', target: '神周瑜' },
   { source: 'qinyin', target: '琴音' },
@@ -336,7 +337,6 @@ export const characterDictionary: Word[] = [
   { source: 'qixing', target: '七星' },
   { source: 'kuangfeng', target: '狂风' },
   { source: 'dawu', target: '大雾' },
-  
   { source: 'god_caocao', target: '神曹操' },
   { source: 'guixin', target: '归心' },
   { source: 'feiying', target: '飞影' },
@@ -357,6 +357,8 @@ export const characterDictionary: Word[] = [
   { source: 'juejing', target: '绝境' },
   { source: 'longhun', target: '龙魂' },
 ];
+
+export const markDictionary: Word[] = [{ source: Marks.Nightmare, target: '梦魇' }];
 
 export const skillDescriptions: Word[] = [
   { source: 'jianxiong_description', target: '当你受到伤害后，你可以获得对你造成伤害的牌并摸一张牌。' },
@@ -853,11 +855,12 @@ export const skillDescriptions: Word[] = [
   { source: 'xinsheng_description', target: '当你受到1点伤害后，你可以获得一张“化身”。' },
   {
     source: 'wushen_description',
-    target: '<b>锁定技</b>，你的红桃手牌均视为【杀】。',
+    target: '<b>锁定技</b>，你的红桃手牌均视为【杀】；你使用红桃【杀】无距离限制。',
   },
   {
     source: 'wuhun_description',
-    target: '<b>锁定技</b>，当你受到1点伤害后，伤害来源获得1枚“梦魇”标记；当你死亡时，你令“梦魇”标记数最多的一名其他角色判定，若不为【桃】或【桃园结义】，该角色死亡。',
+    target:
+      '<b>锁定技</b>，当你受到1点伤害后，伤害来源获得1枚“梦魇”标记；当你死亡时，你令“梦魇”标记数最多的一名其他角色判定，若不为【桃】或【桃园结义】，该角色死亡。',
   },
   {
     source: 'shelie_description',
@@ -911,11 +914,13 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'wuqian_description',
-    target: '出牌阶段，你可以移去2枚“暴怒”标记并选择本回合内你未以此法选择过的一名其他角色，然后直到回合结束，你拥有“无双”且该角色的防具失效。',
+    target:
+      '出牌阶段，你可以移去2枚“暴怒”标记并选择本回合内你未以此法选择过的一名其他角色，然后直到回合结束，你拥有“无双”且该角色的防具失效。',
   },
   {
     source: 'shenfen_description',
-    target: '出牌阶段限一次，你可以移去6枚“暴怒”标记并对所有其他角色造成1点伤害，然后这些角色弃置装备区里的所有牌，再弃置四张手牌，最后你翻面。',
+    target:
+      '出牌阶段限一次，你可以移去6枚“暴怒”标记并对所有其他角色造成1点伤害，然后这些角色弃置装备区里的所有牌，再弃置四张手牌，最后你翻面。',
   },
   {
     source: 'renjie_description',
@@ -939,7 +944,8 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'longhun_description',
-    target: '你可以将一至两张同花色的牌按如下规则使用或打出：红桃当【桃】；方块当火【杀】；梅花当【闪】；黑桃当【无懈可击】。若你以此法使用或打出的两张牌为：红色，此牌的伤害值或回复值+1；黑色，你弃置当前回合角色的一张牌。',
+    target:
+      '你可以将一至两张同花色的牌按如下规则使用或打出：红桃当【桃】；方块当火【杀】；梅花当【闪】；黑桃当【无懈可击】。若你以此法使用或打出的两张牌为：红色，此牌的伤害值或回复值+1；黑色，你弃置当前回合角色的一张牌。',
   },
 ];
 
@@ -1025,6 +1031,9 @@ export const eventDictionary: Word[] = [
   { source: 'normal_property', target: '无属性' },
   { source: 'fire_property', target: '火属性' },
   { source: 'thunder_property', target: '雷属性' },
+  { source: 'obtained', target: '获得' },
+  { source: 'lost', target: '失去' },
+  { source: '{0} {1} {2} {3} marks', target: '{0} {1}了 {2} 枚 {3} 标记' },
   {
     source: 'do you want to trigger skill {0} ?',
     target: '是否发动技能 【{0}】?',
@@ -1207,6 +1216,7 @@ export const eventDictionary: Word[] = [
     target: '{0} 受到了来自 {1} 的 {2} 点【{3}】伤害',
   },
   { source: '{0} moved all hand cards out of the game', target: '{0} 将所有手牌移出了游戏' },
+  { source: '{0} use skill {1}, bring {2} to hell', target: '{0} 使用了技能 {1}，杀死了 {2}' },
   {
     source: 'do you wanna use {0} for {1} from {2}',
     target: '是否对 {2} 的 {1} 使用 {0}',
@@ -1284,8 +1294,57 @@ export const eventDictionary: Word[] = [
   },
   {
     source: 'please choose jiangchi options',
-    target: '请选择：1.额外摸一张牌，本回合【杀】无距离限制且使用次数+1 2.弃置一张牌，本回合不可使用或打出【杀】',
+    target: '请选择：1.弃置一张牌，本回合【杀】无距离限制且使用次数+1 2.额外摸一张牌，本回合不可使用或打出【杀】',
   },
+  {
+    source: 'wuhun:Please choose a target to die with you',
+    target: '请选择一名角色进行【武魂】的判定，若结果不为【桃】或【桃园结义】，其立即死亡',
+  },
+  {
+    source: 'qinyin: loseHp',
+    target: '失去体力',
+  },
+  {
+    source: 'qinyin: recoverHp',
+    target: '回复体力',
+  },
+  {
+    source: 'qinyin: please choose a choice to make everyone lose hp or recover hp',
+    target: '琴音：你可以令全场角色依次失去 1 点体力或回复 1 点体力',
+  },
+  {
+    source: 'yeyan: 1 point',
+    target: '1 点',
+  },
+  {
+    source: 'yeyan: 2 point',
+    target: '2 点',
+  },
+  {
+    source: 'yeyan: 3 point',
+    target: '3 点',
+  },
+  {
+    source: 'yeyan: cancel',
+    target: '取消',
+  },
+  {
+    source: 'please assign damage for {0}',
+    target: '请为 {0} 分配伤害点数',
+  },
+  {
+    source: 'please assign damage for {0}, {1}',
+    target: '请为 {0}、{1} 分配伤害点数',
+  },
+  {
+    source: 'please assign damage for {0}, {1}, {2}',
+    target: '请为 {0}、{1}、{2} 分配伤害点数',
+  },
+  {
+    source: 'please assign x damage for {0}, and {1} will get (3 - x) damage',
+    target: '请为 {0} 分配 x 点伤害，{1} 将会分配到 (3 - x) 点伤害',
+  },
+  { source: 'haoshi:please choose handcards and a target', target: '请选择交给的手牌与一名目标角色' },
 
   { source: 'cixiongjian:drop-card', target: '弃置一张手牌' },
   { source: 'cixiongjian:draw-card', target: '令其摸一张牌' },
@@ -1322,7 +1381,15 @@ export const eventDictionary: Word[] = [
     source: 'please choose tianxiang options:{0}',
     target: '请选择：1.令其受到1点伤害，然后摸 {0} 张牌。2.令其失去1点体力，然后其获得你弃置的牌',
   },
-  { source: 'do you wanna transfer the card {0} target to {1}', target: '是否将【{0}】的使用目标改为【1】' },
+  { source: 'do you wanna transfer the card {0} target to {1}', target: '是否将【{0}】的使用目标改为【{1}】' },
+  {
+    source: 'please choose fangzhu options:{0}',
+    target: '请选择：1.摸{0}张牌并翻面；2.弃置{0}张牌并失去1点体力',
+  },
+  {
+    source: 'please choose fangzhu options:{0}',
+    target: '请选择：1.摸{0}张牌并翻面；2.弃置{0}张牌并失去1点体力',
+  },
   {
     source: 'please choose fangzhu options:{0}',
     target: '请选择：1.摸{0}张牌并翻面；2.弃置{0}张牌并失去1点体力',
@@ -1362,6 +1429,19 @@ export const UiDictionary: Word[] = [
   { source: 'room id', target: '房间号' },
   { source: 'round {0}', target: '第 {0} 轮' },
   { source: '{0} draw cards left', target: '剩余 {0} 牌' },
+  { source: 'please enter your text here', target: '在此输入聊天内容' },
+  { source: 'send', target: '发送' },
+  { source: '{0} {1} says: {2}', target: '{0} {1} 说：{2}' },
+  { source: 'player name', target: '玩家名' },
+  { source: 'character name', target: '武将' },
+  { source: 'role', target: '身份' },
+  { source: 'status', target: '状态' },
+  { source: 'handcards', target: '手牌' },
+  { source: 'check', target: '查看' },
+  { source: 'offline', target: '离线' },
+  { source: 'trusted', target: '托管' },
+  { source: 'cancel trusted', target: '取消托管' },
+  { source: 'in trusted', target: '托管中···' },
   {
     source: 'New QSanguosha',
     target: '新神杀',

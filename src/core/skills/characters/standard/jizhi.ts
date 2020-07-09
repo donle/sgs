@@ -48,7 +48,7 @@ export class JiZhi extends TriggerSkill {
 
       room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForOptionsEvent, event.fromId);
 
-      const response = await room.onReceivingAsyncReponseFrom(
+      const response = await room.onReceivingAsyncResponseFrom(
         GameEventIdentifiers.AskForChoosingOptionsEvent,
         event.fromId,
       );

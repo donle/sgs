@@ -48,7 +48,15 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   protected abstract init(...args: any[]): void;
   //Server only
-  public abstract notify<I extends GameEventIdentifiers>(type: I, content: EventPicker<I, T>, player: PlayerId): void;
+  public abstract notify<I extends GameEventIdentifiers>(
+    type: I,
+    content: EventPicker<I, T>,
+    player: PlayerId,
+    hideBroadcast?: boolean,
+  ): void;
+  //Server only
+  public abstract doNotify(toIds: PlayerId[], notificationTime?: number): void;
+
   public abstract broadcast<I extends GameEventIdentifiers>(type: I, content: EventPicker<I, T>): void;
 
   //Server only
@@ -76,7 +84,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract async asyncMoveCards(events: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[]): Promise<void>;
   //Server only
-  public abstract async onReceivingAsyncReponseFrom<T extends GameEventIdentifiers>(
+  public abstract async onReceivingAsyncResponseFrom<T extends GameEventIdentifiers>(
     identifier: T,
     playerId?: PlayerId,
   ): Promise<ClientEventFinder<T>>;
@@ -143,6 +151,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract async askForCardUse(
     event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>,
     to: PlayerId,
+    hideBroadcast?: boolean,
   ): Promise<ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent>>;
   //Server only
   public abstract async askForCardResponse(
@@ -154,6 +163,26 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public abstract skip(player: PlayerId, phase?: PlayerPhase): void;
   public abstract endPhase(phase: PlayerPhase): void;
+
+  public updatePlayerStatus(status: 'online' | 'offline' | 'trusted' | 'player', toId: PlayerId) {
+    const to = this.getPlayerById(toId);
+    switch (status) {
+      case 'online':
+        to.setOnline();
+        break;
+      case 'offline':
+        to.setOffline();
+        break;
+      case 'trusted':
+        to.delegateOnTrusted(true);
+        break;
+      case 'player':
+        to.delegateOnTrusted(false);
+        break;
+      default:
+        throw Precondition.UnreachableError(status);
+    }
+  }
 
   public addProcessingCards(tag: string, ...cardIds: CardId[]) {
     this.onProcessingCards[tag] = this.onProcessingCards[tag] || [];
@@ -350,11 +379,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return true;
   }
 
-  public async kill(deadPlayer: Player): Promise<void> {
-    deadPlayer.clearMarks();
-    deadPlayer.clearFlags();
-    deadPlayer.bury();
-  }
+  public abstract async kill(deadPlayer: Player, killedBy?: PlayerId): Promise<void>;
 
   public canUseCardTo(cardId: CardId | CardMatcher, target: PlayerId): boolean {
     const player = this.getPlayerById(target);

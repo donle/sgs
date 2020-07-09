@@ -1,5 +1,6 @@
 @value gridLine from '../../../../ui/metrics/metrics.css';
 @value halfGridLine from '../../../../ui/metrics/metrics.css';
+@value XinWeiFont from '../../../../ui/metrics/metrics.css';
 
 .equipCardItem {
     width: 100%;
@@ -63,6 +64,7 @@
     padding: halfGridLine;
     flex: auto;
     padding-right: 64px;
+    position: relative;
 }
 
 .playBar {
@@ -135,4 +137,26 @@
 
 .selected {
     left: 16px;
+}
+
+.trustedButton {
+    position: absolute;
+    left: calc(gridLine * 3);
+}
+
+.trustedCover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    font-size: 34px;
+    font-family: XinWeiFont;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.trustedCover.hide {
+    display: none;
 }

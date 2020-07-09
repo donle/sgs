@@ -21,8 +21,17 @@ export class Dimeng extends ActiveSkill {
     return 2;
   }
 
-  cardFilter(room: Room, owner: Player, cards: CardId[]) {
-    return true;
+  cardFilter(room: Room, owner: Player, cards: CardId[], selectedTargets: PlayerId[]) {
+    if (selectedTargets.length !== this.numberOfTargets()) {
+      return false;
+    }
+
+    const first = room.getPlayerById(selectedTargets[0]);
+    const second = room.getPlayerById(selectedTargets[1]);
+    const firstHandcardNum = first.getCardIds(PlayerCardsArea.HandArea).length;
+    const secondHandcardNum = second.getCardIds(PlayerCardsArea.HandArea).length;
+
+    return cards.length === Math.abs(firstHandcardNum - secondHandcardNum);
   }
 
   isAvailableTarget(
@@ -43,8 +52,8 @@ export class Dimeng extends ActiveSkill {
 
     return (
       owner !== target &&
-      !(firstHandcardNum <= 0 && secondHandcardNum <= 0) &&
-      selectedCards.length === Math.abs(firstHandcardNum - secondHandcardNum)
+      room.getPlayerById(owner).getCardIds(PlayerCardsArea.HandArea).length >=
+        Math.abs(firstHandcardNum - secondHandcardNum)
     );
   }
 

@@ -57,7 +57,7 @@ export class Xingshang extends TriggerSkill {
         fromId,
       );
 
-      const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
+      const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
       response.selectedOption = response.selectedOption || 'xingshang:pickup';
       if (response.selectedOption === 'xingshang:recover') {
         room.recover({

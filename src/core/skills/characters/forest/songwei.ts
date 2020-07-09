@@ -31,7 +31,7 @@ export class Songwei extends TriggerSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
     const judgeEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.JudgeEvent>;
-    
+
     const askForInvokeSkill: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
       toId: judgeEvent.toId,
       options: ['yes', 'no'],
@@ -43,7 +43,7 @@ export class Songwei extends TriggerSkill {
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForInvokeSkill, judgeEvent.toId);
-    const { selectedOption } = await room.onReceivingAsyncReponseFrom(
+    const { selectedOption } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingOptionsEvent,
       judgeEvent.toId
     );

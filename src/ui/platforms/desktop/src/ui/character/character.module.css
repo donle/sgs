@@ -1,4 +1,4 @@
-@value SanguoshaFont from '../../../../ui/metrics/metrics.css';
+@value SanguoshaFont from '../metrics/metrics.css';
 
 .characterCard {
     min-width: 160px;

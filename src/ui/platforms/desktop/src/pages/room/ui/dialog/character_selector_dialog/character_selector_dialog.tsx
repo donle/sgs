@@ -4,8 +4,8 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
-import { CharacterCard } from 'pages/room/ui/character/character';
 import * as React from 'react';
+import { CharacterCard } from 'ui/character/character';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import { BaseDialog } from '../base_dialog';
 import styles from './character_selector_dialog.module.css';

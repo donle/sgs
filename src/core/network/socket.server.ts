@@ -54,6 +54,14 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
               );
               break;
             case GameEventIdentifiers.UserMessageEvent:
+              this.onPlayerMessage(identifier, content as ClientEventFinder<GameEventIdentifiers.UserMessageEvent>);
+              break;
+            case GameEventIdentifiers.PlayerStatusEvent:
+              this.onPlayerStatusChanged(
+                socket,
+                identifier,
+                content as ClientEventFinder<GameEventIdentifiers.PlayerStatusEvent>,
+              );
               break;
             default:
               logger.info('Not implemented active listener', identifier, GameEventIdentifiers.PlayerEnterEvent);
@@ -62,7 +70,9 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       });
 
       serverResponsiveListenerEvents.forEach(identifier => {
-        socket.on(identifier.toString(), (content: unknown) => {
+        socket.on(identifier.toString(), (content: ClientEventFinder<GameEventIdentifiers>) => {
+          content.status && this.room!.updatePlayerStatus(content.status, socket.id);
+
           const asyncResolver =
             this.asyncResponseResolver[identifier] && this.asyncResponseResolver[identifier][socket.id];
           if (asyncResolver) {
@@ -82,7 +92,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
 
         this.clientIds = this.clientIds.filter(id => id !== socket.id);
         const room = this.room as ServerRoom;
-        room.getPlayerById(socket.id).offline();
+        room.getPlayerById(socket.id).setOffline();
         if (this.clientIds.length === 0) {
           this.room && this.room.close();
         }
@@ -112,6 +122,32 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         }
       });
     });
+  }
+
+  private async onPlayerMessage(
+    identifier: GameEventIdentifiers.UserMessageEvent,
+    content: ClientEventFinder<GameEventIdentifiers.UserMessageEvent>,
+  ) {
+    const room = this.room as ServerRoom;
+    const player = room.getPlayerById(content.playerId);
+    if (content.message) {
+      (content as any).originalMessage = content.message;
+      content.message = TranslationPack.translationJsonPatcher(
+        '{0} {1} says: {2}',
+        player.Name,
+        player.CharacterId === undefined ? '' : TranslationPack.patchPlayerInTranslation(player),
+        content.message,
+      ).toString();
+      this.broadcast(identifier, (content as unknown) as ServerEventFinder<GameEventIdentifiers.UserMessageEvent>);
+    }
+  }
+
+  private async onPlayerStatusChanged(
+    socket: IOSocketServer.Socket,
+    identifier: GameEventIdentifiers.PlayerStatusEvent,
+    content: ClientEventFinder<GameEventIdentifiers.PlayerStatusEvent>,
+  ) {
+    this.room!.updatePlayerStatus(content.status, socket.id);
   }
 
   private async onPlayerEnter(
@@ -159,7 +195,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     event: ClientEventFinder<typeof identifier>,
   ) {
     const room = this.room as ServerRoom;
-    room.getPlayerById(event.playerId).offline();
+    room.getPlayerById(event.playerId).setOffline();
     this.clientIds = this.clientIds.filter(id => id !== event.playerId);
 
     socket.disconnect();
@@ -173,7 +209,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
 
   public notify<I extends GameEventIdentifiers>(type: I, content: ServerEventFinder<I>, to: PlayerId) {
     const toPlayer = this.room!.getPlayerById(to);
-    if (!toPlayer.isOnline()) {
+    if (!toPlayer.isOnline() || toPlayer.isTrusted()) {
       const result = toPlayer.AI.onAction(this.room!, type, content);
       setTimeout(() => {
         const asyncResolver = this.asyncResponseResolver[type] && this.asyncResponseResolver[type][to];

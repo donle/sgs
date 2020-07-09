@@ -62,7 +62,7 @@ export class TianXiang extends TriggerSkill {
       EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(chooseOptions),
       fromId,
     );
-    const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
+    const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
     if (response.selectedOption === 'option-one') {
       await room.damage({
         toId: toIds![0],

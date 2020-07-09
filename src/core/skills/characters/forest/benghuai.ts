@@ -56,7 +56,7 @@ export class BengHuai extends TriggerSkill {
 
       room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, fromId);
 
-      const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
+      const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
 
       response.selectedOption = response.selectedOption || options[0];
       if (response.selectedOption === 'benghuai:hp') {

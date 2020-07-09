@@ -46,7 +46,7 @@ export class Cheat extends ActiveSkill {
       conversation: 'please choose',
     };
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChoose, skillUseEvent.fromId);
-    const { selectedOption } = await room.onReceivingAsyncReponseFrom(
+    const { selectedOption } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingOptionsEvent,
       skillUseEvent.fromId,
     );
@@ -66,7 +66,7 @@ export class Cheat extends ActiveSkill {
       }),
     ).map(card => card.Name);
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChoose, skillUseEvent.fromId);
-    const { selectedOption: selectedName } = await room.onReceivingAsyncReponseFrom(
+    const { selectedOption: selectedName } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingOptionsEvent,
       skillUseEvent.fromId,
     );
@@ -78,7 +78,7 @@ export class Cheat extends ActiveSkill {
       }),
     ).map(card => Functional.getCardSuitRawText(card.Suit));
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChoose, skillUseEvent.fromId);
-    const { selectedOption: selectedSuit } = await room.onReceivingAsyncReponseFrom(
+    const { selectedOption: selectedSuit } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingOptionsEvent,
       skillUseEvent.fromId,
     );

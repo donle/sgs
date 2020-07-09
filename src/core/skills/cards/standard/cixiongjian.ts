@@ -90,7 +90,7 @@ export class CiXiongJianSkill extends TriggerSkill {
       EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(askForOptionsEvent),
       toId,
     );
-    const response = await room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, toId);
+    const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, toId);
     response.selectedOption = response.selectedOption || 'cixiongjian:draw-card';
     if (response.selectedOption === 'cixiongjian:drop-card') {
       const response = await room.askForCardDrop(toId, 1, [PlayerCardsArea.HandArea], true, undefined, this.Name);

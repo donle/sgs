@@ -54,7 +54,7 @@ export class GongXin extends ActiveSkill {
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingCardEvent, askForChooseCardEvent, fromId);
-    const { selectedCards } = await room.onReceivingAsyncReponseFrom(
+    const { selectedCards } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingCardEvent,
       fromId,
     );
@@ -85,7 +85,7 @@ export class GongXin extends ActiveSkill {
       EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(askForChooseOptionsEvent),
       fromId,
     );
-    const { selectedOption } = await room.onReceivingAsyncReponseFrom(
+    const { selectedOption } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingOptionsEvent,
       fromId,
     );

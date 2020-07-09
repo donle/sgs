@@ -8,10 +8,8 @@ import {
   CardMoveReason,
   ClientEventFinder,
   EventPacker,
-  EventPicker,
   GameEventIdentifiers,
   ServerEventFinder,
-  WorkPlace,
 } from 'core/event/event';
 import {
   CardEffectStage,
@@ -62,6 +60,9 @@ export class GameProcessor {
   private playRoundInsertions: PlayerId[] = [];
   private dumpedLastPlayerPositionIndex: number = -1;
 
+  private readonly DamageTypeTag = 'damageType';
+  private readonly BeginnerTag = 'beginnerOfTheDamage';
+
   constructor(private stageProcessor: StageProcessor, private logger: Logger) {}
 
   private tryToThrowNotStartedError() {
@@ -83,7 +84,7 @@ export class GameProcessor {
     const gameStartEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCharacterEvent>({
       characterIds: [
         ...lordCharacters,
-        ...Sanguosha.getRandomCharacters(2, selectableCharacters, lordCharacters).map(character => character.Id),
+        ...Sanguosha.getRandomCharacters(4, selectableCharacters, lordCharacters).map(character => character.Id),
       ],
       toId: lordInfo.Id,
       role: lordInfo.Role,
@@ -95,7 +96,7 @@ export class GameProcessor {
     });
     this.room.notify(GameEventIdentifiers.AskForChoosingCharacterEvent, gameStartEvent, lordInfo.Id);
 
-    const lordResponse = await this.room.onReceivingAsyncReponseFrom(
+    const lordResponse = await this.room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingCharacterEvent,
       lordInfo.Id,
     );
@@ -116,10 +117,10 @@ export class GameProcessor {
     const sequentialAsyncResponse: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingCharacterEvent>>[] = [];
 
     const selectedCharacters: CharacterId[] = [lordInfo.CharacterId];
+    const notifyOtherPlayer: PlayerId[] = [];
     for (let i = 1; i < playersInfo.length; i++) {
-      const characters = Sanguosha.getRandomCharacters(3, selectableCharacters, selectedCharacters);
+      const characters = Sanguosha.getRandomCharacters(5, selectableCharacters, selectedCharacters);
       characters.forEach(character => selectedCharacters.push(character.Id));
-
       const playerInfo = playersInfo[i];
       this.room.notify(
         GameEventIdentifiers.AskForChoosingCharacterEvent,
@@ -139,13 +140,16 @@ export class GameProcessor {
           ).extract(),
         },
         playerInfo.Id,
+        true,
       );
 
+      notifyOtherPlayer.push(playerInfo.Id);
       sequentialAsyncResponse.push(
-        this.room.onReceivingAsyncReponseFrom(GameEventIdentifiers.AskForChoosingCharacterEvent, playerInfo.Id),
+        this.room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingCharacterEvent, playerInfo.Id),
       );
     }
 
+    this.room.doNotify(notifyOtherPlayer);
     for (const response of await Promise.all(sequentialAsyncResponse)) {
       const playerInfo = Precondition.exists(
         playersInfo.find(info => info.Id === response.fromId),
@@ -269,7 +273,7 @@ export class GameProcessor {
             },
             this.CurrentPlayer.Id,
           );
-          const response = await this.room.onReceivingAsyncReponseFrom(
+          const response = await this.room.onReceivingAsyncResponseFrom(
             GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
             this.CurrentPlayer.Id,
           );
@@ -439,7 +443,10 @@ export class GameProcessor {
       const pendingResponses: {
         [k in PlayerId]: Promise<ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent>>;
       } = {};
+
+      const notifierAllPlayers: PlayerId[] = [];
       for (const player of this.room.getAlivePlayersFrom(this.CurrentPlayer.Id)) {
+        notifierAllPlayers.push(player.Id);
         if (!player.hasCard(this.room, new CardMatcher({ name: ['wuxiekeji'] }))) {
           continue;
         }
@@ -475,9 +482,11 @@ export class GameProcessor {
           byCardId: event.cardId,
           cardUserId: event.fromId,
         };
-        pendingResponses[player.Id] = this.room.askForCardUse(wuxiekejiEvent, player.Id);
+        pendingResponses[player.Id] = this.room.askForCardUse(wuxiekejiEvent, player.Id, true);
       }
 
+      //TODO: enable to custom wuxiekeji response time limit
+      this.room.doNotify(notifierAllPlayers, 15);
       let cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> | undefined;
       while (Object.keys(pendingResponses).length > 0) {
         const response = await Promise.race(Object.values(pendingResponses));
@@ -500,6 +509,7 @@ export class GameProcessor {
 
       if (cardUseEvent) {
         await this.room.useCard(cardUseEvent);
+        await this.room.sleep(1500);
         if (!EventPacker.isTerminated(cardUseEvent)) {
           event.isCancelledOut = true;
           await this.room.trigger(event, CardEffectStage.CardEffectCancelledOut);
@@ -709,7 +719,7 @@ export class GameProcessor {
 
   private iterateEachStage = async <T extends GameEventIdentifiers>(
     identifier: T,
-    event: EventPicker<GameEventIdentifiers, WorkPlace.Server>,
+    event: ServerEventFinder<GameEventIdentifiers>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
     processor?: (stage: GameEventStage) => Promise<void>,
   ) => {
@@ -759,7 +769,7 @@ export class GameProcessor {
 
   private async onHandleDrawCardEvent(
     identifier: GameEventIdentifiers.DrawCardEvent,
-    event: EventPicker<GameEventIdentifiers.DrawCardEvent, WorkPlace.Server>,
+    event: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     const from = this.room.getPlayerById(event.fromId);
@@ -794,18 +804,13 @@ export class GameProcessor {
 
   private async onHandleDamgeEvent(
     identifier: GameEventIdentifiers.DamageEvent,
-    event: EventPicker<GameEventIdentifiers.DamageEvent, WorkPlace.Server>,
+    event: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     const to = this.room.getPlayerById(event.toId);
     const from = event.fromId ? this.room.getPlayerById(event.fromId) : undefined;
     return await this.iterateEachStage(identifier, event, onActualExecuted, async (stage: GameEventStage) => {
-      if (to.Dead) {
-        EventPacker.terminate(event);
-        return;
-      }
-
-      if (stage === DamageEffectStage.DamagedEffect) {
+      if (stage === DamageEffectStage.DamagedEffect && !to.Dead) {
         const { toId, damage, damageType, fromId } = event;
         event.fromId = from?.Dead ? undefined : from?.Id;
 
@@ -831,12 +836,28 @@ export class GameProcessor {
           byReaon: 'damage',
           byCardIds: event.cardIds,
         };
+        EventPacker.addMiddleware(
+          {
+            tag: this.DamageTypeTag,
+            data: event.damageType,
+          },
+          hpChangeEvent,
+        );
+        EventPacker.addMiddleware(
+          {
+            tag: this.BeginnerTag,
+            data: event.beginnerOfTheDamage,
+          },
+          hpChangeEvent,
+        );
+
         await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async hpChangeStage => {
           if (hpChangeStage === HpChangeStage.HpChanging) {
             this.room.broadcast(identifier, event);
           }
           return true;
         });
+        event.beginnerOfTheDamage = hpChangeEvent.beginnerOfTheDamage;
         EventPacker.copyPropertiesTo(hpChangeEvent, event);
         if (EventPacker.isTerminated(event)) {
           return;
@@ -853,9 +874,8 @@ export class GameProcessor {
             EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerDyingEvent, dyingEvent),
           );
         }
-
-        if (to.ChainLocked && event.damageType !== DamageType.Normal) {
-          await this.room.chainedOn(to.Id);
+      } else if (stage === DamageEffectStage.AfterDamagedEffect) {
+        if (event.beginnerOfTheDamage === to.Id) {
           await this.onChainedDamage(event);
         }
       }
@@ -873,7 +893,6 @@ export class GameProcessor {
           ...event,
           toId: player.Id,
           isFromChainedDamage: true,
-          beginnerOfTheDamage: event.fromId,
         });
       }
     }
@@ -945,7 +964,7 @@ export class GameProcessor {
     let isGameOver = false;
     const deadPlayer = this.room.getPlayerById(event.playerId);
     await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      if (stage === PlayerDiedStage.PlayerDied) {
+      if (stage === PlayerDiedStage.PrePlayerDied) {
         this.room.broadcast(identifier, event);
         deadPlayer.bury();
 
@@ -1013,7 +1032,7 @@ export class GameProcessor {
 
   private async onHandleSkillUseEvent(
     identifier: GameEventIdentifiers.SkillUseEvent,
-    event: EventPicker<GameEventIdentifiers.SkillUseEvent, WorkPlace.Server>,
+    event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
@@ -1039,7 +1058,7 @@ export class GameProcessor {
   }
   private async onHandleSkillEffectEvent(
     identifier: GameEventIdentifiers.SkillEffectEvent,
-    event: EventPicker<GameEventIdentifiers.SkillEffectEvent, WorkPlace.Server>,
+    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
@@ -1053,7 +1072,7 @@ export class GameProcessor {
 
   private async onHandleAimEvent(
     identifier: GameEventIdentifiers.AimEvent,
-    event: EventPicker<GameEventIdentifiers.AimEvent, WorkPlace.Server>,
+    event: ServerEventFinder<GameEventIdentifiers.AimEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
@@ -1067,7 +1086,7 @@ export class GameProcessor {
 
   private async onHandleCardEffectEvent(
     identifier: GameEventIdentifiers.CardEffectEvent,
-    event: EventPicker<GameEventIdentifiers.CardEffectEvent, WorkPlace.Server>,
+    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     const card = Sanguosha.getCardById(event.cardId);
@@ -1124,7 +1143,10 @@ export class GameProcessor {
       }
     }
 
-    this.room.broadcast(GameEventIdentifiers.CardUseEvent, event);
+    if (!card.is(CardType.Equip)) {
+      event.animation = event.animation || card.Skill.getAnimationSteps(event);
+    }
+    this.room.broadcast(identifier, event);
     event.translationsMessage = undefined;
 
     if (!this.room.isCardOnProcessing(event.cardId) && !card.is(CardType.DelayedTrick)) {
@@ -1140,13 +1162,9 @@ export class GameProcessor {
     await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       event.toIds = event.toIds && this.room.deadPlayerFilters(event.toIds);
       if (stage === CardUseStage.CardUsing) {
-        if (!card.is(CardType.Equip)) {
-          event.animation = event.animation || card.Skill.getAnimationSteps(event);
-
-          if (card.is(CardType.DelayedTrick)) {
-            EventPacker.terminate(event);
-          }
-        } else {
+        if (card.is(CardType.DelayedTrick)) {
+          EventPacker.terminate(event);
+        } else if (card.is(CardType.Equip)) {
           let existingEquipId = from.getEquipment((card as EquipCard).EquipType);
           if (card.isVirtualCard()) {
             const actualEquip = Sanguosha.getCardById<EquipCard>((card as VirtualCard).ActualCardIds[0]);
@@ -1168,8 +1186,6 @@ export class GameProcessor {
             toArea: CardMoveArea.EquipArea,
           });
         }
-
-        this.room.broadcast(identifier, event);
       }
     });
 
@@ -1185,7 +1201,7 @@ export class GameProcessor {
 
   private async onHandleCardResponseEvent(
     identifier: GameEventIdentifiers.CardResponseEvent,
-    event: EventPicker<GameEventIdentifiers.CardResponseEvent, WorkPlace.Server>,
+    event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     const from = this.room.getPlayerById(event.fromId);
@@ -1617,6 +1633,15 @@ export class GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     const to = this.room.getPlayerById(event.toId);
+    if (event.byReaon === 'damage') {
+      if (to.ChainLocked && EventPacker.getMiddleware<DamageType>(this.DamageTypeTag, event) != DamageType.Normal) {
+        await this.room.chainedOn(to.Id);
+        event.beginnerOfTheDamage = EventPacker.getMiddleware<string>(this.BeginnerTag, event) || to.Id;
+      }
+    }
+    EventPacker.removeMiddleware(this.DamageTypeTag, event);
+    EventPacker.removeMiddleware(this.BeginnerTag, event);
+
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === HpChangeStage.HpChanging) {
         if (event.byReaon === 'recover') {
