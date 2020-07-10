@@ -64,7 +64,7 @@ export class ClientTranslationModule extends TranslationModule {
   public translatePatchedCardText(text: string, dictionary: TranslationsDictionary): JSX.Element {
     const getCardNumberStyle = (cardSuit: CardSuit): React.CSSProperties => {
       if (cardSuit === CardSuit.Heart || cardSuit === CardSuit.Diamond) {
-        return { 
+        return {
           ...this.boldTextStyle,
           color: 'red',
         };
@@ -136,6 +136,10 @@ export class ClientTranslationModule extends TranslationModule {
     );
   }
 
+  public disPatchedPureText(text: string): JSX.Element {
+    return <span style={this.boldTextStyle}>{text.slice(TranslationPack.pureTextSign.length)}</span>;
+  }
+
   public trx(rawText: string): JSX.Element {
     const dispatchedObject = TranslationPack.dispatch(rawText);
     const dictionary = this.dictionary.get(this.currentLanguage);
@@ -168,6 +172,8 @@ export class ClientTranslationModule extends TranslationModule {
           return this.translatePatchedCardText(param, dictionary);
         } else if (TranslationPack.isPlayerObjectText(param)) {
           return this.translatePatchedPlayerText(param, dictionary);
+        } else if (TranslationPack.isPureTextParameter(param)) {
+          return this.disPatchedPureText(param);
         }
       }
 

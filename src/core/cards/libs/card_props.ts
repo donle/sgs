@@ -21,7 +21,7 @@ export type CardProps = {
 };
 
 export type CardChoosingOptions = {
-  [Area in PlayerCardsArea]?: number | CardId[];
+  [K in string | PlayerCardsArea]?: number | CardId[];
 };
 
 export type VirtualCardIdProps = {

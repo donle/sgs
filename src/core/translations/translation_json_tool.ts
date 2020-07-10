@@ -26,6 +26,7 @@ export class TranslationPack {
   public static readonly translateCardObjectSign = TranslationPack.translationObjectSign + 'card:';
   public static readonly translatePlayerObjectSign = TranslationPack.translationObjectSign + 'player:';
   public static readonly translateTextArraySign = TranslationPack.translationObjectSign + 'array:';
+  public static readonly pureTextSign = '@@pure:';
 
   static create(translationJon: PatchedTranslationObject) {
     return new TranslationPack(translationJon);
@@ -97,6 +98,13 @@ export class TranslationPack {
 
   public static isPlayerObjectText(text: string) {
     return text.startsWith(TranslationPack.translatePlayerObjectSign);
+  }
+
+  public static patchPureTextParameter(text: string) {
+    return TranslationPack.pureTextSign + text;
+  }
+  public static isPureTextParameter(text: string) {
+    return text.startsWith(TranslationPack.pureTextSign);
   }
 
   public static patchEmojiOrImageInTranslation(rawText: string | number) {

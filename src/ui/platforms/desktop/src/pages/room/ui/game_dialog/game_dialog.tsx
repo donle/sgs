@@ -28,7 +28,10 @@ export class GameDialog extends React.Component<GameDialogProps> {
   @mobx.observable.ref
   private textMessage: string | undefined;
   @mobx.observable.ref
-  private userMessageDialogStyles: React.CSSProperties = { minHeight: this.textMessageMinHeight };
+  private userMessageDialogStyles: React.CSSProperties = {
+    minHeight: this.textMessageMinHeight,
+    maxHeight: this.textMessageMinHeight,
+  };
   @mobx.observable.ref
   private borderStyles: React.CSSProperties = { bottom: this.textMessageMinHeight };
 
@@ -46,7 +49,8 @@ export class GameDialog extends React.Component<GameDialogProps> {
     this.textMessage = value;
   };
 
-  private readonly onClickSendButton = () => {
+  private readonly onClickSendButton = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     this.props.store.room.broadcast(GameEventIdentifiers.UserMessageEvent, {
       message: this.textMessage!,
       playerId: this.props.presenter.ClientPlayer!.Id,
@@ -119,19 +123,14 @@ export class GameDialog extends React.Component<GameDialogProps> {
             )}
           </div>
         </div>
-        <form className={styles.inputLabel}>
+        <form className={styles.inputLabel} onSubmit={this.onClickSendButton}>
           <Input
             className={styles.chatInput}
             onChange={this.onMessageChange}
             placeholder={this.props.translator.tr('please enter your text here')}
             value={this.textMessage}
           />
-          <Button
-            className={styles.sendButton}
-            variant="primary"
-            onClick={this.onClickSendButton}
-            disabled={!this.textMessage}
-          >
+          <Button className={styles.sendButton} variant="primary" disabled={!this.textMessage}>
             {this.props.translator.tr('send')}
           </Button>
         </form>

@@ -134,9 +134,9 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       (content as any).originalMessage = content.message;
       content.message = TranslationPack.translationJsonPatcher(
         '{0} {1} says: {2}',
-        player.Name,
+        TranslationPack.patchPureTextParameter(player.Name),
         player.CharacterId === undefined ? '' : TranslationPack.patchPlayerInTranslation(player),
-        content.message,
+        TranslationPack.patchPureTextParameter(content.message),
       ).toString();
       this.broadcast(identifier, (content as unknown) as ServerEventFinder<GameEventIdentifiers.UserMessageEvent>);
     }
@@ -179,7 +179,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       gameInfo: room.Info,
       translationsMessage: TranslationPack.translationJsonPatcher(
         'player {0} join in the room',
-        event.playerName,
+        TranslationPack.patchPureTextParameter(event.playerName),
       ).extract(),
       timestamp: event.timestamp,
     });

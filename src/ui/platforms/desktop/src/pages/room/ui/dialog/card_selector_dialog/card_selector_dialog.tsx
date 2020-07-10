@@ -87,12 +87,13 @@ const CardSelector = (props: CardSelectorProps) => {
         continue;
       }
 
+      const fromArea = parseInt(area, 10);
       const cardLine: JSX.Element[] = [];
       if (typeof cardIds === 'number') {
         for (let i = 0; i < cardIds; i++) {
           cardLine.push(
             <CardSlot
-              from={parseInt(area, 10)}
+              from={Number.isNaN(fromArea) ? undefined : fromArea}
               translator={translator}
               imageLoader={imageLoader}
               index={i}
@@ -106,7 +107,7 @@ const CardSelector = (props: CardSelectorProps) => {
         for (const cardId of cardIds) {
           cardLine.push(
             <CardSlot
-              from={parseInt(area, 10)}
+              from={Number.isNaN(fromArea) ? undefined : fromArea}
               key={cardId}
               translator={translator}
               imageLoader={imageLoader}
