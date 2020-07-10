@@ -58,6 +58,7 @@ const getCardsContainerLines = ({
           disabled={disabled || isSelected !== undefined}
           onSelected={onSelected(card)}
           tag={isSelected?.playerObjectText}
+          width={100}
         />,
       );
     }

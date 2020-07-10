@@ -5,9 +5,11 @@
 }
 
 .selectorCard {
-    height: 160px;
-    width: 120px;
     margin: 0px 8px;
+}
+
+.selectorCard.selected {
+    filter: brightness(0.5);
 }
 
 .selecterCardsItem {

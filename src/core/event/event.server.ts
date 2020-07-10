@@ -245,7 +245,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.AskForChoosingCardEvent]: {
     cardIds?: CardId[] | number;
     customCardFields?: {
-      [fieldName: string]: CardId[] | number;
+      [fieldName in string | number]: CardId[] | number;
     };
     toId: PlayerId;
     cardMatcher?: CardMatcherSocketPassenger;

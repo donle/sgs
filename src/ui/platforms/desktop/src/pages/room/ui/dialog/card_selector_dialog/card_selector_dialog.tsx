@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { Card } from 'core/cards/card';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
@@ -28,16 +29,19 @@ const CardSlot = (props: {
 }) => {
   const onSelected = (selected: boolean) => {
     props.onClick && props.onClick(props.card || props.index!, props.from);
+    setSelected(selected);
   };
+  const [selected, setSelected] = React.useState(false);
 
   return (
     <ClientCard
       imageLoader={props.imageLoader}
-      className={styles.selectorCard}
+      className={classNames(styles.selectorCard, { [styles.selected]: selected })}
       card={props.card}
       translator={props.translator}
       disabled={props.card && props.isCardDisabled ? props.isCardDisabled(props.card) : false}
       onSelected={onSelected}
+      width={100}
     />
   );
 };
