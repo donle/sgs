@@ -6,7 +6,7 @@ import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 
 @CommonSkill({name: 'xingshang', description: 'xingshang_description'})
-export class Xingshang extends TriggerSkill {
+export class XingShang extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>, stage?: AllStage) {
     return stage === PlayerDiedStage.PlayerDied;
   }
