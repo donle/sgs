@@ -4,6 +4,9 @@
 
 @value wuColor from '../../../../ui/metrics/metrics.css';
 
+.player {
+    display: flex;
+}
 .playerCard {
     position: relative;
     height: 230px;
@@ -271,4 +274,13 @@
     background-color: #424242;
     color: white;
     font-weight: 600;
+}
+
+.marks {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: calc(gridLine * 2);
+    height: 100%;
+    width: calc(gridLine * 4);
 }

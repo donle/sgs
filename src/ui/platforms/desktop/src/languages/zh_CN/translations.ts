@@ -1,5 +1,4 @@
 import { Word } from 'languages';
-import { Marks } from '../mark_list';
 
 export const cardDictionary: Word[] = [
   { source: 'slash', target: '杀' },
@@ -358,7 +357,7 @@ export const characterDictionary: Word[] = [
   { source: 'longhun', target: '龙魂' },
 ];
 
-export const markDictionary: Word[] = [{ source: Marks.Nightmare, target: '梦魇' }];
+export const markDictionary: Word[] = [{ source: 'nightmare', target: '梦魇' }];
 
 export const skillDescriptions: Word[] = [
   { source: 'jianxiong_description', target: '当你受到伤害后，你可以获得对你造成伤害的牌并摸一张牌。' },

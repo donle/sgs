@@ -1,0 +1,22 @@
+.mark {
+    height: 28px;
+    width: 28px;
+    position: relative;
+}
+.mark img {
+  width: 100%;
+}
+
+.markAmount {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  font-size: 10px;
+  color: white;
+  text-shadow: 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black;
+}
+
+.tooltip {
+  width: 60px;
+  min-width: initial;
+}
