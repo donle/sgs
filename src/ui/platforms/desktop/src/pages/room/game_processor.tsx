@@ -909,15 +909,15 @@ export class GameClientProcessor {
 
       if (selectedCards.length + selectedCardsIndex.length === content.amount) {
         this.presenter.closeDialog();
-      }
 
-      const event: ClientEventFinder<T> = {
-        fromId: content.toId,
-        selectedCards,
-        selectedCardsIndex,
-      };
-      this.store.room.broadcast(type, event);
-      this.endAction();
+        const event: ClientEventFinder<T> = {
+          fromId: content.toId,
+          selectedCards,
+          selectedCardsIndex,
+        };
+        this.store.room.broadcast(type, event);
+        this.endAction();
+      }
     };
 
     const matcher = content.cardMatcher && new CardMatcher(content.cardMatcher);

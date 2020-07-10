@@ -42,7 +42,7 @@ const EmptyCardSlots = (props: { slotName: string; length: number; translator: C
 
 @mobxReact.observer
 export class GuanXingCardSlots extends React.Component<GuanXingDialogProps> {
-  private readonly cardWidth = 120;
+  private readonly cardWidth = 100;
   private readonly cardMargin = 2;
   private topCards: Card[] = [];
   private bottomCards: Card[] = [];
@@ -338,6 +338,7 @@ export class GuanXingCardSlots extends React.Component<GuanXingDialogProps> {
               offsetTop={this.cardPositions[card.Id] && this.cardPositions[card.Id].top}
               className={styles.guanxingCard}
               style={this.cardStyles[index]}
+              width={100}
             />
           ))}
         </div>
