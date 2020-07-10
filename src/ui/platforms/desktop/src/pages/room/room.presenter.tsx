@@ -103,6 +103,11 @@ export class RoomStore {
   } = {};
 
   @mobx.observable.ref
+  onceSkillUsedHistory: {
+    [K in PlayerId]: string[];
+  } = {};
+
+  @mobx.observable.ref
   clientPlayerCardActionsMatcher: (card: Card) => boolean;
   @mobx.observable.ref
   onClickHandCardToPlay: (card: Card, selected: boolean) => void;
@@ -408,6 +413,15 @@ export class RoomPresenter {
       delete this.store.incomingUserMessages[player];
     } else {
       this.store.incomingUserMessages[player] = message;
+    }
+  }
+
+  @mobx.action
+  onceSkillUsed(player: PlayerId, skillName: string) {
+    if (!this.store.onceSkillUsedHistory[player]) {
+      this.store.onceSkillUsedHistory[player] = [skillName];
+    } else {
+      this.store.onceSkillUsedHistory[player].push(skillName);
     }
   }
 }

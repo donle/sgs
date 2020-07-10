@@ -15,6 +15,7 @@ import { GameCommonRules } from 'core/game/game_rules';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { SkillType } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
@@ -991,6 +992,10 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     await this.store.room.useSkill(content);
+    const skill = Sanguosha.getSkillBySkillName(content.skillName);
+    if (skill.SkillType === SkillType.Limit || skill.SkillType === SkillType.Awaken) {
+      this.presenter.onceSkillUsed(content.fromId, content.skillName);
+    }
     this.presenter.broadcastUIUpdate();
   }
 

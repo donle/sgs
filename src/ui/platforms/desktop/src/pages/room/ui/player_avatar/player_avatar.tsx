@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import { CardId } from 'core/cards/libs/card_props';
 import { Player } from 'core/player/player';
 import { PlayerRole } from 'core/player/player_props';
+import { MarkEnum } from 'core/shares/types/mark_list';
 import { Skill, TriggerSkill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
@@ -14,6 +15,7 @@ import { SkillButton } from 'ui/button/skill_button';
 import { Hp } from 'ui/hp/hp';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
+import { AwakenSkillMark, LimitSkillMark, Mark } from '../mark/mark';
 import { Mask } from '../mask/mask';
 import styles from './player_avatar.module.css';
 
@@ -264,64 +266,103 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     this.props.onCloseIncomingMessage && this.props.onCloseIncomingMessage();
   };
 
+  private getOnceSkillMarks() {
+    const clientPlayer = this.props.presenter.ClientPlayer;
+    if (!clientPlayer || clientPlayer.CharacterId === undefined) {
+      return;
+    }
+
+    const marks: JSX.Element[] = [];
+    const limitSkills = clientPlayer.getSkills('limit');
+    const awakenSkills = clientPlayer.getSkills('awaken');
+    marks.push(
+      ...limitSkills.map(skill => (
+        <LimitSkillMark
+          skillName={this.props.translator.tr(skill.Name)}
+          hasUsed={this.props.store.onceSkillUsedHistory[clientPlayer.Id]?.includes(skill.Name)}
+          key={skill.Name}
+        />
+      )),
+    );
+    marks.push(
+      ...awakenSkills.map(skill => (
+        <AwakenSkillMark
+          skillName={this.props.translator.tr(skill.Name)}
+          hasUsed={this.props.store.onceSkillUsedHistory[clientPlayer.Id]?.includes(skill.Name)}
+          key={skill.Name}
+        />
+      )),
+    );
+
+    const playerMarks = clientPlayer.getAllMarks();
+    for (const [markName, amount] of Object.entries(playerMarks)) {
+      marks.push(<Mark amount={amount} markType={markName as MarkEnum} key={markName} />);
+    }
+
+    return marks;
+  }
+
   render() {
     const clientPlayer = this.props.presenter.ClientPlayer;
     const character = clientPlayer?.CharacterId !== undefined ? clientPlayer?.Character : undefined;
     return (
-      <div
-        className={classNames(styles.playerCard)}
-        onClick={this.onClick}
-        onMouseEnter={this.openTooltip}
-        onMouseLeave={this.closeTooltip}
-      >
-        {this.props.incomingMessage && (
-          <Tooltip
-            className={styles.incomingMessage}
-            position={['top']}
-            closeAfter={3}
-            closeCallback={this.onCloseIncomingMessageCallback}
-          >
-            {this.props.incomingMessage}
-          </Tooltip>
-        )}
-        <span className={styles.playerName}>{clientPlayer?.Name}</span>
-        <span
-          className={classNames(styles.highlightBorder, {
-            [styles.selected]: this.getSelected() && !this.props.disabled,
-          })}
-        />
-        {this.PlayerImage !== undefined && <this.PlayerImage />}
-        {character && (
-          <NationalityBadge nationality={character.Nationality} className={styles.playCharacterName}>
-            {this.props.translator.tr(character.Name)}
-          </NationalityBadge>
-        )}
-        {clientPlayer && clientPlayer.Role !== PlayerRole.Unknown && (
-          <Mask className={styles.playerRole} displayedRole={clientPlayer.Role} disabled={true} />
-        )}
+      <>
+        <div
+          className={classNames(styles.playerCard)}
+          onClick={this.onClick}
+          onMouseEnter={this.openTooltip}
+          onMouseLeave={this.closeTooltip}
+        >
+          {this.props.incomingMessage && (
+            <Tooltip
+              className={styles.incomingMessage}
+              position={['top']}
+              closeAfter={3}
+              closeCallback={this.onCloseIncomingMessageCallback}
+            >
+              {this.props.incomingMessage}
+            </Tooltip>
+          )}
+          <span className={styles.playerName}>{clientPlayer?.Name}</span>
+          <span
+            className={classNames(styles.highlightBorder, {
+              [styles.selected]: this.getSelected() && !this.props.disabled,
+            })}
+          />
+          {this.PlayerImage !== undefined && <this.PlayerImage />}
+          {character && (
+            <NationalityBadge nationality={character.Nationality} className={styles.playCharacterName}>
+              {this.props.translator.tr(character.Name)}
+            </NationalityBadge>
+          )}
+          {clientPlayer && clientPlayer.Role !== PlayerRole.Unknown && (
+            <Mask className={styles.playerRole} displayedRole={clientPlayer.Role} disabled={true} />
+          )}
 
-        {!clientPlayer?.isFaceUp() && (
-          <img className={styles.status} src={this.props.imageLoader.getTurnedOverCover().src} alt="" />
-        )}
-        {clientPlayer && clientPlayer.hasDrunk() > 0 && <div className={styles.drunk} />}
-        {clientPlayer && clientPlayer.ChainLocked && (
-          <img className={styles.chain} src={this.props.imageLoader.getChainImage().src} alt="" />
-        )}
+          {!clientPlayer?.isFaceUp() && (
+            <img className={styles.status} src={this.props.imageLoader.getTurnedOverCover().src} alt="" />
+          )}
+          {clientPlayer && clientPlayer.hasDrunk() > 0 && <div className={styles.drunk} />}
+          {clientPlayer && clientPlayer.ChainLocked && (
+            <img className={styles.chain} src={this.props.imageLoader.getChainImage().src} alt="" />
+          )}
 
-        {this.PlayerRoleCard !== undefined && <this.PlayerRoleCard />}
+          {this.PlayerRoleCard !== undefined && <this.PlayerRoleCard />}
 
-        {this.getSkillButtons()}
-        {clientPlayer && (
-          <Hp hp={clientPlayer.Hp} className={styles.playerHp} maxHp={clientPlayer.MaxHp} size="regular" />
-        )}
-        <div className={styles.playerTags}>
-          {this.getSkillTags()}
-          {this.getOutsideAreaCards()}
+          {this.getSkillButtons()}
+          {clientPlayer && (
+            <Hp hp={clientPlayer.Hp} className={styles.playerHp} maxHp={clientPlayer.MaxHp} size="regular" />
+          )}
+          <div className={styles.playerTags}>
+            {this.getSkillTags()}
+            {this.getOutsideAreaCards()}
+          </div>
+          {this.onTooltipOpened && clientPlayer?.CharacterId !== undefined && (
+            <Tooltip position={['bottom', 'right']}>{this.createTooltipContent()}</Tooltip>
+          )}
         </div>
-        {this.onTooltipOpened && clientPlayer?.CharacterId !== undefined && (
-          <Tooltip position={['bottom', 'right']}>{this.createTooltipContent()}</Tooltip>
-        )}
-      </div>
+        <div className={styles.marks}>{this.getOnceSkillMarks()}</div>
+      </>
     );
   }
 }
