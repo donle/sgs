@@ -924,7 +924,7 @@ export class GameClientProcessor {
 
     this.presenter.createDialog(
       <CardSelectorDialog
-        options={content.cardIds}
+        options={content.cardIds || content.customCardFields!}
         onClick={onSelectedCard}
         translator={this.translator}
         isCardDisabled={isCardDisabled}

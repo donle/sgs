@@ -48,6 +48,7 @@ export type DashboardProps = {
 
 type EquipCardItemProps = {
   disabled?: boolean;
+  highlight?: boolean;
   card: Card;
   imageLoader: ImageLoader;
   translator: ClientTranslationModule;
@@ -92,7 +93,7 @@ export class EquipCardItem extends React.Component<EquipCardItemProps> {
   }
 
   render() {
-    const { card, translator } = this.props;
+    const { card, translator, highlight } = this.props;
     return (
       <div
         className={classNames(styles.equipCardItem, {
@@ -102,6 +103,7 @@ export class EquipCardItem extends React.Component<EquipCardItemProps> {
           [styles.offenseRide]: card?.is(CardType.OffenseRide),
           [styles.precious]: card?.is(CardType.Precious),
           [styles.selected]: this.getSelected() && !this.props.disabled,
+          [styles.disabled]: highlight === undefined ? this.props.disabled : !highlight,
         })}
         onClick={this.onCardClick}
       >
@@ -169,6 +171,7 @@ export class Dashboard extends React.Component<DashboardProps> {
             card={card}
             onClick={this.onClickEquipment(card)}
             disabled={!this.props.cardSkillEnableMatcher || !this.props.cardSkillEnableMatcher(card)}
+            highlight={this.props.store.highlightedCards}
           />
         ))}
       </div>

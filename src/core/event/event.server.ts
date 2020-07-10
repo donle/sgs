@@ -243,7 +243,10 @@ export interface ServerEvent extends EventUtilities {
     conversation: string | PatchedTranslationObject;
   };
   [GameEventIdentifiers.AskForChoosingCardEvent]: {
-    cardIds: CardId[] | number;
+    cardIds?: CardId[] | number;
+    customCardFields?: {
+      [fieldName: string]: CardId[] | number;
+    };
     toId: PlayerId;
     cardMatcher?: CardMatcherSocketPassenger;
     amount: number;

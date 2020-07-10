@@ -24,7 +24,9 @@
 .equipCardNumber {
     margin-right: halfGridLine;
 }
-
+.equipCardItem.disabled:not(.selected) {
+    filter: brightness(0.5);
+}
 .handBoard {
     display: flex;
     flex-direction: column;
@@ -117,6 +119,7 @@
 .equipCardImage {
     width: 100%;
     position: absolute;
+    z-index: 2;
 }
 
 .weapon {
@@ -156,6 +159,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    color: white;
 }
 .trustedCover.hide {
     display: none;
