@@ -27,6 +27,7 @@ import {
   TransformSkill,
   TriggerSkill,
   ViewAsSkill,
+  SkillDependency,
 } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 
@@ -77,6 +78,16 @@ export abstract class Player implements PlayerInfo {
   private marks: {
     [markName: string]: number;
   } = {};
+
+  private disabledSkillList: {
+    Type: SkillType[];
+    Dependency: SkillDependency[];
+    SkillName: string[];
+  } = {
+    Type: [],
+    Dependency: [],
+    SkillName: ['bazhen'],
+  };
 
   constructor(
     playerCards?: PlayerCards & {
@@ -179,6 +190,15 @@ export abstract class Player implements PlayerInfo {
     }
 
     return ruleCardUse;
+  }
+
+  public canUseSkill(skill: Skill) {
+    return (
+      !this.disabledSkillList.Type.includes(skill.SkillType) &&
+      !this.disabledSkillList.Dependency.includes(skill.SkillDependency) &&
+      !this.disabledSkillList.SkillName.includes(skill.GeneralName) &&
+      !this.disabledSkillList.SkillName.includes(skill.Alias)
+    );
   }
 
   public resetCardUseHistory(cardName?: string) {
@@ -716,6 +736,55 @@ export abstract class Player implements PlayerInfo {
       return 'offline';
     } else if (this.trusted) {
       return 'trusted';
+    }
+  }
+
+  /*temporary*/
+  public disableSkillByType(...skillTypes: SkillType[]) {
+    for (const type of skillTypes) {
+      this.disabledSkillList.Type.push(type);
+    }
+  }
+
+  public disableSkillByDependency(...skillDependencies: SkillDependency[]) {
+    for (const dependency of skillDependencies) {
+      this.disabledSkillList.Dependency.push(dependency);
+    }
+  }
+
+  public disableSkillBySkillName(...skillGeneralNames: string[]) {
+    for (const generalName of skillGeneralNames) {
+      this.disabledSkillList.SkillName.push(generalName);
+    }
+  }
+
+  public enableSkillByType(...skillTypes: SkillType[]) {
+    for (const type of skillTypes) {
+      const index = this.disabledSkillList.Type.indexOf(type);
+      if (index == -1) {
+        continue;
+      }
+      this.disabledSkillList.Type.splice(index, 1);
+    }
+  }
+
+  public enableSkillByDependency(...skillDependencies: SkillDependency[]) {
+    for (const dependency of skillDependencies) {
+      const index = this.disabledSkillList.Dependency.indexOf(dependency);
+      if (index == -1) {
+        continue;
+      }
+      this.disabledSkillList.Dependency.splice(index, 1);
+    }
+  }
+
+  public enableSkillBySkillName(...skillGeneralNames: string[]) {
+    for (const generalName of skillGeneralNames) {
+      const index = this.disabledSkillList.SkillName.indexOf(generalName);
+      if (index == -1) {
+        continue;
+      }
+      this.disabledSkillList.SkillName.splice(index, 1);
     }
   }
 }

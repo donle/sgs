@@ -21,7 +21,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { RoomInfo } from 'core/shares/types/server_types';
-import { FilterSkill, RulesBreakerSkill, TransformSkill } from 'core/skills/skill';
+import { FilterSkill, RulesBreakerSkill, TransformSkill, SkillType, SkillDependency } from 'core/skills/skill';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
 
 export type RoomId = number;
@@ -594,5 +594,36 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
   public unsetAwaitingResponseEvent() {
     this.awaitResponseEvent = undefined;
+  }
+
+  /*Tmporary*/
+  public disableSkillByType(toId: PlayerId, ...skillTypes: SkillType[]) {
+    const player = this.getPlayerById(toId);
+    player.disableSkillByType(...skillTypes);
+  }
+
+  public disableSkillByDependency(toId: PlayerId, ...skillDependencies: SkillDependency[]) {
+    const player = this.getPlayerById(toId);
+    player.disableSkillByDependency(...skillDependencies);
+  }
+
+  public disableSkillBySkillName(toId: PlayerId, ...skillGeneralNames: string[]) {
+    const player = this.getPlayerById(toId);
+    player.disableSkillBySkillName(...skillGeneralNames);
+  }
+
+  public enableSkillByType(toId: PlayerId, ...skillTypes: SkillType[]) {
+    const player = this.getPlayerById(toId);
+    player.enableSkillByType(...skillTypes);
+  }
+
+  public enableSkillByDependency(toId: PlayerId, ...skillDependencies: SkillDependency[]) {
+    const player = this.getPlayerById(toId);
+    player.enableSkillByDependency(...skillDependencies);
+  }
+
+  public enableSkillBySkillName(toId: PlayerId, ...skillGeneralNames: string[]) {
+    const player = this.getPlayerById(toId);
+    player.enableSkillBySkillName(...skillGeneralNames);
   }
 }

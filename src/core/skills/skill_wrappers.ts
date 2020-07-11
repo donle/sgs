@@ -1,7 +1,7 @@
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { Skill, SkillType } from './skill';
+import { Skill, SkillType, SkillDependency } from './skill';
 
 type SKillConstructor<T extends Skill> = new () => T;
 function onCalculatingSkillUsageWrapper(
@@ -59,6 +59,7 @@ function skillPropertyWrapper(
     uniqueSkill?: boolean;
     selfTargetSkill?: boolean;
     sideEffectSkill?: boolean;
+    skillDependency?: SkillDependency;
   },
   constructor: new () => any,
 ): any {
@@ -68,6 +69,7 @@ function skillPropertyWrapper(
     private uniqueSkill: boolean;
     private selfTargetSkill: boolean;
     private sideEffectSkill: boolean;
+    private skillDependency: SkillDependency;
     public canUse: (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) => boolean;
 
     constructor() {
@@ -89,6 +91,10 @@ function skillPropertyWrapper(
       if (options.sideEffectSkill !== undefined) {
         this.sideEffectSkill = options.sideEffectSkill;
         this.skillName = '~' + this.skillName;
+      }
+
+      if (options.skillDependency !== undefined) {
+        this.skillDependency = options.skillDependency;
       }
     }
   } as any;
@@ -171,5 +177,16 @@ export function SideEffectSkill<T extends Skill>(constructorFunction: SKillConst
     }
   } as any;
 }
+
+export const SetSkillDependency = (dependency: SkillDependency) => <T extends Skill>(
+  constructorFunction: SKillConstructor<T>,
+) => {
+  return skillPropertyWrapper(
+    {
+      skillDependency: dependency,
+    },
+    constructorFunction as any,
+  );
+};
 
 export type SkillPrototype<T extends Skill> = new () => T;

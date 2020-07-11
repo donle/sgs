@@ -5,8 +5,9 @@ import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { CommonSkill, TriggerSkill } from 'core/skills/skill';
+import { CommonSkill, SetSkillDependency, SkillDependency, TriggerSkill } from 'core/skills/skill';
 
+@SetSkillDependency(SkillDependency.Armor)
 @CommonSkill({ name: 'baguazhen', description: 'baguazhen_description' })
 export class BaGuaZhenSkill extends TriggerSkill {
   public isAutoTrigger() {

@@ -17,8 +17,17 @@ export const enum SkillType {
   Limit,
 }
 
+export const enum SkillDependency {
+  None,
+  Weapon,
+  Armor,
+  OffenseRide,
+  DefenseRide,
+}
+
 export abstract class Skill {
   private skillType: SkillType = SkillType.Common;
+  private skillDependency: SkillDependency = SkillDependency.None;
   private shadowSkill = false;
   private lordSkill = false;
   private uniqueSkill = false;
@@ -94,6 +103,10 @@ export abstract class Skill {
     return this.skillName.replace(/(#|~)+/, '');
   }
 
+  public get Alias() {
+    return this.GeneralName;
+  }
+
   public static get Description() {
     return '';
   }
@@ -125,6 +138,10 @@ export abstract class Skill {
 
   public get SkillType() {
     return this.skillType;
+  }
+
+  public get SkillDependency() {
+    return this.skillDependency;
   }
 }
 

@@ -223,9 +223,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     for (const player of this.getAlivePlayersFrom()) {
       const canTriggerSkills: TriggerSkill[] = [];
       for (const skill of player.getPlayerSkills<TriggerSkill>('trigger')) {
-        const canTrigger = bySkills
-          ? bySkills.find(bySkill => UniqueSkillRule.isProhibitedBySkillRule(bySkill, skill)) === undefined
-          : true;
+        const canTrigger = player.canUseSkill(skill);
 
         if (canTrigger) {
           canTriggerSkills.push(skill);
@@ -234,13 +232,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
       for (const equip of player.getCardIds(PlayerCardsArea.EquipArea)) {
         const equipCard = Sanguosha.getCardById(equip);
-        if (!(equipCard.Skill instanceof TriggerSkill) || UniqueSkillRule.isProhibited(equipCard.Skill, player)) {
+        if (!(equipCard.Skill instanceof TriggerSkill)) {
           continue;
         }
 
-        const canTrigger = bySkills
-          ? bySkills.find(skill => !UniqueSkillRule.canTriggerCardSkillRule(skill, equipCard)) === undefined
-          : true;
+        const canTrigger = player.canUseSkill(equipCard.Skill);
         if (canTrigger) {
           canTriggerSkills.push(equipCard.Skill);
         }
@@ -313,6 +309,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       }
     }
   }
+
   public isBuried(cardId: CardId): boolean {
     return this.dropStack.includes(cardId);
   }
