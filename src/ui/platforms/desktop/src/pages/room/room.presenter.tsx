@@ -250,8 +250,8 @@ export class RoomPresenter {
     if (props.optionsActionHanlder) {
       for (const [option, action] of Object.entries(props.optionsActionHanlder)) {
         props.optionsActionHanlder[option] = () => {
-          action();
           this.closeIncomingConversation();
+          action();
         };
       }
     }
