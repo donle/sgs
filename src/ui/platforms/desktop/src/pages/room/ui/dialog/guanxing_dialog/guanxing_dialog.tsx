@@ -33,7 +33,7 @@ const EmptyCardSlots = (props: { slotName: string; length: number; translator: C
   const slots: JSX.Element[] = [];
   for (let i = 0; i < props.length; i++) {
     slots.push(
-      <CardSlot slotName={props.slotName} className={styles.cardSlot} key={i} translator={props.translator} />,
+      <CardSlot width={100} slotName={props.slotName} className={styles.cardSlot} key={i} translator={props.translator} />,
     );
   }
 
@@ -120,7 +120,7 @@ export class GuanXingCardSlots extends React.Component<GuanXingDialogProps> {
         }
       }
       this.cardPositions[movingCard.Id].left = toCardOffset;
-      this.cardPositions[movingCard.Id].top = to === 'bottom' ? 184 : 0;
+      this.cardPositions[movingCard.Id].top = to === 'bottom' ? 158 : 0;
     }
   }
 

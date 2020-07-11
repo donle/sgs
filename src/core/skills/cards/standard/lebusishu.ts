@@ -54,6 +54,7 @@ export class LeBuSiShuSkill extends ActiveSkill {
 
     return true;
   }
+
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const { toIds, cardId } = event;
     const to = Precondition.exists(toIds, 'Unknown targets in lebusishu')[0];

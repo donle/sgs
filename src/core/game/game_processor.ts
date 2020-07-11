@@ -284,10 +284,7 @@ export class GameProcessor {
 
           if (response.eventName === GameEventIdentifiers.CardUseEvent) {
             const event = response.event as ClientEventFinder<GameEventIdentifiers.CardUseEvent>;
-
-            if (await this.room.preUseCard(event)) {
-              await this.room.useCard(event);
-            }
+            await this.room.useCard(event);
           } else if (response.eventName === GameEventIdentifiers.SkillUseEvent) {
             await this.room.useSkill(response.event as ClientEventFinder<GameEventIdentifiers.SkillUseEvent>);
           } else {
@@ -1427,7 +1424,6 @@ export class GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>,
   ) {
     const { toArea, movingCards, toOutsideArea, placeAtTheBottomOfDrawStack } = event;
-
     for (const { card, fromArea } of movingCards) {
       if (fromArea === CardMoveArea.DrawStack) {
         this.room.getCardFromDrawStack(card);

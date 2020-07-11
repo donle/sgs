@@ -20,7 +20,7 @@ export class GuoSe extends ActiveSkill {
   public numberOfTargets() {
     return 1;
   }
-  
+
   public isAvailableTarget(
     owner: PlayerId,
     room: Room,

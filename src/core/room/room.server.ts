@@ -621,7 +621,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                   ? TranslationPack.patchPlayerInTranslation(...cardUseEvent.toIds.map(id => this.getPlayerById(id)))
                   : '',
               ).extract(),
-      });
+      }, true);
     }
 
     await this.trigger(cardUseEvent, CardUseStage.PreCardUse);
@@ -693,6 +693,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   };
 
   public async useCard(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
+    if (!(await this.preUseCard(event))) {
+      return;
+    }
+
     EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, event);
 
     await super.useCard(event);
@@ -779,22 +783,28 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     });
   }
 
-  public async useSkill(content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
-    const skill = Sanguosha.getSkillBySkillName(content.skillName);
-    if (!(await skill.beforeUse(this, content))) {
-      return;
+  public async useSkill(content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>, recordOnly?: boolean) {
+    if (!recordOnly) {
+      const skill = Sanguosha.getSkillBySkillName(content.skillName);
+      if (!(await skill.beforeUse(this, content))) {
+        return;
+      }
     }
 
     await super.useSkill(content);
-    const acutalTargets =
-      content.toIds && Sanguosha.getSkillBySkillName(content.skillName).nominateForwardTarget(content.toIds);
-    if (acutalTargets && acutalTargets.length > 1) {
-      this.sortPlayersByPosition(content.toIds!);
-    }
+    if (!recordOnly) {
+      const acutalTargets =
+        content.toIds && Sanguosha.getSkillBySkillName(content.skillName).nominateForwardTarget(content.toIds);
+      if (acutalTargets && acutalTargets.length > 1) {
+        this.sortPlayersByPosition(content.toIds!);
+      }
 
-    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.SkillUseEvent, content);
-    if (!EventPacker.isTerminated(content)) {
-      await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.SkillEffectEvent, content);
+      await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.SkillUseEvent, content);
+      if (!EventPacker.isTerminated(content)) {
+        await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.SkillEffectEvent, content);
+      }
+    } else {
+      this.broadcast(GameEventIdentifiers.SkillUseEvent, content);
     }
   }
 
