@@ -365,7 +365,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
               {player.hasDrunk() > 0 && <div className={styles.drunk} />}
               {player.ChainLocked && <img className={styles.chain} src={imageLoader.getChainImage().src} alt="" />}
 
-              <p className={styles.playerSeats}>{translator.tr(`number ${player.Position}`)}</p>
+              <p className={styles.playerSeats}>{translator.tr(`seat ${player.Position}`)}</p>
             </>
           ) : (
             <img

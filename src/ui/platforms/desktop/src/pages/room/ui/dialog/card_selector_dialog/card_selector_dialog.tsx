@@ -3,6 +3,7 @@ import { Card } from 'core/cards/card';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerCardsArea } from 'core/player/player_props';
+import { Functional } from 'core/shares/libs/functional';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
@@ -125,7 +126,10 @@ const CardSelector = (props: CardSelectorProps) => {
 
       optionCardsLine.push(
         <div className={styles.cardLine} key={optionCardsLine.length}>
-          {cardLine}
+          <span className={styles.listName}>
+            {translator.tr(Number.isNaN(fromArea) ? area : Functional.getPlayerCardAreaText(fromArea))}
+          </span>
+          <div className={styles.cardList}>{cardLine}</div>
         </div>,
       );
     }
@@ -139,8 +143,12 @@ export const CardSelectorDialog = (props: {
   imageLoader: ImageLoader;
   onClick?(card: Card | number, fromArea?: PlayerCardsArea): void;
   isCardDisabled?(card: Card): boolean;
-}) => (
-  <BaseDialog title={props.translator.tr('please choose a card')}>
-    <CardSelector {...props} />
-  </BaseDialog>
-);
+  title?: string;
+}) => {
+  const { title, ...selectorProps } = props;
+  return (
+    <BaseDialog title={props.translator.tr(title || 'please choose a card')}>
+      <CardSelector {...selectorProps} />
+    </BaseDialog>
+  );
+};
