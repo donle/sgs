@@ -1,7 +1,7 @@
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { Skill, SkillType, SkillDependency } from './skill';
+import { Skill, SkillDependency, SkillType } from './skill';
 
 type SKillConstructor<T extends Skill> = new () => T;
 function onCalculatingSkillUsageWrapper(

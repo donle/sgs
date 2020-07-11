@@ -23,11 +23,11 @@ import {
   GlobalFilterSkill,
   RulesBreakerSkill,
   Skill,
+  SkillDependency,
   SkillType,
   TransformSkill,
   TriggerSkill,
   ViewAsSkill,
-  SkillDependency,
 } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 

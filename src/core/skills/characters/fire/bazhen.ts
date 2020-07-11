@@ -2,10 +2,9 @@ import { CardType } from 'core/cards/card';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { BaGuaZhenSkill } from 'core/skills/cards/standard/baguazhen';
-import { CompulsorySkill, SetSkillDependency } from 'core/skills/skill_wrappers';
 import { Logger } from 'core/shares/libs/logger/logger';
-import { SkillDependency } from 'core/skills/skill';
+import { BaGuaZhenSkill } from 'core/skills/cards/standard/baguazhen';
+import { CompulsorySkill } from 'core/skills/skill_wrappers';
 
 const log = new Logger();
 @CompulsorySkill({ name: 'bazhen', description: 'bazhen_description' })
