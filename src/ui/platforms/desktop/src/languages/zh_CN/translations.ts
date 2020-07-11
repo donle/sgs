@@ -1387,14 +1387,6 @@ export const eventDictionary: Word[] = [
     target: '请选择：1.摸{0}张牌并翻面；2.弃置{0}张牌并失去1点体力',
   },
   {
-    source: 'please choose fangzhu options:{0}',
-    target: '请选择：1.摸{0}张牌并翻面；2.弃置{0}张牌并失去1点体力',
-  },
-  {
-    source: 'please choose fangzhu options:{0}',
-    target: '请选择：1.摸{0}张牌并翻面；2.弃置{0}张牌并失去1点体力',
-  },
-  {
     source: 'player {0} join in the room',
     target: '玩家 {0} 进入了房间',
   },
