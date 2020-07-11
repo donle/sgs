@@ -20,7 +20,9 @@ const PlayerInfoTable = (props: {
   className?: string;
 }) => {
   const [handcards, setHandcards] = React.useState<CardId[]>([]);
+  const [activePlayer, setActivePlayer] = React.useState<Player>();
   const onSetHandCards = (player: Player) => () => {
+    setActivePlayer(player);
     setHandcards(player.getCardIds(PlayerCardsArea.HandArea));
   };
   const onClearHandCards = () => {
@@ -44,7 +46,7 @@ const PlayerInfoTable = (props: {
           <span className={styles.handcards}>
             <Button variant="primary" onMouseEnter={onSetHandCards(player)} onMouseLeave={onClearHandCards}>
               {props.translator.tr('check')}
-              {handcards.length > 0 && (
+              {activePlayer === player && handcards.length > 0 && (
                 <Tooltip position={['bottom']} className={styles.tooltip}>
                   {handcards.map(cardId => (
                     <ClientCard
@@ -86,7 +88,9 @@ export const GameOverDialog = (props: {
         <PlayerInfoTable imageLoader={imageLoader} players={losers} translator={translator} />
       </div>
       <div className={styles.actionButtons}>
-        <Button variant="primary" onClick={backToLobby}>{translator.tr('back to lobby')}</Button>
+        <Button variant="primary" onClick={backToLobby}>
+          {translator.tr('back to lobby')}
+        </Button>
       </div>
     </div>
   );

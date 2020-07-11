@@ -10,7 +10,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'wuhun', description: 'wuhun_description' })
 export class WuHun extends TriggerSkill {
-  public static readonly Nightmare: string = 'Nightmare';
+  public static readonly Nightmare: string = 'nightmare';
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage): boolean {
     return stage === DamageEffectStage.AfterDamagedEffect;

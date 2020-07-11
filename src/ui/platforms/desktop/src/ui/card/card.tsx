@@ -51,6 +51,7 @@ export class ClientCard extends React.Component<ClientCardProps> {
       }
       this.props.onSelected && this.props.onSelected(this.selected);
     }
+    this.forceUpdate();
   });
 
   @mobx.action

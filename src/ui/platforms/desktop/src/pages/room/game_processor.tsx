@@ -15,6 +15,7 @@ import { GameCommonRules } from 'core/game/game_rules';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { SkillType } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
@@ -77,7 +78,6 @@ export class GameClientProcessor {
       const result = this.presenter.ClientPlayer!.AI.onAction(this.store.room, identifier, event) as ClientEventFinder<
         T
       >;
-      result.status = 'trusted';
       this.store.room.broadcast(identifier, result);
       this.presenter.closeDialog();
       this.presenter.closeIncomingConversation();
@@ -878,6 +878,7 @@ export class GameClientProcessor {
         options={content.options}
         onClick={onSelectedCard}
         translator={this.translator}
+        title={content.customMessage}
       />,
     );
   }
@@ -907,15 +908,15 @@ export class GameClientProcessor {
 
       if (selectedCards.length + selectedCardsIndex.length === content.amount) {
         this.presenter.closeDialog();
-      }
 
-      const event: ClientEventFinder<T> = {
-        fromId: content.toId,
-        selectedCards,
-        selectedCardsIndex,
-      };
-      this.store.room.broadcast(type, event);
-      this.endAction();
+        const event: ClientEventFinder<T> = {
+          fromId: content.toId,
+          selectedCards,
+          selectedCardsIndex,
+        };
+        this.store.room.broadcast(type, event);
+        this.endAction();
+      }
     };
 
     const matcher = content.cardMatcher && new CardMatcher(content.cardMatcher);
@@ -923,11 +924,12 @@ export class GameClientProcessor {
 
     this.presenter.createDialog(
       <CardSelectorDialog
-        options={content.cardIds}
+        options={content.cardIds || content.customCardFields!}
         onClick={onSelectedCard}
         translator={this.translator}
         isCardDisabled={isCardDisabled}
         imageLoader={this.imageLoader}
+        title={content.customMessage}
       />,
     );
 
@@ -990,6 +992,10 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     await this.store.room.useSkill(content);
+    const skill = Sanguosha.getSkillBySkillName(content.skillName);
+    if (skill.SkillType === SkillType.Limit || skill.SkillType === SkillType.Awaken) {
+      this.presenter.onceSkillUsed(content.fromId, content.skillName);
+    }
     this.presenter.broadcastUIUpdate();
   }
 

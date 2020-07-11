@@ -74,9 +74,7 @@
 .disabled {
     filter: brightness(0.5);
 }
-.selected {
-    border-color: red;
-}
+
 .clientCard.selected {
     margin-top: -16px;
 }

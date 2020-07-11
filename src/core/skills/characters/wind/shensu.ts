@@ -14,7 +14,7 @@ export class ShenSu extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage) {
     return (
       stage === PhaseChangeStage.BeforePhaseChange &&
-      [PlayerPhase.DrawCardStage, PlayerPhase.PlayCardStage, PlayerPhase.DropCardStage].includes(event.to)
+      [PlayerPhase.JudgeStage, PlayerPhase.PlayCardStage, PlayerPhase.DropCardStage].includes(event.to)
     );
   }
 
@@ -70,7 +70,10 @@ export class ShenSu extends TriggerSkill {
     const { triggeredOnEvent, toIds, fromId, cardIds } = skillUseEvent;
     const phaseChangeEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
     room.endPhase(phaseChangeEvent.to);
-    if (cardIds && cardIds.length > 0) {
+    if (phaseChangeEvent.to === PlayerPhase.JudgeStage) {
+      await room.skip(fromId, PlayerPhase.DrawCardStage);
+    }
+    if (phaseChangeEvent.to === PlayerPhase.PlayCardStage && cardIds && cardIds.length > 0) {
       room.removeFlag(fromId, this.Name);
       await room.dropCards(CardMoveReason.SelfDrop, cardIds, fromId, fromId, this.Name);
     }

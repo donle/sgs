@@ -243,7 +243,11 @@ export interface ServerEvent extends EventUtilities {
     conversation: string | PatchedTranslationObject;
   };
   [GameEventIdentifiers.AskForChoosingCardEvent]: {
-    cardIds: CardId[] | number;
+    cardIds?: CardId[] | number;
+    customCardFields?: {
+      [fieldName in string | number]: CardId[] | number;
+    };
+    customMessage?: string;
     toId: PlayerId;
     cardMatcher?: CardMatcherSocketPassenger;
     amount: number;
@@ -252,6 +256,7 @@ export interface ServerEvent extends EventUtilities {
     fromId: PlayerId;
     toId: PlayerId;
     options: CardChoosingOptions;
+    customMessage?: string;
   };
   [GameEventIdentifiers.AskForSkillUseEvent]: {
     invokeSkillNames: string[];
@@ -366,6 +371,10 @@ export interface ServerEvent extends EventUtilities {
     status: 'online' | 'offline' | 'trusted' | 'player';
     toId: PlayerId;
   };
+  [GameEventIdentifiers.PhaseSkippedEvent]: {
+    playerId: PlayerId;
+    skippedPhase: PlayerPhase;
+  }
 }
 
 export type PinDianResultType = {

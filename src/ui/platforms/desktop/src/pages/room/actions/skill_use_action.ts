@@ -32,52 +32,67 @@ export class SkillUseAction extends BaseAction {
     this.askForEvent = askForEvent;
   }
 
+  private invokeSpecifiedSkill(skillName: string, translator: ClientTranslationModule, callback: () => void) {
+    if (!EventPacker.isUncancellabelEvent(this.askForEvent)) {
+      this.presenter.enableActionButton('cancel');
+    }
+
+    const event: ClientEventFinder<GameEventIdentifiers.AskForSkillUseEvent> = {
+      invoke: undefined,
+      fromId: this.presenter.ClientPlayer!.Id,
+    };
+    const skill = Sanguosha.getSkillBySkillName<TriggerSkill>(skillName);
+    this.presenter.createIncomingConversation({
+      conversation: skill.getSkillLog(this.store.room, this.askForEvent),
+      translator,
+    });
+    this.selectSkill(skill);
+    this.onPlay();
+    this.enableToCallAction() && this.presenter.enableActionButton('confirm');
+
+    this.presenter.defineConfirmButtonActions(() => {
+      event.invoke = skillName;
+      event.cardIds = this.selectedCards;
+      event.toIds = this.selectedTargets;
+      this.store.room.broadcast(GameEventIdentifiers.AskForSkillUseEvent, event);
+      this.presenter.closeIncomingConversation();
+      this.resetActionHandlers();
+      this.resetAction();
+      this.presenter.resetSelectedSkill();
+      callback();
+    });
+    !EventPacker.isUncancellabelEvent(this.askForEvent) &&
+      this.presenter.defineCancelButtonActions(() => {
+        this.store.room.broadcast(GameEventIdentifiers.AskForSkillUseEvent, event);
+        this.presenter.closeIncomingConversation();
+        this.resetActionHandlers();
+        this.resetAction();
+        this.presenter.resetSelectedSkill();
+        callback();
+      });
+  }
+
   onSelect(translator: ClientTranslationModule) {
     return new Promise<void>(resolve => {
       const { invokeSkillNames, toId } = this.askForEvent;
       if (toId !== this.presenter.ClientPlayer!.Id) {
-        return;
+        return resolve();
       }
 
       if (invokeSkillNames.length === 1) {
-        const skillName = invokeSkillNames[0];
-        const skill = Sanguosha.getSkillBySkillName<TriggerSkill>(skillName);
-        this.presenter.createIncomingConversation({
-          conversation: skill.getSkillLog(this.store.room, this.askForEvent),
-          translator,
-        });
-
-        const event: ClientEventFinder<GameEventIdentifiers.AskForSkillUseEvent> = {
-          invoke: undefined,
-          fromId: toId,
-        };
-        this.selectSkill(skill);
-        this.onPlay();
-        this.enableToCallAction() && this.presenter.enableActionButton('confirm');
-
-        this.presenter.defineConfirmButtonActions(() => {
-          event.invoke = skillName;
-          event.cardIds = this.selectedCards;
-          event.toIds = this.selectedTargets;
-          this.store.room.broadcast(GameEventIdentifiers.AskForSkillUseEvent, event);
-          this.presenter.closeIncomingConversation();
-          this.resetActionHandlers();
-          this.resetAction();
-          this.presenter.resetSelectedSkill();
-          resolve();
-        });
-
-        !EventPacker.isUncancellabelEvent(this.askForEvent) &&
-          this.presenter.defineCancelButtonActions(() => {
-            this.store.room.broadcast(GameEventIdentifiers.AskForSkillUseEvent, event);
-            this.presenter.closeIncomingConversation();
-            this.resetActionHandlers();
-            this.resetAction();
-            this.presenter.resetSelectedSkill();
-            resolve();
-          });
+        this.invokeSpecifiedSkill(invokeSkillNames[0], translator, resolve);
       } else {
-        //TODO: need to refactor, when multiple skills triggered at the same time
+        const actionHandlers = {};
+        for (const skillName of invokeSkillNames) {
+          actionHandlers[skillName] = () => {
+            this.invokeSpecifiedSkill(skillName, translator, resolve);
+          };
+        }
+        this.presenter.createIncomingConversation({
+          optionsActionHanlder: actionHandlers,
+          translator: this.translator,
+          conversation: 'please choose a skill',
+        });
       }
     });
   }

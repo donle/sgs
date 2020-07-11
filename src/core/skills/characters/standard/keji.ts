@@ -31,7 +31,7 @@ export class KeJi extends TriggerSkill {
   }
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    room.skip(skillUseEvent.fromId, PlayerPhase.DropCardStage);
+    await room.skip(skillUseEvent.fromId, PlayerPhase.DropCardStage);
 
     return true;
   }

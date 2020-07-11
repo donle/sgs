@@ -1,5 +1,4 @@
 import { Word } from 'languages';
-import { Marks } from '../mark_list';
 
 export const cardDictionary: Word[] = [
   { source: 'slash', target: '杀' },
@@ -335,6 +334,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'god_zhugeliang', target: '神诸葛亮' },
   { source: 'qixing', target: '七星' },
+  { source: '#qixing', target: '七星' },
   { source: 'kuangfeng', target: '狂风' },
   { source: 'dawu', target: '大雾' },
   { source: 'god_caocao', target: '神曹操' },
@@ -358,7 +358,7 @@ export const characterDictionary: Word[] = [
   { source: 'longhun', target: '龙魂' },
 ];
 
-export const markDictionary: Word[] = [{ source: Marks.Nightmare, target: '梦魇' }];
+export const markDictionary: Word[] = [{ source: 'nightmare', target: '梦魇' }];
 
 export const skillDescriptions: Word[] = [
   { source: 'jianxiong_description', target: '当你受到伤害后，你可以获得对你造成伤害的牌并摸一张牌。' },
@@ -976,19 +976,18 @@ export const generalDictionary: Word[] = [
   { source: 'seat 5', target: '六号位' },
   { source: 'seat 6', target: '七号位' },
   { source: 'seat 7', target: '八号位' },
-  { source: 'number 0', target: '一' },
-  { source: 'number 1', target: '二' },
-  { source: 'number 2', target: '三' },
-  { source: 'number 3', target: '四' },
-  { source: 'number 4', target: '五' },
-  { source: 'number 5', target: '六' },
-  { source: 'number 6', target: '七' },
-  { source: 'number 7', target: '八' },
   { source: 'you', target: '你' },
   { source: 'heart', target: '红桃' },
   { source: 'spade', target: '黑桃' },
   { source: 'club', target: '梅花' },
   { source: 'diamond', target: '方块' },
+
+  { source: 'draw stack', target: '摸牌堆' },
+  { source: 'drop stack', target: '弃牌堆' },
+  { source: 'hand area', target: '手牌区' },
+  { source: 'equip area', target: '装备区' },
+  { source: 'judge area', target: '判定区' },
+  { source: 'outside area', target: '额外区域' },
 
   { source: 'prepare stage', target: '准备阶段' },
   { source: 'judge stage', target: '判定阶段' },
@@ -1034,6 +1033,7 @@ export const eventDictionary: Word[] = [
   { source: 'obtained', target: '获得' },
   { source: 'lost', target: '失去' },
   { source: '{0} {1} {2} {3} marks', target: '{0} {1}了 {2} 枚 {3} 标记' },
+  { source: 'please choose a skill', target: '请选择一个技能' },
   {
     source: 'do you want to trigger skill {0} ?',
     target: '是否发动技能 【{0}】?',
@@ -1126,6 +1126,7 @@ export const eventDictionary: Word[] = [
     source: '{0} obtains {1} cards from {2}',
     target: '{0} 获得了 {2} 的 {1} 张牌',
   },
+  { source: 'please assign others no more than 2 handcards', target: '是否将至多两张手牌交给其他角色' },
   { source: '{0} obtains {1} cards', target: '{0} 获得了 {1} 张牌' },
   { source: 'please drop {0} cards', target: '请弃置 {1} 张牌' },
   { source: '{0} drops cards {1}', target: '{0} 弃置了 {1}' },
@@ -1346,6 +1347,11 @@ export const eventDictionary: Word[] = [
   },
   { source: 'haoshi:please choose handcards and a target', target: '请选择交给的手牌与一名目标角色' },
 
+  { source: 'please select cards to swap', target: '请选择要交换的牌' },
+  {
+    source: '{0} used skill {1}, swapped {2} handcards from qixing cards pile',
+    target: '{0} 使用了技能 【{1}】，从七星堆交换了 {2} 张牌',
+  },
   { source: 'cixiongjian:drop-card', target: '弃置一张手牌' },
   { source: 'cixiongjian:draw-card', target: '令其摸一张牌' },
   { source: 'jizhi:discard', target: '弃置' },

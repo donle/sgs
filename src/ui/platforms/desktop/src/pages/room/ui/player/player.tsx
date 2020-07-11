@@ -5,11 +5,12 @@ import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { ClientPlayer } from 'core/player/player.client';
 import { PlayerCardsArea, PlayerRole } from 'core/player/player_props';
+import { MarkEnum } from 'core/shares/types/mark_list';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
-import { RoomPresenter } from 'pages/room/room.presenter';
+import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
 import { NationalityBadge, PlayerPhaseBadge } from 'ui/badge/badge';
 import { FlatClientCard } from 'ui/card/flat_card';
@@ -17,6 +18,7 @@ import { Hp } from 'ui/hp/hp';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
 import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
+import { AwakenSkillMark, LimitSkillMark, Mark } from '../mark/mark';
 import { Mask } from '../mask/mask';
 import { PlayingBar } from '../playing_bar/playing_bar';
 import styles from './player.module.css';
@@ -28,6 +30,7 @@ type PlayerCardProps = {
   presenter: RoomPresenter;
   imageLoader: ImageLoader;
   inAction: boolean;
+  store: RoomStore;
   incomingMessage?: string;
   onCloseIncomingMessage?(): void;
   actionTimeLimit?: number;
@@ -238,6 +241,42 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     this.props.onCloseIncomingMessage && this.props.onCloseIncomingMessage();
   };
 
+  private getOnceSkillMarks() {
+    const clientPlayer = this.props.player;
+    if (!clientPlayer || clientPlayer.CharacterId === undefined) {
+      return;
+    }
+
+    const marks: JSX.Element[] = [];
+    const limitSkills = clientPlayer.getSkills('limit');
+    const awakenSkills = clientPlayer.getSkills('awaken');
+    marks.push(
+      ...limitSkills.map(skill => (
+        <LimitSkillMark
+          skillName={this.props.translator.tr(skill.Name)}
+          hasUsed={this.props.store.onceSkillUsedHistory[clientPlayer.Id]?.includes(skill.Name)}
+          key={skill.Name}
+        />
+      )),
+    );
+    marks.push(
+      ...awakenSkills.map(skill => (
+        <AwakenSkillMark
+          skillName={this.props.translator.tr(skill.Name)}
+          hasUsed={this.props.store.onceSkillUsedHistory[clientPlayer.Id]?.includes(skill.Name)}
+          key={skill.Name}
+        />
+      )),
+    );
+
+    const playerMarks = clientPlayer.getAllMarks();
+    for (const [markName, amount] of Object.entries(playerMarks)) {
+      marks.push(<Mark amount={amount} markType={markName as MarkEnum} key={markName} />);
+    }
+
+    return marks;
+  }
+
   render() {
     const {
       disabled,
@@ -250,100 +289,105 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
       actionTimeLimit,
     } = this.props;
     return (
-      <div
-        id={player && player.Id}
-        className={styles.playerCard}
-        onClick={this.onClick}
-        onMouseEnter={this.openTooltip}
-        onMouseLeave={this.closeTooltip}
-      >
-        {incomingMessage && (
-          <Tooltip
-            className={styles.incomingMessage}
-            position={['top']}
-            closeAfter={3}
-            closeCallback={this.onCloseIncomingMessageCallback}
-          >
-            {incomingMessage}
-          </Tooltip>
-        )}
-        {player ? (
-          <>
-            <p
-              className={classNames(styles.playerName, {
-                [styles.aligned]: this.PlayerCharacter !== undefined,
-              })}
+      <div className={styles.player}>
+        <div
+          id={player && player.Id}
+          className={styles.playerCard}
+          onClick={this.onClick}
+          onMouseEnter={this.openTooltip}
+          onMouseLeave={this.closeTooltip}
+        >
+          {incomingMessage && (
+            <Tooltip
+              className={styles.incomingMessage}
+              position={['top']}
+              closeAfter={3}
+              closeCallback={this.onCloseIncomingMessageCallback}
             >
-              {player.Name}
-            </p>
-            {this.PlayerCharacter ? (
-              <>
-                <span
-                  className={classNames(styles.highlightBorder, {
-                    [styles.selected]: this.getSelected() && !disabled,
-                    [styles.highlighted]: playerPhase !== undefined,
-                  })}
+              {incomingMessage}
+            </Tooltip>
+          )}
+          {player ? (
+            <>
+              <p
+                className={classNames(styles.playerName, {
+                  [styles.aligned]: this.PlayerCharacter !== undefined,
+                })}
+              >
+                {player.Name}
+              </p>
+              {this.PlayerCharacter ? (
+                <>
+                  <span
+                    className={classNames(styles.highlightBorder, {
+                      [styles.selected]: this.getSelected() && !disabled,
+                      [styles.highlighted]: playerPhase !== undefined,
+                    })}
+                  />
+                  {this.PlayerImage !== undefined && <this.PlayerImage />}
+                  {this.PlayerRoleCard !== undefined && <this.PlayerRoleCard />}
+                  {this.PlayerCharacter && (
+                    <NationalityBadge className={styles.playerCharacter} nationality={this.PlayerCharacter.Nationality}>
+                      {translator.tr(this.PlayerCharacter.Name)}
+                    </NationalityBadge>
+                  )}
+                  {player.Role !== PlayerRole.Unknown && (
+                    <Mask
+                      className={styles.playerRole}
+                      lockedRole={player.Dead || player.Role === PlayerRole.Lord ? player.Role : undefined}
+                      disabled={player.Dead || player.Role === PlayerRole.Lord}
+                    />
+                  )}
+                  {this.getPlayerEquips()}
+                  <div className={styles.playerHp}>
+                    <Hp hp={player.Hp} maxHp={player.MaxHp} size="small" />
+                  </div>
+                  <span className={styles.handCardsNumberBg}>
+                    <img
+                      className={styles.handCardsNumberBgImage}
+                      src={imageLoader.getCardNumberBgImage().src}
+                      alt={''}
+                    />
+                    <span className={styles.handCardsNumber}>{player.getCardIds(PlayerCardsArea.HandArea).length}</span>
+                  </span>
+                </>
+              ) : (
+                <img
+                  className={classNames(styles.playerImage, styles.playerUnknownImage)}
+                  alt={player.Name}
+                  src={imageLoader.getUnknownCharacterImage().src}
                 />
-                {this.PlayerImage !== undefined && <this.PlayerImage />}
-                {this.PlayerRoleCard !== undefined && <this.PlayerRoleCard />}
-                {this.PlayerCharacter && (
-                  <NationalityBadge className={styles.playerCharacter} nationality={this.PlayerCharacter.Nationality}>
-                    {translator.tr(this.PlayerCharacter.Name)}
-                  </NationalityBadge>
-                )}
-                {player.Role !== PlayerRole.Unknown && (
-                  <Mask
-                    className={styles.playerRole}
-                    lockedRole={player.Dead || player.Role === PlayerRole.Lord ? player.Role : undefined}
-                    disabled={player.Dead || player.Role === PlayerRole.Lord}
-                  />
-                )}
-                {this.getPlayerEquips()}
-                <div className={styles.playerHp}>
-                  <Hp hp={player.Hp} maxHp={player.MaxHp} size="small" />
-                </div>
-                <span className={styles.handCardsNumberBg}>
-                  <img
-                    className={styles.handCardsNumberBgImage}
-                    src={imageLoader.getCardNumberBgImage().src}
-                    alt={''}
-                  />
-                  <span className={styles.handCardsNumber}>{player.getCardIds(PlayerCardsArea.HandArea).length}</span>
-                </span>
-              </>
-            ) : (
-              <img
-                className={classNames(styles.playerImage, styles.playerUnknownImage)}
-                alt={player.Name}
-                src={imageLoader.getUnknownCharacterImage().src}
-              />
-            )}
-            {this.getPlayerJudgeCards()}
-            {!player.isFaceUp() && <img className={styles.status} src={imageLoader.getTurnedOverCover().src} alt="" />}
-            {player.hasDrunk() > 0 && <div className={styles.drunk} />}
-            {player.ChainLocked && <img className={styles.chain} src={imageLoader.getChainImage().src} alt="" />}
+              )}
+              {this.getPlayerJudgeCards()}
+              {!player.isFaceUp() && (
+                <img className={styles.status} src={imageLoader.getTurnedOverCover().src} alt="" />
+              )}
+              {player.hasDrunk() > 0 && <div className={styles.drunk} />}
+              {player.ChainLocked && <img className={styles.chain} src={imageLoader.getChainImage().src} alt="" />}
 
-            <p className={styles.playerSeats}>{translator.tr(`number ${player.Position}`)}</p>
-          </>
-        ) : (
-          <img
-            className={classNames(styles.playerImage, styles.playerUnknownImage)}
-            alt={translator.tr('waiting')}
-            src={imageLoader.getEmptySeatImage().src}
-          />
-        )}
-        {playerPhase !== undefined && (
-          <PlayerPhaseBadge stage={playerPhase} translator={translator} className={styles.playerPhaseBadge} />
-        )}
-        <div className={styles.playerTags}>
-          {this.getSkillTags()}
-          {this.getOutsideAreaCards()}
+              <p className={styles.playerSeats}>{translator.tr(`seat ${player.Position}`)}</p>
+            </>
+          ) : (
+            <img
+              className={classNames(styles.playerImage, styles.playerUnknownImage)}
+              alt={translator.tr('waiting')}
+              src={imageLoader.getEmptySeatImage().src}
+            />
+          )}
+          {playerPhase !== undefined && (
+            <PlayerPhaseBadge stage={playerPhase} translator={translator} className={styles.playerPhaseBadge} />
+          )}
+          <div className={styles.playerTags}>
+            {this.getSkillTags()}
+            {this.getOutsideAreaCards()}
+          </div>
+          {player && <span className={styles.playerStatus}>{translator.tr(player.getPlayerStatus() || '')}</span>}
+          {inAction && <PlayingBar className={styles.playBar} playTime={actionTimeLimit} />}
+          {this.onTooltipOpened && this.PlayerCharacter && (
+            <Tooltip position={['top']}>{this.createTooltipContent()}</Tooltip>
+          )}
         </div>
-        {player && <span className={styles.playerStatus}>{translator.tr(player.getPlayerStatus() || '')}</span>}
-        {inAction && <PlayingBar className={styles.playBar} playTime={actionTimeLimit} />}
-        {this.onTooltipOpened && this.PlayerCharacter && (
-          <Tooltip position={['top']}>{this.createTooltipContent()}</Tooltip>
-        )}
+        <div className={styles.marks}>{this.getOnceSkillMarks()}</div>
       </div>
     );
   }

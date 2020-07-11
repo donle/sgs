@@ -162,7 +162,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.turnOver.name);
   }
   //Server only
-  public skip() {
+  public async skip() {
     this.throwUntouchableError(this.skip.name);
   }
   //Server only

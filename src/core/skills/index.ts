@@ -150,5 +150,6 @@ export { YeYan } from './characters/god/yeyan';
 
 export { FeiYing } from './characters/god/feiying';
 export { GuiXin } from './characters/god/guixin';
+export { QiXing, QiXingShadow } from './characters/god/qixing';
 
 export { Cheat } from './system/cheat';

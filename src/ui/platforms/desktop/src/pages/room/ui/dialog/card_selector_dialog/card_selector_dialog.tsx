@@ -1,7 +1,9 @@
+import classNames from 'classnames';
 import { Card } from 'core/cards/card';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerCardsArea } from 'core/player/player_props';
+import { Functional } from 'core/shares/libs/functional';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
@@ -28,16 +30,19 @@ const CardSlot = (props: {
 }) => {
   const onSelected = (selected: boolean) => {
     props.onClick && props.onClick(props.card || props.index!, props.from);
+    setSelected(selected);
   };
+  const [selected, setSelected] = React.useState(false);
 
   return (
     <ClientCard
       imageLoader={props.imageLoader}
-      className={styles.selectorCard}
+      className={classNames(styles.selectorCard, { [styles.selected]: selected })}
       card={props.card}
       translator={props.translator}
       disabled={props.card && props.isCardDisabled ? props.isCardDisabled(props.card) : false}
       onSelected={onSelected}
+      width={100}
     />
   );
 };
@@ -87,12 +92,13 @@ const CardSelector = (props: CardSelectorProps) => {
         continue;
       }
 
+      const fromArea = parseInt(area, 10);
       const cardLine: JSX.Element[] = [];
       if (typeof cardIds === 'number') {
         for (let i = 0; i < cardIds; i++) {
           cardLine.push(
             <CardSlot
-              from={parseInt(area, 10)}
+              from={Number.isNaN(fromArea) ? undefined : fromArea}
               translator={translator}
               imageLoader={imageLoader}
               index={i}
@@ -106,7 +112,7 @@ const CardSelector = (props: CardSelectorProps) => {
         for (const cardId of cardIds) {
           cardLine.push(
             <CardSlot
-              from={parseInt(area, 10)}
+              from={Number.isNaN(fromArea) ? undefined : fromArea}
               key={cardId}
               translator={translator}
               imageLoader={imageLoader}
@@ -120,7 +126,10 @@ const CardSelector = (props: CardSelectorProps) => {
 
       optionCardsLine.push(
         <div className={styles.cardLine} key={optionCardsLine.length}>
-          {cardLine}
+          <span className={styles.listName}>
+            {translator.tr(Number.isNaN(fromArea) ? area : Functional.getPlayerCardAreaText(fromArea))}
+          </span>
+          <div className={styles.cardList}>{cardLine}</div>
         </div>,
       );
     }
@@ -134,8 +143,12 @@ export const CardSelectorDialog = (props: {
   imageLoader: ImageLoader;
   onClick?(card: Card | number, fromArea?: PlayerCardsArea): void;
   isCardDisabled?(card: Card): boolean;
-}) => (
-  <BaseDialog title={props.translator.tr('please choose a card')}>
-    <CardSelector {...props} />
-  </BaseDialog>
-);
+  title?: string;
+}) => {
+  const { title, ...selectorProps } = props;
+  return (
+    <BaseDialog title={props.translator.tr(title || 'please choose a card')}>
+      <CardSelector {...selectorProps} />
+    </BaseDialog>
+  );
+};
