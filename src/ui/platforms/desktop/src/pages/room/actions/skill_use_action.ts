@@ -33,6 +33,10 @@ export class SkillUseAction extends BaseAction {
   }
 
   private invokeSpecifiedSkill(skillName: string, translator: ClientTranslationModule, callback: () => void) {
+    if (!EventPacker.isUncancellabelEvent(this.askForEvent)) {
+      this.presenter.enableActionButton('cancel');
+    }
+
     const event: ClientEventFinder<GameEventIdentifiers.AskForSkillUseEvent> = {
       invoke: undefined,
       fromId: this.presenter.ClientPlayer!.Id,
@@ -57,14 +61,15 @@ export class SkillUseAction extends BaseAction {
       this.presenter.resetSelectedSkill();
       callback();
     });
-    this.presenter.defineCancelButtonActions(() => {
-      this.store.room.broadcast(GameEventIdentifiers.AskForSkillUseEvent, event);
-      this.presenter.closeIncomingConversation();
-      this.resetActionHandlers();
-      this.resetAction();
-      this.presenter.resetSelectedSkill();
-      callback();
-    });
+    !EventPacker.isUncancellabelEvent(this.askForEvent) &&
+      this.presenter.defineCancelButtonActions(() => {
+        this.store.room.broadcast(GameEventIdentifiers.AskForSkillUseEvent, event);
+        this.presenter.closeIncomingConversation();
+        this.resetActionHandlers();
+        this.resetAction();
+        this.presenter.resetSelectedSkill();
+        callback();
+      });
   }
 
   onSelect(translator: ClientTranslationModule) {
@@ -88,10 +93,6 @@ export class SkillUseAction extends BaseAction {
           translator: this.translator,
           conversation: 'please choose a skill',
         });
-
-        if (!EventPacker.isUncancellabelEvent(this.askForEvent)) {
-          this.presenter.enableActionButton('cancel');
-        }
       }
     });
   }
