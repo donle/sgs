@@ -1260,6 +1260,7 @@ export const eventDictionary: Word[] = [
   { source: '{0} display hand card {1}', target: '{0} 展示了 {1}' },
   { source: '{0} lost {1} hand card', target: '{0} 失去了 {1} 张手牌' },
   { source: 'please choose', target: '请选择' },
+  { source: '{0}: please choose', target: '{0}：请选择' },
   { source: 'please choose a player', target: '请选择一名角色' },
   { source: '{0} place card {1} from {2} on the top of draw stack', target: '{0} 将 {2} 的 {1} 置于了牌堆顶' },
   { source: 'recover {0} hp for {1}', target: '是否回复 {1} {0} 点体力' },
@@ -1273,6 +1274,14 @@ export const eventDictionary: Word[] = [
   { source: '{0} used skill {1}, transfrom {2} into {3}', target: '{0} 使用了技能 【{1}】，将 {2} 改为了 {3} 使用' },
   { source: '{0}: please choose a player to obtain {1}', target: '{0}：你可以将 {1} 交给一名角色' },
   { source: '{0}: please choose a player to drop', target: '{0}：你可以弃置攻击范围内含有你的一名角色区域内的一张牌' },
+  { 
+    source: '{0} triggered skill {1}, nullify {2}',
+    target: '{0} 触发了技能 “{1}”，使 {2} 对其无效'
+  },
+  { 
+    source: '{0} triggered skill {1}, become the source of damage dealed by {2}',
+    target: '{0} 触发了技能 “{1}”，成为了 {2} 造成的伤害的伤害来源'
+  },
   {
     source: 'please drop a {0} hand card to hit {1} 1 hp of damage type fire',
     target: '请弃置一张 {0} 手牌，对 {1} 造成1点火焰伤害',
@@ -1391,6 +1400,8 @@ export const eventDictionary: Word[] = [
   { source: 'benghuai:maxhp', target: '减1点体力上限' },
   { source: 'xingshang:recover', target: '回复1点体力' },
   { source: 'xingshang:pickup', target: '获得阵亡角色的所有牌' },
+  { source: 'zaiqi:draw', target: '摸一张牌' },
+  { source: 'zaiqi:recover', target: '令孟获回复1点体力' },
   { source: 'please choose the amount of hp to lose', target: '请选择要失去的体力值' },
   { source: 'please choose your zhiheng cards', target: '请选择要制衡的牌' },
   {
