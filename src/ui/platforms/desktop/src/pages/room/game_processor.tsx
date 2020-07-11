@@ -684,7 +684,6 @@ export class GameClientProcessor {
   ) {
     const action = new SkillUseAction(content.toId, this.store, this.presenter, content, this.translator);
     this.presenter.isSkillDisabled(SkillUseAction.isSkillDisabled(content));
-    this.presenter.broadcastUIUpdate();
     await action.onSelect(this.translator);
     this.endAction();
   }

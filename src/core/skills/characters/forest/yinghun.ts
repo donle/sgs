@@ -74,7 +74,7 @@ export class YingHun extends TriggerSkill {
 
       await room.drawCards(x, toIds![0], 'top', fromId, this.Name);
     }
-    
+
     return true;
   }
 }

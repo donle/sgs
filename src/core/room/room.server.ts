@@ -298,14 +298,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               ) {
                 await this.useSkill(triggerSkillEvent);
               } else {
-                this.notify(
-                  GameEventIdentifiers.AskForSkillUseEvent,
-                  {
-                    invokeSkillNames: [skill.Name],
-                    toId: player.Id,
-                  },
-                  player.Id,
-                );
+                const event = {
+                  invokeSkillNames: [skill.Name],
+                  toId: player.Id,
+                };
+                if (skill.isUncancellable(this, content)) {
+                  EventPacker.createUncancellableEvent(event);
+                }
+                this.notify(GameEventIdentifiers.AskForSkillUseEvent, event, player.Id);
                 const { invoke, cardIds, toIds } = await this.onReceivingAsyncResponseFrom(
                   GameEventIdentifiers.AskForSkillUseEvent,
                   player.Id,
@@ -968,20 +968,27 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async asyncMoveCards(events: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[]) {
     events.sort((prev, next) => {
-      if (prev.fromId === undefined) {
-        return -1;
-      } else if (next.fromId === undefined) {
+      if (prev.fromId !== undefined && next.fromId !== undefined) {
+        const prevPosition = this.getPlayerById(prev.fromId).Position;
+        const nextPosition = this.getPlayerById(next.fromId).Position;
+        if (prevPosition < nextPosition) {
+          return -1;
+        } else if (prevPosition === nextPosition) {
+          return 0;
+        }
+        return 1;
+      } else if (prev.toId !== undefined && next.toId !== undefined) {
+        const prevPosition = this.getPlayerById(prev.toId).Position;
+        const nextPosition = this.getPlayerById(next.toId).Position;
+        if (prevPosition < nextPosition) {
+          return -1;
+        } else if (prevPosition === nextPosition) {
+          return 0;
+        }
         return 1;
       }
 
-      const prevPosition = this.getPlayerById(prev.fromId).Position;
-      const nextPosition = this.getPlayerById(next.fromId).Position;
-      if (prevPosition < nextPosition) {
-        return -1;
-      } else if (prevPosition === nextPosition) {
-        return 0;
-      }
-      return 1;
+      return -1;
     });
 
     await this.gameProcessor.onHandleAsyncMoveCardEvent(events);

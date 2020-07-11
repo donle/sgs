@@ -337,7 +337,6 @@ export const characterDictionary: Word[] = [
   { source: '#qixing', target: '七星' },
   { source: 'kuangfeng', target: '狂风' },
   { source: 'dawu', target: '大雾' },
-
   { source: 'god_caocao', target: '神曹操' },
   { source: 'guixin', target: '归心' },
   { source: 'feiying', target: '飞影' },
@@ -699,7 +698,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'fangzhu_description',
     target:
-      '当你受到伤害后，你可以令伤害来源选择一项：1.摸X张牌并翻面；2.弃置X张牌并失去1点体力（X为你已损失的体力值）。',
+      '当你受到伤害后，你可以令一名其他角色选择一项：1.摸X张牌并翻面；2.弃置X张牌并失去1点体力（X为你已损失的体力值）。',
   },
   {
     source: 'songwei_description',
@@ -1346,6 +1345,7 @@ export const eventDictionary: Word[] = [
     source: 'please assign x damage for {0}, and {1} will get (3 - x) damage',
     target: '请为 {0} 分配 x 点伤害，{1} 将会分配到 (3 - x) 点伤害',
   },
+  { source: 'haoshi:please choose handcards and a target', target: '请选择交给的手牌与一名目标角色' },
 
   { source: 'please select cards to swap', target: '请选择要交换的牌' },
   {

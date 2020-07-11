@@ -35,8 +35,20 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
             this.selectedTargets,
             this.equipSkillCardId,
           ) &&
-          (!skill.cardFilter(this.store.room, this.player, this.selectedCards) ||
-            skill.cardFilter(this.store.room, this.player, [...this.selectedCards, card.Id]))
+          (!skill.cardFilter(
+            this.store.room,
+            this.player,
+            this.selectedCards,
+            this.selectedTargets,
+            this.selectedCardToPlay,
+          ) ||
+            skill.cardFilter(
+              this.store.room,
+              this.player,
+              [...this.selectedCards, card.Id],
+              this.selectedTargets,
+              this.selectedCardToPlay,
+            ))
         );
       } else if (skill instanceof ViewAsSkill) {
         return (
@@ -48,8 +60,20 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
             this.equipSkillCardId,
             this.matcher,
           ) &&
-          (!skill.cardFilter(this.store.room, this.player, this.pendingCards) ||
-            skill.cardFilter(this.store.room, this.player, [...this.pendingCards, card.Id]))
+          (!skill.cardFilter(
+            this.store.room,
+            this.player,
+            this.pendingCards,
+            this.selectedTargets,
+            this.selectedCardToPlay,
+          ) ||
+            skill.cardFilter(
+              this.store.room,
+              this.player,
+              [...this.pendingCards, card.Id],
+              this.selectedTargets,
+              this.selectedCardToPlay,
+            ))
         );
       } else {
         return false;
@@ -61,7 +85,9 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
         return this.matcher.match(card);
       } else if (fromArea === PlayerCardsArea.EquipArea) {
         if (card.Skill instanceof ViewAsSkill) {
-          return new CardMatcher({ name: card.Skill.canViewAs(this.store.room, this.player, this.selectedCards) }).match(this.matcher);
+          return new CardMatcher({
+            name: card.Skill.canViewAs(this.store.room, this.player, this.selectedCards),
+          }).match(this.matcher);
         }
       }
     }
