@@ -525,7 +525,9 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
     // tslint:disable-next-line:no-empty
-  ) {}
+  ) {
+    this.store.room.getPlayerById(content.dying).Dying = true;
+  }
   private onHandleNotifyEvent<T extends GameEventIdentifiers.NotifyEvent>(type: T, content: ServerEventFinder<T>) {
     this.presenter.notify(content.toIds, content.notificationTime);
     this.presenter.broadcastUIUpdate();
@@ -535,7 +537,8 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     const { playerId } = content;
-    this.store.room.kill(this.store.room.getPlayerById(playerId));
+    const player = this.store.room.getPlayerById(playerId);
+    this.store.room.kill(player);
     this.presenter.broadcastUIUpdate();
   }
 
@@ -565,6 +568,7 @@ export class GameClientProcessor {
 
   private onHandleRecoverEvent<T extends GameEventIdentifiers.RecoverEvent>(type: T, content: ServerEventFinder<T>) {
     const player = this.store.room.getPlayerById(content.toId);
+    player.Dying = false;
     player.changeHp(content.recoveredHp);
     this.presenter.broadcastUIUpdate();
   }

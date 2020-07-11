@@ -248,6 +248,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   }
 
   public async kill(deadPlayer: Player): Promise<void> {
+    deadPlayer.Dying = false;
     deadPlayer.clearMarks();
     deadPlayer.clearFlags();
     deadPlayer.bury();

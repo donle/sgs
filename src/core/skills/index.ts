@@ -141,6 +141,7 @@ export { FangZhu } from './characters/forest/fangzhu';
 export { SongWei } from './characters/forest/songwei';
 export { HaoShi, HaoShiShadow } from './characters/forest/haoshi';
 export { DiMeng } from './characters/forest/dimeng';
+export { WanSha } from './characters/forest/wansha';
 
 export { WuShen, WuShenShadow } from './characters/god/wushen';
 export { WuHun, WuHunDied } from './characters/god/wuhun';

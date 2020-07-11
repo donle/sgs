@@ -46,6 +46,7 @@ type SkillStringType =
 export abstract class Player implements PlayerInfo {
   private hp: number;
   private maxHp: number;
+  private dying: boolean = false;
   private dead: boolean;
   private chainLocked: boolean = false;
   private turnedOver: boolean = false;
@@ -671,6 +672,13 @@ export abstract class Player implements PlayerInfo {
 
   public get Dead() {
     return this.dead;
+  }
+
+  public set Dying(dying: boolean) {
+    this.dying = dying;
+  }
+  public get Dying() {
+    return this.dying;
   }
 
   public bury() {

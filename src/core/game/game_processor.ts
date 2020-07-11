@@ -41,6 +41,7 @@ import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/p
 import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { GlobalFilterSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ServerRoom } from '../room/room.server';
 import { Sanguosha } from './engine';
@@ -903,10 +904,12 @@ export class GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
+    const { dying, killedBy } = event;
+    const to = this.room.getPlayerById(dying);
+    to.Dying = true;
+
     await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === PlayerDyingStage.PlayerDying) {
-        const { dying } = event;
-        const to = this.room.getPlayerById(dying);
         this.room.broadcast(GameEventIdentifiers.PlayerDyingEvent, {
           dying: to.Id,
           translationsMessage: TranslationPack.translationJsonPatcher(
@@ -915,7 +918,33 @@ export class GameProcessor {
           ).extract(),
         });
 
+        const filterSkills = this.room.AlivePlayers.reduce<
+          {
+            player: Player;
+            skills: GlobalFilterSkill[];
+          }[]
+        >((skills, player) => {
+          skills.push({
+            player,
+            skills: player.getSkills<GlobalFilterSkill>('globalFilter'),
+          });
+          return skills;
+        }, []);
+
+        const canUsePeachPlayer: Player[] = [];
         for (const player of this.room.getAlivePlayersFrom()) {
+          if (filterSkills.find(
+            ({ skills, player: owner }) =>
+              skills.find(
+                skill => !skill.canUseCardTo(new CardMatcher({ name: ['peach'] }), this.room, owner, player, to),
+              ) !== undefined,
+          )) {
+            continue;
+          }
+          canUsePeachPlayer.push(player);
+        }
+
+        for (const player of canUsePeachPlayer) {
           let hasResponse = false;
           do {
             hasResponse = false;
@@ -948,8 +977,7 @@ export class GameProcessor {
       }
     });
 
-    const { dying, killedBy } = event;
-    const to = this.room.getPlayerById(dying);
+    to.Dying = false;
     if (to.Hp <= 0) {
       await this.room.kill(to, killedBy);
       EventPacker.terminate(event);
