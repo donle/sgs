@@ -1294,7 +1294,7 @@ export class GameProcessor {
     }
 
     for (const event of events) {
-      return await this.iterateEachStage(identifier, event, onActualExecuted);
+      await this.iterateEachStage(identifier, event, onActualExecuted);
     }
   }
 

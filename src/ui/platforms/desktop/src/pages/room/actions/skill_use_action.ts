@@ -43,7 +43,7 @@ export class SkillUseAction extends BaseAction {
     };
     const skill = Sanguosha.getSkillBySkillName<TriggerSkill>(skillName);
     this.presenter.createIncomingConversation({
-      conversation: skill.getSkillLog(this.store.room, this.askForEvent),
+      conversation: skill.getSkillLog(this.store.room, this.player),
       translator,
     });
     this.selectSkill(skill);

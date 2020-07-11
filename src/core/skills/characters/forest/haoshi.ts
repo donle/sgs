@@ -11,6 +11,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'haoshi', description: 'haoshi_description' })
 export class HaoShi extends TriggerSkill {
@@ -63,8 +64,11 @@ export class HaoShiShadow extends TriggerSkill {
     return 1;
   }
 
-  public get SkillLog() {
-    return 'haoshi:please choose handcards and a target';
+  public getSkillLog(room: Room, owner: Player) {
+    return TranslationPack.translationJsonPatcher(
+      'please choose {0} handcards and give them to a target',
+      Math.floor(owner.getCardIds(PlayerCardsArea.HandArea).length / 2),
+    ).extract();
   }
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId) {

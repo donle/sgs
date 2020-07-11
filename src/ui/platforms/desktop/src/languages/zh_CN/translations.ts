@@ -267,6 +267,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'lusu', target: '鲁肃' },
   { source: 'haoshi', target: '好施' },
+  { source: '#haoshi', target: '好施' },
   { source: 'dimeng', target: '缔盟' },
 
   { source: 'sunjian', target: '孙坚' },
@@ -1345,7 +1346,7 @@ export const eventDictionary: Word[] = [
     source: 'please assign x damage for {0}, and {1} will get (3 - x) damage',
     target: '请为 {0} 分配 x 点伤害，{1} 将会分配到 (3 - x) 点伤害',
   },
-  { source: 'haoshi:please choose handcards and a target', target: '请选择交给的手牌与一名目标角色' },
+  { source: 'please choose {0} handcards and give them to a target', target: '请选择 {0} 张手牌交给一名其他角色' },
 
   { source: 'please select cards to swap', target: '请选择要交换的牌' },
   {

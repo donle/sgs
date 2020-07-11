@@ -160,7 +160,7 @@ export abstract class TriggerSkill extends Skill {
     return false;
   }
 
-  public getSkillLog(room: Room, event: ServerEventFinder<GameEventIdentifiers>): PatchedTranslationObject | string {
+  public getSkillLog(room: Room, owner: Player): PatchedTranslationObject | string {
     return TranslationPack.translationJsonPatcher('do you want to trigger skill {0} ?', this.Name).extract();
   }
 
