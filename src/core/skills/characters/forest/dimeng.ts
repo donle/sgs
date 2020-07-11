@@ -12,7 +12,7 @@ import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'dimeng', description: 'dimeng_description' })
-export class Dimeng extends ActiveSkill {
+export class DiMeng extends ActiveSkill {
   public canUse(room: Room, owner: Player) {
     return !owner.hasUsedSkill(this.Name);
   }

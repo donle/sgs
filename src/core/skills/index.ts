@@ -139,23 +139,14 @@ export { YingHun } from './characters/forest/yinghun';
 export { XingShang } from './characters/forest/xingshang';
 export { FangZhu } from './characters/forest/fangzhu';
 export { SongWei } from './characters/forest/songwei';
+export { HaoShi, HaoShiShadow } from './characters/forest/haoshi';
+export { DiMeng } from './characters/forest/dimeng';
 
 export { WuShen, WuShenShadow } from './characters/god/wushen';
 export { WuHun, WuHunDied } from './characters/god/wuhun';
 export { SheLie } from './characters/god/shelie';
 export { QinYin } from './characters/god/qinyin';
 export { YeYan } from './characters/god/yeyan';
-
-export { JiuChi, JiuChiShadow, JiuChiRemove } from './characters/forest/jiuchi';
-export { RouLin, RouLinShadow } from './characters/forest/roulin';
-export { BengHuai } from './characters/forest/benghuai';
-export { JuXiang } from './characters/forest/juxiang';
-export { YingHun } from './characters/forest/yinghun';
-export { Fangzhu } from './characters/forest/fangzhu';
-export { Xingshang } from './characters/forest/xingshang';
-export { Songwei } from './characters/forest/songwei';
-export { Haoshi, HaoshiShadow } from './characters/forest/haoshi';
-export { Dimeng } from './characters/forest/dimeng';
 
 export { FeiYing } from './characters/god/feiying';
 export { GuiXin } from './characters/god/guixin';

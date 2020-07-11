@@ -13,7 +13,7 @@ import { Room } from 'core/room/room';
 import { CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'haoshi', description: 'haoshi_description' })
-export class Haoshi extends TriggerSkill {
+export class HaoShi extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>, stage?: AllStage) {
     return stage === DrawCardStage.CardDrawing;
   }
@@ -40,8 +40,8 @@ export class Haoshi extends TriggerSkill {
 }
 
 @ShadowSkill
-@CommonSkill({ name: Haoshi.GeneralName, description: Haoshi.Description })
-export class HaoshiShadow extends TriggerSkill {
+@CommonSkill({ name: HaoShi.GeneralName, description: HaoShi.Description })
+export class HaoShiShadow extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.BeforeStageChange;
   }
