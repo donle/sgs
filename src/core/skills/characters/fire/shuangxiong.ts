@@ -198,7 +198,15 @@ export class ShuangXiongShadow extends TriggerSkill {
       const chosenCard = Sanguosha.getCardById(chosenOne);
       chosenCard.isRed() && room.setFlag<boolean>(fromId, ShuangXiong.Red, true, true);
       chosenCard.isBlack() && room.setFlag<boolean>(fromId, ShuangXiong.Black, true, true);
-      room.bury(...displayCards.filter(id => id !== chosenOne));
+      await room.moveCards({
+        movingCards: displayCards
+          .filter(id => id !== chosenOne)
+          .map(card => ({ card, fromArea: CardMoveArea.ProcessingArea })),
+        moveReason: CardMoveReason.PlaceToDropStack,
+        toArea: CardMoveArea.DropStack,
+        hideBroadcast: true,
+        movedByReason: this.Name,
+      });
     } else if (identifier === GameEventIdentifiers.DamageEvent) {
       const damageEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
       const { fromId, toId } = damageEvent;

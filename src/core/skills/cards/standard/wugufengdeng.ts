@@ -20,7 +20,7 @@ export class WuGuFengDengSkill extends ActiveSkill {
   public numberOfTargets() {
     return 0;
   }
-  
+
   public cardFilter(): boolean {
     return true;
   }
@@ -97,15 +97,22 @@ export class WuGuFengDengSkill extends ActiveSkill {
 
   public async afterEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const wugufengdengCards = room.getProcessingCards(event.cardId.toString());
-    room.endProcessOnTag(event.cardId.toString());
 
     const droppedCards: CardId[] = [];
     for (const cardId of event.toCardIds!) {
       if (wugufengdengCards.includes(cardId)) {
         droppedCards.push(cardId);
-        room.bury(cardId);
       }
     }
+
+    await room.moveCards({
+      movingCards: droppedCards.map(card => ({ card, fromArea: CardMoveArea.ProcessingArea })),
+      moveReason: CardMoveReason.PlaceToDropStack,
+      toArea: CardMoveArea.DropStack,
+      hideBroadcast: true,
+      movedByReason: this.Name,
+    });
+    room.endProcessOnTag(event.cardId.toString());
 
     room.broadcast(GameEventIdentifiers.ObserveCardFinishEvent, {
       translationsMessage:

@@ -35,8 +35,7 @@ export class ZaiQi extends TriggerSkill {
         content.playerId,
         true,
       ).forEach(event => {
-        droppedCardNum += event.movingCards
-          .filter(mcard => Sanguosha.getCardById(mcard.card).isRed()).length;
+        droppedCardNum += event.movingCards.filter(mcard => Sanguosha.getCardById(mcard.card).isRed()).length;
       });
 
       isUseable = droppedCardNum > 0;
@@ -77,10 +76,7 @@ export class ZaiQi extends TriggerSkill {
 
       const askForChooseEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
         options,
-        conversation: TranslationPack.translationJsonPatcher(
-          '{0}: please choose',
-          this.Name,
-        ).extract(),
+        conversation: TranslationPack.translationJsonPatcher('{0}: please choose', this.Name).extract(),
         toId: target,
       });
 
