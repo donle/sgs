@@ -6,7 +6,7 @@ import { AllStage, PlayerPhase, StagePriority } from 'core/game/stage_processor'
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { TranslationPack } from 'core/translations/translation_json_tool';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 export * from './skill_wrappers';
 export * from './skill_hooks';
 
@@ -156,7 +156,7 @@ export abstract class TriggerSkill extends Skill {
     return false;
   }
 
-  public getSkillLog(room: Room, event: ServerEventFinder<GameEventIdentifiers>) {
+  public getSkillLog(room: Room, event: ServerEventFinder<GameEventIdentifiers>): PatchedTranslationObject | string {
     return TranslationPack.translationJsonPatcher('do you want to trigger skill {0} ?', this.Name).extract();
   }
 

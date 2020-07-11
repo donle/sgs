@@ -1033,6 +1033,7 @@ export const eventDictionary: Word[] = [
   { source: 'obtained', target: '获得' },
   { source: 'lost', target: '失去' },
   { source: '{0} {1} {2} {3} marks', target: '{0} {1}了 {2} 枚 {3} 标记' },
+  { source: 'please choose a skill', target: '请选择一个技能' },
   {
     source: 'do you want to trigger skill {0} ?',
     target: '是否发动技能 【{0}】?',
@@ -1121,6 +1122,7 @@ export const eventDictionary: Word[] = [
     source: '{0} obtains {1} cards from {2}',
     target: '{0} 获得了 {2} 的 {1} 张牌',
   },
+  { source: 'please assign others no more than 2 handcards', target: '是否将至多两张手牌交给其他角色' },
   { source: '{0} obtains {1} cards', target: '{0} 获得了 {1} 张牌' },
   { source: 'please drop {0} cards', target: '请弃置 {1} 张牌' },
   { source: '{0} drops cards {1}', target: '{0} 弃置了 {1}' },

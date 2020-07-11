@@ -78,7 +78,6 @@ export class GameClientProcessor {
       const result = this.presenter.ClientPlayer!.AI.onAction(this.store.room, identifier, event) as ClientEventFinder<
         T
       >;
-      result.status = 'trusted';
       this.store.room.broadcast(identifier, result);
       this.presenter.closeDialog();
       this.presenter.closeIncomingConversation();
