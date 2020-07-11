@@ -2,7 +2,7 @@ import { CardType } from 'core/cards/card';
 import { CardSuit } from 'core/cards/libs/card_props';
 import { CharacterNationality } from 'core/characters/character';
 import { PlayerPhase } from 'core/game/stage_processor';
-import { PlayerRole } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerRole } from 'core/player/player_props';
 import { Precondition } from '../precondition/precondition';
 
 export abstract class Functional {
@@ -22,6 +22,21 @@ export abstract class Functional {
         return 'finish stage';
       default:
         throw Precondition.UnreachableError(stage);
+    }
+  }
+
+  static getPlayerCardAreaText(area: PlayerCardsArea) {
+    switch (area) {
+      case PlayerCardsArea.EquipArea:
+        return 'equip area';
+      case PlayerCardsArea.HandArea:
+        return 'hand area';
+      case PlayerCardsArea.JudgeArea:
+        return 'judge area';
+      case PlayerCardsArea.OutsideArea:
+        return 'outside area';
+      default:
+        throw Precondition.UnreachableError(area);
     }
   }
 

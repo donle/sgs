@@ -880,6 +880,7 @@ export class GameClientProcessor {
         options={content.options}
         onClick={onSelectedCard}
         translator={this.translator}
+        title={content.customMessage}
       />,
     );
   }
@@ -930,6 +931,7 @@ export class GameClientProcessor {
         translator={this.translator}
         isCardDisabled={isCardDisabled}
         imageLoader={this.imageLoader}
+        title={content.customMessage}
       />,
     );
 

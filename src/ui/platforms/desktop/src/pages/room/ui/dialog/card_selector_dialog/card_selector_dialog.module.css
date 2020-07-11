@@ -17,3 +17,14 @@
     justify-content: center;
     flex-direction: column;
 }
+
+.listName {
+    margin-right: 16px;
+    text-orientation: upright;
+    width: 16px;
+    display: flex;
+    align-items: center;
+}
+.cardList {
+    display: flex;
+}
