@@ -1188,9 +1188,16 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return pindianResult;
   }
 
-  public skip(player: PlayerId, phase?: PlayerPhase) {
+  public async skip(player: PlayerId, phase?: PlayerPhase) {
     if (this.CurrentPhasePlayer.Id === player) {
       this.gameProcessor.skip(phase);
+      if (phase !== undefined) {
+        const event: ServerEventFinder<GameEventIdentifiers.PhaseSkippedEvent> = {
+          playerId: player,
+          skippedPhase: phase,
+        };
+        await this.trigger(EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseSkippedEvent, event));
+      }
     }
   }
 

@@ -58,6 +58,7 @@ export const enum GameEventIdentifiers {
   PlayerDyingEvent,
   PlayerDiedEvent,
 
+  PhaseSkippedEvent,
   PlayerChainedEvent,
   PlayerTurnOverEvent,
 

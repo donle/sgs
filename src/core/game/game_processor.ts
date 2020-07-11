@@ -1009,7 +1009,7 @@ export class GameProcessor {
         toArea: CardMoveArea.DropStack,
       });
       if (this.room.CurrentPlayer.Id === playerId) {
-        this.room.skip(playerId);
+        await this.room.skip(playerId);
       }
 
       if (killedBy) {

@@ -371,6 +371,10 @@ export interface ServerEvent extends EventUtilities {
     status: 'online' | 'offline' | 'trusted' | 'player';
     toId: PlayerId;
   };
+  [GameEventIdentifiers.PhaseSkippedEvent]: {
+    playerId: PlayerId;
+    skippedPhase: PlayerPhase;
+  }
 }
 
 export type PinDianResultType = {
