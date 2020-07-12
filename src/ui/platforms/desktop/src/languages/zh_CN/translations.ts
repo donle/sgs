@@ -352,6 +352,11 @@ export const characterDictionary: Word[] = [
   { source: 'renjie', target: '忍戒' },
   { source: 'baiyin', target: '拜印' },
   { source: 'jilve', target: '极略' },
+  { source: '#jilve', target: '极略' },
+  { source: '##jilve', target: '极略·鬼才' },
+  { source: '###jilve', target: '极略·集智' },
+  { source: '####jilve', target: '极略·放逐' },
+  { source: 'jilve-zhiheng', target: '极略·制衡' },
   { source: 'lianpo', target: '连破' },
 
   { source: 'god_zhaoyun', target: '神赵云' },
@@ -359,7 +364,10 @@ export const characterDictionary: Word[] = [
   { source: 'longhun', target: '龙魂' },
 ];
 
-export const markDictionary: Word[] = [{ source: 'nightmare', target: '梦魇' }];
+export const markDictionary: Word[] = [
+  { source: 'nightmare', target: '梦魇' },
+  { source: 'ren', target: '忍' },
+];
 
 export const skillDescriptions: Word[] = [
   { source: 'jianxiong_description', target: '当你受到伤害后，你可以获得对你造成伤害的牌并摸一张牌。' },
@@ -1384,6 +1392,7 @@ export const eventDictionary: Word[] = [
   { source: 'xingshang:recover', target: '回复1点体力' },
   { source: 'xingshang:pickup', target: '获得阵亡角色的所有牌' },
   { source: 'please choose the amount of hp to lose', target: '请选择要失去的体力值' },
+  { source: 'please choose your zhiheng cards', target: '请选择要制衡的牌' },
   {
     source: 'please choose tianxiang options:{0}',
     target: '请选择：1.令其受到1点伤害，然后摸 {0} 张牌。2.令其失去1点体力，然后其获得你弃置的牌',

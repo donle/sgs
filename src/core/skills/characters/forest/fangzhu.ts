@@ -10,7 +10,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 @CommonSkill({name: 'fangzhu', description: 'fangzhu_description'})
 export class FangZhu extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
-    return stage === DamageEffectStage.AfterDamageEffect;
+    return stage === DamageEffectStage.AfterDamagedEffect;
   }
 
   canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {

@@ -444,7 +444,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const { cardMatcher, cardAmount, conversation, fromArea, toId } = content;
+    const { cardMatcher, cardAmount, conversation, fromArea, toId, cardAmountRange } = content;
     this.presenter.createIncomingConversation({
       conversation,
       translator: this.translator,
@@ -458,7 +458,7 @@ export class GameClientProcessor {
       content,
       new CardMatcher(cardMatcher),
     );
-    const selectedCards = await action.onSelectCard(fromArea, cardAmount);
+    const selectedCards = await action.onSelectCard(fromArea, cardAmount || cardAmountRange!);
 
     this.presenter.closeIncomingConversation();
     const askForCardEvent: ClientEventFinder<GameEventIdentifiers.AskForCardEvent> = {

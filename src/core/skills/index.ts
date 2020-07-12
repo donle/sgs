@@ -148,6 +148,10 @@ export { WuHun, WuHunDied } from './characters/god/wuhun';
 export { SheLie } from './characters/god/shelie';
 export { QinYin } from './characters/god/qinyin';
 export { YeYan } from './characters/god/yeyan';
+export { RenJie } from './characters/god/renjie';
+export { BaiYin } from './characters/god/baiyin';
+export { JiLve, JiLveShadow, JiLveGuiCai, JiLveJiZhi, JiLveFangZhu } from './characters/god/jilve';
+export { LianPo, LianPoShadow } from './characters/god/lianpo';
 
 export { FeiYing } from './characters/god/feiying';
 export { GuiXin } from './characters/god/guixin';

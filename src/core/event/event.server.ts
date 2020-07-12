@@ -357,7 +357,8 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.AskForCardEvent]: {
     toId: PlayerId;
     cardMatcher: CardMatcherSocketPassenger;
-    cardAmount: number;
+    cardAmount?: number;
+    cardAmountRange?: [number, number];
     reason: string;
     fromArea: PlayerCardsArea[];
     conversation: string | PatchedTranslationObject;

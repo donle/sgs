@@ -11,10 +11,6 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'jizhi', description: 'jizhi_description' })
 export class JiZhi extends TriggerSkill {
-  public isAutoTrigger() {
-    return true;
-  }
-
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage: CardUseStage) {
     return stage === CardUseStage.CardUsing;
   }
