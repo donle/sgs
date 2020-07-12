@@ -354,17 +354,28 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
+    if (content.randomPinDianCardPlayer.includes(this.store.clientPlayerId)) {
+      const handcards = this.presenter.ClientPlayer!.getCardIds(PlayerCardsArea.HandArea);
+      const randomCardIndex = Math.floor(Math.random() * handcards.length);
+      const event: ClientEventFinder<T> = {
+        fromId: content.toId,
+        pindianCard: handcards[randomCardIndex],
+      };
+      this.store.room.broadcast(type, EventPacker.createIdentifierEvent(type, event));
+      this.endAction();
+      return;
+    }
+
     this.presenter.createIncomingConversation({
       conversation: content.conversation,
       translator: this.translator,
     });
-
     const action = new SelectAction<GameEventIdentifiers.AskForPinDianCardEvent>(
       content.toId,
       this.store,
       this.presenter,
       this.translator,
-      content,
+      EventPacker.createUncancellableEvent(content),
     );
     const selectedCards = await action.onSelectCard([PlayerCardsArea.HandArea], 1);
 

@@ -240,6 +240,7 @@ export interface ServerEvent extends EventUtilities {
     fromId: PlayerId;
     toIds: PlayerId[];
     toId: PlayerId;
+    randomPinDianCardPlayer: PlayerId[];
     conversation: string | PatchedTranslationObject;
   };
   [GameEventIdentifiers.AskForChoosingCardEvent]: {

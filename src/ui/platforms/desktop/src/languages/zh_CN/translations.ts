@@ -232,6 +232,7 @@ export const characterDictionary: Word[] = [
   { source: 'tianyi', target: '天义' },
   { source: 'tianyi_win', target: '天义[赢]' },
   { source: 'tianyi_lose', target: '天义[没赢]' },
+  { source: 'hanzhan', target: '酣战' },
 
   { source: 'pangde', target: '庞德' },
   { source: 'jianchu', target: '鞬出' },
@@ -675,6 +676,7 @@ export const skillDescriptions: Word[] = [
     target:
       '出牌阶段限一次，你可以与一名角色拼点，若你：赢，直到回合结束，你使用【杀】无距离限制且次数上限和目标上限+1；没赢，本回合你不能使用【杀】。',
   },
+  { source: 'hanzhan_description', target: '你与角色拼点，或其他角色对你发起拼点时，你可令其使用随机手牌拼点' },
   {
     source: 'jianchu_description',
     target:

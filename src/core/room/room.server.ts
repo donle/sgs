@@ -34,7 +34,7 @@ import { RecordAnalytics } from 'core/game/record_analytics';
 import { Algorithm } from 'core/shares/libs/algorithm';
 import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
-import { OnDefineReleaseTiming, Skill, SkillHooks, SkillType, TriggerSkill } from 'core/skills/skill';
+import { OnDefineReleaseTiming, Skill, SkillHooks, SkillType, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 import { GameProcessor } from '../game/game_processor';
@@ -594,8 +594,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     if (Card.isVirtualCardId(cardUseEvent.cardId)) {
       const from = this.getPlayerById(cardUseEvent.fromId);
-
-      await this.useSkill({
+      const skill = Sanguosha.getSkillBySkillName(card.GeneratedBySkill);
+      const skillUseEvent = {
         fromId: cardUseEvent.fromId,
         skillName: card.GeneratedBySkill,
         toIds: cardUseEvent.toIds,
@@ -621,7 +621,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                   ? TranslationPack.patchPlayerInTranslation(...cardUseEvent.toIds.map(id => this.getPlayerById(id)))
                   : '',
               ).extract(),
-      }, true);
+      };
+      if (skill instanceof ViewAsSkill) {
+        await this.useSkill(skillUseEvent);
+      } else {
+        this.broadcast(GameEventIdentifiers.SkillUseEvent, skillUseEvent);
+      }
     }
 
     await this.trigger(cardUseEvent, CardUseStage.PreCardUse);
@@ -634,7 +639,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (cardResponseEvent.cardId !== undefined && Card.isVirtualCardId(cardResponseEvent.cardId)) {
       const from = this.getPlayerById(cardResponseEvent.fromId);
       const card = Sanguosha.getCardById<VirtualCard>(cardResponseEvent.cardId);
-      await this.useSkill({
+      const skill = Sanguosha.getSkillBySkillName(card.GeneratedBySkill);
+      const skillUseEvent = {
         fromId: cardResponseEvent.fromId,
         skillName: card.GeneratedBySkill,
         translationsMessage:
@@ -652,7 +658,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                 TranslationPack.patchCardInTranslation(...card.ActualCardIds),
                 TranslationPack.patchCardInTranslation(card.Id),
               ).extract(),
-      });
+      };
+      if (skill instanceof ViewAsSkill) {
+        await this.useSkill(skillUseEvent);
+      } else {
+        this.broadcast(GameEventIdentifiers.SkillUseEvent, skillUseEvent);
+      }
     }
 
     await this.trigger(cardResponseEvent, CardResponseStage.PreCardResponse);
@@ -783,28 +794,22 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     });
   }
 
-  public async useSkill(content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>, recordOnly?: boolean) {
-    if (!recordOnly) {
-      const skill = Sanguosha.getSkillBySkillName(content.skillName);
-      if (!(await skill.beforeUse(this, content))) {
-        return;
-      }
+  public async useSkill(content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    const skill = Sanguosha.getSkillBySkillName(content.skillName);
+    if (!(await skill.beforeUse(this, content))) {
+      return;
     }
 
     await super.useSkill(content);
-    if (!recordOnly) {
-      const acutalTargets =
-        content.toIds && Sanguosha.getSkillBySkillName(content.skillName).nominateForwardTarget(content.toIds);
-      if (acutalTargets && acutalTargets.length > 1) {
-        this.sortPlayersByPosition(content.toIds!);
-      }
+    const acutalTargets =
+      content.toIds && Sanguosha.getSkillBySkillName(content.skillName).nominateForwardTarget(content.toIds);
+    if (acutalTargets && acutalTargets.length > 1) {
+      this.sortPlayersByPosition(content.toIds!);
+    }
 
-      await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.SkillUseEvent, content);
-      if (!EventPacker.isTerminated(content)) {
-        await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.SkillEffectEvent, content);
-      }
-    } else {
-      this.broadcast(GameEventIdentifiers.SkillUseEvent, content);
+    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.SkillUseEvent, content);
+    if (!EventPacker.isTerminated(content)) {
+      await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.SkillEffectEvent, content);
     }
   }
 
@@ -1070,6 +1075,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         '{0} proposed a pindian event, please choose a hand card to pindian',
         TranslationPack.patchPlayerInTranslation(from),
       ).extract(),
+      randomPinDianCardPlayer: [],
     });
     let pindianResult: PinDianResultType | undefined;
 
@@ -1085,15 +1091,18 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           return false;
         }
 
+        const allEvents: ServerEventFinder<GameEventIdentifiers.AskForPinDianCardEvent>[] = [];
         for (const target of pindianEvent.toIds) {
-          this.notify(
-            GameEventIdentifiers.AskForPinDianCardEvent,
-            {
-              ...askForEvent,
-              toId: target,
-            },
-            target,
-          );
+          const askForPinDianEvent = EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForPinDianCardEvent, {
+            ...askForEvent,
+            toId: target,
+          });
+          await this.trigger<ServerEventFinder<GameEventIdentifiers.AskForPinDianCardEvent>>(askForPinDianEvent);
+          allEvents.push(askForPinDianEvent);
+        }
+
+        for (const event of allEvents) {
+          this.notify(GameEventIdentifiers.AskForPinDianCardEvent, event, event.toId);
         }
 
         const responses = await Promise.all(
@@ -1157,12 +1166,15 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               TranslationPack.patchCardInTranslation(pindianCard.cardId),
             ).toString(),
           ),
-          translationsMessage: TranslationPack.translationJsonPatcher(
-            'pindian result:' + (pindianResult.winners.length > 0 ? '{0} win' : 'draw'),
-            TranslationPack.patchPlayerInTranslation(
-              ...pindianResult.winners.map(winner => this.getPlayerById(winner)),
-            ),
-          ).extract(),
+          translationsMessage:
+            pindianResult.winners.length > 0
+              ? TranslationPack.translationJsonPatcher(
+                  'pindian result:{0} win',
+                  TranslationPack.patchPlayerInTranslation(
+                    ...pindianResult.winners.map(winner => this.getPlayerById(winner)),
+                  ),
+                ).extract()
+              : TranslationPack.translationJsonPatcher('pindian result:draw').extract(),
         });
         await this.sleep(3000);
         this.broadcast(GameEventIdentifiers.ObserveCardFinishEvent, {});
