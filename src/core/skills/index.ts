@@ -165,5 +165,8 @@ export { LianPo } from './characters/god/lianpo';
 export { FeiYing } from './characters/god/feiying';
 export { GuiXin } from './characters/god/guixin';
 export { QiXing, QiXingShadow } from './characters/god/qixing';
+export { JunLve } from './characters/god/junlve';
+export { CuiKe } from './characters/god/cuike';
+export { ZhanHuo } from './characters/god/zhanhuo';
 
 export { Cheat } from './system/cheat';

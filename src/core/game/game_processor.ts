@@ -959,8 +959,9 @@ export class GameProcessor {
               fromId: player.Id,
               toId: to.Id,
               conversation: TranslationPack.translationJsonPatcher(
-                '{0} asks for a peach',
+                '{0} asks for {1} peach',
                 TranslationPack.patchPlayerInTranslation(to),
+                1 - to.Hp,
               ).extract(),
             });
 

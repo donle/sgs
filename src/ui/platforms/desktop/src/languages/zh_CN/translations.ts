@@ -1222,8 +1222,8 @@ export const eventDictionary: Word[] = [
   { source: '{0} skipped play stage', target: '{0} 跳过了出牌阶段' },
   { source: '{0} is dying', target: '{0} 进入了濒死阶段' },
   {
-    source: '{0} asks for a peach',
-    target: '{0} 处于濒死阶段，是否对其使用一个【桃】？',
+    source: '{0} asks for {1} peach',
+    target: '{0} 处于濒死状态，是否对其使用 {1} 个【桃】？',
   },
   { source: '{0} was killed', target: '{0} 已阵亡，死于天灾' },
   { source: '{0} was killed by {1}', target: '{0} 已阵亡，凶手是 {1}' },
@@ -1389,6 +1389,14 @@ export const eventDictionary: Word[] = [
   {
     source: '{0} used skill {1}, swapped {2} handcards from qixing cards pile',
     target: '{0} 使用了技能 【{1}】，从七星堆交换了 {2} 张牌',
+  },
+  {
+    source: 'cuike: do you wanna to throw {0} marks to do special skill',
+    target: '摧克：你可以弃 {0} 枚“军略”对其他角色各造成1点伤害'
+  },
+  {
+    source: 'zhanhuo: please choose a target to whom you cause 1 fire damage',
+    target: '绽火：请选择一名角色对其造成1点火焰伤害',
   },
   { source: 'cixiongjian:drop-card', target: '弃置一张手牌' },
   { source: 'cixiongjian:draw-card', target: '令其摸一张牌' },
