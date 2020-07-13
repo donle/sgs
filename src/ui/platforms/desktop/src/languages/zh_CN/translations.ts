@@ -1134,6 +1134,10 @@ export const eventDictionary: Word[] = [
     target: '{0} 获得了技能 【{1}】',
   },
   {
+    source: '{0} lost skill {1}',
+    target: '{0} 失去了技能 【{1}】',
+  },
+  {
     source: 'please select to use a {0}',
     target: '请选择使用一张【{0}】',
   },

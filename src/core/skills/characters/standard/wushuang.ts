@@ -58,11 +58,7 @@ export class WuShuang extends TriggerSkill {
 
 @ShadowSkill
 @CompulsorySkill({ name: WuShuang.GeneralName, description: WuShuang.Description })
-export class WuShuangShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  onLosingSkill(room: Room) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
-  }
-
+export class WuShuangShadow extends TriggerSkill {
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent>,
     stage?: AllStage,
@@ -99,7 +95,6 @@ export class WuShuangShadow extends TriggerSkill implements OnDefineReleaseTimin
         const { responseToEvent } = slashEvent;
         const duelEvent = responseToEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
         canUse = Sanguosha.getCardById(duelEvent.cardId).GeneralName === 'duel' && slashEvent.fromId !== owner.Id;
-
         break;
       }
       default:

@@ -60,6 +60,10 @@ export class WuQianShadow extends TriggerSkill implements OnDefineReleaseTiming 
     return true;
   }
 
+  public isFlaggedSkill() {
+    return true;
+  }
+
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
     return stage === PhaseStageChangeStage.AfterStageChanged;
   }
@@ -86,7 +90,7 @@ export class WuQianShadow extends TriggerSkill implements OnDefineReleaseTiming 
   ): Promise<boolean> {
     if (!!room.getFlag<boolean>(skillEffectEvent.fromId, this.GeneralName)) {
       room.removeFlag(skillEffectEvent.fromId, this.GeneralName);
-      await room.loseSkill(skillEffectEvent.fromId, WuShuang.GeneralName);
+      await room.loseSkill(skillEffectEvent.fromId, WuShuang.GeneralName, true);
     }
 
     for (const player of room.getOtherPlayers(skillEffectEvent.fromId)) {
