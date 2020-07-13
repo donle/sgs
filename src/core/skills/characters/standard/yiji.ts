@@ -46,7 +46,7 @@ export class YiJiShadow extends TriggerSkill {
     return stage === DrawCardStage.AfterDrawCardEffect || stage === CardMoveStage.AfterCardMoved;
   }
 
-  public getSkillLog(room: Room, event: ServerEventFinder<GameEventIdentifiers>) {
+  public getSkillLog(room: Room, owner: Player) {
     return 'please assign others no more than 2 handcards';
   }
 

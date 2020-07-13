@@ -8,7 +8,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { ActiveSkill, CommonSkill, CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { ActiveSkill, CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'rende', description: 'rende_description' })
 export class Rende extends ActiveSkill {
@@ -152,7 +152,7 @@ export class Rende extends ActiveSkill {
 }
 
 @ShadowSkill
-@CompulsorySkill({ name: Rende.GeneralName, description: Rende.Description })
+@CommonSkill({ name: Rende.GeneralName, description: Rende.Description })
 export class RenDeShadow extends TriggerSkill {
   public isAutoTrigger() {
     return true;
@@ -164,6 +164,10 @@ export class RenDeShadow extends TriggerSkill {
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
     return content.fromPlayer === owner.Id;
+  }
+
+  public isFlaggedSkill() {
+    return true;
   }
 
   async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {

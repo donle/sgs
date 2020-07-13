@@ -69,7 +69,15 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
     });
   }
 
-  onSelectCard(fromArea: PlayerCardsArea[], cardAmount: number, except: CardId[] = []) {
+  private match(cardAmount: number | [number, number], currentAmount: number) {
+    if (cardAmount instanceof Array) {
+      return currentAmount >= cardAmount[0] && currentAmount <= cardAmount[1];
+    } else {
+      return currentAmount === cardAmount;
+    }
+  }
+
+  onSelectCard(fromArea: PlayerCardsArea[], cardAmount: number | [number, number], except: CardId[] = []) {
     return new Promise<CardId[]>((resolve, reject) => {
       this.presenter.highlightCards();
       if (!EventPacker.isUncancellabelEvent(this.event)) {
@@ -89,7 +97,10 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
         ) {
           return false;
         }
-        return selectedCards.length !== cardAmount || selectedCards.includes(card.Id);
+        return (
+          (cardAmount instanceof Array ? selectedCards.length < cardAmount[1] : selectedCards.length !== cardAmount) ||
+          selectedCards.includes(card.Id)
+        );
       });
       this.presenter.setupCardSkillSelectionMatcher(card => {
         if (
@@ -99,7 +110,10 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
         ) {
           return false;
         }
-        return selectedCards.length !== cardAmount || selectedCards.includes(card.Id);
+        return (
+          (cardAmount instanceof Array ? selectedCards.length < cardAmount[1] : selectedCards.length !== cardAmount) ||
+          selectedCards.includes(card.Id)
+        );
       });
 
       const onClickCard = (card: Card, selected: boolean) => {
@@ -112,7 +126,7 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
           }
         }
 
-        if (cardAmount === selectedCards.length) {
+        if (this.match(cardAmount, selectedCards.length)) {
           this.presenter.enableActionButton('confirm');
         } else {
           this.presenter.disableActionButton('confirm');

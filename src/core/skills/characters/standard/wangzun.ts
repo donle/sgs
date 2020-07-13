@@ -43,6 +43,10 @@ export class WangZunShadow extends TriggerSkill {
     return stage === PhaseStageChangeStage.AfterStageChanged;
   }
 
+  public isFlaggedSkill() {
+    return true;
+  }
+
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
     if (PlayerPhaseStages.FinishStageEnd !== content.toStage) {
       return false;

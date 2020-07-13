@@ -38,11 +38,13 @@ export type OnceSkillMarkProps = {
 };
 
 export const Mark = (props: MarkProps) => {
-  return (
+  return props.amount > 0 ? (
     <div className={classNames(styles.mark, props.className)}>
       <img src={markIconMaps[props.markType]} alt="" />
       {props.amount > 1 && <span className={styles.markAmount}>{props.amount}</span>}
     </div>
+  ) : (
+    <></>
   );
 };
 

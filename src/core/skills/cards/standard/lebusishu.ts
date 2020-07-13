@@ -70,7 +70,7 @@ export class LeBuSiShuSkill extends ActiveSkill {
         ).extract(),
       });
 
-      room.skip(to, PlayerPhase.PlayCardStage);
+      await room.skip(to, PlayerPhase.PlayCardStage);
     }
     return true;
   }

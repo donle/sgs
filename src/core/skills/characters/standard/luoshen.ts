@@ -117,6 +117,10 @@ export class LuoShenShadow extends TriggerSkill {
     return room.CurrentPlayerPhase === PlayerPhase.DropCardStage && room.CurrentPhasePlayer.Id === owner.Id;
   }
 
+  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage) {
+    return true;
+  }
+
   public async onTrigger(): Promise<boolean> {
     return true;
   }

@@ -2,7 +2,13 @@ import { CardType } from 'core/cards/card';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { GameCommonRules } from 'core/game/game_rules';
-import { AllStage, PhaseChangeStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
+import {
+  AllStage,
+  PhaseChangeStage,
+  PhaseStageChangeStage,
+  PlayerPhase,
+  PlayerPhaseStages,
+} from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -19,8 +25,8 @@ export class CangZhuo extends TriggerSkill {
     return (
       owner.Id === content.playerId &&
       content.toStage === PlayerPhaseStages.DropCardStageStart &&
-      room.Analytics.getUsedCard(owner.Id, true)
-        .filter(cardId => Sanguosha.getCardById(cardId).is(CardType.Trick)).length === 0
+      room.Analytics.getUsedCard(owner.Id, true).filter(cardId => Sanguosha.getCardById(cardId).is(CardType.Trick))
+        .length === 0
     );
   }
 
@@ -45,12 +51,16 @@ export class CangZhuoShadow extends TriggerSkill implements OnDefineReleaseTimin
 
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent | GameEventIdentifiers.PhaseChangeEvent>,
-    stage: AllStage
+    stage: AllStage,
   ): boolean {
     return (
       EventPacker.getIdentifier(event) === GameEventIdentifiers.AskForCardDropEvent ||
       stage === PhaseChangeStage.PhaseChanged
     );
+  }
+
+  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage) {
+    return stage === PhaseChangeStage.PhaseChanged;
   }
 
   public canUse(
@@ -62,8 +72,8 @@ export class CangZhuoShadow extends TriggerSkill implements OnDefineReleaseTimin
     if (EventPacker.getIdentifier(content) === GameEventIdentifiers.AskForCardDropEvent) {
       canTrigger = room.CurrentPlayerPhase === PlayerPhase.DropCardStage && room.CurrentPhasePlayer.Id === owner.Id;
     } else if (EventPacker.getIdentifier(content) === GameEventIdentifiers.PhaseChangeEvent) {
-      const phaseChangeEvent = content as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>
-      canTrigger = owner.Id === phaseChangeEvent.fromPlayer && phaseChangeEvent.from === PlayerPhase.FinishStage
+      const phaseChangeEvent = content as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
+      canTrigger = owner.Id === phaseChangeEvent.fromPlayer && phaseChangeEvent.from === PlayerPhase.FinishStage;
     }
 
     return canTrigger && owner.getFlag<boolean>(this.GeneralName) === true;
@@ -82,20 +92,20 @@ export class CangZhuoShadow extends TriggerSkill implements OnDefineReleaseTimin
     if (identifier === GameEventIdentifiers.AskForCardDropEvent) {
       const askForCardDropEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent>;
       const player = room.getPlayerById(askForCardDropEvent.toId);
-      const tricks = player.getCardIds(PlayerCardsArea.HandArea)
+      const tricks = player
+        .getCardIds(PlayerCardsArea.HandArea)
         .filter(cardId => Sanguosha.getCardById(cardId).is(CardType.Trick));
 
       if (tricks.length > 0) {
         const maxHold =
-          GameCommonRules.getBaseHoldCardNumber(room, player) + GameCommonRules.getAdditionalHoldCardNumber(room, player);
+          GameCommonRules.getBaseHoldCardNumber(room, player) +
+          GameCommonRules.getAdditionalHoldCardNumber(room, player);
 
         const otherHandCards = player.getCardIds(PlayerCardsArea.HandArea).filter(card => !tricks.includes(card));
         const discardAmount = otherHandCards.length - maxHold;
 
         askForCardDropEvent.cardAmount = discardAmount;
-        askForCardDropEvent.except = askForCardDropEvent.except
-          ? [...askForCardDropEvent.except, ...tricks]
-          : tricks;
+        askForCardDropEvent.except = askForCardDropEvent.except ? [...askForCardDropEvent.except, ...tricks] : tricks;
       }
     } else if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
       const phaseChangeEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;

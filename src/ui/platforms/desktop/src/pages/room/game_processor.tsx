@@ -455,7 +455,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const { cardMatcher, cardAmount, conversation, fromArea, toId } = content;
+    const { cardMatcher, cardAmount, conversation, fromArea, toId, cardAmountRange } = content;
     this.presenter.createIncomingConversation({
       conversation,
       translator: this.translator,
@@ -469,7 +469,7 @@ export class GameClientProcessor {
       content,
       new CardMatcher(cardMatcher),
     );
-    const selectedCards = await action.onSelectCard(fromArea, cardAmount);
+    const selectedCards = await action.onSelectCard(fromArea, cardAmount || cardAmountRange!);
 
     this.presenter.closeIncomingConversation();
     const askForCardEvent: ClientEventFinder<GameEventIdentifiers.AskForCardEvent> = {
@@ -536,7 +536,9 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
     // tslint:disable-next-line:no-empty
-  ) {}
+  ) {
+    this.store.room.getPlayerById(content.dying).Dying = true;
+  }
   private onHandleNotifyEvent<T extends GameEventIdentifiers.NotifyEvent>(type: T, content: ServerEventFinder<T>) {
     this.presenter.notify(content.toIds, content.notificationTime);
     this.presenter.broadcastUIUpdate();
@@ -546,7 +548,8 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     const { playerId } = content;
-    this.store.room.kill(this.store.room.getPlayerById(playerId));
+    const player = this.store.room.getPlayerById(playerId);
+    this.store.room.kill(player);
     this.presenter.broadcastUIUpdate();
   }
 
@@ -576,6 +579,7 @@ export class GameClientProcessor {
 
   private onHandleRecoverEvent<T extends GameEventIdentifiers.RecoverEvent>(type: T, content: ServerEventFinder<T>) {
     const player = this.store.room.getPlayerById(content.toId);
+    player.Dying = false;
     player.changeHp(content.recoveredHp);
     this.presenter.broadcastUIUpdate();
   }
@@ -695,7 +699,6 @@ export class GameClientProcessor {
   ) {
     const action = new SkillUseAction(content.toId, this.store, this.presenter, content, this.translator);
     this.presenter.isSkillDisabled(SkillUseAction.isSkillDisabled(content));
-    this.presenter.broadcastUIUpdate();
     await action.onSelect(this.translator);
     this.endAction();
   }

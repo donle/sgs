@@ -14,7 +14,7 @@ import {
   OnDefineReleaseTiming,
   RulesBreakerSkill,
   ShadowSkill,
-  TriggerSkill
+  TriggerSkill,
 } from 'core/skills/skill';
 
 @CommonSkill({ name: 'tianyi', description: 'tianyi_description' })
@@ -29,7 +29,7 @@ export class TianYi extends ActiveSkill {
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return cards.length === 0;
   }
-  
+
   public numberOfTargets() {
     return 1;
   }
@@ -72,6 +72,10 @@ export class TianYiRemove extends TriggerSkill implements OnDefineReleaseTiming 
   }
 
   public isAutoTrigger(): boolean {
+    return true;
+  }
+
+  public isFlaggedSkill() {
     return true;
   }
 

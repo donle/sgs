@@ -71,7 +71,7 @@ export class ShenSu extends TriggerSkill {
     const phaseChangeEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
     room.endPhase(phaseChangeEvent.to);
     if (phaseChangeEvent.to === PlayerPhase.JudgeStage) {
-      room.skip(fromId, PlayerPhase.DrawCardStage);
+      await room.skip(fromId, PlayerPhase.DrawCardStage);
     }
     if (phaseChangeEvent.to === PlayerPhase.PlayCardStage && cardIds && cardIds.length > 0) {
       room.removeFlag(fromId, this.Name);

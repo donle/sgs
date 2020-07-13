@@ -54,7 +54,14 @@ export class YaJiao extends TriggerSkill {
     ).map(p => p.Id);
 
     if (!sameType && targets.length < 1) {
-      room.bury(...card);
+      await room.moveCards({
+        movingCards: card.map(card => ({ card })),
+        moveReason: CardMoveReason.PlaceToDropStack,
+        toArea: CardMoveArea.DropStack,
+        hideBroadcast: true,
+        movedByReason: this.Name,
+      });
+
       return false;
     }
 
@@ -135,10 +142,22 @@ export class YaJiao extends TriggerSkill {
           this.Name,
         );
 
-        room.bury(...card);
+        await room.moveCards({
+          movingCards: card.map(card => ({ card })),
+          moveReason: CardMoveReason.PlaceToDropStack,
+          toArea: CardMoveArea.DropStack,
+          hideBroadcast: true,
+          movedByReason: this.Name,
+        });
       }
     } else {
-      room.bury(...card);
+      await room.moveCards({
+        movingCards: card.map(card => ({ card })),
+        moveReason: CardMoveReason.PlaceToDropStack,
+        toArea: CardMoveArea.DropStack,
+        hideBroadcast: true,
+        movedByReason: this.Name,
+      });
     }
 
     return true;

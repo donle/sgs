@@ -135,6 +135,10 @@ export class YiJueShadow extends TriggerSkill implements OnDefineReleaseTiming {
     return StagePriority.High;
   }
 
+  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage) {
+    return stage === PhaseChangeStage.PhaseChanged;
+  }
+
   isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.DamageEvent | GameEventIdentifiers.PhaseChangeEvent>,
     stage?: AllStage,

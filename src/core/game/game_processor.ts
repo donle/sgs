@@ -41,6 +41,7 @@ import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/p
 import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { GlobalFilterSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ServerRoom } from '../room/room.server';
 import { Sanguosha } from './engine';
@@ -900,10 +901,12 @@ export class GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
+    const { dying, killedBy } = event;
+    const to = this.room.getPlayerById(dying);
+    to.Dying = true;
+
     await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === PlayerDyingStage.PlayerDying) {
-        const { dying } = event;
-        const to = this.room.getPlayerById(dying);
         this.room.broadcast(GameEventIdentifiers.PlayerDyingEvent, {
           dying: to.Id,
           translationsMessage: TranslationPack.translationJsonPatcher(
@@ -912,7 +915,33 @@ export class GameProcessor {
           ).extract(),
         });
 
+        const filterSkills = this.room.AlivePlayers.reduce<
+          {
+            player: Player;
+            skills: GlobalFilterSkill[];
+          }[]
+        >((skills, player) => {
+          skills.push({
+            player,
+            skills: player.getSkills<GlobalFilterSkill>('globalFilter'),
+          });
+          return skills;
+        }, []);
+
+        const canUsePeachPlayer: Player[] = [];
         for (const player of this.room.getAlivePlayersFrom()) {
+          if (filterSkills.find(
+            ({ skills, player: owner }) =>
+              skills.find(
+                skill => !skill.canUseCardTo(new CardMatcher({ name: ['peach'] }), this.room, owner, player, to),
+              ) !== undefined,
+          )) {
+            continue;
+          }
+          canUsePeachPlayer.push(player);
+        }
+
+        for (const player of canUsePeachPlayer) {
           let hasResponse = false;
           do {
             hasResponse = false;
@@ -945,8 +974,7 @@ export class GameProcessor {
       }
     });
 
-    const { dying, killedBy } = event;
-    const to = this.room.getPlayerById(dying);
+    to.Dying = false;
     if (to.Hp <= 0) {
       await this.room.kill(to, killedBy);
       EventPacker.terminate(event);
@@ -1006,7 +1034,7 @@ export class GameProcessor {
         toArea: CardMoveArea.DropStack,
       });
       if (this.room.CurrentPlayer.Id === playerId) {
-        this.room.skip(playerId);
+        await this.room.skip(playerId);
       }
 
       if (killedBy) {
@@ -1187,11 +1215,16 @@ export class GameProcessor {
     });
 
     if (!event.skipDrop) {
+      if (!card.is(CardType.Equip) && !card.is(CardType.DelayedTrick)) {
+        await this.room.moveCards({
+          movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
+          moveReason: CardMoveReason.CardUse,
+          toArea: CardMoveArea.DropStack,
+          hideBroadcast: true,
+        });
+      }
       if (this.room.isCardOnProcessing(card.Id)) {
         this.room.endProcessOnTag(card.Id.toString());
-      }
-      if (!card.is(CardType.Equip) && !card.is(CardType.DelayedTrick)) {
-        this.room.bury(event.cardId);
       }
     }
   }
@@ -1231,10 +1264,15 @@ export class GameProcessor {
     });
 
     if (!event.skipDrop) {
+      await this.room.moveCards({
+        movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
+        moveReason: CardMoveReason.CardResponse,
+        toArea: CardMoveArea.DropStack,
+        hideBroadcast: true,
+      });
       if (this.room.isCardOnProcessing(event.cardId)) {
         this.room.endProcessOnTag(event.cardId.toString());
       }
-      this.room.bury(event.cardId);
     }
   }
 
@@ -1291,7 +1329,7 @@ export class GameProcessor {
     }
 
     for (const event of events) {
-      return await this.iterateEachStage(identifier, event, onActualExecuted);
+      await this.iterateEachStage(identifier, event, onActualExecuted);
     }
   }
 
@@ -1521,8 +1559,14 @@ export class GameProcessor {
       }
     });
 
+    if (this.room.getCardOwnerId(event.judgeCardId) === undefined) {
+      await this.room.moveCards({
+        movingCards: [{ card: event.judgeCardId, fromArea: CardMoveArea.ProcessingArea }],
+        moveReason: CardMoveReason.PlaceToDropStack,
+        toArea: CardMoveArea.DropStack,
+      });
+    }
     this.room.endProcessOnTag(event.judgeCardId.toString());
-    this.room.bury(event.judgeCardId);
   }
 
   private async onHandlePinDianEvent(

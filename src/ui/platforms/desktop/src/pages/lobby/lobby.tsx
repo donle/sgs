@@ -120,8 +120,9 @@ export class Lobby extends React.Component<LobbyProps> {
       characterExtensions: [
         GameCharacterExtensions.Standard,
         GameCharacterExtensions.Wind,
-        GameCharacterExtensions.God,
         GameCharacterExtensions.Fire,
+        GameCharacterExtensions.Forest,
+        GameCharacterExtensions.God,
       ],
       cardExtensions: [GameCardExtensions.Standard, GameCardExtensions.LegionFight],
       ...roomInfo,

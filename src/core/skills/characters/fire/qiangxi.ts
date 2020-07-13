@@ -7,7 +7,14 @@ import { AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_process
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { ActiveSkill, CommonSkill, CompulsorySkill, OnDefineReleaseTiming, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import {
+  ActiveSkill,
+  CommonSkill,
+  CompulsorySkill,
+  OnDefineReleaseTiming,
+  ShadowSkill,
+  TriggerSkill,
+} from 'core/skills/skill';
 
 @CommonSkill({ name: 'qiangxi', description: 'qiangxi_description' })
 export class QiangXi extends ActiveSkill {
@@ -65,6 +72,10 @@ export class QiangXi extends ActiveSkill {
 export class QiangXiShadow extends TriggerSkill implements OnDefineReleaseTiming {
   onLosingSkill(room: Room, playerId: PlayerId) {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+  }
+
+  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage) {
+    return true;
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: AllStage): boolean {

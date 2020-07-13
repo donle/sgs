@@ -79,6 +79,10 @@ export class TieJiShadow extends TriggerSkill implements OnDefineReleaseTiming {
     return stage === PhaseChangeStage.AfterPhaseChanged && event.from === PlayerPhase.FinishStage;
   }
 
+  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage) {
+    return true;
+  }
+
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
     return room.AlivePlayers.find(player => player.getFlag<boolean>(this.GeneralName)) !== undefined;
   }

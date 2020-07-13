@@ -73,7 +73,7 @@ export class BingLiangCunDuanSkill extends ActiveSkill {
         ).extract(),
       });
 
-      room.skip(to, PlayerPhase.DrawCardStage);
+      await room.skip(to, PlayerPhase.DrawCardStage);
     }
     return true;
   }

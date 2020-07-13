@@ -94,7 +94,16 @@ export class LuoYi extends TriggerSkill {
         luoyiObtain = [];
       }
     }
-    room.bury(...displayCards.filter(id => !luoyiObtain.includes(id)));
+
+    await room.moveCards({
+      movingCards: displayCards
+        .filter(id => !luoyiObtain.includes(id))
+        .map(card => ({ card, fromArea: CardMoveArea.ProcessingArea })),
+      moveReason: CardMoveReason.PlaceToDropStack,
+      toArea: CardMoveArea.DropStack,
+      hideBroadcast: true,
+      movedByReason: this.Name,
+    });
 
     return true;
   }
@@ -109,6 +118,10 @@ export class LuoYiShadow extends TriggerSkill implements OnDefineReleaseTiming {
 
   public get Priority() {
     return StagePriority.High;
+  }
+
+  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage) {
+    return event.to === PlayerPhase.PrepareStage && stage === PhaseChangeStage.AfterPhaseChanged;
   }
 
   public isTriggerable(

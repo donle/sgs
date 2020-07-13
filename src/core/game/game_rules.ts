@@ -183,7 +183,7 @@ export class GameCommonRules {
     );
   }
 
-  public static getCardAdditionalUsableDistance(room: Room, user: Player, card: Card | CardMatcher) {
+  public static getCardAdditionalUsableDistance(room: Room, user: Player, card: Card | CardMatcher, target?: Player) {
     GameCommonRules.preCheck(user);
     let times = 0;
     GameCommonRules.userRules[user.Id].cards
@@ -193,7 +193,9 @@ export class GameCommonRules {
       });
 
     user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
-      times += skill.breakCardUsableDistance(card instanceof Card ? card.Id : card, room, user);
+      times +=
+        skill.breakCardUsableDistance(card instanceof Card ? card.Id : card, room, user) +
+        (target ? skill.breakCardUsableDistanceTo(card instanceof Card ? card.Id : card, room, user, target) : 0);
     });
 
     return times;

@@ -123,6 +123,10 @@ export abstract class Skill {
     return this.sideEffectSkill;
   }
 
+  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage) {
+    return false;
+  }
+
   public get SkillType() {
     return this.skillType;
   }
@@ -156,7 +160,11 @@ export abstract class TriggerSkill extends Skill {
     return false;
   }
 
-  public getSkillLog(room: Room, event: ServerEventFinder<GameEventIdentifiers>): PatchedTranslationObject | string {
+  public isUncancellable(room: Room, event?: ServerEventFinder<GameEventIdentifiers>): boolean {
+    return false;
+  }
+
+  public getSkillLog(room: Room, owner: Player): PatchedTranslationObject | string {
     return TranslationPack.translationJsonPatcher('do you want to trigger skill {0} ?', this.Name).extract();
   }
 
@@ -198,7 +206,13 @@ export abstract class TriggerSkill extends Skill {
     }
   }
 
-  public targetFilter(room: Room, owner: Player, targets: PlayerId[]): boolean {
+  public targetFilter(
+    room: Room,
+    owner: Player,
+    targets: PlayerId[],
+    selectedCards: CardId[],
+    cardId?: CardId,
+  ): boolean {
     const availableNumOfTargets = this.numberOfTargets();
     const additionalNumberOfTargets = this.additionalNumberOfTargets(room, owner);
     if (availableNumOfTargets instanceof Array) {
@@ -221,7 +235,7 @@ export abstract class TriggerSkill extends Skill {
     return [];
   }
 
-  public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
+  public cardFilter(room: Room, owner: Player, cards: CardId[], selectedTargets: PlayerId[], cardId?: CardId): boolean {
     return cards.length === 0;
   }
   public isAvailableCard(
@@ -260,7 +274,13 @@ export abstract class ActiveSkill extends Skill {
     return [];
   }
 
-  public targetFilter(room: Room, owner: Player, targets: PlayerId[], cardId?: CardId): boolean {
+  public targetFilter(
+    room: Room,
+    owner: Player,
+    targets: PlayerId[],
+    selectedCards: CardId[],
+    cardId?: CardId,
+  ): boolean {
     const availableNumOfTargets = this.numberOfTargets();
     const additionalNumberOfTargets = this.additionalNumberOfTargets(room, owner, cardId);
     if (availableNumOfTargets instanceof Array) {
@@ -279,8 +299,18 @@ export abstract class ActiveSkill extends Skill {
     }
   }
 
-  public abstract cardFilter(room: Room, owner: Player, cards: CardId[]): boolean;
-  public abstract canUse(room: Room, owner: Player): boolean;
+  public abstract cardFilter(
+    room: Room,
+    owner: Player,
+    cards: CardId[],
+    selectedTargets: PlayerId[],
+    cardId?: CardId,
+  ): boolean;
+  public abstract canUse(
+    room: Room,
+    owner: Player,
+    containerCard?: CardId,
+  ): boolean;
   public abstract isAvailableCard(
     owner: PlayerId,
     room: Room,
@@ -339,7 +369,13 @@ export abstract class ViewAsSkill extends Skill {
 
   public abstract canViewAs(room: Room, owner: Player, selectedCards?: CardId[]): string[];
   public abstract viewAs(cards: CardId[], viewAs?: string): VirtualCard;
-  public abstract cardFilter(room: Room, owner: Player, cards: CardId[]): boolean;
+  public abstract cardFilter(
+    room: Room,
+    owner: Player,
+    cards: CardId[],
+    selectedTargets: PlayerId[],
+    cardId?: CardId,
+  ): boolean;
   public abstract isAvailableCard(
     room: Room,
     owner: Player,
@@ -386,6 +422,9 @@ export abstract class RulesBreakerSkill extends Skill {
     return 0;
   }
   public breakCardUsableDistance(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
+    return 0;
+  }
+  public breakCardUsableDistanceTo(cardId: CardId | CardMatcher, room: Room, owner: Player, target: Player): number {
     return 0;
   }
   public breakCardUsableTargets(cardId: CardId | CardMatcher, room: Room, owner: Player): number {

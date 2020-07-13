@@ -132,11 +132,37 @@ export { TianYi, TianYiRemove, TianYiExtra, TianYiBlock } from './characters/fir
 export { HanZhan } from './characters/fire/hanzhan';
 export { ShuangXiong, ShuangXiongShadow, ShuangXiongRemove } from './characters/fire/shuangxiong';
 
+export { JiuChi, JiuChiShadow, JiuChiRemove } from './characters/forest/jiuchi';
+export { RouLin, RouLinShadow } from './characters/forest/roulin';
+export { BengHuai } from './characters/forest/benghuai';
+export { BaoNve } from './characters/forest/baonve';
+export { JuXiang } from './characters/forest/juxiang';
+export { LieRen } from './characters/forest/lieren';
+export { YingHun } from './characters/forest/yinghun';
+export { WuLie, WuLieShadow } from './characters/forest/wulie';
+export { XingShang } from './characters/forest/xingshang';
+export { FangZhu } from './characters/forest/fangzhu';
+export { SongWei } from './characters/forest/songwei';
+export { HaoShi, HaoShiShadow } from './characters/forest/haoshi';
+export { DiMeng } from './characters/forest/dimeng';
+export { HuoShou } from './characters/forest/huoshou';
+export { ZaiQi } from './characters/forest/zaiqi';
+export { WanSha } from './characters/forest/wansha';
+export { LuanWu } from './characters/forest/luanwu';
+export { WeiMu } from './characters/forest/weimu';
+export { DuanLiang, DuanLiangShadow } from './characters/forest/duanliang';
+export { JieZi } from './characters/forest/jiezi';
+
 export { WuShen, WuShenShadow } from './characters/god/wushen';
 export { WuHun, WuHunDied } from './characters/god/wuhun';
 export { SheLie } from './characters/god/shelie';
 export { QinYin } from './characters/god/qinyin';
 export { YeYan } from './characters/god/yeyan';
+export { RenJie } from './characters/god/renjie';
+export { BaiYin } from './characters/god/baiyin';
+export { JiLve, JiLveShadow, JiLveGuiCai, JiLveJiZhi, JiLveFangZhu } from './characters/god/jilve';
+export { LianPo, LianPoShadow } from './characters/god/lianpo';
+
 export { FeiYing } from './characters/god/feiying';
 export { GuiXin } from './characters/god/guixin';
 export { QiXing, QiXingShadow } from './characters/god/qixing';

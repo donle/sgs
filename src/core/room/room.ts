@@ -82,6 +82,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract async moveCards(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): Promise<void>;
   //Server only
+  public abstract async asyncMoveCards(events: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[]): Promise<void>;
+  //Server only
   public abstract async onReceivingAsyncResponseFrom<T extends GameEventIdentifiers>(
     identifier: T,
     playerId?: PlayerId,
@@ -159,7 +161,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract isCardInDropStack(cardId: CardId): boolean;
   public abstract isCardInDrawStack(cardId: CardId): boolean;
 
-  public abstract skip(player: PlayerId, phase?: PlayerPhase): void;
+  public abstract async skip(player: PlayerId, phase?: PlayerPhase): Promise<void>;
   public abstract endPhase(phase: PlayerPhase): void;
 
   public updatePlayerStatus(status: 'online' | 'offline' | 'trusted' | 'player', toId: PlayerId) {
@@ -362,7 +364,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     const card = Sanguosha.getCardById(cardId);
 
     return Math.max(
-      this.distanceBetween(from, to) - GameCommonRules.getCardAdditionalUsableDistance(room, from, card),
+      this.distanceBetween(from, to) - GameCommonRules.getCardAdditionalUsableDistance(room, from, card, to),
       1,
     );
   }

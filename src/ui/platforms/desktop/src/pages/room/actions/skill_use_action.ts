@@ -33,13 +33,17 @@ export class SkillUseAction extends BaseAction {
   }
 
   private invokeSpecifiedSkill(skillName: string, translator: ClientTranslationModule, callback: () => void) {
+    if (!EventPacker.isUncancellabelEvent(this.askForEvent)) {
+      this.presenter.enableActionButton('cancel');
+    }
+
     const event: ClientEventFinder<GameEventIdentifiers.AskForSkillUseEvent> = {
       invoke: undefined,
       fromId: this.presenter.ClientPlayer!.Id,
     };
     const skill = Sanguosha.getSkillBySkillName<TriggerSkill>(skillName);
     this.presenter.createIncomingConversation({
-      conversation: skill.getSkillLog(this.store.room, this.askForEvent),
+      conversation: skill.getSkillLog(this.store.room, this.player),
       translator,
     });
     this.selectSkill(skill);
@@ -57,14 +61,15 @@ export class SkillUseAction extends BaseAction {
       this.presenter.resetSelectedSkill();
       callback();
     });
-    this.presenter.defineCancelButtonActions(() => {
-      this.store.room.broadcast(GameEventIdentifiers.AskForSkillUseEvent, event);
-      this.presenter.closeIncomingConversation();
-      this.resetActionHandlers();
-      this.resetAction();
-      this.presenter.resetSelectedSkill();
-      callback();
-    });
+    !EventPacker.isUncancellabelEvent(this.askForEvent) &&
+      this.presenter.defineCancelButtonActions(() => {
+        this.store.room.broadcast(GameEventIdentifiers.AskForSkillUseEvent, event);
+        this.presenter.closeIncomingConversation();
+        this.resetActionHandlers();
+        this.resetAction();
+        this.presenter.resetSelectedSkill();
+        callback();
+      });
   }
 
   onSelect(translator: ClientTranslationModule) {
@@ -88,10 +93,6 @@ export class SkillUseAction extends BaseAction {
           translator: this.translator,
           conversation: 'please choose a skill',
         });
-
-        if (!EventPacker.isUncancellabelEvent(this.askForEvent)) {
-          this.presenter.enableActionButton('cancel');
-        }
       }
     });
   }
@@ -107,8 +108,20 @@ export class SkillUseAction extends BaseAction {
           this.selectedTargets,
           this.equipSkillCardId,
         ) &&
-          (!this.selectedSkillToPlay.cardFilter(this.store.room, this.player, this.selectedCards) ||
-            this.selectedSkillToPlay.cardFilter(this.store.room, this.player, [...this.selectedCards, card.Id])) &&
+          (!this.selectedSkillToPlay.cardFilter(
+            this.store.room,
+            this.player,
+            this.selectedCards,
+            this.selectedTargets,
+            this.selectedCardToPlay,
+          ) ||
+            this.selectedSkillToPlay.cardFilter(
+              this.store.room,
+              this.player,
+              [...this.selectedCards, card.Id],
+              this.selectedTargets,
+              this.selectedCardToPlay,
+            )) &&
           card.Id !== this.equipSkillCardId) ||
         this.selectedCards.includes(card.Id)
       );
@@ -120,6 +133,11 @@ export class SkillUseAction extends BaseAction {
   async onPlay() {
     this.delightItems();
     this.presenter.highlightCards();
+
+    if (EventPacker.isUncancellabelEvent(this.askForEvent)) {
+      this.presenter.disableActionButton('cancel');
+      this.presenter.broadcastUIUpdate();
+    }
     this.presenter.setupPlayersSelectionMatcher((player: Player) => this.isPlayerEnabled(player));
     this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
       this.isCardEnabledOnSkillTriggered(card, PlayerCardsArea.HandArea),

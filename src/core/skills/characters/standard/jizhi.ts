@@ -11,10 +11,6 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'jizhi', description: 'jizhi_description' })
 export class JiZhi extends TriggerSkill {
-  public isAutoTrigger() {
-    return true;
-  }
-
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage: CardUseStage) {
     return stage === CardUseStage.CardUsing;
   }
@@ -67,10 +63,18 @@ export class JiZhi extends TriggerSkill {
 }
 
 @ShadowSkill
-@CompulsorySkill({ name: JiZhi.Name, description: JiZhi.Description })
+@CommonSkill({ name: JiZhi.Name, description: JiZhi.Description })
 export class JiZhiShadow extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: PhaseChangeStage) {
     return stage === PhaseChangeStage.AfterPhaseChanged && event.from === PlayerPhase.FinishStage;
+  }
+
+  public isAutoTrigger() {
+    return true;
+  }
+
+  public isFlaggedSkill() {
+    return true;
   }
 
   canUse() {

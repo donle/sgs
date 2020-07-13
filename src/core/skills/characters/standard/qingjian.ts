@@ -106,6 +106,9 @@ export class QingJianShadow extends TriggerSkill implements OnDefineReleaseTimin
   public isAutoTrigger() {
     return true;
   }
+  public isFlaggedSkill() {
+    return true;
+  }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: PhaseChangeStage) {
     return stage === PhaseChangeStage.AfterPhaseChanged && event.from === PlayerPhase.FinishStage;

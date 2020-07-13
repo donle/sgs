@@ -9,10 +9,6 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 @UniqueSkill
 @CompulsorySkill({ name: 'qinggang', description: 'qinggang_description' })
 export class QingGangSkill extends TriggerSkill {
-  isAutoTrigger() {
-    return true;
-  }
-
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage) {
     return (
       stage === AimStage.AfterAim &&
