@@ -173,4 +173,5 @@ export { JunLve } from './characters/god/junlve';
 export { CuiKe } from './characters/god/cuike';
 export { ZhanHuo } from './characters/god/zhanhuo';
 
+export { JueJing, JueJingDying } from './characters/god/juejing';
 export { Cheat } from './system/cheat';
