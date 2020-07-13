@@ -5,7 +5,6 @@ import { AimStage, AllStage, CardResponseStage, CardUseStage, PlayerPhase } from
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
-import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'wushuang', description: 'wushuang_description' })

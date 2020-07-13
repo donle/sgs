@@ -3,16 +3,16 @@ import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/st
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { MarkEnum } from 'core/shares/types/mark_list';
 import { ActiveSkill, TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { CommonSkill, CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { WuShuang } from '../standard/wushuang';
-import { KuangBao } from './kuangbao';
 
 @CommonSkill({ name: 'wuqian', description: 'wuqian_description' })
 export class WuQian extends ActiveSkill {
   public canUse(room: Room, owner: Player): boolean {
-    return room.getMark(owner.Id, KuangBao.Fury) >= 2;
+    return room.getMark(owner.Id, MarkEnum.Wrath) >= 2;
   }
 
   public cardFilter(): boolean {
@@ -36,7 +36,7 @@ export class WuQian extends ActiveSkill {
   }
 
   public async onEffect(room: Room, skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    room.addMark(skillEffectEvent.fromId, KuangBao.Fury, -2);
+    room.addMark(skillEffectEvent.fromId, MarkEnum.Wrath, -2);
 
     const target = skillEffectEvent.toIds![0];
     room.setFlag<boolean>(target, this.GeneralName, true);

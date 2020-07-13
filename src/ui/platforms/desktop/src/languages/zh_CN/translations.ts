@@ -376,7 +376,7 @@ export const markDictionary: Word[] = [
   { source: 'nightmare', target: '梦魇' },
   { source: 'ren', target: '忍' },
   { source: 'lie', target: '烈' },
-  { source: 'Fury', target: '暴怒' },
+  { source: 'nu', target: '暴怒' },
 ];
 
 export const skillDescriptions: Word[] = [

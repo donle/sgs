@@ -2,13 +2,12 @@ import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event
 import { AllStage, DamageEffectStage, GameStartStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
+import { MarkEnum } from 'core/shares/types/mark_list';
 import { TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill } from 'core/skills/skill_wrappers';
 
 @CompulsorySkill({ name: 'kuangbao', description: 'kuangbao_description' })
 export class KuangBao extends TriggerSkill {
-  public static readonly Fury = 'Fury';
-
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
     return (
       stage === GameStartStage.AfterGameStarted ||
@@ -52,9 +51,9 @@ export class KuangBao extends TriggerSkill {
     const unknownEvent = skillEffectEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers>;
     const identifier = EventPacker.getIdentifier(unknownEvent);
     if (identifier === GameEventIdentifiers.DamageEvent) {
-      room.addMark(skillEffectEvent.fromId, KuangBao.Fury, 1);
+      room.addMark(skillEffectEvent.fromId, MarkEnum.Wrath, 1);
     } else {
-      room.addMark(skillEffectEvent.fromId, KuangBao.Fury, 2);
+      room.addMark(skillEffectEvent.fromId, MarkEnum.Wrath, 2);
     }
 
     return true;

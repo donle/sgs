@@ -3,15 +3,14 @@ import { DamageType } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { MarkEnum } from 'core/shares/types/mark_list';
 import { ActiveSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
-import { KuangBao } from './kuangbao';
-import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'shenfen', description: 'shenfen_description' })
 export class ShenFen extends ActiveSkill {
   public canUse(room: Room, owner: Player): boolean {
-    return room.getMark(owner.Id, KuangBao.Fury) >= 6 && !owner.hasUsedSkill(this.GeneralName);
+    return room.getMark(owner.Id, MarkEnum.Wrath) >= 6 && !owner.hasUsedSkill(this.GeneralName);
   }
 
   public numberOfTargets(): number {
@@ -53,7 +52,7 @@ export class ShenFen extends ActiveSkill {
     room: Room,
     skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
-    room.addMark(skillEffectEvent.fromId, KuangBao.Fury, -6);
+    room.addMark(skillEffectEvent.fromId, MarkEnum.Wrath, -6);
 
     await this.onAngry(room, skillEffectEvent.fromId, async (fromId, to) => {
       await room.damage({
