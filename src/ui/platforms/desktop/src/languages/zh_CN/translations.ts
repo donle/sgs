@@ -272,11 +272,12 @@ export const characterDictionary: Word[] = [
 
   { source: 'sunjian', target: '孙坚' },
   { source: 'yinghun', target: '英魂' },
-  { source: 'polu', target: '破虏' },
+  { source: 'wulie', target: '武烈' },
+  { source: '#wulie_shadow', target: '武烈' },
 
   { source: 'dongzhuo', target: '董卓' },
   { source: 'jiuchi', target: '酒池' },
-  { source: 'jiuchi_used', target: '崩坏失效' },
+  { source: 'JiuChi_Used', target: '崩坏失效' },
   { source: 'roulin', target: '肉林' },
   { source: 'benghuai', target: '崩坏' },
   { source: 'baonve', target: '暴虐' },
@@ -338,6 +339,7 @@ export const characterDictionary: Word[] = [
   { source: '#qixing', target: '七星' },
   { source: 'kuangfeng', target: '狂风' },
   { source: 'dawu', target: '大雾' },
+
   { source: 'god_caocao', target: '神曹操' },
   { source: 'guixin', target: '归心' },
   { source: 'feiying', target: '飞影' },
@@ -367,6 +369,7 @@ export const characterDictionary: Word[] = [
 export const markDictionary: Word[] = [
   { source: 'nightmare', target: '梦魇' },
   { source: 'ren', target: '忍' },
+  { source: 'lie', target: '烈' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -752,8 +755,9 @@ export const skillDescriptions: Word[] = [
       '准备阶段开始时，若你已受伤，你可以选择一名其他角色并选择一项：1.令其摸X张牌并弃置一张牌；2.令其摸一张牌并弃置X张牌（X为你已损失的体力值）。',
   },
   {
-    source: 'polu_description',
-    target: '当你杀死一名其他角色后或你死亡时，你可以令至少一名角色各摸X张牌（X为你本局游戏发动过此技能的次数+1）。',
+    source: 'wulie_description',
+    target:
+      '<b>限定技</b>，结束阶段开始时，你可以失去至少1点体力并选择等量其他角色，这些角色各获得一枚“烈”标记；当有“烈”标记的角色受到伤害时，其移去此标记并防止此伤害。',
   },
   {
     source: 'jiuchi_description',
@@ -923,21 +927,23 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'wuqian_description',
-    target:
+    target: 
       '出牌阶段，你可以移去2枚“暴怒”标记并选择本回合内你未以此法选择过的一名其他角色，然后直到回合结束，你拥有“无双”且该角色的防具失效。',
   },
   {
     source: 'shenfen_description',
-    target:
+    target: 
       '出牌阶段限一次，你可以移去6枚“暴怒”标记并对所有其他角色造成1点伤害，然后这些角色弃置装备区里的所有牌，再弃置四张手牌，最后你翻面。',
   },
   {
     source: 'renjie_description',
-    target: '<b>锁定技</b>，当你受到伤害后，或于弃牌阶段内弃置手牌后，你获得X枚“忍”标记（X为伤害值或弃置的手牌数）。',
+    target: 
+      '<b>锁定技</b>，当你受到伤害后，或于弃牌阶段内弃置手牌后，你获得X枚“忍”标记（X为伤害值或弃置的手牌数）。',
   },
   {
     source: 'baiyin_description',
-    target: '<b>觉醒技</b>，准备阶段开始时，若你拥有不少于3枚“忍”标记，你减1点体力上限并获得技能“极略”。',
+    target:
+      '<b>觉醒技</b>，准备阶段开始时，若你拥有不少于3枚“忍”标记，你减1点体力上限并获得技能“极略”。',
   },
   {
     source: 'jilve_description',
@@ -953,7 +959,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'longhun_description',
-    target:
+    target: 
       '你可以将一至两张同花色的牌按如下规则使用或打出：红桃当【桃】；方块当火【杀】；梅花当【闪】；黑桃当【无懈可击】。若你以此法使用或打出的两张牌为：红色，此牌的伤害值或回复值+1；黑色，你弃置当前回合角色的一张牌。',
   },
 ];
@@ -1275,12 +1281,24 @@ export const eventDictionary: Word[] = [
   { source: '{0}: please choose a player to obtain {1}', target: '{0}：你可以将 {1} 交给一名角色' },
   { source: '{0}: please choose a player to drop', target: '{0}：你可以弃置攻击范围内含有你的一名角色区域内的一张牌' },
   { 
+    source: '{0}: do you want {1} to start a judge?',
+    target: '{0}：你可以令 {1} 进行判定，若为黑桃，其回复1点体力'
+  },
+  { 
+    source: '{0} triggered skill {1}',
+    target: '{0} 触发了技能 “{1}”'
+  },
+  { 
     source: '{0} triggered skill {1}, nullify {2}',
     target: '{0} 触发了技能 “{1}”，使 {2} 对其无效'
   },
   { 
     source: '{0} triggered skill {1}, become the source of damage dealed by {2}',
     target: '{0} 触发了技能 “{1}”，成为了 {2} 造成的伤害的伤害来源'
+  },
+  {
+    source: '{0} triggered skill {1}, prevent the damage',
+    target: '{0} 触发了 “{1}” 的效果，防止了此伤害'
   },
   {
     source: 'please drop a {0} hand card to hit {1} 1 hp of damage type fire',
@@ -1412,6 +1430,10 @@ export const eventDictionary: Word[] = [
   {
     source: 'please choose fangzhu options:{0}',
     target: '请选择：1.摸{0}张牌并翻面；2.弃置{0}张牌并失去1点体力',
+  },
+  {
+    source: 'please choose yinghun options:{0}:{1}',
+    target: '请选择：1.令 {0} 摸一张牌，然后弃置 {1} 张牌；2.令 {0} 摸 {1} 张牌，然后弃置一张牌',
   },
   {
     source: 'player {0} join in the room',

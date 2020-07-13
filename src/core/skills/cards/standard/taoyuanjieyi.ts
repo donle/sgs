@@ -1,12 +1,26 @@
+import { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'taoyuanjieyi', description: 'taoyuanjieyi_description' })
 export class TaoYuanJieYiSkill extends ActiveSkill {
-  public canUse() {
-    return true;
+  public canUse(
+    room: Room,
+    owner: Player,
+    containerCard?: CardId,
+  ) {
+    if (containerCard) {
+      for (const target of room.getAlivePlayersFrom()) {
+        if (owner.canUseCardTo(room, containerCard, target.Id)) {
+          return true;
+        }
+      }
+    }
+      
+    return false;
   }
 
   public numberOfTargets() {

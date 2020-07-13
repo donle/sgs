@@ -1,6 +1,8 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
+import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { DamageType } from 'core/game/game_props';
+import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
@@ -11,8 +13,20 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 export class NanManRuQingSkill extends ActiveSkill {
   public static readonly NewSource = 'new_source';
 
-  public canUse() {
-    return true;
+  public canUse(
+    room: Room,
+    owner: Player,
+    containerCard?: CardId,
+  ) {
+    if (containerCard) {
+      for (const target of room.getOtherPlayers(owner.Id)) {
+        if (owner.canUseCardTo(room, containerCard, target.Id)) {
+          return true;
+        }
+      }
+    }
+      
+    return false;
   }
 
   public numberOfTargets() {

@@ -1,4 +1,6 @@
+import { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, SelfTargetSkill } from 'core/skills/skill';
@@ -6,8 +8,12 @@ import { ActiveSkill, CommonSkill, SelfTargetSkill } from 'core/skills/skill';
 @CommonSkill({ name: 'wuzhongshengyou', description: 'wuzhongshengyou_description' })
 @SelfTargetSkill
 export class WuZhongShengYouSkill extends ActiveSkill {
-  public canUse() {
-    return true;
+  public canUse(
+    room: Room,
+    owner: Player,
+    containerCard?: CardId,
+  ) {    
+    return containerCard !== undefined && owner.canUseCardTo(room, containerCard, owner.Id);
   }
 
   public numberOfTargets() {

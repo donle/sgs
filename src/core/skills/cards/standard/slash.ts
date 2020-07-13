@@ -4,6 +4,7 @@ import { DamageType } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { TagEnum } from 'core/shares/types/tag_list';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'slash', description: 'slash_description' })
@@ -37,13 +38,11 @@ export class SlashSkill extends ActiveSkill {
     return room.canAttack(room.getPlayerById(owner), room.getPlayerById(target), containerCard);
   }
 
-  private readonly DrunkTag = 'drunkLevel';
-
   async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const player = room.getPlayerById(event.fromId);
     EventPacker.addMiddleware(
       {
-        tag: this.DrunkTag,
+        tag: TagEnum.DrunkTag,
         data: player.hasDrunk(),
       },
       event,
@@ -55,7 +54,7 @@ export class SlashSkill extends ActiveSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const { toIds, fromId, cardId } = event;
-    const addtionalDrunkDamage = EventPacker.getMiddleware<number>(this.DrunkTag, event) || 0;
+    const addtionalDrunkDamage = EventPacker.getMiddleware<number>(TagEnum.DrunkTag, event) || 0;
     const damageEvent: ServerEventFinder<GameEventIdentifiers.DamageEvent> = {
       fromId,
       toId: toIds![0],
@@ -67,7 +66,7 @@ export class SlashSkill extends ActiveSkill {
 
     EventPacker.addMiddleware(
       {
-        tag: this.DrunkTag,
+        tag: TagEnum.DrunkTag,
         data: addtionalDrunkDamage,
       },
       damageEvent,

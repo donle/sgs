@@ -5,6 +5,7 @@ import { AllStage, CardEffectStage, CardUseStage } from 'core/game/stage_process
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CompulsorySkill, TriggerSkill } from 'core/skills/skill';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'juxiang', description: 'juxiang_description' })
 export class JuXiang extends TriggerSkill {
@@ -39,7 +40,27 @@ export class JuXiang extends TriggerSkill {
     return false;
   }
 
-  public async onTrigger(): Promise<boolean> {
+  public async onTrigger(room: Room, content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
+    const unknownEvent = content.triggeredOnEvent as ServerEventFinder<
+      GameEventIdentifiers.CardEffectEvent | GameEventIdentifiers.CardUseEvent
+    >;
+    const identifier = EventPacker.getIdentifier(unknownEvent);
+    if (identifier === GameEventIdentifiers.CardEffectEvent) {
+      const cardEffectEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>;
+      content.translationsMessage = TranslationPack.translationJsonPatcher(
+        '{0} triggered skill {1}, nullify {2}',
+        TranslationPack.patchPlayerInTranslation(room.getPlayerById(content.fromId)),
+        this.Name,
+        TranslationPack.patchCardInTranslation(cardEffectEvent.cardId),
+      ).extract();
+    } else if (identifier === GameEventIdentifiers.CardUseEvent) {
+      content.translationsMessage = TranslationPack.translationJsonPatcher(
+        '{0} triggered skill {1}',
+        TranslationPack.patchPlayerInTranslation(room.getPlayerById(content.fromId)),
+        this.Name,
+      ).extract();
+    }
+
     return true;
   }
 
