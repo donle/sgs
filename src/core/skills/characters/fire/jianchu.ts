@@ -1,12 +1,20 @@
 import { CardType } from 'core/cards/card';
-import { CardChoosingOptions } from 'core/cards/libs/card_props';
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMatcher } from 'core/cards/libs/card_matcher';
+import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
+import {
+  CardMoveArea,
+  CardMoveReason,
+  EventPacker,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AimStage, AllStage } from 'core/game/stage_processor';
+import { AimStage, AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { CommonSkill, TriggerSkill } from 'core/skills/skill';
+import { CommonSkill, OnDefineReleaseTiming, RulesBreakerSkill, TriggerSkill } from 'core/skills/skill';
+import { ShadowSkill } from 'core/skills/skill_wrappers';
 
 @CommonSkill({ name: 'jianchu', description: 'jianchu_description' })
 export class Jianchu extends TriggerSkill {
@@ -72,8 +80,10 @@ export class Jianchu extends TriggerSkill {
       this.Name,
     );
 
-    if (Sanguosha.getCardById(response.selectedCard!).is(CardType.Equip)) {
+    if (!Sanguosha.getCardById(response.selectedCard!).is(CardType.Basic)) {
       EventPacker.setDisresponsiveEvent(aimEvent);
+      const additionalTimes = room.getFlag<number>(skillUseEvent.fromId, this.Name) || 0;
+      room.setFlag<number>(skillUseEvent.fromId, this.Name, additionalTimes + 1, false);
     } else if (aimEvent.byCardId && room.getCardOwnerId(aimEvent.byCardId) === undefined) {
       await room.moveCards({
         movingCards: [{ card: aimEvent.byCardId, fromArea: CardMoveArea.ProcessingArea }],
@@ -82,6 +92,69 @@ export class Jianchu extends TriggerSkill {
         toId: to.Id,
       });
     }
+
+    return true;
+  }
+}
+
+@ShadowSkill
+@CommonSkill({ name: Jianchu.Name, description: Jianchu.Description })
+export class JianChuShadow extends RulesBreakerSkill {
+  public breakCardUsableTimes(cardId: CardId | CardMatcher, room: Room, owner: Player) {
+    let match = false;
+    if (cardId instanceof CardMatcher) {
+      match = cardId.match(new CardMatcher({ name: ['slash'] }));
+    } else {
+      match = Sanguosha.getCardById(cardId).GeneralName === 'slash';
+    }
+
+    const additionalTimes = room.getFlag<number>(owner.Id, this.GeneralName);
+    if (match && additionalTimes !== undefined && additionalTimes > 0) {
+      return additionalTimes;
+    } else {
+      return 0;
+    }
+  }
+}
+
+@ShadowSkill
+@CommonSkill({ name: JianChuShadow.Name, description: JianChuShadow.Description })
+export class JianchuRemove extends TriggerSkill implements OnDefineReleaseTiming {
+  public onLosingSkill(room: Room): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+  }
+
+  public isAutoTrigger(): boolean {
+    return true;
+  }
+
+  public isFlaggedSkill() {
+    return true;
+  }
+
+  public isTriggerable(
+    event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>,
+    stage: PhaseChangeStage,
+  ): boolean {
+    return stage === PhaseChangeStage.AfterPhaseChanged && event.from === PlayerPhase.FinishStage;
+  }
+
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
+    return (
+      content.fromPlayer === owner.Id &&
+      room.getFlag<number>(owner.Id, this.GeneralName) !== undefined
+    );
+  }
+
+  public async onTrigger(): Promise<boolean> {
+    return true;
+  }
+
+  public async onEffect(
+    room: Room,
+    skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
+  ): Promise<boolean> {
+    room.removeFlag(skillUseEvent.fromId, this.GeneralName);
 
     return true;
   }

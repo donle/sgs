@@ -116,7 +116,7 @@ export { LieGong, LieGongDamage, LieGongShadow } from './characters/wind/liegong
 export { ShenSu } from './characters/wind/shensu';
 export { SheBian } from './characters/wind/shebian';
 
-export { Jianchu } from './characters/fire/jianchu';
+export { Jianchu, JianChuShadow, JianchuRemove } from './characters/fire/jianchu';
 export { QiangXi, QiangXiShadow } from './characters/fire/qiangxi';
 export { QuHu } from './characters/fire/quhu';
 export { JieMing } from './characters/fire/jieming';

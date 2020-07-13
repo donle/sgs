@@ -692,7 +692,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'jianchu_description',
     target:
-      '当你使用【杀】指定一名角色为目标后，你可以弃置其一张牌，若你以此法弃置的牌：为装备牌，此【杀】不可被【闪】响应；不为装备牌，该角色获得此【杀】。',
+      '当你使用【杀】指定一名角色为目标后，你可以弃置其一张牌，若你以此法弃置的牌：不为基本牌，此【杀】不可被【闪】响应，且你本回合内使用【杀】的次数上限+1；为基本牌，该角色获得此【杀】。',
   },
   {
     source: 'shuangxiong_description',
