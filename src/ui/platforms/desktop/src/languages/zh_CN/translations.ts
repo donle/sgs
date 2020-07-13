@@ -358,7 +358,10 @@ export const characterDictionary: Word[] = [
   { source: 'longhun', target: '龙魂' },
 ];
 
-export const markDictionary: Word[] = [{ source: 'nightmare', target: '梦魇' }];
+export const markDictionary: Word[] = [
+  { source: 'nightmare', target: '梦魇' },
+  { source: 'Fury', target: '暴怒' },
+];
 
 export const skillDescriptions: Word[] = [
   { source: 'jianxiong_description', target: '当你受到伤害后，你可以获得对你造成伤害的牌并摸一张牌。' },
