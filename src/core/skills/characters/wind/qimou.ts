@@ -78,6 +78,10 @@ export class QiMouShadow extends TriggerSkill implements OnDefineReleaseTiming {
     return true;
   }
 
+  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage) {
+    return true;
+  }
+
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: AllStage) {
     return stage === PhaseChangeStage.AfterPhaseChanged && event.from === PlayerPhase.FinishStage;
   }

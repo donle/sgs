@@ -105,6 +105,10 @@ export class JiangChiRemove extends TriggerSkill implements OnDefineReleaseTimin
     return true;
   }
 
+  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage) {
+    return true;
+  }
+
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>,
     stage: PhaseChangeStage,

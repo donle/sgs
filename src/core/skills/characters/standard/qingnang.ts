@@ -19,7 +19,7 @@ export class QingNang extends ActiveSkill {
   public numberOfTargets() {
     return 1;
   }
-  
+
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return cards.length === 1;
   }
@@ -90,6 +90,10 @@ export class QingNangShadow extends TriggerSkill implements OnDefineReleaseTimin
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
     return room.getFlag<boolean>(owner.Id, QingNang.exUse) !== undefined;
+  }
+
+  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage) {
+    return true;
   }
 
   public async onTrigger(): Promise<boolean> {

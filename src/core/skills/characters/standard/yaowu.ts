@@ -8,10 +8,6 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'yaowu', description: 'yaowu_description' })
 export class YaoWu extends TriggerSkill {
-  public isAutoTrigger() {
-    return true;
-  }
-
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
     return stage === DamageEffectStage.DamagedEffect;
   }

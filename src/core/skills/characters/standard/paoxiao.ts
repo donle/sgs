@@ -54,9 +54,13 @@ export class PaoXiaoRemove extends TriggerSkill implements OnDefineReleaseTiming
 
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.DamageEvent | GameEventIdentifiers.PhaseChangeEvent>,
-    stage: AllStage
+    stage: AllStage,
   ): boolean {
     return stage === DamageEffectStage.DamageEffect || stage === PhaseChangeStage.PhaseChanged;
+  }
+
+  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage) {
+    return stage === PhaseChangeStage.PhaseChanged;
   }
 
   public canUse(
@@ -66,15 +70,15 @@ export class PaoXiaoRemove extends TriggerSkill implements OnDefineReleaseTiming
   ) {
     let canTrigger = false;
     if (EventPacker.getIdentifier(content) === GameEventIdentifiers.DamageEvent) {
-      const damageEvent = content as ServerEventFinder<GameEventIdentifiers.DamageEvent>
-      canTrigger
-        = damageEvent.fromId !== undefined &&
+      const damageEvent = content as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
+      canTrigger =
+        damageEvent.fromId !== undefined &&
         damageEvent.fromId === owner.Id &&
         damageEvent.cardIds !== undefined &&
         Sanguosha.getCardById(damageEvent.cardIds[0]).GeneralName === 'slash';
     } else if (EventPacker.getIdentifier(content) === GameEventIdentifiers.PhaseChangeEvent) {
-      const phaseChangeEvent = content as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>
-      canTrigger = owner.Id === phaseChangeEvent.fromPlayer && phaseChangeEvent.from === PlayerPhase.FinishStage
+      const phaseChangeEvent = content as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
+      canTrigger = owner.Id === phaseChangeEvent.fromPlayer && phaseChangeEvent.from === PlayerPhase.FinishStage;
     }
 
     return canTrigger && room.getFlag<number>(owner.Id, this.GeneralName) > 0;

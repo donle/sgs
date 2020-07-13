@@ -8,13 +8,7 @@ import { AllStage, DamageEffectStage, PhaseChangeStage, PlayerPhase } from 'core
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import {
-  CommonSkill,
-  OnDefineReleaseTiming,
-  ShadowSkill,
-  TriggerSkill,
-  ViewAsSkill
-} from 'core/skills/skill';
+import { CommonSkill, OnDefineReleaseTiming, ShadowSkill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'jiuchi', description: 'jiuchi_description' })
 export class JiuChi extends ViewAsSkill {
@@ -68,11 +62,7 @@ export class JiuChiShadow extends TriggerSkill {
       return false;
     }
 
-    return (
-      fromId === owner.Id &&
-      Sanguosha.getCardById(cardIds[0]).GeneralName === 'slash' &&
-      drunkLevel > 0
-    );
+    return fromId === owner.Id && Sanguosha.getCardById(cardIds[0]).GeneralName === 'slash' && drunkLevel > 0;
   }
 
   public async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
@@ -96,6 +86,10 @@ export class JiuChiRemove extends TriggerSkill implements OnDefineReleaseTiming 
   }
 
   public isAutoTrigger() {
+    return true;
+  }
+
+  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage) {
     return true;
   }
 

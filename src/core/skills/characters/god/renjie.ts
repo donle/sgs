@@ -1,5 +1,5 @@
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { AllStage, CardMoveStage, DamageEffectStage, PlayerPhase, StagePriority } from 'core/game/stage_processor';
+import { AllStage, CardMoveStage, DamageEffectStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { MarkEnum } from 'core/shares/types/mark_list';
@@ -34,10 +34,6 @@ export class RenJie extends TriggerSkill {
         moveCardEvent.fromId === owner.Id
       );
     }
-  }
-
-  public get Priority() {
-    return StagePriority.High;
   }
 
   public async onTrigger(): Promise<boolean> {

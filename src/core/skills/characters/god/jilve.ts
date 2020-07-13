@@ -138,6 +138,10 @@ export class JiLveShadow extends TriggerSkill {
     return stage === PhaseChangeStage.AfterPhaseChanged && event.from === PlayerPhase.FinishStage;
   }
 
+  public isFlaggedSkill() {
+    return true;
+  }
+
   canUse() {
     return true;
   }

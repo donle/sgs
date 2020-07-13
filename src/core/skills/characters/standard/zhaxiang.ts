@@ -66,6 +66,10 @@ export class ZhaXiangShadow extends TriggerSkill implements OnDefineReleaseTimin
       );
     }
   }
+  
+  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage) {
+    return stage === PhaseChangeStage.AfterPhaseChanged;
+  }
 
   public canUse(
     room: Room,

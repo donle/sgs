@@ -111,6 +111,10 @@ export class LuoYiShadow extends TriggerSkill implements OnDefineReleaseTiming {
     return StagePriority.High;
   }
 
+  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage) {
+    return event.to === PlayerPhase.PrepareStage && stage === PhaseChangeStage.AfterPhaseChanged;
+  }
+
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.DamageEvent>,
     stage: AllStage,

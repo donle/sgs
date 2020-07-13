@@ -123,6 +123,10 @@ export abstract class Skill {
     return this.sideEffectSkill;
   }
 
+  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage) {
+    return false;
+  }
+
   public get SkillType() {
     return this.skillType;
   }
@@ -361,7 +365,13 @@ export abstract class ViewAsSkill extends Skill {
 
   public abstract canViewAs(room: Room, owner: Player, selectedCards?: CardId[]): string[];
   public abstract viewAs(cards: CardId[], viewAs?: string): VirtualCard;
-  public abstract cardFilter(room: Room, owner: Player, cards: CardId[], selectedTargets: PlayerId[], cardId?: CardId): boolean;
+  public abstract cardFilter(
+    room: Room,
+    owner: Player,
+    cards: CardId[],
+    selectedTargets: PlayerId[],
+    cardId?: CardId,
+  ): boolean;
   public abstract isAvailableCard(
     room: Room,
     owner: Player,

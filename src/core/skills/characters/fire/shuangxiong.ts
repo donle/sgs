@@ -229,6 +229,10 @@ export class ShuangXiongRemove extends TriggerSkill implements OnDefineReleaseTi
     return true;
   }
 
+  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage) {
+    return true;
+  }
+
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>,
     stage: PhaseChangeStage,
