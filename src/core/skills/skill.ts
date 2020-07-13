@@ -424,6 +424,9 @@ export abstract class RulesBreakerSkill extends Skill {
   public breakCardUsableDistance(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
     return 0;
   }
+  public breakCardUsableDistanceTo(cardId: CardId | CardMatcher, room: Room, owner: Player, target: Player): number {
+    return 0;
+  }
   public breakCardUsableTargets(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
     return 0;
   }

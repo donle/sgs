@@ -364,7 +364,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     const card = Sanguosha.getCardById(cardId);
 
     return Math.max(
-      this.distanceBetween(from, to) - GameCommonRules.getCardAdditionalUsableDistance(room, from, card),
+      this.distanceBetween(from, to) - GameCommonRules.getCardAdditionalUsableDistance(room, from, card, to),
       1,
     );
   }

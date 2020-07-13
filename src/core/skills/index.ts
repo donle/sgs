@@ -149,6 +149,8 @@ export { ZaiQi } from './characters/forest/zaiqi';
 export { WanSha } from './characters/forest/wansha';
 export { LuanWu } from './characters/forest/luanwu';
 export { WeiMu } from './characters/forest/weimu';
+export { DuanLiang, DuanLiangShadow } from './characters/forest/duanliang';
+export { JieZi } from './characters/forest/jiezi';
 
 export { WuShen, WuShenShadow } from './characters/god/wushen';
 export { WuHun, WuHunDied } from './characters/god/wuhun';
