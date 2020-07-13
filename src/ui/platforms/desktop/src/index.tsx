@@ -1,6 +1,6 @@
 import { getClientConfg } from 'client.config';
 import { Sanguosha } from 'core/game/engine';
-import { DevMode } from 'core/shares/types/host_config';
+import { Flavor } from 'core/shares/types/host_config';
 import { Languages } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { SimplifiedChinese } from 'languages';
@@ -13,7 +13,7 @@ import { emojiLoader } from './emoji_loader/emoji_loader';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
-const mode = (process.env.DEV_MODE as DevMode) || DevMode.Dev;
+const mode = (process.env.DEV_MODE as Flavor) || Flavor.Dev;
 const config = getClientConfg(mode);
 
 const translator = ClientTranslationModule.setup(config.ui.language, [Languages.ZH_CN, SimplifiedChinese]);

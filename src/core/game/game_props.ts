@@ -1,5 +1,6 @@
 import { CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
 import { PlayerId, PlayerRole } from 'core/player/player_props';
+import { Flavor } from 'core/shares/types/host_config';
 
 export const INFINITE_TRIGGERING_TIMES = 1000;
 export const NONE_TRIGGERING_TIMES = -9999;
@@ -27,6 +28,7 @@ export type GameInfo = {
   numberOfPlayers: number;
   roomName: string;
   multiCharacters?: boolean;
+  flavor: Flavor;
 };
 
 export type GameRunningInfo = {

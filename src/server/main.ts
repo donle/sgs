@@ -6,7 +6,7 @@ import { StageProcessor } from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
-import { DevMode, hostConfig, HostConfigProps } from 'core/shares/types/host_config';
+import { Flavor, hostConfig, HostConfigProps } from 'core/shares/types/host_config';
 import { LobbySocketEvent } from 'core/shares/types/server_types';
 import { Languages } from 'core/translations/translation_json_tool';
 import { TranslationModule } from 'core/translations/translation_module';
@@ -24,7 +24,7 @@ class App {
   private config: HostConfigProps;
   private translator: TranslationModule;
   private lobbySocket: SocketIO.Server;
-  constructor(mode: DevMode, private logger: Logger) {
+  constructor(mode: Flavor, private logger: Logger) {
     this.config = hostConfig[mode];
     this.server = http.createServer();
     this.lobbySocket = SocketIO.listen(this.server, {
@@ -56,7 +56,7 @@ class App {
       '-----',
       'Server Address',
       `${this.config.protocol}://${
-        this.config.mode === DevMode.Dev ? this.getLocalExternalIP() : await this.getPublicExternalIp()
+        this.config.mode === Flavor.Dev ? this.getLocalExternalIP() : await this.getPublicExternalIp()
       }:${this.config.port}`,
       '-----',
     );
@@ -98,6 +98,7 @@ class App {
       new GameProcessor(new StageProcessor(this.logger), this.logger),
       new RecordAnalytics(),
       [],
+      this.config.mode,
       this.logger,
     );
 
@@ -123,6 +124,6 @@ class App {
   };
 }
 
-const mode = (process.env.DEV_MODE as DevMode) || DevMode.Dev;
+const mode = (process.env.DEV_MODE as Flavor) || Flavor.Dev;
 
 new App(mode, new Logger(mode)).start(serverConfig);

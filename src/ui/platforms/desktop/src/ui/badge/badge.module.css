@@ -31,6 +31,12 @@
     justify-content: center;
     padding-left: 0;
 }
+.badge.small {
+    height: calc(gridLine * 15);
+    width: calc(gridLine * 3);
+    padding-left: calc(gridLine / 2);
+    font-size: 18px;
+}
 .nationalityBadge {
     position: absolute;
     top: 0;

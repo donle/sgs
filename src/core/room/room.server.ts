@@ -34,6 +34,7 @@ import { RecordAnalytics } from 'core/game/record_analytics';
 import { Algorithm } from 'core/shares/libs/algorithm';
 import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
+import { Flavor } from 'core/shares/types/host_config';
 import { OnDefineReleaseTiming, Skill, SkillHooks, SkillType, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
@@ -58,6 +59,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     protected gameProcessor: GameProcessor,
     protected analytics: RecordAnalytics,
     protected players: Player[] = [],
+    private flavor: Flavor,
     private logger: Logger,
   ) {
     super();
@@ -1406,6 +1408,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public get Logger(): Readonly<Logger> {
     return this.logger;
+  }
+
+  public get Flavor() {
+    return this.flavor;
   }
 
   public close() {

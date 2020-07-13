@@ -1,28 +1,28 @@
-export const enum DevMode {
+export const enum Flavor {
   Dev = 'dev',
   Prod = 'prod',
 }
 
 export type ServerConfigProps = {
-  [M in DevMode]: HostConfigProps;
+  [M in Flavor]: HostConfigProps;
 };
 
 export type HostConfigProps = {
-  mode: DevMode;
+  mode: Flavor;
   port: number;
   host: string;
   protocol: 'http' | 'https';
 };
 
 export const hostConfig: ServerConfigProps = {
-  [DevMode.Dev]: {
-    mode: DevMode.Dev,
+  [Flavor.Dev]: {
+    mode: Flavor.Dev,
     port: 2020,
     host: 'localhost',
     protocol: 'http',
   },
-  [DevMode.Prod]: {
-    mode: DevMode.Prod,
+  [Flavor.Prod]: {
+    mode: Flavor.Prod,
     port: 2020,
     host: '134.175.232.188',
     protocol: 'http',

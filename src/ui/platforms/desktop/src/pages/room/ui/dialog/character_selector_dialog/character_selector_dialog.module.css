@@ -10,6 +10,9 @@
     display: flex;
     flex-wrap: wrap;
     max-width: 695px;
+    max-height: calc(gridLine * 50);
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .characterSelectorItem {

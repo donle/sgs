@@ -7,6 +7,10 @@
     font-size: 24px;
     position: relative;
 }
+.characterCard.small {
+    min-width: 120px;
+    height: 150px;
+}
 
 .characterImage {
     height: 100%;
@@ -19,6 +23,11 @@
     top: 16px;
     left: 48px;
     display: flex;
+}
+.characterHp.small {
+    left: 32px;
+    max-width: 80px;
+    flex-wrap: wrap;
 }
 
 .characterHp > * {

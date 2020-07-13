@@ -1,10 +1,10 @@
 import chalk from 'chalk';
-import { DevMode } from 'core/shares/types/host_config';
+import { Flavor } from 'core/shares/types/host_config';
 import { TranslationModule } from 'core/translations/translation_module';
 
 export class Logger {
   private translator: TranslationModule | undefined;
-  constructor(private mode: DevMode = DevMode.Dev) {}
+  constructor(private mode: Flavor = Flavor.Dev) {}
 
   public set Translator(translator: TranslationModule) {
     this.translator = translator;
@@ -31,7 +31,7 @@ export class Logger {
   }
 
   debug(...args: any[]) {
-    if (this.mode !== DevMode.Prod) {
+    if (this.mode !== Flavor.Prod) {
       // tslint:disable-next-line: no-console
       console.log(chalk.green(...this.translate(args)));
     }

@@ -61,6 +61,7 @@ export class CharacterSelectorDialog extends React.Component<CharacterSelectorDi
           character={character}
           key={characterId}
           onClick={this.props.onClick}
+          size={'small'}
         />
       </div>
     );

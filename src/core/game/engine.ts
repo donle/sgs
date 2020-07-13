@@ -158,6 +158,10 @@ export class Sanguosha {
     return selectedCharacterIndex.map(index => availableCharacters[index]);
   }
 
+  public static getAllCharacters(except: CharacterId[] = []) {
+    return this.characters.filter(character => !except.includes(character.Id));
+  }
+
   public static getLordCharacters(packages: GameCharacterExtensions[]) {
     return this.characters.filter(character => character.isLord() && packages.includes(character.Package));
   }

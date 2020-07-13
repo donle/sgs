@@ -16,6 +16,7 @@ export type CharacterCardProps = {
   onClick?(character: Character): void;
   disabled?: boolean;
   className?: string;
+  size?: 'regular' | 'small';
 };
 
 @mobxReact.observer
@@ -35,16 +36,28 @@ export class CharacterCard extends React.Component<CharacterCardProps> {
   }
 
   render() {
-    const { character, translator, className } = this.props;
+    const { character, translator, className, size } = this.props;
     return (
-      <div className={classNames(styles.characterCard, className)} onClick={this.onClick}>
+      <div
+        className={classNames(styles.characterCard, className, {
+          [styles.small]: size === 'small',
+        })}
+        onClick={this.onClick}
+      >
         {this.characterImage ? (
           <>
-            <NationalityBadge nationality={character.Nationality} isLord={character.isLord()}>
+            <NationalityBadge size={size} nationality={character.Nationality} isLord={character.isLord()}>
               {translator.tr(character.Name)}
             </NationalityBadge>
-            <CharacterHp character={character} className={styles.characterHp} />
-            <img className={styles.characterImage} src={this.characterImage} alt="" />
+            <CharacterHp
+              character={character}
+              className={classNames(styles.characterHp, { [styles.small]: size === 'small' })}
+            />
+            <img
+              className={classNames(styles.characterImage, { [styles.small]: size === 'small' })}
+              src={this.characterImage}
+              alt=""
+            />
           </>
         ) : (
           <p>

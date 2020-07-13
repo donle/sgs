@@ -25,7 +25,6 @@ import {
   LoseHpStage,
   PhaseChangeStage,
   PhaseStageChangeStage,
-  PinDianStage,
   PlayerDiedStage,
   PlayerDyingStage,
   PlayerPhase,
@@ -41,6 +40,7 @@ import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/p
 import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { Flavor } from 'core/shares/types/host_config';
 import { GlobalFilterSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ServerRoom } from '../room/room.server';
@@ -70,6 +70,14 @@ export class GameProcessor {
     Precondition.assert(this.room !== undefined, 'Game is not started yet');
   }
 
+  private getSelectableCharacters(selectable: number, selectableCharacters: Character[], selected: CharacterId[]) {
+    if (this.room.Flavor === Flavor.Dev) {
+      return Sanguosha.getAllCharacters(selected);
+    } else {
+      return Sanguosha.getRandomCharacters(selectable, selectableCharacters, selected);
+    }
+  }
+
   private async chooseCharacters(playersInfo: PlayerInfo[], selectableCharacters: Character[]) {
     const lordInfo = playersInfo[0];
     const lordCharacters = Sanguosha.getLordCharacters(this.room.Info.characterExtensions).map(
@@ -85,7 +93,7 @@ export class GameProcessor {
     const gameStartEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCharacterEvent>({
       characterIds: [
         ...lordCharacters,
-        ...Sanguosha.getRandomCharacters(4, selectableCharacters, lordCharacters).map(character => character.Id),
+        ...this.getSelectableCharacters(4, selectableCharacters, lordCharacters).map(character => character.Id),
       ],
       toId: lordInfo.Id,
       role: lordInfo.Role,
@@ -120,7 +128,7 @@ export class GameProcessor {
     const selectedCharacters: CharacterId[] = [lordInfo.CharacterId];
     const notifyOtherPlayer: PlayerId[] = [];
     for (let i = 1; i < playersInfo.length; i++) {
-      const characters = Sanguosha.getRandomCharacters(5, selectableCharacters, selectedCharacters);
+      const characters = this.getSelectableCharacters(5, selectableCharacters, selectedCharacters);
       characters.forEach(character => selectedCharacters.push(character.Id));
       const playerInfo = playersInfo[i];
       this.room.notify(
@@ -930,12 +938,14 @@ export class GameProcessor {
 
         const canUsePeachPlayer: Player[] = [];
         for (const player of this.room.getAlivePlayersFrom()) {
-          if (filterSkills.find(
-            ({ skills, player: owner }) =>
-              skills.find(
-                skill => !skill.canUseCardTo(new CardMatcher({ name: ['peach'] }), this.room, owner, player, to),
-              ) !== undefined,
-          )) {
+          if (
+            filterSkills.find(
+              ({ skills, player: owner }) =>
+                skills.find(
+                  skill => !skill.canUseCardTo(new CardMatcher({ name: ['peach'] }), this.room, owner, player, to),
+                ) !== undefined,
+            )
+          ) {
             continue;
           }
           canUsePeachPlayer.push(player);

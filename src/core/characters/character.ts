@@ -55,7 +55,7 @@ export abstract class Character {
     return this.lord;
   }
 
-  public get Id() {
+  public get Id(): CharacterId {
     return this.id;
   }
 

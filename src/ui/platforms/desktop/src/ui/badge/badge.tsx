@@ -51,12 +51,13 @@ function getNationalityBadge(nationality: CharacterNationality, isLord?: boolean
 
 export type BadgeProps = {
   className?: string;
+  size?: 'regular' | 'small';
   children?: React.ReactNode;
 };
 
 export const Badge = (props: BadgeProps) => {
-  const { children, className } = props;
-  return <div className={classNames(styles.badge, className)}>{children}</div>;
+  const { children, className, size } = props;
+  return <div className={classNames(styles.badge, className, { [styles.small]: size === 'small' })}>{children}</div>;
 };
 
 export type NationalityBadgeProps = BadgeProps & {
