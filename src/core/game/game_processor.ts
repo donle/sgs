@@ -2,7 +2,7 @@ import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { Character, CharacterId } from 'core/characters/character';
+import { Character, CharacterId, CharacterNationality } from 'core/characters/character';
 import {
   CardMoveArea,
   CardMoveReason,
@@ -114,6 +114,27 @@ export class GameProcessor {
     lordInfo.MaxHp = lord.MaxHp;
     lordInfo.Hp = lord.Hp;
 
+    if (lord.Nationality === CharacterNationality.God) {
+      const askForNationality = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
+        options: ['wei', 'shu', 'wu', 'qun'],
+        toId: lordInfo.Id,
+        askedBy: undefined,
+        conversation: 'please choose a nationality',
+      });
+
+      this.room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForNationality, lordInfo.Id);
+
+      const nationalityResponse = await this.room.onReceivingAsyncResponseFrom(
+        GameEventIdentifiers.AskForChoosingOptionsEvent,
+        lordInfo.Id,
+      );
+
+      lord.Nationality = nationalityResponse.selectedOption 
+        ? Functional.getPlayerNationalityEnum(nationalityResponse.selectedOption)!
+        : CharacterNationality.Wei
+      ;
+    }
+
     if (playersInfo.length >= 5) {
       lordInfo.MaxHp++;
       lord.MaxHp++;
@@ -147,6 +168,7 @@ export class GameProcessor {
             Sanguosha.getCharacterById(lordInfo.CharacterId).Name,
             Functional.getPlayerRoleRawText(playerInfo.Role!),
           ).extract(),
+          
         },
         playerInfo.Id,
         true,

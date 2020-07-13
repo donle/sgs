@@ -26,7 +26,7 @@ export class JunLve extends TriggerSkill
   }
 
   public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    room.addMark(skillUseEvent.fromId, JunLve.Name, 1);
+    room.addMark(skillUseEvent.fromId, this.Name, 1);
     return true;
   }
 }

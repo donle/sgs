@@ -54,6 +54,29 @@ export abstract class Functional {
     return playerRoleRawText[nationality];
   }
 
+  static getPlayerNationalityEnum(nationality: string) {
+    switch (nationality) {
+      case 'wei': {
+        return CharacterNationality.Wei;
+      }
+      case 'shu': {
+        return CharacterNationality.Shu;
+      }
+      case 'wu': {
+        return CharacterNationality.Wu;
+      }
+      case 'qun': {
+        return CharacterNationality.Qun;
+      }
+      case 'god': {
+        return CharacterNationality.God;
+      }
+      default: {
+        throw new Error(`Unknown incoming nationality: ${nationality}`);;
+      }
+    }
+  }
+
   static getCardTypeRawText(type: CardType) {
     switch (type) {
       case CardType.Basic:
