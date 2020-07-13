@@ -1420,6 +1420,23 @@ export const eventDictionary: Word[] = [
     source: 'zhanhuo: please choose a target to whom you cause 1 fire damage',
     target: '绽火：请选择一名角色对其造成1点火焰伤害',
   },
+  {
+    source: 'wumou: loseHp',
+    target: '失去体力',
+  },
+  {
+    source: 'wumou: loseMark',
+    target: '失去标记',
+  },
+  {
+    source: 'wumou: please choose the cost for your Normal Trick',
+    target: '请选择：失去 1 点体力或失去 1 枚‘狂暴’标记',
+  },
+  {
+    source: 'shenfen: please select 4 cards to drop',
+    target: '神愤：请弃置 4 张手牌',
+  },
+
   { source: 'cixiongjian:drop-card', target: '弃置一张手牌' },
   { source: 'cixiongjian:draw-card', target: '令其摸一张牌' },
   { source: 'jizhi:discard', target: '弃置' },
