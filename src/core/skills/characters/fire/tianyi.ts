@@ -23,7 +23,7 @@ export class TianYi extends ActiveSkill {
   public static readonly Lose = 'tianyi_lose';
 
   public canUse(room: Room, owner: Player) {
-    return !owner.hasUsedSkill(this.Name);
+    return !owner.hasUsedSkill(this.Name) && owner.getCardIds(PlayerCardsArea.HandArea).length > 0;
   }
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {

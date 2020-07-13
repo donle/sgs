@@ -10,7 +10,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 @CommonSkill({ name: 'quhu', description: 'quhu_description' })
 export class QuHu extends ActiveSkill {
   public canUse(room: Room, owner: Player) {
-    return !owner.hasUsedSkill(this.Name);
+    return !owner.hasUsedSkill(this.Name) && owner.getCardIds(PlayerCardsArea.HandArea).length > 0;
   }
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
