@@ -31,6 +31,6 @@
     "start": "yarn build && NODE_PATH=./build DEV_MODE=prod node ./build/server/main.js",
     "start:win": "yarn build:win && cross-env NODE_PATH=./build DEV_MODE=prod node ./build/server/main.js",
     "start:dev": "yarn build && NODE_PATH=./build DEV_MODE=dev node ./build/server/main.js",
-    "start:dev:win": "yarn build && cross-env NODE_PATH=./build DEV_MODE=dev node ./build/server/main.js"
+    "start:dev:win": "yarn build:win && cross-env NODE_PATH=./build DEV_MODE=dev node ./build/server/main.js"
   }
 }
