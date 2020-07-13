@@ -6,11 +6,12 @@ import { Room } from 'core/room/room';
 import { ActiveSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 import { KuangBao } from './kuangbao';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'shenfen', description: 'shenfen_description' })
 export class ShenFen extends ActiveSkill {
   public canUse(room: Room, owner: Player): boolean {
-    return room.getMark(owner.Id, KuangBao.Fury) >= 6 && !owner.hasUsedSkill(this.Name);
+    return room.getMark(owner.Id, KuangBao.Fury) >= 6 && !owner.hasUsedSkill(this.GeneralName);
   }
 
   public numberOfTargets(): number {
@@ -50,33 +51,44 @@ export class ShenFen extends ActiveSkill {
 
   public async onEffect(
     room: Room,
-    skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
+    skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
-    this.onAngry(room, skillUseEvent.fromId, async (fromId, to) => {
+    room.addMark(skillEffectEvent.fromId, KuangBao.Fury, -6);
+
+    await this.onAngry(room, skillEffectEvent.fromId, async (fromId, to) => {
       await room.damage({
         fromId,
         toId: to.Id,
         damage: 1,
         damageType: DamageType.Normal,
-        triggeredBySkills: [this.Name],
+        triggeredBySkills: [this.GeneralName],
       });
     });
 
-    this.onAngry(room, skillUseEvent.fromId, async (fromId, to) => {
+    await this.onAngry(room, skillEffectEvent.fromId, async (fromId, to) => {
       const equipCardIds = to.getCardIds(PlayerCardsArea.EquipArea);
-      await room.dropCards(CardMoveReason.SelfDrop, equipCardIds, to.Id, to.Id, this.Name);
+      await room.dropCards(CardMoveReason.SelfDrop, equipCardIds, to.Id, to.Id, this.GeneralName);
     });
 
-    this.onAngry(room, skillUseEvent.fromId, async (fromId, to) => {
+    await this.onAngry(room, skillEffectEvent.fromId, async (fromId, to) => {
       const handCardIds = to.getCardIds(PlayerCardsArea.HandArea);
       if (handCardIds.length <= 4) {
-        await room.dropCards(CardMoveReason.SelfDrop, handCardIds, to.Id, to.Id, this.Name);
+        await room.dropCards(CardMoveReason.SelfDrop, handCardIds, to.Id, to.Id, this.GeneralName);
       } else {
-        await room.askForCardDrop(to.Id, 4, [PlayerCardsArea.HandArea], true, undefined, this.Name, '');
+        const response = await room.askForCardDrop(
+          to.Id,
+          4,
+          [PlayerCardsArea.HandArea],
+          true,
+          undefined,
+          this.GeneralName,
+          'shenfen: please select 4 cards to drop',
+        );
+        await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, to.Id, to.Id, this.GeneralName);
       }
     });
 
-    await room.turnOver(skillUseEvent.fromId);
+    await room.turnOver(skillEffectEvent.fromId);
 
     return true;
   }

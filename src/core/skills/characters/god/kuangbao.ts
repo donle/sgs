@@ -30,11 +30,15 @@ export class KuangBao extends TriggerSkill {
     const identifier = EventPacker.getIdentifier(event);
     if (identifier === GameEventIdentifiers.DamageEvent) {
       const damageEvent = event as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-      return damageEvent.fromId === owner.Id || damageEvent.toId === owner.Id;
-    } else if (identifier === GameEventIdentifiers.GameStartEvent) {
+      if (room.CurrentProcessingStage === DamageEffectStage.AfterDamageEffect) {
+        return damageEvent.fromId === owner.Id;
+      } else if (room.CurrentProcessingStage === DamageEffectStage.AfterDamagedEffect) {
+        return damageEvent.toId === owner.Id;
+      }
+      return false;
+    } else {
       return !owner.hasUsedSkill(this.Name);
     }
-    return false;
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -43,14 +47,14 @@ export class KuangBao extends TriggerSkill {
 
   public async onEffect(
     room: Room,
-    skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
+    skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
-    const unknownEvent = skillUseEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers>;
+    const unknownEvent = skillEffectEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers>;
     const identifier = EventPacker.getIdentifier(unknownEvent);
     if (identifier === GameEventIdentifiers.DamageEvent) {
-      room.addMark(skillUseEvent.fromId, KuangBao.Fury, 1);
+      room.addMark(skillEffectEvent.fromId, KuangBao.Fury, 1);
     } else {
-      room.addMark(skillUseEvent.fromId, KuangBao.Fury, 2);
+      room.addMark(skillEffectEvent.fromId, KuangBao.Fury, 2);
     }
 
     return true;

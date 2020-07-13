@@ -1341,12 +1341,28 @@ export const eventDictionary: Word[] = [
     source: 'please assign x damage for {0}, and {1} will get (3 - x) damage',
     target: '请为 {0} 分配 x 点伤害，{1} 将会分配到 (3 - x) 点伤害',
   },
-
   { source: 'please select cards to swap', target: '请选择要交换的牌' },
   {
     source: '{0} used skill {1}, swapped {2} handcards from qixing cards pile',
     target: '{0} 使用了技能 【{1}】，从七星堆交换了 {2} 张牌',
   },
+  {
+    source: 'wumou: loseHp',
+    target: '失去体力',
+  },
+  {
+    source: 'wumou: loseMark',
+    target: '失去标记',
+  },
+  {
+    source: 'wumou: please choose the cost for your Normal Trick',
+    target: '请选择：失去 1 点体力或失去 1 枚‘狂暴’标记',
+  },
+  {
+    source: 'shenfen: please select 4 cards to drop',
+    target: '神愤：请弃置 4 张手牌',
+  },
+
   { source: 'cixiongjian:drop-card', target: '弃置一张手牌' },
   { source: 'cixiongjian:draw-card', target: '令其摸一张牌' },
   { source: 'jizhi:discard', target: '弃置' },

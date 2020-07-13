@@ -225,7 +225,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       }
 
       const canTrigger = bySkills
-        ? bySkills.find(skill => !UniqueSkillRule.canTriggerCardSkillRule(skill, equipCard)) === undefined
+        ? bySkills.find(skill => !UniqueSkillRule.canTriggerCardSkillRule(skill, equipCard, player)) === undefined
         : true;
       if (
         canTrigger &&
