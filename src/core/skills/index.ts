@@ -161,8 +161,7 @@ export { YeYan } from './characters/god/yeyan';
 export { RenJie } from './characters/god/renjie';
 export { BaiYin } from './characters/god/baiyin';
 export { JiLve, JiLveShadow, JiLveGuiCai, JiLveJiZhi, JiLveFangZhu } from './characters/god/jilve';
-export { LianPo, LianPoShadow } from './characters/god/lianpo';
-
+export { LianPo } from './characters/god/lianpo';
 export { FeiYing } from './characters/god/feiying';
 export { GuiXin } from './characters/god/guixin';
 export { QiXing, QiXingShadow } from './characters/god/qixing';

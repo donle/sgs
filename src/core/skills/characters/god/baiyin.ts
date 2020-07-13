@@ -21,7 +21,7 @@ export class BaiYin extends TriggerSkill {
     owner: Player,
     content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
   ): boolean {
-    return owner.Id === content.playerId && owner.getMark(MarkEnum.Ren) >= 3;
+    return owner.Id === content.playerId && owner.getMark(MarkEnum.Ren) > 3;
   }
 
   public async onTrigger(): Promise<boolean> {

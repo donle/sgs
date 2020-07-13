@@ -945,7 +945,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'baiyin_description',
     target:
-      '<b>觉醒技</b>，准备阶段开始时，若你拥有不少于3枚“忍”标记，你减1点体力上限并获得技能“极略”。',
+      '<b>觉醒技</b>，准备阶段开始时，若你拥有不少于4枚“忍”标记，你减1点体力上限并获得技能“极略”。',
   },
   {
     source: 'jilve_description',
