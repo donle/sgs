@@ -1,5 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
@@ -13,8 +14,20 @@ type SelectedCard = {
 
 @CommonSkill({ name: 'wugufengdeng', description: 'wugufengdeng_description' })
 export class WuGuFengDengSkill extends ActiveSkill {
-  public canUse() {
-    return true;
+  public canUse(
+    room: Room,
+    owner: Player,
+    containerCard?: CardId,
+  ) {
+    if (containerCard) {
+      for (const target of room.getAlivePlayersFrom()) {
+        if (owner.canUseCardTo(room, containerCard, target.Id)) {
+          return true;
+        }
+      }
+    }
+      
+    return false;
   }
 
   public numberOfTargets() {

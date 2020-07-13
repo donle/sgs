@@ -94,7 +94,16 @@ export class LuoYi extends TriggerSkill {
         luoyiObtain = [];
       }
     }
-    room.bury(...displayCards.filter(id => !luoyiObtain.includes(id)));
+
+    await room.moveCards({
+      movingCards: displayCards
+        .filter(id => !luoyiObtain.includes(id))
+        .map(card => ({ card, fromArea: CardMoveArea.ProcessingArea })),
+      moveReason: CardMoveReason.PlaceToDropStack,
+      toArea: CardMoveArea.DropStack,
+      hideBroadcast: true,
+      movedByReason: this.Name,
+    });
 
     return true;
   }

@@ -1218,11 +1218,16 @@ export class GameProcessor {
     });
 
     if (!event.skipDrop) {
+      if (!card.is(CardType.Equip) && !card.is(CardType.DelayedTrick)) {
+        await this.room.moveCards({
+          movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
+          moveReason: CardMoveReason.CardUse,
+          toArea: CardMoveArea.DropStack,
+          hideBroadcast: true,
+        });
+      }
       if (this.room.isCardOnProcessing(card.Id)) {
         this.room.endProcessOnTag(card.Id.toString());
-      }
-      if (!card.is(CardType.Equip) && !card.is(CardType.DelayedTrick)) {
-        this.room.bury(event.cardId);
       }
     }
   }
@@ -1262,10 +1267,15 @@ export class GameProcessor {
     });
 
     if (!event.skipDrop) {
+      await this.room.moveCards({
+        movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
+        moveReason: CardMoveReason.CardResponse,
+        toArea: CardMoveArea.DropStack,
+        hideBroadcast: true,
+      });
       if (this.room.isCardOnProcessing(event.cardId)) {
         this.room.endProcessOnTag(event.cardId.toString());
       }
-      this.room.bury(event.cardId);
     }
   }
 
@@ -1553,8 +1563,14 @@ export class GameProcessor {
       }
     });
 
+    if (this.room.getCardOwnerId(event.judgeCardId) === undefined) {
+      await this.room.moveCards({
+        movingCards: [{ card: event.judgeCardId, fromArea: CardMoveArea.ProcessingArea }],
+        moveReason: CardMoveReason.PlaceToDropStack,
+        toArea: CardMoveArea.DropStack,
+      });
+    }
     this.room.endProcessOnTag(event.judgeCardId.toString());
-    this.room.bury(event.judgeCardId);
   }
 
   private async onHandlePinDianEvent(

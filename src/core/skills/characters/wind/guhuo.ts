@@ -136,7 +136,9 @@ export class GuHuoShadow extends TriggerSkill {
     for (const playerId of askForPlayers) {
       chooseOptionEvent.toId = playerId;
       room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, chooseOptionEvent, playerId, true);
-      askingResponses.push(room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, playerId));
+      askingResponses.push(
+        room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, playerId),
+      );
     }
 
     const responses = await Promise.all(askingResponses);
@@ -213,8 +215,15 @@ export class GuHuoShadow extends TriggerSkill {
 
     if (!success) {
       EventPacker.terminate(cardEvent);
+      await room.moveCards({
+        movingCards: [{ card: realCard.Id, fromArea: CardMoveArea.ProcessingArea }],
+        moveReason: CardMoveReason.PlaceToDropStack,
+        toArea: CardMoveArea.DropStack,
+        hideBroadcast: true,
+        movedByReason: this.Name,
+      });
       room.endProcessOnTag(preuseCard.Id.toString());
-      room.bury(realCard.Id);
+
       return false;
     } else {
       cardEvent.cardId = preuseCard.Id;

@@ -272,7 +272,7 @@ export abstract class BaseAction {
           if (card.Skill.isSelfTargetSkill()) {
             canSelfUse = player.canUseCardTo(this.store.room, card.Id, player.Id);
           }
-          return canSelfUse && card.Skill.canUse(this.store.room, player);
+          return canSelfUse && card.Skill.canUse(this.store.room, player, card.Id);
         }
 
         return false;

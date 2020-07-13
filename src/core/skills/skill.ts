@@ -306,7 +306,11 @@ export abstract class ActiveSkill extends Skill {
     selectedTargets: PlayerId[],
     cardId?: CardId,
   ): boolean;
-  public abstract canUse(room: Room, owner: Player): boolean;
+  public abstract canUse(
+    room: Room,
+    owner: Player,
+    containerCard?: CardId,
+  ): boolean;
   public abstract isAvailableCard(
     owner: PlayerId,
     room: Room,

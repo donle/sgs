@@ -175,7 +175,7 @@ export abstract class Player implements PlayerInfo {
     if (card) {
       return (
         ruleCardUse &&
-        (card.is(CardType.Equip) ? true : onResponse ? onResponse.match(card) : card.Skill.canUse(room, this))
+        (card.is(CardType.Equip) ? true : onResponse ? onResponse.match(card) : card.Skill.canUse(room, this, cardId))
       );
     }
 

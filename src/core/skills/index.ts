@@ -134,14 +134,21 @@ export { ShuangXiong, ShuangXiongShadow, ShuangXiongRemove } from './characters/
 export { JiuChi, JiuChiShadow, JiuChiRemove } from './characters/forest/jiuchi';
 export { RouLin, RouLinShadow } from './characters/forest/roulin';
 export { BengHuai } from './characters/forest/benghuai';
+export { BaoNve } from './characters/forest/baonve';
 export { JuXiang } from './characters/forest/juxiang';
+export { LieRen } from './characters/forest/lieren';
 export { YingHun } from './characters/forest/yinghun';
+export { WuLie, WuLieShadow } from './characters/forest/wulie';
 export { XingShang } from './characters/forest/xingshang';
 export { FangZhu } from './characters/forest/fangzhu';
 export { SongWei } from './characters/forest/songwei';
 export { HaoShi, HaoShiShadow } from './characters/forest/haoshi';
 export { DiMeng } from './characters/forest/dimeng';
+export { HuoShou } from './characters/forest/huoshou';
+export { ZaiQi } from './characters/forest/zaiqi';
 export { WanSha } from './characters/forest/wansha';
+export { LuanWu } from './characters/forest/luanwu';
+export { WeiMu } from './characters/forest/weimu';
 
 export { WuShen, WuShenShadow } from './characters/god/wushen';
 export { WuHun, WuHunDied } from './characters/god/wuhun';

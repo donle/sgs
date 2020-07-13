@@ -1,4 +1,4 @@
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -34,47 +34,56 @@ export class YingHun extends TriggerSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId, toIds } = event;
-    const options: string[] = ['yinghun:discard', 'yinghun:draw'];
+    const options: string[] = ['option-one', 'option-two'];
 
+    let selected: string | undefined;
     const from = room.getPlayerById(fromId);
+    const toId = toIds![0];
     const x = from.MaxHp - from.Hp;
-    const askForChooseEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
-      options,
-      conversation: TranslationPack.translationJsonPatcher(
-        'please choose tianxiang options:{0}',
-        x,
-      ).extract(),
-      toId: fromId,
-    });
 
-    room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, fromId);
+    if (x > 1) {
+      const askForChooseEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
+        options,
+        conversation: TranslationPack.translationJsonPatcher(
+          'please choose yinghun options:{0}:{1}',
+          TranslationPack.patchPlayerInTranslation(room.getPlayerById(toId)),
+          x,
+        ).extract(),
+        toId: fromId,
+      });
 
-    const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
+      room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, fromId);
 
-    response.selectedOption = response.selectedOption || 'yinghun:discard';
-    if (response.selectedOption === 'yinghun:discard') {
-      await room.drawCards(1, toIds![0], 'top', fromId, this.Name);
-      await room.askForCardDrop(
-        toIds![0],
-        x,
+      const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
+      selected = response.selectedOption || 'option-one';
+    }
+    
+    if (!selected || selected === 'option-one') {
+      await room.drawCards(1, toId, 'top', fromId, this.Name);
+
+      const response = await room.askForCardDrop(
+        toId,
+        Math.min(x, room.getPlayerById(toId).getPlayerCards().length),
         [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
         true,
         undefined,
-        this.Name
+        this.Name,
       );
+      await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toId);
     } else {
-      await room.askForCardDrop(
-        toIds![0],
+      await room.drawCards(x, toId, 'top', fromId, this.Name);
+
+      const response = await room.askForCardDrop(
+        toId,
         1,
         [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
         true,
         undefined,
-        this.Name
+        this.Name,
       );
-
-      await room.drawCards(x, toIds![0], 'top', fromId, this.Name);
+      await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toId);
     }
-
+    
     return true;
   }
 }

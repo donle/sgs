@@ -1,6 +1,9 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
+import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { DamageType } from 'core/game/game_props';
+import { Player } from 'core/player/player';
+import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
@@ -8,8 +11,22 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'nanmanruqing', description: 'nanmanruqing_description' })
 export class NanManRuQingSkill extends ActiveSkill {
-  public canUse() {
-    return true;
+  public static readonly NewSource = 'new_source';
+
+  public canUse(
+    room: Room,
+    owner: Player,
+    containerCard?: CardId,
+  ) {
+    if (containerCard) {
+      for (const target of room.getOtherPlayers(owner.Id)) {
+        if (owner.canUseCardTo(room, containerCard, target.Id)) {
+          return true;
+        }
+      }
+    }
+      
+    return false;
   }
 
   public numberOfTargets() {
@@ -64,7 +81,7 @@ export class NanManRuQingSkill extends ActiveSkill {
 
     if (response.cardId === undefined) {
       const eventContent = {
-        fromId,
+        fromId: EventPacker.getMiddleware<PlayerId>(NanManRuQingSkill.NewSource, event) || fromId,
         toId: to,
         damage: 1,
         damageType: DamageType.Normal,

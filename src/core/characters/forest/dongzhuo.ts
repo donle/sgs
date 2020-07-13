@@ -11,6 +11,7 @@ export class DongZhuo extends Character {
       ...skillLoaderInstance.getSkillsByName('jiuchi'),
       ...skillLoaderInstance.getSkillsByName('roulin'),
       skillLoaderInstance.getSkillByName('benghuai'),
+      skillLoaderInstance.getSkillByName('baonve'),
     ]);
   }
 }
