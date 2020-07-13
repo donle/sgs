@@ -4,9 +4,9 @@ import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/st
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { MarkEnum } from 'core/shares/types/mark_list';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { JunLve } from './junlve';
 
 @CommonSkill({ name: 'cuike', description: 'cuike_description'})
 export class CuiKe extends TriggerSkill{
@@ -24,7 +24,7 @@ export class CuiKe extends TriggerSkill{
 
   public isAvailableTarget(ownerId: PlayerId, room: Room, targetId: PlayerId) {
     const target = room.getPlayerById(targetId);
-    if (room.getMark(ownerId, JunLve.Name) % 2 === 0) {
+    if (room.getMark(ownerId, MarkEnum.JunLve) % 2 === 0) {
       return !target.ChainLocked || target.getPlayerCards().length > 0;
     } else {
       return true
@@ -38,7 +38,7 @@ export class CuiKe extends TriggerSkill{
   public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId, toIds } = skillUseEvent;
     const to = room.getPlayerById(toIds![0]);
-    if (room.getMark(fromId, JunLve.Name) % 2 === 0) {
+    if (room.getMark(fromId, MarkEnum.JunLve) % 2 === 0) {
       if (!to.ChainLocked) {
         await room.chainedOn(toIds![0]);
       }
@@ -96,7 +96,7 @@ export class CuiKe extends TriggerSkill{
     }
 
     // special
-    const numOfName = room.getMark(fromId, JunLve.Name);
+    const numOfName = room.getMark(fromId, MarkEnum.JunLve);
     if (numOfName > 7) {
       const askForInvokeSkill: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
         toId: fromId,
@@ -114,7 +114,7 @@ export class CuiKe extends TriggerSkill{
       );
 
       if (selectedOption === 'yes') {
-        room.addMark(fromId, JunLve.Name, -numOfName);
+        room.addMark(fromId, MarkEnum.JunLve, -numOfName);
         for (const player of room.getOtherPlayers(fromId)) {
           await room.damage({
             fromId,

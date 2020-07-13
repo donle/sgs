@@ -5,4 +5,6 @@ export const enum MarkEnum {
   Ren = 'ren',
   Ying = 'ying',
   Wrath = 'nu',
+  JunLve = 'junlve',
+  Lie = 'lie',
 }

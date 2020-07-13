@@ -2,6 +2,7 @@ import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
+import { MarkEnum } from 'core/shares/types/mark_list';
 import { TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill } from 'core/skills/skill_wrappers';
 
@@ -26,7 +27,7 @@ export class JunLve extends TriggerSkill
   }
 
   public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    room.addMark(skillUseEvent.fromId, this.Name, 1);
+    room.addMark(skillUseEvent.fromId, MarkEnum.JunLve, 1);
     return true;
   }
 }

@@ -330,8 +330,8 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
             })}
           />
           {this.PlayerImage !== undefined && <this.PlayerImage />}
-          {character && (
-            <NationalityBadge nationality={character.Nationality} className={styles.playCharacterName}>
+          {clientPlayer && character && (
+            <NationalityBadge nationality={clientPlayer.Nationality} className={styles.playCharacterName}>
               {this.props.translator.tr(character.Name)}
             </NationalityBadge>
           )}

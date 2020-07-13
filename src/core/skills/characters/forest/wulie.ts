@@ -3,14 +3,13 @@ import { AllStage, DamageEffectStage, PhaseStageChangeStage, PlayerPhaseStages }
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { MarkEnum } from 'core/shares/types/mark_list';
 import { TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill, LimitSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @LimitSkill({ name: 'wulie', description: 'wulie_description' })
 export class WuLie extends TriggerSkill {
-  public static readonly MarkName = 'lie';
-
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
     stage?: AllStage,
@@ -47,7 +46,7 @@ export class WuLie extends TriggerSkill {
     await room.loseHp(event.fromId, toIds.length);
     for (const target of toIds) {
       room.obtainSkill(target, WuLieShadow.Name);
-      room.addMark(target, WuLie.MarkName, 1);
+      room.addMark(target, MarkEnum.Lie, 1);
     }
 
     return true;
@@ -69,7 +68,7 @@ export class WuLieShadow extends TriggerSkill {
     owner: Player,
     content: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
   ): boolean {
-    return content.toId === owner.Id && owner.getMark(WuLie.MarkName) > 0;
+    return content.toId === owner.Id && owner.getMark(MarkEnum.Lie) > 0;
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -78,7 +77,7 @@ export class WuLieShadow extends TriggerSkill {
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const damageEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-    room.addMark(event.fromId, WuLie.MarkName, -1);
+    room.addMark(event.fromId, MarkEnum.Lie, -1);
 
     room.broadcast(GameEventIdentifiers.CustomGameDialog, {
       translationsMessage: TranslationPack.translationJsonPatcher(

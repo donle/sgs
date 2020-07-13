@@ -70,6 +70,28 @@ export class GameProcessor {
     Precondition.assert(this.room !== undefined, 'Game is not started yet');
   }
 
+  private async askForChoosingNationalities(player: Player) {
+    if (player.Nationality === CharacterNationality.God) {
+      const askForNationality = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
+        options: ['wei', 'shu', 'wu', 'qun'],
+        toId: player.Id,
+        askedBy: undefined,
+        conversation: 'please choose a nationality',
+      });
+
+      this.room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForNationality, player.Id);
+
+      const nationalityResponse = await this.room.onReceivingAsyncResponseFrom(
+        GameEventIdentifiers.AskForChoosingOptionsEvent,
+        player.Id,
+      );
+
+      player.Nationality = nationalityResponse.selectedOption
+        ? Functional.getPlayerNationalityEnum(nationalityResponse.selectedOption)!
+        : CharacterNationality.God;
+    }
+  }
+
   private getSelectableCharacters(selectable: number, selectableCharacters: Character[], selected: CharacterId[]) {
     if (this.room.Flavor === Flavor.Dev) {
       return Sanguosha.getAllCharacters(selected);
@@ -111,29 +133,19 @@ export class GameProcessor {
     );
     const lord = this.room.getPlayerById(lordInfo.Id);
     lord.CharacterId = lordResponse.chosenCharacter;
+    await this.askForChoosingNationalities(lord);
+    this.room.notify(
+      GameEventIdentifiers.PlayerPropertiesChangeEvent,
+      {
+        changedProperties: [{ toId: lord.Id, nationality: lord.Nationality }],
+      },
+      lord.Id,
+    );
+
     lordInfo.MaxHp = lord.MaxHp;
     lordInfo.Hp = lord.Hp;
-
-    if (lord.Nationality === CharacterNationality.God) {
-      const askForNationality = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
-        options: ['wei', 'shu', 'wu', 'qun'],
-        toId: lordInfo.Id,
-        askedBy: undefined,
-        conversation: 'please choose a nationality',
-      });
-
-      this.room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForNationality, lordInfo.Id);
-
-      const nationalityResponse = await this.room.onReceivingAsyncResponseFrom(
-        GameEventIdentifiers.AskForChoosingOptionsEvent,
-        lordInfo.Id,
-      );
-
-      lord.Nationality = nationalityResponse.selectedOption 
-        ? Functional.getPlayerNationalityEnum(nationalityResponse.selectedOption)!
-        : CharacterNationality.Wei
-      ;
-    }
+    lordInfo.Nationality = lord.Nationality;
+    lordInfo.CharacterId = lord.CharacterId;
 
     if (playersInfo.length >= 5) {
       lordInfo.MaxHp++;
@@ -142,10 +154,7 @@ export class GameProcessor {
       lord.Hp++;
     }
 
-    lordInfo.CharacterId = lordResponse.chosenCharacter;
-
     const sequentialAsyncResponse: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingCharacterEvent>>[] = [];
-
     const selectedCharacters: CharacterId[] = [lordInfo.CharacterId];
     const notifyOtherPlayer: PlayerId[] = [];
     for (let i = 1; i < playersInfo.length; i++) {
@@ -159,6 +168,7 @@ export class GameProcessor {
           lordInfo: {
             lordCharacter: lordInfo.CharacterId,
             lordId: lordInfo.Id,
+            lordNationality: lordInfo.Nationality,
           },
           toId: playerInfo.Id,
           role: playerInfo.Role,
@@ -168,7 +178,6 @@ export class GameProcessor {
             Sanguosha.getCharacterById(lordInfo.CharacterId).Name,
             Functional.getPlayerRoleRawText(playerInfo.Role!),
           ).extract(),
-          
         },
         playerInfo.Id,
         true,
@@ -192,6 +201,29 @@ export class GameProcessor {
       playerInfo.CharacterId = response.chosenCharacter;
       playerInfo.MaxHp = player.MaxHp;
       playerInfo.Hp = player.Hp;
+    }
+
+    const players = this.room
+      .getOtherPlayers(lord.Id, lord.Id)
+      .filter(player => player.Nationality === CharacterNationality.God);
+    const askForChooseNationalities = players.map(player => this.askForChoosingNationalities(player));
+    this.room.doNotify(notifyOtherPlayer);
+    await Promise.all(askForChooseNationalities);
+    // this.room.broadcast(GameEventIdentifiers.PlayerPropertiesChangeEvent, {
+    //   messages: players.map(player =>
+    //     TranslationPack.translationJsonPatcher(
+    //       '{0} select nationaliy {1}',
+    //       TranslationPack.patchPlayerInTranslation(player),
+    //       Functional.getPlayerNationalityText(player.Nationality),
+    //     ).toString(),
+    //   ),
+    //   changedProperties: players.map(player => ({ toId: player.Id, nationality: player.Nationality })),
+    // });
+    for (const playerInfo of playersInfo) {
+      const changedNationalityPlayer = players.find(player => player.Id === playerInfo.Id);
+      if (changedNationalityPlayer) {
+        playerInfo.Nationality = changedNationalityPlayer.Nationality;
+      }
     }
   }
 

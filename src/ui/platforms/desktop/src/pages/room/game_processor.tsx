@@ -268,6 +268,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.NotifyEvent:
         await this.onHandleNotifyEvent(e as any, content);
         break;
+      case GameEventIdentifiers.PlayerPropertiesChangeEvent:
+        await this.onHandlePlayerPropertiesChangeEvent(e as any, content);
+        break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
     }
@@ -539,6 +542,22 @@ export class GameClientProcessor {
   ) {
     this.store.room.getPlayerById(content.dying).Dying = true;
   }
+  private onHandlePlayerPropertiesChangeEvent<T extends GameEventIdentifiers.PlayerPropertiesChangeEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const { changedProperties } = content;
+    for (const { toId, nationality, gender } of changedProperties) {
+      const player = this.store.room.getPlayerById(toId);
+      if (nationality !== undefined) {
+        player.Nationality = nationality;
+      }
+      if (gender !== undefined) {
+        player.Gender = gender;
+      }
+    }
+    this.presenter.broadcastUIUpdate();
+  }
   private onHandleNotifyEvent<T extends GameEventIdentifiers.NotifyEvent>(type: T, content: ServerEventFinder<T>) {
     this.presenter.notify(content.toIds, content.notificationTime);
     this.presenter.broadcastUIUpdate();
@@ -591,6 +610,9 @@ export class GameClientProcessor {
     content.players.forEach(playerInfo => {
       const player = this.store.room.getPlayerById(playerInfo.Id);
       player.CharacterId = playerInfo.CharacterId!;
+      if (playerInfo.Nationality !== undefined) {
+        player.Nationality = playerInfo.Nationality;
+      }
       player.MaxHp = playerInfo.MaxHp;
       player.Hp = playerInfo.Hp;
     });
@@ -657,6 +679,7 @@ export class GameClientProcessor {
     if (content.lordInfo) {
       const lord = this.store.room.getPlayerById(content.lordInfo.lordId);
       lord.CharacterId = content.lordInfo.lordCharacter;
+      lord.Nationality = content.lordInfo.lordNationality;
       this.presenter.broadcastUIUpdate();
     }
 

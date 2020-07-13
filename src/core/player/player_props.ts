@@ -1,5 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { CharacterId } from 'core/characters/character';
+import { CharacterId, CharacterNationality } from 'core/characters/character';
 
 export type PlayerId = string;
 
@@ -31,6 +31,7 @@ export interface PlayerInfo {
   Name: string;
   Position: number;
   CharacterId: CharacterId | undefined;
+  Nationality: CharacterNationality | undefined;
   Role: PlayerRole | undefined;
   Hp: number;
   MaxHp: number;
