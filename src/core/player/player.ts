@@ -219,6 +219,14 @@ export abstract class Player implements PlayerInfo {
     }
   }
 
+  public getOutsideAreaNameOf(cardId: CardId) {
+    for (const [areaName, cards] of Object.entries(this.playerOutsideCards)) {
+      if (cards.includes(cardId)) {
+        return areaName;
+      }
+    }
+  }
+
   public getOutsideAreaCards() {
     return this.playerOutsideCards;
   }
