@@ -310,6 +310,7 @@ export const characterDictionary: Word[] = [
   { source: 'jiang', target: '激昂' },
   { source: 'hunzi', target: '魂姿' },
   { source: 'zhiba', target: '制霸' },
+  { source: '~zhiba', target: '制霸' },
 
   { source: 'zhangzhaozhanghong', target: '张昭张纮' },
   { source: 'zhijian', target: '直谏' },
@@ -1329,6 +1330,14 @@ export const eventDictionary: Word[] = [
   {
     source: '{0} triggered skill {1}, prevent the damage',
     target: '{0} 触发了 “{1}” 的效果，防止了此伤害',
+  },
+  {
+    source: '{0}: do you agree to pindian with {1}',
+    target: '{0}：你是否同意和 {1} 进行拼点？'
+  },
+  {
+    source: '{0}: do you want to obtain pindian cards: {1}',
+    target: '{0}：你可以获得拼点牌 {1}'
   },
   {
     source: 'please drop a {0} hand card to hit {1} 1 hp of damage type fire',
