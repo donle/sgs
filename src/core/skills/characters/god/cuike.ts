@@ -43,7 +43,6 @@ export class CuiKe extends TriggerSkill{
         await room.chainedOn(toIds![0]);
       }
       if (to.getPlayerCards().length > 0) {
-        // throw a card from 'to'
         const options = {
           [PlayerCardsArea.JudgeArea]: to.getCardIds(PlayerCardsArea.JudgeArea),
           [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),
@@ -85,7 +84,6 @@ export class CuiKe extends TriggerSkill{
         );
       }
     } else {
-      // cause 1 damage to 'to'
       await room.damage({
         fromId,
         damage: 1,
@@ -95,7 +93,6 @@ export class CuiKe extends TriggerSkill{
       });
     }
 
-    // special
     const numOfName = room.getMark(fromId, MarkEnum.JunLve);
     if (numOfName > 7) {
       const askForInvokeSkill: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {

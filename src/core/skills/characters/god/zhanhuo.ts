@@ -12,10 +12,6 @@ export class ZhanHuo extends ActiveSkill {
     return owner.getMark(MarkEnum.JunLve) > 0;
   }
 
-  public numberOfCards() {
-    return [0];
-  }
-
   public cardFilter() {
     return true;
   }
