@@ -94,7 +94,7 @@ export class GameProcessor {
 
   private getSelectableCharacters(selectable: number, selectableCharacters: Character[], selected: CharacterId[]) {
     if (this.room.Flavor === Flavor.Dev) {
-      return Sanguosha.getAllCharacters(selected);
+      return Sanguosha.getAllCharacters();
     } else {
       return Sanguosha.getRandomCharacters(selectable, selectableCharacters, selected);
     }
