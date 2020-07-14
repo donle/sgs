@@ -365,6 +365,11 @@ export const characterDictionary: Word[] = [
   { source: 'god_zhaoyun', target: '神赵云' },
   { source: 'juejing', target: '绝境' },
   { source: 'longhun', target: '龙魂' },
+
+  { source: 'god_luxun', target: '神陆逊' },
+  { source: 'junlve', target: '军略' },
+  { source: 'cuike', target: '摧克' },
+  { source: 'zhanhuo', target: '绽火' },
 ];
 
 export const markDictionary: Word[] = [
@@ -929,23 +934,21 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'wuqian_description',
-    target: 
+    target:
       '出牌阶段，你可以移去2枚“暴怒”标记并选择本回合内你未以此法选择过的一名其他角色，然后直到回合结束，你拥有“无双”且该角色的防具失效。',
   },
   {
     source: 'shenfen_description',
-    target: 
+    target:
       '出牌阶段限一次，你可以移去6枚“暴怒”标记并对所有其他角色造成1点伤害，然后这些角色弃置装备区里的所有牌，再弃置四张手牌，最后你翻面。',
   },
   {
     source: 'renjie_description',
-    target: 
-      '<b>锁定技</b>，当你受到伤害后，或于弃牌阶段内弃置手牌后，你获得X枚“忍”标记（X为伤害值或弃置的手牌数）。',
+    target: '<b>锁定技</b>，当你受到伤害后，或于弃牌阶段内弃置手牌后，你获得X枚“忍”标记（X为伤害值或弃置的手牌数）。',
   },
   {
     source: 'baiyin_description',
-    target:
-      '<b>觉醒技</b>，准备阶段开始时，若你拥有不少于4枚“忍”标记，你减1点体力上限并获得技能“极略”。',
+    target: '<b>觉醒技</b>，准备阶段开始时，若你拥有不少于4枚“忍”标记，你减1点体力上限并获得技能“极略”。',
   },
   {
     source: 'jilve_description',
@@ -961,8 +964,22 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'longhun_description',
-    target: 
+    target:
       '你可以将一至两张同花色的牌按如下规则使用或打出：红桃当【桃】；方块当火【杀】；梅花当【闪】；黑桃当【无懈可击】。若你以此法使用或打出的两张牌为：红色，此牌的伤害值或回复值+1；黑色，你弃置当前回合角色的一张牌。',
+  },
+  {
+    source: 'junlve_description',
+    target: '<b>锁定技</b>，当你受到或造成1点伤害后，你获得一个“军略”标记。',
+  },
+  {
+    source: 'cuike_description',
+    target:
+      '出牌阶段开始时，若“军略”数量为奇数，你可以对一名角色造成1点伤害；若“军略”数量为偶数，你可以横置一名角色并弃置其区域里的一张牌。若“军略”数量超过7个，你可以移去全部“军略”标记并对所有其他角色造成1点伤害。',
+  },
+  {
+    source: 'zhanhuo_description',
+    target:
+      '<b>限定技</b>，出牌阶段，你可以移去全部“军略”标记，令至多等量的已横置角色弃置所有装备区里的牌，然后对其中一名角色造成1点火焰伤害。',
   },
 ];
 
@@ -1051,6 +1068,7 @@ export const eventDictionary: Word[] = [
   { source: 'lost', target: '失去' },
   { source: '{0} {1} {2} {3} marks', target: '{0} {1}了 {2} 枚 {3} 标记' },
   { source: 'please choose a skill', target: '请选择一个技能' },
+  { source: '{0} select nationaliy {1}', target: '{0} 选择了 {1} 势力' },
   {
     source: 'do you want to trigger skill {0} ?',
     target: '是否发动技能 【{0}】?',
@@ -1075,6 +1093,10 @@ export const eventDictionary: Word[] = [
   {
     source: 'please choose a character',
     target: '请选择一名武将',
+  },
+  {
+    source: 'please choose a nationality',
+    target: '请选择一个势力',
   },
   {
     source: 'please choose a card',
@@ -1222,8 +1244,8 @@ export const eventDictionary: Word[] = [
   { source: '{0} skipped play stage', target: '{0} 跳过了出牌阶段' },
   { source: '{0} is dying', target: '{0} 进入了濒死阶段' },
   {
-    source: '{0} asks for a peach',
-    target: '{0} 处于濒死阶段，是否对其使用一个【桃】？',
+    source: '{0} asks for {1} peach',
+    target: '{0} 处于濒死状态，是否对其使用 {1} 个【桃】？',
   },
   { source: '{0} was killed', target: '{0} 已阵亡，死于天灾' },
   { source: '{0} was killed by {1}', target: '{0} 已阵亡，凶手是 {1}' },
@@ -1282,25 +1304,25 @@ export const eventDictionary: Word[] = [
   { source: '{0} used skill {1}, transfrom {2} into {3}', target: '{0} 使用了技能 【{1}】，将 {2} 改为了 {3} 使用' },
   { source: '{0}: please choose a player to obtain {1}', target: '{0}：你可以将 {1} 交给一名角色' },
   { source: '{0}: please choose a player to drop', target: '{0}：你可以弃置攻击范围内含有你的一名角色区域内的一张牌' },
-  { 
+  {
     source: '{0}: do you want {1} to start a judge?',
-    target: '{0}：你可以令 {1} 进行判定，若为黑桃，其回复1点体力'
+    target: '{0}：你可以令 {1} 进行判定，若为黑桃，其回复1点体力',
   },
-  { 
+  {
     source: '{0} triggered skill {1}',
-    target: '{0} 触发了技能 “{1}”'
+    target: '{0} 触发了技能 “{1}”',
   },
-  { 
+  {
     source: '{0} triggered skill {1}, nullify {2}',
-    target: '{0} 触发了技能 “{1}”，使 {2} 对其无效'
+    target: '{0} 触发了技能 “{1}”，使 {2} 对其无效',
   },
-  { 
+  {
     source: '{0} triggered skill {1}, become the source of damage dealed by {2}',
-    target: '{0} 触发了技能 “{1}”，成为了 {2} 造成的伤害的伤害来源'
+    target: '{0} 触发了技能 “{1}”，成为了 {2} 造成的伤害的伤害来源',
   },
   {
     source: '{0} triggered skill {1}, prevent the damage',
-    target: '{0} 触发了 “{1}” 的效果，防止了此伤害'
+    target: '{0} 触发了 “{1}” 的效果，防止了此伤害',
   },
   {
     source: 'please drop a {0} hand card to hit {1} 1 hp of damage type fire',
@@ -1389,6 +1411,14 @@ export const eventDictionary: Word[] = [
   {
     source: '{0} used skill {1}, swapped {2} handcards from qixing cards pile',
     target: '{0} 使用了技能 【{1}】，从七星堆交换了 {2} 张牌',
+  },
+  {
+    source: 'cuike: do you wanna to throw {0} marks to do special skill',
+    target: '摧克：你可以弃 {0} 枚“军略”对其他角色各造成1点伤害',
+  },
+  {
+    source: 'zhanhuo: please choose a target to whom you cause 1 fire damage',
+    target: '绽火：请选择一名角色对其造成1点火焰伤害',
   },
   { source: 'cixiongjian:drop-card', target: '弃置一张手牌' },
   { source: 'cixiongjian:draw-card', target: '令其摸一张牌' },

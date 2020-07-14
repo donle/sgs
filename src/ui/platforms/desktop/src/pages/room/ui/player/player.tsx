@@ -326,8 +326,8 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                   />
                   {this.PlayerImage !== undefined && <this.PlayerImage />}
                   {this.PlayerRoleCard !== undefined && <this.PlayerRoleCard />}
-                  {this.PlayerCharacter && (
-                    <NationalityBadge className={styles.playerCharacter} nationality={this.PlayerCharacter.Nationality}>
+                  {this.props.player && this.props.player.CharacterId !== undefined && (
+                    <NationalityBadge className={styles.playerCharacter} nationality={this.props.player.Nationality}>
                       {translator.tr(this.PlayerCharacter.Name)}
                     </NationalityBadge>
                   )}

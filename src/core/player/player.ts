@@ -582,6 +582,10 @@ export abstract class Player implements PlayerInfo {
     return this.gender;
   }
 
+  public set Gender(gender: CharacterGender) {
+    this.gender = gender;
+  }
+
   public get ChainLocked() {
     return this.chainLocked;
   }
@@ -693,6 +697,7 @@ export abstract class Player implements PlayerInfo {
       Id: this.playerId,
       Name: this.playerName,
       Position: this.playerPosition,
+      Nationality: this.playerCharacterId ? this.Nationality : undefined,
       CharacterId: this.playerCharacterId,
       Role: this.playerRole,
       Hp: this.hp,

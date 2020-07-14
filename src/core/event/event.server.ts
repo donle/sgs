@@ -1,6 +1,6 @@
 import { CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
-import { CharacterId } from 'core/characters/character';
+import { CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
 import { DamageType, GameCommonRuleObject, GameInfo, GameRunningInfo } from 'core/game/game_props';
 import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
@@ -282,6 +282,7 @@ export interface ServerEvent extends EventUtilities {
     lordInfo?: {
       lordId: PlayerId;
       lordCharacter: CharacterId;
+      lordNationality: CharacterNationality;
     };
     toId: PlayerId;
     role?: PlayerRole;
@@ -376,7 +377,10 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.PhaseSkippedEvent]: {
     playerId: PlayerId;
     skippedPhase: PlayerPhase;
-  }
+  };
+  [GameEventIdentifiers.PlayerPropertiesChangeEvent]: {
+    changedProperties: { toId: PlayerId; nationality?: CharacterNationality; gender?: CharacterGender }[];
+  };
 }
 
 export type PinDianResultType = {

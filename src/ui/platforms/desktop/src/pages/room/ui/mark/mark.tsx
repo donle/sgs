@@ -6,7 +6,9 @@ import styles from './mark.module.css';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import awakenIcon from './images/awaken.png';
 import dawuIcon from './images/dawu.png';
+import junlveIcon from './images/junlve.png';
 import kuangfengIcon from './images/kuangfeng.png';
+import lieIcon from './images/lie.png';
 import limitIcon from './images/limit.png';
 import limitUsedIcon from './images/limit_used.png';
 import nightmareIcon from './images/nightmare.png';
@@ -23,6 +25,8 @@ const markIconMaps: {
   [MarkEnum.Ren]: renIcon,
   [MarkEnum.Wrath]: wrathIcon,
   [MarkEnum.Ying]: yingIcon,
+  [MarkEnum.JunLve]: junlveIcon,
+  [MarkEnum.Lie]: lieIcon,
 };
 
 export type MarkProps = {
