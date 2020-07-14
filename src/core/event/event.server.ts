@@ -233,6 +233,7 @@ export interface ServerEvent extends EventUtilities {
     extraUse?: boolean;
     cardMatcher: CardMatcherSocketPassenger;
     conversation: string | PatchedTranslationObject;
+    commonUse?: boolean;
     triggeredOnEvent?: ServerEventFinder<GameEventIdentifiers>;
     responsedEvent?: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
   };

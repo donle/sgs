@@ -152,6 +152,15 @@ export class ResponsiveUseCardAction<
     return false;
   }
 
+  isPlayerEnabled(player: Player): boolean {
+    const event = this.askForEvent as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
+    if (!event.commonUse && this.scopedTargets && this.scopedTargets.includes(player.Id)) {
+      return true;
+    }
+
+    return super.isPlayerEnabled(player);
+  }
+
   protected onClickCard(card: Card, selected: boolean): void {
     super.onClickCard(card, selected, this.matcher);
   }
