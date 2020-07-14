@@ -1,6 +1,5 @@
 import { Card, CardType } from 'core/cards/card';
 import { Player } from 'core/player/player';
-import { WuQian } from './characters/god/wuqian';
 import { Skill, SkillType } from './skill';
 
 export class UniqueSkillRule {
@@ -15,10 +14,7 @@ export class UniqueSkillRule {
     }
   }
 
-  public static canTriggerCardSkillRule(bySkill: Skill, card: Card, player: Player) {
-    if (player.getFlag<boolean>(WuQian.GeneralName)) {
-      return !card.is(CardType.Armor);
-    }
+  public static canTriggerCardSkillRule(bySkill: Skill, card: Card) {
     switch (bySkill.Name) {
       case 'qinggang':
         return !card.is(CardType.Armor);
@@ -27,16 +23,23 @@ export class UniqueSkillRule {
     }
   }
 
-  public static isProhibited(skill: Skill, owner: Player) {
+  public static isProhibited(skill: Skill, owner: Player, cardContainer?: Card) {
+    if (cardContainer) {
+      if (owner.getFlag<boolean>('wuqian')) {
+        return cardContainer.is(CardType.Armor);
+      }
+    }
+
     if (owner.hasSkill('chanyuan') && owner.Hp <= 1) {
       return skill.GeneralName !== 'chanyuan' && owner.hasSkill(skill.Name);
     }
     if (owner.getFlag<boolean>('tieji') || owner.getFlag<boolean>('yijue')) {
       return skill.SkillType !== SkillType.Compulsory && owner.hasSkill(skill.Name);
     }
-    if (owner.getFlag<boolean>(WuQian.GeneralName)) {
+    if (owner.getFlag<boolean>('wuqian')) {
       return skill.Name === 'bazhen';
     }
+
     return false;
   }
 }

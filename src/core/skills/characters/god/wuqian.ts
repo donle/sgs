@@ -36,13 +36,10 @@ export class WuQian extends ActiveSkill {
   }
 
   public async onEffect(room: Room, skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    room.addMark(skillEffectEvent.fromId, MarkEnum.Wrath, -2);
-
     const target = skillEffectEvent.toIds![0];
     room.setFlag<boolean>(target, this.GeneralName, true);
 
     if (!room.getFlag<boolean>(skillEffectEvent.fromId, this.GeneralName)) {
-      room.setFlag<boolean>(skillEffectEvent.fromId, this.GeneralName, true);
       room.obtainSkill(skillEffectEvent.fromId, WuShuang.GeneralName);
     }
 
@@ -88,13 +85,8 @@ export class WuQianShadow extends TriggerSkill implements OnDefineReleaseTiming 
     room: Room,
     skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
-    if (!!room.getFlag<boolean>(skillEffectEvent.fromId, this.GeneralName)) {
-      room.removeFlag(skillEffectEvent.fromId, this.GeneralName);
-      await room.loseSkill(skillEffectEvent.fromId, WuShuang.GeneralName, true);
-    }
-
     for (const player of room.getOtherPlayers(skillEffectEvent.fromId)) {
-      if (!!room.getFlag<boolean>(player.Id, this.GeneralName)) {
+      if (room.getFlag<boolean>(player.Id, this.GeneralName)) {
         room.removeFlag(player.Id, this.GeneralName);
       }
     }

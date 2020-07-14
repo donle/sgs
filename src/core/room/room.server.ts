@@ -230,12 +230,15 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     } else {
       for (const equip of player.getCardIds(PlayerCardsArea.EquipArea)) {
         const equipCard = Sanguosha.getCardById(equip);
-        if (!(equipCard.Skill instanceof TriggerSkill) || UniqueSkillRule.isProhibited(equipCard.Skill, player)) {
+        if (
+          !(equipCard.Skill instanceof TriggerSkill) ||
+          UniqueSkillRule.isProhibited(equipCard.Skill, player, equipCard)
+        ) {
           continue;
         }
 
         const canTrigger = bySkills
-          ? bySkills.find(skill => !UniqueSkillRule.canTriggerCardSkillRule(skill, equipCard, player)) === undefined
+          ? bySkills.find(skill => !UniqueSkillRule.canTriggerCardSkillRule(skill, equipCard)) === undefined
           : true;
         if (
           canTrigger &&
