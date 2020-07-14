@@ -261,6 +261,13 @@ export abstract class Player implements PlayerInfo {
         return parseInt(area, 10) as PlayerCardsArea;
       }
     }
+
+    for (const [, cards] of Object.entries(this.getOutsideAreaCards)) {
+      const realCards = Card.getActualCards(cards);
+      if (realCards.find(card => card === cardId)) {
+        return PlayerCardsArea.OutsideArea;
+      }
+    }
   }
 
   public obtainCardIds(...cards: CardId[]) {
