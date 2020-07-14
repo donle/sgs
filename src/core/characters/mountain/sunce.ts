@@ -10,6 +10,7 @@ export class SunCe extends Character {
     super(id, 'sunce', CharacterGender.Male, CharacterNationality.Wu, 4, 4, GameCharacterExtensions.Mountain, [
       skillLoaderInstance.getSkillByName('jiang'),
       skillLoaderInstance.getSkillByName('hunzi'),
+      skillLoaderInstance.getSkillByName('zhiba'),
     ]);
   }
 }
