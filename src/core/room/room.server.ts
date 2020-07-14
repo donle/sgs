@@ -207,7 +207,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     const canTriggerSkills: TriggerSkill[] = [];
     if (skillFrom === 'character') {
-      for (const skill of player.getPlayerSkills<TriggerSkill>('trigger')) {
+      const hookedSkills = this.hookedSkills.reduce<TriggerSkill[]>((skills, { player: skillOwner, skill }) => {
+        if (skillOwner.Id === player.Id) {
+          skills.push(skill as TriggerSkill);
+        }
+        return skills;
+      }, []);
+      for (const skill of [...player.getPlayerSkills<TriggerSkill>('trigger'), ...hookedSkills]) {
         const canTrigger = bySkills
           ? bySkills.find(bySkill => UniqueSkillRule.isProhibitedBySkillRule(bySkill, skill)) === undefined
           : true;
@@ -253,20 +259,16 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       return;
     }
 
-    const executedHookedSkillsIndex: number[] = [];
-    for (let i = 0; i < this.hookedSkills.length; i++) {
-      const { skill, player } = this.hookedSkills[i];
+    this.hookedSkills = this.hookedSkills.filter(({ skill, player }, index) => {
       const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
       if (hookedSkill.onLosingSkill && hookedSkill.onLosingSkill(this, player.Id)) {
-        await skill.onEffect(this, { fromId: player.Id, skillName: skill.Name, triggeredOnEvent: content });
-        executedHookedSkillsIndex.push(i);
+        return false;
       }
       if (hookedSkill.onDeath && hookedSkill.onDeath(this, player.Id)) {
-        executedHookedSkillsIndex.push(i);
-        await skill.onEffect(this, { fromId: player.Id, skillName: skill.Name, triggeredOnEvent: content });
+        return false;
       }
-    }
-    this.hookedSkills = this.hookedSkills.filter((hookedSkill, index) => !executedHookedSkillsIndex.includes(index));
+      return true;
+    });
 
     const skillSource: Readonly<['character', 'equip']> = ['character', 'equip'];
     for (const player of this.getAlivePlayersFrom()) {
