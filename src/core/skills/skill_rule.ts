@@ -23,12 +23,21 @@ export class UniqueSkillRule {
     }
   }
 
-  public static isProhibited(skill: Skill, owner: Player) {
+  public static isProhibited(skill: Skill, owner: Player, cardContainer?: Card) {
+    if (cardContainer) {
+      if (owner.getFlag<boolean>('wuqian')) {
+        return cardContainer.is(CardType.Armor);
+      }
+    }
+
     if (owner.hasSkill('chanyuan') && owner.Hp <= 1) {
       return skill.GeneralName !== 'chanyuan' && owner.hasSkill(skill.Name);
     }
     if (owner.getFlag<boolean>('tieji') || owner.getFlag<boolean>('yijue')) {
       return skill.SkillType !== SkillType.Compulsory && owner.hasSkill(skill.Name);
+    }
+    if (owner.getFlag<boolean>('wuqian')) {
+      return skill.Name === 'bazhen';
     }
 
     return false;

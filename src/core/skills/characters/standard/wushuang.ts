@@ -1,11 +1,10 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AimStage, AllStage, CardResponseStage, CardUseStage, PlayerPhase } from 'core/game/stage_processor';
+import { AimStage, AllStage, CardResponseStage, CardUseStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
-import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'wushuang', description: 'wushuang_description' })
@@ -58,11 +57,7 @@ export class WuShuang extends TriggerSkill {
 
 @ShadowSkill
 @CompulsorySkill({ name: WuShuang.GeneralName, description: WuShuang.Description })
-export class WuShuangShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  onLosingSkill(room: Room) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
-  }
-
+export class WuShuangShadow extends TriggerSkill {
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent>,
     stage?: AllStage,
@@ -99,7 +94,6 @@ export class WuShuangShadow extends TriggerSkill implements OnDefineReleaseTimin
         const { responseToEvent } = slashEvent;
         const duelEvent = responseToEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
         canUse = Sanguosha.getCardById(duelEvent.cardId).GeneralName === 'duel' && slashEvent.fromId !== owner.Id;
-
         break;
       }
       default:

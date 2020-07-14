@@ -135,7 +135,7 @@ export class YeYan extends ActiveSkill {
 
   public async onEffect(
     room: Room,
-    skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
+    skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     if (skillUseEvent.cardIds && skillUseEvent.cardIds.length === 4) {
       await room.dropCards(
