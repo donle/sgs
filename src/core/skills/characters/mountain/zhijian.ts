@@ -4,10 +4,11 @@ import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder }
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardUseStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerId } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'zhijian', description: 'zhijian_descripiton' })
 export class ZhiJian extends ActiveSkill {
@@ -68,6 +69,7 @@ export class ZhiJian extends ActiveSkill {
     await room.moveCards({
       movingCards: [{ card, fromArea: from.cardFrom(card) }],
       moveReason: CardMoveReason.ActiveMove,
+      fromId,
       toId: toIds![0],
       toArea: CardMoveArea.EquipArea,
       proposer: fromId,
@@ -89,6 +91,10 @@ export class ZhiJianShadow extends TriggerSkill {
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const card = Sanguosha.getCardById(content.cardId);
     return content.fromId === owner.Id && card.is(CardType.Equip);
+  }
+
+  public getSkillLog(room: Room, owner: Player) {
+      return 'zhijian: do you wanna use draw 1 card';
   }
 
   async onTrigger() {
