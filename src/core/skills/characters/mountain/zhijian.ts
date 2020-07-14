@@ -8,7 +8,6 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
-import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'zhijian', description: 'zhijian_descripiton' })
 export class ZhiJian extends ActiveSkill {
@@ -82,7 +81,7 @@ export class ZhiJian extends ActiveSkill {
 }
 
 @ShadowSkill
-@CommonSkill({ name: ZhiJian.Name, description: ZhiJian.Name })
+@CommonSkill({ name: ZhiJian.Name, description: ZhiJian.Description })
 export class ZhiJianShadow extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage?: AllStage) {
     return stage === CardUseStage.CardUsing;
