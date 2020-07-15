@@ -114,7 +114,7 @@ export class KuangFengShadow extends TriggerSkill implements OnDefineReleaseTimi
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
-    return stage === DamageEffectStage.DamagedEffect || stage === PhaseChangeStage.BeforePhaseChange;
+    return stage === DamageEffectStage.OnDamageConfirmed || stage === PhaseChangeStage.BeforePhaseChange;
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers>): boolean {
