@@ -105,15 +105,16 @@ export class GuHuoShadow extends TriggerSkill {
 
     preuseCard.Suit = realCard.Suit;
     preuseCard.CardNumber = realCard.CardNumber;
-
-    await room.moveCards({
-      movingCards: [{ card: preuseCard.Id }],
-      fromId: cardEvent.fromId,
-      toArea: CardMoveArea.ProcessingArea,
-      moveReason: CardMoveReason.CardUse,
-      movedByReason: this.GeneralName,
-      hideBroadcast: true,
-    });
+    if (!room.isCardOnProcessing(preuseCard.Id)) {
+      await room.moveCards({
+        movingCards: [{ card: preuseCard.Id }],
+        fromId: cardEvent.fromId,
+        toArea: CardMoveArea.ProcessingArea,
+        moveReason: CardMoveReason.CardUse,
+        movedByReason: this.GeneralName,
+        hideBroadcast: true,
+      });
+    }
 
     const chooseOptionEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = EventPacker.createUncancellableEvent<
       GameEventIdentifiers.AskForChoosingOptionsEvent

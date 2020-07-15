@@ -569,7 +569,6 @@ export class GameProcessor {
 
       if (cardUseEvent) {
         await this.room.useCard(cardUseEvent);
-        await this.room.sleep(1500);
         if (!EventPacker.isTerminated(cardUseEvent)) {
           event.isCancelledOut = true;
           await this.room.trigger(event, CardEffectStage.CardEffectCancelledOut);

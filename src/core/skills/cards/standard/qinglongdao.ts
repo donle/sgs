@@ -43,15 +43,13 @@ export class QingLongYanYueDaoSkill extends TriggerSkill {
         fromId: response.fromId,
         cardId: response.cardId,
         toIds: slashEffectEvent.toIds,
-      };
-
-      room.broadcast(GameEventIdentifiers.CustomGameDialog, {
         translationsMessage: TranslationPack.translationJsonPatcher(
           '{0} used skill {1}',
           TranslationPack.patchPlayerInTranslation(from),
           this.Name,
         ).extract(),
-      });
+      };
+      
       await room.useCard(slashEvent);
     }
 

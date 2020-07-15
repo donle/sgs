@@ -121,11 +121,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.gameProcessor.insertPlayerRound(player);
   }
 
-  public readonly sleep = async (timeDuration: number) =>
-    new Promise(r => {
-      setTimeout(r, timeDuration);
-    });
-
   public async gameStart() {
     this.shuffle();
     this.shuffleSeats();
@@ -562,7 +557,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       } else {
         responseEvent.cardId = undefined;
       }
-    } while (player.hasCard(this, new CardMatcher(event.cardMatcher)));
+    } while (true);
 
     return responseEvent;
   }
@@ -593,7 +588,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         responseEvent.fromId = preResponseEvent.fromId;
         break;
       }
-    } while (player.hasCard(this, new CardMatcher(event.cardMatcher)));
+    } while (true);
 
     return responseEvent;
   }
@@ -669,8 +664,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (cardResponseEvent.cardId !== undefined && Card.isVirtualCardId(cardResponseEvent.cardId)) {
       const from = this.getPlayerById(cardResponseEvent.fromId);
       const card = Sanguosha.getCardById<VirtualCard>(cardResponseEvent.cardId);
-      const skill = Sanguosha.getSkillBySkillName(card.GeneratedBySkill);
-      const skillUseEvent = {
+      await this.useSkill({
         fromId: cardResponseEvent.fromId,
         skillName: card.GeneratedBySkill,
         translationsMessage:
@@ -688,12 +682,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                 TranslationPack.patchCardInTranslation(...card.ActualCardIds),
                 TranslationPack.patchCardInTranslation(card.Id),
               ).extract(),
-      };
-      if (skill instanceof ViewAsSkill) {
-        await this.useSkill(skillUseEvent);
-      } else {
-        this.broadcast(GameEventIdentifiers.SkillUseEvent, skillUseEvent);
-      }
+      });
     }
 
     await this.trigger(cardResponseEvent, CardResponseStage.PreCardResponse);

@@ -184,6 +184,11 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     }
   }
 
+  public readonly sleep = async (timeDuration: number) =>
+    new Promise(r => {
+      setTimeout(r, timeDuration);
+    });
+
   public addProcessingCards(tag: string, ...cardIds: CardId[]) {
     this.onProcessingCards[tag] = this.onProcessingCards[tag] || [];
 

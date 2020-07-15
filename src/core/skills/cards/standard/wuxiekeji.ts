@@ -20,6 +20,8 @@ export class WuXieKeJiSkill extends ResponsiveSkill {
     const { responseToEvent } = event;
 
     EventPacker.terminate(Precondition.exists(responseToEvent, 'Unable to get slash use event when jin is on effect'));
+    room.doNotify(room.AlivePlayers.map(player => player.Id), 1500);
+    await room.sleep(1500);
     return true;
   }
 }
