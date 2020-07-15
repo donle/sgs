@@ -1419,6 +1419,22 @@ export const eventDictionary: Word[] = [
     target: '{0} 使用了技能 【{1}】，从七星堆交换了 {2} 张牌',
   },
   {
+    source: 'Please choose a player to set a KuangFeng mark',
+    target: '请选择一名角色，其获得‘狂风’标记',
+  },
+  {
+    source: 'dawu: card to drop',
+    target: '弃牌区',
+  },
+  {
+    source: 'Please choose {0} player to set a DaWu mark',
+    target: '请选择 {0} 名角色，其获得‘大雾’标记',
+  },
+  {
+    source: '{0} used skill {1}, let damage invalid',
+    target: '{0} 使用了技能 【{1}】，防止了此次伤害',
+  },
+  {
     source: 'cuike: do you wanna to throw {0} marks to do special skill',
     target: '摧克：你可以弃 {0} 枚“军略”对其他角色各造成1点伤害',
   },
