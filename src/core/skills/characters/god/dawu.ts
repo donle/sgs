@@ -158,7 +158,7 @@ export class DaWuShadow extends TriggerSkill implements OnDefineReleaseTiming {
     const identifier = EventPacker.getIdentifier(unknownEvent);
     if (identifier === GameEventIdentifiers.DamageEvent) {
       skillUseEvent.translationsMessage = TranslationPack.translationJsonPatcher(
-        '{0} used skill {1}, let damage invalid',
+        '{0} used skill {1}, nullified damage event',
         TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
         this.GeneralName,
       ).extract();
