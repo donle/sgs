@@ -365,6 +365,7 @@ export const characterDictionary: Word[] = [
   { source: 'god_zhaoyun', target: '神赵云' },
   { source: 'juejing', target: '绝境' },
   { source: 'longhun', target: '龙魂' },
+  { source: '#longhun', target: '龙魂' },
 
   { source: 'god_luxun', target: '神陆逊' },
   { source: 'junlve', target: '军略' },

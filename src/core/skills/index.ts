@@ -172,6 +172,7 @@ export { QiXing, QiXingShadow } from './characters/god/qixing';
 export { JunLve } from './characters/god/junlve';
 export { CuiKe } from './characters/god/cuike';
 export { ZhanHuo } from './characters/god/zhanhuo';
-
 export { JueJing, JueJingDying } from './characters/god/juejing';
+export { LongHun, LongHunEffect } from './characters/god/longhun';
+
 export { Cheat } from './system/cheat';

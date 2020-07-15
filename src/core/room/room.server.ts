@@ -516,7 +516,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         cardId: responseEvent.cardId!,
       };
 
-      if (responseEvent.cardId === undefined || (await this.preUseCard(preUseEvent))) {
+      if (responseEvent.cardId === undefined || (await this.preUseCard(preUseEvent, true))) {
         responseEvent.cardId = preUseEvent.cardId;
         responseEvent.fromId = preUseEvent.fromId;
         EventPacker.copyPropertiesTo(preUseEvent, responseEvent);
@@ -525,7 +525,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         responseEvent.cardId = undefined;
       }
     } while (
-      player.hasCard(this, new CardMatcher({ name: event.fromId === event.toId ? ['peach', 'alcohol'] : ['peach'] }))
+      player.hasCard(this, new CardMatcher({ name: event.fromId === event.toId ? ['alcohol', 'peach'] : ['peach'] }))
     );
 
     return responseEvent;
@@ -554,7 +554,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         cardId: responseEvent.cardId!,
       };
 
-      if (responseEvent.cardId === undefined || (await this.preUseCard(preUseEvent))) {
+      if (responseEvent.cardId === undefined || (await this.preUseCard(preUseEvent, true))) {
         responseEvent.cardId = preUseEvent.cardId;
         responseEvent.toIds = preUseEvent.toIds;
         responseEvent.fromId = preUseEvent.fromId;
@@ -614,12 +614,15 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     await this.drawCards(1, from.Id);
   }
 
-  public async preUseCard(cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): Promise<boolean> {
+  public async preUseCard(
+    cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
+    noExecution?: boolean,
+  ): Promise<boolean> {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, cardUseEvent);
     const card = Sanguosha.getCardById<VirtualCard>(cardUseEvent.cardId);
     await card.Skill.onUse(this, cardUseEvent);
 
-    if (Card.isVirtualCardId(cardUseEvent.cardId)) {
+    if (!noExecution && Card.isVirtualCardId(cardUseEvent.cardId)) {
       const from = this.getPlayerById(cardUseEvent.fromId);
       const skill = Sanguosha.getSkillBySkillName(card.GeneratedBySkill);
       const skillUseEvent = {

@@ -42,6 +42,7 @@ export class PeachSkill extends ActiveSkill {
       recoverBy: event.fromId,
       toId,
       recoveredHp: 1,
+      cardIds: [event.cardId],
       triggeredBySkills: [this.Name],
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} recovers {1} hp',
