@@ -84,8 +84,9 @@ export class DaWu extends TriggerSkill {
       toId: skillEffectEvent.fromId,
       requiredAmount: bottom.length,
       conversation: TranslationPack.translationJsonPatcher(
-        'Please choose {0} player to set a DaWu mark',
+        'Please choose {0} player to set {1} mark',
         bottom.length,
+        this.Name,
       ).extract(),
     };
 
@@ -116,10 +117,7 @@ export class DaWuShadow extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
-    if (stage === DamageEffectStage.DamagedEffect) {
-      return false;
-    }
-    return true;
+    return stage !== DamageEffectStage.DamagedEffect;
   }
 
   public get Priority(): StagePriority {

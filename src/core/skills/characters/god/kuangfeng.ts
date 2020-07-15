@@ -75,7 +75,11 @@ export class KuangFeng extends TriggerSkill {
       players: room.getAlivePlayersFrom().map(player => player.Id),
       toId: skillEffectEvent.fromId,
       requiredAmount: 1,
-      conversation: 'Please choose a player to set a KuangFeng mark',
+      conversation: TranslationPack.translationJsonPatcher(
+        'Please choose {0} player to set {1} mark',
+        1,
+        this.Name,
+      ).extract(),
     };
 
     room.notify(
@@ -98,15 +102,12 @@ export class KuangFeng extends TriggerSkill {
 @ShadowSkill
 @CommonSkill({ name: KuangFeng.Name, description: KuangFeng.Description })
 export class KuangFengShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  public onLosingSkill(room: Room, owner: PlayerId): boolean {
+  public onLosingSkill(room: Room): boolean {
     return room.CurrentPlayerPhase === PlayerPhase.PrepareStage;
   }
 
   public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
-    if (stage === DamageEffectStage.DamagedEffect) {
-      return false;
-    }
-    return true;
+    return stage !== DamageEffectStage.DamagedEffect;
   }
 
   public isAutoTrigger(): boolean {
@@ -114,7 +115,7 @@ export class KuangFengShadow extends TriggerSkill implements OnDefineReleaseTimi
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
-    return stage === DamageEffectStage.OnDamageConfirmed || stage === PhaseChangeStage.BeforePhaseChange;
+    return stage === DamageEffectStage.DamagedEffect || stage === PhaseChangeStage.BeforePhaseChange;
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers>): boolean {
