@@ -16,7 +16,7 @@ export class JiXi extends ViewAsSkill {
   public canUse(room: Room, owner: Player) {
     return (
       owner.canUseCard(room, new CardMatcher({ name: this.canViewAs() })) &&
-      owner.getCardIds(PlayerCardsArea.OutsideArea, TunTian.PileName).length > 0
+      owner.getCardIds(PlayerCardsArea.OutsideArea, TunTian.Name).length > 0
     );
   }
 
@@ -29,7 +29,7 @@ export class JiXi extends ViewAsSkill {
     owner: Player,
     pendingCardId: CardId,
   ): boolean {
-    return owner.getCardIds(PlayerCardsArea.OutsideArea, TunTian.PileName).includes(pendingCardId);
+    return owner.getCardIds(PlayerCardsArea.OutsideArea, TunTian.Name).includes(pendingCardId);
   }
 
   public viewAs(selectedCards: CardId[]) {
