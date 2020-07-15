@@ -26,7 +26,7 @@ export class ZaoXian extends TriggerSkill {
   ): boolean {
     return (
       content.playerId === owner.Id &&
-      owner.getCardIds(PlayerCardsArea.OutsideArea, TunTian.PileName).length > 2
+      owner.getCardIds(PlayerCardsArea.OutsideArea, TunTian.Name).length > 2
     );
   }
 

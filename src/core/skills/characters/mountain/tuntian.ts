@@ -10,8 +10,6 @@ import { ShadowSkill } from 'core/skills/skill_wrappers';
 
 @CommonSkill({ name: 'tuntian', description: 'tuntian_description' })
 export class TunTian extends TriggerSkill {
-  public static readonly PileName = 'tian';
-
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>,
     stage?: AllStage,
@@ -64,7 +62,7 @@ export class TunTian extends TriggerSkill {
         toId: fromId,
         toArea: PlayerCardsArea.OutsideArea,
         moveReason: CardMoveReason.ActiveMove,
-        toOutsideArea: TunTian.PileName,
+        toOutsideArea: this.Name,
         isOutsideAreaInPublic: true,
         proposer: fromId,
         movedByReason: this.Name,
@@ -88,6 +86,6 @@ export class TunTian extends TriggerSkill {
 @CommonSkill({ name: TunTian.Name, description: TunTian.Description })
 export class TunTianShadow extends RulesBreakerSkill {
   public breakOffenseDistance(room: Room, owner: Player) {
-    return owner.getCardIds(PlayerCardsArea.OutsideArea, TunTian.PileName).length;
+    return owner.getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName).length;
   }
 }
