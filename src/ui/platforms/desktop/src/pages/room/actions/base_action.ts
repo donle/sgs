@@ -113,6 +113,9 @@ export abstract class BaseAction {
     ) {
       return false;
     }
+    if (this.selectedTargets.includes(player.Id)) {
+      return true;
+    }
 
     if (this.selectedCardToPlay !== undefined) {
       for (const skillOwner of this.store.room.getAlivePlayersFrom()) {

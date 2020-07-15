@@ -153,7 +153,7 @@ export class ResponsiveUseCardAction<
   }
 
   isPlayerEnabled(player: Player): boolean {
-    const event = this.askForEvent as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
+    const event = (this.askForEvent as unknown) as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
     if (!event.commonUse && this.scopedTargets && this.scopedTargets.includes(player.Id)) {
       return true;
     }
