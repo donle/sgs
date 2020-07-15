@@ -49,7 +49,11 @@ export class QiXingShadow extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    return content.toStage === PlayerPhaseStages.DrawCardStageEnd && content.playerId === owner.Id;
+    return (
+      content.toStage === PlayerPhaseStages.DrawCardStageEnd &&
+      content.playerId === owner.Id &&
+      owner.getCardIds(PlayerCardsArea.OutsideArea, QiXing.Name).length > 0
+    );
   }
 
   async onTrigger() {
