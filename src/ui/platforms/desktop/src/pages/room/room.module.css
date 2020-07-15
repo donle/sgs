@@ -30,7 +30,7 @@
 
 .incomingConversation {
     position: fixed;
-    bottom: 220px;
+    bottom: 228px;
     max-width: 768px;
     justify-self: center;
     display: flex;

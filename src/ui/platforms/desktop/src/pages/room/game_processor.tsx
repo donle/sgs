@@ -875,7 +875,7 @@ export class GameClientProcessor {
       name: content.fromId === content.toId ? ['peach', 'alcohol'] : ['peach'],
     });
     this.presenter.isSkillDisabled(
-      ResponsiveUseCardAction.isSkillsOnResponsiveCardUseDisabled(
+      AskForPeachAction.isSkillDisabled(
         this.store.room,
         askForPeachMatcher,
         this.store.room.getPlayerById(content.fromId),

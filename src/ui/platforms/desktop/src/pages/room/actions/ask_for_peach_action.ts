@@ -3,12 +3,31 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { ClientEventFinder, EventPacker, GameEventIdentifiers } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
-import { ActiveSkill, ViewAsSkill } from 'core/skills/skill';
+import { Room } from 'core/room/room';
+import { ActiveSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
+import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { BaseAction } from './base_action';
 import { ResponsiveUseCardAction } from './responsive_card_use_action';
 
 export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifiers.AskForPeachEvent> {
+  public static readonly isSkillDisabled = (room: Room, matcher: CardMatcher, player: Player) => (skill: Skill) => {
+    if (UniqueSkillRule.isProhibited(skill, player)) {
+      return true;
+    }
+
+    if (skill instanceof TriggerSkill) {
+      return true;
+    } else if (skill instanceof ViewAsSkill) {
+      return (
+        !CardMatcher.weakMatch({ name: skill.canViewAs(room, player), tag: 'card-matcher' }, matcher) ||
+        !skill.canUse(room, player)
+      );
+    }
+
+    return true;
+  };
+
   isCardEnabledOnAskingForPeach(card: Card, fromArea: PlayerCardsArea) {
     if (EventPacker.isDisresponsiveEvent(this.askForEvent)) {
       return false;

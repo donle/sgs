@@ -965,18 +965,17 @@ export class GameProcessor {
   ) {
     const { dying, killedBy } = event;
     const to = this.room.getPlayerById(dying);
-    to.Dying = true;
+    this.room.broadcast(GameEventIdentifiers.PlayerDyingEvent, {
+      dying: to.Id,
+      translationsMessage: TranslationPack.translationJsonPatcher(
+        '{0} is dying',
+        TranslationPack.patchPlayerInTranslation(to),
+      ).extract(),
+    });
 
+    to.Dying = true;
     await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === PlayerDyingStage.PlayerDying) {
-        this.room.broadcast(GameEventIdentifiers.PlayerDyingEvent, {
-          dying: to.Id,
-          translationsMessage: TranslationPack.translationJsonPatcher(
-            '{0} is dying',
-            TranslationPack.patchPlayerInTranslation(to),
-          ).extract(),
-        });
-
         const filterSkills = this.room.AlivePlayers.reduce<
           {
             player: Player;
@@ -1035,6 +1034,10 @@ export class GameProcessor {
           if (to.Hp > 0) {
             break;
           }
+        }
+
+        if (to.Hp <= 0) {
+          await this.room.kill(to, killedBy);
         }
       }
     });

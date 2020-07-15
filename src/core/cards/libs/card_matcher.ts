@@ -32,6 +32,56 @@ export class CardMatcher {
     };
   }
 
+  public static weakMatch(matcher: CardMatcherSocketPassenger | undefined, card: Card | CardMatcher) {
+    if (matcher === undefined) {
+      return false;
+    }
+
+    Precondition.assert(matcher.tag && matcher.tag === 'card-matcher', 'Invalid card matcher props');
+    const { suit, cardNumber, name, type, cards, reverseMatch } = matcher;
+    let matched = false;
+
+    if (card instanceof Card) {
+      if (suit) {
+        matched = matched || suit.includes(card.Suit);
+      }
+      if (cardNumber) {
+        matched = matched || cardNumber.includes(card.CardNumber);
+      }
+      if (name) {
+        matched = matched || name.includes(card.GeneralName);
+      }
+      if (type) {
+        matched = matched || type.find(subType => card.is(subType)) !== undefined;
+      }
+      if (cards) {
+        matched = matched || cards.includes(card.Id);
+      }
+    } else {
+      matcher = card.toSocketPassenger();
+      if (suit && matcher.suit) {
+        matched = matched || matcher.suit.length === 0 || !!matcher.suit.find(cardSuit => suit.includes(cardSuit));
+      }
+      if (cardNumber && matcher.cardNumber) {
+        matched =
+          matched ||
+          matcher.cardNumber.length === 0 ||
+          !!matcher.cardNumber.find(cardNum => cardNumber.includes(cardNum));
+      }
+      if (name && matcher.name) {
+        matched = matched || matcher.name.length === 0 || !!matcher.name.find(cardName => name.includes(cardName));
+      }
+      if (type && matcher.type) {
+        matched = matched || matcher.type.length === 0 || !!matcher.type.find(cardType => type.includes(cardType));
+      }
+      if (cards && matcher.cards) {
+        matched = matched || matcher.cards.length === 0 || !!matcher.cards.find(innerCard => cards.includes(innerCard));
+      }
+    }
+
+    return reverseMatch ? !matched : matched;
+  }
+
   public static match(matcher: CardMatcherSocketPassenger | undefined, card: Card | CardMatcher) {
     if (matcher === undefined) {
       return false;

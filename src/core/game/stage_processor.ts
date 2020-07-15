@@ -137,6 +137,8 @@ export const enum DrawCardStage {
 }
 
 export const enum DamageEffectStage {
+  OnDamageConfirmed = 'OnDamageConfirmed',
+  DamageStart = 'DamageStart',
   DamageEffect = 'DamageEffect',
   DamagedEffect = 'DamagedEffect',
   AfterDamageEffect = 'AfterDamageEffect',
@@ -270,6 +272,8 @@ const gameEventStageList: {
     DrawCardStage.AfterDrawCardEffect,
   ],
   [GameEventIdentifiers.DamageEvent]: [
+    DamageEffectStage.OnDamageConfirmed,
+    DamageEffectStage.DamageStart,
     DamageEffectStage.DamageEffect,
     DamageEffectStage.DamagedEffect,
     DamageEffectStage.AfterDamageEffect,
