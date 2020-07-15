@@ -161,6 +161,9 @@ export { HunZi } from './characters/mountain/hunzi';
 export { ZhiBa, ZhiBaPindianCard } from './characters/mountain/zhiba';
 export { ZhiJian, ZhiJianShadow } from './characters/mountain/zhijian';
 export { GuZheng } from './characters/mountain/guzheng';
+export { TunTian, TunTianShadow } from './characters/mountain/tuntian';
+export { ZaoXian } from './characters/mountain/zaoxian';
+export { JiXi } from './characters/mountain/jixi';
 
 export { WuShen, WuShenShadow } from './characters/god/wushen';
 export { WuHun, WuHunDied } from './characters/god/wuhun';
