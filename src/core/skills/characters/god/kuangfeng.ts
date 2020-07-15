@@ -9,7 +9,7 @@ import {
   PlayerPhaseStages,
 } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { MarkEnum } from 'core/shares/types/mark_list';
 import { OnDefineReleaseTiming, TriggerSkill } from 'core/skills/skill';
