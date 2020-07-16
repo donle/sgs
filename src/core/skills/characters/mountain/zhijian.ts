@@ -4,7 +4,7 @@ import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder }
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardUseStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
