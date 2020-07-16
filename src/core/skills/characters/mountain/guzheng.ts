@@ -126,6 +126,7 @@ export class GuZheng extends TriggerSkill {
 
     room.broadcast(GameEventIdentifiers.ObserveCardsEvent, chooseGuZhengCardEvent);
     room.endProcessOnTag(displayCardIds.toString());
+    room.broadcast(GameEventIdentifiers.ObserveCardFinishEvent, {});
 
     await room.moveCards({
       movingCards: [{ card: response.selectedCard, fromArea: CardMoveArea.DropStack }],
