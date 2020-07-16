@@ -84,13 +84,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.broadcast(GameEventIdentifiers.PlayerStatusEvent, { status, toId });
   }
 
-  private shuffle() {
+  public shuffle() {
     if (this.dropStack.length > 0) {
+      Algorithm.shuffle(this.dropStack);
       this.drawStack = this.drawStack.concat(this.dropStack);
       this.dropStack = [];
+    } else {
+      Algorithm.shuffle(this.drawStack);
     }
-
-    Algorithm.shuffle(this.drawStack);
   }
 
   private shuffleSeats() {
@@ -1358,6 +1359,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       ).extract(),
     });
     return super.addMark(player, name, value);
+  }
+
+  public getCardsFromDrawStackOrDropStack(fromDropStack: boolean): CardId[] {
+    return fromDropStack ? this.dropStack : this.drawStack;
   }
 
   public isCardInDropStack(cardId: CardId): boolean {

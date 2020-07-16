@@ -11,6 +11,7 @@ import { HuangGai } from './huanggai';
 import { HuangYueYing } from './huangyueying';
 import { HuaTuo } from './huatuo';
 import { HuaXiong } from './huaxiong';
+import { JieXuShu } from './jiexushu';
 import { LiDian } from './lidian';
 import { LiuBei } from './liubei';
 import { LuXun } from './luxun';
@@ -49,6 +50,7 @@ export const StandardCharacterPackage: (index: number) => Character[] = index =>
   new ZhangFei(index++),
   new GuanYu(index++),
   new YiJi(index++),
+  new JieXuShu(index++),
 
   new CaoCao(index++),
   new SiMaYi(index++),
