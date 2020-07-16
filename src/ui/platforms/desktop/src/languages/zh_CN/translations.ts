@@ -1419,6 +1419,18 @@ export const eventDictionary: Word[] = [
     target: '{0} 使用了技能 【{1}】，从七星堆交换了 {2} 张牌',
   },
   {
+    source: 'dawu: card to drop',
+    target: '弃牌区',
+  },
+  {
+    source: 'Please choose {0} player to set {1} mark',
+    target: '请选择 {0} 名角色，其获得‘{1}’标记',
+  },
+  {
+    source: '{0} used skill {1}, nullified damage event',
+    target: '{0} 使用了技能 【{1}】，防止了此次伤害',
+  },
+  {
     source: 'cuike: do you wanna to throw {0} marks to do special skill',
     target: '摧克：你可以弃 {0} 枚“军略”对其他角色各造成1点伤害',
   },

@@ -257,17 +257,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       return;
     }
 
-    this.hookedSkills = this.hookedSkills.filter(({ skill, player }, index) => {
-      const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
-      if (hookedSkill.onLosingSkill && hookedSkill.onLosingSkill(this, player.Id)) {
-        return false;
-      }
-      if (hookedSkill.onDeath && hookedSkill.onDeath(this, player.Id)) {
-        return false;
-      }
-      return true;
-    });
-
     const skillSource: Readonly<['character', 'equip']> = ['character', 'equip'];
     for (const player of this.getAlivePlayersFrom()) {
       for (const skillFrom of skillSource) {
@@ -396,6 +385,17 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         } while (canTriggerSkills.length > 0);
       }
     }
+
+    this.hookedSkills = this.hookedSkills.filter(({ skill, player }, index) => {
+      const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+      if (hookedSkill.onLosingSkill && hookedSkill.onLosingSkill(this, player.Id)) {
+        return false;
+      }
+      if (hookedSkill.onDeath && hookedSkill.onDeath(this, player.Id)) {
+        return false;
+      }
+      return true;
+    });
   }
 
   public async onReceivingAsyncResponseFrom<T extends GameEventIdentifiers>(

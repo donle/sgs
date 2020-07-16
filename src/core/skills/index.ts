@@ -169,6 +169,8 @@ export { WuQian, WuQianShadow } from './characters/god/wuqian';
 export { FeiYing } from './characters/god/feiying';
 export { GuiXin } from './characters/god/guixin';
 export { QiXing, QiXingShadow } from './characters/god/qixing';
+export { KuangFeng, KuangFengShadow } from './characters/god/kuangfeng';
+export { DaWu, DaWuShadow } from './characters/god/dawu';
 export { JunLve } from './characters/god/junlve';
 export { CuiKe } from './characters/god/cuike';
 export { ZhanHuo } from './characters/god/zhanhuo';
