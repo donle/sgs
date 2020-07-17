@@ -150,17 +150,19 @@ export class GuZheng extends TriggerSkill {
       node => node !== response.selectedCard
     );
 
-    await room.moveCards({
-      movingCards: obtainCards.map(
-        card => {
-          return { card, fromArea: CardMoveArea.DropStack };
-      }),
-      toId: fromId,
-      toArea: CardMoveArea.HandArea,
-      moveReason: CardMoveReason.ActiveMove,
-      proposer: fromId,
-      movedByReason: this.Name,
-    });
+    if (obtainCards.length > 0) {
+      await room.moveCards({
+        movingCards: obtainCards.map(
+          card => {
+            return { card, fromArea: CardMoveArea.DropStack };
+        }),
+        toId: fromId,
+        toArea: CardMoveArea.HandArea,
+        moveReason: CardMoveReason.ActiveMove,
+        proposer: fromId,
+        movedByReason: this.Name,
+      });
+    }
 
     return true;
   }
