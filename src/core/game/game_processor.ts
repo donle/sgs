@@ -1042,10 +1042,6 @@ export class GameProcessor {
     });
 
     to.Dying = false;
-    if (to.Hp <= 0) {
-      await this.room.kill(to, killedBy);
-      EventPacker.terminate(event);
-    }
   }
 
   private async onHandlePlayerDiedEvent(
