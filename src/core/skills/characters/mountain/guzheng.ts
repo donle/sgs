@@ -14,7 +14,11 @@ export class GuZheng extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    if (content.playerId === owner.Id || content.toStage !== PlayerPhaseStages.DropCardStageEnd) {
+    if (
+      content.playerId === owner.Id ||
+      content.toStage !== PlayerPhaseStages.DropCardStageEnd ||
+      room.getNextAlivePlayer(content.playerId).Dead
+    ) {
       return false;
     }
     const events = room.Analytics.getCardDropRecord(content.playerId, true, [PlayerPhase.DropCardStage]);
@@ -38,7 +42,12 @@ export class GuZheng extends TriggerSkill {
     const events = room.Analytics.getRecordEvents<GameEventIdentifiers.MoveCardEvent>(
       event => {
         return EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
-          (event.moveReason === CardMoveReason.SelfDrop || event.moveReason === CardMoveReason.PassiveDrop);
+          (
+            event.moveReason === CardMoveReason.SelfDrop ||
+            event.moveReason === CardMoveReason.PassiveDrop ||
+            event.moveReason === CardMoveReason.PlaceToDropStack
+          )
+        ;
       },
       undefined,
       true,
