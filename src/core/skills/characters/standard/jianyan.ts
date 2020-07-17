@@ -9,7 +9,6 @@ import {
   GameEventIdentifiers,
   ServerEventFinder
 } from 'core/event/event';
-import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
@@ -70,7 +69,7 @@ export class JianYan extends ActiveSkill {
     const askForChooseEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
       options,
       conversation: TranslationPack.translationJsonPatcher(
-        '{0}: please choose a card type what you want',
+        '{0}: please choose a card type or color',
         this.Name
       ).extract(),
       toId: fromId,
@@ -83,11 +82,9 @@ export class JianYan extends ActiveSkill {
 
     const cardMatcher: CardMatcher = this.jianYanMatch(response.selectedOption);
     
-    let displayCard =
-      room.getCardsFromDrawStackOrDropStack().find(cardId => cardMatcher.match(Sanguosha.getCardById(cardId)));
+    let displayCard = room.findCardByMatcherFrom(cardMatcher);
     if (displayCard === undefined) {
-      displayCard =
-        room.getCardsFromDrawStackOrDropStack(true).find(cardId => cardMatcher.match(Sanguosha.getCardById(cardId)));
+      displayCard = room.findCardByMatcherFrom(cardMatcher, false);
       room.shuffle();
     }
     if (displayCard === undefined) {

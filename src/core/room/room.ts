@@ -161,7 +161,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     to: PlayerId,
   ): Promise<ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent>>;
   //Server only
-  public abstract getCardsFromDrawStackOrDropStack(fromDropStack?: boolean): CardId[];
+  public abstract findCardByMatcherFrom(cardMatcher: CardMatcher, fromDrawStack?: boolean): CardId | undefined;
   public abstract isCardInDropStack(cardId: CardId): boolean;
   public abstract isCardInDrawStack(cardId: CardId): boolean;
 

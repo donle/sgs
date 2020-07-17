@@ -1361,8 +1361,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return super.addMark(player, name, value);
   }
 
-  public getCardsFromDrawStackOrDropStack(fromDropStack: boolean): CardId[] {
-    return fromDropStack ? this.dropStack : this.drawStack;
+  public findCardByMatcherFrom(cardMatcher: CardMatcher, fromDrawStack: boolean = true): CardId | undefined {
+    const fromStack = fromDrawStack ? this.drawStack : this.dropStack;
+    return fromStack.find(cardId => cardMatcher.match(Sanguosha.getCardById(cardId)));
   }
 
   public isCardInDropStack(cardId: CardId): boolean {
