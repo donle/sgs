@@ -17,17 +17,18 @@ export class GuZheng extends TriggerSkill {
     if (
       content.playerId === owner.Id ||
       content.toStage !== PlayerPhaseStages.DropCardStageEnd ||
-      room.getNextAlivePlayer(content.playerId).Dead
+      room.getPlayerById(content.playerId).Dead
     ) {
       return false;
     }
+
     const events = room.Analytics.getCardDropRecord(content.playerId, true, [PlayerPhase.DropCardStage]);
     const findFunc = (event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) => {
       return event.movingCards.find(
         ({ card, fromArea }) => {
           return fromArea === CardMoveArea.HandArea;
         }
-      )
+      );
     };
     return events.find(findFunc) !== undefined;
   }
