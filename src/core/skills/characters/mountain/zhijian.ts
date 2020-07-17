@@ -9,7 +9,7 @@ import { Room } from 'core/room/room';
 import { ActiveSkill, TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 
-@CommonSkill({ name: 'zhijian', description: 'zhijian_descripiton' })
+@CommonSkill({ name: 'zhijian', description: 'zhijian_description' })
 export class ZhiJian extends ActiveSkill {
   canUse() {
     return true;
