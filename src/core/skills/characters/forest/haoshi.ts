@@ -80,7 +80,7 @@ export class HaoShiShadow extends TriggerSkill {
   }
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]) {
-    return cards.length === Math.ceil(owner.getCardIds(PlayerCardsArea.HandArea).length / 2);
+    return cards.length === Math.floor(owner.getCardIds(PlayerCardsArea.HandArea).length / 2);
   }
 
   public isAvailableCard(

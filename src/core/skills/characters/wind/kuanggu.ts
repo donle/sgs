@@ -11,7 +11,7 @@ export class KuangGu extends TriggerSkill {
   public static readonly KuangGuTag = 'kuangGuTag';
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
-    return stage === DamageEffectStage.AfterDamagedEffect;
+    return stage === DamageEffectStage.AfterDamageEffect;
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {

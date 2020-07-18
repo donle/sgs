@@ -8,7 +8,7 @@ import { Room } from 'core/room/room';
 import { CompulsorySkill, OnDefineReleaseTiming, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CompulsorySkill({ name: 'roulin', description: 'wushuang_description' })
+@CompulsorySkill({ name: 'roulin', description: 'roulin_description' })
 export class RouLin extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage): boolean {
     if (stage === AimStage.AfterAim) {
