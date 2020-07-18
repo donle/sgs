@@ -982,6 +982,8 @@ export class GameClientProcessor {
         this.store.room.broadcast(type, event);
         this.endAction();
       });
+    } else {
+      this.presenter.disableActionButton('cancel');
     }
   }
 
@@ -1022,6 +1024,8 @@ export class GameClientProcessor {
         this.endAction();
         this.presenter.closeIncomingConversation();
       });
+    } else {
+      this.presenter.disableActionButton('cancel');
     }
   }
 

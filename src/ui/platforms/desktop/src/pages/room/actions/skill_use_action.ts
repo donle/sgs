@@ -35,6 +35,8 @@ export class SkillUseAction extends BaseAction {
   private invokeSpecifiedSkill(skillName: string, translator: ClientTranslationModule, callback: () => void) {
     if (!EventPacker.isUncancellabelEvent(this.askForEvent)) {
       this.presenter.enableActionButton('cancel');
+    } else {
+      this.presenter.disableActionButton('cancel');
     }
 
     const event: ClientEventFinder<GameEventIdentifiers.AskForSkillUseEvent> = {

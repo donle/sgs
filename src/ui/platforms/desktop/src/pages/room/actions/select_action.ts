@@ -29,6 +29,8 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
           this.resetAction();
           resolve();
         });
+      } else {
+        this.presenter.disableActionButton('cancel');
       }
 
       const selectedPlayers: PlayerId[] = scopedTargets.length === 1 ? scopedTargets.slice() : [];
@@ -86,6 +88,8 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
           resolve([]);
           this.resetAction();
         });
+      } else {
+        this.presenter.disableActionButton('cancel');
       }
 
       const selectedCards: CardId[] = [];

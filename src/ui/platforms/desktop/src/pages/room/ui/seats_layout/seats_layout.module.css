@@ -1,6 +1,7 @@
 .seatsLayout {
     display: flex;
     flex: auto;
+    padding-left: 24px;
 }
 
 .rightSeats,

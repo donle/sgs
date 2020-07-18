@@ -52,6 +52,8 @@ export class ResponsiveUseCardAction<
 
     if (!EventPacker.isUncancellabelEvent(this.askForEvent)) {
       this.presenter.enableActionButton('cancel');
+    } else {
+      this.presenter.disableActionButton('cancel');
     }
   }
 
