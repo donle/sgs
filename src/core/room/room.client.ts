@@ -60,6 +60,10 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.doNotify.name);
   }
   //Server only
+  public shuffle(): any {
+    this.throwUntouchableError(this.shuffle.name);
+  }
+  //Server only
   public getCards(): any {
     this.throwUntouchableError(this.getCards.name);
   }
@@ -168,6 +172,10 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   //Server only
   public endPhase(phase: PlayerPhase): void {
     this.throwUntouchableError(this.endPhase.name);
+  }
+  //Server only
+  public findCardByMatcherFrom(): any {
+    this.throwUntouchableError(this.findCardByMatcherFrom.name);
   }
   //Server only
   public isCardInDropStack(): any {

@@ -118,6 +118,11 @@ export const characterDictionary: Word[] = [
   { source: 'jijie', target: '机捷' },
   { source: 'jiyuan', target: '急援' },
 
+  { source: 'jiexushu', target: '界徐庶' },
+  { source: 'zhuhai', target: '诛害' },
+  { source: 'qianxin', target: '潜心' },
+  { source: 'jianyan', target: '荐言' },
+
   { source: 'sunquan', target: '孙权' },
   { source: 'zhiheng', target: '制衡' },
   { source: 'jiuyuan', target: '救援' },
@@ -589,6 +594,21 @@ export const skillDescriptions: Word[] = [
   },
   { source: 'jijie_description', target: '出牌阶段限一次，你可以观看牌堆底一张牌，然后交给一名角色。' },
   { source: 'jiyuan_description', target: '当一名角色进入濒死状态或你交给一名其他角色牌时，你可以令其摸一张牌。' },
+  {
+    source: 'zhuhai_description',
+    target:
+      '其他角色的结束阶段开始时，若其于此回合造成过伤害，你可以对其使用一张无距离限制的【杀】。',
+  },
+  {
+    source: 'qianxin_description',
+    target:
+      '<b>觉醒技</b>，当你造成伤害后，若你已受伤，你减1点体力上限并获得技能“荐言”。',
+  },
+  {
+    source: 'jianyan_description',
+    target:
+      '出牌阶段限一次，你可以声明一种牌的类别或颜色，然后亮出牌堆中第一张符合你声明的牌，并将之交给一名男性角色。',
+  },
   {
     source: 'shensu_description',
     target:
@@ -1329,6 +1349,18 @@ export const eventDictionary: Word[] = [
   {
     source: '{0} triggered skill {1}, prevent the damage',
     target: '{0} 触发了 “{1}” 的效果，防止了此伤害',
+  },
+  {
+    source: '{0}: please choose a card type or color',
+    target: '{0}：请选择以下一种选项，系统将会亮出牌堆中符合条件的第一张牌，然后你将之交给一名男性角色',
+  },
+  {
+    source: 'jianyan:Please choose a target to obtain the card you show',
+    target: '荐言：请选择一名男性角色获得此牌',
+  },
+  {
+    source: '{0}: do you want to use a slash to {1}?',
+    target: '{0}：你可以对 {1} 使用一张【杀】（无距离限制）',
   },
   {
     source: 'please drop a {0} hand card to hit {1} 1 hp of damage type fire',

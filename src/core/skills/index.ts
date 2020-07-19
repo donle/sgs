@@ -98,6 +98,9 @@ export { WangXi } from './characters/standard/wangxi';
 export { JiangChi, JiangChiRemove, JiangChiExtra, JiangChiBlock } from './characters/standard/jiangchi';
 export { WangZun, WangZunShadow } from './characters/standard/wangzun';
 export { TongJi } from './characters/standard/tongji';
+export { ZhuHai } from './characters/standard/zhuhai';
+export { QianXin } from './characters/standard/qianxin';
+export { JianYan } from './characters/standard/jianyan';
 
 export { JuShou } from './characters/wind/jushou';
 export { JieWei, JieWeiShadow } from './characters/wind/jiewei';

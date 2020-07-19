@@ -60,6 +60,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract broadcast<I extends GameEventIdentifiers>(type: I, content: EventPicker<I, T>): void;
 
   //Server only
+  public abstract shuffle(): void;
+  //Server only
   public abstract getCards(numberOfCards: number, from: 'top' | 'bottom'): CardId[];
   //Server only
   public abstract putCards(from: 'top' | 'bottom', ...cardIds: CardId[]): void;
@@ -158,6 +160,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     event: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>,
     to: PlayerId,
   ): Promise<ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent>>;
+  //Server only
+  public abstract findCardByMatcherFrom(cardMatcher: CardMatcher, fromDrawStack?: boolean): CardId | undefined;
   public abstract isCardInDropStack(cardId: CardId): boolean;
   public abstract isCardInDrawStack(cardId: CardId): boolean;
 
