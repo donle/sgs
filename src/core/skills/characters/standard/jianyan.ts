@@ -48,6 +48,8 @@ export class JianYan extends ActiveSkill {
     switch(cardType) {
       case 'basic card':
         return new CardMatcher({ type: [CardType.Basic] });
+      case 'trick card':
+        return new CardMatcher({ type: [CardType.Trick] });
       case 'equip card':
         return new CardMatcher({ type: [CardType.Equip] });
       case 'jianyan:red':
@@ -55,7 +57,7 @@ export class JianYan extends ActiveSkill {
       case 'jianyan:black':
         return new CardMatcher({ suit: [CardSuit.Club, CardSuit.Spade] });
       default:
-        return new CardMatcher({ type: [CardType.Trick] });
+        throw new Error('Unknown jianyan type');
     }
   }
 
@@ -104,7 +106,7 @@ export class JianYan extends ActiveSkill {
       cardIds: displayCards,
       selected: [],
     };
-    room.notify(GameEventIdentifiers.ObserveCardsEvent, observeCardsEvent, fromId);
+    room.broadcast(GameEventIdentifiers.ObserveCardsEvent, observeCardsEvent);
 
     const choosePlayerEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
       players: room.getAlivePlayersFrom().filter(p => p.Gender === CharacterGender.Male).map(p => p.Id),
@@ -124,7 +126,7 @@ export class JianYan extends ActiveSkill {
         ? fromId
         : choosePlayerResponse.selectedPlayers[0];
 
-    room.notify(GameEventIdentifiers.ObserveCardFinishEvent, {}, fromId);
+    room.broadcast(GameEventIdentifiers.ObserveCardFinishEvent, {});
     await room.moveCards({
       movingCards: displayCards.map(card => ({ card, fromArea: CardMoveArea.ProcessingArea })),
       toId: target,
