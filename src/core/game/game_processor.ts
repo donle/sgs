@@ -1354,7 +1354,12 @@ export class GameProcessor {
     }
 
     const from = fromId ? this.room.getPlayerById(fromId) : undefined;
-    const cardIds = movingCards.map(cardInfo => cardInfo.card);
+    const cardIds = movingCards.reduce<CardId[]>((cards, cardInfo) => {
+      if (!cardInfo.asideMove) {
+        cards.push(cardInfo.card);
+      }
+      return cards;
+    }, []);
     const actualCardIds = Card.getActualCards(cardIds);
 
     this.createCardMoveMessage(from, to, cardIds, actualCardIds, event);
@@ -1525,8 +1530,10 @@ export class GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>,
   ) {
     const { toArea, movingCards, toOutsideArea, placeAtTheBottomOfDrawStack } = event;
-    for (const { card, fromArea } of movingCards) {
-      if (fromArea === CardMoveArea.DrawStack) {
+    for (const { card, fromArea, asideMove } of movingCards) {
+      if (asideMove) {
+        continue;
+      } else if (fromArea === CardMoveArea.DrawStack) {
         this.room.getCardFromDrawStack(card);
       } else if (fromArea === CardMoveArea.DropStack) {
         this.room.getCardFromDropStack(card);

@@ -90,6 +90,7 @@ export interface ServerEvent extends EventUtilities {
     movingCards: {
       card: CardId;
       fromArea?: CardMoveArea | PlayerCardsArea;
+      asideMove?: boolean;
     }[];
     fromId?: PlayerId;
     moveReason: CardMoveReason;

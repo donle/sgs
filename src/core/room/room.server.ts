@@ -995,6 +995,31 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   public async moveCards(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
+    const from = event.fromId ? this.getPlayerById(event.fromId) : undefined;
+    event.movingCards = event.movingCards.reduce<
+      {
+        card: CardId;
+        fromArea?: CardMoveArea | PlayerCardsArea;
+      }[]
+    >((allCards, cardInfo) => {
+      if (Card.isVirtualCardId(cardInfo.card)) {
+        const card = Sanguosha.getCardById<VirtualCard>(cardInfo.card);
+        if (!Sanguosha.isTransformCardSill(card.GeneratedBySkill)) {
+          allCards.push(
+            ...card.ActualCardIds.map(cardId => ({
+              card: cardId,
+              fromArea: from?.cardFrom(cardId),
+              asideMove: true,
+            })),
+          );
+        }
+      }
+
+      allCards.push(cardInfo);
+
+      return allCards;
+    }, []);
+
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.MoveCardEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.MoveCardEvent, event),

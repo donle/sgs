@@ -3,7 +3,7 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, VirtualCardId } from 'core/cards/libs/card_props';
 import { Character, CharacterId } from 'core/characters/character';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { Skill } from 'core/skills/skill';
+import { Skill, TransformSkill } from 'core/skills/skill';
 import { GameCardExtensions, GameCharacterExtensions } from './game_props';
 import { CardLoader } from './package_loader/loader.cards';
 import { CharacterLoader } from './package_loader/loader.characters';
@@ -17,6 +17,7 @@ export class Sanguosha {
   private static cards: Card[];
   private static characters: Character[];
   private static version: string;
+  private static transformSkills: string[] = [];
   private static cardCategories: {
     [K: string]: CardType[];
   } = {} as any;
@@ -36,6 +37,9 @@ export class Sanguosha {
   public static initialize() {
     for (const skill of SkillLoader.getInstance().getAllSkills()) {
       Sanguosha.skills[skill.Name] = skill;
+      if (skill instanceof TransformSkill) {
+        this.transformSkills.push(skill.Name);
+      }
     }
 
     Sanguosha.cards = CardLoader.getInstance().getAllCards();
@@ -47,6 +51,10 @@ export class Sanguosha {
         this.cardCategories[card.Name] = card.Type;
       }
     }
+  }
+
+  public static isTransformCardSill(skillName: string) {
+    return this.transformSkills.includes(skillName);
   }
 
   public static getCardTypeByName(cardName: string) {

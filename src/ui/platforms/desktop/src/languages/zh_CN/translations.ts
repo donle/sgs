@@ -371,6 +371,7 @@ export const characterDictionary: Word[] = [
   { source: 'juejing', target: '绝境' },
   { source: 'longhun', target: '龙魂' },
   { source: '#longhun', target: '龙魂' },
+  { source: '##longhun', target: '龙魂' },
 
   { source: 'god_luxun', target: '神陆逊' },
   { source: 'junlve', target: '军略' },
@@ -596,13 +597,11 @@ export const skillDescriptions: Word[] = [
   { source: 'jiyuan_description', target: '当一名角色进入濒死状态或你交给一名其他角色牌时，你可以令其摸一张牌。' },
   {
     source: 'zhuhai_description',
-    target:
-      '其他角色的结束阶段开始时，若其于此回合造成过伤害，你可以对其使用一张无距离限制的【杀】。',
+    target: '其他角色的结束阶段开始时，若其于此回合造成过伤害，你可以对其使用一张无距离限制的【杀】。',
   },
   {
     source: 'qianxin_description',
-    target:
-      '<b>觉醒技</b>，当你造成伤害后，若你已受伤，你减1点体力上限并获得技能“荐言”。',
+    target: '<b>觉醒技</b>，当你造成伤害后，若你已受伤，你减1点体力上限并获得技能“荐言”。',
   },
   {
     source: 'jianyan_description',
@@ -1519,6 +1518,8 @@ export const eventDictionary: Word[] = [
   { source: 'xingshang:pickup', target: '获得阵亡角色的所有牌' },
   { source: 'zaiqi:draw', target: '摸一张牌' },
   { source: 'zaiqi:recover', target: '令孟获回复1点体力' },
+  { source: 'jianyan:red', target: '红色牌' },
+  { source: 'jianyan:black', target: '黑色牌' },
   { source: 'please choose the amount of hp to lose', target: '请选择要失去的体力值' },
   { source: 'please choose your zhiheng cards', target: '请选择要制衡的牌' },
   {

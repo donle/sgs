@@ -1,9 +1,9 @@
-import { VirtualCard } from 'core/cards/card';
+import { Card, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AllStage, DamageEffectStage, RecoverEffectStage } from 'core/game/stage_processor';
+import { AllStage, CardUseStage, DamageEffectStage, RecoverEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -42,8 +42,9 @@ export class LongHun extends ViewAsSkill {
 
   public canUse(room: Room, owner: Player) {
     return (
-      owner.canUseCard(room, new CardMatcher({ name: ['slash'] })) ||
-      owner.canUseCard(room, new CardMatcher({ name: ['peach'] }))
+      owner.getPlayerCards().length > 0 &&
+      (owner.canUseCard(room, new CardMatcher({ name: ['slash'] })) ||
+        owner.canUseCard(room, new CardMatcher({ name: ['peach'] })))
     );
   }
 
@@ -155,14 +156,24 @@ export class LongHunEffect extends TriggerSkill {
         return false;
       }
       const card = Sanguosha.getCardById<VirtualCard>(event.cardIds[0]);
-      return card.isVirtualCard() && card.GeneratedBySkill === LongHun.Name && card.ActualCardIds.length === 2;
+      return (
+        card.isVirtualCard() &&
+        card.GeneratedBySkill === LongHun.Name &&
+        card.ActualCardIds.length === 2 &&
+        card.isRed()
+      );
     } else {
       const event = content as ServerEventFinder<GameEventIdentifiers.RecoverEvent>;
       if (event.recoverBy !== owner.Id || event.cardIds === undefined) {
         return false;
       }
       const card = Sanguosha.getCardById<VirtualCard>(event.cardIds[0]);
-      return card.isVirtualCard() && card.GeneratedBySkill === LongHun.Name && card.ActualCardIds.length === 2;
+      return (
+        card.isVirtualCard() &&
+        card.GeneratedBySkill === LongHun.Name &&
+        card.ActualCardIds.length === 2 &&
+        card.isRed()
+      );
     }
   }
 
@@ -178,6 +189,68 @@ export class LongHunEffect extends TriggerSkill {
       event.recoveredHp++;
     }
 
+    return true;
+  }
+}
+
+@ShadowSkill
+@CommonSkill({ name: LongHunEffect.Name, description: LongHunEffect.Description })
+export class LongHunBlackEffect extends TriggerSkill {
+  isTriggerable(content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage?: AllStage) {
+    return stage === CardUseStage.CardUsing;
+  }
+
+  public async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
+    event.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} activated skill {1}',
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
+      this.Name,
+    ).extract();
+    return true;
+  }
+
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): boolean {
+    if (!Card.isVirtualCardId(content.cardId) || room.CurrentPlayer.getPlayerCards().length === 0) {
+      return false;
+    }
+    const card = Sanguosha.getCardById<VirtualCard>(content.cardId);
+    return (
+      card.isVirtualCard() &&
+      card.GeneratedBySkill === LongHun.Name &&
+      card.ActualCardIds.length === 2 &&
+      card.isBlack()
+    );
+  }
+
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
+    const askForDropCard: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent> = {
+      fromId: event.fromId,
+      toId: room.CurrentPlayer.Id,
+      options: {
+        [PlayerCardsArea.HandArea]: room.CurrentPlayer.getCardIds(PlayerCardsArea.HandArea).length,
+        [PlayerCardsArea.EquipArea]: room.CurrentPlayer.getCardIds(PlayerCardsArea.EquipArea),
+      },
+    };
+    room.notify(
+      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(askForDropCard),
+      event.fromId,
+    );
+
+    const { selectedCard } = await room.onReceivingAsyncResponseFrom(
+      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
+      event.fromId,
+    );
+
+    let cardId: CardId | undefined;
+    if (selectedCard === undefined) {
+      const cardIds = room.CurrentPlayer.getCardIds(PlayerCardsArea.HandArea);
+      cardId = cardIds[Math.floor(Math.random() * cardIds.length)];
+    } else {
+      cardId = selectedCard;
+    }
+
+    await room.dropCards(CardMoveReason.PassiveDrop, [cardId], room.CurrentPlayer.Id, event.fromId, this.GeneralName);
     return true;
   }
 }

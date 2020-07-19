@@ -795,9 +795,10 @@ export class GameClientProcessor {
     const to = toId && this.store.room.getPlayerById(toId);
     const from = fromId ? this.store.room.getPlayerById(fromId) : undefined;
 
-    for (const { card, fromArea } of movingCards) {
+    for (const { card, fromArea, asideMove } of movingCards) {
       if (
         from &&
+        !asideMove &&
         ![CardMoveArea.DrawStack, CardMoveArea.DropStack, CardMoveArea.ProcessingArea].includes(
           fromArea as CardMoveArea,
         )
@@ -806,7 +807,13 @@ export class GameClientProcessor {
       }
     }
 
-    const cardIds = movingCards.map(cardInfo => cardInfo.card);
+    const cardIds = movingCards.reduce<CardId[]>((cards, cardInfo) => {
+      if (!cardInfo.asideMove) {
+        cards.push(cardInfo.card);
+      }
+      return cards;
+    }, []);
+
     if (
       to &&
       ![CardMoveArea.DrawStack, CardMoveArea.DropStack, CardMoveArea.ProcessingArea].includes(toArea as CardMoveArea)
