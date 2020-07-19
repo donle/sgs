@@ -1091,7 +1091,7 @@ export class GameProcessor {
         }, []),
       ];
       await this.room.moveCards({
-        moveReason: CardMoveReason.PlaceToDropStack,
+        moveReason: CardMoveReason.SelfDrop,
         fromId: playerId,
         movingCards: allCards.map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
         toArea: CardMoveArea.DropStack,

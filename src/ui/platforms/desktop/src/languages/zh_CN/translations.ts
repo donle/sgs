@@ -1377,6 +1377,10 @@ export const eventDictionary: Word[] = [
     target: '直谏：你可以发动【直谏】摸一张牌',
   },
   {
+    source: 'guzheng: do you wanna obtain the rest of cards?',
+    target: '固政：是否获得剩余的牌？'
+  },
+  {
     source: 'wuhun:Please choose a target to die with you',
     target: '请选择一名角色进行【武魂】的判定，若结果不为【桃】或【桃园结义】，其立即死亡',
   },

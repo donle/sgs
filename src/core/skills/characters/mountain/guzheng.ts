@@ -45,8 +45,7 @@ export class GuZheng extends TriggerSkill {
         return EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
           (
             event.moveReason === CardMoveReason.SelfDrop ||
-            event.moveReason === CardMoveReason.PassiveDrop ||
-            event.moveReason === CardMoveReason.PlaceToDropStack
+            event.moveReason === CardMoveReason.PassiveDrop
           )
         ;
       },
@@ -136,7 +135,6 @@ export class GuZheng extends TriggerSkill {
 
     room.broadcast(GameEventIdentifiers.ObserveCardsEvent, chooseGuZhengCardEvent);
     room.endProcessOnTag(displayCardIds.toString());
-    room.broadcast(GameEventIdentifiers.ObserveCardFinishEvent, {});
 
     await room.moveCards({
       movingCards: [{ card: response.selectedCard, fromArea: CardMoveArea.DropStack }],
@@ -152,17 +150,34 @@ export class GuZheng extends TriggerSkill {
     );
 
     if (obtainCards.length > 0) {
-      await room.moveCards({
-        movingCards: obtainCards.map(
-          card => {
-            return { card, fromArea: CardMoveArea.DropStack };
-        }),
+      const askForChoice: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
         toId: fromId,
-        toArea: CardMoveArea.HandArea,
-        moveReason: CardMoveReason.ActiveMove,
-        proposer: fromId,
-        movedByReason: this.Name,
-      });
+        options: ['yes', 'no'],
+        conversation: 'guzheng: do you wanna obtain the rest of cards?',
+      }
+
+      room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChoice, fromId);
+
+      const { selectedOption } = await room.onReceivingAsyncResponseFrom(
+        GameEventIdentifiers.AskForChoosingOptionsEvent,
+        fromId,
+      );
+
+      room.broadcast(GameEventIdentifiers.ObserveCardFinishEvent, {});
+
+      if (selectedOption === 'yes') {
+        await room.moveCards({
+          movingCards: obtainCards.map(
+            card => {
+              return { card, fromArea: CardMoveArea.DropStack };
+          }),
+          toId: fromId,
+          toArea: CardMoveArea.HandArea,
+          moveReason: CardMoveReason.ActiveMove,
+          proposer: fromId,
+          movedByReason: this.Name,
+        });
+      }
     }
 
     return true;

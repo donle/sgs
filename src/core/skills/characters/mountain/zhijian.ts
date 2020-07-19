@@ -4,7 +4,7 @@ import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder }
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardUseStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerId } from 'core/player/player_props';
+import { PlayerId, PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
@@ -33,7 +33,10 @@ export class ZhiJian extends ActiveSkill {
     selectedTargets: PlayerId[],
     containerCard?: CardId
   ) {
-    return Sanguosha.getCardById(cardId).is(CardType.Equip);
+    return (
+      Sanguosha.getCardById(cardId).is(CardType.Equip) &&
+      room.getPlayerById(owner).cardFrom(cardId) === PlayerCardsArea.HandArea
+    );
   }
 
   numberOfTargets() {
