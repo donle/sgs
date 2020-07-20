@@ -178,6 +178,8 @@ export class GuZheng extends TriggerSkill {
           movedByReason: this.Name,
         });
       }
+    } else {
+      room.broadcast(GameEventIdentifiers.ObserveCardFinishEvent, {});
     }
 
     return true;
