@@ -1,13 +1,10 @@
 import { GameCharacterExtensions, GameInfo } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
-import { HostConfigProps } from 'core/shares/types/host_config';
 
 export const enum LobbySocketEvent {
   QueryRoomList,
   GameCreated,
-  SocketConfig,
-
   QueryVersion,
   VersionMismatch,
 }
@@ -60,7 +57,6 @@ interface LobbyEventList extends LobbyEventUtilities {
     roomId: RoomId;
   };
   [LobbySocketEvent.QueryRoomList]: RoomInfo[];
-  [LobbySocketEvent.SocketConfig]: HostConfigProps;
   [LobbySocketEvent.QueryVersion]: {
     version: string;
   };

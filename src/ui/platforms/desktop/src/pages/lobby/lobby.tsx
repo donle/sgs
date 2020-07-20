@@ -7,13 +7,13 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import SocketIOClient from 'socket.io-client';
-import { PagePropsWithHostConfig } from 'types/page_props';
+import { PagePropsWithConfig } from 'types/page_props';
 import { Button } from 'ui/button/button';
 import styles from './lobby.module.css';
 import { CreatRoomDialog, TemporaryRoomCreationInfo } from './ui/create_room_dialog/create_room_dialog';
 import { UsernameData, UsernameDialog } from './ui/username_dialog/username_dialog';
 
-type LobbyProps = PagePropsWithHostConfig<{
+type LobbyProps = PagePropsWithConfig<{
   translator: ClientTranslationModule;
 }>;
 
@@ -29,7 +29,7 @@ export class Lobby extends React.Component<LobbyProps> {
   private openRoomCreationDialog = false;
 
   private socket = SocketIOClient(
-    `${this.props.config.protocol}://${this.props.config.host}:${this.props.config.port}/lobby`,
+    `${this.props.config.host.protocol}://${this.props.config.host.host}:${this.props.config.host.port}/lobby`,
   );
 
   private username: string | null;

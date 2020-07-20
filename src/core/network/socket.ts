@@ -1,6 +1,5 @@
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder, WorkPlace } from 'core/event/event';
 import { PlayerId } from 'core/player/player_props';
-import { HostConfigProps } from 'core/shares/types/host_config';
 
 export type WebSocketWithId<T> = T & {
   id: string;
@@ -15,7 +14,7 @@ export interface WebSocketMessageEvent {
 export abstract class Socket<T extends WorkPlace> {
   protected abstract roomId: string;
 
-  constructor(protected eventMode: T, protected hostConfig: HostConfigProps) {}
+  constructor(protected eventMode: T) {}
 
   public abstract async waitForResponse<I extends GameEventIdentifiers>(
     identifier: I,

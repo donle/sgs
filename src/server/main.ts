@@ -6,7 +6,7 @@ import { StageProcessor } from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
-import { Flavor, hostConfig, HostConfigProps } from 'core/shares/types/host_config';
+import { Flavor } from 'core/shares/types/host_config';
 import { LobbySocketEvent } from 'core/shares/types/server_types';
 import { Languages } from 'core/translations/translation_json_tool';
 import { TranslationModule } from 'core/translations/translation_module';
@@ -15,17 +15,17 @@ import * as https from 'https';
 import * as os from 'os';
 import * as SocketIO from 'socket.io';
 import { SimplifiedChinese } from './languages';
-import { serverConfig, ServerConfig } from './server_config';
+import { getServerConfig, ServerConfig } from './server_config';
 
 class App {
   private server: http.Server | https.Server;
   private rooms: ServerRoom[] = [];
   private roomsPathList: string[] = [];
-  private config: HostConfigProps;
+  private config: ServerConfig;
   private translator: TranslationModule;
   private lobbySocket: SocketIO.Server;
   constructor(mode: Flavor, private logger: Logger) {
-    this.config = hostConfig[mode];
+    this.config = getServerConfig(mode);
     this.server = http.createServer();
     this.lobbySocket = SocketIO.listen(this.server, {
       origins: '*:*',
@@ -54,10 +54,8 @@ class App {
     this.logger.info('-----', 'Sanguosha Server Launched', '-----');
     this.logger.info(
       '-----',
-      'Server Address',
-      `${this.config.protocol}://${
-        this.config.mode === Flavor.Dev ? this.getLocalExternalIP() : await this.getPublicExternalIp()
-      }:${this.config.port}`,
+      'Server listening at port ',
+      `${this.config.port}`,
       '-----',
     );
     this.logger.info('-----', 'Core Version', Sanguosha.Version, '-----');
@@ -69,8 +67,8 @@ class App {
     this.logger.Translator = this.translator;
   }
 
-  public start(config: ServerConfig) {
-    this.loadLanguages(config.language);
+  public start() {
+    this.loadLanguages(this.config.language);
 
     Sanguosha.initialize();
     this.log();
@@ -78,7 +76,6 @@ class App {
     this.lobbySocket.of('/lobby').on('connect', socket => {
       socket
         .on(LobbySocketEvent.GameCreated.toString(), this.onGameCreated(socket))
-        .on(LobbySocketEvent.SocketConfig.toString(), this.onQuerySocketConfig(socket))
         .on(LobbySocketEvent.QueryRoomList.toString(), this.onQueryRoomsInfo(socket))
         .on(LobbySocketEvent.QueryVersion.toString(), this.matchCoreVersion(socket));
     });
@@ -90,7 +87,7 @@ class App {
 
   private readonly onGameCreated = (socket: SocketIO.Socket) => (content: GameInfo) => {
     const roomId = Date.now();
-    const roomSocket = new ServerSocket(this.config, this.lobbySocket.of(`/room-${roomId}`), roomId, this.logger);
+    const roomSocket = new ServerSocket(this.lobbySocket.of(`/room-${roomId}`), roomId, this.logger);
     const room = new ServerRoom(
       roomId,
       content,
@@ -114,10 +111,6 @@ class App {
     });
   };
 
-  private readonly onQuerySocketConfig = (socket: SocketIO.Socket) => () => {
-    socket.emit(LobbySocketEvent.SocketConfig.toString(), this.config);
-  };
-
   private readonly onQueryRoomsInfo = (socket: SocketIO.Socket) => () => {
     const roomsInfo = this.rooms.map(room => room.getRoomInfo());
     socket.emit(LobbySocketEvent.QueryRoomList.toString(), roomsInfo);
@@ -126,4 +119,4 @@ class App {
 
 const mode = (process.env.DEV_MODE as Flavor) || Flavor.Dev;
 
-new App(mode, new Logger(mode)).start(serverConfig);
+new App(mode, new Logger(mode)).start();
