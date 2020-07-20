@@ -1,10 +1,11 @@
-import { CardId, CardSuit } from 'core/cards/libs/card_props';
+import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { JudgeMatcher, JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -61,11 +62,10 @@ export class BingLiangCunDuanSkill extends ActiveSkill {
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const { toIds, cardId } = event;
     const to = Precondition.exists(toIds, 'Unknown targets in bingliangcunduan')[0];
-
-    const judgeEvent = await room.judge(to, cardId, this.Name);
-
+    const judgeEvent = await room.judge(to, cardId, this.Name, JudgeMatcherEnum.BingLiangCunDuan);
     const card = Sanguosha.getCardById(judgeEvent.judgeCardId);
-    if (card.Suit !== CardSuit.Club) {
+
+    if (JudgeMatcher.onJudge(judgeEvent.judgeMatcherEnum!, card)) {
       room.broadcast(GameEventIdentifiers.CustomGameDialog, {
         translationsMessage: TranslationPack.translationJsonPatcher(
           '{0} skipped draw stage',

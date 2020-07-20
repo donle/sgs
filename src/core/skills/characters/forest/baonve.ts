@@ -1,10 +1,10 @@
-import { CardSuit } from 'core/cards/libs/card_props';
 import { CharacterNationality } from 'core/characters/character';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
+import { JudgeMatcher, JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, LordSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -26,10 +26,7 @@ export class BaoNve extends TriggerSkill {
       return false;
     }
 
-    return (
-      owner.Id !== fromId &&
-      room.getPlayerById(fromId).Nationality === CharacterNationality.Qun
-    );
+    return owner.Id !== fromId && room.getPlayerById(fromId).Nationality === CharacterNationality.Qun;
   }
 
   public async onTrigger(room: Room, content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
@@ -52,14 +49,14 @@ export class BaoNve extends TriggerSkill {
       conversation: TranslationPack.translationJsonPatcher(
         '{0}: do you want {1} to start a judge?',
         this.Name,
-        TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId))
+        TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
       ).extract(),
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForInvokeSkill, fromId);
     const { selectedOption } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingOptionsEvent,
-      fromId
+      fromId,
     );
 
     if (selectedOption === 'yes') {
@@ -71,9 +68,9 @@ export class BaoNve extends TriggerSkill {
         ).extract(),
       });
 
-      const judge = await room.judge(event.fromId, undefined, this.Name);
+      const judge = await room.judge(event.fromId, undefined, this.Name, JudgeMatcherEnum.BaoNve);
 
-      if (Sanguosha.getCardById(judge.judgeCardId).Suit === CardSuit.Spade) {
+      if (JudgeMatcher.onJudge(judge.judgeMatcherEnum!, Sanguosha.getCardById(judge.judgeCardId))) {
         room.recover({
           toId: event.fromId,
           recoveredHp: 1,

@@ -4,6 +4,7 @@ import { CharacterGender, CharacterId, CharacterNationality } from 'core/charact
 import { DamageType, GameCommonRuleObject, GameInfo, GameRunningInfo } from 'core/game/game_props';
 import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
+import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
 import {
@@ -159,6 +160,8 @@ export interface ServerEvent extends EventUtilities {
     bySkill?: string;
     byCard?: CardId;
     judgeCardId: CardId;
+    realJudgeCardId: CardId;
+    judgeMatcherEnum?: JudgeMatcherEnum;
   };
   [GameEventIdentifiers.PinDianEvent]: {
     attackerId: PlayerId;

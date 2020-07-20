@@ -33,6 +33,7 @@ import { CharacterLoader } from 'core/game/package_loader/loader.characters';
 import { RecordAnalytics } from 'core/game/record_analytics';
 import { Algorithm } from 'core/shares/libs/algorithm';
 import { Functional } from 'core/shares/libs/functional';
+import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Flavor } from 'core/shares/types/host_config';
 import { OnDefineReleaseTiming, Skill, SkillHooks, SkillType, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
@@ -1100,13 +1101,16 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     to: PlayerId,
     byCard?: CardId,
     bySkill?: string,
+    judgeMatcherEnum?: JudgeMatcherEnum,
   ): Promise<ServerEventFinder<GameEventIdentifiers.JudgeEvent>> {
     const judgeCardId = this.getCards(1, 'top')[0];
     const event: ServerEventFinder<GameEventIdentifiers.JudgeEvent> = {
       toId: to,
       judgeCardId,
+      realJudgeCardId: judgeCardId,
       byCard,
       bySkill,
+      judgeMatcherEnum,
     };
 
     await this.gameProcessor.onHandleIncomingEvent(

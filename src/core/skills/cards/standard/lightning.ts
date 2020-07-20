@@ -1,10 +1,11 @@
-import { CardId, CardSuit } from 'core/cards/libs/card_props';
+import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { JudgeMatcher } from 'core/shares/libs/judge_matchers';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, SelfTargetSkill } from 'core/skills/skill';
 
@@ -95,7 +96,7 @@ export class LightningSkill extends ActiveSkill {
     );
 
     const card = Sanguosha.getCardById(judgeEvent.judgeCardId);
-    if (card.Suit === CardSuit.Spade && card.CardNumber >= 2 && card.CardNumber <= 9) {
+    if (JudgeMatcher.onJudge(judgeEvent.judgeMatcherEnum!, card)) {
       const damageEvent: ServerEventFinder<GameEventIdentifiers.DamageEvent> = {
         damageType: DamageType.Thunder,
         damage: 3,

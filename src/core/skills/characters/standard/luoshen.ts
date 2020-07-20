@@ -12,6 +12,7 @@ import {
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { JudgeMatcher, JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { CommonSkill, CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'luoshen', description: 'luoshen_description' })
@@ -63,8 +64,8 @@ export class LuoShen extends TriggerSkill {
     const identifier = triggeredOnEvent && EventPacker.getIdentifier(triggeredOnEvent);
     if (identifier === GameEventIdentifiers.PhaseStageChangeEvent) {
       do {
-        const judge = await room.judge(skillUseEvent.fromId, undefined, this.Name);
-        if (Sanguosha.getCardById(judge.judgeCardId).isBlack()) {
+        const judge = await room.judge(skillUseEvent.fromId, undefined, this.Name, JudgeMatcherEnum.LuoShen);
+        if (JudgeMatcher.onJudge(JudgeMatcherEnum.LuoShen, Sanguosha.getCardById(judge.judgeCardId))) {
           room.notify(
             GameEventIdentifiers.AskForSkillUseEvent,
             {

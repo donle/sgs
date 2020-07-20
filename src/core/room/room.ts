@@ -19,6 +19,7 @@ import { AllStage, GameEventStage, PlayerPhase, PlayerPhaseStages } from 'core/g
 import { Socket } from 'core/network/socket';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
+import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { FilterSkill, RulesBreakerSkill, TransformSkill } from 'core/skills/skill';
@@ -104,6 +105,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     to: PlayerId,
     byCard?: CardId,
     bySkill?: string,
+    judgeMatcherEnum?: JudgeMatcherEnum,
   ): Promise<ServerEventFinder<GameEventIdentifiers.JudgeEvent>>;
   //Server only
   public abstract async responseCard(event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>): Promise<void>;

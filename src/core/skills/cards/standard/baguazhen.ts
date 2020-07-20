@@ -5,6 +5,7 @@ import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
+import { JudgeMatcher, JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'baguazhen', description: 'baguazhen_description' })
@@ -54,9 +55,9 @@ export class BaGuaZhenSkill extends TriggerSkill {
     const jinkCardEvent = triggeredOnEvent as ServerEventFinder<
       GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent
     >;
-    const judgeEvent = await room.judge(event.fromId, undefined, this.Name);
+    const judgeEvent = await room.judge(event.fromId, undefined, this.Name, JudgeMatcherEnum.BaGuaZhen);
 
-    if (Sanguosha.getCardById(judgeEvent.judgeCardId).isRed()) {
+    if (JudgeMatcher.onJudge(judgeEvent.judgeMatcherEnum!, Sanguosha.getCardById(judgeEvent.judgeCardId))) {
       const jink = VirtualCard.create<Jink>({
         cardName: 'jink',
         bySkill: this.Name,

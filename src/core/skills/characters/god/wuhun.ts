@@ -3,6 +3,7 @@ import { Sanguosha } from 'core/game/engine';
 import { AllStage, DamageEffectStage, PlayerDiedStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
+import { JudgeMatcher, JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
@@ -107,9 +108,9 @@ export class WuHunDied extends TriggerSkill implements OnDefineReleaseTiming {
       return false;
     }
 
-    const judge = await room.judge(sacrificer.Id, undefined, this.GeneralName);
+    const judge = await room.judge(sacrificer.Id, undefined, this.GeneralName, JudgeMatcherEnum.WuHun);
     const judgeCard = Sanguosha.getCardById(judge.judgeCardId);
-    if (judgeCard.GeneralName !== 'peach' && judgeCard.GeneralName !== 'taoyuanjieyi') {
+    if (JudgeMatcher.onJudge(judge.judgeMatcherEnum!, judgeCard)) {
       room.broadcast(GameEventIdentifiers.CustomGameDialog, {
         translationsMessage: TranslationPack.translationJsonPatcher(
           '{0} use skill {1}, bring {2} to hell',
