@@ -13,7 +13,7 @@ $ git clone git@github.com:donle/sgs.git <working_directory>
 ```sh
 $ cd <working_directory>
 # cnpm is recommended if you're in China.
-$ npm install 
+$ npm install
 $ cd src/server
 $ npm install
 $ cd ../ui/platforms/desktop
@@ -31,3 +31,9 @@ $ cd ./ui/platforms/desktop
 $ npm run start:mac #start:win if you're using Windows.
 ```
 
+## Configuration
+
+You may configure how the clients and server execute and communicate.
+
+edit `src/server/server_config.ts` to configure the server
+edit `src/ui/platforms/desktop/src/client.config.ts` to configure the web client

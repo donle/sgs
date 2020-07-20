@@ -1,4 +1,4 @@
-import { getClientConfg } from 'client.config';
+import { getClientConfig } from 'client.config';
 import { Sanguosha } from 'core/game/engine';
 import { Flavor } from 'core/shares/types/host_config';
 import { Languages } from 'core/translations/translation_json_tool';
@@ -14,7 +14,7 @@ import './index.css';
 import * as serviceWorker from './serviceWorker';
 
 const mode = (process.env.DEV_MODE as Flavor) || Flavor.Dev;
-const config = getClientConfg(mode);
+const config = getClientConfig(mode);
 
 const translator = ClientTranslationModule.setup(config.ui.language, [Languages.ZH_CN, SimplifiedChinese]);
 emojiLoader(translator);
@@ -25,10 +25,7 @@ if (config.flavor === ClientFlavor.Prod) {
 
 const header = document.getElementsByTagName('head')[0];
 const baseDirElement = document.createElement('base');
-baseDirElement.setAttribute(
-  'href',
-  `${config.host.protocol}://${config.host.host}${config.flavor === ClientFlavor.Dev ? ':3000' : ''}/`,
-);
+baseDirElement.setAttribute('href', '/');
 header.append(baseDirElement);
 
 Sanguosha.initialize();

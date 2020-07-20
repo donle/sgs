@@ -6,7 +6,7 @@ import { getImageLoader } from 'image_loader/image_loader_util';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { match } from 'react-router-dom';
-import { PagePropsWithHostConfig } from 'types/page_props';
+import { PagePropsWithConfig } from 'types/page_props';
 import { ClientCard } from 'ui/card/card';
 import { GameClientProcessor } from './game_processor';
 import { installService, RoomBaseService } from './install_service';
@@ -21,7 +21,7 @@ import { SeatsLayout } from './ui/seats_layout/seats_layout';
 
 @mobxReact.observer
 export class RoomPage extends React.Component<
-  PagePropsWithHostConfig<{
+  PagePropsWithConfig<{
     match: match<{ slug: string }>;
     translator: ClientTranslationModule;
   }>
@@ -33,7 +33,7 @@ export class RoomPage extends React.Component<
   private roomId: number;
   private playerName = window.localStorage.getItem('username') || 'unknown';
   private baseService: RoomBaseService;
-  private imageLoader = getImageLoader(this.props.flavor);
+  private imageLoader = getImageLoader(this.props.config.flavor);
 
   private displayedCardsRef = React.createRef<HTMLDivElement>();
   private readonly cardWidth = 120;
@@ -41,14 +41,20 @@ export class RoomPage extends React.Component<
 
   constructor(props: any) {
     super(props);
+    const { config, match, translator } = this.props;
 
-    this.roomId = parseInt(this.props.match.params.slug, 10);
+    this.roomId = parseInt(match.params.slug, 10);
     this.presenter = new RoomPresenter(this.imageLoader);
     this.store = this.presenter.createStore();
-    this.socket = new ClientSocket(this.props.config, this.roomId);
-    this.baseService = installService(this.props.translator, this.store, this.imageLoader);
 
-    this.gameProcessor = new GameClientProcessor(this.presenter, this.store, this.props.translator, this.imageLoader);
+    const roomId = this.roomId.toString();
+    this.socket = new ClientSocket(
+      `${config.host.protocol}://${config.host.host}:${config.host.port}/room-${roomId}`,
+      roomId,
+    );
+    this.baseService = installService(translator, this.store, this.imageLoader);
+
+    this.gameProcessor = new GameClientProcessor(this.presenter, this.store, translator, this.imageLoader);
   }
 
   componentDidMount() {

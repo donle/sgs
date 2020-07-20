@@ -13,7 +13,6 @@ import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { HostConfigProps } from 'core/shares/types/host_config';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import IOSocketServer from 'socket.io';
 
@@ -29,8 +28,8 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     };
   } = {} as any;
 
-  constructor(config: HostConfigProps, socket: IOSocketServer.Namespace, roomId: RoomId, private logger: Logger) {
-    super(WorkPlace.Server, config);
+  constructor(socket: IOSocketServer.Namespace, roomId: RoomId, private logger: Logger) {
+    super(WorkPlace.Server);
     this.roomId = roomId.toString();
 
     this.socket = socket;

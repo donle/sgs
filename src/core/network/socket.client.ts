@@ -1,18 +1,13 @@
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder, WorkPlace } from 'core/event/event';
 import { Socket } from 'core/network/socket';
-import { HostConfigProps } from 'core/shares/types/host_config';
 import IOSocketClient, { Manager } from 'socket.io-client';
 
 export class ClientSocket extends Socket<WorkPlace.Client> {
-  protected roomId: string;
   private socketIO: SocketIOClient.Socket;
   private manager: SocketIOClient.Manager;
 
-  constructor(config: HostConfigProps, roomId: number) {
-    super(WorkPlace.Client, config);
-
-    this.roomId = roomId.toString();
-    const endpoint = `${config.protocol}://${config.host}:${config.port}/room-${roomId}`;
+  constructor(endpoint: string, protected roomId: string) {
+    super(WorkPlace.Client);
     this.socketIO = IOSocketClient(endpoint);
     this.manager = new Manager(endpoint, {
       reconnection: true,

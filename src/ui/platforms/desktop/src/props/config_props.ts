@@ -1,4 +1,4 @@
-import { HostConfigProps } from 'core/shares/types/host_config';
+import { Flavor } from 'core/shares/types/host_config';
 import { Languages } from 'core/translations/translation_json_tool';
 
 export type UiConfigTypes = {
@@ -10,8 +10,15 @@ export const enum ClientFlavor {
   Prod,
 }
 
-export type ClientConfigTypes = {
+export type ServiceConfig = {
+  mode: Flavor;
+  port: number;
+  host: string;
+  protocol: 'http' | 'https';
+};
+
+export type ClientConfig = {
   ui: UiConfigTypes;
-  host: HostConfigProps;
+  host: ServiceConfig;
   flavor: ClientFlavor;
 };
