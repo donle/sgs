@@ -1408,6 +1408,14 @@ export const eventDictionary: Word[] = [
     target: '请选择：1.弃置一张牌，本回合【杀】无距离限制且使用次数+1 2.额外摸一张牌，本回合不可使用或打出【杀】',
   },
   {
+    source: 'zhijian: do you wanna use draw 1 card',
+    target: '直谏：你可以发动【直谏】摸一张牌',
+  },
+  {
+    source: 'guzheng: do you wanna obtain the rest of cards?',
+    target: '固政：是否获得剩余的牌？'
+  },
+  {
     source: 'wuhun:Please choose a target to die with you',
     target: '请选择一名角色进行【武魂】的判定，若结果不为【桃】或【桃园结义】，其立即死亡',
   },
