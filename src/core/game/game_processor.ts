@@ -1083,8 +1083,16 @@ export class GameProcessor {
 
     if (!isGameOver) {
       const { killedBy, playerId } = event;
+      await this.room.moveCards({
+        moveReason: CardMoveReason.SelfDrop,
+        fromId: playerId,
+        movingCards: deadPlayer.getPlayerCards()
+          .map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
+        toArea: CardMoveArea.DropStack,
+      });
+
       const allCards = [
-        ...deadPlayer.getCardIds(),
+        ...deadPlayer.getCardIds(PlayerCardsArea.JudgeArea),
         ...Object.values(deadPlayer.getOutsideAreaCards).reduce<CardId[]>((allCards, cards) => {
           return [...allCards, ...cards];
         }, []),
@@ -1095,6 +1103,7 @@ export class GameProcessor {
         movingCards: allCards.map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
         toArea: CardMoveArea.DropStack,
       });
+
       if (this.room.CurrentPlayer.Id === playerId) {
         await this.room.skip(playerId);
       }
