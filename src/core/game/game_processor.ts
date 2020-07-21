@@ -209,16 +209,15 @@ export class GameProcessor {
     const askForChooseNationalities = players.map(player => this.askForChoosingNationalities(player));
     this.room.doNotify(notifyOtherPlayer);
     await Promise.all(askForChooseNationalities);
-    // this.room.broadcast(GameEventIdentifiers.PlayerPropertiesChangeEvent, {
-    //   messages: players.map(player =>
-    //     TranslationPack.translationJsonPatcher(
-    //       '{0} select nationaliy {1}',
-    //       TranslationPack.patchPlayerInTranslation(player),
-    //       Functional.getPlayerNationalityText(player.Nationality),
-    //     ).toString(),
-    //   ),
-    //   changedProperties: players.map(player => ({ toId: player.Id, nationality: player.Nationality })),
-    // });
+    this.room.broadcast(GameEventIdentifiers.CustomGameDialog, {
+      messages: players.map(player =>
+        TranslationPack.translationJsonPatcher(
+          '{0} select nationaliy {1}',
+          TranslationPack.patchPlayerInTranslation(player),
+          Functional.getPlayerNationalityText(player.Nationality),
+        ).toString(),
+      ),
+    });
     for (const playerInfo of playersInfo) {
       const changedNationalityPlayer = players.find(player => player.Id === playerInfo.Id);
       if (changedNationalityPlayer) {
