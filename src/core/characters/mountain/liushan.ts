@@ -9,8 +9,11 @@ export class LiuShan extends Character {
   constructor(id: number) {
     super(id, 'liushan', CharacterGender.Male, CharacterNationality.Shu, 3, 3, GameCharacterExtensions.Mountain, [
       skillLoaderInstance.getSkillByName('xiangle'),
+<<<<<<< HEAD
       ...skillLoaderInstance.getSkillsByName('fangquan'),
       skillLoaderInstance.getSkillByName('ruoyu'),
+=======
+>>>>>>> 2a28492... add Character Liushan & Skill Xiangle
     ]);
   }
 }
