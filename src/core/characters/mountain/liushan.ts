@@ -10,6 +10,7 @@ export class LiuShan extends Character {
     super(id, 'liushan', CharacterGender.Male, CharacterNationality.Shu, 3, 3, GameCharacterExtensions.Mountain, [
       skillLoaderInstance.getSkillByName('xiangle'),
       ...skillLoaderInstance.getSkillsByName('fangquan'),
+      skillLoaderInstance.getSkillByName('ruoyu'),
     ]);
   }
 }

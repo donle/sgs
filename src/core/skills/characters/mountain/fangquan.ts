@@ -1,6 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { AllStage, PhaseChangeStage, PlayerPhase, PlayerPhaseStages, PhaseStageChangeStage } from 'core/game/stage_processor';
+import { AllStage, PhaseChangeStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -30,7 +30,6 @@ export class FangQuan extends TriggerSkill {
     const phaseChangeEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
 
     room.endPhase(phaseChangeEvent.to);
-
     await room.skip(fromId, PlayerPhase.PlayCardStage);
 
     return true;

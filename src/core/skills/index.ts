@@ -158,6 +158,7 @@ export { JieZi } from './characters/forest/jiezi';
 
 export { XiangLe } from './characters/mountain/xiangle';
 export { FangQuan, FangQuanShadow } from './characters/mountain/fangquan';
+export { RuoYu } from './characters/mountain/ruoyu';
 export { JiAng } from './characters/mountain/jiang';
 export { HunZi } from './characters/mountain/hunzi';
 export { ZhiBa, ZhiBaPindianCard } from './characters/mountain/zhiba';
