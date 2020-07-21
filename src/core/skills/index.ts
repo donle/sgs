@@ -158,11 +158,15 @@ export { JieZi } from './characters/forest/jiezi';
 
 export { XiangLe } from './characters/mountain/xiangle';
 <<<<<<< HEAD
+<<<<<<< HEAD
 export { FangQuan, FangQuanShadow } from './characters/mountain/fangquan';
 export { RuoYu } from './characters/mountain/ruoyu';
 export { SiShu, SiShuShadow } from './characters/mountain/sishu';
 =======
 >>>>>>> 2a28492... add Character Liushan & Skill Xiangle
+=======
+export { FangQuan, FangQuanShadow } from './characters/mountain/fangquan';
+>>>>>>> c72500b... add Skill Fangquan to Liushan
 export { JiAng } from './characters/mountain/jiang';
 export { HunZi } from './characters/mountain/hunzi';
 export { ZhiBa, ZhiBaPindianCard } from './characters/mountain/zhiba';
