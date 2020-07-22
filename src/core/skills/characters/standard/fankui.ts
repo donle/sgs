@@ -14,7 +14,16 @@ export class FanKui extends TriggerSkill {
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
     const damageFrom = content.fromId !== undefined && room.getPlayerById(content.fromId);
-    return owner.Id === content.toId && damageFrom && damageFrom.getPlayerCards().length > 0 && !damageFrom.Dead;
+    return (
+      owner.Id === content.toId &&
+      damageFrom &&
+      !damageFrom.Dead &&
+      (
+        content.toId === content.fromId
+        ? damageFrom.getCardIds(PlayerCardsArea.EquipArea).length > 0
+        : damageFrom.getPlayerCards().length > 0
+      )
+    );
   }
 
   triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
@@ -32,8 +41,11 @@ export class FanKui extends TriggerSkill {
       const damageFrom = room.getPlayerById(fromId);
       const options: CardChoosingOptions = {
         [PlayerCardsArea.EquipArea]: damageFrom.getCardIds(PlayerCardsArea.EquipArea),
-        [PlayerCardsArea.HandArea]: damageFrom.getCardIds(PlayerCardsArea.HandArea).length,
       };
+
+      if (fromId !== skillUseEvent.fromId) {
+        options[PlayerCardsArea.HandArea] = damageFrom.getCardIds(PlayerCardsArea.HandArea).length;
+      }
 
       const chooseCardEvent = {
         fromId: skillUseEvent.fromId,
