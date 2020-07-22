@@ -101,6 +101,7 @@ export abstract class BaseAction {
   public readonly resetActionHandlers = () => {
     this.presenter.setupPlayersSelectionMatcher(() => false);
     this.presenter.setupClientPlayerCardActionsMatcher(() => false);
+    this.presenter.setupClientPlayerOutsideCardActionsMatcher(() => false);
     this.presenter.setupCardSkillSelectionMatcher(() => false);
   };
 
@@ -212,6 +213,7 @@ export abstract class BaseAction {
             this.selectedTargets,
             this.equipSkillCardId,
           ) &&
+          skill.availableCardAreas().includes(fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             player,
@@ -230,6 +232,7 @@ export abstract class BaseAction {
       } else if (skill instanceof ViewAsSkill) {
         return (
           skill.isAvailableCard(this.store.room, player, card.Id, this.pendingCards, this.equipSkillCardId) &&
+          skill.availableCardAreas().includes(fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             player,
@@ -277,6 +280,9 @@ export abstract class BaseAction {
         }
 
         return false;
+      } else if (fromArea === PlayerCardsArea.OutsideArea) {
+        //TODO: to adapt muniuliuma in the future here
+        return false;
       }
     } else {
       const playingCard = Sanguosha.getCardById(this.selectedCardToPlay);
@@ -304,6 +310,7 @@ export abstract class BaseAction {
             this.selectedTargets,
             card.Id,
           ) &&
+          skill.availableCardAreas().includes(fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.presenter.ClientPlayer!,
@@ -328,6 +335,7 @@ export abstract class BaseAction {
             this.pendingCards,
             this.equipSkillCardId,
           ) &&
+          skill.availableCardAreas().includes(fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.presenter.ClientPlayer!,
@@ -509,6 +517,12 @@ export abstract class BaseAction {
   public abstract async onPlay(...args: any): Promise<void>;
 
   protected onClickCard(card: Card, selected: boolean, matcher?: CardMatcher): void {
+    if (selected) {
+      this.presenter.selectCard(card);
+    } else {
+      this.presenter.unselectCard(card);
+    }
+
     if (this.selectedSkillToPlay !== undefined) {
       if (
         this.selectedSkillToPlay instanceof ViewAsSkill &&

@@ -23,13 +23,13 @@ export class JiXi extends ViewAsSkill {
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return cards.length === 1;
   }
-  
-  public isAvailableCard(
-    room: Room,
-    owner: Player,
-    pendingCardId: CardId,
-  ): boolean {
+
+  public isAvailableCard(room: Room, owner: Player, pendingCardId: CardId): boolean {
     return owner.getCardIds(PlayerCardsArea.OutsideArea, TunTian.Name).includes(pendingCardId);
+  }
+
+  public availableCardAreas() {
+    return [PlayerCardsArea.OutsideArea];
   }
 
   public viewAs(selectedCards: CardId[]) {

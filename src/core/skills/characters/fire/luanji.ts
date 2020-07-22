@@ -44,7 +44,11 @@ export class LuanJi extends ViewAsSkill {
       );
     }
 
-    return selectedCards.length < 2 && owner.cardFrom(pendingCardId) === PlayerCardsArea.HandArea;
+    return selectedCards.length < 2;
+  }
+
+  public availableCardAreas() {
+    return [PlayerCardsArea.HandArea];
   }
 
   public viewAs(selectedCards: CardId[]) {

@@ -303,6 +303,20 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
     return [...alivePlayers.slice(startsFromNext ? fromIndex + 1 : fromIndex), ...alivePlayers.slice(0, fromIndex)];
   }
+  
+  public getAllPlayersFrom(playerId?: PlayerId, startsFromNext: boolean = false) {
+    playerId = playerId === undefined ? this.CurrentPlayer.Id : playerId;
+    while (this.getPlayerById(playerId).Dead) {
+      playerId = this.getNextAlivePlayer(playerId).Id;
+    }
+
+    const players = this.Players;
+    const fromIndex = players.findIndex(player => player.Id === playerId);
+
+    Precondition.assert(fromIndex >= 0, `Player ${playerId} is dead or doesn't exist`);
+
+    return [...players.slice(startsFromNext ? fromIndex + 1 : fromIndex), ...players.slice(0, fromIndex)];
+  }
 
   public getOtherPlayers(playerId: PlayerId, from?: PlayerId) {
     return this.getAlivePlayersFrom(from).filter(player => player.Id !== playerId);

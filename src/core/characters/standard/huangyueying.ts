@@ -14,7 +14,7 @@ export class HuangYueYing extends Character {
       3,
       3,
       GameCharacterExtensions.Standard,
-      [...skillLoaderInstance.getSkillsByName('jizhi'), skillLoaderInstance.getSkillByName('qicai')],
+      [...skillLoaderInstance.getSkillsByName('jizhi'), ...skillLoaderInstance.getSkillsByName('qicai')],
     );
   }
 }

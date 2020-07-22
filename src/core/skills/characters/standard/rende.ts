@@ -29,7 +29,11 @@ export class Rende extends ActiveSkill {
   }
 
   isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
-    return room.getPlayerById(owner).cardFrom(cardId) === PlayerCardsArea.HandArea;
+    return true;
+  }
+
+  public availableCardAreas() {
+    return [PlayerCardsArea.HandArea];
   }
 
   async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {

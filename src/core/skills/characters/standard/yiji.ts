@@ -96,8 +96,12 @@ export class YiJiShadow extends TriggerSkill {
     selectedTargets: PlayerId[],
     containerCard?: CardId,
   ): boolean {
-    return room.getPlayerById(owner).cardFrom(cardId) === PlayerCardsArea.HandArea;
+    return true;
   }
+  public availableCardAreas() {
+    return [PlayerCardsArea.HandArea];
+  }
+
   public isAvailableTarget(
     owner: PlayerId,
     room: Room,

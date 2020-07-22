@@ -81,6 +81,7 @@ export class CardResponseAction extends BaseAction {
             this.equipSkillCardId,
             this.matcher,
           ) &&
+          skill.availableCardAreas().includes(fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.player,
@@ -175,6 +176,9 @@ export class CardResponseAction extends BaseAction {
       this.presenter.setupPlayersSelectionMatcher(() => false);
       this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
         this.isCardEnabledOnResponse(card, PlayerCardsArea.HandArea, new CardMatcher(this.askForEvent.cardMatcher)),
+      );
+      this.presenter.setupClientPlayerOutsideCardActionsMatcher((card: Card) =>
+        this.isCardEnabledOnResponse(card, PlayerCardsArea.OutsideArea, new CardMatcher(this.askForEvent.cardMatcher)),
       );
       this.presenter.setupCardSkillSelectionMatcher((card: Card) =>
         this.isCardEnabledOnResponse(card, PlayerCardsArea.EquipArea, new CardMatcher(this.askForEvent.cardMatcher)),

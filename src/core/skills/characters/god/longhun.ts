@@ -84,11 +84,12 @@ export class LongHun extends ViewAsSkill {
         return false;
       }
     } else {
-      return (
-        owner.cardFrom(pendingCardId) === PlayerCardsArea.HandArea &&
-        Sanguosha.getCardById(pendingCardId).Suit === Sanguosha.getCardById(selectedCards[0]).Suit
-      );
+      return Sanguosha.getCardById(pendingCardId).Suit === Sanguosha.getCardById(selectedCards[0]).Suit;
     }
+  }
+
+  public availableCardAreas() {
+    return [PlayerCardsArea.HandArea];
   }
 
   public viewAs(selectedCards: CardId[]): VirtualCard {
