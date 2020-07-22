@@ -34,7 +34,7 @@ export class LianYing extends TriggerSkill {
     containerCard?: CardId,
   ) {
     const numberOfTargets = room.getFlag<number>(owner, this.Name);
-    return selectedTargets.length <= numberOfTargets;
+    return selectedTargets.length < numberOfTargets;
   }
 
   async onTrigger() {
