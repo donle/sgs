@@ -25,15 +25,12 @@ export class LianHuan extends ViewAsSkill {
     return cards.length === 1;
   }
 
-  public isAvailableCard(
-    room: Room,
-    owner: Player,
-    pendingCardId: CardId
-  ): boolean {
-    return (
-      Sanguosha.getCardById(pendingCardId).Suit === CardSuit.Club &&
-      owner.cardFrom(pendingCardId) === PlayerCardsArea.HandArea
-    );
+  public isAvailableCard(room: Room, owner: Player, pendingCardId: CardId): boolean {
+    return Sanguosha.getCardById(pendingCardId).Suit === CardSuit.Club;
+  }
+
+  public availableCardAreas() {
+    return [PlayerCardsArea.HandArea];
   }
 
   public viewAs(selectedCards: CardId[]) {

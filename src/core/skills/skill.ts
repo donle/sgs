@@ -258,6 +258,10 @@ export abstract class TriggerSkill extends Skill {
   ): boolean {
     return false;
   }
+
+  public availableCardAreas() {
+    return [PlayerCardsArea.HandArea];
+  }
 }
 
 export abstract class ActiveSkill extends Skill {
@@ -324,6 +328,10 @@ export abstract class ActiveSkill extends Skill {
     containerCard?: CardId,
   ): boolean;
 
+  public availableCardAreas() {
+    return [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea];
+  }
+
   public isRefreshAt(phase: PlayerPhase) {
     return phase === PlayerPhase.PrepareStage;
   }
@@ -380,6 +388,10 @@ export abstract class ViewAsSkill extends Skill {
     containerCard?: CardId,
     cardMatcher?: CardMatcher,
   ): boolean;
+
+  public availableCardAreas(): PlayerCardsArea[] {
+    return [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea];
+  }
 
   public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     return true;

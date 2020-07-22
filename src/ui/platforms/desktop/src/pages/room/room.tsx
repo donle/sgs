@@ -200,6 +200,7 @@ export class RoomPage extends React.Component<
               translator={this.props.translator}
               imageLoader={this.imageLoader}
               cardEnableMatcher={this.store.clientPlayerCardActionsMatcher}
+              outsideCardEnableMatcher={this.store.clientPlayerOutsideCardActionsMatcher}
               onClickConfirmButton={this.store.confirmButtonAction}
               onClickCancelButton={this.store.cancelButtonAction}
               onClickFinishButton={this.store.finishButtonAction}

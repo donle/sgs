@@ -34,9 +34,12 @@ export class ZhiJian extends ActiveSkill {
     containerCard?: CardId
   ) {
     return (
-      Sanguosha.getCardById(cardId).is(CardType.Equip) &&
-      room.getPlayerById(owner).cardFrom(cardId) === PlayerCardsArea.HandArea
+      Sanguosha.getCardById(cardId).is(CardType.Equip)
     );
+  }
+
+  public availableCardAreas() {
+    return [PlayerCardsArea.HandArea];
   }
 
   numberOfTargets() {
