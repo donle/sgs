@@ -96,6 +96,8 @@ export class RoomStore {
   delightedPlayers: boolean | undefined = false;
   @mobx.observable.ref
   highlightedCards: boolean | undefined = true;
+  @mobx.observable.shallow
+  selectedCards: Card[] = [];
 
   @mobx.observable.ref
   incomingUserMessages: {
@@ -109,6 +111,8 @@ export class RoomStore {
 
   @mobx.observable.ref
   clientPlayerCardActionsMatcher: (card: Card) => boolean;
+  @mobx.observable.ref
+  clientPlayerOutsideCardActionsMatcher: (card: Card) => boolean;
   @mobx.observable.ref
   onClickHandCardToPlay: (card: Card, selected: boolean) => void;
   @mobx.observable.ref
@@ -277,6 +281,10 @@ export class RoomPresenter {
     this.store.clientPlayerCardActionsMatcher = matcher;
   }
   @mobx.action
+  setupClientPlayerOutsideCardActionsMatcher(matcher: (card: Card) => boolean) {
+    this.store.clientPlayerOutsideCardActionsMatcher = matcher;
+  }
+  @mobx.action
   onClickPlayerCard(handler: (card: Card, selected: boolean) => void) {
     this.store.onClickHandCardToPlay = handler;
   }
@@ -372,6 +380,17 @@ export class RoomPresenter {
       identifier,
       event,
     };
+  }
+
+  @mobx.action
+  selectCard(card: Card) {
+    this.store.selectedCards.push(card);
+  }
+
+  @mobx.action
+  unselectCard(card: Card) {
+    const index = this.store.selectedCards.findIndex(selected => selected === card);
+    index >= 0 && this.store.selectedCards.splice(index, 1);
   }
 
   @mobx.action

@@ -65,6 +65,7 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
             this.selectedTargets,
             this.equipSkillCardId,
           ) &&
+          skill.availableCardAreas().includes(fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.player,
@@ -90,6 +91,7 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
             this.equipSkillCardId,
             this.matcher,
           ) &&
+          skill.availableCardAreas().includes(fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.player,
@@ -160,6 +162,9 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
       this.presenter.setupPlayersSelectionMatcher((player: Player) => false);
       this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
         this.isCardEnabledOnAskingForPeach(card, PlayerCardsArea.HandArea),
+      );
+      this.presenter.setupClientPlayerOutsideCardActionsMatcher((card: Card) =>
+        this.isCardEnabledOnAskingForPeach(card, PlayerCardsArea.OutsideArea),
       );
       this.presenter.setupCardSkillSelectionMatcher((card: Card) =>
         this.isCardEnabledOnAskingForPeach(card, PlayerCardsArea.EquipArea),

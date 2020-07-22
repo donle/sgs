@@ -106,6 +106,19 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
           selectedCards.includes(card.Id)
         );
       });
+      this.presenter.setupClientPlayerOutsideCardActionsMatcher(card => {
+        if (
+          !fromArea.includes(PlayerCardsArea.OutsideArea) ||
+          (this.customSelector && !this.customSelector.match(card)) ||
+          except.includes(card.Id)
+        ) {
+          return false;
+        }
+        return (
+          (cardAmount instanceof Array ? selectedCards.length < cardAmount[1] : selectedCards.length !== cardAmount) ||
+          selectedCards.includes(card.Id)
+        );
+      });
       this.presenter.setupCardSkillSelectionMatcher(card => {
         if (
           !fromArea.includes(PlayerCardsArea.EquipArea) ||
@@ -122,8 +135,10 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
 
       const onClickCard = (card: Card, selected: boolean) => {
         if (selected) {
+          this.presenter.selectCard(card);
           selectedCards.push(card.Id);
         } else {
+          this.presenter.unselectCard(card);
           const index = selectedCards.findIndex(cardId => card.Id === cardId);
           if (index >= 0) {
             selectedCards.splice(index, 1);

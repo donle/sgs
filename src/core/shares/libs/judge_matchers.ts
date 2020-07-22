@@ -11,6 +11,7 @@ export const enum JudgeMatcherEnum {
   WuHun,
   LuoShen,
   SiShu,
+  TunTian,
 }
 
 export abstract class JudgeMatcher {
@@ -24,6 +25,7 @@ export abstract class JudgeMatcher {
       case JudgeMatcherEnum.WuHun: return this.WuHun(card);
       case JudgeMatcherEnum.LuoShen: return this.LuoShen(card);
       case JudgeMatcherEnum.SiShu: return this.SiShu(card);
+      case JudgeMatcherEnum.TunTian: return this.TunTian(card);
       default:
         throw Precondition.UnreachableError(matcherEnum);
     }
@@ -35,6 +37,9 @@ export abstract class JudgeMatcher {
 
   private static SiShu(card: Card) {
     return card.Suit === CardSuit.Heart;
+  }
+  private static TunTian(card: Card) {
+    return card.Suit !== CardSuit.Heart;
   }
   private static BingLiangCunDuan(card: Card) {
     return card.Suit !== CardSuit.Club;
@@ -49,7 +54,7 @@ export abstract class JudgeMatcher {
     return card.Suit === CardSuit.Spade;
   }
   private static WuHun(card: Card) {
-    return card.Name === 'peach' || card.Name === 'taoyuanjieyi';
+    return card.Name !== 'peach' && card.Name !== 'taoyuanjieyi';
   }
   private static LuoShen(card: Card) {
     return card.isBlack();

@@ -42,6 +42,7 @@ const CardSlot = (props: {
       translator={props.translator}
       disabled={props.card && props.isCardDisabled ? props.isCardDisabled(props.card) : false}
       onSelected={onSelected}
+      selected={selected}
       width={100}
     />
   );

@@ -66,20 +66,23 @@ export class LongDan extends ViewAsSkill {
         canUse = Sanguosha.getCardById(pendingCardId).GeneralName === 'peach';
       }
 
-      return canUse && owner.cardFrom(pendingCardId) === PlayerCardsArea.HandArea;
+      return canUse;
     } else {
-      const fromHandArea = owner.cardFrom(pendingCardId) === PlayerCardsArea.HandArea;
       const card = Sanguosha.getCardById(pendingCardId);
       if (card.GeneralName === 'jink') {
-        return fromHandArea && owner.canUseCard(room, new CardMatcher({ generalName: ['slash'] }));
+        return  owner.canUseCard(room, new CardMatcher({ generalName: ['slash'] }));
       } else if (card.GeneralName === 'alcohol') {
-        return fromHandArea && owner.canUseCard(room, new CardMatcher({ name: ['peach'] }));
+        return owner.canUseCard(room, new CardMatcher({ name: ['peach'] }));
       } else if (card.GeneralName === 'peach') {
-        return fromHandArea && owner.canUseCard(room, new CardMatcher({ name: ['alcohol'] }));
+        return owner.canUseCard(room, new CardMatcher({ name: ['alcohol'] }));
       }
 
       return false;
     }
+  }
+
+  public availableCardAreas() {
+    return [PlayerCardsArea.HandArea];
   }
 
   public viewAs(selectedCards: CardId[]) {

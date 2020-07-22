@@ -91,6 +91,7 @@ export class ResponsiveUseCardAction<
             this.selectedTargets,
             this.equipSkillCardId,
           ) &&
+          skill.availableCardAreas().includes(fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.player,
@@ -116,6 +117,7 @@ export class ResponsiveUseCardAction<
             this.equipSkillCardId,
             this.matcher,
           ) &&
+          skill.availableCardAreas().includes(fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.player,
@@ -216,6 +218,9 @@ export class ResponsiveUseCardAction<
       }
       this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
         this.isCardEnabledOnResponsiveUse(card, PlayerCardsArea.HandArea, this.matcher),
+      );
+      this.presenter.setupClientPlayerOutsideCardActionsMatcher((card: Card) =>
+        this.isCardEnabledOnResponsiveUse(card, PlayerCardsArea.OutsideArea, this.matcher),
       );
       this.presenter.setupCardSkillSelectionMatcher((card: Card) =>
         this.isCardEnabledOnResponsiveUse(card, PlayerCardsArea.EquipArea, this.matcher),

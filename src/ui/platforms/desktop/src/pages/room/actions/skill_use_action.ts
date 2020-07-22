@@ -110,6 +110,7 @@ export class SkillUseAction extends BaseAction {
           this.selectedTargets,
           this.equipSkillCardId,
         ) &&
+          this.selectedSkillToPlay.availableCardAreas().includes(fromArea) &&
           (!this.selectedSkillToPlay.cardFilter(
             this.store.room,
             this.player,
@@ -143,6 +144,9 @@ export class SkillUseAction extends BaseAction {
     this.presenter.setupPlayersSelectionMatcher((player: Player) => this.isPlayerEnabled(player));
     this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
       this.isCardEnabledOnSkillTriggered(card, PlayerCardsArea.HandArea),
+    );
+    this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
+      this.isCardEnabledOnSkillTriggered(card, PlayerCardsArea.OutsideArea),
     );
     this.presenter.setupCardSkillSelectionMatcher((card: Card) =>
       this.isCardEnabledOnSkillTriggered(card, PlayerCardsArea.EquipArea),

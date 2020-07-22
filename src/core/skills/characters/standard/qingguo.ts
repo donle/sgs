@@ -21,7 +21,11 @@ export class QingGuo extends ViewAsSkill {
     return cards.length === 1;
   }
   public isAvailableCard(room: Room, owner: Player, pendingCardId: CardId): boolean {
-    return Sanguosha.getCardById(pendingCardId).isBlack() && owner.cardFrom(pendingCardId) === PlayerCardsArea.HandArea;
+    return Sanguosha.getCardById(pendingCardId).isBlack();
+  }
+
+  public availableCardAreas() {
+    return [PlayerCardsArea.HandArea];
   }
 
   public viewAs(selectedCards: CardId[]) {
