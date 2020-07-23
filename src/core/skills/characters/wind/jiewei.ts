@@ -32,8 +32,13 @@ export class JieWei extends ViewAsSkill {
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return cards.length === 1;
   }
+
   public isAvailableCard(room: Room, owner: Player, pendingCardId: CardId): boolean {
-    return owner.cardFrom(pendingCardId) === PlayerCardsArea.EquipArea;
+    return true;
+  }
+
+  public availableCardAreas() {
+    return [PlayerCardsArea.EquipArea];
   }
 
   public viewAs(selectedCards: CardId[]) {

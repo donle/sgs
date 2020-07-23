@@ -35,6 +35,7 @@ export type DashboardProps = {
   playerSelectableMatcher?(player: Player): boolean;
   onClickPlayer?(player: Player, selected: boolean): void;
   cardEnableMatcher?(card: Card): boolean;
+  outsideCardEnableMatcher?(card: Card): boolean;
   cardSkillEnableMatcher?(card: Card): boolean;
   onClick?(card: Card, selected: boolean): void;
   onClickEquipment?(card: Card, selected: boolean): void;
@@ -142,7 +143,8 @@ export class Dashboard extends React.Component<DashboardProps> {
     const { presenter } = this.props;
     if (this.handBoardRef.current && presenter.ClientPlayer) {
       const width = this.handBoardRef.current.clientWidth;
-      const numOfHandCards = presenter.ClientPlayer.getCardIds(PlayerCardsArea.HandArea).length;
+      const numOfHandCards =
+        presenter.ClientPlayer.getCardIds(PlayerCardsArea.HandArea).length + this.AvailableOutsideCards.length;
       if (width < numOfHandCards * (this.handCardWidth + this.cardMargin)) {
         this.cardOffset = -(numOfHandCards * (this.handCardWidth + this.cardMargin) - width) / (numOfHandCards - 1);
       } else {
@@ -178,25 +180,69 @@ export class Dashboard extends React.Component<DashboardProps> {
     );
   }
 
-  getAllClientHandCards() {
-    return this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.HandArea).map((cardId, index) => {
-      const card = Sanguosha.getCardById(cardId);
+  get AvailableOutsideCards() {
+    if (!this.props.outsideCardEnableMatcher || !this.props.presenter.ClientPlayer) {
+      return [];
+    }
+
+    const availableCards: { areaName; card: Card }[] = [];
+    for (const [areaName, cards] of Object.entries(this.props.presenter.ClientPlayer.getOutsideAreaCards())) {
+      availableCards.push(
+        ...cards
+          .filter(card => this.props.outsideCardEnableMatcher!(Sanguosha.getCardById(card)))
+          .map(cardId => ({
+            areaName,
+            card: Sanguosha.getCardById(cardId),
+          })),
+      );
+    }
+
+    return availableCards;
+  }
+
+  get AllClientHandCards() {
+    const outsideCards = this.AvailableOutsideCards.map((cardInfo, index) => {
       const leftOffset = index * (this.handCardWidth + this.cardOffset);
       return (
         <ClientCard
           imageLoader={this.props.imageLoader}
-          key={cardId}
+          key={index}
           width={this.handCardWidth}
           offsetLeft={leftOffset}
           translator={this.props.translator}
-          card={card}
+          card={cardInfo.card}
           highlight={this.props.store.highlightedCards}
-          onSelected={this.onClick(card)}
+          onSelected={this.onClick(cardInfo.card)}
+          tag={this.props.translator.tr(cardInfo.areaName)}
           className={styles.handCard}
-          disabled={!this.props.cardEnableMatcher || !this.props.cardEnableMatcher(card)}
+          disabled={!this.props.outsideCardEnableMatcher || !this.props.outsideCardEnableMatcher(cardInfo.card)}
+          selected={this.props.store.selectedCards.includes(cardInfo.card)}
         />
       );
     });
+
+    const handcards =
+      this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.HandArea).map((cardId, index) => {
+        const card = Sanguosha.getCardById(cardId);
+        const leftOffset = (index + outsideCards.length) * (this.handCardWidth + this.cardOffset);
+        return (
+          <ClientCard
+            imageLoader={this.props.imageLoader}
+            key={cardId}
+            width={this.handCardWidth}
+            offsetLeft={leftOffset}
+            translator={this.props.translator}
+            card={card}
+            highlight={this.props.store.highlightedCards}
+            onSelected={this.onClick(card)}
+            className={styles.handCard}
+            disabled={!this.props.cardEnableMatcher || !this.props.cardEnableMatcher(card)}
+            selected={this.props.store.selectedCards.includes(card)}
+          />
+        );
+      }) || [];
+
+    return [...outsideCards, ...handcards];
   }
 
   getPlayerJudgeCards() {
@@ -257,7 +303,7 @@ export class Dashboard extends React.Component<DashboardProps> {
           </Button>
         </div>
         <div className={styles.handCards}>
-          {this.getAllClientHandCards()}
+          {this.AllClientHandCards}
           <div
             className={classNames(styles.trustedCover, {
               [styles.hide]: !this.props.presenter.ClientPlayer!.isTrusted(),

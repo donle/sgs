@@ -167,6 +167,9 @@ export class PlayPhaseAction extends BaseAction {
       this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
         this.isCardEnabled(card, this.player, PlayerCardsArea.HandArea),
       );
+      this.presenter.setupClientPlayerOutsideCardActionsMatcher((card: Card) =>
+        this.isCardEnabled(card, this.player, PlayerCardsArea.OutsideArea),
+      );
       this.presenter.setupCardSkillSelectionMatcher((card: Card) =>
         this.isCardEnabled(card, this.player, PlayerCardsArea.EquipArea),
       );

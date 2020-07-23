@@ -210,7 +210,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         }
         return skills;
       }, []);
-      for (const skill of [...player.getPlayerSkills<TriggerSkill>('trigger'), ...hookedSkills]) {
+
+      const playerSkills = player.Dead ? [] : player.getPlayerSkills<TriggerSkill>('trigger');
+      for (const skill of [...playerSkills, ...hookedSkills]) {
         const canTrigger = bySkills
           ? bySkills.find(bySkill => UniqueSkillRule.isProhibitedBySkillRule(bySkill, skill)) === undefined
           : true;
@@ -224,7 +226,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           canTriggerSkills.push(skill);
         }
       }
-    } else {
+    } else if (!player.Dead) {
       for (const equip of player.getCardIds(PlayerCardsArea.EquipArea)) {
         const equipCard = Sanguosha.getCardById(equip);
         if (
@@ -260,7 +262,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
 
     const skillSource: Readonly<['character', 'equip']> = ['character', 'equip'];
-    for (const player of this.getAlivePlayersFrom()) {
+    for (const player of this.getAllPlayersFrom()) {
       for (const skillFrom of skillSource) {
         let canTriggerSkills = this.playerTriggerableSkills(player, skillFrom, content, stage);
         const triggeredSkills: TriggerSkill[] = [];

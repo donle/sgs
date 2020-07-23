@@ -29,12 +29,11 @@ export type ClientCardProps = {
   onMouseMove?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onMouseLeave?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   ref?: string | ((instance: HTMLDivElement | null) => void) | React.RefObject<HTMLDivElement>;
+  selected?: boolean;
 };
 
 @mobxReact.observer
 export class ClientCard extends React.Component<ClientCardProps> {
-  @mobx.observable.ref
-  private selected: boolean = false;
   @mobx.observable.ref
   private cardImage: string | undefined;
   @mobx.observable.ref
@@ -46,21 +45,10 @@ export class ClientCard extends React.Component<ClientCardProps> {
 
   readonly onClick = mobx.action(() => {
     if (this.props.disabled === false) {
-      if (!this.props.unselectable) {
-        this.selected = !this.selected;
-      }
-      this.props.onSelected && this.props.onSelected(this.selected);
+      this.props.onSelected && this.props.onSelected(!this.props.selected);
+      this.forceUpdate();
     }
-    this.forceUpdate();
   });
-
-  @mobx.action
-  getSelected() {
-    if (!!this.props.disabled) {
-      this.selected = false;
-    }
-    return this.selected;
-  }
 
   playAudio(): string {
     const randomIndex = Math.round(Math.random() * this.soundTracks.length);
@@ -78,7 +66,7 @@ export class ClientCard extends React.Component<ClientCardProps> {
   }
 
   @mobx.action
-  async componentDidMount() {
+  private async initComponent() {
     const { card, imageLoader } = this.props;
     if (!card) {
       return;
@@ -94,7 +82,15 @@ export class ClientCard extends React.Component<ClientCardProps> {
     }
   }
 
-  getCardComponent() {
+  async componentDidMount() {
+    await this.initComponent();
+  }
+
+  async componentDidUpdate() {
+    await this.initComponent();
+  }
+
+  get CardComponent() {
     const { card, translator, imageLoader, tag } = this.props;
     if (!card) {
       const cardBack = imageLoader.getCardBack();
@@ -139,7 +135,7 @@ export class ClientCard extends React.Component<ClientCardProps> {
       <div
         ref={this.props.ref}
         className={classNames(styles.clientCard, className, {
-          [styles.selected]: this.getSelected() && !this.props.disabled,
+          [styles.selected]: this.props.selected,
           [styles.disabled]: highlight === undefined ? this.props.disabled : !highlight,
         })}
         style={{
@@ -152,7 +148,7 @@ export class ClientCard extends React.Component<ClientCardProps> {
         onMouseMove={this.props.onMouseMove}
         onMouseLeave={this.props.onMouseLeave}
       >
-        {this.getCardComponent()}
+        {this.CardComponent}
       </div>
     );
   }

@@ -299,7 +299,7 @@ export const characterDictionary: Word[] = [
   { source: 'dengai', target: '邓艾' },
   { source: 'tuntian', target: '屯田' },
   { source: 'zaoxian', target: '凿险' },
-  { source: 'qixi', target: '奇袭' },
+  { source: 'jixi', target: '急袭' },
 
   { source: 'jiangwei', target: '姜维' },
   { source: 'tiaoxin', target: '挑衅' },

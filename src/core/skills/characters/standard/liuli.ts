@@ -31,8 +31,12 @@ export class LiuLi extends TriggerSkill {
     return cards.length === 1;
   }
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
-    return room.getPlayerById(owner).cardFrom(cardId) === PlayerCardsArea.HandArea;
+    return true;
   }
+  public availableCardAreas() {
+    return [PlayerCardsArea.HandArea];
+  }
+
   public isAvailableTarget(owner: PlayerId, room: Room, targetId: PlayerId): boolean {
     const from = room.getPlayerById(owner);
     const to = room.getPlayerById(targetId);
