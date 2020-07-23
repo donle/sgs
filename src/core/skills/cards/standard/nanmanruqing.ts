@@ -25,7 +25,7 @@ export class NanManRuQingSkill extends ActiveSkill {
         }
       }
     }
-      
+
     return false;
   }
 
@@ -55,7 +55,7 @@ export class NanManRuQingSkill extends ActiveSkill {
 
     const askForCardEvent = {
       cardMatcher: new CardMatcher({
-        name: ['slash'],
+        generalName: ['slash'],
       }).toSocketPassenger(),
       byCardId: cardId,
       cardUserId: fromId,

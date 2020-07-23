@@ -19,7 +19,7 @@ export class JiJiang extends ViewAsSkill {
   }
   public canUse(room: Room, owner: Player) {
     return (
-      owner.canUseCard(room, new CardMatcher({ name: ['slash'] })) &&
+      owner.canUseCard(room, new CardMatcher({ generalName: ['slash'] })) &&
       room.getAlivePlayersFrom().filter(player => player.Nationality === CharacterNationality.Shu && player !== owner)
         .length > 0
     );
@@ -86,7 +86,7 @@ export class JiJiangShadow extends TriggerSkill {
 
       const response = await room.askForCardResponse(
         {
-          cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
+          cardMatcher: new CardMatcher({ generalName: ['slash'] }).toSocketPassenger(),
           toId: player.Id,
           conversation: TranslationPack.translationJsonPatcher(
             'do you wanna response a {0} card for skill {1} from {2}',

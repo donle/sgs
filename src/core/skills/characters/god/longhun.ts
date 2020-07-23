@@ -43,7 +43,7 @@ export class LongHun extends ViewAsSkill {
   public canUse(room: Room, owner: Player) {
     return (
       owner.getPlayerCards().length > 0 &&
-      (owner.canUseCard(room, new CardMatcher({ name: ['slash'] })) ||
+      (owner.canUseCard(room, new CardMatcher({ generalName: ['slash'] })) ||
         owner.canUseCard(room, new CardMatcher({ name: ['peach'] })))
     );
   }
@@ -76,7 +76,7 @@ export class LongHun extends ViewAsSkill {
       } else {
         const card = Sanguosha.getCardById(pendingCardId);
         if (card.Suit === CardSuit.Diamond) {
-          return owner.canUseCard(room, new CardMatcher({ name: ['slash'] }));
+          return owner.canUseCard(room, new CardMatcher({ generalName: ['slash'] }));
         } else if (card.Suit === CardSuit.Heart) {
           return owner.canUseCard(room, new CardMatcher({ name: ['peach'] }));
         }

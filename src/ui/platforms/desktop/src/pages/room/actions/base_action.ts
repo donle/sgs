@@ -532,7 +532,7 @@ export abstract class BaseAction {
                 )
               );
             } else {
-              return matcher.Matcher.name ? matcher.Matcher.name.includes(cardName) : false;
+              return matcher.match(new CardMatcher({ name: [cardName] }));
             }
           });
 

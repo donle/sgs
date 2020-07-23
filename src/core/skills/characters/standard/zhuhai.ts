@@ -46,7 +46,7 @@ export class ZhuHai extends TriggerSkill {
         toId: fromId,
         cardUserId: fromId,
         scopedTargets: [changeEvent.playerId],
-        cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
+        cardMatcher: new CardMatcher({ generalName: ['slash'] }).toSocketPassenger(),
         extraUse: true,
         commonUse: false,
         conversation: TranslationPack.translationJsonPatcher(

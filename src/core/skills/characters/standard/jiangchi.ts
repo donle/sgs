@@ -148,7 +148,7 @@ export class JiangChiExtra extends RulesBreakerSkill implements OnDefineReleaseT
 
     let match = false;
     if (cardId instanceof CardMatcher) {
-      match = cardId.match(new CardMatcher({ name: ['slash'] }));
+      match = cardId.match(new CardMatcher({ generalName: ['slash'] }));
     } else {
       match = Sanguosha.getCardById(cardId).GeneralName === 'slash';
     }
@@ -167,7 +167,7 @@ export class JiangChiExtra extends RulesBreakerSkill implements OnDefineReleaseT
 
     let match = false;
     if (cardId instanceof CardMatcher) {
-      match = cardId.match(new CardMatcher({ name: ['slash'] }));
+      match = cardId.match(new CardMatcher({ generalName: ['slash'] }));
     } else {
       match = Sanguosha.getCardById(cardId).GeneralName === 'slash';
     }
@@ -193,7 +193,7 @@ export class JiangChiBlock extends FilterSkill implements OnDefineReleaseTiming 
     }
 
     return cardId instanceof CardMatcher
-      ? !cardId.match(new CardMatcher({ name: ['slash'] }))
+      ? !cardId.match(new CardMatcher({ generalName: ['slash'] }))
       : Sanguosha.getCardById(cardId).GeneralName !== 'slash';
   }
 }

@@ -9,7 +9,7 @@ export class ZhuGeLianNuSlashSkill extends RulesBreakerSkill {
   public breakCardUsableTimes(cardId: CardId | CardMatcher) {
     let match = false;
     if (cardId instanceof CardMatcher) {
-      match = cardId.match(new CardMatcher({ name: ['slash'] }));
+      match = cardId.match(new CardMatcher({ generalName: ['slash'] }));
     } else {
       match = Sanguosha.getCardById(cardId).GeneralName === 'slash';
     }

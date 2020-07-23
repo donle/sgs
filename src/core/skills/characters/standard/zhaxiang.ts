@@ -66,7 +66,7 @@ export class ZhaXiangShadow extends TriggerSkill implements OnDefineReleaseTimin
       );
     }
   }
-  
+
   public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage) {
     return stage === PhaseChangeStage.AfterPhaseChanged;
   }
@@ -130,7 +130,7 @@ export class ZhaXiangDistance extends RulesBreakerSkill implements OnDefineRelea
 
     let match = false;
     if (cardId instanceof CardMatcher) {
-      match = cardId.match(new CardMatcher({ suit: [CardSuit.Heart, CardSuit.Diamond], name: ['slash'] }));
+      match = cardId.match(new CardMatcher({ suit: [CardSuit.Heart, CardSuit.Diamond], generalName: ['slash'] }));
     } else {
       const card = Sanguosha.getCardById(cardId);
       match = card.GeneralName === 'slash' && card.isRed();
@@ -147,7 +147,7 @@ export class ZhaXiangDistance extends RulesBreakerSkill implements OnDefineRelea
 
     let match = false;
     if (cardId instanceof CardMatcher) {
-      match = cardId.match(new CardMatcher({ name: ['slash'] }));
+      match = cardId.match(new CardMatcher({ generalName: ['slash'] }));
     } else {
       match = Sanguosha.getCardById(cardId).GeneralName === 'slash';
     }

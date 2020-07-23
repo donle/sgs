@@ -1,4 +1,5 @@
 import { Card, CardType } from 'core/cards/card';
+import { Algorithm } from 'core/shares/libs/algorithm';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CardId, CardSuit } from './card_props';
 
@@ -6,6 +7,7 @@ export type CardMatcherProps = {
   suit?: CardSuit[];
   cardNumber?: number[];
   name?: string[];
+  generalName?: string[];
   type?: CardType[];
   cards?: CardId[];
 };
@@ -18,6 +20,9 @@ export type CardMatcherSocketPassenger = {
 export class CardMatcher {
   private matchAll: boolean;
   private reverseMatch: boolean = false;
+  private static generalNameMaps = {
+    slash: ['slash', 'fire_slash', 'thunder_slash'],
+  };
 
   constructor(private matcher: CardMatcherProps) {
     if (Object.keys(this.matcher).length === 0) {
@@ -32,54 +37,8 @@ export class CardMatcher {
     };
   }
 
-  public static weakMatch(matcher: CardMatcherSocketPassenger | undefined, card: Card | CardMatcher) {
-    if (matcher === undefined) {
-      return false;
-    }
-
-    Precondition.assert(matcher.tag && matcher.tag === 'card-matcher', 'Invalid card matcher props');
-    const { suit, cardNumber, name, type, cards, reverseMatch } = matcher;
-    let matched = false;
-
-    if (card instanceof Card) {
-      if (suit) {
-        matched = matched || suit.includes(card.Suit);
-      }
-      if (cardNumber) {
-        matched = matched || cardNumber.includes(card.CardNumber);
-      }
-      if (name) {
-        matched = matched || name.includes(card.GeneralName);
-      }
-      if (type) {
-        matched = matched || type.find(subType => card.is(subType)) !== undefined;
-      }
-      if (cards) {
-        matched = matched || cards.includes(card.Id);
-      }
-    } else {
-      matcher = card.toSocketPassenger();
-      if (suit && matcher.suit) {
-        matched = matched || matcher.suit.length === 0 || !!matcher.suit.find(cardSuit => suit.includes(cardSuit));
-      }
-      if (cardNumber && matcher.cardNumber) {
-        matched =
-          matched ||
-          matcher.cardNumber.length === 0 ||
-          !!matcher.cardNumber.find(cardNum => cardNumber.includes(cardNum));
-      }
-      if (name && matcher.name) {
-        matched = matched || matcher.name.length === 0 || !!matcher.name.find(cardName => name.includes(cardName));
-      }
-      if (type && matcher.type) {
-        matched = matched || matcher.type.length === 0 || !!matcher.type.find(cardType => type.includes(cardType));
-      }
-      if (cards && matcher.cards) {
-        matched = matched || matcher.cards.length === 0 || !!matcher.cards.find(innerCard => cards.includes(innerCard));
-      }
-    }
-
-    return reverseMatch ? !matched : matched;
+  private static hasName(generalName: string, name: string) {
+    return this.generalNameMaps[generalName] && this.generalNameMaps[generalName].includes(name);
   }
 
   public static match(matcher: CardMatcherSocketPassenger | undefined, card: Card | CardMatcher) {
@@ -89,7 +48,7 @@ export class CardMatcher {
 
     Precondition.assert(matcher.tag && matcher.tag === 'card-matcher', 'Invalid card matcher props');
 
-    const { suit, cardNumber, name, type, cards, reverseMatch } = matcher;
+    const { suit, cardNumber, name, generalName, type, cards, reverseMatch } = matcher;
     let matched = true;
 
     if (card instanceof Card) {
@@ -100,7 +59,10 @@ export class CardMatcher {
         matched = matched && cardNumber.includes(card.CardNumber);
       }
       if (name) {
-        matched = matched && name.includes(card.GeneralName);
+        matched = matched && name.includes(card.Name);
+      }
+      if (generalName) {
+        matched = matched && generalName.includes(card.GeneralName);
       }
       if (type) {
         matched = matched && type.find(subType => card.is(subType)) !== undefined;
@@ -117,8 +79,38 @@ export class CardMatcher {
         matched =
           matched && matcher.cardNumber.length > 0 && matcher.cardNumber.every(cardNum => cardNumber.includes(cardNum));
       }
-      if (name && matcher.name) {
-        matched = matched && matcher.name.length > 0 && matcher.name.every(cardName => name.includes(cardName));
+      if (name) {
+        if (matcher.name) {
+          matched = matched && matcher.name.length > 0 && Algorithm.intersection(name, matcher.name).length > 0;
+        }
+        if (matcher.generalName && matcher.generalName.length > 0) {
+          const allNames = matcher.generalName.reduce<string[]>((target, currentGeneralName) => {
+            if (this.generalNameMaps[currentGeneralName]) {
+              target.push(...this.generalNameMaps[currentGeneralName]);
+            }
+            return target;
+          }, []);
+
+          matched = matched && Algorithm.intersection(allNames, name).length > 0;
+        }
+      }
+      if (generalName) {
+        if (matcher.generalName) {
+          matched =
+            matched &&
+            matcher.generalName.length > 0 &&
+            Algorithm.intersection(generalName, matcher.generalName).length > 0;
+        }
+        if (matcher.name) {
+          const allNames = generalName.reduce<string[]>((target, currentGeneralName) => {
+            if (this.generalNameMaps[currentGeneralName]) {
+              target.push(...this.generalNameMaps[currentGeneralName]);
+            }
+            return target;
+          }, []);
+
+          matched = matched && Algorithm.intersection(allNames, matcher.name).length > 0;
+        }
       }
       if (type && matcher.type) {
         matched = matched && matcher.type.length > 0 && matcher.type.every(cardType => type.includes(cardType));

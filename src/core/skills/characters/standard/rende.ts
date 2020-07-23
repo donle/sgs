@@ -63,7 +63,7 @@ export class Rende extends ActiveSkill {
       if (hasLegionFightExt && from.canUseCard(room, new CardMatcher({ name: ['alcohol'] }))) {
         options.push('alcohol');
       }
-      if (from.canUseCard(room, new CardMatcher({ name: ['slash'] }))) {
+      if (from.canUseCard(room, new CardMatcher({ generalName: ['slash'] }))) {
         options.push('slash');
         if (hasLegionFightExt) {
           options.push('fire_slash');

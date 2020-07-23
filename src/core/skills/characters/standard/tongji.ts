@@ -11,7 +11,7 @@ import { CompulsorySkill } from 'core/skills/skill_wrappers';
 export class TongJi extends GlobalFilterSkill {
   canUseCardTo(cardId: CardId | CardMatcher, room: Room, owner: Player, attacker: Player, target: Player) {
     if (cardId instanceof CardMatcher) {
-      if (!cardId.match(new CardMatcher({ name: ['slash'] }))) {
+      if (!cardId.match(new CardMatcher({ generalName: ['slash'] }))) {
         return true;
       }
     } else {

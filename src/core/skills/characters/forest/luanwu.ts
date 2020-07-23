@@ -72,7 +72,7 @@ export class LuanWu extends ActiveSkill {
             toId: target.Id,
             cardUserId: target.Id,
             scopedTargets: toIds,
-            cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
+            cardMatcher: new CardMatcher({ generalName: ['slash'] }).toSocketPassenger(),
             extraUse: true,
             conversation: TranslationPack.translationJsonPatcher(
               'please use a {0} to player {1} to response {2}',
@@ -92,7 +92,7 @@ export class LuanWu extends ActiveSkill {
             toIds: response.toIds,
             triggeredBySkills: [this.Name],
           };
-    
+
           await room.useCard(cardUseEvent);
         } else {
           await room.loseHp(target.Id, 1);

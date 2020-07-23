@@ -33,7 +33,7 @@ export class QingLongYanYueDaoSkill extends TriggerSkill {
       toId: slashEffectEvent.fromId!,
       scopedTargets: slashEffectEvent.toIds,
       extraUse: true,
-      cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
+      cardMatcher: new CardMatcher({ generalName: ['slash'] }).toSocketPassenger(),
       conversation: TranslationPack.translationJsonPatcher('do you want to trigger skill {0} ?', this.Name).extract(),
     };
 
@@ -49,7 +49,7 @@ export class QingLongYanYueDaoSkill extends TriggerSkill {
           this.Name,
         ).extract(),
       };
-      
+
       await room.useCard(slashEvent);
     }
 

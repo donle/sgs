@@ -20,7 +20,7 @@ export class JieDaoShaRenSkill extends ActiveSkill {
   public numberOfTargets() {
     return 2;
   }
-  
+
   public cardFilter(): boolean {
     return true;
   }
@@ -69,7 +69,7 @@ export class JieDaoShaRenSkill extends ActiveSkill {
         byCardId: cardId,
         cardUserId: event.fromId,
         scopedTargets: [target],
-        cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
+        cardMatcher: new CardMatcher({ generalName: ['slash'] }).toSocketPassenger(),
         extraUse: true,
         conversation: TranslationPack.translationJsonPatcher(
           'please use a {0} to player {1} to response {2}',

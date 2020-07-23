@@ -13,7 +13,7 @@ export class GameCommonRules {
     times: number;
   }[] = [
     {
-      cardMatcher: new CardMatcher({ name: ['slash'] }),
+      cardMatcher: new CardMatcher({ generalName: ['slash'] }),
       times: 1,
     },
     {

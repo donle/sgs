@@ -15,7 +15,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 export class PaoXiao extends RulesBreakerSkill {
   public breakCardUsableTimes(cardId: CardId | CardMatcher) {
     if (cardId instanceof CardMatcher) {
-      return cardId.match(new CardMatcher({ name: ['slash'] })) ? INFINITE_TRIGGERING_TIMES : 0;
+      return cardId.match(new CardMatcher({ generalName: ['slash'] })) ? INFINITE_TRIGGERING_TIMES : 0;
     } else {
       return Sanguosha.getCardById(cardId).GeneralName === 'slash' ? INFINITE_TRIGGERING_TIMES : 0;
     }
