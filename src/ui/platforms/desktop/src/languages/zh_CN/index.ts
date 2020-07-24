@@ -1,5 +1,5 @@
 import { TranslationsDictionary, Word } from 'languages';
-import * as dictionaryBook from './translations';
+import * as dictionaryBooks from './translations';
 
 function wordsToDictionary(words: Word[]): TranslationsDictionary {
   const dict: TranslationsDictionary = {};
@@ -10,6 +10,11 @@ function wordsToDictionary(words: Word[]): TranslationsDictionary {
   return dict;
 }
 
-const translationWords = Object.values(dictionaryBook).reduce((prev, current) => prev.concat(current), []);
+const translationWords: Word[] = [];
+for (const book of Object.values(dictionaryBooks)) {
+  for (const words of Object.values(book)) {
+    translationWords.push(...words);
+  }
+}
 
 export const SimplifiedChinese = wordsToDictionary(translationWords);
