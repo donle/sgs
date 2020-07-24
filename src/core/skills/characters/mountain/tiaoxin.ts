@@ -16,6 +16,7 @@ export class TiaoXin extends ActiveSkill {
   }
 
   public isRefreshAt(phase: PlayerPhase) {
+    console.log(phase);
     return phase === PlayerPhase.PlayCardStage;
   }
 
