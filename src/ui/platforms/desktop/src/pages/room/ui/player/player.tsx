@@ -37,12 +37,11 @@ type PlayerCardProps = {
   disabled?: boolean;
   delight?: boolean;
   onClick?(selected: boolean): void;
+  selected?: boolean;
 };
 
 @mobxReact.observer
 export class PlayerCard extends React.Component<PlayerCardProps> {
-  @mobx.observable.ref
-  selected: boolean = false;
   @mobx.observable.ref
   onTooltipOpened: boolean = false;
   @mobx.observable.ref
@@ -55,8 +54,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
 
   private readonly onClick = mobx.action(() => {
     if (this.props.disabled === false) {
-      this.selected = !this.selected;
-      this.props.onClick && this.props.onClick(this.selected);
+      this.props.onClick && this.props.onClick(!this.props.selected);
     }
   });
 
@@ -71,14 +69,6 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     } catch {
       return undefined;
     }
-  }
-
-  @mobx.action
-  getSelected() {
-    if (!!this.props.disabled) {
-      this.selected = false;
-    }
-    return this.selected;
   }
 
   getPlayerEquips() {
@@ -320,7 +310,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                 <>
                   <span
                     className={classNames(styles.highlightBorder, {
-                      [styles.selected]: this.getSelected() && !disabled,
+                      [styles.selected]: this.props.selected && !disabled,
                       [styles.highlighted]: playerPhase !== undefined,
                     })}
                   />

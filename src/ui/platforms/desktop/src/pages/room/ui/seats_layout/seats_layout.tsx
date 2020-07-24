@@ -93,6 +93,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           inAction={player !== undefined && this.props.store.notifiedPlayers.includes(player.Id)}
           incomingMessage={player && this.props.store.incomingUserMessages[player.Id]}
           onCloseIncomingMessage={player && this.onCloseIncomingMessage(player)}
+          selected={this.props.store.selectedPlayers.includes(player!)}
         />,
       );
       do {
@@ -132,6 +133,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           inAction={player !== undefined && this.props.store.notifiedPlayers.includes(player.Id)}
           incomingMessage={player && this.props.store.incomingUserMessages[player.Id]}
           onCloseIncomingMessage={player && this.onCloseIncomingMessage(player)}
+          selected={this.props.store.selectedPlayers.includes(player!)}
         />,
       );
       do {
@@ -169,6 +171,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           inAction={player !== undefined && this.props.store.notifiedPlayers.includes(player.Id)}
           incomingMessage={player && this.props.store.incomingUserMessages[player.Id]}
           onCloseIncomingMessage={player && this.onCloseIncomingMessage(player)}
+          selected={this.props.store.selectedPlayers.includes(player!)}
         />,
       );
 

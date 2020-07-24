@@ -390,6 +390,9 @@ export class GameProcessor {
     if (phase === undefined) {
       this.playerStages = [];
     } else {
+      if (this.currentPlayerPhase === phase) {
+        this.toEndPhase = true;
+      }
       this.playerStages = this.playerStages.filter(stage => !this.stageProcessor.isInsidePlayerPhase(phase, stage));
     }
   }
@@ -1086,7 +1089,8 @@ export class GameProcessor {
       await this.room.moveCards({
         moveReason: CardMoveReason.SelfDrop,
         fromId: playerId,
-        movingCards: deadPlayer.getPlayerCards()
+        movingCards: deadPlayer
+          .getPlayerCards()
           .map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
         toArea: CardMoveArea.DropStack,
       });
