@@ -171,7 +171,7 @@ export class WuShuangShadow extends TriggerSkill {
         byCardId: duelEvent.cardId,
         cardUserId: duelResponseEvent.fromId,
         conversation: TranslationPack.translationJsonPatcher(
-          'please use a {0} card to response {1}',
+          'please response a {0} card to response {1}',
           'slash',
           TranslationPack.patchCardInTranslation(duelEvent.cardId),
         ).extract(),
