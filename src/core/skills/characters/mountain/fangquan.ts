@@ -2,6 +2,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { AllStage, PhaseChangeStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 =======
 import { AllStage, PhaseChangeStage, PlayerPhase, PlayerPhaseStages, PhaseStageChangeStage } from 'core/game/stage_processor';
@@ -9,6 +10,15 @@ import { AllStage, PhaseChangeStage, PlayerPhase, PlayerPhaseStages, PhaseStageC
 =======
 import { AllStage, PhaseChangeStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 >>>>>>> ac08ff2... add Skill Ruoyu to Liushan
+=======
+import {
+  AllStage,
+  PhaseChangeStage,
+  PhaseStageChangeStage,
+  PlayerPhase,
+  PlayerPhaseStages,
+} from 'core/game/stage_processor';
+>>>>>>> 76b4f19... fixup phase skip process
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -35,6 +45,7 @@ export class FangQuan extends TriggerSkill {
 
   public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId, triggeredOnEvent } = skillUseEvent;
+<<<<<<< HEAD
     const phaseChangeEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
 
     room.endPhase(phaseChangeEvent.to);
@@ -45,6 +56,8 @@ export class FangQuan extends TriggerSkill {
 >>>>>>> c72500b... add Skill Fangquan to Liushan
 =======
 >>>>>>> ac08ff2... add Skill Ruoyu to Liushan
+=======
+>>>>>>> 76b4f19... fixup phase skip process
     await room.skip(fromId, PlayerPhase.PlayCardStage);
 
     return true;
@@ -79,7 +92,11 @@ export class FangQuanShadow extends TriggerSkill {
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
-    return room.getPlayerById(owner).cardFrom(cardId) === PlayerCardsArea.HandArea;
+    return true;
+  }
+
+  public availableCardAreas() {
+    return [PlayerCardsArea.HandArea];
   }
 
   public getSkillLog(room: Room, owner: Player) {
@@ -93,13 +110,7 @@ export class FangQuanShadow extends TriggerSkill {
   public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId, cardIds, toIds } = skillUseEvent;
 
-    await room.dropCards(
-      CardMoveReason.SelfDrop,
-      cardIds!,
-      fromId,
-      fromId,
-      this.GeneralName
-    );
+    await room.dropCards(CardMoveReason.SelfDrop, cardIds!, fromId, fromId, this.GeneralName);
 
     room.insertPlayerRound(toIds![0]);
 
