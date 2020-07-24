@@ -3,6 +3,7 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
+import { ClientPlayer } from 'core/player/player.client';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { ActiveSkill, GlobalFilterSkill, ResponsiveSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -103,6 +104,8 @@ export abstract class BaseAction {
     this.presenter.setupClientPlayerCardActionsMatcher(() => false);
     this.presenter.setupClientPlayerOutsideCardActionsMatcher(() => false);
     this.presenter.setupCardSkillSelectionMatcher(() => false);
+    this.presenter.clearSelectedCards();
+    this.presenter.clearSelectedPlayers();
   };
 
   isPlayerEnabled(player: Player): boolean {
@@ -628,6 +631,9 @@ export abstract class BaseAction {
   }
 
   protected onClickPlayer(player: Player, selected: boolean): void {
+    selected
+      ? this.presenter.selectPlayer(player as ClientPlayer)
+      : this.presenter.unselectPlayer(player as ClientPlayer);
     this.callToActionCheck();
   }
   // tslint:disable-next-line:no-empty

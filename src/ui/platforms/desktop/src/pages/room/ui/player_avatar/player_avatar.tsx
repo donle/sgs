@@ -28,6 +28,7 @@ type PlayerAvatarProps = {
   incomingMessage?: string;
   onCloseIncomingMessage?(): void;
   disabled?: boolean;
+  selected?: boolean;
   delight?: boolean;
   onClick?(player: Player, selected: boolean): void;
   onClickSkill?(skill: Skill, selected: boolean): void;
@@ -36,8 +37,6 @@ type PlayerAvatarProps = {
 
 @mobxReact.observer
 export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
-  @mobx.observable.ref
-  selected: boolean = false;
   @mobx.observable.ref
   skillSelected: boolean = false;
   @mobx.observable.ref
@@ -54,8 +53,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   @mobx.action
   private readonly onClick = () => {
     if (this.props.disabled === false) {
-      this.selected = !this.selected;
-      this.props.onClick && this.props.onClick(this.props.presenter.ClientPlayer!, this.selected);
+      this.props.onClick && this.props.onClick(this.props.presenter.ClientPlayer!, !this.props.selected);
     }
   };
 
@@ -72,14 +70,6 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     this.skillSelected = !this.skillSelected;
     this.props.onClickSkill && this.props.onClickSkill(skill, this.skillSelected);
   };
-
-  @mobx.action
-  getSelected() {
-    if (!!this.props.disabled) {
-      this.selected = false;
-    }
-    return this.selected;
-  }
 
   @mobx.action
   getSkillSelected() {
@@ -326,7 +316,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           <span className={styles.playerName}>{clientPlayer?.Name}</span>
           <span
             className={classNames(styles.highlightBorder, {
-              [styles.selected]: this.getSelected() && !this.props.disabled,
+              [styles.selected]: this.props.selected && !this.props.disabled,
             })}
           />
           {this.PlayerImage !== undefined && <this.PlayerImage />}
