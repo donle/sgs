@@ -134,3 +134,11 @@
     margin: 2px;
     font-size: 14px;
 }
+.equipImage {
+    position: absolute;
+    z-index: -1;
+}
+.flatEquipNumber {
+    font-size: 14px;
+    margin-right: 4px;
+}

@@ -46,14 +46,12 @@ export class FlatClientCard extends React.PureComponent<FlatClientCardProps> {
     return (
       <div className={classNames(className, styles.flatCard)}>
         {this.equipImage ? (
-          <img src={this.equipImage} alt={this.equipName} />
+          <img className={styles.equipImage} src={this.equipImage} alt={this.equipName} />
         ) : (
-          <>
-            <span className={styles.equipName}>{translator.trx(card.Name)}</span>
-            <CardSuitItem suit={card.Suit} />
-            <CardNumberItem cardNumber={card.CardNumber} isRed={card.isRed()} />
-          </>
+          <span className={styles.equipName}>{translator.trx(card.Name)}</span>
         )}
+        <CardSuitItem suit={card.Suit} />
+        <CardNumberItem className={styles.flatEquipNumber} cardNumber={card.CardNumber} isRed={card.isRed()} />
       </div>
     );
   }
