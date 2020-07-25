@@ -3,9 +3,10 @@ import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/st
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
-import { AwakeningSkill } from 'core/skills/skill_wrappers';
+import { AwakeningSkill, LordSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
+@LordSkill
 @AwakeningSkill({ name: 'ruoyu', description: 'ruoyu_description' })
 export class RuoYu extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
@@ -13,11 +14,11 @@ export class RuoYu extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    const hp = owner.Hp;
-    const findFunc = (player: Player) => {
-      return player.Hp < hp;
-    };
-    return room.getOtherPlayers(owner.Id).find(findFunc) === undefined;
+    return room.getOtherPlayers(owner.Id).find(
+      player => {
+        return player.Hp < owner.Hp;
+      }
+    ) === undefined;
   }
 
   async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
