@@ -34,7 +34,7 @@ export class YingHun extends TriggerSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId, toIds } = event;
-    const options: string[] = ['option-one', 'option-two'];
+    const options: string[] = ['yinghun:option-one', 'yinghun:option-two'];
 
     let selected: string | undefined;
     const from = room.getPlayerById(fromId);
@@ -55,10 +55,10 @@ export class YingHun extends TriggerSkill {
       room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, fromId);
 
       const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
-      selected = response.selectedOption || 'option-one';
+      selected = response.selectedOption || 'yinghun:option-one';
     }
     
-    if (!selected || selected === 'option-one') {
+    if (!selected || selected === 'yinghun:option-one') {
       await room.drawCards(1, toId, 'top', fromId, this.Name);
 
       const response = await room.askForCardDrop(
