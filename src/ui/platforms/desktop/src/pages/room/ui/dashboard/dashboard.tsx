@@ -102,7 +102,7 @@ export class EquipCardItem extends React.Component<EquipCardItemProps> {
   private readonly openTooltip = () => {
     this.onTooltipOpeningTimer = setTimeout(() => {
       this.onTooltipOpened = true;
-    }, 2500);
+    }, 2000);
   };
   @mobx.action
   private readonly closeTooltip = () => {

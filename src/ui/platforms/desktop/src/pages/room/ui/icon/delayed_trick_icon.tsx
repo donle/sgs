@@ -19,7 +19,7 @@ export const DelayedTrickIcon = (props: {
     setTooltipOpeningTimer(
       setTimeout(() => {
         setTooltipOpened(true);
-      }, 2500),
+      }, 2000),
     );
   };
 

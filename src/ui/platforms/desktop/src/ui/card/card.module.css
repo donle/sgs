@@ -136,12 +136,14 @@
     font-size: 14px;
 }
 .equipImage {
-    position: absolute;
     z-index: -1;
+}
+.cardSpecification {
+    position: absolute;
+    right: 4px;
 }
 .flatEquipNumber {
     font-size: 14px;
-    margin-right: 4px;
 }
 .cardDescription {
     z-index: 2;

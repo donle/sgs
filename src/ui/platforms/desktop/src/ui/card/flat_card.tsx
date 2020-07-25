@@ -50,7 +50,7 @@ export class FlatClientCard extends React.PureComponent<FlatClientCardProps> {
   private readonly openTooltip = () => {
     this.onTooltipOpeningTimer = setTimeout(() => {
       this.onTooltipOpened = true;
-    }, 2500);
+    }, 2000);
   };
   @mobx.action
   private readonly closeTooltip = () => {
@@ -78,8 +78,10 @@ export class FlatClientCard extends React.PureComponent<FlatClientCardProps> {
         ) : (
           <span className={styles.equipName}>{translator.trx(card.Name)}</span>
         )}
-        <CardSuitItem suit={card.Suit} />
-        <CardNumberItem className={styles.flatEquipNumber} cardNumber={card.CardNumber} isRed={card.isRed()} />
+        <span className={styles.cardSpecification}>
+          <CardSuitItem suit={card.Suit} />
+          <CardNumberItem className={styles.flatEquipNumber} cardNumber={card.CardNumber} isRed={card.isRed()} />
+        </span>
         {this.onTooltipOpened && (
           <Tooltip position={['left', 'bottom']} className={styles.cardDescription}>
             <CardDescription translator={translator} card={card} />

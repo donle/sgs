@@ -140,12 +140,13 @@
     width: 170px;
     position: absolute;
     left: 0;
+    align-items: center;
 }
 
 .playerEquip {
     height: 25%;
-    width: 100%;
     justify-content: center;
+    position: absolute;
 }
 
 .handCardsNumberBg {
