@@ -328,7 +328,6 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                       disabled={player.Dead || player.Role === PlayerRole.Lord}
                     />
                   )}
-                  {this.getPlayerEquips()}
                   <div className={styles.playerHp}>
                     <Hp hp={player.Hp} maxHp={player.MaxHp} size="small" />
                   </div>
@@ -377,6 +376,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
             <Tooltip position={['top']}>{this.createTooltipContent()}</Tooltip>
           )}
         </div>
+        {this.getPlayerEquips()}
         <div className={styles.marks}>{this.getOnceSkillMarks()}</div>
       </div>
     );

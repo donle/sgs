@@ -39,6 +39,7 @@ export const generalDictionary: Word[] = [
   { source: 'spade', target: '黑桃' },
   { source: 'club', target: '梅花' },
   { source: 'diamond', target: '方块' },
+  { source: 'attack range:', target: '攻击距离：'},
 
   { source: 'draw stack', target: '摸牌堆' },
   { source: 'drop stack', target: '弃牌堆' },

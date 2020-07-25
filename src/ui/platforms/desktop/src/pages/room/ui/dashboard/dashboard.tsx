@@ -21,6 +21,8 @@ import { PlayingBar } from '../playing_bar/playing_bar';
 import styles from './dashboard.module.css';
 
 import { Button } from 'ui/button/button';
+import { CardDescription } from 'ui/card_description/card_description';
+import { Tooltip } from 'ui/tooltip/tooltip';
 import armorSlot from './images/armor.png';
 import defenseHorseSlot from './images/defense_horse.png';
 import offenseHorseSlot from './images/offense_horse.png';
@@ -62,6 +64,9 @@ export class EquipCardItem extends React.Component<EquipCardItemProps> {
   selected: boolean = false;
   @mobx.observable.ref
   equipCardImage: string | undefined;
+  @mobx.observable.ref
+  onTooltipOpened: boolean = false;
+  private onTooltipOpeningTimer: NodeJS.Timer;
   private cardName: string = this.props.card.Name;
 
   @mobx.action
@@ -93,6 +98,24 @@ export class EquipCardItem extends React.Component<EquipCardItemProps> {
     }
   }
 
+  @mobx.action
+  private readonly openTooltip = () => {
+    this.onTooltipOpeningTimer = setTimeout(() => {
+      this.onTooltipOpened = true;
+    }, 2500);
+  };
+  @mobx.action
+  private readonly closeTooltip = () => {
+    this.onTooltipOpeningTimer && clearTimeout(this.onTooltipOpeningTimer);
+    this.onTooltipOpened = false;
+  };
+
+  private readonly onMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (this.onTooltipOpened) {
+      this.closeTooltip();
+    }
+  };
+
   render() {
     const { card, translator, highlight } = this.props;
     return (
@@ -107,6 +130,9 @@ export class EquipCardItem extends React.Component<EquipCardItemProps> {
           [styles.disabled]: highlight === undefined ? this.props.disabled : !highlight,
         })}
         onClick={this.onCardClick}
+        onMouseEnter={this.openTooltip}
+        onMouseMove={this.onMouseMove}
+        onMouseLeave={this.closeTooltip}
       >
         {this.equipCardImage ? (
           <img src={this.equipCardImage} className={styles.equipCardImage} alt="" />
@@ -117,6 +143,11 @@ export class EquipCardItem extends React.Component<EquipCardItemProps> {
           {card && <CardSuitItem className={styles.equipCardSuit} suit={card.Suit} />}
           <CardNumberItem className={styles.equipCardNumber} cardNumber={card.CardNumber} isRed={card.isRed()} />
         </>
+        {this.onTooltipOpened && (
+          <Tooltip position={['left', 'bottom']}>
+            <CardDescription translator={translator} card={card} />
+          </Tooltip>
+        )}
       </div>
     );
   }

@@ -6,6 +6,7 @@
 
 .player {
     display: flex;
+    position: relative;
 }
 .playerCard {
     position: relative;
@@ -132,24 +133,19 @@
     padding: 0 calc(gridLine * 4);
 }
 .playerEquips {
-    height: calc(11 * gridLine);
+    height: calc(11 * 8px);
     display: flex;
     flex-direction: column;
     align-self: flex-end;
-    width: 100%;
-    bottom: 0;
-    position: relative;
+    width: 170px;
+    position: absolute;
     left: 0;
 }
 
 .playerEquip {
     height: 25%;
     width: 100%;
-    display: flex;
-    align-items: center;
-    left: 0;
-    position: absolute;
-    padding: 0 gridLine;
+    justify-content: center;
 }
 
 .handCardsNumberBg {
