@@ -125,3 +125,8 @@ export const skillDescriptions: Word[] = [
     target: '<b>锁定技</b>，你不能成为黑色锦囊牌的目标。',
   },
 ];
+
+export const eventDictionary: Word[] = [
+  { source: 'yinghun:option-one', target: '摸一弃X' },
+  { source: 'yinghun:option-two', target: '摸X弃一' },
+];
