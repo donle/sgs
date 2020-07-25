@@ -33,7 +33,7 @@ export class WuShenShadow extends RulesBreakerSkill {
   public breakCardUsableDistance(cardId: CardId | CardMatcher): number {
     let match = false;
     if (cardId instanceof CardMatcher) {
-      match = cardId.match(new CardMatcher({ suit: [CardSuit.Heart], name: ['slash'] }));
+      match = cardId.match(new CardMatcher({ suit: [CardSuit.Heart], generalName: ['slash'] }));
     } else {
       const card = Sanguosha.getCardById(cardId);
       match = card.GeneralName === 'slash' && card.Suit === CardSuit.Heart;

@@ -18,7 +18,7 @@ export class WuSheng extends ViewAsSkill {
   }
 
   public canUse(room: Room, owner: Player): boolean {
-    return owner.canUseCard(room, new CardMatcher({ name: ['slash'] }));
+    return owner.canUseCard(room, new CardMatcher({ generalName: ['slash'] }));
   }
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
@@ -33,7 +33,7 @@ export class WuSheng extends ViewAsSkill {
     containerCard?: CardId,
     cardMatcher?: CardMatcher,
   ): boolean {
-    const isAvailable = cardMatcher ? cardMatcher.match(new CardMatcher({ name: ['slash'] })) : true;
+    const isAvailable = cardMatcher ? cardMatcher.match(new CardMatcher({ generalName: ['slash'] })) : true;
     return isAvailable && Sanguosha.getCardById(pendingCardId).isRed();
   }
   public viewAs(selectedCards: CardId[]): VirtualCard {
@@ -56,7 +56,7 @@ export class WuShengShadow extends RulesBreakerSkill implements OnDefineReleaseT
 
   breakCardUsableDistance(cardId: CardId | CardMatcher, room: Room, owner: Player) {
     if (cardId instanceof CardMatcher) {
-      return cardId.match(new CardMatcher({ name: ['slash'], suit: [CardSuit.Diamond] })) ? INFINITE_DISTANCE : 0;
+      return cardId.match(new CardMatcher({ generalName: ['slash'], suit: [CardSuit.Diamond] })) ? INFINITE_DISTANCE : 0;
     } else {
       const card = Sanguosha.getCardById(cardId);
       return card.GeneralName === 'slash' && card.Suit === CardSuit.Diamond ? INFINITE_DISTANCE : 0;

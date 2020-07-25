@@ -884,7 +884,7 @@ export class GameClientProcessor {
     this.presenter.isSkillDisabled(
       AskForPeachAction.isSkillDisabled(
         this.store.room,
-        askForPeachMatcher,
+        content.fromId === content.toId,
         this.store.room.getPlayerById(content.fromId),
       ),
     );

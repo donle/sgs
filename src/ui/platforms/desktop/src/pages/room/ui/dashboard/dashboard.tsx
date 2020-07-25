@@ -365,6 +365,7 @@ export class Dashboard extends React.Component<DashboardProps> {
           isSkillDisabled={this.props.isSkillDisabled}
           incomingMessage={this.props.store.incomingUserMessages[player.Id]}
           onCloseIncomingMessage={this.onCloseIncomingMessage(player)}
+          selected={this.props.store.selectedPlayers.includes(player)}
         />
       </div>
     );

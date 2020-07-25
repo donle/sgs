@@ -13,11 +13,11 @@ export class DuelSkill extends ActiveSkill {
   public canUse() {
     return true;
   }
-  
+
   public numberOfTargets() {
     return 1;
   }
-  
+
   public cardFilter(): boolean {
     return true;
   }
@@ -50,11 +50,11 @@ export class DuelSkill extends ActiveSkill {
       const response = await room.askForCardResponse(
         {
           toId: targets[turn],
-          cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
+          cardMatcher: new CardMatcher({ generalName: ['slash'] }).toSocketPassenger(),
           byCardId: event.cardId,
           cardUserId: event.fromId,
           conversation: TranslationPack.translationJsonPatcher(
-            'please use a {0} card to response {1}',
+            'please response a {0} card to response {1}',
             'slash',
             TranslationPack.patchCardInTranslation(event.cardId),
           ).extract(),

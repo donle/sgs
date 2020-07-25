@@ -213,6 +213,7 @@ export class ResponsiveUseCardAction<
 
       if (this.scopedTargets && this.scopedTargets.length === 1) {
         this.selectedTargets = this.scopedTargets.slice();
+        this.onClickPlayer(this.store.room.getPlayerById(this.selectedTargets[0]), true);
       } else {
         this.presenter.setupPlayersSelectionMatcher((player: Player) => this.isPlayerEnabled(player));
       }

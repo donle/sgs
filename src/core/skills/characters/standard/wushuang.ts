@@ -167,11 +167,11 @@ export class WuShuangShadow extends TriggerSkill {
       const duelEvent = responseToEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
       const askForResponseCardEvent = {
         toId: duelResponseEvent.fromId,
-        cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
+        cardMatcher: new CardMatcher({ generalName: ['slash'] }).toSocketPassenger(),
         byCardId: duelEvent.cardId,
         cardUserId: duelResponseEvent.fromId,
         conversation: TranslationPack.translationJsonPatcher(
-          'please use a {0} card to response {1}',
+          'please response a {0} card to response {1}',
           'slash',
           TranslationPack.patchCardInTranslation(duelEvent.cardId),
         ).extract(),

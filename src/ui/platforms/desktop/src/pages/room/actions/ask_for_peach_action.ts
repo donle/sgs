@@ -11,7 +11,7 @@ import { BaseAction } from './base_action';
 import { ResponsiveUseCardAction } from './responsive_card_use_action';
 
 export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifiers.AskForPeachEvent> {
-  public static readonly isSkillDisabled = (room: Room, matcher: CardMatcher, player: Player) => (skill: Skill) => {
+  public static readonly isSkillDisabled = (room: Room, useByMyself: boolean, player: Player) => (skill: Skill) => {
     if (UniqueSkillRule.isProhibited(skill, player)) {
       return true;
     }
@@ -20,8 +20,10 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
       return true;
     } else if (skill instanceof ViewAsSkill) {
       return (
-        !CardMatcher.weakMatch({ name: skill.canViewAs(room, player), tag: 'card-matcher' }, matcher) ||
-        !skill.canUse(room, player)
+        !CardMatcher.match(
+          { name: skill.canViewAs(room, player), tag: 'card-matcher' },
+          new CardMatcher({ name: useByMyself ? ['alocohol', 'peach'] : ['peach'] }),
+        ) || !skill.canUse(room, player)
       );
     }
 

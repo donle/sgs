@@ -98,6 +98,8 @@ export class RoomStore {
   highlightedCards: boolean | undefined = true;
   @mobx.observable.shallow
   selectedCards: Card[] = [];
+  @mobx.observable.shallow
+  selectedPlayers: ClientPlayer[] = [];
 
   @mobx.observable.ref
   incomingUserMessages: {
@@ -383,14 +385,31 @@ export class RoomPresenter {
   }
 
   @mobx.action
+  clearSelectedCards() {
+    this.store.selectedCards = [];
+  }
+  @mobx.action
   selectCard(card: Card) {
     this.store.selectedCards.push(card);
   }
-
   @mobx.action
   unselectCard(card: Card) {
     const index = this.store.selectedCards.findIndex(selected => selected === card);
     index >= 0 && this.store.selectedCards.splice(index, 1);
+  }
+
+  @mobx.action
+  clearSelectedPlayers() {
+    this.store.selectedPlayers = [];
+  }
+  @mobx.action
+  selectPlayer(player: ClientPlayer) {
+    this.store.selectedPlayers.push(player);
+  }
+  @mobx.action
+  unselectPlayer(player: ClientPlayer) {
+    const index = this.store.selectedPlayers.findIndex(selected => selected === player);
+    index >= 0 && this.store.selectedPlayers.splice(index, 1);
   }
 
   @mobx.action

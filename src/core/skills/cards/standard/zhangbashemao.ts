@@ -13,7 +13,7 @@ export class ZhangBaSheMaoSkill extends ViewAsSkill {
     return ['slash'];
   }
   public canUse(room: Room, owner: Player) {
-    return owner.canUseCard(room, new CardMatcher({ name: ['slash'] }));
+    return owner.canUseCard(room, new CardMatcher({ generalName: ['slash'] }));
   }
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {

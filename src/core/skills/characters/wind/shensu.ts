@@ -34,7 +34,7 @@ export class ShenSu extends TriggerSkill {
 
   public targetFilter(room: Room, owner: Player, targets: PlayerId[]): boolean {
     const availableNumOfTargets = 1;
-    const additionalNumberOfTargets = this.additionalNumberOfTargets(room, owner, new CardMatcher({ name: ['slash'] }));
+    const additionalNumberOfTargets = this.additionalNumberOfTargets(room, owner, new CardMatcher({ generalName: ['slash'] }));
     if (additionalNumberOfTargets > 0) {
       return (
         targets.length >= availableNumOfTargets && targets.length <= availableNumOfTargets + additionalNumberOfTargets
@@ -45,7 +45,7 @@ export class ShenSu extends TriggerSkill {
   }
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
-    return room.getPlayerById(owner).canUseCardTo(room, new CardMatcher({ name: ['slash'] }), target);
+    return room.getPlayerById(owner).canUseCardTo(room, new CardMatcher({ generalName: ['slash'] }), target);
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {

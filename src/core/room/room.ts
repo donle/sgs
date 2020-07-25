@@ -370,7 +370,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
     return (
       from.getAttackDistance(this) + additionalAttackDistance >= seatDistance &&
-      this.canUseCardTo(slash || new CardMatcher({ name: ['slash'] }), to.Id)
+      this.canUseCardTo(slash || new CardMatcher({ generalName: ['slash'] }), to.Id)
     );
   }
 

@@ -110,7 +110,7 @@ export class QiMouBlocker extends RulesBreakerSkill {
   breakCardUsableTimes(cardId: CardId | CardMatcher, room: Room, owner: Player) {
     const additionalTimes = room.getFlag<number>(owner.Id, this.GeneralName) || 0;
     if (cardId instanceof CardMatcher) {
-      return cardId.match(new CardMatcher({ name: ['slash'] })) ? additionalTimes : 0;
+      return cardId.match(new CardMatcher({ generalName: ['slash'] })) ? additionalTimes : 0;
     } else {
       return Sanguosha.getCardById(cardId).GeneralName === 'slash' ? additionalTimes : 0;
     }
