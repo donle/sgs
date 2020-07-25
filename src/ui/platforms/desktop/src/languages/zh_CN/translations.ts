@@ -6,7 +6,7 @@ export const cardDictionary: Word[] = [
   { source: 'peach', target: '桃' },
   { source: 'alcohol', target: '酒' },
   { source: 'qinggang', target: '青釭剑' },
-  { source: 'zixin', target: '紫骍' },
+  { source: 'zixing', target: '紫骍' },
   { source: 'dayuan', target: '大宛' },
   { source: 'jueying', target: '绝影' },
   { source: 'chitu', target: '赤兔' },
