@@ -7,7 +7,7 @@ import { ProdImageLoader } from './prod_image_loader';
 export function getImageLoader(flavor: ClientFlavor): ImageLoader {
   switch (flavor) {
     case ClientFlavor.Dev:
-      // return new DevImageLoader();
+      return new DevImageLoader();
     case ClientFlavor.Prod:
       return new ProdImageLoader();
     default:
