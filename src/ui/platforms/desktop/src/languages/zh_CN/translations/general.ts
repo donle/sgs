@@ -419,6 +419,10 @@ export const eventDictionary: Word[] = [
     target: '固政：是否获得剩余的牌？',
   },
   {
+    source: 'tiaoxin: you are provoked by {0}, do you wanna use slash to {0}?',
+    target: '{0} 对你发动了“挑衅”，是否对包括其在内的角色使用一张【杀】？',
+  },
+  {
     source: 'wuhun:Please choose a target to die with you',
     target: '请选择一名角色进行【武魂】的判定，若结果不为【桃】或【桃园结义】，其立即死亡',
   },
@@ -544,6 +548,8 @@ export const eventDictionary: Word[] = [
   { source: 'zaiqi:recover', target: '令孟获回复1点体力' },
   { source: 'jianyan:red', target: '红色牌' },
   { source: 'jianyan:black', target: '黑色牌' },
+  { source: 'zhiji:drawcards', target: '摸两张牌'},
+  { source: 'zhiji:recover', target: '回复1点体力'},
   { source: 'please choose the amount of hp to lose', target: '请选择要失去的体力值' },
   { source: 'please choose your zhiheng cards', target: '请选择要制衡的牌' },
   {

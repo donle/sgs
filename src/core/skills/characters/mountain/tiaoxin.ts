@@ -16,7 +16,6 @@ export class TiaoXin extends ActiveSkill {
   }
 
   public isRefreshAt(phase: PlayerPhase) {
-    console.log(phase);
     return phase === PlayerPhase.PlayCardStage;
   }
 
@@ -58,7 +57,7 @@ export class TiaoXin extends ActiveSkill {
         extraUse: true,
         commonUse: true,
         conversation: TranslationPack.translationJsonPatcher(
-          'you are provoked by {0}, do you wanna use slash to {0}?',
+          'tiaoxin: you are provoked by {0}, do you wanna use slash to {0}?',
           TranslationPack.patchPlayerInTranslation(from),
         ).extract(),
         triggeredBySkills: [this.Name],
