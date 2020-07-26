@@ -3,6 +3,7 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
+import { ClientPlayer } from 'core/player/player.client';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { RoomPresenter, RoomStore } from '../room.presenter';
@@ -44,6 +45,9 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
       }
 
       this.presenter.onClickPlayer((player: Player, selected: boolean) => {
+        selected
+          ? this.presenter.selectPlayer(player as ClientPlayer)
+          : this.presenter.unselectPlayer(player as ClientPlayer);
         if (selected) {
           selectedPlayers.push(player.Id);
         } else {
