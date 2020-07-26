@@ -163,12 +163,8 @@ export class ClientCard extends React.Component<ClientCardProps> {
   };
 
   render() {
-<<<<<<< HEAD
     const { className, style = {}, card, translator } = this.props;
 
-=======
-    const { className, style = {}, highlight } = this.props;
->>>>>>> 76b4f19... fixup phase skip process
     return (
       <div
         ref={this.props.ref}

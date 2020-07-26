@@ -31,15 +31,10 @@ export class RuoYu extends TriggerSkill {
     return true;
   }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 38ee290... add Skill Sishu
   async onEffect(room: Room, skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const fromId = skillEffectEvent.fromId;
 
     room.changeMaxHp(fromId, 1);
-<<<<<<< HEAD
     room.recover(
       {
         recoveredHp: 1,
@@ -50,27 +45,6 @@ export class RuoYu extends TriggerSkill {
     );
     room.obtainSkill(fromId, 'jijiang', true);
     room.obtainSkill(fromId, 'sishu', true);
-=======
-  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    room.changeMaxHp(event.fromId, 1);
-=======
->>>>>>> 38ee290... add Skill Sishu
-    room.recover(
-      {
-        recoveredHp: 1,
-        toId: fromId,
-        recoverBy: fromId,
-        triggeredBySkills: [this.Name],
-      }
-    );
-<<<<<<< HEAD
-    room.obtainSkill(event.fromId, 'jijiang', true);
-    //room.obtainSkill(event.fromId, 'sishu', true);
->>>>>>> ac08ff2... add Skill Ruoyu to Liushan
-=======
-    room.obtainSkill(fromId, 'jijiang', true);
-    room.obtainSkill(fromId, 'sishu', true);
->>>>>>> 38ee290... add Skill Sishu
     
     return true;
   }
