@@ -6,6 +6,8 @@ import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
+import { CardDescription } from 'ui/card_description/card_description';
+import { Tooltip } from 'ui/tooltip/tooltip';
 import styles from './card.module.css';
 import { CardNumberItem } from './card_number';
 import { CardSuitItem } from './card_suit';
@@ -40,6 +42,9 @@ export class ClientCard extends React.Component<ClientCardProps> {
   private realFlatCardImage: string | undefined;
   @mobx.observable.ref
   private originalCard: Card | undefined;
+  @mobx.observable.ref
+  onTooltipOpened: boolean = false;
+  private onTooltipOpeningTimer: NodeJS.Timer;
 
   private soundTracks: string[] = [];
 
@@ -91,7 +96,7 @@ export class ClientCard extends React.Component<ClientCardProps> {
   }
 
   get CardComponent() {
-    const { card, translator, imageLoader, tag } = this.props;
+    const { card, translator, imageLoader, tag, highlight } = this.props;
     if (!card) {
       const cardBack = imageLoader.getCardBack();
       return (
@@ -102,7 +107,11 @@ export class ClientCard extends React.Component<ClientCardProps> {
     }
 
     return (
-      <div className={styles.innerCard}>
+      <div
+        className={classNames(styles.innerCard, {
+          [styles.disabled]: highlight === undefined ? this.props.disabled : !highlight,
+        })}
+      >
         {this.originalCard && (
           <div className={styles.cornerTag}>
             <CardNumberItem cardNumber={this.originalCard.CardNumber} isRed={this.originalCard.isRed()} />
@@ -128,15 +137,39 @@ export class ClientCard extends React.Component<ClientCardProps> {
     );
   }
 
+  @mobx.action
+  private readonly openTooltip = () => {
+    this.onTooltipOpeningTimer = setTimeout(() => {
+      this.onTooltipOpened = true;
+    }, 2000);
+  };
+  @mobx.action
+  private readonly closeTooltip = () => {
+    this.onTooltipOpeningTimer && clearTimeout(this.onTooltipOpeningTimer);
+    this.onTooltipOpened = false;
+  };
+
+  private readonly onMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (this.onTooltipOpened) {
+      this.closeTooltip();
+    }
+
+    this.props.onMouseMove && this.props.onMouseMove(e);
+  };
+
+  private readonly onMouseLeave = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    this.closeTooltip();
+    this.props.onMouseLeave && this.props.onMouseLeave(e);
+  };
+
   render() {
-    const { className, style = {}, highlight } = this.props;
+    const { className, style = {}, card, translator } = this.props;
 
     return (
       <div
         ref={this.props.ref}
         className={classNames(styles.clientCard, className, {
           [styles.selected]: this.props.selected,
-          [styles.disabled]: highlight === undefined ? this.props.disabled : !highlight,
         })}
         style={{
           ...this.getCardRatioSize(),
@@ -145,10 +178,16 @@ export class ClientCard extends React.Component<ClientCardProps> {
         onClick={this.onClick}
         onMouseDown={this.props.onMouseDown}
         onMouseUp={this.props.onMouseUp}
-        onMouseMove={this.props.onMouseMove}
-        onMouseLeave={this.props.onMouseLeave}
+        onMouseMove={this.onMouseMove}
+        onMouseLeave={this.onMouseLeave}
+        onMouseEnter={this.openTooltip}
       >
         {this.CardComponent}
+        {this.onTooltipOpened && card && (
+          <Tooltip position={[]} className={styles.cardDescription}>
+            <CardDescription translator={translator} card={card} />
+          </Tooltip>
+        )}
       </div>
     );
   }

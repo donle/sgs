@@ -79,7 +79,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     }
 
     return (
-      <div className={styles.playerEquips}>
+      <div className={styles.playerEquips} onClick={this.onClick}>
         {equips.map(equip => (
           <FlatClientCard
             card={equip}
@@ -116,7 +116,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   private readonly openTooltip = () => {
     this.onTooltipOpeningTimer = setTimeout(() => {
       this.onTooltipOpened = true;
-    }, 2500);
+    }, 2000);
   };
   @mobx.action
   private readonly closeTooltip = () => {
@@ -328,7 +328,6 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                       disabled={player.Dead || player.Role === PlayerRole.Lord}
                     />
                   )}
-                  {this.getPlayerEquips()}
                   <div className={styles.playerHp}>
                     <Hp hp={player.Hp} maxHp={player.MaxHp} size="small" />
                   </div>
@@ -377,6 +376,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
             <Tooltip position={['top']}>{this.createTooltipContent()}</Tooltip>
           )}
         </div>
+        {this.getPlayerEquips()}
         <div className={styles.marks}>{this.getOnceSkillMarks()}</div>
       </div>
     );

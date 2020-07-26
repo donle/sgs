@@ -70,7 +70,7 @@ export class LongDan extends ViewAsSkill {
     } else {
       const card = Sanguosha.getCardById(pendingCardId);
       if (card.GeneralName === 'jink') {
-        return  owner.canUseCard(room, new CardMatcher({ generalName: ['slash'] }));
+        return owner.canUseCard(room, new CardMatcher({ generalName: ['slash'] }));
       } else if (card.GeneralName === 'alcohol') {
         return owner.canUseCard(room, new CardMatcher({ name: ['peach'] }));
       } else if (card.GeneralName === 'peach') {

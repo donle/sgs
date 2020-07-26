@@ -60,13 +60,13 @@ export const cardDescriptions: Word[] = [
   {
     source: 'peach_description',
     target:
-      '出牌阶段/当一名角色进入濒死状态时，对已受伤的你/该角色使用。目标角色回复1点体力',
+      '<b style="color:red">出牌阶段</b>/<b style="color:green">当一名角色进入濒死状态时</b>，对已受伤的<b style="color:red">你</b>/<b style="color:green">该角色</b>使用。目标角色回复1点体力',
   },
   {
     source: 'alcohol_description',
     target:
-      '①出牌阶段，对本回合内为以此效果使用过【酒】的你使用。目标角色于此回合内使用的下一张【杀】的伤害基数+1。\
-      ②当你处于濒死状态时，对你使用。目标角色回复1点体力。',
+      `①出牌阶段，对本回合内为以此效果使用过【酒】的你使用。目标角色于此回合内使用的下一张【杀】的伤害基数+1。<br />
+      ②当你处于濒死状态时，对你使用。目标角色回复1点体力。`,
   },
   {
     source: 'bingliangcunduan_description',
@@ -109,9 +109,9 @@ export const cardDescriptions: Word[] = [
       '出牌阶段，对你使用。目标角色判定，若为黑桃2~9，其受到3点无来源的雷电伤害。',
   },
   {
-    source: 'shushouqianyang_description',
+    source: 'shunshouqianyang_description',
     target:
-      '出牌阶段，对区域内有牌的一名其他角色使用。你获得目标角色区域内的一张牌。',
+      '出牌阶段，对距离为一且区域内有牌的一名其他角色使用。你获得目标角色区域内的一张牌。',
   },
   {
     source: 'taoyuanjieyi_description',
@@ -164,7 +164,7 @@ export const cardDescriptions: Word[] = [
       '当你使用的【杀】被目标角色抵消后，你可以弃置两张牌，使此【杀】依然生效。',
   },
   {
-    source: 'guanshifu_description',
+    source: 'hanbingjian_description',
     target:
       '当你使用【杀】对目标角色造成伤害时，若其有牌，你可以防止此伤害，然后依次弃置其两张牌。',
   },

@@ -15,13 +15,7 @@ export class ZhiJian extends ActiveSkill {
     return true;
   }
 
-  cardFilter(
-    room: Room,
-    owner: Player,
-    cards: CardId[],
-    selectedTargets: PlayerId[],
-    cardId?: CardId
-  ) {
+  cardFilter(room: Room, owner: Player, cards: CardId[], selectedTargets: PlayerId[], cardId?: CardId) {
     return cards.length === 1;
   }
 
@@ -31,11 +25,9 @@ export class ZhiJian extends ActiveSkill {
     cardId: CardId,
     selectedCards: CardId[],
     selectedTargets: PlayerId[],
-    containerCard?: CardId
+    containerCard?: CardId,
   ) {
-    return (
-      Sanguosha.getCardById(cardId).is(CardType.Equip)
-    );
+    return Sanguosha.getCardById(cardId).is(CardType.Equip);
   }
 
   public availableCardAreas() {
@@ -57,9 +49,8 @@ export class ZhiJian extends ActiveSkill {
     if (selectedCards.length === 1) {
       return room.canPlaceCardTo(selectedCards[0], target);
     } else {
-       return false;
+      return false;
     }
-
   }
 
   async onUse() {
@@ -67,7 +58,7 @@ export class ZhiJian extends ActiveSkill {
   }
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const { fromId, toIds ,cardIds } = skillUseEvent;
+    const { fromId, toIds, cardIds } = skillUseEvent;
     const from = room.getPlayerById(fromId);
     const card = cardIds![0];
 
@@ -99,7 +90,7 @@ export class ZhiJianShadow extends TriggerSkill {
   }
 
   public getSkillLog(room: Room, owner: Player) {
-      return 'zhijian: do you wanna use draw 1 card';
+    return 'zhijian: do you wanna use draw 1 card';
   }
 
   async onTrigger() {
