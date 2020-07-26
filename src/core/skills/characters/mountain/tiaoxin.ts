@@ -54,7 +54,7 @@ export class TiaoXin extends ActiveSkill {
         toId,
         cardUserId: toId,
         scopedTargets: [fromId],
-        cardMatcher: new CardMatcher({ name: ['slash'] }).toSocketPassenger(),
+        cardMatcher: new CardMatcher({ generalName: ['slash'] }).toSocketPassenger(),
         extraUse: true,
         commonUse: true,
         conversation: TranslationPack.translationJsonPatcher(
@@ -73,7 +73,7 @@ export class TiaoXin extends ActiveSkill {
       }
       const options = {
         [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),
-        [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea),
+        [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea).length,
       };
 
       const chooseCardEvent = {

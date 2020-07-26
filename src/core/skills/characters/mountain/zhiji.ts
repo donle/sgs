@@ -1,4 +1,4 @@
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
@@ -31,6 +31,8 @@ export class ZhiJi extends TriggerSkill {
     const { fromId } = skillEffectEvent;
     const from = room.getPlayerById(fromId);
 
+    room.changeMaxHp(fromId, -1);
+
     if (from.Hp >= from.MaxHp) {
       await room.drawCards(2, fromId, undefined, fromId, this.Name);
     } else {
@@ -43,11 +45,15 @@ export class ZhiJi extends TriggerSkill {
         ).extract()
       };
 
-      room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChoose, fromId);
+      room.notify(
+        GameEventIdentifiers.AskForChoosingOptionsEvent,
+        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(askForChoose),
+        fromId,
+      );
 
       const { selectedOption } = await room.onReceivingAsyncResponseFrom(
         GameEventIdentifiers.AskForChoosingOptionsEvent,
-        fromId
+        fromId,
       );
 
       if (selectedOption === undefined || selectedOption === 'zhiji:drawcards') {
@@ -62,7 +68,6 @@ export class ZhiJi extends TriggerSkill {
       }
     }
 
-    room.changeMaxHp(fromId, -1);
     room.obtainSkill(fromId, 'guanxing', true);
 
     return true;
