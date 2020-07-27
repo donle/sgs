@@ -156,6 +156,9 @@ export { WeiMu } from './characters/forest/weimu';
 export { DuanLiang, DuanLiangShadow } from './characters/forest/duanliang';
 export { JieZi } from './characters/forest/jiezi';
 
+
+export { TiaoXin } from './characters/mountain/tiaoxin';
+export { ZhiJi } from './characters/mountain/zhiji';
 export { XiangLe } from './characters/mountain/xiangle';
 export { RuoYu } from './characters/mountain/ruoyu';
 export { SiShu, SiShuShadow } from './characters/mountain/sishu';

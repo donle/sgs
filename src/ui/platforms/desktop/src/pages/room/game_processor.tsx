@@ -757,19 +757,19 @@ export class GameClientProcessor {
       // content.fromPlayer && this.presenter.isSkillDisabled(PlayPhaseAction.disableSkills);
       this.store.room.turnTo(content.toPlayer);
       this.store.room.Analytics.turnTo(content.toPlayer);
+    }
 
-      if (content.fromPlayer) {
-        for (const player of this.store.room.AlivePlayers) {
-          for (const skill of player.getSkills()) {
-            if (this.store.room.CurrentPlayerPhase === PlayerPhase.PrepareStage) {
-              player.resetCardUseHistory();
-            } else {
-              player.resetCardUseHistory('slash');
-            }
+    if (content.fromPlayer) {
+      for (const player of this.store.room.AlivePlayers) {
+        for (const skill of player.getSkills()) {
+          if (this.store.room.CurrentPlayerPhase === PlayerPhase.PrepareStage) {
+            player.resetCardUseHistory();
+          } else {
+            player.resetCardUseHistory('slash');
+          }
 
-            if (skill.isRefreshAt(content.to)) {
-              player.resetSkillUseHistory(skill.Name);
-            }
+          if (skill.isRefreshAt(content.to)) {
+            player.resetSkillUseHistory(skill.Name);
           }
         }
       }

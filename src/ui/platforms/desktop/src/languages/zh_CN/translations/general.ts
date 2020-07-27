@@ -419,6 +419,10 @@ export const eventDictionary: Word[] = [
     target: '固政：是否获得剩余的牌？',
   },
   {
+    source: 'tiaoxin: you are provoked by {0}, do you wanna use slash to {0}?',
+    target: '{0} 对你发动了“挑衅”，是否对包括其在内的角色使用一张【杀】？',
+  },
+  {
     source: 'fangquan: choose 1 card and 1 player to whom you ask play one round',
     target: '放权：你可以弃置一张手牌并选择一名其他角色，该角色将于回合结束后进行一个额外回合',
   },
@@ -556,6 +560,8 @@ export const eventDictionary: Word[] = [
   { source: 'zaiqi:recover', target: '令孟获回复1点体力' },
   { source: 'jianyan:red', target: '红色牌' },
   { source: 'jianyan:black', target: '黑色牌' },
+  { source: 'zhiji:drawcards', target: '摸两张牌'},
+  { source: 'zhiji:recover', target: '回复1点体力'},
   { source: 'please choose the amount of hp to lose', target: '请选择要失去的体力值' },
   { source: 'please choose your zhiheng cards', target: '请选择要制衡的牌' },
   {

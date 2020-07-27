@@ -211,7 +211,9 @@ export class ResponsiveUseCardAction<
         resolve();
       });
 
-      if (this.scopedTargets && this.scopedTargets.length === 1) {
+      //TODO: optimize auto selection
+      const event = (this.askForEvent as unknown) as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
+      if (this.scopedTargets && this.scopedTargets.length === 1 && !event.commonUse) {
         this.selectedTargets = this.scopedTargets.slice();
         this.onClickPlayer(this.store.room.getPlayerById(this.selectedTargets[0]), true);
       } else {
