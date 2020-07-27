@@ -20,7 +20,8 @@ export class LieRen extends TriggerSkill {
       content.byCardId !== undefined &&
       Sanguosha.getCardById(content.byCardId).GeneralName === 'slash' &&
       owner.Id !== content.toId &&
-      room.getPlayerById(content.toId).getCardIds(PlayerCardsArea.HandArea).length > 0
+      room.getPlayerById(content.toId).getCardIds(PlayerCardsArea.HandArea).length > 0 &&
+      room.canPindian(owner.Id, content.toId)
     );
   }
 
@@ -43,28 +44,28 @@ export class LieRen extends TriggerSkill {
           [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),
           [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea).length,
         };
-  
+
         const chooseCardEvent = {
           fromId,
           toId,
           options,
         };
-  
+
         room.notify(
           GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
           EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(chooseCardEvent),
           fromId,
         );
-  
+
         const response = await room.onReceivingAsyncResponseFrom(
           GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
           fromId,
         );
-  
+
         if (response.selectedCard === undefined) {
           response.selectedCard = to.getCardIds(PlayerCardsArea.HandArea)[response.selectedCardIndex!];
         }
-  
+
         await room.moveCards({
           movingCards: [{ card: response.selectedCard, fromArea: response.fromArea }],
           fromId: chooseCardEvent.toId,

@@ -27,8 +27,6 @@ export class FangQuan extends TriggerSkill {
 
   public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId, triggeredOnEvent } = skillUseEvent;
-    const phaseChangeEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-
     await room.skip(fromId, PlayerPhase.PlayCardStage);
 
     return true;

@@ -24,7 +24,10 @@ export class QuHu extends ActiveSkill {
     const player = room.getPlayerById(owner);
     const targetPlayer = room.getPlayerById(target);
     return (
-      target !== owner && player.Hp < targetPlayer.Hp && targetPlayer.getCardIds(PlayerCardsArea.HandArea).length > 0
+      target !== owner &&
+      player.Hp < targetPlayer.Hp &&
+      targetPlayer.getCardIds(PlayerCardsArea.HandArea).length > 0 &&
+      room.canPindian(owner, target)
     );
   }
 

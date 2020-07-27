@@ -1,12 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { CharacterNationality } from 'core/characters/character';
-import {
-  CardMoveArea,
-  CardMoveReason,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, GameStartStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -48,8 +42,8 @@ export class ZhiBa extends TriggerSkill {
 export class ZhiBaPindianCard extends ActiveSkill {
   public canUse(room: Room, owner: Player) {
     return (
-      owner.hasUsedSkillTimes(this.Name) < room.getAlivePlayersFrom()
-        .filter(player => player.hasSkill(this.GeneralName)).length &&
+      owner.hasUsedSkillTimes(this.Name) <
+        room.getAlivePlayersFrom().filter(player => player.hasSkill(this.GeneralName)).length &&
       owner.getCardIds(PlayerCardsArea.HandArea).length > 0
     );
   }
@@ -69,6 +63,7 @@ export class ZhiBaPindianCard extends ActiveSkill {
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
     return (
       room.getPlayerById(target).hasSkill(this.GeneralName) &&
+      room.canPindian(owner, target) &&
       room.Analytics.getRecordEvents<GameEventIdentifiers.SkillEffectEvent>(
         event =>
           event.skillName === this.Name &&
@@ -122,15 +117,17 @@ export class ZhiBaPindianCard extends ActiveSkill {
           return [...allCards, card.cardId];
         }, []);
 
-        const askForChooseEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
-          options,
-          conversation: TranslationPack.translationJsonPatcher(
-            '{0}: do you want to obtain pindian cards: {1}',
-            this.Name,
-            TranslationPack.patchCardInTranslation(...pindianCardIds),
-          ).extract(),
-          toId,
-        });
+        const askForChooseEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(
+          {
+            options,
+            conversation: TranslationPack.translationJsonPatcher(
+              '{0}: do you want to obtain pindian cards: {1}',
+              this.Name,
+              TranslationPack.patchCardInTranslation(...pindianCardIds),
+            ).extract(),
+            toId,
+          },
+        );
 
         room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, toId);
 

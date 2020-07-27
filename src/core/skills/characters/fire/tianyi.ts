@@ -36,7 +36,7 @@ export class TianYi extends ActiveSkill {
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
     const targetPlayer = room.getPlayerById(target);
-    return target !== owner && targetPlayer.getCardIds(PlayerCardsArea.HandArea).length > 0;
+    return target !== owner && targetPlayer.getCardIds(PlayerCardsArea.HandArea).length > 0 && room.canPindian(owner, target);
   }
 
   public isAvailableCard() {
