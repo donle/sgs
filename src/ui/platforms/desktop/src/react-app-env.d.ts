@@ -39,6 +39,11 @@ declare module '*.webp' {
   export default src;
 }
 
+declare module '*.ogg' {
+  const src: string;
+  export default src;
+}
+
 declare module '*.svg' {
   import * as React from 'react';
 

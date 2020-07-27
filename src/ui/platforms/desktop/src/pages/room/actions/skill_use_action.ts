@@ -145,7 +145,7 @@ export class SkillUseAction extends BaseAction {
     this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
       this.isCardEnabledOnSkillTriggered(card, PlayerCardsArea.HandArea),
     );
-    this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
+    this.presenter.setupClientPlayerOutsideCardActionsMatcher((card: Card) =>
       this.isCardEnabledOnSkillTriggered(card, PlayerCardsArea.OutsideArea),
     );
     this.presenter.setupCardSkillSelectionMatcher((card: Card) =>

@@ -153,12 +153,12 @@
     position: absolute;
     text-align: center;
     z-index: 2;
-    margin-top: 8px;
+    margin-top: gridLine;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: calc(8px * 5);
-    left: calc(8px * -2.5);
+    width: calc(gridLine * 5);
+    left: calc(gridLine * -2.5);
     bottom: 0;
 }
 .handCardsNumberBgImage {

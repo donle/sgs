@@ -261,6 +261,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       return;
     }
 
+    const { triggeredBySkills } = content as ServerEventFinder<GameEventIdentifiers>;
+    const bySkills = triggeredBySkills
+      ? triggeredBySkills.map(skillName => Sanguosha.getSkillBySkillName(skillName))
+      : undefined;
+
     const skillSource: Readonly<['character', 'equip']> = ['character', 'equip'];
     for (const player of this.getAllPlayersFrom()) {
       for (const skillFrom of skillSource) {
@@ -318,7 +323,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                 }
               }
             } else {
-              const awaitedSkills: TriggerSkill[] = [];
+              let awaitedSkills: TriggerSkill[] = [];
               for (const skill of skills) {
                 if (skill.isFlaggedSkill(this, content, stage)) {
                   const triggerSkillEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent> = {
@@ -344,6 +349,16 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                   invokeSkillNames: awaitedSkills.map(skill => skill.Name),
                   toId: player.Id,
                 };
+                if (awaitedSkills.length === 1 && uncancellableSkills.length === 1) {
+                  const triggerSkillEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent> = {
+                    fromId: player.Id,
+                    skillName: awaitedSkills[0].Name,
+                    triggeredOnEvent: content,
+                  };
+                  await this.useSkill(triggerSkillEvent);
+                  break;
+                }
+                
                 if (uncancellableSkills.length > 1) {
                   EventPacker.createUncancellableEvent(event);
                 }
@@ -380,6 +395,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                     awaitedSkills.splice(index, 1);
                   }
                 }
+
+                awaitedSkills = awaitedSkills.filter(skill => {
+                  const canTrigger = bySkills
+                    ? bySkills.find(bySkill => UniqueSkillRule.isProhibitedBySkillRule(bySkill, skill)) === undefined
+                    : true;
+
+                  return canTrigger && skill.isTriggerable(content, stage) && skill.canUse(this, player, content);
+                });
               }
             }
           }

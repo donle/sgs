@@ -79,7 +79,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     }
 
     return (
-      <div className={styles.playerEquips}>
+      <div className={styles.playerEquips} onClick={this.onClick}>
         {equips.map(equip => (
           <FlatClientCard
             card={equip}

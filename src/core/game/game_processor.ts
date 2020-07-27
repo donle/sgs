@@ -57,7 +57,7 @@ export class GameProcessor {
   private currentProcessingStage: GameEventStage | undefined;
   private playerStages: PlayerPhaseStages[] = [];
 
-  private toEndPhase: boolean = false;
+  private toEndPhase: PlayerPhase | undefined;
   private playRoundInsertions: PlayerId[] = [];
   private dumpedLastPlayerPositionIndex: number = -1;
 
@@ -315,8 +315,8 @@ export class GameProcessor {
 
           await this.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
 
-          if (this.toEndPhase === true) {
-            this.toEndPhase = false;
+          if (this.toEndPhase !== undefined) {
+            this.toEndPhase = undefined;
             break;
           }
         }
@@ -357,8 +357,8 @@ export class GameProcessor {
           if (this.CurrentPlayer.Dead) {
             break;
           }
-          if (this.toEndPhase === true) {
-            this.toEndPhase = false;
+          if (this.toEndPhase !== undefined) {
+            this.toEndPhase = undefined;
             break;
           }
         } while (true);
@@ -390,16 +390,28 @@ export class GameProcessor {
     if (phase === undefined) {
       this.playerStages = [];
     } else {
-      if (this.currentPlayerPhase === phase) {
-        this.toEndPhase = true;
-      }
+      this.toEndPhase = phase;
       this.playerStages = this.playerStages.filter(stage => !this.stageProcessor.isInsidePlayerPhase(phase, stage));
+      if (
+        phase !== undefined &&
+        this.currentPlayerStage !== undefined &&
+        this.stageProcessor.isInsidePlayerPhase(phase, this.currentPlayerStage)
+      ) {
+        this.currentPlayerStage = this.playerStages.shift();
+      }
     }
   }
 
   public endPhase(phase: PlayerPhase) {
-    this.toEndPhase = true;
+    this.toEndPhase = phase;
     this.playerStages = this.playerStages.filter(stage => !this.stageProcessor.isInsidePlayerPhase(phase, stage));
+    if (
+      phase !== undefined &&
+      this.currentPlayerStage !== undefined &&
+      this.stageProcessor.isInsidePlayerPhase(phase, this.currentPlayerStage)
+    ) {
+      this.currentPlayerStage = this.playerStages.shift();
+    }
   }
 
   private readonly processingPhaseStages = [
@@ -433,9 +445,9 @@ export class GameProcessor {
       });
       if (nextPhase !== this.currentPlayerPhase) {
         await this.onHandleIncomingEvent(GameEventIdentifiers.PhaseChangeEvent, phaseChangeEvent, async stage => {
-          if (this.toEndPhase) {
+          if (this.toEndPhase === nextPhase) {
             EventPacker.terminate(phaseChangeEvent);
-            this.toEndPhase = false;
+            this.toEndPhase = undefined;
             return false;
           }
 
