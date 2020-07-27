@@ -306,6 +306,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                   const event = {
                     invokeSkillNames: [skill.Name],
                     toId: player.Id,
+                    conversation: skill.getSkillLog(this, player, content),
                   };
                   if (skill.isUncancellable(this, content)) {
                     EventPacker.createUncancellableEvent(event);

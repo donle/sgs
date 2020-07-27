@@ -303,7 +303,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
     return [...alivePlayers.slice(startsFromNext ? fromIndex + 1 : fromIndex), ...alivePlayers.slice(0, fromIndex)];
   }
-  
+
   public getAllPlayersFrom(playerId?: PlayerId, startsFromNext: boolean = false) {
     playerId = playerId === undefined ? this.CurrentPlayer.Id : playerId;
     while (this.getPlayerById(playerId).Dead) {
@@ -432,6 +432,12 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     }
 
     return false;
+  }
+
+  public canPindian(fromId: PlayerId, targetId: PlayerId): boolean {
+    const target = this.getPlayerById(targetId);
+    const targetSkills = target.getPlayerSkills<FilterSkill>('filter');
+    return targetSkills.find(skill => !skill.canBePindianTarget(this, targetId, fromId)) === undefined;
   }
 
   public clearFlags(player: PlayerId) {
