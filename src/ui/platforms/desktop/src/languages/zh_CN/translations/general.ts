@@ -419,6 +419,18 @@ export const eventDictionary: Word[] = [
     target: '固政：是否获得剩余的牌？',
   },
   {
+    source: 'fangquan: choose 1 card and 1 player to whom you ask play one round',
+    target: '放权：你可以弃置一张手牌并选择一名其他角色，该角色将于回合结束后进行一个额外回合',
+  },
+  {
+    source: 'xiangle: please drop 1 basic card else this Slash will be of no effect to {0}',
+    target: '享乐：请弃置一张基本牌，否则此【杀】将对 {0} 无效',
+  },
+  {
+    source: '{0} sishu effect, lebusishu result will reverse',
+    target: '{0} 的“思蜀”效果被触发，其将要进行的【乐不思蜀】判定效果反转',
+  },
+  {
     source: 'wuhun:Please choose a target to die with you',
     target: '请选择一名角色进行【武魂】的判定，若结果不为【桃】或【桃园结义】，其立即死亡',
   },
