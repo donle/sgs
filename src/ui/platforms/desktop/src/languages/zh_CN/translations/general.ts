@@ -1,5 +1,4 @@
 import type { Word } from 'languages';
-import { trace } from 'mobx';
 
 export const markDictionary: Word[] = [
   { source: 'nightmare', target: '梦魇' },
