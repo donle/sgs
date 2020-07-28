@@ -69,6 +69,7 @@ export abstract class Player implements PlayerInfo {
     [K: string]: number;
   }[] = [];
   private playerCharacter: Character | undefined;
+  private playerOutsideCharacters: { [name: string]: CharacterId[] } = {};
   protected playerCards: PlayerCards;
   protected playerOutsideCards: PlayerCardsOutside;
 
@@ -113,6 +114,33 @@ export abstract class Player implements PlayerInfo {
     this.online = true;
 
     GameCommonRules.initPlayerCommonRules(this);
+  }
+
+  public addOutsideCharacters(name: string, characters: CharacterId[]): void {
+    this.playerOutsideCharacters[name] || (this.playerOutsideCharacters[name] = []);
+    this.playerOutsideCharacters[name].push(...characters);
+  }
+  public removeOutsideCharacters(name: string, characters: CharacterId[]): void {
+    this.playerOutsideCharacters[name] || (this.playerOutsideCharacters[name] = []);
+    this.playerOutsideCharacters[name] = this.playerOutsideCharacters[name].filter(id => !characters.includes(id));
+  }
+  public getOutsideCharacters(name: string): CharacterId[] {
+    return this.playerOutsideCharacters[name] || [];
+  }
+  public clearOutsideCharacters(name?: string): CharacterId[] {
+    const clearedCharacterIds: CharacterId[] = [];
+    if (name) {
+      if (this.playerOutsideCharacters[name]) {
+        clearedCharacterIds.concat(this.playerOutsideCharacters[name]);
+        delete this.playerOutsideCharacters[name];
+      }
+    } else {
+      for (const name in this.playerOutsideCharacters) {
+        clearedCharacterIds.concat(this.playerOutsideCharacters[name]);
+      }
+      this.playerOutsideCharacters = {};
+    }
+    return clearedCharacterIds;
   }
 
   public clearFlags() {

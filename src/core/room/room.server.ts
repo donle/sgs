@@ -23,7 +23,7 @@ import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/p
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardTargetEnum } from 'core/cards/libs/card_props';
-import { Character } from 'core/characters/character';
+import { Character, CharacterId } from 'core/characters/character';
 import { PinDianResultType } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { GameInfo, getRoles } from 'core/game/game_props';
@@ -44,6 +44,7 @@ import { Room, RoomId } from './room';
 
 export class ServerRoom extends Room<WorkPlace.Server> {
   private loadedCharacters: Character[] = [];
+  private selectedCharacters: CharacterId[] = [];
 
   private drawStack: CardId[] = [];
   private dropStack: CardId[] = [];
@@ -143,7 +144,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     this.gameStarted = true;
     await this.sleep(3000);
-    await this.gameProcessor.gameStart(this, this.loadedCharacters);
+    await this.gameProcessor.gameStart(this, this.loadedCharacters, () => {
+      this.selectedCharacters = this.getAlivePlayersFrom().map(player => player.CharacterId) as CharacterId[];
+    });
   }
 
   public createPlayer(playerInfo: PlayerInfo) {
@@ -486,6 +489,49 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         ).extract(),
       }),
     );
+  }
+
+  public getRandomCharactersFromLoadedPackage(numberOfCharacter: number): CharacterId[] {
+    const characters = Sanguosha.getRandomCharacters(
+      numberOfCharacter,
+      this.loadedCharacters,
+      this.selectedCharacters,
+    ).map(character => character.Id);
+
+    return characters;
+  }
+
+  public putCharactersAway(characterIds: CharacterId[]): void {
+    this.selectedCharacters = this.selectedCharacters.filter(characterId => !characterIds.includes(characterId));
+  }
+
+  public addOutsideCharacters(playerId: PlayerId, name: string, characterIds: CharacterId[]): void {
+    this.selectedCharacters = this.selectedCharacters.concat(characterIds);
+
+    super.addOutsideCharacters(playerId, name, characterIds);
+  }
+  public removeOutsideCharacters(playerId: PlayerId, name: string, characterIds: CharacterId[]): void {
+    this.putCharactersAway(characterIds);
+    super.removeOutsideCharacters(playerId, name, characterIds);
+  }
+  public clearOutsideCharacters(playerId: PlayerId, name?: string): CharacterId[] {
+    const clearedCharacterIds: CharacterId[] = super.clearOutsideCharacters(playerId, name);
+    this.putCharactersAway(clearedCharacterIds);
+    return clearedCharacterIds;
+  }
+
+  public changePlayerProperties(event: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent>): void {
+    const { changedProperties } = event;
+    for (const property of changedProperties) {
+      const player = this.getPlayerById(property.toId);
+      property.characterId !== undefined && (player.CharacterId = property.characterId);
+      property.maxHp !== undefined && (player.MaxHp = property.maxHp);
+      property.hp !== undefined && (player.Hp = property.hp);
+      property.nationality !== undefined && (player.Nationality = property.nationality);
+      property.gender !== undefined && (player.Gender = property.gender);
+    }
+
+    this.broadcast(GameEventIdentifiers.PlayerPropertiesChangeEvent, event);
   }
 
   public async askForCardDrop(
@@ -875,7 +921,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       const outsideCards = player.getCardIds(PlayerCardsArea.OutsideArea, skill.Name);
       if (SkillHooks.isHookedUpOnLosingSkill(skill)) {
         this.hookedSkills.push({ player, skill });
-      } else if (outsideCards) {
+      }
+
+      if (outsideCards) {
         await this.moveCards({
           movingCards: outsideCards.map(card => ({ card, fromArea: PlayerCardsArea.OutsideArea })),
           fromId: player.Id,
@@ -884,6 +932,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         });
       }
     }
+
+    this.clearOutsideCharacters(player.Id, skillName);
   }
   public obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean) {
     const player = this.getPlayerById(playerId);
@@ -1344,6 +1394,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       GameEventIdentifiers.PlayerDiedEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerDiedEvent, playerDiedEvent),
     );
+
+    deadPlayer.CharacterId && this.putCharactersAway([deadPlayer.CharacterId]);
   }
 
   public clearFlags(player: PlayerId) {

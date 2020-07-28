@@ -2,6 +2,7 @@ import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
+import { CharacterId } from 'core/characters/character';
 import {
   CardMoveReason,
   ClientEventFinder,
@@ -86,6 +87,12 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract async moveCards(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): Promise<void>;
   //Server only
   public abstract async asyncMoveCards(events: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[]): Promise<void>;
+  //Server only
+  public abstract getRandomCharactersFromLoadedPackage(numberOfCharacter: number): CharacterId[];
+  //Server only
+  public abstract changePlayerProperties(
+    event: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent>,
+  ): void;
   //Server only
   public abstract async onReceivingAsyncResponseFrom<T extends GameEventIdentifiers>(
     identifier: T,
@@ -438,6 +445,19 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     const target = this.getPlayerById(targetId);
     const targetSkills = target.getPlayerSkills<FilterSkill>('filter');
     return targetSkills.find(skill => !skill.canBePindianTarget(this, targetId, fromId)) === undefined;
+  }
+
+  public addOutsideCharacters(playerId: PlayerId, name: string, characters: CharacterId[]): void {
+    this.getPlayerById(playerId).addOutsideCharacters(name, characters);
+  }
+  public removeOutsideCharacters(playerId: PlayerId, name: string, characters: CharacterId[]): void {
+    this.getPlayerById(playerId).removeOutsideCharacters(name, characters);
+  }
+  public getOutsideCharacters(playerId: PlayerId, name: string): CharacterId[] {
+    return this.getPlayerById(playerId).getOutsideCharacters(name);
+  }
+  public clearOutsideCharacters(playerId: PlayerId, name?: string): CharacterId[] {
+    return this.getPlayerById(playerId).clearOutsideCharacters(name);
   }
 
   public clearFlags(player: PlayerId) {
