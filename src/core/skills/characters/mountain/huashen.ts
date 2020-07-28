@@ -12,28 +12,39 @@ import {
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { Logger } from 'core/shares/libs/logger/logger';
 import { SkillType, TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 
-const log = new Logger();
-
 type HuaShenInfo = {
   originGender: CharacterGender;
   originNationality: CharacterNationality;
+  tempCharacterId?: CharacterId;
   tempSkill?: string;
 };
 
 @CommonSkill({ name: 'huashen', description: 'huashen_description' })
 export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
-  public onLosingSkill(): boolean {
-    //todo: do something when lose skill
+  public showOrigin(room: Room, who: PlayerId): void {
+    const huashenInfo = room.getFlag<HuaShenInfo>(who, HuaShen.GeneralName);
+    const playerPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
+      changedProperties: [{ toId: who, nationality: huashenInfo.originNationality, gender: huashenInfo.originGender }],
+    };
+    room.changePlayerProperties(playerPropertiesChangeEvent);
+  }
+
+  public onLosingSkill(room: Room, owner: PlayerId): boolean {
+    this.showOrigin(room, owner);
+
     return true;
   }
 
-  public isAutoTrigger(): boolean {
-    return true;
+  public isAutoTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers>): boolean {
+    const identifier = EventPacker.getIdentifier(event);
+    if (identifier === GameEventIdentifiers.GameStartEvent) {
+      return true;
+    }
+    return false;
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
@@ -64,17 +75,27 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
     return true;
   }
 
-  public async askForChoosingCharacter(room: Room, who: PlayerId, amount: number): Promise<CharacterId[]> {
-    const askForChoosingCharactersEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingCharactersEvent> = {
-      characterIds: room.getOutsideCharacters(who, HuaShen.GeneralName),
+  public async askForChoosingCharacter(
+    room: Room,
+    who: PlayerId,
+    amount: number,
+    except?: CharacterId,
+  ): Promise<CharacterId[]> {
+    let characterIds = room.getOutsideCharacters(who, HuaShen.GeneralName);
+    if (except !== undefined) {
+      characterIds = characterIds.filter(characterId => characterId !== except);
+    }
+
+    const askForChoosingCharacterEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingCharacterEvent> = {
+      characterIds,
       toId: who,
       amount,
     };
 
-    room.notify(GameEventIdentifiers.AskForChoosingCharactersEvent, askForChoosingCharactersEvent, who);
+    room.notify(GameEventIdentifiers.AskForChoosingCharacterEvent, askForChoosingCharacterEvent, who);
 
     const { chosenCharacterIds } = await room.onReceivingAsyncResponseFrom(
-      GameEventIdentifiers.AskForChoosingCharactersEvent,
+      GameEventIdentifiers.AskForChoosingCharacterEvent,
       who,
     );
 
@@ -85,14 +106,12 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
     const player = room.getPlayerById(who);
     const chosenCharacterIds = await this.askForChoosingCharacter(room, who, 1);
     const character = Sanguosha.getCharacterById(chosenCharacterIds[0]);
-    player.Nationality = character.Nationality;
-    player.Gender = character.Gender;
 
     const playerPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
       changedProperties: [{ toId: who, nationality: character.Nationality, gender: character.Gender }],
     };
 
-    room.broadcast(GameEventIdentifiers.PlayerPropertiesChangeEvent, playerPropertiesChangeEvent);
+    room.changePlayerProperties(playerPropertiesChangeEvent);
 
     const options = character.Skills.filter(
       skill =>
@@ -105,6 +124,7 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
         ),
     ).map(skill => skill.GeneralName);
 
+    let skillObtain: string | undefined;
     if (options.length > 0) {
       const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
         options,
@@ -125,16 +145,20 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
         who,
       );
 
-      const huashenInfo = room.getFlag<HuaShenInfo>(who, HuaShen.GeneralName);
-      if (huashenInfo.tempSkill) {
-        await room.loseSkill(who, huashenInfo.tempSkill);
-        huashenInfo.tempSkill = undefined;
-      }
+      skillObtain = selectedOption!;
+    }
 
-      if (!player.hasSkill(selectedOption!)) {
-        room.obtainSkill(who, selectedOption!);
-        huashenInfo.tempSkill = selectedOption;
-      }
+    const huashenInfo = room.getFlag<HuaShenInfo>(who, HuaShen.GeneralName);
+    huashenInfo.tempCharacterId = chosenCharacterIds[0];
+
+    if (huashenInfo.tempSkill && huashenInfo.tempSkill !== skillObtain) {
+      await room.loseSkill(who, huashenInfo.tempSkill);
+      huashenInfo.tempSkill = undefined;
+    }
+
+    if (skillObtain && !player.hasSkill(skillObtain)) {
+      room.obtainSkill(who, skillObtain);
+      huashenInfo.tempSkill = skillObtain;
     }
   }
 
@@ -169,10 +193,16 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
       if (selectedOption === 'huashen_1') {
         await this.disguise(room, skillEffectEvent.fromId);
       } else {
-        const selectedCharacterIds = await this.askForChoosingCharacter(room, skillEffectEvent.fromId, 2);
+        const huashenInfo = room.getFlag<HuaShenInfo>(skillEffectEvent.fromId, HuaShen.GeneralName);
+        const selectedCharacterIds = await this.askForChoosingCharacter(
+          room,
+          skillEffectEvent.fromId,
+          2,
+          huashenInfo.tempCharacterId,
+        );
         const huashen = room.getRandomCharactersFromLoadedPackage(2);
-        room.addOutsideCharacters(skillEffectEvent.fromId, HuaShen.GeneralName, huashen);
         room.removeOutsideCharacters(skillEffectEvent.fromId, HuaShen.GeneralName, selectedCharacterIds);
+        room.addOutsideCharacters(skillEffectEvent.fromId, HuaShen.GeneralName, huashen);
       }
     } else {
       const husahenInfo: HuaShenInfo = {
