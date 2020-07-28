@@ -2,7 +2,7 @@ import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { Character, CharacterId, CharacterNationality } from 'core/characters/character';
+import { Character, CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
 import {
   CardMoveArea,
   CardMoveReason,
@@ -70,26 +70,29 @@ export class GameProcessor {
     Precondition.assert(this.room !== undefined, 'Game is not started yet');
   }
 
-  private async askForChoosingNationalities(player: Player) {
-    if (player.Nationality === CharacterNationality.God) {
-      const askForNationality = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
-        options: ['wei', 'shu', 'wu', 'qun'],
-        toId: player.Id,
-        askedBy: undefined,
-        conversation: 'please choose a nationality',
-      });
+  private async askForChoosingNationalities(playerId: PlayerId, broadcastMsg: string[]) {
+    const askForNationality = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
+      options: ['wei', 'shu', 'wu', 'qun'],
+      toId: playerId,
+      conversation: 'please choose a nationality',
+    });
 
-      this.room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForNationality, player.Id);
+    this.room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForNationality, playerId);
 
-      const nationalityResponse = await this.room.onReceivingAsyncResponseFrom(
-        GameEventIdentifiers.AskForChoosingOptionsEvent,
-        player.Id,
-      );
+    const nationalityResponse = await this.room.onReceivingAsyncResponseFrom(
+      GameEventIdentifiers.AskForChoosingOptionsEvent,
+      playerId,
+    );
 
-      player.Nationality = nationalityResponse.selectedOption
-        ? Functional.getPlayerNationalityEnum(nationalityResponse.selectedOption)!
-        : CharacterNationality.God;
-    }
+    broadcastMsg.push(
+      TranslationPack.translationJsonPatcher(
+        '{0} select nationaliy {1}',
+        TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(playerId)),
+        nationalityResponse.selectedOption!,
+      ).toString(),
+    );
+
+    return nationalityResponse;
   }
 
   private getSelectableCharacters(selectable: number, selectableCharacters: Character[], selected: CharacterId[]) {
@@ -112,51 +115,56 @@ export class GameProcessor {
         Functional.getPlayerRoleRawText(PlayerRole.Lord),
       ).extract(),
     });
-    const gameStartEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCharacterEvent>({
+
+    const lordChooseCharacterEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingCharacterEvent> = {
+      amount: 1,
       characterIds: [
         ...lordCharacters,
         ...this.getSelectableCharacters(4, selectableCharacters, lordCharacters).map(character => character.Id),
       ],
       toId: lordInfo.Id,
-      role: lordInfo.Role,
-      isGameStart: true,
+      updateInfoInClient: true,
       translationsMessage: TranslationPack.translationJsonPatcher(
         'your role is {0}, please choose a lord',
         Functional.getPlayerRoleRawText(lordInfo.Role!),
       ).extract(),
-    });
-    this.room.notify(GameEventIdentifiers.AskForChoosingCharacterEvent, gameStartEvent, lordInfo.Id);
+    };
+
+    this.room.notify(GameEventIdentifiers.AskForChoosingCharacterEvent, lordChooseCharacterEvent, lordInfo.Id);
 
     const lordResponse = await this.room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingCharacterEvent,
       lordInfo.Id,
     );
-    const lord = this.room.getPlayerById(lordInfo.Id);
-    lord.CharacterId = lordResponse.chosenCharacter;
-    await this.askForChoosingNationalities(lord);
-    this.room.notify(
-      GameEventIdentifiers.PlayerPropertiesChangeEvent,
-      {
-        changedProperties: [{ toId: lord.Id, nationality: lord.Nationality }],
-      },
-      lord.Id,
-    );
+    const lordCharacter = Sanguosha.getCharacterById(lordResponse.chosenCharacterIds[0]);
 
-    lordInfo.MaxHp = lord.MaxHp;
-    lordInfo.Hp = lord.Hp;
-    lordInfo.Nationality = lord.Nationality;
-    lordInfo.CharacterId = lord.CharacterId;
-
-    if (playersInfo.length >= 5) {
-      lordInfo.MaxHp++;
-      lord.MaxHp++;
-      lordInfo.Hp++;
-      lord.Hp++;
-    }
+    const godNationalityMessages: string[] = [];
+    const additionalPropertyValue = playersInfo.length >= 5 ? 1 : 0;
+    const playerPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
+      changedProperties: [
+        {
+          toId: lordInfo.Id,
+          characterId: lordCharacter.Id,
+          maxHp: additionalPropertyValue ? lordCharacter.MaxHp + additionalPropertyValue : undefined,
+          hp: additionalPropertyValue ? lordCharacter.Hp + additionalPropertyValue : undefined,
+          nationality:
+            lordCharacter.Nationality === CharacterNationality.God
+              ? Functional.getPlayerNationalityEnum(
+                  (await this.askForChoosingNationalities(lordInfo.Id, godNationalityMessages)).selectedOption!,
+                )
+              : undefined,
+        },
+      ],
+    };
+    this.room.broadcast(GameEventIdentifiers.CustomGameDialog, {
+      messages: godNationalityMessages,
+    });
+    this.room.changePlayerProperties(playerPropertiesChangeEvent);
 
     const sequentialAsyncResponse: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingCharacterEvent>>[] = [];
-    const selectedCharacters: CharacterId[] = [lordInfo.CharacterId];
+    const selectedCharacters: CharacterId[] = [lordCharacter.Id];
     const notifyOtherPlayer: PlayerId[] = [];
+    godNationalityMessages.length = 0;
     for (let i = 1; i < playersInfo.length; i++) {
       const characters = this.getSelectableCharacters(5, selectableCharacters, selectedCharacters);
       characters.forEach(character => selectedCharacters.push(character.Id));
@@ -164,18 +172,13 @@ export class GameProcessor {
       this.room.notify(
         GameEventIdentifiers.AskForChoosingCharacterEvent,
         {
+          amount: 1,
           characterIds: characters.map(character => character.Id),
-          lordInfo: {
-            lordCharacter: lordInfo.CharacterId,
-            lordId: lordInfo.Id,
-            lordNationality: lordInfo.Nationality,
-          },
           toId: playerInfo.Id,
-          role: playerInfo.Role,
-          isGameStart: true,
+          updateInfoInClient: true,
           translationsMessage: TranslationPack.translationJsonPatcher(
             'lord is {0}, your role is {1}, please choose a character',
-            Sanguosha.getCharacterById(lordInfo.CharacterId).Name,
+            Sanguosha.getCharacterById(lordCharacter.Id).Name,
             Functional.getPlayerRoleRawText(playerInfo.Role!),
           ).extract(),
         },
@@ -190,40 +193,47 @@ export class GameProcessor {
     }
 
     this.room.doNotify(notifyOtherPlayer);
+    const changedProperties: {
+      toId: PlayerId;
+      characterId?: CharacterId;
+      maxHp?: number;
+      hp?: number;
+      nationality?: CharacterNationality;
+      gender?: CharacterGender;
+    }[] = [];
+    const askForChooseNationalities: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent>>[] = [];
     for (const response of await Promise.all(sequentialAsyncResponse)) {
       const playerInfo = Precondition.exists(
         playersInfo.find(info => info.Id === response.fromId),
         'Unexpected player id received',
       );
 
-      const player = this.room.getPlayerById(playerInfo.Id);
-      player.CharacterId = response.chosenCharacter;
-      playerInfo.CharacterId = response.chosenCharacter;
-      playerInfo.MaxHp = player.MaxHp;
-      playerInfo.Hp = player.Hp;
-    }
+      const character = Sanguosha.getCharacterById(response.chosenCharacterIds[0]);
 
-    const players = this.room
-      .getOtherPlayers(lord.Id, lord.Id)
-      .filter(player => player.Nationality === CharacterNationality.God);
-    const askForChooseNationalities = players.map(player => this.askForChoosingNationalities(player));
-    this.room.doNotify(notifyOtherPlayer);
-    await Promise.all(askForChooseNationalities);
-    this.room.broadcast(GameEventIdentifiers.CustomGameDialog, {
-      messages: players.map(player =>
-        TranslationPack.translationJsonPatcher(
-          '{0} select nationaliy {1}',
-          TranslationPack.patchPlayerInTranslation(player),
-          Functional.getPlayerNationalityText(player.Nationality),
-        ).toString(),
-      ),
-    });
-    for (const playerInfo of playersInfo) {
-      const changedNationalityPlayer = players.find(player => player.Id === playerInfo.Id);
-      if (changedNationalityPlayer) {
-        playerInfo.Nationality = changedNationalityPlayer.Nationality;
+      changedProperties.push({
+        toId: playerInfo.Id,
+        characterId: response.chosenCharacterIds[0],
+      });
+
+      if (character.Nationality === CharacterNationality.God) {
+        askForChooseNationalities.push(this.askForChoosingNationalities(playerInfo.Id, godNationalityMessages));
       }
     }
+
+    this.room.doNotify(notifyOtherPlayer);
+    for (const response of await Promise.all(askForChooseNationalities)) {
+      const property = Precondition.exists(
+        changedProperties.find(obj => obj.toId === response.fromId),
+        'Unexpected player id received',
+      );
+
+      property.nationality = Functional.getPlayerNationalityEnum(response.selectedOption!);
+    }
+
+    this.room.changePlayerProperties({ changedProperties });
+    this.room.broadcast(GameEventIdentifiers.CustomGameDialog, {
+      messages: godNationalityMessages,
+    });
   }
 
   private async drawGameBeginsCards(playerId: PlayerId) {
@@ -254,17 +264,22 @@ export class GameProcessor {
       .push(...cardIds);
   }
 
-  public async gameStart(room: ServerRoom, selectableCharacters: Character[]) {
+  public async gameStart(room: ServerRoom, selectableCharacters: Character[], setSelectedCharacters: () => void) {
     this.room = room;
 
     const playersInfo = this.room.Players.map(player => player.getPlayerInfo());
     await this.chooseCharacters(playersInfo, selectableCharacters);
+    setSelectedCharacters();
 
     const gameStartEvent: ServerEventFinder<GameEventIdentifiers.GameStartEvent> = {
       players: playersInfo,
     };
 
-    await this.onHandleIncomingEvent(GameEventIdentifiers.GameStartEvent, gameStartEvent);
+    await this.onHandleIncomingEvent(
+      GameEventIdentifiers.GameStartEvent,
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.GameStartEvent, gameStartEvent),
+    );
+
     for (const player of playersInfo) {
       await this.drawGameBeginsCards(player.Id);
     }
@@ -1119,6 +1134,8 @@ export class GameProcessor {
         movingCards: allCards.map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
         toArea: CardMoveArea.DropStack,
       });
+
+      this.room.clearOutsideCharacters(playerId);
 
       if (this.room.CurrentPlayer.Id === playerId) {
         await this.room.skip(playerId);

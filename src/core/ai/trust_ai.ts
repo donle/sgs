@@ -215,7 +215,7 @@ export class TrustAI extends PlayerAI {
   ) {
     const { characterIds, toId } = content;
     const chooseCharacter: ClientEventFinder<T> = {
-      chosenCharacter: characterIds[0],
+      chosenCharacterIds: characterIds,
       fromId: toId,
     };
 

@@ -1,7 +1,7 @@
 import { Card, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { Character } from 'core/characters/character';
+import { Character, CharacterId } from 'core/characters/character';
 import {
   CardMoveArea,
   ClientEventFinder,
@@ -547,14 +547,13 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     const { changedProperties } = content;
-    for (const { toId, nationality, gender } of changedProperties) {
+    for (const { toId, characterId, maxHp, hp, nationality, gender } of changedProperties) {
       const player = this.store.room.getPlayerById(toId);
-      if (nationality !== undefined) {
-        player.Nationality = nationality;
-      }
-      if (gender !== undefined) {
-        player.Gender = gender;
-      }
+      characterId !== undefined && (player.CharacterId = characterId);
+      maxHp !== undefined && (player.MaxHp = maxHp);
+      hp !== undefined && (player.Hp = hp);
+      nationality !== undefined && (player.Nationality = nationality);
+      gender !== undefined && (player.Gender = gender);
     }
     this.presenter.broadcastUIUpdate();
   }
@@ -607,15 +606,6 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    content.players.forEach(playerInfo => {
-      const player = this.store.room.getPlayerById(playerInfo.Id);
-      player.CharacterId = playerInfo.CharacterId!;
-      if (playerInfo.Nationality !== undefined) {
-        player.Nationality = playerInfo.Nationality;
-      }
-      player.MaxHp = playerInfo.MaxHp;
-      player.Hp = playerInfo.Hp;
-    });
     this.presenter.isSkillDisabled(() => true);
     this.presenter.broadcastUIUpdate();
   }
@@ -676,27 +666,35 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    if (content.lordInfo) {
-      const lord = this.store.room.getPlayerById(content.lordInfo.lordId);
-      lord.CharacterId = content.lordInfo.lordCharacter;
-      lord.Nationality = content.lordInfo.lordNationality;
-      this.presenter.broadcastUIUpdate();
-    }
+    const selectedCharacters: CharacterId[] = [];
 
     const onClick = (character: Character) => {
-      if (this.presenter.ClientPlayer) {
-        this.presenter.ClientPlayer.CharacterId = character.Id;
+      const index = selectedCharacters.indexOf(character.Id);
+      if (index === -1) {
+        selectedCharacters.push(character.Id);
+      } else {
+        selectedCharacters.splice(index, 1);
       }
-      this.presenter.closeDialog();
-      const response: ClientEventFinder<T> = {
-        isGameStart: content.isGameStart,
-        chosenCharacter: character.Id,
-        fromId: this.store.clientPlayerId,
-      };
-      this.store.room.broadcast(type, response);
-      this.presenter.broadcastUIUpdate();
-      this.endAction();
+
+      if (selectedCharacters.length === content.amount) {
+        if (content.updateInfoInClient && this.presenter.ClientPlayer) {
+          this.presenter.ClientPlayer.CharacterId = character.Id;
+        }
+
+        this.presenter.closeDialog();
+
+        const response: ClientEventFinder<T> = {
+          chosenCharacterIds: selectedCharacters,
+          fromId: this.store.clientPlayerId,
+        };
+
+        this.store.room.broadcast(type, response);
+        this.presenter.broadcastUIUpdate();
+        this.endAction();
+      }
     };
+
+    const isSelected = (characterId: CharacterId) => selectedCharacters.includes(characterId);
 
     this.presenter.createDialog(
       <CharacterSelectorDialog
@@ -704,6 +702,7 @@ export class GameClientProcessor {
         characterIds={content.characterIds}
         onClick={onClick}
         translator={this.translator}
+        isSelected={isSelected}
       />,
     );
   }
