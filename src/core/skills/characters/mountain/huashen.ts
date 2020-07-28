@@ -13,7 +13,6 @@ import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { SkillType, TriggerSkill } from 'core/skills/skill';
-import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 
 type HuaShenInfo = {
@@ -24,21 +23,7 @@ type HuaShenInfo = {
 };
 
 @CommonSkill({ name: 'huashen', description: 'huashen_description' })
-export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
-  public showOrigin(room: Room, who: PlayerId): void {
-    const huashenInfo = room.getFlag<HuaShenInfo>(who, HuaShen.GeneralName);
-    const playerPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
-      changedProperties: [{ toId: who, nationality: huashenInfo.originNationality, gender: huashenInfo.originGender }],
-    };
-    room.changePlayerProperties(playerPropertiesChangeEvent);
-  }
-
-  public onLosingSkill(room: Room, owner: PlayerId): boolean {
-    this.showOrigin(room, owner);
-
-    return true;
-  }
-
+export class HuaShen extends TriggerSkill {
   public isAutoTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers>): boolean {
     const identifier = EventPacker.getIdentifier(event);
     if (identifier === GameEventIdentifiers.GameStartEvent) {
@@ -81,7 +66,7 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
     amount: number,
     except?: CharacterId,
   ): Promise<CharacterId[]> {
-    let characterIds = room.getOutsideCharacters(who, HuaShen.GeneralName);
+    let characterIds = room.getOutsideCharacters(who, this.GeneralName);
     if (except !== undefined) {
       characterIds = characterIds.filter(characterId => characterId !== except);
     }
@@ -118,7 +103,6 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
         !(
           skill.isShadowSkill() ||
           skill.isLordSkill() ||
-          skill.SkillType === SkillType.Compulsory ||
           skill.SkillType === SkillType.Limit ||
           skill.SkillType === SkillType.Awaken
         ),
@@ -129,7 +113,7 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
       const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
         options,
         toId: who,
-        conversation: 'huashen skill choose',
+        conversation: 'huashen: please announce a skill to obtain',
       };
 
       room.notify(
@@ -148,7 +132,7 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
       skillObtain = selectedOption!;
     }
 
-    const huashenInfo = room.getFlag<HuaShenInfo>(who, HuaShen.GeneralName);
+    const huashenInfo = room.getFlag<HuaShenInfo>(who, this.GeneralName);
     huashenInfo.tempCharacterId = chosenCharacterIds[0];
 
     if (huashenInfo.tempSkill && huashenInfo.tempSkill !== skillObtain) {
@@ -174,7 +158,8 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
       const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
         options: ['huashen_1', 'huashen_2'],
         toId: skillEffectEvent.fromId,
-        conversation: 'please choose',
+        conversation:
+          'please choose: 1. show a character from huashen area and announce a skill to obtain. 2. remove no more than two unshown characters of huashen and get equal number of that.',
       };
 
       room.notify(
@@ -193,7 +178,7 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
       if (selectedOption === 'huashen_1') {
         await this.disguise(room, skillEffectEvent.fromId);
       } else {
-        const huashenInfo = room.getFlag<HuaShenInfo>(skillEffectEvent.fromId, HuaShen.GeneralName);
+        const huashenInfo = room.getFlag<HuaShenInfo>(skillEffectEvent.fromId, this.GeneralName);
         const selectedCharacterIds = await this.askForChoosingCharacter(
           room,
           skillEffectEvent.fromId,
@@ -201,21 +186,74 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
           huashenInfo.tempCharacterId,
         );
         const huashen = room.getRandomCharactersFromLoadedPackage(2);
-        room.removeOutsideCharacters(skillEffectEvent.fromId, HuaShen.GeneralName, selectedCharacterIds);
-        room.addOutsideCharacters(skillEffectEvent.fromId, HuaShen.GeneralName, huashen);
+        room.removeOutsideCharacters(skillEffectEvent.fromId, this.GeneralName, selectedCharacterIds);
+        room.addOutsideCharacters(skillEffectEvent.fromId, this.GeneralName, huashen);
       }
     } else {
       const husahenInfo: HuaShenInfo = {
         originGender: player.Gender,
         originNationality: player.Nationality,
       };
-      room.setFlag<HuaShenInfo>(skillEffectEvent.fromId, HuaShen.GeneralName, husahenInfo);
+      room.setFlag<HuaShenInfo>(skillEffectEvent.fromId, this.GeneralName, husahenInfo);
 
       const huashen = room.getRandomCharactersFromLoadedPackage(3);
-      room.addOutsideCharacters(skillEffectEvent.fromId, HuaShen.GeneralName, huashen);
+      room.addOutsideCharacters(skillEffectEvent.fromId, this.GeneralName, huashen);
       await this.disguise(room, skillEffectEvent.fromId);
     }
 
     return true;
   }
 }
+
+/*
+const log = new Logger();
+
+@ShadowSkill
+@CommonSkill({ name: HuaShen.Name, description: HuaShen.Description })
+export class HuaShenShadow extends TriggerSkill implements OnDefineReleaseTiming {
+  public onLosingSkill(room: Room, owner: PlayerId): boolean {
+    return !room.getPlayerById(owner).hasSkill(this.GeneralName);
+  }
+
+  public onDeath(room: Room, owner: PlayerId): boolean {
+    log.info(room.getPlayerById(owner).Dead);
+    return room.getPlayerById(owner).Dead;
+  }
+
+  public isAutoTrigger(): boolean {
+    return true;
+  }
+
+  public isTriggerable(): boolean {
+    return true;
+  }
+
+  public canUse(room: Room, owner: Player): boolean {
+    return !owner.hasSkill(this.GeneralName) || owner.Dead;
+  }
+
+  public async onTrigger(): Promise<boolean> {
+    return true;
+  }
+
+  public async onEffect(room: Room, skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    log.info('triggered');
+    const huashenInfo = room.getFlag<HuaShenInfo>(skillEffectEvent.fromId, this.GeneralName);
+    const playerPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
+      changedProperties: [
+        { toId: skillEffectEvent.fromId, nationality: huashenInfo.originNationality, gender: huashenInfo.originGender },
+      ],
+    };
+    room.changePlayerProperties(playerPropertiesChangeEvent);
+
+    if (huashenInfo.tempSkill) {
+      room.getPlayerById(skillEffectEvent.fromId).hasSkill(huashenInfo.tempSkill) &&
+        (await room.loseSkill(skillEffectEvent.fromId, huashenInfo.tempSkill));
+    }
+
+    room.removeFlag(skillEffectEvent.fromId, this.GeneralName);
+
+    return true;
+  }
+}
+*/

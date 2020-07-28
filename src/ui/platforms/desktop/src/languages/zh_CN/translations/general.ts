@@ -435,6 +435,22 @@ export const eventDictionary: Word[] = [
     target: '{0} 的“思蜀”效果被触发，其将要进行的【乐不思蜀】判定效果反转',
   },
   {
+    source: 'please choose: 1. show a character from huashen area and announce a skill to obtain. 2. remove no more than two unshown characters of huashen and get equal number of that.',
+    target: '请选择：1.从化身牌中亮出一张武将牌并声明一个技能（锁定技、主公技、限定技除外）获得之；2.移去一至二张未亮出的化身牌并获得等量的化身牌',
+  },
+  {
+    source: 'huashen_1',
+    target: '替换亮出的化身牌',
+  },
+  {
+    source: 'huashen_2',
+    target: '移去未亮出的化身牌',
+  },
+  {
+    source: 'huashen: please announce a skill to obtain',
+    target: '化身：请声明一个技能获得之',
+  },
+  {
     source: 'wuhun:Please choose a target to die with you',
     target: '请选择一名角色进行【武魂】的判定，若结果不为【桃】或【桃园结义】，其立即死亡',
   },
