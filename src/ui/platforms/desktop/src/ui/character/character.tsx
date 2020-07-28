@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { Character, getNationalityRawText } from 'core/characters/character';
+import { Character, CharacterId, getNationalityRawText } from 'core/characters/character';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
@@ -17,16 +17,20 @@ export type CharacterCardProps = {
   disabled?: boolean;
   className?: string;
   size?: 'regular' | 'small';
+  isSelected?(characterId: CharacterId): boolean;
 };
 
 @mobxReact.observer
 export class CharacterCard extends React.Component<CharacterCardProps> {
   @mobx.observable.ref
   private characterImage: string | undefined;
+  @mobx.observable.ref
+  private characterDisabled: boolean | undefined = undefined;
 
   private readonly onClick = () => {
     if (!this.props.disabled) {
       this.props.onClick && this.props.onClick(this.props.character);
+      this.characterDisabled = this.props.isSelected && this.props.isSelected(this.props.character.Id);
     }
   };
 
@@ -41,6 +45,7 @@ export class CharacterCard extends React.Component<CharacterCardProps> {
       <div
         className={classNames(styles.characterCard, className, {
           [styles.small]: size === 'small',
+          [styles.disabled]: this.characterDisabled,
         })}
         onClick={this.onClick}
       >

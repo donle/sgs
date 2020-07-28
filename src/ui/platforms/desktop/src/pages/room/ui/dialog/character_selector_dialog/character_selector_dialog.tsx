@@ -14,6 +14,7 @@ type CharacterSelectorDialogProps = {
   translator: ClientTranslationModule;
   imageLoader: ImageLoader;
   characterIds: CharacterId[];
+  isSelected?(characterId: CharacterId): boolean;
   onClick?(character: Character): void;
 };
 
@@ -62,6 +63,7 @@ export class CharacterSelectorDialog extends React.Component<CharacterSelectorDi
           key={characterId}
           onClick={this.props.onClick}
           size={'small'}
+          isSelected={this.props.isSelected}
         />
       </div>
     );
