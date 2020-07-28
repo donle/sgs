@@ -70,7 +70,7 @@ export class GameProcessor {
     Precondition.assert(this.room !== undefined, 'Game is not started yet');
   }
 
-  private async askForChoosingNationalities(playerId: PlayerId, broadcastMsg: string[]) {
+  private async askForChoosingNationalities(playerId: PlayerId) {
     const askForNationality = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
       options: ['wei', 'shu', 'wu', 'qun'],
       toId: playerId,
@@ -82,14 +82,6 @@ export class GameProcessor {
     const nationalityResponse = await this.room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingOptionsEvent,
       playerId,
-    );
-
-    broadcastMsg.push(
-      TranslationPack.translationJsonPatcher(
-        '{0} select nationaliy {1}',
-        TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(playerId)),
-        nationalityResponse.selectedOption!,
-      ).toString(),
     );
 
     return nationalityResponse;
@@ -137,8 +129,6 @@ export class GameProcessor {
       lordInfo.Id,
     );
     const lordCharacter = Sanguosha.getCharacterById(lordResponse.chosenCharacterIds[0]);
-
-    const godNationalityMessages: string[] = [];
     const additionalPropertyValue = playersInfo.length >= 5 ? 1 : 0;
     const playerPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
       changedProperties: [
@@ -150,21 +140,28 @@ export class GameProcessor {
           nationality:
             lordCharacter.Nationality === CharacterNationality.God
               ? Functional.getPlayerNationalityEnum(
-                  (await this.askForChoosingNationalities(lordInfo.Id, godNationalityMessages)).selectedOption!,
+                  (await this.askForChoosingNationalities(lordInfo.Id)).selectedOption!,
                 )
               : undefined,
         },
       ],
     };
-    this.room.broadcast(GameEventIdentifiers.CustomGameDialog, {
-      messages: godNationalityMessages,
-    });
+
     this.room.changePlayerProperties(playerPropertiesChangeEvent);
+    const lord = this.room.getPlayerById(lordInfo.Id);
+    this.room.broadcast(GameEventIdentifiers.CustomGameDialog, {
+      messages: [
+        TranslationPack.translationJsonPatcher(
+          '{0} select nationaliy {1}',
+          TranslationPack.patchPlayerInTranslation(lord),
+          Functional.getPlayerNationalityText(lord.Nationality),
+        ).toString(),
+      ],
+    });
 
     const sequentialAsyncResponse: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingCharacterEvent>>[] = [];
     const selectedCharacters: CharacterId[] = [lordCharacter.Id];
     const notifyOtherPlayer: PlayerId[] = [];
-    godNationalityMessages.length = 0;
     for (let i = 1; i < playersInfo.length; i++) {
       const characters = this.getSelectableCharacters(5, selectableCharacters, selectedCharacters);
       characters.forEach(character => selectedCharacters.push(character.Id));
@@ -209,30 +206,39 @@ export class GameProcessor {
       );
 
       const character = Sanguosha.getCharacterById(response.chosenCharacterIds[0]);
-
       changedProperties.push({
         toId: playerInfo.Id,
-        characterId: response.chosenCharacterIds[0],
+        characterId: character.Id,
       });
 
       if (character.Nationality === CharacterNationality.God) {
-        askForChooseNationalities.push(this.askForChoosingNationalities(playerInfo.Id, godNationalityMessages));
+        askForChooseNationalities.push(this.askForChoosingNationalities(playerInfo.Id));
       }
     }
 
     this.room.doNotify(notifyOtherPlayer);
+    const godNationalityPlayers: PlayerId[] = [];
     for (const response of await Promise.all(askForChooseNationalities)) {
       const property = Precondition.exists(
         changedProperties.find(obj => obj.toId === response.fromId),
         'Unexpected player id received',
       );
 
+      godNationalityPlayers.push(property.toId);
       property.nationality = Functional.getPlayerNationalityEnum(response.selectedOption!);
     }
+    this.room.sortPlayersByPosition(godNationalityPlayers);
 
     this.room.changePlayerProperties({ changedProperties });
     this.room.broadcast(GameEventIdentifiers.CustomGameDialog, {
-      messages: godNationalityMessages,
+      messages: godNationalityPlayers.map(id => {
+        const player = this.room.getPlayerById(id);
+        return TranslationPack.translationJsonPatcher(
+          '{0} select nationaliy {1}',
+          TranslationPack.patchPlayerInTranslation(player),
+          Functional.getPlayerNationalityText(player.Nationality),
+        ).toString();
+      }),
     });
   }
 
