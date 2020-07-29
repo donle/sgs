@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import { CardId } from 'core/cards/libs/card_props';
+import { CharacterId } from 'core/characters/character';
 import { Player } from 'core/player/player';
 import { PlayerRole } from 'core/player/player_props';
 import { MarkEnum } from 'core/shares/types/mark_list';
@@ -126,14 +127,29 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     );
   }
 
-  private readonly onOutsideAreaTagClicked = (name: string, cards: CardId[]) => () => {
+  private readonly onOutsideAreaTagClicked = (name: string, cards: (CardId | CharacterId)[]) => () => {
+    const player = this.props.presenter.ClientPlayer;
+    if (
+      player === undefined ||
+      player.CharacterId === undefined ||
+      (this.openedDialog === undefined && this.props.store.selectorDialog !== undefined)
+    ) {
+      return;
+    }
+
     if (this.openedDialog === name) {
       this.openedDialog = undefined;
       this.props.presenter.closeDialog();
     } else {
       this.openedDialog = name;
       this.props.presenter.createDialog(
-        <CardSelectorDialog imageLoader={this.props.imageLoader} options={cards} translator={this.props.translator} />,
+        <CardSelectorDialog
+          title={this.props.translator.tr(name)}
+          isCharacterCard={player.isCharacterOutsideArea(name)}
+          imageLoader={this.props.imageLoader}
+          options={cards}
+          translator={this.props.translator}
+        />,
       );
     }
   };

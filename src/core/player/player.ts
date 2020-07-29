@@ -69,9 +69,9 @@ export abstract class Player implements PlayerInfo {
     [K: string]: number;
   }[] = [];
   private playerCharacter: Character | undefined;
-  private playerOutsideCharacters: { [name: string]: CharacterId[] } = {};
   protected playerCards: PlayerCards;
   protected playerOutsideCards: PlayerCardsOutside;
+  protected playerOutsideCharactersAreaNames: string[] = [];
 
   private flags: {
     [k: string]: any;
@@ -114,33 +114,6 @@ export abstract class Player implements PlayerInfo {
     this.online = true;
 
     GameCommonRules.initPlayerCommonRules(this);
-  }
-
-  public addOutsideCharacters(name: string, characters: CharacterId[]): void {
-    this.playerOutsideCharacters[name] || (this.playerOutsideCharacters[name] = []);
-    this.playerOutsideCharacters[name].push(...characters);
-  }
-  public removeOutsideCharacters(name: string, characters: CharacterId[]): void {
-    this.playerOutsideCharacters[name] || (this.playerOutsideCharacters[name] = []);
-    this.playerOutsideCharacters[name] = this.playerOutsideCharacters[name].filter(id => !characters.includes(id));
-  }
-  public getOutsideCharacters(name: string): CharacterId[] {
-    return this.playerOutsideCharacters[name] || [];
-  }
-  public clearOutsideCharacters(name?: string): CharacterId[] {
-    const clearedCharacterIds: CharacterId[] = [];
-    if (name) {
-      if (this.playerOutsideCharacters[name]) {
-        clearedCharacterIds.concat(this.playerOutsideCharacters[name]);
-        delete this.playerOutsideCharacters[name];
-      }
-    } else {
-      for (const name in this.playerOutsideCharacters) {
-        clearedCharacterIds.concat(this.playerOutsideCharacters[name]);
-      }
-      this.playerOutsideCharacters = {};
-    }
-    return clearedCharacterIds;
   }
 
   public clearFlags() {
@@ -232,22 +205,33 @@ export abstract class Player implements PlayerInfo {
       : (this.skillUsedHistory[skillName] = 1);
   }
 
-  public getCardIds(area?: PlayerCardsArea, outsideAreaName?: string): CardId[] {
+  public getCardIds<T extends CardId | CharacterId = CardId>(area?: PlayerCardsArea, outsideAreaName?: string): T[] {
     if (area === undefined) {
       const [handCards, judgeCards, equipCards] = Object.values<CardId[]>(this.playerCards);
-      return [...handCards, ...judgeCards, ...equipCards];
+      return ([...handCards, ...judgeCards, ...equipCards] as unknown) as T[];
     }
 
     if (area !== PlayerCardsArea.OutsideArea) {
-      return this.playerCards[area];
+      return (this.playerCards[area] as unknown) as T[];
     } else {
       outsideAreaName = Precondition.exists(outsideAreaName, `Unable to get ${outsideAreaName} area cards`);
       this.playerOutsideCards[outsideAreaName] = this.playerOutsideCards[outsideAreaName] || [];
-      return this.playerOutsideCards[outsideAreaName];
+      return (this.playerOutsideCards[outsideAreaName] as unknown) as T[];
     }
   }
 
-  public getOutsideAreaNameOf(cardId: CardId) {
+  public setCharacterOutsideAreaCards(areaName: string, characterIds: CharacterId[]) {
+    if (!this.playerOutsideCharactersAreaNames.includes(areaName)) {
+      this.playerOutsideCharactersAreaNames.push(areaName);
+    }
+    this.playerOutsideCards[areaName] = characterIds;
+  }
+
+  public isCharacterOutsideArea(areaName: string) {
+    return this.playerOutsideCharactersAreaNames.includes(areaName);
+  }
+
+  public getOutsideAreaNameOf<T extends CardId | CharacterId>(cardId: T) {
     for (const [areaName, cards] of Object.entries(this.playerOutsideCards)) {
       if (cards.includes(cardId)) {
         return areaName;

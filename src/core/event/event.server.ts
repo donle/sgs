@@ -287,7 +287,7 @@ export interface ServerEvent extends EventUtilities {
     amount: number;
     characterIds: CharacterId[];
     toId: PlayerId;
-    updateInfoInClient?: boolean;
+    byHuaShen?: boolean;
   };
   [GameEventIdentifiers.AskForChoosingOptionsEvent]: {
     askedBy?: PlayerId;
@@ -388,6 +388,12 @@ export interface ServerEvent extends EventUtilities {
       nationality?: CharacterNationality;
       gender?: CharacterGender;
     }[];
+  };
+  [GameEventIdentifiers.SetOutsideCharactersEvent]: {
+    toId: PlayerId;
+    characterIds: CharacterId[];
+    areaName: string;
+    isPublic?: boolean;
   };
 }
 

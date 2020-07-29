@@ -13,6 +13,7 @@ export const enum GameEventIdentifiers {
   PhaseStageChangeEvent,
   SyncGameCommonRulesEvent,
   PlayerPropertiesChangeEvent,
+  SetOutsideCharactersEvent,
 
   SetFlagEvent,
   RemoveFlagEvent,
@@ -104,6 +105,7 @@ export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.SetMarkEvent,
   GameEventIdentifiers.RemoveMarkEvent,
   GameEventIdentifiers.ClearMarkEvent,
+  GameEventIdentifiers.SetOutsideCharactersEvent,
 
   GameEventIdentifiers.UserMessageEvent,
   GameEventIdentifiers.PhaseChangeEvent,

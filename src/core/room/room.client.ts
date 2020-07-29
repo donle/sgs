@@ -198,6 +198,10 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.socket.notify(type, content);
   }
 
+  public setCharacterOutsideAreaCards(): void {
+    this.throwUntouchableError(this.setCharacterOutsideAreaCards.name);
+  }
+
   public get CurrentPlayerPhase(): PlayerPhase {
     return this.currentPlayerPhase;
   }

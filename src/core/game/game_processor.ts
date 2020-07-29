@@ -115,7 +115,6 @@ export class GameProcessor {
         ...this.getSelectableCharacters(4, selectableCharacters, lordCharacters).map(character => character.Id),
       ],
       toId: lordInfo.Id,
-      updateInfoInClient: true,
       translationsMessage: TranslationPack.translationJsonPatcher(
         'your role is {0}, please choose a lord',
         Functional.getPlayerRoleRawText(lordInfo.Role!),
@@ -172,7 +171,6 @@ export class GameProcessor {
           amount: 1,
           characterIds: characters.map(character => character.Id),
           toId: playerInfo.Id,
-          updateInfoInClient: true,
           translationsMessage: TranslationPack.translationJsonPatcher(
             'lord is {0}, your role is {1}, please choose a character',
             Sanguosha.getCharacterById(lordCharacter.Id).Name,
@@ -1140,8 +1138,6 @@ export class GameProcessor {
         movingCards: allCards.map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
         toArea: CardMoveArea.DropStack,
       });
-
-      this.room.clearOutsideCharacters(playerId);
 
       if (this.room.CurrentPlayer.Id === playerId) {
         await this.room.skip(playerId);

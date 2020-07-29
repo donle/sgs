@@ -1,6 +1,8 @@
+import { CharacterId } from 'core/characters/character';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
+import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
@@ -28,8 +30,11 @@ export class XinSheng extends TriggerSkill {
     room: Room,
     skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
-    const huashen = room.getRandomCharactersFromLoadedPackage(1);
-    room.addOutsideCharacters(skillEffectEvent.fromId, HuaShen.GeneralName, huashen);
+    const huashenCards = room
+      .getPlayerById(skillEffectEvent.fromId)
+      .getCardIds<CharacterId>(PlayerCardsArea.OutsideArea, HuaShen.GeneralName);
+    const huashen = room.getRandomCharactersFromLoadedPackage(1, huashenCards);
+    room.setCharacterOutsideAreaCards(skillEffectEvent.fromId, HuaShen.GeneralName, [...huashenCards, ...huashen]);
 
     return true;
   }

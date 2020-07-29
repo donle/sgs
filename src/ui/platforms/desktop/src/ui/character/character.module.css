@@ -12,7 +12,7 @@
     height: 150px;
 }
 
-.disabled {
+.selected {
     filter: brightness(0.5);
 }
 

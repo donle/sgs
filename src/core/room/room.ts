@@ -88,7 +88,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract async asyncMoveCards(events: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[]): Promise<void>;
   //Server only
-  public abstract getRandomCharactersFromLoadedPackage(numberOfCharacter: number): CharacterId[];
+  public abstract getRandomCharactersFromLoadedPackage(
+    numberOfCharacter: number,
+    except?: CharacterId[],
+  ): CharacterId[];
   //Server only
   public abstract changePlayerProperties(
     event: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent>,
@@ -173,6 +176,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract findCardByMatcherFrom(cardMatcher: CardMatcher, fromDrawStack?: boolean): CardId | undefined;
   public abstract isCardInDropStack(cardId: CardId): boolean;
   public abstract isCardInDrawStack(cardId: CardId): boolean;
+
+  public abstract setCharacterOutsideAreaCards(player: PlayerId, areaName: string, characterIds: CharacterId[]): void;
 
   public abstract async skip(player: PlayerId, phase?: PlayerPhase): Promise<void>;
   public abstract endPhase(phase: PlayerPhase): void;
@@ -445,19 +450,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     const target = this.getPlayerById(targetId);
     const targetSkills = target.getPlayerSkills<FilterSkill>('filter');
     return targetSkills.find(skill => !skill.canBePindianTarget(this, targetId, fromId)) === undefined;
-  }
-
-  public addOutsideCharacters(playerId: PlayerId, name: string, characters: CharacterId[]): void {
-    this.getPlayerById(playerId).addOutsideCharacters(name, characters);
-  }
-  public removeOutsideCharacters(playerId: PlayerId, name: string, characters: CharacterId[]): void {
-    this.getPlayerById(playerId).removeOutsideCharacters(name, characters);
-  }
-  public getOutsideCharacters(playerId: PlayerId, name: string): CharacterId[] {
-    return this.getPlayerById(playerId).getOutsideCharacters(name);
-  }
-  public clearOutsideCharacters(playerId: PlayerId, name?: string): CharacterId[] {
-    return this.getPlayerById(playerId).clearOutsideCharacters(name);
   }
 
   public clearFlags(player: PlayerId) {

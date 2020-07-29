@@ -14,7 +14,7 @@ type CharacterSelectorDialogProps = {
   translator: ClientTranslationModule;
   imageLoader: ImageLoader;
   characterIds: CharacterId[];
-  isSelected?(characterId: CharacterId): boolean;
+  selectedCharacters?: CharacterId[];
   onClick?(character: Character): void;
 };
 
@@ -22,6 +22,8 @@ type CharacterSelectorDialogProps = {
 export class CharacterSelectorDialog extends React.Component<CharacterSelectorDialogProps> {
   @mobx.observable.ref
   private tooltipCharacter: Character | undefined;
+  @mobx.observable.shallow
+  private selectedCharacters: CharacterId[] = [];
 
   private readonly onOpenTooltip = (character: Character) =>
     mobx.action(() => {
@@ -47,33 +49,45 @@ export class CharacterSelectorDialog extends React.Component<CharacterSelectorDi
       </div>
     ));
   };
-  private readonly characters = this.props.characterIds.map((characterId, index) => {
-    const character = Sanguosha.getCharacterById(characterId);
-    return (
-      <div
-        className={styles.characterSelectorItem}
-        onMouseLeave={this.onCloseTooltip()}
-        onMouseEnter={this.onOpenTooltip(character)}
-        key={index}
-      >
-        <CharacterCard
-          imageLoader={this.props.imageLoader}
-          translator={this.props.translator}
-          character={character}
-          key={characterId}
-          onClick={this.props.onClick}
-          size={'small'}
-          isSelected={this.props.isSelected}
-        />
-      </div>
-    );
-  });
+
+  @mobx.action
+  private readonly onClick = (character: Character) => {
+    this.props.onClick && this.props.onClick(character);
+    const index = this.selectedCharacters.findIndex(characterId => characterId === character.Id);
+    if (index >= 0) {
+      this.selectedCharacters.splice(index, 1);
+    } else {
+      this.selectedCharacters.push(character.Id);
+    }
+  };
 
   render() {
     return (
       <BaseDialog title={this.props.translator.tr('please choose a character')}>
         <div className={styles.innerDialog}>
-          <div className={styles.characterSelector}>{this.characters}</div>
+          <div className={styles.characterSelector}>
+            {this.props.characterIds.map((characterId, index) => {
+              const character = Sanguosha.getCharacterById(characterId);
+              return (
+                <div
+                  className={styles.characterSelectorItem}
+                  onMouseLeave={this.onCloseTooltip()}
+                  onMouseEnter={this.onOpenTooltip(character)}
+                  key={index}
+                >
+                  <CharacterCard
+                    imageLoader={this.props.imageLoader}
+                    translator={this.props.translator}
+                    character={character}
+                    key={characterId}
+                    onClick={this.onClick}
+                    size={'small'}
+                    selected={this.selectedCharacters.includes(characterId)}
+                  />
+                </div>
+              );
+            })}
+          </div>
           {this.tooltipCharacter && (
             <Tooltip position={['top']} className={styles.tooltip}>
               {this.createTooltipContent(this.tooltipCharacter)}

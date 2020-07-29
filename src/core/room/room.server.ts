@@ -362,7 +362,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                   await this.useSkill(triggerSkillEvent);
                   break;
                 }
-                
+
                 if (uncancellableSkills.length > 1) {
                   EventPacker.createUncancellableEvent(event);
                 }
@@ -491,33 +491,23 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     );
   }
 
-  public getRandomCharactersFromLoadedPackage(numberOfCharacter: number): CharacterId[] {
-    const characters = Sanguosha.getRandomCharacters(
-      numberOfCharacter,
-      this.loadedCharacters,
-      this.selectedCharacters,
-    ).map(character => character.Id);
+  public getRandomCharactersFromLoadedPackage(numberOfCharacter: number, except: CharacterId[] = []): CharacterId[] {
+    const characters = Sanguosha.getRandomCharacters(numberOfCharacter, this.loadedCharacters, [
+      ...this.selectedCharacters,
+      ...except,
+    ]).map(character => character.Id);
 
     return characters;
   }
 
-  public putCharactersAway(characterIds: CharacterId[]): void {
-    this.selectedCharacters = this.selectedCharacters.filter(characterId => !characterIds.includes(characterId));
-  }
-
-  public addOutsideCharacters(playerId: PlayerId, name: string, characterIds: CharacterId[]): void {
-    this.selectedCharacters = this.selectedCharacters.concat(characterIds);
-
-    super.addOutsideCharacters(playerId, name, characterIds);
-  }
-  public removeOutsideCharacters(playerId: PlayerId, name: string, characterIds: CharacterId[]): void {
-    this.putCharactersAway(characterIds);
-    super.removeOutsideCharacters(playerId, name, characterIds);
-  }
-  public clearOutsideCharacters(playerId: PlayerId, name?: string): CharacterId[] {
-    const clearedCharacterIds: CharacterId[] = super.clearOutsideCharacters(playerId, name);
-    this.putCharactersAway(clearedCharacterIds);
-    return clearedCharacterIds;
+  public setCharacterOutsideAreaCards(player: PlayerId, areaName: string, characterIds: CharacterId[]) {
+    this.getPlayerById(player).setCharacterOutsideAreaCards(areaName, characterIds);
+    this.broadcast(GameEventIdentifiers.SetOutsideCharactersEvent, {
+      toId: player,
+      characterIds,
+      areaName,
+      isPublic: false,
+    });
   }
 
   public changePlayerProperties(event: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent>): void {
@@ -932,8 +922,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         });
       }
     }
-
-    this.clearOutsideCharacters(player.Id, skillName);
   }
   public obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean) {
     const player = this.getPlayerById(playerId);
@@ -1394,8 +1382,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       GameEventIdentifiers.PlayerDiedEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerDiedEvent, playerDiedEvent),
     );
-
-    deadPlayer.CharacterId && this.putCharactersAway([deadPlayer.CharacterId]);
   }
 
   public clearFlags(player: PlayerId) {

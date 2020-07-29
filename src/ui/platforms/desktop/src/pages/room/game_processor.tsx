@@ -271,6 +271,10 @@ export class GameClientProcessor {
       case GameEventIdentifiers.PlayerPropertiesChangeEvent:
         await this.onHandlePlayerPropertiesChangeEvent(e as any, content);
         break;
+      case GameEventIdentifiers.SetOutsideCharactersEvent:
+        await this.onHandleSetOutsideCharactersEvent(e as any, content);
+        break;
+
       default:
         throw new Error(`Unhandled Game event: ${e}`);
     }
@@ -542,6 +546,18 @@ export class GameClientProcessor {
   ) {
     this.store.room.getPlayerById(content.dying).Dying = true;
   }
+
+  private onHandleSetOutsideCharactersEvent<T extends GameEventIdentifiers.SetOutsideCharactersEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const { toId, areaName, characterIds, isPublic } = content;
+    const player = this.store.room.getPlayerById(toId);
+    player.setCharacterOutsideAreaCards(areaName, characterIds);
+    isPublic && player.setVisibleOutsideArea(areaName);
+    this.presenter.broadcastUIUpdate();
+  }
+
   private onHandlePlayerPropertiesChangeEvent<T extends GameEventIdentifiers.PlayerPropertiesChangeEvent>(
     type: T,
     content: ServerEventFinder<T>,
@@ -557,10 +573,12 @@ export class GameClientProcessor {
     }
     this.presenter.broadcastUIUpdate();
   }
+
   private onHandleNotifyEvent<T extends GameEventIdentifiers.NotifyEvent>(type: T, content: ServerEventFinder<T>) {
     this.presenter.notify(content.toIds, content.notificationTime);
     this.presenter.broadcastUIUpdate();
   }
+
   private onHandlePlayerDiedEvent<T extends GameEventIdentifiers.PlayerDiedEvent>(
     type: T,
     content: ServerEventFinder<T>,
@@ -672,29 +690,41 @@ export class GameClientProcessor {
       const index = selectedCharacters.indexOf(character.Id);
       if (index === -1) {
         selectedCharacters.push(character.Id);
+        if (selectedCharacters.length === content.amount) {
+          this.store.confirmButtonAction && this.store.confirmButtonAction();
+          return;
+        }
       } else {
         selectedCharacters.splice(index, 1);
       }
 
-      if (selectedCharacters.length === content.amount) {
-        if (content.updateInfoInClient && this.presenter.ClientPlayer) {
-          this.presenter.ClientPlayer.CharacterId = character.Id;
-        }
-
-        this.presenter.closeDialog();
-
-        const response: ClientEventFinder<T> = {
-          chosenCharacterIds: selectedCharacters,
-          fromId: this.store.clientPlayerId,
-        };
-
-        this.store.room.broadcast(type, response);
+      if (selectedCharacters.length > 0) {
+        this.presenter.enableActionButton('confirm');
         this.presenter.broadcastUIUpdate();
-        this.endAction();
+      } else {
+        this.presenter.disableActionButton('confirm');
+        this.presenter.broadcastUIUpdate();
       }
     };
 
-    const isSelected = (characterId: CharacterId) => selectedCharacters.includes(characterId);
+    this.presenter.defineConfirmButtonActions(() => {
+      this.presenter.closeDialog();
+
+      if (!content.byHuaShen) {
+        if (this.presenter.ClientPlayer) {
+          this.presenter.ClientPlayer.CharacterId = selectedCharacters[0];
+        }
+      }
+
+      const response: ClientEventFinder<T> = {
+        chosenCharacterIds: selectedCharacters,
+        fromId: this.store.clientPlayerId,
+      };
+
+      this.store.room.broadcast(type, response);
+      this.presenter.broadcastUIUpdate();
+      this.endAction();
+    });
 
     this.presenter.createDialog(
       <CharacterSelectorDialog
@@ -702,7 +732,7 @@ export class GameClientProcessor {
         characterIds={content.characterIds}
         onClick={onClick}
         translator={this.translator}
-        isSelected={isSelected}
+        selectedCharacters={selectedCharacters}
       />,
     );
   }
