@@ -171,6 +171,7 @@ export { GuZheng } from './characters/mountain/guzheng';
 export { TunTian, TunTianShadow } from './characters/mountain/tuntian';
 export { ZaoXian } from './characters/mountain/zaoxian';
 export { JiXi } from './characters/mountain/jixi';
+export { QiaoBian, QiaoBianSkipDraw, QiaoBianSkipPlay } from './characters/mountain/qiaobian';
 
 export { WuShen, WuShenShadow } from './characters/god/wushen';
 export { WuHun, WuHunDied } from './characters/god/wuhun';
