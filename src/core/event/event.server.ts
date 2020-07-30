@@ -395,6 +395,11 @@ export interface ServerEvent extends EventUtilities {
     areaName: string;
     isPublic?: boolean;
   };
+  [GameEventIdentifiers.HuaShenCardUpdatedEvent]: {
+    latestHuaShen: CharacterId;
+    latestHuaShenSkillName: string;
+    toId: PlayerId;
+  }
 }
 
 export type PinDianResultType = {

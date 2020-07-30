@@ -1,5 +1,6 @@
 import { CharacterId } from 'core/characters/character';
-import { Player } from 'core/player/player';
+import { HuaShenInfo, Player } from 'core/player/player';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 import { PlayerCards, PlayerCardsArea, PlayerCardsOutside, PlayerId } from './player_props';
 
 export class ClientPlayer extends Player {
@@ -48,5 +49,15 @@ export class ClientPlayer extends Player {
   }
   getAllVisibleTags() {
     return this.visiblePlayerTags;
+  }
+
+  setHuaShenInfo(info: HuaShenInfo) {
+    if (this.huashenInfo) {
+      this.removeFlag(
+        TranslationPack.translationJsonPatcher('huashen skill:{0}', this.huashenInfo.skillName).toString(),
+      );
+    }
+    this.setFlag(TranslationPack.translationJsonPatcher('huashen skill:{0}', info.skillName).toString(), true, false);
+    super.setHuaShenInfo(info);
   }
 }

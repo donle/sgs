@@ -1,0 +1,34 @@
+.switchAvatar {
+    position: relative;
+}
+
+.dynamicMainImage {
+    animation-name: mainFade;
+    opacity: 0;
+    animation-duration: 8s;
+    animation-iteration-count: infinite;
+}
+
+.mainImage,
+.sideImage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+@keyframes mainFade {
+    0% {
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+    80% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}

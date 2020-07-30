@@ -359,7 +359,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                     skillName: awaitedSkills[0].Name,
                     triggeredOnEvent: content,
                   };
-                  await this.useSkill(triggerSkillEvent);
+                  for (let i = 0; i < skillTriggerableTimes[awaitedSkills[0].Name]; i++) {
+                    await this.useSkill(triggerSkillEvent);
+                  }
                   break;
                 }
 
@@ -500,13 +502,22 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return characters;
   }
 
-  public setCharacterOutsideAreaCards(player: PlayerId, areaName: string, characterIds: CharacterId[]) {
+  public setCharacterOutsideAreaCards(
+    player: PlayerId,
+    areaName: string,
+    characterIds: CharacterId[],
+    translationsMessage?: PatchedTranslationObject,
+    unengagedMessage?: PatchedTranslationObject,
+  ) {
     this.getPlayerById(player).setCharacterOutsideAreaCards(areaName, characterIds);
     this.broadcast(GameEventIdentifiers.SetOutsideCharactersEvent, {
       toId: player,
       characterIds,
       areaName,
       isPublic: false,
+      translationsMessage,
+      engagedPlayerIds: [player],
+      unengagedMessage,
     });
   }
 

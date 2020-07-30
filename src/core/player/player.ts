@@ -43,6 +43,11 @@ type SkillStringType =
   | 'transform'
   | 'viewAs';
 
+export type HuaShenInfo = {
+  skillName: string;
+  characterId: CharacterId;
+};
+
 export abstract class Player implements PlayerInfo {
   private hp: number;
   private maxHp: number;
@@ -63,6 +68,7 @@ export abstract class Player implements PlayerInfo {
   protected abstract playerPosition: number;
   protected playerRole: PlayerRole = PlayerRole.Unknown;
   protected nationality: CharacterNationality;
+  protected huashenInfo: HuaShenInfo | undefined;
 
   private cardUseHistory: CardId[] = [];
   private skillUsedHistory: {
@@ -730,6 +736,13 @@ export abstract class Player implements PlayerInfo {
       Hp: this.hp,
       MaxHp: this.maxHp,
     };
+  }
+
+  setHuaShenInfo(info: HuaShenInfo) {
+    this.huashenInfo = info;
+  }
+  getHuaShenInfo() {
+    return this.huashenInfo;
   }
 
   public setOffline() {

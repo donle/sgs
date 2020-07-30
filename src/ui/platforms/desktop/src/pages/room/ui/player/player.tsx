@@ -21,6 +21,7 @@ import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
 import { AwakenSkillMark, LimitSkillMark, Mark } from '../mark/mark';
 import { Mask } from '../mask/mask';
 import { PlayingBar } from '../playing_bar/playing_bar';
+import { SwitchAvatar } from '../switch_avatar/switch_avatar';
 import styles from './player.module.css';
 
 type PlayerCardProps = {
@@ -48,6 +49,11 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   PlayerImage: () => JSX.Element;
   @mobx.observable.ref
   PlayerRoleCard: () => JSX.Element;
+
+  @mobx.observable.ref
+  mainImage: string | undefined;
+  @mobx.observable.ref
+  sideImage: string | undefined;
 
   private onTooltipOpeningTimer: NodeJS.Timer;
   private openedDialog: string | undefined;
@@ -132,7 +138,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
         <div className={styles.skillTags}>
           {flags.map((flag, index) => (
             <span key={index} className={styles.skillTag}>
-              {translator.tr(flag)}
+              {translator.trx(flag)}
             </span>
           ))}
         </div>
@@ -195,12 +201,22 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     ));
   }
 
+  @mobx.action
   async componentDidUpdate() {
+    if (this.PlayerCharacter) {
+      this.mainImage = (await this.props.imageLoader.getCharacterImage(this.PlayerCharacter.Name)).src;
+      const huashenCharacterId = this.props.player?.getHuaShenInfo()?.characterId;
+      const huashenCharacter =
+        huashenCharacterId !== undefined ? Sanguosha.getCharacterById(huashenCharacterId) : undefined;
+      this.sideImage = huashenCharacter && (await this.props.imageLoader.getCharacterImage(huashenCharacter.Name)).src;
+    }
+
     if (this.PlayerImage === undefined && this.PlayerCharacter) {
-      const image = await this.props.imageLoader.getCharacterImage(this.PlayerCharacter.Name);
       mobx.runInAction(() => {
         this.PlayerImage = () => (
-          <img
+          <SwitchAvatar
+            mainImage={this.mainImage}
+            sideImage={this.sideImage}
             className={classNames(styles.playerImage, {
               [styles.dead]: this.props.player && this.props.player.Dead,
               [styles.disabled]:
@@ -209,8 +225,6 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                   : !(this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead) &&
                     this.props.disabled,
             })}
-            alt={image.alt}
-            src={image.src}
           />
         );
       });

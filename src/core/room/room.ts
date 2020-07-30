@@ -177,7 +177,13 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract isCardInDropStack(cardId: CardId): boolean;
   public abstract isCardInDrawStack(cardId: CardId): boolean;
 
-  public abstract setCharacterOutsideAreaCards(player: PlayerId, areaName: string, characterIds: CharacterId[]): void;
+  public abstract setCharacterOutsideAreaCards(
+    player: PlayerId,
+    areaName: string,
+    characterIds: CharacterId[],
+    translationsMessage?: PatchedTranslationObject,
+    unengagedMessage?: PatchedTranslationObject,
+  ): void;
 
   public abstract async skip(player: PlayerId, phase?: PlayerPhase): Promise<void>;
   public abstract endPhase(phase: PlayerPhase): void;

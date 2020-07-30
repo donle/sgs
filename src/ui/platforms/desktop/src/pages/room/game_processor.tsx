@@ -274,7 +274,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.SetOutsideCharactersEvent:
         await this.onHandleSetOutsideCharactersEvent(e as any, content);
         break;
-
+      case GameEventIdentifiers.HuaShenCardUpdatedEvent:
+        await this.onHandleHuaShenCardUpdatedEvent(e as any, content);
+        break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
     }
@@ -555,6 +557,19 @@ export class GameClientProcessor {
     const player = this.store.room.getPlayerById(toId);
     player.setCharacterOutsideAreaCards(areaName, characterIds);
     isPublic && player.setVisibleOutsideArea(areaName);
+    this.presenter.broadcastUIUpdate();
+  }
+
+  private onHandleHuaShenCardUpdatedEvent<T extends GameEventIdentifiers.HuaShenCardUpdatedEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const { toId, latestHuaShen, latestHuaShenSkillName } = content;
+    const player = this.store.room.getPlayerById(toId);
+    player.setHuaShenInfo({
+      skillName: latestHuaShenSkillName,
+      characterId: latestHuaShen,
+    });
     this.presenter.broadcastUIUpdate();
   }
 

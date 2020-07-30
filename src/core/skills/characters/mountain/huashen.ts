@@ -1,25 +1,21 @@
-import { CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
+import { CharacterId } from 'core/characters/character';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import {
   AllStage,
   GameStartStage,
   PhaseChangeStage,
-  PhaseStageChangeStage,
   PlayerDiedStage,
   PlayerPhase,
-  PlayerPhaseStages,
+  StagePriority,
 } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { OnDefineReleaseTiming, SkillType, TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
-
-type HuaShenInfo = {
-  huashenSkill: string;
-  huashenCharacterId: CharacterId;
-};
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'huashen', description: 'huashen_description' })
 export class HuaShen extends TriggerSkill {
@@ -32,23 +28,16 @@ export class HuaShen extends TriggerSkill {
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
-    return (
-      stage === PhaseChangeStage.BeforePhaseChange ||
-      stage === PhaseStageChangeStage.AfterStageChanged ||
-      stage === GameStartStage.GameStarting
-    );
+    return stage === PhaseChangeStage.BeforePhaseChange || stage === GameStartStage.GameStarting;
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers>) {
     const identifier = EventPacker.getIdentifier(event);
     if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
       const phaseChangeEvent = event as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-      return phaseChangeEvent.toPlayer === owner.Id && phaseChangeEvent.to === PlayerPhase.PrepareStage;
-    } else if (identifier === GameEventIdentifiers.PhaseStageChangeEvent) {
-      const phaseStageChangeEvent = event as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
       return (
-        phaseStageChangeEvent.playerId === owner.Id &&
-        phaseStageChangeEvent.toStage === PlayerPhaseStages.FinishStageEnd
+        (phaseChangeEvent.toPlayer === owner.Id && phaseChangeEvent.to === PlayerPhase.PrepareStage) ||
+        (phaseChangeEvent.fromPlayer === owner.Id && phaseChangeEvent.from === PlayerPhase.FinishStage)
       );
     } else {
       return !owner.hasUsedSkill(this.GeneralName);
@@ -57,6 +46,10 @@ export class HuaShen extends TriggerSkill {
 
   public async onTrigger(): Promise<boolean> {
     return true;
+  }
+
+  public get Priority() {
+    return StagePriority.High;
   }
 
   public async askForChoosingCharacter(
@@ -125,16 +118,18 @@ export class HuaShen extends TriggerSkill {
       who,
     );
 
-    const huashenInfo = player.getFlag<HuaShenInfo>(this.GeneralName);
+    const huashenInfo = player.getHuaShenInfo();
     if (huashenInfo !== undefined) {
-      await room.loseSkill(who, huashenInfo.huashenSkill);
+      await room.loseSkill(who, huashenInfo.skillName);
     }
 
-    player.setFlag<HuaShenInfo>(this.GeneralName, {
-      huashenSkill: selectedOption!,
-      huashenCharacterId: character.Id,
+    player.setHuaShenInfo({ skillName: selectedOption!, characterId: character.Id });
+    room.broadcast(GameEventIdentifiers.HuaShenCardUpdatedEvent, {
+      toId: player.Id,
+      latestHuaShen: character.Id,
+      latestHuaShenSkillName: selectedOption!,
     });
-    room.obtainSkill(who, selectedOption!);
+    room.obtainSkill(who, selectedOption!, true);
   }
 
   public async onEffect(
@@ -143,6 +138,7 @@ export class HuaShen extends TriggerSkill {
   ): Promise<boolean> {
     const unknownEvent = skillEffectEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers>;
     const identifier = EventPacker.getIdentifier(unknownEvent);
+    const player = room.getPlayerById(skillEffectEvent.fromId);
 
     if (identifier !== GameEventIdentifiers.GameStartEvent) {
       const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
@@ -165,28 +161,51 @@ export class HuaShen extends TriggerSkill {
         skillEffectEvent.fromId,
       );
 
-      const player = room.getPlayerById(skillEffectEvent.fromId);
-
       if (selectedOption === 'option-one') {
         await this.disguise(room, skillEffectEvent.fromId);
       } else {
-        const huashenInfo = player.getFlag<HuaShenInfo>(this.GeneralName);
-        const selectedCharacterIds = await this.askForChoosingCharacter(
-          room,
-          player,
-          2,
-          huashenInfo.huashenCharacterId,
-        );
+        const huashenInfo = Precondition.exists(player.getHuaShenInfo(), 'unknown huashen info');
+        const selectedCharacterIds = await this.askForChoosingCharacter(room, player, 2, huashenInfo.characterId);
         const huashenCards = player.getCardIds<CharacterId>(PlayerCardsArea.OutsideArea, this.GeneralName);
         const huashen = room.getRandomCharactersFromLoadedPackage(selectedCharacterIds.length, huashenCards);
         const newHuashenCards = huashenCards
           .filter(characterId => !selectedCharacterIds.includes(characterId))
           .concat(huashen);
-        room.setCharacterOutsideAreaCards(player.Id, this.GeneralName, newHuashenCards);
+        room.setCharacterOutsideAreaCards(
+          player.Id,
+          this.GeneralName,
+          newHuashenCards,
+          TranslationPack.translationJsonPatcher(
+            '{0} obtained character cards {1}',
+            TranslationPack.patchPlayerInTranslation(player),
+            TranslationPack.wrapArrayParams(
+              ...huashen.map(characterId => Sanguosha.getCharacterById(characterId).Name),
+            ),
+          ).extract(),
+          TranslationPack.translationJsonPatcher(
+            '{0} swapped {1} character cards',
+            TranslationPack.patchPlayerInTranslation(player),
+            huashen.length,
+          ).extract(),
+        );
       }
     } else {
       const huashen = room.getRandomCharactersFromLoadedPackage(3);
-      room.setCharacterOutsideAreaCards(skillEffectEvent.fromId, this.GeneralName, huashen);
+      room.setCharacterOutsideAreaCards(
+        skillEffectEvent.fromId,
+        this.GeneralName,
+        huashen,
+        TranslationPack.translationJsonPatcher(
+          '{0} obtained character cards {1}',
+          TranslationPack.patchPlayerInTranslation(player),
+          TranslationPack.wrapArrayParams(...huashen.map(characterId => Sanguosha.getCharacterById(characterId).Name)),
+        ).extract(),
+        TranslationPack.translationJsonPatcher(
+          '{0} swapped {1} character cards',
+          TranslationPack.patchPlayerInTranslation(player),
+          huashen.length,
+        ).extract(),
+      );
       await this.disguise(room, skillEffectEvent.fromId);
     }
 
@@ -234,9 +253,9 @@ export class HuaShenShadow extends TriggerSkill implements OnDefineReleaseTiming
       ],
     };
     room.changePlayerProperties(playerPropertiesChangeEvent);
-    const huashenInfo = player.getFlag<HuaShenInfo>(this.GeneralName);
+    const huashenInfo = player.getHuaShenInfo();
     if (huashenInfo !== undefined) {
-      await room.loseSkill(skillEffectEvent.fromId, huashenInfo.huashenSkill);
+      await room.loseSkill(skillEffectEvent.fromId, huashenInfo.skillName);
     }
 
     return true;
