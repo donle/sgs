@@ -233,7 +233,16 @@ export class HuaShenShadow extends TriggerSkill implements OnDefineReleaseTiming
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>): boolean {
-    return owner.Dead || !owner.hasSkill(this.GeneralName);
+    if (room.CurrentProcessingStage !== PlayerDiedStage.PlayerDied && owner.hasSkill(this.GeneralName)) {
+      return false;
+    }
+
+    if (!owner.getFlag<boolean>(this.Name)) {
+      owner.setFlag(this.Name, true);
+      return owner.Dead || !owner.hasSkill(this.GeneralName);
+    } else {
+      return false;
+    }
   }
 
   public async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
