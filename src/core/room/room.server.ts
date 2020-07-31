@@ -280,9 +280,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             [K: string]: number;
           } = {};
           for (const skill of canTriggerSkills) {
-            skillsInPriorities[skill.Priority]
-              ? skillsInPriorities[skill.Priority].push(skill)
-              : (skillsInPriorities[skill.Priority] = [skill]);
+            const priority = skill.getPriority(this, player, content);
+            skillsInPriorities[priority]
+              ? skillsInPriorities[priority].push(skill)
+              : (skillsInPriorities[priority] = [skill]);
             skillTriggerableTimes[skill.Name] = skill.triggerableTimes(content);
           }
 

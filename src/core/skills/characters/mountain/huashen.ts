@@ -28,7 +28,11 @@ export class HuaShen extends TriggerSkill {
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
-    return stage === PhaseChangeStage.BeforePhaseChange || stage === GameStartStage.GameStarting;
+    return (
+      stage === PhaseChangeStage.BeforePhaseChange ||
+      stage === PhaseChangeStage.PhaseChanged ||
+      stage === GameStartStage.GameStarting
+    );
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers>) {
@@ -36,8 +40,12 @@ export class HuaShen extends TriggerSkill {
     if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
       const phaseChangeEvent = event as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
       return (
-        (phaseChangeEvent.toPlayer === owner.Id && phaseChangeEvent.to === PlayerPhase.PrepareStage) ||
-        (phaseChangeEvent.fromPlayer === owner.Id && phaseChangeEvent.from === PlayerPhase.FinishStage)
+        (phaseChangeEvent.toPlayer === owner.Id &&
+          phaseChangeEvent.to === PlayerPhase.PrepareStage &&
+          room.CurrentProcessingStage === PhaseChangeStage.BeforePhaseChange) ||
+        (phaseChangeEvent.fromPlayer === owner.Id &&
+          phaseChangeEvent.from === PlayerPhase.FinishStage &&
+          room.CurrentProcessingStage === PhaseChangeStage.PhaseChanged)
       );
     } else {
       return !owner.hasUsedSkill(this.GeneralName);
@@ -48,8 +56,14 @@ export class HuaShen extends TriggerSkill {
     return true;
   }
 
-  public get Priority() {
-    return StagePriority.High;
+  public getPriority(room: Room, owner: Player) {
+    if (room.CurrentProcessingStage === PhaseChangeStage.BeforePhaseChange) {
+      return StagePriority.High;
+    } else if (room.CurrentProcessingStage === PhaseChangeStage.PhaseChanged) {
+      return StagePriority.Low;
+    } else {
+      return StagePriority.Medium;
+    }
   }
 
   public async askForChoosingCharacter(

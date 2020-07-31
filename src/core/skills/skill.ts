@@ -168,7 +168,7 @@ export abstract class TriggerSkill extends Skill {
     return TranslationPack.translationJsonPatcher('do you want to trigger skill {0} ?', this.Name).extract();
   }
 
-  public get Priority() {
+  public getPriority(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers>) {
     return StagePriority.Medium;
   }
 
