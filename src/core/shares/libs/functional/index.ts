@@ -6,7 +6,7 @@ import { PlayerCardsArea, PlayerRole } from 'core/player/player_props';
 import { Precondition } from '../precondition/precondition';
 
 export abstract class Functional {
-  static getPlayerPhaseRarText(stage: PlayerPhase) {
+  static getPlayerPhaseRawText(stage: PlayerPhase) {
     switch (stage) {
       case PlayerPhase.PrepareStage:
         return 'prepare stage';
