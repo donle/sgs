@@ -40,10 +40,10 @@ export class DuanLiang extends ViewAsSkill {
   ): boolean {
     const isAvailable = cardMatcher
       ? cardMatcher.match(new CardMatcher({ type: [CardType.Basic], suit: [CardSuit.Spade, CardSuit.Club] })) ||
-        cardMatcher.match(new CardMatcher({ type: [CardType.Equip] }))
+        cardMatcher.match(new CardMatcher({ type: [CardType.Equip], suit: [CardSuit.Spade, CardSuit.Club] }))
       : true;
     const card = Sanguosha.getCardById(pendingCardId);
-    return isAvailable && ((card.is(CardType.Basic) && card.isBlack()) || card.is(CardType.Equip));
+    return isAvailable && card.isBlack();
   }
 
   public viewAs(selectedCards: CardId[]): VirtualCard {
