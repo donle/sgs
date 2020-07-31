@@ -229,6 +229,9 @@ export class VirtualCard<T extends Card = Card> extends Card {
       this.suit = cardSuit;
       this.viewAsBlackCard = this.suit === CardSuit.Spade || this.suit === CardSuit.Club;
       this.viewAsRedCard = this.suit === CardSuit.Heart || this.suit === CardSuit.Diamond;
+    } else if (this.cardIds.length === 0) {
+      this.viewAsBlackCard = this.suit === CardSuit.Spade || this.suit === CardSuit.Club;
+      this.viewAsRedCard = this.suit === CardSuit.Heart || this.suit === CardSuit.Diamond;
     } else if (this.cardIds.length === 1) {
       const card = Sanguosha.getCardById(this.cardIds[0]);
       this.cardNumber = card.CardNumber;

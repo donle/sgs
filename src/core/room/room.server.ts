@@ -23,7 +23,7 @@ import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/p
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardTargetEnum } from 'core/cards/libs/card_props';
-import { Character } from 'core/characters/character';
+import { Character, CharacterId } from 'core/characters/character';
 import { PinDianResultType } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { GameInfo, getRoles } from 'core/game/game_props';
@@ -44,6 +44,7 @@ import { Room, RoomId } from './room';
 
 export class ServerRoom extends Room<WorkPlace.Server> {
   private loadedCharacters: Character[] = [];
+  private selectedCharacters: CharacterId[] = [];
 
   private drawStack: CardId[] = [];
   private dropStack: CardId[] = [];
@@ -143,7 +144,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     this.gameStarted = true;
     await this.sleep(3000);
-    await this.gameProcessor.gameStart(this, this.loadedCharacters);
+    await this.gameProcessor.gameStart(this, this.loadedCharacters, () => {
+      this.selectedCharacters = this.getAlivePlayersFrom().map(player => player.CharacterId) as CharacterId[];
+    });
   }
 
   public createPlayer(playerInfo: PlayerInfo) {
@@ -277,9 +280,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             [K: string]: number;
           } = {};
           for (const skill of canTriggerSkills) {
-            skillsInPriorities[skill.Priority]
-              ? skillsInPriorities[skill.Priority].push(skill)
-              : (skillsInPriorities[skill.Priority] = [skill]);
+            const priority = skill.getPriority(this, player, content);
+            skillsInPriorities[priority]
+              ? skillsInPriorities[priority].push(skill)
+              : (skillsInPriorities[priority] = [skill]);
             skillTriggerableTimes[skill.Name] = skill.triggerableTimes(content);
           }
 
@@ -356,10 +360,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                     skillName: awaitedSkills[0].Name,
                     triggeredOnEvent: content,
                   };
-                  await this.useSkill(triggerSkillEvent);
+                  for (let i = 0; i < skillTriggerableTimes[awaitedSkills[0].Name]; i++) {
+                    await this.useSkill(triggerSkillEvent);
+                  }
                   break;
                 }
-                
+
                 if (uncancellableSkills.length > 1) {
                   EventPacker.createUncancellableEvent(event);
                 }
@@ -486,6 +492,48 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         ).extract(),
       }),
     );
+  }
+
+  public getRandomCharactersFromLoadedPackage(numberOfCharacter: number, except: CharacterId[] = []): CharacterId[] {
+    const characters = Sanguosha.getRandomCharacters(numberOfCharacter, this.loadedCharacters, [
+      ...this.selectedCharacters,
+      ...except,
+    ]).map(character => character.Id);
+
+    return characters;
+  }
+
+  public setCharacterOutsideAreaCards(
+    player: PlayerId,
+    areaName: string,
+    characterIds: CharacterId[],
+    translationsMessage?: PatchedTranslationObject,
+    unengagedMessage?: PatchedTranslationObject,
+  ) {
+    this.getPlayerById(player).setCharacterOutsideAreaCards(areaName, characterIds);
+    this.broadcast(GameEventIdentifiers.SetOutsideCharactersEvent, {
+      toId: player,
+      characterIds,
+      areaName,
+      isPublic: false,
+      translationsMessage,
+      engagedPlayerIds: [player],
+      unengagedMessage,
+    });
+  }
+
+  public changePlayerProperties(event: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent>): void {
+    const { changedProperties } = event;
+    for (const property of changedProperties) {
+      const player = this.getPlayerById(property.toId);
+      property.characterId !== undefined && (player.CharacterId = property.characterId);
+      property.maxHp !== undefined && (player.MaxHp = property.maxHp);
+      property.hp !== undefined && (player.Hp = property.hp);
+      property.nationality !== undefined && (player.Nationality = property.nationality);
+      property.gender !== undefined && (player.Gender = property.gender);
+    }
+
+    this.broadcast(GameEventIdentifiers.PlayerPropertiesChangeEvent, event);
   }
 
   public async askForCardDrop(
@@ -875,13 +923,19 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       const outsideCards = player.getCardIds(PlayerCardsArea.OutsideArea, skill.Name);
       if (SkillHooks.isHookedUpOnLosingSkill(skill)) {
         this.hookedSkills.push({ player, skill });
-      } else if (outsideCards) {
-        await this.moveCards({
-          movingCards: outsideCards.map(card => ({ card, fromArea: PlayerCardsArea.OutsideArea })),
-          fromId: player.Id,
-          toArea: CardMoveArea.DropStack,
-          moveReason: CardMoveReason.PlaceToDropStack,
-        });
+      }
+
+      if (outsideCards) {
+        if (player.isCharacterOutsideArea(skill.Name)) {
+          outsideCards.splice(0, outsideCards.length);
+        } else {
+          await this.moveCards({
+            movingCards: outsideCards.map(card => ({ card, fromArea: PlayerCardsArea.OutsideArea })),
+            fromId: player.Id,
+            toArea: CardMoveArea.DropStack,
+            moveReason: CardMoveReason.PlaceToDropStack,
+          });
+        }
       }
     }
   }

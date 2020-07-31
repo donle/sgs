@@ -116,7 +116,7 @@ export class LuoYiShadow extends TriggerSkill implements OnDefineReleaseTiming {
     return room.CurrentPlayer === room.getPlayerById(playerId) && room.CurrentPlayerPhase === PlayerPhase.PrepareStage;
   }
 
-  public get Priority() {
+  public getPriority() {
     return StagePriority.High;
   }
 

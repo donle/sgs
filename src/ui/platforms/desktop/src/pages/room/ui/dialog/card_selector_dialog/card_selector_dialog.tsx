@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { Card } from 'core/cards/card';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
+import { CharacterId } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Functional } from 'core/shares/libs/functional';
@@ -8,6 +9,7 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
 import { ClientCard } from 'ui/card/card';
+import { CharacterCard } from 'ui/character/character';
 import { BaseDialog } from '../base_dialog';
 import styles from './card_selector_dialog.module.css';
 
@@ -15,6 +17,7 @@ type CardSelectorProps = {
   translator: ClientTranslationModule;
   options: CardChoosingOptions | CardId[] | number;
   imageLoader: ImageLoader;
+  isCharacterCard?: boolean;
   onClick?(card: Card | number, fromArea: PlayerCardsArea): void;
   isCardDisabled?(card: Card): boolean;
 };
@@ -49,7 +52,7 @@ const CardSlot = (props: {
 };
 
 const CardSelector = (props: CardSelectorProps) => {
-  const { options, onClick, translator, isCardDisabled, imageLoader } = props;
+  const { options, onClick, translator, isCardDisabled, imageLoader, isCharacterCard } = props;
 
   const optionCardsLine: JSX.Element[] = [];
   if (options instanceof Array || typeof options === 'number') {
@@ -70,14 +73,24 @@ const CardSelector = (props: CardSelectorProps) => {
     } else {
       for (const cardId of options) {
         cardLine.push(
-          <CardSlot
-            key={cardId}
-            translator={translator}
-            imageLoader={imageLoader}
-            card={Sanguosha.getCardById(cardId)}
-            onClick={onClick}
-            isCardDisabled={isCardDisabled}
-          />,
+          isCharacterCard ? (
+            <CharacterCard
+              key={cardId}
+              character={Sanguosha.getCharacterById(cardId as CharacterId)}
+              imageLoader={imageLoader}
+              translator={translator}
+              size="small"
+            />
+          ) : (
+            <CardSlot
+              key={cardId}
+              translator={translator}
+              imageLoader={imageLoader}
+              card={Sanguosha.getCardById(cardId)}
+              onClick={onClick}
+              isCardDisabled={isCardDisabled}
+            />
+          ),
         );
       }
     }
@@ -144,6 +157,7 @@ export const CardSelectorDialog = (props: {
   imageLoader: ImageLoader;
   onClick?(card: Card | number, fromArea?: PlayerCardsArea): void;
   isCardDisabled?(card: Card): boolean;
+  isCharacterCard?: boolean;
   title?: string;
 }) => {
   const { title, ...selectorProps } = props;

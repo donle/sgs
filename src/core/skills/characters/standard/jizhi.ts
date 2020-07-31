@@ -66,7 +66,7 @@ export class JiZhi extends TriggerSkill {
 @CommonSkill({ name: JiZhi.Name, description: JiZhi.Description })
 export class JiZhiShadow extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: PhaseChangeStage) {
-    return stage === PhaseChangeStage.AfterPhaseChanged && event.from === PlayerPhase.FinishStage;
+    return stage === PhaseChangeStage.PhaseChanged && event.from === PlayerPhase.FinishStage;
   }
 
   public isAutoTrigger() {

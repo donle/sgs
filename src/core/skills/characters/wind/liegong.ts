@@ -59,7 +59,7 @@ export class LieGongDamage extends TriggerSkill {
     return stage === DamageEffectStage.DamageEffect;
   }
 
-  public get Priority() {
+  public getPriority() {
     return StagePriority.High;
   }
 

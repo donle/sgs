@@ -284,15 +284,10 @@ export interface ServerEvent extends EventUtilities {
     responsedEvent?: ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent>;
   };
   [GameEventIdentifiers.AskForChoosingCharacterEvent]: {
+    amount: number;
     characterIds: CharacterId[];
-    lordInfo?: {
-      lordId: PlayerId;
-      lordCharacter: CharacterId;
-      lordNationality: CharacterNationality;
-    };
     toId: PlayerId;
-    role?: PlayerRole;
-    isGameStart?: boolean;
+    byHuaShen?: boolean;
   };
   [GameEventIdentifiers.AskForChoosingOptionsEvent]: {
     askedBy?: PlayerId;
@@ -385,8 +380,26 @@ export interface ServerEvent extends EventUtilities {
     skippedPhase: PlayerPhase;
   };
   [GameEventIdentifiers.PlayerPropertiesChangeEvent]: {
-    changedProperties: { toId: PlayerId; nationality?: CharacterNationality; gender?: CharacterGender }[];
+    changedProperties: {
+      toId: PlayerId;
+      characterId?: CharacterId;
+      maxHp?: number;
+      hp?: number;
+      nationality?: CharacterNationality;
+      gender?: CharacterGender;
+    }[];
   };
+  [GameEventIdentifiers.SetOutsideCharactersEvent]: {
+    toId: PlayerId;
+    characterIds: CharacterId[];
+    areaName: string;
+    isPublic?: boolean;
+  };
+  [GameEventIdentifiers.HuaShenCardUpdatedEvent]: {
+    latestHuaShen: CharacterId;
+    latestHuaShenSkillName: string;
+    toId: PlayerId;
+  }
 }
 
 export type PinDianResultType = {

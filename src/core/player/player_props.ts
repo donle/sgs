@@ -4,7 +4,7 @@ import { CharacterId, CharacterNationality } from 'core/characters/character';
 export type PlayerId = string;
 
 export type PlayerCardsOutside = {
-  [SkillName: string]: CardId[];
+  [SkillName: string]: (CardId | CharacterId)[];
 };
 
 export type PlayerCards = {

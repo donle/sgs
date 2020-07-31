@@ -1,5 +1,7 @@
 import classNames from 'classnames';
 import { CardId } from 'core/cards/libs/card_props';
+import { CharacterId } from 'core/characters/character';
+import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerRole } from 'core/player/player_props';
 import { MarkEnum } from 'core/shares/types/mark_list';
@@ -17,6 +19,7 @@ import { Tooltip } from 'ui/tooltip/tooltip';
 import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
 import { AwakenSkillMark, LimitSkillMark, Mark } from '../mark/mark';
 import { Mask } from '../mask/mask';
+import { SwitchAvatar } from '../switch_avatar/switch_avatar';
 import styles from './player_avatar.module.css';
 
 type PlayerAvatarProps = {
@@ -44,9 +47,13 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   private onTooltipOpeningTimer: NodeJS.Timer;
   @mobx.observable.ref
   PlayerRoleCard: () => JSX.Element;
-
   @mobx.observable.ref
   PlayerImage: () => JSX.Element;
+
+  @mobx.observable.ref
+  mainImage: string | undefined;
+  @mobx.observable.ref
+  sideImage: string | undefined;
 
   private openedDialog: string | undefined;
 
@@ -118,7 +125,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
         <div className={styles.skillTags}>
           {flags.map((flag, index) => (
             <span key={index} className={styles.skillTag}>
-              {translator.tr(flag)}
+              {translator.trx(flag)}
             </span>
           ))}
         </div>
@@ -126,14 +133,29 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     );
   }
 
-  private readonly onOutsideAreaTagClicked = (name: string, cards: CardId[]) => () => {
+  private readonly onOutsideAreaTagClicked = (name: string, cards: (CardId | CharacterId)[]) => () => {
+    const player = this.props.presenter.ClientPlayer;
+    if (
+      player === undefined ||
+      player.CharacterId === undefined ||
+      (this.openedDialog === undefined && this.props.store.selectorDialog !== undefined)
+    ) {
+      return;
+    }
+
     if (this.openedDialog === name) {
       this.openedDialog = undefined;
       this.props.presenter.closeDialog();
     } else {
       this.openedDialog = name;
       this.props.presenter.createDialog(
-        <CardSelectorDialog imageLoader={this.props.imageLoader} options={cards} translator={this.props.translator} />,
+        <CardSelectorDialog
+          title={this.props.translator.tr(name)}
+          isCharacterCard={player.isCharacterOutsideArea(name)}
+          imageLoader={this.props.imageLoader}
+          options={cards}
+          translator={this.props.translator}
+        />,
       );
     }
   };
@@ -216,16 +238,26 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     ));
   }
 
+  @mobx.action
   async componentDidUpdate() {
+    if (this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.CharacterId !== undefined) {
+      this.mainImage = (await this.props.imageLoader.getCharacterImage(this.props.presenter.ClientPlayer.Character.Name)).src;
+      const huashenCharacterId = this.props.presenter.ClientPlayer.getHuaShenInfo()?.characterId;
+      const huashenCharacter =
+        huashenCharacterId !== undefined ? Sanguosha.getCharacterById(huashenCharacterId) : undefined;
+      this.sideImage = huashenCharacter && (await this.props.imageLoader.getCharacterImage(huashenCharacter.Name)).src;
+    }
+
     if (
       this.PlayerImage === undefined &&
       this.props.presenter.ClientPlayer &&
       this.props.presenter.ClientPlayer.CharacterId !== undefined
     ) {
-      const image = await this.props.imageLoader.getCharacterImage(this.props.presenter.ClientPlayer.Character.Name);
       mobx.runInAction(() => {
         this.PlayerImage = () => (
-          <img
+          <SwitchAvatar
+            mainImage={this.mainImage}
+            sideImage={this.sideImage}
             className={classNames(styles.playerImage, {
               [styles.dead]: this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead,
               [styles.disabled]:
@@ -234,8 +266,6 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
                   : !(this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead) &&
                     this.props.disabled,
             })}
-            alt={image.alt}
-            src={image.src}
           />
         );
       });

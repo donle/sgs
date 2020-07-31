@@ -12,6 +12,10 @@
     height: 150px;
 }
 
+.selected {
+    filter: brightness(0.5);
+}
+
 .characterImage {
     height: 100%;
     position: absolute;

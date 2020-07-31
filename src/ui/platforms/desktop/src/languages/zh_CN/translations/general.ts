@@ -39,7 +39,7 @@ export const generalDictionary: Word[] = [
   { source: 'spade', target: '黑桃' },
   { source: 'club', target: '梅花' },
   { source: 'diamond', target: '方块' },
-  { source: 'attack range:', target: '攻击距离：'},
+  { source: 'attack range:', target: '攻击距离：' },
 
   { source: 'draw stack', target: '摸牌堆' },
   { source: 'drop stack', target: '弃牌堆' },
@@ -435,6 +435,16 @@ export const eventDictionary: Word[] = [
     target: '{0} 的“思蜀”效果被触发，其将要进行的【乐不思蜀】判定效果反转',
   },
   {
+    source:
+      'please choose: 1. show a character from huashen area and announce a skill to obtain. 2. remove no more than two unshown characters of huashen and get equal number of that.',
+    target:
+      '请选择：1.从化身牌中亮出一张武将牌并声明一个技能（锁定技、主公技、限定技除外）获得之；2.移去一至二张未亮出的化身牌并获得等量的化身牌',
+  },
+  {
+    source: 'huashen: please announce a skill to obtain',
+    target: '化身：请声明一个技能获得之',
+  },
+  {
     source: 'wuhun:Please choose a target to die with you',
     target: '请选择一名角色进行【武魂】的判定，若结果不为【桃】或【桃园结义】，其立即死亡',
   },
@@ -525,6 +535,9 @@ export const eventDictionary: Word[] = [
     source: 'shenfen: please select 4 cards to drop',
     target: '神愤：请弃置 4 张手牌',
   },
+  { source: '{0} obtained character cards {1}', target: '{0} 获得了武将 {1}' },
+  { source: '{0} swapped {1} character cards', target: '{0} 交换了 {1} 张武将牌' },
+  { source: 'huashen skill:{0}', target: '化身: {0}' },
 
   { source: 'cixiongjian:drop-card', target: '弃置一张手牌' },
   { source: 'cixiongjian:draw-card', target: '令其摸一张牌' },
@@ -560,8 +573,8 @@ export const eventDictionary: Word[] = [
   { source: 'zaiqi:recover', target: '令孟获回复1点体力' },
   { source: 'jianyan:red', target: '红色牌' },
   { source: 'jianyan:black', target: '黑色牌' },
-  { source: 'zhiji:drawcards', target: '摸两张牌'},
-  { source: 'zhiji:recover', target: '回复1点体力'},
+  { source: 'zhiji:drawcards', target: '摸两张牌' },
+  { source: 'zhiji:recover', target: '回复1点体力' },
   { source: 'please choose the amount of hp to lose', target: '请选择要失去的体力值' },
   { source: 'please choose your zhiheng cards', target: '请选择要制衡的牌' },
   {

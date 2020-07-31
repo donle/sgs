@@ -218,6 +218,10 @@ export class Dashboard extends React.Component<DashboardProps> {
 
     const availableCards: { areaName; card: Card }[] = [];
     for (const [areaName, cards] of Object.entries(this.props.presenter.ClientPlayer.getOutsideAreaCards())) {
+      if (this.props.presenter.ClientPlayer.isCharacterOutsideArea(areaName)) {
+        continue;
+      }
+
       availableCards.push(
         ...cards
           .filter(card => this.props.outsideCardEnableMatcher!(Sanguosha.getCardById(card)))

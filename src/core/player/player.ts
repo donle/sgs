@@ -43,6 +43,11 @@ type SkillStringType =
   | 'transform'
   | 'viewAs';
 
+export type HuaShenInfo = {
+  skillName: string;
+  characterId: CharacterId;
+};
+
 export abstract class Player implements PlayerInfo {
   private hp: number;
   private maxHp: number;
@@ -63,6 +68,7 @@ export abstract class Player implements PlayerInfo {
   protected abstract playerPosition: number;
   protected playerRole: PlayerRole = PlayerRole.Unknown;
   protected nationality: CharacterNationality;
+  protected huashenInfo: HuaShenInfo | undefined;
 
   private cardUseHistory: CardId[] = [];
   private skillUsedHistory: {
@@ -71,6 +77,7 @@ export abstract class Player implements PlayerInfo {
   private playerCharacter: Character | undefined;
   protected playerCards: PlayerCards;
   protected playerOutsideCards: PlayerCardsOutside;
+  protected playerOutsideCharactersAreaNames: string[] = [];
 
   private flags: {
     [k: string]: any;
@@ -204,22 +211,33 @@ export abstract class Player implements PlayerInfo {
       : (this.skillUsedHistory[skillName] = 1);
   }
 
-  public getCardIds(area?: PlayerCardsArea, outsideAreaName?: string): CardId[] {
+  public getCardIds<T extends CardId | CharacterId = CardId>(area?: PlayerCardsArea, outsideAreaName?: string): T[] {
     if (area === undefined) {
       const [handCards, judgeCards, equipCards] = Object.values<CardId[]>(this.playerCards);
-      return [...handCards, ...judgeCards, ...equipCards];
+      return ([...handCards, ...judgeCards, ...equipCards] as unknown) as T[];
     }
 
     if (area !== PlayerCardsArea.OutsideArea) {
-      return this.playerCards[area];
+      return (this.playerCards[area] as unknown) as T[];
     } else {
       outsideAreaName = Precondition.exists(outsideAreaName, `Unable to get ${outsideAreaName} area cards`);
       this.playerOutsideCards[outsideAreaName] = this.playerOutsideCards[outsideAreaName] || [];
-      return this.playerOutsideCards[outsideAreaName];
+      return (this.playerOutsideCards[outsideAreaName] as unknown) as T[];
     }
   }
 
-  public getOutsideAreaNameOf(cardId: CardId) {
+  public setCharacterOutsideAreaCards(areaName: string, characterIds: CharacterId[]) {
+    if (!this.playerOutsideCharactersAreaNames.includes(areaName)) {
+      this.playerOutsideCharactersAreaNames.push(areaName);
+    }
+    this.playerOutsideCards[areaName] = characterIds;
+  }
+
+  public isCharacterOutsideArea(areaName: string) {
+    return this.playerOutsideCharactersAreaNames.includes(areaName);
+  }
+
+  public getOutsideAreaNameOf<T extends CardId | CharacterId>(cardId: T) {
     for (const [areaName, cards] of Object.entries(this.playerOutsideCards)) {
       if (cards.includes(cardId)) {
         return areaName;
@@ -703,6 +721,7 @@ export abstract class Player implements PlayerInfo {
   public bury() {
     this.turnedOver = false;
     this.chainLocked = false;
+    this.huashenInfo = undefined;
     this.clearHeaded();
     this.dead = true;
   }
@@ -718,6 +737,13 @@ export abstract class Player implements PlayerInfo {
       Hp: this.hp,
       MaxHp: this.maxHp,
     };
+  }
+
+  setHuaShenInfo(info: HuaShenInfo) {
+    this.huashenInfo = info;
+  }
+  getHuaShenInfo() {
+    return this.huashenInfo;
   }
 
   public setOffline() {

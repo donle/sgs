@@ -5,6 +5,7 @@ import { JiangWei } from './jiangwei';
 import { LiuShan } from './liushan';
 import { SunCe } from './sunce';
 import { ZhangHe } from './zhanghe';
+import { ZuoCi } from './zuoci';
 
 export const MountainCharacterPackage: (index: number) => Character[] = index => [
   new DengAi(index++),
@@ -15,4 +16,5 @@ export const MountainCharacterPackage: (index: number) => Character[] = index =>
   
   new SunCe(index++),
   new ErZhang(index++),
+  new ZuoCi(index++),
 ];

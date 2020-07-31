@@ -1,7 +1,7 @@
 import { Card, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { Character } from 'core/characters/character';
+import { Character, CharacterId } from 'core/characters/character';
 import {
   CardMoveArea,
   ClientEventFinder,
@@ -270,6 +270,12 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.PlayerPropertiesChangeEvent:
         await this.onHandlePlayerPropertiesChangeEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.SetOutsideCharactersEvent:
+        await this.onHandleSetOutsideCharactersEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.HuaShenCardUpdatedEvent:
+        await this.onHandleHuaShenCardUpdatedEvent(e as any, content);
         break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
@@ -542,26 +548,52 @@ export class GameClientProcessor {
   ) {
     this.store.room.getPlayerById(content.dying).Dying = true;
   }
+
+  private onHandleSetOutsideCharactersEvent<T extends GameEventIdentifiers.SetOutsideCharactersEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const { toId, areaName, characterIds, isPublic } = content;
+    const player = this.store.room.getPlayerById(toId);
+    player.setCharacterOutsideAreaCards(areaName, characterIds);
+    isPublic && player.setVisibleOutsideArea(areaName);
+    this.presenter.broadcastUIUpdate();
+  }
+
+  private onHandleHuaShenCardUpdatedEvent<T extends GameEventIdentifiers.HuaShenCardUpdatedEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const { toId, latestHuaShen, latestHuaShenSkillName } = content;
+    const player = this.store.room.getPlayerById(toId);
+    player.setHuaShenInfo({
+      skillName: latestHuaShenSkillName,
+      characterId: latestHuaShen,
+    });
+    this.presenter.broadcastUIUpdate();
+  }
+
   private onHandlePlayerPropertiesChangeEvent<T extends GameEventIdentifiers.PlayerPropertiesChangeEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
     const { changedProperties } = content;
-    for (const { toId, nationality, gender } of changedProperties) {
+    for (const { toId, characterId, maxHp, hp, nationality, gender } of changedProperties) {
       const player = this.store.room.getPlayerById(toId);
-      if (nationality !== undefined) {
-        player.Nationality = nationality;
-      }
-      if (gender !== undefined) {
-        player.Gender = gender;
-      }
+      characterId !== undefined && (player.CharacterId = characterId);
+      maxHp !== undefined && (player.MaxHp = maxHp);
+      hp !== undefined && (player.Hp = hp);
+      nationality !== undefined && (player.Nationality = nationality);
+      gender !== undefined && (player.Gender = gender);
     }
     this.presenter.broadcastUIUpdate();
   }
+
   private onHandleNotifyEvent<T extends GameEventIdentifiers.NotifyEvent>(type: T, content: ServerEventFinder<T>) {
     this.presenter.notify(content.toIds, content.notificationTime);
     this.presenter.broadcastUIUpdate();
   }
+
   private onHandlePlayerDiedEvent<T extends GameEventIdentifiers.PlayerDiedEvent>(
     type: T,
     content: ServerEventFinder<T>,
@@ -607,15 +639,6 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    content.players.forEach(playerInfo => {
-      const player = this.store.room.getPlayerById(playerInfo.Id);
-      player.CharacterId = playerInfo.CharacterId!;
-      if (playerInfo.Nationality !== undefined) {
-        player.Nationality = playerInfo.Nationality;
-      }
-      player.MaxHp = playerInfo.MaxHp;
-      player.Hp = playerInfo.Hp;
-    });
     this.presenter.isSkillDisabled(() => true);
     this.presenter.broadcastUIUpdate();
   }
@@ -676,27 +699,47 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    if (content.lordInfo) {
-      const lord = this.store.room.getPlayerById(content.lordInfo.lordId);
-      lord.CharacterId = content.lordInfo.lordCharacter;
-      lord.Nationality = content.lordInfo.lordNationality;
-      this.presenter.broadcastUIUpdate();
-    }
+    const selectedCharacters: CharacterId[] = [];
 
     const onClick = (character: Character) => {
-      if (this.presenter.ClientPlayer) {
-        this.presenter.ClientPlayer.CharacterId = character.Id;
+      const index = selectedCharacters.indexOf(character.Id);
+      if (index === -1) {
+        selectedCharacters.push(character.Id);
+        if (selectedCharacters.length === content.amount) {
+          this.store.confirmButtonAction && this.store.confirmButtonAction();
+          return;
+        }
+      } else {
+        selectedCharacters.splice(index, 1);
       }
+
+      if (selectedCharacters.length > 0) {
+        this.presenter.enableActionButton('confirm');
+        this.presenter.broadcastUIUpdate();
+      } else {
+        this.presenter.disableActionButton('confirm');
+        this.presenter.broadcastUIUpdate();
+      }
+    };
+
+    this.presenter.defineConfirmButtonActions(() => {
       this.presenter.closeDialog();
+
+      if (!content.byHuaShen) {
+        if (this.presenter.ClientPlayer) {
+          this.presenter.ClientPlayer.CharacterId = selectedCharacters[0];
+        }
+      }
+
       const response: ClientEventFinder<T> = {
-        isGameStart: content.isGameStart,
-        chosenCharacter: character.Id,
+        chosenCharacterIds: selectedCharacters,
         fromId: this.store.clientPlayerId,
       };
+
       this.store.room.broadcast(type, response);
       this.presenter.broadcastUIUpdate();
       this.endAction();
-    };
+    });
 
     this.presenter.createDialog(
       <CharacterSelectorDialog
@@ -704,6 +747,7 @@ export class GameClientProcessor {
         characterIds={content.characterIds}
         onClick={onClick}
         translator={this.translator}
+        selectedCharacters={selectedCharacters}
       />,
     );
   }
@@ -733,11 +777,11 @@ export class GameClientProcessor {
     this.store.room.CurrentPlayerStage = content.toStage;
   }
 
-  private onHandleLoseSkillEvent<T extends GameEventIdentifiers.LoseSkillEvent>(
+  private async onHandleLoseSkillEvent<T extends GameEventIdentifiers.LoseSkillEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.store.room.getPlayerById(content.toId).loseSkill(content.skillName);
+    await this.store.room.loseSkill(content.toId, content.skillName);
   }
 
   private onHandleObtainSkillEvent<T extends GameEventIdentifiers.ObtainSkillEvent>(

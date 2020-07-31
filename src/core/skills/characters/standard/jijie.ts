@@ -69,6 +69,7 @@ export class JiJie extends ActiveSkill {
       moveReason: CardMoveReason.ActivePrey,
       proposer: skillUseEvent.fromId,
       movedByReason: this.Name,
+      engagedPlayerIds: [target],
     });
 
     return true;

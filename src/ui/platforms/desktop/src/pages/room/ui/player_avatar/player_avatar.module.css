@@ -132,7 +132,7 @@
 
 .playerTags {
     position: absolute;
-    top: calc(gridLine * 4);
+    top: calc(gridLine * 5);
     left: calc(gridLine * 3);
     font-size: 14px;
     font-weight: 600;
@@ -151,6 +151,11 @@
 .skillTag {
     background-color: grey;
     margin: 0px 4px;
+    font-size: 13px;
+    font-weight: 500;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    padding: 0 4px;
 }
 .clickableSkillTag {
     cursor: pointer;

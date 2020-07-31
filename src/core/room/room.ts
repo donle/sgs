@@ -2,6 +2,7 @@ import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
+import { CharacterId } from 'core/characters/character';
 import {
   CardMoveReason,
   ClientEventFinder,
@@ -87,6 +88,15 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract async asyncMoveCards(events: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[]): Promise<void>;
   //Server only
+  public abstract getRandomCharactersFromLoadedPackage(
+    numberOfCharacter: number,
+    except?: CharacterId[],
+  ): CharacterId[];
+  //Server only
+  public abstract changePlayerProperties(
+    event: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent>,
+  ): void;
+  //Server only
   public abstract async onReceivingAsyncResponseFrom<T extends GameEventIdentifiers>(
     identifier: T,
     playerId?: PlayerId,
@@ -166,6 +176,14 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract findCardByMatcherFrom(cardMatcher: CardMatcher, fromDrawStack?: boolean): CardId | undefined;
   public abstract isCardInDropStack(cardId: CardId): boolean;
   public abstract isCardInDrawStack(cardId: CardId): boolean;
+
+  public abstract setCharacterOutsideAreaCards(
+    player: PlayerId,
+    areaName: string,
+    characterIds: CharacterId[],
+    translationsMessage?: PatchedTranslationObject,
+    unengagedMessage?: PatchedTranslationObject,
+  ): void;
 
   public abstract async skip(player: PlayerId, phase?: PlayerPhase): Promise<void>;
   public abstract endPhase(phase: PlayerPhase): void;
