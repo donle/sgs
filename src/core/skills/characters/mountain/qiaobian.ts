@@ -80,9 +80,10 @@ export class QiaoBian extends TriggerSkill {
 
     await room.dropCards(CardMoveReason.SelfDrop, cardIds, fromId, fromId, this.Name);
 
-    room.setFlag(fromId, this.Name, true);
+    const from = room.getPlayerById(fromId);
+    from.setFlag(this.Name, true);
     await room.skip(fromId, phaseChangeEvent.to);
-    room.removeFlag(fromId, this.Name);
+    from.removeFlag(this.Name);
     
     return true;
   }
@@ -105,7 +106,7 @@ export class QiaoBianSkipDraw extends TriggerSkill {
   ): boolean {
     return (
       owner.Id === content.playerId &&
-      room.getFlag<boolean>(owner.Id, this.GeneralName) === true
+      owner.getFlag<boolean>(this.GeneralName) === true
     );
   }
 
@@ -195,7 +196,7 @@ export class QiaoBianSkipPlay extends TriggerSkill {
   ): boolean {
     return (
       owner.Id === content.playerId &&
-      room.getFlag<boolean>(owner.Id, this.GeneralName) === true
+      owner.getFlag<boolean>(this.GeneralName) === true
     );
   }
 
