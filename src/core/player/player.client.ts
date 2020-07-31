@@ -60,4 +60,13 @@ export class ClientPlayer extends Player {
     this.setFlag(TranslationPack.translationJsonPatcher('huashen skill:{0}', info.skillName).toString(), true, false);
     super.setHuaShenInfo(info);
   }
+
+  bury() {
+    for (const areaName of this.playerOutsideCharactersAreaNames) {
+      if (this.playerOutsideCards[areaName]) {
+        delete this.playerOutsideCards[areaName];
+      }
+    }
+    super.bury();
+  }
 }

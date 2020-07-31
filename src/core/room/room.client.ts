@@ -5,7 +5,7 @@ import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { ClientSocket } from 'core/network/socket.client';
 import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
-import { PlayerId } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room, RoomId } from './room';
 
 export class ClientRoom extends Room<WorkPlace.Client> {
@@ -138,10 +138,6 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.trigger.name);
   }
   //Server only
-  public async loseSkill(): Promise<void> {
-    this.throwUntouchableError(this.loseSkill.name);
-  }
-  //Server only
   public obtainSkill(): void {
     this.throwUntouchableError(this.obtainSkill.name);
   }
@@ -261,6 +257,18 @@ export class ClientRoom extends Room<WorkPlace.Client> {
 
   public get CurrentPlayerStage() {
     return this.currentPlayerStage;
+  }
+
+  public async loseSkill(playerId: PlayerId, skillName: string): Promise<void> {
+    const player = this.getPlayerById(playerId);
+    const lostSkill = player.loseSkill(skillName);
+
+    for (const skill of lostSkill) {
+      const outsideCards = player.getCardIds(PlayerCardsArea.OutsideArea, skill.Name);
+      if (outsideCards && player.isCharacterOutsideArea(skill.Name)) {
+        outsideCards.splice(0, outsideCards.length);
+      }
+    }
   }
 
   public getPlayerById(playerId: PlayerId) {

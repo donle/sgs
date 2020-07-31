@@ -926,12 +926,16 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       }
 
       if (outsideCards) {
-        await this.moveCards({
-          movingCards: outsideCards.map(card => ({ card, fromArea: PlayerCardsArea.OutsideArea })),
-          fromId: player.Id,
-          toArea: CardMoveArea.DropStack,
-          moveReason: CardMoveReason.PlaceToDropStack,
-        });
+        if (player.isCharacterOutsideArea(skill.Name)) {
+          outsideCards.splice(0, outsideCards.length);
+        } else {
+          await this.moveCards({
+            movingCards: outsideCards.map(card => ({ card, fromArea: PlayerCardsArea.OutsideArea })),
+            fromId: player.Id,
+            toArea: CardMoveArea.DropStack,
+            moveReason: CardMoveReason.PlaceToDropStack,
+          });
+        }
       }
     }
   }

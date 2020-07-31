@@ -1126,12 +1126,17 @@ export class GameProcessor {
         toArea: CardMoveArea.DropStack,
       });
 
-      const allCards = [
-        ...deadPlayer.getCardIds(PlayerCardsArea.JudgeArea),
-        ...Object.values(deadPlayer.getOutsideAreaCards).reduce<CardId[]>((allCards, cards) => {
-          return [...allCards, ...cards];
-        }, []),
-      ];
+      const outsideCards = Object.entries(deadPlayer.getOutsideAreaCards()).reduce<CardId[]>(
+        (allCards, [areaName, cards]) => {
+          if (!deadPlayer.isCharacterOutsideArea(areaName)) {
+            allCards.push(...cards);
+          }
+          return allCards;
+        },
+        [],
+      );
+
+      const allCards = [...deadPlayer.getCardIds(PlayerCardsArea.JudgeArea), ...outsideCards];
       await this.room.moveCards({
         moveReason: CardMoveReason.PlaceToDropStack,
         fromId: playerId,

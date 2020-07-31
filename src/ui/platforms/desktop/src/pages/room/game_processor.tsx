@@ -777,11 +777,11 @@ export class GameClientProcessor {
     this.store.room.CurrentPlayerStage = content.toStage;
   }
 
-  private onHandleLoseSkillEvent<T extends GameEventIdentifiers.LoseSkillEvent>(
+  private async onHandleLoseSkillEvent<T extends GameEventIdentifiers.LoseSkillEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.store.room.getPlayerById(content.toId).loseSkill(content.skillName);
+    await this.store.room.loseSkill(content.toId, content.skillName);
   }
 
   private onHandleObtainSkillEvent<T extends GameEventIdentifiers.ObtainSkillEvent>(
