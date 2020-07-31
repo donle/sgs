@@ -3,15 +3,14 @@ import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, GameStartStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
+import { MarkEnum } from 'core/shares/types/mark_list';
 import { CommonSkill, LordSkill, RulesBreakerSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 
 @LordSkill
 @CommonSkill({ name: 'xueyi', description: 'xueyi_description' })
 export class XueYi extends TriggerSkill {
-  public static readonly markName = 'yi';
-
   public isAutoTrigger() {
-    return true
+    return true;
   }
 
   public isTriggerable(content: ServerEventFinder<GameEventIdentifiers.GameStartEvent>, stage: AllStage) {
@@ -19,10 +18,7 @@ export class XueYi extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.GameStartEvent>) {
-    return (
-      room.getAlivePlayersFrom()
-        .filter(player => player.Nationality === CharacterNationality.Qun).length > 0
-    );
+    return room.getAlivePlayersFrom().filter(player => player.Nationality === CharacterNationality.Qun).length > 0;
   }
 
   async onTrigger() {
@@ -30,9 +26,8 @@ export class XueYi extends TriggerSkill {
   }
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const allies = room.getAlivePlayersFrom()
-      .filter(player => player.Nationality === CharacterNationality.Qun).length;
-    allies > 0 && room.setMark(event.fromId, XueYi.markName, allies);
+    const allies = room.getAlivePlayersFrom().filter(player => player.Nationality === CharacterNationality.Qun).length;
+    allies > 0 && room.setMark(event.fromId, MarkEnum.XueYi, allies);
 
     return true;
   }
@@ -47,7 +42,7 @@ export class XueYiShadow extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
-      return owner.Id === content.toPlayer && owner.getMark(XueYi.markName) > 0
+    return owner.Id === content.toPlayer && owner.getMark(MarkEnum.XueYi) > 0;
   }
 
   async onTrigger() {
@@ -57,7 +52,7 @@ export class XueYiShadow extends TriggerSkill {
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId } = event;
 
-    room.addMark(fromId, XueYi.markName, -1);
+    room.addMark(fromId, MarkEnum.XueYi, -1);
     await room.drawCards(1, fromId, 'top', fromId, this.Name);
 
     return true;
@@ -69,6 +64,6 @@ export class XueYiShadow extends TriggerSkill {
 @CommonSkill({ name: XueYiShadow.Name, description: XueYiShadow.Description })
 export class XueYiBuff extends RulesBreakerSkill {
   public breakAdditionalCardHoldNumber(room: Room, owner: Player) {
-    return owner.getMark(XueYi.markName) * 2;
+    return owner.getMark(MarkEnum.XueYi) * 2;
   }
 }
