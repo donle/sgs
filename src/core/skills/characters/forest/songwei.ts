@@ -9,7 +9,7 @@ import { CommonSkill, LordSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @LordSkill
-@CommonSkill({name: 'songwei', description: 'songwei_description'})
+@CommonSkill({ name: 'songwei', description: 'songwei_description' })
 export class SongWei extends TriggerSkill {
   isAutoTrigger() {
     return true;
@@ -21,7 +21,11 @@ export class SongWei extends TriggerSkill {
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.JudgeEvent>) {
     const to = room.getPlayerById(content.toId);
-    return owner.Id !== content.toId && to.Nationality === CharacterNationality.Wei && Sanguosha.getCardById(content.judgeCardId).isBlack();
+    return (
+      owner.Id !== content.toId &&
+      to.Nationality === CharacterNationality.Wei &&
+      Sanguosha.getCardById(content.judgeCardId).isBlack()
+    );
   }
 
   async onTrigger() {
@@ -38,14 +42,14 @@ export class SongWei extends TriggerSkill {
       conversation: TranslationPack.translationJsonPatcher(
         'do you want to trigger skill {0} from {1} ?',
         this.GeneralName,
-        TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId))
+        TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
       ).extract(),
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForInvokeSkill, judgeEvent.toId);
     const { selectedOption } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingOptionsEvent,
-      judgeEvent.toId
+      judgeEvent.toId,
     );
 
     if (selectedOption === 'yes') {

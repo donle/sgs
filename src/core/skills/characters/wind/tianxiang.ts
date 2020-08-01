@@ -29,10 +29,11 @@ export class TianXiang extends TriggerSkill {
   }
 
   isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
-    return (
-      Sanguosha.getCardById(cardId).Suit === CardSuit.Heart &&
-      room.getPlayerById(owner).cardFrom(cardId) === PlayerCardsArea.HandArea
-    );
+    return Sanguosha.getCardById(cardId).Suit === CardSuit.Heart;
+  }
+
+  public availableCardAreas() {
+    return [PlayerCardsArea.HandArea];
   }
 
   cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {

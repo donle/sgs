@@ -4,6 +4,7 @@ import { AllStage, DamageEffectStage, PlayerDiedStage } from 'core/game/stage_pr
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { JudgeMatcher, JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
+import { MarkEnum } from 'core/shares/types/mark_list';
 import { TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
@@ -11,8 +12,6 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'wuhun', description: 'wuhun_description' })
 export class WuHun extends TriggerSkill {
-  public static readonly Nightmare: string = 'nightmare';
-
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage): boolean {
     return stage === DamageEffectStage.AfterDamagedEffect;
   }
@@ -35,7 +34,7 @@ export class WuHun extends TriggerSkill {
   ): Promise<boolean> {
     const { triggeredOnEvent } = skillUseEvent;
     const damageEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-    room.addMark(damageEvent.fromId!, WuHun.Nightmare, 1);
+    room.addMark(damageEvent.fromId!, MarkEnum.Nightmare, 1);
     return true;
   }
 }
@@ -47,12 +46,12 @@ export class WuHunDied extends TriggerSkill implements OnDefineReleaseTiming {
     return room.CurrentProcessingStage === PlayerDiedStage.PlayerDied;
   }
 
-  public isTriggerable(): boolean {
-    return false;
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>, stage?: AllStage): boolean {
+    return stage === PlayerDiedStage.PlayerDied;
   }
 
-  public canUse(): boolean {
-    return false;
+  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>): boolean {
+    return owner.Id === event.playerId && owner.Dead;
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -65,20 +64,20 @@ export class WuHunDied extends TriggerSkill implements OnDefineReleaseTiming {
   ): Promise<boolean> {
     const alivePlayers = room.getAlivePlayersFrom();
     let maxMarkNum = 0;
+    for (const player of alivePlayers) {
+      if (player.getMark(MarkEnum.Nightmare) > maxMarkNum) {
+        maxMarkNum = player.getMark(MarkEnum.Nightmare);
+      }
+    }
+
     const revengeList: Player[] = [];
     for (const player of alivePlayers) {
-      const markNum = player.getMark(WuHun.Nightmare);
-      room.removeMark(player.Id, WuHun.Nightmare);
-      if (!markNum || markNum < maxMarkNum) {
-        continue;
+      if (player.getMark(MarkEnum.Nightmare) === maxMarkNum) {
+        revengeList.push(player);
       }
-
-      if (maxMarkNum && markNum > maxMarkNum) {
-        maxMarkNum = markNum;
-        revengeList.length = 0;
+      if (player.getMark(MarkEnum.Nightmare) > 0) {
+        room.removeMark(player.Id, MarkEnum.Nightmare);
       }
-
-      revengeList.push(player);
     }
 
     let sacrificer: Player;

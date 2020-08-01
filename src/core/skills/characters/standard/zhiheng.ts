@@ -25,8 +25,7 @@ export class ZhiHeng extends ActiveSkill {
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
-    const cardFromArea = room.getPlayerById(owner).cardFrom(cardId);
-    return cardFromArea !== undefined && [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea].includes(cardFromArea);
+    return room.getPlayerById(owner).cardFrom(cardId) !== undefined;
   }
 
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {

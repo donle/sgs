@@ -1,0 +1,55 @@
+.switchAvatar {
+    position: relative;
+}
+
+.dynamicMainImage {
+    animation-name: mainFade;
+    animation-duration: 8s;
+    animation-iteration-count: infinite;
+    opacity: 0;
+}
+
+.sideImage {
+    animation-name: sideFade;
+    animation-duration: 8s;
+    animation-iteration-count: infinite;
+}
+
+.mainImage,
+.sideImage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+@keyframes mainFade {
+    0% {
+        opacity: 0;
+    }
+    25% {
+        opacity: 1;
+    }
+    75% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes sideFade {
+    0% {
+        opacity: 1;
+    }
+    25% {
+        opacity: 0;
+    }
+    75% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}

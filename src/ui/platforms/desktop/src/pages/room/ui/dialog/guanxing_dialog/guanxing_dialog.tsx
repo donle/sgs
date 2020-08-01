@@ -33,7 +33,13 @@ const EmptyCardSlots = (props: { slotName: string; length: number; translator: C
   const slots: JSX.Element[] = [];
   for (let i = 0; i < props.length; i++) {
     slots.push(
-      <CardSlot width={100} slotName={props.slotName} className={styles.cardSlot} key={i} translator={props.translator} />,
+      <CardSlot
+        width={100}
+        slotName={props.slotName}
+        className={styles.cardSlot}
+        key={i}
+        translator={props.translator}
+      />,
     );
   }
 

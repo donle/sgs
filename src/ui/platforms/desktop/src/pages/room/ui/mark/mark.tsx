@@ -14,6 +14,7 @@ import limitUsedIcon from './images/limit_used.png';
 import nightmareIcon from './images/nightmare.png';
 import wrathIcon from './images/nu.png';
 import renIcon from './images/ren.png';
+import xueyiIcon from './images/xueyi.png';
 import yingIcon from './images/ying.png';
 
 const markIconMaps: {
@@ -27,6 +28,7 @@ const markIconMaps: {
   [MarkEnum.Ying]: yingIcon,
   [MarkEnum.JunLve]: junlveIcon,
   [MarkEnum.Lie]: lieIcon,
+  [MarkEnum.XueYi]: xueyiIcon,
 };
 
 export type MarkProps = {

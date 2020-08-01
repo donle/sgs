@@ -3,6 +3,7 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
+import { ClientPlayer } from 'core/player/player.client';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { ActiveSkill, GlobalFilterSkill, ResponsiveSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -101,7 +102,10 @@ export abstract class BaseAction {
   public readonly resetActionHandlers = () => {
     this.presenter.setupPlayersSelectionMatcher(() => false);
     this.presenter.setupClientPlayerCardActionsMatcher(() => false);
+    this.presenter.setupClientPlayerOutsideCardActionsMatcher(() => false);
     this.presenter.setupCardSkillSelectionMatcher(() => false);
+    this.presenter.clearSelectedCards();
+    this.presenter.clearSelectedPlayers();
   };
 
   isPlayerEnabled(player: Player): boolean {
@@ -212,6 +216,7 @@ export abstract class BaseAction {
             this.selectedTargets,
             this.equipSkillCardId,
           ) &&
+          skill.availableCardAreas().includes(fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             player,
@@ -230,6 +235,7 @@ export abstract class BaseAction {
       } else if (skill instanceof ViewAsSkill) {
         return (
           skill.isAvailableCard(this.store.room, player, card.Id, this.pendingCards, this.equipSkillCardId) &&
+          skill.availableCardAreas().includes(fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             player,
@@ -277,6 +283,9 @@ export abstract class BaseAction {
         }
 
         return false;
+      } else if (fromArea === PlayerCardsArea.OutsideArea) {
+        //TODO: to adapt muniuliuma in the future here
+        return false;
       }
     } else {
       const playingCard = Sanguosha.getCardById(this.selectedCardToPlay);
@@ -304,6 +313,7 @@ export abstract class BaseAction {
             this.selectedTargets,
             card.Id,
           ) &&
+          skill.availableCardAreas().includes(fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.presenter.ClientPlayer!,
@@ -328,6 +338,7 @@ export abstract class BaseAction {
             this.pendingCards,
             this.equipSkillCardId,
           ) &&
+          skill.availableCardAreas().includes(fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.presenter.ClientPlayer!,
@@ -509,6 +520,12 @@ export abstract class BaseAction {
   public abstract async onPlay(...args: any): Promise<void>;
 
   protected onClickCard(card: Card, selected: boolean, matcher?: CardMatcher): void {
+    if (selected) {
+      this.presenter.selectCard(card);
+    } else {
+      this.presenter.unselectCard(card);
+    }
+
     if (this.selectedSkillToPlay !== undefined) {
       if (
         this.selectedSkillToPlay instanceof ViewAsSkill &&
@@ -614,6 +631,9 @@ export abstract class BaseAction {
   }
 
   protected onClickPlayer(player: Player, selected: boolean): void {
+    selected
+      ? this.presenter.selectPlayer(player as ClientPlayer)
+      : this.presenter.unselectPlayer(player as ClientPlayer);
     this.callToActionCheck();
   }
   // tslint:disable-next-line:no-empty

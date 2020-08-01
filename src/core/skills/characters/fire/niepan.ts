@@ -30,17 +30,10 @@ export class NiePan extends TriggerSkill {
       }
     }
 
-    wholeCards.length > 0 && 
-      await room.dropCards(
-        CardMoveReason.SelfDrop,
-        wholeCards,
-        fromId,
-        fromId,
-        this.Name,
-      );
+    wholeCards.length > 0 && (await room.dropCards(CardMoveReason.SelfDrop, wholeCards, fromId, fromId, this.Name));
 
-    !from.isFaceUp() && await room.turnOver(skillUseEvent.fromId);
-    from.ChainLocked && await room.chainedOn(fromId);
+    !from.isFaceUp() && (await room.turnOver(skillUseEvent.fromId));
+    from.ChainLocked && (await room.chainedOn(fromId));
 
     await room.drawCards(3, fromId, 'top', fromId, this.Name);
     await room.recover({

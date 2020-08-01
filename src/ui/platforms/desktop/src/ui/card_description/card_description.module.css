@@ -1,0 +1,20 @@
+.cardDescriptions {
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.cardSpefication {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 16px;
+}
+.cardName {
+    font-weight: 550;
+    margin-right: 8px;
+}
+.attackRange {
+    margin-bottom: 16px;
+}

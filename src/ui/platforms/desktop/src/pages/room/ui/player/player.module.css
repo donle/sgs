@@ -6,6 +6,7 @@
 
 .player {
     display: flex;
+    position: relative;
 }
 .playerCard {
     position: relative;
@@ -132,36 +133,32 @@
     padding: 0 calc(gridLine * 4);
 }
 .playerEquips {
-    height: calc(11 * gridLine);
+    height: calc(11 * 8px);
     display: flex;
     flex-direction: column;
     align-self: flex-end;
-    width: 100%;
-    bottom: 0;
-    position: relative;
+    width: 170px;
+    position: absolute;
     left: 0;
+    align-items: center;
 }
 
 .playerEquip {
     height: 25%;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    left: 0;
+    justify-content: center;
     position: absolute;
-    padding: 0 gridLine;
 }
 
 .handCardsNumberBg {
     position: absolute;
     text-align: center;
     z-index: 2;
-    margin-top: 8px;
+    margin-top: gridLine;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: calc(8px * 5);
-    left: calc(8px * -2.5);
+    width: calc(gridLine * 5);
+    left: calc(gridLine * -2.5);
     bottom: 0;
 }
 .handCardsNumberBgImage {
@@ -217,7 +214,7 @@
 
 .playerTags {
     position: absolute;
-    top: calc(gridLine * 4);
+    top: calc(gridLine * 5);
     left: calc(gridLine * 3);
     font-size: 14px;
     font-weight: 600;
@@ -236,6 +233,11 @@
 .skillTag {
     background-color: grey;
     margin: 0px 4px;
+    font-size: 13px;
+    font-weight: 500;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    padding: 0 4px;
 }
 .clickableSkillTag {
     cursor: pointer;

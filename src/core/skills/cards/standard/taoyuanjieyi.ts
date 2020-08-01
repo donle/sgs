@@ -7,11 +7,7 @@ import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'taoyuanjieyi', description: 'taoyuanjieyi_description' })
 export class TaoYuanJieYiSkill extends ActiveSkill {
-  public canUse(
-    room: Room,
-    owner: Player,
-    containerCard?: CardId,
-  ) {
+  public canUse(room: Room, owner: Player, containerCard?: CardId) {
     if (containerCard) {
       for (const target of room.getAlivePlayersFrom()) {
         if (owner.canUseCardTo(room, containerCard, target.Id)) {
@@ -19,7 +15,7 @@ export class TaoYuanJieYiSkill extends ActiveSkill {
         }
       }
     }
-      
+
     return false;
   }
 

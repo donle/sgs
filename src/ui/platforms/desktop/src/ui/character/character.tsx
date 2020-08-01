@@ -17,6 +17,7 @@ export type CharacterCardProps = {
   disabled?: boolean;
   className?: string;
   size?: 'regular' | 'small';
+  selected?: boolean;
 };
 
 @mobxReact.observer
@@ -27,6 +28,7 @@ export class CharacterCard extends React.Component<CharacterCardProps> {
   private readonly onClick = () => {
     if (!this.props.disabled) {
       this.props.onClick && this.props.onClick(this.props.character);
+      this.forceUpdate();
     }
   };
 
@@ -36,11 +38,12 @@ export class CharacterCard extends React.Component<CharacterCardProps> {
   }
 
   render() {
-    const { character, translator, className, size } = this.props;
+    const { character, translator, className, size, selected } = this.props;
     return (
       <div
         className={classNames(styles.characterCard, className, {
           [styles.small]: size === 'small',
+          [styles.selected]: selected,
         })}
         onClick={this.onClick}
       >

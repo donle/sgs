@@ -1,12 +1,12 @@
 import { CardType } from 'core/cards/card';
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { GameCommonRules } from 'core/game/game_rules';
-import { CardMoveStage, CardUseStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
+import { CardUseStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { CommonSkill, CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'jizhi', description: 'jizhi_description' })
@@ -66,7 +66,7 @@ export class JiZhi extends TriggerSkill {
 @CommonSkill({ name: JiZhi.Name, description: JiZhi.Description })
 export class JiZhiShadow extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: PhaseChangeStage) {
-    return stage === PhaseChangeStage.AfterPhaseChanged && event.from === PlayerPhase.FinishStage;
+    return stage === PhaseChangeStage.PhaseChanged && event.from === PlayerPhase.FinishStage;
   }
 
   public isAutoTrigger() {
@@ -98,43 +98,6 @@ export class JiZhiShadow extends TriggerSkill {
         user.removeInvisibleMark(this.GeneralName);
         GameCommonRules.addAdditionalHoldCardNumber(user, -extraHold);
       });
-    return true;
-  }
-}
-
-@ShadowSkill
-@CompulsorySkill({ name: JiZhiShadow.Name, description: JiZhiShadow.Description })
-export class JizhiBlock extends TriggerSkill {
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>, stage: CardMoveStage) {
-    return stage === CardMoveStage.BeforeCardMoving;
-  }
-
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
-    return (
-      content.fromId === owner.Id &&
-      content.moveReason === CardMoveReason.PassiveDrop &&
-      content.proposer !== owner.Id &&
-      content.movingCards.find(
-        cardInfo =>
-          cardInfo.fromArea === CardMoveArea.EquipArea &&
-          (Sanguosha.getCardById(cardInfo.card).is(CardType.Armor) ||
-            Sanguosha.getCardById(cardInfo.card).is(CardType.Precious)),
-      ) !== undefined
-    );
-  }
-
-  async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
-    event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} activated skill {1}',
-      TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
-      this.Name,
-    ).extract();
-    return true;
-  }
-
-  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const { triggeredOnEvent } = event;
-    EventPacker.terminate(triggeredOnEvent!);
     return true;
   }
 }

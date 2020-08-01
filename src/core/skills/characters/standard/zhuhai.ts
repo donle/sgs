@@ -29,15 +29,12 @@ export class ZhuHai extends TriggerSkill {
     return (
       owner.Id !== content.playerId &&
       PlayerPhaseStages.FinishStageStart === content.toStage &&
-      room.Analytics.getDamageReord(content.playerId, true)
-        .filter(event => event.fromId === content.playerId).length > 0
+      room.Analytics.getDamageReord(content.playerId, true).filter(event => event.fromId === content.playerId).length >
+        0
     );
   }
 
-  public async beforeUse(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ): Promise<boolean> {
+  public async beforeUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     const { fromId, triggeredOnEvent } = event;
     const changeEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
 
@@ -89,8 +86,10 @@ export class ZhuHai extends TriggerSkill {
     room: Room,
     skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
-    const cardUseEvent =
-      EventPacker.getMiddleware<ServerEventFinder<GameEventIdentifiers.CardUseEvent>>(this.ZhuHaiSlashTag, skillUseEvent);
+    const cardUseEvent = EventPacker.getMiddleware<ServerEventFinder<GameEventIdentifiers.CardUseEvent>>(
+      this.ZhuHaiSlashTag,
+      skillUseEvent,
+    );
     if (cardUseEvent === undefined) {
       return false;
     }

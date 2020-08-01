@@ -21,6 +21,8 @@ import { PlayingBar } from '../playing_bar/playing_bar';
 import styles from './dashboard.module.css';
 
 import { Button } from 'ui/button/button';
+import { CardDescription } from 'ui/card_description/card_description';
+import { Tooltip } from 'ui/tooltip/tooltip';
 import armorSlot from './images/armor.png';
 import defenseHorseSlot from './images/defense_horse.png';
 import offenseHorseSlot from './images/offense_horse.png';
@@ -35,6 +37,7 @@ export type DashboardProps = {
   playerSelectableMatcher?(player: Player): boolean;
   onClickPlayer?(player: Player, selected: boolean): void;
   cardEnableMatcher?(card: Card): boolean;
+  outsideCardEnableMatcher?(card: Card): boolean;
   cardSkillEnableMatcher?(card: Card): boolean;
   onClick?(card: Card, selected: boolean): void;
   onClickEquipment?(card: Card, selected: boolean): void;
@@ -61,6 +64,9 @@ export class EquipCardItem extends React.Component<EquipCardItemProps> {
   selected: boolean = false;
   @mobx.observable.ref
   equipCardImage: string | undefined;
+  @mobx.observable.ref
+  onTooltipOpened: boolean = false;
+  private onTooltipOpeningTimer: NodeJS.Timer;
   private cardName: string = this.props.card.Name;
 
   @mobx.action
@@ -92,6 +98,24 @@ export class EquipCardItem extends React.Component<EquipCardItemProps> {
     }
   }
 
+  @mobx.action
+  private readonly openTooltip = () => {
+    this.onTooltipOpeningTimer = setTimeout(() => {
+      this.onTooltipOpened = true;
+    }, 2000);
+  };
+  @mobx.action
+  private readonly closeTooltip = () => {
+    this.onTooltipOpeningTimer && clearTimeout(this.onTooltipOpeningTimer);
+    this.onTooltipOpened = false;
+  };
+
+  private readonly onMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (this.onTooltipOpened) {
+      this.closeTooltip();
+    }
+  };
+
   render() {
     const { card, translator, highlight } = this.props;
     return (
@@ -106,6 +130,9 @@ export class EquipCardItem extends React.Component<EquipCardItemProps> {
           [styles.disabled]: highlight === undefined ? this.props.disabled : !highlight,
         })}
         onClick={this.onCardClick}
+        onMouseEnter={this.openTooltip}
+        onMouseMove={this.onMouseMove}
+        onMouseLeave={this.closeTooltip}
       >
         {this.equipCardImage ? (
           <img src={this.equipCardImage} className={styles.equipCardImage} alt="" />
@@ -116,6 +143,11 @@ export class EquipCardItem extends React.Component<EquipCardItemProps> {
           {card && <CardSuitItem className={styles.equipCardSuit} suit={card.Suit} />}
           <CardNumberItem className={styles.equipCardNumber} cardNumber={card.CardNumber} isRed={card.isRed()} />
         </>
+        {this.onTooltipOpened && (
+          <Tooltip position={['left', 'bottom']}>
+            <CardDescription translator={translator} card={card} />
+          </Tooltip>
+        )}
       </div>
     );
   }
@@ -142,7 +174,8 @@ export class Dashboard extends React.Component<DashboardProps> {
     const { presenter } = this.props;
     if (this.handBoardRef.current && presenter.ClientPlayer) {
       const width = this.handBoardRef.current.clientWidth;
-      const numOfHandCards = presenter.ClientPlayer.getCardIds(PlayerCardsArea.HandArea).length;
+      const numOfHandCards =
+        presenter.ClientPlayer.getCardIds(PlayerCardsArea.HandArea).length + this.AvailableOutsideCards.length;
       if (width < numOfHandCards * (this.handCardWidth + this.cardMargin)) {
         this.cardOffset = -(numOfHandCards * (this.handCardWidth + this.cardMargin) - width) / (numOfHandCards - 1);
       } else {
@@ -178,25 +211,73 @@ export class Dashboard extends React.Component<DashboardProps> {
     );
   }
 
-  getAllClientHandCards() {
-    return this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.HandArea).map((cardId, index) => {
-      const card = Sanguosha.getCardById(cardId);
+  get AvailableOutsideCards() {
+    if (!this.props.outsideCardEnableMatcher || !this.props.presenter.ClientPlayer) {
+      return [];
+    }
+
+    const availableCards: { areaName; card: Card }[] = [];
+    for (const [areaName, cards] of Object.entries(this.props.presenter.ClientPlayer.getOutsideAreaCards())) {
+      if (this.props.presenter.ClientPlayer.isCharacterOutsideArea(areaName)) {
+        continue;
+      }
+
+      availableCards.push(
+        ...cards
+          .filter(card => this.props.outsideCardEnableMatcher!(Sanguosha.getCardById(card)))
+          .map(cardId => ({
+            areaName,
+            card: Sanguosha.getCardById(cardId),
+          })),
+      );
+    }
+
+    return availableCards;
+  }
+
+  get AllClientHandCards() {
+    const outsideCards = this.AvailableOutsideCards.map((cardInfo, index) => {
       const leftOffset = index * (this.handCardWidth + this.cardOffset);
       return (
         <ClientCard
           imageLoader={this.props.imageLoader}
-          key={cardId}
+          key={index}
           width={this.handCardWidth}
           offsetLeft={leftOffset}
           translator={this.props.translator}
-          card={card}
+          card={cardInfo.card}
           highlight={this.props.store.highlightedCards}
-          onSelected={this.onClick(card)}
+          onSelected={this.onClick(cardInfo.card)}
+          tag={this.props.translator.tr(cardInfo.areaName)}
           className={styles.handCard}
-          disabled={!this.props.cardEnableMatcher || !this.props.cardEnableMatcher(card)}
+          disabled={!this.props.outsideCardEnableMatcher || !this.props.outsideCardEnableMatcher(cardInfo.card)}
+          selected={this.props.store.selectedCards.includes(cardInfo.card)}
         />
       );
     });
+
+    const handcards =
+      this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.HandArea).map((cardId, index) => {
+        const card = Sanguosha.getCardById(cardId);
+        const leftOffset = (index + outsideCards.length) * (this.handCardWidth + this.cardOffset);
+        return (
+          <ClientCard
+            imageLoader={this.props.imageLoader}
+            key={cardId}
+            width={this.handCardWidth}
+            offsetLeft={leftOffset}
+            translator={this.props.translator}
+            card={card}
+            highlight={this.props.store.highlightedCards}
+            onSelected={this.onClick(card)}
+            className={styles.handCard}
+            disabled={!this.props.cardEnableMatcher || !this.props.cardEnableMatcher(card)}
+            selected={this.props.store.selectedCards.includes(card)}
+          />
+        );
+      }) || [];
+
+    return [...outsideCards, ...handcards];
   }
 
   getPlayerJudgeCards() {
@@ -257,7 +338,7 @@ export class Dashboard extends React.Component<DashboardProps> {
           </Button>
         </div>
         <div className={styles.handCards}>
-          {this.getAllClientHandCards()}
+          {this.AllClientHandCards}
           <div
             className={classNames(styles.trustedCover, {
               [styles.hide]: !this.props.presenter.ClientPlayer!.isTrusted(),
@@ -319,6 +400,7 @@ export class Dashboard extends React.Component<DashboardProps> {
           isSkillDisabled={this.props.isSkillDisabled}
           incomingMessage={this.props.store.incomingUserMessages[player.Id]}
           onCloseIncomingMessage={this.onCloseIncomingMessage(player)}
+          selected={this.props.store.selectedPlayers.includes(player)}
         />
       </div>
     );

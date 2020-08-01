@@ -2,7 +2,7 @@ import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { Character, CharacterId, CharacterNationality } from 'core/characters/character';
+import { Character, CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
 import {
   CardMoveArea,
   CardMoveReason,
@@ -57,7 +57,7 @@ export class GameProcessor {
   private currentProcessingStage: GameEventStage | undefined;
   private playerStages: PlayerPhaseStages[] = [];
 
-  private toEndPhase: boolean = false;
+  private toEndPhase: PlayerPhase | undefined;
   private playRoundInsertions: PlayerId[] = [];
   private dumpedLastPlayerPositionIndex: number = -1;
 
@@ -70,26 +70,21 @@ export class GameProcessor {
     Precondition.assert(this.room !== undefined, 'Game is not started yet');
   }
 
-  private async askForChoosingNationalities(player: Player) {
-    if (player.Nationality === CharacterNationality.God) {
-      const askForNationality = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
-        options: ['wei', 'shu', 'wu', 'qun'],
-        toId: player.Id,
-        askedBy: undefined,
-        conversation: 'please choose a nationality',
-      });
+  private async askForChoosingNationalities(playerId: PlayerId) {
+    const askForNationality = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
+      options: ['wei', 'shu', 'wu', 'qun'],
+      toId: playerId,
+      conversation: 'please choose a nationality',
+    });
 
-      this.room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForNationality, player.Id);
+    this.room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForNationality, playerId);
 
-      const nationalityResponse = await this.room.onReceivingAsyncResponseFrom(
-        GameEventIdentifiers.AskForChoosingOptionsEvent,
-        player.Id,
-      );
+    const nationalityResponse = await this.room.onReceivingAsyncResponseFrom(
+      GameEventIdentifiers.AskForChoosingOptionsEvent,
+      playerId,
+    );
 
-      player.Nationality = nationalityResponse.selectedOption
-        ? Functional.getPlayerNationalityEnum(nationalityResponse.selectedOption)!
-        : CharacterNationality.God;
-    }
+    return nationalityResponse;
   }
 
   private getSelectableCharacters(selectable: number, selectableCharacters: Character[], selected: CharacterId[]) {
@@ -112,50 +107,59 @@ export class GameProcessor {
         Functional.getPlayerRoleRawText(PlayerRole.Lord),
       ).extract(),
     });
-    const gameStartEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCharacterEvent>({
+
+    const lordChooseCharacterEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingCharacterEvent> = {
+      amount: 1,
       characterIds: [
         ...lordCharacters,
         ...this.getSelectableCharacters(4, selectableCharacters, lordCharacters).map(character => character.Id),
       ],
       toId: lordInfo.Id,
-      role: lordInfo.Role,
-      isGameStart: true,
       translationsMessage: TranslationPack.translationJsonPatcher(
         'your role is {0}, please choose a lord',
         Functional.getPlayerRoleRawText(lordInfo.Role!),
       ).extract(),
-    });
-    this.room.notify(GameEventIdentifiers.AskForChoosingCharacterEvent, gameStartEvent, lordInfo.Id);
+    };
+
+    this.room.notify(GameEventIdentifiers.AskForChoosingCharacterEvent, lordChooseCharacterEvent, lordInfo.Id);
 
     const lordResponse = await this.room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingCharacterEvent,
       lordInfo.Id,
     );
+    const lordCharacter = Sanguosha.getCharacterById(lordResponse.chosenCharacterIds[0]);
+    const additionalPropertyValue = playersInfo.length >= 5 ? 1 : 0;
+    const playerPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
+      changedProperties: [
+        {
+          toId: lordInfo.Id,
+          characterId: lordCharacter.Id,
+          maxHp: additionalPropertyValue ? lordCharacter.MaxHp + additionalPropertyValue : undefined,
+          hp: additionalPropertyValue ? lordCharacter.Hp + additionalPropertyValue : undefined,
+          nationality:
+            lordCharacter.Nationality === CharacterNationality.God
+              ? Functional.getPlayerNationalityEnum(
+                  (await this.askForChoosingNationalities(lordInfo.Id)).selectedOption!,
+                )
+              : undefined,
+        },
+      ],
+    };
+
+    this.room.changePlayerProperties(playerPropertiesChangeEvent);
     const lord = this.room.getPlayerById(lordInfo.Id);
-    lord.CharacterId = lordResponse.chosenCharacter;
-    await this.askForChoosingNationalities(lord);
-    this.room.notify(
-      GameEventIdentifiers.PlayerPropertiesChangeEvent,
-      {
-        changedProperties: [{ toId: lord.Id, nationality: lord.Nationality }],
-      },
-      lord.Id,
-    );
-
-    lordInfo.MaxHp = lord.MaxHp;
-    lordInfo.Hp = lord.Hp;
-    lordInfo.Nationality = lord.Nationality;
-    lordInfo.CharacterId = lord.CharacterId;
-
-    if (playersInfo.length >= 5) {
-      lordInfo.MaxHp++;
-      lord.MaxHp++;
-      lordInfo.Hp++;
-      lord.Hp++;
-    }
+    this.room.broadcast(GameEventIdentifiers.CustomGameDialog, {
+      messages: [
+        TranslationPack.translationJsonPatcher(
+          '{0} select nationaliy {1}',
+          TranslationPack.patchPlayerInTranslation(lord),
+          Functional.getPlayerNationalityText(lord.Nationality),
+        ).toString(),
+      ],
+    });
 
     const sequentialAsyncResponse: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingCharacterEvent>>[] = [];
-    const selectedCharacters: CharacterId[] = [lordInfo.CharacterId];
+    const selectedCharacters: CharacterId[] = [lordCharacter.Id];
     const notifyOtherPlayer: PlayerId[] = [];
     for (let i = 1; i < playersInfo.length; i++) {
       const characters = this.getSelectableCharacters(5, selectableCharacters, selectedCharacters);
@@ -164,18 +168,12 @@ export class GameProcessor {
       this.room.notify(
         GameEventIdentifiers.AskForChoosingCharacterEvent,
         {
+          amount: 1,
           characterIds: characters.map(character => character.Id),
-          lordInfo: {
-            lordCharacter: lordInfo.CharacterId,
-            lordId: lordInfo.Id,
-            lordNationality: lordInfo.Nationality,
-          },
           toId: playerInfo.Id,
-          role: playerInfo.Role,
-          isGameStart: true,
           translationsMessage: TranslationPack.translationJsonPatcher(
             'lord is {0}, your role is {1}, please choose a character',
-            Sanguosha.getCharacterById(lordInfo.CharacterId).Name,
+            Sanguosha.getCharacterById(lordCharacter.Id).Name,
             Functional.getPlayerRoleRawText(playerInfo.Role!),
           ).extract(),
         },
@@ -190,40 +188,56 @@ export class GameProcessor {
     }
 
     this.room.doNotify(notifyOtherPlayer);
+    const changedProperties: {
+      toId: PlayerId;
+      characterId?: CharacterId;
+      maxHp?: number;
+      hp?: number;
+      nationality?: CharacterNationality;
+      gender?: CharacterGender;
+    }[] = [];
+    const askForChooseNationalities: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent>>[] = [];
     for (const response of await Promise.all(sequentialAsyncResponse)) {
       const playerInfo = Precondition.exists(
         playersInfo.find(info => info.Id === response.fromId),
         'Unexpected player id received',
       );
 
-      const player = this.room.getPlayerById(playerInfo.Id);
-      player.CharacterId = response.chosenCharacter;
-      playerInfo.CharacterId = response.chosenCharacter;
-      playerInfo.MaxHp = player.MaxHp;
-      playerInfo.Hp = player.Hp;
+      const character = Sanguosha.getCharacterById(response.chosenCharacterIds[0]);
+      changedProperties.push({
+        toId: playerInfo.Id,
+        characterId: character.Id,
+      });
+
+      if (character.Nationality === CharacterNationality.God) {
+        askForChooseNationalities.push(this.askForChoosingNationalities(playerInfo.Id));
+      }
     }
 
-    const players = this.room
-      .getOtherPlayers(lord.Id, lord.Id)
-      .filter(player => player.Nationality === CharacterNationality.God);
-    const askForChooseNationalities = players.map(player => this.askForChoosingNationalities(player));
     this.room.doNotify(notifyOtherPlayer);
-    await Promise.all(askForChooseNationalities);
+    const godNationalityPlayers: PlayerId[] = [];
+    for (const response of await Promise.all(askForChooseNationalities)) {
+      const property = Precondition.exists(
+        changedProperties.find(obj => obj.toId === response.fromId),
+        'Unexpected player id received',
+      );
+
+      godNationalityPlayers.push(property.toId);
+      property.nationality = Functional.getPlayerNationalityEnum(response.selectedOption!);
+    }
+    this.room.sortPlayersByPosition(godNationalityPlayers);
+
+    this.room.changePlayerProperties({ changedProperties });
     this.room.broadcast(GameEventIdentifiers.CustomGameDialog, {
-      messages: players.map(player =>
-        TranslationPack.translationJsonPatcher(
+      messages: godNationalityPlayers.map(id => {
+        const player = this.room.getPlayerById(id);
+        return TranslationPack.translationJsonPatcher(
           '{0} select nationaliy {1}',
           TranslationPack.patchPlayerInTranslation(player),
           Functional.getPlayerNationalityText(player.Nationality),
-        ).toString(),
-      ),
+        ).toString();
+      }),
     });
-    for (const playerInfo of playersInfo) {
-      const changedNationalityPlayer = players.find(player => player.Id === playerInfo.Id);
-      if (changedNationalityPlayer) {
-        playerInfo.Nationality = changedNationalityPlayer.Nationality;
-      }
-    }
   }
 
   private async drawGameBeginsCards(playerId: PlayerId) {
@@ -254,17 +268,22 @@ export class GameProcessor {
       .push(...cardIds);
   }
 
-  public async gameStart(room: ServerRoom, selectableCharacters: Character[]) {
+  public async gameStart(room: ServerRoom, selectableCharacters: Character[], setSelectedCharacters: () => void) {
     this.room = room;
 
     const playersInfo = this.room.Players.map(player => player.getPlayerInfo());
     await this.chooseCharacters(playersInfo, selectableCharacters);
+    setSelectedCharacters();
 
     const gameStartEvent: ServerEventFinder<GameEventIdentifiers.GameStartEvent> = {
       players: playersInfo,
     };
 
-    await this.onHandleIncomingEvent(GameEventIdentifiers.GameStartEvent, gameStartEvent);
+    await this.onHandleIncomingEvent(
+      GameEventIdentifiers.GameStartEvent,
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.GameStartEvent, gameStartEvent),
+    );
+
     for (const player of playersInfo) {
       await this.drawGameBeginsCards(player.Id);
     }
@@ -315,8 +334,8 @@ export class GameProcessor {
 
           await this.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
 
-          if (this.toEndPhase === true) {
-            this.toEndPhase = false;
+          if (this.toEndPhase !== undefined) {
+            this.toEndPhase = undefined;
             break;
           }
         }
@@ -357,8 +376,8 @@ export class GameProcessor {
           if (this.CurrentPlayer.Dead) {
             break;
           }
-          if (this.toEndPhase === true) {
-            this.toEndPhase = false;
+          if (this.toEndPhase !== undefined) {
+            this.toEndPhase = undefined;
             break;
           }
         } while (true);
@@ -390,13 +409,28 @@ export class GameProcessor {
     if (phase === undefined) {
       this.playerStages = [];
     } else {
+      this.toEndPhase = phase;
       this.playerStages = this.playerStages.filter(stage => !this.stageProcessor.isInsidePlayerPhase(phase, stage));
+      if (
+        phase !== undefined &&
+        this.currentPlayerStage !== undefined &&
+        this.stageProcessor.isInsidePlayerPhase(phase, this.currentPlayerStage)
+      ) {
+        this.currentPlayerStage = this.playerStages.shift();
+      }
     }
   }
 
   public endPhase(phase: PlayerPhase) {
-    this.toEndPhase = true;
+    this.toEndPhase = phase;
     this.playerStages = this.playerStages.filter(stage => !this.stageProcessor.isInsidePlayerPhase(phase, stage));
+    if (
+      phase !== undefined &&
+      this.currentPlayerStage !== undefined &&
+      this.stageProcessor.isInsidePlayerPhase(phase, this.currentPlayerStage)
+    ) {
+      this.currentPlayerStage = this.playerStages.shift();
+    }
   }
 
   private readonly processingPhaseStages = [
@@ -430,9 +464,9 @@ export class GameProcessor {
       });
       if (nextPhase !== this.currentPlayerPhase) {
         await this.onHandleIncomingEvent(GameEventIdentifiers.PhaseChangeEvent, phaseChangeEvent, async stage => {
-          if (this.toEndPhase) {
+          if (this.toEndPhase === nextPhase) {
             EventPacker.terminate(phaseChangeEvent);
-            this.toEndPhase = false;
+            this.toEndPhase = undefined;
             return false;
           }
 
@@ -1083,18 +1117,33 @@ export class GameProcessor {
 
     if (!isGameOver) {
       const { killedBy, playerId } = event;
-      const allCards = [
-        ...deadPlayer.getCardIds(),
-        ...Object.values(deadPlayer.getOutsideAreaCards).reduce<CardId[]>((allCards, cards) => {
-          return [...allCards, ...cards];
-        }, []),
-      ];
+      await this.room.moveCards({
+        moveReason: CardMoveReason.SelfDrop,
+        fromId: playerId,
+        movingCards: deadPlayer
+          .getPlayerCards()
+          .map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
+        toArea: CardMoveArea.DropStack,
+      });
+
+      const outsideCards = Object.entries(deadPlayer.getOutsideAreaCards()).reduce<CardId[]>(
+        (allCards, [areaName, cards]) => {
+          if (!deadPlayer.isCharacterOutsideArea(areaName)) {
+            allCards.push(...cards);
+          }
+          return allCards;
+        },
+        [],
+      );
+
+      const allCards = [...deadPlayer.getCardIds(PlayerCardsArea.JudgeArea), ...outsideCards];
       await this.room.moveCards({
         moveReason: CardMoveReason.PlaceToDropStack,
         fromId: playerId,
         movingCards: allCards.map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
         toArea: CardMoveArea.DropStack,
       });
+
       if (this.room.CurrentPlayer.Id === playerId) {
         await this.room.skip(playerId);
       }

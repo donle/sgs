@@ -8,7 +8,7 @@ export type ServerConfig = {
 };
 
 export function getServerConfig(flavor: Flavor): ServerConfig {
-  switch(flavor) {
+  switch (flavor) {
     case Flavor.Dev:
       return {
         mode: Flavor.Dev,
@@ -24,4 +24,4 @@ export function getServerConfig(flavor: Flavor): ServerConfig {
     default:
       throw Error(`invalid flavor: ${flavor}`);
   }
-};
+}

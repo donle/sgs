@@ -12,6 +12,7 @@
     height: 25%;
     justify-content: flex-end;
     transition: left 0.15s;
+    z-index: 3;
 }
 .equipCardName {
     flex: auto;

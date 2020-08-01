@@ -141,9 +141,8 @@ export interface ClientEvent extends EventUtilities {
     fromId: PlayerId;
   };
   [GameEventIdentifiers.AskForChoosingCharacterEvent]: {
-    chosenCharacter: CharacterId;
+    chosenCharacterIds: CharacterId[];
     fromId: PlayerId;
-    isGameStart?: boolean;
   };
   [GameEventIdentifiers.AskForContinuouslyChoosingCardEvent]: {
     fromId: PlayerId;

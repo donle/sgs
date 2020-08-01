@@ -2,6 +2,7 @@ import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
+import { CharacterId } from 'core/characters/character';
 import {
   CardMoveReason,
   ClientEventFinder,
@@ -87,6 +88,15 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract async asyncMoveCards(events: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[]): Promise<void>;
   //Server only
+  public abstract getRandomCharactersFromLoadedPackage(
+    numberOfCharacter: number,
+    except?: CharacterId[],
+  ): CharacterId[];
+  //Server only
+  public abstract changePlayerProperties(
+    event: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent>,
+  ): void;
+  //Server only
   public abstract async onReceivingAsyncResponseFrom<T extends GameEventIdentifiers>(
     identifier: T,
     playerId?: PlayerId,
@@ -166,6 +176,14 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract findCardByMatcherFrom(cardMatcher: CardMatcher, fromDrawStack?: boolean): CardId | undefined;
   public abstract isCardInDropStack(cardId: CardId): boolean;
   public abstract isCardInDrawStack(cardId: CardId): boolean;
+
+  public abstract setCharacterOutsideAreaCards(
+    player: PlayerId,
+    areaName: string,
+    characterIds: CharacterId[],
+    translationsMessage?: PatchedTranslationObject,
+    unengagedMessage?: PatchedTranslationObject,
+  ): void;
 
   public abstract async skip(player: PlayerId, phase?: PlayerPhase): Promise<void>;
   public abstract endPhase(phase: PlayerPhase): void;
@@ -304,6 +322,20 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return [...alivePlayers.slice(startsFromNext ? fromIndex + 1 : fromIndex), ...alivePlayers.slice(0, fromIndex)];
   }
 
+  public getAllPlayersFrom(playerId?: PlayerId, startsFromNext: boolean = false) {
+    playerId = playerId === undefined ? this.CurrentPlayer.Id : playerId;
+    while (this.getPlayerById(playerId).Dead) {
+      playerId = this.getNextAlivePlayer(playerId).Id;
+    }
+
+    const players = this.Players;
+    const fromIndex = players.findIndex(player => player.Id === playerId);
+
+    Precondition.assert(fromIndex >= 0, `Player ${playerId} is dead or doesn't exist`);
+
+    return [...players.slice(startsFromNext ? fromIndex + 1 : fromIndex), ...players.slice(0, fromIndex)];
+  }
+
   public getOtherPlayers(playerId: PlayerId, from?: PlayerId) {
     return this.getAlivePlayersFrom(from).filter(player => player.Id !== playerId);
   }
@@ -418,6 +450,12 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     }
 
     return false;
+  }
+
+  public canPindian(fromId: PlayerId, targetId: PlayerId): boolean {
+    const target = this.getPlayerById(targetId);
+    const targetSkills = target.getPlayerSkills<FilterSkill>('filter');
+    return targetSkills.find(skill => !skill.canBePindianTarget(this, targetId, fromId)) === undefined;
   }
 
   public clearFlags(player: PlayerId) {

@@ -19,8 +19,7 @@ export class GuDingDaoSkill extends TriggerSkill {
     }
 
     return (
-      event.fromId === owner.Id &&
-      room.getPlayerById(event.toId).getCardIds(PlayerCardsArea.HandArea).length === 0
+      event.fromId === owner.Id && room.getPlayerById(event.toId).getCardIds(PlayerCardsArea.HandArea).length === 0
     );
   }
 

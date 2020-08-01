@@ -6,7 +6,7 @@ import { PlayerCardsArea, PlayerRole } from 'core/player/player_props';
 import { Precondition } from '../precondition/precondition';
 
 export abstract class Functional {
-  static getPlayerPhaseRarText(stage: PlayerPhase) {
+  static getPlayerPhaseRawText(stage: PlayerPhase) {
     switch (stage) {
       case PlayerPhase.PrepareStage:
         return 'prepare stage';
@@ -72,7 +72,7 @@ export abstract class Functional {
         return CharacterNationality.God;
       }
       default: {
-        throw new Error(`Unknown incoming nationality: ${nationality}`);;
+        throw new Error(`Unknown incoming nationality: ${nationality}`);
       }
     }
   }

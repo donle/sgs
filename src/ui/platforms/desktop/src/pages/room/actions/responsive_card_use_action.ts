@@ -91,6 +91,7 @@ export class ResponsiveUseCardAction<
             this.selectedTargets,
             this.equipSkillCardId,
           ) &&
+          skill.availableCardAreas().includes(fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.player,
@@ -116,6 +117,7 @@ export class ResponsiveUseCardAction<
             this.equipSkillCardId,
             this.matcher,
           ) &&
+          skill.availableCardAreas().includes(fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.player,
@@ -209,13 +211,19 @@ export class ResponsiveUseCardAction<
         resolve();
       });
 
-      if (this.scopedTargets && this.scopedTargets.length === 1) {
+      //TODO: optimize auto selection
+      const event = (this.askForEvent as unknown) as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
+      if (this.scopedTargets && this.scopedTargets.length === 1 && !event.commonUse) {
         this.selectedTargets = this.scopedTargets.slice();
+        this.onClickPlayer(this.store.room.getPlayerById(this.selectedTargets[0]), true);
       } else {
         this.presenter.setupPlayersSelectionMatcher((player: Player) => this.isPlayerEnabled(player));
       }
       this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
         this.isCardEnabledOnResponsiveUse(card, PlayerCardsArea.HandArea, this.matcher),
+      );
+      this.presenter.setupClientPlayerOutsideCardActionsMatcher((card: Card) =>
+        this.isCardEnabledOnResponsiveUse(card, PlayerCardsArea.OutsideArea, this.matcher),
       );
       this.presenter.setupCardSkillSelectionMatcher((card: Card) =>
         this.isCardEnabledOnResponsiveUse(card, PlayerCardsArea.EquipArea, this.matcher),

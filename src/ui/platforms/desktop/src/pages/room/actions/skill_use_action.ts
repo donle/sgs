@@ -4,6 +4,7 @@ import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Skill, TriggerSkill } from 'core/skills/skill';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { RoomPresenter, RoomStore } from '../room.presenter';
 import { BaseAction } from './base_action';
@@ -45,7 +46,9 @@ export class SkillUseAction extends BaseAction {
     };
     const skill = Sanguosha.getSkillBySkillName<TriggerSkill>(skillName);
     this.presenter.createIncomingConversation({
-      conversation: skill.getSkillLog(this.store.room, this.player),
+      conversation:
+        this.askForEvent.conversation ||
+        TranslationPack.translationJsonPatcher('do you want to trigger skill {0} ?', skill.Name).extract(),
       translator,
     });
     this.selectSkill(skill);
@@ -110,6 +113,7 @@ export class SkillUseAction extends BaseAction {
           this.selectedTargets,
           this.equipSkillCardId,
         ) &&
+          this.selectedSkillToPlay.availableCardAreas().includes(fromArea) &&
           (!this.selectedSkillToPlay.cardFilter(
             this.store.room,
             this.player,
@@ -143,6 +147,9 @@ export class SkillUseAction extends BaseAction {
     this.presenter.setupPlayersSelectionMatcher((player: Player) => this.isPlayerEnabled(player));
     this.presenter.setupClientPlayerCardActionsMatcher((card: Card) =>
       this.isCardEnabledOnSkillTriggered(card, PlayerCardsArea.HandArea),
+    );
+    this.presenter.setupClientPlayerOutsideCardActionsMatcher((card: Card) =>
+      this.isCardEnabledOnSkillTriggered(card, PlayerCardsArea.OutsideArea),
     );
     this.presenter.setupCardSkillSelectionMatcher((card: Card) =>
       this.isCardEnabledOnSkillTriggered(card, PlayerCardsArea.EquipArea),

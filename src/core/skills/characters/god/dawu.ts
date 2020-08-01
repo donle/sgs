@@ -120,7 +120,7 @@ export class DaWuShadow extends TriggerSkill implements OnDefineReleaseTiming {
     return stage !== DamageEffectStage.DamagedEffect;
   }
 
-  public get Priority(): StagePriority {
+  public getPriority(): StagePriority {
     return StagePriority.Low;
   }
 

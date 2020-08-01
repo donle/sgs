@@ -21,6 +21,7 @@ import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
 import { AwakenSkillMark, LimitSkillMark, Mark } from '../mark/mark';
 import { Mask } from '../mask/mask';
 import { PlayingBar } from '../playing_bar/playing_bar';
+import { SwitchAvatar } from '../switch_avatar/switch_avatar';
 import styles from './player.module.css';
 
 type PlayerCardProps = {
@@ -37,12 +38,11 @@ type PlayerCardProps = {
   disabled?: boolean;
   delight?: boolean;
   onClick?(selected: boolean): void;
+  selected?: boolean;
 };
 
 @mobxReact.observer
 export class PlayerCard extends React.Component<PlayerCardProps> {
-  @mobx.observable.ref
-  selected: boolean = false;
   @mobx.observable.ref
   onTooltipOpened: boolean = false;
   @mobx.observable.ref
@@ -50,13 +50,17 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   @mobx.observable.ref
   PlayerRoleCard: () => JSX.Element;
 
+  @mobx.observable.ref
+  mainImage: string | undefined;
+  @mobx.observable.ref
+  sideImage: string | undefined;
+
   private onTooltipOpeningTimer: NodeJS.Timer;
   private openedDialog: string | undefined;
 
   private readonly onClick = mobx.action(() => {
     if (this.props.disabled === false) {
-      this.selected = !this.selected;
-      this.props.onClick && this.props.onClick(this.selected);
+      this.props.onClick && this.props.onClick(!this.props.selected);
     }
   });
 
@@ -73,14 +77,6 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     }
   }
 
-  @mobx.action
-  getSelected() {
-    if (!!this.props.disabled) {
-      this.selected = false;
-    }
-    return this.selected;
-  }
-
   getPlayerEquips() {
     const { player, translator, imageLoader } = this.props;
     const equips = player?.getCardIds(PlayerCardsArea.EquipArea).map(cardId => Sanguosha.getCardById(cardId));
@@ -89,7 +85,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     }
 
     return (
-      <div className={styles.playerEquips}>
+      <div className={styles.playerEquips} onClick={this.onClick}>
         {equips.map(equip => (
           <FlatClientCard
             card={equip}
@@ -126,7 +122,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   private readonly openTooltip = () => {
     this.onTooltipOpeningTimer = setTimeout(() => {
       this.onTooltipOpened = true;
-    }, 2500);
+    }, 2000);
   };
   @mobx.action
   private readonly closeTooltip = () => {
@@ -142,7 +138,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
         <div className={styles.skillTags}>
           {flags.map((flag, index) => (
             <span key={index} className={styles.skillTag}>
-              {translator.tr(flag)}
+              {translator.trx(flag)}
             </span>
           ))}
         </div>
@@ -205,12 +201,22 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     ));
   }
 
+  @mobx.action
   async componentDidUpdate() {
+    if (this.PlayerCharacter) {
+      this.mainImage = (await this.props.imageLoader.getCharacterImage(this.PlayerCharacter.Name)).src;
+      const huashenCharacterId = this.props.player?.getHuaShenInfo()?.characterId;
+      const huashenCharacter =
+        huashenCharacterId !== undefined ? Sanguosha.getCharacterById(huashenCharacterId) : undefined;
+      this.sideImage = huashenCharacter && (await this.props.imageLoader.getCharacterImage(huashenCharacter.Name)).src;
+    }
+
     if (this.PlayerImage === undefined && this.PlayerCharacter) {
-      const image = await this.props.imageLoader.getCharacterImage(this.PlayerCharacter.Name);
       mobx.runInAction(() => {
         this.PlayerImage = () => (
-          <img
+          <SwitchAvatar
+            mainImage={this.mainImage}
+            sideImage={this.sideImage}
             className={classNames(styles.playerImage, {
               [styles.dead]: this.props.player && this.props.player.Dead,
               [styles.disabled]:
@@ -219,8 +225,6 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                   : !(this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead) &&
                     this.props.disabled,
             })}
-            alt={image.alt}
-            src={image.src}
           />
         );
       });
@@ -320,7 +324,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                 <>
                   <span
                     className={classNames(styles.highlightBorder, {
-                      [styles.selected]: this.getSelected() && !disabled,
+                      [styles.selected]: this.props.selected && !disabled,
                       [styles.highlighted]: playerPhase !== undefined,
                     })}
                   />
@@ -338,7 +342,6 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                       disabled={player.Dead || player.Role === PlayerRole.Lord}
                     />
                   )}
-                  {this.getPlayerEquips()}
                   <div className={styles.playerHp}>
                     <Hp hp={player.Hp} maxHp={player.MaxHp} size="small" />
                   </div>
@@ -387,6 +390,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
             <Tooltip position={['top']}>{this.createTooltipContent()}</Tooltip>
           )}
         </div>
+        {this.getPlayerEquips()}
         <div className={styles.marks}>{this.getOnceSkillMarks()}</div>
       </div>
     );

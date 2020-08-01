@@ -26,7 +26,11 @@ export class ZhangBaSheMaoSkill extends ViewAsSkill {
     selectedCards: CardId[],
     containerCard?: CardId | undefined,
   ): boolean {
-    return pendingCardId !== containerCard && owner.cardFrom(pendingCardId) === PlayerCardsArea.HandArea;
+    return pendingCardId !== containerCard;
+  }
+
+  public availableCardAreas() {
+    return [PlayerCardsArea.HandArea];
   }
 
   public viewAs(selectedCards: CardId[]) {

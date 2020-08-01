@@ -8,13 +8,7 @@ import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import {
-  CommonSkill,
-  OnDefineReleaseTiming,
-  RulesBreakerSkill,
-  ShadowSkill,
-  ViewAsSkill,
-} from 'core/skills/skill';
+import { CommonSkill, OnDefineReleaseTiming, RulesBreakerSkill, ShadowSkill, ViewAsSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'duanliang', description: 'duanliang_description' })
 export class DuanLiang extends ViewAsSkill {
@@ -40,10 +34,10 @@ export class DuanLiang extends ViewAsSkill {
   ): boolean {
     const isAvailable = cardMatcher
       ? cardMatcher.match(new CardMatcher({ type: [CardType.Basic], suit: [CardSuit.Spade, CardSuit.Club] })) ||
-        cardMatcher.match(new CardMatcher({ type: [CardType.Equip] }))
+        cardMatcher.match(new CardMatcher({ type: [CardType.Equip], suit: [CardSuit.Spade, CardSuit.Club] }))
       : true;
     const card = Sanguosha.getCardById(pendingCardId);
-    return isAvailable && ((card.is(CardType.Basic) && card.isBlack()) || card.is(CardType.Equip));
+    return isAvailable && card.isBlack();
   }
 
   public viewAs(selectedCards: CardId[]): VirtualCard {

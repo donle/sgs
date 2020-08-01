@@ -27,12 +27,7 @@ export class LuanJi extends ViewAsSkill {
     return cards.length === 2;
   }
 
-  public isAvailableCard(
-    room: Room,
-    owner: Player,
-    pendingCardId: CardId,
-    selectedCards: CardId[]
-  ): boolean {
+  public isAvailableCard(room: Room, owner: Player, pendingCardId: CardId, selectedCards: CardId[]): boolean {
     if (selectedCards.length === 1) {
       const pendingCard = Sanguosha.getCardById(pendingCardId);
       const selectedCard = Sanguosha.getCardById(selectedCards[0]);
@@ -44,7 +39,11 @@ export class LuanJi extends ViewAsSkill {
       );
     }
 
-    return selectedCards.length < 2 && owner.cardFrom(pendingCardId) === PlayerCardsArea.HandArea;
+    return selectedCards.length < 2;
+  }
+
+  public availableCardAreas() {
+    return [PlayerCardsArea.HandArea];
   }
 
   public viewAs(selectedCards: CardId[]) {
@@ -70,7 +69,8 @@ export class LuanJiShadow extends TriggerSkill {
       room.removeFlag(owner.Id, this.GeneralName);
     }
 
-    const canUse = owner === room.getPlayerById(event.fromId) &&
+    const canUse =
+      owner === room.getPlayerById(event.fromId) &&
       Sanguosha.getCardById(event.cardId).GeneralName === 'wanjianqifa' &&
       event.toIds !== undefined &&
       event.toIds.length > 1;
@@ -86,7 +86,7 @@ export class LuanJiShadow extends TriggerSkill {
   }
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
-    const toIds = room.getPlayerById(owner).getFlag<PlayerId[]>(this.GeneralName)
+    const toIds = room.getPlayerById(owner).getFlag<PlayerId[]>(this.GeneralName);
     return toIds.includes(target);
   }
 

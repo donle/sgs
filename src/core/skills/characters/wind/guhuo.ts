@@ -41,7 +41,11 @@ export class GuHuo extends ViewAsSkill {
   }
 
   public isAvailableCard(room: Room, owner: Player, pendingCardId: CardId): boolean {
-    return owner.cardFrom(pendingCardId) === PlayerCardsArea.HandArea;
+    return true;
+  }
+
+  public availableCardAreas() {
+    return [PlayerCardsArea.HandArea];
   }
 
   public viewAs(selectedCards: CardId[], viewAs: string): VirtualCard {

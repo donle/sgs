@@ -2,8 +2,6 @@
     position: relative;
     transition: all 0.15s;
     background: white;
-}
-.clientCard:hover {
     z-index: 2;
 }
 
@@ -27,6 +25,9 @@
     font-size: 28px;
     line-height: 20px;
     text-shadow: 0px 0px 2px white, 0px 0px 2px white, 0px 0px 4px white, 0px 0px 4px white;
+}
+.cardDescription {
+    bottom: 100%;
 }
 
 .flatCard .cardSuit {
@@ -135,10 +136,15 @@
     font-size: 14px;
 }
 .equipImage {
-    position: absolute;
     z-index: -1;
+}
+.cardSpecification {
+    position: absolute;
+    right: 4px;
 }
 .flatEquipNumber {
     font-size: 14px;
-    margin-right: 4px;
+}
+.cardDescription {
+    z-index: 2;
 }

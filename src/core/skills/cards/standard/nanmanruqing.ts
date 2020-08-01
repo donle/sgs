@@ -13,11 +13,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 export class NanManRuQingSkill extends ActiveSkill {
   public static readonly NewSource = 'new_source';
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    containerCard?: CardId,
-  ) {
+  public canUse(room: Room, owner: Player, containerCard?: CardId) {
     if (containerCard) {
       for (const target of room.getOtherPlayers(owner.Id)) {
         if (owner.canUseCardTo(room, containerCard, target.Id)) {

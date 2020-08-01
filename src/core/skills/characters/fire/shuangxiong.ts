@@ -40,11 +40,13 @@ export class ShuangXiong extends ViewAsSkill implements OnDefineReleaseTiming {
 
   public isAvailableCard(room: Room, owner: Player, pendingCardId: CardId): boolean {
     return (
-      ((room.getFlag<boolean>(owner.Id, ShuangXiong.Red) === true && !Sanguosha.getCardById(pendingCardId).isRed()) ||
-        (room.getFlag<boolean>(owner.Id, ShuangXiong.Black) === true &&
-          !Sanguosha.getCardById(pendingCardId).isBlack())) &&
-      owner.cardFrom(pendingCardId) === PlayerCardsArea.HandArea
+      (room.getFlag<boolean>(owner.Id, ShuangXiong.Red) === true && !Sanguosha.getCardById(pendingCardId).isRed()) ||
+      (room.getFlag<boolean>(owner.Id, ShuangXiong.Black) === true && !Sanguosha.getCardById(pendingCardId).isBlack())
     );
+  }
+
+  public availableCardAreas() {
+    return [PlayerCardsArea.HandArea];
   }
 
   public viewAs(selectedCards: CardId[]) {
@@ -245,7 +247,7 @@ export class ShuangXiongRemove extends TriggerSkill implements OnDefineReleaseTi
     event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>,
     stage: PhaseChangeStage,
   ): boolean {
-    return stage === PhaseChangeStage.AfterPhaseChanged && event.from === PlayerPhase.FinishStage;
+    return stage === PhaseChangeStage.PhaseChanged && event.from === PlayerPhase.FinishStage;
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {

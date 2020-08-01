@@ -131,7 +131,7 @@ export class YiJueShadow extends TriggerSkill implements OnDefineReleaseTiming {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 
-  public get Priority() {
+  public getPriority() {
     return StagePriority.High;
   }
 

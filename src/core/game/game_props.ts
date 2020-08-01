@@ -11,7 +11,7 @@ export const enum GameCharacterExtensions {
   Wind = 'wind',
   Fire = 'fire',
   Forest = 'forest',
-  // Hill,
+  Mountain = 'mountain',
   // SP,
   // NewStandard,
   God = 'god',

@@ -5,7 +5,7 @@ import { DamageType } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { JudgeMatcher } from 'core/shares/libs/judge_matchers';
+import { JudgeMatcher, JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, SelfTargetSkill } from 'core/skills/skill';
 
@@ -93,6 +93,7 @@ export class LightningSkill extends ActiveSkill {
       Precondition.exists(toIds, 'Unknown targets in lightning')[0],
       cardId,
       this.Name,
+      JudgeMatcherEnum.Lightning,
     );
 
     const card = Sanguosha.getCardById(judgeEvent.judgeCardId);

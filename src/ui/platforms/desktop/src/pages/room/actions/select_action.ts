@@ -3,6 +3,7 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
+import { ClientPlayer } from 'core/player/player.client';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { RoomPresenter, RoomStore } from '../room.presenter';
@@ -44,6 +45,9 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
       }
 
       this.presenter.onClickPlayer((player: Player, selected: boolean) => {
+        selected
+          ? this.presenter.selectPlayer(player as ClientPlayer)
+          : this.presenter.unselectPlayer(player as ClientPlayer);
         if (selected) {
           selectedPlayers.push(player.Id);
         } else {
@@ -106,6 +110,19 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
           selectedCards.includes(card.Id)
         );
       });
+      this.presenter.setupClientPlayerOutsideCardActionsMatcher(card => {
+        if (
+          !fromArea.includes(PlayerCardsArea.OutsideArea) ||
+          (this.customSelector && !this.customSelector.match(card)) ||
+          except.includes(card.Id)
+        ) {
+          return false;
+        }
+        return (
+          (cardAmount instanceof Array ? selectedCards.length < cardAmount[1] : selectedCards.length !== cardAmount) ||
+          selectedCards.includes(card.Id)
+        );
+      });
       this.presenter.setupCardSkillSelectionMatcher(card => {
         if (
           !fromArea.includes(PlayerCardsArea.EquipArea) ||
@@ -122,8 +139,10 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
 
       const onClickCard = (card: Card, selected: boolean) => {
         if (selected) {
+          this.presenter.selectCard(card);
           selectedCards.push(card.Id);
         } else {
+          this.presenter.unselectCard(card);
           const index = selectedCards.findIndex(cardId => card.Id === cardId);
           if (index >= 0) {
             selectedCards.splice(index, 1);

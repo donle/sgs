@@ -95,7 +95,7 @@ export const PlayerPhaseBadge = (props: {
       <img
         className={styles.playerPhaseBadge}
         src={phaseBadgeImageMap[stage]}
-        alt={translator.tr(Functional.getPlayerPhaseRarText(stage))}
+        alt={translator.tr(Functional.getPlayerPhaseRawText(stage))}
       />
     </Badge>
   );

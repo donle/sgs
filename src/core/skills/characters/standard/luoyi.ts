@@ -116,7 +116,7 @@ export class LuoYiShadow extends TriggerSkill implements OnDefineReleaseTiming {
     return room.CurrentPlayer === room.getPlayerById(playerId) && room.CurrentPlayerPhase === PlayerPhase.PrepareStage;
   }
 
-  public get Priority() {
+  public getPriority() {
     return StagePriority.High;
   }
 
@@ -136,11 +136,11 @@ export class LuoYiShadow extends TriggerSkill implements OnDefineReleaseTiming {
       const currentEvent = event as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
       return (
         stage === DamageEffectStage.DamageEffect &&
+        !currentEvent.isFromChainedDamage &&
         !!currentEvent.cardIds &&
         currentEvent.cardIds.length === 1 &&
         (Sanguosha.getCardById(currentEvent.cardIds[0]).GeneralName === 'slash' ||
-          Sanguosha.getCardById(currentEvent.cardIds[0]).GeneralName === 'duel') &&
-        currentEvent.isFromChainedDamage !== true
+          Sanguosha.getCardById(currentEvent.cardIds[0]).GeneralName === 'duel')
       );
     }
   }

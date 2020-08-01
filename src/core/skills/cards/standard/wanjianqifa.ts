@@ -10,11 +10,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'wanjianqifa', description: 'wanjianqifa_description' })
 export class WanJianQiFaSkill extends ActiveSkill {
-  public canUse(
-    room: Room,
-    owner: Player,
-    containerCard?: CardId,
-  ) {
+  public canUse(room: Room, owner: Player, containerCard?: CardId) {
     if (containerCard) {
       for (const target of room.getOtherPlayers(owner.Id)) {
         if (owner.canUseCardTo(room, containerCard, target.Id)) {
@@ -22,7 +18,7 @@ export class WanJianQiFaSkill extends ActiveSkill {
         }
       }
     }
-      
+
     return false;
   }
 
