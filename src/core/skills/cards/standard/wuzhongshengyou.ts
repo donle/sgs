@@ -8,18 +8,14 @@ import { ActiveSkill, CommonSkill, SelfTargetSkill } from 'core/skills/skill';
 @CommonSkill({ name: 'wuzhongshengyou', description: 'wuzhongshengyou_description' })
 @SelfTargetSkill
 export class WuZhongShengYouSkill extends ActiveSkill {
-  public canUse(
-    room: Room,
-    owner: Player,
-    containerCard?: CardId,
-  ) {    
+  public canUse(room: Room, owner: Player, containerCard?: CardId) {
     return containerCard !== undefined && owner.canUseCardTo(room, containerCard, owner.Id);
   }
 
   public numberOfTargets() {
     return 0;
   }
-  
+
   public cardFilter(): boolean {
     return true;
   }

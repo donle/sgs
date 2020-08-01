@@ -121,17 +121,14 @@ export const skillDescriptions: Word[] = [
 export const promptDictionary: Word[] = [
   {
     source: '{0}: do you want to drop a hand card to skip {1} ?',
-    target:
-      '{0}：你可以弃置一张手牌，跳过 {1}',
+    target: '{0}：你可以弃置一张手牌，跳过 {1}',
   },
   {
     source: '{0}: please choose one or two targets to obtain a hand card from each of them',
-    target:
-      '{0}：你可以选择一至两名其他角色，获得他们各一张手牌',
+    target: '{0}：你可以选择一至两名其他角色，获得他们各一张手牌',
   },
   {
     source: '{0}: do you want to move a card in the battlefield?',
-    target:
-      '{0}：你可以移动场上一张牌',
+    target: '{0}：你可以移动场上一张牌',
   },
 ];

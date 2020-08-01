@@ -2,13 +2,7 @@ import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { CharacterGender } from 'core/characters/character';
-import {
-  CardMoveArea,
-  CardMoveReason,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder
-} from 'core/event/event';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
@@ -45,7 +39,7 @@ export class JianYan extends ActiveSkill {
   }
 
   private jianYanMatch(cardType: string): CardMatcher {
-    switch(cardType) {
+    switch (cardType) {
       case 'basic card':
         return new CardMatcher({ type: [CardType.Basic] });
       case 'trick card':
@@ -72,7 +66,7 @@ export class JianYan extends ActiveSkill {
       options,
       conversation: TranslationPack.translationJsonPatcher(
         '{0}: please choose a card type or color',
-        this.Name
+        this.Name,
       ).extract(),
       toId: fromId,
     });
@@ -83,7 +77,7 @@ export class JianYan extends ActiveSkill {
     response.selectedOption = response.selectedOption || 'trick card';
 
     const cardMatcher: CardMatcher = this.jianYanMatch(response.selectedOption);
-    
+
     let displayCard = room.findCardByMatcherFrom(cardMatcher);
     if (displayCard === undefined) {
       displayCard = room.findCardByMatcherFrom(cardMatcher, false);
@@ -109,7 +103,10 @@ export class JianYan extends ActiveSkill {
     room.broadcast(GameEventIdentifiers.ObserveCardsEvent, observeCardsEvent);
 
     const choosePlayerEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
-      players: room.getAlivePlayersFrom().filter(p => p.Gender === CharacterGender.Male).map(p => p.Id),
+      players: room
+        .getAlivePlayersFrom()
+        .filter(p => p.Gender === CharacterGender.Male)
+        .map(p => p.Id),
       toId: fromId,
       requiredAmount: 1,
       conversation: 'jianyan:Please choose a target to obtain the card you show',
@@ -122,9 +119,7 @@ export class JianYan extends ActiveSkill {
     );
 
     const target =
-      choosePlayerResponse.selectedPlayers === undefined
-        ? fromId
-        : choosePlayerResponse.selectedPlayers[0];
+      choosePlayerResponse.selectedPlayers === undefined ? fromId : choosePlayerResponse.selectedPlayers[0];
 
     room.broadcast(GameEventIdentifiers.ObserveCardFinishEvent, {});
     await room.moveCards({

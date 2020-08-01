@@ -79,7 +79,7 @@ export class WuHunDied extends TriggerSkill implements OnDefineReleaseTiming {
         room.removeMark(player.Id, MarkEnum.Nightmare);
       }
     }
-  
+
     let sacrificer: Player;
     if (revengeList.length === 1) {
       sacrificer = revengeList[0];

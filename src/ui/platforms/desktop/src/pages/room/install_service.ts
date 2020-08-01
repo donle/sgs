@@ -11,7 +11,11 @@ export type RoomBaseService = {
   };
 };
 
-export function installService(translator: ClientTranslationModule, store: RoomStore, imageLoader: ImageLoader): RoomBaseService {
+export function installService(
+  translator: ClientTranslationModule,
+  store: RoomStore,
+  imageLoader: ImageLoader,
+): RoomBaseService {
   return {
     Animation: {
       GuideLineAnimation: new GuideLine(store, 500, 2000),

@@ -17,15 +17,24 @@ export const enum JudgeMatcherEnum {
 export abstract class JudgeMatcher {
   public static onJudge(matcherEnum: JudgeMatcherEnum, card: Card) {
     switch (matcherEnum) {
-      case JudgeMatcherEnum.LeBuSiShu: return this.LeBuSiShu(card);
-      case JudgeMatcherEnum.BingLiangCunDuan: return this.BingLiangCunDuan(card);
-      case JudgeMatcherEnum.BaGuaZhen: return this.BaGuaZhen(card);
-      case JudgeMatcherEnum.Lightning: return this.Lightning(card);
-      case JudgeMatcherEnum.BaoNve: return this.BaoNve(card);
-      case JudgeMatcherEnum.WuHun: return this.WuHun(card);
-      case JudgeMatcherEnum.LuoShen: return this.LuoShen(card);
-      case JudgeMatcherEnum.SiShu: return this.SiShu(card);
-      case JudgeMatcherEnum.TunTian: return this.TunTian(card);
+      case JudgeMatcherEnum.LeBuSiShu:
+        return this.LeBuSiShu(card);
+      case JudgeMatcherEnum.BingLiangCunDuan:
+        return this.BingLiangCunDuan(card);
+      case JudgeMatcherEnum.BaGuaZhen:
+        return this.BaGuaZhen(card);
+      case JudgeMatcherEnum.Lightning:
+        return this.Lightning(card);
+      case JudgeMatcherEnum.BaoNve:
+        return this.BaoNve(card);
+      case JudgeMatcherEnum.WuHun:
+        return this.WuHun(card);
+      case JudgeMatcherEnum.LuoShen:
+        return this.LuoShen(card);
+      case JudgeMatcherEnum.SiShu:
+        return this.SiShu(card);
+      case JudgeMatcherEnum.TunTian:
+        return this.TunTian(card);
       default:
         throw Precondition.UnreachableError(matcherEnum);
     }

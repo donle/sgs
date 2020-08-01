@@ -12,10 +12,7 @@ export class HunZi extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    return (
-      content.playerId === owner.Id &&
-      owner.Hp <= 2
-    );
+    return content.playerId === owner.Id && owner.Hp <= 2;
   }
 
   async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
@@ -32,7 +29,7 @@ export class HunZi extends TriggerSkill {
     room.changeMaxHp(event.fromId, -1);
     room.obtainSkill(event.fromId, 'yingzi', true);
     room.obtainSkill(event.fromId, 'yinghun', true);
-    
+
     return true;
   }
 }

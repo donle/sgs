@@ -6,9 +6,8 @@ import { MarkEnum } from 'core/shares/types/mark_list';
 import { TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill } from 'core/skills/skill_wrappers';
 
-@CompulsorySkill({ name: 'junlve', description: 'junlve_description'})
-export class JunLve extends TriggerSkill
-{
+@CompulsorySkill({ name: 'junlve', description: 'junlve_description' })
+export class JunLve extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
     return stage === DamageEffectStage.AfterDamageEffect || stage === DamageEffectStage.AfterDamagedEffect;
   }
@@ -18,8 +17,10 @@ export class JunLve extends TriggerSkill
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
-    return (content.fromId === owner.Id && room.CurrentProcessingStage === DamageEffectStage.AfterDamageEffect)
-      || (content.toId === owner.Id && room.CurrentProcessingStage === DamageEffectStage.AfterDamagedEffect);
+    return (
+      (content.fromId === owner.Id && room.CurrentProcessingStage === DamageEffectStage.AfterDamageEffect) ||
+      (content.toId === owner.Id && room.CurrentProcessingStage === DamageEffectStage.AfterDamagedEffect)
+    );
   }
 
   public async onTrigger() {

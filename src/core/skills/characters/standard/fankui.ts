@@ -18,11 +18,9 @@ export class FanKui extends TriggerSkill {
       owner.Id === content.toId &&
       damageFrom &&
       !damageFrom.Dead &&
-      (
-        content.toId === content.fromId
+      (content.toId === content.fromId
         ? damageFrom.getCardIds(PlayerCardsArea.EquipArea).length > 0
-        : damageFrom.getPlayerCards().length > 0
-      )
+        : damageFrom.getPlayerCards().length > 0)
     );
   }
 

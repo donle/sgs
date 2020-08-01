@@ -12,10 +12,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 export class RouLin extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage): boolean {
     if (stage === AimStage.AfterAim) {
-      return (
-        event.byCardId !== undefined &&
-        Sanguosha.getCardById(event.byCardId).GeneralName === 'slash'
-      );
+      return event.byCardId !== undefined && Sanguosha.getCardById(event.byCardId).GeneralName === 'slash';
     } else if (stage === AimStage.AfterAimmed) {
       return event.byCardId !== undefined && Sanguosha.getCardById(event.byCardId).GeneralName === 'slash';
     }
@@ -28,10 +25,8 @@ export class RouLin extends TriggerSkill {
     }
 
     return (
-      (owner.Id === event.fromId &&
-        room.getPlayerById(event.toId).Gender === CharacterGender.Female) ||
-      (owner.Id === event.toId &&
-        room.getPlayerById(event.fromId).Gender === CharacterGender.Female)
+      (owner.Id === event.fromId && room.getPlayerById(event.toId).Gender === CharacterGender.Female) ||
+      (owner.Id === event.toId && room.getPlayerById(event.fromId).Gender === CharacterGender.Female)
     );
   }
 

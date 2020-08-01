@@ -11,7 +11,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 export class JuXiang extends TriggerSkill {
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent | GameEventIdentifiers.CardUseEvent>,
-    stage?: AllStage
+    stage?: AllStage,
   ): boolean {
     return stage === CardEffectStage.PreCardEffect || stage === CardUseStage.CardUseFinishedEffect;
   }
@@ -19,9 +19,9 @@ export class JuXiang extends TriggerSkill {
   public canUse(
     room: Room,
     owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent | GameEventIdentifiers.CardUseEvent>
+    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent | GameEventIdentifiers.CardUseEvent>,
   ): boolean {
-    const unknownEvent =  EventPacker.getIdentifier(event);
+    const unknownEvent = EventPacker.getIdentifier(event);
     if (unknownEvent === GameEventIdentifiers.CardEffectEvent) {
       const cardEffectEvent = event as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>;
       return (
@@ -32,8 +32,7 @@ export class JuXiang extends TriggerSkill {
     } else if (unknownEvent === GameEventIdentifiers.CardUseEvent) {
       const cardUseEvent = event as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
       return (
-        Sanguosha.getCardById(cardUseEvent.cardId).GeneralName === 'nanmanruqing' &&
-        cardUseEvent.fromId !== owner.Id
+        Sanguosha.getCardById(cardUseEvent.cardId).GeneralName === 'nanmanruqing' && cardUseEvent.fromId !== owner.Id
       );
     }
 

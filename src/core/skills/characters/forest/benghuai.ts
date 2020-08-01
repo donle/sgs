@@ -7,17 +7,14 @@ import { JiuChi } from './jiuchi';
 
 @CompulsorySkill({ name: 'benghuai', description: 'benghuai_description' })
 export class BengHuai extends TriggerSkill {
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
-    stage: AllStage
-  ): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage: AllStage): boolean {
     return stage === PhaseStageChangeStage.BeforeStageChange;
   }
 
   public canUse(
     room: Room,
     owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>
+    event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
   ): boolean {
     return (
       owner.Id === event.playerId &&
@@ -31,16 +28,13 @@ export class BengHuai extends TriggerSkill {
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
-    const allHp = room.getAlivePlayersFrom().reduce<number[]>(
-      (allHp, player) => {
-        allHp.push(player.Hp);
-        return allHp;
-      },
-      [],
-    );
+    const allHp = room.getAlivePlayersFrom().reduce<number[]>((allHp, player) => {
+      allHp.push(player.Hp);
+      return allHp;
+    }, []);
 
     const { fromId } = event;
-    const from = room.getPlayerById(fromId)
+    const from = room.getPlayerById(fromId);
     if (from.Hp > Math.min(...allHp)) {
       const options: string[] = ['benghuai:maxhp'];
 

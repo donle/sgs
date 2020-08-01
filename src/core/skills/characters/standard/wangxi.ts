@@ -20,11 +20,7 @@ export class WangXi extends TriggerSkill {
         !room.getPlayerById(content.fromId).Dead
       );
     } else {
-      return (
-        content.fromId === owner.Id &&
-        content.toId !== owner.Id &&
-        !room.getPlayerById(content.toId).Dead
-      );
+      return content.fromId === owner.Id && content.toId !== owner.Id && !room.getPlayerById(content.toId).Dead;
     }
   }
 
@@ -39,7 +35,7 @@ export class WangXi extends TriggerSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
     const { fromId, toId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-    
+
     const players: PlayerId[] = [fromId!, toId];
     room.sortPlayersByPosition(players);
     for (const playerId of players) {

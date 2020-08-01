@@ -14,11 +14,11 @@ export class RuoYu extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    return room.getOtherPlayers(owner.Id).find(
-      player => {
+    return (
+      room.getOtherPlayers(owner.Id).find(player => {
         return player.Hp < owner.Hp;
-      }
-    ) === undefined;
+      }) === undefined
+    );
   }
 
   async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
@@ -35,17 +35,15 @@ export class RuoYu extends TriggerSkill {
     const fromId = skillEffectEvent.fromId;
 
     room.changeMaxHp(fromId, 1);
-    room.recover(
-      {
-        recoveredHp: 1,
-        toId: fromId,
-        recoverBy: fromId,
-        triggeredBySkills: [this.Name],
-      }
-    );
+    room.recover({
+      recoveredHp: 1,
+      toId: fromId,
+      recoverBy: fromId,
+      triggeredBySkills: [this.Name],
+    });
     room.obtainSkill(fromId, 'jijiang', true);
     room.obtainSkill(fromId, 'sishu', true);
-    
+
     return true;
   }
 }

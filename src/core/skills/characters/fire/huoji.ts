@@ -14,10 +14,7 @@ export class HuoJi extends ViewAsSkill {
   }
 
   public canUse(room: Room, owner: Player) {
-    return (
-      owner.canUseCard(room, new CardMatcher({ name: ['fire_attack'] })) &&
-      owner.getPlayerCards().length > 0
-    );
+    return owner.canUseCard(room, new CardMatcher({ name: ['fire_attack'] })) && owner.getPlayerCards().length > 0;
   }
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {

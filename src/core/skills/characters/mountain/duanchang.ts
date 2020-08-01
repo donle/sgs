@@ -5,13 +5,17 @@ import { Room } from 'core/room/room';
 import { CompulsorySkill, TriggerSkill } from 'core/skills/skill';
 
 @CompulsorySkill({ name: 'duanchang', description: 'duanchang_description' })
-export class DuanChang extends TriggerSkill{
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>, stage?: AllStage) {
+export class DuanChang extends TriggerSkill {
+  public onDeath(room: Room): boolean {
+    return room.CurrentProcessingStage === PlayerDiedStage.PlayerDied;
+  }
+
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>, stage?: AllStage): boolean {
     return stage === PlayerDiedStage.PlayerDied;
   }
 
-  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>) {
-    return content.killedBy !== undefined
+  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>): boolean {
+    return owner.Id === event.playerId && owner.Dead;
   }
 
   public async onTrigger() {
@@ -22,10 +26,9 @@ export class DuanChang extends TriggerSkill{
     const { triggeredOnEvent } = skillUseEvent;
     const { killedBy } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>;
     const to = room.getPlayerById(killedBy!);
-    const skills = to.getPlayerSkills()
-    skills.forEach(skills=>{ 
-      to.loseSkill(skills.GeneralName);}
-    )
+    for (const skill of to.getPlayerSkills()) {
+      await room.loseSkill(to.Id, skill.Name, true);
+    }
     room.setFlag<boolean>(killedBy!, this.GeneralName, true);
     return true;
   }

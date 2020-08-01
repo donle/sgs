@@ -8,8 +8,8 @@ import { MarkEnum } from 'core/shares/types/mark_list';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill({ name: 'cuike', description: 'cuike_description'})
-export class CuiKe extends TriggerSkill{
+@CommonSkill({ name: 'cuike', description: 'cuike_description' })
+export class CuiKe extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.StageChanged;
   }
@@ -27,7 +27,7 @@ export class CuiKe extends TriggerSkill{
     if (room.getMark(ownerId, MarkEnum.JunLve) % 2 === 0) {
       return !target.ChainLocked || target.getPlayerCards().length > 0;
     } else {
-      return true
+      return true;
     }
   }
 
@@ -46,7 +46,7 @@ export class CuiKe extends TriggerSkill{
         const options = {
           [PlayerCardsArea.JudgeArea]: to.getCardIds(PlayerCardsArea.JudgeArea),
           [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),
-        }
+        };
         if (toIds![0] === fromId) {
           options[PlayerCardsArea.HandArea] = to.getCardIds(PlayerCardsArea.HandArea);
         } else {
@@ -56,7 +56,7 @@ export class CuiKe extends TriggerSkill{
         const chooseCardEvent = {
           fromId,
           toId: toIds![0],
-          options
+          options,
         };
 
         room.notify(
@@ -107,7 +107,7 @@ export class CuiKe extends TriggerSkill{
       room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForInvokeSkill, fromId);
       const { selectedOption } = await room.onReceivingAsyncResponseFrom(
         GameEventIdentifiers.AskForChoosingOptionsEvent,
-        fromId
+        fromId,
       );
 
       if (selectedOption === 'yes') {

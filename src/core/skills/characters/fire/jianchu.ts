@@ -1,13 +1,7 @@
 import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
-import {
-  CardMoveArea,
-  CardMoveReason,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AimStage, AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -140,10 +134,7 @@ export class JianchuRemove extends TriggerSkill implements OnDefineReleaseTiming
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
-    return (
-      content.fromPlayer === owner.Id &&
-      room.getFlag<number>(owner.Id, this.GeneralName) !== undefined
-    );
+    return content.fromPlayer === owner.Id && room.getFlag<number>(owner.Id, this.GeneralName) !== undefined;
   }
 
   public async onTrigger(): Promise<boolean> {

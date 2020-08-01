@@ -10,11 +10,18 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'baiyinshizi', description: 'baiyinshizi_description' })
 export class BaiYinShiZiSkill extends TriggerSkill {
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent | GameEventIdentifiers.MoveCardEvent>, stage?: AllStage) {
+  public isTriggerable(
+    event: ServerEventFinder<GameEventIdentifiers.DamageEvent | GameEventIdentifiers.MoveCardEvent>,
+    stage?: AllStage,
+  ) {
     return stage === DamageEffectStage.DamagedEffect || stage === CardMoveStage.BeforeCardMoving;
   }
 
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent | GameEventIdentifiers.MoveCardEvent>) {
+  canUse(
+    room: Room,
+    owner: Player,
+    content: ServerEventFinder<GameEventIdentifiers.DamageEvent | GameEventIdentifiers.MoveCardEvent>,
+  ) {
     const identifier = EventPacker.getIdentifier(content);
     if (identifier === GameEventIdentifiers.DamageEvent) {
       const damageEvent = content as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
@@ -24,10 +31,7 @@ export class BaiYinShiZiSkill extends TriggerSkill {
       const equipCards = moveEvent.movingCards
         .filter(card => card.fromArea === PlayerCardsArea.EquipArea)
         .filter(equip => Sanguosha.getCardById(equip.card).GeneralName === 'baiyinshizi');
-      return (
-        moveEvent.fromId === owner.Id &&
-        equipCards.length > 0
-      );
+      return moveEvent.fromId === owner.Id && equipCards.length > 0;
     }
     return false;
   }

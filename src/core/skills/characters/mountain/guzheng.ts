@@ -24,11 +24,9 @@ export class GuZheng extends TriggerSkill {
 
     const events = room.Analytics.getCardDropRecord(content.playerId, true, [PlayerPhase.DropCardStage]);
     const findFunc = (event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) => {
-      return event.movingCards.find(
-        ({ card, fromArea }) => {
-          return fromArea === CardMoveArea.HandArea;
-        }
-      );
+      return event.movingCards.find(({ card, fromArea }) => {
+        return fromArea === CardMoveArea.HandArea;
+      });
     };
     return events.find(findFunc) !== undefined;
   }
@@ -42,12 +40,10 @@ export class GuZheng extends TriggerSkill {
 
     const events = room.Analytics.getRecordEvents<GameEventIdentifiers.MoveCardEvent>(
       event => {
-        return EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
-          (
-            event.moveReason === CardMoveReason.SelfDrop ||
-            event.moveReason === CardMoveReason.PassiveDrop
-          )
-        ;
+        return (
+          EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
+          (event.moveReason === CardMoveReason.SelfDrop || event.moveReason === CardMoveReason.PassiveDrop)
+        );
       },
       undefined,
       true,
@@ -61,51 +57,43 @@ export class GuZheng extends TriggerSkill {
     const allCards: { cardId: CardId; enableToReturn: boolean }[] = [];
     const guzhengee = (triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>).playerId;
 
-    events.forEach(
-      (event) => {
-        const isGuzhengee = event.fromId === guzhengee;
-        event.movingCards.forEach(
-          ({ card, fromArea }) => {
-            if (!allCards.map(
-              (card) => {
-                return card.cardId;
-              }
-            )
+    events.forEach(event => {
+      const isGuzhengee = event.fromId === guzhengee;
+      event.movingCards.forEach(({ card, fromArea }) => {
+        if (
+          !allCards
+            .map(card => {
+              return card.cardId;
+            })
             .includes(card)
-            ) {
-              if (room.isCardInDropStack(card)) {
-                if (isGuzhengee === true && fromArea === CardMoveArea.HandArea) {
-                  allCards.push({ cardId: card, enableToReturn: true });
-                } else {
-                  allCards.push({ cardId: card, enableToReturn: false });
-                }
-              }
+        ) {
+          if (room.isCardInDropStack(card)) {
+            if (isGuzhengee === true && fromArea === CardMoveArea.HandArea) {
+              allCards.push({ cardId: card, enableToReturn: true });
             } else {
-              const index = allCards.findIndex(
-                ({ cardId, enableToReturn }) => {
-                  return cardId === card && enableToReturn === false;
-                }
-              );
-              if (index >= 0) {
-                allCards[index].enableToReturn = true;
-              }
+              allCards.push({ cardId: card, enableToReturn: false });
             }
           }
-        )
-      }
-    );
+        } else {
+          const index = allCards.findIndex(({ cardId, enableToReturn }) => {
+            return cardId === card && enableToReturn === false;
+          });
+          if (index >= 0) {
+            allCards[index].enableToReturn = true;
+          }
+        }
+      });
+    });
 
     const displayCardIds: CardId[] = [];
     const selectedCardIds: { card: CardId; player?: PlayerId }[] = [];
 
-    allCards.forEach(
-      cardInfo => {
-        displayCardIds.push(cardInfo.cardId);
-        if (cardInfo.enableToReturn === false) {
-          selectedCardIds.push({ card: cardInfo.cardId });
-        }
+    allCards.forEach(cardInfo => {
+      displayCardIds.push(cardInfo.cardId);
+      if (cardInfo.enableToReturn === false) {
+        selectedCardIds.push({ card: cardInfo.cardId });
       }
-    )
+    });
 
     room.addProcessingCards(displayCardIds.toString(), ...displayCardIds);
 
@@ -122,11 +110,7 @@ export class GuZheng extends TriggerSkill {
       userId: fromId,
     };
 
-    room.notify(
-      GameEventIdentifiers.AskForContinuouslyChoosingCardEvent,
-      chooseGuZhengCardEvent,
-      fromId,
-    );
+    room.notify(GameEventIdentifiers.AskForContinuouslyChoosingCardEvent, chooseGuZhengCardEvent, fromId);
 
     const response = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForContinuouslyChoosingCardEvent,
@@ -145,16 +129,14 @@ export class GuZheng extends TriggerSkill {
       movedByReason: this.Name,
     });
 
-    const obtainCards: CardId[] = displayCardIds.filter(
-      node => node !== response.selectedCard
-    );
+    const obtainCards: CardId[] = displayCardIds.filter(node => node !== response.selectedCard);
 
     if (obtainCards.length > 0) {
       const askForChoice: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
         toId: fromId,
         options: ['yes', 'no'],
         conversation: 'guzheng: do you wanna obtain the rest of cards?',
-      }
+      };
 
       room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChoice, fromId);
 
@@ -167,9 +149,8 @@ export class GuZheng extends TriggerSkill {
 
       if (selectedOption === 'yes') {
         await room.moveCards({
-          movingCards: obtainCards.map(
-            card => {
-              return { card, fromArea: CardMoveArea.DropStack };
+          movingCards: obtainCards.map(card => {
+            return { card, fromArea: CardMoveArea.DropStack };
           }),
           toId: fromId,
           toArea: CardMoveArea.HandArea,

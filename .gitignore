@@ -31,4 +31,3 @@ build
 /plugins
 /www
 src/ui/platforms/desktop/src/core
-src/core/characters/mountain/caiwenji.ts
