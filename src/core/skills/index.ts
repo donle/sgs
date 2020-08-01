@@ -173,6 +173,8 @@ export { JiXi } from './characters/mountain/jixi';
 export { QiaoBian, QiaoBianSkipDraw, QiaoBianSkipPlay } from './characters/mountain/qiaobian';
 export { HuaShen, HuaShenShadow } from './characters/mountain/huashen';
 export { XinSheng } from './characters/mountain/xinsheng';
+export { BeiGe } from './characters/mountain/beige';
+export { DuanChang } from './characters/mountain/duanchang';
 
 export { WuShen, WuShenShadow } from './characters/god/wushen';
 export { WuHun, WuHunDied } from './characters/god/wuhun';
