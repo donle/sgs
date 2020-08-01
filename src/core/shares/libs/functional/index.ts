@@ -72,7 +72,7 @@ export abstract class Functional {
         return CharacterNationality.God;
       }
       default: {
-        throw new Error(`Unknown incoming nationality: ${nationality}`);;
+        throw new Error(`Unknown incoming nationality: ${nationality}`);
       }
     }
   }

@@ -52,12 +52,7 @@ class App {
 
   private async log() {
     this.logger.info('-----', 'Sanguosha Server Launched', '-----');
-    this.logger.info(
-      '-----',
-      'Server listening at port ',
-      `${this.config.port}`,
-      '-----',
-    );
+    this.logger.info('-----', 'Server listening at port ', `${this.config.port}`, '-----');
     this.logger.info('-----', 'Core Version', Sanguosha.Version, '-----');
   }
 

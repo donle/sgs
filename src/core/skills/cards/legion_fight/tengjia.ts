@@ -10,11 +10,18 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'tengjia', description: 'tengjia_description' })
 export class TengJiaSkill extends TriggerSkill {
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent | GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
+  public isTriggerable(
+    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent | GameEventIdentifiers.DamageEvent>,
+    stage?: AllStage,
+  ) {
     return stage === CardEffectStage.PreCardEffect || stage === DamageEffectStage.DamagedEffect;
   }
 
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardEffectEvent | GameEventIdentifiers.DamageEvent>) {
+  canUse(
+    room: Room,
+    owner: Player,
+    content: ServerEventFinder<GameEventIdentifiers.CardEffectEvent | GameEventIdentifiers.DamageEvent>,
+  ) {
     const identifier = EventPacker.getIdentifier(content);
     if (identifier === GameEventIdentifiers.CardEffectEvent) {
       const effectEvent = content as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>;
@@ -22,8 +29,8 @@ export class TengJiaSkill extends TriggerSkill {
         effectEvent.toIds !== undefined &&
         effectEvent.toIds.includes(owner.Id) &&
         (Sanguosha.getCardById(effectEvent.cardId).Name === 'slash' ||
-        Sanguosha.getCardById(effectEvent.cardId).GeneralName === 'nanmanruqing' ||
-        Sanguosha.getCardById(effectEvent.cardId).GeneralName === 'wanjianqifa')
+          Sanguosha.getCardById(effectEvent.cardId).GeneralName === 'nanmanruqing' ||
+          Sanguosha.getCardById(effectEvent.cardId).GeneralName === 'wanjianqifa')
       );
     } else if (identifier === GameEventIdentifiers.DamageEvent) {
       const damageEvent = content as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
@@ -64,7 +71,7 @@ export class TengJiaSkill extends TriggerSkill {
         ).toString(),
       );
     }
-    
+
     return true;
   }
 }

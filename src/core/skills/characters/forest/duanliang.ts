@@ -8,13 +8,7 @@ import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import {
-  CommonSkill,
-  OnDefineReleaseTiming,
-  RulesBreakerSkill,
-  ShadowSkill,
-  ViewAsSkill,
-} from 'core/skills/skill';
+import { CommonSkill, OnDefineReleaseTiming, RulesBreakerSkill, ShadowSkill, ViewAsSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'duanliang', description: 'duanliang_description' })
 export class DuanLiang extends ViewAsSkill {

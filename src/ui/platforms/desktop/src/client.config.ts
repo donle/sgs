@@ -14,7 +14,7 @@ const clientFlavorMap: { [M in Flavor]: ClientFlavor } = {
 export const getClientConfig = (mode: Flavor): ClientConfig => {
   let host: ServiceConfig;
 
-  switch(mode) {
+  switch (mode) {
     case Flavor.Dev:
       host = {
         mode: Flavor.Dev,
@@ -33,7 +33,7 @@ export const getClientConfig = (mode: Flavor): ClientConfig => {
       break;
     default:
       throw Error(`invalid flavor: ${mode}`);
-  };
+  }
   return {
     ui: uiConfig,
     host,

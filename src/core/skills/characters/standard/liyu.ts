@@ -87,9 +87,10 @@ export class LiYu extends TriggerSkill {
 
     const responseCard = Sanguosha.getCardById(response.selectedCard);
     if (responseCard.is(CardType.Equip)) {
-      const targets = room.getOtherPlayers(damageEvent.fromId!).filter(
-        p => p.Id !== damageEvent.toId && from.canUseCardTo(room, new CardMatcher({ name: ['duel'] }), p.Id),
-      ).map(p => p.Id);
+      const targets = room
+        .getOtherPlayers(damageEvent.fromId!)
+        .filter(p => p.Id !== damageEvent.toId && from.canUseCardTo(room, new CardMatcher({ name: ['duel'] }), p.Id))
+        .map(p => p.Id);
 
       if (targets.length > 0) {
         const choosePlayerEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {

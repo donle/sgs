@@ -39,10 +39,7 @@ export class ZhiJi extends TriggerSkill {
       const askForChoose: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
         toId: fromId,
         options: ['zhiji:drawcards', 'zhiji:recover'],
-        conversation: TranslationPack.translationJsonPatcher(
-          '{0}: please choose',
-          this.Name,
-        ).extract()
+        conversation: TranslationPack.translationJsonPatcher('{0}: please choose', this.Name).extract(),
       };
 
       room.notify(

@@ -14,10 +14,7 @@ export class YingHun extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    return (
-      content.playerId === owner.Id &&
-      owner.Hp < owner.MaxHp
-    );
+    return content.playerId === owner.Id && owner.Hp < owner.MaxHp;
   }
 
   public targetFilter(room: Room, owner: Player, targets: PlayerId[]): boolean {
@@ -57,7 +54,7 @@ export class YingHun extends TriggerSkill {
       const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
       selected = response.selectedOption || 'yinghun:option-one';
     }
-    
+
     if (!selected || selected === 'yinghun:option-one') {
       await room.drawCards(1, toId, 'top', fromId, this.Name);
 
@@ -83,7 +80,7 @@ export class YingHun extends TriggerSkill {
       );
       await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toId);
     }
-    
+
     return true;
   }
 }

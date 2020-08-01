@@ -30,7 +30,7 @@ export class WuLie extends TriggerSkill {
   }
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
-    return target !== owner
+    return target !== owner;
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -56,18 +56,11 @@ export class WuLie extends TriggerSkill {
 @ShadowSkill
 @CompulsorySkill({ name: 'wulie_shadow', description: 'wulie_shadow_description' })
 export class WuLieShadow extends TriggerSkill {
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
-    stage?: AllStage,
-  ): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage): boolean {
     return stage === DamageEffectStage.DamagedEffect;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>): boolean {
     return content.toId === owner.Id && owner.getMark(MarkEnum.Lie) > 0;
   }
 

@@ -12,7 +12,7 @@ export class WeiMu extends FilterSkill {
     if (cardId instanceof CardMatcher) {
       return !new CardMatcher({ suit: [CardSuit.Spade, CardSuit.Club], type: [CardType.Trick] }).match(cardId);
     } else {
-      const card = Sanguosha.getCardById(cardId)
+      const card = Sanguosha.getCardById(cardId);
       return !(card.is(CardType.Trick) && card.isBlack());
     }
   }

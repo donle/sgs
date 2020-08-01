@@ -15,11 +15,11 @@ export class FireAttackSkill extends ActiveSkill {
   public canUse() {
     return true;
   }
-  
+
   public numberOfTargets() {
     return 1;
   }
-  
+
   public cardFilter(): boolean {
     return true;
   }
@@ -60,14 +60,14 @@ export class FireAttackSkill extends ActiveSkill {
       triggeredBySkills: [this.Name],
       conversation:
         fromId !== undefined
-            ? TranslationPack.translationJsonPatcher(
+          ? TranslationPack.translationJsonPatcher(
               '{0} used {1} to you, please present a hand card',
               TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
               TranslationPack.patchCardInTranslation(event.cardId),
             ).extract()
-            : TranslationPack.translationJsonPatcher(
+          : TranslationPack.translationJsonPatcher(
               '{0}: please present a hand card',
-              TranslationPack.patchCardInTranslation(event.cardId)
+              TranslationPack.patchCardInTranslation(event.cardId),
             ).extract(),
     });
 
@@ -80,16 +80,16 @@ export class FireAttackSkill extends ActiveSkill {
     room.broadcast(GameEventIdentifiers.CardDisplayEvent, {
       displayCards: selectedCards,
       translationsMessage: TranslationPack.translationJsonPatcher(
-          '{0} display hand card {1}',
-          TranslationPack.patchPlayerInTranslation(to),
-          TranslationPack.patchCardInTranslation(...selectedCards),
+        '{0} display hand card {1}',
+        TranslationPack.patchPlayerInTranslation(to),
+        TranslationPack.patchCardInTranslation(...selectedCards),
       ).extract(),
     });
 
     if (fromId !== undefined) {
       const from = room.getPlayerById(fromId);
       if (!from.Dead && to.getCardIds(PlayerCardsArea.HandArea).length > 0) {
-        const card = Sanguosha.getCardById(selectedCards[0])
+        const card = Sanguosha.getCardById(selectedCards[0]);
         const response = await room.askForCardDrop(
           fromId,
           1,
@@ -105,13 +105,7 @@ export class FireAttackSkill extends ActiveSkill {
         );
 
         if (response.droppedCards.length > 0) {
-          await room.dropCards(
-            CardMoveReason.SelfDrop,
-            response.droppedCards,
-            fromId,
-            fromId,
-            this.Name,
-          );
+          await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, fromId, fromId, this.Name);
 
           await room.damage({
             fromId,

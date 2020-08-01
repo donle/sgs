@@ -5,7 +5,7 @@ import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 
-@CommonSkill({name: 'xingshang', description: 'xingshang_description'})
+@CommonSkill({ name: 'xingshang', description: 'xingshang_description' })
 export class XingShang extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>, stage?: AllStage) {
     return stage === PlayerDiedStage.PlayerDied;
@@ -36,7 +36,7 @@ export class XingShang extends TriggerSkill {
     } else if (caopi.Hp >= caopi.MaxHp) {
       const heritage = dead.getPlayerCards();
       await room.moveCards({
-        movingCards: heritage.map(cardId => ({card: cardId, fromArea: dead.cardFrom(cardId)})),
+        movingCards: heritage.map(cardId => ({ card: cardId, fromArea: dead.cardFrom(cardId) })),
         fromId: playerId,
         moveReason: CardMoveReason.ActivePrey,
         toId: fromId,
@@ -68,7 +68,7 @@ export class XingShang extends TriggerSkill {
       } else {
         const heritage = dead.getPlayerCards();
         await room.moveCards({
-          movingCards: heritage.map(cardId => ({card: cardId, fromArea: dead.cardFrom(cardId)})),
+          movingCards: heritage.map(cardId => ({ card: cardId, fromArea: dead.cardFrom(cardId) })),
           fromId: playerId,
           moveReason: CardMoveReason.ActivePrey,
           toId: fromId,

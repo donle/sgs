@@ -10,33 +10,24 @@ import { ShadowSkill } from 'core/skills/skill_wrappers';
 
 @CommonSkill({ name: 'tuntian', description: 'tuntian_description' })
 export class TunTian extends TriggerSkill {
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>,
-    stage?: AllStage,
-  ): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>, stage?: AllStage): boolean {
     return stage === CardMoveStage.AfterCardMoved;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): boolean {
     if (owner.Id !== content.fromId || room.CurrentPhasePlayer === owner) {
       return false;
     }
 
-    const yourCards = content.movingCards
-      .filter(
-        card => card.fromArea === PlayerCardsArea.HandArea ||
-          card.fromArea === PlayerCardsArea.EquipArea
-      );
+    const yourCards = content.movingCards.filter(
+      card => card.fromArea === PlayerCardsArea.HandArea || card.fromArea === PlayerCardsArea.EquipArea,
+    );
 
     return (
-      !(owner.Id === content.toId &&
-        (content.toArea === PlayerCardsArea.HandArea ||
-          content.toArea === PlayerCardsArea.EquipArea)) &&
-      yourCards.length > 0
+      !(
+        owner.Id === content.toId &&
+        (content.toArea === PlayerCardsArea.HandArea || content.toArea === PlayerCardsArea.EquipArea)
+      ) && yourCards.length > 0
     );
   }
 
@@ -44,10 +35,7 @@ export class TunTian extends TriggerSkill {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { fromId } = event;
 
     const judgeEvent = await room.judge(fromId, undefined, this.Name);

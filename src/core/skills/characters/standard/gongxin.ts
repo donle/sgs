@@ -23,7 +23,7 @@ export class GongXin extends ActiveSkill {
   public numberOfTargets() {
     return 1;
   }
-  
+
   cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return cards.length === 0;
   }

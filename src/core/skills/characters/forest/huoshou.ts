@@ -11,7 +11,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 export class HuoShou extends TriggerSkill {
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent | GameEventIdentifiers.AimEvent>,
-    stage?: AllStage
+    stage?: AllStage,
   ): boolean {
     return stage === CardEffectStage.PreCardEffect || stage === AimStage.AfterAim;
   }
@@ -19,9 +19,9 @@ export class HuoShou extends TriggerSkill {
   public canUse(
     room: Room,
     owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent | GameEventIdentifiers.AimEvent>
+    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent | GameEventIdentifiers.AimEvent>,
   ): boolean {
-    const unknownEvent =  EventPacker.getIdentifier(event);
+    const unknownEvent = EventPacker.getIdentifier(event);
     if (unknownEvent === GameEventIdentifiers.CardEffectEvent) {
       const cardEffectEvent = event as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>;
       return (
@@ -84,7 +84,7 @@ export class HuoShou extends TriggerSkill {
           tag: NanManRuQingSkill.NewSource,
           data: event.fromId,
         },
-        aimEvent
+        aimEvent,
       );
     }
 

@@ -14,10 +14,7 @@ export class JiAng extends TriggerSkill {
 
     const card = Sanguosha.getCardById(event.byCardId);
     return (
-      stage === AimStage.AfterAimmed &&
-      ((card.GeneralName === 'slash' &&
-        card.isRed()) ||
-        card.GeneralName === 'duel')
+      stage === AimStage.AfterAimmed && ((card.GeneralName === 'slash' && card.isRed()) || card.GeneralName === 'duel')
     );
   }
 

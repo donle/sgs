@@ -39,9 +39,9 @@ export class XiangLe extends TriggerSkill {
       1,
       [PlayerCardsArea.HandArea],
       false,
-      from.getCardIds(PlayerCardsArea.HandArea).filter(
-        cardId => Sanguosha.getCardById(cardId).BaseType !== CardType.Basic
-      ),
+      from
+        .getCardIds(PlayerCardsArea.HandArea)
+        .filter(cardId => Sanguosha.getCardById(cardId).BaseType !== CardType.Basic),
       this.Name,
       TranslationPack.translationJsonPatcher(
         'xiangle: please drop 1 basic card else this Slash will be of no effect to {0}',
@@ -52,13 +52,7 @@ export class XiangLe extends TriggerSkill {
     if (response.droppedCards.length <= 0) {
       triggeredOnEvent.nullifiedTargets.push(liushanId);
     } else {
-      await room.dropCards(
-        CardMoveReason.SelfDrop,
-        response.droppedCards,
-        fromId,
-        fromId,
-        this.Name
-      );
+      await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, fromId, fromId, this.Name);
     }
 
     return true;

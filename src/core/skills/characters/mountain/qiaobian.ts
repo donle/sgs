@@ -1,11 +1,5 @@
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
-import {
-  CardMoveArea,
-  CardMoveReason,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder
-} from 'core/event/event';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseChangeStage, PlayerPhase, StagePriority } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -16,10 +10,7 @@ import { PatchedTranslationObject, TranslationPack } from 'core/translations/tra
 
 @CommonSkill({ name: 'qiaobian', description: 'qiaobian_description' })
 export class QiaoBian extends TriggerSkill {
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>,
-    stage?: AllStage,
-  ): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage): boolean {
     return (
       stage === PhaseChangeStage.AfterPhaseChanged &&
       [
@@ -31,11 +22,7 @@ export class QiaoBian extends TriggerSkill {
     );
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
     if (content.toPlayer !== owner.Id) {
       return false;
     }
@@ -84,7 +71,7 @@ export class QiaoBian extends TriggerSkill {
     from.setFlag(this.Name, true);
     await room.skip(fromId, phaseChangeEvent.to);
     from.removeFlag(this.Name);
-    
+
     return true;
   }
 }
@@ -104,10 +91,7 @@ export class QiaoBianSkipDraw extends TriggerSkill {
     owner: Player,
     content: ServerEventFinder<GameEventIdentifiers.PhaseSkippedEvent>,
   ): boolean {
-    return (
-      owner.Id === content.playerId &&
-      owner.getFlag<boolean>(this.GeneralName) === true
-    );
+    return owner.Id === content.playerId && owner.getFlag<boolean>(this.GeneralName) === true;
   }
 
   public get Priority() {
@@ -174,7 +158,7 @@ export class QiaoBianSkipDraw extends TriggerSkill {
         movedByReason: this.GeneralName,
       });
     }
-    
+
     return true;
   }
 }
@@ -194,10 +178,7 @@ export class QiaoBianSkipPlay extends TriggerSkill {
     owner: Player,
     content: ServerEventFinder<GameEventIdentifiers.PhaseSkippedEvent>,
   ): boolean {
-    return (
-      owner.Id === content.playerId &&
-      owner.getFlag<boolean>(this.GeneralName) === true
-    );
+    return owner.Id === content.playerId && owner.getFlag<boolean>(this.GeneralName) === true;
   }
 
   public get Priority() {
@@ -256,10 +237,7 @@ export class QiaoBianSkipPlay extends TriggerSkill {
     ).extract();
   }
 
-  public async onTrigger(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ): Promise<boolean> {
+  public async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     event.animation = this.getAnimationSteps(event);
     return true;
   }
@@ -312,7 +290,7 @@ export class QiaoBianSkipPlay extends TriggerSkill {
       proposer: chooseCardEvent.fromId,
       movedByReason: this.GeneralName,
     });
-    
+
     return true;
   }
 }

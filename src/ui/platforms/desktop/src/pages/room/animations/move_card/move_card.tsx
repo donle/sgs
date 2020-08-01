@@ -59,7 +59,7 @@ export class MoveCard extends UiAnimation {
     if (identifier !== GameEventIdentifiers.MoveCardEvent) {
       return;
     }
-    const content = event as unknown as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
+    const content = (event as unknown) as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
     this.from = content.fromId;
     this.to = content.toId;
     this.cards = content.movingCards

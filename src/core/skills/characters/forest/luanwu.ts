@@ -46,25 +46,16 @@ export class LuanWu extends ActiveSkill {
           minDistance = distance;
         }
       });
-      const targets = room.getOtherPlayers(target.Id).reduce<Player[]>(
-        (targets, player) => {
-          if (
-            room.distanceBetween(target, player) === minDistance &&
-            room.canAttack(target, player)
-          ) {
-            targets.push(player);
-          }
-          return targets;
-        },
-        [],
-      );
-      const toIds = targets.reduce<PlayerId[]>(
-        (toIds, player) => {
-          toIds.push(player.Id);
-          return toIds;
-        },
-        [],
-      );
+      const targets = room.getOtherPlayers(target.Id).reduce<Player[]>((targets, player) => {
+        if (room.distanceBetween(target, player) === minDistance && room.canAttack(target, player)) {
+          targets.push(player);
+        }
+        return targets;
+      }, []);
+      const toIds = targets.reduce<PlayerId[]>((toIds, player) => {
+        toIds.push(player.Id);
+        return toIds;
+      }, []);
 
       if (targets.length > 0) {
         const response = await room.askForCardUse(

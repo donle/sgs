@@ -14,11 +14,7 @@ type SelectedCard = {
 
 @CommonSkill({ name: 'wugufengdeng', description: 'wugufengdeng_description' })
 export class WuGuFengDengSkill extends ActiveSkill {
-  public canUse(
-    room: Room,
-    owner: Player,
-    containerCard?: CardId,
-  ) {
+  public canUse(room: Room, owner: Player, containerCard?: CardId) {
     if (containerCard) {
       for (const target of room.getAlivePlayersFrom()) {
         if (owner.canUseCardTo(room, containerCard, target.Id)) {
@@ -26,14 +22,14 @@ export class WuGuFengDengSkill extends ActiveSkill {
         }
       }
     }
-      
+
     return false;
   }
 
   public numberOfTargets() {
     return 0;
   }
-  
+
   public cardFilter(): boolean {
     return true;
   }

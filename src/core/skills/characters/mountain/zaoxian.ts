@@ -13,10 +13,7 @@ export class ZaoXian extends TriggerSkill {
     event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
     stage?: AllStage,
   ): boolean {
-    return (
-      stage === PhaseStageChangeStage.StageChanged &&
-      event.toStage === PlayerPhaseStages.PrepareStageStart
-    );
+    return stage === PhaseStageChangeStage.StageChanged && event.toStage === PlayerPhaseStages.PrepareStageStart;
   }
 
   public canUse(
@@ -24,10 +21,7 @@ export class ZaoXian extends TriggerSkill {
     owner: Player,
     content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
   ): boolean {
-    return (
-      content.playerId === owner.Id &&
-      owner.getCardIds(PlayerCardsArea.OutsideArea, TunTian.Name).length > 2
-    );
+    return content.playerId === owner.Id && owner.getCardIds(PlayerCardsArea.OutsideArea, TunTian.Name).length > 2;
   }
 
   public async onTrigger(
@@ -43,13 +37,10 @@ export class ZaoXian extends TriggerSkill {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     room.changeMaxHp(event.fromId, -1);
     room.obtainSkill(event.fromId, 'jixi', true);
-    
+
     return true;
   }
 }

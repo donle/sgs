@@ -56,7 +56,9 @@ export class WuShengShadow extends RulesBreakerSkill implements OnDefineReleaseT
 
   breakCardUsableDistance(cardId: CardId | CardMatcher, room: Room, owner: Player) {
     if (cardId instanceof CardMatcher) {
-      return cardId.match(new CardMatcher({ generalName: ['slash'], suit: [CardSuit.Diamond] })) ? INFINITE_DISTANCE : 0;
+      return cardId.match(new CardMatcher({ generalName: ['slash'], suit: [CardSuit.Diamond] }))
+        ? INFINITE_DISTANCE
+        : 0;
     } else {
       const card = Sanguosha.getCardById(cardId);
       return card.GeneralName === 'slash' && card.Suit === CardSuit.Diamond ? INFINITE_DISTANCE : 0;

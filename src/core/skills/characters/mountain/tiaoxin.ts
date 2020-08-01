@@ -23,11 +23,7 @@ export class TiaoXin extends ActiveSkill {
     return 1;
   }
 
-  public isAvailableTarget(
-    owner: PlayerId,
-    room: Room,
-    target: PlayerId,
-  ) {
+  public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId) {
     return target !== owner;
   }
 
@@ -78,7 +74,7 @@ export class TiaoXin extends ActiveSkill {
       const chooseCardEvent = {
         fromId,
         toId,
-        options
+        options,
       };
 
       room.notify(

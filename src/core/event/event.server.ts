@@ -399,7 +399,7 @@ export interface ServerEvent extends EventUtilities {
     latestHuaShen: CharacterId;
     latestHuaShenSkillName: string;
     toId: PlayerId;
-  }
+  };
 }
 
 export type PinDianResultType = {

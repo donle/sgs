@@ -15,10 +15,7 @@ export class KuangGu extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
-    return (
-      owner.Id === content.fromId &&
-      EventPacker.getMiddleware<boolean>(KuangGu.KuangGuTag, content) === true
-    );
+    return owner.Id === content.fromId && EventPacker.getMiddleware<boolean>(KuangGu.KuangGuTag, content) === true;
   }
 
   triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
@@ -83,10 +80,7 @@ export class KuangGuShadow extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.HpChangeEvent>) {
-    return (
-      owner.Id === content.fromId &&
-      room.distanceBetween(owner, room.getPlayerById(content.toId)) <= 1
-    );
+    return owner.Id === content.fromId && room.distanceBetween(owner, room.getPlayerById(content.toId)) <= 1;
   }
 
   async onTrigger() {
@@ -96,13 +90,14 @@ export class KuangGuShadow extends TriggerSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
 
-    triggeredOnEvent && EventPacker.addMiddleware(
-      {
-        tag: KuangGu.KuangGuTag,
-        data: true,
-      },
-      triggeredOnEvent,
-    );
+    triggeredOnEvent &&
+      EventPacker.addMiddleware(
+        {
+          tag: KuangGu.KuangGuTag,
+          data: true,
+        },
+        triggeredOnEvent,
+      );
 
     return true;
   }
