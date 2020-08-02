@@ -2,9 +2,10 @@ import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } 
 import { AllStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { CommonSkill, TriggerSkill } from 'core/skills/skill';
+import { TriggerSkill } from 'core/skills/skill';
+import { CompulsorySkill } from 'core/skills/skill_wrappers';
 
-@CommonSkill({ name: 'qinyin', description: 'qinyin_description' })
+@CompulsorySkill({ name: 'qinyin', description: 'qinyin_description' })
 export class QinYin extends TriggerSkill {
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
@@ -44,25 +45,25 @@ export class QinYin extends TriggerSkill {
 
   public async onEffect(
     room: Room,
-    skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
+    skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     const options = ['qinyin: loseHp'];
     room.getAlivePlayersFrom().find(player => player.isInjured()) && options.push('qinyin: recoverHp');
     const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
       options,
-      toId: skillUseEvent.fromId,
+      toId: skillEffectEvent.fromId,
       conversation: 'qinyin: please choose a choice to make everyone lose hp or recover hp',
     };
 
     room.notify(
       GameEventIdentifiers.AskForChoosingOptionsEvent,
       EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(askForChoosingOptionsEvent),
-      skillUseEvent.fromId,
+      skillEffectEvent.fromId,
     );
 
     const { selectedOption } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingOptionsEvent,
-      skillUseEvent.fromId,
+      skillEffectEvent.fromId,
     );
 
     if (selectedOption === 'qinyin: loseHp') {
@@ -71,7 +72,7 @@ export class QinYin extends TriggerSkill {
       }
     } else if (selectedOption === 'qinyin: recoverHp') {
       for (const player of room.getAlivePlayersFrom()) {
-        await room.recover({ recoveredHp: 1, recoverBy: skillUseEvent.fromId, toId: player.Id });
+        await room.recover({ recoveredHp: 1, recoverBy: skillEffectEvent.fromId, toId: player.Id });
       }
     } else {
       return false;

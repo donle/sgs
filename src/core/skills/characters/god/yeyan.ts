@@ -106,7 +106,7 @@ export class YeYan extends ActiveSkill {
     );
 
     if (selectedOption === 'yeyan: 1 point') {
-      if (!!skillUseEvent.cardIds) {
+      if (!skillUseEvent.cardIds) {
         targets.forEach(target => {
           EventPacker.addMiddleware({ tag: target, data: 1 }, skillUseEvent);
         });

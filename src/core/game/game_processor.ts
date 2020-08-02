@@ -148,15 +148,16 @@ export class GameProcessor {
 
     this.room.changePlayerProperties(playerPropertiesChangeEvent);
     const lord = this.room.getPlayerById(lordInfo.Id);
-    this.room.broadcast(GameEventIdentifiers.CustomGameDialog, {
-      messages: [
-        TranslationPack.translationJsonPatcher(
-          '{0} select nationaliy {1}',
-          TranslationPack.patchPlayerInTranslation(lord),
-          Functional.getPlayerNationalityText(lord.Nationality),
-        ).toString(),
-      ],
-    });
+    lord.Character.Nationality === CharacterNationality.God &&
+      this.room.broadcast(GameEventIdentifiers.CustomGameDialog, {
+        messages: [
+          TranslationPack.translationJsonPatcher(
+            '{0} select nationaliy {1}',
+            TranslationPack.patchPlayerInTranslation(lord),
+            Functional.getPlayerNationalityText(lord.Nationality),
+          ).toString(),
+        ],
+      });
 
     const sequentialAsyncResponse: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingCharacterEvent>>[] = [];
     const selectedCharacters: CharacterId[] = [lordCharacter.Id];

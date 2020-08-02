@@ -15,7 +15,7 @@ export const generalDictionary: Word[] = [
   { source: 'wind', target: '风' },
   { source: 'forest', target: '林' },
   { source: 'fire', target: '火' },
-  { source: 'hill', target: '山' },
+  { source: 'mountain', target: '山' },
   { source: 'wei', target: '魏' },
   { source: 'shu', target: '蜀' },
   { source: 'wu', target: '吴' },
