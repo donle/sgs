@@ -1,14 +1,7 @@
 import { CharacterId } from 'core/characters/character';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import {
-  AllStage,
-  GameStartStage,
-  PhaseChangeStage,
-  PlayerDiedStage,
-  PlayerPhase,
-  StagePriority,
-} from 'core/game/stage_processor';
+import { AllStage, PhaseChangeStage, PlayerDiedStage, PlayerPhase, StagePriority } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -20,36 +13,26 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 @CommonSkill({ name: 'huashen', description: 'huashen_description' })
 export class HuaShen extends TriggerSkill {
   public isAutoTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers>): boolean {
-    const identifier = EventPacker.getIdentifier(event);
-    if (identifier === GameEventIdentifiers.GameStartEvent) {
+    if (room.Round === 0 && room.CurrentProcessingStage === PhaseChangeStage.BeforePhaseChange) {
       return true;
     }
     return false;
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
-    return (
-      stage === PhaseChangeStage.BeforePhaseChange ||
-      stage === PhaseChangeStage.PhaseChanged ||
-      stage === GameStartStage.GameStarting
-    );
+    return stage === PhaseChangeStage.BeforePhaseChange || stage === PhaseChangeStage.AfterPhaseChanged;
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers>) {
-    const identifier = EventPacker.getIdentifier(event);
-    if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
-      const phaseChangeEvent = event as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-      return (
-        (phaseChangeEvent.toPlayer === owner.Id &&
-          phaseChangeEvent.to === PlayerPhase.PrepareStage &&
-          room.CurrentProcessingStage === PhaseChangeStage.BeforePhaseChange) ||
-        (phaseChangeEvent.fromPlayer === owner.Id &&
-          phaseChangeEvent.from === PlayerPhase.FinishStage &&
-          room.CurrentProcessingStage === PhaseChangeStage.PhaseChanged)
-      );
-    } else {
-      return !owner.hasUsedSkill(this.GeneralName);
-    }
+    const phaseChangeEvent = event as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
+    return (
+      (phaseChangeEvent.toPlayer === owner.Id &&
+        phaseChangeEvent.to === PlayerPhase.PrepareStage &&
+        room.CurrentProcessingStage === PhaseChangeStage.BeforePhaseChange) ||
+      (phaseChangeEvent.fromPlayer === owner.Id &&
+        phaseChangeEvent.from === PlayerPhase.FinishStage &&
+        room.CurrentProcessingStage === PhaseChangeStage.AfterPhaseChanged)
+    );
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -59,7 +42,7 @@ export class HuaShen extends TriggerSkill {
   public getPriority(room: Room, owner: Player) {
     if (room.CurrentProcessingStage === PhaseChangeStage.BeforePhaseChange) {
       return StagePriority.High;
-    } else if (room.CurrentProcessingStage === PhaseChangeStage.PhaseChanged) {
+    } else if (room.CurrentProcessingStage === PhaseChangeStage.AfterPhaseChanged) {
       return StagePriority.Low;
     } else {
       return StagePriority.Medium;
@@ -150,11 +133,8 @@ export class HuaShen extends TriggerSkill {
     room: Room,
     skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
-    const unknownEvent = skillEffectEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers>;
-    const identifier = EventPacker.getIdentifier(unknownEvent);
     const player = room.getPlayerById(skillEffectEvent.fromId);
-
-    if (identifier !== GameEventIdentifiers.GameStartEvent) {
+    if (room.Round !== 0 && room.CurrentProcessingStage === PhaseChangeStage.BeforePhaseChange) {
       const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
         options: ['option-one', 'option-two'],
         toId: skillEffectEvent.fromId,

@@ -27,7 +27,7 @@ export class QingJian extends TriggerSkill {
     );
   }
 
-  public isRefreshAt(phase: PlayerPhase): boolean {
+  public isRefreshAt(room: Room, owner: Player, phase: PlayerPhase): boolean {
     return phase === PlayerPhase.PrepareStage;
   }
 

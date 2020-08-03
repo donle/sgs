@@ -13,7 +13,7 @@ export class AlcoholSkill extends ActiveSkill {
     return !owner.hasUsed(this.Name);
   }
 
-  isRefreshAt(stage: PlayerPhase) {
+  isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
     return stage === PlayerPhase.PrepareStage;
   }
 

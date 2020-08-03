@@ -481,7 +481,8 @@ export class GameProcessor {
                   player.resetCardUseHistory('slash');
                 }
 
-                if (skill.isRefreshAt(nextPhase)) {
+                if (skill.isRefreshAt(this.room, player, nextPhase)) {
+                  skill.whenRefresh(this.room, player);
                   player.resetSkillUseHistory(skill.Name);
                 }
               }

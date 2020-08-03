@@ -154,7 +154,7 @@ export class YeYan extends ActiveSkill {
       await room.damage({
         fromId: skillUseEvent.fromId,
         toId: target,
-        damage: EventPacker.getMiddleware(target, skillUseEvent) as number,
+        damage: EventPacker.getMiddleware<number>(target, skillUseEvent)!,
         damageType: DamageType.Fire,
         triggeredBySkills: [this.Name],
       });

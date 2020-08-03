@@ -138,7 +138,7 @@ export class JianchuRemove extends TriggerSkill implements OnDefineReleaseTiming
   }
 
   public async onTrigger(): Promise<boolean> {
-    return true;
+  return true;
   }
 
   public async onEffect(

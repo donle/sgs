@@ -15,7 +15,7 @@ export class TiaoXin extends ActiveSkill {
     return !owner.hasUsedSkill(this.Name);
   }
 
-  public isRefreshAt(phase: PlayerPhase) {
+  public isRefreshAt(room: Room, owner: Player, phase: PlayerPhase) {
     return phase === PlayerPhase.PlayCardStage;
   }
 

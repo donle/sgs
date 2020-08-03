@@ -5,7 +5,7 @@ import { Room } from 'core/room/room';
 import { MarkEnum } from 'core/shares/types/mark_list';
 import { TriggerSkill } from 'core/skills/skill';
 import { AwakeningSkill } from 'core/skills/skill_wrappers';
-import { JiZhiShadow } from '../standard/jizhi';
+import { JiLve } from './jilve';
 
 @AwakeningSkill({ name: 'baiyin', description: 'baiyin_description' })
 export class BaiYin extends TriggerSkill {
@@ -33,8 +33,7 @@ export class BaiYin extends TriggerSkill {
     skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     room.changeMaxHp(skillUseEvent.fromId, -1);
-    room.obtainSkill(skillUseEvent.fromId, 'jilve', true);
-    room.obtainSkill(skillUseEvent.fromId, JiZhiShadow.Name, false);
+    room.obtainSkill(skillUseEvent.fromId, JiLve.GeneralName, true);
     return true;
   }
 }

@@ -23,7 +23,7 @@ export class FangQuan extends TriggerSkill {
     return content.toPlayer === owner.Id;
   }
 
-  public isRefreshAt(stage: PlayerPhase) {
+  public isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
     return stage === PlayerPhase.PrepareStage;
   }
 

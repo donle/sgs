@@ -812,7 +812,7 @@ export class GameClientProcessor {
             player.resetCardUseHistory('slash');
           }
 
-          if (skill.isRefreshAt(content.to)) {
+          if (skill.isRefreshAt(this.store.room, player, content.to)) {
             player.resetSkillUseHistory(skill.Name);
           }
         }

@@ -1,4 +1,5 @@
 import { Card } from 'core/cards/card';
+import { CardId } from 'core/cards/libs/card_props';
 import type { ServerEventFinder } from 'core/event/event';
 import { GameEventIdentifiers } from 'core/event/event';
 import type { GameInfo } from 'core/game/game_props';
@@ -97,7 +98,7 @@ export class RoomStore {
   @mobx.observable.ref
   highlightedCards: boolean | undefined = true;
   @mobx.observable.shallow
-  selectedCards: Card[] = [];
+  selectedCards: CardId[] = [];
   @mobx.observable.shallow
   selectedPlayers: ClientPlayer[] = [];
 
@@ -390,11 +391,11 @@ export class RoomPresenter {
   }
   @mobx.action
   selectCard(card: Card) {
-    this.store.selectedCards.push(card);
+    this.store.selectedCards.push(card.Id);
   }
   @mobx.action
   unselectCard(card: Card) {
-    const index = this.store.selectedCards.findIndex(selected => selected === card);
+    const index = this.store.selectedCards.findIndex(selected => selected === card.Id);
     index >= 0 && this.store.selectedCards.splice(index, 1);
   }
 

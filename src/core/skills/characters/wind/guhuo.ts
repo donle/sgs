@@ -28,7 +28,7 @@ export class GuHuo extends ViewAsSkill {
     );
   }
 
-  isRefreshAt(phase: PlayerPhase) {
+  isRefreshAt(room: Room, owner: Player, phase: PlayerPhase) {
     return phase === PlayerPhase.PrepareStage;
   }
 

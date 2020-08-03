@@ -251,7 +251,7 @@ export class Dashboard extends React.Component<DashboardProps> {
           tag={this.props.translator.tr(cardInfo.areaName)}
           className={styles.handCard}
           disabled={!this.props.outsideCardEnableMatcher || !this.props.outsideCardEnableMatcher(cardInfo.card)}
-          selected={this.props.store.selectedCards.includes(cardInfo.card)}
+          selected={this.props.store.selectedCards.includes(cardInfo.card.Id)}
         />
       );
     });
@@ -272,7 +272,7 @@ export class Dashboard extends React.Component<DashboardProps> {
             onSelected={this.onClick(card)}
             className={styles.handCard}
             disabled={!this.props.cardEnableMatcher || !this.props.cardEnableMatcher(card)}
-            selected={this.props.store.selectedCards.includes(card)}
+            selected={this.props.store.selectedCards.includes(card.Id)}
           />
         );
       }) || [];

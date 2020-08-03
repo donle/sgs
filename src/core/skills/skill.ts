@@ -27,7 +27,9 @@ export abstract class Skill {
   private description: string;
   private skillName: string;
 
-  public abstract isRefreshAt(stage: PlayerPhase): boolean;
+  public abstract isRefreshAt(room: Room, owner: Player, stage: PlayerPhase): boolean;
+  // tslint:disable-next-line:no-empty
+  public whenRefresh(room: Room, owner: Player) {}
 
   public async beforeUse(
     room: Room,
@@ -195,7 +197,7 @@ export abstract class TriggerSkill extends Skill {
     return 1;
   }
 
-  public isRefreshAt(stage: PlayerPhase) {
+  public isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
     return false;
   }
 
@@ -264,7 +266,7 @@ export abstract class TriggerSkill extends Skill {
   }
 
   public availableCardAreas() {
-    return [PlayerCardsArea.HandArea];
+    return [PlayerCardsArea.EquipArea, PlayerCardsArea.HandArea];
   }
 }
 
@@ -336,7 +338,7 @@ export abstract class ActiveSkill extends Skill {
     return [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea];
   }
 
-  public isRefreshAt(phase: PlayerPhase) {
+  public isRefreshAt(room: Room, owner: Player, phase: PlayerPhase) {
     return phase === PlayerPhase.PrepareStage;
   }
 }
@@ -365,7 +367,7 @@ export abstract class TransformSkill extends Skill {
 }
 
 export abstract class ViewAsSkill extends Skill {
-  public isRefreshAt(phase: PlayerPhase) {
+  public isRefreshAt(room: Room, owner: Player, phase: PlayerPhase) {
     return false;
   }
 

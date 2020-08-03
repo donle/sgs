@@ -314,7 +314,11 @@ export abstract class Player implements PlayerInfo {
         if (index >= 0) {
           droppedCardIds.push(areaCards.splice(index, 1)[0]);
         } else {
-          for (const outsideArea of Object.values(this.playerOutsideCards)) {
+          for (const [areaName, outsideArea] of Object.entries(this.playerOutsideCards)) {
+            if (this.isCharacterOutsideArea(areaName)) {
+              continue;
+            }
+
             index = outsideArea.findIndex(areaCard => areaCard === card);
             if (index >= 0) {
               droppedCardIds.push(outsideArea.splice(index, 1)[0]);

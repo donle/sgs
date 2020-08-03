@@ -27,6 +27,9 @@ export class DuanChang extends TriggerSkill {
     const { killedBy } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>;
     const to = room.getPlayerById(killedBy!);
     for (const skill of to.getPlayerSkills()) {
+      if (skill.isShadowSkill()) {
+        continue;
+      }
       await room.loseSkill(to.Id, skill.Name, true);
     }
     room.setFlag<boolean>(killedBy!, this.GeneralName, true);

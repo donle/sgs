@@ -2,15 +2,26 @@ import { CardType } from 'core/cards/card';
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { GameCommonRules } from 'core/game/game_rules';
-import { CardUseStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
+import { CardUseStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'jizhi', description: 'jizhi_description' })
 export class JiZhi extends TriggerSkill {
+  isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
+    return stage === PlayerPhase.PrepareStage;
+  }
+
+  whenRefresh(room: Room, owner: Player) {
+    room.syncGameCommonRules(owner.Id, user => {
+      const extraHold = user.getInvisibleMark(this.Name);
+      user.removeInvisibleMark(this.Name);
+      GameCommonRules.addAdditionalHoldCardNumber(user, -extraHold);
+    });
+  }
+
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage: CardUseStage) {
     return stage === CardUseStage.CardUsing;
   }
@@ -58,46 +69,6 @@ export class JiZhi extends TriggerSkill {
       }
     }
 
-    return true;
-  }
-}
-
-@ShadowSkill
-@CommonSkill({ name: JiZhi.Name, description: JiZhi.Description })
-export class JiZhiShadow extends TriggerSkill {
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: PhaseChangeStage) {
-    return stage === PhaseChangeStage.PhaseChanged && event.from === PlayerPhase.FinishStage;
-  }
-
-  public isAutoTrigger() {
-    return true;
-  }
-
-  public isFlaggedSkill() {
-    return true;
-  }
-
-  canUse() {
-    return true;
-  }
-
-  async onTrigger() {
-    return true;
-  }
-
-  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const { triggeredOnEvent } = event;
-    const phaseChangeEvent = Precondition.exists(
-      triggeredOnEvent,
-      'Unknown phase change event in jizhi',
-    ) as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-
-    phaseChangeEvent.fromPlayer &&
-      room.syncGameCommonRules(phaseChangeEvent.fromPlayer, user => {
-        const extraHold = user.getInvisibleMark(this.GeneralName);
-        user.removeInvisibleMark(this.GeneralName);
-        GameCommonRules.addAdditionalHoldCardNumber(user, -extraHold);
-      });
     return true;
   }
 }

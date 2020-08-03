@@ -19,7 +19,7 @@ export class HaoShi extends TriggerSkill {
     return stage === DrawCardStage.CardDrawing;
   }
 
-  isRefreshAt(stage: PlayerPhase) {
+  isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
     return stage === PlayerPhase.DrawCardStage;
   }
 

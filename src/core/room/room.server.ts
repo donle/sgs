@@ -613,7 +613,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       EventPacker.terminate(event);
       return event.responsedEvent;
     }
-    const player = this.getPlayerById(to);
 
     let responseEvent: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> | undefined;
     do {
@@ -648,7 +647,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       EventPacker.terminate(event);
       return event.responsedEvent;
     }
-    const player = this.getPlayerById(to);
 
     let responseEvent: ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent> | undefined;
     do {
@@ -799,7 +797,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   };
 
   public async useCard(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    if (!(await this.preUseCard(event))) {
+    if (!this.isCardOnProcessing(event.cardId) && !(await this.preUseCard(event))) {
       return;
     }
 

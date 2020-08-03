@@ -85,8 +85,8 @@ export class Sanguosha {
   public static getCharacterById(characterId: CharacterId) {
     this.tryToThrowUninitializedError();
 
-    const character = Sanguosha.characters.find(character => character.Id === characterId);
-    return Precondition.exists(character, `Unable to find character by id: ${characterId}`);
+    const character = Sanguosha.characters[characterId] as Character;
+    return Precondition.exists(character, `Unable to find the card by id: ${characterId}`);
   }
 
   public static getVirtualCardById<T extends Card>(cardId: VirtualCardId): VirtualCard<T> {
