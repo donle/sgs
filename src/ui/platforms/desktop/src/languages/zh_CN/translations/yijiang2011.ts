@@ -8,7 +8,7 @@ export const characterDictionary: Word[] = [
   { source: 'jiushi', target: '酒诗' },
   { source: '#jiushi', target: '酒诗' },
   { source: 'chengzhang', target: '成章' },
-  
+
   { source: 'yujin', target: '于禁' },
   { source: 'jieyue', target: '节鉞' },
 
@@ -50,8 +50,7 @@ export const characterDictionary: Word[] = [
 export const skillDescriptions: Word[] = [
   {
     source: 'luoying_description',
-    target:
-      '当其他角色的判定牌进入弃牌堆后，或其他角色的牌因弃置而进入弃牌堆后，你可以获得其中至少一张梅花牌。',
+    target: '当其他角色的判定牌进入弃牌堆后，或其他角色的牌因弃置而进入弃牌堆后，你可以获得其中至少一张梅花牌。',
   },
   {
     source: 'jiushi_description',
@@ -71,24 +70,20 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'jueqing_description',
-    target:
-      '<b>锁定技</b>，你即将造成的伤害均视为体力流失。',
+    target: '<b>锁定技</b>，你即将造成的伤害均视为体力流失。',
   },
   {
     source: 'shangshi_description',
-    target:
-      '当你的手牌数小于X时，你可以将手牌摸至X张（X为你已损失的体力值）。',
+    target: '当你的手牌数小于X时，你可以将手牌摸至X张（X为你已损失的体力值）。',
   },
 
   {
     source: 'sanyao_description',
-    target:
-      '出牌阶段限一次，你可以弃置至少一张牌，并选择等量名除你外体力最高的角色，你对这些角色各造成1点伤害。',
+    target: '出牌阶段限一次，你可以弃置至少一张牌，并选择等量名除你外体力最高的角色，你对这些角色各造成1点伤害。',
   },
   {
     source: 'zhiman_description',
-    target:
-      '你对其他角色造成伤害时，你可以防止此伤害，然后获得其区域内的一张牌。',
+    target: '你对其他角色造成伤害时，你可以防止此伤害，然后获得其区域内的一张牌。',
   },
 
   {
@@ -104,8 +99,7 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'wuyan_description',
-    target:
-      '<b>锁定技</b>，当你使用锦囊牌造成伤害时，或你受到锦囊牌造成的伤害时，防止此伤害。',
+    target: '<b>锁定技</b>，当你使用锦囊牌造成伤害时，或你受到锦囊牌造成的伤害时，防止此伤害。',
   },
   {
     source: 'jujian_description',
@@ -143,8 +137,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'zhichi_description',
-    target:
-      '<b>锁定技</b>，当你于回合外受到伤害后，本回合内【杀】和普通锦囊牌对你无效。',
+    target: '<b>锁定技</b>，当你于回合外受到伤害后，本回合内【杀】和普通锦囊牌对你无效。',
   },
 
   {
@@ -154,8 +147,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'jinjiu_description',
-    target:
-      '<b>锁定技</b>，你的【杀】均视为【酒】。',
+    target: '<b>锁定技</b>，你的【杀】均视为【酒】。',
   },
 ];
 
@@ -174,19 +166,16 @@ export const promptDescriptions: Word[] = [
   },
   {
     source: '{0}: do you want to prevent the damage to {1} to pick one card in areas?',
-    target:
-      '{0}：你可以防止对 {1} 造成的伤害，然后获得其区域里的一张牌',
+    target: '{0}：你可以防止对 {1} 造成的伤害，然后获得其区域里的一张牌',
   },
 
   {
     source: '{0} triggered skill {1}, prevent the damage of {2}',
-    target:
-      '{0} 触发了技能 {1} ，防止了 {2} 造成的伤害',
+    target: '{0} 触发了技能 {1} ，防止了 {2} 造成的伤害',
   },
   {
     source: '{0}: do you want to drop a card except basic card and choose a target',
-    target:
-      '{0}：你可以弃置一张非基本牌并选择一名其他角色，其选择摸牌、回血或复原',
+    target: '{0}：你可以弃置一张非基本牌并选择一名其他角色，其选择摸牌、回血或复原',
   },
   { source: 'jujian:draw', target: '摸两张牌' },
   { source: 'jujian:recover', target: '回复1点体力' },
