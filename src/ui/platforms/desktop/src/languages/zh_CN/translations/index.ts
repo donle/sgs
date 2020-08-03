@@ -6,6 +6,7 @@ import * as godCharactersDictionary from './god';
 import * as mountainCharactersDictionary from './mountain';
 import * as standardCharactersDictionary from './standard';
 import * as windCharactersDictionary from './wind';
+import * as yiJiangCharactersDictionary from './yijiang2011';
 
 export {
   cardsDictionary,
@@ -16,4 +17,5 @@ export {
   mountainCharactersDictionary,
   standardCharactersDictionary,
   windCharactersDictionary,
+  yiJiangCharactersDictionary,
 };
