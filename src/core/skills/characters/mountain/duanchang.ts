@@ -11,7 +11,7 @@ export class DuanChang extends TriggerSkill {
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>, stage?: AllStage): boolean {
-    return stage === PlayerDiedStage.PlayerDied;
+    return stage === PlayerDiedStage.PlayerDied && event.killedBy !== undefined;
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>): boolean {
