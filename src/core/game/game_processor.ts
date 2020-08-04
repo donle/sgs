@@ -820,7 +820,7 @@ export class GameProcessor {
     let processingStage: GameEventStage | undefined = this.stageProcessor.involve(identifier);
     while (true) {
       if (EventPacker.isTerminated(event)) {
-        this.stageProcessor.skipEventProcess(identifier);
+        this.stageProcessor.skipEventProcess();
         break;
       }
 
@@ -828,7 +828,7 @@ export class GameProcessor {
       await this.room.trigger<typeof event>(event, this.currentProcessingStage);
       this.currentProcessingStage = processingStage;
       if (EventPacker.isTerminated(event)) {
-        this.stageProcessor.skipEventProcess(identifier);
+        this.stageProcessor.skipEventProcess();
         break;
       }
 
@@ -838,7 +838,7 @@ export class GameProcessor {
         this.currentProcessingStage = processingStage;
       }
       if (EventPacker.isTerminated(event)) {
-        this.stageProcessor.skipEventProcess(identifier);
+        this.stageProcessor.skipEventProcess();
         break;
       }
 
@@ -848,13 +848,13 @@ export class GameProcessor {
         this.currentProcessingStage = processingStage;
       }
       if (EventPacker.isTerminated(event)) {
-        this.stageProcessor.skipEventProcess(identifier);
+        this.stageProcessor.skipEventProcess();
         break;
       }
 
-      const nextStage = this.stageProcessor.getNextStage();
-      if (this.stageProcessor.isInsideEvent(identifier, nextStage)) {
-        processingStage = this.stageProcessor.next();
+      const nextStage = this.stageProcessor.popStage();
+      if (nextStage) {
+        processingStage = nextStage;
       } else {
         break;
       }

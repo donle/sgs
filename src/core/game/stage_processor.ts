@@ -348,99 +348,55 @@ const gameEventStageList: {
 
 export class StageProcessor {
   private gameEventStageList: GameEventStage[][] = [];
-  private currentGameEventStage: GameEventStage | undefined;
-  private processingGameEvent = false;
 
   constructor(private logger: Logger) {}
-
-  private popStage() {
-    if (this.gameEventStageList.length === 0) {
-      return;
-    }
-
-    const stage = this.gameEventStageList[0][0];
-    this.gameEventStageList[0].shift();
-    if (this.gameEventStageList[0].length === 0) {
-      this.gameEventStageList.shift();
-    }
-
-    return stage;
-  }
 
   public involve(identifier: GameEventIdentifiers) {
     const stageList = Precondition.exists(gameEventStageList[identifier], `Unable to get game event of ${identifier}`);
 
     this.gameEventStageList.unshift(stageList.slice());
 
-    this.currentGameEventStage = this.gameEventStageList[0][0];
+    const currentGameEventStage = this.gameEventStageList[0][0];
     this.gameEventStageList[0].shift();
-    this.processingGameEvent = true;
 
-    return this.currentGameEventStage;
-  }
-
-  public next(): GameEventStage | undefined {
-    if (!this.gameEventStageList || !this.processingGameEvent) {
-      return;
-    }
-    if (this.gameEventStageList[0] && this.gameEventStageList[0][0] === this.currentGameEventStage) {
-      this.gameEventStageList[0].shift();
-    }
-
-    const nextStage = this.popStage();
-    if (nextStage === undefined) {
-      this.currentGameEventStage = undefined;
-      this.processingGameEvent = false;
-      return;
-    }
-
-    return nextStage;
+    return currentGameEventStage;
   }
 
   public getNextStage(): GameEventStage | undefined {
-    if (this.gameEventStageList.length === 0) {
+    Precondition.assert(
+      this.gameEventStageList.length > 0,
+      'stage_processor.ts >> getNextStage() >> error: getting in empty gameEventStageList',
+    );
+
+    if (this.gameEventStageList[0].length === 0) {
       return;
-    }
-    if (this.gameEventStageList[0] && this.gameEventStageList[0][0] === this.currentGameEventStage) {
-      this.gameEventStageList[0].shift();
     }
 
     return this.gameEventStageList[0][0];
   }
 
-  public clearProcess() {
-    this.gameEventStageList = [];
-    this.currentGameEventStage = undefined;
-    this.processingGameEvent = false;
-  }
-
-  public skipEventProcess(currentIdentifier) {
-    if (!this.isInsideEvent(currentIdentifier, this.gameEventStageList[0] && this.gameEventStageList[0][0])) {
+  public popStage() {
+    if (this.gameEventStageList.length === 0) {
       return;
     }
 
+    if (this.gameEventStageList[0].length === 0) {
+      this.gameEventStageList.shift();
+      return;
+    }
+
+    const stage = this.gameEventStageList[0][0];
+    this.gameEventStageList[0].shift();
+
+    return stage;
+  }
+
+  public clearProcess() {
+    this.gameEventStageList = [];
+  }
+
+  public skipEventProcess() {
     this.gameEventStageList.shift();
-    this.currentGameEventStage = undefined;
-  }
-
-  public terminateEventProcess() {
-    this.processingGameEvent = false;
-    this.currentGameEventStage = undefined;
-  }
-
-  public get CurrentGameEventStage() {
-    return this.currentGameEventStage;
-  }
-  public set CurrentGameEventStage(stage: GameEventStage | undefined) {
-    this.currentGameEventStage = stage;
-  }
-
-  public isCurrentGameEventDone() {
-    return !this.processingGameEvent;
-  }
-
-  public isProcessingGameEvent() {
-    return this.processingGameEvent;
   }
 
   public isInsideEvent(identifier: GameEventIdentifiers, stage?: GameEventStage) {
