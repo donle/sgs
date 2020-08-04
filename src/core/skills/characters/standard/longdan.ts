@@ -58,7 +58,7 @@ export class LongDan extends ViewAsSkill {
       let canUse = false;
       if (cardMatcher.Matcher.name?.includes('jink')) {
         canUse = Sanguosha.getCardById(pendingCardId).GeneralName === 'slash';
-      } else if (cardMatcher.Matcher.name?.includes('slash')) {
+      } else if (cardMatcher.Matcher.name?.includes('slash') || cardMatcher.Matcher.generalName?.includes('slash')) {
         canUse = Sanguosha.getCardById(pendingCardId).GeneralName === 'jink';
       } else if (cardMatcher.Matcher.name?.includes('peach')) {
         canUse = Sanguosha.getCardById(pendingCardId).GeneralName === 'alcohol';

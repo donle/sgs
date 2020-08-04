@@ -15,6 +15,7 @@ import { GameCommonRules } from 'core/game/game_rules';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { System } from 'core/shares/libs/system';
 import { SkillType } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -222,6 +223,9 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.AskForChoosingCardEvent:
         await this.onHandleAskForChoosingCardEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.AskForChoosingCardWithConditionsEvent:
+        await this.onHandleAskForChoosingCardWithConditionsEvent(e as any, content);
         break;
       case GameEventIdentifiers.AimEvent:
         await this.onHandleAimEvent(e as any, content);
@@ -970,6 +974,129 @@ export class GameClientProcessor {
         title={content.customMessage}
       />,
     );
+  }
+
+  private onHandleAskForChoosingCardWithConditionsEvent<
+    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent
+  >(type: T, content: ServerEventFinder<T>) {
+    const selectedCards: CardId[] = [];
+    const selectedCardsIndex: number[] = [];
+
+    const matcher = content.cardFilter !== undefined && System.AskForChoosingCardEventFilters[content.cardFilter];
+    const isCardDisabled = matcher
+      ? (card: Card) => {
+          if (content.cardIds) {
+            if (typeof content.cardIds === 'number') {
+              return true;
+            } else {
+              return !matcher(content.cardIds, selectedCards, card.Id);
+            }
+          } else if (content.customCardFields) {
+            const cards = Object.values(content.customCardFields).reduce<CardId[]>((allCards, currentSection) => {
+              if (currentSection instanceof Array) {
+                allCards.push(...currentSection);
+              }
+              return allCards;
+            }, []);
+            return !matcher(cards, selectedCards, card.Id);
+          }
+
+          return true;
+        }
+      : undefined;
+
+    const onSelectedCard = (card: Card | number) => {
+      if (card instanceof Card) {
+        const index = selectedCards.findIndex(cardId => cardId === card.Id);
+        if (index >= 0) {
+          selectedCards.splice(index, 1);
+        } else {
+          selectedCards.push(card.Id);
+        }
+      } else {
+        const index = selectedCardsIndex.findIndex(cardIndex => cardIndex === card);
+        if (index >= 0) {
+          selectedCardsIndex.splice(index, 1);
+        } else {
+          selectedCardsIndex.push(card);
+        }
+      }
+
+      if (content.amount === undefined) {
+        Precondition.assert(matcher !== undefined, 'no valid card filter');
+        const cards = content.customCardFields
+          ? Object.values(content.customCardFields)
+              .reduce<CardId[]>(
+                (allCards, currentSection) => {
+                  if (currentSection instanceof Array) {
+                    allCards.push(...currentSection);
+                  }
+                  return allCards;
+                },
+                content.cardIds instanceof Array ? content.cardIds : [],
+              )
+              .filter(cardId => !selectedCards.includes(cardId))
+          : [];
+        for (const card of cards) {
+          if (matcher && matcher(cards, selectedCards, card)) {
+            this.presenter.disableActionButton('confirm');
+            return;
+          }
+        }
+        this.presenter.enableActionButton('confirm');
+      } else if (content.amount instanceof Array) {
+        const selectedLength = selectedCards.length + selectedCardsIndex.length;
+        if (selectedLength >= content.amount[0] && selectedLength <= content.amount[1]) {
+          this.presenter.enableActionButton('confirm');
+        } else {
+          this.presenter.disableActionButton('confirm');
+        }
+      } else {
+        if (selectedCards.length + selectedCardsIndex.length === content.amount) {
+          this.presenter.enableActionButton('confirm');
+        } else {
+          this.presenter.disableActionButton('confirm');
+        }
+      }
+    };
+
+    this.presenter.createDialog(
+      <CardSelectorDialog
+        options={content.cardIds || content.customCardFields!}
+        onClick={onSelectedCard}
+        translator={this.translator}
+        isCardDisabled={isCardDisabled}
+        imageLoader={this.imageLoader}
+        title={content.customMessage}
+      />,
+    );
+
+    if (!EventPacker.isUncancellabelEvent(content)) {
+      this.presenter.enableActionButton('cancel');
+      this.presenter.defineCancelButtonActions(() => {
+        this.presenter.closeDialog();
+
+        const event: ClientEventFinder<T> = {
+          fromId: content.toId,
+        };
+        this.store.room.broadcast(type, event);
+        this.endAction();
+      });
+    } else {
+      this.presenter.disableActionButton('cancel');
+    }
+
+    this.presenter.defineConfirmButtonActions(() => {
+      this.presenter.closeDialog();
+
+      const event: ClientEventFinder<T> = {
+        fromId: content.toId,
+        selectedCards,
+        selectedCardsIndex,
+      };
+      this.store.room.broadcast(type, event);
+      this.endAction();
+    });
   }
 
   private onHandleAskForChoosingCardEvent<T extends GameEventIdentifiers.AskForChoosingCardEvent>(

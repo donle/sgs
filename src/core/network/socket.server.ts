@@ -107,8 +107,8 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
 
         if (!room.isPlaying()) {
           room.removePlayer(socket.id);
-        } else if (this.room?.AwaitingResponseEvent) {
-          const { identifier: awaitIdentifier, content } = this.room?.AwaitingResponseEvent;
+        } else if (this.room?.AwaitingResponseEvent[socket.id]) {
+          const { identifier: awaitIdentifier, content } = this.room?.AwaitingResponseEvent[socket.id]!;
           if ((content as any).toId !== socket.id) {
             return;
           }
@@ -118,6 +118,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
             this.asyncResponseResolver[awaitIdentifier][socket.id]!(result);
             delete this.asyncResponseResolver[awaitIdentifier][socket.id];
           }
+          this.room.unsetAwaitingResponseEvent(socket.id);
         }
       });
     });
@@ -215,10 +216,11 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         if (asyncResolver) {
           asyncResolver(result);
           delete this.asyncResponseResolver[type][to];
+          this.room?.unsetAwaitingResponseEvent(to);
         }
       }, 100);
     } else {
-      this.room?.setAwaitingResponseEvent(type, content);
+      this.room?.setAwaitingResponseEvent(type, content, to);
       const clientSocket = Precondition.exists(
         this.clientIds.find(clientId => clientId === to),
         `Unable to find player: ${to} in connected socket clients`,
@@ -263,7 +265,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         identifierResolvers[playerId] = resolve;
       }
     }).then(response => {
-      this.room?.unsetAwaitingResponseEvent();
+      this.room?.unsetAwaitingResponseEvent(playerId);
       return response;
     });
   }

@@ -208,8 +208,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     const canTriggerSkills: TriggerSkill[] = [];
     if (skillFrom === 'character') {
       const hookedSkills = this.hookedSkills.reduce<TriggerSkill[]>((skills, { player: skillOwner, skill }) => {
-        if (skillOwner.Id === player.Id) {
-          skills.push(skill as TriggerSkill);
+        if (skillOwner.Id === player.Id && skill instanceof TriggerSkill) {
+          skills.push(skill);
         }
         return skills;
       }, []);

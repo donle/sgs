@@ -456,6 +456,21 @@ export class GameProcessor {
 
     while (this.playerStages.length > 0) {
       const nextPhase = this.stageProcessor.getInsidePlayerPhase(this.playerStages[0]);
+      for (const player of this.room.AlivePlayers) {
+        for (const skill of player.getSkills()) {
+          if (nextPhase === PlayerPhase.PrepareStage) {
+            player.resetCardUseHistory();
+            player.hasDrunk() && this.room.clearHeaded(player.Id);
+          } else {
+            player.resetCardUseHistory('slash');
+          }
+
+          if (skill.isRefreshAt(this.room, player, nextPhase)) {
+            skill.whenRefresh(this.room, player);
+            player.resetSkillUseHistory(skill.Name);
+          }
+        }
+      }
 
       const phaseChangeEvent = EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseChangeEvent, {
         from: this.currentPlayerPhase,
@@ -463,67 +478,50 @@ export class GameProcessor {
         fromPlayer: lastPlayer?.Id,
         toPlayer: player.Id,
       });
-      if (nextPhase !== this.currentPlayerPhase) {
-        await this.onHandleIncomingEvent(GameEventIdentifiers.PhaseChangeEvent, phaseChangeEvent, async stage => {
-          if (this.toEndPhase === nextPhase) {
-            EventPacker.terminate(phaseChangeEvent);
-            this.toEndPhase = undefined;
-            return false;
-          }
-
-          if (stage === PhaseChangeStage.BeforePhaseChange) {
-            for (const player of this.room.AlivePlayers) {
-              for (const skill of player.getSkills()) {
-                if (this.currentPlayerPhase === PlayerPhase.PrepareStage) {
-                  player.resetCardUseHistory();
-                  player.hasDrunk() && this.room.clearHeaded(player.Id);
-                } else {
-                  player.resetCardUseHistory('slash');
-                }
-
-                if (skill.isRefreshAt(this.room, player, nextPhase)) {
-                  skill.whenRefresh(this.room, player);
-                  player.resetSkillUseHistory(skill.Name);
-                }
-              }
-            }
-          } else if (stage === PhaseChangeStage.PhaseChanged) {
-            this.currentPlayerPhase = nextPhase;
-            if (this.currentPlayerPhase === PlayerPhase.PrepareStage) {
-              this.room.Analytics.turnTo(this.CurrentPlayer.Id);
-            }
-          }
-
-          return true;
-        });
-        if (EventPacker.isTerminated(phaseChangeEvent)) {
-          continue;
+      await this.onHandleIncomingEvent(GameEventIdentifiers.PhaseChangeEvent, phaseChangeEvent, async stage => {
+        if (this.toEndPhase === nextPhase) {
+          EventPacker.terminate(phaseChangeEvent);
+          this.toEndPhase = undefined;
+          return false;
         }
 
-        do {
-          await this.onHandleIncomingEvent(
-            GameEventIdentifiers.PhaseStageChangeEvent,
-            EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseStageChangeEvent, {
-              toStage: this.currentPlayerStage!,
-              playerId: this.CurrentPlayer.Id,
-            }),
-            async stage => {
-              if (
-                stage === PhaseStageChangeStage.StageChanged &&
-                this.processingPhaseStages.includes(this.currentPlayerStage!)
-              ) {
-                await this.onPhase(this.currentPlayerPhase!);
-              }
-              return true;
-            },
-          );
+        if (stage === PhaseChangeStage.PhaseChanged) {
+          this.currentPlayerPhase = nextPhase;
+          if (this.currentPlayerPhase === PlayerPhase.PrepareStage) {
+            this.room.Analytics.turnTo(this.CurrentPlayer.Id);
+          }
+        }
 
-          this.currentPlayerStage = this.playerStages.shift();
-        } while (
-          this.currentPlayerStage !== undefined &&
-          this.stageProcessor.isInsidePlayerPhase(this.currentPlayerPhase!, this.currentPlayerStage)
-        );
+        return true;
+      });
+
+      if (EventPacker.isTerminated(phaseChangeEvent)) {
+        continue;
       }
+
+      do {
+        await this.onHandleIncomingEvent(
+          GameEventIdentifiers.PhaseStageChangeEvent,
+          EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseStageChangeEvent, {
+            toStage: this.currentPlayerStage!,
+            playerId: this.CurrentPlayer.Id,
+          }),
+          async stage => {
+            if (
+              stage === PhaseStageChangeStage.StageChanged &&
+              this.processingPhaseStages.includes(this.currentPlayerStage!)
+            ) {
+              await this.onPhase(this.currentPlayerPhase!);
+            }
+            return true;
+          },
+        );
+
+        this.currentPlayerStage = this.playerStages.shift();
+      } while (
+        this.currentPlayerStage !== undefined &&
+        this.stageProcessor.isInsidePlayerPhase(this.currentPlayerPhase!, this.currentPlayerStage)
+      );
 
       lastPlayer = this.currentPhasePlayer;
     }
