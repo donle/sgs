@@ -152,3 +152,11 @@ export const skillDescriptions: Word[] = [
       '<b>锁定技</b>，你的【杀】均视为【酒】。',
   },
 ];
+
+export const promptDescriptions: Word[] = [
+  {
+    source: '{0}: do you want to prevent the damage to {1}, then obtain one of cards in his/her area?',
+    target:
+      '{0}：你可以防止对 {1} 造成的伤害，然后获得其区域里的一张牌',
+  },
+];

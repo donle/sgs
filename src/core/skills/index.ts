@@ -200,4 +200,7 @@ export { ZhanHuo } from './characters/god/zhanhuo';
 export { JueJing, JueJingDying } from './characters/god/juejing';
 export { LongHun, LongHunEffect, LongHunBlackEffect } from './characters/god/longhun';
 
+export { SanYao } from './characters/yijiang2011/sanyao';
+export { ZhiMan } from './characters/yijiang2011/zhiman';
+
 export { Cheat } from './system/cheat';
