@@ -1,6 +1,7 @@
 import { Character } from '../character';
 import { CaoZhi } from './caozhi';
 import { ChenGong } from './chengong';
+import { FaZheng } from './fazheng';
 import { MaSu } from './masu';
 import { XuSheng } from './xusheng';
 import { XuShu } from './xushu';
@@ -8,6 +9,7 @@ import { XuShu } from './xushu';
 export const YiJiang2011Package: (index: number) => Character[] = index => [
   new CaoZhi(index++),
 
+  new FaZheng(index++),
   new MaSu(index++),
   new XuShu(index++),
   
