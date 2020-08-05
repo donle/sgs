@@ -20,7 +20,7 @@ export class ClientPlayer extends Player {
   }
 
   setFlag<T>(name: string, value: T, invisible?: boolean): T {
-    if (!invisible) {
+    if (!invisible && !this.visiblePlayerTags.includes(name)) {
       this.visiblePlayerTags.push(name);
     }
 

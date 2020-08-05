@@ -54,7 +54,6 @@ export class FireAttackSkill extends ActiveSkill {
     }
 
     const askForDisplayCardEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForCardDisplayEvent>({
-      cardMatcher: new CardMatcher({}).toSocketPassenger(),
       cardAmount: 1,
       toId,
       triggeredBySkills: [this.Name],

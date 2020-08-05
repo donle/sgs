@@ -1,6 +1,6 @@
 import { CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { CardId, CardSuit } from 'core/cards/libs/card_props';
+import { CardId } from 'core/cards/libs/card_props';
 import { Slash } from 'core/cards/standard/slash';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE } from 'core/game/game_props';
@@ -32,11 +32,11 @@ export class DuanLiang extends ViewAsSkill {
     containerCard?: CardId,
     cardMatcher?: CardMatcher,
   ): boolean {
-    const isAvailable = cardMatcher
-      ? cardMatcher.match(new CardMatcher({ type: [CardType.Basic], suit: [CardSuit.Spade, CardSuit.Club] })) ||
-        cardMatcher.match(new CardMatcher({ type: [CardType.Equip], suit: [CardSuit.Spade, CardSuit.Club] }))
-      : true;
     const card = Sanguosha.getCardById(pendingCardId);
+    const isAvailable = cardMatcher
+      ? cardMatcher.match(new CardMatcher({ type: [CardType.Basic] })) ||
+        cardMatcher.match(new CardMatcher({ type: [CardType.Equip] }))
+      : card.is(CardType.Basic) || card.is(CardType.Equip);
     return isAvailable && card.isBlack();
   }
 

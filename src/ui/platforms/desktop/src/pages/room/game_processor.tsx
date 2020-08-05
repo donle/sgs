@@ -451,7 +451,7 @@ export class GameClientProcessor {
       this.presenter,
       this.translator,
       content,
-      new CardMatcher(cardMatcher),
+      cardMatcher && new CardMatcher(cardMatcher),
     );
     const selectedCards = await action.onSelectCard([PlayerCardsArea.HandArea], cardAmount);
 
@@ -480,7 +480,7 @@ export class GameClientProcessor {
       this.presenter,
       this.translator,
       content,
-      new CardMatcher(cardMatcher),
+      cardMatcher && new CardMatcher(cardMatcher),
     );
     const selectedCards = await action.onSelectCard(fromArea, cardAmount || cardAmountRange!);
 

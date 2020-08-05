@@ -88,10 +88,6 @@ export class LongHun extends ViewAsSkill {
     }
   }
 
-  public availableCardAreas() {
-    return [PlayerCardsArea.HandArea];
-  }
-
   public viewAs(selectedCards: CardId[]): VirtualCard {
     const suit = Sanguosha.getCardById(selectedCards[0]).Suit;
     let cardName: string | undefined;
@@ -153,7 +149,7 @@ export class LongHunEffect extends TriggerSkill {
     const identifier = EventPacker.getIdentifier(content);
     if (identifier === GameEventIdentifiers.DamageEvent) {
       const event = content as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-      if (event.fromId !== owner.Id || event.cardIds === undefined) {
+      if (event.fromId !== owner.Id || event.cardIds === undefined || event.isFromChainedDamage) {
         return false;
       }
       const card = Sanguosha.getCardById<VirtualCard>(event.cardIds[0]);

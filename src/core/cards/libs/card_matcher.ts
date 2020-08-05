@@ -50,41 +50,54 @@ export class CardMatcher {
 
     const { suit, cardNumber, name, generalName, type, cards, reverseMatch } = matcher;
     let matched = true;
+    let hasMatchedCondition = false;
 
     if (card instanceof Card) {
       if (suit) {
+        hasMatchedCondition = true;
         matched = matched && suit.includes(card.Suit);
       }
       if (cardNumber) {
+        hasMatchedCondition = true;
         matched = matched && cardNumber.includes(card.CardNumber);
       }
       if (name) {
+        hasMatchedCondition = true;
         matched = matched && name.includes(card.Name);
       }
       if (generalName) {
+        hasMatchedCondition = true;
         matched = matched && generalName.includes(card.GeneralName);
       }
       if (type) {
+        hasMatchedCondition = true;
         matched = matched && type.find(subType => card.is(subType)) !== undefined;
       }
       if (cards) {
+        hasMatchedCondition = true;
         matched = matched && cards.includes(card.Id);
       }
     } else {
-      matcher = card.toSocketPassenger();
-      if (suit && matcher.suit) {
-        matched = matched && matcher.suit.length > 0 && matcher.suit.every(cardSuit => suit.includes(cardSuit));
+      const cardMatcher = card.toSocketPassenger();
+      if (suit && cardMatcher.suit) {
+        hasMatchedCondition = true;
+        matched = matched && cardMatcher.suit.length > 0 && cardMatcher.suit.every(cardSuit => suit.includes(cardSuit));
       }
-      if (cardNumber && matcher.cardNumber) {
+      if (cardNumber && cardMatcher.cardNumber) {
+        hasMatchedCondition = true;
         matched =
-          matched && matcher.cardNumber.length > 0 && matcher.cardNumber.every(cardNum => cardNumber.includes(cardNum));
+          matched &&
+          cardMatcher.cardNumber.length > 0 &&
+          cardMatcher.cardNumber.every(cardNum => cardNumber.includes(cardNum));
       }
       if (name) {
-        if (matcher.name) {
-          matched = matched && matcher.name.length > 0 && Algorithm.intersection(name, matcher.name).length > 0;
+        if (cardMatcher.name) {
+          hasMatchedCondition = true;
+          matched = matched && cardMatcher.name.length > 0 && Algorithm.intersection(name, cardMatcher.name).length > 0;
         }
-        if (matcher.generalName && matcher.generalName.length > 0) {
-          const allNames = matcher.generalName.reduce<string[]>((target, currentGeneralName) => {
+        if (cardMatcher.generalName && cardMatcher.generalName.length > 0) {
+          hasMatchedCondition = true;
+          const allNames = cardMatcher.generalName.reduce<string[]>((target, currentGeneralName) => {
             if (this.generalNameMaps[currentGeneralName]) {
               target.push(...this.generalNameMaps[currentGeneralName]);
             }
@@ -95,13 +108,15 @@ export class CardMatcher {
         }
       }
       if (generalName) {
-        if (matcher.generalName) {
+        if (cardMatcher.generalName) {
+          hasMatchedCondition = true;
           matched =
             matched &&
-            matcher.generalName.length > 0 &&
-            Algorithm.intersection(generalName, matcher.generalName).length > 0;
+            cardMatcher.generalName.length > 0 &&
+            Algorithm.intersection(generalName, cardMatcher.generalName).length > 0;
         }
-        if (matcher.name) {
+        if (cardMatcher.name) {
+          hasMatchedCondition = true;
           const allNames = generalName.reduce<string[]>((target, currentGeneralName) => {
             if (this.generalNameMaps[currentGeneralName]) {
               target.push(...this.generalNameMaps[currentGeneralName]);
@@ -109,17 +124,21 @@ export class CardMatcher {
             return target;
           }, []);
 
-          matched = matched && Algorithm.intersection(allNames, matcher.name).length > 0;
+          matched = matched && Algorithm.intersection(allNames, cardMatcher.name).length > 0;
         }
       }
-      if (type && matcher.type) {
-        matched = matched && matcher.type.length > 0 && matcher.type.every(cardType => type.includes(cardType));
+      if (type && cardMatcher.type) {
+        hasMatchedCondition = true;
+        matched = matched && cardMatcher.type.length > 0 && cardMatcher.type.every(cardType => type.includes(cardType));
       }
-      if (cards && matcher.cards) {
-        matched = matched && matcher.cards.length > 0 && matcher.cards.every(innerCard => cards.includes(innerCard));
+      if (cards && cardMatcher.cards) {
+        hasMatchedCondition = true;
+        matched =
+          matched && cardMatcher.cards.length > 0 && cardMatcher.cards.every(innerCard => cards.includes(innerCard));
       }
     }
 
+    matched = hasMatchedCondition && matched;
     return reverseMatch ? !matched : matched;
   }
 

@@ -51,7 +51,6 @@ export class YiJue extends ActiveSkill {
     await room.dropCards(CardMoveReason.SelfDrop, cardIds!, fromId, fromId, this.Name);
 
     const askForDisplayCardEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForCardDisplayEvent>({
-      cardMatcher: new CardMatcher({}).toSocketPassenger(),
       cardAmount: 1,
       toId: to.Id,
       triggeredBySkills: [this.Name],

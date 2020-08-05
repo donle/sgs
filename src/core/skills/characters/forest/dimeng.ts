@@ -92,6 +92,7 @@ export class DiMeng extends ActiveSkill {
         toArea: CardMoveArea.ProcessingArea,
         proposer: fromId,
         movedByReason: this.Name,
+        engagedPlayerIds: [firstId],
       },
       {
         moveReason: CardMoveReason.PassiveMove,
@@ -100,6 +101,7 @@ export class DiMeng extends ActiveSkill {
         toArea: CardMoveArea.ProcessingArea,
         proposer: fromId,
         movedByReason: this.Name,
+        engagedPlayerIds: [secondId],
       },
     ]);
 

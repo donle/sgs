@@ -80,7 +80,6 @@ export class JiLve extends ActiveSkill {
       const askForCard: ServerEventFinder<GameEventIdentifiers.AskForCardEvent> = {
         cardAmountRange: [1, from.getPlayerCards().length],
         toId: from.Id,
-        cardMatcher: new CardMatcher({}).toSocketPassenger(),
         reason: this.Name,
         conversation: 'please choose your zhiheng cards',
         fromArea: [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],

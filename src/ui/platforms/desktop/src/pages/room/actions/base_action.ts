@@ -146,7 +146,10 @@ export abstract class BaseAction {
       const isAvailableInRoom =
         this.selectedCardToPlay === undefined
           ? true
-          : this.store.room.isAvailableTarget(this.selectedCardToPlay, this.playerId, player.Id);
+          : skill.nominateForwardTarget([...this.selectedTargets, player.Id])?.includes(player.Id)
+          ? this.store.room.isAvailableTarget(this.selectedCardToPlay, this.playerId, player.Id)
+          : true;
+
       return (
         skill.isAvailableTarget(
           this.playerId,
