@@ -46,6 +46,7 @@ export class DuelSkill extends ActiveSkill {
     ];
 
     let turn = 0;
+    let validResponse: boolean;
     while (true) {
       const response = await room.askForCardResponse(
         {
@@ -68,22 +69,29 @@ export class DuelSkill extends ActiveSkill {
           cardId: response.cardId,
           responseToEvent: event,
         };
-        await room.responseCard(responseEvent);
+        validResponse = await room.responseCard(responseEvent);
 
-        turn = (turn + 1) % targets.length;
-        continue;
+        if (validResponse) {
+          turn = (turn + 1) % targets.length;
+        } else {
+          break;
+        }
       } else {
-        await room.damage({
-          fromId: targets[(turn + 1) % targets.length],
-          cardIds: [event.cardId],
-          damage: 1,
-          damageType: DamageType.Normal,
-          toId: targets[turn],
-          triggeredBySkills: [this.Name],
-        });
+        validResponse = false;
         break;
       }
     }
+
+    !validResponse &&
+      (await room.damage({
+        fromId: targets[(turn + 1) % targets.length],
+        cardIds: [event.cardId],
+        damage: 1,
+        damageType: DamageType.Normal,
+        toId: targets[turn],
+        triggeredBySkills: [this.Name],
+      }));
+
     return true;
   }
 }
