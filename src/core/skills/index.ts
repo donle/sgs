@@ -214,5 +214,6 @@ export { MingCe } from './characters/yijiang2011/mingce';
 export { ZhiChi, ZhiChiShadow } from './characters/yijiang2011/zhichi';
 
 export { EnYuan } from './characters/yijiang2011/enyuan';
+export { XuanHuo } from './characters/yijiang2011/xuanhuo';
 
 export { Cheat } from './system/cheat';
