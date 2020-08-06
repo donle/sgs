@@ -108,11 +108,12 @@ export class XuanHuo extends TriggerSkill {
 
   private async doSlashFail(room: Room, fromId: PlayerId, toId: PlayerId) {
     const to = room.getPlayerById(toId);
-    const ownedCards = to.getPlayerCards;
+    const ownedCards = to.getPlayerCards();
 
     if (ownedCards.length <= 0) {
       return;
     }
+
     const cardsChooseEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardEvent> = {
       amount: Math.min(ownedCards.length, 2),
       customCardFields: {
@@ -129,17 +130,19 @@ export class XuanHuo extends TriggerSkill {
       fromId,
     );
 
-    const { selectedCards } = await room.onReceivingAsyncResponseFrom(
+    const { selectedCards, selectedCardsIndex } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingCardEvent,
       fromId,
     );
 
     await room.moveCards({
       fromId: toId,
-      movingCards: selectedCards!.map(card => ({ card, fromArea: to.cardFrom(card) })),
+      movingCards: selectedCards!.map(card => ({ card, fromArea: to.cardFrom(card) })).concat(selectedCardsIndex!.map(cardIndex => {
+        return { card: to.getCardIds(PlayerCardsArea.HandArea)[cardIndex], fromArea: PlayerCardsArea.HandArea}
+      })),
       toId: fromId,
       toArea: CardMoveArea.HandArea,
-      moveReason: CardMoveReason.PassiveMove,
+      moveReason: CardMoveReason.ActivePrey,
       movedByReason: this.Name,
       proposer: fromId,
       engagedPlayerIds: [fromId],
