@@ -110,6 +110,7 @@ export class XuanHuo extends TriggerSkill {
     if (ownedCards.length <= 0) {
       return;
     }
+
     const cardsChooseEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardEvent> = {
       amount: Math.min(ownedCards.length, 2),
       customCardFields: {
