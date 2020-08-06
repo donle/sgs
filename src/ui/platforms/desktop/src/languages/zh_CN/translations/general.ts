@@ -5,6 +5,7 @@ export const markDictionary: Word[] = [
   { source: 'ren', target: '忍' },
   { source: 'lie', target: '烈' },
   { source: 'nu', target: '暴怒' },
+  { source: 'ying', target: '营' },
 ];
 
 export const generalDictionary: Word[] = [

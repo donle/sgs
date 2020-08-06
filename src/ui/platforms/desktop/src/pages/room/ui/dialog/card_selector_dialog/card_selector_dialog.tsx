@@ -53,6 +53,12 @@ const CardSlot = (props: {
 
 const CardSelector = (props: CardSelectorProps) => {
   const { options, onClick, translator, isCardDisabled, imageLoader, isCharacterCard } = props;
+  const [update, setUpdate] = React.useState(false);
+
+  const onClickCardSlot = (card: Card | number, fromArea: PlayerCardsArea) => {
+    onClick && onClick(card, fromArea);
+    setUpdate(!update);
+  };
 
   const optionCardsLine: JSX.Element[] = [];
   if (options instanceof Array || typeof options === 'number') {
@@ -65,7 +71,7 @@ const CardSelector = (props: CardSelectorProps) => {
             translator={translator}
             index={i}
             key={i}
-            onClick={onClick}
+            onClick={onClickCardSlot}
             isCardDisabled={isCardDisabled}
           />,
         );
@@ -87,7 +93,7 @@ const CardSelector = (props: CardSelectorProps) => {
               translator={translator}
               imageLoader={imageLoader}
               card={Sanguosha.getCardById(cardId)}
-              onClick={onClick}
+              onClick={onClickCardSlot}
               isCardDisabled={isCardDisabled}
             />
           ),
@@ -117,7 +123,7 @@ const CardSelector = (props: CardSelectorProps) => {
               imageLoader={imageLoader}
               index={i}
               key={i}
-              onClick={onClick}
+              onClick={onClickCardSlot}
               isCardDisabled={isCardDisabled}
             />,
           );
@@ -131,7 +137,7 @@ const CardSelector = (props: CardSelectorProps) => {
               translator={translator}
               imageLoader={imageLoader}
               card={Sanguosha.getCardById(cardId)}
-              onClick={onClick}
+              onClick={onClickCardSlot}
               isCardDisabled={isCardDisabled}
             />,
           );

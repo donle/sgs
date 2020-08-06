@@ -55,13 +55,24 @@ export const CharacterHp = (props: { character: Character; className?: string })
 
   const getMagatama = () => {
     const magatamas: JSX.Element[] = [];
-    for (let i = 0; i < character.MaxHp; i++) {
+    for (let i = 0; i < character.Hp; i++) {
       magatamas.push(
         <CharaterMagatama
           key={i}
           className={styles.characterMagatama}
           isLord={character.isLord()}
           nationality={character.Nationality}
+        />,
+      );
+    }
+    for (let i = 0; i < character.MaxHp - character.Hp; i++) {
+      magatamas.push(
+        <CharaterMagatama
+          key={i}
+          className={styles.characterMagatama}
+          isLord={character.isLord()}
+          nationality={character.Nationality}
+          emptyHp={true}
         />,
       );
     }

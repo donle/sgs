@@ -301,7 +301,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                   triggeredOnEvent: content,
                 };
                 if (
-                  skill.isAutoTrigger(this, content) ||
+                  skill.isAutoTrigger(this, player, content) ||
                   skill.SkillType === SkillType.Compulsory ||
                   skill.SkillType === SkillType.Awaken
                 ) {
@@ -345,7 +345,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               while (awaitedSkills.length > 0) {
                 const uncancellableSkills = awaitedSkills.filter(
                   skill =>
-                    skill.isAutoTrigger(this, content) ||
+                    skill.isAutoTrigger(this, player, content) ||
                     skill.SkillType === SkillType.Compulsory ||
                     skill.SkillType === SkillType.Awaken,
                 );

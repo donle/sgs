@@ -41,7 +41,7 @@ import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { Flavor } from 'core/shares/types/host_config';
-import { GlobalFilterSkill } from 'core/skills/skill';
+import { GlobalFilterSkill, RulesBreakerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ServerRoom } from '../room/room.server';
 import { Sanguosha } from './engine';
@@ -135,7 +135,10 @@ export class GameProcessor {
           toId: lordInfo.Id,
           characterId: lordCharacter.Id,
           maxHp: additionalPropertyValue ? lordCharacter.MaxHp + additionalPropertyValue : undefined,
-          hp: additionalPropertyValue ? lordCharacter.Hp + additionalPropertyValue : undefined,
+          hp:
+            additionalPropertyValue || lordCharacter.Hp !== lordCharacter.MaxHp
+              ? lordCharacter.Hp + additionalPropertyValue
+              : undefined,
           nationality:
             lordCharacter.Nationality === CharacterNationality.God
               ? Functional.getPlayerNationalityEnum(
@@ -343,6 +346,7 @@ export class GameProcessor {
         return;
       case PlayerPhase.DrawCardStage:
         this.logger.debug('enter draw cards phase');
+
         await this.room.drawCards(2, this.CurrentPlayer.Id);
         return;
       case PlayerPhase.PlayCardStage:

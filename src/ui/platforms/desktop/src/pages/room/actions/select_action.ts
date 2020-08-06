@@ -35,6 +35,10 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
       }
 
       const selectedPlayers: PlayerId[] = scopedTargets.length === 1 ? scopedTargets.slice() : [];
+      for (const player of selectedPlayers) {
+        this.presenter.selectPlayer(this.store.room.getPlayerById(player));
+      }
+
       this.presenter.setupPlayersSelectionMatcher(
         (player: Player) =>
           (scopedTargets.includes(player.Id) && selectedPlayers.length < requiredAmount) ||

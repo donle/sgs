@@ -199,5 +199,7 @@ export { CuiKe } from './characters/god/cuike';
 export { ZhanHuo } from './characters/god/zhanhuo';
 export { JueJing, JueJingDying } from './characters/god/juejing';
 export { LongHun, LongHunEffect, LongHunBlackEffect } from './characters/god/longhun';
+export { PoXi } from './characters/god/poxi';
+export { JieYing, JieYingShadow, JieYingDraw } from './characters/god/jieying';
 
 export { Cheat } from './system/cheat';

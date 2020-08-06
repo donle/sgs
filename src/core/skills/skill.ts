@@ -158,7 +158,7 @@ export abstract class ResponsiveSkill extends Skill {
 
 export abstract class TriggerSkill extends Skill {
   public abstract isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean;
-  public isAutoTrigger(room: Room, event?: ServerEventFinder<GameEventIdentifiers>): boolean {
+  public isAutoTrigger(room: Room, owner: Player, event?: ServerEventFinder<GameEventIdentifiers>): boolean {
     return false;
   }
 
@@ -431,7 +431,9 @@ export abstract class RulesBreakerSkill extends Skill {
   public breakCardUsableTimesTo(cardId: CardId | CardMatcher, room: Room, owner: Player, target: Player): number {
     return 0;
   }
-
+  public breakDrawCardNumber(room: Room, owner: Player): number {
+    return 0;
+  }
   public breakCardUsableTimes(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
     return 0;
   }

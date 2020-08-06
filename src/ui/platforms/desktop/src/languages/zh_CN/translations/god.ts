@@ -50,6 +50,10 @@ export const characterDictionary: Word[] = [
   { source: 'junlve', target: '军略' },
   { source: 'cuike', target: '摧克' },
   { source: 'zhanhuo', target: '绽火' },
+
+  { source: 'god_ganning', target: '神甘宁' },
+  { source: 'poxi', target: '魄袭' },
+  { source: 'jieying', target: '结营' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -161,4 +165,18 @@ export const skillDescriptions: Word[] = [
     target:
       '<b>限定技</b>，出牌阶段，你可以移去全部“军略”标记，令至多等量的已横置角色弃置所有装备区里的牌，然后对其中一名角色造成1点火焰伤害。',
   },
+  {
+    source: 'poxi_description',
+    target:
+      '出牌阶段限一次，你可以观看一名其他角色的手牌，然后你可以弃置你与其共计四张花色各不相同的手牌。若你以此法弃置你的牌数为：0，你减1点体力上限；1，你结束此阶段且本回合手牌上限-1；3，你回复1点体力；4，你摸四张牌。',
+  },
+  {
+    source: 'jieying_description',
+    target:
+      '回合开始时，若场上没有“营”，你获得一枚“营”标记；结束阶段开始时，你可以将“营”移至其他角色；你令有“营”的角色于其摸牌阶段多摸一张牌、使用【杀】的次数上限+1、手牌上限+1；有“营”的其他角色的结束阶段开始时，你移去其“营”，然后获得其所有手牌。',
+  },
+];
+
+export const conversations: Word[] = [
+  { source: 'please choose a player to obtain a {0} mark', target: '请选择一名其他角色获得一枚 “{0}” 标记' },
 ];

@@ -12,7 +12,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'huashen', description: 'huashen_description' })
 export class HuaShen extends TriggerSkill {
-  public isAutoTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
+  public isAutoTrigger(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
     if (event.from === undefined && event.to === PlayerPhase.PrepareStage) {
       return true;
     }

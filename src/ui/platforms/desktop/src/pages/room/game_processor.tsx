@@ -1058,6 +1058,7 @@ export class GameClientProcessor {
           this.presenter.disableActionButton('confirm');
         }
       }
+      this.presenter.broadcastUIUpdate();
     };
 
     this.presenter.createDialog(
@@ -1067,7 +1068,7 @@ export class GameClientProcessor {
         translator={this.translator}
         isCardDisabled={isCardDisabled}
         imageLoader={this.imageLoader}
-        title={content.customMessage}
+        title={content.customTitle && this.translator.tr(content.customTitle)}
       />,
     );
 
@@ -1136,8 +1137,8 @@ export class GameClientProcessor {
     };
 
     const matcher = content.cardMatcher && new CardMatcher(content.cardMatcher);
-    const isCardDisabled = matcher ? (card: Card) => !matcher.match(card) : undefined;
 
+    const isCardDisabled = matcher ? (card: Card) => !matcher.match(card) : undefined;
     this.presenter.createDialog(
       <CardSelectorDialog
         options={content.cardIds || content.customCardFields!}

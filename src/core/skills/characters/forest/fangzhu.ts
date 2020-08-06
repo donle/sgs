@@ -70,7 +70,7 @@ export class FangZhu extends TriggerSkill {
           this.Name,
         );
         await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toIds![0]);
-        room.loseHp(toIds![0], 1);
+        await room.loseHp(toIds![0], 1);
       }
     }
 
