@@ -41,11 +41,7 @@ export class CardMatcher {
     return this.generalNameMaps[generalName] && this.generalNameMaps[generalName].includes(name);
   }
 
-  public static match(matcher: CardMatcherSocketPassenger | undefined, card: Card | CardMatcher) {
-    if (matcher === undefined) {
-      return false;
-    }
-
+  public static match(matcher: CardMatcherSocketPassenger, card: Card | CardMatcher) {
     Precondition.assert(matcher.tag && matcher.tag === 'card-matcher', 'Invalid card matcher props');
 
     const { suit, cardNumber, name, generalName, type, cards, reverseMatch } = matcher;
@@ -142,7 +138,7 @@ export class CardMatcher {
     return reverseMatch ? !matched : matched;
   }
 
-  public static notMatch(matcher: CardMatcherSocketPassenger | undefined, card: Card | CardMatcher) {
+  public static notMatch(matcher: CardMatcherSocketPassenger, card: Card | CardMatcher) {
     return !this.match(matcher, card);
   }
 

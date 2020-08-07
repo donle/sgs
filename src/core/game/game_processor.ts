@@ -338,7 +338,7 @@ export class GameProcessor {
 
           await this.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
 
-          if (this.toEndPhase !== undefined) {
+          if (this.toEndPhase === phase) {
             this.toEndPhase = undefined;
             break;
           }
@@ -381,7 +381,7 @@ export class GameProcessor {
           if (this.CurrentPlayer.Dead) {
             break;
           }
-          if (this.toEndPhase !== undefined) {
+          if (this.toEndPhase === phase) {
             this.toEndPhase = undefined;
             break;
           }
