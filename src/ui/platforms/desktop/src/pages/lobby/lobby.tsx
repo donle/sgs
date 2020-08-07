@@ -85,10 +85,18 @@ export class Lobby extends React.Component<LobbyProps> {
 
   @mobx.action
   private readonly onCreateRoom = () => {
+    if (this.unmatchedCoreVersion) {
+      return;
+    }
+
     this.openRoomCreationDialog = true;
   };
 
   private readonly onClickRefresh = () => {
+    if (this.unmatchedCoreVersion) {
+      return;
+    }
+
     this.socket.emit(LobbySocketEvent.QueryRoomList.toString());
   };
 
@@ -145,11 +153,16 @@ export class Lobby extends React.Component<LobbyProps> {
               variant="primary"
               className={styles.button}
               onClick={this.onCreateRoom}
-              disabled={!window.localStorage.getItem('username')}
+              disabled={!window.localStorage.getItem('username') && !this.unmatchedCoreVersion}
             >
               {this.props.translator.tr('Create a room')}
             </Button>
-            <Button variant="primary" className={styles.button} onClick={this.onClickRefresh}>
+            <Button
+              variant="primary"
+              className={styles.button}
+              onClick={this.onClickRefresh}
+              disabled={!this.unmatchedCoreVersion}
+            >
               {this.props.translator.tr('Refresh room list')}
             </Button>
             <Button variant="primary" className={styles.button} onClick={this.onChangeUsername}>
