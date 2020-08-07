@@ -10,13 +10,13 @@ import { CommonSkill } from 'core/skills/skill_wrappers';
 export class EnYuan extends TriggerSkill {
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.DamageEvent | GameEventIdentifiers.MoveCardEvent>,
-    stage?: AllStage
+    stage?: AllStage,
   ) {
     return stage === DamageEffectStage.AfterDamagedEffect || stage === CardMoveStage.AfterCardMoved;
   }
 
   public triggerableTimes(
-    event: ServerEventFinder<GameEventIdentifiers.DamageEvent | GameEventIdentifiers.MoveCardEvent>
+    event: ServerEventFinder<GameEventIdentifiers.DamageEvent | GameEventIdentifiers.MoveCardEvent>,
   ) {
     const identifier = EventPacker.getIdentifier<GameEventIdentifiers.DamageEvent | GameEventIdentifiers.MoveCardEvent>(
       event,
@@ -31,7 +31,7 @@ export class EnYuan extends TriggerSkill {
   public canUse(
     room: Room,
     owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.DamageEvent | GameEventIdentifiers.MoveCardEvent>
+    content: ServerEventFinder<GameEventIdentifiers.DamageEvent | GameEventIdentifiers.MoveCardEvent>,
   ) {
     const identifier = EventPacker.getIdentifier<GameEventIdentifiers.DamageEvent | GameEventIdentifiers.MoveCardEvent>(
       content,
@@ -48,10 +48,9 @@ export class EnYuan extends TriggerSkill {
       const moveCardEvent = content as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
       return (
         moveCardEvent.toId === owner.Id &&
-        moveCardEvent.toArea === CardMoveArea.HandArea &&
-        moveCardEvent.moveReason === CardMoveReason.ActiveMove &&
-        moveCardEvent.movingCards.length >= 2 &&
         moveCardEvent.fromId !== undefined &&
+        moveCardEvent.toArea === CardMoveArea.HandArea &&
+        moveCardEvent.movingCards.length >= 2 &&
         room.getPlayerById(moveCardEvent.fromId).Dead === false
       );
     }
@@ -75,13 +74,9 @@ export class EnYuan extends TriggerSkill {
           toId: damageFromId!,
           cardIds: damageFrom.getCardIds(PlayerCardsArea.HandArea),
           amount: 1,
-        }
+        };
 
-        room.notify(
-          GameEventIdentifiers.AskForChoosingCardEvent,
-          askForChooseCard,
-          damageFromId!,
-        );
+        room.notify(GameEventIdentifiers.AskForChoosingCardEvent, askForChooseCard, damageFromId!);
 
         const { selectedCards } = await room.onReceivingAsyncResponseFrom(
           GameEventIdentifiers.AskForChoosingCardEvent,

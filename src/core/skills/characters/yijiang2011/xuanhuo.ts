@@ -22,11 +22,7 @@ export class XuanHuo extends TriggerSkill {
     return 1;
   }
 
-  public isAvailableTarget(
-    owner: PlayerId,
-    room: Room,
-    target: PlayerId
-  ) {
+  public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId) {
     return owner !== target;
   }
 
@@ -43,14 +39,15 @@ export class XuanHuo extends TriggerSkill {
     await room.drawCards(2, toId, undefined, fromId, this.Name);
 
     const to = room.getPlayerById(toId);
-    const targetIds = room.getOtherPlayers(toId).filter(
-      target => {
+    const targetIds = room
+      .getOtherPlayers(toId)
+      .filter(target => {
         return to.getAttackDistance(room) >= room.distanceBetween(to, target);
-      }
-    ).map(target => target.Id);
+      })
+      .map(target => target.Id);
 
     if (targetIds.length <= 0) {
-      this.doSlashFail(room, fromId, toId);
+      await this.doSlashFail(room, fromId, toId);
     } else {
       const askForChoosingPlayer: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
         toId: fromId,
@@ -58,7 +55,7 @@ export class XuanHuo extends TriggerSkill {
         requiredAmount: 1,
         conversation: TranslationPack.translationJsonPatcher(
           'xuanhuo: please choose a target who {0} can slash',
-          TranslationPack.patchPlayerInTranslation(to)
+          TranslationPack.patchPlayerInTranslation(to),
         ).extract(),
       };
 
@@ -94,12 +91,12 @@ export class XuanHuo extends TriggerSkill {
           fromId: response.fromId,
           toIds: response.toIds,
           cardId: response.cardId,
-          triggeredBySkills: [this.Name]
+          triggeredBySkills: [this.Name],
         };
 
         await room.useCard(slashUseEvent);
       } else {
-        this.doSlashFail(room, fromId, toId);
+        await this.doSlashFail(room, fromId, toId);
       }
     }
 
@@ -137,9 +134,13 @@ export class XuanHuo extends TriggerSkill {
 
     await room.moveCards({
       fromId: toId,
-      movingCards: selectedCards!.map(card => ({ card, fromArea: to.cardFrom(card) })).concat(selectedCardsIndex!.map(cardIndex => {
-        return { card: to.getCardIds(PlayerCardsArea.HandArea)[cardIndex], fromArea: PlayerCardsArea.HandArea}
-      })),
+      movingCards: selectedCards!
+        .map(card => ({ card, fromArea: PlayerCardsArea.EquipArea }))
+        .concat(
+          selectedCardsIndex!.map(cardIndex => {
+            return { card: to.getCardIds(PlayerCardsArea.HandArea)[cardIndex], fromArea: PlayerCardsArea.HandArea };
+          }),
+        ),
       toId: fromId,
       toArea: CardMoveArea.HandArea,
       moveReason: CardMoveReason.ActivePrey,
