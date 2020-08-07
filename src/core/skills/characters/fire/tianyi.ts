@@ -69,7 +69,7 @@ export class TianYi extends ActiveSkill {
 @ShadowSkill
 @CommonSkill({ name: TianYi.Name, description: TianYi.Description })
 export class TianYiRemove extends TriggerSkill implements OnDefineReleaseTiming {
-  public onLosingSkill(room: Room): boolean {
+  public afterLosingSkill(room: Room): boolean {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 
@@ -119,7 +119,7 @@ export class TianYiRemove extends TriggerSkill implements OnDefineReleaseTiming 
 @ShadowSkill
 @CommonSkill({ name: TianYiRemove.Name, description: TianYiRemove.Description })
 export class TianYiExtra extends RulesBreakerSkill implements OnDefineReleaseTiming {
-  public onLosingSkill(room: Room, playerId: PlayerId): boolean {
+  public afterLosingSkill(room: Room, playerId: PlayerId): boolean {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 
@@ -177,7 +177,7 @@ export class TianYiExtra extends RulesBreakerSkill implements OnDefineReleaseTim
 @ShadowSkill
 @CommonSkill({ name: TianYiExtra.Name, description: TianYiExtra.Description })
 export class TianYiBlock extends FilterSkill implements OnDefineReleaseTiming {
-  public onLosingSkill(room: Room): boolean {
+  public afterLosingSkill(room: Room): boolean {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 

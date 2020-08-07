@@ -177,7 +177,7 @@ export { BeiGe } from './characters/mountain/beige';
 export { DuanChang } from './characters/mountain/duanchang';
 
 export { WuShen, WuShenShadow } from './characters/god/wushen';
-export { WuHun, WuHunDied } from './characters/god/wuhun';
+export { WuHun } from './characters/god/wuhun';
 export { SheLie } from './characters/god/shelie';
 export { QinYin } from './characters/god/qinyin';
 export { YeYan } from './characters/god/yeyan';
@@ -200,6 +200,6 @@ export { ZhanHuo } from './characters/god/zhanhuo';
 export { JueJing, JueJingDying } from './characters/god/juejing';
 export { LongHun, LongHunEffect, LongHunBlackEffect } from './characters/god/longhun';
 export { PoXi } from './characters/god/poxi';
-export { JieYing, JieYingShadow, JieYingDraw } from './characters/god/jieying';
+export { JieYing, JieYingDraw, JieYingEffect } from './characters/god/jieying';
 
 export { Cheat } from './system/cheat';

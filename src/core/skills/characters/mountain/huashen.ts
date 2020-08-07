@@ -211,7 +211,7 @@ export class HuaShen extends TriggerSkill {
 @ShadowSkill
 @CommonSkill({ name: HuaShen.Name, description: HuaShen.Description })
 export class HuaShenShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  public onLosingSkill(room: Room, owner: PlayerId): boolean {
+  public afterLosingSkill(room: Room, owner: PlayerId): boolean {
     return !room.getPlayerById(owner).hasSkill(this.GeneralName);
   }
 
@@ -219,7 +219,7 @@ export class HuaShenShadow extends TriggerSkill implements OnDefineReleaseTiming
     return true;
   }
 
-  public onDeath(room: Room): boolean {
+  public afterDead(room: Room): boolean {
     return room.CurrentProcessingStage === PlayerDiedStage.PlayerDied;
   }
 

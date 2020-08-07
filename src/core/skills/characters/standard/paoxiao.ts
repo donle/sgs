@@ -48,7 +48,7 @@ export class PaoXiaoShadow extends TriggerSkill {
 @ShadowSkill
 @CompulsorySkill({ name: PaoXiaoShadow.Name, description: PaoXiaoShadow.Description })
 export class PaoXiaoRemove extends TriggerSkill implements OnDefineReleaseTiming {
-  onLosingSkill(room: Room, playerId: PlayerId) {
+  afterLosingSkill(room: Room, playerId: PlayerId) {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 

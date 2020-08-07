@@ -16,11 +16,33 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { MarkEnum } from 'core/shares/types/mark_list';
 import { RulesBreakerSkill, TriggerSkill } from 'core/skills/skill';
+import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'jieying', description: 'jieying_description' })
-export class JieYing extends TriggerSkill {
+export class JieYing extends TriggerSkill implements OnDefineReleaseTiming {
+  async whenLosingSkill(room: Room, player: Player) {
+    for (const other of room.getOtherPlayers(player.Id)) {
+      if (other.getMark(MarkEnum.Ying) === 0) {
+        continue;
+      }
+
+      room.removeMark(other.Id, MarkEnum.Ying);
+      await room.loseSkill(other.Id, JieYingEffect.Name);
+    }
+  }
+  async whenDead(room: Room, player: Player) {
+    for (const other of room.getOtherPlayers(player.Id)) {
+      if (other.getMark(MarkEnum.Ying) === 0) {
+        continue;
+      }
+
+      room.removeMark(other.Id, MarkEnum.Ying);
+      await room.loseSkill(other.Id, JieYingEffect.Name);
+    }
+  }
+
   private readonly jieYingtTarget: string;
   public isAutoTrigger(
     room: Room,
@@ -116,6 +138,7 @@ export class JieYing extends TriggerSkill {
     const identifier = EventPacker.getIdentifier(triggeredOnEvent!);
     if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
       room.setMark(fromId, MarkEnum.Ying, 1);
+      room.obtainSkill(fromId, JieYingEffect.Name);
     } else {
       const from = room.getPlayerById(fromId);
       if (from.getFlag<PlayerId>(this.jieYingtTarget)) {
@@ -123,6 +146,8 @@ export class JieYing extends TriggerSkill {
         from.removeFlag(this.jieYingtTarget);
         room.removeMark(fromId, MarkEnum.Ying);
         room.setMark(toId, MarkEnum.Ying, 1);
+        room.loseSkill(fromId, JieYingEffect.Name);
+        room.obtainSkill(toId, JieYingEffect.Name);
       } else {
         const event = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
         room.removeMark(event.playerId, MarkEnum.Ying);
@@ -147,37 +172,6 @@ export class JieYing extends TriggerSkill {
 
 @ShadowSkill
 @CommonSkill({ name: JieYing.Name, description: JieYing.Description })
-export class JieYingShadow extends RulesBreakerSkill {
-  public breakCardUsableTimes(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
-    if (room.getMark(owner.Id, MarkEnum.Ying) === 0) {
-      return 0;
-    }
-
-    let match = false;
-    if (cardId instanceof CardMatcher) {
-      match = cardId.match(new CardMatcher({ generalName: ['slash'] }));
-    } else {
-      match = Sanguosha.getCardById(cardId).GeneralName === 'slash';
-    }
-
-    if (match) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-
-  public breakAdditionalCardHoldNumber(room: Room, owner: Player) {
-    if (room.getMark(owner.Id, MarkEnum.Ying) === 0) {
-      return 0;
-    }
-
-    return 1;
-  }
-}
-
-@ShadowSkill
-@CommonSkill({ name: JieYingShadow.Name, description: JieYingShadow.Description })
 export class JieYingDraw extends TriggerSkill {
   isAutoTrigger() {
     return true;
@@ -206,5 +200,36 @@ export class JieYingDraw extends TriggerSkill {
     drawCardEvent.drawAmount += 1;
 
     return true;
+  }
+}
+
+@ShadowSkill
+@CommonSkill({ name: JieYingDraw.Name, description: JieYingDraw.Description })
+export class JieYingEffect extends RulesBreakerSkill {
+  public breakCardUsableTimes(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
+    if (room.getMark(owner.Id, MarkEnum.Ying) === 0) {
+      return 0;
+    }
+
+    let match = false;
+    if (cardId instanceof CardMatcher) {
+      match = cardId.match(new CardMatcher({ generalName: ['slash'] }));
+    } else {
+      match = Sanguosha.getCardById(cardId).GeneralName === 'slash';
+    }
+
+    if (match) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
+  public breakAdditionalCardHoldNumber(room: Room, owner: Player) {
+    if (room.getMark(owner.Id, MarkEnum.Ying) === 0) {
+      return 0;
+    }
+
+    return 1;
   }
 }

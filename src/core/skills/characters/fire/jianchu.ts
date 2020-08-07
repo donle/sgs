@@ -114,7 +114,7 @@ export class JianChuShadow extends RulesBreakerSkill {
 @ShadowSkill
 @CommonSkill({ name: JianChuShadow.Name, description: JianChuShadow.Description })
 export class JianchuRemove extends TriggerSkill implements OnDefineReleaseTiming {
-  public onLosingSkill(room: Room): boolean {
+  public afterLosingSkill(room: Room): boolean {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 

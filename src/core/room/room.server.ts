@@ -36,7 +36,7 @@ import { Functional } from 'core/shares/libs/functional';
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Flavor } from 'core/shares/types/host_config';
-import { OnDefineReleaseTiming, Skill, SkillHooks, SkillType, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
+import { OnDefineReleaseTiming, Skill, SkillLifeCycle, SkillType, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 import { GameProcessor } from '../game/game_processor';
@@ -422,10 +422,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     this.hookedSkills = this.hookedSkills.filter(({ skill, player }, index) => {
       const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
-      if (hookedSkill.onLosingSkill && hookedSkill.onLosingSkill(this, player.Id)) {
+      if (hookedSkill.afterLosingSkill && hookedSkill.afterLosingSkill(this, player.Id)) {
         return false;
       }
-      if (hookedSkill.onDeath && hookedSkill.onDeath(this, player.Id)) {
+      if (hookedSkill.afterDead && hookedSkill.afterDead(this, player.Id)) {
         return false;
       }
       return true;
@@ -550,7 +550,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       {
         cardAmount: discardAmount,
         fromArea,
-        toId: this.CurrentPlayer.Id,
+        toId: playerId,
         except,
         triggeredBySkills: bySkill ? [bySkill] : undefined,
         conversation,
@@ -919,9 +919,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     for (const skill of lostSkill) {
       const outsideCards = player.getCardIds(PlayerCardsArea.OutsideArea, skill.Name);
-      if (SkillHooks.isHookedUpOnLosingSkill(skill)) {
+      if (SkillLifeCycle.isHookedAfterLosingSkill(skill)) {
         this.hookedSkills.push({ player, skill });
       }
+      await SkillLifeCycle.executeHookOnLosingSkill(skill, this, player);
 
       if (outsideCards) {
         if (player.isCharacterOutsideArea(skill.Name)) {
@@ -1389,9 +1390,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     };
 
     for (const skill of deadPlayer.getPlayerSkills()) {
-      if (SkillHooks.isHookedUpOnDeath(skill)) {
+      if (SkillLifeCycle.isHookedAfterDead(skill)) {
         this.hookedSkills.push({ player: deadPlayer, skill });
       }
+      await SkillLifeCycle.executeHookedOnDead(skill, this, deadPlayer);
     }
 
     await this.gameProcessor.onHandleIncomingEvent(

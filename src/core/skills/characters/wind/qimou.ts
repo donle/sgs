@@ -70,7 +70,7 @@ export class QiMou extends ActiveSkill {
 @ShadowSkill
 @CommonSkill({ name: QiMou.Name, description: QiMou.Description })
 export class QiMouShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  onLosingSkill(room: Room, playerId: PlayerId) {
+  afterLosingSkill(room: Room, playerId: PlayerId) {
     return room.CurrentPlayerStage === PlayerPhaseStages.FinishStageEnd;
   }
 

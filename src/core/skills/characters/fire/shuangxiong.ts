@@ -17,7 +17,7 @@ export class ShuangXiong extends ViewAsSkill implements OnDefineReleaseTiming {
   public static readonly Red = 'shuangxiong_red';
   public static readonly Black = 'shuangxiong_black';
 
-  onLosingSkill(room: Room, playerId: PlayerId) {
+  afterLosingSkill(room: Room, playerId: PlayerId) {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 
@@ -231,7 +231,7 @@ export class ShuangXiongShadow extends TriggerSkill {
 @ShadowSkill
 @CommonSkill({ name: ShuangXiongShadow.Name, description: ShuangXiongShadow.Description })
 export class ShuangXiongRemove extends TriggerSkill implements OnDefineReleaseTiming {
-  public onLosingSkill(room: Room): boolean {
+  public afterLosingSkill(room: Room): boolean {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 

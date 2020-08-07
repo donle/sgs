@@ -517,7 +517,9 @@ export abstract class Player implements PlayerInfo {
       `Player ${this.playerName} has not been initialized with a character yet`,
     );
 
-    const skills = this.playerSkills.filter(skill => includeDisabled || !UniqueSkillRule.isProhibited(skill, this));
+    const skills = this.playerSkills.filter(
+      skill => (includeDisabled || !UniqueSkillRule.isProhibited(skill, this)) && !skill.isSideEffectSkill(),
+    );
     if (skillType === undefined) {
       return skills as T[];
     }

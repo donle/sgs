@@ -1155,7 +1155,7 @@ export class GameProcessor {
       if (killedBy) {
         const killer = this.room.getPlayerById(killedBy);
 
-        if (deadPlayer.Role === PlayerRole.Rebel) {
+        if (deadPlayer.Role === PlayerRole.Rebel && !killer.Dead) {
           await this.room.drawCards(3, killedBy);
         } else if (deadPlayer.Role === PlayerRole.Loyalist && killer.Role === PlayerRole.Lord) {
           const lordCards = Card.getActualCards(killer.getPlayerCards());

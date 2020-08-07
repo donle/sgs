@@ -171,6 +171,7 @@ export const enum EquipCardCategory {
   Shield,
   DefenseRide,
   OffenseRide,
+  Precious,
 }
 
 export class VirtualCard<T extends Card = Card> extends Card {

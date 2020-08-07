@@ -11,57 +11,8 @@ import { CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'wuhun', description: 'wuhun_description' })
-export class WuHun extends TriggerSkill {
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage): boolean {
-    return stage === DamageEffectStage.AfterDamagedEffect;
-  }
-
-  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>): boolean {
-    return owner.Id === content.toId && !!content.fromId && !room.getPlayerById(content.fromId).Dead;
-  }
-
-  public triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>): number {
-    return event.damage;
-  }
-
-  public async onTrigger(): Promise<boolean> {
-    return true;
-  }
-
-  public async onEffect(
-    room: Room,
-    skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
-    const { triggeredOnEvent } = skillUseEvent;
-    const damageEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-    room.addMark(damageEvent.fromId!, MarkEnum.Nightmare, 1);
-    return true;
-  }
-}
-
-@ShadowSkill
-@CompulsorySkill({ name: WuHun.Name, description: WuHun.Description })
-export class WuHunDied extends TriggerSkill implements OnDefineReleaseTiming {
-  public onDeath(room: Room): boolean {
-    return room.CurrentProcessingStage === PlayerDiedStage.PlayerDied;
-  }
-
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>, stage?: AllStage): boolean {
-    return stage === PlayerDiedStage.PlayerDied;
-  }
-
-  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>): boolean {
-    return owner.Id === event.playerId && owner.Dead;
-  }
-
-  public async onTrigger(): Promise<boolean> {
-    return true;
-  }
-
-  public async onEffect(
-    room: Room,
-    skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+export class WuHun extends TriggerSkill implements OnDefineReleaseTiming {
+  async whenDead(room: Room, owner: Player) {
     const alivePlayers = room.getAlivePlayersFrom();
     let maxMarkNum = 0;
     for (const player of alivePlayers) {
@@ -86,7 +37,7 @@ export class WuHunDied extends TriggerSkill implements OnDefineReleaseTiming {
     } else if (revengeList.length > 1) {
       const choosePlayerEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
         players: revengeList.map(player => player.Id),
-        toId: skillUseEvent.fromId,
+        toId: owner.Id,
         requiredAmount: 1,
         conversation: 'wuhun:Please choose a target to die with you',
       };
@@ -94,17 +45,17 @@ export class WuHunDied extends TriggerSkill implements OnDefineReleaseTiming {
       room.notify(
         GameEventIdentifiers.AskForChoosingPlayerEvent,
         EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingPlayerEvent>(choosePlayerEvent),
-        skillUseEvent.fromId,
+        owner.Id,
       );
 
       const choosePlayerResponse = await room.onReceivingAsyncResponseFrom(
         GameEventIdentifiers.AskForChoosingPlayerEvent,
-        skillUseEvent.fromId,
+        owner.Id,
       );
 
       sacrificer = room.getPlayerById(choosePlayerResponse.selectedPlayers![0]);
     } else {
-      return false;
+      return;
     }
 
     const judge = await room.judge(sacrificer.Id, undefined, this.GeneralName, JudgeMatcherEnum.WuHun);
@@ -113,15 +64,39 @@ export class WuHunDied extends TriggerSkill implements OnDefineReleaseTiming {
       room.broadcast(GameEventIdentifiers.CustomGameDialog, {
         translationsMessage: TranslationPack.translationJsonPatcher(
           '{0} use skill {1}, bring {2} to hell',
-          TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
+          TranslationPack.patchPlayerInTranslation(owner),
           this.GeneralName,
           TranslationPack.patchPlayerInTranslation(room.getPlayerById(sacrificer.Id)),
         ).extract(),
       });
 
-      await room.kill(sacrificer, skillUseEvent.fromId);
+      await room.kill(sacrificer, owner.Id);
     }
+  }
 
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage): boolean {
+    return stage === DamageEffectStage.AfterDamagedEffect;
+  }
+
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>): boolean {
+    return owner.Id === content.toId && !!content.fromId && !room.getPlayerById(content.fromId).Dead;
+  }
+
+  public triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>): number {
+    return event.damage;
+  }
+
+  public async onTrigger(): Promise<boolean> {
+    return true;
+  }
+
+  public async onEffect(
+    room: Room,
+    skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
+  ): Promise<boolean> {
+    const { triggeredOnEvent } = skillUseEvent;
+    const damageEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
+    room.addMark(damageEvent.fromId!, MarkEnum.Nightmare, 1);
     return true;
   }
 }

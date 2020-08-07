@@ -1,17 +1,30 @@
+import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Skill } from './skill';
 
 export interface OnDefineReleaseTiming {
-  onLosingSkill?(room: Room, playerId: PlayerId): boolean;
-  onDeath?(room: Room, playerId: PlayerId): boolean;
+  afterLosingSkill?(room: Room, playerId: PlayerId): boolean;
+  afterDead?(room: Room, playerId: PlayerId): boolean;
+  whenLosingSkill?(room: Room, playerId: Player): Promise<void>;
+  whenDead?(room: Room, playerId: Player): Promise<void>;
 }
 
-export class SkillHooks {
-  public static isHookedUpOnLosingSkill(skill: Skill) {
-    return ((skill as unknown) as OnDefineReleaseTiming).onLosingSkill;
+export class SkillLifeCycle {
+  public static isHookedAfterLosingSkill(skill: Skill) {
+    const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+    return hookedSkill.afterLosingSkill;
   }
-  public static isHookedUpOnDeath(skill: Skill) {
-    return ((skill as unknown) as OnDefineReleaseTiming).onDeath;
+  public static isHookedAfterDead(skill: Skill) {
+    const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+    return hookedSkill.afterDead;
+  }
+  public static async executeHookOnLosingSkill(skill: Skill, room: Room, owner: Player) {
+    const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+    hookedSkill.whenLosingSkill && await hookedSkill.whenLosingSkill(room, owner);
+  }
+  public static async executeHookedOnDead(skill: Skill, room: Room, owner: Player) {
+    const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+    hookedSkill.whenDead && await hookedSkill.whenDead(room, owner);
   }
 }

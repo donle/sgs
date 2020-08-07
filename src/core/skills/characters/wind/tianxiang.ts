@@ -54,8 +54,7 @@ export class TianXiang extends TriggerSkill {
       options: ['option-one', 'option-two'],
       toId: fromId,
       conversation: TranslationPack.translationJsonPatcher(
-        'please choose tianxiang options:{0}',
-        damageEvent.damage,
+        'please choose tianxiang options',
       ).extract(),
     };
     room.notify(

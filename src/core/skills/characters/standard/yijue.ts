@@ -123,10 +123,10 @@ export class YiJue extends ActiveSkill {
 @ShadowSkill
 @CompulsorySkill({ name: YiJue.GeneralName, description: YiJue.Description })
 export class YiJueShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  onDeath(room: Room) {
+  afterDead(room: Room) {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
-  onLosingSkill(room: Room, playerId: PlayerId) {
+  afterLosingSkill(room: Room, playerId: PlayerId) {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 

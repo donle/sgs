@@ -19,6 +19,25 @@ import { QiXing } from './qixing';
 
 @CommonSkill({ name: 'kuangfeng', description: 'kuangfeng_description' })
 export class KuangFeng extends TriggerSkill {
+  async whenLosingSkill(room: Room, player: Player) {
+    for (const other of room.getOtherPlayers(player.Id)) {
+      if (other.getMark(MarkEnum.KuangFeng) === 0) {
+        continue;
+      }
+
+      room.removeMark(other.Id, MarkEnum.KuangFeng);
+    }
+  }
+  async whenDead(room: Room, player: Player) {
+    for (const other of room.getOtherPlayers(player.Id)) {
+      if (other.getMark(MarkEnum.KuangFeng) === 0) {
+        continue;
+      }
+
+      room.removeMark(other.Id, MarkEnum.KuangFeng);
+    }
+  }
+
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
     return stage === PhaseStageChangeStage.StageChanged;
   }
@@ -102,7 +121,7 @@ export class KuangFeng extends TriggerSkill {
 @ShadowSkill
 @CommonSkill({ name: KuangFeng.Name, description: KuangFeng.Description })
 export class KuangFengShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  public onLosingSkill(room: Room): boolean {
+  public afterLosingSkill(room: Room): boolean {
     return room.CurrentPlayerPhase === PlayerPhase.PrepareStage;
   }
 

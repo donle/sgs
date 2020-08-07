@@ -55,7 +55,7 @@ export class RouLin extends TriggerSkill {
 @ShadowSkill
 @CompulsorySkill({ name: RouLin.GeneralName, description: RouLin.Description })
 export class RouLinShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  onLosingSkill(room: Room) {
+  afterLosingSkill(room: Room) {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 

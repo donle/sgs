@@ -54,7 +54,7 @@ export class DuanLiang extends ViewAsSkill {
 @ShadowSkill
 @CommonSkill({ name: DuanLiang.Name, description: DuanLiang.Description })
 export class DuanLiangShadow extends RulesBreakerSkill implements OnDefineReleaseTiming {
-  onLosingSkill(room: Room, playerId: PlayerId) {
+  afterLosingSkill(room: Room, playerId: PlayerId) {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 
