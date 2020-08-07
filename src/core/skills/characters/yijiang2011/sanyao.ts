@@ -30,13 +30,10 @@ export class SanYao extends ActiveSkill {
   }
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
-    let maxHp: number = room.getOtherPlayers(owner)[0].Hp;
-    room.getOtherPlayers(owner).forEach(player => {
-      if (maxHp < player.Hp) {
-        maxHp = player.Hp;
-      }
-    });
-    return owner !== target && room.getPlayerById(target).Hp === maxHp;
+    return (
+      owner !== target &&
+      room.getOtherPlayers(owner).find(player => player.Hp > room.getPlayerById(target).Hp) === undefined
+    );
   }
 
   public isAvailableCard(): boolean {

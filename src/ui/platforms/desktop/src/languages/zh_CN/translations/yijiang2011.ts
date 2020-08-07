@@ -155,7 +155,7 @@ export const skillDescriptions: Word[] = [
 
 export const promptDescriptions: Word[] = [
   {
-    source: '{0}: do you want to prevent the damage to {1}, then obtain one of cards in his/her area?',
+    source: '{0}: do you want to prevent the damage to {1} to pick one card in areas?',
     target:
       '{0}：你可以防止对 {1} 造成的伤害，然后获得其区域里的一张牌',
   },

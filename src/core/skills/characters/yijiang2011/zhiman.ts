@@ -35,7 +35,7 @@ export class ZhiMan extends TriggerSkill {
     event: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
   ): PatchedTranslationObject {
     return TranslationPack.translationJsonPatcher(
-      '{0}: do you want to prevent the damage to {1}, then obtain one of cards in his/her area?',
+      '{0}: do you want to prevent the damage to {1} to pick one card in areas?',
       this.Name,
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.toId)),
     ).extract();
