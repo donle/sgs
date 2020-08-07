@@ -153,7 +153,7 @@ export class Lobby extends React.Component<LobbyProps> {
               variant="primary"
               className={styles.button}
               onClick={this.onCreateRoom}
-              disabled={!window.localStorage.getItem('username') && !this.unmatchedCoreVersion}
+              disabled={!window.localStorage.getItem('username') || this.unmatchedCoreVersion}
             >
               {this.props.translator.tr('Create a room')}
             </Button>
@@ -161,7 +161,7 @@ export class Lobby extends React.Component<LobbyProps> {
               variant="primary"
               className={styles.button}
               onClick={this.onClickRefresh}
-              disabled={!this.unmatchedCoreVersion}
+              disabled={this.unmatchedCoreVersion}
             >
               {this.props.translator.tr('Refresh room list')}
             </Button>
