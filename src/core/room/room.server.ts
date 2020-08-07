@@ -1161,18 +1161,20 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.RecoverEvent, event);
   }
 
-  public async responseCard(event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>): Promise<void> {
+  public async responseCard(event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>): Promise<boolean> {
+    let validResponse = false;
     EventPacker.createIdentifierEvent(GameEventIdentifiers.CardResponseEvent, event);
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardResponseEvent, event, async stage => {
       if (stage === CardResponseStage.AfterCardResponseEffect) {
         if (event.responseToEvent) {
           EventPacker.terminate(event.responseToEvent);
-          return false;
+          validResponse = true;
         }
       }
-
       return true;
     });
+
+    return validResponse;
   }
 
   public async judge(

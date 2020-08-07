@@ -118,7 +118,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     judgeMatcherEnum?: JudgeMatcherEnum,
   ): Promise<ServerEventFinder<GameEventIdentifiers.JudgeEvent>>;
   //Server only
-  public abstract async responseCard(event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>): Promise<void>;
+  public abstract async responseCard(
+    event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>,
+  ): Promise<boolean>;
   //Server only
   public abstract async chainedOn(playerId: PlayerId): Promise<void>;
   //Server only

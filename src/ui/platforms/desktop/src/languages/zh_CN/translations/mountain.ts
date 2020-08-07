@@ -75,7 +75,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'ruoyu_description',
     target:
-      '<b>觉醒技</b>，准备阶段开始时，若你为体力值最小的角色，你增加1点体力上限并回复1点体力，然后获得“激将”和“思蜀”。',
+      '<b>主公技</b>，<b>觉醒技</b>，准备阶段开始时，若你为体力值最小的角色，你增加1点体力上限并回复1点体力，然后获得“激将”和“思蜀”。',
   },
   {
     source: 'sishu_description',
