@@ -683,9 +683,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     await this.drawCards(1, from.Id);
   }
 
-  public async preUseCard(
-    cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
-  ): Promise<boolean> {
+  public async preUseCard(cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): Promise<boolean> {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, cardUseEvent);
     const card = Sanguosha.getCardById<VirtualCard>(cardUseEvent.cardId);
     await card.Skill.onUse(this, cardUseEvent);
@@ -693,7 +691,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (Card.isVirtualCardId(cardUseEvent.cardId)) {
       const from = this.getPlayerById(cardUseEvent.fromId);
       const skill = Sanguosha.getSkillBySkillName(card.GeneratedBySkill);
-      const skillUseEvent = {
+      const skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent> = {
         fromId: cardUseEvent.fromId,
         skillName: card.GeneratedBySkill,
         toIds: cardUseEvent.toIds,
@@ -795,12 +793,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return cardAimEvent;
   };
 
-  public async useCard(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    if (!this.isCardOnProcessing(event.cardId) && !(await this.preUseCard(event))) {
+  public async useCard(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, declared?: boolean) {
+    EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, event);
+    if (!declared && !(await this.preUseCard(event))) {
       return;
     }
-
-    EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, event);
 
     await super.useCard(event);
     const card = Sanguosha.getCardById(event.cardId);

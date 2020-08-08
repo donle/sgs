@@ -55,6 +55,14 @@ export class LieGong extends TriggerSkill {
 @ShadowSkill
 @CommonSkill({ name: LieGong.Name, description: LieGong.Description })
 export class LieGongDamage extends TriggerSkill {
+  isAutoTrigger() {
+    return true;
+  }
+
+  isFlaggedSkill() {
+    return true;
+  }
+
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage): boolean {
     return stage === DamageEffectStage.DamageEffect;
   }
@@ -84,6 +92,7 @@ export class LieGongDamage extends TriggerSkill {
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
+    room.getPlayerById(event.fromId).removeFlag(this.GeneralName);
     const damageEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
     damageEvent.damage++;
 

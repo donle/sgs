@@ -1,18 +1,56 @@
 import { CharacterId } from 'core/characters/character';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AllStage, PhaseChangeStage, PlayerDiedStage, PlayerPhase, StagePriority } from 'core/game/stage_processor';
+import { AllStage, PhaseChangeStage, PlayerPhase, StagePriority } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { OnDefineReleaseTiming, SkillType, TriggerSkill } from 'core/skills/skill';
-import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import { CommonSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'huashen', description: 'huashen_description' })
-export class HuaShen extends TriggerSkill {
-  public isAutoTrigger(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
+export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
+  async whenDead(room: Room, owner: Player) {
+    const playerPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
+      changedProperties: [
+        {
+          toId: owner.Id,
+          nationality: owner.Character.Nationality,
+          gender: owner.Character.Gender,
+        },
+      ],
+    };
+    room.changePlayerProperties(playerPropertiesChangeEvent);
+    const huashenInfo = owner.getHuaShenInfo();
+    if (huashenInfo !== undefined) {
+      await room.loseSkill(owner.Id, huashenInfo.skillName);
+    }
+  }
+
+  async whenLosingSkill(room: Room, owner: Player) {
+    const playerPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
+      changedProperties: [
+        {
+          toId: owner.Id,
+          nationality: owner.Character.Nationality,
+          gender: owner.Character.Gender,
+        },
+      ],
+    };
+    room.changePlayerProperties(playerPropertiesChangeEvent);
+    const huashenInfo = owner.getHuaShenInfo();
+    if (huashenInfo !== undefined) {
+      await room.loseSkill(owner.Id, huashenInfo.skillName);
+    }
+  }
+
+  public isAutoTrigger(
+    room: Room,
+    owner: Player,
+    event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>,
+  ): boolean {
     if (event.from === undefined && event.to === PlayerPhase.PrepareStage) {
       return true;
     }
@@ -202,64 +240,6 @@ export class HuaShen extends TriggerSkill {
           ).extract(),
         );
       }
-    }
-
-    return true;
-  }
-}
-
-@ShadowSkill
-@CommonSkill({ name: HuaShen.Name, description: HuaShen.Description })
-export class HuaShenShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(room: Room, owner: PlayerId): boolean {
-    return !room.getPlayerById(owner).hasSkill(this.GeneralName);
-  }
-
-  public isAutoTrigger(): boolean {
-    return true;
-  }
-
-  public afterDead(room: Room): boolean {
-    return room.CurrentProcessingStage === PlayerDiedStage.PlayerDied;
-  }
-
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>, stage?: AllStage): boolean {
-    return true;
-  }
-
-  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>): boolean {
-    if (room.CurrentProcessingStage !== PlayerDiedStage.PlayerDied && owner.hasSkill(this.GeneralName)) {
-      return false;
-    }
-
-    if (!owner.getFlag<boolean>(this.Name)) {
-      owner.setFlag(this.Name, true);
-      return owner.Dead || !owner.hasSkill(this.GeneralName);
-    } else {
-      return false;
-    }
-  }
-
-  public async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
-    event.translationsMessage = undefined;
-    return true;
-  }
-
-  public async onEffect(room: Room, skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const player = room.getPlayerById(skillEffectEvent.fromId);
-    const playerPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
-      changedProperties: [
-        {
-          toId: skillEffectEvent.fromId,
-          nationality: player.Character.Nationality,
-          gender: player.Character.Gender,
-        },
-      ],
-    };
-    room.changePlayerProperties(playerPropertiesChangeEvent);
-    const huashenInfo = player.getHuaShenInfo();
-    if (huashenInfo !== undefined) {
-      await room.loseSkill(skillEffectEvent.fromId, huashenInfo.skillName);
     }
 
     return true;

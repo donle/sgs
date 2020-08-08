@@ -264,7 +264,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     );
   }
 
-  public async useCard(content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): Promise<void> {
+  public async useCard(content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, declared?: boolean): Promise<void> {
     if (content.fromId) {
       const from = this.getPlayerById(content.fromId);
       if (this.CurrentPlayer.Id === content.fromId && !content.extraUse) {

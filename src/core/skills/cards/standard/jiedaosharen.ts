@@ -90,7 +90,7 @@ export class JieDaoShaRenSkill extends ActiveSkill {
         triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
       };
 
-      await room.useCard(cardUseEvent);
+      await room.useCard(cardUseEvent, true);
     } else {
       const weapon = room.getPlayerById(attacker).getEquipment(CardType.Weapon);
       if (weapon === undefined) {

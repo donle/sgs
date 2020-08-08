@@ -605,7 +605,7 @@ export class GameProcessor {
       }
 
       if (cardUseEvent) {
-        await this.room.useCard(cardUseEvent);
+        await this.room.useCard(cardUseEvent, true);
         if (!EventPacker.isTerminated(cardUseEvent)) {
           event.isCancelledOut = true;
           await this.room.trigger(event, CardEffectStage.CardEffectCancelledOut);
@@ -653,7 +653,7 @@ export class GameProcessor {
             toCardIds: [cardId],
             responseToEvent: event,
           };
-          await this.room.useCard(jinkUseEvent);
+          await this.room.useCard(jinkUseEvent, true);
 
           if (!EventPacker.isTerminated(jinkUseEvent)) {
             event.isCancelledOut = true;
@@ -1063,7 +1063,7 @@ export class GameProcessor {
               };
               EventPacker.copyPropertiesTo(response, cardUseEvent);
 
-              await this.room.useCard(cardUseEvent);
+              await this.room.useCard(cardUseEvent, true);
             }
           } while (hasResponse && to.Hp <= 0);
 

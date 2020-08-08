@@ -50,7 +50,7 @@ export class QingLongYanYueDaoSkill extends TriggerSkill {
         ).extract(),
       };
 
-      await room.useCard(slashEvent);
+      await room.useCard(slashEvent, true);
     }
 
     return response.cardId !== undefined;

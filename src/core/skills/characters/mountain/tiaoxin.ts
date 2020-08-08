@@ -108,7 +108,7 @@ export class TiaoXin extends ActiveSkill {
         triggeredBySkills: [this.Name],
       };
 
-      await room.useCard(slashUseEvent);
+      await room.useCard(slashUseEvent, true);
     }
 
     return true;

@@ -84,7 +84,7 @@ export class LuanWu extends ActiveSkill {
             triggeredBySkills: [this.Name],
           };
 
-          await room.useCard(cardUseEvent);
+          await room.useCard(cardUseEvent, true);
         } else {
           await room.loseHp(target.Id, 1);
         }

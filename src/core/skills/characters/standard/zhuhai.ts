@@ -94,7 +94,7 @@ export class ZhuHai extends TriggerSkill {
       return false;
     }
 
-    await room.useCard(cardUseEvent);
+    await room.useCard(cardUseEvent, true);
 
     return true;
   }

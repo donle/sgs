@@ -124,7 +124,7 @@ export class RouLinShadow extends TriggerSkill implements OnDefineReleaseTiming 
         responseToEvent: slashEvent,
       };
       EventPacker.addMiddleware({ tag: this.Name, data: true }, useJinkEvent);
-      await room.useCard(useJinkEvent);
+      await room.useCard(useJinkEvent, true);
       if (!EventPacker.isTerminated(useJinkEvent)) {
         EventPacker.recall(jinkEvent);
       }
