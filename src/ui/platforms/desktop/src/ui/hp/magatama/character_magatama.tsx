@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { CharacterNationality } from 'core/characters/character';
 import * as React from 'react';
+import emptyMagatama from './images/empty.png';
 import lordMagatama from './images/lord.png';
 import qunMagatama from './images/qun.png';
 import shuMagatama from './images/shu.png';
@@ -20,14 +21,15 @@ export type MagatamaProps = {
   nationality: CharacterNationality;
   isLord?: boolean;
   className?: string;
+  emptyHp?: boolean;
 };
 
 export const CharaterMagatama = (props: MagatamaProps) => {
-  const { nationality, isLord, className } = props;
+  const { nationality, isLord, className, emptyHp } = props;
   return (
     <img
       className={classNames(styles.magatama, className)}
-      src={magatamaImageMap[isLord ? CharacterNationality.God : nationality]}
+      src={emptyHp ? emptyMagatama : magatamaImageMap[isLord ? CharacterNationality.God : nationality]}
       alt={''}
     />
   );

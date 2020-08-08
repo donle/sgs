@@ -52,6 +52,14 @@ export const cardDescriptions: Word[] = [
     target: '出牌阶段限一次，对你攻击范围内的一名其他角色使用。你对目标角色造成1点伤害。',
   },
   {
+    source: 'fire_slash_description',
+    target: '出牌阶段限一次，对你攻击范围内的一名其他角色使用。你对目标角色造成1点【火属性】伤害。',
+  },
+  {
+    source: 'thunder_slash_description',
+    target: '出牌阶段限一次，对你攻击范围内的一名其他角色使用。你对目标角色造成1点【雷属性】伤害。',
+  },
+  {
     source: 'jink_description',
     target: '当【杀】对你生效前，对此【杀】使用。抵消目标【杀】。',
   },

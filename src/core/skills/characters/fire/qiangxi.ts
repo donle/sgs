@@ -70,7 +70,7 @@ export class QiangXi extends ActiveSkill {
 @ShadowSkill
 @CompulsorySkill({ name: QiangXi.GeneralName, description: QiangXi.Description })
 export class QiangXiShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  onLosingSkill(room: Room, playerId: PlayerId) {
+  afterLosingSkill(room: Room, playerId: PlayerId) {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 

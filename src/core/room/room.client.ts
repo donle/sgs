@@ -130,7 +130,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.judge.name);
   }
   //Server only
-  public async responseCard(): Promise<void> {
+  public async responseCard(): Promise<any> {
     this.throwUntouchableError(this.responseCard.name);
   }
   //Server only

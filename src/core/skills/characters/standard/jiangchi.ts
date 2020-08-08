@@ -97,7 +97,7 @@ export class JiangChi extends TriggerSkill {
 @ShadowSkill
 @CompulsorySkill({ name: JiangChi.Name, description: JiangChi.Description })
 export class JiangChiRemove extends TriggerSkill implements OnDefineReleaseTiming {
-  public onLosingSkill(room: Room): boolean {
+  public afterLosingSkill(room: Room): boolean {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 
@@ -137,7 +137,7 @@ export class JiangChiRemove extends TriggerSkill implements OnDefineReleaseTimin
 @ShadowSkill
 @CompulsorySkill({ name: JiangChiRemove.Name, description: JiangChiRemove.Description })
 export class JiangChiExtra extends RulesBreakerSkill implements OnDefineReleaseTiming {
-  public onLosingSkill(room: Room, playerId: PlayerId): boolean {
+  public afterLosingSkill(room: Room, playerId: PlayerId): boolean {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 
@@ -183,7 +183,7 @@ export class JiangChiExtra extends RulesBreakerSkill implements OnDefineReleaseT
 @ShadowSkill
 @CompulsorySkill({ name: JiangChiExtra.Name, description: JiangChiExtra.Description })
 export class JiangChiBlock extends FilterSkill implements OnDefineReleaseTiming {
-  public onLosingSkill(room: Room): boolean {
+  public afterLosingSkill(room: Room): boolean {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 

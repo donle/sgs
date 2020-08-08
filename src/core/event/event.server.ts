@@ -3,8 +3,9 @@ import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
 import { DamageType, GameCommonRuleObject, GameInfo, GameRunningInfo } from 'core/game/game_props';
 import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
-import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props';
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
+import { System } from 'core/shares/libs/system';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
 import {
@@ -55,6 +56,7 @@ export interface ServerEvent extends EventUtilities {
     responseToEvent?: ServerEventFinder<GameEventIdentifiers>;
     skipDrop?: boolean;
     nullifiedTargets?: PlayerId[];
+    extraUse?: boolean;
   };
   [GameEventIdentifiers.CardEffectEvent]: {
     fromId?: PlayerId;
@@ -248,6 +250,17 @@ export interface ServerEvent extends EventUtilities {
     randomPinDianCardPlayer: PlayerId[];
     conversation: string | PatchedTranslationObject;
   };
+  [GameEventIdentifiers.AskForChoosingCardWithConditionsEvent]: {
+    cardIds?: CardId[] | number;
+    customCardFields?: {
+      [fieldName in string | number]: CardId[] | number;
+    };
+    customMessage?: string;
+    customTitle?: string;
+    cardFilter?: System.AskForChoosingCardEventFilter;
+    toId: PlayerId;
+    amount?: number | [number, number];
+  };
   [GameEventIdentifiers.AskForChoosingCardEvent]: {
     cardIds?: CardId[] | number;
     customCardFields?: {
@@ -270,7 +283,7 @@ export interface ServerEvent extends EventUtilities {
     conversation?: string | PatchedTranslationObject;
   };
   [GameEventIdentifiers.AskForCardDisplayEvent]: {
-    cardMatcher: CardMatcherSocketPassenger;
+    cardMatcher?: CardMatcherSocketPassenger;
     cardAmount: number;
     toId: PlayerId;
     conversation: string | PatchedTranslationObject;
@@ -359,7 +372,7 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.AskForCardEvent]: {
     toId: PlayerId;
-    cardMatcher: CardMatcherSocketPassenger;
+    cardMatcher?: CardMatcherSocketPassenger;
     cardAmount?: number;
     cardAmountRange?: [number, number];
     reason: string;

@@ -52,11 +52,11 @@ export class WuQian extends ActiveSkill {
 @ShadowSkill
 @CompulsorySkill({ name: WuQian.GeneralName, description: WuQian.Description })
 export class WuQianShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  public onLosingSkill(room: Room): boolean {
+  public afterLosingSkill(room: Room): boolean {
     return room.CurrentPlayerStage === PlayerPhaseStages.FinishStageEnd;
   }
 
-  public onDeath(): boolean {
+  public afterDead(): boolean {
     return true;
   }
 

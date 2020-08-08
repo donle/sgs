@@ -65,7 +65,7 @@ export class LongHun extends ViewAsSkill {
         let canUse = false;
         if (cardMatcher.Matcher.name?.includes('jink')) {
           canUse = Sanguosha.getCardById(pendingCardId).Suit === CardSuit.Club;
-        } else if (cardMatcher.Matcher.name?.includes('slash')) {
+        } else if (cardMatcher.Matcher.name?.includes('slash') || cardMatcher.Matcher.generalName?.includes('slash')) {
           canUse = Sanguosha.getCardById(pendingCardId).Suit === CardSuit.Diamond;
         } else if (cardMatcher.Matcher.name?.includes('peach')) {
           canUse = Sanguosha.getCardById(pendingCardId).Suit === CardSuit.Heart;
@@ -81,15 +81,11 @@ export class LongHun extends ViewAsSkill {
           return owner.canUseCard(room, new CardMatcher({ name: ['peach'] }));
         }
 
-        return false;
+        return false; 
       }
     } else {
       return Sanguosha.getCardById(pendingCardId).Suit === Sanguosha.getCardById(selectedCards[0]).Suit;
     }
-  }
-
-  public availableCardAreas() {
-    return [PlayerCardsArea.HandArea];
   }
 
   public viewAs(selectedCards: CardId[]): VirtualCard {
@@ -153,7 +149,7 @@ export class LongHunEffect extends TriggerSkill {
     const identifier = EventPacker.getIdentifier(content);
     if (identifier === GameEventIdentifiers.DamageEvent) {
       const event = content as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-      if (event.fromId !== owner.Id || event.cardIds === undefined) {
+      if (event.fromId !== owner.Id || event.cardIds === undefined || event.isFromChainedDamage) {
         return false;
       }
       const card = Sanguosha.getCardById<VirtualCard>(event.cardIds[0]);

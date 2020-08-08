@@ -126,9 +126,12 @@ export class TrustAI extends PlayerAI {
     const { cardAmount, cardMatcher, toId } = content;
     const to = room.getPlayerById(toId);
     const handCards = to.getCardIds(PlayerCardsArea.HandArea);
-    const displayedCards = handCards
-      .filter(cardId => CardMatcher.match(cardMatcher, Sanguosha.getCardById(cardId)))
-      .slice(0, cardAmount);
+    const displayedCards =
+      cardMatcher === undefined
+        ? handCards.slice(0, cardAmount)
+        : handCards
+            .filter(cardId => CardMatcher.match(cardMatcher, Sanguosha.getCardById(cardId)))
+            .slice(0, cardAmount);
 
     const displayCards: ClientEventFinder<T> = {
       fromId: toId,
@@ -145,10 +148,12 @@ export class TrustAI extends PlayerAI {
     const to = room.getPlayerById(toId);
     const selectedCards = fromArea
       .reduce<CardId[]>((allCards, area) => {
-        return [
-          ...allCards,
-          ...to.getCardIds(area).filter(card => CardMatcher.match(cardMatcher, Sanguosha.getCardById(card))),
-        ];
+        if (cardMatcher) {
+          allCards.push(...to.getCardIds(area).filter(card => CardMatcher.match(cardMatcher, Sanguosha.getCardById(card))));
+        } else {
+          allCards.push(...to.getCardIds(area))
+        }
+        return allCards;
       }, [])
       .slice(0, cardAmount);
     const selectCard: ClientEventFinder<GameEventIdentifiers.AskForCardEvent> = {

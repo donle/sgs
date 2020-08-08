@@ -25,10 +25,10 @@ const markIconMaps: {
   [MarkEnum.Nightmare]: nightmareIcon,
   [MarkEnum.Ren]: renIcon,
   [MarkEnum.Wrath]: wrathIcon,
-  [MarkEnum.Ying]: yingIcon,
   [MarkEnum.JunLve]: junlveIcon,
   [MarkEnum.Lie]: lieIcon,
   [MarkEnum.XueYi]: xueyiIcon,
+  [MarkEnum.Ying]: yingIcon,
 };
 
 export type MarkProps = {

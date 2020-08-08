@@ -3,9 +3,9 @@ export const enum MarkEnum {
   DaWu = 'dawu',
   KuangFeng = 'kuangfeng',
   Ren = 'ren',
-  Ying = 'ying',
   Wrath = 'nu',
   JunLve = 'junlve',
   Lie = 'lie',
   XueYi = 'xueyi',
+  Ying = 'ying',
 }

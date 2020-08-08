@@ -9,7 +9,7 @@ export class FireSlash extends Slash {
     super(id, cardNumber, suit);
 
     this.name = 'fire_slash';
-    this.description = 'fire_slash_decription';
+    this.description = 'fire_slash_description';
     this.fromPackage = GameCardExtensions.LegionFight;
     this.skill = SkillLoader.getInstance().getSkillByName('fire_slash');
   }

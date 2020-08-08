@@ -41,7 +41,7 @@ import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { Flavor } from 'core/shares/types/host_config';
-import { GlobalFilterSkill } from 'core/skills/skill';
+import { GlobalFilterSkill, RulesBreakerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ServerRoom } from '../room/room.server';
 import { Sanguosha } from './engine';
@@ -135,7 +135,10 @@ export class GameProcessor {
           toId: lordInfo.Id,
           characterId: lordCharacter.Id,
           maxHp: additionalPropertyValue ? lordCharacter.MaxHp + additionalPropertyValue : undefined,
-          hp: additionalPropertyValue ? lordCharacter.Hp + additionalPropertyValue : undefined,
+          hp:
+            additionalPropertyValue || lordCharacter.Hp !== lordCharacter.MaxHp
+              ? lordCharacter.Hp + additionalPropertyValue
+              : undefined,
           nationality:
             lordCharacter.Nationality === CharacterNationality.God
               ? Functional.getPlayerNationalityEnum(
@@ -335,7 +338,7 @@ export class GameProcessor {
 
           await this.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
 
-          if (this.toEndPhase !== undefined) {
+          if (this.toEndPhase === phase) {
             this.toEndPhase = undefined;
             break;
           }
@@ -343,6 +346,7 @@ export class GameProcessor {
         return;
       case PlayerPhase.DrawCardStage:
         this.logger.debug('enter draw cards phase');
+
         await this.room.drawCards(2, this.CurrentPlayer.Id);
         return;
       case PlayerPhase.PlayCardStage:
@@ -377,7 +381,7 @@ export class GameProcessor {
           if (this.CurrentPlayer.Dead) {
             break;
           }
-          if (this.toEndPhase !== undefined) {
+          if (this.toEndPhase === phase) {
             this.toEndPhase = undefined;
             break;
           }
@@ -456,6 +460,21 @@ export class GameProcessor {
 
     while (this.playerStages.length > 0) {
       const nextPhase = this.stageProcessor.getInsidePlayerPhase(this.playerStages[0]);
+      for (const player of this.room.AlivePlayers) {
+        for (const skill of player.getSkills()) {
+          if (nextPhase === PlayerPhase.PrepareStage) {
+            player.resetCardUseHistory();
+            player.hasDrunk() && this.room.clearHeaded(player.Id);
+          } else {
+            player.resetCardUseHistory('slash');
+          }
+
+          if (skill.isRefreshAt(this.room, player, nextPhase)) {
+            skill.whenRefresh(this.room, player);
+            player.resetSkillUseHistory(skill.Name);
+          }
+        }
+      }
 
       const phaseChangeEvent = EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseChangeEvent, {
         from: this.currentPlayerPhase,
@@ -463,67 +482,50 @@ export class GameProcessor {
         fromPlayer: lastPlayer?.Id,
         toPlayer: player.Id,
       });
-      if (nextPhase !== this.currentPlayerPhase) {
-        await this.onHandleIncomingEvent(GameEventIdentifiers.PhaseChangeEvent, phaseChangeEvent, async stage => {
-          if (this.toEndPhase === nextPhase) {
-            EventPacker.terminate(phaseChangeEvent);
-            this.toEndPhase = undefined;
-            return false;
-          }
-
-          if (stage === PhaseChangeStage.BeforePhaseChange) {
-            for (const player of this.room.AlivePlayers) {
-              for (const skill of player.getSkills()) {
-                if (this.currentPlayerPhase === PlayerPhase.PrepareStage) {
-                  player.resetCardUseHistory();
-                  player.hasDrunk() && this.room.clearHeaded(player.Id);
-                } else {
-                  player.resetCardUseHistory('slash');
-                }
-
-                if (skill.isRefreshAt(this.room, player, nextPhase)) {
-                  skill.whenRefresh(this.room, player);
-                  player.resetSkillUseHistory(skill.Name);
-                }
-              }
-            }
-          } else if (stage === PhaseChangeStage.PhaseChanged) {
-            this.currentPlayerPhase = nextPhase;
-            if (this.currentPlayerPhase === PlayerPhase.PrepareStage) {
-              this.room.Analytics.turnTo(this.CurrentPlayer.Id);
-            }
-          }
-
-          return true;
-        });
-        if (EventPacker.isTerminated(phaseChangeEvent)) {
-          continue;
+      await this.onHandleIncomingEvent(GameEventIdentifiers.PhaseChangeEvent, phaseChangeEvent, async stage => {
+        if (this.toEndPhase === nextPhase) {
+          EventPacker.terminate(phaseChangeEvent);
+          this.toEndPhase = undefined;
+          return false;
         }
 
-        do {
-          await this.onHandleIncomingEvent(
-            GameEventIdentifiers.PhaseStageChangeEvent,
-            EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseStageChangeEvent, {
-              toStage: this.currentPlayerStage!,
-              playerId: this.CurrentPlayer.Id,
-            }),
-            async stage => {
-              if (
-                stage === PhaseStageChangeStage.StageChanged &&
-                this.processingPhaseStages.includes(this.currentPlayerStage!)
-              ) {
-                await this.onPhase(this.currentPlayerPhase!);
-              }
-              return true;
-            },
-          );
+        if (stage === PhaseChangeStage.PhaseChanged) {
+          this.currentPlayerPhase = nextPhase;
+          if (this.currentPlayerPhase === PlayerPhase.PrepareStage) {
+            this.room.Analytics.turnTo(this.CurrentPlayer.Id);
+          }
+        }
 
-          this.currentPlayerStage = this.playerStages.shift();
-        } while (
-          this.currentPlayerStage !== undefined &&
-          this.stageProcessor.isInsidePlayerPhase(this.currentPlayerPhase!, this.currentPlayerStage)
-        );
+        return true;
+      });
+
+      if (EventPacker.isTerminated(phaseChangeEvent)) {
+        continue;
       }
+
+      do {
+        await this.onHandleIncomingEvent(
+          GameEventIdentifiers.PhaseStageChangeEvent,
+          EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseStageChangeEvent, {
+            toStage: this.currentPlayerStage!,
+            playerId: this.CurrentPlayer.Id,
+          }),
+          async stage => {
+            if (
+              stage === PhaseStageChangeStage.StageChanged &&
+              this.processingPhaseStages.includes(this.currentPlayerStage!)
+            ) {
+              await this.onPhase(this.currentPlayerPhase!);
+            }
+            return true;
+          },
+        );
+
+        this.currentPlayerStage = this.playerStages.shift();
+      } while (
+        this.currentPlayerStage !== undefined &&
+        this.stageProcessor.isInsidePlayerPhase(this.currentPlayerPhase!, this.currentPlayerStage)
+      );
 
       lastPlayer = this.currentPhasePlayer;
     }
@@ -820,7 +822,7 @@ export class GameProcessor {
     let processingStage: GameEventStage | undefined = this.stageProcessor.involve(identifier);
     while (true) {
       if (EventPacker.isTerminated(event)) {
-        this.stageProcessor.skipEventProcess(identifier);
+        this.stageProcessor.skipEventProcess();
         break;
       }
 
@@ -828,7 +830,7 @@ export class GameProcessor {
       await this.room.trigger<typeof event>(event, this.currentProcessingStage);
       this.currentProcessingStage = processingStage;
       if (EventPacker.isTerminated(event)) {
-        this.stageProcessor.skipEventProcess(identifier);
+        this.stageProcessor.skipEventProcess();
         break;
       }
 
@@ -838,7 +840,7 @@ export class GameProcessor {
         this.currentProcessingStage = processingStage;
       }
       if (EventPacker.isTerminated(event)) {
-        this.stageProcessor.skipEventProcess(identifier);
+        this.stageProcessor.skipEventProcess();
         break;
       }
 
@@ -848,13 +850,13 @@ export class GameProcessor {
         this.currentProcessingStage = processingStage;
       }
       if (EventPacker.isTerminated(event)) {
-        this.stageProcessor.skipEventProcess(identifier);
+        this.stageProcessor.skipEventProcess();
         break;
       }
 
-      const nextStage = this.stageProcessor.getNextStage();
-      if (this.stageProcessor.isInsideEvent(identifier, nextStage)) {
-        processingStage = this.stageProcessor.next();
+      const nextStage = this.stageProcessor.popStage();
+      if (nextStage) {
+        processingStage = nextStage;
       } else {
         break;
       }
@@ -1153,7 +1155,7 @@ export class GameProcessor {
       if (killedBy) {
         const killer = this.room.getPlayerById(killedBy);
 
-        if (deadPlayer.Role === PlayerRole.Rebel) {
+        if (deadPlayer.Role === PlayerRole.Rebel && !killer.Dead) {
           await this.room.drawCards(3, killedBy);
         } else if (deadPlayer.Role === PlayerRole.Loyalist && killer.Role === PlayerRole.Lord) {
           const lordCards = Card.getActualCards(killer.getPlayerCards());

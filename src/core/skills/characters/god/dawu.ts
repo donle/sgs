@@ -20,6 +20,25 @@ import { QiXing } from './qixing';
 
 @CommonSkill({ name: 'dawu', description: 'dawu_description' })
 export class DaWu extends TriggerSkill {
+  async whenLosingSkill(room: Room, player: Player) {
+    for (const other of room.getOtherPlayers(player.Id)) {
+      if (other.getMark(MarkEnum.DaWu) === 0) {
+        continue;
+      }
+
+      room.removeMark(other.Id, MarkEnum.DaWu);
+    }
+  }
+  async whenDead(room: Room, player: Player) {
+    for (const other of room.getOtherPlayers(player.Id)) {
+      if (other.getMark(MarkEnum.DaWu) === 0) {
+        continue;
+      }
+
+      room.removeMark(other.Id, MarkEnum.DaWu);
+    }
+  }
+
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
     return stage === PhaseStageChangeStage.StageChanged;
   }
@@ -112,7 +131,7 @@ export class DaWu extends TriggerSkill {
 @ShadowSkill
 @CommonSkill({ name: DaWu.Name, description: DaWu.Description })
 export class DaWuShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  public onLosingSkill(room: Room, owner: PlayerId): boolean {
+  public afterLosingSkill(room: Room, owner: PlayerId): boolean {
     return room.CurrentPlayerPhase === PlayerPhase.PrepareStage;
   }
 

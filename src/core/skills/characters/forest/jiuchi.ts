@@ -81,7 +81,7 @@ export class JiuChiShadow extends TriggerSkill {
 @ShadowSkill
 @CommonSkill({ name: JiuChiShadow.Name, description: JiuChiShadow.Description })
 export class JiuChiRemove extends TriggerSkill implements OnDefineReleaseTiming {
-  onLosingSkill(room: Room, playerId: PlayerId) {
+  afterLosingSkill(room: Room, playerId: PlayerId) {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 

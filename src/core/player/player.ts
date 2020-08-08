@@ -433,7 +433,7 @@ export abstract class Player implements PlayerInfo {
   }
 
   public hasUsedSkill(skillName: string): boolean {
-    return this.skillUsedHistory[skillName] && this.skillUsedHistory[skillName] > 0;
+    return !!this.skillUsedHistory[skillName] && this.skillUsedHistory[skillName] > 0;
   }
   public hasUsedSkillTimes(skillName: string): number {
     return this.skillUsedHistory[skillName] === undefined ? 0 : this.skillUsedHistory[skillName];
@@ -517,7 +517,9 @@ export abstract class Player implements PlayerInfo {
       `Player ${this.playerName} has not been initialized with a character yet`,
     );
 
-    const skills = this.playerSkills.filter(skill => includeDisabled || !UniqueSkillRule.isProhibited(skill, this));
+    const skills = this.playerSkills.filter(
+      skill => (includeDisabled || !UniqueSkillRule.isProhibited(skill, this)) && !skill.isSideEffectSkill(),
+    );
     if (skillType === undefined) {
       return skills as T[];
     }

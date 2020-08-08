@@ -37,12 +37,12 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected abstract readonly roomId: RoomId;
   protected round: number = 0;
 
-  protected awaitResponseEvent:
-    | {
-        identifier: GameEventIdentifiers;
-        content: EventPicker<GameEventIdentifiers, T>;
-      }
-    | undefined;
+  protected awaitResponseEvent: {
+    [K in PlayerId]?: {
+      identifier: GameEventIdentifiers;
+      content: EventPicker<GameEventIdentifiers, T>;
+    };
+  } = {};
 
   protected gameStarted: boolean = false;
   protected gameOvered: boolean = false;
@@ -118,7 +118,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     judgeMatcherEnum?: JudgeMatcherEnum,
   ): Promise<ServerEventFinder<GameEventIdentifiers.JudgeEvent>>;
   //Server only
-  public abstract async responseCard(event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>): Promise<void>;
+  public abstract async responseCard(
+    event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>,
+  ): Promise<boolean>;
   //Server only
   public abstract async chainedOn(playerId: PlayerId): Promise<void>;
   //Server only
@@ -265,7 +267,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public async useCard(content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): Promise<void> {
     if (content.fromId) {
       const from = this.getPlayerById(content.fromId);
-      if (this.CurrentPlayer.Id === content.fromId) {
+      if (this.CurrentPlayer.Id === content.fromId && !content.extraUse) {
         from.useCard(content.cardId);
       }
     }
@@ -637,13 +639,21 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return this.awaitResponseEvent;
   }
 
-  public setAwaitingResponseEvent(identifier: GameEventIdentifiers, content: EventPicker<GameEventIdentifiers, T>) {
-    this.awaitResponseEvent = {
+  public setAwaitingResponseEvent(
+    identifier: GameEventIdentifiers,
+    content: EventPicker<GameEventIdentifiers, T>,
+    toId: PlayerId,
+  ) {
+    this.awaitResponseEvent[toId] = {
       identifier,
       content,
     };
   }
-  public unsetAwaitingResponseEvent() {
-    this.awaitResponseEvent = undefined;
+  public unsetAwaitingResponseEvent(toId?: PlayerId) {
+    if (toId === undefined) {
+      this.awaitResponseEvent = {};
+    } else {
+      delete this.awaitResponseEvent[toId];
+    }
   }
 }

@@ -112,7 +112,7 @@ export class LuoYi extends TriggerSkill {
 @ShadowSkill
 @CompulsorySkill({ name: LuoYi.GeneralName, description: LuoYi.Description })
 export class LuoYiShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  onLosingSkill(room: Room, playerId: PlayerId) {
+  afterLosingSkill(room: Room, playerId: PlayerId) {
     return room.CurrentPlayer === room.getPlayerById(playerId) && room.CurrentPlayerPhase === PlayerPhase.PrepareStage;
   }
 

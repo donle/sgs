@@ -1,4 +1,3 @@
-import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -54,7 +53,6 @@ export class FireAttackSkill extends ActiveSkill {
     }
 
     const askForDisplayCardEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForCardDisplayEvent>({
-      cardMatcher: new CardMatcher({}).toSocketPassenger(),
       cardAmount: 1,
       toId,
       triggeredBySkills: [this.Name],

@@ -1,4 +1,3 @@
-import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -80,7 +79,6 @@ export class JiLve extends ActiveSkill {
       const askForCard: ServerEventFinder<GameEventIdentifiers.AskForCardEvent> = {
         cardAmountRange: [1, from.getPlayerCards().length],
         toId: from.Id,
-        cardMatcher: new CardMatcher({}).toSocketPassenger(),
         reason: this.Name,
         conversation: 'please choose your zhiheng cards',
         fromArea: [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],

@@ -36,7 +36,7 @@ import { Functional } from 'core/shares/libs/functional';
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Flavor } from 'core/shares/types/host_config';
-import { OnDefineReleaseTiming, Skill, SkillHooks, SkillType, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
+import { OnDefineReleaseTiming, Skill, SkillLifeCycle, SkillType, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 import { GameProcessor } from '../game/game_processor';
@@ -208,8 +208,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     const canTriggerSkills: TriggerSkill[] = [];
     if (skillFrom === 'character') {
       const hookedSkills = this.hookedSkills.reduce<TriggerSkill[]>((skills, { player: skillOwner, skill }) => {
-        if (skillOwner.Id === player.Id) {
-          skills.push(skill as TriggerSkill);
+        if (skillOwner.Id === player.Id && skill instanceof TriggerSkill) {
+          skills.push(skill);
         }
         return skills;
       }, []);
@@ -301,7 +301,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                   triggeredOnEvent: content,
                 };
                 if (
-                  skill.isAutoTrigger(this, content) ||
+                  skill.isAutoTrigger(this, player, content) ||
                   skill.SkillType === SkillType.Compulsory ||
                   skill.SkillType === SkillType.Awaken
                 ) {
@@ -345,7 +345,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               while (awaitedSkills.length > 0) {
                 const uncancellableSkills = awaitedSkills.filter(
                   skill =>
-                    skill.isAutoTrigger(this, content) ||
+                    skill.isAutoTrigger(this, player, content) ||
                     skill.SkillType === SkillType.Compulsory ||
                     skill.SkillType === SkillType.Awaken,
                 );
@@ -422,10 +422,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     this.hookedSkills = this.hookedSkills.filter(({ skill, player }, index) => {
       const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
-      if (hookedSkill.onLosingSkill && hookedSkill.onLosingSkill(this, player.Id)) {
+      if (hookedSkill.afterLosingSkill && hookedSkill.afterLosingSkill(this, player.Id)) {
         return false;
       }
-      if (hookedSkill.onDeath && hookedSkill.onDeath(this, player.Id)) {
+      if (hookedSkill.afterDead && hookedSkill.afterDead(this, player.Id)) {
         return false;
       }
       return true;
@@ -550,7 +550,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       {
         cardAmount: discardAmount,
         fromArea,
-        toId: this.CurrentPlayer.Id,
+        toId: playerId,
         except,
         triggeredBySkills: bySkill ? [bySkill] : undefined,
         conversation,
@@ -587,7 +587,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         cardId: responseEvent.cardId!,
       };
 
-      if (responseEvent.cardId === undefined || (await this.preUseCard(preUseEvent, true))) {
+      if (responseEvent.cardId === undefined || (await this.preUseCard(preUseEvent))) {
         responseEvent.cardId = preUseEvent.cardId;
         responseEvent.fromId = preUseEvent.fromId;
         EventPacker.copyPropertiesTo(preUseEvent, responseEvent);
@@ -624,7 +624,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         cardId: responseEvent.cardId!,
       };
 
-      if (responseEvent.cardId === undefined || (await this.preUseCard(preUseEvent, true))) {
+      if (responseEvent.cardId === undefined || (await this.preUseCard(preUseEvent))) {
         responseEvent.cardId = preUseEvent.cardId;
         responseEvent.toIds = preUseEvent.toIds;
         responseEvent.fromId = preUseEvent.fromId;
@@ -685,13 +685,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async preUseCard(
     cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
-    noExecution?: boolean,
   ): Promise<boolean> {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, cardUseEvent);
     const card = Sanguosha.getCardById<VirtualCard>(cardUseEvent.cardId);
     await card.Skill.onUse(this, cardUseEvent);
 
-    if (!noExecution && Card.isVirtualCardId(cardUseEvent.cardId)) {
+    if (Card.isVirtualCardId(cardUseEvent.cardId)) {
       const from = this.getPlayerById(cardUseEvent.fromId);
       const skill = Sanguosha.getSkillBySkillName(card.GeneratedBySkill);
       const skillUseEvent = {
@@ -919,9 +918,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     for (const skill of lostSkill) {
       const outsideCards = player.getCardIds(PlayerCardsArea.OutsideArea, skill.Name);
-      if (SkillHooks.isHookedUpOnLosingSkill(skill)) {
+      if (SkillLifeCycle.isHookedAfterLosingSkill(skill)) {
         this.hookedSkills.push({ player, skill });
       }
+      await SkillLifeCycle.executeHookOnLosingSkill(skill, this, player);
 
       if (outsideCards) {
         if (player.isCharacterOutsideArea(skill.Name)) {
@@ -1161,18 +1161,20 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.RecoverEvent, event);
   }
 
-  public async responseCard(event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>): Promise<void> {
+  public async responseCard(event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>): Promise<boolean> {
+    let validResponse = false;
     EventPacker.createIdentifierEvent(GameEventIdentifiers.CardResponseEvent, event);
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardResponseEvent, event, async stage => {
       if (stage === CardResponseStage.AfterCardResponseEffect) {
         if (event.responseToEvent) {
           EventPacker.terminate(event.responseToEvent);
-          return false;
+          validResponse = true;
         }
       }
-
       return true;
     });
+
+    return validResponse;
   }
 
   public async judge(
@@ -1387,9 +1389,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     };
 
     for (const skill of deadPlayer.getPlayerSkills()) {
-      if (SkillHooks.isHookedUpOnDeath(skill)) {
+      if (SkillLifeCycle.isHookedAfterDead(skill)) {
         this.hookedSkills.push({ player: deadPlayer, skill });
       }
+      await SkillLifeCycle.executeHookedOnDead(skill, this, deadPlayer);
     }
 
     await this.gameProcessor.onHandleIncomingEvent(

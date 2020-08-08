@@ -52,7 +52,7 @@ export class DiMeng extends ActiveSkill {
 
     return (
       owner !== target &&
-      room.getPlayerById(owner).getCardIds(PlayerCardsArea.HandArea).length >=
+      room.getPlayerById(owner).getPlayerCards().length >=
         Math.abs(firstHandcardNum - secondHandcardNum)
     );
   }
@@ -92,6 +92,7 @@ export class DiMeng extends ActiveSkill {
         toArea: CardMoveArea.ProcessingArea,
         proposer: fromId,
         movedByReason: this.Name,
+        engagedPlayerIds: [firstId],
       },
       {
         moveReason: CardMoveReason.PassiveMove,
@@ -100,6 +101,7 @@ export class DiMeng extends ActiveSkill {
         toArea: CardMoveArea.ProcessingArea,
         proposer: fromId,
         movedByReason: this.Name,
+        engagedPlayerIds: [secondId],
       },
     ]);
 
