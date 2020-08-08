@@ -202,4 +202,7 @@ export { LongHun, LongHunEffect, LongHunBlackEffect } from './characters/god/lon
 export { PoXi } from './characters/god/poxi';
 export { JieYing, JieYingDraw, JieYingEffect } from './characters/god/jieying';
 
+export { SanYao } from './characters/yijiang2011/sanyao';
+export { ZhiMan } from './characters/yijiang2011/zhiman';
+
 export { Cheat } from './system/cheat';
