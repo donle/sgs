@@ -433,7 +433,7 @@ export abstract class Player implements PlayerInfo {
   }
 
   public hasUsedSkill(skillName: string): boolean {
-    return this.skillUsedHistory[skillName] && this.skillUsedHistory[skillName] > 0;
+    return !!this.skillUsedHistory[skillName] && this.skillUsedHistory[skillName] > 0;
   }
   public hasUsedSkillTimes(skillName: string): number {
     return this.skillUsedHistory[skillName] === undefined ? 0 : this.skillUsedHistory[skillName];

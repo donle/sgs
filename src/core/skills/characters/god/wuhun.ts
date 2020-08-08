@@ -1,6 +1,6 @@
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AllStage, DamageEffectStage, PlayerDiedStage } from 'core/game/stage_processor';
+import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { JudgeMatcher, JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
