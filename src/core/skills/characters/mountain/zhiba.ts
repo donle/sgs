@@ -6,14 +6,27 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { System } from 'core/shares/libs/system';
 import { ActiveSkill, CommonSkill, LordSkill, SideEffectSkill, TriggerSkill } from 'core/skills/skill';
+import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { HunZi } from './hunzi';
 
 @LordSkill
 @CommonSkill({ name: 'zhiba', description: 'zhiba_description' })
-export class ZhiBa extends TriggerSkill {
+export class ZhiBa extends TriggerSkill implements OnDefineReleaseTiming {
   public isAutoTrigger() {
     return true;
+  }
+
+  public isFlaggedSkill() {
+    return true;
+  }
+
+  async whenLosingSkill(room: Room) {
+    room.uninstallSideEffectSkill(System.SideEffectSkillApplierEnum.ZhiBa);
+  }
+
+  async whenObtainingSkill(room: Room) {
+    room.installSideEffectSkill(System.SideEffectSkillApplierEnum.ZhiBa, ZhiBaPindianCard.Name);
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.GameStartEvent>, stage?: AllStage): boolean {

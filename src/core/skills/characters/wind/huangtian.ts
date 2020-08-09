@@ -23,7 +23,11 @@ export class HuangTian extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   async whenLosingSkill(room: Room) {
-    room.uninstallSideEffectSkill(System.SideEffectSkillApplierEnum.ZhiBa);
+    room.uninstallSideEffectSkill(System.SideEffectSkillApplierEnum.HuangTian);
+  }
+
+  async whenObtainingSkill(room: Room) {
+    room.installSideEffectSkill(System.SideEffectSkillApplierEnum.HuangTian, HuangTianGiveCard.Name);
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.GameStartEvent>, stage?: AllStage): boolean {
