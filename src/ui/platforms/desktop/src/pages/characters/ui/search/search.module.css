@@ -1,0 +1,112 @@
+@value SanguoshaFont from '../../../../ui/metrics/metrics.css';
+@value IcomoonFont from '../../../../ui/metrics/metrics.css';
+@value gridLine from '../../../../ui/metrics/metrics.css';
+@value halfGridLine from '../../../../ui/metrics/metrics.css';
+
+.searchBar{
+    width: 100%;
+    padding: 8px;
+    background: #121212;
+    border-bottom: 1px solid white;
+    display: grid;
+    display: -moz-grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-gap: calc(2 * gridLine) gridLine;
+    grid-auto-flow: row dense;
+}
+
+.searchWrapper{
+    grid-column: 6 / 9;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.filterButton{
+    width: 108px;
+    height: 3.2vh;
+    line-height: 3.2vh;
+    color: rgba(255, 255, 255, 1);
+    font-size: 1.2rem;
+    font-family: SanguoshaFont;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 1);
+    border-radius: 4px;
+    background-color: rgba(69, 49, 41, 1);
+    cursor: pointer;
+}
+
+.input{
+    width: 12vw;
+    height: 3.2vh;
+    margin-right: gridLine;
+    border-radius: 20px;
+    border: 2px solid #fff;
+    background: #f9f0da;
+    outline: none;
+    position: relative;
+    animation: reset .5s;
+}
+
+.input:focus{
+    animation: expand .5s;
+    width: 20vw;
+}
+
+@keyframes expand{
+    from{
+        width: 12vw;
+    };
+    to{
+        width: 20vw;
+    }
+}
+
+@keyframes reset{
+    from{
+        width: 20vw;
+    };
+    to{
+        width: 12vw;
+    }
+}
+
+.searchButton{
+    height: 3.2vh;
+    line-height: 3.2vh;
+    background: transparent;
+    border: none;
+    position: absolute;
+    right: 6vh;
+}
+
+.closeButton{
+    width: 3.2vh;
+    height: 3.2vh;
+    line-height: 3.2vh;
+    background-color: rgba(189, 64, 64, 1);
+    color: white;
+    text-align: center;
+    border-radius: 3.2vh;
+}
+
+.icon{
+    font-family: IcomoonFont;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+  
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.searchButton > span::before{
+    content: "\e900";
+}
+
+.closeButton > span::before{
+    content: "\ea0f";
+}

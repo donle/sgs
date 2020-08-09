@@ -11,6 +11,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { App } from './app';
 import { emojiLoader } from './emoji_loader/emoji_loader';
 import './index.css';
+import './index.module.css'
 import * as serviceWorker from './serviceWorker';
 
 const mode = (process.env.DEV_MODE as Flavor) || Flavor.Dev;
@@ -19,10 +20,10 @@ const config = getClientConfig(mode);
 const translator = ClientTranslationModule.setup(config.ui.language, [Languages.ZH_CN, SimplifiedChinese]);
 emojiLoader(translator);
 
-if (config.flavor === ClientFlavor.Prod) {
+/* if (config.flavor === ClientFlavor.Prod) {
   import('./index.module.css');
 }
-
+ */
 const header = document.getElementsByTagName('head')[0];
 const baseDirElement = document.createElement('base');
 baseDirElement.setAttribute('href', '/');

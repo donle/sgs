@@ -15,25 +15,82 @@
     position: fixed;
     top: 10vh;
     right: 5vw;
-    height: 60vh;
+    height: 72vh;
     background-color: #121212;
+}
+
+.borderSVG{
+    position: absolute;
+    width: calc(100% + 12px);
+    height: calc(100% + 12px);
+    left: -6px;
+    top: -6px;
+    z-index: -1;
+}
+
+.border{
+    stroke: #996633;
+    stroke-width: 12px;
+}
+
+.cor{
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    z-index: 1;
+    background: transparent;
+}
+
+.corLeftTop{
+    top: -6px;
+    left: -6px;
+    border-radius: 0px 0px 20px 0px;
+    border-bottom: 6px solid #996633;
+    border-right: 6px solid #996633;
+}
+
+.corLeftBottom{
+    top: -6px;
+    right: -6px;
+    border-radius: 0px 0px 0px 20px;
+    border-bottom: 6px solid #996633;
+    border-left: 6px solid #996633;
+}
+
+.corRightTop{
+    left: -6px;
+    bottom: -6px;
+    border-radius: 0px 20px 0px 0px;
+    border-top: 6px solid #996633;
+    border-right: 6px solid #996633;
+}
+
+.corRightBottom{
+    right: -6px;
+    bottom: -6px;
+    border-radius: 20px 0px 0px 0px;
+    border-top: 6px solid #996633;
+    border-left: 6px solid #996633;
+}
+
+.list{
+    height: 60vh;
     display: grid;
     display: -moz-grid;
     grid-template-columns: repeat(5, 1fr);
     grid-gap: calc(gridLine * 2) gridLine;
-    justify-content: space-evenly;
     padding: 0 calc(gridLine * 3) 0 calc(gridLine * 3);
     overflow-y: scroll;
 }
 
 /* 未兼容火狐、IE */
-.container::-webkit-scrollbar {
+.list::-webkit-scrollbar {
     display: none;
 }
 
 .character{
-    margin: gridLine gridLine gridLine gridLine;
     cursor: pointer;
+    padding: 0 4px 4px;
 }
 
 .character:hover::before, .character:hover::after{
