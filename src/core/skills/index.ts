@@ -176,6 +176,10 @@ export { XinSheng } from './characters/mountain/xinsheng';
 export { BeiGe } from './characters/mountain/beige';
 export { DuanChang } from './characters/mountain/duanchang';
 
+export { LuoYing } from './characters/yijiang2011/luoying';
+export { JiuShi, JiuShiShadow } from './characters/yijiang2011/jiushi';
+export { ChengZhang } from './characters/yijiang2011/chengzhang';
+
 export { WuShen, WuShenShadow } from './characters/god/wushen';
 export { WuHun } from './characters/god/wuhun';
 export { SheLie } from './characters/god/shelie';
