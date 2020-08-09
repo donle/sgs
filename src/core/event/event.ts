@@ -204,6 +204,10 @@ export const serverResponsiveListenerEvents = [
   GameEventIdentifiers.AskForContinuouslyChoosingCardEvent,
 ];
 
+export const enum CardMovedBySpecialReason {
+  JudgeProcess = 'Judge Process',
+}
+
 export const enum CardMoveReason {
   CardDraw,
   ActivePrey,

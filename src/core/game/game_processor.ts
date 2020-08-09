@@ -5,6 +5,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { Character, CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
 import {
   CardMoveArea,
+  CardMovedBySpecialReason,
   CardMoveReason,
   ClientEventFinder,
   EventPacker,
@@ -1692,6 +1693,8 @@ export class GameProcessor {
         movingCards: [{ card: event.judgeCardId, fromArea: CardMoveArea.ProcessingArea }],
         moveReason: CardMoveReason.PlaceToDropStack,
         toArea: CardMoveArea.DropStack,
+        proposer: event.toId,
+        movedByReason: CardMovedBySpecialReason.JudgeProcess,
       });
     }
     this.room.endProcessOnTag(event.judgeCardId.toString());
