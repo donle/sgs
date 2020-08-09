@@ -17,30 +17,10 @@ type CharacterProps = PagePropsWithConfig<{
 
 export const Characters = (props: CharacterProps) => {
   const { config, translator } = props;
-  const totalCharacters: Character[] = Sanguosha.getAllCharacters();
   const imageLoader = getImageLoader(config.flavor);
 
+  const totalCharacters: Character[] = useMemo(() => Sanguosha.getAllCharacters(), []);
   const [characters, setCharacters] = useState(totalCharacters);
-
-  const characterItems = useMemo(() => {
-    return characters.map((character, cardId) => 
-      <CharacterCard
-        key={cardId}
-        className={classNames(styles.character, {
-          [styles.wei]: character.Nationality === CharacterNationality.Wei,
-          [styles.shu]: character.Nationality === CharacterNationality.Shu,
-          [styles.wu]: character.Nationality === CharacterNationality.Wu,
-          [styles.qun]: character.Nationality === CharacterNationality.Qun,
-          [styles.god]: character.Nationality === CharacterNationality.God,
-        })}
-        character={Sanguosha.getCharacterById(cardId as CharacterId)}
-        imageLoader={imageLoader}
-        translator={translator}
-        size="regular"
-        hideHp
-      />
-    );
-  }, [imageLoader, translator, characters])
 
   return (<>
     <Background imageLoader={imageLoader} />
@@ -61,9 +41,27 @@ export const Characters = (props: CharacterProps) => {
         <div className={classNames(styles.cor, styles.corRightBottom)} />
         {/*模拟边框 end*/}
 
-        <SearchBar translator={translator} totalCharacters={totalCharacters}/>
+        <SearchBar translator={translator} totalCharacters={totalCharacters} setCharacters={setCharacters}/>
         <div className={styles.list}>
-          {characterItems}
+          {characters.map((character) => {
+            const cardId = totalCharacters.indexOf(character);
+            return (<CharacterCard
+              key={cardId}
+              className={classNames(styles.character, {
+                [styles.wei]: character.Nationality === CharacterNationality.Wei,
+                [styles.shu]: character.Nationality === CharacterNationality.Shu,
+                [styles.wu]: character.Nationality === CharacterNationality.Wu,
+                [styles.qun]: character.Nationality === CharacterNationality.Qun,
+                [styles.god]: character.Nationality === CharacterNationality.God,
+              })}
+              character={Sanguosha.getCharacterById(cardId as CharacterId)}
+              imageLoader={imageLoader}
+              translator={translator}
+              size="regular"
+              hideHp
+              onClick={() => console.log(character.Name)}
+            />)
+          })}
         </div>
       </section>
     </main>
