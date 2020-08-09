@@ -105,6 +105,11 @@ export class Lobby extends React.Component<LobbyProps> {
     this.openUsernameDialog = true;
   };
 
+  @mobx.action
+  private readonly onViewCharacters = () => {
+    this.props.history.push('/characters');
+  }
+
   unmatchedView() {
     //TODO: complete unmatched view;
     return <div>{this.props.translator.tr('Unmatched core version, please update your application')}</div>;
@@ -167,6 +172,9 @@ export class Lobby extends React.Component<LobbyProps> {
             </Button>
             <Button variant="primary" className={styles.button} onClick={this.onChangeUsername}>
               {this.props.translator.tr('Change username')}
+            </Button>
+            <Button variant="primary" className={styles.button} onClick={this.onViewCharacters}>
+              {this.props.translator.tr('View characters')}
             </Button>
           </div>
           <div className={styles.roomList}>

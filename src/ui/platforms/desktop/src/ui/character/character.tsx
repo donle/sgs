@@ -18,6 +18,7 @@ export type CharacterCardProps = {
   className?: string;
   size?: 'regular' | 'small';
   selected?: boolean;
+  hideHp?: boolean;
 };
 
 @mobxReact.observer
@@ -38,7 +39,7 @@ export class CharacterCard extends React.Component<CharacterCardProps> {
   }
 
   render() {
-    const { character, translator, className, size, selected } = this.props;
+    const { character, translator, className, size, selected, hideHp } = this.props;
     return (
       <div
         className={classNames(styles.characterCard, className, {
@@ -52,10 +53,10 @@ export class CharacterCard extends React.Component<CharacterCardProps> {
             <NationalityBadge size={size} nationality={character.Nationality} isLord={character.isLord()}>
               {translator.tr(character.Name)}
             </NationalityBadge>
-            <CharacterHp
+            {hideHp || <CharacterHp
               character={character}
               className={classNames(styles.characterHp, { [styles.small]: size === 'small' })}
-            />
+            />}
             <img
               className={classNames(styles.characterImage, { [styles.small]: size === 'small' })}
               src={this.characterImage}

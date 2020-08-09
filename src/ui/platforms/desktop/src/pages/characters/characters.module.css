@@ -1,0 +1,68 @@
+@value gridLine from '../../ui/metrics/metrics.css';
+
+@value wuColor from '../../ui/metrics/metrics.css';
+@value weiColor from '../../ui/metrics/metrics.css';
+@value shuColor from '../../ui/metrics/metrics.css';
+@value qunColor from '../../ui/metrics/metrics.css';
+@value godColor from '../../ui/metrics/metrics.css';
+
+.content{
+    height: 100vh;
+    width: 100vw;
+}
+
+.container{
+    position: fixed;
+    top: 10vh;
+    right: 5vw;
+    height: 60vh;
+    background-color: #121212;
+    display: grid;
+    display: -moz-grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: calc(gridLine * 2) gridLine;
+    justify-content: space-evenly;
+    padding: 0 calc(gridLine * 3) 0 calc(gridLine * 3);
+    overflow-y: scroll;
+}
+
+/* 未兼容火狐、IE */
+.container::-webkit-scrollbar {
+    display: none;
+}
+
+.character{
+    margin: gridLine gridLine gridLine gridLine;
+    cursor: pointer;
+}
+
+.character:hover::before, .character:hover::after{
+    position: absolute;
+    content: "";
+    top: gridLine;
+    left: gridLine;
+    bottom: 0;
+    right: gridLine;
+    border-radius: 4px;
+    z-index: -1;
+}
+
+.character.wei:hover::before, .character.wei:hover::after{
+    box-shadow:0 0 8px 8px weiColor;
+}
+
+.character.shu:hover::before, .character.shu:hover::after{
+    box-shadow:0 0 8px 8px shuColor;
+}
+
+.character.wu:hover::before, .character.wu:hover::after{
+    box-shadow:0 0 8px 8px wuColor;
+}
+
+.character.qun:hover::before, .character.qun:hover::after{
+    box-shadow:0 0 8px 8px qunColor;
+}
+
+.character.god:hover::before, .character.god:hover::after{
+    box-shadow:0 0 8px 8px godColor;
+}

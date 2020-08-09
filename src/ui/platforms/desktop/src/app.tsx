@@ -4,6 +4,7 @@ import { RoomPage } from 'pages/room/room';
 import { ClientConfig } from 'props/config_props';
 import * as React from 'react';
 import { Redirect, Route, Router, Switch } from 'react-router-dom';
+import { Characters } from './pages/characters/characters';
 import { Lobby } from './pages/lobby/lobby';
 
 export const App = (props: { config: ClientConfig; translator: ClientTranslationModule }) => {
@@ -24,6 +25,18 @@ export const App = (props: { config: ClientConfig; translator: ClientTranslation
             path={'/lobby'}
             render={({ match, location, history }) => (
               <Lobby
+                config={props.config}
+                match={match}
+                translator={props.translator}
+                location={location}
+                history={history}
+              />
+            )}
+          ></Route>
+          <Route
+            path={'/characters'}
+            render={({ match, location, history }) => (
+              <Characters
                 config={props.config}
                 match={match}
                 translator={props.translator}

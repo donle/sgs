@@ -615,6 +615,7 @@ export const UiDictionary: Word[] = [
   },
   { source: 'Refresh room list', target: '刷新房间' },
   { source: 'Change username', target: '更改玩家名' },
+  { source: 'View characters', target: '武将一览' },
   { source: 'Join', target: '加入' },
   { source: 'lobby', target: '大厅' },
   { source: 'room id', target: '房间号' },
