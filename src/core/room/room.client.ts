@@ -178,8 +178,8 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.endPhase.name);
   }
   //Server only
-  public findCardByMatcherFrom(): any {
-    this.throwUntouchableError(this.findCardByMatcherFrom.name);
+  public findCardsByMatcherFrom(): any {
+    this.throwUntouchableError(this.findCardsByMatcherFrom.name);
   }
   //Server only
   public isCardInDropStack(): any {
