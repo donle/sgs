@@ -15,6 +15,7 @@ export const enum GameEventIdentifiers {
   PlayerPropertiesChangeEvent,
   SetOutsideCharactersEvent,
   HuaShenCardUpdatedEvent,
+  UpgradeSideEffectSkillsEvent,
 
   SetFlagEvent,
   RemoveFlagEvent,
@@ -109,6 +110,7 @@ export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.ClearMarkEvent,
   GameEventIdentifiers.SetOutsideCharactersEvent,
   GameEventIdentifiers.HuaShenCardUpdatedEvent,
+  GameEventIdentifiers.UpgradeSideEffectSkillsEvent,
 
   GameEventIdentifiers.UserMessageEvent,
   GameEventIdentifiers.PhaseChangeEvent,

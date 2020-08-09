@@ -23,7 +23,7 @@ import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/p
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardTargetEnum } from 'core/cards/libs/card_props';
-import { Character, CharacterId } from 'core/characters/character';
+import { Character, CharacterId, CharacterNationality } from 'core/characters/character';
 import { PinDianResultType } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { GameInfo, getRoles } from 'core/game/game_props';
@@ -35,6 +35,7 @@ import { Algorithm } from 'core/shares/libs/algorithm';
 import { Functional } from 'core/shares/libs/functional';
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { Logger } from 'core/shares/libs/logger/logger';
+import { System } from 'core/shares/libs/system';
 import { Flavor } from 'core/shares/types/host_config';
 import { OnDefineReleaseTiming, Skill, SkillLifeCycle, SkillType, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
@@ -934,7 +935,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       }
     }
   }
-  public obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean) {
+  public async obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean) {
     const player = this.getPlayerById(playerId);
     player.obtainSkill(skillName);
     this.broadcast(GameEventIdentifiers.ObtainSkillEvent, {
@@ -948,6 +949,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           ).extract()
         : undefined,
     });
+    await SkillLifeCycle.executeHookOnObtainingSkill(Sanguosha.getSkillBySkillName(skillName), this, player);
   }
 
   public async loseHp(playerId: PlayerId, lostHp: number) {
@@ -1288,17 +1290,19 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           winners,
           pindianCards,
         };
+        const messages = pindianCards.map(pindianCard =>
+          TranslationPack.translationJsonPatcher(
+            '{0} used {1} to respond pindian',
+            TranslationPack.patchPlayerInTranslation(this.getPlayerById(pindianCard.fromId)),
+            TranslationPack.patchCardInTranslation(pindianCard.cardId),
+          ).toString(),
+        );
+        pindianResult.winners.length === 0 && messages.push('pindian result:draw');
 
         this.broadcast(GameEventIdentifiers.ObserveCardsEvent, {
           cardIds: pindianCards.map(pindianCard => pindianCard.cardId),
           selected: pindianCards.map(pindianCard => ({ card: pindianCard.cardId, player: pindianCard.fromId })),
-          messages: pindianCards.map(pindianCard =>
-            TranslationPack.translationJsonPatcher(
-              '{0} used {1} to respond pindian',
-              TranslationPack.patchPlayerInTranslation(this.getPlayerById(pindianCard.fromId)),
-              TranslationPack.patchCardInTranslation(pindianCard.cardId),
-            ).toString(),
-          ),
+          messages,
           translationsMessage:
             pindianResult.winners.length > 0
               ? TranslationPack.translationJsonPatcher(
@@ -1307,7 +1311,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                     ...pindianResult.winners.map(winner => this.getPlayerById(winner)),
                   ),
                 ).extract()
-              : TranslationPack.translationJsonPatcher('pindian result:draw').extract(),
+              : undefined,
         });
         await this.sleep(3000);
         this.broadcast(GameEventIdentifiers.ObserveCardFinishEvent, {});
@@ -1487,6 +1491,22 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   public getCardFromDrawStack(cardId: CardId): CardId | undefined {
     const index = this.drawStack.findIndex(card => card === cardId);
     return index < 0 ? undefined : this.drawStack.splice(index, 1)[0];
+  }
+
+  public installSideEffectSkill(applier: System.SideEffectSkillApplierEnum, skillName: string) {
+    super.installSideEffectSkill(applier, skillName);
+    this.broadcast(GameEventIdentifiers.UpgradeSideEffectSkillsEvent, {
+      sideEffectSkillApplier: applier,
+      skillName,
+    });
+  }
+
+  public uninstallSideEffectSkill(applier: System.SideEffectSkillApplierEnum) {
+    super.uninstallSideEffectSkill(applier);
+    this.broadcast(GameEventIdentifiers.UpgradeSideEffectSkillsEvent, {
+      sideEffectSkillApplier: applier,
+      skillName: undefined,
+    });
   }
 
   public get CurrentPhasePlayer() {

@@ -164,7 +164,7 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
       latestHuaShen: character.Id,
       latestHuaShenSkillName: selectedOption!,
     });
-    room.obtainSkill(who, selectedOption!, true);
+    await room.obtainSkill(who, selectedOption!, true);
   }
 
   public async onEffect(

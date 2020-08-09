@@ -22,6 +22,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { System } from 'core/shares/libs/system';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { FilterSkill, RulesBreakerSkill, TransformSkill } from 'core/skills/skill';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
@@ -47,6 +48,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected gameStarted: boolean = false;
   protected gameOvered: boolean = false;
   private onProcessingCards: { [K: string]: CardId[] } = {};
+  protected sideEffectSkills: { [N in System.SideEffectSkillApplierEnum]?: string } = {};
 
   protected abstract init(...args: any[]): void;
   //Server only
@@ -210,6 +212,25 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     }
   }
 
+  public getSideEffectSkills(player: Player) {
+    const skills: string[] = [];
+    for (const [applierEnumString, skillName] of Object.entries(this.sideEffectSkills)) {
+      if (System.SideEffectSkillAppliers[applierEnumString](player, this)) {
+        skills.push(skillName!);
+      }
+    }
+
+    return skills;
+  }
+
+  public installSideEffectSkill(applier: System.SideEffectSkillApplierEnum, skillName: string) {
+    this.sideEffectSkills[applier] = skillName;
+  }
+
+  public uninstallSideEffectSkill(applier: System.SideEffectSkillApplierEnum) {
+    delete this.sideEffectSkills[applier];
+  }
+
   public readonly sleep = async (timeDuration: number) =>
     new Promise(r => {
       setTimeout(r, timeDuration);
@@ -264,7 +285,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     );
   }
 
-  public async useCard(content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, declared?: boolean): Promise<void> {
+  public async useCard(
+    content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
+    declared?: boolean,
+  ): Promise<void> {
     if (content.fromId) {
       const from = this.getPlayerById(content.fromId);
       if (this.CurrentPlayer.Id === content.fromId && !content.extraUse) {

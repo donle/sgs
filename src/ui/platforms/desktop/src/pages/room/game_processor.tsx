@@ -281,6 +281,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.HuaShenCardUpdatedEvent:
         await this.onHandleHuaShenCardUpdatedEvent(e as any, content);
         break;
+      case GameEventIdentifiers.UpgradeSideEffectSkillsEvent:
+        await this.onHandleUpgradeSideEffectSkillsEvent(e as any, content);
+        break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
     }
@@ -574,6 +577,16 @@ export class GameClientProcessor {
       skillName: latestHuaShenSkillName,
       characterId: latestHuaShen,
     });
+    this.presenter.broadcastUIUpdate();
+  }
+
+  private onHandleUpgradeSideEffectSkillsEvent<T extends GameEventIdentifiers.UpgradeSideEffectSkillsEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    content.skillName !== undefined
+      ? this.store.room.installSideEffectSkill(content.sideEffectSkillApplier, content.skillName)
+      : this.store.room.uninstallSideEffectSkill(content.sideEffectSkillApplier);
     this.presenter.broadcastUIUpdate();
   }
 

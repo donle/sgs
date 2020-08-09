@@ -71,7 +71,7 @@ export class BaoNve extends TriggerSkill {
       const judge = await room.judge(event.fromId, undefined, this.Name, JudgeMatcherEnum.BaoNve);
 
       if (JudgeMatcher.onJudge(judge.judgeMatcherEnum!, Sanguosha.getCardById(judge.judgeCardId))) {
-        room.recover({
+        await room.recover({
           toId: event.fromId,
           recoveredHp: 1,
           recoverBy: event.fromId,

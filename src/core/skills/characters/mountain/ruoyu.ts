@@ -34,15 +34,15 @@ export class RuoYu extends TriggerSkill {
   async onEffect(room: Room, skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const fromId = skillEffectEvent.fromId;
 
-    room.changeMaxHp(fromId, 1);
-    room.recover({
+    await room.changeMaxHp(fromId, 1);
+    await room.recover({
       recoveredHp: 1,
       toId: fromId,
       recoverBy: fromId,
       triggeredBySkills: [this.Name],
     });
-    room.obtainSkill(fromId, 'jijiang', true);
-    room.obtainSkill(fromId, 'sishu', true);
+    await room.obtainSkill(fromId, 'jijiang', true);
+    await room.obtainSkill(fromId, 'sishu', true);
 
     return true;
   }

@@ -48,6 +48,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   public get CurrentProcessingStage(): any {
     return this.throwUntouchableError(this.CurrentProcessingStage.name);
   }
+
   //Server only
   public insertPlayerRound(): void {
     this.throwUntouchableError(this.insertPlayerRound.name);

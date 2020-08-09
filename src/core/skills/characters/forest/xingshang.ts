@@ -28,7 +28,7 @@ export class XingShang extends TriggerSkill {
     const caopi = room.getPlayerById(fromId);
 
     if (dead.getPlayerCards().length <= 0) {
-      room.recover({
+      await room.recover({
         recoveredHp: 1,
         toId: fromId,
         recoverBy: fromId,
@@ -60,7 +60,7 @@ export class XingShang extends TriggerSkill {
       const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
       response.selectedOption = response.selectedOption || 'xingshang:pickup';
       if (response.selectedOption === 'xingshang:recover') {
-        room.recover({
+        await room.recover({
           recoveredHp: 1,
           toId: fromId,
           recoverBy: fromId,

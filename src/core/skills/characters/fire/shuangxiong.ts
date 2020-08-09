@@ -119,7 +119,12 @@ export class ShuangXiongShadow extends TriggerSkill {
     const unknownEvent = EventPacker.getIdentifier(event);
     if (unknownEvent === GameEventIdentifiers.DrawCardEvent) {
       const drawEvent = event as ServerEventFinder<GameEventIdentifiers.DrawCardEvent>;
-      return owner.Id === drawEvent.fromId && room.CurrentPlayerPhase === PlayerPhase.DrawCardStage;
+      return (
+        owner.Id === drawEvent.fromId &&
+        room.CurrentPlayerPhase === PlayerPhase.DrawCardStage &&
+        drawEvent.triggeredBySkills === undefined &&
+        drawEvent.drawAmount > 0
+      );
     } else if (unknownEvent === GameEventIdentifiers.DamageEvent) {
       const damageEvent = event as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
       if (

@@ -1,10 +1,10 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { CharacterNationality } from 'core/characters/character';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, GameStartStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { System } from 'core/shares/libs/system';
 import { ActiveSkill, CommonSkill, LordSkill, SideEffectSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { HunZi } from './hunzi';
@@ -27,11 +27,7 @@ export class ZhiBa extends TriggerSkill {
     return true;
   }
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
-    for (const player of room.getOtherPlayers(event.fromId)) {
-      if (player.Nationality === CharacterNationality.Wu) {
-        room.obtainSkill(player.Id, ZhiBaPindianCard.Name);
-      }
-    }
+    room.installSideEffectSkill(System.SideEffectSkillApplierEnum.ZhiBa, ZhiBaPindianCard.Name);
 
     return true;
   }

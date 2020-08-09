@@ -79,7 +79,10 @@ export class JieYing extends TriggerSkill implements OnDefineReleaseTiming {
   ) {
     const identifier = EventPacker.getIdentifier(event);
     if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
-      return owner.getMark(MarkEnum.Ying) === 0 && room.CurrentPlayer.Id === owner.Id;
+      return (
+        room.AlivePlayers.find(player => player.getMark(MarkEnum.Ying) > 0) === undefined &&
+        room.CurrentPlayer.Id === owner.Id
+      );
     } else if (identifier === GameEventIdentifiers.PhaseStageChangeEvent) {
       return (
         room
@@ -138,7 +141,7 @@ export class JieYing extends TriggerSkill implements OnDefineReleaseTiming {
     const identifier = EventPacker.getIdentifier(triggeredOnEvent!);
     if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
       room.setMark(fromId, MarkEnum.Ying, 1);
-      room.obtainSkill(fromId, JieYingEffect.Name);
+      await room.obtainSkill(fromId, JieYingEffect.Name);
     } else {
       const from = room.getPlayerById(fromId);
       if (from.getFlag<PlayerId>(this.jieYingtTarget)) {
@@ -146,8 +149,8 @@ export class JieYing extends TriggerSkill implements OnDefineReleaseTiming {
         from.removeFlag(this.jieYingtTarget);
         room.removeMark(fromId, MarkEnum.Ying);
         room.setMark(toId, MarkEnum.Ying, 1);
-        room.loseSkill(fromId, JieYingEffect.Name);
-        room.obtainSkill(toId, JieYingEffect.Name);
+        await room.loseSkill(fromId, JieYingEffect.Name);
+        await room.obtainSkill(toId, JieYingEffect.Name);
       } else {
         const event = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
         room.removeMark(event.playerId, MarkEnum.Ying);

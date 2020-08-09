@@ -1,9 +1,9 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE } from 'core/game/game_props';
-import { AllStage, LoseHpStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
+import { AllStage, LoseHpStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -12,7 +12,13 @@ import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 
 @CompulsorySkill({ name: 'zhaxiang', description: 'zhaxiang_description' })
 export class ZhaXiang extends TriggerSkill {
-  private check: boolean = false;
+  whenRefresh(room: Room, owner: Player) {
+    owner.getFlag<number>(this.Name) && room.removeFlag(owner.Id, this.GeneralName);
+  }
+
+  isRefreshAt(room: Room, owner: Player, phase: PlayerPhase) {
+    return phase === PlayerPhase.PlayCardStage && room.CurrentPlayer.Id === owner.Id;
+  }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.LoseHpEvent>, stage?: AllStage): boolean {
     return stage === LoseHpStage.AfterLostHp;
@@ -35,8 +41,10 @@ export class ZhaXiang extends TriggerSkill {
     skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     await room.drawCards(3, skillUseEvent.fromId);
-    const num = room.getFlag<number>(skillUseEvent.fromId, this.GeneralName) || 0;
-    room.setFlag<number>(skillUseEvent.fromId, this.GeneralName, num + 1);
+    if (room.CurrentPlayer.Id === skillUseEvent.fromId) {
+      const num = room.getFlag<number>(skillUseEvent.fromId, this.GeneralName) || 0;
+      room.setFlag<number>(skillUseEvent.fromId, this.GeneralName, num + 1);
+    }
 
     return true;
   }
@@ -49,44 +57,16 @@ export class ZhaXiangShadow extends TriggerSkill implements OnDefineReleaseTimin
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.AskForCardUseEvent>,
-    stage: AllStage,
-  ): boolean {
-    const identifier = EventPacker.getIdentifier(event);
-    if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
-      const currentEvent = event as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-      return currentEvent.from === PlayerPhase.FinishStage && stage === PhaseChangeStage.AfterPhaseChanged;
-    } else {
-      const currentEvent = event as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
-      return (
-        currentEvent.byCardId !== undefined &&
-        Sanguosha.getCardById(currentEvent.byCardId).GeneralName === 'slash' &&
-        Sanguosha.getCardById(currentEvent.byCardId).isRed()
-      );
-    }
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>, stage: AllStage): boolean {
+    return (
+      event.byCardId !== undefined &&
+      Sanguosha.getCardById(event.byCardId).GeneralName === 'slash' &&
+      Sanguosha.getCardById(event.byCardId).isRed()
+    );
   }
 
-  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage) {
-    return stage === PhaseChangeStage.AfterPhaseChanged;
-  }
-
-  public canUse(
-    room: Room,
-    owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.AskForCardUseEvent>,
-  ): boolean {
-    if (room.getFlag<number>(owner.Id, this.GeneralName) === 0) {
-      return false;
-    }
-
-    const identifier = EventPacker.getIdentifier(event);
-    if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
-      const currentEvent = event as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
-      return owner.Id === currentEvent.cardUserId;
-    }
-
-    return true;
+  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>): boolean {
+    return room.getFlag<number>(owner.Id, this.GeneralName) !== 0 && owner.Id === event.cardUserId;
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -95,21 +75,11 @@ export class ZhaXiangShadow extends TriggerSkill implements OnDefineReleaseTimin
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { triggeredOnEvent } = event;
-    const unknownEvent = triggeredOnEvent as ServerEventFinder<
-      GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.AskForCardUseEvent
-    >;
-    const identifier = EventPacker.getIdentifier(unknownEvent);
-
-    if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
-      const currentEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-      currentEvent.fromPlayer && room.removeFlag(currentEvent.fromPlayer, this.GeneralName);
-    } else if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
-      const currentEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
-      if (room.getFlag<number>(currentEvent.cardUserId!, this.GeneralName) > 0) {
-        currentEvent.cardMatcher = new CardMatcher(currentEvent.cardMatcher)
-          .without({ name: ['jink'] })
-          .toSocketPassenger();
-      }
+    const currentEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
+    if (room.getFlag<number>(currentEvent.cardUserId!, this.GeneralName) > 0) {
+      currentEvent.cardMatcher = new CardMatcher(currentEvent.cardMatcher)
+        .without({ name: ['jink'] })
+        .toSocketPassenger();
     }
 
     return true;

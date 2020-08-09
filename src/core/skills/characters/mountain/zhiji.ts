@@ -31,7 +31,7 @@ export class ZhiJi extends TriggerSkill {
     const { fromId } = skillEffectEvent;
     const from = room.getPlayerById(fromId);
 
-    room.changeMaxHp(fromId, -1);
+    await room.changeMaxHp(fromId, -1);
 
     if (from.Hp >= from.MaxHp) {
       await room.drawCards(2, fromId, undefined, fromId, this.Name);
@@ -65,7 +65,7 @@ export class ZhiJi extends TriggerSkill {
       }
     }
 
-    room.obtainSkill(fromId, 'guanxing', true);
+    await room.obtainSkill(fromId, 'guanxing', true);
 
     return true;
   }

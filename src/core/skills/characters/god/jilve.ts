@@ -117,7 +117,7 @@ export class JiLve extends ActiveSkill {
       room.setFlag(from.Id, JiLve.ZhihengUsed, true);
       room.addMark(skillUseEvent.fromId, MarkEnum.Ren, -1);
     } else {
-      room.obtainSkill(skillUseEvent.fromId, WanSha.Name, true);
+      await room.obtainSkill(skillUseEvent.fromId, WanSha.Name, true);
       room.setFlag(skillUseEvent.fromId, JiLve.WanshaUsed, true);
       room.addMark(skillUseEvent.fromId, MarkEnum.Ren, -1);
     }
@@ -157,7 +157,7 @@ export class JiLveShadow extends TriggerSkill {
     const from = room.getPlayerById(event.fromId);
     if (from.getFlag<boolean>(JiLve.WanshaUsed)) {
       room.removeFlag(from.Id, JiLve.WanshaUsed);
-      room.loseSkill(from.Id, WanSha.Name);
+      await room.loseSkill(from.Id, WanSha.Name);
     }
     if (from.getFlag<boolean>(JiLve.ZhihengUsed)) {
       room.removeFlag(from.Id, JiLve.ZhihengUsed);

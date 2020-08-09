@@ -78,7 +78,7 @@ export class YiJue extends ActiveSkill {
 
     const card = Sanguosha.getCardById(selectedCards[0]);
     if (card.isBlack()) {
-      room.obtainSkill(to.Id, YiJueBlocker.Name);
+      await room.obtainSkill(to.Id, YiJueBlocker.Name);
       room.setFlag(to.Id, this.Name, true, true);
     } else {
       await room.moveCards({

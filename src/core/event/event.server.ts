@@ -413,6 +413,10 @@ export interface ServerEvent extends EventUtilities {
     latestHuaShenSkillName: string;
     toId: PlayerId;
   };
+  [GameEventIdentifiers.UpgradeSideEffectSkillsEvent]: {
+    sideEffectSkillApplier: System.SideEffectSkillApplierEnum;
+    skillName: string | undefined;
+  };
 }
 
 export type PinDianResultType = {
