@@ -5,6 +5,7 @@ import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'enyuan', description: 'enyuan_description' })
 export class EnYuan extends TriggerSkill {
@@ -54,6 +55,29 @@ export class EnYuan extends TriggerSkill {
         room.getPlayerById(moveCardEvent.fromId).Dead === false
       );
     }
+  }
+
+  public getSkillLog(
+    room: Room,
+    owner: Player,
+    content: ServerEventFinder<GameEventIdentifiers.DamageEvent | GameEventIdentifiers.MoveCardEvent>,
+  ) {
+    const identifier = EventPacker.getIdentifier<GameEventIdentifiers.DamageEvent | GameEventIdentifiers.MoveCardEvent>(
+      content,
+    );
+    let target: Player;
+    if (identifier === GameEventIdentifiers.DamageEvent) {
+      const damageEvent = content as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
+      target = room.getPlayerById(damageEvent.fromId!);
+    } else {
+      const moveCardEvent = content as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
+      target = room.getPlayerById(moveCardEvent.fromId!);
+    }
+    return TranslationPack.translationJsonPatcher(
+      'do you want to trigger skill {0} to {1} ?',
+      this.Name,
+      TranslationPack.patchPlayerInTranslation(target),
+    ).extract();
   }
 
   public async onTrigger() {
