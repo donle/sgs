@@ -72,13 +72,14 @@ export class JiuShiShadow extends TriggerSkill {
   }
 
   public async obtainTrickRandomly(room: Room, fromId: PlayerId) {
-    const pendingCardIds = room.findCardsByMatcherFrom(new CardMatcher({ type: [CardType.Trick] }), false);
+    const pendingCardIds = room.findCardsByMatcherFrom(new CardMatcher({ type: [CardType.Trick] }));
     if (pendingCardIds.length === 0) {
       return;
     }
+
     const randomIndex = Math.floor(Math.random() * pendingCardIds.length);
     await room.moveCards({
-      movingCards: [{ card: pendingCardIds[randomIndex], fromArea: CardMoveArea.DropStack }],
+      movingCards: [{ card: pendingCardIds[randomIndex], fromArea: CardMoveArea.DrawStack }],
       toId: fromId,
       toArea: PlayerCardsArea.HandArea,
       moveReason: CardMoveReason.ActivePrey,

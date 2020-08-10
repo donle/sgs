@@ -3,6 +3,7 @@ import {
   CardMoveArea,
   CardMovedBySpecialReason,
   CardMoveReason,
+  EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
@@ -42,13 +43,34 @@ export class LuoYing extends TriggerSkill {
     skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     const moveCardEvent = skillEffectEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
+    const luoyingCard = moveCardEvent.movingCards
+      .filter(node => Sanguosha.getCardById(node.card).Suit === CardSuit.Club)
+      .map(node => node.card);
+
+    const askForChoosingLuoYingCard: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardWithConditionsEvent> = {
+      amount: [1, luoyingCard.length],
+      cardIds: luoyingCard,
+      toId: skillEffectEvent.fromId,
+      customTitle: this.GeneralName,
+    };
+
+    room.notify(
+      GameEventIdentifiers.AskForChoosingCardWithConditionsEvent,
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardWithConditionsEvent>(
+        askForChoosingLuoYingCard,
+      ),
+      skillEffectEvent.fromId,
+    );
+    const { selectedCards } = await room.onReceivingAsyncResponseFrom(
+      GameEventIdentifiers.AskForChoosingCardWithConditionsEvent,
+      skillEffectEvent.fromId,
+    );
+
     await room.moveCards({
-      movingCards: moveCardEvent.movingCards
-        .filter(node => Sanguosha.getCardById(node.card).Suit === CardSuit.Club)
-        .map(node => {
-          node.fromArea = CardMoveArea.DropStack;
-          return node;
-        }),
+      movingCards: (selectedCards?.length ? selectedCards : luoyingCard).map(cardId => ({
+        card: cardId,
+        fromArea: CardMoveArea.DropStack,
+      })),
       moveReason: CardMoveReason.ActivePrey,
       toId: skillEffectEvent.fromId,
       toArea: PlayerCardsArea.HandArea,
