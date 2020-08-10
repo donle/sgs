@@ -13,6 +13,7 @@ import {
   CardUseStage,
   DrawCardStage,
   PinDianStage,
+  PlayerDiedStage,
   PlayerPhase,
 } from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
@@ -1142,7 +1143,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (to.Hp === to.MaxHp) {
       return;
     }
-
+    
+    event.recoveredHp = Math.min(event.recoveredHp, to.MaxHp - to.Hp);
     event.translationsMessage =
       event.recoverBy !== undefined
         ? TranslationPack.translationJsonPatcher(
@@ -1389,16 +1391,21 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       ).extract(),
     };
 
-    for (const skill of deadPlayer.getPlayerSkills()) {
-      if (SkillLifeCycle.isHookedAfterDead(skill)) {
-        this.hookedSkills.push({ player: deadPlayer, skill });
-      }
-      await SkillLifeCycle.executeHookedOnDead(skill, this, deadPlayer);
-    }
-
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.PlayerDiedEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerDiedEvent, playerDiedEvent),
+      async stage => {
+        if (stage === PlayerDiedStage.AfterPlayerDied) {
+          for (const skill of deadPlayer.getPlayerSkills()) {
+            if (SkillLifeCycle.isHookedAfterDead(skill)) {
+              this.hookedSkills.push({ player: deadPlayer, skill });
+            }
+            await SkillLifeCycle.executeHookedOnDead(skill, this, deadPlayer);
+          }
+        }
+
+        return true;
+      },
     );
   }
 

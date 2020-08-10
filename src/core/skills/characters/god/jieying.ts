@@ -125,14 +125,6 @@ export class JieYing extends TriggerSkill implements OnDefineReleaseTiming {
     return true;
   }
 
-  public getPriority(room: Room, owner: Player) {
-    if (room.CurrentProcessingStage === PhaseChangeStage.BeforePhaseChange) {
-      return StagePriority.High;
-    } else {
-      return StagePriority.Medium;
-    }
-  }
-
   public async onEffect(
     room: Room,
     skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
