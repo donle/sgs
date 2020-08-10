@@ -72,7 +72,7 @@ export class QiXingShadow extends TriggerSkill {
         [PlayerCardsArea.HandArea]: handcards,
       },
       toId: from.Id,
-      customMessage: 'please select cards to swap',
+      customTitle: 'please select cards to swap',
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingCardEvent, askForChoosingCardsEvent, from.Id);
