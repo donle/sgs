@@ -84,7 +84,7 @@ export class GameClientProcessor {
       this.presenter.closeIncomingConversation();
 
       this.endAction();
-    }, this.store.notificationTime * 1000);
+    }, this.store.notificationTime * (this.presenter.ClientPlayer!.isTrusted() ? 0 : 1000));
   }
   public endAction() {
     if (this.onPlayTrustedActionTimer !== undefined) {
@@ -822,7 +822,10 @@ export class GameClientProcessor {
 
     if (content.fromPlayer) {
       for (const player of this.store.room.AlivePlayers) {
-        for (const skill of player.getSkills()) {
+        const sideEffectSkills = this.store.room
+          .getSideEffectSkills(player)
+          .map(skillName => Sanguosha.getSkillBySkillName(skillName));
+        for (const skill of [...player.getSkills(), ...sideEffectSkills]) {
           if (this.store.room.CurrentPlayerPhase === PlayerPhase.PrepareStage) {
             player.resetCardUseHistory();
           } else {

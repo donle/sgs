@@ -461,7 +461,10 @@ export class GameProcessor {
     while (this.playerStages.length > 0) {
       const nextPhase = this.stageProcessor.getInsidePlayerPhase(this.playerStages[0]);
       for (const player of this.room.AlivePlayers) {
-        for (const skill of player.getSkills()) {
+        const sideEffectSkills = this.room
+          .getSideEffectSkills(player)
+          .map(skillName => Sanguosha.getSkillBySkillName(skillName));
+        for (const skill of [...player.getSkills(), ...sideEffectSkills]) {
           if (nextPhase === PlayerPhase.PrepareStage) {
             player.resetCardUseHistory();
             player.hasDrunk() && this.room.clearHeaded(player.Id);
