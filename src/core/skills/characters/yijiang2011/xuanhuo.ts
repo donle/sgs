@@ -111,14 +111,19 @@ export class XuanHuo extends TriggerSkill {
       return;
     }
 
+    const numOfObtain = Math.min(ownedCards.length, 2);
+
     const cardsChooseEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardEvent> = {
-      amount: Math.min(ownedCards.length, 2),
+      amount: numOfObtain,
       customCardFields: {
         [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea).length,
         [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),
       },
       toId: fromId,
-      customMessage: 'please choose 2 cards to obtain',
+      customMessage: TranslationPack.translationJsonPatcher(
+        'please choose {0} cards to obtain',
+        numOfObtain,
+      ).toString(),
     };
 
     room.notify(

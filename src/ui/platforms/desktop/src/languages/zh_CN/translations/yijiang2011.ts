@@ -169,8 +169,8 @@ export const promptDescriptions: Word[] = [
     target: '眩惑：你可以对 {0} 使用【杀】，或者 {1} 将获得你的两张牌',
   },
   {
-    source: 'please choose 2 cards to obtain',
-    target: '请选择获得其中的 2 张牌',
+    source: 'please choose {0} cards to obtain',
+    target: '请选择获得其中的 {0} 张牌',
   },
   {
     source: '{0}: do you want to prevent the damage to {1} to pick one card in areas?',
