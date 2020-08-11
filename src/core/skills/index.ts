@@ -204,5 +204,6 @@ export { JieYing, JieYingDraw, JieYingEffect } from './characters/god/jieying';
 
 export { SanYao } from './characters/yijiang2011/sanyao';
 export { ZhiMan } from './characters/yijiang2011/zhiman';
+export { PoJun, PoJunShadow } from './characters/yijiang2011/pojun';
 
 export { Cheat } from './system/cheat';
