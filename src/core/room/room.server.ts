@@ -1,4 +1,5 @@
 import {
+  CardDrawReason,
   CardMoveArea,
   CardMoveReason,
   ClientEventFinder,
@@ -682,7 +683,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         TranslationPack.patchCardInTranslation(cardId),
       ).extract(),
     });
-    await this.drawCards(1, from.Id);
+    await this.drawCards(1, from.Id, 'top', undefined, CardDrawReason.Reforge);
   }
 
   public async preUseCard(cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): Promise<boolean> {

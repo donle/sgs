@@ -208,6 +208,12 @@ export const enum CardMovedBySpecifiedReason {
   JudgeProcess = 'JudgeProcess',
 }
 
+export const enum CardDrawReason {
+  GameStage = 'game_stage',
+  KillReward = 'kill_reward',
+  Reforge = 'reforge',
+}
+
 export const enum CardMoveReason {
   CardDraw,
   ActivePrey,
