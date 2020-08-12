@@ -87,6 +87,7 @@ export interface ServerEvent extends EventUtilities {
     fromId: PlayerId;
     drawAmount: number;
     askedBy: PlayerId;
+    reasonBy?: string;
     from?: 'top' | 'bottom';
   };
   [GameEventIdentifiers.MoveCardEvent]: {

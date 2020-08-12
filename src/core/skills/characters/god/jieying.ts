@@ -1,6 +1,6 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardDrawReason, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import {
   AllStage,
@@ -179,7 +179,7 @@ export class JieYingDraw extends TriggerSkill {
     return (
       room.getPlayerById(content.fromId).getMark(MarkEnum.Ying) > 0 &&
       room.CurrentPlayerPhase === PlayerPhase.DrawCardStage &&
-      content.triggeredBySkills === undefined
+      content.reasonBy === CardDrawReason.GameStage
     );
   }
 

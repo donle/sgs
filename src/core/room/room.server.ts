@@ -52,6 +52,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   private drawStack: CardId[] = [];
   private dropStack: CardId[] = [];
 
+  private readonly specialDrawReasons: string[] = [
+    CardDrawReason.GameStage,
+    CardDrawReason.KillReward,
+    CardDrawReason.Reforge,
+  ];
+
   private hookedSkills: {
     player: Player;
     skill: Skill;
@@ -1024,6 +1030,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       triggeredBySkills: byReason ? [byReason] : undefined,
       from,
     };
+
+    if (byReason !== undefined && this.specialDrawReasons.includes(byReason)) {
+      drawEvent.reasonBy = byReason;
+      drawEvent.triggeredBySkills = undefined;
+    }
 
     let drawedCards: CardId[] = [];
     await this.gameProcessor.onHandleIncomingEvent(

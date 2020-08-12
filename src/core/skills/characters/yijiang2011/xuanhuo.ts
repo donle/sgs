@@ -1,5 +1,12 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import {
+  CardDrawReason,
+  CardMoveArea,
+  CardMoveReason,
+  EventPacker,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from 'core/event/event';
 import { AllStage, DrawCardStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -15,7 +22,11 @@ export class XuanHuo extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>) {
-    return owner.Id === content.fromId && room.CurrentPlayerPhase === PlayerPhase.DrawCardStage;
+    return (
+      owner.Id === content.fromId &&
+      room.CurrentPlayerPhase === PlayerPhase.DrawCardStage &&
+      content.reasonBy === CardDrawReason.GameStage
+    );
   }
 
   public numberOfTargets() {
