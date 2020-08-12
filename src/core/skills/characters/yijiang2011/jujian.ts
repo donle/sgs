@@ -83,7 +83,7 @@ export class JuJian extends TriggerSkill {
     const askForChooseEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
       options,
       conversation: TranslationPack.translationJsonPatcher(
-        'please choose {0} options',
+        '{0}: please choose',
         this.Name,
       ).extract(),
       toId,

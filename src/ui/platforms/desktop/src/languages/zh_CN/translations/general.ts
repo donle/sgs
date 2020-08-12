@@ -573,10 +573,6 @@ export const eventDictionary: Word[] = [
   { source: 'please choose the amount of hp to lose', target: '请选择要失去的体力值' },
   { source: 'please choose your zhiheng cards', target: '请选择要制衡的牌' },
   {
-    source: 'please choose {0} options',
-    target: '{0}：请选择一项',
-  },
-  {
     source: 'please choose tianxiang options',
     target: '请选择：1.令其受到1点伤害，然后摸X张牌（X为你其失去的体力值）。2.令其失去1点体力，然后其获得你弃置的牌',
   },
