@@ -970,6 +970,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         Math.abs(additionalMaxHp),
       ).extract(),
     };
+    EventPacker.createIdentifierEvent(GameEventIdentifiers.ChangeMaxHpEvent, lostMaxHpEvent);
     this.broadcast(GameEventIdentifiers.ChangeMaxHpEvent, lostMaxHpEvent);
 
     const player = this.getPlayerById(playerId);
@@ -981,6 +982,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (player.MaxHp <= 0) {
       await this.kill(player);
     }
+
+    await this.trigger(lostMaxHpEvent);
   }
 
   public getCards(numberOfCards: number, from: 'top' | 'bottom') {
@@ -1143,7 +1146,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (to.Hp === to.MaxHp) {
       return;
     }
-    
+
     event.recoveredHp = Math.min(event.recoveredHp, to.MaxHp - to.Hp);
     event.translationsMessage =
       event.recoverBy !== undefined
@@ -1158,7 +1161,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.toId)),
             event.recoveredHp,
           ).extract();
-
+    EventPacker.createIdentifierEvent(GameEventIdentifiers.RecoverEvent, event);
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.RecoverEvent, event);
   }
 

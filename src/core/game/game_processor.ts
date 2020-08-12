@@ -949,7 +949,7 @@ export class GameProcessor {
           },
           hpChangeEvent,
         );
-
+        EventPacker.createIdentifierEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent);
         await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async hpChangeStage => {
           if (hpChangeStage === HpChangeStage.HpChanging) {
             this.room.broadcast(identifier, event);
@@ -1770,6 +1770,7 @@ export class GameProcessor {
           amount: event.lostHp,
           byReaon: 'lostHp',
         };
+        EventPacker.createIdentifierEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent);
         await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async stage => {
           if (stage === HpChangeStage.HpChanging) {
             this.room.broadcast(identifier, event);
@@ -1841,6 +1842,7 @@ export class GameProcessor {
           byReaon: 'recover',
           byCardIds: event.cardIds,
         };
+        EventPacker.createIdentifierEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent);
         await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async stage => {
           if (stage === HpChangeStage.HpChanging) {
             this.room.broadcast(identifier, event);
