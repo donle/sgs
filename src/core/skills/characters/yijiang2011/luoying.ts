@@ -1,7 +1,7 @@
 import { CardSuit } from 'core/cards/libs/card_props';
 import {
   CardMoveArea,
-  CardMovedBySpecialReason,
+  CardMovedBySpecifiedReason,
   CardMoveReason,
   EventPacker,
   GameEventIdentifiers,
@@ -26,7 +26,7 @@ export class LuoYing extends TriggerSkill {
       (event.fromId &&
         event.fromId !== owner.Id &&
         (event.moveReason === CardMoveReason.PassiveDrop || event.moveReason === CardMoveReason.SelfDrop)) ||
-      (event.proposer && event.proposer !== owner.Id && event.movedByReason === CardMovedBySpecialReason.JudgeProcess)
+      (event.proposer && event.proposer !== owner.Id && event.movedByReason === CardMovedBySpecifiedReason.JudgeProcess)
     ) {
       return !!event.movingCards.find(node => Sanguosha.getCardById(node.card).Suit === CardSuit.Club);
     }
