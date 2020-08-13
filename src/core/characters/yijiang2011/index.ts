@@ -5,11 +5,13 @@ import { FaZheng } from './fazheng';
 import { MaSu } from './masu';
 import { XuSheng } from './xusheng';
 import { XuShu } from './xushu';
+import { YuJin } from './yujin';
 import { ZhangChunHua } from './zhangchunhua';
 
 export const YiJiang2011Package: (index: number) => Character[] = index => [
   new CaoZhi(index++),
   new ZhangChunHua(index++),
+  new YuJin(index++),
 
   new FaZheng(index++),
   new MaSu(index++),

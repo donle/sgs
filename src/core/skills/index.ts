@@ -212,6 +212,7 @@ export { ChengZhang } from './characters/yijiang2011/chengzhang';
 export { PoJun, PoJunDamage, PoJunClear } from './characters/yijiang2011/pojun';
 export { MingCe } from './characters/yijiang2011/mingce';
 export { ZhiChi, ZhiChiShadow } from './characters/yijiang2011/zhichi';
+export { JieYue } from './characters/yijiang2011/jieyue';
 export { EnYuan } from './characters/yijiang2011/enyuan';
 export { XuanHuo } from './characters/yijiang2011/xuanhuo';
 export { JueQing } from './characters/yijiang2011/jueqing';
