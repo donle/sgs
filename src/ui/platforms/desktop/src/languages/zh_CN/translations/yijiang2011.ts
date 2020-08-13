@@ -177,6 +177,15 @@ export const promptDescriptions: Word[] = [
     source: '{0}: do you want to drop a card except basic card and choose a target',
     target: '{0}：你可以弃置一张非基本牌并选择一名其他角色，其选择摸牌、回血或复原',
   },
+
+  {
+    source: '{0} triggered skill {1}, prevent the damage of {2}',
+    target: '{0} 触发了技能 {1} ，防止了 {2} 造成的伤害',
+  },
+  {
+    source: '{0}: do you want to drop a card except basic card and choose a target',
+    target: '{0}：你可以弃置一张非基本牌并选择一名其他角色，其选择摸牌、回血或复原',
+  },
   { source: 'jujian:draw', target: '摸两张牌' },
   { source: 'jujian:recover', target: '回复1点体力' },
   { source: 'jujian:restore', target: '复原武将牌' },
