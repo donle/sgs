@@ -1,9 +1,9 @@
-import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardId } from 'core/cards/libs/card_props';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { System } from 'core/shares/libs/system';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -17,13 +17,13 @@ export class JieYue extends TriggerSkill {
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
     return (
       owner.Id === content.playerId &&
-      content.toStage === PlayerPhaseStages.PrepareStageStart &&
+      content.toStage === PlayerPhaseStages.FinishStageStart &&
       owner.getPlayerCards().length > 0
     );
   }
 
-  public numberOfCards() {
-    return [1];
+  public cardFilter(room: Room, owner: Player, cards: CardId[]) {
+    return cards.length === 1;
   }
 
   public isAvailableCard() {
@@ -60,28 +60,55 @@ export class JieYue extends TriggerSkill {
     if (to.getPlayerCards().length <= 0) {
       await room.drawCards(3, yujinId, undefined, toId, this.Name);
     } else {
-      const askForChoice: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
+      const askForChoice = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
         options: ['option-one', 'option-two'],
         askedBy: yujinId,
         toId,
         conversation: TranslationPack.translationJsonPatcher('{0}: please choose jieyue options', this.Name).extract(),
         triggeredBySkills: [this.Name],
-      };
+      });
 
       room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChoice, toId);
 
       const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, toId);
 
       if (response.selectedOption === 'option-one') {
-        const askForDiscards: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardWithConditionsEvent> = {
+        const customCardFields: {
+          [x: number]: CardId[];
+        } = {};
+
+        const handCards = to.getCardIds(PlayerCardsArea.HandArea);
+        const equipCards = to.getCardIds(PlayerCardsArea.EquipArea);
+
+        let numOfAreas: number = 0;
+
+        if (handCards.length > 0) {
+          customCardFields[PlayerCardsArea.HandArea] = handCards;
+          numOfAreas++;
+        }
+
+        if (equipCards.length > 0) {
+          customCardFields[PlayerCardsArea.EquipArea] = equipCards;
+          numOfAreas++;
+        }
+
+        let amount: number | [number, number];
+        if (numOfAreas === 2) {
+          amount = [1, 1];
+        } else if (numOfAreas === 1) {
+          amount = 1;
+        } else {
+          return false;
+        }
+
+        const askForDiscards = EventPacker.createUncancellableEvent<
+          GameEventIdentifiers.AskForChoosingCardWithConditionsEvent
+        >({
           toId,
-          amount: 2,
-          customCardFields: {
-            [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea),
-            [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),
-          },
+          amount,
+          customCardFields,
           customMessage: 'please choose cards that you want to keep',
-        };
+        });
 
         room.notify(GameEventIdentifiers.AskForChoosingCardWithConditionsEvent, askForDiscards, toId);
 
@@ -93,7 +120,10 @@ export class JieYue extends TriggerSkill {
         if (selectedCards === undefined) {
           return false;
         } else {
-          await room.dropCards(CardMoveReason.SelfDrop, selectedCards, toId, toId, this.Name);
+          const discards = to.getPlayerCards().filter(card => !selectedCards.includes(card));
+          if (discards.length > 0) {
+            await room.dropCards(CardMoveReason.SelfDrop, discards, toId, toId, this.Name);
+          }
         }
       } else {
         await room.drawCards(3, yujinId, undefined, toId, this.Name);
