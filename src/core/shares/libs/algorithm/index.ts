@@ -7,6 +7,31 @@ export namespace Algorithm {
     return a;
   }
 
+  export function randomPick(pick: number, upperBound: number) {
+    const resultRecord: boolean[] = [];
+    let isInvert = false;
+
+    if (pick * 2 > upperBound) {
+      pick = upperBound - pick;
+      isInvert = true;
+    }
+
+    while (pick--) {
+      let randomIdx = Math.floor(Math.random() * upperBound);
+      while (resultRecord[randomIdx]) {
+        randomIdx = (randomIdx + 1) % upperBound;
+      }
+      resultRecord[randomIdx] = true;
+    }
+
+    const randomIdx: number[] = [];
+    for (let i = 0; i < upperBound; i++) {
+      isInvert !== !!resultRecord[i] && randomIdx.push(i);
+    }
+
+    return randomIdx;
+  }
+
   export function randomInt(from: number, to: number) {
     return Math.round(Math.random() * (to - from)) + from;
   }
