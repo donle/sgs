@@ -33,7 +33,7 @@ export class HaoShi extends TriggerSkill {
     return (
       owner.Id === content.fromId &&
       room.CurrentPlayerPhase === PlayerPhase.DrawCardStage &&
-      content.reasonBy === CardDrawReason.GameStage
+      content.bySpecialReason === CardDrawReason.GameStage
     );
   }
 

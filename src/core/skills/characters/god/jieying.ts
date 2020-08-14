@@ -179,7 +179,7 @@ export class JieYingDraw extends TriggerSkill {
     return (
       room.getPlayerById(content.fromId).getMark(MarkEnum.Ying) > 0 &&
       room.CurrentPlayerPhase === PlayerPhase.DrawCardStage &&
-      content.reasonBy === CardDrawReason.GameStage
+      content.bySpecialReason === CardDrawReason.GameStage
     );
   }
 

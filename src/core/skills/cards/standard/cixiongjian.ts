@@ -74,7 +74,7 @@ export class CiXiongJianSkill extends TriggerSkill {
     }
 
     if (to.getCardIds(PlayerCardsArea.HandArea).length === 0) {
-      await room.drawCards(1, fromId);
+      await room.drawCards(1, fromId, undefined, toId, this.Name);
       return true;
     }
 

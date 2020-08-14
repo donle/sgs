@@ -349,7 +349,7 @@ export class GameProcessor {
       case PlayerPhase.DrawCardStage:
         this.logger.debug('enter draw cards phase');
 
-        await this.room.drawCards(2, this.CurrentPlayer.Id, 'top', undefined, CardDrawReason.GameStage);
+        await this.room.drawCards(2, this.CurrentPlayer.Id, 'top', undefined, undefined, CardDrawReason.GameStage);
         return;
       case PlayerPhase.PlayCardStage:
         this.logger.debug('enter play cards phase');
@@ -1161,7 +1161,7 @@ export class GameProcessor {
         const killer = this.room.getPlayerById(killedBy);
 
         if (deadPlayer.Role === PlayerRole.Rebel && !killer.Dead) {
-          await this.room.drawCards(3, killedBy, 'top', undefined, CardDrawReason.KillReward);
+          await this.room.drawCards(3, killedBy, 'top', undefined, undefined, CardDrawReason.KillReward);
         } else if (deadPlayer.Role === PlayerRole.Loyalist && killer.Role === PlayerRole.Lord) {
           const lordCards = Card.getActualCards(killer.getPlayerCards());
           await this.room.moveCards({

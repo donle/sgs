@@ -52,7 +52,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   private drawStack: CardId[] = [];
   private dropStack: CardId[] = [];
 
-  private readonly specialDrawReasons: string[] = [
+  private readonly specialDrawReasons: CardDrawReason[] = [
     CardDrawReason.GameStage,
     CardDrawReason.KillReward,
     CardDrawReason.Reforge,
@@ -689,7 +689,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         TranslationPack.patchCardInTranslation(cardId),
       ).extract(),
     });
-    await this.drawCards(1, from.Id, 'top', undefined, CardDrawReason.Reforge);
+    await this.drawCards(1, from.Id, 'top', undefined, undefined, CardDrawReason.Reforge);
   }
 
   public async preUseCard(cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): Promise<boolean> {
@@ -1019,6 +1019,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     from: 'top' | 'bottom' = 'top',
     askedBy?: PlayerId,
     byReason?: string,
+    bySpecialReason?: CardDrawReason,
   ) {
     askedBy = askedBy || playerId || this.CurrentPlayer.Id;
     playerId = playerId || this.CurrentPlayer.Id;
@@ -1028,13 +1029,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       fromId: playerId,
       askedBy,
       triggeredBySkills: byReason ? [byReason] : undefined,
+      bySpecialReason,
       from,
     };
-
-    if (byReason !== undefined && this.specialDrawReasons.includes(byReason)) {
-      drawEvent.reasonBy = byReason;
-      drawEvent.triggeredBySkills = undefined;
-    }
 
     let drawedCards: CardId[] = [];
     await this.gameProcessor.onHandleIncomingEvent(
