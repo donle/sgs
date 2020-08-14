@@ -71,6 +71,7 @@ export class JieDaoShaRenSkill extends ActiveSkill {
         scopedTargets: [target],
         cardMatcher: new CardMatcher({ generalName: ['slash'] }).toSocketPassenger(),
         extraUse: true,
+        commonUse: true,
         conversation: TranslationPack.translationJsonPatcher(
           'please use a {0} to player {1} to response {2}',
           'slash',

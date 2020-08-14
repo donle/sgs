@@ -1014,7 +1014,12 @@ export class GameClientProcessor {
               }
               return allCards;
             }, []);
-            return !matcher(cards, selectedCards, card.Id);
+            return !matcher(
+              cards,
+              selectedCards,
+              card.Id,
+              content.involvedTargets?.map(target => this.store.room.getPlayerById(target)),
+            );
           }
 
           return true;

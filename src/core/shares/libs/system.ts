@@ -23,6 +23,7 @@ export namespace System {
     allCards: CardId[],
     selected: CardId[],
     currentCard: CardId,
+    involvedTargets?: Player[],
   ) => boolean;
 
   export const AskForChoosingCardEventFilters: {

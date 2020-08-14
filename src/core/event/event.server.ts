@@ -259,6 +259,7 @@ export interface ServerEvent extends EventUtilities {
     customTitle?: string;
     cardFilter?: System.AskForChoosingCardEventFilter;
     toId: PlayerId;
+    involvedTargets?: PlayerId[];
     amount?: number | [number, number];
   };
   [GameEventIdentifiers.AskForChoosingCardEvent]: {
