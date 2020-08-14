@@ -1,5 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import {
   AimStage,
@@ -9,10 +9,9 @@ import {
   PlayerPhaseStages,
 } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Algorithm } from 'core/shares/libs/algorithm';
-import { System } from 'core/shares/libs/system';
 import { TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
@@ -47,7 +46,6 @@ export class PoJun extends TriggerSkill {
     const equipCardIds = to.getCardIds(PlayerCardsArea.EquipArea);
     const askForPoJunCards: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardWithConditionsEvent> = {
       toId: aimEvent.toId,
-      cardFilter: System.AskForChoosingCardEventFilter.PoXi,
       customCardFields: {
         [PlayerCardsArea.HandArea]: handCardIds.length,
         [PlayerCardsArea.EquipArea]: equipCardIds,
@@ -69,16 +67,10 @@ export class PoJun extends TriggerSkill {
         movingCards.push({ card: id, fromArea: to.cardFrom(id) });
       });
 
-    if (selectedCardsIndex) {
-      const randomIdx: number[] = [];
-      handCardIds.forEach((_, index) => {
-        randomIdx.push(index);
+    selectedCardsIndex &&
+      Algorithm.randomPick(selectedCardsIndex.length, handCardIds.length).forEach(idx => {
+        movingCards.push({ card: handCardIds[idx], fromArea: PlayerCardsArea.HandArea });
       });
-      Algorithm.shuffle(randomIdx);
-      selectedCardsIndex.forEach((_, index) => {
-        movingCards.push({ card: handCardIds[randomIdx[index]], fromArea: PlayerCardsArea.HandArea });
-      });
-    }
 
     await room.moveCards({
       movingCards,
@@ -97,62 +89,29 @@ export class PoJun extends TriggerSkill {
 
 @ShadowSkill
 @CommonSkill({ name: PoJun.Name, description: PoJun.Description })
-export class PoJunShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(room: Room, playerId: PlayerId): boolean {
-    return (
-      room.CurrentPlayerStage === PlayerPhaseStages.FinishStageStart &&
-      !room
-        .getAlivePlayersFrom()
-        .find(player => player.getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName).length > 0)
-    );
-  }
-
-  public afterDead(room: Room, playerId: PlayerId): boolean {
-    return (
-      room.CurrentPlayerStage === PlayerPhaseStages.FinishStageStart &&
-      !room
-        .getAlivePlayersFrom()
-        .find(player => player.getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName).length > 0)
-    );
-  }
-
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
-    return stage === PhaseStageChangeStage.StageChanged || stage === DamageEffectStage.DamageEffect;
-  }
-
+export class PoJunDamage extends TriggerSkill {
   public isAutoTrigger(): boolean {
     return true;
   }
 
-  public isFlaggedSkill(): boolean {
-    return true;
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
+    return stage === DamageEffectStage.DamageEffect;
   }
 
-  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers>): boolean {
-    const identifier = EventPacker.getIdentifier(event);
-    if (identifier === GameEventIdentifiers.PhaseStageChangeEvent) {
-      const phaseStageChangeEvent = event as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
-      return (
-        phaseStageChangeEvent.toStage === PlayerPhaseStages.FinishStageStart &&
-        room.getPlayerById(phaseStageChangeEvent.playerId).getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName)
-          .length > 0
-      );
-    } else {
-      const damageEvent = event as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-      if (damageEvent.fromId === owner.Id) {
-        const to = room.getPlayerById(damageEvent.toId);
-        const handCardLengthOfDamageTo = to.getCardIds(PlayerCardsArea.HandArea).length;
-        const handCardLengthOfDamageFrom = owner.getCardIds(PlayerCardsArea.HandArea).length;
-        const equipCardLengthOfDamageTo = to.getCardIds(PlayerCardsArea.EquipArea).length;
-        const equipCardLengthOfDamageFrom = owner.getCardIds(PlayerCardsArea.EquipArea).length;
+  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.DamageEvent>): boolean {
+    if (event.fromId === owner.Id) {
+      const to = room.getPlayerById(event.toId);
+      const handCardLengthOfDamageTo = to.getCardIds(PlayerCardsArea.HandArea).length;
+      const handCardLengthOfDamageFrom = owner.getCardIds(PlayerCardsArea.HandArea).length;
+      const equipCardLengthOfDamageTo = to.getCardIds(PlayerCardsArea.EquipArea).length;
+      const equipCardLengthOfDamageFrom = owner.getCardIds(PlayerCardsArea.EquipArea).length;
 
-        return (
-          handCardLengthOfDamageTo <= handCardLengthOfDamageFrom &&
-          equipCardLengthOfDamageTo <= equipCardLengthOfDamageFrom
-        );
-      }
-      return false;
+      return (
+        handCardLengthOfDamageTo <= handCardLengthOfDamageFrom &&
+        equipCardLengthOfDamageTo <= equipCardLengthOfDamageFrom
+      );
     }
+    return false;
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -163,36 +122,81 @@ export class PoJunShadow extends TriggerSkill implements OnDefineReleaseTiming {
     room: Room,
     skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
-    const unknownEvent = skillEffectEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers>;
-    const identifier = EventPacker.getIdentifier(unknownEvent);
-    if (identifier === GameEventIdentifiers.PhaseStageChangeEvent) {
-      const phaseStageChangeEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
-      const to = room.getPlayerById(phaseStageChangeEvent.playerId);
+    const damageEvent = skillEffectEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
+    damageEvent.damage++;
+    damageEvent.messages = damageEvent.messages || [];
+    damageEvent.messages.push(
+      TranslationPack.translationJsonPatcher(
+        '{0} used skill {1}, damage increases to {2}',
+        TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillEffectEvent.fromId)),
+        this.GeneralName,
+        damageEvent.damage,
+      ).toString(),
+    );
+    return true;
+  }
+}
 
-      await room.moveCards({
-        movingCards: to
-          .getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName)
-          .map(id => ({ card: id, fromArea: PlayerCardsArea.OutsideArea })),
-        fromId: to.Id,
-        toId: to.Id,
-        toArea: PlayerCardsArea.HandArea,
-        moveReason: CardMoveReason.ActivePrey,
-        proposer: to.Id,
-        movedByReason: this.GeneralName,
-      });
-    } else {
-      const damageEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-      damageEvent.damage++;
-      damageEvent.messages = damageEvent.messages || [];
-      damageEvent.messages.push(
-        TranslationPack.translationJsonPatcher(
-          '{0} used skill {1}, damage increases to {2}',
-          TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillEffectEvent.fromId)),
-          this.GeneralName,
-          damageEvent.damage,
-        ).toString(),
-      );
+@ShadowSkill
+@CommonSkill({ name: PoJunDamage.Name, description: PoJunDamage.Description })
+export class PoJunClear extends TriggerSkill implements OnDefineReleaseTiming {
+  public async pojunClear(room: Room): Promise<void> {
+    for (const player of room.getAlivePlayersFrom()) {
+      const pojunCard = player.getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName);
+      if (pojunCard.length) {
+        await room.moveCards({
+          movingCards: pojunCard.map(id => ({ card: id, fromArea: PlayerCardsArea.OutsideArea })),
+          fromId: player.Id,
+          toId: player.Id,
+          toArea: PlayerCardsArea.HandArea,
+          moveReason: CardMoveReason.ActivePrey,
+          proposer: player.Id,
+          movedByReason: this.GeneralName,
+        });
+      }
     }
+  }
+
+  public afterLosingSkill(room: Room): boolean {
+    return room.CurrentPlayerStage === PlayerPhaseStages.FinishStage;
+  }
+
+  public afterDead(room: Room): boolean {
+    return room.CurrentPlayerStage === PlayerPhaseStages.FinishStage;
+  }
+
+  public async whenDead(room: Room, player: Player): Promise<void> {
+    if (room.CurrentPhasePlayer === player) {
+      await this.pojunClear(room);
+    }
+  }
+
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
+    return stage === PhaseStageChangeStage.StageChanged;
+  }
+
+  public isAutoTrigger(): boolean {
+    return true;
+  }
+
+  public isFlaggedSkill(): boolean {
+    return true;
+  }
+
+  public canUse(
+    room: Room,
+    owner: Player,
+    event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
+  ): boolean {
+    return event.toStage === PlayerPhaseStages.FinishStageStart;
+  }
+
+  public async onTrigger(): Promise<boolean> {
+    return true;
+  }
+
+  public async onEffect(room: Room): Promise<boolean> {
+    this.pojunClear(room);
 
     return true;
   }
