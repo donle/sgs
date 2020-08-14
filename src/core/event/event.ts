@@ -209,9 +209,9 @@ export const enum CardMovedBySpecifiedReason {
 }
 
 export const enum CardDrawReason {
-  GameStage = 'game_stage',
-  KillReward = 'kill_reward',
-  Reforge = 'reforge',
+  GameStage,
+  KillReward,
+  Reforge,
 }
 
 export const enum CardMoveReason {

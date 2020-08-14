@@ -9,6 +9,7 @@ import { System } from 'core/shares/libs/system';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
 import {
+  CardDrawReason,
   CardMoveArea,
   CardMoveReason,
   ClientEventFinder,
@@ -87,7 +88,7 @@ export interface ServerEvent extends EventUtilities {
     fromId: PlayerId;
     drawAmount: number;
     askedBy: PlayerId;
-    reasonBy?: string;
+    bySpecialReason?: CardDrawReason;
     from?: 'top' | 'bottom';
   };
   [GameEventIdentifiers.MoveCardEvent]: {
