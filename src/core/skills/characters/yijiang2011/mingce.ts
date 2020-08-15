@@ -21,15 +21,44 @@ export class MingCe extends ActiveSkill {
     return !owner.hasUsedSkill(this.Name);
   }
 
-  public numberOfTargets(): number {
-    return 1;
+  public numberOfTargets(): number[] {
+    return [];
+  }
+
+  public targetFilter(room: Room, owner: Player, targets: PlayerId[]): boolean {
+    let canSlash: boolean = true;
+    const slash = VirtualCard.create<Slash>({
+      cardName: 'slash',
+      bySkill: this.Name,
+    }).Id;
+    if (targets[0]) {
+      canSlash = room.getOtherPlayers(targets[0])
+        .find(player => room.canAttack(room.getPlayerById(targets[0]), player, slash))
+        ? true : false;
+    }
+
+    return canSlash ? targets.length === 2 : targets.length === 1;
   }
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return cards.length === 1;
   }
 
-  public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
+  public isAvailableTarget(
+    owner: PlayerId,
+    room: Room,
+    target: PlayerId,
+    selectedCards: CardId[],
+    selectedTargets: PlayerId[],
+  ): boolean {
+    if (selectedTargets.length === 1) {
+      const slash = VirtualCard.create<Slash>({
+        cardName: 'slash',
+        bySkill: this.Name,
+      }).Id;
+      return room.canAttack(room.getPlayerById(selectedTargets[0]), room.getPlayerById(target), slash);
+    }
+
     return owner !== target;
   }
 
@@ -38,10 +67,20 @@ export class MingCe extends ActiveSkill {
     return card.GeneralName === 'slash' || card.is(CardType.Equip);
   }
 
-  public async onUse(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ): Promise<boolean> {
+  public getAnimationSteps(event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    const { fromId, toIds } = event;
+    return [
+      { from: fromId, tos: [toIds![0]] },
+      { from: toIds![0], tos: [toIds![1]] },
+    ];
+  }
+
+  public nominateForwardTarget(targets: PlayerId[]) {
+    return [targets[0]];
+  }
+
+  async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    event.animation = this.getAnimationSteps(event);
     return true;
   }
 
@@ -50,83 +89,51 @@ export class MingCe extends ActiveSkill {
     skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     const { fromId, toIds, cardIds } = skillUseEvent;
-    const toId = toIds![0];
+    const first = toIds![0];
+    const second = toIds![1];
 
     await room.moveCards({
       movingCards: cardIds!.map(card => ({ card, fromArea: room.getPlayerById(fromId).cardFrom(card) })),
       fromId: skillUseEvent.fromId,
-      toId,
+      toId: first,
       toArea: CardMoveArea.HandArea,
       moveReason: CardMoveReason.ActiveMove,
       proposer: fromId,
     });
 
-    let targets = room.getOtherPlayers(toId);
+    const options = ['mingce:draw'];
     const slash = VirtualCard.create<Slash>({
       cardName: 'slash',
       bySkill: this.Name,
     }).Id;
-    targets = targets.filter(player => room.canAttack(room.getPlayerById(toId), player, slash));
-    const targetIds = targets.reduce<PlayerId[]>(
-      (playerIds, player) => [
-        ...playerIds, player.Id
-      ],
-      [],
-    );
+    if (room.canAttack(room.getPlayerById(first), room.getPlayerById(second), slash)) {
+      options.unshift('mingce:slash');
+    }
 
-    if (targetIds.length > 0) {
-      const choosePlayerEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
-        players: targetIds,
-        toId: fromId,
-        requiredAmount: 1,
-        conversation: TranslationPack.translationJsonPatcher(
-          '{0}: please choose a target who {1} can use slash to',
-          this.Name,
-          TranslationPack.patchPlayerInTranslation(room.getPlayerById(toId)),
-        ).extract(),
+    const askForChooseEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
+      options,
+      conversation: TranslationPack.translationJsonPatcher(
+        'please choose mingce options:{0}',
+        TranslationPack.patchPlayerInTranslation(room.getPlayerById(second)),
+      ).extract(),
+      toId: first,
+    });
+
+    room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, first);
+
+    const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, first);
+    response.selectedOption = response.selectedOption || 'mingce:draw';
+
+    if (response.selectedOption === 'mingce:slash') {
+      const slashUseEvent = {
+        fromId: first,
+        cardId: slash,
+        toIds: [second],
       };
 
-      room.notify(
-        GameEventIdentifiers.AskForChoosingPlayerEvent,
-        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingPlayerEvent>(choosePlayerEvent),
-        fromId,
-      );
-
-      const choosePlayerResponse = await room.onReceivingAsyncResponseFrom(
-        GameEventIdentifiers.AskForChoosingPlayerEvent,
-        fromId,
-      );
-      choosePlayerResponse.selectedPlayers = choosePlayerResponse.selectedPlayers || [targetIds[0]];
-      
-      const slashTo = room.getPlayerById(choosePlayerResponse.selectedPlayers[0]);
-      const askForChooseEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
-        options: ['mingce:slash', 'mingce:draw'],
-        conversation: TranslationPack.translationJsonPatcher(
-          'please choose {0} options:{1}',
-          this.Name,
-          TranslationPack.patchPlayerInTranslation(slashTo),
-        ).extract(),
-        toId,
-      });
-
-      room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, toId);
-
-      const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, toId);
-      response.selectedOption = response.selectedOption || 'mingce:draw';
-
-      if (response.selectedOption === 'mingce:slash') {
-        const slashUseEvent = {
-          fromId: toId,
-          cardId: slash,
-          toIds: choosePlayerResponse.selectedPlayers,
-        };
-
-        await room.useCard(slashUseEvent);
-      } else {
-        await room.drawCards(1, toId, 'top', toId, this.Name);
-      }
+      await room.useCard(slashUseEvent);
     } else {
-      await room.drawCards(1, toId, 'top', toId, this.Name);
+      await room.drawCards(1, first, 'top', first, this.Name);
     }
 
     return true;
