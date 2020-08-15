@@ -123,3 +123,32 @@
 .character.god:hover::before, .character.god:hover::after{
     box-shadow:0 0 8px 8px godColor;
 }
+
+.tooltip {
+    position: fixed;
+    padding: calc(gridLine * 2);
+    z-index: 99;
+    max-width: calc(gridLine * 32);
+    background: rgba(0, 0, 0, 0.7);
+    color: #ddd;
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.7);
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.skillInfo {
+    display: flex;
+    flex-direction: column;
+}
+.skillItem {
+    display: flex;
+    margin-bottom: calc(gridLine * 2);
+}
+.skillName {
+    flex: auto;
+    margin-right: gridLine;
+    min-width: calc(gridLine * 6);
+    font-weight: 600;
+    font-size: calc(gridLine * 2);
+    color: #fbd000;
+}

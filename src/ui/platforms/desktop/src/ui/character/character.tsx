@@ -14,6 +14,8 @@ export type CharacterCardProps = {
   imageLoader: ImageLoader;
   translator: ClientTranslationModule;
   onClick?(character: Character): void;
+  onMouseMove?(event: React.MouseEvent, character: Character): void;
+  onMouseLeave?(): void;
   disabled?: boolean;
   className?: string;
   size?: 'regular' | 'small';
@@ -33,6 +35,20 @@ export class CharacterCard extends React.Component<CharacterCardProps> {
     }
   };
 
+  private readonly onMouseMove = (event) => {
+    if (!this.props.disabled) {
+      this.props.onMouseMove && this.props.onMouseMove(event, this.props.character);
+      this.forceUpdate();
+    }
+  };
+
+  private readonly onMouseLeave = () => {
+    if (!this.props.disabled) {
+      this.props.onMouseLeave && this.props.onMouseLeave();
+      this.forceUpdate();
+    }
+  };
+
   @mobx.action
   async componentDidMount() {
     this.characterImage = (await this.props.imageLoader.getCharacterImage(this.props.character.Name)).src;
@@ -47,6 +63,8 @@ export class CharacterCard extends React.Component<CharacterCardProps> {
           [styles.selected]: selected,
         })}
         onClick={this.onClick}
+        onMouseMove={this.onMouseMove}
+        onMouseLeave={this.onMouseLeave}
       >
         {this.characterImage ? (
           <>

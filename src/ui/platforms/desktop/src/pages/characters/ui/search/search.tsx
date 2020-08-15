@@ -85,7 +85,6 @@ export const SearchBar = (props: SearchBarProps) => {
             setKeywordFilter(() => defaultKeywordFilter);
         }
     }, 300), [translator]);
-    const handleKeywordChange = e => setKeyword(e.target.value);
 
     return (
         <>
@@ -95,7 +94,7 @@ export const SearchBar = (props: SearchBarProps) => {
                         type="text" 
                         className={styles.input} 
                         placeholder={translator.tr('Please input character info:')} 
-                        onChange={handleKeywordChange}
+                        onChange={e => setKeyword(e.target.value)}
                     />
                     <div className={styles.searchButton}>
                         <span className={styles.icon}></span>
