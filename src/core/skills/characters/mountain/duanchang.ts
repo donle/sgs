@@ -32,7 +32,7 @@ export class DuanChang extends TriggerSkill {
       }
       await room.loseSkill(to.Id, skill.Name, true);
     }
-    room.setFlag<boolean>(killedBy!, this.GeneralName, true);
+    room.setFlag<boolean>(killedBy!, this.GeneralName, true, true);
     return true;
   }
 }

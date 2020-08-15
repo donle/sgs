@@ -42,7 +42,7 @@ export class WuQian extends ActiveSkill {
     room.setFlag<boolean>(target, this.GeneralName, true);
 
     if (!room.getPlayerById(skillEffectEvent.fromId).hasSkill(WuShuang.GeneralName)) {
-      room.obtainSkill(skillEffectEvent.fromId, WuShuang.GeneralName);
+      await room.obtainSkill(skillEffectEvent.fromId, WuShuang.GeneralName);
       room.setFlag<boolean>(skillEffectEvent.fromId, this.GeneralName, true);
     }
 

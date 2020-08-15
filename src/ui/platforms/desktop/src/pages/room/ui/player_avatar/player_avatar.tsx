@@ -91,9 +91,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     const { presenter, translator, isSkillDisabled, imageLoader } = this.props;
     const skills =
       presenter.ClientPlayer && presenter.ClientPlayer.CharacterId !== undefined
-        ? presenter.ClientPlayer.getPlayerSkills(undefined, true).filter(
-            skill => !skill.isShadowSkill() && !skill.isSideEffectSkill(),
-          )
+        ? presenter.ClientPlayer.getPlayerSkills(undefined, true).filter(skill => !skill.isShadowSkill())
         : [];
 
     return (
@@ -186,15 +184,15 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   }
 
   getSideEffectSkills() {
-    const { translator, imageLoader } = this.props;
+    const { translator, imageLoader, store } = this.props;
 
     const player = this.props.presenter.ClientPlayer;
     if (player === undefined || player.CharacterId === undefined) {
       return;
     }
 
-    const sideEffectSkills = player.getSkills().filter(skill => skill.isSideEffectSkill());
-    return sideEffectSkills.map((skill, index) => {
+    return store.room.getSideEffectSkills(player).map((skillName, index) => {
+      const skill = Sanguosha.getSkillBySkillName(skillName);
       return (
         <SkillButton
           imageLoader={imageLoader}

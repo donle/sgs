@@ -52,7 +52,8 @@ export class QiXingShadow extends TriggerSkill {
     return (
       content.toStage === PlayerPhaseStages.DrawCardStageEnd &&
       content.playerId === owner.Id &&
-      owner.getCardIds(PlayerCardsArea.OutsideArea, QiXing.Name).length > 0
+      owner.getCardIds(PlayerCardsArea.OutsideArea, QiXing.Name).length > 0 &&
+      owner.getCardIds(PlayerCardsArea.HandArea).length > 0
     );
   }
 

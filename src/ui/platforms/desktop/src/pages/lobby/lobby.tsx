@@ -61,7 +61,7 @@ export class Lobby extends React.Component<LobbyProps> {
 
   @mobx.action
   componentDidMount() {
-    this.username = localStorage.getItem('username');
+    this.username = window.localStorage.getItem('username');
     if (!this.username) {
       this.openUsernameDialog = true;
     }

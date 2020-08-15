@@ -41,7 +41,7 @@ import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { Flavor } from 'core/shares/types/host_config';
-import { GlobalFilterSkill, RulesBreakerSkill } from 'core/skills/skill';
+import { GlobalFilterSkill, SkillLifeCycle } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ServerRoom } from '../room/room.server';
 import { Sanguosha } from './engine';
@@ -461,7 +461,10 @@ export class GameProcessor {
     while (this.playerStages.length > 0) {
       const nextPhase = this.stageProcessor.getInsidePlayerPhase(this.playerStages[0]);
       for (const player of this.room.AlivePlayers) {
-        for (const skill of player.getSkills()) {
+        const sideEffectSkills = this.room
+          .getSideEffectSkills(player)
+          .map(skillName => Sanguosha.getSkillBySkillName(skillName));
+        for (const skill of [...player.getSkills(), ...sideEffectSkills]) {
           if (nextPhase === PlayerPhase.PrepareStage) {
             player.resetCardUseHistory();
             player.hasDrunk() && this.room.clearHeaded(player.Id);
@@ -946,7 +949,7 @@ export class GameProcessor {
           },
           hpChangeEvent,
         );
-
+        EventPacker.createIdentifierEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent);
         await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async hpChangeStage => {
           if (hpChangeStage === HpChangeStage.HpChanging) {
             this.room.broadcast(identifier, event);
@@ -1418,7 +1421,7 @@ export class GameProcessor {
 
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === CardMoveStage.CardMoving) {
-        this.moveCardInGameboard(from, to, cardIds, actualCardIds, event);
+        await this.moveCardInGameboard(from, to, cardIds, actualCardIds, event);
         this.room.broadcast(identifier, event);
       }
     });
@@ -1444,7 +1447,7 @@ export class GameProcessor {
       const actualCardIds = Card.getActualCards(cardIds);
 
       this.createCardMoveMessage(from, to, cardIds, actualCardIds, event);
-      this.moveCardInGameboard(from, to, cardIds, actualCardIds, event);
+      await this.moveCardInGameboard(from, to, cardIds, actualCardIds, event);
       this.room.broadcast(identifier, event);
     }
 
@@ -1574,7 +1577,7 @@ export class GameProcessor {
     }
   }
 
-  public moveCardInGameboard(
+  public async moveCardInGameboard(
     from: Player | undefined,
     to: Player | undefined,
     cardIds: CardId[],
@@ -1592,6 +1595,9 @@ export class GameProcessor {
       } else if (fromArea === CardMoveArea.ProcessingArea) {
         this.room.endProcessOnCard(card);
       } else if (from) {
+        if (fromArea === CardMoveArea.EquipArea) {
+          await SkillLifeCycle.executeHookOnLosingSkill(Sanguosha.getCardById(card).Skill, this.room, from);
+        }
         from.dropCards(card);
       }
     }
@@ -1764,6 +1770,7 @@ export class GameProcessor {
           amount: event.lostHp,
           byReaon: 'lostHp',
         };
+        EventPacker.createIdentifierEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent);
         await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async stage => {
           if (stage === HpChangeStage.HpChanging) {
             this.room.broadcast(identifier, event);
@@ -1835,6 +1842,7 @@ export class GameProcessor {
           byReaon: 'recover',
           byCardIds: event.cardIds,
         };
+        EventPacker.createIdentifierEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent);
         await this.onHandleIncomingEvent(GameEventIdentifiers.HpChangeEvent, hpChangeEvent, async stage => {
           if (stage === HpChangeStage.HpChanging) {
             this.room.broadcast(identifier, event);

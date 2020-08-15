@@ -8,7 +8,6 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
-import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'tianxiang', description: 'tianxiang_description' })
 export class TianXiang extends TriggerSkill {
@@ -53,9 +52,7 @@ export class TianXiang extends TriggerSkill {
     const chooseOptions: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
       options: ['option-one', 'option-two'],
       toId: fromId,
-      conversation: TranslationPack.translationJsonPatcher(
-        'please choose tianxiang options',
-      ).extract(),
+      conversation: 'please choose tianxiang options',
     };
     room.notify(
       GameEventIdentifiers.AskForChoosingOptionsEvent,

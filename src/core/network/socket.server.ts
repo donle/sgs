@@ -209,7 +209,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
 
   public notify<I extends GameEventIdentifiers>(type: I, content: ServerEventFinder<I>, to: PlayerId) {
     const toPlayer = this.room!.getPlayerById(to);
-    if (!toPlayer.isOnline() || toPlayer.isTrusted()) {
+    if (!toPlayer.isOnline()) {
       const result = toPlayer.AI.onAction(this.room!, type, content);
       setTimeout(() => {
         const asyncResolver = this.asyncResponseResolver[type] && this.asyncResponseResolver[type][to];

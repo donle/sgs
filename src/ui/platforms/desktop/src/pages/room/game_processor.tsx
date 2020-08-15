@@ -84,7 +84,7 @@ export class GameClientProcessor {
       this.presenter.closeIncomingConversation();
 
       this.endAction();
-    }, this.store.notificationTime * 1000);
+    }, this.store.notificationTime * (this.presenter.ClientPlayer!.isTrusted() ? 0 : 1000));
   }
   public endAction() {
     if (this.onPlayTrustedActionTimer !== undefined) {
@@ -280,6 +280,9 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.HuaShenCardUpdatedEvent:
         await this.onHandleHuaShenCardUpdatedEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.UpgradeSideEffectSkillsEvent:
+        await this.onHandleUpgradeSideEffectSkillsEvent(e as any, content);
         break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
@@ -577,6 +580,16 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
+  private onHandleUpgradeSideEffectSkillsEvent<T extends GameEventIdentifiers.UpgradeSideEffectSkillsEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    content.skillName !== undefined
+      ? this.store.room.installSideEffectSkill(content.sideEffectSkillApplier, content.skillName)
+      : this.store.room.uninstallSideEffectSkill(content.sideEffectSkillApplier);
+    this.presenter.broadcastUIUpdate();
+  }
+
   private onHandlePlayerPropertiesChangeEvent<T extends GameEventIdentifiers.PlayerPropertiesChangeEvent>(
     type: T,
     content: ServerEventFinder<T>,
@@ -809,7 +822,10 @@ export class GameClientProcessor {
 
     if (content.fromPlayer) {
       for (const player of this.store.room.AlivePlayers) {
-        for (const skill of player.getSkills()) {
+        const sideEffectSkills = this.store.room
+          .getSideEffectSkills(player)
+          .map(skillName => Sanguosha.getSkillBySkillName(skillName));
+        for (const skill of [...player.getSkills(), ...sideEffectSkills]) {
           if (this.store.room.CurrentPlayerPhase === PlayerPhase.PrepareStage) {
             player.resetCardUseHistory();
           } else {
@@ -998,7 +1014,12 @@ export class GameClientProcessor {
               }
               return allCards;
             }, []);
-            return !matcher(cards, selectedCards, card.Id);
+            return !matcher(
+              cards,
+              selectedCards,
+              card.Id,
+              content.involvedTargets?.map(target => this.store.room.getPlayerById(target)),
+            );
           }
 
           return true;

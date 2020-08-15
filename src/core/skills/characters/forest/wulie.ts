@@ -45,7 +45,7 @@ export class WuLie extends TriggerSkill {
 
     await room.loseHp(event.fromId, toIds.length);
     for (const target of toIds) {
-      room.obtainSkill(target, WuLieShadow.Name);
+      await room.obtainSkill(target, WuLieShadow.Name);
       room.addMark(target, MarkEnum.Lie, 1);
     }
 

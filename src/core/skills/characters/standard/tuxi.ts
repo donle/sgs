@@ -16,7 +16,11 @@ export class TuXi extends TriggerSkill {
       room.removeFlag(owner.Id, this.Name);
     }
 
-    const canUse = owner.Id === content.fromId && room.CurrentPlayerPhase === PlayerPhase.DrawCardStage;
+    const canUse =
+      owner.Id === content.fromId &&
+      room.CurrentPlayerPhase === PlayerPhase.DrawCardStage &&
+      content.triggeredBySkills === undefined &&
+      content.drawAmount > 0;
     if (canUse) {
       room.setFlag(owner.Id, this.Name, content.drawAmount);
     }

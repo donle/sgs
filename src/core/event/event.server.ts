@@ -259,6 +259,7 @@ export interface ServerEvent extends EventUtilities {
     customTitle?: string;
     cardFilter?: System.AskForChoosingCardEventFilter;
     toId: PlayerId;
+    involvedTargets?: PlayerId[];
     amount?: number | [number, number];
   };
   [GameEventIdentifiers.AskForChoosingCardEvent]: {
@@ -412,6 +413,10 @@ export interface ServerEvent extends EventUtilities {
     latestHuaShen: CharacterId;
     latestHuaShenSkillName: string;
     toId: PlayerId;
+  };
+  [GameEventIdentifiers.UpgradeSideEffectSkillsEvent]: {
+    sideEffectSkillApplier: System.SideEffectSkillApplierEnum;
+    skillName: string | undefined;
   };
 }
 

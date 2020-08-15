@@ -1,20 +1,33 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { CharacterNationality } from 'core/characters/character';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, GameStartStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { System } from 'core/shares/libs/system';
 import { ActiveSkill, TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, LordSkill, SideEffectSkill } from 'core/skills/skill';
+import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @LordSkill
 @CommonSkill({ name: 'huangtian', description: 'huangtian_description' })
-export class HuangTian extends TriggerSkill {
+export class HuangTian extends TriggerSkill implements OnDefineReleaseTiming {
   public isAutoTrigger() {
     return true;
+  }
+
+  public isFlaggedSkill() {
+    return true;
+  }
+
+  async whenLosingSkill(room: Room) {
+    room.uninstallSideEffectSkill(System.SideEffectSkillApplierEnum.HuangTian);
+  }
+
+  async whenObtainingSkill(room: Room) {
+    room.installSideEffectSkill(System.SideEffectSkillApplierEnum.HuangTian, HuangTianGiveCard.Name);
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.GameStartEvent>, stage?: AllStage): boolean {
@@ -28,12 +41,7 @@ export class HuangTian extends TriggerSkill {
     return true;
   }
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
-    for (const player of room.getOtherPlayers(event.fromId)) {
-      if (player.Nationality === CharacterNationality.Qun) {
-        room.obtainSkill(player.Id, HuangTianGiveCard.Name);
-      }
-    }
-
+    room.installSideEffectSkill(System.SideEffectSkillApplierEnum.HuangTian, HuangTianGiveCard.Name);
     return true;
   }
 }

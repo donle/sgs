@@ -38,8 +38,8 @@ export class ZaoXian extends TriggerSkill {
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
-    room.changeMaxHp(event.fromId, -1);
-    room.obtainSkill(event.fromId, 'jixi', true);
+    await room.changeMaxHp(event.fromId, -1);
+    await room.obtainSkill(event.fromId, 'jixi', true);
 
     return true;
   }

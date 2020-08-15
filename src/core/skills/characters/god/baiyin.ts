@@ -32,8 +32,8 @@ export class BaiYin extends TriggerSkill {
     room: Room,
     skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
-    room.changeMaxHp(skillUseEvent.fromId, -1);
-    room.obtainSkill(skillUseEvent.fromId, JiLve.GeneralName, true);
+    await room.changeMaxHp(skillUseEvent.fromId, -1);
+    await room.obtainSkill(skillUseEvent.fromId, JiLve.GeneralName, true);
     return true;
   }
 }

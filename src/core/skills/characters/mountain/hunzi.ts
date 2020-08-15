@@ -26,9 +26,9 @@ export class HunZi extends TriggerSkill {
   }
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    room.changeMaxHp(event.fromId, -1);
-    room.obtainSkill(event.fromId, 'yingzi', true);
-    room.obtainSkill(event.fromId, 'yinghun', true);
+    await room.changeMaxHp(event.fromId, -1);
+    await room.obtainSkill(event.fromId, 'yingzi', true);
+    await room.obtainSkill(event.fromId, 'yinghun', true);
 
     return true;
   }

@@ -207,7 +207,7 @@ export class GuHuoShadow extends TriggerSkill {
           } else {
             await room.loseHp(response.fromId, 1);
           }
-          room.obtainSkill(response.fromId, ChanYuan.Name, true);
+          await room.obtainSkill(response.fromId, ChanYuan.Name, true);
           room.setFlag(response.fromId, ChanYuan.Name, true, true);
         }
       } else {
