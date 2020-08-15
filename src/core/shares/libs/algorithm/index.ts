@@ -1,3 +1,5 @@
+import { CardId } from 'core/cards/libs/card_props';
+
 export namespace Algorithm {
   export function shuffle<T>(a: T[]) {
     for (let i = a.length - 1; i > 0; i--) {
@@ -7,29 +9,37 @@ export namespace Algorithm {
     return a;
   }
 
-  export function randomPick(pick: number, upperBound: number) {
-    const resultRecord: boolean[] = [];
+  export function randomPick(pick: number, cardIds: CardId[]) {
+    const originResultRecord: boolean[] = [];
+    const randomResultRecord: number[] = [];
     let isInvert = false;
 
-    if (pick * 2 > upperBound) {
-      pick = upperBound - pick;
+    if (pick * 2 > cardIds.length) {
+      pick = cardIds.length - pick;
       isInvert = true;
     }
 
+    let currentLength = cardIds.length;
     while (pick--) {
-      let randomIdx = Math.floor(Math.random() * upperBound);
-      while (resultRecord[randomIdx]) {
-        randomIdx = (randomIdx + 1) % upperBound;
+      const randomId = Math.floor(Math.random() * currentLength);
+      let originIdx = randomId;
+      let originLength = currentLength;
+      while (originLength < cardIds.length) {
+        originLength++;
+        originIdx = (originIdx + randomResultRecord[cardIds.length - originLength]) % originLength;
       }
-      resultRecord[randomIdx] = true;
+
+      originResultRecord[originIdx] = true;
+      randomResultRecord.push(randomId);
+      currentLength--;
     }
 
-    const randomIdx: number[] = [];
-    for (let i = 0; i < upperBound; i++) {
-      isInvert !== !!resultRecord[i] && randomIdx.push(i);
+    const randomCardIds: CardId[] = [];
+    for (let i = 0; i < cardIds.length; i++) {
+      isInvert !== !!originResultRecord[i] && randomCardIds.push(cardIds[i]);
     }
 
-    return randomIdx;
+    return randomCardIds;
   }
 
   export function randomInt(from: number, to: number) {

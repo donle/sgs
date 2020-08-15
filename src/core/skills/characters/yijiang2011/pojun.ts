@@ -68,8 +68,8 @@ export class PoJun extends TriggerSkill {
       });
 
     selectedCardsIndex &&
-      Algorithm.randomPick(selectedCardsIndex.length, handCardIds.length).forEach(idx => {
-        movingCards.push({ card: handCardIds[idx], fromArea: PlayerCardsArea.HandArea });
+      Algorithm.randomPick(selectedCardsIndex.length, handCardIds).forEach(card => {
+        movingCards.push({ card, fromArea: PlayerCardsArea.HandArea });
       });
 
     await room.moveCards({
