@@ -17,6 +17,6 @@
 @value rebelColor: rgb(62, 134, 0);
 @value renegadeColor: weiDarkColor;
 
-@value SanguoshaFont: XinWei, LiSu, -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', 微软雅黑;
+@value SanguoshaFont: /* XinWei,  */LiSu, -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', 微软雅黑;
 @value XinWeiFont: XinWei, -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', 微软雅黑;
 @value IcomoonFont: icomoon, -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', 微软雅黑;

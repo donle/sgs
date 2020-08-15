@@ -37,13 +37,14 @@
 }
 
 .filterButton.actived{
-    box-shadow: 0 0 0 2px rgb(199, 147, 127);
+   border: 1px solid rgb(199, 147, 127);
 }
 
 .input{
     width: 12vw;
     height: 3.2vh;
     margin-right: gridLine;
+    padding: gridLine;
     border-radius: 20px;
     border: 2px solid #fff;
     background: #f9f0da;

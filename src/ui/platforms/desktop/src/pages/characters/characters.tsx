@@ -20,7 +20,7 @@ export const Characters = (props: CharacterProps) => {
   const imageLoader = getImageLoader(config.flavor);
 
   const totalCharacters: Character[] = useMemo(() => Sanguosha.getAllCharacters(), []);
-  const [characters, setCharacters] = useState(totalCharacters);
+  const [characters, setCharacters] = useState(totalCharacters);//filterd
 
   return (<>
     <Background imageLoader={imageLoader} />
@@ -59,7 +59,7 @@ export const Characters = (props: CharacterProps) => {
               translator={translator}
               size="regular"
               hideHp
-              onClick={() => console.log(character.Name)}
+              /* onClick={() => console.log(character.Name)} */
             />)
           })}
         </div>

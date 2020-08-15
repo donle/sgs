@@ -1,8 +1,9 @@
 import classNames from 'classnames';
 import { Character} from 'core/characters/character';
+import { Skill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import { uniq } from 'lodash';
-import React, {useMemo} from 'react';
+import { debounce, uniq } from 'lodash';
+import React, {useEffect, useMemo, useState} from 'react';
 import styles from './search.module.css';
 
 type FilterFunction = (character: Character) => boolean;
@@ -11,7 +12,6 @@ type FilterObject = {
     actived: boolean,
     handler: FilterFunction;
 }
-type FilterFactory = (name: string) => FilterObject;
 
 type SearchBarProps = {
     translator: ClientTranslationModule;
@@ -19,57 +19,84 @@ type SearchBarProps = {
     setCharacters: React.Dispatch<React.SetStateAction<Character[]>>
 };
 
-const packageFilterFactory: FilterFactory = (pkg: string) => ({
+const packageFilterFactory = (pkg: string) => ({
     key: pkg,
     actived: false,
     handler: (character: Character) => character.Package as string === pkg
 });
+const keywordFilterFactory = (keyword: string, translator: ClientTranslationModule) => (character: Character) => {
+        const { Name, Skills } = character;
+        return translator.tr(Name).indexOf(keyword) !== -1 ||
+            Skills.some((skill: Skill) => 
+                translator.tr(skill.Name).indexOf(keyword) !== -1 ||
+                translator.tr(skill.Description).indexOf(keyword) !== -1
+            );
+};
+const defaultKeywordFilter: FilterFunction = (character: Character) => true;
 
 export const SearchBar = (props: SearchBarProps) => {
     const { translator, totalCharacters, setCharacters } = props;
 
-    const filters: FilterObject[] = useMemo(
-        () => {
-            const packages: string[] = uniq(totalCharacters.map(character => character.Package as string));
-            return packages.map(packageFilterFactory);
-        },
-        [totalCharacters]
-    );
+    const [filters, setFilters] = useState<FilterObject[]>([]);
+    const [keywordFilter, setKeywordFilter] = useState<FilterFunction>(() => defaultKeywordFilter);
+
+    useEffect(() => {
+        setFilters(uniq(totalCharacters.map(character => character.Package as string)).map(packageFilterFactory));
+    }, [totalCharacters]);
+    useEffect(() => {
+        const actived = filters.filter(filter => filter.actived);
+        if(actived.length === 0){
+            setCharacters(totalCharacters.filter(keywordFilter));
+        }else{
+            setCharacters(totalCharacters.filter(character => 
+                actived.map(filter => filter.handler).some(handler => handler(character))
+            ).filter(keywordFilter));
+        }
+    }, [filters, keywordFilter, setCharacters, totalCharacters])
 
     const filterButtons = useMemo(() => {
         const toggleFilter = (filter: FilterObject) => {
-            filter.actived = !filter.actived;
-            const actived = filters.filter(filter => filter.actived);
-            console.log(actived.map(filter => filter.key));
-            if(actived.length === 0){
-                setCharacters(totalCharacters);
-            }else{
-                setCharacters(totalCharacters.filter(character => 
-                    actived.map(filter => filter.handler).some(handler => handler(character))
-                ));
-            }
+            setFilters((filters: FilterObject[]) => {
+                return filters.map(obj => {
+                    if(obj.key === filter.key){
+                        obj.actived = !obj.actived;
+                    }
+                    return obj;
+                })
+            });
         };
-
-        return filters.map(filterObject => {
+        return filters.map((filterObject: FilterObject) => {
             return (
                 <div 
                     key={filterObject.key} 
-                    className={classNames(styles.filterButton, {
-                        [styles.actived]: filterObject.actived
-                    })} 
+                    className={classNames(styles.filterButton, {[styles.actived]: filterObject.actived})} 
                     onClick={() => toggleFilter(filterObject)}
                 >
                     {translator.tr(filterObject.key)}
                 </div>
             );
         })
-    }, [filters, translator, setCharacters, totalCharacters]);
+    }, [filters, translator]);
+
+    const setKeyword = useMemo(() => debounce(value => {
+        if(value){
+            setKeywordFilter(() => keywordFilterFactory(value, translator));
+        }else{
+            setKeywordFilter(() => defaultKeywordFilter);
+        }
+    }, 300), [translator]);
+    const handleKeywordChange = e => setKeyword(e.target.value);
 
     return (
         <>
             <div className={styles.searchBar}>
                 <div className={styles.searchWrapper}>
-                    <input type="text" className={styles.input} placeholder={translator.tr('Please input character info:')} />
+                    <input 
+                        type="text" 
+                        className={styles.input} 
+                        placeholder={translator.tr('Please input character info:')} 
+                        onChange={handleKeywordChange}
+                    />
                     <div className={styles.searchButton}>
                         <span className={styles.icon}></span>
                     </div>
