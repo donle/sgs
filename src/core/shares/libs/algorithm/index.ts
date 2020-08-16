@@ -9,37 +9,17 @@ export namespace Algorithm {
     return a;
   }
 
-  export function randomPick(pick: number, cardIds: CardId[]) {
-    const originResultRecord: boolean[] = [];
-    const randomResultRecord: number[] = [];
-    let isInvert = false;
-
-    if (pick * 2 > cardIds.length) {
-      pick = cardIds.length - pick;
-      isInvert = true;
+  export function randomPick<T>(pick: number, arr: T[]): T[] {
+    const copy = arr.slice();
+    const picked: T[] = [];
+    const reverse = pick > arr.length / 2;
+    pick = reverse ? arr.length - pick : pick;
+    while (pick > 0) {
+      const index = Math.floor(Math.random() * copy.length);
+      picked.push(...copy.splice(index, 1));
+      pick--;
     }
-
-    let currentLength = cardIds.length;
-    while (pick--) {
-      const randomId = Math.floor(Math.random() * currentLength);
-      let originIdx = randomId;
-      let originLength = currentLength;
-      while (originLength < cardIds.length) {
-        originLength++;
-        originIdx = (originIdx + randomResultRecord[cardIds.length - originLength]) % originLength;
-      }
-
-      originResultRecord[originIdx] = true;
-      randomResultRecord.push(randomId);
-      currentLength--;
-    }
-
-    const randomCardIds: CardId[] = [];
-    for (let i = 0; i < cardIds.length; i++) {
-      isInvert !== !!originResultRecord[i] && randomCardIds.push(cardIds[i]);
-    }
-
-    return randomCardIds;
+    return reverse ? copy : picked;
   }
 
   export function randomInt(from: number, to: number) {
