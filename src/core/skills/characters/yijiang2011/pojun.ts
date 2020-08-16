@@ -61,16 +61,13 @@ export class PoJun extends TriggerSkill {
       skillEffectEvent.fromId,
     );
 
-    const movingCards: { card: CardId; fromArea: PlayerCardsArea | undefined }[] = [];
-    selectedCards &&
-      selectedCards.forEach(id => {
-        movingCards.push({ card: id, fromArea: to.cardFrom(id) });
-      });
+    const movingCards: { card: CardId; fromArea: PlayerCardsArea | undefined }[] = selectedCards
+      ? selectedCards.map(id => ({ card: id, fromArea: to.cardFrom(id) }))
+      : [];
 
-    selectedCardsIndex &&
-      Algorithm.randomPick(selectedCardsIndex.length, handCardIds).forEach(card => {
-        movingCards.push({ card, fromArea: PlayerCardsArea.HandArea });
-      });
+    for (const card of selectedCardsIndex ? Algorithm.randomPick(selectedCardsIndex.length, handCardIds) : []) {
+      movingCards.push({ card, fromArea: PlayerCardsArea.HandArea });
+    }
 
     await room.moveCards({
       movingCards,
@@ -82,7 +79,6 @@ export class PoJun extends TriggerSkill {
       toOutsideArea: this.GeneralName,
       movedByReason: this.GeneralName,
     });
-
     return true;
   }
 }
