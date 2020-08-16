@@ -267,7 +267,7 @@ export interface ServerEvent extends EventUtilities {
     customCardFields?: {
       [fieldName in string | number]: CardId[] | number;
     };
-    customMessage?: string;
+    customTitle?: string;
     toId: PlayerId;
     cardMatcher?: CardMatcherSocketPassenger;
     amount: number;
@@ -276,7 +276,7 @@ export interface ServerEvent extends EventUtilities {
     fromId: PlayerId;
     toId: PlayerId;
     options: CardChoosingOptions;
-    customMessage?: string;
+    customTitle?: string;
   };
   [GameEventIdentifiers.AskForSkillUseEvent]: {
     invokeSkillNames: string[];

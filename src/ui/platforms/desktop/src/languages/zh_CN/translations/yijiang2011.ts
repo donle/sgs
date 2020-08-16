@@ -6,6 +6,8 @@ export const characterDictionary: Word[] = [
   { source: 'caozhi', target: '曹植' },
   { source: 'luoying', target: '落英' },
   { source: 'jiushi', target: '酒诗' },
+  { source: '#jiushi', target: '酒诗' },
+  { source: 'chengzhang', target: '成章' },
   
   { source: 'yujin', target: '于禁' },
   { source: 'jieyue', target: '节鉞' },
@@ -54,9 +56,13 @@ export const skillDescriptions: Word[] = [
   {
     source: 'jiushi_description',
     target:
-      '当你需要使用【酒】时，若你的武将牌正面朝上，你可以翻面并视为使用之；当你受到伤害后，若你的武将牌背面朝上且你的武将牌于你受到此伤害时背面朝上，你可以翻面。',
+      '1级：当你需要使用[酒]时，若你的武将牌正面向上，你可以翻面，视为使用一张[酒]。当你受到伤害后，若你的武将牌背面向上，你可以翻面并获得牌堆中的一张随机锦囊。<br />2级：当你需要使用[酒]时，若你的武将牌正面向上，你可以翻面，视为使用一张[酒]。当你受到伤害后若你的武将牌背面向上，你可以翻面。当你翻面时，你获得牌堆中的一张随机锦囊。',
   },
-
+  {
+    source: 'chengzhang_description',
+    target:
+      '<b>觉醒技</b>，准备阶段开始时，若你造成伤害与受到伤害值之和累计7点或以上，则你回复1点体力并摸1张牌，然后升级“酒诗”。',
+  },
   {
     source: 'jieyue_description',
     target:

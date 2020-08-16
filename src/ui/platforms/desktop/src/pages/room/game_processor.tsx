@@ -987,7 +987,7 @@ export class GameClientProcessor {
         options={content.options}
         onClick={onSelectedCard}
         translator={this.translator}
-        title={content.customMessage}
+        title={content.customTitle}
       />,
     );
   }
@@ -1167,7 +1167,7 @@ export class GameClientProcessor {
         translator={this.translator}
         isCardDisabled={isCardDisabled}
         imageLoader={this.imageLoader}
-        title={content.customMessage}
+        title={content.customTitle}
       />,
     );
 
