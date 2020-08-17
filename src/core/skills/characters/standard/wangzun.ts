@@ -27,7 +27,7 @@ export class WangZun extends TriggerSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
     const phaseStageChangeEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
-    await room.drawCards(1, skillUseEvent.fromId);
+    await room.drawCards(1, skillUseEvent.fromId, undefined, skillUseEvent.fromId, this.Name);
     room.syncGameCommonRules(phaseStageChangeEvent.playerId, user => {
       user.addInvisibleMark(this.Name, 1);
       GameCommonRules.addAdditionalHoldCardNumber(user, -1);

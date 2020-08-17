@@ -40,7 +40,7 @@ export class ZhaXiang extends TriggerSkill {
     room: Room,
     skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
-    await room.drawCards(3, skillUseEvent.fromId);
+    await room.drawCards(3, skillUseEvent.fromId, undefined, skillUseEvent.fromId, this.Name);
     if (room.CurrentPlayer.Id === skillUseEvent.fromId) {
       const num = room.getFlag<number>(skillUseEvent.fromId, this.GeneralName) || 0;
       room.setFlag<number>(skillUseEvent.fromId, this.GeneralName, num + 1);

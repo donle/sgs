@@ -67,7 +67,7 @@ export class HongYanShadow extends TriggerSkill {
   }
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    await room.drawCards(1, skillUseEvent.fromId);
+    await room.drawCards(1, skillUseEvent.fromId, undefined, skillUseEvent.fromId, this.GeneralName);
     return true;
   }
 }

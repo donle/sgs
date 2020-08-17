@@ -60,7 +60,7 @@ export class QiMou extends ActiveSkill {
     const lostHp = parseInt(response.selectedOption!, 10);
 
     await room.loseHp(fromId, lostHp);
-    await room.drawCards(lostHp, fromId);
+    await room.drawCards(lostHp, fromId, undefined, fromId, this.Name);
     room.setFlag(fromId, this.Name, lostHp, true);
 
     return true;

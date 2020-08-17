@@ -127,7 +127,7 @@ export class LiYu extends TriggerSkill {
         await room.useCard(cardUseEvent);
       }
     } else {
-      await room.drawCards(1, chooseCardEvent.toId);
+      await room.drawCards(1, chooseCardEvent.toId, undefined, skillUseEvent.fromId, this.Name);
     }
 
     return true;
