@@ -176,10 +176,6 @@ export { XinSheng } from './characters/mountain/xinsheng';
 export { BeiGe } from './characters/mountain/beige';
 export { DuanChang } from './characters/mountain/duanchang';
 
-export { LuoYing } from './characters/yijiang2011/luoying';
-export { JiuShi, JiuShiShadow } from './characters/yijiang2011/jiushi';
-export { ChengZhang } from './characters/yijiang2011/chengzhang';
-
 export { WuShen, WuShenShadow } from './characters/god/wushen';
 export { WuHun } from './characters/god/wuhun';
 export { SheLie } from './characters/god/shelie';
@@ -210,6 +206,11 @@ export { SanYao } from './characters/yijiang2011/sanyao';
 export { ZhiMan } from './characters/yijiang2011/zhiman';
 export { WuYan } from './characters/yijiang2011/wuyan';
 export { JuJian } from './characters/yijiang2011/jujian';
+export { LuoYing } from './characters/yijiang2011/luoying';
+export { JiuShi, JiuShiShadow } from './characters/yijiang2011/jiushi';
+export { ChengZhang } from './characters/yijiang2011/chengzhang';
 export { PoJun, PoJunDamage, PoJunClear } from './characters/yijiang2011/pojun';
+export { MingCe } from './characters/yijiang2011/mingce';
+export { ZhiChi, ZhiChiShadow } from './characters/yijiang2011/zhichi';
 
 export { Cheat } from './system/cheat';
