@@ -131,8 +131,8 @@ export class XuanHuo extends TriggerSkill {
         [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),
       },
       toId: fromId,
-      customMessage: TranslationPack.translationJsonPatcher(
-        'please choose {0} cards to obtain',
+      customTitle: TranslationPack.translationJsonPatcher(
+        '{0}: please choose {1} cards to obtain',
         numOfObtain,
       ).toString(),
     };
