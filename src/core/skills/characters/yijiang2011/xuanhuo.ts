@@ -1,4 +1,5 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
+import { CardId } from 'core/cards/libs/card_props';
 import {
   CardDrawReason,
   CardMoveArea,
@@ -11,6 +12,7 @@ import { AllStage, DrawCardStage, PlayerPhase } from 'core/game/stage_processor'
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Algorithm } from 'core/shares/libs/algorithm';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -133,6 +135,7 @@ export class XuanHuo extends TriggerSkill {
       toId: fromId,
       customTitle: TranslationPack.translationJsonPatcher(
         '{0}: please choose {1} cards to obtain',
+        this.Name,
         numOfObtain,
       ).toString(),
     };
@@ -148,15 +151,36 @@ export class XuanHuo extends TriggerSkill {
       fromId,
     );
 
+    const selectableCards: {
+      card: CardId;
+      fromArea: PlayerCardsArea | undefined;
+    }[] = to.getPlayerCards().map(card => ({ card, fromArea: to.cardFrom(card) }));
+
+    let movingCards: {
+      card: CardId | number;
+      fromArea: PlayerCardsArea | undefined;
+    }[];
+
+    if (selectableCards === undefined && selectedCardsIndex === undefined) {
+      movingCards = Algorithm.randomPick(numOfObtain, selectableCards);
+    } else if (selectedCardsIndex === undefined) {
+      movingCards = selectedCards!.map(card => ({ card, fromArea: PlayerCardsArea.EquipArea }));
+    } else if (selectedCards === undefined) {
+      const randomHandcards = Algorithm.randomPick(numOfObtain, to.getCardIds(PlayerCardsArea.HandArea));
+      movingCards = randomHandcards.map(card => ({ card, fromArea: PlayerCardsArea.HandArea }));
+    } else {
+      movingCards = [];
+      for (const card of selectedCards) {
+        movingCards.push({ card, fromArea: PlayerCardsArea.EquipArea });
+      }
+      for (const card of Algorithm.randomPick(selectedCardsIndex.length, to.getCardIds(PlayerCardsArea.HandArea))) {
+        movingCards.push({ card, fromArea: PlayerCardsArea.HandArea });
+      }
+    }
+
     await room.moveCards({
       fromId: toId,
-      movingCards: selectedCards!
-        .map(card => ({ card, fromArea: PlayerCardsArea.EquipArea }))
-        .concat(
-          selectedCardsIndex!.map(cardIndex => {
-            return { card: to.getCardIds(PlayerCardsArea.HandArea)[cardIndex], fromArea: PlayerCardsArea.HandArea };
-          }),
-        ),
+      movingCards,
       toId: fromId,
       toArea: CardMoveArea.HandArea,
       moveReason: CardMoveReason.ActivePrey,

@@ -98,6 +98,11 @@ export class EnYuan extends TriggerSkill {
           toId: damageFromId!,
           cardIds: damageFrom.getCardIds(PlayerCardsArea.HandArea),
           amount: 1,
+          customTitle: TranslationPack.translationJsonPatcher(
+            '{0}: you need to give a handcard to {1}',
+            this.Name,
+            TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillEffectEvent.fromId)),
+          ).toString(),
         };
 
         room.notify(GameEventIdentifiers.AskForChoosingCardEvent, askForChooseCard, damageFromId!);

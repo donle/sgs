@@ -165,6 +165,10 @@ export const promptDescriptions: Word[] = [
     target: '{0}：请选择获得其中的 {1} 张牌',
   },
   {
+    source: '{0}: you need to give a handcard to {1}',
+    target: '{0}：你需交给 {1} 一张手牌',
+  },
+  {
     source: '{0}: do you want to prevent the damage to {1} to pick one card in areas?',
     target: '{0}：你可以防止对 {1} 造成的伤害，然后获得其区域里的一张牌',
   },
