@@ -1,5 +1,3 @@
-import { CardId } from 'core/cards/libs/card_props';
-
 export namespace Algorithm {
   export function shuffle<T>(a: T[]) {
     for (let i = a.length - 1; i > 0; i--) {
