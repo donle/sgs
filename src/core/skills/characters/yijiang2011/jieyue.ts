@@ -92,22 +92,12 @@ export class JieYue extends TriggerSkill {
           numOfAreas++;
         }
 
-        let amount: number | [number, number];
-        if (numOfAreas === 2) {
-          amount = [1, 1];
-        } else if (numOfAreas === 1) {
-          amount = 1;
-        } else {
-          return false;
-        }
-
         const askForDiscards = EventPacker.createUncancellableEvent<
           GameEventIdentifiers.AskForChoosingCardWithConditionsEvent
         >({
           toId,
-          amount,
           customCardFields,
-          customMessage: 'please choose cards that you want to keep',
+          customTitle: 'please choose cards that you want to keep',
         });
 
         room.notify(GameEventIdentifiers.AskForChoosingCardWithConditionsEvent, askForDiscards, toId);
