@@ -24,10 +24,12 @@ export class PoJun extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, aimEvent: ServerEventFinder<GameEventIdentifiers.AimEvent>): boolean {
+    const to = room.getPlayerById(aimEvent.toId);
     return (
       aimEvent.fromId === owner.Id &&
       !!aimEvent.byCardId &&
-      Sanguosha.getCardById(aimEvent.byCardId).GeneralName === 'slash'
+      Sanguosha.getCardById(aimEvent.byCardId).GeneralName === 'slash' &&
+      to.getCardIds(PlayerCardsArea.HandArea).length + to.getCardIds(PlayerCardsArea.EquipArea).length > 0
     );
   }
 
