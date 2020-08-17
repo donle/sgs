@@ -11,6 +11,7 @@ export const YiJiang2011Package: (index: number) => Character[] = index => [
 
   new FaZheng(index++),
   new MaSu(index++),
+  new XuSheng(index++),
   new XuShu(index++),
   
   new XuSheng(index++),
