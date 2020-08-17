@@ -78,16 +78,16 @@ export class JianYan extends ActiveSkill {
 
     const cardMatcher: CardMatcher = this.jianYanMatch(response.selectedOption);
 
-    let displayCard = room.findCardByMatcherFrom(cardMatcher);
-    if (displayCard === undefined) {
-      displayCard = room.findCardByMatcherFrom(cardMatcher, false);
+    let pendingCardIds = room.findCardsByMatcherFrom(cardMatcher);
+    if (pendingCardIds.length === 0) {
+      pendingCardIds = room.findCardsByMatcherFrom(cardMatcher, false);
       room.shuffle();
     }
-    if (displayCard === undefined) {
+    if (pendingCardIds.length === 0) {
       return false;
     }
 
-    const displayCards: CardId[] = [displayCard];
+    const displayCards: CardId[] = [pendingCardIds[0]];
 
     await room.moveCards({
       movingCards: displayCards.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
