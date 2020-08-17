@@ -53,7 +53,7 @@ export class ZhiChi extends TriggerSkill {
 @ShadowSkill
 @CompulsorySkill({ name: ZhiChi.Name, description: ZhiChi.Description })
 export class ZhiChiShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  onLosingSkill(room: Room, playerId: PlayerId) {
+  afterLosingSkill(room: Room, playerId: PlayerId) {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 
