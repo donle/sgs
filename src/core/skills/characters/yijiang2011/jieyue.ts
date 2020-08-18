@@ -4,6 +4,7 @@ import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/st
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Algorithm } from 'core/shares/libs/algorithm';
 import { System } from 'core/shares/libs/system';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
@@ -96,8 +97,10 @@ export class JieYue extends TriggerSkill {
           customCardFields,
           cardFilter: System.AskForChoosingCardEventFilter.JieYue,
           involvedTargets: [toId],
-          customTitle: 'please choose cards that you want to keep',
-          customMessage: 'choose cards you want to keep and discard others',
+          customTitle: TranslationPack.translationJsonPatcher(
+            '{0}: please choose cards that you want to keep',
+            this.Name,
+          ).toString(),
         });
 
         room.notify(GameEventIdentifiers.AskForChoosingCardWithConditionsEvent, askForDiscards, toId);
@@ -107,13 +110,17 @@ export class JieYue extends TriggerSkill {
           toId,
         );
 
+        let discards: CardId[];
         if (selectedCards === undefined) {
-          return false;
+          discards = [
+            Algorithm.randomPick(handCards.length - 1, handCards)[0],
+            Algorithm.randomPick(equipCards.length - 1, equipCards)[0],
+          ];
         } else {
-          const discards = to.getPlayerCards().filter(card => !selectedCards.includes(card));
-          if (discards.length > 0) {
-            await room.dropCards(CardMoveReason.SelfDrop, discards, toId, toId, this.Name);
-          }
+          discards = to.getPlayerCards().filter(card => !selectedCards.includes(card));
+        }
+        if (discards.length > 0) {
+          await room.dropCards(CardMoveReason.SelfDrop, discards, toId, toId, this.Name);
         }
       } else {
         await room.drawCards(3, yujinId, undefined, toId, this.Name);
