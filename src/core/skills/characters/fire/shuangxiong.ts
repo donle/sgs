@@ -2,7 +2,14 @@ import { Card, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Duel } from 'core/cards/standard/duel';
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import {
+  CardDrawReason,
+  CardMoveArea,
+  CardMoveReason,
+  EventPacker,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, DamageEffectStage, DrawCardStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -122,8 +129,8 @@ export class ShuangXiongShadow extends TriggerSkill {
       return (
         owner.Id === drawEvent.fromId &&
         room.CurrentPlayerPhase === PlayerPhase.DrawCardStage &&
-        drawEvent.triggeredBySkills === undefined &&
-        drawEvent.drawAmount > 0
+        drawEvent.drawAmount > 0 &&
+        drawEvent.bySpecialReason === CardDrawReason.GameStage
       );
     } else if (unknownEvent === GameEventIdentifiers.DamageEvent) {
       const damageEvent = event as ServerEventFinder<GameEventIdentifiers.DamageEvent>;

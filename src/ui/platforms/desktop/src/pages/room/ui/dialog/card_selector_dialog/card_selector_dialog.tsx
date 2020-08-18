@@ -168,7 +168,7 @@ export const CardSelectorDialog = (props: {
 }) => {
   const { title, ...selectorProps } = props;
   return (
-    <BaseDialog title={props.translator.tr(title || 'please choose a card')}>
+    <BaseDialog title={props.translator.trx(title || 'please choose a card')}>
       <CardSelector {...selectorProps} />
     </BaseDialog>
   );

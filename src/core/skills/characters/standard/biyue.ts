@@ -23,6 +23,9 @@ export class BiYue extends TriggerSkill {
     await room.drawCards(
       room.getPlayerById(skillUseEvent.fromId).getCardIds(PlayerCardsArea.HandArea).length === 0 ? 2 : 1,
       skillUseEvent.fromId,
+      undefined,
+      skillUseEvent.fromId,
+      this.Name,
     );
     return true;
   }

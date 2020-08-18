@@ -113,7 +113,13 @@ export class JiLve extends ActiveSkill {
         ZhiHeng.Name,
       );
 
-      await room.drawCards(selectedCards.length + additionalCardDraw, skillUseEvent.fromId);
+      await room.drawCards(
+        selectedCards.length + additionalCardDraw,
+        skillUseEvent.fromId,
+        undefined,
+        skillUseEvent.fromId,
+        this.Name,
+      );
       room.setFlag(from.Id, JiLve.ZhihengUsed, true);
       room.addMark(skillUseEvent.fromId, MarkEnum.Ren, -1);
     } else {

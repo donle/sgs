@@ -27,10 +27,7 @@ export class JiuYuan extends TriggerSkill {
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage: AimStage) {
-    return (
-      // EventPacker.getIdentifier(event) === GameEventIdentifiers.RecoverEvent &&
-      stage === AimStage.OnAim
-    );
+    return stage === AimStage.OnAim;
   }
 
   async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
@@ -56,7 +53,7 @@ export class JiuYuan extends TriggerSkill {
     );
     if (selectedOption === 'yes') {
       aimEvent.toId = event.fromId;
-      await room.drawCards(1, aimEvent.fromId, undefined, undefined, this.Name);
+      await room.drawCards(1, aimEvent.fromId, undefined, event.fromId, this.Name);
     }
 
     return true;
