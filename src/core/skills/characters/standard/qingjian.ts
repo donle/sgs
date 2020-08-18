@@ -21,6 +21,7 @@ export class QingJian extends TriggerSkill {
     return (
       owner.Id === content.toId &&
       content.toArea === CardMoveArea.HandArea &&
+      room.CurrentPhasePlayer.Id === owner.Id &&
       room.CurrentPlayerPhase !== PlayerPhase.DrawCardStage &&
       !owner.hasUsedSkill(this.Name) &&
       owner.getPlayerCards().length !== 0

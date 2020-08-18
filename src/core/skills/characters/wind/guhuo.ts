@@ -214,7 +214,7 @@ export class GuHuoShadow extends TriggerSkill {
       } else {
         if (response.selectedOption === 'guhuo:doubt') {
           success = false;
-          await room.drawCards(1, response.fromId);
+          await room.drawCards(1, response.fromId, undefined, event.fromId, this.GeneralName);
         }
       }
     }

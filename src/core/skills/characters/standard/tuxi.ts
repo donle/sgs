@@ -1,4 +1,11 @@
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import {
+  CardDrawReason,
+  CardMoveArea,
+  CardMoveReason,
+  EventPacker,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from 'core/event/event';
 import { AllStage, DrawCardStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -19,7 +26,7 @@ export class TuXi extends TriggerSkill {
     const canUse =
       owner.Id === content.fromId &&
       room.CurrentPlayerPhase === PlayerPhase.DrawCardStage &&
-      content.triggeredBySkills === undefined &&
+      content.bySpecialReason === CardDrawReason.GameStage &&
       content.drawAmount > 0;
     if (canUse) {
       room.setFlag(owner.Id, this.Name, content.drawAmount);

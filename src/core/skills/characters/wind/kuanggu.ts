@@ -47,7 +47,7 @@ export class KuangGu extends TriggerSkill {
 
     response.selectedOption = response.selectedOption || 'kuanggu:draw';
     if (response.selectedOption === 'kuanggu:draw') {
-      await room.drawCards(1, weiyanId);
+      await room.drawCards(1, weiyanId, undefined, weiyanId, this.Name);
     } else {
       await room.recover({
         recoveredHp: 1,
