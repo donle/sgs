@@ -52,12 +52,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   private drawStack: CardId[] = [];
   private dropStack: CardId[] = [];
 
-  private readonly specialDrawReasons: CardDrawReason[] = [
-    CardDrawReason.GameStage,
-    CardDrawReason.KillReward,
-    CardDrawReason.Reforge,
-  ];
-
   private hookedSkills: {
     player: Player;
     skill: Skill;
