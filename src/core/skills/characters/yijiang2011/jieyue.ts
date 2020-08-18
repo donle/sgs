@@ -4,6 +4,7 @@ import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/st
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { System } from 'core/shares/libs/system';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -80,16 +81,12 @@ export class JieYue extends TriggerSkill {
         const handCards = to.getCardIds(PlayerCardsArea.HandArea);
         const equipCards = to.getCardIds(PlayerCardsArea.EquipArea);
 
-        let numOfAreas: number = 0;
-
         if (handCards.length > 0) {
           customCardFields[PlayerCardsArea.HandArea] = handCards;
-          numOfAreas++;
         }
 
         if (equipCards.length > 0) {
           customCardFields[PlayerCardsArea.EquipArea] = equipCards;
-          numOfAreas++;
         }
 
         const askForDiscards = EventPacker.createUncancellableEvent<
@@ -97,7 +94,10 @@ export class JieYue extends TriggerSkill {
         >({
           toId,
           customCardFields,
+          cardFilter: System.AskForChoosingCardEventFilter.JieYue,
+          involvedTargets: [toId],
           customTitle: 'please choose cards that you want to keep',
+          customMessage: 'choose cards you want to keep and discard others',
         });
 
         room.notify(GameEventIdentifiers.AskForChoosingCardWithConditionsEvent, askForDiscards, toId);
