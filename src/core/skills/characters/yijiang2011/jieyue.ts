@@ -66,7 +66,11 @@ export class JieYue extends TriggerSkill {
         options: ['option-one', 'option-two'],
         askedBy: yujinId,
         toId,
-        conversation: TranslationPack.translationJsonPatcher('{0}: please choose jieyue options', this.Name).extract(),
+        conversation: TranslationPack.translationJsonPatcher(
+          'jieyue: please choose jieyue options',
+          this.Name,
+          TranslationPack.patchPlayerInTranslation(yujin),
+        ).extract(),
         triggeredBySkills: [this.Name],
       });
 
@@ -97,10 +101,7 @@ export class JieYue extends TriggerSkill {
           customCardFields,
           cardFilter: System.AskForChoosingCardEventFilter.JieYue,
           involvedTargets: [toId],
-          customTitle: TranslationPack.translationJsonPatcher(
-            '{0}: please choose cards that you want to keep',
-            this.Name,
-          ).toString(),
+          customTitle: this.Name,
         });
 
         room.notify(GameEventIdentifiers.AskForChoosingCardWithConditionsEvent, askForDiscards, toId);
