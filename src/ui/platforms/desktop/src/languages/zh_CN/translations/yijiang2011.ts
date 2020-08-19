@@ -193,7 +193,7 @@ export const promptDescriptions: Word[] = [
   { source: 'jujian:draw', target: '摸两张牌' },
   { source: 'jujian:recover', target: '回复1点体力' },
   { source: 'jujian:restore', target: '复原武将牌' },
-  
+
   {
     source: '{0}: please choose a target who {1} can use slash to',
     target:
@@ -207,4 +207,9 @@ export const promptDescriptions: Word[] = [
   },
   { source: 'mingce:slash', target: '视为使用【杀】' },
   { source: 'mingce:draw', target: '摸一张牌' },
+
+  {
+    source: '{0}: do you want to draw {1} cards?',
+    target: '{0}：你可以摸 {1} 张牌',
+  },
 ];
