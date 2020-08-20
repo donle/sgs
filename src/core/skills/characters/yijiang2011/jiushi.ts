@@ -54,6 +54,17 @@ export class JiuShi extends ViewAsSkill {
 export class JiuShiShadow extends TriggerSkill {
   private static readonly faceDownTag = 'jiushi_face_down';
 
+  public isAutoTrigger(room: Room): boolean {
+    return (
+      room.CurrentProcessingStage === DamageEffectStage.DamagedEffect ||
+      room.CurrentProcessingStage === TurnOverStage.TurningOver
+    );
+  }
+
+  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
+    return stage === DamageEffectStage.DamagedEffect;
+  }
+
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
     return (
       stage === DamageEffectStage.DamagedEffect ||
