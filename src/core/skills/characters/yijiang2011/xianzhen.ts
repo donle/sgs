@@ -1,9 +1,10 @@
+import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE, INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
-import { PlayerPhase } from 'core/game/stage_processor';
+import { CardUseStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -139,6 +140,37 @@ export class XianZhenKeep extends TriggerSkill {
 
     askForCardDropEvent.cardAmount -= slashes.length;
     askForCardDropEvent.except = askForCardDropEvent.except ? [...askForCardDropEvent.except, ...slashes] : slashes;
+
+    return true;
+  }
+}
+
+@ShadowSkill
+@CommonSkill({ name: XianZhenKeep.Name, description: XianZhen.Description })
+export class XianZhenAddTarget extends TriggerSkill {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage: CardUseStage) {
+    return stage === CardUseStage.CardUsing;
+  }
+
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
+    const { fromId, toIds, cardId } = content;
+    const card = Sanguosha.getCardById(cardId);
+    return (
+      fromId === owner.Id &&
+      toIds?.length === 1 &&
+      owner.getFlag<boolean>(XianZhen.Win) === true &&
+      !toIds?.includes(owner.getFlag<PlayerId>(this.GeneralName)) &&
+      (card.GeneralName === 'slash' || (card.is(CardType.Trick) && !card.is(CardType.DelayedTrick)))
+    );
+  }
+
+  public async onTrigger() {
+    return true;
+  }
+
+  public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    const { fromId, triggeredOnEvent } = skillUseEvent;
+    const { toIds } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
 
     return true;
   }
