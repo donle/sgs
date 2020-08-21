@@ -4,7 +4,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE, INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
-import { CardUseStage, PlayerPhase } from 'core/game/stage_processor';
+import { AimStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -148,18 +148,21 @@ export class XianZhenKeep extends TriggerSkill {
 @ShadowSkill
 @CommonSkill({ name: XianZhenKeep.Name, description: XianZhen.Description })
 export class XianZhenAddTarget extends TriggerSkill {
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage: CardUseStage) {
-    return stage === CardUseStage.CardUsing;
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage: AimStage) {
+    return stage === AimStage.OnAim;
   }
 
-  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    const { fromId, toIds, cardId } = content;
-    const card = Sanguosha.getCardById(cardId);
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
+    const { fromId, byCardId, isFirstTarget, allTargets } = content;
+    if (byCardId === undefined || !isFirstTarget || allTargets === undefined) {
+      return false;
+    }
+    const card = Sanguosha.getCardById(byCardId);
     return (
       fromId === owner.Id &&
-      toIds?.length === 1 &&
+      allTargets.length === 1 &&
       owner.getFlag<boolean>(XianZhen.Win) === true &&
-      !toIds?.includes(owner.getFlag<PlayerId>(this.GeneralName)) &&
+      !allTargets.includes(owner.getFlag<PlayerId>(this.GeneralName)) &&
       (card.GeneralName === 'slash' || (card.is(CardType.Trick) && !card.is(CardType.DelayedTrick)))
     );
   }
@@ -170,7 +173,9 @@ export class XianZhenAddTarget extends TriggerSkill {
 
   public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     const { fromId, triggeredOnEvent } = skillUseEvent;
-    const { toIds } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
+    const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
+
+    aimEvent.allTargets = [...aimEvent.allTargets, room.getFlag<PlayerId>(fromId, this.GeneralName)];
 
     return true;
   }
