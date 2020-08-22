@@ -479,7 +479,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public canPindian(fromId: PlayerId, targetId: PlayerId): boolean {
     const target = this.getPlayerById(targetId);
     const targetSkills = target.getPlayerSkills<FilterSkill>('filter');
-    return targetSkills.find(skill => !skill.canBePindianTarget(this, targetId, fromId)) === undefined;
+    return (
+      fromId !== targetId && targetSkills.find(skill => !skill.canBePindianTarget(this, targetId, fromId)) === undefined
+    );
   }
 
   public clearFlags(player: PlayerId) {

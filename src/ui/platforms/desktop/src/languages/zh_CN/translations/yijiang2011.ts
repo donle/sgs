@@ -45,6 +45,8 @@ export const characterDictionary: Word[] = [
   { source: 'gaoshun', target: '高顺' },
   { source: 'xianzhen', target: '陷阵' },
   { source: 'jinjiu', target: '禁酒' },
+  { source: 'xianzhen target: {0}', target: '陷阵：{0}' },
+  { source: 'xianzhen_lose', target: '陷阵[没赢]' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -196,14 +198,12 @@ export const promptDescriptions: Word[] = [
 
   {
     source: '{0}: please choose a target who {1} can use slash to',
-    target:
-      '{0}：请选择 {1} 攻击范围内的一名角色作为【杀】的目标',
+    target: '{0}：请选择 {1} 攻击范围内的一名角色作为【杀】的目标',
   },
 
   {
     source: 'please choose mingce options:{0}',
-    target:
-      '明策：1.视为对 {0} 使用一张【杀】；2.摸一张牌',
+    target: '明策：1.视为对 {0} 使用一张【杀】；2.摸一张牌',
   },
   { source: 'mingce:slash', target: '视为使用【杀】' },
   { source: 'mingce:draw', target: '摸一张牌' },
@@ -216,5 +216,9 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to reveal a hand card from {1} ?',
     target: '{0}：你可以展示 {1} 的一张手牌，若此牌不为基本牌，其弃置之并回复1点体力',
+  },
+  {
+    source: 'xianzhen: do you want to add {0} as targets of {1}?',
+    target: '陷阵：你可以令 {0} 也成为 {1} 的目标',
   },
 ];
