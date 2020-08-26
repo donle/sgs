@@ -212,4 +212,9 @@ export const promptDescriptions: Word[] = [
     source: '{0}: do you want to draw {1} cards?',
     target: '{0}：你可以摸 {1} 张牌',
   },
+
+  {
+    source: '{0}: do you want to reveal a hand card from {1} ?',
+    target: '{0}：你可以展示 {1} 的一张手牌，若此牌不为基本牌，其弃置之并回复1点体力',
+  },
 ];
