@@ -68,17 +68,19 @@ export class GameClientProcessor {
   }
 
   private record<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
+    if (this.store.inAction && !event.ignoreNotifiedStatus) {
+      this.endAction();
+    }
     if (serverResponsiveListenerEvents.includes(identifier) && !this.excludedResponsiveEvents.includes(identifier)) {
       this.presenter.startAction(identifier, event);
-      this.onPlayTrustedAction(identifier, event);
+      this.onPlayTrustedAction();
     }
   }
 
-  public onPlayTrustedAction<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
+  public onPlayTrustedAction() {
     this.onPlayTrustedActionTimer = setTimeout(() => {
-      const result = this.presenter.ClientPlayer!.AI.onAction(this.store.room, identifier, event) as ClientEventFinder<
-        T
-      >;
+      const { identifier, event } = this.store.awaitingResponseEvent;
+      const result = this.presenter.ClientPlayer!.AI.onAction(this.store.room, identifier, event);
       this.store.room.broadcast(identifier, result);
       this.presenter.closeDialog();
       this.presenter.closeIncomingConversation();
@@ -86,12 +88,12 @@ export class GameClientProcessor {
       this.endAction();
     }, this.store.notificationTime * (this.presenter.ClientPlayer!.isTrusted() ? 0 : 1000));
   }
+
   public endAction() {
     if (this.onPlayTrustedActionTimer !== undefined) {
       clearTimeout(this.onPlayTrustedActionTimer);
       this.onPlayTrustedActionTimer = undefined;
     }
-    this.presenter.disableActionButton('finish');
     this.store.inAction && this.presenter.endAction();
   }
 
@@ -363,7 +365,6 @@ export class GameClientProcessor {
     );
 
     await action.onPlay(this.translator);
-    this.endAction();
   }
 
   private async onHandleAskForPinDianCardEvent<T extends GameEventIdentifiers.AskForPinDianCardEvent>(
@@ -378,7 +379,6 @@ export class GameClientProcessor {
         pindianCard: handcards[randomCardIndex],
       };
       this.store.room.broadcast(type, EventPacker.createIdentifierEvent(type, event));
-      this.endAction();
       return;
     }
 
@@ -401,7 +401,6 @@ export class GameClientProcessor {
       pindianCard: selectedCards[0],
     };
     this.store.room.broadcast(type, EventPacker.createIdentifierEvent(type, event));
-    this.endAction();
   }
 
   private async onHandleAskForCardDropEvent<T extends GameEventIdentifiers.AskForCardDropEvent>(
@@ -414,7 +413,6 @@ export class GameClientProcessor {
         droppedCards: [],
       };
       this.store.room.broadcast(type, EventPacker.createIdentifierEvent(type, event));
-      this.endAction();
       return;
     }
 
@@ -434,7 +432,6 @@ export class GameClientProcessor {
       droppedCards: selectedCards,
     };
     this.store.room.broadcast(type, EventPacker.createIdentifierEvent(type, event));
-    this.endAction();
   }
 
   private async onHandleAskForCardDisplayEvent<T extends GameEventIdentifiers.AskForCardDisplayEvent>(
@@ -464,7 +461,6 @@ export class GameClientProcessor {
       selectedCards,
     };
     this.store.room.broadcast(type, EventPacker.createIdentifierEvent(type, displayEvent));
-    this.endAction();
   }
 
   private async onHandleAskForCardEvent<T extends GameEventIdentifiers.AskForCardEvent>(
@@ -493,7 +489,6 @@ export class GameClientProcessor {
       selectedCards,
     };
     this.store.room.broadcast(type, askForCardEvent);
-    this.endAction();
   }
 
   private async onHandleAskForCardUseEvent<T extends GameEventIdentifiers.AskForCardUseEvent>(
@@ -510,7 +505,6 @@ export class GameClientProcessor {
     );
 
     await action.onPlay(this.translator);
-    this.endAction();
   }
 
   private async onHandleCardUseEvent<T extends GameEventIdentifiers.CardUseEvent>(
@@ -755,7 +749,6 @@ export class GameClientProcessor {
 
       this.store.room.broadcast(type, response);
       this.presenter.broadcastUIUpdate();
-      this.endAction();
     });
 
     this.presenter.createDialog(
@@ -784,7 +777,6 @@ export class GameClientProcessor {
     const action = new SkillUseAction(content.toId, this.store, this.presenter, content, this.translator);
     this.presenter.isSkillDisabled(SkillUseAction.isSkillDisabled(content));
     await action.onSelect(this.translator);
-    this.endAction();
   }
 
   private onHandlePhaseStageChangeEvent<T extends GameEventIdentifiers.PhaseStageChangeEvent>(
@@ -851,7 +843,6 @@ export class GameClientProcessor {
     );
     this.presenter.broadcastUIUpdate();
     await action.onPlay();
-    this.endAction();
   }
 
   private onHandleMoveCardEvent<T extends GameEventIdentifiers.MoveCardEvent>(type: T, content: ServerEventFinder<T>) {
@@ -961,7 +952,6 @@ export class GameClientProcessor {
       askForPeachMatcher,
     );
     await action.onPlay(this.translator);
-    this.endAction();
   }
 
   private onHandleAskForChoosingCardFromPlayerEvent<T extends GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(
@@ -978,7 +968,6 @@ export class GameClientProcessor {
         selectedCardIndex: card instanceof Card ? undefined : card,
       };
       this.store.room.broadcast(type, event);
-      this.endAction();
     };
 
     this.presenter.createDialog(
@@ -1102,7 +1091,6 @@ export class GameClientProcessor {
           fromId: content.toId,
         };
         this.store.room.broadcast(type, event);
-        this.endAction();
       });
     } else {
       this.presenter.disableActionButton('cancel');
@@ -1117,7 +1105,6 @@ export class GameClientProcessor {
         selectedCardsIndex,
       };
       this.store.room.broadcast(type, event);
-      this.endAction();
     });
   }
 
@@ -1153,7 +1140,6 @@ export class GameClientProcessor {
           selectedCardsIndex,
         };
         this.store.room.broadcast(type, event);
-        this.endAction();
       }
     };
 
@@ -1180,7 +1166,6 @@ export class GameClientProcessor {
           fromId: content.toId,
         };
         this.store.room.broadcast(type, event);
-        this.endAction();
       });
     } else {
       this.presenter.disableActionButton('cancel');
@@ -1201,7 +1186,6 @@ export class GameClientProcessor {
         };
 
         this.store.room.broadcast(GameEventIdentifiers.AskForChoosingOptionsEvent, response);
-        this.endAction();
         this.presenter.disableActionButton('cancel');
       };
     });
@@ -1221,7 +1205,6 @@ export class GameClientProcessor {
         };
 
         this.store.room.broadcast(GameEventIdentifiers.AskForChoosingOptionsEvent, response);
-        this.endAction();
         this.presenter.closeIncomingConversation();
       });
     } else {
@@ -1252,7 +1235,6 @@ export class GameClientProcessor {
       <GameOverDialog imageLoader={this.imageLoader} translator={this.translator} winners={winners} losers={losers} />,
     );
     this.presenter.broadcastUIUpdate();
-    this.endAction();
     this.store.room.gameOver();
   }
 
@@ -1290,7 +1272,6 @@ export class GameClientProcessor {
     };
 
     this.store.room.broadcast(GameEventIdentifiers.AskForChoosingPlayerEvent, choosePlayerEvent);
-    this.endAction();
     this.presenter.closeIncomingConversation();
   }
 
@@ -1322,7 +1303,6 @@ export class GameClientProcessor {
 
       this.presenter.closeDialog();
       this.store.room.broadcast(GameEventIdentifiers.AskForPlaceCardsInDileEvent, responseEvent);
-      this.endAction();
     };
 
     this.presenter.createDialog(
@@ -1369,7 +1349,6 @@ export class GameClientProcessor {
       };
 
       this.store.room.broadcast(type, responseEvent);
-      this.endAction();
     };
 
     this.presenter.createDialog(

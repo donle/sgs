@@ -56,7 +56,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     type: I,
     content: EventPicker<I, T>,
     player: PlayerId,
-    hideBroadcast?: boolean,
   ): void;
   //Server only
   public abstract doNotify(toIds: PlayerId[], notificationTime?: number): void;
@@ -169,7 +168,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract async askForCardUse(
     event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>,
     to: PlayerId,
-    hideBroadcast?: boolean,
   ): Promise<ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent>>;
   //Server only
   public abstract async askForCardResponse(

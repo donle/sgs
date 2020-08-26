@@ -164,7 +164,9 @@ export class GameProcessor {
 
     const sequentialAsyncResponse: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingCharacterEvent>>[] = [];
     const selectedCharacters: CharacterId[] = [lordCharacter.Id];
-    const notifyOtherPlayer: PlayerId[] = [];
+    const notifyOtherPlayer: PlayerId[] = playersInfo.map(info => info.Id);
+    this.room.doNotify(notifyOtherPlayer);
+
     for (let i = 1; i < playersInfo.length; i++) {
       const characters = this.getSelectableCharacters(5, selectableCharacters, selectedCharacters);
       characters.forEach(character => selectedCharacters.push(character.Id));
@@ -180,18 +182,16 @@ export class GameProcessor {
             Sanguosha.getCharacterById(lordCharacter.Id).Name,
             Functional.getPlayerRoleRawText(playerInfo.Role!),
           ).extract(),
+          ignoreNotifiedStatus: true,
         },
         playerInfo.Id,
-        true,
       );
 
-      notifyOtherPlayer.push(playerInfo.Id);
       sequentialAsyncResponse.push(
         this.room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingCharacterEvent, playerInfo.Id),
       );
     }
 
-    this.room.doNotify(notifyOtherPlayer);
     const changedProperties: {
       toId: PlayerId;
       characterId?: CharacterId;
@@ -581,8 +581,9 @@ export class GameProcessor {
           }).toSocketPassenger(),
           byCardId: event.cardId,
           cardUserId: event.fromId,
+          ignoreNotifiedStatus: true,
         };
-        pendingResponses[player.Id] = this.room.askForCardUse(wuxiekejiEvent, player.Id, true);
+        pendingResponses[player.Id] = this.room.askForCardUse(wuxiekejiEvent, player.Id);
       }
 
       //TODO: enable to custom wuxiekeji response time limit

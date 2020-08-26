@@ -13,4 +13,7 @@ export class DevAudioLoader implements AudioLoader {
       gender === CharacterGender.Female ? 'female' : 'male'
     }/${skillName}.ogg`;
   }
+  async getDeathAudio(characterName: string): Promise<string> {
+    return `http://doublebit.gitee.io/pictest/audio/${characterName}.ogg`;
+  }
 }
