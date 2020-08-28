@@ -52,15 +52,39 @@ export class JiuShi extends ViewAsSkill {
 @ShadowSkill
 @CommonSkill({ name: JiuShi.Name, description: JiuShi.Description })
 export class JiuShiShadow extends TriggerSkill {
+  private static readonly faceDownTag = 'jiushi_face_down';
+
+  public isAutoTrigger(room: Room): boolean {
+    return (
+      room.CurrentProcessingStage === DamageEffectStage.DamagedEffect ||
+      room.CurrentProcessingStage === TurnOverStage.TurningOver
+    );
+  }
+
+  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
+    return stage === DamageEffectStage.DamagedEffect;
+  }
+
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
-    return stage === DamageEffectStage.AfterDamagedEffect || stage === TurnOverStage.TurningOver;
+    return (
+      stage === DamageEffectStage.DamagedEffect ||
+      stage === DamageEffectStage.AfterDamagedEffect ||
+      stage === TurnOverStage.TurningOver
+    );
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers>): boolean {
     const identifier = EventPacker.getIdentifier(event);
     if (identifier === GameEventIdentifiers.DamageEvent) {
       const damageEvent = event as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-      return damageEvent.toId === owner.Id && !owner.isFaceUp();
+      if (damageEvent.toId === owner.Id && !owner.isFaceUp()) {
+        if (room.CurrentProcessingStage === DamageEffectStage.DamagedEffect) {
+          return true;
+        } else {
+          return !!EventPacker.getMiddleware(JiuShiShadow.faceDownTag, damageEvent);
+        }
+      }
+      return false;
     } else {
       const turnOverEvent = event as ServerEventFinder<GameEventIdentifiers.PlayerTurnOverEvent>;
       return turnOverEvent.toId === owner.Id && owner.getFlag<boolean>(JiuShi.levelUp);
@@ -96,9 +120,13 @@ export class JiuShiShadow extends TriggerSkill {
     const unknownEvent = skillEffectEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers>;
     const identifier = EventPacker.getIdentifier(unknownEvent);
     if (identifier === GameEventIdentifiers.DamageEvent) {
-      await room.turnOver(skillEffectEvent.fromId);
-      if (!player.getFlag<boolean>(JiuShi.levelUp)) {
-        await this.obtainTrickRandomly(room, skillEffectEvent.fromId);
+      if (room.CurrentProcessingStage === DamageEffectStage.DamagedEffect) {
+        EventPacker.addMiddleware({ tag: JiuShiShadow.faceDownTag, data: true }, unknownEvent);
+      } else {
+        await room.turnOver(skillEffectEvent.fromId);
+        if (!player.getFlag<boolean>(JiuShi.levelUp)) {
+          await this.obtainTrickRandomly(room, skillEffectEvent.fromId);
+        }
       }
     } else {
       await this.obtainTrickRandomly(room, skillEffectEvent.fromId);

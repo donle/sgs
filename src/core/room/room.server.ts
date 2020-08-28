@@ -170,11 +170,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     type: I,
     content: ServerEventFinder<I>,
     to: PlayerId,
-    hideBroadcast?: boolean,
     notificationTime: number = 60,
   ) {
+    !content.ignoreNotifiedStatus &&
+      this.socket.broadcast(GameEventIdentifiers.NotifyEvent, { toIds: [to], notificationTime });
     this.socket.notify(type, EventPacker.createIdentifierEvent(type, content), to);
-    !hideBroadcast && this.socket.broadcast(GameEventIdentifiers.NotifyEvent, { toIds: [to], notificationTime });
   }
 
   //TODO: enable to custom response time limit
@@ -605,11 +605,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return responseEvent;
   }
 
-  public async askForCardUse(
-    event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>,
-    to: PlayerId,
-    hideBroadcast?: boolean,
-  ) {
+  public async askForCardUse(event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>, to: PlayerId) {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForCardUseEvent, event);
     await this.trigger<typeof event>(event);
     if (event.responsedEvent) {
@@ -619,7 +615,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     let responseEvent: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> | undefined;
     do {
-      this.notify(GameEventIdentifiers.AskForCardUseEvent, event, to, hideBroadcast);
+      this.notify(GameEventIdentifiers.AskForCardUseEvent, event, to);
       responseEvent = await this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardUseEvent, to);
       const preUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
         fromId: to,

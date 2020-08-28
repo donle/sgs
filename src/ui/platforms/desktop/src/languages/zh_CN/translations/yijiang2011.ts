@@ -210,4 +210,9 @@ export const promptDescriptions: Word[] = [
     source: 'jieyue: please choose jieyue options',
     target: '{0}：1.选择一张手牌和装备牌，弃置其余的牌；2.令 {1} 摸3张牌',
   },
+
+  {
+    source: '{0}: do you want to reveal a hand card from {1} ?',
+    target: '{0}：你可以展示 {1} 的一张手牌，若此牌不为基本牌，其弃置之并回复1点体力',
+  },
 ];

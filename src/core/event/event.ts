@@ -248,6 +248,7 @@ export type BaseGameEvent = {
   triggeredBySkills?: string[];
   messages?: string[];
   translationsMessage?: PatchedTranslationObject;
+  ignoreNotifiedStatus?: boolean;
   animation?: {
     from: PlayerId;
     tos: PlayerId[];
