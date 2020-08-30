@@ -406,7 +406,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     if (slash) {
       additionalAttackDistance =
         GameCommonRules.getCardAdditionalAttackDistance(this, from, Sanguosha.getCardById(slash)) +
-        from.getCardUsableDistance(this, slash) -
+        from.getCardUsableDistance(this, slash, to) -
         Sanguosha.getCardById(slash).EffectUseDistance;
     }
 
@@ -450,15 +450,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public canUseCardTo(cardId: CardId | CardMatcher, target: PlayerId): boolean {
     const player = this.getPlayerById(target);
-
-    const skills = player.getSkills<FilterSkill>('filter');
-    for (const skill of skills) {
-      if (!skill.canBeUsedCard(cardId, this, target)) {
-        return false;
-      }
-    }
-
-    return true;
+    return player.canUseCardTo(this, cardId, target);
   }
 
   public canPlaceCardTo(cardId: CardId, target: PlayerId): boolean {
