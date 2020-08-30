@@ -217,4 +217,15 @@ export const promptDescriptions: Word[] = [
     source: '{0}: do you want to reveal a hand card from {1} ?',
     target: '{0}：你可以展示 {1} 的一张手牌，若此牌不为基本牌，其弃置之并回复1点体力',
   },
+
+  { source: 'xuanfeng:move', target: '移动装备' },
+  { source: 'xuanfeng:drop', target: '弃置牌' },
+  {
+    source: '{0}: please choose two target to move their equipment',
+    target: '{0}：请依次选择两名其他角色，先选角色装备区里的牌将被移至后选角色',
+  },
+  {
+    source: '{0}: please choose a target to drop card',
+    target: '{0}：请选择一名角色并弃置其一张牌',
+  },
 ];

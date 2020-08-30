@@ -218,5 +218,6 @@ export { JueQing } from './characters/yijiang2011/jueqing';
 export { ShangShi } from './characters/yijiang2011/shangshi';
 export { GanLu } from './characters/yijiang2011/ganlu';
 export { BuYi } from './characters/yijiang2011/buyi';
+export { XuanFeng, XuanFengMove, XuanFengDrop } from './characters/yijiang2011/xuanfeng';
 
 export { Cheat } from './system/cheat';
