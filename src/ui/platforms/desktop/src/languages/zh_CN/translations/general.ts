@@ -328,7 +328,7 @@ export const eventDictionary: Word[] = [
   { source: '{0} display hand card {1}', target: '{0} 展示了 {1}' },
   { source: '{0} lost {1} hand card', target: '{0} 失去了 {1} 张手牌' },
   { source: 'please choose', target: '请选择' },
-  { source: '{0}: please choose', target: '{0}：请选择' },
+  { source: '{0}: please choose', target: '{0}：请选择一项' },
   { source: 'please choose a player', target: '请选择一名角色' },
   { source: '{0} place card {1} from {2} on the top of draw stack', target: '{0} 将 {2} 的 {1} 置于了牌堆顶' },
   { source: 'recover {0} hp for {1}', target: '是否回复 {1} {0} 点体力' },

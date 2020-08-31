@@ -221,6 +221,7 @@ export {
   XianZhenNullify,
 } from './characters/yijiang2011/xianzhen';
 export { JinJiu } from './characters/yijiang2011/jinjiu';
+export { JieYue } from './characters/yijiang2011/jieyue';
 export { EnYuan } from './characters/yijiang2011/enyuan';
 export { XuanHuo } from './characters/yijiang2011/xuanhuo';
 export { JueQing } from './characters/yijiang2011/jueqing';
