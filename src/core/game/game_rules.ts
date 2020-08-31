@@ -3,7 +3,7 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { FilterSkill, RulesBreakerSkill } from 'core/skills/skill';
+import { RulesBreakerSkill } from 'core/skills/skill';
 import { GameCommonRuleObject, INFINITE_TRIGGERING_TIMES } from './game_props';
 
 export class GameCommonRules {
@@ -84,16 +84,7 @@ export class GameCommonRules {
     GameCommonRules.preCheck(user);
   }
 
-  public static canUse(room: Room, user: Player, card: Card | CardMatcher) {
-    GameCommonRules.preCheck(user);
-
-    const filterSkills = user.getSkills<FilterSkill>('filter');
-    for (const skill of filterSkills) {
-      if (!skill.canUseCard(card instanceof Card ? card.Id : card, room, user.Id)) {
-        return false;
-      }
-    }
-
+  public static getCardUsableTimes(room: Room, user: Player, card: Card | CardMatcher, target?: Player) {
     let availableUseTimes = INFINITE_TRIGGERING_TIMES;
 
     const baseRule = GameCommonRules.commonCardUseRules.find(rule => rule.cardMatcher.match(card));
@@ -109,11 +100,32 @@ export class GameCommonRules {
     }
     for (const skill of user.getSkills<RulesBreakerSkill>('breaker')) {
       availableUseTimes += skill.breakCardUsableTimes(card instanceof Card ? card.Id : card, room, user);
+      if (target) {
+        availableUseTimes += skill.breakCardUsableTimesTo(card instanceof Card ? card.Id : card, room, user, target);
+      }
     }
 
+    return availableUseTimes;
+  }
+
+  public static canUseCard(room: Room, user: Player, card: Card | CardMatcher) {
+    GameCommonRules.preCheck(user);
+
+    const availableUseTimes = this.getCardUsableTimes(room, user, card);
     if (GameCommonRules.isBannedBySideRules(user, card)) {
       return false;
     }
+    return user.cardUsedTimes(card instanceof Card ? card.Id : card) < availableUseTimes;
+  }
+
+  public static canUseCardTo(room: Room, user: Player, card: Card | CardMatcher, target: Player) {
+    GameCommonRules.preCheck(user);
+
+    const availableUseTimes = this.getCardUsableTimes(room, user, card, target);
+    if (GameCommonRules.isBannedBySideRules(user, card)) {
+      return false;
+    }
+
     return user.cardUsedTimes(card instanceof Card ? card.Id : card) < availableUseTimes;
   }
 
@@ -183,14 +195,21 @@ export class GameCommonRules {
     );
   }
 
-  public static getCardAdditionalUsableDistance(room: Room, user: Player, card: Card | CardMatcher, target?: Player) {
+  public static getCardAdditionalUsableDistance(
+    room: Room,
+    user: Player,
+    card: Card | CardMatcher | undefined,
+    target?: Player,
+  ) {
     GameCommonRules.preCheck(user);
     let times = 0;
-    GameCommonRules.userRules[user.Id].cards
-      .filter(rule => rule.cardMatcher.match(card))
-      .forEach(rule => {
-        times += rule.additionalUsableDistance;
-      });
+    if (card !== undefined) {
+      GameCommonRules.userRules[user.Id].cards
+        .filter(rule => rule.cardMatcher.match(card))
+        .forEach(rule => {
+          times += rule.additionalUsableDistance;
+        });
+    }
 
     user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
       times +=
@@ -221,7 +240,7 @@ export class GameCommonRules {
     return GameCommonRules.userRules[user.Id].additionalAttackDistance;
   }
 
-  public static getCardAdditionalAttackDistance(room: Room, user: Player, card?: Card | CardMatcher) {
+  public static getCardAdditionalAttackDistance(room: Room, user: Player, card?: Card | CardMatcher, target?: Player) {
     GameCommonRules.preCheck(user);
     let distance = GameCommonRules.userRules[user.Id].additionalAttackDistance;
     user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {

@@ -44,7 +44,10 @@ export const characterDictionary: Word[] = [
 
   { source: 'gaoshun', target: '高顺' },
   { source: 'xianzhen', target: '陷阵' },
+  { source: '#####xianzhen', target: '陷阵'},
   { source: 'jinjiu', target: '禁酒' },
+  { source: 'xianzhen target: {0}', target: '陷阵:{0}' },
+  { source: 'xianzhen_lose', target: '陷阵[没赢]' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -205,12 +208,15 @@ export const promptDescriptions: Word[] = [
     source: 'jieyue: please choose jieyue options',
     target: '{0}：1.选择一张手牌和装备牌，弃置其余的牌；2.令 {1} 摸3张牌',
   },
-
+  
   {
     source: '{0}: do you want to reveal a hand card from {1} ?',
     target: '{0}：你可以展示 {1} 的一张手牌，若此牌不为基本牌，其弃置之并回复1点体力',
   },
-
+  {
+    source: 'xianzhen: do you want to add {0} as targets of {1}?',
+    target: '陷阵：你可以令 {0} 也成为 {1} 的目标',
+  },
   { source: 'xuanfeng:move', target: '移动装备' },
   { source: 'xuanfeng:drop', target: '弃置牌' },
   {
