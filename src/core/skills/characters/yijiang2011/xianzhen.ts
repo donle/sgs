@@ -8,9 +8,10 @@ import { AimStage, AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/sta
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { QingGangSkill } from 'core/skills/cards/standard/qinggang';
 import { ActiveSkill, FilterSkill, RulesBreakerSkill, TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
-import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import { CommonSkill, ShadowSkill, UniqueSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'xianzhen', description: 'xianzhen_description' })
@@ -220,7 +221,24 @@ export class XianZhenAddTarget extends TriggerSkill {
 }
 
 @ShadowSkill
+@UniqueSkill
 @CommonSkill({ name: XianZhenAddTarget.Name, description: XianZhen.Description })
+export class XianZhenNullify extends QingGangSkill {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage) {
+    return stage === AimStage.AfterAim && event.byCardId !== undefined;
+  }
+
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
+    return !!content && owner.Id === content.fromId && owner.getFlag<PlayerId>(XianZhen.Win) === content.toId;
+  }
+
+  public isAutoTrigger() {
+    return true;
+  }
+}
+
+@ShadowSkill
+@CommonSkill({ name: XianZhenNullify.Name, description: XianZhen.Description })
 export class XianZhenRemove extends TriggerSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(room: Room) {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;

@@ -218,6 +218,7 @@ export {
   XianZhenBlock,
   XianZhenKeep,
   XianZhenAddTarget,
+  XianZhenNullify,
   XianZhenRemove,
 } from './characters/yijiang2011/xianzhen';
 export { JinJiu } from './characters/yijiang2011/jinjiu';
