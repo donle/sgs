@@ -44,8 +44,9 @@ export const characterDictionary: Word[] = [
 
   { source: 'gaoshun', target: '高顺' },
   { source: 'xianzhen', target: '陷阵' },
+  { source: '#####xianzhen', target: '陷阵'},
   { source: 'jinjiu', target: '禁酒' },
-  { source: 'xianzhen target: {0}', target: '陷阵：{0}' },
+  { source: 'xianzhen target: {0}', target: '陷阵:{0}' },
   { source: 'xianzhen_lose', target: '陷阵[没赢]' },
 ];
 
