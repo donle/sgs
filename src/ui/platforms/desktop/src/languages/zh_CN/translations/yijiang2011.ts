@@ -208,7 +208,7 @@ export const promptDescriptions: Word[] = [
     source: 'jieyue: please choose jieyue options',
     target: '{0}：1.选择一张手牌和装备牌，弃置其余的牌；2.令 {1} 摸3张牌',
   },
-
+  
   {
     source: '{0}: do you want to reveal a hand card from {1} ?',
     target: '{0}：你可以展示 {1} 的一张手牌，若此牌不为基本牌，其弃置之并回复1点体力',
@@ -216,5 +216,15 @@ export const promptDescriptions: Word[] = [
   {
     source: 'xianzhen: do you want to add {0} as targets of {1}?',
     target: '陷阵：你可以令 {0} 也成为 {1} 的目标',
+  },
+  { source: 'xuanfeng:move', target: '移动装备' },
+  { source: 'xuanfeng:drop', target: '弃置牌' },
+  {
+    source: '{0}: please choose two target to move their equipment',
+    target: '{0}：请依次选择两名其他角色，先选角色装备区里的牌将被移至后选角色',
+  },
+  {
+    source: '{0}: please choose a target to drop card',
+    target: '{0}：请选择一名角色并弃置其一张牌',
   },
 ];

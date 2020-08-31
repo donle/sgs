@@ -3,6 +3,7 @@ import { CaoZhi } from './caozhi';
 import { ChenGong } from './chengong';
 import { FaZheng } from './fazheng';
 import { GaoShun } from './gaoshun';
+import { LingTong } from './lingtong';
 import { MaSu } from './masu';
 import { XuSheng } from './xusheng';
 import { XuShu } from './xushu';
@@ -23,6 +24,7 @@ export const YiJiang2011Package: (index: number) => Character[] = index => [
 
   new XuSheng(index++),
   new WuGuoTai(index++),
+  new LingTong(index++),
 
   new ChenGong(index++),
   new GaoShun(index++),
