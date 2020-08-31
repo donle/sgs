@@ -5,8 +5,6 @@ import { FaZheng } from './fazheng';
 import { GaoShun } from './gaoshun';
 import { LingTong } from './lingtong';
 import { MaSu } from './masu';
-import { XuSheng } from './xusheng';
-import { XuShu } from './xushu';
 import { WuGuoTai } from './wuguotai';
 import { XuSheng } from './xusheng';
 import { XuShu } from './xushu';
