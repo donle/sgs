@@ -4,11 +4,13 @@ import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerRole } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Precondition } from './precondition/precondition';
 
 export namespace System {
   export const enum AskForChoosingCardEventFilter {
     SheLie,
     PoXi,
+    JieYue,
   }
 
   const differentCardSuitFilterFunction = (allCards: CardId[], selected: CardId[], currentCard: CardId) => {
@@ -16,6 +18,20 @@ export namespace System {
     return (
       selected.includes(currentCard) ||
       selected.find(cardId => Sanguosha.getCardById(cardId).Suit === card.Suit) === undefined
+    );
+  };
+
+  const differentCardAreaFilterFunction = (
+    allCards: CardId[],
+    selected: CardId[],
+    currentCard: CardId,
+    involvedTargets?: Player[],
+  ) => {
+    const from = Precondition.exists(involvedTargets, 'unknown involvedTargets')[0];
+    const currentArea = from.cardFrom(currentCard);
+
+    return (
+      selected.includes(currentCard) || selected.find(cardId => from.cardFrom(cardId) === currentArea) === undefined
     );
   };
 
@@ -31,6 +47,7 @@ export namespace System {
   } = {
     [AskForChoosingCardEventFilter.PoXi]: differentCardSuitFilterFunction,
     [AskForChoosingCardEventFilter.SheLie]: differentCardSuitFilterFunction,
+    [AskForChoosingCardEventFilter.JieYue]: differentCardAreaFilterFunction,
   };
 
   export type SideEffectSkillApplierFunc = (player: Player, room: Room) => boolean;

@@ -10,7 +10,7 @@ export const characterDictionary: Word[] = [
   { source: 'chengzhang', target: '成章' },
 
   { source: 'yujin', target: '于禁' },
-  { source: 'jieyue', target: '节鉞' },
+  { source: 'jieyue', target: '节钺' },
 
   { source: 'zhangchunhua', target: '张春华' },
   { source: 'jueqing', target: '绝情' },
@@ -191,21 +191,19 @@ export const promptDescriptions: Word[] = [
 
   {
     source: '{0}: please choose a target who {1} can use slash to',
-    target:
-      '{0}：请选择 {1} 攻击范围内的一名角色作为【杀】的目标',
+    target: '{0}：请选择 {1} 攻击范围内的一名角色作为【杀】的目标',
   },
 
   {
     source: 'please choose mingce options:{0}',
-    target:
-      '明策：1.视为对 {0} 使用一张【杀】；2.摸一张牌',
+    target: '明策：1.视为对 {0} 使用一张【杀】；2.摸一张牌',
   },
   { source: 'mingce:slash', target: '视为使用【杀】' },
   { source: 'mingce:draw', target: '摸一张牌' },
 
   {
-    source: '{0}: do you want to draw {1} cards?',
-    target: '{0}：你可以摸 {1} 张牌',
+    source: 'jieyue: please choose jieyue options',
+    target: '{0}：1.选择一张手牌和装备牌，弃置其余的牌；2.令 {1} 摸3张牌',
   },
 
   {
