@@ -31,7 +31,8 @@ export class WuZhongShengYouSkill extends ActiveSkill {
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
-    await room.drawCards(2, Precondition.exists(event.toIds, 'Unknown targets in wuzhongshengyou')[0]);
+    const toId = Precondition.exists(event.toIds, 'Unknown targets in wuzhongshengyou')[0];
+    await room.drawCards(2, toId, undefined, toId, this.Name);
     return true;
   }
 }

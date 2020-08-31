@@ -976,7 +976,7 @@ export class GameClientProcessor {
         options={content.options}
         onClick={onSelectedCard}
         translator={this.translator}
-        title={content.customMessage}
+        title={content.customTitle}
       />,
     );
   }
@@ -986,7 +986,7 @@ export class GameClientProcessor {
   >(type: T, content: ServerEventFinder<T>) {
     const selectedCards: CardId[] = [];
     const selectedCardsIndex: number[] = [];
-
+    const involvedTargets = content.involvedTargets?.map(target => this.store.room.getPlayerById(target));
     const matcher = content.cardFilter !== undefined && System.AskForChoosingCardEventFilters[content.cardFilter];
     const isCardDisabled = matcher
       ? (card: Card) => {
@@ -994,7 +994,7 @@ export class GameClientProcessor {
             if (typeof content.cardIds === 'number') {
               return true;
             } else {
-              return !matcher(content.cardIds, selectedCards, card.Id);
+              return !matcher(content.cardIds, selectedCards, card.Id, involvedTargets);
             }
           } else if (content.customCardFields) {
             const cards = Object.values(content.customCardFields).reduce<CardId[]>((allCards, currentSection) => {
@@ -1003,12 +1003,7 @@ export class GameClientProcessor {
               }
               return allCards;
             }, []);
-            return !matcher(
-              cards,
-              selectedCards,
-              card.Id,
-              content.involvedTargets?.map(target => this.store.room.getPlayerById(target)),
-            );
+            return !matcher(cards, selectedCards, card.Id, involvedTargets);
           }
 
           return true;
@@ -1048,7 +1043,7 @@ export class GameClientProcessor {
               .filter(cardId => !selectedCards.includes(cardId))
           : [];
         for (const card of cards) {
-          if (matcher && matcher(cards, selectedCards, card)) {
+          if (matcher && matcher(cards, selectedCards, card, involvedTargets)) {
             this.presenter.disableActionButton('confirm');
             return;
           }
@@ -1153,7 +1148,7 @@ export class GameClientProcessor {
         translator={this.translator}
         isCardDisabled={isCardDisabled}
         imageLoader={this.imageLoader}
-        title={content.customMessage}
+        title={content.customTitle}
       />,
     );
 

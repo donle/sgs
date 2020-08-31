@@ -1,5 +1,11 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import {
+  CardDrawReason,
+  CardMoveArea,
+  CardMoveReason,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, DrawCardStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -16,7 +22,11 @@ export class SheLie extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>): boolean {
-    return owner.Id === content.fromId && room.CurrentPlayerPhase === PlayerPhase.DrawCardStage;
+    return (
+      owner.Id === content.fromId &&
+      room.CurrentPlayerPhase === PlayerPhase.DrawCardStage &&
+      content.bySpecialReason === CardDrawReason.GameStage
+    );
   }
 
   public async onTrigger(): Promise<boolean> {

@@ -1,6 +1,13 @@
 import { CardType } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import {
+  CardDrawReason,
+  CardMoveArea,
+  CardMoveReason,
+  EventPacker,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import {
   AllStage,
@@ -27,7 +34,11 @@ export class LuoYi extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>): boolean {
-    return owner.Id === content.fromId && room.CurrentPlayerPhase === PlayerPhase.DrawCardStage;
+    return (
+      owner.Id === content.fromId &&
+      room.CurrentPlayerPhase === PlayerPhase.DrawCardStage &&
+      content.bySpecialReason === CardDrawReason.GameStage
+    );
   }
 
   public async onTrigger(): Promise<boolean> {

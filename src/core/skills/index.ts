@@ -202,4 +202,32 @@ export { LongHun, LongHunEffect, LongHunBlackEffect } from './characters/god/lon
 export { PoXi } from './characters/god/poxi';
 export { JieYing, JieYingDraw, JieYingEffect } from './characters/god/jieying';
 
+export { SanYao } from './characters/yijiang2011/sanyao';
+export { ZhiMan } from './characters/yijiang2011/zhiman';
+export { WuYan } from './characters/yijiang2011/wuyan';
+export { JuJian } from './characters/yijiang2011/jujian';
+export { LuoYing } from './characters/yijiang2011/luoying';
+export { JiuShi, JiuShiShadow } from './characters/yijiang2011/jiushi';
+export { ChengZhang } from './characters/yijiang2011/chengzhang';
+export { PoJun, PoJunDamage, PoJunClear } from './characters/yijiang2011/pojun';
+export { MingCe } from './characters/yijiang2011/mingce';
+export { ZhiChi, ZhiChiShadow } from './characters/yijiang2011/zhichi';
+export {
+  XianZhen,
+  XianZhenExtra,
+  XianZhenBlock,
+  XianZhenKeep,
+  XianZhenAddTarget,
+  XianZhenNullify,
+} from './characters/yijiang2011/xianzhen';
+export { JinJiu } from './characters/yijiang2011/jinjiu';
+export { JieYue } from './characters/yijiang2011/jieyue';
+export { EnYuan } from './characters/yijiang2011/enyuan';
+export { XuanHuo } from './characters/yijiang2011/xuanhuo';
+export { JueQing } from './characters/yijiang2011/jueqing';
+export { ShangShi } from './characters/yijiang2011/shangshi';
+export { GanLu } from './characters/yijiang2011/ganlu';
+export { BuYi } from './characters/yijiang2011/buyi';
+export { XuanFeng, XuanFengMove, XuanFengDrop } from './characters/yijiang2011/xuanfeng';
+
 export { Cheat } from './system/cheat';

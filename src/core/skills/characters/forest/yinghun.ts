@@ -36,7 +36,7 @@ export class YingHun extends TriggerSkill {
     let selected: string | undefined;
     const from = room.getPlayerById(fromId);
     const toId = toIds![0];
-    const x = from.MaxHp - from.Hp;
+    const x = from.LostHp;
 
     if (x > 1) {
       const askForChooseEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({

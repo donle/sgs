@@ -143,12 +143,17 @@ export abstract class BaseAction {
       return false;
     }
     if (skill instanceof ActiveSkill || skill instanceof TriggerSkill) {
-      const isAvailableInRoom =
+      let isAvailableInRoom =
         this.selectedCardToPlay === undefined
           ? true
           : skill.nominateForwardTarget([...this.selectedTargets, player.Id])?.includes(player.Id)
           ? this.store.room.isAvailableTarget(this.selectedCardToPlay, this.playerId, player.Id)
           : true;
+
+      if (this.selectedCardToPlay !== undefined) {
+        isAvailableInRoom =
+          isAvailableInRoom && this.player.canUseCardTo(this.store.room, this.selectedCardToPlay, player.Id);
+      }
 
       return (
         skill.isAvailableTarget(
@@ -261,11 +266,14 @@ export abstract class BaseAction {
       }
     }
 
+    const canUseOnPlayers =
+      this.store.room.AlivePlayers.find(target => player.canUseCardTo(this.store.room, card.Id, target.Id)) !==
+      undefined;
     if (this.selectedCardToPlay === undefined) {
       if (fromArea === PlayerCardsArea.HandArea) {
         if (
           card.Skill instanceof ResponsiveSkill ||
-          (!ignoreCanUseCondition && !player.canUseCard(this.store.room, card.Id))
+          (!ignoreCanUseCondition && !player.canUseCard(this.store.room, card.Id) && !canUseOnPlayers)
         ) {
           return false;
         }
@@ -362,7 +370,7 @@ export abstract class BaseAction {
       }
     }
 
-    return player.canUseCard(this.store.room, card.Id);
+    return player.canUseCard(this.store.room, card.Id) || canUseOnPlayers;
   }
 
   protected unselectePlayer(player: Player) {

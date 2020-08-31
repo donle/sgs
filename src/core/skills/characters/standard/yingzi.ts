@@ -1,4 +1,4 @@
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardDrawReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, DrawCardStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
@@ -11,7 +11,11 @@ export class YingZi extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>) {
-    return owner.Id === content.fromId && room.CurrentPlayerPhase === PlayerPhase.DrawCardStage;
+    return (
+      owner.Id === content.fromId &&
+      room.CurrentPlayerPhase === PlayerPhase.DrawCardStage &&
+      content.bySpecialReason === CardDrawReason.GameStage
+    );
   }
 
   async onTrigger() {

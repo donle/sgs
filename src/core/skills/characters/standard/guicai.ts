@@ -1,5 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, JudgeEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -43,6 +43,16 @@ export class GuiCai extends TriggerSkill {
       ).extract(),
       skipDrop: true,
     });
+
+    room.moveCards({
+      movingCards: [{ card: judgeEvent.judgeCardId, fromArea: CardMoveArea.ProcessingArea }],
+      toArea: CardMoveArea.DropStack,
+      moveReason: CardMoveReason.PlaceToDropStack,
+      proposer: skillUseEvent.fromId,
+      movedByReason: this.GeneralName,
+    });
+    room.endProcessOnTag(judgeEvent.judgeCardId.toString());
+
     judgeEvent.judgeCardId = cardIds![0];
     room.addProcessingCards(judgeEvent.judgeCardId.toString(), cardIds![0]);
 

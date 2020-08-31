@@ -1,4 +1,5 @@
 import {
+  CardDrawReason,
   CardMoveArea,
   CardMoveReason,
   ClientEventFinder,
@@ -678,7 +679,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         TranslationPack.patchCardInTranslation(cardId),
       ).extract(),
     });
-    await this.drawCards(1, from.Id);
+    await this.drawCards(1, from.Id, 'top', undefined, undefined, CardDrawReason.Reforge);
   }
 
   public async preUseCard(cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): Promise<boolean> {
@@ -1008,6 +1009,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     from: 'top' | 'bottom' = 'top',
     askedBy?: PlayerId,
     byReason?: string,
+    bySpecialReason?: CardDrawReason,
   ) {
     askedBy = askedBy || playerId || this.CurrentPlayer.Id;
     playerId = playerId || this.CurrentPlayer.Id;
@@ -1017,6 +1019,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       fromId: playerId,
       askedBy,
       triggeredBySkills: byReason ? [byReason] : undefined,
+      bySpecialReason,
       from,
     };
 
@@ -1478,9 +1481,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return super.addMark(player, name, value);
   }
 
-  public findCardByMatcherFrom(cardMatcher: CardMatcher, fromDrawStack: boolean = true): CardId | undefined {
+  public findCardsByMatcherFrom(cardMatcher: CardMatcher, fromDrawStack: boolean = true): CardId[] {
     const fromStack = fromDrawStack ? this.drawStack : this.dropStack;
-    return fromStack.find(cardId => cardMatcher.match(Sanguosha.getCardById(cardId)));
+    return fromStack.filter(cardId => cardMatcher.match(Sanguosha.getCardById(cardId)));
   }
 
   public isCardInDropStack(cardId: CardId): boolean {

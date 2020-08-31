@@ -175,7 +175,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     to: PlayerId,
   ): Promise<ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent>>;
   //Server only
-  public abstract findCardByMatcherFrom(cardMatcher: CardMatcher, fromDrawStack?: boolean): CardId | undefined;
+  public abstract findCardsByMatcherFrom(cardMatcher: CardMatcher, fromDrawStack?: boolean): CardId[];
   public abstract isCardInDropStack(cardId: CardId): boolean;
   public abstract isCardInDrawStack(cardId: CardId): boolean;
 
@@ -406,7 +406,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     if (slash) {
       additionalAttackDistance =
         GameCommonRules.getCardAdditionalAttackDistance(this, from, Sanguosha.getCardById(slash)) +
-        from.getCardUsableDistance(this, slash) -
+        from.getCardUsableDistance(this, slash, to) -
         Sanguosha.getCardById(slash).EffectUseDistance;
     }
 
@@ -450,15 +450,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public canUseCardTo(cardId: CardId | CardMatcher, target: PlayerId): boolean {
     const player = this.getPlayerById(target);
-
-    const skills = player.getSkills<FilterSkill>('filter');
-    for (const skill of skills) {
-      if (!skill.canBeUsedCard(cardId, this, target)) {
-        return false;
-      }
-    }
-
-    return true;
+    return player.canUseCardTo(this, cardId, target);
   }
 
   public canPlaceCardTo(cardId: CardId, target: PlayerId): boolean {
@@ -479,7 +471,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public canPindian(fromId: PlayerId, targetId: PlayerId): boolean {
     const target = this.getPlayerById(targetId);
     const targetSkills = target.getPlayerSkills<FilterSkill>('filter');
-    return targetSkills.find(skill => !skill.canBePindianTarget(this, targetId, fromId)) === undefined;
+    return (
+      fromId !== targetId && targetSkills.find(skill => !skill.canBePindianTarget(this, targetId, fromId)) === undefined
+    );
   }
 
   public clearFlags(player: PlayerId) {

@@ -68,7 +68,7 @@ export class TianXiang extends TriggerSkill {
         triggeredBySkills: [this.Name],
       });
       const to = room.getPlayerById(toIds![0]);
-      await room.drawCards(to.MaxHp - to.Hp, to.Id, undefined, undefined, this.Name);
+      await room.drawCards(Math.min(to.LostHp, 5), to.Id, undefined, undefined, this.Name);
     } else {
       await room.loseHp(toIds![0], 1);
       let droppedCardIds = cardIds!;
