@@ -96,7 +96,11 @@ export class PoJunDamage extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.DamageEvent>): boolean {
-    if (event.fromId === owner.Id) {
+    if (
+      event.fromId === owner.Id &&
+      !!event.cardIds &&
+      Sanguosha.getCardById(event.cardIds[0]).GeneralName === 'slash'
+    ) {
       const to = room.getPlayerById(event.toId);
       const handCardLengthOfDamageTo = to.getCardIds(PlayerCardsArea.HandArea).length;
       const handCardLengthOfDamageFrom = owner.getCardIds(PlayerCardsArea.HandArea).length;
