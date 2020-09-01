@@ -48,7 +48,6 @@ export class JiuShi extends ViewAsSkill {
     return true;
   }
 }
-
 @ShadowSkill
 @CommonSkill({ name: JiuShi.Name, description: JiuShi.Description })
 export class JiuShiShadow extends TriggerSkill {
@@ -79,7 +78,7 @@ export class JiuShiShadow extends TriggerSkill {
       const damageEvent = event as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
       if (damageEvent.toId === owner.Id && !owner.isFaceUp()) {
         if (room.CurrentProcessingStage === DamageEffectStage.DamagedEffect) {
-          return true;
+          EventPacker.addMiddleware({ tag: JiuShiShadow.faceDownTag, data: true }, damageEvent);
         } else {
           return !!EventPacker.getMiddleware(JiuShiShadow.faceDownTag, damageEvent);
         }
@@ -120,13 +119,9 @@ export class JiuShiShadow extends TriggerSkill {
     const unknownEvent = skillEffectEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers>;
     const identifier = EventPacker.getIdentifier(unknownEvent);
     if (identifier === GameEventIdentifiers.DamageEvent) {
-      if (room.CurrentProcessingStage === DamageEffectStage.DamagedEffect) {
-        EventPacker.addMiddleware({ tag: JiuShiShadow.faceDownTag, data: true }, unknownEvent);
-      } else {
-        await room.turnOver(skillEffectEvent.fromId);
-        if (!player.getFlag<boolean>(JiuShi.levelUp)) {
-          await this.obtainTrickRandomly(room, skillEffectEvent.fromId);
-        }
+      await room.turnOver(skillEffectEvent.fromId);
+      if (!player.getFlag<boolean>(JiuShi.levelUp)) {
+        await this.obtainTrickRandomly(room, skillEffectEvent.fromId);
       }
     } else {
       await this.obtainTrickRandomly(room, skillEffectEvent.fromId);
