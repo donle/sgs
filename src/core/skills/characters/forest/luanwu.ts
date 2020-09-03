@@ -19,23 +19,23 @@ export class LuanWu extends ActiveSkill {
     return 0;
   }
 
-  cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
+  public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return cards.length === 0;
   }
 
-  isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
+  public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
     return false;
   }
 
-  isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
+  public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
     return false;
   }
 
-  async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+  public async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     return true;
   }
 
-  async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+  public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId } = skillUseEvent;
 
     for (const target of room.getOtherPlayers(fromId)) {
