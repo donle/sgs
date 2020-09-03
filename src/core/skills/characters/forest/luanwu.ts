@@ -47,7 +47,7 @@ export class LuanWu extends ActiveSkill {
         }
       });
       const targets = room.getOtherPlayers(target.Id).reduce<Player[]>((targets, player) => {
-        if (room.distanceBetween(target, player) === minDistance && room.canAttack(target, player)) {
+        if (room.distanceBetween(target, player) === minDistance) {
           targets.push(player);
         }
         return targets;
@@ -65,6 +65,7 @@ export class LuanWu extends ActiveSkill {
             scopedTargets: toIds,
             cardMatcher: new CardMatcher({ generalName: ['slash'] }).toSocketPassenger(),
             extraUse: true,
+            commonUse: true,
             conversation: TranslationPack.translationJsonPatcher(
               'please use a {0} to player {1} to response {2}',
               'slash',
