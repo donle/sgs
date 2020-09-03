@@ -97,3 +97,10 @@ export const skillDescriptions: Word[] = [
       '<b>主公技</b>，游戏开始时，你获得X枚“裔”标记（X为群势力角色数）；回合开始时，你可以移除一枚"裔"并摸一张牌；你每有一枚"裔"，手牌上限便+2。',
   },
 ];
+
+export const conversations: Word[] = [
+  {
+    source: 'shuangxiong: do you wanna to obtain slashes from "shuangxiong" ?',
+    target: '双雄：是否获得本次【决斗】中其他角色打出的【杀】？',
+  },
+];
