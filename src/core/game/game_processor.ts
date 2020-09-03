@@ -285,14 +285,14 @@ export class GameProcessor {
       players: playersInfo,
     };
 
+    for (const player of playersInfo) {
+      await this.drawGameBeginsCards(player.Id);
+    }
+
     await this.onHandleIncomingEvent(
       GameEventIdentifiers.GameStartEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.GameStartEvent, gameStartEvent),
     );
-
-    for (const player of playersInfo) {
-      await this.drawGameBeginsCards(player.Id);
-    }
 
     let lastPlayerPosition = this.playerPositionIndex;
     while (this.room.isPlaying() && !this.room.isGameOver() && !this.room.isClosed()) {
