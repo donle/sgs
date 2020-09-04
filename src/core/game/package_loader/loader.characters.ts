@@ -6,6 +6,7 @@ import { MountainCharacterPackage } from 'core/characters/mountain';
 import { StandardCharacterPackage } from 'core/characters/standard';
 import { WindCharacterPackage } from 'core/characters/wind';
 import { YiJiang2011Package } from 'core/characters/yijiang2011';
+import { YiJiang2012Package } from 'core/characters/yijiang2012';
 import { GameCharacterExtensions } from 'core/game/game_props';
 
 export type CharacterPackages = {
@@ -26,6 +27,7 @@ const allCharacterLoaders: {
   [GameCharacterExtensions.Mountain]: MountainCharacterPackage,
   [GameCharacterExtensions.God]: GodCharacterPackage,
   [GameCharacterExtensions.YiJiang2011]: YiJiang2011Package,
+  [GameCharacterExtensions.YiJiang2012]: YiJiang2012Package,
 };
 
 export class CharacterLoader {
