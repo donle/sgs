@@ -133,6 +133,7 @@ export class Lobby extends React.Component<LobbyProps> {
         GameCharacterExtensions.Mountain,
         GameCharacterExtensions.God,
         GameCharacterExtensions.YiJiang2011,
+        GameCharacterExtensions.YiJiang2012,
       ],
       cardExtensions: [GameCardExtensions.Standard, GameCardExtensions.LegionFight],
       ...roomInfo,
