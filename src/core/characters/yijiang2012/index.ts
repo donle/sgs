@@ -1,6 +1,6 @@
 import { Character } from '../character';
-import { LiaoHua } from './liaohua';
 import { HanDang } from './handang';
+import { LiaoHua } from './liaohua';
 import { WangYi } from './wangyi';
 import { XunYou } from './xunyou';
 import { ZhongHui } from './zhonghui';

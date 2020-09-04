@@ -99,7 +99,6 @@ export const skillDescriptions: Word[] = [
     target:
       '准备阶段开始时，你可以摸一张牌，弃置一张牌，然后你令你距离为1的一名角色于本回合内不能使用或打出与你以此法弃置牌颜色相同的手牌。',
   },
-
   {
     source: 'anxu_description',
     target:
