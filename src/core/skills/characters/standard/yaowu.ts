@@ -28,7 +28,7 @@ export class YaoWu extends TriggerSkill {
 
   public async onTrigger(room: Room, content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     content.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} activated skill {1}',
+      '{0} triggered skill {1}',
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(content.fromId)),
       this.Name,
     ).extract();

@@ -35,6 +35,7 @@ export class QiXing extends TriggerSkill {
       isOutsideAreaInPublic: false,
       toOutsideArea: this.Name,
       proposer: skillUseEvent.fromId,
+      engagedPlayerIds: [skillUseEvent.fromId],
     });
 
     return true;

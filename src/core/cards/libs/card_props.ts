@@ -9,6 +9,12 @@ export const enum CardSuit {
   Diamond,
 }
 
+export const enum CardColor {
+  Red,
+  Black,
+  None,
+}
+
 export type CardId = RealCardId | VirtualCardId;
 export type RealCardId = number;
 export type VirtualCardId = string;
