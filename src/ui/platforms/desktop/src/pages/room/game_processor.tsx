@@ -589,14 +589,24 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     const { changedProperties } = content;
-    for (const { toId, characterId, maxHp, hp, nationality, gender } of changedProperties) {
+    for (const { toId, characterId, maxHp, hp, nationality, gender, handCards, equips } of changedProperties) {
       const player = this.store.room.getPlayerById(toId);
       characterId !== undefined && (player.CharacterId = characterId);
       maxHp !== undefined && (player.MaxHp = maxHp);
       hp !== undefined && (player.Hp = hp);
       nationality !== undefined && (player.Nationality = nationality);
       gender !== undefined && (player.Gender = gender);
+
+      if (handCards !== undefined) {
+        player.getCardIds(PlayerCardsArea.HandArea).splice(0, player.getCardIds(PlayerCardsArea.HandArea).length);
+        player.getCardIds(PlayerCardsArea.HandArea).push(...handCards);
+      }
+      if (equips !== undefined) {
+        player.getCardIds(PlayerCardsArea.EquipArea).splice(0, player.getCardIds(PlayerCardsArea.EquipArea).length);
+        player.getCardIds(PlayerCardsArea.EquipArea).push(...equips);
+      }
     }
+
     this.presenter.broadcastUIUpdate();
   }
 

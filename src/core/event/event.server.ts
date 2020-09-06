@@ -403,6 +403,8 @@ export interface ServerEvent extends EventUtilities {
       hp?: number;
       nationality?: CharacterNationality;
       gender?: CharacterGender;
+      handCards?: CardId[];
+      equips?: CardId[];
     }[];
   };
   [GameEventIdentifiers.SetOutsideCharactersEvent]: {
