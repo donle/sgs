@@ -1,3 +1,4 @@
+import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { DamageType } from 'core/game/game_props';
 import {
@@ -19,7 +20,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 import { QiXing } from './qixing';
 
 @CommonSkill({ name: 'dawu', description: 'dawu_description' })
-export class DaWu extends TriggerSkill {
+export class DaWu extends TriggerSkill implements OnDefineReleaseTiming {
   async whenLosingSkill(room: Room, player: Player) {
     for (const other of room.getOtherPlayers(player.Id)) {
       if (other.getMark(MarkEnum.DaWu) === 0) {
@@ -39,15 +40,11 @@ export class DaWu extends TriggerSkill {
     }
   }
 
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.StageChanged;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
     return (
       event.toStage === PlayerPhaseStages.FinishStageStart &&
       event.playerId === owner.Id &&
@@ -55,75 +52,48 @@ export class DaWu extends TriggerSkill {
     );
   }
 
-  public async onTrigger(): Promise<boolean> {
+  public availableCardAreas() {
+    return [PlayerCardsArea.OutsideArea];
+  }
+
+  public cardFilter(room: Room, owner: Player, cards: CardId[]) {
+    return cards.length > 0;
+  }
+
+  public isAvailableCard(owner: PlayerId, room: Room, pendingCardId: CardId) {
+    return room.getPlayerById(owner).getCardIds(PlayerCardsArea.OutsideArea, QiXing.Name).includes(pendingCardId);
+  }
+
+  public targetFilter(room: Room, owner: Player, targets: string[], selectedCards: CardId[]) {
+    return targets.length === selectedCards.length;
+  }
+
+  public isAvailableTarget(
+    owner: PlayerId,
+    room: Room,
+    target: PlayerId,
+    selectedCards: CardId[],
+    selectedTargets: PlayerId[],
+  ) {
+    return selectedTargets.length < selectedCards.length;
+  }
+
+  public async onTrigger() {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ): Promise<boolean> {
-    const player = room.getPlayerById(skillEffectEvent.fromId);
-    const star = player.getCardIds(PlayerCardsArea.OutsideArea, QiXing.Name);
-    const boundValue = Math.min(room.getAlivePlayersFrom().length, star.length);
-    const askForChooseCards: ServerEventFinder<GameEventIdentifiers.AskForPlaceCardsInDileEvent> = {
-      toId: skillEffectEvent.fromId,
-      cardIds: star,
-      top: star.length,
-      topStackName: QiXing.GeneralName,
-      bottom: boundValue,
-      bottomStackName: 'dawu: card to drop',
-      bottomMaxCard: boundValue,
-      bottomMinCard: 1,
-      movable: true,
-      triggeredBySkills: [this.Name],
-    };
-
-    room.notify(
-      GameEventIdentifiers.AskForPlaceCardsInDileEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForPlaceCardsInDileEvent>(askForChooseCards),
-      skillEffectEvent.fromId,
-    );
-
-    const { bottom } = await room.onReceivingAsyncResponseFrom(
-      GameEventIdentifiers.AskForPlaceCardsInDileEvent,
-      skillEffectEvent.fromId,
-    );
-
+  public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     await room.dropCards(
       CardMoveReason.PlaceToDropStack,
-      bottom,
-      skillEffectEvent.fromId,
-      skillEffectEvent.fromId,
+      skillUseEvent.cardIds!,
+      skillUseEvent.fromId,
+      skillUseEvent.fromId,
       this.Name,
     );
 
-    const askForChoosingPlayerEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
-      players: room.getAlivePlayersFrom().map(player => player.Id),
-      toId: skillEffectEvent.fromId,
-      requiredAmount: bottom.length,
-      conversation: TranslationPack.translationJsonPatcher(
-        'Please choose {0} player to set {1} mark',
-        bottom.length,
-        this.Name,
-      ).extract(),
-    };
-
-    room.notify(
-      GameEventIdentifiers.AskForChoosingPlayerEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingPlayerEvent>(askForChoosingPlayerEvent),
-      skillEffectEvent.fromId,
-    );
-
-    const { selectedPlayers } = await room.onReceivingAsyncResponseFrom(
-      GameEventIdentifiers.AskForChoosingPlayerEvent,
-      skillEffectEvent.fromId,
-    );
-
-    for (const playerId of selectedPlayers!) {
-      room.addMark(playerId, MarkEnum.DaWu, 1);
+    for (const player of skillUseEvent.toIds!) {
+      room.addMark(player, MarkEnum.DaWu, 1);
     }
-
     return true;
   }
 }
