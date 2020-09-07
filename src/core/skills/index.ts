@@ -135,7 +135,7 @@ export { TianYi, TianYiRemove, TianYiExtra, TianYiBlock } from './characters/fir
 export { HanZhan } from './characters/fire/hanzhan';
 export { ShuangXiong, ShuangXiongShadow, ShuangXiongRemove } from './characters/fire/shuangxiong';
 
-export { JiuChi, JiuChiShadow, JiuChiRemove } from './characters/forest/jiuchi';
+export { JiuChi, JiuChiDrunk, JiuChiExtra } from './characters/forest/jiuchi';
 export { RouLin, RouLinShadow } from './characters/forest/roulin';
 export { BengHuai } from './characters/forest/benghuai';
 export { BaoNve } from './characters/forest/baonve';

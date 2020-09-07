@@ -1,5 +1,5 @@
 import { CharacterNationality } from 'core/characters/character';
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -18,6 +18,10 @@ export class BaoNve extends TriggerSkill {
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage: AllStage): boolean {
     return stage === DamageEffectStage.AfterDamageEffect;
+  }
+
+  public triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
+    return event.damage;
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.DamageEvent>): boolean {
@@ -47,7 +51,7 @@ export class BaoNve extends TriggerSkill {
       toId: fromId,
       options: ['yes', 'no'],
       conversation: TranslationPack.translationJsonPatcher(
-        '{0}: do you want {1} to start a judge?',
+        'do you want to trigger skill {0} from {1} ?',
         this.Name,
         TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
       ).extract(),
@@ -75,6 +79,15 @@ export class BaoNve extends TriggerSkill {
           toId: event.fromId,
           recoveredHp: 1,
           recoverBy: event.fromId,
+        });
+
+        await room.moveCards({
+          movingCards: [{ card: judge.judgeCardId, fromArea: CardMoveArea.ProcessingArea }],
+          toArea: CardMoveArea.HandArea,
+          toId: event.fromId,
+          moveReason: CardMoveReason.ActivePrey,
+          movedByReason: this.Name,
+          proposer: event.fromId,
         });
       }
     }

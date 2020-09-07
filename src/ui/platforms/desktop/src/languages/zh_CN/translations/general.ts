@@ -343,10 +343,6 @@ export const eventDictionary: Word[] = [
   { source: '{0}: please choose a player to obtain {1}', target: '{0}：你可以将 {1} 交给一名角色' },
   { source: '{0}: please choose a player to drop', target: '{0}：你可以弃置攻击范围内含有你的一名角色区域内的一张牌' },
   {
-    source: '{0}: do you want {1} to start a judge?',
-    target: '{0}：你可以令 {1} 进行判定，若为黑桃，其回复1点体力',
-  },
-  {
     source: '{0} triggered skill {1}',
     target: '{0} 触发了技能 “{1}”',
   },
