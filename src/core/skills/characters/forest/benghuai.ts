@@ -21,7 +21,7 @@ export class BengHuai extends TriggerSkill {
       owner.Id === event.playerId &&
       PlayerPhaseStages.FinishStageStart === event.toStage &&
       room.getFlag<boolean>(owner.Id, JiuChi.Used) !== true &&
-      room.getOtherPlayers(owner.Id).every(player => owner.Hp <= player.Hp)
+      !room.getOtherPlayers(owner.Id).every(player => owner.Hp <= player.Hp)
     );
   }
 
