@@ -58,7 +58,7 @@ export class ZhiYu extends TriggerSkill {
         undefined,
         this.Name,
       );
-      await room.dropCards(CardMoveReason.PassiveDrop, droppedCards, damageEvent.fromId, damageEvent.toId, this.Name);
+      await room.dropCards(CardMoveReason.SelfDrop, droppedCards, damageEvent.fromId, damageEvent.fromId, this.Name);
     }
     return true;
   }
