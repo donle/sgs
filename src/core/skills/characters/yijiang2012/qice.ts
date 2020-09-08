@@ -18,7 +18,7 @@ export class QiCe extends ViewAsSkill {
   }
 
   isRefreshAt(room: Room, owner: Player, phase: PlayerPhase) {
-    return phase === PlayerPhase.PrepareStage;
+    return phase === PlayerPhase.PlayCardStage;
   }
 
   public canUse(room: Room, owner: Player): boolean {

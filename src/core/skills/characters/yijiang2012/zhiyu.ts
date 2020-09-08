@@ -18,22 +18,9 @@ export class ZhiYu extends TriggerSkill {
     return owner.Id === content.toId;
   }
 
-  isAvailableTarget() {
-    return false;
-  }
-
   targetFilter(room: Room, owner: Player, targets: PlayerId[]): boolean {
     return targets.length === 0;
   }
-
-  isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
-    return false;
-  }
-
-  cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
-    return cards.length === 0;
-  }
-
   async onTrigger() {
     return true;
   }
@@ -53,29 +40,23 @@ export class ZhiYu extends TriggerSkill {
       ).extract(),
     });
 
-    if (!damageEvent.fromId || room.getPlayerById(damageEvent.fromId).getPlayerCards().length === 0) {
+    if (
+      !damageEvent.fromId ||
+      room.getPlayerById(damageEvent.fromId).getCardIds(PlayerCardsArea.HandArea).length === 0
+    ) {
       return true;
     }
 
     const firstCardColor = Sanguosha.getCardById(handCards[0]).Color;
     const inSameColor = handCards.find(cardId => Sanguosha.getCardById(cardId).Color !== firstCardColor) === undefined;
     if (inSameColor) {
-      const askForCardDropEvent: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
-        toId: damageEvent.fromId,
-        cardAmount: 1,
-        fromArea: [PlayerCardsArea.EquipArea, PlayerCardsArea.HandArea],
-        triggeredBySkills: [this.Name],
-      };
-
-      room.notify(
-        GameEventIdentifiers.AskForCardDropEvent,
-        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForCardDropEvent>(askForCardDropEvent),
+      const { droppedCards } = await room.askForCardDrop(
         damageEvent.fromId,
-      );
-
-      const { droppedCards } = await room.onReceivingAsyncResponseFrom(
-        GameEventIdentifiers.AskForCardDropEvent,
-        damageEvent.fromId,
+        1,
+        [PlayerCardsArea.HandArea],
+        true,
+        undefined,
+        this.Name,
       );
       await room.dropCards(CardMoveReason.PassiveDrop, droppedCards, damageEvent.fromId, damageEvent.toId, this.Name);
     }
