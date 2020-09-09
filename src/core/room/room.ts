@@ -137,7 +137,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract async loseSkill(playerId: PlayerId, skillName: string, broadcast?: boolean): Promise<void>;
   //Server only
-  public abstract obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean): void;
+  public abstract async obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean): Promise<void>;
   //Server only
   public abstract async pindian(fromId: PlayerId, toIds: PlayerId[]): Promise<PinDianResultType | undefined>;
   public abstract async turnOver(playerId: PlayerId): Promise<void>;

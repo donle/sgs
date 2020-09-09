@@ -77,7 +77,7 @@ export class JiuChiDrunk extends TriggerSkill {
   }
 
   public whenRefresh(room: Room, owner: Player) {
-    if (room.getFlag(owner.Id, JiuChi.Used) === true) {
+    if (room.getFlag<boolean>(owner.Id, JiuChi.Used) === true) {
       room.removeFlag(owner.Id, JiuChi.Used);
     }
   }

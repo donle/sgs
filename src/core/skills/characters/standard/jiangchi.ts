@@ -40,7 +40,7 @@ export class JiangChi extends TriggerSkill {
   }
 
   public whenRefresh(room: Room, owner: Player) {
-    if (room.getFlag(owner.Id, this.Name) !== undefined) {
+    if (room.getFlag<string>(owner.Id, this.Name) !== undefined) {
       room.removeFlag(owner.Id, this.Name);
     }
   }
