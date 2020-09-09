@@ -17,6 +17,7 @@ export const enum GameCharacterExtensions {
   // NewStandard,
   God = 'god',
   YiJiang2011 = 'yijiang2011',
+  YiJiang2013 = 'yijiang2013',
 }
 
 export const enum GameCardExtensions {
