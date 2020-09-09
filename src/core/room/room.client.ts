@@ -139,7 +139,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.trigger.name);
   }
   //Server only
-  public obtainSkill(): void {
+  public async obtainSkill(): Promise<void> {
     this.throwUntouchableError(this.obtainSkill.name);
   }
   //Server only
