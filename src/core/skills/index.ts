@@ -95,7 +95,7 @@ export { WuShuang, WuShuangShadow } from './characters/standard/wushuang';
 export { LiYu } from './characters/standard/liyu';
 export { XunXun } from './characters/standard/xunxun';
 export { WangXi } from './characters/standard/wangxi';
-export { JiangChi, JiangChiRemove, JiangChiExtra, JiangChiBlock } from './characters/standard/jiangchi';
+export { JiangChi, JiangChiExtra, JiangChiBlock, JiangChiKeep } from './characters/standard/jiangchi';
 export { WangZun, WangZunShadow } from './characters/standard/wangzun';
 export { TongJi } from './characters/standard/tongji';
 export { ZhuHai } from './characters/standard/zhuhai';
@@ -135,7 +135,7 @@ export { TianYi, TianYiRemove, TianYiExtra, TianYiBlock } from './characters/fir
 export { HanZhan } from './characters/fire/hanzhan';
 export { ShuangXiong, ShuangXiongShadow, ShuangXiongRemove } from './characters/fire/shuangxiong';
 
-export { JiuChi, JiuChiShadow, JiuChiRemove } from './characters/forest/jiuchi';
+export { JiuChi, JiuChiDrunk, JiuChiExtra } from './characters/forest/jiuchi';
 export { RouLin, RouLinShadow } from './characters/forest/roulin';
 export { BengHuai } from './characters/forest/benghuai';
 export { BaoNve } from './characters/forest/baonve';

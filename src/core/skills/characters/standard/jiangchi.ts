@@ -5,7 +5,6 @@ import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE } from 'core/game/game_props';
 import {
   AllStage,
-  PhaseChangeStage,
   PhaseStageChangeStage,
   PlayerPhase,
   PlayerPhaseStages,
@@ -34,6 +33,16 @@ export class JiangChi extends TriggerSkill {
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
     return owner.Id === content.playerId && PlayerPhaseStages.DrawCardStageEnd === content.toStage;
+  }
+
+  public isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
+    return stage === PlayerPhase.FinishStage;
+  }
+
+  public whenRefresh(room: Room, owner: Player) {
+    if (room.getFlag<string>(owner.Id, this.Name) !== undefined) {
+      room.removeFlag(owner.Id, this.Name);
+    }
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -96,46 +105,6 @@ export class JiangChi extends TriggerSkill {
 
 @ShadowSkill
 @CompulsorySkill({ name: JiangChi.Name, description: JiangChi.Description })
-export class JiangChiRemove extends TriggerSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
-  }
-
-  public isAutoTrigger(): boolean {
-    return true;
-  }
-
-  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage) {
-    return true;
-  }
-
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>,
-    stage: PhaseChangeStage,
-  ): boolean {
-    return stage === PhaseChangeStage.PhaseChanged && event.from === PlayerPhase.FinishStage;
-  }
-
-  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
-    return content.fromPlayer === owner.Id && room.getFlag<string>(owner.Id, this.GeneralName) !== undefined;
-  }
-
-  public async onTrigger(): Promise<boolean> {
-    return true;
-  }
-
-  public async onEffect(
-    room: Room,
-    skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
-    room.removeFlag(skillUseEvent.fromId, this.GeneralName);
-
-    return true;
-  }
-}
-
-@ShadowSkill
-@CompulsorySkill({ name: JiangChiRemove.Name, description: JiangChiRemove.Description })
 export class JiangChiExtra extends RulesBreakerSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(room: Room, playerId: PlayerId): boolean {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
@@ -195,5 +164,47 @@ export class JiangChiBlock extends FilterSkill implements OnDefineReleaseTiming 
     return cardId instanceof CardMatcher
       ? !cardId.match(new CardMatcher({ generalName: ['slash'] }))
       : Sanguosha.getCardById(cardId).GeneralName !== 'slash';
+  }
+}
+
+@ShadowSkill
+@CompulsorySkill({ name: JiangChiBlock.Name, description: JiangChi.Description })
+export class JiangChiKeep extends TriggerSkill {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent>) {
+    return EventPacker.getIdentifier(event) === GameEventIdentifiers.AskForCardDropEvent;
+  }
+
+  public isAutoTrigger() {
+    return true;
+  }
+
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent>) {
+    return (
+      room.CurrentPlayerPhase === PlayerPhase.DropCardStage &&
+      room.CurrentPhasePlayer.Id === owner.Id &&
+      room.getFlag<string>(owner.Id, this.GeneralName) === JiangChi.BlockFlag
+    );
+  }
+
+  public isFlaggedSkill() {
+    return true;
+  }
+
+  public async onTrigger() {
+    return true;
+  }
+
+  public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    const { triggeredOnEvent } = skillUseEvent;
+    const askForCardDropEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent>;
+    const caozhang = room.getPlayerById(askForCardDropEvent.toId);
+    const slashes = caozhang.getCardIds(PlayerCardsArea.HandArea).filter(cardId => {
+      return Sanguosha.getCardById(cardId).GeneralName === 'slash';
+    });
+
+    askForCardDropEvent.cardAmount -= slashes.length;
+    askForCardDropEvent.except = askForCardDropEvent.except ? [...askForCardDropEvent.except, ...slashes] : slashes;
+
+    return true;
   }
 }

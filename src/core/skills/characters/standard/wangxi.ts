@@ -12,16 +12,17 @@ export class WangXi extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
-    if (room.CurrentProcessingStage === DamageEffectStage.AfterDamagedEffect) {
-      return (
-        content.fromId !== undefined &&
-        content.fromId !== owner.Id &&
-        content.toId === owner.Id &&
-        !room.getPlayerById(content.fromId).Dead
-      );
-    } else {
-      return content.fromId === owner.Id && content.toId !== owner.Id && !room.getPlayerById(content.toId).Dead;
+    if (content.fromId === undefined || content.fromId === content.toId) {
+      return false;
     }
+    return (
+      (room.CurrentProcessingStage === DamageEffectStage.AfterDamageEffect &&
+        content.fromId === owner.Id &&
+        !room.getPlayerById(content.toId).Dead) ||
+      (room.CurrentProcessingStage === DamageEffectStage.AfterDamagedEffect &&
+        content.toId === owner.Id &&
+        !room.getPlayerById(content.fromId).Dead)
+    );
   }
 
   triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {

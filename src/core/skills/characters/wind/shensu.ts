@@ -49,7 +49,10 @@ export class ShenSu extends TriggerSkill {
   }
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
-    return room.getPlayerById(owner).canUseCardTo(room, new CardMatcher({ generalName: ['slash'] }), target);
+    return (
+      owner !== target &&
+      room.getPlayerById(owner).canUseCardTo(room, new CardMatcher({ generalName: ['slash'] }), target)
+    );
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {

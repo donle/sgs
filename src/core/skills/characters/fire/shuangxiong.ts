@@ -87,6 +87,9 @@ export class ShuangXiongShadow extends TriggerSkill {
         if (EventPacker.getIdentifier(event) !== GameEventIdentifiers.CardResponseEvent) {
           return false;
         }
+        if (event.fromId === fromId) {
+          return false;
+        }
 
         const { responseToEvent } = event;
 
@@ -151,6 +154,15 @@ export class ShuangXiongShadow extends TriggerSkill {
     }
 
     return false;
+  }
+
+  public getSkillLog(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers>) {
+    const identifier = EventPacker.getIdentifier(event);
+    if (identifier === GameEventIdentifiers.DrawCardEvent) {
+      return super.getSkillLog(room, owner, event);
+    } else {
+      return 'shuangxiong: do you wanna to obtain slashes from "shuangxiong" ?';
+    }
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -226,7 +238,7 @@ export class ShuangXiongShadow extends TriggerSkill {
       const { fromId, toId } = damageEvent;
 
       if (fromId) {
-        const toObtain = this.findSlash(room, fromId);
+        const toObtain = this.findSlash(room, toId);
         await room.moveCards({
           movingCards: toObtain.map(card => ({ card, fromArea: CardMoveArea.DropStack })),
           toId,

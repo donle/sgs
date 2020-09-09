@@ -15,10 +15,10 @@ export const GodCharacterPackage: (index: number) => Character[] = index => [
   new GodLvMeng(index++),
   new GodZhouYu(index++),
   new GodZhuGeLiang(index++),
-  new GodLvBu(index++),
   new GodCaoCao(index++),
+  new GodLvBu(index++),
+  new GodZhaoYun(index++),
   new GodSiMaYi(index++),
   new GodLuXun(index++),
-  new GodZhaoYun(index++),
   new GodGanNing(index++),
 ];
