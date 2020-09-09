@@ -166,7 +166,9 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
         <div className={styles.outsideArea}>
           {Object.entries<CardId[]>(cards)
             .map(([areaName, cards], index) =>
-              cards.length === 0 ? undefined : (
+              cards.length === 0 ? (
+                undefined
+              ) : (
                 <span
                   key={index}
                   className={classNames(styles.skillTag, {
@@ -339,7 +341,6 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                     <Mask
                       className={styles.playerRole}
                       lockedRole={player.Dead || player.Role === PlayerRole.Lord ? player.Role : undefined}
-                      disabled={player.Dead || player.Role === PlayerRole.Lord}
                     />
                   )}
                   <div className={styles.playerHp}>

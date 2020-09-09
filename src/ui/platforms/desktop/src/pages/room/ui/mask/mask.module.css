@@ -28,7 +28,9 @@
 
 .oneMask {
     top: 0;
+    z-index: 1;
 }
+
 .displayedRole {
     z-index: 2;
 }

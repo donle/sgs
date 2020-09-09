@@ -18,7 +18,7 @@ const maskImages: { [K in PlayerRole]: string } = {
 
 export type MaskProps = {
   displayedRole?: PlayerRole;
-  disabled?: boolean;
+  hideDisplay?: boolean;
   className?: string;
   lockedRole?: PlayerRole;
 };
@@ -62,7 +62,7 @@ const AllMasks = (props: { onClick?(role: PlayerRole): () => void; opened: boole
 };
 
 export const Mask = (props: MaskProps) => {
-  const { disabled, displayedRole = PlayerRole.Unknown, className, lockedRole } = props;
+  const { hideDisplay, displayedRole = PlayerRole.Unknown, className, lockedRole } = props;
   const [maskSwitch, setMaskSwitch] = React.useState(false);
   const [role, setRole] = React.useState(displayedRole);
 
@@ -76,7 +76,9 @@ export const Mask = (props: MaskProps) => {
       return;
     }
 
-    !disabled && setMaskSwitch(!maskSwitch);
+    hideDisplay
+      ? setRole(role === PlayerRole.Unknown ? displayedRole : PlayerRole.Unknown)
+      : setMaskSwitch(!maskSwitch);
   };
 
   return (
@@ -91,7 +93,7 @@ export const Mask = (props: MaskProps) => {
       >
         <img className={styles.maskImage} alt={''} src={maskImages[lockedRole || role]} />
       </div>
-      <AllMasks onClick={disabled ? undefined : onClick} opened={maskSwitch} />
+      <AllMasks onClick={lockedRole ? undefined : onClick} opened={!lockedRole && maskSwitch} />
     </div>
   );
 };
