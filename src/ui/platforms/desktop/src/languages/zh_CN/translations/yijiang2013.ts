@@ -65,7 +65,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'fencheng_description',
     target:
-      '限定技，出牌阶段，你可以令所有其他角色依次选择一项：1.弃置至少X张牌（若有上一名角色且其选择弃置牌，X为其弃置牌数+1，否则X为1）；2.受到你造成的2点火焰伤害。',
+      '<b>限定技</b>，出牌阶段，你可以令所有其他角色依次选择一项：1.弃置至少X张牌（若有上一名角色且其选择弃置牌，X为其弃置牌数+1，否则X为1）；2.受到你造成的2点火焰伤害。',
   },
   {
     source: 'xiansi_description',
@@ -86,7 +86,7 @@ export const skillDescriptions: Word[] = [
     source: 'duodao_description',
     target: '当你受到【杀】造成的伤害后，你可以弃置一张牌，然后获得伤害来源装备区里的武器牌。',
   },
-  { source: 'anjian_description', target: '锁定技，当你使用【杀】造成伤害时，若你不在其攻击范围内，此伤害+1。' },
+  { source: 'anjian_description', target: '<b>锁定技</b>，当你使用【杀】造成伤害时，若你不在其攻击范围内，此伤害+1。' },
   { source: 'zongxuan_description', target: '当你的牌因弃置而进入弃牌堆后，你可以将其中至少一张牌置于牌堆顶。' },
   {
     source: 'zhiyan_description',
