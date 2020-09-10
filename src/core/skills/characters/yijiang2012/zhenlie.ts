@@ -74,7 +74,7 @@ export class ZhenLie extends TriggerSkill {
 
     if (aimEvent.fromId) {
       const user = room.getPlayerById(aimEvent.fromId);
-      if (user.getPlayerCards().length < 1) {
+      if (user.getPlayerCards().length < 1 || room.getPlayerById(fromId).Dead) {
         return false;
       }
 
