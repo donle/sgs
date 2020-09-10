@@ -1,6 +1,18 @@
 import type { Word } from 'languages';
 
 export const characterDictionary: Word[] = [
+  { source: 'caochong', target: '曹冲' },
+  { source: 'fuhuanghou', target: '伏皇后' },
+  { source: 'guanping', target: '关平' },
+  { source: 'guohuai', target: '郭淮' },
+  { source: 'jianyong', target: '简雍' },
+  { source: 'liru', target: '李儒' },
+  { source: 'liufeng', target: '刘封' },
+  { source: 'manchong', target: '满宠' },
+  { source: 'panzhangmazhong', target: '潘璋马忠' },
+  { source: 'yufan', target: '虞翻' },
+  { source: 'zhuran', target: '朱然' },
+
   { source: 'chengxiang', target: '称象' },
   { source: 'renxin', target: '仁心' },
   { source: 'zhuikong', target: '惴恐' },
