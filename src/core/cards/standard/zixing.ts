@@ -4,14 +4,14 @@ import { RulesBreakerSkill } from 'core/skills/skill';
 import { OffenseRideCard } from '../equip_card';
 import { CardSuit } from '../libs/card_props';
 
-export class ZiXin extends OffenseRideCard {
+export class ZiXing extends OffenseRideCard {
   constructor(id: number, cardNumber: number, suit: CardSuit) {
     super(
       id,
       cardNumber,
       suit,
-      'zixin',
-      'zixin_description',
+      'zixing',
+      'zixing_description',
       GameCardExtensions.Standard,
       SkillLoader.getInstance().getSkillByName<RulesBreakerSkill>('offense_horse'),
     );

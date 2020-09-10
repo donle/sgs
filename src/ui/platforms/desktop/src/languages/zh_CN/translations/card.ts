@@ -6,7 +6,7 @@ export const cardDictionary: Word[] = [
   { source: 'peach', target: '桃' },
   { source: 'alcohol', target: '酒' },
   { source: 'qinggang', target: '青釭剑' },
-  { source: 'zixin', target: '紫骍' },
+  { source: 'zixing', target: '紫骍' },
   { source: 'dayuan', target: '大宛' },
   { source: 'jueying', target: '绝影' },
   { source: 'chitu', target: '赤兔' },
@@ -201,7 +201,7 @@ export const cardDescriptions: Word[] = [
     target: '<b>锁定技</b>，【南蛮入侵】、【万箭齐发】和普【杀】对你无效；当你受到火焰伤害时，此伤害+1。',
   },
   {
-    source: 'zixin_description',
+    source: 'zixing_description',
     target: '你计算与其他角色的距离-1。',
   },
   {
