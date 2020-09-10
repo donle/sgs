@@ -230,4 +230,7 @@ export { GanLu } from './characters/yijiang2011/ganlu';
 export { BuYi } from './characters/yijiang2011/buyi';
 export { XuanFeng, XuanFengMove, XuanFengDrop } from './characters/yijiang2011/xuanfeng';
 
+export { ChengXiang } from './characters/yijiang2013/chengxiang';
+export { RenXin } from './characters/yijiang2013/renxin';
+
 export { Cheat } from './system/cheat';
