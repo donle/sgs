@@ -175,8 +175,7 @@ export const eventDictionary: Word[] = [
     target: '请选择使用一张【{0}】',
   },
   { source: 'please use a {0} to player {1} to response {2}', target: '请对 {1} 使用一张【{0}】来响应 {2}' },
-  { source: '{0} activated skill {1}', target: '{0} 的技能 【{1}】 被触发' },
-  { source: '{0} activates awakening skill {1}', target: '{0} 的觉醒技 【{1}】 技能被触发' },
+  { source: '{0} activated awakening skill {1}', target: '{0} 的觉醒技 【{1}】 技能被触发' },
   { source: '{0} used skill {1}', target: '{0} 使用了技能【{1}】' },
   { source: '{0} used skill {1} to {2}', target: '{0} 使用了技能【{1}】, 目标是 {2}' },
   {
@@ -333,7 +332,7 @@ export const eventDictionary: Word[] = [
   { source: '{0} place card {1} from {2} on the top of draw stack', target: '{0} 将 {2} 的 {1} 置于了牌堆顶' },
   { source: 'recover {0} hp for {1}', target: '是否回复 {1} {0} 点体力' },
   { source: '{0} used skill {1}, damage increases to {2}', target: '{0} 使用了技能 【{1}】，伤害增加至 {2} 点' },
-  { source: '{0} activated skill {1}, damage reduces to {2}', target: '{0} 触发了技能 【{1}】，伤害减少至 {2} 点' },
+  { source: '{0} triggered skill {1}, damage reduces to {2}', target: '{0} 触发了技能 【{1}】，伤害减少至 {2} 点' },
   { source: '{0} used skill {1} to you, please present a hand card', target: '{0} 使用了技能 【{1}】，请展示一张手牌' },
   { source: '{0} used {1} to you, please present a hand card', target: '{0} 对你使用了 {1}，请展示一张手牌' },
   { source: '{0} move cards {1} onto the top of character card', target: '{0} 将 {1} 置于了武将牌上' },
@@ -348,19 +347,19 @@ export const eventDictionary: Word[] = [
   },
   {
     source: '{0} triggered skill {1}',
-    target: '{0} 触发了技能 “{1}”',
+    target: '{0} 触发了技能 【{1}】',
   },
   {
     source: '{0} triggered skill {1}, nullify {2}',
-    target: '{0} 触发了技能 “{1}”，使 {2} 对其无效',
+    target: '{0} 触发了技能 【{1}】，使 {2} 对其无效',
   },
   {
     source: '{0} triggered skill {1}, become the source of damage dealed by {2}',
-    target: '{0} 触发了技能 “{1}”，成为了 {2} 造成的伤害的伤害来源',
+    target: '{0} 触发了技能 【{1}】，成为了 {2} 造成的伤害的伤害来源',
   },
   {
     source: '{0} triggered skill {1}, prevent the damage',
-    target: '{0} 触发了 “{1}” 的效果，防止了此伤害',
+    target: '{0} 触发了 【{1}】 的效果，防止了此伤害',
   },
   {
     source: '{0}: please choose a card type or color',

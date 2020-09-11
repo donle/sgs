@@ -19,11 +19,10 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
     if (skill instanceof TriggerSkill) {
       return true;
     } else if (skill instanceof ViewAsSkill) {
+      const matcher = new CardMatcher({ name: useByMyself ? ['alcohol', 'peach'] : ['peach'] });
       return (
-        !CardMatcher.match(
-          { name: skill.canViewAs(room, player), tag: 'card-matcher' },
-          new CardMatcher({ name: useByMyself ? ['alcohol', 'peach'] : ['peach'] }),
-        ) || !skill.canUse(room, player)
+        !CardMatcher.match({ name: skill.canViewAs(room, player, undefined, matcher), tag: 'card-matcher' }, matcher) ||
+        !skill.canUse(room, player)
       );
     }
 
@@ -109,7 +108,7 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
       } else if (fromArea === PlayerCardsArea.EquipArea) {
         if (card.Skill instanceof ViewAsSkill) {
           return new CardMatcher({
-            name: card.Skill.canViewAs(this.store.room, this.player, this.selectedCards),
+            name: card.Skill.canViewAs(this.store.room, this.player, this.selectedCards, this.matcher),
           }).match(this.matcher);
         }
       }

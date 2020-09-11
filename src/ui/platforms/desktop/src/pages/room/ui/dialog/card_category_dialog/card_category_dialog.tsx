@@ -19,30 +19,40 @@ const DemoCardList = (props: CardCategoryDialogProps & { type: CardType }) => {
   return (
     <div className={styles.demoCardList}>
       <h3 className={styles.cardListName}>{props.translator.tr(Functional.getCardTypeRawText(props.type))}</h3>
-      {props.cardNames
-        .filter(cardName => Sanguosha.getCardTypeByName(cardName).includes(props.type))
-        .map((cardName, index) => (
-          <FlatDemoCard
-            translator={props.translator}
-            cardName={cardName}
-            imageLoader={props.imageLoader}
-            onClick={props.onClick}
-            key={index}
-            className={styles.flatCard}
-          />
-        ))}
+      {props.cardNames.map((cardName, index) => (
+        <FlatDemoCard
+          translator={props.translator}
+          cardName={cardName}
+          imageLoader={props.imageLoader}
+          onClick={props.onClick}
+          key={index}
+          className={styles.flatCard}
+        />
+      ))}
     </div>
   );
 };
 
 export const CardCategoryDialog = (props: CardCategoryDialogProps) => {
   const baseTypes = [CardType.Basic, CardType.Trick, CardType.Equip];
+  const cardsWithTypes: [string[], string[], string[]] = [[], [], []];
+  for (const cardName of props.cardNames) {
+    const card = Sanguosha.getCardByName(cardName);
+    for (let i = 0; i < baseTypes.length; i++) {
+      if (card.is(baseTypes[i])) {
+        cardsWithTypes[i].push(cardName);
+      }
+    }
+  }
+
   return (
     <BaseDialog title={props.translator.tr('please choose a card')} className={styles.cardCategoryDialog}>
       <div className={styles.cardList}>
-        {baseTypes.map((type, index) => (
-          <DemoCardList {...props} type={type} key={index} />
-        ))}
+        {cardsWithTypes
+          .filter(cards => cards.length > 0)
+          .map((cards, index) => (
+            <DemoCardList {...props} cardNames={cards} type={baseTypes[index]} key={index} />
+          ))}
       </div>
     </BaseDialog>
   );

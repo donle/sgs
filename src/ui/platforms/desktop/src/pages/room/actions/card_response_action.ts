@@ -22,7 +22,10 @@ export class CardResponseAction extends BaseAction {
     if (skill instanceof TriggerSkill) {
       return true;
     } else if (skill instanceof ViewAsSkill) {
-      return !new CardMatcher({ name: skill.canViewAs(room, player) }).match(matcher) || !skill.canUse(room, player);
+      return (
+        !new CardMatcher({ name: skill.canViewAs(room, player, undefined, matcher) }).match(matcher) ||
+        !skill.canUse(room, player)
+      );
     }
 
     return true;
@@ -110,9 +113,9 @@ export class CardResponseAction extends BaseAction {
         this.askForEvent.fromArea.includes(PlayerCardsArea.HandArea)
       ) {
         if (card.Skill instanceof ViewAsSkill) {
-          return new CardMatcher({ name: card.Skill.canViewAs(this.store.room, this.player, this.pendingCards) }).match(
-            new CardMatcher(this.askForEvent.cardMatcher),
-          );
+          return new CardMatcher({
+            name: card.Skill.canViewAs(this.store.room, this.player, this.pendingCards, this.matcher),
+          }).match(new CardMatcher(this.askForEvent.cardMatcher));
         }
       }
     }
