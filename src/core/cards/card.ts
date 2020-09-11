@@ -2,7 +2,15 @@ import { Sanguosha } from 'core/game/engine';
 import { GameCardExtensions } from 'core/game/game_props';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { Skill, ViewAsSkill } from 'core/skills/skill';
-import { CardId, CardSuit, CardTargetEnum, RealCardId, VirtualCardId, VirtualCardIdProps } from './libs/card_props';
+import {
+  CardColor,
+  CardId,
+  CardSuit,
+  CardTargetEnum,
+  RealCardId,
+  VirtualCardId,
+  VirtualCardIdProps,
+} from './libs/card_props';
 
 export function None<T extends Card>(constructor: new (...args: any) => any): any {
   return (class extends constructor {
@@ -78,6 +86,16 @@ export abstract class Card {
 
   public get Suit() {
     return this.suit;
+  }
+
+  public get Color() {
+    if (this.suit === CardSuit.NoSuit) {
+      return CardColor.None;
+    } else if (this.suit === CardSuit.Club || this.suit === CardSuit.Spade) {
+      return CardColor.Black;
+    }
+
+    return CardColor.Red;
   }
 
   public get Name() {

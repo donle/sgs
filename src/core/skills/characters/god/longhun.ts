@@ -134,7 +134,7 @@ export class LongHunEffect extends TriggerSkill {
 
   public async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} activated skill {1}',
+      '{0} triggered skill {1}',
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
       this.Name,
     ).extract();
@@ -199,7 +199,7 @@ export class LongHunBlackEffect extends TriggerSkill {
 
   public async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} activated skill {1}',
+      '{0} triggered skill {1}',
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
       this.Name,
     ).extract();

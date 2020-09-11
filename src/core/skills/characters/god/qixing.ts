@@ -45,7 +45,8 @@ export class QiXing extends TriggerSkill {
       movedByReason: this.Name,
       isOutsideAreaInPublic: false,
       toOutsideArea: this.Name,
-      proposer: fromId,
+      proposer: skillUseEvent.fromId,
+      engagedPlayerIds: [skillUseEvent.fromId],
     });
 
     const handcards = from.getCardIds(PlayerCardsArea.HandArea);

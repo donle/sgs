@@ -17,7 +17,7 @@ export class HunZi extends TriggerSkill {
 
   async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     skillUseEvent.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} activates awakening skill {1}',
+      '{0} activated awakening skill {1}',
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
       this.Name,
     ).extract();
