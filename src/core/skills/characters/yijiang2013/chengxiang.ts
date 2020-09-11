@@ -5,6 +5,7 @@ import { Room } from 'core/room/room';
 import { System } from 'core/shares/libs/system';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'chengxiang', description: 'chengxiang_description' })
 export class ChengXiang extends TriggerSkill {
@@ -48,6 +49,11 @@ export class ChengXiang extends TriggerSkill {
         moveReason: CardMoveReason.ActiveMove,
         movedByReason: this.Name,
         engagedPlayerIds: [this.Name],
+        translationsMessage: TranslationPack.translationJsonPatcher(
+          '{0} obtains cards {1}',
+          TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
+          TranslationPack.patchCardInTranslation(...selectedCards!),
+        ).extract(),
       });
     }
 
