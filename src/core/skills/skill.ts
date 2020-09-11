@@ -377,8 +377,8 @@ export abstract class ViewAsSkill extends Skill {
     contentOrContainerCard?: ServerEventFinder<GameEventIdentifiers> | CardId,
   ): boolean;
 
-  public abstract canViewAs(room: Room, owner: Player, selectedCards?: CardId[]): string[];
-  public abstract viewAs(cards: CardId[], viewAs?: string): VirtualCard;
+  public abstract canViewAs(room: Room, owner: Player, selectedCards?: CardId[], cardMatcher?: CardMatcher): string[];
+  public abstract viewAs(cards: CardId[], owner: Player, viewAs?: string): VirtualCard;
   public abstract cardFilter(
     room: Room,
     owner: Player,

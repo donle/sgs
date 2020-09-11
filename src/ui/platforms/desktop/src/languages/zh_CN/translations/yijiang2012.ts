@@ -59,7 +59,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'zhiyu_description',
-    target: '当你受到伤害后，你可以摸一张牌并展示所有手牌，若这些牌颜色均相同，伤害来源弃置一张牌。',
+    target: '当你受到伤害后，你可以摸一张牌并展示所有手牌，若这些牌颜色均相同，伤害来源弃置一张手牌。',
   },
 
   {

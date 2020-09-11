@@ -570,7 +570,7 @@ export abstract class BaseAction {
           const onClickDemoCard = (selectedCardName: string) => {
             this.inProcessDialog = false;
             this.presenter.closeDialog();
-            this.selectedCardToPlay = skill.viewAs(this.pendingCards, selectedCardName).Id;
+            this.selectedCardToPlay = skill.viewAs(this.pendingCards, this.player, selectedCardName).Id;
             this.callToActionCheck();
           };
 
@@ -580,7 +580,7 @@ export abstract class BaseAction {
             onClick: onClickDemoCard,
           });
         } else {
-          this.selectedCardToPlay = this.selectedSkillToPlay.viewAs(this.pendingCards, canViewAs[0]).Id;
+          this.selectedCardToPlay = this.selectedSkillToPlay.viewAs(this.pendingCards, this.player, canViewAs[0]).Id;
         }
       } else {
         this.selectedCardToPlay = undefined;
@@ -624,7 +624,7 @@ export abstract class BaseAction {
         const onClickDemoCard = (selectedCardName: string) => {
           this.inProcessDialog = false;
           this.presenter.closeDialog();
-          this.selectedCardToPlay = skill.viewAs(this.pendingCards, selectedCardName).Id;
+          this.selectedCardToPlay = skill.viewAs(this.pendingCards, this.player, selectedCardName).Id;
           this.callToActionCheck();
         };
 
@@ -634,7 +634,7 @@ export abstract class BaseAction {
           onClick: onClickDemoCard,
         });
       } else {
-        this.selectedCardToPlay = this.selectedSkillToPlay.viewAs(this.pendingCards, canViewAs[0]).Id;
+        this.selectedCardToPlay = this.selectedSkillToPlay.viewAs(this.pendingCards, this.player, canViewAs[0]).Id;
       }
     }
     this.delightItems();
