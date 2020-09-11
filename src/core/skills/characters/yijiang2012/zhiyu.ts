@@ -20,7 +20,6 @@ export class ZhiYu extends TriggerSkill {
   targetFilter(room: Room, owner: Player, targets: PlayerId[]): boolean {
     return targets.length === 0;
   }
-
   async onTrigger() {
     return true;
   }
