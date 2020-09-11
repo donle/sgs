@@ -76,11 +76,13 @@ export class MoveCard extends UiAnimation {
         return true;
       })
       .map(cardInfo => {
+        const isPublic = content.engagedPlayerIds
+          ? false
+          : !(cardInfo.fromArea === CardMoveArea.HandArea && content.toArea === CardMoveArea.HandArea) &&
+            content.moveReason !== CardMoveReason.CardDraw;
         return {
           cardId: cardInfo.card,
-          public:
-            !(cardInfo.fromArea === CardMoveArea.HandArea && content.toArea === CardMoveArea.HandArea) &&
-            content.moveReason !== CardMoveReason.CardDraw,
+          public: isPublic,
         };
       });
 

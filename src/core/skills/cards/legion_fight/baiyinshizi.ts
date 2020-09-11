@@ -30,7 +30,7 @@ export class BaiYinShiZiSkill extends TriggerSkill implements OnDefineReleaseTim
 
   async onTrigger(room: Room, content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     content.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} activated skill {1}',
+      '{0} triggered skill {1}',
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(content.fromId)),
       this.Name,
     ).extract();
@@ -45,7 +45,7 @@ export class BaiYinShiZiSkill extends TriggerSkill implements OnDefineReleaseTim
     damageEvent.messages = damageEvent.messages || [];
     damageEvent.messages.push(
       TranslationPack.translationJsonPatcher(
-        '{0} activated skill {1}, damage reduces to {2}',
+        '{0} triggered skill {1}, damage reduces to {2}',
         TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
         this.Name,
         damageEvent.damage,
