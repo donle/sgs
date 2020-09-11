@@ -28,7 +28,7 @@ export class ZhenLie extends TriggerSkill {
     return (
       stage === AimStage.AfterAimmed &&
       (
-        card.is(CardType.Basic) ||
+        card.GeneralName === 'slash' ||
         (
           card.is(CardType.Trick) &&
           !card.is(CardType.DelayedTrick)
