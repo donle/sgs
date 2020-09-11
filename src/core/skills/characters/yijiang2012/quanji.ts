@@ -104,7 +104,8 @@ export class QuanJi extends TriggerSkill {
           fromId,
         );
 
-        card = cardIds![0];
+        const handcards = from.getCardIds(PlayerCardsArea.HandArea);
+        card = cardIds ? cardIds[0] : handcards[Math.floor(Math.random() * handcards.length)];
       } else {
         card = from.getCardIds(PlayerCardsArea.HandArea)[0];
       }
