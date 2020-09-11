@@ -29,7 +29,7 @@ export class ZaoXian extends TriggerSkill {
     skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     skillUseEvent.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} activates awakening skill {1}',
+      '{0} activated awakening skill {1}',
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
       this.Name,
     ).extract();

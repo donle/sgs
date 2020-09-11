@@ -411,7 +411,7 @@ export abstract class Player implements PlayerInfo {
       }
 
       const skill = this.getSkills<ViewAsSkill>('viewAs').find(skill => {
-        const viewAsCards = skill.canViewAs(room, this);
+        const viewAsCards = skill.canViewAs(room, this, undefined, cardMatcherOrId);
         return (
           skill.canUse(room, this) && CardMatcher.match(CardMatcher.addTag({ name: viewAsCards }), cardMatcherOrId)
         );
