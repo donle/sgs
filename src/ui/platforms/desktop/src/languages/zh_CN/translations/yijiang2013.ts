@@ -1,6 +1,8 @@
 import type { Word } from 'languages';
 
 export const characterDictionary: Word[] = [
+  { source: 'yijiang2013', target: '将3' },
+
   { source: 'caochong', target: '曹冲' },
   { source: 'fuhuanghou', target: '伏皇后' },
   { source: 'guanping', target: '关平' },
