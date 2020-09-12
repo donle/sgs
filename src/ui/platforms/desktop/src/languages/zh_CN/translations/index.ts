@@ -21,4 +21,5 @@ export {
   windCharactersDictionary,
   yiJiangCharactersDictionary,
   oneVersusTwoCharactersDictonary,
+  yiJiang3CharactersDictionary,
 };
