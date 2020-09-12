@@ -232,6 +232,9 @@ export { XuanFeng, XuanFengMove, XuanFengDrop } from './characters/yijiang2011/x
 
 export { QiCe } from './characters/yijiang2012/qice';
 export { ZhiYu } from './characters/yijiang2012/zhiyu';
+export { QuanJi, QuanJiShadow, QuanJiBuff } from './characters/yijiang2012/quanji';
+export { ZiLi } from './characters/yijiang2012/zili';
+export { PaiYi } from './characters/yijiang2012/paiyi';
 
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';
