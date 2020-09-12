@@ -235,6 +235,8 @@ export { ZhiYu } from './characters/yijiang2012/zhiyu';
 export { QuanJi, QuanJiShadow, QuanJiBuff } from './characters/yijiang2012/quanji';
 export { ZiLi } from './characters/yijiang2012/zili';
 export { PaiYi } from './characters/yijiang2012/paiyi';
+export { ZhenLie } from './characters/yijiang2012/zhenlie';
+export { MiJi, MiJiShadow } from './characters/yijiang2012/miji';
 
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';
