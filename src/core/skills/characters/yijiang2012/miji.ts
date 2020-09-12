@@ -107,7 +107,7 @@ export class MiJiShadow extends TriggerSkill {
   }
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
-    return cards.length === owner.getFlag<number>('miji');
+    return cards.length === owner.getFlag<number>(this.GeneralName);
   }
 
   public numberOfTargets(): number {
@@ -121,7 +121,7 @@ export class MiJiShadow extends TriggerSkill {
     selectedCards: CardId[],
   ): boolean {
     const player = room.getPlayerById(owner)
-    return selectedCards.length <= player.getFlag<number>('miji');
+    return selectedCards.length <= player.getFlag<number>(this.GeneralName);
   }
 
   public availableCardAreas(): PlayerCardsArea[] {
