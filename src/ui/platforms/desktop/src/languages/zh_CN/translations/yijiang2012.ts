@@ -140,5 +140,15 @@ export const skillDescriptions: Word[] = [
 ];
 
 export const promptDescriptions: Word[] = [
+  {
+    source: '{0}: do you want to draw a card, then put a hand card on your general card?',
+    target: '{0}：你可以摸一张牌，然后将一张手牌置为“权”',
+  },
+  {
+    source: '{0}: please put a hand card on your general card',
+    target: '{0}：请选择一张手牌置为“权”',
+  },
 
+  { source: 'zili:drawcards', target: '摸两张牌' },
+  { source: 'zili:recover', target: '回复1点体力' },
 ];
