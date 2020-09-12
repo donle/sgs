@@ -7,6 +7,7 @@ import * as mountainCharactersDictionary from './mountain';
 import * as standardCharactersDictionary from './standard';
 import * as windCharactersDictionary from './wind';
 import * as yiJiangCharactersDictionary from './yijiang2011';
+import * as yiJiang3CharactersDictionary from './yijiang2013'
 
 export {
   cardsDictionary,
@@ -18,4 +19,5 @@ export {
   standardCharactersDictionary,
   windCharactersDictionary,
   yiJiangCharactersDictionary,
+  yiJiang3CharactersDictionary,
 };
