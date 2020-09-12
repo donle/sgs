@@ -141,7 +141,6 @@ export const skillDescriptions: Word[] = [
 
 export const promptDescriptions: Word[] = [
   {
-<<<<<<< HEAD
     source: '{0}: do you want to draw a card, then put a hand card on your general card?',
     target: '{0}：你可以摸一张牌，然后将一张手牌置为“权”',
   },
@@ -152,7 +151,8 @@ export const promptDescriptions: Word[] = [
 
   { source: 'zili:drawcards', target: '摸两张牌' },
   { source: 'zili:recover', target: '回复1点体力' },
-=======
+
+  {
     source: '{0}: do you want to lose 1 hp to nullify {1}, then drop a card from {2}',
     target: '{0}：你可以失去1点体力令 {1} 对你无效，然后你弃置 {2} 的一张牌',
   },
@@ -161,5 +161,4 @@ export const promptDescriptions: Word[] = [
     source: '{0}: do you want to give another player {1} hand card(s)?',
     target: '{0}：你可以选择 {1} 张牌交给一名其他角色',
   },
->>>>>>> 3c56c959... add WangYi
 ];
