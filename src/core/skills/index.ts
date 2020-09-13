@@ -232,10 +232,8 @@ export { XuanFeng, XuanFengMove, XuanFengDrop } from './characters/yijiang2011/x
 
 export { ChengXiang } from './characters/yijiang2013/chengxiang';
 export { RenXin } from './characters/yijiang2013/renxin';
-export { AnJian } from './characters/yijiang2013/anjian';
+export { AnJian,AnJianPeach } from './characters/yijiang2013/anjian';
 export { DuoDao } from './characters/yijiang2013/duodao';
-export { JueCe, JueCeShadow } from './characters/yijiang2013/juece';
+export { JueCe } from './characters/yijiang2013/juece';
 export { MieJi } from './characters/yijiang2013/mieji';
-export { FenCheng } from './characters/yijiang2013/fencheng';
-
 export { Cheat } from './system/cheat';
