@@ -56,7 +56,7 @@ export class RouLin extends TriggerSkill {
 @CompulsorySkill({ name: RouLin.GeneralName, description: RouLin.Description })
 export class RouLinShadow extends TriggerSkill implements OnDefineReleaseTiming {
   afterLosingSkill(room: Room) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage?: AllStage): boolean {

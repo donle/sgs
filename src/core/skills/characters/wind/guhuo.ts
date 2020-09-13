@@ -29,7 +29,7 @@ export class GuHuo extends ViewAsSkill {
   }
 
   isRefreshAt(room: Room, owner: Player, phase: PlayerPhase) {
-    return phase === PlayerPhase.PrepareStage;
+    return phase === PlayerPhase.PhaseBegin;
   }
 
   public canUse(room: Room, owner: Player): boolean {

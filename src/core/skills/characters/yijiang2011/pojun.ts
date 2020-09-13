@@ -159,11 +159,11 @@ export class PoJunClear extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerStage === PlayerPhaseStages.FinishStage;
+    return room.CurrentPlayerStage === PlayerPhaseStages.PhaseFinish;
   }
 
   public afterDead(room: Room): boolean {
-    return room.CurrentPlayerStage === PlayerPhaseStages.FinishStage;
+    return room.CurrentPlayerStage === PlayerPhaseStages.PhaseFinish;
   }
 
   public async whenDead(room: Room, player: Player): Promise<void> {
@@ -189,7 +189,7 @@ export class PoJunClear extends TriggerSkill implements OnDefineReleaseTiming {
     owner: Player,
     event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
   ): boolean {
-    return event.toStage === PlayerPhaseStages.FinishStageStart;
+    return event.toStage === PlayerPhaseStages.PhaseFinish;
   }
 
   public async onTrigger(): Promise<boolean> {

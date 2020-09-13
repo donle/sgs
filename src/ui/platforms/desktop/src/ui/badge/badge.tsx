@@ -35,12 +35,14 @@ const lordNationalityBadgeImageMap: { [K in CharacterNationality]?: string } = {
   [CharacterNationality.Qun]: qunLordBadge,
 };
 const phaseBadgeImageMap: { [K in PlayerPhase]: string } = {
+  [PlayerPhase.PhaseBegin]: preparePhaseBadge,
   [PlayerPhase.PrepareStage]: preparePhaseBadge,
   [PlayerPhase.JudgeStage]: judgePhaseBadge,
   [PlayerPhase.DrawCardStage]: drawPhaseBadge,
   [PlayerPhase.DropCardStage]: dropPhaseBadge,
   [PlayerPhase.PlayCardStage]: playPhaseBadge,
   [PlayerPhase.FinishStage]: finishPhaseBadge,
+  [PlayerPhase.PhaseFinish]: finishPhaseBadge,
 };
 
 function getNationalityBadge(nationality: CharacterNationality, isLord?: boolean) {

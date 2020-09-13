@@ -71,7 +71,7 @@ export class QiMou extends ActiveSkill {
 @CommonSkill({ name: QiMou.Name, description: QiMou.Description })
 export class QiMouShadow extends TriggerSkill implements OnDefineReleaseTiming {
   afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerStage === PlayerPhaseStages.FinishStageEnd;
+    return room.CurrentPlayerStage === PlayerPhaseStages.PhaseFinishEnd;
   }
 
   isAutoTrigger() {
@@ -83,11 +83,11 @@ export class QiMouShadow extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: AllStage) {
-    return stage === PhaseChangeStage.PhaseChanged && event.from === PlayerPhase.FinishStage;
+    return stage === PhaseChangeStage.AfterPhaseChanged && event.to === PlayerPhase.PhaseFinish;
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
-    return content.fromPlayer === owner.Id && room.getFlag(owner.Id, this.GeneralName) !== undefined;
+    return content.toPlayer === owner.Id && room.getFlag(owner.Id, this.GeneralName) !== undefined;
   }
 
   async onTrigger() {

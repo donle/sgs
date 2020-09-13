@@ -53,7 +53,7 @@ export class WuQian extends ActiveSkill {
 @CompulsorySkill({ name: WuQian.GeneralName, description: WuQian.Description })
 export class WuQianShadow extends TriggerSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerStage === PlayerPhaseStages.FinishStageEnd;
+    return room.CurrentPlayerStage === PlayerPhaseStages.PhaseFinishEnd;
   }
 
   public afterDead(): boolean {
@@ -75,7 +75,7 @@ export class WuQianShadow extends TriggerSkill implements OnDefineReleaseTiming 
   ): boolean {
     return (
       event.playerId === owner.Id &&
-      event.toStage === PlayerPhaseStages.FinishStageEnd &&
+      event.toStage === PlayerPhaseStages.PhaseFinishEnd &&
       !!room.getAlivePlayersFrom().find(player => !!room.getFlag<boolean>(player.Id, this.GeneralName))
     );
   }

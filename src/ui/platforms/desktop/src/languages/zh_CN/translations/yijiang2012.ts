@@ -21,6 +21,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'liaohua', target: '廖化' },
   { source: 'dangxian', target: '当先' },
+  { source: '#dangxian', target: '当先' },
   { source: 'fuli', target: '伏枥' },
 
   { source: 'madai', target: '马岱' },
@@ -46,7 +47,8 @@ export const characterDictionary: Word[] = [
 export const skillDescriptions: Word[] = [
   {
     source: 'zhenlie_description',
-    target: '当你成为其他角色使用【杀】或普通锦囊牌的目标后，你可以失去1点体力，令此牌对你无效，然后你弃置使用者的一张牌。',
+    target:
+      '当你成为其他角色使用【杀】或普通锦囊牌的目标后，你可以失去1点体力，令此牌对你无效，然后你弃置使用者的一张牌。',
   },
   {
     source: 'miji_description',
@@ -64,7 +66,7 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'quanji_description',
-    target: 
+    target:
       '出牌阶段结束时，若你的手牌数大于体力值，或当你受到1点伤害后，你可以摸一张牌，然后将一张手牌置于你的武将牌上，称为“权”；你的手牌上限+X（X为你的“权”数）。',
   },
   {
@@ -97,7 +99,7 @@ export const skillDescriptions: Word[] = [
     target:
       '准备阶段开始时，你可以摸一张牌，弃置一张牌，然后你令你距离为1的一名角色于本回合内不能使用或打出与你以此法弃置牌颜色相同的手牌。',
   },
-  
+
   {
     source: 'anxu_description',
     target:
@@ -160,5 +162,13 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to give another player {1} hand card(s)?',
     target: '{0}：你可以选择 {1} 张牌交给一名其他角色',
+  },
+  {
+    source: '{0} triggered skill {1}, started an extra {2}',
+    target: '{0} 的技能 【{1}】被触发，开始了一个额外的 {2}',
+  },
+  {
+    source: 'do you want to trigger skill {0} to get a slash card from drop stack?',
+    target: '是否发动技能【{0}】从弃牌堆中获得一张杀？',
   },
 ];

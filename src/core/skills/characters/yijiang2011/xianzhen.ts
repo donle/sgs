@@ -100,7 +100,7 @@ export class XianZhen extends ActiveSkill {
 @CommonSkill({ name: XianZhen.Name, description: XianZhen.Description })
 export class XianZhenExtra extends RulesBreakerSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public breakCardUsableDistanceTo(cardId: CardId | CardMatcher, room: Room, owner: Player, target: Player) {
@@ -126,7 +126,7 @@ export class XianZhenExtra extends RulesBreakerSkill implements OnDefineReleaseT
 @CommonSkill({ name: XianZhenExtra.Name, description: XianZhen.Description })
 export class XianZhenBlock extends FilterSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(room: Room) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId) {
