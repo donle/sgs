@@ -2,7 +2,7 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AimStage, AllStage, CardUseStage, DamageEffectStage } from 'core/game/stage_processor';
+import { AimStage, AllStage, CardUseStage, DamageEffectStage, PlayerDyingStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -14,7 +14,10 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 export class AnJian extends TriggerSkill {
   public isTriggerable(
     event: ServerEventFinder<
-      GameEventIdentifiers.AimEvent | GameEventIdentifiers.DamageEvent | GameEventIdentifiers.CardUseEvent
+      | GameEventIdentifiers.AimEvent
+      | GameEventIdentifiers.DamageEvent
+      | GameEventIdentifiers.CardUseEvent
+      | GameEventIdentifiers.PlayerDyingEvent
     >,
     stage?: AllStage,
   ): boolean {
@@ -25,6 +28,8 @@ export class AnJian extends TriggerSkill {
       return stage === DamageEffectStage.DamageEffect;
     } else if (unknownEvent === GameEventIdentifiers.CardUseEvent) {
       return stage === CardUseStage.CardUseFinishedEffect;
+    } else if (unknownEvent === GameEventIdentifiers.PlayerDyingEvent) {
+      return stage === PlayerDyingStage.PlayerDying || stage === PlayerDyingStage.AfterPlayerDying;
     }
     return false;
   }
@@ -33,7 +38,10 @@ export class AnJian extends TriggerSkill {
     room: Room,
     owner: Player,
     content: ServerEventFinder<
-      GameEventIdentifiers.AimEvent | GameEventIdentifiers.DamageEvent | GameEventIdentifiers.CardUseEvent
+      | GameEventIdentifiers.AimEvent
+      | GameEventIdentifiers.DamageEvent
+      | GameEventIdentifiers.CardUseEvent
+      | GameEventIdentifiers.PlayerDyingEvent
     >,
   ): boolean {
     const identifier = EventPacker.getIdentifier(content);
@@ -61,6 +69,14 @@ export class AnJian extends TriggerSkill {
         content.cardId !== undefined &&
         Sanguosha.getCardById(content.cardId).GeneralName === 'slash'
       );
+    } else if (identifier === GameEventIdentifiers.PlayerDyingEvent) {
+      content = content as ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>;
+      if (room.getPlayerById(content.dying).hasSkill(this.GeneralName)) {
+        return true;
+      }
+      if (room.getPlayerById(content.dying).getFlag<boolean>(this.GeneralName)&&Sanguosha.getCardById(content.killedBycard).GeneralName === 'slash') {
+        return true;
+      }
     }
     return false;
   }
@@ -75,7 +91,12 @@ export class AnJian extends TriggerSkill {
   ): Promise<boolean> {
     const { triggeredOnEvent } = skillUseEvent;
     const identifier = EventPacker.getIdentifier(
-      triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent | GameEventIdentifiers.DamageEvent>,
+      triggeredOnEvent as ServerEventFinder<
+        | GameEventIdentifiers.AimEvent
+        | GameEventIdentifiers.DamageEvent
+        | GameEventIdentifiers.CardUseEvent
+        | GameEventIdentifiers.PlayerDyingEvent
+      >,
     );
     if (identifier === GameEventIdentifiers.AimEvent) {
       const { toId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
@@ -87,7 +108,7 @@ export class AnJian extends TriggerSkill {
     } else if (identifier === GameEventIdentifiers.DamageEvent) {
       const { toId, fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
       const damageEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-      await room.obtainSkill(toId, AnJianPeach.Name);
+
       damageEvent.damage++;
       damageEvent.messages = damageEvent.messages || [];
       damageEvent.messages.push(
@@ -98,6 +119,13 @@ export class AnJian extends TriggerSkill {
           damageEvent.damage,
         ).toString(),
       );
+    } else if (identifier === GameEventIdentifiers.PlayerDyingEvent) {
+      const dyingEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>;
+      if (room.CurrentProcessingStage === PlayerDyingStage.PlayerDying) {
+        await room.obtainSkill(dyingEvent.dying, AnJianPeach.Name);
+      } else {
+        await room.loseSkill(dyingEvent.dying, AnJianPeach.Name);
+      }
     } else if (identifier === GameEventIdentifiers.CardUseEvent) {
       const cardEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
       await room.loseSkill(cardEvent.toIds![0], AnJianPeach.Name);

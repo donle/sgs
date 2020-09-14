@@ -586,6 +586,8 @@ export const eventDictionary: Word[] = [
   { source: 'zhiji:recover', target: '回复1点体力' },
   { source: '1v2:recover', target: '回复1点体力' },
   { source: '1v2:draw', target: '摸2张牌' },
+  { source: 'mieji:trick', target: '交给李儒一张锦囊牌' },
+  { source: 'mieji:drop', target: '依次弃置俩张非锦囊牌' },
   { source: 'please choose the amount of hp to lose', target: '请选择要失去的体力值' },
   { source: 'please choose your zhiheng cards', target: '请选择要制衡的牌' },
   {
@@ -601,6 +603,7 @@ export const eventDictionary: Word[] = [
     source: 'please choose yinghun options:{0}:{1}',
     target: '请选择：1.令 {0} 摸一张牌，然后弃置 {1} 张牌；2.令 {0} 摸 {1} 张牌，然后弃置一张牌',
   },
+  { source: 'please choose mieji options', target: '请选择' },
   {
     source: 'player {0} join in the room',
     target: '玩家 {0} 进入了房间',
