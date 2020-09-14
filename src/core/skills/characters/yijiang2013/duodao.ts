@@ -1,9 +1,9 @@
 import { CardType } from 'core/cards/card';
-import { CardId } from 'core/cards/libs/card_props';
+import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerId } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
@@ -36,19 +36,28 @@ export class DuoDao extends TriggerSkill {
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
-    const { toId, fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
+    const { fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
     if (fromId !== undefined) {
       const weapon = room.getPlayerById(fromId).getEquipment(CardType.Weapon);
       if (weapon === undefined) {
         return true;
       }
+      const damageFrom = room.getPlayerById(fromId);
+      const options: CardChoosingOptions = {
+        [PlayerCardsArea.EquipArea]: damageFrom.getCardIds(PlayerCardsArea.EquipArea),
+      };
+      const chooseCardEvent = {
+        fromId: skillUseEvent.fromId!,
+        toId: fromId,
+        options,
+      };
       await room.moveCards({
         movingCards: [{ card: weapon, fromArea: CardMoveArea.EquipArea }],
-        fromId: fromId,
-        toId: toId,
+        fromId: chooseCardEvent.toId,
+        toId: skillUseEvent.fromId,
         toArea: CardMoveArea.HandArea,
         moveReason: CardMoveReason.ActivePrey,
-        proposer: toId,
+        proposer: skillUseEvent.fromId,
       });
     }
     return true;
