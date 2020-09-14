@@ -70,11 +70,11 @@ export const skillDescriptions: Word[] = [
       '出牌阶段，你可以与一名角色拼点。若你：赢，你此阶段内使用的下一张基本或普通锦囊牌可多或少选一个目标；没赢，结束此阶段且你的锦囊牌于本回合内不计入手牌上限。',
   },
   { source: 'zongshi_description', target: '当你的拼点结果确定后，若你赢/没赢，你可以获得其/你的拼点牌。' },
-  { source: 'juece_description', target: '结束阶段开始时，你可以对没有手牌的一名其他角色造成1点伤害。' },
+  { source: 'juece_description', target: '结束阶段开始时，你可以对本回合失去过牌的一名其他角色造成1点伤害。' },
   {
     source: 'mieji_description',
     target:
-      '出牌阶段限一次，你可以将一张黑色锦囊牌置于牌堆顶，并选择有手牌的一名其他角色，令其弃置一张牌，若此牌不为锦囊牌，其弃置一张非锦囊牌。',
+      '出牌阶段限一次，你可以将一张黑色锦囊牌置于牌堆顶，并令有手牌的一名其他角色选择一项：1.交给你一张锦囊牌；2.依次弃置两张非锦囊牌。',
   },
   {
     source: 'fencheng_description',
@@ -98,9 +98,9 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'duodao_description',
-    target: '当你受到【杀】造成的伤害后，你可以弃置一张牌，然后获得伤害来源装备区里的武器牌。',
+    target: '当你成为其他角色使用【杀】的目标后，你可以弃置一张牌，然后获得其装备区里的武器牌。',
   },
-  { source: 'anjian_description', target: '<b>锁定技</b>，当你使用【杀】造成伤害时，若你不在其攻击范围内，此伤害+1。' },
+  { source: 'anjian_description', target: '<b>锁定技</b>，当你使用【杀】指定目标后，若你不在其攻击范围内，此【杀】无视其防具且对其伤害+1，若该角色因此【杀】进入濒死状态，其不能使用【桃】直到此濒死结算结束。' },
   { source: 'zongxuan_description', target: '当你的牌因弃置而进入弃牌堆后，你可以将其中至少一张牌置于牌堆顶。' },
   {
     source: 'zhiyan_description',
