@@ -52,7 +52,7 @@ export class MieJi extends ActiveSkill {
         movedByReason: this.Name,
       });
     }
-    const { toIds, fromId } = skillUseEvent;
+    const { toIds } = skillUseEvent;
     const to = room.getPlayerById(toIds![0]);
     const toId = toIds![0];
     const response = await room.askForCardDrop(
@@ -68,9 +68,12 @@ export class MieJi extends ActiveSkill {
     if (card.is(CardType.Trick)) {
       return true;
     }
+    if (to.getPlayerCards().filter(cardId => Sanguosha.getCardById(cardId).BaseType !== CardType.Trick).length === 0) {
+      return true;
+    } else {
       const response2 = await room.askForCardDrop(
         toId,
-        Math.min(1, room.getPlayerById(toId).getPlayerCards().length),
+        1,
         [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
         true,
         to
@@ -78,12 +81,10 @@ export class MieJi extends ActiveSkill {
           .filter(cardId => Sanguosha.getCardById(cardId).BaseType === CardType.Trick),
         this.Name,
       );
-      if (response2.droppedCards.length <= 0) {
-        return true;
-      } else {
-        await room.dropCards(CardMoveReason.SelfDrop, response2.droppedCards, toId);
-      }
-    
+
+      await room.dropCards(CardMoveReason.SelfDrop, response2.droppedCards, toId);
+    }
+
     return true;
   }
 }
