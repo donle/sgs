@@ -3,12 +3,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE } from 'core/game/game_props';
-import {
-  AllStage,
-  PhaseStageChangeStage,
-  PlayerPhase,
-  PlayerPhaseStages,
-} from 'core/game/stage_processor';
+import { AllStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -202,7 +197,7 @@ export class JiangChiKeep extends TriggerSkill {
       return Sanguosha.getCardById(cardId).GeneralName === 'slash';
     });
 
-    askForCardDropEvent.cardAmount -= slashes.length;
+    (askForCardDropEvent.cardAmount as number) -= slashes.length;
     askForCardDropEvent.except = askForCardDropEvent.except ? [...askForCardDropEvent.except, ...slashes] : slashes;
 
     return true;
