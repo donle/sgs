@@ -2,6 +2,7 @@ import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { PinDianResult } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE, INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { AimStage, AllStage, PlayerPhase } from 'core/game/stage_processor';
@@ -81,12 +82,12 @@ export class XianZhen extends ActiveSkill {
 
   public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId, toIds } = skillUseEvent;
-    const pindianResult = await room.pindian(fromId, toIds!);
-    if (!pindianResult) {
+    const { pindianRecord } = await room.pindian(fromId, toIds!);
+    if (!pindianRecord.length) {
       return false;
     }
 
-    if (pindianResult.winners.includes(fromId)) {
+    if (pindianRecord[0].result === PinDianResult.WIN) {
       XianZhen.setXianZhenTarget(room, fromId, toIds![0]);
     } else {
       room.setFlag<boolean>(fromId, XianZhen.Lose, true, true);
@@ -177,7 +178,7 @@ export class XianZhenKeep extends TriggerSkill {
       return Sanguosha.getCardById(cardId).GeneralName === 'slash';
     });
 
-    askForCardDropEvent.cardAmount -= slashes.length;
+    (askForCardDropEvent.cardAmount as number) -= slashes.length;
     askForCardDropEvent.except = askForCardDropEvent.except ? [...askForCardDropEvent.except, ...slashes] : slashes;
 
     return true;

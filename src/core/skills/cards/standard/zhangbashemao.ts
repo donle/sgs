@@ -9,6 +9,10 @@ import { CommonSkill, ViewAsSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'zhangbashemao', description: 'zhangbashemao_description' })
 export class ZhangBaSheMaoSkill extends ViewAsSkill {
+  get Muted() {
+    return true;
+  }
+
   public canViewAs(): string[] {
     return ['slash'];
   }

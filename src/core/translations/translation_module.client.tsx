@@ -205,7 +205,7 @@ export class ClientTranslationModule extends TranslationModule {
     const splitRawText = translatedOriginalText.split(/\{[0-9]\}/).map(splitStr => splitStr.trim());
     for (let i = 0; i < splitRawText.length; i++) {
       if (splitRawText[i]) {
-        translatedReactComponents.push(<span>{splitRawText[i]}</span>);
+        translatedReactComponents.push(<span key={i}>{splitRawText[i]}</span>);
       }
       if (textCombinations[paramIndex[i]]) {
         translatedReactComponents.push(textCombinations[paramIndex[i]]);

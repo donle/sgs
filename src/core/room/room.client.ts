@@ -6,6 +6,7 @@ import { ClientSocket } from 'core/network/socket.client';
 import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { GameMode } from 'core/shares/types/room_props';
 import { Room, RoomId } from './room';
 
 export class ClientRoom extends Room<WorkPlace.Client> {
@@ -13,6 +14,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   protected readonly gameInfo: GameInfo;
   protected readonly players: Player[];
   protected readonly roomId: RoomId;
+  protected gameMode: GameMode;
 
   private currentPlayer: ClientPlayer;
   private currentPhasePlayer: ClientPlayer;
@@ -33,6 +35,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.socket = socket;
     this.gameInfo = gameInfo;
     this.players = players;
+    this.gameMode = gameInfo.gameMode;
   }
 
   protected init(gameStartInfo: GameRunningInfo): void {
@@ -260,7 +263,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     return this.currentPlayerStage;
   }
 
-  public async loseSkill(playerId: PlayerId, skillName: string): Promise<void> {
+  public async loseSkill(playerId: PlayerId, skillName: string | string[]): Promise<void> {
     const player = this.getPlayerById(playerId);
     const lostSkill = player.loseSkill(skillName);
 

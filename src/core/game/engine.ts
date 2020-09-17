@@ -149,9 +149,12 @@ export class Sanguosha {
     numberOfCharacters: number,
     charactersPool: Character[] = this.characters,
     except: CharacterId[],
-  ) {
+    filter?: (characer: Character) => boolean,
+  ): Character[] {
     const characterIndex: number[] = [];
-    const availableCharacters = charactersPool.filter(character => !except.includes(character.Id));
+    const availableCharacters = charactersPool.filter(
+      character => !except.includes(character.Id) && (filter ? filter(character) : true),
+    );
     for (let i = 0; i < availableCharacters.length; i++) {
       characterIndex.push(i);
     }
@@ -162,7 +165,6 @@ export class Sanguosha {
 
       numberOfCharacters--;
     }
-
     return selectedCharacterIndex.map(index => availableCharacters[index]);
   }
 
@@ -176,6 +178,18 @@ export class Sanguosha {
 
   public static isVirtualCardId(cardId: CardId) {
     return typeof cardId === 'string';
+  }
+
+  public static getGameCharacterExtensions() {
+    return [
+      GameCharacterExtensions.Standard,
+      GameCharacterExtensions.Wind,
+      GameCharacterExtensions.Fire,
+      GameCharacterExtensions.Forest,
+      GameCharacterExtensions.Mountain,
+      GameCharacterExtensions.God,
+      GameCharacterExtensions.YiJiang2011,
+    ];
   }
 
   public static get Version() {

@@ -1,6 +1,7 @@
 import { CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
 import { PlayerId, PlayerRole } from 'core/player/player_props';
 import { Flavor } from 'core/shares/types/host_config';
+import { GameMode } from 'core/shares/types/room_props';
 
 export const INFINITE_TRIGGERING_TIMES = 1000;
 export const NONE_TRIGGERING_TIMES = -9999;
@@ -29,8 +30,10 @@ export type GameInfo = {
   cardExtensions: GameCardExtensions[];
   numberOfPlayers: number;
   roomName: string;
+  passcode?: string;
   multiCharacters?: boolean;
   flavor: Flavor;
+  gameMode: GameMode;
 };
 
 export type GameRunningInfo = {
@@ -65,48 +68,3 @@ export type GameCommonRuleObject = {
   additionalHold: number;
   additionalAttackDistance: number;
 };
-
-export function getRoles(totalPlayers: number): PlayerRole[] {
-  switch (totalPlayers) {
-    case 2:
-      return [PlayerRole.Lord, PlayerRole.Rebel];
-    case 3:
-      return [PlayerRole.Lord, PlayerRole.Rebel, PlayerRole.Renegade];
-    case 4:
-      return [PlayerRole.Lord, PlayerRole.Rebel, PlayerRole.Loyalist, PlayerRole.Renegade];
-    case 5:
-      return [PlayerRole.Lord, PlayerRole.Rebel, PlayerRole.Rebel, PlayerRole.Loyalist, PlayerRole.Renegade];
-    case 6:
-      return [
-        PlayerRole.Lord,
-        PlayerRole.Rebel,
-        PlayerRole.Rebel,
-        PlayerRole.Rebel,
-        PlayerRole.Loyalist,
-        PlayerRole.Renegade,
-      ];
-    case 7:
-      return [
-        PlayerRole.Lord,
-        PlayerRole.Rebel,
-        PlayerRole.Rebel,
-        PlayerRole.Rebel,
-        PlayerRole.Loyalist,
-        PlayerRole.Loyalist,
-        PlayerRole.Renegade,
-      ];
-    case 8:
-      return [
-        PlayerRole.Lord,
-        PlayerRole.Rebel,
-        PlayerRole.Rebel,
-        PlayerRole.Rebel,
-        PlayerRole.Rebel,
-        PlayerRole.Loyalist,
-        PlayerRole.Loyalist,
-        PlayerRole.Renegade,
-      ];
-    default:
-      throw new Error('Unable to create roles with invalid number of players');
-  }
-}

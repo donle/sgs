@@ -38,16 +38,6 @@ function onCalculatingSkillUsageWrapper(
         Object.bind(this, this.canUse);
       }
     }
-
-    public async onUse(
-      room: Room,
-      event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent>,
-    ) {
-      const result = await super.onUse(room, event);
-      room.getPlayerById(event.fromId).useSkill(this.name);
-
-      return result;
-    }
   } as any;
 }
 
@@ -59,6 +49,8 @@ function skillPropertyWrapper(
     uniqueSkill?: boolean;
     selfTargetSkill?: boolean;
     sideEffectSkill?: boolean;
+    persistentSkill?: boolean;
+    stubbornSkill?: boolean;
   },
   constructor: new () => any,
 ): any {
@@ -68,6 +60,8 @@ function skillPropertyWrapper(
     private uniqueSkill: boolean;
     private selfTargetSkill: boolean;
     private sideEffectSkill: boolean;
+    private persistentSkill: boolean;
+    private stubbornSkill: boolean;
     public canUse: (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) => boolean;
 
     constructor() {
@@ -89,6 +83,12 @@ function skillPropertyWrapper(
       if (options.sideEffectSkill !== undefined) {
         this.sideEffectSkill = options.sideEffectSkill;
         this.skillName = '~' + this.skillName;
+      }
+      if (options.persistentSkill !== undefined) {
+        this.persistentSkill = options.persistentSkill;
+      }
+      if (options.stubbornSkill !== undefined) {
+        this.stubbornSkill = options.stubbornSkill;
       }
     }
   } as any;
@@ -149,6 +149,19 @@ export const ShadowSkill = <T extends Skill>(constructorFunction: SKillConstruct
     }
   } as any;
 };
+
+export const PersistentSkill = (option?: { stubbornSkill?: boolean }) => <T extends Skill>(
+  constructorFunction: SKillConstructor<T>,
+) => {
+  return skillPropertyWrapper(
+    {
+      persistentSkill: true,
+      stubbornSkill: option?.stubbornSkill,
+    },
+    constructorFunction as any,
+  );
+};
+
 export function UniqueSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
   return skillPropertyWrapper(
     {

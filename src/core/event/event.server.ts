@@ -83,6 +83,7 @@ export interface ServerEvent extends EventUtilities {
     cardId: CardId;
     responseToEvent?: ServerEventFinder<GameEventIdentifiers>;
     skipDrop?: boolean;
+    mute?: boolean;
   };
   [GameEventIdentifiers.DrawCardEvent]: {
     fromId: PlayerId;
@@ -119,6 +120,7 @@ export interface ServerEvent extends EventUtilities {
     cardIds?: CardId[];
     toIds?: PlayerId[];
     triggeredOnEvent?: ServerEventFinder<GameEventIdentifiers>;
+    mute?: boolean;
   };
   [GameEventIdentifiers.SkillEffectEvent]: {
     fromId: PlayerId;
@@ -168,10 +170,12 @@ export interface ServerEvent extends EventUtilities {
     judgeMatcherEnum?: JudgeMatcherEnum;
   };
   [GameEventIdentifiers.PinDianEvent]: {
-    attackerId: PlayerId;
+    fromId: PlayerId;
+    cardId?: CardId;
     toIds: PlayerId[];
+    procedures: PinDianProcedure[];
+    randomPinDianCardPlayer: PlayerId[];
   };
-
   [GameEventIdentifiers.UserMessageEvent]: {
     playerId: PlayerId;
     message: string;
@@ -247,10 +251,9 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.AskForPinDianCardEvent]: {
     fromId: PlayerId;
-    toIds: PlayerId[];
     toId: PlayerId;
-    randomPinDianCardPlayer: PlayerId[];
     conversation: string | PatchedTranslationObject;
+    randomPinDianCard?: boolean;
   };
   [GameEventIdentifiers.AskForChoosingCardWithConditionsEvent]: {
     cardIds?: CardId[] | number;
@@ -294,7 +297,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.AskForCardDropEvent]: {
     fromArea: PlayerCardsArea[];
     except?: CardId[];
-    cardAmount: number;
+    cardAmount: number | [number, number];
     toId: PlayerId;
     conversation?: string | PatchedTranslationObject;
     responsedEvent?: ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent>;
@@ -348,7 +351,7 @@ export interface ServerEvent extends EventUtilities {
     commonRules: GameCommonRuleObject;
   };
   [GameEventIdentifiers.LoseSkillEvent]: {
-    skillName: string;
+    skillName: string | string[];
     toId: PlayerId;
     includeStatusSkill?: boolean;
   };
@@ -424,10 +427,20 @@ export interface ServerEvent extends EventUtilities {
   };
 }
 
-export type PinDianResultType = {
-  winners: PlayerId[];
-  pindianCards: {
-    fromId: PlayerId;
-    cardId: CardId;
-  }[];
+export enum PinDianResult {
+  NoResult,
+  WIN,
+  LOSE,
+  DRAW,
+}
+
+export type PinDianProcedure = {
+  toId: PlayerId;
+  cardId: CardId;
+  result: PinDianResult;
+};
+
+export type PinDianReport = {
+  pindianCardId?: CardId;
+  pindianRecord: PinDianProcedure[];
 };

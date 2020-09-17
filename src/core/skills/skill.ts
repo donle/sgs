@@ -24,6 +24,8 @@ export abstract class Skill {
   private uniqueSkill = false;
   private selfTargetSkill = false;
   private sideEffectSkill = false;
+  private persistentSkill = false;
+  private stubbornSkill = false;
   private description: string;
   private skillName: string;
 
@@ -96,6 +98,10 @@ export abstract class Skill {
     return this.skillName.replace(/(#|~)+/, '');
   }
 
+  public get Muted() {
+    return false;
+  }
+
   public static get Description() {
     return '';
   }
@@ -123,6 +129,13 @@ export abstract class Skill {
   }
   public isSideEffectSkill() {
     return this.sideEffectSkill;
+  }
+  public isPersistentSkill() {
+    return this.persistentSkill;
+  }
+
+  public isStubbornSkill() {
+    return this.stubbornSkill;
   }
 
   public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage) {

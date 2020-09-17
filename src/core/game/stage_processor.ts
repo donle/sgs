@@ -155,6 +155,7 @@ export const enum JudgeEffectStage {
 export const enum PinDianStage {
   BeforePinDianEffect = 'BeforePinDianEffect',
   PinDianEffect = 'PinDianEffect',
+  PinDianResultConfirmed = 'PinDianConfirmed', // only used for trigger(), don't put it into stage list;
   AfterPinDianEffect = 'AfterPinDianEffect',
 }
 
@@ -211,7 +212,7 @@ export const enum LoseHpStage {
 export const enum HpChangeStage {
   BeforeHpChange = 'BeforeHpChange',
   HpChanging = 'HpChanging',
-  AtferHpChange = 'AtferHpChange',
+  AfterHpChange = 'AfterHpChange',
 }
 
 export type GameEventStage =
@@ -335,7 +336,7 @@ const gameEventStageList: {
   [GameEventIdentifiers.HpChangeEvent]: [
     HpChangeStage.BeforeHpChange,
     HpChangeStage.HpChanging,
-    HpChangeStage.AtferHpChange,
+    HpChangeStage.AfterHpChange,
   ],
   [GameEventIdentifiers.ChainLockedEvent]: [
     ChainLockStage.BeforeChainingOn,

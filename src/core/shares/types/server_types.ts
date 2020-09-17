@@ -1,6 +1,7 @@
 import { GameCharacterExtensions, GameInfo } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
+import { GameMode } from './room_props';
 
 export const enum LobbySocketEvent {
   QueryRoomList,
@@ -21,6 +22,8 @@ export type RoomInfo = {
   status: 'playing' | 'waiting';
   packages: GameCharacterExtensions[];
   id: RoomId;
+  gameMode: GameMode;
+  passcode?: string;
 };
 
 type RoomEventUtilities = {

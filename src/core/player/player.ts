@@ -569,14 +569,27 @@ export abstract class Player implements PlayerInfo {
     return [...this.getEquipSkills<T>(skillType), ...this.getPlayerSkills<T>(skillType)];
   }
 
-  public loseSkill(skillName: string) {
+  public loseSkill(skillName: string | string[]) {
     const lostSkill: Skill[] = [];
     const existSkill: Skill[] = [];
     for (const skill of this.playerSkills) {
-      if (skill.Name.endsWith(skillName)) {
-        lostSkill.push(skill);
-      } else {
+      if (skill.isStubbornSkill()) {
         existSkill.push(skill);
+        continue;
+      }
+
+      if (typeof skillName === 'string') {
+        if (skill.Name.endsWith(skillName)) {
+          lostSkill.push(skill);
+        } else {
+          existSkill.push(skill);
+        }
+      } else {
+        if (skillName.find(name => skill.Name.endsWith(name))) {
+          lostSkill.push(skill);
+        } else {
+          existSkill.push(skill);
+        }
       }
     }
 
@@ -663,7 +676,7 @@ export abstract class Player implements PlayerInfo {
   }
 
   public get LostHp() {
-    return this.maxHp - this.hp;
+    return this.maxHp - Math.max(this.hp, 0);
   }
 
   public get Role() {

@@ -1,5 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { PinDianResult } from 'core/event/event.server';
 import { AllStage, GameStartStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -115,16 +116,14 @@ export class ZhiBaPindianCard extends ActiveSkill {
     }
 
     if (selectedOption === 'yes') {
-      const pindianResult = await room.pindian(fromId, toIds!);
-      if (!pindianResult) {
+      const { pindianCardId, pindianRecord } = await room.pindian(fromId, toIds!);
+      if (!pindianRecord.length) {
         return false;
       }
 
-      if (!pindianResult.winners.includes(fromId)) {
+      if (pindianRecord[0].result !== PinDianResult.WIN) {
         const options: string[] = ['confirm', 'cancel'];
-        const pindianCardIds = pindianResult.pindianCards.reduce<CardId[]>((allCards, card) => {
-          return [...allCards, card.cardId];
-        }, []);
+        const pindianCardIds = [pindianCardId!, pindianRecord[0].cardId];
 
         const askForChooseEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(
           {

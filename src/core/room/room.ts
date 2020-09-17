@@ -11,7 +11,7 @@ import {
   ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
-import { PinDianResultType } from 'core/event/event.server';
+import { PinDianReport } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { GameInfo } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
@@ -19,10 +19,11 @@ import { RecordAnalytics } from 'core/game/record_analytics';
 import { AllStage, GameEventStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Socket } from 'core/network/socket';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { System } from 'core/shares/libs/system';
+import { GameMode } from 'core/shares/types/room_props';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { FilterSkill, RulesBreakerSkill, TransformSkill } from 'core/skills/skill';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
@@ -36,6 +37,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected abstract readonly gameInfo: GameInfo;
   protected abstract readonly players: Player[];
   protected abstract readonly roomId: RoomId;
+  protected abstract readonly gameMode: GameMode;
   protected round: number = 0;
 
   protected awaitResponseEvent: {
@@ -52,11 +54,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   protected abstract init(...args: any[]): void;
   //Server only
-  public abstract notify<I extends GameEventIdentifiers>(
-    type: I,
-    content: EventPicker<I, T>,
-    player: PlayerId,
-  ): void;
+  public abstract notify<I extends GameEventIdentifiers>(type: I, content: EventPicker<I, T>, player: PlayerId): void;
   //Server only
   public abstract doNotify(toIds: PlayerId[], notificationTime?: number): void;
 
@@ -135,11 +133,11 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     stage?: AllStage,
   ): void;
   //Server only
-  public abstract async loseSkill(playerId: PlayerId, skillName: string, broadcast?: boolean): Promise<void>;
+  public abstract async loseSkill(playerId: PlayerId, skillName: string | string[], broadcast?: boolean): Promise<void>;
   //Server only
   public abstract async obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean): Promise<void>;
   //Server only
-  public abstract async pindian(fromId: PlayerId, toIds: PlayerId[]): Promise<PinDianResultType | undefined>;
+  public abstract async pindian(fromId: PlayerId, toIds: PlayerId[]): Promise<PinDianReport>;
   public abstract async turnOver(playerId: PlayerId): Promise<void>;
 
   //Server only
@@ -157,7 +155,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract async askForCardDrop(
     playerId: PlayerId,
-    discardAmount: number,
+    discardAmount: number | [number, number],
     fromArea: PlayerCardsArea[],
     uncancellable?: boolean,
     except?: CardId[],
@@ -573,6 +571,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       packages: this.gameInfo.characterExtensions,
       status: this.gameStarted ? 'playing' : 'waiting',
       id: this.roomId,
+      gameMode: this.gameInfo.gameMode,
+      passcode: this.gameInfo.passcode,
     };
   }
 
@@ -601,46 +601,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public isPlaying() {
     return this.gameStarted;
-  }
-
-  public getGameWinners(): Player[] | undefined {
-    const rebellion: Player[] = [];
-    let renegade: Player | undefined;
-    const loyalist: Player[] = [];
-    let lordDied = false;
-
-    for (const player of this.players) {
-      if (player.Dead) {
-        if (player.Role === PlayerRole.Lord) {
-          lordDied = true;
-        }
-        continue;
-      }
-
-      switch (player.Role) {
-        case PlayerRole.Lord:
-        case PlayerRole.Loyalist:
-          loyalist.push(player);
-          break;
-        case PlayerRole.Rebel:
-          rebellion.push(player);
-          break;
-        case PlayerRole.Renegade:
-          renegade = player;
-          break;
-        default:
-      }
-    }
-
-    if (lordDied) {
-      if (rebellion.length > 0) {
-        return this.players.filter(player => player.Role === PlayerRole.Rebel);
-      } else if (renegade) {
-        return [renegade];
-      }
-    } else if (renegade === undefined && rebellion.length === 0) {
-      return this.players.filter(player => player.Role === PlayerRole.Lord || player.Role === PlayerRole.Loyalist);
-    }
   }
 
   public gameOver() {

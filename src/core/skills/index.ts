@@ -132,7 +132,7 @@ export { NiePan } from './characters/fire/niepan';
 export { LuanJi, LuanJiShadow } from './characters/fire/luanji';
 export { XueYi, XueYiShadow, XueYiBuff } from './characters/fire/xueyi';
 export { TianYi, TianYiRemove, TianYiExtra, TianYiBlock } from './characters/fire/tianyi';
-export { HanZhan } from './characters/fire/hanzhan';
+export { HanZhan, HanZhanHidden } from './characters/fire/hanzhan';
 export { ShuangXiong, ShuangXiongShadow, ShuangXiongRemove } from './characters/fire/shuangxiong';
 
 export { JiuChi, JiuChiDrunk, JiuChiExtra } from './characters/forest/jiuchi';
@@ -176,8 +176,8 @@ export { XinSheng } from './characters/mountain/xinsheng';
 export { BeiGe } from './characters/mountain/beige';
 export { DuanChang } from './characters/mountain/duanchang';
 
-export { WuShen, WuShenShadow } from './characters/god/wushen';
-export { WuHun } from './characters/god/wuhun';
+export { WuShen, WuShenShadow, WuShenDisresponse } from './characters/god/wushen';
+export { WuHun, WuHunDeath } from './characters/god/wuhun';
 export { SheLie } from './characters/god/shelie';
 export { QinYin } from './characters/god/qinyin';
 export { YeYan } from './characters/god/yeyan';
@@ -232,6 +232,12 @@ export { XuanFeng, XuanFengMove, XuanFengDrop } from './characters/yijiang2011/x
 
 export { ChengXiang } from './characters/yijiang2013/chengxiang';
 export { RenXin } from './characters/yijiang2013/renxin';
-export { AnJian } from './characters/yijiang2013/anjian';
+export { AnJian,AnJianPeach } from './characters/yijiang2013/anjian';
 export { DuoDao } from './characters/yijiang2013/duodao';
+export { JueCe, JueCeShadow } from './characters/yijiang2013/juece';
+export { MieJi } from './characters/yijiang2013/mieji';
+export { FenCheng } from './characters/yijiang2013/fencheng';
+
 export { Cheat } from './system/cheat';
+export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';
+export { FeiYang } from './game_mode/1v2/feiyang';

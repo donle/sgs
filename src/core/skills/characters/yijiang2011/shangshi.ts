@@ -19,7 +19,7 @@ export class ShangShi extends TriggerSkill {
   ): boolean {
     return (
       stage === CardMoveStage.AfterCardMoved ||
-      stage === HpChangeStage.AtferHpChange ||
+      stage === HpChangeStage.AfterHpChange ||
       EventPacker.getIdentifier(event) === GameEventIdentifiers.ChangeMaxHpEvent
     );
   }
