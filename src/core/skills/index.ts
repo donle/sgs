@@ -261,6 +261,8 @@ export { AnJian } from './characters/yijiang2013/anjian';
 export { DuoDao } from './characters/yijiang2013/duodao';
 export { JueCe } from './characters/yijiang2013/juece';
 export { MieJi } from './characters/yijiang2013/mieji';
+export { FenCheng } from './characters/yijiang2013/fencheng';
+
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';
 export { FeiYang } from './game_mode/1v2/feiyang';

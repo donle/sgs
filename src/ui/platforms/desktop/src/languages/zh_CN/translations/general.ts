@@ -295,6 +295,7 @@ export const eventDictionary: Word[] = [
   { source: '{0} responses card {1}', target: '{0} 打出了一张 {1}' },
   { source: '{0} responded card', target: '{0} 打出' },
   { source: 'please drop {0} cards', target: '请弃置 {0} 张牌' },
+  { source: 'please drop {1} to {2} cards', target: '请弃置至少 {1}、至多 {2} 张牌' },
   { source: '{0} skipped draw stage', target: '{0} 跳过了摸牌阶段' },
   { source: '{0} skipped play stage', target: '{0} 跳过了出牌阶段' },
   { source: '{0} is dying', target: '{0} 进入了濒死阶段' },

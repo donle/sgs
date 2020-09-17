@@ -161,7 +161,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract async askForCardDrop(
     playerId: PlayerId,
-    discardAmount: number,
+    discardAmount: number | [number, number],
     fromArea: PlayerCardsArea[],
     uncancellable?: boolean,
     except?: CardId[],
