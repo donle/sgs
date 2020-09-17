@@ -52,11 +52,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   protected abstract init(...args: any[]): void;
   //Server only
-  public abstract notify<I extends GameEventIdentifiers>(
-    type: I,
-    content: EventPicker<I, T>,
-    player: PlayerId,
-  ): void;
+  public abstract notify<I extends GameEventIdentifiers>(type: I, content: EventPicker<I, T>, player: PlayerId): void;
   //Server only
   public abstract doNotify(toIds: PlayerId[], notificationTime?: number): void;
 
@@ -157,7 +153,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract async askForCardDrop(
     playerId: PlayerId,
-    discardAmount: number,
+    discardAmount: number | [number, number],
     fromArea: PlayerCardsArea[],
     uncancellable?: boolean,
     except?: CardId[],

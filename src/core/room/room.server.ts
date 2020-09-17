@@ -541,7 +541,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async askForCardDrop(
     playerId: PlayerId,
-    discardAmount: number,
+    discardAmount: number | [number, number],
     fromArea: PlayerCardsArea[],
     uncancellable?: boolean,
     except?: CardId[],

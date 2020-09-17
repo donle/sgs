@@ -294,7 +294,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.AskForCardDropEvent]: {
     fromArea: PlayerCardsArea[];
     except?: CardId[];
-    cardAmount: number;
+    cardAmount: number | [number, number];
     toId: PlayerId;
     conversation?: string | PatchedTranslationObject;
     responsedEvent?: ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent>;
