@@ -104,6 +104,10 @@ export const eventDictionary: Word[] = [
     target: '是否发动 {1} 的技能 【{0}】？',
   },
   {
+    source: 'do you want to trigger skill {0} to {1} ?',
+    target: '是否对 {1} 使用 【{0}】？',
+  },
+  {
     source: '{0} draws {1} cards',
     target: '{0} 摸了 {1} 张牌',
   },
@@ -324,7 +328,7 @@ export const eventDictionary: Word[] = [
   { source: '{0} display hand card {1}', target: '{0} 展示了 {1}' },
   { source: '{0} lost {1} hand card', target: '{0} 失去了 {1} 张手牌' },
   { source: 'please choose', target: '请选择' },
-  { source: '{0}: please choose', target: '{0}：请选择' },
+  { source: '{0}: please choose', target: '{0}：请选择一项' },
   { source: 'please choose a player', target: '请选择一名角色' },
   { source: '{0} place card {1} from {2} on the top of draw stack', target: '{0} 将 {2} 的 {1} 置于了牌堆顶' },
   { source: 'recover {0} hp for {1}', target: '是否回复 {1} {0} 点体力' },
@@ -338,10 +342,6 @@ export const eventDictionary: Word[] = [
   { source: '{0} used skill {1}, transfrom {2} into {3}', target: '{0} 使用了技能 【{1}】，将 {2} 改为了 {3} 使用' },
   { source: '{0}: please choose a player to obtain {1}', target: '{0}：你可以将 {1} 交给一名角色' },
   { source: '{0}: please choose a player to drop', target: '{0}：你可以弃置攻击范围内含有你的一名角色区域内的一张牌' },
-  {
-    source: '{0}: do you want {1} to start a judge?',
-    target: '{0}：你可以令 {1} 进行判定，若为黑桃，其回复1点体力',
-  },
   {
     source: '{0} triggered skill {1}',
     target: '{0} 触发了技能 “{1}”',
@@ -494,8 +494,6 @@ export const eventDictionary: Word[] = [
     target: '请为 {0} 分配 x 点伤害，{1} 将会分配到 (3 - x) 点伤害',
   },
   { source: 'please choose {0} handcards and give them to a target', target: '请选择 {0} 张手牌交给一名其他角色' },
-
-  { source: 'please select cards to swap', target: '请选择要交换的牌' },
   {
     source: '{0} used skill {1}, swapped {2} handcards from qixing cards pile',
     target: '{0} 使用了技能 【{1}】，从七星堆交换了 {2} 张牌',

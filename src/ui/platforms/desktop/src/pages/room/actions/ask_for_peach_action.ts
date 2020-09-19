@@ -22,7 +22,7 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
       return (
         !CardMatcher.match(
           { name: skill.canViewAs(room, player), tag: 'card-matcher' },
-          new CardMatcher({ name: useByMyself ? ['alocohol', 'peach'] : ['peach'] }),
+          new CardMatcher({ name: useByMyself ? ['alcohol', 'peach'] : ['peach'] }),
         ) || !skill.canUse(room, player)
       );
     }

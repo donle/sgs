@@ -30,7 +30,7 @@ export class JianXiong extends TriggerSkill {
         toArea: CardMoveArea.HandArea,
       });
     }
-    await room.drawCards(1, damagedEvent.toId);
+    await room.drawCards(1, damagedEvent.toId, undefined, damagedEvent.toId, this.Name);
     return true;
   }
 }

@@ -11,7 +11,11 @@ import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 export class SlashSkill extends ActiveSkill {
   protected damageType: DamageType = DamageType.Normal;
 
-  public canUse() {
+  public canUse(room: Room, owner: Player, contentOrContainerCard?: CardId) {
+    return !owner.hasUsed(this.Name);
+  }
+
+  public isRefreshAt() {
     return true;
   }
 

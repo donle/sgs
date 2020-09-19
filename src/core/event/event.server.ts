@@ -9,6 +9,7 @@ import { System } from 'core/shares/libs/system';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
 import {
+  CardDrawReason,
   CardMoveArea,
   CardMoveReason,
   ClientEventFinder,
@@ -87,6 +88,7 @@ export interface ServerEvent extends EventUtilities {
     fromId: PlayerId;
     drawAmount: number;
     askedBy: PlayerId;
+    bySpecialReason?: CardDrawReason;
     from?: 'top' | 'bottom';
   };
   [GameEventIdentifiers.MoveCardEvent]: {
@@ -267,7 +269,7 @@ export interface ServerEvent extends EventUtilities {
     customCardFields?: {
       [fieldName in string | number]: CardId[] | number;
     };
-    customMessage?: string;
+    customTitle?: string;
     toId: PlayerId;
     cardMatcher?: CardMatcherSocketPassenger;
     amount: number;
@@ -276,7 +278,7 @@ export interface ServerEvent extends EventUtilities {
     fromId: PlayerId;
     toId: PlayerId;
     options: CardChoosingOptions;
-    customMessage?: string;
+    customTitle?: string;
   };
   [GameEventIdentifiers.AskForSkillUseEvent]: {
     invokeSkillNames: string[];
@@ -401,6 +403,8 @@ export interface ServerEvent extends EventUtilities {
       hp?: number;
       nationality?: CharacterNationality;
       gender?: CharacterGender;
+      handCards?: CardId[];
+      equips?: CardId[];
     }[];
   };
   [GameEventIdentifiers.SetOutsideCharactersEvent]: {

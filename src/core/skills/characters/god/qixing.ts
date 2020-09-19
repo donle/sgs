@@ -1,5 +1,11 @@
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { AllStage, GameStartStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
+import {
+  AllStage,
+  PhaseChangeStage,
+  PhaseStageChangeStage,
+  PlayerPhase,
+  PlayerPhaseStages,
+} from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -9,15 +15,15 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 @CommonSkill({ name: 'qixing', description: 'qixing_description' })
 export class QiXing extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.GameStartEvent>, stage?: AllStage) {
-    return stage === GameStartStage.GameStarting;
+    return stage === PhaseChangeStage.BeforePhaseChange;
   }
 
   isAutoTrigger() {
     return true;
   }
 
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.GameStartEvent>) {
-    return true;
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
+    return room.Round === 0 && !owner.getFlag<boolean>(this.Name) && content.to === PlayerPhase.PrepareStage;
   }
 
   async onTrigger() {
@@ -25,17 +31,72 @@ export class QiXing extends TriggerSkill {
   }
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const qixingCards = room.getCards(7, 'top');
+    const fromId = skillUseEvent.fromId;
+    const from = room.getPlayerById(fromId);
+    let qixingCards = room.getCards(7, 'top');
+
+    from.setFlag<boolean>(this.Name, true);
+
     await room.moveCards({
       movingCards: qixingCards.map(card => ({ card })),
       toArea: PlayerCardsArea.OutsideArea,
-      toId: skillUseEvent.fromId,
+      toId: fromId,
       moveReason: CardMoveReason.ActiveMove,
       movedByReason: this.Name,
       isOutsideAreaInPublic: false,
       toOutsideArea: this.Name,
-      proposer: skillUseEvent.fromId,
+      proposer: fromId,
     });
+
+    const handcards = from.getCardIds(PlayerCardsArea.HandArea);
+    qixingCards = from.getCardIds(PlayerCardsArea.OutsideArea, this.Name);
+
+    const askForChoosingCardsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardEvent> = {
+      amount: handcards.length,
+      customCardFields: {
+        [this.Name]: qixingCards,
+        [PlayerCardsArea.HandArea]: handcards,
+      },
+      toId: fromId,
+      customTitle: 'qixing: please select cards to save',
+    };
+
+    room.notify(GameEventIdentifiers.AskForChoosingCardEvent, askForChoosingCardsEvent, fromId);
+    const { selectedCards } = await room.onReceivingAsyncResponseFrom(
+      GameEventIdentifiers.AskForChoosingCardEvent,
+      fromId,
+    );
+    if (!selectedCards) {
+      return false;
+    } else {
+      const fromHandcards = selectedCards.filter(card => !handcards.includes(card));
+      await room.moveCards({
+        fromId,
+        movingCards: handcards.map(card => ({ card, fromArea: PlayerCardsArea.HandArea })),
+        toArea: PlayerCardsArea.OutsideArea,
+        toId: fromId,
+        toOutsideArea: this.Name,
+        moveReason: CardMoveReason.ActiveMove,
+        movedByReason: this.Name,
+        proposer: fromId,
+        engagedPlayerIds: [fromId],
+      });
+      await room.moveCards({
+        fromId,
+        movingCards: selectedCards.map(card => ({ card, fromArea: PlayerCardsArea.OutsideArea })),
+        toArea: PlayerCardsArea.HandArea,
+        toId: fromId,
+        moveReason: CardMoveReason.ActiveMove,
+        movedByReason: this.Name,
+        proposer: fromId,
+        translationsMessage: TranslationPack.translationJsonPatcher(
+          '{0} used skill {1}, swapped {2} handcards from qixing cards pile',
+          TranslationPack.patchPlayerInTranslation(from),
+          this.Name,
+          fromHandcards.length,
+        ).extract(),
+      });
+    }
 
     return true;
   }
@@ -73,7 +134,7 @@ export class QiXingShadow extends TriggerSkill {
         [PlayerCardsArea.HandArea]: handcards,
       },
       toId: from.Id,
-      customMessage: 'please select cards to swap',
+      customTitle: 'qixing: please select cards to save',
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingCardEvent, askForChoosingCardsEvent, from.Id);

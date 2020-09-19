@@ -1,4 +1,5 @@
 import {
+  CardDrawReason,
   CardMoveArea,
   CardMoveReason,
   ClientEventFinder,
@@ -169,11 +170,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     type: I,
     content: ServerEventFinder<I>,
     to: PlayerId,
-    hideBroadcast?: boolean,
     notificationTime: number = 60,
   ) {
+    !content.ignoreNotifiedStatus &&
+      this.socket.broadcast(GameEventIdentifiers.NotifyEvent, { toIds: [to], notificationTime });
     this.socket.notify(type, EventPacker.createIdentifierEvent(type, content), to);
-    !hideBroadcast && this.socket.broadcast(GameEventIdentifiers.NotifyEvent, { toIds: [to], notificationTime });
   }
 
   //TODO: enable to custom response time limit
@@ -604,11 +605,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return responseEvent;
   }
 
-  public async askForCardUse(
-    event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>,
-    to: PlayerId,
-    hideBroadcast?: boolean,
-  ) {
+  public async askForCardUse(event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>, to: PlayerId) {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForCardUseEvent, event);
     await this.trigger<typeof event>(event);
     if (event.responsedEvent) {
@@ -618,7 +615,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     let responseEvent: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> | undefined;
     do {
-      this.notify(GameEventIdentifiers.AskForCardUseEvent, event, to, hideBroadcast);
+      this.notify(GameEventIdentifiers.AskForCardUseEvent, event, to);
       responseEvent = await this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardUseEvent, to);
       const preUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
         fromId: to,
@@ -682,7 +679,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         TranslationPack.patchCardInTranslation(cardId),
       ).extract(),
     });
-    await this.drawCards(1, from.Id);
+    await this.drawCards(1, from.Id, 'top', undefined, undefined, CardDrawReason.Reforge);
   }
 
   public async preUseCard(cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): Promise<boolean> {
@@ -1012,6 +1009,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     from: 'top' | 'bottom' = 'top',
     askedBy?: PlayerId,
     byReason?: string,
+    bySpecialReason?: CardDrawReason,
   ) {
     askedBy = askedBy || playerId || this.CurrentPlayer.Id;
     playerId = playerId || this.CurrentPlayer.Id;
@@ -1021,6 +1019,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       fromId: playerId,
       askedBy,
       triggeredBySkills: byReason ? [byReason] : undefined,
+      bySpecialReason,
       from,
     };
 
@@ -1482,9 +1481,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return super.addMark(player, name, value);
   }
 
-  public findCardByMatcherFrom(cardMatcher: CardMatcher, fromDrawStack: boolean = true): CardId | undefined {
+  public findCardsByMatcherFrom(cardMatcher: CardMatcher, fromDrawStack: boolean = true): CardId[] {
     const fromStack = fromDrawStack ? this.drawStack : this.dropStack;
-    return fromStack.find(cardId => cardMatcher.match(Sanguosha.getCardById(cardId)));
+    return fromStack.filter(cardId => cardMatcher.match(Sanguosha.getCardById(cardId)));
   }
 
   public isCardInDropStack(cardId: CardId): boolean {

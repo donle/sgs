@@ -22,12 +22,15 @@ export class BeiGe extends TriggerSkill {
     const card = Sanguosha.getCardById(cardIds[0]);
     return card.GeneralName === 'slash' && content.fromId !== undefined && !room.getPlayerById(content.toId).Dead;
   }
-  isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
+
+  public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
     return true;
   }
-  cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
+
+  public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return cards.length === 1;
   }
+
   public async onTrigger() {
     return true;
   }
@@ -44,18 +47,25 @@ export class BeiGe extends TriggerSkill {
     const { toId, fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
     const judge = await room.judge(toId, undefined, this.Name);
     const judgeCard = Sanguosha.getCardById(judge.judgeCardId);
+    const damageFrom = room.getPlayerById(fromId!);
     if (judgeCard.Suit === CardSuit.Club) {
-      const response = await room.askForCardDrop(
-        fromId!,
-        2,
-        [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
-        true,
-        undefined,
-        this.Name,
-      );
-      await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, fromId);
+      const numOfCards = damageFrom.getPlayerCards().length;
+      if (!damageFrom.Dead && numOfCards > 0) {
+        const numOfDiscard = Math.min(numOfCards, 2);
+        const response = await room.askForCardDrop(
+          fromId!,
+          numOfDiscard,
+          [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
+          true,
+          undefined,
+          this.Name,
+        );
+        await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, fromId);
+      }
     } else if (judgeCard.Suit === CardSuit.Spade) {
-      await room.turnOver(fromId!);
+      if (!damageFrom.Dead) {
+        await room.turnOver(fromId!);
+      }
     } else if (judgeCard.Suit === CardSuit.Heart) {
       const damageEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
       await room.recover({

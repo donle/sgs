@@ -56,7 +56,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     type: I,
     content: EventPicker<I, T>,
     player: PlayerId,
-    hideBroadcast?: boolean,
   ): void;
   //Server only
   public abstract doNotify(toIds: PlayerId[], notificationTime?: number): void;
@@ -138,7 +137,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract async loseSkill(playerId: PlayerId, skillName: string, broadcast?: boolean): Promise<void>;
   //Server only
-  public abstract obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean): void;
+  public abstract async obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean): Promise<void>;
   //Server only
   public abstract async pindian(fromId: PlayerId, toIds: PlayerId[]): Promise<PinDianResultType | undefined>;
   public abstract async turnOver(playerId: PlayerId): Promise<void>;
@@ -169,7 +168,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract async askForCardUse(
     event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>,
     to: PlayerId,
-    hideBroadcast?: boolean,
   ): Promise<ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent>>;
   //Server only
   public abstract async askForCardResponse(
@@ -177,7 +175,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     to: PlayerId,
   ): Promise<ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent>>;
   //Server only
-  public abstract findCardByMatcherFrom(cardMatcher: CardMatcher, fromDrawStack?: boolean): CardId | undefined;
+  public abstract findCardsByMatcherFrom(cardMatcher: CardMatcher, fromDrawStack?: boolean): CardId[];
   public abstract isCardInDropStack(cardId: CardId): boolean;
   public abstract isCardInDrawStack(cardId: CardId): boolean;
 
@@ -408,7 +406,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     if (slash) {
       additionalAttackDistance =
         GameCommonRules.getCardAdditionalAttackDistance(this, from, Sanguosha.getCardById(slash)) +
-        from.getCardUsableDistance(this, slash) -
+        from.getCardUsableDistance(this, slash, to) -
         Sanguosha.getCardById(slash).EffectUseDistance;
     }
 
@@ -452,15 +450,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public canUseCardTo(cardId: CardId | CardMatcher, target: PlayerId): boolean {
     const player = this.getPlayerById(target);
-
-    const skills = player.getSkills<FilterSkill>('filter');
-    for (const skill of skills) {
-      if (!skill.canBeUsedCard(cardId, this, target)) {
-        return false;
-      }
-    }
-
-    return true;
+    return player.canUseCardTo(this, cardId, target);
   }
 
   public canPlaceCardTo(cardId: CardId, target: PlayerId): boolean {
@@ -481,7 +471,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public canPindian(fromId: PlayerId, targetId: PlayerId): boolean {
     const target = this.getPlayerById(targetId);
     const targetSkills = target.getPlayerSkills<FilterSkill>('filter');
-    return targetSkills.find(skill => !skill.canBePindianTarget(this, targetId, fromId)) === undefined;
+    return (
+      fromId !== targetId && targetSkills.find(skill => !skill.canBePindianTarget(this, targetId, fromId)) === undefined
+    );
   }
 
   public clearFlags(player: PlayerId) {

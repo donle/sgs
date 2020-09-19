@@ -4,7 +4,9 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Character, CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
 import {
+  CardDrawReason,
   CardMoveArea,
+  CardMovedBySpecifiedReason,
   CardMoveReason,
   ClientEventFinder,
   EventPacker,
@@ -164,7 +166,9 @@ export class GameProcessor {
 
     const sequentialAsyncResponse: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingCharacterEvent>>[] = [];
     const selectedCharacters: CharacterId[] = [lordCharacter.Id];
-    const notifyOtherPlayer: PlayerId[] = [];
+    const notifyOtherPlayer: PlayerId[] = playersInfo.map(info => info.Id);
+    this.room.doNotify(notifyOtherPlayer);
+
     for (let i = 1; i < playersInfo.length; i++) {
       const characters = this.getSelectableCharacters(5, selectableCharacters, selectedCharacters);
       characters.forEach(character => selectedCharacters.push(character.Id));
@@ -180,18 +184,16 @@ export class GameProcessor {
             Sanguosha.getCharacterById(lordCharacter.Id).Name,
             Functional.getPlayerRoleRawText(playerInfo.Role!),
           ).extract(),
+          ignoreNotifiedStatus: true,
         },
         playerInfo.Id,
-        true,
       );
 
-      notifyOtherPlayer.push(playerInfo.Id);
       sequentialAsyncResponse.push(
         this.room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingCharacterEvent, playerInfo.Id),
       );
     }
 
-    this.room.doNotify(notifyOtherPlayer);
     const changedProperties: {
       toId: PlayerId;
       characterId?: CharacterId;
@@ -347,7 +349,7 @@ export class GameProcessor {
       case PlayerPhase.DrawCardStage:
         this.logger.debug('enter draw cards phase');
 
-        await this.room.drawCards(2, this.CurrentPlayer.Id);
+        await this.room.drawCards(2, this.CurrentPlayer.Id, 'top', undefined, undefined, CardDrawReason.GameStage);
         return;
       case PlayerPhase.PlayCardStage:
         this.logger.debug('enter play cards phase');
@@ -581,8 +583,9 @@ export class GameProcessor {
           }).toSocketPassenger(),
           byCardId: event.cardId,
           cardUserId: event.fromId,
+          ignoreNotifiedStatus: true,
         };
-        pendingResponses[player.Id] = this.room.askForCardUse(wuxiekejiEvent, player.Id, true);
+        pendingResponses[player.Id] = this.room.askForCardUse(wuxiekejiEvent, player.Id);
       }
 
       //TODO: enable to custom wuxiekeji response time limit
@@ -1159,7 +1162,7 @@ export class GameProcessor {
         const killer = this.room.getPlayerById(killedBy);
 
         if (deadPlayer.Role === PlayerRole.Rebel && !killer.Dead) {
-          await this.room.drawCards(3, killedBy);
+          await this.room.drawCards(3, killedBy, 'top', undefined, undefined, CardDrawReason.KillReward);
         } else if (deadPlayer.Role === PlayerRole.Loyalist && killer.Role === PlayerRole.Lord) {
           const lordCards = Card.getActualCards(killer.getPlayerCards());
           await this.room.moveCards({
@@ -1692,6 +1695,8 @@ export class GameProcessor {
         movingCards: [{ card: event.judgeCardId, fromArea: CardMoveArea.ProcessingArea }],
         moveReason: CardMoveReason.PlaceToDropStack,
         toArea: CardMoveArea.DropStack,
+        proposer: event.toId,
+        movedByReason: CardMovedBySpecifiedReason.JudgeProcess,
       });
     }
     this.room.endProcessOnTag(event.judgeCardId.toString());

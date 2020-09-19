@@ -1,3 +1,4 @@
+import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { DamageType } from 'core/game/game_props';
 import {
@@ -9,7 +10,7 @@ import {
   PlayerPhaseStages,
 } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { MarkEnum } from 'core/shares/types/mark_list';
 import { OnDefineReleaseTiming, TriggerSkill } from 'core/skills/skill';
@@ -18,17 +19,8 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 import { QiXing } from './qixing';
 
 @CommonSkill({ name: 'kuangfeng', description: 'kuangfeng_description' })
-export class KuangFeng extends TriggerSkill {
-  async whenLosingSkill(room: Room, player: Player) {
-    for (const other of room.getOtherPlayers(player.Id)) {
-      if (other.getMark(MarkEnum.KuangFeng) === 0) {
-        continue;
-      }
-
-      room.removeMark(other.Id, MarkEnum.KuangFeng);
-    }
-  }
-  async whenDead(room: Room, player: Player) {
+export class KuangFeng extends TriggerSkill implements OnDefineReleaseTiming {
+  public async whenLosingSkill(room: Room, player: Player) {
     for (const other of room.getOtherPlayers(player.Id)) {
       if (other.getMark(MarkEnum.KuangFeng) === 0) {
         continue;
@@ -38,82 +30,55 @@ export class KuangFeng extends TriggerSkill {
     }
   }
 
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
+  public async whenDead(room: Room, player: Player) {
+    for (const other of room.getOtherPlayers(player.Id)) {
+      if (other.getMark(MarkEnum.KuangFeng) === 0) {
+        continue;
+      }
+
+      room.removeMark(other.Id, MarkEnum.KuangFeng);
+    }
+  }
+
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.StageChanged;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
     return (
-      event.toStage === PlayerPhaseStages.FinishStageStart &&
-      event.playerId === owner.Id &&
+      content.toStage === PlayerPhaseStages.FinishStageStart &&
+      content.playerId === owner.Id &&
       owner.getCardIds(PlayerCardsArea.OutsideArea, QiXing.Name).length > 0
     );
   }
 
-  public async onTrigger(): Promise<boolean> {
+  public availableCardAreas() {
+    return [PlayerCardsArea.OutsideArea];
+  }
+
+  public cardFilter(room: Room, owner: Player, cards: CardId[]) {
+    return cards.length === 1;
+  }
+
+  public isAvailableCard(owner: PlayerId,room: Room, pendingCardId: CardId) {
+    return room.getPlayerById(owner).getCardIds(PlayerCardsArea.OutsideArea, QiXing.Name).includes(pendingCardId);
+  }
+
+  public numberOfTargets() {
+    return 1;
+  }
+
+  public isAvailableTarget(ownerId: PlayerId, room: Room, targetId: PlayerId) {
+    return ownerId !== targetId;
+  }
+
+  public async onTrigger() {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ): Promise<boolean> {
-    const player = room.getPlayerById(skillEffectEvent.fromId);
-    const star = player.getCardIds(PlayerCardsArea.OutsideArea, QiXing.Name);
-
-    const askForChoosingCardEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardEvent> = {
-      toId: skillEffectEvent.fromId,
-      cardIds: star,
-      amount: 1,
-    };
-
-    room.notify(
-      GameEventIdentifiers.AskForChoosingCardEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardEvent>(askForChoosingCardEvent),
-      skillEffectEvent.fromId,
-    );
-
-    const { selectedCards } = await room.onReceivingAsyncResponseFrom(
-      GameEventIdentifiers.AskForChoosingCardEvent,
-      skillEffectEvent.fromId,
-    );
-
-    await room.dropCards(
-      CardMoveReason.PlaceToDropStack,
-      selectedCards!,
-      skillEffectEvent.fromId,
-      skillEffectEvent.fromId,
-      this.GeneralName,
-    );
-
-    const askForChoosingPlayerEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
-      players: room.getAlivePlayersFrom().map(player => player.Id),
-      toId: skillEffectEvent.fromId,
-      requiredAmount: 1,
-      conversation: TranslationPack.translationJsonPatcher(
-        'Please choose {0} player to set {1} mark',
-        1,
-        this.Name,
-      ).extract(),
-    };
-
-    room.notify(
-      GameEventIdentifiers.AskForChoosingPlayerEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingPlayerEvent>(askForChoosingPlayerEvent),
-      skillEffectEvent.fromId,
-    );
-
-    const { selectedPlayers } = await room.onReceivingAsyncResponseFrom(
-      GameEventIdentifiers.AskForChoosingPlayerEvent,
-      skillEffectEvent.fromId,
-    );
-
-    room.addMark(selectedPlayers![0], MarkEnum.KuangFeng, 1);
-
+  public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    await room.dropCards(CardMoveReason.PlaceToDropStack, skillUseEvent.cardIds!, skillUseEvent.fromId, skillUseEvent.fromId, this.Name);
+    room.addMark(skillUseEvent.toIds![0], MarkEnum.KuangFeng, 1);
     return true;
   }
 }

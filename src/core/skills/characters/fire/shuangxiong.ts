@@ -2,7 +2,14 @@ import { Card, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Duel } from 'core/cards/standard/duel';
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import {
+  CardDrawReason,
+  CardMoveArea,
+  CardMoveReason,
+  EventPacker,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, DamageEffectStage, DrawCardStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -80,6 +87,9 @@ export class ShuangXiongShadow extends TriggerSkill {
         if (EventPacker.getIdentifier(event) !== GameEventIdentifiers.CardResponseEvent) {
           return false;
         }
+        if (event.fromId === fromId) {
+          return false;
+        }
 
         const { responseToEvent } = event;
 
@@ -122,8 +132,8 @@ export class ShuangXiongShadow extends TriggerSkill {
       return (
         owner.Id === drawEvent.fromId &&
         room.CurrentPlayerPhase === PlayerPhase.DrawCardStage &&
-        drawEvent.triggeredBySkills === undefined &&
-        drawEvent.drawAmount > 0
+        drawEvent.drawAmount > 0 &&
+        drawEvent.bySpecialReason === CardDrawReason.GameStage
       );
     } else if (unknownEvent === GameEventIdentifiers.DamageEvent) {
       const damageEvent = event as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
@@ -144,6 +154,15 @@ export class ShuangXiongShadow extends TriggerSkill {
     }
 
     return false;
+  }
+
+  public getSkillLog(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers>) {
+    const identifier = EventPacker.getIdentifier(event);
+    if (identifier === GameEventIdentifiers.DrawCardEvent) {
+      return super.getSkillLog(room, owner, event);
+    } else {
+      return 'shuangxiong: do you wanna to obtain slashes from "shuangxiong" ?';
+    }
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -219,7 +238,7 @@ export class ShuangXiongShadow extends TriggerSkill {
       const { fromId, toId } = damageEvent;
 
       if (fromId) {
-        const toObtain = this.findSlash(room, fromId);
+        const toObtain = this.findSlash(room, toId);
         await room.moveCards({
           movingCards: toObtain.map(card => ({ card, fromArea: CardMoveArea.DropStack })),
           toId,

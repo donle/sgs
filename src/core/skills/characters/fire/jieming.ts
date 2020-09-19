@@ -36,7 +36,7 @@ export class JieMing extends TriggerSkill {
     await room.drawCards(2, toIds![0], 'top', fromId, this.Name);
     const target = room.getPlayerById(toIds![0]);
     if (target.getCardIds(PlayerCardsArea.HandArea).length <= target.MaxHp) {
-      await room.drawCards(1, fromId);
+      await room.drawCards(1, fromId, 'top', fromId, this.Name);
     }
 
     return true;

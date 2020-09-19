@@ -74,7 +74,7 @@ export class CiXiongJianSkill extends TriggerSkill {
     }
 
     if (to.getCardIds(PlayerCardsArea.HandArea).length === 0) {
-      await room.drawCards(1, fromId);
+      await room.drawCards(1, fromId, undefined, toId, this.Name);
       return true;
     }
 
@@ -96,7 +96,7 @@ export class CiXiongJianSkill extends TriggerSkill {
       const response = await room.askForCardDrop(toId, 1, [PlayerCardsArea.HandArea], true, undefined, this.Name);
       await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toId);
     } else {
-      await room.drawCards(1, fromId);
+      await room.drawCards(1, fromId, undefined, toId, this.Name);
     }
     return true;
   }

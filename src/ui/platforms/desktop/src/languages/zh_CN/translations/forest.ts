@@ -97,7 +97,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'jiuchi_description',
-    target: '你可以将一张黑桃手牌当【酒】使用；你使用【酒】【杀】造成伤害后，本回合内你的“崩坏”无效。',
+    target: '你可以将一张黑桃手牌当【酒】使用；你使用【酒】无次数限制；你使用【酒】【杀】造成伤害后，本回合内你的“崩坏”无效。',
   },
   {
     source: 'roulin_description',
@@ -110,7 +110,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'baonve_description',
-    target: '<b>主公技</b>，当其他群势力角色造成伤害后，其可以令你进行判定，若结果为黑桃，你回复1点体力。',
+    target: '<b>主公技</b>，当其他群势力角色造成一点伤害后，其可以令你进行判定，若结果为黑桃，你获得此判定牌并回复1点体力。',
   },
   {
     source: 'wansha_description',

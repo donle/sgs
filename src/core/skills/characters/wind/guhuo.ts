@@ -130,6 +130,7 @@ export class GuHuoShadow extends TriggerSkill {
         TranslationPack.patchCardInTranslation(cardEvent.cardId),
         TranslationPack.patchPlayerInTranslation(from),
       ).extract(),
+      ignoreNotifiedStatus: true,
     });
 
     const askingResponses: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent>>[] = [];
@@ -140,7 +141,7 @@ export class GuHuoShadow extends TriggerSkill {
     room.doNotify(askForPlayers);
     for (const playerId of askForPlayers) {
       chooseOptionEvent.toId = playerId;
-      room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, chooseOptionEvent, playerId, true);
+      room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, chooseOptionEvent, playerId);
       askingResponses.push(
         room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, playerId),
       );
@@ -213,7 +214,7 @@ export class GuHuoShadow extends TriggerSkill {
       } else {
         if (response.selectedOption === 'guhuo:doubt') {
           success = false;
-          await room.drawCards(1, response.fromId);
+          await room.drawCards(1, response.fromId, undefined, event.fromId, this.GeneralName);
         }
       }
     }

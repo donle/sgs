@@ -33,7 +33,7 @@ export class PoXi extends ActiveSkill {
   }
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId) {
-    return target !== owner;
+    return target !== owner && room.getPlayerById(target).getCardIds(PlayerCardsArea.HandArea).length > 0;
   }
 
   public whenRefresh(room: Room, owner: Player) {

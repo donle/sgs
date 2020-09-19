@@ -7,6 +7,19 @@ export namespace Algorithm {
     return a;
   }
 
+  export function randomPick<T>(pick: number, arr: T[]): T[] {
+    const copy = arr.slice();
+    const picked: T[] = [];
+    const reverse = pick > arr.length / 2;
+    pick = reverse ? arr.length - pick : pick;
+    while (pick > 0) {
+      const index = Math.floor(Math.random() * copy.length);
+      picked.push(...copy.splice(index, 1));
+      pick--;
+    }
+    return reverse ? copy : picked;
+  }
+
   export function randomInt(from: number, to: number) {
     return Math.round(Math.random() * (to - from)) + from;
   }

@@ -139,7 +139,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.trigger.name);
   }
   //Server only
-  public obtainSkill(): void {
+  public async obtainSkill(): Promise<void> {
     this.throwUntouchableError(this.obtainSkill.name);
   }
   //Server only
@@ -179,8 +179,8 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.endPhase.name);
   }
   //Server only
-  public findCardByMatcherFrom(): any {
-    this.throwUntouchableError(this.findCardByMatcherFrom.name);
+  public findCardsByMatcherFrom(): any {
+    this.throwUntouchableError(this.findCardsByMatcherFrom.name);
   }
   //Server only
   public isCardInDropStack(): any {

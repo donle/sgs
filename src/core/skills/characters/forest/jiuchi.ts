@@ -4,11 +4,13 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AllStage, DamageEffectStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
+import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
+import { AllStage, DamageEffectStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { CommonSkill, OnDefineReleaseTiming, ShadowSkill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
+import { RulesBreakerSkill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
+import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 
 @CommonSkill({ name: 'jiuchi', description: 'jiuchi_description' })
 export class JiuChi extends ViewAsSkill {
@@ -46,7 +48,7 @@ export class JiuChi extends ViewAsSkill {
 
 @ShadowSkill
 @CommonSkill({ name: JiuChi.GeneralName, description: JiuChi.Description })
-export class JiuChiShadow extends TriggerSkill {
+export class JiuChiDrunk extends TriggerSkill {
   public isAutoTrigger() {
     return true;
   }
@@ -62,7 +64,22 @@ export class JiuChiShadow extends TriggerSkill {
       return false;
     }
 
-    return fromId === owner.Id && Sanguosha.getCardById(cardIds[0]).GeneralName === 'slash' && drunkLevel > 0;
+    return (
+      fromId === owner.Id &&
+      Sanguosha.getCardById(cardIds[0]).GeneralName === 'slash' &&
+      drunkLevel > 0 &&
+      !owner.hasUsedSkill(this.Name)
+    );
+  }
+
+  public isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
+    return stage === PlayerPhase.PrepareStage;
+  }
+
+  public whenRefresh(room: Room, owner: Player) {
+    if (room.getFlag<boolean>(owner.Id, JiuChi.Used) === true) {
+      room.removeFlag(owner.Id, JiuChi.Used);
+    }
   }
 
   public async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
@@ -79,40 +96,13 @@ export class JiuChiShadow extends TriggerSkill {
 }
 
 @ShadowSkill
-@CommonSkill({ name: JiuChiShadow.Name, description: JiuChiShadow.Description })
-export class JiuChiRemove extends TriggerSkill implements OnDefineReleaseTiming {
-  afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
-  }
-
-  public isAutoTrigger() {
-    return true;
-  }
-
-  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage) {
-    return true;
-  }
-
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: AllStage): boolean {
-    return event.from === PlayerPhase.FinishStage && stage === PhaseChangeStage.AfterPhaseChanged;
-  }
-
-  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
-    return room.getFlag<boolean>(owner.Id, JiuChi.Used) === true;
-  }
-
-  public async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
-    event.translationsMessage = undefined;
-
-    return true;
-  }
-
-  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
-    const { triggeredOnEvent } = event;
-    const phaseChangeEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-
-    phaseChangeEvent.fromPlayer && room.removeFlag(phaseChangeEvent.fromPlayer, JiuChi.Used);
-
-    return true;
+@CommonSkill({ name: JiuChiDrunk.Name, description: JiuChi.Description })
+export class JiuChiExtra extends RulesBreakerSkill {
+  public breakCardUsableTimes(cardId: CardId | CardMatcher) {
+    if (cardId instanceof CardMatcher) {
+      return cardId.match(new CardMatcher({ name: ['alcohol'] })) ? INFINITE_TRIGGERING_TIMES : 0;
+    } else {
+      return Sanguosha.getCardById(cardId).Name === 'alcohol' ? INFINITE_TRIGGERING_TIMES : 0;
+    }
   }
 }

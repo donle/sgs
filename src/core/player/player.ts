@@ -173,7 +173,7 @@ export abstract class Player implements PlayerInfo {
 
   public canUseCard(room: Room, cardId: CardId | CardMatcher, onResponse?: CardMatcher): boolean {
     const card = cardId instanceof CardMatcher ? undefined : Sanguosha.getCardById(cardId);
-    const ruleCardUse = GameCommonRules.canUse(
+    const ruleCardUse = GameCommonRules.canUseCard(
       room,
       this,
       cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId),
@@ -381,6 +381,17 @@ export abstract class Player implements PlayerInfo {
       }
     }
 
+    const card = cardId instanceof CardMatcher ? undefined : Sanguosha.getCardById(cardId);
+    if (card) {
+      const ruleCardUse = GameCommonRules.canUseCardTo(
+        room,
+        this,
+        cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId),
+        room.getPlayerById(target),
+      );
+      return ruleCardUse;
+    }
+
     return true;
   }
 
@@ -466,9 +477,11 @@ export abstract class Player implements PlayerInfo {
     return GameCommonRules.getAdditionalDefenseDistance(room, this);
   }
 
-  public getCardUsableDistance(room: Room, cardId: CardId) {
-    const card = Sanguosha.getCardById(cardId);
-    return card.EffectUseDistance + GameCommonRules.getCardAdditionalUsableDistance(room, this, card);
+  public getCardUsableDistance(room: Room, cardId?: CardId, target?: Player) {
+    const card = cardId ? Sanguosha.getCardById(cardId) : undefined;
+    return (
+      (card ? card.EffectUseDistance : 0) + GameCommonRules.getCardAdditionalUsableDistance(room, this, card, target)
+    );
   }
 
   public getCardAdditionalUsableNumberOfTargets(room: Room, cardId: CardId | CardMatcher) {
