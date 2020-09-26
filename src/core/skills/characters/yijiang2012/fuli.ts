@@ -1,5 +1,5 @@
 import { CharacterNationality } from 'core/characters/character';
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PlayerDyingStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
@@ -10,12 +10,12 @@ import { DangXian } from './dangxian';
 
 @LimitSkill({ name: 'fuli', description: 'fuli_description' })
 export class FuLi extends TriggerSkill {
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>, stage?: AllStage): boolean {
-    return stage === PlayerDyingStage.PlayerDying;
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AskForPeachEvent>, stage?: AllStage): boolean {
+    return EventPacker.getIdentifier(event) === GameEventIdentifiers.AskForPeachEvent;
   }
 
-  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>): boolean {
-    return content.dying === owner.Id;
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.AskForPeachEvent>): boolean {
+    return content.fromId === owner.Id && content.toId === owner.Id;
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -34,19 +34,22 @@ export class FuLi extends TriggerSkill {
       }
       return allNations;
     }, []);
+    const recoverAmount = nations.length - from.Hp;
+    if (recoverAmount > 0) {
+      await room.recover({
+        recoveredHp: recoverAmount,
+        recoverBy: from.Id,
+        triggeredBySkills: [this.Name],
+        toId: from.Id,
+      });
+    }
     const drawAmount = nations.length - from.getCardIds(PlayerCardsArea.HandArea).length;
     if (drawAmount > 0) {
       await room.drawCards(drawAmount, from.Id, undefined, from.Id, this.Name);
     }
 
-    await room.recover({
-      recoveredHp: nations.length,
-      recoverBy: from.Id,
-      triggeredBySkills: [this.Name],
-      toId: from.Id,
-    });
-
-    if (drawAmount < 3) {
+    const strongest = room.getOtherPlayers(from.Id).find(player => player.Hp >= from.Hp);
+    if (strongest === undefined) {
       await room.turnOver(from.Id);
     }
 
