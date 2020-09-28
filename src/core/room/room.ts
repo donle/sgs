@@ -25,7 +25,7 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { System } from 'core/shares/libs/system';
 import { GameMode } from 'core/shares/types/room_props';
 import { RoomInfo } from 'core/shares/types/server_types';
-import { FilterSkill, RulesBreakerSkill, TransformSkill } from 'core/skills/skill';
+import { FilterSkill, GlobalRulesBreakerSkill, RulesBreakerSkill, TransformSkill } from 'core/skills/skill';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
 
 export type RoomId = number;
@@ -450,6 +450,15 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       return 0;
     }
 
+    for (const player of this.getAlivePlayersFrom()) {
+      for (const skill of player.getPlayerSkills<GlobalRulesBreakerSkill>('globalBreaker')) {
+        const breakDistance = skill.breakDistance(this, player, from, to);
+        if (breakDistance > 0) {
+          return breakDistance;
+        }
+      }
+    }
+
     for (const skill of from.getPlayerSkills<RulesBreakerSkill>('breaker')) {
       const breakDistance = skill.breakDistanceTo(this, from, to);
       if (breakDistance > 0) {
@@ -460,6 +469,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     const seatGap = to.getDefenseDistance(this) - from.getOffenseDistance(this);
     return Math.max(this.onSeatDistance(from, to) + seatGap, 1);
   }
+
   public cardUseDistanceBetween(room: Room, cardId: CardId, from: Player, to: Player) {
     const card = Sanguosha.getCardById(cardId);
 
