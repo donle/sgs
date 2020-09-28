@@ -269,7 +269,7 @@ export { XianSi, XianSiShadow, XianSiFilter, XianSiSlash } from './characters/yi
 export { LongYin, LongYinClear } from './characters/yijiang2013/longyin';
 export { QiaoShuo, QiaoShuoLose, QiaoShuoWin } from './characters/yijiang2013/qiaoshuo';
 export { J3ZongShi } from './characters/yijiang2013/zongshi';
-export { DanShou } from './characters/yijiang2013/danshou';
+export { DanShou, DanshouShadow } from './characters/yijiang2013/danshou';
 
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';

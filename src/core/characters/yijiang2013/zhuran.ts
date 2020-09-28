@@ -8,7 +8,7 @@ const skillLoaderInstance = SkillLoader.getInstance();
 export class ZhuRan extends Character {
   constructor(id: number) {
     super(id, 'zhuran', CharacterGender.Male, CharacterNationality.Wu, 4, 4, GameCharacterExtensions.YiJiang2013, [
-      skillLoaderInstance.getSkillByName(DanShou.Name),
+      ...skillLoaderInstance.getSkillsByName(DanShou.Name),
     ]);
   }
 }
