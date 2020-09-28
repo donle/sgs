@@ -270,6 +270,8 @@ export { LongYin, LongYinClear } from './characters/yijiang2013/longyin';
 export { QiaoShuo, QiaoShuoLose, QiaoShuoWin } from './characters/yijiang2013/qiaoshuo';
 export { J3ZongShi } from './characters/yijiang2013/zongshi';
 export { DanShou, DanshouShadow } from './characters/yijiang2013/danshou';
+export { ZhuiKong, ZhuiKongFilter, ZhuiKongDistance } from './characters/yijiang2013/zhuikong';
+export { QiuYuan } from './characters/yijiang2013/qiuyuan';
 
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';
