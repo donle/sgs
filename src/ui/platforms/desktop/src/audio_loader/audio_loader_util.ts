@@ -6,7 +6,7 @@ import { ProdAudioLoader } from './prod_audio_loader';
 export function getAudioLoader(flavor: ClientFlavor) {
   switch (flavor) {
     case ClientFlavor.Dev:
-      // return new DevAudioLoader();
+      return new DevAudioLoader();
     case ClientFlavor.Prod:
       return new ProdAudioLoader();
     default:
