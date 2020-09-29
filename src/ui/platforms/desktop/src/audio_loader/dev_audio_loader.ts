@@ -8,7 +8,21 @@ export class DevAudioLoader implements AudioLoader {
   getRoomBackgroundMusic() {
     return 'https://aod.cos.tx.xmcdn.com/group24/M02/CF/E6/wKgJMFi6G1bgZDjzAB9BygnpYEI443.m4a';
   }
+  getDamageAudio(damage: number) {
+    return '';
+  }
+  getLoseHpAudio(): string {
+    return '';
+  }
+  getRecoverAudio(): string {
+    return '';
+  }
   async getSkillAudio(skillName: string, gender: CharacterGender, characterName?: string) {
+    return `http://doublebit.gitee.io/pictest/audio/${
+      gender === CharacterGender.Female ? 'female' : 'male'
+    }/${skillName}.ogg`;
+  }
+  async getCardAudio(skillName: string, gender: CharacterGender, characterName?: string) {
     return `http://doublebit.gitee.io/pictest/audio/${
       gender === CharacterGender.Female ? 'female' : 'male'
     }/${skillName}.ogg`;

@@ -1,3 +1,4 @@
+import { getAudioLoader } from 'audio_loader/audio_loader_util';
 import { clientActiveListenerEvents, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { ClientSocket } from 'core/network/socket.client';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -7,6 +8,7 @@ import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { match } from 'react-router-dom';
 import { PagePropsWithConfig } from 'types/page_props';
+import { installAudioPlayerService } from 'ui/audio/install';
 import { ClientCard } from 'ui/card/card';
 import { GameClientProcessor } from './game_processor';
 import { installService, RoomBaseService } from './install_service';
@@ -34,6 +36,8 @@ export class RoomPage extends React.Component<
   private playerName = window.localStorage.getItem('username') || 'unknown';
   private baseService: RoomBaseService;
   private imageLoader = getImageLoader(this.props.config.flavor);
+  private audioLoader = getAudioLoader(this.props.config.flavor);
+  private audioService = installAudioPlayerService(this.audioLoader);
 
   private displayedCardsRef = React.createRef<HTMLDivElement>();
   private readonly cardWidth = 120;
@@ -53,8 +57,13 @@ export class RoomPage extends React.Component<
       roomId,
     );
     this.baseService = installService(translator, this.store, this.imageLoader);
-
-    this.gameProcessor = new GameClientProcessor(this.presenter, this.store, translator, this.imageLoader);
+    this.gameProcessor = new GameClientProcessor(
+      this.presenter,
+      this.store,
+      translator,
+      this.imageLoader,
+      this.audioService,
+    );
   }
 
   componentDidMount() {
@@ -95,6 +104,7 @@ export class RoomPage extends React.Component<
 
   componentWillUnmount() {
     this.disconnect();
+    this.audioService.stop();
   }
 
   private updateGameStatus(event: ServerEventFinder<GameEventIdentifiers>) {

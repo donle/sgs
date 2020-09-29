@@ -1,3 +1,4 @@
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { Flavor } from 'core/shares/types/host_config';
 import { Languages } from 'core/translations/translation_json_tool';
 import { ClientConfig, ClientFlavor, ServiceConfig, UiConfigTypes } from 'props/config_props';
@@ -32,7 +33,7 @@ export const getClientConfig = (mode: Flavor): ClientConfig => {
       };
       break;
     default:
-      throw Error(`invalid flavor: ${mode}`);
+      throw Precondition.UnreachableError(mode);
   }
   return {
     ui: uiConfig,

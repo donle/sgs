@@ -1,4 +1,4 @@
-import { Card, VirtualCard } from 'core/cards/card';
+import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Character, CharacterId } from 'core/characters/character';
@@ -21,6 +21,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
+import { AudioService } from 'ui/audio/install';
 import { AskForPeachAction } from './actions/ask_for_peach_action';
 import { CardResponseAction } from './actions/card_response_action';
 import { PlayPhaseAction } from './actions/play_phase_action';
@@ -44,7 +45,10 @@ export class GameClientProcessor {
     private store: RoomStore,
     private translator: ClientTranslationModule,
     private imageLoader: ImageLoader,
-  ) {}
+    private audioService: AudioService,
+  ) {
+    this.audioService.playRoomBGM();
+  }
 
   private tryToThrowNotReadyException(e: GameEventIdentifiers) {
     if (!this.store.room && e !== GameEventIdentifiers.PlayerEnterEvent) {
@@ -516,6 +520,12 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
+    const from = this.store.room.getPlayerById(content.fromId);
+    const card = Sanguosha.getCardById(content.cardId);
+    if (!card.is(CardType.Equip)) {
+      this.audioService.playCardAudio(card.Name, from.Gender, from.Character.Name);
+    }
+
     await this.store.room.useCard(content);
     this.presenter.showCards(...Card.getActualCards([content.cardId]).map(cardId => Sanguosha.getCardById(cardId)));
     this.presenter.broadcastUIUpdate();
@@ -525,6 +535,11 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
+    const from = this.store.room.getPlayerById(content.fromId);
+    const card = Sanguosha.getCardById(content.cardId);
+    if (!card.is(CardType.Equip)) {
+      this.audioService.playCardAudio(card.Name, from.Gender, from.Character.Name);
+    }
     this.presenter.showCards(...Card.getActualCards([content.cardId]).map(cardId => Sanguosha.getCardById(cardId)));
   }
 
@@ -626,18 +641,21 @@ export class GameClientProcessor {
   ) {
     const { playerId } = content;
     const player = this.store.room.getPlayerById(playerId);
+    this.audioService.playDeathAudio(player.Character.Name);
     this.store.room.kill(player);
     this.presenter.broadcastUIUpdate();
   }
 
   private onHandleDamageEvent<T extends GameEventIdentifiers.DamageEvent>(type: T, content: ServerEventFinder<T>) {
     const player = this.store.room.getPlayerById(content.toId);
+    this.audioService.playDamageAudio(content.damage);
     player.changeHp(-content.damage);
     this.presenter.broadcastUIUpdate();
   }
 
   private onHandleLoseHpEvent<T extends GameEventIdentifiers.LoseHpEvent>(type: T, content: ServerEventFinder<T>) {
     const player = this.store.room.getPlayerById(content.toId);
+    this.audioService.playLoseHpAudio();
     player.changeHp(-content.lostHp);
     this.presenter.broadcastUIUpdate();
   }
@@ -658,6 +676,7 @@ export class GameClientProcessor {
     const player = this.store.room.getPlayerById(content.toId);
     player.Dying = false;
     player.changeHp(content.recoveredHp);
+    this.audioService.playRecoverAudio();
     this.presenter.broadcastUIUpdate();
   }
 
@@ -1226,8 +1245,11 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    await this.store.room.useSkill(content);
     const skill = Sanguosha.getSkillBySkillName(content.skillName);
+    const from = this.store.room.getPlayerById(content.fromId);
+    this.audioService.playSkillAudio(skill.GeneralName, from.Gender, from.Character.Name);
+
+    await this.store.room.useSkill(content);
     if (skill.SkillType === SkillType.Limit || skill.SkillType === SkillType.Awaken) {
       this.presenter.onceSkillUsed(content.fromId, content.skillName);
     }
