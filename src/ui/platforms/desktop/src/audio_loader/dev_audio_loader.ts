@@ -1,6 +1,8 @@
 import { CharacterGender } from 'core/characters/character';
 import { AudioLoader } from './audio_loader';
 
+const remoteRoot: string = 'http://doublebit.gitee.io/pictest/backup_remote';
+
 export class DevAudioLoader implements AudioLoader {
   getLobbyBackgroundMusic() {
     return 'https://web.sanguosha.com/10/pc/res/assets/runtime/voice/bgm/outbgm_2.mp3';
@@ -9,25 +11,22 @@ export class DevAudioLoader implements AudioLoader {
     return 'https://aod.cos.tx.xmcdn.com/group24/M02/CF/E6/wKgJMFi6G1bgZDjzAB9BygnpYEI443.m4a';
   }
   getDamageAudio(damage: number) {
-    return '';
+    return `${remoteRoot}/audios/` + (damage === 1 ? 'damage' : 'damage2') + '.mp3';
   }
   getLoseHpAudio(): string {
-    return '';
+    return `${remoteRoot}/audios/loseHp.mp3`;
   }
   getRecoverAudio(): string {
-    return '';
+    return `${remoteRoot}/audios/recover.mp3`;
   }
   async getSkillAudio(skillName: string, gender: CharacterGender, characterName?: string) {
-    return `http://doublebit.gitee.io/pictest/audio/${
-      gender === CharacterGender.Female ? 'female' : 'male'
-    }/${skillName}.ogg`;
+    const randomIndex = Math.round(Math.random() * 1) + 1;
+    return `${remoteRoot}/audios/characters/${skillName}${randomIndex}.mp3`;
   }
-  async getCardAudio(skillName: string, gender: CharacterGender, characterName?: string) {
-    return `http://doublebit.gitee.io/pictest/audio/${
-      gender === CharacterGender.Female ? 'female' : 'male'
-    }/${skillName}.ogg`;
+  async getCardAudio(cardName: string, gender: CharacterGender, characterName?: string) {
+    return `${remoteRoot}/audios/cards/${gender === CharacterGender.Female ? 'female' : 'male'}/${cardName}.ogg`;
   }
   async getDeathAudio(characterName: string): Promise<string> {
-    return `http://doublebit.gitee.io/pictest/audio/${characterName}.ogg`;
+    return `${remoteRoot}/audios/characters/${characterName}.mp3`;
   }
 }
