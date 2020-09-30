@@ -466,6 +466,12 @@ export abstract class RulesBreakerSkill extends Skill {
   public breakAdditionalCardHoldNumber(room: Room, owner: Player): number {
     return 0;
   }
+  public breakAdditionalAttackRange(room: Room, owner: Player): number {
+    return 0;
+  }
+  public breakFinalAttackRange(room: Room, owner: Player): number {
+    return -1;
+  }
 }
 
 export abstract class FilterSkill extends Skill {
