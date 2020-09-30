@@ -237,7 +237,7 @@ export { ZiLi } from './characters/yijiang2012/zili';
 export { PaiYi } from './characters/yijiang2012/paiyi';
 export { ZhenLie } from './characters/yijiang2012/zhenlie';
 export { MiJi, MiJiShadow } from './characters/yijiang2012/miji';
-export { DangXian, DangXianSlash } from './characters/yijiang2012/dangxian';
+export { DangXian } from './characters/yijiang2012/dangxian';
 export { FuLi } from './characters/yijiang2012/fuli';
 
 export { Cheat } from './system/cheat';
