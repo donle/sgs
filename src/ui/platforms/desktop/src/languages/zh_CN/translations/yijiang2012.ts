@@ -167,8 +167,4 @@ export const promptDescriptions: Word[] = [
     source: '{0} triggered skill {1}, started an extra {2}',
     target: '{0} 的技能 【{1}】被触发，开始了一个额外的 {2}',
   },
-  {
-    source: 'do you want to trigger skill {0} to get a slash card from drop stack?',
-    target: '是否发动技能【{0}】从弃牌堆中获得一张杀？',
-  },
 ];
