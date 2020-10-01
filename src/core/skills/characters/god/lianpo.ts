@@ -12,7 +12,7 @@ export class LianPo extends TriggerSkill {
     event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
     stage?: AllStage,
   ): boolean {
-    return stage === PhaseStageChangeStage.AfterStageChanged && event.toStage === PlayerPhaseStages.FinishStageEnd;
+    return stage === PhaseStageChangeStage.AfterStageChanged && event.toStage === PlayerPhaseStages.PhaseFinish;
   }
 
   public canUse(

@@ -46,7 +46,7 @@ export class CangZhuo extends TriggerSkill {
 @CompulsorySkill({ name: CangZhuo.GeneralName, description: CangZhuo.Description })
 export class CangZhuoShadow extends TriggerSkill implements OnDefineReleaseTiming {
   afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public isTriggerable(
@@ -73,7 +73,7 @@ export class CangZhuoShadow extends TriggerSkill implements OnDefineReleaseTimin
       canTrigger = room.CurrentPlayerPhase === PlayerPhase.DropCardStage && room.CurrentPhasePlayer.Id === owner.Id;
     } else if (EventPacker.getIdentifier(content) === GameEventIdentifiers.PhaseChangeEvent) {
       const phaseChangeEvent = content as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-      canTrigger = owner.Id === phaseChangeEvent.fromPlayer && phaseChangeEvent.from === PlayerPhase.FinishStage;
+      canTrigger = owner.Id === phaseChangeEvent.fromPlayer && phaseChangeEvent.from === PlayerPhase.PhaseFinish;
     }
 
     return canTrigger && owner.getFlag<boolean>(this.GeneralName) === true;

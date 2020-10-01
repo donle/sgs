@@ -179,5 +179,4 @@ export const skillDescriptions: Word[] = [
 
 export const conversations: Word[] = [
   { source: 'qixing: please select cards to save', target: '七星：请选择需要保留为手牌的牌' },
-  { source: 'please choose a player to obtain a {0} mark', target: '请选择一名其他角色获得一枚 “{0}” 标记' },
 ];

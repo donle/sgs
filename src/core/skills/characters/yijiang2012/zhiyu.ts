@@ -1,5 +1,4 @@
-import { CardId } from 'core/cards/libs/card_props';
-import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -21,6 +20,7 @@ export class ZhiYu extends TriggerSkill {
   targetFilter(room: Room, owner: Player, targets: PlayerId[]): boolean {
     return targets.length === 0;
   }
+
   async onTrigger() {
     return true;
   }

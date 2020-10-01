@@ -85,11 +85,11 @@ export class QingNang extends ActiveSkill {
 @CompulsorySkill({ name: QingNang.GeneralName, description: QingNang.Description })
 export class QingNangShadow extends TriggerSkill implements OnDefineReleaseTiming {
   afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: AllStage): boolean {
-    return event.from === PlayerPhase.FinishStage && stage === PhaseChangeStage.AfterPhaseChanged;
+    return event.from === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.AfterPhaseChanged;
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {

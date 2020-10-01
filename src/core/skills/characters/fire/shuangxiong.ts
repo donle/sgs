@@ -25,7 +25,7 @@ export class ShuangXiong extends ViewAsSkill implements OnDefineReleaseTiming {
   public static readonly Black = 'shuangxiong_black';
 
   afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public canViewAs(): string[] {
@@ -256,7 +256,7 @@ export class ShuangXiongShadow extends TriggerSkill {
 @CommonSkill({ name: ShuangXiongShadow.Name, description: ShuangXiongShadow.Description })
 export class ShuangXiongRemove extends TriggerSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public isAutoTrigger(): boolean {
@@ -271,7 +271,7 @@ export class ShuangXiongRemove extends TriggerSkill implements OnDefineReleaseTi
     event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>,
     stage: PhaseChangeStage,
   ): boolean {
-    return stage === PhaseChangeStage.PhaseChanged && event.from === PlayerPhase.FinishStage;
+    return stage === PhaseChangeStage.PhaseChanged && event.from === PlayerPhase.PhaseFinish;
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {

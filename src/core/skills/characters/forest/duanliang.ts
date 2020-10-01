@@ -55,7 +55,7 @@ export class DuanLiang extends ViewAsSkill {
 @CommonSkill({ name: DuanLiang.Name, description: DuanLiang.Description })
 export class DuanLiangShadow extends RulesBreakerSkill implements OnDefineReleaseTiming {
   afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   breakCardUsableDistanceTo(cardId: CardId | CardMatcher, room: Room, owner: Player, target: Player) {

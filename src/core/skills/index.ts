@@ -120,7 +120,7 @@ export { ShenSu } from './characters/wind/shensu';
 export { SheBian } from './characters/wind/shebian';
 
 export { Jianchu, JianChuShadow, JianchuRemove } from './characters/fire/jianchu';
-export { QiangXi, QiangXiShadow } from './characters/fire/qiangxi';
+export { QiangXi } from './characters/fire/qiangxi';
 export { QuHu } from './characters/fire/quhu';
 export { JieMing } from './characters/fire/jieming';
 export { BaZhen } from './characters/fire/bazhen';
@@ -237,5 +237,7 @@ export { ZiLi } from './characters/yijiang2012/zili';
 export { PaiYi } from './characters/yijiang2012/paiyi';
 export { ZhenLie } from './characters/yijiang2012/zhenlie';
 export { MiJi, MiJiShadow } from './characters/yijiang2012/miji';
+export { DangXian } from './characters/yijiang2012/dangxian';
+export { FuLi } from './characters/yijiang2012/fuli';
 
 export { Cheat } from './system/cheat';

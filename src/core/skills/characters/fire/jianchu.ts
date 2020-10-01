@@ -115,7 +115,7 @@ export class JianChuShadow extends RulesBreakerSkill {
 @CommonSkill({ name: JianChuShadow.Name, description: JianChuShadow.Description })
 export class JianchuRemove extends TriggerSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public isAutoTrigger(): boolean {
@@ -130,7 +130,7 @@ export class JianchuRemove extends TriggerSkill implements OnDefineReleaseTiming
     event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>,
     stage: PhaseChangeStage,
   ): boolean {
-    return stage === PhaseChangeStage.PhaseChanged && event.from === PlayerPhase.FinishStage;
+    return stage === PhaseChangeStage.PhaseChanged && event.from === PlayerPhase.PhaseFinish;
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
