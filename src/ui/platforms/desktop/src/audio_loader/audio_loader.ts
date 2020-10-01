@@ -9,4 +9,5 @@ export interface AudioLoader {
   getDamageAudio(damage: number): string;
   getLoseHpAudio(): string;
   getEquipAudio(): string;
+  getChainAudio(): string;
 }

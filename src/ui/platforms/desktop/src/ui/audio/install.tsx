@@ -11,6 +11,7 @@ export interface AudioService {
   playDamageAudio(damage: number): void;
   playLoseHpAudio(): void;
   playEquipAudio(): void;
+  playChainAudio(): void;
   playRoomBGM(): void;
   playLobbyBGM(): void;
   stop(): void;
@@ -46,6 +47,13 @@ class AudioPlayerService implements AudioService {
   }
   playEquipAudio() {
     this.play(this.loader.getEquipAudio());
+  }
+  playChainAudio() {
+    const chainAudioIdentifier = 'chainAudioIdentifier';
+    if (this.playList.has(chainAudioIdentifier)) {
+      return;
+    }
+    this.play(this.loader.getChainAudio(), undefined, chainAudioIdentifier);
   }
 
   playRoomBGM() {

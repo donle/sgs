@@ -1194,6 +1194,9 @@ export class GameProcessor {
               : '',
           ).extract();
         }
+        if (Sanguosha.isShadowSkillName(event.skillName)) {
+          event.mute = true;
+        }
         const skill = Sanguosha.getSkillBySkillName(event.skillName);
         await skill.onUse(this.room, event);
         event.animation = event.animation || skill.getAnimationSteps(event);

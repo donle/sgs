@@ -1,6 +1,7 @@
 import { CharacterGender } from 'core/characters/character';
 import lobbyBGM from './audios/bgm/lobby.mp3';
 import roomBGM from './audios/bgm/room.mp3';
+import chainAudio from './audios/chain.mp3';
 import damageAudio from './audios/damage.mp3';
 import seriousDamageAudio from './audios/damage2.mp3';
 import equipAudio from './audios/equip.mp3';
@@ -24,6 +25,9 @@ export class ProdAudioLoader implements AudioLoader {
   }
   getEquipAudio(): string {
     return equipAudio;
+  }
+  getChainAudio(): string {
+    return chainAudio;
   }
 
   async getCardAudio(cardName: string, gender: CharacterGender, characterName?: string): Promise<string> {
