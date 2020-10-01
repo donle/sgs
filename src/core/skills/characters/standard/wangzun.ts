@@ -48,7 +48,7 @@ export class WangZunShadow extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    if (PlayerPhaseStages.FinishStageEnd !== content.toStage) {
+    if (PlayerPhaseStages.PhaseFinishEnd !== content.toStage) {
       return false;
     }
     const lord = room.getPlayerById(content.playerId);

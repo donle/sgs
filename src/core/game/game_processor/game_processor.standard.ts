@@ -61,7 +61,12 @@ export class StandardGameProcessor extends GameProcessor {
   protected playerStages: PlayerPhaseStages[] = [];
 
   protected toEndPhase: PlayerPhase | undefined;
+  protected inExtraPhase: boolean = false;
   protected playRoundInsertions: PlayerId[] = [];
+  protected playPhaseInsertions: {
+    player: PlayerId;
+    phase: PlayerPhase;
+  }[] = [];
   protected dumpedLastPlayerPositionIndex: number = -1;
 
   private readonly DamageTypeTag = 'damageType';
@@ -320,18 +325,18 @@ export class StandardGameProcessor extends GameProcessor {
     switch (phase) {
       case PlayerPhase.JudgeStage:
         this.logger.debug('enter judge cards phase');
-        const judgeCardIds = this.CurrentPlayer.getCardIds(PlayerCardsArea.JudgeArea);
+        const judgeCardIds = this.currentPhasePlayer.getCardIds(PlayerCardsArea.JudgeArea);
         for (let i = judgeCardIds.length - 1; i >= 0; i--) {
           const judgeCardId = judgeCardIds[i];
           const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
             cardId: judgeCardId,
-            toIds: [this.CurrentPlayer.Id],
+            toIds: [this.currentPhasePlayer.Id],
             nullifiedTargets: [],
-            allTargets: Sanguosha.getCardById(judgeCardId).Skill.nominateForwardTarget([this.CurrentPlayer.Id]),
+            allTargets: Sanguosha.getCardById(judgeCardId).Skill.nominateForwardTarget([this.currentPhasePlayer.Id]),
           };
 
           this.room.broadcast(GameEventIdentifiers.MoveCardEvent, {
-            fromId: this.CurrentPlayer.Id,
+            fromId: this.currentPhasePlayer.Id,
             movingCards: [
               {
                 fromArea: CardMoveArea.JudgeArea,
@@ -341,7 +346,7 @@ export class StandardGameProcessor extends GameProcessor {
             toArea: CardMoveArea.DropStack,
             moveReason: CardMoveReason.PlaceToDropStack,
           });
-          this.CurrentPlayer.dropCards(judgeCardId);
+          this.currentPhasePlayer.dropCards(judgeCardId);
 
           await this.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
 
@@ -354,7 +359,7 @@ export class StandardGameProcessor extends GameProcessor {
       case PlayerPhase.DrawCardStage:
         this.logger.debug('enter draw cards phase');
 
-        await this.room.drawCards(2, this.CurrentPlayer.Id, 'top', undefined, undefined, CardDrawReason.GameStage);
+        await this.room.drawCards(2, this.currentPhasePlayer.Id, 'top', undefined, undefined, CardDrawReason.GameStage);
         return;
       case PlayerPhase.PlayCardStage:
         this.logger.debug('enter play cards phase');
@@ -362,13 +367,13 @@ export class StandardGameProcessor extends GameProcessor {
           this.room.notify(
             GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
             {
-              toId: this.CurrentPlayer.Id,
+              toId: this.currentPhasePlayer.Id,
             },
-            this.CurrentPlayer.Id,
+            this.currentPhasePlayer.Id,
           );
           const response = await this.room.onReceivingAsyncResponseFrom(
             GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
-            this.CurrentPlayer.Id,
+            this.currentPhasePlayer.Id,
           );
 
           if (response.end) {
@@ -385,7 +390,7 @@ export class StandardGameProcessor extends GameProcessor {
             await this.room.reforge(reforgeEvent.cardId, this.room.getPlayerById(reforgeEvent.fromId));
           }
 
-          if (this.CurrentPlayer.Dead) {
+          if (this.currentPhasePlayer.Dead) {
             break;
           }
           if (this.toEndPhase === phase) {
@@ -397,12 +402,12 @@ export class StandardGameProcessor extends GameProcessor {
       case PlayerPhase.DropCardStage:
         this.logger.debug('enter drop cards phase');
         const maxCardHold =
-          GameCommonRules.getBaseHoldCardNumber(this.room, this.CurrentPlayer) +
-          GameCommonRules.getAdditionalHoldCardNumber(this.room, this.CurrentPlayer);
-        const discardAmount = this.CurrentPlayer.getCardIds(PlayerCardsArea.HandArea).length - maxCardHold;
+          GameCommonRules.getBaseHoldCardNumber(this.room, this.currentPhasePlayer) +
+          GameCommonRules.getAdditionalHoldCardNumber(this.room, this.currentPhasePlayer);
+        const discardAmount = this.currentPhasePlayer.getCardIds(PlayerCardsArea.HandArea).length - maxCardHold;
         if (discardAmount > 0) {
           const response = await this.room.askForCardDrop(
-            this.CurrentPlayer.Id,
+            this.currentPhasePlayer.Id,
             discardAmount,
             [PlayerCardsArea.HandArea],
             true,
@@ -418,6 +423,10 @@ export class StandardGameProcessor extends GameProcessor {
   }
 
   public skip(phase?: PlayerPhase) {
+    if (this.inExtraPhase) {
+      return;
+    }
+
     if (phase === undefined) {
       this.playerStages = [];
     } else {
@@ -446,12 +455,14 @@ export class StandardGameProcessor extends GameProcessor {
   }
 
   private readonly processingPhaseStages = [
+    PlayerPhaseStages.PhaseBegin,
     PlayerPhaseStages.PrepareStage,
     PlayerPhaseStages.JudgeStage,
     PlayerPhaseStages.DrawCardStage,
     PlayerPhaseStages.PlayCardStage,
     PlayerPhaseStages.DropCardStage,
     PlayerPhaseStages.FinishStage,
+    PlayerPhaseStages.PhaseFinish,
   ];
 
   private async play(player: Player, specifiedStages?: PlayerPhaseStages[]) {
@@ -461,18 +472,27 @@ export class StandardGameProcessor extends GameProcessor {
     }
 
     let lastPlayer = this.currentPhasePlayer;
-    this.currentPhasePlayer = player;
-
     this.playerStages = specifiedStages ? specifiedStages : this.stageProcessor.createPlayerStage();
-
     while (this.playerStages.length > 0) {
-      const nextPhase = this.stageProcessor.getInsidePlayerPhase(this.playerStages[0]);
+      let nextPhase: PlayerPhase;
+      if (this.playPhaseInsertions.length > 0) {
+        const { phase, player: nextPlayer } = this.playPhaseInsertions.shift()!;
+        nextPhase = phase;
+        this.currentPhasePlayer = this.room.getPlayerById(nextPlayer);
+        this.inExtraPhase = true;
+        this.playerStages.unshift(...this.stageProcessor.createPlayerStage(phase));
+      } else {
+        this.currentPhasePlayer = player;
+        nextPhase = this.stageProcessor.getInsidePlayerPhase(this.playerStages[0]);
+        this.inExtraPhase = false;
+      }
+
       for (const player of this.room.AlivePlayers) {
         const sideEffectSkills = this.room
           .getSideEffectSkills(player)
           .map(skillName => Sanguosha.getSkillBySkillName(skillName));
         for (const skill of [...player.getSkills(), ...sideEffectSkills]) {
-          if (nextPhase === PlayerPhase.PrepareStage) {
+          if (nextPhase === PlayerPhase.PhaseBegin) {
             player.resetCardUseHistory();
             player.hasDrunk() && this.room.clearHeaded(player.Id);
           } else {
@@ -501,7 +521,7 @@ export class StandardGameProcessor extends GameProcessor {
 
         if (stage === PhaseChangeStage.PhaseChanged) {
           this.currentPlayerPhase = nextPhase;
-          if (this.currentPlayerPhase === PlayerPhase.PrepareStage) {
+          if (this.currentPlayerPhase === PlayerPhase.PhaseBegin) {
             this.room.Analytics.turnTo(this.CurrentPlayer.Id);
           }
         }
@@ -518,7 +538,7 @@ export class StandardGameProcessor extends GameProcessor {
           GameEventIdentifiers.PhaseStageChangeEvent,
           EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseStageChangeEvent, {
             toStage: this.currentPlayerStage!,
-            playerId: this.CurrentPlayer.Id,
+            playerId: this.currentPhasePlayer.Id,
           }),
           async stage => {
             if (
@@ -1163,7 +1183,7 @@ export class StandardGameProcessor extends GameProcessor {
         toArea: CardMoveArea.DropStack,
       });
 
-      if (this.room.CurrentPlayer.Id === playerId) {
+      if (this.room.CurrentPhasePlayer.Id === playerId) {
         await this.room.skip(playerId);
       }
 
@@ -1910,6 +1930,16 @@ export class StandardGameProcessor extends GameProcessor {
 
   public insertPlayerRound(player: PlayerId) {
     this.playRoundInsertions.push(player);
+  }
+  public insertPlayerPhase(player: PlayerId, phase: PlayerPhase) {
+    this.playPhaseInsertions.push({
+      player,
+      phase,
+    });
+  }
+
+  public isExtraPhase() {
+    return this.inExtraPhase;
   }
 
   public async turnToNextPlayer() {

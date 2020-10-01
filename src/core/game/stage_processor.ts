@@ -3,6 +3,10 @@ import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 
 export const enum PlayerPhaseStages {
+  PhaseBeginStart,
+  PhaseBegin,
+  PhaseBeginEnd,
+
   PrepareStageStart,
   PrepareStage,
   PrepareStageEnd,
@@ -27,6 +31,10 @@ export const enum PlayerPhaseStages {
   FinishStageStart,
   FinishStage,
   FinishStageEnd,
+
+  PhaseFinishStart,
+  PhaseFinish,
+  PhaseFinishEnd,
 }
 
 export const enum StagePriority {
@@ -36,17 +44,24 @@ export const enum StagePriority {
 }
 
 export const enum PlayerPhase {
+  PhaseBegin,
   PrepareStage,
   JudgeStage,
   DrawCardStage,
   PlayCardStage,
   DropCardStage,
   FinishStage,
+  PhaseFinish,
 }
 
 const playerStagesList: {
   [K in PlayerPhase]: PlayerPhaseStages[];
 } = {
+  [PlayerPhase.PhaseBegin]: [
+    PlayerPhaseStages.PhaseBeginStart,
+    PlayerPhaseStages.PhaseBegin,
+    PlayerPhaseStages.PhaseBeginEnd,
+  ],
   [PlayerPhase.PrepareStage]: [
     PlayerPhaseStages.PrepareStageStart,
     PlayerPhaseStages.PrepareStage,
@@ -77,6 +92,11 @@ const playerStagesList: {
     PlayerPhaseStages.FinishStageStart,
     PlayerPhaseStages.FinishStage,
     PlayerPhaseStages.FinishStageEnd,
+  ],
+  [PlayerPhase.PhaseFinish]: [
+    PlayerPhaseStages.PhaseFinishStart,
+    PlayerPhaseStages.PhaseFinish,
+    PlayerPhaseStages.PhaseFinishEnd,
   ],
 };
 
@@ -414,12 +434,14 @@ export class StageProcessor {
       return playerStagesList[stage].slice();
     } else {
       const stages = [
+        PlayerPhase.PhaseBegin,
         PlayerPhase.PrepareStage,
         PlayerPhase.JudgeStage,
         PlayerPhase.DrawCardStage,
         PlayerPhase.PlayCardStage,
         PlayerPhase.DropCardStage,
         PlayerPhase.FinishStage,
+        PlayerPhase.PhaseFinish,
       ];
 
       let createdStages: PlayerPhaseStages[] = [];
@@ -437,7 +459,7 @@ export class StageProcessor {
 
   public getInsidePlayerPhase(specificStage: PlayerPhaseStages | undefined): PlayerPhase {
     if (specificStage === undefined) {
-      return PlayerPhase.PrepareStage;
+      return PlayerPhase.PhaseBegin;
     }
     for (const [stage, stageList] of (Object.entries(playerStagesList) as unknown) as [string, PlayerPhaseStages[]][]) {
       if (stageList.includes(specificStage)) {

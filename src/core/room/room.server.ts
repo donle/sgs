@@ -129,6 +129,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   public insertPlayerRound(player: PlayerId) {
     this.gameProcessor.insertPlayerRound(player);
   }
+  public insertPlayerPhase(player: PlayerId, phase: PlayerPhase) {
+    this.gameProcessor.insertPlayerPhase(player, phase);
+  }
+
+  public isExtraPhase() {
+    return this.gameProcessor.isExtraPhase();
+  }
 
   public async gameStart() {
     this.shuffle();
@@ -1547,6 +1554,18 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   public getCardFromDrawStack(cardId: CardId): CardId | undefined {
     const index = this.drawStack.findIndex(card => card === cardId);
     return index < 0 ? undefined : this.drawStack.splice(index, 1)[0];
+  }
+
+  public getCardsByNameFromStack(cardName: string, stackName: 'draw' | 'drop', amount: number = 0): CardId[] {
+    const stack = stackName === 'draw' ? this.drawStack : this.dropStack;
+    const cards = stack.filter(cardId => Sanguosha.getCardById(cardId).GeneralName === cardName);
+    if (cards.length === 0) {
+      return cards;
+    }
+
+    Algorithm.shuffle(cards);
+
+    return amount === 0 ? cards : cards.slice(0, amount);
   }
 
   public installSideEffectSkill(applier: System.SideEffectSkillApplierEnum, skillName: string) {

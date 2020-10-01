@@ -8,6 +8,7 @@ import { Precondition } from '../precondition/precondition';
 export abstract class Functional {
   static getPlayerPhaseRawText(stage: PlayerPhase) {
     switch (stage) {
+      case PlayerPhase.PhaseBegin:
       case PlayerPhase.PrepareStage:
         return 'prepare stage';
       case PlayerPhase.JudgeStage:
@@ -19,6 +20,7 @@ export abstract class Functional {
       case PlayerPhase.DropCardStage:
         return 'drop stage';
       case PlayerPhase.FinishStage:
+      case PlayerPhase.PhaseFinish:
         return 'finish stage';
       default:
         throw Precondition.UnreachableError(stage);

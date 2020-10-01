@@ -11,7 +11,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 @CommonSkill({ name: 'jizhi', description: 'jizhi_description' })
 export class JiZhi extends TriggerSkill {
   isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
-    return stage === PlayerPhase.PrepareStage;
+    return stage === PlayerPhase.PhaseFinish;
   }
 
   whenRefresh(room: Room, owner: Player) {
