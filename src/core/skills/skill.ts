@@ -31,6 +31,10 @@ export abstract class Skill {
   // tslint:disable-next-line:no-empty
   public whenRefresh(room: Room, owner: Player) {}
 
+  public canPlayAudio(): boolean {
+    return !this.isShadowSkill();
+  }
+
   public async beforeUse(
     room: Room,
     event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent>,

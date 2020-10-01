@@ -43,6 +43,7 @@ export class GuiDao extends TriggerSkill {
         TranslationPack.patchCardInTranslation(judgeEvent.judgeCardId),
       ).extract(),
       skipDrop: true,
+      muteAudio: true,
     });
     await room.moveCards({
       moveReason: CardMoveReason.ActiveMove,

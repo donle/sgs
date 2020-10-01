@@ -83,6 +83,7 @@ export interface ServerEvent extends EventUtilities {
     cardId: CardId;
     responseToEvent?: ServerEventFinder<GameEventIdentifiers>;
     skipDrop?: boolean;
+    muteAudio?: boolean;
   };
   [GameEventIdentifiers.DrawCardEvent]: {
     fromId: PlayerId;

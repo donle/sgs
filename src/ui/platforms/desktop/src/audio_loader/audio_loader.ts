@@ -8,5 +8,5 @@ export interface AudioLoader {
   getDeathAudio(characterName: string): Promise<string>;
   getDamageAudio(damage: number): string;
   getLoseHpAudio(): string;
-  getRecoverAudio(): string;
+  getEquipAudio(): string;
 }
