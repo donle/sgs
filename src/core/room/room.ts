@@ -101,6 +101,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     playerId?: PlayerId,
   ): Promise<ClientEventFinder<T>>;
   public abstract insertPlayerRound(player: PlayerId): void;
+  public abstract insertPlayerPhase(player: PlayerId, phase: PlayerPhase): void;
+  public abstract isExtraPhase(): boolean;
   //Server only
   public abstract async loseHp(player: PlayerId, lostHp: number): Promise<void>;
   //Server only
@@ -176,6 +178,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract findCardsByMatcherFrom(cardMatcher: CardMatcher, fromDrawStack?: boolean): CardId[];
   public abstract isCardInDropStack(cardId: CardId): boolean;
   public abstract isCardInDrawStack(cardId: CardId): boolean;
+  public abstract getCardsByNameFromStack(cardName: string, stackName: 'draw' | 'drop', amount?: number): CardId[];
 
   public abstract setCharacterOutsideAreaCards(
     player: PlayerId,

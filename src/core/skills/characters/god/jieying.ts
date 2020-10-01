@@ -17,7 +17,6 @@ import { MarkEnum } from 'core/shares/types/mark_list';
 import { RulesBreakerSkill, TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
-import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'jieying', description: 'jieying_description' })
 export class JieYing extends TriggerSkill implements OnDefineReleaseTiming {
@@ -42,7 +41,6 @@ export class JieYing extends TriggerSkill implements OnDefineReleaseTiming {
     }
   }
 
-  private readonly jieYingtTarget: string;
   public isAutoTrigger(
     room: Room,
     owner: Player,
@@ -50,7 +48,7 @@ export class JieYing extends TriggerSkill implements OnDefineReleaseTiming {
   ): boolean {
     if (
       (EventPacker.getIdentifier(event) === GameEventIdentifiers.PhaseChangeEvent &&
-        (event as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>).to === PlayerPhase.PrepareStage) ||
+        (event as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>).to === PlayerPhase.PhaseBegin) ||
       (EventPacker.getIdentifier(event) === GameEventIdentifiers.PhaseStageChangeEvent &&
         (event as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>).playerId !== owner.Id)
     ) {
@@ -67,7 +65,7 @@ export class JieYing extends TriggerSkill implements OnDefineReleaseTiming {
       stage === PhaseChangeStage.BeforePhaseChange ||
       (stage === PhaseStageChangeStage.StageChanged &&
         (event as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>).toStage ===
-          PlayerPhaseStages.FinishStageStart)
+          PlayerPhaseStages.PhaseFinish)
     );
   }
 
@@ -92,52 +90,45 @@ export class JieYing extends TriggerSkill implements OnDefineReleaseTiming {
     return false;
   }
 
-  async beforeUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
-    if (room.CurrentProcessingStage === PhaseStageChangeStage.StageChanged && room.CurrentPlayer.Id === event.fromId) {
-      const askForPlayerEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
-        toId: event.fromId,
-        players: room.AlivePlayers.filter(player => player.Id !== event.fromId).map(player => player.Id),
-        requiredAmount: 1,
-        conversation: TranslationPack.translationJsonPatcher(
-          'please choose a player to obtain a {0} mark',
-          MarkEnum.Ying,
-        ).extract(),
-      };
+  isAvailableTarget(
+    owner: PlayerId,
+    room: Room,
+    target: PlayerId,
+    selectedCards: CardId[],
+    selectedTargets: PlayerId[],
+    containerCard?: CardId,
+  ) {
+    return !room.getPlayerById(target).getFlag<boolean>(this.jieYingTarget);
+  }
 
-      room.notify(
-        GameEventIdentifiers.AskForChoosingPlayerEvent,
-        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingPlayerEvent>(askForPlayerEvent),
-        event.fromId,
-      );
-
-      const { selectedPlayers } = await room.onReceivingAsyncResponseFrom(
-        GameEventIdentifiers.AskForChoosingPlayerEvent,
-        event.fromId,
-      );
-      room.getPlayerById(event.fromId).setFlag(this.jieYingtTarget, selectedPlayers![0]);
-    }
-
-    return true;
+  targetFilter(room: Room, owner: Player, targets: PlayerId[], selectedCards: CardId[], cardId?: CardId) {
+    return targets.length === 1;
   }
 
   public async onTrigger(): Promise<boolean> {
     return true;
   }
 
+  private readonly jieYingTarget = 'jieyingTarget';
+
   public async onEffect(
     room: Room,
     skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
-    const { triggeredOnEvent, fromId } = skillEffectEvent;
+    const { triggeredOnEvent, fromId, toIds } = skillEffectEvent;
     const identifier = EventPacker.getIdentifier(triggeredOnEvent!);
     if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
       room.setMark(fromId, MarkEnum.Ying, 1);
       await room.obtainSkill(fromId, JieYingEffect.Name);
     } else {
       const from = room.getPlayerById(fromId);
-      if (from.getFlag<PlayerId>(this.jieYingtTarget)) {
-        const toId = from.getFlag<PlayerId>(this.jieYingtTarget);
-        from.removeFlag(this.jieYingtTarget);
+      if (from.getFlag<PlayerId>(this.jieYingTarget)) {
+        if (!toIds) {
+          return false;
+        }
+
+        const toId = toIds[0];
+        from.removeFlag(this.jieYingTarget);
         room.removeMark(fromId, MarkEnum.Ying);
         room.setMark(toId, MarkEnum.Ying, 1);
         await room.loseSkill(fromId, JieYingEffect.Name);

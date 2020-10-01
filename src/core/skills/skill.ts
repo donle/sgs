@@ -352,7 +352,7 @@ export abstract class ActiveSkill extends Skill {
   }
 
   public isRefreshAt(room: Room, owner: Player, phase: PlayerPhase) {
-    return phase === PlayerPhase.PrepareStage;
+    return phase === PlayerPhase.PhaseBegin;
   }
 }
 

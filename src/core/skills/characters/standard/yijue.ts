@@ -124,10 +124,10 @@ export class YiJue extends ActiveSkill {
 @CompulsorySkill({ name: YiJue.GeneralName, description: YiJue.Description })
 export class YiJueShadow extends TriggerSkill implements OnDefineReleaseTiming {
   afterDead(room: Room) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
   afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public getPriority() {
@@ -156,7 +156,7 @@ export class YiJueShadow extends TriggerSkill implements OnDefineReleaseTiming {
       return room.getPlayerById(content.toId).getFlag<boolean>(this.GeneralName) && owner.Id === content.fromId;
     } else if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
       content = content as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-      return owner.Id === content.fromPlayer && content.from === PlayerPhase.FinishStage;
+      return owner.Id === content.fromPlayer && content.from === PlayerPhase.PhaseFinish;
     }
     return false;
   }

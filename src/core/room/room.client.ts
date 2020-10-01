@@ -56,6 +56,12 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   public insertPlayerRound(): void {
     this.throwUntouchableError(this.insertPlayerRound.name);
   }
+  public insertPlayerPhase(player: PlayerId, phase: PlayerPhase): void {
+    this.throwUntouchableError(this.insertPlayerPhase.name);
+  }
+  public isExtraPhase(): any {
+    this.throwUntouchableError(this.isExtraPhase.name);
+  }
   //Server only
   public notify(): void {
     this.throwUntouchableError(this.notify.name);
@@ -192,6 +198,9 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   //Server only
   public isCardInDrawStack(): any {
     this.throwUntouchableError(this.isCardInDrawStack.name);
+  }
+  public getCardsByNameFromStack(): any {
+    this.throwUntouchableError(this.getCardsByNameFromStack.name);
   }
 
   public broadcast<T extends GameEventIdentifiers>(type: T, content: ClientEventFinder<T>): void {

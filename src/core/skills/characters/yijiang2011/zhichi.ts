@@ -54,7 +54,7 @@ export class ZhiChi extends TriggerSkill {
 @CompulsorySkill({ name: ZhiChi.Name, description: ZhiChi.Description })
 export class ZhiChiShadow extends TriggerSkill implements OnDefineReleaseTiming {
   afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public isTriggerable(
@@ -85,7 +85,7 @@ export class ZhiChiShadow extends TriggerSkill implements OnDefineReleaseTiming 
       );
     } else if (EventPacker.getIdentifier(content) === GameEventIdentifiers.PhaseChangeEvent) {
       const phaseChangeEvent = content as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-      canTrigger = phaseChangeEvent.from === PlayerPhase.FinishStage;
+      canTrigger = phaseChangeEvent.to === PlayerPhase.PhaseFinish;
     }
 
     return canTrigger && room.getFlag<boolean>(owner.Id, this.GeneralName) === true;

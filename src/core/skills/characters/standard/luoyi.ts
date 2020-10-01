@@ -124,7 +124,7 @@ export class LuoYi extends TriggerSkill {
 @CompulsorySkill({ name: LuoYi.GeneralName, description: LuoYi.Description })
 export class LuoYiShadow extends TriggerSkill implements OnDefineReleaseTiming {
   afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayer === room.getPlayerById(playerId) && room.CurrentPlayerPhase === PlayerPhase.PrepareStage;
+    return room.CurrentPlayer === room.getPlayerById(playerId) && room.CurrentPlayerPhase === PlayerPhase.PhaseBegin;
   }
 
   public getPriority() {
@@ -132,7 +132,7 @@ export class LuoYiShadow extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage) {
-    return event.to === PlayerPhase.PrepareStage && stage === PhaseChangeStage.AfterPhaseChanged;
+    return event.to === PlayerPhase.PhaseBegin && stage === PhaseChangeStage.AfterPhaseChanged;
   }
 
   public isTriggerable(
@@ -142,7 +142,7 @@ export class LuoYiShadow extends TriggerSkill implements OnDefineReleaseTiming {
     const identifier = EventPacker.getIdentifier(event);
     if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
       const currentEvent = event as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-      return currentEvent.to === PlayerPhase.PrepareStage && stage === PhaseChangeStage.AfterPhaseChanged;
+      return currentEvent.to === PlayerPhase.PhaseBegin && stage === PhaseChangeStage.AfterPhaseChanged;
     } else {
       const currentEvent = event as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
       return (

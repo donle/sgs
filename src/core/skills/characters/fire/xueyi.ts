@@ -38,7 +38,7 @@ export class XueYi extends TriggerSkill {
 @CommonSkill({ name: XueYi.GeneralName, description: XueYi.Description })
 export class XueYiShadow extends TriggerSkill {
   public isTriggerable(content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: AllStage) {
-    return content.to === PlayerPhase.PrepareStage && stage === PhaseChangeStage.AfterPhaseChanged;
+    return content.to === PlayerPhase.PhaseBegin && stage === PhaseChangeStage.AfterPhaseChanged;
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {

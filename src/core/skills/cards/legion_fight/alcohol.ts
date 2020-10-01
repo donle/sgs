@@ -14,7 +14,7 @@ export class AlcoholSkill extends ActiveSkill {
   }
 
   isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
-    return stage === PlayerPhase.PrepareStage;
+    return stage === PlayerPhase.PhaseBegin;
   }
 
   isAvailableCard() {
