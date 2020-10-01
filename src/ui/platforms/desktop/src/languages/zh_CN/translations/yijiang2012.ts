@@ -162,7 +162,6 @@ export const promptDescriptions: Word[] = [
     source: '{0}: do you want to give another player {1} hand card(s)?',
     target: '{0}：你可以选择 {1} 张牌交给一名其他角色',
   },
-
   {
     source: '{0} triggered skill {1}, started an extra {2}',
     target: '{0} 的技能 【{1}】被触发，开始了一个额外的 {2}',
