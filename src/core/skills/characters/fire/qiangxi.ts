@@ -3,22 +3,24 @@ import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
-import { AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import {
   ActiveSkill,
   CommonSkill,
-  CompulsorySkill,
-  OnDefineReleaseTiming,
-  ShadowSkill,
-  TriggerSkill,
 } from 'core/skills/skill';
 
 @CommonSkill({ name: 'qiangxi', description: 'qiangxi_description' })
 export class QiangXi extends ActiveSkill {
   public static readonly exUse = 'QiangXi_ExUse';
+
+  public async whenRefresh(room: Room, owner: Player) {
+    room.removeFlag(owner.Id, QiangXi.exUse);
+    for (const player of room.AlivePlayers) {
+      room.removeFlag(player.Id, this.GeneralName);
+    }
+  }
 
   public canUse(room: Room, owner: Player) {
     return owner.hasUsedSkillTimes(this.Name) < 2;
@@ -62,42 +64,6 @@ export class QiangXi extends ActiveSkill {
       damageType: DamageType.Normal,
       triggeredBySkills: [this.Name],
     });
-
-    return true;
-  }
-}
-
-@ShadowSkill
-@CompulsorySkill({ name: QiangXi.GeneralName, description: QiangXi.Description })
-export class QiangXiShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
-  }
-
-  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage) {
-    return true;
-  }
-
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: AllStage): boolean {
-    return event.from === PlayerPhase.FinishStage && stage === PhaseChangeStage.AfterPhaseChanged;
-  }
-
-  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
-    return room.getFlag<boolean>(owner.Id, QiangXi.exUse) === true;
-  }
-
-  public async onTrigger(): Promise<boolean> {
-    return true;
-  }
-
-  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
-    const { triggeredOnEvent } = event;
-    const phaseChangeEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-
-    phaseChangeEvent.fromPlayer && room.removeFlag(phaseChangeEvent.fromPlayer, QiangXi.exUse);
-    for (const player of room.AlivePlayers) {
-      room.removeFlag(player.Id, this.GeneralName);
-    }
 
     return true;
   }

@@ -51,7 +51,7 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
     owner: Player,
     event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>,
   ): boolean {
-    if (event.from === undefined && event.to === PlayerPhase.PrepareStage) {
+    if (event.from === undefined && event.to === PlayerPhase.PhaseBegin) {
       return true;
     }
     return false;
@@ -64,10 +64,10 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
     const canUse =
       ((event.toPlayer === owner.Id || (room.Round === 0 && !owner.getFlag<boolean>(this.Name))) &&
-        event.to === PlayerPhase.PrepareStage &&
+        event.to === PlayerPhase.PhaseBegin &&
         room.CurrentProcessingStage === PhaseChangeStage.BeforePhaseChange) ||
       (event.fromPlayer === owner.Id &&
-        event.from === PlayerPhase.FinishStage &&
+        event.from === PlayerPhase.PhaseFinish &&
         room.CurrentProcessingStage === PhaseChangeStage.AfterPhaseChanged);
 
     return canUse;
@@ -78,9 +78,9 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   public getPriority(room: Room, owner: Player) {
-    if (room.CurrentProcessingStage === PhaseChangeStage.BeforePhaseChange) {
+    if (room.CurrentPlayerPhase === PlayerPhase.PhaseBegin) {
       return StagePriority.High;
-    } else if (room.CurrentProcessingStage === PhaseChangeStage.AfterPhaseChanged) {
+    } else if (room.CurrentPlayerPhase === PlayerPhase.PhaseFinish) {
       return StagePriority.Low;
     } else {
       return StagePriority.Medium;

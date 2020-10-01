@@ -64,7 +64,7 @@ export class QianXun extends TriggerSkill {
 @CommonSkill({ name: QianXun.GeneralName, description: QianXun.Description })
 export class QianXunShadow extends TriggerSkill implements OnDefineReleaseTiming {
   afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   isAutoTrigger() {
@@ -72,7 +72,7 @@ export class QianXunShadow extends TriggerSkill implements OnDefineReleaseTiming
   }
 
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage) {
-    return stage === PhaseChangeStage.PhaseChanged && event.to === PlayerPhase.FinishStage;
+    return stage === PhaseChangeStage.AfterPhaseChanged && event.to === PlayerPhase.PhaseFinish;
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
