@@ -42,6 +42,7 @@ export class GuiCai extends TriggerSkill {
         TranslationPack.patchCardInTranslation(judgeEvent.judgeCardId),
       ).extract(),
       skipDrop: true,
+      mute: true,
     });
 
     room.moveCards({

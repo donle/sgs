@@ -16,8 +16,11 @@ export class DevAudioLoader implements AudioLoader {
   getLoseHpAudio(): string {
     return `${remoteRoot}/audios/loseHp.mp3`;
   }
-  getRecoverAudio(): string {
-    return `${remoteRoot}/audios/recover.mp3`;
+  getEquipAudio(): string {
+    return `${remoteRoot}/audios/equip.mp3`;
+  }
+  getChainAudio(): string {
+    return `${remoteRoot}/audios/chain.mp3`;
   }
   async getSkillAudio(skillName: string, gender: CharacterGender, characterName?: string) {
     const randomIndex = Math.round(Math.random() * 1) + 1;
