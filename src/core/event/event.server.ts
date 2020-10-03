@@ -83,6 +83,7 @@ export interface ServerEvent extends EventUtilities {
     cardId: CardId;
     responseToEvent?: ServerEventFinder<GameEventIdentifiers>;
     skipDrop?: boolean;
+    mute?: boolean;
   };
   [GameEventIdentifiers.DrawCardEvent]: {
     fromId: PlayerId;
@@ -119,6 +120,7 @@ export interface ServerEvent extends EventUtilities {
     cardIds?: CardId[];
     toIds?: PlayerId[];
     triggeredOnEvent?: ServerEventFinder<GameEventIdentifiers>;
+    mute?: boolean;
   };
   [GameEventIdentifiers.SkillEffectEvent]: {
     fromId: PlayerId;

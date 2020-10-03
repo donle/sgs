@@ -524,6 +524,8 @@ export class GameClientProcessor {
     const card = Sanguosha.getCardById(content.cardId);
     if (!card.is(CardType.Equip)) {
       this.audioService.playCardAudio(card.Name, from.Gender, from.Character.Name);
+    } else {
+      this.audioService.playEquipAudio();
     }
 
     await this.store.room.useCard(content);
@@ -537,7 +539,7 @@ export class GameClientProcessor {
   ) {
     const from = this.store.room.getPlayerById(content.fromId);
     const card = Sanguosha.getCardById(content.cardId);
-    if (!card.is(CardType.Equip)) {
+    if (!card.is(CardType.Equip) && !content.mute) {
       this.audioService.playCardAudio(card.Name, from.Gender, from.Character.Name);
     }
     this.presenter.showCards(...Card.getActualCards([content.cardId]).map(cardId => Sanguosha.getCardById(cardId)));
@@ -676,7 +678,6 @@ export class GameClientProcessor {
     const player = this.store.room.getPlayerById(content.toId);
     player.Dying = false;
     player.changeHp(content.recoveredHp);
-    this.audioService.playRecoverAudio();
     this.presenter.broadcastUIUpdate();
   }
 
@@ -1247,7 +1248,7 @@ export class GameClientProcessor {
   ) {
     const skill = Sanguosha.getSkillBySkillName(content.skillName);
     const from = this.store.room.getPlayerById(content.fromId);
-    this.audioService.playSkillAudio(skill.GeneralName, from.Gender, from.Character.Name);
+    !content.mute && this.audioService.playSkillAudio(skill.GeneralName, from.Gender, from.Character.Name);
 
     await this.store.room.useSkill(content);
     if (skill.SkillType === SkillType.Limit || skill.SkillType === SkillType.Awaken) {
@@ -1274,6 +1275,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
+    this.audioService.playChainAudio();
     const { toId, linked } = content;
     this.store.room.getPlayerById(toId).ChainLocked = linked;
     this.presenter.broadcastUIUpdate();
