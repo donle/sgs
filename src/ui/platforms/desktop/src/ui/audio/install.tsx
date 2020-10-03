@@ -10,17 +10,23 @@ export interface AudioService {
   playDeathAudio(characterName: string): Promise<void>;
   playDamageAudio(damage: number): void;
   playLoseHpAudio(): void;
-  playRecoverAudio(): void;
+  playEquipAudio(): void;
+  playChainAudio(): void;
   playRoomBGM(): void;
   playLobbyBGM(): void;
   stop(): void;
 }
 
 class AudioPlayerService implements AudioService {
+  public playList: Set<string> = new Set<string>();
+
   constructor(private loader: AudioLoader) {}
   async playSkillAudio(skillName: string, gender: CharacterGender, characterName?: string) {
+    if (this.playList.has(skillName)) {
+      return;
+    }
     const audioUrl = await this.loader.getSkillAudio(skillName, gender, characterName);
-    this.play(audioUrl);
+    this.play(audioUrl, undefined, skillName);
   }
   async playCardAudio(cardName: string, gender: CharacterGender, characterName?: string) {
     const audioUrl = await this.loader.getCardAudio(cardName, gender, characterName);
@@ -39,8 +45,15 @@ class AudioPlayerService implements AudioService {
   playLoseHpAudio() {
     this.play(this.loader.getLoseHpAudio());
   }
-  playRecoverAudio() {
-    this.play(this.loader.getRecoverAudio());
+  playEquipAudio() {
+    this.play(this.loader.getEquipAudio());
+  }
+  playChainAudio() {
+    const chainAudioIdentifier = 'chainAudioIdentifier';
+    if (this.playList.has(chainAudioIdentifier)) {
+      return;
+    }
+    this.play(this.loader.getChainAudio(), undefined, chainAudioIdentifier);
   }
 
   playRoomBGM() {
@@ -52,12 +65,14 @@ class AudioPlayerService implements AudioService {
     this.play(audioUrl, true);
   }
 
-  private play(url: string, loop?: boolean) {
+  private play(url: string, loop?: boolean, nodeName?: string) {
     const container = document.createElement('div');
     container.setAttribute('name', 'audioPlayer');
     document.getElementById('root')?.append(container);
+    nodeName && this.playList.add(nodeName);
     const onEnd = () => {
       container.remove();
+      nodeName && this.playList.delete(nodeName);
     };
     const player = <AudioPlayer url={url} loop={loop} onEnd={onEnd} />;
     ReactDOM.render(player, container);
