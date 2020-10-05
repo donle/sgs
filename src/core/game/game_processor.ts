@@ -989,12 +989,18 @@ export class GameProcessor {
       return;
     }
 
+    const { fromId, cardIds, damage, damageType, triggeredBySkills, beginnerOfTheDamage } = event;
     for (const player of this.room.getAlivePlayersFrom()) {
       if (player.ChainLocked) {
         await this.room.damage({
-          ...event,
+          fromId,
           toId: player.Id,
+          cardIds,
+          damage,
+          damageType,
+          triggeredBySkills,
           isFromChainedDamage: true,
+          beginnerOfTheDamage,
         });
       }
     }
