@@ -239,6 +239,8 @@ export { ZhenLie } from './characters/yijiang2012/zhenlie';
 export { MiJi, MiJiShadow } from './characters/yijiang2012/miji';
 export { DangXian } from './characters/yijiang2012/dangxian';
 export { FuLi } from './characters/yijiang2012/fuli';
+export { GongJi, GongJiBuff } from './characters/yijiang2012/gongji';
+export { JieFan } from './characters/yijiang2012/jiefan';
 
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';
