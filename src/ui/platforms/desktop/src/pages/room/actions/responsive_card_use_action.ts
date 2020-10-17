@@ -4,7 +4,7 @@ import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { ActiveSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
+import { ActiveSkill, FilterSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { RoomPresenter, RoomStore } from '../room.presenter';
@@ -58,6 +58,12 @@ export class ResponsiveUseCardAction<
   }
 
   isCardEnabledOnResponsiveUse(card: Card, fromArea: PlayerCardsArea, matcher: CardMatcher) {
+    for (const skill of this.player.getSkills<FilterSkill>('filter')) {
+      if (!skill.canUseCard(card.Id, this.store.room, this.playerId)) {
+        return false;
+      }
+    }
+
     if (EventPacker.isDisresponsiveEvent(this.askForEvent)) {
       return false;
     }
