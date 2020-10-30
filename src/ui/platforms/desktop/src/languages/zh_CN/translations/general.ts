@@ -361,6 +361,10 @@ export const eventDictionary: Word[] = [
     target: '{0}：你可以将{1}变为火【杀】',
   },
   {
+    source: '{0}: do you want to draw {1} card(s)?',
+    target: '{0}：你可以摸 {1} 张牌',
+  },
+  {
     source: '{0} triggered skill {1}',
     target: '{0} 触发了技能 【{1}】',
   },

@@ -57,7 +57,7 @@ export class ShangShi extends TriggerSkill {
 
   public getSkillLog(room: Room, owner: Player): PatchedTranslationObject {
     return TranslationPack.translationJsonPatcher(
-      '{0}: do you want to draw {1} cards?',
+      '{0}: do you want to draw {1} card(s)?',
       this.Name,
       owner.LostHp - owner.getCardIds(PlayerCardsArea.HandArea).length,
     ).extract();

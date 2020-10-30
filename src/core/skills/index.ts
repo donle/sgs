@@ -247,6 +247,8 @@ export { LiHuo, LiHuoLoseHp, LiHuoShadow } from './characters/yijiang2012/lihuo'
 export { ChunLao, ChunLaoShadow } from './characters/yijiang2012/chunlao';
 export { AnXu } from './characters/yijiang2012/anxu';
 export { ZhuiYi } from './characters/yijiang2012/zhuiyi';
+export { ZiShou, ZiShouShadow, ZiShouBlocker } from './characters/yijiang2012/zishou';
+export { ZongShi, ZongShiShadow, ZongShiBuff } from './characters/yijiang2012/zongshi';
 
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';
