@@ -604,8 +604,8 @@ export const UiDictionary: Word[] = [
   { source: 'waiting', target: '等待中' },
   { source: 'playing', target: '游戏中' },
   { source: "{0}'s room", target: '{0} 的房间' },
-  { source: 'please enter your room name', target: '请输入房间名' },
-  { source: 'please choose number of players', target: '请选择玩家数' },
+  { source: 'please enter your room name', target: '房间名' },
+  { source: 'please choose number of players', target: '选择玩家数' },
   { source: '{0} players', target: '{0} 个玩家' },
   { source: 'please enter your username', target: '请输入玩家名称' },
   {
@@ -652,4 +652,7 @@ export const UiDictionary: Word[] = [
     source: 'finish',
     target: '结束',
   },
+  { source: 'main volume', target: '音乐音量' },
+  { source: 'game volume', target: '游戏音量' },
+  { source: 'settings', target: '设置' },
 ];

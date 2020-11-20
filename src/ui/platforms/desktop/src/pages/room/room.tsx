@@ -1,10 +1,12 @@
-import { getAudioLoader } from 'audio_loader/audio_loader_util';
+import { AudioLoader } from 'audio_loader/audio_loader';
 import { clientActiveListenerEvents, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { ClientSocket } from 'core/network/socket.client';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import { getImageLoader } from 'image_loader/image_loader_util';
+import { ImageLoader } from 'image_loader/image_loader';
+import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
+import { SettingsDialog } from 'pages/ui/settings/settings';
 import * as React from 'react';
 import { match } from 'react-router-dom';
 import { PagePropsWithConfig } from 'types/page_props';
@@ -26,6 +28,8 @@ export class RoomPage extends React.Component<
   PagePropsWithConfig<{
     match: match<{ slug: string }>;
     translator: ClientTranslationModule;
+    imageLoader: ImageLoader;
+    audioLoader: AudioLoader;
   }>
 > {
   private presenter: RoomPresenter;
@@ -35,20 +39,45 @@ export class RoomPage extends React.Component<
   private roomId: number;
   private playerName = window.localStorage.getItem('username') || 'unknown';
   private baseService: RoomBaseService;
-  private imageLoader = getImageLoader(this.props.config.flavor);
-  private audioLoader = getAudioLoader(this.props.config.flavor);
-  private audioService = installAudioPlayerService(this.audioLoader);
+  private audioService = installAudioPlayerService(this.props.audioLoader);
 
   private displayedCardsRef = React.createRef<HTMLDivElement>();
   private readonly cardWidth = 120;
   private readonly cardMargin = 2;
 
-  constructor(props: any) {
+  @mobx.observable.ref
+  openSettings = false;
+  @mobx.observable.ref
+  private defaultMainVolume = window.localStorage.getItem('mainVolume') ? Number.parseInt(window.localStorage.getItem('mainVolume')!, 10) : 50;
+  @mobx.observable.ref
+  private defaultGameVolume = window.localStorage.getItem('gameVolume') ? Number.parseInt(window.localStorage.getItem('gameVolume')!, 10) : 50;
+  
+  private readonly settings = {
+    onVolumeChange: mobx.action((volume: number) => {
+      window.localStorage.setItem('gameVolume', volume.toString());
+      this.defaultGameVolume = volume;
+      this.audioService.changeGameVolume();
+    }),
+    onMainVolumeChange: mobx.action((volume: number) => {
+      window.localStorage.setItem('mainVolume', volume.toString());
+      this.defaultMainVolume = volume;
+      this.audioService.changeBGMVolume();
+    }),
+  };
+
+  constructor(
+    props: PagePropsWithConfig<{
+      match: match<{ slug: string }>;
+      translator: ClientTranslationModule;
+      imageLoader: ImageLoader;
+      audioLoader: AudioLoader;
+    }>,
+  ) {
     super(props);
     const { config, match, translator } = this.props;
 
     this.roomId = parseInt(match.params.slug, 10);
-    this.presenter = new RoomPresenter(this.imageLoader);
+    this.presenter = new RoomPresenter(this.props.imageLoader);
     this.store = this.presenter.createStore();
 
     const roomId = this.roomId.toString();
@@ -56,12 +85,12 @@ export class RoomPage extends React.Component<
       `${config.host.protocol}://${config.host.host}:${config.host.port}/room-${roomId}`,
       roomId,
     );
-    this.baseService = installService(translator, this.store, this.imageLoader);
+    this.baseService = installService(translator, this.store, this.props.imageLoader);
     this.gameProcessor = new GameClientProcessor(
       this.presenter,
       this.store,
       translator,
-      this.imageLoader,
+      this.props.imageLoader,
       this.audioService,
     );
   }
@@ -156,7 +185,7 @@ export class RoomPage extends React.Component<
       <div className={styles.displayedCards} ref={this.displayedCardsRef}>
         {this.store.displayedCards.map((card, index) => (
           <ClientCard
-            imageLoader={this.imageLoader}
+            imageLoader={this.props.imageLoader}
             card={card}
             width={this.cardWidth}
             offsetLeft={this.calculateDisplayedCardOffset(this.store.displayedCards.length, index)}
@@ -168,10 +197,19 @@ export class RoomPage extends React.Component<
     );
   }
 
+  @mobx.action
+  private readonly onClickSettings = () => {
+    this.openSettings = true;
+  };
+  @mobx.action
+  private readonly onCloseSettings = () => {
+    this.openSettings = false;
+  };
+
   render() {
     return (
       <div className={styles.room}>
-        <Background imageLoader={this.imageLoader} />
+        <Background imageLoader={this.props.imageLoader} />
         {this.store.selectorDialog}
 
         <div className={styles.incomingConversation}>{this.store.incomingConversation}</div>
@@ -182,10 +220,11 @@ export class RoomPage extends React.Component<
               translator={this.props.translator}
               roomName={this.store.room.getRoomInfo().name}
               className={styles.roomBanner}
+              onClickSettings={this.onClickSettings}
             />
             <div className={styles.mainBoard}>
               <SeatsLayout
-                imageLoader={this.imageLoader}
+                imageLoader={this.props.imageLoader}
                 updateFlag={this.store.updateUIFlag}
                 store={this.store}
                 presenter={this.presenter}
@@ -204,7 +243,7 @@ export class RoomPage extends React.Component<
               store={this.store}
               presenter={this.presenter}
               translator={this.props.translator}
-              imageLoader={this.imageLoader}
+              imageLoader={this.props.imageLoader}
               cardEnableMatcher={this.store.clientPlayerCardActionsMatcher}
               outsideCardEnableMatcher={this.store.clientPlayerOutsideCardActionsMatcher}
               onClickConfirmButton={this.store.confirmButtonAction}
@@ -220,6 +259,17 @@ export class RoomPage extends React.Component<
               isSkillDisabled={this.store.isSkillDisabled}
             />
           </div>
+        )}
+        {this.openSettings && (
+          <SettingsDialog
+            defaultGameVolume={this.defaultGameVolume}
+            defaultMainVolume={this.defaultMainVolume}
+            imageLoader={this.props.imageLoader}
+            translator={this.props.translator}
+            onMainVolumeChange={this.settings.onMainVolumeChange}
+            onGameVolumeChange={this.settings.onVolumeChange}
+            onConfirm={this.onCloseSettings}
+          />
         )}
       </div>
     );

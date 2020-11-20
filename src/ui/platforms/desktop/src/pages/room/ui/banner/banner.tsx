@@ -10,6 +10,7 @@ export type BannerProps = {
   roomIndex: number;
   translator: ClientTranslationModule;
   className?: string;
+  onClickSettings(): void;
 };
 
 const BreadCrumb = (props: { content: string[] }) => {
@@ -38,6 +39,9 @@ export const Banner = (props: BannerProps) => {
     <div className={classNames(styles.banner, props.className)}>
       <BreadCrumb content={breadcrumb} />
       <div className={styles.controlButtons}>
+        <Button variant="primary" onClick={props.onClickSettings} className={styles.settingsButton}>
+          {translator.tr('settings')}
+        </Button>
         <Button variant="primary" onClick={onClick}>
           {translator.tr('back to lobby')}
         </Button>

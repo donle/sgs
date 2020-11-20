@@ -83,6 +83,7 @@ class App {
   private readonly onGameCreated = (socket: SocketIO.Socket) => (content: GameInfo) => {
     const roomId = Date.now();
     const roomSocket = new ServerSocket(this.lobbySocket.of(`/room-${roomId}`), roomId, this.logger);
+    //@@TODO: switch game mode here
     const room = new ServerRoom(
       roomId,
       content,

@@ -1,0 +1,5 @@
+.dialog {
+    position: fixed;
+    align-self: center;
+    z-index: 999;
+}

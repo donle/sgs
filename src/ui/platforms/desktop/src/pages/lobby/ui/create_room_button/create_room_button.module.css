@@ -1,0 +1,14 @@
+.creatRoomButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    outline: 0;
+}
+
+.buttonImage {
+    width: 32px;
+}
+
+.creatRoomButton:disabled .buttonImage {
+    filter: grayscale(1);
+}

@@ -569,6 +569,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       packages: this.gameInfo.characterExtensions,
       status: this.gameStarted ? 'playing' : 'waiting',
       id: this.roomId,
+      gameMode: this.gameInfo.gameMode,
     };
   }
 

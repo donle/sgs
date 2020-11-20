@@ -1,26 +1,33 @@
+import { GameMode } from 'core/shares/types/room_props';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
+import { Button } from 'ui/button/button';
+import { Dialog } from 'ui/dialog/dialog';
 import styles from './create_room_dialog.module.css';
 
 export type TemporaryRoomCreationInfo = {
   numberOfPlayers: number;
   roomName: string;
+  gameMode: GameMode;
 };
 
 export const CreatRoomDialog = (props: {
   translator: ClientTranslationModule;
   onSubmit(data: TemporaryRoomCreationInfo): void;
   onCancel(): void;
+  imageLoader: ImageLoader;
 }) => {
   const username = window.localStorage.getItem('username');
   const [numberOfPlayers, setNumberOfPlayers] = React.useState<number>(2);
+  const [gameMode, setGameMode] = React.useState<GameMode>(GameMode.Standard);
   const [roomName, setRoomName] = React.useState<string>(
     username ? props.translator.tr(TranslationPack.translationJsonPatcher("{0}'s room", username).extract()) : '',
   );
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    props.onSubmit({ numberOfPlayers, roomName });
+    props.onSubmit({ numberOfPlayers, roomName, gameMode });
   };
 
   const onRoomNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,7 +47,8 @@ export const CreatRoomDialog = (props: {
   };
 
   return (
-    <div className={styles.createRoomDialog}>
+    <Dialog className={styles.createRoomDialog}>
+      <img src={props.imageLoader.getDialogBackgroundImage().src} alt="bg" className={styles.background} />
       <form onSubmit={onSubmit} className={styles.creatRoomForm}>
         <div className={styles.inputField}>
           <span className={styles.inputLabelText}>{props.translator.tr('please enter your room name')}</span>
@@ -55,12 +63,14 @@ export const CreatRoomDialog = (props: {
           </select>
         </div>
         <div className={styles.submitSection}>
-          <button type="submit">{props.translator.tr('confirm')}</button>
-          <button type="button" onClick={props.onCancel}>
+          <Button variant="primary" type="submit">
+            {props.translator.tr('confirm')}
+          </Button>
+          <Button variant="primary" type="button" onClick={props.onCancel}>
             {props.translator.tr('cancel')}
-          </button>
+          </Button>
         </div>
       </form>
-    </div>
+    </Dialog>
   );
 };
