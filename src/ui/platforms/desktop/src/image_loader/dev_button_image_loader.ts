@@ -1,5 +1,6 @@
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { SkillType } from 'core/skills/skill';
+import { LobbyButton } from 'props/game_props';
 import { SkillButtonImageProps } from './image_loader';
 
 function getSkillTypeNameText(type: SkillType) {
@@ -17,6 +18,16 @@ function getSkillTypeNameText(type: SkillType) {
   }
 }
 
+const lobbyButtons: {
+  [T in LobbyButton]: string;
+} = {
+  record: 'record_button',
+  settings: 'settings_button',
+  charactersList: 'characters_list_button',
+  feedback: 'feedback_button',
+  acknowledge: 'acknowledge_button',
+};
+
 export function getSkillButtonImages(type: SkillType, size: 'wide' | 'normal', rootUrl: string): SkillButtonImageProps {
   const prefix = size === 'wide' ? 'wide_' : '';
   const skillTypeName = getSkillTypeNameText(type);
@@ -26,4 +37,8 @@ export function getSkillButtonImages(type: SkillType, size: 'wide' | 'normal', r
     down: `${rootUrl}/images/skills/${prefix + skillTypeName}down.png`,
     disabled: `${rootUrl}/images/skills/${prefix + skillTypeName}disabled.png`,
   };
+}
+
+export function getLobbyButtonImage(variant: LobbyButton, rootUrl: string) {
+  return `${rootUrl}/images/lobby/${lobbyButtons[variant]}.png`;
 }

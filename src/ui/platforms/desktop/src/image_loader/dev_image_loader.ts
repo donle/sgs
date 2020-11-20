@@ -4,9 +4,12 @@ import { GameMode } from 'core/shares/types/room_props';
 import { SkillType } from 'core/skills/skill';
 import { LobbyButton } from 'props/game_props';
 import { getSkillButtonImages } from './dev_button_image_loader';
+import { getLobbyButtonImage } from './dev_button_image_loader';
 import { ImageLoader } from './image_loader';
 
 const remoteRoot: string = 'http://doublebit.gitee.io/pictest/backup_remote';
+
+const gameModeIcons = ['general_mode', '1v2_mode', '2v2_mode', 'hegemony_mode'];
 
 export class DevImageLoader implements ImageLoader {
   public async getCardImage(name: string) {
@@ -79,27 +82,35 @@ export class DevImageLoader implements ImageLoader {
   }
 
   public getGameModeIcon(mode: GameMode) {
-    return { src: '', alt: '' };
+    return { src: `${remoteRoot}/images/lobby/${gameModeIcons[mode]}.png`, alt: '' };
   }
+
   public getRandomLobbyIllustration() {
-    return { src: '', alt: '' };
+    const index = Math.floor(Math.random() * 8) + 1;
+    return { src: `${remoteRoot}/images/lobby/illustration${index}.png`, alt: '' };
   }
+
   public getLobbyBackgroundImage() {
-    return { src: '', alt: '' };
+    return { src: `${remoteRoot}/images/lobby/background.png`, alt: '' };
   }
+
   public getLobbyButtonImage(buttonVariant: LobbyButton) {
-    return { src: '', alt: '' };
+    return { src: getLobbyButtonImage(buttonVariant, remoteRoot), alt: '' };
   }
+
   public getCreateRoomButtonImage() {
-    return { src: '', alt: '' };
+    return { src: `${remoteRoot}/images/lobby/create.png`, alt: '' };
   }
+
   public getRoomListBackgroundImage() {
-    return { src: '', alt: '' };
+    return { src: `${remoteRoot}/images/lobby/room_list.png`, alt: '' };
   }
+
   public getDialogBackgroundImage() {
-    return { src: '', alt: '' };
+    return { src: `${remoteRoot}/images/system/dialog_background.png`, alt: '' };
   }
+
   public getAcknowledgementImage() {
-    return { src: '', alt: '' };
+    return { src: `${remoteRoot}/images/system/acknowledge.png`, alt: '' };
   }
 }
