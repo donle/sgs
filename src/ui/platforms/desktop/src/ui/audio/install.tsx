@@ -58,14 +58,14 @@ class AudioPlayerService implements AudioService {
 
   playRoomBGM() {
     const audioUrl = this.loader.getRoomBackgroundMusic();
-    this.play(audioUrl, true);
+    this.play(audioUrl, true, undefined, 'bgm');
   }
   playLobbyBGM() {
     const audioUrl = this.loader.getLobbyBackgroundMusic();
-    this.play(audioUrl, true);
+    this.play(audioUrl, true, undefined, 'bgm');
   }
 
-  private play(url: string, loop?: boolean, nodeName?: string) {
+  private play(url: string, loop?: boolean, nodeName?: string, type: 'bgm' | 'game' = 'game') {
     const container = document.createElement('div');
     container.setAttribute('name', 'audioPlayer');
     document.getElementById('root')?.append(container);
@@ -74,7 +74,10 @@ class AudioPlayerService implements AudioService {
       container.remove();
       nodeName && this.playList.delete(nodeName);
     };
-    const player = <AudioPlayer url={url} loop={loop} onEnd={onEnd} />;
+
+    const volumeString = window.localStorage.getItem(type === 'bgm' ? 'mainVolume' : 'gameVolume');
+    const volume = volumeString ? parseInt(volumeString, 10) : undefined;
+    const player = <AudioPlayer defaultVolume={volume} type={type} url={url} loop={loop} onEnd={onEnd} />;
     ReactDOM.render(player, container);
   }
 
@@ -82,6 +85,46 @@ class AudioPlayerService implements AudioService {
     const elements = document.getElementsByName('audioPlayer');
     for (const el of elements) {
       el.remove();
+    }
+  }
+
+  public changeBGMVolume() {
+    const volumeString = window.localStorage.getItem('mainVolume');
+    if (!volumeString) {
+      return;
+    }
+
+    const volume = parseInt(volumeString, 10);
+    const elements = document.getElementsByTagName('audio');
+    for (const element of elements) {
+      if (element.getAttribute('type') === 'bgm') {
+        const fixedVolume = volume / 100;
+        if (fixedVolume <= 0.01) {
+          element.volume = 0;
+        } else {
+          element.volume = fixedVolume;
+        }
+      }
+    }
+  }
+
+  public changeGameVolume() {
+    const volumeString = window.localStorage.getItem('gameVolume');
+    if (!volumeString) {
+      return;
+    }
+
+    const volume = parseInt(volumeString, 10);
+    const elements = document.getElementsByTagName('audio');
+    for (const element of elements) {
+      if (element.getAttribute('type') === 'game') {
+        const fixedVolume = volume / 100;
+        if (fixedVolume <= 0.01) {
+          element.volume = 0;
+        } else {
+          element.volume = fixedVolume;
+        }
+      }
     }
   }
 }

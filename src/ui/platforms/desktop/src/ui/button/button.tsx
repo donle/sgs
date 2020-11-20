@@ -18,11 +18,21 @@ export type OptionButtonProps = {
   disabled?: boolean;
   className?: string;
   children?: React.ReactNode;
+  type?: 'submit' | 'button';
   variant: 'option' | 'primaryStatic' | 'secondaryStatic' | 'primary' | 'system';
 };
 
 export const Button = (props: OptionButtonProps) => {
-  const { onClick, disabled, className, children, variant, onMouseEnter: mouseEnter, onMouseLeave: mouseLeave } = props;
+  const {
+    onClick,
+    disabled,
+    className,
+    children,
+    variant,
+    type,
+    onMouseEnter: mouseEnter,
+    onMouseLeave: mouseLeave,
+  } = props;
   const onClickButton = () => {
     if (!disabled && onClick) {
       onClick();
@@ -123,6 +133,7 @@ export const Button = (props: OptionButtonProps) => {
           [styles.primaryButton]: variant === 'primary',
           [styles.imageButton]: variant === 'primaryStatic' || variant === 'secondaryStatic',
         })}
+        type={type}
         disabled={disabled}
         onClick={onClickButton}
         onMouseEnter={onMouseEnter}

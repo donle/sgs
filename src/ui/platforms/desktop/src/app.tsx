@@ -1,5 +1,7 @@
+import { getAudioLoader } from 'audio_loader/audio_loader_util';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { createBrowserHistory } from 'history';
+import { getImageLoader } from 'image_loader/image_loader_util';
 import { RoomPage } from 'pages/room/room';
 import { ClientConfig } from 'props/config_props';
 import * as React from 'react';
@@ -12,6 +14,8 @@ export const App = (props: { config: ClientConfig; translator: ClientTranslation
   React.useEffect(() => {
     document.title = props.translator.tr('New QSanguosha');
   });
+  const imageLoader = getImageLoader(props.config.flavor);
+  const audioLoader = getAudioLoader(props.config.flavor);
 
   return (
     <Router history={customHistory}>
@@ -29,6 +33,8 @@ export const App = (props: { config: ClientConfig; translator: ClientTranslation
                 translator={props.translator}
                 location={location}
                 history={history}
+                imageLoader={imageLoader}
+                audioLoader={audioLoader}
               />
             )}
           ></Route>
@@ -39,6 +45,8 @@ export const App = (props: { config: ClientConfig; translator: ClientTranslation
                 location={location}
                 history={history}
                 match={match}
+                imageLoader={imageLoader}
+                audioLoader={audioLoader}
                 config={props.config}
                 translator={props.translator}
               />

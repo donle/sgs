@@ -1,0 +1,65 @@
+@value gridLine from '../../../ui/metrics/metrics.css';
+@value XinWeiFont from '../../../ui/metrics/metrics.css';
+
+.settings {
+    padding: calc(gridLine * 4);
+    font-family: XinWeiFont;
+    min-width: calc(gridLine * 50);
+    min-height: calc(gridLine * 30);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+}
+
+.mainVolume, .gameVolume {
+    margin-bottom: calc(gridLine * 2);
+}
+
+.usernameForm {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    margin-bottom: calc(gridLine * 2);
+}
+
+.inputField {
+    margin-bottom: gridLine;
+    padding: gridLine 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.inputLabelText {
+    margin-bottom: gridLine;
+}
+
+.input {
+    border: 0;
+    border-bottom: 1px solid grey;
+    height: calc(gridLine * 3);
+    background: #404040;
+    color: white;
+    box-shadow: inset 2px 2px 2px 0px #171212;
+    border-radius: 4px;
+    outline: none;
+}
+
+.submitSection {
+    margin-top: calc(gridLine * 2);
+    display: flex;
+    justify-content: center;
+}
+.confirm {
+  align-self: flex-end;
+}
