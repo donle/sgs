@@ -10,6 +10,7 @@
 }
 
 .background {
+    z-index: -1;
     position: absolute;
     align-self: center;
     width: 100vw;
@@ -18,6 +19,7 @@
 }
 
 .logo {
+    position: absolute;
     margin-bottom: calc(gridLine * 4);
     max-width: calc(gridLine * 32);
     align-self: center;
@@ -98,6 +100,7 @@
 }
 .functionBoard {
     position: relative;
+    margin: calc(gridLine * 4) 0 0;
     padding: calc(gridLine * 2);
     display: flex;
     justify-content: flex-end;
