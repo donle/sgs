@@ -1,5 +1,12 @@
 import { SkillType } from 'core/skills/skill';
+import { LobbyButton } from 'props/game_props';
 import { SkillButtonImageSize } from './image_loader';
+
+import lobbyAcknowledgeButtonImage from './images/lobby/acknowledge_button.png';
+import lobbyCharactersListButtonImage from './images/lobby/characters_list_button.png';
+import lobbyFeedbackButtonImage from './images/lobby/feedback_button.png';
+import lobbyRecordButtonImage from './images/lobby/record_button.png';
+import lobbySettingsButtonImage from './images/lobby/settings_button.png';
 
 import compulsoryDisabledImage from './images/skills/compulsory_disabled.png';
 import compulsoryDownImage from './images/skills/compulsory_down.png';
@@ -36,6 +43,16 @@ import wideLimitDisabledImage from './images/skills/wide_limit_disabled.png';
 import wideLimitDownImage from './images/skills/wide_limit_down.png';
 import wideLimitHoverImage from './images/skills/wide_limit_hover.png';
 import wideLimitImage from './images/skills/wide_limit_normal.png';
+
+const lobbyButtons: {
+  [T in LobbyButton]: string;
+} = {
+  record: lobbyRecordButtonImage,
+  settings: lobbySettingsButtonImage,
+  charactersList: lobbyCharactersListButtonImage,
+  feedback: lobbyFeedbackButtonImage,
+  acknowledge: lobbyAcknowledgeButtonImage,
+};
 
 const skillButtons: {
   [T in SkillType]: SkillButtonImageSize;
@@ -100,4 +117,8 @@ const skillButtons: {
 
 export function getSkillButtonImages(type: SkillType, size: 'wide' | 'normal') {
   return skillButtons[type][size];
+}
+
+export function getLobbyButtonImage(variant: LobbyButton) {
+  return lobbyButtons[variant];
 }

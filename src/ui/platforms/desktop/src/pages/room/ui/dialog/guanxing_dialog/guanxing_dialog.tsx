@@ -221,6 +221,7 @@ export class GuanXingCardSlots extends React.Component<GuanXingDialogProps> {
   };
 
   onMouseDown = (card: Card, index: number) => (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    e.stopPropagation();
     const { topMaxCard, bottomMaxCard } = this.props;
 
     let canMove = true;

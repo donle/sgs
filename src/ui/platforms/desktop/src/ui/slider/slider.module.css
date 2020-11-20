@@ -1,0 +1,65 @@
+@value gridLine from '../metrics/metrics.css';
+
+.slider {
+    display: flex;
+    align-items: center;
+}
+
+.label {
+    margin-right: calc(gridLine * 2);
+    min-width: calc(gridLine * 8);
+}
+
+.innerSlider {
+    position: relative;
+    width: 100%;
+}
+.sliderInput {
+    position: absolute;
+    opacity: 0;
+    z-index: 3;
+    width: 100%;
+    margin: 0;
+    cursor: pointer;
+}
+
+.bar {
+    height: gridLine;
+    border-radius: 2px;
+    background-color: #865223;
+    width: 100%;
+    display: block;
+    margin-top: 4px;
+    box-shadow: 0px 1px 3px 0px #210f00;
+}
+
+.dot {
+    border: 1px solid #404040;
+    height: calc(gridLine * 2);
+    width: calc(gridLine * 2);
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    border-radius: 50%;
+    background: linear-gradient(180deg, rgb(187, 126, 51) 0%, rgba(145, 62, 37, 1) 33%, rgb(97, 36, 0) 66%);
+}
+
+.sliderInput:hover ~ .dot {
+    background: linear-gradient(180deg, rgb(255, 124, 72) 0%, rgb(197, 84, 49) 33%, rgb(156, 65, 32) 66%);
+}
+
+.sliderInput:active ~ .dot {
+    background: linear-gradient(180deg, rgb(168, 80, 45) 0%, rgb(124, 46, 22) 33%, rgb(83, 24, 3) 66%);
+}
+
+.activeBar {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #523215;
+    display: block;
+    height: gridLine;
+    margin-top: 4px;
+    border-radius: 4px;
+}
