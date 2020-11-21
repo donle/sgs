@@ -1,4 +1,4 @@
-import { app, BrowserWindow, BrowserWindowConstructorOptions, protocol } from 'electron';
+import { app, BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
 import * as MouseTrap from 'mousetrap';
 import * as path from 'path';
 import * as url from 'url';
@@ -47,22 +47,13 @@ class AppWindow {
   }
 }
 
-export function main(env = process.env.NODE_ENV || 'development') {
-  const WEB_FOLDER = 'web';
-  const PROTOCOL = 'file';
-
-  protocol.interceptFileProtocol(PROTOCOL, (request, callback) => {
-    let url = request.url.substr(PROTOCOL.length + 1);
-    url = path.join(__dirname, WEB_FOLDER, url);
-    url = path.normalize(url);
-    callback(url);
-  });
-
+export function main() {
   const winApp = new AppWindow({
-    minWidth: 768,
-    minHeight: 600,
-    width: 800,
-    height: 600,
+    icon: path.join(__dirname, 'favicon.ico'),
+    minWidth: 1366,
+    minHeight: 768,
+    width: 1366,
+    height: 768,
     webPreferences: {
       nodeIntegration: false,
     },
@@ -73,17 +64,14 @@ export function main(env = process.env.NODE_ENV || 'development') {
     return;
   }
 
-  winAppInstance.webContents.openDevTools();
   winAppInstance.setMenu(null);
-  env === 'development'
-    ? winAppInstance.loadURL('http://localhost:3000/')
-    : winAppInstance.loadURL(
-        url.format({
-          pathname: path.join(__dirname, './index.html'),
-          protocol: 'file:',
-          slashes: true,
-        }),
-      );
+  winAppInstance.loadURL(
+    url.format({
+      pathname: path.join(__dirname, './index.html'),
+      protocol: 'file:',
+      slashes: true,
+    }),
+  );
   winApp.onClose(() => winApp.releaseInstance());
   return winAppInstance;
 }
