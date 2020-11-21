@@ -1,5 +1,4 @@
 {
-  "extends": "./tsconfig.fixed.json",
   "compilerOptions": {
     "jsx": "react",
     "lib": ["dom", "dom.iterable", "ESNext", "es2018"],
@@ -23,5 +22,5 @@
     "target": "es2015",
     "typeRoots": ["node_modules/@types"]
   },
-  "include": ["src"]
+  "include": ["tools"]
 }

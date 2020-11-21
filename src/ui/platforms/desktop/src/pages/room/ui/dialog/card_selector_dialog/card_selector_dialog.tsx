@@ -154,7 +154,12 @@ const CardSelector = (props: CardSelectorProps) => {
       );
     }
   }
-  return <div className={styles.selecterCardsItem}>{optionCardsLine}</div>;
+
+  const onAction = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    e.stopPropagation();
+  };
+
+  return <div className={styles.selecterCardsItem} onMouseDown={onAction}>{optionCardsLine}</div>;
 };
 
 export const CardSelectorDialog = (props: {

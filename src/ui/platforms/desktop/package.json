@@ -1,6 +1,13 @@
 {
-  "name": "view",
-  "version": "0.1.0",
+  "name": "DSanguosha",
+  "version": "0.1.1",
+  "author": {
+    "name": "donle",
+    "email": "donle1988@gmail.com"
+  },
+  "repository": {
+    "url": "https://github.com/donle/sgs"
+  },
   "private": true,
   "main": "./build/electron.js",
   "homepage": "./",
@@ -83,9 +90,28 @@
     "start:win": "yarn sync:win && cross-env NODE_PATH=./src GENERATE_SOURCEMAP=false node scripts/start.js",
     "build:dev:win": "yarn sync:win && cross-env NODE_PATH=./src GENERATE_SOURCEMAP=false node scripts/build.js",
     "start:dev:win": "yarn build:dev:win && xcopy .\\public\\home .\\build\\public\\home /s /i && ts-node ./server/app.ts",
-    "electron:win": "yarn build:win && cross-env tsc ./tools/electron --outDir ./build/ && cross-env NODE_ENV=production electron .",
+    "electron:win": "yarn build:win &&tsc ./tools/electron --outDir ./build/ && cross-env NODE_ENV=production electron .",
     "electron:mac": "yarn build:mac && NODE_ENV=production electron .",
+    "build:electron:win": "yarn build:win && tsc --project tsconfig.electron.json && electron-builder",
+    "build:electron:mac": "yarn build:mac && tsc --project tsconfig.electron.json && electron-builder",
     "test": "node scripts/test.js"
+  },
+  "build": {
+    "appId": "app.electron.sgs",
+    "directories": {
+      "output": "./dist/"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "./build/favicon.ico"
+    },
+    "mac": {
+      "category": "category.type"
+    },
+    "buildVersion": "0.1.1",
+    "files": [
+      "./build/**/*"
+    ]
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -114,6 +140,7 @@
     "css-loader": "^3.4.2",
     "css-modules-typescript-loader": "^4.0.0",
     "electron": "^9.0.0",
+    "electron-builder": "^22.9.1",
     "mousetrap": "^1.6.5",
     "react-test-renderer": "^16.13.0",
     "rimraf": "^3.0.0",
