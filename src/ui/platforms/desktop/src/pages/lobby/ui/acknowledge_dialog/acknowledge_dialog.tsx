@@ -8,7 +8,7 @@ export const AcknowledgeDialog = ({ imageLoader, onClose }: { imageLoader: Image
   return (
     <Dialog className={styles.acknowledge}>
       <button className={styles.closeButton} onClick={onClose} >
-        <img className={styles.close} src={closeIcon} />
+        <img className={styles.close} src={closeIcon} alt="" />
       </button>
       <img className={styles.background} src={imageLoader.getAcknowledgementImage().src} alt="" />
     </Dialog>

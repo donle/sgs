@@ -2,27 +2,27 @@
 
 .lobby {
     display: flex;
-    width: 100vw;
-    height: 100vh;
-    overflow-x: auto;
+    width: 100%;
     justify-content: center;
     position: relative;
 }
 
 .background {
-    z-index: -1;
-    position: absolute;
+    position: fixed;
     align-self: center;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     filter: brightness(0.5);
+    top: 0;
+    left: 0;
+    z-index: -1;
 }
 
 .logo {
-    position: absolute;
-    margin-bottom: calc(gridLine * 4);
+    margin-top: calc(gridLine * 2);
     max-width: calc(gridLine * 32);
     align-self: center;
+    z-index: 2;
 }
 
 .board {
