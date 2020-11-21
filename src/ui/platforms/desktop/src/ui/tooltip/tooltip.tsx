@@ -7,13 +7,14 @@ export type TooltipProps = {
   className?: string;
   closeAfter?: number;
   closeCallback?(): void;
+  autoAnimation?: boolean;
   position: ('left' | 'right' | 'top' | 'bottom')[];
 };
 
 let timer: NodeJS.Timer | undefined;
 
 export const Tooltip = (props: TooltipProps) => {
-  const { closeCallback, children, position, className, closeAfter } = props;
+  const { closeCallback, children, position, className, closeAfter, autoAnimation } = props;
 
   React.useEffect(() => {
     if (closeAfter === undefined) {
@@ -26,16 +27,7 @@ export const Tooltip = (props: TooltipProps) => {
     }, closeAfter * 1000);
   });
 
-  return (
-    <div
-      className={classNames(styles.tooltip, className, {
-        [styles.top]: position.includes('top'),
-        [styles.bottom]: position.includes('bottom'),
-        [styles.left]: position.includes('left'),
-        [styles.right]: position.includes('right'),
-      })}
-    >
-      {children}
-    </div>
-  );
+  return <div className={classNames(styles.tooltip, className, styles[position as any], {
+    [styles.shining]: autoAnimation
+  })}>{children}</div>;
 };
