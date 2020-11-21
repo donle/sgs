@@ -108,6 +108,11 @@
     transition: color 0.2s;
 }
 
-.linkButton:hover {
+.linkButton:disabled {
+    color: grey;
+    cursor: not-allowed;
+}
+
+.linkButton:enabled:hover {
     color: rgb(156, 65, 32);
 }

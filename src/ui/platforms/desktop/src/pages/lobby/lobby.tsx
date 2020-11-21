@@ -16,6 +16,7 @@ import { PagePropsWithConfig } from 'types/page_props';
 import { installAudioPlayerService } from 'ui/audio/install';
 import { Button } from 'ui/button/button';
 import { LinkButton } from 'ui/button/link_button';
+import { Tooltip } from 'ui/tooltip/tooltip';
 import styles from './lobby.module.css';
 import { AcknowledgeDialog } from './ui/acknowledge_dialog/acknowledge_dialog';
 import { CreateRoomButton } from './ui/create_room_button/create_room_button';
@@ -187,6 +188,8 @@ export class Lobby extends React.Component<LobbyProps> {
   };
 
   render() {
+    const username = window.localStorage.getItem('username');
+
     return (
       <div className={styles.lobby}>
         <img src={this.backgroundImage} alt="" className={styles.background} />
@@ -203,7 +206,7 @@ export class Lobby extends React.Component<LobbyProps> {
               {this.props.translator.tr('Refresh room list')}
             </Button>
           </div>
-          <div className={styles.roomList}>
+          <div className={classNames(styles.roomList, { [styles.unavailable]: !username })}>
             {this.roomList.length === 0 && <span>{this.props.translator.tr('No rooms at the moment')}</span>}
             {this.unmatchedCoreVersion
               ? this.unmatchedView()
@@ -220,7 +223,7 @@ export class Lobby extends React.Component<LobbyProps> {
                     <span className={styles.roomActions}>
                       <LinkButton
                         onClick={this.enterRoom(roomInfo)}
-                        disabled={roomInfo.activePlayers === roomInfo.totalPlayers}
+                        disabled={roomInfo.activePlayers === roomInfo.totalPlayers || !username}
                       >
                         {this.props.translator.tr('Join')}
                       </LinkButton>
@@ -232,7 +235,7 @@ export class Lobby extends React.Component<LobbyProps> {
               onClick={this.onCreateRoom}
               className={styles.createRoomButton}
               image={this.createRoomImage}
-              disabled={!window.localStorage.getItem('username') || this.unmatchedCoreVersion}
+              disabled={!username || this.unmatchedCoreVersion}
             />
             <img src={this.roomListBackgroundImage} alt="" className={styles.roomListBackground} />
           </div>
@@ -256,6 +259,9 @@ export class Lobby extends React.Component<LobbyProps> {
               />
             </button>
             <button className={styles.systemButton} onClick={this.onClickSettings}>
+              {!username && (
+                <Tooltip autoAnimation position={['top']}>{this.props.translator.tr('please input your username here')}</Tooltip>
+              )}
               <img
                 {...this.props.imageLoader.getLobbyButtonImage(LobbyButton.Settings)}
                 className={styles.lobbyButtonIcon}
