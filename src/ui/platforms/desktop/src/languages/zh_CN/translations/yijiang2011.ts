@@ -227,4 +227,8 @@ export const promptDescriptions: Word[] = [
     source: '{0}: please choose a target to drop card',
     target: '{0}：请选择一名角色并弃置其一张牌',
   },
+  {
+    source: '{0}: do you want to draw {1} cards?',
+    target: '{0}: 是否摸 {1} 张牌?',
+  }
 ];

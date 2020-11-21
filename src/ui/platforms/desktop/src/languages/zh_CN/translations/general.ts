@@ -607,7 +607,7 @@ export const UiDictionary: Word[] = [
   { source: 'please enter your room name', target: '房间名' },
   { source: 'please choose number of players', target: '选择玩家数' },
   { source: '{0} players', target: '{0} 个玩家' },
-  { source: 'please enter your username', target: '请输入玩家名称' },
+  { source: 'please enter your username', target: '玩家名称' },
   {
     source: 'Unmatched core version, please update your application',
     target: '内核版本不匹配，请升级你的客户端版本',

@@ -19,3 +19,7 @@ body * {
 img {
     pointer-events: none;
 }
+
+#root {
+    width: 100%;
+}
