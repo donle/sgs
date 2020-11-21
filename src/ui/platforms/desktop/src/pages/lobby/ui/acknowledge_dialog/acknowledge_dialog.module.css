@@ -18,8 +18,8 @@
   border-radius: 50%;
   border: 2px solid white;
   padding: calc(gridLine / 2);
-  height: calc(gridLine * 4);
-  width: calc(gridLine * 4);
+  height: calc(gridLine * 3);
+  width: calc(gridLine * 3);
   background: none;
   outline: none;
   z-index: 2;

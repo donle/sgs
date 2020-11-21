@@ -21,7 +21,7 @@ export const CreatRoomDialog = (props: {
 }) => {
   const username = window.localStorage.getItem('username');
   const [numberOfPlayers, setNumberOfPlayers] = React.useState<number>(2);
-  const [gameMode, setGameMode] = React.useState<GameMode>(GameMode.Standard);
+  const [gameMode,] = React.useState<GameMode>(GameMode.Standard);
   const [roomName, setRoomName] = React.useState<string>(
     username ? props.translator.tr(TranslationPack.translationJsonPatcher("{0}'s room", username).extract()) : '',
   );
