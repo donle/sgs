@@ -613,6 +613,7 @@ export const UiDictionary: Word[] = [
     target: '内核版本不匹配，请升级你的客户端版本',
   },
   { source: 'Refresh room list', target: '刷新房间' },
+  { source: 'please input your username here', target: '在此设置玩家名称后可开始游戏' },
   { source: 'Change username', target: '更改玩家名' },
   { source: 'Join', target: '加入' },
   { source: 'lobby', target: '大厅' },
