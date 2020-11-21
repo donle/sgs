@@ -36,10 +36,14 @@ const DemoCardList = (props: CardCategoryDialogProps & { type: CardType }) => {
 };
 
 export const CardCategoryDialog = (props: CardCategoryDialogProps) => {
+  const onAction = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    e.stopPropagation();
+  };
+
   const baseTypes = [CardType.Basic, CardType.Trick, CardType.Equip];
   return (
     <BaseDialog title={props.translator.tr('please choose a card')} className={styles.cardCategoryDialog}>
-      <div className={styles.cardList}>
+      <div className={styles.cardList} onMouseDown={onAction}>
         {baseTypes.map((type, index) => (
           <DemoCardList {...props} type={type} key={index} />
         ))}
