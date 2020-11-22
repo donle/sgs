@@ -338,7 +338,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           {this.props.incomingMessage && (
             <Tooltip
               className={styles.incomingMessage}
-              position={['top']}
+              position={['slightTop', 'right']}
               closeAfter={3}
               closeCallback={this.onCloseIncomingMessageCallback}
             >
@@ -385,7 +385,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
             {this.getOutsideAreaCards()}
           </div>
           {this.onTooltipOpened && clientPlayer?.CharacterId !== undefined && (
-            <Tooltip position={['bottom', 'right']}>{this.createTooltipContent()}</Tooltip>
+            <Tooltip position={['left']}>{this.createTooltipContent()}</Tooltip>
           )}
         </div>
         <div className={styles.marks}>{this.getOnceSkillMarks()}</div>

@@ -306,7 +306,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
           {incomingMessage && (
             <Tooltip
               className={styles.incomingMessage}
-              position={['top']}
+              position={['slightTop']}
               closeAfter={3}
               closeCallback={this.onCloseIncomingMessageCallback}
             >
@@ -388,7 +388,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
           {player && <span className={styles.playerStatus}>{translator.tr(player.getPlayerStatus() || '')}</span>}
           {inAction && <PlayingBar className={styles.playBar} playTime={actionTimeLimit} />}
           {this.onTooltipOpened && this.PlayerCharacter && (
-            <Tooltip position={['top']}>{this.createTooltipContent()}</Tooltip>
+            <Tooltip position={['center']}>{this.createTooltipContent()}</Tooltip>
           )}
         </div>
         {this.getPlayerEquips()}

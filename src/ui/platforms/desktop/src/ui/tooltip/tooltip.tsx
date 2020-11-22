@@ -8,7 +8,7 @@ export type TooltipProps = {
   closeAfter?: number;
   closeCallback?(): void;
   autoAnimation?: boolean;
-  position: ('left' | 'right' | 'top' | 'bottom')[];
+  position: ('left' | 'right' | 'top' | 'bottom' | 'center' | 'slightTop' | 'slightBottom')[];
 };
 
 let timer: NodeJS.Timer | undefined;
