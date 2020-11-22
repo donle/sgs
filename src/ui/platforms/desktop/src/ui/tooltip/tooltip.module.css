@@ -31,6 +31,14 @@
 .right {
     left: 100%;
 }
+.slightBottom {
+    top: 75%;
+}
+.slightTop {
+    bottom: 75%;
+}
+.center {
+}
 
 @keyframes shining {
     0% {
