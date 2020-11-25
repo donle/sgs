@@ -375,7 +375,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    if (content.randomPinDianCardPlayer.includes(this.store.clientPlayerId)) {
+    if (content.randomPinDianCard) {
       const handcards = this.presenter.ClientPlayer!.getCardIds(PlayerCardsArea.HandArea);
       const randomCardIndex = Math.floor(Math.random() * handcards.length);
       const event: ClientEventFinder<T> = {
