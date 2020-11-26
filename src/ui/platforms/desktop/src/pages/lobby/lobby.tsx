@@ -16,6 +16,7 @@ import { PagePropsWithConfig } from 'types/page_props';
 import { installAudioPlayerService } from 'ui/audio/install';
 import { Button } from 'ui/button/button';
 import { LinkButton } from 'ui/button/link_button';
+import { ShadowMask } from 'ui/shadow_mask/shadow_mask';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import styles from './lobby.module.css';
 import { AcknowledgeDialog } from './ui/acknowledge_dialog/acknowledge_dialog';
@@ -260,7 +261,9 @@ export class Lobby extends React.Component<LobbyProps> {
             </button>
             <button className={styles.systemButton} onClick={this.onClickSettings}>
               {!username && (
-                <Tooltip autoAnimation position={['top']}>{this.props.translator.tr('please input your username here')}</Tooltip>
+                <Tooltip autoAnimation position={['top']}>
+                  {this.props.translator.tr('please input your username here')}
+                </Tooltip>
               )}
               <img
                 {...this.props.imageLoader.getLobbyButtonImage(LobbyButton.Settings)}
@@ -288,26 +291,32 @@ export class Lobby extends React.Component<LobbyProps> {
         </div>
         <div className={styles.chatInfo}></div>
         {this.openRoomCreationDialog && (
-          <CreatRoomDialog
-            imageLoader={this.props.imageLoader}
-            translator={this.props.translator}
-            onSubmit={this.onRoomCreated}
-            onCancel={this.onRoomCreationCancelled}
-          />
+          <ShadowMask onCancel={this.onRoomCreationCancelled}>
+            <CreatRoomDialog
+              imageLoader={this.props.imageLoader}
+              translator={this.props.translator}
+              onSubmit={this.onRoomCreated}
+              onCancel={this.onRoomCreationCancelled}
+            />
+          </ShadowMask>
         )}
         {this.openSettings && (
-          <SettingsDialog
-            defaultGameVolume={this.defaultGameVolume}
-            defaultMainVolume={this.defaultMainVolume}
-            imageLoader={this.props.imageLoader}
-            translator={this.props.translator}
-            onMainVolumeChange={this.settings.onMainVolumeChange}
-            onGameVolumeChange={this.settings.onVolumeChange}
-            onConfirm={this.onCloseSettings}
-          />
+          <ShadowMask onCancel={this.onCloseSettings}>
+            <SettingsDialog
+              defaultGameVolume={this.defaultGameVolume}
+              defaultMainVolume={this.defaultMainVolume}
+              imageLoader={this.props.imageLoader}
+              translator={this.props.translator}
+              onMainVolumeChange={this.settings.onMainVolumeChange}
+              onGameVolumeChange={this.settings.onVolumeChange}
+              onConfirm={this.onCloseSettings}
+            />
+          </ShadowMask>
         )}
         {this.openAcknowledgement && (
-          <AcknowledgeDialog imageLoader={this.props.imageLoader} onClose={this.onCloseAcknowledgement} />
+          <ShadowMask onCancel={this.onCloseAcknowledgement}>
+            <AcknowledgeDialog imageLoader={this.props.imageLoader} onClose={this.onCloseAcknowledgement} />
+          </ShadowMask>
         )}
       </div>
     );
