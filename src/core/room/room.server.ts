@@ -1334,7 +1334,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       return true;
     });
 
-    const droppedCards: CardId[] = [];
+    const droppedCards: CardId[] = pindianEvent.cardId ? [pindianEvent.cardId] : [];
     for (const { cardId } of pindianEvent.procedures) {
       if (this.isCardOnProcessing(cardId)) {
         this.endProcessOnCard(cardId);
