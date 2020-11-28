@@ -194,9 +194,11 @@ export class Lobby extends React.Component<LobbyProps> {
       <div className={styles.lobby}>
         <img src={this.backgroundImage} alt="" className={styles.background} />
         <div className={styles.board}>
-          <img className={styles.logo} src={logoImage} alt={'logo'} />
           <div className={styles.functionBoard}>
-            <img src={this.illustrationImage} alt="" className={styles.illustration} />
+            <div className={styles.illustration}>
+              <img src={this.illustrationImage} alt="" />
+              <img className={styles.logo} src={logoImage} alt={'logo'} />
+            </div>
             <Button
               variant="primary"
               className={styles.button}
@@ -260,7 +262,9 @@ export class Lobby extends React.Component<LobbyProps> {
             </button>
             <button className={styles.systemButton} onClick={this.onClickSettings}>
               {!username && (
-                <Tooltip autoAnimation position={['top']}>{this.props.translator.tr('please input your username here')}</Tooltip>
+                <Tooltip autoAnimation position={['top']}>
+                  {this.props.translator.tr('please input your username here')}
+                </Tooltip>
               )}
               <img
                 {...this.props.imageLoader.getLobbyButtonImage(LobbyButton.Settings)}

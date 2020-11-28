@@ -5,6 +5,8 @@
     width: 100%;
     justify-content: center;
     position: relative;
+    animation: resize 2.5s 1;
+    height: 100vh;
 }
 
 .background {
@@ -19,8 +21,8 @@
 }
 
 .logo {
-    margin-top: calc(gridLine * 2);
-    max-width: calc(gridLine * 32);
+    margin-top: calc(gridLine * -8);
+    max-width: calc(gridLine * 28);
     align-self: center;
     z-index: 2;
 }
@@ -30,19 +32,24 @@
     width: 50%;
     padding: calc(gridLine * 2);
     flex-direction: column;
+    justify-content: center;
 }
 
 .illustration {
+    display: flex;
+    flex-direction: column;
     position: absolute;
     align-self: center;
     top: calc(100% + calc(gridLine * 4));
     right: 95%;
     z-index: 0;
+    animation: leftSideIn 2.5s 1;
 }
 
 .button {
     margin-left: 4px;
     align-self: center;
+    animation: fadeIn 2.5s 1;
 }
 
 .gameModeIcon {
@@ -62,6 +69,7 @@
     padding: calc(gridLine * 5) calc(gridLine * 6);
     padding-right: calc(gridLine * 12);
     position: relative;
+    animation: topSideIn 2.5s 1;
 }
 .roomListBackground {
     position: absolute;
@@ -119,6 +127,7 @@
     display: flex;
     z-index: 2;
     justify-content: flex-end;
+    animation: bottomSideIn 2.5s 1;
 }
 
 .systemButton {
@@ -150,4 +159,70 @@
     position: absolute;
     right: calc(gridLine * 6);
     top: calc(gridLine * 3.5);
+}
+
+@keyframes leftSideIn {
+    0% {
+        right: 155%;
+    }
+    20% {
+        right: 155%;
+    }
+    100% {
+        right: 95%;
+    }
+}
+
+@keyframes topSideIn {
+    0% {
+        transform: translateY(-75vh);
+    }
+    20% {
+        transform: translateY(-75vh);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+@keyframes bottomSideIn {
+    0% {
+        transform: translateY(22vh);
+    }
+    20% {
+        transform: translateY(22vh);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+@keyframes resize {
+    0% {
+        overflow: hidden;
+        background-color: rgba(0, 0, 0, 1);
+    }
+    20% {
+        overflow: hidden;
+    }
+    90% {
+        overflow: hidden;
+        background-color: rgba(0, 0, 0, 0);
+    }
+    100% {
+        overflow: inherit;
+        background-color: inherit;
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    90% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
