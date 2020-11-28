@@ -150,7 +150,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'jinjiu_description',
-    target: '<b>锁定技</b>，你的【杀】均视为【酒】。',
+    target: '<b>锁定技</b>，你的【酒】均视为【杀】。',
   },
 ];
 
