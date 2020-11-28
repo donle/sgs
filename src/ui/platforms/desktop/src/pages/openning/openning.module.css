@@ -1,0 +1,53 @@
+@value gridLine from '../../ui/metrics/metrics.css';
+
+.scene {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+}
+
+.logo {
+    margin-bottom: calc(gridLine * 4);
+    animation: logoNeon 6s 1;
+    max-width: calc(gridLine * 32);
+}
+
+.description {
+  animation: descriptionNeon 6s 1;
+}
+
+@keyframes logoNeon {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes descriptionNeon {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

@@ -1,16 +1,16 @@
 import { app, BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
-import * as MouseTrap from 'mousetrap';
+// import * as MouseTrap from 'mousetrap';
 import * as path from 'path';
 import * as url from 'url';
 
 app.setPath('userData', __dirname);
 
-app.whenReady().then(() => {
-  // tslint:disable-next-line:no-empty
-  MouseTrap.bind(['command+r', 'ctrl+r'], () => {});
-  // tslint:disable-next-line:no-empty
-  MouseTrap.bind(['f5'], () => {});
-});
+// app.whenReady().then(() => {
+//   // tslint:disable-next-line:no-empty
+//   MouseTrap.bind(['command+r', 'ctrl+r'], () => {});
+//   // tslint:disable-next-line:no-empty
+//   MouseTrap.bind(['f5'], () => {});
+// });
 
 class AppWindow {
   public static onReady(callbackFn: () => void) {

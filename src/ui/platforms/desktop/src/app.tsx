@@ -2,6 +2,7 @@ import { getAudioLoader } from 'audio_loader/audio_loader_util';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { createHashHistory } from 'history';
 import { getImageLoader } from 'image_loader/image_loader_util';
+import { OpenningPage } from 'pages/openning/openning';
 import { RoomPage } from 'pages/room/room';
 import { ClientConfig } from 'props/config_props';
 import * as React from 'react';
@@ -21,8 +22,14 @@ export const App = (props: { config: ClientConfig; translator: ClientTranslation
     <Router history={customHistory}>
       <div>
         <Route path={'/'} exact>
-          <Redirect to={'lobby'} />
+          <Redirect to={'openning'} />
         </Route>
+        <Route
+          path={'/openning'}
+          render={({ match, location, history }) => (
+            <OpenningPage config={props.config} match={match} location={location} history={history} />
+          )}
+        />
         <Route
           path={'/lobby'}
           render={({ match, location, history }) => (
@@ -36,7 +43,7 @@ export const App = (props: { config: ClientConfig; translator: ClientTranslation
               audioLoader={audioLoader}
             />
           )}
-        ></Route>
+        />
         <Route
           path={'/room/:slug'}
           render={({ match, location, history }) => (
