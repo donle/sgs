@@ -14,6 +14,7 @@ export interface AudioService {
   playChainAudio(): void;
   playRoomBGM(): void;
   playLobbyBGM(): void;
+  playGameStartAudio(): void;
   stop(): void;
 }
 
@@ -63,6 +64,9 @@ class AudioPlayerService implements AudioService {
   playLobbyBGM() {
     const audioUrl = this.loader.getLobbyBackgroundMusic();
     this.play(audioUrl, true, undefined, 'bgm');
+  }
+  playGameStartAudio () {
+    this.play(this.loader.getGameStartAudio());
   }
 
   private play(url: string, loop?: boolean, nodeName?: string, type: 'bgm' | 'game' = 'game') {

@@ -5,6 +5,7 @@ import { Sanguosha } from 'core/game/engine';
 import { GameCardExtensions, GameCharacterExtensions } from 'core/game/game_props';
 import { LobbySocketEvent, LobbySocketEventPicker, RoomInfo } from 'core/shares/types/server_types';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
@@ -26,6 +27,7 @@ type LobbyProps = PagePropsWithConfig<{
   translator: ClientTranslationModule;
   imageLoader: ImageLoader;
   audioLoader: AudioLoader;
+  electronLoader: ElectronLoader;
 }>;
 
 @mobxReact.observer
@@ -111,10 +113,6 @@ export class Lobby extends React.Component<LobbyProps> {
     this.socket.emit(LobbySocketEvent.QueryVersion.toString(), {
       version: Sanguosha.Version,
     });
-
-    if (window.innerWidth < 1200) {
-      window.screen.orientation.lock('landscape');
-    }
   }
 
   @mobx.action

@@ -1,16 +1,10 @@
-import { app, BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
-// import * as MouseTrap from 'mousetrap';
+import { app, BrowserWindow, BrowserWindowConstructorOptions, ipcMain } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 
-app.setPath('userData', __dirname);
+const FLASH_WINDOW = 'flashWindow';
 
-// app.whenReady().then(() => {
-//   // tslint:disable-next-line:no-empty
-//   MouseTrap.bind(['command+r', 'ctrl+r'], () => {});
-//   // tslint:disable-next-line:no-empty
-//   MouseTrap.bind(['f5'], () => {});
-// });
+app.setPath('userData', __dirname);
 
 class AppWindow {
   public static onReady(callbackFn: () => void) {
@@ -28,6 +22,18 @@ class AppWindow {
   private windowInstance: BrowserWindow | undefined;
   constructor(windowOptions?: BrowserWindowConstructorOptions) {
     this.windowInstance = new BrowserWindow(windowOptions);
+    this.installIpcListener();
+    this.windowInstance.webContents.openDevTools();
+  }
+
+  private installIpcListener() {
+    this.windowInstance.once('focus', () => {
+      this.windowInstance.flashFrame(false);
+    });
+
+    ipcMain.on(FLASH_WINDOW, () => {
+      this.windowInstance.flashFrame(true);
+    });
   }
 
   public getInstance() {
@@ -56,6 +62,7 @@ export function main() {
     height: 768,
     webPreferences: {
       nodeIntegration: false,
+      preload: path.join(__dirname, './preload.js'),
     },
   });
   const winAppInstance = winApp.getInstance();

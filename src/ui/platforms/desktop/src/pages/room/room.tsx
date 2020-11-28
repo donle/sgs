@@ -3,6 +3,7 @@ import { clientActiveListenerEvents, EventPacker, GameEventIdentifiers, ServerEv
 import { ClientSocket } from 'core/network/socket.client';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
@@ -30,6 +31,7 @@ export class RoomPage extends React.Component<
     translator: ClientTranslationModule;
     imageLoader: ImageLoader;
     audioLoader: AudioLoader;
+    electronLoader: ElectronLoader;
   }>
 > {
   private presenter: RoomPresenter;
@@ -48,10 +50,14 @@ export class RoomPage extends React.Component<
   @mobx.observable.ref
   openSettings = false;
   @mobx.observable.ref
-  private defaultMainVolume = window.localStorage.getItem('mainVolume') ? Number.parseInt(window.localStorage.getItem('mainVolume')!, 10) : 50;
+  private defaultMainVolume = window.localStorage.getItem('mainVolume')
+    ? Number.parseInt(window.localStorage.getItem('mainVolume')!, 10)
+    : 50;
   @mobx.observable.ref
-  private defaultGameVolume = window.localStorage.getItem('gameVolume') ? Number.parseInt(window.localStorage.getItem('gameVolume')!, 10) : 50;
-  
+  private defaultGameVolume = window.localStorage.getItem('gameVolume')
+    ? Number.parseInt(window.localStorage.getItem('gameVolume')!, 10)
+    : 50;
+
   private readonly settings = {
     onVolumeChange: mobx.action((volume: number) => {
       window.localStorage.setItem('gameVolume', volume.toString());
@@ -71,6 +77,7 @@ export class RoomPage extends React.Component<
       translator: ClientTranslationModule;
       imageLoader: ImageLoader;
       audioLoader: AudioLoader;
+      electronLoader: ElectronLoader;
     }>,
   ) {
     super(props);
@@ -92,6 +99,7 @@ export class RoomPage extends React.Component<
       translator,
       this.props.imageLoader,
       this.audioService,
+      this.props.electronLoader,
     );
   }
 

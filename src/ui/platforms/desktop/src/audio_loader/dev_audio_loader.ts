@@ -10,6 +10,9 @@ export class DevAudioLoader implements AudioLoader {
   getRoomBackgroundMusic() {
     return 'https://aod.cos.tx.xmcdn.com/group24/M02/CF/E6/wKgJMFi6G1bgZDjzAB9BygnpYEI443.m4a';
   }
+  getGameStartAudio() {
+    return 'http://doublebit.gitee.io/pictest/audio/common/gamestart.ogg'; 
+  }
   getDamageAudio(damage: number) {
     return `${remoteRoot}/audios/` + (damage === 1 ? 'damage' : 'damage2') + '.mp3';
   }
