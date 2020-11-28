@@ -90,10 +90,10 @@
     "start:win": "yarn sync:win && cross-env NODE_PATH=./src GENERATE_SOURCEMAP=false node scripts/start.js",
     "build:dev:win": "yarn sync:win && cross-env NODE_PATH=./src GENERATE_SOURCEMAP=false node scripts/build.js",
     "start:dev:win": "yarn build:dev:win && xcopy .\\public\\home .\\build\\public\\home /s /i && ts-node ./server/app.ts",
-    "electron:win": "yarn build:win &&tsc ./tools/electron --outDir ./build/ && cross-env NODE_ENV=production electron .",
-    "electron:mac": "yarn build:mac && NODE_ENV=production electron .",
-    "build:electron:win": "yarn build:win && tsc ./tools/electron --outDir ./build/ && electron-builder",
-    "build:electron:mac": "yarn build:mac && tsc ./tools/electron --outDir ./build/ && electron-builder",
+    "electron:win": "yarn build:win && tsc ./tools/electron --outDir ./build/ && copy .\\tools\\preload.js .\\build && cross-env NODE_ENV=production electron .",
+    "electron:mac": "yarn build:mac && tsc ./tools/electron --outDir ./build/ && copy .\\tools\\preload.js .\\build && NODE_ENV=production electron .",
+    "build:electron:win": "yarn build:win && tsc ./tools/electron --outDir ./build/ && copy .\\tools\\preload.js .\\build && electron-builder",
+    "build:electron:mac": "yarn build:mac && tsc ./tools/electron --outDir ./build/ && cp -R ./tools/preload.js ./build && electron-builder",
     "test": "node scripts/test.js"
   },
   "build": {

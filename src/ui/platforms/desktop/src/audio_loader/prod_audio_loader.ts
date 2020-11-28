@@ -5,6 +5,7 @@ import chainAudio from './audios/chain.mp3';
 import damageAudio from './audios/damage.mp3';
 import seriousDamageAudio from './audios/damage2.mp3';
 import equipAudio from './audios/equip.mp3';
+import gameStartAudio from './audios/gamestart.mp3';
 import lostHpAudio from './audios/loseHp.mp3';
 import { AudioLoader } from './audio_loader';
 
@@ -15,6 +16,9 @@ export class ProdAudioLoader implements AudioLoader {
 
   getRoomBackgroundMusic() {
     return roomBGM;
+  }
+  getGameStartAudio() {
+    return gameStartAudio;
   }
 
   getDamageAudio(damage: number) {

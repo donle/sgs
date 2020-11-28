@@ -19,6 +19,7 @@ import { System } from 'core/shares/libs/system';
 import { SkillType } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
 import { AudioService } from 'ui/audio/install';
@@ -46,6 +47,7 @@ export class GameClientProcessor {
     private translator: ClientTranslationModule,
     private imageLoader: ImageLoader,
     private audioService: AudioService,
+    private electron: ElectronLoader,
   ) {
     this.audioService.playRoomBGM();
   }
@@ -310,6 +312,7 @@ export class GameClientProcessor {
     this.presenter.addUserMessage(this.translator.trx(content.message));
     this.presenter.onIncomingMessage(content.playerId, content.originalMessage);
     this.presenter.broadcastUIUpdate();
+    this.electron.flashFrame();
   }
 
   private async onHandleSetFlagEvent<T extends GameEventIdentifiers.SetFlagEvent>(
@@ -695,6 +698,8 @@ export class GameClientProcessor {
     });
     this.store.room.sortPlayers();
     this.presenter.broadcastUIUpdate();
+    this.audioService.playGameStartAudio();
+    this.electron.flashFrame();
     await this.store.room.gameStart(content.gameStartInfo);
   }
 
