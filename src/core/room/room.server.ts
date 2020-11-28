@@ -1262,8 +1262,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         );
 
         responses.sort((p1, p2) => {
-          const pos1 = this.getPlayerById(p1.fromId).Position;
-          const pos2 = this.getPlayerById(p2.fromId).Position;
+          const pos1 =
+            (this.getPlayerById(p1.fromId).Position - from.Position + this.Players.length) % this.Players.length;
+          const pos2 =
+            (this.getPlayerById(p2.fromId).Position - from.Position + this.Players.length) % this.Players.length;
+
           return pos1 < pos2 ? 1 : -1;
         });
 
