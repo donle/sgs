@@ -16,7 +16,7 @@ import { PagePropsWithConfig } from 'types/page_props';
 import { installAudioPlayerService } from 'ui/audio/install';
 import { Button } from 'ui/button/button';
 import { LinkButton } from 'ui/button/link_button';
-import { ShadowMask } from 'ui/shadow_mask/shadow_mask';
+import { Curtain } from 'ui/curtain/curtain';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import styles from './lobby.module.css';
 import { AcknowledgeDialog } from './ui/acknowledge_dialog/acknowledge_dialog';
@@ -291,17 +291,17 @@ export class Lobby extends React.Component<LobbyProps> {
         </div>
         <div className={styles.chatInfo}></div>
         {this.openRoomCreationDialog && (
-          <ShadowMask onCancel={this.onRoomCreationCancelled}>
+          <Curtain onCancel={this.onRoomCreationCancelled}>
             <CreatRoomDialog
               imageLoader={this.props.imageLoader}
               translator={this.props.translator}
               onSubmit={this.onRoomCreated}
               onCancel={this.onRoomCreationCancelled}
             />
-          </ShadowMask>
+          </Curtain>
         )}
         {this.openSettings && (
-          <ShadowMask onCancel={this.onCloseSettings}>
+          <Curtain onCancel={this.onCloseSettings}>
             <SettingsDialog
               defaultGameVolume={this.defaultGameVolume}
               defaultMainVolume={this.defaultMainVolume}
@@ -311,12 +311,12 @@ export class Lobby extends React.Component<LobbyProps> {
               onGameVolumeChange={this.settings.onVolumeChange}
               onConfirm={this.onCloseSettings}
             />
-          </ShadowMask>
+          </Curtain>
         )}
         {this.openAcknowledgement && (
-          <ShadowMask onCancel={this.onCloseAcknowledgement}>
+          <Curtain onCancel={this.onCloseAcknowledgement}>
             <AcknowledgeDialog imageLoader={this.props.imageLoader} onClose={this.onCloseAcknowledgement} />
-          </ShadowMask>
+          </Curtain>
         )}
       </div>
     );
