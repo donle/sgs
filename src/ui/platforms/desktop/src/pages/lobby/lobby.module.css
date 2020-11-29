@@ -83,7 +83,6 @@
 
 .roomInfo {
     display: flex;
-    justify-content: space-between;
     padding: 0 calc(gridLine / 2);
     align-items: center;
     box-shadow: 0 0 0 0, inset 0 0 0 0;
@@ -94,6 +93,34 @@
 }
 .roomInfo:last-of-type {
     border-bottom: 0;
+}
+
+.roomName {
+    flex: auto;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 60%;
+    white-space: nowrap;
+}
+
+.roomLocker > img {
+    height: calc(gridLine * 2);
+}
+
+.roomLocker,
+.roomMode {
+    width: calc(gridLine * 6);
+    text-align: center;
+}
+
+.roomPlayers {
+    width: calc(gridLine * 8);
+    text-align: center;
+}
+
+.roomStatus {
+    width: calc(gridLine * 8);
+    text-align: center;
 }
 
 .gameInfo {
@@ -159,6 +186,15 @@
     position: absolute;
     right: calc(gridLine * 6);
     top: calc(gridLine * 3.5);
+}
+
+.version {
+    position: absolute;
+    z-index: 9;
+    font-size: 14px;
+    right: gridLine;
+    bottom: gridLine;
+    color: white
 }
 
 @keyframes leftSideIn {

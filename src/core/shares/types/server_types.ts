@@ -23,6 +23,7 @@ export type RoomInfo = {
   packages: GameCharacterExtensions[];
   id: RoomId;
   gameMode: GameMode;
+  passcode?: string;
 };
 
 type RoomEventUtilities = {

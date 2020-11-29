@@ -19,6 +19,7 @@
     font-weight: 600;
     letter-spacing: 2px;
     height: 100%;
+    width: 100%;
 }
 .button.imageButton {
     background: transparent;

@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { Sanguosha } from 'core/game/engine';
 import { GameCardExtensions, GameCharacterExtensions } from 'core/game/game_props';
 import { LobbySocketEvent, LobbySocketEventPicker, RoomInfo } from 'core/shares/types/server_types';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
@@ -18,10 +19,12 @@ import { installAudioPlayerService } from 'ui/audio/install';
 import { Button } from 'ui/button/button';
 import { LinkButton } from 'ui/button/link_button';
 import { Tooltip } from 'ui/tooltip/tooltip';
+import lockerImage from './images/locked.png';
 import styles from './lobby.module.css';
 import { AcknowledgeDialog } from './ui/acknowledge_dialog/acknowledge_dialog';
 import { CreateRoomButton } from './ui/create_room_button/create_room_button';
 import { CreatRoomDialog, TemporaryRoomCreationInfo } from './ui/create_room_dialog/create_room_dialog';
+import { EnterPasscodeDialog } from './ui/enter_passcode_dialog/enter_passcode_dialog';
 
 type LobbyProps = PagePropsWithConfig<{
   translator: ClientTranslationModule;
@@ -40,6 +43,10 @@ export class Lobby extends React.Component<LobbyProps> {
   private openRoomCreationDialog = false;
   @mobx.observable.ref
   private openSettings = false;
+  @mobx.observable.ref
+  private openPasscodeEnterDialog = false;
+  @mobx.observable.ref
+  private showPasscodeError = false;
   @mobx.observable.ref
   private defaultMainVolume = window.localStorage.getItem('mainVolume')
     ? Number.parseInt(window.localStorage.getItem('mainVolume')!, 10)
@@ -60,6 +67,8 @@ export class Lobby extends React.Component<LobbyProps> {
   private roomListBackgroundImage = this.props.imageLoader.getRoomListBackgroundImage().src!;
   private createRoomImage = this.props.imageLoader.getCreateRoomButtonImage().src!;
   private audioService = installAudioPlayerService(this.props.audioLoader);
+
+  private currentInteractiveRoomInfo: RoomInfo;
 
   constructor(props: LobbyProps) {
     super(props);
@@ -137,8 +146,14 @@ export class Lobby extends React.Component<LobbyProps> {
     return <div>{this.props.translator.tr('Unmatched core version, please update your application')}</div>;
   }
 
+  @mobx.action
   private readonly enterRoom = (roomInfo: RoomInfo) => () => {
-    this.props.history.push(`/room/${roomInfo.id}`);
+    if (roomInfo.passcode) {
+      this.openPasscodeEnterDialog = true;
+      this.currentInteractiveRoomInfo = roomInfo;
+    } else {
+      this.props.history.push(`/room/${roomInfo.id}`);
+    }
   };
 
   @mobx.action
@@ -185,6 +200,23 @@ export class Lobby extends React.Component<LobbyProps> {
     this.openAcknowledgement = false;
   };
 
+  @mobx.action
+  private readonly onPasscodeSubmit = (passcode?: string) => {
+    if (this.currentInteractiveRoomInfo && passcode && this.currentInteractiveRoomInfo.passcode === passcode) {
+      this.openPasscodeEnterDialog = false;
+      this.showPasscodeError = false;
+      this.props.history.push(`/room/${this.currentInteractiveRoomInfo.id}`);
+    } else {
+      this.showPasscodeError = true;
+    }
+  };
+
+  @mobx.action
+  private readonly onPasscodeDialogClose = () => {
+    this.openPasscodeEnterDialog = false;
+    this.showPasscodeError = false;
+  };
+
   render() {
     const username = window.localStorage.getItem('username');
 
@@ -212,14 +244,19 @@ export class Lobby extends React.Component<LobbyProps> {
               ? this.unmatchedView()
               : this.roomList.map((roomInfo, index) => (
                   <li className={styles.roomInfo} key={index}>
-                    <span>{roomInfo.name}</span>
-                    <img
-                      className={styles.gameModeIcon}
-                      src={this.props.imageLoader.getGameModeIcon(roomInfo.gameMode).src}
-                      alt=""
-                    />
-                    <span>{this.props.translator.tr(roomInfo.status)}</span>
-                    <span>{`${roomInfo.activePlayers}/${roomInfo.totalPlayers}`}</span>
+                    <span className={styles.roomName}>
+                      <span>{roomInfo.name}</span>
+                    </span>
+                    <span className={styles.roomMode}>
+                      <img
+                        className={styles.gameModeIcon}
+                        src={this.props.imageLoader.getGameModeIcon(roomInfo.gameMode).src}
+                        alt=""
+                      />
+                    </span>
+                    <span className={styles.roomStatus}>{this.props.translator.tr(roomInfo.status)}</span>
+                    <span className={styles.roomPlayers}>{`${roomInfo.activePlayers}/${roomInfo.totalPlayers}`}</span>
+                    <span className={styles.roomLocker}>{roomInfo.passcode && <img src={lockerImage} alt="" />}</span>
                     <span className={styles.roomActions}>
                       <LinkButton
                         onClick={this.enterRoom(roomInfo)}
@@ -308,9 +345,23 @@ export class Lobby extends React.Component<LobbyProps> {
             onConfirm={this.onCloseSettings}
           />
         )}
+        {this.openPasscodeEnterDialog && (
+          <EnterPasscodeDialog
+            translator={this.props.translator}
+            imageLoader={this.props.imageLoader}
+            onSubmit={this.onPasscodeSubmit}
+            onClose={this.onPasscodeDialogClose}
+            showError={this.showPasscodeError}
+          />
+        )}
         {this.openAcknowledgement && (
           <AcknowledgeDialog imageLoader={this.props.imageLoader} onClose={this.onCloseAcknowledgement} />
         )}
+        <div className={styles.version}>
+          {this.props.translator.trx(
+            TranslationPack.translationJsonPatcher('core version: {0}', Sanguosha.Version).toString(),
+          )}
+        </div>
       </div>
     );
   }

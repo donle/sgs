@@ -570,6 +570,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       status: this.gameStarted ? 'playing' : 'waiting',
       id: this.roomId,
       gameMode: this.gameInfo.gameMode,
+      passcode: this.gameInfo.passcode,
     };
   }
 

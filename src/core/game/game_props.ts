@@ -30,6 +30,7 @@ export type GameInfo = {
   cardExtensions: GameCardExtensions[];
   numberOfPlayers: number;
   roomName: string;
+  passcode?: string;
   multiCharacters?: boolean;
   flavor: Flavor;
   gameMode: GameMode;
