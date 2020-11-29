@@ -1,0 +1,67 @@
+@value gridLine from '../../../../ui/metrics/metrics.css';
+
+.passcodeDialog {
+    display: flex;
+    flex-direction: column;
+    padding: calc(gridLine * 3);
+    color: white;
+    min-width: calc(gridLine * 40);
+}
+
+.background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.inputField {
+    padding: calc(gridLine * 2) 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 2;
+}
+
+.inputLabelText {
+    margin-bottom: gridLine;
+}
+
+.input {
+    border: 0;
+    border-bottom: 1px solid grey;
+    height: calc(gridLine * 4);
+    background: #404040;
+    color: white;
+    box-shadow: inset 2px 2px 2px 0px #171212;
+    border-radius: 4px;
+    outline: none;
+    margin-bottom: gridLine;
+}
+
+.closeButton {
+    position: absolute;
+    top: calc(gridLine * 2);
+    right: calc(gridLine * 2);
+    cursor: pointer;
+    border-radius: 50%;
+    border: 2px solid white;
+    padding: calc(gridLine / 2);
+    height: calc(gridLine * 3);
+    width: calc(gridLine * 3);
+    background: none;
+    outline: none;
+    z-index: 3;
+}
+.close {
+    height: 100%;
+    width: 100%;
+}
+
+.confirmButton {
+    align-self: flex-end;
+}
+
+.error {
+  color: red;
+}
