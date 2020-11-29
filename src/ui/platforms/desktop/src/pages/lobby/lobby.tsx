@@ -18,6 +18,7 @@ import { PagePropsWithConfig } from 'types/page_props';
 import { installAudioPlayerService } from 'ui/audio/install';
 import { Button } from 'ui/button/button';
 import { LinkButton } from 'ui/button/link_button';
+import { Curtain } from 'ui/curtain/curtain';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import lockerImage from './images/locked.png';
 import styles from './lobby.module.css';
@@ -327,23 +328,27 @@ export class Lobby extends React.Component<LobbyProps> {
         </div>
         <div className={styles.chatInfo}></div>
         {this.openRoomCreationDialog && (
-          <CreatRoomDialog
-            imageLoader={this.props.imageLoader}
-            translator={this.props.translator}
-            onSubmit={this.onRoomCreated}
-            onCancel={this.onRoomCreationCancelled}
-          />
+          <Curtain onCancel={this.onRoomCreationCancelled}>
+            <CreatRoomDialog
+              imageLoader={this.props.imageLoader}
+              translator={this.props.translator}
+              onSubmit={this.onRoomCreated}
+              onCancel={this.onRoomCreationCancelled}
+            />
+          </Curtain>
         )}
         {this.openSettings && (
-          <SettingsDialog
-            defaultGameVolume={this.defaultGameVolume}
-            defaultMainVolume={this.defaultMainVolume}
-            imageLoader={this.props.imageLoader}
-            translator={this.props.translator}
-            onMainVolumeChange={this.settings.onMainVolumeChange}
-            onGameVolumeChange={this.settings.onVolumeChange}
-            onConfirm={this.onCloseSettings}
-          />
+          <Curtain onCancel={this.onCloseSettings}>
+            <SettingsDialog
+              defaultGameVolume={this.defaultGameVolume}
+              defaultMainVolume={this.defaultMainVolume}
+              imageLoader={this.props.imageLoader}
+              translator={this.props.translator}
+              onMainVolumeChange={this.settings.onMainVolumeChange}
+              onGameVolumeChange={this.settings.onVolumeChange}
+              onConfirm={this.onCloseSettings}
+            />
+          </Curtain>
         )}
         {this.openPasscodeEnterDialog && (
           <EnterPasscodeDialog
@@ -355,7 +360,9 @@ export class Lobby extends React.Component<LobbyProps> {
           />
         )}
         {this.openAcknowledgement && (
-          <AcknowledgeDialog imageLoader={this.props.imageLoader} onClose={this.onCloseAcknowledgement} />
+          <Curtain onCancel={this.onCloseAcknowledgement}>
+            <AcknowledgeDialog imageLoader={this.props.imageLoader} onClose={this.onCloseAcknowledgement} />
+          </Curtain>
         )}
         <div className={styles.version}>
           {this.props.translator.trx(

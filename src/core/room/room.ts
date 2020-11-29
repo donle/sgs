@@ -11,7 +11,7 @@ import {
   ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
-import { PinDianResultType } from 'core/event/event.server';
+import { PinDianReport } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { GameInfo } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
@@ -135,7 +135,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract async obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean): Promise<void>;
   //Server only
-  public abstract async pindian(fromId: PlayerId, toIds: PlayerId[]): Promise<PinDianResultType | undefined>;
+  public abstract async pindian(fromId: PlayerId, toIds: PlayerId[]): Promise<PinDianReport>;
   public abstract async turnOver(playerId: PlayerId): Promise<void>;
 
   //Server only

@@ -155,6 +155,7 @@ export const enum JudgeEffectStage {
 export const enum PinDianStage {
   BeforePinDianEffect = 'BeforePinDianEffect',
   PinDianEffect = 'PinDianEffect',
+  PinDianResultConfirmed = 'PinDianConfirmed', // only used for trigger(), don't put it into stage list;
   AfterPinDianEffect = 'AfterPinDianEffect',
 }
 
