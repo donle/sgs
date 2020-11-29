@@ -1,6 +1,7 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { PinDianResult } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE } from 'core/game/game_props';
 import { PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
@@ -51,12 +52,12 @@ export class TianYi extends ActiveSkill {
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { toIds, fromId } = event;
-    const pindianResult = await room.pindian(fromId, toIds!);
-    if (!pindianResult) {
+    const { pindianRecord } = await room.pindian(fromId, toIds!);
+    if (!pindianRecord.length) {
       return false;
     }
 
-    if (pindianResult.winners.includes(fromId)) {
+    if (pindianRecord[0].result === PinDianResult.WIN) {
       room.setFlag<boolean>(fromId, TianYi.Win, true, true);
     } else {
       room.setFlag<boolean>(fromId, TianYi.Lose, true, true);

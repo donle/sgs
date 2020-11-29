@@ -13,6 +13,7 @@ import { match } from 'react-router-dom';
 import { PagePropsWithConfig } from 'types/page_props';
 import { installAudioPlayerService } from 'ui/audio/install';
 import { ClientCard } from 'ui/card/card';
+import { Curtain } from 'ui/curtain/curtain';
 import { GameClientProcessor } from './game_processor';
 import { installService, RoomBaseService } from './install_service';
 import styles from './room.module.css';
@@ -269,15 +270,17 @@ export class RoomPage extends React.Component<
           </div>
         )}
         {this.openSettings && (
-          <SettingsDialog
-            defaultGameVolume={this.defaultGameVolume}
-            defaultMainVolume={this.defaultMainVolume}
-            imageLoader={this.props.imageLoader}
-            translator={this.props.translator}
-            onMainVolumeChange={this.settings.onMainVolumeChange}
-            onGameVolumeChange={this.settings.onVolumeChange}
-            onConfirm={this.onCloseSettings}
-          />
+          <Curtain onCancel={this.onCloseSettings}>
+            <SettingsDialog
+              defaultGameVolume={this.defaultGameVolume}
+              defaultMainVolume={this.defaultMainVolume}
+              imageLoader={this.props.imageLoader}
+              translator={this.props.translator}
+              onMainVolumeChange={this.settings.onMainVolumeChange}
+              onGameVolumeChange={this.settings.onVolumeChange}
+              onConfirm={this.onCloseSettings}
+            />
+          </Curtain>
         )}
       </div>
     );

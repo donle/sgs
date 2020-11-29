@@ -1,5 +1,6 @@
 import { CardChoosingOptions } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { PinDianResult } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { AimStage, AllStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -35,9 +36,12 @@ export class LieRen extends TriggerSkill {
     const { toId } = aimEvent;
     const toIds: PlayerId[] = [toId];
 
-    const pindianResult = await room.pindian(fromId, toIds);
+    const { pindianCardId, pindianRecord } = await room.pindian(fromId, toIds);
+    if (!pindianRecord.length) {
+      return false;
+    }
 
-    if (pindianResult?.winners.includes(fromId)) {
+    if (pindianRecord[0].result === PinDianResult.WIN) {
       const to = room.getPlayerById(toId);
       if (to.getPlayerCards().length > 0) {
         const options: CardChoosingOptions = {
@@ -82,7 +86,7 @@ export class LieRen extends TriggerSkill {
 
       const moveEvents: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[] = [];
       for (const playerId of playerIds) {
-        const cardId = pindianResult?.pindianCards.filter(card => card.fromId === playerId)[0].cardId;
+        const cardId = fromId === playerId ? pindianCardId : pindianRecord[0].cardId;
         if (cardId && room.isCardInDropStack(cardId)) {
           moveEvents.push({
             movingCards: [{ card: cardId, fromArea: CardMoveArea.DropStack }],
