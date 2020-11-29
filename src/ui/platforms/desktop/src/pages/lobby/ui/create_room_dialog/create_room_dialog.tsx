@@ -11,6 +11,7 @@ export type TemporaryRoomCreationInfo = {
   numberOfPlayers: number;
   roomName: string;
   gameMode: GameMode;
+  passcode?: string;
 };
 
 export const CreatRoomDialog = (props: {
@@ -21,17 +22,21 @@ export const CreatRoomDialog = (props: {
 }) => {
   const username = window.localStorage.getItem('username');
   const [numberOfPlayers, setNumberOfPlayers] = React.useState<number>(2);
-  const [gameMode,] = React.useState<GameMode>(GameMode.Standard);
+  const [gameMode] = React.useState<GameMode>(GameMode.Standard);
+  const [passcode, setPasscode] = React.useState<string>();
   const [roomName, setRoomName] = React.useState<string>(
     username ? props.translator.tr(TranslationPack.translationJsonPatcher("{0}'s room", username).extract()) : '',
   );
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    props.onSubmit({ numberOfPlayers, roomName, gameMode });
+    props.onSubmit({ numberOfPlayers, roomName, gameMode, passcode });
   };
 
   const onRoomNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRoomName(event.target.value);
+  };
+  const onPasscodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPasscode(event.target.value);
   };
   const onNumberOfPlayersChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setNumberOfPlayers(parseInt(event.target.value, 10));
@@ -46,13 +51,21 @@ export const CreatRoomDialog = (props: {
     return options;
   };
 
+  const onAction = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    e.stopPropagation();
+  };
+
   return (
     <Dialog className={styles.createRoomDialog}>
       <img src={props.imageLoader.getDialogBackgroundImage().src} alt="bg" className={styles.background} />
-      <form onSubmit={onSubmit} className={styles.creatRoomForm}>
+      <form onSubmit={onSubmit} className={styles.creatRoomForm} onMouseDown={onAction}>
         <div className={styles.inputField}>
           <span className={styles.inputLabelText}>{props.translator.tr('please enter your room name')}</span>
           <input className={styles.input} value={roomName} onChange={onRoomNameChange} />
+        </div>
+        <div className={styles.inputField}>
+          <span className={styles.inputLabelText}>{props.translator.tr('please enter your room passcode')}</span>
+          <input className={styles.input} value={passcode} onChange={onPasscodeChange} />
         </div>
         <div className={styles.inputField}>
           <span className={styles.inputLabelText}>{props.translator.tr('please choose number of players')}</span>
