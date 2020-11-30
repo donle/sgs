@@ -2,13 +2,53 @@ import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, CardMoveStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Algorithm } from 'core/shares/libs/algorithm';
-import { TriggerSkill } from 'core/skills/skill';
-import { CommonSkill } from 'core/skills/skill_wrappers';
+import { ActiveSkill, TriggerSkill } from 'core/skills/skill';
+import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 
 @CommonSkill({ name: 'zongxuan', description: 'zongxuan_description' })
-export class ZongXuan extends TriggerSkill {
+export class ZongXuan extends ActiveSkill {
+  public canUse(room: Room, owner: Player) {
+    return !owner.hasUsedSkill(this.GeneralName);
+  }
+
+  public cardFilter(room: Room, owner: Player, cards: CardId[]) {
+    return cards.length === 1;
+  }
+
+  public availableCardAreas() {
+    return [PlayerCardsArea.HandArea];
+  }
+
+  public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
+    return true;
+  }
+
+  public numberOfTargets() {
+    return 0;
+  }
+
+  public isAvailableTarget() {
+    return true;
+  }
+
+  public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    return true;
+  }
+
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    const { cardIds } = event;
+    room.putCards('top', ...cardIds!);
+
+    return true;
+  }
+}
+
+@ShadowSkill
+@CommonSkill({ name: ZongXuan.Name, description: ZongXuan.Description })
+export class ZongXuanShadow extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>, stage?: AllStage) {
     return stage === CardMoveStage.AfterCardMoved;
   }

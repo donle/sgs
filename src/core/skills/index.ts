@@ -258,7 +258,7 @@ export { RenXin } from './characters/yijiang2013/renxin';
 export { JingCe } from './characters/yijiang2013/jingce';
 export { JunXing } from './characters/yijiang2013/junxing';
 export { YuCe } from './characters/yijiang2013/yuce';
-export { ZongXuan } from './characters/yijiang2013/zongxuan';
+export { ZongXuan, ZongXuanShadow } from './characters/yijiang2013/zongxuan';
 export { ZhiYan } from './characters/yijiang2013/zhiyan';
 
 export { Cheat } from './system/cheat';

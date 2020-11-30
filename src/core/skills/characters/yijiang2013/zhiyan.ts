@@ -44,7 +44,7 @@ export class ZhiYan extends TriggerSkill {
     }
 
     const showCardEvent: ServerEventFinder<GameEventIdentifiers.CardDisplayEvent> = {
-      fromId,
+      fromId: toId,
       displayCards: [cardId],
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} display hand card {1}',
