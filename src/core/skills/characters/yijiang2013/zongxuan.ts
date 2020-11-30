@@ -4,7 +4,6 @@ import { AllStage, CardMoveStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { Algorithm } from 'core/shares/libs/algorithm';
 import { ActiveSkill, TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 
@@ -89,11 +88,7 @@ export class ZongXuanShadow extends TriggerSkill {
       fromId,
     );
 
-    if (bottom !== undefined) {
-      room.putCards('top', ...bottom);
-    } else {
-      room.putCards('top', ...Algorithm.randomPick<CardId>(1, cardIds));
-    }
+    room.putCards('top', ...bottom);
 
     return true;
   }
