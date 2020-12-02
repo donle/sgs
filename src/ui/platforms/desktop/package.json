@@ -90,10 +90,11 @@
     "start:win": "yarn sync:win && cross-env NODE_PATH=./src GENERATE_SOURCEMAP=false node scripts/start.js",
     "build:dev:win": "yarn sync:win && cross-env NODE_PATH=./src GENERATE_SOURCEMAP=false node scripts/build.js",
     "start:dev:win": "yarn build:dev:win && xcopy .\\public\\home .\\build\\public\\home /s /i && ts-node ./server/app.ts",
-    "electron:win": "yarn build:win && tsc ./tools/electron --outDir ./build/ && copy .\\tools\\preload.js .\\build && cross-env NODE_ENV=production electron .",
-    "electron:mac": "yarn build:mac && tsc ./tools/electron --outDir ./build/ && copy .\\tools\\preload.js .\\build && NODE_ENV=production electron .",
-    "build:electron:win": "yarn build:win && tsc ./tools/electron --outDir ./build/ && copy .\\tools\\preload.js .\\build && electron-builder",
-    "build:electron:mac": "yarn build:mac && tsc ./tools/electron --outDir ./build/ && cp -R ./tools/preload.js ./build && electron-builder",
+    "electron:win": "yarn build:win && tsc --project ./tools/tsconfig.json && copy .\\tools\\preload.js .\\build && cross-env NODE_ENV=production electron .",
+    "electron:mac": "yarn build:mac && tsc --project ./tools/tsconfig.json && copy .\\tools\\preload.js .\\build && NODE_ENV=production electron .",
+    "build:electron:win": "yarn build:win && tsc --project ./tools/tsconfig.json && copy .\\tools\\preload.js .\\build && electron-builder",
+    "build:electron:mac": "yarn build:mac && tsc --project ./tools/tsconfig.json && cp -R ./tools/preload.js ./build && electron-builder",
+    "builder": "electron-builder",
     "test": "node scripts/test.js"
   },
   "build": {
@@ -136,7 +137,6 @@
   },
   "devDependencies": {
     "@types/classnames": "^2.2.9",
-    "@types/mousetrap": "^1.6.3",
     "@types/react-router-dom": "^5.1.3",
     "@types/react-test-renderer": "^16.9.2",
     "@types/socket.io-client": "^1.4.32",
@@ -147,7 +147,7 @@
     "css-modules-typescript-loader": "^4.0.0",
     "electron": "^9.0.0",
     "electron-builder": "^22.9.1",
-    "mousetrap": "^1.6.5",
+    "electron-store": "^6.0.1",
     "react-test-renderer": "^16.13.0",
     "rimraf": "^3.0.0",
     "ts-jest": "^24.2.1",

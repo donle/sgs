@@ -103,7 +103,9 @@
     box-shadow: none;
     flex: auto;
 }
-
+.sideSkill {
+    width: 100%;
+}
 .skillInfo {
     display: flex;
     flex-direction: column;
