@@ -203,7 +203,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           selected={this.getSkillSelected() && this.props.store.selectedSkill === skill}
           size="normal"
           key={index}
-          className={styles.playerSkill}
+          className={classNames(styles.playerSkill, styles.sideSkill)}
           disabled={!skill.canUse(this.props.store.room, player)}
           onClick={this.onClickSkill(skill)}
         />

@@ -1,5 +1,5 @@
 import type { IpcRenderer } from 'electron';
-import { FLASH_WINDOW } from 'electron.port';
+import { FLASH_WINDOW, SET_DATA } from 'electron.port';
 import { ElectronLoader } from './electron_loader';
 
 export class ProdElectronLoader extends ElectronLoader {
@@ -8,4 +8,8 @@ export class ProdElectronLoader extends ElectronLoader {
   public flashFrame() {
     this.ipcRenderer.send(FLASH_WINDOW);
   }
+
+  public setData<T>(key: string, value: T) {
+    this.ipcRenderer.send(SET_DATA, value);
+  };
 }
