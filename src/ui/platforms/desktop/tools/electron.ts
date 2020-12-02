@@ -1,8 +1,10 @@
 import { app, BrowserWindow, BrowserWindowConstructorOptions, ipcMain } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+import { Store } from './store';
 
 const FLASH_WINDOW = 'flashWindow';
+const SET_DATA = 'setData';
 
 app.setPath('userData', __dirname);
 
@@ -20,6 +22,7 @@ class AppWindow {
   }
 
   private windowInstance: BrowserWindow | undefined;
+  private store = new Store();
   constructor(windowOptions?: BrowserWindowConstructorOptions) {
     this.windowInstance = new BrowserWindow(windowOptions);
     this.installIpcListener();
@@ -27,17 +30,21 @@ class AppWindow {
   }
 
   private installIpcListener() {
-    this.windowInstance.once('focus', () => {
-      this.windowInstance.flashFrame(false);
+    this.windowInstance!.once('focus', () => {
+      this.windowInstance!.flashFrame(false);
     });
 
     ipcMain.on(FLASH_WINDOW, () => {
-      this.windowInstance.flashFrame(true);
+      this.windowInstance!.flashFrame(true);
+    });
+
+    ipcMain.on(SET_DATA, (event, { key, value }: { key: string; value: any }) => {
+      this.store.set(key, value);
     });
   }
 
   public getInstance() {
-    return this.windowInstance;
+    return this.windowInstance!;
   }
 
   public releaseInstance() {

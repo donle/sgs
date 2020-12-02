@@ -132,7 +132,7 @@ export { NiePan } from './characters/fire/niepan';
 export { LuanJi, LuanJiShadow } from './characters/fire/luanji';
 export { XueYi, XueYiShadow, XueYiBuff } from './characters/fire/xueyi';
 export { TianYi, TianYiRemove, TianYiExtra, TianYiBlock } from './characters/fire/tianyi';
-export { HanZhan } from './characters/fire/hanzhan';
+export { HanZhan, HanZhanHidden } from './characters/fire/hanzhan';
 export { ShuangXiong, ShuangXiongShadow, ShuangXiongRemove } from './characters/fire/shuangxiong';
 
 export { JiuChi, JiuChiDrunk, JiuChiExtra } from './characters/forest/jiuchi';

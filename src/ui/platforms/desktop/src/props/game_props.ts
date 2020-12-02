@@ -5,3 +5,9 @@ export const enum LobbyButton {
   Feedback = 'feedback',
   Acknowledgement = 'acknowledge',
 }
+
+export type GameSettings = {
+  gameVolume: number;
+  mainVolume: number;
+  username: string;
+}

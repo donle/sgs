@@ -8,7 +8,7 @@ export class TaiShiCi extends Character {
   constructor(id: number) {
     super(id, 'taishici', CharacterGender.Male, CharacterNationality.Wu, 4, 4, GameCharacterExtensions.Fire, [
       ...skillLoaderInstance.getSkillsByName('tianyi'),
-      skillLoaderInstance.getSkillByName('hanzhan'),
+      ...skillLoaderInstance.getSkillsByName('hanzhan'),
     ]);
   }
 }

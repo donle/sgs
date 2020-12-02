@@ -349,15 +349,16 @@ export const eventDictionary: Word[] = [
   },
   {
     source: '{0} triggered skill {1}, nullify {2}',
-    target: '{0} 触发了技能 “{1}”，使 {2} 对其无效',
+    target: '{0} 触发了技能 【{1}】，使 {2} 对其无效',
   },
+  { source: '{0} triggered skill {1}, obtained card {2}', target: '{0} 触发了技能 【{1}】，获得了 {2}' },
   {
     source: '{0} triggered skill {1}, become the source of damage dealed by {2}',
-    target: '{0} 触发了技能 “{1}”，成为了 {2} 造成的伤害的伤害来源',
+    target: '{0} 触发了技能 【{1}】，成为了 {2} 造成的伤害的伤害来源',
   },
   {
     source: '{0} triggered skill {1}, prevent the damage',
-    target: '{0} 触发了 “{1}” 的效果，防止了此伤害',
+    target: '{0} 触发了【{1}】的效果，防止了此伤害',
   },
   {
     source: '{0}: please choose a card type or color',
@@ -617,7 +618,7 @@ export const UiDictionary: Word[] = [
   { source: 'Refresh room list', target: '刷新房间' },
   { source: 'please input your username here', target: '在此设置玩家名称后可开始游戏' },
   { source: 'Change username', target: '更改玩家名' },
-  { source: 'core version: {0}', target: '内核版本 {0}'},
+  { source: 'core version: {0}', target: '内核版本 {0}' },
   { source: 'Join', target: '加入' },
   { source: 'lobby', target: '大厅' },
   { source: 'room id', target: '房间号' },
