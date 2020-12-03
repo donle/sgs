@@ -1,4 +1,5 @@
 import { AudioLoader } from 'audio_loader/audio_loader';
+import classNames from 'classnames';
 import { clientActiveListenerEvents, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { ClientSocket } from 'core/network/socket.client';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -40,33 +41,35 @@ export class RoomPage extends React.Component<
   private socket: ClientSocket;
   private gameProcessor: GameClientProcessor;
   private roomId: number;
-  private playerName = window.localStorage.getItem('username') || 'unknown';
+  private playerName: string = this.props.electronLoader.getData('username') || 'unknown';
   private baseService: RoomBaseService;
-  private audioService = installAudioPlayerService(this.props.audioLoader);
+  private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
 
   private displayedCardsRef = React.createRef<HTMLDivElement>();
   private readonly cardWidth = 120;
   private readonly cardMargin = 2;
 
   @mobx.observable.ref
+  private focusedCardIndex: number | undefined;
+  @mobx.observable.ref
   openSettings = false;
   @mobx.observable.ref
-  private defaultMainVolume = window.localStorage.getItem('mainVolume')
-    ? Number.parseInt(window.localStorage.getItem('mainVolume')!, 10)
+  private defaultMainVolume = this.props.electronLoader.getData('mainVolume')
+    ? Number.parseInt(this.props.electronLoader.getData('mainVolume'), 10)
     : 50;
   @mobx.observable.ref
-  private defaultGameVolume = window.localStorage.getItem('gameVolume')
-    ? Number.parseInt(window.localStorage.getItem('gameVolume')!, 10)
+  private defaultGameVolume = this.props.electronLoader.getData('gameVolume')
+    ? Number.parseInt(this.props.electronLoader.getData('gameVolume'), 10)
     : 50;
 
   private readonly settings = {
     onVolumeChange: mobx.action((volume: number) => {
-      window.localStorage.setItem('gameVolume', volume.toString());
+      this.props.electronLoader.setData('gameVolume', volume.toString());
       this.defaultGameVolume = volume;
       this.audioService.changeGameVolume();
     }),
     onMainVolumeChange: mobx.action((volume: number) => {
-      window.localStorage.setItem('mainVolume', volume.toString());
+      this.props.electronLoader.setData('mainVolume', volume.toString());
       this.defaultMainVolume = volume;
       this.audioService.changeBGMVolume();
     }),
@@ -189,17 +192,31 @@ export class RoomPage extends React.Component<
     }
   }
 
+  private readonly onDisplayCardFocused = (index: number) => mobx.action(() => {
+    this.focusedCardIndex = index;
+  });
+
+  @mobx.action
+  private readonly onDisplayCardLeft = () => {
+    this.focusedCardIndex = undefined;
+  }
+
   private getDisplayedCard() {
     return (
       <div className={styles.displayedCards} ref={this.displayedCardsRef}>
-        {this.store.displayedCards.map((card, index) => (
+        {this.store.displayedCards.map((displayCard, index) => (
           <ClientCard
             imageLoader={this.props.imageLoader}
-            card={card}
+            card={displayCard.card}
+            tag={displayCard.tag}
             width={this.cardWidth}
             offsetLeft={this.calculateDisplayedCardOffset(this.store.displayedCards.length, index)}
             translator={this.props.translator}
-            className={styles.displayedCard}
+            className={classNames(styles.displayedCard, {
+              [styles.focused]: this.focusedCardIndex === index,
+            })}
+            onMouseEnter={this.onDisplayCardFocused(index)}
+            onMouseLeave={this.onDisplayCardLeft}
           />
         ))}
       </div>
@@ -279,6 +296,7 @@ export class RoomPage extends React.Component<
               onMainVolumeChange={this.settings.onMainVolumeChange}
               onGameVolumeChange={this.settings.onVolumeChange}
               onConfirm={this.onCloseSettings}
+              electronLoader={this.props.electronLoader}
             />
           </Curtain>
         )}

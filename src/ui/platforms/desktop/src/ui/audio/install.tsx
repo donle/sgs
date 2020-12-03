@@ -1,5 +1,6 @@
 import { AudioLoader } from 'audio_loader/audio_loader';
 import { CharacterGender } from 'core/characters/character';
+import { ElectronLoader } from 'electron_loader/electron_loader';
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { AudioPlayer } from './audio';
@@ -21,7 +22,7 @@ export interface AudioService {
 class AudioPlayerService implements AudioService {
   public playList: Set<string> = new Set<string>();
 
-  constructor(private loader: AudioLoader) {}
+  constructor(private loader: AudioLoader, private electronLoader: ElectronLoader) {}
   async playSkillAudio(skillName: string, gender: CharacterGender, characterName?: string) {
     if (this.playList.has(skillName)) {
       return;
@@ -65,7 +66,7 @@ class AudioPlayerService implements AudioService {
     const audioUrl = this.loader.getLobbyBackgroundMusic();
     this.play(audioUrl, true, undefined, 'bgm');
   }
-  playGameStartAudio () {
+  playGameStartAudio() {
     this.play(this.loader.getGameStartAudio());
   }
 
@@ -79,7 +80,7 @@ class AudioPlayerService implements AudioService {
       nodeName && this.playList.delete(nodeName);
     };
 
-    const volumeString = window.localStorage.getItem(type === 'bgm' ? 'mainVolume' : 'gameVolume');
+    const volumeString: string = this.electronLoader.getData(type === 'bgm' ? 'mainVolume' : 'gameVolume');
     const volume = volumeString ? parseInt(volumeString, 10) : undefined;
     const player = <AudioPlayer defaultVolume={volume} type={type} url={url} loop={loop} onEnd={onEnd} />;
     ReactDOM.render(player, container);
@@ -93,7 +94,7 @@ class AudioPlayerService implements AudioService {
   }
 
   public changeBGMVolume() {
-    const volumeString = window.localStorage.getItem('mainVolume');
+    const volumeString: string = this.electronLoader.getData('mainVolume');
     if (!volumeString) {
       return;
     }
@@ -113,7 +114,7 @@ class AudioPlayerService implements AudioService {
   }
 
   public changeGameVolume() {
-    const volumeString = window.localStorage.getItem('gameVolume');
+    const volumeString: string = this.electronLoader.getData('gameVolume');
     if (!volumeString) {
       return;
     }
@@ -135,9 +136,9 @@ class AudioPlayerService implements AudioService {
 
 let serviceInstance: AudioPlayerService | undefined;
 
-export function installAudioPlayerService(audioLoader: AudioLoader) {
+export function installAudioPlayerService(audioLoader: AudioLoader, electronLoader: ElectronLoader) {
   if (serviceInstance === undefined) {
-    serviceInstance = new AudioPlayerService(audioLoader);
+    serviceInstance = new AudioPlayerService(audioLoader, electronLoader);
   }
   return serviceInstance;
 }

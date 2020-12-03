@@ -1,20 +1,25 @@
-// import { app } from 'electron';
 import * as fs from 'fs';
-// import * as path from 'path';
 
 export class Store {
   private savFileDir: string = './savedata.json';
   private saveJson: any = {};
   constructor() {
     if (!fs.existsSync(this.savFileDir)) {
-      fs.writeFileSync(this.savFileDir, '');
+      fs.writeFileSync(this.savFileDir, '{}');
     } else {
       this.saveJson = JSON.parse(fs.readFileSync(this.savFileDir, 'utf-8'));
     }
   }
 
+  public getSaveData() {
+    return this.saveJson;
+  }
+
   public set<T = unknown>(key: string, value: T) {
     this.saveJson[key] = value;
+  }
+
+  public save() {
     fs.writeFileSync(this.savFileDir, JSON.stringify(this.saveJson), 'utf-8');
   }
 

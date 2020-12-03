@@ -5,6 +5,8 @@ import { Store } from './store';
 
 const FLASH_WINDOW = 'flashWindow';
 const SET_DATA = 'setData';
+const GET_ALL_DATA = 'getAllData';
+const DELETE_DATA = 'deleteData';
 
 app.setPath('userData', __dirname);
 
@@ -41,6 +43,13 @@ class AppWindow {
     ipcMain.on(SET_DATA, (event, { key, value }: { key: string; value: any }) => {
       this.store.set(key, value);
     });
+    ipcMain.on(GET_ALL_DATA, () => {
+      const saveData = this.store.getSaveData();
+      ipcMain.emit(GET_ALL_DATA, saveData);
+    });
+    ipcMain.on(DELETE_DATA, (event, { key }: { key: string }) => {
+      this.store.remove(key);
+    });
   }
 
   public getInstance() {
@@ -56,6 +65,7 @@ class AppWindow {
       return;
     }
 
+    this.store.save();
     this.windowInstance.on('closed', callbackFn);
   }
 }
