@@ -6,8 +6,9 @@ export type UiConfigTypes = {
 };
 
 export const enum ClientFlavor {
-  Dev,
-  Prod,
+  Dev = 'dev',
+  Web = 'web',
+  Desktop = 'desktop',
 }
 
 export type ServiceConfig = {

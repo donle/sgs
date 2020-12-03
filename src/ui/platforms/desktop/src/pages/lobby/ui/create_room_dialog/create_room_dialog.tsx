@@ -1,6 +1,7 @@
 import { GameMode } from 'core/shares/types/room_props';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
 import { Button } from 'ui/button/button';
@@ -19,8 +20,9 @@ export const CreatRoomDialog = (props: {
   onSubmit(data: TemporaryRoomCreationInfo): void;
   onCancel(): void;
   imageLoader: ImageLoader;
+  electronLoader: ElectronLoader;
 }) => {
-  const username = window.localStorage.getItem('username');
+  const username: string = props.electronLoader.getData('username');
   const [numberOfPlayers, setNumberOfPlayers] = React.useState<number>(2);
   const [gameMode] = React.useState<GameMode>(GameMode.Standard);
   const [passcode, setPasscode] = React.useState<string>();

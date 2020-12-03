@@ -5,9 +5,10 @@ import { ProdAudioLoader } from './prod_audio_loader';
 
 export function getAudioLoader(flavor: ClientFlavor) {
   switch (flavor) {
-    case ClientFlavor.Dev:
+    case ClientFlavor.Web:
       return new DevAudioLoader();
-    case ClientFlavor.Prod:
+    case ClientFlavor.Dev:
+    case ClientFlavor.Desktop:
       return new ProdAudioLoader();
     default:
       throw Precondition.UnreachableError(flavor);

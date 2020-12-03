@@ -6,9 +6,10 @@ import { ProdImageLoader } from './prod_image_loader';
 
 export function getImageLoader(flavor: ClientFlavor): ImageLoader {
   switch (flavor) {
-    case ClientFlavor.Dev:
+    case ClientFlavor.Web:
       return new DevImageLoader();
-    case ClientFlavor.Prod:
+    case ClientFlavor.Dev:
+    case ClientFlavor.Desktop:
       return new ProdImageLoader();
     default:
       throw Precondition.UnreachableError(flavor);

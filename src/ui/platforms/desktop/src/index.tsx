@@ -13,13 +13,13 @@ import { emojiLoader } from './emoji_loader/emoji_loader';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
-const mode = (process.env.DEV_MODE as Flavor) || Flavor.Dev;
+const mode = (process.env.DEV_MODE as ClientFlavor) || Flavor.Dev;
 const config = getClientConfig(mode);
 
 const translator = ClientTranslationModule.setup(config.ui.language, [Languages.ZH_CN, SimplifiedChinese]);
 emojiLoader(translator);
 
-if (config.flavor === ClientFlavor.Prod) {
+if (config.flavor === ClientFlavor.Desktop) {
   import('./index.module.css');
 }
 

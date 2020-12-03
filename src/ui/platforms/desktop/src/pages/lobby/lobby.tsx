@@ -49,15 +49,13 @@ export class Lobby extends React.Component<LobbyProps> {
   @mobx.observable.ref
   private showPasscodeError = false;
   @mobx.observable.ref
-  private defaultMainVolume = window.localStorage.getItem('mainVolume')
-    ? Number.parseInt(window.localStorage.getItem('mainVolume')!, 10)
-    : 50;
+  private defaultMainVolume = 50;
   @mobx.observable.ref
-  private defaultGameVolume = window.localStorage.getItem('gameVolume')
-    ? Number.parseInt(window.localStorage.getItem('gameVolume')!, 10)
-    : 50;
+  private defaultGameVolume = 50;
   @mobx.observable.ref
   private openAcknowledgement = false;
+  @mobx.observable.ref
+  private username: string;
 
   private socket = SocketIOClient(
     `${this.props.config.host.protocol}://${this.props.config.host.host}:${this.props.config.host.port}/lobby`,
@@ -67,7 +65,7 @@ export class Lobby extends React.Component<LobbyProps> {
   private illustrationImage = this.props.imageLoader.getRandomLobbyIllustration().src!;
   private roomListBackgroundImage = this.props.imageLoader.getRoomListBackgroundImage().src!;
   private createRoomImage = this.props.imageLoader.getCreateRoomButtonImage().src!;
-  private audioService = installAudioPlayerService(this.props.audioLoader);
+  private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
 
   private currentInteractiveRoomInfo: RoomInfo;
 
@@ -98,19 +96,28 @@ export class Lobby extends React.Component<LobbyProps> {
 
   private readonly settings = {
     onVolumeChange: mobx.action((volume: number) => {
-      window.localStorage.setItem('gameVolume', volume.toString());
+      this.props.electronLoader.setData('gameVolume', volume.toString());
       this.defaultGameVolume = volume;
       this.audioService.changeGameVolume();
     }),
     onMainVolumeChange: mobx.action((volume: number) => {
-      window.localStorage.setItem('mainVolume', volume.toString());
+      this.props.electronLoader.setData('mainVolume', volume.toString());
       this.defaultMainVolume = volume;
       this.audioService.changeBGMVolume();
     }),
   };
 
+  @mobx.action
   componentDidMount() {
+    console.log(this.props.electronLoader);
     this.audioService.playLobbyBGM();
+    this.defaultMainVolume = this.props.electronLoader.getData('mainVolume')
+      ? Number.parseInt(this.props.electronLoader.getData('mainVolume'), 10)
+      : 50;
+    this.defaultGameVolume = this.props.electronLoader.getData('gameVolume')
+      ? Number.parseInt(this.props.electronLoader.getData('gameVolume'), 10)
+      : 50;
+    this.username = this.props.electronLoader.getData('username');
   }
 
   componentWillUnmount() {
@@ -219,8 +226,6 @@ export class Lobby extends React.Component<LobbyProps> {
   };
 
   render() {
-    const username = window.localStorage.getItem('username');
-
     return (
       <div className={styles.lobby}>
         <img src={this.backgroundImage} alt="" className={styles.background} />
@@ -239,7 +244,7 @@ export class Lobby extends React.Component<LobbyProps> {
               {this.props.translator.tr('Refresh room list')}
             </Button>
           </div>
-          <div className={classNames(styles.roomList, { [styles.unavailable]: !username })}>
+          <div className={classNames(styles.roomList, { [styles.unavailable]: !this.username })}>
             {this.roomList.length === 0 && <span>{this.props.translator.tr('No rooms at the moment')}</span>}
             {this.unmatchedCoreVersion
               ? this.unmatchedView()
@@ -261,7 +266,7 @@ export class Lobby extends React.Component<LobbyProps> {
                     <span className={styles.roomActions}>
                       <LinkButton
                         onClick={this.enterRoom(roomInfo)}
-                        disabled={roomInfo.activePlayers === roomInfo.totalPlayers || !username}
+                        disabled={roomInfo.activePlayers === roomInfo.totalPlayers || !this.username}
                       >
                         {this.props.translator.tr('Join')}
                       </LinkButton>
@@ -273,7 +278,7 @@ export class Lobby extends React.Component<LobbyProps> {
               onClick={this.onCreateRoom}
               className={styles.createRoomButton}
               image={this.createRoomImage}
-              disabled={!username || this.unmatchedCoreVersion}
+              disabled={!this.username || this.unmatchedCoreVersion}
             />
             <img src={this.roomListBackgroundImage} alt="" className={styles.roomListBackground} />
           </div>
@@ -297,7 +302,7 @@ export class Lobby extends React.Component<LobbyProps> {
               />
             </button>
             <button className={styles.systemButton} onClick={this.onClickSettings}>
-              {!username && (
+              {!this.username && (
                 <Tooltip autoAnimation position={['top']}>
                   {this.props.translator.tr('please input your username here')}
                 </Tooltip>
@@ -332,6 +337,7 @@ export class Lobby extends React.Component<LobbyProps> {
             <CreatRoomDialog
               imageLoader={this.props.imageLoader}
               translator={this.props.translator}
+              electronLoader={this.props.electronLoader}
               onSubmit={this.onRoomCreated}
               onCancel={this.onRoomCreationCancelled}
             />
@@ -340,6 +346,7 @@ export class Lobby extends React.Component<LobbyProps> {
         {this.openSettings && (
           <Curtain onCancel={this.onCloseSettings}>
             <SettingsDialog
+              electronLoader={this.props.electronLoader}
               defaultGameVolume={this.defaultGameVolume}
               defaultMainVolume={this.defaultMainVolume}
               imageLoader={this.props.imageLoader}
