@@ -7,16 +7,11 @@ const uiConfig: UiConfigTypes = {
   language: Languages.ZH_CN,
 };
 
-const clientFlavorMap: { [M in Flavor]: ClientFlavor } = {
-  [Flavor.Dev]: ClientFlavor.Dev,
-  [Flavor.Prod]: ClientFlavor.Prod,
-};
-
-export const getClientConfig = (mode: Flavor): ClientConfig => {
+export const getClientConfig = (mode: ClientFlavor): ClientConfig => {
   let host: ServiceConfig;
 
   switch (mode) {
-    case Flavor.Dev:
+    case ClientFlavor.Dev:
       host = {
         mode: Flavor.Dev,
         port: 2020,
@@ -24,7 +19,8 @@ export const getClientConfig = (mode: Flavor): ClientConfig => {
         protocol: 'http',
       };
       break;
-    case Flavor.Prod:
+    case ClientFlavor.Web:
+    case ClientFlavor.Desktop:
       host = {
         mode: Flavor.Prod,
         port: 2020,
@@ -38,6 +34,6 @@ export const getClientConfig = (mode: Flavor): ClientConfig => {
   return {
     ui: uiConfig,
     host,
-    flavor: clientFlavorMap[mode],
+    flavor: mode,
   };
 };

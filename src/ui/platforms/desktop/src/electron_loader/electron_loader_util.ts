@@ -6,8 +6,9 @@ import { ElectronLoader } from './electron_loader';
 export async function getElectronLoader(flavor: ClientFlavor): Promise<ElectronLoader> {
   switch (flavor) {
     case ClientFlavor.Dev:
+    case ClientFlavor.Web:
       return new DevElectronLoader();
-    case ClientFlavor.Prod:
+    case ClientFlavor.Desktop:
       const { ProdElectronLoader } = await import('./prod_electron_loader');
       return new ProdElectronLoader();
     default:

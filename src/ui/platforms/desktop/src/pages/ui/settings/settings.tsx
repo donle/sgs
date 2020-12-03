@@ -1,4 +1,5 @@
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
 import { Button } from 'ui/button/button';
@@ -7,6 +8,7 @@ import { Slider } from 'ui/slider/slider';
 import styles from './settings.module.css';
 
 export type SettingsProps = {
+  electronLoader: ElectronLoader;
   onMainVolumeChange(volume: number): void;
   onGameVolumeChange(volume: number): void;
   translator: ClientTranslationModule;
@@ -17,9 +19,9 @@ export type SettingsProps = {
 };
 
 export const SettingsDialog = (props: SettingsProps) => {
-  const [username, setUsername] = React.useState<string>(window.localStorage.getItem('username') || '');
+  const [username, setUsername] = React.useState<string>(props.electronLoader.getData('username') || '');
   const onSubmit = () => {
-    window.localStorage.setItem('username', username);
+    props.electronLoader.setData('username', username);
     props.onConfirm();
   };
 

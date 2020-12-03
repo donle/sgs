@@ -4,6 +4,8 @@ import { ElectronLoader } from 'electron_loader/electron_loader';
 import { getElectronLoader } from 'electron_loader/electron_loader_util';
 import { createHashHistory } from 'history';
 import { getImageLoader } from 'image_loader/image_loader_util';
+import * as mobx from 'mobx';
+import * as mobxReact from 'mobx-react';
 import { OpenningPage } from 'pages/openning/openning';
 import { RoomPage } from 'pages/room/room';
 import { ClientConfig } from 'props/config_props';
@@ -11,15 +13,21 @@ import * as React from 'react';
 import { Redirect, Route, Router } from 'react-router-dom';
 import { Lobby } from './pages/lobby/lobby';
 
+@mobxReact.observer
 export class App extends React.PureComponent<{ config: ClientConfig; translator: ClientTranslationModule }> {
   private customHistory = createHashHistory();
 
   private imageLoader = getImageLoader(this.props.config.flavor);
   private audioLoader = getAudioLoader(this.props.config.flavor);
+  @mobx.observable.ref
   private electronLoader: ElectronLoader;
 
-  async componentWillMount() {
-    this.electronLoader = await getElectronLoader(this.props.config.flavor);
+  componentWillMount() {
+    getElectronLoader(this.props.config.flavor).then(
+      mobx.action(loader => {
+        this.electronLoader = loader;
+      }),
+    );
   }
 
   componentDidMount() {
@@ -39,21 +47,30 @@ export class App extends React.PureComponent<{ config: ClientConfig; translator:
               <OpenningPage config={this.props.config} match={match} location={location} history={history} />
             )}
           />
-          <Route
-            path={'/lobby'}
-            render={({ match, location, history }) => (
-              <Lobby
-                config={this.props.config}
-                match={match}
-                translator={this.props.translator}
-                location={location}
-                history={history}
-                imageLoader={this.imageLoader}
-                audioLoader={this.audioLoader}
-                electronLoader={this.electronLoader}
-              />
-            )}
-          />
+          {this.electronLoader ? (
+            <Route
+              path={'/lobby'}
+              render={({ match, location, history }) => (
+                <Lobby
+                  config={this.props.config}
+                  match={match}
+                  translator={this.props.translator}
+                  location={location}
+                  history={history}
+                  imageLoader={this.imageLoader}
+                  audioLoader={this.audioLoader}
+                  electronLoader={this.electronLoader}
+                />
+              )}
+            />
+          ) : (
+            <Route
+              path={'/openning'}
+              render={({ match, location, history }) => (
+                <OpenningPage config={this.props.config} match={match} location={location} history={history} />
+              )}
+            />
+          )}
           <Route
             path={'/room/:slug'}
             render={({ match, location, history }) => (

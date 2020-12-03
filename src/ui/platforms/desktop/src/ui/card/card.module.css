@@ -65,11 +65,12 @@
     bottom: 4px;
     font-size: 12px;
     font-family: -apple-system, BlinkMacSystemFont, 'MicrosoftYaHei';
-    text-shadow: 0px 0px 2px white, 0px 0px 2px white, 0px 0px 2px white, 0px 0px 2px white;
+    text-shadow: 0px 0px 2px white, 0px 0px 2px white, 0px 0px 4px white, 0px 0px 4px white;
     display: block;
     width: 100%;
     text-align: center;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.53) 41%, rgba(0, 0, 0, 1) 100%);
+    font-weight: 600;
 }
 
 .disabled {

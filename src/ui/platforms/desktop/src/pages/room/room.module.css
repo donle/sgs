@@ -54,6 +54,9 @@
     margin: 2px;
     position: absolute;
 }
+.displayedCard.focused {
+    z-index: 3;
+}
 
 .roomBanner {
     flex: auto;
