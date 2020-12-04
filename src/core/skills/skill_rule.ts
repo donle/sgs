@@ -28,6 +28,10 @@ export class UniqueSkillRule {
   }
 
   public static isProhibited(skill: Skill, owner: Player, cardContainer?: Card) {
+    if (skill.isPersistentSkill()) {
+      return false;
+    }
+
     if (cardContainer) {
       if (owner.getFlag<boolean>('wuqian')) {
         return cardContainer.is(CardType.Armor);
