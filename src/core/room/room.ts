@@ -19,10 +19,11 @@ import { RecordAnalytics } from 'core/game/record_analytics';
 import { AllStage, GameEventStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Socket } from 'core/network/socket';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { System } from 'core/shares/libs/system';
+import { GameMode } from 'core/shares/types/room_props';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { FilterSkill, RulesBreakerSkill, TransformSkill } from 'core/skills/skill';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
@@ -36,6 +37,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected abstract readonly gameInfo: GameInfo;
   protected abstract readonly players: Player[];
   protected abstract readonly roomId: RoomId;
+  protected abstract readonly gameMode: GameMode;
   protected round: number = 0;
 
   protected awaitResponseEvent: {
@@ -599,46 +601,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public isPlaying() {
     return this.gameStarted;
-  }
-
-  public getGameWinners(): Player[] | undefined {
-    const rebellion: Player[] = [];
-    let renegade: Player | undefined;
-    const loyalist: Player[] = [];
-    let lordDied = false;
-
-    for (const player of this.players) {
-      if (player.Dead) {
-        if (player.Role === PlayerRole.Lord) {
-          lordDied = true;
-        }
-        continue;
-      }
-
-      switch (player.Role) {
-        case PlayerRole.Lord:
-        case PlayerRole.Loyalist:
-          loyalist.push(player);
-          break;
-        case PlayerRole.Rebel:
-          rebellion.push(player);
-          break;
-        case PlayerRole.Renegade:
-          renegade = player;
-          break;
-        default:
-      }
-    }
-
-    if (lordDied) {
-      if (rebellion.length > 0) {
-        return this.players.filter(player => player.Role === PlayerRole.Rebel);
-      } else if (renegade) {
-        return [renegade];
-      }
-    } else if (renegade === undefined && rebellion.length === 0) {
-      return this.players.filter(player => player.Role === PlayerRole.Lord || player.Role === PlayerRole.Loyalist);
-    }
   }
 
   public gameOver() {

@@ -13,6 +13,8 @@ import {
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
+import { GameCommonRules } from 'core/game/game_rules';
 import {
   CardEffectStage,
   CardMoveStage,
@@ -39,40 +41,37 @@ import {
 } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
+import { ServerRoom } from 'core/room/room.server';
 import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { Flavor } from 'core/shares/types/host_config';
 import { GlobalFilterSkill, SkillLifeCycle } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { ServerRoom } from '../room/room.server';
-import { Sanguosha } from './engine';
-import { DamageType } from './game_props';
-import { GameCommonRules } from './game_rules';
+import { DamageType } from '../game_props';
+import { GameProcessor } from './game_processor';
 
-export class GameProcessor {
-  private playerPositionIndex = 0;
-  private room: ServerRoom;
-  private currentPlayerStage: PlayerPhaseStages | undefined;
-  private currentPlayerPhase: PlayerPhase | undefined;
-  private currentPhasePlayer: Player;
-  private currentProcessingStage: GameEventStage | undefined;
-  private playerStages: PlayerPhaseStages[] = [];
+export class StandardGameProcessor extends GameProcessor {
+  protected playerPositionIndex = 0;
+  protected room: ServerRoom;
+  protected currentPlayerStage: PlayerPhaseStages | undefined;
+  protected currentPlayerPhase: PlayerPhase | undefined;
+  protected currentPhasePlayer: Player;
+  protected currentProcessingStage: GameEventStage | undefined;
+  protected playerStages: PlayerPhaseStages[] = [];
 
-  private toEndPhase: PlayerPhase | undefined;
-  private playRoundInsertions: PlayerId[] = [];
-  private dumpedLastPlayerPositionIndex: number = -1;
+  protected toEndPhase: PlayerPhase | undefined;
+  protected playRoundInsertions: PlayerId[] = [];
+  protected dumpedLastPlayerPositionIndex: number = -1;
 
   private readonly DamageTypeTag = 'damageType';
   private readonly BeginnerTag = 'beginnerOfTheDamage';
 
-  constructor(private stageProcessor: StageProcessor, private logger: Logger) {}
-
-  private tryToThrowNotStartedError() {
-    Precondition.assert(this.room !== undefined, 'Game is not started yet');
+  constructor(protected stageProcessor: StageProcessor, protected logger: Logger) {
+    super();
   }
 
-  private async askForChoosingNationalities(playerId: PlayerId) {
+  protected async askForChoosingNationalities(playerId: PlayerId) {
     const askForNationality = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
       options: ['wei', 'shu', 'wu', 'qun'],
       toId: playerId,
@@ -89,15 +88,20 @@ export class GameProcessor {
     return nationalityResponse;
   }
 
-  private getSelectableCharacters(selectable: number, selectableCharacters: Character[], selected: CharacterId[]) {
+  protected getSelectableCharacters(
+    selectable: number,
+    selectableCharacters: Character[],
+    selected: CharacterId[],
+    filter?: (characer: Character) => boolean,
+  ) {
     if (this.room.Flavor === Flavor.Dev) {
       return Sanguosha.getAllCharacters();
     } else {
-      return Sanguosha.getRandomCharacters(selectable, selectableCharacters, selected);
+      return Sanguosha.getRandomCharacters(selectable, selectableCharacters, selected, filter);
     }
   }
 
-  private async chooseCharacters(playersInfo: PlayerInfo[], selectableCharacters: Character[]) {
+  protected async chooseCharacters(playersInfo: PlayerInfo[], selectableCharacters: Character[]) {
     const lordInfo = playersInfo[0];
     const lordCharacters = Sanguosha.getLordCharacters(this.room.Info.characterExtensions).map(
       character => character.Id,
@@ -295,6 +299,7 @@ export class GameProcessor {
     }
 
     let lastPlayerPosition = this.playerPositionIndex;
+    await this.beforeGameStartPreparation();
     while (this.room.isPlaying() && !this.room.isGameOver() && !this.room.isClosed()) {
       if (this.playerPositionIndex < lastPlayerPosition) {
         this.room.nextRound();
@@ -819,7 +824,7 @@ export class GameProcessor {
     return;
   }
 
-  private iterateEachStage = async <T extends GameEventIdentifiers>(
+  protected iterateEachStage = async <T extends GameEventIdentifiers>(
     identifier: T,
     event: ServerEventFinder<GameEventIdentifiers>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
@@ -1093,12 +1098,11 @@ export class GameProcessor {
     to.Dying = false;
   }
 
-  private async onHandlePlayerDiedEvent(
+  protected async onHandlePlayerDiedEvent(
     identifier: GameEventIdentifiers.PlayerDiedEvent,
     event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    let isGameOver = false;
     const deadPlayer = this.room.getPlayerById(event.playerId);
     await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === PlayerDiedStage.PrePlayerDied) {
@@ -1126,12 +1130,11 @@ export class GameProcessor {
             winnerIds: winners.map(winner => winner.Id),
             loserIds: this.room.Players.filter(player => !winners.includes(player)).map(player => player.Id),
           });
-          isGameOver = true;
         }
       }
     });
 
-    if (!isGameOver) {
+    if (!this.room.isGameOver()) {
       const { killedBy, playerId } = event;
       await this.room.moveCards({
         moveReason: CardMoveReason.SelfDrop,
@@ -1941,24 +1944,5 @@ export class GameProcessor {
   public get CurrentPlayer() {
     this.tryToThrowNotStartedError();
     return this.room.Players[this.playerPositionIndex];
-  }
-
-  public get CurrentPhasePlayer() {
-    this.tryToThrowNotStartedError();
-    return this.currentPhasePlayer!;
-  }
-
-  public get CurrentPlayerPhase() {
-    this.tryToThrowNotStartedError();
-    return this.currentPlayerPhase!;
-  }
-  public get CurrentPlayerStage() {
-    this.tryToThrowNotStartedError();
-    return this.currentPlayerStage!;
-  }
-
-  public get CurrentProcessingStage() {
-    this.tryToThrowNotStartedError();
-    return this.currentProcessingStage;
   }
 }
