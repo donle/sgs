@@ -578,6 +578,8 @@ export const eventDictionary: Word[] = [
   { source: 'jianyan:black', target: '黑色牌' },
   { source: 'zhiji:drawcards', target: '摸两张牌' },
   { source: 'zhiji:recover', target: '回复1点体力' },
+  { source: '1v2:recover', target: '回复1点体力' },
+  { source: '1v2:draw', target: '摸2张牌' },
   { source: 'please choose the amount of hp to lose', target: '请选择要失去的体力值' },
   { source: 'please choose your zhiheng cards', target: '请选择要制衡的牌' },
   {

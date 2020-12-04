@@ -23,8 +23,8 @@ export const CreatRoomDialog = (props: {
   electronLoader: ElectronLoader;
 }) => {
   const username: string = props.electronLoader.getData('username');
-  const [numberOfPlayers, setNumberOfPlayers] = React.useState<number>(2);
-  const [gameMode] = React.useState<GameMode>(GameMode.Standard);
+  const [numberOfPlayers, setNumberOfPlayers] = React.useState<number>(3);
+  const [gameMode] = React.useState<GameMode>(GameMode.OneVersusTwo);
   const [passcode, setPasscode] = React.useState<string>();
   const [roomName, setRoomName] = React.useState<string>(
     username ? props.translator.tr(TranslationPack.translationJsonPatcher("{0}'s room", username).extract()) : '',

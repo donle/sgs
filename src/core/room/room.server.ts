@@ -28,7 +28,9 @@ import { CardId, CardTargetEnum } from 'core/cards/libs/card_props';
 import { Character, CharacterId } from 'core/characters/character';
 import { PinDianProcedure, PinDianReport, PinDianResult } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
-import { GameInfo, getRoles } from 'core/game/game_props';
+import { getRoles, getWinners } from 'core/game/game_processor/game_handlers';
+import { GameProcessor } from 'core/game/game_processor/game_processor';
+import { GameInfo } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
 import { CardLoader } from 'core/game/package_loader/loader.cards';
 import { CharacterLoader } from 'core/game/package_loader/loader.characters';
@@ -39,10 +41,10 @@ import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { System } from 'core/shares/libs/system';
 import { Flavor } from 'core/shares/types/host_config';
+import { GameMode } from 'core/shares/types/room_props';
 import { OnDefineReleaseTiming, Skill, SkillLifeCycle, SkillType, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
-import { GameProcessor } from '../game/game_processor';
 import { Room, RoomId } from './room';
 
 export class ServerRoom extends Room<WorkPlace.Server> {
@@ -66,6 +68,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     protected players: Player[] = [],
     private flavor: Flavor,
     private logger: Logger,
+    protected gameMode: GameMode,
   ) {
     super();
     this.init();
@@ -108,7 +111,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   public assignRoles() {
-    const roles = getRoles(this.gameInfo.numberOfPlayers);
+    const roles = getRoles(this.gameInfo.numberOfPlayers, this.gameMode);
     Algorithm.shuffle(roles);
     for (let i = 0; i < this.players.length; i++) {
       this.players[i].Role = roles[i];
@@ -302,6 +305,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                   fromId: player.Id,
                   skillName: skill.Name,
                   triggeredOnEvent: content,
+                  mute: skill.Muted,
                 };
                 if (
                   skill.isAutoTrigger(this, player, content) ||
@@ -338,6 +342,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                     fromId: player.Id,
                     skillName: skill.Name,
                     triggeredOnEvent: content,
+                    mute: skill.Muted,
                   };
                   await this.useSkill(triggerSkillEvent);
                 } else {
@@ -362,6 +367,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                     fromId: player.Id,
                     skillName: awaitedSkills[0].Name,
                     triggeredOnEvent: content,
+                    mute: awaitedSkills[0].Muted,
                   };
                   for (let i = 0; i < skillTriggerableTimes[awaitedSkills[0].Name]; i++) {
                     await this.useSkill(triggerSkillEvent);
@@ -383,16 +389,19 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                       fromId: player.Id,
                       skillName: skill.Name,
                       triggeredOnEvent: content,
+                      mute: skill.Muted,
                     };
                     await this.useSkill(triggerSkillEvent);
                   }
                   break;
                 }
 
+                const awaitedSkill = awaitedSkills.find(skill => skill.Name === invoke);
                 const triggerSkillEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent> = {
                   fromId: player.Id,
                   skillName: invoke,
                   triggeredOnEvent: content,
+                  mute: awaitedSkill?.Muted,
                 };
                 triggerSkillEvent.toIds = toIds;
                 triggerSkillEvent.cardIds = cardIds;
@@ -1535,6 +1544,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       sideEffectSkillApplier: applier,
       skillName: undefined,
     });
+  }
+
+  public getGameWinners(): Player[] | undefined {
+    return getWinners(this.players, this.gameMode);
   }
 
   public get CurrentPhasePlayer() {

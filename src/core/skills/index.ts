@@ -231,3 +231,5 @@ export { BuYi } from './characters/yijiang2011/buyi';
 export { XuanFeng, XuanFengMove, XuanFengDrop } from './characters/yijiang2011/xuanfeng';
 
 export { Cheat } from './system/cheat';
+export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';
+export { FeiYang } from './game_mode/1v2/feiyang';

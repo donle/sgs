@@ -97,6 +97,10 @@ export abstract class Skill {
     return this.skillName.replace(/(#|~)+/, '');
   }
 
+  public get Muted() {
+    return false;
+  }
+
   public static get Description() {
     return '';
   }

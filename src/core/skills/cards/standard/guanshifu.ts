@@ -10,6 +10,10 @@ import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'guanshifu', description: 'guanshifu_description' })
 export class GuanShiFuSkill extends TriggerSkill {
+  get Muted() {
+    return true;
+  }
+
   public isAutoTrigger() {
     return false;
   }

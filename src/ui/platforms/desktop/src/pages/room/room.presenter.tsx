@@ -47,7 +47,7 @@ export class RoomStore {
   messageLog: (string | JSX.Element)[] = [];
 
   @mobx.observable.shallow
-  displayedCards: { card: Card, tag?: string }[] = [];
+  displayedCards: { card: Card; tag?: string }[] = [];
 
   @mobx.observable.ref
   canReforge: boolean = false;
@@ -225,7 +225,7 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  showCards(...cards: { card: Card, tag?: string }[]) {
+  showCards(...cards: { card: Card; tag?: string }[]) {
     if (this.store.displayedCards.length >= 7) {
       this.store.displayedCards = [];
     }
