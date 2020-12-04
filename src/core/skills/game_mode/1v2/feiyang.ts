@@ -4,9 +4,9 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
-import { CompulsorySkill } from 'core/skills/skill_wrappers';
+import { CommonSkill } from 'core/skills/skill_wrappers';
 
-@CompulsorySkill({ name: 'feiyang', description: 'feiyang_description' })
+@CommonSkill({ name: 'feiyang', description: 'feiyang_description' })
 export class FeiYang extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage: AllStage) {
     return stage === PhaseStageChangeStage.StageChanged;
