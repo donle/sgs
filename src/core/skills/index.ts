@@ -239,3 +239,5 @@ export { MieJi } from './characters/yijiang2013/mieji';
 export { FenCheng } from './characters/yijiang2013/fencheng';
 
 export { Cheat } from './system/cheat';
+export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';
+export { FeiYang } from './game_mode/1v2/feiyang';

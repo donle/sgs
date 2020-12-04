@@ -166,7 +166,6 @@ export class Lobby extends React.Component<LobbyProps> {
   @mobx.action
   private readonly onRoomCreated = (roomInfo: TemporaryRoomCreationInfo) => {
     this.openRoomCreationDialog = false;
-
     this.socket.emit(LobbySocketEvent.GameCreated.toString(), {
       characterExtensions: [
         GameCharacterExtensions.Standard,

@@ -149,9 +149,12 @@ export class Sanguosha {
     numberOfCharacters: number,
     charactersPool: Character[] = this.characters,
     except: CharacterId[],
+    filter?: (characer: Character) => boolean,
   ) {
     const characterIndex: number[] = [];
-    const availableCharacters = charactersPool.filter(character => !except.includes(character.Id));
+    const availableCharacters = charactersPool.filter(
+      character => !except.includes(character.Id) && filter?.(character),
+    );
     for (let i = 0; i < availableCharacters.length; i++) {
       characterIndex.push(i);
     }
