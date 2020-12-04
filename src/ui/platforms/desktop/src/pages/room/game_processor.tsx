@@ -40,7 +40,10 @@ import { WuGuFengDengDialog } from './ui/dialog/wugufengdeng_dialog/wugufengdeng
 export class GameClientProcessor {
   private onPlayTrustedActionTimer: NodeJS.Timer | undefined;
 
-  private excludedResponsiveEvents: GameEventIdentifiers[] = [GameEventIdentifiers.UserMessageEvent];
+  private excludedResponsiveEvents: GameEventIdentifiers[] = [
+    GameEventIdentifiers.UserMessageEvent,
+    GameEventIdentifiers.PlayerStatusEvent,
+  ];
 
   constructor(
     private presenter: RoomPresenter,
@@ -69,7 +72,7 @@ export class GameClientProcessor {
         this.store.room.DropStack = numberOfDropStack;
       }
     }
-    if (identifier !== GameEventIdentifiers.UserMessageEvent) {
+    if (!this.excludedResponsiveEvents.includes(identifier)) {
       this.presenter.clearNotifiers();
     }
   }
@@ -78,7 +81,7 @@ export class GameClientProcessor {
     if (this.store.inAction && !event.ignoreNotifiedStatus) {
       this.endAction();
     }
-    if (serverResponsiveListenerEvents.includes(identifier) && !this.excludedResponsiveEvents.includes(identifier)) {
+    if (serverResponsiveListenerEvents.includes(identifier)) {
       this.presenter.startAction(identifier, event);
       this.onPlayTrustedAction();
     }

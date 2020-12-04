@@ -86,7 +86,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public updatePlayerStatus(status: 'online' | 'offline' | 'trusted' | 'player', toId: PlayerId) {
     super.updatePlayerStatus(status, toId);
-    this.broadcast(GameEventIdentifiers.PlayerStatusEvent, { status, toId });
+    this.broadcast(GameEventIdentifiers.PlayerStatusEvent, { status, toId, ignoreNotifiedStatus: true });
   }
 
   public shuffle() {
@@ -1231,11 +1231,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         });
 
         const targetList = [fromId, ...pindianEvent.toIds];
+        this.doNotify(targetList);
         for (const target of targetList) {
           const askForPinDianEvent = {
             ...pindianEventTemplate,
             toId: target,
             randomPinDianCard: pindianEvent.randomPinDianCardPlayer.includes(target),
+            ignoreNotifiedStatus: true,
           };
           this.notify(GameEventIdentifiers.AskForPinDianCardEvent, askForPinDianEvent, target);
         }
@@ -1249,6 +1251,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                   fromId: result.fromId,
                   toArea: CardMoveArea.ProcessingArea,
                   moveReason: CardMoveReason.ActiveMove,
+                  ignoreNotifiedStatus: true,
                 });
 
                 if (result.fromId === fromId) {
