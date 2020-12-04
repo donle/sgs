@@ -12,4 +12,5 @@ export const dictionary: Word[] = [
     target: '<b>锁定技</b>，准备阶段开始时，你摸一张牌。出牌阶段，你可以多使用一张【杀】。',
   },
   { source: 'please drop a judge card', target: '请弃置一张判定牌' },
+  { source: 'your role is {0}, please choose a character', target: '你的身份是 {0}，请选择一个你的武将' },
 ];
