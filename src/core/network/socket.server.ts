@@ -138,6 +138,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         player.CharacterId === undefined ? '' : TranslationPack.patchPlayerInTranslation(player),
         TranslationPack.patchPureTextParameter(content.message),
       ).toString();
+      content.ignoreNotifiedStatus = true;
       this.broadcast(identifier, (content as unknown) as ServerEventFinder<GameEventIdentifiers.UserMessageEvent>);
     }
   }
