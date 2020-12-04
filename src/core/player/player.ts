@@ -663,7 +663,7 @@ export abstract class Player implements PlayerInfo {
   }
 
   public get LostHp() {
-    return Math.max(this.maxHp - this.hp, 0);
+    return this.maxHp - Math.max(this.hp, 0);
   }
 
   public get Role() {
