@@ -77,6 +77,9 @@ export const eventDictionary: Word[] = [
   { source: 'turn overed', target: '翻面' },
   { source: 'option-one', target: '选项一' },
   { source: 'option-two', target: '选项二' },
+  { source: 'standard-game', target: '身份场' },
+  { source: '1v2', target: '斗地主' },
+  { source: 'hegemony-game', target: '国战' },
 
   { source: 'yes', target: '是' },
   { source: 'no', target: '否' },
@@ -92,6 +95,8 @@ export const eventDictionary: Word[] = [
   { source: 'thunder_property', target: '雷属性' },
   { source: 'obtained', target: '获得' },
   { source: 'lost', target: '失去' },
+  { source: 'please select a game mode', target: '选择游戏模式' },
+  { source: 'please select character extensions', target: '选择武将扩展包' },
   { source: '{0} {1} {2} {3} marks', target: '{0} {1}了 {2} 枚 {3} 标记' },
   { source: 'please choose a skill', target: '请选择一个技能' },
   { source: '{0} select nationaliy {1}', target: '{0} 选择了 {1} 势力' },
