@@ -710,24 +710,24 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         translationsMessage:
           card.ActualCardIds.length === 0 || card.isActualCardHidden()
             ? TranslationPack.translationJsonPatcher(
-                '{0} used skill {1}, use card {2}' + (cardUseEvent.toIds ? ' to {3}' : ''),
-                TranslationPack.patchPlayerInTranslation(from),
-                card.GeneratedBySkill,
-                TranslationPack.patchCardInTranslation(card.Id),
-                cardUseEvent.toIds
-                  ? TranslationPack.patchPlayerInTranslation(...cardUseEvent.toIds.map(id => this.getPlayerById(id)))
-                  : '',
-              ).extract()
+              '{0} used skill {1}, use card {2}' + (cardUseEvent.toIds ? ' to {3}' : ''),
+              TranslationPack.patchPlayerInTranslation(from),
+              card.GeneratedBySkill,
+              TranslationPack.patchCardInTranslation(card.Id),
+              cardUseEvent.toIds
+                ? TranslationPack.patchPlayerInTranslation(...cardUseEvent.toIds.map(id => this.getPlayerById(id)))
+                : '',
+            ).extract()
             : TranslationPack.translationJsonPatcher(
-                '{0} used skill {1}, transformed {2} as {3} card' + (cardUseEvent.toIds ? ' used to {4}' : ' to use'),
-                TranslationPack.patchPlayerInTranslation(from),
-                card.GeneratedBySkill || '',
-                TranslationPack.patchCardInTranslation(...card.ActualCardIds),
-                TranslationPack.patchCardInTranslation(card.Id),
-                cardUseEvent.toIds
-                  ? TranslationPack.patchPlayerInTranslation(...cardUseEvent.toIds.map(id => this.getPlayerById(id)))
-                  : '',
-              ).extract(),
+              '{0} used skill {1}, transformed {2} as {3} card' + (cardUseEvent.toIds ? ' used to {4}' : ' to use'),
+              TranslationPack.patchPlayerInTranslation(from),
+              card.GeneratedBySkill || '',
+              TranslationPack.patchCardInTranslation(...card.ActualCardIds),
+              TranslationPack.patchCardInTranslation(card.Id),
+              cardUseEvent.toIds
+                ? TranslationPack.patchPlayerInTranslation(...cardUseEvent.toIds.map(id => this.getPlayerById(id)))
+                : '',
+            ).extract(),
       };
       if (skill instanceof ViewAsSkill) {
         await this.useSkill(skillUseEvent);
@@ -753,11 +753,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         translationsMessage:
           card.ActualCardIds.length === 0 || card.isActualCardHidden()
             ? TranslationPack.translationJsonPatcher(
-                '{0} used skill {1}, response card {2}',
-                TranslationPack.patchPlayerInTranslation(from),
-                card.GeneratedBySkill,
-                TranslationPack.patchCardInTranslation(card.Id),
-              ).extract()
+              '{0} used skill {1}, response card {2}',
+              TranslationPack.patchPlayerInTranslation(from),
+              card.GeneratedBySkill,
+              TranslationPack.patchCardInTranslation(card.Id),
+            ).extract()
             : TranslationPack.translationJsonPatcher(
                 '{0} used skill {1}, transformed {2} as {3} card to response',
                 TranslationPack.patchPlayerInTranslation(from),
@@ -972,10 +972,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       skillName,
       translationsMessage: broadcast
         ? TranslationPack.translationJsonPatcher(
-            '{0} obtained skill {1}',
-            TranslationPack.patchPlayerInTranslation(player),
-            skillName,
-          ).extract()
+          '{0} obtained skill {1}',
+          TranslationPack.patchPlayerInTranslation(player),
+          skillName,
+        ).extract()
         : undefined,
     });
     await SkillLifeCycle.executeHookOnObtainingSkill(Sanguosha.getSkillBySkillName(skillName), this, player);
@@ -1181,16 +1181,16 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     event.translationsMessage =
       event.recoverBy !== undefined
         ? TranslationPack.translationJsonPatcher(
-            '{0} recovered {2} hp for {1}',
-            TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.recoverBy)),
-            TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.toId)),
-            event.recoveredHp,
-          ).extract()
+          '{0} recovered {2} hp for {1}',
+          TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.recoverBy)),
+          TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.toId)),
+          event.recoveredHp,
+        ).extract()
         : TranslationPack.translationJsonPatcher(
-            '{0} recovered {1} hp',
-            TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.toId)),
-            event.recoveredHp,
-          ).extract();
+          '{0} recovered {1} hp',
+          TranslationPack.patchPlayerInTranslation(this.getPlayerById(event.toId)),
+          event.recoveredHp,
+        ).extract();
     EventPacker.createIdentifierEvent(GameEventIdentifiers.RecoverEvent, event);
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.RecoverEvent, event);
   }
@@ -1360,8 +1360,40 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           await this.sleep(2500);
           this.broadcast(GameEventIdentifiers.ObserveCardFinishEvent, {});
         }
+<<<<<<< HEAD
 
         return true;
+=======
+        pindianResult = {
+          winners,
+          pindianCards,
+        };
+        const messages = pindianCards.map(pindianCard =>
+          TranslationPack.translationJsonPatcher(
+            '{0} used {1} to respond pindian',
+            TranslationPack.patchPlayerInTranslation(this.getPlayerById(pindianCard.fromId)),
+            TranslationPack.patchCardInTranslation(pindianCard.cardId),
+          ).toString(),
+        );
+        pindianResult.winners.length === 0 && messages.push('pindian result:draw');
+
+        this.broadcast(GameEventIdentifiers.ObserveCardsEvent, {
+          cardIds: pindianCards.map(pindianCard => pindianCard.cardId),
+          selected: pindianCards.map(pindianCard => ({ card: pindianCard.cardId, player: pindianCard.fromId })),
+          messages,
+          translationsMessage:
+            pindianResult.winners.length > 0
+              ? TranslationPack.translationJsonPatcher(
+                'pindian result:{0} win',
+                TranslationPack.patchPlayerInTranslation(
+                  ...pindianResult.winners.map(winner => this.getPlayerById(winner)),
+                ),
+              ).extract()
+              : undefined,
+        });
+        await this.sleep(3000);
+        this.broadcast(GameEventIdentifiers.ObserveCardFinishEvent, {});
+>>>>>>> 1e5cc50 (Change the conditions of Install SideEffectSkill)
       }
 
       return true;
@@ -1548,11 +1580,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return index < 0 ? undefined : this.drawStack.splice(index, 1)[0];
   }
 
-  public installSideEffectSkill(applier: System.SideEffectSkillApplierEnum, skillName: string) {
-    super.installSideEffectSkill(applier, skillName);
+  public installSideEffectSkill(applier: System.SideEffectSkillApplierEnum, skillName: string, sourceId: PlayerId) {
+    super.installSideEffectSkill(applier, skillName, sourceId);
     this.broadcast(GameEventIdentifiers.UpgradeSideEffectSkillsEvent, {
       sideEffectSkillApplier: applier,
       skillName,
+      sourceId,
     });
   }
 
