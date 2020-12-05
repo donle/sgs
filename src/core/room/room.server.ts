@@ -147,7 +147,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       messages: ['game will start within 3 seconds'],
     };
     this.broadcast(GameEventIdentifiers.GameReadyEvent, event);
-
     this.gameStarted = true;
     await this.sleep(3000);
     await this.gameProcessor.gameStart(this, this.loadedCharacters, () => {

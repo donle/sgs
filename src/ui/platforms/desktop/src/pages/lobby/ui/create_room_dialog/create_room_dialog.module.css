@@ -3,7 +3,7 @@
 .createRoomDialog {
     padding: calc(gridLine * 3);
     color: white;
-    min-width: calc(gridLine * 50);
+    min-width: calc(gridLine * 75);
 }
 
 .background {
@@ -13,6 +13,20 @@
     height: 100%;
     top: 0;
     left: 0;
+}
+
+.layout {
+    display: flex;
+}
+
+.verticalLayout {
+    display: flex;
+    flex-direction: column;
+    margin: 0 gridLine;
+    flex: auto;
+}
+.basicInfo {
+    width: 40%;
 }
 
 .creatRoomForm {
@@ -29,6 +43,8 @@
 
 .inputLabelText {
     margin-bottom: gridLine;
+    font-size: 14px;
+    font-weight: 550;
 }
 
 .input {
@@ -46,4 +62,5 @@
     margin-top: gridLine;
     display: flex;
     justify-content: center;
+    align-self: flex-end;
 }
