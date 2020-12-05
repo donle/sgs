@@ -6,8 +6,9 @@ import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/st
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { RulesBreakerSkill, TriggerSkill } from 'core/skills/skill';
-import { CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import { CompulsorySkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 
+@PersistentSkill({ stubbornSkill: true })
 @CompulsorySkill({ name: 'bahu', description: 'bahu_description' })
 export class BaHu extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage: AllStage) {
@@ -34,6 +35,7 @@ export class BaHu extends TriggerSkill {
 }
 
 @ShadowSkill
+@PersistentSkill({ stubbornSkill: true })
 @CompulsorySkill({ name: BaHu.Name, description: BaHu.Description })
 export class BaHuShadow extends RulesBreakerSkill {
   get Muted() {

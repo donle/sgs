@@ -60,6 +60,7 @@ function skillPropertyWrapper(
     selfTargetSkill?: boolean;
     sideEffectSkill?: boolean;
     persistentSkill?: boolean;
+    stubbornSkill?: boolean;
   },
   constructor: new () => any,
 ): any {
@@ -70,6 +71,7 @@ function skillPropertyWrapper(
     private selfTargetSkill: boolean;
     private sideEffectSkill: boolean;
     private persistentSkill: boolean;
+    private stubbornSkill: boolean;
     public canUse: (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) => boolean;
 
     constructor() {
@@ -94,6 +96,9 @@ function skillPropertyWrapper(
       }
       if (options.persistentSkill !== undefined) {
         this.persistentSkill = options.persistentSkill;
+      }
+      if (options.stubbornSkill !== undefined) {
+        this.stubbornSkill = options.stubbornSkill;
       }
     }
   } as any;
@@ -155,10 +160,16 @@ export const ShadowSkill = <T extends Skill>(constructorFunction: SKillConstruct
   } as any;
 };
 
-export const PersistentSkill = <T extends Skill>(constructorFunction: SKillConstructor<T>) => {
-  return class extends ShadowSkill(constructorFunction) {
-    public persistentSkill = true;
-  } as any;
+export const PersistentSkill = (option?: { stubbornSkill?: boolean }) => <T extends Skill>(
+  constructorFunction: SKillConstructor<T>,
+) => {
+  return skillPropertyWrapper(
+    {
+      persistentSkill: true,
+      stubbornSkill: option?.stubbornSkill,
+    },
+    constructorFunction as any,
+  );
 };
 
 export function UniqueSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {

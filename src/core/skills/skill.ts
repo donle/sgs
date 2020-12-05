@@ -25,6 +25,7 @@ export abstract class Skill {
   private selfTargetSkill = false;
   private sideEffectSkill = false;
   private persistentSkill = false;
+  private stubbornSkill = false;
   private description: string;
   private skillName: string;
 
@@ -131,6 +132,10 @@ export abstract class Skill {
   }
   public isPersistentSkill() {
     return this.persistentSkill;
+  }
+
+  public isStubbornSkill() {
+    return this.stubbornSkill;
   }
 
   public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage) {

@@ -133,7 +133,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     stage?: AllStage,
   ): void;
   //Server only
-  public abstract async loseSkill(playerId: PlayerId, skillName: string, broadcast?: boolean): Promise<void>;
+  public abstract async loseSkill(playerId: PlayerId, skillName: string | string[], broadcast?: boolean): Promise<void>;
   //Server only
   public abstract async obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean): Promise<void>;
   //Server only
