@@ -3,7 +3,7 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { INFINITE_INTEGER } from 'core/game/game_props';
+import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { AimStage, AllStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
@@ -96,7 +96,7 @@ export class WuShenShadow extends RulesBreakerSkill {
       match = card.GeneralName === 'slash' && card.Suit === CardSuit.Heart;
     }
 
-    return match ? INFINITE_INTEGER : 0;
+    return match ? INFINITE_TRIGGERING_TIMES : 0;
   }
 
   public breakCardUsableDistance(cardId: CardId | CardMatcher): number {
