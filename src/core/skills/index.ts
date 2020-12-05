@@ -176,7 +176,7 @@ export { XinSheng } from './characters/mountain/xinsheng';
 export { BeiGe } from './characters/mountain/beige';
 export { DuanChang } from './characters/mountain/duanchang';
 
-export { WuShen, WuShenShadow } from './characters/god/wushen';
+export { WuShen, WuShenShadow, WuShenDisresponse } from './characters/god/wushen';
 export { WuHun } from './characters/god/wuhun';
 export { SheLie } from './characters/god/shelie';
 export { QinYin } from './characters/god/qinyin';
