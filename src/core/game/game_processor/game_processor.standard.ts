@@ -857,7 +857,7 @@ export class StandardGameProcessor extends GameProcessor {
 
       if (processor) {
         this.currentProcessingStage = processingStage;
-        await processor(processingStage!);
+        await processor(processingStage);
         this.currentProcessingStage = processingStage;
       }
       if (EventPacker.isTerminated(event)) {

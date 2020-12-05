@@ -212,7 +212,7 @@ export const enum LoseHpStage {
 export const enum HpChangeStage {
   BeforeHpChange = 'BeforeHpChange',
   HpChanging = 'HpChanging',
-  AtferHpChange = 'AtferHpChange',
+  AfterHpChange = 'AfterHpChange',
 }
 
 export type GameEventStage =
@@ -336,7 +336,7 @@ const gameEventStageList: {
   [GameEventIdentifiers.HpChangeEvent]: [
     HpChangeStage.BeforeHpChange,
     HpChangeStage.HpChanging,
-    HpChangeStage.AtferHpChange,
+    HpChangeStage.AfterHpChange,
   ],
   [GameEventIdentifiers.ChainLockedEvent]: [
     ChainLockStage.BeforeChainingOn,

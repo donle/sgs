@@ -351,7 +351,7 @@ export interface ServerEvent extends EventUtilities {
     commonRules: GameCommonRuleObject;
   };
   [GameEventIdentifiers.LoseSkillEvent]: {
-    skillName: string;
+    skillName: string | string[];
     toId: PlayerId;
     includeStatusSkill?: boolean;
   };

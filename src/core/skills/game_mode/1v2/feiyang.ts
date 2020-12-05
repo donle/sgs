@@ -4,8 +4,9 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
-import { CommonSkill } from 'core/skills/skill_wrappers';
+import { CommonSkill, PersistentSkill } from 'core/skills/skill_wrappers';
 
+@PersistentSkill({ stubbornSkill: true })
 @CommonSkill({ name: 'feiyang', description: 'feiyang_description' })
 export class FeiYang extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage: AllStage) {
