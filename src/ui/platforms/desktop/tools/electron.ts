@@ -28,7 +28,7 @@ class AppWindow {
   constructor(windowOptions?: BrowserWindowConstructorOptions) {
     this.windowInstance = new BrowserWindow(windowOptions);
     this.installIpcListener();
-    this.windowInstance.webContents.openDevTools();
+    // this.windowInstance.webContents.openDevTools();
   }
 
   private installIpcListener() {
@@ -37,7 +37,9 @@ class AppWindow {
     });
 
     ipcMain.on(FLASH_WINDOW, () => {
-      this.windowInstance!.flashFrame(true);
+      if (this.windowInstance && !this.windowInstance.isFocused()) {
+        this.windowInstance.flashFrame(true);
+      }
     });
 
     ipcMain.on(SET_DATA, (event, { key, value }: { key: string; value: any }) => {
@@ -45,7 +47,7 @@ class AppWindow {
     });
     ipcMain.on(GET_ALL_DATA, () => {
       const saveData = this.store.getSaveData();
-      ipcMain.emit(GET_ALL_DATA, saveData);
+      this.windowInstance!.webContents.send(GET_ALL_DATA, saveData);
     });
     ipcMain.on(DELETE_DATA, (event, { key }: { key: string }) => {
       this.store.remove(key);
@@ -65,8 +67,10 @@ class AppWindow {
       return;
     }
 
-    this.store.save();
-    this.windowInstance.on('closed', callbackFn);
+    this.windowInstance.on('closed', () => {
+      this.store.save();
+      callbackFn();
+    });
   }
 }
 

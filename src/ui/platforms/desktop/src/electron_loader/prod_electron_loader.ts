@@ -9,8 +9,8 @@ export class ProdElectronLoader extends ElectronLoader {
   constructor() {
     super();
     this.ipcRenderer.send(GET_ALL_DATA);
-    this.ipcRenderer.on(GET_ALL_DATA, (event, { value }: { value: any }) => {
-      this.saveJson = value;
+    this.ipcRenderer.on(GET_ALL_DATA, (event, data: any) => {
+      this.saveJson = data;
     });
   }
 

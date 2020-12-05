@@ -35,7 +35,12 @@ import illustraion6 from './images/lobby/illustration6.png';
 import illustraion7 from './images/lobby/illustration7.png';
 import illustraion8 from './images/lobby/illustration8.png';
 
-const gameModeIcons = [generalModeIcon, oneVersusTwoModeIcon, twoVersusTwoModeIcon, hegemonyModeIcon];
+const gameModeIcons = {
+  [GameMode.Standard]: generalModeIcon,
+  [GameMode.OneVersusTwo]: oneVersusTwoModeIcon,
+  [GameMode.TwoVersusTwo]: twoVersusTwoModeIcon,
+  [GameMode.Hegemony]: hegemonyModeIcon,
+};
 const lobbyIllustrations = [
   illustraion1,
   illustraion2,

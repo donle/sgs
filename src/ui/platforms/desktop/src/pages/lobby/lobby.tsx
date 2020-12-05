@@ -56,6 +56,8 @@ export class Lobby extends React.Component<LobbyProps> {
   private openAcknowledgement = false;
   @mobx.observable.ref
   private username: string;
+  @mobx.observable.ref
+  private viewCharacterExtenstions: number | undefined;
 
   private socket = SocketIOClient(
     `${this.props.config.host.protocol}://${this.props.config.host.host}:${this.props.config.host.port}/lobby`,
@@ -214,6 +216,15 @@ export class Lobby extends React.Component<LobbyProps> {
     this.showPasscodeError = false;
   };
 
+  @mobx.action
+  private readonly viewGameCharaterExtensions = (index: number) => () => {
+    this.viewCharacterExtenstions = index;
+  };
+  @mobx.action
+  private readonly closeGameCharaterExtensions = () => {
+    this.viewCharacterExtenstions = undefined;
+  };
+
   render() {
     return (
       <div className={styles.lobby}>
@@ -242,12 +253,21 @@ export class Lobby extends React.Component<LobbyProps> {
                     <span className={styles.roomName}>
                       <span>{roomInfo.name}</span>
                     </span>
-                    <span className={styles.roomMode}>
+                    <span
+                      className={styles.roomMode}
+                      onMouseEnter={this.viewGameCharaterExtensions(index)}
+                      onMouseLeave={this.closeGameCharaterExtensions}
+                    >
                       <img
                         className={styles.gameModeIcon}
                         src={this.props.imageLoader.getGameModeIcon(roomInfo.gameMode).src}
                         alt=""
                       />
+                      {this.viewCharacterExtenstions === index && (
+                        <Tooltip position={['slightBottom', 'right']}>
+                          {roomInfo.packages.map(p => this.props.translator.tr(p)).join(', ')}
+                        </Tooltip>
+                      )}
                     </span>
                     <span className={styles.roomStatus}>{this.props.translator.tr(roomInfo.status)}</span>
                     <span className={styles.roomPlayers}>{`${roomInfo.activePlayers}/${roomInfo.totalPlayers}`}</span>
