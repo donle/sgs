@@ -2,7 +2,7 @@ import logoImage from 'assets/images/lobby/logo.png';
 import { AudioLoader } from 'audio_loader/audio_loader';
 import classNames from 'classnames';
 import { Sanguosha } from 'core/game/engine';
-import { GameCardExtensions, GameCharacterExtensions } from 'core/game/game_props';
+import { GameCardExtensions } from 'core/game/game_props';
 import { LobbySocketEvent, LobbySocketEventPicker, RoomInfo } from 'core/shares/types/server_types';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -167,15 +167,6 @@ export class Lobby extends React.Component<LobbyProps> {
   private readonly onRoomCreated = (roomInfo: TemporaryRoomCreationInfo) => {
     this.openRoomCreationDialog = false;
     this.socket.emit(LobbySocketEvent.GameCreated.toString(), {
-      characterExtensions: [
-        GameCharacterExtensions.Standard,
-        GameCharacterExtensions.Wind,
-        GameCharacterExtensions.Fire,
-        GameCharacterExtensions.Forest,
-        GameCharacterExtensions.Mountain,
-        GameCharacterExtensions.God,
-        GameCharacterExtensions.YiJiang2011,
-      ],
       cardExtensions: [GameCardExtensions.Standard, GameCardExtensions.LegionFight],
       ...roomInfo,
     });
