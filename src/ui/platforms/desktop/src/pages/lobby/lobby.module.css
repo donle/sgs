@@ -107,10 +107,16 @@
     height: calc(gridLine * 2);
 }
 
-.roomLocker,
-.roomMode {
+.roomLocker {
     width: calc(gridLine * 6);
     text-align: center;
+}
+
+.roomMode {
+    width: calc(gridLine * 6);
+    display: flex;
+    justify-content: center;
+    position: relative;
 }
 
 .roomPlayers {

@@ -27,7 +27,14 @@ export const Tooltip = (props: TooltipProps) => {
     }, closeAfter * 1000);
   });
 
-  return <div className={classNames(styles.tooltip, className, styles[position as any], {
-    [styles.shining]: autoAnimation
-  })}>{children}</div>;
+  const divClassName: any = {};
+  for (const pos of position) {
+    divClassName[styles[pos]] = true;
+  }
+
+  return (
+    <div className={classNames(styles.tooltip, className, { ...divClassName, [styles.shining]: autoAnimation })}>
+      {children}
+    </div>
+  );
 };
