@@ -44,6 +44,7 @@ function getGameCharacterExtensions(translator: ClientTranslationModule) {
     id: extension,
     label: translator.tr(extension),
     checked: true,
+    disabled: extension === GameCharacterExtensions.Standard,
   }));
 }
 
