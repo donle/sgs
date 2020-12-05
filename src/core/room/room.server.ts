@@ -219,12 +219,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         return skills;
       }, []);
 
-      const playerSkills = player.Dead ? [] : player.getPlayerSkills<TriggerSkill>('trigger');
+      const playerSkills = player.getPlayerSkills<TriggerSkill>('trigger');
       for (const skill of [...playerSkills, ...hookedSkills]) {
         const canTrigger = bySkills
           ? bySkills.find(bySkill => UniqueSkillRule.isProhibitedBySkillRule(bySkill, skill)) === undefined
           : true;
-
         if (
           canTrigger &&
           skill.isTriggerable(content, stage) &&
@@ -268,7 +267,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (!this.CurrentPlayer || !this.isPlaying()) {
       return;
     }
-
     const { triggeredBySkills } = content as ServerEventFinder<GameEventIdentifiers>;
     const bySkills = triggeredBySkills
       ? triggeredBySkills.map(skillName => Sanguosha.getSkillBySkillName(skillName))
@@ -742,6 +740,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (cardResponseEvent.cardId !== undefined && Card.isVirtualCardId(cardResponseEvent.cardId)) {
       const from = this.getPlayerById(cardResponseEvent.fromId);
       const card = Sanguosha.getCardById<VirtualCard>(cardResponseEvent.cardId);
+      const skill = Sanguosha.getSkillBySkillName(card.GeneratedBySkill);
       await this.useSkill({
         fromId: cardResponseEvent.fromId,
         skillName: card.GeneratedBySkill,
@@ -760,6 +759,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                 TranslationPack.patchCardInTranslation(...card.ActualCardIds),
                 TranslationPack.patchCardInTranslation(card.Id),
               ).extract(),
+        mute: skill.Muted,
       });
     }
 
@@ -909,14 +909,31 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
   }
 
-  public async loseSkill(playerId: PlayerId, skillName: string, broadcast?: boolean) {
+  public async loseSkill(playerId: PlayerId, skillName: string | string[], broadcast?: boolean) {
     const player = this.getPlayerById(playerId);
     const lostSkill = player.loseSkill(skillName);
+    if (lostSkill.length === 0) {
+      return;
+    }
+    const lostSkillNames = lostSkill.map(skill => skill.Name);
     this.broadcast(GameEventIdentifiers.LoseSkillEvent, {
       toId: playerId,
-      skillName,
+      skillName: lostSkillNames,
       translationsMessage: broadcast
-        ? TranslationPack.translationJsonPatcher('{0} lost skill {1}', player.Name, skillName).extract()
+        ? TranslationPack.translationJsonPatcher(
+            '{0} lost skill {1}',
+            player.Name,
+            typeof skillName === 'string'
+              ? skillName
+              : TranslationPack.wrapArrayParams(
+                  ...lostSkillNames.reduce<string[]>((total, currentSkill) => {
+                    if (!total.find(skillName => currentSkill.endsWith(skillName))) {
+                      total.push(currentSkill);
+                    }
+                    return total;
+                  }, []),
+                ),
+          ).extract()
         : undefined,
     });
 

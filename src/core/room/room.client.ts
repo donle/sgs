@@ -263,7 +263,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     return this.currentPlayerStage;
   }
 
-  public async loseSkill(playerId: PlayerId, skillName: string): Promise<void> {
+  public async loseSkill(playerId: PlayerId, skillName: string | string[]): Promise<void> {
     const player = this.getPlayerById(playerId);
     const lostSkill = player.loseSkill(skillName);
 
