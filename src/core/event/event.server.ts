@@ -424,6 +424,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.UpgradeSideEffectSkillsEvent]: {
     sideEffectSkillApplier: System.SideEffectSkillApplierEnum;
     skillName: string | undefined;
+    sourceId?: PlayerId | undefined;
   };
 }
 
