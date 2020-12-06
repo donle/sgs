@@ -186,6 +186,7 @@ export class Lobby extends React.Component<LobbyProps> {
 
   @mobx.action
   private readonly onCloseSettings = () => {
+    this.username = this.props.electronLoader.getData('username');
     this.openSettings = false;
   };
 
