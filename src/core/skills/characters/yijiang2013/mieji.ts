@@ -54,34 +54,61 @@ export class MieJi extends ActiveSkill {
     const { toIds } = skillUseEvent;
     const to = room.getPlayerById(toIds![0]);
     const toId = toIds![0];
-    const response = await room.askForCardDrop(
-      toId,
-      Math.min(1, room.getPlayerById(toId).getPlayerCards().length),
-      [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
-      true,
-      undefined,
-      this.Name,
-    );
-    await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toId);
-    const card = Sanguosha.getCardById(response.droppedCards[0]);
-    if (card.is(CardType.Trick)) {
-      return true;
+    const options: string[] = [];
+    if (to.getPlayerCards().filter(cardId => Sanguosha.getCardById(cardId).BaseType === CardType.Trick).length > 0) {
+      options.push('mieji:trick');
     }
-    if (to.getPlayerCards().filter(cardId => Sanguosha.getCardById(cardId).BaseType !== CardType.Trick).length === 0) {
-      return true;
-    } else {
-      const response2 = await room.askForCardDrop(
+    if (to.getPlayerCards().filter(cardId => Sanguosha.getCardById(cardId).BaseType !== CardType.Trick).length > 0) {
+      options.push('mieji:drop');
+    }
+
+    // const options = to.getPlayerCards().filter(cardId => Sanguosha.getCardById(cardId).BaseType === CardType.Trick).length>0 ? ['mieji:trick', 'mieji:drop']:['mieji:drop'];
+    const askForChooseOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
+      options,
+      toId: toIds![0],
+      conversation: 'please choose mieji options',
+    };
+    room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseOptionsEvent, toIds![0]);
+    const { selectedOption } = await room.onReceivingAsyncResponseFrom(
+      GameEventIdentifiers.AskForChoosingOptionsEvent,
+      toIds![0],
+    );
+    if (selectedOption === 'mieji:trick') {
+      const response1 = await room.askForCardDrop(
         toId,
         1,
         [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
         true,
         to
           .getCardIds(PlayerCardsArea.HandArea)
-          .filter(cardId => Sanguosha.getCardById(cardId).BaseType === CardType.Trick),
+          .filter(cardId => Sanguosha.getCardById(cardId).BaseType !== CardType.Trick),
         this.Name,
       );
-
-      await room.dropCards(CardMoveReason.SelfDrop, response2.droppedCards, toId);
+      await room.moveCards({
+        movingCards: [{ card: response1.droppedCards[0], fromArea: CardMoveArea.HandArea }],
+        fromId: toIds![0],
+        toId: skillUseEvent.fromId,
+        toArea: CardMoveArea.HandArea,
+        moveReason: CardMoveReason.ActivePrey,
+        proposer: skillUseEvent.fromId,
+      });
+    } else {
+      for (let i = 1; i <= 2; i++) {
+        const response = await room.askForCardDrop(
+          toId,
+          Math.min(
+            1,
+            to.getPlayerCards().filter(cardId => Sanguosha.getCardById(cardId).BaseType !== CardType.Trick).length,
+          ),
+          [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
+          true,
+          to
+            .getCardIds(PlayerCardsArea.HandArea)
+            .filter(cardId => Sanguosha.getCardById(cardId).BaseType === CardType.Trick),
+          this.Name,
+        );
+        await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toId);
+      }
     }
 
     return true;
