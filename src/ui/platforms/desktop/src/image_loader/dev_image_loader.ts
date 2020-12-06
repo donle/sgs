@@ -9,7 +9,12 @@ import { ImageLoader } from './image_loader';
 
 const remoteRoot: string = 'http://doublebit.gitee.io/pictest/backup_remote';
 
-const gameModeIcons = ['general_mode', '1v2_mode', '2v2_mode', 'hegemony_mode'];
+const gameModeIcons = {
+  [GameMode.Standard]: 'general_mode',
+  [GameMode.OneVersusTwo]: '1v2_mode',
+  [GameMode.TwoVersusTwo]: '2v2_mode',
+  [GameMode.Hegemony]: 'hegemony_mode',
+};
 
 export class DevImageLoader implements ImageLoader {
   public async getCardImage(name: string) {
