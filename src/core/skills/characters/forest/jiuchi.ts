@@ -10,6 +10,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { RulesBreakerSkill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
+import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 
 @CommonSkill({ name: 'jiuchi', description: 'jiuchi_description' })
@@ -48,7 +49,7 @@ export class JiuChi extends ViewAsSkill {
 
 @ShadowSkill
 @CommonSkill({ name: JiuChi.GeneralName, description: JiuChi.Description })
-export class JiuChiDrunk extends TriggerSkill {
+export class JiuChiDrunk extends TriggerSkill implements OnDefineReleaseTiming {
   public isAutoTrigger() {
     return true;
   }
@@ -80,6 +81,10 @@ export class JiuChiDrunk extends TriggerSkill {
     if (room.getFlag<boolean>(owner.Id, JiuChi.Used) === true) {
       room.removeFlag(owner.Id, JiuChi.Used);
     }
+  }
+
+  public async whenDead(room: Room, owner: Player) {
+    this.whenRefresh(room, owner);
   }
 
   public async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {

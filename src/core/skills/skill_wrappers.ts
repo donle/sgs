@@ -38,16 +38,6 @@ function onCalculatingSkillUsageWrapper(
         Object.bind(this, this.canUse);
       }
     }
-
-    public async onUse(
-      room: Room,
-      event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent>,
-    ) {
-      const result = await super.onUse(room, event);
-      room.getPlayerById(event.fromId).useSkill(this.name);
-
-      return result;
-    }
   } as any;
 }
 

@@ -219,7 +219,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         return skills;
       }, []);
 
-      const playerSkills = player.getPlayerSkills<TriggerSkill>('trigger');
+      const playerSkills =
+        player.Dead && stage !== PlayerDiedStage.PlayerDied && stage !== PlayerDiedStage.AfterPlayerDied
+          ? []
+          : player.getPlayerSkills<TriggerSkill>('trigger');
       for (const skill of [...playerSkills, ...hookedSkills]) {
         const canTrigger = bySkills
           ? bySkills.find(bySkill => UniqueSkillRule.isProhibitedBySkillRule(bySkill, skill)) === undefined
@@ -922,7 +925,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       translationsMessage: broadcast
         ? TranslationPack.translationJsonPatcher(
             '{0} lost skill {1}',
-            player.Name,
+            TranslationPack.patchPlayerInTranslation(player),
             typeof skillName === 'string'
               ? skillName
               : TranslationPack.wrapArrayParams(
