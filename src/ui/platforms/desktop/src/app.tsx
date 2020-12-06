@@ -2,7 +2,7 @@ import { getAudioLoader } from 'audio_loader/audio_loader_util';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { getElectronLoader } from 'electron_loader/electron_loader_util';
-import { createHashHistory } from 'history';
+import { createMemoryHistory } from 'history';
 import { getImageLoader } from 'image_loader/image_loader_util';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
@@ -15,7 +15,7 @@ import { Lobby } from './pages/lobby/lobby';
 
 @mobxReact.observer
 export class App extends React.PureComponent<{ config: ClientConfig; translator: ClientTranslationModule }> {
-  private customHistory = createHashHistory();
+  private customHistory = createMemoryHistory();
 
   private imageLoader = getImageLoader(this.props.config.flavor);
   private audioLoader = getAudioLoader(this.props.config.flavor);

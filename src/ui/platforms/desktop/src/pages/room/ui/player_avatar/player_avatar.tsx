@@ -166,9 +166,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
         <div className={styles.outsideArea}>
           {Object.entries<CardId[]>(cards)
             .map(([areaName, cards], index) =>
-              cards.length === 0 ? (
-                undefined
-              ) : (
+              cards.length === 0 ? undefined : (
                 <span
                   key={index}
                   className={classNames(styles.skillTag, styles.clickableSkillTag)}
@@ -361,6 +359,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
             <Mask
               className={styles.playerRole}
               displayedRole={clientPlayer.Role}
+              gameMode={this.props.store.room.Info.gameMode}
               lockedRole={clientPlayer.Dead || clientPlayer.Role === PlayerRole.Lord ? clientPlayer.Role : undefined}
               hideDisplay={true}
             />

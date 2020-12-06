@@ -7,7 +7,7 @@ import { SimplifiedChinese } from 'languages';
 import { ClientFlavor } from 'props/config_props';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { HashRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { App } from './app';
 import { emojiLoader } from './emoji_loader/emoji_loader';
 import './index.css';
@@ -26,9 +26,9 @@ if (config.flavor === ClientFlavor.Desktop) {
 Sanguosha.initialize();
 
 ReactDOM.render(
-  <HashRouter>
+  <MemoryRouter>
     <App config={config} translator={translator} />
-  </HashRouter>,
+  </MemoryRouter>,
   document.getElementById('root'),
 );
 
