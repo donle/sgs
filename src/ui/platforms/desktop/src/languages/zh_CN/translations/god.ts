@@ -59,7 +59,7 @@ export const characterDictionary: Word[] = [
 export const skillDescriptions: Word[] = [
   {
     source: 'wushen_description',
-    target: '<b>锁定技</b>，你的红桃手牌均视为【杀】；你使用红桃【杀】无距离限制。',
+    target: '<b>锁定技</b>，你的红桃手牌均视为【杀】；你使用红桃【杀】无距离和次数限制，无法被响应。',
   },
   {
     source: 'wuhun_description',

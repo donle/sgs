@@ -78,6 +78,8 @@ export class OneVersusTwoGameProcessor extends StandardGameProcessor {
       changedProperties.push({
         toId: playerInfo.Id,
         characterId: character.Id,
+        maxHp: playerInfo.Role === PlayerRole.Lord ? character.MaxHp + 1 : undefined,
+        hp: playerInfo.Role === PlayerRole.Lord ? character.Hp + 1 : undefined,
       });
 
       if (character.Nationality === CharacterNationality.God) {
