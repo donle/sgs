@@ -62,7 +62,6 @@ export class MieJi extends ActiveSkill {
       options.push('mieji:drop');
     }
 
-    // const options = to.getPlayerCards().filter(cardId => Sanguosha.getCardById(cardId).BaseType === CardType.Trick).length>0 ? ['mieji:trick', 'mieji:drop']:['mieji:drop'];
     const askForChooseOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
       options,
       toId: toIds![0],
