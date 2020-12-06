@@ -21,23 +21,41 @@ export interface AudioService {
 
 class AudioPlayerService implements AudioService {
   public playList: Set<string> = new Set<string>();
+  public badResourcesList: Set<string> = new Set<string>();
 
   constructor(private loader: AudioLoader, private electronLoader: ElectronLoader) {}
   async playSkillAudio(skillName: string, gender: CharacterGender, characterName?: string) {
-    if (this.playList.has(skillName)) {
+    if (this.playList.has(skillName) || this.badResourcesList.has(skillName)) {
       return;
     }
-    const audioUrl = await this.loader.getSkillAudio(skillName, gender, characterName);
-    this.play(audioUrl, undefined, skillName);
+    try {
+      const audioUrl = await this.loader.getSkillAudio(skillName, gender, characterName);
+      this.play(audioUrl, undefined, skillName);
+    } catch {
+      // tslint:disable-next-line: no-console
+      console.warn(`The resource of '${skillName}' doesn't exist`);
+      this.badResourcesList.add(skillName);
+    }
   }
+
   async playCardAudio(cardName: string, gender: CharacterGender, characterName?: string) {
-    const audioUrl = await this.loader.getCardAudio(cardName, gender, characterName);
-    this.play(audioUrl);
+    try {
+      const audioUrl = await this.loader.getCardAudio(cardName, gender, characterName);
+      this.play(audioUrl);
+    } catch {
+      // tslint:disable-next-line: no-console
+      console.warn(`The resource of '${cardName}' doesn't exist`);
+    }
   }
 
   async playDeathAudio(characterName: string) {
-    const audioUrl = await this.loader.getDeathAudio(characterName);
-    this.play(audioUrl);
+    try {
+      const audioUrl = await this.loader.getDeathAudio(characterName);
+      this.play(audioUrl);
+    } catch {
+      // tslint:disable-next-line: no-console
+      console.warn(`The resource of '${characterName}' doesn't exist`);
+    }
   }
 
   playDamageAudio(damage: number) {
