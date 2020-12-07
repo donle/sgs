@@ -589,7 +589,7 @@ export const eventDictionary: Word[] = [
   { source: 'please choose your zhiheng cards', target: '请选择要制衡的牌' },
   {
     source: 'please choose tianxiang options',
-    target: '请选择：1.令其受到1点伤害，然后摸X张牌（X为你其失去的体力值）。2.令其失去1点体力，然后其获得你弃置的牌',
+    target: '请选择：1.令其受到1点伤害，然后摸X张牌（X为其失去的体力值）。2.令其失去1点体力，然后其获得你弃置的牌',
   },
   { source: 'do you wanna transfer the card {0} target to {1}', target: '是否将【{0}】的使用目标改为【{1}】' },
   {
