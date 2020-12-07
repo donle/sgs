@@ -1595,6 +1595,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.broadcast(GameEventIdentifiers.UpgradeSideEffectSkillsEvent, {
       sideEffectSkillApplier: applier,
       skillName: undefined,
+      sourceId: undefined,
     });
   }
 
