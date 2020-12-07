@@ -95,7 +95,7 @@ export class JueCeShadow extends TriggerSkill {
   }
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const { triggeredOnEvent, fromId } = skillUseEvent;
+    const { triggeredOnEvent } = skillUseEvent;
     const identifier = EventPacker.getIdentifier(
       triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent | GameEventIdentifiers.PhaseChangeEvent>,
     );
