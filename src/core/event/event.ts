@@ -276,8 +276,18 @@ export type EventPicker<I extends GameEventIdentifiers, E extends WorkPlace> = B
 export type ClientEventFinder<I extends GameEventIdentifiers> = BaseGameEvent & ClientBaseEvent & ClientEvent[I];
 export type ServerEventFinder<I extends GameEventIdentifiers> = BaseGameEvent & ServerEvent[I];
 
+export type InstallSideEffectSkillEvent = {
+  skillName: string;
+  sourceId: PlayerId;
+}
+
+export type UninstallSideEffectSkillEvent = {
+  skillName?: undefined;
+  sourceId: undefined;
+}
+
 export class EventPacker {
-  private constructor() {}
+  private constructor() { }
 
   static wrapGameRunningInfo<T extends GameEventIdentifiers>(
     event: ServerEventFinder<T>,
