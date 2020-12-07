@@ -5,7 +5,7 @@ import { AllStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { GlobalFilterSkill, GlobalRulesBreakerSkill, OnDefineReleaseTiming, TriggerSkill } from 'core/skills/skill';
-import { CommonSkill, PersistentSkill } from 'core/skills/skill_wrappers';
+import { CommonSkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 
 @CommonSkill({ name: 'zhuikong', description: 'zhuikong_description' })
 export class ZhuiKong extends TriggerSkill implements OnDefineReleaseTiming {
@@ -62,7 +62,8 @@ export class ZhuiKong extends TriggerSkill implements OnDefineReleaseTiming {
   }
 }
 
-@PersistentSkill
+@ShadowSkill
+@PersistentSkill()
 @CommonSkill({ name: ZhuiKong.Name, description: ZhuiKong.Description })
 export class ZhuiKongFilter extends GlobalFilterSkill {
   public canUseCardTo(_: CardId | CardMatcher, __: Room, ___: Player, from: Player, to: Player): boolean {
@@ -70,7 +71,8 @@ export class ZhuiKongFilter extends GlobalFilterSkill {
   }
 }
 
-@PersistentSkill
+@ShadowSkill
+@PersistentSkill()
 @CommonSkill({ name: ZhuiKongFilter.Name, description: ZhuiKongFilter.Description })
 export class ZhuiKongDistance extends GlobalRulesBreakerSkill {
   public breakDistance(_: Room, owner: Player, from: Player, to: Player): number {
