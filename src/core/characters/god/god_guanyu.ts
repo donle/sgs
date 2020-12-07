@@ -8,7 +8,7 @@ export class GodGuanYu extends Character {
   constructor(id: number) {
     super(id, 'god_guanyu', CharacterGender.Male, CharacterNationality.God, 5, 5, GameCharacterExtensions.God, [
       ...skillLoaderInstance.getSkillsByName('wushen'),
-      skillLoaderInstance.getSkillByName('wuhun'),
+      ...skillLoaderInstance.getSkillsByName('wuhun'),
     ]);
   }
 }

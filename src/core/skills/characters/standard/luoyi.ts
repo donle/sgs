@@ -65,7 +65,7 @@ export class LuoYi extends TriggerSkill {
     let luoyiObtain: CardId[] = [];
     for (const cardId of displayCards) {
       const card = Sanguosha.getCardById(cardId);
-      if (card.is(CardType.Basic) || card.is(CardType.Equip) || card.GeneralName === 'duel') {
+      if (card.is(CardType.Basic) || card.is(CardType.Weapon) || card.GeneralName === 'duel') {
         luoyiObtain.push(cardId);
       }
     }
