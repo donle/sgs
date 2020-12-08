@@ -279,8 +279,8 @@ export class GameClientProcessor {
         await this.onHandleObserveCardsEvent(e as any, content);
         break;
       case GameEventIdentifiers.ChainLockedEvent:
-        break;
         await this.onHandleChainLockedEvent(e as any, content);
+        break;
       case GameEventIdentifiers.DrunkEvent:
         await this.onHandleDrunkEvent(e as any, content);
         break;

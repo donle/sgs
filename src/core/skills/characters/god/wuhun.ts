@@ -39,7 +39,7 @@ export class WuHun extends TriggerSkill {
 }
 
 @ShadowSkill
-@CommonSkill({ name: WuHun.Name, description: WuHun.Description })
+@CompulsorySkill({ name: WuHun.Name, description: WuHun.Description })
 export class WuHunDeath extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
     return stage === PlayerDiedStage.PlayerDied;
