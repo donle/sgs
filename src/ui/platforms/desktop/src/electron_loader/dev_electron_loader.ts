@@ -15,4 +15,11 @@ export class DevElectronLoader extends ElectronLoader {
   public removeData(key: string) {
     return window.localStorage.removeItem(key);
   }
+
+  public saveTemporaryData(key: string, value: string): void {
+    window.sessionStorage.setItem(key, value);
+  }
+  public getTemporaryData(key: string): string | null {
+    return window.sessionStorage.getItem(key);
+  }
 }

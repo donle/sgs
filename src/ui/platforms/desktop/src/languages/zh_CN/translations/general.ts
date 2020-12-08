@@ -609,6 +609,10 @@ export const eventDictionary: Word[] = [
     target: '玩家 {0} 退出了房间',
   },
   {
+    source: 'player {0} re-enter in the room',
+    target: '玩家 {0} 重新回到了游戏',
+  },
+  {
     source: 'game will start within 3 seconds',
     target: '游戏将在3秒后开始',
   },

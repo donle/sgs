@@ -206,6 +206,13 @@ export interface ServerEvent extends EventUtilities {
     gameInfo: GameInfo;
     timestamp: number;
   };
+  [GameEventIdentifiers.PlayerReenterEvent]: {
+    toId: PlayerId;
+  };
+  [GameEventIdentifiers.PlayerBulkPacketEvent]: {
+    stackedLostMessages: ServerEventFinder<GameEventIdentifiers>[];
+    timestamp: number;
+  };
   [GameEventIdentifiers.PlayerLeaveEvent]: {
     playerId: PlayerId;
   };

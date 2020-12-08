@@ -782,7 +782,7 @@ export abstract class Player implements PlayerInfo {
     this.online = false;
   }
   public setOnline() {
-    this.online = false;
+    this.online = true;
   }
 
   public isOnline() {

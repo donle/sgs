@@ -4,6 +4,7 @@ import { ElectronLoader } from './electron_loader';
 
 export class ProdElectronLoader extends ElectronLoader {
   private saveJson: any = {};
+  private tempSaveData: any = {};
   private ipcRenderer: IpcRenderer = (window as any).ipcRenderer;
 
   constructor() {
@@ -30,5 +31,12 @@ export class ProdElectronLoader extends ElectronLoader {
   public removeData(key: string) {
     this.ipcRenderer.send(DELETE_DATA, key);
     delete this.saveJson[key];
+  }
+
+  public saveTemporaryData(key: string, value: string): void {
+    this.tempSaveData[key] = value;
+  }
+  public getTemporaryData(key: string): string | null {
+    return this.tempSaveData[key];
   }
 }

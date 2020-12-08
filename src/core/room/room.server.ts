@@ -194,7 +194,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       });
     }
 
-    this.analytics.record(content, this.isPlaying() ? this.CurrentPlayerPhase : undefined);
+    if (type !== GameEventIdentifiers.NotifyEvent) {
+      EventPacker.setTimestamp(content);
+      this.analytics.record(content, this.isPlaying() ? this.CurrentPlayerPhase : undefined);
+    }
     this.socket.broadcast(type, EventPacker.createIdentifierEvent(type, content));
   }
 

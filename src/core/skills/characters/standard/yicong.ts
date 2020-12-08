@@ -9,6 +9,6 @@ export class YiCong extends RulesBreakerSkill {
   }
 
   public breakOffenseDistance(room: Room, owner: Player) {
-    return owner.Hp > 2 ? 1 : 0;
+    return 1;
   }
 }

@@ -1,7 +1,13 @@
 import { AudioLoader } from 'audio_loader/audio_loader';
 import classNames from 'classnames';
-import { clientActiveListenerEvents, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import {
+  clientActiveListenerEvents,
+  EventPacker,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from 'core/event/event';
 import { ClientSocket } from 'core/network/socket.client';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronLoader } from 'electron_loader/electron_loader';
@@ -48,6 +54,7 @@ export class RoomPage extends React.Component<
   private displayedCardsRef = React.createRef<HTMLDivElement>();
   private readonly cardWidth = 120;
   private readonly cardMargin = 2;
+  private lastEventTimeStamp: number;
 
   @mobx.observable.ref
   private focusedCardIndex: number | undefined;
@@ -107,6 +114,16 @@ export class RoomPage extends React.Component<
     );
   }
 
+  private readonly onHandleBulkEvents = async (events: ServerEventFinder<GameEventIdentifiers>[]) => {
+    this.store.room.emitStatus('trusted', this.props.electronLoader.getTemporaryData('playerId')!);
+    for (const content of events) {
+      const identifier = Precondition.exists(EventPacker.getIdentifier(content), 'Unable to load event identifier');
+      await this.gameProcessor.onHandleIncomingEvent(identifier, content);
+      this.showMessageFromEvent(content);
+      this.updateGameStatus(content);
+    }
+  };
+
   componentDidMount() {
     this.presenter.setupRoomStatus({
       playerName: this.playerName,
@@ -115,9 +132,27 @@ export class RoomPage extends React.Component<
       timestamp: Date.now(),
     });
 
+    this.socket.onReconnected(() => {
+      const playerId = this.props.electronLoader.getTemporaryData('playerId');
+      if (!playerId) {
+        return;
+      }
+
+      this.socket.notify(GameEventIdentifiers.PlayerReenterEvent, {
+        timestamp: this.lastEventTimeStamp,
+        playerId,
+        playerName: this.playerName,
+      });
+    });
+
+    if (!this.props.electronLoader.getTemporaryData('playerId')) {
+      this.props.electronLoader.saveTemporaryData('playerId', `${this.playerName}-${Date.now()}`);
+    }
+
     this.socket.notify(GameEventIdentifiers.PlayerEnterEvent, {
       playerName: this.playerName,
       timestamp: this.store.clientRoomInfo.timestamp,
+      playerId: this.props.electronLoader.getTemporaryData('playerId')!,
     });
 
     this.socket.on(GameEventIdentifiers.PlayerEnterRefusedEvent, () => {
@@ -126,10 +161,21 @@ export class RoomPage extends React.Component<
 
     clientActiveListenerEvents().forEach(identifier => {
       this.socket.on(identifier, async (content: ServerEventFinder<GameEventIdentifiers>) => {
-        await this.gameProcessor.onHandleIncomingEvent(identifier, content);
-        this.showMessageFromEvent(content);
-        this.animation(identifier, content);
-        this.updateGameStatus(content);
+        const timestamp = EventPacker.getTimestamp(content);
+        if (timestamp) {
+          this.lastEventTimeStamp = timestamp;
+        }
+
+        if (identifier === GameEventIdentifiers.PlayerBulkPacketEvent) {
+          await this.onHandleBulkEvents(
+            (content as ServerEventFinder<GameEventIdentifiers.PlayerBulkPacketEvent>).stackedLostMessages,
+          );
+        } else {
+          await this.gameProcessor.onHandleIncomingEvent(identifier, content);
+          this.showMessageFromEvent(content);
+          this.animation(identifier, content);
+          this.updateGameStatus(content);
+        }
       });
     });
 
@@ -192,14 +238,15 @@ export class RoomPage extends React.Component<
     }
   }
 
-  private readonly onDisplayCardFocused = (index: number) => mobx.action(() => {
-    this.focusedCardIndex = index;
-  });
+  private readonly onDisplayCardFocused = (index: number) =>
+    mobx.action(() => {
+      this.focusedCardIndex = index;
+    });
 
   @mobx.action
   private readonly onDisplayCardLeft = () => {
     this.focusedCardIndex = undefined;
-  }
+  };
 
   private getDisplayedCard() {
     return (

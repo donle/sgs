@@ -149,6 +149,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.PlayerEnterEvent:
         await this.onHandlePlayerEnterEvent(e as any, content);
         break;
+      case GameEventIdentifiers.PlayerReenterEvent:
+        await this.onHandlePlayerReenterEvent(e as any, content);
+        break;
       case GameEventIdentifiers.PlayerLeaveEvent:
         await this.onHandlePlayerLeaveEvent(e as any, content);
         break;
@@ -276,8 +279,8 @@ export class GameClientProcessor {
         await this.onHandleObserveCardsEvent(e as any, content);
         break;
       case GameEventIdentifiers.ChainLockedEvent:
-        await this.onHandleChainLockedEvent(e as any, content);
         break;
+        await this.onHandleChainLockedEvent(e as any, content);
       case GameEventIdentifiers.DrunkEvent:
         await this.onHandleDrunkEvent(e as any, content);
         break;
@@ -741,7 +744,6 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     Precondition.assert(this.store.clientRoomInfo !== undefined, 'Uninitialized Client room info');
-
     if (
       content.joiningPlayerName === this.store.clientRoomInfo.playerName &&
       content.timestamp === this.store.clientRoomInfo.timestamp
@@ -764,6 +766,14 @@ export class GameClientProcessor {
       this.store.animationPosition.insertPlayer(playerInfo.Id);
       this.presenter.playerEnter(playerInfo);
     }
+  }
+
+  private async onHandlePlayerReenterEvent<T extends GameEventIdentifiers.PlayerReenterEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.getPlayerById(content.toId).setOnline();
+    this.presenter.broadcastUIUpdate();
   }
 
   private onHandlePlayerLeaveEvent<T extends GameEventIdentifiers.PlayerLeaveEvent>(
