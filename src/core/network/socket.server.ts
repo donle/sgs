@@ -208,7 +208,6 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     socket.emit(GameEventIdentifiers.PlayerBulkPacketEvent.toString(), {
       timestamp: event.timestamp,
       stackedLostMessages: missingEvents,
-      ignoreNotifiedStatus: true,
     });
 
     this.broadcast(GameEventIdentifiers.PlayerReenterEvent, {
@@ -217,6 +216,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         'player {0} re-enter in the room',
         TranslationPack.patchPureTextParameter(event.playerName),
       ).extract(),
+      ignoreNotifiedStatus: true,
     });
   }
 
