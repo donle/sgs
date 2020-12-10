@@ -26,6 +26,8 @@ export const characterDictionary: Word[] = [
 
   { source: 'madai', target: '马岱' },
   { source: 'qianxi', target: '潜袭' },
+  { source: 'qianxi_red', target: '潜袭[红色]' },
+  { source: 'qianxi_black', target: '潜袭[黑色]' },
 
   { source: 'bulianshi', target: '步练师' },
   { source: 'anxu', target: '安恤' },
@@ -99,7 +101,6 @@ export const skillDescriptions: Word[] = [
     target:
       '准备阶段开始时，你可以摸一张牌，弃置一张牌，然后你令你距离为1的一名角色于本回合内不能使用或打出与你以此法弃置牌颜色相同的手牌。',
   },
-
   {
     source: 'anxu_description',
     target:
@@ -172,5 +173,10 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: please drop a weapon, or {1} will draw a card',
     target: '{0}：请弃置一张武器牌，否则 {1} 将会摸一张牌',
+  },
+
+  {
+    source: 'qianxi: please choose a target with 1 Distance(to you)',
+    target: '<b>潜袭</b>：请选择你至其距离为1的一名角色',
   },
 ];
