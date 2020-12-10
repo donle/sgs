@@ -15,7 +15,9 @@ import {
   ClientEventFinder,
   EventUtilities,
   GameEventIdentifiers,
+  InstallSideEffectSkillEvent,
   ServerEventFinder,
+  UninstallSideEffectSkillEvent,
 } from './event';
 
 export interface ServerEvent extends EventUtilities {
@@ -423,8 +425,7 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.UpgradeSideEffectSkillsEvent]: {
     sideEffectSkillApplier: System.SideEffectSkillApplierEnum;
-    skillName: string | undefined;
-  };
+  } & (InstallSideEffectSkillEvent | UninstallSideEffectSkillEvent);
 }
 
 export enum PinDianResult {
