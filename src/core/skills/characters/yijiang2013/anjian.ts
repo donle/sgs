@@ -4,9 +4,9 @@ import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event
 import { Sanguosha } from 'core/game/engine';
 import { AimStage, AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import {  PlayerId } from 'core/player/player_props';
+import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { CompulsorySkill, FilterSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { CompulsorySkill, GlobalFilterSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'anjian', description: 'anjian_description' })
@@ -33,8 +33,9 @@ export class AnJian extends TriggerSkill {
     if (identifier === GameEventIdentifiers.AimEvent) {
       content = content as ServerEventFinder<GameEventIdentifiers.AimEvent>;
       return (
+        owner.Id === content.fromId &&
         content.byCardId !== undefined &&
-        Sanguosha.getCardById(content.byCardId).GeneralName === 'slash' 
+        Sanguosha.getCardById(content.byCardId).GeneralName === 'slash'
         // &&
         // room.getPlayerById(content.toId).getAttackDistance(room) <
         //   room.distanceBetween(room.getPlayerById(content.toId), owner)
@@ -64,9 +65,9 @@ export class AnJian extends TriggerSkill {
       triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent | GameEventIdentifiers.DamageEvent>,
     );
     if (identifier === GameEventIdentifiers.AimEvent) {
-      const { toId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
+      const { toId,fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
       room.setFlag(toId, this.GeneralName, true, true);
-       await room.obtainSkill(toId, AnJianPeach.Name);
+      await room.obtainSkill(fromId, AnJianPeach.Name);
     } else if (identifier === GameEventIdentifiers.DamageEvent) {
       const { fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
       const damageEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
@@ -88,21 +89,33 @@ export class AnJian extends TriggerSkill {
 }
 @ShadowSkill
 @CompulsorySkill({ name: 'anjianPeach', description: 'anjianPeach_description' })
-export class AnJianPeach extends FilterSkill {
-  canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId) {
-    return cardId instanceof CardMatcher
-      ? false 
-      : Sanguosha.getCardById(cardId).GeneralName === 'peach';
+export class AnJianPeach extends GlobalFilterSkill {
+  canUseCardTo(cardId: CardId | CardMatcher, room: Room, owner: Player, from: Player, to: Player) {
+    const inOwnersRound = room.CurrentPlayer.Id === owner.Id  && from.Id !== to.Id;
+
+    if (cardId instanceof CardMatcher) {
+      if (inOwnersRound && cardId.match(new CardMatcher({ name: ['peach'] }))) {
+        return false;
+      }
+    } else {
+      if (inOwnersRound && Sanguosha.getCardById(cardId).GeneralName === 'peach') {
+        return false;
+      }
+    }
+
+    return true;
   }
+  
 }
-      // const inOwnersRound =  owner.Id && from.Id;
-      // if (room.getPlayerById(inOwnersRound).getFlag<boolean>(this.GeneralName)) {
-      // if (cardId instanceof CardMatcher) {
-      //   if (inOwnersRound && cardId.match(new CardMatcher({ name: ['peach'] }))) {
-      //     return false;
-      //   }
-      // } else {
-      //   if (inOwnersRound && Sanguosha.getCardById(cardId).GeneralName === 'peach') {
-      //     return false;
-      //   }
-      // }
+// canUseCardTo(cardId: CardId | CardMatcher, room: Room, owner: Player, from: Player, to: Player) {
+//   const inOwnersRound =  owner.Id && from.Id;
+//   if (room.getPlayerById(inOwnersRound).getFlag<boolean>(this.GeneralName)) {
+//   if (cardId instanceof CardMatcher) {
+//     if (inOwnersRound && cardId.match(new CardMatcher({ name: ['peach'] }))) {
+//       return false;
+//     }
+//   } else {
+//     if (inOwnersRound && Sanguosha.getCardById(cardId).GeneralName === 'peach') {
+//       return false;
+//     }
+//   }
