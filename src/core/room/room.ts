@@ -418,6 +418,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   public distanceBetween(from: Player, to: Player) {
+    if (from === to) {
+      return 0;
+    }
+
     for (const skill of from.getPlayerSkills<RulesBreakerSkill>('breaker')) {
       const breakDistance = skill.breakDistanceTo(this, from, to);
       if (breakDistance > 0) {
@@ -426,7 +430,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     }
 
     const seatGap = to.getDefenseDistance(this) - from.getOffenseDistance(this);
-    return this.onSeatDistance(from, to) + seatGap;
+    return Math.max(this.onSeatDistance(from, to) + seatGap, 1);
   }
   public cardUseDistanceBetween(room: Room, cardId: CardId, from: Player, to: Player) {
     const card = Sanguosha.getCardById(cardId);
