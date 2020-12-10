@@ -230,12 +230,6 @@ export { GanLu } from './characters/yijiang2011/ganlu';
 export { BuYi } from './characters/yijiang2011/buyi';
 export { XuanFeng, XuanFengMove, XuanFengDrop } from './characters/yijiang2011/xuanfeng';
 
-export { ChengXiang } from './characters/yijiang2013/chengxiang';
-export { RenXin } from './characters/yijiang2013/renxin';
-export { JingCe, JingCeShadow } from './characters/yijiang2013/jingce';
-export { JunXing } from './characters/yijiang2013/junxing';
-export { YuCe } from './characters/yijiang2013/yuce';
-
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';
 export { FeiYang } from './game_mode/1v2/feiyang';
