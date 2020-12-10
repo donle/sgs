@@ -1,8 +1,8 @@
 import { Character } from '../character';
 import { CaoChong } from './caochong';
 import { GuoHuai } from './guohuai';
-import { ManChong } from './manchong';
 import { LiRu } from './liru';
+import { ManChong } from './manchong';
 import { PanZhangMaZhong } from './panzhangmazhong';
 
 export const YiJiang2013Package: (index: number) => Character[] = index => [
