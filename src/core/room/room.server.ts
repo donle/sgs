@@ -926,7 +926,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       toId: playerId,
       skillName: lostSkillNames,
       translationsMessage: broadcast
-        ? TranslationPack.translationJsonPatcher('{0} lost skill {1}', player.Name, skillName).extract()
         ? TranslationPack.translationJsonPatcher(
             '{0} lost skill {1}',
             TranslationPack.patchPlayerInTranslation(player),
@@ -1361,40 +1360,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           await this.sleep(2500);
           this.broadcast(GameEventIdentifiers.ObserveCardFinishEvent, {});
         }
-<<<<<<< HEAD
-
         return true;
-=======
-        pindianResult = {
-          winners,
-          pindianCards,
-        };
-        const messages = pindianCards.map(pindianCard =>
-          TranslationPack.translationJsonPatcher(
-            '{0} used {1} to respond pindian',
-            TranslationPack.patchPlayerInTranslation(this.getPlayerById(pindianCard.fromId)),
-            TranslationPack.patchCardInTranslation(pindianCard.cardId),
-          ).toString(),
-        );
-        pindianResult.winners.length === 0 && messages.push('pindian result:draw');
-
-        this.broadcast(GameEventIdentifiers.ObserveCardsEvent, {
-          cardIds: pindianCards.map(pindianCard => pindianCard.cardId),
-          selected: pindianCards.map(pindianCard => ({ card: pindianCard.cardId, player: pindianCard.fromId })),
-          messages,
-          translationsMessage:
-            pindianResult.winners.length > 0
-              ? TranslationPack.translationJsonPatcher(
-                'pindian result:{0} win',
-                TranslationPack.patchPlayerInTranslation(
-                  ...pindianResult.winners.map(winner => this.getPlayerById(winner)),
-                ),
-              ).extract()
-              : undefined,
-        });
-        await this.sleep(3000);
-        this.broadcast(GameEventIdentifiers.ObserveCardFinishEvent, {});
->>>>>>> 1e5cc50 (Change the conditions of Install SideEffectSkill)
       }
 
       return true;
