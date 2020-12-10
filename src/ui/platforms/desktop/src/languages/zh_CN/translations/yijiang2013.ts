@@ -62,7 +62,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'jingce_description',
-    target: '当你于回合内第一次使用一种花色的牌时，本回合你的手牌上限+1；出牌阶段结束时，你可以摸X张牌（X为你本回合使用过的牌的类别数）。',
+    target: '结束阶段开始时，若你于本回合内使用过的牌数不小于X张，你可以摸两张牌（X为你的体力值）。',
   },
   {
     source: 'qiaoshui_description',
