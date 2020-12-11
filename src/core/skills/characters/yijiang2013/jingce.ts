@@ -34,7 +34,7 @@ export class JingCe extends TriggerSkill {
         if (user.getInvisibleMark(JingCe.suit_marks[i]) === 1) {
           extraHold += 1;
         };
-        user.removeInvisibleMark(JingCe.suit_marks[i])
+        user.removeInvisibleMark(JingCe.suit_marks[i]);
       }
       user.removeInvisibleMark("jingce_type_basic");
       user.removeInvisibleMark("jingce_type_equip");
