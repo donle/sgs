@@ -89,7 +89,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'junxing_description',
     target:
-      '出牌阶段限一次，你可以弃置至少一张手牌并选择一名其他角色，其选择一项：1.弃置与你弃置牌类别均不同的一张手牌；2.翻面，然后摸与你弃置牌数相同数量的牌。',
+      '出牌阶段限一次，你可以弃置至少一张手牌并选择一名其他角色，令其选择一项：1.弃置等量的牌并失去1点体力；2.翻面并摸等量的牌。',
   },
   {
     source: 'yuce_description',
@@ -113,4 +113,9 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
-export const promptDescriptions: Word[] = [];
+export const promptDescriptions: Word[] = [
+  {
+    source: '{0}: drop {1} cards or turn over',
+    target: '{0}：弃置{1}张牌并失去一点体力，或翻面并摸{1}张牌',
+  },
+];
