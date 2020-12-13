@@ -1042,25 +1042,32 @@ export class StandardGameProcessor extends GameProcessor {
           return skills;
         }, []);
 
-        const canUsePeachPlayer: Player[] = [];
         for (const player of this.room.getAlivePlayersFrom()) {
+          event.rescuer = player.Id;
+          await this.room.trigger(event, PlayerDyingStage.RequestRescue);
+          event.rescuer = undefined;
+
           if (
             filterSkills.find(
               ({ skills, player: owner }) =>
                 skills.find(
-                  skill => !skill.canUseCardTo(new CardMatcher({ name: ['peach'] }), this.room, owner, player, to),
+                  skill =>
+                    !skill.canUseCardTo(
+                      new CardMatcher({ name: player != to ? ['peach'] : ['peach', 'alcohol'] }),
+                      this.room,
+                      owner,
+                      player,
+                      to,
+                    ),
                 ) !== undefined,
             )
           ) {
             continue;
           }
-          canUsePeachPlayer.push(player);
-        }
 
-        for (const player of canUsePeachPlayer) {
-          let hasResponse = false;
-          do {
-            hasResponse = false;
+          let continueRequest = true;
+          while (continueRequest && to.Hp <= 0) {
+            continueRequest = false;
             const response = await this.room.askForPeach({
               fromId: player.Id,
               toId: to.Id,
@@ -1072,7 +1079,7 @@ export class StandardGameProcessor extends GameProcessor {
             });
 
             if (response && response.cardId !== undefined) {
-              hasResponse = true;
+              continueRequest = true;
               const cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
                 fromId: response.fromId,
                 cardId: response.cardId,
@@ -1082,7 +1089,7 @@ export class StandardGameProcessor extends GameProcessor {
 
               await this.room.useCard(cardUseEvent, true);
             }
-          } while (hasResponse && to.Hp <= 0);
+          }
 
           if (to.Hp > 0) {
             break;

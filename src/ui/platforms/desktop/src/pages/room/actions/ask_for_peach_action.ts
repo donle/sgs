@@ -4,7 +4,7 @@ import { ClientEventFinder, EventPacker, GameEventIdentifiers } from 'core/event
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { ActiveSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
+import { ActiveSkill, FilterSkill, Skill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { BaseAction } from './base_action';
@@ -31,6 +31,12 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
   };
 
   isCardEnabledOnAskingForPeach(card: Card, fromArea: PlayerCardsArea) {
+    for (const skill of this.player.getSkills<FilterSkill>('filter')) {
+      if (!skill.canUseCard(card.Id, this.store.room, this.playerId)) {
+        return false;
+      }
+    }
+
     if (EventPacker.isDisresponsiveEvent(this.askForEvent)) {
       return false;
     }

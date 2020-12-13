@@ -1,4 +1,5 @@
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { AllStage, PlayerDyingStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -6,20 +7,20 @@ import { LimitSkill, TriggerSkill } from 'core/skills/skill';
 
 @LimitSkill({ name: 'niepan', description: 'niepan_description' })
 export class NiePan extends TriggerSkill {
-  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AskForPeachEvent>) {
-    return EventPacker.getIdentifier(event) === GameEventIdentifiers.AskForPeachEvent;
+  isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage: AllStage) {
+    return stage === PlayerDyingStage.RequestRescue;
   }
 
-  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.AskForPeachEvent>): boolean {
-    return content.fromId === owner.Id && content.toId === owner.Id;
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>): boolean {
+    return content.dying === owner.Id && content.rescuer === owner.Id;
   }
 
   async onTrigger() {
     return true;
   }
 
-  async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const { fromId } = skillUseEvent;
+  async onEffect(room: Room, skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    const { fromId } = skillEffectEvent;
     const from = room.getPlayerById(fromId);
 
     const wholeCards = from.getPlayerCards();
@@ -32,7 +33,7 @@ export class NiePan extends TriggerSkill {
 
     wholeCards.length > 0 && (await room.dropCards(CardMoveReason.SelfDrop, wholeCards, fromId, fromId, this.Name));
 
-    !from.isFaceUp() && (await room.turnOver(skillUseEvent.fromId));
+    !from.isFaceUp() && (await room.turnOver(skillEffectEvent.fromId));
     from.ChainLocked && (await room.chainedOn(fromId));
 
     await room.drawCards(3, fromId, 'top', fromId, this.Name);

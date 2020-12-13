@@ -161,6 +161,7 @@ export const enum PinDianStage {
 
 export const enum PlayerDyingStage {
   PlayerDying = 'PlayerDying',
+  RequestRescue = 'RequestRescue',
   AfterPlayerDying = 'AfterPlayerDying',
 }
 export const enum PlayerDiedStage {

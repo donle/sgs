@@ -46,6 +46,7 @@ import { OnDefineReleaseTiming, Skill, SkillLifeCycle, SkillType, TriggerSkill, 
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 import { Room, RoomId } from './room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 
 export class ServerRoom extends Room<WorkPlace.Server> {
   private loadedCharacters: Character[] = [];
@@ -586,10 +587,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async askForPeach(event: ServerEventFinder<GameEventIdentifiers.AskForPeachEvent>) {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForPeachEvent, event);
-    await this.trigger(event);
-    if (this.getPlayerById(event.toId).Hp > 0) {
-      return;
-    }
+    Precondition.assert(
+      this.getPlayerById(event.toId).Hp <= 0,
+      "room.server.ts -> askForPeach() : ask for peach while player's hp greater than 0",
+    );
     const player = this.getPlayerById(event.fromId);
 
     let responseEvent: ClientEventFinder<GameEventIdentifiers.AskForPeachEvent> | undefined;
