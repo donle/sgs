@@ -39,6 +39,7 @@ import { Algorithm } from 'core/shares/libs/algorithm';
 import { Functional } from 'core/shares/libs/functional';
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { Logger } from 'core/shares/libs/logger/logger';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { System } from 'core/shares/libs/system';
 import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
@@ -46,7 +47,6 @@ import { OnDefineReleaseTiming, Skill, SkillLifeCycle, SkillType, TriggerSkill, 
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 import { Room, RoomId } from './room';
-import { Precondition } from 'core/shares/libs/precondition/precondition';
 
 export class ServerRoom extends Room<WorkPlace.Server> {
   private loadedCharacters: Character[] = [];
