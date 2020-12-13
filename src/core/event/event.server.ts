@@ -3,6 +3,7 @@ import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
 import { DamageType, GameCommonRuleObject, GameInfo, GameRunningInfo } from 'core/game/game_props';
 import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
+import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props';
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { System } from 'core/shares/libs/system';
@@ -434,17 +435,10 @@ export interface ServerEvent extends EventUtilities {
   };
 }
 
-export enum PinDianResult {
-  NoResult,
-  WIN,
-  LOSE,
-  DRAW,
-}
-
 export type PinDianProcedure = {
   toId: PlayerId;
   cardId: CardId;
-  result: PinDianResult;
+  winner?: PlayerId;
 };
 
 export type PinDianReport = {

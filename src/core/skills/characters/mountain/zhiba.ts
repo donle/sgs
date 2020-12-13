@@ -1,6 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { PinDianResult } from 'core/event/event.server';
 import { AllStage, GameStartStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -121,7 +120,7 @@ export class ZhiBaPindianCard extends ActiveSkill {
         return false;
       }
 
-      if (pindianRecord[0].result !== PinDianResult.WIN) {
+      if (pindianRecord[0].winner !== fromId) {
         const options: string[] = ['confirm', 'cancel'];
         const pindianCardIds = [pindianCardId!, pindianRecord[0].cardId];
 

@@ -1,6 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { PinDianResult } from 'core/event/event.server';
 import { DamageType } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -47,7 +46,7 @@ export class QuHu extends ActiveSkill {
     }
 
     const target = room.getPlayerById(toIds![0]);
-    if (pindianRecord[0].result === PinDianResult.WIN) {
+    if (pindianRecord[0].winner === fromId) {
       const askForChoosingPlayer: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
         toId: fromId,
         players: room.AlivePlayers.filter(

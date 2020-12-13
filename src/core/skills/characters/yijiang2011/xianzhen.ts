@@ -2,7 +2,6 @@ import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { PinDianResult } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE, INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { AimStage, AllStage, PlayerPhase } from 'core/game/stage_processor';
@@ -87,7 +86,7 @@ export class XianZhen extends ActiveSkill {
       return false;
     }
 
-    if (pindianRecord[0].result === PinDianResult.WIN) {
+    if (pindianRecord[0].winner === fromId) {
       XianZhen.setXianZhenTarget(room, fromId, toIds![0]);
     } else {
       room.setFlag<boolean>(fromId, XianZhen.Lose, true, true);
