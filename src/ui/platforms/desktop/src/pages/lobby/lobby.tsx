@@ -226,6 +226,16 @@ export class Lobby extends React.Component<LobbyProps> {
     this.viewCharacterExtenstions = undefined;
   };
 
+  private readonly onOpenReplay = () => {
+    this.props.electronLoader.readReplay(Sanguosha.Version).then(replay => {
+      if (!replay) {
+        return;
+      }
+
+      this.props.history.push('/replay', { replayData: replay });
+    });
+  };
+
   render() {
     return (
       <div className={styles.lobby}>
@@ -293,21 +303,21 @@ export class Lobby extends React.Component<LobbyProps> {
             <img src={this.roomListBackgroundImage} alt="" className={styles.roomListBackground} />
           </div>
           <div className={styles.systemButtons}>
-            <button className={styles.systemButton} disabled>
+            <button
+              className={styles.systemButton}
+              onClick={this.onOpenReplay}
+              disabled={!this.props.electronLoader.ReplayEnabled}
+            >
               <img
                 {...this.props.imageLoader.getLobbyButtonImage(LobbyButton.Record)}
-                className={classNames(styles.lobbyButtonIcon, {
-                  [styles.disabled]: true,
-                })}
+                className={styles.lobbyButtonIcon}
                 alt=""
               />
             </button>
             <button className={styles.systemButton} disabled>
               <img
                 {...this.props.imageLoader.getLobbyButtonImage(LobbyButton.CharactersList)}
-                className={classNames(styles.lobbyButtonIcon, {
-                  [styles.disabled]: true,
-                })}
+                className={styles.lobbyButtonIcon}
                 alt=""
               />
             </button>
@@ -326,9 +336,7 @@ export class Lobby extends React.Component<LobbyProps> {
             <button className={styles.systemButton} disabled>
               <img
                 {...this.props.imageLoader.getLobbyButtonImage(LobbyButton.Feedback)}
-                className={classNames(styles.lobbyButtonIcon, {
-                  [styles.disabled]: true,
-                })}
+                className={styles.lobbyButtonIcon}
                 alt=""
               />
             </button>

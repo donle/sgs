@@ -3,12 +3,16 @@ import { Socket } from 'core/network/socket';
 import IOSocketClient, { Manager } from 'socket.io-client';
 
 export class ClientSocket extends Socket<WorkPlace.Client> {
-  private socketIO: SocketIOClient.Socket;
+  protected socketIO: SocketIOClient.Socket;
   private reconnecting: boolean = false;
   private manager: SocketIOClient.Manager;
 
   constructor(endpoint: string, protected roomId: string) {
     super(WorkPlace.Client);
+    this.init(endpoint);
+  }
+
+  protected init(endpoint: string) {
     this.socketIO = IOSocketClient(endpoint);
     this.manager = new Manager(endpoint, {
       reconnection: true,

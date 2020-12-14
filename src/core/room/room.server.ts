@@ -175,13 +175,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     notificationTime: number = 60,
   ) {
     !content.ignoreNotifiedStatus &&
-      this.socket.broadcast(GameEventIdentifiers.NotifyEvent, { toIds: [to], notificationTime });
+      this.broadcast(GameEventIdentifiers.NotifyEvent, { toIds: [to], notificationTime });
     this.socket.notify(type, EventPacker.createIdentifierEvent(type, content), to);
   }
 
   //TODO: enable to custom response time limit
   public doNotify(toIds: PlayerId[], notificationTime: number = 60) {
-    this.socket.broadcast(GameEventIdentifiers.NotifyEvent, { toIds, notificationTime });
+    this.broadcast(GameEventIdentifiers.NotifyEvent, { toIds, notificationTime });
   }
 
   public broadcast<I extends GameEventIdentifiers>(type: I, content: ServerEventFinder<I>) {

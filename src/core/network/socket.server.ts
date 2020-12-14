@@ -124,7 +124,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
 
         const room = this.room as ServerRoom;
         room.getPlayerById(playerId).setOffline();
-        if (room.getAllPlayersFrom().every(player => !player.isOnline())) {
+        if (room.Players.every(player => !player.isOnline())) {
           this.room?.close();
           return;
         }

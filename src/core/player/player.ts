@@ -717,7 +717,7 @@ export abstract class Player implements PlayerInfo {
   }
 
   public get Character(): Character {
-    return Precondition.exists(this.playerCharacter, 'Uninitialized player character');
+    return Precondition.alarm(this.playerCharacter, 'Uninitialized player character');
   }
 
   public get Id() {

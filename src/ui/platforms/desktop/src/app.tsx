@@ -7,6 +7,7 @@ import { getImageLoader } from 'image_loader/image_loader_util';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { OpenningPage } from 'pages/openning/openning';
+import { ReplayRoomPage } from 'pages/room/replay_room';
 import { RoomPage } from 'pages/room/room';
 import { ClientConfig } from 'props/config_props';
 import * as React from 'react';
@@ -71,6 +72,21 @@ export class App extends React.PureComponent<{ config: ClientConfig; translator:
               )}
             />
           )}
+          <Route
+            path={'/replay'}
+            render={({ match, location, history }) => (
+              <ReplayRoomPage
+                location={location}
+                history={history}
+                match={match}
+                imageLoader={this.imageLoader}
+                audioLoader={this.audioLoader}
+                electronLoader={this.electronLoader}
+                config={this.props.config}
+                translator={this.props.translator}
+              />
+            )}
+          />
           <Route
             path={'/room/:slug'}
             render={({ match, location, history }) => (

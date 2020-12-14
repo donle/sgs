@@ -5,6 +5,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Functional } from 'core/shares/libs/functional';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
@@ -71,11 +72,14 @@ export const GameOverDialog = (props: {
   winners: Player[];
   losers: Player[];
   imageLoader: ImageLoader;
+  electron: ElectronLoader;
+  disableSaveReplayButton?: boolean;
 }) => {
-  const { translator, winners, losers, imageLoader } = props;
+  const { translator, winners, losers, imageLoader, electron, disableSaveReplayButton } = props;
   const history = useHistory();
 
   const backToLobby = () => history.push('/lobby');
+  const saveReplay = () => electron.saveReplay();
 
   return (
     <div className={styles.gameOverBoard}>
@@ -88,6 +92,11 @@ export const GameOverDialog = (props: {
         <PlayerInfoTable imageLoader={imageLoader} players={losers} translator={translator} />
       </div>
       <div className={styles.actionButtons}>
+        {electron.ReplayEnabled && !disableSaveReplayButton && (
+          <Button variant="primary" onClick={saveReplay}>
+            {translator.tr('save replay')}
+          </Button>
+        )}
         <Button variant="primary" onClick={backToLobby}>
           {translator.tr('back to lobby')}
         </Button>

@@ -73,6 +73,7 @@ export const eventDictionary: Word[] = [
   { source: 'winners', target: '胜利玩家' },
   { source: 'losers', target: '战败玩家' },
   { source: 'back to lobby', target: '返回大厅' },
+  { source: 'save replay', target: '保存录像' },
   { source: 'game over, winner is {0}', target: '游戏结束，{0} 胜利' },
   { source: 'turn overed', target: '翻面' },
   { source: 'option-one', target: '选项一' },

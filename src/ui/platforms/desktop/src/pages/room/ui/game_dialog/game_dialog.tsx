@@ -12,6 +12,7 @@ export type GameDialogProps = {
   translator: ClientTranslationModule;
   store: RoomStore;
   presenter: RoomPresenter;
+  replayMode?: boolean;
 };
 
 @mobxReact.observer
@@ -51,10 +52,11 @@ export class GameDialog extends React.Component<GameDialogProps> {
 
   private readonly onClickSendButton = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    this.props.store.room.broadcast(GameEventIdentifiers.UserMessageEvent, {
-      message: this.textMessage!,
-      playerId: this.props.presenter.ClientPlayer!.Id,
-    });
+    !this.props.replayMode &&
+      this.props.store.room.broadcast(GameEventIdentifiers.UserMessageEvent, {
+        message: this.textMessage!,
+        playerId: this.props.presenter.ClientPlayer!.Id,
+      });
     this.onMessageChange('');
   };
 
