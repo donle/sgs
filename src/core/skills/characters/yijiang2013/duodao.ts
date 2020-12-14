@@ -7,7 +7,7 @@ import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
-@CommonSkill({ name: 'duodao', description: 'duoda_description' })
+@CommonSkill({ name: 'duodao', description: 'duodao_description' })
 export class DuoDao extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
     return stage === DamageEffectStage.AfterDamagedEffect;
