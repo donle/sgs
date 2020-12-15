@@ -15,4 +15,5 @@ export abstract class ElectronLoader {
   public abstract saveReplay(): Promise<void>;
   public abstract async readReplay(version: string): Promise<ReplayDataType | undefined>;
   public abstract get ReplayEnabled(): boolean;
+  public abstract refreshReplayDataFlow(): void;
 }

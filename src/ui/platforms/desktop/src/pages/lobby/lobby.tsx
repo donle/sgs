@@ -111,6 +111,7 @@ export class Lobby extends React.Component<LobbyProps> {
 
   @mobx.action
   componentDidMount() {
+    this.props.electronLoader.refreshReplayDataFlow();
     this.audioService.playLobbyBGM();
     this.defaultMainVolume = this.props.electronLoader.getData('mainVolume')
       ? Number.parseInt(this.props.electronLoader.getData('mainVolume'), 10)

@@ -130,6 +130,11 @@ export class ReplayRoomPage extends React.Component<
   private async loadSteps(events: ServerEventFinder<GameEventIdentifiers>[]) {
     for (const content of events) {
       const identifier = EventPacker.getIdentifier(content)!;
+      if (identifier === undefined) {
+        // tslint:disable-next-line:no-console
+        console.warn(`missing identifier: ${JSON.stringify(content, null, 2)}`);
+        continue;
+      }
       if (identifier === GameEventIdentifiers.PlayerBulkPacketEvent) {
         const { stackedLostMessages } = content as ServerEventFinder<GameEventIdentifiers.PlayerBulkPacketEvent>;
         await this.loadSteps(stackedLostMessages);
@@ -258,6 +263,7 @@ export class ReplayRoomPage extends React.Component<
   };
 
   render() {
+    const { replayData } = this.props.location.state as { replayData: ReplayDataType };
     return (
       <div className={styles.room}>
         <Background imageLoader={this.props.imageLoader} />
@@ -267,7 +273,7 @@ export class ReplayRoomPage extends React.Component<
         {this.store.room && (
           <div className={styles.roomBoard}>
             <Banner
-              roomIndex={Date.now()}
+              roomIndex={replayData.roomId}
               translator={this.props.translator}
               roomName={this.store.room.getRoomInfo().name}
               className={styles.roomBanner}

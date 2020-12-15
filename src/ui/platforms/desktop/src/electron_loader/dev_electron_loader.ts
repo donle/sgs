@@ -25,6 +25,8 @@ export class DevElectronLoader extends ElectronLoader {
   }
 
   // tslint:disable-next-line:no-empty
+  public refreshReplayDataFlow() {}
+  // tslint:disable-next-line:no-empty
   public sendReplayEventFlow(): void {}
   // tslint:disable-next-line:no-empty
   public async saveReplay(): Promise<void> {}

@@ -49,4 +49,8 @@ export class Replay {
   public push<T extends object>(e: T) {
     this.gameEvents.push(e);
   }
+
+  public clear() {
+    this.gameEvents = [];
+  }
 }

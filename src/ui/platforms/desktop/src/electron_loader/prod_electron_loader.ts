@@ -4,6 +4,7 @@ import {
   DELETE_DATA,
   FLASH_WINDOW,
   GAME_EVENT_FLOW,
+  GAME_EVENT_FLOW_REFRESH,
   GET_ALL_DATA,
   READ_REPLAY,
   SAVE_REPLAY,
@@ -48,6 +49,10 @@ export class ProdElectronLoader extends ElectronLoader {
   }
   public getTemporaryData(key: string): string | null {
     return this.tempSaveData[key];
+  }
+
+  public refreshReplayDataFlow() {
+    this.ipcRenderer.send(GAME_EVENT_FLOW_REFRESH);
   }
 
   public sendReplayEventFlow(

@@ -12,6 +12,7 @@ export const GET_ALL_DATA = 'getAllData';
 export const DELETE_DATA = 'deleteData';
 
 export const GAME_EVENT_FLOW = 'gameEventFlow';
+export const GAME_EVENT_FLOW_REFRESH = 'gameEventFlowRefresh';
 export const SAVE_REPLAY = 'saveReplay';
 export const READ_REPLAY = 'readReplay';
 
@@ -38,7 +39,7 @@ class AppWindow {
   constructor(windowOptions?: BrowserWindowConstructorOptions) {
     this.windowInstance = new BrowserWindow(windowOptions);
     this.installIpcListener();
-    this.windowInstance.webContents.openDevTools();
+    // this.windowInstance.webContents.openDevTools();
   }
 
   private installIpcListener() {
@@ -68,6 +69,10 @@ class AppWindow {
       if (otherInfo) {
         this.replay.OtherInfo = otherInfo;
       }
+    });
+
+    ipcMain.on(GAME_EVENT_FLOW_REFRESH, () => {
+      this.replay.clear();
     });
 
     ipcMain.on(SAVE_REPLAY, async () => {

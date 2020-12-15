@@ -199,7 +199,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       EventPacker.setTimestamp(content);
       this.analytics.record(content, this.isPlaying() ? this.CurrentPlayerPhase : undefined);
     }
-    this.socket.broadcast(type, EventPacker.createIdentifierEvent(type, content));
+    this.socket.broadcast(type, content);
   }
 
   private playerTriggerableSkills(

@@ -6,6 +6,7 @@ export const enum Language {
 const zhCnTranslations = {
   Yes: '确定',
   Cancel: '取消',
+  ReplayFile: '新神杀录像文件',
   MismatchVersionTitle: '录像版本不匹配',
   MismatchVersionMessage: (replayVersion: string, currentVersion: string) =>
     `录像版本 ${replayVersion}，客户端版本 ${currentVersion}。播放不同版本录像可能会出现不可预知的问题导致客户端崩溃，是否继续播放？`,
@@ -14,6 +15,7 @@ const zhCnTranslations = {
 const enTranslations = {
   Yes: 'Yes',
   Cancel: 'Cancel',
+  ReplayFile: 'DSanguosha Replay File',
   MismatchVersionTitle: 'Mismatched replay version',
   MismatchVersionMessage: (replayVersion: string, currentVersion: string) =>
     `replay version ${replayVersion}, client version ${currentVersion}. An unexpected issue might happen if playing a mismatched replay, do you want to continue?`,
