@@ -4,6 +4,7 @@ export const characterDictionary: Word[] = [
   { source: 'god_guanyu', target: '神关羽' },
   { source: 'wushen', target: '武神' },
   { source: 'wuhun', target: '武魂' },
+  { source: '#wuhun', target: '武魂' },
 
   { source: 'god_lvmeng', target: '神吕蒙' },
   { source: 'gongxin', target: '攻心' },

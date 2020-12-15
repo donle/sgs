@@ -1,4 +1,13 @@
 export class Precondition {
+  public static alarm<T>(arg: T | null | undefined, errorMsg: string): T {
+    if (arg === null || arg === undefined) {
+      // tslint:disable-next-line:no-console
+      console.warn(errorMsg);
+    }
+
+    return arg!;
+  }
+
   public static exists<T>(arg: T | null | undefined, errorMsg: string): T {
     if (arg === null || arg === undefined) {
       throw new Error(errorMsg);

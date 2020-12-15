@@ -26,7 +26,7 @@ import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardTargetEnum } from 'core/cards/libs/card_props';
 import { Character, CharacterId } from 'core/characters/character';
-import { PinDianProcedure, PinDianReport, PinDianResult } from 'core/event/event.server';
+import { PinDianProcedure, PinDianReport } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { getRoles, getWinners } from 'core/game/game_processor/game_handlers';
 import { GameProcessor } from 'core/game/game_processor/game_processor';
@@ -175,13 +175,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     notificationTime: number = 60,
   ) {
     !content.ignoreNotifiedStatus &&
-      this.socket.broadcast(GameEventIdentifiers.NotifyEvent, { toIds: [to], notificationTime });
+      this.broadcast(GameEventIdentifiers.NotifyEvent, { toIds: [to], notificationTime });
     this.socket.notify(type, EventPacker.createIdentifierEvent(type, content), to);
   }
 
   //TODO: enable to custom response time limit
   public doNotify(toIds: PlayerId[], notificationTime: number = 60) {
-    this.socket.broadcast(GameEventIdentifiers.NotifyEvent, { toIds, notificationTime });
+    this.broadcast(GameEventIdentifiers.NotifyEvent, { toIds, notificationTime });
   }
 
   public broadcast<I extends GameEventIdentifiers>(type: I, content: ServerEventFinder<I>) {
@@ -194,7 +194,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       });
     }
 
-    this.analytics.record(content, this.isPlaying() ? this.CurrentPlayerPhase : undefined);
+    if (type !== GameEventIdentifiers.NotifyEvent) {
+      EventPacker.setTimestamp(content);
+      this.analytics.record(content, this.isPlaying() ? this.CurrentPlayerPhase : undefined);
+    }
     this.socket.broadcast(type, EventPacker.createIdentifierEvent(type, content));
   }
 
@@ -1322,15 +1325,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           const procedure: PinDianProcedure = {
             toId: response.fromId,
             cardId: response.pindianCard,
-            result: PinDianResult.NoResult,
+            winner: '',
           };
           const rivalCardNumber = Sanguosha.getCardById(procedure.cardId).CardNumber;
           if (proposerCardNumber > rivalCardNumber) {
-            procedure.result = PinDianResult.WIN;
+            procedure.winner = fromId;
           } else if (proposerCardNumber < rivalCardNumber) {
-            procedure.result = PinDianResult.LOSE;
-          } else {
-            procedure.result = PinDianResult.DRAW;
+            procedure.winner = procedure.toId;
           }
           pindianEvent.procedures.push(procedure);
 
@@ -1341,10 +1342,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               TranslationPack.patchCardInTranslation(procedure.cardId),
             ).toString(),
             TranslationPack.translationJsonPatcher(
-              procedure.result !== PinDianResult.DRAW ? 'pindian result:{0} win' : 'pindian result:draw',
-              TranslationPack.patchPlayerInTranslation(
-                procedure.result === PinDianResult.WIN ? from : this.getPlayerById(procedure.toId),
-              ),
+              procedure.winner ? 'pindian result:{0} win' : 'pindian result:draw',
+              procedure.winner ? TranslationPack.patchPlayerInTranslation(this.getPlayerById(procedure.winner)) : '',
             ).toString(),
           ];
 

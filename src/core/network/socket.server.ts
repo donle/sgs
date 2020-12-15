@@ -1,5 +1,6 @@
 import {
   ClientEventFinder,
+  EventPacker,
   GameEventIdentifiers,
   serverActiveListenerEvents,
   ServerEventFinder,
@@ -12,14 +13,12 @@ import { PlayerId } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
-import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import IOSocketServer from 'socket.io';
 
 export class ServerSocket extends Socket<WorkPlace.Server> {
   private socket: IOSocketServer.Namespace;
   private room?: ServerRoom;
-  private clientIds: string[] = [];
   protected roomId: string;
 
   private asyncResponseResolver: {
@@ -28,6 +27,14 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     };
   } = {} as any;
 
+  private mapSocketIdToPlayerId: { [K in string]: string } = {};
+  private lastResponsiveEvent:
+    | {
+        to: PlayerId;
+        identifier: GameEventIdentifiers;
+        event: ServerEventFinder<GameEventIdentifiers>;
+      }
+    | undefined;
   constructor(socket: IOSocketServer.Namespace, roomId: RoomId, private logger: Logger) {
     super(WorkPlace.Server);
     this.roomId = roomId.toString();
@@ -43,6 +50,13 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
                 socket,
                 identifier,
                 content as ClientEventFinder<GameEventIdentifiers.PlayerEnterEvent>,
+              );
+              break;
+            case GameEventIdentifiers.PlayerReenterEvent:
+              this.onPlayerReenter(
+                socket,
+                identifier,
+                content as ClientEventFinder<GameEventIdentifiers.PlayerReenterEvent>,
               );
               break;
             case GameEventIdentifiers.PlayerLeaveEvent:
@@ -70,13 +84,23 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
 
       serverResponsiveListenerEvents.forEach(identifier => {
         socket.on(identifier.toString(), (content: ClientEventFinder<GameEventIdentifiers>) => {
-          content.status && this.room!.updatePlayerStatus(content.status, socket.id);
+          const mappedPlayerId = Object.entries(this.mapSocketIdToPlayerId).find(
+            ([playerId, socketId]) => socketId === socket.id,
+          );
+          if (!mappedPlayerId) {
+            this.logger.info(`Unable to find playerId of socket ${socket.id}`);
+            return;
+          }
+          const playerId = mappedPlayerId[0];
+
+          content.status && this.room!.updatePlayerStatus(content.status, playerId);
 
           const asyncResolver =
-            this.asyncResponseResolver[identifier] && this.asyncResponseResolver[identifier][socket.id];
+            this.asyncResponseResolver[identifier] && this.asyncResponseResolver[identifier][playerId];
           if (asyncResolver) {
             asyncResolver(content);
-            delete this.asyncResponseResolver[identifier][socket.id];
+            delete this.asyncResponseResolver[identifier][playerId];
+            this.lastResponsiveEvent = undefined;
           }
         });
       });
@@ -85,40 +109,49 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         logger.info('User disconnected', socket.id);
         socket.leave(this.roomId);
 
-        if (this.room && this.room.Players.find(player => player.Id === socket.id) === undefined) {
+        const mappedPlayerId = Object.entries(this.mapSocketIdToPlayerId).find(
+          ([playerId, socketId]) => socketId === socket.id,
+        );
+        if (!mappedPlayerId) {
+          this.logger.info(`Unable to find playerId of socket ${socket.id}`);
+          return;
+        }
+        const playerId = mappedPlayerId[0];
+
+        if (this.room && this.room.Players.find(player => player.Id === playerId) === undefined) {
           return;
         }
 
-        this.clientIds = this.clientIds.filter(id => id !== socket.id);
         const room = this.room as ServerRoom;
-        room.getPlayerById(socket.id).setOffline();
-        if (this.clientIds.length === 0) {
-          this.room && this.room.close();
+        room.getPlayerById(playerId).setOffline();
+        if (room.Players.every(player => !player.isOnline())) {
+          this.room?.close();
+          return;
         }
 
         const playerLeaveEvent: ServerEventFinder<GameEventIdentifiers.PlayerLeaveEvent> = {
-          playerId: socket.id,
+          playerId,
           translationsMessage: TranslationPack.translationJsonPatcher(
             'player {0} has left the room',
-            room.getPlayerById(socket.id).Name,
+            room.getPlayerById(playerId).Name,
           ).extract(),
         };
         this.broadcast(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent);
 
         if (!room.isPlaying()) {
-          room.removePlayer(socket.id);
-        } else if (this.room?.AwaitingResponseEvent[socket.id]) {
-          const { identifier: awaitIdentifier, content } = this.room?.AwaitingResponseEvent[socket.id]!;
-          if ((content as any).toId !== socket.id) {
+          room.removePlayer(playerId);
+        } else if (this.room?.AwaitingResponseEvent[playerId]) {
+          const { identifier: awaitIdentifier, content } = this.room?.AwaitingResponseEvent[playerId]!;
+          if ((content as any).toId !== playerId) {
             return;
           }
-          const toPlayer = room.getPlayerById(socket.id);
+          const toPlayer = room.getPlayerById(playerId);
           const result = toPlayer.AI.onAction(this.room!, awaitIdentifier, content);
-          if (this.asyncResponseResolver[awaitIdentifier][socket.id]) {
-            this.asyncResponseResolver[awaitIdentifier][socket.id]!(result);
-            delete this.asyncResponseResolver[awaitIdentifier][socket.id];
+          if (this.asyncResponseResolver[awaitIdentifier][playerId]) {
+            this.asyncResponseResolver[awaitIdentifier][playerId]!(result);
+            delete this.asyncResponseResolver[awaitIdentifier][playerId];
           }
-          this.room.unsetAwaitingResponseEvent(socket.id);
+          this.room.unsetAwaitingResponseEvent(playerId);
         }
       });
     });
@@ -148,7 +181,43 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     identifier: GameEventIdentifiers.PlayerStatusEvent,
     content: ClientEventFinder<GameEventIdentifiers.PlayerStatusEvent>,
   ) {
-    this.room!.updatePlayerStatus(content.status, socket.id);
+    this.room!.updatePlayerStatus(content.status, content.toId);
+  }
+
+  private async onPlayerReenter(
+    socket: IOSocketServer.Socket,
+    identifier: GameEventIdentifiers.PlayerReenterEvent,
+    event: ClientEventFinder<typeof identifier>,
+  ) {
+    const room = this.room as ServerRoom;
+    if (this.mapSocketIdToPlayerId[event.playerId] !== undefined) {
+      this.mapSocketIdToPlayerId[event.playerId] = socket.id;
+      room.getPlayerById(event.playerId).setOnline();
+    }
+
+    const missingEvents = this.room!.Analytics.getRecordEvents(e => {
+      const timeStamp = EventPacker.getTimestamp(e);
+      if (!timeStamp) {
+        return false;
+      }
+      return timeStamp > event.timestamp;
+    });
+    if (this.lastResponsiveEvent && this.lastResponsiveEvent.to === event.playerId) {
+      missingEvents.push(this.lastResponsiveEvent.event);
+    }
+    socket.emit(GameEventIdentifiers.PlayerBulkPacketEvent.toString(), {
+      timestamp: event.timestamp,
+      stackedLostMessages: missingEvents,
+    });
+
+    this.broadcast(GameEventIdentifiers.PlayerReenterEvent, {
+      toId: event.playerId,
+      translationsMessage: TranslationPack.translationJsonPatcher(
+        'player {0} re-enter in the room',
+        TranslationPack.patchPureTextParameter(event.playerName),
+      ).extract(),
+      ignoreNotifiedStatus: true,
+    });
   }
 
   private async onPlayerEnter(
@@ -159,7 +228,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     const room = this.room as ServerRoom;
     if (room.Info.numberOfPlayers <= room.Players.length) {
       socket.emit(GameEventIdentifiers.PlayerEnterRefusedEvent.toString(), {
-        playerId: socket.id,
+        playerId: event.playerId,
         playerName: event.playerName,
         timestamp: event.timestamp,
       });
@@ -168,13 +237,12 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       return;
     }
 
-    const player = new ServerPlayer(socket.id, event.playerName, room.Players.length);
+    const player = new ServerPlayer(event.playerId, event.playerName, room.Players.length);
     room.addPlayer(player);
-    this.clientIds.push(socket.id);
-
+    this.mapSocketIdToPlayerId[event.playerId] = socket.id;
     this.broadcast(GameEventIdentifiers.PlayerEnterEvent, {
       joiningPlayerName: event.playerName,
-      joiningPlayerId: socket.id,
+      joiningPlayerId: event.playerId,
       roomInfo: room.getRoomInfo(),
       playersInfo: room.Players.map(p => p.getPlayerInfo()),
       gameInfo: room.Info,
@@ -197,7 +265,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
   ) {
     const room = this.room as ServerRoom;
     room.getPlayerById(event.playerId).setOffline();
-    this.clientIds = this.clientIds.filter(id => id !== event.playerId);
+    // this.clientIds = this.clientIds.filter(id => id !== event.playerId);
 
     socket.disconnect();
   }
@@ -210,6 +278,12 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
 
   public notify<I extends GameEventIdentifiers>(type: I, content: ServerEventFinder<I>, to: PlayerId) {
     const toPlayer = this.room!.getPlayerById(to);
+    this.lastResponsiveEvent = {
+      to,
+      identifier: type,
+      event: content,
+    };
+
     if (!toPlayer.isOnline()) {
       const result = toPlayer.AI.onAction(this.room!, type, content);
       setTimeout(() => {
@@ -222,29 +296,12 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       }, 100);
     } else {
       this.room?.setAwaitingResponseEvent(type, content, to);
-      const clientSocket = Precondition.exists(
-        this.clientIds.find(clientId => clientId === to),
-        `Unable to find player: ${to} in connected socket clients`,
-      );
-
-      this.socket.to(clientSocket).emit(type.toString(), content);
+      this.socket.to(this.mapSocketIdToPlayerId[to]).emit(type.toString(), content);
     }
   }
 
   broadcast<I extends GameEventIdentifiers>(type: I, content: ServerEventFinder<I>) {
     this.socket.emit(type.toString(), content);
-  }
-
-  public getSocketById(id: PlayerId) {
-    const clientId = Precondition.exists(
-      this.clientIds.find(clientId => clientId === id),
-      `Unable to find socket: ${id}`,
-    );
-    return this.socket.to(clientId);
-  }
-
-  public get ClientIds() {
-    return this.clientIds;
   }
 
   public clearSubscriber(identifier: GameEventIdentifiers, to: PlayerId) {

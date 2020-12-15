@@ -20,7 +20,12 @@ export class BeiGe extends TriggerSkill {
     }
 
     const card = Sanguosha.getCardById(cardIds[0]);
-    return card.GeneralName === 'slash' && content.fromId !== undefined && !room.getPlayerById(content.toId).Dead;
+    return (
+      card.GeneralName === 'slash' &&
+      content.fromId !== undefined &&
+      !room.getPlayerById(content.toId).Dead &&
+      !content.isFromChainedDamage
+    );
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {

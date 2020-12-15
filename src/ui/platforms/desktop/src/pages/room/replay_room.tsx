@@ -1,8 +1,8 @@
 import { AudioLoader } from 'audio_loader/audio_loader';
 import classNames from 'classnames';
-import { clientActiveListenerEvents, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { ClientSocket } from 'core/network/socket.client';
-import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { ClientOfflineSocket } from 'core/network/socket.offline';
+import { PlayerInfo } from 'core/player/player_props';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronLoader } from 'electron_loader/electron_loader';
@@ -11,12 +11,12 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { SettingsDialog } from 'pages/ui/settings/settings';
 import * as React from 'react';
-import { match } from 'react-router-dom';
 import { PagePropsWithConfig } from 'types/page_props';
+import { ReplayDataType } from 'types/replay_props';
 import { installAudioPlayerService } from 'ui/audio/install';
 import { ClientCard } from 'ui/card/card';
 import { Curtain } from 'ui/curtain/curtain';
-import { GameClientProcessor } from './game_processor';
+import { ReplayClientProcessor } from './game_processor.replay';
 import { installService, RoomBaseService } from './install_service';
 import styles from './room.module.css';
 import { RoomPresenter, RoomStore } from './room.presenter';
@@ -28,9 +28,8 @@ import { GameDialog } from './ui/game_dialog/game_dialog';
 import { SeatsLayout } from './ui/seats_layout/seats_layout';
 
 @mobxReact.observer
-export class RoomPage extends React.Component<
+export class ReplayRoomPage extends React.Component<
   PagePropsWithConfig<{
-    match: match<{ slug: string }>;
     translator: ClientTranslationModule;
     imageLoader: ImageLoader;
     audioLoader: AudioLoader;
@@ -39,17 +38,15 @@ export class RoomPage extends React.Component<
 > {
   private presenter: RoomPresenter;
   private store: RoomStore;
-  private socket: ClientSocket;
-  private gameProcessor: GameClientProcessor;
-  private roomId: number;
-  private playerName: string = this.props.electronLoader.getData('username') || 'unknown';
+  private gameProcessor: ReplayClientProcessor;
   private baseService: RoomBaseService;
   private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
 
   private displayedCardsRef = React.createRef<HTMLDivElement>();
   private readonly cardWidth = 120;
   private readonly cardMargin = 2;
-  private lastEventTimeStamp: number;
+
+  private replayStepDelay = 2000;
 
   @mobx.observable.ref
   private focusedCardIndex: number | undefined;
@@ -79,7 +76,6 @@ export class RoomPage extends React.Component<
 
   constructor(
     props: PagePropsWithConfig<{
-      match: match<{ slug: string }>;
       translator: ClientTranslationModule;
       imageLoader: ImageLoader;
       audioLoader: AudioLoader;
@@ -87,19 +83,13 @@ export class RoomPage extends React.Component<
     }>,
   ) {
     super(props);
-    const { config, match, translator } = this.props;
+    const { translator } = this.props;
 
-    this.roomId = parseInt(match.params.slug, 10);
     this.presenter = new RoomPresenter(this.props.imageLoader);
     this.store = this.presenter.createStore();
 
-    const roomId = this.roomId.toString();
-    this.socket = new ClientSocket(
-      `${config.host.protocol}://${config.host.host}:${config.host.port}/room-${roomId}`,
-      roomId,
-    );
     this.baseService = installService(translator, this.store, this.props.imageLoader);
-    this.gameProcessor = new GameClientProcessor(
+    this.gameProcessor = new ReplayClientProcessor(
       this.presenter,
       this.store,
       translator,
@@ -109,92 +99,76 @@ export class RoomPage extends React.Component<
     );
   }
 
-  private readonly onHandleBulkEvents = async (events: ServerEventFinder<GameEventIdentifiers>[]) => {
-    this.store.room.emitStatus('trusted', this.props.electronLoader.getTemporaryData('playerId')!);
-    for (const content of events) {
-      const identifier = Precondition.exists(EventPacker.getIdentifier(content), 'Unable to load event identifier');
-      await this.gameProcessor.onHandleIncomingEvent(identifier, content);
-      this.showMessageFromEvent(content);
-      this.updateGameStatus(content);
+  private static readonly nonDelayedEvents: GameEventIdentifiers[] = [
+    GameEventIdentifiers.PhaseChangeEvent,
+    GameEventIdentifiers.PhaseStageChangeEvent,
+    GameEventIdentifiers.PlayerBulkPacketEvent,
+    GameEventIdentifiers.PlayerBulkPacketEvent,
+    GameEventIdentifiers.MoveCardEvent,
+    GameEventIdentifiers.DrawCardEvent,
+    GameEventIdentifiers.DrunkEvent,
+    GameEventIdentifiers.HpChangeEvent,
+    GameEventIdentifiers.ChangeMaxHpEvent,
+    GameEventIdentifiers.PlayerPropertiesChangeEvent,
+    GameEventIdentifiers.ObtainSkillEvent,
+    GameEventIdentifiers.LoseSkillEvent,
+    GameEventIdentifiers.LoseHpEvent,
+    GameEventIdentifiers.DamageEvent,
+    GameEventIdentifiers.CustomGameDialog,
+    GameEventIdentifiers.NotifyEvent,
+    GameEventIdentifiers.UserMessageEvent,
+  ];
+
+  private async stepDelay(identifier: GameEventIdentifiers) {
+    if (ReplayRoomPage.nonDelayedEvents.includes(identifier)) {
+      await this.sleep(0);
+    } else {
+      await this.sleep(this.replayStepDelay);
     }
-  };
-
-  componentDidMount() {
-    this.presenter.setupRoomStatus({
-      playerName: this.playerName,
-      socket: this.socket,
-      roomId: this.roomId,
-      timestamp: Date.now(),
-    });
-
-    this.socket.onReconnected(() => {
-      const playerId = this.props.electronLoader.getTemporaryData('playerId');
-      if (!playerId) {
-        return;
-      }
-
-      this.socket.notify(
-        GameEventIdentifiers.PlayerReenterEvent,
-        EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerReenterEvent, {
-          timestamp: this.lastEventTimeStamp,
-          playerId,
-          playerName: this.playerName,
-        }),
-      );
-    });
-
-    if (!this.props.electronLoader.getTemporaryData('playerId')) {
-      this.props.electronLoader.saveTemporaryData('playerId', `${this.playerName}-${Date.now()}`);
-    }
-
-    this.socket.notify(
-      GameEventIdentifiers.PlayerEnterEvent,
-      EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerEnterEvent, {
-        playerName: this.playerName,
-        timestamp: this.store.clientRoomInfo.timestamp,
-        playerId: this.props.electronLoader.getTemporaryData('playerId')!,
-      }),
-    );
-
-    this.socket.on(GameEventIdentifiers.PlayerEnterRefusedEvent, () => {
-      this.props.history.push('/lobby');
-    });
-
-    clientActiveListenerEvents().forEach(identifier => {
-      this.socket.on(identifier, async (content: ServerEventFinder<GameEventIdentifiers>) => {
-        const timestamp = EventPacker.getTimestamp(content);
-        if (timestamp) {
-          this.lastEventTimeStamp = timestamp;
-        }
-
-        if (identifier === GameEventIdentifiers.PlayerBulkPacketEvent) {
-          await this.onHandleBulkEvents(
-            (content as ServerEventFinder<GameEventIdentifiers.PlayerBulkPacketEvent>).stackedLostMessages,
-          );
-        } else {
-          await this.gameProcessor.onHandleIncomingEvent(identifier, content);
-          this.showMessageFromEvent(content);
-          this.animation(identifier, content);
-          this.updateGameStatus(content);
-        }
-      });
-    });
-
-    window.addEventListener('beforeunload', () => this.disconnect());
   }
 
-  private readonly disconnect = () => {
-    this.socket.notify(
-      GameEventIdentifiers.PlayerLeaveEvent,
-      EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerLeaveEvent, {
-        playerId: this.store.clientPlayerId,
-      }),
+  private async loadSteps(events: ServerEventFinder<GameEventIdentifiers>[]) {
+    for (const content of events) {
+      const identifier = EventPacker.getIdentifier(content)!;
+      if (identifier === GameEventIdentifiers.PlayerBulkPacketEvent) {
+        const { stackedLostMessages } = content as ServerEventFinder<GameEventIdentifiers.PlayerBulkPacketEvent>;
+        await this.loadSteps(stackedLostMessages);
+      } else {
+        await this.gameProcessor.onHandleIncomingEvent(identifier, content);
+        this.showMessageFromEvent(content);
+        this.animation(identifier, content);
+        this.updateGameStatus(content);
+        await this.stepDelay(identifier);
+      }
+    }
+  }
+
+  componentDidMount() {
+    const { replayData } = this.props.location.state as { replayData: ReplayDataType };
+    if (!replayData) {
+      this.props.history.push('/lobby');
+    }
+
+    this.presenter.setupClientPlayerId(replayData.viewerId);
+    this.presenter.createClientRoom(
+      replayData.roomId,
+      new ClientOfflineSocket(replayData.roomId.toString()),
+      replayData.gameInfo,
+      replayData.playersInfo as PlayerInfo[],
     );
-    this.socket.disconnect();
-  };
+    this.props.translator.setupPlayer(this.presenter.ClientPlayer);
+    this.store.animationPosition.insertPlayer(replayData.viewerId);
+
+    this.loadSteps(replayData.events);
+  }
+
+  private async sleep(ms: number) {
+    return new Promise(r => {
+      setTimeout(() => r(), ms);
+    });
+  }
 
   componentWillUnmount() {
-    this.disconnect();
     this.audioService.stop();
   }
 
@@ -293,7 +267,7 @@ export class RoomPage extends React.Component<
         {this.store.room && (
           <div className={styles.roomBoard}>
             <Banner
-              roomIndex={this.roomId}
+              roomIndex={Date.now()}
               translator={this.props.translator}
               roomName={this.store.room.getRoomInfo().name}
               className={styles.roomBanner}
@@ -306,13 +280,16 @@ export class RoomPage extends React.Component<
                 store={this.store}
                 presenter={this.presenter}
                 translator={this.props.translator}
-                onClick={this.store.onClickPlayer}
-                playerSelectableMatcher={this.store.playersSelectionMatcher}
                 gamePad={this.getDisplayedCard()}
               />
               <div className={styles.sideBoard}>
                 <GameBoard store={this.store} translator={this.props.translator} />
-                <GameDialog store={this.store} presenter={this.presenter} translator={this.props.translator} />
+                <GameDialog
+                  store={this.store}
+                  presenter={this.presenter}
+                  translator={this.props.translator}
+                  replayMode={true}
+                />
               </div>
             </div>
             <Dashboard
@@ -321,18 +298,7 @@ export class RoomPage extends React.Component<
               presenter={this.presenter}
               translator={this.props.translator}
               imageLoader={this.props.imageLoader}
-              cardEnableMatcher={this.store.clientPlayerCardActionsMatcher}
-              outsideCardEnableMatcher={this.store.clientPlayerOutsideCardActionsMatcher}
-              onClickConfirmButton={this.store.confirmButtonAction}
-              onClickCancelButton={this.store.cancelButtonAction}
-              onClickFinishButton={this.store.finishButtonAction}
-              onClickReforgeButton={this.store.reforgeButtonAction}
               onClick={this.store.onClickHandCardToPlay}
-              onClickEquipment={this.store.onClickEquipmentToDoAction}
-              onClickPlayer={this.store.onClickPlayer}
-              cardSkillEnableMatcher={this.store.cardSkillsSelectionMatcher}
-              playerSelectableMatcher={this.store.playersSelectionMatcher}
-              onClickSkill={this.store.onClickSkill}
               isSkillDisabled={this.store.isSkillDisabled}
             />
           </div>

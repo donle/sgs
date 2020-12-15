@@ -35,25 +35,33 @@ export class QiaoMeng extends TriggerSkill {
     const to = room.getPlayerById(toId);
     const askForChooseCardEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent> = {
       options: {
+        [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea).length,
         [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),
+        [PlayerCardsArea.JudgeArea]: to.getCardIds(PlayerCardsArea.JudgeArea),
       },
       fromId: fromId!,
       toId,
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingCardFromPlayerEvent, askForChooseCardEvent, fromId!);
-    const { selectedCard } = await room.onReceivingAsyncResponseFrom(
+    const { selectedCard, selectedCardIndex } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
       fromId!,
     );
 
-    if (selectedCard) {
-      const card = Sanguosha.getCardById(selectedCard);
-      await room.dropCards(CardMoveReason.PassiveDrop, [selectedCard], toId, fromId, this.Name);
+    const selectedCardId = selectedCard
+      ? selectedCard
+      : selectedCardIndex !== undefined
+      ? to.getCardIds(PlayerCardsArea.HandArea)[selectedCardIndex]
+      : undefined;
+
+    if (selectedCardId !== undefined) {
+      const card = Sanguosha.getCardById(selectedCardId);
+      await room.dropCards(CardMoveReason.PassiveDrop, [selectedCardId], toId, fromId, this.Name);
 
       if ((card.is(CardType.DefenseRide) || card.is(CardType.OffenseRide)) && room.isCardInDropStack(card.Id)) {
         await room.moveCards({
-          movingCards: [{ card: selectedCard, fromArea: CardMoveArea.DropStack }],
+          movingCards: [{ card: selectedCardId, fromArea: CardMoveArea.DropStack }],
           moveReason: CardMoveReason.ActivePrey,
           fromId,
           toArea: CardMoveArea.HandArea,

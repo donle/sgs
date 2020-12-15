@@ -1,3 +1,4 @@
+import { ReplayDataType } from 'types/replay_props';
 import { ElectronLoader } from './electron_loader';
 
 export class DevElectronLoader extends ElectronLoader {
@@ -14,5 +15,23 @@ export class DevElectronLoader extends ElectronLoader {
 
   public removeData(key: string) {
     return window.localStorage.removeItem(key);
+  }
+
+  public saveTemporaryData(key: string, value: string): void {
+    window.sessionStorage.setItem(key, value);
+  }
+  public getTemporaryData(key: string): string | null {
+    return window.sessionStorage.getItem(key);
+  }
+
+  // tslint:disable-next-line:no-empty
+  public sendReplayEventFlow(): void {}
+  // tslint:disable-next-line:no-empty
+  public async saveReplay(): Promise<void> {}
+  public async readReplay(): Promise<ReplayDataType | undefined> {
+    return;
+  }
+  public get ReplayEnabled(): boolean {
+    return false;
   }
 }

@@ -193,6 +193,8 @@ export class VirtualCard<T extends Card = Card> extends Card {
   private viewAsBlackCard: boolean = false;
   private viewAsRedCard: boolean = false;
 
+  private static readonly virtualIdPrefix = 'prefix';
+
   constructor(
     viewAsOptions: {
       cardName: string;
@@ -251,7 +253,7 @@ export class VirtualCard<T extends Card = Card> extends Card {
   }
 
   public static parseId(cardId: VirtualCardId) {
-    const parsedId = JSON.parse(cardId) as VirtualCardIdProps;
+    const parsedId = JSON.parse(cardId.slice(this.virtualIdPrefix.length)) as VirtualCardIdProps;
     const skill = parsedId.skillName !== undefined ? Sanguosha.getSkillBySkillName(parsedId.skillName) : undefined;
     return VirtualCard.create(
       {
@@ -326,7 +328,7 @@ export class VirtualCard<T extends Card = Card> extends Card {
       hideActualCard: this.hideActualCard,
     };
 
-    return JSON.stringify(virtualCardIdJSONObject);
+    return VirtualCard.virtualIdPrefix + JSON.stringify(virtualCardIdJSONObject);
   }
 
   public get GeneratedBySkill() {

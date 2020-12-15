@@ -202,7 +202,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           size="normal"
           key={index}
           className={classNames(styles.playerSkill, styles.sideSkill)}
-          disabled={!skill.canUse(this.props.store.room, player)}
+          disabled={this.props.store.room.isGameOver() || !skill.canUse(this.props.store.room, player)}
           onClick={this.onClickSkill(skill)}
         />
       );

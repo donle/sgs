@@ -57,6 +57,8 @@ export const enum GameEventIdentifiers {
   GameStartEvent,
   GameOverEvent,
   PlayerEnterRefusedEvent,
+  PlayerReenterEvent,
+  PlayerBulkPacketEvent,
   PlayerEnterEvent,
   PlayerLeaveEvent,
   PlayerDyingEvent,
@@ -152,6 +154,8 @@ export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.PlayerDyingEvent,
   GameEventIdentifiers.PlayerDiedEvent,
   GameEventIdentifiers.PlayerEnterEvent,
+  GameEventIdentifiers.PlayerReenterEvent,
+  GameEventIdentifiers.PlayerBulkPacketEvent,
   GameEventIdentifiers.PlayerLeaveEvent,
 
   GameEventIdentifiers.PlayerChainedEvent,
@@ -182,6 +186,7 @@ export const serverActiveListenerEvents = [
   GameEventIdentifiers.PlayerEnterEvent,
   GameEventIdentifiers.PlayerLeaveEvent,
   GameEventIdentifiers.PlayerStatusEvent,
+  GameEventIdentifiers.PlayerReenterEvent,
 ];
 
 export const serverResponsiveListenerEvents = [
@@ -300,6 +305,14 @@ export class EventPacker {
       round,
       currentPlayerId,
     };
+  }
+
+  static setTimestamp = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>): void => {
+    (event as any).timestamp = Date.now();
+  }
+
+  static getTimestamp = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>): number | undefined => {
+    return (event as any).timestamp;
   }
 
   static isDisresponsiveEvent = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>): boolean => {

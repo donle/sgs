@@ -1,6 +1,5 @@
 import { CardChoosingOptions } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { PinDianResult } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { AimStage, AllStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -41,7 +40,7 @@ export class LieRen extends TriggerSkill {
       return false;
     }
 
-    if (pindianRecord[0].result === PinDianResult.WIN) {
+    if (pindianRecord[0].winner === fromId) {
       const to = room.getPlayerById(toId);
       if (to.getPlayerCards().length > 0) {
         const options: CardChoosingOptions = {

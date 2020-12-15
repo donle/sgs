@@ -6,7 +6,7 @@ import { Room } from 'core/room/room';
 import { JudgeMatcher, JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { MarkEnum } from 'core/shares/types/mark_list';
 import { TriggerSkill } from 'core/skills/skill';
-import { CommonSkill, CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import { CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'wuhun', description: 'wuhun_description' })
@@ -39,7 +39,7 @@ export class WuHun extends TriggerSkill {
 }
 
 @ShadowSkill
-@CommonSkill({ name: WuHun.Name, description: WuHun.Description })
+@CompulsorySkill({ name: WuHun.Name, description: WuHun.Description })
 export class WuHunDeath extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
     return stage === PlayerDiedStage.PlayerDied;
