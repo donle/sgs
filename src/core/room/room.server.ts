@@ -39,6 +39,7 @@ import { Algorithm } from 'core/shares/libs/algorithm';
 import { Functional } from 'core/shares/libs/functional';
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { Logger } from 'core/shares/libs/logger/logger';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { System } from 'core/shares/libs/system';
 import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
@@ -586,10 +587,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async askForPeach(event: ServerEventFinder<GameEventIdentifiers.AskForPeachEvent>) {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForPeachEvent, event);
-    await this.trigger(event);
-    if (this.getPlayerById(event.toId).Hp > 0) {
-      return;
-    }
+    Precondition.assert(
+      this.getPlayerById(event.toId).Hp <= 0,
+      "room.server.ts -> askForPeach() : ask for peach while player's hp greater than 0",
+    );
     const player = this.getPlayerById(event.fromId);
 
     let responseEvent: ClientEventFinder<GameEventIdentifiers.AskForPeachEvent> | undefined;
