@@ -2,17 +2,19 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AimStage, AllStage, DamageEffectStage } from 'core/game/stage_processor';
+import { AimStage, AllStage, CardUseStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { CompulsorySkill, GlobalFilterSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { CompulsorySkill, FilterSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'anjian', description: 'anjian_description' })
 export class AnJian extends TriggerSkill {
   public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.AimEvent | GameEventIdentifiers.DamageEvent>,
+    event: ServerEventFinder<
+      GameEventIdentifiers.AimEvent | GameEventIdentifiers.DamageEvent | GameEventIdentifiers.CardUseEvent
+    >,
     stage?: AllStage,
   ): boolean {
     const unknownEvent = EventPacker.getIdentifier(event);
@@ -20,6 +22,8 @@ export class AnJian extends TriggerSkill {
       return stage === AimStage.AfterAim;
     } else if (unknownEvent === GameEventIdentifiers.DamageEvent) {
       return stage === DamageEffectStage.DamageEffect;
+    } else if (unknownEvent === GameEventIdentifiers.CardUseEvent) {
+      return stage === CardUseStage.CardUseFinishedEffect;
     }
     return false;
   }
@@ -27,7 +31,9 @@ export class AnJian extends TriggerSkill {
   public canUse(
     room: Room,
     owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.AimEvent | GameEventIdentifiers.DamageEvent>,
+    content: ServerEventFinder<
+      GameEventIdentifiers.AimEvent | GameEventIdentifiers.DamageEvent | GameEventIdentifiers.CardUseEvent
+    >,
   ): boolean {
     const identifier = EventPacker.getIdentifier(content);
     if (identifier === GameEventIdentifiers.AimEvent) {
@@ -48,6 +54,13 @@ export class AnJian extends TriggerSkill {
         content.cardIds !== undefined &&
         Sanguosha.getCardById(content.cardIds[0]).GeneralName === 'slash'
       );
+    } else if (identifier === GameEventIdentifiers.CardUseEvent) {
+      content = content as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
+      return (
+        content.fromId === owner.Id &&
+        content.cardId !== undefined &&
+        Sanguosha.getCardById(content.cardId).GeneralName === 'slash'
+      );
     }
     return false;
   }
@@ -65,12 +78,16 @@ export class AnJian extends TriggerSkill {
       triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent | GameEventIdentifiers.DamageEvent>,
     );
     if (identifier === GameEventIdentifiers.AimEvent) {
-      const { toId,fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
+      const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
+      const { toId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
+      aimEvent.triggeredBySkills = aimEvent.triggeredBySkills
+        ? [...aimEvent.triggeredBySkills, this.Name]
+        : [this.Name];
       room.setFlag(toId, this.GeneralName, true, true);
-      await room.obtainSkill(fromId, AnJianPeach.Name);
     } else if (identifier === GameEventIdentifiers.DamageEvent) {
-      const { fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
+      const { toId, fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
       const damageEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
+      await room.obtainSkill(toId, AnJianPeach.Name);
       damageEvent.damage++;
       damageEvent.messages = damageEvent.messages || [];
       damageEvent.messages.push(
@@ -81,41 +98,18 @@ export class AnJian extends TriggerSkill {
           damageEvent.damage,
         ).toString(),
       );
+      await room.loseSkill(toId, AnJianPeach.Name);
+    } else if (identifier === GameEventIdentifiers.CardUseEvent) {
+      const cardEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
+      room.removeFlag(cardEvent.toIds![0], this.GeneralName);
     }
-    //
-    //
     return true;
   }
 }
 @ShadowSkill
 @CompulsorySkill({ name: 'anjianPeach', description: 'anjianPeach_description' })
-export class AnJianPeach extends GlobalFilterSkill {
-  canUseCardTo(cardId: CardId | CardMatcher, room: Room, owner: Player, from: Player, to: Player) {
-    const inOwnersRound = room.CurrentPlayer.Id === owner.Id  && from.Id !== to.Id;
-
-    if (cardId instanceof CardMatcher) {
-      if (inOwnersRound && cardId.match(new CardMatcher({ name: ['peach'] }))) {
-        return false;
-      }
-    } else {
-      if (inOwnersRound && Sanguosha.getCardById(cardId).GeneralName === 'peach') {
-        return false;
-      }
-    }
-
-    return true;
+export class AnJianPeach extends FilterSkill {
+  canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId) {
+    return cardId instanceof CardMatcher ? false : Sanguosha.getCardById(cardId).GeneralName !== 'peach';
   }
-  
 }
-// canUseCardTo(cardId: CardId | CardMatcher, room: Room, owner: Player, from: Player, to: Player) {
-//   const inOwnersRound =  owner.Id && from.Id;
-//   if (room.getPlayerById(inOwnersRound).getFlag<boolean>(this.GeneralName)) {
-//   if (cardId instanceof CardMatcher) {
-//     if (inOwnersRound && cardId.match(new CardMatcher({ name: ['peach'] }))) {
-//       return false;
-//     }
-//   } else {
-//     if (inOwnersRound && Sanguosha.getCardById(cardId).GeneralName === 'peach') {
-//       return false;
-//     }
-//   }
