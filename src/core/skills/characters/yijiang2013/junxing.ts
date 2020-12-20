@@ -1,13 +1,11 @@
-import { CardType } from 'core/cards/card';
-import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'junxing', description: 'junxing_description' })
 export class JunXing extends ActiveSkill {
@@ -45,45 +43,29 @@ export class JunXing extends ActiveSkill {
 
     await room.dropCards(CardMoveReason.SelfDrop, cardIds!, fromId, fromId, this.Name);
 
-    const allTypes = [CardType.Basic, CardType.Trick, CardType.Equip];
-    const junxingTypes: CardType[] = cardIds!.reduce<CardType[]>((types, card) => {
-      const type = Sanguosha.getCardById(card).BaseType;
-      if (!types.includes(type)) {
-        types.push(type);
-      }
-      return types;
-    }, []);
+    const dropCardsNum = cardIds!.length;
+    const playerCardsNum = room.getPlayerById(toId).getPlayerCards().length;
 
-    const handCards = room.getPlayerById(toId).getCardIds(PlayerCardsArea.HandArea);
-    if (junxingTypes.length >= 3 || handCards.length <= 0) {
+    if (playerCardsNum < dropCardsNum) {
       await room.turnOver(toId);
-      await room.drawCards(cardIds!.length, toId, undefined, fromId, this.Name);
+      await room.drawCards(dropCardsNum, toId, undefined, fromId, this.Name);
     } else {
-      const availableTypes = allTypes.filter(type => !junxingTypes.includes(type));
-      if (availableTypes.length <= 0) {
-        return false;
-      }
-
-      const askForDiscard: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardEvent> = {
+      const response = await room.askForCardDrop(
         toId,
-        amount: 1,
-        cardMatcher: new CardMatcher({ type: availableTypes }).toSocketPassenger(),
-        customCardFields: {
-          [PlayerCardsArea.HandArea]: handCards,
-        },
-      };
-
-      room.notify(GameEventIdentifiers.AskForChoosingCardEvent, askForDiscard, toId);
-
-      const { selectedCards } = await room.onReceivingAsyncResponseFrom(
-        GameEventIdentifiers.AskForChoosingCardEvent,
-        toId,
+        dropCardsNum,
+        [PlayerCardsArea.EquipArea, PlayerCardsArea.HandArea],
+        false,
+        undefined,
+        this.Name,
+        TranslationPack.translationJsonPatcher('{0}: drop {1} cards or turn over', this.Name, dropCardsNum).toString(),
       );
-      if (selectedCards !== undefined) {
-        await room.dropCards(CardMoveReason.SelfDrop, selectedCards, toId, toId, this.Name);
+
+      if (response.droppedCards.length === dropCardsNum) {
+        await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toId);
+        await room.loseHp(toId, 1);
       } else {
         await room.turnOver(toId);
-        await room.drawCards(cardIds!.length, toId, undefined, fromId, this.Name);
+        await room.drawCards(dropCardsNum, toId, undefined, fromId, this.Name);
       }
     }
 
