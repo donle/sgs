@@ -44,9 +44,7 @@ export class JunXing extends ActiveSkill {
     await room.dropCards(CardMoveReason.SelfDrop, cardIds!, fromId, fromId, this.Name);
 
     const dropCardsNum = cardIds!.length;
-    const playerCardsNum =
-      room.getPlayerById(toId).getCardIds(PlayerCardsArea.HandArea).length +
-      room.getPlayerById(toId).getCardIds(PlayerCardsArea.EquipArea).length;
+    const playerCardsNum = room.getPlayerById(toId).getPlayerCards().length;
 
     if (playerCardsNum < dropCardsNum) {
       await room.turnOver(toId);
