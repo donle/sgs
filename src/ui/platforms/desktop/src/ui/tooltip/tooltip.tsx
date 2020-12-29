@@ -14,7 +14,7 @@ export type TooltipProps = {
 let timer: NodeJS.Timer | undefined;
 
 export const Tooltip = (props: TooltipProps) => {
-  const { closeCallback, children, position, className, closeAfter, autoAnimation } = props;
+  const { closeCallback, children, position, className, closeAfter, autoAnimation=true } = props;
 
   React.useEffect(() => {
     if (closeAfter === undefined) {

@@ -13,7 +13,7 @@
 }
 
 .tooltip.shining {
-    animation: shining 2.5s infinite;
+    animation: shining 0.2s;
 }
 
 .top {
@@ -42,22 +42,9 @@
 
 @keyframes shining {
     0% {
-        transform: scale(1);
+        transform: scale(0);
     }
-    6% {
-        transform: scale(1.1);
-    }
-    12% {
-        transform: scale(1);
-    }
-
-    18% {
-        transform: scale(1);
-    }
-    24% {
-        transform: scale(1.1);
-    }
-    30% {
+    100% {
         transform: scale(1);
     }
 }

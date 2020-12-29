@@ -123,7 +123,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   private readonly openTooltip = () => {
     this.onTooltipOpeningTimer = setTimeout(() => {
       this.onTooltipOpened = true;
-    }, 2000);
+    }, 500);
   };
   @mobx.action
   private readonly closeTooltip = () => {

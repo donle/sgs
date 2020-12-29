@@ -143,7 +143,7 @@ export class ClientCard extends React.Component<ClientCardProps> {
     this.props.onMouseEnter?.(e);
     this.onTooltipOpeningTimer = setTimeout(() => {
       this.onTooltipOpened = true;
-    }, 2000);
+    }, 1000);
   };
   @mobx.action
   private readonly closeTooltip = () => {

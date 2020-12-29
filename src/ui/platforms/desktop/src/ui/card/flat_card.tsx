@@ -50,7 +50,7 @@ export class FlatClientCard extends React.PureComponent<FlatClientCardProps> {
   private readonly openTooltip = () => {
     this.onTooltipOpeningTimer = setTimeout(() => {
       this.onTooltipOpened = true;
-    }, 2000);
+    }, 1000);
   };
   @mobx.action
   private readonly closeTooltip = () => {

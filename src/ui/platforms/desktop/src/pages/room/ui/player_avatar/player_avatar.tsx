@@ -213,7 +213,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   private readonly openTooltip = () => {
     this.onTooltipOpeningTimer = setTimeout(() => {
       this.onTooltipOpened = true;
-    }, 2000);
+    }, 500);
   };
   @mobx.action
   private readonly closeTooltip = () => {
