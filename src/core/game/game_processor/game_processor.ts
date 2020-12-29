@@ -75,6 +75,8 @@ export abstract class GameProcessor {
   ): Promise<void>;
   public abstract async turnToNextPlayer(): Promise<void>;
   public abstract insertPlayerRound(player: PlayerId): void;
+  public abstract insertPlayerPhase(player: PlayerId, phase: PlayerPhase): void;
+  public abstract isExtraPhase(): boolean;
   public abstract skip(phase?: PlayerPhase): void;
   public abstract endPhase(phase: PlayerPhase): void;
 
