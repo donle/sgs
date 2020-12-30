@@ -155,7 +155,7 @@ export class LongHunEffect extends TriggerSkill {
       const card = Sanguosha.getCardById<VirtualCard>(event.cardIds[0]);
       return (
         card.isVirtualCard() &&
-        card.GeneratedBySkill === LongHun.Name &&
+        card.findByGeneratedSkill(this.GeneralName) &&
         card.ActualCardIds.length === 2 &&
         card.isRed()
       );
@@ -167,7 +167,7 @@ export class LongHunEffect extends TriggerSkill {
       const card = Sanguosha.getCardById<VirtualCard>(event.cardIds[0]);
       return (
         card.isVirtualCard() &&
-        card.GeneratedBySkill === LongHun.Name &&
+        card.findByGeneratedSkill(this.GeneralName) &&
         card.ActualCardIds.length === 2 &&
         card.isRed()
       );
@@ -213,7 +213,7 @@ export class LongHunBlackEffect extends TriggerSkill {
     const card = Sanguosha.getCardById<VirtualCard>(content.cardId);
     return (
       card.isVirtualCard() &&
-      card.GeneratedBySkill === LongHun.Name &&
+      card.findByGeneratedSkill(this.GeneralName) &&
       card.ActualCardIds.length === 2 &&
       card.isBlack()
     );
