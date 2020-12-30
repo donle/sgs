@@ -200,7 +200,11 @@
     font-size: 14px;
     right: gridLine;
     bottom: gridLine;
-    color: white
+    color: white;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: flex-end;
 }
 
 @keyframes leftSideIn {

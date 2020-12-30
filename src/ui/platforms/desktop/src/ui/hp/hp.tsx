@@ -58,7 +58,7 @@ export const CharacterHp = (props: { character: Character; className?: string })
     for (let i = 0; i < character.Hp; i++) {
       magatamas.push(
         <CharaterMagatama
-          key={i}
+          key={`${i}-maxhp-${character.Id}`}
           className={styles.characterMagatama}
           isLord={character.isLord()}
           nationality={character.Nationality}
@@ -68,7 +68,7 @@ export const CharacterHp = (props: { character: Character; className?: string })
     for (let i = 0; i < character.MaxHp - character.Hp; i++) {
       magatamas.push(
         <CharaterMagatama
-          key={i}
+          key={`${i}-${character.Id}`}
           className={styles.characterMagatama}
           isLord={character.isLord()}
           nationality={character.Nationality}

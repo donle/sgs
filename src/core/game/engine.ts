@@ -195,4 +195,7 @@ export class Sanguosha {
   public static get Version() {
     return Sanguosha.version;
   }
+  public static get PlainVersion() {
+    return coreVersion;
+  }
 }

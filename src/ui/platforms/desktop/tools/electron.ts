@@ -1,5 +1,7 @@
 import { app, BrowserWindow, BrowserWindowConstructorOptions, dialog, ipcMain } from 'electron';
-import * as fs from 'fs';
+import extractZip from 'extract-zip';
+import fetch from 'node-fetch';
+import * as fs from 'original-fs';
 import * as path from 'path';
 import * as url from 'url';
 import { getTranslations, Language } from './languages';
@@ -15,6 +17,9 @@ export const GAME_EVENT_FLOW = 'gameEventFlow';
 export const GAME_EVENT_FLOW_REFRESH = 'gameEventFlowRefresh';
 export const SAVE_REPLAY = 'saveReplay';
 export const READ_REPLAY = 'readReplay';
+export const DO_UPDATE = 'doUpdate';
+export const REQUEST_CORE_VERSION = 'requestCoreVersion';
+export const RESTART_CLIENT = 'restartClient';
 
 app.setPath('userData', __dirname);
 
@@ -23,7 +28,7 @@ class AppWindow {
     app.on('ready', callbackFn);
   }
 
-  public static onWindowAllClosed(callbackFn: () => void) {
+  public static onWindowAllClosed(callbackFn: (e: Electron.Event) => void) {
     app.on('window-all-closed', callbackFn);
   }
 
@@ -84,10 +89,10 @@ class AppWindow {
         return;
       }
 
-      fs.writeFileSync(savePath, this.replay.toString(), 'utf-8');
+      fs.writeFileSync(savePath, await this.replay.toString(), 'utf-8');
     });
 
-    ipcMain.on(READ_REPLAY, (event, clientCoreVersion: string) => {
+    ipcMain.on(READ_REPLAY, async (event, clientCoreVersion: string) => {
       const filePath = dialog.showOpenDialogSync(this.windowInstance!, {
         filters: [{ name: 'DSanguosha Replay File', extensions: ['dsgs'] }],
         properties: ['openFile'],
@@ -97,7 +102,7 @@ class AppWindow {
       }
 
       const rawReplay = fs.readFileSync(filePath[0], 'utf-8');
-      const parseReplay = this.replay.parse(rawReplay) as { events: object[]; otherInfo: ReplayOtherInfo };
+      const parseReplay = (await this.replay.parse(rawReplay)) as { events: object[]; otherInfo: ReplayOtherInfo };
       if (parseReplay.otherInfo.version !== clientCoreVersion) {
         dialog
           .showMessageBox(this.windowInstance!, {
@@ -118,12 +123,24 @@ class AppWindow {
     });
   }
 
+  public get Translations() {
+    return this.translation;
+  }
+
   public getInstance() {
     return this.windowInstance!;
   }
 
   public releaseInstance() {
     this.windowInstance = undefined;
+  }
+
+  public onClosing(callbackFn: (e: Electron.Event) => void) {
+    if (this.windowInstance === undefined) {
+      return;
+    }
+
+    this.windowInstance.on('close', callbackFn);
   }
 
   public onClose(callbackFn: () => void) {
@@ -134,6 +151,59 @@ class AppWindow {
     this.windowInstance.on('closed', () => {
       this.store.save();
       callbackFn();
+    });
+  }
+}
+
+async function requestUpdate(window: BrowserWindow) {
+  const requestCurrentVersion = new Promise<string>(resolve => {
+    const continuouslyRequesting = setInterval(() => window.webContents.send(REQUEST_CORE_VERSION), 3000);
+    ipcMain.on(REQUEST_CORE_VERSION, (evt, currentVersion: string) => {
+      clearInterval(continuouslyRequesting);
+      resolve(currentVersion);
+    });
+  });
+
+  const appPath = app.getPath('exe');
+  const releaseAPI = 'https://gitee.com/api/v5/repos/doublebit/PicTest/releases/latest';
+  const response = await fetch(releaseAPI).then(res => res.json());
+  const nextVersion = response.tag_name.replace(/[^\d.]+/g, '');
+  const currentVersion = await requestCurrentVersion;
+
+  if (nextVersion !== currentVersion) {
+    const downloadFile = fs.createWriteStream(path.join(appPath, '../update/core.zip'));
+    window.webContents.send(DO_UPDATE, { nextVersion, progress: 0 });
+    winApp.onClosing(e => {
+      dialog
+        .showMessageBox(appInstance, {
+          title: winApp.Translations.UpdateTitle,
+          message: winApp.Translations.UpdateMessage,
+          buttons: [winApp.Translations.Yes, winApp.Translations.Cancel],
+          defaultId: 1,
+        })
+        .then(({ response }) => {
+          if (response === 1) {
+            e.preventDefault();
+          }
+        });
+    });
+
+    const downloadUrl = `${response.assets[0].browser_download_url}/${response.assets[0].name}`;
+    let totalSize = 0;
+    let currentSize = 0;
+    const dataStream = await fetch(downloadUrl).then(res => {
+      totalSize = (res.headers.get('content-length') as unknown) as number;
+      return res.body;
+    });
+    dataStream.pipe(downloadFile);
+    dataStream.on('data', res => {
+      currentSize += res.length;
+      window.webContents.send(DO_UPDATE, { nextVersion, progress: currentSize / totalSize });
+    });
+    dataStream.on('end', () => {
+      window.webContents.send(DO_UPDATE, { nextVersion, progress: 1, complete: true });
+      // tslint:disable-next-line:no-empty
+      winApp.onClosing(() => {});
     });
   }
 }
@@ -152,10 +222,6 @@ export function main() {
   });
   const winAppInstance = winApp.getInstance();
 
-  if (!winAppInstance) {
-    return;
-  }
-
   winAppInstance.setMenu(null);
   winAppInstance.loadURL(
     url.format({
@@ -165,20 +231,58 @@ export function main() {
     }),
   );
   winApp.onClose(() => winApp.releaseInstance());
-  return winAppInstance;
+  return { winAppInstance, winApp };
 }
 
-let appInstance: BrowserWindow | undefined;
+function beforeLaunch(callback: Function) {
+  const appPath = app.getPath('exe');
+  const updateFolder = path.join(appPath, '../update');
+  if (!fs.existsSync(updateFolder)) {
+    fs.mkdirSync(updateFolder);
+    return callback();
+  } else {
+    const updateZipFile = path.join(updateFolder, './core.zip');
+    if (!fs.existsSync(updateZipFile)) {
+      return callback();
+    }
+
+    extractZip(updateZipFile, { dir: updateFolder })
+      .then(() => {
+        const destDirectory = path.join(appPath, '../resources/app.asar');
+        const updateFile = path.join(updateFolder, './app.asar.bak');
+        if (fs.existsSync(updateFile)) {
+          fs.copyFileSync(updateFile, destDirectory);
+          fs.unlinkSync(updateFile);
+          fs.unlinkSync(updateZipFile);
+        }
+        callback();
+      })
+      .catch(err => {
+        if (fs.existsSync(updateZipFile)) {
+          fs.unlinkSync(updateZipFile);
+        }
+        callback(err);
+      });
+  }
+}
+
+let appInstance: BrowserWindow;
+let winApp: AppWindow;
 AppWindow.onReady(() => {
-  appInstance = main();
+  beforeLaunch(err => {
+    if (err) {
+      // tslint:disable-next-line:no-console
+      console.warn(err);
+    }
+
+    const { winAppInstance, winApp: _winApp } = main();
+    appInstance = winAppInstance;
+    winApp = _winApp;
+    requestUpdate(appInstance).then();
+  });
 });
 AppWindow.onWindowAllClosed(() => {
   if (process.platform !== 'darwin') {
     app.quit();
-  }
-});
-AppWindow.onActivate(() => {
-  if (!appInstance) {
-    appInstance = main();
   }
 });

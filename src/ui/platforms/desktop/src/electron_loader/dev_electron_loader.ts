@@ -36,4 +36,6 @@ export class DevElectronLoader extends ElectronLoader {
   public get ReplayEnabled(): boolean {
     return false;
   }
+  // tslint:disable-next-line:no-empty
+  public whenUpdate() {}
 }

@@ -86,10 +86,7 @@ export class GameClientProcessor {
       this.onPlayTrustedAction();
     }
 
-    if (
-      this.store.room &&
-      (this.store.room.isPlaying() || identifier === GameEventIdentifiers.GameReadyEvent)
-    ) {
+    if (this.store.room && (this.store.room.isPlaying() || identifier === GameEventIdentifiers.GameReadyEvent)) {
       this.electron.sendReplayEventFlow(event, {
         version: Sanguosha.Version,
         roomId: this.store.room.RoomId,
@@ -104,8 +101,13 @@ export class GameClientProcessor {
   public onPlayTrustedAction() {
     this.onPlayTrustedActionTimer = setTimeout(() => {
       const { identifier, event } = this.store.awaitingResponseEvent;
-      const result = this.presenter.ClientPlayer!.AI.onAction(this.store.room, identifier, event);
-      this.store.room.broadcast(identifier, result);
+      if (identifier === undefined) {
+        // tslint:disable-next-line:no-console
+        console.warn(`unknown identifier event: ${JSON.stringify(event, null, 2)}`);
+      } else {
+        const result = this.presenter.ClientPlayer!.AI.onAction(this.store.room, identifier, event);
+        this.store.room.broadcast(identifier, result);
+      }
       this.presenter.closeDialog();
       this.presenter.closeIncomingConversation();
 
@@ -937,7 +939,10 @@ export class GameClientProcessor {
     await action.onPlay();
   }
 
-  protected onHandleMoveCardEvent<T extends GameEventIdentifiers.MoveCardEvent>(type: T, content: ServerEventFinder<T>) {
+  protected onHandleMoveCardEvent<T extends GameEventIdentifiers.MoveCardEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
     const { toArea, toId, fromId, toOutsideArea, movingCards, isOutsideAreaInPublic } = content;
     const to = toId && this.store.room.getPlayerById(toId);
     const from = fromId ? this.store.room.getPlayerById(fromId) : undefined;
@@ -1355,7 +1360,10 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
-  protected async onHandleDrunkEvent<T extends GameEventIdentifiers.DrunkEvent>(type: T, content: ServerEventFinder<T>) {
+  protected async onHandleDrunkEvent<T extends GameEventIdentifiers.DrunkEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
     content.drunk
       ? this.store.room.getPlayerById(content.toId).getDrunk()
       : this.store.room.getPlayerById(content.toId).clearHeaded();

@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import * as React from 'react';
 import { CheckBox, CheckBoxProps } from './check_box';
 import styles from './check_box.module.css';
@@ -6,9 +7,10 @@ export type CheckBoxGroupProps = {
   options: Omit<CheckBoxProps, 'onChecked'>[];
   excludeSelection?: boolean;
   onChecked?(checkedIds: (string | number)[]): void;
+  itemsPerLine?: 4 | 5 | 6;
 };
 
-export const CheckBoxGroup = ({ options, excludeSelection, onChecked }: CheckBoxGroupProps) => {
+export const CheckBoxGroup = ({ options, excludeSelection, onChecked, itemsPerLine = 4 }: CheckBoxGroupProps) => {
   const [checkedIds, setCheckedIds] = React.useState<(string | number)[]>(
     options.filter(o => o.checked).map(o => o.id),
   );
@@ -49,7 +51,11 @@ export const CheckBoxGroup = ({ options, excludeSelection, onChecked }: CheckBox
         <CheckBox
           {...option}
           key={index}
-          className={styles.singleCheckBox}
+          className={classNames({
+            [styles.regularCheckBox]: itemsPerLine === 4,
+            [styles.squashCheckBox]: itemsPerLine === 5,
+            [styles.smashCheckBox]: itemsPerLine === 6,
+          })}
           onChecked={onCheck(index, option.id)}
           checked={checkedIndex[index]}
         />

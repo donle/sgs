@@ -6,6 +6,7 @@ import { createMemoryHistory } from 'history';
 import { getImageLoader } from 'image_loader/image_loader_util';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
+import { CharactersList } from 'pages/characters_list/characters_list';
 import { OpenningPage } from 'pages/openning/openning';
 import { ReplayRoomPage } from 'pages/room/replay_room';
 import { RoomPage } from 'pages/room/room';
@@ -76,6 +77,21 @@ export class App extends React.PureComponent<{ config: ClientConfig; translator:
             path={'/replay'}
             render={({ match, location, history }) => (
               <ReplayRoomPage
+                location={location}
+                history={history}
+                match={match}
+                imageLoader={this.imageLoader}
+                audioLoader={this.audioLoader}
+                electronLoader={this.electronLoader}
+                config={this.props.config}
+                translator={this.props.translator}
+              />
+            )}
+          />
+          <Route
+            path={'/characters'}
+            render={({ match, location, history }) => (
+              <CharactersList
                 location={location}
                 history={history}
                 match={match}

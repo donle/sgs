@@ -18,6 +18,12 @@
     flex-wrap: wrap;
 }
 
-.singleCheckBox {
+.regularCheckBox {
     width: 25%;
+}
+.squashCheckBox {
+    width: 20%;
+}
+.smashCheckBox {
+    width: 16.67%;
 }

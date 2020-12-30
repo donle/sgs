@@ -58,6 +58,12 @@ export class Lobby extends React.Component<LobbyProps> {
   private username: string;
   @mobx.observable.ref
   private viewCharacterExtenstions: number | undefined;
+  @mobx.observable.ref
+  private updateTo: string;
+  @mobx.observable.ref
+  private updateComplete: boolean = false;
+  @mobx.observable.ref
+  private updateProgress: number = 0;
 
   private socket = SocketIOClient(
     `${this.props.config.host.protocol}://${this.props.config.host.host}:${this.props.config.host.port}/lobby`,
@@ -120,6 +126,14 @@ export class Lobby extends React.Component<LobbyProps> {
       ? Number.parseInt(this.props.electronLoader.getData('gameVolume'), 10)
       : 50;
     this.username = this.props.electronLoader.getData('username');
+
+    this.props.electronLoader.whenUpdate(
+      mobx.action((nextVersion: string, progress: number, complete?: boolean) => {
+        this.updateTo = nextVersion;
+        this.updateComplete = !!complete;
+        this.updateProgress = progress;
+      }),
+    );
   }
 
   componentWillUnmount() {
@@ -183,6 +197,10 @@ export class Lobby extends React.Component<LobbyProps> {
   @mobx.action
   private readonly onClickSettings = () => {
     this.openSettings = true;
+  };
+
+  private readonly onClickCharactersList = () => {
+    this.props.history.push('/characters');
   };
 
   @mobx.action
@@ -315,7 +333,7 @@ export class Lobby extends React.Component<LobbyProps> {
                 alt=""
               />
             </button>
-            <button className={styles.systemButton} disabled>
+            <button className={styles.systemButton} onClick={this.onClickCharactersList}>
               <img
                 {...this.props.imageLoader.getLobbyButtonImage(LobbyButton.CharactersList)}
                 className={styles.lobbyButtonIcon}
@@ -391,6 +409,17 @@ export class Lobby extends React.Component<LobbyProps> {
           </Curtain>
         )}
         <div className={styles.version}>
+          {this.updateTo && !this.updateComplete && (
+            <span>
+              {this.props.translator.trx(
+                TranslationPack.translationJsonPatcher('updating core version to {0}, downloading...', this.updateTo).toString(),
+              )}
+              {(this.updateProgress * 100).toFixed(2)} %
+            </span>
+          )}
+          {this.updateComplete && (
+            <span>{this.props.translator.tr('Update complete, please restart client to complete update')}</span>
+          )}
           {this.props.translator.trx(
             TranslationPack.translationJsonPatcher('core version: {0}', Sanguosha.Version).toString(),
           )}

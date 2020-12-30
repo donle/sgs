@@ -81,6 +81,9 @@ export const eventDictionary: Word[] = [
   { source: 'standard-game', target: '身份场' },
   { source: '1v2', target: '斗地主' },
   { source: 'hegemony-game', target: '国战' },
+  { source: 'back to lobby', target: '返回大厅' },
+  { source: 'updating core version to {0}, downloading...', target: '内核版本升级至 {0}，下载中...' },
+  { source: 'Update complete, please restart client to complete update', target: '升级完成，请重启客户端完成更新' },
 
   { source: 'yes', target: '是' },
   { source: 'no', target: '否' },

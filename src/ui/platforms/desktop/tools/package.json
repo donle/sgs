@@ -2,8 +2,12 @@
   "name": "electron",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT",
+  "license": "GPL",
   "devDependencies": {
-    "@types/node": "^14.14.10"
+    "@types/node": "^14.14.10",
+    "@types/node-fetch": "^2.5.7"
+  },
+  "dependencies": {
+    "shrink-string": "^3.0.9"
   }
 }
