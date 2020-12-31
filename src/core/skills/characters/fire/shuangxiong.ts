@@ -104,7 +104,7 @@ export class ShuangXiongShadow extends TriggerSkill {
               ? (responseCard as VirtualCard).ActualCardIds.length > 0
               : true;
 
-            return hasRealResponseCard && shuangxiongCard.GeneratedBySkill === this.GeneralName;
+            return hasRealResponseCard && shuangxiongCard.findByGeneratedSkill(this.GeneralName);
           }
         }
 
@@ -146,7 +146,7 @@ export class ShuangXiongShadow extends TriggerSkill {
 
         return (
           owner.Id === damageEvent.toId &&
-          damageCard.GeneratedBySkill === this.GeneralName &&
+          damageCard.findByGeneratedSkill(this.GeneralName) &&
           damageEvent.fromId !== undefined &&
           this.findSlash(room, owner.Id).length > 0
         );

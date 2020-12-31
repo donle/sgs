@@ -368,4 +368,24 @@ export class VirtualCard<T extends Card = Card> extends Card {
   public isVirtualCard() {
     return true;
   }
+  
+  public findByGeneratedSkill(skillName: string): boolean {
+    if (this.GeneratedBySkill === skillName) {
+      return true;
+    }
+
+    if (this.ActualCardIds.length > 0) {
+      for (const subCardId of this.ActualCardIds) {
+        const subCard = Sanguosha.getCardById(subCardId);
+        if (subCard.isVirtualCard()) {
+          const subVCard = subCard as VirtualCard;
+          if (subVCard.findByGeneratedSkill(skillName)) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  }
 }
