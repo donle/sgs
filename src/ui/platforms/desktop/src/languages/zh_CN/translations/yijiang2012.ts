@@ -106,7 +106,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'anxu_description',
     target:
-      '出牌阶段限一次，你可以选择两名手牌数不相等的其他角色，手牌较少的角色获得另一名角色的一张手牌并展示之，若此牌的花色不为黑桃，你摸一张牌。',
+      '出牌阶段限一次，你可以依次选择两名其他角色，令前者获得后者的一张牌，若前者以此法获得的牌不为装备区里的牌，你摸一张牌，然后你可以令二者中手牌较少的角色摸一张牌。',
   },
   {
     source: 'zhuiyi_description',
@@ -195,5 +195,20 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to remove a Chun to let {1} uses an alchol?',
     target: '{0}：你可以移去一张“醇”，视为 {1} 使用一张【酒】',
+  },
+
+  {
+    source: '{0}: do you want to let {1} draw a card?',
+    target: '{0}：你可以令 {1} 摸一张牌',
+  },
+
+  {
+    source: '{0}: please choose a target to draw 3 cards and recover 1 hp',
+    target: '{0}：你可以令一名其他角色摸三张牌并回复1点体力',
+  },
+
+  {
+    source: '{0}: please choose a target except {1} to draw 3 cards and recover 1 hp',
+    target: '{0}：你可以令一名除 {1} 外的其他角色摸三张牌并回复1点体力',
   },
 ];
