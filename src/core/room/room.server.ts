@@ -43,6 +43,7 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { System } from 'core/shares/libs/system';
 import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
+import { TagEnum } from 'core/shares/types/tag_list';
 import { OnDefineReleaseTiming, Skill, SkillLifeCycle, SkillType, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
@@ -704,6 +705,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async preUseCard(cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): Promise<boolean> {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, cardUseEvent);
+    EventPacker.addMiddleware(
+      {
+        tag: TagEnum.CardUseEventTag,
+        data: Date.now(),
+      },
+      cardUseEvent,
+    );
     const card = Sanguosha.getCardById<VirtualCard>(cardUseEvent.cardId);
     await card.Skill.onUse(this, cardUseEvent);
 
