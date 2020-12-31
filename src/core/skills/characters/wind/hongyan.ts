@@ -43,7 +43,7 @@ export class HongYan extends TransformSkill implements OnDefineReleaseTiming {
         }
 
         const card = Sanguosha.getCardById<VirtualCard>(cardId);
-        if (card.findByGeneratedSkill(this.Name)) {
+        if (!card.findByGeneratedSkill(this.Name)) {
           return cardId;
         }
 

@@ -89,6 +89,9 @@ export class FuHunDamage extends TriggerSkill {
       if (card.isVirtualCard()) {
         const vCard = card as VirtualCard;
         isFuHun = vCard.findByGeneratedSkill(this.GeneralName);
+        if (isFuHun) {
+          break;
+        }
       }
     }
 
@@ -104,15 +107,16 @@ export class FuHunDamage extends TriggerSkill {
     event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     const { fromId } = event;
-    
+    const from = room.getPlayerById(fromId);
+
     if (!room.getPlayerById(fromId).hasSkill(WuSheng.Name)) {
       room.obtainSkill(fromId, WuSheng.Name);
-      room.setFlag<boolean>(fromId, FuHunDamage.WuSheng, true);
+      from.setFlag<boolean>(FuHunDamage.WuSheng, true);
     }
 
     if (!room.getPlayerById(fromId).hasSkill(PaoXiao.Name)) {
       room.obtainSkill(fromId, PaoXiao.Name);
-      room.setFlag<boolean>(fromId, FuHunDamage.PaoXiao, true);
+      from.setFlag<boolean>(FuHunDamage.PaoXiao, true);
     }
 
     return true;
@@ -166,14 +170,16 @@ export class FuHunLoseSkill extends TriggerSkill implements OnDefineReleaseTimin
     event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     const { fromId } = event;
-    if (room.getFlag<boolean>(fromId, FuHunDamage.WuSheng)) {
+    const from = room.getPlayerById(fromId);
+
+    if (from.getFlag<boolean>(FuHunDamage.WuSheng)) {
       await room.loseSkill(fromId, WuSheng.Name);
-      room.removeFlag(fromId, FuHunDamage.WuSheng);
+      from.removeFlag(FuHunDamage.WuSheng);
     }
 
     if (room.getFlag<boolean>(fromId, FuHunDamage.PaoXiao)) {
       await room.loseSkill(fromId, PaoXiao.Name);
-      room.removeFlag(fromId, FuHunDamage.PaoXiao);
+      from.removeFlag(FuHunDamage.PaoXiao);
     }
 
     return true;
