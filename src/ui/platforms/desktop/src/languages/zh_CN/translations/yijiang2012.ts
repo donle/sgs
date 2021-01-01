@@ -211,4 +211,14 @@ export const promptDescriptions: Word[] = [
     source: '{0}: please choose a target except {1} to draw 3 cards and recover 1 hp',
     target: '{0}：你可以令一名除 {1} 外的其他角色摸三张牌并回复1点体力',
   },
+  
+  {
+    source: '{0}: do you want to discard at least one card with different suits and draw cards?',
+    target: '{0}：你可以弃置至少一张花色各不相同的手牌，然后摸等量的牌',
+  },
+
+  {
+    source: '{0} triggered skill {1}, prevent the damage to {2}',
+    target: '{0} 的技能 【{1}】被触发，防止了对 {2} 造成的伤害',
+  },
 ];

@@ -483,6 +483,13 @@ export abstract class Player implements PlayerInfo {
     return Math.max(finalAttackRange >= 0 ? finalAttackRange : attackDistance + additionalAttackRange, 0);
   }
 
+  public getMaxCardHold(room: Room) {
+    const maxCardHold = GameCommonRules.getBaseHoldCardNumber(room, this) +
+      GameCommonRules.getAdditionalHoldCardNumber(room, this)
+
+    return Math.max(maxCardHold, 0);
+  }
+
   public getOffenseDistance(room: Room) {
     return GameCommonRules.getAdditionalOffenseDistance(room, this);
   }

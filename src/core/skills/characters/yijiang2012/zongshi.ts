@@ -1,19 +1,20 @@
+import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { CardId } from 'core/cards/libs/card_props';
+import { CardColor, CardId } from 'core/cards/libs/card_props';
 import { CharacterNationality } from 'core/characters/character';
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
-import { AllStage, PhaseChangeStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
+import { AllStage, CardEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { OnDefineReleaseTiming, RulesBreakerSkill, TriggerSkill } from 'core/skills/skill';
+import { FilterSkill, RulesBreakerSkill, TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'zongshi', description: 'zongshi_description' })
 export class ZongShi extends RulesBreakerSkill {
-  public breakAdditionalCardHoldNumber(room: Room, owner: Player): number {
+  public breakAdditionalCardHoldNumber(room: Room): number {
     const nations = room.AlivePlayers.reduce<CharacterNationality[]>((allNations, player) => {
       if (!allNations.includes(player.Nationality)) {
         allNations.push(player.Nationality);
@@ -27,83 +28,68 @@ export class ZongShi extends RulesBreakerSkill {
 
 @ShadowSkill
 @CompulsorySkill({ name: ZongShi.Name, description: ZongShi.Description })
-export class ZongShiShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  public afterDead(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
-  }
-
-  public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
-  }
-
-  public isFlaggedSkill(): boolean {
-    return true;
-  }
-
+export class ZongShiNullify extends TriggerSkill {
   public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers>,
+    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
     stage?: AllStage,
   ): boolean {
-    return stage === PhaseChangeStage.PhaseChanged || stage === PhaseStageChangeStage.StageChanged;
+    return stage === CardEffectStage.PreCardEffect;
   }
 
   public canUse(
     room: Room,
     owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.PhaseStageChangeEvent>,
+    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
   ): boolean {
-    const unknownEvent = EventPacker.getIdentifier(content);
-    if (unknownEvent === GameEventIdentifiers.PhaseChangeEvent) {
-      const event = content as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-      return event.from === PlayerPhase.PhaseFinish && room.getFlag<boolean>(owner.Id, this.GeneralName) === true;
-    } else if (unknownEvent === GameEventIdentifiers.PhaseStageChangeEvent) {
-      const event = content as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
-      return (
-        event.playerId === owner.Id &&
-        event.toStage === PlayerPhaseStages.PhaseBeginStart &&
-        owner.getCardIds(PlayerCardsArea.HandArea).length > owner.Hp
-      );
-    }
-    
-    return false;
+    return (
+      room.CurrentPlayer !== owner &&
+      owner.getCardIds(PlayerCardsArea.HandArea).length >= owner.getMaxCardHold(room) &&
+      event.toIds !== undefined &&
+      event.toIds.includes(owner.Id) &&
+      Sanguosha.getCardById(event.cardId!).Color === CardColor.None
+    );
   }
 
-  public async onTrigger(): Promise<boolean> {
+  public async onTrigger(
+    room: Room,
+    content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
+  ): Promise<boolean> {
+    const cardEffectEvent = content.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>;
+
+    content.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} triggered skill {1}, nullify {2}',
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(content.fromId)),
+      this.GeneralName,
+      TranslationPack.patchCardInTranslation(cardEffectEvent.cardId),
+    ).extract();
+
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>, 
-  ): Promise<boolean> {
-    const { fromId, triggeredOnEvent } = event;
-    const unknownEvent = triggeredOnEvent as ServerEventFinder<
-      GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.PhaseStageChangeEvent
-    >;
-
-    const identifier = EventPacker.getIdentifier(unknownEvent);
-    if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
-      room.removeFlag(fromId, this.GeneralName);
-    } else if (identifier === GameEventIdentifiers.PhaseStageChangeEvent) {
-      room.setFlag<boolean>(fromId, this.GeneralName, true, true);
-    }
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
+    const cardEffectEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>;
+    cardEffectEvent.nullifiedTargets?.push(event.fromId);
 
     return true;
   }
 }
 
 @ShadowSkill
-@CompulsorySkill({ name: ZongShiShadow.Name, description: ZongShiShadow.Description })
-export class ZongShiBuff extends RulesBreakerSkill {
-  public breakCardUsableTimes(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
-    if (!room.getFlag<boolean>(owner.Id, this.GeneralName)) {
-      return 0;
+@CompulsorySkill({ name: ZongShiNullify.Name, description: ZongShiNullify.Description })
+export class ZongShiProhibit extends FilterSkill {
+  public canBeUsedCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId, attacker?: PlayerId): boolean {
+    const ownerPlayer = room.getPlayerById(owner);
+    if (
+      room.CurrentPlayer === ownerPlayer ||
+      ownerPlayer.getCardIds(PlayerCardsArea.HandArea).length < ownerPlayer.getMaxCardHold(room)
+    ) {
+      return true;
     }
 
     if (cardId instanceof CardMatcher) {
-      return cardId.match(new CardMatcher({ generalName: ['slash'] })) ? INFINITE_TRIGGERING_TIMES : 0;
+      return !new CardMatcher({ type: [CardType.DelayedTrick] }).match(cardId);
     } else {
-      return Sanguosha.getCardById(cardId).GeneralName === 'slash' ? INFINITE_TRIGGERING_TIMES : 0;
+      return !Sanguosha.getCardById(cardId).is(CardType.DelayedTrick);
     }
   }
 }

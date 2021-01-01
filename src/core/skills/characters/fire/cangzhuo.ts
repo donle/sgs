@@ -97,12 +97,8 @@ export class CangZhuoShadow extends TriggerSkill implements OnDefineReleaseTimin
         .filter(cardId => Sanguosha.getCardById(cardId).is(CardType.Trick));
 
       if (tricks.length > 0) {
-        const maxHold =
-          GameCommonRules.getBaseHoldCardNumber(room, player) +
-          GameCommonRules.getAdditionalHoldCardNumber(room, player);
-
         const otherHandCards = player.getCardIds(PlayerCardsArea.HandArea).filter(card => !tricks.includes(card));
-        const discardAmount = otherHandCards.length - maxHold;
+        const discardAmount = otherHandCards.length - player.getMaxCardHold(room);
 
         askForCardDropEvent.cardAmount = discardAmount;
         askForCardDropEvent.except = askForCardDropEvent.except ? [...askForCardDropEvent.except, ...tricks] : tricks;
