@@ -1,6 +1,5 @@
 import { VirtualCard } from 'core/cards/card';
 import { FireSlash } from 'core/cards/legion_fight/fire_slash';
-import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardUseStage, PlayerPhase } from 'core/game/stage_processor';
@@ -160,7 +159,7 @@ export class LiHuoShadow extends TriggerSkill {
     room: Room,
     event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
-    const { fromId, toIds, triggeredOnEvent } = event;
+    const { toIds, triggeredOnEvent } = event;
     const cardUseEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
 
     cardUseEvent.toIds?.push(toIds![0]);
