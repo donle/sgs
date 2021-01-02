@@ -1,7 +1,6 @@
 import { CardType } from 'core/cards/card';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { GameCommonRules } from 'core/game/game_rules';
 import {
   AllStage,
   PhaseChangeStage,

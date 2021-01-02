@@ -28,21 +28,20 @@ export class DangXian extends TriggerSkill {
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const card = room.getCardsByNameFromStack('slash', 'drop', 1)[0];
-    if (card === undefined) {
-      return false;
+    
+    if (card) {
+      await room.moveCards({
+        moveReason: CardMoveReason.ActivePrey,
+        movedByReason: this.Name,
+        toArea: CardMoveArea.HandArea,
+        toId: skillUseEvent.fromId,
+        movingCards: [
+          {
+            card,
+          },
+        ],
+      });
     }
-
-    await room.moveCards({
-      moveReason: CardMoveReason.ActivePrey,
-      movedByReason: this.Name,
-      toArea: CardMoveArea.HandArea,
-      toId: skillUseEvent.fromId,
-      movingCards: [
-        {
-          card,
-        },
-      ],
-    });
 
     room.insertPlayerPhase(skillUseEvent.fromId, PlayerPhase.PlayCardStage);
     return true;

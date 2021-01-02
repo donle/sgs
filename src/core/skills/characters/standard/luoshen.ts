@@ -1,7 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { GameCommonRules } from 'core/game/game_rules';
 import {
   AllStage,
   JudgeEffectStage,
