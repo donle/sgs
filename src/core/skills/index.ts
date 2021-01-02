@@ -245,6 +245,8 @@ export { QianXi, QianXiShadow, QianXiBlock } from './characters/yijiang2012/qian
 export { FuHun, FuHunDamage, FuHunLoseSkill } from './characters/yijiang2012/fuhun';
 export { LiHuo, LiHuoLoseHp, LiHuoShadow } from './characters/yijiang2012/lihuo';
 export { ChunLao, ChunLaoShadow } from './characters/yijiang2012/chunlao';
+export { AnXu } from './characters/yijiang2012/anxu';
+export { ZhuiYi } from './characters/yijiang2012/zhuiyi';
 
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';
