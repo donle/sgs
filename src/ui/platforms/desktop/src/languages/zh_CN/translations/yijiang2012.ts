@@ -35,7 +35,9 @@ export const characterDictionary: Word[] = [
 
   { source: 'chengpu', target: '程普' },
   { source: 'lihuo', target: '疠火' },
+  { source: '#lihuo', target: '疠火' },
   { source: 'chunlao', target: '醇醪' },
+  { source: '#chunlao', target: '醇醪' },
 
   { source: 'handang', target: '韩当' },
   { source: 'gongji', target: '弓骑' },
@@ -178,5 +180,20 @@ export const promptDescriptions: Word[] = [
   {
     source: 'qianxi: please choose a target with 1 Distance(to you)',
     target: '<b>潜袭</b>：请选择你至其距离为1的一名角色',
+  },
+
+  {
+    source: '{0}: please choose a target to be the additional target of {1}',
+    target: '{0}：你可以为此{1}选择一个额外目标',
+  },
+
+  {
+    source: '{0}: do you want to put at least one slash on your general card?',
+    target: '{0}：你可以将至少一张【杀】置为“醇”',
+  },
+
+  {
+    source: '{0}: do you want to remove a Chun to let {1} uses an alchol?',
+    target: '{0}：你可以移去一张“醇”，视为 {1} 使用一张【酒】',
   },
 ];
