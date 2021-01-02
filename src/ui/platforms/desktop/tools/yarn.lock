@@ -2,6 +2,37 @@
 # yarn lockfile v1
 
 
+"@types/highlight.js@^9.7.0":
+  version "9.12.4"
+  resolved "https://registry.yarnpkg.com/@types/highlight.js/-/highlight.js-9.12.4.tgz#8c3496bd1b50cc04aeefd691140aa571d4dbfa34"
+  integrity sha512-t2szdkwmg2JJyuCM20e8kR2X59WCE5Zkl4bzm1u1Oukjm79zpbiAv+QjnwLnuuV0WHEcX2NgUItu0pAMKuOPww==
+
+"@types/linkify-it@*":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/linkify-it/-/linkify-it-3.0.0.tgz#c0ca4c253664492dbf47a646f31cfd483a6bbc95"
+  integrity sha512-x9OaQQTb1N2hPZ/LWJsqushexDvz7NgzuZxiRmZio44WPuolTZNHDBCrOxCzRVOMwamJRO2dWax5NbygOf1OTQ==
+
+"@types/markdown-it@^12.0.0":
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/@types/markdown-it/-/markdown-it-12.0.0.tgz#b2f421565df814c001d071c398bd09d4777ef34d"
+  integrity sha512-+RJNprPSIcEUBzj3nx8WYwRsDdAKF6/dG932OleYKbTqBSJ7VvZK0JbPKeEpIYxoniUhgvgyZjO4vlCd4mFTdw==
+  dependencies:
+    "@types/highlight.js" "^9.7.0"
+    "@types/linkify-it" "*"
+    "@types/mdurl" "*"
+
+"@types/mdurl@*":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@types/mdurl/-/mdurl-1.0.2.tgz#e2ce9d83a613bacf284c7be7d491945e39e1f8e9"
+  integrity sha512-eC4U9MlIcu2q0KQmXszyn5Akca/0jrQmwDRgpAMJai7qBWq4amIQhZyNau4VYGtCeALvW1/NtjzJJ567aZxfKA==
+
+"@types/node-7z@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@types/node-7z/-/node-7z-2.1.0.tgz#6dc23139540a08ab8bc1ddd5c8d1f905b65ec214"
+  integrity sha512-x3enaHLv5fRIWiA60dc43indT+j4a5Rg8Zlu+Xr0r8iKJIfnMza5Gh/FDcqCJAcrrF/up4zCvLIAa9dpCvXjlw==
+  dependencies:
+    "@types/node" "*"
+
 "@types/node-fetch@^2.5.7":
   version "2.5.7"
   resolved "https://registry.yarnpkg.com/@types/node-fetch/-/node-fetch-2.5.7.tgz#20a2afffa882ab04d44ca786449a276f9f6bbf3c"

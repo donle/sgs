@@ -1,5 +1,5 @@
 import { app, BrowserWindow, BrowserWindowConstructorOptions, dialog, ipcMain } from 'electron';
-import extractZip from 'extract-zip';
+import node7z from 'node-7z';
 import fetch from 'node-fetch';
 import * as fs from 'original-fs';
 import * as path from 'path';
@@ -22,8 +22,8 @@ export const REQUEST_CORE_VERSION = 'requestCoreVersion';
 export const RESTART_CLIENT = 'restartClient';
 
 app.setPath('userData', __dirname);
-
 class AppWindow {
+  public static readonly GameReleaseApi = 'https://gitee.com/api/v5/repos/doublebit/PicTest/releases/latest';
   public static onReady(callbackFn: () => void) {
     app.on('ready', callbackFn);
   }
@@ -165,8 +165,7 @@ async function requestUpdate(window: BrowserWindow) {
   });
 
   const appPath = app.getPath('exe');
-  const releaseAPI = 'https://gitee.com/api/v5/repos/doublebit/PicTest/releases/latest';
-  const response = await fetch(releaseAPI).then(res => res.json());
+  const response = await fetch(AppWindow.GameReleaseApi).then(res => res.json());
   const nextVersion = response.tag_name.replace(/[^\d.]+/g, '');
   const currentVersion = await requestCurrentVersion;
 
@@ -188,7 +187,11 @@ async function requestUpdate(window: BrowserWindow) {
         });
     });
 
-    const downloadUrl = `${response.assets[0].browser_download_url}/${response.assets[0].name}`;
+    const downloadInfo = response.assets.find(asset => (asset.name as string).endsWith('.7z'));
+    if (downloadInfo === undefined) {
+      return;
+    }
+    const downloadUrl = `${downloadInfo.browser_download_url}/${downloadInfo.name}`;
     let totalSize = 0;
     let currentSize = 0;
     const dataStream = await fetch(downloadUrl).then(res => {
@@ -241,28 +244,29 @@ function beforeLaunch(callback: Function) {
     fs.mkdirSync(updateFolder);
     return callback();
   } else {
-    const updateZipFile = path.join(updateFolder, './core.zip');
+    const updateZipFile = path.join(updateFolder, './core.7z');
     if (!fs.existsSync(updateZipFile)) {
       return callback();
     }
 
-    extractZip(updateZipFile, { dir: updateFolder })
-      .then(() => {
-        const destDirectory = path.join(appPath, '../resources/app.asar');
-        const updateFile = path.join(updateFolder, './app.asar.bak');
-        if (fs.existsSync(updateFile)) {
-          fs.copyFileSync(updateFile, destDirectory);
-          fs.unlinkSync(updateFile);
-          fs.unlinkSync(updateZipFile);
-        }
-        callback();
-      })
-      .catch(err => {
-        if (fs.existsSync(updateZipFile)) {
-          fs.unlinkSync(updateZipFile);
-        }
-        callback(err);
-      });
+    const extractStream = node7z.extractFull(updateZipFile, updateFolder);
+    extractStream.on('end', () => {
+      const destDirectory = path.join(appPath, '../resources/app.asar');
+      const updateFile = path.join(updateFolder, './app.asar.bak');
+      if (fs.existsSync(updateFile)) {
+        fs.copyFileSync(updateFile, destDirectory);
+        fs.unlinkSync(updateFile);
+        fs.unlinkSync(updateZipFile);
+      }
+      callback();
+    });
+
+    extractStream.on('error', err => {
+      if (fs.existsSync(updateZipFile)) {
+        fs.unlinkSync(updateZipFile);
+      }
+      callback(err);
+    });
   }
 }
 

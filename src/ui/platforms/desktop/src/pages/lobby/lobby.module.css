@@ -14,7 +14,6 @@
     align-self: center;
     width: 100%;
     height: 100%;
-    filter: brightness(0.5);
     top: 0;
     left: 0;
     z-index: -1;
@@ -44,6 +43,41 @@
     right: 95%;
     z-index: 0;
     animation: leftSideIn 2.5s 1;
+}
+
+.gameLog {
+    position: absolute;
+    align-self: center;
+    top: calc(100% - calc(gridLine * 5));
+    left: calc(100% - gridLine);
+    z-index: 0;
+    width: calc(gridLine * 40);
+    animation: rightSideIn 2.5s 1;
+}
+.gameLogContainer {
+    position: relative;
+    padding: calc(gridLine * 2);
+    height: calc(gridLine *70);
+    width: calc(8px * 37);
+}
+.gameLogBoardImage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    height: 100%;
+}
+.gameLogText {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    color: white;
+    height: 100%;
+    overflow: auto;
+    width: 100%;
+    overflow: auto;
+    text-shadow: 0 0 1px black, 0 0 1px black, 0 0 2px black, 0 0 2px black;
+    padding: calc(gridLine * 2);
 }
 
 .button {
@@ -216,6 +250,18 @@
     }
     100% {
         right: 95%;
+    }
+}
+
+@keyframes rightSideIn {
+    0% {
+        left: 155%;
+    }
+    20% {
+        left: 155%;
+    }
+    100% {
+        left: calc(100% - gridLine);
     }
 }
 

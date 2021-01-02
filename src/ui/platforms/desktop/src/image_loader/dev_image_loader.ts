@@ -118,4 +118,7 @@ export class DevImageLoader implements ImageLoader {
   public getAcknowledgementImage() {
     return { src: `${remoteRoot}/images/system/acknowledge.png`, alt: '' };
   }
+  public getGameLogBoradImage() {
+    return { src: `${remoteRoot}/images/system/game_log_board.png`, alt: '' };
+  }
 }

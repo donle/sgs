@@ -35,6 +35,7 @@ export interface ImageLoader {
   getChainImage(): ImageProps;
   getDelayedTricksImage(cardName: string): ImageProps;
 
+  getGameLogBoradImage(): ImageProps;
   getDialogBackgroundImage(): ImageProps;
   getGameModeIcon(mode: GameMode): ImageProps;
   getRandomLobbyIllustration(): ImageProps;

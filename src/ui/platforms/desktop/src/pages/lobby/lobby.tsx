@@ -64,6 +64,8 @@ export class Lobby extends React.Component<LobbyProps> {
   private updateComplete: boolean = false;
   @mobx.observable.ref
   private updateProgress: number = 0;
+  @mobx.observable.ref
+  private gameLog: string;
 
   private socket = SocketIOClient(
     `${this.props.config.host.protocol}://${this.props.config.host.host}:${this.props.config.host.port}/lobby`,
@@ -71,6 +73,7 @@ export class Lobby extends React.Component<LobbyProps> {
 
   private backgroundImage = this.props.imageLoader.getLobbyBackgroundImage().src!;
   private illustrationImage = this.props.imageLoader.getRandomLobbyIllustration().src!;
+  private gameLogBoardImage = this.props.imageLoader.getGameLogBoradImage().src!;
   private roomListBackgroundImage = this.props.imageLoader.getRoomListBackgroundImage().src!;
   private createRoomImage = this.props.imageLoader.getCreateRoomButtonImage().src!;
   private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
@@ -134,6 +137,7 @@ export class Lobby extends React.Component<LobbyProps> {
         this.updateProgress = progress;
       }),
     );
+    this.props.electronLoader.getGameLog().then(mobx.action(inlineHtml => (this.gameLog = inlineHtml)));
   }
 
   componentWillUnmount() {
@@ -264,6 +268,12 @@ export class Lobby extends React.Component<LobbyProps> {
             <div className={styles.illustration}>
               <img src={this.illustrationImage} alt="" />
               <img className={styles.logo} src={logoImage} alt={'logo'} />
+            </div>
+            <div className={styles.gameLog}>
+              <div className={styles.gameLogContainer}>
+                <img className={styles.gameLogBoardImage} src={this.gameLogBoardImage} alt="" />
+                <p className={styles.gameLogText} dangerouslySetInnerHTML={{ __html: this.gameLog }} />
+              </div>
             </div>
             <Button
               variant="primary"
@@ -412,7 +422,10 @@ export class Lobby extends React.Component<LobbyProps> {
           {this.updateTo && !this.updateComplete && (
             <span>
               {this.props.translator.trx(
-                TranslationPack.translationJsonPatcher('updating core version to {0}, downloading...', this.updateTo).toString(),
+                TranslationPack.translationJsonPatcher(
+                  'updating core version to {0}, downloading...',
+                  this.updateTo,
+                ).toString(),
               )}
               {(this.updateProgress * 100).toFixed(2)} %
             </span>

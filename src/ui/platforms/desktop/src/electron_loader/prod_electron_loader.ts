@@ -45,7 +45,9 @@ export class ProdElectronLoader extends ElectronLoader {
     });
   }
 
-  public readonly whenUpdate = (updateCallback: (nextVersion: string, progress: number, complete?: boolean) => void) => {
+  public readonly whenUpdate = (
+    updateCallback: (nextVersion: string, progress: number, complete?: boolean) => void,
+  ) => {
     this.whenUpdateallbackFn = updateCallback;
     this.updateTo && updateCallback(this.updateTo, this.updateProgress, this.updateComplete);
   };
