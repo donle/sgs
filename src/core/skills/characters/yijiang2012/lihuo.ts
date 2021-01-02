@@ -77,7 +77,9 @@ export class LiHuo extends TriggerSkill {
 @ShadowSkill
 @CommonSkill({ name: LiHuo.Name, description: LiHuo.Description })
 export class LiHuoShadow extends TriggerSkill {
-  public static readonly Targets = 'lihuo_targets';
+  public isAutoTrigger(): boolean {
+    return true;
+  }
 
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
@@ -91,14 +93,7 @@ export class LiHuoShadow extends TriggerSkill {
     owner: Player,
     event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
   ): boolean {
-    if (owner.getFlag<CardId>(this.Name) !== undefined) {
-      room.removeFlag(owner.Id, this.Name);
-    }
-    if (owner.getFlag<PlayerId[]>(LiHuoShadow.Targets) !== undefined) {
-      room.removeFlag(owner.Id, LiHuoShadow.Targets);
-    }
-
-    const canUse =
+    return (
       Sanguosha.getCardById(event.cardId).Name === 'fire_slash' &&
       owner.Id === event.fromId &&
       room.getOtherPlayers(owner.Id)
@@ -109,35 +104,52 @@ export class LiHuoShadow extends TriggerSkill {
               !event.toIds!.includes(player.Id)
             );
           }
-        ) !== undefined;
-    if (canUse) {
-      room.setFlag<CardId>(owner.Id, this.Name, event.cardId);
-      room.setFlag<PlayerId[]>(owner.Id, LiHuoShadow.Targets, event.toIds!);
+        ) !== undefined
+    );
+  }
+
+  public async beforeUse(
+    room: Room,
+    event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
+  ): Promise<boolean> {
+    const { fromId, triggeredOnEvent } = event;
+    const cardUseEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
+    const from = room.getPlayerById(fromId);
+
+    const players = room.getAlivePlayersFrom()
+      .filter(player => room.canAttack(from, player, cardUseEvent.cardId) && !cardUseEvent.toIds?.includes(player.Id))
+      .map(player => player.Id);
+
+    if (players.length < 1) {
+      return false;
     }
 
-    return canUse;
-  }
+    const askForPlayerChoose: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
+      toId: fromId,
+      players,
+      requiredAmount: 1,
+      conversation: TranslationPack.translationJsonPatcher(
+          '{0}: please choose a target to be the additional target of {1}',
+          this.GeneralName,
+          TranslationPack.patchCardInTranslation(cardUseEvent.cardId),
+        ).extract(),
+      triggeredBySkills: [this.GeneralName],
+    };
 
-  public numberOfTargets(): number {
-    return 1;
-  }
+    room.notify(
+      GameEventIdentifiers.AskForChoosingPlayerEvent,
+      askForPlayerChoose,
+      fromId,
+    );
 
-  public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
-    const slash = room.getFlag<CardId>(owner, this.Name);
-    const targets = room.getFlag<PlayerId[]>(owner, LiHuoShadow.Targets);
-    return room.canAttack(room.getPlayerById(owner), room.getPlayerById(target), slash) && !targets.includes(target);
-  }
+    const resp = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingPlayerEvent, fromId);
+    if (!resp.selectedPlayers) {
+      return false;
+    }
 
-  public getSkillLog(
-    room: Room,
-    owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
-  ): PatchedTranslationObject {
-    return TranslationPack.translationJsonPatcher(
-      '{0}: please choose a target to be the additional target of {1}',
-      this.Name,
-      TranslationPack.patchCardInTranslation(event.cardId),
-    ).extract();
+    event.toIds = resp.selectedPlayers;
+
+    return true;
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -150,9 +162,6 @@ export class LiHuoShadow extends TriggerSkill {
   ): Promise<boolean> {
     const { fromId, toIds, triggeredOnEvent } = event;
     const cardUseEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
-
-    room.removeFlag(fromId, this.Name);
-    room.removeFlag(fromId, LiHuoShadow.Targets);
 
     cardUseEvent.toIds?.push(toIds![0]);
     room.sortPlayersByPosition(cardUseEvent.toIds!);
