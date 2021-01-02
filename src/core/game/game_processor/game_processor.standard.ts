@@ -401,9 +401,7 @@ export class StandardGameProcessor extends GameProcessor {
         return;
       case PlayerPhase.DropCardStage:
         this.logger.debug('enter drop cards phase');
-        const maxCardHold =
-          GameCommonRules.getBaseHoldCardNumber(this.room, this.currentPhasePlayer) +
-          GameCommonRules.getAdditionalHoldCardNumber(this.room, this.currentPhasePlayer);
+        const maxCardHold = this.currentPhasePlayer.getMaxCardHold(this.room);
         const discardAmount = this.currentPhasePlayer.getCardIds(PlayerCardsArea.HandArea).length - maxCardHold;
         if (discardAmount > 0) {
           const response = await this.room.askForCardDrop(

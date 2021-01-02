@@ -319,6 +319,16 @@ export class VirtualCard<T extends Card = Card> extends Card {
     this.suit = suit;
   }
 
+  public get Color() {
+    if (this.viewAsBlackCard) {
+      return CardColor.Black;
+    } else if (this.viewAsRedCard) {
+      return CardColor.Red;
+    }
+
+    return CardColor.None;
+  }
+
   public get CardNumber() {
     return this.cardNumber === undefined ? 0 : this.cardNumber;
   }
