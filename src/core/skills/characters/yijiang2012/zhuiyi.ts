@@ -1,4 +1,4 @@
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PlayerDiedStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
@@ -13,6 +13,10 @@ export class ZhuiYi extends TriggerSkill implements OnDefineReleaseTiming {
     return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
+  public isAutoTrigger(): boolean {
+    return true;
+  }
+
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>,
     stage?: AllStage,
@@ -25,43 +29,55 @@ export class ZhuiYi extends TriggerSkill implements OnDefineReleaseTiming {
     owner: Player,
     content: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>,
   ): boolean {
-    if (owner.getFlag<PlayerId>(this.Name) !== undefined) {
-      room.removeFlag(owner.Id, this.Name);
-    }
-
-    const canUse = owner.Id === content.playerId;
-    if (canUse && content.killedBy) {
-      room.setFlag<PlayerId>(owner.Id, this.Name, content.killedBy);
-    }
-
-    return canUse;
+    return content.playerId === owner.Id;
   }
 
-  public targetFilter(room: Room, owner: Player, targets: PlayerId[]): boolean {
-    return targets.length === 1;
-  }
-
-  public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
-    return target !== room.getFlag<PlayerId>(owner, this.Name);
-  }
-
-  public getSkillLog(
+  public async beforeUse(
     room: Room,
-    owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>,
-  ): PatchedTranslationObject {
-    return (
-      event.killedBy
-      ? TranslationPack.translationJsonPatcher(
-          '{0}: please choose a target except {1} to draw 3 cards and recover 1 hp',
-          this.Name,
-          TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.killedBy!)),
-        ).extract()
-      : TranslationPack.translationJsonPatcher(
-          '{0}: please choose a target to draw 3 cards and recover 1 hp',
-          this.Name,
-        ).extract()
+    event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
+  ): Promise<boolean> {
+    const { fromId, triggeredOnEvent } = event;
+    const playerDiedEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>;
+
+    const players = room.getAlivePlayersFrom()
+      .filter(player => player.Id !== playerDiedEvent.killedBy)
+      .map(player => player.Id);
+
+    if (players.length < 1) {
+      return false;
+    }
+
+    const askForPlayerChoose: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
+      toId: fromId,
+      players,
+      requiredAmount: 1,
+      conversation: playerDiedEvent.killedBy
+        ? TranslationPack.translationJsonPatcher(
+            '{0}: please choose a target except {1} to draw 3 cards and recover 1 hp',
+            this.Name,
+            TranslationPack.patchPlayerInTranslation(room.getPlayerById(playerDiedEvent.killedBy)),
+          ).extract()
+        : TranslationPack.translationJsonPatcher(
+            '{0}: please choose a target to draw 3 cards and recover 1 hp',
+            this.Name,
+          ).extract(),
+      triggeredBySkills: [this.Name],
+    };
+
+    room.notify(
+      GameEventIdentifiers.AskForChoosingPlayerEvent,
+      askForPlayerChoose,
+      fromId,
     );
+
+    const resp = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingPlayerEvent, fromId);
+    if (!resp.selectedPlayers) {
+      return false;
+    }
+
+    event.toIds = resp.selectedPlayers;
+
+    return true;
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -73,7 +89,6 @@ export class ZhuiYi extends TriggerSkill implements OnDefineReleaseTiming {
     event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     const { fromId, toIds } = event;
-    room.removeFlag(fromId, this.Name);
 
     await room.drawCards(3, toIds![0], 'top', fromId, this.Name);
     await room.recover({
