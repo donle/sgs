@@ -1,4 +1,5 @@
 import { Character } from '../character';
+import { ChengPu } from './chengpu';
 import { GuanXingZhangBao } from './guanxingzhangbao';
 import { HanDang } from './handang';
 import { LiaoHua } from './liaohua';
@@ -17,4 +18,5 @@ export const YiJiang2012Package: (index: number) => Character[] = index => [
   new GuanXingZhangBao(index++),
 
   new HanDang(index++),
+  new ChengPu(index++),
 ];
