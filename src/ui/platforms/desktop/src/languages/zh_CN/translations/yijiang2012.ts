@@ -35,9 +35,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'chengpu', target: '程普' },
   { source: 'lihuo', target: '疠火' },
-  { source: '#lihuo', target: '疠火' },
   { source: 'chunlao', target: '醇醪' },
-  { source: '#chunlao', target: '醇醪' },
 
   { source: 'handang', target: '韩当' },
   { source: 'gongji', target: '弓骑' },
@@ -90,7 +88,7 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'dangxian_description',
-    target: '<b>锁定技</b>，回合开始时，你从弃牌堆中随机获得一张【杀】，然后执行一个额外的出牌阶段。',
+    target: '<b>锁定技</b>，回合开始时，你从弃牌堆中随机获得一张【杀】，执行一个额外的出牌阶段。',
   },
   {
     source: 'fuli_description',
@@ -136,11 +134,11 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'zishou_description',
-    target: '摸牌阶段，你可以多摸X张牌，然后你于此回合内使用牌不能指定其他角色为目标（X为存活势力数）。',
+    target: '摸牌阶段，你可以多摸X张牌（X为存活势力数），然后本回合内防止你对其他角色造成的伤害；结束阶段开始时，若你本回合内未对其他角色使用过牌，你可以弃置至少一张花色各不相同的手牌，然后摸等量的牌。',
   },
   {
     source: 'zongshi_description',
-    target: '<b>锁定技</b>，你的手牌上限+X（X为存活势力数）。',
+    target: '<b>锁定技</b>，你的手牌上限+X（X为存活势力数）；你的回合外，若你的手牌数不小于手牌上限，无色牌对你无效且你不能成为延时类锦囊牌的目标。',
   },
 ];
 

@@ -35,11 +35,7 @@ export class DangXian extends TriggerSkill {
         movedByReason: this.Name,
         toArea: CardMoveArea.HandArea,
         toId: skillUseEvent.fromId,
-        movingCards: [
-          {
-            card,
-          },
-        ],
+        movingCards: [{ card, fromArea: CardMoveArea.DropStack }],
       });
     }
 
