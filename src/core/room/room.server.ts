@@ -43,6 +43,7 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { System } from 'core/shares/libs/system';
 import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
+import { TagEnum } from 'core/shares/types/tag_list';
 import { OnDefineReleaseTiming, Skill, SkillLifeCycle, SkillType, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
@@ -129,6 +130,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public insertPlayerRound(player: PlayerId) {
     this.gameProcessor.insertPlayerRound(player);
+  }
+  public insertPlayerPhase(player: PlayerId, phase: PlayerPhase) {
+    this.gameProcessor.insertPlayerPhase(player, phase);
+  }
+
+  public isExtraPhase() {
+    return this.gameProcessor.isExtraPhase();
   }
 
   public async gameStart() {
@@ -697,6 +705,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async preUseCard(cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): Promise<boolean> {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, cardUseEvent);
+    EventPacker.addMiddleware(
+      {
+        tag: TagEnum.CardUseEventTag,
+        data: Date.now(),
+      },
+      cardUseEvent,
+    );
     const card = Sanguosha.getCardById<VirtualCard>(cardUseEvent.cardId);
     await card.Skill.onUse(this, cardUseEvent);
 
@@ -1547,6 +1562,18 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   public getCardFromDrawStack(cardId: CardId): CardId | undefined {
     const index = this.drawStack.findIndex(card => card === cardId);
     return index < 0 ? undefined : this.drawStack.splice(index, 1)[0];
+  }
+
+  public getCardsByNameFromStack(cardName: string, stackName: 'draw' | 'drop', amount: number = 0): CardId[] {
+    const stack = stackName === 'draw' ? this.drawStack : this.dropStack;
+    const cards = stack.filter(cardId => Sanguosha.getCardById(cardId).GeneralName === cardName);
+    if (cards.length === 0) {
+      return cards;
+    }
+
+    Algorithm.shuffle(cards);
+
+    return amount === 0 ? cards : cards.slice(0, amount);
   }
 
   public installSideEffectSkill(applier: System.SideEffectSkillApplierEnum, skillName: string) {

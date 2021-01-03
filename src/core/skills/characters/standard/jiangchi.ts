@@ -3,12 +3,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE } from 'core/game/game_props';
-import {
-  AllStage,
-  PhaseStageChangeStage,
-  PlayerPhase,
-  PlayerPhaseStages,
-} from 'core/game/stage_processor';
+import { AllStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -27,22 +22,22 @@ export class JiangChi extends TriggerSkill {
   public static readonly ExtraFlag = 'jiangchi_extra';
   public static readonly BlockFlag = 'jiangchi_block';
 
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
-    return stage === PhaseStageChangeStage.StageChanged;
-  }
-
-  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    return owner.Id === content.playerId && PlayerPhaseStages.DrawCardStageEnd === content.toStage;
-  }
-
   public isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
-    return stage === PlayerPhase.FinishStage;
+    return stage === PlayerPhase.PhaseFinish;
   }
 
   public whenRefresh(room: Room, owner: Player) {
     if (room.getFlag<string>(owner.Id, this.Name) !== undefined) {
       room.removeFlag(owner.Id, this.Name);
     }
+  }
+
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
+    return stage === PhaseStageChangeStage.StageChanged;
+  }
+
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
+    return owner.Id === content.playerId && PlayerPhaseStages.DrawCardStageEnd === content.toStage;
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -107,7 +102,7 @@ export class JiangChi extends TriggerSkill {
 @CompulsorySkill({ name: JiangChi.Name, description: JiangChi.Description })
 export class JiangChiExtra extends RulesBreakerSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(room: Room, playerId: PlayerId): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public breakCardUsableDistance(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
@@ -153,7 +148,7 @@ export class JiangChiExtra extends RulesBreakerSkill implements OnDefineReleaseT
 @CompulsorySkill({ name: JiangChiExtra.Name, description: JiangChiExtra.Description })
 export class JiangChiBlock extends FilterSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId): boolean {

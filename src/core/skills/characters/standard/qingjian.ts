@@ -29,7 +29,7 @@ export class QingJian extends TriggerSkill {
   }
 
   public isRefreshAt(room: Room, owner: Player, phase: PlayerPhase): boolean {
-    return phase === PlayerPhase.PrepareStage;
+    return phase === PlayerPhase.PhaseBegin;
   }
 
   public targetFilter(room: Room, owner: Player, targets: PlayerId[]): boolean {
@@ -101,7 +101,7 @@ export class QingJian extends TriggerSkill {
 @CommonSkill({ name: 'qingjian', description: 'qingjian_description' })
 export class QingJianShadow extends TriggerSkill implements OnDefineReleaseTiming {
   afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public isAutoTrigger() {
@@ -112,7 +112,7 @@ export class QingJianShadow extends TriggerSkill implements OnDefineReleaseTimin
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: PhaseChangeStage) {
-    return stage === PhaseChangeStage.PhaseChanged && event.from === PlayerPhase.FinishStage;
+    return stage === PhaseChangeStage.PhaseChanged && event.from === PlayerPhase.PhaseFinish;
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {

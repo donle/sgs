@@ -65,7 +65,7 @@ export class JiJiangShadow extends TriggerSkill {
   ): boolean {
     return (
       content.fromId === owner.Id &&
-      Sanguosha.getCardById<VirtualCard>(content.cardId).GeneratedBySkill === this.GeneralName
+      Sanguosha.getCardById<VirtualCard>(content.cardId).findByGeneratedSkill(this.GeneralName)
     );
   }
 

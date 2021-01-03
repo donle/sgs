@@ -120,7 +120,7 @@ export { ShenSu } from './characters/wind/shensu';
 export { SheBian } from './characters/wind/shebian';
 
 export { Jianchu, JianChuShadow, JianchuRemove } from './characters/fire/jianchu';
-export { QiangXi, QiangXiShadow } from './characters/fire/qiangxi';
+export { QiangXi } from './characters/fire/qiangxi';
 export { QuHu } from './characters/fire/quhu';
 export { JieMing } from './characters/fire/jieming';
 export { BaZhen } from './characters/fire/bazhen';
@@ -229,6 +229,26 @@ export { ShangShi } from './characters/yijiang2011/shangshi';
 export { GanLu } from './characters/yijiang2011/ganlu';
 export { BuYi } from './characters/yijiang2011/buyi';
 export { XuanFeng, XuanFengMove, XuanFengDrop } from './characters/yijiang2011/xuanfeng';
+
+export { QiCe } from './characters/yijiang2012/qice';
+export { ZhiYu } from './characters/yijiang2012/zhiyu';
+export { QuanJi, QuanJiShadow, QuanJiBuff } from './characters/yijiang2012/quanji';
+export { ZiLi } from './characters/yijiang2012/zili';
+export { PaiYi } from './characters/yijiang2012/paiyi';
+export { ZhenLie } from './characters/yijiang2012/zhenlie';
+export { MiJi, MiJiShadow } from './characters/yijiang2012/miji';
+export { DangXian } from './characters/yijiang2012/dangxian';
+export { FuLi } from './characters/yijiang2012/fuli';
+export { GongJi, GongJiBuff } from './characters/yijiang2012/gongji';
+export { JieFan } from './characters/yijiang2012/jiefan';
+export { QianXi, QianXiShadow, QianXiBlock } from './characters/yijiang2012/qianxi';
+export { FuHun, FuHunDamage, FuHunLoseSkill } from './characters/yijiang2012/fuhun';
+export { LiHuo, LiHuoLoseHp, LiHuoShadow } from './characters/yijiang2012/lihuo';
+export { ChunLao, ChunLaoShadow } from './characters/yijiang2012/chunlao';
+export { AnXu } from './characters/yijiang2012/anxu';
+export { ZhuiYi } from './characters/yijiang2012/zhuiyi';
+export { ZiShou, ZiShouReforge, ZiShouPrevent, ZiShouShadow } from './characters/yijiang2012/zishou';
+export { ZongShi, ZongShiNullify, ZongShiProhibit } from './characters/yijiang2012/zongshi';
 
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';

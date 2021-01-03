@@ -411,7 +411,7 @@ export abstract class Player implements PlayerInfo {
       }
 
       const skill = this.getSkills<ViewAsSkill>('viewAs').find(skill => {
-        const viewAsCards = skill.canViewAs(room, this);
+        const viewAsCards = skill.canViewAs(room, this, undefined, cardMatcherOrId);
         return (
           skill.canUse(room, this) && CardMatcher.match(CardMatcher.addTag({ name: viewAsCards }), cardMatcherOrId)
         );
@@ -466,7 +466,28 @@ export abstract class Player implements PlayerInfo {
       }
     }
 
-    return attackDistance + GameCommonRules.getAdditionalAttackDistance(this);
+    let additionalAttackRange: number = 0;
+    for (const skill of this.getSkills<RulesBreakerSkill>('breaker')) {
+      additionalAttackRange += skill.breakAdditionalAttackRange(room, this);
+    }
+    additionalAttackRange += GameCommonRules.getAdditionalAttackDistance(this);
+
+    let finalAttackRange: number = -1;
+    for (const skill of this.getSkills<RulesBreakerSkill>('breaker')) {
+      const newFinalAttackRange = skill.breakFinalAttackRange(room, this);
+      if (newFinalAttackRange > finalAttackRange) {
+        finalAttackRange = newFinalAttackRange;
+      }
+    }
+
+    return Math.max(finalAttackRange >= 0 ? finalAttackRange : attackDistance + additionalAttackRange, 0);
+  }
+
+  public getMaxCardHold(room: Room) {
+    const maxCardHold = GameCommonRules.getBaseHoldCardNumber(room, this) +
+      GameCommonRules.getAdditionalHoldCardNumber(room, this)
+
+    return Math.max(maxCardHold, 0);
   }
 
   public getOffenseDistance(room: Room) {

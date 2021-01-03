@@ -49,7 +49,7 @@ export class PaoXiaoShadow extends TriggerSkill {
 @CompulsorySkill({ name: PaoXiaoShadow.Name, description: PaoXiaoShadow.Description })
 export class PaoXiaoRemove extends TriggerSkill implements OnDefineReleaseTiming {
   afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public isTriggerable(
@@ -78,7 +78,7 @@ export class PaoXiaoRemove extends TriggerSkill implements OnDefineReleaseTiming
         Sanguosha.getCardById(damageEvent.cardIds[0]).GeneralName === 'slash';
     } else if (EventPacker.getIdentifier(content) === GameEventIdentifiers.PhaseChangeEvent) {
       const phaseChangeEvent = content as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-      canTrigger = owner.Id === phaseChangeEvent.fromPlayer && phaseChangeEvent.from === PlayerPhase.FinishStage;
+      canTrigger = owner.Id === phaseChangeEvent.fromPlayer && phaseChangeEvent.from === PlayerPhase.PhaseFinish;
     }
 
     return canTrigger && room.getFlag<number>(owner.Id, this.GeneralName) > 0;

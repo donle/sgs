@@ -13,7 +13,7 @@ export class BoTu extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    if (owner.Id === content.playerId && PlayerPhaseStages.FinishStageEnd === content.toStage) {
+    if (owner.Id === content.playerId && PlayerPhaseStages.PhaseFinishEnd === content.toStage) {
       return (
         room.Analytics.getUsedCard(owner.Id, true, [PlayerPhase.PlayCardStage]).reduce<CardSuit[]>(
           (allSuits, cardId) => {

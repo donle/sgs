@@ -11,7 +11,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 @CommonSkill({ name: 'jizhi', description: 'jizhi_description' })
 export class JiZhi extends TriggerSkill {
   isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
-    return stage === PlayerPhase.PrepareStage;
+    return stage === PlayerPhase.PhaseFinish;
   }
 
   whenRefresh(room: Room, owner: Player) {
@@ -33,7 +33,7 @@ export class JiZhi extends TriggerSkill {
 
   async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} activated skill {1}',
+      '{0} triggered skill {1}',
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
       this.Name,
     ).extract();

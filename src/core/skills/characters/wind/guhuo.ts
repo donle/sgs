@@ -29,7 +29,7 @@ export class GuHuo extends ViewAsSkill {
   }
 
   isRefreshAt(room: Room, owner: Player, phase: PlayerPhase) {
-    return phase === PlayerPhase.PrepareStage;
+    return phase === PlayerPhase.PhaseBegin;
   }
 
   public canUse(room: Room, owner: Player): boolean {
@@ -48,7 +48,7 @@ export class GuHuo extends ViewAsSkill {
     return [PlayerCardsArea.HandArea];
   }
 
-  public viewAs(selectedCards: CardId[], viewAs: string): VirtualCard {
+  public viewAs(selectedCards: CardId[], owner: Player, viewAs: string): VirtualCard {
     Precondition.assert(!!viewAs, 'Unknown guhuo card');
     return VirtualCard.create(
       {
@@ -91,7 +91,7 @@ export class GuHuoShadow extends TriggerSkill {
   ): boolean {
     return (
       content.fromId === owner.Id &&
-      Sanguosha.getCardById<VirtualCard>(content.cardId).GeneratedBySkill === this.GeneralName
+      Sanguosha.getCardById<VirtualCard>(content.cardId).findByGeneratedSkill(this.GeneralName)
     );
   }
 

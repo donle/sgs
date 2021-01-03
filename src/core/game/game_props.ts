@@ -6,6 +6,7 @@ import { GameMode } from 'core/shares/types/room_props';
 export const INFINITE_TRIGGERING_TIMES = 1000;
 export const NONE_TRIGGERING_TIMES = -9999;
 export const INFINITE_DISTANCE = 1000;
+export const INFINITE_ATTACK_RANGE = 1000;
 
 export const enum GameCharacterExtensions {
   Standard = 'standard',
@@ -17,6 +18,7 @@ export const enum GameCharacterExtensions {
   // NewStandard,
   God = 'god',
   YiJiang2011 = 'yijiang2011',
+  YiJiang2012 = 'yijiang2012',
 }
 
 export const enum GameCardExtensions {

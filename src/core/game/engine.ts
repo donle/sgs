@@ -189,6 +189,7 @@ export class Sanguosha {
       GameCharacterExtensions.Mountain,
       GameCharacterExtensions.God,
       GameCharacterExtensions.YiJiang2011,
+      GameCharacterExtensions.YiJiang2012,
     ];
   }
 

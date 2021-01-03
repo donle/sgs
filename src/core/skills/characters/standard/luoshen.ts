@@ -1,7 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { GameCommonRules } from 'core/game/game_rules';
 import {
   AllStage,
   JudgeEffectStage,
@@ -134,11 +133,8 @@ export class LuoShenShadow extends TriggerSkill {
     const luoshenCards = player.getFlag<CardId[]>(this.GeneralName) || [];
     player.removeFlag(this.GeneralName);
 
-    const maxHold =
-      GameCommonRules.getBaseHoldCardNumber(room, player) + GameCommonRules.getAdditionalHoldCardNumber(room, player);
-
     const otherHandCards = player.getCardIds(PlayerCardsArea.HandArea).filter(card => !luoshenCards.includes(card));
-    const discardAmount = otherHandCards.length - maxHold;
+    const discardAmount = otherHandCards.length - player.getMaxCardHold(room);
 
     askForCardDropEvent.cardAmount = discardAmount;
     askForCardDropEvent.except = askForCardDropEvent.except

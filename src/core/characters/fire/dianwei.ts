@@ -7,7 +7,7 @@ const skillLoaderInstance = SkillLoader.getInstance();
 export class DianWei extends Character {
   constructor(id: number) {
     super(id, 'dianwei', CharacterGender.Male, CharacterNationality.Wei, 4, 4, GameCharacterExtensions.Fire, [
-      ...skillLoaderInstance.getSkillsByName('qiangxi'),
+      skillLoaderInstance.getSkillByName('qiangxi'),
     ]);
   }
 }

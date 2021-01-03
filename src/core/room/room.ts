@@ -101,6 +101,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     playerId?: PlayerId,
   ): Promise<ClientEventFinder<T>>;
   public abstract insertPlayerRound(player: PlayerId): void;
+  public abstract insertPlayerPhase(player: PlayerId, phase: PlayerPhase): void;
+  public abstract isExtraPhase(): boolean;
   //Server only
   public abstract async loseHp(player: PlayerId, lostHp: number): Promise<void>;
   //Server only
@@ -176,6 +178,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract findCardsByMatcherFrom(cardMatcher: CardMatcher, fromDrawStack?: boolean): CardId[];
   public abstract isCardInDropStack(cardId: CardId): boolean;
   public abstract isCardInDrawStack(cardId: CardId): boolean;
+  public abstract getCardsByNameFromStack(cardName: string, stackName: 'draw' | 'drop', amount?: number): CardId[];
 
   public abstract setCharacterOutsideAreaCards(
     player: PlayerId,
@@ -415,6 +418,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   public distanceBetween(from: Player, to: Player) {
+    if (from === to) {
+      return 0;
+    }
+
     for (const skill of from.getPlayerSkills<RulesBreakerSkill>('breaker')) {
       const breakDistance = skill.breakDistanceTo(this, from, to);
       if (breakDistance > 0) {
@@ -423,7 +430,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     }
 
     const seatGap = to.getDefenseDistance(this) - from.getOffenseDistance(this);
-    return this.onSeatDistance(from, to) + seatGap;
+    return Math.max(this.onSeatDistance(from, to) + seatGap, 1);
   }
   public cardUseDistanceBetween(room: Room, cardId: CardId, from: Player, to: Player) {
     const card = Sanguosha.getCardById(cardId);

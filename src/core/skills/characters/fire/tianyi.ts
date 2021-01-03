@@ -70,7 +70,7 @@ export class TianYi extends ActiveSkill {
 @CommonSkill({ name: TianYi.Name, description: TianYi.Description })
 export class TianYiRemove extends TriggerSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public isAutoTrigger(): boolean {
@@ -85,7 +85,7 @@ export class TianYiRemove extends TriggerSkill implements OnDefineReleaseTiming 
     event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>,
     stage: PhaseChangeStage,
   ): boolean {
-    return stage === PhaseChangeStage.PhaseChanged && event.from === PlayerPhase.FinishStage;
+    return stage === PhaseChangeStage.PhaseChanged && event.from === PlayerPhase.PhaseFinish;
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
@@ -120,7 +120,7 @@ export class TianYiRemove extends TriggerSkill implements OnDefineReleaseTiming 
 @CommonSkill({ name: TianYiRemove.Name, description: TianYiRemove.Description })
 export class TianYiExtra extends RulesBreakerSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(room: Room, playerId: PlayerId): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public breakCardUsableTargets(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
@@ -178,7 +178,7 @@ export class TianYiExtra extends RulesBreakerSkill implements OnDefineReleaseTim
 @CommonSkill({ name: TianYiExtra.Name, description: TianYiExtra.Description })
 export class TianYiBlock extends FilterSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId): boolean {

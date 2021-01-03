@@ -352,7 +352,7 @@ export abstract class ActiveSkill extends Skill {
   }
 
   public isRefreshAt(room: Room, owner: Player, phase: PlayerPhase) {
-    return phase === PlayerPhase.PrepareStage;
+    return phase === PlayerPhase.PhaseBegin;
   }
 }
 
@@ -390,8 +390,8 @@ export abstract class ViewAsSkill extends Skill {
     contentOrContainerCard?: ServerEventFinder<GameEventIdentifiers> | CardId,
   ): boolean;
 
-  public abstract canViewAs(room: Room, owner: Player, selectedCards?: CardId[]): string[];
-  public abstract viewAs(cards: CardId[], viewAs?: string): VirtualCard;
+  public abstract canViewAs(room: Room, owner: Player, selectedCards?: CardId[], cardMatcher?: CardMatcher): string[];
+  public abstract viewAs(cards: CardId[], owner: Player, viewAs?: string): VirtualCard;
   public abstract cardFilter(
     room: Room,
     owner: Player,
@@ -478,6 +478,12 @@ export abstract class RulesBreakerSkill extends Skill {
   }
   public breakAdditionalCardHoldNumber(room: Room, owner: Player): number {
     return 0;
+  }
+  public breakAdditionalAttackRange(room: Room, owner: Player): number {
+    return 0;
+  }
+  public breakFinalAttackRange(room: Room, owner: Player): number {
+    return -1;
   }
 }
 

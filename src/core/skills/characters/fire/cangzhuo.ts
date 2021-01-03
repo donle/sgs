@@ -1,7 +1,6 @@
 import { CardType } from 'core/cards/card';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { GameCommonRules } from 'core/game/game_rules';
 import {
   AllStage,
   PhaseChangeStage,
@@ -46,7 +45,7 @@ export class CangZhuo extends TriggerSkill {
 @CompulsorySkill({ name: CangZhuo.GeneralName, description: CangZhuo.Description })
 export class CangZhuoShadow extends TriggerSkill implements OnDefineReleaseTiming {
   afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public isTriggerable(
@@ -73,7 +72,7 @@ export class CangZhuoShadow extends TriggerSkill implements OnDefineReleaseTimin
       canTrigger = room.CurrentPlayerPhase === PlayerPhase.DropCardStage && room.CurrentPhasePlayer.Id === owner.Id;
     } else if (EventPacker.getIdentifier(content) === GameEventIdentifiers.PhaseChangeEvent) {
       const phaseChangeEvent = content as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-      canTrigger = owner.Id === phaseChangeEvent.fromPlayer && phaseChangeEvent.from === PlayerPhase.FinishStage;
+      canTrigger = owner.Id === phaseChangeEvent.fromPlayer && phaseChangeEvent.from === PlayerPhase.PhaseFinish;
     }
 
     return canTrigger && owner.getFlag<boolean>(this.GeneralName) === true;
@@ -97,12 +96,8 @@ export class CangZhuoShadow extends TriggerSkill implements OnDefineReleaseTimin
         .filter(cardId => Sanguosha.getCardById(cardId).is(CardType.Trick));
 
       if (tricks.length > 0) {
-        const maxHold =
-          GameCommonRules.getBaseHoldCardNumber(room, player) +
-          GameCommonRules.getAdditionalHoldCardNumber(room, player);
-
         const otherHandCards = player.getCardIds(PlayerCardsArea.HandArea).filter(card => !tricks.includes(card));
-        const discardAmount = otherHandCards.length - maxHold;
+        const discardAmount = otherHandCards.length - player.getMaxCardHold(room);
 
         askForCardDropEvent.cardAmount = discardAmount;
         askForCardDropEvent.except = askForCardDropEvent.except ? [...askForCardDropEvent.except, ...tricks] : tricks;

@@ -24,7 +24,7 @@ export class FangQuan extends TriggerSkill {
   }
 
   public isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
-    return stage === PlayerPhase.PrepareStage;
+    return stage === PlayerPhase.PhaseBegin;
   }
 
   public async onTrigger() {

@@ -900,7 +900,7 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     this.store.room.onPhaseTo(content.toPlayer, content.to);
-    if (content.to === PlayerPhase.PrepareStage) {
+    if (content.to === PlayerPhase.PhaseBegin) {
       // content.fromPlayer && this.presenter.isSkillDisabled(PlayPhaseAction.disableSkills);
       this.store.room.turnTo(content.toPlayer);
       this.store.room.Analytics.turnTo(content.toPlayer);
@@ -912,7 +912,7 @@ export class GameClientProcessor {
           .getSideEffectSkills(player)
           .map(skillName => Sanguosha.getSkillBySkillName(skillName));
         for (const skill of [...player.getSkills(), ...sideEffectSkills]) {
-          if (this.store.room.CurrentPlayerPhase === PlayerPhase.PrepareStage) {
+          if (this.store.room.CurrentPlayerPhase === PlayerPhase.PhaseBegin) {
             player.resetCardUseHistory();
           } else {
             player.resetCardUseHistory('slash');

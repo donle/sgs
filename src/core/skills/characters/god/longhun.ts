@@ -134,7 +134,7 @@ export class LongHunEffect extends TriggerSkill {
 
   public async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} activated skill {1}',
+      '{0} triggered skill {1}',
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
       this.Name,
     ).extract();
@@ -155,7 +155,7 @@ export class LongHunEffect extends TriggerSkill {
       const card = Sanguosha.getCardById<VirtualCard>(event.cardIds[0]);
       return (
         card.isVirtualCard() &&
-        card.GeneratedBySkill === LongHun.Name &&
+        card.findByGeneratedSkill(this.GeneralName) &&
         card.ActualCardIds.length === 2 &&
         card.isRed()
       );
@@ -167,7 +167,7 @@ export class LongHunEffect extends TriggerSkill {
       const card = Sanguosha.getCardById<VirtualCard>(event.cardIds[0]);
       return (
         card.isVirtualCard() &&
-        card.GeneratedBySkill === LongHun.Name &&
+        card.findByGeneratedSkill(this.GeneralName) &&
         card.ActualCardIds.length === 2 &&
         card.isRed()
       );
@@ -199,7 +199,7 @@ export class LongHunBlackEffect extends TriggerSkill {
 
   public async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} activated skill {1}',
+      '{0} triggered skill {1}',
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
       this.Name,
     ).extract();
@@ -213,7 +213,7 @@ export class LongHunBlackEffect extends TriggerSkill {
     const card = Sanguosha.getCardById<VirtualCard>(content.cardId);
     return (
       card.isVirtualCard() &&
-      card.GeneratedBySkill === LongHun.Name &&
+      card.findByGeneratedSkill(this.GeneralName) &&
       card.ActualCardIds.length === 2 &&
       card.isBlack()
     );

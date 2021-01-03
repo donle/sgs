@@ -25,7 +25,10 @@ export class ResponsiveUseCardAction<
     if (skill instanceof TriggerSkill) {
       return true;
     } else if (skill instanceof ViewAsSkill) {
-      return !new CardMatcher({ name: skill.canViewAs(room, player) }).match(matcher) || !skill.canUse(room, player);
+      return (
+        !new CardMatcher({ name: skill.canViewAs(room, player, undefined, matcher) }).match(matcher) ||
+        !skill.canUse(room, player)
+      );
     }
 
     return true;
@@ -153,9 +156,9 @@ export class ResponsiveUseCardAction<
         return matcher.match(card);
       } else if (fromArea === PlayerCardsArea.EquipArea) {
         if (card.Skill instanceof ViewAsSkill) {
-          return new CardMatcher({ name: card.Skill.canViewAs(this.store.room, this.player, this.pendingCards) }).match(
-            this.matcher,
-          );
+          return new CardMatcher({
+            name: card.Skill.canViewAs(this.store.room, this.player, this.pendingCards, this.matcher),
+          }).match(this.matcher);
         }
       }
     }
