@@ -14,6 +14,7 @@ import {
   PlayerId,
   PlayerInfo,
   PlayerRole,
+  PlayerStatus,
 } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
@@ -57,8 +58,7 @@ export abstract class Player implements PlayerInfo {
   private turnedOver: boolean = false;
   private playerSkills: Skill[] = [];
   private gender: CharacterGender;
-  private online: boolean;
-  private trusted: boolean;
+  private status: PlayerStatus;
   private ai: PlayerAI = TrustAI.Instance;
 
   private drunk: number = 0;
@@ -117,7 +117,7 @@ export abstract class Player implements PlayerInfo {
     }
 
     this.dead = false;
-    this.online = true;
+    this.status = PlayerStatus.Online;
 
     GameCommonRules.initPlayerCommonRules(this);
   }
@@ -484,8 +484,8 @@ export abstract class Player implements PlayerInfo {
   }
 
   public getMaxCardHold(room: Room) {
-    const maxCardHold = GameCommonRules.getBaseHoldCardNumber(room, this) +
-      GameCommonRules.getAdditionalHoldCardNumber(room, this)
+    const maxCardHold =
+      GameCommonRules.getBaseHoldCardNumber(room, this) + GameCommonRules.getAdditionalHoldCardNumber(room, this);
 
     return Math.max(maxCardHold, 0);
   }
@@ -799,15 +799,15 @@ export abstract class Player implements PlayerInfo {
     return this.huashenInfo;
   }
 
-  public setOffline() {
-    this.online = false;
+  public setOffline(quit?: boolean) {
+    this.status = quit ? PlayerStatus.Quit : PlayerStatus.Offline;
   }
   public setOnline() {
-    this.online = true;
+    this.status = PlayerStatus.Online;
   }
 
   public isOnline() {
-    return this.online;
+    return this.status === PlayerStatus.Online || this.status === PlayerStatus.Trusted;
   }
 
   public get AI() {
@@ -815,18 +815,14 @@ export abstract class Player implements PlayerInfo {
   }
 
   public delegateOnTrusted(trusted: boolean) {
-    this.trusted = trusted;
+    this.status = trusted ? PlayerStatus.Trusted : PlayerStatus.Online;
   }
 
   public isTrusted() {
-    return this.trusted;
+    return this.status === PlayerStatus.Trusted;
   }
 
   public getPlayerStatus() {
-    if (!this.online) {
-      return 'offline';
-    } else if (this.trusted) {
-      return 'trusted';
-    }
+    return this.status;
   }
 }

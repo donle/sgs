@@ -796,7 +796,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.presenter.playerLeave(content.playerId);
+    this.presenter.playerLeave(content.playerId, content.quit);
     this.presenter.broadcastUIUpdate();
   }
 

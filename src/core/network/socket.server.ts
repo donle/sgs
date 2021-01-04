@@ -123,20 +123,33 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         }
 
         const room = this.room as ServerRoom;
-        room.getPlayerById(playerId).setOffline();
         if (room.Players.every(player => !player.isOnline())) {
           this.room?.close();
           return;
         }
 
-        const playerLeaveEvent: ServerEventFinder<GameEventIdentifiers.PlayerLeaveEvent> = {
-          playerId,
-          translationsMessage: TranslationPack.translationJsonPatcher(
-            'player {0} has left the room',
-            room.getPlayerById(playerId).Name,
-          ).extract(),
-        };
-        this.broadcast(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent);
+        const player = room.getPlayerById(playerId);
+        if (player.isOnline()) {
+          player.setOffline();
+          const playerLeaveEvent: ServerEventFinder<GameEventIdentifiers.PlayerLeaveEvent> = {
+            playerId,
+            translationsMessage: TranslationPack.translationJsonPatcher(
+              'player {0} has disconnected from the room',
+              room.getPlayerById(playerId).Name,
+            ).extract(),
+          };
+          this.broadcast(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent);
+        } else {
+          const playerLeaveEvent: ServerEventFinder<GameEventIdentifiers.PlayerLeaveEvent> = {
+            playerId,
+            quit: true,
+            translationsMessage: TranslationPack.translationJsonPatcher(
+              'player {0} has left the room',
+              room.getPlayerById(playerId).Name,
+            ).extract(),
+          };
+          this.broadcast(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent);
+        }
 
         if (!room.isPlaying()) {
           room.removePlayer(playerId);
@@ -264,7 +277,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     event: ClientEventFinder<typeof identifier>,
   ) {
     const room = this.room as ServerRoom;
-    room.getPlayerById(event.playerId).setOffline();
+    room.getPlayerById(event.playerId).setOffline(true);
     // this.clientIds = this.clientIds.filter(id => id !== event.playerId);
 
     socket.disconnect();

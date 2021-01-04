@@ -4,7 +4,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { ClientPlayer } from 'core/player/player.client';
-import { PlayerCardsArea, PlayerRole } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerRole, PlayerStatus } from 'core/player/player_props';
 import { MarkEnum } from 'core/shares/types/mark_list';
 import { GameMode } from 'core/shares/types/room_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -395,7 +395,9 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
             {this.getSkillTags()}
             {this.getOutsideAreaCards()}
           </div>
-          {player && <span className={styles.playerStatus}>{translator.tr(player.getPlayerStatus() || '')}</span>}
+          {player && player.getPlayerStatus() !== PlayerStatus.Online && (
+            <span className={styles.playerStatus}>{translator.tr(player.getPlayerStatus() || '')}</span>
+          )}
           {inAction && <PlayingBar className={styles.playBar} playTime={actionTimeLimit} />}
           {this.onTooltipOpened && this.PlayerCharacter && (
             <Tooltip position={['center']}>{this.createTooltipContent()}</Tooltip>

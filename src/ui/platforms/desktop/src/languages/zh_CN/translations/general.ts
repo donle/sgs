@@ -623,6 +623,7 @@ export const eventDictionary: Word[] = [
     source: 'player {0} has left the room',
     target: '玩家 {0} 退出了房间',
   },
+  { source: 'player {0} has disconnected from the room', target: '玩家 {0} 断开了连接' },
   {
     source: 'player {0} re-enter in the room',
     target: '玩家 {0} 重新回到了游戏',
@@ -667,7 +668,8 @@ export const UiDictionary: Word[] = [
   { source: 'status', target: '状态' },
   { source: 'handcards', target: '手牌' },
   { source: 'check', target: '查看' },
-  { source: 'offline', target: '离线' },
+  { source: 'offline', target: '断线' },
+  { source: 'quit', target: '退出' },
   { source: 'trusted', target: '托管' },
   { source: 'cancel trusted', target: '取消托管' },
   { source: 'in trusted', target: '托管中···' },

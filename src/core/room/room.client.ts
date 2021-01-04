@@ -295,7 +295,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     deadPlayer.bury();
   }
 
-  public emitStatus(status: 'offline' | 'online' | 'trusted' | 'player', toId: PlayerId) {
+  public emitStatus(status: 'offline' | 'online' | 'quit' | 'trusted' | 'player', toId: PlayerId) {
     this.broadcast(GameEventIdentifiers.PlayerStatusEvent, { status, toId });
   }
 }

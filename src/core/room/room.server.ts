@@ -89,7 +89,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.socket.emit(this);
   }
 
-  public updatePlayerStatus(status: 'online' | 'offline' | 'trusted' | 'player', toId: PlayerId) {
+  public updatePlayerStatus(status: 'online' | 'offline' | 'quit' | 'trusted' | 'player', toId: PlayerId) {
     super.updatePlayerStatus(status, toId);
     this.broadcast(GameEventIdentifiers.PlayerStatusEvent, { status, toId, ignoreNotifiedStatus: true });
   }

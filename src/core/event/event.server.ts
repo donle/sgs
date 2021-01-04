@@ -216,6 +216,7 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.PlayerLeaveEvent]: {
     playerId: PlayerId;
+    quit?: boolean;
   };
   [GameEventIdentifiers.PlayerDyingEvent]: {
     dying: PlayerId;
@@ -400,7 +401,7 @@ export interface ServerEvent extends EventUtilities {
     notificationTime: number;
   };
   [GameEventIdentifiers.PlayerStatusEvent]: {
-    status: 'online' | 'offline' | 'trusted' | 'player';
+    status: 'online' | 'offline' | 'quit' | 'trusted' | 'player';
     toId: PlayerId;
   };
   [GameEventIdentifiers.PhaseSkippedEvent]: {

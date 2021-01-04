@@ -191,7 +191,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract async skip(player: PlayerId, phase?: PlayerPhase): Promise<void>;
   public abstract endPhase(phase: PlayerPhase): void;
 
-  public updatePlayerStatus(status: 'online' | 'offline' | 'trusted' | 'player', toId: PlayerId) {
+  public updatePlayerStatus(status: 'online' | 'offline' | 'quit' | 'trusted' | 'trusted' | 'player', toId: PlayerId) {
     const to = this.getPlayerById(toId);
     switch (status) {
       case 'online':
@@ -199,6 +199,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
         break;
       case 'offline':
         to.setOffline();
+        break;
+      case 'quit':
+        to.setOffline(true);
         break;
       case 'trusted':
         to.delegateOnTrusted(true);

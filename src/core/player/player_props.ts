@@ -26,6 +26,13 @@ export const enum PlayerCardsArea {
   OutsideArea,
 }
 
+export const enum PlayerStatus {
+  Online = 'online',
+  Offline = 'offline',
+  Quit = 'quit',
+  Trusted = 'trusted',
+}
+
 export interface PlayerInfo {
   Id: PlayerId;
   Name: string;

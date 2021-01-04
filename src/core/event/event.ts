@@ -261,7 +261,7 @@ export type BaseGameEvent = {
 };
 
 export type ClientBaseEvent = {
-  status?: 'online' | 'offline' | 'trusted' | 'player';
+  status?: 'online' | 'offline' | 'quit' | 'trusted' | 'player';
 };
 
 export type EventProcessSteps = { from: PlayerId; tos: PlayerId[] }[];

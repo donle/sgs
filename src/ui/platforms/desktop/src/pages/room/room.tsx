@@ -190,7 +190,7 @@ export class RoomPage extends React.Component<
         playerId: this.store.clientPlayerId,
       }),
     );
-    this.socket.disconnect();
+    // this.socket.disconnect();
   };
 
   componentWillUnmount() {

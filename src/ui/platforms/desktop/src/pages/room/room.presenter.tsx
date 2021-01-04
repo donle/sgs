@@ -194,10 +194,10 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  playerLeave(playerId: PlayerId) {
+  playerLeave(playerId: PlayerId, quit?: boolean) {
     this.tryToThrowUninitializedError();
     if (this.store.room.isPlaying()) {
-      this.store.room.getPlayerById(playerId).setOffline();
+      this.store.room.getPlayerById(playerId).setOffline(quit);
     } else {
       this.store.room.removePlayer(playerId);
       this.broadcastUIUpdate();

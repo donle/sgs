@@ -15,7 +15,7 @@ export const getClientConfig = (mode: ClientFlavor): ClientConfig => {
       host = {
         mode: Flavor.Dev,
         port: 2020,
-        host: 'localhost',
+        host: '192.168.1.12', // 'localhost',
         protocol: 'http',
       };
       break;

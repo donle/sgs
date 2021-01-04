@@ -169,7 +169,7 @@ export interface ClientEvent extends EventUtilities {
     fromId: PlayerId;
   };
   [GameEventIdentifiers.PlayerStatusEvent]: {
-    status: 'online' | 'offline' | 'trusted' | 'player';
+    status: 'online' | 'offline' | 'quit' | 'trusted' | 'player';
     toId: PlayerId;
   };
   [GameEventIdentifiers.AskForPlayCardsOrSkillsEvent]: PlayCardOrSkillEvent;
