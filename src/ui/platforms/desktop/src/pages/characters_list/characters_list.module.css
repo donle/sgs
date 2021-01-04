@@ -31,8 +31,17 @@
     padding: calc(gridLine * 6) calc(gridLine * 5);
 }
 
+.packagesGroup {
+    width: 50%;
+}
+.nationalitiesGroup {
+    width: 40%;
+}
+
 .checkboxGroups {
     width: 100%;
+    display: flex;
+    justify-content: space-between;
 }
 
 .character {

@@ -1,9 +1,10 @@
 import { AudioLoader } from 'audio_loader/audio_loader';
-import { Character } from 'core/characters/character';
+import { Character, CharacterNationality } from 'core/characters/character';
 import type { CharacterId } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { GameCharacterExtensions } from 'core/game/game_props';
 import { CharacterLoader } from 'core/game/package_loader/loader.characters';
+import { Functional } from 'core/shares/libs/functional';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
@@ -72,15 +73,24 @@ export class CharactersList extends React.Component<CharactersListProps> {
 
   @mobx.observable.shallow
   private checkedExtensions: GameCharacterExtensions[] = Sanguosha.getGameCharacterExtensions();
+  @mobx.observable.shallow
+  private selectedNationalities: CharacterNationality[] = Sanguosha.getNationalitiesList();
 
   @mobx.action
   private readonly onCheckExtension = (exts: GameCharacterExtensions[]) => {
     this.checkedExtensions = exts;
   };
 
+  @mobx.action
+  private readonly onCheckNationality = (nationalities: CharacterNationality[]) => {
+    this.selectedNationalities = nationalities;
+  };
+
   @mobx.computed
   private get Characters() {
-    return CharacterLoader.getInstance().getPackages(...this.checkedExtensions);
+    return CharacterLoader.getInstance()
+      .getPackages(...this.checkedExtensions)
+      .filter(character => this.selectedNationalities.includes(character.Nationality));
   }
 
   @mobx.action
@@ -102,12 +112,23 @@ export class CharactersList extends React.Component<CharactersListProps> {
             <img src={this.roomListBackgroundImage} alt="" className={styles.roomListBackground} />
             <div className={styles.checkboxGroups}>
               <CheckBoxGroup
+                className={styles.packagesGroup}
                 options={Sanguosha.getGameCharacterExtensions().map(ext => ({
                   label: this.props.translator.tr(ext),
                   checked: true,
                   id: ext,
                 }))}
                 onChecked={this.onCheckExtension}
+                itemsPerLine={6}
+              />
+              <CheckBoxGroup
+                className={styles.nationalitiesGroup}
+                options={Sanguosha.getNationalitiesList().map(nationality => ({
+                  label: this.props.translator.tr(Functional.getPlayerNationalityText(nationality)),
+                  checked: true,
+                  id: nationality,
+                }))}
+                onChecked={this.onCheckNationality}
                 itemsPerLine={6}
               />
             </div>

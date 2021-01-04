@@ -57,8 +57,15 @@
 .gameLogContainer {
     position: relative;
     padding: calc(gridLine * 2);
-    height: calc(gridLine *70);
+    height: calc(gridLine * 70);
     width: calc(8px * 37);
+}
+.gameLogContainer p,
+.gameLogContainer ul {
+    margin: gridLine 0;
+}
+.gameLogContainer ul {
+    padding-inline-start: calc(gridLine * 3);
 }
 .gameLogBoardImage {
     position: absolute;

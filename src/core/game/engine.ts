@@ -1,7 +1,7 @@
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, VirtualCardId } from 'core/cards/libs/card_props';
-import { Character, CharacterId } from 'core/characters/character';
+import { Character, CharacterId, CharacterNationality } from 'core/characters/character';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { Skill, TransformSkill } from 'core/skills/skill';
 import { GameCardExtensions, GameCharacterExtensions } from './game_props';
@@ -190,6 +190,16 @@ export class Sanguosha {
       GameCharacterExtensions.God,
       GameCharacterExtensions.YiJiang2011,
       GameCharacterExtensions.YiJiang2012,
+    ];
+  }
+
+  public static getNationalitiesList() {
+    return [
+      CharacterNationality.Wei,
+      CharacterNationality.Shu,
+      CharacterNationality.Wu,
+      CharacterNationality.Qun,
+      CharacterNationality.God,
     ];
   }
 

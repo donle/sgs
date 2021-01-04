@@ -8,9 +8,10 @@ export type CheckBoxGroupProps = {
   excludeSelection?: boolean;
   onChecked?(checkedIds: (string | number)[]): void;
   itemsPerLine?: 4 | 5 | 6;
+  className?: string;
 };
 
-export const CheckBoxGroup = ({ options, excludeSelection, onChecked, itemsPerLine = 4 }: CheckBoxGroupProps) => {
+export const CheckBoxGroup = ({ options, excludeSelection, onChecked, itemsPerLine = 4, className }: CheckBoxGroupProps) => {
   const [checkedIds, setCheckedIds] = React.useState<(string | number)[]>(
     options.filter(o => o.checked).map(o => o.id),
   );
@@ -46,7 +47,7 @@ export const CheckBoxGroup = ({ options, excludeSelection, onChecked, itemsPerLi
   };
 
   return (
-    <div className={styles.checkboxGroup}>
+    <div className={classNames(styles.checkboxGroup, className)}>
       {options.map((option, index) => (
         <CheckBox
           {...option}
