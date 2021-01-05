@@ -6,7 +6,7 @@ import closeIcon from './images/close.png';
 
 export const AcknowledgeDialog = ({ imageLoader, onClose }: { imageLoader: ImageLoader; onClose(): void }) => {
   return (
-    <Dialog className={styles.acknowledge}>
+    <Dialog className={styles.acknowledge} onClose={onClose}>
       <button className={styles.closeButton} onClick={onClose} >
         <img className={styles.close} src={closeIcon} alt="" />
       </button>

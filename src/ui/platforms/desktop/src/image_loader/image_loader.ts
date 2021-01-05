@@ -44,4 +44,5 @@ export interface ImageLoader {
   getCreateRoomButtonImage(): ImageProps;
   getRoomListBackgroundImage(): ImageProps;
   getAcknowledgementImage(): ImageProps;
+  getFeedbackImage(): ImageProps;
 }

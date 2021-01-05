@@ -89,7 +89,7 @@ mime-types@^2.1.12:
   dependencies:
     mime-db "1.44.0"
 
-shrink-string@^3.0.9:
-  version "3.0.9"
-  resolved "https://registry.yarnpkg.com/shrink-string/-/shrink-string-3.0.9.tgz#f9288cead85bf0a177a2fef7d3ad0e63dc889fff"
-  integrity sha512-G5Gt8HEzJsg++Bx+1Cow8pvwlbQhFrQMengh2QDx6eUgbjIEQsn88DEmRRnvu2ANVjGdP2ajVQMM/bFT6A0igA==
+shrink-string@3.0.8:
+  version "3.0.8"
+  resolved "https://registry.yarnpkg.com/shrink-string/-/shrink-string-3.0.8.tgz#0ecd1ab78322d1ac0687296f36413e325ee730c1"
+  integrity sha512-mr74/atgUM/TYzdaeaz+nmsGDuvYWs8EMMOKp92bXTpseEQLcM+JknaTkWVlYrdEGl0DVrLMvrA9qymDkPlM1w==

@@ -34,7 +34,7 @@ export const SettingsDialog = (props: SettingsProps) => {
   };
 
   return (
-    <Dialog className={styles.settings}>
+    <Dialog className={styles.settings} onClose={props.onConfirm}>
       <img src={props.imageLoader.getDialogBackgroundImage().src} alt="" className={styles.background} />
       <Slider
         label={props.translator.tr('main volume')}

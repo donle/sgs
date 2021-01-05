@@ -10,6 +10,6 @@
     "@types/node-fetch": "^2.5.7"
   },
   "dependencies": {
-    "shrink-string": "^3.0.9"
+    "shrink-string": "3.0.8"
   }
 }

@@ -23,6 +23,7 @@ import cardNumberBg from './images/system/cardNumBg.png';
 import chainImage from './images/system/chain.png';
 import dialogBackgroundImage from './images/system/dialog_background.png';
 import emptySeatImage from './images/system/empty_seat.png';
+import feedbackImage from './images/system/feedback.png';
 import gameLogBoardImage from './images/system/game_log_board.png';
 import unknownCharacterImage from './images/system/player_seat.png';
 import turnedOverCoverImage from './images/system/turn_over.png';
@@ -160,5 +161,8 @@ export class ProdImageLoader implements ImageLoader {
   }
   public getGameLogBoradImage() {
     return { src: gameLogBoardImage, alt: '' };
+  }
+  public getFeedbackImage() {
+    return { src: feedbackImage, alt: '' };
   }
 }

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, BrowserWindowConstructorOptions, dialog, ipcMain } from 'electron';
+import { app, BrowserWindow, BrowserWindowConstructorOptions, dialog, ipcMain, shell } from 'electron';
 import node7z from 'node-7z';
 import fetch from 'node-fetch';
 import * as fs from 'original-fs';
@@ -45,7 +45,16 @@ class AppWindow {
     this.windowInstance = new BrowserWindow(windowOptions);
     this.installIpcListener();
     // this.windowInstance.webContents.openDevTools();
+    this.windowInstance.webContents.on('will-navigate', this.handleRedirect);
+    this.windowInstance.webContents.on('new-window', this.handleRedirect);
   }
+
+  private readonly handleRedirect = (e, url) => {
+    if (url !== this.windowInstance!.webContents.getURL()) {
+      e.preventDefault();
+      shell.openExternal(url);
+    }
+  };
 
   private installIpcListener() {
     this.windowInstance!.once('focus', () => {
@@ -170,7 +179,6 @@ async function requestUpdate(window: BrowserWindow) {
   const currentVersion = await requestCurrentVersion;
 
   if (nextVersion !== currentVersion) {
-    const downloadFile = fs.createWriteStream(path.join(appPath, '../update/core.zip'));
     window.webContents.send(DO_UPDATE, { nextVersion, progress: 0 });
     winApp.onClosing(e => {
       dialog
@@ -187,27 +195,37 @@ async function requestUpdate(window: BrowserWindow) {
         });
     });
 
-    const downloadInfo = response.assets.find(asset => (asset.name as string).endsWith('.7z'));
-    if (downloadInfo === undefined) {
+    const downloadInfos = response.assets.filter(asset => (asset.name as string)?.includes('.7z')) as {
+      browser_download_url: string;
+      name: string;
+    }[];
+    if (downloadInfos.length === 0) {
       return;
     }
-    const downloadUrl = `${downloadInfo.browser_download_url}/${downloadInfo.name}`;
+
     let totalSize = 0;
     let currentSize = 0;
-    const dataStream = await fetch(downloadUrl).then(res => {
-      totalSize = (res.headers.get('content-length') as unknown) as number;
-      return res.body;
-    });
-    dataStream.pipe(downloadFile);
-    dataStream.on('data', res => {
-      currentSize += res.length;
+    const syncUpdateStatusTimer = setInterval(() => {
       window.webContents.send(DO_UPDATE, { nextVersion, progress: currentSize / totalSize });
-    });
-    dataStream.on('end', () => {
-      window.webContents.send(DO_UPDATE, { nextVersion, progress: 1, complete: true });
-      // tslint:disable-next-line:no-empty
-      winApp.onClosing(() => {});
-    });
+    }, 1000);
+    for (const downloadInfo of downloadInfos) {
+      const downloadUrl = `${downloadInfo.browser_download_url}/${downloadInfo.name}`;
+      const dataStream = await fetch(downloadUrl).then(res => {
+        totalSize += (res.headers.get('content-length') as unknown) as number;
+        return res.body;
+      });
+      const downloadFile = fs.createWriteStream(path.join(appPath, '../update', downloadInfo.name));
+      dataStream.pipe(downloadFile);
+      dataStream.on('data', res => {
+        currentSize += res.length;
+      });
+      dataStream.on('end', () => {
+        clearInterval(syncUpdateStatusTimer);
+        window.webContents.send(DO_UPDATE, { nextVersion, progress: 1, complete: true });
+        // tslint:disable-next-line:no-empty
+        winApp.onClosing(() => {});
+      });
+    }
   }
 }
 
@@ -244,9 +262,12 @@ function beforeLaunch(callback: Function) {
     fs.mkdirSync(updateFolder);
     return callback();
   } else {
-    const updateZipFile = path.join(updateFolder, './core.7z');
+    let updateZipFile = path.join(updateFolder, './core.7z');
     if (!fs.existsSync(updateZipFile)) {
-      return callback();
+      updateZipFile += '.001';
+      if (!fs.existsSync(updateZipFile)) {
+        return callback();
+      }
     }
 
     const extractStream = node7z.extractFull(updateZipFile, updateFolder);

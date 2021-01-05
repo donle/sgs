@@ -1,0 +1,34 @@
+@value gridLine from '../../../../ui/metrics/metrics.css';
+
+.feedback {
+    max-width: calc(gridLine * 75);
+    max-height: calc(gridLine * 39);
+    width: 100%;
+    height: 100%;
+    padding: calc(gridLine * 6) calc(gridLine * 8);
+}
+
+.background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+}
+
+.feedbackInfo {
+    display: flex;
+    flex-direction: column;
+    color: white;
+    text-shadow: 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 2px black, 0 0 2px black, 0 0 2px black;
+}
+
+.feedbackInfo h4 {
+    justify-content: center;
+}
+.feedbackInfo a {
+  color: #ffa344;
+}
+.feedbackInfo a:hover{ 
+  color: #fdc016;
+}

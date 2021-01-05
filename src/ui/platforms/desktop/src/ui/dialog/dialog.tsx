@@ -2,12 +2,19 @@ import classNames from 'classnames';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
+import { Curtain } from 'ui/curtain/curtain';
 import styles from './dialog.module.css';
 
 @mobxReact.observer
-export class Dialog extends React.Component<{ className?: string; children?: React.ReactNode }> {
+export class Dialog extends React.Component<{ className?: string; children?: React.ReactNode; onClose?(): void }> {
   private moving = false;
   private onElementRendered = React.createRef<HTMLDivElement>();
+  private Container = (props: { children?: React.ReactNode }) =>
+    this.props.onClose !== undefined ? (
+      <Curtain onCancel={this.props.onClose}>{props.children}</Curtain>
+    ) : (
+      <>{props.children}</>
+    );
 
   @mobx.observable.ref
   topOffset: number;
@@ -28,7 +35,7 @@ export class Dialog extends React.Component<{ className?: string; children?: Rea
     if (!this.moving) {
       return;
     }
-    
+
     this.leftOffset += e.clientX - this.posX;
     this.topOffset += e.clientY - this.posY;
     this.posX = e.clientX;
@@ -51,16 +58,18 @@ export class Dialog extends React.Component<{ className?: string; children?: Rea
 
   render() {
     return (
-      <div
-        className={classNames(styles.dialog, this.props.className)}
-        onMouseMove={this.onMouseMove}
-        onMouseDown={this.onMouseDown}
-        onMouseUp={this.onMouseUp}
-        ref={this.onElementRendered}
-        style={{ top: this.topOffset, left: this.leftOffset }}
-      >
-        {this.props.children}
-      </div>
+      <this.Container>
+        <div
+          className={classNames(styles.dialog, this.props.className)}
+          onMouseMove={this.onMouseMove}
+          onMouseDown={this.onMouseDown}
+          onMouseUp={this.onMouseUp}
+          ref={this.onElementRendered}
+          style={{ top: this.topOffset, left: this.leftOffset }}
+        >
+          {this.props.children}
+        </div>
+      </this.Container>
     );
   }
 }

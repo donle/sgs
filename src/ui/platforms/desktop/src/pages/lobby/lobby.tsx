@@ -18,7 +18,6 @@ import { PagePropsWithConfig } from 'types/page_props';
 import { installAudioPlayerService } from 'ui/audio/install';
 import { Button } from 'ui/button/button';
 import { LinkButton } from 'ui/button/link_button';
-import { Curtain } from 'ui/curtain/curtain';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import lockerImage from './images/locked.png';
 import styles from './lobby.module.css';
@@ -26,6 +25,7 @@ import { AcknowledgeDialog } from './ui/acknowledge_dialog/acknowledge_dialog';
 import { CreateRoomButton } from './ui/create_room_button/create_room_button';
 import { CreatRoomDialog, TemporaryRoomCreationInfo } from './ui/create_room_dialog/create_room_dialog';
 import { EnterPasscodeDialog } from './ui/enter_passcode_dialog/enter_passcode_dialog';
+import { FeedbackDialog } from './ui/feedback_dialog/feedback_dialog';
 
 type LobbyProps = PagePropsWithConfig<{
   translator: ClientTranslationModule;
@@ -46,6 +46,8 @@ export class Lobby extends React.Component<LobbyProps> {
   private openSettings = false;
   @mobx.observable.ref
   private openPasscodeEnterDialog = false;
+  @mobx.observable.ref
+  private openFeedback = false;
   @mobx.observable.ref
   private showPasscodeError = false;
   @mobx.observable.ref
@@ -241,6 +243,16 @@ export class Lobby extends React.Component<LobbyProps> {
   };
 
   @mobx.action
+  private readonly onOpenFeedback = () => {
+    this.openFeedback = true;
+  }
+
+  @mobx.action
+  private readonly onFeedbackDialogClose = () => {
+    this.openFeedback = false;
+  };
+
+  @mobx.action
   private readonly viewGameCharaterExtensions = (index: number) => () => {
     this.viewCharacterExtenstions = index;
   };
@@ -362,7 +374,7 @@ export class Lobby extends React.Component<LobbyProps> {
                 alt=""
               />
             </button>
-            <button className={styles.systemButton} disabled>
+            <button className={styles.systemButton}  onClick={this.onOpenFeedback}>
               <img
                 {...this.props.imageLoader.getLobbyButtonImage(LobbyButton.Feedback)}
                 className={styles.lobbyButtonIcon}
@@ -380,29 +392,25 @@ export class Lobby extends React.Component<LobbyProps> {
         </div>
         <div className={styles.chatInfo}></div>
         {this.openRoomCreationDialog && (
-          <Curtain onCancel={this.onRoomCreationCancelled}>
-            <CreatRoomDialog
-              imageLoader={this.props.imageLoader}
-              translator={this.props.translator}
-              electronLoader={this.props.electronLoader}
-              onSubmit={this.onRoomCreated}
-              onCancel={this.onRoomCreationCancelled}
-            />
-          </Curtain>
+          <CreatRoomDialog
+            imageLoader={this.props.imageLoader}
+            translator={this.props.translator}
+            electronLoader={this.props.electronLoader}
+            onSubmit={this.onRoomCreated}
+            onCancel={this.onRoomCreationCancelled}
+          />
         )}
         {this.openSettings && (
-          <Curtain onCancel={this.onCloseSettings}>
-            <SettingsDialog
-              electronLoader={this.props.electronLoader}
-              defaultGameVolume={this.defaultGameVolume}
-              defaultMainVolume={this.defaultMainVolume}
-              imageLoader={this.props.imageLoader}
-              translator={this.props.translator}
-              onMainVolumeChange={this.settings.onMainVolumeChange}
-              onGameVolumeChange={this.settings.onVolumeChange}
-              onConfirm={this.onCloseSettings}
-            />
-          </Curtain>
+          <SettingsDialog
+            electronLoader={this.props.electronLoader}
+            defaultGameVolume={this.defaultGameVolume}
+            defaultMainVolume={this.defaultMainVolume}
+            imageLoader={this.props.imageLoader}
+            translator={this.props.translator}
+            onMainVolumeChange={this.settings.onMainVolumeChange}
+            onGameVolumeChange={this.settings.onVolumeChange}
+            onConfirm={this.onCloseSettings}
+          />
         )}
         {this.openPasscodeEnterDialog && (
           <EnterPasscodeDialog
@@ -413,10 +421,11 @@ export class Lobby extends React.Component<LobbyProps> {
             showError={this.showPasscodeError}
           />
         )}
+        {this.openFeedback && (
+          <FeedbackDialog imageLoader={this.props.imageLoader} onClose={this.onFeedbackDialogClose} />
+        )}
         {this.openAcknowledgement && (
-          <Curtain onCancel={this.onCloseAcknowledgement}>
-            <AcknowledgeDialog imageLoader={this.props.imageLoader} onClose={this.onCloseAcknowledgement} />
-          </Curtain>
+          <AcknowledgeDialog imageLoader={this.props.imageLoader} onClose={this.onCloseAcknowledgement} />
         )}
         <div className={styles.version}>
           {this.updateTo && !this.updateComplete && (

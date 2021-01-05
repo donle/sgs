@@ -131,7 +131,7 @@ export const CreatRoomDialog = (props: {
   };
 
   return (
-    <Dialog className={styles.createRoomDialog}>
+    <Dialog className={styles.createRoomDialog} onClose={props.onCancel}>
       <img src={props.imageLoader.getDialogBackgroundImage().src} alt="bg" className={styles.background} />
       <form onSubmit={onSubmit} className={styles.creatRoomForm} onMouseDown={onAction}>
         <div className={styles.layout}>

@@ -121,4 +121,7 @@ export class DevImageLoader implements ImageLoader {
   public getGameLogBoradImage() {
     return { src: `${remoteRoot}/images/system/game_log_board.png`, alt: '' };
   }
+  public getFeedbackImage() {
+    return { src: `${remoteRoot}/images/system/feedback.png`, alt: '' };
+  }
 }
