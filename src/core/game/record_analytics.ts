@@ -3,6 +3,10 @@ import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, Server
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { PlayerPhase } from './stage_processor';
 
+const enum PrivateTagEnum {
+  DamageSignatureInCardUse = 'DamageSignatureInCardUse',
+}
+
 type MovingCardType = {
   card: CardId;
   fromArea?: CardMoveArea | PlayerCardsArea;
@@ -269,5 +273,19 @@ export class RecordAnalytics {
       allCards.push(...event.movingCards);
       return allCards;
     }, []);
+  }
+
+  public setDamageSignatureInCardUse(
+    content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
+    sign: boolean = true,
+  ): void {
+    EventPacker.addMiddleware<GameEventIdentifiers.CardUseEvent>(
+      { tag: PrivateTagEnum.DamageSignatureInCardUse, data: sign },
+      content,
+    );
+  }
+
+  public getDamageSignatureInCardUse(content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): boolean {
+    return !!EventPacker.getMiddleware<boolean>(PrivateTagEnum.DamageSignatureInCardUse, content);
   }
 }

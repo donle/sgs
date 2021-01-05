@@ -14,7 +14,6 @@ import {
   ServerEventFinder,
 } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { GameCommonRules } from 'core/game/game_rules';
 import {
   CardEffectStage,
   CardMoveStage,
@@ -58,6 +57,7 @@ export class StandardGameProcessor extends GameProcessor {
   protected currentPlayerPhase: PlayerPhase | undefined;
   protected currentPhasePlayer: Player;
   protected currentProcessingStage: GameEventStage | undefined;
+  protected currentProcessingEvent: ServerEventFinder<GameEventIdentifiers> | undefined;
   protected playerStages: PlayerPhaseStages[] = [];
 
   protected toEndPhase: PlayerPhase | undefined;
@@ -739,11 +739,7 @@ export class StandardGameProcessor extends GameProcessor {
         await this.onHandleDamgeEvent(identifier as GameEventIdentifiers.DamageEvent, event as any, onActualExecuted);
         break;
       case GameEventIdentifiers.PinDianEvent:
-        await this.onHandlePinDianEvent(
-          identifier as GameEventIdentifiers.PinDianEvent,
-          event as any,
-          onActualExecuted,
-        );
+        await this.onHandlePinDianEvent(event as any, onActualExecuted);
         break;
       case GameEventIdentifiers.DrawCardEvent:
         await this.onHandleDrawCardEvent(
@@ -855,9 +851,11 @@ export class StandardGameProcessor extends GameProcessor {
         break;
       }
 
+      this.currentProcessingEvent = event;
       this.currentProcessingStage = processingStage;
       await this.room.trigger<typeof event>(event, this.currentProcessingStage);
       this.currentProcessingStage = processingStage;
+      this.currentProcessingEvent = event;
       if (EventPacker.isTerminated(event)) {
         this.stageProcessor.skipEventProcess();
         break;
@@ -890,6 +888,7 @@ export class StandardGameProcessor extends GameProcessor {
         break;
       }
     }
+    this.currentProcessingEvent = undefined;
   };
 
   private async onHandleDrawCardEvent(
@@ -1258,7 +1257,7 @@ export class StandardGameProcessor extends GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.AimEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+    return await this.iterateEachStage(identifier, event, onActualExecuted, async () => {
       event.allTargets = this.room.deadPlayerFilters(event.allTargets);
       if (this.room.getPlayerById(event.toId).Dead) {
         EventPacker.terminate(event);
@@ -1740,7 +1739,6 @@ export class StandardGameProcessor extends GameProcessor {
   }
 
   private async onHandlePinDianEvent(
-    identifier: GameEventIdentifiers.PinDianEvent,
     event: ServerEventFinder<GameEventIdentifiers.PinDianEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {

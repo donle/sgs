@@ -12,6 +12,7 @@ import {
   AllStage,
   CardResponseStage,
   CardUseStage,
+  DamageEffectStage,
   DrawCardStage,
   PinDianStage,
   PlayerDiedStage,
@@ -705,13 +706,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async preUseCard(cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): Promise<boolean> {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, cardUseEvent);
-    EventPacker.addMiddleware(
-      {
-        tag: TagEnum.CardUseEventTag,
-        data: Date.now(),
-      },
-      cardUseEvent,
-    );
     const card = Sanguosha.getCardById<VirtualCard>(cardUseEvent.cardId);
     await card.Skill.onUse(this, cardUseEvent);
 
@@ -1184,7 +1178,17 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async damage(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>): Promise<void> {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.DamageEvent, event);
-    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.DamageEvent, event);
+    const processingEvent = this.gameProcessor.CurrentProcessingEvent;
+    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.DamageEvent, event, async stage => {
+      if (stage === DamageEffectStage.DamagedEffect) {
+        if (processingEvent && EventPacker.getIdentifier(processingEvent) === GameEventIdentifiers.CardUseEvent) {
+          this.analytics.setDamageSignatureInCardUse(
+            processingEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
+          );
+        }
+      }
+      return true;
+    });
   }
 
   public async recover(event: ServerEventFinder<GameEventIdentifiers.RecoverEvent>): Promise<void> {

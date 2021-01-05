@@ -83,14 +83,6 @@ export class WanJianQiFaSkill extends ActiveSkill {
         triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
       };
 
-      EventPacker.addMiddleware(
-        {
-          tag: TagEnum.CardUseEventTag,
-          data: EventPacker.getMiddleware<number>(TagEnum.CardUseEventTag, event),
-        },
-        eventContent,
-      );
-
       await room.damage(eventContent);
     } else {
       const cardResponsedEvent = {

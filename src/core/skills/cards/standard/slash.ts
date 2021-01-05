@@ -76,14 +76,6 @@ export class SlashSkill extends ActiveSkill {
       damageEvent,
     );
 
-    EventPacker.addMiddleware(
-      {
-        tag: TagEnum.CardUseEventTag,
-        data: EventPacker.getMiddleware<number>(TagEnum.CardUseEventTag, event),
-      },
-      damageEvent,
-    );
-
     await room.damage(damageEvent);
 
     return true;
