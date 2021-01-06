@@ -64,7 +64,7 @@ export class TwoVersusTwoGameProcessor extends StandardGameProcessor {
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} draws {1} cards',
         TranslationPack.patchPlayerInTranslation(this.room.getPlayerById(playerId)),
-        4,
+        cardIds.length,
       ).extract(),
     };
 
