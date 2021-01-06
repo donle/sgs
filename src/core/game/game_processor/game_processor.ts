@@ -110,6 +110,6 @@ export abstract class GameProcessor {
 
   public get CurrentProcessingEvent(): ServerEventFinder<GameEventIdentifiers> | undefined {
     this.tryToThrowNotStartedError();
-    return this.CurrentProcessingEvent;
+    return this.currentProcessingEvent;
   }
 }

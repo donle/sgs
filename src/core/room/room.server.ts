@@ -44,7 +44,6 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { System } from 'core/shares/libs/system';
 import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
-import { TagEnum } from 'core/shares/types/tag_list';
 import { OnDefineReleaseTiming, Skill, SkillLifeCycle, SkillType, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
@@ -881,6 +880,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               GameEventIdentifiers.CardEffectEvent,
               EventPacker.createIdentifierEvent(GameEventIdentifiers.CardEffectEvent, singleCardEffectEvent),
             );
+
+            EventPacker.copyPropertiesTo(singleCardEffectEvent, event);
           }
         } else {
           if (toIds && aimEventCollaborators[toIds[0]]) {
@@ -1181,9 +1182,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     const processingEvent = this.gameProcessor.CurrentProcessingEvent;
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.DamageEvent, event, async stage => {
       if (stage === DamageEffectStage.DamagedEffect) {
-        if (processingEvent && EventPacker.getIdentifier(processingEvent) === GameEventIdentifiers.CardUseEvent) {
-          this.analytics.setDamageSignatureInCardUse(
-            processingEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
+        if (processingEvent && EventPacker.getIdentifier(processingEvent) === GameEventIdentifiers.CardEffectEvent) {
+          EventPacker.setDamageSignatureInCardUse(
+            processingEvent as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
           );
         }
       }

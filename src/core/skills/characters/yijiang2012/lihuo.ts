@@ -6,7 +6,6 @@ import { AllStage, CardUseStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { TagEnum } from 'core/shares/types/tag_list';
 import { CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
@@ -160,7 +159,7 @@ export class LiHuoLoseHp extends TriggerSkill implements OnDefineReleaseTiming {
       isLiHuo = vCard.findByGeneratedSkill(this.GeneralName);
     }
 
-    return content.fromId === owner.Id && isLiHuo && room.Analytics.getDamageSignatureInCardUse(content);
+    return content.fromId === owner.Id && isLiHuo && EventPacker.getDamageSignatureInCardUse(content);
   }
 
   public async onTrigger(): Promise<boolean> {

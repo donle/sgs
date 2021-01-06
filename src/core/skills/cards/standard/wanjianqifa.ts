@@ -5,7 +5,6 @@ import { DamageType } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { TagEnum } from 'core/shares/types/tag_list';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
