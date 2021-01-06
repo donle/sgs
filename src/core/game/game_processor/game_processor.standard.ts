@@ -703,6 +703,9 @@ export class StandardGameProcessor extends GameProcessor {
       return;
     }
 
+    const processingEvent = this.currentProcessingEvent;
+    this.currentProcessingEvent = event;
+
     switch (identifier) {
       case GameEventIdentifiers.PhaseChangeEvent:
         await this.onHandlePhaseChangeEvent(
@@ -835,6 +838,8 @@ export class StandardGameProcessor extends GameProcessor {
         throw new Error(`Unknown incoming event: ${identifier}`);
     }
 
+    this.currentProcessingEvent = processingEvent;
+
     return;
   }
 
@@ -851,11 +856,9 @@ export class StandardGameProcessor extends GameProcessor {
         break;
       }
 
-      this.currentProcessingEvent = event;
       this.currentProcessingStage = processingStage;
       await this.room.trigger<typeof event>(event, this.currentProcessingStage);
       this.currentProcessingStage = processingStage;
-      this.currentProcessingEvent = event;
       if (EventPacker.isTerminated(event)) {
         this.stageProcessor.skipEventProcess();
         break;
@@ -888,7 +891,6 @@ export class StandardGameProcessor extends GameProcessor {
         break;
       }
     }
-    this.currentProcessingEvent = undefined;
   };
 
   private async onHandleDrawCardEvent(
