@@ -275,7 +275,10 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
       this.props.presenter.ClientPlayer.Dead &&
       this.props.presenter.ClientPlayer.Role !== PlayerRole.Unknown
     ) {
-      const image = await this.props.imageLoader.getPlayerRoleCard(this.props.presenter.ClientPlayer.Role);
+      const image = await this.props.imageLoader.getPlayerRoleCard(
+        this.props.presenter.ClientPlayer.Role,
+        this.props.store.room.Info.gameMode,
+      );
       mobx.runInAction(() => {
         this.PlayerRoleCard = () => <img className={styles.playerRoleCard} alt={image.alt} src={image.src} />;
       });

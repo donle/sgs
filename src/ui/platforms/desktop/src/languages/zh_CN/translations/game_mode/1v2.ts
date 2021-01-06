@@ -1,6 +1,8 @@
 import { Word } from 'languages';
 
 export const dictionary: Word[] = [
+  { source: 'landowners', target: '地主' },
+  { source: 'peasant', target: '农民' },
   { source: 'feiyang', target: '飞扬' },
   {
     source: 'feiyang_description',

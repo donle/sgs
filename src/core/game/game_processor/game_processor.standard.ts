@@ -41,10 +41,12 @@ import {
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { ServerRoom } from 'core/room/room.server';
+import { Algorithm } from 'core/shares/libs/algorithm';
 import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { Flavor } from 'core/shares/types/host_config';
+import { GameMode } from 'core/shares/types/room_props';
 import { GlobalFilterSkill, SkillLifeCycle } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { DamageType } from '../game_props';
@@ -76,6 +78,22 @@ export class StandardGameProcessor extends GameProcessor {
     super();
   }
 
+  public assignRoles(players: Player[]) {
+    const roles = this.getRoles(players.length);
+    Algorithm.shuffle(roles);
+    for (let i = 0; i < players.length; i++) {
+      players[i].Role = roles[i];
+    }
+    const lordIndex = players.findIndex(player => player.Role === PlayerRole.Lord);
+    if (lordIndex !== 0) {
+      [players[0], players[lordIndex]] = [players[lordIndex], players[0]];
+      [players[0].Position, players[lordIndex].Position] = [
+        players[lordIndex].Position,
+        players[0].Position,
+      ];
+    }
+  }
+
   protected async askForChoosingNationalities(playerId: PlayerId) {
     const askForNationality = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
       options: ['wei', 'shu', 'wu', 'qun'],
@@ -91,6 +109,91 @@ export class StandardGameProcessor extends GameProcessor {
     );
 
     return nationalityResponse;
+  }
+
+  public getWinners(players: Player[]) {
+    const rebellion: Player[] = [];
+    let renegade: Player | undefined;
+    const loyalist: Player[] = [];
+    let lordDied = false;
+
+    for (const player of players) {
+      if (player.Dead) {
+        if (player.Role === PlayerRole.Lord) {
+          lordDied = true;
+        }
+        continue;
+      }
+
+      switch (player.Role) {
+        case PlayerRole.Lord:
+        case PlayerRole.Loyalist:
+          loyalist.push(player);
+          break;
+        case PlayerRole.Rebel:
+          rebellion.push(player);
+          break;
+        case PlayerRole.Renegade:
+          renegade = player;
+          break;
+        default:
+      }
+    }
+
+    if (lordDied) {
+      if (rebellion.length > 0) {
+        return players.filter(player => player.Role === PlayerRole.Rebel);
+      } else if (renegade) {
+        return [renegade];
+      }
+    } else if (renegade === undefined && rebellion.length === 0) {
+      return players.filter(player => player.Role === PlayerRole.Lord || player.Role === PlayerRole.Loyalist);
+    }
+  }
+
+  public getRoles(totalPlayers: number): PlayerRole[] {
+    switch (totalPlayers) {
+      case 2:
+        return [PlayerRole.Lord, PlayerRole.Rebel];
+      case 3:
+        return [PlayerRole.Lord, PlayerRole.Rebel, PlayerRole.Renegade];
+      case 4:
+        return [PlayerRole.Lord, PlayerRole.Rebel, PlayerRole.Loyalist, PlayerRole.Renegade];
+      case 5:
+        return [PlayerRole.Lord, PlayerRole.Rebel, PlayerRole.Rebel, PlayerRole.Loyalist, PlayerRole.Renegade];
+      case 6:
+        return [
+          PlayerRole.Lord,
+          PlayerRole.Rebel,
+          PlayerRole.Rebel,
+          PlayerRole.Rebel,
+          PlayerRole.Loyalist,
+          PlayerRole.Renegade,
+        ];
+      case 7:
+        return [
+          PlayerRole.Lord,
+          PlayerRole.Rebel,
+          PlayerRole.Rebel,
+          PlayerRole.Rebel,
+          PlayerRole.Loyalist,
+          PlayerRole.Loyalist,
+          PlayerRole.Renegade,
+        ];
+      case 8:
+        return [
+          PlayerRole.Lord,
+          PlayerRole.Rebel,
+          PlayerRole.Rebel,
+          PlayerRole.Rebel,
+          PlayerRole.Rebel,
+          PlayerRole.Loyalist,
+          PlayerRole.Loyalist,
+          PlayerRole.Renegade,
+        ];
+      default:
+        throw new Error('Unable to create roles with invalid number of players');
+    }
   }
 
   protected getSelectableCharacters(
@@ -115,7 +218,7 @@ export class StandardGameProcessor extends GameProcessor {
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} is {1}, waiting for selecting a character',
         lordInfo.Name,
-        Functional.getPlayerRoleRawText(PlayerRole.Lord),
+        Functional.getPlayerRoleRawText(PlayerRole.Lord, GameMode.Standard),
       ).extract(),
     });
 
@@ -128,7 +231,7 @@ export class StandardGameProcessor extends GameProcessor {
       toId: lordInfo.Id,
       translationsMessage: TranslationPack.translationJsonPatcher(
         'your role is {0}, please choose a lord',
-        Functional.getPlayerRoleRawText(lordInfo.Role!),
+        Functional.getPlayerRoleRawText(lordInfo.Role!, GameMode.Standard),
       ).extract(),
     };
 
@@ -191,7 +294,7 @@ export class StandardGameProcessor extends GameProcessor {
           translationsMessage: TranslationPack.translationJsonPatcher(
             'lord is {0}, your role is {1}, please choose a character',
             Sanguosha.getCharacterById(lordCharacter.Id).Name,
-            Functional.getPlayerRoleRawText(playerInfo.Role!),
+            Functional.getPlayerRoleRawText(playerInfo.Role!, GameMode.Standard),
           ).extract(),
           ignoreNotifiedStatus: true,
         },
@@ -255,8 +358,9 @@ export class StandardGameProcessor extends GameProcessor {
     });
   }
 
-  private async drawGameBeginsCards(playerId: PlayerId) {
+  protected async drawGameBeginsCards(playerInfo: PlayerInfo) {
     const cardIds = this.room.getCards(4, 'top');
+    const playerId = playerInfo.Id;
     this.room.transformCard(this.room.getPlayerById(playerId), cardIds, PlayerCardsArea.HandArea);
 
     const drawEvent: ServerEventFinder<GameEventIdentifiers.DrawCardEvent> = {
@@ -300,7 +404,7 @@ export class StandardGameProcessor extends GameProcessor {
     );
 
     for (const player of playersInfo) {
-      await this.drawGameBeginsCards(player.Id);
+      await this.drawGameBeginsCards(player);
     }
 
     let lastPlayerPosition = this.playerPositionIndex;
@@ -316,6 +420,97 @@ export class StandardGameProcessor extends GameProcessor {
     }
   }
 
+  protected async onPlayerJudgeStage(phase: PlayerPhase) {
+    this.logger.debug('enter judge cards phase');
+    const judgeCardIds = this.currentPhasePlayer.getCardIds(PlayerCardsArea.JudgeArea);
+    for (let i = judgeCardIds.length - 1; i >= 0; i--) {
+      const judgeCardId = judgeCardIds[i];
+      const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
+        cardId: judgeCardId,
+        toIds: [this.currentPhasePlayer.Id],
+        nullifiedTargets: [],
+        allTargets: Sanguosha.getCardById(judgeCardId).Skill.nominateForwardTarget([this.currentPhasePlayer.Id]),
+      };
+
+      this.room.broadcast(GameEventIdentifiers.MoveCardEvent, {
+        fromId: this.currentPhasePlayer.Id,
+        movingCards: [
+          {
+            fromArea: CardMoveArea.JudgeArea,
+            card: judgeCardId,
+          },
+        ],
+        toArea: CardMoveArea.DropStack,
+        moveReason: CardMoveReason.PlaceToDropStack,
+      });
+      this.currentPhasePlayer.dropCards(judgeCardId);
+
+      await this.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
+
+      if (this.toEndPhase === phase) {
+        this.toEndPhase = undefined;
+        break;
+      }
+    }
+  }
+  protected async onPlayerDrawCardStage(phase: PlayerPhase) {
+    this.logger.debug('enter draw cards phase');
+    await this.room.drawCards(2, this.currentPhasePlayer.Id, 'top', undefined, undefined, CardDrawReason.GameStage);
+  }
+  protected async onPlayerPlayCardStage(phase: PlayerPhase) {
+    this.logger.debug('enter play cards phase');
+    do {
+      this.room.notify(
+        GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
+        {
+          toId: this.currentPhasePlayer.Id,
+        },
+        this.currentPhasePlayer.Id,
+      );
+      const response = await this.room.onReceivingAsyncResponseFrom(
+        GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
+        this.currentPhasePlayer.Id,
+      );
+
+      if (response.end) {
+        break;
+      }
+
+      if (response.eventName === GameEventIdentifiers.CardUseEvent) {
+        const event = response.event as ClientEventFinder<GameEventIdentifiers.CardUseEvent>;
+        await this.room.useCard(event);
+      } else if (response.eventName === GameEventIdentifiers.SkillUseEvent) {
+        await this.room.useSkill(response.event as ClientEventFinder<GameEventIdentifiers.SkillUseEvent>);
+      } else {
+        const reforgeEvent = response.event as ClientEventFinder<GameEventIdentifiers.ReforgeEvent>;
+        await this.room.reforge(reforgeEvent.cardId, this.room.getPlayerById(reforgeEvent.fromId));
+      }
+
+      if (this.currentPhasePlayer.Dead) {
+        break;
+      }
+      if (this.toEndPhase === phase) {
+        this.toEndPhase = undefined;
+        break;
+      }
+    } while (true);
+  }
+  protected async onPlayerDropCardStage(phase: PlayerPhase) {
+    this.logger.debug('enter drop cards phase');
+    const maxCardHold = this.currentPhasePlayer.getMaxCardHold(this.room);
+    const discardAmount = this.currentPhasePlayer.getCardIds(PlayerCardsArea.HandArea).length - maxCardHold;
+    if (discardAmount > 0) {
+      const response = await this.room.askForCardDrop(
+        this.currentPhasePlayer.Id,
+        discardAmount,
+        [PlayerCardsArea.HandArea],
+        true,
+      );
+
+      await this.room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, response.fromId);
+    }
+  }
+
   private async onPhase(phase: PlayerPhase) {
     Precondition.assert(phase !== undefined, 'Undefined phase');
     if (this.room.isClosed() || !this.room.isPlaying() || this.room.isGameOver()) {
@@ -324,97 +519,13 @@ export class StandardGameProcessor extends GameProcessor {
 
     switch (phase) {
       case PlayerPhase.JudgeStage:
-        this.logger.debug('enter judge cards phase');
-        const judgeCardIds = this.currentPhasePlayer.getCardIds(PlayerCardsArea.JudgeArea);
-        for (let i = judgeCardIds.length - 1; i >= 0; i--) {
-          const judgeCardId = judgeCardIds[i];
-          const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
-            cardId: judgeCardId,
-            toIds: [this.currentPhasePlayer.Id],
-            nullifiedTargets: [],
-            allTargets: Sanguosha.getCardById(judgeCardId).Skill.nominateForwardTarget([this.currentPhasePlayer.Id]),
-          };
-
-          this.room.broadcast(GameEventIdentifiers.MoveCardEvent, {
-            fromId: this.currentPhasePlayer.Id,
-            movingCards: [
-              {
-                fromArea: CardMoveArea.JudgeArea,
-                card: judgeCardId,
-              },
-            ],
-            toArea: CardMoveArea.DropStack,
-            moveReason: CardMoveReason.PlaceToDropStack,
-          });
-          this.currentPhasePlayer.dropCards(judgeCardId);
-
-          await this.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
-
-          if (this.toEndPhase === phase) {
-            this.toEndPhase = undefined;
-            break;
-          }
-        }
-        return;
+        return await this.onPlayerJudgeStage(phase);
       case PlayerPhase.DrawCardStage:
-        this.logger.debug('enter draw cards phase');
-
-        await this.room.drawCards(2, this.currentPhasePlayer.Id, 'top', undefined, undefined, CardDrawReason.GameStage);
-        return;
+        return await this.onPlayerDrawCardStage(phase);
       case PlayerPhase.PlayCardStage:
-        this.logger.debug('enter play cards phase');
-        do {
-          this.room.notify(
-            GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
-            {
-              toId: this.currentPhasePlayer.Id,
-            },
-            this.currentPhasePlayer.Id,
-          );
-          const response = await this.room.onReceivingAsyncResponseFrom(
-            GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
-            this.currentPhasePlayer.Id,
-          );
-
-          if (response.end) {
-            break;
-          }
-
-          if (response.eventName === GameEventIdentifiers.CardUseEvent) {
-            const event = response.event as ClientEventFinder<GameEventIdentifiers.CardUseEvent>;
-            await this.room.useCard(event);
-          } else if (response.eventName === GameEventIdentifiers.SkillUseEvent) {
-            await this.room.useSkill(response.event as ClientEventFinder<GameEventIdentifiers.SkillUseEvent>);
-          } else {
-            const reforgeEvent = response.event as ClientEventFinder<GameEventIdentifiers.ReforgeEvent>;
-            await this.room.reforge(reforgeEvent.cardId, this.room.getPlayerById(reforgeEvent.fromId));
-          }
-
-          if (this.currentPhasePlayer.Dead) {
-            break;
-          }
-          if (this.toEndPhase === phase) {
-            this.toEndPhase = undefined;
-            break;
-          }
-        } while (true);
-        return;
+        return await this.onPlayerPlayCardStage(phase);
       case PlayerPhase.DropCardStage:
-        this.logger.debug('enter drop cards phase');
-        const maxCardHold = this.currentPhasePlayer.getMaxCardHold(this.room);
-        const discardAmount = this.currentPhasePlayer.getCardIds(PlayerCardsArea.HandArea).length - maxCardHold;
-        if (discardAmount > 0) {
-          const response = await this.room.askForCardDrop(
-            this.currentPhasePlayer.Id,
-            discardAmount,
-            [PlayerCardsArea.HandArea],
-            true,
-          );
-
-          await this.room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, response.fromId);
-        }
-
-        return;
+        return await this.onPlayerDropCardStage(phase);
       default:
         break;
     }
@@ -1151,7 +1262,7 @@ export class StandardGameProcessor extends GameProcessor {
           this.room.broadcast(GameEventIdentifiers.GameOverEvent, {
             translationsMessage: TranslationPack.translationJsonPatcher(
               'game over, winner is {0}',
-              Functional.getPlayerRoleRawText(winner!.Role),
+              Functional.getPlayerRoleRawText(winner!.Role, GameMode.Standard),
             ).extract(),
             winnerIds: winners.map(winner => winner.Id),
             loserIds: this.room.Players.filter(player => !winners.includes(player)).map(player => player.Id),

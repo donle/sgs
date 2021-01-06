@@ -2,7 +2,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { Character } from 'core/characters/character';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
-import { PlayerId, PlayerInfo } from 'core/player/player_props';
+import { PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
@@ -80,9 +80,17 @@ export abstract class GameProcessor {
   public abstract isExtraPhase(): boolean;
   public abstract skip(phase?: PlayerPhase): void;
   public abstract endPhase(phase: PlayerPhase): void;
-
+  public abstract getRoles(playerNumber: number): PlayerRole[];
+  public abstract getWinners(players: Player[]): Player[] | undefined;
+  public abstract assignRoles(players: Player[]): void;
+  protected abstract async drawGameBeginsCards(playerInfo: PlayerInfo): Promise<void>;
   // tslint:disable-next-line: no-empty
   protected async beforeGameStartPreparation() {}
+
+  protected abstract async onPlayerJudgeStage(phase: PlayerPhase): Promise<void>;
+  protected abstract async onPlayerDrawCardStage(phase: PlayerPhase): Promise<void>;
+  protected abstract async onPlayerPlayCardStage(phase: PlayerPhase): Promise<void>;
+  protected abstract async onPlayerDropCardStage(phase: PlayerPhase): Promise<void>;
 
   public get CurrentPlayer() {
     this.tryToThrowNotStartedError();

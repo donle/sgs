@@ -113,8 +113,8 @@ export class ProdImageLoader implements ImageLoader {
     return { alt: cardName, src: image };
   }
 
-  public async getPlayerRoleCard(role: PlayerRole) {
-    const roleName = Functional.getPlayerRoleRawText(role);
+  public async getPlayerRoleCard(role: PlayerRole, gameMode: GameMode) {
+    const roleName = Functional.getPlayerRoleRawText(role, gameMode);
     const image: string = (await import(`./images/system/death/${roleName}.png`)).default;
     return { src: image, alt: roleName };
   }

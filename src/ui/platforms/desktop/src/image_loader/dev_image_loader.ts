@@ -43,8 +43,8 @@ export class DevImageLoader implements ImageLoader {
     return getSkillButtonImages(skillType, size, remoteRoot);
   }
 
-  public async getPlayerRoleCard(roleName: PlayerRole) {
-    const roleText = Functional.getPlayerRoleRawText(roleName);
+  public async getPlayerRoleCard(roleName: PlayerRole, gameMode: GameMode) {
+    const roleText = Functional.getPlayerRoleRawText(roleName, gameMode);
     return {
       src: `${remoteRoot}/images/system/death/${roleText}.png`,
       alt: roleText,

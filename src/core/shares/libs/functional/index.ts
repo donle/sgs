@@ -3,6 +3,7 @@ import { CardSuit } from 'core/cards/libs/card_props';
 import { CharacterNationality } from 'core/characters/character';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { PlayerCardsArea, PlayerRole } from 'core/player/player_props';
+import { GameMode } from 'core/shares/types/room_props';
 import { Precondition } from '../precondition/precondition';
 
 export abstract class Functional {
@@ -47,9 +48,27 @@ export abstract class Functional {
     return cardSuitRawText[suit];
   }
 
-  static getPlayerRoleRawText(role: PlayerRole) {
-    const playerRoleRawText = ['unknown', 'lord', 'loyalist', 'rebel', 'renegade'];
-    return playerRoleRawText[role];
+  static getPlayerRoleRawText(role: PlayerRole, mode: GameMode) {
+    switch (mode) {
+      case GameMode.OneVersusTwo: {
+        const playerRoleRawText = {
+          [PlayerRole.Lord]: 'landowners',
+          [PlayerRole.Rebel]: 'peasant',
+        };
+        return playerRoleRawText[role];
+      }
+      case GameMode.TwoVersusTwo: {
+        const playerRoleRawText = {
+          [PlayerRole.Loyalist]: 'dragon-team',
+          [PlayerRole.Rebel]: 'tiger-team',
+        };
+        return playerRoleRawText[role];
+      }
+      default: {
+        const playerRoleRawText = ['unknown', 'lord', 'loyalist', 'rebel', 'renegade'];
+        return playerRoleRawText[role];
+      }
+    }
   }
   static getPlayerNationalityText(nationality: CharacterNationality) {
     const playerRoleRawText = ['wei', 'shu', 'wu', 'qun', 'god'];

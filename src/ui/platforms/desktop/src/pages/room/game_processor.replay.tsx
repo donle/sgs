@@ -54,6 +54,7 @@ export class ReplayClientProcessor extends GameClientProcessor {
         imageLoader={this.imageLoader}
         translator={this.translator}
         electron={this.electron}
+        gameMode={this.store.room.Info.gameMode}
         winners={winners}
         losers={losers}
         disableSaveReplayButton={true}

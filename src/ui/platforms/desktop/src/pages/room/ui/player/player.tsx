@@ -14,6 +14,7 @@ import * as mobxReact from 'mobx-react';
 import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
 import { NationalityBadge, PlayerPhaseBadge } from 'ui/badge/badge';
+import { ClientCard } from 'ui/card/card';
 import { FlatClientCard } from 'ui/card/flat_card';
 import { Hp } from 'ui/hp/hp';
 import { Tooltip } from 'ui/tooltip/tooltip';
@@ -55,6 +56,14 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   mainImage: string | undefined;
   @mobx.observable.ref
   sideImage: string | undefined;
+  @mobx.observable.ref
+  focusedOnPlayerHandcard: boolean = false;
+
+  private showPlayerHandcards =
+    this.props.store.room.Info.gameMode === GameMode.TwoVersusTwo &&
+    this.props.presenter.ClientPlayer &&
+    this.props.player &&
+    this.props.presenter.ClientPlayer.Role === this.props.player.Role;
 
   private onTooltipOpeningTimer: NodeJS.Timer;
   private openedDialog: string | undefined;
@@ -235,7 +244,10 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
       this.props.player.Dead &&
       this.props.player.Role !== PlayerRole.Unknown
     ) {
-      const image = await this.props.imageLoader.getPlayerRoleCard(this.props.player.Role);
+      const image = await this.props.imageLoader.getPlayerRoleCard(
+        this.props.player.Role,
+        this.props.store.room.Info.gameMode,
+      );
       mobx.runInAction(() => {
         this.PlayerRoleCard = () => <img className={styles.playerRoleCard} alt={image.alt} src={image.src} />;
       });
@@ -291,6 +303,11 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
       player.Role === PlayerRole.Lord
     );
   }
+
+  @mobx.action
+  private readonly onFocusPlayerHandcard = () => {
+    this.focusedOnPlayerHandcard = !this.focusedOnPlayerHandcard;
+  };
 
   render() {
     const {
@@ -356,13 +373,30 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                   <div className={styles.playerHp}>
                     <Hp hp={player.Hp} maxHp={player.MaxHp} size="small" />
                   </div>
-                  <span className={styles.handCardsNumberBg}>
+                  <span
+                    className={classNames(styles.handCardsNumberBg, {
+                      [styles.clickableHandcards]: this.showPlayerHandcards,
+                    })}
+                    onClick={this.onFocusPlayerHandcard}
+                  >
                     <img
                       className={styles.handCardsNumberBgImage}
                       src={imageLoader.getCardNumberBgImage().src}
                       alt={''}
                     />
                     <span className={styles.handCardsNumber}>{player.getCardIds(PlayerCardsArea.HandArea).length}</span>
+                    {this.showPlayerHandcards && this.focusedOnPlayerHandcard && this.props.player && (
+                      <Tooltip position={['right', 'bottom']} className={styles.tooltip}>
+                        {this.props.player.getCardIds(PlayerCardsArea.HandArea).map(cardId => (
+                          <ClientCard
+                            width={80}
+                            card={Sanguosha.getCardById(cardId)}
+                            translator={this.props.translator}
+                            imageLoader={this.props.imageLoader}
+                          />
+                        ))}
+                      </Tooltip>
+                    )}
                   </span>
                 </>
               ) : (

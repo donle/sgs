@@ -1,6 +1,7 @@
 import { Sanguosha } from 'core/game/engine';
 import { GameProcessor } from 'core/game/game_processor/game_processor';
 import { OneVersusTwoGameProcessor } from 'core/game/game_processor/game_processor.1v2';
+import { TwoVersusTwoGameProcessor } from 'core/game/game_processor/game_processor.2v2';
 import { StandardGameProcessor } from 'core/game/game_processor/game_processor.standard';
 import { GameInfo } from 'core/game/game_props';
 import { RecordAnalytics } from 'core/game/record_analytics';
@@ -69,6 +70,8 @@ class App {
     switch (gameMode) {
       case GameMode.OneVersusTwo:
         return new OneVersusTwoGameProcessor(new StageProcessor(this.logger), this.logger);
+      case GameMode.TwoVersusTwo:
+        return new TwoVersusTwoGameProcessor(new StageProcessor(this.logger), this.logger);
       case GameMode.Standard:
       default:
         return new StandardGameProcessor(new StageProcessor(this.logger), this.logger);

@@ -29,7 +29,6 @@ import { CardId, CardTargetEnum } from 'core/cards/libs/card_props';
 import { Character, CharacterId } from 'core/characters/character';
 import { PinDianProcedure, PinDianReport } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
-import { getRoles, getWinners } from 'core/game/game_processor/game_handlers';
 import { GameProcessor } from 'core/game/game_processor/game_processor';
 import { GameInfo } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
@@ -112,22 +111,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.sortPlayers();
   }
 
-  public assignRoles() {
-    const roles = getRoles(this.gameInfo.numberOfPlayers, this.gameMode);
-    Algorithm.shuffle(roles);
-    for (let i = 0; i < this.players.length; i++) {
-      this.players[i].Role = roles[i];
-    }
-    const lordIndex = this.players.findIndex(player => player.Role === PlayerRole.Lord);
-    if (lordIndex !== 0) {
-      [this.players[0], this.players[lordIndex]] = [this.players[lordIndex], this.players[0]];
-      [this.players[0].Position, this.players[lordIndex].Position] = [
-        this.players[lordIndex].Position,
-        this.players[0].Position,
-      ];
-    }
-  }
-
   public insertPlayerRound(player: PlayerId) {
     this.gameProcessor.insertPlayerRound(player);
   }
@@ -142,7 +125,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   public async gameStart() {
     this.shuffle();
     this.shuffleSeats();
-    this.assignRoles();
+    this.gameProcessor.assignRoles(this.players);
 
     const event: ServerEventFinder<GameEventIdentifiers.GameReadyEvent> = {
       gameStartInfo: {
@@ -1456,7 +1439,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       translationsMessage: TranslationPack.translationJsonPatcher(
         'the role of {0} is {1}',
         TranslationPack.patchPlayerInTranslation(deadPlayer),
-        Functional.getPlayerRoleRawText(deadPlayer.Role),
+        Functional.getPlayerRoleRawText(deadPlayer.Role, this.gameMode),
       ).extract(),
     };
 
@@ -1598,7 +1581,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   public getGameWinners(): Player[] | undefined {
-    return getWinners(this.players, this.gameMode);
+    return this.gameProcessor.getWinners(this.players);
   }
 
   public get CurrentPhasePlayer() {

@@ -4,6 +4,8 @@ import { GameMode } from 'core/shares/types/room_props';
 import * as React from 'react';
 import lord1v2Mask from './images/1v2_lord.png';
 import rebel1v2Mask from './images/1v2_rebel.png';
+import loyalist2v2Mask from './images/2v2_loyalist.png';
+import rebel2v2Mask from './images/2v2_rebel.png';
 import lordMask from './images/lord.png';
 import loyalistMask from './images/loyalist.png';
 import rebelMask from './images/rebel.png';
@@ -24,10 +26,17 @@ const oneVersusTwoMarkImages: { [K in PlayerRole]?: string } = {
   [PlayerRole.Rebel]: rebel1v2Mask,
 };
 
+const twoVersusTwoMarkImages: { [K in PlayerRole]?: string } = {
+  [PlayerRole.Loyalist]: loyalist2v2Mask,
+  [PlayerRole.Rebel]: rebel2v2Mask,
+};
+
 const getMaskImage = (gameMode: GameMode, role: PlayerRole) => {
   switch (gameMode) {
     case GameMode.OneVersusTwo:
       return oneVersusTwoMarkImages[role];
+    case GameMode.TwoVersusTwo:
+      return twoVersusTwoMarkImages[role];
     case GameMode.Standard:
     default:
       return maskImages[role];

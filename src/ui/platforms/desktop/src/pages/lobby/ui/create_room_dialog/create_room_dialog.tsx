@@ -28,7 +28,6 @@ function getGameModeOptions(translator: ClientTranslationModule) {
       label: translator.tr(GameMode.TwoVersusTwo),
       id: GameMode.TwoVersusTwo,
       checked: false,
-      disabled: true,
     },
     {
       label: translator.tr(GameMode.Hegemony),

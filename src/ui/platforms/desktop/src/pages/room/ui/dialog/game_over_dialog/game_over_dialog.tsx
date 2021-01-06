@@ -4,6 +4,7 @@ import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Functional } from 'core/shares/libs/functional';
+import { GameMode } from 'core/shares/types/room_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
@@ -18,6 +19,7 @@ const PlayerInfoTable = (props: {
   translator: ClientTranslationModule;
   players: Player[];
   imageLoader: ImageLoader;
+  gameMode: GameMode;
   className?: string;
 }) => {
   const [handcards, setHandcards] = React.useState<CardId[]>([]);
@@ -42,7 +44,9 @@ const PlayerInfoTable = (props: {
         <div className={styles.player}>
           <span className={styles.username}>{player.Name}</span>
           <span className={styles.characterName}>{props.translator.tr(player.Character.Name)}</span>
-          <span className={styles.role}>{props.translator.tr(Functional.getPlayerRoleRawText(player.Role))}</span>
+          <span className={styles.role}>
+            {props.translator.tr(Functional.getPlayerRoleRawText(player.Role, props.gameMode))}
+          </span>
           <span className={styles.status}>{props.translator.tr(player.Dead ? 'dead' : 'alive')}</span>
           <span className={styles.handcards}>
             <Button variant="primary" onMouseEnter={onSetHandCards(player)} onMouseLeave={onClearHandCards}>
@@ -73,9 +77,10 @@ export const GameOverDialog = (props: {
   losers: Player[];
   imageLoader: ImageLoader;
   electron: ElectronLoader;
+  gameMode: GameMode;
   disableSaveReplayButton?: boolean;
 }) => {
-  const { translator, winners, losers, imageLoader, electron, disableSaveReplayButton } = props;
+  const { translator, winners, losers, imageLoader, electron, disableSaveReplayButton, gameMode } = props;
   const history = useHistory();
 
   const backToLobby = () => history.push('/lobby');
@@ -85,11 +90,11 @@ export const GameOverDialog = (props: {
     <div className={styles.gameOverBoard}>
       <div className={styles.winners}>
         <span className={styles.title}>{translator.tr('winners')}</span>
-        <PlayerInfoTable imageLoader={imageLoader} players={winners} translator={translator} />
+        <PlayerInfoTable imageLoader={imageLoader} players={winners} translator={translator} gameMode={gameMode} />
       </div>
       <div className={styles.losers}>
         <span className={styles.title}>{translator.tr('losers')}</span>
-        <PlayerInfoTable imageLoader={imageLoader} players={losers} translator={translator} />
+        <PlayerInfoTable imageLoader={imageLoader} players={losers} translator={translator} gameMode={gameMode} />
       </div>
       <div className={styles.actionButtons}>
         {electron.ReplayEnabled && !disableSaveReplayButton && (

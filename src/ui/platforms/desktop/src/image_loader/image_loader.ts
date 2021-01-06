@@ -22,7 +22,7 @@ export interface ImageLoader {
   getOthersEquipCard(cardName: string): Promise<ImageProps>;
   getSlimEquipCard(cardName: string): Promise<ImageProps>;
   getSlimCard(cardName: string): Promise<ImageProps>;
-  getPlayerRoleCard(role: PlayerRole): Promise<ImageProps>;
+  getPlayerRoleCard(role: PlayerRole, gameMode: GameMode): Promise<ImageProps>;
 
   getSkillButtonImage(skillType: SkillType, size: 'wide' | 'normal'): SkillButtonImageProps | undefined;
 
