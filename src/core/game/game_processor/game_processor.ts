@@ -15,6 +15,7 @@ export abstract class GameProcessor {
   protected currentPlayerPhase: PlayerPhase | undefined;
   protected currentPhasePlayer: Player;
   protected currentProcessingStage: GameEventStage | undefined;
+  protected currentProcessingEvent: ServerEventFinder<GameEventIdentifiers> | undefined;
   protected playerStages: PlayerPhaseStages[];
   protected stageProcessor: StageProcessor;
   protected logger: Logger;
@@ -81,7 +82,7 @@ export abstract class GameProcessor {
   public abstract endPhase(phase: PlayerPhase): void;
 
   // tslint:disable-next-line: no-empty
-  protected async beforeGameStartPreparation() {};
+  protected async beforeGameStartPreparation() {}
 
   public get CurrentPlayer() {
     this.tryToThrowNotStartedError();
@@ -105,5 +106,10 @@ export abstract class GameProcessor {
   public get CurrentProcessingStage() {
     this.tryToThrowNotStartedError();
     return this.currentProcessingStage;
+  }
+
+  public get CurrentProcessingEvent(): ServerEventFinder<GameEventIdentifiers> | undefined {
+    this.tryToThrowNotStartedError();
+    return this.currentProcessingEvent;
   }
 }

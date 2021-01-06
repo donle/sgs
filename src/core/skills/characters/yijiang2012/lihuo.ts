@@ -6,25 +6,17 @@ import { AllStage, CardUseStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { TagEnum } from 'core/shares/types/tag_list';
 import { CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'lihuo', description: 'lihuo_description' })
 export class LiHuo extends TriggerSkill {
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
-    stage?: AllStage,
-  ): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage?: AllStage): boolean {
     return stage === CardUseStage.AfterCardUseDeclared;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): boolean {
     return Sanguosha.getCardById(event.cardId).Name === 'slash' && owner.Id === event.fromId;
   }
 
@@ -44,10 +36,7 @@ export class LiHuo extends TriggerSkill {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const cardUseEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
     const { cardId } = cardUseEvent;
 
@@ -80,42 +69,27 @@ export class LiHuoShadow extends TriggerSkill {
     return true;
   }
 
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
-    stage?: AllStage,
-  ): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage?: AllStage): boolean {
     return stage === CardUseStage.AfterCardTargetDeclared;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): boolean {
     return (
       Sanguosha.getCardById(event.cardId).Name === 'fire_slash' &&
       owner.Id === event.fromId &&
-      room.getOtherPlayers(owner.Id)
-        .find(
-          player => {
-            return (
-              room.canAttack(owner, player, event.cardId) &&
-              !event.toIds!.includes(player.Id)
-            );
-          }
-        ) !== undefined
+      room.getOtherPlayers(owner.Id).find(player => {
+        return room.canAttack(owner, player, event.cardId) && !event.toIds!.includes(player.Id);
+      }) !== undefined
     );
   }
 
-  public async beforeUse(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ): Promise<boolean> {
+  public async beforeUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     const { fromId, triggeredOnEvent } = event;
     const cardUseEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
     const from = room.getPlayerById(fromId);
 
-    const players = room.getAlivePlayersFrom()
+    const players = room
+      .getAlivePlayersFrom()
       .filter(player => room.canAttack(from, player, cardUseEvent.cardId) && !cardUseEvent.toIds?.includes(player.Id))
       .map(player => player.Id);
 
@@ -128,18 +102,14 @@ export class LiHuoShadow extends TriggerSkill {
       players,
       requiredAmount: 1,
       conversation: TranslationPack.translationJsonPatcher(
-          '{0}: please choose a target to be the additional target of {1}',
-          this.GeneralName,
-          TranslationPack.patchCardInTranslation(cardUseEvent.cardId),
-        ).extract(),
+        '{0}: please choose a target to be the additional target of {1}',
+        this.GeneralName,
+        TranslationPack.patchCardInTranslation(cardUseEvent.cardId),
+      ).extract(),
       triggeredBySkills: [this.GeneralName],
     };
 
-    room.notify(
-      GameEventIdentifiers.AskForChoosingPlayerEvent,
-      askForPlayerChoose,
-      fromId,
-    );
+    room.notify(GameEventIdentifiers.AskForChoosingPlayerEvent, askForPlayerChoose, fromId);
 
     const resp = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingPlayerEvent, fromId);
     if (!resp.selectedPlayers) {
@@ -155,10 +125,7 @@ export class LiHuoShadow extends TriggerSkill {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { toIds, triggeredOnEvent } = event;
     const cardUseEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
 
@@ -180,19 +147,11 @@ export class LiHuoLoseHp extends TriggerSkill implements OnDefineReleaseTiming {
     return true;
   }
 
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
-    stage?: AllStage,
-  ): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage?: AllStage): boolean {
     return stage === CardUseStage.CardUseFinishedEffect;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
-  ): boolean {
-    const cardUseEventTag = EventPacker.getMiddleware<number>(TagEnum.CardUseEventTag, content);
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): boolean {
     let isLiHuo = false;
     const card = Sanguosha.getCardById(content.cardId);
     if (card.isVirtualCard()) {
@@ -200,28 +159,14 @@ export class LiHuoLoseHp extends TriggerSkill implements OnDefineReleaseTiming {
       isLiHuo = vCard.findByGeneratedSkill(this.GeneralName);
     }
 
-    return (
-      content.fromId === owner.Id &&
-      isLiHuo &&
-      room.Analytics.getRecordEvents<GameEventIdentifiers.DamageEvent>(
-        event => {
-          return (
-            EventPacker.getIdentifier(event) === GameEventIdentifiers.DamageEvent &&
-            EventPacker.getMiddleware<number>(TagEnum.CardUseEventTag, event) === cardUseEventTag
-          );
-        },
-      ).length !== 0
-    );
+    return content.fromId === owner.Id && isLiHuo && EventPacker.getDamageSignatureInCardUse(content);
   }
 
   public async onTrigger(): Promise<boolean> {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     await room.loseHp(event.fromId, 1);
 
     return true;

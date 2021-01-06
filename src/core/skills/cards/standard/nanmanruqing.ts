@@ -6,7 +6,6 @@ import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { TagEnum } from 'core/shares/types/tag_list';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
@@ -85,14 +84,6 @@ export class NanManRuQingSkill extends ActiveSkill {
         cardIds: [event.cardId],
         triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
       };
-  
-      EventPacker.addMiddleware(
-        {
-          tag: TagEnum.CardUseEventTag,
-          data: EventPacker.getMiddleware<number>(TagEnum.CardUseEventTag, event),
-        },
-        eventContent,
-      );
 
       await room.damage(eventContent);
     } else {

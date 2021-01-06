@@ -247,6 +247,10 @@ export const enum WorkPlace {
   Server,
 }
 
+const enum PrivateTagEnum {
+  DamageSignatureInCardUse = 'DamageSignatureInCardUse',
+}
+
 export type BaseGameEvent = {
   unengagedMessage?: PatchedTranslationObject;
   engagedPlayerIds?: PlayerId[];
@@ -304,11 +308,11 @@ export class EventPacker {
 
   static setTimestamp = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>): void => {
     (event as any).timestamp = Date.now();
-  }
+  };
 
   static getTimestamp = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>): number | undefined => {
     return (event as any).timestamp;
-  }
+  };
 
   static isDisresponsiveEvent = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>): boolean => {
     return (event as any).disresponsive;
@@ -408,5 +412,25 @@ export class EventPacker {
     if ((fromEvent as any).disresponsive !== undefined) {
       (toEvent as any).disresponsive = (fromEvent as any).disresponsive;
     }
+  }
+
+  public static setDamageSignatureInCardUse(
+    content:
+      | ServerEventFinder<GameEventIdentifiers.CardUseEvent>
+      | ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
+    sign: boolean = true,
+  ): void {
+    EventPacker.addMiddleware<GameEventIdentifiers.CardEffectEvent>(
+      { tag: PrivateTagEnum.DamageSignatureInCardUse, data: sign },
+      content,
+    );
+  }
+
+  public static getDamageSignatureInCardUse(
+    content:
+      | ServerEventFinder<GameEventIdentifiers.CardUseEvent>
+      | ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
+  ): boolean {
+    return !!EventPacker.getMiddleware<boolean>(PrivateTagEnum.DamageSignatureInCardUse, content);
   }
 }
