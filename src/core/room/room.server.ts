@@ -185,7 +185,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   ) {
     !content.ignoreNotifiedStatus &&
       this.broadcast(GameEventIdentifiers.NotifyEvent, { toIds: [to], notificationTime });
-    this.socket.notify(type, EventPacker.createIdentifierEvent(type, content), to);
+    this.socket.notify(type, EventPacker.createIdentifierEvent(type, EventPacker.minifyPayload(content)), to);
   }
 
   //TODO: enable to custom response time limit
@@ -207,7 +207,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       EventPacker.setTimestamp(content);
       this.analytics.record(content, this.isPlaying() ? this.CurrentPlayerPhase : undefined);
     }
-    this.socket.broadcast(type, content);
+    this.socket.broadcast(type, EventPacker.minifyPayload(content));
   }
 
   private playerTriggerableSkills(

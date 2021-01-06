@@ -297,6 +297,11 @@ export class EventPacker {
     };
   }
 
+  static minifyPayload = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>) => {
+    const { middlewares, ...paylod } = event as any;
+    return paylod;
+  }
+
   static setTimestamp = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>): void => {
     (event as any).timestamp = Date.now();
   }
