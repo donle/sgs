@@ -68,7 +68,6 @@ export abstract class BaseAction {
         }
       }
 
-      //TODO:
       selected ? this.selectCard(card.Id) : this.unselectCard(card.Id);
       this.onClickCard(card, selected);
     });

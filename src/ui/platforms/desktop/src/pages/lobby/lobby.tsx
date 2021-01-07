@@ -172,7 +172,6 @@ export class Lobby extends React.Component<LobbyProps> {
   };
 
   unmatchedView() {
-    //TODO: complete unmatched view;
     return <div>{this.props.translator.tr('Unmatched core version, please update your application')}</div>;
   }
 
