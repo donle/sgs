@@ -84,7 +84,7 @@ export class CardResponseAction extends BaseAction {
             this.equipSkillCardId,
             this.matcher,
           ) &&
-          skill.availableCardAreas().includes(fromArea) &&
+          this.isCardEnabledInArea(skill, card, fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.player,
@@ -117,6 +117,12 @@ export class CardResponseAction extends BaseAction {
             name: card.Skill.canViewAs(this.store.room, this.player, this.pendingCards, this.matcher),
           }).match(new CardMatcher(this.askForEvent.cardMatcher));
         }
+      } else if (
+        fromArea === PlayerCardsArea.OutsideArea &&
+        this.isCardFromParticularArea(card) &&
+        this.askForEvent.fromArea.includes(PlayerCardsArea.HandArea)
+      ) {
+        return matcher.match(card);
       }
     }
 

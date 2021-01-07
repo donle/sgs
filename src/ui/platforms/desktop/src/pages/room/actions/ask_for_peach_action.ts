@@ -61,7 +61,7 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
             this.selectedTargets,
             this.equipSkillCardId,
           ) &&
-          skill.availableCardAreas().includes(fromArea) &&
+          this.isCardEnabledInArea(skill, card, fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.player,
@@ -87,7 +87,7 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
             this.equipSkillCardId,
             this.matcher,
           ) &&
-          skill.availableCardAreas().includes(fromArea) &&
+          this.isCardEnabledInArea(skill, card, fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.player,
@@ -117,6 +117,8 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
             name: card.Skill.canViewAs(this.store.room, this.player, this.selectedCards, this.matcher),
           }).match(this.matcher);
         }
+      } else if (fromArea === PlayerCardsArea.OutsideArea && this.isCardFromParticularArea(card)) {
+        return this.matcher.match(card);
       }
     }
     return false;

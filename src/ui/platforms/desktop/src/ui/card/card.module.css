@@ -139,6 +139,7 @@
 }
 .equipImage {
     z-index: -1;
+    width: 100%;
 }
 .cardSpecification {
     position: absolute;

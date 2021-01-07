@@ -37,6 +37,8 @@ export const cardDictionary: Word[] = [
   { source: 'fire_slash', target: '火杀' },
   { source: 'thunder_slash', target: '雷杀' },
   { source: 'fire_attack', target: '火攻' },
+  { source: 'muniuliuma', target: '木牛流马' },
+  { source: '#muniuliuma', target: '木牛流马' },
   { source: 'bingliangcunduan', target: '兵粮寸断' },
   { source: 'gudingdao', target: '古锭刀' },
   { source: 'zhuqueyushan', target: '朱雀羽扇' },
@@ -85,6 +87,11 @@ export const cardDescriptions: Word[] = [
     source: 'fire_attack_description',
     target:
       '出牌阶段，对一名有手牌的角色使用。目标角色展示其一张手牌，然后你可以弃置与展示牌花色相同的一张手牌，对其造成1点火焰伤害。',
+  },
+  {
+    source: 'muniuliuma_description',
+    target:
+      '出牌阶段限一次，你可将一张手牌移出游戏并扣置于【木牛流马】下，称为“辎”，若如此做，你可将装备区里的【木牛流马】置入一名其他角色的装备区；你能将“辎”如手牌般使用或打出。',
   },
   {
     source: 'jiedaosharen_description',
@@ -232,4 +239,5 @@ export const cardDescriptions: Word[] = [
     source: 'hualiu_description',
     target: '其他角色计算与你的距离+1。',
   },
+  { source: 'do you wish to deliver muniuliuma to another player?', target: '是否将木牛流马移动至其他角色的装备区？' },
 ];

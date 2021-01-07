@@ -512,7 +512,9 @@ export abstract class Player implements PlayerInfo {
 
   public getEquipSkills<T extends Skill = Skill>(skillType?: SkillStringType) {
     const equipCards = this.playerCards[PlayerCardsArea.EquipArea].map(card => Sanguosha.getCardById(card));
-    const skills = equipCards.map(card => card.Skill);
+    const skills = equipCards.reduce<Skill[]>((skills, card) => {
+      return skills.concat([card.Skill, ...card.ShadowSkills]);
+    }, []);
     if (skillType === undefined) {
       return skills as T[];
     }

@@ -10,6 +10,7 @@ import { FireAttack } from './fire_attack';
 import { FireSlash } from './fire_slash';
 import { GuDingDao } from './gudingdao';
 import { HuaLiu } from './hualiu';
+import { MuNiuLiuMa } from './muniuliuma';
 import { TengJia } from './tengjia';
 import { ThunderSlash } from './thunder_slash';
 import { TieSuoLianHuan } from './tiesuolianhuan';
@@ -31,6 +32,8 @@ export const LegionFightCardPackage: (index: number) => Card[] = index => [
   new TengJia(index++, 2, CardSuit.Club),
 
   new BaiYinShiZi(index++, 1, CardSuit.Club),
+
+  new MuNiuLiuMa(index++, 5, CardSuit.Diamond),
 
   new Peach(index++, 5, CardSuit.Heart),
   new Peach(index++, 6, CardSuit.Heart),

@@ -9,7 +9,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    height: 25%;
+    height: 20%;
     justify-content: flex-end;
     transition: left 0.15s;
     z-index: 3;
@@ -102,7 +102,7 @@
 }
 
 .equipSection {
-    width: 200px;
+    width: 180px;
     height: 166px;
     position: relative;
     align-self: flex-end;
@@ -110,11 +110,16 @@
 .equipSlots {
     background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.53) 41%, rgba(0, 0, 0, 1) 100%);
     position: absolute;
-    height: 100%;
+    top: 20%;
+    height: 80%;
     display: flex;
     flex-direction: column;
     width: 100%;
     justify-content: space-between;
+}
+
+.equipSlots > img {
+    height: 25%;
 }
 
 .equipCardImage {
@@ -124,19 +129,19 @@
 }
 
 .weapon {
-    top: 0;
+    top: 20%;
 }
 .armor {
-    top: 25%;
+    top: 40%;
 }
 .defenseRide {
-    top: 50%;
+    top: 60%;
 }
 .offenseRide {
-    top: 75%;
+    top: 80%;
 }
 .precious {
-    /* TBC */
+    top: 0;
 }
 
 .selected {

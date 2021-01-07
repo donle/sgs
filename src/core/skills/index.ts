@@ -37,6 +37,7 @@ export { TengJiaSkill } from './cards/legion_fight/tengjia';
 export { BaiYinShiZiSkill } from './cards/legion_fight/baiyinshizi';
 export { TieSuoLianHuanSkill } from './cards/legion_fight/tiesuolianhuan';
 export { AlcoholSkill } from './cards/legion_fight/alcohol';
+export { MuNiuLiuMaSkill } from './cards/legion_fight/muniuliuma';
 
 export { Hujia } from './characters/standard/hujia';
 export { JianXiong } from './characters/standard/jianxiong';

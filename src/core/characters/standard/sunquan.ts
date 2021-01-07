@@ -10,6 +10,7 @@ export class SunQuan extends Character {
     super(id, 'sunquan', CharacterGender.Male, CharacterNationality.Wu, 4, 4, GameCharacterExtensions.Standard, [
       skillLoaderInstance.getSkillByName('zhiheng'),
       skillLoaderInstance.getSkillByName('jiuyuan'),
+      skillLoaderInstance.getSkillByName('cheat'),
     ]);
   }
 }

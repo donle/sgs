@@ -55,6 +55,7 @@ export abstract class Card {
   protected abstract effectUseDistance: number;
 
   protected abstract fromPackage: GameCardExtensions;
+  protected shadowSkills: Skill[] = [];
 
   private readonly cardTargetNumber: CardTargetEnum = CardTargetEnum.Single;
   private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.Single;
@@ -118,6 +119,10 @@ export abstract class Card {
 
   public get Skill() {
     return this.skill;
+  }
+
+  public get ShadowSkills() {
+    return this.shadowSkills;
   }
 
   public get EffectUseDistance() {
@@ -378,7 +383,7 @@ export class VirtualCard<T extends Card = Card> extends Card {
   public isVirtualCard() {
     return true;
   }
-  
+
   public findByGeneratedSkill(skillName: string): boolean {
     if (this.GeneratedBySkill === skillName) {
       return true;

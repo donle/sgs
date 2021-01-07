@@ -87,10 +87,7 @@ export class StandardGameProcessor extends GameProcessor {
     const lordIndex = players.findIndex(player => player.Role === PlayerRole.Lord);
     if (lordIndex !== 0) {
       [players[0], players[lordIndex]] = [players[lordIndex], players[0]];
-      [players[0].Position, players[lordIndex].Position] = [
-        players[lordIndex].Position,
-        players[0].Position,
-      ];
+      [players[0].Position, players[lordIndex].Position] = [players[lordIndex].Position, players[0].Position];
     }
   }
 
@@ -1575,6 +1572,13 @@ export class StandardGameProcessor extends GameProcessor {
       if (stage === CardMoveStage.CardMoving) {
         await this.moveCardInGameboard(from, to, cardIds, actualCardIds, event);
         this.room.broadcast(identifier, event);
+      } else if (stage === CardMoveStage.AfterCardMoved && event.fromId) {
+        const from = this.room.getPlayerById(event.fromId);
+        const movingEquips = event.movingCards.filter(cardInfo => cardInfo.fromArea === PlayerCardsArea.EquipArea);
+
+        for (const cardInfo of movingEquips) {
+          await SkillLifeCycle.executeHookOnLosingSkill(Sanguosha.getCardById(cardInfo.card).Skill, this.room, from);
+        }
       }
     });
   }
@@ -1604,7 +1608,16 @@ export class StandardGameProcessor extends GameProcessor {
     }
 
     for (const event of events) {
-      await this.iterateEachStage(identifier, event, onActualExecuted);
+      await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+        if (stage === CardMoveStage.AfterCardMoved && event.fromId) {
+          const from = this.room.getPlayerById(event.fromId);
+          const movingEquips = event.movingCards.filter(cardInfo => cardInfo.fromArea === PlayerCardsArea.EquipArea);
+
+          for (const cardInfo of movingEquips) {
+            await SkillLifeCycle.executeHookOnLosingSkill(Sanguosha.getCardById(cardInfo.card).Skill, this.room, from);
+          }
+        }
+      });
     }
   }
 
@@ -1747,9 +1760,6 @@ export class StandardGameProcessor extends GameProcessor {
       } else if (fromArea === CardMoveArea.ProcessingArea) {
         this.room.endProcessOnCard(card);
       } else if (from) {
-        if (fromArea === CardMoveArea.EquipArea) {
-          await SkillLifeCycle.executeHookOnLosingSkill(Sanguosha.getCardById(card).Skill, this.room, from);
-        }
         from.dropCards(card);
       }
     }
@@ -1864,10 +1874,20 @@ export class StandardGameProcessor extends GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      if (this.room.getPlayerById(event.toPlayer).Dead) {
+      const to = this.room.getPlayerById(event.toPlayer);
+      if (to.Dead) {
         this.skip();
         EventPacker.terminate(event);
       } else if (stage === PhaseChangeStage.PhaseChanged) {
+        if (event.to === PlayerPhase.PhaseBegin) {
+          event.messages = event.messages || [];
+          event.messages.push(
+            TranslationPack.translationJsonPatcher(
+              '{0} round start',
+              TranslationPack.patchPlayerInTranslation(to),
+            ).toString(),
+          );
+        }
         this.room.broadcast(GameEventIdentifiers.PhaseChangeEvent, event);
       }
     });

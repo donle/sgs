@@ -34,6 +34,7 @@ export abstract class WeaponCard extends EquipCard {
     protected skill: Skill,
     private attackDistance: number,
     generalName?: string,
+    protected shadowSkills: Skill[] = [],
   ) {
     super(CardType.Weapon);
     this.generalName = generalName || this.name;
@@ -55,8 +56,28 @@ export abstract class ArmorCard extends EquipCard {
     protected fromPackage: GameCardExtensions,
     protected skill: Skill,
     generalName?: string,
+    protected shadowSkills: Skill[] = [],
   ) {
     super(CardType.Armor);
+    this.generalName = generalName || this.name;
+  }
+}
+
+export abstract class PreciousCard extends EquipCard {
+  protected generalName: string;
+
+  constructor(
+    protected id: RealCardId,
+    protected cardNumber: number,
+    protected suit: CardSuit,
+    protected name: string,
+    protected description: string,
+    protected fromPackage: GameCardExtensions,
+    protected skill: Skill,
+    generalName?: string,
+    protected shadowSkills: Skill[] = [],
+  ) {
+    super(CardType.Precious);
     this.generalName = generalName || this.name;
   }
 }
@@ -81,6 +102,7 @@ export class DefenseRideCard extends RideCard {
     protected fromPackage: GameCardExtensions,
     protected skill: RulesBreakerSkill,
     generalName?: string,
+    protected shadowSkills: Skill[] = [],
   ) {
     super(CardType.DefenseRide);
     this.generalName = generalName || this.name;
@@ -99,6 +121,7 @@ export class OffenseRideCard extends RideCard {
     protected fromPackage: GameCardExtensions,
     protected skill: RulesBreakerSkill,
     generalName?: string,
+    protected shadowSkills: Skill[] = [],
   ) {
     super(CardType.OffenseRide);
     this.generalName = generalName || this.name;

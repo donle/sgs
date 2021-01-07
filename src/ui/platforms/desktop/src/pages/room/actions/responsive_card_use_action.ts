@@ -100,7 +100,7 @@ export class ResponsiveUseCardAction<
             this.selectedTargets,
             this.equipSkillCardId,
           ) &&
-          skill.availableCardAreas().includes(fromArea) &&
+          this.isCardEnabledInArea(skill, card, fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.player,
@@ -126,7 +126,7 @@ export class ResponsiveUseCardAction<
             this.equipSkillCardId,
             this.matcher,
           ) &&
-          skill.availableCardAreas().includes(fromArea) &&
+          this.isCardEnabledInArea(skill, card, fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.player,
@@ -160,6 +160,8 @@ export class ResponsiveUseCardAction<
             name: card.Skill.canViewAs(this.store.room, this.player, this.pendingCards, this.matcher),
           }).match(this.matcher);
         }
+      } else if (fromArea === PlayerCardsArea.OutsideArea && this.isCardFromParticularArea(card)) {
+        return matcher.match(card);
       }
     }
     return false;

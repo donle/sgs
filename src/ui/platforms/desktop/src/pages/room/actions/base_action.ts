@@ -10,6 +10,7 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import { RoomPresenter, RoomStore } from '../room.presenter';
 
 export abstract class BaseAction {
+  private readonly particularCards = ['muniuliuma'];
   public static disableSkills = (skill: Skill) => {
     if (skill instanceof TriggerSkill) {
       return false;
@@ -184,6 +185,18 @@ export abstract class BaseAction {
     }
   }
 
+  protected isCardFromParticularArea(card: Card) {
+    return (
+      this.particularCards.find(cardName =>
+        this.player.getCardIds(PlayerCardsArea.OutsideArea, cardName).includes(card.Id),
+      ) !== undefined
+    );
+  }
+
+  protected isCardEnabledInArea(skill: ViewAsSkill | ActiveSkill, card: Card, fromArea: PlayerCardsArea) {
+    return this.isCardFromParticularArea(card) || skill.availableCardAreas().includes(fromArea);
+  }
+
   isCardEnabled(
     card: Card,
     player: Player,
@@ -223,7 +236,7 @@ export abstract class BaseAction {
             this.selectedTargets,
             this.equipSkillCardId,
           ) &&
-          skill.availableCardAreas().includes(fromArea) &&
+          this.isCardEnabledInArea(skill, card, fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             player,
@@ -242,7 +255,7 @@ export abstract class BaseAction {
       } else if (skill instanceof ViewAsSkill) {
         return (
           skill.isAvailableCard(this.store.room, player, card.Id, this.pendingCards, this.equipSkillCardId) &&
-          skill.availableCardAreas().includes(fromArea) &&
+          this.isCardEnabledInArea(skill, card, fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             player,
@@ -277,6 +290,19 @@ export abstract class BaseAction {
           return false;
         }
       } else if (fromArea === PlayerCardsArea.EquipArea) {
+        if (this.particularCards.includes(card.Skill.Name)) {
+          const hasParticularOutsideCards =
+            this.particularCards.find(
+              cardName =>
+                this.selectedCards.find(cardId =>
+                  player.getCardIds(PlayerCardsArea.OutsideArea, cardName).includes(cardId),
+                ) !== undefined,
+            ) !== undefined;
+          if (hasParticularOutsideCards) {
+            return false;
+          }
+        }
+
         if (card.Skill instanceof ViewAsSkill) {
           return (
             player.canUseCard(
@@ -294,8 +320,21 @@ export abstract class BaseAction {
 
         return false;
       } else if (fromArea === PlayerCardsArea.OutsideArea) {
-        //TODO: to adapt muniuliuma in the future here
-        return false;
+        if (this.isCardFromParticularArea(card)) {
+          const hasParticularOutsideCards = this.selectedCards.find(cardId =>
+            this.particularCards.includes(Sanguosha.getCardById(cardId).Name),
+          );
+          if (hasParticularOutsideCards) {
+            return false;
+          }
+
+          if (
+            card.Skill instanceof ResponsiveSkill ||
+            (!ignoreCanUseCondition && !player.canUseCard(this.store.room, card.Id) && !canUseOnPlayers)
+          ) {
+            return false;
+          }
+        }
       }
     } else {
       const playingCard = Sanguosha.getCardById(this.selectedCardToPlay);
@@ -323,7 +362,7 @@ export abstract class BaseAction {
             this.selectedTargets,
             card.Id,
           ) &&
-          skill.availableCardAreas().includes(fromArea) &&
+          this.isCardEnabledInArea(skill, card, fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.presenter.ClientPlayer!,
@@ -348,7 +387,7 @@ export abstract class BaseAction {
             this.pendingCards,
             this.equipSkillCardId,
           ) &&
-          skill.availableCardAreas().includes(fromArea) &&
+          this.isCardEnabledInArea(skill, card, fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.presenter.ClientPlayer!,

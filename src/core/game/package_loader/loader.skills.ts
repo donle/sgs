@@ -45,6 +45,10 @@ export class SkillLoader {
     const skill = this.skills.find(skill => skill.Name === skillName);
     return Precondition.exists(skill, `Unable to get skill ${skillName}`) as S;
   }
+  public getShadowSkillsByName<S extends Skill = Skill>(skillName: string): S[] {
+    const skills = this.shadowSkills.filter(skill => skill.GeneralName === skillName);
+    return Precondition.exists(skills, `Unable to get shadow skills ${skillName}`) as S[];
+  }
   public getSkillsByName<S extends Skill = Skill>(skillName: string): S[] {
     const skills: S[] = [this.getSkillByName(skillName)];
     const shadowSkills = this.shadowSkills.filter(skill => skill.GeneralName === skillName) as S[];
