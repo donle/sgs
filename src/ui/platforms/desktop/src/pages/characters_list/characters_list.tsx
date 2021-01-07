@@ -40,9 +40,15 @@ const CharacterSpec = ({
   const onPlaySkillAudio = (skillName: string) => () => {
     audioService.playSkillAudio(skillName, character.Gender, character.Name);
   };
+  const onPlayDeathAudio = (characterName: string) => () => {
+    audioService.playDeathAudio(characterName);
+  };
 
   return (
     <div className={styles.characterSpec}>
+      <span className={styles.deathButton} onClick={onPlayDeathAudio(character.Name)}>
+        {translator.trx('death audio')}
+      </span>
       {skills.map(skill => (
         <div className={styles.skill}>
           <span className={styles.skillName} onClick={onPlaySkillAudio(skill.Name)}>

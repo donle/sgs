@@ -103,6 +103,11 @@
     margin-bottom: calc(gridLine * 2);
 }
 
+.deathButton {
+    align-self: center;
+    margin-bottom: gridLine;
+}
+.deathButton,
 .skillName {
     font-weight: 600;
     color: rgb(255, 174, 0);
@@ -114,6 +119,7 @@
     cursor: pointer;
 }
 
+.deathButton:hover,
 .skillName:hover {
     background-color: rgb(255, 174, 0);
     color: black;

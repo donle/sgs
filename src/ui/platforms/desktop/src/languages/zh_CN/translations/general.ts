@@ -698,4 +698,5 @@ export const UiDictionary: Word[] = [
   { source: 'main volume', target: '音乐音量' },
   { source: 'game volume', target: '游戏音量' },
   { source: 'settings', target: '设置' },
+  { source: 'death audio', target: '阵亡音效' },
 ];
