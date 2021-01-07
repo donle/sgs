@@ -129,13 +129,13 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   }
 
   @mobx.action
-  private readonly openTooltip = () => {
+  private readonly openTooltip = (event: React.MouseEvent<HTMLSpanElement>) => {
     this.onTooltipOpeningTimer = setTimeout(() => {
       this.onTooltipOpened = true;
     }, 500);
   };
   @mobx.action
-  private readonly closeTooltip = () => {
+  private readonly closeTooltip = (event: React.MouseEvent<HTMLSpanElement>) => {
     this.onTooltipOpeningTimer && clearTimeout(this.onTooltipOpeningTimer);
     this.onTooltipOpened = false;
   };
@@ -434,7 +434,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
           )}
           {inAction && <PlayingBar className={styles.playBar} playTime={actionTimeLimit} />}
           {this.onTooltipOpened && this.PlayerCharacter && (
-            <Tooltip position={['center']}>{this.createTooltipContent()}</Tooltip>
+            <Tooltip position={['center', 'right']}>{this.createTooltipContent()}</Tooltip>
           )}
         </div>
         {this.getPlayerEquips()}
