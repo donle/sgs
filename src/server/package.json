@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "author": "Shaun",
-  "license": "GPL",
+  "license": "GPL-3.0-only",
   "dependencies": {
     "chalk": "^3.0.0",
     "express": "^4.17.1",
