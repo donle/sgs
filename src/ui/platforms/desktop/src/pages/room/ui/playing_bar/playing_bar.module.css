@@ -1,14 +1,14 @@
 .playingBar {
     border-radius: 4px;
     border: 2px solid #c74f00;
-    height: 12px;
+    height: 8px;
     opacity: 0.9;
 }
 
 .innerBar {
     display: block;
     width: 0;
-    background-image: linear-gradient(to left bottom, #e10000, #e41a17, #e72a27, #e93735, #eb4242);
+    background-image: linear-gradient(to bottom, #740b0b 0%, #ffb5b5 10%, #f70000 40%, #740b0b 100%);
     border-radius: 4px;
     animation-timing-function: linear;
     animation: processing;
