@@ -1,5 +1,5 @@
 import { app, BrowserWindow, BrowserWindowConstructorOptions, dialog, ipcMain, shell } from 'electron';
-import node7z from 'node-7z';
+import Extract from 'extract-zip';
 import fetch from 'node-fetch';
 import * as fs from 'original-fs';
 import * as path from 'path';
@@ -34,6 +34,18 @@ class AppWindow {
 
   public static onActivate(callbackFn: () => void) {
     app.on('activate', callbackFn);
+  }
+
+  public static onClosing(callbackFn: (e: Electron.Event) => void) {
+    app.on('before-quit', e => {
+      if (continuouslyRequesting) {
+        clearInterval(continuouslyRequesting);
+      }
+      if (syncUpdateStatusTimer) {
+        clearInterval(syncUpdateStatusTimer);
+      }
+      callbackFn(e);
+    });
   }
 
   private windowInstance: BrowserWindow | undefined;
@@ -144,14 +156,6 @@ class AppWindow {
     this.windowInstance = undefined;
   }
 
-  public onClosing(callbackFn: (e: Electron.Event) => void) {
-    if (this.windowInstance === undefined) {
-      return;
-    }
-
-    this.windowInstance.on('close', callbackFn);
-  }
-
   public onClose(callbackFn: () => void) {
     if (this.windowInstance === undefined) {
       return;
@@ -164,9 +168,11 @@ class AppWindow {
   }
 }
 
+let syncUpdateStatusTimer: NodeJS.Timeout;
+let continuouslyRequesting: NodeJS.Timeout;
 async function requestUpdate(window: BrowserWindow) {
   const requestCurrentVersion = new Promise<string>(resolve => {
-    const continuouslyRequesting = setInterval(() => window.webContents.send(REQUEST_CORE_VERSION), 3000);
+    continuouslyRequesting = setInterval(() => window.webContents.send(REQUEST_CORE_VERSION), 3000);
     ipcMain.on(REQUEST_CORE_VERSION, (evt, currentVersion: string) => {
       clearInterval(continuouslyRequesting);
       resolve(currentVersion);
@@ -180,7 +186,7 @@ async function requestUpdate(window: BrowserWindow) {
 
   if (nextVersion !== currentVersion) {
     window.webContents.send(DO_UPDATE, { nextVersion, progress: 0 });
-    winApp.onClosing(e => {
+    AppWindow.onClosing(e => {
       dialog
         .showMessageBox(appInstance, {
           title: winApp.Translations.UpdateTitle,
@@ -195,7 +201,7 @@ async function requestUpdate(window: BrowserWindow) {
         });
     });
 
-    const downloadInfos = response.assets.filter(asset => (asset.name as string)?.includes('.7z')) as {
+    const downloadInfos = response.assets.filter(asset => asset.name && asset.name.includes('core')) as {
       browser_download_url: string;
       name: string;
     }[];
@@ -205,7 +211,7 @@ async function requestUpdate(window: BrowserWindow) {
 
     let totalSize = 0;
     let currentSize = 0;
-    const syncUpdateStatusTimer = setInterval(() => {
+    syncUpdateStatusTimer = setInterval(() => {
       window.webContents.send(DO_UPDATE, { nextVersion, progress: currentSize / totalSize });
     }, 1000);
     for (const downloadInfo of downloadInfos) {
@@ -223,7 +229,7 @@ async function requestUpdate(window: BrowserWindow) {
         clearInterval(syncUpdateStatusTimer);
         window.webContents.send(DO_UPDATE, { nextVersion, progress: 1, complete: true });
         // tslint:disable-next-line:no-empty
-        winApp.onClosing(() => {});
+        AppWindow.onClosing(() => {});
       });
     }
   }
@@ -262,32 +268,30 @@ function beforeLaunch(callback: Function) {
     fs.mkdirSync(updateFolder);
     return callback();
   } else {
-    let updateZipFile = path.join(updateFolder, './core.7z');
+    const updateZipFile = path.join(updateFolder, './core.zip');
     if (!fs.existsSync(updateZipFile)) {
-      updateZipFile += '.001';
-      if (!fs.existsSync(updateZipFile)) {
-        return callback();
-      }
+      return callback();
     }
 
-    const extractStream = node7z.extractFull(updateZipFile, updateFolder);
-    extractStream.on('end', () => {
-      const destDirectory = path.join(appPath, '../resources/app.asar');
-      const updateFile = path.join(updateFolder, './app.asar.bak');
-      if (fs.existsSync(updateFile)) {
-        fs.copyFileSync(updateFile, destDirectory);
-        fs.unlinkSync(updateFile);
-        fs.unlinkSync(updateZipFile);
-      }
-      callback();
-    });
-
-    extractStream.on('error', err => {
-      if (fs.existsSync(updateZipFile)) {
-        fs.unlinkSync(updateZipFile);
-      }
-      callback(err);
-    });
+    Extract(updateZipFile, { dir: updateFolder })
+      .then(() => {
+        const destDirectory = path.join(appPath, '../resources/app.asar');
+        const updateFile = path.join(updateFolder, './app.asar.bak');
+        if (fs.existsSync(updateFile)) {
+          fs.copyFileSync(updateFile, destDirectory);
+          fs.unlinkSync(updateFile);
+          fs.unlinkSync(updateZipFile);
+        }
+        callback();
+      })
+      .catch(err => {
+        if (err) {
+          if (fs.existsSync(updateZipFile)) {
+            fs.unlinkSync(updateZipFile);
+          }
+          return callback(err);
+        }
+      });
   }
 }
 
@@ -295,12 +299,12 @@ let appInstance: BrowserWindow;
 let winApp: AppWindow;
 AppWindow.onReady(() => {
   beforeLaunch(err => {
-    if (err) {
-      // tslint:disable-next-line:no-console
-      console.warn(err);
-    }
-
     const { winAppInstance, winApp: _winApp } = main();
+    if (err) {
+      dialog.showMessageBox(winAppInstance, {
+        message: JSON.stringify(err),
+      });
+    }
     appInstance = winAppInstance;
     winApp = _winApp;
     requestUpdate(appInstance).then();

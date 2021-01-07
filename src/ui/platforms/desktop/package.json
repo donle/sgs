@@ -1,6 +1,6 @@
 {
   "name": "DSanguosha",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "author": {
     "name": "donle",
     "email": "donle1988@gmail.com"
@@ -42,6 +42,7 @@
     "eslint-plugin-jsx-a11y": "6.2.3",
     "eslint-plugin-react": "7.16.0",
     "eslint-plugin-react-hooks": "^1.6.1",
+    "extract-zip": "^2.0.1",
     "file-loader": "4.3.0",
     "fs-extra": "^8.1.0",
     "html-webpack-plugin": "^4.2.0",
@@ -54,7 +55,6 @@
     "mini-css-extract-plugin": "0.8.0",
     "mobx": "^5.15.2",
     "mobx-react": "^6.1.5",
-    "node-7z": "^2.1.2",
     "node-fetch": "^2.6.1",
     "optimize-css-assets-webpack-plugin": "5.0.3",
     "pnp-webpack-plugin": "1.5.0",
