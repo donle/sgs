@@ -154,6 +154,7 @@ export class CharactersList extends React.Component<CharactersListProps> {
             {this.focusedCharacterId !== undefined && (
               <Tooltip position={['slightTop']} className={styles.characterTooltip}>
                 <CharacterCard
+                className={styles.specCharacter}
                   character={Sanguosha.getCharacterById(this.focusedCharacterId)}
                   imageLoader={this.props.imageLoader}
                   translator={this.props.translator}

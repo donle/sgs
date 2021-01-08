@@ -23,6 +23,9 @@ class AudioPlayerService implements AudioService {
   public playList: Set<string> = new Set<string>();
   public badResourcesList: Set<string> = new Set<string>();
 
+  private readonly nodeNameOfLobbyBGM = 'lobby-bgm';
+  private readonly nodeNameOfRoomBGM = 'room-bgm';
+
   constructor(private loader: AudioLoader, private electronLoader: ElectronLoader) {}
   async playSkillAudio(skillName: string, gender: CharacterGender, characterName?: string) {
     if (this.playList.has(skillName) || this.badResourcesList.has(skillName)) {
@@ -78,14 +81,21 @@ class AudioPlayerService implements AudioService {
 
   playRoomBGM() {
     const audioUrl = this.loader.getRoomBackgroundMusic();
-    this.play(audioUrl, true, undefined, 'bgm');
+    this.play(audioUrl, true, this.nodeNameOfRoomBGM, 'bgm');
   }
   playLobbyBGM() {
     const audioUrl = this.loader.getLobbyBackgroundMusic();
-    this.play(audioUrl, true, undefined, 'bgm');
+    this.play(audioUrl, true, this.nodeNameOfLobbyBGM, 'bgm');
   }
   playGameStartAudio() {
     this.play(this.loader.getGameStartAudio());
+  }
+
+  isPlayingLobbyBGM() {
+    return this.playList.has(this.nodeNameOfLobbyBGM);
+  }
+  isPlayingRoomBGM() {
+    return this.playList.has(this.nodeNameOfRoomBGM);
   }
 
   private play(url: string, loop?: boolean, nodeName?: string, type: 'bgm' | 'game' = 'game') {
@@ -109,6 +119,7 @@ class AudioPlayerService implements AudioService {
     for (const el of elements) {
       el.remove();
     }
+    this.playList.clear();
   }
 
   public changeBGMVolume() {

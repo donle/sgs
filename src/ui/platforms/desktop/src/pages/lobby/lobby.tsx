@@ -123,7 +123,7 @@ export class Lobby extends React.Component<LobbyProps> {
   @mobx.action
   componentDidMount() {
     this.props.electronLoader.refreshReplayDataFlow();
-    this.audioService.playLobbyBGM();
+    !this.audioService.isPlayingLobbyBGM() && this.audioService.playLobbyBGM();
     this.defaultMainVolume = this.props.electronLoader.getData('mainVolume')
       ? Number.parseInt(this.props.electronLoader.getData('mainVolume'), 10)
       : 50;
@@ -140,10 +140,6 @@ export class Lobby extends React.Component<LobbyProps> {
       }),
     );
     this.props.electronLoader.getGameLog().then(mobx.action(inlineHtml => (this.gameLog = inlineHtml)));
-  }
-
-  componentWillUnmount() {
-    this.audioService.stop();
   }
 
   @mobx.action

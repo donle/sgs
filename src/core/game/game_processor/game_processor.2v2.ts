@@ -46,9 +46,9 @@ export class TwoVersusTwoGameProcessor extends StandardGameProcessor {
     const loyalists = players.filter(player => player.Role === PlayerRole.Loyalist && player.Dead);
 
     if (loyalists.length === 2) {
-      return rebels;
+      return players.filter(player => player.Role === PlayerRole.Rebel);
     } else if (rebels.length === 2) {
-      return loyalists;
+      return players.filter(player => player.Role === PlayerRole.Loyalist);
     }
   }
 
@@ -191,10 +191,7 @@ export class TwoVersusTwoGameProcessor extends StandardGameProcessor {
 
         const winners = this.room.getGameWinners();
         if (winners) {
-          let winner = winners.find(player => player.Role === PlayerRole.Loyalist);
-          if (winner === undefined) {
-            winner = winners.find(player => player.Role === PlayerRole.Rebel);
-          }
+          const winner = winners[0];
 
           this.stageProcessor.clearProcess();
           this.playerStages = [];
@@ -202,9 +199,9 @@ export class TwoVersusTwoGameProcessor extends StandardGameProcessor {
           this.room.broadcast(GameEventIdentifiers.GameOverEvent, {
             translationsMessage: TranslationPack.translationJsonPatcher(
               'game over, winner is {0}',
-              Functional.getPlayerRoleRawText(winner!.Role, GameMode.TwoVersusTwo),
+              Functional.getPlayerRoleRawText(winner.Role, GameMode.TwoVersusTwo),
             ).extract(),
-            winnerIds: winners.map(winner => winner.Id),
+            winnerIds: winners.map(w => w.Id),
             loserIds: this.room.Players.filter(player => !winners.includes(player)).map(player => player.Id),
           });
         }

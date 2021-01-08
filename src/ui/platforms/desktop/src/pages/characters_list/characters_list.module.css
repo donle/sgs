@@ -27,6 +27,7 @@
 
 .innerList {
     position: relative;
+    min-height: calc(gridLine * 60);
     height: calc(gridLine * 80);
     padding: calc(gridLine * 6) calc(gridLine * 5);
 }
@@ -64,10 +65,12 @@
     left: 100%;
     top: 0;
     width: calc(8px * 40);
-    display: flex;
     height: 100%;
-    flex-direction: column;
-    align-items: center;
+    overflow: auto;
+}
+.specCharacter {
+    margin: auto;
+    width: calc(gridLine * 20);
 }
 
 .roomListBackground {
