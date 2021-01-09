@@ -8,6 +8,7 @@ import { WindCharacterPackage } from 'core/characters/wind';
 import { YiJiang2011Package } from 'core/characters/yijiang2011';
 import { YiJiang2012Package } from 'core/characters/yijiang2012';
 import { YiJiang2013Package } from 'core/characters/yijiang2013';
+import { YiJiang2014Package } from 'core/characters/yijiang2014';
 import { GameCharacterExtensions } from 'core/game/game_props';
 
 export type CharacterPackages = {
@@ -30,6 +31,7 @@ const allCharacterLoaders: {
   [GameCharacterExtensions.YiJiang2011]: YiJiang2011Package,
   [GameCharacterExtensions.YiJiang2012]: YiJiang2012Package,
   [GameCharacterExtensions.YiJiang2013]: YiJiang2013Package,
+  [GameCharacterExtensions.YiJiang2014]: YiJiang2014Package,
 };
 
 export class CharacterLoader {
