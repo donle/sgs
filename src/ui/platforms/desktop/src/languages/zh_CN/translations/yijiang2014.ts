@@ -52,7 +52,10 @@ export const skillDescriptions: Word[] = [
       '其他角色的出牌阶段开始时，你可以弃置与你的装备区里的其中一张牌颜色相同的一张非基本牌，然后该角色于此回合内不能使用或打出与此牌颜色相同的牌。此阶段结束时，若其于此阶段内没有使用过【杀】，视为你对其使用一张【杀】。',
   },
 
-  { source: 'shenduan_description', target: '当你因弃置而失去一张黑色非锦囊牌后，你可以将此牌当【兵粮寸断】使用（无距离限制）。' },
+  {
+    source: 'shenduan_description',
+    target: '当你因弃置而失去一张黑色非锦囊牌后，你可以将此牌当【兵粮寸断】使用（无距离限制）。',
+  },
   {
     source: 'yonglve_description',
     target:
@@ -97,7 +100,7 @@ export const skillDescriptions: Word[] = [
     source: 'jiaojin_description',
     target: '当你成为男性角色使用【杀】或普通锦囊牌的目标后，你可以弃置一张装备牌，然后该牌对你无效且你获得此牌。',
   },
-  
+
   {
     source: 'fenli_description',
     target:
@@ -113,7 +116,7 @@ export const skillDescriptions: Word[] = [
     source: 'bingyi_description',
     target: '结束阶段开始时，你可以展示所有手牌，若颜色均相同，你令一至X名角色各摸一张牌（X为你的手牌数）。',
   },
-  
+
   {
     source: 'jianying_description',
     target: '当你于出牌阶段内使用牌时，若此牌与你此阶段内使用过的上一张牌的花色或点数相同，你可以摸一张牌。',
@@ -134,3 +137,4 @@ export const skillDescriptions: Word[] = [
       '<b>限定技</b>，出牌阶段，你可以将装备区里的所有牌交给一名其他角色，然后其选择一项：1.令你回复X点体力；2.选择其攻击范围内一至X名角色，其对这些角色各造成1点伤害（X为你以此法给出的牌数）。',
   },
 ];
+export const characterDictionary: Word[] = [{ source: 'yijiang2014', target: '将4' }];
