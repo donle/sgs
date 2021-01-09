@@ -191,6 +191,7 @@ export class Sanguosha {
       GameCharacterExtensions.YiJiang2011,
       GameCharacterExtensions.YiJiang2012,
       GameCharacterExtensions.YiJiang2013,
+      GameCharacterExtensions.YiJiang2014,
     ];
   }
 
