@@ -31,6 +31,10 @@ import { PatchedTranslationObject } from 'core/translations/translation_json_too
 export type RoomId = number;
 
 export abstract class Room<T extends WorkPlace = WorkPlace> {
+  public get GameParticularAreas() {
+    return ['muniuliuma'];
+  }
+
   protected abstract readonly analytics: RecordAnalytics;
 
   protected abstract readonly socket: Socket<T>;

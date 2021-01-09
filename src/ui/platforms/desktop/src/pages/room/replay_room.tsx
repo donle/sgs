@@ -46,6 +46,7 @@ export class ReplayRoomPage extends React.Component<
   private readonly cardMargin = 2;
 
   private replayStepDelay = 2000;
+  private dumped = false;
 
   @mobx.observable.ref
   private focusedCardIndex: number | undefined;
@@ -128,6 +129,9 @@ export class ReplayRoomPage extends React.Component<
 
   private async loadSteps(events: ServerEventFinder<GameEventIdentifiers>[]) {
     for (const content of events) {
+      if (this.dumped) {
+        break;
+      }
       const identifier = EventPacker.getIdentifier(content)!;
       if (identifier === undefined) {
         // tslint:disable-next-line:no-console
@@ -173,6 +177,7 @@ export class ReplayRoomPage extends React.Component<
   }
 
   componentWillUnmount() {
+    this.dumped = true;
     this.audioService.stop();
   }
 

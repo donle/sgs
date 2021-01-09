@@ -10,7 +10,6 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import { RoomPresenter, RoomStore } from '../room.presenter';
 
 export abstract class BaseAction {
-  private readonly particularCards = ['muniuliuma'];
   public static disableSkills = (skill: Skill) => {
     if (skill instanceof TriggerSkill) {
       return false;
@@ -187,7 +186,7 @@ export abstract class BaseAction {
 
   protected isCardFromParticularArea(card: Card) {
     return (
-      this.particularCards.find(cardName =>
+      this.store.room.GameParticularAreas.find(cardName =>
         this.player.getCardIds(PlayerCardsArea.OutsideArea, cardName).includes(card.Id),
       ) !== undefined
     );
@@ -290,9 +289,9 @@ export abstract class BaseAction {
           return false;
         }
       } else if (fromArea === PlayerCardsArea.EquipArea) {
-        if (this.particularCards.includes(card.Skill.Name)) {
+        if (this.store.room.GameParticularAreas.includes(card.Skill.Name)) {
           const hasParticularOutsideCards =
-            this.particularCards.find(
+            this.store.room.GameParticularAreas.find(
               cardName =>
                 this.selectedCards.find(cardId =>
                   player.getCardIds(PlayerCardsArea.OutsideArea, cardName).includes(cardId),
@@ -322,7 +321,7 @@ export abstract class BaseAction {
       } else if (fromArea === PlayerCardsArea.OutsideArea) {
         if (this.isCardFromParticularArea(card)) {
           const hasParticularOutsideCards = this.selectedCards.find(cardId =>
-            this.particularCards.includes(Sanguosha.getCardById(cardId).Name),
+            this.store.room.GameParticularAreas.includes(Sanguosha.getCardById(cardId).Name),
           );
           if (hasParticularOutsideCards) {
             return false;

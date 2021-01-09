@@ -585,6 +585,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     const player = this.getPlayerById(event.fromId);
 
     let responseEvent: ClientEventFinder<GameEventIdentifiers.AskForPeachEvent> | undefined;
+    const peachMatcher = new CardMatcher({ name: event.fromId === event.toId ? ['alcohol', 'peach'] : ['peach'] });
     do {
       this.notify(GameEventIdentifiers.AskForPeachEvent, event, event.fromId);
       responseEvent = await this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForPeachEvent, event.fromId);
@@ -603,7 +604,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         responseEvent.cardId = undefined;
       }
     } while (
-      player.hasCard(this, new CardMatcher({ name: event.fromId === event.toId ? ['alcohol', 'peach'] : ['peach'] }))
+      player.hasCard(this, peachMatcher) ||
+      this.GameParticularAreas.find(
+        areaName => player.hasCard(this, peachMatcher, PlayerCardsArea.OutsideArea, areaName) === undefined,
+      )
     );
 
     return responseEvent;

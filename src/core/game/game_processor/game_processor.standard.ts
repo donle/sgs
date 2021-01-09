@@ -678,9 +678,16 @@ export class StandardGameProcessor extends GameProcessor {
       } = {};
 
       const notifierAllPlayers: PlayerId[] = [];
+      const wuxiekejiMatcher = new CardMatcher({ name: ['wuxiekeji'] });
       for (const player of this.room.getAlivePlayersFrom(this.CurrentPlayer.Id)) {
         notifierAllPlayers.push(player.Id);
-        if (!player.hasCard(this.room, new CardMatcher({ name: ['wuxiekeji'] }))) {
+        if (
+          !player.hasCard(this.room, wuxiekejiMatcher) &&
+          this.room.GameParticularAreas.find(
+            areaName =>
+              player.hasCard(this.room, wuxiekejiMatcher, PlayerCardsArea.OutsideArea, areaName) === undefined,
+          )
+        ) {
           continue;
         }
 
@@ -709,9 +716,7 @@ export class StandardGameProcessor extends GameProcessor {
                       )
                     : '',
                 ).extract(),
-          cardMatcher: new CardMatcher({
-            name: ['wuxiekeji'],
-          }).toSocketPassenger(),
+          cardMatcher: wuxiekejiMatcher.toSocketPassenger(),
           byCardId: event.cardId,
           cardUserId: event.fromId,
           ignoreNotifiedStatus: true,
@@ -1180,7 +1185,7 @@ export class StandardGameProcessor extends GameProcessor {
                 skills.find(
                   skill =>
                     !skill.canUseCardTo(
-                      new CardMatcher({ name: player != to ? ['peach'] : ['peach', 'alcohol'] }),
+                      new CardMatcher({ name: player.Id !== to.Id ? ['peach'] : ['peach', 'alcohol'] }),
                       this.room,
                       owner,
                       player,
