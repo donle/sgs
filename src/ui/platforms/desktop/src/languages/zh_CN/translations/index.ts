@@ -10,6 +10,7 @@ import * as standardCharactersDictionary from './standard';
 import * as windCharactersDictionary from './wind';
 import * as yiJiangCharactersDictionary from './yijiang2011';
 import * as yiJiang2CharactersDictionary from './yijiang2012';
+import * as yiJiang4CharactersDictionary from './yijiang2014';
 
 export {
   cardsDictionary,
@@ -24,4 +25,5 @@ export {
   oneVersusTwoCharactersDictonary,
   twoVersusTwoCharactersDictonary,
   yiJiang2CharactersDictionary,
+  yiJiang4CharactersDictionary,
 };
