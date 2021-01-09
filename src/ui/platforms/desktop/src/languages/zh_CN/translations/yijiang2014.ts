@@ -137,4 +137,3 @@ export const skillDescriptions: Word[] = [
       '<b>限定技</b>，出牌阶段，你可以将装备区里的所有牌交给一名其他角色，然后其选择一项：1.令你回复X点体力；2.选择其攻击范围内一至X名角色，其对这些角色各造成1点伤害（X为你以此法给出的牌数）。',
   },
 ];
-export const characterDictionary: Word[] = [{ source: 'yijiang2014', target: '将4' }];
