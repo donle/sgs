@@ -1536,6 +1536,21 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return fromStack.filter(cardId => cardMatcher.match(Sanguosha.getCardById(cardId)));
   }
 
+  public displayCards(fromId: PlayerId, displayCards: CardId[], translations?: PatchedTranslationObject): void {
+    const cardDisplayEvent: ServerEventFinder<GameEventIdentifiers.CardDisplayEvent> = {
+      fromId,
+      displayCards,
+      translationsMessage:
+        translations ||
+        TranslationPack.translationJsonPatcher(
+          '{0} displayed cards {1}',
+          TranslationPack.patchPlayerInTranslation(this.getPlayerById(fromId)),
+          TranslationPack.patchCardInTranslation(...displayCards),
+        ).extract(),
+    };
+    this.broadcast(GameEventIdentifiers.CardDisplayEvent, cardDisplayEvent);
+  }
+
   public isCardInDropStack(cardId: CardId): boolean {
     return this.dropStack.includes(cardId);
   }

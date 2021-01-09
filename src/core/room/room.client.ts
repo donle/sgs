@@ -192,6 +192,10 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.findCardsByMatcherFrom.name);
   }
   //Server only
+  public displayCards(): any {
+    this.throwUntouchableError(this.displayCards.name);
+  }
+  //Server only
   public isCardInDropStack(): any {
     this.throwUntouchableError(this.isCardInDropStack.name);
   }
