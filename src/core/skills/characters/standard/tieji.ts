@@ -1,6 +1,6 @@
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AimStage, AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
+import { AimStage, AllStage, PhaseChangeStage, PlayerPhase, StagePriority } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -73,6 +73,10 @@ export class TieJiShadow extends TriggerSkill implements OnDefineReleaseTiming {
   }
   afterDead(room: Room, playerId: PlayerId) {
     return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  }
+
+  getPriority() {
+    return StagePriority.High;
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: PhaseChangeStage) {
