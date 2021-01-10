@@ -197,7 +197,7 @@ export class PoJunClear extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   public async onEffect(room: Room): Promise<boolean> {
-    this.pojunClear(room);
+    await this.pojunClear(room);
 
     return true;
   }
