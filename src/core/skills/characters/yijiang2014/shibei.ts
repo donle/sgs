@@ -42,7 +42,6 @@ export class ShiBeiShadow extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
-    console.log(`Phase to ${content.to}, flag is ${room.getFlag<boolean>(owner.Id, this.GeneralName)}`);
     return content.to === PlayerPhase.PhaseFinish && room.getFlag<boolean>(owner.Id, this.GeneralName) === true;
   }
 
