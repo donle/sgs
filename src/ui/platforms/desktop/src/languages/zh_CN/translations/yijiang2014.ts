@@ -45,7 +45,7 @@ export const characterDictionary: Word[] = [
   { source: 'xianzhou', target: '献州' },
 ];
 
-export const skillDescriptions: Word[] = [
+export const skillDescriptionriptions: Word[] = [
   {
     source: 'sidi_description',
     target:
