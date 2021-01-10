@@ -117,12 +117,14 @@ export class JieYing extends TriggerSkill implements OnDefineReleaseTiming {
   ): Promise<boolean> {
     const { triggeredOnEvent, fromId, toIds } = skillEffectEvent;
     const identifier = EventPacker.getIdentifier(triggeredOnEvent!);
+    const from = room.getPlayerById(fromId);
+
     if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
       room.setMark(fromId, MarkEnum.Ying, 1);
+      from.setFlag<boolean>(this.jieYingTarget, true);
       await room.obtainSkill(fromId, JieYingEffect.Name);
     } else {
-      const from = room.getPlayerById(fromId);
-      if (from.getFlag<PlayerId>(this.jieYingTarget)) {
+      if (from.getFlag<boolean>(this.jieYingTarget)) {
         if (!toIds) {
           return false;
         }

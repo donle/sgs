@@ -683,7 +683,7 @@ export class StandardGameProcessor extends GameProcessor {
         notifierAllPlayers.push(player.Id);
         if (
           !player.hasCard(this.room, wuxiekejiMatcher) &&
-          this.room.GameParticularAreas.find(
+          !this.room.GameParticularAreas.find(
             areaName =>
               player.hasCard(this.room, wuxiekejiMatcher, PlayerCardsArea.OutsideArea, areaName) === undefined,
           )

@@ -272,10 +272,22 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     const skillSource: Readonly<['character', 'equip']> = ['character', 'equip'];
     for (const player of this.getAllPlayersFrom()) {
+      if (EventPacker.isTerminated(content)) {
+        return;
+      }
+
       for (const skillFrom of skillSource) {
+        if (EventPacker.isTerminated(content)) {
+          return;
+        }
+
         let canTriggerSkills = this.playerTriggerableSkills(player, skillFrom, content, stage);
         const triggeredSkills: TriggerSkill[] = [];
         do {
+          if (EventPacker.isTerminated(content)) {
+            return;
+          }
+
           const skillsInPriorities: TriggerSkill[][] = [];
           const skillTriggerableTimes: {
             [K: string]: number;
@@ -289,6 +301,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           }
 
           for (const skills of skillsInPriorities) {
+            if (EventPacker.isTerminated(content)) {
+              return;
+            }
             if (!skills) {
               continue;
             }
@@ -896,7 +911,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async useSkill(content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     const skill = Sanguosha.getSkillBySkillName(content.skillName);
-    if (!(await skill.beforeUse(this, content))) {
+    if (EventPacker.isTerminated(content) || !(await skill.beforeUse(this, content))) {
       return;
     }
 

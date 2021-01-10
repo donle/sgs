@@ -1,11 +1,12 @@
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { GameCommonRules } from 'core/game/game_rules';
-import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
+import { AllStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerRole } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 
 @CommonSkill({ name: 'wangzun', description: 'wangzun_description' })
 export class WangZun extends TriggerSkill {
@@ -38,7 +39,13 @@ export class WangZun extends TriggerSkill {
 
 @ShadowSkill
 @CompulsorySkill({ name: WangZun.Name, description: WangZun.Description })
-export class WangZunShadow extends TriggerSkill {
+export class WangZunShadow extends TriggerSkill implements OnDefineReleaseTiming {
+  afterLosingSkill(room: Room) {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  }
+  public afterDead(room: Room): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  }
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.AfterStageChanged;
   }

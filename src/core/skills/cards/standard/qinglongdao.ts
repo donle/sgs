@@ -43,6 +43,7 @@ export class QingLongYanYueDaoSkill extends TriggerSkill {
         fromId: response.fromId,
         cardId: response.cardId,
         toIds: slashEffectEvent.toIds,
+        extraUse: true,
         translationsMessage: TranslationPack.translationJsonPatcher(
           '{0} used skill {1}',
           TranslationPack.patchPlayerInTranslation(from),
