@@ -82,7 +82,7 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'sanyao_description',
-    target: '出牌阶段限一次，你可以弃置至少一张牌，并选择等量名除你外体力最高的角色，你对这些角色各造成1点伤害。',
+    target: '出牌阶段每项限一次，你可以弃置一张牌，并选择一项：1.指定体力值最高的一名角色；2.指定手牌数最多的一名角色，对你所选的角色造成1点伤害。',
   },
   {
     source: 'zhiman_description',
@@ -171,6 +171,14 @@ export const promptDescriptions: Word[] = [
     source: '{0}: you need to give a handcard to {1}',
     target: '{0}：你需交给 {1} 一张手牌',
   },
+
+  {
+    source: 'please choose sanyao options',
+    target: '<b>散谣</b>：请选择消耗项',
+  },
+  { source: 'sanyao:hp', target: '体力值' },
+  { source: 'sanyao:handNum', target: '手牌数' },
+
   {
     source: '{0}: do you want to prevent the damage to {1} to pick one card in areas?',
     target: '{0}：你可以防止对 {1} 造成的伤害，然后获得其区域里的一张牌',

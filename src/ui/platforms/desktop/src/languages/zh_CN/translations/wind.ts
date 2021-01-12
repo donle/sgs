@@ -22,6 +22,7 @@ export const characterDictionary: Word[] = [
   { source: 'tianxiang', target: '天香' },
   { source: 'hongyan', target: '红颜' },
   { source: '#hongyan', target: '红颜' },
+  { source: 'piaoling', target: '飘零' },
 
   { source: 'zhoutai', target: '周泰' },
   { source: 'buqu', target: '不屈' },
@@ -73,12 +74,17 @@ export const skillDescriptions: Word[] = [
   {
     source: 'tianxiang_description',
     target:
-      '当你受到伤害时，你可以弃置一张红桃手牌，防止此伤害并选择一名其他角色，然后你选择一项：1.令其受到1点伤害，然后摸X张牌（X为其已损失体力值且至多为5）；2.令其失去1点体力，然后其获得你弃置的牌。',
+      '当你受到伤害时，你可以弃置一张红桃牌，防止此伤害并选择一名其他角色，然后你选择一项：1.令其受到1点伤害，然后摸X张牌（X为其已损失体力值且至多为5）；2.令其失去1点体力，然后其获得你弃置的牌。',
   },
   {
     source: 'hongyan_description',
     target:
-      '<b>锁定技</b>，你的黑桃牌或你的黑桃判定牌的花色视为红桃；当你于回合外失去红桃牌时，若你的手牌小于体力值，你摸一张牌。',
+      '<b>锁定技</b>，你的黑桃牌或你的黑桃判定牌的花色视为红桃；若你的装备区里有红桃牌，你的手牌上限等于X（X为你的体力上限）。',
+  },
+  {
+    source: 'piaoling_description',
+    target:
+      '结束阶段开始时，你可以判定，若结果为红桃，你选择一项：1.将判定牌交给一名角色，若其为你，你弃置一张牌；2.将判定牌置于牌堆顶。',
   },
   {
     source: 'buqu_description',

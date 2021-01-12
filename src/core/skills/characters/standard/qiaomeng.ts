@@ -1,5 +1,5 @@
 import { CardType } from 'core/cards/card';
-import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -18,10 +18,9 @@ export class QiaoMeng extends TriggerSkill {
     const to = room.getPlayerById(content.toId);
     return (
       owner.Id === content.fromId &&
-      to.getCardIds(PlayerCardsArea.EquipArea).length > 0 &&
+      to.getCardIds().length > 0 &&
       !!damageCard &&
-      damageCard.GeneralName === 'slash' &&
-      damageCard.isBlack()
+      damageCard.GeneralName === 'slash'
     );
   }
 
@@ -43,27 +42,34 @@ export class QiaoMeng extends TriggerSkill {
       toId,
     };
 
-    room.notify(GameEventIdentifiers.AskForChoosingCardFromPlayerEvent, askForChooseCardEvent, fromId!);
-    const { selectedCard, selectedCardIndex } = await room.onReceivingAsyncResponseFrom(
+    room.notify(
+      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(askForChooseCardEvent),
+      fromId!,
+    );
+    const response = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
       fromId!,
     );
 
-    const selectedCardId = selectedCard
-      ? selectedCard
-      : selectedCardIndex !== undefined
-      ? to.getCardIds(PlayerCardsArea.HandArea)[selectedCardIndex]
-      : undefined;
+    if (response.selectedCardIndex !== undefined) {
+      const cardIds = to.getCardIds(PlayerCardsArea.HandArea);
+      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
+    } else if (response.selectedCard === undefined) {
+      const cardIds = to.getCardIds();
+      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
+    }
 
-    if (selectedCardId !== undefined) {
-      const card = Sanguosha.getCardById(selectedCardId);
-      await room.dropCards(CardMoveReason.PassiveDrop, [selectedCardId], toId, fromId, this.Name);
+    if (response.selectedCard !== undefined) {
+      const card = Sanguosha.getCardById(response.selectedCard);
+      await room.dropCards(CardMoveReason.PassiveDrop, [response.selectedCard], toId, fromId, this.Name);
 
       if ((card.is(CardType.DefenseRide) || card.is(CardType.OffenseRide)) && room.isCardInDropStack(card.Id)) {
         await room.moveCards({
-          movingCards: [{ card: selectedCardId, fromArea: CardMoveArea.DropStack }],
+          movingCards: [{ card: response.selectedCard, fromArea: CardMoveArea.DropStack }],
           moveReason: CardMoveReason.ActivePrey,
-          fromId,
+          fromId: toId,
+          toId: fromId,
           toArea: CardMoveArea.HandArea,
         });
       }
