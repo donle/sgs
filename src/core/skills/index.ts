@@ -114,6 +114,7 @@ export { BuQu, BuQuShadow } from './characters/wind/buqu';
 export { FenJi } from './characters/wind/fenji';
 export { HongYan, HongYanShadow } from './characters/wind/hongyan';
 export { TianXiang } from './characters/wind/tianxiang';
+export { PiaoLing } from './characters/wind/piaoling';
 export { GuHuo, GuHuoShadow } from './characters/wind/guhuo';
 export { ChanYuan } from './characters/wind/chanyuan';
 export { LieGong, LieGongDamage, LieGongShadow } from './characters/wind/liegong';

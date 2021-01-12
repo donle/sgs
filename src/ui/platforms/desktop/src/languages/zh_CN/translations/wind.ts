@@ -117,4 +117,6 @@ export const skillDescriptions: Word[] = [
     source: 'chanyuan_description',
     target: '<b>锁定技</b>，你不能质疑“蛊惑”；若你的体力值小于等于1，则你的其他技能失效。',
   },
+  { source: '#piaoling-select', target: '请选择：1. 将判定牌置于牌堆顶。2. 交给一名角色' },
+  { source: 'piaoling: select a player to obtain the judge card', target: '飘零：选择一名角色获得此判定牌' },
 ];
