@@ -9,6 +9,7 @@ export class DengAi extends Character {
     super(id, 'dengai', CharacterGender.Male, CharacterNationality.Wei, 4, 4, GameCharacterExtensions.Mountain, [
       ...skillLoaderInstance.getSkillsByName('tuntian'),
       skillLoaderInstance.getSkillByName('zaoxian'),
+      skillLoaderInstance.getSkillByName('cheat'),
     ]);
   }
 }

@@ -1648,27 +1648,28 @@ export class StandardGameProcessor extends GameProcessor {
     if (!hideBroadcast) {
       if (from) {
         event.messages = event.messages || [];
-        const lostCards = movingCards
-          .filter(cardInfo => cardInfo.fromArea === CardMoveArea.EquipArea)
-          .map(cardInfo => cardInfo.card);
-        if (lostCards.length > 0 && fromId !== toId) {
-          if (moveReason === CardMoveReason.PlaceToDropStack) {
-            event.messages.push(
-              TranslationPack.translationJsonPatcher(
-                '{0} has been placed into drop stack from {1}',
-                TranslationPack.patchCardInTranslation(...Card.getActualCards(lostCards)),
-                TranslationPack.patchPlayerInTranslation(from),
-              ).toString(),
-            );
-          } else if (moveReason === CardMoveReason.PlaceToDrawStack) {
-            event.messages.push(
-              TranslationPack.translationJsonPatcher(
-                `{0} has been placed on the ${placeAtTheBottomOfDrawStack ? 'bottom' : 'top'} of draw stack from {1}`,
-                TranslationPack.patchCardInTranslation(...Card.getActualCards(lostCards)),
-                TranslationPack.patchPlayerInTranslation(from),
-              ).toString(),
-            );
-          } else {
+        const cards = movingCards.map(cardInfo => cardInfo.card);
+        if (moveReason === CardMoveReason.PlaceToDropStack) {
+          event.messages.push(
+            TranslationPack.translationJsonPatcher(
+              '{0} has been placed into drop stack from {1}',
+              TranslationPack.patchCardInTranslation(...Card.getActualCards(cards)),
+              TranslationPack.patchPlayerInTranslation(from),
+            ).toString(),
+          );
+        } else if (moveReason === CardMoveReason.PlaceToDrawStack) {
+          event.messages.push(
+            TranslationPack.translationJsonPatcher(
+              `{0} has been placed on the ${placeAtTheBottomOfDrawStack ? 'bottom' : 'top'} of draw stack from {1}`,
+              TranslationPack.patchCardInTranslation(...Card.getActualCards(cards)),
+              TranslationPack.patchPlayerInTranslation(from),
+            ).toString(),
+          );
+        } else {
+          const lostCards = movingCards
+            .filter(cardInfo => cardInfo.fromArea === CardMoveArea.EquipArea)
+            .map(cardInfo => cardInfo.card);
+          if (lostCards.length > 0) {
             event.messages.push(
               TranslationPack.translationJsonPatcher(
                 '{0} lost card {1}',
@@ -1682,7 +1683,7 @@ export class StandardGameProcessor extends GameProcessor {
         const moveOwnedCards = movingCards
           .filter(cardInfo => cardInfo.fromArea === CardMoveArea.HandArea)
           .map(cardInfo => cardInfo.card);
-        if ([CardMoveReason.SelfDrop, CardMoveReason.PassiveDrop].includes(moveReason)) {
+        if ([CardMoveReason.SelfDrop, CardMoveReason.PassiveDrop].includes(moveReason) && moveOwnedCards.length > 0) {
           event.messages.push(
             TranslationPack.translationJsonPatcher(
               '{0} drops cards {1}' + (proposer !== undefined && proposer !== fromId ? ' by {2}' : ''),
@@ -1705,6 +1706,7 @@ export class StandardGameProcessor extends GameProcessor {
           );
         }
       }
+
       if (!event.translationsMessage && to) {
         if (toArea === PlayerCardsArea.HandArea) {
           const isPrivateCardMoving = !!movingCards.find(({ fromArea }) => fromArea === CardMoveArea.HandArea);
@@ -1730,16 +1732,18 @@ export class StandardGameProcessor extends GameProcessor {
         } else if (toArea === PlayerCardsArea.OutsideArea) {
           if (isOutsideAreaInPublic) {
             event.translationsMessage = TranslationPack.translationJsonPatcher(
-              '{0} move cards {1} onto the top of character card',
+              '{0} move cards {1} onto the top of {2} character card',
               TranslationPack.patchPlayerInTranslation(to),
               TranslationPack.patchCardInTranslation(...actualCardIds),
+              TranslationPack.patchPlayerInTranslation(to),
             ).extract();
           } else {
             event.engagedPlayerIds = [to.Id];
             event.unengagedMessage = TranslationPack.translationJsonPatcher(
-              '{0} move {1} cards onto the top of character card',
+              '{0} move {1} cards onto the top of {2} character card',
               TranslationPack.patchPlayerInTranslation(to),
               actualCardIds.length,
+              TranslationPack.patchPlayerInTranslation(to),
             ).extract();
           }
         }

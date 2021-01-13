@@ -100,7 +100,7 @@ export class ResponsiveUseCardAction<
             this.selectedTargets,
             this.equipSkillCardId,
           ) &&
-          this.isCardEnabledInArea(skill, card, fromArea) &&
+          skill.availableCardAreas().includes(fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.player,

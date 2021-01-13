@@ -1,6 +1,7 @@
 import { CardType } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -16,6 +17,10 @@ export class MuNiuLiuMaSkill extends ActiveSkill implements OnDefineReleaseTimin
 
   public canUse(room: Room, owner: Player) {
     return !owner.hasUsedSkill(this.Name) && owner.getCardIds(PlayerCardsArea.OutsideArea, this.Name).length < 5;
+  }
+
+  public isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
+    return stage === PlayerPhase.PlayCardStage;
   }
 
   public numberOfTargets() {
@@ -68,14 +73,16 @@ export class MuNiuLiuMaSkill extends ActiveSkill implements OnDefineReleaseTimin
       proposer: fromId,
       engagedPlayerIds: [fromId],
       translationsMessage: TranslationPack.translationJsonPatcher(
-        '{0} move cards {1} onto the top of character card',
+        '{0} move cards {1} onto the top of {2} character card',
         TranslationPack.patchPlayerInTranslation(from),
         TranslationPack.patchCardInTranslation(...cardIds!),
+        TranslationPack.patchPlayerInTranslation(from),
       ).extract(),
       unengagedMessage: TranslationPack.translationJsonPatcher(
-        '{0} move {1} cards onto the top of character card',
+        '{0} move {1} cards onto the top of {2} character card',
         TranslationPack.patchPlayerInTranslation(from),
         cardIds!.length,
+        TranslationPack.patchPlayerInTranslation(from),
       ).extract(),
     });
 
@@ -129,14 +136,16 @@ export class MuNiuLiuMaSkill extends ActiveSkill implements OnDefineReleaseTimin
           movedByReason: this.Name,
           proposer: fromId,
           translationsMessage: TranslationPack.translationJsonPatcher(
-            '{0} move cards {1} onto the top of character card',
+            '{0} move cards {1} onto the top of {2} character card',
             TranslationPack.patchPlayerInTranslation(from),
             TranslationPack.patchCardInTranslation(...cardIds!),
+            TranslationPack.patchPlayerInTranslation(to),
           ).extract(),
           unengagedMessage: TranslationPack.translationJsonPatcher(
-            '{0} move {1} cards onto the top of character card',
+            '{0} move {1} cards onto the top of {2} character card',
             TranslationPack.patchPlayerInTranslation(from),
             cardIds!.length,
+            TranslationPack.patchPlayerInTranslation(to),
           ).extract(),
         },
       ]);
