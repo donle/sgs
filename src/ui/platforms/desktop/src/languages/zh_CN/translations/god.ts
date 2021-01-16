@@ -54,7 +54,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'god_ganning', target: '神甘宁' },
   { source: 'poxi', target: '魄袭' },
-  { source: 'jieying', target: '结营' },
+  { source: 'jieying', target: '劫营' },
 ];
 
 export const skillDescriptions: Word[] = [
