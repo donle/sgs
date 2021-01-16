@@ -327,7 +327,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.AskForChoosingPlayerEvent]: {
     players: PlayerId[];
     toId: PlayerId;
-    requiredAmount: number;
+    requiredAmount: number | number[];
     conversation: string | PatchedTranslationObject;
   };
   [GameEventIdentifiers.AskForPlaceCardsInDileEvent]: {

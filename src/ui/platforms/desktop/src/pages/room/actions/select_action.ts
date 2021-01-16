@@ -52,7 +52,7 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
           selectedPlayers.includes(player.Id),
       );
 
-      if (requiredAmounts.indexOf(selectedPlayers.length)) {
+      if (requiredAmounts.includes(selectedPlayers.length)) {
         this.presenter.enableActionButton('confirm');
       }
 
@@ -69,7 +69,7 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
           }
         }
 
-        if (requiredAmounts.indexOf(selectedPlayers.length)) {
+        if (requiredAmounts.includes(selectedPlayers.length)) {
           this.presenter.enableActionButton('confirm');
         } else {
           this.presenter.disableActionButton('confirm');

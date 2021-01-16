@@ -149,9 +149,11 @@ export class TrustAI extends PlayerAI {
     const selectedCards = fromArea
       .reduce<CardId[]>((allCards, area) => {
         if (cardMatcher) {
-          allCards.push(...to.getCardIds(area).filter(card => CardMatcher.match(cardMatcher, Sanguosha.getCardById(card))));
+          allCards.push(
+            ...to.getCardIds(area).filter(card => CardMatcher.match(cardMatcher, Sanguosha.getCardById(card))),
+          );
         } else {
-          allCards.push(...to.getCardIds(area))
+          allCards.push(...to.getCardIds(area));
         }
         return allCards;
       }, [])
@@ -196,9 +198,10 @@ export class TrustAI extends PlayerAI {
     room: Room,
   ) {
     const { requiredAmount, players, toId } = content;
+    const amount = requiredAmount instanceof Array ? requiredAmount[0] : requiredAmount;
     const choosePlayer: ClientEventFinder<T> = {
       fromId: toId,
-      selectedPlayers: players.slice(0, requiredAmount),
+      selectedPlayers: players.slice(0, amount),
     };
     return choosePlayer;
   }
