@@ -1,3 +1,4 @@
+import { CardSuit } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardUseStage, PlayerPhase } from 'core/game/stage_processor';
@@ -22,7 +23,11 @@ export class JianYing extends TriggerSkill {
 
     if (lastCardId !== undefined) {
       const lastCard = Sanguosha.getCardById(lastCardId);
-      if (lastCard.Suit === card.Suit || lastCard.CardNumber === card.CardNumber) {
+      if (
+        lastCard.Suit !== CardSuit.NoSuit &&
+        lastCard.CardNumber !== undefined &&
+        (lastCard.Suit === card.Suit || lastCard.CardNumber === card.CardNumber)
+      ) {
         return true;
       }
     }
