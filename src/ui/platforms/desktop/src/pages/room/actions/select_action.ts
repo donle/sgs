@@ -36,7 +36,7 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
       }
 
       if (requiredAmount instanceof Array) {
-        requiredAmounts = requiredAmount.sort((a, b) => a - b).reverse();
+        requiredAmounts = requiredAmount.sort((a, b) => b - a);
       } else {
         requiredAmounts = [requiredAmount];
       }
