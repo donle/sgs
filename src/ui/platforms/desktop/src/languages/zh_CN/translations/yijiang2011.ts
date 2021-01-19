@@ -37,6 +37,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'lingtong', target: '凌统' },
   { source: 'xuanfeng', target: '旋风' },
+  { source: 'yongjin', target: '勇进' },
 
   { source: 'chengong', target: '陈宫' },
   { source: 'mingce', target: '明策' },
@@ -130,7 +131,12 @@ export const skillDescriptions: Word[] = [
   {
     source: 'xuanfeng_description',
     target:
-      '若你于弃牌阶段内弃置过至少两张手牌，或当你失去装备区里的牌后，你可以选择一项：1.依次弃置其他角色的共计一至两张牌；2.将一名其他角色装备区里的牌置入另一名其他角色的装备区。',
+      '若你于弃牌阶段内弃置过至少两张手牌，或当你失去装备区里的牌后，你可以依次弃置其他角色的共计一至两张牌，然后你可以对其中一名角色造成1点伤害。',
+  },
+  {
+    source: 'yongjin_description',
+    target:
+      '<b>限定技</b>，出牌阶段，你可以依次移动场上一至三张装备区里的不同的牌。',
   },
 
   {
@@ -225,16 +231,21 @@ export const promptDescriptions: Word[] = [
     source: 'xianzhen: do you want to add {0} as targets of {1}?',
     target: '陷阵：你可以令 {0} 也成为 {1} 的目标',
   },
-  { source: 'xuanfeng:move', target: '移动装备' },
-  { source: 'xuanfeng:drop', target: '弃置牌' },
+
+  {
+    source: '{0}: do you want to choose a target to drop a card?',
+    target: '{0}：你可以弃置一名角色的一张牌',
+  },
+  {
+    source: '{0}: do you want to choose a XuanFeng target to deal 1 damage?',
+    target: '{0}：你可以选择其中一名角色，对其造成1点伤害',
+  },
+
   {
     source: '{0}: please choose two target to move their equipment',
-    target: '{0}：请依次选择两名其他角色，先选角色装备区里的牌将被移至后选角色',
+    target: '{0}：你可以依次选择两名角色，先选角色装备区里的牌将被移至后选角色',
   },
-  {
-    source: '{0}: please choose a target to drop card',
-    target: '{0}：请选择一名角色并弃置其一张牌',
-  },
+
   {
     source: '{0}: do you want to draw {1} cards?',
     target: '{0}: 是否摸 {1} 张牌?',
