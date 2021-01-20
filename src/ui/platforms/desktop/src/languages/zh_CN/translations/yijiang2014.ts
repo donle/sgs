@@ -45,7 +45,7 @@ export const characterDictionary: Word[] = [
   { source: 'xianzhou', target: '献州' },
 ];
 
-export const skillDescriptionriptions: Word[] = [
+export const skillDescriptions: Word[] = [
   {
     source: 'sidi_description',
     target:
@@ -100,7 +100,6 @@ export const skillDescriptionriptions: Word[] = [
     source: 'jiaojin_description',
     target: '当你成为男性角色使用【杀】或普通锦囊牌的目标后，你可以弃置一张装备牌，然后该牌对你无效且你获得此牌。',
   },
-
   {
     source: 'fenli_description',
     target:
@@ -116,7 +115,6 @@ export const skillDescriptionriptions: Word[] = [
     source: 'bingyi_description',
     target: '结束阶段开始时，你可以展示所有手牌，若颜色均相同，你令一至X名角色各摸一张牌（X为你的手牌数）。',
   },
-
   {
     source: 'jianying_description',
     target: '当你于出牌阶段内使用牌时，若此牌与你此阶段内使用过的上一张牌的花色或点数相同，你可以摸一张牌。',
