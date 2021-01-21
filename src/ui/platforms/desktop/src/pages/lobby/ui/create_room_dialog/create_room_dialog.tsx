@@ -55,7 +55,7 @@ export type TemporaryRoomCreationInfo = {
   characterExtensions: GameCharacterExtensions[];
 };
 
-export const CreatRoomDialog = (props: {
+export const CreateRoomDialog = (props: {
   translator: ClientTranslationModule;
   onSubmit(data: TemporaryRoomCreationInfo): void;
   onCancel(): void;
@@ -132,7 +132,7 @@ export const CreatRoomDialog = (props: {
   return (
     <Dialog className={styles.createRoomDialog} onClose={props.onCancel}>
       <img src={props.imageLoader.getDialogBackgroundImage().src} alt="bg" className={styles.background} />
-      <form onSubmit={onSubmit} className={styles.creatRoomForm} onMouseDown={onAction}>
+      <form onSubmit={onSubmit} className={styles.createRoomForm} onMouseDown={onAction}>
         <div className={styles.layout}>
           <div className={classNames(styles.verticalLayout, styles.basicInfo)}>
             <div className={styles.inputField}>

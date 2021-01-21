@@ -11,7 +11,7 @@ export const enum LobbySocketEvent {
 }
 
 export const enum RoomSocketEvent {
-  CreatRoom = 'create-room',
+  CreateRoom = 'create-room',
   PlayerReady = 'player-ready',
 }
 
@@ -34,12 +34,12 @@ export type RoomSocketEventPicker<E extends RoomSocketEvent> = RoomEventList[E];
 export type RoomSocketEventResponser<E extends RoomSocketEvent> = RoomEventResponseList[E];
 
 interface RoomEventResponseList extends RoomEventUtilities {
-  [RoomSocketEvent.CreatRoom]: never;
+  [RoomSocketEvent.CreateRoom]: never;
   [RoomSocketEvent.PlayerReady]: never;
 }
 
 interface RoomEventList extends RoomEventUtilities {
-  [RoomSocketEvent.CreatRoom]: {
+  [RoomSocketEvent.CreateRoom]: {
     roomInfo: GameInfo;
   };
   [RoomSocketEvent.PlayerReady]: {

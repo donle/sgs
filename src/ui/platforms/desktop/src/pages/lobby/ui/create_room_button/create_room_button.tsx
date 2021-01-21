@@ -17,7 +17,7 @@ export const CreateRoomButton = ({
   disabled?: boolean;
 }) => {
   return (
-    <button className={classNames(styles.creatRoomButton, className)} onClick={onClick} disabled={disabled}>
+    <button className={classNames(styles.createRoomButton, className)} onClick={onClick} disabled={disabled}>
       <img src={imageLoader.getCreateRoomButtonImage().src} alt={''} className={styles.buttonImage} />
     </button>
   );

@@ -23,7 +23,7 @@ import lockerImage from './images/locked.png';
 import styles from './lobby.module.css';
 import { AcknowledgeDialog } from './ui/acknowledge_dialog/acknowledge_dialog';
 import { CreateRoomButton } from './ui/create_room_button/create_room_button';
-import { CreatRoomDialog, TemporaryRoomCreationInfo } from './ui/create_room_dialog/create_room_dialog';
+import { CreateRoomDialog, TemporaryRoomCreationInfo } from './ui/create_room_dialog/create_room_dialog';
 import { EnterPasscodeDialog } from './ui/enter_passcode_dialog/enter_passcode_dialog';
 import { FeedbackDialog } from './ui/feedback_dialog/feedback_dialog';
 
@@ -387,7 +387,7 @@ export class Lobby extends React.Component<LobbyProps> {
         </div>
         <div className={styles.chatInfo}></div>
         {this.openRoomCreationDialog && (
-          <CreatRoomDialog
+          <CreateRoomDialog
             imageLoader={this.props.imageLoader}
             translator={this.props.translator}
             electronLoader={this.props.electronLoader}

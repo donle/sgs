@@ -29,7 +29,7 @@
     width: 40%;
 }
 
-.creatRoomForm {
+.createRoomForm {
     display: flex;
     justify-content: flex-start;
     flex-direction: column;
