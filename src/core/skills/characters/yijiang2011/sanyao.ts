@@ -92,16 +92,16 @@ export class SanYao extends ActiveSkill {
       );
 
       const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, fromId);
-      response.selectedOption = response.selectedOption || 'sanyao:hp';
+      response.selectedOption = response.selectedOption || askForChooseEvent.options[0];
 
-      if (response.selectedOption === 'sanyap:handNum') {
+      if (response.selectedOption === askForChooseEvent.options[1]) {
         room.setFlag<boolean>(fromId, SanYao.MostHandNum, true);
       } else {
         room.setFlag<boolean>(fromId, SanYao.MostHp, true);
       }
     } else if (hasMostHp) {
       room.setFlag<boolean>(fromId, SanYao.MostHp, true);
-    } else if (hasMostHandNum) {
+    } else {
       room.setFlag<boolean>(fromId, SanYao.MostHandNum, true);
     }
 

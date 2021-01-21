@@ -9,7 +9,6 @@ import {
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, LimitSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
@@ -38,19 +37,16 @@ export class YongJin extends ActiveSkill {
     selectedCards: CardId[],
     selectedTargets: PlayerId[],
   ): boolean {
-    const to = room.getPlayerById(target);
-    const equiprCardIds = to.getCardIds(PlayerCardsArea.EquipArea);
-
     if (selectedTargets.length === 0) {
-      return equiprCardIds.length > 0;
+      const to = room.getPlayerById(target);
+      const equipCardIds = to.getCardIds(PlayerCardsArea.EquipArea);
+
+      return equipCardIds.length > 0;
     } else if (selectedTargets.length === 1) {
-      let canBeTarget: boolean = false;
       const from = room.getPlayerById(selectedTargets[0]);
-
       const fromEquipArea = from.getCardIds(PlayerCardsArea.EquipArea);
-      canBeTarget = canBeTarget || fromEquipArea.find(id => room.canPlaceCardTo(id, target)) !== undefined;
 
-      return canBeTarget;
+      return fromEquipArea.find(id => room.canPlaceCardTo(id, target)) !== undefined;
     }
 
     return false;
@@ -80,10 +76,7 @@ export class YongJin extends ActiveSkill {
     const moveTo = room.getPlayerById(toId);
     const canMovedEquipCardIds: CardId[] = [];
 
-    const fromEquipArea = Precondition.exists(
-      moveFrom.getCardIds(PlayerCardsArea.EquipArea),
-      'Unable to get yongjin equips',
-    );
+    const fromEquipArea = moveFrom.getCardIds(PlayerCardsArea.EquipArea);
     const banIds = room.getFlag<CardId[]>(user, this.Name);
     canMovedEquipCardIds.push(
       ...fromEquipArea.filter(id => room.canPlaceCardTo(id, moveTo.Id) && (banIds ? !banIds.includes(id) : true)),
@@ -184,15 +177,15 @@ export class YongJinMove extends TriggerSkill {
     selectedCards: CardId[],
     selectedTargets: PlayerId[],
   ): boolean {
-    const to = room.getPlayerById(target);
-    const equipCardIds = to.getCardIds(PlayerCardsArea.EquipArea);
+    const banIds = room.getFlag<CardId[]>(owner, YongJin.Name) || [];
 
     if (selectedTargets.length === 0) {
-      return equipCardIds.length > 0;
+      const to = room.getPlayerById(target);
+      const equipCardIds = to.getCardIds(PlayerCardsArea.EquipArea);
+
+      return equipCardIds.filter(id => !banIds.includes(id)).length > 0;
     } else if (selectedTargets.length === 1) {
       const from = room.getPlayerById(selectedTargets[0]);
-      const banIds = room.getFlag<CardId[]>(owner, YongJin.Name);
-
       const fromEquipArea = from.getCardIds(PlayerCardsArea.EquipArea);
 
       return (

@@ -83,7 +83,7 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'sanyao_description',
-    target: '出牌阶段每项限一次，你可以弃置一张牌，并选择一项：1.指定体力值最高的一名角色；2.指定手牌数最多的一名角色，对你所选的角色造成1点伤害。',
+    target: '出牌阶段每项限一次，你可以弃置一张牌，并选择一项：1.指定体力值最高的一名角色；2.指定手牌数最多的一名角色。对你所选的角色造成1点伤害。',
   },
   {
     source: 'zhiman_description',
@@ -136,7 +136,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'yongjin_description',
     target:
-      '<b>限定技</b>，出牌阶段，你可以依次移动场上一至三张装备区里的不同的牌。',
+      '<b>限定技</b>，出牌阶段，你可以依次移动场上一至三张不同的装备牌。',
   },
 
   {
