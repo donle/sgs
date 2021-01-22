@@ -27,6 +27,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     };
   } = {} as any;
 
+  private playerReconnectTimer: { [K in string]: NodeJS.Timer; } = {};
   private mapSocketIdToPlayerId: { [K in string]: string } = {};
   private lastResponsiveEvent:
     | {
@@ -122,12 +123,9 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
           return;
         }
 
-        const room = this.room as ServerRoom;
-        if (room.Players.every(player => !player.isOnline())) {
-          this.room?.close();
-          return;
-        }
+        this.delayToDisconnect(playerId);
 
+        const room = this.room as ServerRoom;
         const player = room.getPlayerById(playerId);
         if (player.isOnline()) {
           player.setOffline();
@@ -151,6 +149,11 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
           this.broadcast(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent);
         }
 
+        if (room.Players.every(player => !player.isOnline())) {
+          this.room?.close();
+          return;
+        }
+
         if (!room.isPlaying()) {
           room.removePlayer(playerId);
         } else if (this.room?.AwaitingResponseEvent[playerId]) {
@@ -168,6 +171,14 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         }
       });
     });
+  }
+
+  private delayToDisconnect(playerId: PlayerId) {
+    this.playerReconnectTimer[playerId] = setTimeout(() => {
+      delete this.mapSocketIdToPlayerId[playerId];
+      this.room!.removePlayer(playerId);
+      delete this.playerReconnectTimer[playerId];
+    }, 300 * 1000);
   }
 
   private async onPlayerMessage(
@@ -205,6 +216,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     const room = this.room as ServerRoom;
     if (this.mapSocketIdToPlayerId[event.playerId] !== undefined) {
       this.mapSocketIdToPlayerId[event.playerId] = socket.id;
+      clearTimeout(this.playerReconnectTimer[event.playerId]);
       room.getPlayerById(event.playerId).setOnline();
     }
 

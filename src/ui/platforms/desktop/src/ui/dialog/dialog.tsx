@@ -24,25 +24,52 @@ export class Dialog extends React.Component<{ className?: string; children?: Rea
   private posX: number;
   private posY: number;
 
-  private readonly onMouseDown = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    this.moving = true;
-    this.posX = e.clientX;
-    this.posY = e.clientY;
-  };
-
-  @mobx.action
-  private readonly onMouseMove = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    if (!this.moving) {
+  private readonly onMouseDown = (e: React.MouseEvent<HTMLElement, MouseEvent> | React.TouchEvent<HTMLElement>) => {
+    if (e.currentTarget !== e.target) {
       return;
     }
 
-    this.leftOffset += e.clientX - this.posX;
-    this.topOffset += e.clientY - this.posY;
-    this.posX = e.clientX;
-    this.posY = e.clientY;
+    e.stopPropagation();
+    e.preventDefault();
+    this.moving = true;
+    const clientX =
+      (e as React.MouseEvent<HTMLElement, MouseEvent>).clientX ||
+      (e as React.TouchEvent<HTMLElement>).touches[0].clientX;
+    const clientY =
+      (e as React.MouseEvent<HTMLElement, MouseEvent>).clientY ||
+      (e as React.TouchEvent<HTMLElement>).touches[0].clientY;
+
+    this.posX = clientX;
+    this.posY = clientY;
   };
 
-  private readonly onMouseUp = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+  @mobx.action
+  private readonly onMouseMove = (e: React.MouseEvent<HTMLElement, MouseEvent> | React.TouchEvent<HTMLElement>) => {
+    if (!this.moving || e.currentTarget !== e.target) {
+      return;
+    }
+    e.stopPropagation();
+    e.preventDefault();
+
+    const clientX =
+      (e as React.MouseEvent<HTMLElement, MouseEvent>).clientX ||
+      (e as React.TouchEvent<HTMLElement>).touches[0].clientX;
+    const clientY =
+      (e as React.MouseEvent<HTMLElement, MouseEvent>).clientY ||
+      (e as React.TouchEvent<HTMLElement>).touches[0].clientY;
+    this.leftOffset += clientX - this.posX;
+    this.topOffset += clientY - this.posY;
+    this.posX = clientX;
+    this.posY = clientY;
+  };
+
+  private readonly onMouseUp = (e: React.MouseEvent<HTMLElement, MouseEvent> | React.TouchEvent<HTMLElement>) => {
+    if (e.currentTarget !== e.target) {
+      return;
+    }
+
+    e.stopPropagation();
+    e.preventDefault();
     this.moving = false;
   };
 
@@ -64,6 +91,9 @@ export class Dialog extends React.Component<{ className?: string; children?: Rea
           onMouseMove={this.onMouseMove}
           onMouseDown={this.onMouseDown}
           onMouseUp={this.onMouseUp}
+          onTouchEnd={this.onMouseUp}
+          onTouchStart={this.onMouseDown}
+          onTouchMove={this.onMouseMove}
           ref={this.onElementRendered}
           style={{ top: this.topOffset, left: this.leftOffset }}
         >
