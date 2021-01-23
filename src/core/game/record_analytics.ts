@@ -64,7 +64,7 @@ export class RecordAnalytics {
   ): ServerEventFinder<GameEventIdentifiers.RecoverEvent>[] {
     return this.getRecordEvents<GameEventIdentifiers.RecoverEvent>(
       event => EventPacker.getIdentifier(event) === GameEventIdentifiers.RecoverEvent && event.toId === player,
-      player,
+      undefined,
       currentRound,
       inPhase,
     );
@@ -76,7 +76,7 @@ export class RecordAnalytics {
   ): ServerEventFinder<GameEventIdentifiers.DamageEvent>[] {
     return this.getRecordEvents<GameEventIdentifiers.DamageEvent>(
       event => EventPacker.getIdentifier(event) === GameEventIdentifiers.DamageEvent && event.fromId === player,
-      player,
+      undefined,
       currentRound,
       inPhase,
     );
@@ -88,7 +88,7 @@ export class RecordAnalytics {
   ): ServerEventFinder<GameEventIdentifiers.DamageEvent>[] {
     return this.getRecordEvents<GameEventIdentifiers.DamageEvent>(
       event => EventPacker.getIdentifier(event) === GameEventIdentifiers.DamageEvent && event.toId === player,
-      player,
+      undefined,
       currentRound,
       inPhase,
     );
@@ -100,7 +100,7 @@ export class RecordAnalytics {
   ): ServerEventFinder<GameEventIdentifiers.LoseHpEvent>[] {
     return this.getRecordEvents<GameEventIdentifiers.LoseHpEvent>(
       event => EventPacker.getIdentifier(event) === GameEventIdentifiers.LoseHpEvent && event.toId === player,
-      player,
+      undefined,
       currentRound,
       inPhase,
     );
@@ -112,7 +112,7 @@ export class RecordAnalytics {
   ): ServerEventFinder<GameEventIdentifiers.CardUseEvent>[] {
     return this.getRecordEvents<GameEventIdentifiers.CardUseEvent>(
       event => EventPacker.getIdentifier(event) === GameEventIdentifiers.CardUseEvent && event.fromId === player,
-      player,
+      undefined,
       currentRound,
       inPhase,
     );
@@ -124,7 +124,7 @@ export class RecordAnalytics {
   ): ServerEventFinder<GameEventIdentifiers.CardResponseEvent>[] {
     return this.getRecordEvents<GameEventIdentifiers.CardResponseEvent>(
       event => EventPacker.getIdentifier(event) === GameEventIdentifiers.CardResponseEvent && event.fromId === player,
-      player,
+      undefined,
       currentRound,
       inPhase,
     );
@@ -141,7 +141,7 @@ export class RecordAnalytics {
         event.movingCards.find(
           cardInfo => cardInfo.fromArea === CardMoveArea.HandArea || cardInfo.fromArea === CardMoveArea.EquipArea,
         ) !== undefined,
-      player,
+      undefined,
       currentRound,
       inPhase,
     );
@@ -156,7 +156,7 @@ export class RecordAnalytics {
         EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
         event.toId === player &&
         event.toArea === CardMoveArea.HandArea,
-      player,
+      undefined,
       currentRound,
       inPhase,
     );
@@ -171,7 +171,7 @@ export class RecordAnalytics {
         EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
         event.toId === player &&
         event.moveReason === CardMoveReason.CardDraw,
-      player,
+      undefined,
       currentRound,
       inPhase,
     );
@@ -186,7 +186,7 @@ export class RecordAnalytics {
         EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
         event.fromId === player &&
         (event.moveReason === CardMoveReason.SelfDrop || event.moveReason === CardMoveReason.PassiveDrop),
-      player,
+      undefined,
       currentRound,
       inPhase,
     );
@@ -198,7 +198,7 @@ export class RecordAnalytics {
   ): ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[] {
     return this.getRecordEvents<GameEventIdentifiers.MoveCardEvent>(
       event => EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent && event.proposer === player,
-      player,
+      undefined,
       currentRound,
       inPhase,
     );
