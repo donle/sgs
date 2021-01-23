@@ -1,8 +1,8 @@
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { AllStage, DamageEffectStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
+import { AllStage, DamageEffectStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { CompulsorySkill, TriggerSkill } from 'core/skills/skill';
 
 @CompulsorySkill({ name: 'shibei', description: 'shibei_description' })
 export class ShiBei extends TriggerSkill {
@@ -11,7 +11,21 @@ export class ShiBei extends TriggerSkill {
   }
 
   whenRefresh(room: Room, owner: Player) {
-    room.removeFlag(owner.Id, this.GeneralName);
+    if (room.getFlag<boolean>(owner.Id, this.GeneralName) === true) {
+      room.removeFlag(owner.Id, this.GeneralName);
+    }
+  }
+
+  async whenObtainingSkill(room: Room, owner: Player) {
+    if (room.Analytics.getDamagedReord(owner.Id, true).length > 0) {
+      room.setFlag(owner.Id, this.GeneralName, true, true);
+    }
+  }
+
+  async whenLosingSkill(room: Room, owner: Player) {
+    if (room.getFlag<boolean>(owner.Id, this.GeneralName) === true) {
+      room.removeFlag(owner.Id, this.GeneralName);
+    }
   }
 
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
@@ -27,13 +41,17 @@ export class ShiBei extends TriggerSkill {
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
-    if (room.getFlag<boolean>(event.fromId, this.Name) !== true) {
+    if (room.getFlag<boolean>(event.fromId, this.GeneralName) !== true) {
+      room.setFlag(event.fromId, this.GeneralName, true, true);
+    }
+
+    if (room.Analytics.getDamagedReord(event.fromId, true).length <= 1) {
       const damagedEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
       await room.recover({ recoveredHp: 1, recoverBy: damagedEvent.toId, toId: damagedEvent.toId });
-      room.setFlag(event.fromId, this.GeneralName, true, true);
     } else {
       await room.loseHp(event.fromId, 1);
     }
+
     return true;
   }
 }
