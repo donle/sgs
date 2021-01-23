@@ -326,7 +326,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
   }
 
   broadcast<I extends GameEventIdentifiers>(type: I, content: ServerEventFinder<I>) {
-    this.socket.emit(type.toString(), EventPacker.createIdentifierEvent(type, content));
+    this.socket.emit(type.toString(), EventPacker.minifyPayload(content));
   }
 
   public clearSubscriber(identifier: GameEventIdentifiers, to: PlayerId) {
