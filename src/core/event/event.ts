@@ -304,7 +304,7 @@ export class EventPacker {
   static minifyPayload = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>) => {
     const { middlewares, ...paylod } = event as any;
     return paylod;
-  }
+  };
 
   static setTimestamp = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>): void => {
     (event as any).timestamp = Date.now();
@@ -399,17 +399,30 @@ export class EventPacker {
   static copyPropertiesTo<T extends GameEventIdentifiers, Y extends GameEventIdentifiers>(
     fromEvent: ServerEventFinder<T>,
     toEvent: ServerEventFinder<Y>,
+    configuration: {
+      copyTerminate?: boolean;
+      copyUncancellable?: boolean;
+      copyMiddlewares?: boolean;
+      copyDisresponsive?: boolean;
+    } = {},
   ) {
-    if ((fromEvent as any).terminate !== undefined) {
+    const {
+      copyTerminate = false,
+      copyUncancellable = true,
+      copyMiddlewares = true,
+      copyDisresponsive = true,
+    } = configuration;
+
+    if (copyTerminate && (fromEvent as any).terminate !== undefined) {
       (toEvent as any).terminate = (fromEvent as any).terminate;
     }
-    if ((fromEvent as any).uncancellable !== undefined) {
+    if (copyUncancellable && (fromEvent as any).uncancellable !== undefined) {
       (toEvent as any).uncancellable = (fromEvent as any).uncancellable;
     }
-    if ((fromEvent as any).middlewares !== undefined) {
+    if (copyMiddlewares && (fromEvent as any).middlewares !== undefined) {
       (toEvent as any).middlewares = { ...(toEvent as any).middlewares, ...(fromEvent as any).middlewares };
     }
-    if ((fromEvent as any).disresponsive !== undefined) {
+    if (copyDisresponsive && (fromEvent as any).disresponsive !== undefined) {
       (toEvent as any).disresponsive = (fromEvent as any).disresponsive;
     }
   }
