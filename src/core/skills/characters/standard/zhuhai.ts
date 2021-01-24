@@ -29,7 +29,7 @@ export class ZhuHai extends TriggerSkill {
     return (
       owner.Id !== content.playerId &&
       PlayerPhaseStages.FinishStageStart === content.toStage &&
-      room.Analytics.getDamageReord(content.playerId, true).filter(event => event.fromId === content.playerId).length >
+      room.Analytics.getDamageRecord(content.playerId, true).filter(event => event.fromId === content.playerId).length >
         0
     );
   }

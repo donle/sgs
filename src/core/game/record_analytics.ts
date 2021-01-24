@@ -57,7 +57,7 @@ export class RecordAnalytics {
     }
   }
 
-  public getRecoveredHpReord(
+  public getRecoveredHpRecord(
     player: PlayerId,
     currentRound?: boolean,
     inPhase?: PlayerPhase[],
@@ -69,7 +69,7 @@ export class RecordAnalytics {
       inPhase,
     );
   }
-  public getDamageReord(
+  public getDamageRecord(
     player: PlayerId,
     currentRound?: boolean,
     inPhase?: PlayerPhase[],
@@ -81,7 +81,7 @@ export class RecordAnalytics {
       inPhase,
     );
   }
-  public getDamagedReord(
+  public getDamagedRecord(
     player: PlayerId,
     currentRound?: boolean,
     inPhase?: PlayerPhase[],
@@ -93,7 +93,7 @@ export class RecordAnalytics {
       inPhase,
     );
   }
-  public getLostHpReord(
+  public getLostHpRecord(
     player: PlayerId,
     currentRound?: boolean,
     inPhase?: PlayerPhase[],
@@ -205,25 +205,25 @@ export class RecordAnalytics {
   }
 
   public getRecoveredHp(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]) {
-    return this.getRecoveredHpReord(player, currentRound, inPhase).reduce<number>((totalAmount, event) => {
+    return this.getRecoveredHpRecord(player, currentRound, inPhase).reduce<number>((totalAmount, event) => {
       totalAmount += event.recoveredHp;
       return totalAmount;
     }, 0);
   }
   public getDamage(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]) {
-    return this.getDamageReord(player, currentRound, inPhase).reduce<number>((totalAmount, event) => {
+    return this.getDamageRecord(player, currentRound, inPhase).reduce<number>((totalAmount, event) => {
       totalAmount += event.damage;
       return totalAmount;
     }, 0);
   }
   public getDamaged(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]) {
-    return this.getDamagedReord(player, currentRound, inPhase).reduce<number>((totalAmount, event) => {
+    return this.getDamagedRecord(player, currentRound, inPhase).reduce<number>((totalAmount, event) => {
       totalAmount += event.damage;
       return totalAmount;
     }, 0);
   }
   public getLostHp(player: PlayerId, currentRound?: boolean, inPhase?: PlayerPhase[]) {
-    return this.getLostHpReord(player, currentRound, inPhase).reduce<number>((totalAmount, event) => {
+    return this.getLostHpRecord(player, currentRound, inPhase).reduce<number>((totalAmount, event) => {
       totalAmount += event.lostHp;
       return totalAmount;
     }, 0);
