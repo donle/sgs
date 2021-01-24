@@ -18,7 +18,9 @@ export class JinkSkill extends ResponsiveSkill {
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const { responseToEvent } = event;
     if (responseToEvent !== undefined) {
-      EventPacker.terminate(responseToEvent);
+      if (EventPacker.getIdentifier(responseToEvent) === GameEventIdentifiers.CardEffectEvent) {
+        (responseToEvent as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>).isCancelledOut = true;
+      }
     }
 
     return true;
