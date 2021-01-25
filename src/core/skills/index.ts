@@ -251,6 +251,9 @@ export { ZhuiYi } from './characters/yijiang2012/zhuiyi';
 export { ZiShou, ZiShouReforge, ZiShouPrevent, ZiShouShadow } from './characters/yijiang2012/zishou';
 export { ZongShi, ZongShiNullify, ZongShiProhibit } from './characters/yijiang2012/zongshi';
 
+export { ShiBei } from './characters/yijiang2014/shibei';
+export { JianYing } from './characters/yijiang2014/jianying';
+
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';
 export { FeiYang } from './game_mode/1v2/feiyang';
