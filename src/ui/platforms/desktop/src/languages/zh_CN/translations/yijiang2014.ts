@@ -134,3 +134,10 @@ export const skillDescriptions: Word[] = [
       '<b>限定技</b>，出牌阶段，你可以将装备区里的所有牌交给一名其他角色，然后其选择一项：1.令你回复X点体力；2.选择其攻击范围内一至X名角色，其对这些角色各造成1点伤害（X为你以此法给出的牌数）。',
   },
 ];
+
+export const promptDescriptions: Word[] = [
+  {
+    source: 'please choose less than {0} player to draw 1 crad.',
+    target: '请选择至多{0}名角色各摸一张牌。',
+  },
+];
