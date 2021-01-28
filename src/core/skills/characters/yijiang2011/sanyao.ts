@@ -16,6 +16,7 @@ export class SanYao extends ActiveSkill {
     return phase === PlayerPhase.PlayCardStage;
   }
 
+  //TODO: use a shadow skill to remove flags
   public async whenRefresh(room: Room, owner: Player) {
     room.removeFlag(owner.Id, SanYao.MostHp);
     room.removeFlag(owner.Id, SanYao.MostHandNum);
