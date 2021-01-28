@@ -114,6 +114,7 @@ export { BuQu, BuQuShadow } from './characters/wind/buqu';
 export { FenJi } from './characters/wind/fenji';
 export { HongYan, HongYanShadow } from './characters/wind/hongyan';
 export { TianXiang } from './characters/wind/tianxiang';
+export { PiaoLing } from './characters/wind/piaoling';
 export { GuHuo, GuHuoShadow } from './characters/wind/guhuo';
 export { ChanYuan } from './characters/wind/chanyuan';
 export { LieGong, LieGongDamage, LieGongShadow } from './characters/wind/liegong';
@@ -229,7 +230,8 @@ export { JueQing } from './characters/yijiang2011/jueqing';
 export { ShangShi } from './characters/yijiang2011/shangshi';
 export { GanLu } from './characters/yijiang2011/ganlu';
 export { BuYi } from './characters/yijiang2011/buyi';
-export { XuanFeng, XuanFengMove, XuanFengDrop } from './characters/yijiang2011/xuanfeng';
+export { XuanFeng } from './characters/yijiang2011/xuanfeng';
+export { YongJin, YongJinMove } from './characters/yijiang2011/yongjin';
 
 export { QiCe } from './characters/yijiang2012/qice';
 export { ZhiYu } from './characters/yijiang2012/zhiyu';

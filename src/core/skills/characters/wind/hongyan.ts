@@ -1,15 +1,12 @@
 import { Card, VirtualCard } from 'core/cards/card';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
-import { CardMoveArea, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AllStage, CardMoveStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { CompulsorySkill, ShadowSkill, TransformSkill } from 'core/skills/skill';
-import { TriggerSkill } from 'core/skills/skill';
+import { CompulsorySkill, RulesBreakerSkill, ShadowSkill, TransformSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
-import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'hongyan', description: 'hongyan_description' })
 export class HongYan extends TransformSkill implements OnDefineReleaseTiming {
@@ -87,37 +84,16 @@ export class HongYan extends TransformSkill implements OnDefineReleaseTiming {
 
 @ShadowSkill
 @CompulsorySkill({ name: HongYan.Name, description: HongYan.Description })
-export class HongYanShadow extends TriggerSkill {
-  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>, stage?: AllStage) {
-    return (
-      stage === CardMoveStage.AfterCardMoved &&
-      event.movingCards.find(
-        cardInfo =>
-          (cardInfo.fromArea === CardMoveArea.HandArea || cardInfo.fromArea === CardMoveArea.EquipArea) &&
-          Sanguosha.getCardById(cardInfo.card).Suit === CardSuit.Heart,
-      ) !== undefined
-    );
-  }
+export class HongYanShadow extends RulesBreakerSkill {
+  public breakBaseCardHoldNumber(room: Room, owner: Player) {
+    if (
+      owner
+        .getCardIds(PlayerCardsArea.EquipArea)
+        .find(cardId => Sanguosha.getCardById(cardId).Suit === CardSuit.Heart) !== undefined
+    ) {
+      return owner.MaxHp;
+    }
 
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
-    return (
-      owner.Id === content.fromId &&
-      room.CurrentPlayer.Id !== owner.Id &&
-      owner.getCardIds(PlayerCardsArea.HandArea).length < owner.Hp
-    );
-  }
-
-  async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
-    skillUseEvent.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} used skill {1}',
-      TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
-      this.GeneralName,
-    ).extract();
-    return true;
-  }
-
-  async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    await room.drawCards(1, skillUseEvent.fromId, undefined, skillUseEvent.fromId, this.GeneralName);
-    return true;
+    return -1;
   }
 }

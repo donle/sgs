@@ -5,10 +5,10 @@ import { Player } from 'core/player/player';
 import { PlayerRole } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { CommonSkill, CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 
-@CommonSkill({ name: 'wangzun', description: 'wangzun_description' })
+@CompulsorySkill({ name: 'wangzun', description: 'wangzun_description' })
 export class WangZun extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.StageChanged;
@@ -17,7 +17,7 @@ export class WangZun extends TriggerSkill {
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
     return (
       PlayerPhaseStages.PrepareStageStart === content.toStage &&
-      room.getPlayerById(content.playerId).Role === PlayerRole.Lord
+      room.getPlayerById(content.playerId).Hp > owner.Hp
     );
   }
 
@@ -28,11 +28,17 @@ export class WangZun extends TriggerSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
     const phaseStageChangeEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
-    await room.drawCards(1, skillUseEvent.fromId, undefined, skillUseEvent.fromId, this.Name);
-    room.syncGameCommonRules(phaseStageChangeEvent.playerId, user => {
-      user.addInvisibleMark(this.Name, 1);
-      GameCommonRules.addAdditionalHoldCardNumber(user, -1);
-    });
+
+    if (room.getPlayerById(phaseStageChangeEvent.playerId).Role === PlayerRole.Lord) {
+      await room.drawCards(2, skillUseEvent.fromId, undefined, skillUseEvent.fromId, this.Name);
+      room.syncGameCommonRules(phaseStageChangeEvent.playerId, user => {
+        user.addInvisibleMark(this.Name, 1);
+        GameCommonRules.addAdditionalHoldCardNumber(user, -1);
+      });
+    } else {
+      await room.drawCards(1, skillUseEvent.fromId, undefined, skillUseEvent.fromId, this.Name);
+    }
+
     return true;
   }
 }
@@ -40,12 +46,14 @@ export class WangZun extends TriggerSkill {
 @ShadowSkill
 @CompulsorySkill({ name: WangZun.Name, description: WangZun.Description })
 export class WangZunShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  afterLosingSkill(room: Room) {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
-  }
   public afterDead(room: Room): boolean {
     return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
+
+  public afterLosingSkill(room: Room): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  }
+
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.AfterStageChanged;
   }
