@@ -35,12 +35,14 @@ export type MarkProps = {
   markType: MarkEnum;
   amount: number;
   className?: string;
+  tagPosition?: 'left' | 'right';
 };
 
 export type OnceSkillMarkProps = {
   hasUsed: boolean;
   skillName: string;
   className?: string;
+  tagPosition?: 'left' | 'right';
 };
 
 export const Mark = (props: MarkProps) => {
@@ -66,7 +68,7 @@ export const LimitSkillMark = (props: OnceSkillMarkProps) => {
     <div className={classNames(styles.mark, props.className)} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <img src={props.hasUsed ? limitUsedIcon : limitIcon} alt="" />
       {hovered && (
-        <Tooltip className={styles.tooltip} position={['bottom', 'right']}>
+        <Tooltip className={styles.tooltip} position={['bottom', props.tagPosition || 'right']}>
           {props.skillName}
         </Tooltip>
       )}
@@ -87,7 +89,7 @@ export const AwakenSkillMark = (props: OnceSkillMarkProps) => {
     <div className={classNames(styles.mark, props.className)} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <img src={awakenIcon} alt="" />
       {hovered && (
-        <Tooltip className={styles.tooltip} position={['bottom', 'right']}>
+        <Tooltip className={styles.tooltip} position={['bottom', props.tagPosition || 'right']}>
           {props.skillName}
         </Tooltip>
       )}

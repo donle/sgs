@@ -304,6 +304,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           skillName={this.props.translator.tr(skill.Name)}
           hasUsed={this.props.store.onceSkillUsedHistory[clientPlayer.Id]?.includes(skill.Name)}
           key={skill.Name}
+          tagPosition="left"
         />
       )),
     );
@@ -313,13 +314,14 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           skillName={this.props.translator.tr(skill.Name)}
           hasUsed={this.props.store.onceSkillUsedHistory[clientPlayer.Id]?.includes(skill.Name)}
           key={skill.Name}
+          tagPosition="left"
         />
       )),
     );
 
     const playerMarks = clientPlayer.getAllMarks();
     for (const [markName, amount] of Object.entries(playerMarks)) {
-      marks.push(<Mark amount={amount} markType={markName as MarkEnum} key={markName} />);
+      marks.push(<Mark amount={amount} markType={markName as MarkEnum} key={markName}  />);
     }
 
     return marks;
