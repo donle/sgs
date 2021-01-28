@@ -1,6 +1,6 @@
 # Character Class
 
-> [dsanguosha](../index.md) > [dsgscore](./dsgscore-index.md) > character
+> [DSanguosha](../index.md) > [Core](./core-index.md) > Character
 
 ___
 
@@ -12,29 +12,29 @@ Character类是游戏中所有武将的基类。[更多...](#detailed-descriptio
 
 ___
 
-Private Members | | |
- -: | :-: | :-
-[turnedOver](#turnedover) | : | boolean
-[linked](#linked) | : | boolean
-[lord](#lord) | : | boolean
+|           Private Members |       |         |
+| ------------------------: | :---: | :------ |
+| [turnedOver](#turnedover) |   :   | boolean |
+|         [linked](#linked) |   :   | boolean |
+|             [lord](#lord) |   :   | boolean |
 
 ___
 
-Protected Members | | |
- -: | :-: | :-
-[id](#id) | : | CharacterId
-[name](#name) | : | string
-[gender](#gender) | : | CharacterGender
-[nationality](#nationality) | : | CharacterNationality
-[maxHp](#maxhp) | : | number
-[hp](#hp) | : | number
-[fromPackage](#frompackage) | : | GameCharacterExtensions
-[skills](#skills) | : | Skill[]
+|           Protected Members |       |                         |
+| --------------------------: | :---: | :---------------------- |
+|                   [id](#id) |   :   | CharacterId             |
+|               [name](#name) |   :   | string                  |
+|           [gender](#gender) |   :   | CharacterGender         |
+| [nationality](#nationality) |   :   | CharacterNationality    |
+|             [maxHp](#maxhp) |   :   | number                  |
+|                   [hp](#hp) |   :   | number                  |
+| [fromPackage](#frompackage) |   :   | GameCharacterExtensions |
+|           [skills](#skills) |   :   | Skill[]                 |
 
 ___
 
-Public Functions | | |
- -: | :-: | :-
+| Public Functions |       |      |
+| ---------------: | :---: | :--- |
 
 + isLord()
 + turnOver()
@@ -45,8 +45,8 @@ Public Functions | | |
 
 ___
 
-Property Getters | | |
- -: | :-: | :-
+| Property Getters |       |      |
+| ---------------: | :---: | :--- |
 
 + Id
 + MaxHp
