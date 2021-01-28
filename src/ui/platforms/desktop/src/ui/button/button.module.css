@@ -1,4 +1,4 @@
-@value XinWeiFont from '../metrics/metrics.css';
+@value FZLiBianFont from '../metrics/metrics.css';
 
 .buttonOuter {
     border-radius: 4px;
@@ -14,7 +14,7 @@
     outline: none;
     color: #eaeaea;
     position: relative;
-    font-family: XinWeiFont;
+    font-family: FZLiBianFont;
     font-size: 15px;
     font-weight: 600;
     letter-spacing: 2px;
@@ -101,7 +101,7 @@
     outline: none;
     color: #eaeaea;
     position: relative;
-    font-family: XinWeiFont;
+    font-family: FZLiBianFont;
     font-size: 15px;
     font-weight: 600;
     letter-spacing: 2px;

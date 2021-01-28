@@ -1,4 +1,5 @@
 @value gridLine from '../../ui/metrics/metrics.css';
+@value FZLiBianFont from '../../ui/metrics/metrics.css';
 
 .charactersList {
     display: flex;
@@ -111,6 +112,11 @@
     align-self: center;
     margin-bottom: gridLine;
 }
+.skillName {
+    position: relative;
+    bottom: calc(8px / 2);
+}
+
 .deathButton,
 .skillName {
     font-weight: 600;
@@ -130,6 +136,7 @@
 }
 
 .skillDescription {
-    font-size: 12px;
+    font-family: FZLiBianFont;
+    font-size: 20px;
     line-height: calc(gridLine * 3);
 }

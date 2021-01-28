@@ -34,7 +34,6 @@
 .badge.small {
     height: calc(gridLine * 15);
     width: calc(gridLine * 3);
-    padding-left: calc(gridLine / 2);
     font-size: 18px;
 }
 .nationalityBadge {
@@ -47,7 +46,7 @@
 
 .badgeContext {
     align-items: center;
-    padding-top: calc(8px * 5);
+    margin-top: calc(8px * 5);
     display: flex;
 }
 
@@ -55,6 +54,7 @@
     width: 100%;
     text-align: center;
 }
+
 .playerPhaseBadge {
     height: 100%;
 }

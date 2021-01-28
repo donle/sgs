@@ -55,27 +55,32 @@ export const CharacterHp = (props: { character: Character; className?: string })
 
   const getMagatama = () => {
     const magatamas: JSX.Element[] = [];
-    for (let i = 0; i < character.Hp; i++) {
-      magatamas.push(
-        <CharaterMagatama
-          key={`${i}-maxhp-${character.Id}`}
-          className={styles.characterMagatama}
-          isLord={character.isLord()}
-          nationality={character.Nationality}
-        />,
-      );
-    }
-    for (let i = 0; i < character.MaxHp - character.Hp; i++) {
-      magatamas.push(
-        <CharaterMagatama
-          key={`${i}-${character.Id}`}
-          className={styles.characterMagatama}
-          isLord={character.isLord()}
-          nationality={character.Nationality}
-          emptyHp={true}
-        />,
-      );
-    }
+    const hp = character.Hp;
+    const maxHp = character.MaxHp || hp;
+
+    /* for (let i = 0; i < character.Hp; i++) {
+        magatamas.push(
+          <CharaterMagatama
+            key={`${i}-maxhp-${character.Id}`}
+            className={styles.characterMagatama}
+            isLord={character.isLord()}
+            nationality={character.Nationality}
+          />,
+        );
+      }
+      for (let i = 0; i < character.MaxHp - character.Hp; i++) {
+        magatamas.push(
+          <CharaterMagatama
+            key={`${i}-${character.Id}`}
+            className={styles.characterMagatama}
+            isLord={character.isLord()}
+            nationality={character.Nationality}
+            emptyHp={true}
+          />,
+        );
+      } */
+
+    magatamas.push(<span>{hp}</span>, <span>/</span>, <span>{maxHp}</span>);
 
     return magatamas;
   };
