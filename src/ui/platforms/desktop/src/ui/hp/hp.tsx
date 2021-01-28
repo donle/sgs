@@ -2,7 +2,6 @@ import classNames from 'classnames';
 import { Character } from 'core/characters/character';
 import * as React from 'react';
 import styles from './hp.module.css';
-import { CharaterMagatama } from './magatama/character_magatama';
 import { DamagedMagatama, HealthyStatusType, Magatama } from './magatama/magatama';
 
 const getStatus = (hp: number, maxHp: number): HealthyStatusType => {
@@ -54,35 +53,23 @@ export const CharacterHp = (props: { character: Character; className?: string })
   const { character, className } = props;
 
   const getMagatama = () => {
-    const magatamas: JSX.Element[] = [];
     const hp = character.Hp;
     const maxHp = character.MaxHp || hp;
+    const status = getStatus(hp, maxHp);
 
-    /* for (let i = 0; i < character.Hp; i++) {
-        magatamas.push(
-          <CharaterMagatama
-            key={`${i}-maxhp-${character.Id}`}
-            className={styles.characterMagatama}
-            isLord={character.isLord()}
-            nationality={character.Nationality}
-          />,
-        );
-      }
-      for (let i = 0; i < character.MaxHp - character.Hp; i++) {
-        magatamas.push(
-          <CharaterMagatama
-            key={`${i}-${character.Id}`}
-            className={styles.characterMagatama}
-            isLord={character.isLord()}
-            nationality={character.Nationality}
-            emptyHp={true}
-          />,
-        );
-      } */
-
-    magatamas.push(<span>{hp}</span>, <span>/</span>, <span>{maxHp}</span>);
-
-    return magatamas;
+    const className = classNames(styles.textHp, {
+      [styles.dying]: status === 'dying',
+      [styles.danger]: status === 'danger',
+      [styles.healthy]: status === 'healthy',
+    });
+    return (
+      <React.Fragment>
+        <Magatama size={'small'} status={status} />
+        <span className={className}>{hp}</span>
+        <span className={className}>/</span>
+        <span className={className}>{maxHp}</span>
+      </React.Fragment>
+    );
   };
 
   return <div className={classNames(styles.characterHpLabel, className)}>{getMagatama()}</div>;

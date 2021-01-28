@@ -18,7 +18,7 @@ import * as serviceWorker from './serviceWorker';
 const mode = (process.env.DEV_MODE as ClientFlavor) || Flavor.Dev;
 const config = getClientConfig(mode);
 
-if (config.flavor === ClientFlavor.Desktop) {
+if (config.flavor !== ClientFlavor.Web) {
   import('./index.module.css');
 }
 
