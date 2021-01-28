@@ -11,7 +11,7 @@ import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
-import { LobbySocketEvent, ChatSocketEvent } from 'core/shares/types/server_types';
+import { ChatSocketEvent, LobbySocketEvent } from 'core/shares/types/server_types';
 import { Languages } from 'core/translations/translation_json_tool';
 import { TranslationModule } from 'core/translations/translation_module';
 import * as http from 'http';
