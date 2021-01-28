@@ -1,4 +1,9 @@
 @font-face {
     font-family: XinWei;
-    src: url(./xinwei.ttf);
+    src: url(./assets/font/xinwei.ttf);
+}
+
+@font-face {
+    font-family: FZLiBian;
+    src: url(./assets/font/FZLiBian.ttf);
 }
