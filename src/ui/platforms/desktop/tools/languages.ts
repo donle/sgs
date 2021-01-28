@@ -1,6 +1,7 @@
 export const enum Language {
-  EN_US,
-  ZH_CN,
+  EN_US = 'en-US',
+  ZH_TW = 'zh-TW',
+  ZH_CN = 'zh-CN',
 }
 
 const zhCnTranslations = {
@@ -21,13 +22,15 @@ const enTranslations = {
   MismatchVersionTitle: 'Mismatched replay version',
   MismatchVersionMessage: (replayVersion: string, currentVersion: string) =>
     `replay version ${replayVersion}, client version ${currentVersion}. An unexpected issue might happen if playing a mismatched replay, do you want to continue?`,
-    UpdateTitle: 'Game Updating',
-    UpdateMessage: 'Game is updating, the update will be cancelled if the application had been closed, do you want to quit now?',
+  UpdateTitle: 'Game Updating',
+  UpdateMessage:
+    'Game is updating, the update will be cancelled if the application had been closed, do you want to quit now?',
 };
 
 const Translations: { [K in Language]: typeof zhCnTranslations } = {
   [Language.ZH_CN]: zhCnTranslations,
   [Language.EN_US]: enTranslations,
+  [Language.ZH_TW]: zhCnTranslations,
 };
 
 export function getTranslations(lang: Language = Language.EN_US) {

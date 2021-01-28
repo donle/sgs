@@ -51,7 +51,7 @@ class AppWindow {
   private windowInstance: BrowserWindow | undefined;
   private store = new Store();
   private replay = new Replay();
-  private translation = getTranslations(Language.ZH_CN);
+  private translation = getTranslations(this.store.get<Language>('language'));
 
   constructor(windowOptions?: BrowserWindowConstructorOptions) {
     this.windowInstance = new BrowserWindow(windowOptions);

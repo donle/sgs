@@ -10,6 +10,10 @@ export const enum LobbySocketEvent {
   VersionMismatch,
 }
 
+export const enum ChatSocketEvent {
+  Chat = 'chat',
+}
+
 export const enum RoomSocketEvent {
   CreateRoom = 'create-room',
   PlayerReady = 'player-ready',

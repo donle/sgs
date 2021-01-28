@@ -1,10 +1,8 @@
 import { getAudioLoader } from 'audio_loader/audio_loader_util';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronLoader } from 'electron_loader/electron_loader';
-import { getElectronLoader } from 'electron_loader/electron_loader_util';
 import { createMemoryHistory } from 'history';
 import { getImageLoader } from 'image_loader/image_loader_util';
-import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { CharactersList } from 'pages/characters_list/characters_list';
 import { OpenningPage } from 'pages/openning/openning';
@@ -13,24 +11,20 @@ import { RoomPage } from 'pages/room/room';
 import { ClientConfig } from 'props/config_props';
 import * as React from 'react';
 import { Redirect, Route, Router } from 'react-router-dom';
+import { ConnectionService } from 'services/connection_service/connection_service';
 import { Lobby } from './pages/lobby/lobby';
 
 @mobxReact.observer
-export class App extends React.PureComponent<{ config: ClientConfig; translator: ClientTranslationModule }> {
+export class App extends React.PureComponent<{
+  config: ClientConfig;
+  electronLoader: ElectronLoader;
+  translator: ClientTranslationModule;
+}> {
   private customHistory = createMemoryHistory();
 
   private imageLoader = getImageLoader(this.props.config.flavor);
   private audioLoader = getAudioLoader(this.props.config.flavor);
-  @mobx.observable.ref
-  private electronLoader: ElectronLoader;
-
-  componentWillMount() {
-    getElectronLoader(this.props.config.flavor).then(
-      mobx.action(loader => {
-        this.electronLoader = loader;
-      }),
-    );
-  }
+  private connectionService = new ConnectionService(this.props.config);
 
   componentDidMount() {
     document.title = this.props.translator.tr('New QSanguosha');
@@ -49,7 +43,7 @@ export class App extends React.PureComponent<{ config: ClientConfig; translator:
               <OpenningPage config={this.props.config} match={match} location={location} history={history} />
             )}
           />
-          {this.electronLoader ? (
+          {this.props.electronLoader ? (
             <Route
               path={'/lobby'}
               render={({ match, location, history }) => (
@@ -61,7 +55,8 @@ export class App extends React.PureComponent<{ config: ClientConfig; translator:
                   history={history}
                   imageLoader={this.imageLoader}
                   audioLoader={this.audioLoader}
-                  electronLoader={this.electronLoader}
+                  electronLoader={this.props.electronLoader}
+                  connectionService={this.connectionService}
                 />
               )}
             />
@@ -82,9 +77,10 @@ export class App extends React.PureComponent<{ config: ClientConfig; translator:
                 match={match}
                 imageLoader={this.imageLoader}
                 audioLoader={this.audioLoader}
-                electronLoader={this.electronLoader}
+                electronLoader={this.props.electronLoader}
                 config={this.props.config}
                 translator={this.props.translator}
+                connectionService={this.connectionService}
               />
             )}
           />
@@ -97,7 +93,7 @@ export class App extends React.PureComponent<{ config: ClientConfig; translator:
                 match={match}
                 imageLoader={this.imageLoader}
                 audioLoader={this.audioLoader}
-                electronLoader={this.electronLoader}
+                electronLoader={this.props.electronLoader}
                 config={this.props.config}
                 translator={this.props.translator}
               />
@@ -112,9 +108,10 @@ export class App extends React.PureComponent<{ config: ClientConfig; translator:
                 match={match}
                 imageLoader={this.imageLoader}
                 audioLoader={this.audioLoader}
-                electronLoader={this.electronLoader}
+                electronLoader={this.props.electronLoader}
                 config={this.props.config}
                 translator={this.props.translator}
+                connectionService={this.connectionService}
               />
             )}
           />

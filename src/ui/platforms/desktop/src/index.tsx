@@ -3,7 +3,9 @@ import { Sanguosha } from 'core/game/engine';
 import { Flavor } from 'core/shares/types/host_config';
 import { Languages } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import { SimplifiedChinese } from 'languages';
+import { ElectronLoader } from 'electron_loader/electron_loader';
+import { getElectronLoader } from 'electron_loader/electron_loader_util';
+import { SimplifiedChinese, TraditionalChinese } from 'languages';
 import { ClientFlavor } from 'props/config_props';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -16,21 +18,33 @@ import * as serviceWorker from './serviceWorker';
 const mode = (process.env.DEV_MODE as ClientFlavor) || Flavor.Dev;
 const config = getClientConfig(mode);
 
-const translator = ClientTranslationModule.setup(config.ui.language, [Languages.ZH_CN, SimplifiedChinese]);
-emojiLoader(translator);
-
 if (config.flavor === ClientFlavor.Desktop) {
   import('./index.module.css');
 }
 
-Sanguosha.initialize();
+let translator: ClientTranslationModule;
+let electronLoader: ElectronLoader;
 
-ReactDOM.render(
-  <MemoryRouter>
-    <App config={config} translator={translator} />
-  </MemoryRouter>,
-  document.getElementById('root'),
-);
+getElectronLoader(config.flavor)
+  .then(loader => {
+    electronLoader = loader;
+    translator = ClientTranslationModule.setup(
+      electronLoader.getData('language'),
+      [Languages.ZH_CN, SimplifiedChinese],
+      [Languages.ZH_HK, TraditionalChinese],
+      [Languages.ZH_TW, TraditionalChinese],
+    );
+    emojiLoader(translator);
+    Sanguosha.initialize();
+  })
+  .then(() => {
+    ReactDOM.render(
+      <MemoryRouter>
+        <App config={config} electronLoader={electronLoader} translator={translator} />
+      </MemoryRouter>,
+      document.getElementById('root'),
+    );
+  });
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

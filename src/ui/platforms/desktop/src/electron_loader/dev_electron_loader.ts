@@ -2,6 +2,12 @@ import { ReplayDataType } from 'types/replay_props';
 import { ElectronLoader } from './electron_loader';
 
 export class DevElectronLoader extends ElectronLoader {
+  constructor() {
+    super();
+    if (!window.localStorage.getItem('language')) {
+      window.localStorage.setItem('language', navigator.language);
+    }
+  }
   // tslint:disable-next-line:no-empty
   public flashFrame() {}
 

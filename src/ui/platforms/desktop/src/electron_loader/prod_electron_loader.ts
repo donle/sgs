@@ -17,7 +17,9 @@ import { ReplayDataType } from 'types/replay_props';
 import { ElectronLoader } from './electron_loader';
 
 export class ProdElectronLoader extends ElectronLoader {
-  private saveJson: any = {};
+  private saveJson: any = {
+    language: navigator.language,
+  };
   private tempSaveData: any = {};
   private ipcRenderer: IpcRenderer = (window as any).ipcRenderer;
   private whenUpdateallbackFn: Function | undefined;

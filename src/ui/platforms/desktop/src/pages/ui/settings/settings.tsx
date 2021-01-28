@@ -1,3 +1,4 @@
+import { getAllLanguages, Languages } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
@@ -20,6 +21,7 @@ export type SettingsProps = {
 
 export const SettingsDialog = (props: SettingsProps) => {
   const [username, setUsername] = React.useState<string>(props.electronLoader.getData('username') || '');
+  const [language, setLanguage] = React.useState<Languages>(props.electronLoader.getData('language'));
   const onSubmit = () => {
     props.electronLoader.setData('username', username);
     props.onConfirm();
@@ -31,6 +33,15 @@ export const SettingsDialog = (props: SettingsProps) => {
 
   const onMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.stopPropagation();
+  };
+
+  const onChangeLanguge = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    props.electronLoader.setData('language', event.currentTarget.value);
+    setLanguage(event.currentTarget.value as Languages);
+  };
+
+  const getLanguageText = () => {
+    return language;
   };
 
   return (
@@ -49,9 +60,22 @@ export const SettingsDialog = (props: SettingsProps) => {
         onChange={props.onGameVolumeChange}
       />
 
-      <div className={styles.inputField} onMouseDown={onMouseDown}>
-        <span className={styles.inputLabelText}>{props.translator.tr('please enter your username')}</span>
-        <input className={styles.input} value={username} onChange={onUsernameChange} />
+      <div className={styles.manuallyInput}>
+        <div className={styles.inputField} onMouseDown={onMouseDown}>
+          <span className={styles.inputLabelText}>{props.translator.tr('please enter your username')}</span>
+          <input className={styles.input} value={username} onChange={onUsernameChange} />
+        </div>
+
+        <div className={styles.inputField}>
+          <span className={styles.inputLabelText}>{props.translator.tr('game language')}</span>
+          <select className={styles.input} value={getLanguageText()} onChange={onChangeLanguge}>
+            {getAllLanguages().map(option => (
+              <option value={option} disabled={option === Languages.EN_US}>
+                {props.translator.tr(option)}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <Button variant="primary" onClick={onSubmit} className={styles.confirm} disabled={!username}>

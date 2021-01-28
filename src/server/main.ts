@@ -11,7 +11,7 @@ import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
-import { LobbySocketEvent } from 'core/shares/types/server_types';
+import { LobbySocketEvent, ChatSocketEvent } from 'core/shares/types/server_types';
 import { Languages } from 'core/translations/translation_json_tool';
 import { TranslationModule } from 'core/translations/translation_module';
 import * as http from 'http';
@@ -60,7 +60,14 @@ class App {
         .on(LobbySocketEvent.QueryRoomList.toString(), this.onQueryRoomsInfo(socket))
         .on(LobbySocketEvent.QueryVersion.toString(), this.matchCoreVersion(socket));
     });
+    this.lobbySocket.of('/chat').on('connect', socket => {
+      socket.on(ChatSocketEvent.Chat, this.onGameChat);
+    });
   }
+
+  private readonly onGameChat = (message: any) => {
+    this.lobbySocket.of('/chat').emit(ChatSocketEvent.Chat, message);
+  };
 
   private readonly matchCoreVersion = (socket: SocketIO.Socket) => (content: { version: string }) => {
     socket.emit(LobbySocketEvent.VersionMismatch.toString(), content.version === Sanguosha.Version);

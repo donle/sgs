@@ -1,4 +1,5 @@
 export * from './zh_CN';
+export * from './zh_TW';
 
 export type Word = {
   source: string;

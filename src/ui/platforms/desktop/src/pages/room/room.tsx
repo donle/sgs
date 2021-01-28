@@ -12,6 +12,7 @@ import * as mobxReact from 'mobx-react';
 import { SettingsDialog } from 'pages/ui/settings/settings';
 import * as React from 'react';
 import { match } from 'react-router-dom';
+import { ConnectionService } from 'services/connection_service/connection_service';
 import { PagePropsWithConfig } from 'types/page_props';
 import { installAudioPlayerService } from 'ui/audio/install';
 import { ClientCard } from 'ui/card/card';
@@ -34,6 +35,7 @@ export class RoomPage extends React.Component<
     imageLoader: ImageLoader;
     audioLoader: AudioLoader;
     electronLoader: ElectronLoader;
+    connectionService: ConnectionService;
   }>
 > {
   private presenter: RoomPresenter;
@@ -83,6 +85,7 @@ export class RoomPage extends React.Component<
       imageLoader: ImageLoader;
       audioLoader: AudioLoader;
       electronLoader: ElectronLoader;
+      connectionService: ConnectionService;
     }>,
   ) {
     super(props);
@@ -312,7 +315,12 @@ export class RoomPage extends React.Component<
               />
               <div className={styles.sideBoard}>
                 <GameBoard store={this.store} translator={this.props.translator} />
-                <GameDialog store={this.store} presenter={this.presenter} translator={this.props.translator} />
+                <GameDialog
+                  store={this.store}
+                  presenter={this.presenter}
+                  translator={this.props.translator}
+                  connectionService={this.props.connectionService}
+                />
               </div>
             </div>
             <Dashboard

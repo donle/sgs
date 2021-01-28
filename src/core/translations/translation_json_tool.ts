@@ -3,8 +3,14 @@ import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 
 export const enum Languages {
-  ZH_CN = 'zh-CN',
   EN_US = 'en-US',
+  ZH_CN = 'zh-CN',
+  ZH_HK = 'zh-HK',
+  ZH_TW = 'zh-TW',
+}
+
+export function getAllLanguages() {
+  return [Languages.EN_US, Languages.ZH_CN, Languages.ZH_HK, Languages.ZH_TW];
 }
 
 export type PatchedTranslationObject = {
