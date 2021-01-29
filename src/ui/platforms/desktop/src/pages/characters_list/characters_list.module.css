@@ -56,9 +56,10 @@
     overflow-y: auto;
     display: flex;
     flex-wrap: wrap;
-    max-height: calc(100% - 48px);
+    max-height: calc(100% - calc(gridLine * 6));
     overflow-x: hidden;
     justify-content: space-between;
+    padding: gridLine;
 }
 
 .characterTooltip {

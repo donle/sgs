@@ -34,7 +34,7 @@ export const characterDictionary: Word[] = [
   { source: 'huangtian', target: '黃天' },
   { source: '~huangtian', target: '黃天' },
 
-  { source: 'yuji', target: '於吉' },
+  { source: 'yuji', target: '于吉' },
   { source: 'guhuo', target: '蠱惑' },
   { source: 'chanyuan', target: '纏怨' },
 ];

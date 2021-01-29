@@ -1,15 +1,16 @@
 @value SanguoshaFont from '../metrics/metrics.css';
+@value gridLine from '../metrics/metrics.css';
 
 .characterCard {
-    min-width: 160px;
-    height: 200px;
+    min-width: calc(gridLine * 20);
+    height: calc(gridLine * 25);
     font-family: SanguoshaFont;
-    font-size: 24px;
+    font-size: calc(gridLine * 3);
     position: relative;
 }
 .characterCard.small {
-    min-width: 120px;
-    height: 150px;
+    min-width: calc(gridLine * 15);
+    height: calc(gridLine * 18.75);
 }
 
 .selected {
@@ -25,10 +26,10 @@
 
 .characterHp {
     bottom: 0px;
-    right: 5px;
+    right: 0;
     color: white;
-    font-size: calc(8px * 2);
-    font-weight: 900;
+    font-size: calc(gridLine * 2);
+    font-weight: 700;
     display: flex;
     flex-direction: column;
 
@@ -37,7 +38,7 @@
 }
 
 .characterHp.small {
-    max-width: 80px;
+    max-width: calc(gridLine * 10);
     flex-wrap: wrap;
 }
 

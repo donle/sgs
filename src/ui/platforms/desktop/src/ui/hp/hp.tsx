@@ -1,7 +1,8 @@
 import classNames from 'classnames';
-import { Character } from 'core/characters/character';
+import { Character, CharacterNationality } from 'core/characters/character';
 import * as React from 'react';
 import styles from './hp.module.css';
+import { CharaterMagatama } from './magatama/character_magatama';
 import { DamagedMagatama, HealthyStatusType, Magatama } from './magatama/magatama';
 
 const getStatus = (hp: number, maxHp: number): HealthyStatusType => {
@@ -55,16 +56,18 @@ export const CharacterHp = (props: { character: Character; className?: string })
   const getMagatama = () => {
     const hp = character.Hp;
     const maxHp = character.MaxHp || hp;
-    const status = getStatus(hp, maxHp);
 
     const className = classNames(styles.textHp, {
-      [styles.dying]: status === 'dying',
-      [styles.danger]: status === 'danger',
-      [styles.healthy]: status === 'healthy',
+      [styles.lord]: character.isLord(),
+      [styles.wei]: character.Nationality === CharacterNationality.Wei,
+      [styles.shu]: character.Nationality === CharacterNationality.Shu,
+      [styles.wu]: character.Nationality === CharacterNationality.Wu,
+      [styles.qun]: character.Nationality === CharacterNationality.Qun,
+      [styles.god]: character.Nationality === CharacterNationality.God,
     });
     return (
       <React.Fragment>
-        <Magatama size={'small'} status={status} />
+        <CharaterMagatama nationality={character.isLord() ? CharacterNationality.God : character.Nationality} />
         <span className={className}>{hp}</span>
         <span className={className}>/</span>
         <span className={className}>{maxHp}</span>

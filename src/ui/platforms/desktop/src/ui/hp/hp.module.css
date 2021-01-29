@@ -1,6 +1,8 @@
-@value dyingColor from './magatama/magatama.module.css';
-@value dangerColor from './magatama/magatama.module.css';
-@value healthyColor from './magatama/magatama.module.css';
+@value wuColor from '../metrics/metrics.css';
+@value weiColor from '../metrics/metrics.css';
+@value shuColor from '../metrics/metrics.css';
+@value qunColor from '../metrics/metrics.css';
+@value godColor from '../metrics/metrics.css';
 
 .textHpLabel {
     display: flex;
@@ -16,12 +18,21 @@
         0 0 4px white;
 }
 
-.dying {
-    color: dyingColor;
+.wei {
+    color: weiColor;
 }
-.danger {
-    color: dangerColor;
+.shu {
+    color: shuColor;
 }
-.healthy {
-    color: healthyColor;
+.wu {
+    color: wuColor;
+}
+.qun {
+    color: qunColor;
+}
+.god {
+    color: godColor;
+}
+.lord {
+    color: godColor;
 }

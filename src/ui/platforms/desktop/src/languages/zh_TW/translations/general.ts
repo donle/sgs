@@ -636,7 +636,7 @@ export const eventDictionary: Word[] = [
 ];
 
 export const UiDictionary: Word[] = [
-  { source: 'No rooms at the moment', target: '還冇有玩家創建房間' },
+  { source: 'No rooms at the moment', target: '還沒有玩家創建房間' },
   { source: 'Create a room', target: '創建房間' },
   { source: 'waiting', target: '等待中' },
   { source: 'playing', target: '遊戲中' },
@@ -699,7 +699,7 @@ export const UiDictionary: Word[] = [
   { source: 'game volume', target: '遊戲音量' },
   { source: 'settings', target: '設置' },
   { source: 'death audio', target: '陣亡音效' },
-  { source: 'game language', target: '選擇語言（重啟或刷新後生效）'},
+  { source: 'game language', target: '選擇語言（重啟或刷新後生效）' },
   { source: 'zh-CN', target: '简体中文' },
   { source: 'zh-TW', target: '繁體中文' },
   { source: 'zh-HK', target: '繁體中文（香港）' },

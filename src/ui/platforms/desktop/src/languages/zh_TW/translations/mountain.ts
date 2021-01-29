@@ -9,7 +9,7 @@ export const characterDictionary: Word[] = [
   { source: 'zaoxian', target: '鑿險' },
   { source: 'jixi', target: '急襲' },
 
-  { source: 'jiangwei', target: '薑維' },
+  { source: 'jiangwei', target: '姜維' },
   { source: 'tiaoxin', target: '挑釁' },
   { source: 'zhiji', target: '誌繼' },
 
