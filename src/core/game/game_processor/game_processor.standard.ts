@@ -1104,6 +1104,8 @@ export class StandardGameProcessor extends GameProcessor {
         const dyingEvent: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent> = {
           dying: to.Id,
           killedBy: event.fromId,
+          killedByCard: event.cardIds,
+          triggeredBySkills: event.triggeredBySkills,
         };
 
         if (to.Hp <= 0) {
@@ -1147,7 +1149,7 @@ export class StandardGameProcessor extends GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    const { dying, killedBy } = event;
+    const { dying, killedBy, killedByCard } = event;
     const to = this.room.getPlayerById(dying);
     this.room.broadcast(GameEventIdentifiers.PlayerDyingEvent, {
       dying: to.Id,
@@ -1155,6 +1157,7 @@ export class StandardGameProcessor extends GameProcessor {
         '{0} is dying',
         TranslationPack.patchPlayerInTranslation(to),
       ).extract(),
+      killedByCard,
     });
 
     to.Dying = true;
