@@ -1444,7 +1444,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     );
   }
 
-  public async kill(deadPlayer: Player, killedBy?: PlayerId) {
+  public async kill(deadPlayer: Player, killedBy?: PlayerId, killedByCards?: CardId[]) {
     deadPlayer.Dying = false;
     const playerDiedEvent: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent> = {
       playerId: deadPlayer.Id,
@@ -1456,6 +1456,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           killedBy ? TranslationPack.patchPlayerInTranslation(this.getPlayerById(killedBy)) : '',
         ).toString(),
       ],
+      killedByCards,
       translationsMessage: TranslationPack.translationJsonPatcher(
         'the role of {0} is {1}',
         TranslationPack.patchPlayerInTranslation(deadPlayer),
