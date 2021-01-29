@@ -221,7 +221,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.PlayerDyingEvent]: {
     dying: PlayerId;
     killedBy?: PlayerId;
-    killedByCard?: CardId[];
+    killedByCards?: CardId[];
     rescuer?: PlayerId;
   };
   [GameEventIdentifiers.PlayerDiedEvent]: {
