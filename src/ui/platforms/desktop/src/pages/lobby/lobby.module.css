@@ -9,6 +9,12 @@
     height: 100vh;
 }
 
+.signalBar {
+    position: absolute;
+    top: gridLine;
+    right: gridLine;
+}
+
 .background {
     position: fixed;
     align-self: center;

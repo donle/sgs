@@ -300,6 +300,7 @@ export class RoomPage extends React.Component<
               translator={this.props.translator}
               roomName={this.store.room.getRoomInfo().name}
               className={styles.roomBanner}
+              connectionService={this.props.connectionService}
               onClickSettings={this.onClickSettings}
             />
             <div className={styles.mainBoard}>

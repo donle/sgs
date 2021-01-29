@@ -1,5 +1,7 @@
+@value gridLine from '../../../../ui/metrics/metrics.css';
+
 .banner {
-    padding: 4px 8px;
+    padding: calc(gridLine / 2) gridLine;
     display: flex;
     background: rgba(0, 0, 0, 0.64);
     font-weight: 550;
@@ -15,9 +17,13 @@
 }
 
 .settingsButton {
-    margin-right: 16px;
+    margin-right: calc(gridLine * 2);
 }
 
 .controlButtons {
     display: flex;
+}
+.signalBar {
+    margin-left: gridLine;
+    align-self: center;
 }

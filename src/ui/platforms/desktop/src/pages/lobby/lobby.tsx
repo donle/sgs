@@ -18,6 +18,7 @@ import { PagePropsWithConfig } from 'types/page_props';
 import { installAudioPlayerService } from 'ui/audio/install';
 import { Button } from 'ui/button/button';
 import { LinkButton } from 'ui/button/link_button';
+import { SignalBar } from 'ui/signal_bar/signal_bar';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import lockerImage from './images/locked.png';
 import styles from './lobby.module.css';
@@ -255,6 +256,7 @@ export class Lobby extends React.Component<LobbyProps> {
   render() {
     return (
       <div className={styles.lobby}>
+        <SignalBar className={styles.signalBar} connectionService={this.props.connectionService} />
         <img src={this.backgroundImage} alt="" className={styles.background} />
         <div className={styles.board}>
           <div className={styles.functionBoard}>

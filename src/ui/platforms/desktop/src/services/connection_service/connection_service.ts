@@ -17,11 +17,16 @@ export class ConnectionService {
     this.lobbySocket = SocketIOClient(this.baseConnectionUrl + 'lobby');
   }
 
+  private pingReceiver: (ping: number) => void;
+  private pingStartTimestamp: number;
+
   private readonly lobbyService = {
     getRoomList: () => {
+      this.pingStartTimestamp = Date.now();
       this.lobbySocket.emit(LobbySocketEvent.QueryRoomList.toString());
     },
     checkCoreVersion: () => {
+      this.pingStartTimestamp = Date.now();
       this.lobbySocket.emit(LobbySocketEvent.QueryVersion.toString(), {
         version: Sanguosha.Version,
       });
@@ -33,14 +38,25 @@ export class ConnectionService {
     ) => {
       this.lobbySocket.emit(LobbySocketEvent.GameCreated.toString(), gameInfo);
     },
+    ping: (action: (ping: number) => void) => {
+      this.pingReceiver = action;
+    },
     onGameCreated: (action: (matched: LobbySocketEventPicker<LobbySocketEvent.GameCreated>) => void) => {
-      this.lobbySocket.on(LobbySocketEvent.GameCreated.toString(), action);
+      this.lobbySocket.on(LobbySocketEvent.GameCreated.toString(), evt => {
+        action(evt);
+      });
     },
     onReceivedRoomList: (action: (matched: LobbySocketEventPicker<LobbySocketEvent.QueryRoomList>) => void) => {
-      this.lobbySocket.on(LobbySocketEvent.QueryRoomList.toString(), action);
+      this.lobbySocket.on(LobbySocketEvent.QueryRoomList.toString(), evt => {
+        this.pingReceiver?.(Math.round((Date.now() - this.pingStartTimestamp) / 2));
+        action(evt);
+      });
     },
     onVersionMismatch: (action: (matched: LobbySocketEventPicker<LobbySocketEvent.VersionMismatch>) => void) => {
-      this.lobbySocket.on(LobbySocketEvent.VersionMismatch.toString(), action);
+      this.lobbySocket.on(LobbySocketEvent.VersionMismatch.toString(), evt => {
+        this.pingReceiver?.(Math.round((Date.now() - this.pingStartTimestamp) / 2));
+        action(evt);
+      });
     },
   };
 
