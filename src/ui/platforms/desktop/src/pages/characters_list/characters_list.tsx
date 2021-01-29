@@ -52,7 +52,7 @@ const CharacterSpec = ({
       {skills.map(skill => (
         <div className={styles.skill}>
           <span className={styles.skillName} onClick={onPlaySkillAudio(skill.Name)}>
-            {translator.trx(skill.Name)}
+            {translator.tr(skill.Name)}
           </span>
           <span
             className={styles.skillDescription}

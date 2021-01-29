@@ -9,7 +9,7 @@ export const characterDictionary: Word[] = [
   { source: '#jiushi', target: '酒詩' },
   { source: 'chengzhang', target: '成章' },
 
-  { source: 'yujin', target: '於禁' },
+  { source: 'yujin', target: '于禁' },
   { source: 'jieyue', target: '節鉞' },
 
   { source: 'zhangchunhua', target: '張春華' },
@@ -37,6 +37,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'lingtong', target: '淩統' },
   { source: 'xuanfeng', target: '旋風' },
+  { source: 'yongjin', target: '勇進' },
 
   { source: 'chengong', target: '陳宮' },
   { source: 'mingce', target: '明策' },
@@ -132,6 +133,11 @@ export const skillDescriptions: Word[] = [
     target:
       '若你於棄牌階段內棄置過至少兩張手牌，或當你失去裝備區裏的牌後，你可以選擇一項：1.依次棄置其他角色的共計一至兩張牌；2.將一名其他角色裝備區裏的牌置入另一名其他角色的裝備區。',
   },
+  {
+    source: 'yongjin_description',
+    target:
+      '<b>限定技</b>，出牌階段，你可以依次移動場上一至三張不同的裝備牌。',
+  },
 
   {
     source: 'mingce_description',
@@ -208,7 +214,7 @@ export const promptDescriptions: Word[] = [
     source: 'jieyue: please choose jieyue options',
     target: '{0}：1.選擇一張手牌和裝備牌，棄置其餘的牌；2.令 {1} 摸3張牌',
   },
-  
+
   {
     source: '{0}: do you want to reveal a hand card from {1} ?',
     target: '{0}：你可以展示 {1} 的一張手牌，若此牌不為基本牌，其棄置之並回複1點體力',
