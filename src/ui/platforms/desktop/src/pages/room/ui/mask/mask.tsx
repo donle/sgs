@@ -1,6 +1,9 @@
 import classNames from 'classnames';
 import { PlayerRole } from 'core/player/player_props';
+import { GameMode } from 'core/shares/types/room_props';
 import * as React from 'react';
+import lord1v2Mask from './images/1v2_lord.png';
+import rebel1v2Mask from './images/1v2_rebel.png';
 import lordMask from './images/lord.png';
 import loyalistMask from './images/loyalist.png';
 import rebelMask from './images/rebel.png';
@@ -16,15 +19,36 @@ const maskImages: { [K in PlayerRole]: string } = {
   [PlayerRole.Unknown]: unknownMask,
 };
 
+const oneVersusTwoMarkImages: { [K in PlayerRole]?: string } = {
+  [PlayerRole.Lord]: lord1v2Mask,
+  [PlayerRole.Rebel]: rebel1v2Mask,
+};
+
+const getMaskImage = (gameMode: GameMode, role: PlayerRole) => {
+  switch (gameMode) {
+    case GameMode.OneVersusTwo:
+      return oneVersusTwoMarkImages[role];
+    case GameMode.Standard:
+    default:
+      return maskImages[role];
+  }
+};
+
 export type MaskProps = {
   displayedRole?: PlayerRole;
   hideDisplay?: boolean;
   className?: string;
   lockedRole?: PlayerRole;
+  gameMode: GameMode;
 };
 
-const OneMask = (props: { role: PlayerRole; onClick?(role: PlayerRole): () => void; className?: string }) => {
-  const { role, onClick, className } = props;
+const OneMask = (props: {
+  role: PlayerRole;
+  onClick?(role: PlayerRole): () => void;
+  className?: string;
+  gameMode: GameMode;
+}) => {
+  const { role, onClick, className, gameMode } = props;
   return (
     <div
       className={classNames(styles.oneMask, className, {
@@ -36,13 +60,13 @@ const OneMask = (props: { role: PlayerRole; onClick?(role: PlayerRole): () => vo
       })}
       onClick={onClick && onClick(role)}
     >
-      <img className={styles.maskImage} alt={''} src={maskImages[role]} />
+      <img className={styles.maskImage} alt={''} src={getMaskImage(gameMode, role)} />
     </div>
   );
 };
 
-const AllMasks = (props: { onClick?(role: PlayerRole): () => void; opened: boolean }) => {
-  const { onClick, opened } = props;
+const AllMasks = (props: { onClick?(role: PlayerRole): () => void; opened: boolean; gameMode: GameMode }) => {
+  const { onClick, opened, gameMode } = props;
 
   const masks: JSX.Element[] = [];
   for (const role of [PlayerRole.Loyalist, PlayerRole.Rebel, PlayerRole.Renegade, PlayerRole.Unknown]) {
@@ -50,6 +74,7 @@ const AllMasks = (props: { onClick?(role: PlayerRole): () => void; opened: boole
       <OneMask
         role={role}
         key={role}
+        gameMode={gameMode}
         onClick={onClick}
         className={classNames({
           [styles.opened]: opened,
@@ -62,7 +87,7 @@ const AllMasks = (props: { onClick?(role: PlayerRole): () => void; opened: boole
 };
 
 export const Mask = (props: MaskProps) => {
-  const { hideDisplay, displayedRole = PlayerRole.Unknown, className, lockedRole } = props;
+  const { hideDisplay, displayedRole = PlayerRole.Unknown, className, lockedRole, gameMode } = props;
   const [maskSwitch, setMaskSwitch] = React.useState(false);
   const [role, setRole] = React.useState(displayedRole);
 
@@ -91,9 +116,9 @@ export const Mask = (props: MaskProps) => {
           [styles.renegade]: lockedRole === PlayerRole.Renegade || role === PlayerRole.Renegade,
         })}
       >
-        <img className={styles.maskImage} alt={''} src={maskImages[lockedRole || role]} />
+        <img className={styles.maskImage} alt={''} src={getMaskImage(gameMode, lockedRole || role)} />
       </div>
-      <AllMasks onClick={lockedRole ? undefined : onClick} opened={!lockedRole && maskSwitch} />
+      <AllMasks onClick={lockedRole ? undefined : onClick} opened={!lockedRole && maskSwitch} gameMode={gameMode} />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { Card, VirtualCard } from 'core/cards/card';
+import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Character, CharacterId } from 'core/characters/character';
@@ -13,14 +13,17 @@ import {
 import { Sanguosha } from 'core/game/engine';
 import { GameCommonRules } from 'core/game/game_rules';
 import { PlayerPhase } from 'core/game/stage_processor';
+import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { System } from 'core/shares/libs/system';
 import { SkillType } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
+import { AudioService } from 'ui/audio/install';
 import { AskForPeachAction } from './actions/ask_for_peach_action';
 import { CardResponseAction } from './actions/card_response_action';
 import { PlayPhaseAction } from './actions/play_phase_action';
@@ -37,14 +40,21 @@ import { WuGuFengDengDialog } from './ui/dialog/wugufengdeng_dialog/wugufengdeng
 export class GameClientProcessor {
   private onPlayTrustedActionTimer: NodeJS.Timer | undefined;
 
-  private excludedResponsiveEvents: GameEventIdentifiers[] = [GameEventIdentifiers.UserMessageEvent];
+  private excludedResponsiveEvents: GameEventIdentifiers[] = [
+    GameEventIdentifiers.UserMessageEvent,
+    GameEventIdentifiers.PlayerStatusEvent,
+  ];
 
   constructor(
     private presenter: RoomPresenter,
     private store: RoomStore,
     private translator: ClientTranslationModule,
     private imageLoader: ImageLoader,
-  ) {}
+    private audioService: AudioService,
+    private electron: ElectronLoader,
+  ) {
+    this.audioService.playRoomBGM();
+  }
 
   private tryToThrowNotReadyException(e: GameEventIdentifiers) {
     if (!this.store.room && e !== GameEventIdentifiers.PlayerEnterEvent) {
@@ -62,7 +72,7 @@ export class GameClientProcessor {
         this.store.room.DropStack = numberOfDropStack;
       }
     }
-    if (identifier !== GameEventIdentifiers.UserMessageEvent) {
+    if (!this.excludedResponsiveEvents.includes(identifier)) {
       this.presenter.clearNotifiers();
     }
   }
@@ -71,7 +81,7 @@ export class GameClientProcessor {
     if (this.store.inAction && !event.ignoreNotifiedStatus) {
       this.endAction();
     }
-    if (serverResponsiveListenerEvents.includes(identifier) && !this.excludedResponsiveEvents.includes(identifier)) {
+    if (serverResponsiveListenerEvents.includes(identifier)) {
       this.presenter.startAction(identifier, event);
       this.onPlayTrustedAction();
     }
@@ -306,6 +316,7 @@ export class GameClientProcessor {
     this.presenter.addUserMessage(this.translator.trx(content.message));
     this.presenter.onIncomingMessage(content.playerId, content.originalMessage);
     this.presenter.broadcastUIUpdate();
+    this.electron.flashFrame();
   }
 
   private async onHandleSetFlagEvent<T extends GameEventIdentifiers.SetFlagEvent>(
@@ -371,7 +382,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    if (content.randomPinDianCardPlayer.includes(this.store.clientPlayerId)) {
+    if (content.randomPinDianCard) {
       const handcards = this.presenter.ClientPlayer!.getCardIds(PlayerCardsArea.HandArea);
       const randomCardIndex = Math.floor(Math.random() * handcards.length);
       const event: ClientEventFinder<T> = {
@@ -516,8 +527,27 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
+    const from = this.store.room.getPlayerById(content.fromId);
+    const card = Sanguosha.getCardById(content.cardId);
+    if (!card.is(CardType.Equip)) {
+      this.audioService.playCardAudio(card.Name, from.Gender, from.Character.Name);
+    } else {
+      this.audioService.playEquipAudio();
+    }
+
+    const tos = content.toIds?.map(toId => this.store.room.getPlayerById(toId)) as Player[];
+
     await this.store.room.useCard(content);
-    this.presenter.showCards(...Card.getActualCards([content.cardId]).map(cardId => Sanguosha.getCardById(cardId)));
+    this.presenter.showCards(
+      ...Card.getActualCards([content.cardId]).map(cardId => ({
+        card: Sanguosha.getCardById(cardId),
+        tag: TranslationPack.translationJsonPatcher(
+          tos ? '{0} used card to {1}' : '{0} used card',
+          TranslationPack.patchPlayerInTranslation(from),
+          tos && TranslationPack.patchPlayerInTranslation(...tos),
+        ).toString(),
+      })),
+    );
     this.presenter.broadcastUIUpdate();
   }
 
@@ -525,14 +555,37 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.presenter.showCards(...Card.getActualCards([content.cardId]).map(cardId => Sanguosha.getCardById(cardId)));
+    const from = this.store.room.getPlayerById(content.fromId);
+    const card = Sanguosha.getCardById(content.cardId);
+    if (!card.is(CardType.Equip) && !content.mute) {
+      this.audioService.playCardAudio(card.Name, from.Gender, from.Character.Name);
+    }
+    this.presenter.showCards(
+      ...Card.getActualCards([content.cardId]).map(cardId => ({
+        card: Sanguosha.getCardById(cardId),
+        tag: TranslationPack.translationJsonPatcher(
+          '{0} responded card',
+          TranslationPack.patchPlayerInTranslation(from),
+        ).toString(),
+      })),
+    );
   }
 
   private onHandleCardDisplayEvent<T extends GameEventIdentifiers.CardDisplayEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.presenter.showCards(...Card.getActualCards(content.displayCards).map(cardId => Sanguosha.getCardById(cardId)));
+    this.presenter.showCards(
+      ...Card.getActualCards(content.displayCards).map(cardId => ({
+        card: Sanguosha.getCardById(cardId),
+        tag:
+          content.fromId &&
+          TranslationPack.translationJsonPatcher(
+            '{0} displayed card',
+            TranslationPack.patchPlayerInTranslation(this.store.room.getPlayerById(content.fromId)),
+          ).toString(),
+      })),
+    );
   }
 
   // tslint:disable-next-line:no-empty
@@ -626,18 +679,21 @@ export class GameClientProcessor {
   ) {
     const { playerId } = content;
     const player = this.store.room.getPlayerById(playerId);
+    this.audioService.playDeathAudio(player.Character.Name);
     this.store.room.kill(player);
     this.presenter.broadcastUIUpdate();
   }
 
   private onHandleDamageEvent<T extends GameEventIdentifiers.DamageEvent>(type: T, content: ServerEventFinder<T>) {
     const player = this.store.room.getPlayerById(content.toId);
+    this.audioService.playDamageAudio(content.damage);
     player.changeHp(-content.damage);
     this.presenter.broadcastUIUpdate();
   }
 
   private onHandleLoseHpEvent<T extends GameEventIdentifiers.LoseHpEvent>(type: T, content: ServerEventFinder<T>) {
     const player = this.store.room.getPlayerById(content.toId);
+    this.audioService.playLoseHpAudio();
     player.changeHp(-content.lostHp);
     this.presenter.broadcastUIUpdate();
   }
@@ -680,6 +736,8 @@ export class GameClientProcessor {
     });
     this.store.room.sortPlayers();
     this.presenter.broadcastUIUpdate();
+    this.audioService.playGameStartAudio();
+    this.electron.flashFrame();
     await this.store.room.gameStart(content.gameStartInfo);
   }
 
@@ -922,7 +980,12 @@ export class GameClientProcessor {
         to.getCardIds(toArea as PlayerCardsArea).push(...actualCardIds);
       }
     } else if (toArea === CardMoveArea.DropStack) {
-      this.presenter.showCards(...Card.getActualCards(cardIds).map(cardId => Sanguosha.getCardById(cardId)));
+      this.presenter.showCards(
+        ...Card.getActualCards(cardIds).map(cardId => ({
+          card: Sanguosha.getCardById(cardId),
+          tag: 'move to drop stack',
+        })),
+      );
     }
 
     toOutsideArea !== undefined && isOutsideAreaInPublic && to && to.setVisibleOutsideArea(toOutsideArea);
@@ -931,8 +994,14 @@ export class GameClientProcessor {
   }
 
   private onHandleJudgeEvent<T extends GameEventIdentifiers.JudgeEvent>(type: T, content: ServerEventFinder<T>) {
-    const { judgeCardId } = content;
-    this.presenter.showCards(Sanguosha.getCardById(judgeCardId));
+    const { judgeCardId, toId } = content;
+    this.presenter.showCards({
+      card: Sanguosha.getCardById(judgeCardId),
+      tag: TranslationPack.translationJsonPatcher(
+        "{0}'s judge card",
+        TranslationPack.patchPlayerInTranslation(this.store.room.getPlayerById(toId)),
+      ).toString(),
+    });
     this.presenter.broadcastUIUpdate();
   }
 
@@ -1226,8 +1295,11 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    await this.store.room.useSkill(content);
     const skill = Sanguosha.getSkillBySkillName(content.skillName);
+    const from = this.store.room.getPlayerById(content.fromId);
+    !content.mute && this.audioService.playSkillAudio(skill.GeneralName, from.Gender, from.Character.Name);
+
+    await this.store.room.useSkill(content);
     if (skill.SkillType === SkillType.Limit || skill.SkillType === SkillType.Awaken) {
       this.presenter.onceSkillUsed(content.fromId, content.skillName);
     }
@@ -1252,6 +1324,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
+    this.audioService.playChainAudio();
     const { toId, linked } = content;
     this.store.room.getPlayerById(toId).ChainLocked = linked;
     this.presenter.broadcastUIUpdate();

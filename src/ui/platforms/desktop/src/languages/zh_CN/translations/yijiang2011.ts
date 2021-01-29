@@ -150,7 +150,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'jinjiu_description',
-    target: '<b>锁定技</b>，你的【杀】均视为【酒】。',
+    target: '<b>锁定技</b>，你的【酒】均视为【杀】。',
   },
 ];
 
@@ -227,4 +227,8 @@ export const promptDescriptions: Word[] = [
     source: '{0}: please choose a target to drop card',
     target: '{0}：请选择一名角色并弃置其一张牌',
   },
+  {
+    source: '{0}: do you want to draw {1} cards?',
+    target: '{0}: 是否摸 {1} 张牌?',
+  }
 ];

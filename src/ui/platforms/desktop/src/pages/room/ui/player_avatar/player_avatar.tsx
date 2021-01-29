@@ -166,9 +166,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
         <div className={styles.outsideArea}>
           {Object.entries<CardId[]>(cards)
             .map(([areaName, cards], index) =>
-              cards.length === 0 ? (
-                undefined
-              ) : (
+              cards.length === 0 ? undefined : (
                 <span
                   key={index}
                   className={classNames(styles.skillTag, styles.clickableSkillTag)}
@@ -203,7 +201,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           selected={this.getSkillSelected() && this.props.store.selectedSkill === skill}
           size="normal"
           key={index}
-          className={styles.playerSkill}
+          className={classNames(styles.playerSkill, styles.sideSkill)}
           disabled={!skill.canUse(this.props.store.room, player)}
           onClick={this.onClickSkill(skill)}
         />
@@ -338,7 +336,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           {this.props.incomingMessage && (
             <Tooltip
               className={styles.incomingMessage}
-              position={['top']}
+              position={['slightTop']}
               closeAfter={3}
               closeCallback={this.onCloseIncomingMessageCallback}
             >
@@ -361,6 +359,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
             <Mask
               className={styles.playerRole}
               displayedRole={clientPlayer.Role}
+              gameMode={this.props.store.room.Info.gameMode}
               lockedRole={clientPlayer.Dead || clientPlayer.Role === PlayerRole.Lord ? clientPlayer.Role : undefined}
               hideDisplay={true}
             />
@@ -385,7 +384,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
             {this.getOutsideAreaCards()}
           </div>
           {this.onTooltipOpened && clientPlayer?.CharacterId !== undefined && (
-            <Tooltip position={['bottom', 'right']}>{this.createTooltipContent()}</Tooltip>
+            <Tooltip position={['left']}>{this.createTooltipContent()}</Tooltip>
           )}
         </div>
         <div className={styles.marks}>{this.getOnceSkillMarks()}</div>

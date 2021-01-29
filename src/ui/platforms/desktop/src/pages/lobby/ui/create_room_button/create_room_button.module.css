@@ -1,0 +1,26 @@
+.creatRoomButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    outline: 0;
+}
+
+.buttonImage {
+    width: 32px;
+}
+
+.creatRoomButton:disabled {
+    cursor: not-allowed;
+}
+
+.creatRoomButton:disabled .buttonImage {
+    filter: grayscale(1);
+}
+
+.creatRoomButton:enabled:hover .buttonImage {
+    filter: brightness(1.3);
+}
+
+.creatRoomButton:enabled:active .buttonImage {
+    filter: brightness(0.7);
+}

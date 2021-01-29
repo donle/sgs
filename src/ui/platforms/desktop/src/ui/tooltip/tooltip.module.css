@@ -12,18 +12,52 @@
     font-size: 14px;
 }
 
+.tooltip.shining {
+    animation: shining 2.5s infinite;
+}
+
 .top {
-    top: 0;
+    bottom: 100%;
 }
 
 .bottom {
-    bottom: 0;
+    top: 100%;
 }
 
 .left {
-    left: 0;
+    right: 100%;
 }
 
 .right {
-    right: 0;
+    left: 100%;
+}
+.slightBottom {
+    top: 75%;
+}
+.slightTop {
+    bottom: 75%;
+}
+.center {
+}
+
+@keyframes shining {
+    0% {
+        transform: scale(1);
+    }
+    6% {
+        transform: scale(1.1);
+    }
+    12% {
+        transform: scale(1);
+    }
+
+    18% {
+        transform: scale(1);
+    }
+    24% {
+        transform: scale(1.1);
+    }
+    30% {
+        transform: scale(1);
+    }
 }

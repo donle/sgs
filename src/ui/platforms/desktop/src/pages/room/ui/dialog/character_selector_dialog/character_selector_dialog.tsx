@@ -89,7 +89,7 @@ export class CharacterSelectorDialog extends React.Component<CharacterSelectorDi
             })}
           </div>
           {this.tooltipCharacter && (
-            <Tooltip position={['top']} className={styles.tooltip}>
+            <Tooltip position={['center']} className={styles.tooltip}>
               {this.createTooltipContent(this.tooltipCharacter)}
             </Tooltip>
           )}

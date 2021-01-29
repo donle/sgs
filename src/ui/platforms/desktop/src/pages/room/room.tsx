@@ -1,13 +1,20 @@
+import { AudioLoader } from 'audio_loader/audio_loader';
+import classNames from 'classnames';
 import { clientActiveListenerEvents, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { ClientSocket } from 'core/network/socket.client';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import { getImageLoader } from 'image_loader/image_loader_util';
+import { ElectronLoader } from 'electron_loader/electron_loader';
+import { ImageLoader } from 'image_loader/image_loader';
+import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
+import { SettingsDialog } from 'pages/ui/settings/settings';
 import * as React from 'react';
 import { match } from 'react-router-dom';
 import { PagePropsWithConfig } from 'types/page_props';
+import { installAudioPlayerService } from 'ui/audio/install';
 import { ClientCard } from 'ui/card/card';
+import { Curtain } from 'ui/curtain/curtain';
 import { GameClientProcessor } from './game_processor';
 import { installService, RoomBaseService } from './install_service';
 import styles from './room.module.css';
@@ -24,6 +31,9 @@ export class RoomPage extends React.Component<
   PagePropsWithConfig<{
     match: match<{ slug: string }>;
     translator: ClientTranslationModule;
+    imageLoader: ImageLoader;
+    audioLoader: AudioLoader;
+    electronLoader: ElectronLoader;
   }>
 > {
   private presenter: RoomPresenter;
@@ -31,20 +41,54 @@ export class RoomPage extends React.Component<
   private socket: ClientSocket;
   private gameProcessor: GameClientProcessor;
   private roomId: number;
-  private playerName = window.localStorage.getItem('username') || 'unknown';
+  private playerName: string = this.props.electronLoader.getData('username') || 'unknown';
   private baseService: RoomBaseService;
-  private imageLoader = getImageLoader(this.props.config.flavor);
+  private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
 
   private displayedCardsRef = React.createRef<HTMLDivElement>();
   private readonly cardWidth = 120;
   private readonly cardMargin = 2;
 
-  constructor(props: any) {
+  @mobx.observable.ref
+  private focusedCardIndex: number | undefined;
+  @mobx.observable.ref
+  openSettings = false;
+  @mobx.observable.ref
+  private defaultMainVolume = this.props.electronLoader.getData('mainVolume')
+    ? Number.parseInt(this.props.electronLoader.getData('mainVolume'), 10)
+    : 50;
+  @mobx.observable.ref
+  private defaultGameVolume = this.props.electronLoader.getData('gameVolume')
+    ? Number.parseInt(this.props.electronLoader.getData('gameVolume'), 10)
+    : 50;
+
+  private readonly settings = {
+    onVolumeChange: mobx.action((volume: number) => {
+      this.props.electronLoader.setData('gameVolume', volume.toString());
+      this.defaultGameVolume = volume;
+      this.audioService.changeGameVolume();
+    }),
+    onMainVolumeChange: mobx.action((volume: number) => {
+      this.props.electronLoader.setData('mainVolume', volume.toString());
+      this.defaultMainVolume = volume;
+      this.audioService.changeBGMVolume();
+    }),
+  };
+
+  constructor(
+    props: PagePropsWithConfig<{
+      match: match<{ slug: string }>;
+      translator: ClientTranslationModule;
+      imageLoader: ImageLoader;
+      audioLoader: AudioLoader;
+      electronLoader: ElectronLoader;
+    }>,
+  ) {
     super(props);
     const { config, match, translator } = this.props;
 
     this.roomId = parseInt(match.params.slug, 10);
-    this.presenter = new RoomPresenter(this.imageLoader);
+    this.presenter = new RoomPresenter(this.props.imageLoader);
     this.store = this.presenter.createStore();
 
     const roomId = this.roomId.toString();
@@ -52,9 +96,15 @@ export class RoomPage extends React.Component<
       `${config.host.protocol}://${config.host.host}:${config.host.port}/room-${roomId}`,
       roomId,
     );
-    this.baseService = installService(translator, this.store, this.imageLoader);
-
-    this.gameProcessor = new GameClientProcessor(this.presenter, this.store, translator, this.imageLoader);
+    this.baseService = installService(translator, this.store, this.props.imageLoader);
+    this.gameProcessor = new GameClientProcessor(
+      this.presenter,
+      this.store,
+      translator,
+      this.props.imageLoader,
+      this.audioService,
+      this.props.electronLoader,
+    );
   }
 
   componentDidMount() {
@@ -95,6 +145,7 @@ export class RoomPage extends React.Component<
 
   componentWillUnmount() {
     this.disconnect();
+    this.audioService.stop();
   }
 
   private updateGameStatus(event: ServerEventFinder<GameEventIdentifiers>) {
@@ -141,27 +192,50 @@ export class RoomPage extends React.Component<
     }
   }
 
+  private readonly onDisplayCardFocused = (index: number) => mobx.action(() => {
+    this.focusedCardIndex = index;
+  });
+
+  @mobx.action
+  private readonly onDisplayCardLeft = () => {
+    this.focusedCardIndex = undefined;
+  }
+
   private getDisplayedCard() {
     return (
       <div className={styles.displayedCards} ref={this.displayedCardsRef}>
-        {this.store.displayedCards.map((card, index) => (
+        {this.store.displayedCards.map((displayCard, index) => (
           <ClientCard
-            imageLoader={this.imageLoader}
-            card={card}
+            imageLoader={this.props.imageLoader}
+            card={displayCard.card}
+            tag={displayCard.tag}
             width={this.cardWidth}
             offsetLeft={this.calculateDisplayedCardOffset(this.store.displayedCards.length, index)}
             translator={this.props.translator}
-            className={styles.displayedCard}
+            className={classNames(styles.displayedCard, {
+              [styles.focused]: this.focusedCardIndex === index,
+            })}
+            onMouseEnter={this.onDisplayCardFocused(index)}
+            onMouseLeave={this.onDisplayCardLeft}
           />
         ))}
       </div>
     );
   }
 
+  @mobx.action
+  private readonly onClickSettings = () => {
+    this.openSettings = true;
+  };
+  @mobx.action
+  private readonly onCloseSettings = () => {
+    this.openSettings = false;
+  };
+
   render() {
     return (
       <div className={styles.room}>
-        <Background imageLoader={this.imageLoader} />
+        <Background imageLoader={this.props.imageLoader} />
         {this.store.selectorDialog}
 
         <div className={styles.incomingConversation}>{this.store.incomingConversation}</div>
@@ -172,10 +246,11 @@ export class RoomPage extends React.Component<
               translator={this.props.translator}
               roomName={this.store.room.getRoomInfo().name}
               className={styles.roomBanner}
+              onClickSettings={this.onClickSettings}
             />
             <div className={styles.mainBoard}>
               <SeatsLayout
-                imageLoader={this.imageLoader}
+                imageLoader={this.props.imageLoader}
                 updateFlag={this.store.updateUIFlag}
                 store={this.store}
                 presenter={this.presenter}
@@ -194,7 +269,7 @@ export class RoomPage extends React.Component<
               store={this.store}
               presenter={this.presenter}
               translator={this.props.translator}
-              imageLoader={this.imageLoader}
+              imageLoader={this.props.imageLoader}
               cardEnableMatcher={this.store.clientPlayerCardActionsMatcher}
               outsideCardEnableMatcher={this.store.clientPlayerOutsideCardActionsMatcher}
               onClickConfirmButton={this.store.confirmButtonAction}
@@ -210,6 +285,20 @@ export class RoomPage extends React.Component<
               isSkillDisabled={this.store.isSkillDisabled}
             />
           </div>
+        )}
+        {this.openSettings && (
+          <Curtain onCancel={this.onCloseSettings}>
+            <SettingsDialog
+              defaultGameVolume={this.defaultGameVolume}
+              defaultMainVolume={this.defaultMainVolume}
+              imageLoader={this.props.imageLoader}
+              translator={this.props.translator}
+              onMainVolumeChange={this.settings.onMainVolumeChange}
+              onGameVolumeChange={this.settings.onVolumeChange}
+              onConfirm={this.onCloseSettings}
+              electronLoader={this.props.electronLoader}
+            />
+          </Curtain>
         )}
       </div>
     );

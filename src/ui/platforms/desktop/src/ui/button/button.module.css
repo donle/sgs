@@ -19,6 +19,8 @@
     font-weight: 600;
     letter-spacing: 2px;
     height: 100%;
+    width: 100%;
+    justify-content: center;
 }
 .button.imageButton {
     background: transparent;
@@ -89,4 +91,30 @@
     justify-content: center;
     padding-left: 24px;
     padding-bottom: 4px;
+}
+
+.linkButton {
+    border: none;
+    background: none;
+    padding: 4px 8px;
+    cursor: pointer;
+    outline: none;
+    color: #eaeaea;
+    position: relative;
+    font-family: XinWeiFont;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    height: 100%;
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+
+.linkButton:disabled {
+    color: grey;
+    cursor: not-allowed;
+}
+
+.linkButton:enabled:hover {
+    color: rgb(156, 65, 32);
 }

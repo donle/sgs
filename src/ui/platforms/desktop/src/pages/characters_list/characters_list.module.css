@@ -1,0 +1,134 @@
+@value gridLine from '../../ui/metrics/metrics.css';
+
+.charactersList {
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+}
+
+.background {
+    position: fixed;
+    align-self: center;
+    width: 100%;
+    height: 100%;
+    filter: brightness(0.5);
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.board {
+    display: flex;
+    width: 50%;
+    padding: calc(gridLine * 2);
+    flex-direction: column;
+    justify-content: center;
+}
+
+.innerList {
+    position: relative;
+    min-height: calc(gridLine * 60);
+    height: calc(gridLine * 80);
+    padding: calc(gridLine * 6) calc(gridLine * 5);
+}
+
+.packagesGroup {
+    width: 50%;
+}
+.nationalitiesGroup {
+    width: 40%;
+}
+
+.checkboxGroups {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.character {
+    z-index: 2;
+    width: 16.66%;
+    cursor: pointer;
+}
+
+.characters {
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    max-height: calc(100% - 48px);
+    overflow-x: hidden;
+}
+
+.characterTooltip {
+    position: absolute;
+    z-index: 999;
+    left: 100%;
+    top: 0;
+    width: calc(8px * 40);
+    height: 100%;
+    overflow: auto;
+}
+.specCharacter {
+    margin: auto;
+    width: calc(gridLine * 20);
+}
+
+.roomListBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.functionBoard {
+    position: relative;
+    margin: calc(gridLine * 4) 0 0;
+    padding: calc(gridLine * 2);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.button {
+    margin-left: 4px;
+    align-self: center;
+    animation: fadeIn 2.5s 1;
+}
+
+.characterSpec {
+    display: flex;
+    flex-direction: column;
+    margin-top: calc(gridLine * 3);
+}
+
+.skill {
+    margin-bottom: calc(gridLine * 2);
+}
+
+.deathButton {
+    align-self: center;
+    margin-bottom: gridLine;
+}
+.deathButton,
+.skillName {
+    font-weight: 600;
+    color: rgb(255, 174, 0);
+    font-size: 14px;
+    margin-right: calc(gridLine * 2);
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid rgb(255, 174, 0);
+    cursor: pointer;
+}
+
+.deathButton:hover,
+.skillName:hover {
+    background-color: rgb(255, 174, 0);
+    color: black;
+}
+
+.skillDescription {
+    font-size: 12px;
+    line-height: calc(gridLine * 3);
+}

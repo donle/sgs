@@ -21,6 +21,7 @@
 }
 
 .sideBoard {
+    background: rgba(0, 0, 0, 0.4);
     flex-direction: column;
     justify-content: stretch;
     display: flex;
@@ -52,6 +53,9 @@
 .displayedCard {
     margin: 2px;
     position: absolute;
+}
+.displayedCard.focused {
+    z-index: 3;
 }
 
 .roomBanner {

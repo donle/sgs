@@ -13,3 +13,11 @@
     flex: auto;
     align-items: center;
 }
+
+.settingsButton {
+    margin-right: 16px;
+}
+
+.controlButtons {
+    display: flex;
+}

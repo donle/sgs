@@ -6,6 +6,7 @@ import { PlayerPhase } from 'core/game/stage_processor';
 import { ClientPlayer } from 'core/player/player.client';
 import { PlayerCardsArea, PlayerRole } from 'core/player/player_props';
 import { MarkEnum } from 'core/shares/types/mark_list';
+import { GameMode } from 'core/shares/types/room_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
@@ -166,9 +167,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
         <div className={styles.outsideArea}>
           {Object.entries<CardId[]>(cards)
             .map(([areaName, cards], index) =>
-              cards.length === 0 ? (
-                undefined
-              ) : (
+              cards.length === 0 ? undefined : (
                 <span
                   key={index}
                   className={classNames(styles.skillTag, {
@@ -283,6 +282,16 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     return marks;
   }
 
+  private isPlayerRoleLocked(player: ClientPlayer) {
+    const { gameMode } = this.props.store.room.Info;
+    return (
+      gameMode === GameMode.OneVersusTwo ||
+      gameMode === GameMode.TwoVersusTwo ||
+      player.Dead ||
+      player.Role === PlayerRole.Lord
+    );
+  }
+
   render() {
     const {
       disabled,
@@ -306,7 +315,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
           {incomingMessage && (
             <Tooltip
               className={styles.incomingMessage}
-              position={['top']}
+              position={['slightTop']}
               closeAfter={3}
               closeCallback={this.onCloseIncomingMessageCallback}
             >
@@ -340,7 +349,8 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
                   {player.Role !== PlayerRole.Unknown && (
                     <Mask
                       className={styles.playerRole}
-                      lockedRole={player.Dead || player.Role === PlayerRole.Lord ? player.Role : undefined}
+                      gameMode={this.props.store.room.Info.gameMode}
+                      lockedRole={this.isPlayerRoleLocked(player) ? player.Role : undefined}
                     />
                   )}
                   <div className={styles.playerHp}>
@@ -388,7 +398,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
           {player && <span className={styles.playerStatus}>{translator.tr(player.getPlayerStatus() || '')}</span>}
           {inAction && <PlayingBar className={styles.playBar} playTime={actionTimeLimit} />}
           {this.onTooltipOpened && this.PlayerCharacter && (
-            <Tooltip position={['top']}>{this.createTooltipContent()}</Tooltip>
+            <Tooltip position={['center']}>{this.createTooltipContent()}</Tooltip>
           )}
         </div>
         {this.getPlayerEquips()}

@@ -7,28 +7,28 @@ import { SimplifiedChinese } from 'languages';
 import { ClientFlavor } from 'props/config_props';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { App } from './app';
 import { emojiLoader } from './emoji_loader/emoji_loader';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
-const mode = (process.env.DEV_MODE as Flavor) || Flavor.Dev;
+const mode = (process.env.DEV_MODE as ClientFlavor) || Flavor.Dev;
 const config = getClientConfig(mode);
 
 const translator = ClientTranslationModule.setup(config.ui.language, [Languages.ZH_CN, SimplifiedChinese]);
 emojiLoader(translator);
 
-if (config.flavor === ClientFlavor.Prod) {
+if (config.flavor === ClientFlavor.Desktop) {
   import('./index.module.css');
 }
 
 Sanguosha.initialize();
 
 ReactDOM.render(
-  <BrowserRouter>
+  <MemoryRouter>
     <App config={config} translator={translator} />
-  </BrowserRouter>,
+  </MemoryRouter>,
   document.getElementById('root'),
 );
 

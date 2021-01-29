@@ -47,7 +47,7 @@ export class RoomStore {
   messageLog: (string | JSX.Element)[] = [];
 
   @mobx.observable.shallow
-  displayedCards: Card[] = [];
+  displayedCards: { card: Card; tag?: string }[] = [];
 
   @mobx.observable.ref
   canReforge: boolean = false;
@@ -225,13 +225,13 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  showCards(...cards: Card[]) {
+  showCards(...cards: { card: Card; tag?: string }[]) {
     if (this.store.displayedCards.length >= 7) {
       this.store.displayedCards = [];
     }
 
     for (const card of cards) {
-      !this.store.displayedCards.includes(card) && this.store.displayedCards.push(card);
+      this.store.displayedCards.push(card);
     }
   }
 

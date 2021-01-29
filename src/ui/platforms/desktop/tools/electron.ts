@@ -1,16 +1,14 @@
-import { app, BrowserWindow, BrowserWindowConstructorOptions, protocol } from 'electron';
-import * as MouseTrap from 'mousetrap';
+import { app, BrowserWindow, BrowserWindowConstructorOptions, ipcMain } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+import { Store } from './store';
+
+const FLASH_WINDOW = 'flashWindow';
+const SET_DATA = 'setData';
+const GET_ALL_DATA = 'getAllData';
+const DELETE_DATA = 'deleteData';
 
 app.setPath('userData', __dirname);
-
-app.whenReady().then(() => {
-  // tslint:disable-next-line:no-empty
-  MouseTrap.bind(['command+r', 'ctrl+r'], () => {});
-  // tslint:disable-next-line:no-empty
-  MouseTrap.bind(['f5'], () => {});
-});
 
 class AppWindow {
   public static onReady(callbackFn: () => void) {
@@ -26,12 +24,38 @@ class AppWindow {
   }
 
   private windowInstance: BrowserWindow | undefined;
+  private store = new Store();
   constructor(windowOptions?: BrowserWindowConstructorOptions) {
     this.windowInstance = new BrowserWindow(windowOptions);
+    this.installIpcListener();
+    // this.windowInstance.webContents.openDevTools();
+  }
+
+  private installIpcListener() {
+    this.windowInstance!.once('focus', () => {
+      this.windowInstance!.flashFrame(false);
+    });
+
+    ipcMain.on(FLASH_WINDOW, () => {
+      if (this.windowInstance && !this.windowInstance.isFocused()) {
+        this.windowInstance.flashFrame(true);
+      }
+    });
+
+    ipcMain.on(SET_DATA, (event, { key, value }: { key: string; value: any }) => {
+      this.store.set(key, value);
+    });
+    ipcMain.on(GET_ALL_DATA, () => {
+      const saveData = this.store.getSaveData();
+      this.windowInstance!.webContents.send(GET_ALL_DATA, saveData);
+    });
+    ipcMain.on(DELETE_DATA, (event, { key }: { key: string }) => {
+      this.store.remove(key);
+    });
   }
 
   public getInstance() {
-    return this.windowInstance;
+    return this.windowInstance!;
   }
 
   public releaseInstance() {
@@ -43,28 +67,23 @@ class AppWindow {
       return;
     }
 
-    this.windowInstance.on('closed', callbackFn);
+    this.windowInstance.on('closed', () => {
+      this.store.save();
+      callbackFn();
+    });
   }
 }
 
-export function main(env = process.env.NODE_ENV || 'development') {
-  const WEB_FOLDER = 'web';
-  const PROTOCOL = 'file';
-
-  protocol.interceptFileProtocol(PROTOCOL, (request, callback) => {
-    let url = request.url.substr(PROTOCOL.length + 1);
-    url = path.join(__dirname, WEB_FOLDER, url);
-    url = path.normalize(url);
-    callback(url);
-  });
-
+export function main() {
   const winApp = new AppWindow({
-    minWidth: 768,
-    minHeight: 600,
-    width: 800,
-    height: 600,
+    icon: path.join(__dirname, 'favicon.ico'),
+    minWidth: 1366,
+    minHeight: 768,
+    width: 1366,
+    height: 768,
     webPreferences: {
       nodeIntegration: false,
+      preload: path.join(__dirname, './preload.js'),
     },
   });
   const winAppInstance = winApp.getInstance();
@@ -73,17 +92,14 @@ export function main(env = process.env.NODE_ENV || 'development') {
     return;
   }
 
-  winAppInstance.webContents.openDevTools();
   winAppInstance.setMenu(null);
-  env === 'development'
-    ? winAppInstance.loadURL('http://localhost:3000/')
-    : winAppInstance.loadURL(
-        url.format({
-          pathname: path.join(__dirname, './index.html'),
-          protocol: 'file:',
-          slashes: true,
-        }),
-      );
+  winAppInstance.loadURL(
+    url.format({
+      pathname: path.join(__dirname, './index.html'),
+      protocol: 'file:',
+      slashes: true,
+    }),
+  );
   winApp.onClose(() => winApp.releaseInstance());
   return winAppInstance;
 }

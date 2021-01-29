@@ -30,6 +30,7 @@ export type ClientCardProps = {
   onMouseDown?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onMouseMove?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onMouseLeave?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
+  onMouseEnter?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   ref?: string | ((instance: HTMLDivElement | null) => void) | React.RefObject<HTMLDivElement>;
   selected?: boolean;
 };
@@ -138,7 +139,8 @@ export class ClientCard extends React.Component<ClientCardProps> {
   }
 
   @mobx.action
-  private readonly openTooltip = () => {
+  private readonly openTooltip = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    this.props.onMouseEnter?.(e);
     this.onTooltipOpeningTimer = setTimeout(() => {
       this.onTooltipOpened = true;
     }, 2000);

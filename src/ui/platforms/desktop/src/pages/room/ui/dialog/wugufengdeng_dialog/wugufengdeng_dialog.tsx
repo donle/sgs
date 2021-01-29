@@ -70,10 +70,14 @@ const getCardsContainerLines = ({
   return cardsLine;
 };
 
+const onAction = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+  e.stopPropagation();
+};
+
 export const WuGuFengDengDialog = (props: WuGuFengDengDialogProps) => {
   return (
     <BaseDialog title={props.translator.tr('please choose a card')}>
-      <div className={styles.cardContainer}>
+      <div className={styles.cardContainer} onMouseDown={onAction}>
         {getCardsContainerLines(props).map((cardsLine, index) => {
           return (
             <div className={styles.cardLine} key={index}>

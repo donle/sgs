@@ -1,10 +1,20 @@
 import { PlayerRole } from 'core/player/player_props';
 import { Functional } from 'core/shares/libs/functional';
+import { GameMode } from 'core/shares/types/room_props';
 import { SkillType } from 'core/skills/skill';
+import { LobbyButton } from 'props/game_props';
 import { getSkillButtonImages } from './dev_button_image_loader';
+import { getLobbyButtonImage } from './dev_button_image_loader';
 import { ImageLoader } from './image_loader';
 
 const remoteRoot: string = 'http://doublebit.gitee.io/pictest/backup_remote';
+
+const gameModeIcons = {
+  [GameMode.Standard]: 'general_mode',
+  [GameMode.OneVersusTwo]: '1v2_mode',
+  [GameMode.TwoVersusTwo]: '2v2_mode',
+  [GameMode.Hegemony]: 'hegemony_mode',
+};
 
 export class DevImageLoader implements ImageLoader {
   public async getCardImage(name: string) {
@@ -74,5 +84,38 @@ export class DevImageLoader implements ImageLoader {
 
   public getTurnedOverCover() {
     return { src: `${remoteRoot}/images/system/turn_over.png`, alt: '' };
+  }
+
+  public getGameModeIcon(mode: GameMode) {
+    return { src: `${remoteRoot}/images/lobby/${gameModeIcons[mode]}.png`, alt: '' };
+  }
+
+  public getRandomLobbyIllustration() {
+    const index = Math.floor(Math.random() * 8) + 1;
+    return { src: `${remoteRoot}/images/lobby/illustration${index}.png`, alt: '' };
+  }
+
+  public getLobbyBackgroundImage() {
+    return { src: `${remoteRoot}/images/lobby/background.png`, alt: '' };
+  }
+
+  public getLobbyButtonImage(buttonVariant: LobbyButton) {
+    return { src: getLobbyButtonImage(buttonVariant, remoteRoot), alt: '' };
+  }
+
+  public getCreateRoomButtonImage() {
+    return { src: `${remoteRoot}/images/lobby/create.png`, alt: '' };
+  }
+
+  public getRoomListBackgroundImage() {
+    return { src: `${remoteRoot}/images/lobby/room_list.png`, alt: '' };
+  }
+
+  public getDialogBackgroundImage() {
+    return { src: `${remoteRoot}/images/system/dialog_background.png`, alt: '' };
+  }
+
+  public getAcknowledgementImage() {
+    return { src: `${remoteRoot}/images/system/acknowledge.png`, alt: '' };
   }
 }
