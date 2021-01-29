@@ -22,6 +22,7 @@ export const characterDictionary: Word[] = [
   { source: 'tianxiang', target: '天香' },
   { source: 'hongyan', target: '紅顔' },
   { source: '#hongyan', target: '紅顔' },
+  { source: 'piaoling', target: '飄零' },
 
   { source: 'zhoutai', target: '周泰' },
   { source: 'buqu', target: '不屈' },
@@ -81,6 +82,11 @@ export const skillDescriptions: Word[] = [
       '<b>鎖定技</b>，你的黑桃牌或你的黑桃判定牌的花色視為紅桃；當你於回合外失去紅桃牌時，若你的手牌小於體力值，你摸一張牌。',
   },
   {
+    source: 'piaoling_description',
+    target:
+      '結束階段開始時，你可以判定，若結果為紅桃，你選擇一項：1.將判定牌交給一名角色，若其為你，你棄置一張牌；2.將判定牌置於牌堆頂。',
+  },
+  {
     source: 'buqu_description',
     target:
       '<b>鎖定技</b>，當你處於瀕死狀態時，你將牌堆頂一張牌置於你的武將牌上，稱為"創"，若此牌的點數與你武將牌上已有的"創"點數均不同，則你將體力回複至1點。若出現相同點數則將此牌置入棄牌堆。若你的武將牌上有"創"，則你的手牌上限與"創"的數量相等。',
@@ -111,4 +117,6 @@ export const skillDescriptions: Word[] = [
     source: 'chanyuan_description',
     target: '<b>鎖定技</b>，你不能質疑“蠱惑”；若你的體力值小於等於1，則你的其他技能失效。',
   },
+  { source: '#piaoling-select', target: '請選擇：1. 將判定牌置於牌堆頂。2. 交給一名角色' },
+  { source: 'piaoling: select a player to obtain the judge card', target: '飄零：選擇一名角色獲得此判定牌' },
 ];
