@@ -326,11 +326,14 @@ export const skillDescriptions: Word[] = [
     source: 'yaowu_description',
     target: '<b>鎖定技</b>，當你受到傷害時，若造成傷害的牌：為紅色，傷害來源摸一張牌；不為紅色，你摸一張牌。',
   },
-  { source: 'wangzun_description', target: '主公的準備階段開始時，你可以摸一張牌，並令其本回合內手牌上限-1。' },
+  {
+    source: 'wangzun_description',
+    target: '鎖定技，體力值大於你的角色的準備階段開始時，你摸一張牌，若其為主公，改為你摸兩張牌且其本回合手牌上限-1。',
+  },
   {
     source: 'tongji_description',
     target:
-      '<b>鎖定技</b>，若你的手牌數大於你的體力值，則攻擊範圍內含有你的角色使用【殺】，不能指定除你外的角色為目標。',
+      '當其他角色成為【殺】的目標時，若你處於其攻擊範圍內且你不為此牌的使用者及目標，其可以棄置一張牌，將此【殺】轉移給你。',
   },
   {
     source: 'yicong_description',

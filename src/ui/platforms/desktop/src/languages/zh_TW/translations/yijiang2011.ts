@@ -45,7 +45,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'gaoshun', target: '高順' },
   { source: 'xianzhen', target: '陷陣' },
-  { source: '#####xianzhen', target: '陷陣'},
+  { source: '#####xianzhen', target: '陷陣' },
   { source: 'jinjiu', target: '禁酒' },
   { source: 'xianzhen target: {0}', target: '陷陣:{0}' },
   { source: 'xianzhen_lose', target: '陷陣[冇贏]' },
@@ -83,7 +83,8 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'sanyao_description',
-    target: '出牌階段限一次，你可以棄置至少一張牌，並選擇等量名除你外體力最高的角色，你對這些角色各造成1點傷害。',
+    target:
+      '出牌階段每項限一次，你可以棄置一張牌，並選擇一項：1.指定體力值最高的一名角色；2.指定手牌數最多的一名角色。對你所選的角色造成1點傷害。',
   },
   {
     source: 'zhiman_description',
@@ -131,12 +132,11 @@ export const skillDescriptions: Word[] = [
   {
     source: 'xuanfeng_description',
     target:
-      '若你於棄牌階段內棄置過至少兩張手牌，或當你失去裝備區裏的牌後，你可以選擇一項：1.依次棄置其他角色的共計一至兩張牌；2.將一名其他角色裝備區裏的牌置入另一名其他角色的裝備區。',
+      '若你於棄牌階段內棄置過至少兩張手牌，或當你失去裝備區裡的牌後，你可以依次棄置其他角色的共計一至兩張牌，然後你可以對其中一名角色造成1點傷害。',
   },
   {
     source: 'yongjin_description',
-    target:
-      '<b>限定技</b>，出牌階段，你可以依次移動場上一至三張不同的裝備牌。',
+    target: '<b>限定技</b>，出牌階段，你可以依次移動場上一至三張不同的裝備牌。',
   },
 
   {
@@ -183,6 +183,12 @@ export const promptDescriptions: Word[] = [
   },
 
   {
+    source: 'please choose sanyao options',
+    target: '<b>散謠</b>：請選擇消耗項',
+  },
+  { source: 'sanyao:hp', target: '體力值' },
+  { source: 'sanyao:handNum', target: '手牌數' },
+  {
     source: '{0} triggered skill {1}, prevent the damage of {2}',
     target: '{0} 觸發了技能 {1} ，防止了 {2} 造成的傷害',
   },
@@ -223,8 +229,10 @@ export const promptDescriptions: Word[] = [
     source: 'xianzhen: do you want to add {0} as targets of {1}?',
     target: '陷陣：你可以令 {0} 也成為 {1} 的目標',
   },
-  { source: 'xuanfeng:move', target: '移動裝備' },
-  { source: 'xuanfeng:drop', target: '棄置牌' },
+  {
+    source: '{0}: do you want to choose a XuanFeng target to deal 1 damage?',
+    target: '{0}：你可以選擇其中一名角色，對其造成1點傷害',
+  },
   {
     source: '{0}: please choose two target to move their equipment',
     target: '{0}：請依次選擇兩名其他角色，先選角色裝備區裏的牌將被移至後選角色',
@@ -236,5 +244,5 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to draw {1} cards?',
     target: '{0}: 是否摸 {1} 張牌?',
-  }
+  },
 ];
