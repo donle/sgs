@@ -38,12 +38,12 @@ ___
 | Public Functions |       |      |
 | ---------------: | :---: | :--- |
 
-+ isLord()
-+ turnOver()
-+ isTurnOver()
-+ link()
-+ unlink()
-+ isLinked()
++ [isLord()](#islord)
++ [turnOver()](#turnover)
++ [isTurnOver()](#isturnover)
++ [link()](#link)
++ [unlink()](#unlink)
++ [isLinked()](#islinked)
 
 ___
 
@@ -63,7 +63,7 @@ ___
 
 ## Detailed Description
 
-Character类是所有其他武将的基类。（待补充）
+Character类是所有其他武将的基类。该类保存着武将的基本属性，如编号、势力、性别等。
 
 ___
 
@@ -111,13 +111,35 @@ ___
 
 ### lord
 
-  是否是主公。
+  是否是常备主公武将。
 
 ___
 
 ## Member Function Documentation
 
-（待补充）
+### isLord()
+
+  判断武将是否为主公武将。
+
+### turnOver()
+
+  将武将的[turnedOver](#turnedover)属性置为与原来相反，相当于翻面。
+
+### isTurnOver()
+
+  判断武将是否被翻面。
+
+### link()
+
+  将武将的[linked](#linked)属性置为`true`。
+
+### unlink()
+
+  将武将的[linked](#linked)属性置为`false`。
+
+### isLinked()
+
+  判断武将是否处于连环状态。
 
 ___
 
