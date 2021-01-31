@@ -6,6 +6,8 @@ ___
 
 Character类是游戏中所有武将的基类。[更多...](#detailed-description)
 
+[查看源文件...](../../src/core/characters/character.ts)
+
 + [所有属性](#property-documentation)
 + [成员函数](#member-function-documentation)
 + [其他相关](#related-non-members)
@@ -121,17 +123,33 @@ ___
 
 ## Related Non-members
 
-+ `const enum CharacterGender`
+### const enum CharacterGender
 
-  共有3种取值：Male，Female，Neutral。武将的属性gender即为此类型。
+  武将的属性gender即为此类型。
+
+  | 常量                    | 值  | 描述 |
+  | ----------------------- | --- | ---- |
+  | CharacterGender.Male    | 0   | 男性 |
+  | CharacterGender.Female  | 1   | 女性 |
+  | CharacterGender.Neutral | 2   | 中性 |
+
   转为字符串的函数：`getGenderRawText(gender)`
 
-+ `const enum CharacterNationality`
+### const enum CharacterNationality`
 
-  共有5种取值：Wei，Shu，Wu，Qun，God。武将的属性nationality即为此类型。
+  武将的属性nationality即为此类型。
+  
+  | 常量                     | 值  | 描述   |
+  | ------------------------ | --- | ------ |
+  | CharacterNationality.Wei | 0   | 魏势力 |
+  | CharacterNationality.Shu | 1   | 蜀势力 |
+  | CharacterNationality.Wu  | 2   | 吴势力 |
+  | CharacterNationality.Qun | 3   | 群势力 |
+  | CharacterNationality.God | 4   | 神势力 |
+
   转为字符串的函数：`getNationalityRawText(nationality)`
 
-+ 装饰器函数：Lord
+### 装饰器函数：Lord
 
   在其他武将继承时使用@Lord装饰器以表示其是主公武将。
 
