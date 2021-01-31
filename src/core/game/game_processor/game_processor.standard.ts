@@ -749,10 +749,9 @@ export class StandardGameProcessor extends GameProcessor {
       if (cardUseEvent) {
         await this.room.useCard(cardUseEvent, true);
         if (!EventPacker.isTerminated(cardUseEvent)) {
-          event.isCancelledOut = true;
           await this.room.trigger(event, CardEffectStage.CardEffectCancelledOut);
 
-          event.isCancelledOut ? EventPacker.terminate(event) : EventPacker.recall(event);
+          event.isCancelledOut && EventPacker.terminate(event);
         }
       }
       EventPacker.isTerminated(event) && card.Skill.onEffectRejected(this.room, event);
