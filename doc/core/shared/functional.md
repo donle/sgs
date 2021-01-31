@@ -14,7 +14,7 @@ Functional为一个抽象类，内含多种实用方法（主要是枚举值和�
   - [getCardSuitRawText](#getcardsuitrawtext)
   - [getPlayerRoleRawText](#getplayerrolerawtext)
   - [getPlayerNationalityText](#getplayernationalitytext)
-  - [getPlayerNationalityEnum(nationality: string)](#getplayernationalityenumnationality-string)
+  - [getPlayerNationalityEnum](#getplayernationalityenum)
   - [getCardTypeRawText](#getcardtyperawtext)
 
 ## getPlayerPhaseRawText
@@ -57,7 +57,7 @@ Functional为一个抽象类，内含多种实用方法（主要是枚举值和�
 
   参看[CharacterNationality](../character.md#const-enum-characternationality)。
 
-## getPlayerNationalityEnum(nationality: string)
+## getPlayerNationalityEnum
 
   原型：`getPlayerNationalityEnum(nationality: string)`
 

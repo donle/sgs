@@ -135,7 +135,7 @@ ___
 
   转为字符串的函数：`getGenderRawText(gender)`
 
-### const enum CharacterNationality`
+### const enum CharacterNationality
 
   武将的属性nationality即为此类型。
   
