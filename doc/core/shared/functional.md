@@ -17,13 +17,15 @@ Functional为一个抽象类，内含多种实用方法（主要是枚举值和�
   - [getPlayerNationalityEnum](#getplayernationalityenum)
   - [getCardTypeRawText](#getcardtyperawtext)
 
+___
+
 ## getPlayerPhaseRawText
 
   原型：`getPlayerPhaseRawText(stage: PlayerPhase)`
 
   功能：根据PlayerPhase返回相应的字符串。
 
-  参看PlayerPhase。
+  参看[PlayerPhase](./functional.md)。
 
 ## getPlayerCardAreaText
 
@@ -31,7 +33,7 @@ Functional为一个抽象类，内含多种实用方法（主要是枚举值和�
 
   功能：根据PlayerCardsArea返回相应的字符串。
 
-  参看PlayerCardsArea。
+  参看[PlayerCardsArea](./functional.md)。
 
 ## getCardSuitRawText
 
@@ -39,7 +41,7 @@ Functional为一个抽象类，内含多种实用方法（主要是枚举值和�
 
   功能：根据CardSuit返回相应的字符串。
 
-  参看CardSuit。
+  参看[CardSuit](./functional.md)。
 
 ## getPlayerRoleRawText
 
@@ -47,7 +49,7 @@ Functional为一个抽象类，内含多种实用方法（主要是枚举值和�
 
   功能：根据PlayerRole和GameMode返回PlayerRole对应的字符串。
 
-  参看PlayerRole，GameMode。
+  参看[PlayerRole](./functional.md)，[GameMode](./functional.md)。
 
 ## getPlayerNationalityText
 
@@ -71,4 +73,4 @@ Functional为一个抽象类，内含多种实用方法（主要是枚举值和�
 
   功能：根据CardType返回相应的字符串。
 
-  参看CardType。
+  参看[CardType](./functional.md)。

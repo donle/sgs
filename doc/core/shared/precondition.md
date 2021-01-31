@@ -4,13 +4,17 @@
 
 ___
 
-[查看源文件...](../../src/core/shares/libs/precondition/precondition.ts)
+Precondition类中定义了诸如assert等常用函数。
+
+[查看源文件...](../../../src/core/shares/libs/precondition/precondition.ts)
 
 - [Precondition](#precondition)
   - [alarm](#alarm)
   - [exists](#exists)
   - [assert](#assert)
   - [UnreachableError](#unreachableerror)
+
+___
 
 ## alarm
 

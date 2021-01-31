@@ -15,6 +15,8 @@ Algorithm是一个命名空间，里面包含了一些常用算法。
   - [intersection](#intersection)
   - [isSubsetOf](#issubsetof)
 
+___
+
 ## shuffle
   
   原型：`shuffle<T>(a: T[]): T[]`
