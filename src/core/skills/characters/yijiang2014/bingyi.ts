@@ -39,13 +39,12 @@ export class BingYi extends TriggerSkill {
     });
 
     const firstCardColor = Sanguosha.getCardById(handCards[0]).Color;
-    const isSameColor = handCards.find(cardId => Sanguosha.getCardById(cardId).Color !== firstCardColor) === undefined;
-
+    const isSameColor = handCards.every(cardId => Sanguosha.getCardById(cardId).Color === firstCardColor);
     if (isSameColor) {
       const askForPlayerChoose: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
         players: room.AlivePlayers.map(player => player.Id),
         toId: from.Id,
-        requiredAmount: [...Array(handCards.length).keys()].map(i => i + 1),
+        requiredAmount: [1, handCards.length],
         conversation: TranslationPack.translationJsonPatcher(
           'please choose less than {0} player to draw 1 crad.',
           handCards.length,
