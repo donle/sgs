@@ -43,15 +43,15 @@ ___
 
 | 常量               | 值            | 描述                                 |
 | ------------------ | ------------- | ------------------------------------ |
-| MarkEnum.Nightmare | `'nightmare'` | “梦魇”标记（[【武魂】](./types.md)） |
-| MarkEnum.DaWu      | `'dawu'`      | “大雾”标记（[【大雾】](./types.md)） |
-| MarkEnum.KuangFeng | `'kuangfeng'` | “狂风”标记（[【狂风】](./types.md)） |
-| MarkEnum.Ren       | `'ren'`       | “忍”标记（[【忍戒】](./types.md)）   |
-| MarkEnum.Wrath     | `'nu'`        | “怒”标记（[【狂暴】](./types.md)）   |
-| MarkEnum.JunLve    | `'junlve'`    | “军略”标记（[【军略】](./types.md)） |
-| MarkEnum.Lie       | `'lie'`       | “烈”标记（[【武烈】](./types.md)）   |
-| MarkEnum.XueYi     | `'xueyi'`     | “血裔”标记（[【血裔】](./types.md)） |
-| MarkEnum.Ying      | `'ying'`      | “营”标记（[【劫营】](./types.md)）   |
+| MarkEnum.Nightmare | `'nightmare'` | “梦魇”标记（[【武魂】](../../characters/god.md#武魂)） |
+| MarkEnum.DaWu      | `'dawu'`      | “大雾”标记（[【大雾】](../../characters/god.md#大雾)） |
+| MarkEnum.KuangFeng | `'kuangfeng'` | “狂风”标记（[【狂风】](../../characters/god.md#狂风)） |
+| MarkEnum.Ren       | `'ren'`       | “忍”标记（[【忍戒】](../../characters/god.md#忍戒)）   |
+| MarkEnum.Wrath     | `'nu'`        | “怒”标记（[【狂暴】](../../characters/god.md#狂暴)）   |
+| MarkEnum.JunLve    | `'junlve'`    | “军略”标记（[【军略】](../../characters/god.md#军略)） |
+| MarkEnum.Lie       | `'lie'`       | “烈”标记（[【武烈】](../../characters/forest.md#武烈)）   |
+| MarkEnum.XueYi     | `'xueyi'`     | “血裔”标记（[【血裔】](../../characters/fire.md#血裔)） |
+| MarkEnum.Ying      | `'ying'`      | “营”标记（[【劫营】](../../characters/god.md#劫营)）   |
 
 ___
 
@@ -131,4 +131,4 @@ string类型，保存该房间的密码。（可选）
 
 | 常量             | 值             | 描述   |
 | ---------------- | -------------- | ------ |
-| TagEnum.DrunkTag | `'drunkLevel'` | 身份局 |
+| TagEnum.DrunkTag | `'drunkLevel'` | 酒杀中附加的酒的数量 |

@@ -30,14 +30,14 @@ ___
 
 ### const enum JudgeMatcherEnum
 
-| 常量                              | 值  | 描述                                       |
-| --------------------------------- | --- | ------------------------------------------ |
-| JudgeMatcherEnum.LeBuSiShu        | 1   | 卡牌[【乐不思蜀】](#judge-matcher)相关判定 |
-| JudgeMatcherEnum.BingLiangCunDuan | 2   | 卡牌[【兵粮寸断】](#judge-matcher)相关判定 |
-| JudgeMatcherEnum.BaGuaZhen        | 3   | 卡牌[【八卦阵】](#judge-matcher)相关判定   |
-| JudgeMatcherEnum.Lightning        | 4   | 卡牌[【闪电】](#judge-matcher)相关判定     |
-| JudgeMatcherEnum.BaoNve           | 5   | 武将技能[【暴虐】](#judge-matcher)相关判定 |
-| JudgeMatcherEnum.WuHun            | 6   | 武将技能[【武魂】](#judge-matcher)相关判定 |
-| JudgeMatcherEnum.LuoShen          | 7   | 武将技能[【洛神】](#judge-matcher)相关判定 |
-| JudgeMatcherEnum.SiShu            | 8   | 武将技能[【思蜀】](#judge-matcher)相关判定 |
-| JudgeMatcherEnum.TunTian          | 9   | 武将技能[【屯田】](#judge-matcher)相关判定 |
+| 常量                              | 值  | 描述                                                        |
+| --------------------------------- | --- | ----------------------------------------------------------- |
+| JudgeMatcherEnum.LeBuSiShu        | 1   | 卡牌[【乐不思蜀】](#judge-matcher)相关判定                  |
+| JudgeMatcherEnum.BingLiangCunDuan | 2   | 卡牌[【兵粮寸断】](#judge-matcher)相关判定                  |
+| JudgeMatcherEnum.BaGuaZhen        | 3   | 卡牌[【八卦阵】](#judge-matcher)相关判定                    |
+| JudgeMatcherEnum.Lightning        | 4   | 卡牌[【闪电】](#judge-matcher)相关判定                      |
+| JudgeMatcherEnum.BaoNve           | 5   | 武将技能[【暴虐】](../../characters/forest.md#暴虐)相关判定 |
+| JudgeMatcherEnum.WuHun            | 6   | 武将技能[【武魂】](../../characters/forest.md#武魂)相关判定 |
+| JudgeMatcherEnum.LuoShen          | 7   | 武将技能[【洛神】](../../characters/forest.md#洛神)相关判定 |
+| JudgeMatcherEnum.SiShu            | 8   | 武将技能[【思蜀】](../../characters/forest.md#思蜀)相关判定 |
+| JudgeMatcherEnum.TunTian          | 9   | 武将技能[【屯田】](../../characters/forest.md#屯田)相关判定 |

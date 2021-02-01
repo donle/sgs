@@ -24,11 +24,11 @@ ___
 
 ### const enum AskForChoosingCardEventFilter
 
-| 常量                                 | 值  | 描述                              |
-| ------------------------------------ | --- | --------------------------------- |
-| AskForChoosingCardEventFilter.SheLie | 0   | 与技能[【涉猎】](./system.md)有关 |
-| AskForChoosingCardEventFilter.PoXi   | 1   | 与技能[【魄袭】](./system.md)有关 |
-| AskForChoosingCardEventFilter.JieYue | 2   | 与技能[【节钺】](./system.md)有关 |
+| 常量                                 | 值  | 描述                                                       |
+| ------------------------------------ | --- | ---------------------------------------------------------- |
+| AskForChoosingCardEventFilter.SheLie | 0   | 与技能[【涉猎】](../../characters/god.md#涉猎)有关         |
+| AskForChoosingCardEventFilter.PoXi   | 1   | 与技能[【魄袭】](../../characters/god.md#魄袭)有关         |
+| AskForChoosingCardEventFilter.JieYue | 2   | 与技能[【节钺】](../../characters/yijiang2011.md#节钺)有关 |
 
 ### type AskForChoosingCardEventFilterFunc
 
@@ -52,10 +52,10 @@ ___
 
 ### const enum SideEffectSkillApplierEnum
 
-| 常量                                 | 值  | 描述                              |
-| ------------------------------------ | --- | --------------------------------- |
-| SideEffectSkillApplierEnum.ZhiBa     | 0   | 与技能[【制霸】](./system.md)有关 |
-| SideEffectSkillApplierEnum.HuangTian | 1   | 与技能[【黄天】](./system.md)有关 |
+| 常量                                 | 值  | 描述                                                    |
+| ------------------------------------ | --- | ------------------------------------------------------- |
+| SideEffectSkillApplierEnum.ZhiBa     | 0   | 与技能[【制霸】](../../characters/mountain.md#制霸)有关 |
+| SideEffectSkillApplierEnum.HuangTian | 1   | 与技能[【黄天】](../../characters/wind.md#黄天)有关     |
 
 ### const SideEffectSkillAppliers
 
