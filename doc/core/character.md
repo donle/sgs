@@ -16,27 +16,29 @@ ___
 
 ## Properties
 
-|                        成员 |       | 类型                    |
-| --------------------------: | :---: | :---------------------- |
-|                   [id](#id) |   :   | CharacterId             |
-|               [name](#name) |   :   | string                  |
-|           [gender](#gender) |   :   | CharacterGender         |
-| [nationality](#nationality) |   :   | CharacterNationality    |
-|             [maxHp](#maxhp) |   :   | number                  |
-|                   [hp](#hp) |   :   | number                  |
-| [fromPackage](#frompackage) |   :   | GameCharacterExtensions |
-|           [skills](#skills) |   :   | Skill[]                 |
+|                        成员 |       | 类型                                                     |
+| --------------------------: | :---: | :------------------------------------------------------- |
+|                   [Id](#id) |   :   | [CharacterId](#type-characterid)                         |
+|               [Name](#name) |   :   | string                                                   |
+|           [Gender](#gender) |   :   | [CharacterGender](#const-enum-charactergender)           |
+| [Nationality](#nationality) |   :   | [CharacterNationality](#const-enum-characternationality) |
+|             [MaxHp](#maxhp) |   :   | number                                                   |
+|                   [Hp](#hp) |   :   | number                                                   |
+|     [Package](#frompackage) |   :   | GameCharacterExtensions                                  |
+|           [Skills](#skills) |   :   | Skill[]                                                  |
 
 ___
 
 ## Public Functions
 
-+ [isLord()](#islord)
-+ [turnOver()](#turnover)
-+ [isTurnOver()](#isturnover)
-+ [link()](#link)
-+ [unlink()](#unlink)
-+ [isLinked()](#islinked)
+|                        函数 |       | 返回类型 |
+| --------------------------: | :---: | :------- |
+|         [isLord](#islord)() |  =>   | boolean  |
+|     [turnOver](#turnover)() |  =>   | void     |
+| [isTurnOver](#isturnover)() |  =>   | boolean  |
+|             [link](#link)() |  =>   | void     |
+|         [unlink](#unlink)() |  =>   | void     |
+|     [isLinked](#islinked)() |  =>   | boolean  |
 
 ___
 
@@ -48,81 +50,73 @@ ___
 
 ## Property Documentation
 
-### id
+### Id: [CharacterId](#type-characterid)
   
   id是武将的编号。在初始化过程中，每名武将被分配到一个与之对应的id。通过id可以找到其对应的武将。
 
-### name
+### Name: string
 
   武将的名字。
 
-### gender
+### Gender: [CharacterGender](#const-enum-charactergender)
 
   武将的性别。
 
-### nationality
+### Nationality: [CharacterNationality](#const-enum-characternationality)
 
   武将的势力（魏蜀吴群神）。
 
-### maxHp
+### MaxHp: number
 
   武将的最大体力值（勾玉数量）。
 
-### hp
+### Hp: number
 
   武将的初始体力值（比如神甘宁，3血6上限，其hp值是3）。
 
-### fromPackage
+### Package: GameCharacterExtensions
 
   武将所在的拓展包。
 
-### skills
+### Skills: Skill[]
 
   武将的所有技能。
-
-### turnedOver
-
-  是否被翻面。
-
-### linked
-
-  是否处于连环状态。
-
-### lord
-
-  是否是常备主公武将。
 
 ___
 
 ## Member Function Documentation
 
-### isLord()
+### isLord() => boolean
 
   判断武将是否为主公武将。
 
-### turnOver()
+### turnOver() => void
 
   将武将的[turnedOver](#turnedover)属性置为与原来相反，相当于翻面。
 
-### isTurnOver()
+### isTurnOver() => boolean
 
   判断武将是否被翻面。
 
-### link()
+### link() => void
 
   将武将的[linked](#linked)属性置为`true`。
 
-### unlink()
+### unlink() => void
 
   将武将的[linked](#linked)属性置为`false`。
 
-### isLinked()
+### isLinked() => boolean
 
   判断武将是否处于连环状态。
 
 ___
 
 ## Related Non-members
+
+### type CharacterId
+
+number的别名。
 
 ### const enum CharacterGender
 
@@ -150,7 +144,9 @@ ___
 
   转为字符串的函数：`getNationalityRawText(nationality)`
 
-### 装饰器函数：Lord
+### Decorators
+
+#### @Lord
 
   在其他武将继承时使用@Lord装饰器以表示其是主公武将。
 
