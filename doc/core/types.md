@@ -1,6 +1,6 @@
 # Types
 
-> [DSanguosha](../../index.md) > [Core](../core-index.md) > [Shared](./shared-index.md) > Types
+> [DSanguosha](../index.md) > [Core](./core-index.md) > [Shared](./shared-index.md) > Types
 
 ___
 
@@ -28,7 +28,7 @@ ___
 
 ## Flavor
 
-[查看源文件](../../../src/core/shares/types/host_config.ts)
+[查看源文件](../../src/core/shares/types/host_config.ts)
 
 | 常量        | 值       | 描述              |
 | ----------- | -------- | ----------------- |
@@ -39,25 +39,25 @@ ___
 
 ## MarkEnum
 
-[查看源代码...](../../../src/core/shares/types/mark_list.ts)
+[查看源代码...](../../src/core/shares/types/mark_list.ts)
 
-| 常量               | 值            | 描述                                 |
-| ------------------ | ------------- | ------------------------------------ |
-| MarkEnum.Nightmare | `'nightmare'` | “梦魇”标记（[【武魂】](../../characters/god.md#武魂)） |
-| MarkEnum.DaWu      | `'dawu'`      | “大雾”标记（[【大雾】](../../characters/god.md#大雾)） |
-| MarkEnum.KuangFeng | `'kuangfeng'` | “狂风”标记（[【狂风】](../../characters/god.md#狂风)） |
-| MarkEnum.Ren       | `'ren'`       | “忍”标记（[【忍戒】](../../characters/god.md#忍戒)）   |
-| MarkEnum.Wrath     | `'nu'`        | “怒”标记（[【狂暴】](../../characters/god.md#狂暴)）   |
-| MarkEnum.JunLve    | `'junlve'`    | “军略”标记（[【军略】](../../characters/god.md#军略)） |
-| MarkEnum.Lie       | `'lie'`       | “烈”标记（[【武烈】](../../characters/forest.md#武烈)）   |
-| MarkEnum.XueYi     | `'xueyi'`     | “血裔”标记（[【血裔】](../../characters/fire.md#血裔)） |
-| MarkEnum.Ying      | `'ying'`      | “营”标记（[【劫营】](../../characters/god.md#劫营)）   |
+| 常量               | 值            | 描述                                                 |
+| ------------------ | ------------- | ---------------------------------------------------- |
+| MarkEnum.Nightmare | `'nightmare'` | “梦魇”标记（[【武魂】](../characters/god.md#武魂)）  |
+| MarkEnum.DaWu      | `'dawu'`      | “大雾”标记（[【大雾】](../characters/god.md#大雾)）  |
+| MarkEnum.KuangFeng | `'kuangfeng'` | “狂风”标记（[【狂风】](../characters/god.md#狂风)）  |
+| MarkEnum.Ren       | `'ren'`       | “忍”标记（[【忍戒】](../characters/god.md#忍戒)）    |
+| MarkEnum.Wrath     | `'nu'`        | “怒”标记（[【狂暴】](../characters/god.md#狂暴)）    |
+| MarkEnum.JunLve    | `'junlve'`    | “军略”标记（[【军略】](../characters/god.md#军略)）  |
+| MarkEnum.Lie       | `'lie'`       | “烈”标记（[【武烈】](../characters/forest.md#武烈)） |
+| MarkEnum.XueYi     | `'xueyi'`     | “血裔”标记（[【血裔】](../characters/fire.md#血裔)） |
+| MarkEnum.Ying      | `'ying'`      | “营”标记（[【劫营】](../characters/god.md#劫营)）    |
 
 ___
 
 ## GameMode
 
-[查看源代码...](../../../src/core/shares/types/room_props.ts)
+[查看源代码...](../../src/core/shares/types/room_props.ts)
 
 | 常量                  | 值                | 描述     |
 | --------------------- | ----------------- | -------- |
@@ -72,14 +72,14 @@ ___
 
 ### LobbySocketEvent
 
-[查看源代码...](../../../src/core/shares/types/server_types.ts)
+[查看源代码...](../../src/core/shares/types/server_types.ts)
 
-常量|值|描述
--|-|-
-LobbySocketEvent.QueryRoomList|0|待补充
-LobbySocketEvent.GameCreated|1|待补充
-LobbySocketEvent.QueryVersion|2|待补充
-LobbySocketEvent.VersionMismatch|3|待补充
+| 常量                             | 值  | 描述   |
+| -------------------------------- | --- | ------ |
+| LobbySocketEvent.QueryRoomList   | 0   | 待补充 |
+| LobbySocketEvent.GameCreated     | 1   | 待补充 |
+| LobbySocketEvent.QueryVersion    | 2   | 待补充 |
+| LobbySocketEvent.VersionMismatch | 3   | 待补充 |
 
 参看（待补充）
 
@@ -127,8 +127,8 @@ string类型，保存该房间的密码。（可选）
 
 ## TagEnum
 
-[查看源代码...](../../../src/core/shares/types/tag_list.ts)
+[查看源代码...](../../src/core/shares/types/tag_list.ts)
 
-| 常量             | 值             | 描述   |
-| ---------------- | -------------- | ------ |
+| 常量             | 值             | 描述                 |
+| ---------------- | -------------- | -------------------- |
 | TagEnum.DrunkTag | `'drunkLevel'` | 酒杀中附加的酒的数量 |

@@ -1,6 +1,6 @@
 # Shared
 
-> [DSanguosha](../../index.md) > [Core](../core-index.md) > Shared
+> [DSanguosha](../index.md) > [Core](./core-index.md) > Shared
 
 ___
 

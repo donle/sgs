@@ -1,12 +1,12 @@
 # System
 
-> [DSanguosha](../../index.md) > [Core](../core-index.md) > [Shared](./shared-index.md) > System
+> [DSanguosha](../index.md) > [Core](./core-index.md) > [Shared](./shared-index.md) > System
 
 ___
 
 system是一个命名空间，包含有和askForChooseCard以及SideEffectSkill相关的部分。
 
-[查看源文件...](../../../src/core/shares/libs/system.ts)
+[查看源文件...](../../src/core/shares/libs/system.ts)
 
 - [System](#system)
   - [AskForChoosingCardEventFilter相关](#askforchoosingcardeventfilter相关)
@@ -26,9 +26,9 @@ ___
 
 | 常量                                 | 值  | 描述                                                       |
 | ------------------------------------ | --- | ---------------------------------------------------------- |
-| AskForChoosingCardEventFilter.SheLie | 0   | 与技能[【涉猎】](../../characters/god.md#涉猎)有关         |
-| AskForChoosingCardEventFilter.PoXi   | 1   | 与技能[【魄袭】](../../characters/god.md#魄袭)有关         |
-| AskForChoosingCardEventFilter.JieYue | 2   | 与技能[【节钺】](../../characters/yijiang2011.md#节钺)有关 |
+| AskForChoosingCardEventFilter.SheLie | 0   | 与技能[【涉猎】](../characters/god.md#涉猎)有关         |
+| AskForChoosingCardEventFilter.PoXi   | 1   | 与技能[【魄袭】](../characters/god.md#魄袭)有关         |
+| AskForChoosingCardEventFilter.JieYue | 2   | 与技能[【节钺】](../characters/yijiang2011.md#节钺)有关 |
 
 ### type AskForChoosingCardEventFilterFunc
 
@@ -54,8 +54,8 @@ ___
 
 | 常量                                 | 值  | 描述                                                    |
 | ------------------------------------ | --- | ------------------------------------------------------- |
-| SideEffectSkillApplierEnum.ZhiBa     | 0   | 与技能[【制霸】](../../characters/mountain.md#制霸)有关 |
-| SideEffectSkillApplierEnum.HuangTian | 1   | 与技能[【黄天】](../../characters/wind.md#黄天)有关     |
+| SideEffectSkillApplierEnum.ZhiBa     | 0   | 与技能[【制霸】](../characters/mountain.md#制霸)有关 |
+| SideEffectSkillApplierEnum.HuangTian | 1   | 与技能[【黄天】](../characters/wind.md#黄天)有关     |
 
 ### const SideEffectSkillAppliers
 

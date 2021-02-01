@@ -1,12 +1,12 @@
 # Algorithm
 
-> [DSanguosha](../../index.md) > [Core](../core-index.md) > [Shared](./shared-index.md) > Algorithm
+> [DSanguosha](../index.md) > [Core](./core-index.md) > [Shared](./shared-index.md) > Algorithm
 
 ___
 
 Algorithm是一个命名空间，里面包含了一些常用算法。
 
-[查看源文件...](../../../src/core/shares/libs/algorithm/index.ts)
+[查看源文件...](../../src/core/shares/libs/algorithm/index.ts)
 
 - [Algorithm](#algorithm)
   - [shuffle](#shuffle)
