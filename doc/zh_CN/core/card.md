@@ -4,67 +4,55 @@
 
 ___
 
-Card类用来代表游戏中的卡牌。[更多...](#detailed-description)
+Card类用来代表游戏中的卡牌。卡牌指的是游戏牌，而不是武将牌、体力牌、身份牌（晕）
 
 [查看源文件...](../../src/core/cards/card.ts)
 
 子类：
 
-+ [所有属性](#property-documentation)
-+ [成员函数](#member-function-documentation)
-+ [其他相关](#related-non-members)
-
-___
-
-## Properties
-
-|              成员 |       | 类型                                         |
-| ----------------: | :---: | :------------------------------------------- |
-|       Reforgeable |   :   | boolean                                      |
-|                Id |   :   | [CardId](#type-cardid)                       |
-|        CardNumber |   :   | number                                       |
-|              Suit |   :   | [CardSuit](#const-enum-cardsuit)             |
-|             Color |   :   | [CardColor](#const-enum-cardcolor)           |
-|              Name |   :   | string                                       |
-|       GeneralName |   :   | string                                       |
-|       Description |   :   | string                                       |
-|          BaseType |   :   | [CardType](#const-enum-cardtype)             |
-|              Type |   :   | [CardType](#const-enum-cardtype)[]           |
-|             Skill |   :   | [Skill](./skill.md)                          |
-|      ShadowSkills |   :   | [Skill](./skill.md)[]                        |
-| EffectUseDistance |   :   | number                                       |
-|           Package |   :   | GameCardExtensions                           |
-|               AOE |   :   | [CardTargetEnum](#const-enum-cardtargetenum) |
-
-___
-
-## Public Functions
-
-|                                          函数 |       | 返回类型 |
-| --------------------------------------------: | :---: | :------- |
-|                              hasTransformed() |  =>   | boolean  |
-|    is(type: [CardType](#const-enum-cardtype)) |  =>   | boolean  |
-|         isSameType(card: [Card](#card-class)) |  =>   | boolean  |
-|                                     isBlack() |  =>   | boolean  |
-|                                       isRed() |  =>   | boolean  |
-|                               isVirtualCard() |  =>   | boolean  |
-| equals(card: Readonly\<[Card](#card-class)\>) |  =>   | boolean  |
-|                                       reset() |  =>   | void     |
-
-___
-
-## Static Public Members
-
-|                                             成员 |       | 类型                     |
-| -----------------------------------------------: | :---: | :----------------------- |
-| getActualCards(cards: [CardId](#type-cardid)\[]) |  =>   | [CardId](#type-cardid)[] |
-|      isVirtualCardId(id: [CardId](#type-cardid)) |  =>   | boolean                  |
-
-___
-
-## Detailed Description
-
-卡牌指的是游戏牌，而不是武将牌、体力牌、身份牌（晕）
+- [Card Class](#card-class)
+  - [Property Documentation](#property-documentation)
+    - [Reforgeable: boolean](#reforgeable-boolean)
+    - [Id: CardId](#id-cardid)
+    - [CardNumber: number](#cardnumber-number)
+    - [Suit: CardSuit](#suit-cardsuit)
+    - [Color: CardColor](#color-cardcolor)
+    - [Name: string](#name-string)
+    - [GeneralName: string](#generalname-string)
+    - [Description: string](#description-string)
+    - [BaseType: CardType](#basetype-cardtype)
+    - [Type: CardType[]](#type-cardtype)
+    - [Skill: Skill](#skill-skill)
+    - [ShadowSkills: Skill[]](#shadowskills-skill)
+    - [EffectUseDistance: number](#effectusedistance-number)
+    - [Package: GameCardExtensions](#package-gamecardextensions)
+    - [AOE: CardTargetEnum](#aoe-cardtargetenum)
+  - [Public Functions](#public-functions)
+    - [hasTransformed() => boolean](#hastransformed--boolean)
+    - [is(type: CardType) => boolean](#istype-cardtype--boolean)
+    - [isSameType(card: Card) => boolean](#issametypecard-card--boolean)
+    - [isBlack() => boolean](#isblack--boolean)
+    - [isRed() => boolean](#isred--boolean)
+    - [isVirtualCard() => boolean](#isvirtualcard--boolean)
+    - [equals(card: Readonly\<Card\>) => boolean](#equalscard-readonlycard--boolean)
+    - [reset() => void](#reset--void)
+  - [Static Public Members](#static-public-members)
+    - [getActualCards(cards: CardId[]) => CardId[]](#getactualcardscards-cardid--cardid)
+    - [isVirtualCardId(id: CardId) => boolean](#isvirtualcardidid-cardid--boolean)
+  - [Related Non-members](#related-non-members)
+    - [const enum CardSuit](#const-enum-cardsuit)
+    - [const enum CardColor](#const-enum-cardcolor)
+    - [type CardId](#type-cardid)
+    - [type RealCardId](#type-realcardid)
+    - [type VirtualCardId](#type-virtualcardid)
+    - [const enum CardTargetEnum](#const-enum-cardtargetenum)
+    - [const enum CardType](#const-enum-cardtype)
+    - [Decorators](#decorators)
+      - [@None](#none)
+      - [@Single](#single)
+      - [@Multiple](#multiple)
+      - [@Others](#others)
+      - [@Globe](#globe)
 
 ___
 
@@ -132,7 +120,7 @@ ___
 
 ___
 
-## Member Function Documentation
+## Public Functions
 
 ### hasTransformed() => boolean
 
@@ -166,7 +154,11 @@ ___
 
 将卡牌的指定目标类型重置为其原本的类型。
 
-### getActualCards(cards: [CardId](#type-cardid)\[]) => [CardId](#type-cardid)[]
+___
+
+## Static Public Members
+
+### getActualCards(cards: [CardId](#type-cardid)[]) => CardId[]
 
 根据给定的id返回对应各实体卡的id。
 

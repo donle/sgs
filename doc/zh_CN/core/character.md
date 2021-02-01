@@ -4,47 +4,33 @@
 
 ___
 
-Character类是游戏中所有武将的基类。[更多...](#detailed-description)
+Character类是游戏中所有武将的基类。该类保存着武将的基本属性，如编号、势力、性别等。
 
 [查看源文件...](../../src/core/characters/character.ts)
 
-+ [所有属性](#property-documentation)
-+ [成员函数](#member-function-documentation)
-+ [其他相关](#related-non-members)
-
-___
-
-## Properties
-
-|                        成员 |       | 类型                                                     |
-| --------------------------: | :---: | :------------------------------------------------------- |
-|                   [Id](#id) |   :   | [CharacterId](#type-characterid)                         |
-|               [Name](#name) |   :   | string                                                   |
-|           [Gender](#gender) |   :   | [CharacterGender](#const-enum-charactergender)           |
-| [Nationality](#nationality) |   :   | [CharacterNationality](#const-enum-characternationality) |
-|             [MaxHp](#maxhp) |   :   | number                                                   |
-|                   [Hp](#hp) |   :   | number                                                   |
-|     [Package](#frompackage) |   :   | GameCharacterExtensions                                  |
-|           [Skills](#skills) |   :   | Skill[]                                                  |
-
-___
-
-## Public Functions
-
-|                        函数 |       | 返回类型 |
-| --------------------------: | :---: | :------- |
-|         [isLord](#islord)() |  =>   | boolean  |
-|     [turnOver](#turnover)() |  =>   | void     |
-| [isTurnOver](#isturnover)() |  =>   | boolean  |
-|             [link](#link)() |  =>   | void     |
-|         [unlink](#unlink)() |  =>   | void     |
-|     [isLinked](#islinked)() |  =>   | boolean  |
-
-___
-
-## Detailed Description
-
-Character类是所有其他武将的基类。该类保存着武将的基本属性，如编号、势力、性别等。
+- [Character Class](#character-class)
+  - [Property Documentation](#property-documentation)
+    - [Id: CharacterId](#id-characterid)
+    - [Name: string](#name-string)
+    - [Gender: CharacterGender](#gender-charactergender)
+    - [Nationality: CharacterNationality](#nationality-characternationality)
+    - [MaxHp: number](#maxhp-number)
+    - [Hp: number](#hp-number)
+    - [Package: GameCharacterExtensions](#package-gamecharacterextensions)
+    - [Skills: Skill[]](#skills-skill)
+  - [Public Functions](#public-functions)
+    - [isLord() => boolean](#islord--boolean)
+    - [turnOver() => void](#turnover--void)
+    - [isTurnOver() => boolean](#isturnover--boolean)
+    - [link() => void](#link--void)
+    - [unlink() => void](#unlink--void)
+    - [isLinked() => boolean](#islinked--boolean)
+  - [Related Non-members](#related-non-members)
+    - [type CharacterId](#type-characterid)
+    - [const enum CharacterGender](#const-enum-charactergender)
+    - [const enum CharacterNationality](#const-enum-characternationality)
+    - [Decorators](#decorators)
+      - [@Lord](#lord)
 
 ___
 
@@ -78,13 +64,12 @@ ___
 
   武将所在的拓展包。
 
-### Skills: Skill[]
+### Skills: [Skill](./skill.md)[]
 
   武将的所有技能。
-
 ___
 
-## Member Function Documentation
+## Public Functions
 
 ### isLord() => boolean
 
