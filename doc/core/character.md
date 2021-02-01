@@ -14,7 +14,7 @@ Character类是游戏中所有武将的基类。[更多...](#detailed-descriptio
 
 ___
 
-## Protected Members
+## Properties
 
 |                        成员 |       | 类型                    |
 | --------------------------: | :---: | :---------------------- |
