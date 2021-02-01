@@ -9,4 +9,4 @@ ___
 + [Character](./character.md)
 + [Extension](./extension.md)
 + [Skill](./skill.md)
-+ [Shared](./shared/shared-index.md)
++ [Shared](./shared-index.md)
