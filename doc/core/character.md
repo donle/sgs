@@ -14,15 +14,9 @@ Character类是游戏中所有武将的基类。[更多...](#detailed-descriptio
 
 ___
 
-|           Private Members |       |         |
-| ------------------------: | :---: | :------ |
-| [turnedOver](#turnedover) |   :   | boolean |
-|         [linked](#linked) |   :   | boolean |
-|             [lord](#lord) |   :   | boolean |
+## Protected Members
 
-___
-
-|           Protected Members |       |                         |
+|                        成员 |       | 类型                    |
 | --------------------------: | :---: | :---------------------- |
 |                   [id](#id) |   :   | CharacterId             |
 |               [name](#name) |   :   | string                  |
@@ -35,8 +29,7 @@ ___
 
 ___
 
-| Public Functions |       |      |
-| ---------------: | :---: | :--- |
+## Public Functions
 
 + [isLord()](#islord)
 + [turnOver()](#turnover)
@@ -44,20 +37,6 @@ ___
 + [link()](#link)
 + [unlink()](#unlink)
 + [isLinked()](#islinked)
-
-___
-
-| Property Getters |       |      |
-| ---------------: | :---: | :--- |
-
-+ Id
-+ MaxHp
-+ Hp
-+ Nationality
-+ Skills
-+ Name
-+ Package
-+ Gender
 
 ___
 
