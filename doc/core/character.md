@@ -146,10 +146,8 @@ number的别名。
 
 ### Decorators
 
+以下的装饰器在武将继承Character类时可能被用到。
+
 #### @Lord
 
-  在其他武将继承时使用@Lord装饰器以表示其是主公武将。
-
-___
-
-参考：[Skill](./skill.md)，[Extension](./extension.md)
+表示装饰目标是主公武将。
