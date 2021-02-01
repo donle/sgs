@@ -14,8 +14,8 @@ ___
 
 ## 文档索引
 
-+ [Core](./core/core-index.md)
-+ [武将一览](./characters/characters-index.md)
++ [Core](./core/core_index.md)
++ [武将一览](./characters/characters_index.md)
 
 ## 说明
 

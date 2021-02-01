@@ -1,6 +1,6 @@
 # 风
 
-> [DSanguosha](../index.md) > [武将一览](./characters-index.md) > 风
+> [DSanguosha](../index.md) > [武将一览](./characters_index.md) > 风
 
 ___
 

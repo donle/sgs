@@ -1,6 +1,6 @@
 # 林
 
-> [DSanguosha](../index.md) > [武将一览](./characters-index.md) > 林
+> [DSanguosha](../index.md) > [武将一览](./characters_index.md) > 林
 
 ___
 

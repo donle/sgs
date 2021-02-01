@@ -1,6 +1,6 @@
 # 神
 
-> [DSanguosha](../index.md) > [武将一览](./characters-index.md) > 神
+> [DSanguosha](../index.md) > [武将一览](./characters_index.md) > 神
 
 ___
 

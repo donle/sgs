@@ -1,6 +1,6 @@
 # Card Class
 
-> [DSanguosha](../index.md) > [Core](./core-index.md) > Card
+> [DSanguosha](../index.md) > [Core](./core_index.md) > Card
 
 ___
 

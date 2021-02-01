@@ -1,5 +1,5 @@
 # Skill Class
 
-> [DSanguosha](../index.md) > [Core](./core-index.md) > Skill
+> [DSanguosha](../index.md) > [Core](./core_index.md) > Skill
 
 ___

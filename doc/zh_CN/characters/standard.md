@@ -1,6 +1,6 @@
 # 标准版
 
-> [DSanguosha](../index.md) > [武将一览](./characters-index.md) > 标准版
+> [DSanguosha](../index.md) > [武将一览](./characters_index.md) > 标准版
 
 ___
 

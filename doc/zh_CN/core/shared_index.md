@@ -1,6 +1,6 @@
 # Shared
 
-> [DSanguosha](../index.md) > [Core](./core-index.md) > Shared
+> [DSanguosha](../index.md) > [Core](./core_index.md) > Shared
 
 ___
 
@@ -10,6 +10,6 @@ ___
 + [Functional](./functional.md)
 + [Logger](./logger.md)
 + [Precondition](./precondition.md)
-+ [Judge Matcher](./judge-matcher.md)
++ [Judge Matcher](./judge_matcher.md)
 + [System](./system.md)
 + [Types](./types.md)

@@ -1,5 +1,5 @@
 # Extension
 
-> [DSanguosha](../index.md) > [Core](./core-index.md) > Extension
+> [DSanguosha](../index.md) > [Core](./core_index.md) > Extension
 
 ___

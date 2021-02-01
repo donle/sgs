@@ -1,6 +1,6 @@
 # Judge Matcher
 
-> [DSanguosha](../index.md) > [Core](./core-index.md) > [Shared](./shared-index.md) > Algorithm
+> [DSanguosha](../index.md) > [Core](./core_index.md) > [Shared](./shared_index.md) > Algorithm
 
 ___
 
@@ -32,10 +32,10 @@ ___
 
 | 常量                              | 值  | 描述                                                        |
 | --------------------------------- | --- | ----------------------------------------------------------- |
-| JudgeMatcherEnum.LeBuSiShu        | 1   | 卡牌[【乐不思蜀】](#judge-matcher)相关判定                  |
-| JudgeMatcherEnum.BingLiangCunDuan | 2   | 卡牌[【兵粮寸断】](#judge-matcher)相关判定                  |
-| JudgeMatcherEnum.BaGuaZhen        | 3   | 卡牌[【八卦阵】](#judge-matcher)相关判定                    |
-| JudgeMatcherEnum.Lightning        | 4   | 卡牌[【闪电】](#judge-matcher)相关判定                      |
+| JudgeMatcherEnum.LeBuSiShu        | 1   | 卡牌[【乐不思蜀】](#judge_matcher)相关判定                  |
+| JudgeMatcherEnum.BingLiangCunDuan | 2   | 卡牌[【兵粮寸断】](#judge_matcher)相关判定                  |
+| JudgeMatcherEnum.BaGuaZhen        | 3   | 卡牌[【八卦阵】](#judge_matcher)相关判定                    |
+| JudgeMatcherEnum.Lightning        | 4   | 卡牌[【闪电】](#judge_matcher)相关判定                      |
 | JudgeMatcherEnum.BaoNve           | 5   | 武将技能[【暴虐】](../characters/forest.md#暴虐)相关判定 |
 | JudgeMatcherEnum.WuHun            | 6   | 武将技能[【武魂】](../characters/forest.md#武魂)相关判定 |
 | JudgeMatcherEnum.LuoShen          | 7   | 武将技能[【洛神】](../characters/forest.md#洛神)相关判定 |

@@ -4,7 +4,10 @@ import { CharacterLoader } from 'core/game/package_loader/loader.characters';
 import { TranslationModule } from 'core/translations/translation_module';
 import { Languages } from 'core/translations/translation_json_tool';
 import { Functional } from 'core/shares/libs/functional';
-import { SimplifiedChinese } from 'languages/zh_CN'; // 该问题大可忽略
+// Please copy src/ui/platforms/desktop/src/languages to src/languages in order to make the script work.
+import { SimplifiedChinese } from 'languages/zh_CN';
+
+// @TODO: add i18n feature
 
 Sanguosha.initialize();
 const translator = TranslationModule.setup(Languages.ZH_CN, [Languages.ZH_CN, SimplifiedChinese]);
@@ -14,10 +17,10 @@ function generateCharactersOverview() {
     for (let extension of Sanguosha.getGameCharacterExtensions()) {
         indexBuffer = indexBuffer.concat(`+ [${translator.tr(extension)}](./${extension}.md)\n`)
     }
-    fs.writeFileSync('characters/characters-index.md', indexBuffer);
+    fs.writeFileSync('zh_CN/characters/characters_index.md', indexBuffer);
 
     for (let extension of Sanguosha.getGameCharacterExtensions()) {
-        let buffer = `# ${translator.tr(extension)}\n\n> [DSanguosha](../index.md) > [武将一览](./characters-index.md) > ${translator.tr(extension)}\n\n___\n\n- [${translator.tr(extension)}](#${translator.tr(extension)})\n\n___\n\n`;
+        let buffer = `# ${translator.tr(extension)}\n\n> [DSanguosha](../index.md) > [武将一览](./characters_index.md) > ${translator.tr(extension)}\n\n___\n\n- [${translator.tr(extension)}](#${translator.tr(extension)})\n\n___\n\n`;
 
         let characters = CharacterLoader.getInstance().getPackages(extension);
         for (let character of characters) {
@@ -31,6 +34,6 @@ function generateCharactersOverview() {
                 buffer = buffer.concat('___\n\n');
         }
         
-        fs.writeFileSync(`characters/${extension}.md`, buffer);
+        fs.writeFileSync(`zh_CN/characters/${extension}.md`, buffer);
     }
 }

@@ -1,6 +1,6 @@
 # Algorithm
 
-> [DSanguosha](../index.md) > [Core](./core-index.md) > [Shared](./shared-index.md) > Algorithm
+> [DSanguosha](../index.md) > [Core](./core_index.md) > [Shared](./shared_index.md) > Algorithm
 
 ___
 

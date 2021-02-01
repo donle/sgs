@@ -1,6 +1,6 @@
 # Precondition
 
-> [DSanguosha](../index.md) > [Core](./core-index.md) > [Shared](./shared-index.md) > Precondition
+> [DSanguosha](../index.md) > [Core](./core_index.md) > [Shared](./shared_index.md) > Precondition
 
 ___
 

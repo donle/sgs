@@ -1,6 +1,6 @@
 # Character Class
 
-> [DSanguosha](../index.md) > [Core](./core-index.md) > Character
+> [DSanguosha](../index.md) > [Core](./core_index.md) > Character
 
 ___
 

@@ -1,6 +1,6 @@
 # Types
 
-> [DSanguosha](../index.md) > [Core](./core-index.md) > [Shared](./shared-index.md) > Types
+> [DSanguosha](../index.md) > [Core](./core_index.md) > [Shared](./shared_index.md) > Types
 
 ___
 

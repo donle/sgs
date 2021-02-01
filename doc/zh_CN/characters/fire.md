@@ -1,6 +1,6 @@
 # 火
 
-> [DSanguosha](../index.md) > [武将一览](./characters-index.md) > 火
+> [DSanguosha](../index.md) > [武将一览](./characters_index.md) > 火
 
 ___
 
