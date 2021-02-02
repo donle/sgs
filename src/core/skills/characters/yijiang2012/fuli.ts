@@ -1,6 +1,6 @@
 import { CharacterNationality } from 'core/characters/character';
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { AllStage } from 'core/game/stage_processor';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { AllStage, PlayerDyingStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
@@ -8,12 +8,12 @@ import { LimitSkill } from 'core/skills/skill_wrappers';
 
 @LimitSkill({ name: 'fuli', description: 'fuli_description' })
 export class FuLi extends TriggerSkill {
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AskForPeachEvent>, stage?: AllStage): boolean {
-    return EventPacker.getIdentifier(event) === GameEventIdentifiers.AskForPeachEvent;
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>, stage?: AllStage): boolean {
+    return stage === PlayerDyingStage.RequestRescue;
   }
 
-  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.AskForPeachEvent>): boolean {
-    return content.fromId === owner.Id && content.toId === owner.Id;
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>): boolean {
+    return content.rescuer === owner.Id && content.dying === owner.Id;
   }
 
   public async onTrigger(): Promise<boolean> {
