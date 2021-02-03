@@ -24,11 +24,11 @@ function generateCharactersOverview() {
 
         let characters = CharacterLoader.getInstance().getPackages(extension);
         for (let character of characters) {
-            buffer = buffer.concat(`## ${translator.tr(character.Name)} ${translator.tr(Functional.getPlayerNationalityText(character.Nationality))} ${character.Hp}/${character.MaxHp}\n\n[查看源代码...](../../src/core/characters/${extension}/${character.Name}.ts)\n\n`);
+            buffer = buffer.concat(`## ${translator.tr(character.Name)} ${translator.tr(Functional.getPlayerNationalityText(character.Nationality))} ${character.Hp}/${character.MaxHp}\n\n[查看源代码...](../../../src/core/characters/${extension}/${character.Name}.ts)\n\n`);
 
             for (let skill of character.Skills) {
                 if (!skill.Name.startsWith('#'))
-                    buffer = buffer.concat(`### ${translator.tr(skill.Name)}\n\n[查看源代码...](../../src/core/skills/characters/${extension}/${skill.Name}.ts)\n\n${translator.tr(skill.Name.concat('_description'))}\n\n`);
+                    buffer = buffer.concat(`### ${translator.tr(skill.Name)}\n\n[查看源代码...](../../../src/core/skills/characters/${extension}/${skill.Name}.ts)\n\n${translator.tr(skill.Name.concat('_description'))}\n\n`);
             }
             if (character !== characters[characters.length-1])
                 buffer = buffer.concat('___\n\n');

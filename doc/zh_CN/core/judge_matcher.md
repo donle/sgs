@@ -6,7 +6,7 @@ ___
 
 JudgeMatcher类用来提供与判定相关的辅助。
 
-[查看源文件...](../../src/core/shares/libs/judge_matchers.ts)
+[查看源文件...](../../../src/core/shares/libs/judge_matchers.ts)
 
 - [Judge Matcher](#judge-matcher)
   - [Member Function Documentation](#member-function-documentation)

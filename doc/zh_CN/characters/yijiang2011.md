@@ -42,23 +42,23 @@ ___
 
 ## 曹植 魏 3/3
 
-[查看源代码...](../../src/core/characters/yijiang2011/caozhi.ts)
+[查看源代码...](../../../src/core/characters/yijiang2011/caozhi.ts)
 
 ### 落英
 
-[查看源代码...](../../src/core/skills/characters/yijiang2011/luoying.ts)
+[查看源代码...](../../../src/core/skills/characters/yijiang2011/luoying.ts)
 
 当其他角色的判定牌进入弃牌堆后，或其他角色的牌因弃置而进入弃牌堆后，你可以获得其中至少一张梅花牌。
 
 ### 酒诗
 
-[查看源代码...](../../src/core/skills/characters/yijiang2011/jiushi.ts)
+[查看源代码...](../../../src/core/skills/characters/yijiang2011/jiushi.ts)
 
 1级：当你需要使用[酒]时，若你的武将牌正面向上，你可以翻面，视为使用一张[酒]。当你受到伤害后，若你的武将牌背面向上，你可以翻面并获得牌堆中的一张随机锦囊。<br />2级：当你需要使用[酒]时，若你的武将牌正面向上，你可以翻面，视为使用一张[酒]。当你受到伤害后若你的武将牌背面向上，你可以翻面。当你翻面时，你获得牌堆中的一张随机锦囊。
 
 ### 成章
 
-[查看源代码...](../../src/core/skills/characters/yijiang2011/chengzhang.ts)
+[查看源代码...](../../../src/core/skills/characters/yijiang2011/chengzhang.ts)
 
 <b>觉醒技</b>，准备阶段开始时，若你造成伤害与受到伤害值之和累计7点或以上，则你回复1点体力并摸1张牌，然后升级“酒诗”。
 
@@ -66,17 +66,17 @@ ___
 
 ## 张春华 魏 3/3
 
-[查看源代码...](../../src/core/characters/yijiang2011/zhangchunhua.ts)
+[查看源代码...](../../../src/core/characters/yijiang2011/zhangchunhua.ts)
 
 ### 绝情
 
-[查看源代码...](../../src/core/skills/characters/yijiang2011/jueqing.ts)
+[查看源代码...](../../../src/core/skills/characters/yijiang2011/jueqing.ts)
 
 <b>锁定技</b>，你即将造成的伤害均视为体力流失。
 
 ### 伤逝
 
-[查看源代码...](../../src/core/skills/characters/yijiang2011/shangshi.ts)
+[查看源代码...](../../../src/core/skills/characters/yijiang2011/shangshi.ts)
 
 当你的手牌数小于X时，你可以将手牌摸至X张（X为你已损失的体力值）。
 
@@ -84,11 +84,11 @@ ___
 
 ## 于禁 魏 4/4
 
-[查看源代码...](../../src/core/characters/yijiang2011/yujin.ts)
+[查看源代码...](../../../src/core/characters/yijiang2011/yujin.ts)
 
 ### 节钺
 
-[查看源代码...](../../src/core/skills/characters/yijiang2011/jieyue.ts)
+[查看源代码...](../../../src/core/skills/characters/yijiang2011/jieyue.ts)
 
 结束阶段开始时，你可以交给一名其他角色一张牌，然后其选择一项：1.保留一张手牌和一张装备区里的牌，弃置其余的牌；2.令你摸三张牌。
 
@@ -96,17 +96,17 @@ ___
 
 ## 法正 蜀 3/3
 
-[查看源代码...](../../src/core/characters/yijiang2011/fazheng.ts)
+[查看源代码...](../../../src/core/characters/yijiang2011/fazheng.ts)
 
 ### 恩怨
 
-[查看源代码...](../../src/core/skills/characters/yijiang2011/enyuan.ts)
+[查看源代码...](../../../src/core/skills/characters/yijiang2011/enyuan.ts)
 
 当你受到伤害后，你可以令伤害来源选择一项：1.交给你一张手牌；2.失去1点体力。当你获得其他角色的牌后，若不少于两张，你可以令其摸一张牌。
 
 ### 眩惑
 
-[查看源代码...](../../src/core/skills/characters/yijiang2011/xuanhuo.ts)
+[查看源代码...](../../../src/core/skills/characters/yijiang2011/xuanhuo.ts)
 
 摸牌阶段，你可以放弃摸牌，令一名其他角色摸两张牌，然后其选择一项：1.对其攻击范围内由你指定的另一名角色使用一张【杀】；2.你获得其两张牌。
 
@@ -114,17 +114,17 @@ ___
 
 ## 马谡 蜀 3/3
 
-[查看源代码...](../../src/core/characters/yijiang2011/masu.ts)
+[查看源代码...](../../../src/core/characters/yijiang2011/masu.ts)
 
 ### 散谣
 
-[查看源代码...](../../src/core/skills/characters/yijiang2011/sanyao.ts)
+[查看源代码...](../../../src/core/skills/characters/yijiang2011/sanyao.ts)
 
 出牌阶段每项限一次，你可以弃置一张牌，并选择一项：1.指定体力值最高的一名角色；2.指定手牌数最多的一名角色。对你所选的角色造成1点伤害。
 
 ### 制蛮
 
-[查看源代码...](../../src/core/skills/characters/yijiang2011/zhiman.ts)
+[查看源代码...](../../../src/core/skills/characters/yijiang2011/zhiman.ts)
 
 你对其他角色造成伤害时，你可以防止此伤害，然后获得其区域内的一张牌。
 
@@ -132,17 +132,17 @@ ___
 
 ## 徐庶 蜀 3/3
 
-[查看源代码...](../../src/core/characters/yijiang2011/xushu.ts)
+[查看源代码...](../../../src/core/characters/yijiang2011/xushu.ts)
 
 ### 无言
 
-[查看源代码...](../../src/core/skills/characters/yijiang2011/wuyan.ts)
+[查看源代码...](../../../src/core/skills/characters/yijiang2011/wuyan.ts)
 
 <b>锁定技</b>，当你使用锦囊牌造成伤害时，或你受到锦囊牌造成的伤害时，防止此伤害。
 
 ### 举荐
 
-[查看源代码...](../../src/core/skills/characters/yijiang2011/jujian.ts)
+[查看源代码...](../../../src/core/skills/characters/yijiang2011/jujian.ts)
 
 结束阶段开始时，你可以弃置一张非基本牌并选择一名其他角色，其选择一项：1.回复1点体力；2.摸两张牌；3.复原武将牌。
 
@@ -150,11 +150,11 @@ ___
 
 ## 徐盛 吴 4/4
 
-[查看源代码...](../../src/core/characters/yijiang2011/xusheng.ts)
+[查看源代码...](../../../src/core/characters/yijiang2011/xusheng.ts)
 
 ### 破军
 
-[查看源代码...](../../src/core/skills/characters/yijiang2011/pojun.ts)
+[查看源代码...](../../../src/core/skills/characters/yijiang2011/pojun.ts)
 
 当你使用【杀】指定目标后，你可以将其一至X张牌扣置于其武将牌上，此回合结束时，其获得这些牌（X为其体力值）；当你使用【杀】对手牌区与装备区牌数均不大于你的角色造成伤害时，此伤害+1。
 
@@ -162,17 +162,17 @@ ___
 
 ## 吴国太 吴 3/3
 
-[查看源代码...](../../src/core/characters/yijiang2011/wuguotai.ts)
+[查看源代码...](../../../src/core/characters/yijiang2011/wuguotai.ts)
 
 ### 甘露
 
-[查看源代码...](../../src/core/skills/characters/yijiang2011/ganlu.ts)
+[查看源代码...](../../../src/core/skills/characters/yijiang2011/ganlu.ts)
 
 出牌阶段限一次，你可以选择一项：1.选择两名装备区内牌数相差不大于你已损失体力值的角色，令他们交换装备区里的牌；2.交换你与一名其他角色装备区里的牌。
 
 ### 补益
 
-[查看源代码...](../../src/core/skills/characters/yijiang2011/buyi.ts)
+[查看源代码...](../../../src/core/skills/characters/yijiang2011/buyi.ts)
 
 当一名角色进入濒死状态时，若其体力值不大于0，你可以展示其一张手牌，若此牌不为基本牌，则其弃置之且该角色回复1点体力。
 
@@ -180,17 +180,17 @@ ___
 
 ## 凌统 吴 4/4
 
-[查看源代码...](../../src/core/characters/yijiang2011/lingtong.ts)
+[查看源代码...](../../../src/core/characters/yijiang2011/lingtong.ts)
 
 ### 旋风
 
-[查看源代码...](../../src/core/skills/characters/yijiang2011/xuanfeng.ts)
+[查看源代码...](../../../src/core/skills/characters/yijiang2011/xuanfeng.ts)
 
 若你于弃牌阶段内弃置过至少两张手牌，或当你失去装备区里的牌后，你可以依次弃置其他角色的共计一至两张牌，然后你可以对其中一名角色造成1点伤害。
 
 ### 勇进
 
-[查看源代码...](../../src/core/skills/characters/yijiang2011/yongjin.ts)
+[查看源代码...](../../../src/core/skills/characters/yijiang2011/yongjin.ts)
 
 <b>限定技</b>，出牌阶段，你可以依次移动场上一至三张不同的装备牌。
 
@@ -198,17 +198,17 @@ ___
 
 ## 陈宫 群 3/3
 
-[查看源代码...](../../src/core/characters/yijiang2011/chengong.ts)
+[查看源代码...](../../../src/core/characters/yijiang2011/chengong.ts)
 
 ### 明策
 
-[查看源代码...](../../src/core/skills/characters/yijiang2011/mingce.ts)
+[查看源代码...](../../../src/core/skills/characters/yijiang2011/mingce.ts)
 
 出牌阶段限一次，你可以将一张【杀】或装备牌交给一名其他角色，然后其选择一项：1.视为对其攻击范围内由你指定的另一名角色使用一张【杀】；2.摸一张牌。
 
 ### 智迟
 
-[查看源代码...](../../src/core/skills/characters/yijiang2011/zhichi.ts)
+[查看源代码...](../../../src/core/skills/characters/yijiang2011/zhichi.ts)
 
 <b>锁定技</b>，当你于回合外受到伤害后，本回合内【杀】和普通锦囊牌对你无效。
 
@@ -216,17 +216,17 @@ ___
 
 ## 高顺 群 4/4
 
-[查看源代码...](../../src/core/characters/yijiang2011/gaoshun.ts)
+[查看源代码...](../../../src/core/characters/yijiang2011/gaoshun.ts)
 
 ### 禁酒
 
-[查看源代码...](../../src/core/skills/characters/yijiang2011/jinjiu.ts)
+[查看源代码...](../../../src/core/skills/characters/yijiang2011/jinjiu.ts)
 
 <b>锁定技</b>，你的【酒】均视为【杀】。
 
 ### 陷阵
 
-[查看源代码...](../../src/core/skills/characters/yijiang2011/xianzhen.ts)
+[查看源代码...](../../../src/core/skills/characters/yijiang2011/xianzhen.ts)
 
 出牌阶段限一次，你可以与一名角色拼点，若你：赢，此阶段内你无视其防具，对其使用牌无距离和次数限制，且当你使用【杀】或普通锦囊牌仅指定唯一目标时，可令其成为目标；没赢，你本回合内不能使用【杀】且你的【杀】不计入手牌上限。
 

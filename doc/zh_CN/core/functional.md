@@ -6,7 +6,7 @@ ___
 
 Functional为一个抽象类，内含多种实用方法（主要是枚举值和字符串的相互转化）。
 
-[查看源文件...](../../src/core/shares/libs/functional/index.ts)
+[查看源文件...](../../../src/core/shares/libs/functional/index.ts)
 
 - [Functional](#functional)
   - [getPlayerPhaseRawText](#getplayerphaserawtext)

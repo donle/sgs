@@ -4,6 +4,6 @@
 
 ___
 
-[查看源文件...](../../src/core/shares/libs/logger/logger.ts)
+[查看源文件...](../../../src/core/shares/libs/logger/logger.ts)
 
 （待补充）

@@ -34,17 +34,17 @@ ___
 
 ## 曹仁 魏 4/4
 
-[查看源代码...](../../src/core/characters/wind/caoren.ts)
+[查看源代码...](../../../src/core/characters/wind/caoren.ts)
 
 ### 据守
 
-[查看源代码...](../../src/core/skills/characters/wind/jushou.ts)
+[查看源代码...](../../../src/core/skills/characters/wind/jushou.ts)
 
 结束阶段开始时，你可以翻面并摸四张牌，然后选择一项：1.弃置一张非装备牌；2.使用一张装备牌。
 
 ### 解围
 
-[查看源代码...](../../src/core/skills/characters/wind/jiewei.ts)
+[查看源代码...](../../../src/core/skills/characters/wind/jiewei.ts)
 
 你可以将装备区里的牌当【无懈可击】使用；当你的武将牌从背面翻至正面时，你可以弃置一张牌，然后移动场上的一张牌。
 
@@ -52,17 +52,17 @@ ___
 
 ## 夏侯渊 魏 4/4
 
-[查看源代码...](../../src/core/characters/wind/xiahouyuan.ts)
+[查看源代码...](../../../src/core/characters/wind/xiahouyuan.ts)
 
 ### 神速
 
-[查看源代码...](../../src/core/skills/characters/wind/shensu.ts)
+[查看源代码...](../../../src/core/skills/characters/wind/shensu.ts)
 
 你可以做出如下选择：1.跳过判定阶段和摸牌阶段；2.跳过出牌阶段并弃置一张装备牌；3.跳过弃牌阶段并翻面。你每选择一项，便视为你使用一张无距离限制的【杀】。
 
 ### 设变
 
-[查看源代码...](../../src/core/skills/characters/wind/shebian.ts)
+[查看源代码...](../../../src/core/skills/characters/wind/shebian.ts)
 
 当你翻面后，你可以移动场上一张装备牌。
 
@@ -70,17 +70,17 @@ ___
 
 ## 魏延 蜀 4/4
 
-[查看源代码...](../../src/core/characters/wind/weiyan.ts)
+[查看源代码...](../../../src/core/characters/wind/weiyan.ts)
 
 ### 狂骨
 
-[查看源代码...](../../src/core/skills/characters/wind/kuanggu.ts)
+[查看源代码...](../../../src/core/skills/characters/wind/kuanggu.ts)
 
 当你对一名角色造成1点伤害后，若你与其的距离于其因受到此伤害而扣减体力前不大于1，你可以回复1点体力或摸一张牌。
 
 ### 奇谋
 
-[查看源代码...](../../src/core/skills/characters/wind/qimou.ts)
+[查看源代码...](../../../src/core/skills/characters/wind/qimou.ts)
 
 <b>限定技</b>，出牌阶段，你可以失去至少1点体力并摸X张牌，然后直到回合结束，你计算与其他角色的距离-X，且你使用【杀】的次数上限+X（X为你以此法失去的体力值）。
 
@@ -88,11 +88,11 @@ ___
 
 ## 黄忠 蜀 4/4
 
-[查看源代码...](../../src/core/characters/wind/huangzhong.ts)
+[查看源代码...](../../../src/core/characters/wind/huangzhong.ts)
 
 ### 烈弓
 
-[查看源代码...](../../src/core/skills/characters/wind/liegong.ts)
+[查看源代码...](../../../src/core/skills/characters/wind/liegong.ts)
 
 你使用【杀】可以选择距离不大于此【杀】点数的角色为目标；当你使用【杀】指定目标后，你可以根据下列条件执行相应的效果：1.其手牌数不大于你的手牌数，此【杀】不可被【闪】响应；2.其体力值不小于你的体力值，此【杀】伤害+1。
 
@@ -100,17 +100,17 @@ ___
 
 ## 周泰 吴 4/4
 
-[查看源代码...](../../src/core/characters/wind/zhoutai.ts)
+[查看源代码...](../../../src/core/characters/wind/zhoutai.ts)
 
 ### 奋激
 
-[查看源代码...](../../src/core/skills/characters/wind/fenji.ts)
+[查看源代码...](../../../src/core/skills/characters/wind/fenji.ts)
 
 当一名角色因另一名角色的弃置或获得而失去手牌后，你可以失去1点体力。若如此做，失去手牌的角色摸两张牌。
 
 ### 不屈
 
-[查看源代码...](../../src/core/skills/characters/wind/buqu.ts)
+[查看源代码...](../../../src/core/skills/characters/wind/buqu.ts)
 
 <b>锁定技</b>，当你处于濒死状态时，你将牌堆顶一张牌置于你的武将牌上，称为"创"，若此牌的点数与你武将牌上已有的"创"点数均不同，则你将体力回复至1点。若出现相同点数则将此牌置入弃牌堆。若你的武将牌上有"创"，则你的手牌上限与"创"的数量相等。
 
@@ -118,11 +118,11 @@ ___
 
 ## 于吉 群 3/3
 
-[查看源代码...](../../src/core/characters/wind/yuji.ts)
+[查看源代码...](../../../src/core/characters/wind/yuji.ts)
 
 ### 蛊惑
 
-[查看源代码...](../../src/core/skills/characters/wind/guhuo.ts)
+[查看源代码...](../../../src/core/skills/characters/wind/guhuo.ts)
 
 每回合限一次，你可以扣置一张手牌当任意一张基本牌或普通锦囊牌使用或打出。其他角色可同时进行质疑并翻开此牌：若为假则此牌作废，且质疑者各摸一张牌；若为真，则质疑者依次弃置一张牌或失去1点体力，并获得"缠怨"。
 
@@ -130,23 +130,23 @@ ___
 
 ## 张角 群 3/3
 
-[查看源代码...](../../src/core/characters/wind/zhangjiao.ts)
+[查看源代码...](../../../src/core/characters/wind/zhangjiao.ts)
 
 ### 鬼道
 
-[查看源代码...](../../src/core/skills/characters/wind/guidao.ts)
+[查看源代码...](../../../src/core/skills/characters/wind/guidao.ts)
 
 当一名角色的判定牌生效前，你可以打出一张黑色牌替换之。若你打出的牌为黑桃2-9，则你摸一张牌。
 
 ### 雷击
 
-[查看源代码...](../../src/core/skills/characters/wind/leiji.ts)
+[查看源代码...](../../../src/core/skills/characters/wind/leiji.ts)
 
 当你使用或打出【闪】或【闪电】时，你可以进行判定；当你的判定牌生效后，若判定结果为：黑桃，你可以选择一名其他角色，对其造成2点雷电伤害；梅花，你回复1点体力，然后你可以选择一名其他角色，对其造成1点雷电伤害。
 
 ### 黄天
 
-[查看源代码...](../../src/core/skills/characters/wind/huangtian.ts)
+[查看源代码...](../../../src/core/skills/characters/wind/huangtian.ts)
 
 <b>主公技</b>，其他群势力角色的出牌阶段限一次，其可以将一张【闪】或【闪电】交给你。
 
@@ -154,23 +154,23 @@ ___
 
 ## 小乔 吴 3/3
 
-[查看源代码...](../../src/core/characters/wind/xiaoqiao.ts)
+[查看源代码...](../../../src/core/characters/wind/xiaoqiao.ts)
 
 ### 红颜
 
-[查看源代码...](../../src/core/skills/characters/wind/hongyan.ts)
+[查看源代码...](../../../src/core/skills/characters/wind/hongyan.ts)
 
 <b>锁定技</b>，你的黑桃牌或你的黑桃判定牌的花色视为红桃；若你的装备区里有红桃牌，你的手牌上限等于X（X为你的体力上限）。
 
 ### 天香
 
-[查看源代码...](../../src/core/skills/characters/wind/tianxiang.ts)
+[查看源代码...](../../../src/core/skills/characters/wind/tianxiang.ts)
 
 当你受到伤害时，你可以弃置一张红桃牌，防止此伤害并选择一名其他角色，然后你选择一项：1.令其受到1点伤害，然后摸X张牌（X为其已损失体力值且至多为5）；2.令其失去1点体力，然后其获得你弃置的牌。
 
 ### 飘零
 
-[查看源代码...](../../src/core/skills/characters/wind/piaoling.ts)
+[查看源代码...](../../../src/core/skills/characters/wind/piaoling.ts)
 
 结束阶段开始时，你可以判定，若结果为红桃，你选择一项：1.将判定牌交给一名角色，若其为你，你弃置一张牌；2.将判定牌置于牌堆顶。
 

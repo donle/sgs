@@ -6,7 +6,7 @@ ___
 
 system是一个命名空间，包含有和askForChooseCard以及SideEffectSkill相关的部分。
 
-[查看源文件...](../../src/core/shares/libs/system.ts)
+[查看源文件...](../../../src/core/shares/libs/system.ts)
 
 - [System](#system)
   - [AskForChoosingCardEventFilter相关](#askforchoosingcardeventfilter相关)

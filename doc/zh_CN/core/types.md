@@ -28,7 +28,7 @@ ___
 
 ## Flavor
 
-[查看源文件](../../src/core/shares/types/host_config.ts)
+[查看源文件](../../../src/core/shares/types/host_config.ts)
 
 | 常量        | 值       | 描述              |
 | ----------- | -------- | ----------------- |
@@ -39,7 +39,7 @@ ___
 
 ## MarkEnum
 
-[查看源代码...](../../src/core/shares/types/mark_list.ts)
+[查看源代码...](../../../src/core/shares/types/mark_list.ts)
 
 | 常量               | 值            | 描述                                                 |
 | ------------------ | ------------- | ---------------------------------------------------- |
@@ -57,7 +57,7 @@ ___
 
 ## GameMode
 
-[查看源代码...](../../src/core/shares/types/room_props.ts)
+[查看源代码...](../../../src/core/shares/types/room_props.ts)
 
 | 常量                  | 值                | 描述     |
 | --------------------- | ----------------- | -------- |
@@ -72,7 +72,7 @@ ___
 
 ### LobbySocketEvent
 
-[查看源代码...](../../src/core/shares/types/server_types.ts)
+[查看源代码...](../../../src/core/shares/types/server_types.ts)
 
 | 常量                             | 值  | 描述   |
 | -------------------------------- | --- | ------ |
@@ -127,7 +127,7 @@ string类型，保存该房间的密码。（可选）
 
 ## TagEnum
 
-[查看源代码...](../../src/core/shares/types/tag_list.ts)
+[查看源代码...](../../../src/core/shares/types/tag_list.ts)
 
 | 常量             | 值             | 描述                 |
 | ---------------- | -------------- | -------------------- |

@@ -6,9 +6,9 @@ ___
 
 Card类用来代表游戏中的卡牌。卡牌指的是游戏牌，而不是武将牌、体力牌、身份牌（晕）
 
-[查看源文件...](../../src/core/cards/card.ts)
+[查看源文件...](../../../src/core/cards/card.ts)
 
-子类：[VirtualCard](./virtual_card.md)
+子类：[VirtualCard](./virtual_card.md), [BasicCard](./card_extend.md#basiccard), [TrickCard](./card_extend.md#trickcard), [EquipCard](./card_extend.md#equipcard)
 
 - [Card Class](#card-class)
   - [Property Documentation](#property-documentation)

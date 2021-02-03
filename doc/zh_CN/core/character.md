@@ -6,7 +6,7 @@ ___
 
 Character类是游戏中所有武将的基类。该类保存着武将的基本属性，如编号、势力、性别等。
 
-[查看源文件...](../../src/core/characters/character.ts)
+[查看源文件...](../../../src/core/characters/character.ts)
 
 - [Character Class](#character-class)
   - [Property Documentation](#property-documentation)
