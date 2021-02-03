@@ -237,7 +237,7 @@ export class CardMatcher {
   }
 
   public toString() {
-    return JSON.stringify(this.match);
+    return JSON.stringify(this.matcher);
   }
 
   public static parse(cardPattern: string) {
