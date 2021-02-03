@@ -389,6 +389,9 @@ export abstract class Player implements PlayerInfo {
         cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId),
         room.getPlayerById(target),
       );
+      if (card.Skill instanceof ActiveSkill) {
+        return ruleCardUse && card.Skill.canUse(room, this);
+      }
       return ruleCardUse;
     }
 

@@ -12,10 +12,8 @@ function onCalculatingSkillUsageWrapper(
 ): any {
   return class WrappedSkillConstructor extends constructor {
     protected skillType = skillType;
-    private canUseEntity: (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) => boolean;
     private description = description;
     private skillName = name;
-    private canUse: (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) => boolean;
 
     public static get Description() {
       return description;
@@ -32,10 +30,6 @@ function onCalculatingSkillUsageWrapper(
 
       if (this.skillType === SkillType.Awaken || this.skillType === SkillType.Limit) {
         this.isRefreshAt = () => false;
-        this.canUseEntity = this.canUse;
-        this.canUse = (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) =>
-          !owner.hasUsedSkill(this.Name) && this.canUseEntity(room, owner, content);
-        Object.bind(this, this.canUse);
       }
     }
   } as any;
