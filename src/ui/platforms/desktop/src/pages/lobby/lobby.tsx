@@ -81,21 +81,6 @@ export class Lobby extends React.Component<LobbyProps> {
 
   private currentInteractiveRoomInfo: RoomInfo;
 
-  constructor(props: LobbyProps) {
-    super(props);
-
-    this.props.connectionService.Lobby.onGameCreated(
-      mobx.action(event => {
-        const { roomId, roomInfo } = event;
-        this.props.history.push(`/room/${roomId}`, { gameMode: roomInfo.gameMode });
-      }),
-    );
-    this.props.connectionService.Lobby.onReceivedRoomList(mobx.action(content => (this.roomList = content)));
-    this.props.connectionService.Lobby.onVersionMismatch(
-      mobx.action(matched => (this.unmatchedCoreVersion = !matched)),
-    );
-  }
-
   private readonly settings = {
     onVolumeChange: mobx.action((volume: number) => {
       this.props.electronLoader.setData('gameVolume', volume.toString());
@@ -133,8 +118,10 @@ export class Lobby extends React.Component<LobbyProps> {
 
   @mobx.action
   UNSAFE_componentWillMount() {
-    this.props.connectionService.Lobby.getRoomList();
-    this.props.connectionService.Lobby.checkCoreVersion();
+    this.props.connectionService.Lobby.getRoomList().then(mobx.action(content => (this.roomList = content)));
+    this.props.connectionService.Lobby.checkCoreVersion().then(
+      mobx.action(matched => (this.unmatchedCoreVersion = !matched)),
+    );
   }
 
   @mobx.action
@@ -151,7 +138,7 @@ export class Lobby extends React.Component<LobbyProps> {
       return;
     }
 
-    this.props.connectionService.Lobby.getRoomList();
+    this.props.connectionService.Lobby.getRoomList().then(mobx.action(content => (this.roomList = content)));
   };
 
   unmatchedView() {
@@ -164,7 +151,16 @@ export class Lobby extends React.Component<LobbyProps> {
       this.openPasscodeEnterDialog = true;
       this.currentInteractiveRoomInfo = roomInfo;
     } else {
-      this.props.history.push(`/room/${roomInfo.id}`);
+      this.props.connectionService.Lobby.getRoomList().then(list => {
+        if (list.find(room => room.id === roomInfo.id) !== undefined) {
+          this.props.history.push(`/room/${roomInfo.id}`);
+        } else {
+          //TODO: add error popout
+          mobx.runInAction(() => {
+            this.roomList = list;
+          });
+        }
+      });
     }
   };
 
@@ -174,7 +170,12 @@ export class Lobby extends React.Component<LobbyProps> {
     this.props.connectionService.Lobby.createGame({
       cardExtensions: [GameCardExtensions.Standard, GameCardExtensions.LegionFight],
       ...roomInfo,
-    });
+    }).then(
+      mobx.action(event => {
+        const { roomId, roomInfo } = event;
+        this.props.history.push(`/room/${roomId}`, { gameMode: roomInfo.gameMode });
+      }),
+    );
   };
 
   @mobx.action
@@ -212,7 +213,16 @@ export class Lobby extends React.Component<LobbyProps> {
     if (this.currentInteractiveRoomInfo && passcode && this.currentInteractiveRoomInfo.passcode === passcode) {
       this.openPasscodeEnterDialog = false;
       this.showPasscodeError = false;
-      this.props.history.push(`/room/${this.currentInteractiveRoomInfo.id}`);
+      this.props.connectionService.Lobby.getRoomList().then(list => {
+        if (list.find(room => room.id === this.currentInteractiveRoomInfo.id) !== undefined) {
+          this.props.history.push(`/room/${this.currentInteractiveRoomInfo.id}`);
+        } else {
+          //TODO: add error popout
+          mobx.runInAction(() => {
+            this.roomList = list;
+          });
+        }
+      });
     } else {
       this.showPasscodeError = true;
     }

@@ -21,42 +21,42 @@ export class ConnectionService {
   private pingStartTimestamp: number;
 
   private readonly lobbyService = {
-    getRoomList: () => {
+    getRoomList: async () => {
       this.pingStartTimestamp = Date.now();
       this.lobbySocket.emit(LobbySocketEvent.QueryRoomList.toString());
+      return new Promise<LobbySocketEventPicker<LobbySocketEvent.QueryRoomList>>(resolve => {
+        this.lobbySocket.on(LobbySocketEvent.QueryRoomList.toString(), evt => {
+          this.pingReceiver?.(Math.round((Date.now() - this.pingStartTimestamp) / 2));
+          resolve(evt);
+        });
+      });
     },
-    checkCoreVersion: () => {
+    checkCoreVersion: async () => {
       this.pingStartTimestamp = Date.now();
       this.lobbySocket.emit(LobbySocketEvent.QueryVersion.toString(), {
         version: Sanguosha.Version,
       });
+      return new Promise<LobbySocketEventPicker<LobbySocketEvent.VersionMismatch>>(resolve => {
+        this.lobbySocket.on(LobbySocketEvent.VersionMismatch.toString(), evt => {
+          this.pingReceiver?.(Math.round((Date.now() - this.pingStartTimestamp) / 2));
+          resolve(evt);
+        });
+      });
     },
-    createGame: (
+    createGame: async (
       gameInfo: {
         cardExtensions: GameCardExtensions[];
       } & TemporaryRoomCreationInfo,
     ) => {
       this.lobbySocket.emit(LobbySocketEvent.GameCreated.toString(), gameInfo);
+      return new Promise<LobbySocketEventPicker<LobbySocketEvent.GameCreated>>(resolve => {
+        this.lobbySocket.on(LobbySocketEvent.GameCreated.toString(), evt => {
+          resolve(evt);
+        });
+      });
     },
     ping: (action: (ping: number) => void) => {
       this.pingReceiver = action;
-    },
-    onGameCreated: (action: (matched: LobbySocketEventPicker<LobbySocketEvent.GameCreated>) => void) => {
-      this.lobbySocket.on(LobbySocketEvent.GameCreated.toString(), evt => {
-        action(evt);
-      });
-    },
-    onReceivedRoomList: (action: (matched: LobbySocketEventPicker<LobbySocketEvent.QueryRoomList>) => void) => {
-      this.lobbySocket.on(LobbySocketEvent.QueryRoomList.toString(), evt => {
-        this.pingReceiver?.(Math.round((Date.now() - this.pingStartTimestamp) / 2));
-        action(evt);
-      });
-    },
-    onVersionMismatch: (action: (matched: LobbySocketEventPicker<LobbySocketEvent.VersionMismatch>) => void) => {
-      this.lobbySocket.on(LobbySocketEvent.VersionMismatch.toString(), evt => {
-        this.pingReceiver?.(Math.round((Date.now() - this.pingStartTimestamp) / 2));
-        action(evt);
-      });
     },
   };
 

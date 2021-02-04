@@ -390,7 +390,7 @@ export abstract class Player implements PlayerInfo {
         room.getPlayerById(target),
       );
       if (card.Skill instanceof ActiveSkill) {
-        return ruleCardUse && card.Skill.canUse(room, this);
+        return ruleCardUse && card.Skill.canUse(room, this, card.Id);
       }
       return ruleCardUse;
     }
