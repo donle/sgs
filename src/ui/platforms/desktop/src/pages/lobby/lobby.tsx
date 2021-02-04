@@ -320,7 +320,11 @@ export class Lobby extends React.Component<LobbyProps> {
                     <span className={styles.roomActions}>
                       <LinkButton
                         onClick={this.enterRoom(roomInfo)}
-                        disabled={roomInfo.activePlayers === roomInfo.totalPlayers || !this.username}
+                        disabled={
+                          roomInfo.activePlayers === roomInfo.totalPlayers ||
+                          !this.username ||
+                          roomInfo.status === 'playing'
+                        }
                       >
                         {this.props.translator.tr('Join')}
                       </LinkButton>
