@@ -7,7 +7,7 @@ import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
-import { TranslationPack } from 'core/translations/translation_json_tool';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'zhiyan', description: 'zhiyan_description' })
 export class ZhiYan extends TriggerSkill {
@@ -25,6 +25,13 @@ export class ZhiYan extends TriggerSkill {
 
   public isAvailableTarget() {
     return true;
+  }
+
+  public getSkillLog(): PatchedTranslationObject {
+    return TranslationPack.translationJsonPatcher(
+      '{0}: do you want to choose a target to draw a card?',
+      this.Name,
+    ).extract();
   }
 
   public async onTrigger() {
