@@ -10,6 +10,8 @@ Card类用来代表游戏中的卡牌。卡牌指的是游戏牌，而不是武�
 
 子类：[VirtualCard](./virtual_card.md), [BasicCard](./card_extend.md#basiccard), [TrickCard](./card_extend.md#trickcard), [EquipCard](./card_extend.md#equipcard)
 
+另请查看相关类：[CardMatcher](./card_matcher.md)
+
 - [Card Class](#card-class)
   - [Property Documentation](#property-documentation)
     - [Reforgeable: boolean](#reforgeable-boolean)
