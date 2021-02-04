@@ -68,6 +68,7 @@ export namespace System {
   export const enum SideEffectSkillApplierEnum {
     ZhiBa,
     HuangTian,
+    XianSi,
   }
 
   export const SideEffectSkillAppliers: { [K in SideEffectSkillApplierEnum]: SideEffectSkillApplierFunc } = {
@@ -76,6 +77,9 @@ export namespace System {
     },
     [SideEffectSkillApplierEnum.HuangTian]: (player: Player, room: Room, sourceId: PlayerId) => {
       return player.Nationality === CharacterNationality.Qun && player.Id !== sourceId;
+    },
+    [SideEffectSkillApplierEnum.XianSi]: (player: Player, room: Room, sourceId: PlayerId) => {
+      return player.Id !== sourceId;
     },
   };
 }
