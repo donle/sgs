@@ -50,6 +50,7 @@ export class ZongXuan extends ActiveSkill {
           this.Name,
         ).extract(),
         fromArea: [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
+        triggeredBySkills: [this.Name],
       };
       room.notify(
         GameEventIdentifiers.AskForCardEvent,
