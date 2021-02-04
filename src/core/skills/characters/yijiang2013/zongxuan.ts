@@ -115,7 +115,7 @@ export class ZongXuanShadow extends TriggerSkill {
       bottomStackName: 'draw stack top',
       bottomMinCard: 1,
       movable: true,
-      triggeredBySkills: [this.Name],
+      triggeredBySkills: [this.GeneralName],
     });
 
     room.notify(GameEventIdentifiers.AskForPlaceCardsInDileEvent, askForGuanxing, fromId);

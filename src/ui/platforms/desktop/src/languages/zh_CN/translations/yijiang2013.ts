@@ -34,8 +34,6 @@ export const characterDictionary: Word[] = [
   { source: 'zongxuan', target: '纵玄' },
   { source: 'zhiyan', target: '直言' },
   { source: 'danshou', target: '胆守' },
-
-  { source: '#zongxuan', target: '纵玄' },
 ];
 
 export const skillDescriptions: Word[] = [
