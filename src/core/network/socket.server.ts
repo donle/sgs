@@ -180,8 +180,20 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
 
   private delayToDisconnect(playerId: PlayerId) {
     this.playerReconnectTimer[playerId] = setTimeout(() => {
+      const playerLeaveEvent: ServerEventFinder<GameEventIdentifiers.PlayerLeaveEvent> = {
+        playerId,
+        quit: true,
+        translationsMessage: TranslationPack.translationJsonPatcher(
+          'player {0} has left the room',
+          this.room!.getPlayerById(playerId).Name,
+        ).extract(),
+      };
+      this.broadcast(
+        GameEventIdentifiers.PlayerLeaveEvent,
+        EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent),
+      );
+      this.room!.getPlayerById(playerId).setOffline(true);
       delete this.mapSocketIdToPlayerId[playerId];
-      this.room!.removePlayer(playerId);
       delete this.playerReconnectTimer[playerId];
     }, 300 * 1000);
   }
@@ -307,7 +319,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       GameEventIdentifiers.PlayerLeaveEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent),
     );
-    room.removePlayer(event.playerId);
+    room.getPlayerById(event.playerId).setOffline(true);
     if (room.Players.every(player => !player.isOnline()) || room.Players.length === 0) {
       room.close();
       return;
