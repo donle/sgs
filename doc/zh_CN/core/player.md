@@ -4,7 +4,7 @@
 
 ___
 
-Player类表示游戏中的玩家。
+Player类表示游戏中的玩家。属性中有一点没提到的是mark（键为string值为number的对象，表示角色所有的标记）和flag（键为string值为any的对象，用来保存一些常用值），在这里说明一下。
 
 [查看源代码...](../../../src/core/player/player.ts)
 
@@ -42,32 +42,32 @@ Player类表示游戏中的玩家。
     - [addInvisibleMark(name: string, value: number) => number](#addinvisiblemarkname-string-value-number--number)
     - [getInvisibleMark(name: string) => number](#getinvisiblemarkname-string--number)
     - [removeInvisibleMark(name: string) => void](#removeinvisiblemarkname-string--void)
-    - [canUseCard(room: Room, cardId: CardId | [CardMatcher](./card_matcher.md), onResponse?: [CardMatcher](./card_matcher.md)) => boolean](#canusecardroom-room-cardid-cardid--cardmatcher-onresponse-cardmatcher--boolean)
+    - [canUseCard(room: Room, cardId: CardId | CardMatcher, onResponse?: CardMatcher) => boolean](#canusecardroom-room-cardid-cardid--cardmatcher-onresponse-cardmatcher--boolean)
     - [resetCardUseHistory(cardName?: string) => void](#resetcardusehistorycardname-string--void)
     - [resetSkillUseHistory(skillName: string) => void](#resetskillusehistoryskillname-string--void)
     - [useCard(cardId: CardId) => void](#usecardcardid-cardid--void)
     - [useSkill(skillName: string) => void](#useskillskillname-string--void)
-    - [getCardIds\<T extends CardId | [CharacterId](./character.md#type-characterid) = [CardId](./card.md#type-cardid)>(area?: [PlayerCardsArea](#const-enum-playercardsarea), outsideAreaName?: string) => T\[\]](#getcardidst-extends-cardid--characterid--cardidarea-playercardsarea-outsideareaname-string--t)
+    - [getCardIds\<T extends CardId | CharacterId = CardId>(area?: PlayerCardsArea, outsideAreaName?: string) => T\[\]](#getcardidst-extends-cardid--characterid--cardidarea-playercardsarea-outsideareaname-string--t)
     - [setCharacterOutsideAreaCards(areaName: string, characterIds: CharacterId[]) => void](#setcharacteroutsideareacardsareaname-string-characterids-characterid--void)
     - [isCharacterOutsideArea(areaName: string) => boolean](#ischaracteroutsideareaareaname-string--boolean)
-    - [getOutsideAreaNameOf\<T extends CardId | [CharacterId](./character.md#type-characterid)>(cardId: T) => string | undefined](#getoutsideareanameoft-extends-cardid--characteridcardid-t--string--undefined)
+    - [getOutsideAreaNameOf\<T extends CardId | CharacterId>(cardId: T) => string | undefined](#getoutsideareanameoft-extends-cardid--characteridcardid-t--string--undefined)
     - [getOutsideAreaCards() => PlayerCardsOutside](#getoutsideareacards--playercardsoutside)
     - [getPlayerCards() => CardId[]](#getplayercards--cardid)
     - [getWeaponCardId() => CardId | undefined](#getweaponcardid--cardid--undefined)
-    - [getCardId(cardId: CardId) => [CardId](./card.md#type-cardid) | undefined](#getcardidcardid-cardid--cardid--undefined)
-    - [cardFrom(cardId: CardId) => [PlayerCardsArea](#const-enum-playercardsarea) | undefined](#cardfromcardid-cardid--playercardsarea--undefined)
+    - [getCardId(cardId: CardId => CardId | undefined](#getcardidcardid-cardid--cardid--undefined)
+    - [cardFrom(cardId: CardId) => PlayerCardsArea | undefined](#cardfromcardid-cardid--playercardsarea--undefined)
     - [obtainCardIds(...cards: CardId[]) => void](#obtaincardidscards-cardid--void)
-    - [dropCards(...cards: CardId[]) => [CardId](./card.md#type-cardid)[]](#dropcardscards-cardid--cardid)
+    - [dropCards(...cards: CardId[]) => CardId[]](#dropcardscards-cardid--cardid)
     - [equip(equipCard: EquipCard) => CardId](#equipequipcard-equipcard--cardid)
     - [isInjured() => boolean](#isinjured--boolean)
     - [getDrunk() => void](#getdrunk--void)
     - [hasDrunk() => number](#hasdrunk--number)
     - [clearHeaded() => void](#clearheaded--void)
-    - [canUseCardTo(room: Room, cardId: CardId | [CardMatcher](./card_matcher.md), target: PlayerId) => boolean](#canusecardtoroom-room-cardid-cardid--cardmatcher-target-playerid--boolean)
+    - [canUseCardTo(room: Room, cardId: CardId | CardMatcher, target: PlayerId) => boolean](#canusecardtoroom-room-cardid-cardid--cardmatcher-target-playerid--boolean)
     - [getEquipment(cardType: CardType) => string | number | undefined](#getequipmentcardtype-cardtype--string--number--undefined)
-    - [hasCard(room: Room, cardMatcherOrId: CardId | [CardMatcher](./card_matcher.md), areas?: [PlayerCardsArea](#const-enum-playercardsarea), outsideName?: string) => boolean](#hascardroom-room-cardmatcherorid-cardid--cardmatcher-areas-playercardsarea-outsidename-string--boolean)
+    - [hasCard(room: Room, cardMatcherOrId: CardId | CardMatcher, areas?: PlayerCardsArea, outsideName?: string) => boolean](#hascardroom-room-cardmatcherorid-cardid--cardmatcher-areas-playercardsarea-outsidename-string--boolean)
     - [hasUsed(cardName: string) => boolean](#hasusedcardname-string--boolean)
-    - [cardUsedTimes(cardSkillName: CardId | [CardMatcher](./card_matcher.md)) => number](#cardusedtimescardskillname-cardid--cardmatcher--number)
+    - [cardUsedTimes(cardSkillName: CardId | CardMatcher) => number](#cardusedtimescardskillname-cardid--cardmatcher--number)
     - [hasUsedSkill(skillName: string) => boolean](#hasusedskillskillname-string--boolean)
     - [hasUsedSkillTimes(skillName: string) => number](#hasusedskilltimesskillname-string--number)
     - [getAttackDistance(room: Room) => number](#getattackdistanceroom-room--number)
@@ -75,8 +75,8 @@ Player类表示游戏中的玩家。
     - [getMaxCardHold(room: Room) => number](#getmaxcardholdroom-room--number)
     - [getOffenseDistance(room: Room) => number](#getoffensedistanceroom-room--number)
     - [getDefenseDistance(room: Room) => number](#getdefensedistanceroom-room--number)
-    - [getCardUsableDistance(room: Room, cardId?: CardId, target?: [Player](#player-class)) => number](#getcardusabledistanceroom-room-cardid-cardid-target-player--number)
-    - [getCardAdditionalUsableNumberOfTargets(room: Room, cardId: CardId | [CardMatcher](./card_matcher.md)) => number](#getcardadditionalusablenumberoftargetsroom-room-cardid-cardid--cardmatcher--number)
+    - [getCardUsableDistance(room: Room, cardId?: CardId, target?: Player) => number](#getcardusabledistanceroom-room-cardid-cardid-target-player--number)
+    - [getCardAdditionalUsableNumberOfTargets(room: Room, cardId: CardId | CardMatcher) => number](#getcardadditionalusablenumberoftargetsroom-room-cardid-cardid--cardmatcher--number)
     - [getEquipSkills\<T extends Skill = Skill>(skillType?: SkillStringType) => T[]](#getequipskillst-extends-skill--skillskilltype-skillstringtype--t)
     - [getPlayerSkills\<T extends Skill = Skill>(skillType?: SkillStringType, includeDisabled?: boolean) => T[]](#getplayerskillst-extends-skill--skillskilltype-skillstringtype-includedisabled-boolean--t)
     - [getSkills\<T extends Skill = Skill>(skillType?: SkillStringType) => T[]](#getskillst-extends-skill--skillskilltype-skillstringtype--t)
@@ -110,6 +110,8 @@ Player类表示游戏中的玩家。
     - [const enum DistanceType](#const-enum-distancetype)
     - [type SkillStringType](#type-skillstringtype)
     - [type HuaShenInfo](#type-huasheninfo)
+
+___
 
 ## Properties Documentation
 
@@ -248,7 +250,7 @@ constructor(
 
 清空该角色的名为name的隐藏mark。
 
-### canUseCard(room: Room, cardId: [CardId](./card.md#type-cardid) | [CardMatcher](./card_matcher.md), onResponse?: [CardMatcher](./card_matcher.md)) => boolean
+### canUseCard(room: Room, cardId: CardId | [CardMatcher](./card_matcher.md), onResponse?: CardMatcher) => boolean
 
 判断该角色能否使用某一张/某一种卡牌。
 
@@ -268,7 +270,7 @@ constructor(
 
 该角色名为skillName的技能的使用次数+1。
 
-### getCardIds\<T extends [CardId](./card.md#type-cardid) | [CharacterId](./character.md#type-characterid) = [CardId](./card.md#type-cardid)>(area?: [PlayerCardsArea](#const-enum-playercardsarea), outsideAreaName?: string) => T\[\]
+### getCardIds\<T extends [CardId](./card.md#type-cardid) | CharacterId = CardId>(area?: PlayerCardsArea, outsideAreaName?: string) => T\[\]
 
 返回该角色某区域的所有卡牌的id。若area不指定，则返回手牌区、装备区、判定区的卡牌；若area为游戏外牌堆且指定了名字，则返回那个牌堆的所有卡牌的id。
 
@@ -280,7 +282,7 @@ constructor(
 
 判断某游戏外牌堆是否有武将牌。
 
-### getOutsideAreaNameOf\<T extends [CardId](./card.md#type-cardid) | [CharacterId](./character.md#type-characterid)>(cardId: T) => string | undefined
+### getOutsideAreaNameOf\<T extends [CardId](./card.md#type-cardid) | CharacterId>(cardId: T) => string | undefined
 
 根据[CardId](./card.md#type-cardid)或[CharacterId](./character.md#type-characterid)返回它所在的游戏外牌堆名字（没有的话返回undefined）。
 
@@ -296,11 +298,11 @@ constructor(
 
 获取该角色已装备武器的id。没装备武器的话返回undefined。
 
-### getCardId(cardId: [CardId](./card.md#type-cardid)) => [CardId](./card.md#type-cardid) | undefined
+### getCardId(cardId: CardId => [CardId](./card.md#type-cardid) | undefined
 
 判断该角色的手牌区、装备区、判定区是否存在id为[CardId](./card.md#type-cardid)的卡牌。
 
-### cardFrom(cardId: [CardId](./card.md#type-cardid)) => [PlayerCardsArea](#const-enum-playercardsarea) | undefined
+### cardFrom(cardId: CardId) => PlayerCardsArea | undefined
 
 获取某一张卡牌位于该角色的哪个区域。如果没有此卡牌，返回undefined。
 
@@ -308,7 +310,7 @@ constructor(
 
 该角色的手牌中追加cards。
 
-### dropCards(...cards: [CardId](./card.md#type-cardid)[]) => [CardId](./card.md#type-cardid)[]
+### dropCards(...cards: [CardId](./card.md#type-cardid)[]) => CardId[]
 
 弃掉该角色的一些卡牌。
 
@@ -332,7 +334,7 @@ constructor(
 
 使该角色【酒】效果的叠加数目变成0。
 
-### canUseCardTo(room: Room, cardId: [CardId](./card.md#type-cardid) | [CardMatcher](./card_matcher.md), target: PlayerId) => boolean
+### canUseCardTo(room: Room, cardId: [CardId](./card.md#type-cardid) | CardMatcher, target: PlayerId) => boolean
 
 判断该角色能否对target使用一张/一种牌。
 
@@ -340,7 +342,7 @@ constructor(
 
 获得该角色装备区内某种类型的装备。
 
-### hasCard(room: Room, cardMatcherOrId: [CardId](./card.md#type-cardid) | [CardMatcher](./card_matcher.md), areas?: [PlayerCardsArea](#const-enum-playercardsarea), outsideName?: string) => boolean
+### hasCard(room: Room, cardMatcherOrId: [CardId](./card.md#type-cardid) | CardMatcher, areas?: PlayerCardsArea, outsideName?: string) => boolean
 
 判断该角色是否拥有某某卡牌。
 
@@ -348,7 +350,7 @@ constructor(
 
 判断该角色是否用过某种牌名的牌。
 
-### cardUsedTimes(cardSkillName: [CardId](./card.md#type-cardid) | [CardMatcher](./card_matcher.md)) => number
+### cardUsedTimes(cardSkillName: [CardId](./card.md#type-cardid) | CardMatcher) => number
 
 获得该角色使用某张/某种卡牌的次数。
 
@@ -380,11 +382,11 @@ constructor(
 
 获得其他角色与该角色计算距离时应该增加的距离数（或者说+1马buff数量）。
 
-### getCardUsableDistance(room: Room, cardId?: [CardId](./card.md#type-cardid), target?: [Player](#player-class)) => number
+### getCardUsableDistance(room: Room, cardId?: [CardId](./card.md#type-cardid), target?: Player) => number
 
 获得该角色的某卡牌合法使用的距离限制。
 
-### getCardAdditionalUsableNumberOfTargets(room: Room, cardId: [CardId](./card.md#type-cardid) | [CardMatcher](./card_matcher.md)) => number
+### getCardAdditionalUsableNumberOfTargets(room: Room, cardId: [CardId](./card.md#type-cardid) | CardMatcher) => number
 
 获得该角色的某卡牌可指定的额外目标的数量。
 
