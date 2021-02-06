@@ -22,7 +22,7 @@ export const characterDictionary: Word[] = [
   { source: 'longyin', target: '龙吟' },
   { source: 'jingce', target: '精策' },
   { source: 'qiaoshui', target: '巧说' },
-  { source: 'zongshi', target: '纵适' },
+  { source: 'jianyong_zongshi', target: '纵适' },
   { source: 'juece', target: '绝策' },
   { source: 'mieji', target: '灭计' },
   { source: 'fencheng', target: '焚城' },
@@ -69,7 +69,7 @@ export const skillDescriptions: Word[] = [
     target:
       '出牌阶段，你可以与一名角色拼点。若你：赢，你此阶段内使用的下一张基本或普通锦囊牌可多或少选一个目标；没赢，结束此阶段且你的锦囊牌于本回合内不计入手牌上限。',
   },
-  { source: 'zongshi_description', target: '当你的拼点结果确定后，若你赢/没赢，你可以获得其/你的拼点牌。' },
+  { source: 'jianyong_zongshi_description', target: '当你的拼点结果确定后，若你赢/没赢，你可以获得其/你的拼点牌。' },
   { source: 'juece_description', target: '结束阶段开始时，你可以对没有手牌的一名其他角色造成1点伤害。' },
   {
     source: 'mieji_description',
