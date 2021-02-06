@@ -1,6 +1,6 @@
 import { Card } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { ClientEventFinder, EventPacker, GameEventIdentifiers } from 'core/event/event';
+import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -11,7 +11,12 @@ import { BaseAction } from './base_action';
 import { ResponsiveUseCardAction } from './responsive_card_use_action';
 
 export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifiers.AskForPeachEvent> {
-  public static readonly isSkillDisabled = (room: Room, useByMyself: boolean, player: Player) => (skill: Skill) => {
+  public static readonly isSkillDisabled = (
+    room: Room,
+    useByMyself: boolean,
+    player: Player,
+    event: ServerEventFinder<GameEventIdentifiers>,
+  ) => (skill: Skill) => {
     if (UniqueSkillRule.isProhibited(skill, player)) {
       return true;
     }
@@ -21,8 +26,10 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
     } else if (skill instanceof ViewAsSkill) {
       const matcher = new CardMatcher({ name: useByMyself ? ['alcohol', 'peach'] : ['peach'] });
       return (
-        !CardMatcher.match({ name: skill.canViewAs(room, player, undefined, matcher), tag: 'card-matcher' }, matcher) ||
-        !skill.canUse(room, player)
+        !CardMatcher.match(
+          { name: skill.canViewAs(room, player, undefined, matcher), tag: 'card-matcher' },
+          matcher,
+        ) || !skill.canUse(room, player, event)
       );
     }
 
@@ -114,7 +121,7 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
       } else if (fromArea === PlayerCardsArea.EquipArea) {
         if (card.Skill instanceof ViewAsSkill) {
           return new CardMatcher({
-            name: card.Skill.canViewAs(this.store.room, this.player, this.selectedCards, this.matcher),
+            name: card.Skill.canViewAs(this.store.room, this.player, this.selectedCards, this.matcher, this.askForEvent),
           }).match(this.matcher);
         }
       } else if (fromArea === PlayerCardsArea.OutsideArea && this.isCardFromParticularArea(card)) {

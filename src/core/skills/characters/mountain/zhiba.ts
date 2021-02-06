@@ -25,8 +25,8 @@ export class ZhiBa extends TriggerSkill implements OnDefineReleaseTiming {
     room.uninstallSideEffectSkill(System.SideEffectSkillApplierEnum.ZhiBa);
   }
 
-  async whenObtainingSkill(room: Room) {
-    room.installSideEffectSkill(System.SideEffectSkillApplierEnum.ZhiBa, ZhiBaPindianCard.Name);
+  async whenObtainingSkill(room: Room, owner: Player) {
+    room.installSideEffectSkill(System.SideEffectSkillApplierEnum.ZhiBa, ZhiBaPindianCard.Name, owner.Id);
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.GameStartEvent>, stage?: AllStage): boolean {
@@ -40,19 +40,19 @@ export class ZhiBa extends TriggerSkill implements OnDefineReleaseTiming {
     return true;
   }
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
-    room.installSideEffectSkill(System.SideEffectSkillApplierEnum.ZhiBa, ZhiBaPindianCard.Name);
+    room.installSideEffectSkill(System.SideEffectSkillApplierEnum.ZhiBa, ZhiBaPindianCard.Name, event.fromId);
 
     return true;
   }
 }
 
 @SideEffectSkill
-@CommonSkill({ name: ZhiBa.Name, description: ZhiBa.Description })
+@CommonSkill({ name: 'zhiba_side', description: ZhiBa.Description })
 export class ZhiBaPindianCard extends ActiveSkill {
   public canUse(room: Room, owner: Player) {
     return (
       owner.hasUsedSkillTimes(this.Name) <
-        room.getAlivePlayersFrom().filter(player => player.hasSkill(this.GeneralName)).length &&
+        room.getAlivePlayersFrom().filter(player => player.hasSkill(ZhiBa.GeneralName)).length &&
       owner.getCardIds(PlayerCardsArea.HandArea).length > 0
     );
   }
@@ -71,7 +71,7 @@ export class ZhiBaPindianCard extends ActiveSkill {
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
     return (
-      room.getPlayerById(target).hasSkill(this.GeneralName) &&
+      room.getPlayerById(target).hasSkill(ZhiBa.GeneralName) &&
       room.canPindian(owner, target) &&
       room.Analytics.getRecordEvents<GameEventIdentifiers.SkillEffectEvent>(
         event =>

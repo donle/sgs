@@ -260,6 +260,7 @@ export { JunXing } from './characters/yijiang2013/junxing';
 export { YuCe } from './characters/yijiang2013/yuce';
 export { ZongXuan, ZongXuanShadow } from './characters/yijiang2013/zongxuan';
 export { ZhiYan } from './characters/yijiang2013/zhiyan';
+export { XianSi, XianSiShadow, XianSiSlash } from './characters/yijiang2013/xiansi';
 
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';
