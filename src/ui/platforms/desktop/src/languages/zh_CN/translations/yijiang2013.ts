@@ -32,6 +32,7 @@ export const characterDictionary: Word[] = [
   { source: 'duodao', target: '夺刀' },
   { source: 'anjian', target: '暗箭' },
   { source: 'zongxuan', target: '纵玄' },
+  { source: '#zongxuan', target: '纵玄' },
   { source: 'zhiyan', target: '直言' },
   { source: 'danshou', target: '胆守' },
 ];
@@ -101,7 +102,10 @@ export const skillDescriptions: Word[] = [
     target: '当你受到【杀】造成的伤害后，你可以弃置一张牌，然后获得伤害来源装备区里的武器牌。',
   },
   { source: 'anjian_description', target: '<b>锁定技</b>，当你使用【杀】造成伤害时，若你不在其攻击范围内，此伤害+1。' },
-  { source: 'zongxuan_description', target: '当你的牌因弃置而进入弃牌堆后，你可以将其中至少一张牌置于牌堆顶。' },
+  {
+    source: 'zongxuan_description',
+    target: '出牌阶段限一次，你可以摸一张牌，然后将一张牌置于牌堆顶；当你的牌因弃置而进入弃牌堆后，你可以将其中至少一张牌置于牌堆顶。',
+  },
   {
     source: 'zhiyan_description',
     target: '结束阶段开始时，你可以令一名其他角色摸一张牌并展示之，若此牌为装备牌，其使用之，然后回复1点体力。',
@@ -117,5 +121,20 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: drop {1} cards or turn over',
     target: '{0}：弃置{1}张牌并失去一点体力，或翻面并摸{1}张牌',
+  },
+
+  {
+    source: '{0}: please choose a card to put it on the top of the draw pile',
+    target: '{0}：请选择一张牌，将其置于牌堆顶',
+  },
+
+  {
+    source: '{0}: do you want to put at least one of these cards on the top of the draw pile?',
+    target: '{0}：你可以将弃牌中至少一张牌以任意顺序置于牌堆顶',
+  },
+
+  {
+    source: '{0}: do you want to choose a target to draw a card?',
+    target: '{0}：你可以令一名角色摸一张牌并展示之',
   },
 ];
