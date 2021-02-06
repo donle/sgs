@@ -256,7 +256,7 @@ export { JianYing } from './characters/yijiang2014/jianying';
 export { BingYi } from './characters/yijiang2014/bingyi';
 export { ShenXing } from './characters/yijiang2014/shenxing';
 export { XianTu, XianTuShadow, XianTuCard } from './characters/yijiang2014/xiantu';
-export { QiangZhi, QiangZhiShadow, QiangZhiDraw } from './characters/yijiang2014/qiangzhi';
+export { QiangZhi, QiangZhiDraw } from './characters/yijiang2014/qiangzhi';
 
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';

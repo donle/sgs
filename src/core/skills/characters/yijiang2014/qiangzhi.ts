@@ -1,6 +1,12 @@
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AllStage, CardUseStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
+import {
+  AllStage,
+  CardUseStage,
+  PhaseStageChangeStage,
+  PlayerPhaseStages,
+  PlayerPhase,
+} from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -9,6 +15,14 @@ import { PatchedTranslationObject, TranslationPack } from 'core/translations/tra
 
 @CommonSkill({ name: 'qiangzhi', description: 'qiangzhi_description' })
 export class QiangZhi extends TriggerSkill {
+  isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
+    return stage === PlayerPhase.PlayCardStage;
+  }
+
+  whenRefresh(room: Room, owner: Player) {
+    owner.removeFlag(this.GeneralName);
+  }
+
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.StageChanged;
   }
@@ -46,7 +60,7 @@ export class QiangZhi extends TriggerSkill {
     );
 
     if (selectedPlayers === undefined) {
-      return true;
+      return false;
     }
 
     room.notify(
@@ -86,42 +100,13 @@ export class QiangZhi extends TriggerSkill {
 
 @ShadowSkill
 @CommonSkill({ name: QiangZhi.Name, description: QiangZhi.Description })
-export class QiangZhiShadow extends TriggerSkill {
-  isAutoTrigger() {
-    return true;
-  }
-
-  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
-    return stage === PhaseStageChangeStage.StageChanged;
-  }
-
-  canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    return (
-      owner.Id === event.playerId &&
-      event.toStage === PlayerPhaseStages.PlayCardStageEnd &&
-      owner.getFlag(this.GeneralName) !== undefined
-    );
-  }
-
-  async onTrigger() {
-    return true;
-  }
-
-  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    room.getPlayerById(event.fromId).removeFlag(this.GeneralName);
-    return true;
-  }
-}
-
-@ShadowSkill
-@CommonSkill({ name: QiangZhiShadow.Name, description: QiangZhiShadow.Description })
 export class QiangZhiDraw extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage?: AllStage) {
     return stage === CardUseStage.CardUsing;
   }
 
   canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    if (event.fromId !== owner.Id) {
+    if (event.fromId !== owner.Id || room.CurrentPhasePlayer !== owner) {
       return false;
     }
 

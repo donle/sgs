@@ -50,7 +50,7 @@ export class XianTu extends TriggerSkill {
     }
 
     // optimize hide card
-    room.moveCards({
+    await room.moveCards({
       movingCards: cardIds.map(card => ({ card, fromArea: room.getPlayerById(content.fromId).cardFrom(card) })),
       fromId: content.fromId,
       moveReason: CardMoveReason.ActiveMove,
