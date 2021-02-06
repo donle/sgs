@@ -100,13 +100,14 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'duodao_description',
-    target: '当你受到【杀】造成的伤害后，你可以弃置一张牌，然后获得伤害来源装备区里的武器牌。',
+    target: '当你成为其他角色使用【杀】的目标后，你可以弃置一张牌，然后获得其装备区里的武器牌。',
   },
-  { source: 'anjian_description', target: '<b>锁定技</b>，当你使用【杀】造成伤害时，若你不在其攻击范围内，此伤害+1。' },
   {
-    source: 'zongxuan_description',
-    target: '出牌阶段限一次，你可以摸一张牌，然后将一张牌置于牌堆顶；当你的牌因弃置而进入弃牌堆后，你可以将其中至少一张牌置于牌堆顶。',
+    source: 'anjian_description',
+    target:
+      '<b>锁定技</b>，当你使用【杀】指定目标后，若你不在其攻击范围内，此【杀】无视其防具且对其伤害+1，若该角色因此【杀】进入濒死状态，其不能使用【桃】直到此濒死结算结束。',
   },
+  { source: 'zongxuan_description', target: '当你的牌因弃置而进入弃牌堆后，你可以将其中至少一张牌置于牌堆顶。' },
   {
     source: 'zhiyan_description',
     target: '结束阶段开始时，你可以令一名其他角色摸一张牌并展示之，若此牌为装备牌，其使用之，然后回复1点体力。',

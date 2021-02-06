@@ -99,9 +99,9 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'duodao_description',
-    target: '當你受到【殺】造成的傷害後，你可以棄置一張牌，然後獲得傷害來源裝備區裡的武器牌。',
+    target: '當你成為其他角色使用【殺】的目標後，你可以棄置一張牌，然後獲得其裝備區裡的武器牌。',
   },
-  { source: 'anjian_description', target: '<b>鎖定技</b>，當你使用【殺】造成傷害時，若你不在其攻擊範圍內，此傷害+1。' },
+  { source: 'anjian_description', target: '<b>鎖定技</b>，當你使用【殺】指定目標後，若你不在其攻擊範圍內，此【殺】無視其防具且對其傷害+1，若該角色因此【殺】進入瀕死狀態，其不能使用【桃】直到此瀕死結算結束。' },
   { source: 'zongxuan_description', target: '當你的牌因棄置而進入棄牌堆後，你可以將其中至少一張牌置於牌堆頂。' },
   {
     source: 'zhiyan_description',
