@@ -1,17 +1,12 @@
 import { CardType, VirtualCard } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
 import { Slash } from 'core/cards/standard/slash';
-import { 
-  CardMoveArea,
-  CardMoveReason,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
@@ -30,13 +25,11 @@ export class MingCe extends ActiveSkill {
     if (targets[0]) {
       const first = room.getPlayerById(targets[0]);
 
-      canSlash = room.getOtherPlayers(targets[0])
-        .find(player => {
-          return (
-            room.canAttack(first, player) &&
-            first.getAttackDistance(room) >= room.distanceBetween(first, player)
-          );
-        }) ? true : false;
+      canSlash = room.getOtherPlayers(targets[0]).find(player => {
+        return room.canAttack(first, player) && first.getAttackDistance(room) >= room.distanceBetween(first, player);
+      })
+        ? true
+        : false;
     }
 
     return canSlash ? targets.length === 2 : targets.length === 1;
@@ -57,10 +50,7 @@ export class MingCe extends ActiveSkill {
       const first = room.getPlayerById(selectedTargets[0]);
       const second = room.getPlayerById(target);
 
-      return (
-        room.canAttack(first, second) &&
-        first.getAttackDistance(room) >= room.distanceBetween(first, second)
-      );
+      return room.canAttack(first, second) && first.getAttackDistance(room) >= room.distanceBetween(first, second);
     }
 
     return owner !== target;
@@ -79,17 +69,17 @@ export class MingCe extends ActiveSkill {
         { from: toIds![0], tos: [toIds![1]] },
       ];
     }
-    
+
     return event.toIds ? [{ from: event.fromId, tos: event.toIds }] : [];
   }
 
-  public nominateForwardTarget(targets: PlayerId[]) {
-    return [targets[0]];
+  public resortTargets() {
+    return false;
   }
 
   async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     event.animation = this.getAnimationSteps(event);
-    
+
     return true;
   }
 
@@ -117,15 +107,12 @@ export class MingCe extends ActiveSkill {
 
     const askForChooseEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
       options,
-      conversation: second ?
-        TranslationPack.translationJsonPatcher(
-          'please choose mingce options:{0}',
-          TranslationPack.patchPlayerInTranslation(room.getPlayerById(second)),
-        ).extract()
-      : TranslationPack.translationJsonPatcher(
-          '{0}: please choose',
-          this.Name,
-        ).extract(),
+      conversation: second
+        ? TranslationPack.translationJsonPatcher(
+            'please choose mingce options:{0}',
+            TranslationPack.patchPlayerInTranslation(room.getPlayerById(second)),
+          ).extract()
+        : TranslationPack.translationJsonPatcher('{0}: please choose', this.Name).extract(),
       toId: first,
     });
 
@@ -143,7 +130,7 @@ export class MingCe extends ActiveSkill {
       const slashUseEvent = {
         fromId: first,
         cardId: slash,
-        toIds: [second],
+        targetGroup: new TargetGroupSet([second]),
       };
 
       await room.useCard(slashUseEvent);

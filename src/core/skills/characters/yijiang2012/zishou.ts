@@ -1,12 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { CharacterNationality } from 'core/characters/character';
-import {
-  CardDrawReason,
-  CardMoveReason,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { CardDrawReason, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import {
   AllStage,
@@ -27,18 +21,11 @@ import { PatchedTranslationObject, TranslationPack } from 'core/translations/tra
 
 @CommonSkill({ name: 'zishou', description: 'zishou_description' })
 export class ZiShou extends TriggerSkill {
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>,
-    stage?: AllStage,
-  ): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>, stage?: AllStage): boolean {
     return stage === DrawCardStage.CardDrawing;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>): boolean {
     return (
       owner.Id === content.fromId &&
       room.CurrentPlayerPhase === PlayerPhase.DrawCardStage &&
@@ -64,10 +51,7 @@ export class ZiShou extends TriggerSkill {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { fromId, triggeredOnEvent } = event;
     const drawCardEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DrawCardEvent>;
 
@@ -108,8 +92,8 @@ export class ZiShouReforge extends TriggerSkill {
         event => {
           return (
             event.fromId === owner.Id &&
-            event.toIds !== undefined &&
-            event.toIds.find(player => player !== owner.Id) !== undefined
+            event.targetGroup !== undefined &&
+            event.targetGroup.getRealTargetIds().find(player => player !== owner.Id) !== undefined
           );
         },
         owner.Id,
@@ -122,12 +106,7 @@ export class ZiShouReforge extends TriggerSkill {
     return cards.length > 0;
   }
 
-  public isAvailableCard(
-    owner: PlayerId,
-    room: Room,
-    cardId: CardId,
-    selectedCards: CardId[],
-  ): boolean {
+  public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId, selectedCards: CardId[]): boolean {
     return (
       selectedCards.length === 0 ||
       selectedCards.find(card => Sanguosha.getCardById(card).Suit === Sanguosha.getCardById(cardId).Suit) === undefined
@@ -149,20 +128,11 @@ export class ZiShouReforge extends TriggerSkill {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>, 
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     event.cardIds = Precondition.exists(event.cardIds, 'Unable to get zishou cards');
 
     const { fromId, cardIds } = event;
-    await room.dropCards(
-      CardMoveReason.SelfDrop,
-      event.cardIds,
-      event.fromId,
-      event.fromId,
-      this.Name,
-    );
+    await room.dropCards(CardMoveReason.SelfDrop, event.cardIds, event.fromId, event.fromId, this.Name);
 
     await room.drawCards(cardIds.length, fromId, 'top', fromId, this.GeneralName);
 
@@ -185,18 +155,11 @@ export class ZiShouPrevent extends TriggerSkill implements OnDefineReleaseTiming
     return true;
   }
 
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
-    stage?: AllStage,
-  ): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage): boolean {
     return stage === DamageEffectStage.DamageEffect;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>): boolean {
     return (
       content.fromId === owner.Id &&
       content.toId !== undefined &&
@@ -205,10 +168,7 @@ export class ZiShouPrevent extends TriggerSkill implements OnDefineReleaseTiming
     );
   }
 
-  public async onTrigger(
-    room: Room,
-    content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ): Promise<boolean> {
+  public async onTrigger(room: Room, content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     const damageEvent = content.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
 
     content.translationsMessage = TranslationPack.translationJsonPatcher(
@@ -221,10 +181,7 @@ export class ZiShouPrevent extends TriggerSkill implements OnDefineReleaseTiming
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>, 
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const damageEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
     EventPacker.terminate(damageEvent);
 
@@ -247,18 +204,11 @@ export class ZiShouShadow extends TriggerSkill implements OnDefineReleaseTiming 
     return true;
   }
 
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>,
-    stage?: AllStage,
-  ): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage): boolean {
     return stage === PhaseChangeStage.PhaseChanged;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
     return content.from === PlayerPhase.PhaseFinish && room.getFlag<boolean>(owner.Id, this.GeneralName) === true;
   }
 
@@ -266,10 +216,7 @@ export class ZiShouShadow extends TriggerSkill implements OnDefineReleaseTiming 
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>, 
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     room.removeFlag(event.fromId, this.GeneralName);
 
     return true;

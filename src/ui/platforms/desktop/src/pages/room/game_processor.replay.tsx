@@ -4,6 +4,7 @@ import { GameEventIdentifiers, ServerEventFinder, serverResponsiveListenerEvents
 import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
+import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import React from 'react';
 import { GameClientProcessor } from './game_processor';
@@ -112,7 +113,8 @@ export class ReplayClientProcessor extends GameClientProcessor {
       this.audioService.playEquipAudio();
     }
 
-    const tos = content.toIds?.map(toId => this.store.room.getPlayerById(toId)) as Player[];
+    const targetGroup = content.targetGroup && new TargetGroupSet(...content.targetGroup.targets);
+    const tos = targetGroup?.getRealTargetIds().map(toId => this.store.room.getPlayerById(toId)) as Player[];
 
     this.presenter.showCards(
       ...Card.getActualCards([content.cardId]).map(cardId => ({

@@ -78,7 +78,7 @@ export class LiHuoShadow extends TriggerSkill {
       Sanguosha.getCardById(event.cardId).Name === 'fire_slash' &&
       owner.Id === event.fromId &&
       room.getOtherPlayers(owner.Id).find(player => {
-        return room.canAttack(owner, player, event.cardId) && !event.toIds!.includes(player.Id);
+        return room.canAttack(owner, player, event.cardId) && !event.targetGroup!.includes(player.Id);
       }) !== undefined
     );
   }
@@ -90,7 +90,9 @@ export class LiHuoShadow extends TriggerSkill {
 
     const players = room
       .getAlivePlayersFrom()
-      .filter(player => room.canAttack(from, player, cardUseEvent.cardId) && !cardUseEvent.toIds?.includes(player.Id))
+      .filter(
+        player => room.canAttack(from, player, cardUseEvent.cardId) && !cardUseEvent.targetGroup?.includes(player.Id),
+      )
       .map(player => player.Id);
 
     if (players.length < 1) {
@@ -129,8 +131,7 @@ export class LiHuoShadow extends TriggerSkill {
     const { toIds, triggeredOnEvent } = event;
     const cardUseEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
 
-    cardUseEvent.toIds?.push(toIds![0]);
-    room.sortPlayersByPosition(cardUseEvent.toIds!);
+    cardUseEvent.targetGroup?.push(toIds![0]);
 
     return true;
   }

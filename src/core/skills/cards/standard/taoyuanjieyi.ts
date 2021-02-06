@@ -2,6 +2,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
+import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
@@ -32,10 +33,11 @@ export class TaoYuanJieYiSkill extends ActiveSkill {
   public isAvailableTarget(): boolean {
     return false;
   }
+
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const from = room.getPlayerById(event.fromId);
     const allPlayers = room.getAlivePlayersFrom().filter(player => from.canUseCardTo(room, event.cardId, player.Id));
-    event.toIds = allPlayers.map(player => player.Id);
+    event.targetGroup = new TargetGroupSet(...allPlayers.map(player => [player.Id]));
     event.nullifiedTargets = allPlayers.filter(player => player.Hp === player.MaxHp).map(player => player.Id);
     return true;
   }

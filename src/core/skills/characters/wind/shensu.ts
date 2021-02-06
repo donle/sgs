@@ -8,6 +8,7 @@ import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
+import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 
 @CommonSkill({ name: 'shensu', description: 'shensu_description' })
 export class ShenSu extends TriggerSkill {
@@ -90,7 +91,7 @@ export class ShenSu extends TriggerSkill {
 
     const cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
       fromId,
-      toIds,
+      targetGroup: toIds && new TargetGroupSet(toIds),
       cardId: VirtualCard.create({ cardName: 'slash', bySkill: this.Name }).Id,
     };
     await room.useCard(cardUseEvent);

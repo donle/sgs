@@ -6,6 +6,7 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 
 @CommonSkill({ name: 'qinglongyanyuedao', description: 'qinglongyanyuedao_description' })
 export class QingLongYanYueDaoSkill extends TriggerSkill {
@@ -42,7 +43,7 @@ export class QingLongYanYueDaoSkill extends TriggerSkill {
       const slashEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
         fromId: response.fromId,
         cardId: response.cardId,
-        toIds: slashEffectEvent.toIds,
+        targetGroup: slashEffectEvent.toIds && new TargetGroupSet(slashEffectEvent.toIds),
         extraUse: true,
         translationsMessage: TranslationPack.translationJsonPatcher(
           '{0} used skill {1}',

@@ -5,6 +5,7 @@ import { DamageType, GameCommonRuleObject, GameInfo, GameRunningInfo } from 'cor
 import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props';
+import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { System } from 'core/shares/libs/system';
 import { RoomInfo } from 'core/shares/types/server_types';
@@ -53,7 +54,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.CardUseEvent]: {
     fromId: PlayerId;
     cardId: CardId;
-    toIds?: PlayerId[];
+    targetGroup?: TargetGroupSet;
     toCardIds?: CardId[];
     responseToEvent?: ServerEventFinder<GameEventIdentifiers>;
     skipDrop?: boolean;

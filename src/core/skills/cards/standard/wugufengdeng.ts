@@ -3,6 +3,7 @@ import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, Server
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -42,7 +43,8 @@ export class WuGuFengDengSkill extends ActiveSkill {
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const all = room.getAlivePlayersFrom();
     const from = room.getPlayerById(event.fromId);
-    event.toIds = all.filter(player => from.canUseCardTo(room, event.cardId, player.Id)).map(player => player.Id);
+    const groups = all.filter(player => from.canUseCardTo(room, event.cardId, player.Id)).map(player => [player.Id]);
+    event.targetGroup = new TargetGroupSet(...groups);
 
     return true;
   }

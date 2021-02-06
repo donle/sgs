@@ -1,7 +1,13 @@
 import { Card, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { ClientEventFinder, EventProcessSteps, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import {
+  ClientEventFinder,
+  EventPacker,
+  EventProcessSteps,
+  GameEventIdentifiers,
+  ServerEventFinder,
+} from 'core/event/event';
 import { AllStage, PlayerPhase, StagePriority } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -80,10 +86,20 @@ export abstract class Skill {
   public getAnimationSteps(
     event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent>,
   ): EventProcessSteps {
-    return event.toIds ? [{ from: event.fromId, tos: event.toIds }] : [];
+    if (EventPacker.getIdentifier(event) === GameEventIdentifiers.CardUseEvent) {
+      const skillUseEvent = event as ServerEventFinder<GameEventIdentifiers.SkillUseEvent>;
+      return skillUseEvent.toIds ? [{ from: event.fromId, tos: skillUseEvent.toIds }] : [];
+    }
+    const cardUseEvent = event as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
+    return cardUseEvent.targetGroup ? [{ from: event.fromId, tos: cardUseEvent.targetGroup.getRealTargetIds() }] : [];
   }
-  public nominateForwardTarget(targets?: PlayerId[]) {
-    return targets;
+
+  public targetGroupDispatcher(targetIds: PlayerId[]) {
+    return targetIds.map(id => [id]);
+  }
+
+  public resortTargets() {
+    return true;
   }
 
   public get Description() {

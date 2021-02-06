@@ -7,6 +7,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
+import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 
 @CommonSkill({ name: 'guose', description: 'guose_description' })
 export class GuoSe extends ActiveSkill {
@@ -75,7 +76,7 @@ export class GuoSe extends ActiveSkill {
       );
       await room.useCard({
         fromId,
-        toIds,
+        targetGroup: toIds && new TargetGroupSet(toIds),
         cardId: lebusishuCard.Id,
         triggeredBySkills: [this.Name],
       });

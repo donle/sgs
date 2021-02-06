@@ -5,6 +5,7 @@ import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, SelfTargetSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 
 @CommonSkill({ name: 'peach', description: 'peach_skill_description' })
 @SelfTargetSkill
@@ -29,8 +30,8 @@ export class PeachSkill extends ActiveSkill {
   }
 
   async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    if (!event.toIds) {
-      event.toIds = [event.fromId];
+    if (!event.targetGroup) {
+      event.targetGroup = new TargetGroupSet([event.fromId]);
     }
 
     return true;

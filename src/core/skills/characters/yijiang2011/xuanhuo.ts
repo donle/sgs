@@ -16,6 +16,7 @@ import { Algorithm } from 'core/shares/libs/algorithm';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 
 @CommonSkill({ name: 'xuanhuo', description: 'xuanhuo_description' })
 export class XuanHuo extends TriggerSkill {
@@ -102,7 +103,7 @@ export class XuanHuo extends TriggerSkill {
       if (response.cardId !== undefined) {
         const slashUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
           fromId: response.fromId,
-          toIds: response.toIds,
+          targetGroup: response.toIds && new TargetGroupSet(response.toIds),
           cardId: response.cardId,
           triggeredBySkills: [this.Name],
         };

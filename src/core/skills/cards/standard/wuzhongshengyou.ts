@@ -4,6 +4,7 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, SelfTargetSkill } from 'core/skills/skill';
+import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 
 @CommonSkill({ name: 'wuzhongshengyou', description: 'wuzhongshengyou_description' })
 @SelfTargetSkill
@@ -26,7 +27,7 @@ export class WuZhongShengYouSkill extends ActiveSkill {
     return false;
   }
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    event.toIds = [event.fromId];
+    event.targetGroup = new TargetGroupSet([event.fromId]);
     return true;
   }
 

@@ -72,10 +72,10 @@ export class LuanJiShadow extends TriggerSkill {
     const canUse =
       owner === room.getPlayerById(event.fromId) &&
       Sanguosha.getCardById(event.cardId).GeneralName === 'wanjianqifa' &&
-      event.toIds !== undefined &&
-      event.toIds.length > 1;
+      event.targetGroup !== undefined &&
+      event.targetGroup.length > 1;
     if (canUse) {
-      room.setFlag<string[]>(owner.Id, this.GeneralName, event.toIds!);
+      room.setFlag<string[]>(owner.Id, this.GeneralName, event.targetGroup!.getRealTargetIds());
     }
 
     return canUse;
@@ -97,8 +97,7 @@ export class LuanJiShadow extends TriggerSkill {
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { triggeredOnEvent, toIds } = event;
     const cardUseEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
-    const newTargets = cardUseEvent.toIds!.filter(toId => toId !== toIds![0]);
-    cardUseEvent.toIds = newTargets;
+    cardUseEvent.targetGroup?.remove(toIds![0]);
 
     return true;
   }

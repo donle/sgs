@@ -5,6 +5,7 @@ import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder }
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -43,15 +44,16 @@ export class JieDaoShaRenSkill extends ActiveSkill {
   }
 
   public getAnimationSteps(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    const { fromId, toIds } = event;
+    const toIds = event.targetGroup?.Targets[0];
+    const { fromId } = event;
     return [
       { from: fromId, tos: [toIds![0]] },
       { from: toIds![0], tos: [toIds![1]] },
     ];
   }
 
-  public nominateForwardTarget(targets: PlayerId[]) {
-    return [targets[0]];
+  public targetGroupDispatcher(targets: PlayerId[]) {
+    return [targets];
   }
 
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
@@ -60,8 +62,8 @@ export class JieDaoShaRenSkill extends ActiveSkill {
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
-    const { allTargets, cardId } = event;
-    const [attacker, target] = Precondition.exists(allTargets, 'Unknown targets in jiedaosharen');
+    const { toIds, cardId } = event;
+    const [attacker, target] = Precondition.exists(toIds, 'Unknown targets in jiedaosharen');
 
     const response = await room.askForCardUse(
       {
@@ -87,7 +89,7 @@ export class JieDaoShaRenSkill extends ActiveSkill {
       const cardUseEvent = {
         fromId: response.fromId,
         cardId: response.cardId,
-        toIds: response.toIds,
+        targetGroup: response.toIds && new TargetGroupSet(response.toIds),
         triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
       };
 

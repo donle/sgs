@@ -8,6 +8,7 @@ import { Room } from 'core/room/room';
 import { ActiveSkill } from 'core/skills/skill';
 import { LimitSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 
 @LimitSkill({ name: 'luanwu', description: 'luanwu_description' })
 export class LuanWu extends ActiveSkill {
@@ -81,7 +82,7 @@ export class LuanWu extends ActiveSkill {
           const cardUseEvent = {
             fromId: response.fromId,
             cardId: response.cardId,
-            toIds: response.toIds,
+            targetGroup: new TargetGroupSet(response.toIds!),
             triggeredBySkills: [this.Name],
           };
 

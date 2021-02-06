@@ -6,6 +6,7 @@ import { CardMoveReason, ClientEventFinder, GameEventIdentifiers, ServerEventFin
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'lijian', description: 'lijian_description' })
@@ -49,8 +50,8 @@ export class LiJian extends ActiveSkill {
     ];
   }
 
-  public nominateForwardTarget(targets?: PlayerId[]) {
-    return [targets![0]];
+  public resortTargets() {
+    return false;
   }
 
   async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
@@ -73,7 +74,7 @@ export class LiJian extends ActiveSkill {
 
     await room.useCard({
       fromId: skillUseEvent.toIds![1],
-      toIds: [skillUseEvent.toIds![0]],
+      targetGroup: new TargetGroupSet([skillUseEvent.toIds![0]]),
       cardId: duel.Id,
     });
 
