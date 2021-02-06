@@ -47,7 +47,7 @@ export class ZhiBa extends TriggerSkill implements OnDefineReleaseTiming {
 }
 
 @SideEffectSkill
-@CommonSkill({ name: 'zhiba_side', description: ZhiBa.Description })
+@CommonSkill({ name: ZhiBa.GeneralName, description: ZhiBa.Description })
 export class ZhiBaPindianCard extends ActiveSkill {
   public canUse(room: Room, owner: Player) {
     return (

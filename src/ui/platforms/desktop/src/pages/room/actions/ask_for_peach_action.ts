@@ -121,7 +121,7 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
       } else if (fromArea === PlayerCardsArea.EquipArea) {
         if (card.Skill instanceof ViewAsSkill) {
           return new CardMatcher({
-            name: card.Skill.canViewAs(this.store.room, this.player, this.selectedCards, this.matcher, this.askForEvent),
+            name: card.Skill.canViewAs(this.store.room, this.player, this.selectedCards, this.matcher),
           }).match(this.matcher);
         }
       } else if (fromArea === PlayerCardsArea.OutsideArea && this.isCardFromParticularArea(card)) {

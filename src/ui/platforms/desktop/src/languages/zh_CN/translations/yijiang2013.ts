@@ -27,6 +27,7 @@ export const characterDictionary: Word[] = [
   { source: 'mieji', target: '灭计' },
   { source: 'fencheng', target: '焚城' },
   { source: 'xiansi', target: '陷嗣' },
+  { source: '~xiansi', target: '陷嗣' },
   { source: 'junxing', target: '峻刑' },
   { source: 'yuce', target: '御策' },
   { source: 'duodao', target: '夺刀' },

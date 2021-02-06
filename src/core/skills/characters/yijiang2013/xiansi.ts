@@ -2,12 +2,13 @@ import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId, CardSuit } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { AllStage, GameStartStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { System } from 'core/shares/libs/system';
-import { ActiveSkill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
+import { GlobalFilterSkill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { CommonSkill, ShadowSkill, SideEffectSkill } from 'core/skills/skill_wrappers';
 
@@ -119,10 +120,35 @@ export class XianSiShadow extends TriggerSkill implements OnDefineReleaseTiming 
   }
 }
 
+@ShadowSkill
+@CommonSkill({ name: XianSiShadow.Name, description: XianSi.Description })
+export class XianSiFilter extends GlobalFilterSkill {
+  canUseCardTo(cardId: CardId | CardMatcher, room: Room, owner: Player, attacker: Player, target: Player) {
+    if (!(cardId instanceof CardMatcher)) {
+      if (
+        VirtualCard.isVirtualCardId(cardId) &&
+        Sanguosha.getCardById<VirtualCard>(cardId).GeneratedBySkill === XianSiSlash.Name
+      ) {
+        return target.hasSkill(XianSi.Name);
+      }
+    }
+
+    return true;
+  }
+}
+
 @SideEffectSkill
-@CommonSkill({ name: 'xiansi_side', description: XianSi.Description })
+@CommonSkill({ name: XianSi.GeneralName, description: XianSi.Description })
 export class XianSiSlash extends ViewAsSkill {
   canUse(room: Room, owner: Player, contentOrContainerCard?: ServerEventFinder<GameEventIdentifiers> | CardId) {
+    if (
+      room
+        .getOtherPlayers(owner.Id)
+        .find(player => player.getCardIds(PlayerCardsArea.OutsideArea, XianSi.Name).length >= 2) === undefined
+    ) {
+      return false;
+    }
+
     if (typeof contentOrContainerCard === 'object') {
       const identifier = EventPacker.getIdentifier(contentOrContainerCard);
       if (identifier !== GameEventIdentifiers.AskForCardUseEvent) {
@@ -147,7 +173,7 @@ export class XianSiSlash extends ViewAsSkill {
   }
 
   viewAs() {
-    return VirtualCard.create({ cardName: 'slash', cardSuit: CardSuit.NoSuit, bySkill: this.Name });
+    return VirtualCard.create({ cardName: 'slash', cardSuit: CardSuit.NoSuit, bySkill: XianSiSlash.Name });
   }
 
   isAvailableCard() {
@@ -158,10 +184,10 @@ export class XianSiSlash extends ViewAsSkill {
     return cards.length === 0;
   }
 
-  async beforeUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+  async beforeUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     const { toIds, fromId } = event;
     const to = room.getPlayerById(toIds![0]);
-    const niCards = to.getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName);
+    const niCards = to.getCardIds(PlayerCardsArea.OutsideArea, XianSi.GeneralName);
 
     const askForChooseCardEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardEvent> = {
       toId: fromId,

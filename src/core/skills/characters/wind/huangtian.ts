@@ -47,7 +47,7 @@ export class HuangTian extends TriggerSkill implements OnDefineReleaseTiming {
 }
 
 @SideEffectSkill
-@CommonSkill({ name: 'huangtian_side', description: HuangTian.Description })
+@CommonSkill({ name: HuangTian.GeneralName, description: HuangTian.Description })
 export class HuangTianGiveCard extends ActiveSkill {
   public canUse(room: Room, owner: Player) {
     return !owner.hasUsedSkill(this.Name);
