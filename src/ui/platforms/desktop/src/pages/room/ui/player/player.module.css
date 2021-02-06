@@ -82,7 +82,6 @@
 .playerCharacter {
     position: absolute;
     left: calc(gridLine * -1.5);
-    z-index: 2;
 }
 
 .playerHp {
