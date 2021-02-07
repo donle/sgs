@@ -391,6 +391,7 @@ export class GameClientProcessor {
         this.store.room,
         new CardMatcher(content.cardMatcher),
         this.store.room.getPlayerById(content.toId),
+        content,
       ),
     );
 
@@ -531,6 +532,7 @@ export class GameClientProcessor {
         this.store.room,
         new CardMatcher(content.cardMatcher),
         this.store.room.getPlayerById(content.toId),
+        content,
       ),
     );
 
@@ -651,7 +653,7 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     content.skillName !== undefined
-      ? this.store.room.installSideEffectSkill(content.sideEffectSkillApplier, content.skillName)
+      ? this.store.room.installSideEffectSkill(content.sideEffectSkillApplier, content.skillName, content.sourceId!)
       : this.store.room.uninstallSideEffectSkill(content.sideEffectSkillApplier);
     this.presenter.broadcastUIUpdate();
   }
@@ -1049,6 +1051,7 @@ export class GameClientProcessor {
         this.store.room,
         content.fromId === content.toId,
         this.store.room.getPlayerById(content.fromId),
+        content,
       ),
     );
     const action = new AskForPeachAction(

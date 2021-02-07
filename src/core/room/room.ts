@@ -54,7 +54,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected gameStarted: boolean = false;
   protected gameOvered: boolean = false;
   private onProcessingCards: { [K: string]: CardId[] } = {};
-  protected sideEffectSkills: { [N in System.SideEffectSkillApplierEnum]?: string } = {};
+  protected sideEffectSkills: {
+    [N in System.SideEffectSkillApplierEnum]?: { skillName: string; sourceId: PlayerId };
+  } = {};
 
   protected abstract init(...args: any[]): void;
   //Server only
@@ -222,17 +224,21 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public getSideEffectSkills(player: Player) {
     const skills: string[] = [];
-    for (const [applierEnumString, skillName] of Object.entries(this.sideEffectSkills)) {
-      if (System.SideEffectSkillAppliers[applierEnumString](player, this)) {
-        skills.push(skillName!);
+    for (const [applierEnumString, skillAssembly] of Object.entries(this.sideEffectSkills)) {
+      if (System.SideEffectSkillAppliers[applierEnumString](player, this, skillAssembly?.sourceId)) {
+        if (skillAssembly) {
+          const shadowSkills = Sanguosha.getShadowSkillsBySkillName(skillAssembly.skillName).map(skill => skill.Name);
+          skills.push(skillAssembly?.skillName);
+          skills.push(...shadowSkills);
+        }
       }
     }
 
     return skills;
   }
 
-  public installSideEffectSkill(applier: System.SideEffectSkillApplierEnum, skillName: string) {
-    this.sideEffectSkills[applier] = skillName;
+  public installSideEffectSkill(applier: System.SideEffectSkillApplierEnum, skillName: string, sourceId: PlayerId) {
+    this.sideEffectSkills[applier] = { skillName, sourceId };
   }
 
   public uninstallSideEffectSkill(applier: System.SideEffectSkillApplierEnum) {
@@ -305,11 +311,13 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     }
   }
 
-  public async useSkill(content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<void> {
+  public async useSkill(content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     if (content.fromId) {
       const from = this.getPlayerById(content.fromId);
       from.useSkill(content.skillName);
+      return true;
     }
+    return false;
   }
 
   public get AlivePlayers() {

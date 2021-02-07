@@ -742,7 +742,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               ).extract(),
       };
       if (skill instanceof ViewAsSkill) {
-        await this.useSkill(skillUseEvent);
+        const result = await this.useSkill(skillUseEvent);
+        if (!result) {
+          return false;
+        }
       } else {
         this.broadcast(GameEventIdentifiers.SkillUseEvent, skillUseEvent);
       }
@@ -759,7 +762,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       const from = this.getPlayerById(cardResponseEvent.fromId);
       const card = Sanguosha.getCardById<VirtualCard>(cardResponseEvent.cardId);
       const skill = Sanguosha.getSkillBySkillName(card.GeneratedBySkill);
-      await this.useSkill({
+      const result = await this.useSkill({
         fromId: cardResponseEvent.fromId,
         skillName: card.GeneratedBySkill,
         translationsMessage:
@@ -779,6 +782,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               ).extract(),
         mute: skill.Muted,
       });
+
+      if (!result) {
+        return false;
+      }
     }
 
     await this.trigger(cardResponseEvent, CardResponseStage.PreCardResponse);
@@ -913,10 +920,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   public async useSkill(content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     const skill = Sanguosha.getSkillBySkillName(content.skillName);
     if (EventPacker.isTerminated(content) || !(await skill.beforeUse(this, content))) {
-      return;
+      return false;
     }
 
-    await super.useSkill(content);
+    if (!(await super.useSkill(content))) {
+      return false;
+    }
+
     const acutalTargets =
       content.toIds && Sanguosha.getSkillBySkillName(content.skillName).nominateForwardTarget(content.toIds);
     if (acutalTargets && acutalTargets.length > 1) {
@@ -927,6 +937,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (!EventPacker.isTerminated(content)) {
       await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.SkillEffectEvent, content);
     }
+
+    return true;
   }
 
   public async loseSkill(playerId: PlayerId, skillName: string | string[], broadcast?: boolean) {
@@ -1600,11 +1612,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return amount === 0 ? cards : cards.slice(0, amount);
   }
 
-  public installSideEffectSkill(applier: System.SideEffectSkillApplierEnum, skillName: string) {
-    super.installSideEffectSkill(applier, skillName);
+  public installSideEffectSkill(applier: System.SideEffectSkillApplierEnum, skillName: string, sourceId: PlayerId) {
+    super.installSideEffectSkill(applier, skillName, sourceId);
     this.broadcast(GameEventIdentifiers.UpgradeSideEffectSkillsEvent, {
       sideEffectSkillApplier: applier,
       skillName,
+      sourceId,
     });
   }
 
