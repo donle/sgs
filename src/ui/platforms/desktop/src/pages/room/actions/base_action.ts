@@ -91,6 +91,8 @@ export abstract class BaseAction {
 
     this.presenter.disableActionButton('confirm');
     this.presenter.disableActionButton('reforge');
+    this.presenter.disableActionButton('cancel');
+    this.presenter.disableActionButton('finish');
     this.presenter.disableCardReforgeStatus();
     this.presenter.delightPlayers(false);
     this.presenter.highlightCards(true);

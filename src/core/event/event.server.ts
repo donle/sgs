@@ -333,6 +333,11 @@ export interface ServerEvent extends EventUtilities {
     requiredAmount: number | [number, number];
     conversation: string | PatchedTranslationObject;
   };
+  [GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent]: {
+    cardId: CardId;
+    exclude: PlayerId[];
+    conversation: string | PatchedTranslationObject;
+  };
   [GameEventIdentifiers.AskForPlaceCardsInDileEvent]: {
     cardIds: CardId[];
     top: number;

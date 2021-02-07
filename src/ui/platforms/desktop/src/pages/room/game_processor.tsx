@@ -280,6 +280,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.AskForChoosingPlayerEvent:
         await this.onHandleAskForChoosingPlayerEvent(e as any, content);
         break;
+      case GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent:
+        await this.onHandleAskForChoosingCardAvailableTargetEvent(e as any, content);
+        break;
       case GameEventIdentifiers.AskForPinDianCardEvent:
         await this.onHandleAskForPinDianCardEvent(e as any, content);
         break;
@@ -1394,6 +1397,26 @@ export class GameClientProcessor {
     };
 
     this.store.room.broadcast(GameEventIdentifiers.AskForChoosingPlayerEvent, choosePlayerEvent);
+    this.presenter.closeIncomingConversation();
+  }
+
+  protected async onHandleAskForChoosingCardAvailableTargetEvent<
+    T extends GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent
+  >(type: T, content: ServerEventFinder<T>) {
+    const { cardId, exclude, conversation } = content;
+    this.presenter.createIncomingConversation({
+      conversation,
+      translator: this.translator,
+    });
+    const action = new SelectAction(this.store.clientPlayerId, this.store, this.presenter, this.translator, content);
+    const selectedPlayers = await action.onSelectCardTargets(cardId, exclude);
+
+    const choosePlayerEvent: ClientEventFinder<GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent> = {
+      fromId: this.store.clientPlayerId,
+      selectedPlayers,
+    };
+
+    this.store.room.broadcast(GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent, choosePlayerEvent);
     this.presenter.closeIncomingConversation();
   }
 
