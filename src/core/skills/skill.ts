@@ -502,7 +502,13 @@ export abstract class FilterSkill extends Skill {
     return true;
   }
 
-  public canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId, target?: PlayerId): boolean {
+  public canUseCard(
+    cardId: CardId | CardMatcher,
+    room: Room,
+    owner: PlayerId,
+    target?: PlayerId,
+    onResponse?: ServerEventFinder<GameEventIdentifiers>,
+  ): boolean {
     return true;
   }
   public canBeUsedCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId, attacker?: PlayerId): boolean {

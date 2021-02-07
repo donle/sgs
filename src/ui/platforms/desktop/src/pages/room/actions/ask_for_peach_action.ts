@@ -31,7 +31,7 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
 
   isCardEnabledOnAskingForPeach(card: Card, fromArea: PlayerCardsArea) {
     for (const skill of this.player.getSkills<FilterSkill>('filter')) {
-      if (!skill.canUseCard(card.Id, this.store.room, this.playerId)) {
+      if (!skill.canUseCard(card.Id, this.store.room, this.playerId, this.askForEvent.fromId, this.askForEvent)) {
         return false;
       }
     }

@@ -54,7 +54,7 @@ export class CardResponseAction extends BaseAction {
 
   isCardEnabledOnResponse(card: Card, fromArea: PlayerCardsArea, matcher: CardMatcher) {
     for (const skill of this.player.getSkills<FilterSkill>('filter')) {
-      if (!skill.canUseCard(card.Id, this.store.room, this.playerId)) {
+      if (!skill.canUseCard(card.Id, this.store.room, this.playerId, undefined, this.askForEvent)) {
         return false;
       }
     }
