@@ -181,6 +181,13 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     to: PlayerId,
   ): Promise<ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent>>;
   //Server only
+  public abstract async doAskForCommonly<T extends GameEventIdentifiers>(
+    type: T,
+    event: ServerEventFinder<T>,
+    toId: PlayerId,
+    uncancellable?: boolean,
+  ): Promise<ClientEventFinder<T>>;
+  //Server only
   public abstract findCardsByMatcherFrom(cardMatcher: CardMatcher, fromDrawStack?: boolean): CardId[];
   //Server only
   public abstract displayCards(fromId: PlayerId, displayCards: CardId[], translations?: PatchedTranslationObject): void;

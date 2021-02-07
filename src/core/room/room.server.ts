@@ -699,6 +699,21 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return responseEvent;
   }
 
+  public async doAskForCommonly<T extends GameEventIdentifiers>(
+    type: T,
+    event: ServerEventFinder<T>,
+    toId: PlayerId,
+    uncancellable?: boolean,
+  ): Promise<ClientEventFinder<T>> {
+    if (uncancellable) {
+      EventPacker.createUncancellableEvent(event);
+    }
+
+    this.notify<T>(type, event, toId);
+
+    return await this.onReceivingAsyncResponseFrom(type, toId);
+  }
+
   public async reforge(cardId: CardId, from: Player) {
     await this.moveCards({
       fromId: from.Id,
@@ -868,6 +883,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
         const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
           ...event,
+          allTargets: toIds,
           nullifiedTargets,
         };
 
@@ -923,7 +939,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
 
     await super.useSkill(content);
-    skill.resortTargets && this.sortPlayersByPosition(content.toIds!);
+    content.toIds && skill.resortTargets && this.sortPlayersByPosition(content.toIds);
 
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.SkillUseEvent, content);
     if (!EventPacker.isTerminated(content)) {
