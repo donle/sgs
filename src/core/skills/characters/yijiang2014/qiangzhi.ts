@@ -41,6 +41,7 @@ export class QiangZhi extends TriggerSkill {
     room.notify(
       GameEventIdentifiers.AskForChoosingPlayerEvent,
       EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingPlayerEvent>({
+        triggeredBySkills: [this.GeneralName],
         toId: ownerId,
         players: room.AlivePlayers.filter(
           player => player.getCardIds(PlayerCardsArea.HandArea).length > 0 && player.Id !== ownerId,
@@ -66,6 +67,7 @@ export class QiangZhi extends TriggerSkill {
     room.notify(
       GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
       EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>({
+        triggeredBySkills: [this.GeneralName],
         fromId: ownerId,
         toId: selectedPlayers[0],
         options: {
