@@ -46,7 +46,7 @@ export class SlashSkill extends ActiveSkill implements ExtralCardSkillProperty {
     selectedTargets: PlayerId[],
     containerCard: CardId,
   ) {
-    return room.canAttack(room.getPlayerById(owner), room.getPlayerById(target), containerCard);
+    return owner !== target;
   }
 
   isAvailableTarget(

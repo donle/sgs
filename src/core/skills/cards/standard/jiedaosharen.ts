@@ -9,9 +9,10 @@ import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @CommonSkill({ name: 'jiedaosharen', description: 'ljiedaosharen_description' })
-export class JieDaoShaRenSkill extends ActiveSkill {
+export class JieDaoShaRenSkill extends ActiveSkill implements ExtralCardSkillProperty {
   public canUse(room: Room, owner: Player) {
     return (
       room.getOtherPlayers(owner.Id).find(player => player.getEquipment(CardType.Weapon) !== undefined) !== undefined
@@ -28,7 +29,8 @@ export class JieDaoShaRenSkill extends ActiveSkill {
   public isAvailableCard(): boolean {
     return false;
   }
-  public isAvailableTarget(
+
+  public isCardAvailableTarget(
     owner: PlayerId,
     room: Room,
     target: PlayerId,
@@ -41,6 +43,17 @@ export class JieDaoShaRenSkill extends ActiveSkill {
     } else {
       return room.canAttack(room.getPlayerById(selectedTargets[0]), room.getPlayerById(target));
     }
+  }
+
+  public isAvailableTarget(
+    owner: PlayerId,
+    room: Room,
+    target: PlayerId,
+    selectedCards: CardId[],
+    selectedTargets: PlayerId[],
+    containerCard: CardId,
+  ): boolean {
+    return this.isCardAvailableTarget(owner, room, target, selectedCards, selectedTargets, containerCard);
   }
 
   public getAnimationSteps(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {

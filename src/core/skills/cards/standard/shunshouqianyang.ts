@@ -32,7 +32,6 @@ export class ShunShouQianYangSkill extends ActiveSkill implements ExtralCardSkil
     selectedTargets: PlayerId[],
     containerCard: CardId,
   ) {
-    const from = room.getPlayerById(owner);
     const to = room.getPlayerById(target);
 
     return (
