@@ -2,7 +2,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { CharacterNationality } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
-import { PlayerRole } from 'core/player/player_props';
+import { PlayerId, PlayerRole } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from './precondition/precondition';
 
@@ -63,11 +63,12 @@ export namespace System {
     [AskForChoosingCardEventFilter.ChengXiang]: thirteenPointFilterFunction,
   };
 
-  export type SideEffectSkillApplierFunc = (player: Player, room: Room) => boolean;
+  export type SideEffectSkillApplierFunc = (player: Player, room: Room, sourceId: PlayerId) => boolean;
 
   export const enum SideEffectSkillApplierEnum {
     ZhiBa,
     HuangTian,
+    XianSi,
   }
 
   export const SideEffectSkillAppliers: { [K in SideEffectSkillApplierEnum]: SideEffectSkillApplierFunc } = {
@@ -76,6 +77,9 @@ export namespace System {
     },
     [SideEffectSkillApplierEnum.HuangTian]: (player: Player, room: Room) => {
       return player.Nationality === CharacterNationality.Qun && player.Role !== PlayerRole.Lord;
+    },
+    [SideEffectSkillApplierEnum.XianSi]: (player: Player, room: Room, sourceId: PlayerId) => {
+      return player.Id !== sourceId;
     },
   };
 }

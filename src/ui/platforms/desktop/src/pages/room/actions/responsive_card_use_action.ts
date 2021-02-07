@@ -15,9 +15,12 @@ export class ResponsiveUseCardAction<
     | GameEventIdentifiers.AskForCardUseEvent
     | GameEventIdentifiers.AskForPeachEvent = GameEventIdentifiers.AskForCardUseEvent
 > extends BaseAction {
-  public static isSkillsOnResponsiveCardUseDisabled = (room: Room, matcher: CardMatcher, player: Player) => (
-    skill: Skill,
-  ) => {
+  public static isSkillsOnResponsiveCardUseDisabled = (
+    room: Room,
+    matcher: CardMatcher,
+    player: Player,
+    event: ServerEventFinder<GameEventIdentifiers>,
+  ) => (skill: Skill) => {
     if (UniqueSkillRule.isProhibited(skill, player)) {
       return true;
     }
@@ -27,7 +30,7 @@ export class ResponsiveUseCardAction<
     } else if (skill instanceof ViewAsSkill) {
       return (
         !new CardMatcher({ name: skill.canViewAs(room, player, undefined, matcher) }).match(matcher) ||
-        !skill.canUse(room, player)
+        !skill.canUse(room, player, event)
       );
     }
 
