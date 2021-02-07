@@ -104,7 +104,7 @@ export class TrustAI extends PlayerAI {
       const cards = fromArea.reduce<CardId[]>((allCards, area) => {
         return [...allCards, ...to.getCardIds(area).filter(cardId => !except?.includes(cardId))];
       }, []);
-      cardDrop.droppedCards = cards.slice(0, cardAmount);
+      cardDrop.droppedCards = cards.slice(0, cardAmount instanceof Array ? cardAmount[0] : cardAmount);
     }
 
     return cardDrop;
@@ -198,10 +198,9 @@ export class TrustAI extends PlayerAI {
     room: Room,
   ) {
     const { requiredAmount, players, toId } = content;
-    const amount = requiredAmount instanceof Array ? requiredAmount[0] : requiredAmount;
     const choosePlayer: ClientEventFinder<T> = {
       fromId: toId,
-      selectedPlayers: players.slice(0, amount),
+      selectedPlayers: players.slice(0, requiredAmount),
     };
     return choosePlayer;
   }

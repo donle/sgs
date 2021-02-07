@@ -1,4 +1,4 @@
-import { Card, CardType, VirtualCard } from 'core/cards/card';
+import { Card, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Character, CharacterId } from 'core/characters/character';
@@ -13,17 +13,14 @@ import {
 import { Sanguosha } from 'core/game/engine';
 import { GameCommonRules } from 'core/game/game_rules';
 import { PlayerPhase } from 'core/game/stage_processor';
-import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { System } from 'core/shares/libs/system';
 import { SkillType } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
-import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
-import { AudioService } from 'ui/audio/install';
 import { AskForPeachAction } from './actions/ask_for_peach_action';
 import { CardResponseAction } from './actions/card_response_action';
 import { PlayPhaseAction } from './actions/play_phase_action';
@@ -38,31 +35,24 @@ import { GuanXingDialog } from './ui/dialog/guanxing_dialog/guanxing_dialog';
 import { WuGuFengDengDialog } from './ui/dialog/wugufengdeng_dialog/wugufengdeng_dialog';
 
 export class GameClientProcessor {
-  protected onPlayTrustedActionTimer: NodeJS.Timer | undefined;
+  private onPlayTrustedActionTimer: NodeJS.Timer | undefined;
 
-  protected excludedResponsiveEvents: GameEventIdentifiers[] = [
-    GameEventIdentifiers.UserMessageEvent,
-    GameEventIdentifiers.PlayerStatusEvent,
-  ];
+  private excludedResponsiveEvents: GameEventIdentifiers[] = [GameEventIdentifiers.UserMessageEvent];
 
   constructor(
-    protected presenter: RoomPresenter,
-    protected store: RoomStore,
-    protected translator: ClientTranslationModule,
-    protected imageLoader: ImageLoader,
-    protected audioService: AudioService,
-    protected electron: ElectronLoader,
-  ) {
-    this.audioService.playRoomBGM();
-  }
+    private presenter: RoomPresenter,
+    private store: RoomStore,
+    private translator: ClientTranslationModule,
+    private imageLoader: ImageLoader,
+  ) {}
 
-  protected tryToThrowNotReadyException(e: GameEventIdentifiers) {
+  private tryToThrowNotReadyException(e: GameEventIdentifiers) {
     if (!this.store.room && e !== GameEventIdentifiers.PlayerEnterEvent) {
       throw new Error('Game client process does not work when client room is not initialized');
     }
   }
 
-  protected eventFilter<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
+  private eventFilter<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
     if (identifier !== GameEventIdentifiers.PlayerEnterEvent) {
       this.store.room.Analytics.record(event, this.store.room.CurrentPlayerPhase);
       if (this.store.room.isPlaying()) {
@@ -72,42 +62,26 @@ export class GameClientProcessor {
         this.store.room.DropStack = numberOfDropStack;
       }
     }
-    if (!this.excludedResponsiveEvents.includes(identifier)) {
+    if (identifier !== GameEventIdentifiers.UserMessageEvent) {
       this.presenter.clearNotifiers();
     }
   }
 
-  protected record<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
+  private record<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
     if (this.store.inAction && !event.ignoreNotifiedStatus) {
       this.endAction();
     }
-    if (serverResponsiveListenerEvents.includes(identifier)) {
+    if (serverResponsiveListenerEvents.includes(identifier) && !this.excludedResponsiveEvents.includes(identifier)) {
       this.presenter.startAction(identifier, event);
       this.onPlayTrustedAction();
-    }
-
-    if (this.store.room && (this.store.room.isPlaying() || identifier === GameEventIdentifiers.GameReadyEvent)) {
-      this.electron.sendReplayEventFlow(event, {
-        version: Sanguosha.Version,
-        roomId: this.store.room.RoomId,
-        gameInfo: this.store.room.Info,
-        viewerId: this.store.clientPlayerId,
-        viewerName: this.store.clientRoomInfo.playerName,
-        playersInfo: this.store.room.Players.map(p => ({ Id: p.Id, Name: p.Name, Position: p.Position })),
-      });
     }
   }
 
   public onPlayTrustedAction() {
     this.onPlayTrustedActionTimer = setTimeout(() => {
       const { identifier, event } = this.store.awaitingResponseEvent;
-      if (identifier === undefined) {
-        // tslint:disable-next-line:no-console
-        console.warn(`unknown identifier event: ${JSON.stringify(event, null, 2)}`);
-      } else {
-        const result = this.presenter.ClientPlayer!.AI.onAction(this.store.room, identifier, event);
-        this.store.room.broadcast(identifier, result);
-      }
+      const result = this.presenter.ClientPlayer!.AI.onAction(this.store.room, identifier, event);
+      this.store.room.broadcast(identifier, result);
       this.presenter.closeDialog();
       this.presenter.closeIncomingConversation();
 
@@ -164,9 +138,6 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.PlayerEnterEvent:
         await this.onHandlePlayerEnterEvent(e as any, content);
-        break;
-      case GameEventIdentifiers.PlayerReenterEvent:
-        await this.onHandlePlayerReenterEvent(e as any, content);
         break;
       case GameEventIdentifiers.PlayerLeaveEvent:
         await this.onHandlePlayerLeaveEvent(e as any, content);
@@ -320,7 +291,7 @@ export class GameClientProcessor {
     }
   }
 
-  protected async onHandlePlayerStatusEvent<T extends GameEventIdentifiers.PlayerStatusEvent>(
+  private async onHandlePlayerStatusEvent<T extends GameEventIdentifiers.PlayerStatusEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -328,60 +299,59 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
-  protected async onHandleUserMessageEvent<T extends GameEventIdentifiers.UserMessageEvent>(
+  private async onHandleUserMessageEvent<T extends GameEventIdentifiers.UserMessageEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
     this.presenter.addUserMessage(this.translator.trx(content.message));
     this.presenter.onIncomingMessage(content.playerId, content.originalMessage);
     this.presenter.broadcastUIUpdate();
-    this.electron.flashFrame();
   }
 
-  protected async onHandleSetFlagEvent<T extends GameEventIdentifiers.SetFlagEvent>(
+  private async onHandleSetFlagEvent<T extends GameEventIdentifiers.SetFlagEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
     this.store.room.getPlayerById(content.to).setFlag(content.name, content.value, content.invisible);
   }
-  protected async onHandleRemoveFlagEvent<T extends GameEventIdentifiers.RemoveFlagEvent>(
+  private async onHandleRemoveFlagEvent<T extends GameEventIdentifiers.RemoveFlagEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
     this.store.room.getPlayerById(content.to).removeFlag(content.name);
   }
-  protected async onHandleClearFlagEvent<T extends GameEventIdentifiers.ClearFlagEvent>(
+  private async onHandleClearFlagEvent<T extends GameEventIdentifiers.ClearFlagEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
     this.store.room.getPlayerById(content.to).clearFlags();
   }
-  protected async onHandleAddMarkEvent<T extends GameEventIdentifiers.AddMarkEvent>(
+  private async onHandleAddMarkEvent<T extends GameEventIdentifiers.AddMarkEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
     this.store.room.getPlayerById(content.to).addMark(content.name, content.value);
   }
-  protected async onHandleSetMarkEvent<T extends GameEventIdentifiers.SetMarkEvent>(
+  private async onHandleSetMarkEvent<T extends GameEventIdentifiers.SetMarkEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
     this.store.room.getPlayerById(content.to).setMark(content.name, content.value);
   }
-  protected async onHandleRemoveMarkEvent<T extends GameEventIdentifiers.RemoveMarkEvent>(
+  private async onHandleRemoveMarkEvent<T extends GameEventIdentifiers.RemoveMarkEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
     this.store.room.getPlayerById(content.to).removeMark(content.name);
   }
-  protected async onHandleClearMarkEvent<T extends GameEventIdentifiers.ClearMarkEvent>(
+  private async onHandleClearMarkEvent<T extends GameEventIdentifiers.ClearMarkEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
     this.store.room.getPlayerById(content.to).clearMarks();
   }
 
-  protected async onHandleAskForCardResponseEvent<T extends GameEventIdentifiers.AskForCardResponseEvent>(
+  private async onHandleAskForCardResponseEvent<T extends GameEventIdentifiers.AskForCardResponseEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -398,11 +368,11 @@ export class GameClientProcessor {
     await action.onPlay(this.translator);
   }
 
-  protected async onHandleAskForPinDianCardEvent<T extends GameEventIdentifiers.AskForPinDianCardEvent>(
+  private async onHandleAskForPinDianCardEvent<T extends GameEventIdentifiers.AskForPinDianCardEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    if (content.randomPinDianCard) {
+    if (content.randomPinDianCardPlayer.includes(this.store.clientPlayerId)) {
       const handcards = this.presenter.ClientPlayer!.getCardIds(PlayerCardsArea.HandArea);
       const randomCardIndex = Math.floor(Math.random() * handcards.length);
       const event: ClientEventFinder<T> = {
@@ -434,11 +404,11 @@ export class GameClientProcessor {
     this.store.room.broadcast(type, EventPacker.createIdentifierEvent(type, event));
   }
 
-  protected async onHandleAskForCardDropEvent<T extends GameEventIdentifiers.AskForCardDropEvent>(
+  private async onHandleAskForCardDropEvent<T extends GameEventIdentifiers.AskForCardDropEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    if (content.cardAmount <= 0) {
+    if (typeof content.cardAmount === 'number' && content.cardAmount <= 0) {
       const event: ClientEventFinder<T> = {
         fromId: content.toId,
         droppedCards: [],
@@ -450,7 +420,12 @@ export class GameClientProcessor {
     this.presenter.createIncomingConversation({
       conversation: content.conversation
         ? content.conversation
-        : TranslationPack.translationJsonPatcher('please drop {0} cards', content.cardAmount).extract(),
+        : TranslationPack.translationJsonPatcher(
+            'please drop ' + (content.cardAmount instanceof Array ? '{1} to {2}' : '{0}') + ' cards',
+            content.cardAmount as number,
+            (content.cardAmount as [number, number])[0],
+            (content.cardAmount as [number, number])[1],
+          ).extract(),
       translator: this.translator,
     });
 
@@ -465,7 +440,7 @@ export class GameClientProcessor {
     this.store.room.broadcast(type, EventPacker.createIdentifierEvent(type, event));
   }
 
-  protected async onHandleAskForCardDisplayEvent<T extends GameEventIdentifiers.AskForCardDisplayEvent>(
+  private async onHandleAskForCardDisplayEvent<T extends GameEventIdentifiers.AskForCardDisplayEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -494,7 +469,7 @@ export class GameClientProcessor {
     this.store.room.broadcast(type, EventPacker.createIdentifierEvent(type, displayEvent));
   }
 
-  protected async onHandleAskForCardEvent<T extends GameEventIdentifiers.AskForCardEvent>(
+  private async onHandleAskForCardEvent<T extends GameEventIdentifiers.AskForCardEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -522,7 +497,7 @@ export class GameClientProcessor {
     this.store.room.broadcast(type, askForCardEvent);
   }
 
-  protected async onHandleAskForCardUseEvent<T extends GameEventIdentifiers.AskForCardUseEvent>(
+  private async onHandleAskForCardUseEvent<T extends GameEventIdentifiers.AskForCardUseEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -539,84 +514,42 @@ export class GameClientProcessor {
     await action.onPlay(this.translator);
   }
 
-  protected async onHandleCardUseEvent<T extends GameEventIdentifiers.CardUseEvent>(
+  private async onHandleCardUseEvent<T extends GameEventIdentifiers.CardUseEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const from = this.store.room.getPlayerById(content.fromId);
-    const card = Sanguosha.getCardById(content.cardId);
-    if (!card.is(CardType.Equip)) {
-      this.audioService.playCardAudio(card.Name, from.Gender, from.Character.Name);
-    } else {
-      this.audioService.playEquipAudio();
-    }
-
-    const tos = content.toIds?.map(toId => this.store.room.getPlayerById(toId)) as Player[];
-
     await this.store.room.useCard(content);
-    this.presenter.showCards(
-      ...Card.getActualCards([content.cardId]).map(cardId => ({
-        card: Sanguosha.getCardById(cardId),
-        tag: TranslationPack.translationJsonPatcher(
-          tos ? '{0} used card to {1}' : '{0} used card',
-          TranslationPack.patchPlayerInTranslation(from),
-          tos && TranslationPack.patchPlayerInTranslation(...tos),
-        ).toString(),
-      })),
-    );
+    this.presenter.showCards(...Card.getActualCards([content.cardId]).map(cardId => Sanguosha.getCardById(cardId)));
     this.presenter.broadcastUIUpdate();
   }
 
-  protected onHandleCardResponseEvent<T extends GameEventIdentifiers.CardResponseEvent>(
+  private onHandleCardResponseEvent<T extends GameEventIdentifiers.CardResponseEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const from = this.store.room.getPlayerById(content.fromId);
-    const card = Sanguosha.getCardById(content.cardId);
-    if (!card.is(CardType.Equip) && !content.mute) {
-      this.audioService.playCardAudio(card.Name, from.Gender, from.Character.Name);
-    }
-    this.presenter.showCards(
-      ...Card.getActualCards([content.cardId]).map(cardId => ({
-        card: Sanguosha.getCardById(cardId),
-        tag: TranslationPack.translationJsonPatcher(
-          '{0} responded card',
-          TranslationPack.patchPlayerInTranslation(from),
-        ).toString(),
-      })),
-    );
+    this.presenter.showCards(...Card.getActualCards([content.cardId]).map(cardId => Sanguosha.getCardById(cardId)));
   }
 
-  protected onHandleCardDisplayEvent<T extends GameEventIdentifiers.CardDisplayEvent>(
+  private onHandleCardDisplayEvent<T extends GameEventIdentifiers.CardDisplayEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.presenter.showCards(
-      ...Card.getActualCards(content.displayCards).map(cardId => ({
-        card: Sanguosha.getCardById(cardId),
-        tag:
-          content.fromId &&
-          TranslationPack.translationJsonPatcher(
-            '{0} displayed card',
-            TranslationPack.patchPlayerInTranslation(this.store.room.getPlayerById(content.fromId)),
-          ).toString(),
-      })),
-    );
+    this.presenter.showCards(...Card.getActualCards(content.displayCards).map(cardId => Sanguosha.getCardById(cardId)));
   }
 
   // tslint:disable-next-line:no-empty
-  protected onHandleAimEvent<T extends GameEventIdentifiers.AimEvent>(type: T, content: ServerEventFinder<T>) {}
-  protected onHandleDrawCardsEvent<T extends GameEventIdentifiers.DrawCardEvent>(
+  private onHandleAimEvent<T extends GameEventIdentifiers.AimEvent>(type: T, content: ServerEventFinder<T>) {}
+  private onHandleDrawCardsEvent<T extends GameEventIdentifiers.DrawCardEvent>(
     type: T,
     content: ServerEventFinder<T>,
     // tslint:disable-next-line:no-empty
   ) {}
-  protected onHandleCustomDialogEvent<T extends GameEventIdentifiers.CustomGameDialog>(
+  private onHandleCustomDialogEvent<T extends GameEventIdentifiers.CustomGameDialog>(
     type: T,
     content: ServerEventFinder<T>,
     // tslint:disable-next-line:no-empty
   ) {}
-  protected onHandlePlayerDyingEvent<T extends GameEventIdentifiers.PlayerDyingEvent>(
+  private onHandlePlayerDyingEvent<T extends GameEventIdentifiers.PlayerDyingEvent>(
     type: T,
     content: ServerEventFinder<T>,
     // tslint:disable-next-line:no-empty
@@ -624,7 +557,7 @@ export class GameClientProcessor {
     this.store.room.getPlayerById(content.dying).Dying = true;
   }
 
-  protected onHandleSetOutsideCharactersEvent<T extends GameEventIdentifiers.SetOutsideCharactersEvent>(
+  private onHandleSetOutsideCharactersEvent<T extends GameEventIdentifiers.SetOutsideCharactersEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -635,7 +568,7 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
-  protected onHandleHuaShenCardUpdatedEvent<T extends GameEventIdentifiers.HuaShenCardUpdatedEvent>(
+  private onHandleHuaShenCardUpdatedEvent<T extends GameEventIdentifiers.HuaShenCardUpdatedEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -648,7 +581,7 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
-  protected onHandleUpgradeSideEffectSkillsEvent<T extends GameEventIdentifiers.UpgradeSideEffectSkillsEvent>(
+  private onHandleUpgradeSideEffectSkillsEvent<T extends GameEventIdentifiers.UpgradeSideEffectSkillsEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -658,7 +591,7 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
-  protected onHandlePlayerPropertiesChangeEvent<T extends GameEventIdentifiers.PlayerPropertiesChangeEvent>(
+  private onHandlePlayerPropertiesChangeEvent<T extends GameEventIdentifiers.PlayerPropertiesChangeEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -684,37 +617,34 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
-  protected onHandleNotifyEvent<T extends GameEventIdentifiers.NotifyEvent>(type: T, content: ServerEventFinder<T>) {
+  private onHandleNotifyEvent<T extends GameEventIdentifiers.NotifyEvent>(type: T, content: ServerEventFinder<T>) {
     this.presenter.notify(content.toIds, content.notificationTime);
     this.presenter.broadcastUIUpdate();
   }
 
-  protected onHandlePlayerDiedEvent<T extends GameEventIdentifiers.PlayerDiedEvent>(
+  private onHandlePlayerDiedEvent<T extends GameEventIdentifiers.PlayerDiedEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
     const { playerId } = content;
     const player = this.store.room.getPlayerById(playerId);
-    this.audioService.playDeathAudio(player.Character.Name);
     this.store.room.kill(player);
     this.presenter.broadcastUIUpdate();
   }
 
-  protected onHandleDamageEvent<T extends GameEventIdentifiers.DamageEvent>(type: T, content: ServerEventFinder<T>) {
+  private onHandleDamageEvent<T extends GameEventIdentifiers.DamageEvent>(type: T, content: ServerEventFinder<T>) {
     const player = this.store.room.getPlayerById(content.toId);
-    this.audioService.playDamageAudio(content.damage);
     player.changeHp(-content.damage);
     this.presenter.broadcastUIUpdate();
   }
 
-  protected onHandleLoseHpEvent<T extends GameEventIdentifiers.LoseHpEvent>(type: T, content: ServerEventFinder<T>) {
+  private onHandleLoseHpEvent<T extends GameEventIdentifiers.LoseHpEvent>(type: T, content: ServerEventFinder<T>) {
     const player = this.store.room.getPlayerById(content.toId);
-    this.audioService.playLoseHpAudio();
     player.changeHp(-content.lostHp);
     this.presenter.broadcastUIUpdate();
   }
 
-  protected onHandleChangeMaxHpEvent<T extends GameEventIdentifiers.ChangeMaxHpEvent>(
+  private onHandleChangeMaxHpEvent<T extends GameEventIdentifiers.ChangeMaxHpEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -726,14 +656,14 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
-  protected onHandleRecoverEvent<T extends GameEventIdentifiers.RecoverEvent>(type: T, content: ServerEventFinder<T>) {
+  private onHandleRecoverEvent<T extends GameEventIdentifiers.RecoverEvent>(type: T, content: ServerEventFinder<T>) {
     const player = this.store.room.getPlayerById(content.toId);
     player.Dying = false;
     player.changeHp(content.recoveredHp);
     this.presenter.broadcastUIUpdate();
   }
 
-  protected onHandleGameStartEvent<T extends GameEventIdentifiers.GameStartEvent>(
+  private onHandleGameStartEvent<T extends GameEventIdentifiers.GameStartEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -741,7 +671,7 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
-  protected async onHandleGameReadyEvent<T extends GameEventIdentifiers.GameReadyEvent>(
+  private async onHandleGameReadyEvent<T extends GameEventIdentifiers.GameReadyEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -752,16 +682,15 @@ export class GameClientProcessor {
     });
     this.store.room.sortPlayers();
     this.presenter.broadcastUIUpdate();
-    this.audioService.playGameStartAudio();
-    this.electron.flashFrame();
     await this.store.room.gameStart(content.gameStartInfo);
   }
 
-  protected onHandlePlayerEnterEvent<T extends GameEventIdentifiers.PlayerEnterEvent>(
+  private onHandlePlayerEnterEvent<T extends GameEventIdentifiers.PlayerEnterEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
     Precondition.assert(this.store.clientRoomInfo !== undefined, 'Uninitialized Client room info');
+
     if (
       content.joiningPlayerName === this.store.clientRoomInfo.playerName &&
       content.timestamp === this.store.clientRoomInfo.timestamp
@@ -786,23 +715,15 @@ export class GameClientProcessor {
     }
   }
 
-  protected async onHandlePlayerReenterEvent<T extends GameEventIdentifiers.PlayerReenterEvent>(
+  private onHandlePlayerLeaveEvent<T extends GameEventIdentifiers.PlayerLeaveEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.store.room.getPlayerById(content.toId).setOnline();
+    this.presenter.playerLeave(content.playerId);
     this.presenter.broadcastUIUpdate();
   }
 
-  protected onHandlePlayerLeaveEvent<T extends GameEventIdentifiers.PlayerLeaveEvent>(
-    type: T,
-    content: ServerEventFinder<T>,
-  ) {
-    this.presenter.playerLeave(content.playerId, content.quit);
-    this.presenter.broadcastUIUpdate();
-  }
-
-  protected onHandleChoosingCharacterEvent<T extends GameEventIdentifiers.AskForChoosingCharacterEvent>(
+  private onHandleChoosingCharacterEvent<T extends GameEventIdentifiers.AskForChoosingCharacterEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -858,7 +779,7 @@ export class GameClientProcessor {
     );
   }
 
-  protected onHandleSyncGameCommonRulesEvent<T extends GameEventIdentifiers.SyncGameCommonRulesEvent>(
+  private onHandleSyncGameCommonRulesEvent<T extends GameEventIdentifiers.SyncGameCommonRulesEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -866,7 +787,7 @@ export class GameClientProcessor {
     GameCommonRules.syncSocketObject(this.store.room.getPlayerById(toId), commonRules);
   }
 
-  protected async onHandleAskForSkillUseEvent<T extends GameEventIdentifiers.AskForSkillUseEvent>(
+  private async onHandleAskForSkillUseEvent<T extends GameEventIdentifiers.AskForSkillUseEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -875,21 +796,21 @@ export class GameClientProcessor {
     await action.onSelect(this.translator);
   }
 
-  protected onHandlePhaseStageChangeEvent<T extends GameEventIdentifiers.PhaseStageChangeEvent>(
+  private onHandlePhaseStageChangeEvent<T extends GameEventIdentifiers.PhaseStageChangeEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
     this.store.room.CurrentPlayerStage = content.toStage;
   }
 
-  protected async onHandleLoseSkillEvent<T extends GameEventIdentifiers.LoseSkillEvent>(
+  private async onHandleLoseSkillEvent<T extends GameEventIdentifiers.LoseSkillEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
     await this.store.room.loseSkill(content.toId, content.skillName);
   }
 
-  protected onHandleObtainSkillEvent<T extends GameEventIdentifiers.ObtainSkillEvent>(
+  private onHandleObtainSkillEvent<T extends GameEventIdentifiers.ObtainSkillEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -897,12 +818,12 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
-  protected onHandlePhaseChangeEvent<T extends GameEventIdentifiers.PhaseChangeEvent>(
+  private onHandlePhaseChangeEvent<T extends GameEventIdentifiers.PhaseChangeEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
     this.store.room.onPhaseTo(content.toPlayer, content.to);
-    if (content.to === PlayerPhase.PhaseBegin) {
+    if (content.to === PlayerPhase.PrepareStage) {
       // content.fromPlayer && this.presenter.isSkillDisabled(PlayPhaseAction.disableSkills);
       this.store.room.turnTo(content.toPlayer);
       this.store.room.Analytics.turnTo(content.toPlayer);
@@ -914,7 +835,7 @@ export class GameClientProcessor {
           .getSideEffectSkills(player)
           .map(skillName => Sanguosha.getSkillBySkillName(skillName));
         for (const skill of [...player.getSkills(), ...sideEffectSkills]) {
-          if (this.store.room.CurrentPlayerPhase === PlayerPhase.PhaseBegin) {
+          if (this.store.room.CurrentPlayerPhase === PlayerPhase.PrepareStage) {
             player.resetCardUseHistory();
           } else {
             player.resetCardUseHistory('slash');
@@ -929,7 +850,7 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
-  protected async onHandlePlayCardStage<T extends GameEventIdentifiers.AskForPlayCardsOrSkillsEvent>(
+  private async onHandlePlayCardStage<T extends GameEventIdentifiers.AskForPlayCardsOrSkillsEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -941,10 +862,7 @@ export class GameClientProcessor {
     await action.onPlay();
   }
 
-  protected onHandleMoveCardEvent<T extends GameEventIdentifiers.MoveCardEvent>(
-    type: T,
-    content: ServerEventFinder<T>,
-  ) {
+  private onHandleMoveCardEvent<T extends GameEventIdentifiers.MoveCardEvent>(type: T, content: ServerEventFinder<T>) {
     const { toArea, toId, fromId, toOutsideArea, movingCards, isOutsideAreaInPublic } = content;
     const to = toId && this.store.room.getPlayerById(toId);
     const from = fromId ? this.store.room.getPlayerById(fromId) : undefined;
@@ -1006,12 +924,7 @@ export class GameClientProcessor {
         to.getCardIds(toArea as PlayerCardsArea).push(...actualCardIds);
       }
     } else if (toArea === CardMoveArea.DropStack) {
-      this.presenter.showCards(
-        ...Card.getActualCards(cardIds).map(cardId => ({
-          card: Sanguosha.getCardById(cardId),
-          tag: 'move to drop stack',
-        })),
-      );
+      this.presenter.showCards(...Card.getActualCards(cardIds).map(cardId => Sanguosha.getCardById(cardId)));
     }
 
     toOutsideArea !== undefined && isOutsideAreaInPublic && to && to.setVisibleOutsideArea(toOutsideArea);
@@ -1019,19 +932,13 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
-  protected onHandleJudgeEvent<T extends GameEventIdentifiers.JudgeEvent>(type: T, content: ServerEventFinder<T>) {
-    const { judgeCardId, toId } = content;
-    this.presenter.showCards({
-      card: Sanguosha.getCardById(judgeCardId),
-      tag: TranslationPack.translationJsonPatcher(
-        "{0}'s judge card",
-        TranslationPack.patchPlayerInTranslation(this.store.room.getPlayerById(toId)),
-      ).toString(),
-    });
+  private onHandleJudgeEvent<T extends GameEventIdentifiers.JudgeEvent>(type: T, content: ServerEventFinder<T>) {
+    const { judgeCardId } = content;
+    this.presenter.showCards(Sanguosha.getCardById(judgeCardId));
     this.presenter.broadcastUIUpdate();
   }
 
-  protected onHandlePlayerTurnOverEvent<T extends GameEventIdentifiers.PlayerTurnOverEvent>(
+  private onHandlePlayerTurnOverEvent<T extends GameEventIdentifiers.PlayerTurnOverEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -1039,7 +946,7 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
-  protected async onHandleAskForPeachEvent<T extends GameEventIdentifiers.AskForPeachEvent>(
+  private async onHandleAskForPeachEvent<T extends GameEventIdentifiers.AskForPeachEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -1065,7 +972,7 @@ export class GameClientProcessor {
     await action.onPlay(this.translator);
   }
 
-  protected onHandleAskForChoosingCardFromPlayerEvent<T extends GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(
+  private onHandleAskForChoosingCardFromPlayerEvent<T extends GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -1092,7 +999,7 @@ export class GameClientProcessor {
     );
   }
 
-  protected onHandleAskForChoosingCardWithConditionsEvent<
+  private onHandleAskForChoosingCardWithConditionsEvent<
     T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent
   >(type: T, content: ServerEventFinder<T>) {
     const selectedCards: CardId[] = [];
@@ -1214,7 +1121,7 @@ export class GameClientProcessor {
     });
   }
 
-  protected onHandleAskForChoosingCardEvent<T extends GameEventIdentifiers.AskForChoosingCardEvent>(
+  private onHandleAskForChoosingCardEvent<T extends GameEventIdentifiers.AskForChoosingCardEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -1278,7 +1185,7 @@ export class GameClientProcessor {
     }
   }
 
-  protected onHandleAskForChoosingOptionsEvent<T extends GameEventIdentifiers.AskForChoosingOptionsEvent>(
+  private onHandleAskForChoosingOptionsEvent<T extends GameEventIdentifiers.AskForChoosingOptionsEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -1318,22 +1225,19 @@ export class GameClientProcessor {
     }
   }
 
-  protected async onHandleSkillUseEvent<T extends GameEventIdentifiers.SkillUseEvent>(
+  private async onHandleSkillUseEvent<T extends GameEventIdentifiers.SkillUseEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const skill = Sanguosha.getSkillBySkillName(content.skillName);
-    const from = this.store.room.getPlayerById(content.fromId);
-    !content.mute && this.audioService.playSkillAudio(skill.GeneralName, from.Gender, from.Character.Name);
-
     await this.store.room.useSkill(content);
+    const skill = Sanguosha.getSkillBySkillName(content.skillName);
     if (skill.SkillType === SkillType.Limit || skill.SkillType === SkillType.Awaken) {
       this.presenter.onceSkillUsed(content.fromId, content.skillName);
     }
     this.presenter.broadcastUIUpdate();
   }
 
-  protected async onHandleGameOverEvent<T extends GameEventIdentifiers.GameOverEvent>(
+  private async onHandleGameOverEvent<T extends GameEventIdentifiers.GameOverEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -1341,40 +1245,29 @@ export class GameClientProcessor {
     const winners = winnerIds.map(id => this.store.room.getPlayerById(id));
     const losers = loserIds.map(id => this.store.room.getPlayerById(id));
     this.presenter.createDialog(
-      <GameOverDialog
-        imageLoader={this.imageLoader}
-        translator={this.translator}
-        electron={this.electron}
-        gameMode={this.store.room.Info.gameMode}
-        winners={winners}
-        losers={losers}
-      />,
+      <GameOverDialog imageLoader={this.imageLoader} translator={this.translator} winners={winners} losers={losers} />,
     );
     this.presenter.broadcastUIUpdate();
     this.store.room.gameOver();
   }
 
-  protected async onHandleChainLockedEvent<T extends GameEventIdentifiers.ChainLockedEvent>(
+  private async onHandleChainLockedEvent<T extends GameEventIdentifiers.ChainLockedEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.audioService.playChainAudio();
     const { toId, linked } = content;
     this.store.room.getPlayerById(toId).ChainLocked = linked;
     this.presenter.broadcastUIUpdate();
   }
 
-  protected async onHandleDrunkEvent<T extends GameEventIdentifiers.DrunkEvent>(
-    type: T,
-    content: ServerEventFinder<T>,
-  ) {
+  private async onHandleDrunkEvent<T extends GameEventIdentifiers.DrunkEvent>(type: T, content: ServerEventFinder<T>) {
     content.drunk
       ? this.store.room.getPlayerById(content.toId).getDrunk()
       : this.store.room.getPlayerById(content.toId).clearHeaded();
     this.presenter.broadcastUIUpdate();
   }
 
-  protected async onHandleAskForChoosingPlayerEvent<T extends GameEventIdentifiers.AskForChoosingPlayerEvent>(
+  private async onHandleAskForChoosingPlayerEvent<T extends GameEventIdentifiers.AskForChoosingPlayerEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -1395,7 +1288,7 @@ export class GameClientProcessor {
     this.presenter.closeIncomingConversation();
   }
 
-  protected async onHandlePlaceCardsInDileEvent<T extends GameEventIdentifiers.AskForPlaceCardsInDileEvent>(
+  private async onHandlePlaceCardsInDileEvent<T extends GameEventIdentifiers.AskForPlaceCardsInDileEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -1446,7 +1339,7 @@ export class GameClientProcessor {
     );
   }
 
-  protected async onHandleContinuouslyChoosingCard<T extends GameEventIdentifiers.AskForContinuouslyChoosingCardEvent>(
+  private async onHandleContinuouslyChoosingCard<T extends GameEventIdentifiers.AskForContinuouslyChoosingCardEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -1486,7 +1379,7 @@ export class GameClientProcessor {
       />,
     );
   }
-  protected async onHandleObserveCardsEvent<T extends GameEventIdentifiers.ObserveCardsEvent>(
+  private async onHandleObserveCardsEvent<T extends GameEventIdentifiers.ObserveCardsEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
@@ -1507,7 +1400,7 @@ export class GameClientProcessor {
     );
   }
 
-  protected async onHandleContinuouslyChoosingCardFinish<T extends GameEventIdentifiers.ObserveCardFinishEvent>(
+  private async onHandleContinuouslyChoosingCardFinish<T extends GameEventIdentifiers.ObserveCardFinishEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {

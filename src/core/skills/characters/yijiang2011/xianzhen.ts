@@ -81,12 +81,12 @@ export class XianZhen extends ActiveSkill {
 
   public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId, toIds } = skillUseEvent;
-    const { pindianRecord } = await room.pindian(fromId, toIds!);
-    if (!pindianRecord.length) {
+    const pindianResult = await room.pindian(fromId, toIds!);
+    if (!pindianResult) {
       return false;
     }
 
-    if (pindianRecord[0].winner === fromId) {
+    if (pindianResult.winners.includes(fromId)) {
       XianZhen.setXianZhenTarget(room, fromId, toIds![0]);
     } else {
       room.setFlag<boolean>(fromId, XianZhen.Lose, true, true);
@@ -100,7 +100,7 @@ export class XianZhen extends ActiveSkill {
 @CommonSkill({ name: XianZhen.Name, description: XianZhen.Description })
 export class XianZhenExtra extends RulesBreakerSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 
   public breakCardUsableDistanceTo(cardId: CardId | CardMatcher, room: Room, owner: Player, target: Player) {
@@ -126,7 +126,7 @@ export class XianZhenExtra extends RulesBreakerSkill implements OnDefineReleaseT
 @CommonSkill({ name: XianZhenExtra.Name, description: XianZhen.Description })
 export class XianZhenBlock extends FilterSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(room: Room) {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
 
   public canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId) {
@@ -177,7 +177,7 @@ export class XianZhenKeep extends TriggerSkill {
       return Sanguosha.getCardById(cardId).GeneralName === 'slash';
     });
 
-    askForCardDropEvent.cardAmount -= slashes.length;
+    (askForCardDropEvent.cardAmount as number) -= slashes.length;
     askForCardDropEvent.except = askForCardDropEvent.except ? [...askForCardDropEvent.except, ...slashes] : slashes;
 
     return true;
