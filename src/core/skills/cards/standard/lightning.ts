@@ -8,7 +8,6 @@ import { Room } from 'core/room/room';
 import { JudgeMatcher, JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, SelfTargetSkill } from 'core/skills/skill';
-import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 
 @CommonSkill({ name: 'lightning', description: 'lightning_description' })
 @SelfTargetSkill
@@ -44,7 +43,7 @@ export class LightningSkill extends ActiveSkill {
           toArea: CardMoveArea.JudgeArea,
           moveReason: CardMoveReason.CardUse,
         });
-        event.targetGroup = new TargetGroupSet([player.Id]);
+        event.targetGroup = [[player.Id]];
         break;
       }
     }

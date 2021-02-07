@@ -4,7 +4,6 @@ import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { ExtralCardSkillProperty } from '../interface/extral_property';
@@ -53,7 +52,7 @@ export class AlcoholSkill extends ActiveSkill implements ExtralCardSkillProperty
     if (from.Dying) {
       EventPacker.addMiddleware({ tag: this.recoverTag, data: true }, event);
     }
-    event.targetGroup = new TargetGroupSet([event.fromId]);
+    event.targetGroup = [[event.fromId]];
     return true;
   }
 

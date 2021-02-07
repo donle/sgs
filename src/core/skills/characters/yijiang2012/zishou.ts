@@ -15,6 +15,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
@@ -93,7 +94,7 @@ export class ZiShouReforge extends TriggerSkill {
           return (
             event.fromId === owner.Id &&
             event.targetGroup !== undefined &&
-            event.targetGroup.getRealTargetIds().find(player => player !== owner.Id) !== undefined
+            TargetGroupUtil.getRealTargets(event.targetGroup).find(player => player !== owner.Id) !== undefined
           );
         },
         owner.Id,

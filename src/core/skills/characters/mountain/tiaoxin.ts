@@ -8,7 +8,6 @@ import { Room } from 'core/room/room';
 import { ActiveSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 
 @CommonSkill({ name: 'tiaoxin', description: 'tiaoxin_description' })
 export class TiaoXin extends ActiveSkill {
@@ -104,7 +103,7 @@ export class TiaoXin extends ActiveSkill {
     } else {
       const slashUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
         fromId: response.fromId,
-        targetGroup: response.toIds && new TargetGroupSet(response.toIds),
+        targetGroup: response.toIds && [response.toIds],
         cardId: response.cardId,
         triggeredBySkills: [this.Name],
       };

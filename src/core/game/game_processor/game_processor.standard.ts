@@ -42,10 +42,10 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { ServerRoom } from 'core/room/room.server';
 import { Algorithm } from 'core/shares/libs/algorithm';
-import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
 import { GlobalFilterSkill, SkillLifeCycle } from 'core/skills/skill';
@@ -480,7 +480,7 @@ export class StandardGameProcessor extends GameProcessor {
       if (response.eventName === GameEventIdentifiers.CardUseEvent) {
         const event = response.event as ClientEventFinder<GameEventIdentifiers.CardUseEvent>;
         const card = Sanguosha.getCardById(event.cardId);
-        const targetGroup = event.toIds && new TargetGroupSet(...card.Skill.targetGroupDispatcher(event.toIds));
+        const targetGroup = event.toIds && [...card.Skill.targetGroupDispatcher(event.toIds)];
         await this.room.useCard({
           targetGroup,
           ...event,
@@ -1224,7 +1224,7 @@ export class StandardGameProcessor extends GameProcessor {
               const cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
                 fromId: response.fromId,
                 cardId: response.cardId,
-                targetGroup: new TargetGroupSet([to.Id]),
+                targetGroup: [[to.Id]],
               };
               EventPacker.copyPropertiesTo(response, cardUseEvent);
 
@@ -1442,7 +1442,7 @@ export class StandardGameProcessor extends GameProcessor {
           TranslationPack.patchCardInTranslation(event.cardId),
           event.targetGroup
             ? TranslationPack.patchPlayerInTranslation(
-                ...event.targetGroup.getRealTargetIds().map(id => this.room.getPlayerById(id)),
+                ...TargetGroupUtil.getRealTargets(event.targetGroup).map(id => this.room.getPlayerById(id)),
               )
             : event.toCardIds
             ? TranslationPack.patchCardInTranslation(...event.toCardIds)

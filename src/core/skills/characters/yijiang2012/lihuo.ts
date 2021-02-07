@@ -6,6 +6,7 @@ import { AllStage, CardUseStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
@@ -78,7 +79,10 @@ export class LiHuoShadow extends TriggerSkill {
       Sanguosha.getCardById(event.cardId).Name === 'fire_slash' &&
       owner.Id === event.fromId &&
       room.getOtherPlayers(owner.Id).find(player => {
-        return room.canAttack(owner, player, event.cardId) && !event.targetGroup!.includes(player.Id);
+        return (
+          room.canAttack(owner, player, event.cardId) &&
+          !TargetGroupUtil.includeRealTarget(event.targetGroup, player.Id)
+        );
       }) !== undefined
     );
   }
@@ -91,7 +95,9 @@ export class LiHuoShadow extends TriggerSkill {
     const players = room
       .getAlivePlayersFrom()
       .filter(
-        player => room.canAttack(from, player, cardUseEvent.cardId) && !cardUseEvent.targetGroup?.includes(player.Id),
+        player =>
+          room.canAttack(from, player, cardUseEvent.cardId) &&
+          !TargetGroupUtil.includeRealTarget(cardUseEvent.targetGroup, player.Id),
       )
       .map(player => player.Id);
 
@@ -131,7 +137,7 @@ export class LiHuoShadow extends TriggerSkill {
     const { toIds, triggeredOnEvent } = event;
     const cardUseEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
 
-    cardUseEvent.targetGroup?.push(toIds![0]);
+    TargetGroupUtil.pushTargets(cardUseEvent.targetGroup!, toIds![0]);
 
     return true;
   }

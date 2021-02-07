@@ -5,7 +5,6 @@ import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder }
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -57,7 +56,7 @@ export class JieDaoShaRenSkill extends ActiveSkill implements ExtralCardSkillPro
   }
 
   public getAnimationSteps(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    const toIds = event.targetGroup?.Targets[0];
+    const toIds = event.targetGroup![0];
     const { fromId } = event;
     return [
       { from: fromId, tos: [toIds![0]] },
@@ -103,7 +102,7 @@ export class JieDaoShaRenSkill extends ActiveSkill implements ExtralCardSkillPro
       const cardUseEvent = {
         fromId: response.fromId,
         cardId: response.cardId,
-        targetGroup: response.toIds && new TargetGroupSet(response.toIds),
+        targetGroup: response.toIds && [response.toIds],
         triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
       };
 

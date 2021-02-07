@@ -3,11 +3,10 @@ import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
 import { DamageType, GameCommonRuleObject, GameInfo, GameRunningInfo } from 'core/game/game_props';
 import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
-import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props';
-import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { System } from 'core/shares/libs/system';
+import { TargetGroup } from 'core/shares/libs/utils/target_group';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
 import {
@@ -54,7 +53,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.CardUseEvent]: {
     fromId: PlayerId;
     cardId: CardId;
-    targetGroup?: TargetGroupSet;
+    targetGroup?: TargetGroup;
     toCardIds?: CardId[];
     responseToEvent?: ServerEventFinder<GameEventIdentifiers>;
     skipDrop?: boolean;

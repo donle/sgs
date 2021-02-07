@@ -111,7 +111,7 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
       const numberOfCardTargets = cardSkill.numberOfTargets() || 1;
 
       const excludeExistedTargets = (playerId: PlayerId) =>
-        selectedTargets.length == 0 ? !exclude.includes(playerId) : true;
+        selectedTargets.length === 0 ? !exclude.includes(playerId) : true;
       const isAvailableTarget = skillExtralProp.isCardAvailableTarget || cardSkill.isAvailableCard;
 
       this.presenter.setupPlayersSelectionMatcher(

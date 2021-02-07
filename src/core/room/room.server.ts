@@ -36,12 +36,12 @@ import { CardLoader } from 'core/game/package_loader/loader.cards';
 import { CharacterLoader } from 'core/game/package_loader/loader.characters';
 import { RecordAnalytics } from 'core/game/record_analytics';
 import { Algorithm } from 'core/shares/libs/algorithm';
-import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 import { Functional } from 'core/shares/libs/functional';
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { System } from 'core/shares/libs/system';
+import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
 import {
@@ -616,7 +616,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       responseEvent = await this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForPeachEvent, event.fromId);
       const preUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
         fromId: responseEvent.fromId,
-        targetGroup: new TargetGroupSet([event.toId]),
+        targetGroup: [[event.toId]],
         cardId: responseEvent.cardId!,
       };
 
@@ -652,13 +652,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       responseEvent = await this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardUseEvent, to);
       const preUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
         fromId: to,
-        targetGroup: responseEvent.toIds && new TargetGroupSet(responseEvent.toIds),
+        targetGroup: responseEvent.toIds && [responseEvent.toIds],
         cardId: responseEvent.cardId!,
       };
 
       if (responseEvent.cardId === undefined || (await this.preUseCard(preUseEvent))) {
         responseEvent.cardId = preUseEvent.cardId;
-        responseEvent.toIds = preUseEvent.targetGroup?.getRealTargetIds();
+        responseEvent.toIds = TargetGroupUtil.getRealTargets(preUseEvent.targetGroup);
         responseEvent.fromId = preUseEvent.fromId;
         break;
       } else {
@@ -741,7 +741,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       const skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent> = {
         fromId: cardUseEvent.fromId,
         skillName: card.GeneratedBySkill,
-        toIds: cardUseEvent.targetGroup?.getRealTargetIds(),
+        toIds: TargetGroupUtil.getRealTargets(cardUseEvent.targetGroup),
         animation: card.Skill.getAnimationSteps(cardUseEvent),
         translationsMessage:
           card.ActualCardIds.length === 0 || card.isActualCardHidden()
@@ -752,7 +752,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                 TranslationPack.patchCardInTranslation(card.Id),
                 cardUseEvent.targetGroup
                   ? TranslationPack.patchPlayerInTranslation(
-                      ...cardUseEvent.targetGroup.getRealTargetIds().map(id => this.getPlayerById(id)),
+                      ...TargetGroupUtil.getRealTargets(cardUseEvent.targetGroup).map(id => this.getPlayerById(id)),
                     )
                   : '',
               ).extract()
@@ -765,7 +765,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                 TranslationPack.patchCardInTranslation(card.Id),
                 cardUseEvent.targetGroup
                   ? TranslationPack.patchPlayerInTranslation(
-                      ...cardUseEvent.targetGroup.getRealTargetIds().map(id => this.getPlayerById(id)),
+                      ...TargetGroupUtil.getRealTargets(cardUseEvent.targetGroup).map(id => this.getPlayerById(id)),
                     )
                   : '',
               ).extract(),
@@ -866,7 +866,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       if (stage === CardUseStage.AfterCardUseEffect) {
         const card = Sanguosha.getCardById(event.cardId);
         const aimEventCollaborators: { [player: string]: ServerEventFinder<GameEventIdentifiers.AimEvent> } = {};
-        const toIds = event.targetGroup?.getRealTargetIds();
+        const involvedPlayerIds = event.targetGroup && TargetGroupUtil.getAllTargets(event.targetGroup);
+        involvedPlayerIds && this.sortByPlayersPosition(involvedPlayerIds, ids => this.getPlayerById(ids[0]));
+        const toIds = involvedPlayerIds?.map(ids => ids[0]);
         let nullifiedTargets: PlayerId[] = event.nullifiedTargets || [];
 
         if (toIds) {
@@ -901,7 +903,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         if (card.Skill instanceof ResponsiveSkill) {
           await onCardEffect(cardEffectEvent);
         } else {
-          for (const groupTargets of event.targetGroup?.Targets || []) {
+          for (const groupTargets of involvedPlayerIds || []) {
             const toId = groupTargets[0];
             if (nullifiedTargets.includes(toId) || this.getPlayerById(toId).Dead) {
               continue;

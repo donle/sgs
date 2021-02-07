@@ -5,7 +5,6 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 
 @CommonSkill({ name: 'zhuhai', description: 'zhuhai_description' })
 export class ZhuHai extends TriggerSkill {
@@ -61,7 +60,7 @@ export class ZhuHai extends TriggerSkill {
       const cardUseEvent = {
         fromId: response.fromId,
         cardId: response.cardId,
-        targetGroup: new TargetGroupSet(response.toIds!),
+        targetGroup: [response.toIds!],
         triggeredBySkills: [this.Name],
       };
 

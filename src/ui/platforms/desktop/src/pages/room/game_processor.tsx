@@ -15,9 +15,9 @@ import { GameCommonRules } from 'core/game/game_rules';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
-import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { System } from 'core/shares/libs/system';
+import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { SkillType } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -555,8 +555,9 @@ export class GameClientProcessor {
       this.audioService.playEquipAudio();
     }
 
-    const targetGroup = content.targetGroup && new TargetGroupSet(...content.targetGroup.targets);
-    const tos = targetGroup?.getRealTargetIds().map(id => this.store.room.getPlayerById(id)) as Player[];
+    const tos = TargetGroupUtil.getRealTargets(content.targetGroup)?.map(id =>
+      this.store.room.getPlayerById(id),
+    ) as Player[];
 
     await this.store.room.useCard(content);
     this.presenter.showCards(

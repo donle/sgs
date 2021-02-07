@@ -9,7 +9,6 @@ import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 
 @CommonSkill({ name: 'liyu', description: 'liyu_description' })
 export class LiYu extends TriggerSkill {
@@ -122,7 +121,7 @@ export class LiYu extends TriggerSkill {
             cardName: 'duel',
             bySkill: this.Name,
           }).Id,
-          targetGroup: new TargetGroupSet(choosePlayerResponse.selectedPlayers!),
+          targetGroup: [choosePlayerResponse.selectedPlayers!],
         };
 
         await room.useCard(cardUseEvent);

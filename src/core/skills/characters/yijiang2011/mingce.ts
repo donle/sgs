@@ -6,7 +6,6 @@ import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
@@ -130,7 +129,7 @@ export class MingCe extends ActiveSkill {
       const slashUseEvent = {
         fromId: first,
         cardId: slash,
-        targetGroup: new TargetGroupSet([second]),
+        targetGroup: [[second]],
       };
 
       await room.useCard(slashUseEvent);

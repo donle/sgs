@@ -48,7 +48,7 @@ export class LeBuSiShuSkill extends ActiveSkill {
     await room.moveCards({
       fromId: event.fromId,
       movingCards: [{ card: event.cardId, fromArea: CardMoveArea.HandArea }],
-      toId: event.targetGroup!.getRealTargetIds()[0],
+      toId: event.targetGroup![0][0],
       toArea: CardMoveArea.JudgeArea,
       moveReason: CardMoveReason.CardUse,
     });

@@ -10,7 +10,6 @@ import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { ShadowSkill } from 'core/skills/skill_wrappers';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
-import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 
 @CommonSkill({ name: 'chunlao', description: 'chunlao_description' })
 export class ChunLao extends TriggerSkill {
@@ -144,7 +143,7 @@ export class ChunLaoShadow extends TriggerSkill {
       await room.useCard({
         fromId: playerDyingEvent.dying,
         cardId: alcohol.Id,
-        targetGroup: new TargetGroupSet([playerDyingEvent.dying]),
+        targetGroup: [[playerDyingEvent.dying]],
       });
 
       if (chun.Name === 'thunder_slash') {

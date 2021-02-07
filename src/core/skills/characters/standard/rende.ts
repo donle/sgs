@@ -9,7 +9,6 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
-import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 
 @CommonSkill({ name: 'rende', description: 'rende_description' })
 export class Rende extends ActiveSkill {
@@ -132,7 +131,7 @@ export class Rende extends ActiveSkill {
               cardName: response.selectedOption,
               bySkill: this.Name,
             }).Id,
-            targetGroup: new TargetGroupSet(choosePlayerResponse.selectedPlayers),
+            targetGroup: [choosePlayerResponse.selectedPlayers],
           };
 
           await room.useCard(slashUseEvent);

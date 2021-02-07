@@ -12,6 +12,7 @@ import { AllStage, PlayerPhase, StagePriority } from 'core/game/stage_processor'
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 export * from './skill_wrappers';
 export * from './skill_hooks';
@@ -91,7 +92,9 @@ export abstract class Skill {
       return skillUseEvent.toIds ? [{ from: event.fromId, tos: skillUseEvent.toIds }] : [];
     }
     const cardUseEvent = event as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
-    return cardUseEvent.targetGroup ? [{ from: event.fromId, tos: cardUseEvent.targetGroup.getRealTargetIds() }] : [];
+    return cardUseEvent.targetGroup
+      ? [{ from: event.fromId, tos: TargetGroupUtil.getRealTargets(cardUseEvent.targetGroup) }]
+      : [];
   }
 
   public targetGroupDispatcher(targetIds: PlayerId[]) {

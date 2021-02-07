@@ -2,7 +2,6 @@ import { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, SelfTargetSkill } from 'core/skills/skill';
 import { ExtralCardSkillProperty } from '../interface/extral_property';
@@ -34,7 +33,7 @@ export class WuZhongShengYouSkill extends ActiveSkill implements ExtralCardSkill
     return false;
   }
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    event.targetGroup = new TargetGroupSet([event.fromId]);
+    event.targetGroup = [[event.fromId]];
     return true;
   }
 

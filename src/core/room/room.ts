@@ -554,6 +554,17 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     }
   }
 
+  public sortByPlayersPosition<T>(array: T[], extractor: (el: T) => Player) {
+    array.sort((el1, el2) => {
+      const p1 = extractor(el1);
+      const p2 = extractor(el2);
+      const pos1 = (p1.Position - this.CurrentPlayer.Position + this.Players.length) % this.Players.length;
+      const pos2 = (p2.Position - this.CurrentPlayer.Position + this.Players.length) % this.Players.length;
+
+      return pos1 < pos2 ? 1 : -1;
+    });
+  }
+
   public transformCard(
     player: Player,
     cardIds: CardId[],

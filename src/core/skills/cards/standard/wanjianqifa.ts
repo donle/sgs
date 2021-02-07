@@ -5,7 +5,6 @@ import { DamageType } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -47,7 +46,7 @@ export class WanJianQiFaSkill extends ActiveSkill implements ExtralCardSkillProp
     const others = room.getOtherPlayers(event.fromId);
     const from = room.getPlayerById(event.fromId);
     const groups = others.filter(player => from.canUseCardTo(room, event.cardId, player.Id)).map(player => [player.Id]);
-    event.targetGroup = new TargetGroupSet(...groups);
+    event.targetGroup = [...groups];
     return true;
   }
 

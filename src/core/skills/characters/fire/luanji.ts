@@ -8,6 +8,7 @@ import { AllStage, CardUseStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { CommonSkill, ShadowSkill, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'luanji', description: 'luanji_description' })
@@ -75,7 +76,7 @@ export class LuanJiShadow extends TriggerSkill {
       event.targetGroup !== undefined &&
       event.targetGroup.length > 1;
     if (canUse) {
-      room.setFlag<string[]>(owner.Id, this.GeneralName, event.targetGroup!.getRealTargetIds());
+      room.setFlag<string[]>(owner.Id, this.GeneralName, TargetGroupUtil.getRealTargets(event.targetGroup));
     }
 
     return canUse;
@@ -97,7 +98,7 @@ export class LuanJiShadow extends TriggerSkill {
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { triggeredOnEvent, toIds } = event;
     const cardUseEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
-    cardUseEvent.targetGroup?.remove(toIds![0]);
+    TargetGroupUtil.removeTarget(cardUseEvent.targetGroup!, toIds![0]);
 
     return true;
   }
