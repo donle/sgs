@@ -5,9 +5,10 @@ import { Room } from 'core/room/room';
 import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @CommonSkill({ name: 'taoyuanjieyi', description: 'taoyuanjieyi_description' })
-export class TaoYuanJieYiSkill extends ActiveSkill {
+export class TaoYuanJieYiSkill extends ActiveSkill implements ExtralCardSkillProperty {
   public canUse(room: Room, owner: Player, containerCard?: CardId) {
     if (containerCard) {
       for (const target of room.getAlivePlayersFrom()) {
@@ -30,6 +31,11 @@ export class TaoYuanJieYiSkill extends ActiveSkill {
   public isAvailableCard(): boolean {
     return false;
   }
+
+  public isCardAvailableTarget(): boolean {
+    return true;
+  }
+
   public isAvailableTarget(): boolean {
     return false;
   }

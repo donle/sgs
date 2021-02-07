@@ -5,9 +5,10 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @CommonSkill({ name: 'shunshouqianyang', description: 'shunshouqianyang_description' })
-export class ShunShouQianYangSkill extends ActiveSkill {
+export class ShunShouQianYangSkill extends ActiveSkill implements ExtralCardSkillProperty {
   public canUse() {
     return true;
   }
@@ -22,6 +23,25 @@ export class ShunShouQianYangSkill extends ActiveSkill {
   public isAvailableCard(): boolean {
     return false;
   }
+
+  public isCardAvailableTarget(
+    owner: PlayerId,
+    room: Room,
+    target: PlayerId,
+    selectedCards: CardId[],
+    selectedTargets: PlayerId[],
+    containerCard: CardId,
+  ) {
+    const from = room.getPlayerById(owner);
+    const to = room.getPlayerById(target);
+
+    return (
+      target !== owner &&
+      room.getPlayerById(owner).canUseCardTo(room, containerCard, target) &&
+      to.getCardIds().length > 0
+    );
+  }
+
   public isAvailableTarget(
     owner: PlayerId,
     room: Room,
@@ -34,9 +54,7 @@ export class ShunShouQianYangSkill extends ActiveSkill {
     const to = room.getPlayerById(target);
 
     return (
-      target !== owner &&
-      room.getPlayerById(owner).canUseCardTo(room, containerCard, target) &&
-      to.getCardIds().length > 0 &&
+      this.isCardAvailableTarget(owner, room, target, selectedCards, selectedTargets, containerCard) &&
       room.cardUseDistanceBetween(room, containerCard, from, to) <=
         Sanguosha.getCardById(containerCard).EffectUseDistance
     );

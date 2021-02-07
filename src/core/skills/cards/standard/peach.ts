@@ -1,15 +1,17 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
+import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, SelfTargetSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @CommonSkill({ name: 'peach', description: 'peach_skill_description' })
 @SelfTargetSkill
-export class PeachSkill extends ActiveSkill {
+export class PeachSkill extends ActiveSkill implements ExtralCardSkillProperty {
   canUse(room: Room, owner: Player) {
     return owner.Hp < owner.MaxHp;
   }
@@ -25,6 +27,12 @@ export class PeachSkill extends ActiveSkill {
   isAvailableCard() {
     return false;
   }
+
+  isCardAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
+    const player = room.getPlayerById(target);
+    return owner !== target && player.Hp < player.MaxHp;
+  }
+
   isAvailableTarget() {
     return false;
   }

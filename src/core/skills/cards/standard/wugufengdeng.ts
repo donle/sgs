@@ -50,7 +50,8 @@ export class WuGuFengDengSkill extends ActiveSkill {
   }
 
   public async beforeEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
-    event.toCardIds = room.getCards(room.AlivePlayers.length, 'top');
+    const showCardNum = event.allTargets?.length || 0;
+    event.toCardIds = room.getCards(showCardNum, 'top');
     room.addProcessingCards(event.cardId.toString(), ...event.toCardIds);
     EventPacker.addMiddleware(
       {

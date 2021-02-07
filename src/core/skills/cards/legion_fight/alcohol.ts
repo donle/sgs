@@ -2,13 +2,15 @@ import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
+import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
-import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @CommonSkill({ name: 'alcohol', description: 'alcohol_description' })
-export class AlcoholSkill extends ActiveSkill {
+export class AlcoholSkill extends ActiveSkill implements ExtralCardSkillProperty {
   private readonly recoverTag = 'recover';
 
   public canUse(room: Room, owner: Player) {
@@ -29,6 +31,16 @@ export class AlcoholSkill extends ActiveSkill {
 
   public numberOfTargets() {
     return 0;
+  }
+
+  public isCardAvailableTarget(owner: PlayerId, room: Room, target: PlayerId) {
+    const self = room.getPlayerById(owner);
+    const player = room.getPlayerById(target);
+    let isAvailable = true;
+    if (self.Dying) {
+      isAvailable = player.Hp < player.MaxHp;
+    }
+    return owner !== target && isAvailable;
   }
 
   isAvailableTarget() {
@@ -56,7 +68,7 @@ export class AlcoholSkill extends ActiveSkill {
       });
     } else {
       room.getPlayerById(toId).getDrunk();
-      room.broadcast(GameEventIdentifiers.DrunkEvent, { toId: event.fromId!, drunk: true });
+      room.broadcast(GameEventIdentifiers.DrunkEvent, { toId, drunk: true });
     }
     return true;
   }

@@ -9,9 +9,10 @@ import { TargetGroupSet } from 'core/shares/libs/data structure/target_group';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @CommonSkill({ name: 'nanmanruqing', description: 'nanmanruqing_description' })
-export class NanManRuQingSkill extends ActiveSkill {
+export class NanManRuQingSkill extends ActiveSkill implements ExtralCardSkillProperty {
   public static readonly NewSource = 'new_source';
 
   public canUse(room: Room, owner: Player, containerCard?: CardId) {
@@ -33,6 +34,11 @@ export class NanManRuQingSkill extends ActiveSkill {
   public cardFilter(): boolean {
     return true;
   }
+
+  public isCardAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
+    return target !== owner;
+  }
+
   public isAvailableCard(): boolean {
     return false;
   }
