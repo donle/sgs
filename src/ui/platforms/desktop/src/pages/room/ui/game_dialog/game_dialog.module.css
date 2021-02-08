@@ -13,15 +13,14 @@
     flex-direction: column;
     height: 100%;
     position: relative;
-    height: calc(100% - 32px);
 }
 
 .gameLogDialog {
     overflow: auto;
-    flex: auto;
     padding: 4px 0;
     display: flex;
     flex-direction: column;
+    height: 100%;
 }
 
 .gameDialog::-webkit-scrollbar,
@@ -35,34 +34,20 @@
     padding: 4px 0;
     overflow: auto;
 }
-.inputLabel {
-    width: 100%;
-    display: flex;
-    align-items: center;
-}
-.chatInput {
-    flex: auto;
-    background: transparent;
-    border: 1px solid grey;
-    margin-right: 4px;
-}
-.sendButton {
-    height: 100%;
-}
 .messageLine {
     margin: 0;
     margin-bottom: 4px;
-    color: #fbd000;
+    color: #dcad00;
     line-height: 16px;
 }
 .dragBorder {
     height: 1px;
     border-top: 1px dashed grey;
     cursor: row-resize;
-    position: absolute;
-    left: 0;
     width: calc(100% - 16px);
     margin-left: 8px;
+    padding-top: 4px;
+    padding-bottom: 4px;
 }
 .dragBorder::before {
     position: absolute;

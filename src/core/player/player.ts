@@ -36,7 +36,7 @@ type SkillStringType =
   | 'common'
   | 'limit'
   | 'awaken'
-  | 'complusory'
+  | 'compulsory'
   | 'active'
   | 'filter'
   | 'globalFilter'
@@ -532,7 +532,7 @@ export abstract class Player implements PlayerInfo {
         return skills.filter(skill => skill instanceof TriggerSkill) as T[];
       case 'breaker':
         return skills.filter(skill => skill instanceof RulesBreakerSkill) as T[];
-      case 'complusory':
+      case 'compulsory':
         return skills.filter(skill => skill.SkillType === SkillType.Compulsory) as T[];
       case 'awaken':
         return skills.filter(skill => skill.SkillType === SkillType.Awaken) as T[];
@@ -575,7 +575,7 @@ export abstract class Player implements PlayerInfo {
         return skills.filter(skill => skill instanceof RulesBreakerSkill) as T[];
       case 'transform':
         return skills.filter(skill => skill instanceof TransformSkill) as T[];
-      case 'complusory':
+      case 'compulsory':
         return skills.filter(skill => skill.SkillType === SkillType.Compulsory) as T[];
       case 'awaken':
         return skills.filter(skill => skill.SkillType === SkillType.Awaken) as T[];

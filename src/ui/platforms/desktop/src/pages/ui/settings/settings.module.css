@@ -4,12 +4,13 @@
 .settings {
     padding: calc(gridLine * 4);
     font-family: XinWeiFont;
-    min-width: calc(gridLine * 50);
+    min-width: calc(gridLine * 60);
     min-height: calc(gridLine * 30);
     color: white;
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    font-size: 14px;
 }
 
 .background {
@@ -21,7 +22,12 @@
     height: 100%;
 }
 
-.mainVolume, .gameVolume {
+.manuallyInput {
+    display: flex;
+    justify-content: space-between;
+}
+.mainVolume,
+.gameVolume {
     margin-bottom: calc(gridLine * 2);
 }
 
@@ -37,7 +43,6 @@
     padding: gridLine 0;
     display: flex;
     flex-direction: column;
-    width: 100%;
 }
 
 .inputLabelText {
@@ -61,5 +66,5 @@
     justify-content: center;
 }
 .confirm {
-  align-self: flex-end;
+    align-self: flex-end;
 }

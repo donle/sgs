@@ -1,0 +1,65 @@
+@value gridLine from '../../../../ui/metrics/metrics.css';
+
+.chat {
+    display: flex;
+    flex: auto;
+    flex-direction: column;
+}
+.inputLabel {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+.chatInput {
+    flex: auto;
+    background: transparent;
+    border: 1px solid grey;
+    margin-right: 4px;
+}
+.sendButton {
+    height: 100%;
+}
+
+.messageDialog {
+    display: flex;
+    flex-direction: column;
+    padding: 4px 0;
+    overflow: auto;
+}
+.messageLine {
+    margin: 0;
+    margin-bottom: 4px;
+    color: #dcad00;
+    line-height: 16px;
+}
+.tabs {
+    display: flex;
+    height: calc(gridLine * 3);
+}
+.tab {
+    line-height: calc(gridLine * 3);
+    width: calc(gridLine * 5);
+    text-align: center;
+    color: #dcad00;
+    border-radius: 8px 8px 0 0;
+    border: 1px solid grey;
+    font-size: 14px;
+    position: relative;
+}
+.tab.new::before {
+    content: '';
+    height: 8px;
+    width: 8px;
+    background: red;
+    position: absolute;
+    border-radius: 50%;
+    right: 0;
+}
+.tab.selected {
+    font-weight: 700;
+    border-bottom: 0;
+}
+.spacer {
+    flex: auto;
+    border-bottom: 1px solid grey;
+}

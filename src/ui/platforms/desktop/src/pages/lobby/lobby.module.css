@@ -9,6 +9,12 @@
     height: 100vh;
 }
 
+.signalBar {
+    position: absolute;
+    top: gridLine;
+    right: gridLine;
+}
+
 .background {
     position: fixed;
     align-self: center;
@@ -193,9 +199,6 @@
     justify-content: flex-end;
 }
 
-.chatInfo {
-}
-
 .systemButtons {
     margin-top: calc(gridLine * 4);
     display: flex;
@@ -233,6 +236,16 @@
     position: absolute;
     right: calc(gridLine * 6);
     top: calc(gridLine * 3.5);
+}
+
+.chatSection {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: calc(gridLine * 40);
+    height: calc(gridLine * 25);
+    z-index: 9;
+    animation: bottomSideIn 2.5s 1;
 }
 
 .version {

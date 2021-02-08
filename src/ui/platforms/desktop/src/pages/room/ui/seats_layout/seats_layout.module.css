@@ -11,6 +11,7 @@
     justify-content: space-evenly;
     min-width: 200px;
     align-items: center;
+    z-index: 2;
 }
 
 .central {
@@ -24,6 +25,7 @@
     justify-content: space-evenly;
     align-items: center;
     padding-top: 16px;
+    z-index: 2;
 }
 
 .gamePad {
@@ -32,4 +34,5 @@
     flex-direction: column;
     flex: auto;
     justify-content: center;
+    z-index: 0;
 }

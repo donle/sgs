@@ -329,7 +329,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.AskForChoosingPlayerEvent]: {
     players: PlayerId[];
     toId: PlayerId;
-    requiredAmount: number | number[];
+    requiredAmount: number | [number, number];
     conversation: string | PatchedTranslationObject;
   };
   [GameEventIdentifiers.AskForPlaceCardsInDileEvent]: {
@@ -436,6 +436,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.UpgradeSideEffectSkillsEvent]: {
     sideEffectSkillApplier: System.SideEffectSkillApplierEnum;
     skillName: string | undefined;
+    sourceId?: PlayerId | undefined;
   };
 }
 

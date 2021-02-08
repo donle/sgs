@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { Character } from 'core/characters/character';
+import { Character, CharacterNationality } from 'core/characters/character';
 import * as React from 'react';
 import styles from './hp.module.css';
 import { CharaterMagatama } from './magatama/character_magatama';
@@ -54,30 +54,25 @@ export const CharacterHp = (props: { character: Character; className?: string })
   const { character, className } = props;
 
   const getMagatama = () => {
-    const magatamas: JSX.Element[] = [];
-    for (let i = 0; i < character.Hp; i++) {
-      magatamas.push(
-        <CharaterMagatama
-          key={`${i}-maxhp-${character.Id}`}
-          className={styles.characterMagatama}
-          isLord={character.isLord()}
-          nationality={character.Nationality}
-        />,
-      );
-    }
-    for (let i = 0; i < character.MaxHp - character.Hp; i++) {
-      magatamas.push(
-        <CharaterMagatama
-          key={`${i}-${character.Id}`}
-          className={styles.characterMagatama}
-          isLord={character.isLord()}
-          nationality={character.Nationality}
-          emptyHp={true}
-        />,
-      );
-    }
+    const hp = character.Hp;
+    const maxHp = character.MaxHp || hp;
 
-    return magatamas;
+    const className = classNames(styles.textHp, {
+      [styles.lord]: character.isLord(),
+      [styles.wei]: character.Nationality === CharacterNationality.Wei,
+      [styles.shu]: character.Nationality === CharacterNationality.Shu,
+      [styles.wu]: character.Nationality === CharacterNationality.Wu,
+      [styles.qun]: character.Nationality === CharacterNationality.Qun,
+      [styles.god]: character.Nationality === CharacterNationality.God,
+    });
+    return (
+      <React.Fragment>
+        <CharaterMagatama nationality={character.isLord() ? CharacterNationality.God : character.Nationality} />
+        <span className={className}>{hp}</span>
+        <span className={className}>/</span>
+        <span className={className}>{maxHp}</span>
+      </React.Fragment>
+    );
   };
 
   return <div className={classNames(styles.characterHpLabel, className)}>{getMagatama()}</div>;

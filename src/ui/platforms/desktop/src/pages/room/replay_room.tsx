@@ -11,6 +11,7 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { SettingsDialog } from 'pages/ui/settings/settings';
 import * as React from 'react';
+import { ConnectionService } from 'services/connection_service/connection_service';
 import { PagePropsWithConfig } from 'types/page_props';
 import { ReplayDataType } from 'types/replay_props';
 import { installAudioPlayerService } from 'ui/audio/install';
@@ -33,6 +34,7 @@ export class ReplayRoomPage extends React.Component<
     imageLoader: ImageLoader;
     audioLoader: AudioLoader;
     electronLoader: ElectronLoader;
+    connectionService: ConnectionService;
   }>
 > {
   private presenter: RoomPresenter;
@@ -80,6 +82,7 @@ export class ReplayRoomPage extends React.Component<
       imageLoader: ImageLoader;
       audioLoader: AudioLoader;
       electronLoader: ElectronLoader;
+      connectionService: ConnectionService;
     }>,
   ) {
     super(props);
@@ -281,6 +284,7 @@ export class ReplayRoomPage extends React.Component<
               translator={this.props.translator}
               roomName={this.store.room.getRoomInfo().name}
               className={styles.roomBanner}
+              connectionService={this.props.connectionService}
               onClickSettings={this.onClickSettings}
             />
             <div className={styles.mainBoard}>
@@ -299,6 +303,7 @@ export class ReplayRoomPage extends React.Component<
                   presenter={this.presenter}
                   translator={this.props.translator}
                   replayMode={true}
+                  connectionService={this.props.connectionService}
                 />
               </div>
             </div>

@@ -3,7 +3,7 @@ import { AudioLoader } from 'audio_loader/audio_loader';
 import classNames from 'classnames';
 import { Sanguosha } from 'core/game/engine';
 import { GameCardExtensions } from 'core/game/game_props';
-import { LobbySocketEvent, LobbySocketEventPicker, RoomInfo } from 'core/shares/types/server_types';
+import { RoomInfo } from 'core/shares/types/server_types';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronLoader } from 'electron_loader/electron_loader';
@@ -13,15 +13,17 @@ import * as mobxReact from 'mobx-react';
 import { SettingsDialog } from 'pages/ui/settings/settings';
 import { LobbyButton } from 'props/game_props';
 import * as React from 'react';
-import SocketIOClient from 'socket.io-client';
+import { ConnectionService } from 'services/connection_service/connection_service';
 import { PagePropsWithConfig } from 'types/page_props';
 import { installAudioPlayerService } from 'ui/audio/install';
 import { Button } from 'ui/button/button';
 import { LinkButton } from 'ui/button/link_button';
+import { SignalBar } from 'ui/signal_bar/signal_bar';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import lockerImage from './images/locked.png';
 import styles from './lobby.module.css';
 import { AcknowledgeDialog } from './ui/acknowledge_dialog/acknowledge_dialog';
+import { Chat } from './ui/chat/chat';
 import { CreateRoomButton } from './ui/create_room_button/create_room_button';
 import { CreateRoomDialog, TemporaryRoomCreationInfo } from './ui/create_room_dialog/create_room_dialog';
 import { EnterPasscodeDialog } from './ui/enter_passcode_dialog/enter_passcode_dialog';
@@ -32,6 +34,7 @@ type LobbyProps = PagePropsWithConfig<{
   imageLoader: ImageLoader;
   audioLoader: AudioLoader;
   electronLoader: ElectronLoader;
+  connectionService: ConnectionService;
 }>;
 
 @mobxReact.observer
@@ -69,10 +72,6 @@ export class Lobby extends React.Component<LobbyProps> {
   @mobx.observable.ref
   private gameLog: string;
 
-  private socket = SocketIOClient(
-    `${this.props.config.host.protocol}://${this.props.config.host.host}:${this.props.config.host.port}/lobby`,
-  );
-
   private backgroundImage = this.props.imageLoader.getLobbyBackgroundImage().src!;
   private illustrationImage = this.props.imageLoader.getRandomLobbyIllustration().src!;
   private gameLogBoardImage = this.props.imageLoader.getGameLogBoradImage().src!;
@@ -81,31 +80,6 @@ export class Lobby extends React.Component<LobbyProps> {
   private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
 
   private currentInteractiveRoomInfo: RoomInfo;
-
-  constructor(props: LobbyProps) {
-    super(props);
-
-    this.socket
-      .on(
-        LobbySocketEvent.VersionMismatch.toString(),
-        mobx.action((matched: LobbySocketEventPicker<LobbySocketEvent.VersionMismatch>) => {
-          this.unmatchedCoreVersion = !matched;
-        }),
-      )
-      .on(
-        LobbySocketEvent.QueryRoomList.toString(),
-        mobx.action((content: LobbySocketEventPicker<LobbySocketEvent.QueryRoomList>) => {
-          this.roomList = content;
-        }),
-      )
-      .on(
-        LobbySocketEvent.GameCreated.toString(),
-        mobx.action((event: LobbySocketEventPicker<LobbySocketEvent.GameCreated>) => {
-          const { roomId, roomInfo } = event;
-          this.props.history.push(`/room/${roomId}`, { gameMode: roomInfo.gameMode });
-        }),
-      );
-  }
 
   private readonly settings = {
     onVolumeChange: mobx.action((volume: number) => {
@@ -144,10 +118,10 @@ export class Lobby extends React.Component<LobbyProps> {
 
   @mobx.action
   UNSAFE_componentWillMount() {
-    this.socket.emit(LobbySocketEvent.QueryRoomList.toString());
-    this.socket.emit(LobbySocketEvent.QueryVersion.toString(), {
-      version: Sanguosha.Version,
-    });
+    this.props.connectionService.Lobby.getRoomList().then(mobx.action(content => (this.roomList = content)));
+    this.props.connectionService.Lobby.checkCoreVersion().then(
+      mobx.action(matched => (this.unmatchedCoreVersion = !matched)),
+    );
   }
 
   @mobx.action
@@ -164,7 +138,7 @@ export class Lobby extends React.Component<LobbyProps> {
       return;
     }
 
-    this.socket.emit(LobbySocketEvent.QueryRoomList.toString());
+    this.props.connectionService.Lobby.getRoomList().then(mobx.action(content => (this.roomList = content)));
   };
 
   unmatchedView() {
@@ -177,17 +151,31 @@ export class Lobby extends React.Component<LobbyProps> {
       this.openPasscodeEnterDialog = true;
       this.currentInteractiveRoomInfo = roomInfo;
     } else {
-      this.props.history.push(`/room/${roomInfo.id}`);
+      this.props.connectionService.Lobby.getRoomList().then(list => {
+        if (list.find(room => room.id === roomInfo.id) !== undefined) {
+          this.props.history.push(`/room/${roomInfo.id}`);
+        } else {
+          //TODO: add error popout
+          mobx.runInAction(() => {
+            this.roomList = list;
+          });
+        }
+      });
     }
   };
 
   @mobx.action
   private readonly onRoomCreated = (roomInfo: TemporaryRoomCreationInfo) => {
     this.openRoomCreationDialog = false;
-    this.socket.emit(LobbySocketEvent.GameCreated.toString(), {
+    this.props.connectionService.Lobby.createGame({
       cardExtensions: [GameCardExtensions.Standard, GameCardExtensions.LegionFight],
       ...roomInfo,
-    });
+    }).then(
+      mobx.action(event => {
+        const { roomId, roomInfo } = event;
+        this.props.history.push(`/room/${roomId}`, { gameMode: roomInfo.gameMode });
+      }),
+    );
   };
 
   @mobx.action
@@ -225,7 +213,16 @@ export class Lobby extends React.Component<LobbyProps> {
     if (this.currentInteractiveRoomInfo && passcode && this.currentInteractiveRoomInfo.passcode === passcode) {
       this.openPasscodeEnterDialog = false;
       this.showPasscodeError = false;
-      this.props.history.push(`/room/${this.currentInteractiveRoomInfo.id}`);
+      this.props.connectionService.Lobby.getRoomList().then(list => {
+        if (list.find(room => room.id === this.currentInteractiveRoomInfo.id) !== undefined) {
+          this.props.history.push(`/room/${this.currentInteractiveRoomInfo.id}`);
+        } else {
+          //TODO: add error popout
+          mobx.runInAction(() => {
+            this.roomList = list;
+          });
+        }
+      });
     } else {
       this.showPasscodeError = true;
     }
@@ -240,7 +237,7 @@ export class Lobby extends React.Component<LobbyProps> {
   @mobx.action
   private readonly onOpenFeedback = () => {
     this.openFeedback = true;
-  }
+  };
 
   @mobx.action
   private readonly onFeedbackDialogClose = () => {
@@ -269,6 +266,7 @@ export class Lobby extends React.Component<LobbyProps> {
   render() {
     return (
       <div className={styles.lobby}>
+        <SignalBar className={styles.signalBar} connectionService={this.props.connectionService} />
         <img src={this.backgroundImage} alt="" className={styles.background} />
         <div className={styles.board}>
           <div className={styles.functionBoard}>
@@ -322,7 +320,11 @@ export class Lobby extends React.Component<LobbyProps> {
                     <span className={styles.roomActions}>
                       <LinkButton
                         onClick={this.enterRoom(roomInfo)}
-                        disabled={roomInfo.activePlayers === roomInfo.totalPlayers || !this.username}
+                        disabled={
+                          roomInfo.activePlayers === roomInfo.totalPlayers ||
+                          !this.username ||
+                          roomInfo.status === 'playing'
+                        }
                       >
                         {this.props.translator.tr('Join')}
                       </LinkButton>
@@ -369,7 +371,7 @@ export class Lobby extends React.Component<LobbyProps> {
                 alt=""
               />
             </button>
-            <button className={styles.systemButton}  onClick={this.onOpenFeedback}>
+            <button className={styles.systemButton} onClick={this.onOpenFeedback}>
               <img
                 {...this.props.imageLoader.getLobbyButtonImage(LobbyButton.Feedback)}
                 className={styles.lobbyButtonIcon}
@@ -384,6 +386,12 @@ export class Lobby extends React.Component<LobbyProps> {
               />
             </button>
           </div>
+          <Chat
+            className={styles.chatSection}
+            username={this.props.electronLoader.getData('username')}
+            translator={this.props.translator}
+            connectionService={this.props.connectionService}
+          />
         </div>
         <div className={styles.chatInfo}></div>
         {this.openRoomCreationDialog && (

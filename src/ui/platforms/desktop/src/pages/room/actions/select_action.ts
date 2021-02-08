@@ -21,9 +21,9 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
     super(playerId, store, presenter, translator);
   }
 
-  onSelectPlayer(requiredAmount: number | number[], scopedTargets: PlayerId[]) {
+  onSelectPlayer(requiredAmount: number | [number, number], scopedTargets: PlayerId[]) {
     return new Promise<PlayerId[] | undefined>(resolve => {
-      let requiredAmounts: number[];
+      let requiredAmounts: [number, number];
       this.delightItems();
       if (!EventPacker.isUncancellabelEvent(this.event)) {
         this.presenter.enableActionButton('cancel');
@@ -36,9 +36,9 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
       }
 
       if (requiredAmount instanceof Array) {
-        requiredAmounts = requiredAmount.sort((a, b) => b - a);
+        requiredAmounts = requiredAmount.sort((a, b) => a - b);
       } else {
-        requiredAmounts = [requiredAmount];
+        requiredAmounts = [requiredAmount, requiredAmount];
       }
 
       const selectedPlayers: PlayerId[] = scopedTargets.length === 1 ? scopedTargets.slice() : [];
@@ -48,11 +48,11 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
 
       this.presenter.setupPlayersSelectionMatcher(
         (player: Player) =>
-          (scopedTargets.includes(player.Id) && selectedPlayers.length < requiredAmounts[0]) ||
+          (scopedTargets.includes(player.Id) && selectedPlayers.length < requiredAmounts[1]) ||
           selectedPlayers.includes(player.Id),
       );
 
-      if (requiredAmounts.includes(selectedPlayers.length)) {
+      if (requiredAmounts[0] <= selectedPlayers.length && requiredAmounts[1] >= selectedPlayers.length) {
         this.presenter.enableActionButton('confirm');
       }
 
@@ -69,7 +69,7 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
           }
         }
 
-        if (requiredAmounts.includes(selectedPlayers.length)) {
+        if (requiredAmounts[0] <= selectedPlayers.length && requiredAmounts[1] >= selectedPlayers.length) {
           this.presenter.enableActionButton('confirm');
         } else {
           this.presenter.disableActionButton('confirm');

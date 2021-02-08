@@ -9,7 +9,7 @@ import {
 } from 'core/event/event';
 import { Socket } from 'core/network/socket';
 import { ServerPlayer } from 'core/player/player.server';
-import { PlayerId } from 'core/player/player_props';
+import { PlayerId, PlayerStatus } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
@@ -27,7 +27,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     };
   } = {} as any;
 
-  private playerReconnectTimer: { [K in string]: NodeJS.Timer; } = {};
+  private playerReconnectTimer: { [K in string]: NodeJS.Timer } = {};
   private mapSocketIdToPlayerId: { [K in string]: string } = {};
   private lastResponsiveEvent:
     | {
@@ -123,12 +123,11 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
           return;
         }
 
-        this.delayToDisconnect(playerId);
-
         const room = this.room as ServerRoom;
         const player = room.getPlayerById(playerId);
         if (player.isOnline()) {
           player.setOffline();
+          this.delayToDisconnect(playerId);
           const playerLeaveEvent: ServerEventFinder<GameEventIdentifiers.PlayerLeaveEvent> = {
             playerId,
             translationsMessage: TranslationPack.translationJsonPatcher(
@@ -136,7 +135,10 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
               room.getPlayerById(playerId).Name,
             ).extract(),
           };
-          this.broadcast(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent);
+          this.broadcast(
+            GameEventIdentifiers.PlayerLeaveEvent,
+            EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent),
+          );
         } else {
           const playerLeaveEvent: ServerEventFinder<GameEventIdentifiers.PlayerLeaveEvent> = {
             playerId,
@@ -146,11 +148,14 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
               room.getPlayerById(playerId).Name,
             ).extract(),
           };
-          this.broadcast(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent);
+          this.broadcast(
+            GameEventIdentifiers.PlayerLeaveEvent,
+            EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent),
+          );
         }
 
-        if (room.Players.every(player => !player.isOnline())) {
-          this.room?.close();
+        if (room.Players.every(player => !player.isOnline()) || room.Players.length === 0) {
+          room.close();
           return;
         }
 
@@ -175,8 +180,20 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
 
   private delayToDisconnect(playerId: PlayerId) {
     this.playerReconnectTimer[playerId] = setTimeout(() => {
+      const playerLeaveEvent: ServerEventFinder<GameEventIdentifiers.PlayerLeaveEvent> = {
+        playerId,
+        quit: true,
+        translationsMessage: TranslationPack.translationJsonPatcher(
+          'player {0} has left the room',
+          this.room!.getPlayerById(playerId).Name,
+        ).extract(),
+      };
+      this.broadcast(
+        GameEventIdentifiers.PlayerLeaveEvent,
+        EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent),
+      );
+      this.room!.getPlayerById(playerId).setOffline(true);
       delete this.mapSocketIdToPlayerId[playerId];
-      this.room!.removePlayer(playerId);
       delete this.playerReconnectTimer[playerId];
     }, 300 * 1000);
   }
@@ -290,7 +307,23 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
   ) {
     const room = this.room as ServerRoom;
     room.getPlayerById(event.playerId).setOffline(true);
-    // this.clientIds = this.clientIds.filter(id => id !== event.playerId);
+    const playerLeaveEvent: ServerEventFinder<GameEventIdentifiers.PlayerLeaveEvent> = {
+      playerId: event.playerId,
+      quit: true,
+      translationsMessage: TranslationPack.translationJsonPatcher(
+        'player {0} has left the room',
+        room.getPlayerById(event.playerId).Name,
+      ).extract(),
+    };
+    this.broadcast(
+      GameEventIdentifiers.PlayerLeaveEvent,
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent),
+    );
+    room.getPlayerById(event.playerId).setOffline(true);
+    if (room.Players.every(player => !player.isOnline()) || room.Players.length === 0) {
+      room.close();
+      return;
+    }
 
     socket.disconnect();
   }

@@ -83,7 +83,7 @@ export class FlatClientCard extends React.PureComponent<FlatClientCardProps> {
           <CardNumberItem className={styles.flatEquipNumber} cardNumber={card.CardNumber} isRed={card.isRed()} />
         </span>
         {this.onTooltipOpened && (
-          <Tooltip position={['left', 'bottom']} className={styles.cardDescription}>
+          <Tooltip position={['right', 'bottom']}>
             <CardDescription translator={translator} card={card} />
           </Tooltip>
         )}

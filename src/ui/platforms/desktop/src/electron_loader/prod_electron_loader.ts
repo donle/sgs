@@ -17,19 +17,23 @@ import { ReplayDataType } from 'types/replay_props';
 import { ElectronLoader } from './electron_loader';
 
 export class ProdElectronLoader extends ElectronLoader {
-  private saveJson: any = {};
+  private saveJson: any = {
+    language: navigator.language,
+  };
   private tempSaveData: any = {};
   private ipcRenderer: IpcRenderer = (window as any).ipcRenderer;
   private whenUpdateallbackFn: Function | undefined;
   private updateTo: string | undefined;
   private updateProgress: number = 0;
   private updateComplete: boolean = false;
+  private resolver: (instance: ProdElectronLoader) => void;
 
   constructor() {
     super();
     this.ipcRenderer.send(GET_ALL_DATA);
     this.ipcRenderer.on(GET_ALL_DATA, (event, data: any) => {
       this.saveJson = data;
+      this.resolver?.(this);
     });
     this.ipcRenderer.on(DO_UPDATE, (evt, process: { nextVersion: string; progress: number; complete?: boolean }) => {
       if (this.whenUpdateallbackFn) {
@@ -42,6 +46,12 @@ export class ProdElectronLoader extends ElectronLoader {
     });
     this.ipcRenderer.on(REQUEST_CORE_VERSION, () => {
       this.ipcRenderer.send(REQUEST_CORE_VERSION, Sanguosha.PlainVersion);
+    });
+  }
+
+  public afterInit(): Promise<ProdElectronLoader> {
+    return new Promise<ProdElectronLoader>(resolve => {
+      this.resolver = resolve;
     });
   }
 

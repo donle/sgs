@@ -442,7 +442,10 @@ export class StandardGameProcessor extends GameProcessor {
       });
       this.currentPhasePlayer.dropCards(judgeCardId);
 
-      await this.onHandleIncomingEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent);
+      await this.onHandleIncomingEvent(
+        GameEventIdentifiers.CardEffectEvent,
+        EventPacker.createIdentifierEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent),
+      );
 
       if (this.toEndPhase === phase) {
         this.toEndPhase = undefined;
@@ -749,13 +752,12 @@ export class StandardGameProcessor extends GameProcessor {
       if (cardUseEvent) {
         await this.room.useCard(cardUseEvent, true);
         if (!EventPacker.isTerminated(cardUseEvent)) {
-          event.isCancelledOut = true;
           await this.room.trigger(event, CardEffectStage.CardEffectCancelledOut);
 
-          event.isCancelledOut ? EventPacker.terminate(event) : EventPacker.recall(event);
+          event.isCancelledOut && EventPacker.terminate(event);
         }
       }
-      EventPacker.isTerminated(event) && card.Skill.onEffectRejected(this.room, event);
+      EventPacker.isTerminated(event) && (await card.Skill.onEffectRejected(this.room, event));
     } else if (card.GeneralName === 'slash') {
       const { toIds, fromId, cardId } = event;
       const targets = Precondition.exists(toIds, 'Unable to get slash target');

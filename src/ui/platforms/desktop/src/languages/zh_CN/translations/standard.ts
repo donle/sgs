@@ -326,20 +326,23 @@ export const skillDescriptions: Word[] = [
     source: 'yaowu_description',
     target: '<b>锁定技</b>，当你受到伤害时，若造成伤害的牌：为红色，伤害来源摸一张牌；不为红色，你摸一张牌。',
   },
-  { source: 'wangzun_description', target: '主公的准备阶段开始时，你可以摸一张牌，并令其本回合内手牌上限-1。' },
+  {
+    source: 'wangzun_description',
+    target: '锁定技，体力值大于你的角色的准备阶段开始时，你摸一张牌，若其为主公，改为你摸两张牌且其本回合手牌上限-1。',
+  },
   {
     source: 'tongji_description',
     target:
-      '<b>锁定技</b>，若你的手牌数大于你的体力值，则攻击范围内含有你的角色使用【杀】，不能指定除你外的角色为目标。',
+      '当其他角色成为【杀】的目标时，若你处于其攻击范围内且你不为此牌的使用者及目标，其可以弃置一张牌，将此【杀】转移给你。',
   },
   {
     source: 'yicong_description',
     target:
-      '<b>锁定技</b>，若你的体力值大于2，你计算与其他角色的距离-1；若你的体力值不大于2，其他角色计算与你的距离+1。',
+      '<b>锁定技</b>，你计算与其他角色的距离-1；若你的体力值不大于2，其他角色计算与你的距离+1。',
   },
   {
     source: 'qiaomeng_description',
-    target: '当你使用黑色【杀】对一名角色造成伤害后，你可弃置其装备区里的一张牌。若此牌为坐骑牌，你获得之。',
+    target: '当你使用【杀】对一名角色造成伤害后，你可弃置其区域内的一张牌。若此牌为坐骑牌，你获得之。',
   },
   { source: 'jijie_description', target: '出牌阶段限一次，你可以观看牌堆底一张牌，然后交给一名角色。' },
   { source: 'jiyuan_description', target: '当一名角色进入濒死状态或你交给一名其他角色牌时，你可以令其摸一张牌。' },
@@ -355,5 +358,17 @@ export const skillDescriptions: Word[] = [
     source: 'jianyan_description',
     target:
       '出牌阶段限一次，你可以声明一种牌的类别或颜色，然后亮出牌堆中第一张符合你声明的牌，并将之交给一名男性角色。',
+  },
+];
+
+export const promptDescriptions: Word[] = [
+  {
+    source: '{0}: do you want to discard 1 card to transfer the target of {1} to {2}',
+    target: '{0}：你可以弃置一张牌将此{1}转移给 {2}',
+  },
+
+  {
+    source: '{0} used skill {1}, transfer the target of {1} to {2}',
+    target: '{0} 使用了技能【{1}】，将{1}的目标转移给 {2}',
   },
 ];

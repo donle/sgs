@@ -37,10 +37,6 @@ export class CardMatcher {
     };
   }
 
-  private static hasName(generalName: string, name: string) {
-    return this.generalNameMaps[generalName] && this.generalNameMaps[generalName].includes(name);
-  }
-
   public static match(matcher: CardMatcherSocketPassenger, card: Card | CardMatcher) {
     Precondition.assert(matcher.tag && matcher.tag === 'card-matcher', 'Invalid card matcher props');
 
@@ -237,7 +233,7 @@ export class CardMatcher {
   }
 
   public toString() {
-    return JSON.stringify(this.match);
+    return JSON.stringify(this.matcher);
   }
 
   public static parse(cardPattern: string) {

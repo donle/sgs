@@ -1,0 +1,62 @@
+@value barLine: 6px;
+@value dyingbackground: #ff5613;
+@value dangerbackground: #e48205;
+@value healthybackground: #1f9824;
+
+.signalBar {
+    display: flex;
+    align-items: flex-end;
+    width: calc(barLine * 4);
+    justify-content: space-between;
+    cursor: pointer;
+    position: relative;
+}
+.text {
+  min-width: inherit;
+}
+.barOne,
+.barTwo,
+.barThree {
+  width: barLine;
+  border: 1px solid #333;
+}
+
+.barOne {
+  height: barLine;
+}
+.barTwo {
+  height: calc(barLine * 2);
+}
+.barThree {
+  height: calc(barLine * 3);
+}
+
+.barOne.strong {
+  background: healthybackground;
+}
+.barOne.medium {
+  background: dangerbackground;
+}
+.barOne.weak {
+  background: dyingbackground;
+}
+
+.barTwo.strong {
+  background: healthybackground;
+}
+.barTwo.medium {
+  background: dangerbackground;
+}
+.barTwo.weak {
+  background: darkgrey;
+}
+
+.barThree.strong {
+  background: healthybackground;
+}
+.barThree.medium {
+  background: darkgrey;
+}
+.barThree.weak {
+  background: darkgrey;
+}

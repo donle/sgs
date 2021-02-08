@@ -217,7 +217,7 @@
     min-width: calc(gridLine * 6);
     font-weight: 600;
     font-size: calc(gridLine * 2);
-    color: #fbd000;
+    color: #dcad00;
 }
 
 .playerTags {

@@ -12,7 +12,7 @@ export async function getElectronLoader(flavor: ClientFlavor): Promise<ElectronL
       return new DevElectronLoader();
     case ClientFlavor.Desktop:
       const { ProdElectronLoader } = await import('./prod_electron_loader');
-      return new ProdElectronLoader();
+      return await new ProdElectronLoader().afterInit();
     default:
       throw Precondition.UnreachableError(flavor);
   }

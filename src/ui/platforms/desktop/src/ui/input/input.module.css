@@ -6,7 +6,7 @@
     min-height: calc(gridLine * 4);
     padding: calc(gridLine / 2);
     font-size: 14px;
-    color: #fbd000;
+    color: #dcad00;
     outline: none;
 }
 

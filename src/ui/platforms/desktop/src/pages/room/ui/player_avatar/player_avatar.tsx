@@ -191,22 +191,25 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
       return;
     }
 
-    return store.room.getSideEffectSkills(player).map((skillName, index) => {
-      const skill = Sanguosha.getSkillBySkillName(skillName);
-      return (
-        <SkillButton
-          imageLoader={imageLoader}
-          translator={translator}
-          skill={skill}
-          selected={this.getSkillSelected() && this.props.store.selectedSkill === skill}
-          size="normal"
-          key={index}
-          className={classNames(styles.playerSkill, styles.sideSkill)}
-          disabled={this.props.store.room.isGameOver() || !skill.canUse(this.props.store.room, player)}
-          onClick={this.onClickSkill(skill)}
-        />
-      );
-    });
+    return store.room
+      .getSideEffectSkills(player)
+      .filter(skillName => !Sanguosha.isShadowSkillName(skillName))
+      .map((skillName, index) => {
+        const skill = Sanguosha.getSkillBySkillName(skillName);
+        return (
+          <SkillButton
+            imageLoader={imageLoader}
+            translator={translator}
+            skill={skill}
+            selected={this.getSkillSelected() && this.props.store.selectedSkill === skill}
+            size="normal"
+            key={index}
+            className={classNames(styles.playerSkill, styles.sideSkill)}
+            disabled={this.props.store.room.isGameOver() || !skill.canUse(this.props.store.room, player)}
+            onClick={this.onClickSkill(skill)}
+          />
+        );
+      });
   }
 
   @mobx.action
@@ -304,6 +307,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           skillName={this.props.translator.tr(skill.Name)}
           hasUsed={this.props.store.onceSkillUsedHistory[clientPlayer.Id]?.includes(skill.Name)}
           key={skill.Name}
+          tagPosition="left"
         />
       )),
     );
@@ -313,6 +317,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           skillName={this.props.translator.tr(skill.Name)}
           hasUsed={this.props.store.onceSkillUsedHistory[clientPlayer.Id]?.includes(skill.Name)}
           key={skill.Name}
+          tagPosition="left"
         />
       )),
     );

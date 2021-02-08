@@ -32,7 +32,7 @@ export class TianXiang extends TriggerSkill {
   }
 
   public availableCardAreas() {
-    return [PlayerCardsArea.HandArea];
+    return [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea];
   }
 
   cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {

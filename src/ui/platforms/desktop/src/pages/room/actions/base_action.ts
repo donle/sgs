@@ -296,6 +296,24 @@ export abstract class BaseAction {
         ) {
           return false;
         }
+        if (ignoreCanUseCondition) {
+          return true;
+        }
+        
+        if (card.Skill instanceof ViewAsSkill) {
+          return (
+            player.canUseCard(
+              this.store.room,
+              new CardMatcher({ name: card.Skill.canViewAs(this.store.room, player, this.pendingCards) }),
+            ) && card.Skill.canUse(this.store.room, player)
+          );
+        } else if (card.Skill instanceof ActiveSkill) {
+          let canSelfUse = true;
+          if (card.Skill.isSelfTargetSkill()) {
+            canSelfUse = player.canUseCardTo(this.store.room, card.Id, player.Id);
+          }
+          return canSelfUse && card.Skill.canUse(this.store.room, player, card.Id);
+        }
       } else if (fromArea === PlayerCardsArea.EquipArea) {
         if (this.store.room.GameParticularAreas.includes(card.Skill.Name)) {
           const hasParticularOutsideCards =

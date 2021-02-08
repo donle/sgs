@@ -25,6 +25,10 @@ export class ClientTranslationModule extends TranslationModule {
     return translator;
   }
 
+  public switchLanguage(language: Languages) {
+    this.currentLanguage = language;
+  }
+
   private commonTextStyle: React.CSSProperties = {
     padding: '0 4px',
   };

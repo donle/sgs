@@ -114,6 +114,7 @@ export { BuQu, BuQuShadow } from './characters/wind/buqu';
 export { FenJi } from './characters/wind/fenji';
 export { HongYan, HongYanShadow } from './characters/wind/hongyan';
 export { TianXiang } from './characters/wind/tianxiang';
+export { PiaoLing } from './characters/wind/piaoling';
 export { GuHuo, GuHuoShadow } from './characters/wind/guhuo';
 export { ChanYuan } from './characters/wind/chanyuan';
 export { LieGong, LieGongDamage, LieGongShadow } from './characters/wind/liegong';
@@ -229,7 +230,8 @@ export { JueQing } from './characters/yijiang2011/jueqing';
 export { ShangShi } from './characters/yijiang2011/shangshi';
 export { GanLu } from './characters/yijiang2011/ganlu';
 export { BuYi } from './characters/yijiang2011/buyi';
-export { XuanFeng, XuanFengMove, XuanFengDrop } from './characters/yijiang2011/xuanfeng';
+export { XuanFeng } from './characters/yijiang2011/xuanfeng';
+export { YongJin, YongJinMove } from './characters/yijiang2011/yongjin';
 
 export { QiCe } from './characters/yijiang2012/qice';
 export { ZhiYu } from './characters/yijiang2012/zhiyu';
@@ -256,6 +258,9 @@ export { RenXin } from './characters/yijiang2013/renxin';
 export { JingCe } from './characters/yijiang2013/jingce';
 export { JunXing } from './characters/yijiang2013/junxing';
 export { YuCe } from './characters/yijiang2013/yuce';
+export { ZongXuan, ZongXuanShadow } from './characters/yijiang2013/zongxuan';
+export { ZhiYan } from './characters/yijiang2013/zhiyan';
+export { XianSi, XianSiShadow, XianSiFilter, XianSiSlash } from './characters/yijiang2013/xiansi';
 
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';

@@ -22,16 +22,18 @@ export const characterDictionary: Word[] = [
   { source: 'longyin', target: '龙吟' },
   { source: 'jingce', target: '精策' },
   { source: 'qiaoshui', target: '巧说' },
-  { source: 'zongshi', target: '纵适' },
+  { source: 'jianyong_zongshi', target: '纵适' },
   { source: 'juece', target: '绝策' },
   { source: 'mieji', target: '灭计' },
   { source: 'fencheng', target: '焚城' },
   { source: 'xiansi', target: '陷嗣' },
+  { source: '~xiansi', target: '陷嗣' },
   { source: 'junxing', target: '峻刑' },
   { source: 'yuce', target: '御策' },
   { source: 'duodao', target: '夺刀' },
   { source: 'anjian', target: '暗箭' },
   { source: 'zongxuan', target: '纵玄' },
+  { source: '#zongxuan', target: '纵玄' },
   { source: 'zhiyan', target: '直言' },
   { source: 'danshou', target: '胆守' },
 ];
@@ -69,7 +71,7 @@ export const skillDescriptions: Word[] = [
     target:
       '出牌阶段，你可以与一名角色拼点。若你：赢，你此阶段内使用的下一张基本或普通锦囊牌可多或少选一个目标；没赢，结束此阶段且你的锦囊牌于本回合内不计入手牌上限。',
   },
-  { source: 'zongshi_description', target: '当你的拼点结果确定后，若你赢/没赢，你可以获得其/你的拼点牌。' },
+  { source: 'jianyong_zongshi_description', target: '当你的拼点结果确定后，若你赢/没赢，你可以获得其/你的拼点牌。' },
   { source: 'juece_description', target: '结束阶段开始时，你可以对没有手牌的一名其他角色造成1点伤害。' },
   {
     source: 'mieji_description',
@@ -98,9 +100,13 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'duodao_description',
-    target: '当你受到【杀】造成的伤害后，你可以弃置一张牌，然后获得伤害来源装备区里的武器牌。',
+    target: '当你成为其他角色使用【杀】的目标后，你可以弃置一张牌，然后获得其装备区里的武器牌。',
   },
-  { source: 'anjian_description', target: '<b>锁定技</b>，当你使用【杀】造成伤害时，若你不在其攻击范围内，此伤害+1。' },
+  {
+    source: 'anjian_description',
+    target:
+      '<b>锁定技</b>，当你使用【杀】指定目标后，若你不在其攻击范围内，此【杀】无视其防具且对其伤害+1，若该角色因此【杀】进入濒死状态，其不能使用【桃】直到此濒死结算结束。',
+  },
   { source: 'zongxuan_description', target: '当你的牌因弃置而进入弃牌堆后，你可以将其中至少一张牌置于牌堆顶。' },
   {
     source: 'zhiyan_description',
@@ -117,5 +123,20 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: drop {1} cards or turn over',
     target: '{0}：弃置{1}张牌并失去一点体力，或翻面并摸{1}张牌',
+  },
+
+  {
+    source: '{0}: please choose a card to put it on the top of the draw pile',
+    target: '{0}：请选择一张牌，将其置于牌堆顶',
+  },
+
+  {
+    source: '{0}: do you want to put at least one of these cards on the top of the draw pile?',
+    target: '{0}：你可以将弃牌中至少一张牌以任意顺序置于牌堆顶',
+  },
+
+  {
+    source: '{0}: do you want to choose a target to draw a card?',
+    target: '{0}：你可以令一名角色摸一张牌并展示之',
   },
 ];

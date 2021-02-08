@@ -9,6 +9,7 @@ export class XiaoQiao extends Character {
     super(id, 'xiaoqiao', CharacterGender.Female, CharacterNationality.Wu, 3, 3, GameCharacterExtensions.Wind, [
       ...skillLoaderInstance.getSkillsByName('hongyan'),
       skillLoaderInstance.getSkillByName('tianxiang'),
+      skillLoaderInstance.getSkillByName('piaoling'),
     ]);
   }
 }
