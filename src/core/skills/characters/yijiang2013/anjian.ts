@@ -62,14 +62,7 @@ export class AnJian extends TriggerSkill {
         content.cardIds !== undefined &&
         Sanguosha.getCardById(content.cardIds[0]).GeneralName === 'slash'
       );
-    } else if (identifier === GameEventIdentifiers.CardUseEvent) {
-      content = content as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
-      return (
-        content.fromId === owner.Id &&
-        content.cardId !== undefined &&
-        Sanguosha.getCardById(content.cardId).GeneralName === 'slash'
-      );
-    } else if (identifier === GameEventIdentifiers.PlayerDyingEvent) {
+    }  else if (identifier === GameEventIdentifiers.PlayerDyingEvent) {
       content = content as ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>;
       if (room.getPlayerById(content.dying).hasSkill(this.GeneralName)) {
         return true;
@@ -123,12 +116,11 @@ export class AnJian extends TriggerSkill {
       const dyingEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>;
       if (room.CurrentProcessingStage === PlayerDyingStage.PlayerDying) {
         await room.obtainSkill(dyingEvent.dying, AnJianPeach.Name);
-      } else {
+      } else if(room.CurrentProcessingStage ===PlayerDyingStage.AfterPlayerDying) {
         await room.loseSkill(dyingEvent.dying, AnJianPeach.Name);
       }
     } else if (identifier === GameEventIdentifiers.CardUseEvent) {
       const cardEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
-      await room.loseSkill(cardEvent.toIds![0], AnJianPeach.Name);
       room.removeFlag(cardEvent.toIds![0], this.GeneralName);
     }
     return true;

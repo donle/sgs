@@ -58,6 +58,7 @@ export class DuoDao extends TriggerSkill {
         toArea: CardMoveArea.HandArea,
         moveReason: CardMoveReason.ActivePrey,
         proposer: skillUseEvent.fromId,
+        movedByReason: this.Name,
       });
     }
     return true;
