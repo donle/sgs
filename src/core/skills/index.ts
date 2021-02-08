@@ -255,7 +255,7 @@ export { ZongShi, ZongShiNullify, ZongShiProhibit } from './characters/yijiang20
 
 export { ChengXiang } from './characters/yijiang2013/chengxiang';
 export { RenXin } from './characters/yijiang2013/renxin';
-export { JingCe, JingCeShadow } from './characters/yijiang2013/jingce';
+export { JingCe, JingCeRecorder, JingCeShadow } from './characters/yijiang2013/jingce';
 export { JunXing } from './characters/yijiang2013/junxing';
 export { YuCe } from './characters/yijiang2013/yuce';
 export { ZongXuan, ZongXuanShadow } from './characters/yijiang2013/zongxuan';

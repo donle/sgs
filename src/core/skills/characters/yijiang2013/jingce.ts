@@ -1,114 +1,150 @@
 import { CardType } from 'core/cards/card';
+import { CardSuit } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { GameCommonRules } from 'core/game/game_rules';
-import { 
+import {
   AllStage,
-  PhaseStageChangeStage, 
-  PlayerPhaseStages, 
-  CardUseStage, 
+  CardUseStage,
+  PhaseChangeStage,
+  PhaseStageChangeStage,
   PlayerPhase,
+  PlayerPhaseStages,
 } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
+import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { CommonSkill, OnDefineReleaseTiming, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'jingce', description: 'jingce_description' })
 export class JingCe extends TriggerSkill {
-  public static suit_marks: string[] = [
-    "jingce_NoSuit",
-    "jingce_Spade",
-    "jingce_Heart",
-    "jingce_Club",
-    "jingce_Diamond"
-  ]
+  public static readonly JingCeSuits: string = 'jingce_suits';
+  public static readonly JingCeTypes: string = 'jingce_types';
 
-  isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
-    return stage === PlayerPhase.PrepareStage;
+  public isTriggerable(
+    event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
+    stage?: AllStage,
+  ): boolean {
+    return stage === PhaseStageChangeStage.StageChanged;
   }
 
-  whenRefresh(room: Room, owner: Player) {
-    room.syncGameCommonRules(owner.Id, user => {
-      let extraHold: number = 0;
-      for (let i: number = 0; i < 5; i += 1) {
-        if (user.getInvisibleMark(JingCe.suit_marks[i]) === 1) {
-          extraHold += 1;
-        };
-        user.removeInvisibleMark(JingCe.suit_marks[i]);
-      }
-      user.removeInvisibleMark("jingce_type_basic");
-      user.removeInvisibleMark("jingce_type_equip");
-      user.removeInvisibleMark("jingce_type_trick");
-      GameCommonRules.addAdditionalHoldCardNumber(user, -extraHold);
-    });
-    
-  }
-
-  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
-    return stage === PhaseStageChangeStage.BeforeStageChange;
-  }
-
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
+  public canUse(
+    room: Room,
+    owner: Player,
+    content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
+  ): boolean {
+    const types = owner.getFlag<CardType[]>(JingCe.JingCeTypes);
     return (
       owner.Id === content.playerId &&
       content.toStage === PlayerPhaseStages.PlayCardStageEnd &&
-      owner.getInvisibleMark("jingce_type_trick") + owner.getInvisibleMark("jingce_type_equip")
-       + owner.getInvisibleMark("jingce_type_basic") > 0
+      types !== undefined &&
+      types.length > 0
     );
   }
 
-  async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+  public getSkillLog(room: Room, owner: Player): PatchedTranslationObject {
+    return TranslationPack.translationJsonPatcher(
+      '{0}: do you want to draw {1} card(s)?',
+      this.Name,
+      owner.getFlag<CardType[]>(JingCe.JingCeTypes).length,
+    ).extract();
+  }
+
+  public async onTrigger(): Promise<boolean> {
     return true;
   }
 
-  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const player = room.getPlayerById(event.fromId);
-    let drawNum: number = player.getInvisibleMark("jingce_type_trick") +
-    player.getInvisibleMark("jingce_type_equip") + player.getInvisibleMark("jingce_type_basic");
-    console.log("jingce drawcard")
+    const drawNum: number = player.getFlag<CardType[]>(JingCe.JingCeTypes).length;
     await room.drawCards(drawNum, event.fromId, undefined, event.fromId, this.Name);
+
     return true;
   }
 }
 
 @ShadowSkill
-@CommonSkill({ name: JingCe.GeneralName, description: JingCe.Description })
-export class JingCeShadow extends TriggerSkill {
-  
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage?: CardUseStage) {
+@CommonSkill({ name: JingCe.Name, description: JingCe.Description })
+export class JingCeRecorder extends TriggerSkill {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage?: CardUseStage): boolean {
     return stage === CardUseStage.CardUsing;
   }
 
-  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    return room.CurrentPlayer.Id === owner.Id &&
-           content.fromId === owner.Id;
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): boolean {
+    return room.CurrentPlayer.Id === owner.Id && content.fromId === owner.Id;
   }
 
-  isAutoTrigger() {
+  public isAutoTrigger(): boolean {
     return true;
   }
 
-  public async onTrigger() {
+  public async onTrigger(): Promise<boolean> {
     return true;
   }
 
-  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const CardUseEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
+    const CardUseEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
     room.syncGameCommonRules(event.fromId, user => {
-          const card = Sanguosha.getCardById(CardUseEvent.cardId);
-          if (card.is(CardType.Basic) && user.getInvisibleMark("jingce_type_basic") === 0) {
-            user.addInvisibleMark("jingce_type_basic", 1);
-          } else if (card.is(CardType.Equip) && user.getInvisibleMark("jingce_type_equip") === 0) {
-            user.addInvisibleMark("jingce_type_equip", 1);
-          } else if (card.is(CardType.Trick) && user.getInvisibleMark("jingce_type_trick") === 0) {
-            user.addInvisibleMark("jingce_type_trick", 1);
-          }
-          if (user.getInvisibleMark(JingCe.suit_marks[card.Suit]) === 0){
-            user.addInvisibleMark(JingCe.suit_marks[card.Suit], 1);
-            console.log("jingce maxcard")
-            GameCommonRules.addAdditionalHoldCardNumber(user, 1);
-          };
-        });
+      const card = Sanguosha.getCardById(CardUseEvent.cardId);
+      const jingceTypes = JingCe.JingCeTypes;
+      const JingCeSuits = JingCe.JingCeSuits;
+
+      const types = user.getFlag<CardType[]>(jingceTypes) || [];
+      if (!types.includes(card.BaseType)) {
+        types.push(card.BaseType);
+        user.setFlag<CardType[]>(jingceTypes, types);
+      }
+
+      const suits = user.getFlag<CardSuit[]>(JingCeSuits) || [];
+      if (!suits.includes(card.Suit)) {
+        suits.push(card.Suit);
+        user.setFlag<CardSuit[]>(JingCeSuits, suits);
+        GameCommonRules.addAdditionalHoldCardNumber(user, 1);
+      }
+    });
+    return true;
+  }
+}
+
+@ShadowSkill
+@CommonSkill({ name: JingCeRecorder.Name, description: JingCeRecorder.Description })
+export class JingCeShadow extends TriggerSkill implements OnDefineReleaseTiming {
+  public afterLosingSkill(room: Room, playerId: PlayerId): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  }
+
+  public isAutoTrigger(): boolean {
+    return true;
+  }
+
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: AllStage): boolean {
+    return stage === PhaseChangeStage.PhaseChanged;
+  }
+
+  public isFlaggedSkill(): boolean {
+    return true;
+  }
+
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
+    return content.fromPlayer === owner.Id && content.to === PlayerPhase.PhaseFinish;
+  }
+
+  public async onTrigger(): Promise<boolean> {
+    return true;
+  }
+
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
+    room.syncGameCommonRules(event.fromId, user => {
+      const jingceSuits = JingCe.JingCeSuits;
+      const suits = user.getFlag<CardSuit[]>(jingceSuits);
+      if (suits) {
+        GameCommonRules.addAdditionalHoldCardNumber(user, -suits.length);
+        user.removeFlag(jingceSuits);
+      }
+      user.removeFlag(JingCe.JingCeTypes);
+    });
+
     return true;
   }
 }
