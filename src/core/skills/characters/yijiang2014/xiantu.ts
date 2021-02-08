@@ -33,7 +33,7 @@ export class XianTu extends TriggerSkill {
       toId: content.fromId,
       conversation: TranslationPack.translationJsonPatcher(
         'please give {0} two cards.',
-        room.getPlayerById(phaseStageChangeEvent.playerId).Name,
+        TranslationPack.patchPlayerInTranslation(room.getPlayerById(phaseStageChangeEvent.playerId)),
       ).extract(),
     };
 

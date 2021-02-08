@@ -152,4 +152,5 @@ export const promptDescriptions: Word[] = [
     target: '{0}：请选择一名角色展示其一张手牌',
   },
   { source: '{0}: do you want to draw a card?', target: '是否发动{0}摸一张牌' },
+  { source: 'please give {0} two cards.', target: '请交给{0}两张牌' },
 ];
