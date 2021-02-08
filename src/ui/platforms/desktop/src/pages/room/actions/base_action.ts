@@ -299,7 +299,7 @@ export abstract class BaseAction {
         if (ignoreCanUseCondition) {
           return true;
         }
-        
+
         if (card.Skill instanceof ViewAsSkill) {
           return (
             player.canUseCard(
@@ -312,7 +312,8 @@ export abstract class BaseAction {
           if (card.Skill.isSelfTargetSkill()) {
             canSelfUse = player.canUseCardTo(this.store.room, card.Id, player.Id);
           }
-          return canSelfUse && card.Skill.canUse(this.store.room, player, card.Id);
+
+          return canSelfUse && player.canUseCard(this.store.room, card.Id);
         }
       } else if (fromArea === PlayerCardsArea.EquipArea) {
         if (this.store.room.GameParticularAreas.includes(card.Skill.Name)) {
