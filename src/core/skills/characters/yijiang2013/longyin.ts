@@ -3,7 +3,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { GameCommonRules } from 'core/game/game_rules';
-import { AllStage, CardUseStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
+import { AllStage, CardUseStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -12,25 +12,25 @@ import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 @CommonSkill({ name: 'longyin', description: 'longyin_description' })
 export class LongYin extends TriggerSkill {
   public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.PhaseChangeEvent>,
+    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.PhaseStageChangeEvent>,
     stage?: AllStage,
   ) {
-    return stage === CardUseStage.CardUsing || stage === PhaseChangeStage.AfterPhaseChanged;
+    return stage === CardUseStage.CardUsing || stage === PhaseStageChangeStage.AfterStageChanged;
   }
 
   isAutoTrigger(
     room: Room,
     owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.PhaseChangeEvent>,
+    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.PhaseStageChangeEvent>,
   ) {
     const identifier = EventPacker.getIdentifier(event);
-    return identifier === GameEventIdentifiers.PhaseChangeEvent;
+    return identifier === GameEventIdentifiers.PhaseStageChangeEvent;
   }
 
   public canUse(
     room: Room,
     owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.PhaseChangeEvent>,
+    content: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.PhaseStageChangeEvent>,
   ) {
     const identifier = EventPacker.getIdentifier(content);
     if (identifier === GameEventIdentifiers.CardUseEvent) {
@@ -41,8 +41,8 @@ export class LongYin extends TriggerSkill {
         owner.getPlayerCards().length > 0
       );
     } else {
-      const event = content as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-      return event.to === PlayerPhase.PhaseFinish && owner.getFlag<PlayerId>(this.Name) !== undefined;
+      const event = content as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
+      return event.toStage === PlayerPhaseStages.PlayCardStageEnd && owner.getFlag<PlayerId>(this.Name) !== undefined;
     }
   }
 
@@ -57,7 +57,7 @@ export class LongYin extends TriggerSkill {
   public async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     const { triggeredOnEvent } = event;
     const identifier = EventPacker.getIdentifier(triggeredOnEvent!);
-    if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
+    if (identifier === GameEventIdentifiers.PhaseStageChangeEvent) {
       event.translationsMessage = undefined;
     }
     return true;
@@ -67,7 +67,7 @@ export class LongYin extends TriggerSkill {
     const { fromId, cardIds, triggeredOnEvent } = skillUseEvent;
     const from = room.getPlayerById(fromId);
     const identifier = EventPacker.getIdentifier(triggeredOnEvent!);
-    if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
+    if (identifier === GameEventIdentifiers.PhaseStageChangeEvent) {
       const targetId = from.getFlag<PlayerId>(this.Name);
       const extraUse = from.getInvisibleMark(this.Name);
       room.syncGameCommonRules(targetId, target => {
