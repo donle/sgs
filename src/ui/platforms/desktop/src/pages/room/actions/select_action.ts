@@ -108,20 +108,22 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
       const selectedTargets: PlayerId[] = [];
       const cardSkill = card.Skill as ActiveSkill;
       const skillExtralProp = (card.Skill as unknown) as ExtralCardSkillProperty;
-      const numberOfCardTargets = cardSkill.numberOfTargets() || 1;
+      let numberOfCardTargets = cardSkill.numberOfTargets();
+      numberOfCardTargets = (numberOfCardTargets instanceof Array ? numberOfCardTargets[0] : numberOfCardTargets) || 1;
 
       const excludeExistedTargets = (playerId: PlayerId) =>
-        selectedTargets.length === 0 ? !exclude.includes(playerId) : true;
+        (selectedTargets.length === 0 ? !exclude.includes(playerId) : true) &&
+        this.store.room.isAvailableTarget(cardId, this.store.clientPlayerId, playerId);
       const isAvailableTarget = skillExtralProp.isCardAvailableTarget || cardSkill.isAvailableCard;
 
-      this.presenter.setupPlayersSelectionMatcher(
-        (player: Player) =>
+      this.presenter.setupPlayersSelectionMatcher((player: Player) => {
+        return (
           (excludeExistedTargets(player.Id) &&
             selectedTargets.length < numberOfCardTargets &&
-            isAvailableTarget(this.playerId, this.store.room, player.Id, [], selectedTargets, cardId) &&
-            player.canUseCardTo(this.store.room, cardId, player.Id)) ||
-          selectedTargets.includes(player.Id),
-      );
+            isAvailableTarget(this.playerId, this.store.room, player.Id, [], selectedTargets, cardId)) ||
+          selectedTargets.includes(player.Id)
+        );
+      });
 
       this.presenter.onClickPlayer((player: Player, selected: boolean) => {
         selected

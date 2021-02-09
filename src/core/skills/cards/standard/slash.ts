@@ -38,14 +38,7 @@ export class SlashSkill extends ActiveSkill implements ExtralCardSkillProperty {
     return 1;
   }
 
-  public isCardAvailableTarget(
-    owner: PlayerId,
-    room: Room,
-    target: PlayerId,
-    selectedCards: CardId[],
-    selectedTargets: PlayerId[],
-    containerCard: CardId,
-  ) {
+  public isCardAvailableTarget(owner: PlayerId, room: Room, target: PlayerId) {
     return owner !== target;
   }
 
@@ -57,7 +50,7 @@ export class SlashSkill extends ActiveSkill implements ExtralCardSkillProperty {
     selectedTargets: PlayerId[],
     containerCard: CardId,
   ) {
-    return this.isCardAvailableTarget(owner, room, target, selectedCards, selectedTargets, containerCard);
+    return room.canAttack(room.getPlayerById(owner), room.getPlayerById(target), containerCard);
   }
 
   async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
