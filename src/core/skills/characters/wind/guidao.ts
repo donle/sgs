@@ -5,7 +5,7 @@ import { AllStage, JudgeEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { CommonSkill, TriggerSkill } from 'core/skills/skill';
+import { CommonSkill, FilterSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'guidao', description: 'guidao_description' })
@@ -22,7 +22,13 @@ export class GuiDao extends TriggerSkill {
     return cards.length === 1;
   }
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
-    return Sanguosha.getCardById(cardId).isBlack();
+    return (
+      Sanguosha.getCardById(cardId).isBlack() &&
+      room
+        .getPlayerById(owner)
+        .getSkills<FilterSkill>('filter')
+        .find(skill => !skill.canUseCard(cardId, room, owner)) === undefined
+    );
   }
 
   async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {

@@ -268,7 +268,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     event: ClientEventFinder<typeof identifier>,
   ) {
     const room = this.room as ServerRoom;
-    if (room.Info.numberOfPlayers <= room.Players.length) {
+    if (room.Info.numberOfPlayers <= room.Players.length || room.isPlaying()) {
       socket.emit(GameEventIdentifiers.PlayerEnterRefusedEvent.toString(), {
         playerId: event.playerId,
         playerName: event.playerName,

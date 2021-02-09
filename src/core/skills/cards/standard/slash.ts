@@ -1,6 +1,9 @@
+import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
+import { GameCommonRules } from 'core/game/game_rules';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -11,8 +14,11 @@ import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 export class SlashSkill extends ActiveSkill {
   protected damageType: DamageType = DamageType.Normal;
 
-  public canUse(room: Room, owner: Player, contentOrContainerCard?: CardId) {
-    return !owner.hasUsed(this.Name);
+  public canUse(room: Room, owner: Player, contentOrContainerCard: CardId) {
+    return (
+      GameCommonRules.getCardUsableTimes(room, owner, Sanguosha.getCardById(contentOrContainerCard)) >
+      owner.cardUsedTimes(new CardMatcher({ generalName: [this.Name] }))
+    );
   }
 
   public isRefreshAt() {
