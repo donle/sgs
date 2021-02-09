@@ -198,9 +198,10 @@ export class TrustAI extends PlayerAI {
     room: Room,
   ) {
     const { requiredAmount, players, toId } = content;
+    const amount = requiredAmount instanceof Array ? requiredAmount[0] : requiredAmount;
     const choosePlayer: ClientEventFinder<T> = {
       fromId: toId,
-      selectedPlayers: players.slice(0, requiredAmount),
+      selectedPlayers: players.slice(0, amount),
     };
     return choosePlayer;
   }

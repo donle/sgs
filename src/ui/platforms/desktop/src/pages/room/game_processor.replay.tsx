@@ -95,7 +95,12 @@ export class ReplayClientProcessor extends GameClientProcessor {
     this.presenter.createIncomingConversation({
       conversation: content.conversation
         ? content.conversation
-        : TranslationPack.translationJsonPatcher('please drop {0} cards', content.cardAmount).extract(),
+        : TranslationPack.translationJsonPatcher(
+            'please drop ' + (content.cardAmount instanceof Array ? '{1} to {2}' : '{0}') + ' cards',
+            content.cardAmount as number,
+            (content.cardAmount as [number, number])[0],
+            (content.cardAmount as [number, number])[1],
+          ).extract(),
       translator: this.translator,
     });
   }

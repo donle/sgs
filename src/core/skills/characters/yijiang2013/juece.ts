@@ -17,7 +17,7 @@ import { CommonSkill, CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/sk
 @CommonSkill({ name: 'juece', description: 'juece_description' })
 export class JueCe extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
-    return stage === PhaseStageChangeStage.BeforeStageChange;
+    return stage === PhaseStageChangeStage.StageChanged;
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
