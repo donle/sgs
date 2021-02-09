@@ -120,7 +120,29 @@ export const skillDescriptions: Word[] = [
 
 export const promptDescriptions: Word[] = [
   {
+    source: 'mieji:trick',
+    target: '交給其一張錦囊牌',
+  },
+  {
+    source: 'mieji:drop',
+    target: '棄置兩張非錦囊牌',
+  },
+  {
     source: '{0}: drop {1} cards or turn over',
     target: '{0}：棄置{1}張牌並失去一點體力，或翻面並摸{1}張牌',
+  },
+  {
+    source: '{0}: please choose a card to put it on the top of the draw pile',
+    target: '{0}：請選擇一張牌，將其置於牌堆頂',
+  },
+
+  {
+    source: '{0}: do you want to put at least one of these cards on the top of the draw pile?',
+    target: '{0}：你可以將棄牌中至少一張牌以任意順序置於牌堆頂',
+  },
+
+  {
+    source: '{0}: do you want to choose a target to draw a card?',
+    target: '{0}：你可以令一名角色摸一張牌並展示之',
   },
 ];

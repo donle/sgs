@@ -121,6 +121,14 @@ export const skillDescriptions: Word[] = [
 
 export const promptDescriptions: Word[] = [
   {
+    source: 'mieji:trick',
+    target: '交给其一张锦囊牌',
+  },
+  {
+    source: 'mieji:drop',
+    target: '弃置两张非锦囊牌',
+  },
+  {
     source: '{0}: drop {1} cards or turn over',
     target: '{0}：弃置{1}张牌并失去一点体力，或翻面并摸{1}张牌',
   },
