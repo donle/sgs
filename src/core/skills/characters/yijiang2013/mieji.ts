@@ -4,6 +4,7 @@ import {
   CardMoveArea,
   CardMoveReason,
   ClientEventFinder,
+  EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
@@ -12,6 +13,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'mieji', description: 'mieji_description' })
 export class MieJi extends ActiveSkill {
@@ -28,7 +30,18 @@ export class MieJi extends ActiveSkill {
   }
 
   isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
-    return owner !== target && room.getPlayerById(target).getPlayerCards().length > 0;
+    return (
+      owner !== target &&
+      room
+        .getPlayerById(target)
+        .getPlayerCards()
+        .filter(cardId => Sanguosha.getCardById(cardId).isBlack() && Sanguosha.getCardById(cardId).is(CardType.Trick))
+        .length > 0
+    );
+  }
+
+  availableCardAreas() {
+    return [PlayerCardsArea.HandArea];
   }
 
   isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
@@ -45,15 +58,15 @@ export class MieJi extends ActiveSkill {
       await room.moveCards({
         movingCards: skillUseEvent.cardIds!.map(card => ({ card, fromArea: CardMoveArea.HandArea })),
         fromId: skillUseEvent.fromId,
-        moveReason: CardMoveReason.PassiveMove,
+        moveReason: CardMoveReason.PlaceToDrawStack,
         toArea: CardMoveArea.DrawStack,
         proposer: skillUseEvent.fromId,
         movedByReason: this.Name,
       });
     }
-    const { toIds } = skillUseEvent;
-    const to = room.getPlayerById(toIds![0]);
+    const { toIds, fromId } = skillUseEvent;
     const toId = toIds![0];
+    const to = room.getPlayerById(toId);
     const options: string[] = [];
     if (to.getPlayerCards().filter(cardId => Sanguosha.getCardById(cardId).BaseType === CardType.Trick).length > 0) {
       options.push('mieji:trick');
@@ -64,41 +77,53 @@ export class MieJi extends ActiveSkill {
 
     const askForChooseOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
       options,
-      toId: toIds![0],
+      toId,
       conversation: 'please choose mieji options',
+      triggeredBySkills: [this.Name],
     };
-    room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseOptionsEvent, toIds![0]);
+    room.notify(
+      GameEventIdentifiers.AskForChoosingOptionsEvent,
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(askForChooseOptionsEvent),
+      toId,
+    );
     const { selectedOption } = await room.onReceivingAsyncResponseFrom(
       GameEventIdentifiers.AskForChoosingOptionsEvent,
-      toIds![0],
+      toId,
     );
     if (selectedOption === 'mieji:trick') {
       const response1 = await room.askForCardDrop(
         toId,
         1,
-        [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
+        [PlayerCardsArea.HandArea],
         true,
         to
           .getCardIds(PlayerCardsArea.HandArea)
           .filter(cardId => Sanguosha.getCardById(cardId).BaseType !== CardType.Trick),
         this.Name,
+        TranslationPack.translationJsonPatcher(
+          'please choose a trick card to pass to {0}',
+          TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
+        ).toString(),
       );
       await room.moveCards({
         movingCards: [{ card: response1.droppedCards[0], fromArea: CardMoveArea.HandArea }],
-        fromId: toIds![0],
+        fromId: toId,
         toId: skillUseEvent.fromId,
         toArea: CardMoveArea.HandArea,
         moveReason: CardMoveReason.ActivePrey,
+        movedByReason: this.Name,
         proposer: skillUseEvent.fromId,
+        engagedPlayerIds: [fromId, toId],
       });
     } else {
-      for (let i = 1; i <= 2; i++) {
+      let droppedCards = 0;
+      while (
+        droppedCards < 2 &&
+        to.getPlayerCards().filter(cardId => !Sanguosha.getCardById(cardId).is(CardType.Trick)).length > 0
+      ) {
         const response = await room.askForCardDrop(
           toId,
-          Math.min(
-            1,
-            to.getPlayerCards().filter(cardId => Sanguosha.getCardById(cardId).BaseType !== CardType.Trick).length,
-          ),
+          1,
           [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
           true,
           to
@@ -107,6 +132,7 @@ export class MieJi extends ActiveSkill {
           this.Name,
         );
         await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toId);
+        droppedCards++;
       }
     }
 

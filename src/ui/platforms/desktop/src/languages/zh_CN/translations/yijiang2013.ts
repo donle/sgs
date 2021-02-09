@@ -72,11 +72,11 @@ export const skillDescriptions: Word[] = [
       '出牌阶段，你可以与一名角色拼点。若你：赢，你此阶段内使用的下一张基本或普通锦囊牌可多或少选一个目标；没赢，结束此阶段且你的锦囊牌于本回合内不计入手牌上限。',
   },
   { source: 'jianyong_zongshi_description', target: '当你的拼点结果确定后，若你赢/没赢，你可以获得其/你的拼点牌。' },
-  { source: 'juece_description', target: '结束阶段开始时，你可以对没有手牌的一名其他角色造成1点伤害。' },
+  { source: 'juece_description', target: '结束阶段开始时，你可以对本回合失去过牌的一名其他角色造成1点伤害。' },
   {
     source: 'mieji_description',
     target:
-      '出牌阶段限一次，你可以将一张黑色锦囊牌置于牌堆顶，并选择有手牌的一名其他角色，令其弃置一张牌，若此牌不为锦囊牌，其弃置一张非锦囊牌。',
+      '出牌阶段限一次，你可以将一张黑色锦囊牌置于牌堆顶，并令有手牌的一名其他角色选择一项：1.交给你一张锦囊牌；2.依次弃置两张非锦囊牌。',
   },
   {
     source: 'fencheng_description',

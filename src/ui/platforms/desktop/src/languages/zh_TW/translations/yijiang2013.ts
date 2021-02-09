@@ -71,11 +71,11 @@ export const skillDescriptions: Word[] = [
       '出牌階段，你可以與一名角色拼點。若你：贏，你此階段內使用的下一張基本或普通錦囊牌可多或少選一個目標；沒贏，結束此階段且你的錦囊牌於本回合內不計入手牌上限。',
   },
   { source: 'jianyong_zongshi_description', target: '當你的拼點結果確定後，若你贏/沒贏，你可以獲得其/你的拼點牌。' },
-  { source: 'juece_description', target: '結束階段開始時，你可以對沒有手牌的一名其他角色造成1點傷害。' },
+  { source: 'juece_description', target: '結束階段開始時，你可以對本回合失去過牌的一名其他角色造成1點傷害。' },
   {
     source: 'mieji_description',
     target:
-      '出牌階段限一次，你可以將一張黑色錦囊牌置於牌堆頂，並選擇有手牌的一名其他角色，令其棄置一張牌，若此牌不為錦囊牌，其棄置一張非錦囊牌。',
+      '出牌階段限一次，你可以將一張黑色錦囊牌置於牌堆頂，並令有手牌的一名其他角色選擇一項：1.交給你一張錦囊牌；2.依次棄置兩張非錦囊牌。',
   },
   {
     source: 'fencheng_description',
@@ -101,7 +101,11 @@ export const skillDescriptions: Word[] = [
     source: 'duodao_description',
     target: '當你成為其他角色使用【殺】的目標後，你可以棄置一張牌，然後獲得其裝備區裡的武器牌。',
   },
-  { source: 'anjian_description', target: '<b>鎖定技</b>，當你使用【殺】指定目標後，若你不在其攻擊範圍內，此【殺】無視其防具且對其傷害+1，若該角色因此【殺】進入瀕死狀態，其不能使用【桃】直到此瀕死結算結束。' },
+  {
+    source: 'anjian_description',
+    target:
+      '<b>鎖定技</b>，當你使用【殺】指定目標後，若你不在其攻擊範圍內，此【殺】無視其防具且對其傷害+1，若該角色因此【殺】進入瀕死狀態，其不能使用【桃】直到此瀕死結算結束。',
+  },
   { source: 'zongxuan_description', target: '當你的牌因棄置而進入棄牌堆後，你可以將其中至少一張牌置於牌堆頂。' },
   {
     source: 'zhiyan_description',
