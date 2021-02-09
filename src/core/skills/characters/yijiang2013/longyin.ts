@@ -46,10 +46,6 @@ export class LongYin extends TriggerSkill {
     owner: Player,
     content: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.PhaseStageChangeEvent>,
   ) {
-    if (owner.Dead) {
-      return false;
-    }
-
     const identifier = EventPacker.getIdentifier(content);
     if (identifier === GameEventIdentifiers.CardUseEvent) {
       const event = content as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
