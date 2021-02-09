@@ -7,7 +7,7 @@ const skillLoaderInstance = SkillLoader.getInstance();
 export class GuanPing extends Character {
   constructor(id: number) {
     super(id, 'guanping', CharacterGender.Male, CharacterNationality.Shu, 4, 4, GameCharacterExtensions.YiJiang2013, [
-      skillLoaderInstance.getSkillByName('longyin'),
+      ...skillLoaderInstance.getSkillsByName('longyin'),
     ]);
   }
 }
