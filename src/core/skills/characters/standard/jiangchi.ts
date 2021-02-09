@@ -22,22 +22,22 @@ export class JiangChi extends TriggerSkill {
   public static readonly ExtraFlag = 'jiangchi_extra';
   public static readonly BlockFlag = 'jiangchi_block';
 
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
-    return stage === PhaseStageChangeStage.StageChanged;
-  }
-
-  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    return owner.Id === content.playerId && PlayerPhaseStages.DrawCardStageEnd === content.toStage;
-  }
-
   public isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
-    return stage === PlayerPhase.FinishStage;
+    return stage === PlayerPhase.PhaseFinish;
   }
 
   public whenRefresh(room: Room, owner: Player) {
     if (room.getFlag<string>(owner.Id, this.Name) !== undefined) {
       room.removeFlag(owner.Id, this.Name);
     }
+  }
+
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
+    return stage === PhaseStageChangeStage.StageChanged;
+  }
+
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
+    return owner.Id === content.playerId && PlayerPhaseStages.DrawCardStageEnd === content.toStage;
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -102,7 +102,7 @@ export class JiangChi extends TriggerSkill {
 @CompulsorySkill({ name: JiangChi.Name, description: JiangChi.Description })
 export class JiangChiExtra extends RulesBreakerSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(room: Room, playerId: PlayerId): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public breakCardUsableDistance(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
@@ -148,7 +148,7 @@ export class JiangChiExtra extends RulesBreakerSkill implements OnDefineReleaseT
 @CompulsorySkill({ name: JiangChiExtra.Name, description: JiangChiExtra.Description })
 export class JiangChiBlock extends FilterSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId): boolean {

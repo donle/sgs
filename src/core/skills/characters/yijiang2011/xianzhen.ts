@@ -81,12 +81,12 @@ export class XianZhen extends ActiveSkill {
 
   public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId, toIds } = skillUseEvent;
-    const pindianResult = await room.pindian(fromId, toIds!);
-    if (!pindianResult) {
+    const { pindianRecord } = await room.pindian(fromId, toIds!);
+    if (!pindianRecord.length) {
       return false;
     }
 
-    if (pindianResult.winners.includes(fromId)) {
+    if (pindianRecord[0].winner === fromId) {
       XianZhen.setXianZhenTarget(room, fromId, toIds![0]);
     } else {
       room.setFlag<boolean>(fromId, XianZhen.Lose, true, true);
@@ -100,7 +100,7 @@ export class XianZhen extends ActiveSkill {
 @CommonSkill({ name: XianZhen.Name, description: XianZhen.Description })
 export class XianZhenExtra extends RulesBreakerSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public breakCardUsableDistanceTo(cardId: CardId | CardMatcher, room: Room, owner: Player, target: Player) {
@@ -126,7 +126,7 @@ export class XianZhenExtra extends RulesBreakerSkill implements OnDefineReleaseT
 @CommonSkill({ name: XianZhenExtra.Name, description: XianZhen.Description })
 export class XianZhenBlock extends FilterSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(room: Room) {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
 
   public canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId) {
