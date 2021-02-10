@@ -7,9 +7,10 @@ import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @CommonSkill({ name: 'duel', description: 'duel_description' })
-export class DuelSkill extends ActiveSkill {
+export class DuelSkill extends ActiveSkill implements ExtralCardSkillProperty {
   public canUse() {
     return true;
   }
@@ -24,7 +25,8 @@ export class DuelSkill extends ActiveSkill {
   public isAvailableCard(): boolean {
     return false;
   }
-  public isAvailableTarget(
+
+  public isCardAvailableTarget(
     owner: PlayerId,
     room: Room,
     target: PlayerId,
@@ -33,6 +35,17 @@ export class DuelSkill extends ActiveSkill {
     containerCard: CardId,
   ): boolean {
     return owner !== target && room.getPlayerById(owner).canUseCardTo(room, containerCard, target);
+  }
+
+  public isAvailableTarget(
+    owner: PlayerId,
+    room: Room,
+    target: PlayerId,
+    selectedCards: CardId[],
+    selectedTargets: PlayerId[],
+    containerCard: CardId,
+  ): boolean {
+    return this.isCardAvailableTarget(owner, room, target, selectedCards, selectedTargets, containerCard);
   }
 
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {

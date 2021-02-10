@@ -17,6 +17,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { System } from 'core/shares/libs/system';
+import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { SkillType } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -278,6 +279,9 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.AskForChoosingPlayerEvent:
         await this.onHandleAskForChoosingPlayerEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent:
+        await this.onHandleAskForChoosingCardAvailableTargetEvent(e as any, content);
         break;
       case GameEventIdentifiers.AskForPinDianCardEvent:
         await this.onHandleAskForPinDianCardEvent(e as any, content);
@@ -551,7 +555,9 @@ export class GameClientProcessor {
       this.audioService.playEquipAudio();
     }
 
-    const tos = content.toIds?.map(toId => this.store.room.getPlayerById(toId)) as Player[];
+    const tos = TargetGroupUtil.getRealTargets(content.targetGroup)?.map(id =>
+      this.store.room.getPlayerById(id),
+    ) as Player[];
 
     await this.store.room.useCard(content);
     this.presenter.showCards(
@@ -1392,6 +1398,26 @@ export class GameClientProcessor {
     };
 
     this.store.room.broadcast(GameEventIdentifiers.AskForChoosingPlayerEvent, choosePlayerEvent);
+    this.presenter.closeIncomingConversation();
+  }
+
+  protected async onHandleAskForChoosingCardAvailableTargetEvent<
+    T extends GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent
+  >(type: T, content: ServerEventFinder<T>) {
+    const { cardId, exclude, conversation } = content;
+    this.presenter.createIncomingConversation({
+      conversation,
+      translator: this.translator,
+    });
+    const action = new SelectAction(this.store.clientPlayerId, this.store, this.presenter, this.translator, content);
+    const selectedPlayers = await action.onSelectCardTargets(cardId, exclude);
+
+    const choosePlayerEvent: ClientEventFinder<GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent> = {
+      fromId: this.store.clientPlayerId,
+      selectedPlayers,
+    };
+
+    this.store.room.broadcast(GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent, choosePlayerEvent);
     this.presenter.closeIncomingConversation();
   }
 

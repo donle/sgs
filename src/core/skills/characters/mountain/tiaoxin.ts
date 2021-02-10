@@ -103,7 +103,7 @@ export class TiaoXin extends ActiveSkill {
     } else {
       const slashUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
         fromId: response.fromId,
-        toIds: response.toIds,
+        targetGroup: response.toIds && [response.toIds],
         cardId: response.cardId,
         triggeredBySkills: [this.Name],
       };

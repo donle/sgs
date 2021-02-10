@@ -9,9 +9,10 @@ import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TagEnum } from 'core/shares/types/tag_list';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @CommonSkill({ name: 'slash', description: 'slash_description' })
-export class SlashSkill extends ActiveSkill {
+export class SlashSkill extends ActiveSkill implements ExtralCardSkillProperty {
   protected damageType: DamageType = DamageType.Normal;
 
   public canUse(room: Room, owner: Player, contentOrContainerCard: CardId) {
@@ -35,6 +36,10 @@ export class SlashSkill extends ActiveSkill {
 
   public numberOfTargets() {
     return 1;
+  }
+
+  public isCardAvailableTarget(owner: PlayerId, room: Room, target: PlayerId) {
+    return owner !== target;
   }
 
   isAvailableTarget(

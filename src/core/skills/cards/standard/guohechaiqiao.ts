@@ -4,9 +4,10 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @CommonSkill({ name: 'guohechaiqiao', description: 'guohechaiqiao_description' })
-export class GuoHeChaiQiaoSkill extends ActiveSkill {
+export class GuoHeChaiQiaoSkill extends ActiveSkill implements ExtralCardSkillProperty {
   public canUse() {
     return true;
   }
@@ -21,7 +22,8 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill {
   public isAvailableCard(): boolean {
     return false;
   }
-  public isAvailableTarget(
+
+  public isCardAvailableTarget(
     owner: PlayerId,
     room: Room,
     target: PlayerId,
@@ -34,6 +36,17 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill {
       room.getPlayerById(owner).canUseCardTo(room, containerCard, target) &&
       room.getPlayerById(target).getCardIds().length > 0
     );
+  }
+
+  public isAvailableTarget(
+    owner: PlayerId,
+    room: Room,
+    target: PlayerId,
+    selectedCards: CardId[],
+    selectedTargets: PlayerId[],
+    containerCard: CardId,
+  ): boolean {
+    return this.isCardAvailableTarget(owner, room, target, selectedCards, selectedTargets, containerCard);
   }
 
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {

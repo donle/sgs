@@ -8,9 +8,10 @@ import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @CommonSkill({ name: 'nanmanruqing', description: 'nanmanruqing_description' })
-export class NanManRuQingSkill extends ActiveSkill {
+export class NanManRuQingSkill extends ActiveSkill implements ExtralCardSkillProperty {
   public static readonly NewSource = 'new_source';
 
   public canUse(room: Room, owner: Player, containerCard?: CardId) {
@@ -32,6 +33,11 @@ export class NanManRuQingSkill extends ActiveSkill {
   public cardFilter(): boolean {
     return true;
   }
+
+  public isCardAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
+    return target !== owner;
+  }
+
   public isAvailableCard(): boolean {
     return false;
   }
@@ -41,7 +47,8 @@ export class NanManRuQingSkill extends ActiveSkill {
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const others = room.getOtherPlayers(event.fromId);
     const from = room.getPlayerById(event.fromId);
-    event.toIds = others.filter(player => from.canUseCardTo(room, event.cardId, player.Id)).map(player => player.Id);
+    const groups = others.filter(player => from.canUseCardTo(room, event.cardId, player.Id)).map(player => [player.Id]);
+    event.targetGroup = [...groups];
     return true;
   }
 

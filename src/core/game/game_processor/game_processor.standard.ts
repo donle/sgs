@@ -45,6 +45,7 @@ import { Algorithm } from 'core/shares/libs/algorithm';
 import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
 import { GlobalFilterSkill, SkillLifeCycle } from 'core/skills/skill';
@@ -426,7 +427,7 @@ export class StandardGameProcessor extends GameProcessor {
         cardId: judgeCardId,
         toIds: [this.currentPhasePlayer.Id],
         nullifiedTargets: [],
-        allTargets: Sanguosha.getCardById(judgeCardId).Skill.nominateForwardTarget([this.currentPhasePlayer.Id]),
+        allTargets: [this.currentPhasePlayer.Id],
       };
 
       this.room.broadcast(GameEventIdentifiers.MoveCardEvent, {
@@ -478,7 +479,12 @@ export class StandardGameProcessor extends GameProcessor {
 
       if (response.eventName === GameEventIdentifiers.CardUseEvent) {
         const event = response.event as ClientEventFinder<GameEventIdentifiers.CardUseEvent>;
-        await this.room.useCard(event);
+        const card = Sanguosha.getCardById(event.cardId);
+        const targetGroup = event.toIds && [...card.Skill.targetGroupDispatcher(event.toIds)];
+        await this.room.useCard({
+          targetGroup,
+          ...event,
+        });
       } else if (response.eventName === GameEventIdentifiers.SkillUseEvent) {
         await this.room.useSkill(response.event as ClientEventFinder<GameEventIdentifiers.SkillUseEvent>);
       } else {
@@ -1218,7 +1224,7 @@ export class StandardGameProcessor extends GameProcessor {
               const cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
                 fromId: response.fromId,
                 cardId: response.cardId,
-                toIds: [to.Id],
+                targetGroup: [[to.Id]],
               };
               EventPacker.copyPropertiesTo(response, cardUseEvent);
 
@@ -1431,11 +1437,13 @@ export class StandardGameProcessor extends GameProcessor {
         ).extract();
       } else {
         event.translationsMessage = TranslationPack.translationJsonPatcher(
-          '{0} used card {1}' + (event.toIds || event.toCardIds ? ' to {2}' : ''),
+          '{0} used card {1}' + (event.targetGroup || event.toCardIds ? ' to {2}' : ''),
           TranslationPack.patchPlayerInTranslation(from),
           TranslationPack.patchCardInTranslation(event.cardId),
-          event.toIds
-            ? TranslationPack.patchPlayerInTranslation(...event.toIds.map(id => this.room.getPlayerById(id)))
+          event.targetGroup
+            ? TranslationPack.patchPlayerInTranslation(
+                ...TargetGroupUtil.getRealTargets(event.targetGroup).map(id => this.room.getPlayerById(id)),
+              )
             : event.toCardIds
             ? TranslationPack.patchCardInTranslation(...event.toCardIds)
             : '',
@@ -1460,7 +1468,6 @@ export class StandardGameProcessor extends GameProcessor {
     }
 
     await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      event.toIds = event.toIds && this.room.deadPlayerFilters(event.toIds);
       if (stage === CardUseStage.CardUsing) {
         if (card.is(CardType.DelayedTrick)) {
           EventPacker.terminate(event);

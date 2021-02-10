@@ -226,8 +226,8 @@ export class QiaoBianSkipPlay extends TriggerSkill {
     ];
   }
 
-  public nominateForwardTarget(targets: PlayerId[]) {
-    return [targets[0]];
+  public resortTargets() {
+    return false;
   }
 
   public getSkillLog(room: Room, owner: Player): PatchedTranslationObject | string {

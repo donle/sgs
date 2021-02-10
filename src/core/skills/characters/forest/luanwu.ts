@@ -81,7 +81,7 @@ export class LuanWu extends ActiveSkill {
           const cardUseEvent = {
             fromId: response.fromId,
             cardId: response.cardId,
-            toIds: response.toIds,
+            targetGroup: [response.toIds!],
             triggeredBySkills: [this.Name],
           };
 

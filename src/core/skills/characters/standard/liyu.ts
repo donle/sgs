@@ -121,7 +121,7 @@ export class LiYu extends TriggerSkill {
             cardName: 'duel',
             bySkill: this.Name,
           }).Id,
-          toIds: choosePlayerResponse.selectedPlayers,
+          targetGroup: [choosePlayerResponse.selectedPlayers!],
         };
 
         await room.useCard(cardUseEvent);
