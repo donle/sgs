@@ -21,7 +21,7 @@ export const characterDictionary: Word[] = [
   { source: 'qiuyuan', target: '求援' },
   { source: 'longyin', target: '龙吟' },
   { source: 'jingce', target: '精策' },
-  { source: 'qiaoshui', target: '巧说' },
+  { source: 'qiaoshuo', target: '巧说' },
   { source: 'j3_zongshi', target: '纵适' },
   { source: 'juece', target: '绝策' },
   { source: 'mieji', target: '灭计' },
@@ -68,7 +68,7 @@ export const skillDescriptions: Word[] = [
       '出牌阶段，你每使用一种花色的手牌，你本回合手牌上限+1；出牌阶段结束时，你可摸X张牌（X是你本回合使用过牌的类型）。',
   },
   {
-    source: 'qiaoshui_description',
+    source: 'qiaoshuo_description',
     target:
       '出牌阶段，你可以与一名角色拼点。若你：赢，你此阶段内使用的下一张基本或普通锦囊牌可多或少选一个目标；没赢，结束此阶段且你的锦囊牌于本回合内不计入手牌上限。',
   },
@@ -154,31 +154,31 @@ export const promptDescriptions: Word[] = [
       '请选择：1.弃置至少X张牌（X为上一名角色且其选择弃置牌，X为其弃置牌数+1，否则为1）；2.受到其造成的2点火焰伤害',
   },
   {
-    source: 'qiaoshui_win',
+    source: 'qiaoshuo_win',
     target: '巧说[赢]',
   },
   {
-    source: 'qiaoshui_lose',
+    source: 'qiaoshuo_lose',
     target: '巧说[没赢]',
   },
   {
-    source: 'qiaoshui: add',
+    source: 'qiaoshuo: add',
     target: '添加目标',
   },
   {
-    source: 'qiaoshui: reduce',
+    source: 'qiaoshuo: reduce',
     target: '减少目标',
   },
   {
-    source: 'qiaoshui: please select',
+    source: 'qiaoshuo: please select',
     target: '巧说：请选择一项操作',
   },
   {
-    source: 'qiaoshui: please select a player to reduce from card targets',
+    source: 'qiaoshuo: please select a player to reduce from card targets',
     target: '请选择一名角色从卡牌目标中移除',
   },
   {
-    source: 'qiaoshui: please select a player to append to card targets',
+    source: 'qiaoshuo: please select a player to append to card targets',
     target: '请选择一名角色将其添加至卡牌目标中',
   },
   {

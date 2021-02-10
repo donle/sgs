@@ -267,6 +267,8 @@ export { AnJian, AnJianPeach } from './characters/yijiang2013/anjian';
 export { DuoDao } from './characters/yijiang2013/duodao';
 export { XianSi, XianSiShadow, XianSiFilter, XianSiSlash } from './characters/yijiang2013/xiansi';
 export { LongYin, LongYinClear } from './characters/yijiang2013/longyin';
+export { QiaoShuo, QiaoShuoLose, QiaoShuoWin } from './characters/yijiang2013/qiaoshuo';
+export { J3ZongShi } from './characters/yijiang2013/zongshi';
 
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';

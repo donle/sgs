@@ -12,10 +12,10 @@ import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { CommonSkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CommonSkill({ name: 'qiaoshui', description: 'qiaoshui_description' })
-export class QiaoShui extends ActiveSkill {
-  public static readonly WIN: string = 'qiaoshui_win';
-  public static readonly LOSE: string = 'qiaoshui_lose';
+@CommonSkill({ name: 'qiaoshuo', description: 'qiaoshuo_description' })
+export class QiaoShuo extends ActiveSkill {
+  public static readonly WIN: string = 'qiaoshuo_win';
+  public static readonly LOSE: string = 'qiaoshuo_lose';
 
   public canUse(): boolean {
     return true;
@@ -52,10 +52,10 @@ export class QiaoShui extends ActiveSkill {
     }
 
     if (pindianRecord[0].winner === fromId) {
-      room.setFlag(fromId, QiaoShui.WIN, true, true);
+      room.setFlag(fromId, QiaoShuo.WIN, true, true);
     } else {
       await room.skip(fromId, PlayerPhase.PlayCardStage);
-      room.setFlag(fromId, QiaoShui.LOSE, true, true);
+      room.setFlag(fromId, QiaoShuo.LOSE, true, true);
     }
 
     return true;
@@ -64,8 +64,8 @@ export class QiaoShui extends ActiveSkill {
 
 @ShadowSkill
 @PersistentSkill()
-@CommonSkill({ name: QiaoShui.GeneralName, description: QiaoShui.Description })
-export class QiaoShuiWin extends TriggerSkill implements OnDefineReleaseTiming {
+@CommonSkill({ name: QiaoShuo.GeneralName, description: QiaoShuo.Description })
+export class QiaoShuoWin extends TriggerSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(room: Room): boolean {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
@@ -79,7 +79,7 @@ export class QiaoShuiWin extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): boolean {
-    return event.fromId === owner.Id && owner.getFlag(QiaoShui.WIN);
+    return event.fromId === owner.Id && owner.getFlag(QiaoShuo.WIN);
   }
 
   public isRefreshAt(room: Room, owner: Player, stage: PlayerPhase): boolean {
@@ -87,7 +87,7 @@ export class QiaoShuiWin extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   public whenRefresh(room: Room, owner: Player): void {
-    owner.getFlag<boolean>(QiaoShui.WIN) && room.removeFlag(owner.Id, QiaoShui.WIN);
+    owner.getFlag<boolean>(QiaoShuo.WIN) && room.removeFlag(owner.Id, QiaoShuo.WIN);
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -113,7 +113,7 @@ export class QiaoShuiWin extends TriggerSkill implements OnDefineReleaseTiming {
       const targetGroup = cardUseEvent.targetGroup;
       const realTargets = TargetGroupUtil.getRealTargets(cardUseEvent.targetGroup);
       if (targetGroup.length > 1) {
-        options.push('qiaoshui: reduce');
+        options.push('qiaoshuo: reduce');
       }
 
       const cardSkill = (card.Skill as unknown) as ExtralCardSkillProperty;
@@ -129,7 +129,7 @@ export class QiaoShuiWin extends TriggerSkill implements OnDefineReleaseTiming {
         });
 
       if (pendingTargets.length) {
-        options.push('qiaoshui: add');
+        options.push('qiaoshuo: add');
       }
 
       if (!options.length) {
@@ -141,7 +141,7 @@ export class QiaoShuiWin extends TriggerSkill implements OnDefineReleaseTiming {
         {
           options,
           toId: fromId,
-          conversation: 'qiaoshui: please select',
+          conversation: 'qiaoshuo: please select',
         },
         fromId,
       );
@@ -150,14 +150,14 @@ export class QiaoShuiWin extends TriggerSkill implements OnDefineReleaseTiming {
         return false;
       }
 
-      if (selectedOption === 'qiaoshui: reduce') {
+      if (selectedOption === 'qiaoshuo: reduce') {
         const { selectedPlayers } = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingPlayerEvent>(
           GameEventIdentifiers.AskForChoosingPlayerEvent,
           {
             players: realTargets,
             toId: fromId,
             requiredAmount: 1,
-            conversation: 'qiaoshui: please select a player to reduce from card targets',
+            conversation: 'qiaoshuo: please select a player to reduce from card targets',
           },
           fromId,
           true,
@@ -182,7 +182,7 @@ export class QiaoShuiWin extends TriggerSkill implements OnDefineReleaseTiming {
           {
             cardId: cardUseEvent.cardId,
             exclude: realTargets,
-            conversation: 'qiaoshui: please select a player to append to card targets',
+            conversation: 'qiaoshuo: please select a player to append to card targets',
           },
           fromId,
         );
@@ -203,15 +203,15 @@ export class QiaoShuiWin extends TriggerSkill implements OnDefineReleaseTiming {
       }
     }
 
-    room.removeFlag(fromId, QiaoShui.WIN);
+    room.removeFlag(fromId, QiaoShuo.WIN);
     return true;
   }
 }
 
 @ShadowSkill
 @PersistentSkill()
-@CommonSkill({ name: QiaoShuiWin.Name, description: QiaoShuiWin.GeneralName })
-export class QiaoShuiLose extends TriggerSkill implements OnDefineReleaseTiming {
+@CommonSkill({ name: QiaoShuoWin.Name, description: QiaoShuoWin.GeneralName })
+export class QiaoShuoLose extends TriggerSkill implements OnDefineReleaseTiming {
   public afterLosingSkill(room: Room): boolean {
     return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
   }
@@ -232,7 +232,7 @@ export class QiaoShuiLose extends TriggerSkill implements OnDefineReleaseTiming 
     return (
       room.CurrentPlayerPhase === PlayerPhase.DropCardStage &&
       room.CurrentPhasePlayer.Id === owner.Id &&
-      owner.getFlag<boolean>(QiaoShui.LOSE)
+      owner.getFlag<boolean>(QiaoShuo.LOSE)
     );
   }
 
@@ -241,7 +241,7 @@ export class QiaoShuiLose extends TriggerSkill implements OnDefineReleaseTiming 
   }
 
   public whenRefresh(room: Room, owner: Player) {
-    owner.getFlag<boolean>(QiaoShui.LOSE) && room.removeFlag(owner.Id, QiaoShui.LOSE);
+    owner.getFlag<boolean>(QiaoShuo.LOSE) && room.removeFlag(owner.Id, QiaoShuo.LOSE);
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -261,7 +261,7 @@ export class QiaoShuiLose extends TriggerSkill implements OnDefineReleaseTiming 
     askForCardDropEvent.cardAmount -= tricks.length;
     askForCardDropEvent.except = askForCardDropEvent.except ? [...askForCardDropEvent.except, ...tricks] : tricks;
 
-    room.removeFlag(player.Id, QiaoShui.LOSE);
+    room.removeFlag(player.Id, QiaoShuo.LOSE);
     return true;
   }
 }
