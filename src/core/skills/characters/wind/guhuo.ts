@@ -61,10 +61,6 @@ export class GuHuo extends ViewAsSkill {
       selectedCards,
     );
   }
-
-  nominateForwardTarget() {
-    return [];
-  }
 }
 
 @ShadowSkill
@@ -120,18 +116,18 @@ export class GuHuoShadow extends TriggerSkill {
       });
     }
 
-    const chooseOptionEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = EventPacker.createUncancellableEvent<
-      GameEventIdentifiers.AskForChoosingOptionsEvent
-    >({
-      toId: event.fromId,
-      options: ['guhuo:doubt', 'guhuo:no-doubt'],
-      conversation: TranslationPack.translationJsonPatcher(
-        'do you doubt the pre-use of {0} from {1}',
-        TranslationPack.patchCardInTranslation(cardEvent.cardId),
-        TranslationPack.patchPlayerInTranslation(from),
-      ).extract(),
-      ignoreNotifiedStatus: true,
-    });
+    const chooseOptionEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(
+      {
+        toId: event.fromId,
+        options: ['guhuo:doubt', 'guhuo:no-doubt'],
+        conversation: TranslationPack.translationJsonPatcher(
+          'do you doubt the pre-use of {0} from {1}',
+          TranslationPack.patchCardInTranslation(cardEvent.cardId),
+          TranslationPack.patchPlayerInTranslation(from),
+        ).extract(),
+        ignoreNotifiedStatus: true,
+      },
+    );
 
     const askingResponses: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent>>[] = [];
     const askForPlayers = room
@@ -168,13 +164,13 @@ export class GuHuoShadow extends TriggerSkill {
     });
 
     let success = true;
-    const chooseOptions: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = EventPacker.createUncancellableEvent<
-      GameEventIdentifiers.AskForChoosingOptionsEvent
-    >({
-      options: ['guhuo:lose-hp', 'guhuo:drop-card'],
-      toId: '',
-      conversation: 'please choose',
-    });
+    const chooseOptions: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(
+      {
+        options: ['guhuo:lose-hp', 'guhuo:drop-card'],
+        toId: '',
+        conversation: 'please choose',
+      },
+    );
     for (const response of responses) {
       if (preuseCard.Name === realCard.Name) {
         if (response.selectedOption === 'guhuo:doubt') {

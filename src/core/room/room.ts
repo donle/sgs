@@ -181,6 +181,13 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     to: PlayerId,
   ): Promise<ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent>>;
   //Server only
+  public abstract async doAskForCommonly<T extends GameEventIdentifiers>(
+    type: T,
+    event: ServerEventFinder<T>,
+    toId: PlayerId,
+    uncancellable?: boolean,
+  ): Promise<ClientEventFinder<T>>;
+  //Server only
   public abstract findCardsByMatcherFrom(cardMatcher: CardMatcher, fromDrawStack?: boolean): CardId[];
   //Server only
   public abstract displayCards(fromId: PlayerId, displayCards: CardId[], translations?: PatchedTranslationObject): void;
@@ -467,6 +474,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       if (!skill.canBeUsedCard(cardId, (this as unknown) as Room, target, attacker)) {
         return false;
       }
+
+      if (!skill.canUseCard(cardId, (this as unknown) as Room, attacker, target)) {
+        return false;
+      }
     }
 
     return true;
@@ -549,6 +560,17 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
         players.push(topPlayer!);
       }
     }
+  }
+
+  public sortByPlayersPosition<T>(array: T[], extractor: (el: T) => Player) {
+    array.sort((el1, el2) => {
+      const p1 = extractor(el1);
+      const p2 = extractor(el2);
+      const pos1 = (p1.Position - this.CurrentPhasePlayer.Position + this.Players.length) % this.Players.length;
+      const pos2 = (p2.Position - this.CurrentPhasePlayer.Position + this.Players.length) % this.Players.length;
+
+      return pos1 - pos2;
+    });
   }
 
   public transformCard(

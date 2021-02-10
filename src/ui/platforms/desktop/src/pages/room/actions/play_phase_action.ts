@@ -60,6 +60,7 @@ export class PlayPhaseAction extends BaseAction {
         toIds: this.selectedTargets.length > 0 ? this.selectedTargets : undefined,
         toCardIds: this.selectedCards.length > 0 ? this.selectedCards : undefined,
       };
+
       return {
         fromId: player,
         end: false,

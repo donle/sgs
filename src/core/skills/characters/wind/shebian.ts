@@ -67,8 +67,8 @@ export class SheBian extends TriggerSkill {
     ];
   }
 
-  public nominateForwardTarget(targets: PlayerId[]) {
-    return [targets[0]];
+  public resortTargets() {
+    return false;
   }
 
   async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {

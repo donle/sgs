@@ -49,8 +49,8 @@ export class LiJian extends ActiveSkill {
     ];
   }
 
-  public nominateForwardTarget(targets?: PlayerId[]) {
-    return [targets![0]];
+  public resortTargets() {
+    return false;
   }
 
   async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {
@@ -73,7 +73,7 @@ export class LiJian extends ActiveSkill {
 
     await room.useCard({
       fromId: skillUseEvent.toIds![1],
-      toIds: [skillUseEvent.toIds![0]],
+      targetGroup: [[skillUseEvent.toIds![0]]],
       cardId: duel.Id,
     });
 

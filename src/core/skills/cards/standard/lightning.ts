@@ -43,7 +43,7 @@ export class LightningSkill extends ActiveSkill {
           toArea: CardMoveArea.JudgeArea,
           moveReason: CardMoveReason.CardUse,
         });
-        event.toIds = [player.Id];
+        event.targetGroup = [[player.Id]];
         break;
       }
     }

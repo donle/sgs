@@ -90,7 +90,7 @@ export class ShenSu extends TriggerSkill {
 
     const cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
       fromId,
-      toIds,
+      targetGroup: toIds && [toIds],
       cardId: VirtualCard.create({ cardName: 'slash', bySkill: this.Name }).Id,
     };
     await room.useCard(cardUseEvent);

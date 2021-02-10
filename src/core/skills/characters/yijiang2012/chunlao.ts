@@ -28,7 +28,8 @@ export class ChunLao extends TriggerSkill {
     return (
       event.playerId === owner.Id &&
       owner.getCardIds(PlayerCardsArea.OutsideArea, this.Name).length === 0 &&
-      owner.getCardIds(PlayerCardsArea.HandArea)
+      owner
+        .getCardIds(PlayerCardsArea.HandArea)
         .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'slash') !== undefined
     );
   }
@@ -56,10 +57,7 @@ export class ChunLao extends TriggerSkill {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { fromId, cardIds } = event;
 
     await room.moveCards({
@@ -81,18 +79,11 @@ export class ChunLao extends TriggerSkill {
 @ShadowSkill
 @CommonSkill({ name: ChunLao.Name, description: ChunLao.Description })
 export class ChunLaoShadow extends TriggerSkill {
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>,
-    stage?: AllStage,
-  ): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>, stage?: AllStage): boolean {
     return stage === PlayerDyingStage.PlayerDying;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>): boolean {
     return (
       room.getPlayerById(event.dying).Hp < 1 &&
       owner.getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName).length > 0
@@ -128,10 +119,7 @@ export class ChunLaoShadow extends TriggerSkill {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { fromId, cardIds, triggeredOnEvent } = event;
     const playerDyingEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>;
 
@@ -145,19 +133,17 @@ export class ChunLaoShadow extends TriggerSkill {
       movedByReason: this.GeneralName,
     });
 
-    const alcohol = VirtualCard.create<Alcohol>(
-      {
-        cardName: 'alcohol',
-        bySkill: this.GeneralName,
-      },
-    );
+    const alcohol = VirtualCard.create<Alcohol>({
+      cardName: 'alcohol',
+      bySkill: this.GeneralName,
+    });
 
     const user = room.getPlayerById(playerDyingEvent.dying);
     if (user.canUseCardTo(room, alcohol.Id, playerDyingEvent.dying)) {
       await room.useCard({
         fromId: playerDyingEvent.dying,
         cardId: alcohol.Id,
-        toIds: [playerDyingEvent.dying],
+        targetGroup: [[playerDyingEvent.dying]],
       });
 
       if (chun.Name === 'thunder_slash') {

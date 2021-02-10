@@ -131,7 +131,7 @@ export class Rende extends ActiveSkill {
               cardName: response.selectedOption,
               bySkill: this.Name,
             }).Id,
-            toIds: choosePlayerResponse.selectedPlayers,
+            targetGroup: [choosePlayerResponse.selectedPlayers],
           };
 
           await room.useCard(slashUseEvent);

@@ -4,9 +4,10 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @CommonSkill({ name: 'taoyuanjieyi', description: 'taoyuanjieyi_description' })
-export class TaoYuanJieYiSkill extends ActiveSkill {
+export class TaoYuanJieYiSkill extends ActiveSkill implements ExtralCardSkillProperty {
   public canUse(room: Room, owner: Player, containerCard?: CardId) {
     if (containerCard) {
       for (const target of room.getAlivePlayersFrom()) {
@@ -29,13 +30,19 @@ export class TaoYuanJieYiSkill extends ActiveSkill {
   public isAvailableCard(): boolean {
     return false;
   }
+
+  public isCardAvailableTarget(): boolean {
+    return true;
+  }
+
   public isAvailableTarget(): boolean {
     return false;
   }
+
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const from = room.getPlayerById(event.fromId);
     const allPlayers = room.getAlivePlayersFrom().filter(player => from.canUseCardTo(room, event.cardId, player.Id));
-    event.toIds = allPlayers.map(player => player.Id);
+    event.targetGroup = [...allPlayers.map(player => [player.Id])];
     event.nullifiedTargets = allPlayers.filter(player => player.Hp === player.MaxHp).map(player => player.Id);
     return true;
   }

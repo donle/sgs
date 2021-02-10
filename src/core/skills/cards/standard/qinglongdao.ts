@@ -42,7 +42,7 @@ export class QingLongYanYueDaoSkill extends TriggerSkill {
       const slashEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
         fromId: response.fromId,
         cardId: response.cardId,
-        toIds: slashEffectEvent.toIds,
+        targetGroup: slashEffectEvent.toIds && [slashEffectEvent.toIds],
         extraUse: true,
         translationsMessage: TranslationPack.translationJsonPatcher(
           '{0} used skill {1}',

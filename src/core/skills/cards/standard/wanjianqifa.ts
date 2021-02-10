@@ -3,13 +3,15 @@ import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { DamageType } from 'core/game/game_props';
 import { Player } from 'core/player/player';
+import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @CommonSkill({ name: 'wanjianqifa', description: 'wanjianqifa_description' })
-export class WanJianQiFaSkill extends ActiveSkill {
+export class WanJianQiFaSkill extends ActiveSkill implements ExtralCardSkillProperty {
   public canUse(room: Room, owner: Player, containerCard?: CardId) {
     if (containerCard) {
       for (const target of room.getOtherPlayers(owner.Id)) {
@@ -29,6 +31,11 @@ export class WanJianQiFaSkill extends ActiveSkill {
   public cardFilter(): boolean {
     return true;
   }
+
+  public isCardAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
+    return target !== owner;
+  }
+
   public isAvailableCard(): boolean {
     return false;
   }
@@ -38,7 +45,8 @@ export class WanJianQiFaSkill extends ActiveSkill {
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const others = room.getOtherPlayers(event.fromId);
     const from = room.getPlayerById(event.fromId);
-    event.toIds = others.filter(player => from.canUseCardTo(room, event.cardId, player.Id)).map(player => player.Id);
+    const groups = others.filter(player => from.canUseCardTo(room, event.cardId, player.Id)).map(player => [player.Id]);
+    event.targetGroup = [...groups];
     return true;
   }
 
