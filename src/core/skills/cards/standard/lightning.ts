@@ -12,11 +12,17 @@ import { ActiveSkill, CommonSkill, SelfTargetSkill } from 'core/skills/skill';
 @CommonSkill({ name: 'lightning', description: 'lightning_description' })
 @SelfTargetSkill
 export class LightningSkill extends ActiveSkill {
-  public canUse(room: Room, owner: Player) {
+  public canUse(room: Room, owner: Player, containerCard?: CardId) {
+    let canUseTo = true;
+    if (containerCard) {
+      canUseTo = owner.canUseCardTo(room, containerCard, owner.Id);
+    }
+
     return (
       owner
         .getCardIds(PlayerCardsArea.JudgeArea)
-        .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'lightning') === undefined
+        .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'lightning') === undefined &&
+      canUseTo
     );
   }
 
@@ -34,19 +40,7 @@ export class LightningSkill extends ActiveSkill {
     return false;
   }
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    for (const player of room.getAlivePlayersFrom(event.fromId)) {
-      if (room.isAvailableTarget(event.cardId, event.fromId, player.Id)) {
-        await room.moveCards({
-          fromId: event.fromId,
-          movingCards: [{ card: event.cardId, fromArea: CardMoveArea.HandArea }],
-          toId: player.Id,
-          toArea: CardMoveArea.JudgeArea,
-          moveReason: CardMoveReason.CardUse,
-        });
-        event.targetGroup = [[player.Id]];
-        break;
-      }
-    }
+    event.targetGroup = [[event.fromId]];
 
     return true;
   }

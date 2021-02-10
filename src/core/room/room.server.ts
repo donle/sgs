@@ -24,6 +24,7 @@ import { ServerPlayer } from 'core/player/player.server';
 import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props';
 
 import { Card, CardType, VirtualCard } from 'core/cards/card';
+import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Character, CharacterId } from 'core/characters/character';
@@ -879,7 +880,48 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           }
         }
 
-        if (card.is(CardType.Equip) || card.is(CardType.DelayedTrick)) {
+        const realTargets = TargetGroupUtil.getAllTargets(event.targetGroup);
+        const moveToIds = realTargets?.map(ids => ids[0]);
+        if (card.is(CardType.Equip)) {
+          if (moveToIds && !this.getPlayerById(moveToIds[0]).Dead && this.isCardOnProcessing(event.cardId)) {
+            const moveTo = this.getPlayerById(moveToIds[0]);
+
+            let existingEquipId = moveTo.getEquipment((card as EquipCard).EquipType);
+            if (card.isVirtualCard()) {
+              const actualEquip = Sanguosha.getCardById<EquipCard>((card as VirtualCard).ActualCardIds[0]);
+              existingEquipId = moveTo.getEquipment(actualEquip.EquipType);
+            }
+  
+            if (existingEquipId !== undefined) {
+              await this.moveCards({
+                  fromId:moveTo.Id,
+                  moveReason: CardMoveReason.PlaceToDropStack,
+                  toArea: CardMoveArea.DropStack,
+                  movingCards: [{ card: existingEquipId, fromArea: CardMoveArea.EquipArea }],
+              });
+            }
+            
+            await this.moveCards({
+              movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
+              moveReason: CardMoveReason.CardUse,
+              toId: moveTo.Id,
+              toArea: CardMoveArea.EquipArea,
+            });
+          }
+          
+          return true;
+        } else if (card.is(CardType.DelayedTrick)) {
+          if (moveToIds && !this.getPlayerById(moveToIds[0]).Dead && this.isCardOnProcessing(event.cardId)) {
+            const moveTo = this.getPlayerById(moveToIds[0]);
+            await this.moveCards({
+              fromId: event.fromId,
+              movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
+              toId: moveTo[0],
+              toArea: CardMoveArea.JudgeArea,
+              moveReason: CardMoveReason.CardUse,
+            });
+          }
+
           return true;
         }
 

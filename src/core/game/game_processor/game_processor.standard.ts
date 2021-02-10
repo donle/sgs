@@ -1457,7 +1457,7 @@ export class StandardGameProcessor extends GameProcessor {
     this.room.broadcast(identifier, event);
     event.translationsMessage = undefined;
 
-    if (!this.room.isCardOnProcessing(event.cardId) && !card.is(CardType.DelayedTrick)) {
+    if (!this.room.isCardOnProcessing(event.cardId)) {
       this.room.addProcessingCards(event.cardId.toString(), event.cardId);
       await this.room.moveCards({
         movingCards: [{ card: event.cardId, fromArea: from.cardFrom(event.cardId) }],
@@ -1467,34 +1467,7 @@ export class StandardGameProcessor extends GameProcessor {
       });
     }
 
-    await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      if (stage === CardUseStage.CardUsing) {
-        if (card.is(CardType.DelayedTrick)) {
-          EventPacker.terminate(event);
-        } else if (card.is(CardType.Equip)) {
-          let existingEquipId = from.getEquipment((card as EquipCard).EquipType);
-          if (card.isVirtualCard()) {
-            const actualEquip = Sanguosha.getCardById<EquipCard>((card as VirtualCard).ActualCardIds[0]);
-            existingEquipId = from.getEquipment(actualEquip.EquipType);
-          }
-
-          if (existingEquipId !== undefined) {
-            await this.room.moveCards({
-              fromId: from.Id,
-              moveReason: CardMoveReason.PlaceToDropStack,
-              toArea: CardMoveArea.DropStack,
-              movingCards: [{ card: existingEquipId, fromArea: CardMoveArea.EquipArea }],
-            });
-          }
-          await this.room.moveCards({
-            movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
-            moveReason: CardMoveReason.CardUse,
-            toId: from.Id,
-            toArea: CardMoveArea.EquipArea,
-          });
-        }
-      }
-    });
+    await this.iterateEachStage(identifier, event, onActualExecuted);
 
     if (!event.skipDrop) {
       if (!card.is(CardType.Equip) && !card.is(CardType.DelayedTrick)) {
