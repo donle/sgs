@@ -147,4 +147,9 @@ export const promptDescriptions: Word[] = [
     source: '{0}: do you want to choose a target to draw a card?',
     target: '{0}：你可以令一名角色摸一张牌并展示之',
   },
+  {
+    source: 'please choose: fencheng-options',
+    target:
+      '请选择：1.弃置至少X张牌（X为上一名角色且其选择弃置牌，X为其弃置牌数+1，否则为1）；2.受到其造成的2点火焰伤害',
+  },
 ];

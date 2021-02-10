@@ -1,4 +1,5 @@
 import { CardType } from 'core/cards/card';
+import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import {
   CardMoveArea,
@@ -80,7 +81,7 @@ export class MieJi extends ActiveSkill {
     const askForChooseOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
       options,
       toId,
-      conversation: 'please choose mieji options',
+      conversation: 'please choose',
       triggeredBySkills: [this.Name],
     };
     room.notify(
@@ -92,23 +93,28 @@ export class MieJi extends ActiveSkill {
       GameEventIdentifiers.AskForChoosingOptionsEvent,
       toId,
     );
+
     if (selectedOption === 'mieji:trick') {
-      const response1 = await room.askForCardDrop(
+      const askForCard: ServerEventFinder<GameEventIdentifiers.AskForCardEvent> = {
         toId,
-        1,
-        [PlayerCardsArea.HandArea],
-        true,
-        to
-          .getCardIds(PlayerCardsArea.HandArea)
-          .filter(cardId => Sanguosha.getCardById(cardId).BaseType !== CardType.Trick),
-        this.Name,
-        TranslationPack.translationJsonPatcher(
+        cardAmount: 1,
+        fromArea: [PlayerCardsArea.HandArea],
+        reason: this.Name,
+        cardMatcher: new CardMatcher({ type: [CardType.Basic, CardType.Equip] }).toSocketPassenger(),
+        conversation: TranslationPack.translationJsonPatcher(
           'please choose a trick card to pass to {0}',
           TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
         ).toString(),
+      };
+      room.notify(
+        GameEventIdentifiers.AskForCardEvent,
+        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForCardEvent>(askForCard),
+        toId,
       );
+      const { selectedCards } = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardEvent, toId);
+
       await room.moveCards({
-        movingCards: [{ card: response1.droppedCards[0], fromArea: CardMoveArea.HandArea }],
+        movingCards: [{ card: selectedCards[0], fromArea: CardMoveArea.HandArea }],
         fromId: toId,
         toId: skillUseEvent.fromId,
         toArea: CardMoveArea.HandArea,
@@ -120,7 +126,7 @@ export class MieJi extends ActiveSkill {
     } else {
       let droppedCards = 0;
       const nonTrickCards = to.getPlayerCards().filter(cardId => !Sanguosha.getCardById(cardId).is(CardType.Trick));
-      while (droppedCards < 2 && Math.min(nonTrickCards.length, 2)) {
+      while (droppedCards < Math.min(nonTrickCards.length, 2)) {
         const response = await room.askForCardDrop(
           toId,
           1,

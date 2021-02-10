@@ -45,12 +45,12 @@ export class FenCheng extends ActiveSkill {
     for (const player of room.getOtherPlayers(fromId)) {
       const playerCardsLength = player.getCardIds().length;
 
-      const options = ['fencheng: drop_card', 'fencheng: damaged'];
+      const options = ['option-one', 'option-two'];
       playerCardsLength < x && options.shift();
 
       const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
         options,
-        conversation: 'please choose',
+        conversation: 'please choose: fencheng-options',
         toId: player.Id,
         askedBy: SkillEffectEvent.fromId,
       };
@@ -68,7 +68,7 @@ export class FenCheng extends ActiveSkill {
         player.Id,
       );
 
-      if (selectedOption === 'fencheng: drop_card') {
+      if (selectedOption === 'option-one') {
         let droppedCards: CardId[];
         if (playerCardsLength === x) {
           droppedCards = player.getCardIds();
