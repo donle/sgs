@@ -30,6 +30,7 @@
     display: flex;
     justify-content: center;
     padding-left: 0;
+    z-index: 0;
 }
 .badge.small {
     height: calc(gridLine * 15);

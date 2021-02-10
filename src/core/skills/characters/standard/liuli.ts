@@ -20,7 +20,7 @@ export class LiuLi extends TriggerSkill {
 
   canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
     room.setFlag(owner.Id, this.Name, event.fromId);
-    return event.toId === owner.Id;
+    return event.toId === owner.Id && owner.getPlayerCards().length > 0;
   }
 
   public targetFilter(room: Room, owner: Player, targets: PlayerId[]) {

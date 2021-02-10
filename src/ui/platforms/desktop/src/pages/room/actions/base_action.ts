@@ -601,6 +601,10 @@ export abstract class BaseAction {
       this.presenter.selectCard(card);
     } else {
       this.presenter.unselectCard(card);
+      for (const target of this.selectedTargets) {
+        this.presenter.unselectPlayer(this.store.room.getPlayerById(target));
+      }
+      this.selectedTargets = [];
     }
 
     if (this.selectedSkillToPlay !== undefined) {
@@ -702,6 +706,16 @@ export abstract class BaseAction {
       } else {
         this.selectedCardToPlay = this.selectedSkillToPlay.viewAs(this.pendingCards, this.player, canViewAs[0]).Id;
       }
+    }
+    if (!selected) {
+      for (const card of this.selectedCards) {
+        this.presenter.unselectCard(Sanguosha.getCardById(card));
+      }
+      for (const target of this.selectedTargets) {
+        this.presenter.unselectPlayer(this.store.room.getPlayerById(target));
+      }
+      this.selectedCards = [];
+      this.selectedTargets = [];
     }
     this.delightItems();
     this.callToActionCheck();
