@@ -261,7 +261,7 @@ export class QiaoShuoLose extends TriggerSkill implements OnDefineReleaseTiming 
       .getCardIds(PlayerCardsArea.HandArea)
       .filter(cardId => Sanguosha.getCardById(cardId).is(CardType.Trick));
 
-    askForCardDropEvent.cardAmount -= tricks.length;
+    (askForCardDropEvent.cardAmount as number) -= tricks.length;
     askForCardDropEvent.except = askForCardDropEvent.except ? [...askForCardDropEvent.except, ...tricks] : tricks;
 
     room.removeFlag(player.Id, QiaoShuo.LOSE);
