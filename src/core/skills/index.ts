@@ -263,6 +263,8 @@ export { MieJi } from './characters/yijiang2013/mieji';
 export { FenCheng } from './characters/yijiang2013/fencheng';
 export { ZongXuan, ZongXuanShadow } from './characters/yijiang2013/zongxuan';
 export { ZhiYan } from './characters/yijiang2013/zhiyan';
+export { AnJian, AnJianPeach } from './characters/yijiang2013/anjian';
+export { DuoDao } from './characters/yijiang2013/duodao';
 export { XianSi, XianSiShadow, XianSiFilter, XianSiSlash } from './characters/yijiang2013/xiansi';
 export { LongYin, LongYinClear } from './characters/yijiang2013/longyin';
 
