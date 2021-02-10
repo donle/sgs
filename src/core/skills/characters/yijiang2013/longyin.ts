@@ -7,7 +7,7 @@ import { AllStage, CardUseStage, PhaseStageChangeStage, PlayerPhaseStages } from
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { CommonSkill, PersistentSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 
 @CommonSkill({ name: 'longyin', description: 'longyin_description' })
@@ -60,6 +60,7 @@ export class LongYin extends TriggerSkill {
 }
 
 @ShadowSkill
+@PersistentSkill()
 @CommonSkill({ name: LongYin.Name, description: LongYin.Description })
 export class LongYinClear extends TriggerSkill implements OnDefineReleaseTiming {
   get Muted() {
