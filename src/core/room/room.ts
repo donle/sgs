@@ -305,7 +305,11 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   ): Promise<void> {
     if (content.fromId) {
       const from = this.getPlayerById(content.fromId);
-      if (this.CurrentPlayer.Id === content.fromId && !content.extraUse) {
+      const exclude =
+        from
+          .getSkills<FilterSkill>('filter')
+          .find(skill => skill.excludeCardUseHistory(content.cardId, this, from.Id)) !== undefined;
+      if (this.CurrentPlayer.Id === content.fromId && !content.extraUse && !exclude) {
         from.useCard(content.cardId);
       }
     }

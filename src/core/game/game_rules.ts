@@ -158,9 +158,17 @@ export class GameCommonRules {
 
   public static addCardUsableTimes(cardMatcher: CardMatcher, times: number, user: Player) {
     GameCommonRules.preCheck(user);
-    this.userRules[user.Id].cards
-      .filter(cardProp => cardProp.cardMatcher.match(cardMatcher))
-      .map(rule => (rule.additionalUsableTimes += times));
+    const matchedRules = this.userRules[user.Id].cards.filter(cardProp => cardProp.cardMatcher.match(cardMatcher));
+    if (matchedRules.length === 0) {
+      this.userRules[user.Id].cards.push({
+        cardMatcher,
+        additionalTargets: 0,
+        additionalUsableDistance: 0,
+        additionalUsableTimes: times,
+      });
+    } else {
+      matchedRules.map(rule => (rule.additionalUsableTimes += times));
+    }
   }
 
   public static addCardUsableDistance(cardMatcher: CardMatcher, times: number, user: Player) {

@@ -518,6 +518,10 @@ export abstract class FilterSkill extends Skill {
     return true;
   }
 
+  public excludeCardUseHistory(cardId: CardId | CardMatcher, room: Room, owner: PlayerId): boolean {
+    return false;
+  }
+
   public canBePindianTarget(room: Room, owner: PlayerId, fromId: PlayerId): boolean {
     return true;
   }
