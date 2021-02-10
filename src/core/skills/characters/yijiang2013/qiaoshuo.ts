@@ -103,6 +103,8 @@ export class QiaoShuoWin extends TriggerSkill implements OnDefineReleaseTiming {
     const cardUseEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
     const card = Sanguosha.getCardById(cardUseEvent.cardId);
     if (card.is(CardType.Basic) || (card.is(CardType.Trick) && !card.is(CardType.DelayedTrick))) {
+      room.removeFlag(fromId, QiaoShuo.WIN);
+
       const options: string[] = [];
 
       if (!cardUseEvent.targetGroup) {
@@ -206,7 +208,6 @@ export class QiaoShuoWin extends TriggerSkill implements OnDefineReleaseTiming {
       }
     }
 
-    room.removeFlag(fromId, QiaoShuo.WIN);
     return true;
   }
 }
