@@ -6,6 +6,7 @@ import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ExtralCardSkillProperty } from '../interface/extral_property';
@@ -69,6 +70,14 @@ export class JieDaoShaRenSkill extends ActiveSkill implements ExtralCardSkillPro
   }
 
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
+    const targets = TargetGroupUtil.getAllTargets(event.targetGroup)![0];
+    event.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} used card {1} to {2} and announced {3} as pending target',
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
+      TranslationPack.patchCardInTranslation(event.cardId),
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(targets[0])),
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(targets[1])),
+    ).extract();
     event.animation = this.getAnimationSteps(event);
     return true;
   }
