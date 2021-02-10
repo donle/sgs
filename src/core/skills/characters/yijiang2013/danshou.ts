@@ -7,10 +7,10 @@ import { AimStage, AllStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStag
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 
 @CommonSkill({ name: 'danshou', description: 'danshou_description' })
 export class DanShou extends TriggerSkill {
