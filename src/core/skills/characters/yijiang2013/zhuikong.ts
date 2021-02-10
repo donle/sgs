@@ -47,12 +47,12 @@ export class ZhuiKong extends TriggerSkill implements OnDefineReleaseTiming {
     const { playerId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
     const to = room.getPlayerById(playerId);
 
-    const pindianResult = await room.pindian(fromId, [playerId]);
-    if (!pindianResult) {
+    const { pindianRecord } = await room.pindian(fromId, [playerId]);
+    if (!pindianRecord) {
       return false;
     }
 
-    if (pindianResult.winners.includes(fromId)) {
+    if (pindianRecord[0].winner === fromId) {
       room.setFlag<boolean>(to.Id, ZhuiKong.Filter, true);
     } else {
       room.setFlag<boolean>(to.Id, ZhuiKong.DistanceBreak, true);

@@ -873,11 +873,23 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         let nullifiedTargets: PlayerId[] = event.nullifiedTargets || [];
 
         if (toIds) {
+          // need to refactor it
+          let currentLength = toIds.length;
+          //
           for (const toId of toIds) {
             const response = await this.onAim(event, toId, toIds, nullifiedTargets, toId === toIds[0]);
+            // need to refactor it
+            while (toIds.length < response.allTargets.length) {
+              involvedPlayerIds?.push([response.allTargets[currentLength]]);
+              currentLength++;
+            }
+            //
             aimEventCollaborators[toId] = response;
             nullifiedTargets = response.nullifiedTargets;
           }
+          // need to refactor it
+          this.sortByPlayersPosition(involvedPlayerIds!, ids => this.getPlayerById(ids[0]));
+          //
         }
 
         if (card.is(CardType.Equip)) {
