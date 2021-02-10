@@ -21,7 +21,7 @@ export const characterDictionary: Word[] = [
   { source: 'qiuyuan', target: '求援' },
   { source: 'longyin', target: '龍吟' },
   { source: 'jingce', target: '精策' },
-  { source: 'qiaoshui', target: '巧說' },
+  { source: 'qiaoshuo', target: '巧說' },
   { source: 'jianyong_zongshi', target: '縱適' },
   { source: 'juece', target: '絕策' },
   { source: 'mieji', target: '滅計' },
@@ -66,7 +66,7 @@ export const skillDescriptions: Word[] = [
     target: '結束階段開始時，若你於本回合內使用過的牌數不小於X張，你可以摸兩張牌（X為你的體力值）。',
   },
   {
-    source: 'qiaoshui_description',
+    source: 'qiaoshuo_description',
     target:
       '出牌階段，你可以與一名角色拼點。若你：贏，你此階段內使用的下一張基本或普通錦囊牌可多或少選一個目標；沒贏，結束此階段且你的錦囊牌於本回合內不計入手牌上限。',
   },

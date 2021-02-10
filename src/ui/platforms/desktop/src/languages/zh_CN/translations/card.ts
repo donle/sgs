@@ -239,5 +239,12 @@ export const cardDescriptions: Word[] = [
     source: 'hualiu_description',
     target: '其他角色计算与你的距离+1。',
   },
+];
+
+export const promptDescriptions: Word[] = [
   { source: 'do you wish to deliver muniuliuma to another player?', target: '是否将木牛流马移动至其他角色的装备区？' },
+  {
+    source: '{0} used card {1} to {2} and announced {3} as pending target',
+    target: '{0} 使用了一张 {1}，目标是 {2}，其需要杀的目标是 {3}',
+  },
 ];
