@@ -58,6 +58,9 @@ export class JueCeShadow extends TriggerSkill implements OnDefineReleaseTiming {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>, stage?: AllStage) {
     return (
       stage === CardMoveStage.AfterCardMoved &&
+      event.toId !== event.fromId &&
+      event.toArea !== CardMoveArea.HandArea &&
+      event.toArea !== CardMoveArea.EquipArea &&
       event.movingCards.find(
         cardInfo => cardInfo.fromArea === CardMoveArea.HandArea || cardInfo.fromArea === CardMoveArea.EquipArea,
       ) !== undefined
