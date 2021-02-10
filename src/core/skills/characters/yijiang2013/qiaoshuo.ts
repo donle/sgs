@@ -142,6 +142,7 @@ export class QiaoShuoWin extends TriggerSkill implements OnDefineReleaseTiming {
           options,
           toId: fromId,
           conversation: 'qiaoshuo: please select',
+          triggeredBySkills: [this.Name],
         },
         fromId,
       );
@@ -158,6 +159,7 @@ export class QiaoShuoWin extends TriggerSkill implements OnDefineReleaseTiming {
             toId: fromId,
             requiredAmount: 1,
             conversation: 'qiaoshuo: please select a player to reduce from card targets',
+            triggeredBySkills: [this.Name],
           },
           fromId,
           true,
@@ -183,6 +185,7 @@ export class QiaoShuoWin extends TriggerSkill implements OnDefineReleaseTiming {
             cardId: cardUseEvent.cardId,
             exclude: realTargets,
             conversation: 'qiaoshuo: please select a player to append to card targets',
+            triggeredBySkills: [this.Name],
           },
           fromId,
         );
