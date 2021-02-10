@@ -18,7 +18,13 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 @CommonSkill({ name: 'mieji', description: 'mieji_description' })
 export class MieJi extends ActiveSkill {
   public canUse(room: Room, owner: Player) {
-    return !owner.hasUsedSkill(this.Name);
+    return (
+      !owner.hasUsedSkill(this.Name) &&
+      owner
+        .getCardIds(PlayerCardsArea.HandArea)
+        .filter(cardId => Sanguosha.getCardById(cardId).isBlack() && Sanguosha.getCardById(cardId).is(CardType.Trick))
+        .length > 0
+    );
   }
 
   public numberOfTargets() {
@@ -30,14 +36,7 @@ export class MieJi extends ActiveSkill {
   }
 
   isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
-    return (
-      owner !== target &&
-      room
-        .getPlayerById(target)
-        .getPlayerCards()
-        .filter(cardId => Sanguosha.getCardById(cardId).isBlack() && Sanguosha.getCardById(cardId).is(CardType.Trick))
-        .length > 0
-    );
+    return owner !== target && room.getPlayerById(target).getPlayerCards().length > 0;
   }
 
   availableCardAreas() {
@@ -54,7 +53,7 @@ export class MieJi extends ActiveSkill {
   }
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    if (skillUseEvent.cardIds! !== undefined) {
+    if (skillUseEvent.cardIds !== undefined) {
       await room.moveCards({
         movingCards: skillUseEvent.cardIds!.map(card => ({ card, fromArea: CardMoveArea.HandArea })),
         fromId: skillUseEvent.fromId,
@@ -68,10 +67,13 @@ export class MieJi extends ActiveSkill {
     const toId = toIds![0];
     const to = room.getPlayerById(toId);
     const options: string[] = [];
-    if (to.getPlayerCards().filter(cardId => Sanguosha.getCardById(cardId).BaseType === CardType.Trick).length > 0) {
+    const trickCards: CardId[] = to
+      .getCardIds(PlayerCardsArea.HandArea)
+      .filter(cardId => Sanguosha.getCardById(cardId).is(CardType.Trick));
+    if (trickCards.length > 0) {
       options.push('mieji:trick');
     }
-    if (to.getPlayerCards().filter(cardId => Sanguosha.getCardById(cardId).BaseType !== CardType.Trick).length > 0) {
+    if (to.getPlayerCards().length > trickCards.length) {
       options.push('mieji:drop');
     }
 
@@ -117,10 +119,8 @@ export class MieJi extends ActiveSkill {
       });
     } else {
       let droppedCards = 0;
-      while (
-        droppedCards < 2 &&
-        to.getPlayerCards().filter(cardId => !Sanguosha.getCardById(cardId).is(CardType.Trick)).length > 0
-      ) {
+      const nonTrickCards = to.getPlayerCards().filter(cardId => !Sanguosha.getCardById(cardId).is(CardType.Trick));
+      while (droppedCards < 2 && Math.min(nonTrickCards.length, 2)) {
         const response = await room.askForCardDrop(
           toId,
           1,

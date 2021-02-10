@@ -4,7 +4,8 @@ import { AllStage, CardMoveStage, PhaseStageChangeStage, PlayerPhaseStages } fro
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { CommonSkill, PersistentSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 
 @CommonSkill({ name: 'juece', description: 'juece_description' })
 export class JueCe extends TriggerSkill {
@@ -47,12 +48,9 @@ export class JueCe extends TriggerSkill {
 }
 
 @ShadowSkill
+@PersistentSkill()
 @CommonSkill({ name: JueCe.Name, description: JueCe.Description })
-export class JueCeShadow extends TriggerSkill {
-  get Muted() {
-    return true;
-  }
-
+export class JueCeShadow extends TriggerSkill implements OnDefineReleaseTiming {
   isAutoTrigger() {
     return true;
   }
@@ -66,8 +64,16 @@ export class JueCeShadow extends TriggerSkill {
     );
   }
 
+  async whenObtainingSkill(room: Room, owner: Player) {
+    for (const player of room.getOtherPlayers(owner.Id)) {
+      if (room.Analytics.getCardLostRecord(player.Id, true).length > 0) {
+        room.setFlag(player.Id, this.GeneralName, true);
+      }
+    }
+  }
+
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
-    return owner.Id !== content.fromId && room.CurrentPlayer.Id === owner.Id;
+    return owner.Id !== content.fromId && room.CurrentPhasePlayer.Id === owner.Id;
   }
 
   async onTrigger() {
