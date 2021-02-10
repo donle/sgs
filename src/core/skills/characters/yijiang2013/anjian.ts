@@ -6,6 +6,7 @@ import { AimStage, AllStage, CardUseStage, DamageEffectStage, PlayerDyingStage }
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { QingGangSkill } from 'core/skills/cards/standard/qinggang';
 import { CompulsorySkill, FilterSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -62,12 +63,16 @@ export class AnJian extends TriggerSkill {
         content.cardIds !== undefined &&
         Sanguosha.getCardById(content.cardIds[0]).GeneralName === 'slash'
       );
-    }  else if (identifier === GameEventIdentifiers.PlayerDyingEvent) {
+    } else if (identifier === GameEventIdentifiers.PlayerDyingEvent) {
       content = content as ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>;
       if (room.getPlayerById(content.dying).hasSkill(this.GeneralName)) {
         return true;
       }
-      if (room.getPlayerById(content.dying).getFlag<boolean>(this.GeneralName)&&Sanguosha.getCardById(content.killedBycard).GeneralName === 'slash') {
+      if (
+        room.getPlayerById(content.dying).getFlag<boolean>(this.GeneralName) &&
+        content.killedByCards &&
+        Sanguosha.getCardById(content.killedByCards[0]).GeneralName === 'slash'
+      ) {
         return true;
       }
     }
@@ -116,12 +121,13 @@ export class AnJian extends TriggerSkill {
       const dyingEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>;
       if (room.CurrentProcessingStage === PlayerDyingStage.PlayerDying) {
         await room.obtainSkill(dyingEvent.dying, AnJianPeach.Name);
-      } else if(room.CurrentProcessingStage ===PlayerDyingStage.AfterPlayerDying) {
+      } else if (room.CurrentProcessingStage === PlayerDyingStage.AfterPlayerDying) {
         await room.loseSkill(dyingEvent.dying, AnJianPeach.Name);
       }
     } else if (identifier === GameEventIdentifiers.CardUseEvent) {
       const cardEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
-      room.removeFlag(cardEvent.toIds![0], this.GeneralName);
+      const toIds = TargetGroupUtil.getRealTargets(cardEvent.targetGroup);
+      room.removeFlag(toIds[0], this.GeneralName);
     }
     return true;
   }
