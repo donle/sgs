@@ -1,6 +1,6 @@
 import { CardType } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
-import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
 import { AimStage, AllStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
@@ -10,9 +10,14 @@ import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 
 @CommonSkill({ name: 'danshou', description: 'danshou_description' })
 export class DanShou extends TriggerSkill {
+  public isRefreshAt(room: Room, owner: Player, stage: PlayerPhase): boolean {
+    return stage === PlayerPhase.PhaseBegin;
+  }
+
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage) {
     return stage === AimStage.AfterAimmed;
   }
@@ -26,31 +31,57 @@ export class DanShou extends TriggerSkill {
     );
   }
 
-  public async onTrigger() {
-    return true;
+  //TODO: need to refactor
+  public getSkillLog(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers>) {
+    const drawNum = room.Analytics.getRecordEvents(
+      event => {
+        if (EventPacker.getIdentifier(event) !== GameEventIdentifiers.CardUseEvent) {
+          return false;
+        }
+        const cardUseEvent = event as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
+        return (
+          cardUseEvent.targetGroup !== undefined &&
+          TargetGroupUtil.getRealTargets(cardUseEvent.targetGroup).find(player => player === owner.Id) !== undefined &&
+          (Sanguosha.getCardById(cardUseEvent.cardId).is(CardType.Basic) ||
+            Sanguosha.getCardById(cardUseEvent.cardId).is(CardType.Trick))
+        );
+      },
+      undefined,
+      true,
+    ).length;
+
+    return TranslationPack.translationJsonPatcher(
+      '{0}: do you want to draw {1} card(s)?',
+      this.Name,
+      drawNum,
+    ).extract();
   }
 
-  public isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
-    return stage === PlayerPhase.PrepareStage;
+  public async onTrigger() {
+    return true;
   }
 
   public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId } = skillUseEvent;
 
-    const numOfDrawing = room.Players.reduce<number>((total, player) => {
-      return (
-        total +
-        room.Analytics.getCardUseRecord(player.Id, true, undefined).filter(
-          event =>
-            event.toIds !== undefined &&
-            event.toIds!.includes(fromId) &&
-            (Sanguosha.getCardById(event.cardId).is(CardType.Basic) ||
-              Sanguosha.getCardById(event.cardId).is(CardType.Trick)),
-        ).length
-      );
-    }, 0);
+    const drawNum = room.Analytics.getRecordEvents(
+      event => {
+        if (EventPacker.getIdentifier(event) !== GameEventIdentifiers.CardUseEvent) {
+          return false;
+        }
+        const cardUseEvent = event as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
+        return (
+          cardUseEvent.targetGroup !== undefined &&
+          TargetGroupUtil.getRealTargets(cardUseEvent.targetGroup).find(player => player === fromId) !== undefined &&
+          (Sanguosha.getCardById(cardUseEvent.cardId).is(CardType.Basic) ||
+            Sanguosha.getCardById(cardUseEvent.cardId).is(CardType.Trick))
+        );
+      },
+      undefined,
+      true,
+    ).length;
 
-    await room.drawCards(numOfDrawing, fromId, undefined, fromId, this.Name);
+    await room.drawCards(drawNum, fromId, undefined, fromId, this.Name);
 
     return true;
   }
@@ -76,11 +107,19 @@ export class DanshouShadow extends TriggerSkill {
   }
 
   public getSkillLog(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers>) {
-    return TranslationPack.translationJsonPatcher(
-      'do you want to trigger skill {0} to {1} ?',
-      this.GeneralName,
-      TranslationPack.patchPlayerInTranslation(room.CurrentPhasePlayer),
-    ).extract();
+    const currentHandNum = room.CurrentPhasePlayer.getCardIds(PlayerCardsArea.HandArea).length;
+    return currentHandNum > 0
+      ? TranslationPack.translationJsonPatcher(
+          '{0}: do you want to drop {1} card(s) to deal 1 damage to {2} ?',
+          this.GeneralName,
+          currentHandNum,
+          TranslationPack.patchPlayerInTranslation(room.CurrentPhasePlayer),
+        ).extract()
+      : TranslationPack.translationJsonPatcher(
+          '{0}: do you want to deal 1 damage to {1} ?',
+          this.GeneralName,
+          TranslationPack.patchPlayerInTranslation(room.CurrentPhasePlayer),
+        ).extract();
   }
 
   public async onTrigger() {
