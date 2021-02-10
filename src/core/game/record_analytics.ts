@@ -138,6 +138,9 @@ export class RecordAnalytics {
       event =>
         EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
         event.fromId === player &&
+        event.toId !== player &&
+        event.toArea !== CardMoveArea.HandArea &&
+        event.toArea !== CardMoveArea.EquipArea &&
         event.movingCards.find(
           cardInfo => cardInfo.fromArea === CardMoveArea.HandArea || cardInfo.fromArea === CardMoveArea.EquipArea,
         ) !== undefined,

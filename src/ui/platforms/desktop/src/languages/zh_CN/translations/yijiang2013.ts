@@ -72,11 +72,11 @@ export const skillDescriptions: Word[] = [
       '出牌阶段，你可以与一名角色拼点。若你：赢，你此阶段内使用的下一张基本或普通锦囊牌可多或少选一个目标；没赢，结束此阶段且你的锦囊牌于本回合内不计入手牌上限。',
   },
   { source: 'jianyong_zongshi_description', target: '当你的拼点结果确定后，若你赢/没赢，你可以获得其/你的拼点牌。' },
-  { source: 'juece_description', target: '结束阶段开始时，你可以对没有手牌的一名其他角色造成1点伤害。' },
+  { source: 'juece_description', target: '结束阶段开始时，你可以对本回合失去过牌的一名其他角色造成1点伤害。' },
   {
     source: 'mieji_description',
     target:
-      '出牌阶段限一次，你可以将一张黑色锦囊牌置于牌堆顶，并选择有手牌的一名其他角色，令其弃置一张牌，若此牌不为锦囊牌，其弃置一张非锦囊牌。',
+      '出牌阶段限一次，你可以将一张黑色锦囊牌置于牌堆顶，并令有手牌的一名其他角色选择一项：1.交给你一张锦囊牌；2.依次弃置两张非锦囊牌。',
   },
   {
     source: 'fencheng_description',
@@ -121,6 +121,14 @@ export const skillDescriptions: Word[] = [
 
 export const promptDescriptions: Word[] = [
   {
+    source: 'mieji:trick',
+    target: '交给其一张锦囊牌',
+  },
+  {
+    source: 'mieji:drop',
+    target: '弃置两张非锦囊牌',
+  },
+  {
     source: '{0}: drop {1} cards or turn over',
     target: '{0}：弃置{1}张牌并失去一点体力，或翻面并摸{1}张牌',
   },
@@ -138,5 +146,10 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to choose a target to draw a card?',
     target: '{0}：你可以令一名角色摸一张牌并展示之',
+  },
+  {
+    source: 'please choose: fencheng-options',
+    target:
+      '请选择：1.弃置至少X张牌（X为上一名角色且其选择弃置牌，X为其弃置牌数+1，否则为1）；2.受到其造成的2点火焰伤害',
   },
 ];
