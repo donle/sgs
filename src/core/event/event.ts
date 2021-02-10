@@ -79,13 +79,13 @@ export const enum GameEventIdentifiers {
   AskForChoosingCardEvent,
   AskForChoosingCardWithConditionsEvent,
   AskForChoosingPlayerEvent,
-  AskForChoosingCardAvailableTargetEvent,
   AskForChoosingOptionsEvent,
   AskForChoosingCharacterEvent,
   AskForChoosingCardFromPlayerEvent,
   AskForSkillUseEvent,
   AskForPlaceCardsInDileEvent,
   AskForContinuouslyChoosingCardEvent,
+  AskForChoosingCardAvailableTargetEvent,
 }
 
 export type CardResponsiveEventIdentifiers =
