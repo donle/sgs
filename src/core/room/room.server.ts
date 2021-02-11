@@ -889,37 +889,52 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               const actualEquip = Sanguosha.getCardById<EquipCard>((card as VirtualCard).ActualCardIds[0]);
               existingEquipId = from.getEquipment(actualEquip.EquipType);
             }
-  
+
             if (existingEquipId !== undefined) {
               await this.moveCards({
-                  fromId:from.Id,
-                  moveReason: CardMoveReason.PlaceToDropStack,
-                  toArea: CardMoveArea.DropStack,
-                  movingCards: [{ card: existingEquipId, fromArea: CardMoveArea.EquipArea }],
+                fromId: from.Id,
+                moveReason: CardMoveReason.PlaceToDropStack,
+                toArea: CardMoveArea.DropStack,
+                movingCards: [{ card: existingEquipId, fromArea: CardMoveArea.EquipArea }],
               });
             }
-            
-            await this.moveCards({
-              movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
-              moveReason: CardMoveReason.CardUse,
-              toId: from.Id,
-              toArea: CardMoveArea.EquipArea,
-            });
+
+            if (from.Dead) {
+              await this.moveCards({
+                movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
+                moveReason: CardMoveReason.PlaceToDropStack,
+                toArea: CardMoveArea.DropStack,
+              });
+            } else {
+              await this.moveCards({
+                movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
+                moveReason: CardMoveReason.CardUse,
+                toId: from.Id,
+                toArea: CardMoveArea.EquipArea,
+              });
+            }
           }
-          
+
           return true;
         } else if (card.is(CardType.DelayedTrick)) {
           if (this.isCardOnProcessing(event.cardId)) {
             const realTargets = TargetGroupUtil.getAllTargets(event.targetGroup);
             const moveToIds = realTargets?.map(ids => ids[0]);
-            if (moveToIds && !this.getPlayerById(moveToIds[0]).Dead && this.isCardOnProcessing(event.cardId)) {
-              const moveTo = this.getPlayerById(moveToIds[0]);
+            const to = moveToIds && this.getPlayerById(moveToIds[0]);
+            if (to && !to.Dead && this.isCardOnProcessing(event.cardId)) {
               await this.moveCards({
                 fromId: event.fromId,
                 movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
-                toId: moveTo[0],
+                toId: to.Id,
                 toArea: CardMoveArea.JudgeArea,
                 moveReason: CardMoveReason.CardUse,
+              });
+            } else {
+              await this.moveCards({
+                fromId: event.fromId,
+                movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
+                toArea: CardMoveArea.DropStack,
+                moveReason: CardMoveReason.PlaceToDropStack,
               });
             }
           }
