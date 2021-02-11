@@ -51,8 +51,6 @@ export class AlcoholSkill extends ActiveSkill implements ExtralCardSkillProperty
     const from = room.getPlayerById(event.fromId);
     if (from.Dying) {
       EventPacker.addMiddleware({ tag: this.recoverTag, data: true }, event);
-    } else {
-      event.toIds = [event.fromId];
     }
     event.targetGroup = [[event.fromId]];
     return true;

@@ -22,7 +22,7 @@ export const characterDictionary: Word[] = [
   { source: 'longyin', target: '龍吟' },
   { source: 'jingce', target: '精策' },
   { source: 'qiaoshuo', target: '巧說' },
-  { source: 'jianyong_zongshi', target: '縱適' },
+  { source: 'j3_zongshi', target: '縱適' },
   { source: 'juece', target: '絕策' },
   { source: 'mieji', target: '滅計' },
   { source: 'fencheng', target: '焚城' },
@@ -33,8 +33,10 @@ export const characterDictionary: Word[] = [
   { source: 'duodao', target: '奪刀' },
   { source: 'anjian', target: '暗箭' },
   { source: 'zongxuan', target: '縱玄' },
+  { source: '#zongxuan', target: '縱玄' },
   { source: 'zhiyan', target: '直言' },
   { source: 'danshou', target: '膽守' },
+  { source: '#danshou', target: '膽守' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -63,15 +65,16 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'jingce_description',
-    target: '結束階段開始時，若你於本回合內使用過的牌數不小於X張，你可以摸兩張牌（X為你的體力值）。',
+    target:
+      '出牌階段，你每使用一種花色的手牌，你本回合手牌上限+1；出牌階段結束時，你可摸X張牌（X是你本回合使用過牌的型別）。',
   },
   {
     source: 'qiaoshuo_description',
     target:
       '出牌階段，你可以與一名角色拼點。若你：贏，你此階段內使用的下一張基本或普通錦囊牌可多或少選一個目標；沒贏，結束此階段且你的錦囊牌於本回合內不計入手牌上限。',
   },
-  { source: 'jianyong_zongshi_description', target: '當你的拼點結果確定後，若你贏/沒贏，你可以獲得其/你的拼點牌。' },
-  { source: 'juece_description', target: '結束階段開始時，你可以對本回合失去過牌的一名其他角色造成1點傷害。' },
+  { source: 'j3_zongshi_description', target: '當你的拼點結果確定後，若你贏/沒贏，你可以獲得其/你的拼點牌。' },
+  { source: 'juece_description', target: '結束階段開始時，你可以對沒有手牌的一名其他角色造成1點傷害。' },
   {
     source: 'mieji_description',
     target:
@@ -131,6 +134,7 @@ export const promptDescriptions: Word[] = [
     source: '{0}: drop {1} cards or turn over',
     target: '{0}：棄置{1}張牌並失去一點體力，或翻面並摸{1}張牌',
   },
+
   {
     source: '{0}: please choose a card to put it on the top of the draw pile',
     target: '{0}：請選擇一張牌，將其置於牌堆頂',
@@ -149,5 +153,53 @@ export const promptDescriptions: Word[] = [
     source: 'please choose: fencheng-options',
     target:
       '請選擇：1.棄置至少X張牌（X為上一名角色且其選擇棄置牌，X為其棄置牌數+1，否則為1）；2.受到其造成的2點火焰傷害',
+  },
+  {
+    source: 'qiaoshuo_win',
+    target: '巧說[贏]',
+  },
+  {
+    source: 'qiaoshuo_lose',
+    target: '巧說[沒贏]',
+  },
+  {
+    source: 'qiaoshuo: add',
+    target: '新增目標',
+  },
+  {
+    source: 'qiaoshuo: reduce',
+    target: '減少目標',
+  },
+  {
+    source: 'qiaoshuo: please select',
+    target: '巧說：請選擇一項操作',
+  },
+  {
+    source: 'qiaoshuo: please select a player to reduce from card targets',
+    target: '請選擇一名角色從卡牌目標中移除',
+  },
+  {
+    source: 'qiaoshuo: please select a player to append to card targets',
+    target: '請選擇一名角色將其新增至卡牌目標中',
+  },
+  {
+    source: "{1} is removed from target list of {2} by {0}'s skill {3}",
+    target: '{0}使用了技能{3}，將{1}從{2}的目標中移除',
+  },
+  {
+    source: "{1} is appended to target list of {2} by {0}'s skill {3}",
+    target: '{0}使用了技能{3}，將{1}新增至{2}的目標中',
+  },
+  {
+    source: '{0}: do you want to drop {1} card(s) to deal 1 damage to {2} ?',
+    target: '{0}：你可以棄置 {1} 張牌對 {2} 造成1點傷害',
+  },
+  {
+    source: '{0}: do you want to deal 1 damage to {1} ?',
+    target: '{0}：你可以對 {1} 造成1點傷害',
+  },
+  {
+    source: '{0}: you need to give a jink to {1}',
+    target: '{0}：請交給{1}一張【閃】，否則成為你將【殺】的目標之一',
   },
 ];
