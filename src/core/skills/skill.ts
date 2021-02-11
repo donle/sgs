@@ -506,6 +506,12 @@ export abstract class RulesBreakerSkill extends Skill {
   }
 }
 
+export abstract class GlobalRulesBreakerSkill extends RulesBreakerSkill {
+  public breakDistance(room: Room, owner: Player, from: Player, to: Player): number {
+    return 0;
+  }
+}
+
 export abstract class FilterSkill extends Skill {
   public canUse() {
     return true;

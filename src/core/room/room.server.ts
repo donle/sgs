@@ -867,17 +867,25 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       if (stage === CardUseStage.AfterCardUseEffect) {
         const card = Sanguosha.getCardById(event.cardId);
         const aimEventCollaborators: { [player: string]: ServerEventFinder<GameEventIdentifiers.AimEvent> } = {};
-        const involvedPlayerIds = TargetGroupUtil.getAllTargets(event.targetGroup);
+        let involvedPlayerIds = TargetGroupUtil.getAllTargets(event.targetGroup);
         involvedPlayerIds && this.sortByPlayersPosition(involvedPlayerIds, ids => this.getPlayerById(ids[0]));
         const toIds = involvedPlayerIds?.map(ids => ids[0]);
         let nullifiedTargets: PlayerId[] = event.nullifiedTargets || [];
 
         if (toIds) {
+          let allTargets: PlayerId[] = [];
           for (const toId of toIds) {
             const response = await this.onAim(event, toId, toIds, nullifiedTargets, toId === toIds[0]);
             aimEventCollaborators[toId] = response;
             nullifiedTargets = response.nullifiedTargets;
+
+            allTargets = response.allTargets;
           }
+          // need to refactor it
+          involvedPlayerIds = involvedPlayerIds?.filter(ids => allTargets.includes(ids[0]));
+          allTargets.forEach(id => !toIds.includes(id) && involvedPlayerIds!.push([id]));
+          this.sortByPlayersPosition(involvedPlayerIds!, ids => this.getPlayerById(ids[0]));
+          //
         }
 
         if (card.is(CardType.Equip)) {

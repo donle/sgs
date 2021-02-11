@@ -1692,8 +1692,7 @@ export class StandardGameProcessor extends GameProcessor {
 
       if (!event.translationsMessage && to) {
         if (toArea === PlayerCardsArea.HandArea) {
-          const isPrivateCardMoving = !!movingCards.find(({ fromArea }) => fromArea === CardMoveArea.HandArea);
-          if (isPrivateCardMoving) {
+          if (!event.engagedPlayerIds) {
             event.engagedPlayerIds = [];
             fromId && event.engagedPlayerIds.push(fromId);
             toId && event.engagedPlayerIds.push(toId);
