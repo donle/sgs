@@ -36,6 +36,7 @@ export const characterDictionary: Word[] = [
   { source: '#zongxuan', target: '纵玄' },
   { source: 'zhiyan', target: '直言' },
   { source: 'danshou', target: '胆守' },
+  { source: '#danshou', target: '胆守' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -188,5 +189,14 @@ export const promptDescriptions: Word[] = [
   {
     source: "{1} is appended to target list of {2} by {0}'s skill {3}",
     target: '{0}使用了技能{3}，将{1}添加至{2}的目标中',
+  },
+
+  {
+    source: '{0}: do you want to drop {1} card(s) to deal 1 damage to {2} ?',
+    target: '{0}：你可以弃置 {1} 张牌对 {2} 造成1点伤害',
+  },
+  {
+    source: '{0}: do you want to deal 1 damage to {1} ?',
+    target: '{0}：你可以对 {1} 造成1点伤害',
   },
 ];
