@@ -2,7 +2,14 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AimStage, AllStage, CardUseStage, DamageEffectStage, PlayerDyingStage } from 'core/game/stage_processor';
+import {
+  AimStage,
+  AllStage,
+  CardUseStage,
+  DamageEffectStage,
+  GameEventStage,
+  PlayerDyingStage,
+} from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -13,6 +20,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'anjian', description: 'anjian_description' })
 export class AnJian extends TriggerSkill {
+  private static AnJianDying = 'anjian_dying';
   public isTriggerable(
     event: ServerEventFinder<
       | GameEventIdentifiers.AimEvent
@@ -65,16 +73,18 @@ export class AnJian extends TriggerSkill {
       );
     } else if (identifier === GameEventIdentifiers.PlayerDyingEvent) {
       content = content as ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>;
-      if (room.getPlayerById(content.dying).hasSkill(this.GeneralName)) {
-        return true;
-      }
+      const dying = room.getPlayerById(content.dying);
       if (
-        room.getPlayerById(content.dying).getFlag<boolean>(this.GeneralName) &&
+        dying.getFlag<boolean>(this.GeneralName) &&
         content.killedByCards &&
         Sanguosha.getCardById(content.killedByCards[0]).GeneralName === 'slash'
       ) {
+        dying.setFlag<GameEventStage>(AnJian.AnJianDying, room.CurrentProcessingStage!);
         return true;
       }
+    } else if (identifier === GameEventIdentifiers.CardUseEvent) {
+      content = content as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
+      return Sanguosha.getCardById(content.cardId).GeneralName === 'slash';
     }
     return false;
   }
@@ -119,11 +129,13 @@ export class AnJian extends TriggerSkill {
       );
     } else if (identifier === GameEventIdentifiers.PlayerDyingEvent) {
       const dyingEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>;
-      if (room.CurrentProcessingStage === PlayerDyingStage.PlayerDying) {
+      const stage = room.getFlag<GameEventStage>(dyingEvent.dying, AnJian.AnJianDying);
+      if (stage === PlayerDyingStage.PlayerDying) {
         await room.obtainSkill(dyingEvent.dying, AnJianPeach.Name);
-      } else if (room.CurrentProcessingStage === PlayerDyingStage.AfterPlayerDying) {
+      } else if (stage === PlayerDyingStage.AfterPlayerDying) {
         await room.loseSkill(dyingEvent.dying, AnJianPeach.Name);
       }
+      room.getPlayerById(dyingEvent.dying).removeFlag(AnJian.AnJianDying);
     } else if (identifier === GameEventIdentifiers.CardUseEvent) {
       const cardEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
       const toIds = TargetGroupUtil.getRealTargets(cardEvent.targetGroup);
@@ -136,6 +148,8 @@ export class AnJian extends TriggerSkill {
 @CompulsorySkill({ name: 'anjianPeach', description: 'anjianPeach_description' })
 export class AnJianPeach extends FilterSkill {
   canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId) {
-    return cardId instanceof CardMatcher ? false : Sanguosha.getCardById(cardId).GeneralName !== 'peach';
+    return cardId instanceof CardMatcher
+      ? !new CardMatcher({ name: ['peach'] }).match(cardId)
+      : Sanguosha.getCardById(cardId).GeneralName !== 'peach';
   }
 }
