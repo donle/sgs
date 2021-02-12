@@ -5,6 +5,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { Jink } from 'core/cards/standard/jink';
 import { Peach } from 'core/cards/standard/peach';
 import { Slash } from 'core/cards/standard/slash';
+import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
@@ -35,7 +36,22 @@ export class LongDan extends ViewAsSkill {
     }
   }
 
-  public canUse(room: Room, owner: Player) {
+  public canUse(
+    room: Room,
+    owner: Player,
+    event?: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent>,
+  ) {
+    const identifier = event && EventPacker.getIdentifier(event);
+    if (
+      identifier === GameEventIdentifiers.AskForCardUseEvent ||
+      identifier === GameEventIdentifiers.AskForCardResponseEvent
+    ) {
+      return (
+        CardMatcher.match(event!.cardMatcher, new CardMatcher({ generalName: ['slash'] })) ||
+        CardMatcher.match(event!.cardMatcher, new CardMatcher({ name: ['jink'] }))
+      );
+    }
+
     return (
       owner.canUseCard(room, new CardMatcher({ name: ['fire_slash'] })) ||
       owner.canUseCard(room, new CardMatcher({ name: ['peach'] })) ||

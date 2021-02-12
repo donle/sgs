@@ -1454,10 +1454,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               TranslationPack.patchPlayerInTranslation(this.getPlayerById(procedure.toId)),
               TranslationPack.patchCardInTranslation(procedure.cardId),
             ).toString(),
-            TranslationPack.translationJsonPatcher(
-              procedure.winner ? 'pindian result:{0} win' : 'pindian result:draw',
-              procedure.winner ? TranslationPack.patchPlayerInTranslation(this.getPlayerById(procedure.winner)) : '',
-            ).toString(),
+            procedure.winner
+              ? TranslationPack.translationJsonPatcher(
+                  'pindian result:{0} win',
+                  TranslationPack.patchPlayerInTranslation(this.getPlayerById(procedure.winner)),
+                ).toString()
+              : 'pindian result:draw',
           ];
 
           this.broadcast(GameEventIdentifiers.ObserveCardsEvent, {

@@ -289,6 +289,10 @@ export abstract class BaseAction {
       undefined;
     if (this.selectedCardToPlay === undefined) {
       if (fromArea === PlayerCardsArea.HandArea) {
+        if (card.is(CardType.Equip)) {
+          return player.canUseCardTo(this.store.room, card.Id, player.Id);
+        }
+
         if (
           card.Skill instanceof ResponsiveSkill ||
           (!ignoreCanUseCondition && !player.canUseCard(this.store.room, card.Id) && !canUseOnPlayers)

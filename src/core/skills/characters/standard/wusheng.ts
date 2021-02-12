@@ -2,6 +2,7 @@ import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { Slash } from 'core/cards/standard/slash';
+import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE } from 'core/game/game_props';
 import { PlayerPhase } from 'core/game/stage_processor';
@@ -17,7 +18,19 @@ export class WuSheng extends ViewAsSkill {
     return ['slash'];
   }
 
-  public canUse(room: Room, owner: Player): boolean {
+  public canUse(
+    room: Room,
+    owner: Player,
+    event?: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent>,
+  ): boolean {
+    const identifier = event && EventPacker.getIdentifier(event);
+    if (
+      identifier === GameEventIdentifiers.AskForCardUseEvent ||
+      identifier === GameEventIdentifiers.AskForCardResponseEvent
+    ) {
+      return CardMatcher.match(event!.cardMatcher, new CardMatcher({ generalName: ['slash'] }));
+    }
+
     return owner.canUseCard(room, new CardMatcher({ generalName: ['slash'] }));
   }
 

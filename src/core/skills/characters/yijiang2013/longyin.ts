@@ -21,7 +21,8 @@ export class LongYin extends TriggerSkill {
     return (
       room.CurrentPhasePlayer.Id === event.fromId &&
       Sanguosha.getCardById(event.cardId).GeneralName === 'slash' &&
-      owner.getPlayerCards().length > 0
+      owner.getPlayerCards().length > 0 &&
+      !event.extraUse
     );
   }
 

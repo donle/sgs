@@ -240,4 +240,8 @@ export const cardDescriptions: Word[] = [
     target: '其他角色計算與你的距離+1。',
   },
   { source: 'do you wish to deliver muniuliuma to another player?', target: '是否將木牛流馬移動至其他角色的裝備區？' },
+  {
+    source: '{0} used card {1} to {2} and announced {3} as pending target',
+    target: '{0} 使用了一張 {1}，目標是 {2}，其需要殺的目標是 {3}',
+  },
 ];
