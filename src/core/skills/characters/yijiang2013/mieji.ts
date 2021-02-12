@@ -100,7 +100,7 @@ export class MieJi extends ActiveSkill {
         cardAmount: 1,
         fromArea: [PlayerCardsArea.HandArea],
         reason: this.Name,
-        cardMatcher: new CardMatcher({ type: [CardType.Basic, CardType.Equip] }).toSocketPassenger(),
+        cardMatcher: new CardMatcher({ type: [CardType.Trick] }).toSocketPassenger(),
         conversation: TranslationPack.translationJsonPatcher(
           'please choose a trick card to pass to {0}',
           TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),

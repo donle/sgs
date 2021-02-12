@@ -74,7 +74,7 @@ export const skillDescriptions: Word[] = [
       '出牌阶段，你可以与一名角色拼点。若你：赢，你此阶段内使用的下一张基本或普通锦囊牌可多或少选一个目标；没赢，结束此阶段且你的锦囊牌于本回合内不计入手牌上限。',
   },
   { source: 'j3_zongshi_description', target: '当你的拼点结果确定后，若你赢/没赢，你可以获得其/你的拼点牌。' },
-  { source: 'juece_description', target: '结束阶段开始时，你可以对没有手牌的一名其他角色造成1点伤害。' },
+  { source: 'juece_description', target: '结束阶段开始时，你可以对本回合失去过牌的一名其他角色造成1点伤害。' },
   {
     source: 'mieji_description',
     target:
@@ -201,5 +201,9 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: you need to give a jink to {1}',
     target: '{0}：请交给{1}一张【闪】，否则成为你将【杀】的目标之一',
+  },
+  {
+    source: 'please choose a trick card to pass to {0}',
+    target: '请交给{0}一张锦囊牌',
   },
 ];

@@ -74,7 +74,7 @@ export const skillDescriptions: Word[] = [
       '出牌階段，你可以與一名角色拼點。若你：贏，你此階段內使用的下一張基本或普通錦囊牌可多或少選一個目標；沒贏，結束此階段且你的錦囊牌於本回合內不計入手牌上限。',
   },
   { source: 'j3_zongshi_description', target: '當你的拼點結果確定後，若你贏/沒贏，你可以獲得其/你的拼點牌。' },
-  { source: 'juece_description', target: '結束階段開始時，你可以對沒有手牌的一名其他角色造成1點傷害。' },
+  { source: 'juece_description', target: '結束階段開始時，你可以對本回合失去過牌的一名其他角色造成1點傷害。' },
   {
     source: 'mieji_description',
     target:
@@ -201,5 +201,9 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: you need to give a jink to {1}',
     target: '{0}：請交給{1}一張【閃】，否則成為你將【殺】的目標之一',
+  },
+  {
+    source: 'please choose a trick card to pass to {0}',
+    target: '請交給{0}一張錦囊牌',
   },
 ];
