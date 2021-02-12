@@ -78,7 +78,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'mieji_description',
     target:
-      '出牌階段限一次，你可以將一張黑色錦囊牌置於牌堆頂，並令有手牌的一名其他角色選擇一項：1.交給你一張錦囊牌；2.依次棄置兩張非錦囊牌。',
+      '出牌階段限一次，你可以將一張黑色錦囊牌置於牌堆頂，並令有牌的一名其他角色選擇一項：1.交給你一張錦囊牌；2.依次棄置兩張非錦囊牌。',
   },
   {
     source: 'fencheng_description',
@@ -109,7 +109,7 @@ export const skillDescriptions: Word[] = [
     target:
       '<b>鎖定技</b>，當你使用【殺】指定目標後，若你不在其攻擊範圍內，此【殺】無視其防具且對其傷害+1，若該角色因此【殺】進入瀕死狀態，其不能使用【桃】直到此瀕死結算結束。',
   },
-  { source: 'zongxuan_description', target: '當你的牌因棄置而進入棄牌堆後，你可以將其中至少一張牌置於牌堆頂。' },
+  { source: 'zongxuan_description', target: '出牌階段限一次，你可以摸一張牌並將一張牌置於牌堆頂；當你的牌因棄置而進入棄牌堆後，你可以將其中任意張牌置於牌堆頂。' },
   {
     source: 'zhiyan_description',
     target: '結束階段開始時，你可以令一名其他角色摸一張牌並展示之，若此牌為裝備牌，其使用之，然後回覆1點體力。',

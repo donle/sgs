@@ -78,7 +78,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'mieji_description',
     target:
-      '出牌阶段限一次，你可以将一张黑色锦囊牌置于牌堆顶，并令有手牌的一名其他角色选择一项：1.交给你一张锦囊牌；2.依次弃置两张非锦囊牌。',
+      '出牌阶段限一次，你可以将一张黑色锦囊牌置于牌堆顶，并令有牌的一名其他角色选择一项：1.交给你一张锦囊牌；2.依次弃置两张非锦囊牌。',
   },
   {
     source: 'fencheng_description',
@@ -109,7 +109,11 @@ export const skillDescriptions: Word[] = [
     target:
       '<b>锁定技</b>，当你使用【杀】指定目标后，若你不在其攻击范围内，此【杀】无视其防具且对其伤害+1，若该角色因此【杀】进入濒死状态，其不能使用【桃】直到此濒死结算结束。',
   },
-  { source: 'zongxuan_description', target: '当你的牌因弃置而进入弃牌堆后，你可以将其中至少一张牌置于牌堆顶。' },
+  {
+    source: 'zongxuan_description',
+    target:
+      '出牌阶段限一次，你可以摸一张牌并将一张牌置于牌堆顶；当你的牌因弃置而进入弃牌堆后，你可以将其中任意张牌置于牌堆顶。',
+  },
   {
     source: 'zhiyan_description',
     target: '结束阶段开始时，你可以令一名其他角色摸一张牌并展示之，若此牌为装备牌，其使用之，然后回复1点体力。',
