@@ -31,8 +31,16 @@ export class ZhuiKong extends TriggerSkill implements OnDefineReleaseTiming {
     return stage === PhaseStageChangeStage.StageChanged;
   }
 
-  public canUse(_: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>): boolean {
-    return event.toStage === PlayerPhaseStages.PrepareStageStart && event.playerId !== owner.Id && owner.isInjured();
+  public canUse(
+    room: Room,
+    owner: Player,
+    event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
+  ): boolean {
+    return (
+      event.toStage === PlayerPhaseStages.PrepareStageStart &&
+      owner.isInjured() &&
+      room.canPindian(owner.Id, event.playerId)
+    );
   }
 
   public async onTrigger(): Promise<boolean> {

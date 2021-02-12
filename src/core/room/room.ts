@@ -516,10 +516,14 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
 
   public canPindian(fromId: PlayerId, targetId: PlayerId): boolean {
+    const from = this.getPlayerById(fromId);
     const target = this.getPlayerById(targetId);
     const targetSkills = target.getPlayerSkills<FilterSkill>('filter');
     return (
-      fromId !== targetId && targetSkills.find(skill => !skill.canBePindianTarget(this, targetId, fromId)) === undefined
+      fromId !== targetId &&
+      from.getCardIds(PlayerCardsArea.HandArea).length > 0 &&
+      target.getCardIds(PlayerCardsArea.HandArea).length > 0 &&
+      targetSkills.find(skill => !skill.canBePindianTarget(this, targetId, fromId)) === undefined
     );
   }
 
