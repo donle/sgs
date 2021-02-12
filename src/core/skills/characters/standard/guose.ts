@@ -75,7 +75,7 @@ export class GuoSe extends ActiveSkill {
       );
       await room.useCard({
         fromId,
-        toIds,
+        targetGroup: toIds && [toIds],
         cardId: lebusishuCard.Id,
         triggeredBySkills: [this.Name],
       });

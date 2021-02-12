@@ -102,7 +102,7 @@ export class XuanHuo extends TriggerSkill {
       if (response.cardId !== undefined) {
         const slashUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
           fromId: response.fromId,
-          toIds: response.toIds,
+          targetGroup: response.toIds && [response.toIds],
           cardId: response.cardId,
           triggeredBySkills: [this.Name],
         };

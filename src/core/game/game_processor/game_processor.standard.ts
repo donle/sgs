@@ -45,6 +45,7 @@ import { Algorithm } from 'core/shares/libs/algorithm';
 import { Functional } from 'core/shares/libs/functional';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
 import { GlobalFilterSkill, SkillLifeCycle } from 'core/skills/skill';
@@ -426,7 +427,7 @@ export class StandardGameProcessor extends GameProcessor {
         cardId: judgeCardId,
         toIds: [this.currentPhasePlayer.Id],
         nullifiedTargets: [],
-        allTargets: Sanguosha.getCardById(judgeCardId).Skill.nominateForwardTarget([this.currentPhasePlayer.Id]),
+        allTargets: [this.currentPhasePlayer.Id],
       };
 
       this.room.broadcast(GameEventIdentifiers.MoveCardEvent, {
@@ -478,7 +479,12 @@ export class StandardGameProcessor extends GameProcessor {
 
       if (response.eventName === GameEventIdentifiers.CardUseEvent) {
         const event = response.event as ClientEventFinder<GameEventIdentifiers.CardUseEvent>;
-        await this.room.useCard(event);
+        const card = Sanguosha.getCardById(event.cardId);
+        const targetGroup = event.toIds && [...card.Skill.targetGroupDispatcher(event.toIds)];
+        await this.room.useCard({
+          targetGroup,
+          ...event,
+        });
       } else if (response.eventName === GameEventIdentifiers.SkillUseEvent) {
         await this.room.useSkill(response.event as ClientEventFinder<GameEventIdentifiers.SkillUseEvent>);
       } else {
@@ -1105,6 +1111,8 @@ export class StandardGameProcessor extends GameProcessor {
         const dyingEvent: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent> = {
           dying: to.Id,
           killedBy: event.fromId,
+          killedByCards: event.cardIds,
+          triggeredBySkills: event.triggeredBySkills,
         };
 
         if (to.Hp <= 0) {
@@ -1148,7 +1156,7 @@ export class StandardGameProcessor extends GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    const { dying, killedBy } = event;
+    const { dying, killedBy, killedByCards } = event;
     const to = this.room.getPlayerById(dying);
     this.room.broadcast(GameEventIdentifiers.PlayerDyingEvent, {
       dying: to.Id,
@@ -1156,6 +1164,7 @@ export class StandardGameProcessor extends GameProcessor {
         '{0} is dying',
         TranslationPack.patchPlayerInTranslation(to),
       ).extract(),
+      killedByCards,
     });
 
     to.Dying = true;
@@ -1215,7 +1224,7 @@ export class StandardGameProcessor extends GameProcessor {
               const cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
                 fromId: response.fromId,
                 cardId: response.cardId,
-                toIds: [to.Id],
+                targetGroup: [[to.Id]],
               };
               EventPacker.copyPropertiesTo(response, cardUseEvent);
 
@@ -1229,7 +1238,7 @@ export class StandardGameProcessor extends GameProcessor {
         }
 
         if (to.Hp <= 0) {
-          await this.room.kill(to, killedBy);
+          await this.room.kill(to, killedBy, killedByCards);
         }
       }
     });
@@ -1428,11 +1437,13 @@ export class StandardGameProcessor extends GameProcessor {
         ).extract();
       } else {
         event.translationsMessage = TranslationPack.translationJsonPatcher(
-          '{0} used card {1}' + (event.toIds || event.toCardIds ? ' to {2}' : ''),
+          '{0} used card {1}' + (event.targetGroup || event.toCardIds ? ' to {2}' : ''),
           TranslationPack.patchPlayerInTranslation(from),
           TranslationPack.patchCardInTranslation(event.cardId),
-          event.toIds
-            ? TranslationPack.patchPlayerInTranslation(...event.toIds.map(id => this.room.getPlayerById(id)))
+          event.targetGroup
+            ? TranslationPack.patchPlayerInTranslation(
+                ...TargetGroupUtil.getRealTargets(event.targetGroup).map(id => this.room.getPlayerById(id)),
+              )
             : event.toCardIds
             ? TranslationPack.patchCardInTranslation(...event.toCardIds)
             : '',
@@ -1446,7 +1457,7 @@ export class StandardGameProcessor extends GameProcessor {
     this.room.broadcast(identifier, event);
     event.translationsMessage = undefined;
 
-    if (!this.room.isCardOnProcessing(event.cardId) && !card.is(CardType.DelayedTrick)) {
+    if (!this.room.isCardOnProcessing(event.cardId)) {
       this.room.addProcessingCards(event.cardId.toString(), event.cardId);
       await this.room.moveCards({
         movingCards: [{ card: event.cardId, fromArea: from.cardFrom(event.cardId) }],
@@ -1456,35 +1467,7 @@ export class StandardGameProcessor extends GameProcessor {
       });
     }
 
-    await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      event.toIds = event.toIds && this.room.deadPlayerFilters(event.toIds);
-      if (stage === CardUseStage.CardUsing) {
-        if (card.is(CardType.DelayedTrick)) {
-          EventPacker.terminate(event);
-        } else if (card.is(CardType.Equip)) {
-          let existingEquipId = from.getEquipment((card as EquipCard).EquipType);
-          if (card.isVirtualCard()) {
-            const actualEquip = Sanguosha.getCardById<EquipCard>((card as VirtualCard).ActualCardIds[0]);
-            existingEquipId = from.getEquipment(actualEquip.EquipType);
-          }
-
-          if (existingEquipId !== undefined) {
-            await this.room.moveCards({
-              fromId: from.Id,
-              moveReason: CardMoveReason.PlaceToDropStack,
-              toArea: CardMoveArea.DropStack,
-              movingCards: [{ card: existingEquipId, fromArea: CardMoveArea.EquipArea }],
-            });
-          }
-          await this.room.moveCards({
-            movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
-            moveReason: CardMoveReason.CardUse,
-            toId: from.Id,
-            toArea: CardMoveArea.EquipArea,
-          });
-        }
-      }
-    });
+    await this.iterateEachStage(identifier, event, onActualExecuted);
 
     if (!event.skipDrop) {
       if (!card.is(CardType.Equip) && !card.is(CardType.DelayedTrick)) {
@@ -1709,8 +1692,7 @@ export class StandardGameProcessor extends GameProcessor {
 
       if (!event.translationsMessage && to) {
         if (toArea === PlayerCardsArea.HandArea) {
-          const isPrivateCardMoving = !!movingCards.find(({ fromArea }) => fromArea === CardMoveArea.HandArea);
-          if (isPrivateCardMoving) {
+          if (!event.engagedPlayerIds) {
             event.engagedPlayerIds = [];
             fromId && event.engagedPlayerIds.push(fromId);
             toId && event.engagedPlayerIds.push(toId);

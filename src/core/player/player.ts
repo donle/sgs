@@ -22,6 +22,7 @@ import {
   ActiveSkill,
   FilterSkill,
   GlobalFilterSkill,
+  GlobalRulesBreakerSkill,
   RulesBreakerSkill,
   Skill,
   SkillType,
@@ -41,6 +42,7 @@ type SkillStringType =
   | 'filter'
   | 'globalFilter'
   | 'breaker'
+  | 'globalBreaker'
   | 'transform'
   | 'viewAs';
 
@@ -370,6 +372,14 @@ export abstract class Player implements PlayerInfo {
   public canUseCardTo(room: Room, cardId: CardId | CardMatcher, target: PlayerId): boolean {
     const player = room.getPlayerById(target);
 
+    for (const skillOwner of room.getAlivePlayersFrom()) {
+      for (const skill of skillOwner.getSkills<GlobalFilterSkill>('globalFilter')) {
+        if (!skill.canUseCardTo(cardId, room, skillOwner, this, room.getPlayerById(target))) {
+          return false;
+        }
+      }
+    }
+
     for (const skill of player.getSkills<FilterSkill>('filter')) {
       if (!skill.canBeUsedCard(cardId, room, target, this.Id)) {
         return false;
@@ -532,6 +542,8 @@ export abstract class Player implements PlayerInfo {
         return skills.filter(skill => skill instanceof TriggerSkill) as T[];
       case 'breaker':
         return skills.filter(skill => skill instanceof RulesBreakerSkill) as T[];
+      case 'globalBreaker':
+        return skills.filter(skill => skill instanceof GlobalRulesBreakerSkill) as T[];
       case 'compulsory':
         return skills.filter(skill => skill.SkillType === SkillType.Compulsory) as T[];
       case 'awaken':
@@ -573,6 +585,8 @@ export abstract class Player implements PlayerInfo {
         return skills.filter(skill => skill instanceof TriggerSkill) as T[];
       case 'breaker':
         return skills.filter(skill => skill instanceof RulesBreakerSkill) as T[];
+      case 'globalBreaker':
+        return skills.filter(skill => skill instanceof GlobalRulesBreakerSkill) as T[];
       case 'transform':
         return skills.filter(skill => skill instanceof TransformSkill) as T[];
       case 'compulsory':

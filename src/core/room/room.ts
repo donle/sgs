@@ -25,7 +25,7 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { System } from 'core/shares/libs/system';
 import { GameMode } from 'core/shares/types/room_props';
 import { RoomInfo } from 'core/shares/types/server_types';
-import { FilterSkill, RulesBreakerSkill, TransformSkill } from 'core/skills/skill';
+import { FilterSkill, GlobalRulesBreakerSkill, RulesBreakerSkill, TransformSkill } from 'core/skills/skill';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
 
 export type RoomId = number;
@@ -54,7 +54,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected gameStarted: boolean = false;
   protected gameOvered: boolean = false;
   private onProcessingCards: { [K: string]: CardId[] } = {};
-  protected sideEffectSkills: { [N in System.SideEffectSkillApplierEnum]?: string } = {};
+  protected sideEffectSkills: {
+    [N in System.SideEffectSkillApplierEnum]?: { skillName: string; sourceId: PlayerId };
+  } = {};
 
   protected abstract init(...args: any[]): void;
   //Server only
@@ -161,7 +163,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract async askForCardDrop(
     playerId: PlayerId,
-    discardAmount: number,
+    discardAmount: number | [number, number],
     fromArea: PlayerCardsArea[],
     uncancellable?: boolean,
     except?: CardId[],
@@ -178,6 +180,13 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     event: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>,
     to: PlayerId,
   ): Promise<ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent>>;
+  //Server only
+  public abstract async doAskForCommonly<T extends GameEventIdentifiers>(
+    type: T,
+    event: ServerEventFinder<T>,
+    toId: PlayerId,
+    uncancellable?: boolean,
+  ): Promise<ClientEventFinder<T>>;
   //Server only
   public abstract findCardsByMatcherFrom(cardMatcher: CardMatcher, fromDrawStack?: boolean): CardId[];
   //Server only
@@ -222,17 +231,21 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public getSideEffectSkills(player: Player) {
     const skills: string[] = [];
-    for (const [applierEnumString, skillName] of Object.entries(this.sideEffectSkills)) {
-      if (System.SideEffectSkillAppliers[applierEnumString](player, this)) {
-        skills.push(skillName!);
+    for (const [applierEnumString, skillAssembly] of Object.entries(this.sideEffectSkills)) {
+      if (System.SideEffectSkillAppliers[applierEnumString](player, this, skillAssembly?.sourceId)) {
+        if (skillAssembly) {
+          const shadowSkills = Sanguosha.getShadowSkillsBySkillName(skillAssembly.skillName).map(skill => skill.Name);
+          skills.push(skillAssembly?.skillName);
+          skills.push(...shadowSkills);
+        }
       }
     }
 
     return skills;
   }
 
-  public installSideEffectSkill(applier: System.SideEffectSkillApplierEnum, skillName: string) {
-    this.sideEffectSkills[applier] = skillName;
+  public installSideEffectSkill(applier: System.SideEffectSkillApplierEnum, skillName: string, sourceId: PlayerId) {
+    this.sideEffectSkills[applier] = { skillName, sourceId };
   }
 
   public uninstallSideEffectSkill(applier: System.SideEffectSkillApplierEnum) {
@@ -299,17 +312,23 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   ): Promise<void> {
     if (content.fromId) {
       const from = this.getPlayerById(content.fromId);
-      if (this.CurrentPlayer.Id === content.fromId && !content.extraUse) {
+      const exclude =
+        from
+          .getSkills<FilterSkill>('filter')
+          .find(skill => skill.excludeCardUseHistory(content.cardId, this, from.Id)) !== undefined;
+      if (this.CurrentPlayer.Id === content.fromId && !content.extraUse && !exclude) {
         from.useCard(content.cardId);
       }
     }
   }
 
-  public async useSkill(content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<void> {
+  public async useSkill(content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     if (content.fromId) {
       const from = this.getPlayerById(content.fromId);
       from.useSkill(content.skillName);
+      return true;
     }
+    return false;
   }
 
   public get AlivePlayers() {
@@ -431,6 +450,15 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       return 0;
     }
 
+    for (const player of this.getAlivePlayersFrom()) {
+      for (const skill of player.getPlayerSkills<GlobalRulesBreakerSkill>('globalBreaker')) {
+        const breakDistance = skill.breakDistance(this, player, from, to);
+        if (breakDistance > 0) {
+          return breakDistance;
+        }
+      }
+    }
+
     for (const skill of from.getPlayerSkills<RulesBreakerSkill>('breaker')) {
       const breakDistance = skill.breakDistanceTo(this, from, to);
       if (breakDistance > 0) {
@@ -441,6 +469,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     const seatGap = to.getDefenseDistance(this) - from.getOffenseDistance(this);
     return Math.max(this.onSeatDistance(from, to) + seatGap, 1);
   }
+
   public cardUseDistanceBetween(room: Room, cardId: CardId, from: Player, to: Player) {
     const card = Sanguosha.getCardById(cardId);
 
@@ -453,6 +482,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public isAvailableTarget(cardId: CardId, attacker: PlayerId, target: PlayerId) {
     for (const skill of this.getPlayerById(target).getSkills<FilterSkill>('filter')) {
       if (!skill.canBeUsedCard(cardId, (this as unknown) as Room, target, attacker)) {
+        return false;
+      }
+
+      if (!skill.canUseCard(cardId, (this as unknown) as Room, attacker, target)) {
         return false;
       }
     }
@@ -537,6 +570,17 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
         players.push(topPlayer!);
       }
     }
+  }
+
+  public sortByPlayersPosition<T>(array: T[], extractor: (el: T) => Player) {
+    array.sort((el1, el2) => {
+      const p1 = extractor(el1);
+      const p2 = extractor(el2);
+      const pos1 = (p1.Position - this.CurrentPhasePlayer.Position + this.Players.length) % this.Players.length;
+      const pos2 = (p2.Position - this.CurrentPhasePlayer.Position + this.Players.length) % this.Players.length;
+
+      return pos1 - pos2;
+    });
   }
 
   public transformCard(

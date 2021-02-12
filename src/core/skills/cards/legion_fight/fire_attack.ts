@@ -8,9 +8,10 @@ import { Functional } from 'core/shares/libs/functional';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @CommonSkill({ name: 'fire_attack', description: 'fire_attack_description' })
-export class FireAttackSkill extends ActiveSkill {
+export class FireAttackSkill extends ActiveSkill implements ExtralCardSkillProperty {
   public canUse() {
     return true;
   }
@@ -25,7 +26,8 @@ export class FireAttackSkill extends ActiveSkill {
   public isAvailableCard(): boolean {
     return false;
   }
-  public isAvailableTarget(
+
+  public isCardAvailableTarget(
     owner: PlayerId,
     room: Room,
     target: PlayerId,
@@ -38,6 +40,17 @@ export class FireAttackSkill extends ActiveSkill {
       to.getCardIds(PlayerCardsArea.HandArea).length > 0 &&
       room.getPlayerById(owner).canUseCardTo(room, containerCard, target)
     );
+  }
+
+  public isAvailableTarget(
+    owner: PlayerId,
+    room: Room,
+    target: PlayerId,
+    selectedCards: CardId[],
+    selectedTargets: PlayerId[],
+    containerCard: CardId,
+  ): boolean {
+    return this.isCardAvailableTarget(owner, room, target, selectedCards, selectedTargets, containerCard);
   }
 
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {

@@ -140,7 +140,7 @@ export class ChunLaoShadow extends TriggerSkill {
       await room.useCard({
         fromId: playerDyingEvent.dying,
         cardId: alcohol.Id,
-        toIds: [playerDyingEvent.dying],
+        targetGroup: [[playerDyingEvent.dying]],
       });
 
       if (chun.Name === 'thunder_slash') {

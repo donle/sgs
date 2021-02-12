@@ -26,8 +26,8 @@ export class HuangTian extends TriggerSkill implements OnDefineReleaseTiming {
     room.uninstallSideEffectSkill(System.SideEffectSkillApplierEnum.HuangTian);
   }
 
-  async whenObtainingSkill(room: Room) {
-    room.installSideEffectSkill(System.SideEffectSkillApplierEnum.HuangTian, HuangTianGiveCard.Name);
+  async whenObtainingSkill(room: Room, owner: Player) {
+    room.installSideEffectSkill(System.SideEffectSkillApplierEnum.HuangTian, HuangTianGiveCard.Name, owner.Id);
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.GameStartEvent>, stage?: AllStage): boolean {
@@ -41,13 +41,13 @@ export class HuangTian extends TriggerSkill implements OnDefineReleaseTiming {
     return true;
   }
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
-    room.installSideEffectSkill(System.SideEffectSkillApplierEnum.HuangTian, HuangTianGiveCard.Name);
+    room.installSideEffectSkill(System.SideEffectSkillApplierEnum.HuangTian, HuangTianGiveCard.Name, event.fromId);
     return true;
   }
 }
 
 @SideEffectSkill
-@CommonSkill({ name: HuangTian.Name, description: HuangTian.Description })
+@CommonSkill({ name: HuangTian.GeneralName, description: HuangTian.Description })
 export class HuangTianGiveCard extends ActiveSkill {
   public canUse(room: Room, owner: Player) {
     return !owner.hasUsedSkill(this.Name);
@@ -74,7 +74,7 @@ export class HuangTianGiveCard extends ActiveSkill {
     selectedTargets: PlayerId[],
     containerCard?: CardId,
   ): boolean {
-    return room.getPlayerById(target).hasSkill(this.GeneralName);
+    return room.getPlayerById(target).hasSkill(HuangTian.GeneralName);
   }
 
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {

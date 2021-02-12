@@ -216,6 +216,7 @@ export const eventDictionary: Word[] = [
   { source: 'please assign others no more than 2 handcards', target: '是否將至多兩張手牌交給其他角色' },
   { source: '{0} obtains {1} cards', target: '{0} 獲得了 {1} 張牌' },
   { source: 'please drop {0} cards', target: '請棄置 {1} 張牌' },
+  { source: 'please drop {1} to {2} cards', target: '請棄置至少 {1}、至多 {2} 張牌' },
   { source: '{0} drops cards {1}', target: '{0} 棄置了 {1}' },
   { source: '{0} drops cards {1} by {2}', target: '{2} 棄置了 {0} 的 {1}' },
   { source: '{0} has been placed into drop stack', target: '{0} 置入了棄牌堆' },

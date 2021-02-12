@@ -52,8 +52,8 @@ export class YongJin extends ActiveSkill {
     return false;
   }
 
-  public nominateForwardTarget(targets?: PlayerId[]) {
-    return [targets![0]];
+  public resortTargets() {
+    return false;
   }
 
   public getAnimationSteps(event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
@@ -198,8 +198,8 @@ export class YongJinMove extends TriggerSkill {
     return false;
   }
 
-  public nominateForwardTarget(targets?: PlayerId[]) {
-    return [targets![0]];
+  public resortTargets() {
+    return false;
   }
 
   public async onTrigger(): Promise<boolean> {

@@ -67,6 +67,7 @@ export const characterDictionary: Word[] = [
   { source: 'jizhi', target: '集智' },
   { source: '#jizhi', target: '集智' },
   { source: 'qicai', target: '奇才' },
+  { source: '#qicai', target: '奇才' },
 
   { source: 'yiji_c', target: '伊籍' },
   { source: 'jijie', target: '机捷' },

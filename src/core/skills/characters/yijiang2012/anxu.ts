@@ -1,11 +1,5 @@
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
-import {
-  CardMoveArea,
-  CardMoveReason,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -39,9 +33,8 @@ export class AnXu extends ActiveSkill {
     selectedTargets: PlayerId[],
   ): boolean {
     return (
-      target !== owner && (selectedTargets.length === 1
-        ? room.getPlayerById(target).getCardIds(PlayerCardsArea.HandArea).length > 0
-        : true)
+      target !== owner &&
+      (selectedTargets.length === 1 ? room.getPlayerById(target).getCardIds(PlayerCardsArea.HandArea).length > 0 : true)
     );
   }
 
@@ -61,14 +54,11 @@ export class AnXu extends ActiveSkill {
     ];
   }
 
-  public nominateForwardTarget(targets?: PlayerId[]) {
-    return [targets![0]];
+  public resortTargets() {
+    return false;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { fromId, toIds } = event;
     const first = toIds![0];
     const second = toIds![1];
@@ -118,7 +108,7 @@ export class AnXu extends ActiveSkill {
     const firstHandNum = room.getPlayerById(first).getCardIds(PlayerCardsArea.HandArea).length;
     const secondHandNum = secondPlayer.getCardIds(PlayerCardsArea.HandArea).length;
     let lessOne: PlayerId | undefined;
-    
+
     if (firstHandNum > secondHandNum) {
       lessOne = second;
     } else if (firstHandNum < secondHandNum) {

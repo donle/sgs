@@ -197,7 +197,7 @@ export class JiangChiKeep extends TriggerSkill {
       return Sanguosha.getCardById(cardId).GeneralName === 'slash';
     });
 
-    askForCardDropEvent.cardAmount -= slashes.length;
+    (askForCardDropEvent.cardAmount as number) -= slashes.length;
     askForCardDropEvent.except = askForCardDropEvent.except ? [...askForCardDropEvent.except, ...slashes] : slashes;
 
     return true;

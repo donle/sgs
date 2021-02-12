@@ -4,10 +4,11 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, SelfTargetSkill } from 'core/skills/skill';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @CommonSkill({ name: 'wuzhongshengyou', description: 'wuzhongshengyou_description' })
 @SelfTargetSkill
-export class WuZhongShengYouSkill extends ActiveSkill {
+export class WuZhongShengYouSkill extends ActiveSkill implements ExtralCardSkillProperty {
   public canUse(room: Room, owner: Player, containerCard?: CardId) {
     return containerCard !== undefined && owner.canUseCardTo(room, containerCard, owner.Id);
   }
@@ -19,14 +20,20 @@ export class WuZhongShengYouSkill extends ActiveSkill {
   public cardFilter(): boolean {
     return true;
   }
+
   public isAvailableCard(): boolean {
     return false;
   }
+
+  public isCardAvailableTarget(): boolean {
+    return true;
+  }
+
   public isAvailableTarget(): boolean {
     return false;
   }
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    event.toIds = [event.fromId];
+    event.targetGroup = [[event.fromId]];
     return true;
   }
 

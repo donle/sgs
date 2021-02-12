@@ -4,6 +4,7 @@ import { GameEventIdentifiers, ServerEventFinder, serverResponsiveListenerEvents
 import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
+import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import React from 'react';
 import { GameClientProcessor } from './game_processor';
@@ -95,7 +96,12 @@ export class ReplayClientProcessor extends GameClientProcessor {
     this.presenter.createIncomingConversation({
       conversation: content.conversation
         ? content.conversation
-        : TranslationPack.translationJsonPatcher('please drop {0} cards', content.cardAmount).extract(),
+        : TranslationPack.translationJsonPatcher(
+            'please drop ' + (content.cardAmount instanceof Array ? '{1} to {2}' : '{0}') + ' cards',
+            content.cardAmount as number,
+            (content.cardAmount as [number, number])[0],
+            (content.cardAmount as [number, number])[1],
+          ).extract(),
       translator: this.translator,
     });
   }
@@ -112,7 +118,9 @@ export class ReplayClientProcessor extends GameClientProcessor {
       this.audioService.playEquipAudio();
     }
 
-    const tos = content.toIds?.map(toId => this.store.room.getPlayerById(toId)) as Player[];
+    const tos = TargetGroupUtil.getRealTargets(content.targetGroup)?.map(toId =>
+      this.store.room.getPlayerById(toId),
+    ) as Player[];
 
     this.presenter.showCards(
       ...Card.getActualCards([content.cardId]).map(cardId => ({

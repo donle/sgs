@@ -12,7 +12,8 @@ import { RoomPresenter, RoomStore } from '../room.presenter';
 import { BaseAction } from './base_action';
 
 export class CardResponseAction extends BaseAction {
-  public static isSkillsOnCardResponseDisabled = (room: Room, matcher: CardMatcher, player: Player) => (
+  public static isSkillsOnCardResponseDisabled = (room: Room, matcher: CardMatcher, player: Player,
+    event: ServerEventFinder<GameEventIdentifiers>,) => (
     skill: Skill,
   ) => {
     if (UniqueSkillRule.isProhibited(skill, player)) {
@@ -24,7 +25,7 @@ export class CardResponseAction extends BaseAction {
     } else if (skill instanceof ViewAsSkill) {
       return (
         !new CardMatcher({ name: skill.canViewAs(room, player, undefined, matcher) }).match(matcher) ||
-        !skill.canUse(room, player)
+        !skill.canUse(room, player, event)
       );
     }
 

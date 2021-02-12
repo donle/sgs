@@ -1,5 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -48,15 +48,7 @@ export class BingLiangCunDuanSkill extends ActiveSkill {
     );
   }
 
-  public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    await room.moveCards({
-      fromId: event.fromId,
-      movingCards: [{ card: event.cardId, fromArea: CardMoveArea.HandArea }],
-      toId: event.toIds![0],
-      toArea: CardMoveArea.JudgeArea,
-      moveReason: CardMoveReason.CardUse,
-    });
-
+  public async onUse() {
     return true;
   }
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {

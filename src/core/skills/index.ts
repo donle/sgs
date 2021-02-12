@@ -253,6 +253,26 @@ export { ZhuiYi } from './characters/yijiang2012/zhuiyi';
 export { ZiShou, ZiShouReforge, ZiShouPrevent, ZiShouShadow } from './characters/yijiang2012/zishou';
 export { ZongShi, ZongShiNullify, ZongShiProhibit } from './characters/yijiang2012/zongshi';
 
+export { ChengXiang } from './characters/yijiang2013/chengxiang';
+export { RenXin } from './characters/yijiang2013/renxin';
+export { JingCe, JingCeRecorder, JingCeShadow } from './characters/yijiang2013/jingce';
+export { JunXing } from './characters/yijiang2013/junxing';
+export { YuCe } from './characters/yijiang2013/yuce';
+export { JueCe, JueCeShadow } from './characters/yijiang2013/juece';
+export { MieJi } from './characters/yijiang2013/mieji';
+export { FenCheng } from './characters/yijiang2013/fencheng';
+export { ZongXuan, ZongXuanShadow } from './characters/yijiang2013/zongxuan';
+export { ZhiYan } from './characters/yijiang2013/zhiyan';
+export { AnJian, AnJianPeach } from './characters/yijiang2013/anjian';
+export { DuoDao } from './characters/yijiang2013/duodao';
+export { XianSi, XianSiShadow, XianSiFilter, XianSiSlash } from './characters/yijiang2013/xiansi';
+export { LongYin, LongYinClear } from './characters/yijiang2013/longyin';
+export { QiaoShuo, QiaoShuoLose, QiaoShuoWin } from './characters/yijiang2013/qiaoshuo';
+export { J3ZongShi } from './characters/yijiang2013/zongshi';
+export { DanShou, DanshouShadow } from './characters/yijiang2013/danshou';
+export { ZhuiKong, ZhuiKongFilter, ZhuiKongDistance } from './characters/yijiang2013/zhuikong';
+export { QiuYuan } from './characters/yijiang2013/qiuyuan';
+
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';
 export { FeiYang } from './game_mode/1v2/feiyang';
