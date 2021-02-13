@@ -607,7 +607,7 @@ export abstract class BaseAction {
       for (const target of this.selectedTargets) {
         this.presenter.unselectPlayer(this.store.room.getPlayerById(target));
       }
-      this.selectedTargets = [];
+      this.scopedTargets?.length !== 1 && (this.selectedTargets = []);
     }
 
     if (this.selectedSkillToPlay !== undefined) {
