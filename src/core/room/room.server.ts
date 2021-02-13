@@ -1008,7 +1008,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
 
     await super.useSkill(content);
-    content.toIds && skill.resortTargets && this.sortPlayersByPosition(content.toIds);
+    content.toIds && skill.resortTargets() && this.sortPlayersByPosition(content.toIds);
 
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.SkillUseEvent, content);
     if (!EventPacker.isTerminated(content)) {
