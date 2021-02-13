@@ -10,6 +10,7 @@ import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { SettingsDialog } from 'pages/ui/settings/settings';
+import { ServerHostTag } from 'props/config_props';
 import * as React from 'react';
 import { ConnectionService } from 'services/connection_service/connection_service';
 import { PagePropsWithConfig } from 'types/page_props';
@@ -291,6 +292,7 @@ export class ReplayRoomPage extends React.Component<
               connectionService={this.props.connectionService}
               onClickSettings={this.onClickSettings}
               onSwitchSideBoard={this.onSwitchSideBoard}
+              host={ServerHostTag.Localhost}
             />
             <div className={styles.mainBoard}>
               <SeatsLayout

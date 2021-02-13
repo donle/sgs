@@ -19,6 +19,7 @@ import * as https from 'https';
 import * as SocketIO from 'socket.io';
 import { SimplifiedChinese } from './languages';
 import { getServerConfig, ServerConfig } from './server_config';
+import { RoomId } from 'core/room/room';
 
 class App {
   private server: http.Server | https.Server;
@@ -58,7 +59,8 @@ class App {
       socket
         .on(LobbySocketEvent.GameCreated.toString(), this.onGameCreated(socket))
         .on(LobbySocketEvent.QueryRoomList.toString(), this.onQueryRoomsInfo(socket))
-        .on(LobbySocketEvent.QueryVersion.toString(), this.matchCoreVersion(socket));
+        .on(LobbySocketEvent.QueryVersion.toString(), this.matchCoreVersion(socket))
+        .on(LobbySocketEvent.CheckRoomExist.toString(), this.onCheckingRoomExist(socket));
     });
     this.lobbySocket.of('/chat').on('connect', socket => {
       socket.on(ChatSocketEvent.Chat, this.onGameChat);
@@ -71,6 +73,10 @@ class App {
 
   private readonly matchCoreVersion = (socket: SocketIO.Socket) => (content: { version: string }) => {
     socket.emit(LobbySocketEvent.VersionMismatch.toString(), content.version === Sanguosha.Version);
+  };
+
+  private readonly onCheckingRoomExist = (socket: SocketIO.Socket) => (id: RoomId) => {
+    socket.emit(LobbySocketEvent.CheckRoomExist.toString(), this.rooms.find(room => room.RoomId) !== undefined);
   };
 
   private readonly createDifferentModeGameProcessor = (gameMode: GameMode): GameProcessor => {

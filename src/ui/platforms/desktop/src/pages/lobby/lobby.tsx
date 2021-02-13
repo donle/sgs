@@ -28,6 +28,7 @@ import { CreateRoomButton } from './ui/create_room_button/create_room_button';
 import { CreateRoomDialog, TemporaryRoomCreationInfo } from './ui/create_room_dialog/create_room_dialog';
 import { EnterPasscodeDialog } from './ui/enter_passcode_dialog/enter_passcode_dialog';
 import { FeedbackDialog } from './ui/feedback_dialog/feedback_dialog';
+import { ServerHostTag } from 'props/config_props';
 
 type LobbyProps = PagePropsWithConfig<{
   translator: ClientTranslationModule;
@@ -37,10 +38,16 @@ type LobbyProps = PagePropsWithConfig<{
   connectionService: ConnectionService;
 }>;
 
+type HostRoomInfo = {
+  info: RoomInfo;
+  host: ServerHostTag;
+  ping: number;
+};
+
 @mobxReact.observer
 export class Lobby extends React.Component<LobbyProps> {
   @mobx.observable.shallow
-  private roomList: RoomInfo[] = [];
+  private roomList: { info: RoomInfo; host: ServerHostTag; ping: number }[] = [];
   @mobx.observable.ref
   private unmatchedCoreVersion = false;
   @mobx.observable.ref
@@ -79,7 +86,7 @@ export class Lobby extends React.Component<LobbyProps> {
   private createRoomImage = this.props.imageLoader.getCreateRoomButtonImage().src!;
   private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
 
-  private currentInteractiveRoomInfo: RoomInfo;
+  private currentInteractiveRoomInfo: HostRoomInfo;
 
   private readonly settings = {
     onVolumeChange: mobx.action((volume: number) => {
@@ -117,11 +124,19 @@ export class Lobby extends React.Component<LobbyProps> {
   }
 
   @mobx.action
-  UNSAFE_componentWillMount() {
-    this.props.connectionService.Lobby.getRoomList().then(mobx.action(content => (this.roomList = content)));
-    this.props.connectionService.Lobby.checkCoreVersion().then(
-      mobx.action(matched => (this.unmatchedCoreVersion = !matched)),
+  private queryRoomList() {
+    this.roomList = [];
+    this.props.connectionService.Lobby.getRoomList(
+      mobx.action(content =>
+        this.roomList.push(
+          ...content.packet.map(roomInfo => ({ info: roomInfo, host: content.hostTag, ping: content.ping })),
+        ),
+      ),
     );
+  }
+
+  UNSAFE_componentWillMount() {
+    this.queryRoomList();
   }
 
   @mobx.action
@@ -138,7 +153,7 @@ export class Lobby extends React.Component<LobbyProps> {
       return;
     }
 
-    this.props.connectionService.Lobby.getRoomList().then(mobx.action(content => (this.roomList = content)));
+    this.queryRoomList();
   };
 
   unmatchedView() {
@@ -146,18 +161,26 @@ export class Lobby extends React.Component<LobbyProps> {
   }
 
   @mobx.action
-  private readonly enterRoom = (roomInfo: RoomInfo) => () => {
-    if (roomInfo.passcode) {
+  private readonly enterRoom = (hostInfo: HostRoomInfo) => () => {
+    const { info, host } = hostInfo;
+    if (info.passcode) {
       this.openPasscodeEnterDialog = true;
-      this.currentInteractiveRoomInfo = roomInfo;
+      this.currentInteractiveRoomInfo = hostInfo;
     } else {
-      this.props.connectionService.Lobby.getRoomList().then(list => {
-        if (list.find(room => room.id === roomInfo.id) !== undefined) {
-          this.props.history.push(`/room/${roomInfo.id}`);
+      this.props.connectionService.Lobby.checkRoomExist(host, info.id, exist => {
+        if (exist) {
+          this.props.history.push(`/room/${info.id}`, {
+            hostConfig: this.props.config.host.find(config => config.hostTag === this.currentInteractiveRoomInfo.host),
+          });
         } else {
           //TODO: add error popout
           mobx.runInAction(() => {
-            this.roomList = list;
+            const deadRoomIndex = this.roomList.findIndex(
+              roomHostInfo => roomHostInfo.info.id === this.currentInteractiveRoomInfo.info.id,
+            );
+            if (deadRoomIndex >= 0) {
+              this.roomList.splice(deadRoomIndex, 1);
+            }
           });
         }
       });
@@ -167,13 +190,21 @@ export class Lobby extends React.Component<LobbyProps> {
   @mobx.action
   private readonly onRoomCreated = (roomInfo: TemporaryRoomCreationInfo) => {
     this.openRoomCreationDialog = false;
-    this.props.connectionService.Lobby.createGame({
-      cardExtensions: [GameCardExtensions.Standard, GameCardExtensions.LegionFight],
-      ...roomInfo,
-    }).then(
+    this.props.connectionService.Lobby.createGame(
+      {
+        cardExtensions: [GameCardExtensions.Standard, GameCardExtensions.LegionFight],
+        ...roomInfo,
+      },
       mobx.action(event => {
-        const { roomId, roomInfo } = event;
-        this.props.history.push(`/room/${roomId}`, { gameMode: roomInfo.gameMode });
+        const { packet, ping } = event;
+        const { roomId, roomInfo } = packet;
+        console.log(roomInfo);
+        console.log(packet);
+        this.props.history.push(`/room/${roomId}`, {
+          gameMode: roomInfo.gameMode,
+          ping,
+          hostConfig: this.props.config.host.find(config => config.hostTag === this.currentInteractiveRoomInfo.host),
+        });
       }),
     );
   };
@@ -210,19 +241,32 @@ export class Lobby extends React.Component<LobbyProps> {
 
   @mobx.action
   private readonly onPasscodeSubmit = (passcode?: string) => {
-    if (this.currentInteractiveRoomInfo && passcode && this.currentInteractiveRoomInfo.passcode === passcode) {
+    if (this.currentInteractiveRoomInfo && passcode && this.currentInteractiveRoomInfo.info.passcode === passcode) {
       this.openPasscodeEnterDialog = false;
       this.showPasscodeError = false;
-      this.props.connectionService.Lobby.getRoomList().then(list => {
-        if (list.find(room => room.id === this.currentInteractiveRoomInfo.id) !== undefined) {
-          this.props.history.push(`/room/${this.currentInteractiveRoomInfo.id}`);
-        } else {
-          //TODO: add error popout
-          mobx.runInAction(() => {
-            this.roomList = list;
-          });
-        }
-      });
+      this.props.connectionService.Lobby.checkRoomExist(
+        this.currentInteractiveRoomInfo.host,
+        this.currentInteractiveRoomInfo.info.id,
+        exist => {
+          if (exist) {
+            this.props.history.push(`/room/${this.currentInteractiveRoomInfo.info.id}`, {
+              hostConfig: this.props.config.host.find(
+                config => config.hostTag === this.currentInteractiveRoomInfo.host,
+              ),
+            });
+          } else {
+            //TODO: add error popout
+            mobx.runInAction(() => {
+              const deadRoomIndex = this.roomList.findIndex(
+                roomHostInfo => roomHostInfo.info.id === this.currentInteractiveRoomInfo.info.id,
+              );
+              if (deadRoomIndex >= 0) {
+                this.roomList.splice(deadRoomIndex, 1);
+              }
+            });
+          }
+        },
+      );
     } else {
       this.showPasscodeError = true;
     }
@@ -266,7 +310,6 @@ export class Lobby extends React.Component<LobbyProps> {
   render() {
     return (
       <div className={styles.lobby}>
-        <SignalBar className={styles.signalBar} connectionService={this.props.connectionService} />
         <img src={this.backgroundImage} alt="" className={styles.background} />
         <div className={styles.board}>
           <div className={styles.functionBoard}>
@@ -293,10 +336,10 @@ export class Lobby extends React.Component<LobbyProps> {
             {this.roomList.length === 0 && <span>{this.props.translator.tr('No rooms at the moment')}</span>}
             {this.unmatchedCoreVersion
               ? this.unmatchedView()
-              : this.roomList.map((roomInfo, index) => (
+              : this.roomList.map((hostInfo, index) => (
                   <li className={styles.roomInfo} key={index}>
                     <span className={styles.roomName}>
-                      <span>{roomInfo.name}</span>
+                      <span>{hostInfo.info.name}</span>
                     </span>
                     <span
                       className={styles.roomMode}
@@ -305,30 +348,39 @@ export class Lobby extends React.Component<LobbyProps> {
                     >
                       <img
                         className={styles.gameModeIcon}
-                        src={this.props.imageLoader.getGameModeIcon(roomInfo.gameMode).src}
+                        src={this.props.imageLoader.getGameModeIcon(hostInfo.info.gameMode).src}
                         alt=""
                       />
                       {this.viewCharacterExtenstions === index && (
                         <Tooltip position={['slightBottom', 'right']}>
-                          {roomInfo.packages.map(p => this.props.translator.tr(p)).join(', ')}
+                          {hostInfo.info.packages.map(p => this.props.translator.tr(p)).join(', ')}
                         </Tooltip>
                       )}
                     </span>
-                    <span className={styles.roomStatus}>{this.props.translator.tr(roomInfo.status)}</span>
-                    <span className={styles.roomPlayers}>{`${roomInfo.activePlayers}/${roomInfo.totalPlayers}`}</span>
-                    <span className={styles.roomLocker}>{roomInfo.passcode && <img src={lockerImage} alt="" />}</span>
+                    <span className={styles.roomStatus}>{this.props.translator.tr(hostInfo.info.status)}</span>
+                    <span
+                      className={styles.roomPlayers}
+                    >{`${hostInfo.info.activePlayers}/${hostInfo.info.totalPlayers}`}</span>
+                    <span className={styles.roomLocker}>
+                      {hostInfo.info.passcode && <img src={lockerImage} alt="" />}
+                    </span>
                     <span className={styles.roomActions}>
                       <LinkButton
-                        onClick={this.enterRoom(roomInfo)}
+                        onClick={this.enterRoom(hostInfo)}
                         disabled={
-                          roomInfo.activePlayers === roomInfo.totalPlayers ||
+                          hostInfo.info.activePlayers === hostInfo.info.totalPlayers ||
                           !this.username ||
-                          roomInfo.status === 'playing'
+                          hostInfo.info.status === 'playing'
                         }
                       >
                         {this.props.translator.tr('Join')}
                       </LinkButton>
                     </span>
+                    <SignalBar
+                      host={hostInfo.host}
+                      className={styles.signalBar}
+                      connectionService={this.props.connectionService}
+                    />
                   </li>
                 ))}
             <CreateRoomButton
