@@ -484,10 +484,6 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       if (!skill.canBeUsedCard(cardId, (this as unknown) as Room, target, attacker)) {
         return false;
       }
-
-      if (!skill.canUseCard(cardId, (this as unknown) as Room, attacker, target)) {
-        return false;
-      }
     }
 
     return true;
