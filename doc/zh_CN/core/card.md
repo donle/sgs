@@ -42,6 +42,7 @@ Card类用来代表游戏中的卡牌。卡牌指的是游戏牌，而不是武�
     - [getActualCards(cards: CardId[]) => CardId[]](#getactualcardscards-cardid--cardid)
     - [isVirtualCardId(id: CardId) => boolean](#isvirtualcardidid-cardid--boolean)
   - [Related Non-members](#related-non-members)
+    - [const enum GameCardExtensions](#const-enum-gamecardextensions)
     - [const enum CardSuit](#const-enum-cardsuit)
     - [const enum CardColor](#const-enum-cardcolor)
     - [type CardId](#type-cardid)
@@ -171,6 +172,15 @@ ___
 ___
 
 ## Related Non-members
+
+### const enum GameCardExtensions
+
+卡牌包。
+
+| 常量                           | 值               | 描述          |
+| ------------------------------ | ---------------- | ------------- |
+| GameCardExtensions.Standard    | `'standard'`     | 标准包+标准ex |
+| GameCardExtensions.LegionFight | `'legion_fight'` | 军争卡牌包    |
 
 ### const enum CardSuit
 

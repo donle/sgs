@@ -26,6 +26,7 @@ Character类是游戏中所有武将的基类。该类保存着武将的基本�
     - [unlink() => void](#unlink--void)
     - [isLinked() => boolean](#islinked--boolean)
   - [Related Non-members](#related-non-members)
+    - [const enum GameCharacterExtensions](#const-enum-gamecharacterextensions)
     - [type CharacterId](#type-characterid)
     - [const enum CharacterGender](#const-enum-charactergender)
     - [const enum CharacterNationality](#const-enum-characternationality)
@@ -98,6 +99,21 @@ ___
 ___
 
 ## Related Non-members
+
+### const enum GameCharacterExtensions
+
+武将包。
+
+| 常量                                | 值              | 描述 |
+| ----------------------------------- | --------------- | ---- |
+| GameCharacterExtensions.Standard    | `'standard'`    | 标   |
+| GameCharacterExtensions.Wind        | `'wind'`        | 风   |
+| GameCharacterExtensions.Fire        | `'fire'`        | 火   |
+| GameCharacterExtensions.Forest      | `'forest'`      | 林   |
+| GameCharacterExtensions.Mountain    | `'mountain'`    | 山   |
+| GameCharacterExtensions.God         | `'god'`         | 神   |
+| GameCharacterExtensions.YiJiang2011 | `'yijiang2011'` | 将1  |
+| GameCharacterExtensions.YiJiang2012 | `'yijiang2012'` | 将2  |
 
 ### type CharacterId
 
