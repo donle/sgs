@@ -8,7 +8,7 @@ ___
 
 + [Character](./character.md)
 + [Card](./card.md)
-+ [Extension](./extension.md)
++ [Sanguosha](./sanguosha.md)
 + [Player](./player.md)
 + [Skill](./skill.md)
 + [Shared](./shared_index.md)
