@@ -55,6 +55,8 @@ ___
 
 初始化整个Sanguosha类的私有静态成员（？），加载好技能、卡牌、武将。
 
+参看[Loader](./loader.md)。
+
 ### isTransformCardSill(skillName: string) => boolean
 
 判断一个技能是否是卡牌转换技（像是天香、武神之类的技能）。
