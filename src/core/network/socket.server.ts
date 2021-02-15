@@ -134,6 +134,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
               'player {0} has disconnected from the room',
               room.getPlayerById(playerId).Name,
             ).extract(),
+            ignoreNotifiedStatus: true,
           };
           this.broadcast(
             GameEventIdentifiers.PlayerLeaveEvent,
@@ -147,6 +148,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
               'player {0} has left the room',
               room.getPlayerById(playerId).Name,
             ).extract(),
+            ignoreNotifiedStatus: true,
           };
           this.broadcast(
             GameEventIdentifiers.PlayerLeaveEvent,
@@ -187,6 +189,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
           'player {0} has left the room',
           this.room!.getPlayerById(playerId).Name,
         ).extract(),
+        ignoreNotifiedStatus: true,
       };
       this.broadcast(
         GameEventIdentifiers.PlayerLeaveEvent,
@@ -314,6 +317,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         'player {0} has left the room',
         room.getPlayerById(event.playerId).Name,
       ).extract(),
+      ignoreNotifiedStatus: true,
     };
     this.broadcast(
       GameEventIdentifiers.PlayerLeaveEvent,
