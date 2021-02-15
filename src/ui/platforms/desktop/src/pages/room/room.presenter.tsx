@@ -360,7 +360,6 @@ export class RoomPresenter {
   }
   @mobx.action
   defineCancelButtonActions(handler: () => void) {
-    this.store.actionButtonStatus.cancel = true;
     this.store.cancelButtonAction = mobx.action(() => {
       this.store.actionButtonStatus.cancel = false;
       this.store.actionButtonStatus.confirm = false;
