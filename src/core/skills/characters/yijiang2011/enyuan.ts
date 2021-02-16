@@ -1,4 +1,6 @@
+import { CardSuit } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardMoveStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
@@ -84,52 +86,54 @@ export class EnYuan extends TriggerSkill {
     return true;
   }
 
-  public async onEffect(room: Room, skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const { triggeredOnEvent } = skillEffectEvent;
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    const { fromId, triggeredOnEvent } = event;
     const identifier = EventPacker.getIdentifier(triggeredOnEvent!);
 
     if (identifier === GameEventIdentifiers.DamageEvent) {
       const damageEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-      const damageFromId = damageEvent.fromId;
-      const damageFrom = room.getPlayerById(damageFromId!);
+      const damageFromId = damageEvent.fromId!;
+      const damageFrom = room.getPlayerById(damageFromId);
 
       if (damageFrom.getCardIds(PlayerCardsArea.HandArea).length > 0) {
-        const askForChooseCard: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardEvent> = {
-          toId: damageFromId!,
-          cardIds: damageFrom.getCardIds(PlayerCardsArea.HandArea),
-          amount: 1,
-          customTitle: TranslationPack.translationJsonPatcher(
+        const askForCard: ServerEventFinder<GameEventIdentifiers.AskForCardEvent> = {
+          cardAmount: 1,
+          toId: damageFromId,
+          reason: this.Name,
+          conversation: TranslationPack.translationJsonPatcher(
             '{0}: you need to give a handcard to {1}',
             this.Name,
-            TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillEffectEvent.fromId)),
-          ).toString(),
+            TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
+          ).extract(),
+          fromArea: [PlayerCardsArea.HandArea],
+          triggeredBySkills: [this.Name],
         };
-
-        room.notify(GameEventIdentifiers.AskForChoosingCardEvent, askForChooseCard, damageFromId!);
-
-        const { selectedCards } = await room.onReceivingAsyncResponseFrom(
-          GameEventIdentifiers.AskForChoosingCardEvent,
-          damageFromId!,
-        );
+        room.notify(GameEventIdentifiers.AskForCardEvent, askForCard, damageFromId);
+        const { selectedCards } = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardEvent, damageFromId);
 
         if (selectedCards === undefined) {
-          await room.loseHp(damageFromId!, 1);
+          await room.loseHp(damageFromId, 1);
         } else {
+          const suit = Sanguosha.getCardById(selectedCards[0]).Suit;
           await room.moveCards({
             movingCards: selectedCards.map(card => ({ card, fromArea: CardMoveArea.HandArea })),
             moveReason: CardMoveReason.ActiveMove,
-            fromId: damageFromId!,
-            toId: skillEffectEvent.fromId,
+            fromId: damageFromId,
+            toId: fromId,
             toArea: CardMoveArea.HandArea,
-            proposer: skillEffectEvent.fromId,
+            proposer: fromId,
           });
+
+          if (suit !== CardSuit.Heart) {
+            await room.drawCards(1, fromId, 'top', fromId, this.Name);
+          }
         }
       } else {
-        await room.loseHp(damageFromId!, 1);
+        await room.loseHp(damageFromId, 1);
       }
     } else {
       const moveCardEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
-      await room.drawCards(1, moveCardEvent.fromId, undefined, skillEffectEvent.fromId, this.Name);
+      await room.drawCards(1, moveCardEvent.fromId, undefined, fromId, this.Name);
     }
 
     return true;
