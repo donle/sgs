@@ -1596,7 +1596,8 @@ export class StandardGameProcessor extends GameProcessor {
     }
 
     for (const event of events) {
-      await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      const moveEvent = EventPacker.createIdentifierEvent(identifier, event);
+      await this.iterateEachStage(identifier, moveEvent, onActualExecuted, async stage => {
         if (stage === CardMoveStage.AfterCardMoved && event.fromId) {
           const from = this.room.getPlayerById(event.fromId);
           const movingEquips = event.movingCards.filter(cardInfo => cardInfo.fromArea === PlayerCardsArea.EquipArea);
