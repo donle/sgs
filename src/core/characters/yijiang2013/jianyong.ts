@@ -6,7 +6,7 @@ import { Character, CharacterGender, CharacterNationality } from '../character';
 const skillLoaderInstance = SkillLoader.getInstance();
 export class JianYong extends Character {
   constructor(id: number) {
-    super(id, 'jianyong', CharacterGender.Male, CharacterNationality.Shu, 3, 3, GameCharacterExtensions.YiJiang2012, [
+    super(id, 'jianyong', CharacterGender.Male, CharacterNationality.Shu, 3, 3, GameCharacterExtensions.YiJiang2013, [
       ...skillLoaderInstance.getSkillsByName(QiaoShuo.Name),
       skillLoaderInstance.getSkillByName(J3ZongShi.Name),
     ]);
