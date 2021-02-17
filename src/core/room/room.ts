@@ -585,20 +585,20 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public transformCard(
     player: Player,
-    cardIds: CardId[],
-    toArea: PlayerCardsArea.EquipArea | PlayerCardsArea.HandArea,
-  ): void;
-  public transformCard(player: Player, judgeEvent: ServerEventFinder<GameEventIdentifiers.JudgeEvent>): void;
-  public transformCard(
-    player: Player,
     judgeEventOrCards: ServerEventFinder<GameEventIdentifiers.JudgeEvent> | CardId[],
     toArea?: PlayerCardsArea.EquipArea | PlayerCardsArea.HandArea,
   ) {
     const transformSkills = player.getSkills<TransformSkill>('transform');
     if (!(judgeEventOrCards instanceof Array)) {
       const judgeEvent = judgeEventOrCards as ServerEventFinder<GameEventIdentifiers.JudgeEvent>;
+
+      if (Card.isVirtualCardId(judgeEvent.judgeCardId)) {
+        const judgeCard = Sanguosha.getCardById<VirtualCard>(judgeEvent.judgeCardId);
+        judgeEvent.judgeCardId = Sanguosha.getCardById(judgeCard.ActualCardIds[0]).Id;
+      }
+
       for (const skill of transformSkills.filter(skill => skill.includesJudgeCard())) {
-        if (!Card.isVirtualCardId(judgeEvent.judgeCardId) && skill.canTransform(judgeEvent.judgeCardId)) {
+        if (skill.canTransform(judgeEvent.judgeCardId)) {
           judgeEvent.judgeCardId = skill.forceToTransformCardTo(judgeEvent.judgeCardId).Id;
           break;
         }

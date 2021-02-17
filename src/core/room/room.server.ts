@@ -1210,6 +1210,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   public async moveCards(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
+    if (event.movingCards.length === 0) {
+      return;
+    }
+
     const from = event.fromId ? this.getPlayerById(event.fromId) : undefined;
     event.movingCards = event.movingCards.reduce<
       {
