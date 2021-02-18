@@ -58,6 +58,8 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   sideImage: string | undefined;
   @mobx.observable.ref
   focusedOnPlayerHandcard: boolean = false;
+  @mobx.observable.ref
+  autoHidePlayerName: boolean = true;
 
   private showPlayerHandcards =
     this.props.store.room.Info.gameMode === GameMode.TwoVersusTwo &&
@@ -72,6 +74,14 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     if (this.props.disabled === false) {
       this.props.onClick && this.props.onClick(!this.props.selected);
     }
+  });
+
+  private readonly showPlayerName = mobx.action(() => {
+    this.autoHidePlayerName = false;
+  });
+
+  private readonly hidePlayerName = mobx.action(() => {
+    this.autoHidePlayerName = true;
   });
 
   @mobx.computed
@@ -134,6 +144,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
       this.onTooltipOpened = true;
     }, 500);
   };
+
   @mobx.action
   private readonly closeTooltip = (event: React.MouseEvent<HTMLSpanElement>) => {
     this.onTooltipOpeningTimer && clearTimeout(this.onTooltipOpeningTimer);
@@ -321,7 +332,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
       actionTimeLimit,
     } = this.props;
     return (
-      <div className={styles.player}>
+      <div className={styles.player} onMouseOver={this.showPlayerName} onMouseOut={this.hidePlayerName}>
         <div
           id={player && player.Id}
           className={styles.playerCard}
@@ -344,6 +355,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
               <p
                 className={classNames(styles.playerName, {
                   [styles.aligned]: this.PlayerCharacter !== undefined,
+                  [styles.autoHide]: this.PlayerCharacter && this.autoHidePlayerName,
                 })}
               >
                 {player.Name}

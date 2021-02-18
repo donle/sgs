@@ -54,8 +54,18 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   mainImage: string | undefined;
   @mobx.observable.ref
   sideImage: string | undefined;
+  @mobx.observable.ref
+  autoHidePlayerName: boolean = true;
 
   private openedDialog: string | undefined;
+
+  private readonly showPlayerName = mobx.action(() => {
+    this.autoHidePlayerName = false;
+  });
+
+  private readonly hidePlayerName = mobx.action(() => {
+    this.autoHidePlayerName = true;
+  });
 
   @mobx.action
   private readonly onClick = () => {
@@ -340,6 +350,8 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           onClick={this.onClick}
           onMouseEnter={this.openTooltip}
           onMouseLeave={this.closeTooltip}
+          onMouseOver={this.showPlayerName}
+          onMouseOut={this.hidePlayerName}
         >
           {this.props.incomingMessage && (
             <Tooltip
@@ -351,7 +363,13 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
               {this.props.incomingMessage}
             </Tooltip>
           )}
-          <span className={styles.playerName}>{clientPlayer?.Name}</span>
+          <span
+            className={classNames(styles.playerName, {
+              [styles.autoHide]: character && this.autoHidePlayerName,
+            })}
+          >
+            {clientPlayer?.Name}
+          </span>
           <span
             className={classNames(styles.highlightBorder, {
               [styles.selected]: this.props.selected && !this.props.disabled,

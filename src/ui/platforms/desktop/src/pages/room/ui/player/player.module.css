@@ -117,6 +117,15 @@
 .disabled:not(.dead) {
     filter: brightness(0.5);
 }
+
+.autoHide {
+    visibility: hidden;
+}
+
+.autoHide:hover {
+    visibility: visible;
+}
+
 .playerName {
     position: absolute;
     width: 100%;

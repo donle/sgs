@@ -19,6 +19,14 @@
     filter: grayscale(100%);
 }
 
+.autoHide {
+    visibility: hidden;
+}
+
+.autoHide:hover {
+    visibility: visible;
+}
+
 .playerName {
     flex: auto;
     position: absolute;
