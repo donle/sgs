@@ -78,13 +78,16 @@ export class XuanHuo extends TriggerSkill {
     });
 
     const options: string[] = [];
-    const cards = Sanguosha.getCardsByMatcher(new CardMatcher({ generalName: ['slash'] }));
-    const attackCards: string[] = [];
-
-    for (const card of cards) {
-      attackCards.push(card.Name);
-    }
+    const attackCards = Sanguosha.getCardsByMatcher(new CardMatcher({ generalName: ['slash'] })).reduce<string[]>(
+      (allName, card) => {
+        allName.push(card.Name);
+        return allName;
+      },
+      [],
+    );
     attackCards.push('duel');
+
+    const newOptions: string[] = [];
 
     for (const acard of attackCards) {
       if (
@@ -96,8 +99,10 @@ export class XuanHuo extends TriggerSkill {
             second,
           )
       ) {
-        options.push('xuanhuo:attack');
-        break;
+        if (!options.includes('xuanhuo:attack')) {
+          options.push('xuanhuo:attack');
+        }
+        newOptions.push(acard);
       }
     }
 
@@ -119,29 +124,17 @@ export class XuanHuo extends TriggerSkill {
       toId: first,
     });
 
-    room.notify(
+    const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingOptionsEvent>(
       GameEventIdentifiers.AskForChoosingOptionsEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(askForChooseEvent),
+      askForChooseEvent,
       first,
     );
 
-    const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, first);
     response.selectedOption = response.selectedOption || askForChooseEvent.options[0];
 
     if (response.selectedOption === 'xuanhuo:attack') {
-      const newOptions: string[] = [];
-      for (const acard of attackCards) {
-        if (
-          room
-            .getPlayerById(first)
-            .canUseCardTo(
-              room,
-              acard !== 'duel' ? new CardMatcher({ name: [acard] }) : new CardMatcher({ generalName: [acard] }),
-              second,
-            )
-        ) {
-          newOptions.push(acard);
-        }
+      if (newOptions.length === 0) {
+        return false;
       }
 
       const askForChooseEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
@@ -153,20 +146,19 @@ export class XuanHuo extends TriggerSkill {
         ).extract(),
         toId: first,
       });
-
-      room.notify(
+  
+      const newResponse = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingOptionsEvent>(
         GameEventIdentifiers.AskForChoosingOptionsEvent,
-        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(askForChooseEvent),
+        askForChooseEvent,
         first,
       );
 
-      const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingOptionsEvent, first);
-      response.selectedOption = response.selectedOption || askForChooseEvent.options[0];
+      newResponse.selectedOption = newResponse.selectedOption || askForChooseEvent.options[0];
 
       const cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
         fromId: first,
         targetGroup: [[second]],
-        cardId: VirtualCard.create({ cardName: response.selectedOption, bySkill: this.Name }).Id,
+        cardId: VirtualCard.create({ cardName: newResponse.selectedOption, bySkill: this.Name }).Id,
       };
       await room.useCard(cardUseEvent);
     } else {

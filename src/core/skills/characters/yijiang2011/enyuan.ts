@@ -96,24 +96,24 @@ export class EnYuan extends TriggerSkill {
       const damageFrom = room.getPlayerById(damageFromId);
 
       if (damageFrom.getCardIds(PlayerCardsArea.HandArea).length > 0) {
-        const askForCard: ServerEventFinder<GameEventIdentifiers.AskForCardEvent> = {
-          cardAmount: 1,
-          toId: damageFromId,
-          reason: this.Name,
-          conversation: TranslationPack.translationJsonPatcher(
-            '{0}: you need to give a handcard to {1}',
-            this.Name,
-            TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
-          ).extract(),
-          fromArea: [PlayerCardsArea.HandArea],
-          triggeredBySkills: [this.Name],
-        };
-        room.notify(GameEventIdentifiers.AskForCardEvent, askForCard, damageFromId);
-        const { selectedCards } = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardEvent, damageFromId);
+        const { selectedCards } = await room.doAskForCommonly<GameEventIdentifiers.AskForCardEvent>(
+          GameEventIdentifiers.AskForCardEvent,
+          {
+            cardAmount: 1,
+            toId: damageFromId,
+            reason: this.Name,
+            conversation: TranslationPack.translationJsonPatcher(
+              '{0}: you need to give a handcard to {1}',
+              this.Name,
+              TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
+            ).extract(),
+            fromArea: [PlayerCardsArea.HandArea],
+            triggeredBySkills: [this.Name],
+          },
+          damageFromId,
+        );
 
-        if (selectedCards === undefined) {
-          await room.loseHp(damageFromId, 1);
-        } else {
+        if (selectedCards !== undefined && selectedCards.length > 0) {
           const suit = Sanguosha.getCardById(selectedCards[0]).Suit;
           await room.moveCards({
             movingCards: selectedCards.map(card => ({ card, fromArea: CardMoveArea.HandArea })),
@@ -127,6 +127,8 @@ export class EnYuan extends TriggerSkill {
           if (suit !== CardSuit.Heart) {
             await room.drawCards(1, fromId, 'top', fromId, this.Name);
           }
+        } else {
+          await room.loseHp(damageFromId, 1);
         }
       } else {
         await room.loseHp(damageFromId, 1);
