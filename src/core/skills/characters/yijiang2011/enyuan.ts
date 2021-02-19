@@ -113,7 +113,7 @@ export class EnYuan extends TriggerSkill {
           damageFromId,
         );
 
-        if (selectedCards !== undefined && selectedCards.length > 0) {
+        if (selectedCards.length > 0) {
           const suit = Sanguosha.getCardById(selectedCards[0]).Suit;
           await room.moveCards({
             movingCards: selectedCards.map(card => ({ card, fromArea: CardMoveArea.HandArea })),
