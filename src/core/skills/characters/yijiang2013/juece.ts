@@ -61,9 +61,7 @@ export class JueCeShadow extends TriggerSkill implements OnDefineReleaseTiming {
       event.toId !== event.fromId &&
       event.toArea !== CardMoveArea.HandArea &&
       event.toArea !== CardMoveArea.EquipArea &&
-      event.movingCards.find(
-        cardInfo => cardInfo.fromArea === CardMoveArea.HandArea || cardInfo.fromArea === CardMoveArea.EquipArea,
-      ) !== undefined
+      event.movingCards.filter(cardInfo => cardInfo.fromArea !== CardMoveArea.JudgeArea).length > 0
     );
   }
 

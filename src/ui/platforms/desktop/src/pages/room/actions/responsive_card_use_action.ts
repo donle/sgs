@@ -181,9 +181,17 @@ export class ResponsiveUseCardAction<
 
   protected onClickCard(card: Card, selected: boolean): void {
     super.onClickCard(card, selected, this.matcher);
+    const event = (this.askForEvent as unknown) as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
+    if (event.scopedTargets !== undefined && event.scopedTargets.length === 1) {
+      this.selectedTargets.push(event.scopedTargets[0]);
+    }
   }
   protected onClickSkill(skill: Skill, selected: boolean): void {
     super.onClickSkill(skill, selected, this.matcher);
+    const event = (this.askForEvent as unknown) as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
+    if (event.scopedTargets !== undefined && event.scopedTargets.length === 1) {
+      this.selectedTargets.push(event.scopedTargets[0]);
+    }
   }
 
   onResetAction() {

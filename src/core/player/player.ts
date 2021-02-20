@@ -182,6 +182,11 @@ export abstract class Player implements PlayerInfo {
     );
 
     if (card) {
+      const canUseToSomeone = room.AlivePlayers.find(player => GameCommonRules.canUseCardTo(room, this, card, player));
+      if (canUseToSomeone) {
+        return card.is(CardType.Equip) ? true : onResponse ? onResponse.match(card) : true;
+      }
+
       return (
         ruleCardUse &&
         (card.is(CardType.Equip) ? true : onResponse ? onResponse.match(card) : card.Skill.canUse(room, this, cardId))

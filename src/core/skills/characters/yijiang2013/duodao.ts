@@ -22,7 +22,8 @@ export class DuoDao extends TriggerSkill {
       damageFrom.getEquipment(CardType.Weapon) !== undefined &&
       owner.getPlayerCards().length > 0 &&
       content.byCardId !== undefined &&
-      Sanguosha.getCardById(content.byCardId).GeneralName === 'slash'
+      Sanguosha.getCardById(content.byCardId).GeneralName === 'slash' &&
+      content.toId === owner.Id
     );
   }
 

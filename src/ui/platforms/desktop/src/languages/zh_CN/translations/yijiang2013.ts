@@ -116,7 +116,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'zhiyan_description',
-    target: '结束阶段开始时，你可以令一名其他角色摸一张牌并展示之，若此牌为装备牌，其使用之，然后回复1点体力。',
+    target: '结束阶段开始时，你可以令一名角色摸一张牌并展示之，若此牌为装备牌，其使用之，然后回复1点体力。',
   },
   {
     source: 'danshou_description',

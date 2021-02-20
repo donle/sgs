@@ -165,6 +165,11 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
           room.removePlayer(playerId);
         } else if (this.room?.AwaitingResponseEvent[playerId]) {
           const { identifier: awaitIdentifier, content } = this.room?.AwaitingResponseEvent[playerId]!;
+          if (awaitIdentifier === undefined) {
+            throw new Error(
+              `Unknown event without identifier: ${JSON.stringify(this.room?.AwaitingResponseEvent[playerId])}`,
+            );
+          }
           if ((content as any).toId !== playerId) {
             return;
           }

@@ -112,7 +112,7 @@ export const skillDescriptions: Word[] = [
   { source: 'zongxuan_description', target: '出牌階段限一次，你可以摸一張牌並將一張牌置於牌堆頂；當你的牌因棄置而進入棄牌堆後，你可以將其中任意張牌置於牌堆頂。' },
   {
     source: 'zhiyan_description',
-    target: '結束階段開始時，你可以令一名其他角色摸一張牌並展示之，若此牌為裝備牌，其使用之，然後回覆1點體力。',
+    target: '結束階段開始時，你可以令一名角色摸一張牌並展示之，若此牌為裝備牌，其使用之，然後回覆1點體力。',
   },
   {
     source: 'danshou_description',

@@ -312,6 +312,7 @@ export abstract class BaseAction {
           );
         } else if (card.Skill instanceof ActiveSkill) {
           let canSelfUse = true;
+          
           if (card.Skill.isSelfTargetSkill()) {
             canSelfUse = player.canUseCardTo(this.store.room, card.Id, player.Id);
           }
