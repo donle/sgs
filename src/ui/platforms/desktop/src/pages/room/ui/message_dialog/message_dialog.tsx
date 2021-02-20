@@ -73,7 +73,7 @@ export class MessageDialog extends React.Component<MessageDialogProps> {
     this.textMessage = value;
   };
   @mobx.observable.shallow
-  private chatMessages: string[] = [];
+  private chatMessages: JSX.Element[] = [];
 
   private readonly onClickSendButton = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -90,11 +90,14 @@ export class MessageDialog extends React.Component<MessageDialogProps> {
   };
 
   componentDidMount() {
-    this.chatMessages = this.props.connectionService.Chat.chatHistory().map(chatObject => {
-      const date = new Date(chatObject.timestamp);
-      return `<b>${chatObject.from}</b> [${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}]: ${
-        chatObject.message
-      }`;
+    this.chatMessages = this.props.connectionService.Chat.chatHistory().map((message, index) => {
+      const date = new Date(message.timestamp);
+      return (
+        <span className={styles.message} key={index}>
+          <b>{message.from}</b>
+          {` [${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}]: ${message.message}`}
+        </span>
+      );
     });
 
     this.props.connectionService.Chat.received(
@@ -102,9 +105,10 @@ export class MessageDialog extends React.Component<MessageDialogProps> {
         this.incomingMessage = this.currentTab !== 'lobby';
         const date = new Date(chatObject.timestamp);
         this.chatMessages.push(
-          `<b>${chatObject.from}</b> [${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}]: ${
-            chatObject.message
-          }`,
+          <span className={styles.message}>
+            <b>{chatObject.from}</b>
+            {` [${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}]: ${chatObject.message}`}
+          </span>,
         );
       }),
     );
@@ -145,15 +149,11 @@ export class MessageDialog extends React.Component<MessageDialogProps> {
               : undefined,
           }}
         >
-          {(this.currentTab === 'room' ? this.props.store.messageLog : this.chatMessages).map((log, index) =>
-            typeof log === 'string' ? (
-              <p className={styles.messageLine} key={index} dangerouslySetInnerHTML={{ __html: log }} />
-            ) : (
-              <p className={styles.messageLine} key={index}>
-                {log}
-              </p>
-            ),
-          )}
+          {(this.currentTab === 'room' ? this.props.store.messageLog : this.chatMessages).map((log, index) => (
+            <p className={styles.messageLine} key={index}>
+              {log}
+            </p>
+          ))}
         </div>
         <form className={classNames(styles.inputLabel, this.props.className)} onSubmit={this.onClickSendButton}>
           <Input

@@ -25,6 +25,7 @@
     flex-direction: column;
     padding: 4px 0;
     overflow: auto;
+    user-select: text;
 }
 .messageLine {
     margin: 0;

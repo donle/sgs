@@ -16,24 +16,13 @@ export const Chat = ({
   username: string;
   className?: string;
 }) => {
-  const [messages, setMessages] = React.useState<string[]>(
-    connectionService.Chat.chatHistory().map(message => {
-      const date = new Date(message.timestamp);
-      return `<b>${message.from}</b> [${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}]: ${
-        message.message
-      }`;
-    }),
-  );
+  const [messages, setMessages] = React.useState([...connectionService.Chat.chatHistory()]);
   const [typing, setTypings] = React.useState<string>('');
   const [hide, hideChat] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     connectionService.Chat.received(message => {
-      const date = new Date(message.timestamp);
-      setMessages(prevMessages => [
-        ...prevMessages,
-        `<b>${message.from}</b> [${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}]: ${message.message}`,
-      ]);
+      setMessages(prevMessages => [...prevMessages, message]);
     });
 
     return () => {
@@ -65,9 +54,15 @@ export const Chat = ({
         {'⬅'}
       </span>
       <div className={styles.messages}>
-        {messages.map(message => (
-          <span className={styles.message} key={message} dangerouslySetInnerHTML={{ __html: message }} />
-        ))}
+        {messages.map((message, index) => {
+          const date = new Date(message.timestamp);
+          return (
+            <span className={styles.message} key={index}>
+              <b>{message.from}</b>
+              {` [${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}]: ${message.message}`}
+            </span>
+          );
+        })}
       </div>
       <form className={styles.inputBox} onSubmit={onSend}>
         <input className={styles.input} value={typing} onChange={onInputChange} />
