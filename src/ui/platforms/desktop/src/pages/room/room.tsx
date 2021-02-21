@@ -64,6 +64,8 @@ export class RoomPage extends React.Component<
   private defaultGameVolume = this.props.electronLoader.getData('gameVolume')
     ? Number.parseInt(this.props.electronLoader.getData('gameVolume'), 10)
     : 50;
+  @mobx.observable.ref
+  private renderSideBoard = true;
 
   private readonly settings = {
     onVolumeChange: mobx.action((volume: number) => {
@@ -285,6 +287,8 @@ export class RoomPage extends React.Component<
   private readonly onCloseSettings = () => {
     this.openSettings = false;
   };
+  @mobx.action
+  private readonly onSwitchSideBoard = () => (this.renderSideBoard = !this.renderSideBoard);
 
   render() {
     return (
@@ -302,6 +306,7 @@ export class RoomPage extends React.Component<
               className={styles.roomBanner}
               connectionService={this.props.connectionService}
               onClickSettings={this.onClickSettings}
+              onSwitchSideBoard={this.onSwitchSideBoard}
             />
             <div className={styles.mainBoard}>
               <SeatsLayout
@@ -314,15 +319,17 @@ export class RoomPage extends React.Component<
                 playerSelectableMatcher={this.store.playersSelectionMatcher}
                 gamePad={this.getDisplayedCard()}
               />
-              <div className={styles.sideBoard}>
-                <GameBoard store={this.store} translator={this.props.translator} />
-                <GameDialog
-                  store={this.store}
-                  presenter={this.presenter}
-                  translator={this.props.translator}
-                  connectionService={this.props.connectionService}
-                />
-              </div>
+              {this.renderSideBoard && (
+                <div className={styles.sideBoard}>
+                  <GameBoard store={this.store} translator={this.props.translator} />
+                  <GameDialog
+                    store={this.store}
+                    presenter={this.presenter}
+                    translator={this.props.translator}
+                    connectionService={this.props.connectionService}
+                  />
+                </div>
+              )}
             </div>
             <Dashboard
               updateFlag={this.store.updateUIFlag}

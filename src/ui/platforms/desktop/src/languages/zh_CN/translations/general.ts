@@ -698,6 +698,8 @@ export const UiDictionary: Word[] = [
   },
   { source: 'main volume', target: '音乐音量' },
   { source: 'game volume', target: '游戏音量' },
+  { source: 'open sideboard', target: '显示战报' },
+  { source: 'close sideboard', target: '隐藏战报' },
   { source: 'settings', target: '设置' },
   { source: 'death audio', target: '阵亡音效' },
   { source: 'game language', target: '选择语言（重启或刷新后生效）' },

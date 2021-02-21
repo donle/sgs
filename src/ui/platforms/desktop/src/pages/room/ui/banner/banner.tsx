@@ -14,6 +14,7 @@ export type BannerProps = {
   connectionService: ConnectionService;
   className?: string;
   onClickSettings(): void;
+  onSwitchSideBoard?(): boolean;
 };
 
 const BreadCrumb = (props: { content: string[] }) => {
@@ -32,7 +33,8 @@ const BreadCrumb = (props: { content: string[] }) => {
 export const Banner = (props: BannerProps) => {
   const history = useHistory();
   const { roomIndex, roomName, translator } = props;
-  const breadcrumb = [translator.tr('lobby'), roomName, `${translator.tr('room id')}: ${roomIndex}`];
+  const [isSideBarOpened, switchSideBar] = React.useState(true);
+  const breadcrumb = [roomName, `${translator.tr('room id')}: ${roomIndex}`];
 
   const onClick = () => {
     history.push('/lobby');
@@ -42,6 +44,15 @@ export const Banner = (props: BannerProps) => {
     <div className={classNames(styles.banner, props.className)}>
       <BreadCrumb content={breadcrumb} />
       <div className={styles.controlButtons}>
+        <Button
+          variant="primary"
+          onClick={() => {
+            props.onSwitchSideBoard && switchSideBar(props.onSwitchSideBoard());
+          }}
+          className={styles.settingsButton}
+        >
+          {translator.tr((isSideBarOpened ? 'close' : 'open') + ' sideboard')}
+        </Button>
         <Button variant="primary" onClick={props.onClickSettings} className={styles.settingsButton}>
           {translator.tr('settings')}
         </Button>
