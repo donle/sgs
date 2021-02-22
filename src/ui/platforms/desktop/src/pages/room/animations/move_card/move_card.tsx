@@ -2,7 +2,6 @@ import { Card } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { PlayerId } from 'core/player/player_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
 import { RoomStore } from 'pages/room/room.presenter';
@@ -15,8 +14,6 @@ import styles from './move_card.module.css';
 
 export class MoveCard extends UiAnimation {
   private cards: { cardId: CardId; public: boolean }[] = [];
-  private from: PlayerId | undefined;
-  private to: PlayerId | undefined;
 
   private readonly cardWidth = 88;
   private readonly cardHeight = 120;
@@ -60,13 +57,12 @@ export class MoveCard extends UiAnimation {
       return;
     }
     const content = (event as unknown) as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
-    this.from = content.fromId;
-    this.to = content.toId;
+    const { fromId, toId } = content;
     this.cards = content.movingCards
       .filter(cardInfo => {
         if (
-          (this.from === undefined && this.to === undefined) ||
-          this.from === this.to ||
+          (fromId === undefined && toId === undefined) ||
+          fromId === toId ||
           content.toArea === CardMoveArea.ProcessingArea ||
           (cardInfo.fromArea === CardMoveArea.ProcessingArea && content.toArea === CardMoveArea.EquipArea)
         ) {
@@ -87,8 +83,8 @@ export class MoveCard extends UiAnimation {
       });
 
     if (
-      (this.from === undefined && this.to === undefined) ||
-      this.from === this.to ||
+      (fromId === undefined && toId === undefined) ||
+      fromId === toId ||
       content.toArea === CardMoveArea.ProcessingArea ||
       content.toArea === CardMoveArea.EquipArea
     ) {
@@ -99,8 +95,8 @@ export class MoveCard extends UiAnimation {
 
     const animationStyles: React.CSSProperties = {};
 
-    if (this.from) {
-      const position = this.store.animationPosition.getPosition(this.from, this.from === this.store.clientPlayerId);
+    if (fromId) {
+      const position = this.store.animationPosition.getPosition(fromId, fromId === this.store.clientPlayerId);
       animationStyles.transform = `translate(${position.x - this.cardWidth / 2}px, ${
         position.y - this.cardHeight / 2
       }px)`;
@@ -120,8 +116,8 @@ export class MoveCard extends UiAnimation {
     );
 
     await this.play(100, () => {
-      const toPosition = this.to
-        ? this.store.animationPosition.getPosition(this.to, this.to === this.store.clientPlayerId)
+      const toPosition = toId
+        ? this.store.animationPosition.getPosition(toId, toId === this.store.clientPlayerId)
         : this.CentralPosition;
 
       ReactDOM.render(
