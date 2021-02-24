@@ -154,6 +154,7 @@
     position: absolute;
     left: 0;
     align-items: center;
+    pointer-events: none;
 }
 
 .playerEquip {
@@ -161,6 +162,7 @@
     justify-content: center;
     position: absolute;
     max-width: calc(gridLine * 15);
+    pointer-events: auto;
 }
 
 .handCardsNumberBg {
