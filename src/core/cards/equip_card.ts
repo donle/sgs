@@ -10,6 +10,7 @@ export abstract class EquipCard extends Card {
 
   constructor(subType: CardType) {
     super();
+    this.CardValue = { value: 35, wane: 0 };
     this.cardType.push(subType);
   }
 

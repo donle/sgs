@@ -18,6 +18,11 @@ export class LeBuSiShu extends TrickCard {
       GameCardExtensions.Standard,
       SkillLoader.getInstance().getSkillByName('lebusishu'),
     );
+
+    this.CardValue = {
+      value: 35,
+      wane: 0.5,
+    };
   }
 
   get Skill() {

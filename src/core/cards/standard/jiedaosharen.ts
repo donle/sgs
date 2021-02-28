@@ -19,6 +19,11 @@ export class JieDaoShaRen extends TrickCard {
       GameCardExtensions.Standard,
       SkillLoader.getInstance().getSkillByName('jiedaosharen'),
     );
+
+    this.CardValue = {
+      value: 35,
+      wane: 0.2,
+    };
   }
 
   get Skill() {

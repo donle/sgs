@@ -18,6 +18,11 @@ export class WanJianQiFa extends TrickCard {
       GameCardExtensions.Standard,
       SkillLoader.getInstance().getSkillByName('wanjianqifa'),
     );
+
+    this.CardValue = {
+      value: 25,
+      wane: 0.2,
+    };
   }
 
   public get Skill() {

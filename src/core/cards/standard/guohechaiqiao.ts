@@ -17,6 +17,11 @@ export class GuoHeChaiQiao extends TrickCard {
       GameCardExtensions.Standard,
       SkillLoader.getInstance().getSkillByName('guohechaiqiao'),
     );
+
+    this.CardValue = {
+      value: 45,
+      wane: 0.8,
+    };
   }
 
   get Skill() {

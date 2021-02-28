@@ -47,3 +47,8 @@ export const enum CardTargetEnum {
   Others,
   Globe,
 }
+
+export type CardValue = {
+  value: number;
+  wane: number;
+};

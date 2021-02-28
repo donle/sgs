@@ -5,6 +5,7 @@ import { Sanguosha } from 'core/game/engine';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { PlayerAI } from './ai';
+import { Card } from 'core/cards/card';
 
 export class TrustAI extends PlayerAI {
   public static get Instance() {
@@ -92,19 +93,61 @@ export class TrustAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
-    const { toId, cardAmount, fromArea, except } = content as ServerEventFinder<
-      GameEventIdentifiers.AskForCardDropEvent
-    >;
+    const {
+      toId,
+      cardAmount,
+      fromArea,
+      except,
+    } = content as ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent>;
     const to = room.getPlayerById(toId);
+
     const cardDrop: ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
       fromId: toId,
       droppedCards: [],
     };
     if (EventPacker.isUncancellabelEvent(content)) {
-      const cards = fromArea.reduce<CardId[]>((allCards, area) => {
+      let cards = fromArea.reduce<CardId[]>((allCards, area) => {
         return [...allCards, ...to.getCardIds(area).filter(cardId => !except?.includes(cardId))];
       }, []);
-      cardDrop.droppedCards = cards.slice(0, cardAmount instanceof Array ? cardAmount[0] : cardAmount);
+
+      const holdAmount = cards.length - (cardAmount instanceof Array ? cardAmount[0] : cardAmount);
+
+      console.log('Hold Card Amount is ' + holdAmount);
+
+      let i = 0;
+      let holdCardList: { cardIds: CardId[]; cardNames: [String] } = { cardIds: [], cardNames: [''] };
+      let maxValueCard: Card = Sanguosha.getCardById(cards[0]);
+
+      let maxValue: number = 0;
+      while (i < holdAmount) {
+        maxValue = 0;
+        for (const card of cards) {
+          const ActCard = Sanguosha.getCardById(card);
+          const sameCardNum = holdCardList.cardNames.filter(cardName => cardName === ActCard.Name).length;
+
+          // ActCard CardValue is undefined
+          const cardValue =
+            ActCard.CardValue.value === undefined ? 0 : ActCard.CardValue.value * ActCard.CardValue.wane ** sameCardNum;
+          console.log(`Card ${ActCard.Name} Value: ${cardValue}`);
+
+          if (cardValue > maxValue) {
+            maxValue = cardValue;
+            maxValueCard = ActCard;
+          }
+        }
+
+        if (maxValueCard !== undefined) {
+          console.log(`hold card ${maxValueCard.Name}, id is ${maxValueCard.Id}`);
+          holdCardList.cardIds.push(maxValueCard.Id);
+          holdCardList.cardNames.push(maxValueCard.Name);
+          cards = cards.filter(card => card !== maxValueCard.Id);
+          console.log(`cards is ${cards}`);
+        }
+        i++;
+      }
+
+      cardDrop.droppedCards = cards;
+      // cardDrop.droppedCards = cards.slice(0, cardAmount instanceof Array ? cardAmount[0] : cardAmount);
     }
 
     return cardDrop;
