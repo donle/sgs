@@ -17,6 +17,11 @@ export class ShunshouQianYang extends TrickCard {
       GameCardExtensions.Standard,
       SkillLoader.getInstance().getSkillByName('shunshouqianyang'),
     );
+
+    this.CardValue = {
+      value: 65,
+      wane: 0.8,
+    };
   }
 
   get Skill() {

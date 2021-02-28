@@ -18,6 +18,11 @@ export class TaoYuanJieYi extends TrickCard {
       GameCardExtensions.Standard,
       SkillLoader.getInstance().getSkillByName('taoyuanjieyi'),
     );
+
+    this.CardValue = {
+      value: 10,
+      wane: 0,
+    };
   }
 
   public get Skill() {

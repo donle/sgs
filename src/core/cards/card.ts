@@ -10,6 +10,7 @@ import {
   RealCardId,
   VirtualCardId,
   VirtualCardIdProps,
+  CardValue,
 } from './libs/card_props';
 
 export function None<T extends Card>(constructor: new (...args: any) => any): any {
@@ -57,6 +58,7 @@ export abstract class Card {
   protected abstract fromPackage: GameCardExtensions;
   protected shadowSkills: Skill[] = [];
 
+  protected cardValue: CardValue;
   private readonly cardTargetNumber: CardTargetEnum = CardTargetEnum.Single;
   private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.Single;
 
@@ -174,6 +176,14 @@ export abstract class Card {
 
   public reset() {
     this.manualSetCardTargetNumber = this.cardTargetNumber;
+  }
+
+  public get CardValue() {
+    return this.cardValue;
+  }
+
+  public set CardValue(cardValue: CardValue) {
+    this.cardValue = cardValue;
   }
 }
 

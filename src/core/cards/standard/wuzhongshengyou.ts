@@ -17,6 +17,11 @@ export class WuZhongShengYou extends TrickCard {
       GameCardExtensions.Standard,
       SkillLoader.getInstance().getSkillByName('wuzhongshengyou'),
     );
+
+    this.CardValue = {
+      value: 60,
+      wane: 0.6,
+    };
   }
 
   get Skill() {

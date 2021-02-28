@@ -1,4 +1,4 @@
-import { CardSuit } from 'core/cards/libs/card_props';
+import { CardSuit, CardValue } from 'core/cards/libs/card_props';
 import type { RealCardId } from 'core/cards/libs/card_props';
 import { TrickCard } from 'core/cards/trick_card';
 import { GameCardExtensions, INFINITE_DISTANCE } from 'core/game/game_props';
@@ -17,6 +17,13 @@ export class Duel extends TrickCard {
       GameCardExtensions.Standard,
       SkillLoader.getInstance().getSkillByName('duel'),
     );
+
+    const duelCardValue: CardValue = {
+      value: 30,
+      wane: 0.1,
+    };
+
+    this.CardValue = duelCardValue;
   }
 
   get Skill() {

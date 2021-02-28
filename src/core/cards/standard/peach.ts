@@ -16,6 +16,11 @@ export class Peach extends BasicCard {
       GameCardExtensions.Standard,
       SkillLoader.getInstance().getSkillByName('peach'),
     );
+
+    this.CardValue = {
+      value: 70,
+      wane: 0.5,
+    };
   }
 
   public get Skill() {

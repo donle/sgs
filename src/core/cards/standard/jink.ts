@@ -16,6 +16,11 @@ export class Jink extends BasicCard {
       GameCardExtensions.Standard,
       SkillLoader.getInstance().getSkillByName('jink'),
     );
+
+    this.CardValue = {
+      value: 55,
+      wane: 0.5,
+    };
   }
 
   public get Skill() {
