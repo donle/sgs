@@ -647,7 +647,15 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       return event.responsedEvent;
     }
 
-    let responseEvent: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> | undefined;
+    let responseEvent: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> | undefined = {
+      fromId: to,
+    };
+
+    if (this.isGameOver()) {
+      EventPacker.terminate(event);
+      return responseEvent;
+    }
+
     do {
       this.notify(GameEventIdentifiers.AskForCardUseEvent, event, to);
       responseEvent = await this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardUseEvent, to);
