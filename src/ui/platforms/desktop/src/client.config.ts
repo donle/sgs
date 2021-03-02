@@ -1,6 +1,6 @@
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { Languages } from 'core/translations/translation_json_tool';
-import { ClientConfig, ClientFlavor, ServiceConfig, UiConfigTypes, ServerHostTag } from 'props/config_props';
+import { ClientConfig, ClientFlavor, ServerHostTag, ServiceConfig, UiConfigTypes } from 'props/config_props';
 
 const uiConfig: UiConfigTypes = {
   language: Languages.ZH_CN,

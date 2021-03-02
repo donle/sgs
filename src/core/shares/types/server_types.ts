@@ -8,6 +8,7 @@ export const enum LobbySocketEvent {
   GameCreated,
   QueryVersion,
   VersionMismatch,
+  PingServer,
   CheckRoomExist,
 }
 

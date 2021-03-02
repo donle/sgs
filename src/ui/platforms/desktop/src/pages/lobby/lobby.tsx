@@ -11,6 +11,7 @@ import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { SettingsDialog } from 'pages/ui/settings/settings';
+import { ServerHostTag } from 'props/config_props';
 import { LobbyButton } from 'props/game_props';
 import * as React from 'react';
 import { ConnectionService } from 'services/connection_service/connection_service';
@@ -28,7 +29,6 @@ import { CreateRoomButton } from './ui/create_room_button/create_room_button';
 import { CreateRoomDialog, TemporaryRoomCreationInfo } from './ui/create_room_dialog/create_room_dialog';
 import { EnterPasscodeDialog } from './ui/enter_passcode_dialog/enter_passcode_dialog';
 import { FeedbackDialog } from './ui/feedback_dialog/feedback_dialog';
-import { ServerHostTag } from 'props/config_props';
 
 type LobbyProps = PagePropsWithConfig<{
   translator: ClientTranslationModule;
@@ -123,9 +123,8 @@ export class Lobby extends React.Component<LobbyProps> {
     this.props.electronLoader.getGameLog().then(mobx.action(inlineHtml => (this.gameLog = inlineHtml)));
   }
 
-  @mobx.action
   private queryRoomList() {
-    this.roomList = [];
+    mobx.runInAction(() => (this.roomList = []));
     this.props.connectionService.Lobby.getRoomList(
       mobx.action(content =>
         this.roomList.push(
@@ -170,7 +169,7 @@ export class Lobby extends React.Component<LobbyProps> {
       this.props.connectionService.Lobby.checkRoomExist(host, info.id, exist => {
         if (exist) {
           this.props.history.push(`/room/${info.id}`, {
-            hostConfig: this.props.config.host.find(config => config.hostTag === this.currentInteractiveRoomInfo.host),
+            hostConfig: this.props.config.host.find(config => config.hostTag === host),
           });
         } else {
           //TODO: add error popout
@@ -195,17 +194,16 @@ export class Lobby extends React.Component<LobbyProps> {
         cardExtensions: [GameCardExtensions.Standard, GameCardExtensions.LegionFight],
         ...roomInfo,
       },
-      mobx.action(event => {
-        const { packet, ping } = event;
+      event => {
+        const { packet, ping, hostTag } = event;
         const { roomId, roomInfo } = packet;
-        console.log(roomInfo);
-        console.log(packet);
+        const hostConfig = this.props.config.host.find(config => config.hostTag === hostTag);
         this.props.history.push(`/room/${roomId}`, {
           gameMode: roomInfo.gameMode,
           ping,
-          hostConfig: this.props.config.host.find(config => config.hostTag === this.currentInteractiveRoomInfo.host),
+          hostConfig,
         });
-      }),
+      },
     );
   };
 
