@@ -1,62 +1,128 @@
-import { Sanguosha } from 'core/game/engine';
 import { GameCardExtensions } from 'core/game/game_props';
+import { RoomId } from 'core/room/room';
 import { ChatSocketEvent, LobbySocketEvent, LobbySocketEventPicker } from 'core/shares/types/server_types';
 import { TemporaryRoomCreationInfo } from 'pages/lobby/ui/create_room_dialog/create_room_dialog';
-import { ClientConfig } from 'props/config_props';
+import { ClientConfig, ServerHostTag } from 'props/config_props';
 import SocketIOClient from 'socket.io-client';
 
 type ChatPacketObject = { message: string; from: string; timestamp: number };
+type RoomListListenerResponse = {
+  packet: LobbySocketEventPicker<LobbySocketEvent.QueryRoomList>;
+  hostTag: ServerHostTag;
+  ping: number;
+};
+type VersionCheckListenerResponse = {
+  packet: LobbySocketEventPicker<LobbySocketEvent.VersionMismatch>;
+  hostTag: ServerHostTag;
+  ping: number;
+};
+type CreateGameListenerResponse = {
+  packet: LobbySocketEventPicker<LobbySocketEvent.GameCreated>;
+  hostTag: ServerHostTag;
+  ping: number;
+};
 
 export class ConnectionService {
   private chatSocket: SocketIOClient.Socket;
-  private lobbySocket: SocketIOClient.Socket;
-  private baseConnectionUrl: string;
+  private lobbySockets: Map<ServerHostTag, SocketIOClient.Socket> = new Map<ServerHostTag, SocketIOClient.Socket>();
+  private queryRoomListListener: (res: RoomListListenerResponse) => void;
+  private versionCheckListener: (res: VersionCheckListenerResponse) => void;
+  private createGameListener: (res: Omit<CreateGameListenerResponse, 'hostTag'>) => void;
+  private pingListener: (ping: number) => void;
+  private pingBestHost: Promise<ServerHostTag>[] = [];
   constructor(config: ClientConfig) {
-    this.baseConnectionUrl = `${config.host.protocol}://${config.host.host}:${config.host.port}/`;
-    this.chatSocket = SocketIOClient(this.baseConnectionUrl + 'chat');
-    this.lobbySocket = SocketIOClient(this.baseConnectionUrl + 'lobby');
+    const { protocol, host, port } = config.host[0];
+    const mainConnectionUrl = `${protocol}://${host}:${port}/`;
+    this.chatSocket = SocketIOClient(mainConnectionUrl + 'chat');
+
+    for (const hostInfo of config.host) {
+      this.lobbySockets.set(
+        hostInfo.hostTag,
+        SocketIOClient(`${hostInfo.protocol}://${hostInfo.host}:${hostInfo.port}/lobby`),
+      );
+    }
+
+    this.lobbySockets.forEach((lobbySocket, hostTag) => {
+      lobbySocket.on(LobbySocketEvent.QueryRoomList.toString(), evt => {
+        this.queryRoomListListener?.({
+          packet: evt,
+          hostTag,
+          ping: Math.round((Date.now() - this.pingStartTimestamp) / 2),
+        });
+      });
+      lobbySocket.on(LobbySocketEvent.VersionMismatch.toString(), evt => {
+        this.versionCheckListener?.({
+          packet: evt,
+          hostTag,
+          ping: Math.round((Date.now() - this.pingStartTimestamp) / 2),
+        });
+      });
+      lobbySocket.on(LobbySocketEvent.GameCreated.toString(), evt => {
+        this.createGameListener?.({
+          packet: evt,
+          ping: Math.round((Date.now() - this.pingStartTimestamp) / 2),
+        });
+      });
+      lobbySocket.on(LobbySocketEvent.PingServer.toString(), () => {
+        this.pingListener?.(Math.round((Date.now() - this.pingStartTimestamp) / 2));
+      });
+      for (const [host, lobbySocket] of this.lobbySockets.entries()) {
+        this.pingBestHost.push(
+          new Promise<ServerHostTag>(resolve =>
+            lobbySocket.on(LobbySocketEvent.PingServer.toString(), () => resolve(host)),
+          ),
+        );
+      }
+    });
   }
 
-  private pingReceiver: (ping: number) => void;
   private pingStartTimestamp: number;
 
   private readonly lobbyService = {
-    getRoomList: async () => {
+    getRoomList: (callback: (response: RoomListListenerResponse) => void) => {
       this.pingStartTimestamp = Date.now();
-      this.lobbySocket.emit(LobbySocketEvent.QueryRoomList.toString());
-      return new Promise<LobbySocketEventPicker<LobbySocketEvent.QueryRoomList>>(resolve => {
-        this.lobbySocket.on(LobbySocketEvent.QueryRoomList.toString(), evt => {
-          this.pingReceiver?.(Math.round((Date.now() - this.pingStartTimestamp) / 2));
-          resolve(evt);
-        });
+      this.queryRoomListListener = callback;
+      this.lobbySockets.forEach(lobbySocket => {
+        lobbySocket.emit(LobbySocketEvent.QueryRoomList.toString());
       });
     },
-    checkCoreVersion: async () => {
+    checkCoreVersion: (callback: (response: VersionCheckListenerResponse) => void) => {
       this.pingStartTimestamp = Date.now();
-      this.lobbySocket.emit(LobbySocketEvent.QueryVersion.toString(), {
-        version: Sanguosha.Version,
-      });
-      return new Promise<LobbySocketEventPicker<LobbySocketEvent.VersionMismatch>>(resolve => {
-        this.lobbySocket.on(LobbySocketEvent.VersionMismatch.toString(), evt => {
-          this.pingReceiver?.(Math.round((Date.now() - this.pingStartTimestamp) / 2));
-          resolve(evt);
-        });
+      this.versionCheckListener = callback;
+      this.lobbySockets.forEach(lobbySocket => {
+        lobbySocket.emit(LobbySocketEvent.VersionMismatch.toString());
       });
     },
-    createGame: async (
+    checkRoomExist: (host: ServerHostTag, id: RoomId, callback: (exist: boolean) => void) => {
+      const lobbySocket = this.lobbySockets.get(host)!;
+      lobbySocket.emit(LobbySocketEvent.CheckRoomExist.toString(), id);
+      lobbySocket.on(LobbySocketEvent.CheckRoomExist.toString(), (exist: boolean) => {
+        callback(exist);
+      });
+    },
+    createGame: (
       gameInfo: {
         cardExtensions: GameCardExtensions[];
       } & TemporaryRoomCreationInfo,
+      callback: (response: CreateGameListenerResponse) => void,
     ) => {
-      this.lobbySocket.emit(LobbySocketEvent.GameCreated.toString(), gameInfo);
-      return new Promise<LobbySocketEventPicker<LobbySocketEvent.GameCreated>>(resolve => {
-        this.lobbySocket.on(LobbySocketEvent.GameCreated.toString(), evt => {
-          resolve(evt);
-        });
+      this.pingStartTimestamp = Date.now();
+      Promise.race(this.pingBestHost).then(serverHost => {
+        const lobbySocket = this.lobbySockets.get(serverHost)!;
+        lobbySocket.emit(LobbySocketEvent.GameCreated.toString(), gameInfo);
+        this.createGameListener = res => {
+          callback({ ...res, hostTag: serverHost });
+        };
       });
+      for (const [, lobbySocket] of this.lobbySockets.entries()) {
+        lobbySocket.emit(LobbySocketEvent.PingServer.toString());
+      }
     },
-    ping: (action: (ping: number) => void) => {
-      this.pingReceiver = action;
+    ping: (hostTag: ServerHostTag, callback: (ping: number) => void) => {
+      this.pingStartTimestamp = Date.now();
+      const lobbySocket = this.lobbySockets.get(hostTag) as SocketIOClient.Socket;
+      this.pingListener = callback;
+      lobbySocket.emit(LobbySocketEvent.PingServer.toString());
     },
   };
 

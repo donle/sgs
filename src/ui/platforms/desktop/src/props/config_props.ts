@@ -1,4 +1,3 @@
-import { Flavor } from 'core/shares/types/host_config';
 import { Languages } from 'core/translations/translation_json_tool';
 
 export type UiConfigTypes = {
@@ -11,15 +10,21 @@ export const enum ClientFlavor {
   Desktop = 'desktop',
 }
 
+export const enum ServerHostTag {
+  Localhost = 'localhost',
+  BeiJing = 'beijing',
+  NanJing = 'nanjing',
+}
+
 export type ServiceConfig = {
-  mode: Flavor;
   port: number;
   host: string;
   protocol: 'http' | 'https';
+  hostTag: ServerHostTag;
 };
 
 export type ClientConfig = {
   ui: UiConfigTypes;
-  host: ServiceConfig;
+  host: ServiceConfig[];
   flavor: ClientFlavor;
 };

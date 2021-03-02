@@ -8,6 +8,8 @@ export const enum LobbySocketEvent {
   GameCreated,
   QueryVersion,
   VersionMismatch,
+  PingServer,
+  CheckRoomExist,
 }
 
 export const enum ChatSocketEvent {
@@ -68,4 +70,5 @@ interface LobbyEventList extends LobbyEventUtilities {
     version: string;
   };
   [LobbySocketEvent.VersionMismatch]: boolean;
+  [LobbySocketEvent.CheckRoomExist]: boolean;
 }

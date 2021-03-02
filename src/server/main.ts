@@ -7,6 +7,7 @@ import { GameInfo } from 'core/game/game_props';
 import { RecordAnalytics } from 'core/game/record_analytics';
 import { StageProcessor } from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
+import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Flavor } from 'core/shares/types/host_config';
@@ -58,7 +59,9 @@ class App {
       socket
         .on(LobbySocketEvent.GameCreated.toString(), this.onGameCreated(socket))
         .on(LobbySocketEvent.QueryRoomList.toString(), this.onQueryRoomsInfo(socket))
-        .on(LobbySocketEvent.QueryVersion.toString(), this.matchCoreVersion(socket));
+        .on(LobbySocketEvent.QueryVersion.toString(), this.matchCoreVersion(socket))
+        .on(LobbySocketEvent.CheckRoomExist.toString(), this.onCheckingRoomExist(socket))
+        .on(LobbySocketEvent.PingServer.toString(), this.onPing(socket));
     });
     this.lobbySocket.of('/chat').on('connect', socket => {
       socket.on(ChatSocketEvent.Chat, this.onGameChat);
@@ -71,6 +74,14 @@ class App {
 
   private readonly matchCoreVersion = (socket: SocketIO.Socket) => (content: { version: string }) => {
     socket.emit(LobbySocketEvent.VersionMismatch.toString(), content.version === Sanguosha.Version);
+  };
+
+  private readonly onCheckingRoomExist = (socket: SocketIO.Socket) => (id: RoomId) => {
+    socket.emit(LobbySocketEvent.CheckRoomExist.toString(), this.rooms.find(room => room.RoomId) !== undefined);
+  };
+
+  private readonly onPing = (socket: SocketIO.Socket) => () => {
+    socket.emit(LobbySocketEvent.PingServer.toString());
   };
 
   private readonly createDifferentModeGameProcessor = (gameMode: GameMode): GameProcessor => {

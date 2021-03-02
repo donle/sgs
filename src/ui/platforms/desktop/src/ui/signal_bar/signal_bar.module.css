@@ -6,7 +6,7 @@
 .signalBar {
     display: flex;
     align-items: flex-end;
-    width: calc(barLine * 4);
+    width: calc(barLine * 3);
     justify-content: space-between;
     cursor: pointer;
     position: relative;

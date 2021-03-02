@@ -1,32 +1,41 @@
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { Flavor } from 'core/shares/types/host_config';
 import { Languages } from 'core/translations/translation_json_tool';
-import { ClientConfig, ClientFlavor, ServiceConfig, UiConfigTypes } from 'props/config_props';
+import { ClientConfig, ClientFlavor, ServerHostTag, ServiceConfig, UiConfigTypes } from 'props/config_props';
 
 const uiConfig: UiConfigTypes = {
   language: Languages.ZH_CN,
 };
 
 export const getClientConfig = (mode: ClientFlavor): ClientConfig => {
-  let host: ServiceConfig;
+  let host: ServiceConfig[];
 
   switch (mode) {
     case ClientFlavor.Dev:
-      host = {
-        mode: Flavor.Dev,
-        port: 2020,
-        host: 'localhost',
-        protocol: 'http',
-      };
+      host = [
+        {
+          port: 2020,
+          host: 'localhost',
+          protocol: 'http',
+          hostTag: ServerHostTag.Localhost,
+        },
+      ];
       break;
     case ClientFlavor.Web:
     case ClientFlavor.Desktop:
-      host = {
-        mode: Flavor.Prod,
-        port: 2020,
-        host: '49.232.190.61',
-        protocol: 'http',
-      };
+      host = [
+        {
+          port: 2020,
+          host: '49.232.190.61',
+          protocol: 'http',
+          hostTag: ServerHostTag.BeiJing,
+        },
+        {
+          port: 2020,
+          host: '146.56.218.109',
+          protocol: 'http',
+          hostTag: ServerHostTag.NanJing,
+        },
+      ];
       break;
     default:
       throw Precondition.UnreachableError(mode);

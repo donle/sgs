@@ -10,6 +10,7 @@ import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { SettingsDialog } from 'pages/ui/settings/settings';
+import { ServerHostTag, ServiceConfig } from 'props/config_props';
 import * as React from 'react';
 import { match } from 'react-router-dom';
 import { ConnectionService } from 'services/connection_service/connection_service';
@@ -53,6 +54,10 @@ export class RoomPage extends React.Component<
   private lastEventTimeStamp: number;
 
   @mobx.observable.ref
+  private roomPing: number = 999;
+  @mobx.observable.ref
+  private gameHostedServer: ServerHostTag;
+  @mobx.observable.ref
   private focusedCardIndex: number | undefined;
   @mobx.observable.ref
   openSettings = false;
@@ -91,17 +96,24 @@ export class RoomPage extends React.Component<
     }>,
   ) {
     super(props);
-    const { config, match, translator } = this.props;
+    const { match, translator } = this.props;
 
     this.roomId = parseInt(match.params.slug, 10);
     this.presenter = new RoomPresenter(this.props.imageLoader);
     this.store = this.presenter.createStore();
 
     const roomId = this.roomId.toString();
+    const { ping, hostConfig } = this.props.location.state as { ping?: number; hostConfig: ServiceConfig };
     this.socket = new ClientSocket(
-      `${config.host.protocol}://${config.host.host}:${config.host.port}/room-${roomId}`,
+      `${hostConfig.protocol}://${hostConfig.host}:${hostConfig.port}/room-${roomId}`,
       roomId,
     );
+    mobx.runInAction(() => (this.gameHostedServer = hostConfig.hostTag));
+
+    if (ping !== undefined) {
+      mobx.runInAction(() => (this.roomPing = ping));
+    }
+
     this.baseService = installService(translator, this.store, this.props.imageLoader);
     this.gameProcessor = new GameClientProcessor(
       this.presenter,
@@ -307,8 +319,11 @@ export class RoomPage extends React.Component<
               connectionService={this.props.connectionService}
               onClickSettings={this.onClickSettings}
               onSwitchSideBoard={this.onSwitchSideBoard}
+              defaultPing={this.roomPing}
+              host={this.gameHostedServer}
             />
             <div className={styles.mainBoard}>
+              1
               <SeatsLayout
                 imageLoader={this.props.imageLoader}
                 updateFlag={this.store.updateUIFlag}

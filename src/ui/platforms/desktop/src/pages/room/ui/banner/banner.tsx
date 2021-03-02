@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ServerHostTag } from 'props/config_props';
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 import { ConnectionService } from 'services/connection_service/connection_service';
@@ -13,8 +14,10 @@ export type BannerProps = {
   translator: ClientTranslationModule;
   connectionService: ConnectionService;
   className?: string;
+  defaultPing?: number;
   onClickSettings(): void;
   onSwitchSideBoard?(): boolean;
+  host: ServerHostTag;
 };
 
 const BreadCrumb = (props: { content: string[] }) => {
@@ -32,7 +35,7 @@ const BreadCrumb = (props: { content: string[] }) => {
 
 export const Banner = (props: BannerProps) => {
   const history = useHistory();
-  const { roomIndex, roomName, translator } = props;
+  const { roomIndex, roomName, translator, host, defaultPing } = props;
   const [isSideBarOpened, switchSideBar] = React.useState(true);
   const breadcrumb = [roomName, `${translator.tr('room id')}: ${roomIndex}`];
 
@@ -60,7 +63,12 @@ export const Banner = (props: BannerProps) => {
           {translator.tr('back to lobby')}
         </Button>
       </div>
-      <SignalBar connectionService={props.connectionService} className={styles.signalBar} />
+      <SignalBar
+        host={host}
+        defaultPing={defaultPing}
+        connectionService={props.connectionService}
+        className={styles.signalBar}
+      />
     </div>
   );
 };

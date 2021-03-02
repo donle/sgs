@@ -10,9 +10,6 @@
 }
 
 .signalBar {
-    position: absolute;
-    top: gridLine;
-    right: gridLine;
 }
 
 .background {

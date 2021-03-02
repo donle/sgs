@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { ServerHostTag } from 'props/config_props';
 import * as React from 'react';
 import { ConnectionService } from 'services/connection_service/connection_service';
 import { Tooltip } from 'ui/tooltip/tooltip';
@@ -9,12 +10,16 @@ let queryingPing = false;
 export const SignalBar = ({
   className,
   connectionService,
+  host,
+  defaultPing = 999,
 }: {
   className?: string;
   connectionService: ConnectionService;
+  host: ServerHostTag;
+  defaultPing?: number;
 }) => {
   const [showPing, enablePing] = React.useState<boolean>(false);
-  const [ping, setPing] = React.useState<number>(999);
+  const [ping, setPing] = React.useState<number>(defaultPing);
   const signal = {
     [styles.strong]: ping < 200,
     [styles.medium]: ping >= 200 && ping < 400,
@@ -22,11 +27,11 @@ export const SignalBar = ({
   };
 
   React.useEffect(() => {
-    connectionService.Lobby.ping(_ping => {
+    connectionService.Lobby.ping(host, _ping => {
       queryingPing = false;
       setPing(_ping);
     });
-  }, [connectionService.Lobby]);
+  }, [connectionService.Lobby, host]);
 
   const onHover = () => {
     enablePing(true);
@@ -41,7 +46,10 @@ export const SignalBar = ({
     }
 
     queryingPing = true;
-    connectionService.Lobby.checkCoreVersion();
+    connectionService.Lobby.ping(host, _ping => {
+      queryingPing = false;
+      setPing(_ping);
+    });
   };
 
   return (
