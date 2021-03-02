@@ -93,12 +93,12 @@ export const skillDescriptions: Word[] = [
   {
     source: 'enyuan_description',
     target:
-      '当你受到伤害后，你可以令伤害来源选择一项：1.交给你一张手牌；2.失去1点体力。当你获得其他角色的牌后，若不少于两张，你可以令其摸一张牌。',
+      '当你受到1点伤害后，你可以令伤害来源选择一项：1.交给你一张手牌，若此牌不为红桃，你摸一张牌；2.失去1点体力。当你获得其他角色的牌后，若不少于两张，你可以令其摸一张牌。',
   },
   {
     source: 'xuanhuo_description',
     target:
-      '摸牌阶段，你可以放弃摸牌，令一名其他角色摸两张牌，然后其选择一项：1.对其攻击范围内由你指定的另一名角色使用一张【杀】；2.你获得其两张牌。',
+      '摸牌阶段结束时，你可以交给一名其他角色两张手牌，并选择另一名其他角色，前者选择一项：1.视为对后者使用一张任意【杀】或【决斗】；2.交给你所有手牌。',
   },
 
   {
@@ -162,25 +162,24 @@ export const skillDescriptions: Word[] = [
 
 export const promptDescriptions: Word[] = [
   {
-    source: 'xuanhuo: please choose a target who {0} can slash',
-    target: '眩惑：请选择一名 {0} 攻击范围内的角色',
-  },
-  {
-    source: 'xuanhuo: please use slash to {0}, else {1} obtain 2 cards from you',
-    target: '眩惑：你可以对 {0} 使用【杀】，或者 {1} 将获得你的两张牌',
-  },
-  {
-    source: '{0}: please choose {1} cards to obtain',
-    target: '{0}：请选择获得其中的 {1} 张牌',
-  },
-  {
     source: '{0}: you need to give a handcard to {1}',
-    target: '{0}：你需交给 {1} 一张手牌',
+    target: '{0}：你需交给 {1} 一张手牌（若不为红桃则 {1} 摸一张牌），否则失去1点体力',
+  },
+
+  { source: 'xuanhuo:attack', target: '选项一' },
+  { source: 'xuanhuo:give', target: '选项二' },
+  {
+    source: '{0}: please choose xuanhuo options: {1}',
+    target: '{0}：选项一：视为对 {1} 使用一张任意【杀】或【决斗】；选项二：交给 {1} 所有手牌',
+  },
+  {
+    source: '{0}: please choose xuanhuo attack options: {1}',
+    target: '{0}：请选择视为对 {1} 使用的牌',
   },
 
   {
     source: 'please choose sanyao options',
-    target: '<b>散谣</b>：请选择消耗项',
+    target: '散谣：请选择消耗项',
   },
   { source: 'sanyao:hp', target: '体力值' },
   { source: 'sanyao:handNum', target: '手牌数' },
