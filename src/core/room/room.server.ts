@@ -141,7 +141,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       gameStartInfo: {
         numberOfDrawStack: this.DrawStack.length,
         numberOfDropStack: this.DropStack.length,
-        round: 0,
+        cycle: 0,
         currentPlayerId: this.players[0].Id,
       },
       gameInfo: this.Info,
@@ -191,7 +191,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       content = EventPacker.wrapGameRunningInfo(content, {
         numberOfDrawStack: this.drawStack.length,
         numberOfDropStack: this.dropStack.length,
-        round: this.round,
+        cycle: this.cycle,
         currentPlayerId: this.CurrentPlayer.Id,
       });
     }

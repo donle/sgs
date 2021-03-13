@@ -67,8 +67,8 @@ export class GameClientProcessor {
     if (identifier !== GameEventIdentifiers.PlayerEnterEvent) {
       this.store.room.Analytics.record(event, this.store.room.CurrentPlayerPhase);
       if (this.store.room.isPlaying()) {
-        const { round, numberOfDrawStack, numberOfDropStack } = EventPacker.getGameRunningInfo(event);
-        this.store.room.Round = round;
+        const { cycle, numberOfDrawStack, numberOfDropStack } = EventPacker.getGameRunningInfo(event);
+        this.store.room.Cycle = cycle;
         this.store.room.DrawStack = numberOfDrawStack;
         this.store.room.DropStack = numberOfDropStack;
       }

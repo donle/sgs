@@ -409,7 +409,7 @@ export class StandardGameProcessor extends GameProcessor {
     await this.beforeGameStartPreparation();
     while (this.room.isPlaying() && !this.room.isGameOver() && !this.room.isClosed()) {
       if (this.playerPositionIndex < lastPlayerPosition) {
-        this.room.nextRound();
+        this.room.nextCycle();
       }
       lastPlayerPosition = this.playerPositionIndex;
 
