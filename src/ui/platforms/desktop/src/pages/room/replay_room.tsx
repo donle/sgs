@@ -190,7 +190,7 @@ export class ReplayRoomPage extends React.Component<
   private updateGameStatus(event: ServerEventFinder<GameEventIdentifiers>) {
     const info = EventPacker.getGameRunningInfo(event);
     this.presenter.updateNumberOfDrawStack(info.numberOfDrawStack);
-    this.presenter.updateGameRound(info.round);
+    this.presenter.updateGameCycle(info.cycle);
   }
 
   private animation<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {

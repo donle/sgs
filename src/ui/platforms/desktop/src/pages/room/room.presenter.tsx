@@ -88,7 +88,7 @@ export class RoomStore {
   @mobx.observable.ref
   numberOfDrawStack: number;
   @mobx.observable.ref
-  currentRound: number = -1;
+  currentCycle: number = -1;
 
   @mobx.observable.ref
   notificationTime: number = 60;
@@ -430,9 +430,9 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  updateGameRound(round: number) {
-    if (round !== undefined) {
-      this.store.currentRound = round;
+  updateGameCycle(cycle: number) {
+    if (cycle !== undefined) {
+      this.store.currentCycle = cycle;
     }
   }
 

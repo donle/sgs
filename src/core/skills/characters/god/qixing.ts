@@ -23,7 +23,7 @@ export class QiXing extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
-    return room.Round === 0 && !owner.getFlag<boolean>(this.Name) && content.to === PlayerPhase.PrepareStage;
+    return room.Cycle === 0 && !owner.getFlag<boolean>(this.Name) && content.to === PlayerPhase.PrepareStage;
   }
 
   async onTrigger() {

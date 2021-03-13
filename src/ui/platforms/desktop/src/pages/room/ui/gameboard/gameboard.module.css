@@ -24,7 +24,7 @@
     width: 100%;
 }
 
-.currentRound,
+.currentCycle,
 .numberOfDrawStack {
     font-family: XinWeiFont;
     font-size: 20px;
