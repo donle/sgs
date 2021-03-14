@@ -5,7 +5,7 @@ import { Sanguosha } from 'core/game/engine';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { PlayerAI } from './ai';
-import { Card } from 'core/cards/card';
+import { Card, CardType } from 'core/cards/card';
 
 export class TrustAI extends PlayerAI {
   public static get Instance() {
@@ -21,6 +21,29 @@ export class TrustAI extends PlayerAI {
     room: Room,
   ) {
     const { toId: fromId } = content as ServerEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent>;
+
+    // const equipCards = room
+    //   .getPlayerById(fromId)
+    //   .getCardIds(PlayerCardsArea.HandArea)
+    //   .filter(cardId => Sanguosha.getCardById(cardId).BaseType === CardType.Equip);
+
+    // console.log(`equipCards is ${equipCards}`);
+
+    // if (equipCards) {
+    //   const equipCardUseEvent: ClientEventFinder<GameEventIdentifiers.CardUseEvent> = {
+    //     fromId,
+    //     cardId: equipCards[0],
+    //   };
+
+    //   const endEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
+    //     fromId,
+    //     end: false,
+    //     eventName: GameEventIdentifiers.CardUseEvent,
+    //     event: equipCardUseEvent,
+    //   };
+    //   return endEvent;
+    // }
+
     const endEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
       fromId,
       end: true,
