@@ -58,7 +58,7 @@ export abstract class Card {
   protected abstract fromPackage: GameCardExtensions;
   protected shadowSkills: Skill[] = [];
 
-  protected cardValue: CardValue;
+  private cardValue: CardValue;
   private readonly cardTargetNumber: CardTargetEnum = CardTargetEnum.Single;
   private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.Single;
 
@@ -183,7 +183,18 @@ export abstract class Card {
   }
 
   public set CardValue(cardValue: CardValue) {
-    this.cardValue = cardValue;
+    // for (const item in cardValue) {
+    // this.cardValue[item] = cardValue[item];
+    // this.cardValue[item] = cardValue[item];
+    // }
+
+    if (!this.cardValue) {
+      this.cardValue = cardValue;
+    }
+
+    if (cardValue !== undefined) {
+      Object.assign(this.cardValue, cardValue);
+    }
   }
 }
 
