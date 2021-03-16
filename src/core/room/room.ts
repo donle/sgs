@@ -42,7 +42,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected abstract readonly players: Player[];
   protected abstract readonly roomId: RoomId;
   protected abstract readonly gameMode: GameMode;
-  protected cycle: number = 0;
+  protected circle: number = 0;
 
   protected awaitResponseEvent: {
     [K in PlayerId]?: {
@@ -648,15 +648,15 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return this.analytics;
   }
 
-  public nextCycle() {
-    this.cycle++;
+  public nextCircle() {
+    this.circle++;
   }
 
-  public get Cycle() {
-    return this.cycle;
+  public get Circle() {
+    return this.circle;
   }
-  public set Cycle(cycle: number) {
-    this.cycle = cycle;
+  public set Circle(circle: number) {
+    this.circle = circle;
   }
 
   public isPlaying() {

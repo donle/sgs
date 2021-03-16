@@ -41,7 +41,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   protected init(gameStartInfo: GameRunningInfo): void {
     this.currentPlayer = this.getPlayerById(gameStartInfo.currentPlayerId) as ClientPlayer;
     this.numberOfDrawStack = gameStartInfo.numberOfDrawStack;
-    this.cycle = gameStartInfo.cycle;
+    this.circle = gameStartInfo.circle;
   }
 
   private throwUntouchableError(functionName: string) {

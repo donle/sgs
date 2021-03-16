@@ -660,7 +660,7 @@ export const UiDictionary: Word[] = [
   { source: 'lobby', target: '大厅' },
   { source: 'room', target: '房间' },
   { source: 'room id', target: '房间号' },
-  { source: 'cycle {0}', target: '第 {0} 轮' },
+  { source: 'circle {0}', target: '第 {0} 轮' },
   { source: '{0} draw cards left', target: '剩余 {0} 牌' },
   { source: 'please enter your text here', target: '在此输入聊天内容' },
   { source: 'send', target: '发送' },

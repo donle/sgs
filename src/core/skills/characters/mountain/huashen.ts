@@ -63,7 +63,7 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
     const canUse =
-      ((event.toPlayer === owner.Id || (room.Cycle === 0 && !owner.getFlag<boolean>(this.Name))) &&
+      ((event.toPlayer === owner.Id || (room.Circle === 0 && !owner.getFlag<boolean>(this.Name))) &&
         event.to === PlayerPhase.PhaseBegin &&
         room.CurrentProcessingStage === PhaseChangeStage.PhaseChanged) ||
       (event.fromPlayer === owner.Id &&
@@ -172,7 +172,7 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
     skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     const player = room.getPlayerById(skillEffectEvent.fromId);
-    if (room.Cycle === 0 && !player.getFlag<boolean>(this.Name)) {
+    if (room.Circle === 0 && !player.getFlag<boolean>(this.Name)) {
       player.setFlag(this.Name, true);
       const huashen = room.getRandomCharactersFromLoadedPackage(3);
       room.setCharacterOutsideAreaCards(
