@@ -112,10 +112,7 @@ export class QiangZhiDraw extends TriggerSkill {
       return false;
     }
 
-    return (
-      owner.getFlag(this.GeneralName) !== undefined &&
-      owner.getFlag(this.GeneralName) === Sanguosha.getCardById(event.cardId).BaseType
-    );
+    return owner.getFlag(this.GeneralName) === Sanguosha.getCardById(event.cardId).BaseType;
   }
 
   getSkillLog(room: Room, owner: Player): PatchedTranslationObject {
