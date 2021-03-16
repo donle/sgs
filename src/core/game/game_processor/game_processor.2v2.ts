@@ -84,7 +84,7 @@ export class TwoVersusTwoGameProcessor extends StandardGameProcessor {
   protected async onPlayerDrawCardStage(phase: PlayerPhase) {
     this.logger.debug('enter draw cards phase');
     await this.room.drawCards(
-      this.currentPhasePlayer.Position === 0 && this.room.Cycle === 0 ? 1 : 2,
+      this.currentPhasePlayer.Position === 0 && this.room.Circle === 0 ? 1 : 2,
       this.currentPhasePlayer.Id,
       'top',
       undefined,

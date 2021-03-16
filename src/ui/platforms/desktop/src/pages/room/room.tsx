@@ -218,7 +218,7 @@ export class RoomPage extends React.Component<
   private updateGameStatus(event: ServerEventFinder<GameEventIdentifiers>) {
     const info = EventPacker.getGameRunningInfo(event);
     this.presenter.updateNumberOfDrawStack(info.numberOfDrawStack);
-    this.presenter.updateGameCycle(info.cycle);
+    this.presenter.updateGameCircle(info.circle);
   }
 
   private animation<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {

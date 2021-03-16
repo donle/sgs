@@ -294,12 +294,12 @@ export class EventPacker {
   }
 
   static getGameRunningInfo<T extends GameEventIdentifiers>(event: ServerEventFinder<T>): GameRunningInfo {
-    const { numberOfDrawStack, numberOfDropStack, cycle, currentPlayerId } = event as any;
+    const { numberOfDrawStack, numberOfDropStack, circle, currentPlayerId } = event as any;
 
     return {
       numberOfDrawStack,
       numberOfDropStack,
-      cycle,
+      circle,
       currentPlayerId,
     };
   }

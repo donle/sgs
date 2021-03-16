@@ -18,8 +18,8 @@ export const GameBoard = mobxReact.observer((props: GameBoardProps) => {
   return (
     <div className={classNames(styles.gameboard, className)}>
       <div className={styles.gameStatus}>
-        <span className={styles.currentCycle}>
-          {translator.trx(TranslationPack.translationJsonPatcher('cycle {0}', store.currentCycle + 1).toString())}
+        <span className={styles.currentCircle}>
+          {translator.trx(TranslationPack.translationJsonPatcher('circle {0}', store.currentCircle + 1).toString())}
         </span>
         <span className={styles.numberOfDrawStack}>
           {translator.trx(
