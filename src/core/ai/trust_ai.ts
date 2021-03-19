@@ -1,4 +1,4 @@
-import { CardMatcher } from 'core/cards/libs/card_matcher';
+import { CardMatcher, CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -22,27 +22,50 @@ export class TrustAI extends PlayerAI {
   ) {
     const { toId: fromId } = content as ServerEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent>;
 
-    // const equipCards = room
-    //   .getPlayerById(fromId)
-    //   .getCardIds(PlayerCardsArea.HandArea)
-    //   .filter(cardId => Sanguosha.getCardById(cardId).BaseType === CardType.Equip);
+    const equipCards = room
+      .getPlayerById(fromId)
+      .getCardIds(PlayerCardsArea.HandArea)
+      .filter(cardId => Sanguosha.getCardById(cardId).BaseType === CardType.Equip);
 
-    // console.log(`equipCards is ${equipCards}`);
+    if (equipCards && equipCards.length > 0) {
+      const equipCardUseEvent: ClientEventFinder<GameEventIdentifiers.CardUseEvent> = {
+        fromId,
+        cardId: equipCards[0],
+      };
 
-    // if (equipCards) {
-    //   const equipCardUseEvent: ClientEventFinder<GameEventIdentifiers.CardUseEvent> = {
-    //     fromId,
-    //     cardId: equipCards[0],
-    //   };
+      const endEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
+        fromId,
+        end: false,
+        eventName: GameEventIdentifiers.CardUseEvent,
+        event: equipCardUseEvent,
+      };
+      return endEvent;
+    }
 
-    //   const endEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
-    //     fromId,
-    //     end: false,
-    //     eventName: GameEventIdentifiers.CardUseEvent,
-    //     event: equipCardUseEvent,
-    //   };
-    //   return endEvent;
-    // }
+    const slashCards = room
+      .getPlayerById(fromId)
+      .getCardIds(PlayerCardsArea.HandArea)
+      .filter(cardId => Sanguosha.getCardById(cardId).GeneralName === 'slash');
+
+    const nextPlayer = room.AlivePlayers.filter(player => player.Id !== fromId)[0];
+
+    if (slashCards && slashCards.length > 0) {
+      if (room.getPlayerById(fromId).canUseCard(room, slashCards[0])) {
+        const slashUseEvent: ClientEventFinder<GameEventIdentifiers.CardUseEvent> = {
+          fromId,
+          cardId: slashCards[0],
+          toIds: [nextPlayer.Id],
+        };
+
+        const endEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
+          fromId,
+          end: false,
+          eventName: GameEventIdentifiers.CardUseEvent,
+          event: slashUseEvent,
+        };
+        return endEvent;
+      }
+    }
 
     const endEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
       fromId,
@@ -95,6 +118,8 @@ export class TrustAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
+    console.log(`Ask For Card Use cardMatcher is ${content.cardMatcher.name}`);
+
     const { toId, cardMatcher } = content as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
     if (EventPacker.isUncancellabelEvent(content)) {
       const cardResponse: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> = {
@@ -106,9 +131,32 @@ export class TrustAI extends PlayerAI {
       };
       return cardResponse;
     } else {
-      const cardResponse: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> = {
-        fromId: toId,
-      };
+      let cardResponse: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
+      if (true) {
+        console.log('card matcher process');
+        const cardIds = room
+          .getPlayerById(toId)
+          .getCardIds(PlayerCardsArea.HandArea)
+          .filter(cardId => CardMatcher.match(cardMatcher, Sanguosha.getCardById(cardId)));
+
+        if (cardIds.length > 0) {
+          console.log(`there are cards match this reponse: ${cardIds}`);
+          const responseCardId = cardIds.sort(
+            (a, b) => Sanguosha.getCardById(a).CardValue.value - Sanguosha.getCardById(b).CardValue.value,
+          )[0];
+          cardResponse = {
+            cardId: responseCardId,
+            fromId: toId,
+          };
+        } else {
+          console.log(`there are not cards match this reponse`);
+
+          cardResponse = {
+            fromId: toId,
+          };
+        }
+      }
+
       return cardResponse;
     }
   }
