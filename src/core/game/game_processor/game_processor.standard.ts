@@ -766,6 +766,7 @@ export class StandardGameProcessor extends GameProcessor {
       EventPacker.isTerminated(event) && (await card.Skill.onEffectRejected(this.room, event));
     } else if (card.GeneralName === 'slash') {
       const { toIds, fromId, cardId } = event;
+      console.log(`${fromId} use a slash`);
       const targets = Precondition.exists(toIds, 'Unable to get slash target');
       Precondition.assert(targets.length === 1, 'slash effect target should be only one target');
       const toId = targets[0];
@@ -795,7 +796,10 @@ export class StandardGameProcessor extends GameProcessor {
           triggeredOnEvent: event,
         };
 
+        console.log(`ask for ${toId} to response`);
+
         const response = await this.room.askForCardUse(askForUseCardEvent, toId);
+        console.log(`${toId} response card is ${response.cardId}`);
         if (response.cardId !== undefined) {
           const jinkUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
             fromId: toId,

@@ -274,6 +274,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     stage?: AllStage,
   ) {
     if (!this.CurrentPlayer || !this.isPlaying()) {
+      this.logger.debug(`Do Not Need to Trigger Skill Because GameEnd Or Not CurrentPlayer`);
       return;
     }
     const { triggeredBySkills } = content as ServerEventFinder<GameEventIdentifiers>;
@@ -641,9 +642,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async askForCardUse(event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>, to: PlayerId) {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForCardUseEvent, event);
+    this.logger.debug(`create a ${GameEventIdentifiers.AskForCardUseEvent} event, then trigger it.`);
     await this.trigger<typeof event>(event);
+    this.logger.debug(`trigger finish of ${GameEventIdentifiers.AskForCardUseEvent} event.`);
     if (event.responsedEvent) {
       EventPacker.terminate(event);
+      this.logger.debug(`return reponseEvent for ${EventPacker.getIdentifier(event)}`);
       return event.responsedEvent;
     }
 
@@ -657,6 +661,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
 
     do {
+      this.logger.debug(`notify AskForCardUseEvent of socket`);
       this.notify(GameEventIdentifiers.AskForCardUseEvent, event, to);
       responseEvent = await this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardUseEvent, to);
       const preUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {

@@ -352,7 +352,9 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     };
 
     if (!toPlayer.isOnline()) {
+      this.logger.info('socket ask for ai action');
       const result = toPlayer.AI.onAction(this.room!, type, content);
+      this.logger.info('Ai done for socket');
       setTimeout(() => {
         const asyncResolver = this.asyncResponseResolver[type] && this.asyncResponseResolver[type][to];
         if (asyncResolver) {
