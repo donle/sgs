@@ -18,7 +18,7 @@ export class Jink extends BasicCard {
     );
 
     this.CardValue = {
-      value: 55,
+      value: 60,
       wane: 0.5,
     };
   }
