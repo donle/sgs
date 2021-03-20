@@ -347,7 +347,7 @@ export class TrustAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
-    const { options, fromId } = content;
+    const { options, fromId, toId } = content;
     if (!EventPacker.isUncancellabelEvent(content)) {
       const chooseCard: ClientEventFinder<T> = {
         fromId,
@@ -355,7 +355,23 @@ export class TrustAI extends PlayerAI {
       return chooseCard;
     }
 
-    const fromArea = (Object.keys(options)[0] as unknown) as PlayerCardsArea;
+    let fromArea: PlayerCardsArea | undefined = undefined;
+    for (const demo in options) {
+      const area = (demo as unknown) as PlayerCardsArea;
+      if (room.getPlayerById(toId).getCardIds(area).length > 0) {
+        fromArea = area;
+        break;
+      }
+    }
+
+    if (fromArea === undefined) {
+      const chooseCard: ClientEventFinder<T> = {
+        fromId,
+      };
+      return chooseCard;
+    }
+
+    // const fromArea = (Object.keys(options)[0] as unknown) as PlayerCardsArea;
     const cards = options[fromArea]!;
     const chooseCard: ClientEventFinder<T> = {
       fromId,
