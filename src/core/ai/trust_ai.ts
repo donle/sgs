@@ -1,4 +1,4 @@
-import { CardMatcher, CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
+import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -6,6 +6,8 @@ import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { PlayerAI } from './ai';
 import { Card, CardType } from 'core/cards/card';
+import { aiUseCard } from './ai_lib';
+import { getCardValueofCard } from './ai_standard';
 
 export class TrustAI extends PlayerAI {
   public static get Instance() {
@@ -22,49 +24,25 @@ export class TrustAI extends PlayerAI {
   ) {
     const { toId: fromId } = content as ServerEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent>;
 
-    const equipCards = room
-      .getPlayerById(fromId)
-      .getCardIds(PlayerCardsArea.HandArea)
-      .filter(cardId => Sanguosha.getCardById(cardId).BaseType === CardType.Equip);
+    // setTimeout(() => {
+    //   console.log(`${fromId} has cards: `);
+    // }, 3000);
 
-    if (equipCards && equipCards.length > 0) {
-      const equipCardUseEvent: ClientEventFinder<GameEventIdentifiers.CardUseEvent> = {
-        fromId,
-        cardId: equipCards[0],
-      };
+    // room
+    //   .getPlayerById(fromId)
+    //   .getCardIds(PlayerCardsArea.HandArea)
+    //   .map(cardId => console.log(`${Sanguosha.getCardById(cardId).GeneralName}`));
 
+    const cardUseEvent = aiUseCard(room, fromId);
+    if (cardUseEvent !== undefined) {
       const endEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
         fromId,
         end: false,
         eventName: GameEventIdentifiers.CardUseEvent,
-        event: equipCardUseEvent,
+        event: cardUseEvent,
       };
+
       return endEvent;
-    }
-
-    const slashCards = room
-      .getPlayerById(fromId)
-      .getCardIds(PlayerCardsArea.HandArea)
-      .filter(cardId => Sanguosha.getCardById(cardId).GeneralName === 'slash');
-
-    const nextPlayer = room.AlivePlayers.filter(player => player.Id !== fromId)[0];
-
-    if (slashCards && slashCards.length > 0) {
-      if (room.getPlayerById(fromId).canUseCard(room, slashCards[0])) {
-        const slashUseEvent: ClientEventFinder<GameEventIdentifiers.CardUseEvent> = {
-          fromId,
-          cardId: slashCards[0],
-          toIds: [nextPlayer.Id],
-        };
-
-        const endEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
-          fromId,
-          end: false,
-          eventName: GameEventIdentifiers.CardUseEvent,
-          event: slashUseEvent,
-        };
-        return endEvent;
-      }
     }
 
     const endEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
