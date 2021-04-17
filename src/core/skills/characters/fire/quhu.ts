@@ -50,7 +50,7 @@ export class QuHu extends ActiveSkill {
       const askForChoosingPlayer: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
         toId: fromId,
         players: room.AlivePlayers.filter(
-          player => target.getAttackDistance(room) >= room.distanceBetween(target, player) && player !== target,
+          player => room.withinAttackDistance(target, player),
         ).map(player => player.Id),
         requiredAmount: 1,
         conversation: TranslationPack.translationJsonPatcher(

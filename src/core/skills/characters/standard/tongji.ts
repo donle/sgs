@@ -29,7 +29,7 @@ export class TongJi extends TriggerSkill {
     return (
       event.toId !== owner.Id &&
       event.fromId !== owner.Id &&
-      to.getAttackDistance(room) >= room.distanceBetween(to, owner) &&
+      room.withinAttackDistance(to, owner) &&
       !event.allTargets.includes(owner.Id)
     );
   }

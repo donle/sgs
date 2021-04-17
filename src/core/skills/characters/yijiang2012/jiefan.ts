@@ -42,7 +42,7 @@ export class JieFan extends ActiveSkill {
     const { toIds } = event;
     const to = room.getPlayerById(toIds![0]);
     const targets = room.getOtherPlayers(toIds![0])
-      .filter(player => player.getAttackDistance(room) >= room.distanceBetween(player, to));
+      .filter(player => room.withinAttackDistance(player, to));
 
     for (const player of targets) {
       const response = await room.askForCardDrop(
