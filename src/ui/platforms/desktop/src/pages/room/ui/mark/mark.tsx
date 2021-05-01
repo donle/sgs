@@ -29,6 +29,7 @@ const markIconMaps: {
   [MarkEnum.Lie]: lieIcon,
   [MarkEnum.XueYi]: xueyiIcon,
   [MarkEnum.Ying]: yingIcon,
+  [MarkEnum.PveHuaShen]: yingIcon,
 };
 
 export type MarkProps = {
