@@ -17,7 +17,7 @@ export class ShiBei extends TriggerSkill {
   }
 
   async whenObtainingSkill(room: Room, owner: Player) {
-    if (room.Analytics.getDamagedReord(owner.Id, true).length > 0) {
+    if (room.Analytics.getDamagedRecord(owner.Id, true).length > 0) {
       room.setFlag(owner.Id, this.GeneralName, true, true);
     }
   }
