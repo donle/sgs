@@ -12,6 +12,7 @@ import * as yiJiangCharactersDictionary from './yijiang2011';
 import * as yiJiang2CharactersDictionary from './yijiang2012';
 import * as yiJiang3CharactersDictionary from './yijiang2013';
 import * as yiJiang4CharactersDictionary from './yijiang2014';
+import * as pveCharactersDictionary from './pve';
 
 export {
   cardsDictionary,
@@ -28,4 +29,5 @@ export {
   yiJiang2CharactersDictionary,
   yiJiang3CharactersDictionary,
   yiJiang4CharactersDictionary,
+  pveCharactersDictionary,
 };

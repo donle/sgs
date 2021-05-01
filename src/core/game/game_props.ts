@@ -21,6 +21,7 @@ export const enum GameCharacterExtensions {
   YiJiang2012 = 'yijiang2012',
   YiJiang2013 = 'yijiang2013',
   YiJiang2014 = 'yijiang2014',
+  Pve = 'pve',
 }
 
 export const enum GameCardExtensions {
