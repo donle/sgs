@@ -1,22 +1,19 @@
-import { CompulsorySkill, PersistentSkill } from 'core/skills/skill_wrappers';
+import { CompulsorySkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { Room } from 'core/room/room';
-import { PlayerPhase, PlayerDiedStage, PlayerDyingStage } from 'core/game/stage_processor';
-import { ServerEventFinder, GameEventIdentifiers, EventPacker } from 'core/event/event';
+import { PlayerPhase, PlayerDiedStage, PlayerDyingStage, PhaseChangeStage } from 'core/game/stage_processor';
+import { ServerEventFinder, GameEventIdentifiers, EventPacker, CardMoveReason } from 'core/event/event';
 import { TriggerSkill } from 'core/skills/skill';
 import { AllStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Sanguosha } from 'core/game/engine';
-import { PveChaoFeng } from 'core/characters/pve/pve_chaofeng';
-import { PveSuanNi } from 'core/characters/pve/pve_suanni';
-import { PveYaZi } from 'core/characters/pve/pve_yazi';
-import { PveBiAn } from 'core/characters/pve/pve_bian';
-import { PveFuXi } from 'core/characters/pve/pve_fuxi';
-import { PveBiXi } from 'core/characters/pve/pve_bixi';
 import { PlayerId } from 'core/player/player_props';
+import { MarkEnum } from 'core/shares/types/mark_list';
 
 @PersistentSkill({ stubbornSkill: true })
 @CompulsorySkill({ name: 'pve_huashen', description: 'pve_huashen_description' })
 export class PveHuaShen extends TriggerSkill {
+  private characterList = ['pve_chaofeng', 'pve_suanni', 'pve_yazi', 'pve_bian', 'pve_fuxi', 'pve_bixi'];
+
   public afterDead(room: Room): boolean {
     return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
   }
@@ -34,10 +31,14 @@ export class PveHuaShen extends TriggerSkill {
   }
 
   private async nextCharacter(room: Room, ownerId: PlayerId) {
-    console.log('next character');
     const NewMaxHp = room.getPlayerById(ownerId).MaxHp + 1;
-    console.log('character MaxHp is ' + NewMaxHp);
-    const nextCharacter = Sanguosha.getCharacterByCharaterName('pve_chaofeng');
+    room.addMark(ownerId, MarkEnum.PveHuaShen, -1);
+    const chara = this.characterList.shift();
+    if (chara === undefined) {
+      return false;
+    }
+    const nextCharacter = Sanguosha.getCharacterByCharaterName(chara);
+
     const playerPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
       changedProperties: [
         {
@@ -56,6 +57,8 @@ export class PveHuaShen extends TriggerSkill {
       await room.loseSkill(ownerId, huashenInfo.skillName);
     }
 
+    await room.dropCards(CardMoveReason.SelfDrop, player.getPlayerCards(), player.Id, player.Id, this.GeneralName);
+
     !player.isFaceUp() && (await room.turnOver(player.Id));
     player.ChainLocked && (await room.chainedOn(player.Id));
     player.clearHeaded();
@@ -67,6 +70,8 @@ export class PveHuaShen extends TriggerSkill {
     player.setHuaShenInfo({ skillName: nextCharacter.Skills[0].GeneralName, characterId: nextCharacter.Id });
 
     await room.obtainSkill(ownerId, nextCharacter.Skills[0].GeneralName, true);
+
+    return true;
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -74,7 +79,14 @@ export class PveHuaShen extends TriggerSkill {
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    await this.nextCharacter(room, event.fromId);
+    if (room.getMark(event.fromId, MarkEnum.PveHuaShen) === 0) {
+      return true;
+    }
+
+    const nextCharacter = await this.nextCharacter(room, event.fromId);
+    if (!nextCharacter) {
+      return true;
+    }
 
     const otherPlayers = room.AlivePlayers.filter(player => player.Id !== event.fromId);
 
@@ -125,6 +137,31 @@ export class PveHuaShen extends TriggerSkill {
       await room.obtainSkill(player.Id, selectedOption!, true);
     }
 
+    return true;
+  }
+}
+
+@ShadowSkill
+@CompulsorySkill({ name: PveHuaShen.Name, description: PveHuaShen.Description })
+export class PveHuaShenBuf extends TriggerSkill {
+  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.GameStartEvent>, stage?: AllStage) {
+    return stage === PhaseChangeStage.BeforePhaseChange;
+  }
+
+  isAutoTrigger() {
+    return true;
+  }
+
+  canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
+    return room.Circle === 0 && owner.getMark(this.GeneralName) === 0 && event.to === PlayerPhase.PrepareStage;
+  }
+
+  async onTrigger() {
+    return true;
+  }
+
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    room.addMark(event.fromId, MarkEnum.PveHuaShen, 5);
     return true;
   }
 }
