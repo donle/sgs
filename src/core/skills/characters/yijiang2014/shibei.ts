@@ -45,7 +45,7 @@ export class ShiBei extends TriggerSkill {
       room.setFlag(event.fromId, this.GeneralName, true, true);
     }
 
-    if (room.Analytics.getDamagedReord(event.fromId, true).length <= 1) {
+    if (room.Analytics.getDamagedRecord(event.fromId, true).length <= 1) {
       const damagedEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
       await room.recover({ recoveredHp: 1, recoverBy: damagedEvent.toId, toId: damagedEvent.toId });
     } else {
