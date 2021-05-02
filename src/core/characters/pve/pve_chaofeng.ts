@@ -10,7 +10,7 @@ export class PveChaoFeng extends Character {
   constructor(id: number) {
     super(id, 'pve_chaofeng', CharacterGender.Female, CharacterNationality.God, 4, 4, GameCharacterExtensions.Pve, [
       skillLoaderInstance.getSkillByName(PveLongLin.Name),
-      ...skillLoaderInstance.getSkillsByName(PveHuaShen.Name),
+      skillLoaderInstance.getSkillByName(PveHuaShen.Name),
     ]);
   }
 }
