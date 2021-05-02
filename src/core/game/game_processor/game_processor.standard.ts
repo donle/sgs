@@ -1225,6 +1225,7 @@ export class StandardGameProcessor extends GameProcessor {
                 fromId: response.fromId,
                 cardId: response.cardId,
                 targetGroup: [[to.Id]],
+                extraUse: true,
               };
               EventPacker.copyPropertiesTo(response, cardUseEvent);
 
