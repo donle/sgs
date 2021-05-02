@@ -14,7 +14,11 @@ export class PveSuWei extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
-    return event.toId === owner.Id && room.getPlayerById(event.fromId).getPlayerCards().length > 0;
+    return (
+      event.toId === owner.Id &&
+      event.fromId !== owner.Id &&
+      room.getPlayerById(event.fromId).getPlayerCards().length > 0
+    );
   }
 
   async onTrigger() {
