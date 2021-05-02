@@ -1,6 +1,6 @@
 import { CompulsorySkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { Room } from 'core/room/room';
-import { PlayerPhase, PlayerDiedStage, PlayerDyingStage, PhaseChangeStage } from 'core/game/stage_processor';
+import { PlayerPhase, PlayerDyingStage, GameStartStage } from 'core/game/stage_processor';
 import { ServerEventFinder, GameEventIdentifiers, EventPacker, CardMoveReason } from 'core/event/event';
 import { TriggerSkill } from 'core/skills/skill';
 import { AllStage } from 'core/game/stage_processor';
@@ -12,7 +12,7 @@ import { MarkEnum } from 'core/shares/types/mark_list';
 @PersistentSkill({ stubbornSkill: true })
 @CompulsorySkill({ name: 'pve_huashen', description: 'pve_huashen_description' })
 export class PveHuaShen extends TriggerSkill {
-  private characterList = ['pve_chaofeng', 'pve_suanni', 'pve_yazi', 'pve_bian', 'pve_fuxi', 'pve_bixi'];
+  private characterList = ['pve_suanni', 'pve_yazi', 'pve_bian', 'pve_fuxi', 'pve_bixi'];
 
   public afterDead(room: Room): boolean {
     return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
@@ -145,7 +145,7 @@ export class PveHuaShen extends TriggerSkill {
 @CompulsorySkill({ name: PveHuaShen.Name, description: PveHuaShen.Description })
 export class PveHuaShenBuf extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.GameStartEvent>, stage?: AllStage) {
-    return stage === PhaseChangeStage.BeforePhaseChange;
+    return stage === GameStartStage.AfterGameStarted;
   }
 
   isAutoTrigger() {
@@ -153,7 +153,7 @@ export class PveHuaShenBuf extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
-    return room.Circle === 0 && owner.getMark(this.GeneralName) === 0 && event.to === PlayerPhase.PrepareStage;
+    return !owner.hasUsedSkill(this.Name);
   }
 
   async onTrigger() {
