@@ -20,6 +20,7 @@ import * as https from 'https';
 import * as SocketIO from 'socket.io';
 import { SimplifiedChinese } from './languages';
 import { getServerConfig, ServerConfig } from './server_config';
+import { PveGameProcessor } from 'core/game/game_processor/game_processor.pve';
 
 class App {
   private server: http.Server | https.Server;
@@ -85,7 +86,10 @@ class App {
   };
 
   private readonly createDifferentModeGameProcessor = (gameMode: GameMode): GameProcessor => {
+    this.logger.debug('game mode is ' + gameMode);
     switch (gameMode) {
+      case GameMode.Pve:
+        return new PveGameProcessor(new StageProcessor(this.logger), this.logger);
       case GameMode.OneVersusTwo:
         return new OneVersusTwoGameProcessor(new StageProcessor(this.logger), this.logger);
       case GameMode.TwoVersusTwo:

@@ -25,7 +25,7 @@ export class TrustAI extends PlayerAI {
     const { toId: fromId } = content as ServerEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent>;
 
     // setTimeout(() => {
-    //   console.log(`${fromId} has cards: `);
+    //   console.log(`wait 3 sec.`);
     // }, 3000);
 
     // room

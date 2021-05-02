@@ -14,6 +14,7 @@ const gameModeIcons = {
   [GameMode.OneVersusTwo]: '1v2_mode',
   [GameMode.TwoVersusTwo]: '2v2_mode',
   [GameMode.Hegemony]: 'hegemony_mode',
+  [GameMode.Pve]: 'pve_mode',
 };
 
 export class DevImageLoader implements ImageLoader {

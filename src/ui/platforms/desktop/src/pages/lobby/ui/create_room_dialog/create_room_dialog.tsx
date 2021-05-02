@@ -35,6 +35,12 @@ function getGameModeOptions(translator: ClientTranslationModule) {
       checked: false,
       disabled: true,
     },
+    {
+      label: translator.tr(GameMode.Pve),
+      id: GameMode.Pve,
+      checked: false,
+      disabled: false,
+    },
   ];
 }
 
