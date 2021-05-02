@@ -105,7 +105,7 @@ export class PveHuaShen extends TriggerSkill {
 
     if (identifier === GameEventIdentifiers.GameStartEvent) {
       room.addMark(event.fromId, MarkEnum.PveHuaShen, this.characterList.length);
-      this.nextCharacter(room, event.fromId);
+      await this.nextCharacter(room, event.fromId);
       return true;
     }
 
