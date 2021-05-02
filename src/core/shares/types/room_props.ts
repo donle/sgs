@@ -3,4 +3,5 @@ export const enum GameMode {
   OneVersusTwo = '1v2',
   TwoVersusTwo = '2v2',
   Hegemony = 'hegemony-game',
+  Pve = 'pve',
 }

@@ -62,6 +62,7 @@ export abstract class Player implements PlayerInfo {
   private gender: CharacterGender;
   private status: PlayerStatus;
   private ai: PlayerAI = TrustAI.Instance;
+  private fake: boolean = false;
 
   private drunk: number = 0;
 
@@ -833,6 +834,14 @@ export abstract class Player implements PlayerInfo {
 
   public get AI() {
     return this.ai;
+  }
+
+  public isFake() {
+    return this.fake;
+  }
+
+  public Fake() {
+    this.fake = true;
   }
 
   public delegateOnTrusted(trusted: boolean) {

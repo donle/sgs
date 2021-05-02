@@ -8,13 +8,14 @@ import {
   WorkPlace,
 } from 'core/event/event';
 import { Socket } from 'core/network/socket';
-import { ServerPlayer } from 'core/player/player.server';
+import { ServerPlayer, FakePlayer } from 'core/player/player.server';
 import { PlayerId, PlayerStatus } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import IOSocketServer from 'socket.io';
+import { GameMode } from 'core/shares/types/room_props';
 
 export class ServerSocket extends Socket<WorkPlace.Server> {
   private socket: IOSocketServer.Namespace;
@@ -287,6 +288,13 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       return;
     }
 
+    if (room.Info.gameMode === GameMode.Pve && room.Players.length === 0) {
+      console.log('Pve Mode Add AI Player');
+      const fakePlayer = new FakePlayer(room.Players.length);
+      room.addPlayer(fakePlayer);
+    }
+
+    console.log(`Position Player${room.Players.length} enter room.`);
     const player = new ServerPlayer(event.playerId, event.playerName, room.Players.length);
     room.addPlayer(player);
     this.mapSocketIdToPlayerId[event.playerId] = socket.id;
