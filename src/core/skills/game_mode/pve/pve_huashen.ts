@@ -32,9 +32,21 @@ export class PveHuaShen extends TriggerSkill {
   public canUse(
     room: Room,
     owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent | GameEventIdentifiers.GameStartEvent>,
+    event: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent | GameEventIdentifiers.GameStartEvent>,
   ): boolean {
-    return content.dying === owner.Id || !owner.hasUsedSkill(this.Name);
+    const identifier = EventPacker.getIdentifier(
+      event as ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent | GameEventIdentifiers.GameStartEvent>,
+    );
+
+    if (identifier === GameEventIdentifiers.GameStartEvent) {
+      return !owner.hasUsedSkill(this.Name);
+    }
+
+    if (identifier === GameEventIdentifiers.PlayerDyingEvent) {
+      return (event as ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>).dying === owner.Id;
+    }
+
+    return false;
   }
 
   private async nextCharacter(room: Room, ownerId: PlayerId) {
