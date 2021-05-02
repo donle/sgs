@@ -45,7 +45,7 @@ export class PveGameProcessor extends StandardGameProcessor {
   protected async chooseCharacters(playersInfo: PlayerInfo[], selectableCharacters: Character[]) {
     // link to  assignRoles
     const lordInfo = playersInfo[0];
-    const lordCharacter = Sanguosha.getCharacterByCharaterName('pve_chaofeng');
+    const lordCharacter = Sanguosha.getCharacterByCharaterName('pve_boss');
     const lordPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
       changedProperties: [{ toId: lordInfo.Id, characterId: lordCharacter.Id }],
     };
