@@ -1,6 +1,7 @@
 import { Word } from 'languages';
 
 export const characterDictionary: Word[] = [
+  { source: 'pve_boss', target: '龙神' },
   { source: 'pve_huashen', target: '化神' },
   { source: 'pve_chaofeng', target: '嘲风' },
   { source: 'pve_longlin', target: '龙鳞' },
@@ -14,6 +15,7 @@ export const characterDictionary: Word[] = [
   { source: 'pve_longshi', target: '龙识' },
   { source: 'pve_yazi', target: '睚眦' },
   { source: 'pve_longlie', target: '龙烈' },
+  { source: '#pve_longlie', target: '龙烈' },
 ];
 
 export const skillDescriptions: Word[] = [

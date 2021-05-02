@@ -280,7 +280,7 @@ export { ShenXing } from './characters/yijiang2014/shenxing';
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';
 export { FeiYang } from './game_mode/1v2/feiyang';
-export { PveHuaShen, PveHuaShenBuf } from './game_mode/pve/pve_huashen';
+export { PveHuaShen } from './game_mode/pve/pve_huashen';
 export { PveLongLin } from './game_mode/pve/pve_longlin';
 export { PveRuiYan } from './game_mode/pve/pve_ruiyan';
 export { PveLongLie, PveLongLieShadow } from './game_mode/pve/pve_longlie';
