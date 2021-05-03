@@ -17,7 +17,7 @@ function getGameModeOptions(translator: ClientTranslationModule) {
     {
       label: translator.tr(GameMode.Standard),
       id: GameMode.Standard,
-      checked: true,
+      checked: false,
     },
     {
       label: translator.tr(GameMode.OneVersusTwo),
@@ -38,7 +38,7 @@ function getGameModeOptions(translator: ClientTranslationModule) {
     {
       label: translator.tr(GameMode.Pve),
       id: GameMode.Pve,
-      checked: false,
+      checked: true,
       disabled: false,
     },
   ];
@@ -70,7 +70,7 @@ export const CreateRoomDialog = (props: {
 }) => {
   const username: string = props.electronLoader.getData('username');
   const [numberOfPlayers, setNumberOfPlayers] = React.useState<number>(2);
-  const [checkedGameMode, setcheckedGameMode] = React.useState<GameMode | undefined>(GameMode.Standard);
+  const [checkedGameMode, setcheckedGameMode] = React.useState<GameMode | undefined>(GameMode.Pve);
   const [characterExtensions, setCharacterExtensions] = React.useState<GameCharacterExtensions[]>(
     Sanguosha.getGameCharacterExtensions(),
   );
