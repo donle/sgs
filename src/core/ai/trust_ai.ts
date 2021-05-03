@@ -125,6 +125,7 @@ export class TrustAI extends PlayerAI {
           cardResponse = {
             cardId: responseCardId,
             fromId: toId,
+            toIds: content.scopedTargets,
           };
         } else {
           console.log(`there are not cards match this reponse`);
