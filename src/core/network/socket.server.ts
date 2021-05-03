@@ -176,7 +176,6 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
           }
           const toPlayer = room.getPlayerById(playerId);
           const result = toPlayer.AI.onAction(this.room!, awaitIdentifier, content);
-          room.sleep(1500);
           if (this.asyncResponseResolver[awaitIdentifier][playerId]) {
             this.asyncResponseResolver[awaitIdentifier][playerId]!(result);
             delete this.asyncResponseResolver[awaitIdentifier][playerId];
@@ -363,7 +362,6 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     if (!toPlayer.isOnline()) {
       this.logger.info('socket ask for ai action');
       const result = toPlayer.AI.onAction(this.room!, type, content);
-      this.room!.sleep(1500);
       this.logger.info('Ai done for socket');
       setTimeout(() => {
         const asyncResolver = this.asyncResponseResolver[type] && this.asyncResponseResolver[type][to];

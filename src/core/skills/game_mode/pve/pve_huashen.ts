@@ -1,6 +1,6 @@
-import { CompulsorySkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import { CompulsorySkill, PersistentSkill } from 'core/skills/skill_wrappers';
 import { Room } from 'core/room/room';
-import { PlayerPhase, PlayerDyingStage, GameStartStage } from 'core/game/stage_processor';
+import { PlayerDyingStage, GameStartStage } from 'core/game/stage_processor';
 import { ServerEventFinder, GameEventIdentifiers, EventPacker, CardMoveReason } from 'core/event/event';
 import { TriggerSkill } from 'core/skills/skill';
 import { AllStage } from 'core/game/stage_processor';
@@ -9,21 +9,18 @@ import { Sanguosha } from 'core/game/engine';
 import { PlayerId } from 'core/player/player_props';
 import { MarkEnum } from 'core/shares/types/mark_list';
 
+// todo: Immediate death by lightning
 @PersistentSkill({ stubbornSkill: true })
 @CompulsorySkill({ name: 'pve_huashen', description: 'pve_huashen_description' })
 export class PveHuaShen extends TriggerSkill {
   private characterList = ['pve_chaofeng', 'pve_suanni', 'pve_yazi', 'pve_bian', 'pve_fuxi', 'pve_bixi'];
-
-  public afterDead(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
-  }
 
   public isAutoTrigger(): boolean {
     return true;
   }
 
   public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent | GameEventIdentifiers.GameStartEvent>,
+    event: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent | GameEventIdentifiers.GameStartEvent>,
     stage?: AllStage,
   ): boolean {
     return stage === PlayerDyingStage.RequestRescue || stage === GameStartStage.AfterGameStarted;

@@ -26,17 +26,6 @@ export class PveGameProcessor extends StandardGameProcessor {
     }
   }
 
-  public getWinners(players: Player[]) {
-    const rebels = players.filter(player => player.Role === PlayerRole.Rebel);
-    const lord = players.find(player => player.Role === PlayerRole.Lord)!;
-
-    if (lord.Dead && lord.getMark(MarkEnum.PveHuaShen) === 0) {
-      return rebels;
-    } else if (rebels.every(rebel => rebel.Dead)) {
-      return [lord];
-    }
-  }
-
   protected async beforeGameStartPreparation() {
     const lord = this.room.AlivePlayers.find(player => player.Role === PlayerRole.Lord)!;
     this.room.updatePlayerStatus('offline', lord.Id);
