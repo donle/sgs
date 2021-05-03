@@ -1,6 +1,6 @@
 import { CompulsorySkill, PersistentSkill } from 'core/skills/skill_wrappers';
 import { Room } from 'core/room/room';
-import { PlayerDyingStage, GameStartStage } from 'core/game/stage_processor';
+import { PlayerDyingStage, GameStartStage, PlayerPhase } from 'core/game/stage_processor';
 import { ServerEventFinder, GameEventIdentifiers, EventPacker, CardMoveReason } from 'core/event/event';
 import { TriggerSkill } from 'core/skills/skill';
 import { AllStage } from 'core/game/stage_processor';
@@ -13,7 +13,7 @@ import { MarkEnum } from 'core/shares/types/mark_list';
 @PersistentSkill({ stubbornSkill: true })
 @CompulsorySkill({ name: 'pve_huashen', description: 'pve_huashen_description' })
 export class PveHuaShen extends TriggerSkill {
-  private characterList = ['pve_chaofeng', 'pve_suanni', 'pve_yazi', 'pve_bian', 'pve_fuxi', 'pve_bixi'];
+  private characterList: string[];
 
   public isAutoTrigger(): boolean {
     return true;
@@ -101,6 +101,8 @@ export class PveHuaShen extends TriggerSkill {
     );
 
     if (identifier === GameEventIdentifiers.GameStartEvent) {
+      this.characterList = ['pve_chaofeng', 'pve_suanni', 'pve_yazi', 'pve_bian', 'pve_fuxi', 'pve_bixi'];
+
       room.addMark(event.fromId, MarkEnum.PveHuaShen, this.characterList.length);
       await this.nextCharacter(room, event.fromId);
       return true;
