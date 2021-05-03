@@ -136,8 +136,6 @@ export class PveHuaShen extends TriggerSkill {
         player.Id,
       );
 
-      // console.log(`${player.Id} choose ${chosenCharacterIds}`);
-
       const options = Sanguosha.getCharacterById(chosenCharacterIds[0])
         .Skills.filter(skill => !(skill.isShadowSkill() || skill.isLordSkill()))
         .map(skill => skill.GeneralName);
