@@ -370,7 +370,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
           delete this.asyncResponseResolver[type][to];
           this.room?.unsetAwaitingResponseEvent(to);
         }
-      }, 100);
+      }, 1500);
     } else {
       this.room?.setAwaitingResponseEvent(type, content, to);
       this.socket.to(this.mapSocketIdToPlayerId[to]).emit(type.toString(), content);
