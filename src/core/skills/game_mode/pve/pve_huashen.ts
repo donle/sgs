@@ -9,11 +9,10 @@ import { Sanguosha } from 'core/game/engine';
 import { PlayerId } from 'core/player/player_props';
 import { MarkEnum } from 'core/shares/types/mark_list';
 
-// todo: Immediate death by lightning
 @PersistentSkill({ stubbornSkill: true })
 @CompulsorySkill({ name: 'pve_huashen', description: 'pve_huashen_description' })
 export class PveHuaShen extends TriggerSkill {
-  private characterList: string[];
+  static readonly CHARACTERS = ['pve_chaofeng', 'pve_suanni', 'pve_yazi', 'pve_bian', 'pve_fuxi', 'pve_bixi'];
 
   public isAutoTrigger(): boolean {
     return true;
@@ -48,8 +47,8 @@ export class PveHuaShen extends TriggerSkill {
 
   private async nextCharacter(room: Room, ownerId: PlayerId) {
     const NewMaxHp = room.getPlayerById(ownerId).MaxHp + 1;
+    const chara = PveHuaShen.CHARACTERS[PveHuaShen.CHARACTERS.length - room.getMark(ownerId, MarkEnum.PveHuaShen)];
     room.addMark(ownerId, MarkEnum.PveHuaShen, -1);
-    const chara = this.characterList.shift();
     if (chara === undefined) {
       return false;
     }
@@ -101,9 +100,7 @@ export class PveHuaShen extends TriggerSkill {
     );
 
     if (identifier === GameEventIdentifiers.GameStartEvent) {
-      this.characterList = ['pve_chaofeng', 'pve_suanni', 'pve_yazi', 'pve_bian', 'pve_fuxi', 'pve_bixi'];
-
-      room.addMark(event.fromId, MarkEnum.PveHuaShen, this.characterList.length);
+      room.addMark(event.fromId, MarkEnum.PveHuaShen, PveHuaShen.CHARACTERS.length);
       await this.nextCharacter(room, event.fromId);
       return true;
     }
