@@ -75,6 +75,7 @@ export const CreateRoomDialog = (props: {
     Sanguosha.getGameCharacterExtensions(),
   );
   const [playerSelectionDisabled, disablePlayerSelection] = React.useState<boolean>(false);
+  const [playerSelectionSwitch, switchPlayerSelection] = React.useState<boolean>(true);
   const [passcode, setPasscode] = React.useState<string>();
   const [roomName, setRoomName] = React.useState<string>(
     username ? props.translator.tr(TranslationPack.translationJsonPatcher("{0}'s room", username).extract()) : '',
@@ -97,10 +98,14 @@ export const CreateRoomDialog = (props: {
 
   const getPlayerOptions = () => {
     const options: { content: string | PatchedTranslationObject; value: number }[] = [];
-    for (let i = 2; i <= 8; i++) {
-      options.push({ content: TranslationPack.translationJsonPatcher('{0} players', i).extract(), value: i });
+    if (playerSelectionSwitch) {
+      options.push({ content: TranslationPack.translationJsonPatcher('单刀赴会', 2).extract(), value: 2 });
+      options.push({ content: TranslationPack.translationJsonPatcher('同舟共济', 3).extract(), value: 3 });
+    } else {
+      for (let i = 2; i <= 8; i++) {
+        options.push({ content: TranslationPack.translationJsonPatcher('{0} players', i).extract(), value: i });
+      }
     }
-
     return options;
   };
 
@@ -115,6 +120,9 @@ export const CreateRoomDialog = (props: {
       setcheckedGameMode(checkedIds[0]);
     }
 
+    if (checkedIds[0] === GameMode.Standard) {
+      setNumberOfPlayers(2);
+    }
     if (checkedIds[0] === GameMode.OneVersusTwo || checkedIds[0] === GameMode.TwoVersusTwo) {
       disablePlayerSelection(true);
       if (checkedIds[0] === GameMode.OneVersusTwo) {
@@ -124,6 +132,12 @@ export const CreateRoomDialog = (props: {
       }
     } else {
       disablePlayerSelection(false);
+    }
+    if (checkedIds[0] === GameMode.Pve) {
+      switchPlayerSelection(true);
+      setNumberOfPlayers(1);
+    } else {
+      switchPlayerSelection(false);
     }
   };
 
@@ -156,6 +170,7 @@ export const CreateRoomDialog = (props: {
                 value={numberOfPlayers}
                 onChange={onNumberOfPlayersChange}
                 disabled={playerSelectionDisabled}
+                switch={playerSelectionSwitch ? 'pve' : ''}
               >
                 {getPlayerOptions().map(option => (
                   <option value={option.value}>{props.translator.tr(option.content)}</option>
