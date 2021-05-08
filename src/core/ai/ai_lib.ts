@@ -44,6 +44,11 @@ export function aiUseCard(room: Room, aiId: PlayerId) {
           cardSkill.numberOfTargets instanceof Array ? cardSkill.numberOfTargets()[0] : cardSkill.numberOfTargets();
         // console.log(`Card target number is ${targetNumber}`);
 
+        if (cardSkill.GeneralName === 'tiesuolianhuan') {
+          console.log(`tiesuolianhuan target number is ${targetNumber}`);
+          // todo: handle jiedaosharen
+        }
+
         if (room.AlivePlayers.length <= targetNumber) {
           continue;
         }
