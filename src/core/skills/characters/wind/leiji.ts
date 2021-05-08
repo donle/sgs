@@ -1,5 +1,5 @@
 import { CardSuit } from 'core/cards/libs/card_props';
-import { GameEventIdentifiers, ServerEventFinder, EventPacker } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
 import { AllStage, CardResponseStage, CardUseStage, JudgeEffectStage } from 'core/game/stage_processor';

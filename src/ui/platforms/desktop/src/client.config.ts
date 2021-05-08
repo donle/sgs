@@ -21,6 +21,15 @@ export const getClientConfig = (mode: ClientFlavor): ClientConfig => {
       ];
       break;
     case ClientFlavor.Web:
+      host = [
+        {
+          port: 8080,
+          host: '146.56.218.109',
+          protocol: 'http',
+          hostTag: ServerHostTag.NanJing,
+        },
+      ];
+      break;
     case ClientFlavor.Desktop:
       host = [
         {
