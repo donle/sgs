@@ -5,9 +5,8 @@ import { Sanguosha } from 'core/game/engine';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { PlayerAI } from './ai';
-import { Card, CardType } from 'core/cards/card';
+import { Card } from 'core/cards/card';
 import { aiUseCard } from './ai_lib';
-import { getCardValueofCard } from './ai_standard';
 import { FireAttackSkill } from 'core/skills';
 import { LeBuSiShu } from 'core/cards/standard/lebusishu';
 import { BingLiangCunDuan } from 'core/cards/legion_fight/bingliangcunduan';
@@ -202,8 +201,9 @@ export class TrustAI extends PlayerAI {
           console.log(`Card ${ActCard.Name} Value: ${cardValue}`);
 
           if (cardValue > maxValue) {
-            maxValue = cardValue;
-            maxValueCard = ActCard;
+            [maxValue, maxValueCard] = [cardValue, ActCard];
+            // maxValue = cardValue;
+            // maxValueCard = ActCard;
           }
         }
 

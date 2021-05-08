@@ -1,6 +1,6 @@
 import { CompulsorySkill, PersistentSkill } from 'core/skills/skill_wrappers';
 import { Room } from 'core/room/room';
-import { PlayerDyingStage, GameStartStage, PlayerPhase } from 'core/game/stage_processor';
+import { PlayerDyingStage, GameStartStage } from 'core/game/stage_processor';
 import { ServerEventFinder, GameEventIdentifiers, EventPacker, CardMoveReason } from 'core/event/event';
 import { TriggerSkill } from 'core/skills/skill';
 import { AllStage } from 'core/game/stage_processor';
