@@ -7,7 +7,7 @@ import { Character } from '../character';
 // import { ZhangSong } from './zhangsong';
 // import { SunLuBan } from './sunluban';
 // import { ZhuHuan } from './zhuhuan';
-import { JuShou } from './jushou';
+import { YjcmJuShou } from './yjcm_jushou';
 import { GuYong } from './guyong';
 // import { CaiFuRen } from './caifuren';
 
@@ -20,7 +20,7 @@ export const YiJiang2014Package: (index: number) => Character[] = index => [
   // new ZhangSong(index++),
   // new SunLuBan(index++),
   // new ZhuHuan(index++),
-  new JuShou(index++),
+  new YjcmJuShou(index++),
   new GuYong(index++),
   // new CarFuRen(index++),
 ];

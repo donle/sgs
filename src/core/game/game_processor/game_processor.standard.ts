@@ -473,6 +473,7 @@ export class StandardGameProcessor extends GameProcessor {
         this.currentPhasePlayer.Id,
       );
 
+      this.logger.debug('Receiving Async Resp from Player');
       if (response.end) {
         break;
       }
@@ -519,6 +520,7 @@ export class StandardGameProcessor extends GameProcessor {
   }
 
   private async onPhase(phase: PlayerPhase) {
+    this.logger.debug('handle player phase ' + phase);
     Precondition.assert(phase !== undefined, 'Undefined phase');
     if (this.room.isClosed() || !this.room.isPlaying() || this.room.isGameOver()) {
       return;
