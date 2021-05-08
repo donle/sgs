@@ -120,3 +120,10 @@ export const skillDescriptions: Word[] = [
   { source: '#piaoling-select', target: '请选择：1. 将判定牌置于牌堆顶。2. 交给一名角色' },
   { source: 'piaoling: select a player to obtain the judge card', target: '飘零：选择一名角色获得此判定牌' },
 ];
+
+export const promptDescriptions: Word[] = [
+  {
+    source: '{0}: please choose a target to deal {1} damage?',
+    target: '{0}: 请选择一名其它角色，对其造成{1}点雷电伤害',
+  },
+];
