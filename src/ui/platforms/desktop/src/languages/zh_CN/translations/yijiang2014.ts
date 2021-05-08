@@ -36,7 +36,7 @@ export const characterDictionary: Word[] = [
   { source: 'shenxing', target: '慎行' },
   { source: 'bingyi', target: '秉壹' },
 
-  { source: 'jushou', target: '沮授' },
+  { source: 'yjcm_jushou', target: '沮授' },
   { source: 'jianying', target: '渐营' },
   { source: 'shibei', target: '矢北' },
 
