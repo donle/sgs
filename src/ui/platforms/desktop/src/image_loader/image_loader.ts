@@ -1,4 +1,5 @@
 import { PlayerRole } from 'core/player/player_props';
+import { PlayerId } from 'core/player/player_props';
 import { GameMode } from 'core/shares/types/room_props';
 import { SkillType } from 'core/skills/skill';
 import { LobbyButton } from 'props/game_props';
@@ -18,7 +19,7 @@ export type SkillButtonImageProps = {
 
 export interface ImageLoader {
   getCardImage(name: string): Promise<ImageProps>;
-  getCharacterImage(name: string): Promise<ImageProps>;
+  getCharacterImage(name: string, roomId?: PlayerId | undefined): Promise<ImageProps>;
   getOthersEquipCard(cardName: string): Promise<ImageProps>;
   getSlimEquipCard(cardName: string): Promise<ImageProps>;
   getSlimCard(cardName: string): Promise<ImageProps>;

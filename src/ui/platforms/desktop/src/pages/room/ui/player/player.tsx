@@ -227,11 +227,11 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   @mobx.action
   async componentDidUpdate() {
     if (this.PlayerCharacter) {
-      this.mainImage = (await this.props.imageLoader.getCharacterImage(this.PlayerCharacter.Name)).src;
+      this.mainImage = (await this.props.imageLoader.getCharacterImage(this.PlayerCharacter.Name, this.props.player?.Id)).src;
       const huashenCharacterId = this.props.player?.getHuaShenInfo()?.characterId;
       const huashenCharacter =
         huashenCharacterId !== undefined ? Sanguosha.getCharacterById(huashenCharacterId) : undefined;
-      this.sideImage = huashenCharacter && (await this.props.imageLoader.getCharacterImage(huashenCharacter.Name)).src;
+      this.sideImage = huashenCharacter && (await this.props.imageLoader.getCharacterImage(huashenCharacter.Name, this.props.player?.Id)).src;
     }
 
     if (this.PlayerImage === undefined && this.PlayerCharacter) {

@@ -254,12 +254,12 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   async componentDidUpdate() {
     if (this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.CharacterId !== undefined) {
       this.mainImage = (
-        await this.props.imageLoader.getCharacterImage(this.props.presenter.ClientPlayer.Character.Name)
+        await this.props.imageLoader.getCharacterImage(this.props.presenter.ClientPlayer.Character.Name, this.props.presenter.ClientPlayer.Id)
       ).src;
       const huashenCharacterId = this.props.presenter.ClientPlayer.getHuaShenInfo()?.characterId;
       const huashenCharacter =
         huashenCharacterId !== undefined ? Sanguosha.getCharacterById(huashenCharacterId) : undefined;
-      this.sideImage = huashenCharacter && (await this.props.imageLoader.getCharacterImage(huashenCharacter.Name)).src;
+        this.sideImage = huashenCharacter && (await this.props.imageLoader.getCharacterImage(huashenCharacter.Name, this.props.presenter.ClientPlayer.Id)).src;
     }
 
     if (

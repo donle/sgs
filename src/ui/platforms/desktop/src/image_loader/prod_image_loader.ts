@@ -1,4 +1,4 @@
-import { PlayerRole } from 'core/player/player_props';
+import { PlayerId, PlayerRole } from 'core/player/player_props';
 import { Functional } from 'core/shares/libs/functional';
 import { GameMode } from 'core/shares/types/room_props';
 import { SkillType } from 'core/skills/skill';
@@ -27,6 +27,7 @@ import feedbackImage from './images/system/feedback.png';
 import gameLogBoardImage from './images/system/game_log_board.png';
 import unknownCharacterImage from './images/system/player_seat.png';
 import turnedOverCoverImage from './images/system/turn_over.png';
+import { SkinLoader } from './skins';
 
 import illustraion1 from './images/lobby/illustration1.png';
 import illustraion2 from './images/lobby/illustration2.png';
@@ -55,6 +56,8 @@ const lobbyIllustrations = [
 ];
 
 export class ProdImageLoader implements ImageLoader {
+  private skinLoader: SkinLoader = new SkinLoader();
+
   public async getCardImage(name: string) {
     const image: string = (await import(`./images/cards/${name}.webp`)).default;
     return {
@@ -131,9 +134,8 @@ export class ProdImageLoader implements ImageLoader {
     return { alt: 'Slim Card', src: image };
   }
 
-  public async getCharacterImage(characterName: string) {
-    const image: string = (await import(`./images/characters/${characterName}.png`)).default;
-    return { alt: characterName, src: image };
+  public async getCharacterImage(characterName: string, playerId: PlayerId) {
+    return this.skinLoader.getCharacterSkin(characterName, playerId);
   }
 
   public getGameModeIcon(mode: GameMode) {

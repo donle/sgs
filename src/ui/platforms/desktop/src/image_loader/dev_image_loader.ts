@@ -1,4 +1,5 @@
 import { PlayerRole } from 'core/player/player_props';
+import { PlayerId } from 'core/player/player_props';
 import { Functional } from 'core/shares/libs/functional';
 import { GameMode } from 'core/shares/types/room_props';
 import { SkillType } from 'core/skills/skill';
@@ -25,7 +26,7 @@ export class DevImageLoader implements ImageLoader {
     };
   }
 
-  public async getCharacterImage(characterName: string) {
+  public async getCharacterImage(characterName: string, playerId?: PlayerId) {
     return {
       src: `${remoteRoot}/images/characters/${characterName}.png`,
       alt: characterName,
