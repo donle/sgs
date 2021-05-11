@@ -12,13 +12,13 @@ export function getServerConfig(flavor: Flavor): ServerConfig {
     case Flavor.Dev:
       return {
         mode: Flavor.Dev,
-        port: 2020,
+        port: 8086,
         language: Languages.ZH_CN,
       };
     case Flavor.Prod:
       return {
         mode: Flavor.Prod,
-        port: 2020,
+        port: 8086,
         language: Languages.ZH_CN,
       };
     default:
