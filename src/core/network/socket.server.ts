@@ -157,7 +157,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
           );
         }
 
-        if (room.Players.every(player => !player.isOnline()) || room.Players.length === 0) {
+        if (room.Players.every(player => !player.isOnline() || player.isFake()) || room.Players.length === 0) {
           room.close();
           return;
         }
