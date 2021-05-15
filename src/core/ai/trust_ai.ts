@@ -26,15 +26,6 @@ export class TrustAI extends PlayerAI {
   ) {
     const { toId: fromId } = content as ServerEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent>;
 
-    // setTimeout(() => {
-    //   console.log(`wait 3 sec.`);
-    // }, 3000);
-
-    // room
-    //   .getPlayerById(fromId)
-    //   .getCardIds(PlayerCardsArea.HandArea)
-    //   .map(cardId => console.log(`${Sanguosha.getCardById(cardId).GeneralName}`));
-
     const cardUseEvent = aiUseCard(room, fromId);
     if (cardUseEvent !== undefined) {
       const endEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
@@ -59,8 +50,8 @@ export class TrustAI extends PlayerAI {
     room: Room,
   ) {
     const { invokeSkillNames, toId } = content as ServerEventFinder<GameEventIdentifiers.AskForSkillUseEvent>;
+    console.log(`AskForSkillUseEvent, Ask AI For Use Skill: ${invokeSkillNames}`);
     if (!EventPacker.isUncancellabelEvent(content)) {
-      console.log(`Ask AI For Use Skill: ${invokeSkillNames}`);
       const skillUse: ClientEventFinder<GameEventIdentifiers.AskForSkillUseEvent> = {
         invoke: invokeSkillNames !== undefined && invokeSkillNames[0] !== undefined ? invokeSkillNames[0] : undefined,
         fromId: toId,
@@ -79,7 +70,12 @@ export class TrustAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
-    console.log(`Ask For Card Response cardMatcher is ${content.cardMatcher.name}`);
+    const logs: string =
+      'AskForCardResponseEvent, ask Card' + content.cardMatcher.name + content !== undefined &&
+      content!.byCardId !== undefined
+        ? `for Reponse ${Sanguosha.getCardById(content!.byCardId).Name}`
+        : '';
+    console.log(logs);
 
     const { toId, cardMatcher } = content as ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>;
     if (EventPacker.isUncancellabelEvent(content)) {
@@ -103,7 +99,12 @@ export class TrustAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
-    console.log(`Ask For Card Use cardMatcher is ${content.cardMatcher.name}`);
+    const logs: string =
+      `AskForCardUseEvent, ask Card ${content.cardMatcher.name}` + content !== undefined &&
+      content!.byCardId !== undefined
+        ? `for Reponse ${Sanguosha.getCardById(content!.byCardId).Name}`
+        : '';
+    console.log(logs);
 
     const { toId, cardMatcher } = content as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
     if (EventPacker.isUncancellabelEvent(content)) {
@@ -125,7 +126,6 @@ export class TrustAI extends PlayerAI {
             room.CurrentPhasePlayer.Id !== content.toId)
         )
       ) {
-        console.log('card matcher process');
         const cardIds = room
           .getPlayerById(toId)
           .getCardIds(PlayerCardsArea.HandArea)
@@ -171,7 +171,6 @@ export class TrustAI extends PlayerAI {
       EventPacker.isUncancellabelEvent(content) ||
       (content.triggeredBySkills !== undefined && content.triggeredBySkills[0] === FireAttackSkill.Name)
     ) {
-      // if (true) {
       let cards = fromArea.reduce<CardId[]>((allCards, area) => {
         return [...allCards, ...to.getCardIds(area).filter(cardId => !except?.includes(cardId))];
       }, []);
@@ -195,24 +194,18 @@ export class TrustAI extends PlayerAI {
           const ActCard = Sanguosha.getCardById(card);
           const sameCardNum = holdCardList.cardNames.filter(cardName => cardName === ActCard.Name).length;
 
-          // ActCard CardValue is undefined
           const cardValue =
             ActCard.CardValue.value === undefined ? 0 : ActCard.CardValue.value * ActCard.CardValue.wane ** sameCardNum;
-          console.log(`Card ${ActCard.Name} Value: ${cardValue}`);
 
           if (cardValue > maxValue) {
             [maxValue, maxValueCard] = [cardValue, ActCard];
-            // maxValue = cardValue;
-            // maxValueCard = ActCard;
           }
         }
 
         if (maxValueCard !== undefined) {
-          console.log(`hold card ${maxValueCard.Name}, id is ${maxValueCard.Id}`);
           holdCardList.cardIds.push(maxValueCard.Id);
           holdCardList.cardNames.push(maxValueCard.Name);
           cards = cards.filter(card => card !== maxValueCard.Id);
-          console.log(`cards is ${cards}`);
         }
         i++;
       }
