@@ -69,14 +69,7 @@ export abstract class PlayerAI {
   >(content: ServerEventFinder<T>, room: Room): ClientEventFinder<T>;
 
   onAction(room: Room, e: GameEventIdentifiers, content: ServerEventFinder<typeof e>): ClientEventFinder<typeof e> {
-    console.log(`ask for ${e} event with ai`);
-    if (room.isGameOver()) {
-      console.log('Game Over');
-    }
-
-    if (room.isPlaying()) {
-      console.log('Game Playing');
-    }
+    console.log(`Ai onAction Event: ${e}`);
 
     switch (e) {
       case GameEventIdentifiers.AskForPlayCardsOrSkillsEvent: {
