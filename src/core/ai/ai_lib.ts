@@ -40,8 +40,8 @@ export function aiUseCard(room: Room, aiId: PlayerId) {
           continue;
         }
 
-        const targetNumber: number =
-          cardSkill.numberOfTargets instanceof Array ? cardSkill.numberOfTargets()[0] : cardSkill.numberOfTargets();
+        let targetNumber: number =
+          cardSkill.numberOfTargets() instanceof Array ? cardSkill.numberOfTargets()[0] : cardSkill.numberOfTargets();
         // console.log(`Card target number is ${targetNumber}`);
 
         if (cardSkill.GeneralName === 'tiesuolianhuan') {
