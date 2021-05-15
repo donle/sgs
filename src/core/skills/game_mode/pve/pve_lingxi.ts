@@ -8,8 +8,6 @@ import { CardId } from 'core/cards/libs/card_props';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-// 【灵屃】锁定技，当你受到伤害后，你摸一张牌并将一张牌置于武将牌上，称为【碑】；你的手牌上限+X；摸牌阶段开始时，你额外摸X张牌（X为碑的数目）。
-
 @CompulsorySkill({ name: 'pve_lingxi', description: 'pve_lingxi_description' })
 export class PveLingXi extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
@@ -22,10 +20,6 @@ export class PveLingXi extends TriggerSkill {
 
   async onTrigger() {
     return true;
-  }
-
-  public triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
-    return event.damage;
   }
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {

@@ -5,7 +5,6 @@ import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/st
 import { Room } from 'core/room/room';
 import { Player } from 'core/player/player';
 
-// 【瑞烟】锁定技，结束阶段开始时，你摸三张牌。
 @CompulsorySkill({ name: 'pve_ruiyan', description: 'pve_ruiyan_description' })
 export class PveRuiYan extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
