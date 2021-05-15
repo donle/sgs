@@ -12,7 +12,7 @@ import { MarkEnum } from 'core/shares/types/mark_list';
 @PersistentSkill({ stubbornSkill: true })
 @CompulsorySkill({ name: 'pve_huashen', description: 'pve_huashen_description' })
 export class PveHuaShen extends TriggerSkill {
-  static readonly CHARACTERS = ['pve_chaofeng', 'pve_suanni', 'pve_yazi', 'pve_bian', 'pve_fuxi', 'pve_bixi'];
+  static readonly CHARACTERS = ['pve_suanni', 'pve_bian', 'pve_bixi', 'pve_yazi', 'pve_fuxi', 'pve_chaofeng'];
 
   public isAutoTrigger(): boolean {
     return true;
@@ -45,7 +45,7 @@ export class PveHuaShen extends TriggerSkill {
     return false;
   }
 
-  private async nextCharacter(room: Room, ownerId: PlayerId) {
+  private async nextEntity(room: Room, ownerId: PlayerId) {
     const NewMaxHp = room.getPlayerById(ownerId).MaxHp + 1;
     const chara = PveHuaShen.CHARACTERS[PveHuaShen.CHARACTERS.length - room.getMark(ownerId, MarkEnum.PveHuaShen)];
     room.addMark(ownerId, MarkEnum.PveHuaShen, -1);
@@ -79,10 +79,8 @@ export class PveHuaShen extends TriggerSkill {
 
     await room.changeMaxHp(ownerId, 1);
     await room.recover({ recoveredHp: NewMaxHp - player.Hp, toId: ownerId });
-    await room.drawCards(5, ownerId, 'top', ownerId, this.Name);
-
+    await room.drawCards(room.getMark(ownerId, MarkEnum.PveHuaShen) === 5 ? 0 : 5, ownerId, 'top', ownerId, this.Name);
     player.setHuaShenInfo({ skillName: nextCharacter.Skills[0].GeneralName, characterId: nextCharacter.Id });
-
     await room.obtainSkill(ownerId, nextCharacter.Skills[0].GeneralName, true);
 
     return true;
@@ -101,7 +99,22 @@ export class PveHuaShen extends TriggerSkill {
 
     if (identifier === GameEventIdentifiers.GameStartEvent) {
       room.addMark(event.fromId, MarkEnum.PveHuaShen, PveHuaShen.CHARACTERS.length);
-      await this.nextCharacter(room, event.fromId);
+      await this.nextEntity(room, event.fromId);
+
+      const otherPlayers = room.AlivePlayers.filter(player => player.Id !== event.fromId);
+      for (const player of otherPlayers) {
+        const playerPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
+          changedProperties: [
+            {
+              toId: player.Id,
+              maxHp: player.Character.MaxHp + 1,
+              hp: player.Character.Hp + 1,
+            },
+          ],
+        };
+
+        room.changePlayerProperties(playerPropertiesChangeEvent);
+      }
       return true;
     }
 
@@ -109,7 +122,7 @@ export class PveHuaShen extends TriggerSkill {
       return true;
     }
 
-    const nextCharacter = await this.nextCharacter(room, event.fromId);
+    const nextCharacter = await this.nextEntity(room, event.fromId);
     if (!nextCharacter) {
       return true;
     }

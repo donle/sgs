@@ -281,7 +281,7 @@ export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';
 export { FeiYang } from './game_mode/1v2/feiyang';
 export { PveHuaShen } from './game_mode/pve/pve_huashen';
-export { PveLongLin } from './game_mode/pve/pve_longlin';
+export { PveLongLin, PveLongLinShadow, PveLongLinDraw } from './game_mode/pve/pve_longlin';
 export { PveRuiYan } from './game_mode/pve/pve_ruiyan';
 export { PveLongLie, PveLongLieShadow } from './game_mode/pve/pve_longlie';
 export { PveSuWei } from './game_mode/pve/pve_suwei';
