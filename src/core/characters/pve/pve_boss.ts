@@ -7,7 +7,7 @@ const skillLoaderInstance = SkillLoader.getInstance();
 
 export class PveBoss extends Character {
   constructor(id: number) {
-    super(id, 'pve_boss', CharacterGender.Female, CharacterNationality.God, 4, 4, GameCharacterExtensions.Pve, [
+    super(id, 'pve_boss', CharacterGender.Female, CharacterNationality.God, 3, 3, GameCharacterExtensions.Pve, [
       skillLoaderInstance.getSkillByName(PveHuaShen.Name),
     ]);
   }
