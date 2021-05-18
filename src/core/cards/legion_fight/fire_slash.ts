@@ -12,11 +12,6 @@ export class FireSlash extends Slash {
     this.description = 'fire_slash_description';
     this.fromPackage = GameCardExtensions.LegionFight;
     this.skill = SkillLoader.getInstance().getSkillByName('fire_slash');
-
-    this.CardValue = {
-      value: 55,
-      wane: 0.2,
-    };
   }
 
   public get Skill() {

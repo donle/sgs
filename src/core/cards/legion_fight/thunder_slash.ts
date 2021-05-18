@@ -12,11 +12,6 @@ export class ThunderSlash extends Slash {
     this.description = 'thunder_slash_description';
     this.fromPackage = GameCardExtensions.LegionFight;
     this.skill = SkillLoader.getInstance().getSkillByName('thunder_slash');
-
-    this.CardValue = {
-      value: 55,
-      wane: 0.2,
-    };
   }
 
   public get Skill() {

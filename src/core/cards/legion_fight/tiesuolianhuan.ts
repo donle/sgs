@@ -17,11 +17,6 @@ export class TieSuoLianHuan extends TrickCard {
       GameCardExtensions.LegionFight,
       SkillLoader.getInstance().getSkillByName('tiesuolianhuan'),
     );
-
-    this.CardValue = {
-      value: 35,
-      wane: 0.2,
-    };
   }
 
   get Reforgeable() {

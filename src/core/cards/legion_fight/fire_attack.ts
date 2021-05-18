@@ -17,11 +17,6 @@ export class FireAttack extends TrickCard {
       GameCardExtensions.LegionFight,
       SkillLoader.getInstance().getSkillByName('fire_attack'),
     );
-
-    this.CardValue = {
-      value: 35,
-      wane: 0.2,
-    };
   }
 
   get Skill() {

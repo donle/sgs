@@ -18,11 +18,6 @@ export class Lightning extends TrickCard {
       GameCardExtensions.Standard,
       SkillLoader.getInstance().getSkillByName('lightning'),
     );
-
-    this.CardValue = {
-      value: 5,
-      wane: 0,
-    };
   }
 
   get Skill() {
