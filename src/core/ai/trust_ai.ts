@@ -7,9 +7,10 @@ import { Room } from 'core/room/room';
 import { PlayerAI } from './ai';
 import { Card } from 'core/cards/card';
 import { aiUseCard } from './ai_lib';
-import { FireAttackSkill } from 'core/skills';
+// import { FireAttackSkill } from 'core/skills';
 import { LeBuSiShu } from 'core/cards/standard/lebusishu';
 import { BingLiangCunDuan } from 'core/cards/legion_fight/bingliangcunduan';
+import { getCardValueofCard } from './ai_standard';
 
 export class TrustAI extends PlayerAI {
   public static get Instance() {
@@ -71,10 +72,10 @@ export class TrustAI extends PlayerAI {
     room: Room,
   ) {
     const logs: string =
-      'AskForCardResponseEvent, ask Card' + content.cardMatcher.name + content !== undefined &&
-      content!.byCardId !== undefined
+      `AskForCardResponseEvent, ask Card ${content.cardMatcher.name} ` +
+      (content !== undefined && content!.byCardId !== undefined
         ? `for Reponse ${Sanguosha.getCardById(content!.byCardId).Name}`
-        : '';
+        : '');
     console.log(logs);
 
     const { toId, cardMatcher } = content as ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>;
@@ -100,10 +101,10 @@ export class TrustAI extends PlayerAI {
     room: Room,
   ) {
     const logs: string =
-      `AskForCardUseEvent, ask Card ${content.cardMatcher.name}` + content !== undefined &&
-      content!.byCardId !== undefined
+      `AskForCardUseEvent, ask Card ${content.cardMatcher.name} ` +
+      (content !== undefined && content!.byCardId !== undefined
         ? `for Reponse ${Sanguosha.getCardById(content!.byCardId).Name}`
-        : '';
+        : '');
     console.log(logs);
 
     const { toId, cardMatcher } = content as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
@@ -133,9 +134,7 @@ export class TrustAI extends PlayerAI {
 
         if (cardIds.length > 0) {
           console.log(`there are cards match this reponse: ${cardIds}`);
-          const responseCardId = cardIds.sort(
-            (a, b) => Sanguosha.getCardById(a).CardValue.value - Sanguosha.getCardById(b).CardValue.value,
-          )[0];
+          const responseCardId = cardIds.sort((a, b) => getCardValueofCard(a).value - getCardValueofCard(b).value)[0];
           cardResponse = {
             cardId: responseCardId,
             fromId: toId,
@@ -154,6 +153,13 @@ export class TrustAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
+    const logs: string =
+      `AskForCardDropEvent, ask ExceptCard: ${content.except}, Amount: ${content.cardAmount} ` +
+      (content !== undefined && content!.triggeredBySkills !== undefined
+        ? `for Reponse ${content!.triggeredBySkills}`
+        : '');
+    console.log(logs);
+
     const {
       toId,
       cardAmount,
@@ -161,7 +167,6 @@ export class TrustAI extends PlayerAI {
       except,
     } = content as ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent>;
     const to = room.getPlayerById(toId);
-
     const cardDrop: ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
       fromId: toId,
       droppedCards: [],
@@ -169,7 +174,8 @@ export class TrustAI extends PlayerAI {
 
     if (
       EventPacker.isUncancellabelEvent(content) ||
-      (content.triggeredBySkills !== undefined && content.triggeredBySkills[0] === FireAttackSkill.Name)
+      content.triggeredBySkills !== undefined
+      // && content.triggeredBySkills[0] === FireAttackSkill.Name
     ) {
       let cards = fromArea.reduce<CardId[]>((allCards, area) => {
         return [...allCards, ...to.getCardIds(area).filter(cardId => !except?.includes(cardId))];
@@ -192,10 +198,11 @@ export class TrustAI extends PlayerAI {
         maxValue = 0;
         for (const card of cards) {
           const ActCard = Sanguosha.getCardById(card);
+          const ActCardValue = getCardValueofCard(card);
           const sameCardNum = holdCardList.cardNames.filter(cardName => cardName === ActCard.Name).length;
 
           const cardValue =
-            ActCard.CardValue.value === undefined ? 0 : ActCard.CardValue.value * ActCard.CardValue.wane ** sameCardNum;
+            ActCardValue.value === undefined ? 0 : ActCardValue.value * ActCardValue.wane ** sameCardNum;
 
           if (cardValue > maxValue) {
             [maxValue, maxValueCard] = [cardValue, ActCard];
@@ -280,24 +287,52 @@ export class TrustAI extends PlayerAI {
 
     return pindianEvent;
   }
+
   protected onAskForChoosingCardEvent<T extends GameEventIdentifiers.AskForChoosingCardEvent>(
     content: ServerEventFinder<T>,
     room: Room,
   ) {
-    const { cardIds, cardMatcher, toId, amount } = content;
-    const chooseCard: ClientEventFinder<T> = {
-      fromId: toId,
-      selectedCardIndex: typeof cardIds === 'number' ? new Array(amount).fill(0).map((n, index) => index) : undefined,
-      selectedCards:
+    console.log(`AskForChoosingCardEvent, ask for choose ${content.amount} card from cardIds or customCardFields`);
+
+    const { cardIds, cardMatcher, toId, amount, customCardFields } = content;
+
+    let selectedCardIndex: number[] | undefined = undefined;
+    let selectedCards: CardId[] | undefined = undefined;
+
+    if (cardIds !== undefined) {
+      console.log(`cardIds is ${cardIds}`);
+      selectedCardIndex = typeof cardIds === 'number' ? new Array(amount).fill(0).map((_, index) => index) : undefined;
+      selectedCards =
         cardIds instanceof Array
           ? cardIds
               .filter(cardId => (cardMatcher ? CardMatcher.match(cardMatcher, Sanguosha.getCardById(cardId)) : cardId))
               .slice(0, amount)
-          : undefined,
+          : undefined;
+    } else if (customCardFields !== undefined) {
+      console.log(`customCardFields is ${Object.entries(customCardFields)}`);
+      let avaliableCards: CardId[] | undefined = [];
+      for (const cards of Object.values(customCardFields)) {
+        if (cards instanceof Array) {
+          avaliableCards = avaliableCards.concat([...cards]);
+        }
+      }
+
+      selectedCards = avaliableCards
+        .filter(cardId => (cardMatcher ? CardMatcher.match(cardMatcher, Sanguosha.getCardById(cardId)) : cardId))
+        .slice(0, amount);
+    }
+
+    const chooseCard: ClientEventFinder<T> = {
+      fromId: toId,
+      selectedCardIndex,
+      selectedCards,
     };
+
+    console.log(`Reponse AskForChoosingCardEvent: ${Object.entries(chooseCard)}`);
 
     return chooseCard;
   }
+
   protected onAskForChoosingPlayerEvent<T extends GameEventIdentifiers.AskForChoosingPlayerEvent>(
     content: ServerEventFinder<T>,
     room: Room,

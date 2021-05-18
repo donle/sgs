@@ -7,12 +7,26 @@ import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
 import { getCardValueofCard } from './ai_standard';
 // import { RealCardId, CardId, CardValue } from 'core/cards/libs/card_props';
 import { ActiveSkill } from 'core/skills/skill';
+import { EquipCard } from 'core/cards/equip_card';
+import { CardValue, CardId } from 'core/cards/libs/card_props';
+
+export function getCardValueofPlayer(room: Room, aiId: PlayerId, cardId: CardId): CardValue {
+  let cardValue: CardValue = getCardValueofCard(cardId);
+  const targetCard = Sanguosha.getCardById(cardId);
+  if (targetCard.BaseType === CardType.Equip) {
+    cardValue.priority =
+      room.getPlayerById(aiId).getEquipment((targetCard as EquipCard).EquipType) === undefined
+        ? cardValue.priority
+        : Math.max(0, cardValue.priority - 60);
+  }
+  return cardValue;
+}
 
 export function aiUseCard(room: Room, aiId: PlayerId) {
   const handCards = room
     .getPlayerById(aiId)
     .getCardIds(PlayerCardsArea.HandArea)
-    .sort((a, b) => getCardValueofCard(b).priority! - getCardValueofCard(a).priority!);
+    .sort((a, b) => getCardValueofPlayer(room, aiId, b).priority! - getCardValueofPlayer(room, aiId, a).priority!);
 
   if (handCards.length > 0) {
     // console.log('Ai handle hand cards');

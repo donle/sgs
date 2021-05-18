@@ -18,11 +18,6 @@ export class Alcohol extends BasicCard {
       GameCardExtensions.LegionFight,
       SkillLoader.getInstance().getSkillByName('alcohol'),
     );
-
-    this.CardValue = {
-      value: 50,
-      wane: 0.5,
-    };
   }
 
   public get Skill() {

@@ -18,11 +18,6 @@ export class WuGuFengDeng extends TrickCard {
       GameCardExtensions.Standard,
       SkillLoader.getInstance().getSkillByName('wugufengdeng'),
     );
-
-    this.CardValue = {
-      value: 25,
-      wane: 0.2,
-    };
   }
 
   public get Skill() {

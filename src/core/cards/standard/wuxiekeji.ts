@@ -19,11 +19,6 @@ export class WuXieKeJi extends TrickCard {
       GameCardExtensions.Standard,
       SkillLoader.getInstance().getSkillByName('wuxiekeji'),
     );
-
-    this.CardValue = {
-      value: 55,
-      wane: 0.2,
-    };
   }
 
   get Skill() {

@@ -52,5 +52,5 @@ export const enum CardTargetEnum {
 export type CardValue = {
   value: number;
   wane: number;
-  priority?: number;
+  priority: number;
 };
