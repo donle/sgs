@@ -78,7 +78,6 @@ export abstract class Character {
   public get Name() {
     return this.name;
   }
-
   public get Package() {
     return this.fromPackage;
   }

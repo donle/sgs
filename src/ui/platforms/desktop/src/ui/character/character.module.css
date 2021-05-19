@@ -24,6 +24,15 @@
     z-index: -2;
 }
 
+.characterImage.left {
+    left: calc(gridLine * -12.5);
+    transform: scale(0.9);
+}
+.characterImage.right {
+    left: calc(gridLine * 12.5);
+    transform: scale(0.9);
+}
+
 .characterHp {
     bottom: 0px;
     right: 0;
@@ -50,4 +59,7 @@
 .characterHp {
     position: absolute;
     z-index: 2;
+}
+.characterCard.characterSkinArea {
+    width: calc(gridLine * 45);
 }

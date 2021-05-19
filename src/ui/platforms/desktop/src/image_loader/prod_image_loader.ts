@@ -137,6 +137,9 @@ export class ProdImageLoader implements ImageLoader {
   public async getCharacterImage(characterName: string, playerId: PlayerId) {
     return this.skinLoader.getCharacterSkin(characterName, playerId);
   }
+  public async getCharacterSkinPlay(characterName: string, skinName?: string) {
+    return this.skinLoader.getCharacterSkinPlay(characterName, skinName);
+  }
 
   public getGameModeIcon(mode: GameMode) {
     return { src: gameModeIcons[mode], alt: '' };

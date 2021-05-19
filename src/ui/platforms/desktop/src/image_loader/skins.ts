@@ -24,8 +24,29 @@ export class SkinLoader implements SkinImage {
 
     for (const characterSkinInfo of gameSkinInfo) {
       this.skinCharacterList.push(characterSkinInfo.characterName);
-      console.log(this.skinCharacterList);
     }
+  }
+
+  public async getCharacterSkinPlay(characterName: string, skinName?: string) {
+    let image: string;
+
+    if (this.skinCharacterList.includes(characterName)) {
+      const index: number = this.skinCharacterList.indexOf(characterName);
+      const characterSkinInfo = gameSkinInfo[index];
+
+      for (const i of characterSkinInfo.skinInfo) {
+        if (i.skinName === skinName) {
+          image = (await import(`./images/skins/${i.skinLocation}`)).default;
+          return { alt: characterName, src: image };
+        }
+      }
+    }
+    if (skinName === characterName) {
+      image = (await import(`./images/characters/${characterName}.png`)).default;
+      return { alt: characterName, src: image };
+    }
+    image = (await import(`./images/characters/${characterName}.png`)).default;
+    return { alt: characterName, src: 'image' };
   }
 
   public async getCharacterSkin(characterName: string, playerId?: PlayerId) {
