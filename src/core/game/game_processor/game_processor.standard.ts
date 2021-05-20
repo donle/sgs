@@ -2005,12 +2005,12 @@ export class StandardGameProcessor extends GameProcessor {
         EventPacker.terminate(event);
         return;
       }
-
+      event.recoveredHp = Math.min(event.recoveredHp, to.MaxHp - to.Hp)
       if (stage === RecoverEffectStage.RecoverEffecting) {
         const hpChangeEvent: ServerEventFinder<GameEventIdentifiers.HpChangeEvent> = {
           fromId: event.recoverBy,
           toId: to.Id,
-          amount: event.recoveredHp,
+          amount:  event.recoveredHp,
           byReaon: 'recover',
           byCardIds: event.cardIds,
         };

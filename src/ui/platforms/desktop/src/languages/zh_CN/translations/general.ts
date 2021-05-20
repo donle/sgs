@@ -352,6 +352,7 @@ export const eventDictionary: Word[] = [
   { source: '{0} place card {1} from {2} into equip area of {3}', target: '{0} 将 {2} 的 {1} 置于了 {3} 的装备区' },
   { source: 'recover {0} hp for {1}', target: '是否回复 {1} {0} 点体力' },
   { source: '{0} used skill {1}, damage increases to {2}', target: '{0} 使用了技能 【{1}】，伤害增加至 {2} 点' },
+  { source: '{0} used skill {1}, damage change to {2}', target: '{0} 使用了技能 【{1}】，转换为回复 {2} 点体力' },
   { source: '{0} triggered skill {1}, damage reduces to {2}', target: '{0} 触发了技能 【{1}】，伤害减少至 {2} 点' },
   { source: '{0} used skill {1} to you, please present a hand card', target: '{0} 使用了技能 【{1}】，请展示一张手牌' },
   { source: '{0} used {1} to you, please present a hand card', target: '{0} 对你使用了 {1}，请展示一张手牌' },

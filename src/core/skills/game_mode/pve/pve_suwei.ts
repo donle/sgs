@@ -1,12 +1,14 @@
-import { CompulsorySkill } from 'core/skills/skill_wrappers';
-import { TriggerSkill } from 'core/skills/skill';
+import { CardType } from 'core/cards/card';
+import {  CardMoveReason, GameEventIdentifiers,  ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { AimStage, AllStage } from 'core/game/stage_processor';
-import { ServerEventFinder, GameEventIdentifiers, EventPacker, CardMoveReason } from 'core/event/event';
 import { Player } from 'core/player/player';
-import { Room } from 'core/room/room';
 import { PlayerCardsArea } from 'core/player/player_props';
+import { Room } from 'core/room/room';
+import { TriggerSkill } from 'core/skills/skill';
+import { CompulsorySkill } from 'core/skills/skill_wrappers';
 
-// 【肃威】锁定技，当你成为一名其它角色使用牌的目标后，你弃置其一张牌。
+// 难1 【肃威】锁定技，当你成为其它角色锦囊牌的目标后，你弃置其装备区内全部牌。
 @CompulsorySkill({ name: 'pve_suwei', description: 'pve_suwei_description' })
 export class PveSuWei extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage) {
@@ -16,8 +18,8 @@ export class PveSuWei extends TriggerSkill {
   canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
     return (
       event.toId === owner.Id &&
-      event.fromId !== owner.Id &&
-      room.getPlayerById(event.fromId).getPlayerCards().length > 0
+      event.fromId !== owner.Id && Sanguosha.getCardById(event.byCardId!).is(CardType.Trick) &&
+      room.getPlayerById(event.fromId).getCardIds(PlayerCardsArea.EquipArea).length > 0
     );
   }
 
@@ -27,40 +29,8 @@ export class PveSuWei extends TriggerSkill {
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     const { fromId, toId } = skillUseEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
-    const owner = room.getPlayerById(fromId);
-    const askForChooseCardEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent> = {
-      options: {
-        [PlayerCardsArea.HandArea]: owner.getCardIds(PlayerCardsArea.HandArea).length,
-        [PlayerCardsArea.EquipArea]: owner.getCardIds(PlayerCardsArea.EquipArea),
-      },
-      fromId: toId,
-      toId: fromId,
-    };
-
-    room.notify(
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(
-        askForChooseCardEvent,
-      ),
-      toId,
-    );
-
-    const response = await room.onReceivingAsyncResponseFrom(
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-      toId,
-    );
-
-    if (response.selectedCardIndex !== undefined) {
-      const cardIds = owner.getCardIds(PlayerCardsArea.HandArea);
-      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
-    } else if (response.selectedCard === undefined) {
-      const cardIds = owner.getPlayerCards();
-      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
-    }
-    if (response.selectedCard !== undefined) {
-      await room.dropCards(CardMoveReason.PassiveDrop, [response.selectedCard], fromId, toId, this.Name);
-    }
-
+    const owner = room.getPlayerById(fromId); 
+    await room.dropCards(CardMoveReason.PassiveDrop,owner.getCardIds(PlayerCardsArea.EquipArea) , fromId, toId, this.Name); 
     return true;
   }
 }

@@ -1,13 +1,13 @@
-import { CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
-import { TriggerSkill } from 'core/skills/skill';
-import { ServerEventFinder, GameEventIdentifiers, EventPacker } from 'core/event/event';
-import { AllStage, AimStage, DamageEffectStage } from 'core/game/stage_processor';
+import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
+import { AimStage, AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
+import { TriggerSkill } from 'core/skills/skill';
+import { CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-// 【龙烈】锁定技，你使用的【杀】指定目标后，你令此【杀】不能被【闪】响应，且此【杀】伤害加一。
+// 难1 【龙烈】锁定技，你使用的【杀】指定目标后，此【杀】不能被响应，且此【杀】伤害+1。
 @CompulsorySkill({ name: 'pve_longlie', description: 'pve_longlie_description' })
 export class PveLongLie extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage) {

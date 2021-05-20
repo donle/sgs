@@ -1,14 +1,17 @@
-import { CompulsorySkill, ShadowSkill, CommonSkill } from 'core/skills/skill_wrappers';
-import { TriggerSkill, RulesBreakerSkill } from 'core/skills/skill';
-import { GameEventIdentifiers, ServerEventFinder, EventPacker, CardMoveReason, CardDrawReason } from 'core/event/event';
-import { AllStage, DamageEffectStage, PlayerPhase, DrawCardStage } from 'core/game/stage_processor';
-import { Room } from 'core/room/room';
-import { Player } from 'core/player/player';
+import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
+import { CardDrawReason, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
+import { DamageType } from 'core/game/game_props';
+import { AllStage, DamageEffectStage, DrawCardStage, PlayerPhase } from 'core/game/stage_processor';
+import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
+import { Room } from 'core/room/room';
+import { RulesBreakerSkill, TriggerSkill } from 'core/skills/skill';
+import { CommonSkill, CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-// 【灵屃】锁定技，当你受到伤害后，你摸一张牌并将一张牌置于武将牌上，称为【碑】；你的手牌上限+X；摸牌阶段开始时，你额外摸X张牌（X为碑的数目）。
+// 难3【灵屃】锁定技，当你受到一点普通伤害后，你摸两张牌并将一张牌置于武将牌上，称为【碑】；摸牌阶段开始时，你额外摸2X张牌且【杀】次数+X（X为碑的数目）。
 
 @CompulsorySkill({ name: 'pve_lingxi', description: 'pve_lingxi_description' })
 export class PveLingXi extends TriggerSkill {
@@ -17,7 +20,7 @@ export class PveLingXi extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
-    return event.toId === owner.Id;
+    return event.toId === owner.Id && event.damageType === DamageType.Normal;
   }
 
   async onTrigger() {
@@ -30,7 +33,7 @@ export class PveLingXi extends TriggerSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const owner = room.getPlayerById(event.fromId);
-    await room.drawCards(1, owner.Id, 'top', owner.Id, this.Name);
+    await room.drawCards(2, owner.Id, 'top', owner.Id, this.Name);
 
     if (owner.getPlayerCards().length > 0) {
       const skillUseEvent = {
@@ -121,9 +124,9 @@ export class PveLingXiDraw extends TriggerSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const drawCardEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DrawCardEvent>;
-    drawCardEvent.drawAmount += room
+    drawCardEvent.drawAmount += 2*(room
       .getPlayerById(event.fromId)
-      .getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName).length;
+      .getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName).length);
     return true;
   }
 }
@@ -131,7 +134,11 @@ export class PveLingXiDraw extends TriggerSkill {
 @ShadowSkill
 @CompulsorySkill({ name: PveLingXiDraw.Name, description: PveLingXiDraw.Description })
 export class PveLingXiBuff extends RulesBreakerSkill {
-  breakAdditionalCardHoldNumber(room: Room, owner: Player) {
-    return owner.getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName).length;
+  public breakCardUsableTimes(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
+    if (cardId instanceof CardMatcher) {
+      return cardId.match(new CardMatcher({ generalName: ['slash'] })) ? owner.getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName).length : 0;
+    } else {
+      return Sanguosha.getCardById(cardId).GeneralName === 'slash' ? owner.getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName).length : 0;
+    }
   }
 }

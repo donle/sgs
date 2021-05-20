@@ -170,7 +170,6 @@ export const CreateRoomDialog = (props: {
                 value={numberOfPlayers}
                 onChange={onNumberOfPlayersChange}
                 disabled={playerSelectionDisabled}
-                switch={playerSelectionSwitch ? 'pve' : ''}
               >
                 {getPlayerOptions().map(option => (
                   <option value={option.value}>{props.translator.tr(option.content)}</option>

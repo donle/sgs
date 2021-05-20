@@ -1,15 +1,15 @@
-import { SkillLoader } from 'core/game/package_loader/loader.skills';
-import { Character, CharacterGender, CharacterNationality } from '../character';
 import { GameCharacterExtensions } from 'core/game/game_props';
-import { PveLongLin } from 'core/skills/game_mode/pve/pve_longlin';
+import { SkillLoader } from 'core/game/package_loader/loader.skills';
 import { PveHuaShen } from 'core/skills';
+import { PveJieNu } from 'core/skills/game_mode/pve/pve_jienu';
+import { Character, CharacterGender, CharacterNationality } from '../character';
 
 const skillLoaderInstance = SkillLoader.getInstance();
 
 export class PveChaoFeng extends Character {
   constructor(id: number) {
     super(id, 'pve_chaofeng', CharacterGender.Female, CharacterNationality.God, 4, 4, GameCharacterExtensions.Pve, [
-      skillLoaderInstance.getSkillByName(PveLongLin.Name),
+      skillLoaderInstance.getSkillByName(PveJieNu.Name),
       skillLoaderInstance.getSkillByName(PveHuaShen.Name),
     ]);
   }
