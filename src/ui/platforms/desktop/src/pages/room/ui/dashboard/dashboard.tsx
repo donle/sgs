@@ -202,6 +202,7 @@ export class Dashboard extends React.Component<DashboardProps> {
             imageLoader={this.props.imageLoader}
             translator={this.props.translator}
             card={card}
+            key={card.Id}
             onClick={this.onClickEquipment(card)}
             disabled={!this.props.cardSkillEnableMatcher || !this.props.cardSkillEnableMatcher(card)}
             highlight={this.props.store.highlightedCards}
@@ -241,7 +242,7 @@ export class Dashboard extends React.Component<DashboardProps> {
       return (
         <ClientCard
           imageLoader={this.props.imageLoader}
-          key={index}
+          key={cardInfo.card.Id}
           width={this.handCardWidth}
           offsetLeft={leftOffset}
           translator={this.props.translator}
