@@ -312,7 +312,7 @@ export abstract class BaseAction {
           );
         } else if (card.Skill instanceof ActiveSkill) {
           let canSelfUse = true;
-          
+
           if (card.Skill.isSelfTargetSkill()) {
             canSelfUse = player.canUseCardTo(this.store.room, card.Id, player.Id);
           }
@@ -603,6 +603,12 @@ export abstract class BaseAction {
   protected onClickCard(card: Card, selected: boolean, matcher?: CardMatcher): void {
     if (selected) {
       this.presenter.selectCard(card);
+      const target = this.store.room.getAlivePlayersFrom().filter(player => this.isPlayerEnabled(player));
+      if (target.length === 1) {
+        this.presenter.selectPlayer(this.store.room.getPlayerById(target[0].Id));
+        this.selectedTargets.push(target[0].Id);
+        this.callToActionCheck();
+      }
     } else {
       this.presenter.unselectCard(card);
       for (const target of this.selectedTargets) {
