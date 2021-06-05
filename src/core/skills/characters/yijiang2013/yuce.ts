@@ -83,7 +83,7 @@ export class YuCe extends TriggerSkill {
           damageFromId,
         );
 
-        if (selectedCards !== undefined) {
+        if (selectedCards !== undefined && !selectedCards) {
           await room.dropCards(CardMoveReason.SelfDrop, selectedCards, damageFromId, damageFromId, this.Name);
         } else {
           await room.recover({
