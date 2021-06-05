@@ -797,7 +797,7 @@ export class StandardGameProcessor extends GameProcessor {
           triggeredOnEvent: event,
         };
 
-        console.log(`ask for ${toId} to response`);
+        console.log(`Ask for ${toId} to Handle`);
 
         const response = await this.room.askForCardUse(askForUseCardEvent, toId);
         console.log(`${toId} response card is ${response.cardId}`);
@@ -1783,10 +1783,10 @@ export class StandardGameProcessor extends GameProcessor {
             to.equip(card);
           }
         } else if (toArea === CardMoveArea.OutsideArea) {
-          to.getCardIds((toArea as unknown) as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
+          to.getCardIds(toArea as unknown as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
         } else if (toArea === CardMoveArea.HandArea) {
           this.room.transformCard(to, actualCardIds, PlayerCardsArea.HandArea);
-          to.getCardIds((toArea as unknown) as PlayerCardsArea).push(...actualCardIds);
+          to.getCardIds(toArea as unknown as PlayerCardsArea).push(...actualCardIds);
         } else {
           const transformedDelayedTricks = cardIds.map(cardId => {
             if (!Card.isVirtualCardId(cardId)) {
@@ -1807,7 +1807,7 @@ export class StandardGameProcessor extends GameProcessor {
 
             return cardId;
           });
-          to.getCardIds((toArea as unknown) as PlayerCardsArea).push(...transformedDelayedTricks);
+          to.getCardIds(toArea as unknown as PlayerCardsArea).push(...transformedDelayedTricks);
         }
       }
     }

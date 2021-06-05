@@ -455,7 +455,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
 
     this.hookedSkills = this.hookedSkills.filter(({ skill, player }) => {
-      const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+      const hookedSkill = skill as unknown as OnDefineReleaseTiming;
       if (hookedSkill.afterLosingSkill && hookedSkill.afterLosingSkill(this, player.Id)) {
         return false;
       }

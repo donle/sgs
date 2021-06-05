@@ -194,7 +194,7 @@ type PlayCardOrSkillEvent =
       end: false | undefined;
     } & PlayerCardOrSkillInnerEvent);
 
-type PlayerCardOrSkillInnerEvent =
+export type PlayerCardOrSkillInnerEvent =
   | {
       eventName: GameEventIdentifiers.CardUseEvent;
       event: ClientEvent[GameEventIdentifiers.CardUseEvent];
