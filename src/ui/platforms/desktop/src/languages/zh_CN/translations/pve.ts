@@ -31,7 +31,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'pve_ruiyan_description',
-    target: '<b>锁定技</b>，结束阶段开始时，你摸三张牌。',
+    target: '<b>锁定技</b>，准备阶段或结束阶段开始时，你摸X张牌（X为其它角色数）。',
   },
   {
     source: 'pve_suwei_description',
