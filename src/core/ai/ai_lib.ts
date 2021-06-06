@@ -165,15 +165,17 @@ export function askAiChooseCardFromPlayer<T extends GameEventIdentifiers.AskForC
     console.log(`ChooseCard from Player EquipArea`);
     const cardIds = options[PlayerCardsArea.EquipArea];
     if (cardIds instanceof Array && cardIds.length > 0) {
-      for (const equipType of equipTypePriority) {
-        const targetCardId = cardIds.filter(cardId => Sanguosha.getCardById(cardId).is(equipType));
-        if (targetCardId.length > 0) {
-          selectedCard = targetCardId[0];
-          break;
-        }
-      }
+      console.log(`Choose EquipArea Card from ${cardIds}`);
+
+      selectedCard = cardIds.find(cardId =>
+        Sanguosha.getCardById(cardId).is(
+          equipTypePriority.find(equipType => cardIds.filter(c => Sanguosha.getCardById(c).is(equipType)).length > 0)!,
+        ),
+      );
     }
-  } else {
+  }
+
+  if (selectedCard === undefined) {
     fromArea = (Object.keys(options) as unknown as [PlayerCardsArea]).find(
       area => room.getPlayerById(toId).getCardIds(area).length > 0,
     );
@@ -184,6 +186,8 @@ export function askAiChooseCardFromPlayer<T extends GameEventIdentifiers.AskForC
     }
 
     const cards = options[fromArea]!;
+
+    console.log(`Cards is :${cards}`);
     selectedCard = cards instanceof Array ? cards[0] : undefined;
     selectedCardIndex = typeof cards === 'number' ? 0 : undefined;
   }
