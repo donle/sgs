@@ -84,8 +84,8 @@ export function aiUseCard(room: Room, aiId: PlayerId): PlayerCardOrSkillInnerEve
           } else {
             targetPlayer = approvedTargetPlayerIds.slice(-targetNumber);
           }
-        } else if (!cardSkill.canUse(room, room.getPlayerById(aiId))) {
-          // handle no target card such as lightning
+        } else if (!cardSkill.canUse(room, room.getPlayerById(aiId), cardId)) {
+          // handle lightning
           continue;
         }
 
@@ -221,7 +221,8 @@ export function sortCardbyValue(cards: CardId[]): CardId[] {
   }, []);
 
   cardIds.map(cardsValue => {
-    console.log(`card: ${Sanguosha.getCardById(cardsValue.cardId)}, value: ${cardsValue.value}`);
+    console.log(`card: ${Sanguosha.getCardById(cardsValue.cardId).Name}, value: ${cardsValue.value}`);
+    return [];
   });
 
   const result = cardIds.map(cardsValue => cardsValue.cardId);
