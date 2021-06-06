@@ -12,7 +12,11 @@ export class PveRuiYan extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    return owner.Id === content.playerId && PlayerPhaseStages.FinishStageStart === content.toStage;
+    return (
+      owner.Id === content.playerId &&
+      (content.toStage === PlayerPhaseStages.FinishStageStart ||
+        content.toStage === PlayerPhaseStages.PrepareStageStart)
+    );
   }
 
   async onTrigger() {
@@ -20,7 +24,13 @@ export class PveRuiYan extends TriggerSkill {
   }
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    await room.drawCards(3, skillUseEvent.fromId, 'top', skillUseEvent.fromId, this.Name);
+    await room.drawCards(
+      room.getAlivePlayersFrom().length - 1,
+      skillUseEvent.fromId,
+      'top',
+      skillUseEvent.fromId,
+      this.Name,
+    );
 
     return true;
   }
