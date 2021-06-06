@@ -131,7 +131,7 @@ export class PveHuaShen extends TriggerSkill {
 
     for (const player of otherPlayers) {
       await room.recover({ recoverBy: event.fromId, recoveredHp: 1, toId: player.Id });
-      await room.drawCards(1, player.Id, 'top');
+      await room.drawCards(3, player.Id, 'top');
 
       const pveHuashenCharacters = room.getRandomCharactersFromLoadedPackage(3);
       const askForChoosingCharacterEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingCharacterEvent> = {
