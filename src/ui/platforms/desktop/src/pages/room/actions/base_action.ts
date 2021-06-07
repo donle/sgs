@@ -601,20 +601,30 @@ export abstract class BaseAction {
   public abstract async onPlay(...args: any): Promise<void>;
 
   protected onClickCard(card: Card, selected: boolean, matcher?: CardMatcher): void {
+    const target = this.store.room.getAlivePlayersFrom().filter(player => this.isPlayerEnabled(player));
     if (selected) {
       this.presenter.selectCard(card);
-      const target = this.store.room.getAlivePlayersFrom().filter(player => this.isPlayerEnabled(player));
       if (target.length === 1) {
-        this.presenter.selectPlayer(this.store.room.getPlayerById(target[0].Id));
-        this.selectedTargets.push(target[0].Id);
+        if (!this.selectedTargets.includes(target[0].Id)) {
+          this.selectedTargets.push(target[0].Id);
+          this.presenter.selectPlayer(this.store.room.getPlayerById(target[0].Id));
+        }
         this.callToActionCheck();
       }
     } else {
       this.presenter.unselectCard(card);
-      for (const target of this.selectedTargets) {
-        this.presenter.unselectPlayer(this.store.room.getPlayerById(target));
+      if (this.selectedCards.length > 0 && target.length === 1) {
+        if (!this.selectedTargets.includes(target[0].Id)) {
+          this.selectedTargets.push(target[0].Id);
+          this.presenter.selectPlayer(this.store.room.getPlayerById(target[0].Id));
+        }
+        this.callToActionCheck();
+      } else {
+        for (const player of target) {
+          this.presenter.unselectPlayer(this.store.room.getPlayerById(player.Id));
+        }
+        this.scopedTargets?.length !== 1 && (this.selectedTargets = []);
       }
-      this.scopedTargets?.length !== 1 && (this.selectedTargets = []);
     }
 
     if (this.selectedSkillToPlay !== undefined) {
