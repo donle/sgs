@@ -151,8 +151,8 @@ export function askAiChooseCardFromPlayer<T extends GameEventIdentifiers.AskForC
   const equipTypePriority = [
     CardType.DefenseRide,
     CardType.Armor,
-    CardType.Weapon,
     CardType.OffenseRide,
+    CardType.Weapon,
     CardType.Precious,
   ];
 
