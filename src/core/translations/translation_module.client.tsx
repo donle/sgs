@@ -3,6 +3,7 @@ import { Player } from 'core/player/player';
 import * as React from 'react';
 import { Languages, TranslationPack, TranslationsDictionary } from './translation_json_tool';
 import { TranslationModule } from './translation_module';
+import { Algorithm } from 'core/shares/libs/algorithm/index';
 
 export type TranslatedCardObject = {
   cardSuit: CardSuit;
@@ -173,11 +174,11 @@ export class ClientTranslationModule extends TranslationModule {
     const textCombinations: JSX.Element[] = dispatchedObject.params.map(param => {
       if (typeof param === 'string' && dictionary) {
         if (TranslationPack.isCardObjectText(param)) {
-          return this.translatePatchedCardText(param, dictionary);
+          return <span key={Algorithm.generateUUID()}>{this.translatePatchedCardText(param, dictionary)}</span>;
         } else if (TranslationPack.isPlayerObjectText(param)) {
-          return this.translatePatchedPlayerText(param, dictionary);
+          return <span key={Algorithm.generateUUID()}>{this.translatePatchedPlayerText(param, dictionary)}</span>;
         } else if (TranslationPack.isPureTextParameter(param)) {
-          return this.disPatchedPureText(param);
+          return <span key={Algorithm.generateUUID()}>{this.disPatchedPureText(param)}</span>;
         }
       }
 
@@ -195,6 +196,7 @@ export class ClientTranslationModule extends TranslationModule {
 
       return (
         <span
+          key={Algorithm.generateUUID()}
           style={{
             ...this.boldTextStyle,
             ...this.commonTextStyle,

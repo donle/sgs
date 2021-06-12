@@ -109,6 +109,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
         <div className={styles.playerSkills}>
           {skills.map((skill, index) => (
             <SkillButton
+              key={index}
               imageLoader={imageLoader}
               translator={translator}
               skill={skill}
@@ -239,8 +240,8 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
       presenter.ClientPlayer?.CharacterId !== undefined
         ? presenter.ClientPlayer.getPlayerSkills().filter(skill => !skill.isShadowSkill())
         : [];
-    return skills.map(skill => (
-      <div className={styles.skillInfo}>
+    return skills.map((skill, index) => (
+      <div className={styles.skillInfo} key={index}>
         <div className={styles.skillItem}>
           <span className={styles.skillName}>{translator.trx(skill.Name)}</span>
           <span dangerouslySetInnerHTML={{ __html: translator.tr(skill.Description) }} />

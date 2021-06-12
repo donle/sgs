@@ -109,6 +109,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
         {equips.map(equip => (
           <FlatClientCard
             card={equip}
+            key={equip.Id}
             imageLoader={imageLoader}
             translator={translator}
             className={classNames(styles.playerEquip, {
@@ -131,6 +132,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
           <DelayedTrickIcon
             imageLoader={this.props.imageLoader}
             card={Sanguosha.getCardById(cardId)}
+            key={cardId}
             translator={this.props.translator}
           />
         ))}
@@ -212,8 +214,8 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     const { player, translator } = this.props;
     const skills =
       player?.CharacterId !== undefined ? player.getPlayerSkills().filter(skill => !skill.isShadowSkill()) : [];
-    return skills.map(skill => (
-      <div className={styles.skillInfo}>
+    return skills.map((skill, index) => (
+      <div className={styles.skillInfo} key={index}>
         <div className={styles.skillItem}>
           <span className={styles.skillName}>{translator.trx(skill.Name)}</span>
           <span dangerouslySetInnerHTML={{ __html: translator.tr(skill.Description) }} />

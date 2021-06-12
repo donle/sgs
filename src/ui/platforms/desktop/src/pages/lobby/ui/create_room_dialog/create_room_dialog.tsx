@@ -99,8 +99,8 @@ export const CreateRoomDialog = (props: {
   const getPlayerOptions = () => {
     const options: { content: string | PatchedTranslationObject; value: number }[] = [];
     if (playerSelectionSwitch) {
-      options.push({ content: TranslationPack.translationJsonPatcher('单刀赴会', 2).extract(), value: 2 });
-      options.push({ content: TranslationPack.translationJsonPatcher('同舟共济', 3).extract(), value: 3 });
+      options.push({ content: TranslationPack.translationJsonPatcher('one player').extract(), value: 2 });
+      options.push({ content: TranslationPack.translationJsonPatcher('two players').extract(), value: 3 });
     } else {
       for (let i = 2; i <= 8; i++) {
         options.push({ content: TranslationPack.translationJsonPatcher('{0} players', i).extract(), value: i });
@@ -172,7 +172,9 @@ export const CreateRoomDialog = (props: {
                 disabled={playerSelectionDisabled}
               >
                 {getPlayerOptions().map(option => (
-                  <option value={option.value}>{props.translator.tr(option.content)}</option>
+                  <option key={option.value} value={option.value}>
+                    {props.translator.tr(option.content)}
+                  </option>
                 ))}
               </select>
             </div>
