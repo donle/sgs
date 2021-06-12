@@ -1,6 +1,7 @@
 export type SkinInfo = {
   skinName: string;
   skinLocation: string;
+  voiceInfos: VoiceInfo[];
 };
 
 export type CharacterSkinInfo = {
@@ -8,21 +9,35 @@ export type CharacterSkinInfo = {
   skinInfo: SkinInfo[];
 };
 
+export type VoiceInfo = {
+  voiceName: string;
+  voiceLocations: string[];
+};
+
 export const gameSkinInfo: CharacterSkinInfo[] = [
   {
     characterName: 'diaochan',
     skinInfo: [
-      { skinName: 'huahaoyueyuan', skinLocation: 'diaochan/1.png' },
-      { skinName: 'shenguanzhaoren', skinLocation: 'diaochan/2.png' },
-      { skinName: 'yuanhua', skinLocation: 'diaochan/3.png' },
-    ],
-  },
-  {
-    characterName: 'sunshangxiang',
-    skinInfo: [
-      { skinName: 'yuanhua', skinLocation: 'sunshangxiang/1.png' },
-      { skinName: 'huahaoyueyuan', skinLocation: 'sunshangxiang/2.png' },
-      { skinName: 'xxxx', skinLocation: 'sunshangxiang/3.png' },
+      {
+        skinName: 'huahaoyueyuan',
+        skinLocation: 'diaochan/1.png',
+        voiceInfos: [
+          {
+            voiceName: 'xiaoji',
+            voiceLocations: ['audio_loader/xiaoji1.mp3'],
+          },
+        ],
+      },
+      {
+        skinName: 'shenguanzhaoren',
+        skinLocation: 'diaochan/2.png',
+        voiceInfos: [
+          {
+            voiceName: 'xiaoji',
+            voiceLocations: ['audio_loader/xiaoji1.mp3'],
+          },
+        ],
+      },
     ],
   },
 ];

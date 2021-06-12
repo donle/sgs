@@ -9,7 +9,6 @@ import { NationalityBadge } from '../badge/badge';
 import { CharacterHp } from '../hp/hp';
 import styles from './character.module.css';
 import { gameSkinInfo } from 'image_loader/skin_data';
-import { Precondition } from 'core/shares/libs/precondition/precondition';
 
 export type CharacterSkinCardProps = {
   character: Character;
