@@ -41,7 +41,7 @@ const PlayerInfoTable = (props: {
         <span className={styles.handcards}>{props.translator.tr('handcards')}</span>
       </div>
       {props.players.map(player => (
-        <div className={styles.player}>
+        <div className={styles.player} key={player.Id}>
           <span className={styles.username}>{player.Name}</span>
           <span className={styles.characterName}>{props.translator.tr(player.Character.Name)}</span>
           <span className={styles.role}>

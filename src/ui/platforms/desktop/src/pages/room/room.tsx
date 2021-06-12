@@ -275,6 +275,7 @@ export class RoomPage extends React.Component<
         {this.store.displayedCards.map((displayCard, index) => (
           <ClientCard
             imageLoader={this.props.imageLoader}
+            key={index}
             card={displayCard.card}
             tag={displayCard.tag}
             width={this.cardWidth}
@@ -323,7 +324,6 @@ export class RoomPage extends React.Component<
               host={this.gameHostedServer}
             />
             <div className={styles.mainBoard}>
-              1
               <SeatsLayout
                 imageLoader={this.props.imageLoader}
                 updateFlag={this.store.updateUIFlag}
