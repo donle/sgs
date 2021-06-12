@@ -55,6 +55,7 @@ const PlayerInfoTable = (props: {
                 <Tooltip position={['bottom']} className={styles.tooltip}>
                   {handcards.map(cardId => (
                     <ClientCard
+                      key={cardId}
                       width={80}
                       card={Sanguosha.getCardById(cardId)}
                       translator={props.translator}
