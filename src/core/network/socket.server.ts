@@ -158,6 +158,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         }
 
         if (room.Players.every(player => !player.isOnline() || player.isFake()) || room.Players.length === 0) {
+          this.logger.debug('room close with no player online');
           room.close();
           return;
         }
@@ -165,6 +166,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         if (!room.isPlaying()) {
           room.removePlayer(playerId);
         } else if (this.room?.AwaitingResponseEvent[playerId]) {
+          this.logger.debug('Room is Playing, Await Ai Resp');
           const { identifier: awaitIdentifier, content } = this.room?.AwaitingResponseEvent[playerId]!;
           if (awaitIdentifier === undefined) {
             throw new Error(
@@ -222,7 +224,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         TranslationPack.patchPureTextParameter(content.message),
       ).toString();
       content.ignoreNotifiedStatus = true;
-      this.broadcast(identifier, (content as unknown) as ServerEventFinder<GameEventIdentifiers.UserMessageEvent>);
+      this.broadcast(identifier, content as unknown as ServerEventFinder<GameEventIdentifiers.UserMessageEvent>);
     }
   }
 
@@ -360,6 +362,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     };
 
     if (!toPlayer.isOnline()) {
+      this.logger.debug('Ai Action with Offonline');
       const result = toPlayer.AI.onAction(this.room!, type, content);
       setTimeout(() => {
         const asyncResolver = this.asyncResponseResolver[type] && this.asyncResponseResolver[type][to];

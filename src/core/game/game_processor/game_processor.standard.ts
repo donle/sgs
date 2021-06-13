@@ -473,7 +473,6 @@ export class StandardGameProcessor extends GameProcessor {
         this.currentPhasePlayer.Id,
       );
 
-      this.logger.debug('Receiving Async Resp from Player');
       if (response.end) {
         break;
       }
@@ -500,7 +499,7 @@ export class StandardGameProcessor extends GameProcessor {
         this.toEndPhase = undefined;
         break;
       }
-    } while (true);
+    } while (!this.room.Players.every(player => !player.isOnline()));
   }
   protected async onPlayerDropCardStage(phase: PlayerPhase) {
     this.logger.debug(`${this.currentPhasePlayer.Id} enter drop cards phase`);
