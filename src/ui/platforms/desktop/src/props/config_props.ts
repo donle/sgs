@@ -12,7 +12,7 @@ export const enum ClientFlavor {
 
 export const enum ServerHostTag {
   Localhost = 'localhost',
-  BeiJing = 'beijing',
+  ShenZhen = 'shenzhen',
   NanJing = 'nanjing',
 }
 

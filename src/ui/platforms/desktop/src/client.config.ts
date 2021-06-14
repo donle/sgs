@@ -25,9 +25,9 @@ export const getClientConfig = (mode: ClientFlavor): ClientConfig => {
       host = [
         {
           port: 2020,
-          host: '49.232.190.61',
+          host: '47.106.210.245',
           protocol: 'http',
-          hostTag: ServerHostTag.BeiJing,
+          hostTag: ServerHostTag.ShenZhen,
         },
         {
           port: 2020,
