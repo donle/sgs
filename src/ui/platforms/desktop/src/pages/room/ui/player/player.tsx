@@ -25,6 +25,7 @@ import { Mask } from '../mask/mask';
 import { PlayingBar } from '../playing_bar/playing_bar';
 import { SwitchAvatar } from '../switch_avatar/switch_avatar';
 import styles from './player.module.css';
+import { getSkinName } from '../../ui/switch_avatar/switch_skin';
 
 type PlayerCardProps = {
   player: ClientPlayer | undefined;
@@ -60,6 +61,8 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   focusedOnPlayerHandcard: boolean = false;
   @mobx.observable.ref
   autoHidePlayerName: boolean = true;
+  @mobx.observable.ref
+  skinName: string;
 
   private showPlayerHandcards =
     this.props.store.room.Info.gameMode === GameMode.TwoVersusTwo &&
@@ -226,12 +229,21 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
 
   @mobx.action
   async componentDidUpdate() {
-    if (this.PlayerCharacter) {
-      this.mainImage = (await this.props.imageLoader.getCharacterImage(this.PlayerCharacter.Name, this.props.player?.Id)).src;
+    if (this.PlayerCharacter && this.props.player) {
+      this.skinName = getSkinName(this.props.player.Character.Name, this.props.player?.Id);
+      this.mainImage = (
+        await this.props.imageLoader.getCharacterImage(
+          this.props.player?.Character.Name,
+          this.props.player?.Id,
+          this.skinName,
+        )
+      ).src;
       const huashenCharacterId = this.props.player?.getHuaShenInfo()?.characterId;
       const huashenCharacter =
         huashenCharacterId !== undefined ? Sanguosha.getCharacterById(huashenCharacterId) : undefined;
-      this.sideImage = huashenCharacter && (await this.props.imageLoader.getCharacterImage(huashenCharacter.Name, this.props.player?.Id)).src;
+      this.sideImage =
+        huashenCharacter &&
+        (await this.props.imageLoader.getCharacterImage(huashenCharacter.Name, this.props.player?.Id)).src;
     }
 
     if (this.PlayerImage === undefined && this.PlayerCharacter) {

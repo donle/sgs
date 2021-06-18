@@ -1,5 +1,5 @@
 import { AudioLoader } from 'audio_loader/audio_loader';
-import { Character, CharacterNationality } from 'core/characters/character';
+import { CharacterNationality } from 'core/characters/character';
 import type { CharacterId } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { GameCharacterExtensions } from 'core/game/game_props';
@@ -12,10 +12,10 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { PagePropsWithConfig } from 'types/page_props';
-import { AudioService, installAudioPlayerService } from 'ui/audio/install';
+import { installAudioPlayerService } from 'ui/audio/install';
 import { Button } from 'ui/button/button';
 import { CharacterCard } from 'ui/character/character';
-import { CharacterSkinCard } from 'ui/character/characterSkin';
+import { CharacterSkinCard, CharacterSpec } from 'ui/character/characterSkin';
 import { CheckBoxGroup } from 'ui/check_box/check_box_group';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import styles from './characters_list.module.css';
@@ -27,44 +27,6 @@ export type CharactersListProps = PagePropsWithConfig<{
   electronLoader: ElectronLoader;
 }>;
 
-const CharacterSpec = ({
-  character,
-  audioService,
-  translator,
-}: {
-  character: Character;
-  audioService: AudioService;
-  translator: ClientTranslationModule;
-}) => {
-  const skills = character.Skills.filter(skill => !skill.isShadowSkill());
-
-  const onPlaySkillAudio = (skillName: string) => () => {
-    audioService.playSkillAudio(skillName, character.Gender, character.Name);
-  };
-  const onPlayDeathAudio = (characterName: string) => () => {
-    audioService.playDeathAudio(characterName);
-  };
-
-  return (
-    <div className={styles.characterSpec}>
-      <span className={styles.deathButton} onClick={onPlayDeathAudio(character.Name)}>
-        {translator.trx('death audio')}
-      </span>
-      {skills.map(skill => (
-        <div className={styles.skill} key={skill.Name}>
-          <span className={styles.skillName} onClick={onPlaySkillAudio(skill.Name)}>
-            {translator.tr(skill.Name)}
-          </span>
-          <span
-            className={styles.skillDescription}
-            dangerouslySetInnerHTML={{ __html: translator.tr(skill.Description) }}
-          />
-        </div>
-      ))}
-    </div>
-  );
-};
-
 @mobxReact.observer
 export class CharactersList extends React.Component<CharactersListProps> {
   private backgroundImage = this.props.imageLoader.getLobbyBackgroundImage().src!;
@@ -73,6 +35,8 @@ export class CharactersList extends React.Component<CharactersListProps> {
 
   @mobx.observable.ref
   private focusedCharacterId: CharacterId;
+  @mobx.observable.ref
+  private focusedSkinName: string;
 
   private readonly backToLobby = () => {
     this.props.history.push('/lobby');
@@ -103,8 +67,12 @@ export class CharactersList extends React.Component<CharactersListProps> {
   @mobx.action
   private readonly onHoverCharacter = (characterId: CharacterId) => () => {
     this.focusedCharacterId = characterId;
+    this.focusedSkinName = Sanguosha.getCharacterById(this.focusedCharacterId).Name;
   };
-
+  @mobx.action
+  private readonly onfocusedSkinName = (skinName: string) => {
+    this.focusedSkinName = skinName;
+  };
   render() {
     return (
       <div className={styles.charactersList}>
@@ -157,12 +125,18 @@ export class CharactersList extends React.Component<CharactersListProps> {
                 <CharacterSkinCard
                   className={styles.specCharacter}
                   character={Sanguosha.getCharacterById(this.focusedCharacterId)}
+                  onClick={this.onfocusedSkinName}
                   imageLoader={this.props.imageLoader}
                   translator={this.props.translator}
                 />
                 <CharacterSpec
                   character={Sanguosha.getCharacterById(this.focusedCharacterId)}
                   audioService={this.audioService}
+                  skinName={
+                    this.focusedSkinName
+                      ? this.focusedSkinName
+                      : Sanguosha.getCharacterById(this.focusedCharacterId).Name
+                  }
                   translator={this.props.translator}
                 />
               </Tooltip>

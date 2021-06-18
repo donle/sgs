@@ -11,4 +11,10 @@ export interface AudioLoader {
   getLoseHpAudio(): string;
   getEquipAudio(): string;
   getChainAudio(): string;
+  getCharacterSkinAudio(
+    characterName: string,
+    skinName: string,
+    skillName: string,
+    gender?: CharacterGender,
+  ): Promise<string>;
 }

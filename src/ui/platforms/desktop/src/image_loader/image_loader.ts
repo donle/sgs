@@ -19,12 +19,12 @@ export type SkillButtonImageProps = {
 
 export interface ImageLoader {
   getCardImage(name: string): Promise<ImageProps>;
-  getCharacterImage(name: string, roomId?: PlayerId | undefined): Promise<ImageProps>;
+  getCharacterImage(name: string, roomId?: PlayerId | undefined, skinName?: string): Promise<ImageProps>;
   getOthersEquipCard(cardName: string): Promise<ImageProps>;
   getSlimEquipCard(cardName: string): Promise<ImageProps>;
   getSlimCard(cardName: string): Promise<ImageProps>;
   getPlayerRoleCard(role: PlayerRole, gameMode: GameMode): Promise<ImageProps>;
-  getCharacterSkinPlay(characterName: string, skinName?: string): Promise<ImageProps>;
+  getCharacterSkinPlay(characterName: string, playerId?: PlayerId, skinName?: string): Promise<ImageProps>;
 
   getSkillButtonImage(skillType: SkillType, size: 'wide' | 'normal'): SkillButtonImageProps | undefined;
 

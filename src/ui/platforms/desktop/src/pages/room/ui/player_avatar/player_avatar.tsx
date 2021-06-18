@@ -21,6 +21,7 @@ import { AwakenSkillMark, LimitSkillMark, Mark } from '../mark/mark';
 import { Mask } from '../mask/mask';
 import { SwitchAvatar } from '../switch_avatar/switch_avatar';
 import styles from './player_avatar.module.css';
+import { getSkinName } from '../../ui/switch_avatar/switch_skin';
 
 type PlayerAvatarProps = {
   store: RoomStore;
@@ -33,6 +34,7 @@ type PlayerAvatarProps = {
   disabled?: boolean;
   selected?: boolean;
   delight?: boolean;
+  skinName?: string;
   onClick?(player: Player, selected: boolean): void;
   onClickSkill?(skill: Skill, selected: boolean): void;
   isSkillDisabled(skill: Skill): boolean;
@@ -49,6 +51,8 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   PlayerRoleCard: () => JSX.Element;
   @mobx.observable.ref
   PlayerImage: () => JSX.Element;
+  @mobx.observable.ref
+  private skinName: string;
 
   @mobx.observable.ref
   mainImage: string | undefined;
@@ -254,12 +258,19 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   async componentDidUpdate() {
     if (this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.CharacterId !== undefined) {
       this.mainImage = (
-        await this.props.imageLoader.getCharacterImage(this.props.presenter.ClientPlayer.Character.Name, this.props.presenter.ClientPlayer.Id)
+        await this.props.imageLoader.getCharacterImage(
+          this.props.presenter.ClientPlayer.Character.Name,
+          this.props.presenter.ClientPlayer.Id,
+          this.skinName,
+        )
       ).src;
       const huashenCharacterId = this.props.presenter.ClientPlayer.getHuaShenInfo()?.characterId;
       const huashenCharacter =
         huashenCharacterId !== undefined ? Sanguosha.getCharacterById(huashenCharacterId) : undefined;
-        this.sideImage = huashenCharacter && (await this.props.imageLoader.getCharacterImage(huashenCharacter.Name, this.props.presenter.ClientPlayer.Id)).src;
+      this.sideImage =
+        huashenCharacter &&
+        (await this.props.imageLoader.getCharacterImage(huashenCharacter.Name, this.props.presenter.ClientPlayer.Id))
+          .src;
     }
 
     if (
@@ -344,6 +355,9 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   render() {
     const clientPlayer = this.props.presenter.ClientPlayer;
     const character = clientPlayer?.CharacterId !== undefined ? clientPlayer?.Character : undefined;
+    if (clientPlayer && character) {
+      this.skinName = getSkinName(clientPlayer.Character?.Name, clientPlayer?.Id);
+    }
     return (
       <>
         <div

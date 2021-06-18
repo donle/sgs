@@ -20,21 +20,37 @@ export const gameSkinInfo: CharacterSkinInfo[] = [
     skinInfo: [
       {
         skinName: 'huahaoyueyuan',
-        skinLocation: 'diaochan/1.png',
+        skinLocation: 'images/洛神御水.gif',
         voiceInfos: [
           {
-            voiceName: 'xiaoji',
-            voiceLocations: ['audio_loader/xiaoji1.mp3'],
+            voiceName: 'lijian',
+            voiceLocations: ['voices/luoshen1.mp3'],
+          },
+          {
+            voiceName: 'biyue',
+            voiceLocations: ['voices/luoshen2.mp3'],
+          },
+          {
+            voiceName: 'death',
+            voiceLocations: ['voices/zhenji.mp3'],
           },
         ],
       },
       {
         skinName: 'shenguanzhaoren',
-        skinLocation: 'diaochan/2.png',
+        skinLocation: 'images/端瑞洛水.png',
         voiceInfos: [
           {
-            voiceName: 'xiaoji',
-            voiceLocations: ['audio_loader/xiaoji1.mp3'],
+            voiceName: 'lijian',
+            voiceLocations: ['voices/xiaoji1.mp3'],
+          },
+          {
+            voiceName: 'biyue',
+            voiceLocations: ['voices/xiaoji2.mp3'],
+          },
+          {
+            voiceName: 'death',
+            voiceLocations: ['voices/yinpin.ogg'],
           },
         ],
       },

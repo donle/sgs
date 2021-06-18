@@ -27,14 +27,11 @@ export class DevImageLoader implements ImageLoader {
       alt: name,
     };
   }
-  public async getCharacterSkinPlay(characterName: string, skinName?: string) {
-    return this.skinLoader.getCharacterSkinPlay(characterName, skinName);
+  public async getCharacterSkinPlay(characterName: string, playerId?: PlayerId, skinName?: string) {
+    return this.skinLoader.getCharacterSkinPlay(characterName, playerId, skinName);
   }
-  public async getCharacterImage(characterName: string, playerId?: PlayerId) {
-    return {
-      src: `${remoteRoot}/images/characters/${characterName}.png`,
-      alt: characterName,
-    };
+  public async getCharacterImage(characterName: string, playerId?: PlayerId, skinName?: string) {
+    return this.skinLoader.getCharacterSkinPlay(characterName, playerId, skinName);
   }
 
   public getCardBack() {

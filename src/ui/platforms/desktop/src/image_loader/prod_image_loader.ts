@@ -134,11 +134,11 @@ export class ProdImageLoader implements ImageLoader {
     return { alt: 'Slim Card', src: image };
   }
 
-  public async getCharacterImage(characterName: string, playerId: PlayerId) {
-    return this.skinLoader.getCharacterSkin(characterName, playerId);
+  public async getCharacterImage(characterName: string, playerId: PlayerId, skinName?: string) {
+    return this.skinLoader.getCharacterSkinPlay(characterName, playerId, skinName);
   }
-  public async getCharacterSkinPlay(characterName: string, skinName?: string) {
-    return this.skinLoader.getCharacterSkinPlay(characterName, skinName);
+  public async getCharacterSkinPlay(characterName: string, playerId?: PlayerId, skinName?: string) {
+    return this.skinLoader.getCharacterSkinPlay(characterName, playerId, skinName);
   }
 
   public getGameModeIcon(mode: GameMode) {

@@ -6,9 +6,9 @@ import ReactDOM from 'react-dom';
 import { AudioPlayer } from './audio';
 
 export interface AudioService {
-  playSkillAudio(skillName: string, gender: CharacterGender, characterName?: string): Promise<void>;
+  playSkillAudio(skillName: string, gender: CharacterGender, characterName?: string, skinName?: string): Promise<void>;
   playCardAudio(skillName: string, gender: CharacterGender, characterName?: string): Promise<void>;
-  playDeathAudio(characterName: string): Promise<void>;
+  playDeathAudio(characterName: string, skinName?: string): Promise<void>;
   playDamageAudio(damage: number): void;
   playLoseHpAudio(): void;
   playEquipAudio(): void;
@@ -27,13 +27,18 @@ class AudioPlayerService implements AudioService {
   private readonly nodeNameOfRoomBGM = 'room-bgm';
 
   constructor(private loader: AudioLoader, private electronLoader: ElectronLoader) {}
-  async playSkillAudio(skillName: string, gender: CharacterGender, characterName?: string) {
+  async playSkillAudio(skillName: string, gender: CharacterGender, characterName?: string, skinName?: string) {
     if (this.playList.has(skillName) || this.badResourcesList.has(skillName)) {
       return;
     }
     try {
-      const audioUrl = await this.loader.getSkillAudio(skillName, gender, characterName);
-      this.play(audioUrl, undefined, skillName);
+      if (skinName) {
+        const audioUrl = await this.loader.getCharacterSkinAudio(characterName!, skinName, skillName, gender);
+        this.play(audioUrl, undefined, skillName);
+      } else {
+        const audioUrl = await this.loader.getSkillAudio(skillName, gender, characterName);
+        this.play(audioUrl, undefined, skillName);
+      }
     } catch {
       // tslint:disable-next-line: no-console
       console.warn(`The resource of '${skillName}' doesn't exist`);
@@ -51,10 +56,15 @@ class AudioPlayerService implements AudioService {
     }
   }
 
-  async playDeathAudio(characterName: string) {
+  async playDeathAudio(characterName: string, skinName?: string) {
     try {
-      const audioUrl = await this.loader.getDeathAudio(characterName);
-      this.play(audioUrl);
+      if (skinName) {
+        const audioUrl = await this.loader.getCharacterSkinAudio(characterName, skinName, 'death');
+        this.play(audioUrl);
+      } else {
+        const audioUrl = await this.loader.getDeathAudio(characterName);
+        this.play(audioUrl);
+      }
     } catch {
       // tslint:disable-next-line: no-console
       console.warn(`The resource of '${characterName}' doesn't exist`);
