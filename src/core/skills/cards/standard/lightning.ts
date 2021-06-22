@@ -65,7 +65,6 @@ export class LightningSkill extends ActiveSkill {
             toId: currentPlayer,
             moveReason: CardMoveReason.PassiveMove,
           });
-          break;
         } else {
           await room.moveCards({
             fromId: currentPlayer,
@@ -74,7 +73,8 @@ export class LightningSkill extends ActiveSkill {
             toId: player.Id,
             moveReason: CardMoveReason.PassiveMove,
           });
-          break;
+        }
+        break;
       } else if (player.Id === currentPlayer) {
         await room.moveCards({
           movingCards: [{ card: cardId, fromArea: CardMoveArea.ProcessingArea }],
