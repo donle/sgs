@@ -48,35 +48,43 @@ export class LightningSkill extends ActiveSkill {
   public async moveToNextPlayer(room: Room, cardId: CardId, currentPlayer: PlayerId) {
     let player: Player | undefined;
     while (true) {
+      
       player = room.getNextAlivePlayer(player ? player.Id : currentPlayer);
-      if (player.Id === currentPlayer) {
+      
+      const legal =
+        room.canUseCardTo(cardId, player.Id) &&
+        player
+          .getCardIds(PlayerCardsArea.JudgeArea)
+          .find(cardId => Sanguosha.getCardById(cardId).GeneralName === this.Name) === undefined;
+      
+      if (legal) {
+        if (player.Id === currentPlayer) {
+          await room.moveCards({
+            movingCards: [{ card: cardId, fromArea: CardMoveArea.ProcessingArea }],
+            toArea: CardMoveArea.JudgeArea,
+            toId: currentPlayer,
+            moveReason: CardMoveReason.PassiveMove,
+          });
+          break;
+        } else {
+          await room.moveCards({
+            fromId: currentPlayer,
+            movingCards: [{ card: cardId, fromArea: CardMoveArea.ProcessingArea }],
+            toArea: CardMoveArea.JudgeArea,
+            toId: player.Id,
+            moveReason: CardMoveReason.PassiveMove,
+          });
+          break;
+      } else if (player.Id === currentPlayer) {
         await room.moveCards({
           movingCards: [{ card: cardId, fromArea: CardMoveArea.ProcessingArea }],
-          toArea: CardMoveArea.JudgeArea,
-          toId: currentPlayer,
-          moveReason: CardMoveReason.PassiveMove,
+          toArea: CardMoveArea.DropStack,
+          toId: undefined,
+          moveReason: CardMoveReason.PlaceToDropStack,
         });
         break;
       }
-
-      const skip =
-        !room.canUseCardTo(cardId, player.Id) ||
-        player
-          .getCardIds(PlayerCardsArea.JudgeArea)
-          .find(cardId => Sanguosha.getCardById(cardId).GeneralName === this.Name) !== undefined;
-
-      if (skip) {
-        continue;
-      }
-
-      await room.moveCards({
-        fromId: currentPlayer,
-        movingCards: [{ card: cardId, fromArea: CardMoveArea.ProcessingArea }],
-        toArea: CardMoveArea.JudgeArea,
-        toId: player.Id,
-        moveReason: CardMoveReason.PassiveMove,
-      });
-      break;
+      
     }
   }
 
