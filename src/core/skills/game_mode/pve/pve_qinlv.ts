@@ -24,12 +24,14 @@ export class PveQinLv extends TriggerSkill {
     const player = room.CurrentPhasePlayer;
 
     await room.recover({ recoveredHp: 1, recoverBy: owner.Id, toId: player.Id });
-    await room.recover({ recoveredHp: 1, recoverBy: owner.Id, toId: owner.Id });
-    if (owner.isInjured() && owner.Id !== player.Id) {
-      await room.loseHp(player.Id, player.MaxHp / 2);
+    if (owner.Id !== player.Id) {
+      await room.recover({ recoveredHp: 1, recoverBy: owner.Id, toId: owner.Id });
+      if (owner.isInjured()) {
+        await room.loseHp(player.Id, player.MaxHp / 2);
+      }
     }
 
-    if (player.isInjured()) {
+    if (!player.isInjured()) {
       await room.drawCards(1, owner.Id, 'top', owner.Id, this.Name);
     }
 
