@@ -19,7 +19,7 @@ import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
 import { PlayerAvatar } from '../player_avatar/player_avatar';
 import { PlayingBar } from '../playing_bar/playing_bar';
 import styles from './dashboard.module.css';
-import { CharacterSkinInfo } from '../../../../image_loader/skins';
+import { CharacterSkinInfo } from 'skins/skins';
 
 import { Button } from 'ui/button/button';
 import { CardDescription } from 'ui/card_description/card_description';

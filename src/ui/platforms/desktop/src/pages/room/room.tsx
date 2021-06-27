@@ -27,7 +27,7 @@ import { Dashboard } from './ui/dashboard/dashboard';
 import { GameBoard } from './ui/gameboard/gameboard';
 import { GameDialog } from './ui/game_dialog/game_dialog';
 import { SeatsLayout } from './ui/seats_layout/seats_layout';
-import { CharacterSkinInfo } from '../../image_loader/skins';
+import { CharacterSkinInfo } from 'skins/skins';
 
 @mobxReact.observer
 export class RoomPage extends React.Component<

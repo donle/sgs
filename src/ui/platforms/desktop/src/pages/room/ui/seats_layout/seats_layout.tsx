@@ -8,7 +8,7 @@ import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
 import { PlayerCard } from '../player/player';
 import styles from './seats_layout.module.css';
-import { CharacterSkinInfo } from '../../../../image_loader/skins';
+import { CharacterSkinInfo } from 'skins/skins';
 
 type SeatsLayoutProps = {
   store: RoomStore;

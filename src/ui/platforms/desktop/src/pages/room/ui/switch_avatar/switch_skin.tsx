@@ -1,4 +1,4 @@
-import { CharacterSkinInfo } from 'image_loader/skins';
+import { CharacterSkinInfo } from 'skins/skins';
 import { PlayerId } from 'core/player/player_props';
 
 export type HistoryCharacterSkin = {

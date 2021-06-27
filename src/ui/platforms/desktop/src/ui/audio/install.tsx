@@ -4,7 +4,7 @@ import { ElectronLoader } from 'electron_loader/electron_loader';
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { AudioPlayer } from './audio';
-import { CharacterSkinInfo } from '../../../src/image_loader/skins';
+import { CharacterSkinInfo } from 'skins/skins';
 
 export interface AudioService {
   playSkillAudio(

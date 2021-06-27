@@ -26,7 +26,7 @@ import { PlayingBar } from '../playing_bar/playing_bar';
 import { SwitchAvatar } from '../switch_avatar/switch_avatar';
 import styles from './player.module.css';
 import { getSkinName } from '../../ui/switch_avatar/switch_skin';
-import { CharacterSkinInfo } from '../../../../image_loader/skins';
+import { CharacterSkinInfo } from 'skins/skins';
 
 type PlayerCardProps = {
   player: ClientPlayer | undefined;

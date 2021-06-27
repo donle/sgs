@@ -22,7 +22,7 @@ import { Mask } from '../mask/mask';
 import { SwitchAvatar } from '../switch_avatar/switch_avatar';
 import styles from './player_avatar.module.css';
 import { getSkinName } from '../../ui/switch_avatar/switch_skin';
-import { CharacterSkinInfo } from '.../../image_loader/skins';
+import { CharacterSkinInfo } from 'skins/skins';
 
 type PlayerAvatarProps = {
   store: RoomStore;

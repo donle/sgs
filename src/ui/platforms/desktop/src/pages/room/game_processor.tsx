@@ -37,7 +37,7 @@ import { GameOverDialog } from './ui/dialog/game_over_dialog/game_over_dialog';
 import { GuanXingDialog } from './ui/dialog/guanxing_dialog/guanxing_dialog';
 import { WuGuFengDengDialog } from './ui/dialog/wugufengdeng_dialog/wugufengdeng_dialog';
 import { getSkinName } from './ui/switch_avatar/switch_skin';
-import { CharacterSkinInfo } from '../../../src/image_loader/skins';
+import { CharacterSkinInfo } from 'skins/skins';
 
 export class GameClientProcessor {
   protected onPlayTrustedActionTimer: NodeJS.Timer | undefined;

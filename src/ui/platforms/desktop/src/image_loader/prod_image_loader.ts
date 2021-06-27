@@ -27,7 +27,7 @@ import feedbackImage from './images/system/feedback.png';
 import gameLogBoardImage from './images/system/game_log_board.png';
 import unknownCharacterImage from './images/system/player_seat.png';
 import turnedOverCoverImage from './images/system/turn_over.png';
-import { SkinLoader, CharacterSkinInfo } from './skins';
+import { CharacterSkinInfo } from 'skins/skins';
 
 import illustraion1 from './images/lobby/illustration1.png';
 import illustraion2 from './images/lobby/illustration2.png';
@@ -56,8 +56,6 @@ const lobbyIllustrations = [
 ];
 
 export class ProdImageLoader implements ImageLoader {
-  private skinLoader: SkinLoader = new SkinLoader();
-
   public async getCardImage(name: string) {
     const image: string = (await import(`./images/cards/${name}.webp`)).default;
     return {
@@ -144,7 +142,20 @@ export class ProdImageLoader implements ImageLoader {
     playerId?: PlayerId,
     skinName?: string,
   ) {
-    return this.skinLoader.getCharacterSkinPlay(characterName, skinData, playerId, skinName);
+    let image: string;
+    if (skinName !== characterName && skinData !== undefined) {
+      const skin = skinData
+        .find(skinInfo => skinInfo.character === characterName)
+        ?.infos.find(skinInfo => skinInfo.images?.find(imagesInfo => imagesInfo.name === skinName));
+      if (skin) {
+        image = process.env.PUBLIC_URL + '/' + skin?.images.find(imagesInfo => imagesInfo.name === skinName)?.big;
+      } else {
+        image = (await import(`./images/characters/${characterName}.png`)).default;
+      }
+    } else {
+      image = (await import(`./images/characters/${characterName}.png`)).default;
+    }
+    return { alt: characterName, src: image };
   }
 
   public getGameModeIcon(mode: GameMode) {

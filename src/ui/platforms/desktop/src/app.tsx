@@ -13,7 +13,7 @@ import * as React from 'react';
 import { Redirect, Route, Router } from 'react-router-dom';
 import { ConnectionService } from 'services/connection_service/connection_service';
 import { Lobby } from './pages/lobby/lobby';
-import { CharacterSkinInfo } from '../src/image_loader/skins';
+import { CharacterSkinInfo } from 'skins/skins';
 @mobxReact.observer
 export class App extends React.PureComponent<{
   config: ClientConfig;

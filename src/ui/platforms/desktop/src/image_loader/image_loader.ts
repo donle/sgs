@@ -4,7 +4,7 @@ import { GameMode } from 'core/shares/types/room_props';
 import { SkillType } from 'core/skills/skill';
 import { LobbyButton } from 'props/game_props';
 import { ImageProps } from 'props/image_props';
-import { CharacterSkinInfo } from 'image_loader/skins';
+import { CharacterSkinInfo } from 'skins/skins';
 
 export type SkillButtonImageSize = {
   wide: SkillButtonImageProps;

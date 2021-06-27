@@ -8,7 +8,7 @@ import equipAudio from './audios/equip.mp3';
 import gameStartAudio from './audios/gamestart.mp3';
 import lostHpAudio from './audios/loseHp.mp3';
 import { AudioLoader } from './audio_loader';
-import { CharacterSkinInfo } from 'image_loader/skins';
+import { CharacterSkinInfo } from 'skins/skins';
 export class ProdAudioLoader implements AudioLoader {
   getLobbyBackgroundMusic() {
     return lobbyBGM;

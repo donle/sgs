@@ -19,7 +19,7 @@ import { CharacterSkinCard, CharacterSpec } from 'ui/character/characterSkin';
 import { CheckBoxGroup } from 'ui/check_box/check_box_group';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import styles from './characters_list.module.css';
-import { CharacterSkinInfo } from '../../image_loader/skins';
+import { CharacterSkinInfo } from 'skins/skins';
 
 export type CharactersListProps = PagePropsWithConfig<{
   translator: ClientTranslationModule;

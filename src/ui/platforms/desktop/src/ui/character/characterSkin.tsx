@@ -8,7 +8,7 @@ import * as React from 'react';
 import { NationalityBadge } from '../badge/badge';
 import { CharacterHp } from '../hp/hp';
 import styles from './character.module.css';
-import { CharacterSkinInfo } from '../../../src/image_loader/skins';
+import { CharacterSkinInfo } from 'skins/skins';
 import { AudioService } from 'ui/audio/install';
 import { Skill } from 'core/skills/skill';
 
@@ -107,10 +107,9 @@ export class CharacterSkinCard extends React.Component<CharacterSkinCardProps> {
         this.props.character.Name,
         this.props.skinData,
         undefined,
-        this.skinName,
+        this.skinNameLists[0],
       )
     ).src;
-
     this.characterSkinImageL =
       this.skinNameLists.length > 2
         ? (
