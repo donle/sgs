@@ -84,7 +84,7 @@ export class PveHuaShen extends TriggerSkill {
     await room.recover({ recoveredHp: NewMaxHp - player.Hp, toId: ownerId });
     await room.drawCards(room.getMark(ownerId, MarkEnum.PveHuaShen) === 5 ? 0 : 5, ownerId, 'top', ownerId, this.Name);
     player.setHuaShenInfo({ skillName: skill.GeneralName, characterId: nextCharacter.Id });
-    await room.obtainSkill(ownerId, nextCharacter.Skills[0].GeneralName, true);
+    await room.obtainSkill(ownerId, skill.GeneralName, true);
   }
 
   public async onTrigger(): Promise<boolean> {

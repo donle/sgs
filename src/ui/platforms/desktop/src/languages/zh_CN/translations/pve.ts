@@ -16,6 +16,9 @@ export const characterDictionary: Word[] = [
   { source: 'pve_yazi', target: '睚眦' },
   { source: 'pve_longlie', target: '龙烈' },
   { source: '#pve_longlie', target: '龙烈' },
+  { source: 'pve_qinlv', target: '琴律' },
+  { source: 'pve_jienu', target: '介怒' },
+  { source: 'pve_longhou', target: '龙吼' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -51,6 +54,20 @@ export const skillDescriptions: Word[] = [
     source: 'pve_longlie_description',
     target:
       '<b>锁定技</b>，当使用的【杀】指定目标后，你令此【杀】不能被【闪】响应；其它角色回合结束时，视为你对其使用一张【火杀】。',
+  },
+  {
+    source: 'pve_qinlv_description',
+    target:
+      '<b>锁定技</b>，每名角色结束阶段开始时，你与其各回复一点体力；若你仍受伤且不是你的回合，其失去X点体力；如此做后，若其未受伤，则你摸1张牌。（X为体力上限一半，向下取整）',
+  },
+  {
+    source: 'pve_longhou_description',
+    target: '<b>锁定技</b>，你使用牌指定目标后，目标角色体力上限+1，然后受到其已损失体力值的伤害。',
+  },
+  {
+    source: 'pve_jienu_description',
+    target:
+      '<b>锁定技</b>，当你翻面后，若你正面朝上，你回复一点体力，否则对所有其他角色造成一点火属性伤害；出牌阶段开始时，若你的体力值小于已损失的体力值，你翻面；当你受到伤害后，你翻面。',
   },
 ];
 
