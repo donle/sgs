@@ -11,7 +11,6 @@ import {
   serverResponsiveListenerEvents,
 } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { GameCommonRules } from 'core/game/game_rules';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
@@ -874,7 +873,7 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     const { commonRules, toId } = content;
-    GameCommonRules.syncSocketObject(this.store.room.getPlayerById(toId), commonRules);
+    this.store.room.gameCommonRules.syncSocketObject(this.store.room.getPlayerById(toId), commonRules);
   }
 
   protected async onHandleAskForSkillUseEvent<T extends GameEventIdentifiers.AskForSkillUseEvent>(
@@ -985,7 +984,7 @@ export class GameClientProcessor {
     ) {
       const actualCardIds = Card.getActualCards(cardIds);
       if (toArea === CardMoveArea.OutsideArea) {
-        to.getCardIds((toArea as unknown) as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
+        to.getCardIds(toArea as unknown as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
       } else if (toArea === CardMoveArea.JudgeArea) {
         const transformedDelayedTricks = cardIds.map(cardId => {
           if (!Card.isVirtualCardId(cardId)) {
@@ -1104,7 +1103,7 @@ export class GameClientProcessor {
   }
 
   protected onHandleAskForChoosingCardWithConditionsEvent<
-    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent
+    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent,
   >(type: T, content: ServerEventFinder<T>) {
     const selectedCards: CardId[] = [];
     const selectedCardsIndex: number[] = [];
@@ -1407,7 +1406,7 @@ export class GameClientProcessor {
   }
 
   protected async onHandleAskForChoosingCardAvailableTargetEvent<
-    T extends GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent
+    T extends GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent,
   >(type: T, content: ServerEventFinder<T>) {
     const { cardId, exclude, conversation } = content;
     this.presenter.createIncomingConversation({

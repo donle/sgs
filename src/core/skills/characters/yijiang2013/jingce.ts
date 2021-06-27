@@ -2,7 +2,6 @@ import { CardType } from 'core/cards/card';
 import { CardSuit } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { GameCommonRules } from 'core/game/game_rules';
 import {
   AllStage,
   CardUseStage,
@@ -100,7 +99,7 @@ export class JingCeRecorder extends TriggerSkill {
       if (!suits.includes(card.Suit)) {
         suits.push(card.Suit);
         user.setFlag<CardSuit[]>(JingCeSuits, suits);
-        GameCommonRules.addAdditionalHoldCardNumber(user, 1);
+        room.gameCommonRules.addAdditionalHoldCardNumber(user, 1);
       }
     });
     return true;
@@ -139,7 +138,7 @@ export class JingCeShadow extends TriggerSkill implements OnDefineReleaseTiming 
       const jingceSuits = JingCe.JingCeSuits;
       const suits = user.getFlag<CardSuit[]>(jingceSuits);
       if (suits) {
-        GameCommonRules.addAdditionalHoldCardNumber(user, -suits.length);
+        room.gameCommonRules.addAdditionalHoldCardNumber(user, -suits.length);
         user.removeFlag(jingceSuits);
       }
       user.removeFlag(JingCe.JingCeTypes);

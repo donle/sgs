@@ -6,7 +6,6 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Character, CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
-import { GameCommonRules } from 'core/game/game_rules';
 import {
   PlayerCards,
   PlayerCardsArea,
@@ -122,7 +121,7 @@ export abstract class Player implements PlayerInfo {
     this.dead = false;
     this.status = PlayerStatus.Online;
 
-    GameCommonRules.initPlayerCommonRules(this);
+    // GameCommonRules.initPlayerCommonRules(this);
   }
 
   public clearFlags() {
@@ -176,14 +175,16 @@ export abstract class Player implements PlayerInfo {
 
   public canUseCard(room: Room, cardId: CardId | CardMatcher, onResponse?: CardMatcher): boolean {
     const card = cardId instanceof CardMatcher ? undefined : Sanguosha.getCardById(cardId);
-    const ruleCardUse = GameCommonRules.canUseCard(
+    const ruleCardUse = room.gameCommonRules.canUseCard(
       room,
       this,
       cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId),
     );
 
     if (card) {
-      const canUseToSomeone = room.AlivePlayers.find(player => GameCommonRules.canUseCardTo(room, this, card, player));
+      const canUseToSomeone = room.AlivePlayers.find(player =>
+        room.gameCommonRules.canUseCardTo(room, this, card, player),
+      );
       if (canUseToSomeone) {
         return card.is(CardType.Equip) ? true : onResponse ? onResponse.match(card) : true;
       }
@@ -222,15 +223,15 @@ export abstract class Player implements PlayerInfo {
   public getCardIds<T extends CardId | CharacterId = CardId>(area?: PlayerCardsArea, outsideAreaName?: string): T[] {
     if (area === undefined) {
       const [handCards, judgeCards, equipCards] = Object.values<CardId[]>(this.playerCards);
-      return ([...handCards, ...judgeCards, ...equipCards] as unknown) as T[];
+      return [...handCards, ...judgeCards, ...equipCards] as unknown as T[];
     }
 
     if (area !== PlayerCardsArea.OutsideArea) {
-      return (this.playerCards[area] as unknown) as T[];
+      return this.playerCards[area] as unknown as T[];
     } else {
       outsideAreaName = Precondition.exists(outsideAreaName, `Unable to get ${outsideAreaName} area cards`);
       this.playerOutsideCards[outsideAreaName] = this.playerOutsideCards[outsideAreaName] || [];
-      return (this.playerOutsideCards[outsideAreaName] as unknown) as T[];
+      return this.playerOutsideCards[outsideAreaName] as unknown as T[];
     }
   }
 
@@ -399,7 +400,7 @@ export abstract class Player implements PlayerInfo {
 
     const card = cardId instanceof CardMatcher ? undefined : Sanguosha.getCardById(cardId);
     if (card) {
-      const ruleCardUse = GameCommonRules.canUseCardTo(
+      const ruleCardUse = room.gameCommonRules.canUseCardTo(
         room,
         this,
         cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId),
@@ -486,7 +487,7 @@ export abstract class Player implements PlayerInfo {
     for (const skill of this.getSkills<RulesBreakerSkill>('breaker')) {
       additionalAttackRange += skill.breakAdditionalAttackRange(room, this);
     }
-    additionalAttackRange += GameCommonRules.getAdditionalAttackDistance(this);
+    additionalAttackRange += room.gameCommonRules.getAdditionalAttackDistance(this);
 
     let finalAttackRange: number = -1;
     for (const skill of this.getSkills<RulesBreakerSkill>('breaker')) {
@@ -501,29 +502,31 @@ export abstract class Player implements PlayerInfo {
 
   public getMaxCardHold(room: Room) {
     const maxCardHold =
-      GameCommonRules.getBaseHoldCardNumber(room, this) + GameCommonRules.getAdditionalHoldCardNumber(room, this);
+      room.gameCommonRules.getBaseHoldCardNumber(room, this) +
+      room.gameCommonRules.getAdditionalHoldCardNumber(room, this);
 
     return Math.max(maxCardHold, 0);
   }
 
   public getOffenseDistance(room: Room) {
-    return GameCommonRules.getAdditionalOffenseDistance(room, this);
+    return room.gameCommonRules.getAdditionalOffenseDistance(room, this);
   }
 
   public getDefenseDistance(room: Room) {
-    return GameCommonRules.getAdditionalDefenseDistance(room, this);
+    return room.gameCommonRules.getAdditionalDefenseDistance(room, this);
   }
 
   public getCardUsableDistance(room: Room, cardId?: CardId, target?: Player) {
     const card = cardId ? Sanguosha.getCardById(cardId) : undefined;
     return (
-      (card ? card.EffectUseDistance : 0) + GameCommonRules.getCardAdditionalUsableDistance(room, this, card, target)
+      (card ? card.EffectUseDistance : 0) +
+      room.gameCommonRules.getCardAdditionalUsableDistance(room, this, card, target)
     );
   }
 
   public getCardAdditionalUsableNumberOfTargets(room: Room, cardId: CardId | CardMatcher) {
     const card = cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId);
-    return GameCommonRules.getCardAdditionalNumberOfTargets(room, this, card);
+    return room.gameCommonRules.getCardAdditionalNumberOfTargets(room, this, card);
   }
 
   public getEquipSkills<T extends Skill = Skill>(skillType?: SkillStringType) {
