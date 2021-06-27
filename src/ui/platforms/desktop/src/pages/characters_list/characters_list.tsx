@@ -19,12 +19,14 @@ import { CharacterSkinCard, CharacterSpec } from 'ui/character/characterSkin';
 import { CheckBoxGroup } from 'ui/check_box/check_box_group';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import styles from './characters_list.module.css';
+import { CharacterSkinInfo } from '../../image_loader/skins';
 
 export type CharactersListProps = PagePropsWithConfig<{
   translator: ClientTranslationModule;
   imageLoader: ImageLoader;
   audioLoader: AudioLoader;
   electronLoader: ElectronLoader;
+  skinData: CharacterSkinInfo[];
 }>;
 
 @mobxReact.observer
@@ -126,12 +128,14 @@ export class CharactersList extends React.Component<CharactersListProps> {
                   className={styles.specCharacter}
                   character={Sanguosha.getCharacterById(this.focusedCharacterId)}
                   onClick={this.onfocusedSkinName}
+                  skinData={this.props.skinData}
                   imageLoader={this.props.imageLoader}
                   translator={this.props.translator}
                 />
                 <CharacterSpec
                   character={Sanguosha.getCharacterById(this.focusedCharacterId)}
                   audioService={this.audioService}
+                  skinData={this.props.skinData}
                   skinName={
                     this.focusedSkinName
                       ? this.focusedSkinName

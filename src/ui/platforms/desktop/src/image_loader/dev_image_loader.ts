@@ -7,7 +7,7 @@ import { LobbyButton } from 'props/game_props';
 import { getSkillButtonImages } from './dev_button_image_loader';
 import { getLobbyButtonImage } from './dev_button_image_loader';
 import { ImageLoader } from './image_loader';
-import { SkinLoader } from './skins';
+import { SkinLoader, CharacterSkinInfo } from './skins';
 
 const remoteRoot: string = 'http://doublebit.gitee.io/pictest/backup_remote';
 
@@ -27,11 +27,17 @@ export class DevImageLoader implements ImageLoader {
       alt: name,
     };
   }
-  public async getCharacterSkinPlay(characterName: string, playerId?: PlayerId, skinName?: string) {
-    return this.skinLoader.getCharacterSkinPlay(characterName, playerId, skinName);
+  public async getCharacterSkinPlay(
+    characterName: string,
+    skinData: CharacterSkinInfo[],
+    playerId?: PlayerId,
+    skinName?: string,
+  ) {
+    return this.skinLoader.getCharacterSkinPlay(characterName, skinData, playerId, skinName);
   }
-  public async getCharacterImage(characterName: string, playerId?: PlayerId, skinName?: string) {
-    return this.skinLoader.getCharacterSkinPlay(characterName, playerId, skinName);
+  public async getCharacterImage(characterName: string) {
+    const image: string = (await import(`./images/characters/${characterName}.png`)).default;
+    return { alt: characterName, src: image };
   }
 
   public getCardBack() {

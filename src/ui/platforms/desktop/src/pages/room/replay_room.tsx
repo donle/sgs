@@ -27,6 +27,7 @@ import { Dashboard } from './ui/dashboard/dashboard';
 import { GameBoard } from './ui/gameboard/gameboard';
 import { GameDialog } from './ui/game_dialog/game_dialog';
 import { SeatsLayout } from './ui/seats_layout/seats_layout';
+import { CharacterSkinInfo } from '../../image_loader/skins';
 
 @mobxReact.observer
 export class ReplayRoomPage extends React.Component<
@@ -36,6 +37,7 @@ export class ReplayRoomPage extends React.Component<
     audioLoader: AudioLoader;
     electronLoader: ElectronLoader;
     connectionService: ConnectionService;
+    skinData: CharacterSkinInfo[];
   }>
 > {
   private presenter: RoomPresenter;
@@ -86,6 +88,7 @@ export class ReplayRoomPage extends React.Component<
       audioLoader: AudioLoader;
       electronLoader: ElectronLoader;
       connectionService: ConnectionService;
+      skinData: CharacterSkinInfo[];
     }>,
   ) {
     super(props);
@@ -102,6 +105,7 @@ export class ReplayRoomPage extends React.Component<
       this.props.imageLoader,
       this.audioService,
       this.props.electronLoader,
+      this.props.skinData,
     );
   }
 
@@ -299,6 +303,7 @@ export class ReplayRoomPage extends React.Component<
                 imageLoader={this.props.imageLoader}
                 updateFlag={this.store.updateUIFlag}
                 store={this.store}
+                skinData={this.props.skinData}
                 presenter={this.presenter}
                 translator={this.props.translator}
                 gamePad={this.getDisplayedCard()}
@@ -321,6 +326,7 @@ export class ReplayRoomPage extends React.Component<
               store={this.store}
               presenter={this.presenter}
               translator={this.props.translator}
+              skinData={this.props.skinData}
               imageLoader={this.props.imageLoader}
               onClick={this.store.onClickHandCardToPlay}
               isSkillDisabled={this.store.isSkillDisabled}

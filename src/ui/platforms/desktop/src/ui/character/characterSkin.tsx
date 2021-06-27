@@ -8,7 +8,7 @@ import * as React from 'react';
 import { NationalityBadge } from '../badge/badge';
 import { CharacterHp } from '../hp/hp';
 import styles from './character.module.css';
-import { gameSkinInfo } from 'image_loader/skin_data';
+import { CharacterSkinInfo } from '../../../src/image_loader/skins';
 import { AudioService } from 'ui/audio/install';
 import { Skill } from 'core/skills/skill';
 
@@ -16,6 +16,7 @@ export type CharacterSkinCardProps = {
   character: Character;
   imageLoader: ImageLoader;
   translator: ClientTranslationModule;
+  skinData: CharacterSkinInfo[];
   skinName?: string;
   onClick?(skinName: string): void;
   disabled?: boolean;
@@ -26,9 +27,8 @@ export type CharacterSkinCardProps = {
 
 @mobxReact.observer
 export class CharacterSkinCard extends React.Component<CharacterSkinCardProps> {
-  private skinNameList: string[] = [];
+  private skinNameList: string[] = [this.props.character.Name];
   private skinNameLists: string[] = [];
-  private skinCharacterList: string[] = [];
   @mobx.observable.ref
   private characterImage: string | undefined;
   @mobx.observable.ref
@@ -75,44 +75,40 @@ export class CharacterSkinCard extends React.Component<CharacterSkinCardProps> {
   }
 
   getskinNameList() {
-    this.skinNameList.push(this.props.character.Name);
-    if (this.skinCharacterList.includes(this.props.character.Name)) {
-      const index: number = this.skinCharacterList.indexOf(this.props.character.Name);
-      const characterSkinInfo = gameSkinInfo[index];
-      for (const skinInfo of characterSkinInfo.skinInfo) {
-        if (skinInfo.skinName) {
-          this.skinNameList.push(skinInfo.skinName);
-        }
-      }
-    }
+    this.props.skinData
+      .find(skinInfo => skinInfo.character === this.props.character.Name)
+      ?.infos.find(skinInfo => skinInfo.images?.forEach(imageInfo => this.skinNameList.push(imageInfo.name)));
     this.skinNameLists = this.skinNameList;
     return this.skinNameLists;
   }
-
   nextSkin() {
     let next: string | undefined;
     next = this.skinNameLists.shift();
     if (next) {
       this.skinNameLists.push(next);
     }
-    this.getSkinImage();
     this.skinName = this.skinNameLists[0];
+    this.getSkinImage();
   }
-
   preSkin() {
     let p: string | undefined;
     p = this.skinNameLists.pop();
     if (p) {
       this.skinNameLists.unshift(p);
     }
-    this.getSkinImage();
     this.skinName = this.skinNameLists[0];
+    this.getSkinImage();
   }
 
   @mobx.action
   async getSkinImage() {
     this.characterImage = (
-      await this.props.imageLoader.getCharacterSkinPlay(this.props.character.Name, undefined, this.skinNameLists[0])
+      await this.props.imageLoader.getCharacterSkinPlay(
+        this.props.character.Name,
+        this.props.skinData,
+        undefined,
+        this.skinName,
+      )
     ).src;
 
     this.characterSkinImageL =
@@ -120,6 +116,7 @@ export class CharacterSkinCard extends React.Component<CharacterSkinCardProps> {
         ? (
             await this.props.imageLoader.getCharacterSkinPlay(
               this.props.character.Name,
+              this.props.skinData,
               undefined,
               this.skinNameLists[this.skinNameLists.length - 1],
             )
@@ -131,6 +128,7 @@ export class CharacterSkinCard extends React.Component<CharacterSkinCardProps> {
         ? (
             await this.props.imageLoader.getCharacterSkinPlay(
               this.props.character.Name,
+              this.props.skinData,
               undefined,
               this.skinNameLists[1],
             )
@@ -140,16 +138,13 @@ export class CharacterSkinCard extends React.Component<CharacterSkinCardProps> {
 
   @mobx.action
   async componentDidMount() {
-    for (const characterSkinInfo of gameSkinInfo) {
-      this.skinCharacterList.push(characterSkinInfo.characterName);
-    }
-    this.skinNameList = [];
+    this.skinNameList = [this.props.character.Name];
     this.getskinNameList();
     this.getSkinImage();
   }
   @mobx.action
   async componentDidUpdate() {
-    this.skinNameList = [];
+    this.skinNameList = [this.props.character.Name];
     if (!this.skinNameLists.includes(this.props.character.Name)) {
       this.getskinNameList();
     }
@@ -213,6 +208,7 @@ export type CharacterSpecProps = {
   audioService: AudioService;
   translator: ClientTranslationModule;
   skinName: string;
+  skinData: CharacterSkinInfo[];
 };
 
 export class CharacterSpec extends React.Component<CharacterSpecProps> {
@@ -228,24 +224,24 @@ export class CharacterSpec extends React.Component<CharacterSpecProps> {
   }
   @mobx.action
   onPlaySkillAudio = (skillName: string, skinName: string) => () => {
-    console.log(this.props.skinName);
     if (this.props.skinName && this.props.skinName !== this.props.character.Name) {
       this.props.audioService.playSkillAudio(
         skillName,
         this.props.character.Gender,
+        this.props.skinData,
         this.props.character.Name,
         this.props.skinName,
       );
     } else {
-      this.props.audioService.playSkillAudio(skillName, this.props.character.Gender, this.props.character.Name);
+      this.props.audioService.playSkillAudio(skillName, this.props.character.Gender, [], this.props.character.Name);
     }
   };
   @mobx.action
   onPlayDeathAudio = (characterName: string, skinName?: string) => () => {
     if (this.props.skinName && this.props.skinName !== characterName) {
-      this.props.audioService.playDeathAudio(characterName, this.props.skinName);
+      this.props.audioService.playDeathAudio(characterName, this.props.skinData, this.props.skinName);
     } else {
-      this.props.audioService.playDeathAudio(characterName);
+      this.props.audioService.playDeathAudio(characterName, []);
     }
   };
   @mobx.action

@@ -8,7 +8,7 @@ import equipAudio from './audios/equip.mp3';
 import gameStartAudio from './audios/gamestart.mp3';
 import lostHpAudio from './audios/loseHp.mp3';
 import { AudioLoader } from './audio_loader';
-import { gameSkinInfo } from '../image_loader/skin_data';
+import { CharacterSkinInfo } from 'image_loader/skins';
 export class ProdAudioLoader implements AudioLoader {
   getLobbyBackgroundMusic() {
     return lobbyBGM;
@@ -52,18 +52,23 @@ export class ProdAudioLoader implements AudioLoader {
     characterName: string,
     skinName: string,
     skillName: string,
+    skinData: CharacterSkinInfo[],
     gender?: CharacterGender,
   ): Promise<string> {
     let voice: string;
-
-    const voices = gameSkinInfo
-      .find(characterSkinInfo => characterSkinInfo.characterName === characterName)
-      ?.skinInfo.find(info => info.skinName === skinName)
-      ?.voiceInfos.find(info => info.voiceName === skillName);
-
-    if (voices !== undefined && voices.voiceLocations.length > 0) {
-      const voicePath = voices.voiceLocations[Math.floor(voices.voiceLocations.length * Math.random())];
-      voice = process.env.PUBLIC_URL + '/' + voicePath;
+    if (skinData !== undefined && skinName !== characterName) {
+      const voices = skinData
+        .find(characterSkinInfo => characterSkinInfo.character === characterName)
+        ?.infos.find(imageInfo => imageInfo.images.find(images => images.name === skinName))?.voices;
+      const voiceDetail = voices?.find(skill => skill.skill === skillName)?.detail;
+      if (voices !== undefined && voiceDetail) {
+        const voicePath = voiceDetail[Math.floor(voiceDetail?.length * Math.random())].location;
+        voice = process.env.PUBLIC_URL + '/' + voicePath;
+      } else if (skillName === 'death') {
+        voice = await this.getDeathAudio(characterName);
+      } else {
+        voice = await this.getSkillAudio(skillName, gender!, characterName);
+      }
     } else if (skillName === 'death') {
       voice = await this.getDeathAudio(characterName);
     } else {

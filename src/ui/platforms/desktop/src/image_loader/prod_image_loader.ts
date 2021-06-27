@@ -27,7 +27,7 @@ import feedbackImage from './images/system/feedback.png';
 import gameLogBoardImage from './images/system/game_log_board.png';
 import unknownCharacterImage from './images/system/player_seat.png';
 import turnedOverCoverImage from './images/system/turn_over.png';
-import { SkinLoader } from './skins';
+import { SkinLoader, CharacterSkinInfo } from './skins';
 
 import illustraion1 from './images/lobby/illustration1.png';
 import illustraion2 from './images/lobby/illustration2.png';
@@ -134,11 +134,17 @@ export class ProdImageLoader implements ImageLoader {
     return { alt: 'Slim Card', src: image };
   }
 
-  public async getCharacterImage(characterName: string, playerId: PlayerId, skinName?: string) {
-    return this.skinLoader.getCharacterSkinPlay(characterName, playerId, skinName);
+  public async getCharacterImage(characterName: string) {
+    const image: string = (await import(`./images/characters/${characterName}.png`)).default;
+    return { alt: characterName, src: image };
   }
-  public async getCharacterSkinPlay(characterName: string, playerId?: PlayerId, skinName?: string) {
-    return this.skinLoader.getCharacterSkinPlay(characterName, playerId, skinName);
+  public async getCharacterSkinPlay(
+    characterName: string,
+    skinData: CharacterSkinInfo[],
+    playerId?: PlayerId,
+    skinName?: string,
+  ) {
+    return this.skinLoader.getCharacterSkinPlay(characterName, skinData, playerId, skinName);
   }
 
   public getGameModeIcon(mode: GameMode) {

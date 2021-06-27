@@ -1,4 +1,4 @@
-import { gameSkinInfo } from '../../../../../src/image_loader/skin_data';
+import { CharacterSkinInfo } from 'image_loader/skins';
 import { PlayerId } from 'core/player/player_props';
 
 export type HistoryCharacterSkin = {
@@ -10,7 +10,7 @@ export type HistoryCharacterSkin = {
 };
 
 let historyCharacterSkinInfo: HistoryCharacterSkin[] = [];
-export function getSkinName(characterName: string, playerId: PlayerId) {
+export function getSkinName(characterName: string, playerId: PlayerId, skinData: CharacterSkinInfo[]) {
   const currentTime = new Date().getTime();
   const history = historyCharacterSkinInfo.find(
     history => history.characterName === characterName && history.playerId === playerId,
@@ -31,13 +31,9 @@ export function getSkinName(characterName: string, playerId: PlayerId) {
     skinName: characterName,
     nextTime: currentTime + Math.floor(Math.random() * 5 + 30) * 1000,
   };
-
-  gameSkinInfo
-    .find(gameSkinInfo => gameSkinInfo.characterName === characterName)
-    ?.skinInfo.filter(skinName => skinName !== undefined)
-    .forEach(skinInfo => {
-      historyCharacterSkin.skinNameList.push(skinInfo.skinName);
-    });
+  skinData
+    .find(skinInfo => skinInfo.character === characterName)
+    ?.infos.forEach(info => info.images.find(imageInfo => historyCharacterSkin.skinNameList.push(imageInfo.name)));
 
   historyCharacterSkinInfo.push(historyCharacterSkin);
 

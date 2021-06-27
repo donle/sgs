@@ -13,7 +13,7 @@ import * as React from 'react';
 import { Redirect, Route, Router } from 'react-router-dom';
 import { ConnectionService } from 'services/connection_service/connection_service';
 import { Lobby } from './pages/lobby/lobby';
-
+import { CharacterSkinInfo } from '../src/image_loader/skins';
 @mobxReact.observer
 export class App extends React.PureComponent<{
   config: ClientConfig;
@@ -21,12 +21,20 @@ export class App extends React.PureComponent<{
   translator: ClientTranslationModule;
 }> {
   private customHistory = createMemoryHistory();
-
+  private skinData: CharacterSkinInfo[];
   private imageLoader = getImageLoader(this.props.config.flavor);
   private audioLoader = getAudioLoader(this.props.config.flavor);
   private connectionService = new ConnectionService(this.props.config);
 
+  async getSkinData() {
+    const url = process.env.PUBLIC_URL + '/skin_infos.json';
+    await fetch(url)
+      .then(res => res.json())
+      .catch(error => console.error(error))
+      .then(response => (this.skinData = response));
+  }
   componentDidMount() {
+    this.getSkinData();
     document.title = this.props.translator.tr('New QSanguosha');
   }
 
@@ -75,6 +83,7 @@ export class App extends React.PureComponent<{
                 location={location}
                 history={history}
                 match={match}
+                skinData={this.skinData}
                 imageLoader={this.imageLoader}
                 audioLoader={this.audioLoader}
                 electronLoader={this.props.electronLoader}
@@ -91,6 +100,7 @@ export class App extends React.PureComponent<{
                 location={location}
                 history={history}
                 match={match}
+                skinData={this.skinData}
                 imageLoader={this.imageLoader}
                 audioLoader={this.audioLoader}
                 electronLoader={this.props.electronLoader}
@@ -106,6 +116,7 @@ export class App extends React.PureComponent<{
                 location={location}
                 history={history}
                 match={match}
+                skinData={this.skinData}
                 imageLoader={this.imageLoader}
                 audioLoader={this.audioLoader}
                 electronLoader={this.props.electronLoader}

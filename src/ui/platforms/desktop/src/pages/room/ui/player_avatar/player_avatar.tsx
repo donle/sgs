@@ -22,6 +22,7 @@ import { Mask } from '../mask/mask';
 import { SwitchAvatar } from '../switch_avatar/switch_avatar';
 import styles from './player_avatar.module.css';
 import { getSkinName } from '../../ui/switch_avatar/switch_skin';
+import { CharacterSkinInfo } from '.../../image_loader/skins';
 
 type PlayerAvatarProps = {
   store: RoomStore;
@@ -29,6 +30,7 @@ type PlayerAvatarProps = {
   translator: ClientTranslationModule;
   updateFlag: boolean;
   imageLoader: ImageLoader;
+  skinData: CharacterSkinInfo[];
   incomingMessage?: string;
   onCloseIncomingMessage?(): void;
   disabled?: boolean;
@@ -258,8 +260,9 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   async componentDidUpdate() {
     if (this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.CharacterId !== undefined) {
       this.mainImage = (
-        await this.props.imageLoader.getCharacterImage(
+        await this.props.imageLoader.getCharacterSkinPlay(
           this.props.presenter.ClientPlayer.Character.Name,
+          this.props.skinData,
           this.props.presenter.ClientPlayer.Id,
           this.skinName,
         )
@@ -356,7 +359,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     const clientPlayer = this.props.presenter.ClientPlayer;
     const character = clientPlayer?.CharacterId !== undefined ? clientPlayer?.Character : undefined;
     if (clientPlayer && character) {
-      this.skinName = getSkinName(clientPlayer.Character?.Name, clientPlayer?.Id);
+      this.skinName = getSkinName(clientPlayer.Character?.Name, clientPlayer?.Id, this.props.skinData);
     }
     return (
       <>

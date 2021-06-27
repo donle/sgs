@@ -19,6 +19,7 @@ import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
 import { PlayerAvatar } from '../player_avatar/player_avatar';
 import { PlayingBar } from '../playing_bar/playing_bar';
 import styles from './dashboard.module.css';
+import { CharacterSkinInfo } from '../../../../image_loader/skins';
 
 import { Button } from 'ui/button/button';
 import { CardDescription } from 'ui/card_description/card_description';
@@ -34,6 +35,7 @@ export type DashboardProps = {
   translator: ClientTranslationModule;
   updateFlag: boolean;
   imageLoader: ImageLoader;
+  skinData: CharacterSkinInfo[];
   playerSelectableMatcher?(player: Player): boolean;
   onClickPlayer?(player: Player, selected: boolean): void;
   cardEnableMatcher?(card: Card): boolean;
@@ -395,6 +397,7 @@ export class Dashboard extends React.Component<DashboardProps> {
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           onClick={this.props.onClickPlayer}
           store={this.props.store}
+          skinData={this.props.skinData}
           presenter={this.props.presenter}
           translator={this.props.translator}
           onClickSkill={this.props.onClickSkill}

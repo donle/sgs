@@ -27,6 +27,7 @@ import { Dashboard } from './ui/dashboard/dashboard';
 import { GameBoard } from './ui/gameboard/gameboard';
 import { GameDialog } from './ui/game_dialog/game_dialog';
 import { SeatsLayout } from './ui/seats_layout/seats_layout';
+import { CharacterSkinInfo } from '../../image_loader/skins';
 
 @mobxReact.observer
 export class RoomPage extends React.Component<
@@ -37,6 +38,7 @@ export class RoomPage extends React.Component<
     audioLoader: AudioLoader;
     electronLoader: ElectronLoader;
     connectionService: ConnectionService;
+    skinData: CharacterSkinInfo[];
   }>
 > {
   private presenter: RoomPresenter;
@@ -93,6 +95,7 @@ export class RoomPage extends React.Component<
       audioLoader: AudioLoader;
       electronLoader: ElectronLoader;
       connectionService: ConnectionService;
+      skinData: CharacterSkinInfo[];
     }>,
   ) {
     super(props);
@@ -122,6 +125,7 @@ export class RoomPage extends React.Component<
       this.props.imageLoader,
       this.audioService,
       this.props.electronLoader,
+      this.props.skinData,
     );
   }
 
@@ -329,6 +333,7 @@ export class RoomPage extends React.Component<
                 updateFlag={this.store.updateUIFlag}
                 store={this.store}
                 presenter={this.presenter}
+                skinData={this.props.skinData}
                 translator={this.props.translator}
                 onClick={this.store.onClickPlayer}
                 playerSelectableMatcher={this.store.playersSelectionMatcher}
@@ -351,6 +356,7 @@ export class RoomPage extends React.Component<
               store={this.store}
               presenter={this.presenter}
               translator={this.props.translator}
+              skinData={this.props.skinData}
               imageLoader={this.props.imageLoader}
               cardEnableMatcher={this.store.clientPlayerCardActionsMatcher}
               outsideCardEnableMatcher={this.store.clientPlayerOutsideCardActionsMatcher}

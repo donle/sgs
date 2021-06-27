@@ -8,6 +8,7 @@ import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
 import { PlayerCard } from '../player/player';
 import styles from './seats_layout.module.css';
+import { CharacterSkinInfo } from '../../../../image_loader/skins';
 
 type SeatsLayoutProps = {
   store: RoomStore;
@@ -16,6 +17,7 @@ type SeatsLayoutProps = {
   gamePad: JSX.Element;
   updateFlag: boolean;
   imageLoader: ImageLoader;
+  skinData: CharacterSkinInfo[];
   onClick?(player: Player, selected: boolean): void;
   playerSelectableMatcher?(player?: Player): boolean;
 };
@@ -80,6 +82,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           key={playerIndex}
           imageLoader={this.props.imageLoader}
           onClick={this.onClick(player)}
+          skinData={this.props.skinData}
           delight={this.props.store.delightedPlayers !== undefined ? this.props.store.delightedPlayers : undefined}
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           store={this.props.store}
@@ -120,6 +123,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           key={playerIndex}
           imageLoader={this.props.imageLoader}
           onClick={this.onClick(player)}
+          skinData={this.props.skinData}
           delight={this.props.store.delightedPlayers !== undefined ? this.props.store.delightedPlayers : undefined}
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           store={this.props.store}
@@ -162,6 +166,7 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           store={this.props.store}
           player={player}
+          skinData={this.props.skinData}
           translator={this.props.translator}
           presenter={this.props.presenter}
           playerPhase={

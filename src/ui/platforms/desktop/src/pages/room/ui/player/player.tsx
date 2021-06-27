@@ -26,6 +26,7 @@ import { PlayingBar } from '../playing_bar/playing_bar';
 import { SwitchAvatar } from '../switch_avatar/switch_avatar';
 import styles from './player.module.css';
 import { getSkinName } from '../../ui/switch_avatar/switch_skin';
+import { CharacterSkinInfo } from '../../../../image_loader/skins';
 
 type PlayerCardProps = {
   player: ClientPlayer | undefined;
@@ -35,6 +36,7 @@ type PlayerCardProps = {
   imageLoader: ImageLoader;
   inAction: boolean;
   store: RoomStore;
+  skinData: CharacterSkinInfo[];
   incomingMessage?: string;
   onCloseIncomingMessage?(): void;
   actionTimeLimit?: number;
@@ -230,10 +232,11 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   @mobx.action
   async componentDidUpdate() {
     if (this.PlayerCharacter && this.props.player) {
-      this.skinName = getSkinName(this.props.player.Character.Name, this.props.player?.Id);
+      this.skinName = getSkinName(this.props.player.Character.Name, this.props.player?.Id, this.props.skinData);
       this.mainImage = (
-        await this.props.imageLoader.getCharacterImage(
+        await this.props.imageLoader.getCharacterSkinPlay(
           this.props.player?.Character.Name,
+          this.props.skinData,
           this.props.player?.Id,
           this.skinName,
         )
