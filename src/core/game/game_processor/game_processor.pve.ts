@@ -1,7 +1,6 @@
 import { StandardGameProcessor } from './game_processor.standard';
 import { PlayerRole, PlayerInfo, PlayerId } from 'core/player/player_props';
 import { Player } from 'core/player/player';
-import { MarkEnum } from 'core/shares/types/mark_list';
 import { Sanguosha } from '../engine';
 import { ServerEventFinder, GameEventIdentifiers, ClientEventFinder } from 'core/event/event';
 import { Character, CharacterId, CharacterNationality } from 'core/characters/character';
