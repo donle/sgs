@@ -1,5 +1,4 @@
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { GameCommonRules } from 'core/game/game_rules';
 import { AllStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerRole } from 'core/player/player_props';
@@ -16,8 +15,7 @@ export class WangZun extends TriggerSkill {
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
     return (
-      PlayerPhaseStages.PrepareStageStart === content.toStage &&
-      room.getPlayerById(content.playerId).Hp > owner.Hp
+      PlayerPhaseStages.PrepareStageStart === content.toStage && room.getPlayerById(content.playerId).Hp > owner.Hp
     );
   }
 
@@ -33,7 +31,7 @@ export class WangZun extends TriggerSkill {
       await room.drawCards(2, skillUseEvent.fromId, undefined, skillUseEvent.fromId, this.Name);
       room.syncGameCommonRules(phaseStageChangeEvent.playerId, user => {
         user.addInvisibleMark(this.Name, 1);
-        GameCommonRules.addAdditionalHoldCardNumber(user, -1);
+        room.gameCommonRules.addAdditionalHoldCardNumber(user, -1);
       });
     } else {
       await room.drawCards(1, skillUseEvent.fromId, undefined, skillUseEvent.fromId, this.Name);
@@ -84,7 +82,7 @@ export class WangZunShadow extends TriggerSkill implements OnDefineReleaseTiming
     room.syncGameCommonRules(phaseChangeEvent.playerId, user => {
       const extraHold = user.getInvisibleMark(this.GeneralName);
       user.removeInvisibleMark(this.GeneralName);
-      GameCommonRules.addAdditionalHoldCardNumber(user, extraHold);
+      room.gameCommonRules.addAdditionalHoldCardNumber(user, extraHold);
     });
     return true;
   }

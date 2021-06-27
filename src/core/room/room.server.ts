@@ -1546,7 +1546,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       GameEventIdentifiers.SyncGameCommonRulesEvent,
       {
         toId: playerId,
-        commonRules: GameCommonRules.toSocketObject(player),
+        commonRules: this.gameCommonRules.toSocketObject(player),
       },
       playerId,
     );

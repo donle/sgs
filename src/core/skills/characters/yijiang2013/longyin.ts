@@ -2,7 +2,6 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { GameCommonRules } from 'core/game/game_rules';
 import { AllStage, CardUseStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
@@ -45,7 +44,7 @@ export class LongYin extends TriggerSkill {
     await room.dropCards(CardMoveReason.SelfDrop, cardIds!, fromId, fromId, this.Name);
     from.setFlag<PlayerId>(this.Name, event.fromId);
     room.syncGameCommonRules(event.fromId, target => {
-      GameCommonRules.addCardUsableTimes(
+      room.gameCommonRules.addCardUsableTimes(
         new CardMatcher({ generalName: ['slash'] }),
         1,
         room.getPlayerById(event.fromId),
@@ -96,7 +95,7 @@ export class LongYinClear extends TriggerSkill implements OnDefineReleaseTiming 
     }
 
     room.syncGameCommonRules(targetId, target => {
-      GameCommonRules.addCardUsableTimes(
+      room.gameCommonRules.addCardUsableTimes(
         new CardMatcher({ generalName: ['slash'] }),
         -extraUse,
         room.getPlayerById(targetId),

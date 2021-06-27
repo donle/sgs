@@ -2,7 +2,6 @@ import { CardType } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { GameCommonRules } from 'core/game/game_rules';
 import { AllStage, CardMoveStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
@@ -91,7 +90,7 @@ export class QingJian extends TriggerSkill {
 
     room.syncGameCommonRules(room.CurrentPlayer.Id, user => {
       user.addInvisibleMark(this.Name, types.length);
-      GameCommonRules.addAdditionalHoldCardNumber(user, types.length);
+      room.gameCommonRules.addAdditionalHoldCardNumber(user, types.length);
     });
     return true;
   }
@@ -134,7 +133,7 @@ export class QingJianShadow extends TriggerSkill implements OnDefineReleaseTimin
       room.syncGameCommonRules(phaseChangeEvent.fromPlayer, user => {
         const extraHold = user.getInvisibleMark(this.GeneralName);
         user.removeInvisibleMark(this.GeneralName);
-        GameCommonRules.addAdditionalHoldCardNumber(user, -extraHold);
+        room.gameCommonRules.addAdditionalHoldCardNumber(user, -extraHold);
       });
     return true;
   }

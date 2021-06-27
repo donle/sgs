@@ -43,6 +43,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected abstract readonly roomId: RoomId;
   protected abstract readonly gameMode: GameMode;
   protected circle: number = 0;
+  public gameCommonRules = new GameCommonRules();
 
   protected awaitResponseEvent: {
     [K in PlayerId]?: {
@@ -434,7 +435,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     let additionalAttackDistance = 0;
     if (slash) {
       additionalAttackDistance =
-        GameCommonRules.getCardAdditionalAttackDistance(this, from, Sanguosha.getCardById(slash)) +
+        this.gameCommonRules.getCardAdditionalAttackDistance(this, from, Sanguosha.getCardById(slash)) +
         from.getCardUsableDistance(this, slash, to) -
         Sanguosha.getCardById(slash).EffectUseDistance;
     }
@@ -474,7 +475,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     const card = Sanguosha.getCardById(cardId);
 
     return Math.max(
-      this.distanceBetween(from, to) - GameCommonRules.getCardAdditionalUsableDistance(room, from, card, to),
+      this.distanceBetween(from, to) - this.gameCommonRules.getCardAdditionalUsableDistance(room, from, card, to),
       1,
     );
   }
@@ -498,7 +499,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public isAvailableTarget(cardId: CardId, attacker: PlayerId, target: PlayerId) {
     for (const skill of this.getPlayerById(target).getSkills<FilterSkill>('filter')) {
-      if (!skill.canBeUsedCard(cardId, (this as unknown) as Room, target, attacker)) {
+      if (!skill.canBeUsedCard(cardId, this as unknown as Room, target, attacker)) {
         return false;
       }
     }
