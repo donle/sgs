@@ -2005,6 +2005,8 @@ export class StandardGameProcessor extends GameProcessor {
         return;
       }
 
+      event.recoveredHp = Math.min(event.recoveredHp, to.MaxHp - to.Hp);
+
       if (stage === RecoverEffectStage.RecoverEffecting) {
         const hpChangeEvent: ServerEventFinder<GameEventIdentifiers.HpChangeEvent> = {
           fromId: event.recoverBy,
