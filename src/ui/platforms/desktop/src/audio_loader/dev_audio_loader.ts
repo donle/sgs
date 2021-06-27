@@ -45,20 +45,7 @@ export class DevAudioLoader implements AudioLoader {
     gender?: CharacterGender,
   ): Promise<string> {
     let voice: string;
-    if (skinData !== undefined && skinName !== characterName) {
-      const voices = skinData
-        .find(characterSkinInfo => characterSkinInfo.character === characterName)
-        ?.infos.find(imageInfo => imageInfo.images.find(images => images.name === skinName))?.voices;
-      const voiceDetail = voices?.find(skill => skill.skill === skillName)?.detail;
-      if (voices !== undefined && voiceDetail) {
-        const voicePath = voiceDetail[Math.floor(voiceDetail?.length * Math.random())].location;
-        voice = process.env.PUBLIC_URL + '/' + voicePath;
-      } else if (skillName === 'death') {
-        voice = await this.getDeathAudio(characterName);
-      } else {
-        voice = await this.getSkillAudio(skillName, gender!, characterName);
-      }
-    } else if (skillName === 'death') {
+    if (skillName === 'death') {
       voice = await this.getDeathAudio(characterName);
     } else {
       voice = await this.getSkillAudio(skillName, gender!, characterName);
