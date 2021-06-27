@@ -287,3 +287,6 @@ export { PveLongLie, PveLongLieShadow } from './game_mode/pve/pve_longlie';
 export { PveSuWei } from './game_mode/pve/pve_suwei';
 export { PveLongShi } from './game_mode/pve/pve_longshi';
 export { PveLingXi, PveLingXiBuff, PveLingXiShadow, PveLingXiDraw } from './game_mode/pve/pve_lingxi';
+export { PveLongHou } from './game_mode/pve/pve_longhou';
+export { PveQinLv } from './game_mode/pve/pve_qinlv';
+export { PveJieNu } from './game_mode/pve/pve_jienu';
