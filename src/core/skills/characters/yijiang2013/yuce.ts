@@ -53,11 +53,10 @@ export class YuCe extends TriggerSkill {
     room.broadcast(GameEventIdentifiers.CardDisplayEvent, showCardEvent);
 
     const damageEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-    const damageFromId = damageEvent.fromId!;
-    const damageFrom = room.getPlayerById(damageFromId!);
+    const damageFromId = damageEvent.fromId;
 
-    if (damageFrom && !damageFrom.Dead) {
-      const handCards = damageFrom.getCardIds(PlayerCardsArea.HandArea);
+    if (damageFromId !== undefined && !room.getPlayerById(damageFromId).Dead) {
+      const handCards = room.getPlayerById(damageFromId).getCardIds(PlayerCardsArea.HandArea);
       if (handCards.length <= 0) {
         await room.recover({
           toId: fromId,
