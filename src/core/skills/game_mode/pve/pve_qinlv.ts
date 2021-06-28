@@ -27,7 +27,7 @@ export class PveQinLv extends TriggerSkill {
     if (owner.Id !== player.Id) {
       await room.recover({ recoveredHp: 1, recoverBy: owner.Id, toId: owner.Id });
       if (owner.isInjured()) {
-        await room.loseHp(player.Id, player.MaxHp / 2);
+        await room.loseHp(player.Id, Math.floor(player.MaxHp / 2));
       }
     }
 
