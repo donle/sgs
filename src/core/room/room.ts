@@ -430,7 +430,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     if (to.Id === from.Id) {
       return false;
     }
-    const seatDistance = this.distanceBetween(from, to);
+    
     let additionalAttackDistance = 0;
     if (slash) {
       additionalAttackDistance =
@@ -440,7 +440,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     }
 
     return (
-      from.getAttackDistance(this) + additionalAttackDistance >= seatDistance &&
+      this.withinAttackDistance(from, to, additionalAttackDistance) &&
       this.canUseCardTo(slash || new CardMatcher({ generalName: ['slash'] }), to.Id)
     );
   }
@@ -477,6 +477,23 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       this.distanceBetween(from, to) - GameCommonRules.getCardAdditionalUsableDistance(room, from, card, to),
       1,
     );
+  }
+
+  public withinAttackDistance(from: Player, to: Player, fixed: number = 0) {
+    if (from === to) {
+      return false;
+    }
+
+    for (const player of this.getAlivePlayersFrom()) {
+      for (const skill of player.getPlayerSkills<GlobalRulesBreakerSkill>('globalBreaker')) {
+        const breakWithinAttackDistance = skill.breakWithinAttackDistance(this, player, from, to);
+        if (breakWithinAttackDistance) {
+          return breakWithinAttackDistance;
+        }
+      }
+    }
+
+    return Math.max(from.getAttackDistance(this) + fixed, 0) >= this.distanceBetween(from, to);
   }
 
   public isAvailableTarget(cardId: CardId, attacker: PlayerId, target: PlayerId) {

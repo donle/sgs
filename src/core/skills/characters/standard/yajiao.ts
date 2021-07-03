@@ -48,8 +48,7 @@ export class YaJiao extends TriggerSkill {
     const from = room.getPlayerById(fromId);
     const targets = room.AlivePlayers.filter(
       player =>
-        player.getAttackDistance(room) >= room.distanceBetween(player, from) &&
-        player !== from &&
+        room.withinAttackDistance(player, from) &&
         player.getCardIds().length > 0,
     ).map(p => p.Id);
 
