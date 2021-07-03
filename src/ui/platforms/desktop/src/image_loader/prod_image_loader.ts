@@ -148,12 +148,15 @@ export class ProdImageLoader implements ImageLoader {
         .find(skinInfo => skinInfo.character === characterName)
         ?.infos.find(skinInfo => skinInfo.images?.find(imagesInfo => imagesInfo.name === skinName));
       if (skin) {
-        image = process.env.PUBLIC_URL + '/' + skin?.images.find(imagesInfo => imagesInfo.name === skinName)?.big;
+        image = process.env.PUBLIC_URL + '/' + skin?.images.find(imagesInfo => imagesInfo.name === skinName)?.seat;
       } else {
         image = (await import(`./images/characters/${characterName}.png`)).default;
       }
     } else {
       image = (await import(`./images/characters/${characterName}.png`)).default;
+    }
+    if (skinName === 'random') {
+      image = (await import(`./images/system/player_seat.png`)).default;
     }
     return { alt: characterName, src: image };
   }

@@ -1,0 +1,21 @@
+@value gridLine from '../../../../../ui/metrics/metrics.css';
+
+.innerDialog {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.characterSelector {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 695px;
+    max-height: calc(gridLine * 50);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.characterSelectorItem {
+    margin: 2px;
+    position: relative;
+}

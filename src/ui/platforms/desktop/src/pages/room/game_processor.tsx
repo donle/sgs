@@ -708,7 +708,7 @@ export class GameClientProcessor {
   ) {
     const { playerId } = content;
     const player = this.store.room.getPlayerById(playerId);
-    let skinName = getSkinName(player.Character.Name, player.Id, this.skinData);
+    let skinName = getSkinName(player.Character.Name, player.Id, this.skinData).skinName;
     this.audioService.playDeathAudio(player.Character.Name, this.skinData, skinName);
     this.store.room.kill(player);
     this.presenter.broadcastUIUpdate();
@@ -988,7 +988,7 @@ export class GameClientProcessor {
     ) {
       const actualCardIds = Card.getActualCards(cardIds);
       if (toArea === CardMoveArea.OutsideArea) {
-        to.getCardIds(toArea as unknown as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
+        to.getCardIds((toArea as unknown) as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
       } else if (toArea === CardMoveArea.JudgeArea) {
         const transformedDelayedTricks = cardIds.map(cardId => {
           if (!Card.isVirtualCardId(cardId)) {
@@ -1107,7 +1107,7 @@ export class GameClientProcessor {
   }
 
   protected onHandleAskForChoosingCardWithConditionsEvent<
-    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent,
+    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent
   >(type: T, content: ServerEventFinder<T>) {
     const selectedCards: CardId[] = [];
     const selectedCardsIndex: number[] = [];
@@ -1338,7 +1338,7 @@ export class GameClientProcessor {
   ) {
     const skill = Sanguosha.getSkillBySkillName(content.skillName);
     const from = this.store.room.getPlayerById(content.fromId);
-    let skinName = getSkinName(from.Character.Name, from.Id, this.skinData);
+    let skinName = getSkinName(from.Character.Name, from.Id, this.skinData).skinName;
     !content.mute &&
       this.audioService.playSkillAudio(skill.GeneralName, from.Gender, this.skinData, from.Character.Name, skinName);
 
@@ -1412,7 +1412,7 @@ export class GameClientProcessor {
   }
 
   protected async onHandleAskForChoosingCardAvailableTargetEvent<
-    T extends GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent,
+    T extends GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent
   >(type: T, content: ServerEventFinder<T>) {
     const { cardId, exclude, conversation } = content;
     this.presenter.createIncomingConversation({

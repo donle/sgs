@@ -135,6 +135,10 @@ export const eventDictionary: Word[] = [
     target: '请选择一名武将',
   },
   {
+    source: 'please choose a skin',
+    target: '请选择一个皮肤',
+  },
+  {
     source: 'please choose a nationality',
     target: '请选择一个势力',
   },

@@ -232,7 +232,11 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   @mobx.action
   async componentDidUpdate() {
     if (this.PlayerCharacter && this.props.player) {
-      this.skinName = getSkinName(this.props.player.Character.Name, this.props.player?.Id, this.props.skinData);
+      this.skinName = getSkinName(
+        this.props.player.Character.Name,
+        this.props.player?.Id,
+        this.props.skinData,
+      ).skinName;
       this.mainImage = (
         await this.props.imageLoader.getCharacterSkinPlay(
           this.props.player?.Character.Name,

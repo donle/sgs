@@ -10,7 +10,12 @@ export type HistoryCharacterSkin = {
 };
 
 let historyCharacterSkinInfo: HistoryCharacterSkin[] = [];
-export function getSkinName(characterName: string, playerId: PlayerId, skinData: CharacterSkinInfo[]) {
+export function getSkinName(
+  characterName: string,
+  playerId: PlayerId,
+  skinData: CharacterSkinInfo[],
+  skinName?: string,
+) {
   const currentTime = new Date().getTime();
   const history = historyCharacterSkinInfo.find(
     history => history.characterName === characterName && history.playerId === playerId,
@@ -21,7 +26,15 @@ export function getSkinName(characterName: string, playerId: PlayerId, skinData:
       history.skinName = history.skinNameList[Math.floor(Math.random() * history.skinNameList.length)];
       history.nextTime = currentTime + Math.floor(Math.random() * 5 + 30) * 1000;
     }
-    return history.skinName;
+    if (skinName) {
+      if (skinName === 'random') {
+        history.nextTime = currentTime;
+      } else {
+        history.nextTime = currentTime + 999999999;
+        history.skinName = skinName;
+      }
+    }
+    return history;
   }
 
   const historyCharacterSkin: HistoryCharacterSkin = {
@@ -36,6 +49,5 @@ export function getSkinName(characterName: string, playerId: PlayerId, skinData:
     ?.infos.forEach(info => info.images.find(imageInfo => historyCharacterSkin.skinNameList.push(imageInfo.name)));
 
   historyCharacterSkinInfo.push(historyCharacterSkin);
-
-  return historyCharacterSkin.skinName;
+  return historyCharacterSkin;
 }
