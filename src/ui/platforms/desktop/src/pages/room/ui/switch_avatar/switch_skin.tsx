@@ -30,7 +30,7 @@ export function getSkinName(
       if (skinName === 'random') {
         history.nextTime = currentTime;
       } else {
-        history.nextTime = currentTime + 999999999;
+        history.nextTime = currentTime + Number.MAX_SAFE_INTEGER;
         history.skinName = skinName;
       }
     }
