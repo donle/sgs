@@ -18,7 +18,7 @@ export class ShiBei extends TriggerSkill {
 
   async whenObtainingSkill(room: Room, owner: Player) {
     if (room.Analytics.getDamagedRecord(owner.Id, true).length > 0) {
-      room.setFlag(owner.Id, this.GeneralName, true, true);
+      room.setFlag(owner.Id, this.GeneralName, true, this.GeneralName);
     }
   }
 
@@ -42,7 +42,7 @@ export class ShiBei extends TriggerSkill {
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     if (room.getFlag<boolean>(event.fromId, this.GeneralName) !== true) {
-      room.setFlag(event.fromId, this.GeneralName, true, true);
+      room.setFlag(event.fromId, this.GeneralName, true, this.GeneralName);
     }
 
     if (room.Analytics.getDamagedRecord(event.fromId, true).length <= 1) {

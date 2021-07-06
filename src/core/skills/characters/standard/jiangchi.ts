@@ -3,7 +3,13 @@ import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE } from 'core/game/game_props';
-import { AllStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
+import {
+  AllStage,
+  PhaseChangeStage,
+  PhaseStageChangeStage,
+  PlayerPhase,
+  PlayerPhaseStages,
+} from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -101,8 +107,13 @@ export class JiangChi extends TriggerSkill {
 @ShadowSkill
 @CompulsorySkill({ name: JiangChi.Name, description: JiangChi.Description })
 export class JiangChiExtra extends RulesBreakerSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(room: Room, playerId: PlayerId): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public breakCardUsableDistance(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
@@ -147,8 +158,13 @@ export class JiangChiExtra extends RulesBreakerSkill implements OnDefineReleaseT
 @ShadowSkill
 @CompulsorySkill({ name: JiangChiExtra.Name, description: JiangChiExtra.Description })
 export class JiangChiBlock extends FilterSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId): boolean {
@@ -164,7 +180,16 @@ export class JiangChiBlock extends FilterSkill implements OnDefineReleaseTiming 
 
 @ShadowSkill
 @CompulsorySkill({ name: JiangChiBlock.Name, description: JiangChi.Description })
-export class JiangChiKeep extends TriggerSkill {
+export class JiangChiKeep extends TriggerSkill implements OnDefineReleaseTiming {
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
+  }
+
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent>) {
     return EventPacker.getIdentifier(event) === GameEventIdentifiers.AskForCardDropEvent;
   }

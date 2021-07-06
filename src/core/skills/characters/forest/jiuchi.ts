@@ -94,7 +94,7 @@ export class JiuChiDrunk extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
-    room.setFlag<boolean>(event.fromId, JiuChi.Used, true, true);
+    room.setFlag<boolean>(event.fromId, JiuChi.Used, true, JiuChi.Used);
 
     return true;
   }

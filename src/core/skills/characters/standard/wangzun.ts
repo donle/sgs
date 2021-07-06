@@ -1,7 +1,13 @@
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { AllStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
+import {
+  AllStage,
+  PhaseChangeStage,
+  PhaseStageChangeStage,
+  PlayerPhase,
+  PlayerPhaseStages,
+} from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerRole } from 'core/player/player_props';
+import { PlayerId, PlayerRole } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CompulsorySkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
@@ -44,27 +50,37 @@ export class WangZun extends TriggerSkill {
 @ShadowSkill
 @CompulsorySkill({ name: WangZun.Name, description: WangZun.Description })
 export class WangZunShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  public afterDead(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterDead(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
-  public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
-  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
-    return stage === PhaseStageChangeStage.AfterStageChanged;
+  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage) {
+    return stage === PhaseChangeStage.PhaseChanged;
   }
 
   public isFlaggedSkill() {
     return true;
   }
 
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    if (PlayerPhaseStages.PhaseFinishEnd !== content.toStage) {
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
+    if (PlayerPhase.PhaseFinish !== content.from || !content.fromPlayer) {
       return false;
     }
-    const lord = room.getPlayerById(content.playerId);
+    const lord = room.getPlayerById(content.fromPlayer);
     return lord.Role === PlayerRole.Lord && lord.getInvisibleMark(this.GeneralName) > 0;
   }
 

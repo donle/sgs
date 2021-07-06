@@ -99,8 +99,13 @@ export class QingJian extends TriggerSkill {
 @ShadowSkill
 @CommonSkill({ name: 'qingjian', description: 'qingjian_description' })
 export class QingJianShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public isAutoTrigger() {

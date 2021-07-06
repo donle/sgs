@@ -49,7 +49,7 @@ export class QiangXi extends ActiveSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId, toIds, cardIds } = skillUseEvent;
     room.setFlag<boolean>(fromId, QiangXi.exUse, true);
-    room.setFlag<boolean>(toIds![0], this.Name, true, false);
+    room.setFlag<boolean>(toIds![0], this.Name, true);
 
     if (cardIds && cardIds.length > 0) {
       await room.dropCards(CardMoveReason.SelfDrop, cardIds, fromId, fromId, this.Name);

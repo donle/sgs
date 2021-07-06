@@ -79,7 +79,7 @@ export class YiJue extends ActiveSkill {
     const card = Sanguosha.getCardById(selectedCards[0]);
     if (card.isBlack()) {
       await room.obtainSkill(to.Id, YiJueBlocker.Name);
-      room.setFlag(to.Id, this.Name, true, true);
+      room.setFlag(to.Id, this.Name, true, this.Name);
     } else {
       await room.moveCards({
         movingCards: selectedCards.map(card => ({ card, fromArea: CardMoveArea.HandArea })),
@@ -123,11 +123,22 @@ export class YiJue extends ActiveSkill {
 @ShadowSkill
 @CompulsorySkill({ name: YiJue.GeneralName, description: YiJue.Description })
 export class YiJueShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  afterDead(room: Room) {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterDead(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
-  afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public getPriority() {

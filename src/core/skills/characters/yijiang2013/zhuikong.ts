@@ -1,8 +1,15 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { AllStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
+import {
+  AllStage,
+  PhaseChangeStage,
+  PhaseStageChangeStage,
+  PlayerPhase,
+  PlayerPhaseStages,
+} from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
+import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { GlobalFilterSkill, GlobalRulesBreakerSkill, OnDefineReleaseTiming, TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
@@ -12,8 +19,13 @@ export class ZhuiKong extends TriggerSkill implements OnDefineReleaseTiming {
   public static Filter: string = 'qiuyuan_filter';
   public static DistanceBreak: string = 'distance_break';
 
-  public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public isRefreshAt(room: Room, owner: Player, phase: PlayerPhase): boolean {

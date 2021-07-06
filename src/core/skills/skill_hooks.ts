@@ -1,11 +1,13 @@
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { AllStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Skill } from './skill';
 
 export interface OnDefineReleaseTiming {
-  afterLosingSkill?(room: Room, playerId: PlayerId): boolean;
-  afterDead?(room: Room, playerId: PlayerId): boolean;
+  afterLosingSkill?(room: Room, playerId: PlayerId, content: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean;
+  afterDead?(room: Room, playerId: PlayerId, content: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean;
   whenObtainingSkill?(room: Room, player: Player): Promise<void>;
   whenLosingSkill?(room: Room, player: Player): Promise<void>;
   whenDead?(room: Room, player: Player): Promise<void>;

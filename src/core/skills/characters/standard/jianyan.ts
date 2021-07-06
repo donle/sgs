@@ -3,6 +3,7 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { CharacterGender } from 'core/characters/character';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { ActiveSkill, CommonSkill } from 'core/skills/skill';
@@ -12,6 +13,10 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 export class JianYan extends ActiveSkill {
   public canUse(room: Room, owner: Player): boolean {
     return !owner.hasUsedSkill(this.Name);
+  }
+
+  public isRefreshAt(room: Room, owner: Player, phase: PlayerPhase): boolean {
+    return phase === PlayerPhase.PlayCardStage;
   }
 
   public numberOfTargets() {

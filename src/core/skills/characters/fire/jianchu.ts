@@ -5,7 +5,7 @@ import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, Server
 import { Sanguosha } from 'core/game/engine';
 import { AimStage, AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, OnDefineReleaseTiming, RulesBreakerSkill, TriggerSkill } from 'core/skills/skill';
 import { ShadowSkill } from 'core/skills/skill_wrappers';
@@ -77,7 +77,7 @@ export class Jianchu extends TriggerSkill {
     if (!Sanguosha.getCardById(response.selectedCard!).is(CardType.Basic)) {
       EventPacker.setDisresponsiveEvent(aimEvent);
       const additionalTimes = room.getFlag<number>(skillUseEvent.fromId, this.Name) || 0;
-      room.setFlag<number>(skillUseEvent.fromId, this.Name, additionalTimes + 1, false);
+      room.setFlag<number>(skillUseEvent.fromId, this.Name, additionalTimes + 1);
     } else if (aimEvent.byCardId && room.getCardOwnerId(aimEvent.byCardId) === undefined) {
       await room.moveCards({
         movingCards: [{ card: aimEvent.byCardId, fromArea: CardMoveArea.ProcessingArea }],
@@ -114,8 +114,13 @@ export class JianChuShadow extends RulesBreakerSkill {
 @ShadowSkill
 @CommonSkill({ name: JianChuShadow.Name, description: JianChuShadow.Description })
 export class JianchuRemove extends TriggerSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public isAutoTrigger(): boolean {
@@ -138,7 +143,7 @@ export class JianchuRemove extends TriggerSkill implements OnDefineReleaseTiming
   }
 
   public async onTrigger(): Promise<boolean> {
-  return true;
+    return true;
   }
 
   public async onEffect(

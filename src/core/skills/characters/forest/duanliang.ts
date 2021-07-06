@@ -4,11 +4,10 @@ import { CardId } from 'core/cards/libs/card_props';
 import { Slash } from 'core/cards/standard/slash';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE } from 'core/game/game_props';
-import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { CommonSkill, OnDefineReleaseTiming, RulesBreakerSkill, ShadowSkill, ViewAsSkill } from 'core/skills/skill';
+import { CommonSkill, RulesBreakerSkill, ShadowSkill, ViewAsSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'duanliang', description: 'duanliang_description' })
 export class DuanLiang extends ViewAsSkill {
@@ -53,11 +52,7 @@ export class DuanLiang extends ViewAsSkill {
 
 @ShadowSkill
 @CommonSkill({ name: DuanLiang.Name, description: DuanLiang.Description })
-export class DuanLiangShadow extends RulesBreakerSkill implements OnDefineReleaseTiming {
-  afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
-  }
-
+export class DuanLiangShadow extends RulesBreakerSkill {
   breakCardUsableDistanceTo(cardId: CardId | CardMatcher, room: Room, owner: Player, target: Player) {
     if (owner.getCardIds(PlayerCardsArea.HandArea).length > target.getCardIds(PlayerCardsArea.HandArea).length) {
       return 0;

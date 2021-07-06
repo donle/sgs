@@ -24,7 +24,7 @@ export interface ServerEvent extends EventUtilities {
     name: string;
     value: any;
     to: PlayerId;
-    invisible: boolean;
+    tagName?: string;
   };
   [GameEventIdentifiers.RemoveFlagEvent]: {
     name: string;

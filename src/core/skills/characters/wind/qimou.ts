@@ -2,7 +2,7 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AllStage, PhaseChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
+import { AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -61,7 +61,7 @@ export class QiMou extends ActiveSkill {
 
     await room.loseHp(fromId, lostHp);
     await room.drawCards(lostHp, fromId, undefined, fromId, this.Name);
-    room.setFlag(fromId, this.Name, lostHp, true);
+    room.setFlag(fromId, this.Name, lostHp, this.Name);
 
     return true;
   }
@@ -70,8 +70,13 @@ export class QiMou extends ActiveSkill {
 @ShadowSkill
 @CommonSkill({ name: QiMou.Name, description: QiMou.Description })
 export class QiMouShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerStage === PlayerPhaseStages.PhaseFinishEnd;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   isAutoTrigger() {
@@ -83,7 +88,7 @@ export class QiMouShadow extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: AllStage) {
-    return stage === PhaseChangeStage.AfterPhaseChanged && event.to === PlayerPhase.PhaseFinish;
+    return stage === PhaseChangeStage.PhaseChanged && event.from === PlayerPhase.PhaseFinish;
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {

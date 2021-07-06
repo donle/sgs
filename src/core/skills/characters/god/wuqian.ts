@@ -1,5 +1,11 @@
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
+import {
+  AllStage,
+  PhaseChangeStage,
+  PhaseStageChangeStage,
+  PlayerPhase,
+  PlayerPhaseStages,
+} from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -52,8 +58,13 @@ export class WuQian extends ActiveSkill {
 @ShadowSkill
 @CompulsorySkill({ name: WuQian.GeneralName, description: WuQian.Description })
 export class WuQianShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerStage === PlayerPhaseStages.PhaseFinishEnd;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public afterDead(): boolean {

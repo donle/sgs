@@ -3,7 +3,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE } from 'core/game/game_props';
-import { PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
+import { AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -57,9 +57,9 @@ export class TianYi extends ActiveSkill {
     }
 
     if (pindianRecord[0].winner === fromId) {
-      room.setFlag<boolean>(fromId, TianYi.Win, true, true);
+      room.setFlag<boolean>(fromId, TianYi.Win, true, TianYi.Win);
     } else {
-      room.setFlag<boolean>(fromId, TianYi.Lose, true, true);
+      room.setFlag<boolean>(fromId, TianYi.Lose, true, TianYi.Lose);
     }
 
     return true;
@@ -69,8 +69,13 @@ export class TianYi extends ActiveSkill {
 @ShadowSkill
 @CommonSkill({ name: TianYi.Name, description: TianYi.Description })
 export class TianYiRemove extends TriggerSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public isAutoTrigger(): boolean {
@@ -119,8 +124,13 @@ export class TianYiRemove extends TriggerSkill implements OnDefineReleaseTiming 
 @ShadowSkill
 @CommonSkill({ name: TianYiRemove.Name, description: TianYiRemove.Description })
 export class TianYiExtra extends RulesBreakerSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(room: Room, playerId: PlayerId): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public breakCardUsableTargets(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
@@ -177,8 +187,13 @@ export class TianYiExtra extends RulesBreakerSkill implements OnDefineReleaseTim
 @ShadowSkill
 @CommonSkill({ name: TianYiExtra.Name, description: TianYiExtra.Description })
 export class TianYiBlock extends FilterSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId): boolean {
