@@ -37,7 +37,7 @@ export class SiShu extends TriggerSkill {
     if (room.getFlag(toId, this.Name) === true) {
       room.removeFlag(toId, this.Name);
     } else {
-      room.setFlag<boolean>(toIds![0], this.Name, true, true);
+      room.setFlag<boolean>(toIds![0], this.Name, true, this.Name);
     }
 
     return true;

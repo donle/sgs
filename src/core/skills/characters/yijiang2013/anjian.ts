@@ -112,7 +112,7 @@ export class AnJian extends TriggerSkill {
       aimEvent.triggeredBySkills = aimEvent.triggeredBySkills
         ? [...aimEvent.triggeredBySkills, QingGangSkill.GeneralName]
         : [QingGangSkill.GeneralName];
-      room.setFlag(toId, this.GeneralName, true, true);
+      room.setFlag(toId, this.GeneralName, true, this.GeneralName);
     } else if (identifier === GameEventIdentifiers.DamageEvent) {
       const { fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
       const damageEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;

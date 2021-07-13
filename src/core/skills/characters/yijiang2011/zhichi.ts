@@ -1,13 +1,7 @@
 import { CardType } from 'core/cards/card';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import {
-  AllStage,
-  CardEffectStage,
-  DamageEffectStage,
-  PhaseChangeStage,
-  PlayerPhase,
-} from 'core/game/stage_processor';
+import { AllStage, CardEffectStage, DamageEffectStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -17,22 +11,13 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'zhichi', description: 'zhichi_description' })
 export class ZhiChi extends TriggerSkill {
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
-    stage?: AllStage,
-  ): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage): boolean {
     return stage === DamageEffectStage.AfterDamagedEffect;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>): boolean {
     return (
-      owner.Id === content.toId && 
-      room.CurrentPlayer !== owner &&
-      room.getFlag<boolean>(owner.Id, this.Name) !== true
+      owner.Id === content.toId && room.CurrentPlayer !== owner && room.getFlag<boolean>(owner.Id, this.Name) !== true
     );
   }
 
@@ -44,7 +29,7 @@ export class ZhiChi extends TriggerSkill {
     room: Room,
     skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
-    room.setFlag(skillUseEvent.fromId, this.Name, true, true);
+    room.setFlag(skillUseEvent.fromId, this.Name, true, this.Name);
 
     return true;
   }
@@ -53,8 +38,13 @@ export class ZhiChi extends TriggerSkill {
 @ShadowSkill
 @CompulsorySkill({ name: ZhiChi.Name, description: ZhiChi.Description })
 export class ZhiChiShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public isTriggerable(
@@ -76,25 +66,20 @@ export class ZhiChiShadow extends TriggerSkill implements OnDefineReleaseTiming 
     let canTrigger = false;
     if (EventPacker.getIdentifier(content) === GameEventIdentifiers.CardEffectEvent) {
       const cardEffectEvent = content as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>;
-      const card = Sanguosha.getCardById(cardEffectEvent.cardId)
-      canTrigger = (
+      const card = Sanguosha.getCardById(cardEffectEvent.cardId);
+      canTrigger =
         cardEffectEvent.toIds !== undefined &&
         cardEffectEvent.toIds.includes(owner.Id) &&
-        (card.GeneralName === 'slash' ||
-          (card.is(CardType.Trick) && !card.is(CardType.DelayedTrick)))
-      );
+        (card.GeneralName === 'slash' || (card.is(CardType.Trick) && !card.is(CardType.DelayedTrick)));
     } else if (EventPacker.getIdentifier(content) === GameEventIdentifiers.PhaseChangeEvent) {
       const phaseChangeEvent = content as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
-      canTrigger = phaseChangeEvent.to === PlayerPhase.PhaseFinish;
+      canTrigger = phaseChangeEvent.from === PlayerPhase.PhaseFinish;
     }
 
     return canTrigger && room.getFlag<boolean>(owner.Id, this.GeneralName) === true;
   }
 
-  public async onTrigger(
-    room: Room,
-    content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ): Promise<boolean> {
+  public async onTrigger(room: Room, content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     const unknownEvent = content.triggeredOnEvent as ServerEventFinder<
       GameEventIdentifiers.CardEffectEvent | GameEventIdentifiers.PhaseChangeEvent
     >;

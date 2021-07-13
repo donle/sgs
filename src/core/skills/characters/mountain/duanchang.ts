@@ -34,7 +34,7 @@ export class DuanChang extends TriggerSkill {
         .map(skill => skill.Name),
       true,
     );
-    room.setFlag<boolean>(killedBy!, this.GeneralName, true, true);
+    room.setFlag<boolean>(killedBy!, this.GeneralName, true, this.GeneralName);
     return true;
   }
 }

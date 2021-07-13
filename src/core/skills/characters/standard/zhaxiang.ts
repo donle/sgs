@@ -3,7 +3,7 @@ import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE } from 'core/game/game_props';
-import { AllStage, LoseHpStage, PlayerPhase } from 'core/game/stage_processor';
+import { AllStage, LoseHpStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -53,8 +53,13 @@ export class ZhaXiang extends TriggerSkill {
 @ShadowSkill
 @CompulsorySkill({ name: ZhaXiang.GeneralName, description: ZhaXiang.Description })
 export class ZhaXiangShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>, stage: AllStage): boolean {

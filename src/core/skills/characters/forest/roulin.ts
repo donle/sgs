@@ -2,8 +2,9 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CharacterGender } from 'core/characters/character';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AimStage, AllStage, CardUseStage, PlayerPhase } from 'core/game/stage_processor';
+import { AimStage, AllStage, CardUseStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
+import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CompulsorySkill, OnDefineReleaseTiming, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -55,8 +56,13 @@ export class RouLin extends TriggerSkill {
 @ShadowSkill
 @CompulsorySkill({ name: RouLin.GeneralName, description: RouLin.Description })
 export class RouLinShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  afterLosingSkill(room: Room) {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseBegin && stage === PhaseChangeStage.AfterPhaseChanged;
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage?: AllStage): boolean {

@@ -8,6 +8,7 @@ import {
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
+import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -18,6 +19,10 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 export class GongXin extends ActiveSkill {
   public canUse(room: Room, owner: Player) {
     return !owner.hasUsedSkill(this.Name);
+  }
+
+  public isRefreshAt(room: Room, owner: Player, phase: PlayerPhase): boolean {
+    return phase === PlayerPhase.PlayCardStage;
   }
 
   public numberOfTargets() {

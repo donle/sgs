@@ -144,8 +144,13 @@ export class ZiShouReforge extends TriggerSkill {
 @ShadowSkill
 @CommonSkill({ name: ZiShouReforge.Name, description: ZiShouReforge.Description })
 export class ZiShouPrevent extends TriggerSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public isFlaggedSkill(): boolean {
@@ -193,8 +198,13 @@ export class ZiShouPrevent extends TriggerSkill implements OnDefineReleaseTiming
 @ShadowSkill
 @CommonSkill({ name: ZiShouPrevent.Name, description: ZiShouPrevent.Description })
 export class ZiShouShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public isFlaggedSkill(): boolean {

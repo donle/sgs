@@ -5,7 +5,7 @@ import { PlayerCards, PlayerCardsArea, PlayerCardsOutside, PlayerId } from './pl
 
 export class ClientPlayer extends Player {
   private visibleOutsideAreas: string[] = [];
-  private visiblePlayerTags: string[] = [];
+  private visiblePlayerTags: { [name: string]: string } = {};
 
   constructor(
     protected playerId: PlayerId,
@@ -19,19 +19,19 @@ export class ClientPlayer extends Player {
     super(playerCards, playerCharacterId);
   }
 
-  setFlag<T>(name: string, value: T, invisible?: boolean): T {
-    if (!invisible && !this.visiblePlayerTags.includes(name)) {
-      this.visiblePlayerTags.push(name);
+  setFlag<T>(name: string, value: T, tagName?: string): T {
+    if (tagName && this.visiblePlayerTags[name] !== tagName) {
+      this.visiblePlayerTags[name] = tagName;
     }
 
     return super.setFlag(name, value);
   }
   public clearFlags() {
-    this.visiblePlayerTags = [];
+    this.visiblePlayerTags = {};
     super.clearFlags();
   }
   removeFlag(name: string) {
-    this.visiblePlayerTags = this.visiblePlayerTags.filter(tag => tag !== name);
+    delete this.visiblePlayerTags[name];
     super.removeFlag(name);
   }
 
@@ -48,7 +48,7 @@ export class ClientPlayer extends Player {
     return this.visibleOutsideAreas.includes(areaName);
   }
   getAllVisibleTags() {
-    return this.visiblePlayerTags;
+    return Object.values(this.visiblePlayerTags);
   }
 
   setHuaShenInfo(info: HuaShenInfo) {
@@ -57,7 +57,7 @@ export class ClientPlayer extends Player {
         TranslationPack.translationJsonPatcher('huashen skill:{0}', this.huashenInfo.skillName).toString(),
       );
     }
-    this.setFlag(TranslationPack.translationJsonPatcher('huashen skill:{0}', info.skillName).toString(), true, false);
+    this.setFlag(TranslationPack.translationJsonPatcher('huashen skill:{0}', info.skillName).toString(), true);
     super.setHuaShenInfo(info);
   }
 
