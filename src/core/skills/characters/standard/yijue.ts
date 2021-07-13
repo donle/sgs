@@ -209,7 +209,7 @@ export class YiJueShadow extends TriggerSkill implements OnDefineReleaseTiming {
 }
 
 @ShadowSkill
-@CompulsorySkill({ name: 'yijueBlocker', description: 'yijueBlocker_description' })
+@CompulsorySkill({ name: 'shadowYijueBlocker', description: 'shadowYijueBlocker_description' })
 export class YiJueBlocker extends FilterSkill {
   canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId) {
     return cardId instanceof CardMatcher
