@@ -100,7 +100,7 @@ export class LuoYi extends TriggerSkill {
           moveReason: CardMoveReason.ActivePrey,
         });
 
-        room.setFlag<boolean>(skillUseEvent.fromId, this.Name, true, true);
+        room.setFlag<boolean>(skillUseEvent.fromId, this.Name, true, this.Name);
       } else {
         luoyiObtain = [];
       }
@@ -123,8 +123,13 @@ export class LuoYi extends TriggerSkill {
 @ShadowSkill
 @CompulsorySkill({ name: LuoYi.GeneralName, description: LuoYi.Description })
 export class LuoYiShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayer === room.getPlayerById(playerId) && room.CurrentPlayerPhase === PlayerPhase.PhaseBegin;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseBegin && stage === PhaseChangeStage.AfterPhaseChanged;
   }
 
   public getPriority() {

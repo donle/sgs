@@ -4,14 +4,9 @@ import { CardId } from 'core/cards/libs/card_props';
 import { Slash } from 'core/cards/standard/slash';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import {
-  AllStage,
-  DamageEffectStage,
-  PhaseChangeStage,
-  PlayerPhase,
-} from 'core/game/stage_processor';
+import { AllStage, DamageEffectStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, OnDefineReleaseTiming, TriggerSkill, ViewAsSkill } from 'core/skills/skill';
 import { ShadowSkill } from 'core/skills/skill_wrappers';
@@ -23,7 +18,7 @@ export class FuHun extends ViewAsSkill {
   public canViewAs(): string[] {
     return ['slash'];
   }
-  
+
   public canUse(room: Room, owner: Player) {
     return owner.canUseCard(room, new CardMatcher({ generalName: ['slash'] }));
   }
@@ -67,18 +62,11 @@ export class FuHunDamage extends TriggerSkill {
     return true;
   }
 
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
-    stage?: AllStage,
-  ): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage): boolean {
     return stage === DamageEffectStage.AfterDamageEffect;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>): boolean {
     if (!content.cardIds) {
       return false;
     }
@@ -102,10 +90,7 @@ export class FuHunDamage extends TriggerSkill {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { fromId } = event;
     const from = room.getPlayerById(fromId);
 
@@ -126,8 +111,13 @@ export class FuHunDamage extends TriggerSkill {
 @ShadowSkill
 @CommonSkill({ name: FuHunDamage.Name, description: FuHunDamage.Description })
 export class FuHunLoseSkill extends TriggerSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public afterDead(): boolean {
@@ -146,18 +136,11 @@ export class FuHunLoseSkill extends TriggerSkill implements OnDefineReleaseTimin
     return stage === PhaseChangeStage.PhaseChanged;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
     return (
       event.fromPlayer === owner.Id &&
       event.from === PlayerPhase.PhaseFinish &&
-      (
-        owner.getFlag<boolean>(FuHunDamage.WuSheng) === true ||
-        owner.getFlag<boolean>(FuHunDamage.PaoXiao) === true
-      )
+      (owner.getFlag<boolean>(FuHunDamage.WuSheng) === true || owner.getFlag<boolean>(FuHunDamage.PaoXiao) === true)
     );
   }
 
@@ -165,10 +148,7 @@ export class FuHunLoseSkill extends TriggerSkill implements OnDefineReleaseTimin
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { fromId } = event;
     const from = room.getPlayerById(fromId);
 

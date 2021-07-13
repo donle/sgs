@@ -24,8 +24,13 @@ export class ShuangXiong extends ViewAsSkill implements OnDefineReleaseTiming {
   public static readonly Red = 'shuangxiong_red';
   public static readonly Black = 'shuangxiong_black';
 
-  afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public canViewAs(): string[] {
@@ -222,8 +227,8 @@ export class ShuangXiongShadow extends TriggerSkill {
       });
 
       const chosenCard = Sanguosha.getCardById(chosenOne);
-      chosenCard.isRed() && room.setFlag<boolean>(fromId, ShuangXiong.Red, true, true);
-      chosenCard.isBlack() && room.setFlag<boolean>(fromId, ShuangXiong.Black, true, true);
+      chosenCard.isRed() && room.setFlag<boolean>(fromId, ShuangXiong.Red, true, ShuangXiong.Red);
+      chosenCard.isBlack() && room.setFlag<boolean>(fromId, ShuangXiong.Black, true, ShuangXiong.Red);
       await room.moveCards({
         movingCards: displayCards
           .filter(id => id !== chosenOne)
@@ -255,8 +260,13 @@ export class ShuangXiongShadow extends TriggerSkill {
 @ShadowSkill
 @CommonSkill({ name: ShuangXiongShadow.Name, description: ShuangXiongShadow.Description })
 export class ShuangXiongRemove extends TriggerSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public isAutoTrigger(): boolean {

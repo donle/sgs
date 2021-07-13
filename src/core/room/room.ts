@@ -530,7 +530,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public removeFlag(player: PlayerId, name: string) {
     this.getPlayerById(player).removeFlag(name);
   }
-  public setFlag<T>(player: PlayerId, name: string, value: T, invisible?: boolean): T {
+  public setFlag<T>(player: PlayerId, name: string, value: T, tagName?: string): T {
     return this.getPlayerById(player).setFlag(name, value);
   }
   public getFlag<T>(player: PlayerId, name: string): T {

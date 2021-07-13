@@ -4,7 +4,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE, INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
-import { AimStage, AllStage, PlayerPhase } from 'core/game/stage_processor';
+import { AimStage, AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -55,28 +55,21 @@ export class XianZhen extends ActiveSkill {
   }
 
   public static setXianZhenTarget(room: Room, gaoshunId: PlayerId, targetId: PlayerId) {
-    room.setFlag<PlayerId>(gaoshunId, XianZhen.Win, targetId, false);
+    room.setFlag<PlayerId>(gaoshunId, XianZhen.Win, targetId);
     room.setFlag<boolean>(
       gaoshunId,
+      XianZhen.Target,
+      true,
       TranslationPack.translationJsonPatcher(
         XianZhen.Target,
         TranslationPack.patchPlayerInTranslation(room.getPlayerById(targetId)),
       ).toString(),
-      true,
-      true,
     );
   }
 
   public static removeXianZhenTarget(room: Room, gaoshunId: PlayerId) {
-    const targetId = room.getFlag<PlayerId>(gaoshunId, XianZhen.Win);
     room.removeFlag(gaoshunId, XianZhen.Win);
-    room.removeFlag(
-      gaoshunId,
-      TranslationPack.translationJsonPatcher(
-        XianZhen.Target,
-        TranslationPack.patchPlayerInTranslation(room.getPlayerById(targetId)),
-      ).toString(),
-    );
+    room.removeFlag(gaoshunId, XianZhen.Target);
   }
 
   public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
@@ -89,7 +82,7 @@ export class XianZhen extends ActiveSkill {
     if (pindianRecord[0].winner === fromId) {
       XianZhen.setXianZhenTarget(room, fromId, toIds![0]);
     } else {
-      room.setFlag<boolean>(fromId, XianZhen.Lose, true, true);
+      room.setFlag<boolean>(fromId, XianZhen.Lose, true, XianZhen.Lose);
     }
 
     return true;
@@ -99,8 +92,13 @@ export class XianZhen extends ActiveSkill {
 @ShadowSkill
 @CommonSkill({ name: XianZhen.Name, description: XianZhen.Description })
 export class XianZhenExtra extends RulesBreakerSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public breakCardUsableDistanceTo(cardId: CardId | CardMatcher, room: Room, owner: Player, target: Player) {
@@ -125,8 +123,13 @@ export class XianZhenExtra extends RulesBreakerSkill implements OnDefineReleaseT
 @ShadowSkill
 @CommonSkill({ name: XianZhenExtra.Name, description: XianZhen.Description })
 export class XianZhenBlock extends FilterSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(room: Room) {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId) {

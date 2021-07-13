@@ -39,7 +39,12 @@ export class PaoXiaoShadow extends TriggerSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const baseDamage = room.getFlag<number>(event.fromId, this.GeneralName) || 0;
-    room.setFlag<number>(event.fromId, this.GeneralName, baseDamage + 1, true);
+    room.setFlag<number>(
+      event.fromId,
+      this.GeneralName,
+      baseDamage + 1,
+      TranslationPack.translationJsonPatcher('paoxiao DMG: {0}', baseDamage + 1).toString(),
+    );
 
     return true;
   }
@@ -48,8 +53,13 @@ export class PaoXiaoShadow extends TriggerSkill {
 @ShadowSkill
 @CompulsorySkill({ name: PaoXiaoShadow.Name, description: PaoXiaoShadow.Description })
 export class PaoXiaoRemove extends TriggerSkill implements OnDefineReleaseTiming {
-  afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public isTriggerable(

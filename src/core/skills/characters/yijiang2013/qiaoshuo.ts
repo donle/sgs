@@ -1,7 +1,7 @@
 import { CardType } from 'core/cards/card';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AllStage, CardUseStage, PlayerPhase } from 'core/game/stage_processor';
+import { AllStage, CardUseStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -52,10 +52,10 @@ export class QiaoShuo extends ActiveSkill {
     }
 
     if (pindianRecord[0].winner === fromId) {
-      room.setFlag(fromId, QiaoShuo.WIN, true, true);
+      room.setFlag(fromId, QiaoShuo.WIN, true, QiaoShuo.WIN);
     } else {
       await room.skip(fromId, PlayerPhase.PlayCardStage);
-      room.setFlag(fromId, QiaoShuo.LOSE, true, true);
+      room.setFlag(fromId, QiaoShuo.LOSE, true, QiaoShuo.LOSE);
     }
 
     return true;
@@ -66,8 +66,13 @@ export class QiaoShuo extends ActiveSkill {
 @PersistentSkill()
 @CommonSkill({ name: QiaoShuo.GeneralName, description: QiaoShuo.Description })
 export class QiaoShuoWin extends TriggerSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public isAutoTrigger(): boolean {
@@ -179,9 +184,9 @@ export class QiaoShuoWin extends TriggerSkill implements OnDefineReleaseTiming {
 
         TargetGroupUtil.removeTarget(targetGroup, selectedPlayers![0]);
       } else {
-        const {
-          selectedPlayers,
-        } = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent>(
+        const { selectedPlayers } = await room.doAskForCommonly<
+          GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent
+        >(
           GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent,
           {
             cardId: cardUseEvent.cardId,
@@ -216,8 +221,13 @@ export class QiaoShuoWin extends TriggerSkill implements OnDefineReleaseTiming {
 @PersistentSkill()
 @CommonSkill({ name: QiaoShuoWin.Name, description: QiaoShuoWin.GeneralName })
 export class QiaoShuoLose extends TriggerSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.FinishStage;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public isAutoTrigger() {
@@ -256,7 +266,9 @@ export class QiaoShuoLose extends TriggerSkill implements OnDefineReleaseTiming 
     room: Room,
     skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
-    const askForCardDropEvent = skillEffectEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent>;
+    const askForCardDropEvent = skillEffectEvent.triggeredOnEvent as ServerEventFinder<
+      GameEventIdentifiers.AskForCardDropEvent
+    >;
     const player = room.getPlayerById(askForCardDropEvent.toId);
     const tricks = player
       .getCardIds(PlayerCardsArea.HandArea)

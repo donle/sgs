@@ -455,10 +455,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     this.hookedSkills = this.hookedSkills.filter(({ skill, player }) => {
       const hookedSkill = skill as unknown as OnDefineReleaseTiming;
-      if (hookedSkill.afterLosingSkill && hookedSkill.afterLosingSkill(this, player.Id)) {
+      if (hookedSkill.afterLosingSkill && hookedSkill.afterLosingSkill(this, player.Id, content, stage)) {
         return false;
       }
-      if (hookedSkill.afterDead && hookedSkill.afterDead(this, player.Id)) {
+      if (hookedSkill.afterDead && hookedSkill.afterDead(this, player.Id, content, stage)) {
         return false;
       }
       return true;
@@ -1602,12 +1602,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     });
     super.removeFlag(player, name);
   }
-  public setFlag<T>(player: PlayerId, name: string, value: T, playerTag?: boolean): T {
+  public setFlag<T>(player: PlayerId, name: string, value: T, tagName?: string): T {
     this.broadcast(GameEventIdentifiers.SetFlagEvent, {
       to: player,
       value,
       name,
-      invisible: !playerTag,
+      tagName,
     });
     return super.setFlag(player, name, value);
   }
