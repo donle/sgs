@@ -214,7 +214,12 @@ export abstract class TriggerSkill extends Skill {
     room: Room,
     event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.SkillUseEvent>,
   ): Promise<boolean>;
-  public abstract canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers>): boolean;
+  public abstract canUse(
+    room: Room,
+    owner: Player,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean;
 
   public async onUse(
     room: Room,
@@ -371,7 +376,7 @@ export abstract class ActiveSkill extends Skill {
   }
 
   public isRefreshAt(room: Room, owner: Player, phase: PlayerPhase) {
-    return phase === PlayerPhase.PlayCardStage;
+    return room.CurrentPhasePlayer === owner && phase === PlayerPhase.PlayCardStage;
   }
 }
 

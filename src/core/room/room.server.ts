@@ -42,6 +42,7 @@ import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { System } from 'core/shares/libs/system';
 import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
+import { FlagEnum } from 'core/shares/types/flag_list';
 import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
 import {
@@ -235,7 +236,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         if (
           canTrigger &&
           skill.isTriggerable(content, stage) &&
-          skill.canUse(this, player, content) &&
+          skill.canUse(this, player, content, stage) &&
           !exclude.includes(skill)
         ) {
           canTriggerSkills.push(skill);
@@ -257,7 +258,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         if (
           canTrigger &&
           equipCard.Skill.isTriggerable(content, stage) &&
-          equipCard.Skill.canUse(this, player, content) &&
+          equipCard.Skill.canUse(this, player, content, stage) &&
           !exclude.includes(equipCard.Skill)
         ) {
           canTriggerSkills.push(equipCard.Skill);
@@ -348,6 +349,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                     GameEventIdentifiers.AskForSkillUseEvent,
                     player.Id,
                   );
+                  const skillsUsing = player.getFlag<string[]>(FlagEnum.SkillsUsing);
+                  if (!invoke && skillsUsing && skillsUsing.includes(skill.Name)) {
+                    await this.loseSkill(player.Id, skill.Name, true);
+                  }
                   triggerSkillEvent.toIds = toIds;
                   triggerSkillEvent.cardIds = cardIds;
                   if (invoke) {
@@ -441,7 +446,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                     ? bySkills.find(bySkill => UniqueSkillRule.isProhibitedBySkillRule(bySkill, skill)) === undefined
                     : true;
 
-                  return canTrigger && skill.isTriggerable(content, stage) && skill.canUse(this, player, content);
+                  return (
+                    canTrigger && skill.isTriggerable(content, stage) && skill.canUse(this, player, content, stage)
+                  );
                 });
               }
             }
@@ -454,7 +461,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
 
     this.hookedSkills = this.hookedSkills.filter(({ skill, player }) => {
-      const hookedSkill = skill as unknown as OnDefineReleaseTiming;
+      const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
       if (hookedSkill.afterLosingSkill && hookedSkill.afterLosingSkill(this, player.Id, content, stage)) {
         return false;
       }
@@ -1022,9 +1029,15 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     await super.useSkill(content);
     content.toIds && skill.resortTargets() && this.sortPlayersByPosition(content.toIds);
 
-    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.SkillUseEvent, content);
+    await this.gameProcessor.onHandleIncomingEvent(
+      GameEventIdentifiers.SkillUseEvent,
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.SkillUseEvent, content),
+    );
     if (!EventPacker.isTerminated(content)) {
-      await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.SkillEffectEvent, content);
+      await this.gameProcessor.onHandleIncomingEvent(
+        GameEventIdentifiers.SkillEffectEvent,
+        EventPacker.createIdentifierEvent(GameEventIdentifiers.SkillEffectEvent, content),
+      );
     }
 
     return true;

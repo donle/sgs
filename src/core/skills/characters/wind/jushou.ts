@@ -13,7 +13,7 @@ export class JuShou extends TriggerSkill {
     event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
     stage?: AllStage,
   ): boolean {
-    return stage === PhaseStageChangeStage.BeforeStageChange;
+    return stage === PhaseStageChangeStage.StageChanged;
   }
 
   public canUse(
