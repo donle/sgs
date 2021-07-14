@@ -278,6 +278,11 @@ export { JianYing } from './characters/yijiang2014/jianying';
 export { BingYi } from './characters/yijiang2014/bingyi';
 export { ShenXing } from './characters/yijiang2014/shenxing';
 
+export { FuJi } from './characters/sp/fuji';
+export { JiaoZi } from './characters/sp/jiaozi';
+export { WenJi, WenJiShadow } from './characters/sp/wenji';
+export { TunJiang } from './characters/sp/tunjiang';
+
 export { PingJian, PingJianLoseSkill, PingJianShadow, PingJianHookSkill } from './characters/biographies/pingjian';
 
 export { Cheat } from './system/cheat';
