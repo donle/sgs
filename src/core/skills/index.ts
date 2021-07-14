@@ -287,6 +287,11 @@ export { TunJiang } from './characters/sp/tunjiang';
 export { ZiShu, ZiShuShadow } from './characters/sp/zishu';
 export { YingYuan, YingYuanShadow } from './characters/sp/yingyuan';
 
+export { LiLu, LiLuSelect } from './characters/biographies/lilu';
+export { YiZheng, YiZhengShadow } from './characters/biographies/yizheng';
+export { MinSi, MinSiShadow, MinSiUnlimited } from './characters/biographies/minsi';
+export { JiJing, JiJingSelect } from './characters/biographies/jijing';
+export { ZhuiDe } from './characters/biographies/zhuide';
 export { PingJian, PingJianLoseSkill, PingJianShadow, PingJianHookSkill } from './characters/biographies/pingjian';
 
 export { Cheat } from './system/cheat';
