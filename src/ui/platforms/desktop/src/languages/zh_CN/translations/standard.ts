@@ -49,6 +49,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'zhangfei', target: '张飞' },
   { source: 'paoxiao', target: '咆哮' },
+  { source: 'paoxiao DMG: {0}', target: '咆哮[{0}]' },
   { source: 'tishen', target: '替身' },
 
   { source: 'zhugeliang', target: '诸葛亮' },

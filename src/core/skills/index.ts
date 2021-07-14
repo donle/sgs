@@ -278,10 +278,14 @@ export { JianYing } from './characters/yijiang2014/jianying';
 export { BingYi } from './characters/yijiang2014/bingyi';
 export { ShenXing } from './characters/yijiang2014/shenxing';
 
+export { StdLongDan } from './characters/sp/std_longdan';
+export { ChongZhen } from './characters/sp/chongzhen';
 export { FuJi } from './characters/sp/fuji';
 export { JiaoZi } from './characters/sp/jiaozi';
 export { WenJi, WenJiShadow } from './characters/sp/wenji';
 export { TunJiang } from './characters/sp/tunjiang';
+export { ZiShu, ZiShuShadow } from './characters/sp/zishu';
+export { YingYuan, YingYuanShadow } from './characters/sp/yingyuan';
 
 export { PingJian, PingJianLoseSkill, PingJianShadow, PingJianHookSkill } from './characters/biographies/pingjian';
 
