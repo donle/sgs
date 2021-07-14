@@ -43,6 +43,18 @@ export const characterDictionary: Word[] = [
   { source: 'caifuren', target: '蔡夫人' },
   { source: 'qieting', target: '窃听' },
   { source: 'xianzhou', target: '献州' },
+
+  { source: 'xushao', target: '许劭' },
+  { source: 'pingjian', target: '评荐' },
+
+  { source: 'qinzheng', target: '勤政' },
+  { source: 'qinzheng times: {0}', target: '勤政[{0}]' },
+
+  { source: 'zhi_shanxi', target: '善檄' },
+  { source: 'zhi_shanxi:xi', target: '檄' },
+
+  { source: 'fuji', target: '伏骑' },
+  { source: 'jiaozi', target: '骄恣' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -133,6 +145,23 @@ export const skillDescriptions: Word[] = [
     source: 'xianzhou_description',
     target:
       '<b>限定技</b>，出牌阶段，你可以将装备区里的所有牌交给一名其他角色，然后其选择一项：1.令你回复X点体力；2.选择其攻击范围内一至X名角色，其对这些角色各造成1点伤害（X为你以此法给出的牌数）。',
+  },
+
+  {
+    source: 'zhi_shanxi_description',
+    target:
+      '出牌阶段开始时，你可以选择一名没有“檄”的其他角色，移去场上所有“檄”，然后该角色获得一枚“檄”标记；当有“檄”的角色回复体力后，若其未处于濒死状态，其选择一项：1.将两张牌交给你；2.失去1点体力。',
+  },
+
+  {
+    source: 'fuji_description',
+    target:
+      '锁定技，距离至你为1的角色不能响应你使用的牌。',
+  },
+  {
+    source: 'jiaozi_description',
+    target:
+      '锁定技，当你造成或受到伤害时，若你的手牌数为全场唯一最多，此伤害+1。',
   },
 ];
 
