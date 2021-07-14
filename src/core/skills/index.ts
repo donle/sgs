@@ -221,6 +221,7 @@ export {
   XianZhenKeep,
   XianZhenAddTarget,
   XianZhenNullify,
+  XianZhenRemove,
 } from './characters/yijiang2011/xianzhen';
 export { JinJiu } from './characters/yijiang2011/jinjiu';
 export { JieYue } from './characters/yijiang2011/jieyue';
@@ -258,7 +259,7 @@ export { RenXin } from './characters/yijiang2013/renxin';
 export { JingCe, JingCeRecorder, JingCeShadow } from './characters/yijiang2013/jingce';
 export { JunXing } from './characters/yijiang2013/junxing';
 export { YuCe } from './characters/yijiang2013/yuce';
-export { JueCe, JueCeShadow } from './characters/yijiang2013/juece';
+export { JueCe } from './characters/yijiang2013/juece';
 export { MieJi } from './characters/yijiang2013/mieji';
 export { FenCheng } from './characters/yijiang2013/fencheng';
 export { ZongXuan, ZongXuanShadow } from './characters/yijiang2013/zongxuan';
@@ -276,6 +277,8 @@ export { ShiBei } from './characters/yijiang2014/shibei';
 export { JianYing } from './characters/yijiang2014/jianying';
 export { BingYi } from './characters/yijiang2014/bingyi';
 export { ShenXing } from './characters/yijiang2014/shenxing';
+
+export { PingJian, PingJianLoseSkill, PingJianShadow, PingJianHookSkill } from './characters/biographies/pingjian';
 
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';

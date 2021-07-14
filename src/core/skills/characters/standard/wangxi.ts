@@ -11,15 +11,15 @@ export class WangXi extends TriggerSkill {
     return stage === DamageEffectStage.AfterDamagedEffect || stage === DamageEffectStage.AfterDamageEffect;
   }
 
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
     if (content.fromId === undefined || content.fromId === content.toId) {
       return false;
     }
     return (
-      (room.CurrentProcessingStage === DamageEffectStage.AfterDamageEffect &&
+      (stage === DamageEffectStage.AfterDamageEffect &&
         content.fromId === owner.Id &&
         !room.getPlayerById(content.toId).Dead) ||
-      (room.CurrentProcessingStage === DamageEffectStage.AfterDamagedEffect &&
+      (stage === DamageEffectStage.AfterDamagedEffect &&
         content.toId === owner.Id &&
         !room.getPlayerById(content.fromId).Dead)
     );

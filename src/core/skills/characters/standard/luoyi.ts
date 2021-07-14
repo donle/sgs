@@ -129,7 +129,11 @@ export class LuoYiShadow extends TriggerSkill implements OnDefineReleaseTiming {
     content: ServerEventFinder<GameEventIdentifiers>,
     stage?: AllStage,
   ): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseBegin && stage === PhaseChangeStage.AfterPhaseChanged;
+    return (
+      room.CurrentPlayer.Id === owner &&
+      room.CurrentPlayerPhase === PlayerPhase.PhaseBegin &&
+      stage === PhaseChangeStage.AfterPhaseChanged
+    );
   }
 
   public getPriority() {

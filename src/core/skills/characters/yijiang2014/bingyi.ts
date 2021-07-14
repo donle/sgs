@@ -10,7 +10,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 @CommonSkill({ name: 'bingyi', description: 'bingyi_description' })
 export class BingYi extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
-    return stage === PhaseStageChangeStage.BeforeStageChange;
+    return stage === PhaseStageChangeStage.StageChanged;
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
