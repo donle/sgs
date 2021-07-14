@@ -1,6 +1,6 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { DamageType } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -61,25 +61,30 @@ export class DuelSkill extends ActiveSkill implements ExtralCardSkillProperty {
     let turn = 0;
     let validResponse: boolean;
     while (true) {
-      const response = await room.askForCardResponse(
-        {
-          toId: targets[turn],
-          cardMatcher: new CardMatcher({ generalName: ['slash'] }).toSocketPassenger(),
-          byCardId: event.cardId,
-          cardUserId: event.fromId,
-          conversation: TranslationPack.translationJsonPatcher(
-            'please response a {0} card to response {1}',
-            'slash',
-            TranslationPack.patchCardInTranslation(event.cardId),
-          ).extract(),
-        },
-        targets[turn],
-      );
+      let responseCard: CardId | undefined;
+      if (!EventPacker.isDisresponsiveEvent(event)) {
+        const response = await room.askForCardResponse(
+          {
+            toId: targets[turn],
+            cardMatcher: new CardMatcher({ generalName: ['slash'] }).toSocketPassenger(),
+            byCardId: event.cardId,
+            cardUserId: event.fromId,
+            conversation: TranslationPack.translationJsonPatcher(
+              'please response a {0} card to response {1}',
+              'slash',
+              TranslationPack.patchCardInTranslation(event.cardId),
+            ).extract(),
+          },
+          targets[turn],
+        );
 
-      if (response.cardId !== undefined) {
+        responseCard = response.cardId;
+      }
+
+      if (responseCard !== undefined) {
         const responseEvent = {
           fromId: targets[turn],
-          cardId: response.cardId,
+          cardId: responseCard,
           responseToEvent: event,
         };
         validResponse = await room.responseCard(responseEvent);

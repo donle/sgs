@@ -785,6 +785,10 @@ export abstract class Player implements PlayerInfo {
     return this.cardUseHistory;
   }
 
+  public get SkillUsedHistory() {
+    return this.skillUsedHistory;
+  }
+
   public get Dead() {
     return this.dead;
   }
