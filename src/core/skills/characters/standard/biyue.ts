@@ -8,7 +8,7 @@ import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 @CommonSkill({ name: 'biyue', description: 'biyue_description' })
 export class BiYue extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
-    return stage === PhaseStageChangeStage.BeforeStageChange;
+    return stage === PhaseStageChangeStage.StageChanged;
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
