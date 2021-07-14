@@ -59,6 +59,7 @@ export interface ServerEvent extends EventUtilities {
     skipDrop?: boolean;
     nullifiedTargets?: PlayerId[];
     extraUse?: boolean;
+    disresponsiveList?: PlayerId[];
   };
   [GameEventIdentifiers.CardEffectEvent]: {
     fromId?: PlayerId;
@@ -69,6 +70,7 @@ export interface ServerEvent extends EventUtilities {
     responseToEvent?: ServerEventFinder<GameEventIdentifiers>;
     nullifiedTargets?: PlayerId[];
     isCancelledOut?: boolean;
+    disresponsiveList?: PlayerId[];
   };
   [GameEventIdentifiers.AimEvent]: {
     fromId: string;

@@ -604,20 +604,20 @@ export class StandardGameProcessor extends GameProcessor {
       }
 
       for (const player of this.room.AlivePlayers) {
-        const sideEffectSkills = this.room
-          .getSideEffectSkills(player)
-          .map(skillName => Sanguosha.getSkillBySkillName(skillName));
-        for (const skill of [...player.getSkills(), ...sideEffectSkills]) {
-          if (nextPhase === PlayerPhase.PhaseBegin) {
-            player.resetCardUseHistory();
-            player.hasDrunk() && this.room.clearHeaded(player.Id);
-          } else {
-            player.resetCardUseHistory('slash');
-          }
+        if (nextPhase === PlayerPhase.PhaseBegin) {
+          player.resetCardUseHistory();
+          player.hasDrunk() && this.room.clearHeaded(player.Id);
+        } else {
+          player.resetCardUseHistory('slash');
+        }
 
-          if (skill.isRefreshAt(this.room, player, nextPhase)) {
-            skill.whenRefresh(this.room, player);
-            player.resetSkillUseHistory(skill.Name);
+        const skillsUsed = Object.keys(player.SkillUsedHistory);
+        if (skillsUsed.length > 0) {
+          for (const skill of skillsUsed) {
+            if (player.hasUsedSkill(skill)) {
+              const reaSkill = Sanguosha.getSkillBySkillName(skill);
+              reaSkill.isRefreshAt(this.room, player, nextPhase) && player.resetSkillUseHistory(skill);
+            }
           }
         }
       }
@@ -692,10 +692,11 @@ export class StandardGameProcessor extends GameProcessor {
       for (const player of this.room.getAlivePlayersFrom(this.CurrentPlayer.Id)) {
         notifierAllPlayers.push(player.Id);
         if (
-          !player.hasCard(this.room, wuxiekejiMatcher) &&
-          this.room.GameParticularAreas.find(areaName =>
-            player.hasCard(this.room, wuxiekejiMatcher, PlayerCardsArea.OutsideArea, areaName),
-          ) === undefined
+          (event.disresponsiveList && event.disresponsiveList.includes(player.Id)) ||
+          (!player.hasCard(this.room, wuxiekejiMatcher) &&
+            this.room.GameParticularAreas.find(areaName =>
+              player.hasCard(this.room, wuxiekejiMatcher, PlayerCardsArea.OutsideArea, areaName),
+            ) === undefined)
         ) {
           continue;
         }
@@ -1782,10 +1783,10 @@ export class StandardGameProcessor extends GameProcessor {
             to.equip(card);
           }
         } else if (toArea === CardMoveArea.OutsideArea) {
-          to.getCardIds(toArea as unknown as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
+          to.getCardIds((toArea as unknown) as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
         } else if (toArea === CardMoveArea.HandArea) {
           this.room.transformCard(to, actualCardIds, PlayerCardsArea.HandArea);
-          to.getCardIds(toArea as unknown as PlayerCardsArea).push(...actualCardIds);
+          to.getCardIds((toArea as unknown) as PlayerCardsArea).push(...actualCardIds);
         } else {
           const transformedDelayedTricks = cardIds.map(cardId => {
             if (!Card.isVirtualCardId(cardId)) {
@@ -1806,7 +1807,7 @@ export class StandardGameProcessor extends GameProcessor {
 
             return cardId;
           });
-          to.getCardIds(toArea as unknown as PlayerCardsArea).push(...transformedDelayedTricks);
+          to.getCardIds((toArea as unknown) as PlayerCardsArea).push(...transformedDelayedTricks);
         }
       }
     }

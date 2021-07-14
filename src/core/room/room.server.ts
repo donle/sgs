@@ -986,6 +986,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           EventPacker.copyPropertiesTo(ev, event);
         };
 
+        const list = event.disresponsiveList;
         if (card.Skill instanceof ResponsiveSkill) {
           await onCardEffect(cardEffectEvent);
         } else {
@@ -1003,6 +1004,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
             if (aimEventCollaborators[toId]) {
               EventPacker.copyPropertiesTo(aimEventCollaborators[toId], singleCardEffectEvent);
+              if (
+                !EventPacker.isDisresponsiveEvent(singleCardEffectEvent) &&
+                list &&
+                list.length > 0 &&
+                list.includes(toId)
+              ) {
+                EventPacker.setDisresponsiveEvent(singleCardEffectEvent);
+              }
             }
 
             await onCardEffect(singleCardEffectEvent);
