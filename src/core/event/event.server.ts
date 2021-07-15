@@ -192,6 +192,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.GameStartEvent]: {
     players: PlayerInfo[];
   };
+  [GameEventIdentifiers.CircleStartEvent]: {};
   [GameEventIdentifiers.GameOverEvent]: {
     loserIds: PlayerId[];
     winnerIds: PlayerId[];

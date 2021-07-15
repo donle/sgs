@@ -293,6 +293,9 @@ export { MinSi, MinSiShadow, MinSiUnlimited } from './characters/biographies/min
 export { JiJing, JiJingSelect } from './characters/biographies/jijing';
 export { ZhuiDe } from './characters/biographies/zhuide';
 export { PingJian, PingJianLoseSkill, PingJianShadow, PingJianHookSkill } from './characters/biographies/pingjian';
+export { CiXiao } from './characters/biographies/cixiao';
+export { XianShuai } from './characters/biographies/xianshuai';
+export { PanShi, PanShiSelect } from './characters/biographies/panshi';
 
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';
