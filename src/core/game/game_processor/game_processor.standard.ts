@@ -18,7 +18,6 @@ import {
   CardEffectStage,
   CardMoveStage,
   CardResponseStage,
-  CardUseStage,
   ChainLockStage,
   DamageEffectStage,
   DrawCardStage,
@@ -64,6 +63,7 @@ export class StandardGameProcessor extends GameProcessor {
   protected playerStages: PlayerPhaseStages[] = [];
 
   protected toEndPhase: PlayerPhase | undefined;
+  protected inExtraRound: boolean = false;
   protected inExtraPhase: boolean = false;
   protected playRoundInsertions: PlayerId[] = [];
   protected playPhaseInsertions: {
@@ -408,10 +408,16 @@ export class StandardGameProcessor extends GameProcessor {
     let lastPlayerPosition = this.playerPositionIndex;
     await this.beforeGameStartPreparation();
     while (this.room.isPlaying() && !this.room.isGameOver() && !this.room.isClosed()) {
-      if (this.playerPositionIndex < lastPlayerPosition) {
-        this.room.nextCircle();
+      if (!this.inExtraRound) {
+        if (this.playerPositionIndex < lastPlayerPosition) {
+          this.room.nextCircle();
+          this.room.Analytics.turnToNextCircle();
+          const circleStartEvent: ServerEventFinder<GameEventIdentifiers.CircleStartEvent> = {};
+          EventPacker.createIdentifierEvent(GameEventIdentifiers.CircleStartEvent, circleStartEvent);
+          await this.room.trigger(circleStartEvent);
+        }
+        lastPlayerPosition = this.playerPositionIndex;
       }
-      lastPlayerPosition = this.playerPositionIndex;
 
       await this.play(this.CurrentPlayer);
       await this.turnToNextPlayer();
@@ -2097,6 +2103,8 @@ export class StandardGameProcessor extends GameProcessor {
         }
       }
     }
+
+    this.inExtraRound = chosen;
 
     while (!chosen) {
       const nextIndex =

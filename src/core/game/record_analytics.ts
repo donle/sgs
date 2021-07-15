@@ -13,6 +13,9 @@ export class RecordAnalytics {
   private currentRoundEvents: {
     [P in PlayerPhase]?: ServerEventFinder<GameEventIdentifiers>[];
   } = {};
+  private currentCircleEvents: {
+    [P in PlayerPhase]?: ServerEventFinder<GameEventIdentifiers>[];
+  } = {};
   private currentPlayerId: PlayerId;
 
   public turnTo(currentPlayer: PlayerId) {
@@ -20,11 +23,18 @@ export class RecordAnalytics {
     this.currentPlayerId = currentPlayer;
   }
 
+  public turnToNextCircle() {
+    this.currentCircleEvents = {};
+  }
+
   public record<T extends GameEventIdentifiers>(event: ServerEventFinder<T>, currentPhase?: PlayerPhase) {
     this.events.push(event);
     if (currentPhase) {
       this.currentRoundEvents[currentPhase] = this.currentRoundEvents[currentPhase] || [];
       this.currentRoundEvents[currentPhase]!.push(event);
+
+      this.currentCircleEvents[currentPhase] = this.currentCircleEvents[currentPhase] || [];
+      this.currentCircleEvents[currentPhase]!.push(event);
     }
   }
 
@@ -33,6 +43,7 @@ export class RecordAnalytics {
     player?: PlayerId,
     currentRound?: boolean,
     inPhase?: PlayerPhase[],
+    currentCircle?: boolean,
   ): ServerEventFinder<T>[] {
     if (currentRound) {
       if (inPhase !== undefined) {
@@ -51,6 +62,24 @@ export class RecordAnalytics {
           [],
         );
         return events.filter(event => matcherFunction(event) && (!player || player === this.currentPlayerId));
+      }
+    } else if (currentCircle) {
+      if (inPhase !== undefined) {
+        const events = inPhase.reduce<ServerEventFinder<T>[]>((selectedEvents, phase) => {
+          const phaseEvents = this.currentCircleEvents[phase] as ServerEventFinder<T>[];
+          phaseEvents && selectedEvents.push(...phaseEvents);
+          return selectedEvents;
+        }, []);
+        return events.filter(event => matcherFunction(event));
+      } else {
+        const events = Object.values(this.currentCircleEvents).reduce<ServerEventFinder<T>[]>(
+          (allEvents, phaseEvents) => {
+            phaseEvents && allEvents.push(...(phaseEvents as ServerEventFinder<T>[]));
+            return allEvents;
+          },
+          [],
+        );
+        return events.filter(event => matcherFunction(event));
       }
     } else {
       return (this.events as any).filter(matcherFunction);
@@ -137,10 +166,10 @@ export class RecordAnalytics {
     return this.getRecordEvents<GameEventIdentifiers.MoveCardEvent>(
       event =>
         EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
-        event.fromId === player &&
-        event.toId !== player &&
-        event.toArea !== CardMoveArea.HandArea &&
-        event.toArea !== CardMoveArea.EquipArea &&
+        !(
+          player === event.toId &&
+          (event.toArea === PlayerCardsArea.HandArea || event.toArea === PlayerCardsArea.EquipArea)
+        ) &&
         event.movingCards.find(
           cardInfo => cardInfo.fromArea === CardMoveArea.HandArea || cardInfo.fromArea === CardMoveArea.EquipArea,
         ) !== undefined,

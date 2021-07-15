@@ -16,6 +16,12 @@ export const characterDictionary: Word[] = [
   { source: 'minsi', target: '敏思' },
   { source: 'jijing', target: '吉境' },
   { source: 'zhuide', target: '追德' },
+
+  { source: 'dingyuan', target: '丁原' },
+  { source: 'cixiao', target: '慈孝' },
+  { source: 'cixiao:yizi', target: '义子' },
+  { source: 'xianshuai', target: '先率' },
+  { source: 'panshi', target: '叛弑' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -43,13 +49,27 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'jijing_description',
-    target:
-      '当你受到伤害后，你可以判定，然后若你弃置至少一张点数和为判定结果点数的牌，你回复1点体力。',
+    target: '当你受到伤害后，你可以判定，然后若你弃置至少一张点数和为判定结果点数的牌，你回复1点体力。',
   },
   {
     source: 'zhuide_description',
+    target: '当你死亡时，你可以令一名其他角色获得牌堆里牌名各不相同的四张基本牌。',
+  },
+
+  {
+    source: 'cixiao_description',
     target:
-      '当你死亡时，你可以令一名其他角色获得牌堆里牌名各不相同的四张基本牌。',
+      '准备阶段开始时，你可以选择一名没有“义子”的其他角色，移去场上所有的“义子”标记，其获得1枚“义子”标记，其视为拥有“叛弑”（<b>锁定技</b>，准备阶段开始时，你将一张手牌交给一名拥有技能“慈孝”的其他角色；当你于出牌阶段内使用【杀】对拥有技能“慈孝”的角色造成伤害时，此伤害+1且你结束此阶段）。',
+  },
+  {
+    source: 'xianshuai_description',
+    target:
+      '<b>锁定技，</b>当一名角色造成伤害后，若此伤害时本轮内造成过的第一次伤害，你摸一张牌，然后若伤害来源为你，你对受伤角色造成1点伤害。',
+  },
+  {
+    source: 'panshi_description',
+    target:
+      '<b>锁定技</b>，准备阶段开始时，你将一张手牌交给一名拥有技能“慈孝”的其他角色；当你于出牌阶段内使用【杀】对拥有技能“慈孝”的角色造成伤害时，此伤害+1且你结束此阶段。',
   },
 ];
 
@@ -85,5 +105,19 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to let another player draw 4 defferent basic cards?',
     target: '{0}：你可以令一名其他角色获得牌堆里四张牌名各不相同的基本牌',
+  },
+
+  {
+    source: '{0}: do you want to choose another player to be your son?',
+    target: '{0}：你可以令一名其他角色获得“义子”标记',
+  },
+
+  {
+    source: 'panshi: please choose one hand card and one target',
+    target: '叛弑：请选择一张手牌，交给其中一名角色',
+  },
+  {
+    source: '{0}: you need to give a handcard to {1}',
+    target: '{0}：请将一张手牌交给 {1}',
   },
 ];
