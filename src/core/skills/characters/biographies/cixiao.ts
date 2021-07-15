@@ -6,6 +6,7 @@ import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, OnDefineReleaseTiming, TriggerSkill } from 'core/skills/skill';
 import { PanShi } from './panshi';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'cixiao', description: 'cixiao_description' })
 export class CiXiao extends TriggerSkill implements OnDefineReleaseTiming {
@@ -60,6 +61,13 @@ export class CiXiao extends TriggerSkill implements OnDefineReleaseTiming {
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
     return owner !== target && !room.getFlag<boolean>(target, this.Name);
+  }
+
+  public getSkillLog(): PatchedTranslationObject {
+    return TranslationPack.translationJsonPatcher(
+      '{0}: do you want to choose another player to be your son?',
+      this.Name,
+    ).extract();
   }
 
   public async onTrigger(): Promise<boolean> {
