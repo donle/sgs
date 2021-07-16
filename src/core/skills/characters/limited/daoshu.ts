@@ -189,7 +189,7 @@ export class DaoShuShadow extends TriggerSkill implements OnDefineReleaseTiming 
     content: ServerEventFinder<GameEventIdentifiers>,
     stage?: AllStage,
   ): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
+    return room.CurrentPlayerPhase === PlayerPhase.PlayCardStage && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public isAutoTrigger(): boolean {
@@ -205,7 +205,7 @@ export class DaoShuShadow extends TriggerSkill implements OnDefineReleaseTiming 
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
-    return content.from === PlayerPhase.PhaseFinish && owner.getFlag<boolean>(this.GeneralName);
+    return content.from === PlayerPhase.PlayCardStage && owner.getFlag<boolean>(this.GeneralName);
   }
 
   public async onTrigger() {

@@ -287,7 +287,7 @@ export { TunJiang } from './characters/sp/tunjiang';
 export { ZiShu, ZiShuShadow } from './characters/sp/zishu';
 export { YingYuan, YingYuanShadow } from './characters/sp/yingyuan';
 
-export { ShanJia } from './characters/limited/shanjia';
+export { ShanJia, ShanJiaShadow } from './characters/limited/shanjia';
 export { WeiCheng } from './characters/limited/weicheng';
 export { DaoShu, DaoShuShadow } from './characters/limited/daoshu';
 export { XingZuo, XingZuoShadow, XingZuoClear } from './characters/limited/xingzuo';
