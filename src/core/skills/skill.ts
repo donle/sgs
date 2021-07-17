@@ -33,6 +33,7 @@ export abstract class Skill {
   private sideEffectSkill = false;
   private persistentSkill = false;
   private stubbornSkill = false;
+  private circleSkill = false;
   private description: string;
   private skillName: string;
 
@@ -159,6 +160,10 @@ export abstract class Skill {
 
   public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage) {
     return false;
+  }
+
+  public isCircleSkill() {
+    return this.circleSkill;
   }
 
   public get SkillType() {
@@ -515,6 +520,7 @@ export abstract class GlobalRulesBreakerSkill extends RulesBreakerSkill {
   public breakDistance(room: Room, owner: Player, from: Player, to: Player): number {
     return 0;
   }
+
   public breakWithinAttackDistance(room: Room, owner: Player, from: Player, to: Player): boolean {
     return false;
   }

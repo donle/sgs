@@ -412,9 +412,23 @@ export class StandardGameProcessor extends GameProcessor {
         if (this.playerPositionIndex < lastPlayerPosition) {
           this.room.nextCircle();
           this.room.Analytics.turnToNextCircle();
+          for (const player of this.room.getAlivePlayersFrom()) {
+            const skillsUsed = Object.keys(player.SkillUsedHistory);
+            if (skillsUsed.length > 0) {
+              for (const skill of skillsUsed) {
+                if (player.hasUsedSkill(skill)) {
+                  const reaSkill = Sanguosha.getSkillBySkillName(skill);
+                  reaSkill.isCircleSkill() && player.resetSkillUseHistory(skill);
+                }
+              }
+            }
+          }
+
           const circleStartEvent: ServerEventFinder<GameEventIdentifiers.CircleStartEvent> = {};
-          EventPacker.createIdentifierEvent(GameEventIdentifiers.CircleStartEvent, circleStartEvent);
-          await this.room.trigger(circleStartEvent);
+          await this.onHandleIncomingEvent(
+            GameEventIdentifiers.CircleStartEvent,
+            EventPacker.createIdentifierEvent(GameEventIdentifiers.CircleStartEvent, circleStartEvent),
+          );
         }
         lastPlayerPosition = this.playerPositionIndex;
       }
@@ -622,6 +636,9 @@ export class StandardGameProcessor extends GameProcessor {
           for (const skill of skillsUsed) {
             if (player.hasUsedSkill(skill)) {
               const reaSkill = Sanguosha.getSkillBySkillName(skill);
+              if (reaSkill.isCircleSkill()) {
+                continue;
+              }
               reaSkill.isRefreshAt(this.room, player, nextPhase) && player.resetSkillUseHistory(skill);
             }
           }
@@ -855,6 +872,13 @@ export class StandardGameProcessor extends GameProcessor {
       case GameEventIdentifiers.GameStartEvent:
         await this.onHandleGameStartEvent(
           identifier as GameEventIdentifiers.GameStartEvent,
+          event as any,
+          onActualExecuted,
+        );
+        break;
+      case GameEventIdentifiers.CircleStartEvent:
+        await this.onHandleCircleStartEvent(
+          identifier as GameEventIdentifiers.CircleStartEvent,
           event as any,
           onActualExecuted,
         );
@@ -1237,7 +1261,6 @@ export class StandardGameProcessor extends GameProcessor {
                 fromId: response.fromId,
                 cardId: response.cardId,
                 targetGroup: [[to.Id]],
-                extraUse: true,
               };
               EventPacker.copyPropertiesTo(response, cardUseEvent);
 
@@ -1919,6 +1942,15 @@ export class StandardGameProcessor extends GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     this.room.broadcast(GameEventIdentifiers.GameStartEvent, event);
+    return await this.iterateEachStage(identifier, event, onActualExecuted);
+  }
+
+  private async onHandleCircleStartEvent(
+    identifier: GameEventIdentifiers.CircleStartEvent,
+    event: ServerEventFinder<GameEventIdentifiers.CircleStartEvent>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
+  ) {
+    this.room.broadcast(GameEventIdentifiers.CircleStartEvent, event);
     return await this.iterateEachStage(identifier, event, onActualExecuted);
   }
 

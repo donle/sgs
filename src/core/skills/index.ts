@@ -303,6 +303,20 @@ export { CiXiao } from './characters/biographies/cixiao';
 export { XianShuai } from './characters/biographies/xianshuai';
 export { PanShi, PanShiSelect } from './characters/biographies/panshi';
 
+export { WuKu } from './characters/wisdom/wuku';
+export { ZhiSanChen } from './characters/wisdom/zhi_sanchen';
+export { MieWu, MieWuShadow } from './characters/wisdom/miewu';
+export { JianZhan } from './characters/wisdom/jianzhan';
+export { DuoJi, DuoJiShadow } from './characters/wisdom/duoji';
+export { JianYu, JianYuShadow } from './characters/wisdom/jianyu';
+export { ShengXi } from './characters/wisdom/shengxi';
+export { WanWei, WanWeiShadow } from './characters/wisdom/wanwei';
+export { YueJian, YueJianShadow } from './characters/wisdom/yuejian';
+export { QinZheng, QinZhengShadow } from './characters/wisdom/qinzheng';
+export { ShaMeng } from './characters/wisdom/shameng';
+export { ZhiQiAi } from './characters/wisdom/zhi_qiai';
+export { ZhiShanXi, ZhiShanXiShadow } from './characters/wisdom/zhi_shanxi';
+
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';
 export { FeiYang } from './game_mode/1v2/feiyang';

@@ -50,6 +50,7 @@ function skillPropertyWrapper(
     selfTargetSkill?: boolean;
     sideEffectSkill?: boolean;
     persistentSkill?: boolean;
+    circleSkill?: boolean;
     stubbornSkill?: boolean;
   },
   constructor: new () => any,
@@ -62,6 +63,7 @@ function skillPropertyWrapper(
     private sideEffectSkill: boolean;
     private persistentSkill: boolean;
     private stubbornSkill: boolean;
+    private circleSkill: boolean;
     public canUse: (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) => boolean;
 
     constructor() {
@@ -89,6 +91,9 @@ function skillPropertyWrapper(
       }
       if (options.stubbornSkill !== undefined) {
         this.stubbornSkill = options.stubbornSkill;
+      }
+      if (options.circleSkill !== undefined) {
+        this.circleSkill = options.circleSkill;
       }
     }
   } as any;
@@ -183,6 +188,15 @@ export function SideEffectSkill<T extends Skill>(constructorFunction: SKillConst
       return '~' + super.Name;
     }
   } as any;
+}
+
+export function CircleSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
+  return skillPropertyWrapper(
+    {
+      circleSkill: true,
+    },
+    constructorFunction as any,
+  );
 }
 
 export type SkillPrototype<T extends Skill> = new () => T;

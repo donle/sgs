@@ -118,6 +118,12 @@ export const enum GameStartStage {
   AfterGameStarted = 'AfterGameStarted',
 }
 
+export const enum CircleStartStage {
+  BeforeCircleStart = 'BeforeCircleStart',
+  CircleStarting = 'CircleStarting',
+  AfterCircleStarted = 'AfterCircleStarted',
+}
+
 export const enum AimStage {
   OnAim = 'OnAim',
   OnAimmed = 'OnAimmed',
@@ -240,6 +246,7 @@ export type GameEventStage =
   | PhaseChangeStage
   | PhaseStageChangeStage
   | GameStartStage
+  | CircleStartStage
   | CardEffectStage
   | CardUseStage
   | CardResponseStage
@@ -268,6 +275,11 @@ const gameEventStageList: {
     GameStartStage.BeforeGameStart,
     GameStartStage.GameStarting,
     GameStartStage.AfterGameStarted,
+  ],
+  [GameEventIdentifiers.CircleStartEvent]: [
+    CircleStartStage.BeforeCircleStart,
+    CircleStartStage.CircleStarting,
+    CircleStartStage.AfterCircleStarted,
   ],
   [GameEventIdentifiers.CardUseEvent]: [
     CardUseStage.BeforeCardUseEffect,

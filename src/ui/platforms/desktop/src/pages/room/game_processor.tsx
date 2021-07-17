@@ -162,6 +162,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.GameStartEvent:
         await this.onHandleGameStartEvent(e as any, content);
         break;
+      case GameEventIdentifiers.CircleStartEvent:
+        await this.onHandleCircleStartEvent(e as any, content);
+        break;
       case GameEventIdentifiers.PlayerEnterEvent:
         await this.onHandlePlayerEnterEvent(e as any, content);
         break;
@@ -751,6 +754,24 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
+  protected onHandleCircleStartEvent<T extends GameEventIdentifiers.CircleStartEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.Analytics.turnToNextCircle();
+    for (const player of this.store.room.AlivePlayers) {
+      const skillsUsed = Object.keys(player.SkillUsedHistory);
+      if (skillsUsed.length > 0) {
+        for (const skill of skillsUsed) {
+          if (player.hasUsedSkill(skill)) {
+            const reaSkill = Sanguosha.getSkillBySkillName(skill);
+            reaSkill.isCircleSkill() && player.resetSkillUseHistory(skill);
+          }
+        }
+      }
+    }
+  }
+
   protected async onHandleGameReadyEvent<T extends GameEventIdentifiers.GameReadyEvent>(
     type: T,
     content: ServerEventFinder<T>,
@@ -920,18 +941,22 @@ export class GameClientProcessor {
 
     if (content.fromPlayer) {
       for (const player of this.store.room.AlivePlayers) {
-        const sideEffectSkills = this.store.room
-          .getSideEffectSkills(player)
-          .map(skillName => Sanguosha.getSkillBySkillName(skillName));
-        for (const skill of [...player.getSkills(), ...sideEffectSkills]) {
-          if (this.store.room.CurrentPlayerPhase === PlayerPhase.PhaseBegin) {
-            player.resetCardUseHistory();
-          } else {
-            player.resetCardUseHistory('slash');
-          }
+        if (this.store.room.CurrentPlayerPhase === PlayerPhase.PhaseBegin) {
+          player.resetCardUseHistory();
+        } else {
+          player.resetCardUseHistory('slash');
+        }
 
-          if (skill.isRefreshAt(this.store.room, player, content.to)) {
-            player.resetSkillUseHistory(skill.Name);
+        const skillsUsed = Object.keys(player.SkillUsedHistory);
+        if (skillsUsed.length > 0) {
+          for (const skill of skillsUsed) {
+            if (player.hasUsedSkill(skill)) {
+              const reaSkill = Sanguosha.getSkillBySkillName(skill);
+              if (reaSkill.isCircleSkill()) {
+                continue;
+              }
+              reaSkill.isRefreshAt(this.store.room, player, content.to) && player.resetSkillUseHistory(skill);
+            }
           }
         }
       }
