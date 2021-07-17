@@ -24,11 +24,7 @@ export class JianZhan extends ActiveSkill {
       const first = room.getPlayerById(targets[0]);
 
       canSlash = room.getOtherPlayers(targets[0]).find(player => {
-        return (
-          first.Hp > player.Hp &&
-          room.canAttack(first, player) &&
-          first.getAttackDistance(room) >= room.distanceBetween(first, player)
-        );
+        return first.Hp > player.Hp && room.canAttack(first, player) && room.withinAttackDistance(first, player);
       })
         ? true
         : false;
@@ -52,11 +48,7 @@ export class JianZhan extends ActiveSkill {
       const first = room.getPlayerById(selectedTargets[0]);
       const second = room.getPlayerById(target);
 
-      return (
-        first.Hp > second.Hp &&
-        room.canAttack(first, second) &&
-        first.getAttackDistance(room) >= room.distanceBetween(first, second)
-      );
+      return first.Hp > second.Hp && room.canAttack(first, second) && room.withinAttackDistance(first, second);
     }
 
     return owner !== target;
