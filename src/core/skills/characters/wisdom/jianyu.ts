@@ -124,7 +124,7 @@ export class JianYuShadow extends TriggerSkill implements OnDefineReleaseTiming 
     event: ServerEventFinder<GameEventIdentifiers.AimEvent | GameEventIdentifiers.PhaseChangeEvent>,
     stage?: AllStage,
   ): boolean {
-    return stage === AimStage.AfterAim || stage === PhaseChangeStage.AfterPhaseChanged;
+    return stage === AimStage.OnAim || stage === PhaseChangeStage.AfterPhaseChanged;
   }
 
   public canUse(
