@@ -18,7 +18,7 @@ export function getServerConfig(flavor: Flavor): ServerConfig {
     case Flavor.Prod:
       return {
         mode: Flavor.Prod,
-        port: 8086,
+        port: 2020,
         language: Languages.ZH_CN,
       };
     default:
