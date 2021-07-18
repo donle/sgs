@@ -35,14 +35,10 @@ export class JieFan extends ActiveSkill {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { toIds } = event;
     const to = room.getPlayerById(toIds![0]);
-    const targets = room.getOtherPlayers(toIds![0])
-      .filter(player => room.withinAttackDistance(player, to));
+    const targets = room.getOtherPlayers(toIds![0]).filter(player => room.withinAttackDistance(player, to));
 
     for (const player of targets) {
       const response = await room.askForCardDrop(

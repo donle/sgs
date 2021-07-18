@@ -13,6 +13,7 @@ import { SettingsDialog } from 'pages/ui/settings/settings';
 import { ServerHostTag } from 'props/config_props';
 import * as React from 'react';
 import { ConnectionService } from 'services/connection_service/connection_service';
+import { CharacterSkinInfo } from 'skins/skins';
 import { PagePropsWithConfig } from 'types/page_props';
 import { ReplayDataType } from 'types/replay_props';
 import { installAudioPlayerService } from 'ui/audio/install';
@@ -36,6 +37,7 @@ export class ReplayRoomPage extends React.Component<
     audioLoader: AudioLoader;
     electronLoader: ElectronLoader;
     connectionService: ConnectionService;
+    skinData: CharacterSkinInfo[];
   }>
 > {
   private presenter: RoomPresenter;
@@ -86,6 +88,7 @@ export class ReplayRoomPage extends React.Component<
       audioLoader: AudioLoader;
       electronLoader: ElectronLoader;
       connectionService: ConnectionService;
+      skinData: CharacterSkinInfo[];
     }>,
   ) {
     super(props);
@@ -102,6 +105,7 @@ export class ReplayRoomPage extends React.Component<
       this.props.imageLoader,
       this.audioService,
       this.props.electronLoader,
+      this.props.skinData,
     );
   }
 
@@ -299,6 +303,7 @@ export class ReplayRoomPage extends React.Component<
                 imageLoader={this.props.imageLoader}
                 updateFlag={this.store.updateUIFlag}
                 store={this.store}
+                skinData={this.props.skinData}
                 presenter={this.presenter}
                 translator={this.props.translator}
                 gamePad={this.getDisplayedCard()}
@@ -321,6 +326,7 @@ export class ReplayRoomPage extends React.Component<
               store={this.store}
               presenter={this.presenter}
               translator={this.props.translator}
+              skinData={this.props.skinData}
               imageLoader={this.props.imageLoader}
               onClick={this.store.onClickHandCardToPlay}
               isSkillDisabled={this.store.isSkillDisabled}

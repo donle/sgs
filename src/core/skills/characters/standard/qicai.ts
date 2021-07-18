@@ -44,7 +44,7 @@ export class QiCaiBlock extends TriggerSkill {
       content.movingCards.find(
         cardInfo =>
           cardInfo.fromArea === CardMoveArea.EquipArea &&
-          (Sanguosha.getCardById(cardInfo.card).is(CardType.Armor) ||
+          (Sanguosha.getCardById(cardInfo.card).is(CardType.Shield) ||
             Sanguosha.getCardById(cardInfo.card).is(CardType.Precious)),
       ) !== undefined
     );

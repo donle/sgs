@@ -1,8 +1,11 @@
+import { CharacterEquipSections } from 'core/characters/character';
 import { PlayerRole } from 'core/player/player_props';
+import { PlayerId } from 'core/player/player_props';
 import { GameMode } from 'core/shares/types/room_props';
 import { SkillType } from 'core/skills/skill';
 import { LobbyButton } from 'props/game_props';
 import { ImageProps } from 'props/image_props';
+import { CharacterSkinInfo } from 'skins/skins';
 
 export type SkillButtonImageSize = {
   wide: SkillButtonImageProps;
@@ -18,11 +21,19 @@ export type SkillButtonImageProps = {
 
 export interface ImageLoader {
   getCardImage(name: string): Promise<ImageProps>;
-  getCharacterImage(name: string): Promise<ImageProps>;
+  getCharacterImage(name: string, roomId?: PlayerId | undefined, skinName?: string): Promise<ImageProps>;
   getOthersEquipCard(cardName: string): Promise<ImageProps>;
   getSlimEquipCard(cardName: string): Promise<ImageProps>;
+  getOthersAbortedEquipCard(): Promise<ImageProps>;
+  getSlimAbortedEquipSection(section: CharacterEquipSections): Promise<ImageProps>;
   getSlimCard(cardName: string): Promise<ImageProps>;
   getPlayerRoleCard(role: PlayerRole, gameMode: GameMode): Promise<ImageProps>;
+  getCharacterSkinPlay(
+    characterName: string,
+    skinData: CharacterSkinInfo[],
+    playerId?: PlayerId,
+    skinName?: string,
+  ): Promise<ImageProps>;
 
   getSkillButtonImage(skillType: SkillType, size: 'wide' | 'normal'): SkillButtonImageProps | undefined;
 

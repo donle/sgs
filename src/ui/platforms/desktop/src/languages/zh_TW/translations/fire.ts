@@ -76,7 +76,11 @@ export const skillDescriptions: Word[] = [
     target:
       '出牌階段限一次，你可以與一名角色拚點，若你：贏，直到回合結束，你使用【殺】無距離限製且次數上限和目標上限+1；冇贏，本回合你不能使用【殺】。',
   },
-  { source: 'hanzhan_description', target: '你與角色拚點，或其他角色對你發起拚點時，你可令其使用隨機手牌拚點。當你拚點後，你可獲得拚點牌中點數最大的【殺】。' },
+  {
+    source: 'hanzhan_description',
+    target:
+      '你與角色拚點，或其他角色對你發起拚點時，你可令其使用隨機手牌拚點。當你拚點後，你可獲得拚點牌中點數最大的【殺】。',
+  },
   {
     source: 'jianchu_description',
     target:

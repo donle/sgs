@@ -1,10 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import {
-  CardMoveArea,
-  CardMoveReason,
-  GameEventIdentifiers,
-  ServerEventFinder
-} from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { DamageType } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -15,10 +10,7 @@ import { QuanJi } from './quanji';
 @CommonSkill({ name: 'paiyi', description: 'paiyi_description' })
 export class PaiYi extends ActiveSkill {
   public canUse(room: Room, owner: Player): boolean {
-    return (
-      !owner.hasUsedSkill(this.Name) &&
-      owner.getCardIds(PlayerCardsArea.OutsideArea, QuanJi.Name).length > 0
-    );
+    return !owner.hasUsedSkill(this.Name) && owner.getCardIds(PlayerCardsArea.OutsideArea, QuanJi.Name).length > 0;
   }
 
   public numberOfTargets(): number {
@@ -46,10 +38,7 @@ export class PaiYi extends ActiveSkill {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { fromId, toIds, cardIds } = event;
     await room.moveCards({
       movingCards: [{ card: cardIds![0], fromArea: CardMoveArea.OutsideArea }],
@@ -74,7 +63,7 @@ export class PaiYi extends ActiveSkill {
         damage: 1,
         damageType: DamageType.Normal,
         triggeredBySkills: [this.Name],
-      })
+      });
     }
 
     return true;

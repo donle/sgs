@@ -1,10 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import {
-  CardMoveArea,
-  CardMoveReason,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -26,11 +21,7 @@ export class MiJi extends TriggerSkill {
     owner: Player,
     content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
   ): boolean {
-    return (
-      owner.Id === content.playerId &&
-      content.toStage === PlayerPhaseStages.FinishStageStart &&
-      owner.LostHp > 0
-    );
+    return owner.Id === content.playerId && content.toStage === PlayerPhaseStages.FinishStageStart && owner.LostHp > 0;
   }
 
   public getSkillLog(room: Room, owner: Player): PatchedTranslationObject {
@@ -45,10 +36,7 @@ export class MiJi extends TriggerSkill {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { fromId } = event;
     const from = room.getPlayerById(fromId);
     const x = from.LostHp;
@@ -65,13 +53,9 @@ export class MiJi extends TriggerSkill {
           this.Name,
           x,
         ).extract(),
-      }
-      room.notify(
-        GameEventIdentifiers.AskForSkillUseEvent,
-        skillUseEvent,
-        fromId,
-      );
-      
+      };
+      room.notify(GameEventIdentifiers.AskForSkillUseEvent, skillUseEvent, fromId);
+
       const { toIds, cardIds } = await room.onReceivingAsyncResponseFrom(
         GameEventIdentifiers.AskForSkillUseEvent,
         fromId,
@@ -87,7 +71,7 @@ export class MiJi extends TriggerSkill {
           toArea: CardMoveArea.HandArea,
           proposer: fromId,
           movedByReason: this.Name,
-        })
+        });
       }
     }
 
@@ -114,13 +98,8 @@ export class MiJiShadow extends TriggerSkill {
     return 1;
   }
 
-  public isAvailableCard(
-    owner: PlayerId,
-    room: Room,
-    cardId: CardId,
-    selectedCards: CardId[],
-  ): boolean {
-    const player = room.getPlayerById(owner)
+  public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId, selectedCards: CardId[]): boolean {
+    const player = room.getPlayerById(owner);
     return selectedCards.length <= player.getFlag<number>(this.GeneralName);
   }
 

@@ -178,6 +178,15 @@ export { XinSheng } from './characters/mountain/xinsheng';
 export { BeiGe } from './characters/mountain/beige';
 export { DuanChang } from './characters/mountain/duanchang';
 
+export { QiZhi, QiZhiShadow } from './characters/shadow/qizhi';
+export { JinQu } from './characters/shadow/jinqu';
+export { HuaiJu } from './characters/shadow/huaiju';
+export { WeiLi } from './characters/shadow/weili';
+export { ZhengLun } from './characters/shadow/zhenglun';
+export { ChengLve, ChengLveShadow, ChengLveBuff } from './characters/shadow/chenglve';
+export { ShiCai, ShiCaiShadow } from './characters/shadow/shicai';
+export { CunMu } from './characters/shadow/cunmu';
+
 export { WuShen, WuShenShadow, WuShenDisresponse } from './characters/god/wushen';
 export { WuHun, WuHunDeath } from './characters/god/wuhun';
 export { SheLie } from './characters/god/shelie';
@@ -221,6 +230,7 @@ export {
   XianZhenKeep,
   XianZhenAddTarget,
   XianZhenNullify,
+  XianZhenRemove,
 } from './characters/yijiang2011/xianzhen';
 export { JinJiu } from './characters/yijiang2011/jinjiu';
 export { JieYue } from './characters/yijiang2011/jieyue';
@@ -258,7 +268,7 @@ export { RenXin } from './characters/yijiang2013/renxin';
 export { JingCe, JingCeRecorder, JingCeShadow } from './characters/yijiang2013/jingce';
 export { JunXing } from './characters/yijiang2013/junxing';
 export { YuCe } from './characters/yijiang2013/yuce';
-export { JueCe, JueCeShadow } from './characters/yijiang2013/juece';
+export { JueCe } from './characters/yijiang2013/juece';
 export { MieJi } from './characters/yijiang2013/mieji';
 export { FenCheng } from './characters/yijiang2013/fencheng';
 export { ZongXuan, ZongXuanShadow } from './characters/yijiang2013/zongxuan';
@@ -272,7 +282,62 @@ export { J3ZongShi } from './characters/yijiang2013/zongshi';
 export { DanShou, DanshouShadow } from './characters/yijiang2013/danshou';
 export { ZhuiKong, ZhuiKongFilter, ZhuiKongDistance } from './characters/yijiang2013/zhuikong';
 export { QiuYuan } from './characters/yijiang2013/qiuyuan';
+export { ShiBei } from './characters/yijiang2014/shibei';
+export { JianYing } from './characters/yijiang2014/jianying';
+export { BingYi } from './characters/yijiang2014/bingyi';
+export { ShenXing } from './characters/yijiang2014/shenxing';
+
+export { StdLongDan } from './characters/sp/std_longdan';
+export { ChongZhen } from './characters/sp/chongzhen';
+export { FuJi } from './characters/sp/fuji';
+export { JiaoZi } from './characters/sp/jiaozi';
+export { WenJi, WenJiShadow } from './characters/sp/wenji';
+export { TunJiang } from './characters/sp/tunjiang';
+export { ZiShu, ZiShuShadow } from './characters/sp/zishu';
+export { YingYuan, YingYuanShadow } from './characters/sp/yingyuan';
+export { FuBi, FuBiShadow, FuBiClear } from './characters/wisdom/fubi';
+export { ZuiCi } from './characters/wisdom/zuici';
+
+export { ShanJia, ShanJiaShadow } from './characters/limited/shanjia';
+export { WeiCheng } from './characters/limited/weicheng';
+export { DaoShu, DaoShuShadow } from './characters/limited/daoshu';
+export { XingZuo, XingZuoShadow, XingZuoClear } from './characters/limited/xingzuo';
+export { MiaoXian, MiaoXianShadow } from './characters/limited/miaoxian';
+
+export { LiLu, LiLuSelect } from './characters/biographies/lilu';
+export { YiZheng, YiZhengShadow } from './characters/biographies/yizheng';
+export { MinSi, MinSiShadow, MinSiUnlimited } from './characters/biographies/minsi';
+export { JiJing, JiJingSelect } from './characters/biographies/jijing';
+export { ZhuiDe } from './characters/biographies/zhuide';
+export { PingJian, PingJianLoseSkill, PingJianShadow, PingJianHookSkill } from './characters/biographies/pingjian';
+export { CiXiao } from './characters/biographies/cixiao';
+export { XianShuai } from './characters/biographies/xianshuai';
+export { PanShi, PanShiSelect } from './characters/biographies/panshi';
+
+export { WuKu } from './characters/wisdom/wuku';
+export { ZhiSanChen } from './characters/wisdom/zhi_sanchen';
+export { MieWu, MieWuShadow } from './characters/wisdom/miewu';
+export { JianZhan } from './characters/wisdom/jianzhan';
+export { DuoJi, DuoJiShadow } from './characters/wisdom/duoji';
+export { JianYu, JianYuShadow } from './characters/wisdom/jianyu';
+export { ShengXi } from './characters/wisdom/shengxi';
+export { WanWei, WanWeiShadow } from './characters/wisdom/wanwei';
+export { YueJian, YueJianShadow } from './characters/wisdom/yuejian';
+export { QinZheng, QinZhengShadow } from './characters/wisdom/qinzheng';
+export { ShaMeng } from './characters/wisdom/shameng';
+export { ZhiQiAi } from './characters/wisdom/zhi_qiai';
+export { ZhiShanXi, ZhiShanXiShadow } from './characters/wisdom/zhi_shanxi';
 
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';
 export { FeiYang } from './game_mode/1v2/feiyang';
+export { PveHuaShen } from './game_mode/pve/pve_huashen';
+export { PveLongLin, PveLongLinShadow, PveLongLinDraw } from './game_mode/pve/pve_longlin';
+export { PveRuiYan } from './game_mode/pve/pve_ruiyan';
+export { PveLongLie, PveLongLieShadow } from './game_mode/pve/pve_longlie';
+export { PveSuWei } from './game_mode/pve/pve_suwei';
+export { PveLongShi } from './game_mode/pve/pve_longshi';
+export { PveLingXi, PveLingXiBuff, PveLingXiShadow, PveLingXiDraw } from './game_mode/pve/pve_lingxi';
+export { PveLongHou } from './game_mode/pve/pve_longhou';
+export { PveQinLv } from './game_mode/pve/pve_qinlv';
+export { PveJieNu } from './game_mode/pve/pve_jienu';

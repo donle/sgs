@@ -15,3 +15,10 @@ export class ServerPlayer extends Player {
     super(playerCards, playerCharacterId);
   }
 }
+
+export class FakePlayer extends ServerPlayer {
+  constructor(protected playerPosition: number) {
+    super('FakeAI', 'FakeAI', playerPosition);
+    this.Fake();
+  }
+}

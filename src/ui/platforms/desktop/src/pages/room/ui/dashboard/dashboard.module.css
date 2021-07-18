@@ -2,32 +2,6 @@
 @value halfGridLine from '../../../../ui/metrics/metrics.css';
 @value XinWeiFont from '../../../../ui/metrics/metrics.css';
 
-.equipCardItem {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 20%;
-    justify-content: flex-end;
-    transition: left 0.15s;
-    z-index: 3;
-}
-.equipCardName {
-    flex: auto;
-}
-.equipCardSuit,
-.equipCardNumber {
-    z-index: 2;
-}
-
-.equipCardNumber {
-    margin-right: halfGridLine;
-}
-.equipCardItem.disabled:not(.selected) {
-    filter: brightness(0.5);
-}
 .handBoard {
     display: flex;
     flex-direction: column;
@@ -107,6 +81,7 @@
     position: relative;
     align-self: flex-end;
 }
+
 .equipSlots {
     background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.53) 41%, rgba(0, 0, 0, 1) 100%);
     position: absolute;
@@ -120,32 +95,6 @@
 
 .equipSlots > img {
     height: 25%;
-}
-
-.equipCardImage {
-    width: 100%;
-    position: absolute;
-    z-index: 2;
-}
-
-.weapon {
-    top: 20%;
-}
-.armor {
-    top: 40%;
-}
-.defenseRide {
-    top: 60%;
-}
-.offenseRide {
-    top: 80%;
-}
-.precious {
-    top: 0;
-}
-
-.selected {
-    left: 16px;
 }
 
 .trustedButton {

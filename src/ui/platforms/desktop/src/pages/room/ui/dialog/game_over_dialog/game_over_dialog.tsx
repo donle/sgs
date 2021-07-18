@@ -41,7 +41,7 @@ const PlayerInfoTable = (props: {
         <span className={styles.handcards}>{props.translator.tr('handcards')}</span>
       </div>
       {props.players.map(player => (
-        <div className={styles.player}>
+        <div className={styles.player} key={player.Id}>
           <span className={styles.username}>{player.Name}</span>
           <span className={styles.characterName}>{props.translator.tr(player.Character.Name)}</span>
           <span className={styles.role}>
@@ -55,6 +55,7 @@ const PlayerInfoTable = (props: {
                 <Tooltip position={['bottom']} className={styles.tooltip}>
                   {handcards.map(cardId => (
                     <ClientCard
+                      key={cardId}
                       width={80}
                       card={Sanguosha.getCardById(cardId)}
                       translator={props.translator}

@@ -1,0 +1,25 @@
+@value SanguoshaFont from '../metrics/metrics.css';
+@value gridLine from '../metrics/metrics.css';
+
+.characterCard {
+    min-width: calc(gridLine * 20);
+    height: calc(gridLine * 25);
+    font-family: SanguoshaFont;
+    font-size: calc(gridLine * 3);
+    position: relative;
+}
+.characterCard.small {
+    min-width: calc(gridLine * 15);
+    height: calc(gridLine * 18.75);
+}
+
+.selected {
+    filter: brightness(0.5);
+}
+
+.characterImage {
+    height: 100%;
+    position: absolute;
+    top: 0;
+    z-index: -2;
+}

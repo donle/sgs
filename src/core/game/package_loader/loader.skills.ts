@@ -50,7 +50,9 @@ export class SkillLoader {
     return Precondition.exists(skills, `Unable to get shadow skills ${skillName}`) as S[];
   }
   public getSkillsByName<S extends Skill = Skill>(skillName: string): S[] {
-    const skills = this.getAllSkills().filter(skill => skill.GeneralName === skillName && !skill.isSideEffectSkill()) as S[];
+    const skills = this.getAllSkills().filter(
+      skill => skill.GeneralName === skillName && !skill.isSideEffectSkill(),
+    ) as S[];
     return skills;
   }
 }

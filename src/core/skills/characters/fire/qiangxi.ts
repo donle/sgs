@@ -6,10 +6,7 @@ import { DamageType } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import {
-  ActiveSkill,
-  CommonSkill,
-} from 'core/skills/skill';
+import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'qiangxi', description: 'qiangxi_description' })
 export class QiangXi extends ActiveSkill {
@@ -49,7 +46,7 @@ export class QiangXi extends ActiveSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId, toIds, cardIds } = skillUseEvent;
     room.setFlag<boolean>(fromId, QiangXi.exUse, true);
-    room.setFlag<boolean>(toIds![0], this.Name, true, false);
+    room.setFlag<boolean>(toIds![0], this.Name, true);
 
     if (cardIds && cardIds.length > 0) {
       await room.dropCards(CardMoveReason.SelfDrop, cardIds, fromId, fromId, this.Name);

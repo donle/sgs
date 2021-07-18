@@ -14,6 +14,7 @@ import { ServerHostTag, ServiceConfig } from 'props/config_props';
 import * as React from 'react';
 import { match } from 'react-router-dom';
 import { ConnectionService } from 'services/connection_service/connection_service';
+import { CharacterSkinInfo } from 'skins/skins';
 import { PagePropsWithConfig } from 'types/page_props';
 import { installAudioPlayerService } from 'ui/audio/install';
 import { ClientCard } from 'ui/card/card';
@@ -37,6 +38,7 @@ export class RoomPage extends React.Component<
     audioLoader: AudioLoader;
     electronLoader: ElectronLoader;
     connectionService: ConnectionService;
+    skinData: CharacterSkinInfo[];
   }>
 > {
   private presenter: RoomPresenter;
@@ -93,6 +95,7 @@ export class RoomPage extends React.Component<
       audioLoader: AudioLoader;
       electronLoader: ElectronLoader;
       connectionService: ConnectionService;
+      skinData: CharacterSkinInfo[];
     }>,
   ) {
     super(props);
@@ -122,6 +125,7 @@ export class RoomPage extends React.Component<
       this.props.imageLoader,
       this.audioService,
       this.props.electronLoader,
+      this.props.skinData,
     );
   }
 
@@ -275,6 +279,7 @@ export class RoomPage extends React.Component<
         {this.store.displayedCards.map((displayCard, index) => (
           <ClientCard
             imageLoader={this.props.imageLoader}
+            key={index}
             card={displayCard.card}
             tag={displayCard.tag}
             width={this.cardWidth}
@@ -323,12 +328,12 @@ export class RoomPage extends React.Component<
               host={this.gameHostedServer}
             />
             <div className={styles.mainBoard}>
-              1
               <SeatsLayout
                 imageLoader={this.props.imageLoader}
                 updateFlag={this.store.updateUIFlag}
                 store={this.store}
                 presenter={this.presenter}
+                skinData={this.props.skinData}
                 translator={this.props.translator}
                 onClick={this.store.onClickPlayer}
                 playerSelectableMatcher={this.store.playersSelectionMatcher}
@@ -351,6 +356,7 @@ export class RoomPage extends React.Component<
               store={this.store}
               presenter={this.presenter}
               translator={this.props.translator}
+              skinData={this.props.skinData}
               imageLoader={this.props.imageLoader}
               cardEnableMatcher={this.store.clientPlayerCardActionsMatcher}
               outsideCardEnableMatcher={this.store.clientPlayerOutsideCardActionsMatcher}

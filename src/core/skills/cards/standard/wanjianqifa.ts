@@ -54,33 +54,38 @@ export class WanJianQiFaSkill extends ActiveSkill implements ExtralCardSkillProp
     const { toIds, fromId, cardId } = event;
     const to = Precondition.exists(toIds, 'Unknown targets in wanjianqifa')[0];
 
-    const askForCardEvent = {
-      cardMatcher: new CardMatcher({
-        name: ['jink'],
-      }).toSocketPassenger(),
-      byCardId: cardId,
-      cardUserId: fromId,
-      conversation:
-        fromId !== undefined
-          ? TranslationPack.translationJsonPatcher(
-              '{0} used {1} to you, please response a {2} card',
-              TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
-              TranslationPack.patchCardInTranslation(cardId),
-              'jink',
-            ).extract()
-          : TranslationPack.translationJsonPatcher('please response a {0} card', 'jink').extract(),
-      triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
-    };
+    let responseCard: CardId | undefined;
+    if (!EventPacker.isDisresponsiveEvent(event)) {
+      const askForCardEvent = {
+        cardMatcher: new CardMatcher({
+          name: ['jink'],
+        }).toSocketPassenger(),
+        byCardId: cardId,
+        cardUserId: fromId,
+        conversation:
+          fromId !== undefined
+            ? TranslationPack.translationJsonPatcher(
+                '{0} used {1} to you, please response a {2} card',
+                TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
+                TranslationPack.patchCardInTranslation(cardId),
+                'jink',
+              ).extract()
+            : TranslationPack.translationJsonPatcher('please response a {0} card', 'jink').extract(),
+        triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
+      };
 
-    const response = await room.askForCardResponse(
-      {
-        ...askForCardEvent,
-        toId: to,
-      },
-      to,
-    );
+      const response = await room.askForCardResponse(
+        {
+          ...askForCardEvent,
+          toId: to,
+        },
+        to,
+      );
 
-    if (response.cardId === undefined) {
+      responseCard = response.cardId;
+    }
+
+    if (responseCard === undefined) {
       const eventContent = {
         fromId,
         toId: to,
@@ -94,7 +99,8 @@ export class WanJianQiFaSkill extends ActiveSkill implements ExtralCardSkillProp
     } else {
       const cardResponsedEvent = {
         fromId: to,
-        cardId: response.cardId,
+        cardId: responseCard,
+        responseToEvent: event,
       };
       EventPacker.terminate(event);
 

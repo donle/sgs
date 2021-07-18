@@ -17,7 +17,7 @@ function getGameModeOptions(translator: ClientTranslationModule) {
     {
       label: translator.tr(GameMode.Standard),
       id: GameMode.Standard,
-      checked: true,
+      checked: false,
     },
     {
       label: translator.tr(GameMode.OneVersusTwo),
@@ -34,6 +34,12 @@ function getGameModeOptions(translator: ClientTranslationModule) {
       id: GameMode.Hegemony,
       checked: false,
       disabled: true,
+    },
+    {
+      label: translator.tr(GameMode.Pve),
+      id: GameMode.Pve,
+      checked: true,
+      disabled: false,
     },
   ];
 }
@@ -64,11 +70,12 @@ export const CreateRoomDialog = (props: {
 }) => {
   const username: string = props.electronLoader.getData('username');
   const [numberOfPlayers, setNumberOfPlayers] = React.useState<number>(2);
-  const [checkedGameMode, setcheckedGameMode] = React.useState<GameMode | undefined>(GameMode.Standard);
+  const [checkedGameMode, setcheckedGameMode] = React.useState<GameMode | undefined>(GameMode.Pve);
   const [characterExtensions, setCharacterExtensions] = React.useState<GameCharacterExtensions[]>(
     Sanguosha.getGameCharacterExtensions(),
   );
   const [playerSelectionDisabled, disablePlayerSelection] = React.useState<boolean>(false);
+  const [playerSelectionSwitch, switchPlayerSelection] = React.useState<boolean>(true);
   const [passcode, setPasscode] = React.useState<string>();
   const [roomName, setRoomName] = React.useState<string>(
     username ? props.translator.tr(TranslationPack.translationJsonPatcher("{0}'s room", username).extract()) : '',
@@ -91,10 +98,14 @@ export const CreateRoomDialog = (props: {
 
   const getPlayerOptions = () => {
     const options: { content: string | PatchedTranslationObject; value: number }[] = [];
-    for (let i = 2; i <= 8; i++) {
-      options.push({ content: TranslationPack.translationJsonPatcher('{0} players', i).extract(), value: i });
+    if (playerSelectionSwitch) {
+      options.push({ content: TranslationPack.translationJsonPatcher('one player').extract(), value: 2 });
+      options.push({ content: TranslationPack.translationJsonPatcher('two players').extract(), value: 3 });
+    } else {
+      for (let i = 2; i <= 8; i++) {
+        options.push({ content: TranslationPack.translationJsonPatcher('{0} players', i).extract(), value: i });
+      }
     }
-
     return options;
   };
 
@@ -109,6 +120,9 @@ export const CreateRoomDialog = (props: {
       setcheckedGameMode(checkedIds[0]);
     }
 
+    if (checkedIds[0] === GameMode.Standard) {
+      setNumberOfPlayers(2);
+    }
     if (checkedIds[0] === GameMode.OneVersusTwo || checkedIds[0] === GameMode.TwoVersusTwo) {
       disablePlayerSelection(true);
       if (checkedIds[0] === GameMode.OneVersusTwo) {
@@ -118,6 +132,12 @@ export const CreateRoomDialog = (props: {
       }
     } else {
       disablePlayerSelection(false);
+    }
+    if (checkedIds[0] === GameMode.Pve) {
+      switchPlayerSelection(true);
+      setNumberOfPlayers(1);
+    } else {
+      switchPlayerSelection(false);
     }
   };
 
@@ -152,7 +172,9 @@ export const CreateRoomDialog = (props: {
                 disabled={playerSelectionDisabled}
               >
                 {getPlayerOptions().map(option => (
-                  <option value={option.value}>{props.translator.tr(option.content)}</option>
+                  <option key={option.value} value={option.value}>
+                    {props.translator.tr(option.content)}
+                  </option>
                 ))}
               </select>
             </div>

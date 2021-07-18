@@ -30,7 +30,7 @@ export class TieJi extends TriggerSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
     const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
-    room.setFlag(aimEvent.toId, this.Name, true, true);
+    room.setFlag(aimEvent.toId, this.Name, true, this.Name);
     const to = room.getPlayerById(aimEvent.toId);
 
     const judge = await room.judge(skillUseEvent.fromId, undefined, this.Name);
@@ -68,11 +68,22 @@ export class TieJi extends TriggerSkill {
 @ShadowSkill
 @CompulsorySkill({ name: TieJi.GeneralName, description: TieJi.Description })
 export class TieJiShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
-  afterDead(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
+
+  public afterDead(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   getPriority() {
@@ -80,7 +91,7 @@ export class TieJiShadow extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: PhaseChangeStage) {
-    return stage === PhaseChangeStage.BeforePhaseChange && event.from === PlayerPhase.PhaseFinish;
+    return stage === PhaseChangeStage.PhaseChanged && event.from === PlayerPhase.PhaseFinish;
   }
 
   public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage) {

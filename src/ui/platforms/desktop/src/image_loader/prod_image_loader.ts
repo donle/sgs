@@ -1,11 +1,14 @@
-import { PlayerRole } from 'core/player/player_props';
+import { CharacterEquipSections } from 'core/characters/character';
+import { PlayerId, PlayerRole } from 'core/player/player_props';
 import { Functional } from 'core/shares/libs/functional';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { GameMode } from 'core/shares/types/room_props';
 import { SkillType } from 'core/skills/skill';
 import { ImageLoader } from './image_loader';
 import { getLobbyButtonImage, getSkillButtonImages } from './prod_button_image_loader';
 
 import { LobbyButton } from 'props/game_props';
+import { CharacterSkinInfo } from 'skins/skins';
 import cardBackImage from './images/cards/cardback.webp';
 import BingLiangCunDuanIcon from './images/delayed_tricks/bingliangcunduan.png';
 import LeBuSiShuIcon from './images/delayed_tricks/lebusishu.png';
@@ -113,6 +116,37 @@ export class ProdImageLoader implements ImageLoader {
     return { alt: cardName, src: image };
   }
 
+  public async getOthersAbortedEquipCard() {
+    const image: string = (await import('./images/others_equips/abort.png')).default;
+    return { alt: 'aborted', src: image };
+  }
+
+  public async getSlimAbortedEquipSection(section: CharacterEquipSections) {
+    let sectionName: string | undefined;
+    switch (section) {
+      case CharacterEquipSections.Weapon:
+        sectionName = 'aborted_weapon';
+        break;
+      case CharacterEquipSections.Shield:
+        sectionName = 'aborted_shield';
+        break;
+      case CharacterEquipSections.DefenseRide:
+        sectionName = 'aborted_defense_ride';
+        break;
+      case CharacterEquipSections.OffenseRide:
+        sectionName = 'aborted_offense_ride';
+        break;
+      case CharacterEquipSections.Precious:
+        sectionName = 'aborted_precious';
+        break;
+      default:
+        throw Precondition.UnreachableError(section);
+    }
+
+    const image: string = (await import(`./images/slim_equips/${sectionName}.png`)).default;
+    return { alt: 'aborted', src: image };
+  }
+
   public async getPlayerRoleCard(role: PlayerRole, gameMode: GameMode) {
     const roleName = [GameMode.OneVersusTwo, GameMode.TwoVersusTwo].includes(gameMode)
       ? 'unknown'
@@ -133,6 +167,30 @@ export class ProdImageLoader implements ImageLoader {
 
   public async getCharacterImage(characterName: string) {
     const image: string = (await import(`./images/characters/${characterName}.png`)).default;
+    return { alt: characterName, src: image };
+  }
+  public async getCharacterSkinPlay(
+    characterName: string,
+    skinData: CharacterSkinInfo[],
+    playerId?: PlayerId,
+    skinName?: string,
+  ) {
+    let image: string;
+    if (skinName !== characterName && skinData !== undefined) {
+      const skin = skinData
+        .find(skinInfo => skinInfo.character === characterName)
+        ?.infos.find(skinInfo => skinInfo.images?.find(imagesInfo => imagesInfo.name === skinName));
+      if (skin) {
+        image = process.env.PUBLIC_URL + '/' + skin?.images.find(imagesInfo => imagesInfo.name === skinName)?.seat;
+      } else {
+        image = (await import(`./images/characters/${characterName}.png`)).default;
+      }
+    } else {
+      image = (await import(`./images/characters/${characterName}.png`)).default;
+    }
+    if (skinName === 'random') {
+      image = (await import('./images/system/player_seat.png')).default;
+    }
     return { alt: characterName, src: image };
   }
 

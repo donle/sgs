@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { CardType } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
+import { CharacterEquipSections } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { ClientPlayer } from 'core/player/player.client';
@@ -12,15 +13,18 @@ import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
+import { ImageProps } from 'props/image_props';
 import * as React from 'react';
+import { CharacterSkinInfo } from 'skins/skins';
 import { NationalityBadge, PlayerPhaseBadge } from 'ui/badge/badge';
 import { ClientCard } from 'ui/card/card';
 import { FlatClientCard } from 'ui/card/flat_card';
 import { Hp } from 'ui/hp/hp';
 import { Tooltip } from 'ui/tooltip/tooltip';
+import { getSkinName } from '../../ui/switch_avatar/switch_skin';
 import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
 import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
-import { AwakenSkillMark, LimitSkillMark, Mark } from '../mark/mark';
+import { AwakenSkillMark, LimitSkillMark, Mark, SwitchSkillMark } from '../mark/mark';
 import { Mask } from '../mask/mask';
 import { PlayingBar } from '../playing_bar/playing_bar';
 import { SwitchAvatar } from '../switch_avatar/switch_avatar';
@@ -34,6 +38,7 @@ type PlayerCardProps = {
   imageLoader: ImageLoader;
   inAction: boolean;
   store: RoomStore;
+  skinData: CharacterSkinInfo[];
   incomingMessage?: string;
   onCloseIncomingMessage?(): void;
   actionTimeLimit?: number;
@@ -60,6 +65,8 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   focusedOnPlayerHandcard: boolean = false;
   @mobx.observable.ref
   autoHidePlayerName: boolean = true;
+  @mobx.observable.ref
+  skinName: string;
 
   private showPlayerHandcards =
     this.props.store.room.Info.gameMode === GameMode.TwoVersusTwo &&
@@ -105,22 +112,26 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     }
 
     return (
-      <div className={styles.playerEquips} onClick={this.onClick}>
-        {equips.map(equip => (
-          <FlatClientCard
-            card={equip}
-            imageLoader={imageLoader}
-            translator={translator}
-            className={classNames(styles.playerEquip, {
-              [styles.weapon]: equip?.is(CardType.Weapon),
-              [styles.armor]: equip?.is(CardType.Armor),
-              [styles.defenseRide]: equip?.is(CardType.DefenseRide),
-              [styles.offenseRide]: equip?.is(CardType.OffenseRide),
-              [styles.precious]: equip?.is(CardType.Precious),
-            })}
-          />
-        ))}
-      </div>
+      <>
+        <div className={styles.playerEquips} onClick={this.onClick}>
+          {equips.map(equip => (
+            <FlatClientCard
+              card={equip}
+              key={equip.Id}
+              imageLoader={imageLoader}
+              translator={translator}
+              className={classNames(styles.playerEquip, {
+                [styles.weapon]: equip?.is(CardType.Weapon),
+                [styles.armor]: equip?.is(CardType.Shield),
+                [styles.defenseRide]: equip?.is(CardType.DefenseRide),
+                [styles.offenseRide]: equip?.is(CardType.OffenseRide),
+                [styles.precious]: equip?.is(CardType.Precious),
+              })}
+            />
+          ))}
+        </div>
+        {player && <PlayerAbortedEquipSection player={player} imageLoader={imageLoader} />}
+      </>
     );
   }
 
@@ -131,6 +142,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
           <DelayedTrickIcon
             imageLoader={this.props.imageLoader}
             card={Sanguosha.getCardById(cardId)}
+            key={cardId}
             translator={this.props.translator}
           />
         ))}
@@ -212,8 +224,8 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     const { player, translator } = this.props;
     const skills =
       player?.CharacterId !== undefined ? player.getPlayerSkills().filter(skill => !skill.isShadowSkill()) : [];
-    return skills.map(skill => (
-      <div className={styles.skillInfo}>
+    return skills.map((skill, index) => (
+      <div className={styles.skillInfo} key={index}>
         <div className={styles.skillItem}>
           <span className={styles.skillName}>{translator.trx(skill.Name)}</span>
           <span dangerouslySetInnerHTML={{ __html: translator.tr(skill.Description) }} />
@@ -224,12 +236,26 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
 
   @mobx.action
   async componentDidUpdate() {
-    if (this.PlayerCharacter) {
-      this.mainImage = (await this.props.imageLoader.getCharacterImage(this.PlayerCharacter.Name)).src;
+    if (this.PlayerCharacter && this.props.player) {
+      this.skinName = getSkinName(
+        this.props.player.Character.Name,
+        this.props.player?.Id,
+        this.props.skinData,
+      ).skinName;
+      this.mainImage = (
+        await this.props.imageLoader.getCharacterSkinPlay(
+          this.props.player?.Character.Name,
+          this.props.skinData,
+          this.props.player?.Id,
+          this.skinName,
+        )
+      ).src;
       const huashenCharacterId = this.props.player?.getHuaShenInfo()?.characterId;
       const huashenCharacter =
         huashenCharacterId !== undefined ? Sanguosha.getCharacterById(huashenCharacterId) : undefined;
-      this.sideImage = huashenCharacter && (await this.props.imageLoader.getCharacterImage(huashenCharacter.Name)).src;
+      this.sideImage =
+        huashenCharacter &&
+        (await this.props.imageLoader.getCharacterImage(huashenCharacter.Name, this.props.player?.Id)).src;
     }
 
     if (this.PlayerImage === undefined && this.PlayerCharacter) {
@@ -278,6 +304,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     const marks: JSX.Element[] = [];
     const limitSkills = clientPlayer.getSkills('limit');
     const awakenSkills = clientPlayer.getSkills('awaken');
+    const switchSkills = clientPlayer.getSkills('switch').filter(skill => skill.isShadowSkill());
     marks.push(
       ...limitSkills.map(skill => (
         <LimitSkillMark
@@ -292,6 +319,15 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
         <AwakenSkillMark
           skillName={this.props.translator.tr(skill.Name)}
           hasUsed={this.props.store.onceSkillUsedHistory[clientPlayer.Id]?.includes(skill.Name)}
+          key={skill.Name}
+        />
+      )),
+    );
+    marks.push(
+      ...switchSkills.map(skill => (
+        <SwitchSkillMark
+          skillName={this.props.translator.tr(skill.Name)}
+          state={this.props.store.switchSkillState[clientPlayer.Id]?.includes(skill.Name)}
           key={skill.Name}
         />
       )),
@@ -451,6 +487,43 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
         </div>
         {this.getPlayerEquips()}
         <div className={styles.marks}>{this.getOnceSkillMarks()}</div>
+      </div>
+    );
+  }
+}
+
+type PlayerAbortedEquipSectionProps = {
+  player: ClientPlayer;
+  imageLoader: ImageLoader;
+};
+
+class PlayerAbortedEquipSection extends React.Component<PlayerAbortedEquipSectionProps> {
+  private abortedImageProp: ImageProps | undefined;
+
+  async componentDidMount() {
+    this.abortedImageProp = await this.props.imageLoader.getOthersAbortedEquipCard();
+  }
+
+  render() {
+    const abortedSections = this.props.player.DisabledEquipSections;
+
+    return (
+      <div className={styles.playerAbortedEquipSections}>
+        {this.abortedImageProp &&
+          abortedSections.map(section => (
+            <img
+              className={classNames(styles.playerEquip, {
+                [styles.weapon]: section === CharacterEquipSections.Weapon,
+                [styles.armor]: section === CharacterEquipSections.Shield,
+                [styles.defenseRide]: section === CharacterEquipSections.DefenseRide,
+                [styles.offenseRide]: section === CharacterEquipSections.OffenseRide,
+                [styles.precious]: section === CharacterEquipSections.Precious,
+              })}
+              key={section}
+              src={this.abortedImageProp!.src}
+              alt={this.abortedImageProp!.alt}
+            />
+          ))}
       </div>
     );
   }

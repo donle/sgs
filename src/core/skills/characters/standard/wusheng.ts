@@ -5,12 +5,9 @@ import { Slash } from 'core/cards/standard/slash';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE } from 'core/game/game_props';
-import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, CompulsorySkill, RulesBreakerSkill, ShadowSkill, ViewAsSkill } from 'core/skills/skill';
-import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 
 @CommonSkill({ name: 'wusheng', description: 'wusheng_description' })
 export class WuSheng extends ViewAsSkill {
@@ -62,11 +59,7 @@ export class WuSheng extends ViewAsSkill {
 
 @ShadowSkill
 @CompulsorySkill({ name: WuSheng.GeneralName, description: WuSheng.Description })
-export class WuShengShadow extends RulesBreakerSkill implements OnDefineReleaseTiming {
-  afterLosingSkill(room: Room, playerId: PlayerId) {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish;
-  }
-
+export class WuShengShadow extends RulesBreakerSkill {
   breakCardUsableDistance(cardId: CardId | CardMatcher, room: Room, owner: Player) {
     if (cardId instanceof CardMatcher) {
       return cardId.match(new CardMatcher({ generalName: ['slash'], suit: [CardSuit.Diamond] }))

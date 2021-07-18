@@ -60,7 +60,7 @@ export class KuangFeng extends TriggerSkill implements OnDefineReleaseTiming {
     return cards.length === 1;
   }
 
-  public isAvailableCard(owner: PlayerId,room: Room, pendingCardId: CardId) {
+  public isAvailableCard(owner: PlayerId, room: Room, pendingCardId: CardId) {
     return room.getPlayerById(owner).getCardIds(PlayerCardsArea.OutsideArea, QiXing.Name).includes(pendingCardId);
   }
 
@@ -77,7 +77,13 @@ export class KuangFeng extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    await room.dropCards(CardMoveReason.PlaceToDropStack, skillUseEvent.cardIds!, skillUseEvent.fromId, skillUseEvent.fromId, this.Name);
+    await room.dropCards(
+      CardMoveReason.PlaceToDropStack,
+      skillUseEvent.cardIds!,
+      skillUseEvent.fromId,
+      skillUseEvent.fromId,
+      this.Name,
+    );
     room.addMark(skillUseEvent.toIds![0], MarkEnum.KuangFeng, 1);
     return true;
   }
@@ -86,8 +92,13 @@ export class KuangFeng extends TriggerSkill implements OnDefineReleaseTiming {
 @ShadowSkill
 @CommonSkill({ name: KuangFeng.Name, description: KuangFeng.Description })
 export class KuangFengShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PrepareStage;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseBegin && stage === PhaseChangeStage.AfterPhaseChanged;
   }
 
   public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
@@ -99,7 +110,7 @@ export class KuangFengShadow extends TriggerSkill implements OnDefineReleaseTimi
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
-    return stage === DamageEffectStage.DamagedEffect || stage === PhaseChangeStage.BeforePhaseChange;
+    return stage === DamageEffectStage.DamagedEffect || stage === PhaseChangeStage.AfterPhaseChanged;
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers>): boolean {
@@ -110,7 +121,7 @@ export class KuangFengShadow extends TriggerSkill implements OnDefineReleaseTimi
     } else if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
       const phaseChangeEvent = event as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
       return (
-        phaseChangeEvent.to === PlayerPhase.PrepareStage &&
+        phaseChangeEvent.to === PlayerPhase.PhaseBegin &&
         phaseChangeEvent.toPlayer === owner.Id &&
         !!room.getAlivePlayersFrom().find(player => player.getMark(MarkEnum.KuangFeng) > 0)
       );

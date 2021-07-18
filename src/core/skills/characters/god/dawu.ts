@@ -101,8 +101,13 @@ export class DaWu extends TriggerSkill implements OnDefineReleaseTiming {
 @ShadowSkill
 @CommonSkill({ name: DaWu.Name, description: DaWu.Description })
 export class DaWuShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(room: Room, owner: PlayerId): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PrepareStage;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseBegin && stage === PhaseChangeStage.AfterPhaseChanged;
   }
 
   public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
@@ -118,7 +123,7 @@ export class DaWuShadow extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
-    return stage === DamageEffectStage.DamagedEffect || stage === PhaseChangeStage.BeforePhaseChange;
+    return stage === DamageEffectStage.DamagedEffect || stage === PhaseChangeStage.AfterPhaseChanged;
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers>): boolean {
@@ -129,7 +134,7 @@ export class DaWuShadow extends TriggerSkill implements OnDefineReleaseTiming {
     } else if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
       const phaseChangeEvent = event as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
       return (
-        phaseChangeEvent.to === PlayerPhase.PrepareStage &&
+        phaseChangeEvent.to === PlayerPhase.PhaseBegin &&
         phaseChangeEvent.toPlayer === owner.Id &&
         !!room.getAlivePlayersFrom().find(player => player.getMark(MarkEnum.DaWu) > 0)
       );

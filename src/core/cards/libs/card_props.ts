@@ -47,3 +47,10 @@ export const enum CardTargetEnum {
   Others,
   Globe,
 }
+
+// equip priority is [80, 100]
+export type CardValue = {
+  value: number;
+  wane: number;
+  priority: number;
+};

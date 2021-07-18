@@ -3,6 +3,7 @@ import { CardMatcher, CardMatcherProps } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
+import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -12,6 +13,10 @@ import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 export class GuoSe extends ActiveSkill {
   public canUse(room: Room, owner: Player) {
     return !owner.hasUsedSkill(this.Name);
+  }
+
+  public isRefreshAt(room: Room, owner: Player, phase: PlayerPhase): boolean {
+    return phase === PlayerPhase.PlayCardStage;
   }
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {

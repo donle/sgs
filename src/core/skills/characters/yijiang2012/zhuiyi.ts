@@ -16,29 +16,20 @@ export class ZhuiYi extends TriggerSkill implements OnDefineReleaseTiming {
     return true;
   }
 
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>,
-    stage?: AllStage,
-  ): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>, stage?: AllStage): boolean {
     return stage === PlayerDiedStage.PlayerDied;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>): boolean {
     return content.playerId === owner.Id;
   }
 
-  public async beforeUse(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ): Promise<boolean> {
+  public async beforeUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     const { fromId, triggeredOnEvent } = event;
     const playerDiedEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>;
 
-    const players = room.getAlivePlayersFrom()
+    const players = room
+      .getAlivePlayersFrom()
       .filter(player => player.Id !== playerDiedEvent.killedBy)
       .map(player => player.Id);
 
@@ -63,11 +54,7 @@ export class ZhuiYi extends TriggerSkill implements OnDefineReleaseTiming {
       triggeredBySkills: [this.Name],
     };
 
-    room.notify(
-      GameEventIdentifiers.AskForChoosingPlayerEvent,
-      askForPlayerChoose,
-      fromId,
-    );
+    room.notify(GameEventIdentifiers.AskForChoosingPlayerEvent, askForPlayerChoose, fromId);
 
     const resp = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingPlayerEvent, fromId);
     if (!resp.selectedPlayers) {
@@ -83,10 +70,7 @@ export class ZhuiYi extends TriggerSkill implements OnDefineReleaseTiming {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { fromId, toIds } = event;
 
     await room.drawCards(3, toIds![0], 'top', fromId, this.Name);

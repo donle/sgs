@@ -1,6 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { GameCommonRules } from 'core/game/game_rules';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -41,7 +40,7 @@ export class PoXi extends ActiveSkill {
       owner.removeFlag(this.Name);
 
       room.syncGameCommonRules(owner.Id, from => {
-        GameCommonRules.addAdditionalHoldCardNumber(from, 1);
+        room.CommonRules.addAdditionalHoldCardNumber(from, 1);
       });
     }
   }
@@ -100,7 +99,7 @@ export class PoXi extends ActiveSkill {
     } else if (fromCards.length === 1) {
       from.setFlag(this.Name, true);
       room.syncGameCommonRules(from.Id, from => {
-        GameCommonRules.addAdditionalHoldCardNumber(from, -1);
+        room.CommonRules.addAdditionalHoldCardNumber(from, -1);
       });
       room.endPhase(PlayerPhase.PlayCardStage);
     } else if (fromCards.length === 3 && from.isInjured()) {

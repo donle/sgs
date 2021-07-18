@@ -9,7 +9,7 @@ export class OpenningPage extends React.PureComponent<PagePropsWithConfig> {
 
   private readonly jumpToLobby = () => {
     this.props.history.push('/lobby');
-  }
+  };
 
   componentDidMount() {
     document.addEventListener('keydown', this.jumpToLobby);
@@ -18,10 +18,10 @@ export class OpenningPage extends React.PureComponent<PagePropsWithConfig> {
     }, 6000);
   }
 
- componentWillUnmount() {
-  document.removeEventListener('keydown', this.jumpToLobby);
-  clearTimeout(this.timeoutId);
- }
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.jumpToLobby);
+    clearTimeout(this.timeoutId);
+  }
 
   render() {
     return (

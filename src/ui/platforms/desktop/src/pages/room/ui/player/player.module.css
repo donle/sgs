@@ -42,6 +42,7 @@
     bottom: -10px;
     right: gridLine;
     display: flex;
+    z-index: 1;
 }
 
 .playerRoleCard {
@@ -145,7 +146,8 @@
 .playerName.aligned {
     padding: 0 calc(gridLine * 4);
 }
-.playerEquips {
+.playerEquips,
+.playerAbortedEquipSections {
     height: calc(12 * 8px);
     display: flex;
     flex-direction: column;

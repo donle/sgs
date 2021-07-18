@@ -13,12 +13,12 @@ import {
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
+import { MovingCardProps } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import {
   CardEffectStage,
   CardMoveStage,
   CardResponseStage,
-  CardUseStage,
   ChainLockStage,
   DamageEffectStage,
   DrawCardStage,
@@ -64,6 +64,7 @@ export class StandardGameProcessor extends GameProcessor {
   protected playerStages: PlayerPhaseStages[] = [];
 
   protected toEndPhase: PlayerPhase | undefined;
+  protected inExtraRound: boolean = false;
   protected inExtraPhase: boolean = false;
   protected playRoundInsertions: PlayerId[] = [];
   protected playPhaseInsertions: {
@@ -407,11 +408,38 @@ export class StandardGameProcessor extends GameProcessor {
 
     let lastPlayerPosition = this.playerPositionIndex;
     await this.beforeGameStartPreparation();
+
     while (this.room.isPlaying() && !this.room.isGameOver() && !this.room.isClosed()) {
-      if (this.playerPositionIndex < lastPlayerPosition) {
+      if (this.room.Circle === 0) {
+        await this.onHandleIncomingEvent(
+          GameEventIdentifiers.GameBeginEvent,
+          EventPacker.createIdentifierEvent(GameEventIdentifiers.GameBeginEvent, {}),
+        );
         this.room.nextCircle();
+      } else if (!this.inExtraRound) {
+        if (this.playerPositionIndex < lastPlayerPosition) {
+          this.room.nextCircle();
+          this.room.Analytics.turnToNextCircle();
+          for (const player of this.room.getAlivePlayersFrom()) {
+            const skillsUsed = Object.keys(player.SkillUsedHistory);
+            if (skillsUsed.length > 0) {
+              for (const skill of skillsUsed) {
+                if (player.hasUsedSkill(skill)) {
+                  const reaSkill = Sanguosha.getSkillBySkillName(skill);
+                  reaSkill.isCircleSkill() && player.resetSkillUseHistory(skill);
+                }
+              }
+            }
+          }
+
+          const circleStartEvent: ServerEventFinder<GameEventIdentifiers.CircleStartEvent> = {};
+          await this.onHandleIncomingEvent(
+            GameEventIdentifiers.CircleStartEvent,
+            EventPacker.createIdentifierEvent(GameEventIdentifiers.CircleStartEvent, circleStartEvent),
+          );
+        }
+        lastPlayerPosition = this.playerPositionIndex;
       }
-      lastPlayerPosition = this.playerPositionIndex;
 
       await this.play(this.CurrentPlayer);
       await this.turnToNextPlayer();
@@ -499,12 +527,13 @@ export class StandardGameProcessor extends GameProcessor {
         this.toEndPhase = undefined;
         break;
       }
-    } while (true);
+    } while (!this.room.Players.every(player => !player.isOnline()));
   }
   protected async onPlayerDropCardStage(phase: PlayerPhase) {
-    this.logger.debug('enter drop cards phase');
+    this.logger.debug(`${this.currentPhasePlayer.Id} enter drop cards phase`);
     const maxCardHold = this.currentPhasePlayer.getMaxCardHold(this.room);
     const discardAmount = this.currentPhasePlayer.getCardIds(PlayerCardsArea.HandArea).length - maxCardHold;
+    this.logger.debug(`${this.currentPhasePlayer.Id},  Upper Limit: ${maxCardHold}`);
     if (discardAmount > 0) {
       const response = await this.room.askForCardDrop(
         this.currentPhasePlayer.Id,
@@ -603,20 +632,23 @@ export class StandardGameProcessor extends GameProcessor {
       }
 
       for (const player of this.room.AlivePlayers) {
-        const sideEffectSkills = this.room
-          .getSideEffectSkills(player)
-          .map(skillName => Sanguosha.getSkillBySkillName(skillName));
-        for (const skill of [...player.getSkills(), ...sideEffectSkills]) {
-          if (nextPhase === PlayerPhase.PhaseBegin) {
-            player.resetCardUseHistory();
-            player.hasDrunk() && this.room.clearHeaded(player.Id);
-          } else {
-            player.resetCardUseHistory('slash');
-          }
+        if (nextPhase === PlayerPhase.PhaseBegin) {
+          player.resetCardUseHistory();
+          player.hasDrunk() && this.room.clearHeaded(player.Id);
+        } else {
+          player.resetCardUseHistory('slash');
+        }
 
-          if (skill.isRefreshAt(this.room, player, nextPhase)) {
-            skill.whenRefresh(this.room, player);
-            player.resetSkillUseHistory(skill.Name);
+        const skillsUsed = Object.keys(player.SkillUsedHistory);
+        if (skillsUsed.length > 0) {
+          for (const skill of skillsUsed) {
+            if (player.hasUsedSkill(skill)) {
+              const reaSkill = Sanguosha.getSkillBySkillName(skill);
+              if (reaSkill.isCircleSkill()) {
+                continue;
+              }
+              reaSkill.isRefreshAt(this.room, player, nextPhase) && player.resetSkillUseHistory(skill);
+            }
           }
         }
       }
@@ -691,10 +723,11 @@ export class StandardGameProcessor extends GameProcessor {
       for (const player of this.room.getAlivePlayersFrom(this.CurrentPlayer.Id)) {
         notifierAllPlayers.push(player.Id);
         if (
-          !player.hasCard(this.room, wuxiekejiMatcher) &&
-          this.room.GameParticularAreas.find(areaName =>
-            player.hasCard(this.room, wuxiekejiMatcher, PlayerCardsArea.OutsideArea, areaName),
-          ) === undefined
+          (event.disresponsiveList && event.disresponsiveList.includes(player.Id)) ||
+          (!player.hasCard(this.room, wuxiekejiMatcher) &&
+            this.room.GameParticularAreas.find(areaName =>
+              player.hasCard(this.room, wuxiekejiMatcher, PlayerCardsArea.OutsideArea, areaName),
+            ) === undefined)
         ) {
           continue;
         }
@@ -843,6 +876,20 @@ export class StandardGameProcessor extends GameProcessor {
       case GameEventIdentifiers.GameStartEvent:
         await this.onHandleGameStartEvent(
           identifier as GameEventIdentifiers.GameStartEvent,
+          event as any,
+          onActualExecuted,
+        );
+        break;
+      case GameEventIdentifiers.GameBeginEvent:
+        await this.onHandleGameBeginEvent(
+          identifier as GameEventIdentifiers.GameBeginEvent,
+          event as any,
+          onActualExecuted,
+        );
+        break;
+      case GameEventIdentifiers.CircleStartEvent:
+        await this.onHandleCircleStartEvent(
+          identifier as GameEventIdentifiers.CircleStartEvent,
           event as any,
           onActualExecuted,
         );
@@ -1225,7 +1272,6 @@ export class StandardGameProcessor extends GameProcessor {
                 fromId: response.fromId,
                 cardId: response.cardId,
                 targetGroup: [[to.Id]],
-                extraUse: true,
               };
               EventPacker.copyPropertiesTo(response, cardUseEvent);
 
@@ -1537,8 +1583,39 @@ export class StandardGameProcessor extends GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    const { fromId, toId, movingCards } = event;
+    const { fromId, toId, movingCards, toArea } = event;
     let to = toId ? this.room.getPlayerById(toId) : undefined;
+    if (to && toArea === CardMoveArea.EquipArea) {
+      const droppedMoves: MovingCardProps[] = [];
+      const equipMoves: MovingCardProps[] = [];
+
+      for (const moving of movingCards) {
+        if (to!.canEquip(Sanguosha.getCardById(moving.card))) {
+          equipMoves.push(moving);
+        } else {
+          droppedMoves.push(moving);
+        }
+      }
+
+      if (droppedMoves.length > 0) {
+        const asyncMoveEvents: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[] = [
+          {
+            ...event,
+            movingCards: droppedMoves,
+            toArea: CardMoveArea.DropStack,
+            moveReason: CardMoveReason.PlaceToDropStack,
+          },
+        ];
+        if (equipMoves.length > 0) {
+          asyncMoveEvents.push({ ...event, movingCards: equipMoves });
+        }
+
+        await this.onHandleAsyncMoveCardEvent(asyncMoveEvents);
+
+        return;
+      }
+    }
+
     if (to && to.Dead) {
       event.toId = undefined;
       event.toArea = CardMoveArea.DropStack;
@@ -1577,6 +1654,42 @@ export class StandardGameProcessor extends GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     const identifier = GameEventIdentifiers.MoveCardEvent;
+
+    const splitEvents: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[] = [];
+    for (const event of events) {
+      if (event.toId && event.toArea === CardMoveArea.EquipArea) {
+        const to = this.room.getPlayerById(event.toId);
+        const droppedMoves: MovingCardProps[] = [];
+        const equipMoves: MovingCardProps[] = [];
+
+        for (const moving of event.movingCards) {
+          if (to.canEquip(Sanguosha.getCardById(moving.card))) {
+            equipMoves.push(moving);
+          } else {
+            droppedMoves.push(moving);
+          }
+        }
+
+        if (droppedMoves.length > 0) {
+          splitEvents.push({
+            ...event,
+            movingCards: droppedMoves,
+            toArea: CardMoveArea.DropStack,
+            moveReason: CardMoveReason.PlaceToDropStack,
+          });
+        }
+        if (equipMoves.length > 0) {
+          splitEvents.push({ ...event, movingCards: equipMoves });
+        }
+      } else {
+        splitEvents.push(event);
+      }
+    }
+
+    this.logger.debug(JSON.stringify(splitEvents, null, 2), JSON.stringify(events, null, 2));
+
+    events = splitEvents;
+
     for (const event of events) {
       const { fromId, toId, movingCards } = event;
       let to = toId ? this.room.getPlayerById(toId) : undefined;
@@ -1910,6 +2023,23 @@ export class StandardGameProcessor extends GameProcessor {
     return await this.iterateEachStage(identifier, event, onActualExecuted);
   }
 
+  private async onHandleGameBeginEvent(
+    identifier: GameEventIdentifiers.GameBeginEvent,
+    event: ServerEventFinder<GameEventIdentifiers.GameBeginEvent>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
+  ) {
+    return await this.iterateEachStage(identifier, event, onActualExecuted);
+  }
+
+  private async onHandleCircleStartEvent(
+    identifier: GameEventIdentifiers.CircleStartEvent,
+    event: ServerEventFinder<GameEventIdentifiers.CircleStartEvent>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
+  ) {
+    this.room.broadcast(GameEventIdentifiers.CircleStartEvent, event);
+    return await this.iterateEachStage(identifier, event, onActualExecuted);
+  }
+
   private async onHandleLoseHpEvent(
     identifier: GameEventIdentifiers.LoseHpEvent,
     event: ServerEventFinder<GameEventIdentifiers.LoseHpEvent>,
@@ -2000,6 +2130,8 @@ export class StandardGameProcessor extends GameProcessor {
         return;
       }
 
+      event.recoveredHp = Math.min(event.recoveredHp, to.MaxHp - to.Hp);
+
       if (stage === RecoverEffectStage.RecoverEffecting) {
         const hpChangeEvent: ServerEventFinder<GameEventIdentifiers.HpChangeEvent> = {
           fromId: event.recoverBy,
@@ -2089,6 +2221,8 @@ export class StandardGameProcessor extends GameProcessor {
         }
       }
     }
+
+    this.inExtraRound = chosen;
 
     while (!chosen) {
       const nextIndex =

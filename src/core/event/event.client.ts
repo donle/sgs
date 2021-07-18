@@ -74,6 +74,11 @@ export interface ClientEvent extends EventUtilities {
     currentPlayer: PlayerInfo;
     otherPlayers: PlayerInfo[];
   };
+
+  [GameEventIdentifiers.GameBeginEvent]: {};
+
+  [GameEventIdentifiers.CircleStartEvent]: {};
+
   [GameEventIdentifiers.GameOverEvent]: {
     playersInfo: PlayerInfo[];
   };
@@ -194,7 +199,7 @@ type PlayCardOrSkillEvent =
       end: false | undefined;
     } & PlayerCardOrSkillInnerEvent);
 
-type PlayerCardOrSkillInnerEvent =
+export type PlayerCardOrSkillInnerEvent =
   | {
       eventName: GameEventIdentifiers.CardUseEvent;
       event: ClientEvent[GameEventIdentifiers.CardUseEvent];

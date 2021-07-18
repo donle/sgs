@@ -159,7 +159,11 @@ const CardSelector = (props: CardSelectorProps) => {
     e.stopPropagation();
   };
 
-  return <div className={styles.selecterCardsItem} onMouseDown={onAction}>{optionCardsLine}</div>;
+  return (
+    <div className={styles.selecterCardsItem} onMouseDown={onAction}>
+      {optionCardsLine}
+    </div>
+  );
 };
 
 export const CardSelectorDialog = (props: {

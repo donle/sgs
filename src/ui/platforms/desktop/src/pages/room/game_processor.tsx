@@ -11,7 +11,6 @@ import {
   serverResponsiveListenerEvents,
 } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { GameCommonRules } from 'core/game/game_rules';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
@@ -24,6 +23,7 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
+import { CharacterSkinInfo } from 'skins/skins';
 import { AudioService } from 'ui/audio/install';
 import { AskForPeachAction } from './actions/ask_for_peach_action';
 import { CardResponseAction } from './actions/card_response_action';
@@ -37,6 +37,7 @@ import { CharacterSelectorDialog } from './ui/dialog/character_selector_dialog/c
 import { GameOverDialog } from './ui/dialog/game_over_dialog/game_over_dialog';
 import { GuanXingDialog } from './ui/dialog/guanxing_dialog/guanxing_dialog';
 import { WuGuFengDengDialog } from './ui/dialog/wugufengdeng_dialog/wugufengdeng_dialog';
+import { getSkinName } from './ui/switch_avatar/switch_skin';
 
 export class GameClientProcessor {
   protected onPlayTrustedActionTimer: NodeJS.Timer | undefined;
@@ -53,6 +54,7 @@ export class GameClientProcessor {
     protected imageLoader: ImageLoader,
     protected audioService: AudioService,
     protected electron: ElectronLoader,
+    protected skinData: CharacterSkinInfo[],
   ) {
     this.audioService.playRoomBGM();
   }
@@ -162,6 +164,9 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.GameStartEvent:
         await this.onHandleGameStartEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.CircleStartEvent:
+        await this.onHandleCircleStartEvent(e as any, content);
         break;
       case GameEventIdentifiers.PlayerEnterEvent:
         await this.onHandlePlayerEnterEvent(e as any, content);
@@ -301,6 +306,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.ChainLockedEvent:
         await this.onHandleChainLockedEvent(e as any, content);
         break;
+      case GameEventIdentifiers.AbortOrResumePlayerSectionsEvent:
+        await this.onHandleAbortOrResumePlayerSectionsEvent(e as any, content);
+        break;
       case GameEventIdentifiers.DrunkEvent:
         await this.onHandleDrunkEvent(e as any, content);
         break;
@@ -346,7 +354,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.store.room.getPlayerById(content.to).setFlag(content.name, content.value, content.invisible);
+    this.store.room.getPlayerById(content.to).setFlag(content.name, content.value, content.tagName);
   }
   protected async onHandleRemoveFlagEvent<T extends GameEventIdentifiers.RemoveFlagEvent>(
     type: T,
@@ -706,7 +714,8 @@ export class GameClientProcessor {
   ) {
     const { playerId } = content;
     const player = this.store.room.getPlayerById(playerId);
-    this.audioService.playDeathAudio(player.Character.Name);
+    const skinName = getSkinName(player.Character.Name, player.Id, this.skinData).skinName;
+    this.audioService.playDeathAudio(player.Character.Name, this.skinData, skinName);
     this.store.room.kill(player);
     this.presenter.broadcastUIUpdate();
   }
@@ -750,6 +759,24 @@ export class GameClientProcessor {
   ) {
     this.presenter.isSkillDisabled(() => true);
     this.presenter.broadcastUIUpdate();
+  }
+
+  protected onHandleCircleStartEvent<T extends GameEventIdentifiers.CircleStartEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.Analytics.turnToNextCircle();
+    for (const player of this.store.room.AlivePlayers) {
+      const skillsUsed = Object.keys(player.SkillUsedHistory);
+      if (skillsUsed.length > 0) {
+        for (const skill of skillsUsed) {
+          if (player.hasUsedSkill(skill)) {
+            const reaSkill = Sanguosha.getSkillBySkillName(skill);
+            reaSkill.isCircleSkill() && player.resetSkillUseHistory(skill);
+          }
+        }
+      }
+    }
   }
 
   protected async onHandleGameReadyEvent<T extends GameEventIdentifiers.GameReadyEvent>(
@@ -874,7 +901,7 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     const { commonRules, toId } = content;
-    GameCommonRules.syncSocketObject(this.store.room.getPlayerById(toId), commonRules);
+    this.store.room.CommonRules.syncSocketObject(this.store.room.getPlayerById(toId), commonRules);
   }
 
   protected async onHandleAskForSkillUseEvent<T extends GameEventIdentifiers.AskForSkillUseEvent>(
@@ -921,18 +948,22 @@ export class GameClientProcessor {
 
     if (content.fromPlayer) {
       for (const player of this.store.room.AlivePlayers) {
-        const sideEffectSkills = this.store.room
-          .getSideEffectSkills(player)
-          .map(skillName => Sanguosha.getSkillBySkillName(skillName));
-        for (const skill of [...player.getSkills(), ...sideEffectSkills]) {
-          if (this.store.room.CurrentPlayerPhase === PlayerPhase.PhaseBegin) {
-            player.resetCardUseHistory();
-          } else {
-            player.resetCardUseHistory('slash');
-          }
+        if (this.store.room.CurrentPlayerPhase === PlayerPhase.PhaseBegin) {
+          player.resetCardUseHistory();
+        } else {
+          player.resetCardUseHistory('slash');
+        }
 
-          if (skill.isRefreshAt(this.store.room, player, content.to)) {
-            player.resetSkillUseHistory(skill.Name);
+        const skillsUsed = Object.keys(player.SkillUsedHistory);
+        if (skillsUsed.length > 0) {
+          for (const skill of skillsUsed) {
+            if (player.hasUsedSkill(skill)) {
+              const reaSkill = Sanguosha.getSkillBySkillName(skill);
+              if (reaSkill.isCircleSkill()) {
+                continue;
+              }
+              reaSkill.isRefreshAt(this.store.room, player, content.to) && player.resetSkillUseHistory(skill);
+            }
           }
         }
       }
@@ -1335,11 +1366,15 @@ export class GameClientProcessor {
   ) {
     const skill = Sanguosha.getSkillBySkillName(content.skillName);
     const from = this.store.room.getPlayerById(content.fromId);
-    !content.mute && this.audioService.playSkillAudio(skill.GeneralName, from.Gender, from.Character.Name);
+    const skinName = getSkinName(from.Character.Name, from.Id, this.skinData).skinName;
+    !content.mute &&
+      this.audioService.playSkillAudio(skill.GeneralName, from.Gender, this.skinData, from.Character.Name, skinName);
 
     await this.store.room.useSkill(content);
     if (skill.SkillType === SkillType.Limit || skill.SkillType === SkillType.Awaken) {
       this.presenter.onceSkillUsed(content.fromId, content.skillName);
+    } else if (skill.isSwitchSkill() && skill.isSwitchable()) {
+      this.presenter.switchSkillStateChanged(content.fromId, skill.GeneralName);
     }
     this.presenter.broadcastUIUpdate();
   }
@@ -1543,5 +1578,19 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     this.presenter.closeDialog();
+  }
+
+  protected async onHandleAbortOrResumePlayerSectionsEvent<
+    T extends GameEventIdentifiers.AbortOrResumePlayerSectionsEvent
+  >(type: T, content: ServerEventFinder<T>) {
+    const { toId, isResumption, toSections } = content;
+    const to = this.store.room.getPlayerById(toId);
+    if (isResumption) {
+      to.resumeEquipSections(...toSections);
+    } else {
+      to.abortEquipSections(...toSections);
+    }
+
+    this.presenter.broadcastUIUpdate();
   }
 }

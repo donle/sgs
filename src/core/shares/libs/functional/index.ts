@@ -48,6 +48,11 @@ export abstract class Functional {
     return cardSuitRawText[suit];
   }
 
+  static getCardSuitCharText(suit: CardSuit) {
+    const cardSuitCharText = ['□', '♠', '♥', '♣', '♦'];
+    return cardSuitCharText[suit];
+  }
+
   static getPlayerRoleRawText(role: PlayerRole, mode: GameMode) {
     switch (mode) {
       case GameMode.OneVersusTwo: {
@@ -108,7 +113,7 @@ export abstract class Functional {
         return 'trick card';
       case CardType.DelayedTrick:
         return 'delayed trick card';
-      case CardType.Armor:
+      case CardType.Shield:
         return 'armor card';
       case CardType.Weapon:
         return 'weapon card';

@@ -134,11 +134,13 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'zishou_description',
-    target: '摸牌阶段，你可以多摸X张牌（X为存活势力数），然后本回合内防止你对其他角色造成的伤害；结束阶段开始时，若你本回合内未对其他角色使用过牌，你可以弃置至少一张花色各不相同的手牌，然后摸等量的牌。',
+    target:
+      '摸牌阶段，你可以多摸X张牌（X为存活势力数），然后本回合内防止你对其他角色造成的伤害；结束阶段开始时，若你本回合内未对其他角色使用过牌，你可以弃置至少一张花色各不相同的手牌，然后摸等量的牌。',
   },
   {
     source: 'zongshi_description',
-    target: '<b>锁定技</b>，你的手牌上限+X（X为存活势力数）；你的回合外，若你的手牌数不小于手牌上限，无色牌对你无效且你不能成为延时类锦囊牌的目标。',
+    target:
+      '<b>锁定技</b>，你的手牌上限+X（X为存活势力数）；你的回合外，若你的手牌数不小于手牌上限，无色牌对你无效且你不能成为延时类锦囊牌的目标。',
   },
 ];
 
@@ -209,7 +211,7 @@ export const promptDescriptions: Word[] = [
     source: '{0}: please choose a target except {1} to draw 3 cards and recover 1 hp',
     target: '{0}：你可以令一名除 {1} 外的其他角色摸三张牌并回复1点体力',
   },
-  
+
   {
     source: '{0}: do you want to discard at least one card with different suits and draw cards?',
     target: '{0}：你可以弃置至少一张花色各不相同的手牌，然后摸等量的牌',

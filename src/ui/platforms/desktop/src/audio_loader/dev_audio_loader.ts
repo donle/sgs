@@ -1,4 +1,5 @@
 import { CharacterGender } from 'core/characters/character';
+import { CharacterSkinInfo } from 'skins/skins';
 import { AudioLoader } from './audio_loader';
 
 const remoteRoot: string = 'http://doublebit.gitee.io/pictest/backup_remote';
@@ -11,7 +12,7 @@ export class DevAudioLoader implements AudioLoader {
     return 'https://aod.cos.tx.xmcdn.com/group24/M02/CF/E6/wKgJMFi6G1bgZDjzAB9BygnpYEI443.m4a';
   }
   getGameStartAudio() {
-    return 'http://doublebit.gitee.io/pictest/audio/common/gamestart.ogg'; 
+    return 'http://doublebit.gitee.io/pictest/audio/common/gamestart.ogg';
   }
   getDamageAudio(damage: number) {
     return `${remoteRoot}/audios/` + (damage === 1 ? 'damage' : 'damage2') + '.mp3';
@@ -34,5 +35,22 @@ export class DevAudioLoader implements AudioLoader {
   }
   async getDeathAudio(characterName: string): Promise<string> {
     return `${remoteRoot}/audios/characters/${characterName}.mp3`;
+  }
+
+  async getCharacterSkinAudio(
+    characterName: string,
+    skinName: string,
+    skillName: string,
+    skinData: CharacterSkinInfo[],
+    gender?: CharacterGender,
+  ): Promise<string> {
+    let voice: string;
+    if (skillName === 'death') {
+      voice = await this.getDeathAudio(characterName);
+    } else {
+      voice = await this.getSkillAudio(skillName, gender!, characterName);
+    }
+
+    return voice;
   }
 }

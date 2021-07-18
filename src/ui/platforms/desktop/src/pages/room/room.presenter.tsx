@@ -113,6 +113,11 @@ export class RoomStore {
   } = {};
 
   @mobx.observable.ref
+  switchSkillState: {
+    [K in PlayerId]: string[];
+  } = {};
+
+  @mobx.observable.ref
   clientPlayerCardActionsMatcher: (card: Card) => boolean;
   @mobx.observable.ref
   clientPlayerOutsideCardActionsMatcher: (card: Card) => boolean;
@@ -460,6 +465,18 @@ export class RoomPresenter {
       this.store.onceSkillUsedHistory[player] = [skillName];
     } else {
       this.store.onceSkillUsedHistory[player].push(skillName);
+    }
+  }
+
+  @mobx.action
+  switchSkillStateChanged(player: PlayerId, skillName: string, initState: boolean = false) {
+    if (!this.store.switchSkillState[player]) {
+      this.store.switchSkillState[player] = [skillName];
+    } else if (!this.store.switchSkillState[player].includes(skillName)) {
+      initState || this.store.switchSkillState[player].push(skillName);
+    } else {
+      const index = this.store.switchSkillState[player].findIndex(name => name === skillName);
+      index !== -1 && this.store.switchSkillState[player].splice(index, 1);
     }
   }
 }

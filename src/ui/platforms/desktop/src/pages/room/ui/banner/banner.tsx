@@ -24,7 +24,7 @@ const BreadCrumb = (props: { content: string[] }) => {
   return (
     <div className={styles.breadcrumb}>
       {props.content.map((layer, index) => (
-        <span className={styles.layer}>
+        <span className={styles.layer} key={index}>
           {layer}
           {index === props.content.length - 1 ? '' : ' /\u00a0'}
         </span>

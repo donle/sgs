@@ -1,13 +1,20 @@
+import { BiographiesPackage } from 'core/characters/biographies';
 import { Character } from 'core/characters/character';
 import { FireCharacterPackage } from 'core/characters/fire';
 import { ForestCharacterPackage } from 'core/characters/forest';
 import { GodCharacterPackage } from 'core/characters/god';
+import { LimitedPackage } from 'core/characters/limited';
 import { MountainCharacterPackage } from 'core/characters/mountain';
+import { PvePackage } from 'core/characters/pve';
+import { ShadowCharacterPackage } from 'core/characters/shadow';
+import { SPPackage } from 'core/characters/sp';
 import { StandardCharacterPackage } from 'core/characters/standard';
 import { WindCharacterPackage } from 'core/characters/wind';
+import { WisdomPackage } from 'core/characters/wisdom';
 import { YiJiang2011Package } from 'core/characters/yijiang2011';
 import { YiJiang2012Package } from 'core/characters/yijiang2012';
 import { YiJiang2013Package } from 'core/characters/yijiang2013';
+import { YiJiang2014Package } from 'core/characters/yijiang2014';
 import { GameCharacterExtensions } from 'core/game/game_props';
 
 export type CharacterPackages = {
@@ -26,10 +33,17 @@ const allCharacterLoaders: {
   [GameCharacterExtensions.Fire]: FireCharacterPackage,
   [GameCharacterExtensions.Forest]: ForestCharacterPackage,
   [GameCharacterExtensions.Mountain]: MountainCharacterPackage,
+  [GameCharacterExtensions.Shadow]: ShadowCharacterPackage,
   [GameCharacterExtensions.God]: GodCharacterPackage,
   [GameCharacterExtensions.YiJiang2011]: YiJiang2011Package,
   [GameCharacterExtensions.YiJiang2012]: YiJiang2012Package,
   [GameCharacterExtensions.YiJiang2013]: YiJiang2013Package,
+  [GameCharacterExtensions.YiJiang2014]: YiJiang2014Package,
+  [GameCharacterExtensions.SP]: SPPackage,
+  [GameCharacterExtensions.Limited]: LimitedPackage,
+  [GameCharacterExtensions.Biographies]: BiographiesPackage,
+  [GameCharacterExtensions.Wisdom]: WisdomPackage,
+  [GameCharacterExtensions.Pve]: PvePackage,
 };
 
 export class CharacterLoader {

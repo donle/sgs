@@ -12,12 +12,15 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
+import { CharacterSkinInfo } from 'skins/skins';
 import { NationalityBadge } from 'ui/badge/badge';
 import { SkillButton } from 'ui/button/skill_button';
 import { Hp } from 'ui/hp/hp';
 import { Tooltip } from 'ui/tooltip/tooltip';
+import { getSkinName } from '../../ui/switch_avatar/switch_skin';
 import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
-import { AwakenSkillMark, LimitSkillMark, Mark } from '../mark/mark';
+import { SkinSelectorDialog } from '../dialog/skin_selector_dialog/skin_selector_dialog';
+import { AwakenSkillMark, LimitSkillMark, Mark, SwitchSkillMark } from '../mark/mark';
 import { Mask } from '../mask/mask';
 import { SwitchAvatar } from '../switch_avatar/switch_avatar';
 import styles from './player_avatar.module.css';
@@ -28,11 +31,13 @@ type PlayerAvatarProps = {
   translator: ClientTranslationModule;
   updateFlag: boolean;
   imageLoader: ImageLoader;
+  skinData: CharacterSkinInfo[];
   incomingMessage?: string;
   onCloseIncomingMessage?(): void;
   disabled?: boolean;
   selected?: boolean;
   delight?: boolean;
+  skinName?: string;
   onClick?(player: Player, selected: boolean): void;
   onClickSkill?(skill: Skill, selected: boolean): void;
   isSkillDisabled(skill: Skill): boolean;
@@ -49,13 +54,17 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   PlayerRoleCard: () => JSX.Element;
   @mobx.observable.ref
   PlayerImage: () => JSX.Element;
-
+  @mobx.observable.ref
+  private skinName: string;
   @mobx.observable.ref
   mainImage: string | undefined;
+  @mobx.observable.ref
+  newMainImage: string | undefined;
   @mobx.observable.ref
   sideImage: string | undefined;
   @mobx.observable.ref
   autoHidePlayerName: boolean = true;
+  private inProcessDialog = false;
 
   private openedDialog: string | undefined;
 
@@ -109,6 +118,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
         <div className={styles.playerSkills}>
           {skills.map((skill, index) => (
             <SkillButton
+              key={index}
               imageLoader={imageLoader}
               translator={translator}
               skill={skill}
@@ -239,8 +249,8 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
       presenter.ClientPlayer?.CharacterId !== undefined
         ? presenter.ClientPlayer.getPlayerSkills().filter(skill => !skill.isShadowSkill())
         : [];
-    return skills.map(skill => (
-      <div className={styles.skillInfo}>
+    return skills.map((skill, index) => (
+      <div className={styles.skillInfo} key={index}>
         <div className={styles.skillItem}>
           <span className={styles.skillName}>{translator.trx(skill.Name)}</span>
           <span dangerouslySetInnerHTML={{ __html: translator.tr(skill.Description) }} />
@@ -250,15 +260,42 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   }
 
   @mobx.action
+  async updateMainImage() {
+    if (this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.CharacterId !== undefined) {
+      this.newMainImage = (
+        await this.props.imageLoader.getCharacterSkinPlay(
+          this.props.presenter.ClientPlayer.Character.Name,
+          this.props.skinData,
+          this.props.presenter.ClientPlayer.Id,
+          this.skinName,
+        )
+      ).src;
+    }
+  }
+
+  @mobx.action
   async componentDidUpdate() {
     if (this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.CharacterId !== undefined) {
+      this.skinName = getSkinName(
+        this.props.presenter.ClientPlayer.Character?.Name,
+        this.props.presenter.ClientPlayer?.Id,
+        this.props.skinData,
+      ).skinName;
       this.mainImage = (
-        await this.props.imageLoader.getCharacterImage(this.props.presenter.ClientPlayer.Character.Name)
+        await this.props.imageLoader.getCharacterSkinPlay(
+          this.props.presenter.ClientPlayer.Character.Name,
+          this.props.skinData,
+          this.props.presenter.ClientPlayer.Id,
+          this.skinName,
+        )
       ).src;
       const huashenCharacterId = this.props.presenter.ClientPlayer.getHuaShenInfo()?.characterId;
       const huashenCharacter =
         huashenCharacterId !== undefined ? Sanguosha.getCharacterById(huashenCharacterId) : undefined;
-      this.sideImage = huashenCharacter && (await this.props.imageLoader.getCharacterImage(huashenCharacter.Name)).src;
+      this.sideImage =
+        huashenCharacter &&
+        (await this.props.imageLoader.getCharacterImage(huashenCharacter.Name, this.props.presenter.ClientPlayer.Id))
+          .src;
     }
 
     if (
@@ -298,6 +335,59 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     }
   }
 
+  @mobx.action
+  onfocusedSkin = (skinName: string) => {
+    const clientPlayer = this.props.presenter.ClientPlayer;
+    const character = clientPlayer?.CharacterId !== undefined ? clientPlayer?.Character : undefined;
+    if (clientPlayer && character) {
+      this.skinName = getSkinName(
+        clientPlayer.Character?.Name,
+        clientPlayer?.Id,
+        this.props.skinData,
+        skinName,
+      ).skinName;
+    }
+    this.updateMainImage();
+    mobx.autorun(() => {
+      if (this.newMainImage !== this.mainImage) {
+        this.PlayerImage = () => (
+          <SwitchAvatar
+            mainImage={this.newMainImage}
+            sideImage={this.sideImage}
+            className={classNames(styles.playerImage, {
+              [styles.dead]: this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead,
+              [styles.disabled]:
+                this.props.delight === false
+                  ? false
+                  : !(this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.Dead) &&
+                    this.props.disabled,
+            })}
+          />
+        );
+      }
+    });
+    this.props.presenter.closeDialog();
+  };
+
+  @mobx.action
+  selectedSkin = () => {
+    if (this.inProcessDialog) {
+      this.props.presenter.closeDialog();
+      this.inProcessDialog = false;
+    } else {
+      this.inProcessDialog = true;
+      this.props.presenter.createDialog(
+        <SkinSelectorDialog
+          translator={this.props.translator}
+          imageLoader={this.props.imageLoader}
+          playerId={this.props.presenter.ClientPlayer ? this.props.presenter.ClientPlayer.Id : ''}
+          onClick={this.onfocusedSkin}
+          skinData={this.props.skinData}
+          character={this.props.presenter.ClientPlayer ? this.props.presenter.ClientPlayer.Character.Name : ''}
+        />,
+      );
+    }
+  };
   private readonly onCloseIncomingMessageCallback = () => {
     this.props.onCloseIncomingMessage && this.props.onCloseIncomingMessage();
   };
@@ -311,6 +401,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     const marks: JSX.Element[] = [];
     const limitSkills = clientPlayer.getSkills('limit');
     const awakenSkills = clientPlayer.getSkills('awaken');
+    const switchSkills = clientPlayer.getSkills('switch').filter(skill => skill.isSwitchable());
     marks.push(
       ...limitSkills.map(skill => (
         <LimitSkillMark
@@ -326,6 +417,16 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
         <AwakenSkillMark
           skillName={this.props.translator.tr(skill.Name)}
           hasUsed={this.props.store.onceSkillUsedHistory[clientPlayer.Id]?.includes(skill.Name)}
+          key={skill.Name}
+          tagPosition="left"
+        />
+      )),
+    );
+    marks.push(
+      ...switchSkills.map(skill => (
+        <SwitchSkillMark
+          skillName={this.props.translator.tr(skill.Name)}
+          state={this.props.store.switchSkillState[clientPlayer.Id]?.includes(skill.Name)}
           key={skill.Name}
           tagPosition="left"
         />
@@ -377,7 +478,11 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           />
           {this.PlayerImage !== undefined && <this.PlayerImage />}
           {clientPlayer && character && (
-            <NationalityBadge nationality={clientPlayer.Nationality} className={styles.playCharacterName}>
+            <NationalityBadge
+              nationality={clientPlayer.Nationality}
+              className={styles.playCharacterName}
+              onClick={this.selectedSkin}
+            >
               {this.props.translator.tr(character.Name)}
             </NationalityBadge>
           )}

@@ -1,11 +1,10 @@
-import { CardMoveArea, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { DamageType } from 'core/game/game_props';
-import { AllStage, CardMoveStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
+import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { CommonSkill, PersistentSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
-import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
+import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'juece', description: 'juece_description' })
 export class JueCe extends TriggerSkill {
@@ -14,11 +13,21 @@ export class JueCe extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    return (
-      owner.Id === content.playerId &&
-      PlayerPhaseStages.FinishStageStart === content.toStage &&
-      room.getOtherPlayers(owner.Id).find(player => player.getFlag<boolean>(this.Name)) !== undefined
-    );
+    let canUse = owner.Id === content.playerId && PlayerPhaseStages.FinishStageStart === content.toStage;
+    if (canUse) {
+      canUse = false;
+      for (const player of room.getOtherPlayers(owner.Id)) {
+        if (player.getFlag<boolean>(this.Name)) {
+          player.removeFlag(this.Name);
+        }
+        if (room.Analytics.getCardLostRecord(player.Id, true).length > 0) {
+          room.setFlag<boolean>(player.Id, this.Name, true);
+          canUse = true;
+        }
+      }
+    }
+
+    return canUse;
   }
   public numberOfTargets() {
     return 1;
@@ -43,56 +52,6 @@ export class JueCe extends TriggerSkill {
     for (const player of room.getOtherPlayers(skillUseEvent.fromId)) {
       player.removeFlag(this.GeneralName);
     }
-    return true;
-  }
-}
-
-@ShadowSkill
-@PersistentSkill()
-@CommonSkill({ name: JueCe.Name, description: JueCe.Description })
-export class JueCeShadow extends TriggerSkill implements OnDefineReleaseTiming {
-  isAutoTrigger() {
-    return true;
-  }
-
-  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>, stage?: AllStage) {
-    return (
-      stage === CardMoveStage.AfterCardMoved &&
-      event.toId !== event.fromId &&
-      event.toArea !== CardMoveArea.HandArea &&
-      event.toArea !== CardMoveArea.EquipArea &&
-      event.movingCards.filter(cardInfo => cardInfo.fromArea !== CardMoveArea.JudgeArea).length > 0
-    );
-  }
-
-  async whenObtainingSkill(room: Room, owner: Player) {
-    for (const player of room.getOtherPlayers(owner.Id)) {
-      if (room.Analytics.getCardLostRecord(player.Id, true).length > 0) {
-        room.setFlag(player.Id, this.GeneralName, true);
-      }
-    }
-  }
-
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
-    return owner.Id !== content.fromId && room.CurrentPhasePlayer.Id === owner.Id;
-  }
-
-  async onTrigger() {
-    return true;
-  }
-
-  async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const { triggeredOnEvent } = skillUseEvent;
-    const { fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
-    if (!fromId) {
-      return false;
-    }
-
-    const from = room.getPlayerById(fromId);
-    if (!from.getFlag<boolean>(this.GeneralName)) {
-      room.setFlag(fromId, this.GeneralName, true);
-    }
-
     return true;
   }
 }

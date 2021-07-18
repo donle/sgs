@@ -8,6 +8,14 @@ export const enum CharacterGender {
   Neutral,
 }
 
+export const enum CharacterEquipSections {
+  Weapon = 'weapon section',
+  Shield = 'shield section',
+  DefenseRide = 'defense ride section',
+  OffenseRide = 'offense ride section',
+  Precious = 'precious',
+}
+
 export const enum CharacterNationality {
   Wei,
   Shu,
@@ -78,7 +86,6 @@ export abstract class Character {
   public get Name() {
     return this.name;
   }
-
   public get Package() {
     return this.fromPackage;
   }

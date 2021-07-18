@@ -1,7 +1,6 @@
 import { CardType } from 'core/cards/card';
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { GameCommonRules } from 'core/game/game_rules';
 import { CardUseStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
@@ -18,7 +17,7 @@ export class JiZhi extends TriggerSkill {
     room.syncGameCommonRules(owner.Id, user => {
       const extraHold = user.getInvisibleMark(this.Name);
       user.removeInvisibleMark(this.Name);
-      GameCommonRules.addAdditionalHoldCardNumber(user, -extraHold);
+      room.CommonRules.addAdditionalHoldCardNumber(user, -extraHold);
     });
   }
 
@@ -43,7 +42,10 @@ export class JiZhi extends TriggerSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const cardId = (await room.drawCards(1, event.fromId, undefined, event.fromId, this.Name))[0];
-    if (Sanguosha.getCardById(cardId).is(CardType.Basic)) {
+    if (
+      Sanguosha.getCardById(cardId).is(CardType.Basic) &&
+      room.getPlayerById(event.fromId).getCardId(cardId) !== undefined
+    ) {
       const askForOptionsEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
         options: ['jizhi:discard', 'jizhi:keep'],
         toId: event.fromId,
@@ -64,7 +66,7 @@ export class JiZhi extends TriggerSkill {
         await room.dropCards(CardMoveReason.SelfDrop, [cardId], event.fromId, event.fromId, this.Name);
         room.syncGameCommonRules(event.fromId, user => {
           user.addInvisibleMark(this.Name, 1);
-          GameCommonRules.addAdditionalHoldCardNumber(user, 1);
+          room.CommonRules.addAdditionalHoldCardNumber(user, 1);
         });
       }
     }

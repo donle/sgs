@@ -8,11 +8,12 @@ import {
   WorkPlace,
 } from 'core/event/event';
 import { Socket } from 'core/network/socket';
-import { ServerPlayer } from 'core/player/player.server';
+import { FakePlayer, ServerPlayer } from 'core/player/player.server';
 import { PlayerId, PlayerStatus } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
+import { GameMode } from 'core/shares/types/room_props';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import IOSocketServer from 'socket.io';
 
@@ -156,7 +157,8 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
           );
         }
 
-        if (room.Players.every(player => !player.isOnline()) || room.Players.length === 0) {
+        if (room.Players.every(player => !player.isOnline() || player.isFake()) || room.Players.length === 0) {
+          this.logger.debug('room close with no player online');
           room.close();
           return;
         }
@@ -164,6 +166,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         if (!room.isPlaying()) {
           room.removePlayer(playerId);
         } else if (this.room?.AwaitingResponseEvent[playerId]) {
+          this.logger.debug('Room is Playing, Await Ai Resp');
           const { identifier: awaitIdentifier, content } = this.room?.AwaitingResponseEvent[playerId]!;
           if (awaitIdentifier === undefined) {
             throw new Error(
@@ -287,6 +290,11 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       return;
     }
 
+    if (room.Info.gameMode === GameMode.Pve && room.Players.length === 0) {
+      const fakePlayer = new FakePlayer(room.Players.length);
+      room.addPlayer(fakePlayer);
+    }
+
     const player = new ServerPlayer(event.playerId, event.playerName, room.Players.length);
     room.addPlayer(player);
     this.mapSocketIdToPlayerId[event.playerId] = socket.id;
@@ -352,6 +360,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     };
 
     if (!toPlayer.isOnline()) {
+      this.logger.debug('Ai Action with Offonline');
       const result = toPlayer.AI.onAction(this.room!, type, content);
       setTimeout(() => {
         const asyncResolver = this.asyncResponseResolver[type] && this.asyncResponseResolver[type][to];
@@ -360,7 +369,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
           delete this.asyncResponseResolver[type][to];
           this.room?.unsetAwaitingResponseEvent(to);
         }
-      }, 100);
+      }, 1500);
     } else {
       this.room?.setAwaitingResponseEvent(type, content, to);
       this.socket.to(this.mapSocketIdToPlayerId[to]).emit(type.toString(), content);

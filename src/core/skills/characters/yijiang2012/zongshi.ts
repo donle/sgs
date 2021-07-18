@@ -29,18 +29,11 @@ export class ZongShi extends RulesBreakerSkill {
 @ShadowSkill
 @CompulsorySkill({ name: ZongShi.Name, description: ZongShi.Description })
 export class ZongShiNullify extends TriggerSkill {
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
-    stage?: AllStage,
-  ): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>, stage?: AllStage): boolean {
     return stage === CardEffectStage.PreCardEffect;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>): boolean {
     return (
       room.CurrentPlayer !== owner &&
       owner.getCardIds(PlayerCardsArea.HandArea).length >= owner.getMaxCardHold(room) &&
@@ -50,10 +43,7 @@ export class ZongShiNullify extends TriggerSkill {
     );
   }
 
-  public async onTrigger(
-    room: Room,
-    content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ): Promise<boolean> {
+  public async onTrigger(room: Room, content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     const cardEffectEvent = content.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>;
 
     content.translationsMessage = TranslationPack.translationJsonPatcher(

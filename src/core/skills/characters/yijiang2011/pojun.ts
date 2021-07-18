@@ -1,15 +1,9 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import {
-  AimStage,
-  AllStage,
-  DamageEffectStage,
-  PhaseStageChangeStage,
-  PlayerPhaseStages,
-} from 'core/game/stage_processor';
+import { AimStage, AllStage, DamageEffectStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Algorithm } from 'core/shares/libs/algorithm';
 import { TriggerSkill } from 'core/skills/skill';
@@ -158,12 +152,22 @@ export class PoJunClear extends TriggerSkill implements OnDefineReleaseTiming {
     }
   }
 
-  public afterLosingSkill(room: Room): boolean {
-    return room.CurrentPlayerStage === PlayerPhaseStages.PhaseFinish;
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
-  public afterDead(room: Room): boolean {
-    return room.CurrentPlayerStage === PlayerPhaseStages.PhaseFinish;
+  public afterDead(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public async whenDead(room: Room, player: Player): Promise<void> {
@@ -173,7 +177,7 @@ export class PoJunClear extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
-    return stage === PhaseStageChangeStage.StageChanged;
+    return stage === PhaseChangeStage.PhaseChanged;
   }
 
   public isAutoTrigger(): boolean {
@@ -184,12 +188,8 @@ export class PoJunClear extends TriggerSkill implements OnDefineReleaseTiming {
     return true;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
-  ): boolean {
-    return event.toStage === PlayerPhaseStages.PhaseFinish;
+  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
+    return event.from === PlayerPhase.PhaseFinish;
   }
 
   public async onTrigger(): Promise<boolean> {

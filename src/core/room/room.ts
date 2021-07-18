@@ -2,7 +2,7 @@ import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { CharacterId } from 'core/characters/character';
+import { CharacterEquipSections, CharacterId } from 'core/characters/character';
 import {
   CardMoveReason,
   ClientEventFinder,
@@ -43,6 +43,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected abstract readonly roomId: RoomId;
   protected abstract readonly gameMode: GameMode;
   protected circle: number = 0;
+  private readonly gameCommonRules = new GameCommonRules();
 
   protected awaitResponseEvent: {
     [K in PlayerId]?: {
@@ -339,6 +340,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return this.players;
   }
 
+  public get CommonRules() {
+    return this.gameCommonRules;
+  }
+
   public sortPlayers() {
     this.players.sort((playerA, playerB) => {
       if (playerA.Position <= playerB.Position) {
@@ -430,11 +435,11 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     if (to.Id === from.Id) {
       return false;
     }
-    
+
     let additionalAttackDistance = 0;
     if (slash) {
       additionalAttackDistance =
-        GameCommonRules.getCardAdditionalAttackDistance(this, from, Sanguosha.getCardById(slash)) +
+        this.gameCommonRules.getCardAdditionalAttackDistance(this, from, Sanguosha.getCardById(slash)) +
         from.getCardUsableDistance(this, slash, to) -
         Sanguosha.getCardById(slash).EffectUseDistance;
     }
@@ -474,7 +479,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     const card = Sanguosha.getCardById(cardId);
 
     return Math.max(
-      this.distanceBetween(from, to) - GameCommonRules.getCardAdditionalUsableDistance(room, from, card, to),
+      this.distanceBetween(from, to) - this.gameCommonRules.getCardAdditionalUsableDistance(room, from, card, to),
       1,
     );
   }
@@ -519,7 +524,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
     if (card.is(CardType.Equip)) {
       const equipCard = card as EquipCard;
-      return player.getEquipment(equipCard.EquipType) === undefined;
+      return player.getEquipment(equipCard.EquipType) === undefined && player.canEquip(equipCard);
     } else if (card.is(CardType.DelayedTrick)) {
       const toJudgeArea = player.getCardIds(PlayerCardsArea.JudgeArea).map(id => Sanguosha.getCardById(id).GeneralName);
       return !toJudgeArea.includes(card.GeneralName) && this.canUseCardTo(cardId, target);
@@ -546,7 +551,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public removeFlag(player: PlayerId, name: string) {
     this.getPlayerById(player).removeFlag(name);
   }
-  public setFlag<T>(player: PlayerId, name: string, value: T, invisible?: boolean): T {
+  public setFlag<T>(player: PlayerId, name: string, value: T, tagName?: string): T {
     return this.getPlayerById(player).setFlag(name, value);
   }
   public getFlag<T>(player: PlayerId, name: string): T {
@@ -567,6 +572,16 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
   public getMark(player: PlayerId, name: string) {
     return this.getPlayerById(player).getMark(name);
+  }
+
+  public abortPlayerEquipSections(playerId: PlayerId, ...abortSections: CharacterEquipSections[]) {
+    const player = this.getPlayerById(playerId);
+    player.abortEquipSections(...abortSections);
+  }
+
+  public resumePlayerEquipSections(playerId: PlayerId, ...abortSections: CharacterEquipSections[]) {
+    const player = this.getPlayerById(playerId);
+    player.resumeEquipSections(...abortSections);
   }
 
   public sortPlayersByPosition(players: PlayerId[]) {

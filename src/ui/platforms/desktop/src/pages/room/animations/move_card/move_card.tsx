@@ -36,7 +36,15 @@ export class MoveCard extends UiAnimation {
       height: 136,
       width: 104,
     };
-    return <ClientCard imageLoader={this.imageLoader} card={card} translator={this.translator} style={style} />;
+    return (
+      <ClientCard
+        key={card?.Id}
+        imageLoader={this.imageLoader}
+        card={card}
+        translator={this.translator}
+        style={style}
+      />
+    );
   }
 
   private createCards() {
@@ -45,10 +53,11 @@ export class MoveCard extends UiAnimation {
       const card = this.cards[i];
 
       cardsElement.push(
-        this.createCard(card.public ? Sanguosha.getCardById(card.cardId) : undefined, i - this.cards.length / 2),
+        <span key={card.cardId}>
+          {this.createCard(card.public ? Sanguosha.getCardById(card.cardId) : undefined, i - this.cards.length / 2)}
+        </span>,
       );
     }
-
     return cardsElement;
   }
 

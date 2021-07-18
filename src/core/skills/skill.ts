@@ -24,6 +24,11 @@ export const enum SkillType {
   Limit,
 }
 
+export const enum SwitchSkillState {
+  Yang,
+  Yin,
+}
+
 export abstract class Skill {
   private skillType: SkillType = SkillType.Common;
   private shadowSkill = false;
@@ -33,6 +38,9 @@ export abstract class Skill {
   private sideEffectSkill = false;
   private persistentSkill = false;
   private stubbornSkill = false;
+  private circleSkill = false;
+  private switchSkill = false;
+  private switchable = false;
   private description: string;
   private skillName: string;
 
@@ -161,6 +169,18 @@ export abstract class Skill {
     return false;
   }
 
+  public isCircleSkill() {
+    return this.circleSkill;
+  }
+
+  public isSwitchSkill() {
+    return this.switchSkill;
+  }
+
+  public isSwitchable() {
+    return this.switchable;
+  }
+
   public get SkillType() {
     return this.skillType;
   }
@@ -214,7 +234,12 @@ export abstract class TriggerSkill extends Skill {
     room: Room,
     event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.SkillUseEvent>,
   ): Promise<boolean>;
-  public abstract canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers>): boolean;
+  public abstract canUse(
+    room: Room,
+    owner: Player,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean;
 
   public async onUse(
     room: Room,
@@ -371,7 +396,7 @@ export abstract class ActiveSkill extends Skill {
   }
 
   public isRefreshAt(room: Room, owner: Player, phase: PlayerPhase) {
-    return phase === PlayerPhase.PhaseBegin;
+    return room.CurrentPhasePlayer === owner && phase === PlayerPhase.PlayCardStage;
   }
 }
 
@@ -510,6 +535,7 @@ export abstract class GlobalRulesBreakerSkill extends RulesBreakerSkill {
   public breakDistance(room: Room, owner: Player, from: Player, to: Player): number {
     return 0;
   }
+
   public breakWithinAttackDistance(room: Room, owner: Player, from: Player, to: Player): boolean {
     return false;
   }

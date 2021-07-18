@@ -14,12 +14,19 @@ export const enum GameCharacterExtensions {
   Fire = 'fire',
   Forest = 'forest',
   Mountain = 'mountain',
+  Shadow = 'shadow',
   // SP,
   // NewStandard,
   God = 'god',
   YiJiang2011 = 'yijiang2011',
   YiJiang2012 = 'yijiang2012',
   YiJiang2013 = 'yijiang2013',
+  YiJiang2014 = 'yijiang2014',
+  SP = 'sp',
+  Limited = 'limited',
+  Biographies = 'biographies',
+  Wisdom = 'wisdom',
+  Pve = 'pve',
 }
 
 export const enum GameCardExtensions {

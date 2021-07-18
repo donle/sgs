@@ -4,11 +4,12 @@ import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
 import { AllStage, CardResponseStage, CardUseStage, JudgeEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerId } from 'core/player/player_props';
+// import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+// import { Precondition } from 'core/shares/libs/precondition/precondition';
 
 @CommonSkill({ name: 'leiji', description: 'leiji_description' })
 export class LeiJi extends TriggerSkill {
@@ -45,26 +46,24 @@ export class LeiJiShadow extends TriggerSkill {
     return stage === JudgeEffectStage.AfterJudgeEffect && Sanguosha.getCardById(event.judgeCardId).isBlack();
   }
 
+  isAutoTrigger() {
+    return true;
+  }
+
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.JudgeEvent>) {
-    return owner.Id === content.toId;
+    const judgeCard = Sanguosha.getCardById(content.judgeCardId);
+    return owner.Id === content.toId && (judgeCard.Suit === CardSuit.Club || judgeCard.Suit === CardSuit.Spade);
   }
 
-  isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId) {
-    return owner !== target;
-  }
+  // isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId) {
+  //   return owner !== target;
+  // }
 
-  targetFilter(room: Room, owner: Player, targets: PlayerId[]) {
-    return targets.length === 1;
-  }
+  // targetFilter(room: Room, owner: Player, targets: PlayerId[]) {
+  //   return targets.length === 1;
+  // }
 
-  async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
-    const target = skillUseEvent.toIds![0];
-    skillUseEvent.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} used skill {1} to {2}',
-      TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
-      this.Name,
-      TranslationPack.patchPlayerInTranslation(room.getPlayerById(target)),
-    ).extract();
+  async onTrigger() {
     return true;
   }
 
@@ -73,29 +72,44 @@ export class LeiJiShadow extends TriggerSkill {
     const judgeEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.JudgeEvent>;
     const judgeCard = Sanguosha.getCardById(judgeEvent.judgeCardId);
     const from = room.getPlayerById(skillUseEvent.fromId);
-    const target = skillUseEvent.toIds![0];
 
-    if (judgeCard.Suit === CardSuit.Club) {
-      if (from.Hp < from.MaxHp) {
-        await room.recover({ recoveredHp: 1, recoverBy: from.Id, toId: from.Id, triggeredBySkills: [this.Name] });
-      }
-
-      await room.damage({
-        fromId: from.Id,
-        toId: target,
-        damage: 1,
-        damageType: DamageType.Thunder,
-        triggeredBySkills: [this.Name],
-      });
-    } else if (judgeCard.Suit === CardSuit.Spade) {
-      await room.damage({
-        fromId: from.Id,
-        toId: target,
-        damage: 2,
-        damageType: DamageType.Thunder,
-        triggeredBySkills: [this.Name],
-      });
+    if (judgeCard.Suit !== CardSuit.Spade && judgeCard.Suit !== CardSuit.Club) {
+      return false;
     }
+
+    const thunderDamageNum = judgeCard.Suit === CardSuit.Spade ? 2 : 1;
+    const askForChoosePlayer: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
+      toId: from.Id,
+      players: room.AlivePlayers.filter(player => player.Id !== from.Id).map(player => player.Id),
+      requiredAmount: 1,
+      conversation: TranslationPack.translationJsonPatcher(
+        '{0}: please choose a target to deal {1} damage?',
+        this.Name,
+        thunderDamageNum,
+      ).extract(),
+      triggeredBySkills: [this.GeneralName],
+    };
+
+    room.notify(GameEventIdentifiers.AskForChoosingPlayerEvent, askForChoosePlayer, from.Id);
+
+    const resp = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingPlayerEvent, from.Id);
+
+    if (resp.selectedPlayers !== undefined && resp.selectedPlayers[0] !== undefined) {
+      await room.damage({
+        fromId: from.Id,
+        toId: resp.selectedPlayers[0],
+        damage: thunderDamageNum,
+        damageType: DamageType.Thunder,
+        triggeredBySkills: [this.Name],
+      });
+
+      if (judgeCard.Suit === CardSuit.Club) {
+        if (from.Hp < from.MaxHp) {
+          await room.recover({ recoveredHp: 1, recoverBy: from.Id, toId: from.Id, triggeredBySkills: [this.Name] });
+        }
+      }
+    }
+
     return true;
   }
 }
