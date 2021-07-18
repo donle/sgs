@@ -66,11 +66,11 @@ export class TrustAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
-    const logs: string =
-      `AskForCardResponseEvent, ask Card ${content.cardMatcher.name} or ${content.cardMatcher.generalName} ` +
-      (content !== undefined && content!.byCardId !== undefined
-        ? `for Reponse ${Sanguosha.getCardById(content!.byCardId).Name}`
-        : '');
+    // const logs: string =
+    //   `AskForCardResponseEvent, ask Card ${content.cardMatcher.name} or ${content.cardMatcher.generalName} ` +
+    //   (content !== undefined && content!.byCardId !== undefined
+    //     ? `for Reponse ${Sanguosha.getCardById(content!.byCardId).Name}`
+    //     : '');
 
     const { toId, cardMatcher } = content as ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>;
     if (EventPacker.isUncancellabelEvent(content)) {
@@ -103,11 +103,11 @@ export class TrustAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
-    const logs: string =
-      `AskForCardUseEvent, ask Card ${content.cardMatcher.name} ` +
-      (content !== undefined && content!.byCardId !== undefined
-        ? `for Reponse ${Sanguosha.getCardById(content!.byCardId).Name}`
-        : '');
+    // const logs: string =
+    //   `AskForCardUseEvent, ask Card ${content.cardMatcher.name} ` +
+    //   (content !== undefined && content!.byCardId !== undefined
+    //     ? `for Reponse ${Sanguosha.getCardById(content!.byCardId).Name}`
+    //     : '');
 
     const { toId, cardMatcher } = content as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
 
@@ -143,11 +143,11 @@ export class TrustAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
-    const logs: string =
-      `AskForCardDropEvent, ask ExceptCard: ${content.except}, Amount: ${content.cardAmount} ` +
-      (content !== undefined && content!.triggeredBySkills !== undefined
-        ? `for Reponse ${content!.triggeredBySkills}`
-        : '');
+    // const logs: string =
+    //   `AskForCardDropEvent, ask ExceptCard: ${content.except}, Amount: ${content.cardAmount} ` +
+    //   (content !== undefined && content!.triggeredBySkills !== undefined
+    //     ? `for Reponse ${content!.triggeredBySkills}`
+    //     : '');
 
     const { toId, cardAmount, fromArea, except } = content as ServerEventFinder<
       GameEventIdentifiers.AskForCardDropEvent
