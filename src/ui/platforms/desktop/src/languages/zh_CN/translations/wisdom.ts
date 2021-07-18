@@ -33,6 +33,12 @@ export const characterDictionary: Word[] = [
   { source: 'wuku: {0}', target: '武库[{0}]' },
   { source: 'zhi_sanchen', target: '三陈' },
   { source: 'miewu', target: '灭吴' },
+
+  { source: 'zhi_sunshao', target: '智孙邵' },
+  { source: 'fubi', target: '辅弼' },
+  { source: '#fubi', target: '辅弼' },
+  { source: '##fubi', target: '辅弼' },
+  { source: 'zuici', target: '罪辞' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -100,6 +106,15 @@ export const skillDescriptions: Word[] = [
     source: 'miewu_description',
     target: '每回合限一次，你可以移去一枚“武库”标记，并将一张牌当任意基本牌或锦囊牌使用或打出，然后你摸一张牌。',
   },
+  {
+    source: 'fubi_description',
+    target:
+      '游戏开始时，你可以另一名其他角色获得一枚“辅”标记。拥有“辅”标记的角色准备阶段开时，你可以选择一项：令其本回合手牌上限+3；或令其此回合使用【杀】的次数上限+1',
+  },
+  {
+    source: 'zuici_description',
+    target: '准备阶段开始时或当你进入濒死状态时，你可以废除一个你的装备栏，回复2点体力，然后你可以转移“辅”标记',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
@@ -161,5 +176,14 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: please remove a Ji',
     target: '{0}：请选择一张“冀”移去',
+  },
+  {
+    source: '{0}: please choose another player to transfer the "fu" mark',
+    target: '{0}: 你可以将“辅”标记转移给一名其他角色',
+  },
+  { source: '{0}: please choose and abort an equip section', target: '{0}: 请选择废除一个装备区' },
+  {
+    source: '{0}: 1.owner has extra 3 cards hold limit, 2.one more time to use slash in current round',
+    target: '{0}: 1. 其本回合手牌上限+3；2. 其此回合使用【杀】的次数上限+1',
   },
 ];

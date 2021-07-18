@@ -1,9 +1,9 @@
-import { CompulsorySkill } from 'core/skills/skill_wrappers';
-import { TriggerSkill } from 'core/skills/skill';
-import { ServerEventFinder, GameEventIdentifiers } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
-import { Room } from 'core/room/room';
 import { Player } from 'core/player/player';
+import { Room } from 'core/room/room';
+import { TriggerSkill } from 'core/skills/skill';
+import { CompulsorySkill } from 'core/skills/skill_wrappers';
 
 @CompulsorySkill({ name: 'pve_ruiyan', description: 'pve_ruiyan_description' })
 export class PveRuiYan extends TriggerSkill {

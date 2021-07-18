@@ -2,6 +2,7 @@ import { Sanguosha } from 'core/game/engine';
 import { GameProcessor } from 'core/game/game_processor/game_processor';
 import { OneVersusTwoGameProcessor } from 'core/game/game_processor/game_processor.1v2';
 import { TwoVersusTwoGameProcessor } from 'core/game/game_processor/game_processor.2v2';
+import { PveGameProcessor } from 'core/game/game_processor/game_processor.pve';
 import { StandardGameProcessor } from 'core/game/game_processor/game_processor.standard';
 import { GameInfo } from 'core/game/game_props';
 import { RecordAnalytics } from 'core/game/record_analytics';
@@ -20,7 +21,6 @@ import * as https from 'https';
 import * as SocketIO from 'socket.io';
 import { SimplifiedChinese } from './languages';
 import { getServerConfig, ServerConfig } from './server_config';
-import { PveGameProcessor } from 'core/game/game_processor/game_processor.pve';
 
 class App {
   private server: http.Server | https.Server;

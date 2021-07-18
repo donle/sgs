@@ -1,3 +1,3 @@
 export const enum FlagEnum {
-    SkillsUsing = 'flag:skills_using',
+  SkillsUsing = 'flag:skills_using',
 }

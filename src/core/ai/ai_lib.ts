@@ -1,18 +1,18 @@
-import { Room } from 'core/room/room';
-import { PlayerId, PlayerCardsArea } from 'core/player/player_props';
 import { Sanguosha } from 'core/game/engine';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { Room } from 'core/room/room';
 
 import { CardType } from 'core/cards/card';
-import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
-import { getCardValueofCard } from './ai_standard';
-import { ActiveSkill } from 'core/skills/skill';
 import { EquipCard } from 'core/cards/equip_card';
-import { CardValue, CardId, CardChoosingOptions } from 'core/cards/libs/card_props';
-import { PlayerCardOrSkillInnerEvent } from 'core/event/event.client';
 import { CardMatcher, CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
+import { CardChoosingOptions, CardId, CardValue } from 'core/cards/libs/card_props';
+import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
+import { PlayerCardOrSkillInnerEvent } from 'core/event/event.client';
+import { ActiveSkill } from 'core/skills/skill';
+import { getCardValueofCard } from './ai_standard';
 
 export function getCardValueofPlayer(room: Room, aiId: PlayerId, cardId: CardId): CardValue {
-  let cardValue: CardValue = getCardValueofCard(cardId);
+  const cardValue: CardValue = getCardValueofCard(cardId);
   const targetCard = Sanguosha.getCardById(cardId);
   if (targetCard.BaseType === CardType.Equip) {
     cardValue.priority =
@@ -39,7 +39,7 @@ export function aiUseCard(room: Room, aiId: PlayerId): PlayerCardOrSkillInnerEve
       if (Sanguosha.getCardById(cardId).BaseType === CardType.Equip) {
         const equipCardUseEvent: ClientEventFinder<GameEventIdentifiers.CardUseEvent> = {
           fromId: aiId,
-          cardId: cardId,
+          cardId,
         };
         return {
           eventName: GameEventIdentifiers.CardUseEvent,
@@ -55,14 +55,14 @@ export function aiUseCard(room: Room, aiId: PlayerId): PlayerCardOrSkillInnerEve
           continue;
         }
 
-        let targetNumber: number =
+        const targetNumber: number =
           cardSkill.numberOfTargets() instanceof Array ? cardSkill.numberOfTargets()[0] : cardSkill.numberOfTargets();
 
         if (cardSkill.GeneralName === 'tiesuolianhuan') {
           console.log(`tiesuolianhuan target number is ${targetNumber}`);
           const reforgeEvent: ClientEventFinder<GameEventIdentifiers.CardUseEvent> = {
             fromId: aiId,
-            cardId: cardId,
+            cardId,
           };
 
           return {
@@ -71,7 +71,7 @@ export function aiUseCard(room: Room, aiId: PlayerId): PlayerCardOrSkillInnerEve
           };
         }
 
-        let targetPlayer: PlayerId[] | undefined = undefined;
+        let targetPlayer: PlayerId[] | undefined;
         if (targetNumber !== 0) {
           const approvedTargetPlayerIds = room.AlivePlayers.filter(player =>
             cardSkill.isAvailableTarget(aiId, room, player.Id, [], [], cardId),
@@ -91,7 +91,7 @@ export function aiUseCard(room: Room, aiId: PlayerId): PlayerCardOrSkillInnerEve
 
         const cardUseEvent: ClientEventFinder<GameEventIdentifiers.CardUseEvent> = {
           fromId: aiId,
-          cardId: cardId,
+          cardId,
           toIds: targetPlayer,
         };
 
@@ -150,19 +150,19 @@ export function askAiChooseCardFromPlayer<T extends GameEventIdentifiers.AskForC
 ): ClientEventFinder<T> {
   const equipTypePriority = [
     CardType.DefenseRide,
-    CardType.Armor,
+    CardType.Shield,
     CardType.OffenseRide,
     CardType.Weapon,
     CardType.Precious,
   ];
 
-  let selectedCard: CardId | undefined = undefined;
-  let fromArea: PlayerCardsArea | undefined = undefined;
-  let selectedCardIndex: number | undefined = undefined;
+  let selectedCard: CardId | undefined;
+  let fromArea: PlayerCardsArea | undefined;
+  let selectedCardIndex: number | undefined;
 
-  const Areas = (Object.keys(options) as unknown as [PlayerCardsArea]).map(area => Number(area));
+  const Areas = ((Object.keys(options) as unknown) as [PlayerCardsArea]).map(area => Number(area));
   if (Areas.includes(PlayerCardsArea.EquipArea)) {
-    console.log(`ChooseCard from Player EquipArea`);
+    console.log('ChooseCard from Player EquipArea');
     const cardIds = options[PlayerCardsArea.EquipArea];
     if (cardIds instanceof Array && cardIds.length > 0) {
       console.log(`Choose EquipArea Card from ${cardIds}`);
@@ -176,7 +176,7 @@ export function askAiChooseCardFromPlayer<T extends GameEventIdentifiers.AskForC
   }
 
   if (selectedCard === undefined) {
-    fromArea = (Object.keys(options) as unknown as [PlayerCardsArea]).find(
+    fromArea = ((Object.keys(options) as unknown) as [PlayerCardsArea]).find(
       area => room.getPlayerById(toId).getCardIds(area).length > 0,
     );
 

@@ -58,7 +58,7 @@ export abstract class ArmorCard extends EquipCard {
     generalName?: string,
     protected shadowSkills: Skill[] = [],
   ) {
-    super(CardType.Armor);
+    super(CardType.Shield);
     this.generalName = generalName || this.name;
   }
 }

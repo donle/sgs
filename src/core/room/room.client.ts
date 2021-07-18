@@ -7,6 +7,7 @@ import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { GameMode } from 'core/shares/types/room_props';
+import { OnDefineReleaseTiming } from 'core/skills/skill';
 import { Room, RoomId } from './room';
 
 export class ClientRoom extends Room<WorkPlace.Client> {
@@ -288,6 +289,10 @@ export class ClientRoom extends Room<WorkPlace.Client> {
       const outsideCards = player.getCardIds(PlayerCardsArea.OutsideArea, skill.Name);
       if (outsideCards && player.isCharacterOutsideArea(skill.Name)) {
         outsideCards.splice(0, outsideCards.length);
+      }
+      const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+      if (hookedSkill.whenLosingSkill) {
+        await hookedSkill.whenLosingSkill(this, player);
       }
     }
   }

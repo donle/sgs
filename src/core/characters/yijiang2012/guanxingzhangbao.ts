@@ -6,8 +6,15 @@ const skillLoaderInstance = SkillLoader.getInstance();
 
 export class GuanXingZhangBao extends Character {
   constructor(id: number) {
-    super(id, 'guanxingzhangbao', CharacterGender.Male, CharacterNationality.Shu, 4, 4, GameCharacterExtensions.YiJiang2012, [
-      ...skillLoaderInstance.getSkillsByName('fuhun'),
-    ]);
+    super(
+      id,
+      'guanxingzhangbao',
+      CharacterGender.Male,
+      CharacterNationality.Shu,
+      4,
+      4,
+      GameCharacterExtensions.YiJiang2012,
+      [...skillLoaderInstance.getSkillsByName('fuhun')],
+    );
   }
 }

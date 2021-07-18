@@ -42,10 +42,7 @@ export class YiZheng extends TriggerSkill {
   }
 
   public getSkillLog(): PatchedTranslationObject {
-    return TranslationPack.translationJsonPatcher(
-      '{0}: do you want to choose a target?',
-      this.Name,
-    ).extract();
+    return TranslationPack.translationJsonPatcher('{0}: do you want to choose a target?', this.Name).extract();
   }
 
   public async onTrigger(): Promise<boolean> {

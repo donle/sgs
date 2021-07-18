@@ -9,18 +9,11 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'wuyan', description: 'wuyan_description' })
 export class WuYan extends TriggerSkill {
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
-    stage?: AllStage,
-  ): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage): boolean {
     return stage === DamageEffectStage.DamageEffect || stage === DamageEffectStage.DamagedEffect;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>): boolean {
     if (content.cardIds === undefined || !Sanguosha.getCardById(content.cardIds[0]).is(CardType.Trick)) {
       return false;
     }

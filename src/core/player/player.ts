@@ -4,7 +4,13 @@ import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard, WeaponCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { Character, CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
+import {
+  Character,
+  CharacterEquipSections,
+  CharacterGender,
+  CharacterId,
+  CharacterNationality,
+} from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import {
   PlayerCards,
@@ -64,6 +70,15 @@ export abstract class Player implements PlayerInfo {
   private status: PlayerStatus;
   private ai: PlayerAI = TrustAI.Instance;
   private fake: boolean = false;
+  private equipSectionsStatus: {
+    [K in CharacterEquipSections]: 'enabled' | 'disabled';
+  } = {
+    [CharacterEquipSections.Weapon]: 'enabled',
+    [CharacterEquipSections.Shield]: 'enabled',
+    [CharacterEquipSections.DefenseRide]: 'enabled',
+    [CharacterEquipSections.OffenseRide]: 'enabled',
+    [CharacterEquipSections.Precious]: 'enabled',
+  };
 
   private drunk: number = 0;
 
@@ -178,16 +193,14 @@ export abstract class Player implements PlayerInfo {
 
   public canUseCard(room: Room, cardId: CardId | CardMatcher, onResponse?: CardMatcher): boolean {
     const card = cardId instanceof CardMatcher ? undefined : Sanguosha.getCardById(cardId);
-    const ruleCardUse = room.gameCommonRules.canUseCard(
+    const ruleCardUse = room.CommonRules.canUseCard(
       room,
       this,
       cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId),
     );
 
     if (card) {
-      const canUseToSomeone = room.AlivePlayers.find(player =>
-        room.gameCommonRules.canUseCardTo(room, this, card, player),
-      );
+      const canUseToSomeone = room.AlivePlayers.find(player => room.CommonRules.canUseCardTo(room, this, card, player));
       if (canUseToSomeone) {
         return card.is(CardType.Equip) ? true : onResponse ? onResponse.match(card) : true;
       }
@@ -232,6 +245,10 @@ export abstract class Player implements PlayerInfo {
         this.switchSkillState.push(generalName);
       }
     }
+  }
+
+  public setupCards(area: PlayerCardsArea, cards: CardId[]) {
+    this.playerCards[area] = cards;
   }
 
   public getCardIds<T extends CardId | CharacterId = CardId>(area?: PlayerCardsArea, outsideAreaName?: string): T[] {
@@ -359,6 +376,30 @@ export abstract class Player implements PlayerInfo {
     return droppedCardIds;
   }
 
+  public canEquip(equipCard: EquipCard) {
+    if (equipCard.is(CardType.Weapon)) {
+      return this.equipSectionsStatus[CharacterEquipSections.Weapon] === 'enabled';
+    }
+    if (equipCard.is(CardType.Shield)) {
+      return this.equipSectionsStatus[CharacterEquipSections.Shield] === 'enabled';
+    }
+    if (equipCard.is(CardType.DefenseRide)) {
+      return this.equipSectionsStatus[CharacterEquipSections.DefenseRide] === 'enabled';
+    }
+    if (equipCard.is(CardType.OffenseRide)) {
+      return this.equipSectionsStatus[CharacterEquipSections.OffenseRide] === 'enabled';
+    }
+    if (equipCard.is(CardType.Precious)) {
+      return this.equipSectionsStatus[CharacterEquipSections.Precious] === 'enabled';
+    }
+
+    return false;
+  }
+
+  public canEquipTo(section: CharacterEquipSections) {
+    return this.equipSectionsStatus[section] === 'enabled';
+  }
+
   public equip(equipCard: EquipCard) {
     Precondition.assert(
       !this.playerCards[PlayerCardsArea.EquipArea].find(card =>
@@ -414,7 +455,11 @@ export abstract class Player implements PlayerInfo {
 
     const card = cardId instanceof CardMatcher ? undefined : Sanguosha.getCardById(cardId);
     if (card) {
-      const ruleCardUse = room.gameCommonRules.canUseCardTo(
+      if (card.is(CardType.Equip) && !player.canEquip(card as EquipCard)) {
+        return false;
+      }
+
+      const ruleCardUse = room.CommonRules.canUseCardTo(
         room,
         this,
         cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId),
@@ -511,7 +556,7 @@ export abstract class Player implements PlayerInfo {
     for (const skill of this.getSkills<RulesBreakerSkill>('breaker')) {
       additionalAttackRange += skill.breakAdditionalAttackRange(room, this);
     }
-    additionalAttackRange += room.gameCommonRules.getAdditionalAttackDistance(this);
+    additionalAttackRange += room.CommonRules.getAdditionalAttackDistance(this);
 
     let finalAttackRange: number = -1;
     for (const skill of this.getSkills<RulesBreakerSkill>('breaker')) {
@@ -526,31 +571,29 @@ export abstract class Player implements PlayerInfo {
 
   public getMaxCardHold(room: Room) {
     const maxCardHold =
-      room.gameCommonRules.getBaseHoldCardNumber(room, this) +
-      room.gameCommonRules.getAdditionalHoldCardNumber(room, this);
+      room.CommonRules.getBaseHoldCardNumber(room, this) + room.CommonRules.getAdditionalHoldCardNumber(room, this);
 
     return Math.max(maxCardHold, 0);
   }
 
   public getOffenseDistance(room: Room) {
-    return room.gameCommonRules.getAdditionalOffenseDistance(room, this);
+    return room.CommonRules.getAdditionalOffenseDistance(room, this);
   }
 
   public getDefenseDistance(room: Room) {
-    return room.gameCommonRules.getAdditionalDefenseDistance(room, this);
+    return room.CommonRules.getAdditionalDefenseDistance(room, this);
   }
 
   public getCardUsableDistance(room: Room, cardId?: CardId, target?: Player) {
     const card = cardId ? Sanguosha.getCardById(cardId) : undefined;
     return (
-      (card ? card.EffectUseDistance : 0) +
-      room.gameCommonRules.getCardAdditionalUsableDistance(room, this, card, target)
+      (card ? card.EffectUseDistance : 0) + room.CommonRules.getCardAdditionalUsableDistance(room, this, card, target)
     );
   }
 
   public getCardAdditionalUsableNumberOfTargets(room: Room, cardId: CardId | CardMatcher) {
     const card = cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId);
-    return room.gameCommonRules.getCardAdditionalNumberOfTargets(room, this, card);
+    return room.CommonRules.getCardAdditionalNumberOfTargets(room, this, card);
   }
 
   public getEquipSkills<T extends Skill = Skill>(skillType?: SkillStringType) {
@@ -847,6 +890,30 @@ export abstract class Player implements PlayerInfo {
       Hp: this.hp,
       MaxHp: this.maxHp,
     };
+  }
+
+  public get DisabledEquipSections(): CharacterEquipSections[] {
+    return (Object.keys(this.equipSectionsStatus) as CharacterEquipSections[]).filter(
+      section => this.equipSectionsStatus[section] === 'disabled',
+    );
+  }
+
+  public get AvailableEquipSections(): CharacterEquipSections[] {
+    return (Object.keys(this.equipSectionsStatus) as CharacterEquipSections[]).filter(
+      section => this.equipSectionsStatus[section] === 'enabled',
+    );
+  }
+
+  public abortEquipSections(...abortSections: CharacterEquipSections[]) {
+    for (const section of abortSections) {
+      this.equipSectionsStatus[section] = 'disabled';
+    }
+  }
+
+  public resumeEquipSections(...abortSections: CharacterEquipSections[]) {
+    for (const section of abortSections) {
+      this.equipSectionsStatus[section] = 'enabled';
+    }
   }
 
   setHuaShenInfo(info: HuaShenInfo) {

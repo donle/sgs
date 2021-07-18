@@ -146,7 +146,7 @@ export class XuanHuo extends TriggerSkill {
         ).extract(),
         toId: first,
       });
-  
+
       const newResponse = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingOptionsEvent>(
         GameEventIdentifiers.AskForChoosingOptionsEvent,
         askForChooseEvent,

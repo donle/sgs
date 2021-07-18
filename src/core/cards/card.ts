@@ -181,7 +181,7 @@ export const enum CardType {
   Basic,
   Equip,
   Weapon,
-  Armor,
+  Shield,
   OffenseRide,
   DefenseRide,
   Precious,

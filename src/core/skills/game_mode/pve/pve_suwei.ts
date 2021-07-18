@@ -1,10 +1,10 @@
-import { CompulsorySkill } from 'core/skills/skill_wrappers';
-import { TriggerSkill } from 'core/skills/skill';
+import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AimStage, AllStage } from 'core/game/stage_processor';
-import { ServerEventFinder, GameEventIdentifiers, EventPacker, CardMoveReason } from 'core/event/event';
 import { Player } from 'core/player/player';
-import { Room } from 'core/room/room';
 import { PlayerCardsArea } from 'core/player/player_props';
+import { Room } from 'core/room/room';
+import { TriggerSkill } from 'core/skills/skill';
+import { CompulsorySkill } from 'core/skills/skill_wrappers';
 
 @CompulsorySkill({ name: 'pve_suwei', description: 'pve_suwei_description' })
 export class PveSuWei extends TriggerSkill {

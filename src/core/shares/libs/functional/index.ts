@@ -113,7 +113,7 @@ export abstract class Functional {
         return 'trick card';
       case CardType.DelayedTrick:
         return 'delayed trick card';
-      case CardType.Armor:
+      case CardType.Shield:
         return 'armor card';
       case CardType.Weapon:
         return 'weapon card';

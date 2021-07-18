@@ -1,17 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
-import {
-  CardMoveArea,
-  CardMoveReason,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
-import {
-  AllStage,
-  DamageEffectStage,
-  PhaseStageChangeStage,
-  PlayerPhaseStages,
-} from 'core/game/stage_processor';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { AllStage, DamageEffectStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -20,14 +9,8 @@ import { PatchedTranslationObject, TranslationPack } from 'core/translations/tra
 
 @CommonSkill({ name: 'quanji', description: 'quanji_description' })
 export class QuanJi extends TriggerSkill {
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers>,
-    stage?: AllStage,
-  ): boolean {
-    return (
-      stage === PhaseStageChangeStage.StageChanged ||
-      stage === DamageEffectStage.AfterDamagedEffect
-    );
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
+    return stage === PhaseStageChangeStage.StageChanged || stage === DamageEffectStage.AfterDamagedEffect;
   }
 
   public canUse(
@@ -58,14 +41,14 @@ export class QuanJi extends TriggerSkill {
       const damageEvent = event as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
       return damageEvent.damage;
     }
-    
+
     return 1;
   }
 
   public getSkillLog(): PatchedTranslationObject {
     return TranslationPack.translationJsonPatcher(
       '{0}: do you want to draw a card, then put a hand card on your general card?',
-      this.Name
+      this.Name,
     ).extract();
   }
 
@@ -73,10 +56,7 @@ export class QuanJi extends TriggerSkill {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { fromId } = event;
     const from = room.getPlayerById(fromId);
     await room.drawCards(1, fromId, 'top', fromId, this.Name);
@@ -92,24 +72,21 @@ export class QuanJi extends TriggerSkill {
             '{0}: please put a hand card on your general card',
             this.Name,
           ).extract(),
-        }
+        };
         room.notify(
           GameEventIdentifiers.AskForSkillUseEvent,
           EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForSkillUseEvent>(skillUseEvent),
           fromId,
         );
-  
-        const { cardIds } = await room.onReceivingAsyncResponseFrom(
-          GameEventIdentifiers.AskForSkillUseEvent,
-          fromId,
-        );
+
+        const { cardIds } = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForSkillUseEvent, fromId);
 
         const handcards = from.getCardIds(PlayerCardsArea.HandArea);
         card = cardIds ? cardIds[0] : handcards[Math.floor(Math.random() * handcards.length)];
       } else {
         card = from.getCardIds(PlayerCardsArea.HandArea)[0];
       }
-     
+
       await room.moveCards({
         movingCards: [{ card, fromArea: CardMoveArea.HandArea }],
         fromId,
@@ -121,7 +98,6 @@ export class QuanJi extends TriggerSkill {
         proposer: fromId,
         movedByReason: this.Name,
       });
-  
     }
 
     return true;

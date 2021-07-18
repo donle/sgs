@@ -1,10 +1,4 @@
-import {
-  CardMoveArea,
-  CardMoveReason,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder
-} from 'core/event/event';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
@@ -14,18 +8,11 @@ import { PatchedTranslationObject, TranslationPack } from 'core/translations/tra
 
 @CommonSkill({ name: 'zhiman', description: 'zhiman_description' })
 export class ZhiMan extends TriggerSkill {
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
-    stage?: AllStage,
-  ): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage): boolean {
     return stage === DamageEffectStage.DamageEffect;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.DamageEvent>): boolean {
     return event.fromId === owner.Id && event.toId !== owner.Id;
   }
 
@@ -45,27 +32,24 @@ export class ZhiMan extends TriggerSkill {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { fromId, triggeredOnEvent } = event;
     const damageEffect = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
     EventPacker.terminate(damageEffect);
 
-    const toId = damageEffect.toId
+    const toId = damageEffect.toId;
     const to = room.getPlayerById(toId);
     if (to.getCardIds().length > 0) {
       const options = {
         [PlayerCardsArea.JudgeArea]: to.getCardIds(PlayerCardsArea.JudgeArea),
         [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),
         [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea).length,
-      }
+      };
 
       const chooseCardEvent = {
         fromId,
         toId,
-        options
+        options,
       };
 
       room.notify(

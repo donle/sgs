@@ -10,4 +10,5 @@ export const SPPackage: (index: number) => Character[] = index => [
   new SPZhaoYun(index++),
   new QuYi(index++),
   new LiuQi(index++),
+
 ];

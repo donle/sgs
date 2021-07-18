@@ -11,7 +11,7 @@ import { Room } from 'core/room/room';
 import { QingGangSkill } from 'core/skills/cards/standard/qinggang';
 import { ActiveSkill, FilterSkill, RulesBreakerSkill, TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
-import { CommonSkill, ShadowSkill, UniqueSkill, PersistentSkill } from 'core/skills/skill_wrappers';
+import { CommonSkill, PersistentSkill, ShadowSkill, UniqueSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'xianzhen', description: 'xianzhen_description' })

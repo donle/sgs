@@ -17,10 +17,7 @@ export class QiaoMeng extends TriggerSkill {
     const damageCard = content.cardIds && Sanguosha.getCardById(content.cardIds[0]);
     const to = room.getPlayerById(content.toId);
     return (
-      owner.Id === content.fromId &&
-      to.getCardIds().length > 0 &&
-      !!damageCard &&
-      damageCard.GeneralName === 'slash'
+      owner.Id === content.fromId && to.getCardIds().length > 0 && !!damageCard && damageCard.GeneralName === 'slash'
     );
   }
 
@@ -44,7 +41,9 @@ export class QiaoMeng extends TriggerSkill {
 
     room.notify(
       GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(askForChooseCardEvent),
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(
+        askForChooseCardEvent,
+      ),
       fromId!,
     );
     const response = await room.onReceivingAsyncResponseFrom(

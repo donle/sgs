@@ -27,8 +27,8 @@
     justify-content: center;
 }
 .feedbackInfo a {
-  color: #ffa344;
+    color: #ffa344;
 }
-.feedbackInfo a:hover{ 
-  color: #fdc016;
+.feedbackInfo a:hover {
+    color: #fdc016;
 }

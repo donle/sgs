@@ -18,7 +18,7 @@ export const Slider = (props: SliderProps) => {
 
   const onMouseDown = (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
     event.stopPropagation();
-  }
+  };
 
   return (
     <div className={classNames(styles.slider, props.className)}>

@@ -1,17 +1,16 @@
-import { StandardGameProcessor } from './game_processor.standard';
-import { PlayerRole, PlayerInfo, PlayerId } from 'core/player/player_props';
-import { Player } from 'core/player/player';
-import { Sanguosha } from '../engine';
-import { ServerEventFinder, GameEventIdentifiers, ClientEventFinder } from 'core/event/event';
 import { Character, CharacterId, CharacterNationality } from 'core/characters/character';
-import { TranslationPack } from 'core/translations/translation_json_tool';
+import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Player } from 'core/player/player';
+import { PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { Functional } from 'core/shares/libs/functional';
-import { GameMode } from 'core/shares/types/room_props';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { GameMode } from 'core/shares/types/room_props';
+import { TranslationPack } from 'core/translations/translation_json_tool';
+import { Sanguosha } from '../engine';
+import { StandardGameProcessor } from './game_processor.standard';
 
 export class PveGameProcessor extends StandardGameProcessor {
   public assignRoles(players: Player[]) {
-    console.log(`player length is ${players.length}`);
     for (let i = 0; i < players.length; i++) {
       if (players[i].isFake()) {
         players[i].Role = PlayerRole.Lord;

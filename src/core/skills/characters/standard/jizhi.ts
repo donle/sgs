@@ -17,7 +17,7 @@ export class JiZhi extends TriggerSkill {
     room.syncGameCommonRules(owner.Id, user => {
       const extraHold = user.getInvisibleMark(this.Name);
       user.removeInvisibleMark(this.Name);
-      room.gameCommonRules.addAdditionalHoldCardNumber(user, -extraHold);
+      room.CommonRules.addAdditionalHoldCardNumber(user, -extraHold);
     });
   }
 
@@ -66,7 +66,7 @@ export class JiZhi extends TriggerSkill {
         await room.dropCards(CardMoveReason.SelfDrop, [cardId], event.fromId, event.fromId, this.Name);
         room.syncGameCommonRules(event.fromId, user => {
           user.addInvisibleMark(this.Name, 1);
-          room.gameCommonRules.addAdditionalHoldCardNumber(user, 1);
+          room.CommonRules.addAdditionalHoldCardNumber(user, 1);
         });
       }
     }

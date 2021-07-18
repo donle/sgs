@@ -90,7 +90,7 @@ export class QingJian extends TriggerSkill {
 
     room.syncGameCommonRules(room.CurrentPlayer.Id, user => {
       user.addInvisibleMark(this.Name, types.length);
-      room.gameCommonRules.addAdditionalHoldCardNumber(user, types.length);
+      room.CommonRules.addAdditionalHoldCardNumber(user, types.length);
     });
     return true;
   }
@@ -138,7 +138,7 @@ export class QingJianShadow extends TriggerSkill implements OnDefineReleaseTimin
       room.syncGameCommonRules(phaseChangeEvent.fromPlayer, user => {
         const extraHold = user.getInvisibleMark(this.GeneralName);
         user.removeInvisibleMark(this.GeneralName);
-        room.gameCommonRules.addAdditionalHoldCardNumber(user, -extraHold);
+        room.CommonRules.addAdditionalHoldCardNumber(user, -extraHold);
       });
     return true;
   }

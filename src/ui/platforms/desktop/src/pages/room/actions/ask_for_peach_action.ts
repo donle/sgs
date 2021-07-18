@@ -26,10 +26,8 @@ export class AskForPeachAction extends ResponsiveUseCardAction<GameEventIdentifi
     } else if (skill instanceof ViewAsSkill) {
       const matcher = new CardMatcher({ name: useByMyself ? ['alcohol', 'peach'] : ['peach'] });
       return (
-        !CardMatcher.match(
-          { name: skill.canViewAs(room, player, undefined, matcher), tag: 'card-matcher' },
-          matcher,
-        ) || !skill.canUse(room, player, event)
+        !CardMatcher.match({ name: skill.canViewAs(room, player, undefined, matcher), tag: 'card-matcher' }, matcher) ||
+        !skill.canUse(room, player, event)
       );
     }
 

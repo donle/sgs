@@ -69,8 +69,6 @@ export abstract class PlayerAI {
   >(content: ServerEventFinder<T>, room: Room): ClientEventFinder<T>;
 
   onAction(room: Room, e: GameEventIdentifiers, content: ServerEventFinder<typeof e>): ClientEventFinder<typeof e> {
-    console.log(`Ai onAction Event: ${e}`);
-
     switch (e) {
       case GameEventIdentifiers.AskForPlayCardsOrSkillsEvent: {
         return this.onAskForPlayCardsOrSkillsEvent(content as any, room);

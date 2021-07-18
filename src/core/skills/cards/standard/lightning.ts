@@ -21,8 +21,7 @@ export class LightningSkill extends ActiveSkill {
     return (
       owner
         .getCardIds(PlayerCardsArea.JudgeArea)
-        .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'lightning') === undefined &&
-      canUseTo
+        .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'lightning') === undefined && canUseTo
     );
   }
 

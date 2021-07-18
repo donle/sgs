@@ -10,4 +10,5 @@ export const enum MarkEnum {
   Ying = 'ying',
   Orange = 'orange',
   PveHuaShen = 'pve_huashen',
+  Fu = 'fu',
 }
