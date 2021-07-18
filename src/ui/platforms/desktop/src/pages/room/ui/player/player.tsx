@@ -20,7 +20,7 @@ import { Hp } from 'ui/hp/hp';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
 import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
-import { AwakenSkillMark, LimitSkillMark, Mark } from '../mark/mark';
+import { AwakenSkillMark, LimitSkillMark, Mark, SwitchSkillMark } from '../mark/mark';
 import { Mask } from '../mask/mask';
 import { PlayingBar } from '../playing_bar/playing_bar';
 import { SwitchAvatar } from '../switch_avatar/switch_avatar';
@@ -280,6 +280,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     const marks: JSX.Element[] = [];
     const limitSkills = clientPlayer.getSkills('limit');
     const awakenSkills = clientPlayer.getSkills('awaken');
+    const switchSkills = clientPlayer.getSkills('switch').filter(skill => skill.isShadowSkill());
     marks.push(
       ...limitSkills.map(skill => (
         <LimitSkillMark
@@ -298,6 +299,15 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
         />
       )),
     );
+    marks.push(
+      ...switchSkills.map(skill => (
+        <SwitchSkillMark
+          skillName={this.props.translator.tr(skill.Name)}
+          state={this.props.store.switchSkillState[clientPlayer.Id]?.includes(skill.Name)}
+          key={skill.Name}
+        />
+      )),
+    )
 
     const playerMarks = clientPlayer.getAllMarks();
     for (const [markName, amount] of Object.entries(playerMarks)) {

@@ -25,6 +25,7 @@ import {
   RulesBreakerSkill,
   Skill,
   SkillType,
+  SwitchSkillState,
   TransformSkill,
   TriggerSkill,
   ViewAsSkill,
@@ -37,6 +38,7 @@ type SkillStringType =
   | 'limit'
   | 'awaken'
   | 'compulsory'
+  | 'switch'
   | 'active'
   | 'filter'
   | 'globalFilter'
@@ -76,6 +78,7 @@ export abstract class Player implements PlayerInfo {
   private skillUsedHistory: {
     [K: string]: number;
   }[] = [];
+  private switchSkillState: string[] = [];
   private playerCharacter: Character | undefined;
   protected playerCards: PlayerCards;
   protected playerOutsideCards: PlayerCardsOutside;
@@ -218,20 +221,31 @@ export abstract class Player implements PlayerInfo {
     this.skillUsedHistory[skillName] !== undefined
       ? this.skillUsedHistory[skillName]++
       : (this.skillUsedHistory[skillName] = 1);
+
+    const skill = Sanguosha.getSkillBySkillName(skillName);
+    if (skill.isSwitchSkill() && skill.isSwitchable()) {
+      const generalName = Sanguosha.getSkillBySkillName(skillName).GeneralName;
+      if (this.switchSkillState.includes(generalName)) {
+        const index = this.switchSkillState.findIndex(name => name === generalName);
+        this.switchSkillState.splice(index, 1);
+      } else {
+        this.switchSkillState.push(generalName);
+      }
+    }
   }
 
   public getCardIds<T extends CardId | CharacterId = CardId>(area?: PlayerCardsArea, outsideAreaName?: string): T[] {
     if (area === undefined) {
       const [handCards, judgeCards, equipCards] = Object.values<CardId[]>(this.playerCards);
-      return [...handCards, ...judgeCards, ...equipCards] as unknown as T[];
+      return ([...handCards, ...judgeCards, ...equipCards] as unknown) as T[];
     }
 
     if (area !== PlayerCardsArea.OutsideArea) {
-      return this.playerCards[area] as unknown as T[];
+      return (this.playerCards[area] as unknown) as T[];
     } else {
       outsideAreaName = Precondition.exists(outsideAreaName, `Unable to get ${outsideAreaName} area cards`);
       this.playerOutsideCards[outsideAreaName] = this.playerOutsideCards[outsideAreaName] || [];
-      return this.playerOutsideCards[outsideAreaName] as unknown as T[];
+      return (this.playerOutsideCards[outsideAreaName] as unknown) as T[];
     }
   }
 
@@ -467,6 +481,16 @@ export abstract class Player implements PlayerInfo {
     return this.skillUsedHistory[skillName] === undefined ? 0 : this.skillUsedHistory[skillName];
   }
 
+  public getSwitchSkillState(skillName: string, beforeUse: boolean = false): SwitchSkillState {
+    const skill = Sanguosha.getSkillBySkillName(skillName);
+    Precondition.assert(skill.isSwitchSkill(), `${skillName} isn't switch skill`);
+    if (skill.isShadowSkill()) {
+      skillName = skill.GeneralName;
+    }
+    const judge = beforeUse ? this.switchSkillState.includes(skillName) : !this.switchSkillState.includes(skillName);
+    return judge ? SwitchSkillState.Yin : SwitchSkillState.Yang;
+  }
+
   public getAttackDistance(room: Room) {
     return Math.max(this.getOffenseDistance(room) + this.getAttackRange(room), 1);
   }
@@ -563,6 +587,8 @@ export abstract class Player implements PlayerInfo {
         return skills.filter(skill => skill.SkillType === SkillType.Common) as T[];
       case 'transform':
         return skills.filter(skill => skill instanceof TransformSkill) as T[];
+      case 'switch':
+        return skills.filter(skill => skill.isSwitchSkill()) as T[];
       default:
         throw Precondition.UnreachableError(skillType);
     }
@@ -606,6 +632,8 @@ export abstract class Player implements PlayerInfo {
         return skills.filter(skill => skill.SkillType === SkillType.Limit) as T[];
       case 'common':
         return skills.filter(skill => skill.SkillType === SkillType.Common) as T[];
+      case 'switch':
+        return skills.filter(skill => skill.isSwitchSkill()) as T[];
       default:
         throw Precondition.UnreachableError(skillType);
     }

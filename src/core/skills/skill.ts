@@ -24,6 +24,11 @@ export const enum SkillType {
   Limit,
 }
 
+export const enum SwitchSkillState {
+  Yang,
+  Yin,
+}
+
 export abstract class Skill {
   private skillType: SkillType = SkillType.Common;
   private shadowSkill = false;
@@ -34,6 +39,8 @@ export abstract class Skill {
   private persistentSkill = false;
   private stubbornSkill = false;
   private circleSkill = false;
+  private switchSkill = false;
+  private switchable = false;
   private description: string;
   private skillName: string;
 
@@ -164,6 +171,14 @@ export abstract class Skill {
 
   public isCircleSkill() {
     return this.circleSkill;
+  }
+
+  public isSwitchSkill() {
+    return this.switchSkill;
+  }
+
+  public isSwitchable() {
+    return this.switchable;
   }
 
   public get SkillType() {

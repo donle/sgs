@@ -1364,6 +1364,8 @@ export class GameClientProcessor {
     await this.store.room.useSkill(content);
     if (skill.SkillType === SkillType.Limit || skill.SkillType === SkillType.Awaken) {
       this.presenter.onceSkillUsed(content.fromId, content.skillName);
+    } else if (skill.isSwitchSkill() && skill.isSwitchable()) {
+      this.presenter.switchSkillStateChanged(content.fromId, skill.GeneralName);
     }
     this.presenter.broadcastUIUpdate();
   }

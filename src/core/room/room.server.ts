@@ -754,6 +754,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, cardUseEvent);
     const card = Sanguosha.getCardById<VirtualCard>(cardUseEvent.cardId);
     await card.Skill.onUse(this, cardUseEvent);
+    if (card.is(CardType.Equip) && !cardUseEvent.targetGroup) {
+      cardUseEvent.targetGroup = [[cardUseEvent.fromId]];
+    }
 
     if (Card.isVirtualCardId(cardUseEvent.cardId)) {
       const from = this.getPlayerById(cardUseEvent.fromId);
@@ -1035,7 +1038,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       return false;
     }
 
-    await super.useSkill(content);
     content.toIds && skill.resortTargets() && this.sortPlayersByPosition(content.toIds);
 
     await this.gameProcessor.onHandleIncomingEvent(

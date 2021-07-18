@@ -55,6 +55,7 @@ export const enum GameEventIdentifiers {
 
   GameReadyEvent,
   GameStartEvent,
+  GameBeginEvent,
   CircleStartEvent,
   GameOverEvent,
   PlayerEnterRefusedEvent,
@@ -152,6 +153,7 @@ export const clientActiveListenerEvents = () => [
 
   GameEventIdentifiers.GameStartEvent,
   GameEventIdentifiers.GameReadyEvent,
+  GameEventIdentifiers.GameBeginEvent,
   GameEventIdentifiers.CircleStartEvent,
   GameEventIdentifiers.GameOverEvent,
   GameEventIdentifiers.PlayerDyingEvent,

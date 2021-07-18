@@ -48,6 +48,11 @@ export abstract class Functional {
     return cardSuitRawText[suit];
   }
 
+  static getCardSuitCharText(suit: CardSuit) {
+    const cardSuitCharText = ['□', '♠', '♥', '♣', '♦'];
+    return cardSuitCharText[suit];
+  }
+
   static getPlayerRoleRawText(role: PlayerRole, mode: GameMode) {
     switch (mode) {
       case GameMode.OneVersusTwo: {

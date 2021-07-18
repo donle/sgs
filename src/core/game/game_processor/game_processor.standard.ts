@@ -407,8 +407,15 @@ export class StandardGameProcessor extends GameProcessor {
 
     let lastPlayerPosition = this.playerPositionIndex;
     await this.beforeGameStartPreparation();
+
     while (this.room.isPlaying() && !this.room.isGameOver() && !this.room.isClosed()) {
-      if (!this.inExtraRound) {
+      if (this.room.Circle === 0) {
+        await this.onHandleIncomingEvent(
+          GameEventIdentifiers.GameBeginEvent,
+          EventPacker.createIdentifierEvent(GameEventIdentifiers.GameBeginEvent, {}),
+        );
+        this.room.nextCircle();
+      } else if (!this.inExtraRound) {
         if (this.playerPositionIndex < lastPlayerPosition) {
           this.room.nextCircle();
           this.room.Analytics.turnToNextCircle();
@@ -872,6 +879,13 @@ export class StandardGameProcessor extends GameProcessor {
       case GameEventIdentifiers.GameStartEvent:
         await this.onHandleGameStartEvent(
           identifier as GameEventIdentifiers.GameStartEvent,
+          event as any,
+          onActualExecuted,
+        );
+        break;
+        case GameEventIdentifiers.GameBeginEvent:
+        await this.onHandleGameBeginEvent(
+          identifier as GameEventIdentifiers.GameBeginEvent,
           event as any,
           onActualExecuted,
         );
@@ -1942,6 +1956,14 @@ export class StandardGameProcessor extends GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     this.room.broadcast(GameEventIdentifiers.GameStartEvent, event);
+    return await this.iterateEachStage(identifier, event, onActualExecuted);
+  }
+
+  private async onHandleGameBeginEvent(
+    identifier: GameEventIdentifiers.GameBeginEvent,
+    event: ServerEventFinder<GameEventIdentifiers.GameBeginEvent>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
+  ) {
     return await this.iterateEachStage(identifier, event, onActualExecuted);
   }
 

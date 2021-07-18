@@ -1,7 +1,7 @@
 import { Word } from 'languages';
 
 export const characterDictionary: Word[] = [
-  { source: 'shadow', target: '陰包' },
+  { source: 'shadow', target: '陰' },
 
 ];
 

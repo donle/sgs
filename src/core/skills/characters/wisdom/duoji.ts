@@ -166,7 +166,9 @@ export class DuoJiShadow extends TriggerSkill {
         cardUseEvent.fromId,
       );
 
-      response.selectedCards = response.selectedCards || ji[0];
+      if (response.selectedCards.length === 0) {
+        response.selectedCards = [ji[0]];
+      }
 
       if (user.getCardIds(PlayerCardsArea.EquipArea).includes(cardUseEvent.cardId)) {
         await room.moveCards({

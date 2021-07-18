@@ -52,6 +52,8 @@ function skillPropertyWrapper(
     persistentSkill?: boolean;
     circleSkill?: boolean;
     stubbornSkill?: boolean;
+    switchSkill?: boolean;
+    switchable?: boolean;
   },
   constructor: new () => any,
 ): any {
@@ -64,6 +66,8 @@ function skillPropertyWrapper(
     private persistentSkill: boolean;
     private stubbornSkill: boolean;
     private circleSkill: boolean;
+    private switchSkill: boolean;
+    private switchable: boolean;
     public canUse: (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) => boolean;
 
     constructor() {
@@ -94,6 +98,12 @@ function skillPropertyWrapper(
       }
       if (options.circleSkill !== undefined) {
         this.circleSkill = options.circleSkill;
+      }
+      if (options.switchSkill !== undefined) {
+        this.switchSkill = options.switchSkill;
+      }
+      if (options.switchable !== undefined) {
+        this.switchable = options.switchable;
       }
     }
   } as any;
@@ -198,5 +208,17 @@ export function CircleSkill<T extends Skill>(constructorFunction: SKillConstruct
     constructorFunction as any,
   );
 }
+
+export const SwitchSkill = (switchable: boolean = true) => <T extends Skill>(
+  constructorFunction: SKillConstructor<T>,
+) => {
+  return skillPropertyWrapper(
+    {
+      switchSkill: true,
+      switchable,
+    },
+    constructorFunction as any,
+  );
+};
 
 export type SkillPrototype<T extends Skill> = new () => T;

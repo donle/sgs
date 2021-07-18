@@ -178,6 +178,15 @@ export { XinSheng } from './characters/mountain/xinsheng';
 export { BeiGe } from './characters/mountain/beige';
 export { DuanChang } from './characters/mountain/duanchang';
 
+export { QiZhi, QiZhiShadow } from './characters/shadow/qizhi';
+export { JinQu } from './characters/shadow/jinqu';
+export { HuaiJu } from './characters/shadow/huaiju';
+export { WeiLi } from './characters/shadow/weili';
+export { ZhengLun } from './characters/shadow/zhenglun';
+export { ChengLve, ChengLveShadow, ChengLveBuff } from './characters/shadow/chenglve';
+export { ShiCai, ShiCaiShadow } from './characters/shadow/shicai';
+export { CunMu } from './characters/shadow/cunmu';
+
 export { WuShen, WuShenShadow, WuShenDisresponse } from './characters/god/wushen';
 export { WuHun, WuHunDeath } from './characters/god/wuhun';
 export { SheLie } from './characters/god/shelie';
