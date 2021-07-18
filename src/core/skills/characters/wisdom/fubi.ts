@@ -163,7 +163,7 @@ export class FuBiClear extends TriggerSkill implements OnDefineReleaseTiming {
     if (from.getInvisibleMark(FuBiShadow.SlashExtender)) {
       room.syncGameCommonRules(playerId, user => {
         user.removeInvisibleMark(FuBiShadow.SlashExtender);
-        room.CommonRules.addAdditionalHoldCardNumber(user, -1);
+        room.CommonRules.addCardUsableTimes(new CardMatcher({ generalName: ['slash'] }), -1, user);
       });
     }
 
