@@ -1,7 +1,9 @@
+import { CardType } from 'core/cards/card';
 import { CharacterEquipSections } from 'core/characters/character';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseStageChangeStage, PlayerDyingStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
+import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { MarkEnum } from 'core/shares/types/mark_list';
 import { TriggerSkill } from 'core/skills/skill';
@@ -30,7 +32,7 @@ export class ZuiCi extends TriggerSkill {
     content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent | GameEventIdentifiers.PlayerDyingEvent>,
     stage?: AllStage,
   ): boolean {
-    if (owner.AvailableEquipSections.length === 0) {
+    if (owner.getCardIds(PlayerCardsArea.EquipArea).length === 0) {
       return false;
     }
 
@@ -45,12 +47,24 @@ export class ZuiCi extends TriggerSkill {
     return true;
   }
 
+  private readonly equipSectionToCardTypeMapper = {
+    [CharacterEquipSections.Weapon]: CardType.Weapon,
+    [CharacterEquipSections.Shield]: CardType.Shield,
+    [CharacterEquipSections.DefenseRide]: CardType.DefenseRide,
+    [CharacterEquipSections.OffenseRide]: CardType.OffenseRide,
+    [CharacterEquipSections.Precious]: CardType.Precious,
+  };
+
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId } = event;
     const from = room.getPlayerById(fromId);
     const identifier = GameEventIdentifiers.AskForChoosingOptionsEvent;
+    const options = from.AvailableEquipSections.filter(
+      section => from.getEquipment(this.equipSectionToCardTypeMapper[section]) !== undefined,
+    );
+
     const askforAbortions: ServerEventFinder<typeof identifier> = {
-      options: from.AvailableEquipSections,
+      options,
       toId: fromId,
       conversation: TranslationPack.translationJsonPatcher(
         '{0}: please choose and abort an equip section',

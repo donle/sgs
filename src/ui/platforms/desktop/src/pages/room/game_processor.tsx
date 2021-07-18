@@ -1590,5 +1590,7 @@ export class GameClientProcessor {
     } else {
       to.abortEquipSections(...toSections);
     }
+
+    this.presenter.broadcastUIUpdate();
   }
 }
