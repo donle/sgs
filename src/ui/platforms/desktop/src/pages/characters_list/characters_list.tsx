@@ -11,6 +11,7 @@ import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
+import { CharacterSkinInfo } from 'skins/skins';
 import { PagePropsWithConfig } from 'types/page_props';
 import { installAudioPlayerService } from 'ui/audio/install';
 import { Button } from 'ui/button/button';
@@ -19,7 +20,6 @@ import { CharacterSkinCard, CharacterSpec } from 'ui/character/characterSkin';
 import { CheckBoxGroup } from 'ui/check_box/check_box_group';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import styles from './characters_list.module.css';
-import { CharacterSkinInfo } from 'skins/skins';
 
 export type CharactersListProps = PagePropsWithConfig<{
   translator: ClientTranslationModule;

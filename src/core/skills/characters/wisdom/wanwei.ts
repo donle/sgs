@@ -63,7 +63,9 @@ export class WanWeiShadow extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>): boolean {
-    return content.dying !== owner.Id && !owner.hasUsedSkill(this.GeneralName) && room.getPlayerById(content.dying).Hp <= 0;
+    return (
+      content.dying !== owner.Id && !owner.hasUsedSkill(this.GeneralName) && room.getPlayerById(content.dying).Hp <= 0
+    );
   }
 
   public getSkillLog(

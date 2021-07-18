@@ -6,10 +6,10 @@ import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { GameMode } from 'core/shares/types/room_props';
 import { SkillType } from 'core/skills/skill';
 import { LobbyButton } from 'props/game_props';
+import { CharacterSkinInfo } from 'skins/skins';
 import { getSkillButtonImages } from './dev_button_image_loader';
 import { getLobbyButtonImage } from './dev_button_image_loader';
 import { ImageLoader } from './image_loader';
-import { CharacterSkinInfo } from 'skins/skins';
 
 const remoteRoot: string = 'http://doublebit.gitee.io/pictest/backup_remote';
 

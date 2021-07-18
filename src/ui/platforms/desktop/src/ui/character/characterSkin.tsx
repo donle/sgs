@@ -1,16 +1,16 @@
 import classNames from 'classnames';
 import { Character, getNationalityRawText } from 'core/characters/character';
+import { Skill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
+import { CharacterSkinInfo } from 'skins/skins';
+import { AudioService } from 'ui/audio/install';
 import { NationalityBadge } from '../badge/badge';
 import { CharacterHp } from '../hp/hp';
 import styles from './character.module.css';
-import { CharacterSkinInfo } from 'skins/skins';
-import { AudioService } from 'ui/audio/install';
-import { Skill } from 'core/skills/skill';
 
 export type CharacterSkinCardProps = {
   character: Character;

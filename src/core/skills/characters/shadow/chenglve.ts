@@ -75,7 +75,7 @@ export class ChengLve extends ActiveSkill {
         }),
         fromId,
       );
-  
+
       if (response.selectedCards.length === 0) {
         response.selectedCards = from.getPlayerCards().slice(0, dropNum);
       }

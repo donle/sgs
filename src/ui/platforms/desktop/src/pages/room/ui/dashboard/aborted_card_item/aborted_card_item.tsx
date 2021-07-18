@@ -28,7 +28,9 @@ export class AbortedCardItem extends React.Component<AbortedCardItemProps> {
           [itemStyles.offenseRide]: this.props.abortedSection === CharacterEquipSections.OffenseRide,
           [itemStyles.precious]: this.props.abortedSection === CharacterEquipSections.Precious,
         })}
-      >{this.sectionImage && <img src={this.sectionImage.src} alt={this.sectionImage.alt} />}</div>
+      >
+        {this.sectionImage && <img src={this.sectionImage.src} alt={this.sectionImage.alt} />}
+      </div>
     );
   }
 }

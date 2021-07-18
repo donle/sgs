@@ -4,8 +4,8 @@ import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
-import styles from './skin.module.css';
 import { CharacterSkinInfo } from 'skins/skins';
+import styles from './skin.module.css';
 
 export type SkinCardProps = {
   character: string;

@@ -146,7 +146,8 @@
 .playerName.aligned {
     padding: 0 calc(gridLine * 4);
 }
-.playerEquips, .playerAbortedEquipSections {
+.playerEquips,
+.playerAbortedEquipSections {
     height: calc(12 * 8px);
     display: flex;
     flex-direction: column;

@@ -13,6 +13,7 @@ import { SettingsDialog } from 'pages/ui/settings/settings';
 import { ServerHostTag } from 'props/config_props';
 import * as React from 'react';
 import { ConnectionService } from 'services/connection_service/connection_service';
+import { CharacterSkinInfo } from 'skins/skins';
 import { PagePropsWithConfig } from 'types/page_props';
 import { ReplayDataType } from 'types/replay_props';
 import { installAudioPlayerService } from 'ui/audio/install';
@@ -27,7 +28,6 @@ import { Dashboard } from './ui/dashboard/dashboard';
 import { GameBoard } from './ui/gameboard/gameboard';
 import { GameDialog } from './ui/game_dialog/game_dialog';
 import { SeatsLayout } from './ui/seats_layout/seats_layout';
-import { CharacterSkinInfo } from 'skins/skins';
 
 @mobxReact.observer
 export class ReplayRoomPage extends React.Component<

@@ -1,5 +1,5 @@
-import { CharacterSkinInfo } from 'skins/skins';
 import { PlayerId } from 'core/player/player_props';
+import { CharacterSkinInfo } from 'skins/skins';
 
 export type HistoryCharacterSkin = {
   playerId: PlayerId;
@@ -9,7 +9,7 @@ export type HistoryCharacterSkin = {
   nextTime: number;
 };
 
-let historyCharacterSkinInfo: HistoryCharacterSkin[] = [];
+const historyCharacterSkinInfo: HistoryCharacterSkin[] = [];
 export function getSkinName(
   characterName: string,
   playerId: PlayerId,
@@ -38,8 +38,8 @@ export function getSkinName(
   }
 
   const historyCharacterSkin: HistoryCharacterSkin = {
-    playerId: playerId,
-    characterName: characterName,
+    playerId,
+    characterName,
     skinNameList: [characterName],
     skinName: characterName,
     nextTime: currentTime + Math.floor(Math.random() * 5 + 30) * 1000,

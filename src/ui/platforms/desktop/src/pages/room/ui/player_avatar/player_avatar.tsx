@@ -12,18 +12,18 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
+import { CharacterSkinInfo } from 'skins/skins';
 import { NationalityBadge } from 'ui/badge/badge';
 import { SkillButton } from 'ui/button/skill_button';
 import { Hp } from 'ui/hp/hp';
 import { Tooltip } from 'ui/tooltip/tooltip';
+import { getSkinName } from '../../ui/switch_avatar/switch_skin';
 import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
+import { SkinSelectorDialog } from '../dialog/skin_selector_dialog/skin_selector_dialog';
 import { AwakenSkillMark, LimitSkillMark, Mark, SwitchSkillMark } from '../mark/mark';
 import { Mask } from '../mask/mask';
 import { SwitchAvatar } from '../switch_avatar/switch_avatar';
 import styles from './player_avatar.module.css';
-import { getSkinName } from '../../ui/switch_avatar/switch_skin';
-import { CharacterSkinInfo } from 'skins/skins';
-import { SkinSelectorDialog } from '../dialog/skin_selector_dialog/skin_selector_dialog';
 
 type PlayerAvatarProps = {
   store: RoomStore;

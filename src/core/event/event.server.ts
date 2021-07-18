@@ -23,7 +23,7 @@ export type MovingCardProps = {
   card: CardId;
   fromArea?: CardMoveArea | PlayerCardsArea;
   asideMove?: boolean;
-}
+};
 
 export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.SetFlagEvent]: {

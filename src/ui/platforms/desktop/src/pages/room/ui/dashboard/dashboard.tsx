@@ -11,6 +11,7 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
+import { CharacterSkinInfo } from 'skins/skins';
 import { PlayerPhaseBadge } from 'ui/badge/badge';
 import { ClientCard } from 'ui/card/card';
 import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
@@ -19,7 +20,6 @@ import { PlayingBar } from '../playing_bar/playing_bar';
 import { AbortedCardItem } from './aborted_card_item/aborted_card_item';
 import styles from './dashboard.module.css';
 import { EquipCardItem } from './equip_card_item/equip_card_item';
-import { CharacterSkinInfo } from 'skins/skins';
 
 import { Button } from 'ui/button/button';
 import armorSlot from './images/armor.png';

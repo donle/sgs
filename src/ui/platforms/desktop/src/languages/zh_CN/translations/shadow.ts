@@ -33,7 +33,8 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'huaiju_description',
-    target: '<b>锁定技，</b>游戏开始时，你获得3枚“橘”标记；有“橘”的角色于其摸牌阶段多摸一张牌；当有“橘”的角色受到伤害时，防止此伤害。',
+    target:
+      '<b>锁定技，</b>游戏开始时，你获得3枚“橘”标记；有“橘”的角色于其摸牌阶段多摸一张牌；当有“橘”的角色受到伤害时，防止此伤害。',
   },
   {
     source: 'weili_description',
@@ -46,7 +47,8 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'chenglve_description',
-    target: '<b>转换技，</b>出牌阶段限一次，阳：你可以摸一张牌，然后弃置两张手牌；阴：你可以摸两张牌，然后弃置一张手牌。若如此做，你于本回合内使用与你以此法弃置牌花色相同的牌无距离和次数限制。',
+    target:
+      '<b>转换技，</b>出牌阶段限一次，阳：你可以摸一张牌，然后弃置两张手牌；阴：你可以摸两张牌，然后弃置一张手牌。若如此做，你于本回合内使用与你以此法弃置牌花色相同的牌无距离和次数限制。',
   },
   {
     source: 'shicai_description',

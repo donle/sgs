@@ -23,6 +23,7 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
+import { CharacterSkinInfo } from 'skins/skins';
 import { AudioService } from 'ui/audio/install';
 import { AskForPeachAction } from './actions/ask_for_peach_action';
 import { CardResponseAction } from './actions/card_response_action';
@@ -37,7 +38,6 @@ import { GameOverDialog } from './ui/dialog/game_over_dialog/game_over_dialog';
 import { GuanXingDialog } from './ui/dialog/guanxing_dialog/guanxing_dialog';
 import { WuGuFengDengDialog } from './ui/dialog/wugufengdeng_dialog/wugufengdeng_dialog';
 import { getSkinName } from './ui/switch_avatar/switch_skin';
-import { CharacterSkinInfo } from 'skins/skins';
 
 export class GameClientProcessor {
   protected onPlayTrustedActionTimer: NodeJS.Timer | undefined;
@@ -714,7 +714,7 @@ export class GameClientProcessor {
   ) {
     const { playerId } = content;
     const player = this.store.room.getPlayerById(playerId);
-    let skinName = getSkinName(player.Character.Name, player.Id, this.skinData).skinName;
+    const skinName = getSkinName(player.Character.Name, player.Id, this.skinData).skinName;
     this.audioService.playDeathAudio(player.Character.Name, this.skinData, skinName);
     this.store.room.kill(player);
     this.presenter.broadcastUIUpdate();
@@ -1366,7 +1366,7 @@ export class GameClientProcessor {
   ) {
     const skill = Sanguosha.getSkillBySkillName(content.skillName);
     const from = this.store.room.getPlayerById(content.fromId);
-    let skinName = getSkinName(from.Character.Name, from.Id, this.skinData).skinName;
+    const skinName = getSkinName(from.Character.Name, from.Id, this.skinData).skinName;
     !content.mute &&
       this.audioService.playSkillAudio(skill.GeneralName, from.Gender, this.skinData, from.Character.Name, skinName);
 

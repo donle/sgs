@@ -125,9 +125,9 @@ export class MieWuShadow extends TriggerSkill implements OnDefineReleaseTiming {
         } else {
           room.removeFlag(fromId, WuKu.Name);
         }
-      }  
+      }
     }
-    
+
     return true;
   }
 }

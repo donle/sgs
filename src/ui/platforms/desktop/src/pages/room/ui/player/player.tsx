@@ -15,11 +15,13 @@ import * as mobxReact from 'mobx-react';
 import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import { ImageProps } from 'props/image_props';
 import * as React from 'react';
+import { CharacterSkinInfo } from 'skins/skins';
 import { NationalityBadge, PlayerPhaseBadge } from 'ui/badge/badge';
 import { ClientCard } from 'ui/card/card';
 import { FlatClientCard } from 'ui/card/flat_card';
 import { Hp } from 'ui/hp/hp';
 import { Tooltip } from 'ui/tooltip/tooltip';
+import { getSkinName } from '../../ui/switch_avatar/switch_skin';
 import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
 import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
 import { AwakenSkillMark, LimitSkillMark, Mark, SwitchSkillMark } from '../mark/mark';
@@ -27,8 +29,6 @@ import { Mask } from '../mask/mask';
 import { PlayingBar } from '../playing_bar/playing_bar';
 import { SwitchAvatar } from '../switch_avatar/switch_avatar';
 import styles from './player.module.css';
-import { getSkinName } from '../../ui/switch_avatar/switch_skin';
-import { CharacterSkinInfo } from 'skins/skins';
 
 type PlayerCardProps = {
   player: ClientPlayer | undefined;
@@ -331,7 +331,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
           key={skill.Name}
         />
       )),
-    )
+    );
 
     const playerMarks = clientPlayer.getAllMarks();
     for (const [markName, amount] of Object.entries(playerMarks)) {

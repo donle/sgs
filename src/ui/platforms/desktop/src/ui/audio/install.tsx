@@ -3,8 +3,8 @@ import { CharacterGender } from 'core/characters/character';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import { AudioPlayer } from './audio';
 import { CharacterSkinInfo } from 'skins/skins';
+import { AudioPlayer } from './audio';
 
 export interface AudioService {
   playSkillAudio(

@@ -6,9 +6,9 @@ import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
+import { CharacterSkinInfo } from 'skins/skins';
 import { PlayerCard } from '../player/player';
 import styles from './seats_layout.module.css';
-import { CharacterSkinInfo } from 'skins/skins';
 
 type SeatsLayoutProps = {
   store: RoomStore;

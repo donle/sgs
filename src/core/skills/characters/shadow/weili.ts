@@ -71,15 +71,15 @@ export class WeiLi extends TriggerSkill {
         }),
         fromId,
       );
-  
+
       response.selectedOption = response.selectedOption || options[0];
-  
+
       if (response.selectedOption === 'weili:loseOrange') {
         room.addMark(fromId, MarkEnum.Orange, -1);
       } else {
         await room.loseHp(fromId, 1);
       }
-  
+
       room.setMark(toIds[0], MarkEnum.Orange, 1);
     }
 

@@ -1,4 +1,5 @@
 import { CharacterGender } from 'core/characters/character';
+import { CharacterSkinInfo } from 'skins/skins';
 import lobbyBGM from './audios/bgm/lobby.mp3';
 import roomBGM from './audios/bgm/room.mp3';
 import chainAudio from './audios/chain.mp3';
@@ -8,7 +9,6 @@ import equipAudio from './audios/equip.mp3';
 import gameStartAudio from './audios/gamestart.mp3';
 import lostHpAudio from './audios/loseHp.mp3';
 import { AudioLoader } from './audio_loader';
-import { CharacterSkinInfo } from 'skins/skins';
 export class ProdAudioLoader implements AudioLoader {
   getLobbyBackgroundMusic() {
     return lobbyBGM;

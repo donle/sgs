@@ -44,7 +44,13 @@ export class JinQu extends TriggerSkill {
 
     const dropNum = from.getCardIds(PlayerCardsArea.HandArea).length - from.hasUsedSkillTimes(QiZhi.Name);
     if (from.hasUsedSkillTimes(QiZhi.Name) === 0 && dropNum > 0) {
-      await room.dropCards(CardMoveReason.SelfDrop, from.getCardIds(PlayerCardsArea.HandArea), fromId, fromId, this.Name);
+      await room.dropCards(
+        CardMoveReason.SelfDrop,
+        from.getCardIds(PlayerCardsArea.HandArea),
+        fromId,
+        fromId,
+        this.Name,
+      );
     } else if (dropNum > 0) {
       const response = await room.doAskForCommonly<GameEventIdentifiers.AskForCardEvent>(
         GameEventIdentifiers.AskForCardEvent,

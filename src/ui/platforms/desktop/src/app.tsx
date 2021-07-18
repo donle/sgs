@@ -12,8 +12,8 @@ import { ClientConfig } from 'props/config_props';
 import * as React from 'react';
 import { Redirect, Route, Router } from 'react-router-dom';
 import { ConnectionService } from 'services/connection_service/connection_service';
-import { Lobby } from './pages/lobby/lobby';
 import { CharacterSkinInfo } from 'skins/skins';
+import { Lobby } from './pages/lobby/lobby';
 @mobxReact.observer
 export class App extends React.PureComponent<{
   config: ClientConfig;

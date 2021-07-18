@@ -1,6 +1,6 @@
 import { CharacterGender } from 'core/characters/character';
-import { AudioLoader } from './audio_loader';
 import { CharacterSkinInfo } from 'skins/skins';
+import { AudioLoader } from './audio_loader';
 
 const remoteRoot: string = 'http://doublebit.gitee.io/pictest/backup_remote';
 

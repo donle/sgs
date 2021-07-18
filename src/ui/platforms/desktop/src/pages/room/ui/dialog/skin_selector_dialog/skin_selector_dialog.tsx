@@ -3,11 +3,11 @@ import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
+import { CharacterSkinInfo } from 'skins/skins';
+import { SkinCard } from 'ui/skin/skin';
+import { getSkinName } from '../../switch_avatar/switch_skin';
 import { BaseDialog } from '../base_dialog';
 import styles from './skin_selector_dialog.module.css';
-import { CharacterSkinInfo } from 'skins/skins';
-import { getSkinName } from '../../switch_avatar/switch_skin';
-import { SkinCard } from 'ui/skin/skin';
 
 type SkinSelectorDialogProps = {
   translator: ClientTranslationModule;
@@ -34,7 +34,9 @@ export class SkinSelectorDialog extends React.Component<SkinSelectorDialogProps>
       this.props.playerId,
       this.props.skinData,
     ).skinNameList.concat();
-    if (!skinNameList.includes('random')) skinNameList.push('random');
+    if (!skinNameList.includes('random')) {
+      skinNameList.push('random');
+    }
     return (
       <BaseDialog title={this.props.translator.tr('please choose a skin')}>
         <div className={styles.innerDialog}>
