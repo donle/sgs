@@ -50,7 +50,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'shicai_description',
-    target: '当你于一回合首次使用一种类别的非装备牌结算结束后，你可以将此牌置于牌堆顶，然后摸一张牌。',
+    target: '当你于一回合首次使用一种类别的非延时类牌结算结束后，你可以将此牌置于牌堆顶，然后摸一张牌。',
   },
   {
     source: 'cunmu_description',
