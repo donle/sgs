@@ -13,6 +13,7 @@ import {
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
+import { MovingCardProps } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import {
   CardEffectStage,
@@ -797,7 +798,6 @@ export class StandardGameProcessor extends GameProcessor {
       EventPacker.isTerminated(event) && (await card.Skill.onEffectRejected(this.room, event));
     } else if (card.GeneralName === 'slash') {
       const { toIds, fromId, cardId } = event;
-      console.log(`${fromId} use a slash`);
       const targets = Precondition.exists(toIds, 'Unable to get slash target');
       Precondition.assert(targets.length === 1, 'slash effect target should be only one target');
       const toId = targets[0];
@@ -827,10 +827,7 @@ export class StandardGameProcessor extends GameProcessor {
           triggeredOnEvent: event,
         };
 
-        console.log(`Ask for ${toId} to Handle`);
-
         const response = await this.room.askForCardUse(askForUseCardEvent, toId);
-        console.log(`${toId} response card is ${response.cardId}`);
         if (response.cardId !== undefined) {
           const jinkUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
             fromId: toId,
@@ -883,7 +880,7 @@ export class StandardGameProcessor extends GameProcessor {
           onActualExecuted,
         );
         break;
-        case GameEventIdentifiers.GameBeginEvent:
+      case GameEventIdentifiers.GameBeginEvent:
         await this.onHandleGameBeginEvent(
           identifier as GameEventIdentifiers.GameBeginEvent,
           event as any,
@@ -1586,8 +1583,39 @@ export class StandardGameProcessor extends GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    const { fromId, toId, movingCards } = event;
+    const { fromId, toId, movingCards, toArea } = event;
     let to = toId ? this.room.getPlayerById(toId) : undefined;
+    if (to && toArea === CardMoveArea.EquipArea) {
+      const droppedMoves: MovingCardProps[] = [];
+      const equipMoves: MovingCardProps[] = [];
+
+      for (const moving of movingCards) {
+        if (to!.canEquip(Sanguosha.getCardById(moving.card))) {
+          equipMoves.push(moving);
+        } else {
+          droppedMoves.push(moving);
+        }
+      }
+
+      if (droppedMoves.length > 0) {
+        const asyncMoveEvents: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[] = [
+          {
+            ...event,
+            movingCards: droppedMoves,
+            toArea: CardMoveArea.DropStack,
+            moveReason: CardMoveReason.PlaceToDropStack,
+          },
+        ];
+        if (equipMoves.length > 0) {
+          asyncMoveEvents.push({ ...event, movingCards: equipMoves });
+        }
+
+        await this.onHandleAsyncMoveCardEvent(asyncMoveEvents);
+
+        return;
+      }
+    }
+
     if (to && to.Dead) {
       event.toId = undefined;
       event.toArea = CardMoveArea.DropStack;
@@ -1626,6 +1654,42 @@ export class StandardGameProcessor extends GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     const identifier = GameEventIdentifiers.MoveCardEvent;
+
+    const splitEvents: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[] = [];
+    for (const event of events) {
+      if (event.toId && event.toArea === CardMoveArea.EquipArea) {
+        const to = this.room.getPlayerById(event.toId);
+        const droppedMoves: MovingCardProps[] = [];
+        const equipMoves: MovingCardProps[] = [];
+
+        for (const moving of event.movingCards) {
+          if (to.canEquip(Sanguosha.getCardById(moving.card))) {
+            equipMoves.push(moving);
+          } else {
+            droppedMoves.push(moving);
+          }
+        }
+
+        if (droppedMoves.length > 0) {
+          splitEvents.push({
+            ...event,
+            movingCards: droppedMoves,
+            toArea: CardMoveArea.DropStack,
+            moveReason: CardMoveReason.PlaceToDropStack,
+          });
+        }
+        if (equipMoves.length > 0) {
+          splitEvents.push({ ...event, movingCards: equipMoves });
+        }
+      } else {
+        splitEvents.push(event);
+      }
+    }
+
+    this.logger.debug(JSON.stringify(splitEvents, null, 2), JSON.stringify(events, null, 2));
+
+    events = splitEvents;
+
     for (const event of events) {
       const { fromId, toId, movingCards } = event;
       let to = toId ? this.room.getPlayerById(toId) : undefined;

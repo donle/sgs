@@ -79,7 +79,7 @@
 
 .clientCard.selected {
     margin-top: -16px;
-    box-shadow: 0px 0px 5px 2px rgba(255,255,255,1);
+    box-shadow: 0px 0px 5px 2px rgba(255, 255, 255, 1);
 }
 
 .flatCard {

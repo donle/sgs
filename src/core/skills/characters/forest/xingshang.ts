@@ -13,7 +13,9 @@ export class XingShang extends TriggerSkill {
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>) {
     const to = room.getPlayerById(content.playerId);
-    return !owner.Dead && owner.Id !== content.playerId && !(owner.Hp >= owner.MaxHp && to.getPlayerCards().length <= 0);
+    return (
+      !owner.Dead && owner.Id !== content.playerId && !(owner.Hp >= owner.MaxHp && to.getPlayerCards().length <= 0)
+    );
   }
 
   async onTrigger() {

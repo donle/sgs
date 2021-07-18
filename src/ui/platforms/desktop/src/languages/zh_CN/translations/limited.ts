@@ -25,8 +25,7 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'weicheng_description',
-    target:
-      '当其他角色获得你的手牌，或你交给其他角色你的手牌后，若你的手牌数小于体力值，你可以摸一张牌。',
+    target: '当其他角色获得你的手牌，或你交给其他角色你的手牌后，若你的手牌数小于体力值，你可以摸一张牌。',
   },
   {
     source: 'daoshu_description',
@@ -49,39 +48,32 @@ export const skillDescriptions: Word[] = [
 export const promptDescriptions: Word[] = [
   {
     source: '{0}: please drop {1} card(s)',
-    target:
-      '{0}: 请弃置 {1} 张牌，若弃牌中均为装备牌，则可视为使用一张无距离限制的【杀】',
+    target: '{0}: 请弃置 {1} 张牌，若弃牌中均为装备牌，则可视为使用一张无距离限制的【杀】',
   },
   {
     source: 'shanjia: do you want to use a slash?',
-    target:
-      '缮甲：你可以视为使用一张【杀】（无距离限制）',
+    target: '缮甲：你可以视为使用一张【杀】（无距离限制）',
   },
 
   {
     source: '{0}: please choose a card suit',
-    target:
-      '{0}: 请选择一种花色',
+    target: '{0}: 请选择一种花色',
   },
   {
     source: '{0}: please give {1} a hand card except the card with suit {2}',
-    target:
-      '{0}: 请交给 {1} 一张非{2}手牌',
+    target: '{0}: 请交给 {1} 一张非{2}手牌',
   },
 
   {
     source: 'the bottom of draw stack',
-    target:
-      '牌堆底的牌',
+    target: '牌堆底的牌',
   },
   {
     source: 'xingzuo: please select cards to put on draw stack bottom',
-    target:
-      '兴作：请选择其中三张牌作为牌堆底的牌',
+    target: '兴作：请选择其中三张牌作为牌堆底的牌',
   },
   {
     source: '{0}: do you want to choose a target to exchange hand cards with draw stack bottom?',
-    target:
-      '{0}：你可以令一名有牌的角色将所有手牌与牌堆底三张牌交换',
+    target: '{0}：你可以令一名有牌的角色将所有手牌与牌堆底三张牌交换',
   },
 ];

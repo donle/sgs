@@ -81,7 +81,7 @@ export class LongHun extends ViewAsSkill {
           return owner.canUseCard(room, new CardMatcher({ name: ['peach'] }));
         }
 
-        return false; 
+        return false;
       }
     } else {
       return Sanguosha.getCardById(pendingCardId).Suit === Sanguosha.getCardById(selectedCards[0]).Suit;

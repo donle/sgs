@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { CardType } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
+import { CharacterEquipSections } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { ClientPlayer } from 'core/player/player.client';
@@ -12,6 +13,7 @@ import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
+import { ImageProps } from 'props/image_props';
 import * as React from 'react';
 import { NationalityBadge, PlayerPhaseBadge } from 'ui/badge/badge';
 import { ClientCard } from 'ui/card/card';
@@ -105,23 +107,26 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     }
 
     return (
-      <div className={styles.playerEquips} onClick={this.onClick}>
-        {equips.map(equip => (
-          <FlatClientCard
-            card={equip}
-            key={equip.Id}
-            imageLoader={imageLoader}
-            translator={translator}
-            className={classNames(styles.playerEquip, {
-              [styles.weapon]: equip?.is(CardType.Weapon),
-              [styles.armor]: equip?.is(CardType.Armor),
-              [styles.defenseRide]: equip?.is(CardType.DefenseRide),
-              [styles.offenseRide]: equip?.is(CardType.OffenseRide),
-              [styles.precious]: equip?.is(CardType.Precious),
-            })}
-          />
-        ))}
-      </div>
+      <>
+        <div className={styles.playerEquips} onClick={this.onClick}>
+          {equips.map(equip => (
+            <FlatClientCard
+              card={equip}
+              key={equip.Id}
+              imageLoader={imageLoader}
+              translator={translator}
+              className={classNames(styles.playerEquip, {
+                [styles.weapon]: equip?.is(CardType.Weapon),
+                [styles.armor]: equip?.is(CardType.Shield),
+                [styles.defenseRide]: equip?.is(CardType.DefenseRide),
+                [styles.offenseRide]: equip?.is(CardType.OffenseRide),
+                [styles.precious]: equip?.is(CardType.Precious),
+              })}
+            />
+          ))}
+        </div>
+        {player && <PlayerAbortedEquipSection player={player} imageLoader={imageLoader} />}
+      </>
     );
   }
 
@@ -463,6 +468,43 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
         </div>
         {this.getPlayerEquips()}
         <div className={styles.marks}>{this.getOnceSkillMarks()}</div>
+      </div>
+    );
+  }
+}
+
+type PlayerAbortedEquipSectionProps = {
+  player: ClientPlayer;
+  imageLoader: ImageLoader;
+};
+
+class PlayerAbortedEquipSection extends React.Component<PlayerAbortedEquipSectionProps> {
+  private abortedImageProp: ImageProps | undefined;
+
+  async componentDidMount() {
+    this.abortedImageProp = await this.props.imageLoader.getOthersAbortedEquipCard();
+  }
+
+  render() {
+    const abortedSections = this.props.player.DisabledEquipSections;
+
+    return (
+      <div className={styles.playerAbortedEquipSections}>
+        {this.abortedImageProp &&
+          abortedSections.map(section => (
+            <img
+              className={classNames(styles.playerEquip, {
+                [styles.weapon]: section === CharacterEquipSections.Weapon,
+                [styles.armor]: section === CharacterEquipSections.Shield,
+                [styles.defenseRide]: section === CharacterEquipSections.DefenseRide,
+                [styles.offenseRide]: section === CharacterEquipSections.OffenseRide,
+                [styles.precious]: section === CharacterEquipSections.Precious,
+              })}
+              key={section}
+              src={this.abortedImageProp!.src}
+              alt={this.abortedImageProp!.alt}
+            />
+          ))}
       </div>
     );
   }

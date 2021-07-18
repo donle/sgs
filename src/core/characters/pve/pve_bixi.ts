@@ -1,8 +1,8 @@
-import { SkillLoader } from 'core/game/package_loader/loader.skills';
-import { CharacterGender, CharacterNationality, Character } from '../character';
 import { GameCharacterExtensions } from 'core/game/game_props';
-import { PveLingXi } from 'core/skills/game_mode/pve/pve_lingxi';
+import { SkillLoader } from 'core/game/package_loader/loader.skills';
 import { PveLongHou } from 'core/skills';
+import { PveLingXi } from 'core/skills/game_mode/pve/pve_lingxi';
+import { Character, CharacterGender, CharacterNationality } from '../character';
 
 const skillLoaderInstance = SkillLoader.getInstance();
 

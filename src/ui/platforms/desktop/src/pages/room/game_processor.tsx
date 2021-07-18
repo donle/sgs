@@ -303,6 +303,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.ChainLockedEvent:
         await this.onHandleChainLockedEvent(e as any, content);
         break;
+      case GameEventIdentifiers.AbortOrResumePlayerSectionsEvent:
+        await this.onHandleAbortOrResumePlayerSectionsEvent(e as any, content);
+        break;
       case GameEventIdentifiers.DrunkEvent:
         await this.onHandleDrunkEvent(e as any, content);
         break;
@@ -894,7 +897,7 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     const { commonRules, toId } = content;
-    this.store.room.gameCommonRules.syncSocketObject(this.store.room.getPlayerById(toId), commonRules);
+    this.store.room.CommonRules.syncSocketObject(this.store.room.getPlayerById(toId), commonRules);
   }
 
   protected async onHandleAskForSkillUseEvent<T extends GameEventIdentifiers.AskForSkillUseEvent>(
@@ -1009,7 +1012,7 @@ export class GameClientProcessor {
     ) {
       const actualCardIds = Card.getActualCards(cardIds);
       if (toArea === CardMoveArea.OutsideArea) {
-        to.getCardIds(toArea as unknown as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
+        to.getCardIds((toArea as unknown) as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
       } else if (toArea === CardMoveArea.JudgeArea) {
         const transformedDelayedTricks = cardIds.map(cardId => {
           if (!Card.isVirtualCardId(cardId)) {
@@ -1128,7 +1131,7 @@ export class GameClientProcessor {
   }
 
   protected onHandleAskForChoosingCardWithConditionsEvent<
-    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent,
+    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent
   >(type: T, content: ServerEventFinder<T>) {
     const selectedCards: CardId[] = [];
     const selectedCardsIndex: number[] = [];
@@ -1433,7 +1436,7 @@ export class GameClientProcessor {
   }
 
   protected async onHandleAskForChoosingCardAvailableTargetEvent<
-    T extends GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent,
+    T extends GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent
   >(type: T, content: ServerEventFinder<T>) {
     const { cardId, exclude, conversation } = content;
     this.presenter.createIncomingConversation({
@@ -1569,5 +1572,17 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     this.presenter.closeDialog();
+  }
+
+  protected async onHandleAbortOrResumePlayerSectionsEvent<
+    T extends GameEventIdentifiers.AbortOrResumePlayerSectionsEvent
+  >(type: T, content: ServerEventFinder<T>) {
+    const { toId, isResumption, toSections } = content;
+    const to = this.store.room.getPlayerById(toId);
+    if (isResumption) {
+      to.resumeEquipSections(...toSections);
+    } else {
+      to.abortEquipSections(...toSections);
+    }
   }
 }

@@ -1,8 +1,8 @@
-import { SkillLoader } from 'core/game/package_loader/loader.skills';
-import { Character, CharacterGender, CharacterNationality } from '../character';
 import { GameCharacterExtensions } from 'core/game/game_props';
-import { PveLongLin } from 'core/skills/game_mode/pve/pve_longlin';
+import { SkillLoader } from 'core/game/package_loader/loader.skills';
 import { PveJieNu } from 'core/skills';
+import { PveLongLin } from 'core/skills/game_mode/pve/pve_longlin';
+import { Character, CharacterGender, CharacterNationality } from '../character';
 
 const skillLoaderInstance = SkillLoader.getInstance();
 

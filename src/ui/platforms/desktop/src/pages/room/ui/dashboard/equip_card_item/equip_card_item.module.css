@@ -1,0 +1,53 @@
+.equipCardItem {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20%;
+    justify-content: flex-end;
+    transition: left 0.15s;
+    z-index: 3;
+}
+.equipCardName {
+    flex: auto;
+}
+.equipCardSuit,
+.equipCardNumber {
+    z-index: 2;
+}
+
+.equipCardNumber {
+    margin-right: halfGridLine;
+}
+
+.equipCardItem.disabled:not(.selected) {
+    filter: brightness(0.5);
+}
+
+.weapon {
+    top: 20%;
+}
+.armor {
+    top: 40%;
+}
+.defenseRide {
+    top: 60%;
+}
+.offenseRide {
+    top: 80%;
+}
+.precious {
+    top: 0;
+}
+
+.selected {
+    left: 16px;
+}
+
+.equipCardImage {
+    width: 100%;
+    position: absolute;
+    z-index: 2;
+}

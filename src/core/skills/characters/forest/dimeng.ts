@@ -52,8 +52,7 @@ export class DiMeng extends ActiveSkill {
 
     return (
       owner !== target &&
-      room.getPlayerById(owner).getPlayerCards().length >=
-        Math.abs(firstHandcardNum - secondHandcardNum)
+      room.getPlayerById(owner).getPlayerCards().length >= Math.abs(firstHandcardNum - secondHandcardNum)
     );
   }
 

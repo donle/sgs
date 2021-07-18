@@ -39,30 +39,20 @@ export class WuShen extends TransformSkill implements OnDefineReleaseTiming {
   }
 
   async whenLosingSkill(room: Room, owner: Player) {
-    const cards = [owner.getCardIds(PlayerCardsArea.HandArea), owner.getCardIds(PlayerCardsArea.EquipArea)].map(cards =>
-      cards.map(cardId => {
-        if (!Card.isVirtualCardId(cardId)) {
-          return cardId;
-        }
+    const cards = owner.getCardIds(PlayerCardsArea.HandArea).map(cardId => {
+      if (!Card.isVirtualCardId(cardId)) {
+        return cardId;
+      }
 
-        const card = Sanguosha.getCardById<VirtualCard>(cardId);
-        if (!card.findByGeneratedSkill(this.Name)) {
-          return cardId;
-        }
+      const card = Sanguosha.getCardById<VirtualCard>(cardId);
+      if (!card.findByGeneratedSkill(this.Name)) {
+        return cardId;
+      }
 
-        return card.ActualCardIds[0];
-      }),
-    );
-
-    room.broadcast(GameEventIdentifiers.PlayerPropertiesChangeEvent, {
-      changedProperties: [
-        {
-          toId: owner.Id,
-          handCards: cards[0],
-          equips: cards[1],
-        },
-      ],
+      return card.ActualCardIds[0];
     });
+
+    owner.setupCards(PlayerCardsArea.HandArea, cards);
   }
 
   public canTransform(cardId: CardId, area: PlayerCardsArea.HandArea): boolean {

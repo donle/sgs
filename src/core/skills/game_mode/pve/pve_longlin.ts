@@ -1,20 +1,20 @@
-import { CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
-import { TriggerSkill } from 'core/skills/skill';
-import { GameEventIdentifiers, ServerEventFinder, CardDrawReason } from 'core/event/event';
+import { CardType } from 'core/cards/card';
+import { CardSuit } from 'core/cards/libs/card_props';
+import { CardDrawReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import {
   AllStage,
   CardUseStage,
-  PhaseStageChangeStage,
-  PlayerPhaseStages,
   DrawCardStage,
+  PhaseStageChangeStage,
   PlayerPhase,
+  PlayerPhaseStages,
 } from 'core/game/stage_processor';
-import { Room } from 'core/room/room';
 import { Player } from 'core/player/player';
-import { Sanguosha } from 'core/game/engine';
-import { CardType } from 'core/cards/card';
 import { PlayerCardsArea } from 'core/player/player_props';
-import { CardSuit } from 'core/cards/libs/card_props';
+import { Room } from 'core/room/room';
+import { TriggerSkill } from 'core/skills/skill';
+import { CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
 
 @CompulsorySkill({ name: 'pve_longlin', description: 'pve_longlin_description' })
 export class PveLongLin extends TriggerSkill {
@@ -66,7 +66,7 @@ export class PveLongLinShadow extends TriggerSkill {
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const owner = room.getPlayerById(event.fromId);
     let extraDrawCardsNum: number = 0;
-    for (const cardType of [CardType.Weapon, CardType.Armor, CardType.Precious]) {
+    for (const cardType of [CardType.Weapon, CardType.Shield, CardType.Precious]) {
       if (owner.getEquipment(cardType) === undefined) {
         extraDrawCardsNum++;
       }

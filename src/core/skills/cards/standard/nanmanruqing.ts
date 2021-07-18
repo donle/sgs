@@ -75,7 +75,7 @@ export class NanManRuQingSkill extends ActiveSkill implements ExtralCardSkillPro
             : TranslationPack.translationJsonPatcher('please response a {0} card', 'slash').extract(),
         triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
       };
-  
+
       const response = await room.askForCardResponse(
         {
           ...askForCardEvent,

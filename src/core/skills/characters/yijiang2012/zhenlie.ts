@@ -1,11 +1,6 @@
 import { CardType } from 'core/cards/card';
 import { CardChoosingOptions } from 'core/cards/libs/card_props';
-import {
-  CardMoveReason,
-  EventPacker,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AimStage, AllStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -16,10 +11,7 @@ import { PatchedTranslationObject, TranslationPack } from 'core/translations/tra
 
 @CommonSkill({ name: 'zhenlie', description: 'zhenlie_description' })
 export class ZhenLie extends TriggerSkill {
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.AimEvent>,
-    stage?: AllStage,
-  ): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage): boolean {
     if (!event.byCardId) {
       return false;
     }
@@ -27,21 +19,11 @@ export class ZhenLie extends TriggerSkill {
     const card = Sanguosha.getCardById(event.byCardId);
     return (
       stage === AimStage.AfterAimmed &&
-      (
-        card.GeneralName === 'slash' ||
-        (
-          card.is(CardType.Trick) &&
-          !card.is(CardType.DelayedTrick)
-        )
-      )
+      (card.GeneralName === 'slash' || (card.is(CardType.Trick) && !card.is(CardType.DelayedTrick)))
     );
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.AimEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AimEvent>): boolean {
     return event.toId === owner.Id && event.fromId !== owner.Id && owner.Hp > 0;
   }
 
@@ -62,10 +44,7 @@ export class ZhenLie extends TriggerSkill {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { fromId, triggeredOnEvent } = event;
     const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
 

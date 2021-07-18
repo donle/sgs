@@ -18,7 +18,7 @@ export class JueQing extends TriggerSkill {
 
   public async onTrigger(
     room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>
+    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     event.translationsMessage = TranslationPack.translationJsonPatcher(
       '{0} triggered skill {1}',
@@ -29,10 +29,7 @@ export class JueQing extends TriggerSkill {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const damageEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
 
     EventPacker.terminate(damageEvent);

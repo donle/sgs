@@ -11,18 +11,11 @@ import { PatchedTranslationObject, TranslationPack } from 'core/translations/tra
 
 @CommonSkill({ name: 'buyi', description: 'buyi_description' })
 export class BuYi extends TriggerSkill {
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>,
-    stage?: AllStage,
-  ): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>, stage?: AllStage): boolean {
     return stage === PlayerDyingStage.PlayerDying;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>): boolean {
     const dyingPlayer = room.getPlayerById(content.dying);
     return dyingPlayer.Hp <= 0 && dyingPlayer.getCardIds(PlayerCardsArea.HandArea).length > 0;
   }
@@ -38,15 +31,12 @@ export class BuYi extends TriggerSkill {
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.dying)),
     ).extract();
   }
-    
+
   public async onTrigger() {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const dyingEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>;
     const dyingPlayer = room.getPlayerById(dyingEvent.dying);
 

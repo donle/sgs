@@ -339,8 +339,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'yicong_description',
-    target:
-      '<b>锁定技</b>，你计算与其他角色的距离-1；若你的体力值不大于2，其他角色计算与你的距离+1。',
+    target: '<b>锁定技</b>，你计算与其他角色的距离-1；若你的体力值不大于2，其他角色计算与你的距离+1。',
   },
   {
     source: 'qiaomeng_description',

@@ -16,7 +16,7 @@ export class SlashSkill extends ActiveSkill implements ExtralCardSkillProperty {
 
   public canUse(room: Room, owner: Player, contentOrContainerCard: CardId) {
     return (
-      room.gameCommonRules.getCardUsableTimes(room, owner, Sanguosha.getCardById(contentOrContainerCard)) >
+      room.CommonRules.getCardUsableTimes(room, owner, Sanguosha.getCardById(contentOrContainerCard)) >
       owner.cardUsedTimes(new CardMatcher({ generalName: [this.Name] }))
     );
   }

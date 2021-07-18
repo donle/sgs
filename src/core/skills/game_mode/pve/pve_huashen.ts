@@ -1,13 +1,13 @@
-import { CompulsorySkill, PersistentSkill } from 'core/skills/skill_wrappers';
-import { Room } from 'core/room/room';
-import { PlayerDyingStage, GameStartStage } from 'core/game/stage_processor';
-import { ServerEventFinder, GameEventIdentifiers, EventPacker, CardMoveReason } from 'core/event/event';
-import { TriggerSkill } from 'core/skills/skill';
+import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
+import { GameStartStage, PlayerDyingStage } from 'core/game/stage_processor';
 import { AllStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { Sanguosha } from 'core/game/engine';
 import { PlayerId } from 'core/player/player_props';
+import { Room } from 'core/room/room';
 import { MarkEnum } from 'core/shares/types/mark_list';
+import { TriggerSkill } from 'core/skills/skill';
+import { CompulsorySkill, PersistentSkill } from 'core/skills/skill_wrappers';
 
 @PersistentSkill({ stubbornSkill: true })
 @CompulsorySkill({ name: 'pve_huashen', description: 'pve_huashen_description' })

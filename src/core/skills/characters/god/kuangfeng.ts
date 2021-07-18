@@ -60,7 +60,7 @@ export class KuangFeng extends TriggerSkill implements OnDefineReleaseTiming {
     return cards.length === 1;
   }
 
-  public isAvailableCard(owner: PlayerId,room: Room, pendingCardId: CardId) {
+  public isAvailableCard(owner: PlayerId, room: Room, pendingCardId: CardId) {
     return room.getPlayerById(owner).getCardIds(PlayerCardsArea.OutsideArea, QiXing.Name).includes(pendingCardId);
   }
 
@@ -77,7 +77,13 @@ export class KuangFeng extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    await room.dropCards(CardMoveReason.PlaceToDropStack, skillUseEvent.cardIds!, skillUseEvent.fromId, skillUseEvent.fromId, this.Name);
+    await room.dropCards(
+      CardMoveReason.PlaceToDropStack,
+      skillUseEvent.cardIds!,
+      skillUseEvent.fromId,
+      skillUseEvent.fromId,
+      this.Name,
+    );
     room.addMark(skillUseEvent.toIds![0], MarkEnum.KuangFeng, 1);
     return true;
   }

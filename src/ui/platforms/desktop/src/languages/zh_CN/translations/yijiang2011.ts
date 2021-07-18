@@ -45,7 +45,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'gaoshun', target: '高顺' },
   { source: 'xianzhen', target: '陷阵' },
-  { source: '#####xianzhen', target: '陷阵'},
+  { source: '#####xianzhen', target: '陷阵' },
   { source: 'jinjiu', target: '禁酒' },
   { source: 'xianzhen target: {0}', target: '陷阵:{0}' },
   { source: 'xianzhen_lose', target: '陷阵[没赢]' },
@@ -83,7 +83,8 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'sanyao_description',
-    target: '出牌阶段每项限一次，你可以弃置一张牌，并选择一项：1.指定体力值最高的一名角色；2.指定手牌数最多的一名角色。对你所选的角色造成1点伤害。',
+    target:
+      '出牌阶段每项限一次，你可以弃置一张牌，并选择一项：1.指定体力值最高的一名角色；2.指定手牌数最多的一名角色。对你所选的角色造成1点伤害。',
   },
   {
     source: 'zhiman_description',
@@ -135,8 +136,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'yongjin_description',
-    target:
-      '<b>限定技</b>，出牌阶段，你可以依次移动场上一至三张不同的装备牌。',
+    target: '<b>限定技</b>，出牌阶段，你可以依次移动场上一至三张不同的装备牌。',
   },
 
   {
@@ -221,7 +221,7 @@ export const promptDescriptions: Word[] = [
     source: 'jieyue: please choose jieyue options',
     target: '{0}：1.选择一张手牌和装备牌，弃置其余的牌；2.令 {1} 摸3张牌',
   },
-  
+
   {
     source: '{0}: do you want to reveal a hand card from {1} ?',
     target: '{0}：你可以展示 {1} 的一张手牌，若此牌不为基本牌，其弃置之并回复1点体力',
@@ -248,5 +248,5 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to draw {1} cards?',
     target: '{0}: 是否摸 {1} 张牌?',
-  }
+  },
 ];

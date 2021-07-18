@@ -40,7 +40,7 @@ export class PoXi extends ActiveSkill {
       owner.removeFlag(this.Name);
 
       room.syncGameCommonRules(owner.Id, from => {
-        room.gameCommonRules.addAdditionalHoldCardNumber(from, 1);
+        room.CommonRules.addAdditionalHoldCardNumber(from, 1);
       });
     }
   }
@@ -99,7 +99,7 @@ export class PoXi extends ActiveSkill {
     } else if (fromCards.length === 1) {
       from.setFlag(this.Name, true);
       room.syncGameCommonRules(from.Id, from => {
-        room.gameCommonRules.addAdditionalHoldCardNumber(from, -1);
+        room.CommonRules.addAdditionalHoldCardNumber(from, -1);
       });
       room.endPhase(PlayerPhase.PlayCardStage);
     } else if (fromCards.length === 3 && from.isInjured()) {

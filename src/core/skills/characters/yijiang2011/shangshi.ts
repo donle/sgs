@@ -11,9 +11,7 @@ import { PatchedTranslationObject, TranslationPack } from 'core/translations/tra
 export class ShangShi extends TriggerSkill {
   public isTriggerable(
     event: ServerEventFinder<
-      | GameEventIdentifiers.MoveCardEvent
-      | GameEventIdentifiers.HpChangeEvent
-      | GameEventIdentifiers.ChangeMaxHpEvent
+      GameEventIdentifiers.MoveCardEvent | GameEventIdentifiers.HpChangeEvent | GameEventIdentifiers.ChangeMaxHpEvent
     >,
     stage?: AllStage,
   ): boolean {
@@ -28,9 +26,7 @@ export class ShangShi extends TriggerSkill {
     room: Room,
     owner: Player,
     content: ServerEventFinder<
-      | GameEventIdentifiers.MoveCardEvent
-      | GameEventIdentifiers.HpChangeEvent
-      | GameEventIdentifiers.ChangeMaxHpEvent
+      GameEventIdentifiers.MoveCardEvent | GameEventIdentifiers.HpChangeEvent | GameEventIdentifiers.ChangeMaxHpEvent
     >,
   ): boolean {
     if (owner.getCardIds(PlayerCardsArea.HandArea).length >= owner.LostHp) {
@@ -67,14 +63,11 @@ export class ShangShi extends TriggerSkill {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { fromId } = event;
     const from = room.getPlayerById(fromId);
     const x = from.LostHp - from.getCardIds(PlayerCardsArea.HandArea).length;
-    
+
     await room.drawCards(x, fromId, 'top', fromId, this.Name);
 
     return true;

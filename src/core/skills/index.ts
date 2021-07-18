@@ -295,6 +295,8 @@ export { WenJi, WenJiShadow } from './characters/sp/wenji';
 export { TunJiang } from './characters/sp/tunjiang';
 export { ZiShu, ZiShuShadow } from './characters/sp/zishu';
 export { YingYuan, YingYuanShadow } from './characters/sp/yingyuan';
+export { FuBi, FuBiShadow, FuBiClear } from './characters/wisdom/fubi';
+export { ZuiCi } from './characters/wisdom/zuici';
 
 export { ShanJia, ShanJiaShadow } from './characters/limited/shanjia';
 export { WeiCheng } from './characters/limited/weicheng';

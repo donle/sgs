@@ -65,6 +65,12 @@ export const generalDictionary: Word[] = [
   { source: 'defense ride card', target: '防御马' },
   { source: 'offense ride card', target: '进攻马' },
   { source: 'precious card', target: '宝物牌' },
+
+  { source: 'weapon section', target: '武器区' },
+  { source: 'shield section', target: '防具区' },
+  { source: 'defense ride section', target: '防御马' },
+  { source: 'offense ride section', target: '进攻马' },
+  { source: 'precious', target: '宝物区' },
 ];
 
 export const eventDictionary: Word[] = [
@@ -105,6 +111,8 @@ export const eventDictionary: Word[] = [
   { source: 'please choose a skill', target: '请选择一个技能' },
   { source: '{0} select nationaliy {1}', target: '{0} 选择了 {1} 势力' },
   { source: 'move to drop stack', target: '移动至弃牌堆' },
+  { source: '{0} aborted {1} equip section', target: '{0} 废除了 {1}' },
+  { source: '{0} resumed {1} equip section', target: '{0} 恢复了 {1}' },
   {
     source: 'do you want to trigger skill {0} ?',
     target: '是否发动技能 【{0}】?',

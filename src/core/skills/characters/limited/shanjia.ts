@@ -213,7 +213,9 @@ export class ShanJiaShadow extends TriggerSkill {
       );
     } else {
       const recordNum =
-        room.getFlag<number>(fromId, this.GeneralName) === undefined ? 3 : room.getFlag<number>(fromId, this.GeneralName);
+        room.getFlag<number>(fromId, this.GeneralName) === undefined
+          ? 3
+          : room.getFlag<number>(fromId, this.GeneralName);
       if (recordNum > 0) {
         const moveCardEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
         const newRecord = Math.max(

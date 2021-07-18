@@ -14,7 +14,7 @@ export class GuoSe extends ActiveSkill {
   public canUse(room: Room, owner: Player) {
     return !owner.hasUsedSkill(this.Name);
   }
-  
+
   public isRefreshAt(room: Room, owner: Player, phase: PlayerPhase): boolean {
     return phase === PlayerPhase.PlayCardStage;
   }

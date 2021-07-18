@@ -6,7 +6,9 @@ function preRelease() {
   const args = process.argv[2] || '--micro';
 
   let fileContent = fs.readFileSync(path.resolve(__dirname, './core/game/version.ts'), 'utf-8');
-  let [majorVersion, betaVersion, minorVersion, microVersion] = coreVersion.split('.').map(versionStr => parseInt(versionStr, 10));
+  let [majorVersion, betaVersion, minorVersion, microVersion] = coreVersion
+    .split('.')
+    .map(versionStr => parseInt(versionStr, 10));
   switch (args) {
     case '--major':
       majorVersion++;

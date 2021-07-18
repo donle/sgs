@@ -10,4 +10,4 @@ export type GameSettings = {
   gameVolume: number;
   mainVolume: number;
   username: string;
-}
+};
