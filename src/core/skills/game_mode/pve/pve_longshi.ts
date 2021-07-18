@@ -1,14 +1,14 @@
-import { CompulsorySkill } from 'core/skills/skill_wrappers';
-import { ServerEventFinder, GameEventIdentifiers, CardMoveReason, CardMoveArea } from 'core/event/event';
-import { Room } from 'core/room/room';
-import { Player } from 'core/player/player';
-import { CardId } from 'core/cards/libs/card_props';
-import { PlayerCardsArea } from 'core/player/player_props';
-import { TriggerSkill } from 'core/skills/skill';
-import { PhaseStageChangeStage, PlayerPhaseStages, AllStage } from 'core/game/stage_processor';
-import { Sanguosha } from 'core/game/engine';
 import { CardType } from 'core/cards/card';
+import { CardId } from 'core/cards/libs/card_props';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
+import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
+import { Player } from 'core/player/player';
+import { PlayerCardsArea } from 'core/player/player_props';
+import { Room } from 'core/room/room';
+import { TriggerSkill } from 'core/skills/skill';
+import { CompulsorySkill } from 'core/skills/skill_wrappers';
 
 @CompulsorySkill({ name: 'pve_longshi', description: 'pve_longshi_description' })
 export class PveLongShi extends TriggerSkill {
@@ -25,7 +25,7 @@ export class PveLongShi extends TriggerSkill {
   }
 
   public async longShiDropCard(room: Room, owner: Player, target: Player): Promise<CardId[]> {
-    let dropCardIds: CardId[] = [];
+    const dropCardIds: CardId[] = [];
 
     for (const area of [PlayerCardsArea.JudgeArea, PlayerCardsArea.EquipArea, PlayerCardsArea.HandArea]) {
       const cardIds = target.getCardIds(area);
@@ -34,7 +34,7 @@ export class PveLongShi extends TriggerSkill {
       }
     }
 
-    let targetOutSideCardIds: CardId[] = [];
+    const targetOutSideCardIds: CardId[] = [];
     for (const [, cards] of Object.entries(target.getOutsideAreaCards())) {
       targetOutSideCardIds.push(...cards);
     }
@@ -70,7 +70,7 @@ export class PveLongShi extends TriggerSkill {
           break;
         case 2:
           await room.damage({
-            fromId: fromId,
+            fromId,
             toId: target.Id,
             damage: 1,
             damageType: DamageType.Normal,

@@ -28,7 +28,7 @@ export class DangXian extends TriggerSkill {
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const card = room.getCardsByNameFromStack('slash', 'drop', 1)[0];
-    
+
     if (card) {
       await room.moveCards({
         moveReason: CardMoveReason.ActivePrey,

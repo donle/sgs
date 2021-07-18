@@ -1,6 +1,6 @@
 import { CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
-import { CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
+import { CharacterEquipSections, CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
 import { DamageType, GameCommonRuleObject, GameInfo, GameRunningInfo } from 'core/game/game_props';
 import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props';
@@ -18,6 +18,12 @@ import {
   GameEventIdentifiers,
   ServerEventFinder,
 } from './event';
+
+export type MovingCardProps = {
+  card: CardId;
+  fromArea?: CardMoveArea | PlayerCardsArea;
+  asideMove?: boolean;
+}
 
 export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.SetFlagEvent]: {
@@ -96,11 +102,7 @@ export interface ServerEvent extends EventUtilities {
     from?: 'top' | 'bottom';
   };
   [GameEventIdentifiers.MoveCardEvent]: {
-    movingCards: {
-      card: CardId;
-      fromArea?: CardMoveArea | PlayerCardsArea;
-      asideMove?: boolean;
-    }[];
+    movingCards: MovingCardProps[];
     fromId?: PlayerId;
     moveReason: CardMoveReason;
     toId?: PlayerId;
@@ -192,6 +194,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.GameStartEvent]: {
     players: PlayerInfo[];
   };
+  [GameEventIdentifiers.GameBeginEvent]: {};
   [GameEventIdentifiers.CircleStartEvent]: {};
   [GameEventIdentifiers.GameOverEvent]: {
     loserIds: PlayerId[];
@@ -445,6 +448,11 @@ export interface ServerEvent extends EventUtilities {
     sideEffectSkillApplier: System.SideEffectSkillApplierEnum;
     skillName: string | undefined;
     sourceId?: PlayerId | undefined;
+  };
+  [GameEventIdentifiers.AbortOrResumePlayerSectionsEvent]: {
+    toId: PlayerId;
+    isResumption?: boolean;
+    toSections: CharacterEquipSections[];
   };
 }
 

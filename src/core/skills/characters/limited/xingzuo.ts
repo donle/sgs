@@ -199,7 +199,7 @@ export class XingZuoShadow extends TriggerSkill implements OnDefineReleaseTiming
       },
     ]);
 
-    num > 3 && await room.loseHp(fromId, 1);
+    num > 3 && (await room.loseHp(fromId, 1));
 
     return true;
   }

@@ -165,6 +165,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.GameStartEvent:
         await this.onHandleGameStartEvent(e as any, content);
         break;
+      case GameEventIdentifiers.CircleStartEvent:
+        await this.onHandleCircleStartEvent(e as any, content);
+        break;
       case GameEventIdentifiers.PlayerEnterEvent:
         await this.onHandlePlayerEnterEvent(e as any, content);
         break;
@@ -302,6 +305,9 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.ChainLockedEvent:
         await this.onHandleChainLockedEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.AbortOrResumePlayerSectionsEvent:
+        await this.onHandleAbortOrResumePlayerSectionsEvent(e as any, content);
         break;
       case GameEventIdentifiers.DrunkEvent:
         await this.onHandleDrunkEvent(e as any, content);
@@ -755,6 +761,24 @@ export class GameClientProcessor {
     this.presenter.broadcastUIUpdate();
   }
 
+  protected onHandleCircleStartEvent<T extends GameEventIdentifiers.CircleStartEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.Analytics.turnToNextCircle();
+    for (const player of this.store.room.AlivePlayers) {
+      const skillsUsed = Object.keys(player.SkillUsedHistory);
+      if (skillsUsed.length > 0) {
+        for (const skill of skillsUsed) {
+          if (player.hasUsedSkill(skill)) {
+            const reaSkill = Sanguosha.getSkillBySkillName(skill);
+            reaSkill.isCircleSkill() && player.resetSkillUseHistory(skill);
+          }
+        }
+      }
+    }
+  }
+
   protected async onHandleGameReadyEvent<T extends GameEventIdentifiers.GameReadyEvent>(
     type: T,
     content: ServerEventFinder<T>,
@@ -877,7 +901,7 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     const { commonRules, toId } = content;
-    this.store.room.gameCommonRules.syncSocketObject(this.store.room.getPlayerById(toId), commonRules);
+    this.store.room.CommonRules.syncSocketObject(this.store.room.getPlayerById(toId), commonRules);
   }
 
   protected async onHandleAskForSkillUseEvent<T extends GameEventIdentifiers.AskForSkillUseEvent>(
@@ -924,18 +948,22 @@ export class GameClientProcessor {
 
     if (content.fromPlayer) {
       for (const player of this.store.room.AlivePlayers) {
-        const sideEffectSkills = this.store.room
-          .getSideEffectSkills(player)
-          .map(skillName => Sanguosha.getSkillBySkillName(skillName));
-        for (const skill of [...player.getSkills(), ...sideEffectSkills]) {
-          if (this.store.room.CurrentPlayerPhase === PlayerPhase.PhaseBegin) {
-            player.resetCardUseHistory();
-          } else {
-            player.resetCardUseHistory('slash');
-          }
+        if (this.store.room.CurrentPlayerPhase === PlayerPhase.PhaseBegin) {
+          player.resetCardUseHistory();
+        } else {
+          player.resetCardUseHistory('slash');
+        }
 
-          if (skill.isRefreshAt(this.store.room, player, content.to)) {
-            player.resetSkillUseHistory(skill.Name);
+        const skillsUsed = Object.keys(player.SkillUsedHistory);
+        if (skillsUsed.length > 0) {
+          for (const skill of skillsUsed) {
+            if (player.hasUsedSkill(skill)) {
+              const reaSkill = Sanguosha.getSkillBySkillName(skill);
+              if (reaSkill.isCircleSkill()) {
+                continue;
+              }
+              reaSkill.isRefreshAt(this.store.room, player, content.to) && player.resetSkillUseHistory(skill);
+            }
           }
         }
       }
@@ -1345,6 +1373,8 @@ export class GameClientProcessor {
     await this.store.room.useSkill(content);
     if (skill.SkillType === SkillType.Limit || skill.SkillType === SkillType.Awaken) {
       this.presenter.onceSkillUsed(content.fromId, content.skillName);
+    } else if (skill.isSwitchSkill() && skill.isSwitchable()) {
+      this.presenter.switchSkillStateChanged(content.fromId, skill.GeneralName);
     }
     this.presenter.broadcastUIUpdate();
   }
@@ -1548,5 +1578,17 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     this.presenter.closeDialog();
+  }
+
+  protected async onHandleAbortOrResumePlayerSectionsEvent<
+    T extends GameEventIdentifiers.AbortOrResumePlayerSectionsEvent
+  >(type: T, content: ServerEventFinder<T>) {
+    const { toId, isResumption, toSections } = content;
+    const to = this.store.room.getPlayerById(toId);
+    if (isResumption) {
+      to.resumeEquipSections(...toSections);
+    } else {
+      to.abortEquipSections(...toSections);
+    }
   }
 }

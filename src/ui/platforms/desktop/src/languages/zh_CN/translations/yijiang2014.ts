@@ -155,13 +155,11 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'fuji_description',
-    target:
-      '锁定技，距离至你为1的角色不能响应你使用的牌。',
+    target: '锁定技，距离至你为1的角色不能响应你使用的牌。',
   },
   {
     source: 'jiaozi_description',
-    target:
-      '锁定技，当你造成或受到伤害时，若你的手牌数为全场唯一最多，此伤害+1。',
+    target: '锁定技，当你造成或受到伤害时，若你的手牌数为全场唯一最多，此伤害+1。',
   },
 ];
 

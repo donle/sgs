@@ -2,7 +2,7 @@ import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { CharacterId } from 'core/characters/character';
+import { CharacterEquipSections, CharacterId } from 'core/characters/character';
 import {
   CardMoveReason,
   ClientEventFinder,
@@ -43,7 +43,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected abstract readonly roomId: RoomId;
   protected abstract readonly gameMode: GameMode;
   protected circle: number = 0;
-  public gameCommonRules = new GameCommonRules();
+  private readonly gameCommonRules = new GameCommonRules();
 
   protected awaitResponseEvent: {
     [K in PlayerId]?: {
@@ -340,6 +340,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return this.players;
   }
 
+  public get CommonRules() {
+    return this.gameCommonRules;
+  }
+
   public sortPlayers() {
     this.players.sort((playerA, playerB) => {
       if (playerA.Position <= playerB.Position) {
@@ -431,7 +435,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     if (to.Id === from.Id) {
       return false;
     }
-    
+
     let additionalAttackDistance = 0;
     if (slash) {
       additionalAttackDistance =
@@ -499,7 +503,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public isAvailableTarget(cardId: CardId, attacker: PlayerId, target: PlayerId) {
     for (const skill of this.getPlayerById(target).getSkills<FilterSkill>('filter')) {
-      if (!skill.canBeUsedCard(cardId, this as unknown as Room, target, attacker)) {
+      if (!skill.canBeUsedCard(cardId, (this as unknown) as Room, target, attacker)) {
         return false;
       }
     }
@@ -520,7 +524,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
     if (card.is(CardType.Equip)) {
       const equipCard = card as EquipCard;
-      return player.getEquipment(equipCard.EquipType) === undefined;
+      return player.getEquipment(equipCard.EquipType) === undefined && player.canEquip(equipCard);
     } else if (card.is(CardType.DelayedTrick)) {
       const toJudgeArea = player.getCardIds(PlayerCardsArea.JudgeArea).map(id => Sanguosha.getCardById(id).GeneralName);
       return !toJudgeArea.includes(card.GeneralName) && this.canUseCardTo(cardId, target);
@@ -568,6 +572,16 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   }
   public getMark(player: PlayerId, name: string) {
     return this.getPlayerById(player).getMark(name);
+  }
+
+  public abortPlayerEquipSections(playerId: PlayerId, ...abortSections: CharacterEquipSections[]) {
+    const player = this.getPlayerById(playerId);
+    player.abortEquipSections(...abortSections);
+  }
+
+  public resumePlayerEquipSections(playerId: PlayerId, ...abortSections: CharacterEquipSections[]) {
+    const player = this.getPlayerById(playerId);
+    player.resumeEquipSections(...abortSections);
   }
 
   public sortPlayersByPosition(players: PlayerId[]) {

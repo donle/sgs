@@ -44,7 +44,7 @@ export class LongYin extends TriggerSkill {
     await room.dropCards(CardMoveReason.SelfDrop, cardIds!, fromId, fromId, this.Name);
     from.setFlag<PlayerId>(this.Name, event.fromId);
     room.syncGameCommonRules(event.fromId, target => {
-      room.gameCommonRules.addCardUsableTimes(
+      room.CommonRules.addCardUsableTimes(
         new CardMatcher({ generalName: ['slash'] }),
         1,
         room.getPlayerById(event.fromId),
@@ -95,7 +95,7 @@ export class LongYinClear extends TriggerSkill implements OnDefineReleaseTiming 
     }
 
     room.syncGameCommonRules(targetId, target => {
-      room.gameCommonRules.addCardUsableTimes(
+      room.CommonRules.addCardUsableTimes(
         new CardMatcher({ generalName: ['slash'] }),
         -extraUse,
         room.getPlayerById(targetId),

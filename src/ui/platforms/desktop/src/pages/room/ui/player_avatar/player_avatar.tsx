@@ -17,7 +17,7 @@ import { SkillButton } from 'ui/button/skill_button';
 import { Hp } from 'ui/hp/hp';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
-import { AwakenSkillMark, LimitSkillMark, Mark } from '../mark/mark';
+import { AwakenSkillMark, LimitSkillMark, Mark, SwitchSkillMark } from '../mark/mark';
 import { Mask } from '../mask/mask';
 import { SwitchAvatar } from '../switch_avatar/switch_avatar';
 import styles from './player_avatar.module.css';
@@ -401,6 +401,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     const marks: JSX.Element[] = [];
     const limitSkills = clientPlayer.getSkills('limit');
     const awakenSkills = clientPlayer.getSkills('awaken');
+    const switchSkills = clientPlayer.getSkills('switch').filter(skill => skill.isSwitchable());
     marks.push(
       ...limitSkills.map(skill => (
         <LimitSkillMark
@@ -416,6 +417,16 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
         <AwakenSkillMark
           skillName={this.props.translator.tr(skill.Name)}
           hasUsed={this.props.store.onceSkillUsedHistory[clientPlayer.Id]?.includes(skill.Name)}
+          key={skill.Name}
+          tagPosition="left"
+        />
+      )),
+    );
+    marks.push(
+      ...switchSkills.map(skill => (
+        <SwitchSkillMark
+          skillName={this.props.translator.tr(skill.Name)}
+          state={this.props.store.switchSkillState[clientPlayer.Id]?.includes(skill.Name)}
           key={skill.Name}
           tagPosition="left"
         />

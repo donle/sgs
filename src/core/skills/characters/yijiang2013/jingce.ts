@@ -99,7 +99,7 @@ export class JingCeRecorder extends TriggerSkill {
       if (!suits.includes(card.Suit)) {
         suits.push(card.Suit);
         user.setFlag<CardSuit[]>(JingCeSuits, suits);
-        room.gameCommonRules.addAdditionalHoldCardNumber(user, 1);
+        room.CommonRules.addAdditionalHoldCardNumber(user, 1);
       }
     });
     return true;
@@ -143,7 +143,7 @@ export class JingCeShadow extends TriggerSkill implements OnDefineReleaseTiming 
       const jingceSuits = JingCe.JingCeSuits;
       const suits = user.getFlag<CardSuit[]>(jingceSuits);
       if (suits) {
-        room.gameCommonRules.addAdditionalHoldCardNumber(user, -suits.length);
+        room.CommonRules.addAdditionalHoldCardNumber(user, -suits.length);
         user.removeFlag(jingceSuits);
       }
       user.removeFlag(JingCe.JingCeTypes);

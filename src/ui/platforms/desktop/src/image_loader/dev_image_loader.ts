@@ -1,6 +1,8 @@
+import { CharacterEquipSections } from 'core/characters/character';
 import { PlayerRole } from 'core/player/player_props';
 import { PlayerId } from 'core/player/player_props';
 import { Functional } from 'core/shares/libs/functional';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { GameMode } from 'core/shares/types/room_props';
 import { SkillType } from 'core/skills/skill';
 import { LobbyButton } from 'props/game_props';
@@ -68,6 +70,9 @@ export class DevImageLoader implements ImageLoader {
   public async getOthersEquipCard(cardName: string) {
     return { src: `${remoteRoot}/images/others_equips/${cardName}.png`, alt: cardName };
   }
+  public async getOthersAbortedEquipCard() {
+    return { src: `${remoteRoot}/images/slim_equips/aborted.png`, alt: 'aborted' };
+  }
 
   public getChainImage() {
     return { alt: '', src: `${remoteRoot}/images/system/chain.png` };
@@ -83,6 +88,32 @@ export class DevImageLoader implements ImageLoader {
 
   public getUnknownCharacterImage() {
     return { src: `${remoteRoot}/images/system/player_seat.png`, alt: '' };
+  }
+
+  public async getSlimAbortedEquipSection(section: CharacterEquipSections) {
+    let sectionName: string | undefined;
+    switch (section) {
+      case CharacterEquipSections.Weapon:
+        sectionName = 'aborted_weapon';
+        break;
+      case CharacterEquipSections.Shield:
+        sectionName = 'aborted_shield';
+        break;
+      case CharacterEquipSections.DefenseRide:
+        sectionName = 'aborted_defense_ride';
+        break;
+      case CharacterEquipSections.OffenseRide:
+        sectionName = 'aborted_offense_ride';
+        break;
+      case CharacterEquipSections.Precious:
+        sectionName = 'aborted_precious';
+        break;
+      default:
+        throw Precondition.UnreachableError(section);
+    }
+
+    const image: string = (await import(`${remoteRoot}/images/slim_equips/${sectionName}.png`)).default;
+    return { alt: 'Aborted Slim Equip Card', src: image };
   }
 
   public async getSlimEquipCard(cardName: string) {

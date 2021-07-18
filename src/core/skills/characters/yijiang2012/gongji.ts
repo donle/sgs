@@ -36,10 +36,7 @@ export class GongJi extends ActiveSkill {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { fromId, toIds, cardIds } = event;
 
     await room.dropCards(CardMoveReason.SelfDrop, cardIds!, fromId, fromId, this.Name);
@@ -76,13 +73,7 @@ export class GongJi extends ActiveSkill {
       response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
     }
 
-    await room.dropCards(
-      CardMoveReason.PassiveDrop,
-      [response.selectedCard],
-      chooseCardEvent.toId,
-      fromId,
-      this.Name,
-    );
+    await room.dropCards(CardMoveReason.PassiveDrop, [response.selectedCard], chooseCardEvent.toId, fromId, this.Name);
 
     return true;
   }

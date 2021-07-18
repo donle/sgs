@@ -5,8 +5,8 @@ import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, OnDefineReleaseTiming, TriggerSkill } from 'core/skills/skill';
-import { PanShi } from './panshi';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
+import { PanShi } from './panshi';
 
 @CommonSkill({ name: 'cixiao', description: 'cixiao_description' })
 export class CiXiao extends TriggerSkill implements OnDefineReleaseTiming {

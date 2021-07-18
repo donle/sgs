@@ -37,7 +37,7 @@ export class WangZun extends TriggerSkill {
       await room.drawCards(2, skillUseEvent.fromId, undefined, skillUseEvent.fromId, this.Name);
       room.syncGameCommonRules(phaseStageChangeEvent.playerId, user => {
         user.addInvisibleMark(this.Name, 1);
-        room.gameCommonRules.addAdditionalHoldCardNumber(user, -1);
+        room.CommonRules.addAdditionalHoldCardNumber(user, -1);
       });
     } else {
       await room.drawCards(1, skillUseEvent.fromId, undefined, skillUseEvent.fromId, this.Name);
@@ -98,7 +98,7 @@ export class WangZunShadow extends TriggerSkill implements OnDefineReleaseTiming
     room.syncGameCommonRules(phaseChangeEvent.playerId, user => {
       const extraHold = user.getInvisibleMark(this.GeneralName);
       user.removeInvisibleMark(this.GeneralName);
-      room.gameCommonRules.addAdditionalHoldCardNumber(user, extraHold);
+      room.CommonRules.addAdditionalHoldCardNumber(user, extraHold);
     });
     return true;
   }

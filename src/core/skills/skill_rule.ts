@@ -21,7 +21,7 @@ export class UniqueSkillRule {
     switch (bySkill.Name) {
       case QingGangSkill.Name:
       case XianZhenNullify.Name:
-        return !card.is(CardType.Armor);
+        return !card.is(CardType.Shield);
       default:
         return true;
     }
@@ -34,7 +34,7 @@ export class UniqueSkillRule {
 
     if (cardContainer) {
       if (owner.getFlag<boolean>('wuqian')) {
-        return cardContainer.is(CardType.Armor);
+        return cardContainer.is(CardType.Shield);
       }
     }
 

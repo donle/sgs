@@ -57,11 +57,14 @@ export class TongJi extends TriggerSkill {
       event.cardIds = response.droppedCards;
       return true;
     }
-    
+
     return false;
   }
 
-  public async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
+  public async onTrigger(
+    room: Room,
+    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
+  ): Promise<boolean> {
     const { fromId, triggeredOnEvent } = event;
     const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
 

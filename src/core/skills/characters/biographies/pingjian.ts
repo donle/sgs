@@ -362,7 +362,10 @@ export class PingJianLoseSkill extends TriggerSkill implements OnDefineReleaseTi
         from.setFlag<string[]>(FlagEnum.SkillsUsing, skillsUsing);
         await room.loseSkill(fromId, skillName, true);
         for (const shadowSkill of Sanguosha.getShadowSkillsBySkillName(skillName)) {
-          if (PingJian.FakeHookedSkillMap[skillName] && PingJian.FakeHookedSkillMap[skillName].includes(shadowSkill.Name)) {
+          if (
+            PingJian.FakeHookedSkillMap[skillName] &&
+            PingJian.FakeHookedSkillMap[skillName].includes(shadowSkill.Name)
+          ) {
             await room.obtainSkill(fromId, shadowSkill.Name);
           }
         }
@@ -409,7 +412,7 @@ export class PingJianHookSkill extends TriggerSkill implements OnDefineReleaseTi
         }
       }
     }
-    
+
     return canUse;
   }
 
@@ -423,7 +426,7 @@ export class PingJianHookSkill extends TriggerSkill implements OnDefineReleaseTi
     for (const hookedSkills of Object.values(PingJian.FakeHookedSkillMap)) {
       const skill = hookedSkills.find(skill => room.getPlayerById(fromId).hasShadowSkill(skill));
       if (skill) {
-        await room.loseSkill(fromId, skill)
+        await room.loseSkill(fromId, skill);
       }
     }
     return true;

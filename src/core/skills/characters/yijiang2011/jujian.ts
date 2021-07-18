@@ -46,10 +46,10 @@ export class JuJian extends TriggerSkill {
     return !Sanguosha.getCardById(cardId).is(CardType.Basic);
   }
 
-  public getSkillLog( room: Room, owner: Player): PatchedTranslationObject {
+  public getSkillLog(room: Room, owner: Player): PatchedTranslationObject {
     return TranslationPack.translationJsonPatcher(
       '{0}: do you want to drop a card except basic card and choose a target',
-      this.Name
+      this.Name,
     ).extract();
   }
 
@@ -82,10 +82,7 @@ export class JuJian extends TriggerSkill {
 
     const askForChooseEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
       options,
-      conversation: TranslationPack.translationJsonPatcher(
-        '{0}: please choose',
-        this.Name,
-      ).extract(),
+      conversation: TranslationPack.translationJsonPatcher('{0}: please choose', this.Name).extract(),
       toId,
     });
 

@@ -181,7 +181,7 @@ export const enum CardType {
   Basic,
   Equip,
   Weapon,
-  Armor,
+  Shield,
   OffenseRide,
   DefenseRide,
   Precious,
@@ -402,5 +402,22 @@ export class VirtualCard<T extends Card = Card> extends Card {
     }
 
     return false;
+  }
+
+  public findRealActualCards(cardIds: CardId[] = []): CardId[] {
+    const actualCardIds: CardId[] = [];
+    if (this.ActualCardIds.length > 0) {
+      for (const subCardId of this.ActualCardIds) {
+        const subCard = Sanguosha.getCardById(subCardId);
+        if (subCard.isVirtualCard()) {
+          const subVCard = subCard as VirtualCard;
+          actualCardIds.push(...subVCard.findRealActualCards(actualCardIds));
+        } else {
+          actualCardIds.push(subCardId);
+        }
+      }
+    }
+
+    return actualCardIds;
   }
 }

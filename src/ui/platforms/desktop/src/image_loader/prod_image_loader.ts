@@ -1,5 +1,7 @@
+import { CharacterEquipSections } from 'core/characters/character';
 import { PlayerId, PlayerRole } from 'core/player/player_props';
 import { Functional } from 'core/shares/libs/functional';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { GameMode } from 'core/shares/types/room_props';
 import { SkillType } from 'core/skills/skill';
 import { ImageLoader } from './image_loader';
@@ -112,6 +114,37 @@ export class ProdImageLoader implements ImageLoader {
   public async getOthersEquipCard(cardName: string) {
     const image: string = (await import(`./images/others_equips/${cardName}.png`)).default;
     return { alt: cardName, src: image };
+  }
+
+  public async getOthersAbortedEquipCard() {
+    const image: string = (await import('./images/others_equips/abort.png')).default;
+    return { alt: 'aborted', src: image };
+  }
+
+  public async getSlimAbortedEquipSection(section: CharacterEquipSections) {
+    let sectionName: string | undefined;
+    switch (section) {
+      case CharacterEquipSections.Weapon:
+        sectionName = 'aborted_weapon';
+        break;
+      case CharacterEquipSections.Shield:
+        sectionName = 'aborted_shield';
+        break;
+      case CharacterEquipSections.DefenseRide:
+        sectionName = 'aborted_defense_ride';
+        break;
+      case CharacterEquipSections.OffenseRide:
+        sectionName = 'aborted_offense_ride';
+        break;
+      case CharacterEquipSections.Precious:
+        sectionName = 'aborted_precious';
+        break;
+      default:
+        throw Precondition.UnreachableError(section);
+    }
+
+    const image: string = (await import(`./images/slim_equips/${sectionName}.png`)).default;
+    return { alt: 'aborted', src: image };
   }
 
   public async getPlayerRoleCard(role: PlayerRole, gameMode: GameMode) {

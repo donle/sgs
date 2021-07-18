@@ -1,11 +1,11 @@
 import { Character } from '../character';
-import { PveChaoFeng } from './pve_chaofeng';
-import { PveSuanNi } from './pve_suanni';
-import { PveYaZi } from './pve_yazi';
 import { PveBiAn } from './pve_bian';
-import { PveFuXi } from './pve_fuxi';
 import { PveBiXi } from './pve_bixi';
 import { PveBoss } from './pve_boss';
+import { PveChaoFeng } from './pve_chaofeng';
+import { PveFuXi } from './pve_fuxi';
+import { PveSuanNi } from './pve_suanni';
+import { PveYaZi } from './pve_yazi';
 
 export const PvePackage: (index: number) => Character[] = index => [
   new PveBoss(index++),

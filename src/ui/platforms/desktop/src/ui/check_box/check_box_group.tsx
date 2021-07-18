@@ -11,7 +11,13 @@ export type CheckBoxGroupProps = {
   className?: string;
 };
 
-export const CheckBoxGroup = ({ options, excludeSelection, onChecked, itemsPerLine = 4, className }: CheckBoxGroupProps) => {
+export const CheckBoxGroup = ({
+  options,
+  excludeSelection,
+  onChecked,
+  itemsPerLine = 4,
+  className,
+}: CheckBoxGroupProps) => {
   const [checkedIds, setCheckedIds] = React.useState<(string | number)[]>(
     options.filter(o => o.checked).map(o => o.id),
   );

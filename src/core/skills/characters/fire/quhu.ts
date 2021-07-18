@@ -49,9 +49,7 @@ export class QuHu extends ActiveSkill {
     if (pindianRecord[0].winner === fromId) {
       const askForChoosingPlayer: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
         toId: fromId,
-        players: room.AlivePlayers.filter(
-          player => room.withinAttackDistance(target, player),
-        ).map(player => player.Id),
+        players: room.AlivePlayers.filter(player => room.withinAttackDistance(target, player)).map(player => player.Id),
         requiredAmount: 1,
         conversation: TranslationPack.translationJsonPatcher(
           'please choose a player to get a damage from {0}',

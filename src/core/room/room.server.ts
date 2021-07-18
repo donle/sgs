@@ -27,7 +27,7 @@ import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { Character, CharacterId } from 'core/characters/character';
+import { Character, CharacterEquipSections, CharacterId } from 'core/characters/character';
 import { PinDianProcedure, PinDianReport } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { GameProcessor } from 'core/game/game_processor/game_processor';
@@ -274,9 +274,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     stage?: AllStage,
   ) {
     if (!this.CurrentPlayer || !this.isPlaying()) {
-      this.logger.debug(`Do Not Need to Trigger Skill Because GameEnd Or Not CurrentPlayer`);
+      this.logger.debug('Do Not Need to Trigger Skill Because GameEnd Or Not CurrentPlayer');
       return;
     }
+
     const { triggeredBySkills } = content as ServerEventFinder<GameEventIdentifiers>;
     const bySkills = triggeredBySkills
       ? triggeredBySkills.map(skillName => Sanguosha.getSkillBySkillName(skillName))
@@ -648,12 +649,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async askForCardUse(event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>, to: PlayerId) {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.AskForCardUseEvent, event);
-    this.logger.debug(`create a ${GameEventIdentifiers.AskForCardUseEvent} event, then trigger it.`);
     await this.trigger<typeof event>(event);
-    this.logger.debug(`trigger finish of ${GameEventIdentifiers.AskForCardUseEvent} event.`);
     if (event.responsedEvent) {
       EventPacker.terminate(event);
-      this.logger.debug(`return reponseEvent for ${EventPacker.getIdentifier(event)}`);
       return event.responsedEvent;
     }
 
@@ -667,7 +665,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
 
     do {
-      this.logger.debug(`notify AskForCardUseEvent of socket`);
+      this.logger.debug('notify AskForCardUseEvent of socket');
       this.notify(GameEventIdentifiers.AskForCardUseEvent, event, to);
       responseEvent = await this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardUseEvent, to);
       const preUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
@@ -754,6 +752,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     EventPacker.createIdentifierEvent(GameEventIdentifiers.CardUseEvent, cardUseEvent);
     const card = Sanguosha.getCardById<VirtualCard>(cardUseEvent.cardId);
     await card.Skill.onUse(this, cardUseEvent);
+    if (card.is(CardType.Equip) && !cardUseEvent.targetGroup) {
+      cardUseEvent.targetGroup = [[cardUseEvent.fromId]];
+    }
 
     if (Card.isVirtualCardId(cardUseEvent.cardId)) {
       const from = this.getPlayerById(cardUseEvent.fromId);
@@ -1035,7 +1036,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       return false;
     }
 
-    await super.useSkill(content);
     content.toIds && skill.resortTargets() && this.sortPlayersByPosition(content.toIds);
 
     await this.gameProcessor.onHandleIncomingEvent(
@@ -1567,7 +1567,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       GameEventIdentifiers.SyncGameCommonRulesEvent,
       {
         toId: playerId,
-        commonRules: this.gameCommonRules.toSocketObject(player),
+        commonRules: this.CommonRules.toSocketObject(player),
       },
       playerId,
     );
@@ -1744,6 +1744,57 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       sideEffectSkillApplier: applier,
       skillName: undefined,
     });
+  }
+
+  public async abortPlayerEquipSections(playerId: PlayerId, ...abortSections: CharacterEquipSections[]) {
+    const player = this.getPlayerById(playerId);
+    player.abortEquipSections(...abortSections);
+
+    const abortEvent: ServerEventFinder<GameEventIdentifiers.AbortOrResumePlayerSectionsEvent> = {
+      toId: playerId,
+      toSections: abortSections,
+      translationsMessage: TranslationPack.translationJsonPatcher(
+        '{0} aborted {1} equip section',
+        TranslationPack.patchPlayerInTranslation(player),
+        TranslationPack.wrapArrayParams(...abortSections),
+      ).extract(),
+    };
+    this.broadcast(GameEventIdentifiers.AbortOrResumePlayerSectionsEvent, abortEvent);
+
+    const equipSectionMapper = {
+      [CharacterEquipSections.Weapon]: CardType.Weapon,
+      [CharacterEquipSections.Shield]: CardType.Shield,
+      [CharacterEquipSections.DefenseRide]: CardType.DefenseRide,
+      [CharacterEquipSections.OffenseRide]: CardType.OffenseRide,
+      [CharacterEquipSections.Precious]: CardType.Precious,
+    };
+
+    const droppedEquips: CardId[] = [];
+    for (const section of abortSections) {
+      const equip = player.getEquipment(equipSectionMapper[section]);
+      if (equip !== undefined) {
+        droppedEquips.push(equip);
+      }
+    }
+
+    await this.dropCards(CardMoveReason.PlaceToDropStack, droppedEquips, playerId);
+  }
+
+  public resumePlayerEquipSections(playerId: PlayerId, ...abortSections: CharacterEquipSections[]) {
+    const player = this.getPlayerById(playerId);
+    player.resumeEquipSections(...abortSections);
+
+    const abortEvent: ServerEventFinder<GameEventIdentifiers.AbortOrResumePlayerSectionsEvent> = {
+      toId: playerId,
+      toSections: abortSections,
+      isResumption: true,
+      translationsMessage: TranslationPack.translationJsonPatcher(
+        '{0} resumed {1} equip section',
+        TranslationPack.patchPlayerInTranslation(player),
+        TranslationPack.wrapArrayParams(...abortSections),
+      ).extract(),
+    };
+    this.broadcast(GameEventIdentifiers.AbortOrResumePlayerSectionsEvent, abortEvent);
   }
 
   public getGameWinners(): Player[] | undefined {

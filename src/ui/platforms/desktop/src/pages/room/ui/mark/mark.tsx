@@ -6,6 +6,7 @@ import styles from './mark.module.css';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import awakenIcon from './images/awaken.png';
 import dawuIcon from './images/dawu.png';
+import fuIcon from './images/fu.png';
 import junlveIcon from './images/junlve.png';
 import kuangfengIcon from './images/kuangfeng.png';
 import lieIcon from './images/lie.png';
@@ -13,7 +14,10 @@ import limitIcon from './images/limit.png';
 import limitUsedIcon from './images/limit_used.png';
 import nightmareIcon from './images/nightmare.png';
 import wrathIcon from './images/nu.png';
+import orangeIcon from './images/orange.png';
 import renIcon from './images/ren.png';
+import switchYangIcon from './images/switch_yang.png';
+import switchYinIcon from './images/switch_yin.png';
 import xueyiIcon from './images/xueyi.png';
 import yingIcon from './images/ying.png';
 
@@ -29,7 +33,9 @@ const markIconMaps: {
   [MarkEnum.Lie]: lieIcon,
   [MarkEnum.XueYi]: xueyiIcon,
   [MarkEnum.Ying]: yingIcon,
+  [MarkEnum.Orange]: orangeIcon,
   [MarkEnum.PveHuaShen]: nightmareIcon,
+  [MarkEnum.Fu]: fuIcon,
 };
 
 export type MarkProps = {
@@ -41,6 +47,13 @@ export type MarkProps = {
 
 export type OnceSkillMarkProps = {
   hasUsed: boolean;
+  skillName: string;
+  className?: string;
+  tagPosition?: 'left' | 'right';
+};
+
+export type SwitchSkillMarkProps = {
+  state: boolean;
   skillName: string;
   className?: string;
   tagPosition?: 'left' | 'right';
@@ -97,5 +110,26 @@ export const AwakenSkillMark = (props: OnceSkillMarkProps) => {
     </div>
   ) : (
     <></>
+  );
+};
+
+export const SwitchSkillMark = (props: SwitchSkillMarkProps) => {
+  const [hovered, setHover] = React.useState<boolean>(false);
+  const onMouseEnter = () => {
+    setHover(true);
+  };
+  const onMouseLeave = () => {
+    setHover(false);
+  };
+
+  return (
+    <div className={classNames(styles.mark, props.className)} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+      <img src={props.state ? switchYinIcon : switchYangIcon} alt="" />
+      {hovered && (
+        <Tooltip className={styles.tooltip} position={['bottom', props.tagPosition || 'right']}>
+          {props.skillName}
+        </Tooltip>
+      )}
+    </div>
   );
 };

@@ -22,6 +22,7 @@ export class ShanJia extends TriggerSkill implements OnDefineReleaseTiming {
         event =>
           event.fromId === owner.Id &&
           event.toId !== owner.Id &&
+          event.movingCards &&
           event.movingCards.find(
             card =>
               (card.fromArea === CardMoveArea.HandArea || card.fromArea === CardMoveArea.EquipArea) &&
@@ -90,7 +91,7 @@ export class ShanJia extends TriggerSkill implements OnDefineReleaseTiming {
           toId: fromId,
           reason: this.Name,
           conversation: TranslationPack.translationJsonPatcher(
-            '{0}: please drop {1} card(s)',
+            '{0}: please drop {1} card(s), if all of them are equip card, you can use a virtual slash',
             this.Name,
             dropNum,
           ).extract(),
@@ -136,15 +137,15 @@ export class ShanJia extends TriggerSkill implements OnDefineReleaseTiming {
           fromId,
         );
 
-        resp.selectedPlayers = resp.selectedPlayers || [targets[0]];
-
-        await room.useCard({
-          fromId,
-          targetGroup: [resp.selectedPlayers],
-          cardId: VirtualCard.create<Slash>({ cardName: 'slash', bySkill: this.Name }).Id,
-          extraUse: true,
-          triggeredBySkills: [this.Name],
-        });
+        if (resp.selectedPlayers && resp.selectedPlayers.length > 0) {
+          await room.useCard({
+            fromId,
+            targetGroup: [resp.selectedPlayers],
+            cardId: VirtualCard.create<Slash>({ cardName: 'slash', bySkill: this.Name }).Id,
+            extraUse: true,
+            triggeredBySkills: [this.Name],
+          });
+        }
       }
     }
 
@@ -212,7 +213,9 @@ export class ShanJiaShadow extends TriggerSkill {
       );
     } else {
       const recordNum =
-        room.getFlag<number>(fromId, this.GeneralName) === undefined ? 3 : room.getFlag<number>(fromId, this.GeneralName);
+        room.getFlag<number>(fromId, this.GeneralName) === undefined
+          ? 3
+          : room.getFlag<number>(fromId, this.GeneralName);
       if (recordNum > 0) {
         const moveCardEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
         const newRecord = Math.max(

@@ -178,6 +178,15 @@ export { XinSheng } from './characters/mountain/xinsheng';
 export { BeiGe } from './characters/mountain/beige';
 export { DuanChang } from './characters/mountain/duanchang';
 
+export { QiZhi, QiZhiShadow } from './characters/shadow/qizhi';
+export { JinQu } from './characters/shadow/jinqu';
+export { HuaiJu } from './characters/shadow/huaiju';
+export { WeiLi } from './characters/shadow/weili';
+export { ZhengLun } from './characters/shadow/zhenglun';
+export { ChengLve, ChengLveShadow, ChengLveBuff } from './characters/shadow/chenglve';
+export { ShiCai, ShiCaiShadow } from './characters/shadow/shicai';
+export { CunMu } from './characters/shadow/cunmu';
+
 export { WuShen, WuShenShadow, WuShenDisresponse } from './characters/god/wushen';
 export { WuHun, WuHunDeath } from './characters/god/wuhun';
 export { SheLie } from './characters/god/shelie';
@@ -286,6 +295,8 @@ export { WenJi, WenJiShadow } from './characters/sp/wenji';
 export { TunJiang } from './characters/sp/tunjiang';
 export { ZiShu, ZiShuShadow } from './characters/sp/zishu';
 export { YingYuan, YingYuanShadow } from './characters/sp/yingyuan';
+export { FuBi, FuBiShadow, FuBiClear } from './characters/wisdom/fubi';
+export { ZuiCi } from './characters/wisdom/zuici';
 
 export { ShanJia, ShanJiaShadow } from './characters/limited/shanjia';
 export { WeiCheng } from './characters/limited/weicheng';
@@ -302,6 +313,20 @@ export { PingJian, PingJianLoseSkill, PingJianShadow, PingJianHookSkill } from '
 export { CiXiao } from './characters/biographies/cixiao';
 export { XianShuai } from './characters/biographies/xianshuai';
 export { PanShi, PanShiSelect } from './characters/biographies/panshi';
+
+export { WuKu } from './characters/wisdom/wuku';
+export { ZhiSanChen } from './characters/wisdom/zhi_sanchen';
+export { MieWu, MieWuShadow } from './characters/wisdom/miewu';
+export { JianZhan } from './characters/wisdom/jianzhan';
+export { DuoJi, DuoJiShadow } from './characters/wisdom/duoji';
+export { JianYu, JianYuShadow } from './characters/wisdom/jianyu';
+export { ShengXi } from './characters/wisdom/shengxi';
+export { WanWei, WanWeiShadow } from './characters/wisdom/wanwei';
+export { YueJian, YueJianShadow } from './characters/wisdom/yuejian';
+export { QinZheng, QinZhengShadow } from './characters/wisdom/qinzheng';
+export { ShaMeng } from './characters/wisdom/shameng';
+export { ZhiQiAi } from './characters/wisdom/zhi_qiai';
+export { ZhiShanXi, ZhiShanXiShadow } from './characters/wisdom/zhi_shanxi';
 
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';

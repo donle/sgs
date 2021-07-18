@@ -22,6 +22,8 @@ export class ClientPlayer extends Player {
   setFlag<T>(name: string, value: T, tagName?: string): T {
     if (tagName && this.visiblePlayerTags[name] !== tagName) {
       this.visiblePlayerTags[name] = tagName;
+    } else if (!tagName && this.visiblePlayerTags[name] !== undefined) {
+      delete this.visiblePlayerTags[name];
     }
 
     return super.setFlag(name, value);
