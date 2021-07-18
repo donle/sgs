@@ -66,7 +66,7 @@
     z-index: 999;
     left: 100%;
     top: 0;
-    width: calc(gridLine * 40);
+    width: calc(gridLine * 50);
     height: 100%;
     overflow: auto;
 }
@@ -96,52 +96,4 @@
     margin-left: calc(gridLine / 2);
     align-self: center;
     animation: fadeIn 2.5s 1;
-}
-
-.characterSpec {
-    display: flex;
-    flex-direction: column;
-    margin-top: calc(gridLine * 3);
-}
-
-.skill {
-    margin-bottom: calc(gridLine * 2);
-    display: flex;
-    font-family: FZLiBianFont;
-}
-
-.skillName {
-    position: relative;
-    bottom: calc(gridLine / 2);
-    align-self: flex-start;
-    flex-shrink: 0;
-}
-
-.deathButton,
-.skillName {
-    font-weight: 600;
-    color: rgb(255, 174, 0);
-    font-size: 16px;
-    margin-right: calc(gridLine * 2);
-    padding: calc(gridLine / 2);
-    border-radius: calc(gridLine / 2);
-    border: 1px solid rgb(255, 174, 0);
-    cursor: pointer;
-}
-
-.deathButton {
-    align-self: center;
-    margin-bottom: gridLine;
-    font-family: FZLiBianFont;
-}
-
-.deathButton:hover,
-.skillName:hover {
-    background-color: rgb(255, 174, 0);
-    color: black;
-}
-
-.skillDescription {
-    font-size: calc(gridLine * 2);
-    line-height: calc(gridLine * 3);
 }

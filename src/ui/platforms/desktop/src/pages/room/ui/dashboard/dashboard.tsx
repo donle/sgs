@@ -19,6 +19,7 @@ import { PlayingBar } from '../playing_bar/playing_bar';
 import { AbortedCardItem } from './aborted_card_item/aborted_card_item';
 import styles from './dashboard.module.css';
 import { EquipCardItem } from './equip_card_item/equip_card_item';
+import { CharacterSkinInfo } from 'skins/skins';
 
 import { Button } from 'ui/button/button';
 import armorSlot from './images/armor.png';
@@ -32,6 +33,7 @@ export type DashboardProps = {
   translator: ClientTranslationModule;
   updateFlag: boolean;
   imageLoader: ImageLoader;
+  skinData: CharacterSkinInfo[];
   playerSelectableMatcher?(player: Player): boolean;
   onClickPlayer?(player: Player, selected: boolean): void;
   cardEnableMatcher?(card: Card): boolean;
@@ -294,6 +296,7 @@ export class Dashboard extends React.Component<DashboardProps> {
           disabled={!this.props.playerSelectableMatcher || !this.props.playerSelectableMatcher(player)}
           onClick={this.props.onClickPlayer}
           store={this.props.store}
+          skinData={this.props.skinData}
           presenter={this.props.presenter}
           translator={this.props.translator}
           onClickSkill={this.props.onClickSkill}

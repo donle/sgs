@@ -64,11 +64,12 @@ export const Badge = (props: BadgeProps) => {
 
 export type NationalityBadgeProps = BadgeProps & {
   nationality: CharacterNationality;
+  onClick?(): void;
   isLord?: boolean;
 };
 
 export const NationalityBadge = (props: NationalityBadgeProps) => {
-  const { nationality, className, children, isLord, ...badgeProps } = props;
+  const { nationality, className, children, isLord, onClick, ...badgeProps } = props;
   return (
     <Badge
       {...badgeProps}
@@ -80,8 +81,15 @@ export const NationalityBadge = (props: NationalityBadgeProps) => {
         [styles.god]: nationality === CharacterNationality.God,
       })}
     >
-      <span className={styles.badgeContext}>{children}</span>
-      <img className={styles.nationalityBadge} src={getNationalityBadge(nationality, isLord)} alt={''} />
+      <span className={styles.badgeContext} onClick={onClick}>
+        {children}
+      </span>
+      <img
+        className={styles.nationalityBadge}
+        onClick={onClick}
+        src={getNationalityBadge(nationality, isLord)}
+        alt={''}
+      />
     </Badge>
   );
 };

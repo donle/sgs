@@ -1,5 +1,6 @@
 import { CharacterGender } from 'core/characters/character';
 import { AudioLoader } from './audio_loader';
+import { CharacterSkinInfo } from 'skins/skins';
 
 const remoteRoot: string = 'http://doublebit.gitee.io/pictest/backup_remote';
 
@@ -34,5 +35,22 @@ export class DevAudioLoader implements AudioLoader {
   }
   async getDeathAudio(characterName: string): Promise<string> {
     return `${remoteRoot}/audios/characters/${characterName}.mp3`;
+  }
+
+  async getCharacterSkinAudio(
+    characterName: string,
+    skinName: string,
+    skillName: string,
+    skinData: CharacterSkinInfo[],
+    gender?: CharacterGender,
+  ): Promise<string> {
+    let voice: string;
+    if (skillName === 'death') {
+      voice = await this.getDeathAudio(characterName);
+    } else {
+      voice = await this.getSkillAudio(skillName, gender!, characterName);
+    }
+
+    return voice;
   }
 }

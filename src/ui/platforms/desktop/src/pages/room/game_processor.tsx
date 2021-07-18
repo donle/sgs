@@ -36,6 +36,8 @@ import { CharacterSelectorDialog } from './ui/dialog/character_selector_dialog/c
 import { GameOverDialog } from './ui/dialog/game_over_dialog/game_over_dialog';
 import { GuanXingDialog } from './ui/dialog/guanxing_dialog/guanxing_dialog';
 import { WuGuFengDengDialog } from './ui/dialog/wugufengdeng_dialog/wugufengdeng_dialog';
+import { getSkinName } from './ui/switch_avatar/switch_skin';
+import { CharacterSkinInfo } from 'skins/skins';
 
 export class GameClientProcessor {
   protected onPlayTrustedActionTimer: NodeJS.Timer | undefined;
@@ -52,6 +54,7 @@ export class GameClientProcessor {
     protected imageLoader: ImageLoader,
     protected audioService: AudioService,
     protected electron: ElectronLoader,
+    protected skinData: CharacterSkinInfo[],
   ) {
     this.audioService.playRoomBGM();
   }
@@ -711,7 +714,8 @@ export class GameClientProcessor {
   ) {
     const { playerId } = content;
     const player = this.store.room.getPlayerById(playerId);
-    this.audioService.playDeathAudio(player.Character.Name);
+    let skinName = getSkinName(player.Character.Name, player.Id, this.skinData).skinName;
+    this.audioService.playDeathAudio(player.Character.Name, this.skinData, skinName);
     this.store.room.kill(player);
     this.presenter.broadcastUIUpdate();
   }
@@ -1362,7 +1366,9 @@ export class GameClientProcessor {
   ) {
     const skill = Sanguosha.getSkillBySkillName(content.skillName);
     const from = this.store.room.getPlayerById(content.fromId);
-    !content.mute && this.audioService.playSkillAudio(skill.GeneralName, from.Gender, from.Character.Name);
+    let skinName = getSkinName(from.Character.Name, from.Id, this.skinData).skinName;
+    !content.mute &&
+      this.audioService.playSkillAudio(skill.GeneralName, from.Gender, this.skinData, from.Character.Name, skinName);
 
     await this.store.room.useSkill(content);
     if (skill.SkillType === SkillType.Limit || skill.SkillType === SkillType.Awaken) {

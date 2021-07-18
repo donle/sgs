@@ -1,5 +1,5 @@
 import { CharacterEquipSections } from 'core/characters/character';
-import { PlayerRole } from 'core/player/player_props';
+import { PlayerId, PlayerRole } from 'core/player/player_props';
 import { Functional } from 'core/shares/libs/functional';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { GameMode } from 'core/shares/types/room_props';
@@ -29,6 +29,7 @@ import feedbackImage from './images/system/feedback.png';
 import gameLogBoardImage from './images/system/game_log_board.png';
 import unknownCharacterImage from './images/system/player_seat.png';
 import turnedOverCoverImage from './images/system/turn_over.png';
+import { CharacterSkinInfo } from 'skins/skins';
 
 import illustraion1 from './images/lobby/illustration1.png';
 import illustraion2 from './images/lobby/illustration2.png';
@@ -166,6 +167,30 @@ export class ProdImageLoader implements ImageLoader {
 
   public async getCharacterImage(characterName: string) {
     const image: string = (await import(`./images/characters/${characterName}.png`)).default;
+    return { alt: characterName, src: image };
+  }
+  public async getCharacterSkinPlay(
+    characterName: string,
+    skinData: CharacterSkinInfo[],
+    playerId?: PlayerId,
+    skinName?: string,
+  ) {
+    let image: string;
+    if (skinName !== characterName && skinData !== undefined) {
+      const skin = skinData
+        .find(skinInfo => skinInfo.character === characterName)
+        ?.infos.find(skinInfo => skinInfo.images?.find(imagesInfo => imagesInfo.name === skinName));
+      if (skin) {
+        image = process.env.PUBLIC_URL + '/' + skin?.images.find(imagesInfo => imagesInfo.name === skinName)?.seat;
+      } else {
+        image = (await import(`./images/characters/${characterName}.png`)).default;
+      }
+    } else {
+      image = (await import(`./images/characters/${characterName}.png`)).default;
+    }
+    if (skinName === 'random') {
+      image = (await import(`./images/system/player_seat.png`)).default;
+    }
     return { alt: characterName, src: image };
   }
 

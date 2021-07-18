@@ -1,4 +1,5 @@
 import { CharacterGender } from 'core/characters/character';
+import { CharacterSkinInfo } from 'skins/skins';
 
 export interface AudioLoader {
   getRoomBackgroundMusic(): string;
@@ -11,4 +12,11 @@ export interface AudioLoader {
   getLoseHpAudio(): string;
   getEquipAudio(): string;
   getChainAudio(): string;
+  getCharacterSkinAudio(
+    characterName: string,
+    skinName: string,
+    skillName: string,
+    skinData: CharacterSkinInfo[],
+    gender?: CharacterGender,
+  ): Promise<string>;
 }
