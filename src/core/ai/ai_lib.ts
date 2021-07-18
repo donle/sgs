@@ -47,7 +47,7 @@ export function aiUseCard(room: Room, aiId: PlayerId): PlayerCardOrSkillInnerEve
         };
       }
 
-      console.log(`AI consider to use card: ${Sanguosha.getCardById(cardId).Name}`);
+      // console.log(`AI consider to use card: ${Sanguosha.getCardById(cardId).Name}`);
 
       const cardSkill = Sanguosha.getCardById(cardId).Skill;
       if (cardSkill instanceof ActiveSkill) {
@@ -59,7 +59,7 @@ export function aiUseCard(room: Room, aiId: PlayerId): PlayerCardOrSkillInnerEve
           cardSkill.numberOfTargets() instanceof Array ? cardSkill.numberOfTargets()[0] : cardSkill.numberOfTargets();
 
         if (cardSkill.GeneralName === 'tiesuolianhuan') {
-          console.log(`tiesuolianhuan target number is ${targetNumber}`);
+          // console.log(`tiesuolianhuan target number is ${targetNumber}`);
           const reforgeEvent: ClientEventFinder<GameEventIdentifiers.CardUseEvent> = {
             fromId: aiId,
             cardId,
@@ -77,7 +77,7 @@ export function aiUseCard(room: Room, aiId: PlayerId): PlayerCardOrSkillInnerEve
             cardSkill.isAvailableTarget(aiId, room, player.Id, [], [], cardId),
           ).map(player => player.Id);
 
-          console.log(`approvedTargetPlayerIds is ${approvedTargetPlayerIds}`);
+          // console.log(`approvedTargetPlayerIds is ${approvedTargetPlayerIds}`);
 
           if (approvedTargetPlayerIds.length < targetNumber) {
             continue;
@@ -123,18 +123,15 @@ export function askAiUseCard(
     return cardId;
   }
 
-  console.log(`Ai use card: ${Sanguosha.getCardById(cardId[0]).Name} by CardId: ${byCardId}`);
+  // console.log(`Ai use card: ${Sanguosha.getCardById(cardId[0]).Name} by CardId: ${byCardId}`);
 
   if (byCardId !== undefined) {
-    switch (Sanguosha.getCardById(cardId[0]).Name) {
-      case 'wuxiekeji': {
-        console.log('AskForUse wuxikeji Handle');
-        const isDelayTrick: boolean = Sanguosha.getCardById(byCardId).is(CardType.DelayedTrick);
-        const isAiPlay: boolean = room.CurrentPhasePlayer.Id === aiId;
-        if ((!isAiPlay && isDelayTrick) || (!isDelayTrick && isAiPlay)) {
-          cardId = [];
-          break;
-        }
+    if (Sanguosha.getCardById(cardId[0]).Name === 'wuxiekeji') {
+      // console.log('AskForUse wuxikeji Handle');
+      const isDelayTrick: boolean = Sanguosha.getCardById(byCardId).is(CardType.DelayedTrick);
+      const isAiPlay: boolean = room.CurrentPhasePlayer.Id === aiId;
+      if ((!isAiPlay && isDelayTrick) || (!isDelayTrick && isAiPlay)) {
+        cardId = [];
       }
     }
   }
@@ -162,10 +159,10 @@ export function askAiChooseCardFromPlayer<T extends GameEventIdentifiers.AskForC
 
   const Areas = ((Object.keys(options) as unknown) as [PlayerCardsArea]).map(area => Number(area));
   if (Areas.includes(PlayerCardsArea.EquipArea)) {
-    console.log('ChooseCard from Player EquipArea');
+    // console.log('ChooseCard from Player EquipArea');
     const cardIds = options[PlayerCardsArea.EquipArea];
     if (cardIds instanceof Array && cardIds.length > 0) {
-      console.log(`Choose EquipArea Card from ${cardIds}`);
+      // console.log(`Choose EquipArea Card from ${cardIds}`);
 
       selectedCard = cardIds.find(cardId =>
         Sanguosha.getCardById(cardId).is(
@@ -187,14 +184,14 @@ export function askAiChooseCardFromPlayer<T extends GameEventIdentifiers.AskForC
 
     const cards = options[fromArea]!;
 
-    console.log(`Cards is :${cards}`);
+    // console.log(`Cards is :${cards}`);
     selectedCard = cards instanceof Array ? cards[0] : undefined;
     selectedCardIndex = typeof cards === 'number' ? 0 : undefined;
   }
 
-  console.log(
-    `Confirm ChooseCard from Player: selectedCard: ${selectedCard}, selectedCardIndex: ${selectedCardIndex}, fromArea: ${fromArea}`,
-  );
+  // console.log(
+  //   `Confirm ChooseCard from Player: selectedCard: ${selectedCard}, selectedCardIndex: ${selectedCardIndex}, fromArea: ${fromArea}`,
+  // );
 
   const chooseCard: ClientEventFinder<T> = {
     fromId: aiId,
@@ -225,7 +222,7 @@ export function sortCardbyValue(cards: CardId[]): CardId[] {
   }, []);
 
   cardIds.map(cardsValue => {
-    console.log(`card: ${Sanguosha.getCardById(cardsValue.cardId).Name}, value: ${cardsValue.value}`);
+    // console.log(`card: ${Sanguosha.getCardById(cardsValue.cardId).Name}, value: ${cardsValue.value}`);
     return [];
   });
 
