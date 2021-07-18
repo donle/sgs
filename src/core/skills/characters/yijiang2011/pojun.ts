@@ -1,14 +1,7 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import {
-  AimStage,
-  AllStage,
-  DamageEffectStage,
-  PhaseChangeStage,
-  PhaseStageChangeStage,
-  PlayerPhase,
-} from 'core/game/stage_processor';
+import { AimStage, AllStage, DamageEffectStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -184,7 +177,7 @@ export class PoJunClear extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
-    return stage === PhaseStageChangeStage.StageChanged;
+    return stage === PhaseChangeStage.PhaseChanged;
   }
 
   public isAutoTrigger(): boolean {
