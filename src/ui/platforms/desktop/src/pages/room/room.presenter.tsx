@@ -88,7 +88,7 @@ export class RoomStore {
   @mobx.observable.ref
   numberOfDrawStack: number;
   @mobx.observable.ref
-  currentCircle: number = -1;
+  currentCircle: number = 0;
 
   @mobx.observable.ref
   notificationTime: number = 60;
