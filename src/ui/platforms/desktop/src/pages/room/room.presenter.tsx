@@ -469,6 +469,15 @@ export class RoomPresenter {
   }
 
   @mobx.action
+  refreshOnceSkillUsed(player: PlayerId, skillName: string) {
+    const history = this.store.onceSkillUsedHistory[player];
+    if (history && history.includes(skillName)) {
+      const index = history.findIndex(name => name === skillName);
+      index !== -1 && history.splice(index, 1);
+    }
+  }
+
+  @mobx.action
   switchSkillStateChanged(player: PlayerId, skillName: string, initState: boolean = false) {
     if (!this.store.switchSkillState[player]) {
       this.store.switchSkillState[player] = [skillName];

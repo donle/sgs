@@ -116,7 +116,7 @@ export class ChengLveShadow extends TriggerSkill implements OnDefineReleaseTimin
     content: ServerEventFinder<GameEventIdentifiers>,
     stage?: AllStage,
   ): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
+    return room.CurrentPlayerPhase === PlayerPhase.PlayCardStage && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public isAutoTrigger(): boolean {
@@ -134,7 +134,7 @@ export class ChengLveShadow extends TriggerSkill implements OnDefineReleaseTimin
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
     return (
       owner.Id === event.fromPlayer &&
-      event.from === PlayerPhase.PhaseFinish &&
+      event.from === PlayerPhase.PlayCardStage &&
       owner.getFlag<number>(this.GeneralName) !== undefined
     );
   }

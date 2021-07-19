@@ -172,7 +172,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'jiangchi_description',
     target:
-      '摸牌階段結束時，你可以選擇一項：1.摸一張牌，然後本回合你不能使用或打出【殺】且【殺】不計入手牌上限；2.棄置一張牌，然後本回合你使用【殺】無距離限製且可以多使用一張【殺】。',
+      '出牌階段開始時，你可以選擇一項：1.摸兩張牌，然後你於此階段不能使用或打出【殺】；2.摸一張牌；3.棄置一張牌，然後你於此階段使用【殺】無距離限制且可多使用一張【殺】。',
   },
   {
     source: 'rende_description',
@@ -358,5 +358,16 @@ export const skillDescriptions: Word[] = [
     source: 'jianyan_description',
     target:
       '出牌階段限一次，你可以聲明一種牌的類別或顔色，然後亮出牌堆中第一張符合你聲明的牌，並將之交給一名男性角色。',
+  },
+];
+
+export const promptDescriptions: Word[] = [
+  {
+    source: 'jiangchi:draw2',
+    target: '摸兩張牌',
+  },
+  {
+    source: 'jiangchi:draw1',
+    target: '摸一張牌',
   },
 ];

@@ -584,6 +584,11 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     player.resumeEquipSections(...abortSections);
   }
 
+  public refreshPlayerOnceSkill(playerId: PlayerId, skillName: string) {
+    const player = this.getPlayerById(playerId);
+    player.refreshOnceSkill(skillName);
+  }
+
   public sortPlayersByPosition(players: PlayerId[]) {
     players.sort((prev, next) => {
       const prevPosition = this.getPlayerById(prev).Position;

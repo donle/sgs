@@ -174,7 +174,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'jiangchi_description',
     target:
-      '摸牌阶段结束时，你可以选择一项：1.摸一张牌，然后本回合你不能使用或打出【杀】且【杀】不计入手牌上限；2.弃置一张牌，然后本回合你使用【杀】无距离限制且可以多使用一张【杀】。',
+      '出牌阶段开始时，你可以选择一项：1.摸两张牌，然后你于此阶段不能使用或打出【杀】；2.摸一张牌；3.弃置一张牌，然后你于此阶段使用【杀】无距离限制且可多使用一张【杀】。',
   },
   {
     source: 'rende_description',
@@ -363,6 +363,15 @@ export const skillDescriptions: Word[] = [
 ];
 
 export const promptDescriptions: Word[] = [
+  {
+    source: 'jiangchi:draw2',
+    target: '摸两张牌',
+  },
+  {
+    source: 'jiangchi:draw1',
+    target: '摸一张牌',
+  },
+
   {
     source: '{0}: do you want to discard 1 card to transfer the target of {1} to {2}',
     target: '{0}：你可以弃置一张牌将此{1}转移给 {2}',

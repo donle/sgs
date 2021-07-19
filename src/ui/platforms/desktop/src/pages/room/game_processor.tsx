@@ -327,6 +327,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.UpgradeSideEffectSkillsEvent:
         await this.onHandleUpgradeSideEffectSkillsEvent(e as any, content);
         break;
+      case GameEventIdentifiers.RefreshOnceSkillEvent:
+        await this.onHandleRefreshOnceSkillEvent(e as any, content);
+        break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
     }
@@ -675,6 +678,19 @@ export class GameClientProcessor {
       ? this.store.room.installSideEffectSkill(content.sideEffectSkillApplier, content.skillName, content.sourceId!)
       : this.store.room.uninstallSideEffectSkill(content.sideEffectSkillApplier);
     this.presenter.broadcastUIUpdate();
+  }
+
+  protected onHandleRefreshOnceSkillEvent<T extends GameEventIdentifiers.RefreshOnceSkillEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    const skill = Sanguosha.getSkillBySkillName(content.skillName);
+
+    this.store.room.refreshPlayerOnceSkill(content.toId, content.skillName);
+    if (skill.SkillType === SkillType.Limit || skill.SkillType === SkillType.Awaken) {
+      this.presenter.refreshOnceSkillUsed(content.toId, content.skillName);
+      this.presenter.broadcastUIUpdate();
+    }
   }
 
   protected onHandlePlayerPropertiesChangeEvent<T extends GameEventIdentifiers.PlayerPropertiesChangeEvent>(

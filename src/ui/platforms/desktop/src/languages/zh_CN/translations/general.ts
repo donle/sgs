@@ -453,7 +453,7 @@ export const eventDictionary: Word[] = [
   },
   {
     source: 'please choose jiangchi options',
-    target: '请选择：1.弃置一张牌，本回合【杀】无距离限制且使用次数+1 2.额外摸一张牌，本回合不可使用或打出【杀】',
+    target: '请选择：1.摸两张牌，此阶段不可使用或打出【杀】；2.摸一张牌；3.弃置一张牌，本回合【杀】无距离限制且使用次数+1',
   },
   {
     source: 'zhijian: do you wanna use draw 1 card',

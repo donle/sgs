@@ -38,7 +38,8 @@ export const characterDictionary: Word[] = [
   { source: 'chunlao', target: '醇醪' },
 
   { source: 'handang', target: '韩当' },
-  { source: 'gongji', target: '弓骑' },
+  { source: 'gongqi', target: '弓骑' },
+  { source: 'gongqi suits: {0}', target: '弓骑[{0}]' },
   { source: 'jiefan', target: '解烦' },
 
   { source: 'liubiao', target: '刘表' },
@@ -113,7 +114,7 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'lihuo_description',
-    target: '你可将普【杀】当火【杀】使用，然后若此【杀】造成伤害，你失去1点体力；你使用火【杀】可额外选择一个目标。',
+    target: '你可将普【杀】当火【杀】使用，然后若此【杀】造成伤害，你失去1点体力；你使用火【杀】可额外选择一个目标；当你于一回合使用的第一张牌结算结束后，若此牌为【杀】，你可以将之置为“醇”。',
   },
   {
     source: 'chunlao_description',
@@ -122,14 +123,14 @@ export const skillDescriptions: Word[] = [
   },
 
   {
-    source: 'gongji_description',
+    source: 'gongqi_description',
     target:
-      '若你的坐骑区内有牌，你的攻击范围无限；出牌阶段限一次，你可以弃置一张基本牌并选择一名有牌的其他角色，你弃置其一张牌。',
+      '出牌阶段限一次，你可以弃置一张牌，令你于本回合攻击范围无限，且使用与以此法弃置牌花色相同的【杀】无次数限制。若你以此法弃置的是装备牌，你可以弃置一名其他角色一张牌。',
   },
   {
     source: 'jiefan_description',
     target:
-      '<b>限定技</b>，出牌阶段，你可以选择一名角色，然后令攻击范围内包含其的角色依次选择一项：1.弃置一张武器牌；2.令你选择的角色摸一张牌。',
+      '<b>限定技</b>，出牌阶段，你可以选择一名角色，然后令攻击范围内包含其的角色依次选择一项：1.弃置一张武器牌；2.令你选择的角色摸一张牌。若此时是游戏的第一轮，本技能于此回合结束时视为未发动过。',
   },
 
   {
@@ -173,6 +174,11 @@ export const promptDescriptions: Word[] = [
   },
 
   {
+    source: 'gongqi: do you want to drop one card of another player?',
+    target: '弓骑：你可以弃置一名其他角色一张牌',
+  },
+
+  {
     source: '{0}: please drop a weapon, or {1} will draw a card',
     target: '{0}：请弃置一张武器牌，否则 {1} 将会摸一张牌',
   },
@@ -185,6 +191,10 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: please choose a target to be the additional target of {1}',
     target: '{0}：你可以为此{1}选择一个额外目标',
+  },
+  {
+    source: '{0}: do you want to put {1} on your general card as Chun?',
+    target: '{0}：你可以将 {1} 置为“醇”',
   },
 
   {

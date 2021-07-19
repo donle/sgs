@@ -536,6 +536,17 @@ export abstract class Player implements PlayerInfo {
     return judge ? SwitchSkillState.Yin : SwitchSkillState.Yang;
   }
 
+  public refreshOnceSkill(skillName: string): boolean {
+    const skill = Sanguosha.getSkillBySkillName(skillName);
+    Precondition.assert(skill.SkillType === SkillType.Limit || skill.SkillType === SkillType.Awaken, `${skillName} isn't once skill`);
+    if (this.skillUsedHistory[skillName] > 0) {
+      this.skillUsedHistory[skillName] = 0;
+      return true;
+    }
+
+    return false;
+  }
+
   public getAttackDistance(room: Room) {
     return Math.max(this.getOffenseDistance(room) + this.getAttackRange(room), 1);
   }

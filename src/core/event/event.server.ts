@@ -454,6 +454,10 @@ export interface ServerEvent extends EventUtilities {
     isResumption?: boolean;
     toSections: CharacterEquipSections[];
   };
+  [GameEventIdentifiers.RefreshOnceSkillEvent]: {
+    toId: PlayerId;
+    skillName: string;
+  };
 }
 
 export type PinDianProcedure = {

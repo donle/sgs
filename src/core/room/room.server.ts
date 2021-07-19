@@ -1797,6 +1797,19 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.broadcast(GameEventIdentifiers.AbortOrResumePlayerSectionsEvent, abortEvent);
   }
 
+  public refreshPlayerOnceSkill(playerId: PlayerId, skillName: string) {
+    const player = this.getPlayerById(playerId);
+    if (!player.refreshOnceSkill(skillName)) {
+      return;
+    }
+
+    const refreshEvent: ServerEventFinder<GameEventIdentifiers.RefreshOnceSkillEvent> = {
+      toId: playerId,
+      skillName,
+    };
+    this.broadcast(GameEventIdentifiers.RefreshOnceSkillEvent, refreshEvent);
+  }
+
   public getGameWinners(): Player[] | undefined {
     return this.gameProcessor.getWinners(this.players);
   }

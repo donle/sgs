@@ -7,8 +7,8 @@ const skillLoaderInstance = SkillLoader.getInstance();
 export class HanDang extends Character {
   constructor(id: number) {
     super(id, 'handang', CharacterGender.Male, CharacterNationality.Wu, 4, 4, GameCharacterExtensions.YiJiang2012, [
-      ...skillLoaderInstance.getSkillsByName('gongji'),
-      skillLoaderInstance.getSkillByName('jiefan'),
+      ...skillLoaderInstance.getSkillsByName('gongqi'),
+      ...skillLoaderInstance.getSkillsByName('jiefan'),
     ]);
   }
 }
