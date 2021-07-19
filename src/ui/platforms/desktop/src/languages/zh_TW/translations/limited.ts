@@ -47,7 +47,7 @@ export const skillDescriptions: Word[] = [
 
 export const promptDescriptions: Word[] = [
   {
-    source: '{0}: please drop {1} card(s)',
+    source: '{0}: please drop {1} card(s), if all of them are equip card, you can use a virtual slash',
     target: '{0}: 請棄置 {1} 張牌，若棄牌中均為裝備牌，則可視為使用一張無距離限制的【殺】',
   },
   {
