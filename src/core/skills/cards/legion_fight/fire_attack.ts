@@ -99,7 +99,7 @@ export class FireAttackSkill extends ActiveSkill implements ExtralCardSkillPrope
 
     if (fromId !== undefined) {
       const from = room.getPlayerById(fromId);
-      if (!from.Dead && to.getCardIds(PlayerCardsArea.HandArea).length > 0) {
+      if (!from.Dead && from.getCardIds(PlayerCardsArea.HandArea).length > 0) {
         const card = Sanguosha.getCardById(selectedCards[0]);
         const response = await room.askForCardDrop(
           fromId,
