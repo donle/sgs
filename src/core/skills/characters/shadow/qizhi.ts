@@ -104,7 +104,7 @@ export class QiZhi extends TriggerSkill {
       const cardIds = to.getCardIds(PlayerCardsArea.HandArea);
       response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
     } else if (response.selectedCard === undefined) {
-      const cardIds = to.getCardIds();
+      const cardIds = to.getPlayerCards();
       response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
     }
 
