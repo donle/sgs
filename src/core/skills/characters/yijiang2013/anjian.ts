@@ -145,7 +145,7 @@ export class AnJian extends TriggerSkill {
   }
 }
 @ShadowSkill
-@CompulsorySkill({ name: 'anjianPeach', description: 'anjianPeach_description' })
+@CompulsorySkill({ name: 'shadow_anjianPeach', description: 'shadow_anjianPeach_description' })
 export class AnJianPeach extends FilterSkill {
   canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId) {
     return cardId instanceof CardMatcher

@@ -411,11 +411,11 @@ export class StandardGameProcessor extends GameProcessor {
 
     while (this.room.isPlaying() && !this.room.isGameOver() && !this.room.isClosed()) {
       if (this.room.Circle === 0) {
+        this.room.nextCircle();
         await this.onHandleIncomingEvent(
           GameEventIdentifiers.GameBeginEvent,
           EventPacker.createIdentifierEvent(GameEventIdentifiers.GameBeginEvent, {}),
         );
-        this.room.nextCircle();
       } else if (!this.inExtraRound) {
         if (this.playerPositionIndex < lastPlayerPosition) {
           this.room.nextCircle();
@@ -647,7 +647,10 @@ export class StandardGameProcessor extends GameProcessor {
               if (reaSkill.isCircleSkill()) {
                 continue;
               }
-              reaSkill.isRefreshAt(this.room, player, nextPhase) && player.resetSkillUseHistory(skill);
+              if (reaSkill.isRefreshAt(this.room, player, nextPhase)) {
+                reaSkill.whenRefresh(this.room, player)
+                player.resetSkillUseHistory(skill);
+              }
             }
           }
         }

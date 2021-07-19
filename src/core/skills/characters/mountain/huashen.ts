@@ -172,7 +172,7 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
     skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     const player = room.getPlayerById(skillEffectEvent.fromId);
-    if (room.Circle === 0 && !player.getFlag<boolean>(this.Name)) {
+    if (room.Circle === 1 && !player.getFlag<boolean>(this.Name)) {
       player.setFlag(this.Name, true);
       const huashen = room.getRandomCharactersFromLoadedPackage(3);
       room.setCharacterOutsideAreaCards(

@@ -27,7 +27,7 @@ export class JiZhi extends TriggerSkill {
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const card = Sanguosha.getCardById(content.cardId);
-    return content.fromId === owner.Id && card.is(CardType.Trick);
+    return content.fromId === owner.Id && card.is(CardType.Trick) && !card.isVirtualCard();
   }
 
   async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
