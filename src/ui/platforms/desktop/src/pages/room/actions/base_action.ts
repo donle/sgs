@@ -82,6 +82,7 @@ export abstract class BaseAction {
   }
 
   public readonly resetAction = () => {
+    this.store.selectedCards = [];
     this.selectedCardToPlay = undefined;
     this.selectedSkillToPlay = undefined;
     this.equipSkillCardId = undefined;
@@ -90,11 +91,9 @@ export abstract class BaseAction {
     this.pendingCards = [];
 
     this.presenter.disableActionButton('confirm');
-    this.presenter.disableActionButton('reforge');
     this.presenter.disableActionButton('cancel');
-    this.presenter.disableActionButton('finish');
     this.presenter.disableCardReforgeStatus();
-    this.presenter.delightPlayers(false);
+    this.delightItems();
     this.presenter.highlightCards(true);
     this.onResetAction();
     this.presenter.broadcastUIUpdate();
@@ -478,6 +477,7 @@ export abstract class BaseAction {
 
   protected unselectCard(cardId: CardId) {
     if (this.equipSkillCardId === cardId) {
+      this.store.selectedSkill = undefined;
       this.resetAction();
       return;
     }
@@ -511,6 +511,7 @@ export abstract class BaseAction {
         .getCardIds(PlayerCardsArea.EquipArea)
         .find(cardId => Sanguosha.getCardById(cardId).Skill === skill);
     }
+    this.getTarger();
   }
   protected unselectSkill(skill: Skill) {
     if (this.selectedSkillToPlay === skill) {
@@ -600,17 +601,22 @@ export abstract class BaseAction {
 
   public abstract async onPlay(...args: any): Promise<void>;
 
+  private getTarger() {
+    let target = this.store.room.getAlivePlayersFrom().filter(player => this.isPlayerEnabled(player));
+    if (target.length === 1) {
+      if (!this.selectedTargets.includes(target[0].Id)) {
+        this.selectedTargets.push(target[0].Id);
+        this.presenter.selectPlayer(this.store.room.getPlayerById(target[0].Id));
+      }
+    }
+  }
+
   protected onClickCard(card: Card, selected: boolean, matcher?: CardMatcher): void {
-    const target = this.store.room.getAlivePlayersFrom().filter(player => this.isPlayerEnabled(player));
+    let target = this.store.room.getAlivePlayersFrom().filter(player => this.isPlayerEnabled(player));
     if (selected) {
       this.presenter.selectCard(card);
-      if (target.length === 1) {
-        if (!this.selectedTargets.includes(target[0].Id)) {
-          this.selectedTargets.push(target[0].Id);
-          this.presenter.selectPlayer(this.store.room.getPlayerById(target[0].Id));
-        }
-        this.callToActionCheck();
-      }
+      this.getTarger();
+      this.callToActionCheck();
     } else {
       this.presenter.unselectCard(card);
       if (this.selectedCards.length > 0 && target.length === 1) {
@@ -671,6 +677,8 @@ export abstract class BaseAction {
           });
         } else {
           this.selectedCardToPlay = this.selectedSkillToPlay.viewAs(this.pendingCards, this.player, canViewAs[0]).Id;
+          this.getTarger();
+          this.callToActionCheck();
         }
       } else {
         this.selectedCardToPlay = undefined;
@@ -728,14 +736,7 @@ export abstract class BaseAction {
       }
     }
     if (!selected) {
-      for (const card of this.selectedCards) {
-        this.presenter.unselectCard(Sanguosha.getCardById(card));
-      }
-      for (const target of this.selectedTargets) {
-        this.presenter.unselectPlayer(this.store.room.getPlayerById(target));
-      }
-      this.selectedCards = [];
-      this.selectedTargets = [];
+      this.resetAction();
     }
     this.delightItems();
     this.callToActionCheck();

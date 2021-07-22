@@ -63,12 +63,10 @@ export class RoomStore {
     confirm: boolean;
     cancel: boolean;
     finish: boolean;
-    reforge: boolean;
   } = {
     confirm: false,
     cancel: false,
     finish: false,
-    reforge: false,
   };
 
   @mobx.observable.ref
@@ -144,8 +142,6 @@ export class RoomStore {
   cancelButtonAction: (() => void) | undefined;
   @mobx.observable.ref
   finishButtonAction: (() => void) | undefined;
-  @mobx.observable.ref
-  reforgeButtonAction: (() => void) | undefined;
 }
 
 export class RoomPresenter {
@@ -182,11 +178,11 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  enableActionButton(...buttons: ('confirm' | 'cancel' | 'finish' | 'reforge')[]) {
+  enableActionButton(...buttons: ('confirm' | 'cancel' | 'finish')[]) {
     buttons.forEach(btn => (this.store.actionButtonStatus[btn] = true));
   }
   @mobx.action
-  disableActionButton(...buttons: ('confirm' | 'cancel' | 'finish' | 'reforge')[]) {
+  disableActionButton(...buttons: ('confirm' | 'cancel' | 'finish')[]) {
     buttons.forEach(btn => (this.store.actionButtonStatus[btn] = false));
   }
 
@@ -254,6 +250,7 @@ export class RoomPresenter {
 
   @mobx.action
   closeDialog() {
+    this.disableActionButton('cancel');
     this.store.selectorDialog = undefined;
   }
 
@@ -342,23 +339,12 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  defineReforgeButtonActions(handler: () => void) {
-    this.store.reforgeButtonAction = mobx.action(() => {
-      this.store.actionButtonStatus.reforge = false;
-      this.store.actionButtonStatus.confirm = false;
-      this.store.reforgeButtonAction = undefined;
-      handler();
-    });
-  }
-
-  @mobx.action
   defineFinishButtonActions(handler: () => void) {
     this.store.actionButtonStatus.finish = true;
     this.store.finishButtonAction = mobx.action(() => {
       this.store.actionButtonStatus.finish = false;
       this.store.actionButtonStatus.confirm = false;
       this.store.actionButtonStatus.cancel = false;
-      this.store.actionButtonStatus.reforge = false;
       this.store.finishButtonAction = undefined;
       handler();
     });
@@ -368,7 +354,6 @@ export class RoomPresenter {
     this.store.cancelButtonAction = mobx.action(() => {
       this.store.actionButtonStatus.cancel = false;
       this.store.actionButtonStatus.confirm = false;
-      this.store.actionButtonStatus.reforge = false;
       this.store.cancelButtonAction = undefined;
       handler();
     });

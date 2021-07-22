@@ -91,10 +91,9 @@ export class PlayPhaseAction extends BaseAction {
     const card = this.selectedCardToPlay && Sanguosha.getCardById(this.selectedCardToPlay);
     if (card && card.Reforgeable && this.selectedTargets.length === 0) {
       this.presenter.enableCardReforgeStatus();
-      this.presenter.enableActionButton('reforge');
+      this.presenter.enableActionButton('confirm');
     } else {
       this.presenter.disableCardReforgeStatus();
-      this.presenter.disableActionButton('reforge');
     }
   }
 
@@ -130,20 +129,6 @@ export class PlayPhaseAction extends BaseAction {
         };
 
         this.store.room.broadcast(GameEventIdentifiers.AskForPlayCardsOrSkillsEvent, event);
-        this.presenter.disableActionButton('finish');
-        this.resetActionHandlers();
-        this.resetAction();
-        this.presenter.resetSelectedSkill();
-        resolve();
-      });
-
-      this.presenter.defineReforgeButtonActions(() => {
-        this.presenter.closeDialog();
-        this.store.room.broadcast(
-          GameEventIdentifiers.AskForPlayCardsOrSkillsEvent,
-          this.createPlayOrSkillUseEvent(this.playerId),
-        );
-
         this.presenter.disableActionButton('finish');
         this.resetActionHandlers();
         this.resetAction();

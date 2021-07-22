@@ -22,6 +22,7 @@ import styles from './dashboard.module.css';
 import { EquipCardItem } from './equip_card_item/equip_card_item';
 
 import { Button } from 'ui/button/button';
+import { AutoButton } from 'ui/button/auto_button';
 import armorSlot from './images/armor.png';
 import defenseHorseSlot from './images/defense_horse.png';
 import offenseHorseSlot from './images/offense_horse.png';
@@ -107,7 +108,7 @@ export class Dashboard extends React.Component<DashboardProps> {
           />
         ))}
         {abortedSections?.map(section => (
-          <AbortedCardItem imageLoader={this.props.imageLoader} abortedSection={section} />
+          <AbortedCardItem key={section} imageLoader={this.props.imageLoader} abortedSection={section} />
         ))}
       </div>
     );
@@ -206,38 +207,29 @@ export class Dashboard extends React.Component<DashboardProps> {
         )}
         {this.getPlayerJudgeCards()}
         <div className={styles.userActionsButtons}>
-          {!this.props.store.canReforge && (
-            <Button
-              variant="primaryStatic"
+          {(this.props.store.actionButtonStatus.finish ||
+            this.props.store.actionButtonStatus.cancel ||
+            this.props.store.actionButtonStatus.confirm) && (
+            <AutoButton
+              variant="confirm"
               disabled={!this.props.store.actionButtonStatus.confirm}
               onClick={this.props.onClickConfirmButton}
-            >
-              {this.props.translator.tr('confirm')}
-            </Button>
+            ></AutoButton>
           )}
-          {this.props.store.canReforge && (
-            <Button
-              variant="primaryStatic"
-              disabled={!this.props.store.actionButtonStatus.reforge}
-              onClick={this.props.onClickReforgeButton}
-            >
-              {this.props.translator.tr('reforge')}
-            </Button>
+          {this.props.store.actionButtonStatus.cancel && (
+            <AutoButton
+              variant="cancel"
+              disabled={!this.props.store.actionButtonStatus.cancel}
+              onClick={this.props.onClickCancelButton}
+            ></AutoButton>
           )}
-          <Button
-            variant="primaryStatic"
-            disabled={!this.props.store.actionButtonStatus.cancel}
-            onClick={this.props.onClickCancelButton}
-          >
-            {this.props.translator.tr('cancel')}
-          </Button>
-          <Button
-            variant="secondaryStatic"
-            disabled={!this.props.store.actionButtonStatus.finish}
-            onClick={this.props.onClickFinishButton}
-          >
-            {this.props.translator.tr('finish')}
-          </Button>
+          {this.props.store.actionButtonStatus.finish && (
+            <AutoButton
+              variant="finish"
+              disabled={!this.props.store.actionButtonStatus.finish}
+              onClick={this.props.onClickFinishButton}
+            ></AutoButton>
+          )}
         </div>
         <div className={styles.handCards}>
           {this.AllClientHandCards}

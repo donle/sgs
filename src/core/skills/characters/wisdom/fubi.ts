@@ -1,5 +1,5 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder, EventPacker } from 'core/event/event';
 import {
   AllStage,
   GameStartStage,
@@ -77,8 +77,7 @@ export class FuBiShadow extends TriggerSkill {
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId, triggeredOnEvent } = event;
     const { playerId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
-    const identifier = GameEventIdentifiers.AskForChoosingOptionsEvent;
-    const askForOption: ServerEventFinder<typeof identifier> = {
+    const askForOption: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
       options: ['option-one', 'option-two'],
       toId: fromId,
       conversation: TranslationPack.translationJsonPatcher(
@@ -86,8 +85,16 @@ export class FuBiShadow extends TriggerSkill {
         this.Name,
       ).extract(),
     };
-    room.notify(identifier, askForOption, fromId);
-    const { selectedOption } = await room.onReceivingAsyncResponseFrom(identifier, fromId);
+
+    room.notify(
+      GameEventIdentifiers.AskForChoosingOptionsEvent,
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(askForOption),
+      fromId,
+    );
+    const { selectedOption } = await room.onReceivingAsyncResponseFrom(
+      GameEventIdentifiers.AskForChoosingOptionsEvent,
+      fromId,
+    );
 
     if (!selectedOption) {
       throw new Error(`Unable to get selected option of ${this.Name}`);
