@@ -5,6 +5,7 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { Skill, SkillProhibitedSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming, SkillLifeCycle } from 'core/skills/skill_hooks';
+import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { CompulsorySkill } from 'core/skills/skill_wrappers';
 
 @CompulsorySkill({ name: 'chanyuan', description: 'chanyuan_description' })
@@ -15,7 +16,8 @@ export class ChanYuan extends SkillProhibitedSkill implements OnDefineReleaseTim
     }
 
     for (const playerSkill of player.getSkillProhibitedSkills(true)) {
-      await SkillLifeCycle.executeHookedOnNullifying(playerSkill, room, player);
+      UniqueSkillRule.isProhibited(playerSkill, player) &&
+        (await SkillLifeCycle.executeHookedOnNullifying(playerSkill, room, player));
     }
   }
 

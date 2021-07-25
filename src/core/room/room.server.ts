@@ -279,6 +279,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       return;
     }
 
+    const effectedSkillList: Skill[] = [];
     const nullifySkillList: Skill[] = [];
     for (const player of this.getAlivePlayersFrom()) {
       for (const pSkill of player.getSkillProhibitedSkills()) {
@@ -288,8 +289,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           }
         } else if ((pSkill as SkillProhibitedSkill).triggerSkillEffecting(this, player, content, stage)) {
           for (const playerSkill of player.getSkillProhibitedSkills(true)) {
-            (pSkill as SkillProhibitedSkill).skillFilter(playerSkill, player, undefined, true) &&
-              (await SkillLifeCycle.executeHookedOnEffecting(playerSkill, this, player));
+            if (effectedSkillList.includes(playerSkill)) {
+              continue;
+            }
+
+            if ((pSkill as SkillProhibitedSkill).skillFilter(playerSkill, player, undefined, true)) {
+              await SkillLifeCycle.executeHookedOnEffecting(playerSkill, this, player);
+              effectedSkillList.push(playerSkill);
+            }
           }
         }
       }
