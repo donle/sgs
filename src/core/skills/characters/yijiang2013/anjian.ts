@@ -60,8 +60,7 @@ export class AnJian extends TriggerSkill {
         owner.Id === content.fromId &&
         content.byCardId !== undefined &&
         Sanguosha.getCardById(content.byCardId).GeneralName === 'slash' &&
-        room.getPlayerById(content.toId).getAttackDistance(room) <
-          room.distanceBetween(room.getPlayerById(content.toId), owner)
+        !room.withinAttackDistance(room.getPlayerById(content.toId), owner)
       );
     } else if (identifier === GameEventIdentifiers.DamageEvent) {
       content = content as ServerEventFinder<GameEventIdentifiers.DamageEvent>;

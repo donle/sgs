@@ -212,6 +212,10 @@ export { JueJing, JueJingDying } from './characters/god/juejing';
 export { LongHun, LongHunEffect, LongHunBlackEffect } from './characters/god/longhun';
 export { PoXi } from './characters/god/poxi';
 export { JieYing, JieYingDraw, JieYingEffect } from './characters/god/jieying';
+export { LongNu, LongNuShaodw, LongNuClear, FireLongNu, ThunderLongNu } from './characters/god/longnu';
+export { LiuJieYing, LiuJieYingBuff } from './characters/god/liu_jieying';
+export { DuoRui, DuoRuiProhibited, DuoRuiShadow } from './characters/god/duorui';
+export { ZhiTi, ZhiTiShadow } from './characters/god/zhiti';
 
 export { SanYao } from './characters/yijiang2011/sanyao';
 export { ZhiMan } from './characters/yijiang2011/zhiman';

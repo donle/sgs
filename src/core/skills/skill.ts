@@ -536,6 +536,10 @@ export abstract class GlobalRulesBreakerSkill extends RulesBreakerSkill {
     return 0;
   }
 
+  public breakAdditionalCardHold(room: Room, owner: Player, target: Player): number {
+    return 0;
+  }
+
   public breakWithinAttackDistance(room: Room, owner: Player, from: Player, to: Player): boolean {
     return false;
   }
@@ -590,5 +594,42 @@ export abstract class GlobalFilterSkill extends FilterSkill {
     target: Player,
   ): boolean {
     return true;
+  }
+}
+
+export abstract class SkillProhibitedSkill extends Skill {
+  public canUse() {
+    return true;
+  }
+
+  public isRefreshAt() {
+    return false;
+  }
+
+  public async onEffect() {
+    return true;
+  }
+  public async onUse() {
+    return true;
+  }
+
+  public abstract skillFilter(skill: Skill, owner: Player, cardContainer?: Card, unlimited?: boolean): boolean;
+
+  public triggerSkillNullifying(
+    room: Room,
+    owner: Player,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return false;
+  }
+
+  public triggerSkillEffecting(
+    room: Room,
+    owner: Player,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return false;
   }
 }

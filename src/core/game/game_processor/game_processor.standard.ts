@@ -1184,8 +1184,8 @@ export class StandardGameProcessor extends GameProcessor {
       return;
     }
 
-    const { fromId, cardIds, damage, damageType, triggeredBySkills, beginnerOfTheDamage } = event;
-    for (const player of this.room.getAlivePlayersFrom()) {
+    const { fromId, toId, cardIds, damage, damageType, triggeredBySkills, beginnerOfTheDamage } = event;
+    for (const player of this.room.getOtherPlayers(toId)) {
       if (player.ChainLocked) {
         await this.room.damage({
           fromId,
@@ -1237,6 +1237,10 @@ export class StandardGameProcessor extends GameProcessor {
           event.rescuer = player.Id;
           await this.room.trigger(event, PlayerDyingStage.RequestRescue);
           event.rescuer = undefined;
+
+          if (to.Hp > 0) {
+            break;
+          }
 
           if (
             filterSkills.find(

@@ -21,6 +21,8 @@ export interface OnDefineReleaseTiming {
   whenObtainingSkill?(room: Room, player: Player): Promise<void>;
   whenLosingSkill?(room: Room, player: Player): Promise<void>;
   whenDead?(room: Room, player: Player): Promise<void>;
+  whenNullifying?(room: Room, player: Player): Promise<void>;
+  whenEffecting?(room: Room, player: Player): Promise<void>;
 }
 
 export class SkillLifeCycle {
@@ -43,5 +45,13 @@ export class SkillLifeCycle {
   public static async executeHookedOnDead(skill: Skill, room: Room, owner: Player) {
     const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
     hookedSkill.whenDead && (await hookedSkill.whenDead(room, owner));
+  }
+  public static async executeHookedOnNullifying(skill: Skill, room: Room, owner: Player) {
+    const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+    hookedSkill.whenNullifying && (await hookedSkill.whenNullifying(room, owner));
+  }
+  public static async executeHookedOnEffecting(skill: Skill, room: Room, owner: Player) {
+    const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+    hookedSkill.whenEffecting && (await hookedSkill.whenEffecting(room, owner));
   }
 }

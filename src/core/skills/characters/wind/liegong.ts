@@ -107,7 +107,7 @@ export class LieGongShadow extends RulesBreakerSkill {
     if (cardId === undefined || cardId instanceof CardMatcher) {
       return 0;
     } else {
-      return Math.max(0, Sanguosha.getCardById(cardId).CardNumber - owner.getAttackDistance(room));
+      return Math.max(0, Sanguosha.getCardById(cardId).CardNumber - owner.getAttackRange(room));
     }
   }
 }
