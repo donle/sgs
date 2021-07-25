@@ -1,6 +1,6 @@
 import { CharacterEquipSections } from 'core/characters/character';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { AllStage, DamageEffectStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
+import { AllStage, DamageEffectStage, PhaseChangeStage, PlayerDiedStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -17,9 +17,29 @@ import { OnDefineReleaseTiming, SkillLifeCycle } from 'core/skills/skill_hooks';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'duorui', description: 'duorui_description' })
-export class DuoRui extends TriggerSkill {
+export class DuoRui extends TriggerSkill implements OnDefineReleaseTiming {
   public static readonly DuoRuiTarget = 'duorui_target';
   public static readonly DuoRuiSkill = 'duorui_skill';
+
+  public async whenDead(room: Room, player: Player) {
+    const toId = player.getFlag<PlayerId>(DuoRui.DuoRuiTarget);
+    if (toId) {
+      const to = room.getPlayerById(toId);
+
+      if (to && to.hasShadowSkill(DuoRuiProhibited.Name)) {
+        await room.loseSkill(toId, DuoRuiProhibited.Name);
+      }
+
+      room.removeFlag(toId, this.GeneralName);
+      room.removeFlag(player.Id, DuoRui.DuoRuiTarget);
+    }
+
+    const skill = player.getFlag<string>(DuoRui.DuoRuiSkill);
+    if (skill) {
+      room.removeFlag(player.Id, DuoRui.DuoRuiSkill);
+      player.hasSkill(skill) && (await room.loseSkill(player.Id, skill));
+    }
+  }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage): boolean {
     return stage === DamageEffectStage.AfterDamageEffect;
@@ -157,7 +177,11 @@ export class DuoRuiShadow extends TriggerSkill implements OnDefineReleaseTiming 
     content: ServerEventFinder<GameEventIdentifiers>,
     stage?: AllStage,
   ): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
+    return (
+      room.CurrentPlayerPhase === PlayerPhase.PhaseFinish &&
+      stage === PhaseChangeStage.PhaseChanged &&
+      !room.getPlayerById(owner).getFlag<PlayerId>(DuoRui.DuoRuiTarget)
+    );
   }
 
   public isAutoTrigger(): boolean {
@@ -168,14 +192,31 @@ export class DuoRuiShadow extends TriggerSkill implements OnDefineReleaseTiming 
     return true;
   }
 
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage): boolean {
-    return stage === PhaseChangeStage.PhaseChanged;
+  public isTriggerable(
+    event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.PlayerDiedEvent>,
+    stage?: AllStage,
+  ): boolean {
+    return stage === PhaseChangeStage.PhaseChanged || stage === PlayerDiedStage.AfterPlayerDied;
   }
 
-  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
-    return (
-      content.from === PlayerPhase.PhaseFinish && content.fromPlayer === owner.getFlag<PlayerId>(DuoRui.DuoRuiTarget)
-    );
+  public canUse(
+    room: Room,
+    owner: Player,
+    content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.PlayerDiedEvent>,
+  ): boolean {
+    const identifier = EventPacker.getIdentifier(content);
+    if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
+      const phaseChangeEvent = content as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
+      return (
+        phaseChangeEvent.from === PlayerPhase.PhaseFinish &&
+        phaseChangeEvent.fromPlayer === owner.getFlag<PlayerId>(DuoRui.DuoRuiTarget)
+      );
+    } else if (identifier === GameEventIdentifiers.PlayerDiedEvent) {
+      const playerDiedEvent = content as ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>;
+      return playerDiedEvent.playerId === owner.getFlag<PlayerId>(DuoRui.DuoRuiTarget);
+    }
+
+    return false;
   }
 
   public async onTrigger() {
@@ -194,13 +235,13 @@ export class DuoRuiShadow extends TriggerSkill implements OnDefineReleaseTiming 
       }
 
       room.removeFlag(toId, this.GeneralName);
+      room.removeFlag(fromId, DuoRui.DuoRuiTarget);
     }
 
-    room.removeFlag(fromId, DuoRui.DuoRuiTarget);
     const skill = from.getFlag<string>(DuoRui.DuoRuiSkill);
-    room.removeFlag(fromId, DuoRui.DuoRuiSkill);
-    if (skill && from.hasSkill(skill)) {
-      await room.loseSkill(fromId, skill);
+    if (skill) {
+      room.removeFlag(fromId, DuoRui.DuoRuiSkill);
+      from.hasSkill(skill) && (await room.loseSkill(fromId, skill));
     }
 
     return true;
