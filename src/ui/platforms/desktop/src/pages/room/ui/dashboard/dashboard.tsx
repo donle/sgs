@@ -21,8 +21,8 @@ import { AbortedCardItem } from './aborted_card_item/aborted_card_item';
 import styles from './dashboard.module.css';
 import { EquipCardItem } from './equip_card_item/equip_card_item';
 
-import { Button } from 'ui/button/button';
 import { AutoButton } from 'ui/button/auto_button';
+import { Button } from 'ui/button/button';
 import armorSlot from './images/armor.png';
 import defenseHorseSlot from './images/defense_horse.png';
 import offenseHorseSlot from './images/offense_horse.png';

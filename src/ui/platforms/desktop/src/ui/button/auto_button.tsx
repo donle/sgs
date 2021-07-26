@@ -2,18 +2,18 @@ import classNames from 'classnames';
 import * as React from 'react';
 import styles from './button.module.css';
 
-import confirmButton from './images/confirm.png';
-import confirmButtonDisabled from './images/confirm_disabled.png';
-import confirmButtonHover from './images/confirm_hover.png';
-import confirmButtonDown from './images/confirm_down.png';
-import finishButton from './images/finish.png';
-import finishButtonDisabled from './images/finish_disabled.png';
-import finishButtonHover from './images/finish_hover.png';
-import finishButtonDown from './images/finish_down.png';
 import cancelButton from './images/cancel.png';
 import cancelButtonDisabled from './images/cancel_disabled.png';
-import cancelButtonHover from './images/cancel_hover.png';
 import cancelButtonDown from './images/cancel_down.png';
+import cancelButtonHover from './images/cancel_hover.png';
+import confirmButton from './images/confirm.png';
+import confirmButtonDisabled from './images/confirm_disabled.png';
+import confirmButtonDown from './images/confirm_down.png';
+import confirmButtonHover from './images/confirm_hover.png';
+import finishButton from './images/finish.png';
+import finishButtonDisabled from './images/finish_disabled.png';
+import finishButtonDown from './images/finish_down.png';
+import finishButtonHover from './images/finish_hover.png';
 
 type AutoButtonProps = {
   onMouseEnter?(): void;

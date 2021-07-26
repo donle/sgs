@@ -602,7 +602,7 @@ export abstract class BaseAction {
   public abstract async onPlay(...args: any): Promise<void>;
 
   private getTarger() {
-    let target = this.store.room.getAlivePlayersFrom().filter(player => this.isPlayerEnabled(player));
+    const target = this.store.room.getAlivePlayersFrom().filter(player => this.isPlayerEnabled(player));
     if (target.length === 1) {
       if (!this.selectedTargets.includes(target[0].Id)) {
         this.selectedTargets.push(target[0].Id);
@@ -612,7 +612,7 @@ export abstract class BaseAction {
   }
 
   protected onClickCard(card: Card, selected: boolean, matcher?: CardMatcher): void {
-    let target = this.store.room.getAlivePlayersFrom().filter(player => this.isPlayerEnabled(player));
+    const target = this.store.room.getAlivePlayersFrom().filter(player => this.isPlayerEnabled(player));
     if (selected) {
       this.presenter.selectCard(card);
       this.getTarger();
