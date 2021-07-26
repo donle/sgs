@@ -511,7 +511,7 @@ export abstract class BaseAction {
         .getCardIds(PlayerCardsArea.EquipArea)
         .find(cardId => Sanguosha.getCardById(cardId).Skill === skill);
     }
-    this.getTarger();
+    this.getTarget();
   }
   protected unselectSkill(skill: Skill) {
     if (this.selectedSkillToPlay === skill) {
@@ -601,7 +601,7 @@ export abstract class BaseAction {
 
   public abstract async onPlay(...args: any): Promise<void>;
 
-  private getTarger() {
+  private getTarget() {
     const target = this.store.room.getAlivePlayersFrom().filter(player => this.isPlayerEnabled(player));
     if (target.length === 1) {
       if (!this.selectedTargets.includes(target[0].Id)) {
@@ -615,7 +615,7 @@ export abstract class BaseAction {
     const target = this.store.room.getAlivePlayersFrom().filter(player => this.isPlayerEnabled(player));
     if (selected) {
       this.presenter.selectCard(card);
-      this.getTarger();
+      this.getTarget();
       this.callToActionCheck();
     } else {
       this.presenter.unselectCard(card);
@@ -677,7 +677,7 @@ export abstract class BaseAction {
           });
         } else {
           this.selectedCardToPlay = this.selectedSkillToPlay.viewAs(this.pendingCards, this.player, canViewAs[0]).Id;
-          this.getTarger();
+          this.getTarget();
           this.callToActionCheck();
         }
       } else {

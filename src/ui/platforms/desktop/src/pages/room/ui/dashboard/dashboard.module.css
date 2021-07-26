@@ -25,7 +25,7 @@
     display: flex;
     justify-content: flex-end;
     align-self: center;
-    height: 55px;
+    height: calc(gridLine * 7);
     margin-top: 14px;
 }
 .userActionsButtons button {
