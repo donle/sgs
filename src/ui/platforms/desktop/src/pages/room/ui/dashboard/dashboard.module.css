@@ -23,10 +23,10 @@
 
 .userActionsButtons {
     display: flex;
-    padding-right: calc(gridLine * 12);
     justify-content: flex-end;
-    align-items: center;
-    height: 64px;
+    align-self: center;
+    height: calc(gridLine * 7);
+    margin-top: 14px;
 }
 .userActionsButtons button {
     margin: 0 halfGridLine;

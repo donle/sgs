@@ -28,6 +28,12 @@
     display: flex;
     align-items: center;
 }
+.button.autoButton {
+    background: transparent;
+    display: flex;
+    width: 150px;
+    height: 45px;
+}
 .button:not(.disabled):hover {
     color: white;
 }
