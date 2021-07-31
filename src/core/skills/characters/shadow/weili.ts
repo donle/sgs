@@ -80,7 +80,7 @@ export class WeiLi extends TriggerSkill {
         await room.loseHp(fromId, 1);
       }
 
-      room.setMark(toIds[0], MarkEnum.Orange, 1);
+      room.addMark(toIds[0], MarkEnum.Orange, 1);
     }
 
     return true;

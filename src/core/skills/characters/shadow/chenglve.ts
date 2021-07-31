@@ -160,7 +160,7 @@ export class ChengLveBuff extends RulesBreakerSkill implements OnDefineReleaseTi
     content: ServerEventFinder<GameEventIdentifiers>,
     stage?: AllStage,
   ): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
+    return room.CurrentPlayerPhase === PlayerPhase.PlayCardStage && stage === PhaseChangeStage.PhaseChanged;
   }
 
   public breakCardUsableDistance(cardId: CardId | CardMatcher, room: Room, owner: Player): number {

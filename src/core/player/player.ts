@@ -30,6 +30,7 @@ import {
   GlobalRulesBreakerSkill,
   RulesBreakerSkill,
   Skill,
+  SkillProhibitedSkill,
   SkillType,
   SwitchSkillState,
   TransformSkill,
@@ -51,7 +52,8 @@ type SkillStringType =
   | 'breaker'
   | 'globalBreaker'
   | 'transform'
-  | 'viewAs';
+  | 'viewAs'
+  | 'skillProhibited';
 
 export type HuaShenInfo = {
   skillName: string;
@@ -538,7 +540,10 @@ export abstract class Player implements PlayerInfo {
 
   public refreshOnceSkill(skillName: string): boolean {
     const skill = Sanguosha.getSkillBySkillName(skillName);
-    Precondition.assert(skill.SkillType === SkillType.Limit || skill.SkillType === SkillType.Awaken, `${skillName} isn't once skill`);
+    Precondition.assert(
+      skill.SkillType === SkillType.Limit || skill.SkillType === SkillType.Awaken,
+      `${skillName} isn't once skill`,
+    );
     if (this.skillUsedHistory[skillName] > 0) {
       this.skillUsedHistory[skillName] = 0;
       return true;
@@ -547,19 +552,15 @@ export abstract class Player implements PlayerInfo {
     return false;
   }
 
-  public getAttackDistance(room: Room) {
-    return Math.max(this.getOffenseDistance(room) + this.getAttackRange(room), 1);
-  }
-
-  public getAttackRange(room: Room) {
-    let attackDistance = 0;
+  public getAttackRange(room: Room, except?: CardId[]) {
+    let attackDistance = 1;
     for (const cardId of this.getCardIds(PlayerCardsArea.EquipArea)) {
       const card = Card.isVirtualCardId(cardId)
         ? Sanguosha.getCardById<VirtualCard<WeaponCard>>(cardId).ViewAsCard
         : Sanguosha.getCardById(cardId);
 
-      if (card instanceof WeaponCard) {
-        attackDistance += card.AttackDistance;
+      if (card instanceof WeaponCard && !except?.includes(card.Id)) {
+        attackDistance = card.AttackDistance;
       }
     }
 
@@ -643,6 +644,8 @@ export abstract class Player implements PlayerInfo {
         return skills.filter(skill => skill instanceof TransformSkill) as T[];
       case 'switch':
         return skills.filter(skill => skill.isSwitchSkill()) as T[];
+      case 'skillProhibited':
+        return skills.filter(skill => skill instanceof SkillProhibitedSkill) as T[];
       default:
         throw Precondition.UnreachableError(skillType);
     }
@@ -688,6 +691,8 @@ export abstract class Player implements PlayerInfo {
         return skills.filter(skill => skill.SkillType === SkillType.Common) as T[];
       case 'switch':
         return skills.filter(skill => skill.isSwitchSkill()) as T[];
+      case 'skillProhibited':
+        return skills.filter(skill => skill instanceof SkillProhibitedSkill) as T[];
       default:
         throw Precondition.UnreachableError(skillType);
     }
@@ -750,6 +755,12 @@ export abstract class Player implements PlayerInfo {
 
   public hasShadowSkill(skillName: string) {
     return this.playerSkills.find(skill => skill.Name.startsWith('#') && skill.Name.endsWith(skillName)) !== undefined;
+  }
+
+  public getSkillProhibitedSkills(negative?: boolean): Skill[] {
+    return this.playerSkills.filter(skill =>
+      negative ? !(skill instanceof SkillProhibitedSkill) : skill instanceof SkillProhibitedSkill,
+    );
   }
 
   public turnOver() {

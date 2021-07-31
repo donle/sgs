@@ -1,3 +1,4 @@
+import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -49,7 +50,13 @@ export class SlashSkill extends ActiveSkill implements ExtralCardSkillProperty {
     selectedTargets: PlayerId[],
     containerCard: CardId,
   ) {
-    return room.canAttack(room.getPlayerById(owner), room.getPlayerById(target), containerCard);
+    const except: CardId[] = [];
+    if (containerCard) {
+      const card = Sanguosha.getCardById(containerCard);
+      const ids = card.isVirtualCard() ? (card as VirtualCard).findRealActualCards() : [card.Id];
+      except.push(...ids);
+    }
+    return room.canAttack(room.getPlayerById(owner), room.getPlayerById(target), containerCard, except.length > 0 ? except : undefined);
   }
 
   async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {

@@ -50,6 +50,7 @@ import {
   ResponsiveSkill,
   Skill,
   SkillLifeCycle,
+  SkillProhibitedSkill,
   SkillType,
   TriggerSkill,
   ViewAsSkill,
@@ -276,6 +277,33 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (!this.CurrentPlayer || !this.isPlaying()) {
       this.logger.debug('Do Not Need to Trigger Skill Because GameEnd Or Not CurrentPlayer');
       return;
+    }
+
+    const effectedSkillList: Skill[] = [];
+    const nullifySkillList: Skill[] = [];
+    for (const player of this.getAlivePlayersFrom()) {
+      for (const pSkill of player.getSkillProhibitedSkills()) {
+        if ((pSkill as SkillProhibitedSkill).toDeactivateSkills(this, player, content, stage)) {
+          for (const playerSkill of player.getSkillProhibitedSkills(true)) {
+            (pSkill as SkillProhibitedSkill).skillFilter(playerSkill, player) && nullifySkillList.push(playerSkill);
+          }
+        } else if ((pSkill as SkillProhibitedSkill).toActivateSkills(this, player, content, stage)) {
+          for (const playerSkill of player.getSkillProhibitedSkills(true)) {
+            if (effectedSkillList.includes(playerSkill)) {
+              continue;
+            }
+
+            if ((pSkill as SkillProhibitedSkill).skillFilter(playerSkill, player, undefined, true)) {
+              await SkillLifeCycle.executeHookedOnEffecting(playerSkill, this, player);
+              effectedSkillList.push(playerSkill);
+            }
+          }
+        }
+      }
+
+      for (const nullifySkill of nullifySkillList) {
+        await SkillLifeCycle.executeHookedOnNullifying(nullifySkill, this, player)
+      }
     }
 
     const { triggeredBySkills } = content as ServerEventFinder<GameEventIdentifiers>;

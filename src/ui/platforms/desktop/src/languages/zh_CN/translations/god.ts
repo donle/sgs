@@ -47,10 +47,20 @@ export const characterDictionary: Word[] = [
   { source: '#longhun', target: '龙魂' },
   { source: '##longhun', target: '龙魂' },
 
+  { source: 'god_liubei', target: '神刘备' },
+  { source: 'longnu', target: '龙怒' },
+  { source: 'liu_jieying', target: '结营' },
+
   { source: 'god_luxun', target: '神陆逊' },
   { source: 'junlve', target: '军略' },
   { source: 'cuike', target: '摧克' },
   { source: 'zhanhuo', target: '绽火' },
+
+  { source: 'god_zhangliao', target: '神张辽' },
+  { source: 'duorui', target: '夺锐' },
+  { source: 'duorui target skill: {0}', target: '被夺锐[{0}]' },
+  { source: 'duorui skill: {0}', target: '夺锐[{0}]' },
+  { source: 'zhiti', target: '止啼' },
 
   { source: 'god_ganning', target: '神甘宁' },
   { source: 'poxi', target: '魄袭' },
@@ -152,6 +162,18 @@ export const skillDescriptions: Word[] = [
     target:
       '你可以将一至两张同花色的牌按如下规则使用或打出：红桃当【桃】；方块当火【杀】；梅花当【闪】；黑桃当【无懈可击】。若你以此法使用或打出的两张牌为：红色，此牌的伤害值或回复值+1；黑色，你弃置当前回合角色的一张牌。',
   },
+
+  {
+    source: 'longnu_description',
+    target:
+      '<b>转换技</b>，<b>锁定技</b>，出牌阶段开始时，阳：你失去1点体力并摸一张牌，然后你于此阶段内红色手牌均视为火【杀】且使用火【杀】无距离限制；阴：你减1点体力上限并摸一张牌，然后你于此阶段内手牌中的锦囊牌均视为雷【杀】且你使用雷【杀】无次数限制。',
+  },
+  {
+    source: 'liu_jieying_description',
+    target:
+      '<b>锁定技</b>，游戏开始时，你横置；当你重置前，你防止之；所有处于“连环状态”的角色的手牌上限+2；结束阶段开始时，你横置一名角色。',
+  },
+
   {
     source: 'junlve_description',
     target: '<b>锁定技</b>，当你受到或造成1点伤害后，你获得一个“军略”标记。',
@@ -166,6 +188,18 @@ export const skillDescriptions: Word[] = [
     target:
       '<b>限定技</b>，出牌阶段，你可以移去全部“军略”标记，令至多等量的已横置角色弃置所有装备区里的牌，然后对其中一名角色造成1点火焰伤害。',
   },
+
+  {
+    source: 'duorui_description',
+    target:
+      '当你于出牌阶段对其他角色造成伤害后，你可以废除一个装备栏，然后选择其武将牌上的一项技能（限定技、觉醒技和主公技除外），令其于其下回合结束之前此技能无效，且你于其下回合结束或其死亡之前拥有此技能且不能发动“夺锐”。',
+  },
+  {
+    source: 'zhiti_description',
+    target:
+      '<b>锁定技</b>，你攻击范围内已受伤的角色的手牌上限-1；当你使用【决斗】对你攻击范围内已受伤的角色造成伤害后，你与这些角色拼点赢后，或你受到这些角色造成的伤害后，你恢复一个装备栏。',
+  },
+
   {
     source: 'poxi_description',
     target:
@@ -180,4 +214,16 @@ export const skillDescriptions: Word[] = [
 
 export const conversations: Word[] = [
   { source: 'qixing: please select cards to save', target: '七星：请选择需要保留为手牌的牌' },
+
+  { source: 'liu_jieying: please choose a target to chain on', target: '结营：请选择一名角色横置' },
+
+  {
+    source: '{0}: please choose a skill to nullify and you obtain it until the end of target’s turn',
+    target: '{0}：请选择一项技能，直到其下回合结束，其此技能失效，且你拥有此技能',
+  },
+
+  {
+    source: '{0}: please choose and resume an equip section',
+    target: '{0}：请选择一个装备栏恢复',
+  },
 ];

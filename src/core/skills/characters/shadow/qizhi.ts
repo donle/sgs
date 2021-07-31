@@ -90,7 +90,7 @@ export class QiZhi extends TriggerSkill {
       GameEventIdentifiers.AskForChoosingCardFromPlayerEvent
     >({
       fromId,
-      toId: fromId,
+      toId: toIds![0],
       options,
     });
 

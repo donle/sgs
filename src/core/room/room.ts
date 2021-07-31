@@ -431,7 +431,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return this.AlivePlayers.length / 2 >= distance ? distance : this.AlivePlayers.length - distance;
   }
 
-  public canAttack(from: Player, to: Player, slash?: CardId) {
+  public canAttack(from: Player, to: Player, slash?: CardId, except?: CardId[]) {
     if (to.Id === from.Id) {
       return false;
     }
@@ -445,12 +445,12 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     }
 
     return (
-      this.withinAttackDistance(from, to, additionalAttackDistance) &&
+      this.withinAttackDistance(from, to, additionalAttackDistance, except) &&
       this.canUseCardTo(slash || new CardMatcher({ generalName: ['slash'] }), to.Id)
     );
   }
 
-  public distanceBetween(from: Player, to: Player) {
+  public distanceBetween(from: Player, to: Player, except?: CardId[]) {
     if (from === to) {
       return 0;
     }
@@ -471,7 +471,13 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       }
     }
 
-    const seatGap = to.getDefenseDistance(this) - from.getOffenseDistance(this);
+    const horses = from.getEquipment(CardType.OffenseRide);
+    const fixed =
+      horses && except?.includes(horses)
+        ? (Sanguosha.getCardById(horses).ShadowSkills[0] as RulesBreakerSkill).breakOffenseDistance(this, from)
+        : 0;
+
+    const seatGap = to.getDefenseDistance(this) - from.getOffenseDistance(this) + fixed;
     return Math.max(this.onSeatDistance(from, to) + seatGap, 1);
   }
 
@@ -484,7 +490,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     );
   }
 
-  public withinAttackDistance(from: Player, to: Player, fixed: number = 0) {
+  public withinAttackDistance(from: Player, to: Player, fixed: number = 0, except?: CardId[]) {
     if (from === to) {
       return false;
     }
@@ -498,7 +504,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       }
     }
 
-    return Math.max(from.getAttackDistance(this) + fixed, 0) >= this.distanceBetween(from, to);
+    return Math.max(from.getAttackRange(this, except) + fixed, 0) >= this.distanceBetween(from, to, except);
   }
 
   public isAvailableTarget(cardId: CardId, attacker: PlayerId, target: PlayerId) {

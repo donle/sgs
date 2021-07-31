@@ -3,7 +3,7 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { RulesBreakerSkill } from 'core/skills/skill';
+import { GlobalRulesBreakerSkill, RulesBreakerSkill } from 'core/skills/skill';
 import { GameCommonRuleObject, INFINITE_TRIGGERING_TIMES } from './game_props';
 
 export class GameCommonRules {
@@ -152,6 +152,12 @@ export class GameCommonRules {
     user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {
       additionalCardHold += skill.breakAdditionalCardHoldNumber(room, user);
     });
+
+    for (const owner of room.getAlivePlayersFrom()) {
+      for (const skill of owner.getSkills<GlobalRulesBreakerSkill>('globalBreaker')) {
+        additionalCardHold += skill.breakAdditionalCardHold(room, owner, user);
+      }
+    }
 
     return additionalCardHold;
   }

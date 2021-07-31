@@ -2,7 +2,7 @@ import { Card, CardType } from 'core/cards/card';
 import { Player } from 'core/player/player';
 import { QingGangSkill } from './cards/standard/qinggang';
 import { XianZhenNullify } from './characters/yijiang2011/xianzhen';
-import { Skill, SkillType } from './skill';
+import { Skill, SkillProhibitedSkill, SkillType } from './skill';
 
 export class UniqueSkillRule {
   private constructor() {}
@@ -27,7 +27,7 @@ export class UniqueSkillRule {
     }
   }
 
-  public static isProhibited(skill: Skill, owner: Player, cardContainer?: Card) {
+  public static isProhibited(skill: Skill, owner: Player, cardContainer?: Card, except: Skill[] = []) {
     if (skill.isPersistentSkill()) {
       return false;
     }
@@ -38,9 +38,21 @@ export class UniqueSkillRule {
       }
     }
 
-    if (owner.hasSkill('chanyuan') && owner.Hp <= 1) {
-      return skill.GeneralName !== 'chanyuan' && owner.hasSkill(skill.Name);
+    for (const pSkill of owner.getSkillProhibitedSkills()) {
+      if (except.includes(pSkill)) {
+        continue;
+      }
+
+      const copyList: Skill[] = [];
+      copyList.push(...except, pSkill);
+      if (
+        !this.isProhibited(pSkill, owner, cardContainer, copyList) &&
+        (pSkill as SkillProhibitedSkill).skillFilter(skill, owner, cardContainer)
+      ) {
+        return true;
+      }
     }
+
     if (owner.getFlag<boolean>('tieji') || owner.getFlag<boolean>('yijue')) {
       return skill.SkillType !== SkillType.Compulsory && owner.hasSkill(skill.Name);
     }
