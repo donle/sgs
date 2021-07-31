@@ -138,6 +138,10 @@ export class Lobby extends React.Component<LobbyProps> {
     this.queryRoomList();
   }
 
+  componentWillUnmount() {
+    this.audioService.stop();
+  }
+
   @mobx.action
   private readonly onCreateRoom = () => {
     if (this.unmatchedCoreVersion) {

@@ -55,9 +55,7 @@ export class GameClientProcessor {
     protected audioService: AudioService,
     protected electron: ElectronLoader,
     protected skinData: CharacterSkinInfo[],
-  ) {
-    this.audioService.playRoomBGM();
-  }
+  ) {}
 
   protected tryToThrowNotReadyException(e: GameEventIdentifiers) {
     if (!this.store.room && e !== GameEventIdentifiers.PlayerEnterEvent) {

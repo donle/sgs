@@ -140,7 +140,7 @@ export class RoomPage extends React.Component<
   };
 
   componentDidMount() {
-    this.audioService.stop();
+    this.audioService.playRoomBGM();
     this.presenter.setupRoomStatus({
       playerName: this.playerName,
       socket: this.socket,

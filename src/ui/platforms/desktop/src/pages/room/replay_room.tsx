@@ -162,6 +162,7 @@ export class ReplayRoomPage extends React.Component<
   }
 
   componentDidMount() {
+    this.audioService.playRoomBGM();
     const { replayData } = this.props.location.state as { replayData: ReplayDataType };
     if (!replayData) {
       this.props.history.push('/lobby');

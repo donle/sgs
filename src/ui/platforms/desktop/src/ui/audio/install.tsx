@@ -127,6 +127,7 @@ class AudioPlayerService implements AudioService {
     document.getElementById('root')?.append(container);
     nodeName && this.playList.add(nodeName);
     const onEnd = () => {
+      ReactDOM.unmountComponentAtNode(container);
       container.remove();
       nodeName && this.playList.delete(nodeName);
     };
@@ -140,6 +141,7 @@ class AudioPlayerService implements AudioService {
   public stop() {
     const elements = document.getElementsByName('audioPlayer');
     for (const el of elements) {
+      ReactDOM.unmountComponentAtNode(el);
       el.remove();
     }
     this.playList.clear();
