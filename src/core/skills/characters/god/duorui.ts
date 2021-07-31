@@ -158,7 +158,7 @@ export class DuoRuiProhibited extends SkillProhibitedSkill implements OnDefineRe
 
     for (const playerSkill of player.getSkillProhibitedSkills(true)) {
       this.skillFilter(playerSkill, player) &&
-        (await SkillLifeCycle.executeHookedOnNullifying(playerSkill, room, player));
+        (await SkillLifeCycle.executeHookedOnEffecting(playerSkill, room, player));
     }
   }
 

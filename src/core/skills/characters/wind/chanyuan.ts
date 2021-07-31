@@ -35,7 +35,7 @@ export class ChanYuan extends SkillProhibitedSkill implements OnDefineReleaseTim
     return (owner.Hp <= 1 || !!unlimited) && skill.GeneralName !== this.Name && owner.hasSkill(skill.Name);
   }
 
-  public triggerSkillNullifying(
+  public toDeactivateSkills(
     room: Room,
     owner: Player,
     content: ServerEventFinder<GameEventIdentifiers>,
@@ -44,7 +44,7 @@ export class ChanYuan extends SkillProhibitedSkill implements OnDefineReleaseTim
     return owner.Hp <= 1 && stage === HpChangeStage.AfterHpChange;
   }
 
-  public triggerSkillEffecting(
+  public toActivateSkills(
     room: Room,
     owner: Player,
     content: ServerEventFinder<GameEventIdentifiers>,

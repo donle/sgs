@@ -283,11 +283,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     const nullifySkillList: Skill[] = [];
     for (const player of this.getAlivePlayersFrom()) {
       for (const pSkill of player.getSkillProhibitedSkills()) {
-        if ((pSkill as SkillProhibitedSkill).triggerSkillNullifying(this, player, content, stage)) {
+        if ((pSkill as SkillProhibitedSkill).toDeactivateSkills(this, player, content, stage)) {
           for (const playerSkill of player.getSkillProhibitedSkills(true)) {
             (pSkill as SkillProhibitedSkill).skillFilter(playerSkill, player) && nullifySkillList.push(playerSkill);
           }
-        } else if ((pSkill as SkillProhibitedSkill).triggerSkillEffecting(this, player, content, stage)) {
+        } else if ((pSkill as SkillProhibitedSkill).toActivateSkills(this, player, content, stage)) {
           for (const playerSkill of player.getSkillProhibitedSkills(true)) {
             if (effectedSkillList.includes(playerSkill)) {
               continue;

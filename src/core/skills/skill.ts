@@ -615,7 +615,7 @@ export abstract class SkillProhibitedSkill extends Skill {
 
   public abstract skillFilter(skill: Skill, owner: Player, cardContainer?: Card, unlimited?: boolean): boolean;
 
-  public triggerSkillNullifying(
+  public toDeactivateSkills(
     room: Room,
     owner: Player,
     content: ServerEventFinder<GameEventIdentifiers>,
@@ -624,7 +624,7 @@ export abstract class SkillProhibitedSkill extends Skill {
     return false;
   }
 
-  public triggerSkillEffecting(
+  public toActivateSkills(
     room: Room,
     owner: Player,
     content: ServerEventFinder<GameEventIdentifiers>,
