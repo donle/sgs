@@ -1,10 +1,7 @@
 import { AudioLoader } from 'audio_loader/audio_loader';
 import { CharacterGender } from 'core/characters/character';
 import { ElectronLoader } from 'electron_loader/electron_loader';
-import * as React from 'react';
-import ReactDOM from 'react-dom';
 import { CharacterSkinInfo } from 'skins/skins';
-import { AudioPlayer } from './audio';
 
 export interface AudioService {
   playSkillAudio(
@@ -27,6 +24,7 @@ export interface AudioService {
 }
 
 class AudioPlayerService implements AudioService {
+  public audioManager: { [key: string]: HTMLAudioElement } = {};
   public playList: Set<string> = new Set<string>();
   public badResourcesList: Set<string> = new Set<string>();
 
@@ -34,6 +32,16 @@ class AudioPlayerService implements AudioService {
   private readonly nodeNameOfRoomBGM = 'room-bgm';
 
   constructor(private loader: AudioLoader, private electronLoader: ElectronLoader) {}
+
+  private getFixedVolume(volumeString: string): number {
+    const volume = parseInt(volumeString, 10);
+    const fixedVolume = volume / 100;
+    if (fixedVolume <= 0.02) {
+      return 0;
+    }
+    return fixedVolume;
+  }
+
   async playSkillAudio(
     skillName: string,
     gender: CharacterGender,
@@ -47,10 +55,10 @@ class AudioPlayerService implements AudioService {
     try {
       if (skinName) {
         const audioUrl = await this.loader.getCharacterSkinAudio(characterName!, skinName, skillName, skinData, gender);
-        this.play(audioUrl, undefined, skillName);
+        this.play(audioUrl, undefined);
       } else {
         const audioUrl = await this.loader.getSkillAudio(skillName, gender, characterName);
-        this.play(audioUrl, undefined, skillName);
+        this.play(audioUrl, undefined);
       }
     } catch {
       // tslint:disable-next-line: no-console
@@ -99,52 +107,47 @@ class AudioPlayerService implements AudioService {
     if (this.playList.has(chainAudioIdentifier)) {
       return;
     }
-    this.play(this.loader.getChainAudio(), undefined, chainAudioIdentifier);
+    this.play(this.loader.getChainAudio(), undefined);
   }
 
   playRoomBGM() {
     const audioUrl = this.loader.getRoomBackgroundMusic();
-    this.play(audioUrl, true, this.nodeNameOfRoomBGM, 'bgm');
+    this.play(audioUrl, true, 'bgm');
   }
   playLobbyBGM() {
     const audioUrl = this.loader.getLobbyBackgroundMusic();
-    this.play(audioUrl, true, this.nodeNameOfLobbyBGM, 'bgm');
+    this.play(audioUrl, true, 'bgm');
   }
   playGameStartAudio() {
     this.play(this.loader.getGameStartAudio());
   }
 
-  isPlayingLobbyBGM() {
-    return this.playList.has(this.nodeNameOfLobbyBGM);
-  }
-  isPlayingRoomBGM() {
-    return this.playList.has(this.nodeNameOfRoomBGM);
-  }
+  private play(url: string, loop?: boolean, type: 'bgm' | 'game' = 'game') {
+    if (this.audioManager[url] !== undefined) {
+      return;
+    }
 
-  private play(url: string, loop?: boolean, nodeName?: string, type: 'bgm' | 'game' = 'game') {
-    const container = document.createElement('div');
-    container.setAttribute('name', 'audioPlayer');
-    document.getElementById('root')?.append(container);
-    nodeName && this.playList.add(nodeName);
-    const onEnd = () => {
-      ReactDOM.unmountComponentAtNode(container);
-      container.remove();
-      nodeName && this.playList.delete(nodeName);
-    };
+    const audio = new Audio(url);
+    this.audioManager[url] = audio;
+    audio.loop = !!loop;
+
+    audio.setAttribute('type', type);
 
     const volumeString: string = this.electronLoader.getData(type === 'bgm' ? 'mainVolume' : 'gameVolume');
-    const volume = volumeString ? parseInt(volumeString, 10) : undefined;
-    const player = <AudioPlayer defaultVolume={volume} type={type} url={url} loop={loop} onEnd={onEnd} />;
-    ReactDOM.render(player, container);
+    audio.volume = audio.volume = volumeString ? this.getFixedVolume(volumeString) : 0.5;
+
+    audio.onended = () => {
+      delete this.audioManager[url];
+    };
+
+    audio.play();
   }
 
   public stop() {
-    const elements = document.getElementsByName('audioPlayer');
-    for (const el of elements) {
-      ReactDOM.unmountComponentAtNode(el);
-      el.remove();
+    for (const key of Object.keys(this.audioManager)) {
+      this.audioManager[key].pause();
+      delete this.audioManager[key];
     }
-    this.playList.clear();
   }
 
   public changeBGMVolume() {
@@ -153,16 +156,9 @@ class AudioPlayerService implements AudioService {
       return;
     }
 
-    const volume = parseInt(volumeString, 10);
-    const elements = document.getElementsByTagName('audio');
-    for (const element of elements) {
-      if (element.getAttribute('type') === 'bgm') {
-        const fixedVolume = volume / 100;
-        if (fixedVolume <= 0.01) {
-          element.volume = 0;
-        } else {
-          element.volume = fixedVolume;
-        }
+    for (const audio of Object.values(this.audioManager)) {
+      if (audio.getAttribute('type') === 'bgm') {
+        audio.volume = this.getFixedVolume(volumeString);
       }
     }
   }
@@ -173,16 +169,9 @@ class AudioPlayerService implements AudioService {
       return;
     }
 
-    const volume = parseInt(volumeString, 10);
-    const elements = document.getElementsByTagName('audio');
-    for (const element of elements) {
-      if (element.getAttribute('type') === 'game') {
-        const fixedVolume = volume / 100;
-        if (fixedVolume <= 0.01) {
-          element.volume = 0;
-        } else {
-          element.volume = fixedVolume;
-        }
+    for (const audio of Object.values(this.audioManager)) {
+      if (audio.getAttribute('type') === 'game') {
+        audio.volume = this.getFixedVolume(volumeString);
       }
     }
   }
