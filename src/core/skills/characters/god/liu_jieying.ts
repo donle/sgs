@@ -1,5 +1,11 @@
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { AllStage, ChainLockStage, GameBeginStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
+import {
+  AllStage,
+  ChainLockStage,
+  GameBeginStage,
+  PhaseStageChangeStage,
+  PlayerPhaseStages,
+} from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CompulsorySkill, GlobalRulesBreakerSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
@@ -57,18 +63,20 @@ export class LiuJieYing extends TriggerSkill {
       | GameEventIdentifiers.ChainLockedEvent
       | GameEventIdentifiers.GameBeginEvent
     >;
-    
+
     const identifier = EventPacker.getIdentifier(unknownEvent);
     if (identifier === GameEventIdentifiers.PhaseStageChangeEvent) {
-      const targets = room.getOtherPlayers(fromId).filter(player => !player.ChainLocked).map(player => player.Id);
+      const targets = room
+        .getOtherPlayers(fromId)
+        .filter(player => !player.ChainLocked)
+        .map(player => player.Id);
       if (targets.length === 0) {
         return false;
       }
 
       const resp = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingPlayerEvent>(
         GameEventIdentifiers.AskForChoosingPlayerEvent,
-        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingPlayerEvent>(
-        {
+        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingPlayerEvent>({
           players: targets,
           toId: fromId,
           requiredAmount: 1,

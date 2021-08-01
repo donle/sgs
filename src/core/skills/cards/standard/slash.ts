@@ -56,7 +56,12 @@ export class SlashSkill extends ActiveSkill implements ExtralCardSkillProperty {
       const ids = card.isVirtualCard() ? (card as VirtualCard).findRealActualCards() : [card.Id];
       except.push(...ids);
     }
-    return room.canAttack(room.getPlayerById(owner), room.getPlayerById(target), containerCard, except.length > 0 ? except : undefined);
+    return room.canAttack(
+      room.getPlayerById(owner),
+      room.getPlayerById(target),
+      containerCard,
+      except.length > 0 ? except : undefined,
+    );
   }
 
   async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {

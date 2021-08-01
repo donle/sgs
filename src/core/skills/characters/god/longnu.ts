@@ -4,7 +4,13 @@ import { CardColor, CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
-import { AllStage, PhaseChangeStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
+import {
+  AllStage,
+  PhaseChangeStage,
+  PhaseStageChangeStage,
+  PlayerPhase,
+  PlayerPhaseStages,
+} from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -18,7 +24,7 @@ import {
   SwitchSkillState,
   TransformSkill,
   TriggerSkill,
-} from 'core/skills/skill';;
+} from 'core/skills/skill';
 
 @SwitchSkill()
 @CompulsorySkill({ name: 'longnu', description: 'longnu_description' })

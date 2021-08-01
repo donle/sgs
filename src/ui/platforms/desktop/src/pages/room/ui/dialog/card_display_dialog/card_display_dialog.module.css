@@ -1,0 +1,4 @@
+.confirmButton {
+    display: flex;
+    justify-content: flex-end;
+}

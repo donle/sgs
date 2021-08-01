@@ -191,7 +191,12 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract findCardsByMatcherFrom(cardMatcher: CardMatcher, fromDrawStack?: boolean): CardId[];
   //Server only
-  public abstract displayCards(fromId: PlayerId, displayCards: CardId[], translations?: PatchedTranslationObject): void;
+  public abstract displayCards(
+    fromId: PlayerId,
+    displayCards: CardId[],
+    toIds?: PlayerId[],
+    translations?: PatchedTranslationObject,
+  ): void;
   public abstract isCardInDropStack(cardId: CardId): boolean;
   public abstract isCardInDrawStack(cardId: CardId): boolean;
   public abstract getCardsByNameFromStack(cardName: string, stackName: 'draw' | 'drop', amount?: number): CardId[];

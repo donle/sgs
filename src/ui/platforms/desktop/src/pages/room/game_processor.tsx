@@ -32,6 +32,7 @@ import { ResponsiveUseCardAction } from './actions/responsive_card_use_action';
 import { SelectAction } from './actions/select_action';
 import { SkillUseAction } from './actions/skill_use_action';
 import { RoomPresenter, RoomStore } from './room.presenter';
+import { CardDisplayDialog } from './ui/dialog/card_display_dialog/card_display_dialog';
 import { CardSelectorDialog } from './ui/dialog/card_selector_dialog/card_selector_dialog';
 import { CharacterSelectorDialog } from './ui/dialog/character_selector_dialog/character_selector_dialog';
 import { GameOverDialog } from './ui/dialog/game_over_dialog/game_over_dialog';
@@ -611,17 +612,35 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.presenter.showCards(
-      ...Card.getActualCards(content.displayCards).map(cardId => ({
-        card: Sanguosha.getCardById(cardId),
-        tag:
-          content.fromId &&
-          TranslationPack.translationJsonPatcher(
-            '{0} displayed card',
-            TranslationPack.patchPlayerInTranslation(this.store.room.getPlayerById(content.fromId)),
-          ).toString(),
-      })),
-    );
+    const from = content.fromId ? this.store.room.getPlayerById(content.fromId) : undefined;
+    if (content.engagedPlayerIds && content.engagedPlayerIds.includes(this.store.clientPlayerId)) {
+      const onCloseDialog = () => {
+        this.presenter.closeDialog();
+        this.presenter.broadcastUIUpdate();
+      };
+
+      this.presenter.createDialog(
+        <CardDisplayDialog
+          onConfirm={onCloseDialog}
+          from={from}
+          translator={this.translator}
+          imageLoader={this.imageLoader}
+          cards={content.displayCards}
+        />,
+      );
+    } else {
+      this.presenter.showCards(
+        ...Card.getActualCards(content.displayCards).map(cardId => ({
+          card: Sanguosha.getCardById(cardId),
+          tag:
+            from &&
+            TranslationPack.translationJsonPatcher(
+              '{0} displayed card',
+              TranslationPack.patchPlayerInTranslation(from),
+            ).toString(),
+        })),
+      );
+    }
   }
 
   // tslint:disable-next-line:no-empty

@@ -28,9 +28,6 @@ class AudioPlayerService implements AudioService {
   public playList: Set<string> = new Set<string>();
   public badResourcesList: Set<string> = new Set<string>();
 
-  private readonly nodeNameOfLobbyBGM = 'lobby-bgm';
-  private readonly nodeNameOfRoomBGM = 'room-bgm';
-
   constructor(private loader: AudioLoader, private electronLoader: ElectronLoader) {}
 
   private getFixedVolume(volumeString: string): number {
@@ -55,10 +52,10 @@ class AudioPlayerService implements AudioService {
     try {
       if (skinName) {
         const audioUrl = await this.loader.getCharacterSkinAudio(characterName!, skinName, skillName, skinData, gender);
-        this.play(audioUrl, undefined);
+        this.play(audioUrl);
       } else {
         const audioUrl = await this.loader.getSkillAudio(skillName, gender, characterName);
-        this.play(audioUrl, undefined);
+        this.play(audioUrl);
       }
     } catch {
       // tslint:disable-next-line: no-console
@@ -80,7 +77,7 @@ class AudioPlayerService implements AudioService {
   async playDeathAudio(characterName: string, skinData: CharacterSkinInfo[], skinName?: string) {
     try {
       if (skinName) {
-        const audioUrl = await this.loader.getCharacterSkinAudio(characterName, skinName, 'death', skinData, undefined);
+        const audioUrl = await this.loader.getCharacterSkinAudio(characterName, skinName, 'death', skinData);
         this.play(audioUrl);
       } else {
         const audioUrl = await this.loader.getDeathAudio(characterName);
@@ -107,7 +104,7 @@ class AudioPlayerService implements AudioService {
     if (this.playList.has(chainAudioIdentifier)) {
       return;
     }
-    this.play(this.loader.getChainAudio(), undefined);
+    this.play(this.loader.getChainAudio());
   }
 
   playRoomBGM() {

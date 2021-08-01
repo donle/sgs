@@ -302,7 +302,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       }
 
       for (const nullifySkill of nullifySkillList) {
-        await SkillLifeCycle.executeHookedOnNullifying(nullifySkill, this, player)
+        await SkillLifeCycle.executeHookedOnNullifying(nullifySkill, this, player);
       }
     }
 
@@ -1714,10 +1714,24 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return fromStack.filter(cardId => cardMatcher.match(Sanguosha.getCardById(cardId)));
   }
 
-  public displayCards(fromId: PlayerId, displayCards: CardId[], translations?: PatchedTranslationObject): void {
+  public displayCards(
+    fromId: PlayerId,
+    displayCards: CardId[],
+    toIds?: PlayerId[],
+    translations?: PatchedTranslationObject,
+  ): void {
     const cardDisplayEvent: ServerEventFinder<GameEventIdentifiers.CardDisplayEvent> = {
       fromId,
+      engagedPlayerIds: toIds,
       displayCards,
+      unengagedMessage: toIds
+        ? TranslationPack.translationJsonPatcher(
+            '{0} displayed {1} cards to {2}',
+            TranslationPack.patchPlayerInTranslation(this.getPlayerById(fromId)),
+            displayCards.length,
+            TranslationPack.patchPlayerInTranslation(...toIds.map(id => this.getPlayerById(id))),
+          ).extract()
+        : undefined,
       translationsMessage:
         translations ||
         TranslationPack.translationJsonPatcher(

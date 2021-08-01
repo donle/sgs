@@ -251,6 +251,9 @@ export const eventDictionary: Word[] = [
   { source: 'lose a hp', target: '失去一點體力' },
   { source: 'drop all {0} cards', target: '棄置所有 {0} 牌' },
   { source: '{0} displayed cards {1}', target: '{0} 展示了 {1}' },
+  { source: '{0} displayed {1} cards to {2}', target: '{0} 對 {2} 展示了 {1}' },
+  { source: 'cards displayed to you', target: '對你展示的牌' },
+  { source: '{0} display handcards to you', target: '{0} 對你展示了手牌' },
   { source: '{0} displayed guhuo cards {1}', target: '{0} 展示了蠱惑牌 {1}' },
   { source: '{0} displayed cards {1} from top of draw stack', target: '{0} 展示了牌堆頂的一張 {1}' },
   { source: 'please choose another player or click cancel', target: '請選擇一名其他角色或點擊取消' },
@@ -453,7 +456,8 @@ export const eventDictionary: Word[] = [
   },
   {
     source: 'please choose jiangchi options',
-    target: '請選擇：1.摸兩張牌，此階段不可使用或打出【殺】；2.摸一張牌；3.棄置一張牌，本回合【殺】無距離限制且使用次數+1',
+    target:
+      '請選擇：1.摸兩張牌，此階段不可使用或打出【殺】；2.摸一張牌；3.棄置一張牌，本回合【殺】無距離限制且使用次數+1',
   },
   {
     source: 'zhijian: do you wanna use draw 1 card',

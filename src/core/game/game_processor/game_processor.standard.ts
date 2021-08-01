@@ -648,7 +648,7 @@ export class StandardGameProcessor extends GameProcessor {
                 continue;
               }
               if (reaSkill.isRefreshAt(this.room, player, nextPhase)) {
-                reaSkill.whenRefresh(this.room, player)
+                reaSkill.whenRefresh(this.room, player);
                 player.resetSkillUseHistory(skill);
               }
             }

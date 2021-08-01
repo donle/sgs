@@ -15,7 +15,7 @@ import { GodZhuGeLiang } from './god_zhugeliang';
 export const GodCharacterPackage: (index: number) => Character[] = index => [
   new GodGuanYu(index++),
   new GodLvMeng(index++),
-  
+
   new GodZhouYu(index++),
   new GodZhuGeLiang(index++),
 
