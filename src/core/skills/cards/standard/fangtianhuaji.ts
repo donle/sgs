@@ -1,4 +1,4 @@
-import { Card } from 'core/cards/card';
+import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
@@ -19,7 +19,7 @@ export class FangTianHuaJiSkill extends RulesBreakerSkill {
       return 0;
     }
 
-    const realCards = Card.getActualCards([cardId]);
+    const realCards = VirtualCard.getActualCards([cardId]);
     const isSlash = realCards.length === 1 ? realCards[0] === handCards[0] : false;
     if (isSlash && Sanguosha.getCardById(cardId).GeneralName === 'slash') {
       return 2;

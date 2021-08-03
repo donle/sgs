@@ -1375,7 +1375,7 @@ export class StandardGameProcessor extends GameProcessor {
         if (deadPlayer.Role === PlayerRole.Rebel && !killer.Dead) {
           await this.room.drawCards(3, killedBy, 'top', undefined, undefined, CardDrawReason.KillReward);
         } else if (deadPlayer.Role === PlayerRole.Loyalist && killer.Role === PlayerRole.Lord) {
-          const lordCards = Card.getActualCards(killer.getPlayerCards());
+          const lordCards = VirtualCard.getActualCards(killer.getPlayerCards());
           await this.room.moveCards({
             moveReason: CardMoveReason.SelfDrop,
             fromId: killer.Id,
@@ -1637,7 +1637,7 @@ export class StandardGameProcessor extends GameProcessor {
       }
       return cards;
     }, []);
-    const actualCardIds = Card.getActualCards(cardIds);
+    const actualCardIds = VirtualCard.getActualCards(cardIds);
 
     this.createCardMoveMessage(from, to, cardIds, actualCardIds, event);
 
@@ -1709,7 +1709,7 @@ export class StandardGameProcessor extends GameProcessor {
 
       const from = fromId ? this.room.getPlayerById(fromId) : undefined;
       const cardIds = movingCards.map(cardInfo => cardInfo.card);
-      const actualCardIds = Card.getActualCards(cardIds);
+      const actualCardIds = VirtualCard.getActualCards(cardIds);
 
       this.createCardMoveMessage(from, to, cardIds, actualCardIds, event);
       await this.moveCardInGameboard(from, to, cardIds, actualCardIds, event);
@@ -1758,7 +1758,7 @@ export class StandardGameProcessor extends GameProcessor {
           event.messages.push(
             TranslationPack.translationJsonPatcher(
               '{0} has been placed into drop stack from {1}',
-              TranslationPack.patchCardInTranslation(...Card.getActualCards(cards)),
+              TranslationPack.patchCardInTranslation(...VirtualCard.getActualCards(cards)),
               TranslationPack.patchPlayerInTranslation(from),
             ).toString(),
           );
@@ -1766,7 +1766,7 @@ export class StandardGameProcessor extends GameProcessor {
           event.messages.push(
             TranslationPack.translationJsonPatcher(
               `{0} has been placed on the ${placeAtTheBottomOfDrawStack ? 'bottom' : 'top'} of draw stack from {1}`,
-              TranslationPack.patchCardInTranslation(...Card.getActualCards(cards)),
+              TranslationPack.patchCardInTranslation(...VirtualCard.getActualCards(cards)),
               TranslationPack.patchPlayerInTranslation(from),
             ).toString(),
           );
@@ -1779,7 +1779,7 @@ export class StandardGameProcessor extends GameProcessor {
               TranslationPack.translationJsonPatcher(
                 '{0} lost card {1}',
                 TranslationPack.patchPlayerInTranslation(from),
-                TranslationPack.patchCardInTranslation(...Card.getActualCards(lostCards)),
+                TranslationPack.patchCardInTranslation(...VirtualCard.getActualCards(lostCards)),
               ).toString(),
             );
           }

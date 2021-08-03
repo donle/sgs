@@ -1,4 +1,4 @@
-import { Card, CardType } from 'core/cards/card';
+import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { GameEventIdentifiers, ServerEventFinder, serverResponsiveListenerEvents } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -123,7 +123,7 @@ export class ReplayClientProcessor extends GameClientProcessor {
     ) as Player[];
 
     this.presenter.showCards(
-      ...Card.getActualCards([content.cardId]).map(cardId => ({
+      ...VirtualCard.getActualCards([content.cardId]).map(cardId => ({
         card: Sanguosha.getCardById(cardId),
         tag: TranslationPack.translationJsonPatcher(
           tos ? '{0} used card to {1}' : '{0} used card',

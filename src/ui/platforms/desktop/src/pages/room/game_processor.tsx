@@ -576,7 +576,7 @@ export class GameClientProcessor {
 
     await this.store.room.useCard(content);
     this.presenter.showCards(
-      ...Card.getActualCards([content.cardId]).map(cardId => ({
+      ...VirtualCard.getActualCards([content.cardId]).map(cardId => ({
         card: Sanguosha.getCardById(cardId),
         tag: TranslationPack.translationJsonPatcher(
           tos ? '{0} used card to {1}' : '{0} used card',
@@ -598,7 +598,7 @@ export class GameClientProcessor {
       this.audioService.playCardAudio(card.Name, from.Gender, from.Character.Name);
     }
     this.presenter.showCards(
-      ...Card.getActualCards([content.cardId]).map(cardId => ({
+      ...VirtualCard.getActualCards([content.cardId]).map(cardId => ({
         card: Sanguosha.getCardById(cardId),
         tag: TranslationPack.translationJsonPatcher(
           '{0} responded card',
@@ -630,7 +630,7 @@ export class GameClientProcessor {
       );
     } else {
       this.presenter.showCards(
-        ...Card.getActualCards(content.displayCards).map(cardId => ({
+        ...VirtualCard.getActualCards(content.displayCards).map(cardId => ({
           card: Sanguosha.getCardById(cardId),
           tag:
             from &&
@@ -1047,7 +1047,7 @@ export class GameClientProcessor {
       to &&
       ![CardMoveArea.DrawStack, CardMoveArea.DropStack, CardMoveArea.ProcessingArea].includes(toArea as CardMoveArea)
     ) {
-      const actualCardIds = Card.getActualCards(cardIds);
+      const actualCardIds = VirtualCard.getActualCards(cardIds);
       if (toArea === CardMoveArea.OutsideArea) {
         to.getCardIds((toArea as unknown) as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
       } else if (toArea === CardMoveArea.JudgeArea) {
@@ -1082,7 +1082,7 @@ export class GameClientProcessor {
       }
     } else if (toArea === CardMoveArea.DropStack) {
       this.presenter.showCards(
-        ...Card.getActualCards(cardIds).map(cardId => ({
+        ...VirtualCard.getActualCards(cardIds).map(cardId => ({
           card: Sanguosha.getCardById(cardId),
           tag: 'move to drop stack',
         })),

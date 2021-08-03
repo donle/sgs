@@ -53,7 +53,7 @@ export class SlashSkill extends ActiveSkill implements ExtralCardSkillProperty {
     const except: CardId[] = [];
     if (containerCard) {
       const card = Sanguosha.getCardById(containerCard);
-      const ids = card.isVirtualCard() ? (card as VirtualCard).findRealActualCards() : [card.Id];
+      const ids = card.isVirtualCard() ? (card as VirtualCard).getRealActualCards() : [card.Id];
       except.push(...ids);
     }
     return room.canAttack(

@@ -1,4 +1,4 @@
-import { Card, VirtualCard } from 'core/cards/card';
+import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Duel } from 'core/cards/standard/duel';
@@ -118,7 +118,7 @@ export class ShuangXiongShadow extends TriggerSkill {
     ).reduce<CardId[]>(
       (cards, event) => [
         ...cards,
-        ...Card.getActualCards([event.cardId]).filter(
+        ...VirtualCard.getActualCards([event.cardId]).filter(
           cardId => room.isCardInDropStack(cardId) && !cards.includes(cardId),
         ),
       ],

@@ -53,7 +53,7 @@ export class ShiCai extends TriggerSkill implements OnDefineReleaseTiming {
       const cardUseEvent = content as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
 
       const card = Sanguosha.getCardById(cardUseEvent.cardId);
-      const cardIds = card.isVirtualCard() ? (card as VirtualCard).findRealActualCards() : [cardUseEvent.cardId];
+      const cardIds = card.isVirtualCard() ? (card as VirtualCard).getRealActualCards() : [cardUseEvent.cardId];
       return (
         cardUseEvent.fromId === owner.Id &&
         cardIds.length > 0 &&
@@ -68,7 +68,7 @@ export class ShiCai extends TriggerSkill implements OnDefineReleaseTiming {
         return false;
       }
       const card = Sanguosha.getCardById(aimEvent.byCardId);
-      const cardIds = card.isVirtualCard() ? (card as VirtualCard).findRealActualCards() : [aimEvent.byCardId];
+      const cardIds = card.isVirtualCard() ? (card as VirtualCard).getRealActualCards() : [aimEvent.byCardId];
       return (
         aimEvent.fromId === owner.Id &&
         cardIds.length > 0 &&
@@ -114,14 +114,14 @@ export class ShiCai extends TriggerSkill implements OnDefineReleaseTiming {
     if (identifier === GameEventIdentifiers.CardUseEvent) {
       const cardUseEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
       const card = Sanguosha.getCardById(cardUseEvent.cardId);
-      cardIds = card.isVirtualCard() ? (card as VirtualCard).findRealActualCards() : [cardUseEvent.cardId];
+      cardIds = card.isVirtualCard() ? (card as VirtualCard).getRealActualCards() : [cardUseEvent.cardId];
     } else {
       const aimEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
       if (!aimEvent.byCardId) {
         return false;
       }
       const card = Sanguosha.getCardById(aimEvent.byCardId);
-      cardIds = card.isVirtualCard() ? (card as VirtualCard).findRealActualCards() : [aimEvent.byCardId];
+      cardIds = card.isVirtualCard() ? (card as VirtualCard).getRealActualCards() : [aimEvent.byCardId];
     }
 
     let toMove: CardId[] = cardIds;

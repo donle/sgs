@@ -159,7 +159,7 @@ export class LiHuoPut extends TriggerSkill {
     ) {
       const card = Sanguosha.getCardById(event.cardId);
       if (card.isVirtualCard()) {
-        const cardIds = (card as VirtualCard).findRealActualCards();
+        const cardIds = (card as VirtualCard).getRealActualCards();
         return cardIds.length === 1 && Sanguosha.getCardById(cardIds[0]).GeneralName === 'slash';
       } else {
         return card.GeneralName === 'slash';
@@ -190,7 +190,7 @@ export class LiHuoPut extends TriggerSkill {
     const cardUseEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
 
     const card = Sanguosha.getCardById(cardUseEvent.cardId);
-    const realCardId = card.isVirtualCard() ? (card as VirtualCard).findRealActualCards()[0] : cardUseEvent.cardId;
+    const realCardId = card.isVirtualCard() ? (card as VirtualCard).getRealActualCards()[0] : cardUseEvent.cardId;
     await room.moveCards({
       movingCards: [{ card: realCardId, fromArea: CardMoveArea.ProcessingArea }],
       toId: fromId,

@@ -64,19 +64,6 @@ export abstract class Card {
     return false;
   }
 
-  public static getActualCards(cards: CardId[]): CardId[] {
-    let result: CardId[] = [];
-    for (const card of cards) {
-      if (Card.isVirtualCardId(card)) {
-        result = result.concat(Card.getActualCards(Sanguosha.getCardById<VirtualCard>(card).ActualCardIds));
-      } else {
-        result.push(card);
-      }
-    }
-
-    return result;
-  }
-
   public get Id(): CardId {
     return this.id;
   }
@@ -404,14 +391,27 @@ export class VirtualCard<T extends Card = Card> extends Card {
     return false;
   }
 
-  public findRealActualCards(): CardId[] {
+  public static getActualCards(cards: CardId[]): CardId[] {
+    let result: CardId[] = [];
+    for (const card of cards) {
+      if (Card.isVirtualCardId(card)) {
+        result = result.concat(VirtualCard.getActualCards(Sanguosha.getCardById<VirtualCard>(card).ActualCardIds));
+      } else {
+        result.push(card);
+      }
+    }
+
+    return result;
+  }
+
+  public getRealActualCards(): CardId[] {
     const actualCardIds: CardId[] = [];
     if (this.ActualCardIds.length > 0) {
       for (const subCardId of this.ActualCardIds) {
         const subCard = Sanguosha.getCardById(subCardId);
         if (subCard.isVirtualCard()) {
           const subVCard = subCard as VirtualCard;
-          actualCardIds.push(...subVCard.findRealActualCards());
+          actualCardIds.push(...subVCard.getRealActualCards());
         } else {
           actualCardIds.push(subCardId);
         }
