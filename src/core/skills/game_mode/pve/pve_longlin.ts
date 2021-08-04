@@ -71,7 +71,7 @@ export class PveLongLinShadow extends TriggerSkill {
         extraDrawCardsNum++;
       }
     }
-    await room.drawCards(extraDrawCardsNum, owner.Id);
+    await room.drawCards(2 * extraDrawCardsNum, owner.Id);
 
     return true;
   }
