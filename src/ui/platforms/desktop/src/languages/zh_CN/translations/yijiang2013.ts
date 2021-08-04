@@ -20,6 +20,7 @@ export const characterDictionary: Word[] = [
   { source: 'zhuikong', target: '惴恐' },
   { source: 'qiuyuan', target: '求援' },
   { source: 'longyin', target: '龙吟' },
+  { source: 'jiezhong', target: '竭忠' },
   { source: 'jingce', target: '精策' },
   { source: 'qiaoshuo', target: '巧说' },
   { source: 'j3_zongshi', target: '纵适' },
@@ -61,7 +62,11 @@ export const skillDescriptions: Word[] = [
   {
     source: 'longyin_description',
     target:
-      '当一名角色于其出牌阶段内使用【杀】时，你可以弃置一张牌，令此【杀】不计入次数限制，然后若此【杀】为红色，你摸一张牌。',
+      '当一名角色于其出牌阶段内使用【杀】时，你可以弃置一张牌，令此【杀】不计入次数限制，然后若此【杀】为红色，你摸一张牌。若你以此法弃置的牌点数与此【杀】相同，你的“竭忠”视为未发动过。',
+  },
+  {
+    source: 'jiezhong_description',
+    target: '<b>限定技</b>，出牌阶段开始时，你可以将手牌摸至体力上限。',
   },
   {
     source: 'jingce_description',

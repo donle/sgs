@@ -20,6 +20,7 @@ export const characterDictionary: Word[] = [
   { source: 'zhuikong', target: '惴恐' },
   { source: 'qiuyuan', target: '求援' },
   { source: 'longyin', target: '龍吟' },
+  { source: 'jiezhong', target: '竭忠' },
   { source: 'jingce', target: '精策' },
   { source: 'qiaoshuo', target: '巧說' },
   { source: 'j3_zongshi', target: '縱適' },
@@ -61,12 +62,16 @@ export const skillDescriptions: Word[] = [
   {
     source: 'longyin_description',
     target:
-      '當一名角色於其出牌階段內使用【殺】時，你可以棄置一張牌，令此【殺】不計入次數限制，然後若此【殺】為紅色，你摸一張牌。',
+      '當一名角色於其出牌階段內使用【殺】時，你可以棄置一張牌，令此【殺】不計入次數限制，然後若此【殺】為紅色，你摸一張牌。若你以此法棄置的牌點數與此【殺】相同，你的“竭忠”視為未發動過。',
+  },
+  {
+    source: 'jiezhong_description',
+    target: '<b>限定技</b>，出牌階段開始時，你可以將手牌摸至體力上限。',
   },
   {
     source: 'jingce_description',
     target:
-      '出牌階段，你每使用一種花色的手牌，你本回合手牌上限+1；出牌階段結束時，你可摸X張牌（X是你本回合使用過牌的型別）。',
+      '出牌階段，你每使用一種花色的手牌，你本回合手牌上限+1；出牌階段結束時，你可摸X張牌（X是你本回合使用過牌的類型）。',
   },
   {
     source: 'qiaoshuo_description',
@@ -168,7 +173,7 @@ export const promptDescriptions: Word[] = [
   },
   {
     source: 'qiaoshuo: add',
-    target: '新增目標',
+    target: '添加目標',
   },
   {
     source: 'qiaoshuo: reduce',
@@ -184,7 +189,7 @@ export const promptDescriptions: Word[] = [
   },
   {
     source: 'qiaoshuo: please select a player to append to card targets',
-    target: '請選擇一名角色將其新增至卡牌目標中',
+    target: '請選擇一名角色將其添加至卡牌目標中',
   },
   {
     source: "{1} is removed from target list of {2} by {0}'s skill {3}",
@@ -192,7 +197,7 @@ export const promptDescriptions: Word[] = [
   },
   {
     source: "{1} is appended to target list of {2} by {0}'s skill {3}",
-    target: '{0}使用了技能{3}，將{1}新增至{2}的目標中',
+    target: '{0}使用了技能{3}，將{1}添加至{2}的目標中',
   },
   {
     source: '{0}: do you want to drop {1} card(s) to deal 1 damage to {2} ?',

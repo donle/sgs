@@ -7,6 +7,14 @@ export const characterDictionary: Word[] = [
   { source: 'zishu', target: '自書' },
   { source: 'yingyuan', target: '應援' },
 
+  { source: 'zhouqun', target: '周群' },
+  { source: 'tiansuan', target: '天算' },
+  { source: 'tiansuan:upup', target: '上上籤' },
+  { source: 'tiansuan:up', target: '上籤' },
+  { source: 'tiansuan:mid', target: '中籤' },
+  { source: 'tiansuan:down', target: '下籤' },
+  { source: 'tiansuan:downdown', target: '下下籤' },
+
   { source: 'sp_zhaoyun', target: '群趙雲' },
   { source: 'std_longdan', target: '龍膽' },
   { source: 'chongzhen', target: '衝陣' },
@@ -24,11 +32,17 @@ export const skillDescriptions: Word[] = [
   {
     source: 'zishu_description',
     target:
-      '<b>鎖定技，</b>當你獲得牌後，若此時是你的：回合內且這些牌不因此技能而獲得，你摸一張牌；回合外，本回合結束時，你將這些牌中仍在你手牌中的牌置入棄牌堆。',
+      '<b>鎖定技</b>，當你獲得牌後，若此時是你的：回合內且這些牌不因此技能而獲得，你摸一張牌；回合外，本回合結束時，你將這些牌中仍在你手牌中的牌置入棄牌堆。',
   },
   {
     source: 'yingyuan_description',
     target: '當你於回合內使用基本牌或普通錦囊牌結算結束後，你可以將此牌交給一名其他角色（每種牌名每回合限一次）。',
+  },
+
+  {
+    source: 'tiansuan_description',
+    target:
+      '每輪限一次，出牌階段，你可以隨機抽取一個“命運籤”（抽籤開始前，你可以多放入一根想要的“命運籤”），然後選擇一名角色獲得此籤對應的效果直到你的下個回合開始。若為：上上籤，你觀看其手牌並獲得其區域內的一張牌；上籤，你獲得其區域內的一張牌。<br>上上籤：當你受到傷害時，防止之。<br>上籤：當你受到傷害時，傷害值減至1點；當你受到傷害後，你摸X張牌（X為傷害值）。<br>中籤：當你受到傷害時，將此傷害改為火焰傷害，將傷害值減至1點。<br>下籤：當你受到傷害時，此傷害+1。<br>下下籤：當你受到傷害時，此傷害+1；你不能使用【桃】和【酒】。',
   },
 
   {
@@ -42,11 +56,11 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'fuji_description',
-    target: '<b>鎖定技，</b>距離至你為1的角色不能響應你使用的牌。',
+    target: '<b>鎖定技</b>，距離至你為1的角色不能響應你使用的牌。',
   },
   {
     source: 'jiaozi_description',
-    target: '<b>鎖定技，</b>當你造成或受到傷害時，若你的手牌數為全場唯一最多，此傷害+1。',
+    target: '<b>鎖定技</b>，當你造成或受到傷害時，若你的手牌數為全場唯一最多，此傷害+1。',
   },
 
   {
@@ -79,5 +93,14 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: you need to give a card to {1}',
     target: '{0}：請選擇一張牌交給 {1}',
+  },
+
+  {
+    source: '{0}: do you want to add a stick?',
+    target: '{0}：你可以額外加入以下一根“命運籤”',
+  },
+  {
+    source: '{0}: the result is {1}, please choose a target',
+    target: '{0}：抽籤結果是 {1}，請選擇一名角色獲得此籤的效果',
   },
 ];

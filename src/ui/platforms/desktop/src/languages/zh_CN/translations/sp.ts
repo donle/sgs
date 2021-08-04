@@ -7,6 +7,14 @@ export const characterDictionary: Word[] = [
   { source: 'zishu', target: '自书' },
   { source: 'yingyuan', target: '应援' },
 
+  { source: 'zhouqun', target: '周群' },
+  { source: 'tiansuan', target: '天算' },
+  { source: 'tiansuan:upup', target: '上上签' },
+  { source: 'tiansuan:up', target: '上签' },
+  { source: 'tiansuan:mid', target: '中签' },
+  { source: 'tiansuan:down', target: '下签' },
+  { source: 'tiansuan:downdown', target: '下下签' },
+
   { source: 'sp_zhaoyun', target: '群赵云' },
   { source: 'std_longdan', target: '龙胆' },
   { source: 'chongzhen', target: '冲阵' },
@@ -24,11 +32,17 @@ export const skillDescriptions: Word[] = [
   {
     source: 'zishu_description',
     target:
-      '<b>锁定技，</b>当你获得牌后，若此时是你的：回合内且这些牌不因此技能而获得，你摸一张牌；回合外，本回合结束时，你将这些牌中仍在你手牌中的牌置入弃牌堆。',
+      '<b>锁定技</b>，当你获得牌后，若此时是你的：回合内且这些牌不因此技能而获得，你摸一张牌；回合外，本回合结束时，你将这些牌中仍在你手牌中的牌置入弃牌堆。',
   },
   {
     source: 'yingyuan_description',
     target: '当你于回合内使用基本牌或普通锦囊牌结算结束后，你可以将此牌交给一名其他角色（每种牌名每回合限一次）。',
+  },
+
+  {
+    source: 'tiansuan_description',
+    target:
+      '每轮限一次，出牌阶段，你可以随机抽取一个“命运签”（抽签开始前，你可以多放入一根想要的“命运签”），然后选择一名角色获得此签对应的效果直到你的下个回合开始。若为：上上签，你观看其手牌并获得其区域内的一张牌；上签，你获得其区域内的一张牌。<br>上上签：当你受到伤害时，防止之。<br>上签：当你受到伤害时，伤害值减至1点；当你受到伤害后，你摸X张牌（X为伤害值）。<br>中签：当你受到伤害时，将此伤害改为火焰伤害，将伤害值减至1点。<br>下签：当你受到伤害时，此伤害+1。<br>下下签：当你受到伤害时，此伤害+1；你不能使用【桃】和【酒】。',
   },
 
   {
@@ -42,11 +56,11 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'fuji_description',
-    target: '<b>锁定技，</b>距离至你为1的角色不能响应你使用的牌。',
+    target: '<b>锁定技</b>，距离至你为1的角色不能响应你使用的牌。',
   },
   {
     source: 'jiaozi_description',
-    target: '<b>锁定技，</b>当你造成或受到伤害时，若你的手牌数为全场唯一最多，此伤害+1。',
+    target: '<b>锁定技</b>，当你造成或受到伤害时，若你的手牌数为全场唯一最多，此伤害+1。',
   },
 
   {
@@ -79,5 +93,14 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: you need to give a card to {1}',
     target: '{0}：请选择一张牌交给 {1}',
+  },
+
+  {
+    source: '{0}: do you want to add a stick?',
+    target: '{0}：你可以额外加入以下一根“命运签”',
+  },
+  {
+    source: '{0}: the result is {1}, please choose a target',
+    target: '{0}：抽签结果是 {1}，请选择一名角色获得此签的效果',
   },
 ];

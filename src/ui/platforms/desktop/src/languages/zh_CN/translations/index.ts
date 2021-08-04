@@ -10,8 +10,10 @@ import * as LimitedCharacterDictionary from './limited';
 import * as mountainCharactersDictionary from './mountain';
 import * as pveCharactersDictionary from './pve';
 import * as shadowCharacterDictionary from './shadow';
+import * as sincerityCharactersDictionary from './sincerity';
 import * as spCharacterDictionary from './sp';
 import * as standardCharactersDictionary from './standard';
+import * as thunderCharactersDictionary from './thunder';
 import * as windCharactersDictionary from './wind';
 import * as wisdomCharacterDictionary from './wisdom';
 import * as yiJiangCharactersDictionary from './yijiang2011';
@@ -27,6 +29,7 @@ export {
   godCharactersDictionary,
   mountainCharactersDictionary,
   shadowCharacterDictionary,
+  thunderCharactersDictionary,
   standardCharactersDictionary,
   windCharactersDictionary,
   yiJiangCharactersDictionary,
@@ -39,5 +42,6 @@ export {
   LimitedCharacterDictionary,
   biographiesCharacterDictionary,
   wisdomCharacterDictionary,
+  sincerityCharactersDictionary,
   pveCharactersDictionary,
 };

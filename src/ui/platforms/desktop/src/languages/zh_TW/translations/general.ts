@@ -66,11 +66,12 @@ export const generalDictionary: Word[] = [
   { source: 'offense ride card', target: '進攻馬' },
   { source: 'precious card', target: '寶物牌' },
 
-  { source: 'weapon section', target: '武器區' },
-  { source: 'shield section', target: '防具區' },
-  { source: 'defense ride section', target: '防禦馬' },
-  { source: 'offense ride section', target: '進攻馬' },
-  { source: 'precious', target: '寶物區' },
+  { source: 'weapon section', target: '武器欄' },
+  { source: 'shield section', target: '防具欄' },
+  { source: 'ride section', target: '坐騎欄' },
+  { source: 'defense ride section', target: '防禦坐騎欄' },
+  { source: 'offense ride section', target: '進攻坐騎欄' },
+  { source: 'precious', target: '寶物欄' },
 ];
 
 export const eventDictionary: Word[] = [
@@ -113,6 +114,8 @@ export const eventDictionary: Word[] = [
   { source: 'move to drop stack', target: '移動至棄牌堆' },
   { source: '{0} aborted {1} equip section', target: '{0} 廢除了 {1}' },
   { source: '{0} resumed {1} equip section', target: '{0} 恢復了 {1}' },
+  { source: '{0} aborted judge area', target: '{0} 廢除了判定區' },
+  { source: '{0} resumed judge area', target: '{0} 恢復了判定區' },
   {
     source: 'do you want to trigger skill {0} ?',
     target: '是否發動技能 【{0}】?',

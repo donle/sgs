@@ -8,17 +8,40 @@ export const characterDictionary: Word[] = [
   { source: 'qizhi times: {0}', target: '奇制[{0}]' },
   { source: 'jinqu', target: '進趨' },
 
+  { source: 'kuaiyuekuailiang', target: '蒯越蒯良' },
+  { source: 'jianxiang', target: '薦降' },
+  { source: 'shenshi', target: '審時' },
+  { source: '#shenshi', target: '審時' },
+
+  { source: 'yanyan', target: '嚴顏' },
+  { source: 'juzhan', target: '拒戰' },
+  { source: '#juzhan', target: '拒戰' },
+
+  { source: 'wangping', target: '王平' },
+  { source: 'feijun', target: '飛軍' },
+  { source: 'binglve', target: '兵略' },
+
   { source: 'luji', target: '陸績' },
   { source: 'huaiju', target: '懷橘' },
   { source: 'orange', target: '橘' },
   { source: 'weili', target: '遺禮' },
   { source: 'zhenglun', target: '整論' },
 
+  { source: 'sunliang', target: '孫亮' },
+  { source: 'kuizhu', target: '潰誅' },
+  { source: 'chezheng', target: '掣政' },
+  { source: 'lijun', target: '立軍' },
+
   { source: 'xuyou', target: '許攸' },
   { source: 'chenglve', target: '成略' },
   { source: 'chenglve suits: {0}', target: '成略[{0}]' },
   { source: 'shicai', target: '恃才' },
   { source: 'cunmu', target: '寸目' },
+
+  { source: 'luzhi', target: '盧植' },
+  { source: 'mingren', target: '明任' },
+  { source: '#mingren', target: '明任' },
+  { source: 'zhenliang', target: '貞良' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -32,9 +55,35 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'jianxiang_description',
+    target: '當你成為其他角色使用牌的目標後，你可以令一名手牌數最少的角色摸一張牌。',
+  },
+  {
+    source: 'shenshi_description',
+    target:
+      '<b>轉換技</b>，陽：出牌階段限一次，你可以將一張牌交給一名除你外手牌數最多的角色，對其造成1點傷害，然後若其死亡，則你可令一名角色將手牌摸至四張；陰：當你受到傷害後，你可以觀看傷害來源的手牌，然後你將一張牌交給該角色，此回合結束時，若此牌仍在其手牌或裝備區內，你將手牌摸至四張。',
+  },
+
+  {
+    source: 'juzhan_description',
+    target:
+      '<b>轉換技</b>，陽：當你成為其他角色使用【殺】的目標後，你可以與其各摸一張牌，然後其於此回合內不能對你使用牌；陰；當你使用【殺】指定第一個目標後，你可以獲得目標中一名角色的一張牌，然後你於此回合內不能對其使用牌。',
+  },
+
+  {
+    source: 'feijun_description',
+    target:
+      '出牌階段限一次，你可以棄置一張牌，然後可以選擇一項：1.令一名手牌數多於你角色交給你一張牌；2.令一名裝備區內牌數多於你的角色棄置一張裝備牌。',
+  },
+  {
+    source: 'binglve_description',
+    target: '<b>鎖定技</b>，當你發動“飛軍”後，若此次“飛軍”的目標於此前未成為過你發動“飛軍”的目標，你摸兩張牌。',
+  },
+
+  {
     source: 'huaiju_description',
     target:
-      '<b>鎖定技，</b>遊戲開始時，你獲得3枚“橘”標記；有“橘”的角色於其摸牌階段多摸一張牌；當有“橘”的角色受到傷害時，防止此傷害。',
+      '<b>鎖定技</b>，遊戲開始時，你獲得3枚“橘”標記；有“橘”的角色於其摸牌階段多摸一張牌；當有“橘”的角色受到傷害時，防止此傷害。',
   },
   {
     source: 'weili_description',
@@ -46,9 +95,25 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'kuizhu_description',
+    target:
+      '棄牌階段結束時，你可以選擇一項：1.令一至X名角色各摸一張牌；2.對至少一名體力值之和為X的角色各造成1點傷害，若選擇了不少於兩名角色，你失去1點體力（X為你此階段內棄置過的你的牌數）。',
+  },
+  {
+    source: 'chezheng_description',
+    target:
+      '<b>鎖定技</b>，你不能對攻擊範圍內不包含你的其他角色使用牌；出牌階段結束時，若你於此階段內使用過的牌數小於這些角色，你棄置其中一名角色一張牌。',
+  },
+  {
+    source: 'lijun_description',
+    target:
+      '<b>主公技</b>，其他吳勢力角色於其出牌階段使用【殺】結算結束後，其可以將此【殺】交給你，然後你可令其摸一張牌。',
+  },
+
+  {
     source: 'chenglve_description',
     target:
-      '<b>轉換技，</b>出牌階段限一次，陽：你可以摸一張牌，然後棄置兩張手牌；陰：你可以摸兩張牌，然後棄置一張手牌。若如此做，你於此階段內使用與你以此法棄置牌花色相同的牌無距離和次數限制。',
+      '<b>轉換技</b>，出牌階段限一次，陽：你可以摸一張牌，然後棄置兩張手牌；陰：你可以摸兩張牌，然後棄置一張手牌。若如此做，你於此階段內使用與你以此法棄置牌花色相同的牌無距離和次數限制。',
   },
   {
     source: 'shicai_description',
@@ -56,7 +121,18 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'cunmu_description',
-    target: '<b>鎖定技，</b>當你摸牌時，改為從牌堆底摸牌。',
+    target: '<b>鎖定技</b>，當你摸牌時，改為從牌堆底摸牌。',
+  },
+
+  {
+    source: 'mingren_description',
+    target:
+      '遊戲開始時，你摸兩張牌，然後將一張手牌置於你的武將牌上，稱為“任”；結束階段開始時，你可以用一張手牌交換“任”。',
+  },
+  {
+    source: 'zhenliang_description',
+    target:
+      '<b>轉換技</b>，陽：出牌階段限一次，你可以選擇你攻擊範圍內的一名角色，並棄置與你的“任”顏色相同的一張牌，對其造成1點傷害；陰：當你於回合外使用或打出牌結算結束後，你可以令一名角色摸一張牌。',
   },
 ];
 
@@ -73,6 +149,50 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: please drop {1} card(s)',
     target: '{0}：請棄置 {1} 張牌',
+  },
+
+  {
+    source: '{0}: do you want to choose a jianxiang target to draw a card?',
+    target: '{0}：你可以令手牌數最少的一名角色摸一張牌',
+  },
+
+  {
+    source: 'shenshi: do you want to choose a target to draw cards?',
+    target: '審時：你可以令一名角色將手牌摸至四張',
+  },
+  {
+    source: '{0}: do you want to view {1}’s hand cards?',
+    target: '{0}：你可以觀看 {1} 的手牌',
+  },
+
+  {
+    source: '{0}: do you want to draw a card with {1} , then he cannot use card to you this round?',
+    target: '{0}：你可以與 {1} 各摸一張牌，然後其於本回合內不能對你使用牌',
+  },
+  {
+    source: '{0}: do you want to choose a target to prey a card from him, then you cannot use card to him this round?',
+    target: '{0}：你可以獲得其中一名目標角色一張牌，然後你於本回合內不能對其使用牌',
+  },
+
+  {
+    source: 'feijun: please choose a target',
+    target: '飛軍：請選擇一名其他角色',
+  },
+  {
+    source: '{0}: please choose feijun options: {1}',
+    target: '{0}：請選擇一項令 {1} 執行',
+  },
+  {
+    source: 'feijun:hand',
+    target: '交給你一張手牌',
+  },
+  {
+    source: 'feijun:equip',
+    target: '棄置一張裝備牌',
+  },
+  {
+    source: '{0}: please drop a equip card',
+    target: '{0}：請棄置一張裝備牌',
   },
 
   {
@@ -93,6 +213,35 @@ export const promptDescriptions: Word[] = [
   },
 
   {
+    source: '{0}: please choose kuizhu options: {1}',
+    target: '{0}：你可以令你一至 {1} 名角色各摸一張牌，或對至少一名體力值之和為 {1} 的角色各造成1點傷害',
+  },
+  { source: 'kuizhu:draw', target: '摸牌' },
+  { source: 'kuizhu:damage', target: '傷害' },
+  {
+    source: '{0}: do you want to choose at least {1} targets to draw a card each?',
+    target: '{0}：你可以令一至 {1} 名角色各摸一張牌',
+  },
+  {
+    source: '{0}: do you want to choose a targets with {1} hp to deal 1 damage to each target?',
+    target: '{0}：你可以對至少一名體力值之和為 {1} 的角色各造成1點傷害',
+  },
+
+  {
+    source: 'chezheng: please choose a target to drop a card from him?',
+    target: '掣政：請選擇其中一名角色，棄置其一張牌',
+  },
+
+  {
+    source: '{0}: do you want to give {1} to {2}?',
+    target: '{0}：你是否要將 {1} 交給 {2}',
+  },
+  {
+    source: '{0}: do you want to let {1} draws a card?',
+    target: '{0}：你是否要令 {1} 摸一張牌',
+  },
+
+  {
     source: '{0}: do you want to skip draw card phase to gain 1 orange?',
     target: '{0}：你可以跳過摸牌階段來獲得一枚“橘”',
   },
@@ -100,5 +249,19 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to put {1} on the top of draw stack, then draw a card?',
     target: '{0}：你可以將 {1} 置於牌堆頂，然後摸一張牌',
+  },
+
+  {
+    source: '{0}: please put a hand card on your general card as ‘Ren’',
+    target: '{0}：請將一張手牌置於你的武將牌上，稱為“任”',
+  },
+  {
+    source: '{0}: do you want to exchange a hand card with a ‘Ren’?',
+    target: '{0}：你可以用一張手牌交換“任”',
+  },
+
+  {
+    source: '{0}: do you want to choose a target to draw a card?',
+    target: '{0}：你可以令一名角色摸一張牌',
   },
 ];
