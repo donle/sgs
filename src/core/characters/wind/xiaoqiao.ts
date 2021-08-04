@@ -10,6 +10,7 @@ export class XiaoQiao extends Character {
       ...skillLoaderInstance.getSkillsByName('hongyan'),
       skillLoaderInstance.getSkillByName('tianxiang'),
       skillLoaderInstance.getSkillByName('piaoling'),
+      skillLoaderInstance.getSkillByName('wusheng'),
     ]);
   }
 }

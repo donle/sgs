@@ -375,6 +375,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                 } else {
                   const event = {
                     invokeSkillNames: [skill.Name],
+                    triggeredOnEvent: content,
                     toId: player.Id,
                     conversation: skill.getSkillLog(this, player, content),
                   };

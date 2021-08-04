@@ -391,11 +391,15 @@ export class VirtualCard<T extends Card = Card> extends Card {
     return false;
   }
 
-  public static getActualCards(cards: CardId[]): CardId[] {
+  public static getActualCards(cards: CardId[], shallow?: boolean): CardId[] {
     let result: CardId[] = [];
     for (const card of cards) {
       if (Card.isVirtualCardId(card)) {
-        result = result.concat(VirtualCard.getActualCards(Sanguosha.getCardById<VirtualCard>(card).ActualCardIds));
+        if (shallow) {
+          result.push(...Sanguosha.getCardById<VirtualCard>(card).ActualCardIds);
+        } else {
+          result = result.concat(VirtualCard.getActualCards(Sanguosha.getCardById<VirtualCard>(card).ActualCardIds));
+        }
       } else {
         result.push(card);
       }

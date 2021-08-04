@@ -591,7 +591,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return this.getPlayerById(player).getMark(name);
   }
 
-  public abortPlayerEquipSections(playerId: PlayerId, ...abortSections: CharacterEquipSections[]) {
+  public async abortPlayerEquipSections(playerId: PlayerId, ...abortSections: CharacterEquipSections[]) {
     const player = this.getPlayerById(playerId);
     player.abortEquipSections(...abortSections);
   }

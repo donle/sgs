@@ -22,6 +22,7 @@ import {
   PlayerStatus,
 } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Algorithm } from 'core/shares/libs/algorithm';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import {
   ActiveSkill,
@@ -337,11 +338,12 @@ export abstract class Player implements PlayerInfo {
   dropCards(...cards: CardId[]): CardId[] {
     const droppedCardIds: CardId[] = [];
     const allCards = this.getCardIds();
+    const allRealCards = VirtualCard.getActualCards(allCards);
     const droppingCards = cards.reduce<CardId[]>((dropping, card) => {
-      if (!allCards.includes(card) && Card.isVirtualCardId(card)) {
-        dropping.push(...VirtualCard.getActualCards([card]));
-      } else {
+      if (allCards.includes(card) || allRealCards.includes(card)) {
         dropping.push(card);
+      } else if (Card.isVirtualCardId(card)) {
+        dropping.push(...Algorithm.intersection(VirtualCard.getActualCards([card]), allRealCards));
       }
       return dropping;
     }, []);
@@ -349,22 +351,12 @@ export abstract class Player implements PlayerInfo {
     for (const area of [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea, PlayerCardsArea.JudgeArea]) {
       const areaCards = this.getCardIds(area);
       for (const card of droppingCards) {
-        let index = areaCards.findIndex(areaCard => {
-          if (areaCard === card) {
-            return true;
-          }
-          if (Card.isVirtualCardId(areaCard)) {
-            const vCard = Sanguosha.getCardById<VirtualCard>(areaCard);
-            if (vCard.getRealActualCards().includes(card)) {
-              return true;
-            }
-          }
-
-          return false;
-        });
+        let index = areaCards.findIndex(
+          areaCard => areaCard === card || VirtualCard.getActualCards([areaCard]).includes(card),
+        );
 
         if (index >= 0) {
-          droppedCardIds.push(areaCards.splice(index, 1)[0]);
+          droppedCardIds.push(...VirtualCard.getActualCards(areaCards.splice(index, 1)));
         } else {
           for (const [areaName, outsideArea] of Object.entries(this.playerOutsideCards)) {
             if (this.isCharacterOutsideArea(areaName)) {
@@ -373,23 +365,14 @@ export abstract class Player implements PlayerInfo {
 
             index = outsideArea.findIndex(areaCard => areaCard === card);
             if (index >= 0) {
-              droppedCardIds.push(outsideArea.splice(index, 1)[0]);
+              droppedCardIds.push(...VirtualCard.getActualCards(outsideArea.splice(index, 1)));
             }
           }
         }
       }
     }
 
-    const droppedRealCards = droppedCardIds.reduce<CardId[]>((realCards, card) => {
-      if (Card.isVirtualCardId(card)) {
-        realCards.push(...Sanguosha.getCardById<VirtualCard>(card).getRealActualCards());
-      } else {
-        realCards.push(card);
-      }
-
-      return realCards;
-    }, []);
-    const untrackedCards = droppingCards.filter(card => !droppedRealCards.includes(card));
+    const untrackedCards = droppingCards.filter(card => !droppedCardIds.includes(card));
     if (untrackedCards.length > 0) {
       throw new Error(`Can't drop card ${JSON.stringify(untrackedCards)} from player ${this.Name}`);
     }

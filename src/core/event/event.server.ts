@@ -304,6 +304,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.AskForSkillUseEvent]: {
     invokeSkillNames: string[];
     toId: PlayerId;
+    triggeredOnEvent?: ServerEventFinder<GameEventIdentifiers>;
     conversation?: string | PatchedTranslationObject;
   };
   [GameEventIdentifiers.AskForCardDisplayEvent]: {
