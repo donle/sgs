@@ -24,10 +24,6 @@ export class PveGameProcessor extends StandardGameProcessor {
     }
   }
 
-  // protected async beforeGameStartPreparation() {
-  //   const lord = this.room.AlivePlayers.find(player => player.Role === PlayerRole.Lord)!;
-  // }
-
   protected async chooseCharacters(playersInfo: PlayerInfo[], selectableCharacters: Character[]) {
     // link to  assignRoles
     const lordInfo = playersInfo[0];

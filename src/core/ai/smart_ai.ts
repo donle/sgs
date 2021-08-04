@@ -63,8 +63,6 @@ export class SmartAI extends PlayerAI {
               .filter(player => cardSkill.isAvailableTarget(from.Id, room, player.Id, [], [], cardId))
               .map(player => player.Id);
 
-            // console.log(`approvedTargetPlayerIds is ${approvedTargetPlayerIds}`);
-
             if (approvedTargetPlayerIds.length < targetNumber) {
               continue;
             } else {
@@ -198,12 +196,6 @@ export class SmartAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
-    // const logs: string =
-    //   `AskForCardResponseEvent, ask Card ${content.cardMatcher.name} or ${content.cardMatcher.generalName} ` +
-    //   (content !== undefined && content!.byCardId !== undefined
-    //     ? `for Reponse ${Sanguosha.getCardById(content!.byCardId).Name}`
-    //     : '');
-
     const { toId, cardMatcher, byCardId, cardUserId } = content as ServerEventFinder<
       GameEventIdentifiers.AskForCardResponseEvent
     >;
@@ -243,12 +235,6 @@ export class SmartAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
-    // const logs: string =
-    //   `AskForCardUseEvent, ask Card ${content.cardMatcher.name} ` +
-    //   (content !== undefined && content!.byCardId !== undefined
-    //     ? `for Reponse ${Sanguosha.getCardById(content!.byCardId).Name}`
-    //     : '');
-
     const { toId, cardMatcher } = content as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
     const toPlayer = room.getPlayerById(toId);
 
@@ -285,12 +271,6 @@ export class SmartAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
-    // const logs: string =
-    //   `AskForCardDropEvent, ask ExceptCard: ${content.except}, Amount: ${content.cardAmount} ` +
-    //   (content !== undefined && content!.triggeredBySkills !== undefined
-    //     ? `for Reponse ${content!.triggeredBySkills}`
-    //     : '');
-
     const { toId, cardAmount, fromArea, except } = content as ServerEventFinder<
       GameEventIdentifiers.AskForCardDropEvent
     >;

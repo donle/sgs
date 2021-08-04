@@ -175,8 +175,6 @@ export abstract class AiLibrary {
       return cardIds;
     }
 
-    // console.log(`Ai use card: ${Sanguosha.getCardById(cardId[0]).Name} by CardId: ${byCardId}`);
-
     if (byCardId !== undefined) {
       if (cardMatcher.name?.includes('wuxiekeji')) {
         return AiLibrary.shouldUseWuXieKeJi(room, aiPlayer, cardIds, byCardId, cardUseFrom) ? cardIds : [];
@@ -206,11 +204,8 @@ export abstract class AiLibrary {
 
     const areas = Object.keys(options).map(area => Number(area) as PlayerCardsArea);
     if (areas.includes(PlayerCardsArea.EquipArea)) {
-      // console.log('ChooseCard from Player EquipArea');
       const cardIds = options[PlayerCardsArea.EquipArea];
       if (cardIds instanceof Array && cardIds.length > 0) {
-        // console.log(`Choose EquipArea Card from ${cardIds}`);
-
         selectedCard = cardIds.find(cardId =>
           Sanguosha.getCardById(cardId).is(
             equipTypePriority.find(
@@ -231,14 +226,9 @@ export abstract class AiLibrary {
 
       const cards = options[fromArea]!;
 
-      // console.log(`Cards is :${cards}`);
       selectedCard = cards instanceof Array ? cards[0] : undefined;
       selectedCardIndex = typeof cards === 'number' ? 0 : undefined;
     }
-
-    // console.log(
-    //   `Confirm ChooseCard from Player: selectedCard: ${selectedCard}, selectedCardIndex: ${selectedCardIndex}, fromArea: ${fromArea}`,
-    // );
 
     const chooseCard: ClientEventFinder<T> = {
       fromId: aiId,
@@ -269,7 +259,6 @@ export abstract class AiLibrary {
     }, []);
 
     cardIds.map(cardsValue => {
-      // console.log(`card: ${Sanguosha.getCardById(cardsValue.cardId).Name}, value: ${cardsValue.value}`);
       return [];
     });
 
