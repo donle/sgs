@@ -159,6 +159,7 @@ export class SmartAI extends PlayerAI {
       const cardResponse: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> = {
         fromId: toId,
         cardId: availableCards.length > 0 ? AiLibrary.sortCardbyValue(availableCards)[0] : undefined,
+        toIds: content.scopedTargets,
       };
       return cardResponse;
     } else {

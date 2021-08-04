@@ -325,6 +325,32 @@ export abstract class AiLibrary {
       cards = cards.filter(cardId => skill.canUseCard(cardId, room, player.Id, onResponse));
     }
 
+    const viewAsSkills = player.getSkills<ViewAsSkill>('viewAs');
+    for (const skill of viewAsSkills) {
+      const availableCards: CardId[] = [];
+      for (const area of skill.availableCardAreas()) {
+        availableCards.push(...player.getCardIds(area, skill.GeneralName));
+      }
+
+      const avaiableViewAs = AiSkillTrigger.createViewAsPossibilties(
+        room,
+        player,
+        skill,
+        availableCards,
+        cardMatcher,
+        [],
+      );
+      if (avaiableViewAs) {
+        const canViewAs = skill.canViewAs(room, player, avaiableViewAs, cardMatcher);
+        for (const viewAs of canViewAs) {
+          const viewAsCardId = skill.viewAs(avaiableViewAs, player, viewAs).Id;
+          if (player.canUseCard(room, viewAsCardId, cardMatcher)) {
+            cards.push(viewAsCardId);
+          }
+        }
+      }
+    }
+
     return cards;
   }
 
