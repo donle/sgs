@@ -48,6 +48,8 @@ export class PveJieNu extends TriggerSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId } = event;
+    let x=0
+    let y=0
     const unknownEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers>;
     const identifier = EventPacker.getIdentifier(unknownEvent);
     if (
@@ -55,23 +57,40 @@ export class PveJieNu extends TriggerSkill {
       (identifier === GameEventIdentifiers.PhaseStageChangeEvent &&
         room.getPlayerById(fromId).Hp < room.getPlayerById(fromId).LostHp)
     ) {
+      if (identifier === GameEventIdentifiers.DamageEvent) {
+        const damageEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
+        if (damageEvent.damageType === DamageType.Normal) {
+          x=0; y=0
+          room.setFlag(fromId,'jienudamage',x)
+          room.setFlag(fromId,'jienurecover',y)
+        }else if(damageEvent.damageType === DamageType.Fire){
+          x++
+          room.setFlag(fromId,'jienudamage',x)
+        }else if(damageEvent.damageType === DamageType.Thunder){
+          y++
+          room.setFlag(fromId,'jienurecover',y)
+        }
+      }
+      if (x>4||y>4) {
+        room.setFlag(fromId,'jienudamage',0)
+        room.setFlag(fromId,'jienurecover',0)
+      }
       await room.turnOver(fromId);
     }
 
     if (identifier === GameEventIdentifiers.PlayerTurnOverEvent) {
-      if (room.getPlayerById(fromId).isFaceUp()) {
-        await room.recover({ recoveredHp: 1, recoverBy: fromId, toId: fromId });
-      } else {
+      const num2 =room.getPlayerById(fromId).getFlag<number>('jienurecover')>0?0:1
+        await room.recover({ recoveredHp: num2, recoverBy: fromId, toId: fromId });
+        const num =room.getPlayerById(fromId).getFlag<number>('jienudamage')>0?1:2
         for (const player of room.getOtherPlayers(fromId)) {
           await room.damage({
             fromId,
             toId: player.Id,
-            damage: 1,
+            damage: num,
             damageType: DamageType.Fire,
             triggeredBySkills: [this.Name],
           });
         }
-      }
     }
     return true;
   }

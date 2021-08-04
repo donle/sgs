@@ -19,6 +19,9 @@ export const characterDictionary: Word[] = [
   { source: 'pve_qinlv', target: '琴律' },
   { source: 'pve_jienu', target: '介怒' },
   { source: 'pve_longhou', target: '龍吼' },
+  { source: 'pve_chaiyue', target: '豺月' },
+  { source: 'pve_lige', target: '離歌' },
+  { source: 'pve_bibao', target: '必報' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -30,7 +33,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_longlin_description',
     target:
-      '<b>鎖定技</b>，鎖定技，準備階段開始時，若你的裝備區：沒有武器，你摸一張牌，沒有防具，你摸一張牌，沒有寶具，你摸一張牌；摸牌階段開始時，你額外摸裝備區花色數張牌；當你使用裝備牌時，若你已受傷，你回覆一點體力並摸一張牌，若你未受傷，你摸三張牌。',
+      '<b>鎖定技</b>，鎖定技，準備階段開始時，若你的裝備區：沒有武器，你摸两張牌，沒有防具，你摸两張牌，沒有寶具，你摸两張牌；摸牌階段開始時，你額外摸裝備區花色數張牌；當你使用裝備牌時，若你已受傷，你回覆一點體力並摸一張牌，若你未受傷，你摸三張牌。',
   },
   {
     source: 'pve_ruiyan_description',
@@ -38,7 +41,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'pve_suwei_description',
-    target: '<b>鎖定技</b>，當你成為一名其它角色使用牌的目標後，你抽一張牌並棄置其一張牌。',
+    target: '<b>鎖定技</b>，當你成為一名其它角色使用牌的目標後，你摸一張牌並棄置其一張牌。',
   },
   {
     source: 'pve_lingxi_description',
@@ -53,12 +56,12 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_longlie_description',
     target:
-      '<b>鎖定技</b>，當使用的【殺】指定目標後，你令此【殺】不能被【閃】響應；其它角色回合結束時，視為你對其使用一張【火殺】。',
+      '<b>鎖定技</b>，你使用【殺】不能被響應；遊戲人數大於2時，此【殺】傷害+1',
   },
   {
     source: 'pve_qinlv_description',
     target:
-      '<b>鎖定技</b>，每名角色結束階段開始時，你與其各回復一點體力；若你仍受傷且不是你的回合，其失去X點體力；如此做後，若其未受傷，則你摸1張牌。（X為體力上限一半，向下取整）',
+      '<b>鎖定技</b>，每名角色結束階段開始時，你與其各回復一點體力；若你仍受傷且不是你的回合，其失去X點體力；如此做後，若其未受傷，則你摸X張牌。（X為體力上限一半，向下取整）',
   },
   {
     source: 'pve_longhou_description',
@@ -67,7 +70,22 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_jienu_description',
     target:
-      '<b>鎖定技</b>，當你翻面後，若你正面朝上，你回覆一點體力，否則對所有其他角色造成一點火屬性傷害；出牌階段開始時，若你的體力值小於已損失的體力值，你翻面；當你受到傷害後，你翻面。',
+      '<b>鎖定技</b>，當你翻面後，你回復一點體力並對所有其他角色造成兩點火屬性傷害；出牌階段開始時，若你的體力值小於已損失的體力值，你翻面；當你受到傷害後，你翻面。（受到屬性傷害後削弱此技能直到受到普通傷害或單屬性傷害超過四次）',
+  },
+  {
+    source: 'pve_chaiyue_description',
+    target:
+      '<b>鎖定技</b>，你每受到1點普通傷害後，你摸兩張牌並將一張牌置於武將牌上，稱為【碑】；摸牌階段開始時，你摸X張牌；你的【殺】次數+X（X為【碑】數）',
+  },
+  {
+    source: 'pve_lige_description',
+    target:
+      '<b>鎖定技</b>，一名其他角色結束階段開始時，其交給你一張牌或令你摸兩張牌，選擇後視為對其使用【決鬥】',
+  },
+  {
+    source: 'pve_bibao_description',
+    target:
+      '<b>鎖定技</b>，你造成或受到傷害時，你回復1點體力且此傷害+1，你摸等同傷害+1張牌。',
   },
 ];
 
