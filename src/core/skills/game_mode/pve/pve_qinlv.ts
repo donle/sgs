@@ -32,7 +32,7 @@ export class PveQinLv extends TriggerSkill {
     }
 
     if (!player.isInjured()) {
-      await room.drawCards(1, owner.Id, 'top', owner.Id, this.Name);
+      await room.drawCards(Math.floor(player.MaxHp / 2), owner.Id, 'top', owner.Id, this.Name);
     }
 
     return true;

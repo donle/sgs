@@ -19,6 +19,9 @@ export const characterDictionary: Word[] = [
   { source: 'pve_qinlv', target: '琴律' },
   { source: 'pve_jienu', target: '介怒' },
   { source: 'pve_longhou', target: '龙吼' },
+  { source: 'pve_chaiyue', target: '豺月' },
+  { source: 'pve_lige', target: '离歌' },
+  { source: 'pve_bibao', target: '必报' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -30,7 +33,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_longlin_description',
     target:
-      '<b>锁定技</b>，锁定技，准备阶段开始时，若你的装备区：没有武器，你摸一张牌，没有防具，你摸一张牌，没有宝具，你摸一张牌；摸牌阶段开始时，你额外摸装备区花色数张牌；当你使用装备牌时，若你已受伤，你回复一点体力并摸一张牌，若你未受伤，你摸三张牌。',
+      '<b>锁定技</b>，锁定技，准备阶段开始时，若你的装备区：没有武器，你摸两张牌，没有防具，你摸两张牌，没有宝具，你摸两张牌；摸牌阶段开始时，你额外摸装备区花色数张牌；当你使用装备牌时，若你已受伤，你回复一点体力并摸一张牌，若你未受伤，你摸三张牌。',
   },
   {
     source: 'pve_ruiyan_description',
@@ -38,7 +41,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'pve_suwei_description',
-    target: '<b>锁定技</b>，当你成为一名其它角色使用牌的目标后，你抽一张牌并弃置其一张牌。',
+    target: '<b>锁定技</b>，当你成为一名其它角色使用牌的目标后，你摸一张牌并弃置其一张牌。',
   },
   {
     source: 'pve_lingxi_description',
@@ -53,12 +56,12 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_longlie_description',
     target:
-      '<b>锁定技</b>，当使用的【杀】指定目标后，你令此【杀】不能被【闪】响应；其它角色回合结束时，视为你对其使用一张【火杀】。',
+      '<b>锁定技</b>，你使用的【杀】无法被响应，且游戏人数大于2时，此【杀】伤害+1。',
   },
   {
     source: 'pve_qinlv_description',
     target:
-      '<b>锁定技</b>，每名角色结束阶段开始时，你与其各回复一点体力；若你仍受伤且不是你的回合，其失去X点体力；如此做后，若其未受伤，则你摸1张牌。（X为体力上限一半，向下取整）',
+      '<b>锁定技</b>，每名角色结束阶段开始时，你与其各回复一点体力；若你仍受伤且不是你的回合，其失去X点体力；若其未受伤，则你摸X张牌。（X为体力上限一半，向下取整）',
   },
   {
     source: 'pve_longhou_description',
@@ -67,7 +70,22 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_jienu_description',
     target:
-      '<b>锁定技</b>，当你翻面后，若你正面朝上，你回复一点体力，否则对所有其他角色造成一点火属性伤害；出牌阶段开始时，若你的体力值小于已损失的体力值，你翻面；当你受到伤害后，你翻面。',
+      '<b>锁定技</b>，当你翻面后，你回复一点体力并对所有其他角色造成两点火属性伤害；出牌阶段开始时，若你的体力值小于已损失的体力值，你翻面；当你受到伤害后，你翻面。（每受到一种属性伤害后削弱此技能直到受到普通伤害或单属性伤害超过四次）',
+  },
+  {
+    source: 'pve_chaiyue_description',
+    target:
+      '<b>锁定技</b>，你每受到1点普通伤害后，你摸两张牌并将一张牌置于武将牌上，称为【碑】；摸牌阶段开始时，你摸X张牌；你的【杀】次数+X（X为【碑】数）',
+  },
+  {
+    source: 'pve_lige_description',
+    target:
+      '<b>锁定技</b>，一名其他角色结束阶段开始时，其交给你一张牌或令你摸两张牌，选择后视为对其使用【决斗】',
+  },
+  {
+    source: 'pve_bibao_description',
+    target:
+      '<b>锁定技</b>，你造成或受到伤害时，你回复1点体力且此伤害+1，你摸等同伤害+1张牌。',
   },
 ];
 
