@@ -691,6 +691,7 @@ export const UiDictionary: Word[] = [
   { source: 'check', target: '查看' },
   { source: 'offline', target: '断线' },
   { source: 'quit', target: '退出' },
+  { source: 'smart-ai', target: '电脑' },
   { source: 'trusted', target: '托管' },
   { source: 'cancel trusted', target: '取消托管' },
   { source: 'in trusted', target: '托管中···' },

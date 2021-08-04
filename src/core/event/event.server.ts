@@ -414,7 +414,7 @@ export interface ServerEvent extends EventUtilities {
     notificationTime: number;
   };
   [GameEventIdentifiers.PlayerStatusEvent]: {
-    status: 'online' | 'offline' | 'quit' | 'trusted' | 'player';
+    status: 'online' | 'offline' | 'quit' | 'trusted' | 'player' | 'smart-ai';
     toId: PlayerId;
   };
   [GameEventIdentifiers.PhaseSkippedEvent]: {

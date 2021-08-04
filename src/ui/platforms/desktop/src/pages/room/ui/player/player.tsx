@@ -367,6 +367,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
       incomingMessage,
       actionTimeLimit,
     } = this.props;
+    console.log(player?.Status);
     return (
       <div className={styles.player} onMouseOver={this.showPlayerName} onMouseOut={this.hidePlayerName}>
         <div
@@ -477,8 +478,8 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
             {this.getSkillTags()}
             {this.getOutsideAreaCards()}
           </div>
-          {player && player.getPlayerStatus() !== PlayerStatus.Online && (
-            <span className={styles.playerStatus}>{translator.tr(player.getPlayerStatus() || '')}</span>
+          {player && player.Status !== PlayerStatus.Online && (
+            <span className={styles.playerStatus}>{translator.tr(player.Status || '')}</span>
           )}
           {inAction && <PlayingBar className={styles.playBar} playTime={actionTimeLimit} />}
           {this.onTooltipOpened && this.PlayerCharacter && (

@@ -1,7 +1,7 @@
 import { CharacterId } from 'core/characters/character';
 import { HuaShenInfo, Player } from 'core/player/player';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { PlayerCards, PlayerCardsArea, PlayerCardsOutside, PlayerId } from './player_props';
+import { PlayerCards, PlayerCardsArea, PlayerCardsOutside, PlayerId, PlayerStatus } from './player_props';
 
 export class ClientPlayer extends Player {
   private visibleOutsideAreas: string[] = [];
@@ -15,6 +15,7 @@ export class ClientPlayer extends Player {
     playerCards?: PlayerCards & {
       [PlayerCardsArea.OutsideArea]: PlayerCardsOutside;
     },
+    protected status: PlayerStatus = PlayerStatus.Online,
   ) {
     super(playerCards, playerCharacterId);
   }

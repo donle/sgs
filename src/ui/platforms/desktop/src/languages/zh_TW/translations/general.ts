@@ -690,6 +690,7 @@ export const UiDictionary: Word[] = [
   { source: 'handcards', target: '手牌' },
   { source: 'check', target: '檢視' },
   { source: 'offline', target: '斷線' },
+  { source: 'smart-ai', target: '電腦' },
   { source: 'quit', target: '退出' },
   { source: 'trusted', target: '託管' },
   { source: 'cancel trusted', target: '取消託管' },

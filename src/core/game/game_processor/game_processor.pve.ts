@@ -12,7 +12,7 @@ import { StandardGameProcessor } from './game_processor.standard';
 export class PveGameProcessor extends StandardGameProcessor {
   public assignRoles(players: Player[]) {
     for (let i = 0; i < players.length; i++) {
-      if (players[i].isFake()) {
+      if (players[i].isSmartAI()) {
         players[i].Role = PlayerRole.Lord;
         if (i !== 0) {
           [players[0], players[i]] = [players[i], players[0]];
@@ -24,10 +24,9 @@ export class PveGameProcessor extends StandardGameProcessor {
     }
   }
 
-  protected async beforeGameStartPreparation() {
-    const lord = this.room.AlivePlayers.find(player => player.Role === PlayerRole.Lord)!;
-    this.room.updatePlayerStatus('offline', lord.Id);
-  }
+  // protected async beforeGameStartPreparation() {
+  //   const lord = this.room.AlivePlayers.find(player => player.Role === PlayerRole.Lord)!;
+  // }
 
   protected async chooseCharacters(playersInfo: PlayerInfo[], selectableCharacters: Character[]) {
     // link to  assignRoles

@@ -1,19 +1,152 @@
+import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { PlayerCardOrSkillInnerEvent } from 'core/event/event.client';
 import { Sanguosha } from 'core/game/engine';
-import { PlayerCardsArea } from 'core/player/player_props';
+import { Player } from 'core/player/player';
+import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { GameMode } from 'core/shares/types/room_props';
+import { ActiveSkill, FilterSkill } from 'core/skills/skill';
 import { PlayerAI } from './ai';
 import { AiLibrary } from './ai_lib';
 
-export class TrustAI extends PlayerAI {
-  public static get Instance() {
-    if (!this.instance) {
-      PlayerAI.instance = new TrustAI();
+export class SmartAI extends PlayerAI {
+  constructor(private gameMode: GameMode) {
+    super();
+  }
+
+  private aiUseCard(room: Room, from: Player): PlayerCardOrSkillInnerEvent | undefined {
+    const handCards = AiLibrary.sortCardsUsePriority(room, from);
+
+    if (handCards.length > 0) {
+      for (const cardId of handCards) {
+        const card = Sanguosha.getCardById(cardId);
+        if (card.BaseType === CardType.Equip) {
+          const equipCardUseEvent: ClientEventFinder<GameEventIdentifiers.CardUseEvent> = {
+            fromId: from.Id,
+            cardId,
+          };
+          return {
+            eventName: GameEventIdentifiers.CardUseEvent,
+            event: equipCardUseEvent,
+          };
+        }
+
+        // console.log(`AI consider to use card: ${Sanguosha.getCardById(cardId).Name}`);
+
+        const cardSkill = card.Skill;
+        if (cardSkill instanceof ActiveSkill) {
+          if (cardSkill.GeneralName === 'jiedaosharen') {
+            continue;
+          }
+
+          const targetNumber: number =
+            cardSkill.numberOfTargets() instanceof Array ? cardSkill.numberOfTargets()[0] : cardSkill.numberOfTargets();
+
+          if (cardSkill.GeneralName === 'tiesuolianhuan') {
+            const reforgeEvent: ClientEventFinder<GameEventIdentifiers.CardUseEvent> = {
+              fromId: from.Id,
+              cardId,
+            };
+
+            return {
+              eventName: GameEventIdentifiers.ReforgeEvent,
+              event: reforgeEvent,
+            };
+          }
+
+          let targetPlayer: PlayerId[] | undefined;
+          if (targetNumber !== 0) {
+            const approvedTargetPlayerIds = this.sortEnemiesByRole(room, from)
+              .filter(player => cardSkill.isAvailableTarget(from.Id, room, player.Id, [], [], cardId))
+              .map(player => player.Id);
+
+            // console.log(`approvedTargetPlayerIds is ${approvedTargetPlayerIds}`);
+
+            if (approvedTargetPlayerIds.length < targetNumber) {
+              continue;
+            } else {
+              targetPlayer = approvedTargetPlayerIds.slice(-targetNumber);
+            }
+          } else if (!cardSkill.canUse(room, from, cardId)) {
+            // handle lightning
+            continue;
+          } else {
+            if (card.Name === 'alcohol' && !from.canUseCard(room, new CardMatcher({ generalName: ['slash'] }))) {
+              continue;
+            }
+          }
+
+          const cardUseEvent: ClientEventFinder<GameEventIdentifiers.CardUseEvent> = {
+            fromId: from.Id,
+            cardId,
+            toIds: targetPlayer,
+          };
+
+          return {
+            eventName: GameEventIdentifiers.CardUseEvent,
+            event: cardUseEvent,
+          };
+        }
+      }
     }
 
-    return PlayerAI.instance;
+    return undefined;
+  }
+
+  private sortEnemiesByRole(room: Room, from: Player) {
+    let enemies = room.getOtherPlayers(from.Id).filter(other => !this.areTheyFriendly(other, from));
+
+    if (from.Role === PlayerRole.Renegade) {
+      enemies = enemies.filter(enemy => enemy.Role === PlayerRole.Lord);
+    }
+
+    return enemies.sort((enemyA, enemyB) => {
+      const defenseValueA = AiLibrary.getPlayerRelativeDefenseValue(from, enemyA);
+      const defenseValueB = AiLibrary.getPlayerRelativeDefenseValue(from, enemyB);
+
+      if (defenseValueA < defenseValueB) {
+        return -1;
+      } else if (defenseValueA === defenseValueB) {
+        return 0;
+      }
+
+      return 1;
+    });
+  }
+
+  private areTheyFriendly(playerA: Player, playerB: Player) {
+    if (this.gameMode !== GameMode.Hegemony && playerA.Role === playerB.Role) {
+      return true;
+    }
+
+    switch (this.gameMode) {
+      case GameMode.Pve:
+      case GameMode.OneVersusTwo: {
+        if (playerA.Role === PlayerRole.Lord || playerB.Role === PlayerRole.Lord) {
+          return false;
+        }
+
+        return true;
+      }
+      case GameMode.TwoVersusTwo: {
+        return playerA.Role === playerB.Role;
+      }
+      case GameMode.Standard: {
+        if (playerA.Role === PlayerRole.Lord || playerA.Role === PlayerRole.Loyalist) {
+          return playerB.Role === PlayerRole.Lord || playerB.Role === PlayerRole.Loyalist;
+        } else if (playerA.Role === PlayerRole.Rebel || playerA.Role === PlayerRole.Renegade) {
+          return playerB.Role === PlayerRole.Rebel || playerB.Role === PlayerRole.Renegade;
+        }
+      }
+      case GameMode.Hegemony: {
+        return playerA.Nationality === playerB.Nationality;
+      }
+      default:
+        return false;
+    }
   }
 
   protected onAskForPlayCardsOrSkillsEvent<T extends GameEventIdentifiers.AskForPlayCardsOrSkillsEvent>(
@@ -21,6 +154,19 @@ export class TrustAI extends PlayerAI {
     room: Room,
   ) {
     const { toId: fromId } = content as ServerEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent>;
+    const from = room.getPlayerById(fromId);
+
+    const cardUseEvent: PlayerCardOrSkillInnerEvent | undefined = this.aiUseCard(room, from);
+    if (cardUseEvent !== undefined) {
+      const endEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
+        fromId,
+        end: false,
+        ...cardUseEvent,
+      };
+
+      return endEvent;
+    }
+
     const endEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
       fromId,
       end: true,
@@ -58,25 +204,33 @@ export class TrustAI extends PlayerAI {
     //     ? `for Reponse ${Sanguosha.getCardById(content!.byCardId).Name}`
     //     : '');
 
-    const { toId, cardMatcher } = content as ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>;
+    const { toId, cardMatcher, byCardId, cardUserId } = content as ServerEventFinder<
+      GameEventIdentifiers.AskForCardResponseEvent
+    >;
+    const toPlayer = room.getPlayerById(toId);
+    const availableCards = AiLibrary.findAvailableCardsToResponse(
+      room,
+      toPlayer,
+      content,
+      new CardMatcher(cardMatcher),
+    );
+
     if (EventPacker.isUncancellabelEvent(content)) {
       const cardResponse: ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent> = {
         fromId: toId,
-        cardId: room
-          .getPlayerById(toId)
-          .getCardIds(PlayerCardsArea.HandArea)
-          .find(cardId => CardMatcher.match(cardMatcher, Sanguosha.getCardById(cardId))),
+        cardId: availableCards.length > 0 ? AiLibrary.sortCardbyValue(availableCards)[0] : undefined,
       };
+
       return cardResponse;
     } else {
-      // just handle nanmanruqin and duel, not enough for another judge
-      let cardId: CardId | undefined;
-      if (cardMatcher.generalName && cardMatcher.generalName.includes('slash')) {
-        cardId = room
-          .getPlayerById(toId)
-          .getCardIds(PlayerCardsArea.HandArea)
-          .find(cardId => CardMatcher.match(cardMatcher, Sanguosha.getCardById(cardId)));
+      let cardId: CardId | undefined = availableCards[0];
+      if (
+        CardMatcher.match(cardMatcher, new CardMatcher({ name: ['jink'] })) &&
+        !AiLibrary.shouldUseJink(room, toPlayer, availableCards, byCardId, cardUserId)
+      ) {
+        cardId = undefined;
       }
+
       const cardResponse: ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent> = {
         fromId: toId,
         cardId,
@@ -96,28 +250,28 @@ export class TrustAI extends PlayerAI {
     //     : '');
 
     const { toId, cardMatcher } = content as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
-
     const toPlayer = room.getPlayerById(toId);
+
     if (EventPacker.isUncancellabelEvent(content)) {
+      let availableCards = AiLibrary.findCardsByMatcher(toPlayer, new CardMatcher(cardMatcher)).filter(cardId =>
+        toPlayer.canUseCard(room, cardId),
+      );
+
+      for (const skill of toPlayer.getSkills<FilterSkill>('filter')) {
+        availableCards = availableCards.filter(cardId => skill.canUseCard(cardId, room, toPlayer.Id));
+      }
+
       const cardResponse: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> = {
         fromId: toId,
-        cardId: toPlayer
-          .getCardIds(PlayerCardsArea.HandArea)
-          .find(
-            cardId =>
-              CardMatcher.match(cardMatcher, Sanguosha.getCardById(cardId)) && toPlayer.canUseCard(room, cardId),
-          ),
+        cardId: availableCards.length > 0 ? AiLibrary.sortCardbyValue(availableCards)[0] : undefined,
       };
       return cardResponse;
     } else {
       let cardResponse: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> = { fromId: toId };
-      const cardIds = AiLibrary.askAiUseCard(room, toId, cardMatcher, content!.byCardId);
+      const cardIds = AiLibrary.askAiUseCard(room, toId, cardMatcher, content.byCardId, content.cardUserId);
       if (cardIds.length > 0) {
-        const responseCardId = cardIds.sort(
-          (a, b) => AiLibrary.getCardValueofCard(a).value - AiLibrary.getCardValueofCard(b).value,
-        )[0];
         cardResponse = {
-          cardId: responseCardId,
+          cardId: AiLibrary.sortCardbyValue(cardIds)[0],
           fromId: toId,
           toIds: content.scopedTargets,
         };
@@ -166,11 +320,29 @@ export class TrustAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
+    const { fromId, toId } = content;
+    const selfRescue = fromId === toId;
+    const from = room.getPlayerById(fromId);
+    const to = room.getPlayerById(toId);
+    if (!this.areTheyFriendly(from, to)) {
+      return {
+        fromId: content.toId,
+      };
+    }
+
+    const rescueCards = AiLibrary.findCardsByMatcher(
+      from,
+      new CardMatcher({ generalName: selfRescue ? ['alcohol', 'peach'] : ['peach'] }),
+    );
+    const alcoholCard = rescueCards.find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'alcohol');
+
     const usePeach: ClientEventFinder<T> = {
       fromId: content.toId,
+      cardId: alcoholCard || rescueCards[0],
     };
     return usePeach;
   }
+
   protected onAskForCardDisplayEvent<T extends GameEventIdentifiers.AskForCardDisplayEvent>(
     content: ServerEventFinder<T>,
     room: Room,

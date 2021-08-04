@@ -212,7 +212,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract async skip(player: PlayerId, phase?: PlayerPhase): Promise<void>;
   public abstract endPhase(phase: PlayerPhase): void;
 
-  public updatePlayerStatus(status: 'online' | 'offline' | 'quit' | 'trusted' | 'trusted' | 'player', toId: PlayerId) {
+  public updatePlayerStatus(
+    status: 'online' | 'offline' | 'quit' | 'trusted' | 'trusted' | 'player' | 'smart-ai',
+    toId: PlayerId,
+  ) {
     const to = this.getPlayerById(toId);
     switch (status) {
       case 'online':
@@ -229,6 +232,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
         break;
       case 'player':
         to.delegateOnTrusted(false);
+        break;
+      case 'smart-ai':
+        to.delegateOnSmartAI();
         break;
       default:
         throw Precondition.UnreachableError(status);
@@ -674,7 +680,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public getRoomInfo(): RoomInfo {
     return {
       name: this.gameInfo.roomName,
-      activePlayers: this.players.filter(player => player.getPlayerStatus() !== PlayerStatus.Quit).length,
+      activePlayers: this.players.filter(player => player.Status !== PlayerStatus.Quit).length,
       totalPlayers: this.gameInfo.numberOfPlayers,
       packages: this.gameInfo.characterExtensions,
       status: this.gameStarted ? 'playing' : 'waiting',

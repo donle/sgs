@@ -69,9 +69,6 @@ export abstract class Player implements PlayerInfo {
   private turnedOver: boolean = false;
   private playerSkills: Skill[] = [];
   private gender: CharacterGender;
-  private status: PlayerStatus;
-  private ai: PlayerAI = TrustAI.Instance;
-  private fake: boolean = false;
   private equipSectionsStatus: {
     [K in CharacterEquipSections]: 'enabled' | 'disabled';
   } = {
@@ -84,6 +81,7 @@ export abstract class Player implements PlayerInfo {
 
   private drunk: number = 0;
 
+  protected abstract status: PlayerStatus;
   protected abstract playerId: PlayerId;
   protected abstract playerName: string;
   protected abstract playerPosition: number;
@@ -113,6 +111,7 @@ export abstract class Player implements PlayerInfo {
       [PlayerCardsArea.OutsideArea]: PlayerCardsOutside;
     },
     protected playerCharacterId?: CharacterId,
+    private ai: PlayerAI = TrustAI.Instance,
   ) {
     if (playerCards) {
       this.playerCards = {
@@ -139,8 +138,6 @@ export abstract class Player implements PlayerInfo {
     }
 
     this.dead = false;
-    this.status = PlayerStatus.Online;
-
     // GameCommonRules.initPlayerCommonRules(this);
   }
 
@@ -472,7 +469,7 @@ export abstract class Player implements PlayerInfo {
       }
     }
     for (const skill of this.getSkills<FilterSkill>('filter')) {
-      if (!skill.canUseCard(cardId, room, this.Id, target)) {
+      if (!skill.canUseCard(cardId, room, this.Id)) {
         return false;
       }
     }
@@ -933,6 +930,7 @@ export abstract class Player implements PlayerInfo {
       Role: this.playerRole,
       Hp: this.hp,
       MaxHp: this.maxHp,
+      Status: this.status,
     };
   }
 
@@ -982,12 +980,12 @@ export abstract class Player implements PlayerInfo {
     return this.ai;
   }
 
-  public isFake() {
-    return this.fake;
+  public isSmartAI() {
+    return this.status === PlayerStatus.SmartAI;
   }
 
-  public Fake() {
-    this.fake = true;
+  public delegateOnSmartAI() {
+    this.status = PlayerStatus.SmartAI;
   }
 
   public delegateOnTrusted(trusted: boolean) {
@@ -998,7 +996,7 @@ export abstract class Player implements PlayerInfo {
     return this.status === PlayerStatus.Trusted;
   }
 
-  public getPlayerStatus() {
+  public get Status() {
     return this.status;
   }
 }

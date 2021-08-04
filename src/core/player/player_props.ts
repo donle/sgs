@@ -31,6 +31,7 @@ export const enum PlayerStatus {
   Offline = 'offline',
   Quit = 'quit',
   Trusted = 'trusted',
+  SmartAI = 'smart-ai',
 }
 
 export interface PlayerInfo {
@@ -40,6 +41,7 @@ export interface PlayerInfo {
   CharacterId: CharacterId | undefined;
   Nationality: CharacterNationality | undefined;
   Role: PlayerRole | undefined;
+  Status: PlayerStatus | undefined;
   Hp: number;
   MaxHp: number;
 }

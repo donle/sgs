@@ -8,12 +8,11 @@ import {
   WorkPlace,
 } from 'core/event/event';
 import { Socket } from 'core/network/socket';
-import { FakePlayer, ServerPlayer } from 'core/player/player.server';
-import { PlayerId, PlayerStatus } from 'core/player/player_props';
+import { ServerPlayer } from 'core/player/player.server';
+import { PlayerId } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
-import { GameMode } from 'core/shares/types/room_props';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import IOSocketServer from 'socket.io';
 
@@ -157,7 +156,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
           );
         }
 
-        if (room.Players.every(player => !player.isOnline() || player.isFake()) || room.Players.length === 0) {
+        if (room.Players.every(player => !player.isOnline() || player.isSmartAI()) || room.Players.length === 0) {
           this.logger.debug('room close with no player online');
           room.close();
           return;
@@ -288,11 +287,6 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
 
       socket.disconnect();
       return;
-    }
-
-    if (room.Info.gameMode === GameMode.Pve && room.Players.length === 0) {
-      const fakePlayer = new FakePlayer(room.Players.length);
-      room.addPlayer(fakePlayer);
     }
 
     const player = new ServerPlayer(event.playerId, event.playerName, room.Players.length);

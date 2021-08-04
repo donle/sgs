@@ -20,7 +20,7 @@ import {
 } from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
 import { Player } from 'core/player/player';
-import { ServerPlayer } from 'core/player/player.server';
+import { ServerPlayer, SmartPlayer } from 'core/player/player.server';
 import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props';
 
 import { Card, CardType, VirtualCard } from 'core/cards/card';
@@ -97,9 +97,17 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.dropStack = [];
 
     this.socket.emit(this);
+    this.initAIPlayers();
   }
 
-  public updatePlayerStatus(status: 'online' | 'offline' | 'quit' | 'trusted' | 'player', toId: PlayerId) {
+  private initAIPlayers() {
+    if (this.gameMode === GameMode.Pve && this.Players.length === 0) {
+      const fakePlayer = new SmartPlayer(this.Players.length, this.gameMode);
+      this.addPlayer(fakePlayer);
+    }
+  }
+
+  public updatePlayerStatus(status: 'online' | 'offline' | 'quit' | 'trusted' | 'player' | 'smart-ai', toId: PlayerId) {
     super.updatePlayerStatus(status, toId);
     this.broadcast(GameEventIdentifiers.PlayerStatusEvent, { status, toId, ignoreNotifiedStatus: true });
   }

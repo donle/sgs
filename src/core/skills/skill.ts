@@ -564,7 +564,6 @@ export abstract class FilterSkill extends Skill {
     cardId: CardId | CardMatcher,
     room: Room,
     owner: PlayerId,
-    target?: PlayerId,
     onResponse?: ServerEventFinder<GameEventIdentifiers>,
   ): boolean {
     return true;

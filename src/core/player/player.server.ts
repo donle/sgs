@@ -1,6 +1,10 @@
+import { PlayerAI } from 'core/ai/ai';
+import { SmartAI } from 'core/ai/smart_ai';
+import { TrustAI } from 'core/ai/trust_ai';
 import { CharacterId } from 'core/characters/character';
 import { Player } from 'core/player/player';
-import { PlayerCards, PlayerCardsArea, PlayerCardsOutside, PlayerId } from './player_props';
+import { GameMode } from 'core/shares/types/room_props';
+import { PlayerCards, PlayerCardsArea, PlayerCardsOutside, PlayerId, PlayerStatus } from './player_props';
 
 export class ServerPlayer extends Player {
   constructor(
@@ -11,14 +15,17 @@ export class ServerPlayer extends Player {
     playerCards?: PlayerCards & {
       [PlayerCardsArea.OutsideArea]: PlayerCardsOutside;
     },
+    ai: PlayerAI = TrustAI.Instance,
   ) {
-    super(playerCards, playerCharacterId);
+    super(playerCards, playerCharacterId, ai);
   }
+
+  protected status = PlayerStatus.Online;
 }
 
-export class FakePlayer extends ServerPlayer {
-  constructor(protected playerPosition: number) {
-    super('FakeAI', 'FakeAI', playerPosition);
-    this.Fake();
+export class SmartPlayer extends ServerPlayer {
+  constructor(protected playerPosition: number, gameMode: GameMode) {
+    super('SmartAI-' + Date.now(), 'AI', playerPosition, undefined, undefined, new SmartAI(gameMode));
+    this.delegateOnSmartAI();
   }
 }

@@ -189,7 +189,14 @@ export class RoomPresenter {
   @mobx.action
   playerEnter(playerInfo: PlayerInfo) {
     this.tryToThrowUninitializedError();
-    const player = new ClientPlayer(playerInfo.Id, playerInfo.Name, playerInfo.Position, playerInfo.CharacterId);
+    const player = new ClientPlayer(
+      playerInfo.Id,
+      playerInfo.Name,
+      playerInfo.Position,
+      playerInfo.CharacterId,
+      undefined,
+      playerInfo.Status,
+    );
     this.store.room.addPlayer(player);
     this.broadcastUIUpdate();
   }
@@ -209,7 +216,15 @@ export class RoomPresenter {
   createClientRoom(roomId: RoomId, socket: ClientSocket, gameInfo: GameInfo, playersInfo: PlayerInfo[]) {
     this.tryToThrowUninitializedError();
     const players = playersInfo.map(
-      playerInfo => new ClientPlayer(playerInfo.Id, playerInfo.Name, playerInfo.Position, playerInfo.CharacterId),
+      playerInfo =>
+        new ClientPlayer(
+          playerInfo.Id,
+          playerInfo.Name,
+          playerInfo.Position,
+          playerInfo.CharacterId,
+          undefined,
+          playerInfo.Status,
+        ),
     );
 
     this.store.room = new ClientRoom(roomId, socket, gameInfo, players, new RecordAnalytics());
