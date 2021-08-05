@@ -93,9 +93,9 @@ export class WangZunShadow extends TriggerSkill implements OnDefineReleaseTiming
     const phaseChangeEvent = Precondition.exists(
       triggeredOnEvent,
       'Unknown phase change event in wangzun',
-    ) as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
+    ) as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
 
-    room.syncGameCommonRules(phaseChangeEvent.playerId, user => {
+    room.syncGameCommonRules(phaseChangeEvent.fromPlayer!, user => {
       const extraHold = user.getInvisibleMark(this.GeneralName);
       user.removeInvisibleMark(this.GeneralName);
       room.CommonRules.addAdditionalHoldCardNumber(user, extraHold);

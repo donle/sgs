@@ -188,6 +188,7 @@ export class Sanguosha {
       GameCharacterExtensions.Forest,
       GameCharacterExtensions.Mountain,
       GameCharacterExtensions.Shadow,
+      GameCharacterExtensions.Thunder,
       GameCharacterExtensions.God,
       GameCharacterExtensions.YiJiang2011,
       GameCharacterExtensions.YiJiang2012,
@@ -197,6 +198,7 @@ export class Sanguosha {
       GameCharacterExtensions.Limited,
       GameCharacterExtensions.Biographies,
       GameCharacterExtensions.Wisdom,
+      GameCharacterExtensions.Sincerity,
     ];
   }
 
