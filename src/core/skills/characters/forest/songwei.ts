@@ -44,6 +44,7 @@ export class SongWei extends TriggerSkill {
         this.GeneralName,
         TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
       ).extract(),
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForInvokeSkill, judgeEvent.toId);

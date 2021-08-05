@@ -98,6 +98,7 @@ export class XuanFeng extends TriggerSkill {
       fromId,
       toId,
       options,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(
@@ -141,6 +142,7 @@ export class XuanFeng extends TriggerSkill {
           '{0}: do you want to choose a target to drop a card?',
           this.Name,
         ).extract(),
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(GameEventIdentifiers.AskForChoosingPlayerEvent, choosePlayerEvent, fromId);

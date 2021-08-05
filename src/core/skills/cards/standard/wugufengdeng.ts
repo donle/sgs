@@ -82,6 +82,7 @@ export class WuGuFengDengSkill extends ActiveSkill {
       selected: selectedCards,
       toId,
       userId: event.fromId,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(GameEventIdentifiers.AskForContinuouslyChoosingCardEvent, wugufengdengEvent, toId);

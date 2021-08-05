@@ -64,7 +64,7 @@ export class XianZhen extends ActiveSkill {
 
   public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId, toIds } = skillUseEvent;
-    const { pindianRecord } = await room.pindian(fromId, toIds!);
+    const { pindianRecord } = await room.pindian(fromId, toIds!, this.Name);
     if (!pindianRecord.length) {
       return false;
     }

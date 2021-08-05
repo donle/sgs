@@ -37,6 +37,7 @@ export class QiaoMeng extends TriggerSkill {
       },
       fromId: fromId!,
       toId,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(

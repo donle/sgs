@@ -90,6 +90,7 @@ export class YongJin extends ActiveSkill {
       fromId: user,
       toId: user,
       options,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(

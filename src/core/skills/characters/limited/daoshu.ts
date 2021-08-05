@@ -55,6 +55,7 @@ export class DaoShu extends ActiveSkill {
       options,
       conversation: TranslationPack.translationJsonPatcher('{0}: please choose a card suit', this.Name).extract(),
       toId: fromId,
+      triggeredBySkills: [this.Name],
     });
 
     const resp = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingOptionsEvent>(
@@ -91,6 +92,7 @@ export class DaoShu extends ActiveSkill {
         options: {
           [PlayerCardsArea.HandArea]: target.getCardIds(PlayerCardsArea.HandArea).length,
         },
+        triggeredBySkills: [this.Name],
       },
       fromId,
     );

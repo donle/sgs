@@ -46,7 +46,7 @@ export class QiaoShuo extends ActiveSkill {
     skillEffectSkill: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     const { fromId, toIds } = skillEffectSkill;
-    const { pindianRecord } = await room.pindian(fromId, toIds!);
+    const { pindianRecord } = await room.pindian(fromId, toIds!, this.Name);
     if (!pindianRecord.length) {
       return false;
     }

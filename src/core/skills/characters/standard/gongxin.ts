@@ -56,6 +56,7 @@ export class GongXin extends ActiveSkill {
       cardIds: handCards,
       cardMatcher: new CardMatcher({ suit: [CardSuit.Heart] }).toSocketPassenger(),
       amount: 1,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingCardEvent, askForChooseCardEvent, fromId);
@@ -84,6 +85,7 @@ export class GongXin extends ActiveSkill {
       options: ['gongxin:dropcard', 'gongxin:putcard'],
       toId: fromId,
       conversation: 'please choose',
+      triggeredBySkills: [this.Name],
     };
     room.notify(
       GameEventIdentifiers.AskForChoosingOptionsEvent,

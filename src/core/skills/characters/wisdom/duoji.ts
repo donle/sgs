@@ -161,7 +161,7 @@ export class DuoJiShadow extends TriggerSkill {
           cardMatcher: new CardMatcher({
             cards: ji,
           }).toSocketPassenger(),
-          triggeredBySkills: [this.GeneralName],
+          triggeredBySkills: [this.Name],
         }),
         cardUseEvent.fromId,
       );

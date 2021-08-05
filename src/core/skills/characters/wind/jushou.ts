@@ -41,6 +41,7 @@ export class JuShou extends TriggerSkill {
       toId: skillUseEvent.fromId,
       cardIds: handCards,
       amount: 1,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(

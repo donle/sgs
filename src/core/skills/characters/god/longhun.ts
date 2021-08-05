@@ -227,6 +227,7 @@ export class LongHunBlackEffect extends TriggerSkill {
         [PlayerCardsArea.HandArea]: room.CurrentPlayer.getCardIds(PlayerCardsArea.HandArea).length,
         [PlayerCardsArea.EquipArea]: room.CurrentPlayer.getCardIds(PlayerCardsArea.EquipArea),
       },
+      triggeredBySkills: [this.Name],
     };
     room.notify(
       GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,

@@ -138,6 +138,7 @@ export class ChongZhen extends TriggerSkill {
           options: {
             [PlayerCardsArea.HandArea]: target.getCardIds(PlayerCardsArea.HandArea).length,
           },
+          triggeredBySkills: [this.Name],
         },
         fromId,
       );

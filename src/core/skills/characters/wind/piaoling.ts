@@ -34,6 +34,7 @@ export class PiaoLing extends TriggerSkill {
       toId: fromId,
       options: ['option-one', 'option-two'],
       conversation: '#piaoling-select',
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(
@@ -66,6 +67,7 @@ export class PiaoLing extends TriggerSkill {
         players: room.AlivePlayers.map(p => p.Id),
         conversation: 'piaoling: select a player to obtain the judge card',
         requiredAmount: 1,
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(

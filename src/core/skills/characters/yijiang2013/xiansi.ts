@@ -193,6 +193,7 @@ export class XianSiSlash extends ViewAsSkill {
       toId: fromId,
       cardIds: niCards,
       amount: 2,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingCardEvent, askForChooseCardEvent, fromId);

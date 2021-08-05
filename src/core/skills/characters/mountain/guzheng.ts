@@ -108,6 +108,7 @@ export class GuZheng extends TriggerSkill {
       selected: selectedCardIds,
       toId: fromId,
       userId: fromId,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(GameEventIdentifiers.AskForContinuouslyChoosingCardEvent, chooseGuZhengCardEvent, fromId);
@@ -136,6 +137,7 @@ export class GuZheng extends TriggerSkill {
         toId: fromId,
         options: ['yes', 'no'],
         conversation: 'guzheng: do you wanna obtain the rest of cards?',
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChoice, fromId);

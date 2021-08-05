@@ -66,6 +66,7 @@ export class ZhenLie extends TriggerSkill {
         fromId,
         toId: aimEvent.fromId,
         options,
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(

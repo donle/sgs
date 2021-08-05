@@ -50,6 +50,7 @@ export class GangLie extends TriggerSkill {
         fromId: skillUseEvent.fromId,
         toId: damageFrom.Id,
         options,
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(

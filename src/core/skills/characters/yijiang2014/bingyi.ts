@@ -49,7 +49,7 @@ export class BingYi extends TriggerSkill {
           'please choose less than {0} player to draw 1 crad.',
           handCards.length,
         ).extract(),
-        triggeredBySkills: [this.GeneralName],
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(

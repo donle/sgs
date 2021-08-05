@@ -102,7 +102,7 @@ export class JieDaoShaRenSkill extends ActiveSkill implements ExtralCardSkillPro
           TranslationPack.patchPlayerInTranslation(room.getPlayerById(target)),
           TranslationPack.patchCardInTranslation(cardId),
         ).extract(),
-        triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
+        triggeredBySkills: [this.Name],
       },
       attacker,
     );

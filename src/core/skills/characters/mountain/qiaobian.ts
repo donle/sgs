@@ -268,6 +268,7 @@ export class QiaoBianSkipPlay extends TriggerSkill {
       fromId,
       toId: fromId,
       options,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(

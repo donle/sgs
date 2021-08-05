@@ -53,6 +53,7 @@ export class JiZhi extends TriggerSkill {
           'do you wanna discard {0}',
           TranslationPack.patchCardInTranslation(cardId),
         ).extract(),
+        triggeredBySkills: [this.Name],
       });
 
       room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForOptionsEvent, event.fromId);

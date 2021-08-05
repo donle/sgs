@@ -94,6 +94,7 @@ export class JiJiangShadow extends TriggerSkill {
             this.Name,
             TranslationPack.patchPlayerInTranslation(from),
           ).extract(),
+          triggeredBySkills: [this.Name],
         },
         player.Id,
       );

@@ -202,6 +202,7 @@ export class ShuangXiongShadow extends TriggerSkill {
         toId: fromId,
         cardIds: displayCards,
         amount: 1,
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(

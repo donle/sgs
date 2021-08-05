@@ -84,6 +84,7 @@ export class FuBiShadow extends TriggerSkill {
         '{0}: 1.owner has extra 3 cards hold limit, 2.one more time to use slash in current round',
         this.Name,
       ).extract(),
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(

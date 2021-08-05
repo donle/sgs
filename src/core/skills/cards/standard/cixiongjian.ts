@@ -83,6 +83,7 @@ export class CiXiongJianSkill extends TriggerSkill {
       conversation: 'please choose',
       toId,
       askedBy: fromId,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(

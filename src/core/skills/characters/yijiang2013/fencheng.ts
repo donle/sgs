@@ -53,6 +53,7 @@ export class FenCheng extends ActiveSkill {
         conversation: 'please choose: fencheng-options',
         toId: player.Id,
         askedBy: SkillEffectEvent.fromId,
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(
@@ -77,6 +78,9 @@ export class FenCheng extends ActiveSkill {
             player.Id,
             [x, playerCardsLength],
             [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
+            false,
+            undefined,
+            this.Name,
           );
 
           droppedCards = response.droppedCards;

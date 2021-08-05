@@ -84,6 +84,7 @@ export class SanYao extends ActiveSkill {
         options: ['sanyao:hp', 'sanyao:handNum'],
         conversation: 'please choose sanyao options',
         toId: fromId,
+        triggeredBySkills: [this.Name],
       });
 
       room.notify(

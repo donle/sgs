@@ -134,6 +134,7 @@ export class PingJian extends ActiveSkill {
       options,
       conversation: TranslationPack.translationJsonPatcher('{0}: please choose pingjian options', this.Name).extract(),
       toId: fromId,
+      triggeredBySkills: [this.Name],
     });
 
     const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingOptionsEvent>(
@@ -234,6 +235,7 @@ export class PingJianShadow extends TriggerSkill {
         this.GeneralName,
       ).extract(),
       toId: fromId,
+      triggeredBySkills: [this.Name],
     });
 
     const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingOptionsEvent>(

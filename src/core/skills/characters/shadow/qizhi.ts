@@ -92,6 +92,7 @@ export class QiZhi extends TriggerSkill {
       fromId,
       toId: toIds![0],
       options,
+      triggeredBySkills: [this.Name],
     });
 
     const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(

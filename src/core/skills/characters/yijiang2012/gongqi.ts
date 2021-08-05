@@ -93,6 +93,7 @@ export class GongQi extends ActiveSkill {
               fromId,
               toId,
               options,
+              triggeredBySkills: [this.Name],
             }),
             fromId,
           );

@@ -74,6 +74,7 @@ export class DuelSkill extends ActiveSkill implements ExtralCardSkillProperty {
               'slash',
               TranslationPack.patchCardInTranslation(event.cardId),
             ).extract(),
+            triggeredBySkills: [this.Name],
           },
           targets[turn],
         );

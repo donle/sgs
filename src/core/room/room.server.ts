@@ -1423,7 +1423,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return event;
   }
 
-  public async pindian(fromId: PlayerId, toIds: PlayerId[]) {
+  public async pindian(fromId: PlayerId, toIds: PlayerId[], bySkill: string) {
     const from = this.getPlayerById(fromId);
 
     const pindianEvent: ServerEventFinder<GameEventIdentifiers.PinDianEvent> = {
@@ -1447,6 +1447,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             '{0} proposed a pindian event, please choose a hand card to pindian',
             TranslationPack.patchPlayerInTranslation(from),
           ).extract(),
+          triggeredBySkills: [bySkill],
         });
 
         const targetList = [fromId, ...pindianEvent.toIds];

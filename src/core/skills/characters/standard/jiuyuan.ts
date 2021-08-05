@@ -45,6 +45,7 @@ export class JiuYuan extends TriggerSkill {
         TranslationPack.patchCardInTranslation(aimEvent.byCardId!),
         TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
       ).extract(),
+      triggeredBySkills: [this.Name],
     };
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForInvokeSkill, aimEvent.fromId);
     const { selectedOption } = await room.onReceivingAsyncResponseFrom(

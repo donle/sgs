@@ -65,6 +65,7 @@ export class Hujia extends TriggerSkill {
           this.Name,
           TranslationPack.patchPlayerInTranslation(from),
         ).extract(),
+        triggeredBySkills: [this.Name],
       };
       room.notify(GameEventIdentifiers.AskForCardResponseEvent, responseJinkEvent, playerId);
 

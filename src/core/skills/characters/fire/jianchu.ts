@@ -48,6 +48,7 @@ export class Jianchu extends TriggerSkill {
       fromId: aimEvent.fromId!,
       toId: to.Id,
       options,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(

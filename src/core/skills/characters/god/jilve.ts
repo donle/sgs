@@ -65,6 +65,7 @@ export class JiLve extends ActiveSkill {
       options,
       conversation: 'please choose a skill',
       toId: skillUseEvent.fromId,
+      triggeredBySkills: [this.Name],
     };
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForOptions, skillUseEvent.fromId);
     const { selectedOption } = await room.onReceivingAsyncResponseFrom(
@@ -82,6 +83,7 @@ export class JiLve extends ActiveSkill {
         reason: this.Name,
         conversation: 'please choose your zhiheng cards',
         fromArea: [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
+        triggeredBySkills: [this.Name],
       };
       room.notify(
         GameEventIdentifiers.AskForCardEvent,

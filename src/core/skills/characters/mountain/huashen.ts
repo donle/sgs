@@ -103,6 +103,7 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
       toId: who.Id,
       amount,
       byHuaShen: true,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingCharacterEvent, askForChoosingCharacterEvent, who.Id);
@@ -140,6 +141,7 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
       options,
       toId: who,
       conversation: 'huashen: please announce a skill to obtain',
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(
@@ -197,6 +199,7 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
         toId: skillEffectEvent.fromId,
         conversation:
           'please choose: 1. show a character from huashen area and announce a skill to obtain. 2. remove no more than two unshown characters of huashen and get equal number of that.',
+          triggeredBySkills: [this.Name],
       };
 
       room.notify(

@@ -51,6 +51,7 @@ export class NiePan extends TriggerSkill {
         options,
         conversation: 'please choose',
         toId: fromId,
+        triggeredBySkills: [this.Name],
       });
 
       room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, fromId);

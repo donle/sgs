@@ -42,6 +42,7 @@ export class BengHuai extends TriggerSkill {
       options,
       conversation: TranslationPack.translationJsonPatcher('{0}: please choose', this.Name).extract(),
       toId: fromId,
+      triggeredBySkills: [this.Name],
     });
 
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, fromId);

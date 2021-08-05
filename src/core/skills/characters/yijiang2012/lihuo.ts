@@ -115,7 +115,7 @@ export class LiHuoShadow extends TriggerSkill {
         this.GeneralName,
         TranslationPack.patchCardInTranslation(cardUseEvent.cardId),
       ).extract(),
-      triggeredBySkills: [this.GeneralName],
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingPlayerEvent, askForPlayerChoose, fromId);

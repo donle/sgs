@@ -85,6 +85,7 @@ export class FanJian extends ActiveSkill {
           this.Name,
         ).extract(),
         askedBy: skillUseEvent.fromId,
+        triggeredBySkills: [this.Name],
       };
       room.notify(
         GameEventIdentifiers.AskForChoosingOptionsEvent,

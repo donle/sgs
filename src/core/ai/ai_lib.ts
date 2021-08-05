@@ -1,7 +1,7 @@
 import { CardType } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher, CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
-import { CardChoosingOptions, CardId, CardValue } from 'core/cards/libs/card_props';
+import { CardChoosingOptions, CardColor, CardId, CardValue } from 'core/cards/libs/card_props';
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { PlayerCardOrSkillInnerEvent } from 'core/event/event.client';
 import { Sanguosha } from 'core/game/engine';
@@ -9,7 +9,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { GameMode } from 'core/shares/types/room_props';
-import { ActiveSkill, FilterSkill, ViewAsSkill } from 'core/skills/skill';
+import { ActiveSkill, FilterSkill, ResponsiveSkill, ViewAsSkill } from 'core/skills/skill';
 import { AiSkillTrigger } from './ai_skill_trigger';
 
 type CardsValue = {
@@ -18,41 +18,76 @@ type CardsValue = {
 };
 
 export abstract class AiLibrary {
+  private static readonly judgeCardsThreatenValue = {
+    lebusishu: 80,
+    bingliangcunduan: 75,
+    lightning: 65,
+  };
+
+  private static readonly equipStaticDefenseValue = {
+    baguazhen: 50,
+    renwangdun: 58,
+    tengjia: 55,
+    baiyinshizi: 45,
+
+    muniuliuma: 57,
+
+    hanbingjian: 50,
+    cixiongjian: 45,
+    fangtianhuaji: 15,
+    gudingdao: 18,
+    guanshifu: 55,
+    zhangbashemao: 40,
+    zhugeliannu: 60,
+    zhuqueyushan: 19,
+    qingnang: 51,
+    qilingong: 20,
+
+    zhuahuangfeidian: 70,
+    dilu: 70,
+    jueying: 70,
+    hualiu: 70,
+
+    chitu: 20,
+    dayuan: 20,
+    zixing: 20,
+  };
+
   private static readonly standardCardValue = [
     // {Card,value, wane, priority}
     // Equipment
-    { cardName: 'baguazhen', value: 35, wane: 0, priority: 95 },
+    { cardName: 'baguazhen', value: 40, wane: 0, priority: 95 },
     { cardName: 'chitu', value: 35, wane: 0, priority: 95 },
     { cardName: 'cixiongjian', value: 35, wane: 0, priority: 95 },
     { cardName: 'dayuan', value: 35, wane: 0, priority: 95 },
     { cardName: 'dilu', value: 35, wane: 0, priority: 95 },
-    { cardName: 'fangtianhuaji', value: 35, wane: 0, priority: 95 },
-    { cardName: 'guanshifu', value: 35, wane: 0, priority: 95 },
+    { cardName: 'fangtianhuaji', value: 23, wane: 0, priority: 95 },
+    { cardName: 'guanshifu', value: 36, wane: 0, priority: 95 },
     { cardName: 'jueying', value: 35, wane: 0, priority: 95 },
     { cardName: 'hanbingjian', value: 35, wane: 0, priority: 95 },
     { cardName: 'qilingong', value: 35, wane: 0, priority: 95 },
-    { cardName: 'qinggang', value: 35, wane: 0, priority: 95 },
+    { cardName: 'qinggang', value: 45, wane: 0, priority: 95 },
     { cardName: 'qinglongyanyuedao', value: 35, wane: 0, priority: 95 },
-    { cardName: 'renwangdun', value: 35, wane: 0, priority: 95 },
-    { cardName: 'zhangbashemao', value: 35, wane: 0, priority: 95 },
+    { cardName: 'renwangdun', value: 45, wane: 0, priority: 95 },
+    { cardName: 'zhangbashemao', value: 30, wane: 0, priority: 95 },
     { cardName: 'zhuahuangfeidian', value: 35, wane: 0, priority: 95 },
-    { cardName: 'zhugeliannu', value: 35, wane: 0, priority: 80 },
+    { cardName: 'zhugeliannu', value: 45, wane: 0, priority: 80 },
     { cardName: 'zixing', value: 35, wane: 0, priority: 95 },
-    { cardName: 'baiyinshizi', value: 35, wane: 0, priority: 95 },
-    { cardName: 'gudingdao', value: 35, wane: 0, priority: 95 },
+    { cardName: 'baiyinshizi', value: 60, wane: 0, priority: 95 },
+    { cardName: 'gudingdao', value: 30, wane: 0, priority: 95 },
     { cardName: 'hualiu', value: 35, wane: 0, priority: 95 },
-    { cardName: 'muniuliuma', value: 35, wane: 0, priority: 95 },
+    { cardName: 'muniuliuma', value: 60, wane: 0, priority: 95 },
     { cardName: 'tengjia', value: 35, wane: 0, priority: 95 },
-    { cardName: 'zhuqueyushan', value: 35, wane: 0, priority: 95 },
+    { cardName: 'zhuqueyushan', value: 25, wane: 0, priority: 95 },
 
     // Trick
-    { cardName: 'wuzhongshengyou', value: 59, wane: 0.9, priority: 84 },
-    { cardName: 'shunshouqianyang', value: 58, wane: 0.9, priority: 83 },
-    { cardName: 'guohechaiqiao', value: 57, wane: 0.9, priority: 85 },
+    { cardName: 'wuzhongshengyou', value: 58, wane: 0.9, priority: 84 },
+    { cardName: 'shunshouqianyang', value: 57, wane: 0.9, priority: 83 },
+    { cardName: 'guohechaiqiao', value: 59, wane: 0.9, priority: 85 },
     { cardName: 'lebusishu', value: 56, wane: 0.9, priority: 82 },
     { cardName: 'bingliangcunduan', value: 55, wane: 0.9, priority: 81 },
     { cardName: 'duel', value: 50, wane: 0.8, priority: 80 },
-    { cardName: 'fireattack', value: 50, wane: 0.8, priority: 81 },
+    { cardName: 'fire_attack', value: 51, wane: 0.8, priority: 81 },
     { cardName: 'nanmanruqing', value: 45, wane: 0, priority: 85 },
     { cardName: 'wanjianqifa', value: 45, wane: 0, priority: 85 },
     { cardName: 'taoyuanjieyi', value: 25, wane: 0, priority: 0 },
@@ -89,21 +124,65 @@ export abstract class AiLibrary {
     const cards = AiLibrary.findAvailableCardsToUse(room, player);
     return cards.sort(
       (a, b) =>
-        AiLibrary.getCardValueofPlayer(room, player.Id, b).priority! -
-        AiLibrary.getCardValueofPlayer(room, player.Id, a).priority!,
+        AiLibrary.getCardValueofPlayer(room, player, b).priority! -
+        AiLibrary.getCardValueofPlayer(room, player, a).priority!,
     );
   }
 
-  static getCardValueofPlayer(room: Room, aiId: PlayerId, cardId: CardId): CardValue {
+  static sortByJudgeCardsThreatenValue(judgeCards: CardId[]) {
+    const judgeThreanValues: [CardId, number][] = judgeCards.map(card => [
+      card,
+      AiLibrary.judgeCardsThreatenValue[Sanguosha.getCardById(card).Name],
+    ]);
+
+    return judgeThreanValues
+      .sort((cardValueA, cardValueB) => cardValueB[1] - cardValueA[1])
+      .map(cardValue => cardValue[0]);
+  }
+
+  static sortTargetEquipsInDefense(room: Room, ai: Player, to: Player) {
+    const equipValues: [CardId, number][] = to
+      .getCardIds(PlayerCardsArea.EquipArea)
+      .map(equip => [equip, AiLibrary.equipStaticDefenseValue[Sanguosha.getCardById(equip).Name]]);
+
+    equipValues.sort((a, b) => b[1] - a[1]);
+
+    return equipValues.map(equipValue => equipValue[0]);
+  }
+
+  static getCardValueofPlayer(room: Room, ai: Player, cardId: CardId): CardValue {
     const cardValue: CardValue = AiLibrary.getCardValueofCard(cardId);
     const targetCard = Sanguosha.getCardById(cardId);
     if (targetCard.BaseType === CardType.Equip) {
       cardValue.priority =
-        room.getPlayerById(aiId).getEquipment((targetCard as EquipCard).EquipType) === undefined
+        ai.getEquipment((targetCard as EquipCard).EquipType) === undefined
           ? cardValue.priority
           : Math.max(0, cardValue.priority - 60);
     }
     return cardValue;
+  }
+
+  static sortCardAndSkillUsePriority(
+    room: Room,
+    ai: Player,
+    skills: ActiveSkill[],
+    cards: CardId[],
+  ): (ActiveSkill | CardId)[] {
+    let actionItems = [...skills, ...cards];
+    for (const skill of skills) {
+      actionItems =
+        AiSkillTrigger.getActiveSkillTrigger(skill)?.dynamicallyAdjustSkillUsePriority(room, ai, skill, actionItems) ||
+        actionItems;
+    }
+
+    for (const cardId of cards) {
+      const skill = Sanguosha.getCardById(cardId).Skill as ActiveSkill;
+      actionItems =
+        AiSkillTrigger.getActiveSkillTrigger(skill)?.dynamicallyAdjustSkillUsePriority(room, ai, skill, actionItems) ||
+        actionItems;
+    }
+
+    return actionItems;
   }
 
   static shouldUseWuXieKeJi(
@@ -158,27 +237,56 @@ export abstract class AiLibrary {
     }
   }
 
+  static getUsableSlashesTo(room: Room, ai: Player, to: Player) {
+    return AiLibrary.findAvailableCardsToUse(room, ai, new CardMatcher({ generalName: ['slash'] })).filter(
+      cardId => room.canAttack(ai, to, cardId) && room.canUseCardTo(cardId, ai, to),
+    );
+  }
+
+  static getAttackWillEffectSlashesTo(room: Room, ai: Player, to: Player, slashes?: CardId[]) {
+    const shieldId = to.getEquipment(CardType.Shield);
+    const shield = shieldId !== undefined ? Sanguosha.getCardById(shieldId) : undefined;
+    slashes = slashes || AiLibrary.getUsableSlashesTo(room, ai, to);
+
+    const weaponId = ai.getEquipment(CardType.Weapon);
+    const weapon = weaponId !== undefined ? Sanguosha.getCardById(weaponId) : undefined;
+    if (weapon && weapon.Name === 'qinggang') {
+      return slashes;
+    }
+
+    if (shield) {
+      if (shield.Name === 'tengjia') {
+        slashes = slashes.filter(slash => Sanguosha.getCardById(slash).Name !== 'slash');
+      } else if (shield.Name === 'renwangdun') {
+        slashes = slashes.filter(slash => Sanguosha.getCardById(slash).Color !== CardColor.Black);
+      }
+    }
+
+    return slashes;
+  }
+
   static askAiUseCard(
     room: Room,
     aiId: PlayerId,
+    availableCards: CardId[],
     cardMatcher: CardMatcherSocketPassenger,
     byCardId?: CardId,
     cardUseFrom?: PlayerId,
   ): CardId[] {
     const aiPlayer = room.getPlayerById(aiId);
-    const cardIds: CardId[] = AiLibrary.findAvailableCardsToUse(room, aiPlayer, new CardMatcher(cardMatcher));
-
-    if (cardIds.length === 0) {
-      return cardIds;
+    if (availableCards.length === 0) {
+      return availableCards;
     }
 
     if (byCardId !== undefined) {
       if (cardMatcher.name?.includes('wuxiekeji')) {
-        return AiLibrary.shouldUseWuXieKeJi(room, aiPlayer, cardIds, byCardId, cardUseFrom) ? cardIds : [];
+        return AiLibrary.shouldUseWuXieKeJi(room, aiPlayer, availableCards, byCardId, cardUseFrom)
+          ? availableCards
+          : [];
       }
     }
 
-    return cardIds;
+    return availableCards;
   }
 
   static askAiChooseCardFromPlayer<T extends GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(
@@ -280,6 +388,10 @@ export abstract class AiLibrary {
       player.canUseCard(room, cardId),
     );
 
+    if (!cardMatcher) {
+      cards = cards.filter(card => !(Sanguosha.getCardById(card).Skill instanceof ResponsiveSkill));
+    }
+
     for (const skill of player.getSkills<FilterSkill>('filter')) {
       cards = cards.filter(cardId => skill.canUseCard(cardId, room, player.Id));
     }
@@ -291,11 +403,11 @@ export abstract class AiLibrary {
         availableCards.push(...player.getCardIds(area, skill.GeneralName));
       }
 
-      const avaiableViewAs = AiSkillTrigger.createViewAsPossibilties(
+      const avaiableViewAs = AiSkillTrigger.getViewAsSkillTrigger(skill)?.createViewAsPossibilties(
         room,
         player,
-        skill,
         availableCards,
+        skill,
         cardMatcher,
         [],
       );
@@ -332,11 +444,11 @@ export abstract class AiLibrary {
         availableCards.push(...player.getCardIds(area, skill.GeneralName));
       }
 
-      const avaiableViewAs = AiSkillTrigger.createViewAsPossibilties(
+      const avaiableViewAs = AiSkillTrigger.getViewAsSkillTrigger(skill)?.createViewAsPossibilties(
         room,
         player,
-        skill,
         availableCards,
+        skill,
         cardMatcher,
         [],
       );
@@ -393,83 +505,6 @@ export abstract class AiLibrary {
     return targetDefenseValue;
   }
 
-  static aiUseCard(room: Room, from: Player): PlayerCardOrSkillInnerEvent | undefined {
-    const handCards = AiLibrary.sortCardsUsePriority(room, from);
-
-    if (handCards.length > 0) {
-      for (const cardId of handCards) {
-        const card = Sanguosha.getCardById(cardId);
-        if (card.BaseType === CardType.Equip) {
-          const equipCardUseEvent: ClientEventFinder<GameEventIdentifiers.CardUseEvent> = {
-            fromId: from.Id,
-            cardId,
-          };
-          return {
-            eventName: GameEventIdentifiers.CardUseEvent,
-            event: equipCardUseEvent,
-          };
-        }
-
-        // console.log(`AI consider to use card: ${Sanguosha.getCardById(cardId).Name}`);
-
-        const cardSkill = card.Skill;
-        if (cardSkill instanceof ActiveSkill) {
-          if (cardSkill.GeneralName === 'jiedaosharen') {
-            continue;
-          }
-
-          const targetNumber: number =
-            cardSkill.numberOfTargets() instanceof Array ? cardSkill.numberOfTargets()[0] : cardSkill.numberOfTargets();
-
-          if (cardSkill.GeneralName === 'tiesuolianhuan') {
-            const reforgeEvent: ClientEventFinder<GameEventIdentifiers.CardUseEvent> = {
-              fromId: from.Id,
-              cardId,
-            };
-
-            return {
-              eventName: GameEventIdentifiers.ReforgeEvent,
-              event: reforgeEvent,
-            };
-          }
-
-          let targetPlayer: PlayerId[] | undefined;
-          if (targetNumber !== 0) {
-            const approvedTargetPlayerIds = this.sortEnemiesByRole(room, from)
-              .filter(player => cardSkill.isAvailableTarget(from.Id, room, player.Id, [], [], cardId))
-              .map(player => player.Id);
-
-            if (approvedTargetPlayerIds.length < targetNumber) {
-              continue;
-            } else {
-              targetPlayer = approvedTargetPlayerIds.slice(-targetNumber);
-            }
-          } else if (!cardSkill.canUse(room, from, cardId)) {
-            // handle lightning
-            continue;
-          } else {
-            if (card.Name === 'alcohol' && !from.canUseCard(room, new CardMatcher({ generalName: ['slash'] }))) {
-              continue;
-            }
-          }
-
-          const cardUseEvent: ClientEventFinder<GameEventIdentifiers.CardUseEvent> = {
-            fromId: from.Id,
-            cardId,
-            toIds: targetPlayer,
-          };
-
-          return {
-            eventName: GameEventIdentifiers.CardUseEvent,
-            event: cardUseEvent,
-          };
-        }
-      }
-    }
-
-    return undefined;
-  }
-
   static sortEnemiesByRole(room: Room, from: Player) {
     let enemies = room.getOtherPlayers(from.Id).filter(other => !this.areTheyFriendly(other, from, room.Info.gameMode));
 
@@ -481,13 +516,20 @@ export abstract class AiLibrary {
       const defenseValueA = AiLibrary.getPlayerRelativeDefenseValue(from, enemyA);
       const defenseValueB = AiLibrary.getPlayerRelativeDefenseValue(from, enemyB);
 
-      if (defenseValueA < defenseValueB) {
-        return -1;
-      } else if (defenseValueA === defenseValueB) {
-        return 0;
-      }
+      return defenseValueA - defenseValueB;
+    });
+  }
 
-      return 1;
+  static sortFriendsFromWeakToStrong(room: Room, from: Player) {
+    const friends = room
+      .getOtherPlayers(from.Id)
+      .filter(other => this.areTheyFriendly(other, from, room.Info.gameMode));
+
+    return friends.sort((enemyA, enemyB) => {
+      const defenseValueA = AiLibrary.getPlayerRelativeDefenseValue(from, enemyA);
+      const defenseValueB = AiLibrary.getPlayerRelativeDefenseValue(from, enemyB);
+
+      return defenseValueA - defenseValueB;
     });
   }
 

@@ -115,6 +115,7 @@ export class Rende extends ActiveSkill {
           toId: from.Id,
           requiredAmount: 1,
           conversation: 'Please choose your slash target',
+          triggeredBySkills: [this.Name],
         };
 
         room.notify(GameEventIdentifiers.AskForChoosingPlayerEvent, choosePlayerEvent, from.Id);

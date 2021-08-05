@@ -51,7 +51,7 @@ export class TianYi extends ActiveSkill {
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { toIds, fromId } = event;
-    const { pindianRecord } = await room.pindian(fromId, toIds!);
+    const { pindianRecord } = await room.pindian(fromId, toIds!, this.Name);
     if (!pindianRecord.length) {
       return false;
     }

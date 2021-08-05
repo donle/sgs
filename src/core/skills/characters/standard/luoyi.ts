@@ -75,6 +75,7 @@ export class LuoYi extends TriggerSkill {
         options: ['luoyi:obtain', 'luoyi:cancel'],
         toId: skillUseEvent.fromId,
         conversation: 'Obtain Basic Card, Equip Card and Duel in display cards?',
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(

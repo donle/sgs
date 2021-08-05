@@ -60,6 +60,7 @@ export class QiXing extends TriggerSkill {
       },
       toId: fromId,
       customTitle: 'qixing: please select cards to save',
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingCardEvent, askForChoosingCardsEvent, fromId);
@@ -136,6 +137,7 @@ export class QiXingShadow extends TriggerSkill {
       },
       toId: from.Id,
       customTitle: 'qixing: please select cards to save',
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingCardEvent, askForChoosingCardsEvent, from.Id);

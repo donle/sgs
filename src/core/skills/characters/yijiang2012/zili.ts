@@ -50,6 +50,7 @@ export class ZiLi extends TriggerSkill {
         toId: fromId,
         options: ['zili:drawcards', 'zili:recover'],
         conversation: TranslationPack.translationJsonPatcher('{0}: please choose', this.Name).extract(),
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(

@@ -73,6 +73,7 @@ export class AnXu extends ActiveSkill {
       fromId: first,
       toId: second,
       options,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(
@@ -124,6 +125,7 @@ export class AnXu extends ActiveSkill {
           this.Name,
           TranslationPack.patchPlayerInTranslation(room.getPlayerById(lessOne)),
         ).extract(),
+        triggeredBySkills: [this.Name],
       };
       room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForInvokeSkill, fromId);
       const { selectedOption } = await room.onReceivingAsyncResponseFrom(

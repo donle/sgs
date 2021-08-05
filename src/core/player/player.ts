@@ -1,7 +1,7 @@
 import { PlayerAI } from 'core/ai/ai';
 import { TrustAI } from 'core/ai/trust_ai';
 import { Card, CardType, VirtualCard } from 'core/cards/card';
-import { EquipCard, WeaponCard } from 'core/cards/equip_card';
+import { ArmorCard, EquipCard, WeaponCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import {
@@ -477,6 +477,28 @@ export abstract class Player implements PlayerInfo {
 
   public getEquipment(cardType: CardType): CardId | undefined {
     return this.playerCards[PlayerCardsArea.EquipArea].find(cardId => Sanguosha.getCardById(cardId).is(cardType));
+  }
+
+  public getShield(): ArmorCard | undefined {
+    const cardId = this.playerCards[PlayerCardsArea.EquipArea].find(cardId =>
+      Sanguosha.getCardById(cardId).is(CardType.Shield),
+    );
+    if (cardId === undefined) {
+      return;
+    }
+
+    return Sanguosha.getCardById<ArmorCard>(cardId);
+  }
+
+  public getWeapon(): WeaponCard | undefined {
+    const cardId = this.playerCards[PlayerCardsArea.EquipArea].find(cardId =>
+      Sanguosha.getCardById(cardId).is(CardType.Weapon),
+    );
+    if (cardId === undefined) {
+      return;
+    }
+
+    return Sanguosha.getCardById<WeaponCard>(cardId);
   }
 
   public hasCard(room: Room, cardMatcherOrId: CardId | CardMatcher, areas?: PlayerCardsArea, outsideName?: string) {

@@ -40,7 +40,7 @@ export class QuHu extends ActiveSkill {
   }
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { toIds, fromId } = event;
-    const { pindianRecord } = await room.pindian(fromId, toIds!);
+    const { pindianRecord } = await room.pindian(fromId, toIds!, this.Name);
     if (!pindianRecord.length) {
       return false;
     }
@@ -55,6 +55,7 @@ export class QuHu extends ActiveSkill {
           'please choose a player to get a damage from {0}',
           TranslationPack.patchPlayerInTranslation(target),
         ).extract(),
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(

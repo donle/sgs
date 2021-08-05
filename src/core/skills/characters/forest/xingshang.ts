@@ -51,6 +51,7 @@ export class XingShang extends TriggerSkill {
         options: ['xingshang:recover', 'xingshang:pickup'],
         conversation: 'please choose',
         toId: fromId,
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(

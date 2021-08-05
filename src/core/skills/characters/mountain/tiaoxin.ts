@@ -75,6 +75,7 @@ export class TiaoXin extends ActiveSkill {
         fromId,
         toId,
         options,
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(

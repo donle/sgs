@@ -78,6 +78,7 @@ export class WanJianQiFaSkill extends ActiveSkill implements ExtralCardSkillProp
         {
           ...askForCardEvent,
           toId: to,
+          triggeredBySkills: [this.Name],
         },
         to,
       );
