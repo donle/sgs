@@ -26,6 +26,10 @@ export const characterDictionary: Word[] = [
   { source: 'liuqi', target: '劉琦' },
   { source: 'wenji', target: '問計' },
   { source: 'tunjiang', target: '屯江' },
+
+  { source: 'zhangling', target: '張陵' },
+  { source: 'huji', target: '虎騎' },
+  { source: 'shoufu', target: '授符' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -73,6 +77,17 @@ export const skillDescriptions: Word[] = [
     target:
       '結束階段開始時，若你於此回合內未使用牌指定過其他角色為目標，且未跳過本回合的出牌階段，你可以摸X張牌（X為存活勢力數）。',
   },
+
+  {
+    source: 'huji_description',
+    target:
+      '<b>鎖定技</b>，你計算與其他角色的距離-1；當你於回合外受到傷害後，你判定，若為紅色，則視為你對傷害來源使用一張無距離限制的【殺】。',
+  },
+  {
+    source: 'shoufu_description',
+    target:
+      '出牌階段限一次，你可以摸一張牌，然後將一張手牌置於一名沒有“籙”的其他角色的武將牌旁：其不能使用或打出與其“籙”類別相同的牌；當其受到傷害後，或於棄牌階段內棄置至少兩張牌後，移去其“籙”。',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
@@ -102,5 +117,10 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: the result is {1}, please choose a target',
     target: '{0}：抽籤結果是 {1}，請選擇一名角色獲得此籤的效果',
+  },
+
+  {
+    source: '{0}: please choose a hand card and choose a target who has no ‘Lu’?',
+    target: '{0}：請選擇一張手牌和一名沒有“籙”的其他角色，將此牌置為其“籙”',
   },
 ];

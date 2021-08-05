@@ -4,6 +4,7 @@ import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerId, PlayerRole } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { MouLi } from 'core/skills/characters/sincerity/mouli';
 import { Precondition } from './precondition/precondition';
 
 export namespace System {
@@ -69,6 +70,7 @@ export namespace System {
     ZhiBa,
     HuangTian,
     XianSi,
+    MouLi,
   }
 
   export const SideEffectSkillAppliers: { [K in SideEffectSkillApplierEnum]: SideEffectSkillApplierFunc } = {
@@ -80,6 +82,9 @@ export namespace System {
     },
     [SideEffectSkillApplierEnum.XianSi]: (player: Player, room: Room, sourceId: PlayerId) => {
       return player.Id !== sourceId;
+    },
+    [SideEffectSkillApplierEnum.MouLi]: (player: Player, room: Room) => {
+      return player.getFlag(MouLi.MouLiLi);
     },
   };
 }

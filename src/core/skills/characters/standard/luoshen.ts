@@ -43,7 +43,11 @@ export class LuoShen extends TriggerSkill {
       return owner.Id === content.playerId && PlayerPhaseStages.PrepareStage === content.toStage;
     } else if (identifier === GameEventIdentifiers.JudgeEvent) {
       content = content as ServerEventFinder<GameEventIdentifiers.JudgeEvent>;
-      return owner.Id === content.toId && content.bySkill === this.GeneralName;
+      return (
+        owner.Id === content.toId &&
+        content.bySkill === this.GeneralName &&
+        room.isCardOnProcessing(content.judgeCardId)
+      );
     }
 
     return false;

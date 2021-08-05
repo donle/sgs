@@ -50,7 +50,7 @@ export class PingJian extends ActiveSkill {
       'mingce',
       'xianzhen',
       'anxu',
-      'gongji',
+      'gongqi',
       'qice',
       'mieji',
       'shenxing',

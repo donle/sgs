@@ -404,6 +404,22 @@ export abstract class Player implements PlayerInfo {
     return this.equipSectionsStatus[section] === 'enabled';
   }
 
+  public getEmptyEquipSections(): CardType[] {
+    let allEquipTypes = [CardType.Weapon, CardType.Shield, CardType.DefenseRide, CardType.OffenseRide, CardType.Precious];
+    if (this.playerCards[PlayerCardsArea.EquipArea].length > 0) {
+      allEquipTypes = allEquipTypes.filter(type => !this.playerCards[PlayerCardsArea.EquipArea].find(id => Sanguosha.getCardById(id).is(type)));
+    }
+
+    const cardTypeMapper = {
+      [CardType.Weapon]: CharacterEquipSections.Weapon,
+      [CardType.Shield]: CharacterEquipSections.Shield,
+      [CardType.DefenseRide]: CharacterEquipSections.DefenseRide,
+      [CardType.OffenseRide]: CharacterEquipSections.OffenseRide,
+      [CardType.Precious]: CharacterEquipSections.Precious,
+    }
+    return allEquipTypes.filter(type => this.equipSectionsStatus[cardTypeMapper[type]] === 'enabled');
+  }
+
   public equip(equipCard: EquipCard) {
     Precondition.assert(
       !this.playerCards[PlayerCardsArea.EquipArea].find(card =>

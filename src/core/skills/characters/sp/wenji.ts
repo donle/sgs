@@ -145,7 +145,7 @@ export class WenJiShadow extends TriggerSkill implements OnDefineReleaseTiming {
     event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.PhaseChangeEvent>,
     stage?: AllStage,
   ): boolean {
-    return stage === CardUseStage.PreCardUse || stage === PhaseChangeStage.PhaseChanged;
+    return stage === CardUseStage.BeforeCardUseEffect || stage === PhaseChangeStage.PhaseChanged;
   }
 
   public canUse(

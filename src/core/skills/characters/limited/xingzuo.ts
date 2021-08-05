@@ -148,7 +148,7 @@ export class XingZuoShadow extends TriggerSkill implements OnDefineReleaseTiming
   public getSkillLog(): PatchedTranslationObject {
     return TranslationPack.translationJsonPatcher(
       '{0}: do you want to choose a target to exchange hand cards with draw stack bottom?',
-      this.Name,
+      this.GeneralName,
     ).extract();
   }
 

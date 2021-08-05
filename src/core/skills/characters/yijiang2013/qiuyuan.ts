@@ -73,8 +73,8 @@ export class QiuYuan extends TriggerSkill {
         engagedPlayerIds: room.getAllPlayersFrom().map(player => player.Id),
       });
     } else {
-      if (room.canUseCardTo(new CardMatcher({ generalName: ['slash'] }), to.Id)) {
-        const aimEvent = skillEffectEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
+      const aimEvent = skillEffectEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
+      if (room.canUseCardTo(aimEvent.fromId, new CardMatcher({ generalName: ['slash'] }), to.Id)) {
         aimEvent.allTargets.push(to.Id);
       }
     }
