@@ -514,6 +514,7 @@ export abstract class AiLibrary {
         } else if (playerA.Role === PlayerRole.Rebel || playerA.Role === PlayerRole.Renegade) {
           return playerB.Role === PlayerRole.Rebel || playerB.Role === PlayerRole.Renegade;
         }
+        break;
       }
       case GameMode.Hegemony: {
         return playerA.Nationality === playerB.Nationality;
@@ -521,5 +522,7 @@ export abstract class AiLibrary {
       default:
         return false;
     }
+
+    return false;
   }
 }

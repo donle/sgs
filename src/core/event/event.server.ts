@@ -304,7 +304,8 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.AskForSkillUseEvent]: {
     invokeSkillNames: string[];
     toId: PlayerId;
-    triggeredOnEvent?: ServerEventFinder<GameEventIdentifiers>;
+    // No idea why typecheck failed here when type is ServerEventFinder<GameEventIdentifiers>
+    triggeredOnEvent?: any;
     conversation?: string | PatchedTranslationObject;
   };
   [GameEventIdentifiers.AskForCardDisplayEvent]: {
