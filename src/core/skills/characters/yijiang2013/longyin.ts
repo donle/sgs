@@ -8,6 +8,7 @@ import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, PersistentSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
+import { JieZhong } from './jiezhong';
 
 @CommonSkill({ name: 'longyin', description: 'longyin_description' })
 export class LongYin extends TriggerSkill {
@@ -53,6 +54,13 @@ export class LongYin extends TriggerSkill {
     });
     if (Sanguosha.getCardById(event.cardId).isRed()) {
       await room.drawCards(1, fromId, 'top', fromId, this.Name);
+    }
+    
+    if (
+      from.hasUsedSkill(JieZhong.Name) &&
+      Sanguosha.getCardById(cardIds![0]).CardNumber === Sanguosha.getCardById(event.cardId).CardNumber
+    ) {
+      room.refreshPlayerOnceSkill(fromId, JieZhong.Name);
     }
 
     return true;

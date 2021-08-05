@@ -7,8 +7,10 @@ import { LimitedPackage } from 'core/characters/limited';
 import { MountainCharacterPackage } from 'core/characters/mountain';
 import { PvePackage } from 'core/characters/pve';
 import { ShadowCharacterPackage } from 'core/characters/shadow';
+import { SincerityCharacterPackage } from 'core/characters/sincerity';
 import { SPPackage } from 'core/characters/sp';
 import { StandardCharacterPackage } from 'core/characters/standard';
+import { ThunderCharacterPackage } from 'core/characters/thunder';
 import { WindCharacterPackage } from 'core/characters/wind';
 import { WisdomPackage } from 'core/characters/wisdom';
 import { YiJiang2011Package } from 'core/characters/yijiang2011';
@@ -34,6 +36,7 @@ const allCharacterLoaders: {
   [GameCharacterExtensions.Forest]: ForestCharacterPackage,
   [GameCharacterExtensions.Mountain]: MountainCharacterPackage,
   [GameCharacterExtensions.Shadow]: ShadowCharacterPackage,
+  [GameCharacterExtensions.Thunder]: ThunderCharacterPackage,
   [GameCharacterExtensions.God]: GodCharacterPackage,
   [GameCharacterExtensions.YiJiang2011]: YiJiang2011Package,
   [GameCharacterExtensions.YiJiang2012]: YiJiang2012Package,
@@ -43,6 +46,7 @@ const allCharacterLoaders: {
   [GameCharacterExtensions.Limited]: LimitedPackage,
   [GameCharacterExtensions.Biographies]: BiographiesPackage,
   [GameCharacterExtensions.Wisdom]: WisdomPackage,
+  [GameCharacterExtensions.Sincerity]: SincerityCharacterPackage,
   [GameCharacterExtensions.Pve]: PvePackage,
 };
 

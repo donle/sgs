@@ -281,11 +281,13 @@ export { AnJian, AnJianPeach } from './characters/yijiang2013/anjian';
 export { DuoDao } from './characters/yijiang2013/duodao';
 export { XianSi, XianSiShadow, XianSiFilter, XianSiSlash } from './characters/yijiang2013/xiansi';
 export { LongYin, LongYinClear } from './characters/yijiang2013/longyin';
+export { JieZhong } from './characters/yijiang2013/jiezhong';
 export { QiaoShuo, QiaoShuoLose, QiaoShuoWin } from './characters/yijiang2013/qiaoshuo';
 export { J3ZongShi } from './characters/yijiang2013/zongshi';
 export { DanShou, DanshouShadow } from './characters/yijiang2013/danshou';
 export { ZhuiKong, ZhuiKongFilter, ZhuiKongDistance } from './characters/yijiang2013/zhuikong';
 export { QiuYuan } from './characters/yijiang2013/qiuyuan';
+
 export { ShiBei } from './characters/yijiang2014/shibei';
 export { JianYing } from './characters/yijiang2014/jianying';
 export { BingYi } from './characters/yijiang2014/bingyi';
@@ -299,8 +301,9 @@ export { WenJi, WenJiShadow } from './characters/sp/wenji';
 export { TunJiang } from './characters/sp/tunjiang';
 export { ZiShu, ZiShuShadow } from './characters/sp/zishu';
 export { YingYuan, YingYuanShadow } from './characters/sp/yingyuan';
-export { FuBi, FuBiShadow, FuBiClear } from './characters/wisdom/fubi';
-export { ZuiCi } from './characters/wisdom/zuici';
+export { TianSuan, TianSuanPower, TianSuanDebuff, TianSuanRemove } from './characters/sp/tiansuan';
+export { HuJi, HuJiShadow } from './characters/sp/huji';
+export { ShouFu, ShouFuChoose, ShouFuRemove, ShouFuDebuff } from './characters/sp/shoufu';
 
 export { ShanJia, ShanJiaShadow } from './characters/limited/shanjia';
 export { WeiCheng } from './characters/limited/weicheng';
@@ -331,6 +334,17 @@ export { QinZheng, QinZhengShadow } from './characters/wisdom/qinzheng';
 export { ShaMeng } from './characters/wisdom/shameng';
 export { ZhiQiAi } from './characters/wisdom/zhi_qiai';
 export { ZhiShanXi, ZhiShanXiShadow } from './characters/wisdom/zhi_shanxi';
+export { FuBi, FuBiShadow, FuBiClear } from './characters/wisdom/fubi';
+export { ZuiCi } from './characters/wisdom/zuici';
+
+export { XiangHai, XiangHaiShadow } from './characters/sincerity/xianghai';
+export { ChuHai, ChuHaiShadow } from './characters/sincerity/chuhai';
+export { MingShi } from './characters/sincerity/mingshi';
+export { LiRang } from './characters/sincerity/lirang';
+export { HeJi, HeJiShadow } from './characters/sincerity/heji';
+export { XunYi, XunYiEffect, XunYiMove } from './characters/sincerity/xunyi';
+export { MouLi, MouLiShaodw, MouLiSide } from './characters/sincerity/mouli';
+export { ZiFu } from './characters/sincerity/zifu';
 
 export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';

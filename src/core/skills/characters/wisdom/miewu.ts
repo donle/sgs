@@ -2,7 +2,7 @@ import { CardType, VirtualCard } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AllStage, CardUseStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
+import { AllStage, CardResponseStage, CardUseStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -78,14 +78,22 @@ export class MieWuShadow extends TriggerSkill implements OnDefineReleaseTiming {
     return true;
   }
 
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage?: AllStage): boolean {
-    return stage === CardUseStage.PreCardUse || stage === CardUseStage.CardUseFinishedEffect;
+  public isTriggerable(
+    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent>,
+    stage?: AllStage,
+  ): boolean {
+    return (
+      stage === CardUseStage.BeforeCardUseEffect ||
+      stage === CardUseStage.CardUseFinishedEffect ||
+      stage === CardResponseStage.PreCardResponse ||
+      stage === CardResponseStage.AfterCardResponseEffect
+    );
   }
 
   public canUse(
     room: Room,
     owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
+    content: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent>,
     stage?: AllStage,
   ): boolean {
     const card = Sanguosha.getCardById(content.cardId);
@@ -109,7 +117,7 @@ export class MieWuShadow extends TriggerSkill implements OnDefineReleaseTiming {
     const { fromId } = event;
     const stage = room.getPlayerById(fromId).getFlag<AllStage>(this.GeneralName);
 
-    if (stage === CardUseStage.CardUseFinishedEffect) {
+    if (stage === CardUseStage.CardUseFinishedEffect || stage === CardResponseStage.AfterCardResponseEffect) {
       await room.drawCards(1, fromId, 'top', fromId, this.GeneralName);
     } else {
       let wuku = room.getFlag<number>(fromId, WuKu.Name);

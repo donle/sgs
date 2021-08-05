@@ -11,7 +11,7 @@ export class TianDu extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.JudgeEvent>) {
-    return owner.Id === content.toId;
+    return owner.Id === content.toId && room.isCardOnProcessing(content.judgeCardId);
   }
 
   async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
