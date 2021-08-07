@@ -59,7 +59,7 @@ export class LightningSkill extends ActiveSkill {
       }
 
       const skip =
-        !room.canUseCardTo(player.Id, cardId, player.Id) ||
+        !room.canUseCardTo(cardId, player, player) ||
         player
           .getCardIds(PlayerCardsArea.JudgeArea)
           .find(cardId => Sanguosha.getCardById(cardId).GeneralName === this.Name) !== undefined;

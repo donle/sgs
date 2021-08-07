@@ -457,7 +457,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
     return (
       this.withinAttackDistance(from, to, additionalAttackDistance, except) &&
-      this.canUseCardTo(from.Id, slash || new CardMatcher({ generalName: ['slash'] }), to.Id)
+      this.canUseCardTo(slash || new CardMatcher({ generalName: ['slash'] }), from, to)
     );
   }
 
@@ -530,9 +530,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public abstract async kill(deadPlayer: Player, killedBy?: PlayerId): Promise<void>;
 
-  public canUseCardTo(fromId: PlayerId, cardId: CardId | CardMatcher, target: PlayerId): boolean {
-    const player = this.getPlayerById(fromId);
-    return player.canUseCardTo(this, cardId, target);
+  public canUseCardTo(cardId: CardId | CardMatcher, from: Player, target: Player): boolean {
+    return from.canUseCardTo(this, cardId, target.Id);
   }
 
   public canPlaceCardTo(cardId: CardId, target: PlayerId): boolean {
@@ -544,7 +543,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       return player.getEquipment(equipCard.EquipType) === undefined && player.canEquip(equipCard);
     } else if (card.is(CardType.DelayedTrick)) {
       const toJudgeArea = player.getCardIds(PlayerCardsArea.JudgeArea).map(id => Sanguosha.getCardById(id).GeneralName);
-      return !toJudgeArea.includes(card.GeneralName) && this.canUseCardTo(target, cardId, target);
+      return !toJudgeArea.includes(card.GeneralName) && this.canUseCardTo(cardId, player, player);
     }
 
     return false;
