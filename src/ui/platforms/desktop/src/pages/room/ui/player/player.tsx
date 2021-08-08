@@ -5,7 +5,7 @@ import { CharacterEquipSections } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { ClientPlayer } from 'core/player/player.client';
-import { PlayerCardsArea, PlayerRole, PlayerStatus } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId, PlayerRole, PlayerStatus } from 'core/player/player_props';
 import { MarkEnum } from 'core/shares/types/mark_list';
 import { GameMode } from 'core/shares/types/room_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -24,6 +24,7 @@ import { Tooltip } from 'ui/tooltip/tooltip';
 import { getSkinName } from '../../ui/switch_avatar/switch_skin';
 import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
 import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
+import { JudgeAreaDisabledIcon } from '../icon/judge_area_disabled_icon';
 import { AwakenSkillMark, LimitSkillMark, Mark, SwitchSkillMark } from '../mark/mark';
 import { Mask } from '../mask/mask';
 import { PlayingBar } from '../playing_bar/playing_bar';
@@ -136,8 +137,11 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   }
 
   getPlayerJudgeCards() {
+    const judgeAreaDisabled = this.props.player?.judgeAreaDisabled();
+    
     return (
       <div className={styles.judgeIcons}>
+        {judgeAreaDisabled ? <JudgeAreaDisabledIcon/> : <></>}
         {this.props.player?.getCardIds(PlayerCardsArea.JudgeArea).map(cardId => (
           <DelayedTrickIcon
             imageLoader={this.props.imageLoader}
@@ -163,9 +167,9 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     this.onTooltipOpened = false;
   };
 
-  private getSkillTags() {
+  private getSkillTags(viewer: PlayerId) {
     const { translator, player } = this.props;
-    const flags = player && player.getAllVisibleTags();
+    const flags = player && player.getAllVisibleTags(viewer);
     return (
       flags && (
         <div className={styles.skillTags}>
@@ -304,7 +308,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     const marks: JSX.Element[] = [];
     const limitSkills = clientPlayer.getSkills('limit');
     const awakenSkills = clientPlayer.getSkills('awaken');
-    const switchSkills = clientPlayer.getSkills('switch').filter(skill => skill.isShadowSkill());
+    const switchSkills = clientPlayer.getSkills('switch').filter(skill => !skill.isShadowSkill());
     marks.push(
       ...limitSkills.map(skill => (
         <LimitSkillMark
@@ -475,7 +479,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
             <PlayerPhaseBadge stage={playerPhase} translator={translator} className={styles.playerPhaseBadge} />
           )}
           <div className={styles.playerTags}>
-            {this.getSkillTags()}
+            {this.props.presenter.ClientPlayer && this.getSkillTags(this.props.presenter.ClientPlayer.Id)}
             {this.getOutsideAreaCards()}
           </div>
           {player && player.Status !== PlayerStatus.Online && (

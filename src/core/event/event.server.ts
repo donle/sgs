@@ -31,6 +31,7 @@ export interface ServerEvent extends EventUtilities {
     value: any;
     to: PlayerId;
     tagName?: string;
+    visiblePlayers?: PlayerId[],
   };
   [GameEventIdentifiers.RemoveFlagEvent]: {
     name: string;
@@ -455,6 +456,10 @@ export interface ServerEvent extends EventUtilities {
     toId: PlayerId;
     isResumption?: boolean;
     toSections: CharacterEquipSections[];
+  };
+  [GameEventIdentifiers.AbortOrResumePlayerJudgeAreaEvent]: {
+    toId: PlayerId;
+    isResumption?: boolean;
   };
   [GameEventIdentifiers.RefreshOnceSkillEvent]: {
     toId: PlayerId;

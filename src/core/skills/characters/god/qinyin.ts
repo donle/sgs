@@ -28,7 +28,7 @@ export class QinYin extends TriggerSkill {
           event.fromId === content.playerId &&
           event.moveReason === CardMoveReason.SelfDrop,
         content.playerId,
-        true,
+        'round',
         [PlayerPhase.DropCardStage],
       ).forEach(event => {
         droppedCardNum += event.movingCards.length;

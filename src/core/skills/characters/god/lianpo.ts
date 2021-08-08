@@ -30,7 +30,9 @@ export class LianPo extends TriggerSkill {
           return diedEvent.killedBy === owner.Id;
         },
         undefined,
-        true,
+        'round',
+        undefined,
+        1,
       ).length > 0
     );
   }

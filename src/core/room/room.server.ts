@@ -1661,12 +1661,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     });
     super.removeFlag(player, name);
   }
-  public setFlag<T>(player: PlayerId, name: string, value: T, tagName?: string): T {
+  public setFlag<T>(player: PlayerId, name: string, value: T, tagName?: string, visiblePlayers?: PlayerId[]): T {
     this.broadcast(GameEventIdentifiers.SetFlagEvent, {
       to: player,
       value,
       name,
       tagName,
+      visiblePlayers,
     });
     return super.setFlag(player, name, value);
   }
@@ -1846,6 +1847,38 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       ).extract(),
     };
     this.broadcast(GameEventIdentifiers.AbortOrResumePlayerSectionsEvent, abortEvent);
+  }
+
+  public async abortPlayerJudgeArea(playerId: PlayerId) {
+    const player = this.getPlayerById(playerId);
+    const judgeAreaCards = player.getCardIds(PlayerCardsArea.JudgeArea);
+    judgeAreaCards.length > 0 && await this.dropCards(CardMoveReason.PlaceToDropStack, judgeAreaCards, playerId, playerId);
+
+    player.abortJudgeArea();
+
+    const abortEvent: ServerEventFinder<GameEventIdentifiers.AbortOrResumePlayerJudgeAreaEvent> = {
+      toId: playerId,
+      translationsMessage: TranslationPack.translationJsonPatcher(
+        '{0} aborted judge area',
+        TranslationPack.patchPlayerInTranslation(player),
+      ).extract(),
+    };
+    this.broadcast(GameEventIdentifiers.AbortOrResumePlayerJudgeAreaEvent, abortEvent);
+  }
+
+  public resumePlayerJudgeArea(playerId: PlayerId) {
+    const player = this.getPlayerById(playerId);
+    player.resumeJudgeArea();
+
+    const abortEvent: ServerEventFinder<GameEventIdentifiers.AbortOrResumePlayerJudgeAreaEvent> = {
+      toId: playerId,
+      isResumption: true,
+      translationsMessage: TranslationPack.translationJsonPatcher(
+        '{0} resumed judge area',
+        TranslationPack.patchPlayerInTranslation(player),
+      ).extract(),
+    };
+    this.broadcast(GameEventIdentifiers.AbortOrResumePlayerJudgeAreaEvent, abortEvent);
   }
 
   public refreshPlayerOnceSkill(playerId: PlayerId, skillName: string) {

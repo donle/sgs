@@ -17,9 +17,9 @@ export class XianShuai extends TriggerSkill {
       room.Analytics.getRecordEvents<GameEventIdentifiers.DamageEvent>(
         event => EventPacker.getIdentifier(event) === GameEventIdentifiers.DamageEvent,
         undefined,
+        'circle',
         undefined,
-        undefined,
-        true,
+        2,
       ).length === 1
     );
   }

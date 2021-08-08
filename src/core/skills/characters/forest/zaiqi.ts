@@ -33,7 +33,7 @@ export class ZaiQi extends TriggerSkill {
           EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
           event.toArea === CardMoveArea.DropStack,
         content.playerId,
-        true,
+        'round',
       ).forEach(event => {
         droppedCardNum += event.movingCards.filter(mcard => Sanguosha.getCardById(mcard.card).isRed()).length;
       });
