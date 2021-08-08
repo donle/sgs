@@ -11,7 +11,6 @@ export class SunLiang extends Character {
       skillLoaderInstance.getSkillByName('kuizhu'),
       ...skillLoaderInstance.getSkillsByName('chezheng'),
       skillLoaderInstance.getSkillByName('lijun'),
-      skillLoaderInstance.getSkillByName('cheat'),
     ]);
   }
 }
