@@ -48,6 +48,14 @@ export const enum CardTargetEnum {
   Globe,
 }
 
+export enum DamageCardEnum {
+  Slash = 'slash',
+  Duel = 'duel',
+  FireAttack = 'fire_attack',
+  NanManRuQin = 'nanmanruqin',
+  WanJianQiFa = 'wanjianqifa',
+}
+
 // equip priority is [80, 100]
 export type CardValue = {
   value: number;
