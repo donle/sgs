@@ -79,7 +79,7 @@ export class KuiZhu extends TriggerSkill {
           toId: fromId,
           conversation: selectedOption === options[0]
           ? TranslationPack.translationJsonPatcher(
-            '{0}: do you want to choose at least {1} targets to draw a card each?',
+            '{0}: do you want to choose at most {1} targets to draw a card each?',
             this.Name,
             droppedCardsNum,
           ).extract()
@@ -131,8 +131,6 @@ export class KuiZhu extends TriggerSkill {
       toIds.length > 1 && (await room.loseHp(fromId, 1));
     }
 
-    await room.abortPlayerJudgeArea(fromId);
-
     return true;
   }
 }
@@ -149,7 +147,7 @@ export class KuiZhuDraw extends TriggerSkill {
   }
 
   public targetFilter(room: Room, owner: Player, targets: PlayerId[]): boolean {
-    return targets.length <= owner.getFlag<number>(KuiZhu.KuiZhuDroppedNum);
+    return targets.length > 0 && targets.length <= owner.getFlag<number>(KuiZhu.KuiZhuDroppedNum);
   }
 
   public isAvailableTarget(): boolean {
