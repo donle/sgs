@@ -2,11 +2,11 @@ import { AiLibrary } from 'core/ai/ai_lib';
 import { ActiveSkillTriggerClass } from 'core/ai/skills/base/active_skill_trigger';
 import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { CardId } from 'core/cards/libs/card_props';
-import { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
-import { Player } from 'core/player/player';
-import { Room } from 'core/room/room';
-import { JieDaoShaRenSkill } from 'core/skills';
+import type { CardId } from 'core/cards/libs/card_props';
+import type { ClientEventFinder, GameEventIdentifiers } from 'core/event/event';
+import type { Player } from 'core/player/player';
+import type { Room } from 'core/room/room';
+import type { JieDaoShaRenSkill } from 'core/skills';
 
 export class JieDaoShaRenSkillTrigger extends ActiveSkillTriggerClass<JieDaoShaRenSkill> {
   protected filterTargets(room: Room, ai: Player, skill: JieDaoShaRenSkill, card: CardId, enemies: Player[]) {
