@@ -99,7 +99,8 @@ export class FeiJun extends ActiveSkill {
 
       if (
         selected === 'feijun:hand' ||
-        target.getCardIds(PlayerCardsArea.HandArea).length > from.getCardIds(PlayerCardsArea.HandArea).length
+        (selected === '' &&
+          target.getCardIds(PlayerCardsArea.HandArea).length > from.getCardIds(PlayerCardsArea.HandArea).length)
       ) {
         const response = await room.doAskForCommonly<GameEventIdentifiers.AskForCardEvent>(
           GameEventIdentifiers.AskForCardEvent,
@@ -136,10 +137,7 @@ export class FeiJun extends ActiveSkill {
             cardAmount: 1,
             toId: resp.selectedPlayers[0],
             reason: this.Name,
-            conversation: TranslationPack.translationJsonPatcher(
-              '{0}: please drop a equip card',
-              this.Name,
-            ).extract(),
+            conversation: TranslationPack.translationJsonPatcher('{0}: please drop a equip card', this.Name).extract(),
             fromArea: [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
             cardMatcher: new CardMatcher({ type: [CardType.Equip] }).toSocketPassenger(),
             triggeredBySkills: [this.Name],
