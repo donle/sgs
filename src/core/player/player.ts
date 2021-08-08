@@ -335,45 +335,63 @@ export abstract class Player implements PlayerInfo {
     }
   }
 
+  private hasCardOrSubCardsInCards(sectionCards: CardId[], cardId: CardId) {
+    const index = sectionCards.findIndex(sectionCardId => sectionCardId === cardId);
+    if (index >= 0) {
+      return index;
+    }
+
+    if (Card.isVirtualCardId(cardId)) {
+      const targetCardRealCards = VirtualCard.getActualCards([cardId]);
+      return sectionCards.findIndex(sectionCardId => {
+        const realCards = VirtualCard.getActualCards([sectionCardId]);
+        if (Algorithm.equals(realCards, targetCardRealCards)) {
+          return true;
+        }
+      });
+    } else {
+      return sectionCards.findIndex(sectionCardId => VirtualCard.getActualCards([sectionCardId]).includes(cardId));
+    }
+  }
+
   dropCards(...cards: CardId[]): CardId[] {
     const droppedCardIds: CardId[] = [];
-    const allCards = this.getCardIds();
-    const allRealCards = VirtualCard.getActualCards(allCards);
-    const droppingCards = cards.reduce<CardId[]>((dropping, card) => {
-      if (allCards.includes(card) || allRealCards.includes(card)) {
-        dropping.push(card);
-      } else if (Card.isVirtualCardId(card)) {
-        dropping.push(...Algorithm.intersection(VirtualCard.getActualCards([card]), allRealCards));
+
+    const areaCardsList: CardId[][] = [
+      this.playerCards[PlayerCardsArea.HandArea],
+      this.playerCards[PlayerCardsArea.EquipArea],
+      this.playerCards[PlayerCardsArea.JudgeArea],
+      ...Object.values(this.playerOutsideCards),
+    ];
+
+    for (const areaCards of areaCardsList) {
+      if (droppedCardIds.length === cards.length) {
+        break;
       }
-      return dropping;
-    }, []);
 
-    for (const area of [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea, PlayerCardsArea.JudgeArea]) {
-      const areaCards = this.getCardIds(area);
-      for (const card of droppingCards) {
-        let index = areaCards.findIndex(
-          areaCard => areaCard === card || VirtualCard.getActualCards([areaCard]).includes(card),
-        );
+      for (const card of cards) {
+        if (droppedCardIds.length === cards.length) {
+          break;
+        }
 
+        if (droppedCardIds.includes(card)) {
+          continue;
+        }
+        if (VirtualCard.getActualCards([card]).length === 0) {
+          droppedCardIds.push(card);
+          continue;
+        }
+
+        const index = this.hasCardOrSubCardsInCards(areaCards, card);
         if (index >= 0) {
-          droppedCardIds.push(...VirtualCard.getActualCards(areaCards.splice(index, 1)));
-        } else {
-          for (const [areaName, outsideArea] of Object.entries(this.playerOutsideCards)) {
-            if (this.isCharacterOutsideArea(areaName)) {
-              continue;
-            }
-
-            index = outsideArea.findIndex(areaCard => areaCard === card);
-            if (index >= 0) {
-              droppedCardIds.push(...VirtualCard.getActualCards(outsideArea.splice(index, 1)));
-            }
-          }
+          droppedCardIds.push(card);
+          areaCards.splice(index, 1);
         }
       }
     }
 
-    const untrackedCards = droppingCards.filter(card => !droppedCardIds.includes(card));
-    if (untrackedCards.length > 0) {
+    if (droppedCardIds.length !== cards.length) {
+      const untrackedCards = Algorithm.unique(cards, droppedCardIds);
       throw new Error(`Can't drop card ${JSON.stringify(untrackedCards)} from player ${this.Name}`);
     }
 

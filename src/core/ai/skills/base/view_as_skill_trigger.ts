@@ -1,12 +1,12 @@
 import { AiLibrary } from 'core/ai/ai_lib';
-import { ViewAsSkillTrigger } from 'core/ai/ai_skill_trigger';
+import type { ViewAsSkillTrigger } from 'core/ai/ai_skill_trigger';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { CardId } from 'core/cards/libs/card_props';
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { Player } from 'core/player/player';
-import { PlayerId } from 'core/player/player_props';
-import { Room } from 'core/room/room';
-import { ViewAsSkill } from 'core/skills/skill';
+import type { CardId } from 'core/cards/libs/card_props';
+import type { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import type { Player } from 'core/player/player';
+import type { PlayerId } from 'core/player/player_props';
+import type { Room } from 'core/room/room';
+import type { ViewAsSkill } from 'core/skills/skill';
 import { BaseSkillTrigger } from './base_trigger';
 
 export class ViewAsSkillTriggerClass extends BaseSkillTrigger {

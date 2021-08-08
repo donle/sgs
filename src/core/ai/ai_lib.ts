@@ -3,7 +3,6 @@ import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher, CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardColor, CardId, CardValue } from 'core/cards/libs/card_props';
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { PlayerCardOrSkillInnerEvent } from 'core/event/event.client';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';

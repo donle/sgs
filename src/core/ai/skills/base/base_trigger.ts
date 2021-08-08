@@ -1,5 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import type { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Room } from 'core/room/room';
 
 export abstract class BaseSkillTrigger {

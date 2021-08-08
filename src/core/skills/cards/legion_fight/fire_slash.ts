@@ -4,5 +4,5 @@ import { SlashSkill } from '../standard/slash';
 
 @CommonSkill({ name: 'fire_slash', description: 'fire_slash_description' })
 export class FireSlashSkill extends SlashSkill {
-  public damageType: DamageType = DamageType.Fire;
+  public readonly damageType: DamageType = DamageType.Fire;
 }

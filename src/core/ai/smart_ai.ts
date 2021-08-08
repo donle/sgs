@@ -1,12 +1,11 @@
 import { CardType } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { CardId } from 'core/cards/libs/card_props';
+import type { CardId } from 'core/cards/libs/card_props';
 import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { PlayerCardOrSkillInnerEvent } from 'core/event/event.client';
 import { Sanguosha } from 'core/game/engine';
-import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
-import { Room } from 'core/room/room';
+import { PlayerCardsArea } from 'core/player/player_props';
+import type { Room } from 'core/room/room';
 import { ActiveSkill, FilterSkill, TriggerSkill } from 'core/skills/skill';
 import { PlayerAI } from './ai';
 import { AiLibrary } from './ai_lib';

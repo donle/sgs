@@ -26,8 +26,14 @@ export namespace Algorithm {
   export function intersection<T>(source: T[], scope: T[]) {
     return source.filter(element => scope.includes(element));
   }
+  export function unique<T>(source: T[], scope: T[]) {
+    return source.filter(element => !scope.includes(element));
+  }
   export function isSubsetOf<T>(source: T[], target: T[]) {
     return target.filter(element => !source.includes(element)).length === 0;
+  }
+  export function equals<T>(source: T[], target: T[]) {
+    return target.length === source.length && target.filter(e => !source.includes(e)).length === 0;
   }
   export function generateUUID() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
