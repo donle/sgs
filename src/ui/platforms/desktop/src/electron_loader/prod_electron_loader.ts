@@ -1,6 +1,5 @@
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import type { IpcRenderer } from 'electron';
 import {
   DELETE_DATA,
   DO_UPDATE,
@@ -21,29 +20,51 @@ export class ProdElectronLoader extends ElectronLoader {
     language: navigator.language,
   };
   private tempSaveData: any = {};
-  private ipcRenderer: IpcRenderer = (window as any).ipcRenderer;
+  private ipcRenderer: {
+    send(api: string, ...data: any): void;
+    on(api: string, handler: (data: any) => void): void;
+  } = (window as any).api;
   private whenUpdateallbackFn: Function | undefined;
   private updateTo: string | undefined;
   private updateProgress: number = 0;
+  private downloadingFile: number | undefined = 1;
+  private totalDownloads: number = 1;
   private updateComplete: boolean = false;
   private resolver: (instance: ProdElectronLoader) => void;
 
   constructor() {
     super();
     this.ipcRenderer.send(GET_ALL_DATA);
-    this.ipcRenderer.on(GET_ALL_DATA, (event, data: any) => {
+    this.ipcRenderer.on(GET_ALL_DATA, (data: any) => {
       this.saveJson = data;
       this.resolver?.(this);
     });
-    this.ipcRenderer.on(DO_UPDATE, (evt, process: { nextVersion: string; progress: number; complete?: boolean }) => {
-      if (this.whenUpdateallbackFn) {
-        this.whenUpdateallbackFn(process.nextVersion, process.progress, process.complete);
-      } else {
-        this.updateTo = process.nextVersion;
-        this.updateComplete = !!process.complete;
-        this.updateProgress = process.progress;
-      }
-    });
+    this.ipcRenderer.on(
+      DO_UPDATE,
+      (process: {
+        nextVersion: string;
+        progress: number;
+        complete?: boolean;
+        downloadingFile?: number;
+        totalFiles: number;
+      }) => {
+        if (this.whenUpdateallbackFn) {
+          this.whenUpdateallbackFn(
+            process.nextVersion,
+            process.progress,
+            process.totalFiles,
+            process.complete,
+            process.downloadingFile,
+          );
+        } else {
+          this.updateTo = process.nextVersion;
+          this.updateComplete = !!process.complete;
+          this.updateProgress = process.progress;
+          this.downloadingFile = process.downloadingFile;
+          this.totalDownloads = process.totalFiles;
+        }
+      },
+    );
     this.ipcRenderer.on(REQUEST_CORE_VERSION, () => {
       this.ipcRenderer.send(REQUEST_CORE_VERSION, Sanguosha.PlainVersion);
     });
@@ -56,10 +77,23 @@ export class ProdElectronLoader extends ElectronLoader {
   }
 
   public readonly whenUpdate = (
-    updateCallback: (nextVersion: string, progress: number, complete?: boolean) => void,
+    updateCallback: (
+      nextVersion: string,
+      progress: number,
+      totalFiles: number,
+      complete?: boolean,
+      downloadingFile?: number,
+    ) => void,
   ) => {
     this.whenUpdateallbackFn = updateCallback;
-    this.updateTo && updateCallback(this.updateTo, this.updateProgress, this.updateComplete);
+    this.updateTo &&
+      updateCallback(
+        this.updateTo,
+        this.updateProgress,
+        this.totalDownloads,
+        this.updateComplete,
+        this.downloadingFile,
+      );
   };
 
   public flashFrame() {
@@ -105,7 +139,7 @@ export class ProdElectronLoader extends ElectronLoader {
   public async readReplay(version: string): Promise<ReplayDataType | undefined> {
     return new Promise<ReplayDataType | undefined>(resovle => {
       this.ipcRenderer.send(READ_REPLAY, version);
-      this.ipcRenderer.on(READ_REPLAY, (event, saveData: ReplayDataType | undefined) => {
+      this.ipcRenderer.on(READ_REPLAY, (saveData: ReplayDataType | undefined) => {
         resovle(saveData);
       });
     });

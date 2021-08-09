@@ -11,7 +11,7 @@ import {
   PlayerDyingStage,
 } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerId } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { QingGangSkill } from 'core/skills/cards/standard/qinggang';
@@ -147,8 +147,15 @@ export class AnJian extends TriggerSkill {
 @CompulsorySkill({ name: 'shadow_anjianPeach', description: 'shadow_anjianPeach_description' })
 export class AnJianPeach extends FilterSkill {
   canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId) {
-    return cardId instanceof CardMatcher
-      ? !new CardMatcher({ name: ['peach'] }).match(cardId)
-      : Sanguosha.getCardById(cardId).GeneralName !== 'peach';
+    const isPeachCard =
+      cardId instanceof CardMatcher
+        ? new CardMatcher({ name: ['peach'] }).match(cardId)
+        : Sanguosha.getCardById(cardId).GeneralName === 'peach';
+
+    if (isPeachCard && room.getPlayerById(owner).hasCard(room, cardId, PlayerCardsArea.HandArea)) {
+      return false;
+    }
+
+    return true;
   }
 }

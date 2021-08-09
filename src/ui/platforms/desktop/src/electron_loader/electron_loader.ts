@@ -17,7 +17,15 @@ export abstract class ElectronLoader {
   public abstract async readReplay(version: string): Promise<ReplayDataType | undefined>;
   public abstract get ReplayEnabled(): boolean;
   public abstract refreshReplayDataFlow(): void;
-  public abstract whenUpdate(updateCallback: (nextVersion: string, progress: number, complete?: boolean) => void): void;
+  public abstract whenUpdate(
+    updateCallback: (
+      nextVersion: string,
+      progress: number,
+      totalFiles: number,
+      complete?: boolean,
+      downloadingFile?: number,
+    ) => void,
+  ): void;
 
   public async getGameLog() {
     const xhr = new XMLHttpRequest();

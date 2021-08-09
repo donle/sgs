@@ -641,6 +641,9 @@ export class GameClientProcessor {
         })),
       );
     }
+    if (content.toIds && !content.toIds.includes(this.store.clientPlayerId)) {
+      return;
+    }
   }
 
   // tslint:disable-next-line:no-empty
@@ -960,11 +963,11 @@ export class GameClientProcessor {
     await this.store.room.loseSkill(content.toId, content.skillName);
   }
 
-  protected onHandleObtainSkillEvent<T extends GameEventIdentifiers.ObtainSkillEvent>(
+  protected async onHandleObtainSkillEvent<T extends GameEventIdentifiers.ObtainSkillEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.store.room.getPlayerById(content.toId).obtainSkill(content.skillName);
+    await this.store.room.obtainSkill(content.toId, content.skillName);
     this.presenter.broadcastUIUpdate();
   }
 

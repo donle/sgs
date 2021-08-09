@@ -1,4 +1,5 @@
 @value FZLiBianFont from '../metrics/metrics.css';
+@value gridLine from '../metrics/metrics.css';
 
 .buttonOuter {
     border-radius: 4px;
@@ -31,8 +32,8 @@
 .button.autoButton {
     background: transparent;
     display: flex;
-    width: 150px;
-    height: 45px;
+    width: calc(gridLine * 15);
+    height: calc(gridLine * 4.5);
 }
 .button:not(.disabled):hover {
     color: white;

@@ -17,6 +17,7 @@
     "experimentalDecorators": true,
     "importHelpers": false,
     "target": "es2015",
-    "typeRoots": ["./node_modules/@types"]
-  }
+    "typeRoots": ["./node_modules/@types"],
+  },
+  "include": ["./electron.ts", "./declaration.d.ts"]
 }

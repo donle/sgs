@@ -28,14 +28,7 @@ export class WuShen extends TransformSkill implements OnDefineReleaseTiming {
       return cardId;
     });
 
-    room.broadcast(GameEventIdentifiers.PlayerPropertiesChangeEvent, {
-      changedProperties: [
-        {
-          toId: owner.Id,
-          handCards: cards,
-        },
-      ],
-    });
+    owner.setupCards(PlayerCardsArea.HandArea, cards);
   }
 
   async whenLosingSkill(room: Room, owner: Player) {

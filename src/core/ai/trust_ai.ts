@@ -89,12 +89,6 @@ export class TrustAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
-    // const logs: string =
-    //   `AskForCardUseEvent, ask Card ${content.cardMatcher.name} ` +
-    //   (content !== undefined && content!.byCardId !== undefined
-    //     ? `for Reponse ${Sanguosha.getCardById(content!.byCardId).Name}`
-    //     : '');
-
     const { toId, cardMatcher } = content as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
 
     const toPlayer = room.getPlayerById(toId);
@@ -131,12 +125,6 @@ export class TrustAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
-    // const logs: string =
-    //   `AskForCardDropEvent, ask ExceptCard: ${content.except}, Amount: ${content.cardAmount} ` +
-    //   (content !== undefined && content!.triggeredBySkills !== undefined
-    //     ? `for Reponse ${content!.triggeredBySkills}`
-    //     : '');
-
     const { toId, cardAmount, fromArea, except } = content as ServerEventFinder<
       GameEventIdentifiers.AskForCardDropEvent
     >;
@@ -331,6 +319,7 @@ export class TrustAI extends PlayerAI {
 
     return placeCards;
   }
+  
   protected onAskForContinuouslyChoosingCardEvent<T extends GameEventIdentifiers.AskForContinuouslyChoosingCardEvent>(
     content: ServerEventFinder<T>,
     room: Room,

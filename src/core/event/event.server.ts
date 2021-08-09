@@ -117,6 +117,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.CardDisplayEvent]: {
     displayCards: CardId[];
     fromId?: PlayerId;
+    toIds?: PlayerId[];
   };
 
   [GameEventIdentifiers.SkillUseEvent]: {

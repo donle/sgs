@@ -3,7 +3,7 @@
 .createRoomDialog {
     padding: calc(gridLine * 3);
     color: white;
-    min-width: calc(gridLine * 75);
+    width: calc(gridLine * 75);
 }
 
 .background {

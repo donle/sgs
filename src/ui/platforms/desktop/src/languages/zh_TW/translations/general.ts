@@ -89,6 +89,7 @@ export const eventDictionary: Word[] = [
   { source: 'hegemony-game', target: '國戰' },
   { source: 'back to lobby', target: '返回大廳' },
   { source: 'updating core version to {0}, downloading...', target: '內核版本升級至 {0}，下載中...' },
+  { source: 'downloading file {0}/{1}', target: '下載檔案 {0}/{1}' },
   { source: 'Update complete, please restart client to complete update', target: '升級完成，請重啓客戶端完成更新' },
 
   { source: 'yes', target: '是' },

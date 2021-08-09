@@ -138,6 +138,7 @@ export class ReplayRoomPage extends React.Component<
   }
 
   private async loadSteps(events: ServerEventFinder<GameEventIdentifiers>[]) {
+    console.log(events);
     for (const content of events) {
       if (this.dumped) {
         break;

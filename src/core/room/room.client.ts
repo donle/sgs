@@ -1,4 +1,5 @@
 import { ClientEventFinder, GameEventIdentifiers, WorkPlace } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { GameInfo, GameRunningInfo } from 'core/game/game_props';
 import { RecordAnalytics } from 'core/game/record_analytics';
 import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
@@ -7,7 +8,7 @@ import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { GameMode } from 'core/shares/types/room_props';
-import { OnDefineReleaseTiming } from 'core/skills/skill';
+import { OnDefineReleaseTiming, SkillLifeCycle } from 'core/skills/skill';
 import { Room, RoomId } from './room';
 
 export class ClientRoom extends Room<WorkPlace.Client> {
@@ -149,10 +150,6 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.trigger.name);
   }
   //Server only
-  public async obtainSkill(): Promise<void> {
-    this.throwUntouchableError(this.obtainSkill.name);
-  }
-  //Server only
   public syncGameCommonRules(): void {
     this.throwUntouchableError(this.syncGameCommonRules.name);
   }
@@ -279,6 +276,12 @@ export class ClientRoom extends Room<WorkPlace.Client> {
 
   public get CurrentPlayerStage() {
     return this.currentPlayerStage;
+  }
+
+  public async obtainSkill(playerId: PlayerId, skillName: string): Promise<void> {
+    const player = this.getPlayerById(playerId);
+    player.obtainCardIds(skillName);
+    await SkillLifeCycle.executeHookOnObtainingSkill(Sanguosha.getSkillBySkillName(skillName), this, player);
   }
 
   public async loseSkill(playerId: PlayerId, skillName: string | string[]): Promise<void> {

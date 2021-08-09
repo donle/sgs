@@ -77,6 +77,10 @@ export class Lobby extends React.Component<LobbyProps> {
   @mobx.observable.ref
   private updateProgress: number = 0;
   @mobx.observable.ref
+  private updateDownloadingFile: number = 1;
+  @mobx.observable.ref
+  private updateDownloadTotalFile: number = 1;
+  @mobx.observable.ref
   private gameLog: string;
 
   private backgroundImage = this.props.imageLoader.getLobbyBackgroundImage().src!;
@@ -114,11 +118,15 @@ export class Lobby extends React.Component<LobbyProps> {
     this.username = this.props.electronLoader.getData('username');
 
     this.props.electronLoader.whenUpdate(
-      mobx.action((nextVersion: string, progress: number, complete?: boolean) => {
-        this.updateTo = nextVersion;
-        this.updateComplete = !!complete;
-        this.updateProgress = progress;
-      }),
+      mobx.action(
+        (nextVersion: string, progress: number, totalFile: number, complete?: boolean, downloadingFile?: number) => {
+          this.updateTo = nextVersion;
+          this.updateComplete = !!complete;
+          this.updateProgress = progress;
+          this.updateDownloadTotalFile = totalFile;
+          this.updateDownloadingFile = downloadingFile || 1;
+        },
+      ),
     );
     this.props.electronLoader.getGameLog().then(mobx.action(inlineHtml => (this.gameLog = inlineHtml)));
   }
@@ -491,6 +499,13 @@ export class Lobby extends React.Component<LobbyProps> {
                 TranslationPack.translationJsonPatcher(
                   'updating core version to {0}, downloading...',
                   this.updateTo,
+                ).toString(),
+              )}
+              {this.props.translator.trx(
+                TranslationPack.translationJsonPatcher(
+                  'downloading file {0}/{1}',
+                  this.updateDownloadingFile,
+                  this.updateDownloadTotalFile,
                 ).toString(),
               )}
               {(this.updateProgress * 100).toFixed(2)} %

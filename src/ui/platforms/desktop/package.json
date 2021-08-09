@@ -1,6 +1,6 @@
 {
   "name": "DSanguosha",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "author": {
     "name": "donle",
     "email": "donle1988@gmail.com"
@@ -45,6 +45,7 @@
     "extract-zip": "^2.0.1",
     "file-loader": "4.3.0",
     "fs-extra": "^8.1.0",
+    "global": "^4.4.0",
     "html-webpack-plugin": "^4.2.0",
     "identity-obj-proxy": "3.0.0",
     "jest": "24.9.0",
@@ -100,6 +101,7 @@
     "electron:mac": "yarn build-electron:mac && tsc --project ./tools/tsconfig.json && copy .\\tools\\preload.js .\\build && NODE_ENV=production electron .",
     "build:electron:win": "yarn build-electron:win && tsc --project ./tools/tsconfig.json && copy .\\tools\\preload.js .\\build && electron-builder",
     "build:electron:mac": "yarn build-electron:mac && tsc --project ./tools/tsconfig.json && cp -R ./tools/preload.js ./build && electron-builder",
+    "electron": "tsc --project ./tools/tsconfig.json && copy .\\tools\\preload.js .\\build && electron-builder",
     "test": "node scripts/test.js"
   },
   "build": {
@@ -150,8 +152,8 @@
     "cross-env": "^7.0.2",
     "css-loader": "^3.4.2",
     "css-modules-typescript-loader": "^4.0.0",
-    "electron": "^9.0.0",
-    "electron-builder": "^22.9.1",
+    "electron": "^13.1.8",
+    "electron-builder": "^22.11.7",
     "electron-store": "^6.0.1",
     "react-test-renderer": "^16.13.0",
     "rimraf": "^3.0.0",

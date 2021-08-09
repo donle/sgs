@@ -21,6 +21,12 @@ export class Replay {
   private static readonly iv = '__sgs_replay_iv_';
   private otherInfo: ReplayOtherInfo;
 
+  static readonly ErrorCode = {
+    EmptyFile: '01001',
+    FileUnparsable: '01002',
+    FileNotFound: '01003',
+  };
+
   public set OtherInfo(info: ReplayOtherInfo) {
     this.otherInfo = info;
   }

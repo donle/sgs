@@ -11,25 +11,24 @@ import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 @CompulsorySkill({ name: 'hongyan', description: 'hongyan_description' })
 export class HongYan extends TransformSkill implements OnDefineReleaseTiming {
   async whenObtainingSkill(room: Room, owner: Player) {
-    const cards = [owner.getCardIds(PlayerCardsArea.HandArea), owner.getCardIds(PlayerCardsArea.EquipArea)].map(cards =>
-      cards.map(cardId => {
-        if (this.canTransform(cardId)) {
-          return this.forceToTransformCardTo(cardId).Id;
-        }
+    const handcards = owner.getCardIds(PlayerCardsArea.HandArea).map(cardId => {
+      if (this.canTransform(cardId)) {
+        return this.forceToTransformCardTo(cardId).Id;
+      }
 
-        return cardId;
-      }),
-    );
-
-    room.broadcast(GameEventIdentifiers.PlayerPropertiesChangeEvent, {
-      changedProperties: [
-        {
-          toId: owner.Id,
-          handCards: cards[0],
-          equips: cards[1],
-        },
-      ],
+      return cardId;
     });
+
+    owner.setupCards(PlayerCardsArea.HandArea, handcards);
+    
+    const equips = owner.getCardIds(PlayerCardsArea.EquipArea).map(cardId => {
+      if (this.canTransform(cardId)) {
+        return this.forceToTransformCardTo(cardId).Id;
+      }
+
+      return cardId;
+    });
+    owner.setupCards(PlayerCardsArea.EquipArea, equips);
   }
 
   async whenLosingSkill(room: Room, owner: Player) {

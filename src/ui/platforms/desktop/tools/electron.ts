@@ -4,6 +4,7 @@ import fetch from 'node-fetch';
 import * as fs from 'original-fs';
 import * as path from 'path';
 import * as url from 'url';
+import { FileSplitter } from './file_splitter';
 import { getTranslations, Language } from './languages';
 import { Replay, ReplayOtherInfo } from './replay';
 import { Store } from './store';
@@ -119,27 +120,41 @@ class AppWindow {
         properties: ['openFile'],
       });
       if (!filePath || filePath.length === 0) {
+        dialog.showMessageBox(this.windowInstance!, {
+          defaultId: 0,
+          title: this.translation.ReplayFile,
+          message: this.translation.ReadReplayExceptions(Replay.ErrorCode.FileNotFound),
+        });
+
         return;
       }
 
       const rawReplay = fs.readFileSync(filePath[0], 'utf-8');
-      const parseReplay = (await this.replay.parse(rawReplay)) as { events: object[]; otherInfo: ReplayOtherInfo };
-      if (parseReplay.otherInfo.version !== clientCoreVersion) {
-        dialog
-          .showMessageBox(this.windowInstance!, {
-            buttons: [this.translation.Yes, this.translation.Cancel],
-            defaultId: 0,
-            title: this.translation.MismatchVersionTitle,
-            message: this.translation.MismatchVersionMessage(parseReplay.otherInfo.version, clientCoreVersion),
-          })
-          .then(({ response }) => {
-            this.windowInstance!.webContents.send(
-              READ_REPLAY,
-              response === 0 ? { events: parseReplay.events, ...parseReplay.otherInfo } : undefined,
-            );
-          });
-      } else {
-        this.windowInstance!.webContents.send(READ_REPLAY, { events: parseReplay.events, ...parseReplay.otherInfo });
+      try {
+        const parseReplay = (await this.replay.parse(rawReplay)) as { events: object[]; otherInfo: ReplayOtherInfo };
+        if (parseReplay.otherInfo.version !== clientCoreVersion) {
+          dialog
+            .showMessageBox(this.windowInstance!, {
+              buttons: [this.translation.Yes, this.translation.Cancel],
+              defaultId: 0,
+              title: this.translation.MismatchVersionTitle,
+              message: this.translation.MismatchVersionMessage(parseReplay.otherInfo.version, clientCoreVersion),
+            })
+            .then(({ response }) => {
+              this.windowInstance!.webContents.send(
+                READ_REPLAY,
+                response === 0 ? { events: parseReplay.events, ...parseReplay.otherInfo } : undefined,
+              );
+            });
+        } else {
+          this.windowInstance!.webContents.send(READ_REPLAY, { events: parseReplay.events, ...parseReplay.otherInfo });
+        }
+      } catch {
+        dialog.showMessageBox(this.windowInstance!, {
+          defaultId: 0,
+          title: this.translation.ReplayFile,
+          message: this.translation.ReadReplayExceptions(Replay.ErrorCode.FileUnparsable),
+        });
       }
     });
   }
@@ -179,7 +194,6 @@ async function requestUpdate(window: BrowserWindow) {
     });
   });
 
-  const appPath = app.getPath('exe');
   const response = await fetch(AppWindow.GameReleaseApi).then(res => res.json());
   const nextVersion = response.tag_name.replace(/[^\d.]+/g, '');
   const currentVersion = await requestCurrentVersion;
@@ -209,30 +223,63 @@ async function requestUpdate(window: BrowserWindow) {
       return;
     }
 
-    let totalSize = 0;
-    let currentSize = 0;
-    syncUpdateStatusTimer = setInterval(() => {
-      window.webContents.send(DO_UPDATE, { nextVersion, progress: currentSize / totalSize });
-    }, 1000);
-    for (const downloadInfo of downloadInfos) {
-      const downloadUrl = `${downloadInfo.browser_download_url}/${downloadInfo.name}`;
-      const dataStream = await fetch(downloadUrl).then(res => {
-        totalSize += (res.headers.get('content-length') as unknown) as number;
-        return res.body;
-      });
-      const downloadFile = fs.createWriteStream(path.join(appPath, '../update', downloadInfo.name));
-      dataStream.pipe(downloadFile);
-      dataStream.on('data', res => {
-        currentSize += res.length;
-      });
-      dataStream.on('end', () => {
-        clearInterval(syncUpdateStatusTimer);
-        window.webContents.send(DO_UPDATE, { nextVersion, progress: 1, complete: true });
-        // tslint:disable-next-line:no-empty
-        AppWindow.onClosing(() => {});
-      });
+    for (let i = 0; i < downloadInfos.length; i++) {
+      const downloadInfo = downloadInfos[i];
+      await downloadFile(window, nextVersion, downloadInfo, i + 1, downloadInfos.length);
     }
+
+    // tslint:disable-next-line:no-empty
+    AppWindow.onClosing(() => {});
   }
+}
+
+async function downloadFile(
+  window: BrowserWindow,
+  downloadVersion: string,
+  downloadInfo: {
+    browser_download_url: string;
+    name: string;
+  },
+  currentDownload: number,
+  totalDownloads: number,
+) {
+  const appPath = app.getPath('exe');
+
+  let totalSize = 0;
+  let currentSize = 0;
+  syncUpdateStatusTimer = setInterval(() => {
+    window.webContents.send(DO_UPDATE, {
+      nextVersion: downloadVersion,
+      progress: currentSize / totalSize,
+      totalFiles: totalDownloads,
+    });
+  }, 1000);
+
+  const downloadUrl = `${downloadInfo.browser_download_url}/${downloadInfo.name}`;
+  const dataStream = await fetch(downloadUrl).then(res => {
+    totalSize += (res.headers.get('content-length') as unknown) as number;
+    return res.body;
+  });
+
+  return new Promise<void>(resolve => {
+    const downloadFile = fs.createWriteStream(path.join(appPath, '../update', downloadInfo.name));
+    dataStream.pipe(downloadFile);
+    dataStream.on('data', res => {
+      currentSize += res.length;
+    });
+    dataStream.on('end', () => {
+      clearInterval(syncUpdateStatusTimer);
+      window.webContents.send(DO_UPDATE, {
+        nextVersion: downloadVersion,
+        progress: 1,
+        complete: true,
+        downloadingFile: currentDownload,
+        totalFiles: totalDownloads,
+      });
+
+      resolve();
+    });
+  });
 }
 
 export function main() {
@@ -261,54 +308,60 @@ export function main() {
   return { winAppInstance, winApp };
 }
 
-function beforeLaunch(callback: Function) {
+async function mergeFiles(downloadDir: string) {
+  const files = fs.readdirSync(downloadDir);
+  if (files.length > 0) {
+    await FileSplitter.mergeFiles(
+      files.map(file => path.join(downloadDir, file)),
+      path.join(downloadDir, 'core.zip'),
+    );
+  }
+
+  return files;
+}
+
+async function beforeLaunch() {
   const appPath = app.getPath('exe');
   const updateFolder = path.join(appPath, '../update');
   if (!fs.existsSync(updateFolder)) {
     fs.mkdirSync(updateFolder);
-    return callback();
+    return;
   } else {
+    await mergeFiles(updateFolder);
+
     const updateZipFile = path.join(updateFolder, './core.zip');
     if (!fs.existsSync(updateZipFile)) {
-      return callback();
+      return;
     }
 
-    Extract(updateZipFile, { dir: updateFolder })
-      .then(() => {
-        const destDirectory = path.join(appPath, '../resources/app.asar');
-        const updateFile = path.join(updateFolder, './app.asar.bak');
-        if (fs.existsSync(updateFile)) {
-          fs.copyFileSync(updateFile, destDirectory);
-          fs.unlinkSync(updateFile);
-          fs.unlinkSync(updateZipFile);
-        }
-        callback();
-      })
-      .catch(err => {
-        if (err) {
-          if (fs.existsSync(updateZipFile)) {
-            fs.unlinkSync(updateZipFile);
-          }
-          return callback(err);
-        }
-      });
+    await Extract(updateZipFile, { dir: updateFolder });
+
+    const destDirectory = path.join(appPath, '../resources/app.asar');
+    const updateFile = path.join(updateFolder, './app.asar.bak');
+    fs.copyFileSync(updateFile, destDirectory);
+
+    const files = fs.readdirSync(updateFolder);
+    for (const file of files) {
+      fs.unlinkSync(path.join(updateFolder, file));
+    }
   }
 }
 
 let appInstance: BrowserWindow;
 let winApp: AppWindow;
-AppWindow.onReady(() => {
-  beforeLaunch(err => {
-    const { winAppInstance, winApp: _winApp } = main();
-    if (err) {
-      dialog.showMessageBox(winAppInstance, {
-        message: JSON.stringify(err),
-      });
-    }
-    appInstance = winAppInstance;
-    winApp = _winApp;
-    requestUpdate(appInstance).then();
-  });
+AppWindow.onReady(async () => {
+  try {
+    await beforeLaunch();
+  } catch (e) {
+    dialog.showMessageBox({
+      message: JSON.stringify(e),
+    });
+  }
+
+  const { winAppInstance, winApp: _winApp } = main();
+  appInstance = winAppInstance;
+  winApp = _winApp;
+  requestUpdate(appInstance).then();
 });
 AppWindow.onWindowAllClosed(() => {
   if (process.platform !== 'darwin') {

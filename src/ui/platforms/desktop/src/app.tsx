@@ -11,7 +11,7 @@ import { RoomPage } from 'pages/room/room';
 import { ClientConfig } from 'props/config_props';
 import * as React from 'react';
 import { Redirect, Route, Router } from 'react-router-dom';
-import { ConnectionService } from 'services/connection_service/connection_service';
+import { getConnectionService } from 'services/connection_service/connection_service_util';
 import { CharacterSkinInfo } from 'skins/skins';
 import { Lobby } from './pages/lobby/lobby';
 @mobxReact.observer
@@ -24,7 +24,8 @@ export class App extends React.PureComponent<{
   private skinData: CharacterSkinInfo[];
   private imageLoader = getImageLoader(this.props.config.flavor);
   private audioLoader = getAudioLoader(this.props.config.flavor);
-  private connectionService = new ConnectionService(this.props.config);
+  private connectionService = getConnectionService(this.props.config);
+  private fakeConnectionService = getConnectionService(this.props.config, true);
 
   async getSkinData() {
     const url = process.env.PUBLIC_URL + '/skin_infos.json';
@@ -89,7 +90,7 @@ export class App extends React.PureComponent<{
                 electronLoader={this.props.electronLoader}
                 config={this.props.config}
                 translator={this.props.translator}
-                connectionService={this.connectionService}
+                connectionService={this.fakeConnectionService}
               />
             )}
           />
