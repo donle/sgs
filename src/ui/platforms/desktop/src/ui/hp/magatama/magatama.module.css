@@ -1,7 +1,3 @@
-@value dyingColor: #ff5613;
-@value dangerColor: #e48205;
-@value healthyColor: #1f9824;
-
 .magatama {
     display: flex;
     height: 18px;

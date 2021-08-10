@@ -4,18 +4,21 @@
 @value qunColor from '../metrics/metrics.css';
 @value godColor from '../metrics/metrics.css';
 
+@value dyingColor: #ff5613;
+@value dangerColor: #e48205;
+@value healthyColor: #1f9824;
+
 .textHpLabel {
     display: flex;
     flex-direction: column;
 }
 
 .textHp {
-    writing-mode: vertical-lr;
-    text-orientation: upright;
-    font-size: 18px;
+    text-align: center;
+    font-size: 16px;
     font-weight: 700;
-    text-shadow: 0 0 2px black, 0 0 2px black, 0 0 3px black, 0 0 3px black, 0 0 4px white, 0 0 4px white, 0 0 4px white,
-        0 0 4px white;
+    text-shadow: 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 3px white, 0 0 4px white, 0 0 4px white,
+        0 0 3px white;
 }
 
 .wei {
@@ -35,4 +38,14 @@
 }
 .lord {
     color: godColor;
+}
+
+.dying {
+    color: dyingColor;
+}
+.danger {
+    color: dangerColor;
+}
+.healthy {
+    color: healthyColor;
 }

@@ -367,7 +367,6 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
       incomingMessage,
       actionTimeLimit,
     } = this.props;
-    console.log(player?.Status);
     return (
       <div className={styles.player} onMouseOver={this.showPlayerName} onMouseOut={this.hidePlayerName}>
         <div

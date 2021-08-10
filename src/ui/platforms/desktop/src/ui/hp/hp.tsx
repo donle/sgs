@@ -31,15 +31,17 @@ export const Hp = (props: { hp: number; maxHp: number; size: 'regular' | 'small'
   const { hp, maxHp, className, size } = props;
   const status = getStatus(hp, maxHp);
 
+  const textHpClassNames = classNames(styles.textHp, {
+    [styles.dying]: status === 'dying',
+    [styles.danger]: status === 'danger',
+    [styles.healthy]: status === 'healthy',
+  });
+
   return maxHp > 5 ? (
     <div className={styles.textHpLabel}>
-      <span
-        className={classNames(styles.textHp, {
-          [styles.dying]: status === 'dying',
-          [styles.danger]: status === 'danger',
-          [styles.healthy]: status === 'healthy',
-        })}
-      >{`${hp}/${maxHp}`}</span>
+      <span className={textHpClassNames}>{hp}</span>
+      <span className={textHpClassNames}>/</span>
+      <span className={textHpClassNames}>{maxHp}</span>
       <Magatama size={size} status={status} />
     </div>
   ) : (
@@ -56,7 +58,6 @@ export const CharacterHp = (props: { character: Character; className?: string })
   const getMagatama = () => {
     const hp = character.Hp;
     const maxHp = character.MaxHp || hp;
-
     const className = classNames(styles.textHp, {
       [styles.lord]: character.isLord(),
       [styles.wei]: character.Nationality === CharacterNationality.Wei,
