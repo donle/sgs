@@ -1,6 +1,5 @@
 import { Card, VirtualCard } from 'core/cards/card';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
-import { GameEventIdentifiers } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
@@ -20,7 +19,7 @@ export class HongYan extends TransformSkill implements OnDefineReleaseTiming {
     });
 
     owner.setupCards(PlayerCardsArea.HandArea, handcards);
-    
+
     const equips = owner.getCardIds(PlayerCardsArea.EquipArea).map(cardId => {
       if (this.canTransform(cardId)) {
         return this.forceToTransformCardTo(cardId).Id;

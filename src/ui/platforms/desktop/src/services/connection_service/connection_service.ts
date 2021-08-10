@@ -2,7 +2,7 @@ import { GameCardExtensions } from 'core/game/game_props';
 import { RoomId } from 'core/room/room';
 import { LobbySocketEvent, LobbySocketEventPicker } from 'core/shares/types/server_types';
 import { TemporaryRoomCreationInfo } from 'pages/lobby/ui/create_room_dialog/create_room_dialog';
-import { ClientConfig, ServerHostTag } from 'props/config_props';
+import { ServerHostTag } from 'props/config_props';
 
 export type ChatPacketObject = { message: string; from: string; timestamp: number };
 export type RoomListListenerResponse = {
@@ -24,8 +24,6 @@ export type CreateGameListenerResponse = {
 export abstract class ConnectionService {
   protected abstract chatSocket: SocketIOClient.Socket;
   protected chatHistory: ChatPacketObject[] = [];
-  // tslint:disable-next-line:no-empty
-  constructor() {}
 
   protected abstract readonly lobbyService: {
     getRoomList(callback: (response: RoomListListenerResponse) => void): void;

@@ -1,6 +1,5 @@
 import { Card, VirtualCard } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
-import { GameEventIdentifiers } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
