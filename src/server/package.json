@@ -7,18 +7,18 @@
   "dependencies": {
     "chalk": "^3.0.0",
     "express": "^4.17.1",
-    "socket.io": "^2.4.0"
+    "socket.io": "2.4.1"
   },
   "devDependencies": {
     "@types/chalk": "^2.2.0",
     "@types/express": "^4.17.2",
-    "@types/socket.io": "^2.1.4",
+    "@types/socket.io": "^3.0.2",
     "cross-env": "^7.0.0",
     "nodemon": "^2.0.2",
+    "ts-node": "^8.6.2",
     "tsconfig": "^7.0.0",
     "tsconfig-paths": "^3.9.0",
-    "typescript": "3.8.2",
-    "ts-node": "^8.6.2"
+    "typescript": "3.8.2"
   },
   "scripts": {
     "patch": "ts-node ../pre_release.ts",
