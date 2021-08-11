@@ -146,7 +146,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract async obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean): Promise<void>;
   //Server only
-  public abstract async pindian(fromId: PlayerId, toIds: PlayerId[]): Promise<PinDianReport>;
+  public abstract async pindian(fromId: PlayerId, toIds: PlayerId[], bySkill: string): Promise<PinDianReport>;
   public abstract async turnOver(playerId: PlayerId): Promise<void>;
 
   //Server only
@@ -457,7 +457,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
     return (
       this.withinAttackDistance(from, to, additionalAttackDistance, except) &&
-      this.canUseCardTo(slash || new CardMatcher({ generalName: ['slash'] }), to.Id)
+      this.canUseCardTo(slash || new CardMatcher({ generalName: ['slash'] }), from, to)
     );
   }
 
@@ -530,9 +530,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public abstract async kill(deadPlayer: Player, killedBy?: PlayerId): Promise<void>;
 
-  public canUseCardTo(cardId: CardId | CardMatcher, target: PlayerId): boolean {
-    const player = this.getPlayerById(target);
-    return player.canUseCardTo(this, cardId, target);
+  public canUseCardTo(cardId: CardId | CardMatcher, from: Player, target: Player): boolean {
+    return from.canUseCardTo(this, cardId, target.Id);
   }
 
   public canPlaceCardTo(cardId: CardId, target: PlayerId): boolean {
@@ -544,7 +543,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       return player.getEquipment(equipCard.EquipType) === undefined && player.canEquip(equipCard);
     } else if (card.is(CardType.DelayedTrick)) {
       const toJudgeArea = player.getCardIds(PlayerCardsArea.JudgeArea).map(id => Sanguosha.getCardById(id).GeneralName);
-      return !toJudgeArea.includes(card.GeneralName) && this.canUseCardTo(cardId, target);
+      return !toJudgeArea.includes(card.GeneralName) && this.canUseCardTo(cardId, player, player);
     }
 
     return false;

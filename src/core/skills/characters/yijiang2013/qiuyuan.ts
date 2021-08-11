@@ -41,6 +41,7 @@ export class QiuYuan extends TriggerSkill {
     skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     const to = room.getPlayerById(skillEffectEvent.toIds![0]);
+    const from = room.getPlayerById(skillEffectEvent.fromId);
 
     const askForCard: ServerEventFinder<GameEventIdentifiers.AskForCardEvent> = {
       cardAmount: 1,
@@ -52,9 +53,10 @@ export class QiuYuan extends TriggerSkill {
       conversation: TranslationPack.translationJsonPatcher(
         '{0}: you need to give a jink to {1}',
         this.Name,
-        TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillEffectEvent.fromId)),
+        TranslationPack.patchPlayerInTranslation(from),
       ).extract(),
       reason: this.Name,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(GameEventIdentifiers.AskForCardEvent, askForCard, to.Id);
@@ -73,7 +75,7 @@ export class QiuYuan extends TriggerSkill {
         engagedPlayerIds: room.getAllPlayersFrom().map(player => player.Id),
       });
     } else {
-      if (room.canUseCardTo(new CardMatcher({ generalName: ['slash'] }), to.Id)) {
+      if (room.canUseCardTo(new CardMatcher({ generalName: ['slash'] }), from, to)) {
         const aimEvent = skillEffectEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
         aimEvent.allTargets.push(to.Id);
       }

@@ -113,6 +113,7 @@ export class YaJiao extends TriggerSkill {
           fromId,
           toId: to.Id,
           options,
+          triggeredBySkills: [this.Name],
         };
 
         room.notify(

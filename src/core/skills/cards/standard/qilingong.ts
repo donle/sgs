@@ -53,6 +53,7 @@ export class QiLinGongSkill extends TriggerSkill {
         return card.is(CardType.OffenseRide) || card.is(CardType.DefenseRide);
       }),
       amount: 1,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(

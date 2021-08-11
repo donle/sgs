@@ -49,6 +49,7 @@ export class FanKui extends TriggerSkill {
         fromId: skillUseEvent.fromId,
         toId: fromId,
         options,
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(

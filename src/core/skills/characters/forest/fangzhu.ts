@@ -46,6 +46,7 @@ export class FangZhu extends TriggerSkill {
         ).extract(),
         toId: toIds![0],
         askedBy: fromId,
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(

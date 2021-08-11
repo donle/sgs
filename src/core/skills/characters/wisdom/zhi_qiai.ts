@@ -64,6 +64,7 @@ export class ZhiQiAi extends ActiveSkill {
           TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
         ).extract(),
         toId,
+        triggeredBySkills: [this.Name],
       });
 
       const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingOptionsEvent>(

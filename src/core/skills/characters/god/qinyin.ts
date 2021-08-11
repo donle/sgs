@@ -53,6 +53,7 @@ export class QinYin extends TriggerSkill {
       options,
       toId: skillEffectEvent.fromId,
       conversation: 'qinyin: please choose a choice to make everyone lose hp or recover hp',
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(

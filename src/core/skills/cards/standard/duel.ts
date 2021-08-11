@@ -9,6 +9,7 @@ import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ExtralCardSkillProperty } from '../interface/extral_property';
 
+
 @CommonSkill({ name: 'duel', description: 'duel_description' })
 export class DuelSkill extends ActiveSkill implements ExtralCardSkillProperty {
   public canUse() {
@@ -74,6 +75,7 @@ export class DuelSkill extends ActiveSkill implements ExtralCardSkillProperty {
               'slash',
               TranslationPack.patchCardInTranslation(event.cardId),
             ).extract(),
+            triggeredBySkills: [this.Name],
           },
           targets[turn],
         );

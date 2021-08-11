@@ -104,7 +104,7 @@ export class RouLinShadow extends TriggerSkill implements OnDefineReleaseTiming 
       cardMatcher: new CardMatcher({ name: ['jink'] }).toSocketPassenger(),
       byCardId: slashEvent.cardId,
       cardUserId: slashEvent.fromId,
-      triggeredBySkills: [Sanguosha.getCardById(slashEvent.cardId).Skill.GeneralName],
+      triggeredBySkills: [this.Name],
       conversation:
         slashEvent.fromId !== undefined
           ? TranslationPack.translationJsonPatcher(

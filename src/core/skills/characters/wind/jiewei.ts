@@ -160,6 +160,7 @@ export class JieWeiShadow extends TriggerSkill {
       fromId: skillUseEvent.fromId,
       toId: skillUseEvent.fromId,
       options,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(

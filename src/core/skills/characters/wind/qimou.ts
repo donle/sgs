@@ -49,6 +49,7 @@ export class QiMou extends ActiveSkill {
       toId: fromId,
       options,
       conversation: 'please choose the amount of hp to lose',
+      triggeredBySkills: [this.Name],
     };
     room.notify(
       GameEventIdentifiers.AskForChoosingOptionsEvent,

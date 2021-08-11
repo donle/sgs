@@ -78,6 +78,7 @@ export class ZaiQi extends TriggerSkill {
         options,
         conversation: TranslationPack.translationJsonPatcher('{0}: please choose', this.Name).extract(),
         toId: target,
+        triggeredBySkills: [this.Name],
       });
 
       room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, target);

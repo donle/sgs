@@ -92,20 +92,17 @@ export class TrustAI extends PlayerAI {
     const { toId, cardMatcher } = content as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
 
     const toPlayer = room.getPlayerById(toId);
+    const availableCards = AiLibrary.findAvailableCardsToUse(room, toPlayer, new CardMatcher(cardMatcher));
+
     if (EventPacker.isUncancellabelEvent(content)) {
       const cardResponse: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> = {
         fromId: toId,
-        cardId: toPlayer
-          .getCardIds(PlayerCardsArea.HandArea)
-          .find(
-            cardId =>
-              CardMatcher.match(cardMatcher, Sanguosha.getCardById(cardId)) && toPlayer.canUseCard(room, cardId),
-          ),
+        cardId: availableCards[0],
       };
       return cardResponse;
     } else {
       let cardResponse: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> = { fromId: toId };
-      const cardIds = AiLibrary.askAiUseCard(room, toId, cardMatcher, content!.byCardId);
+      const cardIds = AiLibrary.askAiUseCard(room, toId, availableCards, cardMatcher, content!.byCardId);
       if (cardIds.length > 0) {
         const responseCardId = cardIds.sort(
           (a, b) => AiLibrary.getCardValueofCard(a).value - AiLibrary.getCardValueofCard(b).value,

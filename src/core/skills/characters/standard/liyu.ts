@@ -51,6 +51,7 @@ export class LiYu extends TriggerSkill {
       fromId: damageEvent.fromId!,
       toId: damageEvent.toId,
       options,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(

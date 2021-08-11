@@ -7,6 +7,7 @@ import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
+
 @CommonSkill({ name: 'qinglongyanyuedao', description: 'qinglongyanyuedao_description' })
 export class QingLongYanYueDaoSkill extends TriggerSkill {
   isAutoTrigger() {
@@ -49,6 +50,7 @@ export class QingLongYanYueDaoSkill extends TriggerSkill {
           TranslationPack.patchPlayerInTranslation(from),
           this.Name,
         ).extract(),
+        triggeredBySkills: [this.Name],
       };
 
       await room.useCard(slashEvent, true);

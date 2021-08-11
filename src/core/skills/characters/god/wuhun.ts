@@ -81,6 +81,7 @@ export class WuHunDeath extends TriggerSkill {
         toId: owner.Id,
         requiredAmount: 1,
         conversation: 'wuhun:Please choose a target to die with you',
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(

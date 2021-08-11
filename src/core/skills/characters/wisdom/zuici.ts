@@ -70,6 +70,7 @@ export class ZuiCi extends TriggerSkill {
         '{0}: please choose and abort an equip section',
         this.Name,
       ).extract(),
+      triggeredBySkills: [this.Name],
     };
     room.notify(identifier, askforAbortions, fromId);
     const { selectedOption } = await room.onReceivingAsyncResponseFrom(identifier, fromId);
@@ -104,6 +105,7 @@ export class ZuiCi extends TriggerSkill {
         '{0}: please choose another player to transfer the "fu" mark',
         this.Name,
       ).extract(),
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingPlayerEvent, askForTransferMark, fromId);

@@ -1084,12 +1084,21 @@ export class GameClientProcessor {
         to.getCardIds(toArea as PlayerCardsArea).push(...actualCardIds);
       }
     } else if (toArea === CardMoveArea.DropStack) {
-      this.presenter.showCards(
-        ...VirtualCard.getActualCards(cardIds).map(cardId => ({
-          card: Sanguosha.getCardById(cardId),
-          tag: 'move to drop stack',
-        })),
-      );
+      const showCards = movingCards
+        .filter(move => move.fromArea !== CardMoveArea.ProcessingArea)
+        .reduce<CardId[]>((picked, move) => {
+          picked.push(...VirtualCard.getActualCards([move.card]));
+          return picked;
+        }, []);
+
+      if (showCards.length > 0) {
+        this.presenter.showCards(
+          ...showCards.map(cardId => ({
+            card: Sanguosha.getCardById(cardId),
+            tag: 'move to drop stack',
+          })),
+        );
+      }
     }
 
     toOutsideArea !== undefined && isOutsideAreaInPublic && to && to.setVisibleOutsideArea(toOutsideArea);

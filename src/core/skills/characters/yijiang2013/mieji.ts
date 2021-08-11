@@ -105,6 +105,7 @@ export class MieJi extends ActiveSkill {
           'please choose a trick card to pass to {0}',
           TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
         ).toString(),
+        triggeredBySkills: [this.Name],
       };
       room.notify(
         GameEventIdentifiers.AskForCardEvent,

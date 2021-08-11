@@ -77,6 +77,7 @@ export class DuoRui extends TriggerSkill implements OnDefineReleaseTiming {
           '{0}: please choose and abort an equip section',
           this.Name,
         ).extract(),
+        triggeredBySkills: [this.Name],
       }),
       fromId,
     );
@@ -108,6 +109,7 @@ export class DuoRui extends TriggerSkill implements OnDefineReleaseTiming {
             '{0}: please choose a skill to nullify and you obtain it until the end of target’s turn',
             this.Name,
           ).extract(),
+          triggeredBySkills: [this.Name],
         }),
         fromId,
       );

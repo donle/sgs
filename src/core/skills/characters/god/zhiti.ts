@@ -89,6 +89,7 @@ export class ZhiTi extends TriggerSkill {
           '{0}: please choose and resume an equip section',
           this.Name,
         ).extract(),
+        triggeredBySkills: [this.Name],
       }),
       fromId,
     );

@@ -45,6 +45,7 @@ export class HanBingJianSkill extends TriggerSkill {
         fromId: event.fromId,
         toId: to.Id,
         options,
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(

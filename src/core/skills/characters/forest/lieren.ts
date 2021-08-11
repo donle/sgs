@@ -35,7 +35,7 @@ export class LieRen extends TriggerSkill {
     const { toId } = aimEvent;
     const toIds: PlayerId[] = [toId];
 
-    const { pindianCardId, pindianRecord } = await room.pindian(fromId, toIds);
+    const { pindianCardId, pindianRecord } = await room.pindian(fromId, toIds, this.Name);
     if (!pindianRecord.length) {
       return false;
     }
@@ -52,6 +52,7 @@ export class LieRen extends TriggerSkill {
           fromId,
           toId,
           options,
+          triggeredBySkills: [this.Name],
         };
 
         room.notify(

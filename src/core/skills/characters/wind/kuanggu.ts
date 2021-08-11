@@ -39,6 +39,7 @@ export class KuangGu extends TriggerSkill {
       options,
       conversation: 'please choose',
       toId: weiyanId,
+      triggeredBySkills: [this.Name],
     });
 
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, weiyanId);

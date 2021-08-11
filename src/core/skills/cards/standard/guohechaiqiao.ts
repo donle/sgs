@@ -69,6 +69,7 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill implements ExtralCardSkillPr
       fromId: event.fromId!,
       toId: to.Id,
       options,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(

@@ -95,6 +95,7 @@ export class HanZhanHidden extends TriggerSkill {
         cardIds: bigCards.map(card => card.Id),
         amount: 1,
         customTitle: this.GeneralName,
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(

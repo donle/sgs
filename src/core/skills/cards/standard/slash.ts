@@ -13,7 +13,7 @@ import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @CommonSkill({ name: 'slash', description: 'slash_description' })
 export class SlashSkill extends ActiveSkill implements ExtralCardSkillProperty {
-  protected damageType: DamageType = DamageType.Normal;
+  public readonly damageType: DamageType = DamageType.Normal;
 
   public canUse(room: Room, owner: Player, contentOrContainerCard: CardId) {
     return (

@@ -94,6 +94,7 @@ export class MuNiuLiuMaSkill extends ActiveSkill implements OnDefineReleaseTimin
       toId: fromId,
       conversation: 'do you wish to deliver muniuliuma to another player?',
       requiredAmount: 1,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingPlayerEvent, askForDeliverTo, fromId);

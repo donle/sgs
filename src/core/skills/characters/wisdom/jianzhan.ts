@@ -107,6 +107,7 @@ export class JianZhan extends ActiveSkill {
             TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
           ).extract(),
       toId: first,
+      triggeredBySkills: [this.Name],
     });
 
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, first);

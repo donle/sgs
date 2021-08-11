@@ -1,3 +1,4 @@
+import { CiXiongJianSkillTrigger } from 'core/ai/skills/cards/cixiongjian';
 import { CardId } from 'core/cards/libs/card_props';
 import { CharacterGender } from 'core/characters/character';
 import {
@@ -13,8 +14,9 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { CommonSkill, TriggerSkill } from 'core/skills/skill';
+import { AI, CommonSkill, TriggerSkill } from 'core/skills/skill';
 
+@AI(CiXiongJianSkillTrigger)
 @CommonSkill({ name: 'cixiongjian', description: 'cixiongjian_description' })
 export class CiXiongJianSkill extends TriggerSkill {
   public isAutoTrigger() {
@@ -83,6 +85,7 @@ export class CiXiongJianSkill extends TriggerSkill {
       conversation: 'please choose',
       toId,
       askedBy: fromId,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(

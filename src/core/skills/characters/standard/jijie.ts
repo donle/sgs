@@ -53,6 +53,7 @@ export class JiJie extends ActiveSkill {
       toId: skillUseEvent.fromId,
       requiredAmount: 1,
       conversation: 'jijie:Please choose a target to obtain the card you show',
+      triggeredBySkills: [this.Name],
     };
     room.notify(GameEventIdentifiers.AskForChoosingPlayerEvent, choosePlayerEvent, skillUseEvent.fromId);
 

@@ -57,6 +57,7 @@ export class SheLie extends TriggerSkill {
         selected: selectedCardIds,
         toId: skillUseEvent.fromId,
         userId: skillUseEvent.fromId,
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(

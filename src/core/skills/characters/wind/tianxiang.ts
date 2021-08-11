@@ -53,6 +53,7 @@ export class TianXiang extends TriggerSkill {
       options: ['option-one', 'option-two'],
       toId: fromId,
       conversation: 'please choose tianxiang options',
+      triggeredBySkills: [this.Name],
     };
     room.notify(
       GameEventIdentifiers.AskForChoosingOptionsEvent,

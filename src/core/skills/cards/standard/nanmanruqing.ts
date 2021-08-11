@@ -80,6 +80,7 @@ export class NanManRuQingSkill extends ActiveSkill implements ExtralCardSkillPro
         {
           ...askForCardEvent,
           toId: to,
+          triggeredBySkills: [this.Name],
         },
         to,
       );

@@ -126,7 +126,7 @@ export class WuShuangShadow extends TriggerSkill {
         cardMatcher: new CardMatcher({ name: ['jink'] }).toSocketPassenger(),
         byCardId: slashEvent.cardId,
         cardUserId: slashEvent.fromId,
-        triggeredBySkills: [Sanguosha.getCardById(slashEvent.cardId).Skill.GeneralName],
+        triggeredBySkills: [this.Name],
         conversation:
           slashEvent.fromId !== undefined
             ? TranslationPack.translationJsonPatcher(
@@ -175,6 +175,7 @@ export class WuShuangShadow extends TriggerSkill {
           'slash',
           TranslationPack.patchCardInTranslation(duelEvent.cardId),
         ).extract(),
+        triggeredBySkills: [this.Name],
       };
       const response = await room.askForCardResponse(askForResponseCardEvent, duelResponseEvent.fromId);
       if (response.cardId === undefined) {

@@ -53,6 +53,7 @@ export class JiangChi extends TriggerSkill {
       options,
       toId: skillUseEvent.fromId,
       conversation: 'please choose jiangchi options',
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(

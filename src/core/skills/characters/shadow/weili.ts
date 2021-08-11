@@ -68,6 +68,7 @@ export class WeiLi extends TriggerSkill {
             TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
           ).extract(),
           toId: fromId,
+          triggeredBySkills: [this.Name],
         }),
         fromId,
       );

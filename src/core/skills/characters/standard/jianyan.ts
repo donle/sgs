@@ -74,6 +74,7 @@ export class JianYan extends ActiveSkill {
         this.Name,
       ).extract(),
       toId: fromId,
+      triggeredBySkills: [this.Name],
     });
 
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, fromId);
@@ -115,6 +116,7 @@ export class JianYan extends ActiveSkill {
       toId: fromId,
       requiredAmount: 1,
       conversation: 'jianyan:Please choose a target to obtain the card you show',
+      triggeredBySkills: [this.Name],
     };
     room.notify(GameEventIdentifiers.AskForChoosingPlayerEvent, choosePlayerEvent, fromId);
 

@@ -1,3 +1,4 @@
+import { BaGuaZhenSkillTrigger } from 'core/ai/skills/cards/baguazhen';
 import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { Jink } from 'core/cards/standard/jink';
@@ -6,8 +7,9 @@ import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { JudgeMatcher, JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
-import { CommonSkill, TriggerSkill } from 'core/skills/skill';
+import { AI, CommonSkill, TriggerSkill } from 'core/skills/skill';
 
+@AI(BaGuaZhenSkillTrigger)
 @CommonSkill({ name: 'baguazhen', description: 'baguazhen_description' })
 export class BaGuaZhenSkill extends TriggerSkill {
   get Muted() {

@@ -1,20 +1,18 @@
+import { CardType } from 'core/cards/card';
+import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { CardId } from 'core/cards/libs/card_props';
+import type { CardId } from 'core/cards/libs/card_props';
 import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { PlayerCardOrSkillInnerEvent } from 'core/event/event.client';
 import { Sanguosha } from 'core/game/engine';
-import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
-import { Room } from 'core/room/room';
+import { PlayerCardsArea } from 'core/player/player_props';
+import type { Room } from 'core/room/room';
 import { ActiveSkill, FilterSkill, TriggerSkill } from 'core/skills/skill';
 import { PlayerAI } from './ai';
 import { AiLibrary } from './ai_lib';
-import { AiSkillTrigger } from './ai_skill_trigger';
+import { ActiveSkillTriggerClass } from './skills/base/active_skill_trigger';
+import { TriggerSkillTriggerClass } from './skills/base/trigger_skill_trigger';
 
 export class SmartAI extends PlayerAI {
-  private constructor() {
-    super();
-  }
-
   public static get Instance() {
     if (!this.instance) {
       PlayerAI.instance = new SmartAI();
@@ -30,30 +28,84 @@ export class SmartAI extends PlayerAI {
     const { toId: fromId } = content as ServerEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent>;
     const from = room.getPlayerById(fromId);
 
-    const skills = from.getPlayerSkills<ActiveSkill>('active');
-    for (const skill of skills) {
-      const useSkill = AiSkillTrigger.fireActiveSkill(room, from, skill);
-      if (useSkill) {
-        const useSkillEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
-          fromId,
-          end: false,
-          eventName: GameEventIdentifiers.SkillUseEvent,
-          event: useSkill,
-        };
+    const skills = from.getSkills<ActiveSkill>('active');
+    const cards = AiLibrary.sortCardsUsePriority(room, from);
+    const actionItems = AiLibrary.sortCardAndSkillUsePriority(room, from, skills, cards);
 
-        return useSkillEvent;
+    for (const item of actionItems) {
+      if (item instanceof ActiveSkill) {
+        const useSkill = item
+          .tryToCallAiTrigger<ActiveSkillTriggerClass>()
+          ?.skillTrigger(room, from, item, undefined as any) as
+          | ClientEventFinder<GameEventIdentifiers.SkillUseEvent>
+          | undefined;
+
+        if (useSkill) {
+          const useSkillEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
+            fromId,
+            end: false,
+            eventName: GameEventIdentifiers.SkillUseEvent,
+            event: useSkill,
+          };
+
+          return useSkillEvent;
+        }
+      } else {
+        const card = Sanguosha.getCardById(item);
+        const cardSkill = card.Skill as ActiveSkill;
+        const aiSkill = cardSkill.tryToCallAiTrigger<ActiveSkillTriggerClass>();
+
+        if (aiSkill?.reforgeTrigger(room, from, cardSkill, item)) {
+          const reforgeEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
+            fromId,
+            end: false,
+            eventName: GameEventIdentifiers.ReforgeEvent,
+            event: {
+              cardId: item,
+              fromId,
+            },
+          };
+
+          return reforgeEvent;
+        }
+
+        if (!from.canUseCard(room, item)) {
+          continue;
+        }
+
+        if (card.BaseType === CardType.Equip) {
+          if (from.getEquipment((card as EquipCard).EquipType) === undefined) {
+            const equipCardUseEvent: ClientEventFinder<GameEventIdentifiers.CardUseEvent> = {
+              fromId: from.Id,
+              cardId: item,
+            };
+
+            const equipUse: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
+              fromId: from.Id,
+              eventName: GameEventIdentifiers.CardUseEvent,
+              end: false,
+              event: equipCardUseEvent,
+            };
+            return equipUse;
+          } else {
+            continue;
+          }
+        }
+
+        const useCard = aiSkill?.skillTrigger(room, from, cardSkill, item) as
+          | ClientEventFinder<GameEventIdentifiers.CardUseEvent>
+          | undefined;
+        if (useCard) {
+          const useCardEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
+            fromId,
+            end: false,
+            eventName: GameEventIdentifiers.CardUseEvent,
+            event: useCard,
+          };
+
+          return useCardEvent;
+        }
       }
-    }
-
-    const cardUseEvent: PlayerCardOrSkillInnerEvent | undefined = AiLibrary.aiUseCard(room, from);
-    if (cardUseEvent !== undefined) {
-      const endEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
-        fromId,
-        end: false,
-        ...cardUseEvent,
-      };
-
-      return endEvent;
     }
 
     const endEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
@@ -80,18 +132,12 @@ export class SmartAI extends PlayerAI {
 
     const from = room.getPlayerById(toId);
     for (const skillName of invokeSkillNames) {
-      if (
-        AiSkillTrigger.fireTriggerSkill(
-          room,
-          from,
-          from.getSkills<TriggerSkill>('trigger').find(skill => skill.Name === skillName)!,
-          triggeredOnEvent,
-        )
-      ) {
-        return {
-          fromId: toId,
-          invoke: skillName,
-        };
+      const skill = Sanguosha.getSkillBySkillName<TriggerSkill>(skillName);
+      const aiSkill = skill.tryToCallAiTrigger<TriggerSkillTriggerClass>();
+
+      const triggerEvent = aiSkill?.skillTrigger(room, from, skill, triggeredOnEvent);
+      if (triggerEvent) {
+        return triggerEvent;
       }
     }
 
@@ -115,6 +161,16 @@ export class SmartAI extends PlayerAI {
       content,
       new CardMatcher(cardMatcher),
     );
+
+    for (const skillName of content.triggeredBySkills || []) {
+      const skill = Sanguosha.getSkillBySkillName(skillName);
+      const aiSkill = skill.tryToCallAiTrigger();
+
+      const response = aiSkill?.onAskForCardResponseEvent?.(content, room, availableCards);
+      if (response) {
+        return response;
+      }
+    }
 
     if (EventPacker.isUncancellabelEvent(content)) {
       const cardResponse: ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent> = {
@@ -146,16 +202,24 @@ export class SmartAI extends PlayerAI {
   ) {
     const { toId, cardMatcher } = content as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
     const toPlayer = room.getPlayerById(toId);
+    let availableCards = AiLibrary.findCardsByMatcher(room, toPlayer, new CardMatcher(cardMatcher)).filter(cardId =>
+      toPlayer.canUseCard(room, cardId),
+    );
+    for (const skill of toPlayer.getSkills<FilterSkill>('filter')) {
+      availableCards = availableCards.filter(cardId => skill.canUseCard(cardId, room, toPlayer.Id));
+    }
+
+    for (const skillName of content.triggeredBySkills || []) {
+      const skill = Sanguosha.getSkillBySkillName(skillName);
+      const aiSkill = skill.tryToCallAiTrigger();
+
+      const response = aiSkill?.onAskForCardUseEvent?.(content, room, availableCards);
+      if (response) {
+        return response;
+      }
+    }
 
     if (EventPacker.isUncancellabelEvent(content)) {
-      let availableCards = AiLibrary.findCardsByMatcher(room, toPlayer, new CardMatcher(cardMatcher)).filter(cardId =>
-        toPlayer.canUseCard(room, cardId),
-      );
-
-      for (const skill of toPlayer.getSkills<FilterSkill>('filter')) {
-        availableCards = availableCards.filter(cardId => skill.canUseCard(cardId, room, toPlayer.Id));
-      }
-
       const cardResponse: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> = {
         fromId: toId,
         cardId: availableCards.length > 0 ? AiLibrary.sortCardbyValue(availableCards)[0] : undefined,
@@ -164,7 +228,14 @@ export class SmartAI extends PlayerAI {
       return cardResponse;
     } else {
       let cardResponse: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> = { fromId: toId };
-      const cardIds = AiLibrary.askAiUseCard(room, toId, cardMatcher, content.byCardId, content.cardUserId);
+      const cardIds = AiLibrary.askAiUseCard(
+        room,
+        toId,
+        availableCards,
+        cardMatcher,
+        content.byCardId,
+        content.cardUserId,
+      );
       if (cardIds.length > 0) {
         cardResponse = {
           cardId: AiLibrary.sortCardbyValue(cardIds)[0],
@@ -185,6 +256,26 @@ export class SmartAI extends PlayerAI {
       GameEventIdentifiers.AskForCardDropEvent
     >;
     const to = room.getPlayerById(toId);
+    const availableCards = fromArea.reduce<CardId[]>((savedCards, area) => {
+      for (const card of to.getCardIds(area)) {
+        if (!to.getSkills<FilterSkill>('filter').find(skill => skill.canDropCard(card, room, toId) === false)) {
+          savedCards.push(card);
+        }
+      }
+
+      return savedCards;
+    }, []);
+
+    for (const skillName of content.triggeredBySkills || []) {
+      const skill = Sanguosha.getSkillBySkillName(skillName);
+      const aiSkill = skill.tryToCallAiTrigger();
+
+      const response = aiSkill?.onAskForCardDropEvent?.(content, room, availableCards);
+      if (response) {
+        return response;
+      }
+    }
+
     const cardDrop: ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
       fromId: toId,
       droppedCards: [],
@@ -241,6 +332,17 @@ export class SmartAI extends PlayerAI {
     const { cardAmount, cardMatcher, toId } = content;
     const to = room.getPlayerById(toId);
     const handCards = to.getCardIds(PlayerCardsArea.HandArea);
+
+    for (const skillName of content.triggeredBySkills || []) {
+      const skill = Sanguosha.getSkillBySkillName(skillName);
+      const aiSkill = skill.tryToCallAiTrigger();
+
+      const response = aiSkill?.onAskForCardDisplayEvent?.(content, room, handCards);
+      if (response) {
+        return response;
+      }
+    }
+
     const displayedCards =
       cardMatcher === undefined
         ? handCards.slice(0, cardAmount)
@@ -259,6 +361,16 @@ export class SmartAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
+    for (const skillName of content.triggeredBySkills || []) {
+      const skill = Sanguosha.getSkillBySkillName(skillName);
+      const aiSkill = skill.tryToCallAiTrigger();
+
+      const response = aiSkill?.onAskForCardEvent?.(content, room);
+      if (response) {
+        return response;
+      }
+    }
+
     const { cardAmount, cardMatcher, toId, fromArea } = content;
     const to = room.getPlayerById(toId);
     const selectedCards = fromArea
@@ -279,10 +391,21 @@ export class SmartAI extends PlayerAI {
     };
     return selectCard;
   }
+
   protected onAskForPinDianCardEvent<T extends GameEventIdentifiers.AskForPinDianCardEvent>(
     content: ServerEventFinder<T>,
     room: Room,
   ) {
+    for (const skillName of content.triggeredBySkills || []) {
+      const skill = Sanguosha.getSkillBySkillName(skillName);
+      const aiSkill = skill.tryToCallAiTrigger();
+
+      const response = aiSkill?.onAskForPinDianCardEvent?.(content, room);
+      if (response) {
+        return response;
+      }
+    }
+
     const pindianEvent: ClientEventFinder<T> = {
       fromId: content.toId,
       pindianCard: room.getPlayerById(content.toId).getCardIds(PlayerCardsArea.HandArea)[0],
@@ -295,6 +418,16 @@ export class SmartAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
+    for (const skillName of content.triggeredBySkills || []) {
+      const skill = Sanguosha.getSkillBySkillName(skillName);
+      const aiSkill = skill.tryToCallAiTrigger();
+
+      const response = aiSkill?.onAskForChoosingCardEvent?.(content, room);
+      if (response) {
+        return response;
+      }
+    }
+
     const { cardIds, cardMatcher, toId, amount, customCardFields } = content;
 
     let selectedCardIndex: number[] | undefined;
@@ -334,6 +467,16 @@ export class SmartAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
+    for (const skillName of content.triggeredBySkills || []) {
+      const skill = Sanguosha.getSkillBySkillName(skillName);
+      const aiSkill = skill.tryToCallAiTrigger();
+
+      const response = aiSkill?.onAskForChoosingPlayerEvent?.(content, room);
+      if (response) {
+        return response;
+      }
+    }
+
     const { requiredAmount, players, toId } = content;
     const amount = requiredAmount instanceof Array ? requiredAmount[0] : requiredAmount;
     const choosePlayer: ClientEventFinder<T> = {
@@ -346,6 +489,16 @@ export class SmartAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
+    for (const skillName of content.triggeredBySkills || []) {
+      const skill = Sanguosha.getSkillBySkillName(skillName);
+      const aiSkill = skill.tryToCallAiTrigger();
+
+      const response = aiSkill?.onAskForChoosingOptionsEvent?.(content, room);
+      if (response) {
+        return response;
+      }
+    }
+
     const { toId, options } = content;
     const chooseOptions: ClientEventFinder<T> = {
       selectedOption: options[0],
@@ -358,6 +511,16 @@ export class SmartAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
+    for (const skillName of content.triggeredBySkills || []) {
+      const skill = Sanguosha.getSkillBySkillName(skillName);
+      const aiSkill = skill.tryToCallAiTrigger();
+
+      const response = aiSkill?.onAskForChoosingCharacterEvent?.(content, room);
+      if (response) {
+        return response;
+      }
+    }
+
     const { characterIds, toId } = content;
     const chooseCharacter: ClientEventFinder<T> = {
       chosenCharacterIds: characterIds,
@@ -370,6 +533,16 @@ export class SmartAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
+    for (const skillName of content.triggeredBySkills || []) {
+      const skill = Sanguosha.getSkillBySkillName(skillName);
+      const aiSkill = skill.tryToCallAiTrigger();
+
+      const response = aiSkill?.onAskForChoosingCardFromPlayerEvent?.(content, room);
+      if (response) {
+        return response;
+      }
+    }
+
     const { options, fromId, toId } = content;
 
     if (!EventPacker.isUncancellabelEvent(content)) {
@@ -386,6 +559,16 @@ export class SmartAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
+    for (const skillName of content.triggeredBySkills || []) {
+      const skill = Sanguosha.getSkillBySkillName(skillName);
+      const aiSkill = skill.tryToCallAiTrigger();
+
+      const response = aiSkill?.onAskForPlaceCardsInDileEvent?.(content, room);
+      if (response) {
+        return response;
+      }
+    }
+
     const placeCards: ClientEventFinder<T> = {
       top: content.cardIds.slice(0, content.top),
       bottom: content.cardIds.slice(content.top, content.top + content.bottom),
@@ -398,7 +581,17 @@ export class SmartAI extends PlayerAI {
     content: ServerEventFinder<T>,
     room: Room,
   ) {
-    const { toId, cardIds, selected } = content;
+    const { toId, cardIds, selected, triggeredBySkills } = content;
+    for (const skillName of triggeredBySkills!) {
+      const skill = Sanguosha.getSkillBySkillName(skillName);
+      const aiSkill = skill.tryToCallAiTrigger();
+
+      const response = aiSkill?.onAskForContinuouslyChoosingCardEvent?.(content, room);
+      if (response) {
+        return response;
+      }
+    }
+
     const selectedCard = cardIds.find(cardId => !selected.find(selectCard => selectCard.card === cardId))!;
     const chooseCard: ClientEventFinder<T> = {
       selectedCard,

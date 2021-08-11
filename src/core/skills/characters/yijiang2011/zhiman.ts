@@ -50,6 +50,7 @@ export class ZhiMan extends TriggerSkill {
         fromId,
         toId,
         options,
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(

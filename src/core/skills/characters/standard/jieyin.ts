@@ -89,6 +89,7 @@ export class JieYin extends ActiveSkill {
           toId: fromId,
           options: ['jieyin:drop', 'jieyin:move'],
           conversation: 'please choose',
+          triggeredBySkills: [this.Name],
         };
 
         room.notify(

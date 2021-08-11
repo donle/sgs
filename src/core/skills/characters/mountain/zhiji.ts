@@ -40,6 +40,7 @@ export class ZhiJi extends TriggerSkill {
         toId: fromId,
         options: ['zhiji:drawcards', 'zhiji:recover'],
         conversation: TranslationPack.translationJsonPatcher('{0}: please choose', this.Name).extract(),
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(

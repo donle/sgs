@@ -36,19 +36,14 @@ export class FeiYang extends TriggerSkill {
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId } = skillUseEvent;
-    const askForDropCards: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
-      toId: fromId,
-      cardAmount: 2,
-      fromArea: [PlayerCardsArea.HandArea],
-      triggeredBySkills: [this.Name],
-    };
-    room.notify(
-      GameEventIdentifiers.AskForCardDropEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForCardDropEvent>(askForDropCards),
+    const { droppedCards } = await room.askForCardDrop(
       fromId,
+      2,
+      [PlayerCardsArea.HandArea],
+      false,
+      undefined,
+      this.Name,
     );
-
-    const { droppedCards } = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardDropEvent, fromId);
     await room.dropCards(CardMoveReason.SelfDrop, droppedCards, fromId, fromId, this.Name);
 
     const from = room.getPlayerById(fromId);

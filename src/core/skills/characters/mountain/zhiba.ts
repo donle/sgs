@@ -106,6 +106,7 @@ export class ZhiBaPindianCard extends ActiveSkill {
           TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
         ).extract(),
         toId,
+        triggeredBySkills: [this.Name],
       });
 
       room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, toId);
@@ -115,7 +116,7 @@ export class ZhiBaPindianCard extends ActiveSkill {
     }
 
     if (selectedOption === 'yes') {
-      const { pindianCardId, pindianRecord } = await room.pindian(fromId, toIds!);
+      const { pindianCardId, pindianRecord } = await room.pindian(fromId, toIds!, this.Name);
       if (!pindianRecord.length) {
         return false;
       }
@@ -133,6 +134,7 @@ export class ZhiBaPindianCard extends ActiveSkill {
               TranslationPack.patchCardInTranslation(...pindianCardIds),
             ).extract(),
             toId,
+            triggeredBySkills: [this.Name],
           },
         );
 

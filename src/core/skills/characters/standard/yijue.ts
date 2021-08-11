@@ -100,6 +100,7 @@ export class YiJue extends ActiveSkill {
             1,
             TranslationPack.patchPlayerInTranslation(to),
           ).extract(),
+          triggeredBySkills: [this.Name],
         };
         room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, from.Id);
         const { selectedOption } = await room.onReceivingAsyncResponseFrom(

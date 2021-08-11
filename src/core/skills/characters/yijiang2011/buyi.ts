@@ -52,6 +52,7 @@ export class BuYi extends TriggerSkill {
       fromId: event.fromId,
       toId: dyingEvent.dying,
       options,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(

@@ -131,6 +131,7 @@ export class GuHuoShadow extends TriggerSkill {
         TranslationPack.patchPlayerInTranslation(from),
       ).extract(),
       ignoreNotifiedStatus: true,
+      triggeredBySkills: [this.Name],
     });
 
     const askingResponses: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent>>[] = [];
@@ -174,6 +175,7 @@ export class GuHuoShadow extends TriggerSkill {
       options: ['guhuo:lose-hp', 'guhuo:drop-card'],
       toId: '',
       conversation: 'please choose',
+      triggeredBySkills: [this.Name],
     });
     for (const response of responses) {
       if (preuseCard.Name === realCard.Name) {

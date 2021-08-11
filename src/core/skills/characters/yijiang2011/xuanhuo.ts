@@ -122,6 +122,7 @@ export class XuanHuo extends TriggerSkill {
         TranslationPack.patchPlayerInTranslation(room.getPlayerById(second)),
       ).extract(),
       toId: first,
+      triggeredBySkills: [this.Name],
     });
 
     const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingOptionsEvent>(
@@ -145,6 +146,7 @@ export class XuanHuo extends TriggerSkill {
           TranslationPack.patchPlayerInTranslation(room.getPlayerById(second)),
         ).extract(),
         toId: first,
+        triggeredBySkills: [this.Name],
       });
 
       const newResponse = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingOptionsEvent>(

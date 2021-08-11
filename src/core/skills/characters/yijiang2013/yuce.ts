@@ -73,6 +73,7 @@ export class YuCe extends TriggerSkill {
           customCardFields: {
             [PlayerCardsArea.HandArea]: handCards,
           },
+          triggeredBySkills: [this.Name],
         };
 
         room.notify(GameEventIdentifiers.AskForChoosingCardEvent, askForDiscard, damageFromId);

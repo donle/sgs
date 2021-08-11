@@ -34,6 +34,7 @@ export class WuMou extends TriggerSkill {
       options,
       toId: skillUseEvent.fromId,
       conversation: 'wumou: please choose the cost for your Normal Trick',
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(

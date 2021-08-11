@@ -79,6 +79,7 @@ export class ShunShouQianYangSkill extends ActiveSkill implements ExtralCardSkil
       fromId: event.fromId!,
       toId: to.Id,
       options,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(

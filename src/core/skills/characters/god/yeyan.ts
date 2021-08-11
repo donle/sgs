@@ -93,6 +93,7 @@ export class YeYan extends ActiveSkill {
       toId: skillUseEvent.fromId,
       conversation,
       ignoreNotifiedStatus: true,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(

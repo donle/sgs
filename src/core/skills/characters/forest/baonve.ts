@@ -55,6 +55,7 @@ export class BaoNve extends TriggerSkill {
         this.Name,
         TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
       ).extract(),
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForInvokeSkill, fromId);

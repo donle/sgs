@@ -127,6 +127,7 @@ export class PveHuaShen extends TriggerSkill {
           characterIds: pveHuashenCharacters,
           toId: player.Id,
           byHuaShen: true,
+          triggeredBySkills: [this.Name],
         };
 
         room.notify(GameEventIdentifiers.AskForChoosingCharacterEvent, askForChoosingCharacterEvent, player.Id);
@@ -144,6 +145,7 @@ export class PveHuaShen extends TriggerSkill {
           options,
           toId: player.Id,
           conversation: 'pve_huashen: please announce a skill to obtain',
+          triggeredBySkills: [this.Name],
         };
 
         room.notify(

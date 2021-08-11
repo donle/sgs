@@ -1,3 +1,4 @@
+import { BaseSkillTrigger } from 'core/ai/skills/base/base_trigger';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
@@ -54,6 +55,7 @@ function skillPropertyWrapper(
     stubbornSkill?: boolean;
     switchSkill?: boolean;
     switchable?: boolean;
+    ai?: typeof BaseSkillTrigger;
   },
   constructor: new () => any,
 ): any {
@@ -68,6 +70,7 @@ function skillPropertyWrapper(
     private circleSkill: boolean;
     private switchSkill: boolean;
     private switchable: boolean;
+    private ai?: BaseSkillTrigger;
     public canUse: (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) => boolean;
 
     constructor() {
@@ -104,6 +107,9 @@ function skillPropertyWrapper(
       }
       if (options.switchable !== undefined) {
         this.switchable = options.switchable;
+      }
+      if (options.ai) {
+        this.ai = new options.ai();
       }
     }
   } as any;
@@ -216,6 +222,17 @@ export const SwitchSkill = (switchable: boolean = true) => <T extends Skill>(
     {
       switchSkill: true,
       switchable,
+    },
+    constructorFunction as any,
+  );
+};
+
+export const AI = (instance: typeof BaseSkillTrigger) => <T extends Skill>(
+  constructorFunction: SKillConstructor<T>,
+) => {
+  return skillPropertyWrapper(
+    {
+      ai: instance,
     },
     constructorFunction as any,
   );

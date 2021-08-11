@@ -87,7 +87,7 @@ export class LeiJiShadow extends TriggerSkill {
         this.Name,
         thunderDamageNum,
       ).extract(),
-      triggeredBySkills: [this.GeneralName],
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingPlayerEvent, askForChoosePlayer, from.Id);

@@ -57,6 +57,7 @@ export class CuiKe extends TriggerSkill {
           fromId,
           toId: toIds![0],
           options,
+          triggeredBySkills: [this.Name],
         };
 
         room.notify(
@@ -102,6 +103,7 @@ export class CuiKe extends TriggerSkill {
           'cuike: do you wanna to throw {0} marks to do special skill',
           numOfName,
         ).extract(),
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForInvokeSkill, fromId);

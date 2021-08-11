@@ -84,6 +84,7 @@ export class JuJian extends TriggerSkill {
       options,
       conversation: TranslationPack.translationJsonPatcher('{0}: please choose', this.Name).extract(),
       toId,
+      triggeredBySkills: [this.Name],
     });
 
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, toId);

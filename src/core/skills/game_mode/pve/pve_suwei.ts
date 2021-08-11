@@ -34,6 +34,7 @@ export class PveSuWei extends TriggerSkill {
         },
         fromId: toId,
         toId: fromId,
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(

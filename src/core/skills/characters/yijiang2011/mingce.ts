@@ -113,6 +113,7 @@ export class MingCe extends ActiveSkill {
           ).extract()
         : TranslationPack.translationJsonPatcher('{0}: please choose', this.Name).extract(),
       toId: first,
+      triggeredBySkills: [this.Name],
     });
 
     room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, askForChooseEvent, first);
