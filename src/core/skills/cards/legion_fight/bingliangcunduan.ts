@@ -1,4 +1,3 @@
-import { BingLiangCunDuanSkillTrigger } from 'core/ai/skills/cards/bingliangcunduan';
 import { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -8,10 +7,9 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { JudgeMatcher, JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { ActiveSkill, AI, CommonSkill } from 'core/skills/skill';
+import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@AI(BingLiangCunDuanSkillTrigger)
 @CommonSkill({ name: 'bingliangcunduan', description: 'bingliangcunduan_description' })
 export class BingLiangCunDuanSkill extends ActiveSkill {
   public canUse(room: Room, owner: Player) {

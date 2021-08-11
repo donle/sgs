@@ -6,7 +6,6 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, ViewAsSkill } from 'core/skills/skill';
-import { AI } from 'core/skills/skill_wrappers';
 
 @CommonSkill({ name: 'zhangbashemao', description: 'zhangbashemao_description' })
 export class ZhangBaSheMaoSkill extends ViewAsSkill {

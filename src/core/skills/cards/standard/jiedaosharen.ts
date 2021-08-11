@@ -1,4 +1,3 @@
-import { JieDaoShaRenSkillTrigger } from 'core/ai/skills/cards/jiedaosharen';
 import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
@@ -8,11 +7,10 @@ import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
-import { ActiveSkill,AI, CommonSkill } from 'core/skills/skill';
+import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ExtralCardSkillProperty } from '../interface/extral_property';
 
-@AI(JieDaoShaRenSkillTrigger)
 @CommonSkill({ name: 'jiedaosharen', description: 'ljiedaosharen_description' })
 export class JieDaoShaRenSkill extends ActiveSkill implements ExtralCardSkillProperty {
   public canUse(room: Room, owner: Player) {

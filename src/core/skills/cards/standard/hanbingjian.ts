@@ -1,4 +1,3 @@
-import { HanBingJianSkillTrigger } from 'core/ai/skills/cards/hanbingjian';
 import { CardChoosingOptions } from 'core/cards/libs/card_props';
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -6,9 +5,8 @@ import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { AI, CommonSkill, TriggerSkill } from 'core/skills/skill';
+import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
-@AI(HanBingJianSkillTrigger)
 @CommonSkill({ name: 'hanbingjian', description: 'hanbingjian_description' })
 export class HanBingJianSkill extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage): boolean {

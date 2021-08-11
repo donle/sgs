@@ -1,4 +1,3 @@
-import { SlashSkillTrigger } from 'core/ai/skills/cards/slash';
 import { VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
@@ -9,10 +8,9 @@ import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TagEnum } from 'core/shares/types/tag_list';
-import { ActiveSkill, AI, CommonSkill } from 'core/skills/skill';
+import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { ExtralCardSkillProperty } from '../interface/extral_property';
 
-@AI(SlashSkillTrigger)
 @CommonSkill({ name: 'slash', description: 'slash_description' })
 export class SlashSkill extends ActiveSkill implements ExtralCardSkillProperty {
   public readonly damageType: DamageType = DamageType.Normal;

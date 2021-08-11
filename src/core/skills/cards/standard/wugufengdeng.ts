@@ -1,11 +1,10 @@
-import { WuGuFengDengSkillTrigger } from 'core/ai/skills/cards/wugufengdeng';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { ActiveSkill, AI, CommonSkill } from 'core/skills/skill';
+import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 type SelectedCard = {
@@ -13,7 +12,6 @@ type SelectedCard = {
   player?: PlayerId;
 };
 
-@AI(WuGuFengDengSkillTrigger)
 @CommonSkill({ name: 'wugufengdeng', description: 'wugufengdeng_description' })
 export class WuGuFengDengSkill extends ActiveSkill {
   public canUse(room: Room, owner: Player, containerCard?: CardId) {

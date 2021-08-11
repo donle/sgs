@@ -1,14 +1,12 @@
-import { ShunShouQianYangSkillTrigger } from 'core/ai/skills/cards/shunshouqianyang';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { ActiveSkill, AI, CommonSkill } from 'core/skills/skill';
+import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 import { ExtralCardSkillProperty } from '../interface/extral_property';
 
-@AI(ShunShouQianYangSkillTrigger)
 @CommonSkill({ name: 'shunshouqianyang', description: 'shunshouqianyang_description' })
 export class ShunShouQianYangSkill extends ActiveSkill implements ExtralCardSkillProperty {
   public canUse() {
