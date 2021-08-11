@@ -11,8 +11,8 @@ export class WuGuFengDengSkillTrigger extends ActiveSkillTriggerClass<WuGuFengDe
     room: Room,
     ai: Player,
     skill: WuGuFengDengSkill,
-    skillInCard?: CardId,
-  ): ClientEventFinder<GameEventIdentifiers.CardUseEvent> | undefined => {
+    skillInCard: CardId,
+  ) => {
     const friends = AiLibrary.sortFriendsFromWeakToStrong(room, ai).filter(f => room.canUseCardTo(skillInCard!, ai, f));
     if (friends.length + 1 < room.AlivePlayers.length / 2) {
       return;
@@ -20,7 +20,7 @@ export class WuGuFengDengSkillTrigger extends ActiveSkillTriggerClass<WuGuFengDe
 
     return {
       fromId: ai.Id,
-      cardId: skillInCard!,
+      cardId: skillInCard,
     };
   };
 

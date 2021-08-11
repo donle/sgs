@@ -5,10 +5,9 @@ import { DamageType } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { ActiveSkill, CommonSkill } from 'core/skills/skill';
+import { ActiveSkill, AI, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ExtralCardSkillProperty } from '../interface/extral_property';
-
 
 @CommonSkill({ name: 'duel', description: 'duel_description' })
 export class DuelSkill extends ActiveSkill implements ExtralCardSkillProperty {
