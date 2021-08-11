@@ -599,7 +599,7 @@ export abstract class BaseAction {
     return false;
   }
 
-  public abstract async onPlay(...args: any): Promise<void>;
+  public abstract onPlay(...args: any): Promise<void>;
 
   private getTarget() {
     const target = this.store.room.getAlivePlayersFrom().filter(player => this.isPlayerEnabled(player));

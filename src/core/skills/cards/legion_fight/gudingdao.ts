@@ -1,12 +1,14 @@
+import { GuDingDaoSkillTrigger } from 'core/ai/skills/cards/gudingdao';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { CompulsorySkill, TriggerSkill } from 'core/skills/skill';
+import { AI, CompulsorySkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
+@AI(GuDingDaoSkillTrigger)
 @CompulsorySkill({ name: 'gudingdao', description: 'gudingdao_description' })
 export class GuDingDaoSkill extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage): boolean {

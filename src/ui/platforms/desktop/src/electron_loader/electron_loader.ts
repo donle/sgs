@@ -14,7 +14,7 @@ export abstract class ElectronLoader {
     otherInfo?: Pick<ReplayDataType, Exclude<keyof ReplayDataType, 'events'>>,
   ): void;
   public abstract saveReplay(): Promise<void>;
-  public abstract async readReplay(version: string): Promise<ReplayDataType | undefined>;
+  public abstract readReplay(version: string): Promise<ReplayDataType | undefined>;
   public abstract get ReplayEnabled(): boolean;
   public abstract refreshReplayDataFlow(): void;
   public abstract whenUpdate(

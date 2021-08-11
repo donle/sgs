@@ -107,7 +107,7 @@ export class GameClientProcessor {
         // tslint:disable-next-line:no-console
         console.warn(`unknown identifier event: ${JSON.stringify(event, null, 2)}`);
       } else {
-        const result = this.presenter.ClientPlayer!.AI.onAction(this.store.room, identifier, event);
+        const result = this.presenter.ClientPlayer!.AI.onAction(this.store.room, identifier, event!);
         this.store.room.broadcast(identifier, result);
       }
       this.presenter.closeDialog();

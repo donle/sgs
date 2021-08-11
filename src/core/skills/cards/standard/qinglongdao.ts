@@ -1,12 +1,14 @@
+import { QingLongDaoSkillTrigger } from 'core/ai/skills/cards/qinglongdao';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { CommonSkill, TriggerSkill } from 'core/skills/skill';
+import { AI, CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
+@AI(QingLongDaoSkillTrigger)
 @CommonSkill({ name: 'qinglongyanyuedao', description: 'qinglongyanyuedao_description' })
 export class QingLongYanYueDaoSkill extends TriggerSkill {
   isAutoTrigger() {

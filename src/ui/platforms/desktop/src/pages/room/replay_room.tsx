@@ -182,7 +182,7 @@ export class ReplayRoomPage extends React.Component<
   }
 
   private async sleep(ms: number) {
-    return new Promise(r => {
+    return new Promise<void>(r => {
       setTimeout(() => r(), ms);
     });
   }

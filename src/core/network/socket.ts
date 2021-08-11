@@ -16,7 +16,7 @@ export abstract class Socket<T extends WorkPlace> {
 
   constructor(protected eventMode: T) {}
 
-  public abstract async waitForResponse<I extends GameEventIdentifiers>(
+  public abstract waitForResponse<I extends GameEventIdentifiers>(
     identifier: I,
     playerId?: PlayerId,
   ): Promise<T extends WorkPlace.Client ? ServerEventFinder<I> : ClientEventFinder<I>>;
