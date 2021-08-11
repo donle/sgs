@@ -348,6 +348,7 @@ export abstract class Player implements PlayerInfo {
         if (Algorithm.equals(realCards, targetCardRealCards)) {
           return true;
         }
+        return false;
       });
     } else {
       return sectionCards.findIndex(sectionCardId => VirtualCard.getActualCards([sectionCardId]).includes(cardId));
