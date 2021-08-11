@@ -1,3 +1,4 @@
+import { BaseSkillTrigger } from 'core/ai/skills/base/base_trigger';
 import { Card, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
@@ -43,6 +44,7 @@ export abstract class Skill {
   private switchable = false;
   private description: string;
   private skillName: string;
+  private ai?: BaseSkillTrigger;
 
   public abstract isRefreshAt(room: Room, owner: Player, stage: PlayerPhase): boolean;
   // tslint:disable-next-line:no-empty
@@ -183,6 +185,10 @@ export abstract class Skill {
 
   public get SkillType() {
     return this.skillType;
+  }
+
+  public tryToCallAiTrigger<T extends BaseSkillTrigger>(): T | undefined {
+    return this.ai as T | undefined;
   }
 }
 

@@ -1,3 +1,4 @@
+import { NanManRuQingSkillTrigger } from 'core/ai/skills/cards/nanmanruqing';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -6,10 +7,11 @@ import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { ActiveSkill, CommonSkill } from 'core/skills/skill';
+import { ActiveSkill, AI, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ExtralCardSkillProperty } from '../interface/extral_property';
 
+@AI(NanManRuQingSkillTrigger)
 @CommonSkill({ name: 'nanmanruqing', description: 'nanmanruqing_description' })
 export class NanManRuQingSkill extends ActiveSkill implements ExtralCardSkillProperty {
   public static readonly NewSource = 'new_source';

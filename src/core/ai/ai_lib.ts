@@ -9,7 +9,8 @@ import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props'
 import { Room } from 'core/room/room';
 import { GameMode } from 'core/shares/types/room_props';
 import { ActiveSkill, FilterSkill, ResponsiveSkill, ViewAsSkill } from 'core/skills/skill';
-import { AiSkillTrigger } from './ai_skill_trigger';
+import { ActiveSkillTriggerClass } from './skills/base/active_skill_trigger';
+import { ViewAsSkillTriggerClass } from './skills/base/view_as_skill_trigger';
 
 type CardsValue = {
   cardId: CardId;
@@ -170,15 +171,21 @@ export abstract class AiLibrary {
     let actionItems = [...skills, ...cards];
     for (const skill of skills) {
       actionItems =
-        AiSkillTrigger.getActiveSkillTrigger(skill)?.dynamicallyAdjustSkillUsePriority(room, ai, skill, actionItems) ||
-        actionItems;
+        skill
+          .tryToCallAiTrigger<ActiveSkillTriggerClass>()
+          ?.dynamicallyAdjustSkillUsePriority(room, ai, skill, actionItems) || actionItems;
     }
 
     for (const cardId of cards) {
-      const skill = Sanguosha.getCardById(cardId).Skill as ActiveSkill;
+      const skill = Sanguosha.getCardById(cardId).Skill;
+      if (!(skill instanceof ActiveSkill)) {
+        continue;
+      }
+
       actionItems =
-        AiSkillTrigger.getActiveSkillTrigger(skill)?.dynamicallyAdjustSkillUsePriority(room, ai, skill, actionItems) ||
-        actionItems;
+        skill
+          .tryToCallAiTrigger<ActiveSkillTriggerClass>()
+          ?.dynamicallyAdjustSkillUsePriority(room, ai, skill, actionItems) || actionItems;
     }
 
     return actionItems;
@@ -402,14 +409,9 @@ export abstract class AiLibrary {
         availableCards.push(...player.getCardIds(area, skill.GeneralName));
       }
 
-      const avaiableViewAs = AiSkillTrigger.getViewAsSkillTrigger(skill)?.createViewAsPossibilties(
-        room,
-        player,
-        availableCards,
-        skill,
-        cardMatcher,
-        [],
-      );
+      const avaiableViewAs = skill
+        .tryToCallAiTrigger<ViewAsSkillTriggerClass>()
+        ?.createViewAsPossibilties(room, player, availableCards, skill, cardMatcher, []);
       if (avaiableViewAs) {
         const canViewAs = skill.canViewAs(room, player, avaiableViewAs, cardMatcher);
         for (const viewAs of canViewAs) {
@@ -443,14 +445,9 @@ export abstract class AiLibrary {
         availableCards.push(...player.getCardIds(area, skill.GeneralName));
       }
 
-      const avaiableViewAs = AiSkillTrigger.getViewAsSkillTrigger(skill)?.createViewAsPossibilties(
-        room,
-        player,
-        availableCards,
-        skill,
-        cardMatcher,
-        [],
-      );
+      const avaiableViewAs = skill
+        .tryToCallAiTrigger<ViewAsSkillTriggerClass>()
+        ?.createViewAsPossibilties(room, player, availableCards, skill, cardMatcher, []);
       if (avaiableViewAs) {
         const canViewAs = skill.canViewAs(room, player, avaiableViewAs, cardMatcher);
         for (const viewAs of canViewAs) {
