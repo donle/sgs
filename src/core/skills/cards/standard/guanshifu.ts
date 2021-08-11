@@ -6,7 +6,7 @@ import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { AI, CommonSkill, TriggerSkill } from 'core/skills/skill';
+import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'guanshifu', description: 'guanshifu_description' })
 export class GuanShiFuSkill extends TriggerSkill {
