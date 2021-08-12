@@ -206,8 +206,12 @@ export abstract class AiLibrary {
     }
 
     if (askedByCard.Name === 'wanjianqifa') {
-      return availableCards.length > 1;
+      if (cardUseFrom && room.CurrentPhasePlayer.Id === cardUseFrom && !room.CurrentPhasePlayer.hasUsed('slash')) {
+        return AiLibrary.findCardsByMatcher(room, player, new CardMatcher({ name: ['jink'] })).length <= 1;
+      }
     }
+
+    return cardUseFrom !== undefined && cardUseFrom !== player.Id;
   }
 
   static shouldUseJink(
