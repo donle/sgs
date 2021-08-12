@@ -1,3 +1,4 @@
+import { QiLinGongSkillTrigger } from 'core/ai/skills/cards/qilingong';
 import { CardType } from 'core/cards/card';
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -6,8 +7,9 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { CommonSkill, TriggerSkill } from 'core/skills/skill';
+import { AI, CommonSkill, TriggerSkill } from 'core/skills/skill';
 
+@AI(QiLinGongSkillTrigger)
 @CommonSkill({ name: 'qilingong', description: 'qilingong_description' })
 export class QiLinGongSkill extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {

@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.fixed.json",
   "compilerOptions": {
+    "baseUrl": "src",
     "jsx": "react",
     "lib": ["dom", "dom.iterable", "ESNext", "es2018"],
     "allowJs": true,

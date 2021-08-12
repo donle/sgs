@@ -1,3 +1,4 @@
+import { AlcoholSkillTrigger } from 'core/ai/skills/cards/alcohol';
 import { CardId } from 'core/cards/libs/card_props';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { PlayerPhase } from 'core/game/stage_processor';
@@ -5,9 +6,10 @@ import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
-import { ActiveSkill, CommonSkill } from 'core/skills/skill';
+import { ActiveSkill, AI, CommonSkill } from 'core/skills/skill';
 import { ExtralCardSkillProperty } from '../interface/extral_property';
 
+@AI(AlcoholSkillTrigger)
 @CommonSkill({ name: 'alcohol', description: 'alcohol_description' })
 export class AlcoholSkill extends ActiveSkill implements ExtralCardSkillProperty {
   private readonly recoverTag = 'recover';

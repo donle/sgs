@@ -10,7 +10,7 @@ import type { ViewAsSkill } from 'core/skills/skill';
 import { BaseSkillTrigger } from './base_trigger';
 
 export class ViewAsSkillTriggerClass extends BaseSkillTrigger {
-  public createViewAsPossibilties(
+  public static createViewAsPossibilties(
     room: Room,
     ai: Player,
     cards: CardId[],
@@ -28,7 +28,7 @@ export class ViewAsSkillTriggerClass extends BaseSkillTrigger {
     }
   }
 
-  public readonly skillTrigger: ViewAsSkillTrigger<
+  public static readonly skillTrigger: ViewAsSkillTrigger<
     GameEventIdentifiers.AskForCardUseEvent | GameEventIdentifiers.AskForCardResponseEvent
   > = (
     room: Room,
@@ -47,7 +47,7 @@ export class ViewAsSkillTriggerClass extends BaseSkillTrigger {
     }, []);
 
     const cardMacter = new CardMatcher(onEvent.cardMatcher);
-    const viewAsCards = this.createViewAsPossibilties(
+    const viewAsCards = ViewAsSkillTriggerClass.createViewAsPossibilties(
       room,
       ai,
       AiLibrary.sortCardbyValue(cards, false),

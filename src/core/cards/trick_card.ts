@@ -17,22 +17,7 @@ export function DelayedTrick<T extends TrickCard>(
   ) => any,
 ): any {
   return (class extends constructor {
-    protected cardType: CardType[];
-    constructor(
-      id: RealCardId,
-      cardNumber: number,
-      suit: CardSuit,
-      effectUseDistance: number,
-      name: string,
-      description: string,
-      fromPackage: GameCardExtensions,
-      skill: Skill,
-      generalName?: string,
-    ) {
-      super(id, cardNumber, suit, effectUseDistance, name, description, fromPackage, skill, generalName);
-
-      this.cardType.push(CardType.DelayedTrick);
-    }
+    protected cardType: CardType[] = [CardType.Trick, CardType.DelayedTrick];
   } as any) as T;
 }
 

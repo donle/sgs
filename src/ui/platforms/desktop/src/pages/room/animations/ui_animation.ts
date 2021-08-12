@@ -8,7 +8,7 @@ export abstract class UiAnimation {
   protected readonly defaultAnimationTime = 150;
 
   protected async play(time: number, action?: () => void) {
-    return new Promise(r => {
+    return new Promise<void>(r => {
       setTimeout(() => {
         action && action();
         r();

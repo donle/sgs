@@ -74,8 +74,8 @@ export class RoomStore {
 
   @mobx.observable.ref
   awaitingResponseEvent: {
-    identifier: GameEventIdentifiers;
-    event: ServerEventFinder<GameEventIdentifiers>;
+    identifier?: GameEventIdentifiers;
+    event?: ServerEventFinder<GameEventIdentifiers>;
   } = {} as any;
 
   @mobx.observable.ref

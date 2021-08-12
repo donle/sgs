@@ -32,7 +32,7 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
         this.presenter.enableActionButton('cancel');
         this.presenter.defineCancelButtonActions(() => {
           this.resetAction();
-          resolve();
+          resolve(undefined);
         });
       } else {
         this.presenter.disableActionButton('cancel');
@@ -96,13 +96,13 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
 
       const card = Sanguosha.getCardById(cardId);
       if (!(card.Skill instanceof ActiveSkill)) {
-        resolve();
+        resolve(undefined);
       }
 
       this.presenter.enableActionButton('cancel');
       this.presenter.defineCancelButtonActions(() => {
         this.resetAction();
-        resolve();
+        resolve(undefined);
       });
 
       const selectedTargets: PlayerId[] = [];

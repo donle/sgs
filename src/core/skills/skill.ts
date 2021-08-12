@@ -57,7 +57,7 @@ export abstract class Skill {
     return true;
   }
 
-  public abstract async onUse(
+  public abstract onUse(
     room: Room,
     event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent>,
   ): Promise<boolean>;
@@ -203,7 +203,7 @@ export abstract class ResponsiveSkill extends Skill {
 
   public abstract responsiveFor(): CardMatcher;
 
-  public abstract async onUse(
+  public abstract onUse(
     room: Room,
     event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent>,
   ): Promise<boolean>;
@@ -236,7 +236,7 @@ export abstract class TriggerSkill extends Skill {
     return StagePriority.Medium;
   }
 
-  public abstract async onTrigger(
+  public abstract onTrigger(
     room: Room,
     event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.SkillUseEvent>,
   ): Promise<boolean>;
@@ -254,7 +254,7 @@ export abstract class TriggerSkill extends Skill {
     return await this.onTrigger(room, event);
   }
 
-  public abstract async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers>): Promise<boolean>;
+  public abstract onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers>): Promise<boolean>;
 
   public triggerableTimes(event: ServerEventFinder<GameEventIdentifiers>): number {
     return 1;

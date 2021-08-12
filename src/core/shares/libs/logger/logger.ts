@@ -39,7 +39,7 @@ export class Logger {
 
   async dump() {
     process.stdin.setRawMode && process.stdin.setRawMode(true);
-    return new Promise(resolve => {
+    return new Promise<void>(resolve => {
       process.stdin.resume();
       process.stdin.once('data', data => {
         process.stdin.setRawMode && process.stdin.setRawMode(false);

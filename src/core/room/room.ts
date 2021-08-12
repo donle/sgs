@@ -74,7 +74,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract putCards(from: 'top' | 'bottom', ...cardIds: CardId[]): void;
   //Server only
-  public abstract async drawCards(
+  public abstract drawCards(
     numberOfCards: number,
     player?: PlayerId,
     from?: 'top' | 'bottom',
@@ -82,7 +82,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     byReason?: string,
   ): Promise<CardId[]>;
   //Server only
-  public abstract async dropCards(
+  public abstract dropCards(
     moveReason: CardMoveReason,
     cardIds: CardId[],
     player?: PlayerId,
@@ -90,9 +90,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     byReason?: string,
   ): Promise<void>;
   //Server only
-  public abstract async moveCards(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): Promise<void>;
+  public abstract moveCards(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): Promise<void>;
   //Server only
-  public abstract async asyncMoveCards(events: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[]): Promise<void>;
+  public abstract asyncMoveCards(events: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[]): Promise<void>;
   //Server only
   public abstract getRandomCharactersFromLoadedPackage(
     numberOfCharacter: number,
@@ -103,7 +103,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     event: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent>,
   ): void;
   //Server only
-  public abstract async onReceivingAsyncResponseFrom<T extends GameEventIdentifiers>(
+  public abstract onReceivingAsyncResponseFrom<T extends GameEventIdentifiers>(
     identifier: T,
     playerId?: PlayerId,
   ): Promise<ClientEventFinder<T>>;
@@ -111,26 +111,26 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract insertPlayerPhase(player: PlayerId, phase: PlayerPhase): void;
   public abstract isExtraPhase(): boolean;
   //Server only
-  public abstract async loseHp(player: PlayerId, lostHp: number): Promise<void>;
+  public abstract loseHp(player: PlayerId, lostHp: number): Promise<void>;
   //Server only
-  public abstract async changeMaxHp(player: PlayerId, additionalMaxHp: number): Promise<void>;
+  public abstract changeMaxHp(player: PlayerId, additionalMaxHp: number): Promise<void>;
   //Server only
-  public abstract async damage(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>): Promise<void>;
+  public abstract damage(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>): Promise<void>;
   //Server only
-  public abstract async recover(event: ServerEventFinder<GameEventIdentifiers.RecoverEvent>): Promise<void>;
+  public abstract recover(event: ServerEventFinder<GameEventIdentifiers.RecoverEvent>): Promise<void>;
   //Server only
-  public abstract async judge(
+  public abstract judge(
     to: PlayerId,
     byCard?: CardId,
     bySkill?: string,
     judgeMatcherEnum?: JudgeMatcherEnum,
   ): Promise<ServerEventFinder<GameEventIdentifiers.JudgeEvent>>;
   //Server only
-  public abstract async responseCard(
+  public abstract responseCard(
     event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>,
   ): Promise<boolean>;
   //Server only
-  public abstract async chainedOn(playerId: PlayerId): Promise<void>;
+  public abstract chainedOn(playerId: PlayerId): Promise<void>;
   //Server only
   public abstract bury(...cardIds: CardId[]): void;
   //Server only
@@ -142,17 +142,17 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     stage?: AllStage,
   ): void;
   //Server only
-  public abstract async loseSkill(playerId: PlayerId, skillName: string | string[], broadcast?: boolean): Promise<void>;
+  public abstract loseSkill(playerId: PlayerId, skillName: string | string[], broadcast?: boolean): Promise<void>;
   //Server only
-  public abstract async obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean): Promise<void>;
+  public abstract obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean): Promise<void>;
   //Server only
-  public abstract async pindian(fromId: PlayerId, toIds: PlayerId[], bySkill: string): Promise<PinDianReport>;
-  public abstract async turnOver(playerId: PlayerId): Promise<void>;
+  public abstract pindian(fromId: PlayerId, toIds: PlayerId[], bySkill: string): Promise<PinDianReport>;
+  public abstract turnOver(playerId: PlayerId): Promise<void>;
 
   //Server only
   public abstract clearHeaded(toId: PlayerId): void;
 
-  public abstract async gameStart(...args: any[]): Promise<void>;
+  public abstract gameStart(...args: any[]): Promise<void>;
   public abstract get CurrentPlayerStage(): PlayerPhaseStages;
   public abstract get CurrentPlayerPhase(): PlayerPhase;
   public abstract get CurrentPhasePlayer(): Player;
@@ -162,7 +162,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract syncGameCommonRules(playerId: PlayerId, updateActions: (user: Player) => void): void;
   //Server only
-  public abstract async askForCardDrop(
+  public abstract askForCardDrop(
     playerId: PlayerId,
     discardAmount: number | [number, number],
     fromArea: PlayerCardsArea[],
@@ -172,17 +172,17 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     conversation?: string | PatchedTranslationObject,
   ): Promise<ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent>>;
   //Server only
-  public abstract async askForCardUse(
+  public abstract askForCardUse(
     event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>,
     to: PlayerId,
   ): Promise<ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent>>;
   //Server only
-  public abstract async askForCardResponse(
+  public abstract askForCardResponse(
     event: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>,
     to: PlayerId,
   ): Promise<ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent>>;
   //Server only
-  public abstract async doAskForCommonly<T extends GameEventIdentifiers>(
+  public abstract doAskForCommonly<T extends GameEventIdentifiers>(
     type: T,
     event: ServerEventFinder<T>,
     toId: PlayerId,
@@ -209,7 +209,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     unengagedMessage?: PatchedTranslationObject,
   ): void;
 
-  public abstract async skip(player: PlayerId, phase?: PlayerPhase): Promise<void>;
+  public abstract skip(player: PlayerId, phase?: PlayerPhase): Promise<void>;
   public abstract endPhase(phase: PlayerPhase): void;
 
   public updatePlayerStatus(
@@ -528,7 +528,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return true;
   }
 
-  public abstract async kill(deadPlayer: Player, killedBy?: PlayerId): Promise<void>;
+  public abstract kill(deadPlayer: Player, killedBy?: PlayerId): Promise<void>;
 
   public canUseCardTo(cardId: CardId | CardMatcher, from: Player, target: Player): boolean {
     return from.canUseCardTo(this, cardId, target.Id);

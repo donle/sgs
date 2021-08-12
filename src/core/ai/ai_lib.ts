@@ -206,8 +206,12 @@ export abstract class AiLibrary {
     }
 
     if (askedByCard.Name === 'wanjianqifa') {
-      return availableCards.length > 1;
+      if (cardUseFrom && room.CurrentPhasePlayer.Id === cardUseFrom && !room.CurrentPhasePlayer.hasUsed('slash')) {
+        return AiLibrary.findCardsByMatcher(room, player, new CardMatcher({ name: ['jink'] })).length <= 1;
+      }
     }
+
+    return cardUseFrom !== undefined && cardUseFrom !== player.Id;
   }
 
   static shouldUseJink(
@@ -409,9 +413,14 @@ export abstract class AiLibrary {
         availableCards.push(...player.getCardIds(area, skill.GeneralName));
       }
 
-      const avaiableViewAs = skill
-        .tryToCallAiTrigger<ViewAsSkillTriggerClass>()
-        ?.createViewAsPossibilties(room, player, availableCards, skill, cardMatcher, []);
+      const avaiableViewAs = ViewAsSkillTriggerClass.createViewAsPossibilties(
+        room,
+        player,
+        availableCards,
+        skill,
+        cardMatcher,
+        [],
+      );
       if (avaiableViewAs) {
         const canViewAs = skill.canViewAs(room, player, avaiableViewAs, cardMatcher);
         for (const viewAs of canViewAs) {
@@ -445,9 +454,14 @@ export abstract class AiLibrary {
         availableCards.push(...player.getCardIds(area, skill.GeneralName));
       }
 
-      const avaiableViewAs = skill
-        .tryToCallAiTrigger<ViewAsSkillTriggerClass>()
-        ?.createViewAsPossibilties(room, player, availableCards, skill, cardMatcher, []);
+      const avaiableViewAs = ViewAsSkillTriggerClass.createViewAsPossibilties(
+        room,
+        player,
+        availableCards,
+        skill,
+        cardMatcher,
+        [],
+      );
       if (avaiableViewAs) {
         const canViewAs = skill.canViewAs(room, player, avaiableViewAs, cardMatcher);
         for (const viewAs of canViewAs) {
