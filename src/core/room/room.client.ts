@@ -280,7 +280,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
 
   public async obtainSkill(playerId: PlayerId, skillName: string): Promise<void> {
     const player = this.getPlayerById(playerId);
-    player.obtainCardIds(skillName);
+    player.obtainSkill(skillName);
     await SkillLifeCycle.executeHookOnObtainingSkill(Sanguosha.getSkillBySkillName(skillName), this, player);
   }
 

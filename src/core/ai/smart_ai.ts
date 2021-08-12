@@ -52,10 +52,10 @@ export class SmartAI extends PlayerAI {
         }
       } else {
         const card = Sanguosha.getCardById(item);
-        const cardSkill = card.Skill as ActiveSkill;
+        const cardSkill = card.Skill;
         const aiSkill = cardSkill.tryToCallAiTrigger<ActiveSkillTriggerClass>();
 
-        if (aiSkill?.reforgeTrigger(room, from, cardSkill, item)) {
+        if (cardSkill instanceof ActiveSkill && aiSkill?.reforgeTrigger(room, from, cardSkill, item)) {
           const reforgeEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
             fromId,
             end: false,
@@ -92,9 +92,11 @@ export class SmartAI extends PlayerAI {
           }
         }
 
-        const useCard = aiSkill?.skillTrigger(room, from, cardSkill, item) as
-          | ClientEventFinder<GameEventIdentifiers.CardUseEvent>
-          | undefined;
+        const useCard =
+          cardSkill instanceof ActiveSkill &&
+          (aiSkill?.skillTrigger(room, from, cardSkill, item) as
+            | ClientEventFinder<GameEventIdentifiers.CardUseEvent>
+            | undefined);
         if (useCard) {
           const useCardEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
             fromId,
