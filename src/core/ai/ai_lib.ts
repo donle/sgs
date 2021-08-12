@@ -409,9 +409,14 @@ export abstract class AiLibrary {
         availableCards.push(...player.getCardIds(area, skill.GeneralName));
       }
 
-      const avaiableViewAs = skill
-        .tryToCallAiTrigger<ViewAsSkillTriggerClass>()
-        ?.createViewAsPossibilties(room, player, availableCards, skill, cardMatcher, []);
+      const avaiableViewAs = ViewAsSkillTriggerClass.createViewAsPossibilties(
+        room,
+        player,
+        availableCards,
+        skill,
+        cardMatcher,
+        [],
+      );
       if (avaiableViewAs) {
         const canViewAs = skill.canViewAs(room, player, avaiableViewAs, cardMatcher);
         for (const viewAs of canViewAs) {
@@ -445,9 +450,14 @@ export abstract class AiLibrary {
         availableCards.push(...player.getCardIds(area, skill.GeneralName));
       }
 
-      const avaiableViewAs = skill
-        .tryToCallAiTrigger<ViewAsSkillTriggerClass>()
-        ?.createViewAsPossibilties(room, player, availableCards, skill, cardMatcher, []);
+      const avaiableViewAs = ViewAsSkillTriggerClass.createViewAsPossibilties(
+        room,
+        player,
+        availableCards,
+        skill,
+        cardMatcher,
+        [],
+      );
       if (avaiableViewAs) {
         const canViewAs = skill.canViewAs(room, player, avaiableViewAs, cardMatcher);
         for (const viewAs of canViewAs) {
