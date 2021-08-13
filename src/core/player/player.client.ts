@@ -60,7 +60,7 @@ export class ClientPlayer extends Player {
   }
   getAllVisibleTags(viewer: PlayerId) {
     const visibleTags: string[] = [];
-    for (const name in this.visiblePlayerTags) {
+    for (const name of Object.keys(this.visiblePlayerTags)) {
       if (this.visiblePlayerTags[name] && (!this.visiblePlayers[name] || this.visiblePlayers[name].includes(viewer))) {
         visibleTags.push(this.visiblePlayerTags[name]);
       }

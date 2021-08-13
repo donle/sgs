@@ -79,7 +79,7 @@ export abstract class Player implements PlayerInfo {
     [CharacterEquipSections.OffenseRide]: 'enabled',
     [CharacterEquipSections.Precious]: 'enabled',
   };
-  private judgeAreaStatus = 'enabled';
+  private judgeAreaStatus: 'enabled' | 'disabled' = 'enabled';
 
   private drunk: number = 0;
 
