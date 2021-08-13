@@ -150,6 +150,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract turnOver(playerId: PlayerId): Promise<void>;
 
   //Server only
+  public abstract async reforge(cardId: CardId, from: Player): Promise<void>;
+
+  //Server only
   public abstract clearHeaded(toId: PlayerId): void;
 
   public abstract gameStart(...args: any[]): Promise<void>;
@@ -567,7 +570,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public removeFlag(player: PlayerId, name: string) {
     this.getPlayerById(player).removeFlag(name);
   }
-  public setFlag<T>(player: PlayerId, name: string, value: T, tagName?: string): T {
+  public setFlag<T>(player: PlayerId, name: string, value: T, tagName?: string, visiblePlayers?: PlayerId[]): T {
     return this.getPlayerById(player).setFlag(name, value);
   }
   public getFlag<T>(player: PlayerId, name: string): T {
@@ -598,6 +601,16 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public resumePlayerEquipSections(playerId: PlayerId, ...abortSections: CharacterEquipSections[]) {
     const player = this.getPlayerById(playerId);
     player.resumeEquipSections(...abortSections);
+  }
+
+  public async abortPlayerJudgeArea(playerId: PlayerId) {
+    const player = this.getPlayerById(playerId);
+    player.abortJudgeArea();
+  }
+
+  public resumePlayerJudgeArea(playerId: PlayerId) {
+    const player = this.getPlayerById(playerId);
+    player.resumeJudgeArea();
   }
 
   public refreshPlayerOnceSkill(playerId: PlayerId, skillName: string) {

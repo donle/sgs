@@ -24,8 +24,9 @@ export class CangZhuo extends TriggerSkill {
     return (
       owner.Id === content.playerId &&
       content.toStage === PlayerPhaseStages.DropCardStageStart &&
-      room.Analytics.getUsedCard(owner.Id, true).filter(cardId => Sanguosha.getCardById(cardId).is(CardType.Trick))
-        .length === 0
+      room.Analytics.getUsedCard(owner.Id, 'round', undefined, 1).filter(cardId =>
+        Sanguosha.getCardById(cardId).is(CardType.Trick),
+      ).length === 0
     );
   }
 

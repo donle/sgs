@@ -79,6 +79,7 @@ export abstract class Player implements PlayerInfo {
     [CharacterEquipSections.OffenseRide]: 'enabled',
     [CharacterEquipSections.Precious]: 'enabled',
   };
+  private judgeAreaStatus: 'enabled' | 'disabled' = 'enabled';
 
   private drunk: number = 0;
 
@@ -499,7 +500,7 @@ export abstract class Player implements PlayerInfo {
 
     const card = cardId instanceof CardMatcher ? undefined : Sanguosha.getCardById(cardId);
     if (card) {
-      if (card.is(CardType.Equip) && !player.canEquip(card as EquipCard)) {
+      if ((card.is(CardType.Equip) && !player.canEquip(card as EquipCard)) || (card.is(CardType.DelayedTrick) && player.judgeAreaDisabled())) {
         return false;
       }
 
@@ -1001,6 +1002,18 @@ export abstract class Player implements PlayerInfo {
     for (const section of abortSections) {
       this.equipSectionsStatus[section] = 'enabled';
     }
+  }
+
+  public judgeAreaDisabled(): boolean {
+    return this.judgeAreaStatus === 'disabled';
+  }
+
+  public abortJudgeArea() {
+    this.judgeAreaStatus = 'disabled';
+  }
+
+  public resumeJudgeArea() {
+    this.judgeAreaStatus = 'enabled';
   }
 
   setHuaShenInfo(info: HuaShenInfo) {

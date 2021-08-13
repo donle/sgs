@@ -670,6 +670,7 @@ export class StandardGameProcessor extends GameProcessor {
         }
 
         if (stage === PhaseChangeStage.PhaseChanged) {
+          this.room.Analytics.turnToNextPhase();
           this.currentPlayerPhase = nextPhase;
           if (this.currentPlayerPhase === PlayerPhase.PhaseBegin) {
             this.room.Analytics.turnTo(this.CurrentPlayer.Id);
@@ -1623,7 +1624,7 @@ export class StandardGameProcessor extends GameProcessor {
       }
     }
 
-    if (to && to.Dead) {
+    if (to && (to.Dead || (toArea === CardMoveArea.JudgeArea && to.judgeAreaDisabled()))) {
       event.toId = undefined;
       event.toArea = CardMoveArea.DropStack;
       event.moveReason = CardMoveReason.PlaceToDropStack;

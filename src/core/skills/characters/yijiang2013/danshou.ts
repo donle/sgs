@@ -47,7 +47,7 @@ export class DanShou extends TriggerSkill {
         );
       },
       undefined,
-      true,
+      'round',
     ).length;
 
     return TranslationPack.translationJsonPatcher(
@@ -78,7 +78,7 @@ export class DanShou extends TriggerSkill {
         );
       },
       undefined,
-      true,
+      'round',
     ).length;
 
     await room.drawCards(drawNum, fromId, undefined, fromId, this.Name);

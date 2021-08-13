@@ -182,6 +182,10 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.turnOver.name);
   }
   //Server only
+  public async reforge() {
+    this.throwUntouchableError(this.reforge.name);
+  }
+  //Server only
   public async skip() {
     this.throwUntouchableError(this.skip.name);
   }

@@ -22,7 +22,7 @@ export class ShengXi extends TriggerSkill {
     return (
       content.playerId === owner.Id &&
       content.toStage === PlayerPhaseStages.FinishStageStart &&
-      room.Analytics.getDamageRecord(owner.Id, true).length === 0
+      room.Analytics.getDamageRecord(owner.Id, 'round', undefined, 1).length === 0
     );
   }
 
