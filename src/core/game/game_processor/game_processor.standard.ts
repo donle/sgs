@@ -905,9 +905,6 @@ export class StandardGameProcessor extends GameProcessor {
           onActualExecuted,
         );
         break;
-      case GameEventIdentifiers.AimEvent:
-        await this.onHandleAimEvent(identifier as GameEventIdentifiers.AimEvent, event as any, onActualExecuted);
-        break;
       case GameEventIdentifiers.DamageEvent:
         await this.onHandleDamgeEvent(identifier as GameEventIdentifiers.DamageEvent, event as any, onActualExecuted);
         break;
@@ -1334,57 +1331,55 @@ export class StandardGameProcessor extends GameProcessor {
             loserIds: this.room.Players.filter(player => !winners.includes(player)).map(player => player.Id),
           });
         }
+      } else if (stage === PlayerDiedStage.PlayerDied) {
+        const { killedBy, playerId } = event;
+        await this.room.moveCards({
+          moveReason: CardMoveReason.SelfDrop,
+          fromId: playerId,
+          movingCards: deadPlayer
+            .getPlayerCards()
+            .map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
+          toArea: CardMoveArea.DropStack,
+        });
+
+        const outsideCards = Object.entries(deadPlayer.getOutsideAreaCards()).reduce<CardId[]>(
+          (allCards, [areaName, cards]) => {
+            if (!deadPlayer.isCharacterOutsideArea(areaName)) {
+              allCards.push(...cards);
+            }
+            return allCards;
+          },
+          [],
+        );
+
+        const allCards = [...deadPlayer.getCardIds(PlayerCardsArea.JudgeArea), ...outsideCards];
+        await this.room.moveCards({
+          moveReason: CardMoveReason.PlaceToDropStack,
+          fromId: playerId,
+          movingCards: allCards.map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
+          toArea: CardMoveArea.DropStack,
+        });
+
+        if (killedBy) {
+          const killer = this.room.getPlayerById(killedBy);
+  
+          if (deadPlayer.Role === PlayerRole.Rebel && !killer.Dead) {
+            await this.room.drawCards(3, killedBy, 'top', undefined, undefined, CardDrawReason.KillReward);
+          } else if (deadPlayer.Role === PlayerRole.Loyalist && killer.Role === PlayerRole.Lord) {
+            const lordCards = VirtualCard.getActualCards(killer.getPlayerCards());
+            await this.room.moveCards({
+              moveReason: CardMoveReason.SelfDrop,
+              fromId: killer.Id,
+              movingCards: lordCards.map(cardId => ({ card: cardId, fromArea: killer.cardFrom(cardId) })),
+              toArea: CardMoveArea.DropStack,
+            });
+          }
+        }
       }
     });
 
-    if (!this.room.isGameOver()) {
-      const { killedBy, playerId } = event;
-      await this.room.moveCards({
-        moveReason: CardMoveReason.SelfDrop,
-        fromId: playerId,
-        movingCards: deadPlayer
-          .getPlayerCards()
-          .map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
-        toArea: CardMoveArea.DropStack,
-      });
-
-      const outsideCards = Object.entries(deadPlayer.getOutsideAreaCards()).reduce<CardId[]>(
-        (allCards, [areaName, cards]) => {
-          if (!deadPlayer.isCharacterOutsideArea(areaName)) {
-            allCards.push(...cards);
-          }
-          return allCards;
-        },
-        [],
-      );
-
-      const allCards = [...deadPlayer.getCardIds(PlayerCardsArea.JudgeArea), ...outsideCards];
-      await this.room.moveCards({
-        moveReason: CardMoveReason.PlaceToDropStack,
-        fromId: playerId,
-        movingCards: allCards.map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
-        toArea: CardMoveArea.DropStack,
-      });
-
-      if (this.room.CurrentPhasePlayer.Id === playerId) {
-        await this.room.skip(playerId);
-      }
-
-      if (killedBy) {
-        const killer = this.room.getPlayerById(killedBy);
-
-        if (deadPlayer.Role === PlayerRole.Rebel && !killer.Dead) {
-          await this.room.drawCards(3, killedBy, 'top', undefined, undefined, CardDrawReason.KillReward);
-        } else if (deadPlayer.Role === PlayerRole.Loyalist && killer.Role === PlayerRole.Lord) {
-          const lordCards = VirtualCard.getActualCards(killer.getPlayerCards());
-          await this.room.moveCards({
-            moveReason: CardMoveReason.SelfDrop,
-            fromId: killer.Id,
-            movingCards: lordCards.map(cardId => ({ card: cardId, fromArea: killer.cardFrom(cardId) })),
-            toArea: CardMoveArea.DropStack,
-          });
-        }
-      }
+    if (!this.room.isGameOver() && this.room.CurrentPhasePlayer.Id === event.playerId) {
+      await this.room.skip(event.playerId);
     }
   }
 
@@ -1428,20 +1423,6 @@ export class StandardGameProcessor extends GameProcessor {
         const { skillName } = event;
         await Sanguosha.getSkillBySkillName(skillName).onEffect(this.room, event);
       }
-    });
-  }
-
-  private async onHandleAimEvent(
-    identifier: GameEventIdentifiers.AimEvent,
-    event: ServerEventFinder<GameEventIdentifiers.AimEvent>,
-    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
-  ) {
-    return await this.iterateEachStage(identifier, event, onActualExecuted, async () => {
-      event.allTargets = this.room.deadPlayerFilters(event.allTargets);
-      if (this.room.getPlayerById(event.toId).Dead) {
-        EventPacker.terminate(event);
-      }
-      return;
     });
   }
 
@@ -1531,6 +1512,7 @@ export class StandardGameProcessor extends GameProcessor {
           moveReason: CardMoveReason.CardUse,
           toArea: CardMoveArea.DropStack,
           hideBroadcast: true,
+          proposer: event.fromId,
         });
       }
       if (this.room.isCardOnProcessing(card.Id)) {
@@ -1579,6 +1561,7 @@ export class StandardGameProcessor extends GameProcessor {
         moveReason: CardMoveReason.CardResponse,
         toArea: CardMoveArea.DropStack,
         hideBroadcast: true,
+        proposer: event.fromId,
       });
       if (this.room.isCardOnProcessing(event.cardId)) {
         this.room.endProcessOnTag(event.cardId.toString());

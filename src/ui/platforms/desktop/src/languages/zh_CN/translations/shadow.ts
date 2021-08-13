@@ -214,7 +214,7 @@ export const promptDescriptions: Word[] = [
 
   {
     source: '{0}: please choose kuizhu options: {1}',
-    target: '{0}：你可以令你至多 {1} 名角色各摸一张牌，或对至少一名体力值之和为 {1} 的角色各造成1点伤害',
+    target: '{0}：你可以令至多 {1} 名角色各摸一张牌，或对至少一名体力值之和为 {1} 的角色各造成1点伤害',
   },
   { source: 'kuizhu:draw', target: '摸牌' },
   { source: 'kuizhu:damage', target: '伤害' },

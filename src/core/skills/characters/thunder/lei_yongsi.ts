@@ -106,9 +106,18 @@ export class LeiYongSi extends TriggerSkill {
 @ShadowSkill
 @PersistentSkill()
 @CompulsorySkill({ name: LeiYongSi.Name, description: LeiYongSi.Description })
-export class LeiYongSiShadow extends RulesBreakerSkill {
+export class LeiYongSiShadow extends RulesBreakerSkill implements OnDefineReleaseTiming {
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
+  }
+
   public breakBaseCardHoldNumber(room: Room, owner: Player) {
-    return owner.getFlag<boolean>(LeiYongSi.LeiYongSiCardHold) ? owner.LostHp : 0;
+    return owner.getFlag<boolean>(LeiYongSi.LeiYongSiCardHold) ? owner.LostHp : -1;
   }
 }
 

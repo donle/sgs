@@ -332,6 +332,12 @@ export class GameClientProcessor {
       case GameEventIdentifiers.RefreshOnceSkillEvent:
         await this.onHandleRefreshOnceSkillEvent(e as any, content);
         break;
+      case GameEventIdentifiers.HookUpSkillsEvent:
+        await this.onHandleHookUpSkillsEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.UnhookSkillsEvent:
+        await this.onHandleUnhookSkillsEvent(e as any, content);
+        break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
     }
@@ -1493,13 +1499,13 @@ export class GameClientProcessor {
   protected async onHandleAskForChoosingCardAvailableTargetEvent<
     T extends GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent
   >(type: T, content: ServerEventFinder<T>) {
-    const { cardId, exclude, conversation } = content;
+    const { user, cardId, exclude, conversation } = content;
     this.presenter.createIncomingConversation({
       conversation,
       translator: this.translator,
     });
     const action = new SelectAction(this.store.clientPlayerId, this.store, this.presenter, this.translator, content);
-    const selectedPlayers = await action.onSelectCardTargets(cardId, exclude);
+    const selectedPlayers = await action.onSelectCardTargets(user, cardId, exclude);
 
     const choosePlayerEvent: ClientEventFinder<GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent> = {
       fromId: this.store.clientPlayerId,
@@ -1654,6 +1660,22 @@ export class GameClientProcessor {
       to.abortJudgeArea();
     }
 
+    this.presenter.broadcastUIUpdate();
+  }
+
+  protected onHandleHookUpSkillsEvent<T extends GameEventIdentifiers.HookUpSkillsEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.getPlayerById(content.toId).hookUpSkills(content.skillNames.map(name => Sanguosha.getSkillBySkillName(name)));
+    this.presenter.broadcastUIUpdate();
+  }
+
+  protected onHandleUnhookSkillsEvent<T extends GameEventIdentifiers.UnhookSkillsEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.getPlayerById(content.toId).removeHookedSkills(content.skillNames.map(name => Sanguosha.getSkillBySkillName(name)));
     this.presenter.broadcastUIUpdate();
   }
 }

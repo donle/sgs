@@ -5,6 +5,7 @@ import { AimStage, AllStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { AimGroupUtil } from 'core/shares/libs/utils/aim_group';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -17,7 +18,7 @@ export class QiuYuan extends TriggerSkill {
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AimEvent>): boolean {
     if (!!event.byCardId && Sanguosha.getCardById(event.byCardId).GeneralName === 'slash' && event.toId === owner.Id) {
-      room.setFlag<PlayerId[]>(owner.Id, this.Name, [event.fromId, ...event.allTargets]);
+      room.setFlag<PlayerId[]>(owner.Id, this.Name, [event.fromId, ...AimGroupUtil.getAllTargets(event.allTargets)]);
       return true;
     }
     return false;
@@ -75,9 +76,9 @@ export class QiuYuan extends TriggerSkill {
         engagedPlayerIds: room.getAllPlayersFrom().map(player => player.Id),
       });
     } else {
-      if (room.canUseCardTo(new CardMatcher({ generalName: ['slash'] }), from, to)) {
-        const aimEvent = skillEffectEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
-        aimEvent.allTargets.push(to.Id);
+      const aimEvent = skillEffectEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
+      if (room.canUseCardTo(new CardMatcher({ generalName: ['slash'] }), room.getPlayerById(aimEvent.fromId), to)) {
+        AimGroupUtil.addTargets(room, aimEvent, to.Id);
       }
     }
 

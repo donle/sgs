@@ -9,6 +9,7 @@ import { PvePackage } from 'core/characters/pve';
 import { ShadowCharacterPackage } from 'core/characters/shadow';
 import { SincerityCharacterPackage } from 'core/characters/sincerity';
 import { SPPackage } from 'core/characters/sp';
+import { SparkPackage } from 'core/characters/spark';
 import { StandardCharacterPackage } from 'core/characters/standard';
 import { ThunderCharacterPackage } from 'core/characters/thunder';
 import { WindCharacterPackage } from 'core/characters/wind';
@@ -43,6 +44,7 @@ const allCharacterLoaders: {
   [GameCharacterExtensions.YiJiang2013]: YiJiang2013Package,
   [GameCharacterExtensions.YiJiang2014]: YiJiang2014Package,
   [GameCharacterExtensions.SP]: SPPackage,
+  [GameCharacterExtensions.Spark]: SparkPackage,
   [GameCharacterExtensions.Limited]: LimitedPackage,
   [GameCharacterExtensions.Biographies]: BiographiesPackage,
   [GameCharacterExtensions.Wisdom]: WisdomPackage,

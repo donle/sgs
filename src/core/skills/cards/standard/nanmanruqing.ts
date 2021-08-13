@@ -94,7 +94,7 @@ export class NanManRuQingSkill extends ActiveSkill implements ExtralCardSkillPro
       const eventContent = {
         fromId: EventPacker.getMiddleware<PlayerId>(NanManRuQingSkill.NewSource, event) || fromId,
         toId: to,
-        damage: 1,
+        damage: 1 + (event.additionalDamage ? event.additionalDamage : 0),
         damageType: DamageType.Normal,
         cardIds: [event.cardId],
         triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],

@@ -9,6 +9,7 @@ import {
   WorkPlace,
 } from 'core/event/event';
 import {
+  AimStage,
   AllStage,
   CardResponseStage,
   CardUseStage,
@@ -41,6 +42,7 @@ import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { System } from 'core/shares/libs/system';
+import { AimGroupUtil, AimStatus } from 'core/shares/libs/utils/aim_group';
 import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { FlagEnum } from 'core/shares/types/flag_list';
 import { Flavor } from 'core/shares/types/host_config';
@@ -65,11 +67,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   private drawStack: CardId[] = [];
   private dropStack: CardId[] = [];
-
-  private hookedSkills: {
-    player: Player;
-    skill: Skill;
-  }[] = [];
 
   constructor(
     protected roomId: RoomId,
@@ -227,18 +224,16 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     const canTriggerSkills: TriggerSkill[] = [];
     if (skillFrom === 'character') {
-      const hookedSkills = this.hookedSkills.reduce<TriggerSkill[]>((skills, { player: skillOwner, skill }) => {
-        if (skillOwner.Id === player.Id && skill instanceof TriggerSkill) {
-          skills.push(skill);
-        }
+      const hookedSkills = player.HookedSkills.reduce<TriggerSkill[]>((skills, skill) => {
+        skill instanceof TriggerSkill && skills.push(skill);
         return skills;
       }, []);
 
       const playerSkills =
         player.Dead && stage !== PlayerDiedStage.PlayerDied && stage !== PlayerDiedStage.AfterPlayerDied
-          ? []
+          ? hookedSkills
           : player.getPlayerSkills<TriggerSkill>('trigger');
-      for (const skill of [...playerSkills, ...hookedSkills]) {
+      for (const skill of [...playerSkills]) {
         const canTrigger = bySkills
           ? bySkills.find(bySkill => UniqueSkillRule.isProhibitedBySkillRule(bySkill, skill)) === undefined
           : true;
@@ -498,16 +493,31 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       }
     }
 
-    this.hookedSkills = this.hookedSkills.filter(({ skill, player }) => {
-      const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
-      if (hookedSkill.afterLosingSkill && hookedSkill.afterLosingSkill(this, player.Id, content, stage)) {
-        return false;
+    for (const p of this.getAlivePlayersFrom()) {
+      if (p.HookedSkills.length === 0) {
+        continue;
       }
-      if (hookedSkill.afterDead && hookedSkill.afterDead(this, player.Id, content, stage)) {
+
+      const toUnhook = p.HookedSkills.filter(skill => {
+        const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+        if (hookedSkill.afterLosingSkill && hookedSkill.afterLosingSkill(this, p.Id, content, stage)) {
+          return true;
+        }
+        if (hookedSkill.afterDead && hookedSkill.afterDead(this, p.Id, content, stage)) {
+          return true;
+        }
         return false;
+      });
+
+      if (toUnhook.length > 0) {
+        p.removeHookedSkills(toUnhook);
+        this.broadcast(GameEventIdentifiers.UnhookSkillsEvent, {
+          toId: p.Id,
+          skillNames: toUnhook.map(skill => skill.Name),
+        });
       }
-      return true;
-    });
+    }
+    
   }
 
   public async onReceivingAsyncResponseFrom<T extends GameEventIdentifiers>(
@@ -881,35 +891,100 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   private readonly onAim = async (
     event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
-    toId: PlayerId,
-    allTargets: PlayerId[],
-    nullifiedTargets: PlayerId[],
-    isFirstTarget?: boolean,
+    aimEventCollaborators: { [player: string]: ServerEventFinder<GameEventIdentifiers.AimEvent>[] },
   ) => {
-    const cardAimEvent: ServerEventFinder<GameEventIdentifiers.AimEvent> = EventPacker.createIdentifierEvent(
-      GameEventIdentifiers.AimEvent,
-      {
-        fromId: event.fromId,
-        byCardId: event.cardId,
-        toId,
-        nullifiedTargets,
-        allTargets,
-        isFirstTarget,
-      },
-    );
-    EventPacker.copyPropertiesTo(event, cardAimEvent);
-
-    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.AimEvent, cardAimEvent);
-
-    if (!EventPacker.isTerminated(cardAimEvent)) {
-      if (cardAimEvent.triggeredBySkills) {
-        event.triggeredBySkills = event.triggeredBySkills
-          ? [...event.triggeredBySkills, ...cardAimEvent.triggeredBySkills]
-          : cardAimEvent.triggeredBySkills;
+    const stages = [AimStage.OnAim, AimStage.OnAimmed, AimStage.AfterAim, AimStage.AfterAimmed];
+    for (const stage of stages) {
+      const involvedPlayerIds = TargetGroupUtil.getAllTargets(event.targetGroup);
+      if (!involvedPlayerIds) {
+        return false;
       }
+      this.sortByPlayersPosition(involvedPlayerIds, ids => this.getPlayerById(ids[0]));
+      event.targetGroup = involvedPlayerIds;
+      let aimGroup = AimGroupUtil.initAimGroup(involvedPlayerIds.map(ids => ids[0]));
+
+      const collabroatorsIndex: { [player: string]: number } = {};
+      let isFirstTarget = true;
+      do {
+        const toId = AimGroupUtil.getUndoneOrDoneTargets(aimGroup)[0];
+        let aimEvent: ServerEventFinder<GameEventIdentifiers.AimEvent>;
+        let initialEvent = false;
+        collabroatorsIndex[toId] = collabroatorsIndex[toId] || 0;
+        if (
+          !aimEventCollaborators[toId] ||
+          collabroatorsIndex[toId] >= aimEventCollaborators[toId].length
+        ) {
+          aimEvent = EventPacker.createIdentifierEvent(GameEventIdentifiers.AimEvent, {
+            fromId: event.fromId,
+            byCardId: event.cardId,
+            toId,
+            targetGroup: event.targetGroup,
+            nullifiedTargets: event.nullifiedTargets || [],
+            allTargets: aimGroup,
+            isFirstTarget,
+            additionalDamage: event.additionalDamage,
+          });
+
+          EventPacker.copyPropertiesTo(event, aimEvent);
+          collabroatorsIndex[toId] = 1;
+          initialEvent = true;
+        } else {
+          aimEvent = aimEventCollaborators[toId][collabroatorsIndex[toId]];
+          aimEvent.fromId = event.fromId;
+          aimEvent.byCardId = event.cardId;
+          aimEvent.allTargets = aimGroup;
+          aimEvent.targetGroup = event.targetGroup;
+          aimEvent.nullifiedTargets = event.nullifiedTargets || [];
+          aimEvent.isFirstTarget = isFirstTarget;
+        }
+
+        isFirstTarget = false;
+
+        await this.trigger(aimEvent, stage);
+        AimGroupUtil.removeDeadTargets(this, aimEvent);
+
+        let aimEventTargetGroup = aimEvent.targetGroup;
+        if (aimEventTargetGroup) {
+          const aimEventTargets = TargetGroupUtil.getAllTargets(aimEventTargetGroup);
+          aimEventTargets && this.sortByPlayersPosition(aimEventTargets, ids => this.getPlayerById(ids[0]));
+          aimEventTargetGroup = aimEventTargets;
+        }
+
+        event.fromId = aimEvent.fromId;
+        event.targetGroup = aimEventTargetGroup;
+        event.nullifiedTargets = aimEvent.nullifiedTargets;
+        if (aimEvent.triggeredBySkills) {
+          event.triggeredBySkills = event.triggeredBySkills
+            ? [...event.triggeredBySkills, ...aimEvent.triggeredBySkills]
+            : aimEvent.triggeredBySkills;
+        }
+        if (AimGroupUtil.getAllTargets(aimEvent.allTargets).length === 0) {
+          return false;
+        }
+
+        const cancelledTargets = AimGroupUtil.getCancelledTargets(aimEvent.allTargets);
+        if (cancelledTargets.length > 0) {
+          for (const target of cancelledTargets) {
+            aimEventCollaborators[target] = [];
+            collabroatorsIndex[target] = 0;
+          }
+        }
+        aimEvent.allTargets[AimStatus.Cancelled] = [];
+
+        aimEventCollaborators[toId] = aimEventCollaborators[toId] || [];
+        if (!(EventPacker.isTerminated(aimEvent) || this.getPlayerById(toId).Dead)) {
+          initialEvent
+            ? aimEventCollaborators[toId].push(aimEvent)
+            : (aimEventCollaborators[toId][collabroatorsIndex[toId]] = aimEvent);
+          collabroatorsIndex[toId]++;
+        }
+
+        EventPacker.isTerminated(aimEvent) || AimGroupUtil.setTargetDone(aimGroup, toId);
+        aimGroup = aimEvent.allTargets;
+      } while (AimGroupUtil.getUndoneOrDoneTargets(aimGroup).length > 0);
     }
 
-    return cardAimEvent;
+    return true;
   };
 
   public async useCard(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, declared?: boolean) {
@@ -923,26 +998,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, event, async stage => {
       if (stage === CardUseStage.AfterCardUseEffect) {
         const card = Sanguosha.getCardById(event.cardId);
-        const aimEventCollaborators: { [player: string]: ServerEventFinder<GameEventIdentifiers.AimEvent> } = {};
-        let involvedPlayerIds = TargetGroupUtil.getAllTargets(event.targetGroup);
-        involvedPlayerIds && this.sortByPlayersPosition(involvedPlayerIds, ids => this.getPlayerById(ids[0]));
-        const toIds = involvedPlayerIds?.map(ids => ids[0]);
-        let nullifiedTargets: PlayerId[] = event.nullifiedTargets || [];
+        const aimEventCollaborators: { [player: string]: ServerEventFinder<GameEventIdentifiers.AimEvent>[] } = {};
 
-        if (toIds) {
-          let allTargets: PlayerId[] = [];
-          for (const toId of toIds) {
-            const response = await this.onAim(event, toId, toIds, nullifiedTargets, toId === toIds[0]);
-            aimEventCollaborators[toId] = response;
-            nullifiedTargets = response.nullifiedTargets;
-
-            allTargets = response.allTargets;
-          }
-          // need to refactor it
-          involvedPlayerIds = involvedPlayerIds?.filter(ids => allTargets.includes(ids[0]));
-          allTargets.forEach(id => !toIds.includes(id) && involvedPlayerIds!.push([id]));
-          this.sortByPlayersPosition(involvedPlayerIds!, ids => this.getPlayerById(ids[0]));
-          //
+        if (TargetGroupUtil.getAllTargets(event.targetGroup) && !(await this.onAim(event, aimEventCollaborators))) {
+          return true;
         }
 
         if (card.is(CardType.Equip)) {
@@ -1009,8 +1068,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
         const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {
           ...event,
-          allTargets: toIds,
-          nullifiedTargets,
+          allTargets: TargetGroupUtil.getRealTargets(event.targetGroup),
         };
 
         await card.Skill.beforeEffect(this, cardEffectEvent);
@@ -1028,8 +1086,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         if (card.Skill instanceof ResponsiveSkill) {
           await onCardEffect(cardEffectEvent);
         } else {
-          for (const groupTargets of involvedPlayerIds || []) {
+          const collabroatorsIndex: { [player: string]: number } = {};
+          for (const groupTargets of TargetGroupUtil.getAllTargets(event.targetGroup) || []) {
             const toId = groupTargets[0];
+            const nullifiedTargets = event.nullifiedTargets || [];
             if (nullifiedTargets.includes(toId) || this.getPlayerById(toId).Dead) {
               continue;
             }
@@ -1041,7 +1101,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             };
 
             if (aimEventCollaborators[toId]) {
-              EventPacker.copyPropertiesTo(aimEventCollaborators[toId], singleCardEffectEvent);
+              collabroatorsIndex[toId] = collabroatorsIndex[toId] || 0;
+              const aimEvent = aimEventCollaborators[toId][collabroatorsIndex[toId]];
+              EventPacker.copyPropertiesTo(aimEvent, singleCardEffectEvent);
+              singleCardEffectEvent.additionalDamage = aimEvent.additionalDamage;
               if (
                 !EventPacker.isDisresponsiveEvent(singleCardEffectEvent) &&
                 list &&
@@ -1050,6 +1113,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               ) {
                 EventPacker.setDisresponsiveEvent(singleCardEffectEvent);
               }
+              collabroatorsIndex[toId]++;
             }
 
             await onCardEffect(singleCardEffectEvent);
@@ -1119,9 +1183,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     for (const skill of lostSkill) {
       const outsideCards = player.getCardIds(PlayerCardsArea.OutsideArea, skill.Name);
-      if (SkillLifeCycle.isHookedAfterLosingSkill(skill)) {
-        this.hookedSkills.push({ player, skill });
-      }
       await SkillLifeCycle.executeHookOnLosingSkill(skill, this, player);
 
       if (outsideCards) {
@@ -1637,9 +1698,19 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       async stage => {
         if (stage === PlayerDiedStage.AfterPlayerDied) {
           for (const skill of deadPlayer.getPlayerSkills()) {
+            const toHookUp: Skill[] = [];
             if (SkillLifeCycle.isHookedAfterDead(skill)) {
-              this.hookedSkills.push({ player: deadPlayer, skill });
+              toHookUp.push(skill);
             }
+
+            if (toHookUp.length > 0) {
+              deadPlayer.hookUpSkills(toHookUp);
+              this.broadcast(GameEventIdentifiers.HookUpSkillsEvent, {
+                toId: deadPlayer.Id,
+                skillNames: toHookUp.map(skill => skill.Name),
+              });
+            }
+
             await SkillLifeCycle.executeHookedOnDead(skill, this, deadPlayer);
           }
         }

@@ -6,6 +6,7 @@ import { AimStage, AllStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { AimGroupUtil } from 'core/shares/libs/utils/aim_group';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
@@ -16,17 +17,18 @@ export class CongJian extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.AimEvent>): boolean {
+    const allTargets = AimGroupUtil.getAllTargets(content.allTargets);
     if (
       content.toId === owner.Id &&
       content.byCardId &&
       Sanguosha.getCardById(content.byCardId).is(CardType.Trick) &&
       content.allTargets &&
-      content.allTargets.length > 1
+      allTargets.length > 1
     ) {
       room.setFlag<PlayerId[]>(
         owner.Id,
         this.Name,
-        content.allTargets.filter(target => target !== owner.Id),
+        allTargets.filter(target => target !== owner.Id),
       );
       return true;
     }

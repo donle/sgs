@@ -12,6 +12,7 @@ import * as pveCharactersDictionary from './pve';
 import * as shadowCharacterDictionary from './shadow';
 import * as sincerityCharactersDictionary from './sincerity';
 import * as spCharacterDictionary from './sp';
+import * as sparkCharactersDictionary from './spark';
 import * as standardCharactersDictionary from './standard';
 import * as thunderCharactersDictionary from './thunder';
 import * as windCharactersDictionary from './wind';
@@ -39,6 +40,7 @@ export {
   yiJiang3CharactersDictionary,
   yiJiang4CharactersDictionary,
   spCharacterDictionary,
+  sparkCharactersDictionary,
   LimitedCharacterDictionary,
   biographiesCharacterDictionary,
   wisdomCharacterDictionary,

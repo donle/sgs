@@ -6,6 +6,7 @@ import { AimStage, AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/sta
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { AimGroupUtil } from 'core/shares/libs/utils/aim_group';
 import { CommonSkill, OnDefineReleaseTiming, PersistentSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
@@ -22,16 +23,17 @@ export class QiZhi extends TriggerSkill {
       stage === AimStage.AfterAim &&
       (Sanguosha.getCardById(event.byCardId!).is(CardType.Basic) ||
         Sanguosha.getCardById(event.byCardId!).is(CardType.Trick)) &&
-      !!event.isFirstTarget
+      event.isFirstTarget
     );
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AimEvent>): boolean {
     let canUse = owner.Id === event.fromId && room.CurrentPlayer === owner;
+    const allTargets = AimGroupUtil.getAllTargets(event.allTargets);
     if (canUse) {
       const availableTargets = room
         .getAlivePlayersFrom()
-        .filter(player => player.getPlayerCards().length > 0 && !event.allTargets.includes(player.Id));
+        .filter(player => player.getPlayerCards().length > 0 && !allTargets.includes(player.Id));
       canUse = availableTargets.length > 0;
       if (canUse) {
         room.setFlag<PlayerId[]>(

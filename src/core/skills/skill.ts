@@ -524,7 +524,7 @@ export abstract class RulesBreakerSkill extends Skill {
     return 0;
   }
   public breakBaseCardHoldNumber(room: Room, owner: Player): number {
-    return 0;
+    return -1;
   }
   public breakAdditionalCardHoldNumber(room: Room, owner: Player): number {
     return 0;

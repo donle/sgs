@@ -29,7 +29,7 @@ export class LiLu extends TriggerSkill {
   }
 
   public getSkillLog(room: Room, owner: Player): PatchedTranslationObject {
-    const n = Math.min(owner.MaxHp - owner.getCardIds(PlayerCardsArea.HandArea).length, 5);
+    const n = Math.min(owner.MaxHp, 5) - owner.getCardIds(PlayerCardsArea.HandArea).length;
     return n > 0
       ? TranslationPack.translationJsonPatcher(
           '{0}: do you want to draw {1} card(s) instead of drawing cards by rule?',

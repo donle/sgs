@@ -6,6 +6,7 @@ import { AimStage, AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/sta
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { AimGroupUtil } from 'core/shares/libs/utils/aim_group';
 import {
   CommonSkill,
   GlobalFilterSkill,
@@ -81,16 +82,18 @@ export class JuZhanYin extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.AimEvent>): boolean {
+    const allTargets = AimGroupUtil.getAllTargets(content.allTargets);
+
     const canUse =
       content.fromId === owner.Id &&
       !!content.isFirstTarget &&
       content.byCardId !== undefined &&
       Sanguosha.getCardById(content.byCardId).GeneralName === 'slash' &&
       owner.getSwitchSkillState(this.GeneralName, true) === SwitchSkillState.Yin &&
-      content.allTargets.find(playerId => room.getPlayerById(playerId).getPlayerCards().length > 0) !== undefined;
+      allTargets.find(playerId => room.getPlayerById(playerId).getPlayerCards().length > 0) !== undefined;
 
     if (canUse) {
-      room.setFlag<PlayerId[]>(owner.Id, this.Name, content.allTargets);
+      room.setFlag<PlayerId[]>(owner.Id, this.Name, allTargets);
     }
 
     return canUse;

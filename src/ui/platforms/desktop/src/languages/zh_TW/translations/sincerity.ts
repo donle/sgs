@@ -10,7 +10,7 @@ export const characterDictionary: Word[] = [
   { source: 'wangling', target: '王凌' },
   { source: 'mouli', target: '謀立' },
   { source: '~side_mouli', target: '謀立' },
-  { source: 'mouli:mou', target: '謀' },
+  { source: 'mouli:li', target: '立' },
   { source: 'zifu', target: '自縛' },
 
   { source: 'mifuren', target: '糜夫人' },
