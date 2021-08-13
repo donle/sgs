@@ -44,7 +44,7 @@ export class XuanFeng extends TriggerSkill {
             event.fromId === phaseStageChangeEvent.playerId &&
             event.moveReason === CardMoveReason.SelfDrop,
           phaseStageChangeEvent.playerId,
-          true,
+          'round',
           [PlayerPhase.DropCardStage],
         );
 

@@ -3,7 +3,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { CharacterId } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
-import { PlayerRole } from 'core/player/player_props';
+import { PlayerId, PlayerRole } from 'core/player/player_props';
 import { MarkEnum } from 'core/shares/types/mark_list';
 import { Skill, TriggerSkill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -135,9 +135,9 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     );
   }
 
-  private getSkillTags() {
+  private getSkillTags(viewer: PlayerId) {
     const { translator, presenter } = this.props;
-    const flags = presenter.ClientPlayer && presenter.ClientPlayer.getAllVisibleTags();
+    const flags = presenter.ClientPlayer && presenter.ClientPlayer.getAllVisibleTags(viewer);
     return (
       flags && (
         <div className={styles.skillTags}>
@@ -204,7 +204,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   }
 
   getSideEffectSkills() {
-    const { translator, imageLoader, store } = this.props;
+    const { translator, imageLoader, store, isSkillDisabled } = this.props;
 
     const player = this.props.presenter.ClientPlayer;
     if (player === undefined || player.CharacterId === undefined) {
@@ -225,7 +225,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
             size="normal"
             key={index}
             className={classNames(styles.playerSkill, styles.sideSkill)}
-            disabled={this.props.store.room.isGameOver() || !skill.canUse(this.props.store.room, player)}
+            disabled={this.props.store.room.isGameOver() || isSkillDisabled(skill)}
             onClick={this.onClickSkill(skill)}
           />
         );
@@ -401,7 +401,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     const marks: JSX.Element[] = [];
     const limitSkills = clientPlayer.getSkills('limit');
     const awakenSkills = clientPlayer.getSkills('awaken');
-    const switchSkills = clientPlayer.getSkills('switch').filter(skill => skill.isSwitchable());
+    const switchSkills = clientPlayer.getSkills('switch').filter(skill => !skill.isShadowSkill());
     marks.push(
       ...limitSkills.map(skill => (
         <LimitSkillMark
@@ -511,7 +511,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
             <Hp hp={clientPlayer.Hp} className={styles.playerHp} maxHp={clientPlayer.MaxHp} size="regular" />
           )}
           <div className={styles.playerTags}>
-            {this.getSkillTags()}
+            {clientPlayer && this.getSkillTags(clientPlayer.Id)}
             {this.getOutsideAreaCards()}
           </div>
           {this.onTooltipOpened && clientPlayer?.CharacterId !== undefined && (

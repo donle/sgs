@@ -214,13 +214,13 @@ export const promptDescriptions: Word[] = [
 
   {
     source: '{0}: please choose kuizhu options: {1}',
-    target: '{0}：你可以令你一至 {1} 名角色各摸一張牌，或對至少一名體力值之和為 {1} 的角色各造成1點傷害',
+    target: '{0}：你可以令你至多 {1} 名角色各摸一張牌，或對至少一名體力值之和為 {1} 的角色各造成1點傷害',
   },
   { source: 'kuizhu:draw', target: '摸牌' },
   { source: 'kuizhu:damage', target: '傷害' },
   {
-    source: '{0}: do you want to choose at least {1} targets to draw a card each?',
-    target: '{0}：你可以令一至 {1} 名角色各摸一張牌',
+    source: '{0}: do you want to choose at most {1} targets to draw a card each?',
+    target: '{0}：你可以令至多 {1} 名角色各摸一張牌',
   },
   {
     source: '{0}: do you want to choose a targets with {1} hp to deal 1 damage to each target?',

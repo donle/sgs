@@ -33,13 +33,16 @@ export class TunJiang extends TriggerSkill {
           );
         },
         owner.Id,
-        true,
+        'round',
         [PlayerPhase.PlayCardStage],
+        1,
       ).length === 0 &&
       room.Analytics.getRecordEvents<GameEventIdentifiers.PhaseSkippedEvent>(
         event => event.playerId === owner.Id && event.skippedPhase === PlayerPhase.PlayCardStage,
         owner.Id,
-        true,
+        'round',
+        undefined,
+        1,
       ).length === 0
     );
   }

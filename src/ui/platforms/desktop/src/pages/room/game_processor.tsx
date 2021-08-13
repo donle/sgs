@@ -308,6 +308,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.AbortOrResumePlayerSectionsEvent:
         await this.onHandleAbortOrResumePlayerSectionsEvent(e as any, content);
         break;
+      case GameEventIdentifiers.AbortOrResumePlayerJudgeAreaEvent:
+        await this.onHandleAbortOrResumePlayerJudgeAreaEvent(e as any, content);
+        break;
       case GameEventIdentifiers.DrunkEvent:
         await this.onHandleDrunkEvent(e as any, content);
         break;
@@ -356,7 +359,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.store.room.getPlayerById(content.to).setFlag(content.name, content.value, content.tagName);
+    this.store.room.getPlayerById(content.to).setFlag(content.name, content.value, content.tagName, content.visiblePlayers);
   }
   protected async onHandleRemoveFlagEvent<T extends GameEventIdentifiers.RemoveFlagEvent>(
     type: T,
@@ -976,6 +979,7 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     this.store.room.onPhaseTo(content.toPlayer, content.to);
+    this.store.room.Analytics.turnToNextPhase();
     if (content.to === PlayerPhase.PhaseBegin) {
       // content.fromPlayer && this.presenter.isSkillDisabled(PlayPhaseAction.disableSkills);
       this.store.room.turnTo(content.toPlayer);
@@ -1634,6 +1638,20 @@ export class GameClientProcessor {
       to.resumeEquipSections(...toSections);
     } else {
       to.abortEquipSections(...toSections);
+    }
+
+    this.presenter.broadcastUIUpdate();
+  }
+
+  protected async onHandleAbortOrResumePlayerJudgeAreaEvent<
+    T extends GameEventIdentifiers.AbortOrResumePlayerJudgeAreaEvent
+  >(type: T, content: ServerEventFinder<T>) {
+    const { toId, isResumption } = content;
+    const to = this.store.room.getPlayerById(toId);
+    if (isResumption) {
+      to.resumeJudgeArea();
+    } else {
+      to.abortJudgeArea();
     }
 
     this.presenter.broadcastUIUpdate();

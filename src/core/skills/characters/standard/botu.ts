@@ -15,7 +15,7 @@ export class BoTu extends TriggerSkill {
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
     if (owner.Id === content.playerId && PlayerPhaseStages.PhaseFinishEnd === content.toStage) {
       return (
-        room.Analytics.getUsedCard(owner.Id, true, [PlayerPhase.PlayCardStage]).reduce<CardSuit[]>(
+        room.Analytics.getUsedCard(owner.Id, 'round', [PlayerPhase.PlayCardStage]).reduce<CardSuit[]>(
           (allSuits, cardId) => {
             const card = Sanguosha.getCardById(cardId);
             if (!allSuits.includes(card.Suit) && card.Suit !== CardSuit.NoSuit) {

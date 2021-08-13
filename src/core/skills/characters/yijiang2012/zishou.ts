@@ -98,7 +98,9 @@ export class ZiShouReforge extends TriggerSkill {
           );
         },
         owner.Id,
-        true,
+        'round',
+        undefined,
+        1,
       ).length === 0
     );
   }
