@@ -91,6 +91,7 @@ export class FireAttackSkill extends ActiveSkill implements ExtralCardSkillPrope
     );
 
     room.broadcast(GameEventIdentifiers.CardDisplayEvent, {
+      fromId: toId,
       displayCards: selectedCards,
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} display hand card {1}',

@@ -67,7 +67,6 @@ function skillPropertyWrapper(
     private switchSkill: boolean;
     private switchable: boolean;
     private ai?: BaseSkillTrigger;
-    public canUse: (room: Room, owner: Player, content?: ServerEventFinder<GameEventIdentifiers>) => boolean;
 
     constructor() {
       super();

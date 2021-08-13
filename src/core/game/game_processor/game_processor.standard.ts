@@ -1883,7 +1883,9 @@ export class StandardGameProcessor extends GameProcessor {
       this.room.bury(...cardIds);
     } else if (toArea === CardMoveArea.ProcessingArea) {
       const processingCards = cardIds.filter(cardId => !this.room.isCardOnProcessing(cardId));
-      this.room.addProcessingCards(processingCards.join('+'), ...processingCards);
+      if (processingCards.length > 0) {
+        this.room.addProcessingCards(processingCards.join('+'), ...processingCards);
+      }
     } else {
       if (to) {
         if (toArea === CardMoveArea.EquipArea) {
@@ -1933,7 +1935,22 @@ export class StandardGameProcessor extends GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.JudgeEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    this.room.addProcessingCards(event.judgeCardId.toString(), event.judgeCardId);
+    let fromArea: CardMoveArea = CardMoveArea.DrawStack;
+    const ownerId = this.room.getCardOwnerId(event.judgeCardId);
+    if (ownerId) {
+      const cardArea = (this.room.getPlayerById(ownerId).cardFrom(event.judgeCardId) as any) as
+        | CardMoveArea
+        | undefined;
+      fromArea = cardArea === undefined ? fromArea : cardArea;
+    }
+
+    await this.room.moveCards({
+      movingCards: [{ card: event.judgeCardId, fromArea }],
+      moveReason: CardMoveReason.ActiveMove,
+      toArea: CardMoveArea.ProcessingArea,
+      proposer: event.toId,
+      movedByReason: CardMovedBySpecifiedReason.JudgeProcess,
+    });
 
     await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       const { toId, bySkill, byCard, judgeCardId } = event;

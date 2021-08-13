@@ -338,21 +338,18 @@ export abstract class Player implements PlayerInfo {
   private hasCardOrSubCardsInCards(sectionCards: CardId[], cardId: CardId) {
     const index = sectionCards.findIndex(sectionCardId => sectionCardId === cardId);
     if (index >= 0) {
-      return index;
+      return true;
     }
 
     if (Card.isVirtualCardId(cardId)) {
       const targetCardRealCards = VirtualCard.getActualCards([cardId]);
-      return sectionCards.findIndex(sectionCardId => {
-        const realCards = VirtualCard.getActualCards([sectionCardId]);
-        if (Algorithm.equals(realCards, targetCardRealCards)) {
-          return true;
-        }
-        return false;
-      });
-    } else {
-      return sectionCards.findIndex(sectionCardId => VirtualCard.getActualCards([sectionCardId]).includes(cardId));
+      return (
+        Algorithm.intersection(VirtualCard.getActualCards(sectionCards), targetCardRealCards).length ===
+        targetCardRealCards.length
+      );
     }
+
+    return false;
   }
 
   dropCards(...cards: CardId[]): CardId[] {
@@ -383,10 +380,18 @@ export abstract class Player implements PlayerInfo {
           continue;
         }
 
-        const index = this.hasCardOrSubCardsInCards(areaCards, card);
-        if (index >= 0) {
+        if (this.hasCardOrSubCardsInCards(areaCards, card)) {
           droppedCardIds.push(card);
-          areaCards.splice(index, 1);
+          if (areaCards.includes(card)) {
+            const index = areaCards.findIndex(c => c === card);
+            areaCards.splice(index, 1);
+          } else {
+            const realCards = VirtualCard.getActualCards([card]);
+            for (const realCard of realCards) {
+              const index = areaCards.findIndex(areaCard => VirtualCard.getActualCards([areaCard]).includes(realCard));
+              areaCards.splice(index, 1);
+            }
+          }
         }
       }
     }
