@@ -48,6 +48,8 @@ export class PveJieNu extends TriggerSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId } = event;
+    let jienudamage = 0;
+    let jienurecover = 0;
     const unknownEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers>;
     const identifier = EventPacker.getIdentifier(unknownEvent);
     if (
@@ -55,22 +57,40 @@ export class PveJieNu extends TriggerSkill {
       (identifier === GameEventIdentifiers.PhaseStageChangeEvent &&
         room.getPlayerById(fromId).Hp < room.getPlayerById(fromId).LostHp)
     ) {
+      if (identifier === GameEventIdentifiers.DamageEvent) {
+        const damageEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
+        if (damageEvent.damageType === DamageType.Normal) {
+          jienudamage = 0;
+          jienurecover = 0;
+        } else if (damageEvent.damageType === DamageType.Fire) {
+          jienudamage++;
+        } else if (damageEvent.damageType === DamageType.Thunder) {
+          jienurecover++;
+        }
+      }
+      if (jienudamage > 4 || jienurecover > 4) {
+        jienudamage = 0;
+        jienurecover = 0;
+      }
+      room.setFlag(fromId, 'jienudamage', jienudamage);
+      room.setFlag(fromId, 'jienurecover', jienurecover);
       await room.turnOver(fromId);
     }
 
     if (identifier === GameEventIdentifiers.PlayerTurnOverEvent) {
-      if (room.getPlayerById(fromId).isFaceUp()) {
-        await room.recover({ recoveredHp: 1, recoverBy: fromId, toId: fromId });
-      } else {
-        for (const player of room.getOtherPlayers(fromId)) {
-          await room.damage({
-            fromId,
-            toId: player.Id,
-            damage: 1,
-            damageType: DamageType.Fire,
-            triggeredBySkills: [this.Name],
-          });
-        }
+      await room.recover({
+        recoveredHp: room.getPlayerById(fromId).getFlag('jienurecover') ? 0 : 1,
+        recoverBy: fromId,
+        toId: fromId,
+      });
+      for (const player of room.getOtherPlayers(fromId)) {
+        await room.damage({
+          fromId,
+          toId: player.Id,
+          damage: room.getPlayerById(fromId).getFlag('jienudamage') ? 1 : 2,
+          damageType: DamageType.Fire,
+          triggeredBySkills: [this.Name],
+        });
       }
     }
     return true;
