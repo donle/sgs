@@ -6,6 +6,7 @@ import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'guanwei', description: 'guanwei_description' })
 export class GuanWei extends TriggerSkill {
@@ -13,11 +14,18 @@ export class GuanWei extends TriggerSkill {
     return stage === PlayerPhase.PhaseBegin;
   }
 
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage): boolean {
+  public isTriggerable(
+    event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
+    stage?: AllStage,
+  ): boolean {
     return stage === PhaseStageChangeStage.StageChanged;
   }
 
-  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>): boolean {
+  public canUse(
+    room: Room,
+    owner: Player,
+    content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
+  ): boolean {
     let canUse = content.toStage === PlayerPhaseStages.PlayCardStageEnd && !owner.hasUsedSkill(this.Name);
     if (canUse) {
       const events = room.Analytics.getCardUseRecord(content.playerId, 'round');
@@ -36,7 +44,7 @@ export class GuanWei extends TriggerSkill {
         canUse = false;
       }
     }
-    
+
     return canUse;
   }
 
@@ -46,6 +54,18 @@ export class GuanWei extends TriggerSkill {
 
   public isAvailableCard() {
     return true;
+  }
+
+  public getSkillLog(
+    room: Room,
+    owner: Player,
+    event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
+  ): PatchedTranslationObject {
+    return TranslationPack.translationJsonPatcher(
+      '{0}: do you want to drop a card to let {1} draw 2 cards and gain an extra play phase?',
+      this.Name,
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.playerId)),
+    ).extract();
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -60,7 +80,7 @@ export class GuanWei extends TriggerSkill {
     const toId = (event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>).playerId;
 
     await room.dropCards(CardMoveReason.SelfDrop, cardIds, fromId, fromId, this.Name);
-    
+
     await room.drawCards(2, toId, 'top', fromId, this.Name);
     room.insertPlayerPhase(toId, PlayerPhase.PlayCardStage);
 

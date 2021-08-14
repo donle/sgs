@@ -88,6 +88,7 @@ export class SheYan extends TriggerSkill {
           this.Name,
           TranslationPack.patchCardInTranslation(aimEvent.byCardId),
         ).extract(),
+        triggeredBySkills: [this.Name],
       },
       fromId,
     );

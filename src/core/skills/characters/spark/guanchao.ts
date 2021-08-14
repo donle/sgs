@@ -49,7 +49,7 @@ export class GuanChao extends TriggerSkill {
       {
         options,
         toId: fromId,
-        conversation: 'qiaoshuo: please select',
+        conversation: 'guanchao: please choose one option',
         triggeredBySkills: [this.Name],
       },
       fromId,

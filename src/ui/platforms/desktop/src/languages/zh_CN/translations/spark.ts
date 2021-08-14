@@ -19,6 +19,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'yanjun', target: '严畯' },
   { source: 'guanchao', target: '观潮' },
+  { source: '#guanchao', target: '观潮' },
   { source: 'guanchao increase', target: '观潮 增' },
   { source: 'guanchao decrease', target: '观潮 减' },
   { source: 'guanchao increase: {0}', target: '观潮 增[{0}]' },
@@ -78,8 +79,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'xunxian_description',
-    target:
-      '每回合限一次，当你于回合外使用或打出的牌进入弃牌堆后，你可以将这些牌交给手牌数大于你的一名角色。',
+    target: '每回合限一次，当你于回合外使用或打出的牌进入弃牌堆后，你可以将这些牌交给手牌数大于你的一名角色。',
   },
 
   {
@@ -100,6 +100,34 @@ export const skillDescriptions: Word[] = [
 ];
 
 export const promptDescriptions: Word[] = [
+  {
+    source: '{0}: please remove a ‘Dao’',
+    target: '{0}：请选择一张“刀”移去',
+  },
+
+  {
+    source: '{0}: you can show a hand card and exchange this card for {1}',
+    target: '{0}：你可以展示一张牌并交换 {1}',
+  },
+
+  {
+    source: '{0}: do you want to drop a card to let {1} draw 2 cards and gain an extra play phase?',
+    target: '{0}：你可以弃置一张牌，令 {1} 摸两张牌并执行一个额外的出牌阶段',
+  },
+
+  {
+    source: 'guanchao: please choose one option',
+    target: '观潮：请选择你此阶段内须满足的点数形式。',
+  },
   { source: 'guanchao:increase', target: '递增' },
   { source: 'guanchao:decrease', target: '递减' },
+
+  {
+    source: '{0}: do you want to give {1} to another player?',
+    target: '{0}：你可以将 {1} 交给手牌数大于你的一名角色',
+  },
+  {
+    source: '{0}: do you want to give {1} cards to another player?',
+    target: '{0}：你可以将 {1} 等牌交给手牌数大于你的一名角色',
+  },
 ];

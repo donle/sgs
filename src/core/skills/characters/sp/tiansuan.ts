@@ -117,6 +117,7 @@ export class TianSuan extends ActiveSkill implements OnDefineReleaseTiming {
         options,
         conversation: TranslationPack.translationJsonPatcher('{0}: do you want to add a stick?', this.Name).extract(),
         toId: fromId,
+        triggeredBySkills: [this.Name],
       },
       fromId,
     );

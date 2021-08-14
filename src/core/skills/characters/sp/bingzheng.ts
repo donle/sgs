@@ -67,6 +67,7 @@ export class BingZheng extends TriggerSkill {
           TranslationPack.patchPlayerInTranslation(to),
         ).extract(),
         toId: fromId,
+        triggeredBySkills: [this.Name],
       },
       fromId,
       true,

@@ -15,6 +15,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'mifuren', target: '糜夫人' },
   { source: 'cunsi', target: '存嗣' },
+  { source: 'cunsi damage: {0}', target: '存嗣[{0}]' },
   { source: 'guixiu', target: '閨秀' },
 
   { source: 'wangfuzhaolei', target: '王甫趙累' },
@@ -48,6 +49,17 @@ export const skillDescriptions: Word[] = [
     source: 'xunyi_description',
     target:
       '遊戲開始時，你可以選擇一名其他角色，其獲得“義”標記：當你或其造成傷害後，對方摸一張牌；當你或其受到傷害後，對方棄置一張牌（你和其對對方造成的傷害除外）。當其死亡時，你可以移動此“義”。',
+  },
+
+  {
+    source: 'cunsi_description',
+    target:
+      '出牌階段限一次，你可以將武將牌翻至背面朝上，並令一名角色從牌堆和棄牌堆中隨機獲得一張【殺】，且其使用的下一張【殺】傷害基數+1。',
+  },
+  {
+    source: 'guixiu_description',
+    target:
+      '<b>鎖定技</b>，當你受到傷害後，你將武將牌翻至正面朝上；當你的武將牌翻至正面朝上後，你摸一張牌。',
   },
 
   {

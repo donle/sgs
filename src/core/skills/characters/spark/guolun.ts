@@ -52,6 +52,7 @@ export class GuoLun extends ActiveSkill {
       fromId,
       toId: toIds![0],
       options,
+      triggeredBySkills: [this.Name],
     });
 
     const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(
@@ -93,7 +94,7 @@ export class GuoLun extends ActiveSkill {
             TranslationPack.patchCardInTranslation(response.selectedCard),
           ).extract(),
           fromArea: [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
-          triggeredBySkills: [this.GeneralName],
+          triggeredBySkills: [this.Name],
         },
         fromId,
         true,
