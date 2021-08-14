@@ -205,7 +205,7 @@ export class SmartAI extends PlayerAI {
     const { toId, cardMatcher } = content as ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>;
     const toPlayer = room.getPlayerById(toId);
     let availableCards = AiLibrary.findCardsByMatcher(room, toPlayer, new CardMatcher(cardMatcher)).filter(cardId =>
-      toPlayer.canUseCard(room, cardId),
+      toPlayer.canUseCard(room, cardId, new CardMatcher(cardMatcher)),
     );
     for (const skill of toPlayer.getSkills<FilterSkill>('filter')) {
       availableCards = availableCards.filter(cardId => skill.canUseCard(cardId, room, toPlayer.Id));

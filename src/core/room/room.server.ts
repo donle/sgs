@@ -517,7 +517,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         });
       }
     }
-    
   }
 
   public async onReceivingAsyncResponseFrom<T extends GameEventIdentifiers>(
@@ -910,10 +909,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         let aimEvent: ServerEventFinder<GameEventIdentifiers.AimEvent>;
         let initialEvent = false;
         collabroatorsIndex[toId] = collabroatorsIndex[toId] || 0;
-        if (
-          !aimEventCollaborators[toId] ||
-          collabroatorsIndex[toId] >= aimEventCollaborators[toId].length
-        ) {
+        if (!aimEventCollaborators[toId] || collabroatorsIndex[toId] >= aimEventCollaborators[toId].length) {
           aimEvent = EventPacker.createIdentifierEvent(GameEventIdentifiers.AimEvent, {
             fromId: event.fromId,
             byCardId: event.cardId,
@@ -996,6 +992,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     await super.useCard(event);
 
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, event, async stage => {
+      if (
+        stage !== CardUseStage.CardUseFinishedEffect &&
+        !(Sanguosha.getCardById(event.cardId).Skill instanceof ResponsiveSkill) &&
+        TargetGroupUtil.getRealTargets(event.targetGroup).length === 0
+      ) {
+        return true;
+      }
+
       if (stage === CardUseStage.AfterCardUseEffect) {
         const card = Sanguosha.getCardById(event.cardId);
         const aimEventCollaborators: { [player: string]: ServerEventFinder<GameEventIdentifiers.AimEvent>[] } = {};
@@ -1924,7 +1928,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   public async abortPlayerJudgeArea(playerId: PlayerId) {
     const player = this.getPlayerById(playerId);
     const judgeAreaCards = player.getCardIds(PlayerCardsArea.JudgeArea);
-    judgeAreaCards.length > 0 && await this.dropCards(CardMoveReason.PlaceToDropStack, judgeAreaCards, playerId, playerId);
+    judgeAreaCards.length > 0 &&
+      (await this.dropCards(CardMoveReason.PlaceToDropStack, judgeAreaCards, playerId, playerId));
 
     player.abortJudgeArea();
 

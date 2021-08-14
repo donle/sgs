@@ -232,7 +232,7 @@ export abstract class AiLibrary {
       if (askedByCard.Name === 'wanjianqifa') {
         return availableCards.length > 1;
       }
-      if (askedByCard.Name === 'slash') {
+      if (askedByCard.GeneralName === 'slash') {
         const useFrom = cardUseFrom ? room.getPlayerById(cardUseFrom) : undefined;
         if (useFrom?.hasDrunk()) {
           return true;
@@ -291,6 +291,10 @@ export abstract class AiLibrary {
     if (byCardId !== undefined) {
       if (cardMatcher.name?.includes('wuxiekeji')) {
         return AiLibrary.shouldUseWuXieKeJi(room, aiPlayer, availableCards, byCardId, cardUseFrom)
+          ? availableCards
+          : [];
+      } else if (cardMatcher.name?.includes('jink')) {
+        return AiLibrary.shouldUseJink(room, aiPlayer, availableCards, byCardId, cardUseFrom)
           ? availableCards
           : [];
       }
