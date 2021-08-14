@@ -49,7 +49,7 @@ export class TieSuoLianHuanSkillTrigger extends ActiveSkillTriggerClass<TieSuoLi
     );
 
     const targets = this.filterTargets(room, ai, skill, skillInCard!, enemies);
-    if (targets.length === 0) {
+    if (targets.length <= 1) {
       return;
     }
 

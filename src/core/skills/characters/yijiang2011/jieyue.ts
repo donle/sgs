@@ -102,6 +102,7 @@ export class JieYue extends TriggerSkill {
           cardFilter: System.AskForChoosingCardEventFilter.JieYue,
           involvedTargets: [toId],
           customTitle: this.Name,
+          triggeredBySkills: [this.Name],
         });
 
         room.notify(GameEventIdentifiers.AskForChoosingCardWithConditionsEvent, askForDiscards, toId);

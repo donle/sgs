@@ -32,6 +32,7 @@ export class ChengXiang extends TriggerSkill {
       },
       cardFilter: System.AskForChoosingCardEventFilter.ChengXiang,
       customTitle: this.Name,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingCardWithConditionsEvent, askForChooseCard, fromId);

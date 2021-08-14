@@ -67,6 +67,9 @@ export abstract class PlayerAI {
   protected abstract onAskForContinuouslyChoosingCardEvent<
     T extends GameEventIdentifiers.AskForContinuouslyChoosingCardEvent
   >(content: ServerEventFinder<T>, room: Room): ClientEventFinder<T>;
+  protected abstract onAskForChoosingCardWithConditionsEvent<
+    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent
+  >(content: ServerEventFinder<T>, room: Room): ClientEventFinder<T>;
 
   onAction(room: Room, e: GameEventIdentifiers, content: ServerEventFinder<typeof e>): ClientEventFinder<typeof e> {
     switch (e) {
@@ -117,6 +120,9 @@ export abstract class PlayerAI {
       }
       case GameEventIdentifiers.AskForContinuouslyChoosingCardEvent: {
         return this.onAskForContinuouslyChoosingCardEvent(content as any, room);
+      }
+      case GameEventIdentifiers.AskForChoosingCardWithConditionsEvent: {
+        return this.onAskForChoosingCardWithConditionsEvent(content as any, room);
       }
       default:
     }

@@ -13,7 +13,7 @@
     position: absolute;
     z-index: 1;
     opacity: 0;
-    transition: transform 0.5s, opacity 0.3s;
+    transition: transform 0.5s, opacity 0.3s, width 0.3s;
 }
 .displayedCard.focused {
     z-index: 3;

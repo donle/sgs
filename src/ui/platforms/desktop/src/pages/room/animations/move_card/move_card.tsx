@@ -59,7 +59,7 @@ export class MoveCard extends React.Component<MoveCardProps> {
         {this.props.store.displayedCards.map((displayCard, index) => {
           return (
             <ClientCard
-              id={displayCard.card.Id.toString()}
+              id={displayCard.animationPlayed ? undefined : displayCard.card.Id.toString()}
               imageLoader={this.props.imageLoader}
               key={index}
               card={displayCard.card}

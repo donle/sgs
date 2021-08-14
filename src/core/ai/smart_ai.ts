@@ -6,6 +6,7 @@ import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder
 import { Sanguosha } from 'core/game/engine';
 import { PlayerCardsArea } from 'core/player/player_props';
 import type { Room } from 'core/room/room';
+import { System } from 'core/shares/libs/system';
 import { ActiveSkill, FilterSkill, TriggerSkill } from 'core/skills/skill';
 import { PlayerAI } from './ai';
 import { AiLibrary } from './ai_lib';
@@ -601,5 +602,75 @@ export class SmartAI extends PlayerAI {
     };
 
     return chooseCard;
+  }
+
+  protected onAskForChoosingCardWithConditionsEvent<
+    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent
+  >(content: ServerEventFinder<T>, room: Room): ClientEventFinder<T> {
+    const { amount, customCardFields, cardIds, cardFilter, involvedTargets, triggeredBySkills } = content;
+
+    for (const skillName of triggeredBySkills!) {
+      const skill = Sanguosha.getSkillBySkillName(skillName);
+      const aiSkill = skill.tryToCallAiTrigger();
+
+      const response = aiSkill?.onAskForChoosingCardWithConditionsEvent?.(content, room);
+      if (response) {
+        return response;
+      }
+    }
+
+    if (!EventPacker.isUncancellabelEvent(content)) {
+      return {
+        fromId: content.toId,
+      };
+    }
+
+    const selectedCards: CardId[] = [];
+    let selectedCardsIndex: number[] = [];
+    const cardAmount = amount instanceof Array ? amount[0] : amount;
+
+    if (cardIds !== undefined) {
+      if (cardIds instanceof Array) {
+        selectedCards.push(...cardIds.slice(0, cardAmount));
+      } else {
+        selectedCardsIndex = Array.from(Array(cardAmount).keys());
+      }
+    } else if (cardFilter !== undefined) {
+      const matcher = System.AskForChoosingCardEventFilters[cardFilter];
+      const allCards: CardId[] = [];
+      for (const cards of Object.values(customCardFields!)) {
+        if (cards instanceof Array) {
+          allCards.push(...cards);
+        }
+      }
+
+      for (const cards of Object.values(customCardFields!)) {
+        if (cards instanceof Array) {
+          for (const card of cards) {
+            if (cardAmount && selectedCardsIndex.length + selectedCards.length === cardAmount) {
+              break;
+            }
+            if (
+              !matcher(
+                allCards,
+                selectedCards,
+                card,
+                involvedTargets?.map(target => room.getPlayerById(target)),
+              )
+            ) {
+              selectedCards.push(card);
+            }
+          }
+        } else {
+          selectedCardsIndex.push(...Array.from(Array(cardAmount).keys()).map(id => id + selectedCardsIndex.length));
+        }
+      }
+    }
+
+    return {
+      fromId: content.toId,
+      selectedCards,
+      selectedCardsIndex,
+    };
   }
 }

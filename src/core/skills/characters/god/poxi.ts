@@ -63,6 +63,7 @@ export class PoXi extends ActiveSkill {
       },
       customTitle: this.Name,
       amount: 4,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingCardWithConditionsEvent, askForCards, from.Id);

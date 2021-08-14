@@ -1160,7 +1160,7 @@ export class GameClientProcessor {
     ) {
       for (const movingCard of movingCards) {
         for (const cardId of VirtualCard.getActualCards([movingCard.card])) {
-          if (this.store.displayedCards.find(cardInfo => cardInfo.card.Id === cardId)) {
+          if (this.store.displayedCards.find(cardInfo => cardInfo.card.Id === cardId && !cardInfo.tag)) {
             continue;
           }
 

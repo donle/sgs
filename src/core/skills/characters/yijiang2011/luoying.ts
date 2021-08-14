@@ -52,6 +52,7 @@ export class LuoYing extends TriggerSkill {
       cardIds: luoyingCard,
       toId: skillEffectEvent.fromId,
       customTitle: this.GeneralName,
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(

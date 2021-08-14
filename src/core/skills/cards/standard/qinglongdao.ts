@@ -51,7 +51,7 @@ export class QingLongYanYueDaoSkill extends TriggerSkill {
           TranslationPack.patchPlayerInTranslation(from),
           this.Name,
         ).extract(),
-        triggeredBySkills: [this.Name],
+        triggeredBySkills: [Sanguosha.getCardById(slashEffectEvent.cardId).Name],
       };
 
       await room.useCard(slashEvent, true);

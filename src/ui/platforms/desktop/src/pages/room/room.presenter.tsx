@@ -256,8 +256,24 @@ export class RoomPresenter {
 
   @mobx.action
   showCards(...cards: DisplayCardProp[]) {
-    if (this.store.displayedCards.length >= 7) {
-      this.store.displayedCards = [];
+    if (this.store.displayedCards.length > 7) {
+      const deletedCards: DisplayCardProp[] = [];
+      for (let i = 0; i < 7; i++) {
+        const cardInfo = this.store.displayedCards[i];
+        this.store.displayedCardsAnimationStyles[cardInfo.card.Id] =
+          this.store.displayedCardsAnimationStyles[cardInfo.card.Id] || {};
+        this.store.displayedCardsAnimationStyles[cardInfo.card.Id].opacity = 0;
+        deletedCards.push(cardInfo);
+      }
+      setTimeout(
+        mobx.action(() => {
+          for (const cardInfo of deletedCards) {
+            this.store.displayedCardsAnimationStyles[cardInfo.card.Id] = {};
+          }
+          this.store.displayedCards = this.store.displayedCards.filter(card => !deletedCards.includes(card));
+        }),
+        600,
+      );
     }
 
     for (const card of cards) {
@@ -307,14 +323,13 @@ export class RoomPresenter {
       this.store.displayedCardsAnimationStyles[cardInfo.card.Id] || {};
 
     const cardStyle = this.store.displayedCardsAnimationStyles[cardInfo.card.Id];
-    cardStyle.transition = 'unset';
-    cardStyle.zIndex = 9;
-
     const originalPosition = this.getCardElementPosition(cardInfo.card.Id);
 
     if (from) {
+      cardStyle.transition = 'unset';
       cardStyle.transform = `translate(${from.x - originalPosition.x}px, ${from.y - originalPosition.y}px)`;
     } else {
+      delete cardStyle.transition;
       cardStyle.opacity = 1;
       return;
     }

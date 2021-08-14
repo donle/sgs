@@ -71,4 +71,9 @@ export class BaseSkillTrigger {
     content: ServerEventFinder<T>,
     room: Room,
   ): ClientEventFinder<T> | undefined;
+
+  onAskForChoosingCardWithConditionsEvent?<T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent>(
+    content: ServerEventFinder<T>,
+    room: Room,
+  ): ClientEventFinder<T> | undefined;
 }

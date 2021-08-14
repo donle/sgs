@@ -47,6 +47,7 @@ export class PoJun extends TriggerSkill {
       },
       customTitle: this.Name,
       amount: [1, to.Hp],
+      triggeredBySkills: [this.Name],
     };
 
     room.notify(GameEventIdentifiers.AskForChoosingCardWithConditionsEvent, askForPoJunCards, skillEffectEvent.fromId);
