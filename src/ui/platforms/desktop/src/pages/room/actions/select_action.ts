@@ -90,7 +90,7 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
     });
   }
 
-  onSelectCardTargets(cardId: CardId, exclude: PlayerId[]) {
+  onSelectCardTargets(user, cardId: CardId, exclude: PlayerId[]) {
     return new Promise<PlayerId[] | undefined>(resolve => {
       this.presenter.delightPlayers(true);
 

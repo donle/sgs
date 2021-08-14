@@ -41,14 +41,11 @@ export class BaGuaZhenSkill extends TriggerSkill {
     }
 
     const { cardMatcher } = content;
+    const jinkMatcher = new CardMatcher({ name: ['jink'] });
     return (
       owner.Id === content.toId &&
-      CardMatcher.match(
-        cardMatcher,
-        new CardMatcher({
-          name: ['jink'],
-        }),
-      )
+      CardMatcher.match(cardMatcher, jinkMatcher) &&
+      owner.canUseCard(room, jinkMatcher, jinkMatcher)
     );
   }
 

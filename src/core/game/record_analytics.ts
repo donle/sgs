@@ -159,7 +159,7 @@ export class RecordAnalytics {
   }
 
   public getRecoveredHpRecord(
-    player?: PlayerId,
+    player: PlayerId,
     current?: RecordCurrentType,
     inPhase?: PlayerPhase[],
     num: number = 0,
@@ -173,7 +173,7 @@ export class RecordAnalytics {
     );
   }
   public getDamageRecord(
-    player?: PlayerId,
+    player: PlayerId,
     current?: RecordCurrentType,
     inPhase?: PlayerPhase[],
     num: number = 0,
@@ -187,7 +187,7 @@ export class RecordAnalytics {
     );
   }
   public getDamagedRecord(
-    player?: PlayerId,
+    player: PlayerId,
     current?: RecordCurrentType,
     inPhase?: PlayerPhase[],
     num: number = 0,
@@ -201,7 +201,7 @@ export class RecordAnalytics {
     );
   }
   public getLostHpRecord(
-    player?: PlayerId,
+    player: PlayerId,
     current?: RecordCurrentType,
     inPhase?: PlayerPhase[],
     num: number = 0,
@@ -215,7 +215,7 @@ export class RecordAnalytics {
     );
   }
   public getCardUseRecord(
-    player?: PlayerId,
+    player: PlayerId,
     current?: RecordCurrentType,
     inPhase?: PlayerPhase[],
     num: number = 0,
@@ -229,7 +229,7 @@ export class RecordAnalytics {
     );
   }
   public getCardResponseRecord(
-    player?: PlayerId,
+    player: PlayerId,
     current?: RecordCurrentType,
     inPhase?: PlayerPhase[],
     num: number = 0,
@@ -243,7 +243,7 @@ export class RecordAnalytics {
     );
   }
   public getCardLostRecord(
-    player?: PlayerId,
+    player: PlayerId,
     current?: RecordCurrentType,
     inPhase?: PlayerPhase[],
     num: number = 0,
@@ -266,7 +266,7 @@ export class RecordAnalytics {
     );
   }
   public getCardObtainedRecord(
-    player?: PlayerId,
+    player: PlayerId,
     current?: RecordCurrentType,
     inPhase?: PlayerPhase[],
     num: number = 0,
@@ -283,7 +283,7 @@ export class RecordAnalytics {
     );
   }
   public getCardDrawRecord(
-    player?: PlayerId,
+    player: PlayerId,
     current?: RecordCurrentType,
     inPhase?: PlayerPhase[],
     num: number = 0,
@@ -300,7 +300,7 @@ export class RecordAnalytics {
     );
   }
   public getCardDropRecord(
-    player?: PlayerId,
+    player: PlayerId,
     current?: RecordCurrentType,
     inPhase?: PlayerPhase[],
     num: number = 0,
@@ -317,7 +317,7 @@ export class RecordAnalytics {
     );
   }
   public getCardMoveRecord(
-    player?: PlayerId,
+    player: PlayerId,
     current?: RecordCurrentType,
     inPhase?: PlayerPhase[],
     num: number = 0,
@@ -331,67 +331,67 @@ export class RecordAnalytics {
     );
   }
 
-  public getRecoveredHp(player?: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
+  public getRecoveredHp(player: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
     return this.getRecoveredHpRecord(player, current, inPhase, num).reduce<number>((totalAmount, event) => {
       totalAmount += event.recoveredHp;
       return totalAmount;
     }, 0);
   }
-  public getDamage(player?: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
+  public getDamage(player: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
     return this.getDamageRecord(player, current, inPhase, num).reduce<number>((totalAmount, event) => {
       totalAmount += event.damage;
       return totalAmount;
     }, 0);
   }
-  public getDamaged(player?: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
+  public getDamaged(player: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
     return this.getDamagedRecord(player, current, inPhase, num).reduce<number>((totalAmount, event) => {
       totalAmount += event.damage;
       return totalAmount;
     }, 0);
   }
-  public getLostHp(player?: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
+  public getLostHp(player: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
     return this.getLostHpRecord(player, current, inPhase, num).reduce<number>((totalAmount, event) => {
       totalAmount += event.lostHp;
       return totalAmount;
     }, 0);
   }
-  public getUsedCard(player?: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
+  public getUsedCard(player: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
     return this.getCardUseRecord(player, current, inPhase, num).reduce<CardId[]>((allCards, event) => {
       allCards.push(event.cardId);
       return allCards;
     }, []);
   }
-  public getResponsedCard(player?: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
+  public getResponsedCard(player: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
     return this.getCardResponseRecord(player, current, inPhase, num).reduce<CardId[]>((allCards, event) => {
       allCards.push(event.cardId);
       return allCards;
     }, []);
   }
-  public getLostCard(player?: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
+  public getLostCard(player: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
     return this.getCardLostRecord(player, current, inPhase, num).reduce<MovingCardType[]>((allCards, event) => {
       allCards.push(...event.movingCards);
       return allCards;
     }, []);
   }
-  public getObtainedCard(player?: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
+  public getObtainedCard(player: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
     return this.getCardObtainedRecord(player, current, inPhase, num).reduce<CardId[]>((allCards, event) => {
       allCards.push(...event.movingCards.map(cardInfo => cardInfo.card));
       return allCards;
     }, []);
   }
-  public getDrawedCard(player?: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
+  public getDrawedCard(player: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
     return this.getCardDrawRecord(player, current, inPhase, num).reduce<CardId[]>((allCards, event) => {
       allCards.push(...event.movingCards.map(cardInfo => cardInfo.card));
       return allCards;
     }, []);
   }
-  public getDroppedCard(player?: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
+  public getDroppedCard(player: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
     return this.getCardDropRecord(player, current, inPhase, num).reduce<CardId[]>((allCards, event) => {
       allCards.push(...event.movingCards.map(cardInfo => cardInfo.card));
       return allCards;
     }, []);
   }
-  public getMovedCard(player?: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
+  public getMovedCard(player: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
     return this.getCardMoveRecord(player, current, inPhase, num).reduce<MovingCardType[]>((allCards, event) => {
       allCards.push(...event.movingCards);
       return allCards;

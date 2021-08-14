@@ -8,6 +8,7 @@ import { AimStage, AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/sta
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { AimGroupUtil } from 'core/shares/libs/utils/aim_group';
 import { QingGangSkill } from 'core/skills/cards/standard/qinggang';
 import { ActiveSkill, FilterSkill, RulesBreakerSkill, TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
@@ -211,11 +212,12 @@ export class XianZhenAddTarget extends TriggerSkill implements OnDefineReleaseTi
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
-    const { fromId, byCardId, isFirstTarget, allTargets } = content;
-    if (byCardId === undefined || !isFirstTarget || allTargets === undefined) {
+    const { fromId, byCardId, isFirstTarget } = content;
+    if (byCardId === undefined || !isFirstTarget ) {
       return false;
     }
     const card = Sanguosha.getCardById(byCardId);
+    const allTargets = AimGroupUtil.getAllTargets(content.allTargets);
     return (
       fromId === owner.Id &&
       allTargets.length === 1 &&
@@ -243,7 +245,7 @@ export class XianZhenAddTarget extends TriggerSkill implements OnDefineReleaseTi
     const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
 
     const xianzhenee = room.getFlag<PlayerId>(fromId, XianZhen.Win);
-    aimEvent.allTargets.push(xianzhenee);
+    AimGroupUtil.addTargets(room, aimEvent, xianzhenee);
 
     return true;
   }

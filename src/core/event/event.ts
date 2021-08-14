@@ -92,6 +92,9 @@ export const enum GameEventIdentifiers {
   AbortOrResumePlayerSectionsEvent,
   AbortOrResumePlayerJudgeAreaEvent,
   RefreshOnceSkillEvent,
+
+  HookUpSkillsEvent,
+  UnhookSkillsEvent,
 }
 
 export type CardResponsiveEventIdentifiers =

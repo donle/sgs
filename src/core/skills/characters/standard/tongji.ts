@@ -1,10 +1,10 @@
-import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AimStage, AllStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { AimGroupUtil } from 'core/shares/libs/utils/aim_group';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -30,7 +30,7 @@ export class TongJi extends TriggerSkill {
       event.toId !== owner.Id &&
       event.fromId !== owner.Id &&
       room.withinAttackDistance(to, owner) &&
-      !event.allTargets.includes(owner.Id)
+      !AimGroupUtil.getAllTargets(event.allTargets).includes(owner.Id)
     );
   }
 
@@ -84,12 +84,9 @@ export class TongJi extends TriggerSkill {
 
     await room.dropCards(CardMoveReason.SelfDrop, cardIds!, aimEvent.toId, aimEvent.toId, this.Name);
 
-    const index = aimEvent.allTargets.findIndex(toId => toId === aimEvent.toId);
-    Precondition.assert(index >= 0, `Unable to find source player of ${this.Name}`);
-    aimEvent.allTargets.splice(index, 1);
-    aimEvent.allTargets.push(fromId);
-    room.sortPlayersByPosition(aimEvent.allTargets);
-    aimEvent.toId = fromId;
+    AimGroupUtil.cancelTarget(aimEvent, aimEvent.toId);
+    AimGroupUtil.addTargets(room, aimEvent, fromId);
+    EventPacker.terminate(aimEvent);
 
     return true;
   }

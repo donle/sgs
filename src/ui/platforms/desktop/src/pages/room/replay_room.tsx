@@ -123,6 +123,8 @@ export class ReplayRoomPage extends React.Component<
     GameEventIdentifiers.CustomGameDialog,
     GameEventIdentifiers.NotifyEvent,
     GameEventIdentifiers.UserMessageEvent,
+    GameEventIdentifiers.HookUpSkillsEvent,
+    GameEventIdentifiers.UnhookSkillsEvent,
   ];
 
   private async stepDelay(identifier: GameEventIdentifiers) {

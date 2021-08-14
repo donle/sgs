@@ -189,6 +189,7 @@ export class QiaoShuoWin extends TriggerSkill implements OnDefineReleaseTiming {
         >(
           GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent,
           {
+            user: fromId,
             cardId: cardUseEvent.cardId,
             exclude: realTargets,
             conversation: 'qiaoshuo: please select a player to append to card targets',

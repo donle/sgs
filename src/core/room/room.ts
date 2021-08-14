@@ -150,7 +150,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract turnOver(playerId: PlayerId): Promise<void>;
 
   //Server only
-  public abstract async reforge(cardId: CardId, from: Player): Promise<void>;
+  public abstract reforge(cardId: CardId, from: Player): Promise<void>;
 
   //Server only
   public abstract clearHeaded(toId: PlayerId): void;

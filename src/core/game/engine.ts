@@ -199,6 +199,7 @@ export class Sanguosha {
       GameCharacterExtensions.YiJiang2013,
       GameCharacterExtensions.YiJiang2014,
       GameCharacterExtensions.SP,
+      GameCharacterExtensions.Spark,
       GameCharacterExtensions.Limited,
       GameCharacterExtensions.Biographies,
       GameCharacterExtensions.Wisdom,

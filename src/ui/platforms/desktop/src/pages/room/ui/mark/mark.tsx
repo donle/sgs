@@ -15,6 +15,7 @@ import limitUsedIcon from './images/limit_used.png';
 import nightmareIcon from './images/nightmare.png';
 import wrathIcon from './images/nu.png';
 import orangeIcon from './images/orange.png';
+import ranIcon from './images/ran.png';
 import renIcon from './images/ren.png';
 import switchYangIcon from './images/switch_yang.png';
 import switchYinIcon from './images/switch_yin.png';
@@ -36,6 +37,7 @@ const markIconMaps: {
   [MarkEnum.Orange]: orangeIcon,
   [MarkEnum.PveHuaShen]: nightmareIcon,
   [MarkEnum.Fu]: fuIcon,
+  [MarkEnum.Ran]: ranIcon,
 };
 
 export type MarkProps = {
