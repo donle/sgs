@@ -50,7 +50,7 @@ export class ChuHai extends ActiveSkill {
 
     await room.drawCards(1, fromId, 'top', fromId, this.Name);
 
-    const { pindianRecord } = await room.pindian(fromId, toIds);
+    const { pindianRecord } = await room.pindian(fromId, toIds, this.Name);
     if (!pindianRecord.length) {
       return false;
     }
