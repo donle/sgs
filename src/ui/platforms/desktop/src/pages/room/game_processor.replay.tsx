@@ -130,6 +130,8 @@ export class ReplayClientProcessor extends GameClientProcessor {
           TranslationPack.patchPlayerInTranslation(from),
           tos && TranslationPack.patchPlayerInTranslation(...tos),
         ).toString(),
+        from,
+        to: undefined,
       })),
     );
     this.presenter.broadcastUIUpdate();

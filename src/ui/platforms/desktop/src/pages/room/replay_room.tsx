@@ -1,5 +1,4 @@
 import { AudioLoader } from 'audio_loader/audio_loader';
-import classNames from 'classnames';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { ClientOfflineSocket } from 'core/network/socket.offline';
 import { PlayerInfo } from 'core/player/player_props';
@@ -17,7 +16,6 @@ import { CharacterSkinInfo } from 'skins/skins';
 import { PagePropsWithConfig } from 'types/page_props';
 import { ReplayDataType } from 'types/replay_props';
 import { installAudioPlayerService } from 'ui/audio/install';
-import { ClientCard } from 'ui/card/card';
 import { ReplayClientProcessor } from './game_processor.replay';
 import { installService, RoomBaseService } from './install_service';
 import styles from './room.module.css';
@@ -53,8 +51,6 @@ export class ReplayRoomPage extends React.Component<
   private replayStepDelay = 2000;
   private dumped = false;
 
-  @mobx.observable.ref
-  private focusedCardIndex: number | undefined;
   @mobx.observable.ref
   openSettings = false;
   @mobx.observable.ref
@@ -97,7 +93,7 @@ export class ReplayRoomPage extends React.Component<
     this.presenter = new RoomPresenter(this.props.imageLoader);
     this.store = this.presenter.createStore();
 
-    this.baseService = installService(translator, this.store, this.props.imageLoader);
+    this.baseService = installService(this.props.translator, this.store, this.props.imageLoader);
     this.gameProcessor = new ReplayClientProcessor(
       this.presenter,
       this.store,
@@ -200,7 +196,6 @@ export class ReplayRoomPage extends React.Component<
 
   private animation<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
     this.baseService.Animation.GuideLineAnimation.animate(identifier, event);
-    this.baseService.Animation.MoveCardAnimation.animate(identifier, event);
   }
 
   private showMessageFromEvent(event: ServerEventFinder<GameEventIdentifiers>) {
@@ -234,38 +229,6 @@ export class ReplayRoomPage extends React.Component<
     } else {
       return (totalCards - index - 1) * (this.cardMargin + this.cardWidth) + this.cardMargin * 2 - innerOffset;
     }
-  }
-
-  private readonly onDisplayCardFocused = (index: number) =>
-    mobx.action(() => {
-      this.focusedCardIndex = index;
-    });
-
-  @mobx.action
-  private readonly onDisplayCardLeft = () => {
-    this.focusedCardIndex = undefined;
-  };
-
-  private getDisplayedCard() {
-    return (
-      <div className={styles.displayedCards} ref={this.displayedCardsRef}>
-        {this.store.displayedCards.map((displayCard, index) => (
-          <ClientCard
-            imageLoader={this.props.imageLoader}
-            card={displayCard.card}
-            tag={displayCard.tag}
-            width={this.cardWidth}
-            offsetLeft={this.calculateDisplayedCardOffset(this.store.displayedCards.length, index)}
-            translator={this.props.translator}
-            className={classNames(styles.displayedCard, {
-              [styles.focused]: this.focusedCardIndex === index,
-            })}
-            onMouseEnter={this.onDisplayCardFocused(index)}
-            onMouseLeave={this.onDisplayCardLeft}
-          />
-        ))}
-      </div>
-    );
   }
 
   @mobx.action
@@ -307,7 +270,6 @@ export class ReplayRoomPage extends React.Component<
                 skinData={this.props.skinData}
                 presenter={this.presenter}
                 translator={this.props.translator}
-                gamePad={this.getDisplayedCard()}
               />
               {this.renderSideBoard && (
                 <div className={styles.sideBoard}>

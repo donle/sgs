@@ -1,5 +1,4 @@
 import { AudioLoader } from 'audio_loader/audio_loader';
-import classNames from 'classnames';
 import { clientActiveListenerEvents, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { ClientSocket } from 'core/network/socket.client';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
@@ -17,7 +16,6 @@ import { ConnectionService } from 'services/connection_service/connection_servic
 import { CharacterSkinInfo } from 'skins/skins';
 import { PagePropsWithConfig } from 'types/page_props';
 import { installAudioPlayerService } from 'ui/audio/install';
-import { ClientCard } from 'ui/card/card';
 import { GameClientProcessor } from './game_processor';
 import { installService, RoomBaseService } from './install_service';
 import styles from './room.module.css';
@@ -50,17 +48,12 @@ export class RoomPage extends React.Component<
   private baseService: RoomBaseService;
   private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
 
-  private displayedCardsRef = React.createRef<HTMLDivElement>();
-  private readonly cardWidth = 120;
-  private readonly cardMargin = 2;
   private lastEventTimeStamp: number;
 
   @mobx.observable.ref
   private roomPing: number = 999;
   @mobx.observable.ref
   private gameHostedServer: ServerHostTag;
-  @mobx.observable.ref
-  private focusedCardIndex: number | undefined;
   @mobx.observable.ref
   openSettings = false;
   @mobx.observable.ref
@@ -117,7 +110,7 @@ export class RoomPage extends React.Component<
       mobx.runInAction(() => (this.roomPing = ping));
     }
 
-    this.baseService = installService(translator, this.store, this.props.imageLoader);
+    this.baseService = installService(this.props.translator, this.store, this.props.imageLoader);
     this.gameProcessor = new GameClientProcessor(
       this.presenter,
       this.store,
@@ -227,7 +220,7 @@ export class RoomPage extends React.Component<
 
   private animation<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
     this.baseService.Animation.GuideLineAnimation.animate(identifier, event);
-    this.baseService.Animation.MoveCardAnimation.animate(identifier, event);
+    this.baseService.Animation.MoveInstantCardAnimation.animate(identifier, event);
   }
 
   private showMessageFromEvent(event: ServerEventFinder<GameEventIdentifiers>) {
@@ -243,57 +236,6 @@ export class RoomPage extends React.Component<
     messages.forEach(message => {
       this.presenter.addGameLog(translator.trx(message));
     });
-  }
-
-  private calculateDisplayedCardOffset(totalCards: number, index: number) {
-    const container = this.displayedCardsRef.current;
-    if (!container) {
-      return this.cardMargin;
-    }
-
-    const containerWidth = container.clientWidth;
-    const innerOffset =
-      Math.min(this.cardWidth * totalCards + this.cardMargin * (totalCards + 1), containerWidth) / 2 -
-      this.cardWidth / 2;
-    if (containerWidth < totalCards * (this.cardWidth + this.cardMargin)) {
-      const offset = (totalCards * (this.cardWidth + this.cardMargin) - containerWidth) / (totalCards - 1);
-      return (totalCards - index - 1) * (this.cardMargin + this.cardWidth - offset) - innerOffset;
-    } else {
-      return (totalCards - index - 1) * (this.cardMargin + this.cardWidth) + this.cardMargin * 2 - innerOffset;
-    }
-  }
-
-  private readonly onDisplayCardFocused = (index: number) =>
-    mobx.action(() => {
-      this.focusedCardIndex = index;
-    });
-
-  @mobx.action
-  private readonly onDisplayCardLeft = () => {
-    this.focusedCardIndex = undefined;
-  };
-
-  private getDisplayedCard() {
-    return (
-      <div className={styles.displayedCards} ref={this.displayedCardsRef}>
-        {this.store.displayedCards.map((displayCard, index) => (
-          <ClientCard
-            imageLoader={this.props.imageLoader}
-            key={index}
-            card={displayCard.card}
-            tag={displayCard.tag}
-            width={this.cardWidth}
-            offsetLeft={this.calculateDisplayedCardOffset(this.store.displayedCards.length, index)}
-            translator={this.props.translator}
-            className={classNames(styles.displayedCard, {
-              [styles.focused]: this.focusedCardIndex === index,
-            })}
-            onMouseEnter={this.onDisplayCardFocused(index)}
-            onMouseLeave={this.onDisplayCardLeft}
-          />
-        ))}
-      </div>
-    );
   }
 
   @mobx.action
@@ -337,7 +279,6 @@ export class RoomPage extends React.Component<
                 translator={this.props.translator}
                 onClick={this.store.onClickPlayer}
                 playerSelectableMatcher={this.store.playersSelectionMatcher}
-                gamePad={this.getDisplayedCard()}
               />
               {this.renderSideBoard && (
                 <div className={styles.sideBoard}>

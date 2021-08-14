@@ -53,24 +53,24 @@ export class GuideLine extends UiAnimation {
       const lines = this.render(step);
       this.rooElement.append(...lines.map(line => line[0]));
       for (const [element, length] of lines) {
-        this.play(100, () => {
+        UiAnimation.play(100, () => {
           element.style.transition = `width ${this.animationTime}ms, opacity ${this.defaultAnimationTime}ms`;
           element.style.width = `${length}px`;
           element.style.opacity = '1';
         });
-        this.play(this.remainTime - this.defaultAnimationTime * 2 - 10, () => {
+        UiAnimation.play(this.remainTime - this.defaultAnimationTime * 2 - 10, () => {
           element.style.transition = `opacity ${this.defaultAnimationTime * 2}ms`;
           element.style.opacity = '0';
         });
       }
 
-      this.play(this.remainTime, () => {
+      UiAnimation.play(this.remainTime, () => {
         for (const line of lines) {
           line[0].remove();
         }
       });
 
-      await this.play(this.animationTime + this.defaultAnimationTime);
+      await UiAnimation.play(this.animationTime + this.defaultAnimationTime);
     }
   }
 

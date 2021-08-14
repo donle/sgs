@@ -40,25 +40,6 @@
     z-index: 1000;
 }
 
-.displayedCards {
-    display: flex;
-    position: relative;
-    width: 100%;
-    max-width: 600px;
-    justify-content: center;
-    align-items: center;
-    height: 160px;
-}
-
-.displayedCard {
-    margin: 2px;
-    position: absolute;
-    z-index: 1;
-}
-.displayedCard.focused {
-    z-index: 3;
-}
-
 .roomBanner {
     flex: auto;
 }

@@ -155,6 +155,10 @@ export class Sanguosha {
     const availableCharacters = charactersPool.filter(
       character => !except.includes(character.Id) && (filter ? filter(character) : true),
     );
+    if (availableCharacters.length === 0) {
+      return [];
+    }
+
     for (let i = 0; i < availableCharacters.length; i++) {
       characterIndex.push(i);
     }

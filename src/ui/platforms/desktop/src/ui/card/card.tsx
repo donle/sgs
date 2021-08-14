@@ -13,6 +13,7 @@ import { CardNumberItem } from './card_number';
 import { CardSuitItem } from './card_suit';
 
 export type ClientCardProps = {
+  id?: string;
   card?: Card;
   translator: ClientTranslationModule;
   imageLoader: ImageLoader;
@@ -31,7 +32,7 @@ export type ClientCardProps = {
   onMouseMove?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onMouseLeave?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onMouseEnter?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
-  ref?: string | ((instance: HTMLDivElement | null) => void) | React.RefObject<HTMLDivElement>;
+  cardRef?: ((instance: HTMLDivElement | null) => void) | React.RefObject<HTMLDivElement>;
   selected?: boolean;
 };
 
@@ -45,6 +46,7 @@ export class ClientCard extends React.Component<ClientCardProps> {
   private originalCard: Card | undefined;
   @mobx.observable.ref
   onTooltipOpened: boolean = false;
+
   private onTooltipOpeningTimer: NodeJS.Timer;
 
   private soundTracks: string[] = [];
@@ -169,7 +171,8 @@ export class ClientCard extends React.Component<ClientCardProps> {
 
     return (
       <div
-        ref={this.props.ref}
+        id={this.props.id}
+        ref={this.props.cardRef}
         className={classNames(styles.clientCard, className, {
           [styles.selected]: this.props.selected,
         })}

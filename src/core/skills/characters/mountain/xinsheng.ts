@@ -35,6 +35,10 @@ export class XinSheng extends TriggerSkill {
     const player = room.getPlayerById(skillEffectEvent.fromId);
     const huashenCards = player.getCardIds<CharacterId>(PlayerCardsArea.OutsideArea, HuaShen.GeneralName);
     const huashen = room.getRandomCharactersFromLoadedPackage(1, huashenCards);
+    if (huashen.length === 0) {
+      return false;
+    }
+
     room.setCharacterOutsideAreaCards(
       skillEffectEvent.fromId,
       HuaShen.GeneralName,

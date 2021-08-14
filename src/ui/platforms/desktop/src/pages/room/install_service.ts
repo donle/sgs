@@ -1,13 +1,13 @@
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
 import { GuideLine } from './animations/guideline/guideline';
-import { MoveCard } from './animations/move_card/move_card';
+import { MoveInstantCardAnimation } from './animations/move_card/move_instant_card';
 import { RoomStore } from './room.presenter';
 
 export type RoomBaseService = {
   Animation: {
     GuideLineAnimation: GuideLine;
-    MoveCardAnimation: MoveCard;
+    MoveInstantCardAnimation: MoveInstantCardAnimation;
   };
 };
 
@@ -19,7 +19,7 @@ export function installService(
   return {
     Animation: {
       GuideLineAnimation: new GuideLine(store, 500, 2000),
-      MoveCardAnimation: new MoveCard(store, translator, imageLoader),
+      MoveInstantCardAnimation: new MoveInstantCardAnimation(store, translator, imageLoader),
     },
   };
 }

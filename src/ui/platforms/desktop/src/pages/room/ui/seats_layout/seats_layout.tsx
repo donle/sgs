@@ -4,6 +4,7 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
+import { MoveCard } from 'pages/room/animations/move_card/move_card';
 import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
 import { CharacterSkinInfo } from 'skins/skins';
@@ -14,7 +15,6 @@ type SeatsLayoutProps = {
   store: RoomStore;
   presenter: RoomPresenter;
   translator: ClientTranslationModule;
-  gamePad: JSX.Element;
   updateFlag: boolean;
   imageLoader: ImageLoader;
   skinData: CharacterSkinInfo[];
@@ -195,7 +195,17 @@ export class SeatsLayout extends React.Component<SeatsLayoutProps> {
         <div className={styles.leftSeats}>{this.getLeftPlayers()}</div>
         <div className={styles.central}>
           <div className={styles.topSeats}>{this.getTopPlayers()}</div>
-          <div className={styles.gamePad}>{this.props.gamePad}</div>
+          <div className={styles.gamePad} id="gamePad">
+            {
+              <MoveCard
+                store={this.props.store}
+                presenter={this.props.presenter}
+                imageLoader={this.props.imageLoader}
+                translator={this.props.translator}
+                updateFlag={this.props.store.updateUIFlag}
+              />
+            }
+          </div>
         </div>
         <div className={styles.rightSeats}>{this.getRightPlayers()}</div>
       </div>

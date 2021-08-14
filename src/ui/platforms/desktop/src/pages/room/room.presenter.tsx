@@ -15,7 +15,7 @@ import { Skill } from 'core/skills/skill';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as React from 'react';
-import { AnimationPosition } from './animations/position';
+import { AnimationPosition, Point } from './animations/position';
 import { Conversation, ConversationProps } from './ui/conversation/conversation';
 import { CardCategoryDialog, CardCategoryDialogProps } from './ui/dialog/card_category_dialog/card_category_dialog';
 
@@ -24,6 +24,16 @@ type ClientRoomInfo = {
   playerName: string;
   socket: ClientSocket;
   timestamp: number;
+};
+
+export type DisplayCardProp = {
+  card: Card;
+  tag?: string;
+  buried?: boolean;
+  from: Player | undefined;
+  to: Player | undefined;
+  hiddenMove?: boolean;
+  animationPlayed?: boolean;
 };
 
 export class RoomStore {
@@ -47,7 +57,11 @@ export class RoomStore {
   messageLog: (string | JSX.Element)[] = [];
 
   @mobx.observable.shallow
-  displayedCards: { card: Card; tag?: string }[] = [];
+  displayedCards: DisplayCardProp[] = [];
+  @mobx.observable.shallow
+  displayedCardsAnimationStyles: {
+    [K in CardId]: React.CSSProperties;
+  } = {};
 
   @mobx.observable.ref
   canReforge: boolean = false;
@@ -241,14 +255,84 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  showCards(...cards: { card: Card; tag?: string }[]) {
+  showCards(...cards: DisplayCardProp[]) {
     if (this.store.displayedCards.length >= 7) {
       this.store.displayedCards = [];
     }
 
     for (const card of cards) {
-      this.store.displayedCards.push(card);
+      const exist = this.store.displayedCards.find(_card => card.card.Id === _card.card.Id);
+      if (exist) {
+        exist.buried = card.buried;
+        exist.tag = card.tag;
+        exist.from = card.from || exist.from;
+        exist.to = card.to || exist.to;
+      } else {
+        this.store.displayedCards.push(card);
+      }
     }
+  }
+
+  @mobx.action
+  buryCards(...cards: CardId[]) {
+    for (const cardId of cards) {
+      const exist = this.store.displayedCards.find(_card => cardId === _card.card.Id);
+      if (exist) {
+        exist.buried = true;
+      }
+    }
+  }
+
+  private getCardElementPosition(cardId: CardId): Point {
+    const cardElement = document.getElementById(cardId.toString());
+    if (!cardElement) {
+      return { x: 0, y: 0 };
+    }
+
+    const offset = this.store.displayedCards.length * 120 > 600 ? 300 : this.store.displayedCards.length * 60;
+    return {
+      x: cardElement.getBoundingClientRect().x + offset,
+      y: cardElement.getBoundingClientRect().y,
+    };
+  }
+
+  @mobx.action
+  playCardAnimation(cardInfo: DisplayCardProp, from?: Point, to?: Point) {
+    if (cardInfo.animationPlayed) {
+      return;
+    }
+
+    cardInfo.animationPlayed = true;
+    this.store.displayedCardsAnimationStyles[cardInfo.card.Id] =
+      this.store.displayedCardsAnimationStyles[cardInfo.card.Id] || {};
+
+    const cardStyle = this.store.displayedCardsAnimationStyles[cardInfo.card.Id];
+    cardStyle.transition = 'unset';
+    cardStyle.zIndex = 9;
+
+    const originalPosition = this.getCardElementPosition(cardInfo.card.Id);
+
+    if (from) {
+      cardStyle.transform = `translate(${from.x - originalPosition.x}px, ${from.y - originalPosition.y}px)`;
+    } else {
+      cardStyle.opacity = 1;
+      return;
+    }
+
+    setTimeout(
+      mobx.action(() => {
+        cardStyle.opacity = 1;
+        if (to) {
+          cardStyle.transform = `translate(${to.x}px, ${to.y}px)`;
+        } else {
+          delete cardStyle.transform;
+          delete cardStyle.transition;
+          delete cardStyle.zIndex;
+        }
+        this.broadcastUIUpdate();
+      }),
+      100,
+    );
   }
 
   @mobx.action
