@@ -6,6 +6,7 @@ import { AimStage, AllStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { AimGroupUtil } from 'core/shares/libs/utils/aim_group';
 import { LimitSkill, TriggerSkill } from 'core/skills/skill';
 
 @LimitSkill({ name: 'fenwei', description: 'fenwei_description' })
@@ -15,13 +16,13 @@ export class FenWei extends TriggerSkill {
       stage === AimStage.AfterAim &&
       Sanguosha.getCardById(event.byCardId!).AOE !== CardTargetEnum.Single &&
       Sanguosha.getCardById(event.byCardId!).is(CardType.Trick) &&
-      event.allTargets.length > 1 &&
-      !!event.isFirstTarget
+      AimGroupUtil.getAllTargets(event.allTargets).length > 1 &&
+      event.isFirstTarget
     );
   }
 
   canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
-    room.setFlag(owner.Id, this.Name, event.allTargets);
+    room.setFlag(owner.Id, this.Name, AimGroupUtil.getAllTargets(event.allTargets));
     return true;
   }
 

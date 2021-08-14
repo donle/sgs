@@ -92,7 +92,7 @@ export class WanJianQiFaSkill extends ActiveSkill implements ExtralCardSkillProp
       const eventContent = {
         fromId,
         toId: to,
-        damage: 1,
+        damage: 1 + (event.additionalDamage ? event.additionalDamage : 0),
         damageType: DamageType.Normal,
         cardIds: [event.cardId],
         triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],

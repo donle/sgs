@@ -31,6 +31,7 @@ import {
   GlobalRulesBreakerSkill,
   RulesBreakerSkill,
   Skill,
+  SkillLifeCycle,
   SkillProhibitedSkill,
   SkillType,
   SwitchSkillState,
@@ -69,6 +70,7 @@ export abstract class Player implements PlayerInfo {
   private chainLocked: boolean = false;
   private turnedOver: boolean = false;
   private playerSkills: Skill[] = [];
+  private hookedSkills: Skill[] = [];
   private gender: CharacterGender;
   private equipSectionsStatus: {
     [K in CharacterEquipSections]: 'enabled' | 'disabled';
@@ -79,6 +81,7 @@ export abstract class Player implements PlayerInfo {
     [CharacterEquipSections.OffenseRide]: 'enabled',
     [CharacterEquipSections.Precious]: 'enabled',
   };
+  private judgeAreaStatus: 'enabled' | 'disabled' = 'enabled';
 
   private drunk: number = 0;
 
@@ -202,7 +205,11 @@ export abstract class Player implements PlayerInfo {
     if (card) {
       const canUseToSomeone = room.AlivePlayers.find(player => room.CommonRules.canUseCardTo(room, this, card, player));
       if (canUseToSomeone) {
-        return card.is(CardType.Equip) ? true : onResponse ? onResponse.match(card) : true;
+        return card.is(CardType.Equip)
+          ? true
+          : onResponse
+          ? onResponse.match(card)
+          : card.Skill.canUse(room, this, cardId);
       }
 
       return (
@@ -428,6 +435,22 @@ export abstract class Player implements PlayerInfo {
     return this.equipSectionsStatus[section] === 'enabled';
   }
 
+  public getEmptyEquipSections(): CardType[] {
+    let allEquipTypes = [CardType.Weapon, CardType.Shield, CardType.DefenseRide, CardType.OffenseRide, CardType.Precious];
+    if (this.playerCards[PlayerCardsArea.EquipArea].length > 0) {
+      allEquipTypes = allEquipTypes.filter(type => !this.playerCards[PlayerCardsArea.EquipArea].find(id => Sanguosha.getCardById(id).is(type)));
+    }
+
+    const cardTypeMapper = {
+      [CardType.Weapon]: CharacterEquipSections.Weapon,
+      [CardType.Shield]: CharacterEquipSections.Shield,
+      [CardType.DefenseRide]: CharacterEquipSections.DefenseRide,
+      [CardType.OffenseRide]: CharacterEquipSections.OffenseRide,
+      [CardType.Precious]: CharacterEquipSections.Precious,
+    }
+    return allEquipTypes.filter(type => this.equipSectionsStatus[cardTypeMapper[type]] === 'enabled');
+  }
+
   public equip(equipCard: EquipCard) {
     Precondition.assert(
       !this.playerCards[PlayerCardsArea.EquipArea].find(card =>
@@ -483,7 +506,14 @@ export abstract class Player implements PlayerInfo {
 
     const card = cardId instanceof CardMatcher ? undefined : Sanguosha.getCardById(cardId);
     if (card) {
-      if (card.is(CardType.Equip) && !player.canEquip(card as EquipCard)) {
+      if (
+        (card.is(CardType.Equip) && !player.canEquip(card as EquipCard)) ||
+        (card.is(CardType.DelayedTrick) &&
+          (player.judgeAreaDisabled() ||
+            player
+              .getCardIds(PlayerCardsArea.JudgeArea)
+              .find(id => Sanguosha.getCardById(id).GeneralName === card.GeneralName) !== undefined))
+      ) {
         return false;
       }
 
@@ -705,7 +735,7 @@ export abstract class Player implements PlayerInfo {
       `Player ${this.playerName} has not been initialized with a character yet`,
     );
 
-    const skills = this.playerSkills.filter(
+    const skills = [...this.playerSkills, ...this.hookedSkills].filter(
       skill => (includeDisabled || !UniqueSkillRule.isProhibited(skill, this)) && !skill.isSideEffectSkill(),
     );
     if (skillType === undefined) {
@@ -762,12 +792,18 @@ export abstract class Player implements PlayerInfo {
       if (typeof skillName === 'string') {
         if (skill.Name.endsWith(skillName)) {
           lostSkill.push(skill);
+          if (SkillLifeCycle.isHookedAfterLosingSkill(skill)) {
+            this.hookedSkills.push(skill);
+          }
         } else {
           existSkill.push(skill);
         }
       } else {
         if (skillName.find(name => skill.Name.endsWith(name))) {
           lostSkill.push(skill);
+          if (SkillLifeCycle.isHookedAfterLosingSkill(skill)) {
+            this.hookedSkills.push(skill);
+          }
         } else {
           existSkill.push(skill);
         }
@@ -784,8 +820,10 @@ export abstract class Player implements PlayerInfo {
       return;
     }
 
+    this.hookedSkills.filter(hookedSkill => hookedSkill !== skill);
     this.playerSkills.push(skill);
     for (const shadowSkill of Sanguosha.getShadowSkillsBySkillName(skillName)) {
+      this.hookedSkills.filter(hookedSkill => hookedSkill !== skill);
       this.playerSkills.push(shadowSkill);
     }
   }
@@ -795,6 +833,14 @@ export abstract class Player implements PlayerInfo {
   }
   public removeSkill(skill: Skill) {
     this.playerSkills = this.playerSkills.filter(existSkill => existSkill !== skill);
+  }
+
+  public hookUpSkills(skills: Skill[]) {
+    this.hookedSkills.push(...skills.filter(skill => !this.hookedSkills.includes(skill)));
+  }
+
+  public removeHookedSkills(skills: Skill[]) {
+    this.hookedSkills.filter(skill => !skills.includes(skill));
   }
 
   public hasSkill(skillName: string) {
@@ -922,6 +968,10 @@ export abstract class Player implements PlayerInfo {
     this.playerPosition = position;
   }
 
+  public get HookedSkills() {
+    return this.hookedSkills;
+  }
+
   public get CardUseHistory() {
     return this.cardUseHistory;
   }
@@ -985,6 +1035,18 @@ export abstract class Player implements PlayerInfo {
     for (const section of abortSections) {
       this.equipSectionsStatus[section] = 'enabled';
     }
+  }
+
+  public judgeAreaDisabled(): boolean {
+    return this.judgeAreaStatus === 'disabled';
+  }
+
+  public abortJudgeArea() {
+    this.judgeAreaStatus = 'disabled';
+  }
+
+  public resumeJudgeArea() {
+    this.judgeAreaStatus = 'enabled';
   }
 
   setHuaShenInfo(info: HuaShenInfo) {

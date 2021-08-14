@@ -12,7 +12,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 @CommonSkill({ name: 'zhi_qiai', description: 'zhi_qiai_description' })
 export class ZhiQiAi extends ActiveSkill {
   public canUse(room: Room, owner: Player): boolean {
-    return !owner.hasUsedSkill(this.Name) && owner.getCardIds(PlayerCardsArea.HandArea).length > 1;
+    return !owner.hasUsedSkill(this.Name) && owner.getCardIds(PlayerCardsArea.HandArea).length > 0;
   }
 
   public numberOfTargets() {

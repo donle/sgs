@@ -35,7 +35,7 @@ export class HuoShou extends TriggerSkill {
         aimEvent.byCardId !== undefined &&
         Sanguosha.getCardById(aimEvent.byCardId).GeneralName === 'nanmanruqing' &&
         aimEvent.fromId !== owner.Id &&
-        !!aimEvent.isFirstTarget
+        aimEvent.isFirstTarget
       );
     }
 

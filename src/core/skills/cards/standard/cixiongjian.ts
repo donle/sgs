@@ -35,18 +35,12 @@ export class CiXiongJianSkill extends TriggerSkill {
       return false;
     }
 
-    const { fromId, allTargets: toIds } = content;
-
+    const target = room.getPlayerById(content.toId);
     return (
-      fromId === owner.Id &&
-      toIds.find(targetId => {
-        const target = room.getPlayerById(targetId);
-        return (
-          target.Gender !== owner.Gender &&
-          target.Gender !== CharacterGender.Neutral &&
-          owner.Gender !== CharacterGender.Neutral
-        );
-      }) !== undefined
+      content.fromId === owner.Id &&
+      target.Gender !== owner.Gender &&
+      owner.Gender !== CharacterGender.Neutral &&
+      target.Gender !== CharacterGender.Neutral
     );
   }
 

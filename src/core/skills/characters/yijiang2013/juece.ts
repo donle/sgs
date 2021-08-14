@@ -18,9 +18,9 @@ export class JueCe extends TriggerSkill {
       canUse = false;
       for (const player of room.getOtherPlayers(owner.Id)) {
         if (player.getFlag<boolean>(this.Name)) {
-          player.removeFlag(this.Name);
+          room.removeFlag(player.Id, this.Name);
         }
-        if (room.Analytics.getCardLostRecord(player.Id, true).length > 0) {
+        if (room.Analytics.getCardLostRecord(player.Id, 'round', undefined, 1).length > 0) {
           room.setFlag<boolean>(player.Id, this.Name, true);
           canUse = true;
         }

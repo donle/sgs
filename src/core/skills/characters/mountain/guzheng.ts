@@ -22,7 +22,7 @@ export class GuZheng extends TriggerSkill {
       return false;
     }
 
-    const events = room.Analytics.getCardDropRecord(content.playerId, true, [PlayerPhase.DropCardStage]);
+    const events = room.Analytics.getCardDropRecord(content.playerId, 'phase');
     const findFunc = (event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) => {
       return event.movingCards.find(({ card, fromArea }) => {
         return fromArea === CardMoveArea.HandArea;
@@ -46,7 +46,7 @@ export class GuZheng extends TriggerSkill {
         );
       },
       undefined,
-      true,
+      'round',
       [PlayerPhase.DropCardStage],
     );
 

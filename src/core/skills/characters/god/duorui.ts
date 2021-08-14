@@ -96,7 +96,8 @@ export class DuoRui extends TriggerSkill implements OnDefineReleaseTiming {
           !skill.isShadowSkill() &&
           skill.SkillType !== SkillType.Awaken &&
           skill.SkillType !== SkillType.Limit &&
-          !skill.isLordSkill(),
+          !skill.isLordSkill() &&
+          !skill.isStubbornSkill(),
       );
     if (!to.Dead && skills.length > 0) {
       const skillNames = skills.map(skill => skill.Name);

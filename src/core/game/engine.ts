@@ -192,15 +192,18 @@ export class Sanguosha {
       GameCharacterExtensions.Forest,
       GameCharacterExtensions.Mountain,
       GameCharacterExtensions.Shadow,
+      GameCharacterExtensions.Thunder,
       GameCharacterExtensions.God,
       GameCharacterExtensions.YiJiang2011,
       GameCharacterExtensions.YiJiang2012,
       GameCharacterExtensions.YiJiang2013,
       GameCharacterExtensions.YiJiang2014,
       GameCharacterExtensions.SP,
+      GameCharacterExtensions.Spark,
       GameCharacterExtensions.Limited,
       GameCharacterExtensions.Biographies,
       GameCharacterExtensions.Wisdom,
+      GameCharacterExtensions.Sincerity,
     ];
   }
 

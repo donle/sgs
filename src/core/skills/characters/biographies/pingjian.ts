@@ -50,7 +50,7 @@ export class PingJian extends ActiveSkill {
       'mingce',
       'xianzhen',
       'anxu',
-      'gongji',
+      'gongqi',
       'qice',
       'mieji',
       'shenxing',
@@ -77,11 +77,6 @@ export class PingJian extends ActiveSkill {
 
   public static readonly PingJianSkillMap: { [mainSkill: string]: string[] } = {
     zhijian: ['#zhijian'],
-  };
-
-  public static readonly FakeHookedSkillMap: { [mainSkill: string]: string[] } = {
-    tianyi: ['##tianyi', '###tianyi'],
-    xianzhen: ['#xianzhen', '##xianzhen'],
   };
 
   public canUse(room: Room, owner: Player): boolean {
@@ -112,7 +107,7 @@ export class PingJian extends ActiveSkill {
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { fromId } = event;
-    let newSkillPool: string[] = [...PingJian.PingJianSkillPool[0]];
+    let newSkillPool: string[] = PingJian.PingJianSkillPool[0].slice();
     const from = room.getPlayerById(fromId);
 
     const skillsUsed = from.getFlag<string[][]>(this.Name) || [];
@@ -134,7 +129,6 @@ export class PingJian extends ActiveSkill {
       options,
       conversation: TranslationPack.translationJsonPatcher('{0}: please choose pingjian options', this.Name).extract(),
       toId: fromId,
-      triggeredBySkills: [this.Name],
     });
 
     const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingOptionsEvent>(
@@ -210,7 +204,7 @@ export class PingJianShadow extends TriggerSkill {
       realEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
     }
     const index = identifier === GameEventIdentifiers.DamageEvent ? 1 : 2;
-    let newSkillPool: string[] = [...PingJian.PingJianSkillPool[index]];
+    let newSkillPool: string[] = PingJian.PingJianSkillPool[index].slice();
     const from = room.getPlayerById(fromId);
 
     const skillsUsed = from.getFlag<string[][]>(this.GeneralName) || [];
@@ -235,7 +229,6 @@ export class PingJianShadow extends TriggerSkill {
         this.GeneralName,
       ).extract(),
       toId: fromId,
-      triggeredBySkills: [this.Name],
     });
 
     const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingOptionsEvent>(
@@ -363,74 +356,9 @@ export class PingJianLoseSkill extends TriggerSkill implements OnDefineReleaseTi
         const skillName = skillsUsing.splice(index, 1)[0];
         from.setFlag<string[]>(FlagEnum.SkillsUsing, skillsUsing);
         await room.loseSkill(fromId, skillName, true);
-        for (const shadowSkill of Sanguosha.getShadowSkillsBySkillName(skillName)) {
-          if (
-            PingJian.FakeHookedSkillMap[skillName] &&
-            PingJian.FakeHookedSkillMap[skillName].includes(shadowSkill.Name)
-          ) {
-            await room.obtainSkill(fromId, shadowSkill.Name);
-          }
-        }
       }
     }
 
-    return true;
-  }
-}
-
-@ShadowSkill
-@PersistentSkill()
-@CommonSkill({ name: PingJianLoseSkill.Name, description: PingJianLoseSkill.Description })
-export class PingJianHookSkill extends TriggerSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(
-    room: Room,
-    owner: PlayerId,
-    content: ServerEventFinder<GameEventIdentifiers>,
-    stage?: AllStage,
-  ): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
-  }
-
-  public isAutoTrigger(): boolean {
-    return true;
-  }
-
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage: AllStage): boolean {
-    return stage === PhaseChangeStage.PhaseChanged;
-  }
-
-  public isFlaggedSkill(room: Room, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage) {
-    return true;
-  }
-
-  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
-    let canUse = content.fromPlayer === owner.Id && content.from === PlayerPhase.PhaseFinish;
-    if (canUse) {
-      canUse = false;
-      for (const hookedSkills of Object.values(PingJian.FakeHookedSkillMap)) {
-        if (hookedSkills.find(skill => owner.hasShadowSkill(skill))) {
-          canUse = true;
-          break;
-        }
-      }
-    }
-
-    return canUse;
-  }
-
-  public async onTrigger(room: Room, content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
-    return true;
-  }
-
-  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
-    const { fromId } = event;
-
-    for (const hookedSkills of Object.values(PingJian.FakeHookedSkillMap)) {
-      const skill = hookedSkills.find(skill => room.getPlayerById(fromId).hasShadowSkill(skill));
-      if (skill) {
-        await room.loseSkill(fromId, skill);
-      }
-    }
     return true;
   }
 }

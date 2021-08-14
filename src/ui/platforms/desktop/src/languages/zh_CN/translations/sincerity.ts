@@ -10,11 +10,12 @@ export const characterDictionary: Word[] = [
   { source: 'wangling', target: '王凌' },
   { source: 'mouli', target: '谋立' },
   { source: '~side_mouli', target: '谋立' },
-  { source: 'mouli:mou', target: '谋' },
+  { source: 'mouli:li', target: '立' },
   { source: 'zifu', target: '自缚' },
 
   { source: 'mifuren', target: '糜夫人' },
   { source: 'cunsi', target: '存嗣' },
+  { source: 'cunsi damage: {0}', target: '存嗣[{0}]' },
   { source: 'guixiu', target: '闺秀' },
 
   { source: 'wangfuzhaolei', target: '王甫赵累' },
@@ -48,6 +49,17 @@ export const skillDescriptions: Word[] = [
     source: 'xunyi_description',
     target:
       '游戏开始时，你可以选择一名其他角色，其获得“义”标记：当你或其造成伤害后，对方摸一张牌；当你或其受到伤害后，对方弃置一张牌（你和其对对方造成的伤害除外）。当其死亡时，你可以移动此“义”。',
+  },
+
+  {
+    source: 'cunsi_description',
+    target:
+      '出牌阶段限一次，你可以将武将牌翻至背面朝上，并令一名角色从牌堆和弃牌堆中随机获得一张【杀】，且其使用的下一张【杀】伤害基数+1。',
+  },
+  {
+    source: 'guixiu_description',
+    target:
+      '<b>锁定技</b>，当你受到伤害后，你将武将牌翻至正面朝上；当你的武将牌翻至正面朝上后，你摸一张牌。',
   },
 
   {

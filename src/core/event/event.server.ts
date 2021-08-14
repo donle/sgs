@@ -6,6 +6,7 @@ import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props';
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { System } from 'core/shares/libs/system';
+import { AimGroup } from 'core/shares/libs/utils/aim_group';
 import { TargetGroup } from 'core/shares/libs/utils/target_group';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
@@ -31,6 +32,7 @@ export interface ServerEvent extends EventUtilities {
     value: any;
     to: PlayerId;
     tagName?: string;
+    visiblePlayers?: PlayerId[],
   };
   [GameEventIdentifiers.RemoveFlagEvent]: {
     name: string;
@@ -66,6 +68,7 @@ export interface ServerEvent extends EventUtilities {
     nullifiedTargets?: PlayerId[];
     extraUse?: boolean;
     disresponsiveList?: PlayerId[];
+    additionalDamage?: number;
   };
   [GameEventIdentifiers.CardEffectEvent]: {
     fromId?: PlayerId;
@@ -77,15 +80,18 @@ export interface ServerEvent extends EventUtilities {
     nullifiedTargets?: PlayerId[];
     isCancelledOut?: boolean;
     disresponsiveList?: PlayerId[];
+    additionalDamage?: number;
   };
   [GameEventIdentifiers.AimEvent]: {
     fromId: string;
     bySkill?: string;
-    byCardId?: CardId;
-    allTargets: PlayerId[];
+    byCardId: CardId;
+    allTargets: AimGroup;
     toId: PlayerId;
+    targetGroup?: TargetGroup;
     nullifiedTargets: PlayerId[];
-    isFirstTarget?: boolean;
+    isFirstTarget: boolean;
+    additionalDamage?: number;
   };
   [GameEventIdentifiers.CardResponseEvent]: {
     fromId: PlayerId;
@@ -341,6 +347,7 @@ export interface ServerEvent extends EventUtilities {
     conversation: string | PatchedTranslationObject;
   };
   [GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent]: {
+    user: PlayerId;
     cardId: CardId;
     exclude: PlayerId[];
     conversation: string | PatchedTranslationObject;
@@ -456,9 +463,21 @@ export interface ServerEvent extends EventUtilities {
     isResumption?: boolean;
     toSections: CharacterEquipSections[];
   };
+  [GameEventIdentifiers.AbortOrResumePlayerJudgeAreaEvent]: {
+    toId: PlayerId;
+    isResumption?: boolean;
+  };
   [GameEventIdentifiers.RefreshOnceSkillEvent]: {
     toId: PlayerId;
     skillName: string;
+  };
+  [GameEventIdentifiers.HookUpSkillsEvent]: {
+    toId: PlayerId;
+    skillNames: string[];
+  };
+  [GameEventIdentifiers.UnhookSkillsEvent]: {
+    toId: PlayerId;
+    skillNames: string[];
   };
 }
 

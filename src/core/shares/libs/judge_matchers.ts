@@ -12,6 +12,7 @@ export const enum JudgeMatcherEnum {
   LuoShen,
   SiShu,
   TunTian,
+  HuJi,
 }
 
 export abstract class JudgeMatcher {
@@ -35,6 +36,8 @@ export abstract class JudgeMatcher {
         return this.SiShu(card);
       case JudgeMatcherEnum.TunTian:
         return this.TunTian(card);
+      case JudgeMatcherEnum.HuJi:
+        return this.HuJi(card);
       default:
         throw Precondition.UnreachableError(matcherEnum);
     }
@@ -67,5 +70,8 @@ export abstract class JudgeMatcher {
   }
   private static LuoShen(card: Card) {
     return card.isBlack();
+  }
+  private static HuJi(card: Card) {
+    return card.isRed();
   }
 }

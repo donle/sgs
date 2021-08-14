@@ -17,7 +17,7 @@ export class ShiBei extends TriggerSkill {
   }
 
   async whenObtainingSkill(room: Room, owner: Player) {
-    if (room.Analytics.getDamagedRecord(owner.Id, true).length > 0) {
+    if (room.Analytics.getDamagedRecord(owner.Id, 'round', undefined, 1).length > 0) {
       room.setFlag(owner.Id, this.GeneralName, true, this.GeneralName);
     }
   }
@@ -45,7 +45,7 @@ export class ShiBei extends TriggerSkill {
       room.setFlag(event.fromId, this.GeneralName, true, this.GeneralName);
     }
 
-    if (room.Analytics.getDamagedRecord(event.fromId, true).length <= 1) {
+    if (room.Analytics.getDamagedRecord(event.fromId, 'round', undefined, 1).length <= 1) {
       const damagedEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
       await room.recover({ recoveredHp: 1, recoverBy: damagedEvent.toId, toId: damagedEvent.toId });
     } else {

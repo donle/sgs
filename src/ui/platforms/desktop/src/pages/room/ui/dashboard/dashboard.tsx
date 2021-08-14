@@ -23,6 +23,7 @@ import { EquipCardItem } from './equip_card_item/equip_card_item';
 
 import { AutoButton } from 'ui/button/auto_button';
 import { Button } from 'ui/button/button';
+import { JudgeAreaDisabledIcon } from '../icon/judge_area_disabled_icon';
 import armorSlot from './images/armor.png';
 import defenseHorseSlot from './images/defense_horse.png';
 import offenseHorseSlot from './images/offense_horse.png';
@@ -184,8 +185,11 @@ export class Dashboard extends React.Component<DashboardProps> {
   }
 
   getPlayerJudgeCards() {
+    const judgeAreaDisabled = this.props.presenter.ClientPlayer?.judgeAreaDisabled();
+
     return (
       <div className={styles.judges}>
+        {judgeAreaDisabled ? <JudgeAreaDisabledIcon/> : <></>}
         {this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.JudgeArea).map(cardId => (
           <DelayedTrickIcon
             key={cardId}

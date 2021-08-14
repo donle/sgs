@@ -19,8 +19,13 @@ export class SlashSkill extends ActiveSkill implements ExtralCardSkillProperty {
 
   public canUse(room: Room, owner: Player, contentOrContainerCard: CardId) {
     return (
-      room.CommonRules.getCardUsableTimes(room, owner, Sanguosha.getCardById(contentOrContainerCard)) >
-      owner.cardUsedTimes(new CardMatcher({ generalName: [this.Name] }))
+      room
+        .getOtherPlayers(owner.Id)
+        .find(
+          player =>
+            room.CommonRules.getCardUsableTimes(room, owner, Sanguosha.getCardById(contentOrContainerCard), player) >
+            owner.cardUsedTimes(new CardMatcher({ generalName: [this.Name] })),
+        ) !== undefined
     );
   }
 
@@ -83,10 +88,11 @@ export class SlashSkill extends ActiveSkill implements ExtralCardSkillProperty {
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const { toIds, fromId, cardId } = event;
     const addtionalDrunkDamage = EventPacker.getMiddleware<number>(TagEnum.DrunkTag, event) || 0;
+    const additionalDamage = event.additionalDamage || 0;
     const damageEvent: ServerEventFinder<GameEventIdentifiers.DamageEvent> = {
       fromId,
       toId: toIds![0],
-      damage: 1 + addtionalDrunkDamage,
+      damage: 1 + addtionalDrunkDamage + additionalDamage,
       damageType: this.damageType,
       cardIds: [cardId],
       triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],

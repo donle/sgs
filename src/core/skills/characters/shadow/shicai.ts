@@ -22,7 +22,7 @@ export class ShiCai extends TriggerSkill implements OnDefineReleaseTiming {
 
   public async whenObtainingSkill(room: Room, owner: Player) {
     const shicaiUsed = owner.getFlag<CardType[]>(this.Name) || [];
-    const cardUseEvents = room.Analytics.getCardUseRecord(owner.Id, true);
+    const cardUseEvents = room.Analytics.getCardUseRecord(owner.Id, 'round');
     if (cardUseEvents.length > 0) {
       for (const event of cardUseEvents) {
         if (shicaiUsed.length === 3) {

@@ -338,6 +338,9 @@ export class GameClientProcessor {
       case GameEventIdentifiers.AbortOrResumePlayerSectionsEvent:
         await this.onHandleAbortOrResumePlayerSectionsEvent(e as any, content);
         break;
+      case GameEventIdentifiers.AbortOrResumePlayerJudgeAreaEvent:
+        await this.onHandleAbortOrResumePlayerJudgeAreaEvent(e as any, content);
+        break;
       case GameEventIdentifiers.DrunkEvent:
         await this.onHandleDrunkEvent(e as any, content);
         break;
@@ -358,6 +361,12 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.RefreshOnceSkillEvent:
         await this.onHandleRefreshOnceSkillEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.HookUpSkillsEvent:
+        await this.onHandleHookUpSkillsEvent(e as any, content);
+        break;
+      case GameEventIdentifiers.UnhookSkillsEvent:
+        await this.onHandleUnhookSkillsEvent(e as any, content);
         break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
@@ -386,7 +395,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.store.room.getPlayerById(content.to).setFlag(content.name, content.value, content.tagName);
+    this.store.room.getPlayerById(content.to).setFlag(content.name, content.value, content.tagName, content.visiblePlayers);
   }
   protected async onHandleRemoveFlagEvent<T extends GameEventIdentifiers.RemoveFlagEvent>(
     type: T,
@@ -1032,6 +1041,7 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     this.store.room.onPhaseTo(content.toPlayer, content.to);
+    this.store.room.Analytics.turnToNextPhase();
     if (content.to === PlayerPhase.PhaseBegin) {
       this.store.room.turnTo(content.toPlayer);
       this.store.room.Analytics.turnTo(content.toPlayer);
@@ -1591,13 +1601,13 @@ export class GameClientProcessor {
   protected async onHandleAskForChoosingCardAvailableTargetEvent<
     T extends GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent
   >(type: T, content: ServerEventFinder<T>) {
-    const { cardId, exclude, conversation } = content;
+    const { user, cardId, exclude, conversation } = content;
     this.presenter.createIncomingConversation({
       conversation,
       translator: this.translator,
     });
     const action = new SelectAction(this.store.clientPlayerId, this.store, this.presenter, this.translator, content);
-    const selectedPlayers = await action.onSelectCardTargets(cardId, exclude);
+    const selectedPlayers = await action.onSelectCardTargets(user, cardId, exclude);
 
     const choosePlayerEvent: ClientEventFinder<GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent> = {
       fromId: this.store.clientPlayerId,
@@ -1738,6 +1748,36 @@ export class GameClientProcessor {
       to.abortEquipSections(...toSections);
     }
 
+    this.presenter.broadcastUIUpdate();
+  }
+
+  protected async onHandleAbortOrResumePlayerJudgeAreaEvent<
+    T extends GameEventIdentifiers.AbortOrResumePlayerJudgeAreaEvent
+  >(type: T, content: ServerEventFinder<T>) {
+    const { toId, isResumption } = content;
+    const to = this.store.room.getPlayerById(toId);
+    if (isResumption) {
+      to.resumeJudgeArea();
+    } else {
+      to.abortJudgeArea();
+    }
+
+    this.presenter.broadcastUIUpdate();
+  }
+
+  protected onHandleHookUpSkillsEvent<T extends GameEventIdentifiers.HookUpSkillsEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.getPlayerById(content.toId).hookUpSkills(content.skillNames.map(name => Sanguosha.getSkillBySkillName(name)));
+    this.presenter.broadcastUIUpdate();
+  }
+
+  protected onHandleUnhookSkillsEvent<T extends GameEventIdentifiers.UnhookSkillsEvent>(
+    type: T,
+    content: ServerEventFinder<T>,
+  ) {
+    this.store.room.getPlayerById(content.toId).removeHookedSkills(content.skillNames.map(name => Sanguosha.getSkillBySkillName(name)));
     this.presenter.broadcastUIUpdate();
   }
 }

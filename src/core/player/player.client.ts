@@ -6,6 +6,7 @@ import { PlayerCards, PlayerCardsArea, PlayerCardsOutside, PlayerId, PlayerStatu
 export class ClientPlayer extends Player {
   private visibleOutsideAreas: string[] = [];
   private visiblePlayerTags: { [name: string]: string } = {};
+  private visiblePlayers: { [name: string]: PlayerId[] } = {};
 
   constructor(
     protected playerId: PlayerId,
@@ -20,11 +21,17 @@ export class ClientPlayer extends Player {
     super(playerCards, playerCharacterId);
   }
 
-  setFlag<T>(name: string, value: T, tagName?: string): T {
+  setFlag<T>(name: string, value: T, tagName?: string, visiblePlayers?: PlayerId[]): T {
     if (tagName && this.visiblePlayerTags[name] !== tagName) {
       this.visiblePlayerTags[name] = tagName;
+      if (visiblePlayers && visiblePlayers.length > 0) {
+        this.visiblePlayers[name] = visiblePlayers;
+      }
     } else if (!tagName && this.visiblePlayerTags[name] !== undefined) {
       delete this.visiblePlayerTags[name];
+      if (this.visiblePlayers[name] !== undefined) {
+        delete this.visiblePlayers[name];
+      }
     }
 
     return super.setFlag(name, value);
@@ -35,6 +42,7 @@ export class ClientPlayer extends Player {
   }
   removeFlag(name: string) {
     delete this.visiblePlayerTags[name];
+    delete this.visiblePlayers[name];
     super.removeFlag(name);
   }
 
@@ -50,8 +58,15 @@ export class ClientPlayer extends Player {
   isOutsideAreaVisible(areaName: string) {
     return this.visibleOutsideAreas.includes(areaName);
   }
-  getAllVisibleTags() {
-    return Object.values(this.visiblePlayerTags);
+  getAllVisibleTags(viewer: PlayerId) {
+    const visibleTags: string[] = [];
+    for (const name of Object.keys(this.visiblePlayerTags)) {
+      if (this.visiblePlayerTags[name] && (!this.visiblePlayers[name] || this.visiblePlayers[name].includes(viewer))) {
+        visibleTags.push(this.visiblePlayerTags[name]);
+      }
+    }
+
+    return visibleTags;
   }
 
   setHuaShenInfo(info: HuaShenInfo) {

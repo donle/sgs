@@ -103,7 +103,7 @@ export class QinZhengShadow extends TriggerSkill {
     event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent>,
     stage?: AllStage,
   ): boolean {
-    return stage === CardUseStage.PreCardUse || stage === CardResponseStage.PreCardResponse;
+    return stage === CardUseStage.BeforeCardUseEffect || stage === CardResponseStage.PreCardResponse;
   }
 
   public canUse(

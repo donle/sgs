@@ -15,6 +15,13 @@ export const characterDictionary: Word[] = [
   { source: 'tiansuan:down', target: '下签' },
   { source: 'tiansuan:downdown', target: '下下签' },
 
+  { source: 'dongyun', target: '董允' },
+  { source: 'bingzheng', target: '秉正' },
+  { source: 'sheyan', target: '舍宴' },
+
+  { source: 'shamoke', target: '沙摩柯' },
+  { source: 'jili', target: '蒺藜' },
+
   { source: 'sp_zhaoyun', target: '群赵云' },
   { source: 'std_longdan', target: '龙胆' },
   { source: 'chongzhen', target: '冲阵' },
@@ -26,6 +33,14 @@ export const characterDictionary: Word[] = [
   { source: 'liuqi', target: '刘琦' },
   { source: 'wenji', target: '问计' },
   { source: 'tunjiang', target: '屯江' },
+
+  { source: 'zhangling', target: '张陵' },
+  { source: 'huji', target: '虎骑' },
+  { source: 'shoufu', target: '授符' },
+
+  { source: 'wutugu', target: '兀突骨' },
+  { source: 'ranshang', target: '燃殇' },
+  { source: 'hanyong', target: '悍勇' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -43,6 +58,21 @@ export const skillDescriptions: Word[] = [
     source: 'tiansuan_description',
     target:
       '每轮限一次，出牌阶段，你可以随机抽取一个“命运签”（抽签开始前，你可以多放入一根想要的“命运签”），然后选择一名角色获得此签对应的效果直到你的下个回合开始。若为：上上签，你观看其手牌并获得其区域内的一张牌；上签，你获得其区域内的一张牌。<br>上上签：当你受到伤害时，防止之。<br>上签：当你受到伤害时，伤害值减至1点；当你受到伤害后，你摸X张牌（X为伤害值）。<br>中签：当你受到伤害时，将此伤害改为火焰伤害，将伤害值减至1点。<br>下签：当你受到伤害时，此伤害+1。<br>下下签：当你受到伤害时，此伤害+1；你不能使用【桃】和【酒】。',
+  },
+
+  {
+    source: 'bingzheng_description',
+    target:
+      '出牌阶段结束时，你可以令体力值与手牌数不相等的一名角色摸一张牌或弃置一张手牌，然后若其手牌数与体力值相等，你摸一张牌，且你可将一张牌交给该角色。',
+  },
+  {
+    source: 'sheyan_description',
+    target: '当你成为锦囊牌的目标时，你可以为此牌增加或减少一个目标（目标数至少为1）。',
+  },
+
+  {
+    source: 'jili_description',
+    target: '当你于一回合内使用或打出第X张牌时，你可以摸X张牌（X为你的攻击范围）。',
   },
 
   {
@@ -73,6 +103,28 @@ export const skillDescriptions: Word[] = [
     target:
       '结束阶段开始时，若你于此回合内未使用牌指定过其他角色为目标，且未跳过本回合的出牌阶段，你可以摸X张牌（X为存活势力数）。',
   },
+
+  {
+    source: 'huji_description',
+    target:
+      '<b>锁定技</b>，你计算与其他角色的距离-1；当你于回合外受到伤害后，你判定，若为红色，则视为你对伤害来源使用一张无距离限制的【杀】。',
+  },
+  {
+    source: 'shoufu_description',
+    target:
+      '出牌阶段限一次，你可以摸一张牌，然后将一张手牌置于一名没有“箓”的其他角色的武将牌旁：其不能使用或打出与其“箓”类别相同的牌；当其受到伤害后，或于弃牌阶段内弃置至少两张牌后，移去其“箓”。',
+  },
+
+  {
+    source: 'ranshang_description',
+    target:
+      '<b>锁定技</b>，当你受到火焰伤害后，你获得等同于伤害值数量的“燃”标记；结束阶段开始时，你失去X点体力（X为你的“燃”标记数），然后若你的“燃”标记数大于2，你减2点体力上限并摸两张牌。',
+  },
+  {
+    source: 'hanyong_description',
+    target:
+      '当你使用黑桃普通【杀】、【南蛮入侵】或【万箭齐发】时，若你已受伤，你可令此牌的伤害基数+1，然后若你的体力值大于当前轮数，你获得1枚“燃”标记。',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
@@ -102,5 +154,44 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: the result is {1}, please choose a target',
     target: '{0}：抽签结果是 {1}，请选择一名角色获得此签的效果',
+  },
+
+  {
+    source: '{0}: do you want to choose a target to let him draw a card or drop a hand card?',
+    target: '{0}：你可以选择手牌数不等于体力值的一名角色，令其摸一张牌或弃置一张牌',
+  },
+  {
+    source: '{0}: please choose bingzheng options: {1}',
+    target: '{0}：你可以令 {1} 摸一张牌或弃置一张手牌',
+  },
+  { source: 'bingzheng:draw', target: '令其摸牌' },
+  { source: 'bingzheng:drop', target: '令其弃牌' },
+  {
+    source: '{0}: please drop a hand card',
+    target: '{0}：请弃置一张手牌',
+  },
+  {
+    source: '{0}: you can to give a card to {1}',
+    target: '{0}：你可以交给 {1} 一张牌',
+  },
+
+  {
+    source: '{0}: please choose sheyan options: {1}',
+    target: '{0}：你可以为 {1} 增加或减少一个目标',
+  },
+  { source: 'sheyan:add', target: '增加目标' },
+  { source: 'sheyan:reduce', target: '减少目标' },
+  {
+    source: 'sheyan: please select a player to append to card targets',
+    target: '舍宴：请选择一名角色成为此牌的额外目标',
+  },
+  {
+    source: 'sheyan: please select a target to remove',
+    target: '舍宴：请选择一名目标角色，取消其目标',
+  },
+
+  {
+    source: '{0}: please choose a hand card and choose a target who has no ‘Lu’?',
+    target: '{0}：请选择一张手牌和一名没有“箓”的其他角色，将此牌置为其“箓”',
   },
 ];

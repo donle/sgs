@@ -106,7 +106,7 @@ export class DuelSkill extends ActiveSkill implements ExtralCardSkillProperty {
     const damageEvent: ServerEventFinder<GameEventIdentifiers.DamageEvent> = {
       fromId: targets[(turn + 1) % targets.length],
       cardIds: [event.cardId],
-      damage: 1,
+      damage: 1 + (event.additionalDamage ? event.additionalDamage : 0),
       damageType: DamageType.Normal,
       toId: targets[turn],
       triggeredBySkills: [this.Name],
