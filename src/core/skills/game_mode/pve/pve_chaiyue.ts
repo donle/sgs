@@ -105,7 +105,7 @@ export class PveChaiYueShadow extends TriggerSkill {
 }
 
 @ShadowSkill
-@CompulsorySkill({ name:PveChaiYueShadow.Name, description: PveChaiYueShadow.Description })
+@CompulsorySkill({ name: PveChaiYueShadow.Name, description: PveChaiYueShadow.Description })
 export class PveChaiYueDraw extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>, stage?: AllStage) {
     return stage === DrawCardStage.CardDrawing;
@@ -125,9 +125,9 @@ export class PveChaiYueDraw extends TriggerSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const drawCardEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DrawCardEvent>;
-    drawCardEvent.drawAmount += (room
+    drawCardEvent.drawAmount += room
       .getPlayerById(event.fromId)
-      .getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName).length);
+      .getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName).length;
     return true;
   }
 }
@@ -137,9 +137,13 @@ export class PveChaiYueDraw extends TriggerSkill {
 export class PveChaiYueBuff extends RulesBreakerSkill {
   public breakCardUsableTimes(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
     if (cardId instanceof CardMatcher) {
-      return cardId.match(new CardMatcher({ generalName: ['slash'] })) ? owner.getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName).length : 0;
+      return cardId.match(new CardMatcher({ generalName: ['slash'] }))
+        ? owner.getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName).length
+        : 0;
     } else {
-      return Sanguosha.getCardById(cardId).GeneralName === 'slash' ? owner.getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName).length : 0;
+      return Sanguosha.getCardById(cardId).GeneralName === 'slash'
+        ? owner.getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName).length
+        : 0;
     }
   }
 }
