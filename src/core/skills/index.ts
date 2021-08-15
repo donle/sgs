@@ -350,6 +350,9 @@ export { GongQing } from './characters/spark/gongqing';
 export { GuanChao, GuanChaoShadow } from './characters/spark/guanchao';
 export { XunXian } from './characters/spark/xunxian';
 export { QinGuo, QinGuoRecover, QinGuoRecorder } from './characters/spark/qinguo';
+export { DuanFa, DuanFaShadow } from './characters/spark/duanfa';
+export { YouDi } from './characters/spark/youdi';
+export { KanNan, KanNanShadow, KanNanBuff } from './characters/spark/kannan';
 
 export { ShanJia, ShanJiaShadow } from './characters/limited/shanjia';
 export { WeiCheng } from './characters/limited/weicheng';

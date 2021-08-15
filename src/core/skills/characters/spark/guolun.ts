@@ -97,7 +97,6 @@ export class GuoLun extends ActiveSkill {
           triggeredBySkills: [this.Name],
         },
         fromId,
-        true,
       );
 
       if (resp.selectedCards && resp.selectedCards.length > 0) {

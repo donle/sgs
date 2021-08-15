@@ -1531,14 +1531,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           targetList.map(target =>
             this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForPinDianCardEvent, target).then(
               async result => {
-                await this.moveCards({
-                  movingCards: [{ card: result.pindianCard, fromArea: PlayerCardsArea.HandArea }],
-                  fromId: result.fromId,
-                  toArea: CardMoveArea.ProcessingArea,
-                  moveReason: CardMoveReason.ActiveMove,
-                  ignoreNotifiedStatus: true,
-                });
-
                 if (result.fromId === fromId) {
                   pindianEvent.cardId = result.pindianCard;
                 }
@@ -1557,6 +1549,20 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
           return pos1 < pos2 ? 1 : -1;
         });
+
+        for (const target of targetList) {
+          const currentResponse = responses.find(resp => resp.fromId === target);
+          if (!currentResponse) {
+            continue;
+          }
+
+          await this.moveCards({
+            movingCards: [{ card: currentResponse.pindianCard, fromArea: PlayerCardsArea.HandArea }],
+            fromId: target,
+            toArea: CardMoveArea.ProcessingArea,
+            moveReason: CardMoveReason.ActiveMove,
+          });
+        }
 
         return true;
       }

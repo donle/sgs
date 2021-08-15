@@ -56,6 +56,17 @@ export class PingJian extends ActiveSkill {
       'shenxing',
       'jijie',
       'gongxin',
+      'feijun',
+      'tiansuan',
+      'shoufu',
+      'guolun',
+      'duanfa',
+      'limu',
+      'kannan',
+      'mouli',
+      'cunsi',
+      'chuhai',
+      'lirang',
     ],
     [
       'jianxiong',
@@ -71,8 +82,11 @@ export class PingJian extends ActiveSkill {
       'yuce',
       'wangxi',
       'guixin',
+      'huji',
+      'weilu',
+      'mingshi',
     ],
-    ['biyue', 'jushou', 'miji', 'zhiyan', 'juece', 'bingyi', 'jujian'],
+    ['biyue', 'jushou', 'miji', 'zhiyan', 'juece', 'bingyi', 'jujian', 'zhengu', 'zuilun', 'youdi'],
   ];
 
   public static readonly PingJianSkillMap: { [mainSkill: string]: string[] } = {
@@ -197,9 +211,8 @@ export class PingJianShadow extends TriggerSkill {
     >;
     const identifier = EventPacker.getIdentifier(unknownEvent);
 
-    let realEvent: ServerEventFinder<GameEventIdentifiers> = unknownEvent as ServerEventFinder<
-      GameEventIdentifiers.DamageEvent
-    >;
+    let realEvent: ServerEventFinder<GameEventIdentifiers> =
+      unknownEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
     if (identifier === GameEventIdentifiers.PhaseStageChangeEvent) {
       realEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
     }

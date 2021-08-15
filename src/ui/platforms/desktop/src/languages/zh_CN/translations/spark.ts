@@ -26,12 +26,20 @@ export const characterDictionary: Word[] = [
   { source: 'guanchao decrease: {0}', target: '观潮 减[{0}]' },
   { source: 'xunxian', target: '逊贤' },
 
+  { source: 'zhoufang', target: '周鲂' },
+  { source: 'duanfa', target: '断发' },
+  { source: 'youdi', target: '诱敌' },
+
   { source: 'lvdai', target: '吕岱' },
   { source: 'qinguo', target: '勤国' },
 
   { source: 'liuyan', target: '刘焉' },
   { source: 'tushe', target: '图射' },
   { source: 'limu', target: '立牧' },
+
+  { source: 'liuyao', target: '刘繇' },
+  { source: 'kannan', target: '戡难' },
+  { source: 'kannan damage: {0}', target: '戡难[{0}]' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -83,6 +91,17 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'duanfa_description',
+    target:
+      '出牌阶段，若X大于0，你可以弃置一至X张黑色牌，然后摸等量的牌（X为你的体力上限减去你此阶段内以此法弃置过的牌数之差）。',
+  },
+  {
+    source: 'youdi_description',
+    target:
+      '结束阶段开始时，你可以令一名其他角色弃置你一张手牌，若以此法弃置的牌不为【杀】，你获得其一张牌。且若以此法弃置的牌不为黑色牌，你摸一张牌。',
+  },
+
+  {
     source: 'qinguo_description',
     target:
       '当你于回合内使用装备牌结算结束后，你可以视为使用一张【杀】；当你失去装备区里的牌后，或有牌进入你的装备区后，若你装备区里的牌数与你的体力值相等，且与此次移动前不相等，你回复1点体力。',
@@ -96,6 +115,12 @@ export const skillDescriptions: Word[] = [
     source: 'limu_description',
     target:
       '出牌阶段，你可以将一张方块牌当【乐不思蜀】对自己使用，然后回复1点体力；若你的判定区有牌，你对攻击范围内的角色使用牌无距离和次数限制。',
+  },
+
+  {
+    source: 'kannan_description',
+    target:
+      '出牌阶段限X次，你可以与你于此阶段内未以此法拼点过的一名角色拼点，赢的角色使用的下一张【杀】伤害基数+1，若该角色为你，则你此阶段不能再发动此技能。',
   },
 ];
 
@@ -129,5 +154,10 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to give {1} cards to another player?',
     target: '{0}：你可以将 {1} 等牌交给手牌数大于你的一名角色',
+  },
+
+  {
+    source: '{0}: do you want to choose another player to let him drop a hand card from you?',
+    target: '{0}：你可以令一名其他角色弃置你一张手牌',
   },
 ];

@@ -1,5 +1,5 @@
 import { BaGuaZhenSkillTrigger } from 'core/ai/skills/cards/baguazhen';
-import { VirtualCard } from 'core/cards/card';
+import { CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { Jink } from 'core/cards/standard/jink';
 import { ClientEventFinder, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -7,7 +7,7 @@ import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { JudgeMatcher, JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
-import { AI, CommonSkill, TriggerSkill } from 'core/skills/skill';
+import { AI, CommonSkill, FilterSkill, TriggerSkill } from 'core/skills/skill';
 
 @AI(BaGuaZhenSkillTrigger)
 @CommonSkill({ name: 'baguazhen', description: 'baguazhen_description' })
@@ -41,11 +41,13 @@ export class BaGuaZhenSkill extends TriggerSkill {
     }
 
     const { cardMatcher } = content;
-    const jinkMatcher = new CardMatcher({ name: ['jink'] });
+    const jinkMatcher = new CardMatcher({ name: ['jink'], type: [CardType.Basic] });
     return (
       owner.Id === content.toId &&
       CardMatcher.match(cardMatcher, jinkMatcher) &&
-      owner.canUseCard(room, jinkMatcher, jinkMatcher)
+      owner
+        .getSkills<FilterSkill>('filter')
+        .find(skill => !skill.canUseCard(jinkMatcher, room, owner.Id, content)) === undefined
     );
   }
 

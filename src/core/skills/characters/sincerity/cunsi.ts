@@ -74,7 +74,7 @@ export class CunSi extends ActiveSkill {
       );
 
       room.getPlayerById(toIds[0]).hasShadowSkill(CunSiBuff.Name) ||
-        (await room.obtainSkill(toIds[0], CunSiBuff.Name, true));
+        (await room.obtainSkill(toIds[0], CunSiBuff.Name));
     }
 
     return true;
