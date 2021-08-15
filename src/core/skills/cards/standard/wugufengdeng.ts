@@ -7,6 +7,7 @@ import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, AI, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 type SelectedCard = {
   card: CardId;
@@ -15,7 +16,7 @@ type SelectedCard = {
 
 @AI(WuGuFengDengSkillTrigger)
 @CommonSkill({ name: 'wugufengdeng', description: 'wugufengdeng_description' })
-export class WuGuFengDengSkill extends ActiveSkill {
+export class WuGuFengDengSkill extends ActiveSkill implements ExtralCardSkillProperty {
   public canUse(room: Room, owner: Player, containerCard?: CardId) {
     if (containerCard) {
       for (const target of room.getAlivePlayersFrom()) {
@@ -41,6 +42,11 @@ export class WuGuFengDengSkill extends ActiveSkill {
   public isAvailableTarget(): boolean {
     return false;
   }
+
+  public isCardAvailableTarget(): boolean {
+    return true;
+  }
+
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const all = room.getAlivePlayersFrom();
     const from = room.getPlayerById(event.fromId);
