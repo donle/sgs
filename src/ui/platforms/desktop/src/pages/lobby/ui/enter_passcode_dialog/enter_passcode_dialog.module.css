@@ -39,27 +39,13 @@
     margin-bottom: gridLine;
 }
 
-.closeButton {
-    position: absolute;
-    top: calc(gridLine * 2);
-    right: calc(gridLine * 2);
-    cursor: pointer;
-    border-radius: 50%;
-    border: 2px solid white;
-    padding: calc(gridLine / 2);
-    height: calc(gridLine * 3);
-    width: calc(gridLine * 3);
-    background: none;
-    outline: none;
-    z-index: 3;
-}
-.close {
-    height: 100%;
-    width: 100%;
+.buttonsLabel {
+    display: flex;
+    align-self: flex-end;
 }
 
-.confirmButton {
-    align-self: flex-end;
+.button {
+    margin: 0 calc(gridLine / 2);
 }
 
 .error {

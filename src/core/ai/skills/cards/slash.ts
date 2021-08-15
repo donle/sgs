@@ -42,6 +42,7 @@ export class SlashSkillTrigger extends ActiveSkillTriggerClass<SlashSkill> {
     skill: SlashSkill,
     skillInCard?: CardId,
   ): ClientEventFinder<GameEventIdentifiers.CardUseEvent> | undefined => {
+    ai.removeInvisibleMark('drunk');
     const enemies = AiLibrary.sortEnemiesByRole(room, ai).filter(
       e =>
         skill.isAvailableTarget(ai.Id, room, e.Id, [], [], skillInCard!) &&
@@ -56,6 +57,10 @@ export class SlashSkillTrigger extends ActiveSkillTriggerClass<SlashSkill> {
 
     if (targets.length === 0) {
       return;
+    }
+
+    if (ai.hasDrunk()) {
+      ai.addInvisibleMark('drunk', 1);
     }
 
     return {

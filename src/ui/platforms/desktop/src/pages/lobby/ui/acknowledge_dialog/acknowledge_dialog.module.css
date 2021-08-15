@@ -9,22 +9,3 @@
     height: 100%;
     width: 100%;
 }
-
-.closeButton {
-    position: absolute;
-    top: 0;
-    right: 0;
-    cursor: pointer;
-    border-radius: 50%;
-    border: 2px solid white;
-    padding: calc(gridLine / 2);
-    height: calc(gridLine * 3);
-    width: calc(gridLine * 3);
-    background: none;
-    outline: none;
-    z-index: 2;
-}
-.close {
-    height: 100%;
-    width: 100%;
-}

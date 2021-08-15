@@ -1,6 +1,6 @@
 import { AiLibrary } from 'core/ai/ai_lib';
 import type { CardId } from 'core/cards/libs/card_props';
-import type { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import type { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import type { Room } from 'core/room/room';
@@ -18,10 +18,18 @@ export class HanBingJianSkillTrigger extends TriggerSkillTriggerClass<
     onEvent?: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>,
     skillInCard?: CardId,
   ): ClientEventFinder<GameEventIdentifiers.AskForSkillUseEvent> | undefined => {
-    return {
-      fromId: ai.Id,
-      invoke: skill.Name,
-    };
+    if (!onEvent) {
+      return;
+    }
+
+    const drunkTag = ai.getInvisibleMark('drunk');
+
+    return drunkTag
+      ? undefined
+      : {
+          fromId: ai.Id,
+          invoke: skill.Name,
+        };
   };
 
   onAskForChoosingCardFromPlayerEvent = (

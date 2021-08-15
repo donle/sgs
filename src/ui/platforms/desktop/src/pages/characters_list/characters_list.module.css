@@ -34,10 +34,11 @@
 }
 
 .packagesGroup {
-    width: 50%;
+    flex: auto;
 }
 .nationalitiesGroup {
-    width: 40%;
+    min-width: calc(30 * 8px);
+    justify-content: center;
 }
 
 .checkboxGroups {

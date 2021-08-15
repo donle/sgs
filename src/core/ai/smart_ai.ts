@@ -374,7 +374,8 @@ export class SmartAI extends PlayerAI {
       }
     }
 
-    const { cardAmount, cardMatcher, toId, fromArea } = content;
+    const { cardAmount, cardAmountRange, cardMatcher, toId, fromArea } = content;
+    const amount = cardAmount || (cardAmountRange && cardAmountRange[0]);
     const to = room.getPlayerById(toId);
     const selectedCards = fromArea
       .reduce<CardId[]>((allCards, area) => {
@@ -387,7 +388,7 @@ export class SmartAI extends PlayerAI {
         }
         return allCards;
       }, [])
-      .slice(0, cardAmount);
+      .slice(0, amount);
     const selectCard: ClientEventFinder<GameEventIdentifiers.AskForCardEvent> = {
       fromId: toId,
       selectedCards,

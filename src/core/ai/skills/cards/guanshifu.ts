@@ -20,7 +20,9 @@ export class GuanShiFuSkillTrigger extends TriggerSkillTriggerClass<
     const cards = ai.getCardIds().filter(card => card !== skillInCard);
     let shouldUse = false;
     if (cards.length < 2) {
-      return;
+      return {
+        fromId: ai.Id,
+      };
     }
 
     if (cards.length <= 4) {
@@ -33,7 +35,9 @@ export class GuanShiFuSkillTrigger extends TriggerSkillTriggerClass<
     }
 
     if (!shouldUse) {
-      return;
+      return {
+        fromId: ai.Id,
+      };
     }
 
     return {

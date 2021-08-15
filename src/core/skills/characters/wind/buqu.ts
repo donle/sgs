@@ -67,6 +67,8 @@ export class BuQu extends TriggerSkill {
 @CompulsorySkill({ name: BuQu.Name, description: BuQu.Description })
 export class BuQuShadow extends RulesBreakerSkill {
   public breakBaseCardHoldNumber(room: Room, owner: Player) {
-    return owner.getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName).length;
+    return owner.getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName).length === 0
+      ? -1
+      : owner.getCardIds(PlayerCardsArea.OutsideArea, this.GeneralName).length;
   }
 }
