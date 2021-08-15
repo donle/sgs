@@ -27,15 +27,15 @@ export class App extends React.PureComponent<{
   private connectionService = getConnectionService(this.props.config);
   private fakeConnectionService = getConnectionService(this.props.config, true);
 
-  async getSkinData() {
-    const url = process.env.PUBLIC_URL + '/skin_infos.json';
-    await fetch(url)
-      .then(res => res.json())
-      .catch(error => console.error(error))
-      .then(response => (this.skinData = response));
-  }
+  // async getSkinData() {
+  //   const url = process.env.PUBLIC_URL + '/skin_infos.json';
+  //   await fetch(url)
+  //     .then(res => res.json())
+  //     .catch(error => console.error(error))
+  //     .then(response => (this.skinData = response));
+  // }
   componentDidMount() {
-    this.getSkinData();
+    // this.getSkinData();
     document.title = this.props.translator.tr('New QSanguosha');
   }
 

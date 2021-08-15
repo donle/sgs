@@ -39,7 +39,7 @@ type PlayerCardProps = {
   imageLoader: ImageLoader;
   inAction: boolean;
   store: RoomStore;
-  skinData: CharacterSkinInfo[];
+  skinData?: CharacterSkinInfo[];
   incomingMessage?: string;
   onCloseIncomingMessage?(): void;
   actionTimeLimit?: number;
@@ -138,10 +138,10 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
 
   getPlayerJudgeCards() {
     const judgeAreaDisabled = this.props.player?.judgeAreaDisabled();
-    
+
     return (
       <div className={styles.judgeIcons}>
-        {judgeAreaDisabled ? <JudgeAreaDisabledIcon/> : <></>}
+        {judgeAreaDisabled ? <JudgeAreaDisabledIcon /> : <></>}
         {this.props.player?.getCardIds(PlayerCardsArea.JudgeArea).map(cardId => (
           <DelayedTrickIcon
             imageLoader={this.props.imageLoader}
@@ -241,19 +241,23 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   @mobx.action
   async componentDidUpdate() {
     if (this.PlayerCharacter && this.props.player) {
-      this.skinName = getSkinName(
-        this.props.player.Character.Name,
-        this.props.player?.Id,
-        this.props.skinData,
-      ).skinName;
-      this.mainImage = (
-        await this.props.imageLoader.getCharacterSkinPlay(
-          this.props.player?.Character.Name,
-          this.props.skinData,
+      if (this.props.skinData) {
+        this.skinName = getSkinName(
+          this.props.player.Character.Name,
           this.props.player?.Id,
-          this.skinName,
-        )
-      ).src;
+          this.props.skinData,
+        ).skinName;
+        this.mainImage = (
+          await this.props.imageLoader.getCharacterSkinPlay(
+            this.props.player?.Character.Name,
+            this.props.skinData,
+            this.props.player?.Id,
+            this.skinName,
+          )
+        ).src;
+      } else {
+        this.mainImage = (await this.props.imageLoader.getCharacterImage(this.PlayerCharacter.Name)).src;
+      }
       const huashenCharacterId = this.props.player?.getHuaShenInfo()?.characterId;
       const huashenCharacter =
         huashenCharacterId !== undefined ? Sanguosha.getCharacterById(huashenCharacterId) : undefined;

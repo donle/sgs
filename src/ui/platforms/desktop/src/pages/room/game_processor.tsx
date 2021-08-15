@@ -57,7 +57,7 @@ export class GameClientProcessor {
     protected imageLoader: ImageLoader,
     protected audioService: AudioService,
     protected electron: ElectronLoader,
-    protected skinData: CharacterSkinInfo[],
+    protected skinData: CharacterSkinInfo[] = [],
   ) {}
 
   protected tryToThrowNotReadyException(e: GameEventIdentifiers) {
@@ -629,8 +629,8 @@ export class GameClientProcessor {
     for (let i = 0; i < showCards.length; i++) {
       const showCard = showCards[i];
       const from = this.calculateInitialFixedPosition(showCard, i);
-      const to = this.calculateFinalFixedPosition(showCard, i);
-      this.presenter.playCardAnimation(showCard, from, to);
+      // const to = this.calculateFinalFixedPosition(showCard, i);
+      this.presenter.playCardAnimation(showCard, from);
     }
   }
 
@@ -658,8 +658,8 @@ export class GameClientProcessor {
     for (let i = 0; i < showCards.length; i++) {
       const showCard = showCards[i];
       const from = this.calculateInitialFixedPosition(showCard, i);
-      const to = this.calculateFinalFixedPosition(showCard, i);
-      this.presenter.playCardAnimation(showCard, from, to);
+      // const to = this.calculateFinalFixedPosition(showCard, i);
+      this.presenter.playCardAnimation(showCard, from);
     }
   }
 
@@ -701,8 +701,8 @@ export class GameClientProcessor {
         for (let i = 0; i < showCards.length; i++) {
           const showCard = showCards[i];
           const from = this.calculateInitialFixedPosition(showCard, i);
-          const to = this.calculateFinalFixedPosition(showCard, i);
-          this.presenter.playCardAnimation(showCard, from, to);
+          // const to = this.calculateFinalFixedPosition(showCard, i);
+          this.presenter.playCardAnimation(showCard, from);
         }
       }
     }
@@ -952,7 +952,7 @@ export class GameClientProcessor {
       if (index === -1) {
         selectedCharacters.push(character.Id);
         if (selectedCharacters.length === content.amount) {
-          this.store.confirmButtonAction && this.store.confirmButtonAction();
+          this.store.confirmButtonAction?.();
           return;
         }
       } else {
@@ -1170,10 +1170,6 @@ export class GameClientProcessor {
     ) {
       for (const movingCard of movingCards) {
         for (const cardId of VirtualCard.getActualCards([movingCard.card])) {
-          if (this.store.displayedCards.find(cardInfo => cardInfo.card.Id === cardId && !cardInfo.tag)) {
-            continue;
-          }
-
           showCards.push({
             card: Sanguosha.getCardById(cardId),
             tag:
@@ -1199,8 +1195,8 @@ export class GameClientProcessor {
       for (let i = 0; i < showCards.length; i++) {
         const showCard = showCards[i];
         const from = this.calculateInitialFixedPosition(showCard, i);
-        const to = this.calculateFinalFixedPosition(showCard, i);
-        this.presenter.playCardAnimation(showCard, from, to);
+        // const to = this.calculateFinalFixedPosition(showCard, i);
+        this.presenter.playCardAnimation(showCard, from);
       }
     }
 

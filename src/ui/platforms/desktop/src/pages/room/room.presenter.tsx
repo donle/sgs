@@ -277,15 +277,7 @@ export class RoomPresenter {
     }
 
     for (const card of cards) {
-      const exist = this.store.displayedCards.find(_card => card.card.Id === _card.card.Id);
-      if (exist) {
-        exist.buried = card.buried;
-        exist.tag = card.tag;
-        exist.from = card.from || exist.from;
-        exist.to = card.to || exist.to;
-      } else {
-        this.store.displayedCards.push(card);
-      }
+      this.store.displayedCards.push(card);
     }
   }
 
@@ -313,12 +305,11 @@ export class RoomPresenter {
   }
 
   @mobx.action
-  playCardAnimation(cardInfo: DisplayCardProp, from?: Point, to?: Point) {
-    if (cardInfo.animationPlayed) {
+  playCardAnimation(cardInfo: DisplayCardProp, from?: Point) {
+    if (cardInfo.animationPlayed || !document.getElementById(cardInfo.card.Id.toString())) {
       return;
     }
 
-    cardInfo.animationPlayed = true;
     this.store.displayedCardsAnimationStyles[cardInfo.card.Id] =
       this.store.displayedCardsAnimationStyles[cardInfo.card.Id] || {};
 
@@ -327,23 +318,18 @@ export class RoomPresenter {
 
     if (from) {
       cardStyle.transition = 'unset';
+      cardStyle.opacity = 0;
       cardStyle.transform = `translate(${from.x - originalPosition.x}px, ${from.y - originalPosition.y}px)`;
     } else {
-      delete cardStyle.transition;
-      cardStyle.opacity = 1;
+      delete this.store.displayedCardsAnimationStyles[cardInfo.card.Id];
+      cardInfo.animationPlayed = true;
       return;
     }
 
     setTimeout(
       mobx.action(() => {
-        cardStyle.opacity = 1;
-        if (to) {
-          cardStyle.transform = `translate(${to.x}px, ${to.y}px)`;
-        } else {
-          delete cardStyle.transform;
-          delete cardStyle.transition;
-          delete cardStyle.zIndex;
-        }
+        delete this.store.displayedCardsAnimationStyles[cardInfo.card.Id];
+        cardInfo.animationPlayed = true;
         this.broadcastUIUpdate();
       }),
       100,

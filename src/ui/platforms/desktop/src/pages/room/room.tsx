@@ -36,7 +36,7 @@ export class RoomPage extends React.Component<
     audioLoader: AudioLoader;
     electronLoader: ElectronLoader;
     connectionService: ConnectionService;
-    skinData: CharacterSkinInfo[];
+    skinData?: CharacterSkinInfo[];
   }>
 > {
   private presenter: RoomPresenter;

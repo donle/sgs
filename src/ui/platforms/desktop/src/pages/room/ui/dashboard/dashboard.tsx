@@ -35,7 +35,7 @@ export type DashboardProps = {
   translator: ClientTranslationModule;
   updateFlag: boolean;
   imageLoader: ImageLoader;
-  skinData: CharacterSkinInfo[];
+  skinData?: CharacterSkinInfo[];
   playerSelectableMatcher?(player: Player): boolean;
   onClickPlayer?(player: Player, selected: boolean): void;
   cardEnableMatcher?(card: Card): boolean;

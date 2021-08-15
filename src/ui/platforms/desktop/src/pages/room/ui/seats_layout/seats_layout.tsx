@@ -17,7 +17,7 @@ type SeatsLayoutProps = {
   translator: ClientTranslationModule;
   updateFlag: boolean;
   imageLoader: ImageLoader;
-  skinData: CharacterSkinInfo[];
+  skinData?: CharacterSkinInfo[];
   onClick?(player: Player, selected: boolean): void;
   playerSelectableMatcher?(player?: Player): boolean;
 };

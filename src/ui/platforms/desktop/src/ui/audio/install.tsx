@@ -52,10 +52,10 @@ class AudioPlayerService implements AudioService {
     try {
       if (skinName) {
         const audioUrl = await this.loader.getCharacterSkinAudio(characterName!, skinName, skillName, skinData, gender);
-        this.play(audioUrl);
+        await this.play(audioUrl);
       } else {
         const audioUrl = await this.loader.getSkillAudio(skillName, gender, characterName);
-        this.play(audioUrl);
+        await this.play(audioUrl);
       }
     } catch {
       // tslint:disable-next-line: no-console
@@ -67,7 +67,7 @@ class AudioPlayerService implements AudioService {
   async playCardAudio(cardName: string, gender: CharacterGender, characterName?: string) {
     try {
       const audioUrl = await this.loader.getCardAudio(cardName, gender, characterName);
-      this.play(audioUrl);
+      await this.play(audioUrl);
     } catch {
       // tslint:disable-next-line: no-console
       console.warn(`The resource of '${cardName}' doesn't exist`);
@@ -78,10 +78,10 @@ class AudioPlayerService implements AudioService {
     try {
       if (skinName) {
         const audioUrl = await this.loader.getCharacterSkinAudio(characterName, skinName, 'death', skinData);
-        this.play(audioUrl);
+        await this.play(audioUrl);
       } else {
         const audioUrl = await this.loader.getDeathAudio(characterName);
-        this.play(audioUrl);
+        await this.play(audioUrl);
       }
     } catch {
       // tslint:disable-next-line: no-console
@@ -89,37 +89,37 @@ class AudioPlayerService implements AudioService {
     }
   }
 
-  playDamageAudio(damage: number) {
+  async playDamageAudio(damage: number) {
     const audioUrl = this.loader.getDamageAudio(damage);
-    this.play(audioUrl);
+    await this.play(audioUrl);
   }
-  playLoseHpAudio() {
-    this.play(this.loader.getLoseHpAudio());
+  async playLoseHpAudio() {
+    await this.play(this.loader.getLoseHpAudio());
   }
-  playEquipAudio() {
-    this.play(this.loader.getEquipAudio());
+  async playEquipAudio() {
+    await this.play(this.loader.getEquipAudio());
   }
-  playChainAudio() {
+  async playChainAudio() {
     const chainAudioIdentifier = 'chainAudioIdentifier';
     if (this.playList.has(chainAudioIdentifier)) {
       return;
     }
-    this.play(this.loader.getChainAudio());
+    await this.play(this.loader.getChainAudio());
   }
 
-  playRoomBGM() {
+  async playRoomBGM() {
     const audioUrl = this.loader.getRoomBackgroundMusic();
-    this.play(audioUrl, true, 'bgm');
+    await this.play(audioUrl, true, 'bgm');
   }
-  playLobbyBGM() {
+  async playLobbyBGM() {
     const audioUrl = this.loader.getLobbyBackgroundMusic();
-    this.play(audioUrl, true, 'bgm');
+    await this.play(audioUrl, true, 'bgm');
   }
-  playGameStartAudio() {
-    this.play(this.loader.getGameStartAudio());
+  async playGameStartAudio() {
+    await this.play(this.loader.getGameStartAudio());
   }
 
-  private play(url: string, loop?: boolean, type: 'bgm' | 'game' = 'game') {
+  private async play(url: string, loop?: boolean, type: 'bgm' | 'game' = 'game') {
     if (this.audioManager[url] !== undefined) {
       return;
     }
@@ -137,7 +137,7 @@ class AudioPlayerService implements AudioService {
       delete this.audioManager[url];
     };
 
-    audio.play();
+    await audio.play();
   }
 
   public stop() {

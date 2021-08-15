@@ -31,7 +31,7 @@ type PlayerAvatarProps = {
   translator: ClientTranslationModule;
   updateFlag: boolean;
   imageLoader: ImageLoader;
-  skinData: CharacterSkinInfo[];
+  skinData?: CharacterSkinInfo[];
   incomingMessage?: string;
   onCloseIncomingMessage?(): void;
   disabled?: boolean;
@@ -261,7 +261,11 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
 
   @mobx.action
   async updateMainImage() {
-    if (this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.CharacterId !== undefined) {
+    if (
+      this.props.presenter.ClientPlayer &&
+      this.props.presenter.ClientPlayer.CharacterId !== undefined &&
+      this.props.skinData
+    ) {
       this.newMainImage = (
         await this.props.imageLoader.getCharacterSkinPlay(
           this.props.presenter.ClientPlayer.Character.Name,
@@ -276,19 +280,26 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   @mobx.action
   async componentDidUpdate() {
     if (this.props.presenter.ClientPlayer && this.props.presenter.ClientPlayer.CharacterId !== undefined) {
-      this.skinName = getSkinName(
-        this.props.presenter.ClientPlayer.Character?.Name,
-        this.props.presenter.ClientPlayer?.Id,
-        this.props.skinData,
-      ).skinName;
-      this.mainImage = (
-        await this.props.imageLoader.getCharacterSkinPlay(
-          this.props.presenter.ClientPlayer.Character.Name,
+      if (this.props.skinData) {
+        this.skinName = getSkinName(
+          this.props.presenter.ClientPlayer.Character?.Name,
+          this.props.presenter.ClientPlayer?.Id,
           this.props.skinData,
-          this.props.presenter.ClientPlayer.Id,
-          this.skinName,
-        )
-      ).src;
+        ).skinName;
+        this.mainImage = (
+          await this.props.imageLoader.getCharacterSkinPlay(
+            this.props.presenter.ClientPlayer.Character.Name,
+            this.props.skinData,
+            this.props.presenter.ClientPlayer.Id,
+            this.skinName,
+          )
+        ).src;
+      } else {
+        this.mainImage = (
+          await this.props.imageLoader.getCharacterImage(this.props.presenter.ClientPlayer.Character.Name)
+        ).src;
+      }
+
       const huashenCharacterId = this.props.presenter.ClientPlayer.getHuaShenInfo()?.characterId;
       const huashenCharacter =
         huashenCharacterId !== undefined ? Sanguosha.getCharacterById(huashenCharacterId) : undefined;
@@ -339,7 +350,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   onfocusedSkin = (skinName: string) => {
     const clientPlayer = this.props.presenter.ClientPlayer;
     const character = clientPlayer?.CharacterId !== undefined ? clientPlayer?.Character : undefined;
-    if (clientPlayer && character) {
+    if (clientPlayer && character && this.props.skinData) {
       this.skinName = getSkinName(
         clientPlayer.Character?.Name,
         clientPlayer?.Id,
@@ -374,7 +385,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     if (this.inProcessDialog) {
       this.props.presenter.closeDialog();
       this.inProcessDialog = false;
-    } else {
+    } else if (this.props.skinData) {
       this.inProcessDialog = true;
       this.props.presenter.createDialog(
         <SkinSelectorDialog
