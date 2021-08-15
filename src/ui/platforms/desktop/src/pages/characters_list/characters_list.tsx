@@ -26,7 +26,7 @@ export type CharactersListProps = PagePropsWithConfig<{
   imageLoader: ImageLoader;
   audioLoader: AudioLoader;
   electronLoader: ElectronLoader;
-  skinData: CharacterSkinInfo[];
+  skinData?: CharacterSkinInfo[];
 }>;
 
 @mobxReact.observer

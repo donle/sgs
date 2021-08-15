@@ -21,7 +21,7 @@ export class App extends React.PureComponent<{
   translator: ClientTranslationModule;
 }> {
   private customHistory = createMemoryHistory();
-  private skinData: CharacterSkinInfo[];
+  private skinData?: CharacterSkinInfo[];
   private imageLoader = getImageLoader(this.props.config.flavor);
   private audioLoader = getAudioLoader(this.props.config.flavor);
   private connectionService = getConnectionService(this.props.config);

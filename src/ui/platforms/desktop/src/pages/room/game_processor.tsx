@@ -57,7 +57,7 @@ export class GameClientProcessor {
     protected imageLoader: ImageLoader,
     protected audioService: AudioService,
     protected electron: ElectronLoader,
-    protected skinData: CharacterSkinInfo[] = [],
+    protected skinData?: CharacterSkinInfo[],
   ) {}
 
   protected tryToThrowNotReadyException(e: GameEventIdentifiers) {

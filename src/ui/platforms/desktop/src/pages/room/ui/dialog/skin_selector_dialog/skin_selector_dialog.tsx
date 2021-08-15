@@ -14,7 +14,7 @@ type SkinSelectorDialogProps = {
   imageLoader: ImageLoader;
   character: string;
   playerId: string;
-  skinData: CharacterSkinInfo[];
+  skinData?: CharacterSkinInfo[];
   onClick?(skinName: string): void;
 };
 

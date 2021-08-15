@@ -13,7 +13,7 @@ const historyCharacterSkinInfo: HistoryCharacterSkin[] = [];
 export function getSkinName(
   characterName: string,
   playerId: PlayerId,
-  skinData: CharacterSkinInfo[],
+  skinData?: CharacterSkinInfo[],
   skinName?: string,
 ) {
   const currentTime = new Date().getTime();
@@ -45,7 +45,7 @@ export function getSkinName(
     nextTime: currentTime + Math.floor(Math.random() * 5 + 30) * 1000,
   };
   skinData
-    .find(skinInfo => skinInfo.character === characterName)
+    ?.find(skinInfo => skinInfo.character === characterName)
     ?.infos.forEach(info => info.images.find(imageInfo => historyCharacterSkin.skinNameList.push(imageInfo.name)));
 
   historyCharacterSkinInfo.push(historyCharacterSkin);

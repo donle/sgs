@@ -16,7 +16,7 @@ export type CharacterSkinCardProps = {
   character: Character;
   imageLoader: ImageLoader;
   translator: ClientTranslationModule;
-  skinData: CharacterSkinInfo[];
+  skinData?: CharacterSkinInfo[];
   skinName?: string;
   onClick?(skinName: string): void;
   disabled?: boolean;
@@ -76,7 +76,7 @@ export class CharacterSkinCard extends React.Component<CharacterSkinCardProps> {
 
   getskinNameList() {
     this.props.skinData
-      .find(skinInfo => skinInfo.character === this.props.character.Name)
+      ?.find(skinInfo => skinInfo.character === this.props.character.Name)
       ?.infos.find(skinInfo => skinInfo.images?.forEach(imageInfo => this.skinNameList.push(imageInfo.name)));
     this.skinNameLists = this.skinNameList;
     return this.skinNameLists;
@@ -207,7 +207,7 @@ export type CharacterSpecProps = {
   audioService: AudioService;
   translator: ClientTranslationModule;
   skinName: string;
-  skinData: CharacterSkinInfo[];
+  skinData?: CharacterSkinInfo[];
 };
 
 export class CharacterSpec extends React.Component<CharacterSpecProps> {

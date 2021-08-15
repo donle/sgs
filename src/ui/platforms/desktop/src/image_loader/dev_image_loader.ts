@@ -31,7 +31,7 @@ export class DevImageLoader implements ImageLoader {
 
   public async getCharacterSkinPlay(
     characterName: string,
-    skinData: CharacterSkinInfo[],
+    skinData?: CharacterSkinInfo[],
     playerId?: PlayerId,
     skinName?: string,
   ) {

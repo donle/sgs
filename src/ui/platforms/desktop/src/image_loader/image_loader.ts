@@ -30,7 +30,7 @@ export interface ImageLoader {
   getPlayerRoleCard(role: PlayerRole, gameMode: GameMode): Promise<ImageProps>;
   getCharacterSkinPlay(
     characterName: string,
-    skinData: CharacterSkinInfo[],
+    skinData?: CharacterSkinInfo[],
     playerId?: PlayerId,
     skinName?: string,
   ): Promise<ImageProps>;

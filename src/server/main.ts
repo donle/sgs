@@ -133,6 +133,6 @@ class App {
   };
 }
 
-const mode = (process.env.DEV_MODE as Flavor) || Flavor.Dev;
+const mode = (process.env.REACT_APP_DEV_MODE as Flavor) || Flavor.Dev;
 
 new App(mode, new Logger(mode)).start();

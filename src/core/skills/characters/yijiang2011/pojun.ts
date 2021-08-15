@@ -26,8 +26,24 @@ export class PoJun extends TriggerSkill {
     );
   }
 
-  public async onTrigger(): Promise<boolean> {
+  public async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
+    const { fromId, triggeredOnEvent } = event;
+    const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
+    const owner = room.getPlayerById(fromId);
+
+    event.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} used skill {1} to {2}',
+      TranslationPack.patchPlayerInTranslation(owner),
+      this.Name,
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(aimEvent.toId)),
+    ).extract();
     return true;
+  }
+
+  getAnimationSteps(event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    const { fromId, triggeredOnEvent } = event;
+    const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
+    return [{ from: fromId, tos: [aimEvent.toId] }];
   }
 
   public async onEffect(

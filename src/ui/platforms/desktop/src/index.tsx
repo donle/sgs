@@ -1,6 +1,5 @@
 import { getClientConfig } from 'client.config';
 import { Sanguosha } from 'core/game/engine';
-import { Flavor } from 'core/shares/types/host_config';
 import { Languages } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronLoader } from 'electron_loader/electron_loader';
@@ -15,7 +14,8 @@ import { emojiLoader } from './emoji_loader/emoji_loader';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
-const mode = (process.env.DEV_MODE as ClientFlavor) || Flavor.Dev;
+const mode = (process.env.REACT_APP_DEV_MODE as ClientFlavor) || ClientFlavor.Dev;
+console.log(process.env.REACT_APP_DEV_MODE);
 const config = getClientConfig(mode);
 
 if (config.flavor !== ClientFlavor.Web) {

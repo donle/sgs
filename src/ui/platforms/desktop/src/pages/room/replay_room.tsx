@@ -35,7 +35,7 @@ export class ReplayRoomPage extends React.Component<
     audioLoader: AudioLoader;
     electronLoader: ElectronLoader;
     connectionService: ConnectionService;
-    skinData: CharacterSkinInfo[];
+    skinData?: CharacterSkinInfo[];
   }>
 > {
   private presenter: RoomPresenter;
@@ -84,7 +84,7 @@ export class ReplayRoomPage extends React.Component<
       audioLoader: AudioLoader;
       electronLoader: ElectronLoader;
       connectionService: ConnectionService;
-      skinData: CharacterSkinInfo[];
+      skinData?: CharacterSkinInfo[];
     }>,
   ) {
     super(props);

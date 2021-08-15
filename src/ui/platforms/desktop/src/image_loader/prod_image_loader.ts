@@ -171,7 +171,7 @@ export class ProdImageLoader implements ImageLoader {
   }
   public async getCharacterSkinPlay(
     characterName: string,
-    skinData: CharacterSkinInfo[],
+    skinData?: CharacterSkinInfo[],
     playerId?: PlayerId,
     skinName?: string,
   ) {

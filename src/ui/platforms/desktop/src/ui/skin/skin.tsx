@@ -13,7 +13,7 @@ export type SkinCardProps = {
   translator: ClientTranslationModule;
   skinName: string;
   playerId: string;
-  skinData: CharacterSkinInfo[];
+  skinData?: CharacterSkinInfo[];
   onClick?(skinName: string): void;
   disabled?: boolean;
   className?: string;

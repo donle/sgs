@@ -41,7 +41,7 @@ export class DevAudioLoader implements AudioLoader {
     characterName: string,
     skinName: string,
     skillName: string,
-    skinData: CharacterSkinInfo[],
+    skinData?: CharacterSkinInfo[],
     gender?: CharacterGender,
   ): Promise<string> {
     let voice: string;

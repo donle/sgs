@@ -7,12 +7,12 @@ export interface AudioService {
   playSkillAudio(
     skillName: string,
     gender: CharacterGender,
-    skinData: CharacterSkinInfo[],
+    skinData?: CharacterSkinInfo[],
     characterName?: string,
     skinName?: string,
   ): Promise<void>;
-  playCardAudio(skillName: string, gender: CharacterGender, characterName?: string): Promise<void>;
-  playDeathAudio(characterName: string, skinDara: CharacterSkinInfo[], skinName?: string): Promise<void>;
+  playCardAudio(skillName: string, gender?: CharacterGender, characterName?: string): Promise<void>;
+  playDeathAudio(characterName: string, skinDara?: CharacterSkinInfo[], skinName?: string): Promise<void>;
   playDamageAudio(damage: number): void;
   playLoseHpAudio(): void;
   playEquipAudio(): void;
@@ -42,7 +42,7 @@ class AudioPlayerService implements AudioService {
   async playSkillAudio(
     skillName: string,
     gender: CharacterGender,
-    skinData: CharacterSkinInfo[],
+    skinData?: CharacterSkinInfo[],
     characterName?: string,
     skinName?: string,
   ) {
