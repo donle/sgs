@@ -8,7 +8,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { GameMode } from 'core/shares/types/room_props';
-import { ActiveSkill, FilterSkill, ResponsiveSkill, ViewAsSkill } from 'core/skills/skill';
+import { ActiveSkill, AI, FilterSkill, ResponsiveSkill, ViewAsSkill } from 'core/skills/skill';
 import { ActiveSkillTriggerClass } from './skills/base/active_skill_trigger';
 import { ViewAsSkillTriggerClass } from './skills/base/view_as_skill_trigger';
 
@@ -229,6 +229,9 @@ export abstract class AiLibrary {
     }
 
     if (askedByCard) {
+      if (player.Hp === 1) {
+        return true;
+      }
       if (askedByCard.Name === 'wanjianqifa') {
         return availableCards.length > 1;
       }
@@ -238,7 +241,7 @@ export abstract class AiLibrary {
           return true;
         }
         if (useFrom && useFrom.getCardIds(PlayerCardsArea.HandArea).length > 3) {
-          return availableCards.length > 1;
+          return availableCards.length >= 1;
         }
         return true;
       }
@@ -294,9 +297,7 @@ export abstract class AiLibrary {
           ? availableCards
           : [];
       } else if (cardMatcher.name?.includes('jink')) {
-        return AiLibrary.shouldUseJink(room, aiPlayer, availableCards, byCardId, cardUseFrom)
-          ? availableCards
-          : [];
+        return AiLibrary.shouldUseJink(room, aiPlayer, availableCards, byCardId, cardUseFrom) ? availableCards : [];
       }
     }
 
