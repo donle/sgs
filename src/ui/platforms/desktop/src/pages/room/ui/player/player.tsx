@@ -68,12 +68,15 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   autoHidePlayerName: boolean = true;
   @mobx.observable.ref
   skinName: string;
-
-  private showPlayerHandcards =
-    this.props.store.room.Info.gameMode === GameMode.TwoVersusTwo &&
-    this.props.presenter.ClientPlayer &&
-    this.props.player &&
-    this.props.presenter.ClientPlayer.Role === this.props.player.Role;
+  @mobx.computed
+  private get showPlayerHandcards() {
+    return (
+      this.props.store.room.Info.gameMode === GameMode.TwoVersusTwo &&
+      this.props.presenter.ClientPlayer &&
+      this.props.player &&
+      this.props.presenter.ClientPlayer.Role === this.props.player.Role
+    );
+  }
 
   private onTooltipOpeningTimer: NodeJS.Timer;
   private openedDialog: string | undefined;
