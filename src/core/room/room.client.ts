@@ -1,6 +1,7 @@
 import { ClientEventFinder, GameEventIdentifiers, WorkPlace } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { GameInfo, GameRunningInfo } from 'core/game/game_props';
+import { GameCommonRules } from 'core/game/game_rules';
 import { RecordAnalytics } from 'core/game/record_analytics';
 import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { ClientSocket } from 'core/network/socket.client';
@@ -30,6 +31,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     gameInfo: GameInfo,
     players: ClientPlayer[],
     protected analytics: RecordAnalytics,
+    protected gameCommonRules: GameCommonRules,
   ) {
     super();
 

@@ -3,6 +3,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import type { ServerEventFinder } from 'core/event/event';
 import { GameEventIdentifiers } from 'core/event/event';
 import type { GameInfo } from 'core/game/game_props';
+import { GameCommonRules } from 'core/game/game_rules';
 import { RecordAnalytics } from 'core/game/record_analytics';
 import { ClientSocket } from 'core/network/socket.client';
 import { Player } from 'core/player/player';
@@ -241,7 +242,7 @@ export class RoomPresenter {
         ),
     );
 
-    this.store.room = new ClientRoom(roomId, socket, gameInfo, players, new RecordAnalytics());
+    this.store.room = new ClientRoom(roomId, socket, gameInfo, players, new RecordAnalytics(), new GameCommonRules());
     this.broadcastUIUpdate();
   }
 

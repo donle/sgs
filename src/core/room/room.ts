@@ -43,7 +43,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected abstract readonly roomId: RoomId;
   protected abstract readonly gameMode: GameMode;
   protected circle: number = 0;
-  private readonly gameCommonRules = new GameCommonRules();
+  protected abstract readonly gameCommonRules: GameCommonRules;
 
   protected awaitResponseEvent: {
     [K in PlayerId]?: {

@@ -5,6 +5,7 @@ import { TwoVersusTwoGameProcessor } from 'core/game/game_processor/game_process
 import { PveGameProcessor } from 'core/game/game_processor/game_processor.pve';
 import { StandardGameProcessor } from 'core/game/game_processor/game_processor.standard';
 import { GameInfo } from 'core/game/game_props';
+import { GameCommonRules } from 'core/game/game_rules';
 import { RecordAnalytics } from 'core/game/record_analytics';
 import { StageProcessor } from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
@@ -113,6 +114,7 @@ class App {
       this.config.mode,
       this.logger,
       content.gameMode,
+      new GameCommonRules(),
     );
 
     room.onClosed(() => {

@@ -14,8 +14,8 @@ import { ExtralCardSkillProperty } from '../interface/extral_property';
 export class AlcoholSkill extends ActiveSkill implements ExtralCardSkillProperty {
   private readonly recoverTag = 'recover';
 
-  public canUse(room: Room, owner: Player) {
-    return !owner.hasUsed(this.Name);
+  public canUse(room: Room, owner: Player, contentOrContainerCard: CardId) {
+    return owner.canUseCard(room,  contentOrContainerCard);
   }
 
   isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
