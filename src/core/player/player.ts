@@ -195,15 +195,11 @@ export abstract class Player implements PlayerInfo {
   }
 
   public canUseCard(room: Room, cardId: CardId | CardMatcher, onResponse?: CardMatcher): boolean {
-    const card = cardId instanceof CardMatcher ? undefined : Sanguosha.getCardById(cardId);
-    const ruleCardUse = room.CommonRules.canUseCard(
-      room,
-      this,
-      cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId),
-    );
+    const card = cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId);
+    const ruleCardUse = room.CommonRules.canUseCard(room, this, card);
 
-    if (card) {
-      const canUseToSomeone = room.AlivePlayers.find(player => room.CommonRules.canUseCardTo(room, this, card, player));
+    const canUseToSomeone = room.AlivePlayers.find(player => room.CommonRules.canUseCardTo(room, this, card, player));
+    if (card instanceof Card) {
       if (canUseToSomeone) {
         return card.is(CardType.Equip)
           ? true
@@ -211,11 +207,10 @@ export abstract class Player implements PlayerInfo {
           ? onResponse.match(card)
           : card.Skill.canUse(room, this, cardId);
       }
-
-      return (
-        ruleCardUse &&
-        (card.is(CardType.Equip) ? true : onResponse ? onResponse.match(card) : card.Skill.canUse(room, this, cardId))
-      );
+    } else {
+      if (canUseToSomeone) {
+        return onResponse ? onResponse.match(card) : true;
+      }
     }
 
     return ruleCardUse;
@@ -436,9 +431,17 @@ export abstract class Player implements PlayerInfo {
   }
 
   public getEmptyEquipSections(): CardType[] {
-    let allEquipTypes = [CardType.Weapon, CardType.Shield, CardType.DefenseRide, CardType.OffenseRide, CardType.Precious];
+    let allEquipTypes = [
+      CardType.Weapon,
+      CardType.Shield,
+      CardType.DefenseRide,
+      CardType.OffenseRide,
+      CardType.Precious,
+    ];
     if (this.playerCards[PlayerCardsArea.EquipArea].length > 0) {
-      allEquipTypes = allEquipTypes.filter(type => !this.playerCards[PlayerCardsArea.EquipArea].find(id => Sanguosha.getCardById(id).is(type)));
+      allEquipTypes = allEquipTypes.filter(
+        type => !this.playerCards[PlayerCardsArea.EquipArea].find(id => Sanguosha.getCardById(id).is(type)),
+      );
     }
 
     const cardTypeMapper = {
@@ -447,7 +450,7 @@ export abstract class Player implements PlayerInfo {
       [CardType.DefenseRide]: CharacterEquipSections.DefenseRide,
       [CardType.OffenseRide]: CharacterEquipSections.OffenseRide,
       [CardType.Precious]: CharacterEquipSections.Precious,
-    }
+    };
     return allEquipTypes.filter(type => this.equipSectionsStatus[cardTypeMapper[type]] === 'enabled');
   }
 

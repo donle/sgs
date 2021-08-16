@@ -1362,7 +1362,7 @@ export class StandardGameProcessor extends GameProcessor {
 
         if (killedBy) {
           const killer = this.room.getPlayerById(killedBy);
-  
+
           if (deadPlayer.Role === PlayerRole.Rebel && !killer.Dead) {
             await this.room.drawCards(3, killedBy, 'top', undefined, undefined, CardDrawReason.KillReward);
           } else if (deadPlayer.Role === PlayerRole.Loyalist && killer.Role === PlayerRole.Lord) {
@@ -1549,11 +1549,7 @@ export class StandardGameProcessor extends GameProcessor {
       });
     }
 
-    await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      if (stage === CardResponseStage.CardResponsing) {
-        this.room.broadcast(identifier, event);
-      }
-    });
+    await this.iterateEachStage(identifier, event, onActualExecuted);
 
     if (!event.skipDrop) {
       await this.room.moveCards({

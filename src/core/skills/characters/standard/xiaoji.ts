@@ -1,4 +1,6 @@
+import { CardType } from 'core/cards/card';
 import { CardMoveArea, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardMoveStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
@@ -21,7 +23,12 @@ export class XiaoJi extends TriggerSkill {
   }
 
   triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
-    return event.movingCards.filter(card => card.fromArea === CardMoveArea.EquipArea).length;
+    return event.movingCards.filter(
+      card =>
+        !Sanguosha.isVirtualCardId(card.card) &&
+        Sanguosha.getCardById(card.card).is(CardType.Equip) &&
+        card.fromArea === CardMoveArea.EquipArea,
+    ).length;
   }
 
   async onTrigger() {

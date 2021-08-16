@@ -44,10 +44,6 @@ export class ReplayRoomPage extends React.Component<
   private baseService: RoomBaseService;
   private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
 
-  private displayedCardsRef = React.createRef<HTMLDivElement>();
-  private readonly cardWidth = 120;
-  private readonly cardMargin = 2;
-
   private replayStepDelay = 2000;
   private dumped = false;
 
@@ -213,24 +209,6 @@ export class ReplayRoomPage extends React.Component<
     messages.forEach(message => {
       this.presenter.addGameLog(translator.trx(message));
     });
-  }
-
-  private calculateDisplayedCardOffset(totalCards: number, index: number) {
-    const container = this.displayedCardsRef.current;
-    if (!container) {
-      return this.cardMargin;
-    }
-
-    const containerWidth = container.clientWidth;
-    const innerOffset =
-      Math.min(this.cardWidth * totalCards + this.cardMargin * (totalCards + 1), containerWidth) / 2 -
-      this.cardWidth / 2;
-    if (containerWidth < totalCards * (this.cardWidth + this.cardMargin)) {
-      const offset = (totalCards * (this.cardWidth + this.cardMargin) - containerWidth) / (totalCards - 1);
-      return (totalCards - index - 1) * (this.cardMargin + this.cardWidth - offset) - innerOffset;
-    } else {
-      return (totalCards - index - 1) * (this.cardMargin + this.cardWidth) + this.cardMargin * 2 - innerOffset;
-    }
   }
 
   @mobx.action

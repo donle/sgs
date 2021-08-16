@@ -120,6 +120,18 @@ export class FuHunLoseSkill extends TriggerSkill implements OnDefineReleaseTimin
     return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
+  public async whenLosingSkill(room: Room, from: Player) {
+    if (from.getFlag<boolean>(FuHunDamage.WuSheng)) {
+      await room.loseSkill(from.Id, WuSheng.Name);
+      from.removeFlag(FuHunDamage.WuSheng);
+    }
+
+    if (room.getFlag<boolean>(from.Id, FuHunDamage.PaoXiao)) {
+      await room.loseSkill(from.Id, PaoXiao.Name);
+      from.removeFlag(FuHunDamage.PaoXiao);
+    }
+  }
+
   public afterDead(): boolean {
     return true;
   }

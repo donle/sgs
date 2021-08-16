@@ -395,7 +395,9 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.store.room.getPlayerById(content.to).setFlag(content.name, content.value, content.tagName, content.visiblePlayers);
+    this.store.room
+      .getPlayerById(content.to)
+      .setFlag(content.name, content.value, content.tagName, content.visiblePlayers);
   }
   protected async onHandleRemoveFlagEvent<T extends GameEventIdentifiers.RemoveFlagEvent>(
     type: T,
@@ -643,7 +645,7 @@ export class GameClientProcessor {
     if (!card.is(CardType.Equip) && !content.mute) {
       this.audioService.playCardAudio(card.Name, from.Gender, from.Character.Name);
     }
-
+    console.log('card responsed');
     const showCards = VirtualCard.getActualCards([content.cardId]).map(cardId => ({
       card: Sanguosha.getCardById(cardId),
       tag: TranslationPack.translationJsonPatcher(
@@ -1765,7 +1767,9 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.store.room.getPlayerById(content.toId).hookUpSkills(content.skillNames.map(name => Sanguosha.getSkillBySkillName(name)));
+    this.store.room
+      .getPlayerById(content.toId)
+      .hookUpSkills(content.skillNames.map(name => Sanguosha.getSkillBySkillName(name)));
     this.presenter.broadcastUIUpdate();
   }
 
@@ -1773,7 +1777,9 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.store.room.getPlayerById(content.toId).removeHookedSkills(content.skillNames.map(name => Sanguosha.getSkillBySkillName(name)));
+    this.store.room
+      .getPlayerById(content.toId)
+      .removeHookedSkills(content.skillNames.map(name => Sanguosha.getSkillBySkillName(name)));
     this.presenter.broadcastUIUpdate();
   }
 }
