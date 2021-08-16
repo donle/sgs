@@ -35,6 +35,9 @@ export const characterDictionary: Word[] = [
 
   { source: 'chengpu', target: '程普' },
   { source: 'lihuo', target: '疠火' },
+  { source: '#lihuo', target: '疠火（增加目标）' },
+  { source: '##lihuo', target: '疠火（置为醇）' },
+  { source: '###lihuo', target: '疠火（失去体力）' },
   { source: 'chunlao', target: '醇醪' },
 
   { source: 'handang', target: '韩当' },

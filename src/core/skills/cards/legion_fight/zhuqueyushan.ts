@@ -36,7 +36,10 @@ export class ZhuQueYuShanSkill extends TriggerSkill {
       },
       [cardId],
     );
+
+    room.endProcessOnTag(cardUseEvent.cardId.toString());
     cardUseEvent.cardId = fireSlash.Id;
+    room.addProcessingCards(cardUseEvent.cardId.toString(), cardUseEvent.cardId);
 
     room.broadcast(GameEventIdentifiers.CustomGameDialog, {
       translationsMessage: TranslationPack.translationJsonPatcher(

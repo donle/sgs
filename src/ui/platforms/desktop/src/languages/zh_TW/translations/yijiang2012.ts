@@ -35,14 +35,17 @@ export const characterDictionary: Word[] = [
 
   { source: 'chengpu', target: '程普' },
   { source: 'lihuo', target: '癘火' },
+  { source: '#lihuo', target: '癘火（增加目標）' },
+  { source: '##lihuo', target: '癘火（置為醇）' },
+  { source: '###lihuo', target: '癘火（失去體力）' },
   { source: 'chunlao', target: '醇醪' },
 
   { source: 'handang', target: '韓當' },
-  { source: 'gongji', target: '弓騎' },
+  { source: 'gongqi', target: '弓騎' },
   { source: 'gongqi suits: {0}', target: '弓騎[{0}]' },
   { source: 'jiefan', target: '解煩' },
 
-  { source: 'liubiao', target: '劉錶' },
+  { source: 'liubiao', target: '劉表' },
   { source: 'zishou', target: '自守' },
   { source: 'zongshi', target: '宗室' },
 ];
@@ -64,7 +67,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'zhiyu_description',
-    target: '當你受到傷害後，你可以摸一張牌並展示所有手牌，若這些牌顔色均相同，傷害來源棄置一張手牌。',
+    target: '當你受到傷害後，你可以摸一張牌並展示所有手牌，若這些牌顏色均相同，傷害來源棄置一張手牌。',
   },
 
   {
@@ -74,7 +77,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'zili_description',
-    target: '覺醒技，準備階段開始時，若你有不少於3張“權”，你減1點體力上限，回複1點體力或摸兩張牌，然後獲得技能“排異”。',
+    target: '覺醒技，準備階段開始時，若你有不少於3張“權”，你減1點體力上限，回覆1點體力或摸兩張牌，然後獲得技能“排異”。',
   },
   {
     source: 'paiyi_description',
@@ -94,37 +97,37 @@ export const skillDescriptions: Word[] = [
   {
     source: 'fuli_description',
     target:
-      '<b>限定技</b>，當你處於瀕死狀態時，你可以將體力回複至X點（X為存活勢力數），然後若你的體力值為全場最高，你翻麵。',
+      '<b>限定技</b>，當你處於瀕死狀態時，你可以將體力回覆至X點（X為存活勢力數），然後若你的體力值為全場最高，你翻面。',
   },
 
   {
     source: 'qianxi_description',
     target:
-      '準備階段開始時，你可以摸一張牌，棄置一張牌，然後你令你距離為1的一名角色於本回合內不能使用或打出與你以此法棄置牌顔色相同的手牌。',
+      '準備階段開始時，你可以摸一張牌，棄置一張牌，然後你令你距離為1的一名角色於本回合內不能使用或打出與你以此法棄置牌顏色相同的手牌。',
   },
   {
     source: 'anxu_description',
     target:
-      '出牌階段限一次，你可以依次選擇兩名其他角色，令前者獲得後者的一張牌，若前者以此法獲得的牌不為裝備區裏的牌，你摸一張牌，然後你可以令二者中手牌較少的角色摸一張牌。',
+      '出牌階段限一次，你可以依次選擇兩名其他角色，令前者獲得後者的一張牌，若前者以此法獲得的牌不為裝備區裡的牌，你摸一張牌，然後你可以令二者中手牌較少的角色摸一張牌。',
   },
   {
     source: 'zhuiyi_description',
-    target: '當你死亡時，你可以令除殺死你的角色外的一名其他角色摸三張牌並回複1點體力。',
+    target: '當你死亡時，你可以令除殺死你的角色外的一名其他角色摸三張牌並回復1點體力。',
   },
 
   {
     source: 'lihuo_description',
     target:
-      '你可將普【殺】當火【殺】使用，然後若此【殺】造成傷害，你失去1點體力；你使用火【殺】可額外選擇一個目標；當你於一回合使用的第一張牌結算結束後，若此牌為【殺】，你可以將之置為“醇”',
+      '你可將普【殺】當火【殺】使用，然後若此【殺】造成傷害，你失去1點體力；你使用火【殺】可額外選擇一個目標；當你於一回合使用的第一張牌結算結束後，若此牌為【殺】，你可以將之置為“醇”。',
   },
   {
     source: 'chunlao_description',
     target:
-      '結束階段開始時，若你冇有“醇”，你可以將至少一張【殺】置於你的武將牌上，稱為“醇”；當一名角色處於瀕死狀態時，你可以移去一張“醇”，視為該角色使用一張【酒】，然後若移去的“醇”為：雷【殺】，你摸兩張牌；火【殺】，你回複1點體力。',
+      '結束階段開始時，若你沒有“醇”，你可以將至少一張【殺】置於你的武將牌上，稱為“醇”；當一名角色處於瀕死狀態時，你可以移去一張“醇”，視為該角色使用一張【酒】，然後若移去的“醇”為：雷【殺】，你摸兩張牌；火【殺】，你回覆1點體力。',
   },
 
   {
-    source: 'gongji_description',
+    source: 'gongqi_description',
     target:
       '出牌階段限一次，你可以棄置一張牌，令你於本回合攻擊範圍無限，且使用與以此法棄置牌花色相同的【殺】無次數限制。若你以此法棄置的是裝備牌，你可以棄置一名其他角色一張牌。',
   },
@@ -157,7 +160,7 @@ export const promptDescriptions: Word[] = [
   },
 
   { source: 'zili:drawcards', target: '摸兩張牌' },
-  { source: 'zili:recover', target: '回複1點體力' },
+  { source: 'zili:recover', target: '回覆1點體力' },
 
   {
     source: '{0}: do you want to lose 1 hp to nullify {1}, then drop a card from {2}',
@@ -215,12 +218,12 @@ export const promptDescriptions: Word[] = [
 
   {
     source: '{0}: please choose a target to draw 3 cards and recover 1 hp',
-    target: '{0}：你可以令一名其他角色摸三張牌並回複1點體力',
+    target: '{0}：你可以令一名其他角色摸三張牌並回復1點體力',
   },
 
   {
     source: '{0}: please choose a target except {1} to draw 3 cards and recover 1 hp',
-    target: '{0}：你可以令一名除 {1} 外的其他角色摸三張牌並回複1點體力',
+    target: '{0}：你可以令一名除 {1} 外的其他角色摸三張牌並回復1點體力',
   },
 
   {

@@ -1506,7 +1506,7 @@ export class StandardGameProcessor extends GameProcessor {
     await this.iterateEachStage(identifier, event, onActualExecuted);
 
     if (!event.skipDrop) {
-      if (!card.is(CardType.Equip) && !card.is(CardType.DelayedTrick)) {
+      if (!card.is(CardType.Equip) && !card.is(CardType.DelayedTrick) && this.room.isCardOnProcessing(card.Id)) {
         await this.room.moveCards({
           movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
           moveReason: CardMoveReason.CardUse,
@@ -1514,8 +1514,6 @@ export class StandardGameProcessor extends GameProcessor {
           hideBroadcast: true,
           proposer: event.fromId,
         });
-      }
-      if (this.room.isCardOnProcessing(card.Id)) {
         this.room.endProcessOnTag(card.Id.toString());
       }
     }

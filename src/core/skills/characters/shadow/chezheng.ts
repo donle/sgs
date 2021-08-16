@@ -1,7 +1,7 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
+import { AllStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -61,13 +61,12 @@ export class CheZheng extends TriggerSkill {
       [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea).length,
     };
 
-    const chooseCardEvent = EventPacker.createUncancellableEvent<
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent
-    >({
-      fromId,
-      toId,
-      options,
-    });
+    const chooseCardEvent =
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>({
+        fromId,
+        toId,
+        options,
+      });
 
     const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(
       GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
@@ -93,6 +92,12 @@ export class CheZheng extends TriggerSkill {
 @CompulsorySkill({ name: CheZheng.Name, description: CheZheng.Description })
 export class CheZhengShadow extends GlobalFilterSkill {
   public canUseCardTo(_: CardId | CardMatcher, room: Room, owner: Player, from: Player, to: Player): boolean {
-    return !(owner === from && owner !== to && !room.withinAttackDistance(to, owner));
+    return !(
+      room.CurrentPlayerPhase === PlayerPhase.PlayCardStage &&
+      room.CurrentPhasePlayer === owner &&
+      owner === from &&
+      owner !== to &&
+      !room.withinAttackDistance(to, owner)
+    );
   }
 }

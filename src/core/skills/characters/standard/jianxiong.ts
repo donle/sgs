@@ -1,3 +1,4 @@
+import { VirtualCard } from 'core/cards/card';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -21,7 +22,11 @@ export class JianXiong extends TriggerSkill {
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = skillUseEvent;
     const damagedEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-    if (damagedEvent.cardIds !== undefined) {
+    if (
+      damagedEvent.cardIds !== undefined &&
+      VirtualCard.getActualCards(damagedEvent.cardIds).length > 0 &&
+      room.isCardOnProcessing(damagedEvent.cardIds[0])
+    ) {
       const { cardIds, toId } = damagedEvent;
       await room.moveCards({
         movingCards: cardIds.map(card => ({ card, fromArea: CardMoveArea.ProcessingArea })),

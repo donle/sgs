@@ -111,10 +111,12 @@ export class ShiCai extends TriggerSkill implements OnDefineReleaseTiming {
     const identifier = EventPacker.getIdentifier(unknownEvent);
 
     let cardIds: CardId[] = [];
+    let mainCard: CardId;
     if (identifier === GameEventIdentifiers.CardUseEvent) {
       const cardUseEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
       const card = Sanguosha.getCardById(cardUseEvent.cardId);
       cardIds = card.isVirtualCard() ? (card as VirtualCard).getRealActualCards() : [cardUseEvent.cardId];
+      mainCard = cardUseEvent.cardId;
     } else {
       const aimEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
       if (!aimEvent.byCardId) {
@@ -122,6 +124,7 @@ export class ShiCai extends TriggerSkill implements OnDefineReleaseTiming {
       }
       const card = Sanguosha.getCardById(aimEvent.byCardId);
       cardIds = card.isVirtualCard() ? (card as VirtualCard).getRealActualCards() : [aimEvent.byCardId];
+      mainCard = aimEvent.byCardId;
     }
 
     let toMove: CardId[] = cardIds;
@@ -149,6 +152,8 @@ export class ShiCai extends TriggerSkill implements OnDefineReleaseTiming {
       toArea: CardMoveArea.DrawStack,
       moveReason: CardMoveReason.PlaceToDrawStack,
     });
+
+    room.endProcessOnTag(mainCard.toString());
 
     await room.drawCards(1, fromId, 'top', fromId, this.Name);
 

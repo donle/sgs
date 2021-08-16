@@ -132,7 +132,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'xuanfeng_description',
     target:
-      '若你於棄牌階段內棄置過至少兩張手牌，或當你失去裝備區裡的牌後，你可以依次棄置其他角色的共計一至兩張牌，然後你可以對其中一名角色造成1點傷害。',
+      '若你於棄牌階段內棄置過至少兩張手牌，或當你失去裝備區裡的牌後，你可以依次棄置其他角色的共計一至兩張牌，然後若此時是你的回合內，你可以對其中一名角色造成1點傷害。',
   },
   {
     source: 'yongjin_description',

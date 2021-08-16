@@ -49,7 +49,11 @@ export class LiHuo extends TriggerSkill {
       },
       [cardId],
     );
+
+    room.endProcessOnTag(cardUseEvent.cardId.toString());
     cardUseEvent.cardId = fireSlash.Id;
+    room.addProcessingCards(cardUseEvent.cardId.toString(), cardUseEvent.cardId);
+
     room.broadcast(GameEventIdentifiers.CustomGameDialog, {
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} used skill {1}, transfrom {2} into {3}',
@@ -176,7 +180,7 @@ export class LiHuoPut extends TriggerSkill {
   ): PatchedTranslationObject {
     return TranslationPack.translationJsonPatcher(
       '{0}: do you want to put {1} on your general card as Chun?',
-      this.Name,
+      this.GeneralName,
       TranslationPack.patchCardInTranslation(event.cardId),
     ).extract();
   }
@@ -315,7 +319,7 @@ export class LiHuoRecord extends TriggerSkill implements OnDefineReleaseTiming {
       from.setFlag<boolean>(this.GeneralName, true);
       EventPacker.addMiddleware({ tag: this.GeneralName, data: true }, unknownEvent);
     } else {
-      room.removeFlag(event.fromId, this.GeneralName);
+      room.getPlayerById(fromId).removeFlag(this.GeneralName);
     }
 
     return true;

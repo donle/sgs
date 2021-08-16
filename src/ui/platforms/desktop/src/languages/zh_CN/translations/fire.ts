@@ -53,7 +53,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'jieming_description',
-    target: '当你受到1点伤害后，你可以令一名角色摸两张牌，然后若其手牌数不大于其体力上限，你摸一张牌。',
+    target: '当你受到1点伤害后，你可以令一名角色摸两张牌，然后若其手牌数小于其体力上限，你摸一张牌。',
   },
   {
     source: 'lianhuan_description',

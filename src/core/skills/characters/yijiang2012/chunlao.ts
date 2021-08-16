@@ -17,7 +17,7 @@ export class ChunLao extends TriggerSkill {
     event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
     stage?: AllStage,
   ): boolean {
-    return stage === PhaseStageChangeStage.StageChanged && event.toStage === PlayerPhaseStages.FinishStageStart;
+    return stage === PhaseStageChangeStage.StageChanged && event.toStage === PlayerPhaseStages.PlayCardStageEnd;
   }
 
   public canUse(

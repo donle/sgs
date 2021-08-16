@@ -32,7 +32,9 @@ export class JuXiang extends TriggerSkill {
     } else if (unknownEvent === GameEventIdentifiers.CardUseEvent) {
       const cardUseEvent = event as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
       return (
-        Sanguosha.getCardById(cardUseEvent.cardId).GeneralName === 'nanmanruqing' && cardUseEvent.fromId !== owner.Id
+        Sanguosha.getCardById(cardUseEvent.cardId).GeneralName === 'nanmanruqing' &&
+        cardUseEvent.fromId !== owner.Id &&
+        room.isCardOnProcessing(cardUseEvent.cardId)
       );
     }
 
