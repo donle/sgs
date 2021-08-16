@@ -15,7 +15,6 @@ import './index.css';
 import * as serviceWorker from './serviceWorker';
 
 const mode = (process.env.REACT_APP_DEV_MODE as ClientFlavor) || ClientFlavor.Dev;
-console.log(process.env.REACT_APP_DEV_MODE);
 const config = getClientConfig(mode);
 
 if (config.flavor !== ClientFlavor.Web) {

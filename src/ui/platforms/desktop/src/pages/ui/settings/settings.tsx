@@ -24,6 +24,7 @@ export const SettingsDialog = (props: SettingsProps) => {
   const [language, setLanguage] = React.useState<Languages>(props.electronLoader.getData('language'));
   const onSubmit = () => {
     props.electronLoader.setData('username', username);
+    props.translator.switchLanguage(language);
     props.onConfirm();
   };
 
