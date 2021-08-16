@@ -1,4 +1,5 @@
 import { GameInfo } from 'core/game/game_props';
+import { GameCommonRules } from 'core/game/game_rules';
 import { RecordAnalytics } from 'core/game/record_analytics';
 import { ClientOfflineSocket } from 'core/network/socket.offline';
 import { ClientPlayer } from 'core/player/player.client';
@@ -7,7 +8,7 @@ import { ClientRoom } from './room.client';
 
 export class ClientOfflineRoom extends ClientRoom {
   constructor(roomId: RoomId, socket: ClientOfflineSocket, gameInfo: GameInfo, players: ClientPlayer[]) {
-    super(roomId, socket, gameInfo, players, undefined as any);
+    super(roomId, socket, gameInfo, players, undefined as any, new GameCommonRules);
   }
 
   public get Analytics(): RecordAnalytics {
