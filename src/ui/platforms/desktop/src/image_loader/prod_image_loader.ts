@@ -19,6 +19,7 @@ import lobbyBackgroundImage from './images/lobby/background_autumn.png';
 import createRoomImage from './images/lobby/create.png';
 import generalModeIcon from './images/lobby/general_mode.png';
 import hegemonyModeIcon from './images/lobby/hegemony_mode.png';
+import pveModeIcon from './images/lobby/pve_mode.png';
 import roomListImage from './images/lobby/room_list.png';
 import acknowledgementImage from './images/system/acknowledge.png';
 import backgroundImage from './images/system/background.jpg';
@@ -44,6 +45,7 @@ const gameModeIcons = {
   [GameMode.Standard]: generalModeIcon,
   [GameMode.OneVersusTwo]: oneVersusTwoModeIcon,
   [GameMode.TwoVersusTwo]: twoVersusTwoModeIcon,
+  [GameMode.Pve]: pveModeIcon,
   [GameMode.Hegemony]: hegemonyModeIcon,
 };
 const lobbyIllustrations = [
