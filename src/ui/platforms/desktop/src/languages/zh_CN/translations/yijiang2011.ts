@@ -169,8 +169,8 @@ export const promptDescriptions: Word[] = [
   { source: 'xuanhuo:attack', target: '选项一' },
   { source: 'xuanhuo:give', target: '选项二' },
   {
-    source: '{0}: please choose xuanhuo options: {1}',
-    target: '{0}：选项一：视为对 {1} 使用一张任意【杀】或【决斗】；选项二：交给 {1} 所有手牌',
+    source: '{0}: please choose xuanhuo options: {1} {2}',
+    target: '{0}：选项一：视为对 {1} 使用一张任意【杀】或【决斗】；选项二：交给 {2} 所有手牌',
   },
   {
     source: '{0}: please choose xuanhuo attack options: {1}',

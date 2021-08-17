@@ -350,7 +350,7 @@ export class TianSuanPower extends TriggerSkill implements OnDefineReleaseTiming
 @CommonSkill({ name: TianSuanPower.Name, description: TianSuanPower.Description })
 export class TianSuanDebuff extends FilterSkill {
   public canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId): boolean {
-    if (room.getFlag<string[]>(owner, TianSuan.Name)?.includes(TianSuan.TianSuanStricks[4])) {
+    if (!room.getFlag<string[]>(owner, TianSuan.Name)?.includes(TianSuan.TianSuanStricks[4])) {
       return true;
     }
 

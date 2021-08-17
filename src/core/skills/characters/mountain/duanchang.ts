@@ -6,10 +6,6 @@ import { CompulsorySkill, TriggerSkill } from 'core/skills/skill';
 
 @CompulsorySkill({ name: 'duanchang', description: 'duanchang_description' })
 export class DuanChang extends TriggerSkill {
-  public afterDead(room: Room): boolean {
-    return room.CurrentProcessingStage === PlayerDiedStage.PlayerDied;
-  }
-
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>, stage?: AllStage): boolean {
     return stage === PlayerDiedStage.PlayerDied && event.killedBy !== undefined;
   }

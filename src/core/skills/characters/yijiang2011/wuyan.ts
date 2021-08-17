@@ -13,12 +13,17 @@ export class WuYan extends TriggerSkill {
     return stage === DamageEffectStage.DamageEffect || stage === DamageEffectStage.DamagedEffect;
   }
 
-  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>): boolean {
+  public canUse(
+    room: Room,
+    owner: Player,
+    content: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
+    stage?: AllStage,
+  ): boolean {
     if (content.cardIds === undefined || !Sanguosha.getCardById(content.cardIds[0]).is(CardType.Trick)) {
       return false;
     }
 
-    if (room.CurrentProcessingStage === DamageEffectStage.DamageEffect) {
+    if (stage === DamageEffectStage.DamageEffect) {
       return content.fromId === owner.Id;
     } else {
       return content.toId === owner.Id;

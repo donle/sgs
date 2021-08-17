@@ -52,6 +52,7 @@ export class AnJian extends TriggerSkill {
       | GameEventIdentifiers.CardUseEvent
       | GameEventIdentifiers.PlayerDyingEvent
     >,
+    stage?: AllStage,
   ): boolean {
     const identifier = EventPacker.getIdentifier(content);
     if (identifier === GameEventIdentifiers.AimEvent) {
@@ -78,7 +79,7 @@ export class AnJian extends TriggerSkill {
         content.killedByCards &&
         Sanguosha.getCardById(content.killedByCards[0]).GeneralName === 'slash'
       ) {
-        dying.setFlag<GameEventStage>(AnJian.AnJianDying, room.CurrentProcessingStage!);
+        dying.setFlag<AllStage>(AnJian.AnJianDying, stage!);
         return true;
       }
     } else if (identifier === GameEventIdentifiers.CardUseEvent) {

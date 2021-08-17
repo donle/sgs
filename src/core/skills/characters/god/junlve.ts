@@ -16,10 +16,15 @@ export class JunLve extends TriggerSkill {
     return event.damage;
   }
 
-  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
+  public canUse(
+    room: Room,
+    owner: Player,
+    content: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
+    stage?: AllStage,
+  ) {
     return (
-      (content.fromId === owner.Id && room.CurrentProcessingStage === DamageEffectStage.AfterDamageEffect) ||
-      (content.toId === owner.Id && room.CurrentProcessingStage === DamageEffectStage.AfterDamagedEffect)
+      (content.fromId === owner.Id && stage === DamageEffectStage.AfterDamageEffect) ||
+      (content.toId === owner.Id && stage === DamageEffectStage.AfterDamagedEffect)
     );
   }
 

@@ -117,9 +117,10 @@ export class XuanHuo extends TriggerSkill {
     const askForChooseEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
       options,
       conversation: TranslationPack.translationJsonPatcher(
-        '{0}: please choose xuanhuo options: {1}',
+        '{0}: please choose xuanhuo options: {1} {2}',
         this.Name,
         TranslationPack.patchPlayerInTranslation(room.getPlayerById(second)),
+        TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
       ).extract(),
       toId: first,
       triggeredBySkills: [this.Name],

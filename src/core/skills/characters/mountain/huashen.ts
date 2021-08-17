@@ -61,16 +61,21 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
     return stage === PhaseChangeStage.BeforePhaseChange || stage === PhaseChangeStage.PhaseChanged;
   }
 
-  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
+  public canUse(
+    room: Room,
+    owner: Player,
+    event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>,
+    stage?: AllStage,
+  ) {
     const canUse =
       (((event.toPlayer === owner.Id &&
         owner.getCardIds<CharacterId>(PlayerCardsArea.OutsideArea, this.Name).length > 0) ||
         (room.Circle === 1 && !owner.getFlag<boolean>(this.Name))) &&
         event.to === PlayerPhase.PhaseBegin &&
-        room.CurrentProcessingStage === PhaseChangeStage.PhaseChanged) ||
+        stage === PhaseChangeStage.AfterPhaseChanged) ||
       (event.fromPlayer === owner.Id &&
         event.from === PlayerPhase.PhaseFinish &&
-        room.CurrentProcessingStage === PhaseChangeStage.BeforePhaseChange &&
+        stage === PhaseChangeStage.PhaseChanged &&
         owner.getCardIds<CharacterId>(PlayerCardsArea.OutsideArea, this.Name).length > 0);
 
     return canUse;
@@ -202,7 +207,7 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
         toId: skillEffectEvent.fromId,
         conversation:
           'please choose: 1. show a character from huashen area and announce a skill to obtain. 2. remove no more than two unshown characters of huashen and get equal number of that.',
-          triggeredBySkills: [this.Name],
+        triggeredBySkills: [this.Name],
       };
 
       room.notify(

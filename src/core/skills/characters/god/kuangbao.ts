@@ -25,13 +25,13 @@ export class KuangBao extends TriggerSkill {
     }
   }
 
-  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers>): boolean {
+  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
     const identifier = EventPacker.getIdentifier(event);
     if (identifier === GameEventIdentifiers.DamageEvent) {
       const damageEvent = event as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-      if (room.CurrentProcessingStage === DamageEffectStage.AfterDamageEffect) {
+      if (stage === DamageEffectStage.AfterDamageEffect) {
         return damageEvent.fromId === owner.Id;
-      } else if (room.CurrentProcessingStage === DamageEffectStage.AfterDamagedEffect) {
+      } else if (stage === DamageEffectStage.AfterDamagedEffect) {
         return damageEvent.toId === owner.Id;
       }
       return false;

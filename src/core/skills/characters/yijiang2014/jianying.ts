@@ -1,7 +1,7 @@
 import { CardSuit } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AllStage, CardUseStage } from 'core/game/stage_processor';
+import { AllStage, CardUseStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
@@ -13,7 +13,11 @@ export class JianYing extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    if (event.fromId !== owner.Id) {
+    if (
+      event.fromId !== owner.Id ||
+      room.CurrentPlayerPhase !== PlayerPhase.PlayCardStage ||
+      room.CurrentPhasePlayer !== owner
+    ) {
       return false;
     }
 

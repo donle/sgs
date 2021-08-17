@@ -44,12 +44,16 @@ export class WuHunDeath extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
     return stage === PlayerDiedStage.PlayerDied;
   }
-  public async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
-    return true;
-  }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>): boolean {
-    return owner.Id === content.playerId && !!content.killedBy;
+    return (
+      owner.Id === content.playerId &&
+      room.getOtherPlayers(owner.Id).find(player => player.getMark(MarkEnum.Nightmare) > 0) !== undefined
+    );
+  }
+
+  public async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
+    return true;
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {

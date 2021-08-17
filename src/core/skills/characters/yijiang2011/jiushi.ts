@@ -72,12 +72,12 @@ export class JiuShiShadow extends TriggerSkill {
     );
   }
 
-  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers>): boolean {
+  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers>, stage?: AllStage): boolean {
     const identifier = EventPacker.getIdentifier(event);
     if (identifier === GameEventIdentifiers.DamageEvent) {
       const damageEvent = event as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
       if (damageEvent.toId === owner.Id && !owner.isFaceUp()) {
-        if (room.CurrentProcessingStage === DamageEffectStage.DamagedEffect) {
+        if (stage === DamageEffectStage.DamagedEffect) {
           EventPacker.addMiddleware({ tag: JiuShiShadow.faceDownTag, data: true }, damageEvent);
         } else {
           return !!EventPacker.getMiddleware(JiuShiShadow.faceDownTag, damageEvent);
