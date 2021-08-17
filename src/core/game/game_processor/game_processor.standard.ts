@@ -4,6 +4,7 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Character, CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
 import {
+  BaseGameEvent,
   CardDrawReason,
   CardMoveArea,
   CardMovedBySpecifiedReason,
@@ -13,7 +14,7 @@ import {
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
-import { MovingCardProps } from 'core/event/event.server';
+import { MoveCardEventInfos, MovingCardProps } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import {
   CardEffectStage,
@@ -375,10 +376,14 @@ export class StandardGameProcessor extends GameProcessor {
 
     this.room.broadcast(GameEventIdentifiers.DrawCardEvent, drawEvent);
     this.room.broadcast(GameEventIdentifiers.MoveCardEvent, {
-      moveReason: CardMoveReason.CardDraw,
-      movingCards: cardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
-      toArea: CardMoveArea.HandArea,
-      toId: playerId,
+      infos: [
+        {
+          moveReason: CardMoveReason.CardDraw,
+          movingCards: cardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
+          toArea: CardMoveArea.HandArea,
+          toId: playerId,
+        },
+      ],
     });
     this.room
       .getPlayerById(playerId)
@@ -459,15 +464,19 @@ export class StandardGameProcessor extends GameProcessor {
       };
 
       this.room.broadcast(GameEventIdentifiers.MoveCardEvent, {
-        fromId: this.currentPhasePlayer.Id,
-        movingCards: [
+        infos: [
           {
-            fromArea: CardMoveArea.JudgeArea,
-            card: judgeCardId,
+            fromId: this.currentPhasePlayer.Id,
+            movingCards: [
+              {
+                fromArea: CardMoveArea.JudgeArea,
+                card: judgeCardId,
+              },
+            ],
+            toArea: CardMoveArea.DropStack,
+            moveReason: CardMoveReason.PlaceToDropStack,
           },
         ],
-        toArea: CardMoveArea.DropStack,
-        moveReason: CardMoveReason.PlaceToDropStack,
       });
       this.currentPhasePlayer.dropCards(judgeCardId);
 
@@ -1084,12 +1093,16 @@ export class StandardGameProcessor extends GameProcessor {
 
         const drawedCards = this.room.getCards(event.drawAmount, event.from || 'top');
         await this.room.moveCards({
-          movingCards: drawedCards.map(cardId => ({ card: cardId, fromArea: CardMoveArea.DrawStack })),
-          toId: event.fromId,
-          toArea: CardMoveArea.HandArea,
-          moveReason: CardMoveReason.CardDraw,
-          hideBroadcast: true,
-          movedByReason: event.triggeredBySkills ? event.triggeredBySkills[0] : undefined,
+          infos: [
+            {
+              movingCards: drawedCards.map(cardId => ({ card: cardId, fromArea: CardMoveArea.DrawStack })),
+              toId: event.fromId,
+              toArea: CardMoveArea.HandArea,
+              moveReason: CardMoveReason.CardDraw,
+              hideBroadcast: true,
+              movedByReason: event.triggeredBySkills ? event.triggeredBySkills[0] : undefined,
+            },
+          ],
         });
       }
     });
@@ -1334,12 +1347,16 @@ export class StandardGameProcessor extends GameProcessor {
       } else if (stage === PlayerDiedStage.PlayerDied) {
         const { killedBy, playerId } = event;
         await this.room.moveCards({
-          moveReason: CardMoveReason.SelfDrop,
-          fromId: playerId,
-          movingCards: deadPlayer
-            .getPlayerCards()
-            .map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
-          toArea: CardMoveArea.DropStack,
+          infos: [
+            {
+              moveReason: CardMoveReason.SelfDrop,
+              fromId: playerId,
+              movingCards: deadPlayer
+                .getPlayerCards()
+                .map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
+              toArea: CardMoveArea.DropStack,
+            },
+          ],
         });
 
         const outsideCards = Object.entries(deadPlayer.getOutsideAreaCards()).reduce<CardId[]>(
@@ -1354,10 +1371,14 @@ export class StandardGameProcessor extends GameProcessor {
 
         const allCards = [...deadPlayer.getCardIds(PlayerCardsArea.JudgeArea), ...outsideCards];
         await this.room.moveCards({
-          moveReason: CardMoveReason.PlaceToDropStack,
-          fromId: playerId,
-          movingCards: allCards.map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
-          toArea: CardMoveArea.DropStack,
+          infos: [
+            {
+              moveReason: CardMoveReason.PlaceToDropStack,
+              fromId: playerId,
+              movingCards: allCards.map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
+              toArea: CardMoveArea.DropStack,
+            },
+          ],
         });
 
         if (killedBy) {
@@ -1368,10 +1389,14 @@ export class StandardGameProcessor extends GameProcessor {
           } else if (deadPlayer.Role === PlayerRole.Loyalist && killer.Role === PlayerRole.Lord) {
             const lordCards = VirtualCard.getActualCards(killer.getPlayerCards());
             await this.room.moveCards({
-              moveReason: CardMoveReason.SelfDrop,
-              fromId: killer.Id,
-              movingCards: lordCards.map(cardId => ({ card: cardId, fromArea: killer.cardFrom(cardId) })),
-              toArea: CardMoveArea.DropStack,
+              infos: [
+                {
+                  moveReason: CardMoveReason.SelfDrop,
+                  fromId: killer.Id,
+                  movingCards: lordCards.map(cardId => ({ card: cardId, fromArea: killer.cardFrom(cardId) })),
+                  toArea: CardMoveArea.DropStack,
+                },
+              ],
             });
           }
         }
@@ -1496,10 +1521,14 @@ export class StandardGameProcessor extends GameProcessor {
     if (!this.room.isCardOnProcessing(event.cardId)) {
       this.room.addProcessingCards(event.cardId.toString(), event.cardId);
       await this.room.moveCards({
-        movingCards: [{ card: event.cardId, fromArea: from.cardFrom(event.cardId) }],
-        toArea: CardMoveArea.ProcessingArea,
-        fromId: from.Id,
-        moveReason: CardMoveReason.CardUse,
+        infos: [
+          {
+            movingCards: [{ card: event.cardId, fromArea: from.cardFrom(event.cardId) }],
+            toArea: CardMoveArea.ProcessingArea,
+            fromId: from.Id,
+            moveReason: CardMoveReason.CardUse,
+          },
+        ],
       });
     }
 
@@ -1508,11 +1537,15 @@ export class StandardGameProcessor extends GameProcessor {
     if (!event.skipDrop) {
       if (!card.is(CardType.Equip) && !card.is(CardType.DelayedTrick) && this.room.isCardOnProcessing(card.Id)) {
         await this.room.moveCards({
-          movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
-          moveReason: CardMoveReason.CardUse,
-          toArea: CardMoveArea.DropStack,
-          hideBroadcast: true,
-          proposer: event.fromId,
+          infos: [
+            {
+              movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
+              moveReason: CardMoveReason.CardUse,
+              toArea: CardMoveArea.DropStack,
+              hideBroadcast: true,
+              proposer: event.fromId,
+            },
+          ],
         });
         this.room.endProcessOnTag(card.Id.toString());
       }
@@ -1539,11 +1572,15 @@ export class StandardGameProcessor extends GameProcessor {
     if (!this.room.isCardOnProcessing(event.cardId)) {
       this.room.addProcessingCards(event.cardId.toString(), event.cardId);
       await this.room.moveCards({
-        movingCards: [{ card: event.cardId, fromArea: from.cardFrom(event.cardId) }],
-        toArea: CardMoveArea.ProcessingArea,
-        fromId: event.fromId,
-        moveReason: CardMoveReason.CardResponse,
-        hideBroadcast: true,
+        infos: [
+          {
+            movingCards: [{ card: event.cardId, fromArea: from.cardFrom(event.cardId) }],
+            toArea: CardMoveArea.ProcessingArea,
+            fromId: event.fromId,
+            moveReason: CardMoveReason.CardResponse,
+            hideBroadcast: true,
+          },
+        ],
       });
     }
 
@@ -1551,11 +1588,15 @@ export class StandardGameProcessor extends GameProcessor {
 
     if (!event.skipDrop) {
       await this.room.moveCards({
-        movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
-        moveReason: CardMoveReason.CardResponse,
-        toArea: CardMoveArea.DropStack,
-        hideBroadcast: true,
-        proposer: event.fromId,
+        infos: [
+          {
+            movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
+            moveReason: CardMoveReason.CardResponse,
+            toArea: CardMoveArea.DropStack,
+            hideBroadcast: true,
+            proposer: event.fromId,
+          },
+        ],
       });
       if (this.room.isCardOnProcessing(event.cardId)) {
         this.room.endProcessOnTag(event.cardId.toString());
@@ -1568,87 +1609,16 @@ export class StandardGameProcessor extends GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    const { fromId, toId, movingCards, toArea } = event;
-    let to = toId ? this.room.getPlayerById(toId) : undefined;
-    if (to && toArea === CardMoveArea.EquipArea) {
-      const droppedMoves: MovingCardProps[] = [];
-      const equipMoves: MovingCardProps[] = [];
-
-      for (const moving of movingCards) {
-        if (to!.canEquip(Sanguosha.getCardById(moving.card))) {
-          equipMoves.push(moving);
-        } else {
-          droppedMoves.push(moving);
-        }
-      }
-
-      if (droppedMoves.length > 0) {
-        const asyncMoveEvents: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[] = [
-          {
-            ...event,
-            movingCards: droppedMoves,
-            toArea: CardMoveArea.DropStack,
-            moveReason: CardMoveReason.PlaceToDropStack,
-          },
-        ];
-        if (equipMoves.length > 0) {
-          asyncMoveEvents.push({ ...event, movingCards: equipMoves });
-        }
-
-        await this.onHandleAsyncMoveCardEvent(asyncMoveEvents);
-
-        return;
-      }
-    }
-
-    if (to && (to.Dead || (toArea === CardMoveArea.JudgeArea && to.judgeAreaDisabled()))) {
-      event.toId = undefined;
-      event.toArea = CardMoveArea.DropStack;
-      event.moveReason = CardMoveReason.PlaceToDropStack;
-      to = undefined;
-    }
-
-    const from = fromId ? this.room.getPlayerById(fromId) : undefined;
-    const cardIds = movingCards.reduce<CardId[]>((cards, cardInfo) => {
-      if (!cardInfo.asideMove) {
-        cards.push(cardInfo.card);
-      }
-      return cards;
-    }, []);
-    const actualCardIds = VirtualCard.getActualCards(cardIds);
-
-    this.createCardMoveMessage(from, to, cardIds, actualCardIds, event);
-
-    return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      if (stage === CardMoveStage.CardMoving) {
-        await this.moveCardInGameboard(from, to, cardIds, actualCardIds, event);
-        this.room.broadcast(identifier, event);
-      } else if (stage === CardMoveStage.AfterCardMoved && event.fromId) {
-        const from = this.room.getPlayerById(event.fromId);
-        const movingEquips = event.movingCards.filter(cardInfo => cardInfo.fromArea === PlayerCardsArea.EquipArea);
-
-        for (const cardInfo of movingEquips) {
-          await SkillLifeCycle.executeHookOnLosingSkill(Sanguosha.getCardById(cardInfo.card).Skill, this.room, from);
-        }
-      }
-    });
-  }
-
-  public async onHandleAsyncMoveCardEvent(
-    events: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[],
-    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
-  ) {
-    const identifier = GameEventIdentifiers.MoveCardEvent;
-
-    const splitEvents: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[] = [];
-    for (const event of events) {
-      if (event.toId && event.toArea === CardMoveArea.EquipArea) {
-        const to = this.room.getPlayerById(event.toId);
+    const moveCardInfos: MoveCardEventInfos[] = [];
+    for (const info of event.infos) {
+      const { fromId, toId, movingCards, toArea } = info;
+      let to = toId ? this.room.getPlayerById(toId) : undefined;
+      if (to && toArea === CardMoveArea.EquipArea) {
         const droppedMoves: MovingCardProps[] = [];
         const equipMoves: MovingCardProps[] = [];
 
-        for (const moving of event.movingCards) {
-          if (to.canEquip(Sanguosha.getCardById(moving.card))) {
+        for (const moving of movingCards) {
+          if (to!.canEquip(Sanguosha.getCardById(moving.card))) {
             equipMoves.push(moving);
           } else {
             droppedMoves.push(moving);
@@ -1656,57 +1626,75 @@ export class StandardGameProcessor extends GameProcessor {
         }
 
         if (droppedMoves.length > 0) {
-          splitEvents.push({
-            ...event,
+          moveCardInfos.push({
+            ...info,
             movingCards: droppedMoves,
             toArea: CardMoveArea.DropStack,
             moveReason: CardMoveReason.PlaceToDropStack,
           });
+          if (equipMoves.length > 0) {
+            moveCardInfos.push({ ...info, movingCards: equipMoves });
+          }
+
+          continue;
         }
-        if (equipMoves.length > 0) {
-          splitEvents.push({ ...event, movingCards: equipMoves });
-        }
-      } else {
-        splitEvents.push(event);
       }
-    }
 
-    this.logger.debug(JSON.stringify(splitEvents, null, 2), JSON.stringify(events, null, 2));
-
-    events = splitEvents;
-
-    for (const event of events) {
-      const { fromId, toId, movingCards } = event;
-      let to = toId ? this.room.getPlayerById(toId) : undefined;
-      if (to && to.Dead) {
-        event.toId = undefined;
-        event.toArea = CardMoveArea.DropStack;
-        event.moveReason = CardMoveReason.PlaceToDropStack;
+      if (to && (to.Dead || (toArea === CardMoveArea.JudgeArea && to.judgeAreaDisabled()))) {
+        info.toId = undefined;
+        info.toArea = CardMoveArea.DropStack;
+        info.moveReason = CardMoveReason.PlaceToDropStack;
         to = undefined;
       }
 
       const from = fromId ? this.room.getPlayerById(fromId) : undefined;
-      const cardIds = movingCards.map(cardInfo => cardInfo.card);
+      const cardIds = movingCards.reduce<CardId[]>((cards, cardInfo) => {
+        if (!cardInfo.asideMove) {
+          cards.push(cardInfo.card);
+        }
+        return cards;
+      }, []);
       const actualCardIds = VirtualCard.getActualCards(cardIds);
 
-      this.createCardMoveMessage(from, to, cardIds, actualCardIds, event);
-      await this.moveCardInGameboard(from, to, cardIds, actualCardIds, event);
-      this.room.broadcast(identifier, event);
+      this.createCardMoveMessage(from, to, cardIds, actualCardIds, info);
+
+      moveCardInfos.push(info);
     }
 
-    for (const event of events) {
-      const moveEvent = EventPacker.createIdentifierEvent(identifier, event);
-      await this.iterateEachStage(identifier, moveEvent, onActualExecuted, async stage => {
-        if (stage === CardMoveStage.AfterCardMoved && event.fromId) {
-          const from = this.room.getPlayerById(event.fromId);
-          const movingEquips = event.movingCards.filter(cardInfo => cardInfo.fromArea === PlayerCardsArea.EquipArea);
+    return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
+      if (stage === CardMoveStage.CardMoving) {
+        for (const info of event.infos) {
+          const { fromId, toId, movingCards, toArea } = info;
+          const from = fromId ? this.room.getPlayerById(fromId) : undefined;
+          const to = toId ? this.room.getPlayerById(toId) : undefined;
+
+          const cardIds = movingCards.reduce<CardId[]>((cards, cardInfo) => {
+            if (!cardInfo.asideMove) {
+              cards.push(cardInfo.card);
+            }
+            return cards;
+          }, []);
+          const actualCardIds = VirtualCard.getActualCards(cardIds);
+
+          await this.moveCardInGameboard(from, to, cardIds, actualCardIds, info);
+        }
+
+        this.room.broadcast(identifier, event);
+      } else if (stage === CardMoveStage.AfterCardMoved) {
+        for (const info of event.infos) {
+          if (!info.fromId) {
+            continue;
+          }
+
+          const from = this.room.getPlayerById(info.fromId);
+          const movingEquips = info.movingCards.filter(cardInfo => cardInfo.fromArea === PlayerCardsArea.EquipArea);
 
           for (const cardInfo of movingEquips) {
             await SkillLifeCycle.executeHookOnLosingSkill(Sanguosha.getCardById(cardInfo.card).Skill, this.room, from);
           }
         }
-      });
-    }
+      }
+    });
   }
 
   public createCardMoveMessage(
@@ -1714,7 +1702,7 @@ export class StandardGameProcessor extends GameProcessor {
     to: Player | undefined,
     cardIds: CardId[],
     actualCardIds: CardId[],
-    event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>,
+    event: MoveCardEventInfos & BaseGameEvent,
   ) {
     const {
       fromId,
@@ -1838,7 +1826,7 @@ export class StandardGameProcessor extends GameProcessor {
     to: Player | undefined,
     cardIds: CardId[],
     actualCardIds: CardId[],
-    event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>,
+    event: MoveCardEventInfos & BaseGameEvent,
   ) {
     const { toArea, movingCards, toOutsideArea, placeAtTheBottomOfDrawStack } = event;
     for (const { card, fromArea, asideMove } of movingCards) {
@@ -1878,10 +1866,10 @@ export class StandardGameProcessor extends GameProcessor {
             to.equip(card);
           }
         } else if (toArea === CardMoveArea.OutsideArea) {
-          to.getCardIds((toArea as unknown) as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
+          to.getCardIds(toArea as unknown as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
         } else if (toArea === CardMoveArea.HandArea) {
           this.room.transformCard(to, actualCardIds, PlayerCardsArea.HandArea);
-          to.getCardIds((toArea as unknown) as PlayerCardsArea).push(...actualCardIds);
+          to.getCardIds(toArea as unknown as PlayerCardsArea).push(...actualCardIds);
         } else {
           const transformedDelayedTricks = cardIds.map(cardId => {
             if (!Card.isVirtualCardId(cardId)) {
@@ -1902,7 +1890,7 @@ export class StandardGameProcessor extends GameProcessor {
 
             return cardId;
           });
-          to.getCardIds((toArea as unknown) as PlayerCardsArea).push(...transformedDelayedTricks);
+          to.getCardIds(toArea as unknown as PlayerCardsArea).push(...transformedDelayedTricks);
         }
       }
     }
@@ -1916,18 +1904,20 @@ export class StandardGameProcessor extends GameProcessor {
     let fromArea: CardMoveArea = CardMoveArea.DrawStack;
     const ownerId = this.room.getCardOwnerId(event.judgeCardId);
     if (ownerId) {
-      const cardArea = (this.room.getPlayerById(ownerId).cardFrom(event.judgeCardId) as any) as
-        | CardMoveArea
-        | undefined;
+      const cardArea = this.room.getPlayerById(ownerId).cardFrom(event.judgeCardId) as any as CardMoveArea | undefined;
       fromArea = cardArea === undefined ? fromArea : cardArea;
     }
 
     await this.room.moveCards({
-      movingCards: [{ card: event.judgeCardId, fromArea }],
-      moveReason: CardMoveReason.ActiveMove,
-      toArea: CardMoveArea.ProcessingArea,
-      proposer: event.toId,
-      movedByReason: CardMovedBySpecifiedReason.JudgeProcess,
+      infos: [
+        {
+          movingCards: [{ card: event.judgeCardId, fromArea }],
+          moveReason: CardMoveReason.ActiveMove,
+          toArea: CardMoveArea.ProcessingArea,
+          proposer: event.toId,
+          movedByReason: CardMovedBySpecifiedReason.JudgeProcess,
+        },
+      ],
     });
 
     await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
@@ -1959,11 +1949,15 @@ export class StandardGameProcessor extends GameProcessor {
 
     if (this.room.getCardOwnerId(event.judgeCardId) === undefined) {
       await this.room.moveCards({
-        movingCards: [{ card: event.judgeCardId, fromArea: CardMoveArea.ProcessingArea }],
-        moveReason: CardMoveReason.PlaceToDropStack,
-        toArea: CardMoveArea.DropStack,
-        proposer: event.toId,
-        movedByReason: CardMovedBySpecifiedReason.JudgeProcess,
+        infos: [
+          {
+            movingCards: [{ card: event.judgeCardId, fromArea: CardMoveArea.ProcessingArea }],
+            moveReason: CardMoveReason.PlaceToDropStack,
+            toArea: CardMoveArea.DropStack,
+            proposer: event.toId,
+            movedByReason: CardMovedBySpecifiedReason.JudgeProcess,
+          },
+        ],
       });
     }
     this.room.endProcessOnTag(event.judgeCardId.toString());

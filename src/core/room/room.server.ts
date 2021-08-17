@@ -781,7 +781,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   public async reforge(cardId: CardId, from: Player) {
-    await this.moveCards({
+    await this.moveCards({infos: [{
       fromId: from.Id,
       movingCards: [{ card: cardId, fromArea: CardMoveArea.HandArea }],
       moveReason: CardMoveReason.PlaceToDropStack,
@@ -792,7 +792,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         TranslationPack.patchPlayerInTranslation(from),
         TranslationPack.patchCardInTranslation(cardId),
       ).extract(),
-    });
+    }]});
     await this.drawCards(1, from.Id, 'top', undefined, undefined, CardDrawReason.Reforge);
   }
 
@@ -1021,27 +1021,27 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             }
 
             if (existingEquipId !== undefined) {
-              await this.moveCards({
+              await this.moveCards({infos: [{
                 fromId: from.Id,
                 moveReason: CardMoveReason.PlaceToDropStack,
                 toArea: CardMoveArea.DropStack,
                 movingCards: [{ card: existingEquipId, fromArea: CardMoveArea.EquipArea }],
-              });
+              }]});
             }
 
             if (from.Dead) {
-              await this.moveCards({
+              await this.moveCards({infos: [{
                 movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
                 moveReason: CardMoveReason.PlaceToDropStack,
                 toArea: CardMoveArea.DropStack,
-              });
+              }]});
             } else {
-              await this.moveCards({
+              await this.moveCards({infos: [{
                 movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
                 moveReason: CardMoveReason.CardUse,
                 toId: from.Id,
                 toArea: CardMoveArea.EquipArea,
-              });
+              }]});
             }
           }
 
@@ -1381,34 +1381,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       GameEventIdentifiers.MoveCardEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.MoveCardEvent, event),
     );
-  }
-
-  public async asyncMoveCards(events: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[]) {
-    events.sort((prev, next) => {
-      if (prev.fromId !== undefined && next.fromId !== undefined) {
-        const prevPosition = this.getPlayerById(prev.fromId).Position;
-        const nextPosition = this.getPlayerById(next.fromId).Position;
-        if (prevPosition < nextPosition) {
-          return -1;
-        } else if (prevPosition === nextPosition) {
-          return 0;
-        }
-        return 1;
-      } else if (prev.toId !== undefined && next.toId !== undefined) {
-        const prevPosition = this.getPlayerById(prev.toId).Position;
-        const nextPosition = this.getPlayerById(next.toId).Position;
-        if (prevPosition < nextPosition) {
-          return -1;
-        } else if (prevPosition === nextPosition) {
-          return 0;
-        }
-        return 1;
-      }
-
-      return -1;
-    });
-
-    await this.gameProcessor.onHandleAsyncMoveCardEvent(events);
   }
 
   public async damage(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>): Promise<void> {
