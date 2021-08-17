@@ -11,6 +11,7 @@ import { TargetGroup } from 'core/shares/libs/utils/target_group';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
 import {
+  BaseGameEvent,
   CardDrawReason,
   CardMoveArea,
   CardMoveReason,
@@ -25,6 +26,20 @@ export type MovingCardProps = {
   fromArea?: CardMoveArea | PlayerCardsArea;
   asideMove?: boolean;
 };
+
+export type MoveCardEventInfos = {
+  movingCards: MovingCardProps[];
+  fromId?: PlayerId;
+  moveReason: CardMoveReason;
+  toId?: PlayerId;
+  toArea: CardMoveArea | PlayerCardsArea;
+  proposer?: PlayerId;
+  toOutsideArea?: string;
+  isOutsideAreaInPublic?: boolean;
+  movedByReason?: string;
+  hideBroadcast?: boolean;
+  placeAtTheBottomOfDrawStack?: boolean;
+}
 
 export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.SetFlagEvent]: {
@@ -108,17 +123,7 @@ export interface ServerEvent extends EventUtilities {
     from?: 'top' | 'bottom';
   };
   [GameEventIdentifiers.MoveCardEvent]: {
-    movingCards: MovingCardProps[];
-    fromId?: PlayerId;
-    moveReason: CardMoveReason;
-    toId?: PlayerId;
-    toArea: CardMoveArea | PlayerCardsArea;
-    proposer?: PlayerId;
-    toOutsideArea?: string;
-    isOutsideAreaInPublic?: boolean;
-    movedByReason?: string;
-    hideBroadcast?: boolean;
-    placeAtTheBottomOfDrawStack?: boolean;
+    infos: MoveCardEventInfos[] & BaseGameEvent;
   };
   [GameEventIdentifiers.CardDisplayEvent]: {
     displayCards: CardId[];
