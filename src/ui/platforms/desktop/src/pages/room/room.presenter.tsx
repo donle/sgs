@@ -5,7 +5,6 @@ import { GameEventIdentifiers } from 'core/event/event';
 import type { GameInfo } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
 import { RecordAnalytics } from 'core/game/record_analytics';
-import { LocalClientEmitter } from 'core/network/local/local_emitter.client';
 import { ClientSocket } from 'core/network/socket.client';
 import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
