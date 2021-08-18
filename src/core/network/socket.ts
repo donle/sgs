@@ -14,8 +14,6 @@ export interface WebSocketMessageEvent {
 export abstract class Socket<T extends WorkPlace> {
   protected abstract roomId: string;
 
-  constructor(protected eventMode: T) {}
-
   public abstract waitForResponse<I extends GameEventIdentifiers>(
     identifier: I,
     playerId?: PlayerId,

@@ -27,6 +27,7 @@ import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
 import { CharacterSkinInfo } from 'skins/skins';
 import { AudioService } from 'ui/audio/install';
+import { bindPlayerWithGlobalEventEmitter } from 'utils/install_event_emitter';
 import { AskForPeachAction } from './actions/ask_for_peach_action';
 import { CardResponseAction } from './actions/card_response_action';
 import { PlayPhaseAction } from './actions/play_phase_action';
@@ -603,6 +604,8 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
+
+    console.log('using card: ', content);
     const from = this.store.room.getPlayerById(content.fromId);
     const card = Sanguosha.getCardById(content.cardId);
     if (!card.is(CardType.Equip)) {
@@ -645,7 +648,6 @@ export class GameClientProcessor {
     if (!card.is(CardType.Equip) && !content.mute) {
       this.audioService.playCardAudio(card.Name, from.Gender, from.Character.Name);
     }
-    console.log('card responsed');
     const showCards = VirtualCard.getActualCards([content.cardId]).map(cardId => ({
       card: Sanguosha.getCardById(cardId),
       tag: TranslationPack.translationJsonPatcher(
@@ -908,6 +910,10 @@ export class GameClientProcessor {
       content.timestamp === this.store.clientRoomInfo.timestamp
     ) {
       this.presenter.setupClientPlayerId(content.joiningPlayerId);
+      if (content.gameInfo.campaignMode) {
+        bindPlayerWithGlobalEventEmitter(content.joiningPlayerId);
+      }
+
       this.presenter.createClientRoom(
         this.store.clientRoomInfo.roomId,
         this.store.clientRoomInfo.socket,

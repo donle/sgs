@@ -1,4 +1,6 @@
 import { getAudioLoader } from 'audio_loader/audio_loader_util';
+import { ClientLogger } from 'core/shares/libs/logger/client_logger';
+import { Flavor } from 'core/shares/types/host_config';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { createMemoryHistory } from 'history';
@@ -11,8 +13,10 @@ import { RoomPage } from 'pages/room/room';
 import { ClientConfig } from 'props/config_props';
 import * as React from 'react';
 import { Redirect, Route, Router } from 'react-router-dom';
+import { CampaignService } from 'services/campaign_service/campaign_service';
 import { getConnectionService } from 'services/connection_service/connection_service_util';
 import { CharacterSkinInfo } from 'skins/skins';
+import { installEventEmitter } from 'utils/install_event_emitter';
 import { Lobby } from './pages/lobby/lobby';
 @mobxReact.observer
 export class App extends React.PureComponent<{
@@ -26,6 +30,7 @@ export class App extends React.PureComponent<{
   private audioLoader = getAudioLoader(this.props.config.flavor);
   private connectionService = getConnectionService(this.props.config);
   private fakeConnectionService = getConnectionService(this.props.config, true);
+  private campaignService = new CampaignService(new ClientLogger(Flavor.Dev));
 
   // async getSkinData() {
   //   const url = process.env.PUBLIC_URL + '/skin_infos.json';
@@ -37,6 +42,7 @@ export class App extends React.PureComponent<{
   componentDidMount() {
     // this.getSkinData();
     document.title = this.props.translator.tr('New QSanguosha');
+    installEventEmitter();
   }
 
   render() {
@@ -66,6 +72,7 @@ export class App extends React.PureComponent<{
                   audioLoader={this.audioLoader}
                   electronLoader={this.props.electronLoader}
                   connectionService={this.connectionService}
+                  campaignService={this.campaignService}
                 />
               )}
             />

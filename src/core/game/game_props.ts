@@ -44,6 +44,7 @@ export type GameInfo = {
   roomName: string;
   passcode?: string;
   multiCharacters?: boolean;
+  enableObserver?: boolean;
   flavor: Flavor;
   gameMode: GameMode;
 };

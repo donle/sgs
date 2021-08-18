@@ -119,7 +119,8 @@
       "icon": "./build/favicon.ico"
     },
     "mac": {
-      "category": "category.type"
+      "category": "category.type",
+      "icon": "./build/favicon.ico"
     },
     "buildVersion": "0.1.1",
     "files": [

@@ -18,7 +18,7 @@ import IOSocketServer from 'socket.io';
 
 export class ServerSocket extends Socket<WorkPlace.Server> {
   private socket: IOSocketServer.Namespace;
-  private room?: ServerRoom;
+  protected room?: ServerRoom;
   protected roomId: string;
 
   private asyncResponseResolver: {
@@ -36,8 +36,8 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         event: ServerEventFinder<GameEventIdentifiers>;
       }
     | undefined;
-  constructor(socket: IOSocketServer.Namespace, roomId: RoomId, private logger: Logger) {
-    super(WorkPlace.Server);
+  constructor(socket: IOSocketServer.Namespace, roomId: RoomId, protected logger: Logger) {
+    super();
     this.roomId = roomId.toString();
 
     this.socket = socket;
@@ -128,18 +128,18 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         if (player.isOnline()) {
           player.setOffline();
           this.delayToDisconnect(playerId);
-          const playerLeaveEvent: ServerEventFinder<GameEventIdentifiers.PlayerLeaveEvent> = {
-            playerId,
-            translationsMessage: TranslationPack.translationJsonPatcher(
-              'player {0} has disconnected from the room',
-              room.getPlayerById(playerId).Name,
-            ).extract(),
-            ignoreNotifiedStatus: true,
-          };
-          this.broadcast(
-            GameEventIdentifiers.PlayerLeaveEvent,
-            EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent),
-          );
+          // const playerLeaveEvent: ServerEventFinder<GameEventIdentifiers.PlayerLeaveEvent> = {
+          //   playerId,
+          //   translationsMessage: TranslationPack.translationJsonPatcher(
+          //     'player {0} has disconnected from the room',
+          //     room.getPlayerById(playerId).Name,
+          //   ).extract(),
+          //   ignoreNotifiedStatus: true,
+          // };
+          // this.broadcast(
+          //   GameEventIdentifiers.PlayerLeaveEvent,
+          //   EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent),
+          // );
         } else {
           const playerLeaveEvent: ServerEventFinder<GameEventIdentifiers.PlayerLeaveEvent> = {
             playerId,

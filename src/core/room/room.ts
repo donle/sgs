@@ -27,6 +27,7 @@ import { GameMode } from 'core/shares/types/room_props';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { FilterSkill, GlobalRulesBreakerSkill, RulesBreakerSkill, TransformSkill } from 'core/skills/skill';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
+import { RoomEventStacker } from './utils/room_event_stack';
 
 export type RoomId = number;
 
@@ -44,6 +45,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   protected abstract readonly gameMode: GameMode;
   protected circle: number = 0;
   protected abstract readonly gameCommonRules: GameCommonRules;
+  protected abstract readonly eventStack: RoomEventStacker<T>;
 
   protected awaitResponseEvent: {
     [K in PlayerId]?: {

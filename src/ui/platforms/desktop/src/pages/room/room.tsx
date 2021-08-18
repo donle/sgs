@@ -1,5 +1,6 @@
 import { AudioLoader } from 'audio_loader/audio_loader';
 import { clientActiveListenerEvents, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { LocalClientEmitter } from 'core/network/local/local_emitter.client';
 import { ClientSocket } from 'core/network/socket.client';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -99,11 +100,20 @@ export class RoomPage extends React.Component<
     this.store = this.presenter.createStore();
 
     const roomId = this.roomId.toString();
-    const { ping, hostConfig } = this.props.location.state as { ping?: number; hostConfig: ServiceConfig };
-    this.socket = new ClientSocket(
-      `${hostConfig.protocol}://${hostConfig.host}:${hostConfig.port}/room-${roomId}`,
-      roomId,
-    );
+    const { ping, hostConfig, campaignMode } = this.props.location.state as {
+      ping?: number;
+      hostConfig: ServiceConfig;
+      campaignMode?: boolean;
+    };
+    if (campaignMode) {
+      this.socket = new LocalClientEmitter((window as any).eventEmitter, roomId);
+    } else {
+      this.socket = new ClientSocket(
+        `${hostConfig.protocol}://${hostConfig.host}:${hostConfig.port}/room-${roomId}`,
+        roomId,
+      );
+    }
+
     mobx.runInAction(() => (this.gameHostedServer = hostConfig.hostTag));
 
     if (ping !== undefined) {
@@ -141,34 +151,9 @@ export class RoomPage extends React.Component<
       timestamp: Date.now(),
     });
 
-    this.socket.onReconnected(() => {
-      const playerId = this.props.electronLoader.getTemporaryData('playerId');
-      if (!playerId) {
-        return;
-      }
-
-      this.socket.notify(
-        GameEventIdentifiers.PlayerReenterEvent,
-        EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerReenterEvent, {
-          timestamp: this.lastEventTimeStamp,
-          playerId,
-          playerName: this.playerName,
-        }),
-      );
-    });
-
     if (!this.props.electronLoader.getTemporaryData('playerId')) {
       this.props.electronLoader.saveTemporaryData('playerId', `${this.playerName}-${Date.now()}`);
     }
-
-    this.socket.notify(
-      GameEventIdentifiers.PlayerEnterEvent,
-      EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerEnterEvent, {
-        playerName: this.playerName,
-        timestamp: this.store.clientRoomInfo.timestamp,
-        playerId: this.props.electronLoader.getTemporaryData('playerId')!,
-      }),
-    );
 
     this.socket.on(GameEventIdentifiers.PlayerEnterRefusedEvent, () => {
       this.props.history.push('/lobby');
@@ -193,6 +178,31 @@ export class RoomPage extends React.Component<
         }
       });
     });
+
+    this.socket.onReconnected(() => {
+      const playerId = this.props.electronLoader.getTemporaryData('playerId');
+      if (!playerId) {
+        return;
+      }
+
+      this.socket.notify(
+        GameEventIdentifiers.PlayerReenterEvent,
+        EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerReenterEvent, {
+          timestamp: this.lastEventTimeStamp,
+          playerId,
+          playerName: this.playerName,
+        }),
+      );
+    });
+
+    this.socket.notify(
+      GameEventIdentifiers.PlayerEnterEvent,
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerEnterEvent, {
+        playerName: this.playerName,
+        timestamp: this.store.clientRoomInfo.timestamp,
+        playerId: this.props.electronLoader.getTemporaryData('playerId')!,
+      }),
+    );
 
     window.addEventListener('beforeunload', () => this.disconnect());
   }

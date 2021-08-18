@@ -3,7 +3,7 @@ import { Flavor } from 'core/shares/types/host_config';
 import { TranslationModule } from 'core/translations/translation_module';
 
 export class Logger {
-  private translator: TranslationModule | undefined;
+  protected translator: TranslationModule | undefined;
   constructor(private mode: Flavor = Flavor.Dev) {}
 
   public set Translator(translator: TranslationModule) {

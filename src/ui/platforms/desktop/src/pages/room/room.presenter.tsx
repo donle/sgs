@@ -5,12 +5,14 @@ import { GameEventIdentifiers } from 'core/event/event';
 import type { GameInfo } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
 import { RecordAnalytics } from 'core/game/record_analytics';
+import { LocalClientEmitter } from 'core/network/local/local_emitter.client';
 import { ClientSocket } from 'core/network/socket.client';
 import { Player } from 'core/player/player';
 import { ClientPlayer } from 'core/player/player.client';
 import type { PlayerId, PlayerInfo } from 'core/player/player_props';
 import type { RoomId } from 'core/room/room';
 import { ClientRoom } from 'core/room/room.client';
+import { RoomEventStacker } from 'core/room/utils/room_event_stack';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { Skill } from 'core/skills/skill';
 import { ImageLoader } from 'image_loader/image_loader';
@@ -242,7 +244,15 @@ export class RoomPresenter {
         ),
     );
 
-    this.store.room = new ClientRoom(roomId, socket, gameInfo, players, new RecordAnalytics(), new GameCommonRules());
+    this.store.room = new ClientRoom(
+      roomId,
+      socket,
+      gameInfo,
+      players,
+      new RecordAnalytics(),
+      new GameCommonRules(),
+      new RoomEventStacker(),
+    );
     this.broadcastUIUpdate();
   }
 

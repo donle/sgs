@@ -56,7 +56,9 @@ export class FireAttackSkillTrigger extends ActiveSkillTriggerClass<FireAttackSk
       return;
     }
 
-    const enemies = AiLibrary.sortEnemiesByRole(room, ai).filter(e => room.canUseCardTo(skillInCard!, ai, e));
+    const enemies = AiLibrary.sortEnemiesByRole(room, ai).filter(e =>
+      skill.isAvailableTarget(ai.Id, room, e.Id, [], [], skillInCard!),
+    );
     if (enemies.length <= 0) {
       return;
     }

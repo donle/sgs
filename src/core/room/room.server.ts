@@ -61,10 +61,12 @@ import {
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 import { Room, RoomId } from './room';
+import { RoomEventStacker } from './utils/room_event_stack';
 
 export class ServerRoom extends Room<WorkPlace.Server> {
   private loadedCharacters: Character[] = [];
   private selectedCharacters: CharacterId[] = [];
+  private enabledObserver: boolean;
 
   private drawStack: CardId[] = [];
   private dropStack: CardId[] = [];
@@ -80,6 +82,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     private logger: Logger,
     protected gameMode: GameMode,
     protected gameCommonRules: GameCommonRules,
+    protected eventStack: RoomEventStacker<WorkPlace.Server>,
   ) {
     super();
     this.init();
@@ -94,6 +97,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       .getPackages(...this.gameInfo.cardExtensions)
       .map(card => card.Id);
     this.dropStack = [];
+    this.enabledObserver = !!this.gameInfo.enableObserver;
 
     this.socket.emit(this);
     this.initAIPlayers();
@@ -186,7 +190,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   ) {
     !content.ignoreNotifiedStatus &&
       this.broadcast(GameEventIdentifiers.NotifyEvent, { toIds: [to], notificationTime });
-    this.socket.notify(type, EventPacker.createIdentifierEvent(type, EventPacker.minifyPayload(content)), to);
+
+    content = EventPacker.createIdentifierEvent(type, EventPacker.minifyPayload(content));
+    this.eventStack.push(content);
+
+    this.socket.notify(type, content, to);
   }
 
   //TODO: enable to custom response time limit
@@ -209,6 +217,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       EventPacker.setTimestamp(content);
       this.analytics.record(content, this.isPlaying() ? this.CurrentPlayerPhase : undefined);
     }
+
+    content = EventPacker.createIdentifierEvent(type, EventPacker.minifyPayload(content));
+    this.eventStack.push(content);
+
     this.socket.broadcast(type, content);
   }
 
