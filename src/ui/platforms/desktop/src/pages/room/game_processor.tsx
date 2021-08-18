@@ -604,8 +604,6 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-
-    console.log('using card: ', content);
     const from = this.store.room.getPlayerById(content.fromId);
     const card = Sanguosha.getCardById(content.cardId);
     if (!card.is(CardType.Equip)) {

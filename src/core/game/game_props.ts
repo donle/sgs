@@ -47,6 +47,7 @@ export type GameInfo = {
   enableObserver?: boolean;
   flavor: Flavor;
   gameMode: GameMode;
+  campaignMode: boolean;
 };
 
 export type GameRunningInfo = {
