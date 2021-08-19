@@ -129,7 +129,7 @@ export class ProdElectronLoader extends ElectronLoader {
     event: ServerEventFinder<GameEventIdentifiers>,
     otherInfo: Pick<ReplayDataType, Exclude<keyof ReplayDataType, 'events'>>,
   ): void {
-    this.ipcRenderer.send(GAME_EVENT_FLOW, event, otherInfo);
+    this.ipcRenderer.send(GAME_EVENT_FLOW, { event, otherInfo });
   }
 
   public async saveReplay(): Promise<void> {

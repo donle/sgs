@@ -91,10 +91,10 @@ class AppWindow {
       this.store.remove(key);
     });
 
-    ipcMain.on(GAME_EVENT_FLOW, (event, content, otherInfo?: ReplayOtherInfo) => {
-      this.replay.push(content);
-      if (otherInfo) {
-        this.replay.OtherInfo = otherInfo;
+    ipcMain.on(GAME_EVENT_FLOW, (event, props: { event: any; otherInfo: ReplayOtherInfo }) => {
+      this.replay.push(props.event);
+      if (props.otherInfo && !this.replay.OtherInfo) {
+        this.replay.OtherInfo = props.otherInfo;
       }
     });
 

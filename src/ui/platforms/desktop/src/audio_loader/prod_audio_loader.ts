@@ -35,8 +35,8 @@ export class ProdAudioLoader implements AudioLoader {
   }
 
   async getCardAudio(cardName: string, gender: CharacterGender, characterName?: string): Promise<string> {
-    return (await import(`./audios/cards/${gender === CharacterGender.Female ? 'female' : 'male'}/${cardName}.ogg`))
-      .default;
+    const genderString = gender === CharacterGender.Female ? 'female' : 'male';
+    return (await import(`./audios/cards/${genderString}/${cardName}.ogg`)).default;
   }
 
   async getSkillAudio(skillName: string, gender: CharacterGender, characterName?: string): Promise<string> {

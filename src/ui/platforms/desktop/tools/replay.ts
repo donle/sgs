@@ -27,6 +27,9 @@ export class Replay {
     FileNotFound: '01003',
   };
 
+  public get OtherInfo() {
+    return this.otherInfo;
+  }
   public set OtherInfo(info: ReplayOtherInfo) {
     this.otherInfo = info;
   }
