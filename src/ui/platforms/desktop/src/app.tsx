@@ -10,7 +10,7 @@ import { CharactersList } from 'pages/characters_list/characters_list';
 import { OpenningPage } from 'pages/openning/openning';
 import { ReplayRoomPage } from 'pages/room/replay_room';
 import { RoomPage } from 'pages/room/room';
-import { ClientConfig } from 'props/config_props';
+import { ClientConfig, ClientFlavor } from 'props/config_props';
 import * as React from 'react';
 import { Redirect, Route, Router } from 'react-router-dom';
 import { CampaignService } from 'services/campaign_service/campaign_service';
@@ -30,7 +30,10 @@ export class App extends React.PureComponent<{
   private audioLoader = getAudioLoader(this.props.config.flavor);
   private connectionService = getConnectionService(this.props.config);
   private fakeConnectionService = getConnectionService(this.props.config, true);
-  private campaignService = new CampaignService(new ClientLogger(Flavor.Prod));
+  private campaignService = new CampaignService(
+    new ClientLogger(this.props.config.flavor === ClientFlavor.Dev ? Flavor.Dev : Flavor.Prod),
+    this.props.config.flavor,
+  );
 
   // async getSkinData() {
   //   const url = process.env.PUBLIC_URL + '/skin_infos.json';

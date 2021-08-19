@@ -22,8 +22,7 @@ export class CampaignService {
   private campaginRooms: {
     [K: string]: ServerRoom;
   } = {};
-  constructor(private logger: ClientLogger) {
-  }
+  constructor(private logger: ClientLogger, private flavor: ClientFlavor) {}
 
   private readonly createDifferentModeGameProcessor = (gameMode: GameMode): GameProcessor => {
     switch (gameMode) {
@@ -53,13 +52,13 @@ export class CampaignService {
       {
         ...roomInfo,
         campaignMode: !!roomInfo.campaignMode,
-        flavor: Flavor.Prod,
+        flavor: this.flavor === ClientFlavor.Dev ? Flavor.Dev : Flavor.Prod,
       },
       (socket as unknown) as ServerSocket,
       this.createDifferentModeGameProcessor(roomInfo.gameMode),
       new RecordAnalytics(),
       [],
-      Flavor.Prod,
+      this.flavor === ClientFlavor.Dev ? Flavor.Dev : Flavor.Prod,
       this.logger,
       roomInfo.gameMode,
       new GameCommonRules(),
@@ -77,7 +76,7 @@ export class CampaignService {
         roomInfo: {
           ...roomInfo,
           campaignMode: !!roomInfo.campaignMode,
-          flavor: Flavor.Prod,
+          flavor: this.flavor === ClientFlavor.Dev ? Flavor.Dev : Flavor.Prod,
         },
       },
       hostTag: ServerHostTag.Localhost,

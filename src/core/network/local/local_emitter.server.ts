@@ -15,8 +15,11 @@ import { LocalServerEmitterInnterface } from './event_emitter_props';
 
 export class LocalServerEmitter implements LocalServerEmitterInnterface {
   private room: ServerRoom | undefined;
+  private playerId: string;
   private asyncResponseResolver: {
-    [I in GameEventIdentifiers]: ((res?: any) => void) | undefined;
+    [I in GameEventIdentifiers]: {
+      [K in PlayerId]: ((res?: any) => void) | undefined;
+    };
   } = {} as any;
 
   constructor(private socket: EventEmitterProps) {
@@ -55,10 +58,11 @@ export class LocalServerEmitter implements LocalServerEmitterInnterface {
 
     serverResponsiveListenerEvents.forEach(identifier => {
       socket.on('client-' + identifier.toString(), (content: ClientEventFinder<GameEventIdentifiers>) => {
-        const asyncResolver = this.asyncResponseResolver[identifier];
+        const asyncResolver =
+          this.asyncResponseResolver[identifier] && this.asyncResponseResolver[identifier][this.playerId];
         if (asyncResolver) {
           asyncResolver(content);
-          delete this.asyncResponseResolver[identifier];
+          delete this.asyncResponseResolver[identifier][this.playerId];
         }
       });
     });
@@ -117,6 +121,7 @@ export class LocalServerEmitter implements LocalServerEmitterInnterface {
     const room = this.room as ServerRoom;
     const player = new ServerPlayer(event.playerId, event.playerName, room.Players.length);
     room.addPlayer(player);
+    this.playerId = event.playerId;
     this.broadcast(GameEventIdentifiers.PlayerEnterEvent, {
       joiningPlayerName: event.playerName,
       joiningPlayerId: event.playerId,
@@ -173,7 +178,12 @@ export class LocalServerEmitter implements LocalServerEmitterInnterface {
     if (toPlayer.isSmartAI()) {
       const result = toPlayer.AI.onAction(this.room!, type, content);
       setTimeout(() => {
-        this.asyncResponseResolver[type]?.(result);
+        const asyncResolver = this.asyncResponseResolver[type] && this.asyncResponseResolver[type][to];
+        if (asyncResolver) {
+          asyncResolver(result);
+          delete this.asyncResponseResolver[type][to];
+          this.room?.unsetAwaitingResponseEvent(to);
+        }
       }, 1500);
     } else {
       this.socket.emit(to, 'server-' + type.toString(), content);
@@ -189,7 +199,19 @@ export class LocalServerEmitter implements LocalServerEmitterInnterface {
 
   public async waitForResponse<T extends GameEventIdentifiers>(identifier: T, playerId: PlayerId) {
     return await new Promise<ClientEventFinder<T>>(resolve => {
-      this.asyncResponseResolver[identifier] = resolve;
+      if (!this.asyncResponseResolver[identifier]) {
+        this.asyncResponseResolver[identifier] = {
+          [playerId]: resolve,
+        };
+      } else {
+        const identifierResolvers = this.asyncResponseResolver[identifier] as {
+          [x: string]: (res?: any) => void;
+        };
+        identifierResolvers[playerId] = resolve;
+      }
+    }).then(response => {
+      this.room?.unsetAwaitingResponseEvent(playerId);
+      return response;
     });
   }
 }
