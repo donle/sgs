@@ -18,7 +18,6 @@ import { Sanguosha } from 'core/game/engine';
 import {
   CardEffectStage,
   CardMoveStage,
-  CardResponseStage,
   ChainLockStage,
   DamageEffectStage,
   DrawCardStage,
@@ -1441,7 +1440,7 @@ export class StandardGameProcessor extends GameProcessor {
         return;
       }
 
-      if (stage == CardEffectStage.PreCardEffect) {
+      if (stage === CardEffectStage.PreCardEffect) {
         await this.doCardEffect(identifier, event);
       }
 
@@ -2101,7 +2100,7 @@ export class StandardGameProcessor extends GameProcessor {
   ) {
     const to = this.room.getPlayerById(event.toId);
     if (event.byReaon === 'damage') {
-      if (to.ChainLocked && EventPacker.getMiddleware<DamageType>(this.DamageTypeTag, event) != DamageType.Normal) {
+      if (to.ChainLocked && EventPacker.getMiddleware<DamageType>(this.DamageTypeTag, event) !== DamageType.Normal) {
         await this.room.chainedOn(to.Id);
         event.beginnerOfTheDamage = EventPacker.getMiddleware<string>(this.BeginnerTag, event) || to.Id;
       }

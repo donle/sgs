@@ -14,6 +14,7 @@ import { SettingsDialog } from 'pages/ui/settings/settings';
 import { ServerHostTag } from 'props/config_props';
 import { LobbyButton } from 'props/game_props';
 import * as React from 'react';
+import { CampaignService } from 'services/campaign_service/campaign_service';
 import { ConnectionService } from 'services/connection_service/connection_service';
 import { PagePropsWithConfig } from 'types/page_props';
 import { installAudioPlayerService } from 'ui/audio/install';
@@ -36,6 +37,7 @@ type LobbyProps = PagePropsWithConfig<{
   audioLoader: AudioLoader;
   electronLoader: ElectronLoader;
   connectionService: ConnectionService;
+  campaignService: CampaignService;
 }>;
 
 type HostRoomInfo = {
@@ -142,6 +144,46 @@ export class Lobby extends React.Component<LobbyProps> {
     );
   }
 
+  private createRoom(roomInfo: TemporaryRoomCreationInfo) {
+    if (roomInfo.campaignMode) {
+      this.props.campaignService.createRoom(
+        this.props.config.flavor,
+        {
+          cardExtensions: [GameCardExtensions.Standard, GameCardExtensions.LegionFight],
+          ...roomInfo,
+        },
+        event => {
+          const { packet, ping, hostTag } = event;
+          const { roomId, roomInfo } = packet;
+          const hostConfig = this.props.config.host.find(config => config.hostTag === hostTag);
+          this.props.history.push(`/room/${roomId}`, {
+            gameMode: roomInfo.gameMode,
+            ping,
+            hostConfig,
+            campaignMode: true,
+          });
+        },
+      );
+    } else {
+      this.props.connectionService.Lobby.createGame(
+        {
+          cardExtensions: [GameCardExtensions.Standard, GameCardExtensions.LegionFight],
+          ...roomInfo,
+        },
+        event => {
+          const { packet, ping, hostTag } = event;
+          const { roomId, roomInfo } = packet;
+          const hostConfig = this.props.config.host.find(config => config.hostTag === hostTag);
+          this.props.history.push(`/room/${roomId}`, {
+            gameMode: roomInfo.gameMode,
+            ping,
+            hostConfig,
+          });
+        },
+      );
+    }
+  }
+
   UNSAFE_componentWillMount() {
     this.queryRoomList();
   }
@@ -201,22 +243,7 @@ export class Lobby extends React.Component<LobbyProps> {
   @mobx.action
   private readonly onRoomCreated = (roomInfo: TemporaryRoomCreationInfo) => {
     this.openRoomCreationDialog = false;
-    this.props.connectionService.Lobby.createGame(
-      {
-        cardExtensions: [GameCardExtensions.Standard, GameCardExtensions.LegionFight],
-        ...roomInfo,
-      },
-      event => {
-        const { packet, ping, hostTag } = event;
-        const { roomId, roomInfo } = packet;
-        const hostConfig = this.props.config.host.find(config => config.hostTag === hostTag);
-        this.props.history.push(`/room/${roomId}`, {
-          gameMode: roomInfo.gameMode,
-          ping,
-          hostConfig,
-        });
-      },
-    );
+    this.createRoom(roomInfo);
   };
 
   @mobx.action

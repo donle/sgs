@@ -11,6 +11,7 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { GameMode } from 'core/shares/types/room_props';
 import { OnDefineReleaseTiming, SkillLifeCycle } from 'core/skills/skill';
 import { Room, RoomId } from './room';
+import { RoomEventStacker } from './utils/room_event_stack';
 
 export class ClientRoom extends Room<WorkPlace.Client> {
   protected readonly socket: ClientSocket;
@@ -32,6 +33,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     players: ClientPlayer[],
     protected analytics: RecordAnalytics,
     protected gameCommonRules: GameCommonRules,
+    protected eventStack: RoomEventStacker<WorkPlace.Client>
   ) {
     super();
 

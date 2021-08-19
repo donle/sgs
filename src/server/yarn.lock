@@ -1277,6 +1277,11 @@ shebang-regex@^3.0.0:
   resolved "https://registry.yarnpkg.com/shebang-regex/-/shebang-regex-3.0.0.tgz#ae16f1644d873ecad843b0307b143362d4c42172"
   integrity sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==
 
+shrink-string@^3.0.9:
+  version "3.0.9"
+  resolved "https://registry.yarnpkg.com/shrink-string/-/shrink-string-3.0.9.tgz#f9288cead85bf0a177a2fef7d3ad0e63dc889fff"
+  integrity sha512-G5Gt8HEzJsg++Bx+1Cow8pvwlbQhFrQMengh2QDx6eUgbjIEQsn88DEmRRnvu2ANVjGdP2ajVQMM/bFT6A0igA==
+
 signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"

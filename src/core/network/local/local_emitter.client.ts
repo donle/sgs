@@ -1,17 +1,22 @@
 import { ClientEventFinder, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { ClientSocket } from './socket.client';
+import { ClientSocket } from '../socket.client';
+import { EventEmitterProps } from './event_emitter_props';
 
-export class ClientOfflineSocket extends ClientSocket {
-  constructor(roomId: string) {
+export class LocalClientEmitter extends ClientSocket {
+  constructor(private emitter: EventEmitterProps, roomId: string) {
     super('', roomId);
   }
 
-  // tslint:disable-next-line:no-empty
+  public notify<I extends GameEventIdentifiers>(type: I, content: ClientEventFinder<I>) {
+    this.emitter.send('client-' + type.toString(), content);
+  }
+
+  // tslint:disable-next-line: no-empty
   protected init() {}
-  // tslint:disable-next-line:no-empty
-  public notify<I extends GameEventIdentifiers>(type: I, content: ClientEventFinder<I>) {}
 
   public on<T extends GameEventIdentifiers>(type: T, receiver: (event: ServerEventFinder<T>) => void): ClientSocket {
+    this.emitter.on('server-' + type.toString(), receiver);
+
     return this;
   }
 
@@ -25,9 +30,9 @@ export class ClientOfflineSocket extends ClientSocket {
     throw new Error("Shouldn't call emitRoomStatus function in client socket");
   }
 
-  // tslint:disable-next-line:no-empty
+  // tslint:disable-next-line: no-empty
   public onReconnected(callback: () => void) {}
 
-  // tslint:disable-next-line:no-empty
+  // tslint:disable-next-line: no-empty
   public disconnect() {}
 }

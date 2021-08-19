@@ -58,6 +58,7 @@ export type TemporaryRoomCreationInfo = {
   roomName: string;
   gameMode: GameMode;
   passcode?: string;
+  campaignMode?: boolean;
   characterExtensions: GameCharacterExtensions[];
 };
 
@@ -83,7 +84,15 @@ export const CreateRoomDialog = (props: {
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    props.onSubmit({ numberOfPlayers, roomName, gameMode: checkedGameMode!, passcode, characterExtensions });
+    const isCampaignMode = checkedGameMode === GameMode.Pve && numberOfPlayers === 2;
+    props.onSubmit({
+      numberOfPlayers,
+      roomName,
+      gameMode: checkedGameMode!,
+      passcode,
+      characterExtensions,
+      campaignMode: isCampaignMode,
+    });
   };
 
   const onRoomNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
