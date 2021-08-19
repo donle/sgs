@@ -70,11 +70,14 @@ export class MiaoXianShadow extends TriggerSkill {
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): boolean {
     return (
-      content.fromId === owner.Id &&
-      content.moveReason === CardMoveReason.CardUse &&
-      content.movingCards.filter(
-        card => Sanguosha.getCardById(card.card).Color === CardColor.Red && card.fromArea === CardMoveArea.HandArea,
-      ).length === 1 &&
+      content.infos.find(
+        info =>
+          info.fromId === owner.Id &&
+          info.moveReason === CardMoveReason.CardUse &&
+          info.movingCards.filter(
+            card => Sanguosha.getCardById(card.card).Color === CardColor.Red && card.fromArea === CardMoveArea.HandArea,
+          ).length === 1,
+      ) !== undefined &&
       owner.getCardIds(PlayerCardsArea.HandArea).find(card => Sanguosha.getCardById(card).Color === CardColor.Red) ===
         undefined
     );

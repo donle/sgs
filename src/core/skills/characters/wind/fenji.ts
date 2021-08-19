@@ -12,19 +12,23 @@ export class FenJi extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): boolean {
-    if (!event.movingCards.find(card => card.fromArea === PlayerCardsArea.HandArea)) {
-      return false;
-    }
+    return (
+      event.infos.find(info => {
+        if (!info.movingCards.find(card => card.fromArea === PlayerCardsArea.HandArea)) {
+          return false;
+        }
 
-    if (event.moveReason === CardMoveReason.ActivePrey) {
-      return !!event.fromId && !!event.toId && event.fromId !== event.toId;
-    } else if (event.moveReason === CardMoveReason.PassiveDrop) {
-      return !!event.fromId;
-    } else if (event.moveReason === CardMoveReason.PassiveMove) {
-      return !!event.toId && event.toArea === CardMoveArea.HandArea;
-    }
+        if (info.moveReason === CardMoveReason.ActivePrey) {
+          return !!info.fromId && !!info.toId && info.fromId !== info.toId;
+        } else if (info.moveReason === CardMoveReason.PassiveDrop) {
+          return !!info.fromId;
+        } else if (info.moveReason === CardMoveReason.PassiveMove) {
+          return !!info.toId && info.toArea === CardMoveArea.HandArea;
+        }
 
-    return false;
+        return false;
+      }) !== undefined
+    );
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -38,7 +42,26 @@ export class FenJi extends TriggerSkill {
     const { triggeredOnEvent } = skillUseEvent;
     const moveCardEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
     await room.loseHp(skillUseEvent.fromId, 1);
-    await room.drawCards(2, moveCardEvent.fromId, 'top', undefined, this.Name);
+
+    const info =
+      moveCardEvent.infos.length === 1
+        ? moveCardEvent.infos[0]
+        : moveCardEvent.infos.find(info => {
+            if (!info.movingCards.find(card => card.fromArea === PlayerCardsArea.HandArea)) {
+              return false;
+            }
+
+            if (info.moveReason === CardMoveReason.ActivePrey) {
+              return !!info.fromId && !!info.toId && info.fromId !== info.toId;
+            } else if (info.moveReason === CardMoveReason.PassiveDrop) {
+              return !!info.fromId;
+            } else if (info.moveReason === CardMoveReason.PassiveMove) {
+              return !!info.toId && info.toArea === CardMoveArea.HandArea;
+            }
+
+            return false;
+          });
+    await room.drawCards(2, info!.fromId, 'top', undefined, this.Name);
 
     return true;
   }

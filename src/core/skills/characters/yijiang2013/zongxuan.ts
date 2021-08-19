@@ -84,9 +84,12 @@ export class ZongXuanShadow extends TriggerSkill {
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
     return (
-      content.fromId === owner.Id &&
-      (content.moveReason === CardMoveReason.PassiveDrop || content.moveReason === CardMoveReason.SelfDrop) &&
-      content.movingCards.find(node => room.isCardInDropStack(node.card)) !== undefined
+      content.infos.find(
+        info =>
+          info.fromId === owner.Id &&
+          (info.moveReason === CardMoveReason.PassiveDrop || info.moveReason === CardMoveReason.SelfDrop) &&
+          info.movingCards.find(node => room.isCardInDropStack(node.card)) !== undefined,
+      ) !== undefined
     );
   }
 
@@ -104,7 +107,26 @@ export class ZongXuanShadow extends TriggerSkill {
   public async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId, triggeredOnEvent } = skillUseEvent;
     const moveCardEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
-    const cardIds = moveCardEvent.movingCards.filter(node => room.isCardInDropStack(node.card)).map(node => node.card);
+
+    const cardIds: CardId[] = [];
+    if (moveCardEvent.infos.length === 1) {
+      cardIds.push(
+        ...moveCardEvent.infos[0].movingCards.filter(node => room.isCardInDropStack(node.card)).map(node => node.card),
+      );
+    } else {
+      const infos = moveCardEvent.infos.filter(
+        info =>
+          info.fromId === fromId &&
+          (info.moveReason === CardMoveReason.PassiveDrop || info.moveReason === CardMoveReason.SelfDrop) &&
+          info.movingCards.find(node => room.isCardInDropStack(node.card)) !== undefined,
+      );
+
+      cardIds.push(
+        ...infos.reduce<CardId[]>((ids, info) => {
+          return ids.concat(info.movingCards.filter(node => room.isCardInDropStack(node.card)).map(node => node.card));
+        }, []),
+      );
+    }
     const numOfCards = cardIds.length;
 
     const askForGuanxing = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForPlaceCardsInDileEvent>({

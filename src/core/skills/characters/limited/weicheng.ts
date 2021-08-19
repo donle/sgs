@@ -14,11 +14,13 @@ export class WeiCheng extends TriggerSkill {
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): boolean {
     return (
-      content.fromId === owner.Id &&
-      content.movingCards.find(card => card.fromArea === CardMoveArea.HandArea) !== undefined &&
-      content.toId !== owner.Id &&
-      content.toArea === CardMoveArea.HandArea &&
-      owner.getCardIds(PlayerCardsArea.HandArea).length < owner.Hp
+      content.infos.find(
+        info =>
+          info.fromId === owner.Id &&
+          info.movingCards.find(card => card.fromArea === CardMoveArea.HandArea) !== undefined &&
+          info.toId !== owner.Id &&
+          info.toArea === CardMoveArea.HandArea,
+      ) !== undefined && owner.getCardIds(PlayerCardsArea.HandArea).length < owner.Hp
     );
   }
 

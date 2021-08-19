@@ -35,12 +35,15 @@ export class ZuiLun extends TriggerSkill {
         } else {
           const moveCardEvent = event as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
           return (
-            moveCardEvent.fromId === player.Id &&
-            moveCardEvent.movingCards &&
-            moveCardEvent.movingCards.find(
-              card => card.fromArea === CardMoveArea.HandArea || card.fromArea === CardMoveArea.EquipArea,
-            ) !== undefined &&
-            moveCardEvent.moveReason === CardMoveReason.SelfDrop
+            moveCardEvent.infos.find(
+              info =>
+                info.fromId === player.Id &&
+                info.movingCards &&
+                info.movingCards.find(
+                  card => card.fromArea === CardMoveArea.HandArea || card.fromArea === CardMoveArea.EquipArea,
+                ) !== undefined &&
+                info.moveReason === CardMoveReason.SelfDrop,
+            ) !== undefined
           );
         }
       },

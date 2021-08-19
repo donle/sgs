@@ -11,7 +11,7 @@ import {
   ServerEventFinder,
   WorkPlace,
 } from 'core/event/event';
-import { PinDianReport } from 'core/event/event.server';
+import { MoveCardEventInfos, PinDianReport } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { GameInfo } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
@@ -91,10 +91,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     droppedBy?: PlayerId,
     byReason?: string,
   ): Promise<void>;
-  //Server only
-  public abstract moveCards(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): Promise<void>;
-  //Server only
-  public abstract asyncMoveCards(events: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[]): Promise<void>;
+  public abstract moveCards(...infos: MoveCardEventInfos[]): Promise<void>;
   //Server only
   public abstract getRandomCharactersFromLoadedPackage(
     numberOfCharacter: number,

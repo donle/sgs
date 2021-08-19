@@ -214,16 +214,12 @@ export class TwoVersusTwoGameProcessor extends StandardGameProcessor {
     if (!this.room.isGameOver()) {
       const { playerId } = event;
       await this.room.moveCards({
-        infos: [
-          {
-            moveReason: CardMoveReason.SelfDrop,
-            fromId: playerId,
-            movingCards: deadPlayer
-              .getPlayerCards()
-              .map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
-            toArea: CardMoveArea.DropStack,
-          },
-        ],
+        moveReason: CardMoveReason.SelfDrop,
+        fromId: playerId,
+        movingCards: deadPlayer
+          .getPlayerCards()
+          .map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
+        toArea: CardMoveArea.DropStack,
       });
 
       const outsideCards = Object.entries(deadPlayer.getOutsideAreaCards()).reduce<CardId[]>(
@@ -238,14 +234,10 @@ export class TwoVersusTwoGameProcessor extends StandardGameProcessor {
 
       const allCards = [...deadPlayer.getCardIds(PlayerCardsArea.JudgeArea), ...outsideCards];
       await this.room.moveCards({
-        infos: [
-          {
-            moveReason: CardMoveReason.PlaceToDropStack,
-            fromId: playerId,
-            movingCards: allCards.map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
-            toArea: CardMoveArea.DropStack,
-          },
-        ],
+        moveReason: CardMoveReason.PlaceToDropStack,
+        fromId: playerId,
+        movingCards: allCards.map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
+        toArea: CardMoveArea.DropStack,
       });
 
       if (this.room.CurrentPlayer.Id === playerId) {

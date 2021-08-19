@@ -58,76 +58,78 @@ export class MoveInstantCardAnimation extends UiAnimation {
   }
 
   private async animateCardMove(content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
-    const { fromId, toId, toArea, movingCards } = content;
-    if (
-      toId === undefined ||
-      toArea === CardMoveArea.ProcessingArea ||
-      movingCards.find(card => card.fromArea === CardMoveArea.ProcessingArea)
-    ) {
-      return;
-    }
-
-    const cards = content.movingCards.map(cardInfo => {
-      const isPublic = content.engagedPlayerIds
-        ? content.engagedPlayerIds.includes(this.store.clientPlayerId)
-        : !(cardInfo.fromArea === CardMoveArea.HandArea && content.toArea === CardMoveArea.HandArea) &&
-          content.moveReason !== CardMoveReason.CardDraw;
-      return {
-        cardId: cardInfo.card,
-        public: isPublic || toId === this.store.clientPlayerId,
-      };
-    });
-
-    const elements = this.createCards(cards);
-    const animationStyles: React.CSSProperties = {};
-    const leftOffset = (this.cardWidth + (elements.length - 1) * 16) / 2;
-
-    if (fromId) {
-      const position = this.store.animationPosition.getPosition(fromId, fromId === this.store.clientPlayerId);
-      animationStyles.transform = `translate(${position.x - leftOffset}px, ${position.y - this.cardHeight / 2}px)`;
-    } else {
-      animationStyles.transform = `translate(${this.CentralPosition.x - leftOffset}px, ${
-        this.CentralPosition.y - this.cardHeight / 2
-      }px)`;
-    }
-
-    const container = document.createElement('div');
-    document.getElementById('root')?.append(container);
-    ReactDOM.render(
-      <div className={styles.movingCards} style={animationStyles}>
-        {elements}
-      </div>,
-      container,
-    );
-
-    await UiAnimation.play(100, () => {
-      const toPosition = this.store.animationPosition.getPosition(toId, toId === this.store.clientPlayerId);
+    for (const info of content.infos) {
+      const { fromId, toId, toArea, movingCards } = info;
+      if (
+        toId === undefined ||
+        toArea === CardMoveArea.ProcessingArea ||
+        movingCards.find(card => card.fromArea === CardMoveArea.ProcessingArea)
+      ) {
+        return;
+      }
+  
+      const cards = info.movingCards.map(cardInfo => {
+        const isPublic = content.engagedPlayerIds
+          ? info.engagedPlayerIds?.includes(this.store.clientPlayerId)
+          : !(cardInfo.fromArea === CardMoveArea.HandArea && info.toArea === CardMoveArea.HandArea) &&
+            info.moveReason !== CardMoveReason.CardDraw;
+        return {
+          cardId: cardInfo.card,
+          public: isPublic || toId === this.store.clientPlayerId,
+        };
+      });
+  
+      const elements = this.createCards(cards);
+      const animationStyles: React.CSSProperties = {};
       const leftOffset = (this.cardWidth + (elements.length - 1) * 16) / 2;
-
+  
+      if (fromId) {
+        const position = this.store.animationPosition.getPosition(fromId, fromId === this.store.clientPlayerId);
+        animationStyles.transform = `translate(${position.x - leftOffset}px, ${position.y - this.cardHeight / 2}px)`;
+      } else {
+        animationStyles.transform = `translate(${this.CentralPosition.x - leftOffset}px, ${
+          this.CentralPosition.y - this.cardHeight / 2
+        }px)`;
+      }
+  
+      const container = document.createElement('div');
+      document.getElementById('root')?.append(container);
       ReactDOM.render(
-        <div
-          className={styles.movingCards}
-          style={{ opacity: 1, transform: `translate(${toPosition.x - leftOffset}px, ${toPosition.y}px)` }}
-        >
+        <div className={styles.movingCards} style={animationStyles}>
           {elements}
         </div>,
         container,
       );
-    });
-
-    await UiAnimation.play(1000, () => {
-      ReactDOM.render(
-        <div className={styles.movingCards} style={{ opacity: 0 }}>
-          {elements}
-        </div>,
-        container,
-      );
-    });
-
-    await UiAnimation.play(150, () => {
-      ReactDOM.unmountComponentAtNode(container);
-      container.remove();
-    });
+  
+      await UiAnimation.play(100, () => {
+        const toPosition = this.store.animationPosition.getPosition(toId, toId === this.store.clientPlayerId);
+        const leftOffset = (this.cardWidth + (elements.length - 1) * 16) / 2;
+  
+        ReactDOM.render(
+          <div
+            className={styles.movingCards}
+            style={{ opacity: 1, transform: `translate(${toPosition.x - leftOffset}px, ${toPosition.y}px)` }}
+          >
+            {elements}
+          </div>,
+          container,
+        );
+      });
+  
+      await UiAnimation.play(1000, () => {
+        ReactDOM.render(
+          <div className={styles.movingCards} style={{ opacity: 0 }}>
+            {elements}
+          </div>,
+          container,
+        );
+      });
+  
+      await UiAnimation.play(150, () => {
+        ReactDOM.unmountComponentAtNode(container);
+        container.remove();
+      });
+    }
   }
 
   async animateCardUse(content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {

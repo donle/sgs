@@ -37,8 +37,11 @@ export class ShangShi extends TriggerSkill {
     if (unknownEvent === GameEventIdentifiers.MoveCardEvent) {
       const event = content as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
       return (
-        event.fromId === owner.Id &&
-        event.movingCards.find(card => card.fromArea === CardMoveArea.HandArea) !== undefined
+        event.infos.find(
+          info =>
+            info.fromId === owner.Id &&
+            info.movingCards.find(card => card.fromArea === CardMoveArea.HandArea) !== undefined,
+        ) !== undefined
       );
     } else if (unknownEvent === GameEventIdentifiers.HpChangeEvent) {
       const event = content as ServerEventFinder<GameEventIdentifiers.HpChangeEvent>;

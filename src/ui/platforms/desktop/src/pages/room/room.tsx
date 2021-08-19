@@ -237,18 +237,35 @@ export class RoomPage extends React.Component<
   }
 
   private showMessageFromEvent(event: ServerEventFinder<GameEventIdentifiers>) {
-    const { messages = [], translationsMessage, unengagedMessage, engagedPlayerIds } = event;
-    const { translator } = this.props;
-
-    if (unengagedMessage && engagedPlayerIds && !engagedPlayerIds.includes(this.store.clientPlayerId)) {
-      messages.push(TranslationPack.create(unengagedMessage).toString());
-    } else if (translationsMessage) {
-      messages.push(TranslationPack.create(translationsMessage).toString());
+    if (EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent) {
+      for (const info of (event as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>).infos) {
+        const { messages = [], translationsMessage, unengagedMessage, engagedPlayerIds } = info;
+        const { translator } = this.props;
+  
+        if (unengagedMessage && engagedPlayerIds && !engagedPlayerIds.includes(this.store.clientPlayerId)) {
+          messages.push(TranslationPack.create(unengagedMessage).toString());
+        } else if (translationsMessage) {
+          messages.push(TranslationPack.create(translationsMessage).toString());
+        }
+  
+        messages.forEach(message => {
+          this.presenter.addGameLog(translator.trx(message));
+        });
+      }
+    } else {
+      const { messages = [], translationsMessage, unengagedMessage, engagedPlayerIds } = event;
+      const { translator } = this.props;
+  
+      if (unengagedMessage && engagedPlayerIds && !engagedPlayerIds.includes(this.store.clientPlayerId)) {
+        messages.push(TranslationPack.create(unengagedMessage).toString());
+      } else if (translationsMessage) {
+        messages.push(TranslationPack.create(translationsMessage).toString());
+      }
+  
+      messages.forEach(message => {
+        this.presenter.addGameLog(translator.trx(message));
+      });
     }
-
-    messages.forEach(message => {
-      this.presenter.addGameLog(translator.trx(message));
-    });
   }
 
   @mobx.action

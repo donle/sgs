@@ -1,4 +1,4 @@
-import { CardSuit } from 'core/cards/libs/card_props';
+import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import {
   CardMoveArea,
   CardMovedBySpecifiedReason,
@@ -22,16 +22,18 @@ export class LuoYing extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): boolean {
-    if (
-      (event.fromId &&
-        event.fromId !== owner.Id &&
-        (event.moveReason === CardMoveReason.PassiveDrop || event.moveReason === CardMoveReason.SelfDrop)) ||
-      (event.proposer && event.proposer !== owner.Id && event.movedByReason === CardMovedBySpecifiedReason.JudgeProcess)
-    ) {
-      return !!event.movingCards.find(node => Sanguosha.getCardById(node.card).Suit === CardSuit.Club);
-    }
-
-    return false;
+    return (
+      event.infos.find(
+        info =>
+          (info.fromId &&
+            info.fromId !== owner.Id &&
+            (info.moveReason === CardMoveReason.PassiveDrop || info.moveReason === CardMoveReason.SelfDrop)) ||
+          (info.proposer &&
+            info.proposer !== owner.Id &&
+            info.movedByReason === CardMovedBySpecifiedReason.JudgeProcess &&
+            !!info.movingCards.find(node => Sanguosha.getCardById(node.card).Suit === CardSuit.Club)),
+      ) !== undefined
+    );
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -43,9 +45,34 @@ export class LuoYing extends TriggerSkill {
     skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     const moveCardEvent = skillEffectEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
-    const luoyingCard = moveCardEvent.movingCards
-      .filter(node => Sanguosha.getCardById(node.card).Suit === CardSuit.Club)
-      .map(node => node.card);
+    const luoyingCard: CardId[] = [];
+    if (moveCardEvent.infos.length === 1) {
+      luoyingCard.push(
+        ...moveCardEvent.infos[0].movingCards
+          .filter(node => Sanguosha.getCardById(node.card).Suit === CardSuit.Club)
+          .map(node => node.card),
+      );
+    } else {
+      const infos = moveCardEvent.infos.filter(
+        info =>
+          (info.fromId &&
+            info.fromId !== skillEffectEvent.fromId &&
+            (info.moveReason === CardMoveReason.PassiveDrop || info.moveReason === CardMoveReason.SelfDrop)) ||
+          (info.proposer &&
+            info.proposer !== skillEffectEvent.fromId &&
+            info.movedByReason === CardMovedBySpecifiedReason.JudgeProcess),
+      );
+
+      luoyingCard.push(
+        ...infos.reduce<CardId[]>((cardIds, info) => {
+          return cardIds.concat(
+            info.movingCards
+              .filter(node => Sanguosha.getCardById(node.card).Suit === CardSuit.Club)
+              .map(node => node.card),
+          );
+        }, []),
+      );
+    }
 
     const askForChoosingLuoYingCard: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardWithConditionsEvent> = {
       amount: [1, luoyingCard.length],

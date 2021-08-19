@@ -50,11 +50,14 @@ export class EnYuan extends TriggerSkill {
     } else {
       const moveCardEvent = content as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
       return (
-        moveCardEvent.toId === owner.Id &&
-        moveCardEvent.fromId !== undefined &&
-        moveCardEvent.toArea === CardMoveArea.HandArea &&
-        moveCardEvent.movingCards.length >= 2 &&
-        room.getPlayerById(moveCardEvent.fromId).Dead === false
+        moveCardEvent.infos.find(
+          info =>
+            info.toId === owner.Id &&
+            info.fromId !== undefined &&
+            info.toArea === CardMoveArea.HandArea &&
+            info.movingCards.length >= 2 &&
+            room.getPlayerById(info.fromId).Dead === false,
+        ) !== undefined
       );
     }
   }
@@ -73,7 +76,19 @@ export class EnYuan extends TriggerSkill {
       target = room.getPlayerById(damageEvent.fromId!);
     } else {
       const moveCardEvent = content as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
-      target = room.getPlayerById(moveCardEvent.fromId!);
+      const info =
+        moveCardEvent.infos.length === 1
+          ? moveCardEvent.infos[0]
+          : moveCardEvent.infos.find(
+              info =>
+                info.toId === owner.Id &&
+                info.fromId !== undefined &&
+                info.toArea === CardMoveArea.HandArea &&
+                info.movingCards.length >= 2 &&
+                room.getPlayerById(info.fromId).Dead === false,
+            )!;
+
+      target = room.getPlayerById(info.fromId!);
     }
     return TranslationPack.translationJsonPatcher(
       'do you want to trigger skill {0} to {1} ?',
@@ -135,7 +150,18 @@ export class EnYuan extends TriggerSkill {
       }
     } else {
       const moveCardEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
-      await room.drawCards(1, moveCardEvent.fromId, undefined, fromId, this.Name);
+      const info =
+        moveCardEvent.infos.length === 1
+          ? moveCardEvent.infos[0]
+          : moveCardEvent.infos.find(
+              info =>
+                info.toId === fromId &&
+                info.fromId !== undefined &&
+                info.toArea === CardMoveArea.HandArea &&
+                info.movingCards.length >= 2 &&
+                room.getPlayerById(info.fromId).Dead === false,
+            )!;
+      await room.drawCards(1, info.fromId, undefined, fromId, this.Name);
     }
 
     return true;

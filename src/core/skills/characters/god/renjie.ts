@@ -1,4 +1,5 @@
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardMoveStage, DamageEffectStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
@@ -29,9 +30,11 @@ export class RenJie extends TriggerSkill {
       const moveCardEvent = content as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
       return (
         room.CurrentPlayerPhase === PlayerPhase.DropCardStage &&
-        (moveCardEvent.moveReason === CardMoveReason.SelfDrop ||
-          moveCardEvent.moveReason === CardMoveReason.PassiveDrop) &&
-        moveCardEvent.fromId === owner.Id
+        moveCardEvent.infos.find(
+          info =>
+            (info.moveReason === CardMoveReason.SelfDrop || info.moveReason === CardMoveReason.PassiveDrop) &&
+            info.fromId === owner.Id,
+        ) !== undefined
       );
     }
   }
@@ -51,7 +54,22 @@ export class RenJie extends TriggerSkill {
       room.addMark(skillUseEvent.fromId, MarkEnum.Ren, damageEvent.damage);
     } else {
       const moveCardEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
-      room.addMark(skillUseEvent.fromId, MarkEnum.Ren, moveCardEvent.movingCards.length);
+
+      let num: number = 0;
+      if (moveCardEvent.infos.length === 1) {
+        num += moveCardEvent.infos[0].movingCards.filter(card => !Sanguosha.isVirtualCardId(card.card)).length;
+      } else {
+        const infos = moveCardEvent.infos.filter(
+          info =>
+            (info.moveReason === CardMoveReason.SelfDrop || info.moveReason === CardMoveReason.PassiveDrop) &&
+            info.fromId === skillUseEvent.fromId,
+        );
+        for (const info of infos) {
+          num += info.movingCards.filter(card => !Sanguosha.isVirtualCardId(card.card)).length;
+        }
+      }
+
+      room.addMark(skillUseEvent.fromId, MarkEnum.Ren, num);
     }
     return true;
   }

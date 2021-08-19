@@ -78,7 +78,7 @@ export class PoXi extends ActiveSkill {
     const fromCards = Algorithm.intersection<CardId>(from.getCardIds(PlayerCardsArea.HandArea), selectedCards);
     const toCards = Algorithm.intersection<CardId>(to.getCardIds(PlayerCardsArea.HandArea), selectedCards);
 
-    await room.asyncMoveCards([
+    await room.moveCards(
       {
         moveReason: CardMoveReason.SelfDrop,
         fromId: from.Id,
@@ -93,7 +93,7 @@ export class PoXi extends ActiveSkill {
         movedByReason: this.Name,
         toArea: CardMoveArea.DropStack,
       },
-    ]);
+    );
 
     if (fromCards.length === 0) {
       await room.changeMaxHp(from.Id, -1);

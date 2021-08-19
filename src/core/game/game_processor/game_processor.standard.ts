@@ -467,15 +467,8 @@ export class StandardGameProcessor extends GameProcessor {
         fromId: this.currentPhasePlayer.Id,
         movingCards: [
           {
-            fromId: this.currentPhasePlayer.Id,
-            movingCards: [
-              {
-                fromArea: CardMoveArea.JudgeArea,
-                card: judgeCardId,
-              },
-            ],
-            toArea: CardMoveArea.DropStack,
-            moveReason: CardMoveReason.PlaceToDropStack,
+            fromArea: CardMoveArea.JudgeArea,
+            card: judgeCardId,
           },
         ],
         toArea: CardMoveArea.ProcessingArea,
@@ -1110,16 +1103,12 @@ export class StandardGameProcessor extends GameProcessor {
 
         const drawedCards = this.room.getCards(event.drawAmount, event.from || 'top');
         await this.room.moveCards({
-          infos: [
-            {
-              movingCards: drawedCards.map(cardId => ({ card: cardId, fromArea: CardMoveArea.DrawStack })),
-              toId: event.fromId,
-              toArea: CardMoveArea.HandArea,
-              moveReason: CardMoveReason.CardDraw,
-              hideBroadcast: true,
-              movedByReason: event.triggeredBySkills ? event.triggeredBySkills[0] : undefined,
-            },
-          ],
+          movingCards: drawedCards.map(cardId => ({ card: cardId, fromArea: CardMoveArea.DrawStack })),
+          toId: event.fromId,
+          toArea: CardMoveArea.HandArea,
+          moveReason: CardMoveReason.CardDraw,
+          hideBroadcast: true,
+          movedByReason: event.triggeredBySkills ? event.triggeredBySkills[0] : undefined,
         });
       }
     });
@@ -1364,16 +1353,12 @@ export class StandardGameProcessor extends GameProcessor {
       } else if (stage === PlayerDiedStage.PlayerDied) {
         const { killedBy, playerId } = event;
         await this.room.moveCards({
-          infos: [
-            {
-              moveReason: CardMoveReason.SelfDrop,
-              fromId: playerId,
-              movingCards: deadPlayer
-                .getPlayerCards()
-                .map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
-              toArea: CardMoveArea.DropStack,
-            },
-          ],
+          moveReason: CardMoveReason.SelfDrop,
+          fromId: playerId,
+          movingCards: deadPlayer
+            .getPlayerCards()
+            .map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
+          toArea: CardMoveArea.DropStack,
         });
 
         const outsideCards = Object.entries(deadPlayer.getOutsideAreaCards()).reduce<CardId[]>(
@@ -1388,14 +1373,10 @@ export class StandardGameProcessor extends GameProcessor {
 
         const allCards = [...deadPlayer.getCardIds(PlayerCardsArea.JudgeArea), ...outsideCards];
         await this.room.moveCards({
-          infos: [
-            {
-              moveReason: CardMoveReason.PlaceToDropStack,
-              fromId: playerId,
-              movingCards: allCards.map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
-              toArea: CardMoveArea.DropStack,
-            },
-          ],
+          moveReason: CardMoveReason.PlaceToDropStack,
+          fromId: playerId,
+          movingCards: allCards.map(cardId => ({ card: cardId, fromArea: deadPlayer.cardFrom(cardId) })),
+          toArea: CardMoveArea.DropStack,
         });
 
         if (killedBy) {
@@ -1406,14 +1387,10 @@ export class StandardGameProcessor extends GameProcessor {
           } else if (deadPlayer.Role === PlayerRole.Loyalist && killer.Role === PlayerRole.Lord) {
             const lordCards = VirtualCard.getActualCards(killer.getPlayerCards());
             await this.room.moveCards({
-              infos: [
-                {
-                  moveReason: CardMoveReason.SelfDrop,
-                  fromId: killer.Id,
-                  movingCards: lordCards.map(cardId => ({ card: cardId, fromArea: killer.cardFrom(cardId) })),
-                  toArea: CardMoveArea.DropStack,
-                },
-              ],
+              moveReason: CardMoveReason.SelfDrop,
+              fromId: killer.Id,
+              movingCards: lordCards.map(cardId => ({ card: cardId, fromArea: killer.cardFrom(cardId) })),
+              toArea: CardMoveArea.DropStack,
             });
           }
         }
@@ -1538,14 +1515,10 @@ export class StandardGameProcessor extends GameProcessor {
     if (!this.room.isCardOnProcessing(event.cardId)) {
       this.room.addProcessingCards(event.cardId.toString(), event.cardId);
       await this.room.moveCards({
-        infos: [
-          {
-            movingCards: [{ card: event.cardId, fromArea: from.cardFrom(event.cardId) }],
-            toArea: CardMoveArea.ProcessingArea,
-            fromId: from.Id,
-            moveReason: CardMoveReason.CardUse,
-          },
-        ],
+        movingCards: [{ card: event.cardId, fromArea: from.cardFrom(event.cardId) }],
+        toArea: CardMoveArea.ProcessingArea,
+        fromId: from.Id,
+        moveReason: CardMoveReason.CardUse,
       });
     }
 
@@ -1574,15 +1547,11 @@ export class StandardGameProcessor extends GameProcessor {
     if (!this.room.isCardOnProcessing(event.cardId)) {
       this.room.addProcessingCards(event.cardId.toString(), event.cardId);
       await this.room.moveCards({
-        infos: [
-          {
-            movingCards: [{ card: event.cardId, fromArea: from.cardFrom(event.cardId) }],
-            toArea: CardMoveArea.ProcessingArea,
-            fromId: event.fromId,
-            moveReason: CardMoveReason.CardResponse,
-            hideBroadcast: true,
-          },
-        ],
+        movingCards: [{ card: event.cardId, fromArea: from.cardFrom(event.cardId) }],
+        toArea: CardMoveArea.ProcessingArea,
+        fromId: event.fromId,
+        moveReason: CardMoveReason.CardResponse,
+        hideBroadcast: true,
       });
     }
 
@@ -1590,15 +1559,11 @@ export class StandardGameProcessor extends GameProcessor {
 
     if (!event.withoutInvokes) {
       await this.room.moveCards({
-        infos: [
-          {
-            movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
-            moveReason: CardMoveReason.CardResponse,
-            toArea: CardMoveArea.DropStack,
-            hideBroadcast: true,
-            proposer: event.fromId,
-          },
-        ],
+        movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
+        moveReason: CardMoveReason.CardResponse,
+        toArea: CardMoveArea.DropStack,
+        hideBroadcast: true,
+        proposer: event.fromId,
       });
       if (this.room.isCardOnProcessing(event.cardId)) {
         this.room.endProcessOnTag(event.cardId.toString());
@@ -1663,6 +1628,12 @@ export class StandardGameProcessor extends GameProcessor {
       moveCardInfos.push(info);
     }
 
+    if (moveCardInfos.length === 0) {
+      return;
+    }
+
+    event.infos = moveCardInfos;
+
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === CardMoveStage.CardMoving) {
         for (const info of event.infos) {
@@ -1704,7 +1675,7 @@ export class StandardGameProcessor extends GameProcessor {
     to: Player | undefined,
     cardIds: CardId[],
     actualCardIds: CardId[],
-    event: MoveCardEventInfos & BaseGameEvent,
+    event: MoveCardEventInfos,
   ) {
     const {
       fromId,
@@ -1828,7 +1799,7 @@ export class StandardGameProcessor extends GameProcessor {
     to: Player | undefined,
     cardIds: CardId[],
     actualCardIds: CardId[],
-    event: MoveCardEventInfos & BaseGameEvent,
+    event: MoveCardEventInfos,
   ) {
     const { toArea, movingCards, toOutsideArea, placeAtTheBottomOfDrawStack } = event;
     for (const { card, fromArea, asideMove } of movingCards) {
@@ -1947,15 +1918,11 @@ export class StandardGameProcessor extends GameProcessor {
 
     if (this.room.getCardOwnerId(event.judgeCardId) === undefined) {
       await this.room.moveCards({
-        infos: [
-          {
-            movingCards: [{ card: event.judgeCardId, fromArea: CardMoveArea.ProcessingArea }],
-            moveReason: CardMoveReason.PlaceToDropStack,
-            toArea: CardMoveArea.DropStack,
-            proposer: event.toId,
-            movedByReason: CardMovedBySpecifiedReason.JudgeProcess,
-          },
-        ],
+        movingCards: [{ card: event.judgeCardId, fromArea: CardMoveArea.ProcessingArea }],
+        moveReason: CardMoveReason.PlaceToDropStack,
+        toArea: CardMoveArea.DropStack,
+        proposer: event.toId,
+        movedByReason: CardMovedBySpecifiedReason.JudgeProcess,
       });
     }
 

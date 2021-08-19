@@ -64,9 +64,12 @@ export class QinGuoRecover extends TriggerSkill {
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): boolean {
     return (
-      ((content.toId === owner.Id && content.toArea === CardMoveArea.EquipArea) ||
-        (content.fromId === owner.Id &&
-          content.movingCards.find(card => card.fromArea === CardMoveArea.EquipArea) !== undefined)) &&
+      content.infos.find(
+        info =>
+          (info.toId === owner.Id && info.toArea === CardMoveArea.EquipArea) ||
+          (info.fromId === owner.Id &&
+            info.movingCards.find(card => card.fromArea === CardMoveArea.EquipArea) !== undefined),
+      ) !== undefined &&
       owner.Hp === owner.getCardIds(PlayerCardsArea.EquipArea).length &&
       EventPacker.getMiddleware<number>(this.GeneralName, content) !== undefined &&
       EventPacker.getMiddleware<number>(this.GeneralName, content) !==
@@ -107,9 +110,12 @@ export class QinGuoRecorder extends TriggerSkill {
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): boolean {
     return (
-      (content.toId === owner.Id && content.toArea === CardMoveArea.EquipArea) ||
-      (content.fromId === owner.Id &&
-        content.movingCards.find(card => card.fromArea === CardMoveArea.EquipArea) !== undefined)
+      content.infos.find(
+        info =>
+          (info.toId === owner.Id && info.toArea === CardMoveArea.EquipArea) ||
+          (info.fromId === owner.Id &&
+            info.movingCards.find(card => card.fromArea === CardMoveArea.EquipArea) !== undefined),
+      ) !== undefined
     );
   }
 
