@@ -6,10 +6,15 @@ class App {
 
   constructor() {
     this.app
-      .get('/', (req, res) => {
+      .use(
+        express.static(path.join(__dirname, '../build/'), {
+          maxAge: '7d',
+        }),
+      )
+      .get('/sgs', (req, res) => {
         res.sendfile(path.join(__dirname, '../build/home/index.html'));
       })
-      .get('/lobby', (req, res) => {
+      .get('/', (req, res) => {
         res.sendfile(path.join(__dirname, '../build/index.html'));
       })
       .use((req, res, next) => {

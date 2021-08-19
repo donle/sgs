@@ -4,7 +4,7 @@ import { Logger } from './logger';
 
 export class ClientLogger extends Logger {
   protected translator: ClientTranslationModule | undefined;
-  constructor(private flavor: Flavor = Flavor.Dev) {
+  constructor(private flavor: Flavor = Flavor.Prod) {
     super();
   }
 

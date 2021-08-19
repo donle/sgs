@@ -30,7 +30,7 @@ export class App extends React.PureComponent<{
   private audioLoader = getAudioLoader(this.props.config.flavor);
   private connectionService = getConnectionService(this.props.config);
   private fakeConnectionService = getConnectionService(this.props.config, true);
-  private campaignService = new CampaignService(new ClientLogger(Flavor.Dev));
+  private campaignService = new CampaignService(new ClientLogger(Flavor.Prod));
 
   // async getSkinData() {
   //   const url = process.env.PUBLIC_URL + '/skin_infos.json';
@@ -44,6 +44,10 @@ export class App extends React.PureComponent<{
     document.title = this.props.translator.tr('New QSanguosha');
     installEventEmitter();
   }
+
+  private readonly getConnectionService = (campaignMode: boolean) => {
+    return campaignMode ? this.fakeConnectionService : this.connectionService;
+  };
 
   render() {
     return (
@@ -130,7 +134,7 @@ export class App extends React.PureComponent<{
                 electronLoader={this.props.electronLoader}
                 config={this.props.config}
                 translator={this.props.translator}
-                connectionService={this.connectionService}
+                getConnectionService={this.getConnectionService}
               />
             )}
           />

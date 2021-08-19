@@ -36,7 +36,7 @@ export class RoomPage extends React.Component<
     imageLoader: ImageLoader;
     audioLoader: AudioLoader;
     electronLoader: ElectronLoader;
-    connectionService: ConnectionService;
+    getConnectionService(campaignMode: boolean): ConnectionService;
     skinData?: CharacterSkinInfo[];
   }>
 > {
@@ -48,6 +48,7 @@ export class RoomPage extends React.Component<
   private playerName: string = this.props.electronLoader.getData('username') || 'unknown';
   private baseService: RoomBaseService;
   private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
+  private isCampaignMode = false;
 
   private lastEventTimeStamp: number;
 
@@ -88,7 +89,7 @@ export class RoomPage extends React.Component<
       imageLoader: ImageLoader;
       audioLoader: AudioLoader;
       electronLoader: ElectronLoader;
-      connectionService: ConnectionService;
+      getConnectionService(campaignMode: boolean): ConnectionService;
       skinData?: CharacterSkinInfo[];
     }>,
   ) {
@@ -105,16 +106,18 @@ export class RoomPage extends React.Component<
       hostConfig: ServiceConfig;
       campaignMode?: boolean;
     };
+    this.isCampaignMode = !!campaignMode;
+
     if (campaignMode) {
       this.socket = new LocalClientEmitter((window as any).eventEmitter, roomId);
+      mobx.runInAction(() => (this.gameHostedServer = ServerHostTag.Localhost));
     } else {
       this.socket = new ClientSocket(
         `${hostConfig.protocol}://${hostConfig.host}:${hostConfig.port}/room-${roomId}`,
         roomId,
       );
+      mobx.runInAction(() => (this.gameHostedServer = hostConfig.hostTag));
     }
-
-    mobx.runInAction(() => (this.gameHostedServer = hostConfig.hostTag));
 
     if (ping !== undefined) {
       mobx.runInAction(() => (this.roomPing = ping));
@@ -273,7 +276,7 @@ export class RoomPage extends React.Component<
               translator={this.props.translator}
               roomName={this.store.room.getRoomInfo().name}
               className={styles.roomBanner}
-              connectionService={this.props.connectionService}
+              connectionService={this.props.getConnectionService(this.isCampaignMode)}
               onClickSettings={this.onClickSettings}
               onSwitchSideBoard={this.onSwitchSideBoard}
               defaultPing={this.roomPing}
@@ -297,7 +300,7 @@ export class RoomPage extends React.Component<
                     store={this.store}
                     presenter={this.presenter}
                     translator={this.props.translator}
-                    connectionService={this.props.connectionService}
+                    connectionService={this.props.getConnectionService(this.isCampaignMode)}
                   />
                 </div>
               )}

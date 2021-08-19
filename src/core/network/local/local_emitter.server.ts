@@ -174,7 +174,7 @@ export class LocalServerEmitter implements LocalServerEmitterInnterface {
       const result = toPlayer.AI.onAction(this.room!, type, content);
       setTimeout(() => {
         this.asyncResponseResolver[type]?.(result);
-      }, 3000);
+      }, 1500);
     } else {
       this.socket.emit(to, 'server-' + type.toString(), content);
     }
