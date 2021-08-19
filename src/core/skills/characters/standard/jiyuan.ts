@@ -1,7 +1,7 @@
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, CardMoveStage, PlayerDyingStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
@@ -23,10 +23,13 @@ export class JiYuan extends TriggerSkill {
     if (identifier === GameEventIdentifiers.MoveCardEvent) {
       const moveEvent = content as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
       return (
-        moveEvent.toId !== undefined &&
-        moveEvent.toId !== owner.Id &&
-        moveEvent.proposer === owner.Id &&
-        moveEvent.toArea === PlayerCardsArea.HandArea
+        moveEvent.infos.find(
+          info =>
+            info.toId !== undefined &&
+            info.toId !== owner.Id &&
+            info.proposer === owner.Id &&
+            info.toArea === PlayerCardsArea.HandArea,
+        ) !== undefined
       );
     } else if (identifier === GameEventIdentifiers.PlayerDyingEvent) {
       return true;
@@ -46,17 +49,22 @@ export class JiYuan extends TriggerSkill {
       GameEventIdentifiers.PlayerDyingEvent | GameEventIdentifiers.MoveCardEvent
     >;
     const identifier = EventPacker.getIdentifier(unknownEvent);
-    let target: PlayerId;
 
     if (identifier === GameEventIdentifiers.MoveCardEvent) {
       const moveEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
-      target = moveEvent.toId!;
+      const infos = moveEvent.infos.length === 1 ? moveEvent.infos : moveEvent.infos.filter(info => info.toId !== undefined &&
+        info.toId !== skillUseEvent.fromId &&
+        info.proposer === skillUseEvent.fromId &&
+        info.toArea === PlayerCardsArea.HandArea,)
+      
+      for (const info of infos) {
+        info.toId && await room.drawCards(1, info.toId, 'top', skillUseEvent.fromId, this.Name);
+      }
+      
     } else {
       const dyingEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>;
-      target = dyingEvent.dying;
+      await room.drawCards(1, dyingEvent.dying, 'top', undefined, this.Name);
     }
-
-    await room.drawCards(1, target, 'top', undefined, this.Name);
 
     return true;
   }

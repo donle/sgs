@@ -61,7 +61,7 @@ export class XingZuo extends TriggerSkill {
       if (toGain.length > 0) {
         const toBottom = selectedCards.filter(card => !cards.includes(card));
 
-        await room.asyncMoveCards([
+        await room.moveCards(
           {
             movingCards: toGain.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
             toArea: CardMoveArea.ProcessingArea,
@@ -77,9 +77,9 @@ export class XingZuo extends TriggerSkill {
             proposer: fromId,
             engagedPlayerIds: [],
           },
-        ]);
+        );
 
-        await room.asyncMoveCards([
+        await room.moveCards(
           {
             movingCards: toBottom.map(card => ({ card, fromArea: CardMoveArea.ProcessingArea })),
             toArea: CardMoveArea.DrawStack,
@@ -95,7 +95,7 @@ export class XingZuo extends TriggerSkill {
             moveReason: CardMoveReason.ActiveMove,
             proposer: fromId,
           },
-        ]);
+        );
 
         from.setFlag<boolean>(this.Name, true);
       }
@@ -166,7 +166,7 @@ export class XingZuoShadow extends TriggerSkill implements OnDefineReleaseTiming
     const num = toExchange.length;
     const cards = room.getCards(3, 'bottom');
 
-    await room.asyncMoveCards([
+    await room.moveCards(
       {
         movingCards: cards.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
         toArea: CardMoveArea.ProcessingArea,
@@ -180,9 +180,9 @@ export class XingZuoShadow extends TriggerSkill implements OnDefineReleaseTiming
         moveReason: CardMoveReason.ActiveMove,
         proposer: toIds[0],
       },
-    ]);
+    );
 
-    await room.asyncMoveCards([
+    await room.moveCards(
       {
         movingCards: toExchange.map(card => ({ card, fromArea: CardMoveArea.ProcessingArea })),
         toArea: CardMoveArea.DrawStack,
@@ -197,7 +197,7 @@ export class XingZuoShadow extends TriggerSkill implements OnDefineReleaseTiming
         moveReason: CardMoveReason.ActiveMove,
         proposer: toIds[0],
       },
-    ]);
+    );
 
     num > 3 && (await room.loseHp(fromId, 1));
 

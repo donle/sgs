@@ -1,6 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { MovingCardProps } from 'core/event/event.server';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { PlayerPhase } from './stage_processor';
 

@@ -83,7 +83,7 @@ export class DiMeng extends ActiveSkill {
 
     const firstCards = first.getCardIds(PlayerCardsArea.HandArea).slice();
     const secondCards = second.getCardIds(PlayerCardsArea.HandArea).slice();
-    await room.asyncMoveCards([
+    await room.moveCards(
       {
         moveReason: CardMoveReason.PassiveMove,
         movingCards: firstCards.map(cardId => ({ card: cardId, fromArea: CardMoveArea.HandArea })),
@@ -102,9 +102,9 @@ export class DiMeng extends ActiveSkill {
         movedByReason: this.Name,
         engagedPlayerIds: [secondId],
       },
-    ]);
+    );
 
-    await room.asyncMoveCards([
+    await room.moveCards(
       {
         moveReason: CardMoveReason.PassiveMove,
         movingCards: secondCards.map(cardId => ({ card: cardId, fromArea: CardMoveArea.ProcessingArea })),
@@ -123,7 +123,7 @@ export class DiMeng extends ActiveSkill {
         movedByReason: this.Name,
         engagedPlayerIds: [firstId, secondId],
       },
-    ]);
+    );
 
     return true;
   }

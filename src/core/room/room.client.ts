@@ -109,9 +109,6 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   public async onReceivingAsyncResponseFrom(): Promise<any> {
     this.throwUntouchableError(this.onReceivingAsyncResponseFrom.name);
   }
-  public async asyncMoveCards(): Promise<void> {
-    this.throwUntouchableError(this.asyncMoveCards.name);
-  }
   public clearHeaded() {
     this.throwUntouchableError(this.clearHeaded.name);
   }

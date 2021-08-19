@@ -29,7 +29,7 @@ import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Character, CharacterEquipSections, CharacterId } from 'core/characters/character';
-import { PinDianProcedure, PinDianReport } from 'core/event/event.server';
+import { MoveCardEventInfos, PinDianProcedure, PinDianReport } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { GameProcessor } from 'core/game/game_processor/game_processor';
 import { GameInfo } from 'core/game/game_props';
@@ -781,7 +781,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   public async reforge(cardId: CardId, from: Player) {
-    await this.moveCards({infos: [{
+    await this.moveCards({
       fromId: from.Id,
       movingCards: [{ card: cardId, fromArea: CardMoveArea.HandArea }],
       moveReason: CardMoveReason.PlaceToDropStack,
@@ -792,7 +792,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         TranslationPack.patchPlayerInTranslation(from),
         TranslationPack.patchCardInTranslation(cardId),
       ).extract(),
-    }]});
+    });
     await this.drawCards(1, from.Id, 'top', undefined, undefined, CardDrawReason.Reforge);
   }
 
@@ -1014,34 +1014,36 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           if (this.isCardOnProcessing(event.cardId)) {
             const from = this.getPlayerById(event.fromId);
 
-            let existingEquipId = from.getEquipment((card as EquipCard).EquipType);
-            if (card.isVirtualCard()) {
-              const actualEquip = Sanguosha.getCardById<EquipCard>((card as VirtualCard).ActualCardIds[0]);
-              existingEquipId = from.getEquipment(actualEquip.EquipType);
-            }
-
-            if (existingEquipId !== undefined) {
-              await this.moveCards({infos: [{
-                fromId: from.Id,
-                moveReason: CardMoveReason.PlaceToDropStack,
-                toArea: CardMoveArea.DropStack,
-                movingCards: [{ card: existingEquipId, fromArea: CardMoveArea.EquipArea }],
-              }]});
-            }
-
             if (from.Dead) {
-              await this.moveCards({infos: [{
+              await this.moveCards({
                 movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
                 moveReason: CardMoveReason.PlaceToDropStack,
                 toArea: CardMoveArea.DropStack,
-              }]});
+              });
             } else {
-              await this.moveCards({infos: [{
-                movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
-                moveReason: CardMoveReason.CardUse,
-                toId: from.Id,
-                toArea: CardMoveArea.EquipArea,
-              }]});
+              let existingEquipId = from.getEquipment((card as EquipCard).EquipType);
+              if (card.isVirtualCard()) {
+                const actualEquip = Sanguosha.getCardById<EquipCard>((card as VirtualCard).ActualCardIds[0]);
+                existingEquipId = from.getEquipment(actualEquip.EquipType);
+              }
+
+              const infos: MoveCardEventInfos[] = [
+                {
+                  movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
+                  moveReason: CardMoveReason.CardUse,
+                  toId: from.Id,
+                  toArea: CardMoveArea.EquipArea,
+                },
+              ];
+
+              existingEquipId &&
+                infos.unshift({
+                  fromId: from.Id,
+                  moveReason: CardMoveReason.PlaceToDropStack,
+                  toArea: CardMoveArea.DropStack,
+                  movingCards: [{ card: existingEquipId, fromArea: CardMoveArea.EquipArea }],
+                });
+              await this.moveCards(...infos);
             }
           }
 
@@ -1347,35 +1349,45 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     );
   }
 
-  public async moveCards(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
-    if (event.movingCards.length === 0) {
-      return;
-    }
-
-    const from = event.fromId ? this.getPlayerById(event.fromId) : undefined;
-    event.movingCards = event.movingCards.reduce<
-      {
-        card: CardId;
-        fromArea?: CardMoveArea | PlayerCardsArea;
-      }[]
-    >((allCards, cardInfo) => {
-      if (Card.isVirtualCardId(cardInfo.card)) {
-        const card = Sanguosha.getCardById<VirtualCard>(cardInfo.card);
-        if (!Sanguosha.isTransformCardSill(card.GeneratedBySkill)) {
-          allCards.push(
-            ...card.ActualCardIds.map(cardId => ({
-              card: cardId,
-              fromArea: from?.cardFrom(cardId),
-              asideMove: true,
-            })),
-          );
-        }
+  public async moveCards(...infos: MoveCardEventInfos[]) {
+    const event = { infos };
+    const toRemove: MoveCardEventInfos[] = [];
+    for (const info of event.infos) {
+      if (info.movingCards.length === 0) {
+        toRemove.push(info);
+        continue;
       }
 
-      allCards.push(cardInfo);
+      const from = info.fromId ? this.getPlayerById(info.fromId) : undefined;
+      info.movingCards = info.movingCards.reduce<
+        {
+          card: CardId;
+          fromArea?: CardMoveArea | PlayerCardsArea;
+        }[]
+      >((allCards, cardInfo) => {
+        if (Card.isVirtualCardId(cardInfo.card)) {
+          const card = Sanguosha.getCardById<VirtualCard>(cardInfo.card);
+          if (!Sanguosha.isTransformCardSill(card.GeneratedBySkill)) {
+            allCards.push(
+              ...card.ActualCardIds.map(cardId => ({
+                card: cardId,
+                fromArea: from?.cardFrom(cardId),
+                asideMove: true,
+              })),
+            );
+          }
+        }
 
-      return allCards;
-    }, []);
+        allCards.push(cardInfo);
+
+        return allCards;
+      }, []);
+    }
+
+    event.infos.filter(info => !toRemove.includes(info));
+    if (event.infos.length === 0) {
+      return;
+    }
 
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.MoveCardEvent,

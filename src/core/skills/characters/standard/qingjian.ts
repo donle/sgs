@@ -18,8 +18,7 @@ export class QingJian extends TriggerSkill {
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): boolean {
     return (
-      owner.Id === content.toId &&
-      content.toArea === CardMoveArea.HandArea &&
+      content.infos.find(info => owner.Id === info.toId && info.toArea === CardMoveArea.HandArea) !== undefined &&
       (room.CurrentPhasePlayer.Id !== owner.Id ||
         (room.CurrentPhasePlayer.Id === owner.Id && room.CurrentPlayerPhase !== PlayerPhase.DrawCardStage)) &&
       !owner.hasUsedSkill(this.Name) &&

@@ -13,7 +13,11 @@ import { CommonSkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wra
 export class DuanFa extends ActiveSkill implements OnDefineReleaseTiming {
   public async whenObtainingSkill(room: Room, player: Player) {
     const num = room.Analytics.getCardDropRecord(player.Id, 'phase').reduce<number>((sum, event) => {
-      event.movedByReason === this.Name && (sum += event.movingCards.map(card => card.card).length);
+      const infos = event.infos.filter(info => info.movedByReason === this.Name);
+      for (const info of infos) {
+        sum += info.movingCards.filter(card => !Sanguosha.isVirtualCardId(card.card)).map(card => card.card).length;
+      }
+
       return sum;
     }, 0);
     room.setFlag<number>(player.Id, this.Name, num);

@@ -115,7 +115,7 @@ export class GuoLun extends ActiveSkill {
         };
         room.broadcast(GameEventIdentifiers.CardDisplayEvent, newShowCardEvent);
 
-        await room.asyncMoveCards([
+        await room.moveCards(
           {
             moveReason: CardMoveReason.PassiveMove,
             movingCards: [{ card: resp.selectedCards[0], fromArea: CardMoveArea.HandArea }],
@@ -132,9 +132,9 @@ export class GuoLun extends ActiveSkill {
             proposer: toIds[0],
             movedByReason: this.Name,
           },
-        ]);
+        );
 
-        await room.asyncMoveCards([
+        await room.moveCards(
           {
             moveReason: CardMoveReason.PassiveMove,
             movingCards: [{ card: resp.selectedCards[0], fromArea: CardMoveArea.ProcessingArea }],
@@ -151,7 +151,7 @@ export class GuoLun extends ActiveSkill {
             proposer: toIds[0],
             movedByReason: this.Name,
           },
-        ]);
+        );
 
         if (diff > 0) {
           await room.drawCards(1, fromId, 'top', fromId, this.Name);

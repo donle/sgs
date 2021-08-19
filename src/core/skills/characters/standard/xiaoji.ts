@@ -14,21 +14,27 @@ export class XiaoJi extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
-    if (owner.Id !== content.fromId) {
-      return false;
-    }
-
-    const equipCards = content.movingCards.filter(card => card.fromArea === PlayerCardsArea.EquipArea);
-    return owner.Id === content.fromId && equipCards.length > 0;
+    return (
+      content.infos.find(
+        info =>
+          owner.Id === info.fromId &&
+          info.movingCards.filter(card => card.fromArea === PlayerCardsArea.EquipArea).length > 0,
+      ) !== undefined
+    );
   }
 
   triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
-    return event.movingCards.filter(
-      card =>
-        !Sanguosha.isVirtualCardId(card.card) &&
-        Sanguosha.getCardById(card.card).is(CardType.Equip) &&
-        card.fromArea === CardMoveArea.EquipArea,
-    ).length;
+    return event.infos.reduce<number>((sum, info) => {
+      return (
+        sum +
+        info.movingCards.filter(
+          card =>
+            !Sanguosha.isVirtualCardId(card.card) &&
+            Sanguosha.getCardById(card.card).is(CardType.Equip) &&
+            card.fromArea === CardMoveArea.EquipArea,
+        ).length
+      );
+    }, 0);
   }
 
   async onTrigger() {
@@ -36,10 +42,8 @@ export class XiaoJi extends TriggerSkill {
   }
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const { triggeredOnEvent } = skillUseEvent;
-    const { fromId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
+    await room.drawCards(2, skillUseEvent.fromId, 'top', undefined, this.Name);
 
-    await room.drawCards(2, fromId, 'top', undefined, this.Name);
     return true;
   }
 }

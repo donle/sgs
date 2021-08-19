@@ -58,7 +58,7 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage): boolean {
-    return stage === PhaseChangeStage.BeforePhaseChange || stage === PhaseChangeStage.PhaseChanged;
+    return stage === PhaseChangeStage.PhaseChanged || stage === PhaseChangeStage.AfterPhaseChanged;
   }
 
   public canUse(

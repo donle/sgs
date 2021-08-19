@@ -106,7 +106,7 @@ export class MuNiuLiuMaSkill extends ActiveSkill implements OnDefineReleaseTimin
     if (selectedPlayers !== undefined && selectedPlayers.length > 0) {
       const toId = selectedPlayers[0];
       const to = room.getPlayerById(toId);
-      await room.asyncMoveCards([
+      await room.moveCards(
         {
           movingCards: [{ card: from.getEquipment(CardType.Precious)!, fromArea: PlayerCardsArea.EquipArea }],
           toArea: PlayerCardsArea.EquipArea,
@@ -149,7 +149,7 @@ export class MuNiuLiuMaSkill extends ActiveSkill implements OnDefineReleaseTimin
             TranslationPack.patchPlayerInTranslation(to),
           ).extract(),
         },
-      ]);
+      );
     }
     return true;
   }

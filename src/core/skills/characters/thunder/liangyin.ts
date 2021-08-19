@@ -23,13 +23,16 @@ export class LiangYin extends TriggerSkill {
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): boolean {
     return (
-      !LiangYin.LiangYinAreas.includes(content.toArea as CardMoveArea) &&
-      room
-        .getOtherPlayers(owner.Id)
-        .find(
-          player =>
-            owner.getCardIds(PlayerCardsArea.HandArea).length < player.getCardIds(PlayerCardsArea.HandArea).length,
-        ) !== undefined
+      content.infos.find(
+        info =>
+          !LiangYin.LiangYinAreas.includes(info.toArea as CardMoveArea) &&
+          room
+            .getOtherPlayers(owner.Id)
+            .find(
+              player =>
+                owner.getCardIds(PlayerCardsArea.HandArea).length < player.getCardIds(PlayerCardsArea.HandArea).length,
+            ) !== undefined,
+      ) !== undefined
     );
   }
 
@@ -76,18 +79,21 @@ export class LiangYinShadow extends TriggerSkill {
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): boolean {
     return (
-      content.movingCards &&
-      content.movingCards.find(
-        card => card.fromArea && !LiangYin.LiangYinAreas.includes(card.fromArea as CardMoveArea),
-      ) !== undefined &&
-      content.toArea === CardMoveArea.HandArea &&
-      room
-        .getOtherPlayers(owner.Id)
-        .find(
-          player =>
-            owner.getCardIds(PlayerCardsArea.HandArea).length > player.getCardIds(PlayerCardsArea.HandArea).length &&
-            player.getPlayerCards().length > 0,
-        ) !== undefined
+      content.infos.find(
+        info =>
+          info.movingCards &&
+          info.movingCards.find(
+            card => card.fromArea && !LiangYin.LiangYinAreas.includes(card.fromArea as CardMoveArea),
+          ) !== undefined &&
+          info.toArea === CardMoveArea.HandArea &&
+          room
+            .getOtherPlayers(owner.Id)
+            .find(
+              player =>
+                owner.getCardIds(PlayerCardsArea.HandArea).length >
+                  player.getCardIds(PlayerCardsArea.HandArea).length && player.getPlayerCards().length > 0,
+            ) !== undefined,
+      ) !== undefined
     );
   }
 

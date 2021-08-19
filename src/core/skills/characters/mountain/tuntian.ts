@@ -15,19 +15,22 @@ export class TunTian extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): boolean {
-    if (owner.Id !== content.fromId || room.CurrentPhasePlayer === owner) {
+    if (room.CurrentPhasePlayer === owner) {
       return false;
     }
 
-    const yourCards = content.movingCards.filter(
-      card => card.fromArea === PlayerCardsArea.HandArea || card.fromArea === PlayerCardsArea.EquipArea,
-    );
-
     return (
-      !(
-        owner.Id === content.toId &&
-        (content.toArea === PlayerCardsArea.HandArea || content.toArea === PlayerCardsArea.EquipArea)
-      ) && yourCards.length > 0
+      content.infos.find(
+        info =>
+          owner.Id === info.fromId &&
+          !(
+            owner.Id === info.toId &&
+            (info.toArea === PlayerCardsArea.HandArea || info.toArea === PlayerCardsArea.EquipArea)
+          ) &&
+          info.movingCards.filter(
+            card => card.fromArea === PlayerCardsArea.HandArea || card.fromArea === PlayerCardsArea.EquipArea,
+          ).length > 0,
+      ) !== undefined
     );
   }
 

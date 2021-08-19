@@ -66,7 +66,7 @@ export class GanLu extends ActiveSkill {
 
     const firstCards = first.getCardIds(PlayerCardsArea.EquipArea).slice();
     const secondCards = second.getCardIds(PlayerCardsArea.EquipArea).slice();
-    await room.asyncMoveCards([
+    await room.moveCards(
       {
         moveReason: CardMoveReason.PassiveMove,
         movingCards: firstCards.map(cardId => ({ card: cardId, fromArea: CardMoveArea.EquipArea })),
@@ -85,9 +85,9 @@ export class GanLu extends ActiveSkill {
         movedByReason: this.Name,
         engagedPlayerIds: [secondId],
       },
-    ]);
+    );
 
-    await room.asyncMoveCards([
+    await room.moveCards(
       {
         moveReason: CardMoveReason.PassiveMove,
         movingCards: secondCards.map(cardId => ({ card: cardId, fromArea: CardMoveArea.ProcessingArea })),
@@ -106,7 +106,7 @@ export class GanLu extends ActiveSkill {
         movedByReason: this.Name,
         engagedPlayerIds: [firstId, secondId],
       },
-    ]);
+    );
 
     return true;
   }

@@ -1,5 +1,6 @@
 import { CardChoosingOptions } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
 import {
   AllStage,
@@ -41,15 +42,37 @@ export class XuanFeng extends TriggerSkill {
         const moveEvents = room.Analytics.getRecordEvents<GameEventIdentifiers.MoveCardEvent>(
           event =>
             EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
-            event.fromId === phaseStageChangeEvent.playerId &&
-            event.moveReason === CardMoveReason.SelfDrop,
+            event.infos.find(
+              info => info.fromId === phaseStageChangeEvent.playerId && info.moveReason === CardMoveReason.SelfDrop,
+            ) !== undefined,
           phaseStageChangeEvent.playerId,
           'round',
           [PlayerPhase.DropCardStage],
         );
 
         for (const moveEvent of moveEvents) {
-          droppedCardNum += moveEvent.movingCards.filter(card => card.fromArea === CardMoveArea.HandArea).length;
+          if (droppedCardNum >= 2) {
+            break;
+          }
+
+          if (moveEvent.infos.length === 1) {
+            droppedCardNum += moveEvent.infos[0].movingCards.filter(
+              cardInfo => !Sanguosha.isVirtualCardId(cardInfo.card) && cardInfo.fromArea === CardMoveArea.HandArea,
+            ).length;
+          } else {
+            const infos = moveEvent.infos.filter(
+              info => info.fromId === phaseStageChangeEvent.playerId && info.moveReason === CardMoveReason.SelfDrop,
+            );
+
+            droppedCardNum += infos.reduce<number>((sum, info) => {
+              return (
+                sum +
+                info.movingCards.filter(
+                  cardInfo => !Sanguosha.isVirtualCardId(cardInfo.card) && cardInfo.fromArea === CardMoveArea.HandArea,
+                ).length
+              );
+            }, 0);
+          }
         }
 
         isUseable = droppedCardNum >= 2;
@@ -57,8 +80,11 @@ export class XuanFeng extends TriggerSkill {
       return isUseable;
     } else if (unknownEvent === GameEventIdentifiers.MoveCardEvent) {
       const moveCardEvent = content as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
-      const equipCards = moveCardEvent.movingCards.filter(card => card.fromArea === CardMoveArea.EquipArea);
-      return owner.Id === moveCardEvent.fromId && equipCards.length > 0;
+      return (
+        moveCardEvent.infos.find(
+          info => owner.Id === info.fromId && info.movingCards.find(card => card.fromArea === CardMoveArea.EquipArea),
+        ) !== undefined
+      );
     }
 
     return false;

@@ -39,7 +39,7 @@ export type MoveCardEventInfos = {
   movedByReason?: string;
   hideBroadcast?: boolean;
   placeAtTheBottomOfDrawStack?: boolean;
-}
+} & BaseGameEvent
 
 export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.SetFlagEvent]: {
@@ -123,7 +123,7 @@ export interface ServerEvent extends EventUtilities {
     from?: 'top' | 'bottom';
   };
   [GameEventIdentifiers.MoveCardEvent]: {
-    infos: MoveCardEventInfos[] & BaseGameEvent;
+    infos: MoveCardEventInfos[];
   };
   [GameEventIdentifiers.CardDisplayEvent]: {
     displayCards: CardId[];

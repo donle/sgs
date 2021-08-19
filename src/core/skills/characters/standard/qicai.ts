@@ -38,14 +38,17 @@ export class QiCaiBlock extends TriggerSkill {
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
     return (
-      content.fromId === owner.Id &&
-      content.moveReason === CardMoveReason.PassiveDrop &&
-      content.proposer !== owner.Id &&
-      content.movingCards.find(
-        cardInfo =>
-          cardInfo.fromArea === CardMoveArea.EquipArea &&
-          (Sanguosha.getCardById(cardInfo.card).is(CardType.Shield) ||
-            Sanguosha.getCardById(cardInfo.card).is(CardType.Precious)),
+      content.infos.find(
+        info =>
+          info.fromId === owner.Id &&
+          info.moveReason === CardMoveReason.PassiveDrop &&
+          info.proposer !== owner.Id &&
+          info.movingCards.find(
+            cardInfo =>
+              cardInfo.fromArea === CardMoveArea.EquipArea &&
+              (Sanguosha.getCardById(cardInfo.card).is(CardType.Shield) ||
+                Sanguosha.getCardById(cardInfo.card).is(CardType.Precious)),
+          ) !== undefined,
       ) !== undefined
     );
   }
@@ -60,8 +63,20 @@ export class QiCaiBlock extends TriggerSkill {
   }
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const { triggeredOnEvent } = event;
-    EventPacker.terminate(triggeredOnEvent!);
+    const moveCardEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
+    for (const info of moveCardEvent.infos) {
+      info.movingCards = info.movingCards.filter(
+        cardInfo =>
+          !(
+            cardInfo.fromArea === CardMoveArea.EquipArea &&
+            (Sanguosha.getCardById(cardInfo.card).is(CardType.Shield) ||
+              Sanguosha.getCardById(cardInfo.card).is(CardType.Precious))
+          ),
+      );
+    }
+
+    moveCardEvent.infos = moveCardEvent.infos.filter(info => info.movingCards.length > 0);
+    moveCardEvent.infos.length === 0 && EventPacker.terminate(moveCardEvent);
     return true;
   }
 }

@@ -1,5 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -31,14 +32,34 @@ export class KuiZhu extends TriggerSkill {
     let canUse = content.playerId === owner.Id && content.toStage === PlayerPhaseStages.DropCardStageEnd;
     if (canUse) {
       const droppedCardsNum = room.Analytics.getCardLostRecord(owner.Id, 'phase').reduce<number>((sum, event) => {
-        return (
-          sum +
-          (event.moveReason === CardMoveReason.SelfDrop
-            ? event.movingCards.filter(
-                card => card.fromArea === CardMoveArea.HandArea || card.fromArea === CardMoveArea.EquipArea,
-              ).length
-            : 0)
-        );
+        if (event.infos.length === 1) {
+          const info = event.infos[0];
+          return (
+            sum +
+            (info.moveReason === CardMoveReason.SelfDrop
+              ? info.movingCards.filter(
+                  card =>
+                    (!Sanguosha.isVirtualCardId(card.card) && card.fromArea === CardMoveArea.HandArea) ||
+                    card.fromArea === CardMoveArea.EquipArea,
+                ).length
+              : 0)
+          );
+        } else {
+          const infos = event.infos.filter(info => info.moveReason === CardMoveReason.SelfDrop);
+
+          for (const info of infos) {
+            sum +=
+              info.moveReason === CardMoveReason.SelfDrop
+                ? info.movingCards.filter(
+                    card =>
+                      (!Sanguosha.isVirtualCardId(card.card) && card.fromArea === CardMoveArea.HandArea) ||
+                      card.fromArea === CardMoveArea.EquipArea,
+                  ).length
+                : 0;
+          }
+
+          return sum;
+        }
       }, 0);
       if (droppedCardsNum > 0) {
         owner.setFlag<number>(this.Name, droppedCardsNum);
@@ -60,7 +81,10 @@ export class KuiZhu extends TriggerSkill {
       {
         options,
         toId: fromId,
-        conversation: TranslationPack.translationJsonPatcher('{0}: please choose kuizhu options: {1}', this.Name).extract(),
+        conversation: TranslationPack.translationJsonPatcher(
+          '{0}: please choose kuizhu options: {1}',
+          this.Name,
+        ).extract(),
       },
       fromId,
     );
@@ -77,17 +101,18 @@ export class KuiZhu extends TriggerSkill {
         {
           invokeSkillNames: selectedOption === options[0] ? [KuiZhuDraw.Name] : [KuiZhuDamage.Name],
           toId: fromId,
-          conversation: selectedOption === options[0]
-          ? TranslationPack.translationJsonPatcher(
-            '{0}: do you want to choose at most {1} targets to draw a card each?',
-            this.Name,
-            droppedCardsNum,
-          ).extract()
-          : TranslationPack.translationJsonPatcher(
-            '{0}: do you want to choose a targets with {1} hp to deal 1 damage to each target?',
-            this.Name,
-            droppedCardsNum,
-          ).extract(),
+          conversation:
+            selectedOption === options[0]
+              ? TranslationPack.translationJsonPatcher(
+                  '{0}: do you want to choose at most {1} targets to draw a card each?',
+                  this.Name,
+                  droppedCardsNum,
+                ).extract()
+              : TranslationPack.translationJsonPatcher(
+                  '{0}: do you want to choose a targets with {1} hp to deal 1 damage to each target?',
+                  this.Name,
+                  droppedCardsNum,
+                ).extract(),
         },
         fromId,
       );
