@@ -1,7 +1,7 @@
 import { CharacterId } from 'core/characters/character';
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AllStage, PhaseChangeStage, PlayerPhase, StagePriority } from 'core/game/stage_processor';
+import { AllStage, GameBeginStage, PhaseChangeStage, PlayerPhase, StagePriority } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -49,32 +49,43 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
   public isAutoTrigger(
     room: Room,
     owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>,
+    event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.GameBeginEvent>,
   ): boolean {
-    if (event.from === undefined && event.to === PlayerPhase.PhaseBegin) {
+    if (EventPacker.getIdentifier(event) === GameEventIdentifiers.GameBeginEvent) {
       return true;
     }
     return false;
   }
 
-  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage): boolean {
-    return stage === PhaseChangeStage.BeforePhaseChange || stage === PhaseChangeStage.PhaseChanged;
+  public isTriggerable(
+    event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.GameBeginEvent>,
+    stage?: AllStage,
+  ): boolean {
+    return (
+      stage === PhaseChangeStage.BeforePhaseChange ||
+      stage === PhaseChangeStage.PhaseChanged ||
+      stage === GameBeginStage.AfterGameBegan
+    );
   }
 
   public canUse(
     room: Room,
     owner: Player,
-    event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>,
+    event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent | GameEventIdentifiers.GameBeginEvent>,
     stage?: AllStage,
   ) {
+    if (stage === GameBeginStage.AfterGameBegan) {
+      return true;
+    }
+
+    const content = event as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
     const canUse =
-      (((event.toPlayer === owner.Id &&
+      (content.toPlayer === owner.Id &&
+        content.to === PlayerPhase.PhaseBegin &&
+        stage === PhaseChangeStage.AfterPhaseChanged &&
         owner.getCardIds<CharacterId>(PlayerCardsArea.OutsideArea, this.Name).length > 0) ||
-        (room.Circle === 1 && !owner.getFlag<boolean>(this.Name))) &&
-        event.to === PlayerPhase.PhaseBegin &&
-        stage === PhaseChangeStage.AfterPhaseChanged) ||
-      (event.fromPlayer === owner.Id &&
-        event.from === PlayerPhase.PhaseFinish &&
+      (content.fromPlayer === owner.Id &&
+        content.from === PlayerPhase.PhaseFinish &&
         stage === PhaseChangeStage.PhaseChanged &&
         owner.getCardIds<CharacterId>(PlayerCardsArea.OutsideArea, this.Name).length > 0);
 
@@ -182,8 +193,7 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
     skillEffectEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     const player = room.getPlayerById(skillEffectEvent.fromId);
-    if (room.Circle === 1 && !player.getFlag<boolean>(this.Name)) {
-      player.setFlag(this.Name, true);
+    if (room.Circle === 1) {
       const huashen = room.getRandomCharactersFromLoadedPackage(3);
       room.setCharacterOutsideAreaCards(
         skillEffectEvent.fromId,

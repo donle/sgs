@@ -1,6 +1,7 @@
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import {
   AllStage,
+  GameBeginStage,
   PhaseChangeStage,
   PhaseStageChangeStage,
   PlayerPhase,
@@ -14,16 +15,16 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'qixing', description: 'qixing_description' })
 export class QiXing extends TriggerSkill {
-  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.GameStartEvent>, stage?: AllStage) {
-    return stage === PhaseChangeStage.BeforePhaseChange;
+  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.GameBeginEvent>, stage?: AllStage) {
+    return stage === GameBeginStage.AfterGameBegan;
   }
 
   isAutoTrigger() {
     return true;
   }
 
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
-    return room.Circle === 0 && !owner.getFlag<boolean>(this.Name) && content.to === PlayerPhase.PrepareStage;
+  canUse() {
+    return true;
   }
 
   async onTrigger() {
@@ -34,8 +35,6 @@ export class QiXing extends TriggerSkill {
     const fromId = skillUseEvent.fromId;
     const from = room.getPlayerById(fromId);
     let qixingCards = room.getCards(7, 'top');
-
-    from.setFlag<boolean>(this.Name, true);
 
     await room.moveCards({
       movingCards: qixingCards.map(card => ({ card })),

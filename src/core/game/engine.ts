@@ -11,6 +11,7 @@ import { SkillLoader } from './package_loader/loader.skills';
 import { coreVersion } from './version';
 
 export class Sanguosha {
+  private static hasInitialized = false;
   private static skills: {
     [name: string]: Skill;
   } = {};
@@ -35,6 +36,11 @@ export class Sanguosha {
   }
 
   public static initialize() {
+    if (this.hasInitialized) {
+      return;
+    }
+
+    this.hasInitialized = true;
     for (const skill of SkillLoader.getInstance().getAllSkills()) {
       Sanguosha.skills[skill.Name] = skill;
       if (skill instanceof TransformSkill) {

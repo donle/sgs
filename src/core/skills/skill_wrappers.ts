@@ -56,18 +56,6 @@ function skillPropertyWrapper(
   constructor: new () => any,
 ): any {
   return class WrappedSkillConstructor extends constructor {
-    private lordSkill: boolean;
-    private shadowSkill: boolean;
-    private uniqueSkill: boolean;
-    private selfTargetSkill: boolean;
-    private sideEffectSkill: boolean;
-    private persistentSkill: boolean;
-    private stubbornSkill: boolean;
-    private circleSkill: boolean;
-    private switchSkill: boolean;
-    private switchable: boolean;
-    private ai?: BaseSkillTrigger;
-
     constructor() {
       super();
 

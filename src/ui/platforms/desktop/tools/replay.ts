@@ -19,7 +19,7 @@ export class Replay {
   private static readonly algorithm = 'aes-256-cbc';
   private static readonly key = '__sgs_replay_signature_algorithm';
   private static readonly iv = '__sgs_replay_iv_';
-  private otherInfo: ReplayOtherInfo;
+  private otherInfo: ReplayOtherInfo | undefined;
 
   static readonly ErrorCode = {
     EmptyFile: '01001',
@@ -28,7 +28,7 @@ export class Replay {
   };
 
   public get OtherInfo() {
-    return this.otherInfo;
+    return this.otherInfo!;
   }
   public set OtherInfo(info: ReplayOtherInfo) {
     this.otherInfo = info;
@@ -36,9 +36,9 @@ export class Replay {
 
   public async toString() {
     const cipher = crypto.createCipheriv(Replay.algorithm, Buffer.from(Replay.key), Replay.iv);
-    let encryptedVersion = cipher.update(this.otherInfo.version);
+    let encryptedVersion = cipher.update(this.otherInfo!.version);
     encryptedVersion = Buffer.concat([encryptedVersion, cipher.final()]);
-    this.otherInfo.version = encryptedVersion.toString('hex');
+    this.otherInfo!.version = encryptedVersion.toString('hex');
     return await stringCompressor.compress(
       JSON.stringify({
         events: this.gameEvents,
@@ -71,5 +71,6 @@ export class Replay {
 
   public clear() {
     this.gameEvents = [];
+    this.otherInfo = undefined;
   }
 }
