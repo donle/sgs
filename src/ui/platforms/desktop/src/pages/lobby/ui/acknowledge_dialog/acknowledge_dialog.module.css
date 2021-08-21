@@ -1,8 +1,8 @@
 @value gridLine from '../../../../ui/metrics/metrics.css';
 
 .acknowledge {
-    width: calc(gridLine * 72);
-    height: calc(gridLine * 40);
+    width: calc(gridLine * 110);
+    height: calc(gridLine * 64.5);
 }
 
 .background {

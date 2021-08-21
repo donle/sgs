@@ -66,7 +66,6 @@ import { RoomEventStacker } from './utils/room_event_stack';
 export class ServerRoom extends Room<WorkPlace.Server> {
   private loadedCharacters: Character[] = [];
   private selectedCharacters: CharacterId[] = [];
-  private enabledObserver: boolean;
 
   private drawStack: CardId[] = [];
   private dropStack: CardId[] = [];
@@ -97,7 +96,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       .getPackages(...this.gameInfo.cardExtensions)
       .map(card => card.Id);
     this.dropStack = [];
-    this.enabledObserver = !!this.gameInfo.enableObserver;
 
     this.socket.emit(this);
     this.initAIPlayers();
@@ -664,6 +662,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (event.responsedEvent) {
       EventPacker.terminate(event);
       return event.responsedEvent;
+    } else if (event.cardAmount <= 0) {
+      const autoResponse: ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
+        fromId: playerId,
+        droppedCards: [],
+      };
+
+      return autoResponse;
     }
 
     this.notify(GameEventIdentifiers.AskForCardDropEvent, event, playerId);

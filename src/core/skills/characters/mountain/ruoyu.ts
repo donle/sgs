@@ -17,7 +17,7 @@ export class RuoYu extends TriggerSkill {
     return (
       room.getOtherPlayers(owner.Id).find(player => {
         return player.Hp < owner.Hp;
-      }) === undefined
+      }) === undefined && content.playerId === owner.Id
     );
   }
 

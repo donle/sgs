@@ -494,15 +494,6 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    if (content.cardAmount <= 0) {
-      const event: ClientEventFinder<T> = {
-        fromId: content.toId,
-        droppedCards: [],
-      };
-      this.store.room.broadcast(type, EventPacker.createIdentifierEvent(type, event));
-      return;
-    }
-
     this.presenter.createIncomingConversation({
       conversation: content.conversation
         ? content.conversation
