@@ -45,7 +45,12 @@ export class JiangChi extends TriggerSkill {
     skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
   ): Promise<boolean> {
     const options = ['jiangchi:draw2', 'jiangchi:draw1', 'jiangchi:drop'];
-    if (room.getPlayerById(skillUseEvent.fromId).getPlayerCards().length === 0) {
+    if (
+      room
+        .getPlayerById(skillUseEvent.fromId)
+        .getPlayerCards()
+        .filter(id => room.canDropCard(skillUseEvent.fromId, id)).length === 0
+    ) {
       options.pop();
     }
 
@@ -83,6 +88,9 @@ export class JiangChi extends TriggerSkill {
         undefined,
         this.Name,
       );
+      if (!response) {
+        return false;
+      }
 
       await room.dropCards(
         CardMoveReason.SelfDrop,

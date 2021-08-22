@@ -40,7 +40,7 @@ export class DuanFa extends ActiveSkill implements OnDefineReleaseTiming {
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
-    return Sanguosha.getCardById(cardId).isBlack();
+    return Sanguosha.getCardById(cardId).isBlack() && room.canDropCard(owner, cardId);
   }
 
   public async onUse(): Promise<boolean> {

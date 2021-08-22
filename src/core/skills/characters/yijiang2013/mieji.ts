@@ -68,13 +68,13 @@ export class MieJi extends ActiveSkill {
     const toId = toIds![0];
     const to = room.getPlayerById(toId);
     const options: string[] = [];
-    const trickCards: CardId[] = to
-      .getCardIds(PlayerCardsArea.HandArea)
-      .filter(cardId => Sanguosha.getCardById(cardId).is(CardType.Trick));
-    if (trickCards.length > 0) {
+    const nonTrickCards: CardId[] = to
+      .getPlayerCards()
+      .filter(cardId => !Sanguosha.getCardById(cardId).is(CardType.Trick) && room.canDropCard(fromId, cardId));
+    if (to.getPlayerCards().filter(id => Sanguosha.getCardById(id).is(CardType.Trick)).length > 0) {
       options.push('mieji:trick');
     }
-    if (to.getPlayerCards().length > trickCards.length) {
+    if (nonTrickCards.length > 0) {
       options.push('mieji:drop');
     }
 
@@ -126,7 +126,6 @@ export class MieJi extends ActiveSkill {
       });
     } else {
       let droppedCards = 0;
-      const nonTrickCards = to.getPlayerCards().filter(cardId => !Sanguosha.getCardById(cardId).is(CardType.Trick));
       while (droppedCards < Math.min(nonTrickCards.length, 2)) {
         const response = await room.askForCardDrop(
           toId,
@@ -138,6 +137,10 @@ export class MieJi extends ActiveSkill {
             .filter(cardId => Sanguosha.getCardById(cardId).BaseType === CardType.Trick),
           this.Name,
         );
+        if (!response) {
+          return false;
+        }
+
         await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toId);
         droppedCards++;
       }

@@ -235,7 +235,7 @@ export abstract class Player implements PlayerInfo {
 
     const skill = Sanguosha.getSkillBySkillName(skillName);
     if (skill.isSwitchSkill() && skill.isSwitchable()) {
-      const generalName = Sanguosha.getSkillBySkillName(skillName).GeneralName;
+      const generalName = skill.GeneralName;
       if (this.switchSkillState.includes(generalName)) {
         const index = this.switchSkillState.findIndex(name => name === generalName);
         this.switchSkillState.splice(index, 1);

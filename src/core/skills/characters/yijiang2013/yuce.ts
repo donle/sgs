@@ -1,5 +1,3 @@
-import { CardType } from 'core/cards/card';
-import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -63,28 +61,24 @@ export class YuCe extends TriggerSkill {
           recoveredHp: 1,
         });
       } else {
-        const allTypes = [CardType.Basic, CardType.Trick, CardType.Equip];
-        const availableTypes = allTypes.filter(type => type !== Sanguosha.getCardById(cardIds![0]).BaseType);
-
-        const askForDiscard: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardEvent> = {
-          toId: damageFromId,
-          amount: 1,
-          cardMatcher: new CardMatcher({ type: availableTypes }).toSocketPassenger(),
-          customCardFields: {
-            [PlayerCardsArea.HandArea]: handCards,
-          },
-          triggeredBySkills: [this.Name],
-        };
-
-        room.notify(GameEventIdentifiers.AskForChoosingCardEvent, askForDiscard, damageFromId);
-
-        const { selectedCards } = await room.onReceivingAsyncResponseFrom(
-          GameEventIdentifiers.AskForChoosingCardEvent,
+        const type = Sanguosha.getCardById(cardIds![0]).BaseType;
+        const response = await room.askForCardDrop(
           damageFromId,
+          1,
+          [PlayerCardsArea.HandArea],
+          false,
+          room
+            .getPlayerById(damageFromId)
+            .getCardIds(PlayerCardsArea.HandArea)
+            .filter(id => Sanguosha.getCardById(id).BaseType === type),
+          this.Name,
         );
+        if (!response) {
+          return false;
+        }
 
-        if (selectedCards !== undefined && selectedCards.length > 0) {
-          await room.dropCards(CardMoveReason.SelfDrop, selectedCards, damageFromId, damageFromId, this.Name);
+        if (response.droppedCards.length > 0) {
+          await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, damageFromId, damageFromId, this.Name);
         } else {
           await room.recover({
             toId: fromId,

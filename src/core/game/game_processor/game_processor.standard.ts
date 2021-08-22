@@ -550,7 +550,7 @@ export class StandardGameProcessor extends GameProcessor {
         true,
       );
 
-      await this.room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, response.fromId);
+      response && await this.room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, response.fromId);
     }
   }
 
@@ -1302,8 +1302,6 @@ export class StandardGameProcessor extends GameProcessor {
         }
       }
     });
-
-    to.Dying = false;
   }
 
   protected async onHandlePlayerDiedEvent(
@@ -2072,6 +2070,9 @@ export class StandardGameProcessor extends GameProcessor {
       if (stage === HpChangeStage.HpChanging) {
         if (event.byReaon === 'recover') {
           to.changeHp(event.amount);
+          if (to.Dying && to.Hp > 0) {
+            to.Dying = false;
+          }
         } else {
           to.changeHp(0 - event.amount);
         }

@@ -1,6 +1,6 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -78,25 +78,14 @@ export class TiaoXin extends ActiveSkill {
         triggeredBySkills: [this.Name],
       };
 
-      room.notify(
-        GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(chooseCardEvent),
-        fromId,
-      );
-
-      const response = await room.onReceivingAsyncResponseFrom(
-        GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-        fromId,
-      );
-
-      if (response.selectedCard === undefined) {
-        const cardIds = to.getCardIds(PlayerCardsArea.HandArea);
-        response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
+      const response = await room.askForChoosingPlayerCard(chooseCardEvent, fromId, true, true);
+      if (!response) {
+        return false;
       }
 
       await room.dropCards(
         CardMoveReason.PassiveDrop,
-        [response.selectedCard],
+        [response.selectedCard!],
         chooseCardEvent.toId,
         chooseCardEvent.fromId,
         this.Name,

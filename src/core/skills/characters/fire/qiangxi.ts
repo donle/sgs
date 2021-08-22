@@ -36,7 +36,7 @@ export class QiangXi extends ActiveSkill {
   }
 
   isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
-    return Sanguosha.getCardById(cardId).is(CardType.Weapon);
+    return Sanguosha.getCardById(cardId).is(CardType.Weapon) && room.canDropCard(owner, cardId);
   }
 
   async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {

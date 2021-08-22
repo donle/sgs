@@ -1,5 +1,4 @@
 import { CardType } from 'core/cards/card';
-import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -131,26 +130,22 @@ export class FeiJun extends ActiveSkill {
           proposer: fromId,
         });
       } else {
-        const response = await room.doAskForCommonly<GameEventIdentifiers.AskForCardEvent>(
-          GameEventIdentifiers.AskForCardEvent,
-          EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForCardEvent>({
-            cardAmount: 1,
-            toId: resp.selectedPlayers[0],
-            reason: this.Name,
-            conversation: TranslationPack.translationJsonPatcher('{0}: please drop a equip card', this.Name).extract(),
-            fromArea: [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
-            cardMatcher: new CardMatcher({ type: [CardType.Equip] }).toSocketPassenger(),
-            triggeredBySkills: [this.Name],
-          }),
+        const response = await room.askForCardDrop(
           resp.selectedPlayers[0],
+          1,
+          [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
+          true,
+          target.getPlayerCards().filter(id => !Sanguosha.getCardById(id).is(CardType.Equip)),
+          this.Name,
+          TranslationPack.translationJsonPatcher('{0}: please drop a equip card', this.Name).extract(),
         );
-
-        const equips = target.getPlayerCards().filter(card => Sanguosha.getCardById(card).is(CardType.Equip));
-        response.selectedCards = response.selectedCards || equips[Math.floor(Math.random() * equips.length)];
+        if (!response) {
+          return false;
+        }
 
         await room.dropCards(
           CardMoveReason.SelfDrop,
-          response.selectedCards,
+          response.droppedCards,
           resp.selectedPlayers[0],
           resp.selectedPlayers[0],
           this.Name,

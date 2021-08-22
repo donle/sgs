@@ -63,7 +63,7 @@ export class JieYin extends ActiveSkill {
 
   isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
     const fromArea = room.getPlayerById(owner).cardFrom(cardId);
-    return fromArea !== undefined && [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea].includes(fromArea);
+    return !(fromArea === PlayerCardsArea.HandArea && !room.canDropCard(owner, cardId));
   }
 
   async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {

@@ -31,33 +31,23 @@ export class MingShi extends TriggerSkill {
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const { fromId, triggeredOnEvent } = event;
+    const { triggeredOnEvent } = event;
     const source = (triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>).fromId!;
-    
-    const sourceCards = room.getPlayerById(source).getPlayerCards();
-    if (sourceCards.length > 0) {
-      const response = await room.doAskForCommonly<GameEventIdentifiers.AskForCardEvent>(
-        GameEventIdentifiers.AskForCardEvent,
-        {
-          cardAmount: 1,
-          toId: source,
-          reason: this.Name,
-          conversation: TranslationPack.translationJsonPatcher(
-            '{0}: please drop a card',
-            this.Name,
-            TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
-          ).extract(),
-          fromArea: [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
-          triggeredBySkills: [this.Name],
-        },
-        source,
-        true,
-      );
 
-      response.selectedCards = response.selectedCards || sourceCards[Math.floor(Math.random() * sourceCards.length)];
-
-      await room.dropCards(CardMoveReason.SelfDrop, response.selectedCards, source, source, this.Name);
+    const response = await room.askForCardDrop(
+      source,
+      1,
+      [PlayerCardsArea.HandArea],
+      true,
+      undefined,
+      this.Name,
+      TranslationPack.translationJsonPatcher('{0}: please drop a hand card', this.Name).extract(),
+    );
+    if (!response) {
+      return false;
     }
+
+    await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, source, source, this.Name);
 
     return true;
   }

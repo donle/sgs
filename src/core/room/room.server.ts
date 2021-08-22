@@ -27,7 +27,7 @@ import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props'
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { CardId } from 'core/cards/libs/card_props';
+import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { Character, CharacterEquipSections, CharacterId } from 'core/characters/character';
 import { MoveCardEventInfos, PinDianProcedure, PinDianReport } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
@@ -501,7 +501,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       }
 
       const toUnhook = p.HookedSkills.filter(skill => {
-        const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+        const hookedSkill = skill as unknown as OnDefineReleaseTiming;
         if (hookedSkill.afterLosingSkill && hookedSkill.afterLosingSkill(this, p.Id, content, stage)) {
           return true;
         }
@@ -634,6 +634,20 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     bySkill?: string,
     conversation?: string | PatchedTranslationObject,
   ) {
+    const cannotDropIds: CardId[] = [];
+    for (const area of fromArea) {
+      cannotDropIds.push(
+        ...this.getPlayerById(playerId)
+          .getCardIds(area)
+          .filter(id => !(this.canDropCard(playerId, id) || except?.includes(id))),
+      );
+    }
+
+    if (cannotDropIds.length > 0) {
+      except = except || [];
+      except.push(...cannotDropIds);
+    }
+
     const event: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent> = EventPacker.createIdentifierEvent(
       GameEventIdentifiers.AskForCardDropEvent,
       {
@@ -652,10 +666,52 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (event.responsedEvent) {
       EventPacker.terminate(event);
       return event.responsedEvent;
+    } else if (EventPacker.isUncancellabelEvent(event)) {
+      const toDrop: CardId[] = [];
+      for (const area of fromArea) {
+        toDrop.push(
+          ...this.getPlayerById(playerId)
+            .getCardIds(area)
+            .filter(id => !except?.includes(id)),
+        );
+        if (toDrop.length > event.cardAmount) {
+          break;
+        }
+      }
+
+      if (toDrop.length === event.cardAmount) {
+        event.responsedEvent = { droppedCards: toDrop, fromId: playerId };
+        return event.responsedEvent;
+      } else if (toDrop.length < event.cardAmount) {
+        event.cardAmount = toDrop.length;
+      }
+    }
+
+    if (event.cardAmount < 1) {
+      return;
     }
 
     this.notify(GameEventIdentifiers.AskForCardDropEvent, event, playerId);
-    return await this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardDropEvent, playerId);
+    const response = await this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardDropEvent, playerId);
+
+    if (EventPacker.isUncancellabelEvent(event) && response.droppedCards.length === 0) {
+      const canDropCards: CardId[] = [];
+      for (const area of fromArea) {
+        canDropCards.push(
+          ...this.getPlayerById(playerId)
+            .getCardIds(area)
+            .filter(id => !except?.includes(id)),
+        );
+      }
+
+      while (canDropCards.length === 0 || response.droppedCards.length === event.cardAmount) {
+        const index = Math.floor(Math.random() * canDropCards.length);
+        response.droppedCards.push(canDropCards[index]);
+        canDropCards.splice(index, 1);
+      }
+    }
+
+    return response;
   }
 
   public async askForPeach(event: ServerEventFinder<GameEventIdentifiers.AskForPeachEvent>) {
@@ -763,6 +819,68 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     } while (true);
 
     return responseEvent;
+  }
+
+  public async askForChoosingPlayerCard(
+    event: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>,
+    to: PlayerId,
+    toDiscard?: boolean,
+    uncancellable?: boolean,
+  ): Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent> | void> {
+    uncancellable &&
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(event);
+
+    if (to === event.toId) {
+      const newOption: CardChoosingOptions = {};
+      for (const [area, cardIds] of Object.entries(event.options)) {
+        if (cardIds) {
+          if (cardIds instanceof Array) {
+            let ids =
+              (area as unknown as PlayerCardsArea) === PlayerCardsArea.HandArea
+                ? this.getPlayerById(to).getCardIds(PlayerCardsArea.HandArea)
+                : cardIds;
+            toDiscard && (ids = ids.filter(id => this.canDropCard(to, id)));
+            ids.length > 0 && (newOption[area] = ids);
+          } else {
+            this.canDropCard(to, cardIds) && (newOption[area] = cardIds);
+          }
+        }
+      }
+
+      event.options = newOption;
+    }
+
+    if (Object.values(event.options).length === 0) {
+      return;
+    }
+
+    this.notify(GameEventIdentifiers.AskForChoosingCardFromPlayerEvent, event, to);
+
+    const response = await this.onReceivingAsyncResponseFrom(
+      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
+      to,
+    );
+
+    if (response.selectedCardIndex !== undefined) {
+      const cardIds =
+        to === event.toId
+          ? this.getPlayerById(to)
+              .getCardIds(PlayerCardsArea.HandArea)
+              .filter(id => this.canDropCard(to, id))
+          : this.getPlayerById(event.toId).getCardIds(PlayerCardsArea.HandArea);
+      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
+    } else if (EventPacker.isUncancellabelEvent(event) && response.selectedCard === undefined) {
+      const cardIds = Object.values(event.options).reduce<CardId[]>((allIds, option) => {
+        if (option) {
+          return allIds.concat(option);
+        }
+
+        return allIds;
+      }, []);
+      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
+    }
+
+    return response;
   }
 
   public async doAskForCommonly<T extends GameEventIdentifiers>(
@@ -1320,6 +1438,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     droppedBy?: PlayerId,
     byReason?: string,
   ) {
+    if (droppedBy !== undefined && droppedBy === playerId) {
+      cardIds = cardIds.filter(id => this.canDropCard(droppedBy!, id));
+    }
+
     if (cardIds.length === 0) {
       return;
     }

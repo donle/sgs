@@ -173,6 +173,10 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     this.throwUntouchableError(this.askForCardResponse.name);
   }
   //Server only
+  public async askForChoosingPlayerCard(): Promise<any> {
+    this.throwUntouchableError(this.askForChoosingPlayerCard.name);
+  }
+  //Server only
   public async doAskForCommonly(): Promise<any> {
     this.throwUntouchableError(this.doAskForCommonly.name);
   }

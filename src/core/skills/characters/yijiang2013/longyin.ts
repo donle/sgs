@@ -30,8 +30,8 @@ export class LongYin extends TriggerSkill {
     return cards.length === 1;
   }
 
-  public isAvailableCard(): boolean {
-    return true;
+  public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
+    return room.canDropCard(owner, cardId);
   }
 
   public async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {

@@ -61,13 +61,14 @@ export class YingHun extends TriggerSkill {
 
       const response = await room.askForCardDrop(
         toId,
-        Math.min(x, room.getPlayerById(toId).getPlayerCards().length),
+        x,
         [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
         true,
         undefined,
         this.Name,
       );
-      await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toId);
+
+      response && (await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toId));
     } else {
       await room.drawCards(x, toId, 'top', fromId, this.Name);
 
@@ -79,7 +80,11 @@ export class YingHun extends TriggerSkill {
         undefined,
         this.Name,
       );
-      await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toId);
+      if (!response) {
+        return false;
+      }
+
+      response && (await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toId));
     }
 
     return true;

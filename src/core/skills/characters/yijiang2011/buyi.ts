@@ -1,6 +1,6 @@
 import { CardType } from 'core/cards/card';
 import { CardChoosingOptions } from 'core/cards/libs/card_props';
-import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, PlayerDyingStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -55,35 +55,27 @@ export class BuYi extends TriggerSkill {
       triggeredBySkills: [this.Name],
     };
 
-    room.notify(
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(chooseCardEvent),
-      event.fromId,
-    );
-
-    const response = await room.onReceivingAsyncResponseFrom(
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-      event.fromId,
-    );
-
-    if (response.selectedCard === undefined) {
-      const cardIds = dyingPlayer.getCardIds(PlayerCardsArea.HandArea);
-      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
+    const response = await room.askForChoosingPlayerCard(chooseCardEvent, event.fromId, false, true);
+    if (!response) {
+      return false;
     }
 
     room.broadcast(GameEventIdentifiers.CardDisplayEvent, {
-      displayCards: [response.selectedCard],
+      displayCards: [response.selectedCard!],
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} display hand card {1}',
         TranslationPack.patchPlayerInTranslation(dyingPlayer),
-        TranslationPack.patchCardInTranslation(response.selectedCard),
+        TranslationPack.patchCardInTranslation(response.selectedCard!),
       ).extract(),
     });
 
-    if (!Sanguosha.getCardById(response.selectedCard).is(CardType.Basic)) {
+    if (
+      !Sanguosha.getCardById(response.selectedCard!).is(CardType.Basic) &&
+      !(event.fromId === dyingEvent.dying && !room.canDropCard(event.fromId, response.selectedCard!))
+    ) {
       await room.dropCards(
         CardMoveReason.SelfDrop,
-        [response.selectedCard],
+        [response.selectedCard!],
         dyingEvent.dying,
         dyingEvent.dying,
         this.Name,

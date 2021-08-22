@@ -1,6 +1,6 @@
 import { CardType } from 'core/cards/card';
 import { CardChoosingOptions } from 'core/cards/libs/card_props';
-import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AimStage, AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -88,27 +88,16 @@ export class QiZhi extends TriggerSkill {
       options[PlayerCardsArea.HandArea] = to.getCardIds(PlayerCardsArea.HandArea);
     }
 
-    const chooseCardEvent = EventPacker.createUncancellableEvent<
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent
-    >({
+    const chooseCardEvent = {
       fromId,
       toId: toIds![0],
       options,
       triggeredBySkills: [this.Name],
-    });
+    };
 
-    const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-      chooseCardEvent,
-      fromId,
-    );
-
-    if (response.selectedCardIndex !== undefined) {
-      const cardIds = to.getCardIds(PlayerCardsArea.HandArea);
-      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
-    } else if (response.selectedCard === undefined) {
-      const cardIds = to.getPlayerCards();
-      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
+    const response = await room.askForChoosingPlayerCard(chooseCardEvent, fromId, true, true);
+    if (!response) {
+      return false;
     }
 
     if (response.selectedCard !== undefined) {

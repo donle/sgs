@@ -1,5 +1,5 @@
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -31,7 +31,7 @@ export class QingCe extends ActiveSkill {
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId, selectedCards: CardId[]): boolean {
     const ownerPlayer = room.getPlayerById(owner);
     if (selectedCards.length > 0) {
-      return ownerPlayer.cardFrom(cardId) === PlayerCardsArea.HandArea;
+      return ownerPlayer.cardFrom(cardId) === PlayerCardsArea.HandArea && room.canDropCard(owner, cardId);
     }
 
     return ownerPlayer.getCardIds(PlayerCardsArea.OutsideArea, ZhengRong.Name).includes(cardId);
@@ -76,27 +76,19 @@ export class QingCe extends ActiveSkill {
       [PlayerCardsArea.JudgeArea]: to.getCardIds(PlayerCardsArea.JudgeArea),
     };
 
-    const chooseCardEvent = EventPacker.createUncancellableEvent<
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent
-    >({
+    const chooseCardEvent = {
       fromId,
       toId: toIds[0],
       options,
-    });
+    };
 
-    const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-      chooseCardEvent,
-      fromId,
-    );
-
-    if (response.selectedCard === undefined) {
-      const cardIds = [...to.getCardIds(PlayerCardsArea.EquipArea), ...to.getCardIds(PlayerCardsArea.JudgeArea)];
-      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
+    const response = await room.askForChoosingPlayerCard(chooseCardEvent, fromId, true, true);
+    if (!response) {
+      return false;
     }
 
     await room.moveCards({
-      movingCards: [{ card: response.selectedCard, fromArea: response.fromArea }],
+      movingCards: [{ card: response.selectedCard!, fromArea: response.fromArea }],
       fromId: toIds[0],
       toArea: CardMoveArea.DropStack,
       moveReason: CardMoveReason.PassiveDrop,

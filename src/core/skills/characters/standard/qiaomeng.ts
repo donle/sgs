@@ -1,5 +1,6 @@
 import { CardType } from 'core/cards/card';
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardChoosingOptions } from 'core/cards/libs/card_props';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -17,7 +18,13 @@ export class QiaoMeng extends TriggerSkill {
     const damageCard = content.cardIds && Sanguosha.getCardById(content.cardIds[0]);
     const to = room.getPlayerById(content.toId);
     return (
-      owner.Id === content.fromId && to.getCardIds().length > 0 && !!damageCard && damageCard.GeneralName === 'slash'
+      owner.Id === content.fromId &&
+      (content.toId === owner.Id
+        ? to.getCardIds().filter(id => room.canDropCard(owner.Id, id)).length > 0
+        : to.getCardIds().length > 0) &&
+      !!damageCard &&
+      damageCard.GeneralName === 'slash' &&
+      !content.isFromChainedDamage
     );
   }
 
@@ -29,38 +36,23 @@ export class QiaoMeng extends TriggerSkill {
     const { triggeredOnEvent } = skillUseEvent;
     const { fromId, toId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
     const to = room.getPlayerById(toId);
+
+    const options: CardChoosingOptions = {
+      [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea).length,
+      [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),
+      [PlayerCardsArea.JudgeArea]: to.getCardIds(PlayerCardsArea.JudgeArea),
+    };
+
     const askForChooseCardEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent> = {
-      options: {
-        [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea).length,
-        [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),
-        [PlayerCardsArea.JudgeArea]: to.getCardIds(PlayerCardsArea.JudgeArea),
-      },
+      options,
       fromId: fromId!,
       toId,
       triggeredBySkills: [this.Name],
     };
 
-    room.notify(
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(
-        askForChooseCardEvent,
-      ),
-      fromId!,
-    );
-    const response = await room.onReceivingAsyncResponseFrom(
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-      fromId!,
-    );
+    const response = await room.askForChoosingPlayerCard(askForChooseCardEvent, askForChooseCardEvent.fromId, true, true);
 
-    if (response.selectedCardIndex !== undefined) {
-      const cardIds = to.getCardIds(PlayerCardsArea.HandArea);
-      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
-    } else if (response.selectedCard === undefined) {
-      const cardIds = to.getCardIds();
-      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
-    }
-
-    if (response.selectedCard !== undefined) {
+    if (response && response.selectedCard !== undefined) {
       const card = Sanguosha.getCardById(response.selectedCard);
       await room.dropCards(CardMoveReason.PassiveDrop, [response.selectedCard], toId, fromId, this.Name);
 

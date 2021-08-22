@@ -123,9 +123,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     judgeMatcherEnum?: JudgeMatcherEnum,
   ): Promise<ServerEventFinder<GameEventIdentifiers.JudgeEvent>>;
   //Server only
-  public abstract responseCard(
-    event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>,
-  ): Promise<boolean>;
+  public abstract responseCard(event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>): Promise<boolean>;
   //Server only
   public abstract chainedOn(playerId: PlayerId): Promise<void>;
   //Server only
@@ -170,7 +168,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     except?: CardId[],
     bySkill?: string,
     conversation?: string | PatchedTranslationObject,
-  ): Promise<ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent>>;
+  ): Promise<ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent> | void>;
   //Server only
   public abstract askForCardUse(
     event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>,
@@ -181,6 +179,13 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     event: ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>,
     to: PlayerId,
   ): Promise<ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent>>;
+  //Server only
+  public abstract askForChoosingPlayerCard(
+    event: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>,
+    to: PlayerId,
+    toDiscard?: boolean,
+    uncancellable?: boolean,
+  ): Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent> | void>;
   //Server only
   public abstract doAskForCommonly<T extends GameEventIdentifiers>(
     type: T,
@@ -520,7 +525,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public isAvailableTarget(cardId: CardId, attacker: PlayerId, target: PlayerId) {
     for (const skill of this.getPlayerById(target).getSkills<FilterSkill>('filter')) {
-      if (!skill.canBeUsedCard(cardId, (this as unknown) as Room, target, attacker)) {
+      if (!skill.canBeUsedCard(cardId, this as unknown as Room, target, attacker)) {
         return false;
       }
     }
@@ -558,6 +563,14 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       from.getCardIds(PlayerCardsArea.HandArea).length > 0 &&
       target.getCardIds(PlayerCardsArea.HandArea).length > 0 &&
       targetSkills.find(skill => !skill.canBePindianTarget(this, targetId, fromId)) === undefined
+    );
+  }
+
+  public canDropCard(fromId: PlayerId, cardId: CardId): boolean {
+    return (
+      this.getPlayerById(fromId)
+        .getPlayerSkills<FilterSkill>('filter')
+        .find(skill => !skill.canDropCard(cardId, this, fromId)) === undefined
     );
   }
 

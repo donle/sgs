@@ -44,9 +44,9 @@ export class ZhanHuo extends ActiveSkill {
 
     for (const targetId of toIds!) {
       const target = room.getPlayerById(targetId);
-      const equips = target.getCardIds(PlayerCardsArea.EquipArea);
+      const equips = target.getCardIds(PlayerCardsArea.EquipArea).filter(id => room.canDropCard(targetId, id));
       if (equips.length > 0) {
-        await room.dropCards(CardMoveReason.PassiveDrop, equips, targetId, fromId, this.Name);
+        await room.dropCards(CardMoveReason.SelfDrop, equips, targetId, targetId, this.Name);
       }
     }
 

@@ -83,7 +83,8 @@ export class ShenFen extends ActiveSkill {
           this.Name,
           'shenfen: please select 4 cards to drop',
         );
-        await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, to.Id, to.Id, this.GeneralName);
+        response &&
+          (await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, to.Id, to.Id, this.GeneralName));
       }
     });
 

@@ -31,7 +31,7 @@ export class LiuLi extends TriggerSkill {
     return cards.length === 1;
   }
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
-    return true;
+    return room.canDropCard(owner, cardId);
   }
   public availableCardAreas() {
     return [PlayerCardsArea.EquipArea, PlayerCardsArea.HandArea];

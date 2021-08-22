@@ -22,12 +22,6 @@ export class ShiBei extends TriggerSkill {
     }
   }
 
-  async whenLosingSkill(room: Room, owner: Player) {
-    if (room.getFlag<boolean>(owner.Id, this.GeneralName) === true) {
-      room.removeFlag(owner.Id, this.GeneralName);
-    }
-  }
-
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
     return stage === DamageEffectStage.AfterDamageEffect;
   }
@@ -45,7 +39,7 @@ export class ShiBei extends TriggerSkill {
       room.setFlag(event.fromId, this.GeneralName, true, this.GeneralName);
     }
 
-    if (room.Analytics.getDamagedRecord(event.fromId, 'round', undefined, 1).length <= 1) {
+    if (room.Analytics.getDamagedRecord(event.fromId, 'round', undefined, 2).length <= 1) {
       const damagedEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
       await room.recover({ recoveredHp: 1, recoverBy: damagedEvent.toId, toId: damagedEvent.toId });
     } else {

@@ -38,7 +38,7 @@ export class QingNang extends ActiveSkill {
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
-    return true;
+    return room.canDropCard(owner, cardId);
   }
 
   public availableCardAreas() {

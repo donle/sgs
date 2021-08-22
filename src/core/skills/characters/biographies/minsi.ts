@@ -42,6 +42,10 @@ export class MinSi extends ActiveSkill {
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId, selectedCards: CardId[]): boolean {
+    if (!room.canDropCard(owner, cardId)) {
+      return false;
+    }
+
     if (selectedCards.length > 0) {
       return (
         Sanguosha.getCardById(cardId).CardNumber <=

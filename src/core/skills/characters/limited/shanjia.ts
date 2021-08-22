@@ -110,33 +110,24 @@ export class ShanJia extends TriggerSkill implements OnDefineReleaseTiming {
     const dropNum = room.getFlag<number>(fromId, this.Name);
     let dropCards: CardId[] | undefined;
     if (dropNum && dropNum > 0) {
-      const response = await room.doAskForCommonly<GameEventIdentifiers.AskForCardEvent>(
-        GameEventIdentifiers.AskForCardEvent,
-        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForCardEvent>({
-          cardAmount: dropNum,
-          toId: fromId,
-          reason: this.Name,
-          conversation: TranslationPack.translationJsonPatcher(
-            '{0}: please drop {1} card(s), if all of them are equip card, you can use a virtual slash',
-            this.Name,
-            dropNum,
-          ).extract(),
-          fromArea: [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
-          triggeredBySkills: [this.Name],
-        }),
+      const response = await room.askForCardDrop(
         fromId,
+        dropNum,
+        [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
+        true,
+        undefined,
+        this.Name,
+        TranslationPack.translationJsonPatcher(
+          '{0}: please drop {1} card(s), if all of them are equip card, you can use a virtual slash',
+          this.Name,
+          dropNum,
+        ).extract(),
       );
 
-      if (response.selectedCards.length === 0) {
-        const wholeCards = room.getPlayerById(fromId).getPlayerCards();
-        for (let i = 0; response.selectedCards.length < wholeCards.length; i++) {
-          response.selectedCards.push(wholeCards[i]);
-        }
+      if (response) {
+        dropCards = response.droppedCards;
+        await room.dropCards(CardMoveReason.SelfDrop, dropCards, fromId, fromId, this.Name);
       }
-
-      dropCards = response.selectedCards;
-
-      await room.dropCards(CardMoveReason.SelfDrop, response.selectedCards, fromId, fromId, this.Name);
     }
 
     if (

@@ -1,4 +1,4 @@
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -13,14 +13,16 @@ export class KeJi extends TriggerSkill {
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
     if (content.to === PlayerPhase.DropCardStage && owner.Id === content.toPlayer) {
-      return (
-        !room.Analytics.getUsedCard(owner.Id, 'round', [PlayerPhase.PlayCardStage], 1).find(
-          cardId => Sanguosha.getCardById(cardId).GeneralName === 'slash',
-        ) &&
-        !room.Analytics.getResponsedCard(owner.Id, 'round', [PlayerPhase.PlayCardStage], 1).find(
-          cardId => Sanguosha.getCardById(cardId).GeneralName === 'slash',
-        )
-      );
+      return room.Analytics.getRecordEvents<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent>(
+        event =>
+          (EventPacker.getIdentifier(event) === GameEventIdentifiers.CardUseEvent ||
+            EventPacker.getIdentifier(event) === GameEventIdentifiers.CardResponseEvent) &&
+          Sanguosha.getCardById(event.cardId).GeneralName === 'slash',
+        owner.Id,
+        'round',
+        [PlayerPhase.PlayCardStage],
+        1,
+      ).length === 0;
     }
 
     return false;

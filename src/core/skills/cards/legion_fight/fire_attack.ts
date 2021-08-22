@@ -118,7 +118,7 @@ export class FireAttackSkill extends ActiveSkill implements ExtralCardSkillPrope
           ).extract(),
         );
 
-        if (response.droppedCards.length > 0) {
+        if (response && response.droppedCards.length > 0) {
           await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, fromId, fromId, this.Name);
 
           const damageEvent: ServerEventFinder<GameEventIdentifiers.DamageEvent> = {

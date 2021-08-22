@@ -36,7 +36,7 @@ export class YiJue extends ActiveSkill {
   }
 
   isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
-    return true;
+    return room.canDropCard(owner, cardId);
   }
 
   async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {

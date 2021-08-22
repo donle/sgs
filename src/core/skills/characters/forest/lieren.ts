@@ -1,5 +1,5 @@
 import { CardChoosingOptions } from 'core/cards/libs/card_props';
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { MoveCardEventInfos } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { AimStage, AllStage } from 'core/game/stage_processor';
@@ -56,23 +56,14 @@ export class LieRen extends TriggerSkill {
           triggeredBySkills: [this.Name],
         };
 
-        room.notify(
-          GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-          EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(chooseCardEvent),
-          fromId,
-        );
+        const response = await room.askForChoosingPlayerCard(chooseCardEvent, fromId, false, true);
 
-        const response = await room.onReceivingAsyncResponseFrom(
-          GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-          fromId,
-        );
-
-        if (response.selectedCard === undefined) {
-          response.selectedCard = to.getCardIds(PlayerCardsArea.HandArea)[response.selectedCardIndex!];
+        if (!response) {
+          return false;
         }
 
         await room.moveCards({
-          movingCards: [{ card: response.selectedCard, fromArea: response.fromArea }],
+          movingCards: [{ card: response.selectedCard!, fromArea: response.fromArea }],
           fromId: chooseCardEvent.toId,
           toId: chooseCardEvent.fromId,
           toArea: CardMoveArea.HandArea,

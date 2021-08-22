@@ -25,7 +25,7 @@ export class RenXin extends TriggerSkill {
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
-    return Sanguosha.getCardById(cardId).BaseType === CardType.Equip;
+    return Sanguosha.getCardById(cardId).BaseType === CardType.Equip && room.canDropCard(owner, cardId);
   }
 
   public getSkillLog(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {

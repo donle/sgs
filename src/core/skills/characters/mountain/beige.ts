@@ -29,7 +29,7 @@ export class BeiGe extends TriggerSkill {
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
-    return true;
+    return room.canDropCard(owner, cardId);
   }
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
@@ -65,7 +65,7 @@ export class BeiGe extends TriggerSkill {
           undefined,
           this.Name,
         );
-        await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, fromId);
+        response && (await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, fromId));
       }
     } else if (judgeCard.Suit === CardSuit.Spade) {
       if (!damageFrom.Dead) {

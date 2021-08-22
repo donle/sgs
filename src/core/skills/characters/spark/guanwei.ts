@@ -3,6 +3,7 @@ import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/ev
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
+import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
@@ -52,8 +53,8 @@ export class GuanWei extends TriggerSkill {
     return cards.length === 1;
   }
 
-  public isAvailableCard() {
-    return true;
+  public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
+    return room.canDropCard(owner, cardId);
   }
 
   public getSkillLog(

@@ -78,6 +78,10 @@ export class JiJingSelect extends TriggerSkill {
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId, selectedCards: CardId[]): boolean {
     const cardNumber = room.getFlag<number>(owner, JiJing.Name);
+    if (!room.canDropCard(owner, cardId)) {
+      return false;
+    }
+
     if (selectedCards.length > 0) {
       return (
         Sanguosha.getCardById(cardId).CardNumber <=
