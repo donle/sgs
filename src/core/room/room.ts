@@ -128,9 +128,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     judgeMatcherEnum?: JudgeMatcherEnum,
   ): Promise<ServerEventFinder<GameEventIdentifiers.JudgeEvent>>;
   //Server only
-  public abstract responseCard(
-    event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>,
-  ): Promise<boolean>;
+  public abstract responseCard(event: ServerEventFinder<GameEventIdentifiers.CardResponseEvent>): Promise<boolean>;
   //Server only
   public abstract chainedOn(playerId: PlayerId): Promise<void>;
   //Server only
@@ -759,5 +757,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     } else {
       delete this.awaitResponseEvent[toId];
     }
+  }
+
+  public get EventStack() {
+    return this.eventStack;
   }
 }

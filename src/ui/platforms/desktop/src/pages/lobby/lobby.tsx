@@ -109,6 +109,7 @@ export class Lobby extends React.Component<LobbyProps> {
 
   @mobx.action
   componentDidMount() {
+    this.queryRoomList();
     this.props.electronLoader.refreshReplayDataFlow();
     this.audioService.playLobbyBGM();
     this.defaultMainVolume = this.props.electronLoader.getData('mainVolume')
@@ -182,10 +183,6 @@ export class Lobby extends React.Component<LobbyProps> {
         },
       );
     }
-  }
-
-  UNSAFE_componentWillMount() {
-    this.queryRoomList();
   }
 
   componentWillUnmount() {

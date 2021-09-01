@@ -1,11 +1,14 @@
+import { WuZhongShengYouSkillTrigger } from 'core/ai/skills/cards/wuzhongshengyou';
 import { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, SelfTargetSkill } from 'core/skills/skill';
+import { AI } from 'core/skills/skill_wrappers';
 import { ExtralCardSkillProperty } from '../interface/extral_property';
 
+@AI(WuZhongShengYouSkillTrigger)
 @CommonSkill({ name: 'wuzhongshengyou', description: 'wuzhongshengyou_description' })
 @SelfTargetSkill
 export class WuZhongShengYouSkill extends ActiveSkill implements ExtralCardSkillProperty {

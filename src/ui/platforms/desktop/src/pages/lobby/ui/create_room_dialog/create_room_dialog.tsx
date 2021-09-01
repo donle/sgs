@@ -128,25 +128,15 @@ export const CreateRoomDialog = (props: {
     } else {
       setcheckedGameMode(checkedIds[0]);
     }
+    switchPlayerSelection(checkedIds[0] === GameMode.Pve);
+    disablePlayerSelection(checkedIds[0] === GameMode.OneVersusTwo || checkedIds[0] === GameMode.TwoVersusTwo);
 
     if (checkedIds[0] === GameMode.Standard) {
       setNumberOfPlayers(2);
-    }
-    if (checkedIds[0] === GameMode.OneVersusTwo || checkedIds[0] === GameMode.TwoVersusTwo) {
-      disablePlayerSelection(true);
-      if (checkedIds[0] === GameMode.OneVersusTwo) {
-        setNumberOfPlayers(3);
-      } else {
-        setNumberOfPlayers(4);
-      }
-    } else {
-      disablePlayerSelection(false);
-    }
-    if (checkedIds[0] === GameMode.Pve) {
-      switchPlayerSelection(true);
-      setNumberOfPlayers(1);
-    } else {
-      switchPlayerSelection(false);
+    } else if (checkedIds[0] === GameMode.OneVersusTwo || checkedIds[0] === GameMode.TwoVersusTwo) {
+      setNumberOfPlayers(checkedIds[0] === GameMode.OneVersusTwo ? 3 : 4);
+    } else if (checkedIds[0] === GameMode.Pve) {
+      setNumberOfPlayers(2);
     }
   };
 
