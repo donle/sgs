@@ -1,6 +1,5 @@
 import { AiLibrary } from 'core/ai/ai_lib';
 import { ActiveSkillTriggerClass } from 'core/ai/skills/base/active_skill_trigger';
-import { CardType } from 'core/cards/card';
 import type { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
