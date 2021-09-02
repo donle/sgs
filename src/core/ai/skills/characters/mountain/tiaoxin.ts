@@ -16,7 +16,7 @@ export class TiaoXinSkillTrigger extends ActiveSkillTriggerClass<TiaoXin> {
       return;
     }
     const enemies = AiLibrary.sortEnemiesByRole(room, ai);
-    const outOfRange = enemies.filter(enemy => room.canAttack(enemy, ai));
+    const outOfRange = enemies.filter(enemy => !room.canAttack(enemy, ai));
 
     if (outOfRange.length > 0) {
       return {
