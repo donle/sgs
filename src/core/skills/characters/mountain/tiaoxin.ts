@@ -1,3 +1,4 @@
+import { TiaoXinSkillTrigger } from 'core/ai/skills/characters/mountain/tiaoxin';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -6,9 +7,10 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { ActiveSkill } from 'core/skills/skill';
-import { CommonSkill } from 'core/skills/skill_wrappers';
+import { AI, CommonSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
+@AI(TiaoXinSkillTrigger)
 @CommonSkill({ name: 'tiaoxin', description: 'tiaoxin_description' })
 export class TiaoXin extends ActiveSkill {
   public canUse(room: Room, owner: Player, containerCard?: CardId) {

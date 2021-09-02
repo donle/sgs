@@ -20,13 +20,11 @@ export class GuanShiFuSkillTrigger extends TriggerSkillTriggerClass<
     const cards = ai.getCardIds().filter(card => card !== skillInCard);
     let shouldUse = false;
     if (cards.length < 2) {
-      return {
-        fromId: ai.Id,
-      };
+      return;
     }
 
     if (cards.length <= 4) {
-      const inDangerEnemy = onEvent!.toIds!.find(toId => room.getPlayerById(toId).Hp === 1);
+      const inDangerEnemy = onEvent!.toIds!.find(toId => room.getPlayerById(toId).Hp <= 2);
       if (inDangerEnemy) {
         shouldUse = true;
       }
@@ -35,9 +33,7 @@ export class GuanShiFuSkillTrigger extends TriggerSkillTriggerClass<
     }
 
     if (!shouldUse) {
-      return {
-        fromId: ai.Id,
-      };
+      return;
     }
 
     return {

@@ -31,10 +31,9 @@ export class WuGuFengDengSkillTrigger extends ActiveSkillTriggerClass<WuGuFengDe
     const selectedCards = content.selected.map(selected => selected.card);
 
     const availableCards = content.cardIds.filter(cardId => !selectedCards.includes(cardId));
-    AiLibrary.sortCardbyValue(availableCards);
     return {
       fromId: content.toId,
-      selectedCard: availableCards[0],
+      selectedCard: AiLibrary.sortCardbyValue(availableCards)[0],
     };
   };
 }

@@ -239,6 +239,7 @@ export class SmartAI extends PlayerAI {
         content.byCardId,
         content.cardUserId,
       );
+
       if (cardIds.length > 0) {
         cardResponse = {
           cardId: AiLibrary.sortCardbyValue(cardIds)[0],
