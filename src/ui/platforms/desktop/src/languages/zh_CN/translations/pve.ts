@@ -22,18 +22,19 @@ export const characterDictionary: Word[] = [
   { source: 'pve_chaiyue', target: '豺月' },
   { source: 'pve_lige', target: '离歌' },
   { source: 'pve_bibao', target: '必报' },
+  { source: 'pve_tansuo', target: '探索' },
 ];
 
 export const skillDescriptions: Word[] = [
   {
     source: 'pve_huashen_description',
     target:
-      '<b>锁定技</b>，游戏开始时，你获得6枚“化神”标记。游戏开始时，你移去一枚“化神”标记，进入下一形态。当你进入濒死状态时，你弃置手牌区及装备区所有牌，移去一枚“化神”标记，进入下一形态；若如此做，其它所有角色依次回复1点体力，摸一张牌，并从三名武将中选择一个，获得其一个技能。',
+      '<b>锁定技</b>，游戏开始时，你获得6枚“化神”标记。游戏开始时，你移去一枚“化神”标记，进入下一形态。当你进入濒死状态时，你弃置手牌区及装备区所有牌，移去一枚“化神”标记，进入下一形态；若如此做，其它所有角色依次回复1点体力，摸两张牌，选择一张牌名强化并从四名武将中选择一个，获得其一个技能。',
   },
   {
     source: 'pve_longlin_description',
     target:
-      '<b>锁定技</b>，锁定技，准备阶段开始时，若你的装备区：没有武器，你摸两张牌，没有防具，你摸两张牌，没有宝具，你摸两张牌；摸牌阶段开始时，你额外摸装备区花色数张牌；当你使用装备牌时，若你已受伤，你回复一点体力并摸一张牌，若你未受伤，你摸三张牌。',
+      '<b>锁定技</b>，锁定技，准备阶段开始时，若你的装备区：没有武器，你摸两张牌，没有防具，你摸两张牌，没有宝具，你摸两张牌；摸牌阶段开始时，你额外摸装备区花色数张牌；当你使用装备牌时，若你已受伤，你回复两点体力并摸一张牌，若你未受伤，你增加一点体力上限并摸三张牌。',
   },
   {
     source: 'pve_ruiyan_description',
@@ -61,7 +62,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_qinlv_description',
     target:
-      '<b>锁定技</b>，每名角色结束阶段开始时，你与其各回复一点体力；若你仍受伤且不是你的回合，其失去X点体力；若其未受伤，则你摸X张牌。（X为体力上限一半，向下取整）',
+      '<b>锁定技</b>，每名角色结束阶段开始时，你与其各回复一点体力；若你仍受伤且不是你的回合，其失去X点体力；若其未受伤，则你摸X张牌。（X为其体力上限一半，向下取整）',
   },
   {
     source: 'pve_longhou_description',
@@ -70,7 +71,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_jienu_description',
     target:
-      '<b>锁定技</b>，当你翻面后，你回复一点体力并对所有其他角色造成两点火属性伤害；出牌阶段开始时，若你的体力值小于已损失的体力值，你翻面；当你受到伤害后，你翻面。（每受到一种属性伤害后削弱此技能直到受到普通伤害或单属性伤害超过四次）',
+      '<b>锁定技</b>，当你翻面后，你回复一点体力并对所有其他角色造成两点火属性伤害；出牌阶段开始时，若你的体力值小于已损失的体力值，你翻面；当你受到伤害后，你对所有其他角色造成两点火属性伤害，若此伤害为普通伤害，则你回复两点体力',
   },
   {
     source: 'pve_chaiyue_description',
@@ -87,11 +88,51 @@ export const skillDescriptions: Word[] = [
     target:
       '<b>锁定技</b>，你造成或受到伤害时，你回复1点体力且此伤害+1，你摸等同伤害+1张牌。',
   },
+  {
+    source: 'pve_tansuo_description',
+    target:
+      '<b>锁定技</b>，第四关及之后，玩家使用牌有概率触发机关（此牌点数越高几率越大）或奇遇宝物。',
+  },
 ];
+
 
 export const promptDescriptions: Word[] = [
   {
     source: 'pve_huashen: please announce a skill to obtain',
     target: '请选择一个武将并获得其一个技能',
   },
+  {
+    source: 'pve_huashen: please make a card1',
+    target: '请选择一张牌名，使用此牌名时，摸一张牌',
+  },
+  {
+    source: 'pve_huashen: please make a card2',
+    target: '请选择一张牌名，使用此牌名时，令一名角色失去1点体力',
+  },
+  {
+    source: 'pve_huashen: please make a card3',
+    target: '请选择一张牌名，使用此牌名时，对一名角色造成随机1-3点伤害',
+  },
+  {
+    source: 'pve_huashen: please make a card4',
+    target: '请选择一张牌名，使用此牌名时，你随机回复至多3点体力',
+  },
+  {
+    source: 'pve_huashen: please announce a boss',
+    target: '请选择最终BOSS难度',
+  },
+  {
+    source: 'pve_huashen:choose a role losehp 1',
+    target: '选择一名角色，令其失去1点体力',
+  },
+  {
+    source: 'pve_huashen:choose a role damage',
+    target: '选择一名角色，对其造成伤害。',
+  },
 ];
+export const eventDictionary: Word[] = [
+  { source: 'pve-one', target: '低难度' },
+  { source: 'pve-two', target: '高难度' },
+  { source: '{0} ouyujiguan', target: '{0} 偶遇了机关' },
+  { source: '{0} qiyubaowu', target: '{0} 奇遇宝物' },
+]

@@ -1,3 +1,4 @@
+import { CardType } from 'core/cards/card';
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { GameStartStage, PlayerDyingStage } from 'core/game/stage_processor';
@@ -6,6 +7,7 @@ import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { MarkEnum } from 'core/shares/types/mark_list';
+import { PveTanSuoShow } from 'core/skills';
 import { TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill, PersistentSkill } from 'core/skills/skill_wrappers';
 
@@ -82,9 +84,19 @@ export class PveHuaShen extends TriggerSkill {
 
     await room.changeMaxHp(ownerId, 1);
     await room.recover({ recoveredHp: NewMaxHp - player.Hp, toId: ownerId });
-    await room.drawCards(room.getMark(ownerId, MarkEnum.PveHuaShen) === 5 ? 0 : 5, ownerId, 'top', ownerId, this.Name);
+    await room.drawCards(
+      room.getMark(ownerId, MarkEnum.PveHuaShen) === 5 ? 0 : 10 - room.getMark(ownerId, MarkEnum.PveHuaShen),
+      ownerId,
+      'top',
+      ownerId,
+      this.Name,
+    );
     player.setHuaShenInfo({ skillName: skill.GeneralName, characterId: nextCharacter.Id });
-    await room.obtainSkill(ownerId, skill.GeneralName, true);
+    if (room.getMark(ownerId, MarkEnum.PveHuaShen) === 0) {
+      await room.obtainSkill(ownerId, !room.getFlag(ownerId,'pve-two') ? charaSkills[0].GeneralName : charaSkills[1].GeneralName, true);
+    } else {
+      await room.obtainSkill(ownerId, skill.GeneralName, true);
+    }
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -101,7 +113,8 @@ export class PveHuaShen extends TriggerSkill {
     if (identifier === GameEventIdentifiers.GameStartEvent) {
       room.addMark(event.fromId, MarkEnum.PveHuaShen, PveHuaShen.CHARACTERS.length);
       await this.nextEntity(room, event.fromId);
-
+      PveTanSuoShow.cardup=[];
+      PveTanSuoShow.cardup[0]='peach2'
       room.AlivePlayers.filter(player => player.Id !== event.fromId).forEach(player =>
         room.changePlayerProperties({
           changedProperties: [
@@ -114,14 +127,28 @@ export class PveHuaShen extends TriggerSkill {
         }),
       );
     } else {
-      await this.nextEntity(room, event.fromId);
       const otherPlayers = room.AlivePlayers.filter(player => player.Id !== event.fromId);
-
       for (const player of otherPlayers) {
         await room.recover({ recoverBy: event.fromId, recoveredHp: 1, toId: player.Id });
-        await room.drawCards(3, player.Id, 'top');
-
-        const pveHuashenCharacters = room.getRandomCharactersFromLoadedPackage(3);
+        await room.drawCards(2, player.Id, 'top');
+        if (room.getMark(event.fromId, MarkEnum.PveHuaShen) === 1) {
+          const bossaskForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
+            options: ['pve-one', 'pve-two'],
+            toId: player.Id,
+            conversation: 'pve_huashen: please announce a boss',
+            triggeredBySkills: [this.Name],
+          };
+          room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, bossaskForChoosingOptionsEvent, player.Id);
+          const response = await room.onReceivingAsyncResponseFrom(
+            GameEventIdentifiers.AskForChoosingOptionsEvent,
+            player.Id,
+          );
+          if (response.selectedOption === 'pve-two') {
+            room.setFlag(event.fromId,'pve-two',true)
+          }
+        }
+        await this.nextEntity(room, event.fromId);
+        const pveHuashenCharacters = room.getRandomCharactersFromLoadedPackage(4);
         const askForChoosingCharacterEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingCharacterEvent> = {
           amount: 1,
           characterIds: pveHuashenCharacters,
@@ -162,6 +189,38 @@ export class PveHuaShen extends TriggerSkill {
         );
 
         await room.obtainSkill(player.Id, selectedOption!, true);
+        if (room.getMark(event.fromId, MarkEnum.PveHuaShen) !== 0) {
+          const trcard = Sanguosha.getCardNameByType(
+            types => types.includes(CardType.Trick) || types.includes(CardType.Basic) || types.includes(CardType.Equip),
+          );
+          const upcard = Math.floor(Math.random() * 4 + 1);
+          const options = [
+            trcard[Math.floor(Math.random() * trcard.length)],
+            trcard[Math.floor(Math.random() * trcard.length)],
+            trcard[Math.floor(Math.random() * trcard.length)],
+          ];
+          const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
+            options,
+            toId: player.Id,
+            conversation: 'pve_huashen: please make a card' + upcard,
+            triggeredBySkills: [this.Name],
+          };
+          room.notify(
+            GameEventIdentifiers.AskForChoosingOptionsEvent,
+            EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(
+              askForChoosingOptionsEvent,
+            ),
+            player.Id,
+          );
+
+          const { selectedOption } = await room.onReceivingAsyncResponseFrom(
+            GameEventIdentifiers.AskForChoosingOptionsEvent,
+            player.Id,
+          );
+          if (selectedOption) {
+            PveTanSuoShow.cardup[PveTanSuoShow.cardup.length] = selectedOption + upcard;
+          }
+        }
       }
     }
     return true;

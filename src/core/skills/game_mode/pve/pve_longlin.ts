@@ -38,9 +38,10 @@ export class PveLongLin extends TriggerSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     if (room.getPlayerById(event.fromId).isInjured()) {
-      await room.recover({ recoverBy: event.fromId, recoveredHp: 1, toId: event.fromId });
+      await room.recover({ recoverBy: event.fromId, recoveredHp: 2, toId: event.fromId });
       await room.drawCards(1, event.fromId, 'top', event.fromId, this.Name);
     } else {
+      await room.changeMaxHp(event.fromId, 1);
       await room.drawCards(3, event.fromId, 'top', event.fromId, this.Name);
     }
 

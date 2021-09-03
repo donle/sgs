@@ -22,18 +22,19 @@ export const characterDictionary: Word[] = [
   { source: 'pve_chaiyue', target: '豺月' },
   { source: 'pve_lige', target: '離歌' },
   { source: 'pve_bibao', target: '必報' },
+  { source: 'pve_tansuo', target: '探索' },
 ];
 
 export const skillDescriptions: Word[] = [
   {
     source: 'pve_huashen_description',
     target:
-      '<b>鎖定技</b>，遊戲開始時，你獲得6枚“化神”標記。遊戲開始時，你移去一枚“化神”標記，進入下一形態。當你進入瀕死狀態時，你棄置手牌區及裝備區所有牌，移去一枚“化神”標記，進入下一形態；若如此做，其它所有角色依次回覆1點體力，摸一張牌，並從三名武將中選擇一個，獲得其一個技能。',
+      '<b>鎖定技</b>，遊戲開始時，你獲得6枚“化神”標記。遊戲開始時，你移去一枚“化神”標記，進入下一形態。當你進入瀕死狀態時，你棄置手牌區及裝備區所有牌，移去一枚“化神”標記，進入下一形態；若如此做，其它所有角色依次回覆1點體力，摸两張牌，選擇一張牌名強化並從四名武將中選擇一個，獲得其一個技能。',
   },
   {
     source: 'pve_longlin_description',
     target:
-      '<b>鎖定技</b>，鎖定技，準備階段開始時，若你的裝備區：沒有武器，你摸两張牌，沒有防具，你摸两張牌，沒有寶具，你摸两張牌；摸牌階段開始時，你額外摸裝備區花色數張牌；當你使用裝備牌時，若你已受傷，你回覆一點體力並摸一張牌，若你未受傷，你摸三張牌。',
+      '<b>鎖定技</b>，鎖定技，準備階段開始時，若你的裝備區：沒有武器，你摸两張牌，沒有防具，你摸两張牌，沒有寶具，你摸两張牌；摸牌階段開始時，你額外摸裝備區花色數張牌；當你使用裝備牌時，若你已受傷，你回覆两點體力並摸一張牌，若你未受傷，你體力上限+1並摸三張牌。',
   },
   {
     source: 'pve_ruiyan_description',
@@ -87,6 +88,11 @@ export const skillDescriptions: Word[] = [
     target:
       '<b>鎖定技</b>，你造成或受到傷害時，你回復1點體力且此傷害+1，你摸等同傷害+1張牌。',
   },
+  {
+    source: 'pve_tansuo_description',
+    target:
+      '<b>鎖定技</b>，第四關及之後，玩家使用牌有概率觸發機關（此牌點數越高幾率越大）或奇遇寶物。',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
@@ -94,4 +100,38 @@ export const promptDescriptions: Word[] = [
     source: 'pve_huashen: please announce a skill to obtain',
     target: '請選擇一個武將並獲得其一個技能',
   },
+  {
+    source: 'pve_huashen: please make a card1',
+    target: '請選擇一張牌名，使用此牌名時，摸一張牌',
+  },
+  {
+    source: 'pve_huashen: please make a card2',
+    target: '請選擇一張牌名，使用此牌名時，令一名角色失去1點體力',
+  },
+  {
+    source: 'pve_huashen: please make a card3',
+    target: '請選擇一張牌名，使用此牌名時，對一名角色造成隨機1-3點傷害',
+  },
+  {
+    source: 'pve_huashen: please make a card4',
+    target: '請選擇一張牌名，使用此牌名時，你隨機回復至多3點體力',
+  },
+  {
+    source: 'pve_huashen: please announce a boss',
+    target: '請選擇最終BOSS難度',
+  },
+  {
+    source: 'pve_huashen:choose a role losehp 1',
+    target: '選擇一名角色，令其失去1點體力',
+  },
+  {
+    source: 'pve_huashen:choose a role damage',
+    target: '選擇一名角色，對其造成傷害',
+  },
 ];
+export const eventDictionary: Word[] = [
+  { source: 'pve-one', target: '低難度' },
+  { source: 'pve-two', target: '高難度' },
+  { source: '{0} ouyujiguan', target: '{0} 偶遇了機關' },
+  { source: '{0} qiyubaowu', target: '{0} 奇遇寶物' },
+]
