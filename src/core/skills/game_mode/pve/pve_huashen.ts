@@ -93,7 +93,11 @@ export class PveHuaShen extends TriggerSkill {
     );
     player.setHuaShenInfo({ skillName: skill.GeneralName, characterId: nextCharacter.Id });
     if (room.getMark(ownerId, MarkEnum.PveHuaShen) === 0) {
-      await room.obtainSkill(ownerId, !room.getFlag(ownerId,'pve-two') ? charaSkills[0].GeneralName : charaSkills[1].GeneralName, true);
+      await room.obtainSkill(
+        ownerId,
+        !room.getFlag(ownerId, 'pve-two') ? charaSkills[0].GeneralName : charaSkills[1].GeneralName,
+        true,
+      );
     } else {
       await room.obtainSkill(ownerId, skill.GeneralName, true);
     }
@@ -113,8 +117,8 @@ export class PveHuaShen extends TriggerSkill {
     if (identifier === GameEventIdentifiers.GameStartEvent) {
       room.addMark(event.fromId, MarkEnum.PveHuaShen, PveHuaShen.CHARACTERS.length);
       await this.nextEntity(room, event.fromId);
-      PveTanSuoShow.cardup=[];
-      PveTanSuoShow.cardup[0]='peach2'
+      PveTanSuoShow.cardup = [];
+      PveTanSuoShow.cardup[0] = 'peach2';
       room.AlivePlayers.filter(player => player.Id !== event.fromId).forEach(player =>
         room.changePlayerProperties({
           changedProperties: [
@@ -144,7 +148,7 @@ export class PveHuaShen extends TriggerSkill {
             player.Id,
           );
           if (response.selectedOption === 'pve-two') {
-            room.setFlag(event.fromId,'pve-two',true)
+            room.setFlag(event.fromId, 'pve-two', true);
           }
         }
         await this.nextEntity(room, event.fromId);

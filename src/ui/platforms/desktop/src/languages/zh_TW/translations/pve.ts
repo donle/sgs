@@ -91,7 +91,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_tansuo_description',
     target:
-      '<b>鎖定技</b>，第四關及之後，玩家使用牌有概率觸發機關（此牌點數越高幾率越大）或奇遇寶物。',
+      '<b>鎖定技</b>，第四關及之後，玩家使用牌有概率觸發機關（此牌點數越高幾率越大）或奇遇寶物。玩家初始強化【桃】且玩家共用強化池',
   },
 ];
 

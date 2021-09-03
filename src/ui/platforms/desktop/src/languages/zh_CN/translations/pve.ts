@@ -91,7 +91,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_tansuo_description',
     target:
-      '<b>锁定技</b>，第四关及之后，玩家使用牌有概率触发机关（此牌点数越高几率越大）或奇遇宝物。',
+      '<b>锁定技</b>，第四关及之后，玩家使用牌有概率触发机关（此牌点数越高几率越大）或奇遇宝物。玩家初始强化【桃】且玩家共用强化池',
   },
 ];
 
