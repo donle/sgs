@@ -15,7 +15,7 @@ import LeBuSiShuIcon from './images/delayed_tricks/lebusishu.png';
 import LightningIcon from './images/delayed_tricks/lightning.png';
 import oneVersusTwoModeIcon from './images/lobby/1v2_mode.png';
 import twoVersusTwoModeIcon from './images/lobby/2v2_mode.png';
-import lobbyBackgroundImage from './images/lobby/background_autumn.png';
+import lobbyBackgroundImage from './images/lobby/background.jpg';
 import createRoomImage from './images/lobby/create.png';
 import generalModeIcon from './images/lobby/general_mode.png';
 import hegemonyModeIcon from './images/lobby/hegemony_mode.png';
