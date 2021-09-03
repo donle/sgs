@@ -264,6 +264,19 @@ export abstract class Player implements PlayerInfo {
     }
   }
 
+  public getAllGameCards() {
+    const allCards = this.getCardIds();
+    for (const [areaName, outside] of Object.entries(this.playerOutsideCards)) {
+      if (this.playerOutsideCharactersAreaNames.includes(areaName)) {
+        continue;
+      }
+
+      allCards.push(...outside);
+    }
+
+    return allCards;
+  }
+
   public setCharacterOutsideAreaCards(areaName: string, characterIds: CharacterId[]) {
     if (!this.playerOutsideCharactersAreaNames.includes(areaName)) {
       this.playerOutsideCharactersAreaNames.push(areaName);
@@ -351,8 +364,6 @@ export abstract class Player implements PlayerInfo {
   }
 
   dropCards(...cards: CardId[]): CardId[] {
-    const droppedCardIds: CardId[] = [];
-
     const areaCardsList: CardId[][] = [
       this.playerCards[PlayerCardsArea.HandArea],
       this.playerCards[PlayerCardsArea.EquipArea],
@@ -360,46 +371,32 @@ export abstract class Player implements PlayerInfo {
       ...Object.values(this.playerOutsideCards),
     ];
 
-    for (const areaCards of areaCardsList) {
-      if (droppedCardIds.length === cards.length) {
-        break;
+    for (const card of cards) {
+      if (VirtualCard.getActualCards([card]).length === 0) {
+        continue;
       }
 
-      for (const card of cards) {
-        if (droppedCardIds.length === cards.length) {
-          break;
-        }
+      const droppedCards: CardId[] = [];
+      const realCards = VirtualCard.getActualCards([card]);
 
-        if (droppedCardIds.includes(card)) {
-          continue;
-        }
-        if (VirtualCard.getActualCards([card]).length === 0) {
-          droppedCardIds.push(card);
-          continue;
-        }
-
-        if (this.hasCardOrSubCardsInCards(areaCards, card)) {
-          droppedCardIds.push(card);
-          if (areaCards.includes(card)) {
-            const index = areaCards.findIndex(c => c === card);
+      for (const areaCards of areaCardsList) {
+        for (const card of realCards) {
+          const index = areaCards.findIndex(
+            areaCard => areaCard === card || VirtualCard.getActualCards([areaCard]).includes(card),
+          );
+          if (index >= 0) {
             areaCards.splice(index, 1);
-          } else {
-            const realCards = VirtualCard.getActualCards([card]);
-            for (const realCard of realCards) {
-              const index = areaCards.findIndex(areaCard => VirtualCard.getActualCards([areaCard]).includes(realCard));
-              areaCards.splice(index, 1);
-            }
+            droppedCards.push(card);
           }
         }
       }
+
+      if (droppedCards.length !== realCards.length) {
+        throw new Error(`Unexpected card drop from player ${this.Name}`);
+      }
     }
 
-    if (droppedCardIds.length !== cards.length) {
-      const untrackedCards = Algorithm.unique(cards, droppedCardIds);
-      throw new Error(`Can't drop card ${JSON.stringify(untrackedCards)} from player ${this.Name}`);
-    }
-
-    return droppedCardIds;
+    return cards;
   }
 
   public canEquip(equipCard: EquipCard) {

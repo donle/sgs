@@ -117,6 +117,7 @@ export const eventDictionary: Word[] = [
   { source: '{0} resumed {1} equip section', target: '{0} 恢復了 {1}' },
   { source: '{0} aborted judge area', target: '{0} 廢除了判定區' },
   { source: '{0} resumed judge area', target: '{0} 恢復了判定區' },
+  { source: '{0} select nationality {1}', target: '{0} 選擇了國籍 {1}'},
   {
     source: 'do you want to trigger skill {0} ?',
     target: '是否發動技能 【{0}】?',

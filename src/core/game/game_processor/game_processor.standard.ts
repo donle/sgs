@@ -457,7 +457,8 @@ export class StandardGameProcessor extends GameProcessor {
         allTargets: [this.currentPhasePlayer.Id],
       };
 
-      this.room.broadcast(GameEventIdentifiers.MoveCardEvent, {
+      this.room.addProcessingCards(judgeCardId.toString(), judgeCardId);
+      await this.room.moveCards({
         fromId: this.currentPhasePlayer.Id,
         movingCards: [
           {
@@ -465,15 +466,29 @@ export class StandardGameProcessor extends GameProcessor {
             card: judgeCardId,
           },
         ],
-        toArea: CardMoveArea.DropStack,
-        moveReason: CardMoveReason.PlaceToDropStack,
+        toArea: CardMoveArea.ProcessingArea,
+        moveReason: CardMoveReason.ActiveMove,
       });
-      this.currentPhasePlayer.dropCards(judgeCardId);
 
       await this.onHandleIncomingEvent(
         GameEventIdentifiers.CardEffectEvent,
         EventPacker.createIdentifierEvent(GameEventIdentifiers.CardEffectEvent, cardEffectEvent),
       );
+
+      if (this.room.getProcessingCards(judgeCardId.toString()).length > 0) {
+        await this.room.moveCards({
+          movingCards: [
+            {
+              fromArea: CardMoveArea.ProcessingArea,
+              card: judgeCardId,
+            },
+          ],
+          toArea: CardMoveArea.DropStack,
+          moveReason: CardMoveReason.PlaceToDropStack,
+        });
+
+        this.room.endProcessOnCard(judgeCardId);
+      }
 
       if (this.toEndPhase === phase) {
         this.toEndPhase = undefined;
@@ -1502,19 +1517,8 @@ export class StandardGameProcessor extends GameProcessor {
       });
     }
 
-    await this.iterateEachStage(identifier, event, onActualExecuted);
-
-    if (!event.skipDrop) {
-      if (!card.is(CardType.Equip) && !card.is(CardType.DelayedTrick) && this.room.isCardOnProcessing(card.Id)) {
-        await this.room.moveCards({
-          movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
-          moveReason: CardMoveReason.CardUse,
-          toArea: CardMoveArea.DropStack,
-          hideBroadcast: true,
-          proposer: event.fromId,
-        });
-        this.room.endProcessOnTag(card.Id.toString());
-      }
+    if (!event.withoutInvokes) {
+      await this.iterateEachStage(identifier, event, onActualExecuted);
     }
   }
 
@@ -1548,7 +1552,7 @@ export class StandardGameProcessor extends GameProcessor {
 
     await this.iterateEachStage(identifier, event, onActualExecuted);
 
-    if (!event.skipDrop) {
+    if (!event.withoutInvokes) {
       await this.room.moveCards({
         movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
         moveReason: CardMoveReason.CardResponse,
@@ -1669,8 +1673,6 @@ export class StandardGameProcessor extends GameProcessor {
         splitEvents.push(event);
       }
     }
-
-    this.logger.debug(JSON.stringify(splitEvents, null, 2), JSON.stringify(events, null, 2));
 
     events = splitEvents;
 
@@ -1913,25 +1915,23 @@ export class StandardGameProcessor extends GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     let fromArea: CardMoveArea = CardMoveArea.DrawStack;
-    const ownerId = this.room.getCardOwnerId(event.judgeCardId);
+    const { toId, bySkill, byCard, judgeCardId } = event;
+
+    const ownerId = this.room.getCardOwnerId(judgeCardId);
     if (ownerId) {
-      const cardArea = (this.room.getPlayerById(ownerId).cardFrom(event.judgeCardId) as any) as
-        | CardMoveArea
-        | undefined;
+      const cardArea = (this.room.getPlayerById(ownerId).cardFrom(judgeCardId) as any) as CardMoveArea | undefined;
       fromArea = cardArea === undefined ? fromArea : cardArea;
     }
 
     await this.room.moveCards({
-      movingCards: [{ card: event.judgeCardId, fromArea }],
+      movingCards: [{ card: judgeCardId, fromArea }],
       moveReason: CardMoveReason.ActiveMove,
       toArea: CardMoveArea.ProcessingArea,
-      proposer: event.toId,
+      proposer: toId,
       movedByReason: CardMovedBySpecifiedReason.JudgeProcess,
     });
 
     await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
-      const { toId, bySkill, byCard, judgeCardId } = event;
-
       if (stage === JudgeEffectStage.OnJudge) {
         this.room.broadcast(GameEventIdentifiers.CustomGameDialog, {
           translationsMessage: TranslationPack.translationJsonPatcher(
@@ -1965,6 +1965,7 @@ export class StandardGameProcessor extends GameProcessor {
         movedByReason: CardMovedBySpecifiedReason.JudgeProcess,
       });
     }
+
     this.room.endProcessOnTag(event.judgeCardId.toString());
   }
 

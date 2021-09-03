@@ -104,7 +104,7 @@ export class JiJiangShadow extends TriggerSkill {
           fromId: player.Id,
           cardId: response.cardId,
           triggeredBySkills: [this.Name],
-          skipDrop: true,
+          withoutInvokes: true,
         });
 
         jijiangEvent.cardId = response.cardId;

@@ -1,3 +1,5 @@
+import { Flavor } from 'core/shares/types/host_config';
+
 export class Precondition {
   public static alarm<T>(arg: T | null | undefined, errorMsg: string): T {
     if (arg === null || arg === undefined) {
@@ -24,5 +26,11 @@ export class Precondition {
 
   public static UnreachableError(arg: never) {
     return new Error(`Unreachable error in switch case of argument ${arg}`);
+  }
+
+  public static debugBlock(flavor: Flavor, debugExec: () => void | Promise<void>) {
+    if (flavor === Flavor.Dev) {
+      debugExec();
+    }
   }
 }

@@ -64,9 +64,9 @@ export interface ServerEvent extends EventUtilities {
     targetGroup?: TargetGroup;
     toCardIds?: CardId[];
     responseToEvent?: ServerEventFinder<GameEventIdentifiers>;
-    skipDrop?: boolean;
     nullifiedTargets?: PlayerId[];
     extraUse?: boolean;
+    withoutInvokes?: boolean;
     disresponsiveList?: PlayerId[];
     additionalDamage?: number;
   };
@@ -97,7 +97,7 @@ export interface ServerEvent extends EventUtilities {
     fromId: PlayerId;
     cardId: CardId;
     responseToEvent?: ServerEventFinder<GameEventIdentifiers>;
-    skipDrop?: boolean;
+    withoutInvokes?: boolean;
     mute?: boolean;
   };
   [GameEventIdentifiers.DrawCardEvent]: {

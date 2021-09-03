@@ -48,7 +48,6 @@ export class GuiDao extends TriggerSkill {
         TranslationPack.patchCardInTranslation(cardIds![0]),
         TranslationPack.patchCardInTranslation(judgeEvent.judgeCardId),
       ).extract(),
-      skipDrop: true,
       mute: true,
     });
     await room.moveCards({
@@ -60,6 +59,7 @@ export class GuiDao extends TriggerSkill {
       movedByReason: this.Name,
     });
 
+    room.endProcessOnTag(judgeEvent.judgeCardId.toString());
     judgeEvent.judgeCardId = cardIds![0];
     room.addProcessingCards(judgeEvent.judgeCardId.toString(), cardIds![0]);
 

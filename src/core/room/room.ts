@@ -56,7 +56,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   protected gameStarted: boolean = false;
   protected gameOvered: boolean = false;
-  private onProcessingCards: { [K: string]: CardId[] } = {};
+  protected onProcessingCards: { [K: string]: CardId[] } = {};
   protected sideEffectSkills: {
     [N in System.SideEffectSkillApplierEnum]?: { skillName: string; sourceId: PlayerId };
   } = {};
