@@ -41,6 +41,9 @@ export const characterDictionary: Word[] = [
   { source: 'wutugu', target: '兀突骨' },
   { source: 'ranshang', target: '燃殤' },
   { source: 'hanyong', target: '悍勇' },
+
+  { source: 'sp_diaochan', target: '貂蟬' },
+  { source: 'lihun', target: '離魂' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -125,6 +128,12 @@ export const skillDescriptions: Word[] = [
     target:
       '當你使用黑桃普通【殺】、【南蠻入侵】或【萬箭齊發】時，若你已受傷，你可令此牌的傷害基數+1，然後若你的體力值大於當前輪數，你獲得1枚“燃”標記。',
   },
+
+  {
+    source: 'lihun_description',
+    target:
+      '出牌階段限一次，你可以棄置一張牌並翻面，然後獲得一名男性其他角色的所有手牌。出牌階段結束時，你將X張牌交給該角色（X爲其體力值）。'
+  }
 ];
 
 export const promptDescriptions: Word[] = [
@@ -193,5 +202,14 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: please choose a hand card and choose a target who has no ‘Lu’?',
     target: '{0}：請選擇一張手牌和一名沒有“籙”的其他角色，將此牌置為其“籙”',
+  },
+
+  {
+    source: 'lihun target: {0}',
+    target: '離魂 {0}',
+  },
+  {
+    source: 'lihun: please give the targets some cards',
+    target: '離魂：請交給目標角色等同於其體力值張牌',
   },
 ];

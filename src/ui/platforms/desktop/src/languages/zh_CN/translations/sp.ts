@@ -207,9 +207,8 @@ export const promptDescriptions: Word[] = [
     source: 'lihun target: {0}',
     target: '离魂 {0}',
   },
-
   {
     source: 'lihun: please give the targets some cards',
-    target: '离魂：请交给目标等同于其体力值张牌，不足则全部交出',
+    target: '离魂：请交给目标等同于其体力值张牌',
   },
 ];

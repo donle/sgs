@@ -132,15 +132,11 @@ export class LihunShadow extends TriggerSkill implements OnDefineReleaseTiming {
             room.removeFlag(fromId, this.GeneralName);
             return true;
         }
-        let cards: CardId[];
 
         const hp = room.getPlayerById(toId).Hp;
         const from = room.getPlayerById(fromId);
-        const allcards = {...from.getCardIds(PlayerCardsArea.HandArea),
-            ...from.getCardIds(PlayerCardsArea.EquipArea)};
-        if (allcards.length < hp) {
-            cards = allcards;
-        } else {
+        let cards = from.getPlayerCards();
+        if (cards.length > hp) {
             const resp = await room.doAskForCommonly<GameEventIdentifiers.AskForCardEvent>(
                 GameEventIdentifiers.AskForCardEvent,
                 {
