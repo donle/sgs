@@ -128,30 +128,35 @@ export class LihunShadow extends TriggerSkill implements OnDefineReleaseTiming {
     ): Promise<boolean> {
         const { fromId } = event;
         const toId = room.getPlayerById(fromId).getFlag<PlayerId>(this.GeneralName);
+        if (room.getPlayerById(toId).Dead) {
+            room.removeFlag(fromId, this.GeneralName);
+            return true;
+        }
         let cards: CardId[];
 
-        const skillUseEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForSkillUseEvent>({
-            invokeSkillNames: [LihunSelect.Name],
-            toId: fromId,
-            conversation: 'lihun: please give the targets some cards',
-        });
-        room.notify(GameEventIdentifiers.AskForSkillUseEvent, skillUseEvent, fromId);
-        const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForSkillUseEvent, fromId);
-        
-        if (response.cardIds) {
-            cards = response.cardIds;
+        const hp = room.getPlayerById(toId).Hp;
+        const from = room.getPlayerById(fromId);
+        const allcards = {...from.getCardIds(PlayerCardsArea.HandArea),
+            ...from.getCardIds(PlayerCardsArea.EquipArea)};
+        if (allcards.length < hp) {
+            cards = allcards;
         } else {
-            const hp = room.getPlayerById(toId).Hp;
-            const from = room.getPlayerById(fromId);
-            const allcards = {...from.getCardIds(PlayerCardsArea.HandArea),
-                ...from.getCardIds(PlayerCardsArea.EquipArea)};
-            if (allcards.length < hp) {
-                cards = allcards;
-            } else {
-                cards = allcards.splice(0, hp);
-            }
-            return cards.length === Math.min(hp, allcards.length);
+            const resp = await room.doAskForCommonly<GameEventIdentifiers.AskForCardEvent>(
+                GameEventIdentifiers.AskForCardEvent,
+                {
+                cardAmount: hp,
+                toId: fromId,
+                reason: this.Name,
+                conversation: 'lihun: please give the targets some cards',
+                fromArea: [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
+                triggeredBySkills: [this.Name],
+                },
+                fromId, true
+            );
+
+            cards = resp.selectedCards;
         }
+
         await room.moveCards({
             movingCards: cards.map(card =>
                 ({ card, fromArea: room.getPlayerById(fromId).cardFrom(card)})),
@@ -166,33 +171,4 @@ export class LihunShadow extends TriggerSkill implements OnDefineReleaseTiming {
     
         return true;
     }
-}
-
-@ShadowSkill
-@CommonSkill({ name: 'lihun_select', description: 'lihun_select_description' })
-export class LihunSelect extends TriggerSkill {
-    public numberOfTargets() {
-        return 1;
-    }
-
-    public isAvailableCard() {
-        return true;
-    }
-
-    public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId) {
-        return room.getPlayerById(owner).getFlag<PlayerId>(this.GeneralName)
-            === target;
-    }
-
-    public cardFilter(room: Room, owner: Player, cards: CardId[]) {
-        const hp = room.getPlayerById(owner.getFlag<PlayerId>(this.GeneralName)).Hp;
-        const allcards = {...owner.getCardIds(PlayerCardsArea.HandArea),
-            ...owner.getCardIds(PlayerCardsArea.EquipArea)};
-        return cards.length === Math.min(hp, allcards.length);
-    }
-
-    public isTriggerable() { return false; }
-    public canUse() { return false; }
-    async onTrigger() { return true; }
-    async onEffect() { return true; }
 }

@@ -43,7 +43,7 @@ export const characterDictionary: Word[] = [
   { source: 'hanyong', target: '悍勇' },
 
   { source: 'sp_diaochan', target: '貂蝉' },
-  { source: 'lihun', target: 'lihun' },
+  { source: 'lihun', target: '离魂' },
 ];
 
 export const skillDescriptions: Word[] = [
