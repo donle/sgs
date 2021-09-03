@@ -23,6 +23,7 @@ import { PlayerCardsArea, PlayerId, PlayerStatus } from 'core/player/player_prop
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { System } from 'core/shares/libs/system';
+import { FlagEnum } from 'core/shares/types/flag_list';
 import { GameMode } from 'core/shares/types/room_props';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { FilterSkill, GlobalRulesBreakerSkill, RulesBreakerSkill, TransformSkill } from 'core/skills/skill';
@@ -447,7 +448,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     return this.AlivePlayers.length / 2 >= distance ? distance : this.AlivePlayers.length - distance;
   }
 
-  public canAttack(from: Player, to: Player, slash?: CardId, except?: CardId[]) {
+  public canAttack(from: Player, to: Player, slash?: CardId, except?: CardId[], unlimited?: boolean) {
     if (to.Id === from.Id) {
       return false;
     }
@@ -462,7 +463,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
     return (
       this.withinAttackDistance(from, to, additionalAttackDistance, except) &&
-      this.canUseCardTo(slash || new CardMatcher({ generalName: ['slash'] }), from, to)
+      this.canUseCardTo(slash || new CardMatcher({ generalName: ['slash'] }), from, to, unlimited)
     );
   }
 
@@ -535,8 +536,8 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public abstract kill(deadPlayer: Player, killedBy?: PlayerId): Promise<void>;
 
-  public canUseCardTo(cardId: CardId | CardMatcher, from: Player, target: Player): boolean {
-    return from.canUseCardTo(this, cardId, target.Id);
+  public canUseCardTo(cardId: CardId | CardMatcher, from: Player, target: Player, unlimited?: boolean): boolean {
+    return from.canUseCardTo(this, cardId, target.Id, unlimited);
   }
 
   public canPlaceCardTo(cardId: CardId, target: PlayerId): boolean {
@@ -674,7 +675,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       }
 
       for (const skill of transformSkills.filter(skill => skill.includesJudgeCard())) {
-        if (skill.canTransform(judgeEvent.judgeCardId)) {
+        if (skill.canTransform(player, judgeEvent.judgeCardId)) {
           judgeEvent.judgeCardId = skill.forceToTransformCardTo(judgeEvent.judgeCardId).Id;
           break;
         }
@@ -692,7 +693,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
           continue;
         }
 
-        if (skill.canTransform(cards[i], toArea)) {
+        if (skill.canTransform(player, cards[i], toArea)) {
           cards[i] = skill.forceToTransformCardTo(cards[i]).Id;
         }
       }
@@ -710,6 +711,13 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       gameMode: this.gameInfo.gameMode,
       passcode: this.gameInfo.passcode,
     };
+  }
+
+  public enableToAwaken(skillName: string, player: Player) {
+    return (
+      player.getFlag<string[]>(FlagEnum.EnableToAwaken)?.includes(skillName) ||
+      System.AwakeningSkillApplier[skillName](this, player)
+    );
   }
 
   public get RoomId() {

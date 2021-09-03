@@ -252,15 +252,15 @@ export abstract class Player implements PlayerInfo {
   public getCardIds<T extends CardId | CharacterId = CardId>(area?: PlayerCardsArea, outsideAreaName?: string): T[] {
     if (area === undefined) {
       const [handCards, judgeCards, equipCards] = Object.values<CardId[]>(this.playerCards);
-      return ([...handCards, ...judgeCards, ...equipCards] as unknown) as T[];
+      return [...handCards, ...judgeCards, ...equipCards] as unknown as T[];
     }
 
     if (area !== PlayerCardsArea.OutsideArea) {
-      return (this.playerCards[area] as unknown) as T[];
+      return this.playerCards[area] as unknown as T[];
     } else {
       outsideAreaName = Precondition.exists(outsideAreaName, `Unable to get ${outsideAreaName} area cards`);
       this.playerOutsideCards[outsideAreaName] = this.playerOutsideCards[outsideAreaName] || [];
-      return (this.playerOutsideCards[outsideAreaName] as unknown) as T[];
+      return this.playerOutsideCards[outsideAreaName] as unknown as T[];
     }
   }
 
@@ -481,7 +481,7 @@ export abstract class Player implements PlayerInfo {
     this.drunk = 0;
   }
 
-  public canUseCardTo(room: Room, cardId: CardId | CardMatcher, target: PlayerId): boolean {
+  public canUseCardTo(room: Room, cardId: CardId | CardMatcher, target: PlayerId, unlimited?: boolean): boolean {
     const player = room.getPlayerById(target);
 
     for (const skillOwner of room.getAlivePlayersFrom()) {
@@ -516,13 +516,15 @@ export abstract class Player implements PlayerInfo {
         return false;
       }
 
-      const ruleCardUse = room.CommonRules.canUseCardTo(
-        room,
-        this,
-        cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId),
-        room.getPlayerById(target),
+      return (
+        unlimited ||
+        room.CommonRules.canUseCardTo(
+          room,
+          this,
+          cardId instanceof CardMatcher ? cardId : Sanguosha.getCardById(cardId),
+          room.getPlayerById(target),
+        )
       );
-      return ruleCardUse;
     }
 
     return true;

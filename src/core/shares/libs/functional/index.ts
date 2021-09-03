@@ -1,5 +1,5 @@
 import { CardType } from 'core/cards/card';
-import { CardSuit } from 'core/cards/libs/card_props';
+import { CardColor, CardSuit } from 'core/cards/libs/card_props';
 import { CharacterNationality } from 'core/characters/character';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { PlayerCardsArea, PlayerRole } from 'core/player/player_props';
@@ -125,6 +125,47 @@ export abstract class Functional {
         return 'precious card';
       default:
         throw Precondition.UnreachableError(type);
+    }
+  }
+
+  static getCardBaseTypeAbbrRawText(type: CardType) {
+    switch (type) {
+      case CardType.Basic:
+        return 'abbr:basic';
+      case CardType.Trick:
+        return 'abbr:trick';
+      case CardType.Equip:
+        return 'abbr:equip';
+      default:
+        throw new Error(`Cannot get the abbreviated raw text of card type: ${type}`);
+    }
+  }
+
+  static getCardColorRawText(color: CardColor) {
+    switch (color) {
+      case CardColor.Black:
+        return 'black';
+      case CardColor.Red:
+        return 'red';
+      case CardColor.None:
+        return 'none_color';
+      default:
+        throw Precondition.UnreachableError(color);
+    }
+  }
+
+  static getCardNumberRawText(cardNumber: number) {
+    switch (cardNumber) {
+      case 1:
+        return 'A';
+      case 11:
+        return 'J';
+      case 12:
+        return 'Q';
+      case 13:
+        return 'K';
+      default:
+        return String(cardNumber);
     }
   }
 }

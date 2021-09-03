@@ -550,7 +550,7 @@ export class StandardGameProcessor extends GameProcessor {
         true,
       );
 
-      response && await this.room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, response.fromId);
+      response && (await this.room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, response.fromId));
     }
   }
 
@@ -735,7 +735,7 @@ export class StandardGameProcessor extends GameProcessor {
       for (const player of this.room.getAlivePlayersFrom(this.CurrentPlayer.Id)) {
         notifierAllPlayers.push(player.Id);
         if (
-          (event.disresponsiveList && event.disresponsiveList.includes(player.Id)) ||
+          EventPacker.isDisresponsiveEvent(event, true) ||
           (!player.hasCard(this.room, wuxiekejiMatcher) &&
             this.room.GameParticularAreas.find(areaName =>
               player.hasCard(this.room, wuxiekejiMatcher, PlayerCardsArea.OutsideArea, areaName),
@@ -814,7 +814,7 @@ export class StandardGameProcessor extends GameProcessor {
       Precondition.assert(targets.length === 1, 'slash effect target should be only one target');
       const toId = targets[0];
 
-      if (!EventPacker.isDisresponsiveEvent(event)) {
+      if (!EventPacker.isDisresponsiveEvent(event, true)) {
         const askForUseCardEvent = {
           toId,
           cardMatcher: new CardMatcher({ name: ['jink'] }).toSocketPassenger(),
@@ -1108,12 +1108,12 @@ export class StandardGameProcessor extends GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    const to = this.room.getPlayerById(event.toId);
-    const from = event.fromId ? this.room.getPlayerById(event.fromId) : undefined;
+    event.fromId = event.fromId ? (this.room.getPlayerById(event.fromId).Dead ? undefined : event.fromId) : undefined;
     return await this.iterateEachStage(identifier, event, onActualExecuted, async (stage: GameEventStage) => {
-      if (stage === DamageEffectStage.DamagedEffect && !to.Dead) {
+      if (stage === DamageEffectStage.DamageDone && !this.room.getPlayerById(event.toId).Dead) {
         const { toId, damage, damageType, fromId } = event;
-        event.fromId = from?.Dead ? undefined : from?.Id;
+        const from = fromId ? this.room.getPlayerById(fromId) : undefined;
+        const to = this.room.getPlayerById(toId);
 
         event.translationsMessage = !from
           ? TranslationPack.translationJsonPatcher(
@@ -1178,7 +1178,7 @@ export class StandardGameProcessor extends GameProcessor {
           );
         }
       } else if (stage === DamageEffectStage.AfterDamagedEffect) {
-        if (event.beginnerOfTheDamage === to.Id) {
+        if (event.beginnerOfTheDamage === event.toId) {
           await this.onChainedDamage(event);
         }
       }
@@ -1502,7 +1502,7 @@ export class StandardGameProcessor extends GameProcessor {
     if (!this.room.isCardOnProcessing(event.cardId)) {
       this.room.addProcessingCards(event.cardId.toString(), event.cardId);
       await this.room.moveCards({
-        movingCards: [{ card: event.cardId, fromArea: from.cardFrom(event.cardId) }],
+        movingCards: [{ card: event.cardId, fromArea: event.customFromArea || from.cardFrom(event.cardId) }],
         toArea: CardMoveArea.ProcessingArea,
         fromId: from.Id,
         moveReason: CardMoveReason.CardUse,
@@ -1551,6 +1551,15 @@ export class StandardGameProcessor extends GameProcessor {
         moveReason: CardMoveReason.CardResponse,
         hideBroadcast: true,
       });
+    }
+
+    if (
+      event.responseToEvent &&
+      EventPacker.getIdentifier(event.responseToEvent) === GameEventIdentifiers.CardEffectEvent
+    ) {
+      const cardEffectEvent = event.responseToEvent as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>;
+      cardEffectEvent.cardIdsResponded = cardEffectEvent.cardIdsResponded || [];
+      cardEffectEvent.cardIdsResponded.push(event.cardId);
     }
 
     await this.iterateEachStage(identifier, event, onActualExecuted);

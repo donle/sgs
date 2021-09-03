@@ -834,15 +834,15 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       const newOption: CardChoosingOptions = {};
       for (const [area, cardIds] of Object.entries(event.options)) {
         if (cardIds) {
-          if (cardIds instanceof Array) {
-            let ids =
-              (area as unknown as PlayerCardsArea) === PlayerCardsArea.HandArea
-                ? this.getPlayerById(to).getCardIds(PlayerCardsArea.HandArea)
-                : cardIds;
+          let ids =
+            Number(area) as PlayerCardsArea === PlayerCardsArea.HandArea
+              ? this.getPlayerById(to).getCardIds(PlayerCardsArea.HandArea)
+              : cardIds;
+          if (ids instanceof Array) {
             toDiscard && (ids = ids.filter(id => this.canDropCard(to, id)));
             ids.length > 0 && (newOption[area] = ids);
           } else {
-            this.canDropCard(to, cardIds) && (newOption[area] = cardIds);
+            newOption[area] = ids;
           }
         }
       }
@@ -902,7 +902,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     await this.moveCards({
       fromId: from.Id,
       movingCards: [{ card: cardId, fromArea: CardMoveArea.HandArea }],
-      moveReason: CardMoveReason.PlaceToDropStack,
+      moveReason: CardMoveReason.Reforge,
       toArea: CardMoveArea.DropStack,
       proposer: from.Id,
       translationsMessage: TranslationPack.translationJsonPatcher(
@@ -1111,6 +1111,15 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     await super.useCard(event);
 
+    if (
+      event.responseToEvent &&
+      EventPacker.getIdentifier(event.responseToEvent) === GameEventIdentifiers.CardEffectEvent
+    ) {
+      const cardEffectEvent = event.responseToEvent as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>;
+      cardEffectEvent.cardIdsResponded = cardEffectEvent.cardIdsResponded || [];
+      cardEffectEvent.cardIdsResponded.push(event.cardId);
+    }
+
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, event, async stage => {
       if (
         stage !== CardUseStage.CardUseFinishedEffect &&
@@ -1243,6 +1252,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             }
 
             await onCardEffect(singleCardEffectEvent);
+
+            if (singleCardEffectEvent.cardIdsResponded) {
+              event.cardIdsResponded = event.cardIdsResponded || [];
+              event.cardIdsResponded.push(...singleCardEffectEvent.cardIdsResponded);
+            }
           }
         }
 
@@ -1438,7 +1452,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     droppedBy?: PlayerId,
     byReason?: string,
   ) {
-    if (droppedBy !== undefined && droppedBy === playerId) {
+    if (droppedBy !== undefined && droppedBy === playerId && moveReason === CardMoveReason.SelfDrop) {
       cardIds = cardIds.filter(id => this.canDropCard(droppedBy!, id));
     }
 
@@ -1658,19 +1672,22 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           return pos1 < pos2 ? 1 : -1;
         });
 
+        const moveCardInfos: MoveCardEventInfos[] = [];
         for (const target of targetList) {
           const currentResponse = responses.find(resp => resp.fromId === target);
           if (!currentResponse) {
             continue;
           }
 
-          await this.moveCards({
+          moveCardInfos.push({
             movingCards: [{ card: currentResponse.pindianCard, fromArea: PlayerCardsArea.HandArea }],
             fromId: target,
             toArea: CardMoveArea.ProcessingArea,
             moveReason: CardMoveReason.ActiveMove,
           });
         }
+
+        await this.moveCards(...moveCardInfos);
 
         return true;
       }
@@ -1764,11 +1781,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (this.CurrentPhasePlayer.Id === player) {
       this.gameProcessor.skip(phase);
       if (phase !== undefined) {
-        const event: ServerEventFinder<GameEventIdentifiers.PhaseSkippedEvent> = {
+        const event = EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseSkippedEvent, {
           playerId: player,
           skippedPhase: phase,
-        };
-        await this.trigger(EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseSkippedEvent, event));
+        });
+        this.analytics.record(event, this.isPlaying() ? this.CurrentPlayerPhase : undefined);
+        await this.trigger(event);
       }
     }
   }
