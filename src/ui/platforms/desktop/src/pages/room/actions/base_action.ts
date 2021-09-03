@@ -545,6 +545,7 @@ export abstract class BaseAction {
       if (card.Skill instanceof ActiveSkill || card.Skill instanceof TriggerSkill) {
         const canUse =
           card.Skill.numberOfCards().length === 0 || card.Skill.numberOfCards().includes(this.selectedCards.length);
+
         return (
           canUse &&
           card.Skill.cardFilter(
@@ -737,6 +738,9 @@ export abstract class BaseAction {
     }
     if (!selected) {
       this.resetAction();
+      this.selectedSkillToPlay || this.selectedCardToPlay
+        ? this.presenter.enableActionButton('cancel')
+        : this.presenter.disableActionButton('cancel');
     }
     this.delightItems();
     this.callToActionCheck();
