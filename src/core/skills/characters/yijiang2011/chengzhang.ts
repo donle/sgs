@@ -20,7 +20,7 @@ export class ChengZhang extends TriggerSkill {
     return (
       event.playerId === owner.Id &&
       event.toStage === PlayerPhaseStages.PrepareStageStart &&
-      room.Analytics.getDamage(owner.Id) + room.Analytics.getDamaged(owner.Id) >= 7
+      room.enableToAwaken(this.Name, owner)
     );
   }
 

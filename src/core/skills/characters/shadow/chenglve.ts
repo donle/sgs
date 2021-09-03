@@ -60,7 +60,6 @@ export class ChengLve extends ActiveSkill {
       true,
       undefined,
       this.Name,
-      TranslationPack.translationJsonPatcher('{0}: please drop {1} card(s)', this.Name, dropNum).extract(),
     );
     if (!response) {
       return false;

@@ -11,7 +11,7 @@ import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 export class HongYan extends TransformSkill implements OnDefineReleaseTiming {
   async whenObtainingSkill(room: Room, owner: Player) {
     const handcards = owner.getCardIds(PlayerCardsArea.HandArea).map(cardId => {
-      if (this.canTransform(cardId)) {
+      if (this.canTransform(owner, cardId)) {
         return this.forceToTransformCardTo(cardId).Id;
       }
 
@@ -21,7 +21,7 @@ export class HongYan extends TransformSkill implements OnDefineReleaseTiming {
     owner.setupCards(PlayerCardsArea.HandArea, handcards);
 
     const equips = owner.getCardIds(PlayerCardsArea.EquipArea).map(cardId => {
-      if (this.canTransform(cardId)) {
+      if (this.canTransform(owner, cardId)) {
         return this.forceToTransformCardTo(cardId).Id;
       }
 
@@ -61,7 +61,7 @@ export class HongYan extends TransformSkill implements OnDefineReleaseTiming {
     owner.setupCards(PlayerCardsArea.EquipArea, equipCards);
   }
 
-  canTransform(cardId: CardId) {
+  canTransform(owner: Player, cardId: CardId) {
     const card = Sanguosha.getCardById(cardId);
     return card.Suit === CardSuit.Spade;
   }

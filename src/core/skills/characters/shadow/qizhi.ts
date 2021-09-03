@@ -33,7 +33,12 @@ export class QiZhi extends TriggerSkill {
     if (canUse) {
       const availableTargets = room
         .getAlivePlayersFrom()
-        .filter(player => player.getPlayerCards().length > 0 && !allTargets.includes(player.Id));
+        .filter(
+          player =>
+            (player === owner
+              ? player.getPlayerCards().find(id => room.canDropCard(player.Id, id))
+              : player.getPlayerCards().length > 0) && !allTargets.includes(player.Id),
+        );
       canUse = availableTargets.length > 0;
       if (canUse) {
         room.setFlag<PlayerId[]>(

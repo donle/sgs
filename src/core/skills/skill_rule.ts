@@ -2,6 +2,7 @@ import { Card, CardType } from 'core/cards/card';
 import { Player } from 'core/player/player';
 import { QingGangSkill } from './cards/standard/qinggang';
 import { XianZhenNullify } from './characters/yijiang2011/xianzhen';
+import { BenXi } from './characters/yijiang2014/benxi';
 import { Skill, SkillProhibitedSkill, SkillType } from './skill';
 
 export class UniqueSkillRule {
@@ -11,6 +12,7 @@ export class UniqueSkillRule {
     switch (bySkill.Name) {
       case QingGangSkill.Name:
       case XianZhenNullify.Name:
+      case BenXi.Name:
         return toSkill.Name === 'bazhen';
       default:
         return false;
@@ -21,6 +23,7 @@ export class UniqueSkillRule {
     switch (bySkill.Name) {
       case QingGangSkill.Name:
       case XianZhenNullify.Name:
+      case BenXi.Name:
         return !card.is(CardType.Shield);
       default:
         return true;

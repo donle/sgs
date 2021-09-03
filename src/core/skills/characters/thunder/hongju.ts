@@ -21,7 +21,7 @@ export class HongJu extends TriggerSkill {
     owner: Player,
     content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
   ): boolean {
-    return content.playerId === owner.Id && owner.getCardIds(PlayerCardsArea.OutsideArea, ZhengRong.Name).length > 2;
+    return content.playerId === owner.Id && room.enableToAwaken(this.Name, owner);
   }
 
   public async onTrigger(
@@ -42,7 +42,7 @@ export class HongJu extends TriggerSkill {
     const from = room.getPlayerById(fromId);
     const rongs = from.getCardIds(PlayerCardsArea.OutsideArea, ZhengRong.Name);
 
-    if (from.getCardIds(PlayerCardsArea.HandArea).length > 0) {
+    if (from.getCardIds(PlayerCardsArea.HandArea).length > 0 && rongs.length > 0) {
       const { selectedCards } = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardEvent>(
         GameEventIdentifiers.AskForChoosingCardEvent,
         {

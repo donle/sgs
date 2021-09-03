@@ -45,7 +45,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'minsi_description',
     target:
-      '出牌阶段限一次，你可以弃置至少一张点数和为13的牌，然后摸等量的牌。你以此法摸的：红色牌于本回合不计入手牌上限；黑色牌于本回合无距离限制。',
+      '出牌阶段限一次，你可以弃置至少一张点数和为13的牌，然后摸两倍数量的牌。你以此法摸的：红色牌于本回合不计入手牌上限；黑色牌于本回合无距离限制。',
   },
   {
     source: 'jijing_description',

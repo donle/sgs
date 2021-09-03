@@ -13,10 +13,6 @@ export class ZiShu extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): boolean {
-    if (room.CurrentPlayer === owner) {
-      return false;
-    }
-
     return (
       content.infos.find(
         info =>

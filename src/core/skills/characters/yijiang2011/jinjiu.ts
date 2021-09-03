@@ -12,7 +12,7 @@ import { CompulsorySkill } from 'core/skills/skill_wrappers';
 export class JinJiu extends TransformSkill implements OnDefineReleaseTiming {
   async whenObtainingSkill(room: Room, owner: Player) {
     const cards = owner.getCardIds(PlayerCardsArea.HandArea).map(cardId => {
-      if (this.canTransform(cardId)) {
+      if (this.canTransform(owner, cardId)) {
         return this.forceToTransformCardTo(cardId).Id;
       }
 
@@ -39,7 +39,7 @@ export class JinJiu extends TransformSkill implements OnDefineReleaseTiming {
     owner.setupCards(PlayerCardsArea.HandArea, cards);
   }
 
-  public canTransform(cardId: CardId) {
+  public canTransform(owner: Player, cardId: CardId) {
     const card = Sanguosha.getCardById(cardId);
     return card.GeneralName === AlcoholSkill.GeneralName;
   }

@@ -97,7 +97,7 @@ export abstract class Skill {
   public getAnimationSteps(
     event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent | GameEventIdentifiers.CardUseEvent>,
   ): EventProcessSteps {
-    if (EventPacker.getIdentifier(event) === GameEventIdentifiers.CardUseEvent) {
+    if (EventPacker.getIdentifier(event) === GameEventIdentifiers.SkillUseEvent) {
       const skillUseEvent = event as ServerEventFinder<GameEventIdentifiers.SkillUseEvent>;
       return skillUseEvent.toIds ? [{ from: event.fromId, tos: skillUseEvent.toIds }] : [];
     }
@@ -424,7 +424,7 @@ export abstract class TransformSkill extends Skill {
     return false;
   }
 
-  public abstract canTransform(cardId: CardId, area?: PlayerCardsArea.EquipArea | PlayerCardsArea.HandArea): boolean;
+  public abstract canTransform(owner: Player, cardId: CardId, area?: PlayerCardsArea.EquipArea | PlayerCardsArea.HandArea): boolean;
 
   public abstract forceToTransformCardTo(cardId: CardId): VirtualCard | Card;
 }
