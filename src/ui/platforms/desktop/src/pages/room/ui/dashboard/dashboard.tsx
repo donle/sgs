@@ -62,6 +62,8 @@ export class Dashboard extends React.Component<DashboardProps> {
 
   @mobx.observable.ref
   private cardOffset: number = 0;
+  @mobx.observable.ref
+  private onFocusCardIndex: number = -1;
 
   private handBoardRef = React.createRef<HTMLDivElement>();
   private readonly handCardWidth = 120;
@@ -139,18 +141,42 @@ export class Dashboard extends React.Component<DashboardProps> {
     return availableCards;
   }
 
+  getCardXOffset(index: number, offsetIndex: number = 0) {
+    if (index - this.onFocusCardIndex === 1 && this.cardOffset < 0) {
+      return (index + offsetIndex) * (this.handCardWidth + this.cardOffset) + this.handCardWidth / 2 - 16;
+    } else if (this.onFocusCardIndex - index === 1 && this.cardOffset < 0) {
+      return (index + offsetIndex) * (this.handCardWidth + this.cardOffset) - this.handCardWidth / 2 + 16;
+    } else {
+      return (index + offsetIndex) * (this.handCardWidth + this.cardOffset);
+    }
+  }
+
+  getCardYOffset(index: number) {
+    if (this.onFocusCardIndex === index) {
+      return -8;
+    }
+  }
+
+  private readonly onFocusCard = (index: number) =>
+    mobx.action(() => {
+      this.onFocusCardIndex = index;
+    });
+
+  @mobx.computed
   get AllClientHandCards() {
     const outsideCards = this.AvailableOutsideCards.map((cardInfo, index) => {
-      const leftOffset = index * (this.handCardWidth + this.cardOffset);
       return (
         <ClientCard
           imageLoader={this.props.imageLoader}
           key={cardInfo.card.Id}
           width={this.handCardWidth}
-          offsetLeft={leftOffset}
+          offsetLeft={this.getCardXOffset(index)}
+          offsetTop={this.getCardYOffset(index)}
           translator={this.props.translator}
           card={cardInfo.card}
           highlight={this.props.store.highlightedCards}
+          onMouseEnter={this.onFocusCard(index)}
+          onMouseLeave={this.onFocusCard(-2)}
           onSelected={this.onClick(cardInfo.card)}
           tag={this.props.translator.tr(cardInfo.areaName)}
           className={styles.handCard}
@@ -163,14 +189,16 @@ export class Dashboard extends React.Component<DashboardProps> {
     const handcards =
       this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.HandArea).map((cardId, index) => {
         const card = Sanguosha.getCardById(cardId);
-        const leftOffset = (index + outsideCards.length) * (this.handCardWidth + this.cardOffset);
         return (
           <ClientCard
             imageLoader={this.props.imageLoader}
             key={cardId}
             width={this.handCardWidth}
-            offsetLeft={leftOffset}
+            offsetLeft={this.getCardXOffset(index + outsideCards.length)}
+            offsetTop={this.getCardYOffset(index + outsideCards.length)}
             translator={this.props.translator}
+            onMouseEnter={this.onFocusCard(index + outsideCards.length)}
+            onMouseLeave={this.onFocusCard(-2)}
             card={card}
             highlight={this.props.store.highlightedCards}
             onSelected={this.onClick(card)}
@@ -189,7 +217,7 @@ export class Dashboard extends React.Component<DashboardProps> {
 
     return (
       <div className={styles.judges}>
-        {judgeAreaDisabled ? <JudgeAreaDisabledIcon/> : <></>}
+        {judgeAreaDisabled ? <JudgeAreaDisabledIcon /> : <></>}
         {this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.JudgeArea).map(cardId => (
           <DelayedTrickIcon
             key={cardId}
