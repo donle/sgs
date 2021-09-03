@@ -4,6 +4,7 @@ import { LiuQi } from './liuqi';
 import { MaLiang } from './maliang';
 import { QuYi } from './quyi';
 import { ShaMoKe } from './shamoke';
+import { SPDiaochan } from './sp_diaochan';
 import { SPZhaoYun } from './sp_zhaoyun';
 import { WuTuGu } from './wutugu';
 import { ZhangLing } from './zhangling';
@@ -20,4 +21,5 @@ export const SPPackage: (index: number) => Character[] = index => [
   new LiuQi(index++),
   new ZhangLing(index++),
   new WuTuGu(index++),
+  new SPDiaochan(index++),
 ];
