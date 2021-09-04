@@ -130,8 +130,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         return total;
       }, 0);
       const gameCards = this.getInGameCards();
-      Precondition.assert(
-        this.numOfCards === this.drawStack.length + gameCards.length + cardsInProcessing,
+      Precondition.alarm(
+        this.numOfCards !== this.drawStack.length + gameCards.length + cardsInProcessing ? undefined : true,
         `some cards are lost: current total cards: ${
           this.drawStack.length + gameCards.length + cardsInProcessing
         }, should be: ${this.numOfCards}`,

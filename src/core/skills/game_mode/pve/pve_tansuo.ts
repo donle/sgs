@@ -11,10 +11,10 @@ import { TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-let treasure = 0;
 @PersistentSkill({ stubbornSkill: true })
 @CompulsorySkill({ name: 'pve_tansuo', description: 'pve_tansuo_description' })
 export class PveTanSuo extends TriggerSkill {
+  private treasure = 0;
   public isAutoTrigger(): boolean {
     return true;
   }
@@ -44,6 +44,8 @@ export class PveTanSuo extends TriggerSkill {
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = event;
     const { fromId, cardId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
+    const longshen = room.getPlayerById(event.fromId);
+    const cardup = longshen.getFlag<string[]>(this.GeneralName) || [];
     const cardNumber = Sanguosha.getCardById(cardId).CardNumber;
     const encounter = Math.floor(Math.random() * 24 + 1);
     if (cardNumber > encounter) {
@@ -82,8 +84,8 @@ export class PveTanSuo extends TriggerSkill {
         await room.recover({ recoverBy: undefined, recoveredHp: Math.floor(Math.random() * 2 + 1), toId: fromId });
       }
       if (encounter === 20 || encounter === 19) {
-        treasure = 0;
-        if (PveTanSuoShow.cardup.length < 9) {
+        this.treasure = 0;
+        if (cardup.length < 9) {
           const trcard = Sanguosha.getCardNameByType(
             types => types.includes(CardType.Trick) || types.includes(CardType.Basic) || types.includes(CardType.Equip),
           );
@@ -112,15 +114,15 @@ export class PveTanSuo extends TriggerSkill {
             fromId,
           );
           if (selectedOption) {
-            PveTanSuoShow.cardup[PveTanSuoShow.cardup.length] = selectedOption + upcard;
+            cardup.push(selectedOption + upcard);
           }
         }
       }
       if (encounter === 4) {
         await room.changeMaxHp(fromId, 1);
       }
-      if (encounter === 1 && treasure === 0) {
-        treasure = 1;
+      if (encounter === 1 && this.treasure === 0) {
+        this.treasure = 1;
         const pveHuashenCharacters = room.getRandomCharactersFromLoadedPackage(4);
         const askForChoosingCharacterEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingCharacterEvent> = {
           amount: 1,
@@ -172,8 +174,6 @@ export class PveTanSuo extends TriggerSkill {
 @PersistentSkill({ stubbornSkill: true })
 @CompulsorySkill({ name: PveTanSuo.Name, description: PveTanSuo.Description })
 export class PveTanSuoShow extends TriggerSkill {
-  static cardup: string[] = [];
-
   public isAutoTrigger(): boolean {
     return true;
   }
@@ -198,8 +198,12 @@ export class PveTanSuoShow extends TriggerSkill {
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { triggeredOnEvent } = event;
     const { fromId, cardId } = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
+    const longshen = room.getPlayerById(event.fromId);
+    const cardup = longshen.getFlag<string[]>(this.GeneralName) || [];
+
     const cardName = Sanguosha.getCardById(cardId).Name;
-    for (const up of PveTanSuoShow.cardup) {
+    console.log(cardup);
+    for (const up of cardup) {
       if (up === cardName + '1') {
         await room.drawCards(1, fromId, 'top', fromId);
       }

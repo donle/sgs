@@ -130,8 +130,8 @@ export const promptDescriptions: Word[] = [
   },
 ];
 export const eventDictionary: Word[] = [
-  { source: 'pve-one', target: '低難度' },
-  { source: 'pve-two', target: '高難度' },
+  { source: 'pve-easy-mode', target: '低難度' },
+  { source: 'pve-hard-mode', target: '高難度' },
   { source: '{0} ouyujiguan', target: '{0} 偶遇了機關' },
   { source: '{0} qiyubaowu', target: '{0} 奇遇寶物' },
 ]

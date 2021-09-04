@@ -101,6 +101,10 @@ export class PveLingXiDraw extends TriggerSkill {
     return stage === DrawCardStage.CardDrawing;
   }
 
+  isFlaggedSkill() {
+    return true;
+  }
+
   canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>) {
     return (
       owner.Id === event.fromId &&
