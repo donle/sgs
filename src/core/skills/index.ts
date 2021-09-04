@@ -359,6 +359,7 @@ export { HuaiYi, HuaiYiShadow } from './characters/yijiang2015/huaiyi';
 export { AnGuo } from './characters/yijiang2015/anguo';
 export { YaoMing, YaoMingShadow } from './characters/yijiang2015/yaoming';
 export { ZhanJue, ZhanJueShadow } from './characters/yijiang2015/zhanjue';
+export * from './characters/yijiang2015/huomo';
 
 export { StdLongDan } from './characters/sp/std_longdan';
 export { ChongZhen } from './characters/sp/chongzhen';
