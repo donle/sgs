@@ -132,8 +132,8 @@ export const skillDescriptions: Word[] = [
   {
     source: 'lihun_description',
     target:
-      '出牌階段限一次，你可以棄置一張牌並翻面，然後獲得一名男性其他角色的所有手牌。出牌階段結束時，你將X張牌交給該角色（X爲其體力值）。'
-  }
+      '出牌階段限一次，你可以棄置一張牌並翻面，然後獲得一名男性其他角色的所有手牌。出牌階段結束時，你將X張牌交給該角色（X爲其體力值）。',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
