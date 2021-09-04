@@ -27,7 +27,7 @@ export const characterDictionary: Word[] = [
   { source: 'zhangni', target: '张嶷' },
   { source: 'wurong', target: '怃戎' },
   { source: 'shizhi', target: '矢志' },
-  
+
   { source: 'quancong', target: '全琮' },
   { source: 'yaoming', target: '邀名' },
 
@@ -72,7 +72,8 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'zhanjue_description',
-    target: '出牌阶段，你可以将所有手牌当【决斗】使用，然后你摸一张牌，且受到过此牌伤害的角色各摸一张牌。若你以此法于一阶段内获得过至少两张牌，本技能于此阶段内失效。',
+    target:
+      '出牌阶段，你可以将所有手牌当【决斗】使用，然后你摸一张牌，且受到过此牌伤害的角色各摸一张牌。若你以此法于一阶段内获得过至少两张牌，本技能于此阶段内失效。',
   },
   {
     source: 'yanyu_description',
@@ -129,6 +130,16 @@ export const skillDescriptions: Word[] = [
     target:
       '当你需要使用或打出【闪】时，你可以令当前回合角色摸一张牌，然后若其不为手牌数唯一最多的角色，你可以弃置手牌数最多的一名角色的一张牌，视为使用或打出【闪】。',
   },
+  {
+    source: 'huomo_description',
+    target:
+      '当你需要使用基本牌时（你本回合使用过的基本牌除外），你可以将一张黑色的非基本牌置于牌堆顶，视为使用此基本牌',
+  },
+  {
+    source: 'zuoding_description',
+    target:
+      '当其他角色于其出牌阶段内使用黑桃牌指定目标后，若所有角色于此阶段内均未受到过伤害，则你可以令其中的一个目标摸一张牌。',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
@@ -173,4 +184,5 @@ export const promptDescriptions: Word[] = [
   { source: 'jigong:draw1', target: '摸一张牌' },
   { source: 'jigong:draw2', target: '摸两张牌' },
   { source: 'jigong:draw3', target: '摸三张牌' },
+  { source: '{0} placed card {1} on the top of draw stack', target: '{0} 将 {1} 置于了牌堆顶 ' },
 ];
