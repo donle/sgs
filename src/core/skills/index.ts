@@ -337,6 +337,7 @@ export { HanYong } from './characters/sp/hanyong';
 export { BingZheng } from './characters/sp/bingzheng';
 export { SheYan } from './characters/sp/sheyan';
 export { JiLi, JiLiShadow, JiLiRemove } from './characters/sp/jili';
+export { Lihun, LihunShadow } from './characters/sp/lihun';
 
 export { TuShe } from './characters/spark/tushe';
 export { LiMu, LiMuShadow } from './characters/spark/limu';
