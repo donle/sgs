@@ -34,6 +34,12 @@ export const getClientConfig = (mode: ClientFlavor): ClientConfig => {
           protocol: 'http',
           hostTag: ServerHostTag.ShenZhen,
         },
+        {
+          port: 2020,
+          host: '121.41.167.150',
+          protocol: 'http',
+          hostTag: ServerHostTag.HangZhou,
+        },
       ];
       break;
     case ClientFlavor.Desktop:
@@ -49,6 +55,12 @@ export const getClientConfig = (mode: ClientFlavor): ClientConfig => {
           host: '146.56.218.109',
           protocol: 'http',
           hostTag: ServerHostTag.NanJing,
+        },
+        {
+          port: 2020,
+          host: '121.41.167.150',
+          protocol: 'http',
+          hostTag: ServerHostTag.HangZhou,
         },
       ];
       break;
