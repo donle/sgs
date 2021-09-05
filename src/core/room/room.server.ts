@@ -685,11 +685,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     conversation?: string | PatchedTranslationObject,
   ) {
     const cannotDropIds: CardId[] = [];
+    except = except || [];
     for (const area of fromArea) {
       cannotDropIds.push(
         ...this.getPlayerById(playerId)
           .getCardIds(area)
-          .filter(id => !(this.canDropCard(playerId, id) || except?.includes(id))),
+          .filter(id => !(this.canDropCard(playerId, id) || except!.includes(id))),
       );
     }
 
