@@ -4,7 +4,6 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Character, CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
 import {
-  BaseGameEvent,
   CardDrawReason,
   CardMoveArea,
   CardMovedBySpecifiedReason,
@@ -1644,7 +1643,7 @@ export class StandardGameProcessor extends GameProcessor {
     return await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === CardMoveStage.CardMoving) {
         for (const info of event.infos) {
-          const { fromId, toId, movingCards, toArea } = info;
+          const { fromId, toId, movingCards } = info;
           const from = fromId ? this.room.getPlayerById(fromId) : undefined;
           const to = toId ? this.room.getPlayerById(toId) : undefined;
 
