@@ -160,6 +160,180 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
+export const skillAudios: Word[] = [
+  {
+    source: '$luoying:1',
+    target: '五月繁花落，怀愁不同秋。',
+  },
+  {
+    source: '$luoying:2',
+    target: '惊风飘白日，光景驰西流。',
+  },
+  {
+    source: '$jiushi:1',
+    target: '德祖箪杯酒，吾亦醉抚琴。',
+  },
+  {
+    source: '$jiushi:2',
+    target: '利剑不在掌，结友何须多。',
+  },
+  {
+    source: '$chengzhang:1',
+    target: '妙笔趁酒兴，文章尽自成。',
+  },
+
+  {
+    source: '$jieyue:1',
+    target: '敌人虚张声势，我且将计就计！',
+  },
+  {
+    source: '$jieyue:2',
+    target: '舍，然后才有得。',
+  },
+
+  {
+    source: '$jueqing:1',
+    target: '博弈此生，终至无情。',
+  },
+  {
+    source: '$jueqing:2',
+    target: '此情已逝，故来决绝！',
+  },
+  {
+    source: '$shangshi:1',
+    target: '情随伤而逝，恨随痛而至！',
+  },
+  {
+    source: '$shangshi:2',
+    target: '春华已老红颜去，此恨绵绵无绝期。',
+  },
+
+  {
+    source: '$sanyao:1',
+    target: '可曾听说，人言可畏？',
+  },
+  {
+    source: '$sanyao:2',
+    target: '丞相谋略，吾已习得八九。',
+  },
+  {
+    source: '$zhiman:1',
+    target: '巧力胜于蛮力。',
+  },
+  {
+    source: '$zhiman:2',
+    target: '取你一件东西使使。',
+  },
+
+  {
+    source: '$enyuan:1',
+    target: '善因得善果，恶因得恶报。',
+  },
+  {
+    source: '$enyuan:1',
+    target: '私我者赠之琼瑶，厌我者报之斧钺。',
+  },
+  {
+    source: '$xuanhuo:1',
+    target: '光以眩目，言以惑人。',
+  },
+  {
+    source: '$xuanhuo:2',
+    target: '我法孝直如何会害你？',
+  },
+
+  {
+    source: '$wuyan:1',
+    target: '不忠不孝之人，不敢开口。',
+  },
+  {
+    source: '$wuyan:2',
+    target: '别跟我说话！我想静静。',
+  },
+  {
+    source: '$jujian:1',
+    target: '大贤不可屈就，将军须当亲往。',
+  },
+  {
+    source: '$jujian:2',
+    target: '大汉中兴，皆系此人！',
+  },
+
+  {
+    source: '$ganlu:1',
+    target: '玄德实乃佳婿啊。',
+  },
+  {
+    source: '$ganlu:2',
+    target: '好一个郎才女貌，真是天作之合啊。',
+  },
+  {
+    source: '$buyi:1',
+    target: '有我在，定保贤婿无虞！',
+  },
+  {
+    source: '$buyi:2',
+    target: '东吴，岂容汝等儿戏！',
+  },
+
+  {
+    source: '$pojun:1',
+    target: '犯大吴疆土者，盛必击而破之！',
+  },
+  {
+    source: '$pojun:2',
+    target: '若敢来犯，必叫你大败而归！',
+  },
+
+  {
+    source: '$xuanfeng:1',
+    target: '风袭千里，片甲不留！',
+  },
+  {
+    source: '$xuanfeng:2',
+    target: '凌风逐敌，横扫千军！',
+  },
+  {
+    source: '$yongjin:1',
+    target: '勇力载舟，长浪奋进！',
+  },
+  {
+    source: '$yongjin:2',
+    target: '以勇拒曹刘，气吞万里如虎！',
+  },
+
+  {
+    source: '$mingce:1',
+    target: '如此，霸业可图也。',
+  },
+  {
+    source: '$mingce:2',
+    target: '如此，一击可擒也。',
+  },
+  {
+    source: '$zhichi:1',
+    target: '若吾早知如此。',
+  },
+  {
+    source: '$zhichi:2',
+    target: '如今之计，唯有退守，再做决断。',
+  },
+
+  {
+    source: '$xianzhen:1',
+    target: '攻无不克，战无不胜！',
+  },{
+    source: '$xianzhen:2',
+    target: '破阵斩将，易如反掌！',
+  },{
+    source: '$jinjiu:1',
+    target: '避嫌远疑，所以无误。',
+  },{
+    source: '$jinjiu:2',
+    target: '贬酒阙色，所以无污。',
+  },
+];
+
 export const promptDescriptions: Word[] = [
   {
     source: '{0}: you need to give a handcard to {1}',

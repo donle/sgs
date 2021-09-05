@@ -386,14 +386,24 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.presenter.addUserMessage(this.translator.trx(content.message));
-    this.presenter.onIncomingMessage(content.playerId, content.originalMessage);
     if (content.originalMessage.replace(/\$[a-z]*:\d/, '') === '') {
       // play skill audio
       const msg = content.originalMessage;
       const skill = msg.slice(1, msg.length - 2);
       const index = parseInt(msg[msg.length - 1]);
-      this.audioService.playSkillAudio(skill, CharacterGender.Male, index);
+      this.audioService.playSkillAudio(skill, CharacterGender.Male, index); // player's character may be undefined
+      
+      const player = this.store.room.getPlayerById(content.playerId);
+      this.presenter.addUserMessage(this.translator.trx(TranslationPack.translationJsonPatcher(
+        '{0} {1} says: {2}',
+        TranslationPack.patchPureTextParameter(player.Name),
+        player.CharacterId === undefined ? '' : TranslationPack.patchPlayerInTranslation(player),
+        this.translator.tr(content.originalMessage),
+      ).toString()));
+      this.presenter.onIncomingMessage(content.playerId, this.translator.tr(content.originalMessage));
+    } else {
+      this.presenter.addUserMessage(this.translator.trx(content.message));
+      this.presenter.onIncomingMessage(content.playerId, content.originalMessage);
     }
     this.presenter.broadcastUIUpdate();
     this.electron.flashFrame();
