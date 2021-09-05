@@ -22,6 +22,12 @@ export const characterDictionary: Word[] = [
   { source: 'liangxing', target: '梁兴' },
   { source: 'lulve', target: '掳掠' },
   { source: 'zhuixi', target: '追袭' },
+
+  { source: 'panfeng', target: '潘凤' },
+  { source: 'kuangfu', target: '狂斧' },
+
+  { source: 'xingdaorong', target: '邢道荣' },
+  { source: 'xuhe', target: '虚猲' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -74,6 +80,18 @@ export const skillDescriptions: Word[] = [
     target:
       '<b>锁定技</b>，当你对一名角色造成伤害时，或一名角色对你造成伤害时，若其武将牌正面朝向与你不同，此伤害+1。',
   },
+
+  {
+    source: 'kuangfu_description',
+    target:
+      '出牌阶段限一次，你可以弃置一名角色装备区里的一张牌，然后视为使用一张无距离限制的【杀】（不计入次数限制）。若你以此法弃置的牌为：你的牌，且此【杀】造成过伤害，你摸两张牌；其他角色的牌，且此【杀】未造成过伤害，你弃置两张手牌。',
+  },
+
+  {
+    source: 'xuhe_description',
+    target:
+      '出牌阶段开始时，你可以弃置距离1以内的所有角色各一张牌或令这些角色各摸一张牌；出牌阶段结束时，若你的体力上限为全场最少，你加1点体力上限。',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
@@ -100,4 +118,40 @@ export const promptDescriptions: Word[] = [
     target:
       '{0}；请选择一个点数',
   },
+
+  {
+    source: '{0}: please choose tanbei options: {1}',
+    target:
+      '{0}；请选择一项：1.令 {1} 随机获得你区域内的一张牌，然后其本回合不能对你使用牌；2.令 {1} 本回合对你用牌无限制',
+  },
+  { source: 'tanbei:prey', target: '令其获得牌' },
+  { source: 'tanbei:unlimited', target: '令其对你用牌无限制' },
+
+  {
+    source: '{0}: do you want to use a card as ShunShouQianYang to one of them?',
+    target:
+      '{0}；你可以将一张手牌当【顺手牵羊】对其中一名角色使用（目标须合法）',
+  },
+
+  {
+    source: '{0}: please choose lulve options: {1}',
+    target:
+      '{0}；请选择一项：1.交给 {1} 所有手牌，其翻面；2.你翻面，视为对 {1} 使用一张【杀】',
+  },
+  { source: 'lulve:prey', target: '交给其手牌' },
+  { source: 'lulve:turnOver', target: '你翻面' },
+
+  {
+    source: '{0}: please choose a target to use a virtual slash to him',
+    target:
+      '{0}；请为此【杀】选择目标',
+  },
+
+  {
+    source: '{0}: please choose xuhe options: {1}',
+    target:
+      '{0}；你可以弃置 {1} 各一张牌，或令这些角色各摸一张牌',
+  },
+  { source: 'xuhe:draw', target: '摸牌' },
+  { source: 'xuhe:discard', target: '弃置牌' },
 ];

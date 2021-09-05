@@ -197,4 +197,75 @@ export const promptDescriptions: Word[] = [
     source: '{0}: do you want to choose at least {1} target(s) to deal 1 damage each?',
     target: '{0}：你可以对至多 {1} 名其他角色各造成1点伤害',
   },
+
+  {
+    source: '{0}: do you want to put a card except basic card onto your general card?',
+    target: '{0}：你可以将一张非基本牌置为“司”',
+  },
+  {
+    source: '{0}: do you want to remove a ‘Si’ to let {1} be unable to use card?',
+    target: '{0}：你可以移去一张“司”，令 {1} 于此阶段内不能使用或打出与此“司”颜色相同的牌',
+  },
+
+  {
+    source: 'shenduan: please choose one of these cards',
+    target: '慎断：请选择其中一张牌作为【兵粮寸断】',
+  },
+  {
+    source: '{0}: please choose a target for {1}',
+    target: '{0}：请为 {1} 选择目标',
+  },
+
+  {
+    source: '{0}: do you want to drop a card from {1}’s judge area?',
+    target: '{0}：你可以弃置 {1} 判定区里的一张牌',
+  },
+  {
+    source: 'yonglve: please drop one of these cards',
+    target: '勇略：请选择其中一张牌弃置',
+  },
+
+  {
+    source: '{0}: do you want to display a hand card from another player?',
+    target: '{0}：你可以展示一名其他角色的一张手牌',
+  },
+  {
+    source: '{0}: do you want to draw a card?',
+    target: '{0}：你可以摸一张牌',
+  },
+
+  {
+    source: 'zhongyong: do you want to choose a target to gain these cards?',
+    target: '忠勇：你可以选择不为目标的一名其他角色获得这些牌',
+  },
+  {
+    source: '{0}: do you want to use a slash to zhongyong {1} targets?',
+    target: '{0}：你可以对 {1} 攻击范围内的一名角色使用一张【杀】（无距离限制）',
+  },
+
+  {
+    source: '{0}: please select a player who can be the target of {1}',
+    target: '{0}：请选择可以成为 {1} 目标的一名其他角色',
+  },
+  {
+    source: '{0}: please give a card to {1}, or you will be the new target of {2}',
+    target: '{0}：请将一张牌交给 {1}，并成为 {2} 的使用者，否则你将成为 {2} 的目标',
+  },
+
+  {
+    source: '{0}：do you want to discard a equip card to let {1} nullify to you and you gain it?',
+    target: '{0}：你可以弃置一张装备牌，令 {1} 对你无效且你获得之',
+  },
+
+  {
+    source: '{0}: please choose qieting options: {1}',
+    target: '{0}：请选择一项：1.将 {1} 装备区里的一张牌置入你的装备区（不替换原装备）；2.摸一张牌',
+  },
+  { source: 'qieting:draw', target: '摸一张牌' },
+  { source: 'qieting:move', target: '移动装备' },
+
+  {
+    source: '{0}: please choose at least {1} xianzhou {2} target(s) to deal 1 damage each?',
+    target: '{0}：你可对 {2} 攻击范围内的至多 {1} 名角色各造成1点伤害，否则 {2} 回复 {1} 点体力',
+  },
 ];

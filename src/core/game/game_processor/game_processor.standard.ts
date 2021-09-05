@@ -1521,6 +1521,16 @@ export class StandardGameProcessor extends GameProcessor {
 
     if (!event.withoutInvokes) {
       await this.iterateEachStage(identifier, event, onActualExecuted);
+      if (this.room.isCardOnProcessing(event.cardId)) {
+        await this.room.moveCards({
+          movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
+          moveReason: CardMoveReason.CardUse,
+          toArea: CardMoveArea.DropStack,
+          hideBroadcast: true,
+          proposer: event.fromId,
+        });
+      }
+      this.room.endProcessOnTag(card.Id.toString());
     }
   }
 
@@ -1564,16 +1574,16 @@ export class StandardGameProcessor extends GameProcessor {
     await this.iterateEachStage(identifier, event, onActualExecuted);
 
     if (!event.withoutInvokes) {
-      await this.room.moveCards({
-        movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
-        moveReason: CardMoveReason.CardResponse,
-        toArea: CardMoveArea.DropStack,
-        hideBroadcast: true,
-        proposer: event.fromId,
-      });
       if (this.room.isCardOnProcessing(event.cardId)) {
-        this.room.endProcessOnTag(event.cardId.toString());
+        await this.room.moveCards({
+          movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
+          moveReason: CardMoveReason.CardResponse,
+          toArea: CardMoveArea.DropStack,
+          hideBroadcast: true,
+          proposer: event.fromId,
+        });
       }
+      this.room.endProcessOnTag(event.cardId.toString());
     }
   }
 

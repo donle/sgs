@@ -84,6 +84,10 @@ export class ChenQing extends TriggerSkill {
     }
 
     await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toIds[0], toIds[0], this.Name);
+    if (response.droppedCards.length < 4) {
+      return false;
+    }
+
     const virtualPeach = VirtualCard.create({ cardName: 'peach', bySkill: this.Name }).Id;
 
     const suits: CardSuit[] = [];

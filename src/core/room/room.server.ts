@@ -1171,36 +1171,48 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         }
 
         if (card.is(CardType.Equip)) {
-          const from = this.getPlayerById(event.fromId);
+          if (this.isCardOnProcessing(event.cardId)) {
+            const from = this.getPlayerById(event.fromId);
 
-          let existingEquipId = from.getEquipment((card as EquipCard).EquipType);
-          if (card.isVirtualCard()) {
-            const actualEquip = Sanguosha.getCardById<EquipCard>((card as VirtualCard).ActualCardIds[0]);
-            existingEquipId = from.getEquipment(actualEquip.EquipType);
-          }
+            if (from.Dead) {
+              await this.moveCards({
+                movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
+                moveReason: CardMoveReason.PlaceToDropStack,
+                toArea: CardMoveArea.DropStack,
+              });
+            } else {
+              let existingEquipId = from.getEquipment((card as EquipCard).EquipType);
+              if (card.isVirtualCard()) {
+                const actualEquip = Sanguosha.getCardById<EquipCard>((card as VirtualCard).ActualCardIds[0]);
+                existingEquipId = from.getEquipment(actualEquip.EquipType);
+              }
 
-          if (existingEquipId !== undefined) {
-            await this.moveCards({
-              fromId: from.Id,
-              moveReason: CardMoveReason.PlaceToDropStack,
-              toArea: CardMoveArea.DropStack,
-              movingCards: [{ card: existingEquipId, fromArea: CardMoveArea.EquipArea }],
-            });
-          }
-
-          if (from.Dead) {
-            await this.moveCards({
-              movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
-              moveReason: CardMoveReason.PlaceToDropStack,
-              toArea: CardMoveArea.DropStack,
-            });
-          } else {
-            await this.moveCards({
-              movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
-              moveReason: CardMoveReason.CardUse,
-              toId: from.Id,
-              toArea: CardMoveArea.EquipArea,
-            });
+              if (existingEquipId !== undefined) {
+                await this.moveCards(
+                  {
+                    fromId: from.Id,
+                    moveReason: CardMoveReason.PlaceToDropStack,
+                    toArea: CardMoveArea.DropStack,
+                    movingCards: [{ card: existingEquipId, fromArea: CardMoveArea.EquipArea }],
+                  },
+                  {
+                    movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
+                    moveReason: CardMoveReason.CardUse,
+                    toId: from.Id,
+                    toArea: CardMoveArea.EquipArea,
+                  },
+                );
+              } else {
+                await this.moveCards(
+                  {
+                    movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
+                    moveReason: CardMoveReason.CardUse,
+                    toId: from.Id,
+                    toArea: CardMoveArea.EquipArea,
+                  },
+                );
+              }
+            }
           }
 
           this.endProcessOnTag(card.Id.toString());
@@ -1228,16 +1240,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
           this.endProcessOnTag(card.Id.toString());
           return true;
-        } else if (!event.withoutInvokes) {
-          await this.moveCards({
-            movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
-            moveReason: CardMoveReason.CardUse,
-            toArea: CardMoveArea.DropStack,
-            hideBroadcast: true,
-            proposer: event.fromId,
-          });
-        } else {
-          this.endProcessOnTag(card.Id.toString());
         }
 
         const cardEffectEvent: ServerEventFinder<GameEventIdentifiers.CardEffectEvent> = {

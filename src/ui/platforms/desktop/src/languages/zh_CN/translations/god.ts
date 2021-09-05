@@ -226,6 +226,48 @@ export const skillDescriptions: Word[] = [
     target:
       '回合开始时，若场上没有“营”，你获得一枚“营”标记；结束阶段开始时，你可以将“营”移至其他角色；你令有“营”的角色于其摸牌阶段多摸一张牌、使用【杀】的次数上限+1、手牌上限+1；有“营”的其他角色的结束阶段开始时，你移去其“营”，然后获得其所有手牌。',
   },
+
+  {
+    source: 'god_huishi_description',
+    target:
+      '出牌阶段限一次，若你的体力上限小于10，你可以判定，若结果与你此次“慧识”中的其它判定结果花色均不同，且你体力上限小于10，你可以加1点体力上限并重复此流程。最后你将所有仍在弃牌堆中的判定牌交给一名角色，若其手牌数为全场最多，你减1点体力上限。',
+  },
+  {
+    source: 'god_tianyi_description',
+    target:
+      '<b>觉醒技</b>，准备阶段开始时，若所有存活角色均在本局游戏内受到过伤害，你加2点体力上限并回复1点体力，令一名角色获得技能“佐幸”（准备阶段开始时，若场上有体力上限大于1的神郭嘉存活，你可以令其中一名减1点体力上限，然后你于本回合的出牌阶段限一次，你可以视为使用一张普通锦囊牌）。',
+  },
+  {
+    source: 'god_huishi_sec_description',
+    target:
+      '<b>限定技</b>，出牌阶段，你可以选择一名角色，若其有未发动过的觉醒技，且你的体力上限不小于存活角色数，你选择其一项觉醒技，令此技能于其触发时机无视其条件发动；否则其摸四张牌。最后你减2点体力上限。',
+  },
+  {
+    source: 'zuoxing_description',
+    target:
+      '准备阶段开始时，若场上有体力上限大于1的神郭嘉存活，你可以令其中一名减1点体力上限，然后你于本回合的出牌阶段限一次，你可以视为使用任意一张普通锦囊牌。',
+  },
+
+  {
+    source: 'dulie_description',
+    target:
+      '<b>锁定技</b>，游戏开始时，你令X名其他角色各获得一枚“围”标记（X为角色数的一半，向下取整）；你对没有“围”的角色使用【杀】无距离限制；当你成为没有“围”的角色使用【杀】的目标时，你判定，若为红色，取消之。',
+  },
+  {
+    source: 'powei_description',
+    target:
+      '<b>使命技</b>，当你使用【杀】对有“围”的角色造成伤害时，移去其一枚“围”标记，并防止此伤害。<br><b>成功</b>：当你使用【杀】结算结束后，若场上没有“围”，你获得技能“神著”<br><b>失败</b>：当你进入濒死状态时，若你的体力小于1，你弃置装备区里的所有牌，回复体力至1点。',
+  },
+  {
+    source: 'dangmo_description',
+    target:
+      '当你于出牌阶段内首次使用【杀】声明指定目标后，你可以为此【杀】额外选择一至X名目标（X为你的体力值-1）。',
+  },
+  {
+    source: 'shenzhuo_description',
+    target:
+      '<b>锁定技</b>，你使用【杀】无次数限制；当你使用非转化和非虚拟的【杀】结算结束后，你摸一张牌。',
+  },
 ];
 
 export const conversations: Word[] = [
@@ -241,6 +283,34 @@ export const conversations: Word[] = [
   {
     source: '{0}: please choose and resume an equip section',
     target: '{0}：请选择一个装备栏恢复',
+  },
+
+  {
+    source: '{0}: do you want to gain a max hp and judge again?',
+    target: '{0}：你可以加1点体力上限并判定',
+  },
+  {
+    source: '{0}: please choose a target to gain these cards',
+    target: '{0}：请将这些牌交给一名角色',
+  },
+
+  {
+    source: 'god_tianyi:please choose a target to obtain ‘Zuo Xing’',
+    target: '天翊：请选择一名角色获得技能“佐幸”',
+  },
+
+  {
+    source: '{0}: please choose god_huishi_sec options: {1}',
+    target: '请选择 {1} 的以下一项觉醒技',
+  },
+
+  {
+    source: '{0}: do you want to let God Guo Jia loses 1 max hp? Then you can use virtual trick this turn',
+    target: '{0}：你可以令“神郭嘉”减1点体力上限，然后你于本回合的出牌阶段限一次，可视为使用任意普通锦囊牌',
+  },
+  {
+    source: 'zuoxing: please choose a God Guo Jia to lose 1 max hp',
+    target: '佐幸：请选择一名“神郭嘉”减1点体力上限',
   },
 
   {

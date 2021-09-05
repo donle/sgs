@@ -71,6 +71,17 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'huomo_description',
+    target:
+      '当你需要使用基本牌时（你本回合使用过的基本牌除外），你可以将一张黑色非基本牌置于牌堆顶，视为使用此基本牌。',
+  },
+  {
+    source: 'zuoding_description',
+    target:
+      '当其他角色于其出牌阶段内使用黑桃牌指定第一个目标后，若没有角色于此阶段内受到过伤害，你可以令一名目标角色摸一张牌。',
+  },
+
+  {
     source: 'zhanjue_description',
     target:
       '出牌阶段，你可以将所有手牌当【决斗】使用，然后你摸一张牌，且受到过此牌伤害的角色各摸一张牌。若你以此法于一阶段内获得过至少两张牌，本技能于此阶段内失效。',
@@ -130,16 +141,6 @@ export const skillDescriptions: Word[] = [
     target:
       '当你需要使用或打出【闪】时，你可以令当前回合角色摸一张牌，然后若其不为手牌数唯一最多的角色，你可以弃置手牌数最多的一名角色的一张牌，视为使用或打出【闪】。',
   },
-  {
-    source: 'huomo_description',
-    target:
-      '当你需要使用基本牌时（你本回合使用过的基本牌除外），你可以将一张黑色的非基本牌置于牌堆顶，视为使用此基本牌',
-  },
-  {
-    source: 'zuoding_description',
-    target:
-      '当其他角色于其出牌阶段内使用黑桃牌指定目标后，若所有角色于此阶段内均未受到过伤害，则你可以令其中的一个目标摸一张牌。',
-  },
 ];
 
 export const promptDescriptions: Word[] = [
@@ -185,4 +186,43 @@ export const promptDescriptions: Word[] = [
   { source: 'jigong:draw2', target: '摸两张牌' },
   { source: 'jigong:draw3', target: '摸三张牌' },
   { source: '{0} placed card {1} on the top of draw stack', target: '{0} 将 {1} 置于了牌堆顶 ' },
+
+  {
+    source: 'zuoding: do you want to choose a target to draw a card?',
+    target: '佐定：你可以令其中一名角色摸一张牌',
+  },
+
+  {
+    source: '{0}: please choose a hand card to display',
+    target: '{0}：请选择一张手牌展示',
+  },
+
+  {
+    source: 'do you want choose a target to use YaoMing?',
+    target: '你可以选择一名角色发动“邀名”',
+  },
+  {
+    source: '{0}: you can discard at most 2 cards, and then draw the same amount of cards',
+    target: '{0}：你可以弃置一至两张牌，然后摸等量的牌',
+  },
+
+  {
+    source: '{0}: please choose a color and discard all hand cards with that color',
+    target: '{0}：请选择一种颜色，并弃置手牌中所有此颜色的牌',
+  },
+  { source: 'huaiyi:black', target: '黑色' },
+  { source: 'huaiyi:red', target: '红色' },
+  {
+    source: '{0}: do you want to choose {1} targets to prey a card from each of them?',
+    target: '{0}：请选择至多 {1} 名其他角色，获得这些角色各一张牌',
+  },
+
+  {
+    source: '{0}: do you want to let {1} draw a card?',
+    target: '{0}：你可以令 {1} 摸一张牌',
+  },
+  {
+    source: 'shifei: do you want to choose a target to drop 1 card by you? and you will use/response a virtual Jink',
+    target: '饰非：你可以弃置其中一名角色一张牌，视为你使用或打出一张【闪】',
+  },
 ];

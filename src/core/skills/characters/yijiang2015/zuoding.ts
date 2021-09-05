@@ -28,7 +28,7 @@ export class ZuoDing extends TriggerSkill {
       room.Analytics.getRecordEvents<GameEventIdentifiers.DamageEvent>(
         event => EventPacker.getIdentifier(event) === GameEventIdentifiers.DamageEvent,
         undefined,
-        'round',
+        'phase',
         undefined,
         1,
       ).length === 0

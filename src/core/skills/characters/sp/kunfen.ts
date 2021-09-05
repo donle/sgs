@@ -47,11 +47,17 @@ export class KunFenEX extends KunFen {
     return KunFen.Name;
   }
 
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
-    stage?: AllStage,
+  public canUse(
+    room: Room,
+    owner: Player,
+    content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
   ): boolean {
-    return stage === PhaseStageChangeStage.StageChanged && !EventPacker.getMiddleware<boolean>(this.GeneralName, event);
+    return (
+      content.playerId === owner.Id &&
+      content.toStage === PlayerPhaseStages.FinishStageStart &&
+      !EventPacker.getMiddleware<boolean>(this.GeneralName, content) &&
+      owner.Hp > 0
+    );
   }
 
   public getSkillLog(): PatchedTranslationObject {

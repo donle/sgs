@@ -14,14 +14,20 @@ export const characterDictionary: Word[] = [
   { source: 'pindi', target: '品第' },
   { source: 'faen', target: '法恩' },
 
+  { source: 'caoxiu', target: '曹休' },
+  { source: 'qianju', target: '千駒' },
+  { source: 'qingxi', target: '傾襲' },
+
   { source: 'wuyi', target: '吳懿' },
   { source: 'benxi', target: '奔襲' },
+  { source: 'benxi times: {0}', target: '奔襲[{0}]' },
 
   { source: 'zhoucang', target: '周倉' },
   { source: 'zhongyong', target: '忠勇' },
 
   { source: 'zhangsong', target: '張松' },
   { source: 'qiangzhi', target: '強識' },
+  { source: 'qiangzhi type: {0}', target: '強識[{0}]' },
   { source: 'xiantu', target: '獻圖' },
 
   { source: 'sunluban', target: '孫魯班' },
@@ -43,25 +49,13 @@ export const characterDictionary: Word[] = [
   { source: 'caifuren', target: '蔡夫人' },
   { source: 'qieting', target: '竊聽' },
   { source: 'xianzhou', target: '獻州' },
-
-  { source: 'xushao', target: '許劭' },
-  { source: 'pingjian', target: '評薦' },
-
-  { source: 'qinzheng', target: '勤政' },
-  { source: 'qinzheng times: {0}', target: '勤政[{0}]' },
-
-  { source: 'zhi_shanxi', target: '善檄' },
-  { source: 'zhi_shanxi:xi', target: '檄' },
-
-  { source: 'fuji', target: '伏騎' },
-  { source: 'jiaozi', target: '驕恣' },
 ];
 
 export const skillDescriptions: Word[] = [
   {
     source: 'sidi_description',
     target:
-      '其他角色的出牌階段開始時，你可以棄置與你的裝備區裡的其中一張牌顏色相同的一張非基本牌，然後該角色於此回合內不能使用或打出與此牌顏色相同的牌。此階段結束時，若其於此階段內沒有使用過【殺】，視為你對其使用一張【殺】。',
+      '結束階段開始時，你可以將一張非基本牌置於你的武將牌上，稱為“司”；其他角色的出牌階段開始時，你可以移去一張“司”，令其此階段內不能使用或打出與此“司”顏色相同的牌。若如此做，此階段結束時，若其於此階段內未使用過【殺】，你視為對其使用一張【殺】，且若其於此階段內未使用過錦囊牌，你摸兩張牌。',
   },
 
   {
@@ -90,7 +84,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'zhongyong_description',
     target:
-      '當你使用的【殺】結算結束後，你可以將此【殺】或此次結算中響應過此【殺】的【閃】交給除此【殺】目標外的一名其他角色，若其以此法獲得了紅色牌，其可對你攻擊範圍內的一名角色使用一張【殺】（無距離限制）。',
+      '當你使用的【殺】結算結束後，你可以將此【殺】和此次結算中響應過此【殺】的【閃】交給除此【殺】目標外的一名其他角色，若其以此法獲得了黑色牌，其摸一張牌，且若其以此法獲得了紅色牌，其可對你攻擊範圍內的一名角色使用一張【殺】（無距離限制）。',
   },
   {
     source: 'qiangzhi_description',
@@ -165,7 +159,113 @@ export const skillDescriptions: Word[] = [
 
 export const promptDescriptions: Word[] = [
   {
+    source: '{0}: please choose pindi options: {1} {2}',
+    target: '{0}：請選擇令 {1} 摸 {2} 張牌或棄置 {2} 張牌',
+  },
+  { source: 'pindi:draw', target: '令其摸牌' },
+  { source: 'pindi:discard', target: '令其棄牌' },
+
+  {
+    source: '{0}: do you want to let {1} draw 1 card?',
+    target: '{0}：你可以令 {1} 摸一張牌',
+  },
+
+  {
+    source: '{0}: please choose benxi options: {1}',
+    target: '{0}：你可為 {1} 選擇至多兩項增益效果',
+  },
+  { source: 'benxi:addTarget', target: '增加一個目標' },
+  { source: 'benxi:unoffsetable', target: '不可抵消' },
+  { source: 'benxi:ignoreArmor', target: '無視防具' },
+  { source: 'benxi:draw', target: '造成傷害時摸一張牌' },
+  {
+    source: 'benxi: please select a player to append to card targets',
+    target: '奔襲：請為此牌選擇一個額外的目標。',
+  },
+
+  {
     source: 'please choose less than {0} player to draw 1 crad.',
     target: '請選擇至多{0}名角色各摸一張牌。',
+  },
+
+  {
+    source: '{0}: do you want to skip {1} ?',
+    target: '{0}；你可以跳過 {1}',
+  },
+
+  {
+    source: '{0}: do you want to choose at least {1} target(s) to deal 1 damage each?',
+    target: '{0}：你可以對至多 {1} 名其他角色各造成1點傷害',
+  },
+
+  {
+    source: '{0}: do you want to put a card except basic card onto your general card?',
+    target: '{0}：你可以將一張非基本牌置為“司”',
+  },
+  {
+    source: '{0}: do you want to remove a ‘Si’ to let {1} be unable to use card?',
+    target: '{0}：你可以移去一張“司”，令 {1} 於此階段內不能使用或打出與此“司”顏色相同的牌',
+  },
+
+  {
+    source: 'shenduan: please choose one of these cards',
+    target: '慎斷：請選擇其中一張牌作為【兵糧寸斷】',
+  },
+  {
+    source: '{0}: please choose a target for {1}',
+    target: '{0}：請為 {1} 選擇目標',
+  },
+
+  {
+    source: '{0}: do you want to drop a card from {1}’s judge area?',
+    target: '{0}：你可以棄置 {1} 判定區裡的一張牌',
+  },
+  {
+    source: 'yonglve: please drop one of these cards',
+    target: '勇略：請選擇其中一張牌棄置',
+  },
+
+  {
+    source: '{0}: do you want to display a hand card from another player?',
+    target: '{0}：你可以展示一名其他角色的一張手牌',
+  },
+  {
+    source: '{0}: do you want to draw a card?',
+    target: '{0}：你可以摸一張牌',
+  },
+
+  {
+    source: 'zhongyong: do you want to choose a target to gain these cards?',
+    target: '忠勇：你可以選擇不為目標的一名其他角色獲得這些牌',
+  },
+  {
+    source: '{0}: do you want to use a slash to zhongyong {1} targets?',
+    target: '{0}：你可以對 {1} 攻擊範圍內的一名角色使用一張【殺】（無距離限制）',
+  },
+
+  {
+    source: '{0}: please select a player who can be the target of {1}',
+    target: '{0}：請選擇可以成為 {1} 目標的一名其他角色',
+  },
+  {
+    source: '{0}: please give a card to {1}, or you will be the new target of {2}',
+    target: '{0}：請將一張牌交給 {1}，併成為 {2} 的使用者，否則你將成為 {2} 的目標',
+  },
+
+  {
+    source: '{0}：do you want to discard a equip card to let {1} nullify to you and you gain it?',
+    target: '{0}：你可以棄置一張裝備牌，令 {1} 對你無效且你獲得之',
+  },
+
+  {
+    source: '{0}: please choose qieting options: {1}',
+    target: '{0}：請選擇一項：1.將 {1} 裝備區裡的一張牌置入你的裝備區（不替換原裝備）；2.摸一張牌',
+  },
+  { source: 'qieting:draw', target: '摸一張牌' },
+  { source: 'qieting:move', target: '移動裝備' },
+
+  {
+    source: '{0}: please choose at least {1} xianzhou {2} target(s) to deal 1 damage each?',
+    target: '{0}：你可對 {2} 攻擊範圍內的至多 {1} 名角色各造成1點傷害，否則 {2} 回覆 {1} 點體力',
   },
 ];

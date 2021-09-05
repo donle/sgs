@@ -7,6 +7,15 @@ export const characterDictionary: Word[] = [
   { source: 'danlao', target: '啖酪' },
   { source: 'jilei', target: '鸡肋' },
 
+  { source: 'sp_caiwenji', target: '魏蔡文姬' },
+  { source: 'chenqing', target: '陈情' },
+  { source: 'mozhi', target: '默识' },
+
+  { source: 'sp_jiangwei', target: '魏姜维' },
+  { source: 'kunfen', target: '困奋' },
+  { source: 'kunfen_EX', target: '困奋' },
+  { source: 'fengliang', target: '逢亮' },
+
   { source: 'sp_sunshangxiang', target: '蜀孙尚香' },
   { source: 'liangzhu', target: '良助' },
   { source: 'fanxiang', target: '返乡' },
@@ -88,6 +97,31 @@ export const skillDescriptions: Word[] = [
     source: 'jilei_description',
     target:
       '当你受到伤害后，若有伤害来源，你可以声明一种牌的类别，令其不能使用、打出或弃置此类别的手牌直到其下个回合开始。',
+  },
+
+  {
+    source: 'kunfen_description',
+    target: '<b>锁定技</b>，结束阶段开始时，你失去1点体力，然后摸两张牌。',
+  },
+  {
+    source: 'kunfen_EX_description',
+    target:
+      '结束阶段开始时，你可以失去1点体力，然后摸两张牌。',
+  },
+  {
+    source: 'fengliang_description',
+    target:
+      '<b>觉醒技</b>，当你进入濒死状态时，若你的体力小于1，你减1点体力上限，回复体力至2点，然后获得技能“挑衅”，修改你的“困奋”为“结束阶段开始时，你可以失去1点体力，然后摸两张牌”。',
+  },
+
+  {
+    source: 'chenqing_description',
+    target: '每轮限一次，当一名角色进入濒死状态时，你可以令另一名其他角色摸四张牌，然后弃置四张牌，若其以此法弃置了四张牌且这些牌的花色各不相同，其视为对该濒死角色使用一张【桃】。',
+  },
+  {
+    source: 'mozhi_description',
+    target:
+      '结束阶段开始时，你可以将一张手牌当你于本回合出牌阶段内使用过的第一张基本或普通锦囊牌使用，然后你可以将一张手牌当第二张基本或普通锦囊牌使用。',
   },
 
   {
@@ -332,5 +366,50 @@ export const promptDescriptions: Word[] = [
   {
     source: 'lihun: please give the targets some cards',
     target: '离魂：请交给目标等同于其体力值张牌',
+  },
+
+  {
+    source: '{0}: do you want to lose 1 hp to draw 2 cards?',
+    target: '{0}：你可以失去1点体力，然后摸两张牌',
+  },
+
+  {
+    source: 'do you want to choose a target to use chenqing?',
+    target: '你可以选择其中一名角色发动“陈情”',
+  },
+  {
+    source: '{0}: please discard 4 cards, if these cards have different suit between each other, you use a virtual peach to {1}?',
+    target: '{0}：请弃置四张牌，若这些牌的花色均不同，你视为对 {1} 使用一张【桃】',
+  },
+
+  {
+    source: '{0}: do you want to a hand card as {1} ?',
+    target: '{0}：你可以将一张手牌视为 {1} 使用',
+  },
+
+  {
+    source: '{0}: please choose liangzhu options: {1}',
+    target: '{0}：你可以选择一项：1.你摸一张牌；2.令 {1} 摸两张牌',
+  },
+  { source: 'liangzhu:you', target: '你摸一张牌' },
+  { source: 'liangzhu:opponent', target: '其摸两张牌' },
+
+  {
+    source: '{0}: please choose fengpo options: {1} {2}',
+    target: '{0}：你可以选择一项：1.摸X张牌：2.令 {1} 对 {2} 造成的伤害+X（X为 {1} 手牌中的方片牌数）',
+  },
+  { source: 'fengpo:draw', target: '摸牌' },
+  { source: 'fengpo:damage', target: '增加伤害' },
+
+  {
+    source: '{0}: please choose moukui options: {1}',
+    target: '{0}：你可以选择一项：1.摸一张牌：2.弃置 {1} 一张牌',
+  },
+  { source: 'moukui:draw', target: '摸一张牌' },
+  { source: 'moukui:discard', target: '弃置其一张牌' },
+
+  {
+    source: '{0}: do you want to use a virtual slash?',
+    target: '{0}：你可以视为使用一张【杀】（不计入次数限制）',
   },
 ];
