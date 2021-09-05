@@ -137,7 +137,7 @@ export abstract class Card {
   }
 
   public isCommonTrick() {
-    return this.cardType.includes(CardType.Trick) && !this.cardType.includes(CardType.DelayedTrick);
+    return false;
   }
 
   public isSameType(card: Card) {
