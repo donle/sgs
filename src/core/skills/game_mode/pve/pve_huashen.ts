@@ -1,10 +1,11 @@
 import { CardType } from 'core/cards/card';
-import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardId } from 'core/cards/libs/card_props';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { GameStartStage, PlayerDiedStage } from 'core/game/stage_processor';
 import { AllStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerId } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { MarkEnum } from 'core/shares/types/mark_list';
 import { TriggerSkill } from 'core/skills/skill';
@@ -54,7 +55,7 @@ export class PveHuaShen extends TriggerSkill {
 
   private async nextEntity(room: Room, ownerId: PlayerId) {
     const level = PveHuaShen.CHARACTERS.length - room.getMark(ownerId, MarkEnum.PveHuaShen);
-    const NewMaxHp = room.getPlayerById(ownerId).MaxHp + 1 + level;
+    const NewMaxHp = room.getPlayerById(ownerId).MaxHp + 1;
     const chara = PveHuaShen.CHARACTERS[level];
     room.addMark(ownerId, MarkEnum.PveHuaShen, -1);
 
@@ -75,7 +76,33 @@ export class PveHuaShen extends TriggerSkill {
     room.changePlayerProperties(playerPropertiesChangeEvent);
     const player = room.getPlayerById(ownerId);
 
-    await room.dropCards(CardMoveReason.SelfDrop, player.getPlayerCards(), player.Id, player.Id, this.GeneralName);
+    await room.moveCards({
+      moveReason: CardMoveReason.SelfDrop,
+      fromId: player.Id,
+      movingCards: player.getPlayerCards().map(cardId => ({ card: cardId, fromArea: player.cardFrom(cardId) })),
+      toArea: CardMoveArea.DropStack,
+      movedByReason: this.Name,
+      proposer: player.Id,
+    });
+
+    const outsideCards = Object.entries(player.getOutsideAreaCards()).reduce<CardId[]>(
+      (allCards, [areaName, cards]) => {
+        if (!player.isCharacterOutsideArea(areaName)) {
+          allCards.push(...cards);
+        }
+        return allCards;
+      },
+      [],
+    );
+
+    await room.moveCards({
+      moveReason: CardMoveReason.PlaceToDropStack,
+      fromId: player.Id,
+      movingCards: outsideCards.map(cardId => ({ card: cardId, fromArea: PlayerCardsArea.OutsideArea })),
+      toArea: CardMoveArea.DropStack,
+      movedByReason: this.Name,
+      proposer: player.Id,
+    });
 
     !player.isFaceUp() && (await room.turnOver(player.Id));
     player.ChainLocked && (await room.chainedOn(player.Id));
@@ -93,13 +120,13 @@ export class PveHuaShen extends TriggerSkill {
     await room.obtainSkill(ownerId, PveTanSuo.Name);
 
     if (room.getMark(ownerId, MarkEnum.PveHuaShen) === 0) {
-      await room.obtainSkill(
+      await room.loseSkill(
         ownerId,
-        !room.getFlag(ownerId, PveHuaShen.pveHardMode) ? charaSkills[0].GeneralName : charaSkills[1].GeneralName,
+        !room.getFlag(ownerId, PveHuaShen.pveHardMode) ? charaSkills[1].GeneralName : charaSkills[0].GeneralName,
         true,
       );
-    } else {
-      await room.obtainSkill(ownerId, skill.GeneralName, true);
+    } else if (charaSkills.length > 1) {
+      await room.loseSkill(ownerId, skill.GeneralName, true);
     }
   }
 
