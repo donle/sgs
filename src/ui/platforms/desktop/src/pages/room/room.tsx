@@ -1,5 +1,6 @@
 import { AudioLoader } from 'audio_loader/audio_loader';
 import { clientActiveListenerEvents, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { LocalClientEmitter } from 'core/network/local/local_emitter.client';
 import { ClientSocket } from 'core/network/socket.client';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
@@ -204,6 +205,7 @@ export class RoomPage extends React.Component<
         playerName: this.playerName,
         timestamp: this.store.clientRoomInfo.timestamp,
         playerId: this.props.electronLoader.getTemporaryData('playerId')!,
+        coreVersion: Sanguosha.Version,
       }),
     );
 
@@ -241,13 +243,13 @@ export class RoomPage extends React.Component<
       for (const info of (event as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>).infos) {
         const { messages = [], translationsMessage, unengagedMessage, engagedPlayerIds } = info;
         const { translator } = this.props;
-  
+
         if (unengagedMessage && engagedPlayerIds && !engagedPlayerIds.includes(this.store.clientPlayerId)) {
           messages.push(TranslationPack.create(unengagedMessage).toString());
         } else if (translationsMessage) {
           messages.push(TranslationPack.create(translationsMessage).toString());
         }
-  
+
         messages.forEach(message => {
           this.presenter.addGameLog(translator.trx(message));
         });
@@ -255,13 +257,13 @@ export class RoomPage extends React.Component<
     } else {
       const { messages = [], translationsMessage, unengagedMessage, engagedPlayerIds } = event;
       const { translator } = this.props;
-  
+
       if (unengagedMessage && engagedPlayerIds && !engagedPlayerIds.includes(this.store.clientPlayerId)) {
         messages.push(TranslationPack.create(unengagedMessage).toString());
       } else if (translationsMessage) {
         messages.push(TranslationPack.create(translationsMessage).toString());
       }
-  
+
       messages.forEach(message => {
         this.presenter.addGameLog(translator.trx(message));
       });

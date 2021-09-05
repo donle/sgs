@@ -87,6 +87,7 @@ export interface ClientEvent extends EventUtilities {
     playerName: string;
     timestamp: number;
     playerId: string;
+    coreVersion: string;
   };
   [GameEventIdentifiers.PlayerReenterEvent]: {
     playerName: string;

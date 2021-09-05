@@ -7,6 +7,7 @@ import {
   serverResponsiveListenerEvents,
   WorkPlace,
 } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { Socket } from 'core/network/socket';
 import { ServerPlayer } from 'core/player/player.server';
 import { PlayerId } from 'core/player/player_props';
@@ -278,7 +279,11 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     event: ClientEventFinder<typeof identifier>,
   ) {
     const room = this.room as ServerRoom;
-    if (room.Info.numberOfPlayers <= room.Players.length || room.isPlaying()) {
+    if (
+      room.Info.numberOfPlayers <= room.Players.length ||
+      room.isPlaying() ||
+      event.coreVersion !== Sanguosha.Version
+    ) {
       socket.emit(GameEventIdentifiers.PlayerEnterRefusedEvent.toString(), {
         playerId: event.playerId,
         playerName: event.playerName,

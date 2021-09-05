@@ -103,6 +103,13 @@ class App {
   };
 
   private readonly onGameCreated = (socket: SocketIO.Socket) => (content: GameInfo) => {
+    if (content.coreVersion !== Sanguosha.Version) {
+      socket.emit(LobbySocketEvent.GameCreated.toString(), {
+        error: 'unmatched core version',
+      });
+      return;
+    }
+
     const roomId = Date.now();
     const roomSocket = new ServerSocket(this.lobbySocket.of(`/room-${roomId}`), roomId, this.logger);
     const room = new ServerRoom(

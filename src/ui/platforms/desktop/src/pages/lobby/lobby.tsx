@@ -154,15 +154,19 @@ export class Lobby extends React.Component<LobbyProps> {
           ...roomInfo,
         },
         event => {
-          const { packet, ping, hostTag } = event;
-          const { roomId, roomInfo } = packet;
-          const hostConfig = this.props.config.host.find(config => config.hostTag === hostTag);
-          this.props.history.push(`/room/${roomId}`, {
-            gameMode: roomInfo.gameMode,
-            ping,
-            hostConfig,
-            campaignMode: true,
-          });
+          const { packet, ping, hostTag, error } = event;
+          if (packet) {
+            const { roomId, roomInfo } = packet;
+            const hostConfig = this.props.config.host.find(config => config.hostTag === hostTag);
+            this.props.history.push(`/room/${roomId}`, {
+              gameMode: roomInfo.gameMode,
+              ping,
+              hostConfig,
+              campaignMode: true,
+            });
+          } else {
+            console.error(error);
+          }
         },
       );
     } else {
@@ -172,14 +176,18 @@ export class Lobby extends React.Component<LobbyProps> {
           ...roomInfo,
         },
         event => {
-          const { packet, ping, hostTag } = event;
-          const { roomId, roomInfo } = packet;
-          const hostConfig = this.props.config.host.find(config => config.hostTag === hostTag);
-          this.props.history.push(`/room/${roomId}`, {
-            gameMode: roomInfo.gameMode,
-            ping,
-            hostConfig,
-          });
+          const { packet, ping, hostTag, error } = event;
+          if (packet) {
+            const { roomId, roomInfo } = packet;
+            const hostConfig = this.props.config.host.find(config => config.hostTag === hostTag);
+            this.props.history.push(`/room/${roomId}`, {
+              gameMode: roomInfo.gameMode,
+              ping,
+              hostConfig,
+            });
+          } else {
+            console.error(error);
+          }
         },
       );
     }

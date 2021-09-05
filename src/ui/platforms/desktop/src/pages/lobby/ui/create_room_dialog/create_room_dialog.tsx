@@ -60,6 +60,7 @@ export type TemporaryRoomCreationInfo = {
   passcode?: string;
   campaignMode?: boolean;
   characterExtensions: GameCharacterExtensions[];
+  coreVersion: string;
 };
 
 export const CreateRoomDialog = (props: {
@@ -92,6 +93,7 @@ export const CreateRoomDialog = (props: {
       passcode,
       characterExtensions,
       campaignMode: isCampaignMode,
+      coreVersion: Sanguosha.Version,
     });
   };
 

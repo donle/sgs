@@ -16,7 +16,8 @@ export type VersionCheckListenerResponse = {
   ping: number;
 };
 export type CreateGameListenerResponse = {
-  packet: LobbySocketEventPicker<LobbySocketEvent.GameCreated>;
+  packet?: LobbySocketEventPicker<LobbySocketEvent.GameCreated>;
+  error?: string;
   hostTag: ServerHostTag;
   ping: number;
 };

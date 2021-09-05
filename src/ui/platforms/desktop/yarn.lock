@@ -11886,10 +11886,10 @@ shellwords@^0.1.1:
   resolved "https://registry.yarnpkg.com/shellwords/-/shellwords-0.1.1.tgz#d6b9181c1a48d397324c84871efbcfc73fc0654b"
   integrity sha512-vFwSUfQvqybiICwZY5+DAWIPLKsWO31Q91JSKl3UYv+K5c2QRPzn0qzec6QPu1Qc9eHYItiP3NdJqNVqetYAww==
 
-shrink-string@3.0.8:
-  version "3.0.8"
-  resolved "https://registry.yarnpkg.com/shrink-string/-/shrink-string-3.0.8.tgz#0ecd1ab78322d1ac0687296f36413e325ee730c1"
-  integrity sha512-mr74/atgUM/TYzdaeaz+nmsGDuvYWs8EMMOKp92bXTpseEQLcM+JknaTkWVlYrdEGl0DVrLMvrA9qymDkPlM1w==
+shrink-string@^3.0.9:
+  version "3.0.9"
+  resolved "https://registry.yarnpkg.com/shrink-string/-/shrink-string-3.0.9.tgz#f9288cead85bf0a177a2fef7d3ad0e63dc889fff"
+  integrity sha512-G5Gt8HEzJsg++Bx+1Cow8pvwlbQhFrQMengh2QDx6eUgbjIEQsn88DEmRRnvu2ANVjGdP2ajVQMM/bFT6A0igA==
 
 side-channel@^1.0.4:
   version "1.0.4"

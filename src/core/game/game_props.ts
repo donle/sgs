@@ -50,6 +50,7 @@ export type GameInfo = {
   flavor: Flavor;
   gameMode: GameMode;
   campaignMode: boolean;
+  coreVersion: string;
 };
 
 export type GameRunningInfo = {
