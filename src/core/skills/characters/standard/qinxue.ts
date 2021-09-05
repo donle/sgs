@@ -1,7 +1,6 @@
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { AwakeningSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -13,10 +12,7 @@ export class QinXue extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    return (
-      content.playerId === owner.Id &&
-      Math.abs(owner.getCardIds(PlayerCardsArea.HandArea).length - owner.Hp) >= (room.Players.length >= 7 ? 2 : 3)
-    );
+    return content.playerId === owner.Id && room.enableToAwaken(this.Name, owner);
   }
 
   async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {

@@ -1,0 +1,188 @@
+import type { Word } from 'languages';
+
+export const characterDictionary: Word[] = [
+  { source: 'yijiang2015', target: '将5' },
+
+  { source: 'caorui', target: '曹叡' },
+  { source: 'huituo', target: '恢拓' },
+  { source: 'mingjian', target: '明鉴' },
+  { source: 'xingshuai', target: '兴衰' },
+
+  { source: 'caoxiu', target: '曹休' },
+  { source: 'qianju', target: '千驹' },
+  { source: 'qingxi', target: '倾袭' },
+
+  { source: 'zhongyao', target: '钟繇' },
+  { source: 'huomo', target: '活墨' },
+  { source: 'zuoding', target: '佐定' },
+
+  { source: 'liuchen', target: '刘谌' },
+  { source: 'zhanjue', target: '战绝' },
+  { source: 'qinwang', target: '勤王' },
+
+  { source: 'xiahoushi', target: '夏侯氏' },
+  { source: 'qiaoshi', target: '樵拾' },
+  { source: 'yanyu', target: '燕语' },
+
+  { source: 'zhangni', target: '张嶷' },
+  { source: 'wurong', target: '怃戎' },
+  { source: 'shizhi', target: '矢志' },
+
+  { source: 'quancong', target: '全琮' },
+  { source: 'yaoming', target: '邀名' },
+
+  { source: 'zhuzhi', target: '朱治' },
+  { source: 'anguo', target: '安国' },
+
+  { source: 'guotupangji', target: '郭图逢纪' },
+  { source: 'jigong', target: '急攻' },
+  { source: 'jigong damage: {0}', target: '急攻[{0}]' },
+  { source: '##jigong', target: '急攻（回复体力）' },
+  { source: 'shifei', target: '饰非' },
+
+  { source: 'gongsunyuan', target: '公孙渊' },
+  { source: 'huaiyi', target: '怀异' },
+];
+
+export const skillDescriptions: Word[] = [
+  {
+    source: 'huituo_description',
+    target: '当你受到伤害后，你可以令一名角色判定，若结果为：红色，其回复1点体力；黑色，其摸X张牌（X为伤害值）。',
+  },
+  {
+    source: 'mingjian_description',
+    target:
+      '出牌阶段限一次，你可以将所有手牌交给一名其他角色。若如此做，其于其下个回合内使用【杀】的次数上限和手牌上限+1。',
+  },
+  {
+    source: 'xingshuai_description',
+    target:
+      '<b>主公技</b>，当你进入濒死状态时，若你的体力值不大于0，你可以令其他魏势力角色依次选择是否令你回复1点体力。此濒死结算结束后，所有以此法令你回复体力的角色各受到1点伤害。',
+  },
+
+  {
+    source: 'qianju_description',
+    target: '<b>锁定技</b>，你计算与其他角色的距离-X（X为你已损失的体力值）。',
+  },
+  {
+    source: 'qingxi_description',
+    target:
+      '当你使用【杀】或【决斗】指定目标后，你可以令其选择一项：1.弃置X张手牌（X为你攻击范围内的角色数且至多为2，若你的装备区里有武器牌，则改为至多为4），然后弃置你装备区里的武器牌；2.令此牌对其伤害基数+1且你判定，若结果为红色，其不能响应此牌。',
+  },
+
+  {
+    source: 'zhanjue_description',
+    target:
+      '出牌阶段，你可以将所有手牌当【决斗】使用，然后你摸一张牌，且受到过此牌伤害的角色各摸一张牌。若你以此法于一阶段内获得过至少两张牌，本技能于此阶段内失效。',
+  },
+  {
+    source: 'yanyu_description',
+    target:
+      '出牌阶段限一次，你可以重铸一张【杀】；出牌阶段结束时，若你于此阶段内重铸过至少两张【杀】，你可令一名男性角色摸两张牌。',
+  },
+
+  {
+    source: 'qiaoshi_description',
+    target: '其他角色的结束阶段开始时，若其手牌数与你相等，你可以与其各摸一张牌。',
+  },
+  {
+    source: 'yanyu_description',
+    target:
+      '出牌阶段，你可以重铸一张【杀】；出牌阶段结束时，若你于此阶段内重铸过至少两张【杀】，你可令一名男性角色摸两张牌。',
+  },
+
+  {
+    source: 'wurong_description',
+    target:
+      '出牌阶段限一次，你可以令你与一名其他角色同时展示一张手牌，若你展示的：为【杀】且其展示的不为【闪】，你对其造成1点伤害；不为【杀】且其展示的为【闪】，你获得其一张牌。',
+  },
+  {
+    source: 'shizhi_description',
+    target:
+      '<b>锁定技</b>，若你的体力值为1，你的【闪】均视为【杀】；当你使用以此法视为的【杀】造成伤害后，你回复1点体力。',
+  },
+
+  {
+    source: 'yaoming_description',
+    target:
+      '每回合每项限一次，当你造成或受到伤害后，你可以选择一项：1.令手牌数小于你的一名角色摸一张牌；2.弃置手牌数大于你的一名角色的一张手牌；3.选择手牌数与你相等的一名角色，其可弃置一至两张牌，然后摸等量的牌。',
+  },
+
+  {
+    source: 'anguo_description',
+    target:
+      '出牌阶段限一次，你可以选择一名其他角色，若其为手牌数最少的角色，其摸一张牌。若其为体力值最少的角色，其回复1点体力。若其为装备区里牌数最少的角色，其从牌堆里随机使用一张装备牌。最后若其有未执行的效果且你满足条件，你依次执行对应效果。',
+  },
+
+  {
+    source: 'huaiyi_description',
+    target:
+      '出牌阶段限一次，你可以展示所有手牌，若其中：所有牌颜色相同，你摸一张牌，且本技能于此阶段内改为“出牌阶段限两次”；有颜色不同的牌，你选择一种颜色，弃置你手牌中该颜色的所有牌，然后你获得一至多X名其他角色各一张牌，若你以此法获得的牌数不少于两张，你失去1点体力。',
+  },
+
+  {
+    source: 'jigong_description',
+    target:
+      '出牌阶段开始时，你可以摸一至三张牌，令你本回合内手牌上限为X（X为你此阶段内造成过的伤害值）。若如此做，本回合你的下个弃牌阶段开始时，若X不小于你此次摸的牌数，你回复1点体力。',
+  },
+  {
+    source: 'shifei_description',
+    target:
+      '当你需要使用或打出【闪】时，你可以令当前回合角色摸一张牌，然后若其不为手牌数唯一最多的角色，你可以弃置手牌数最多的一名角色的一张牌，视为使用或打出【闪】。',
+  },
+  {
+    source: 'huomo_description',
+    target:
+      '当你需要使用基本牌时（你本回合使用过的基本牌除外），你可以将一张黑色的非基本牌置于牌堆顶，视为使用此基本牌',
+  },
+  {
+    source: 'zuoding_description',
+    target:
+      '当其他角色于其出牌阶段内使用黑桃牌指定目标后，若所有角色于此阶段内均未受到过伤害，则你可以令其中的一个目标摸一张牌。',
+  },
+];
+
+export const promptDescriptions: Word[] = [
+  {
+    source:
+      '{0}: do you want to choose a target to judge? if the result is red, he recover, otherwise he draw {1} cards',
+    target: '{0}：你可以令一名角色判定，若结果为：红色，其回复1点体力；黑色，其摸 {1} 张牌',
+  },
+
+  {
+    source: '{0}: do you want to let other Wei generals to choose whether let you recover 1 hp?',
+    target: '{0}：你可以令所有其他魏势力角色依次选择是否令你回复1点体力',
+  },
+  {
+    source: '{0}: do you want to let {1} recover 1 hp, then you will take 1 damage?',
+    target: '{0}：你可以令 {1} 回复1点体力，且会在其此次濒死状态结束后受到1点无来源伤害',
+  },
+
+  {
+    source: '{0}: do you want to use this skill to {1} ?',
+    target: '{0}：你可以对 {1} 发动本技能',
+  },
+  {
+    source: '{0}: please drop {1} card(s), or {2} will deal 1 more damage to you',
+    target: '{0}：请弃置 {1} 张手牌，否则 {2} 对你的伤害基数将会+1，且有一定概率不能响应',
+  },
+
+  {
+    source: '{0}: do you want to draw a card with {1} ?',
+    target: '{0}：你可以与 {1} 各摸一张牌',
+  },
+
+  {
+    source: '{0}: do you want to choose a male character to draw 2 cards?',
+    target: '{0}：你可以令一名男性角色摸两张牌',
+  },
+
+  {
+    source: '{0}: please choose jigong options',
+    target: '{0}：你可以摸一至三张牌',
+  },
+  { source: 'jigong:draw1', target: '摸一张牌' },
+  { source: 'jigong:draw2', target: '摸两张牌' },
+  { source: 'jigong:draw3', target: '摸三张牌' },
+  { source: '{0} placed card {1} on the top of draw stack', target: '{0} 将 {1} 置于了牌堆顶 ' },
+];

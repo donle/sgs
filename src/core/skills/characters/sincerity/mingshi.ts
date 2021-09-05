@@ -5,7 +5,6 @@ import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill } from 'core/skills/skill_wrappers';
-import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'mingshi', description: 'mingshi_description' })
 export class MingShi extends TriggerSkill {
@@ -37,11 +36,10 @@ export class MingShi extends TriggerSkill {
     const response = await room.askForCardDrop(
       source,
       1,
-      [PlayerCardsArea.HandArea],
+      [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
       true,
       undefined,
       this.Name,
-      TranslationPack.translationJsonPatcher('{0}: please drop a hand card', this.Name).extract(),
     );
     if (!response) {
       return false;

@@ -98,7 +98,7 @@ export class YeYan extends ActiveSkill {
 
     room.notify(
       GameEventIdentifiers.AskForChoosingOptionsEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(askForChoosingOptionsEvent),
+      askForChoosingOptionsEvent,
       skillUseEvent.fromId,
     );
 

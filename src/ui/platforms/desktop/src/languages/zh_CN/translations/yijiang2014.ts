@@ -14,14 +14,20 @@ export const characterDictionary: Word[] = [
   { source: 'pindi', target: '品第' },
   { source: 'faen', target: '法恩' },
 
+  { source: 'caoxiu', target: '曹休' },
+  { source: 'qianju', target: '千驹' },
+  { source: 'qingxi', target: '倾袭' },
+
   { source: 'wuyi', target: '吴懿' },
   { source: 'benxi', target: '奔袭' },
+  { source: 'benxi times: {0}', target: '奔袭[{0}]' },
 
   { source: 'zhoucang', target: '周仓' },
   { source: 'zhongyong', target: '忠勇' },
 
   { source: 'zhangsong', target: '张松' },
   { source: 'qiangzhi', target: '强识' },
+  { source: 'qiangzhi type: {0}', target: '强识[{0}]' },
   { source: 'xiantu', target: '献图' },
 
   { source: 'sunluban', target: '孙鲁班' },
@@ -43,25 +49,13 @@ export const characterDictionary: Word[] = [
   { source: 'caifuren', target: '蔡夫人' },
   { source: 'qieting', target: '窃听' },
   { source: 'xianzhou', target: '献州' },
-
-  { source: 'xushao', target: '许劭' },
-  { source: 'pingjian', target: '评荐' },
-
-  { source: 'qinzheng', target: '勤政' },
-  { source: 'qinzheng times: {0}', target: '勤政[{0}]' },
-
-  { source: 'zhi_shanxi', target: '善檄' },
-  { source: 'zhi_shanxi:xi', target: '檄' },
-
-  { source: 'fuji', target: '伏骑' },
-  { source: 'jiaozi', target: '骄恣' },
 ];
 
 export const skillDescriptions: Word[] = [
   {
     source: 'sidi_description',
     target:
-      '其他角色的出牌阶段开始时，你可以弃置与你的装备区里的其中一张牌颜色相同的一张非基本牌，然后该角色于此回合内不能使用或打出与此牌颜色相同的牌。此阶段结束时，若其于此阶段内没有使用过【杀】，视为你对其使用一张【杀】。',
+      '结束阶段开始时，你可以将一张非基本牌置于你的武将牌上，称为“司”；其他角色的出牌阶段开始时，你可以移去一张“司”，令其此阶段内不能使用或打出与此“司”颜色相同的牌。若如此做，此阶段结束时，若其于此阶段内未使用过【杀】，你视为对其使用一张【杀】，且若其于此阶段内未使用过锦囊牌，你摸两张牌。',
   },
 
   {
@@ -90,7 +84,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'zhongyong_description',
     target:
-      '当你使用的【杀】结算结束后，你可以将此【杀】或此次结算中响应过此【杀】的【闪】交给除此【杀】目标外的一名其他角色，若其以此法获得了红色牌，其可对你攻击范围内的一名角色使用一张【杀】（无距离限制）。',
+      '当你使用的【杀】结算结束后，你可以将此【杀】和此次结算中响应过此【杀】的【闪】交给除此【杀】目标外的一名其他角色，若其以此法获得了黑色牌，其摸一张牌，且若其以此法获得了红色牌，其可对你攻击范围内的一名角色使用一张【杀】（无距离限制）。',
   },
   {
     source: 'qiangzhi_description',
@@ -165,7 +159,42 @@ export const skillDescriptions: Word[] = [
 
 export const promptDescriptions: Word[] = [
   {
+    source: '{0}: please choose pindi options: {1} {2}',
+    target: '{0}：请选择令 {1} 摸 {2} 张牌或弃置 {2} 张牌',
+  },
+  { source: 'pindi:draw', target: '令其摸牌' },
+  { source: 'pindi:discard', target: '令其弃牌' },
+
+  {
+    source: '{0}: do you want to let {1} draw 1 card?',
+    target: '{0}：你可以令 {1} 摸一张牌',
+  },
+
+  {
+    source: '{0}: please choose benxi options: {1}',
+    target: '{0}：你可为 {1} 选择至多两项增益效果',
+  },
+  { source: 'benxi:addTarget', target: '增加一个目标' },
+  { source: 'benxi:unoffsetable', target: '不可抵消' },
+  { source: 'benxi:ignoreArmor', target: '无视防具' },
+  { source: 'benxi:draw', target: '造成伤害时摸一张牌' },
+  {
+    source: 'benxi: please select a player to append to card targets',
+    target: '奔袭：请为此牌选择一个额外的目标。',
+  },
+
+  {
     source: 'please choose less than {0} player to draw 1 crad.',
     target: '请选择至多{0}名角色各摸一张牌。',
+  },
+
+  {
+    source: '{0}: do you want to skip {1} ?',
+    target: '{0}；你可以跳过 {1}',
+  },
+
+  {
+    source: '{0}: do you want to choose at least {1} target(s) to deal 1 damage each?',
+    target: '{0}：你可以对至多 {1} 名其他角色各造成1点伤害',
   },
 ];

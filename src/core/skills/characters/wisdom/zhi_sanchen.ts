@@ -5,7 +5,6 @@ import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { AwakeningSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { WuKu } from './wuku';
 
 @AwakeningSkill({ name: 'zhi_sanchen', description: 'zhi_sanchen_description' })
 export class ZhiSanChen extends TriggerSkill {
@@ -24,7 +23,7 @@ export class ZhiSanChen extends TriggerSkill {
     return (
       content.playerId === owner.Id &&
       content.toStage === PlayerPhaseStages.FinishStageStart &&
-      owner.getFlag<number>(WuKu.Name) >= 3
+      room.enableToAwaken(this.Name, owner)
     );
   }
 

@@ -20,6 +20,7 @@ export class ShanJia extends TriggerSkill implements OnDefineReleaseTiming {
     if (owner.getFlag<number>(this.Name) === undefined) {
       const lostNum = room.Analytics.getRecordEvents<GameEventIdentifiers.MoveCardEvent>(
         event =>
+          EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
           event.infos.find(
             info =>
               info.fromId === owner.Id &&

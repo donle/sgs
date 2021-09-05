@@ -81,7 +81,6 @@ export class ShenFen extends ActiveSkill {
           true,
           undefined,
           this.Name,
-          'shenfen: please select 4 cards to drop',
         );
         response &&
           (await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, to.Id, to.Id, this.GeneralName));

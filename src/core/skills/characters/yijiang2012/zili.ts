@@ -1,12 +1,10 @@
 import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { AwakeningSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { PaiYi } from './paiyi';
-import { QuanJi } from './quanji';
 
 @AwakeningSkill({ name: 'zili', description: 'zili_description' })
 export class ZiLi extends TriggerSkill {
@@ -22,7 +20,7 @@ export class ZiLi extends TriggerSkill {
     owner: Player,
     content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
   ): boolean {
-    return content.playerId === owner.Id && owner.getCardIds(PlayerCardsArea.OutsideArea, QuanJi.Name).length > 2;
+    return content.playerId === owner.Id && room.enableToAwaken(this.Name, owner);
   }
 
   public async onTrigger(

@@ -1,26 +1,29 @@
 import { Character } from '../character';
+import { CaiFuRen } from './caifuren';
+import { CaoZhen } from './caozhen';
+import { ChenQun } from './chenqun';
 import { GuYong } from './guyong';
-// import { CaoZhen } from './caozhen';
-// import { HanHaoShiHuan } from './hanhaoshihuan';
-// import { ChenQun } from './chenqun';
-// import { WuYu } from './wuyu';
-// import { ZhouChang } from './zhouchang';
-// import { ZhangSong } from './zhangsong';
-// import { SunLuBan } from './sunluban';
-// import { ZhuHuan } from './zhuhuan';
+import { HanHaoShiHuan } from './hanhaoshihuan';
+import { SunLuBan } from './sunluban';
+import { WuYi } from './wuyi';
 import { YjcmJuShou } from './yjcm_jushou';
-// import { CaiFuRen } from './caifuren';
+import { ZhangSong } from './zhangsong';
+import { ZhouCang } from './zhoucang';
+import { ZhuHuan } from './zhuhuan';
 
 export const YiJiang2014Package: (index: number) => Character[] = index => [
-  // new CaoZhen(index++),
-  // new HanHaoShiHuan(index++),
-  // new ChenQun(index++),
-  // new WuYu(index++),
-  // new ZhouChang(index++),
-  // new ZhangSong(index++),
-  // new SunLuBan(index++),
-  // new ZhuHuan(index++),
-  new YjcmJuShou(index++),
+  new CaoZhen(index++),
+  new HanHaoShiHuan(index++),
+  new ChenQun(index++),
+
+  new WuYi(index++),
+  new ZhangSong(index++),
+  new ZhouCang(index++),
+
   new GuYong(index++),
-  // new CarFuRen(index++),
+  new SunLuBan(index++),
+  new ZhuHuan(index++),
+
+  new YjcmJuShou(index++),
+  new CaiFuRen(index++),
 ];

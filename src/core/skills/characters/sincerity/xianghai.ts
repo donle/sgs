@@ -17,7 +17,7 @@ import {
 export class XiangHai extends TransformSkill implements OnDefineReleaseTiming {
   async whenObtainingSkill(room: Room, owner: Player) {
     const cards = owner.getCardIds(PlayerCardsArea.HandArea).map(cardId => {
-      if (this.canTransform(cardId, PlayerCardsArea.HandArea)) {
+      if (this.canTransform(owner, cardId, PlayerCardsArea.HandArea)) {
         return this.forceToTransformCardTo(cardId).Id;
       }
 
@@ -51,7 +51,7 @@ export class XiangHai extends TransformSkill implements OnDefineReleaseTiming {
     owner.setupCards(PlayerCardsArea.HandArea, cards);
   }
 
-  public canTransform(cardId: CardId, area: PlayerCardsArea.HandArea): boolean {
+  public canTransform(owner: Player, cardId: CardId, area: PlayerCardsArea.HandArea): boolean {
     const card = Sanguosha.getCardById(cardId);
     return card.is(CardType.Equip) && area === PlayerCardsArea.HandArea;
   }

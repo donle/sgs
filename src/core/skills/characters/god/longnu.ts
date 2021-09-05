@@ -69,7 +69,7 @@ export class LongNu extends TriggerSkill {
 export class FireLongNu extends TransformSkill implements OnDefineReleaseTiming {
   async whenObtainingSkill(room: Room, owner: Player) {
     const cards = owner.getCardIds(PlayerCardsArea.HandArea).map(cardId => {
-      if (this.canTransform(cardId, PlayerCardsArea.HandArea)) {
+      if (this.canTransform(owner, cardId, PlayerCardsArea.HandArea)) {
         return this.forceToTransformCardTo(cardId).Id;
       }
 
@@ -103,7 +103,7 @@ export class FireLongNu extends TransformSkill implements OnDefineReleaseTiming 
     owner.setupCards(PlayerCardsArea.HandArea, cards);
   }
 
-  public canTransform(cardId: CardId, area: PlayerCardsArea.HandArea): boolean {
+  public canTransform(owner: Player, cardId: CardId, area: PlayerCardsArea.HandArea): boolean {
     const card = Sanguosha.getCardById(cardId);
     return card.Color === CardColor.Red && area === PlayerCardsArea.HandArea;
   }
@@ -125,7 +125,7 @@ export class FireLongNu extends TransformSkill implements OnDefineReleaseTiming 
 export class ThunderLongNu extends TransformSkill implements OnDefineReleaseTiming {
   async whenObtainingSkill(room: Room, owner: Player) {
     const cards = owner.getCardIds(PlayerCardsArea.HandArea).map(cardId => {
-      if (this.canTransform(cardId, PlayerCardsArea.HandArea)) {
+      if (this.canTransform(owner, cardId, PlayerCardsArea.HandArea)) {
         return this.forceToTransformCardTo(cardId).Id;
       }
 
@@ -159,7 +159,7 @@ export class ThunderLongNu extends TransformSkill implements OnDefineReleaseTimi
     owner.setupCards(PlayerCardsArea.HandArea, cards);
   }
 
-  public canTransform(cardId: CardId, area: PlayerCardsArea.HandArea): boolean {
+  public canTransform(owner: Player, cardId: CardId, area: PlayerCardsArea.HandArea): boolean {
     const card = Sanguosha.getCardById(cardId);
     return card.is(CardType.Trick) && area === PlayerCardsArea.HandArea;
   }

@@ -109,7 +109,7 @@ export class DuelSkill extends ActiveSkill implements ExtralCardSkillProperty {
       damage: 1 + (event.additionalDamage ? event.additionalDamage : 0),
       damageType: DamageType.Normal,
       toId: targets[turn],
-      triggeredBySkills: [this.Name],
+      triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
     };
 
     !validResponse && (await room.damage(damageEvent));

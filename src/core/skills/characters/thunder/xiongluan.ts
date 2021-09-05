@@ -163,20 +163,11 @@ export class XiongLuanBuff extends RulesBreakerSkill implements OnDefineReleaseT
 
 @ShadowSkill
 @PersistentSkill()
-@CommonSkill({ name: 'debuff_xiongluan', description: 'debuff_xiongluan_description' })
-export class XiongLuanDeBuff extends FilterSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(
-    room: Room,
-    owner: PlayerId,
-    content: ServerEventFinder<GameEventIdentifiers>,
-    stage?: AllStage,
-  ): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PlayCardStage && stage === PhaseChangeStage.PhaseChanged;
-  }
-
+@CommonSkill({ name: 's_xiongluan_debuff', description: 's_xiongluan_debuff_description' })
+export class XiongLuanDeBuff extends FilterSkill {
   canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId) {
     return cardId instanceof CardMatcher
-      ? false
+      ? true
       : room.getPlayerById(owner).cardFrom(cardId) !== PlayerCardsArea.HandArea;
   }
 }

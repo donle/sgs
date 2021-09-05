@@ -12,7 +12,7 @@ export class HunZi extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    return content.playerId === owner.Id && owner.Hp <= 2;
+    return content.playerId === owner.Id && room.enableToAwaken(this.Name, owner);
   }
 
   async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
