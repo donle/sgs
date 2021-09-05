@@ -42,7 +42,7 @@ export class MouKui extends TriggerSkill {
       {
         options,
         conversation: TranslationPack.translationJsonPatcher(
-          '{0}: please choose fengpo options: {1}',
+          '{0}: please choose moukui options: {1}',
           this.Name,
           TranslationPack.patchPlayerInTranslation(to),
         ).extract(),

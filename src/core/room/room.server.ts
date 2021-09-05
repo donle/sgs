@@ -679,11 +679,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         }
       }
 
-      if (toDrop.length === event.cardAmount) {
+      if (toDrop.length <= event.cardAmount) {
         event.responsedEvent = { droppedCards: toDrop, fromId: playerId };
         return event.responsedEvent;
-      } else if (toDrop.length < event.cardAmount) {
-        event.cardAmount = toDrop.length;
       }
     }
 

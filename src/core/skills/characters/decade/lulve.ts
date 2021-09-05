@@ -6,7 +6,7 @@ import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
-import { TranslationPack } from 'core/translations/translation_json_tool';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'lulve', description: 'lulve_description' })
 export class LuLve extends TriggerSkill {
@@ -42,6 +42,13 @@ export class LuLve extends TriggerSkill {
 
     const handcards = room.getPlayerById(target).getCardIds(PlayerCardsArea.HandArea).length;
     return handcards > 0 && handcards < room.getPlayerById(owner).getCardIds(PlayerCardsArea.HandArea).length;
+  }
+
+  public getSkillLog(): PatchedTranslationObject {
+    return TranslationPack.translationJsonPatcher(
+      '{0}: do you want to choose a lulve target to use this skill?',
+      this.Name,
+    ).extract();
   }
 
   public async onTrigger(): Promise<boolean> {

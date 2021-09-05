@@ -9,6 +9,8 @@ import { MaZhong } from './mazhong';
 import { QuYi } from './quyi';
 import { ShaMoKe } from './shamoke';
 import { ShiXie } from './shixie';
+import { SPCaiWenJi } from './sp_caiwenji';
+import { SPJiangWei } from './sp_jiangwei';
 import { SPSunShangXiang } from './sp_sunshangxiang';
 import { SPZhaoYun } from './sp_zhaoyun';
 import { SunHao } from './sunhao';
@@ -19,6 +21,8 @@ import { ZhouQun } from './zhouqun';
 
 export const SPPackage: (index: number) => Character[] = index => [
   new YangXiu(index++),
+  new SPCaiWenJi(index++),
+  new SPJiangWei(index++),
 
   new SPSunShangXiang(index++),
   new MaYunLu(index++),

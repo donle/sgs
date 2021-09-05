@@ -17,6 +17,7 @@ import {
   ViewAsSkill,
 } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
 @PersistentSkill()
 @CommonSkill({ name: 'zuoxing', description: 'zuoxing_description' })
@@ -54,7 +55,7 @@ export class ZuoXing extends ViewAsSkill implements OnDefineReleaseTiming {
   }
 
   public viewAs(selectedCards: CardId[], owner: Player, viewAs: string): VirtualCard {
-    Precondition.assert(!!viewAs, 'Unknown qice card');
+    Precondition.assert(!!viewAs, 'Unknown zuoxing card');
     return VirtualCard.create({
       cardName: viewAs,
       bySkill: this.Name,
@@ -95,6 +96,13 @@ export class ZuoXingShadow extends TriggerSkill {
     );
   }
 
+  public getSkillLog(): PatchedTranslationObject {
+    return TranslationPack.translationJsonPatcher(
+      '{0}: do you want to let God Guo Jia loses 1 max hp? Then you can use virtual trick this turn',
+      this.GeneralName,
+    ).extract();
+  }
+
   public async onTrigger(): Promise<boolean> {
     return true;
   }
@@ -114,7 +122,7 @@ export class ZuoXingShadow extends TriggerSkill {
           players: godGuoJias,
           toId: fromId,
           requiredAmount: 1,
-          conversation: 'god_tianyi:please choose a target to obtain ‘Zuo Xing’',
+          conversation: 'zuoxing: please choose a God Guo Jia to lose 1 max hp',
           triggeredBySkills: [this.Name],
         },
         fromId,
@@ -146,7 +154,7 @@ export class ZuoXingSide extends ZuoXing {
   }
 
   public viewAs(selectedCards: CardId[], owner: Player, viewAs: string): VirtualCard {
-    Precondition.assert(!!viewAs, 'Unknown qice card');
+    Precondition.assert(!!viewAs, 'Unknown zuoxing card');
     return VirtualCard.create({
       cardName: viewAs,
       bySkill: ZuoXing.Name,

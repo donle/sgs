@@ -16,7 +16,7 @@ import { Functional } from 'core/shares/libs/functional';
 import { TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { CommonSkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
-import { TranslationPack } from 'core/translations/translation_json_tool';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'qiangzhi', description: 'qiangzhi_description' })
 export class QiangZhi extends TriggerSkill {
@@ -45,6 +45,13 @@ export class QiangZhi extends TriggerSkill {
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
     return owner !== target && room.getPlayerById(target).getCardIds(PlayerCardsArea.HandArea).length > 0;
+  }
+
+  public getSkillLog(): PatchedTranslationObject {
+    return TranslationPack.translationJsonPatcher(
+      '{0}: do you want to display a hand card from another player?',
+      this.Name,
+    ).extract();
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -156,6 +163,13 @@ export class QiangZhiShadow extends TriggerSkill implements OnDefineReleaseTimin
     }
 
     return false;
+  }
+
+  public getSkillLog(): PatchedTranslationObject {
+    return TranslationPack.translationJsonPatcher(
+      '{0}: do you want to draw a card?',
+      this.Name,
+    ).extract();
   }
 
   public async onTrigger(): Promise<boolean> {

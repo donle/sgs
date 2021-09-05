@@ -12,7 +12,7 @@ import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { CommonSkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
-import { TranslationPack } from 'core/translations/translation_json_tool';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'xiantu', description: 'xiantu_description' })
 export class XianTu extends TriggerSkill {
@@ -29,6 +29,18 @@ export class XianTu extends TriggerSkill {
     content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
   ): boolean {
     return owner.Id !== content.playerId;
+  }
+
+  public getSkillLog(
+    room: Room,
+    owner: Player,
+    content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
+  ): PatchedTranslationObject {
+    return TranslationPack.translationJsonPatcher(
+      '{0}: do you want to draw 2 cards, then give 2 cards to {1} ?',
+      this.Name,
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(content.playerId)),
+    ).extract();
   }
 
   public async onTrigger(): Promise<boolean> {

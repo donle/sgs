@@ -9,7 +9,6 @@ export class ZhaoYun extends Character {
     super(id, 'zhaoyun', CharacterGender.Male, CharacterNationality.Shu, 4, 4, GameCharacterExtensions.Standard, [
       skillLoaderInstance.getSkillByName('longdan'),
       skillLoaderInstance.getSkillByName('yajiao'),
-      ...skillLoaderInstance.getSkillsByName('shicai'),
     ]);
   }
 }

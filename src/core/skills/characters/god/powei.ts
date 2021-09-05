@@ -80,7 +80,7 @@ export class PoWei extends TriggerSkill {
 
     if (identifier === GameEventIdentifiers.DamageEvent) {
       const damageEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-      room.setMark(damageEvent.toId, MarkEnum.Wei, 0);
+      room.addMark(damageEvent.toId, MarkEnum.Wei, -1);
       damageEvent.damage = 0;
       EventPacker.terminate(damageEvent);
     } else if (identifier === GameEventIdentifiers.CardUseEvent) {

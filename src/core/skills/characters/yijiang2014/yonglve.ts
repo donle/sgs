@@ -6,6 +6,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'yonglve', description: 'yonglve_description' })
 export class YongLve extends TriggerSkill {
@@ -25,6 +26,18 @@ export class YongLve extends TriggerSkill {
       owner.Id !== content.playerId &&
       room.getPlayerById(content.playerId).getCardIds(PlayerCardsArea.JudgeArea).length > 0
     );
+  }
+
+  public getSkillLog(
+    room: Room,
+    owner: Player,
+    content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
+  ): PatchedTranslationObject {
+    return TranslationPack.translationJsonPatcher(
+      '{0}: do you want to drop a card from {1}’s judge area?',
+      this.Name,
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(content.playerId)),
+    ).extract();
   }
 
   public async onTrigger(): Promise<boolean> {

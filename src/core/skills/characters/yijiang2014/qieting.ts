@@ -76,7 +76,7 @@ export class QieTing extends TriggerSkill {
             toId: fromId,
             cardIds: canMoveCards,
             amount: 1,
-            customTitle: 'qieting: please move one of these cards',
+            customTitle: 'qieting: please move one of these cards to you',
           });
 
         const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardEvent>(

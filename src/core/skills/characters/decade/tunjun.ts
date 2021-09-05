@@ -43,7 +43,7 @@ export class TunJun extends ActiveSkill {
     const times = room.getFlag<number>(event.fromId, LveMing.Name);
     const emptyEquipSections = room.getPlayerById(toIds[0]).getEmptyEquipSections();
 
-    let x = 0;
+    let usedNum = 0;
     for (let i = 0; i < times; i++) {
       const equips = room.findCardsByMatcherFrom(new CardMatcher({ type: [emptyEquipSections[i]] }));
       if (equips.length === 0) {
@@ -58,7 +58,7 @@ export class TunJun extends ActiveSkill {
           cardId: randomEquip,
           customFromArea: CardMoveArea.DrawStack,
         });
-        if (x++ === times) {
+        if (usedNum++ === times) {
           break;
         }
       }

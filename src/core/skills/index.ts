@@ -359,7 +359,8 @@ export { HuaiYi, HuaiYiShadow } from './characters/yijiang2015/huaiyi';
 export { AnGuo } from './characters/yijiang2015/anguo';
 export { YaoMing, YaoMingShadow } from './characters/yijiang2015/yaoming';
 export { ZhanJue, ZhanJueShadow } from './characters/yijiang2015/zhanjue';
-export * from './characters/yijiang2015/huomo';
+export { HuoMo, HuoMoShadow, HuoMoRecord } from './characters/yijiang2015/huomo';
+export { ZuoDing } from './characters/yijiang2015/zuoding';
 
 export { StdLongDan } from './characters/sp/std_longdan';
 export { ChongZhen } from './characters/sp/chongzhen';
@@ -390,6 +391,10 @@ export { GuiMing } from './characters/sp/guiming';
 export { FuMan, FuManShadow } from './characters/sp/fuman';
 export { LiangZhu } from './characters/sp/liangzhu';
 export { FanXiang } from './characters/sp/fanxiang';
+export { KunFen, KunFenEX } from './characters/sp/kunfen';
+export { FengLiang } from './characters/sp/fengliang';
+export { ChenQing } from './characters/sp/chenqing';
+export { MoZhi } from './characters/sp/mozhi';
 
 export { TuShe } from './characters/spark/tushe';
 export { LiMu, LiMuShadow } from './characters/spark/limu';
@@ -416,6 +421,8 @@ export { TanBei, TanBeiBuff, TanBeiDebuff, TanBeiRemover } from './characters/de
 export { SiDao } from './characters/decade/sidao';
 export { LuLve } from './characters/decade/lulve';
 export { ZhuiXi } from './characters/decade/zhuixi';
+export { KuangFu } from './characters/decade/kuangfu';
+export { XuHe } from './characters/decade/xuhe';
 
 export { ShanJia, ShanJiaShadow } from './characters/limited/shanjia';
 export { WeiCheng } from './characters/limited/weicheng';

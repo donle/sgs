@@ -147,7 +147,7 @@ export class GodHuiShiSecRemover extends TriggerSkill {
           content.fromId,
           FlagEnum.EnableToAwaken,
           originalSkillNames,
-          TranslationPack.translationJsonPatcher(tag, 'god_huishi_sec', ...originalSkillNames).toString(),
+          TranslationPack.translationJsonPatcher(tag, GodHuiShiSec.Name, ...originalSkillNames).toString(),
         );
       }
     }

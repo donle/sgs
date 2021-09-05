@@ -39,7 +39,7 @@ export class JiaoJin extends TriggerSkill {
 
   public getSkillLog(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
     return TranslationPack.translationJsonPatcher(
-      'do you want to discard a equip card to let {1} nullify to you and you gain it?',
+      '{0}：do you want to discard a equip card to let {1} nullify to you and you gain it?',
       this.Name,
       TranslationPack.patchCardInTranslation(content.byCardId),
     ).extract();

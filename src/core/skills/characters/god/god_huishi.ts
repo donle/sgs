@@ -91,9 +91,8 @@ export class GodHuiShi extends ActiveSkill {
         toId: fromId,
         requiredAmount: 1,
         conversation: TranslationPack.translationJsonPatcher(
-          '{0}: please choose a target to gain {1}',
+          '{0}: please choose a target to gain these cards',
           this.Name,
-          TranslationPack.patchCardInTranslation(...judgeCardIds),
         ).extract(),
         triggeredBySkills: [this.Name],
       },

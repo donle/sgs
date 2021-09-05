@@ -7,6 +7,7 @@ import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 import { GuiMing } from './guiming';
 
 @CommonSkill({ name: 'canshi', description: 'canshi_description' })
@@ -35,6 +36,20 @@ export class CanShi extends TriggerSkill {
             player.LostHp > 0 || (owner !== player && hasGuiMing && player.Nationality === CharacterNationality.Wu),
         ) !== undefined
     );
+  }
+
+  public getSkillLog(room: Room, owner: Player): PatchedTranslationObject {
+    const hasGuiMing = owner.getPlayerSkills().find(skill => skill.Name === GuiMing.Name);
+    return TranslationPack.translationJsonPatcher(
+      '{0}: do you want to draw {1} card(s) additionally?',
+      this.Name,
+      room
+        .getAlivePlayersFrom()
+        .filter(
+          player =>
+            player.LostHp > 0 || (owner !== player && hasGuiMing && player.Nationality === CharacterNationality.Wu),
+        ).length,
+    ).extract();
   }
 
   public async onTrigger(): Promise<boolean> {

@@ -62,7 +62,7 @@ export class PinDi extends ActiveSkill {
     room.getPlayerById(toIds[0]).getPlayerCards().length > 0 && options.push('pindi:discard');
 
     let chosen = options[0];
-    const x = room.getPlayerById(fromId).hasUsedSkillTimes(this.Name);
+    const skillUsedTimes = room.getPlayerById(fromId).hasUsedSkillTimes(this.Name);
     if (options.length > 1) {
       const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingOptionsEvent>(
         GameEventIdentifiers.AskForChoosingOptionsEvent,
@@ -72,7 +72,7 @@ export class PinDi extends ActiveSkill {
             '{0}: please choose pindi options: {1} {2}',
             this.Name,
             TranslationPack.patchPlayerInTranslation(room.getPlayerById(toIds[0])),
-            x,
+            skillUsedTimes,
           ).extract(),
           toId: fromId,
           triggeredBySkills: [this.Name],
@@ -85,11 +85,11 @@ export class PinDi extends ActiveSkill {
     }
 
     if (chosen === options[0]) {
-      await room.drawCards(x, toIds[0], 'top', fromId, this.Name);
+      await room.drawCards(skillUsedTimes, toIds[0], 'top', fromId, this.Name);
     } else {
       const response = await room.askForCardDrop(
         toIds[0],
-        x,
+        skillUsedTimes,
         [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
         true,
         undefined,

@@ -43,7 +43,7 @@ export class XianZhou extends ActiveSkill {
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId, toIds } = event;
     const from = room.getPlayerById(fromId);
-    const x = from.getCardIds(PlayerCardsArea.EquipArea).length;
+    const equipsNum = from.getCardIds(PlayerCardsArea.EquipArea).length;
 
     await room.moveCards({
       movingCards: from
@@ -68,10 +68,12 @@ export class XianZhou extends ActiveSkill {
       const askForPlayerChoose: ServerEventFinder<GameEventIdentifiers.AskForChoosingPlayerEvent> = {
         toId: toIds![0],
         players: availableTargets,
-        requiredAmount: [1, x],
+        requiredAmount: [1, equipsNum],
         conversation: TranslationPack.translationJsonPatcher(
-          '{0}: please choose a targets to deal damage',
+          '{0}: please choose at least {1} xianzhou {2} target(s) to deal 1 damage each?',
           this.Name,
+          equipsNum,
+          TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
         ).extract(),
         triggeredBySkills: [this.Name],
       };
@@ -86,7 +88,7 @@ export class XianZhou extends ActiveSkill {
 
       if (!isWounded) {
         response.selectedPlayers =
-          response.selectedPlayers || availableTargets.splice(0, Math.min(availableTargets.length, x));
+          response.selectedPlayers || availableTargets.splice(0, Math.min(availableTargets.length, equipsNum));
       }
 
       if (response.selectedPlayers && response.selectedPlayers.length > 0) {
@@ -103,14 +105,14 @@ export class XianZhou extends ActiveSkill {
       } else {
         await room.recover({
           toId: fromId,
-          recoveredHp: x,
+          recoveredHp: equipsNum,
           recoverBy: toIds![0],
         });
       }
     } else {
       await room.recover({
         toId: fromId,
-        recoveredHp: x,
+        recoveredHp: equipsNum,
         recoverBy: toIds![0],
       });
     }

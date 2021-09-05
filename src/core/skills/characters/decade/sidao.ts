@@ -3,7 +3,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, CardUseStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerId } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Algorithm } from 'core/shares/libs/algorithm';
 import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
@@ -81,6 +81,10 @@ export class SiDao extends TriggerSkill {
       [target],
       virtualCard.Id,
     );
+  }
+
+  public availableCardAreas() {
+    return [PlayerCardsArea.HandArea];
   }
 
   public getSkillLog(): PatchedTranslationObject {

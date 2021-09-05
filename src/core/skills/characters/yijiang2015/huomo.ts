@@ -1,18 +1,45 @@
 import { Card, CardType, VirtualCard } from 'core/cards/card';
+import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
-import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AllStage, CardResponseStage, CardUseStage, PlayerPhase, StagePriority } from 'core/game/stage_processor';
+import { AllStage, CardUseStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { TriggerSkill, ViewAsSkill } from 'core/skills/skill';
-import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
+import { CommonSkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'huomo', description: 'huomo_description' })
-export class HuoMo extends ViewAsSkill {
+export class HuoMo extends ViewAsSkill implements OnDefineReleaseTiming {
+  public async whenObtainingSkill(room: Room, player: Player) {
+    const records = room.Analytics.getRecordEvents<GameEventIdentifiers.CardUseEvent>(
+      event =>
+        EventPacker.getIdentifier(event) === GameEventIdentifiers.CardUseEvent &&
+        event.fromId === player.Id &&
+        Sanguosha.getCardById(event.cardId).is(CardType.Basic),
+      undefined,
+      'round',
+    );
+
+    for (const event of records) {
+      const cardId = event.cardId;
+      const usedCards = room.getFlag<string[]>(player.Id, this.GeneralName) || [];
+      if (!usedCards.includes(Sanguosha.getCardById(cardId).GeneralName)) {
+        const slashName = Sanguosha.getCardById(cardId).GeneralName;
+        if (slashName === 'slash') {
+          usedCards.push('slash', 'thunder_slash', 'fire_slash');
+        } else {
+          usedCards.push(Sanguosha.getCardById(cardId).GeneralName);
+        }
+        room.setFlag(player.Id, this.GeneralName, usedCards);
+      }
+    }
+  }
+
   public canViewAs(room: Room, owner: Player): string[] {
     const usedCards = owner.getFlag<string[]>(this.Name) || [];
     return Sanguosha.getCardNameByType(types => types.includes(CardType.Basic)).filter(name => {
@@ -20,12 +47,30 @@ export class HuoMo extends ViewAsSkill {
     });
   }
 
-  isRefreshAt(room: Room, owner: Player, phase: PlayerPhase) {
-    return phase === PlayerPhase.PhaseBegin;
-  }
+  public canUse(
+    room: Room,
+    owner: Player,
+    event?: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>,
+  ): boolean {
+    const identifier = event && EventPacker.getIdentifier(event);
+    const usedCards = owner.getFlag<string[]>(this.Name) || [];
+    if (identifier === GameEventIdentifiers.AskForCardUseEvent) {
+      return (
+        Sanguosha.getCardNameByType(types => types.includes(CardType.Basic)).find(name => {
+          return (
+            !usedCards.includes(name) &&
+            owner.canUseCard(room, new CardMatcher({ name: [name] }), new CardMatcher(event!.cardMatcher))
+          );
+        }) !== undefined
+      );
+    }
 
-  public canUse(room: Room, owner: Player): boolean {
-    return !owner.hasUsedSkill(this.Name) && owner.getCardIds(PlayerCardsArea.HandArea).length > 0;
+    return (
+      identifier !== GameEventIdentifiers.AskForCardResponseEvent &&
+      Sanguosha.getCardNameByType(types => types.includes(CardType.Basic)).find(name => {
+        return !usedCards.includes(name) && owner.canUseCard(room, new CardMatcher({ name: [name] }));
+      }) !== undefined
+    );
   }
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
@@ -56,6 +101,7 @@ export class HuoMo extends ViewAsSkill {
 }
 
 @ShadowSkill
+@PersistentSkill()
 @CommonSkill({ name: HuoMo.Name, description: HuoMo.Description })
 export class HuoMoShadow extends TriggerSkill {
   isAutoTrigger() {
@@ -70,25 +116,11 @@ export class HuoMoShadow extends TriggerSkill {
     return true;
   }
 
-  public getPriority() {
-    return StagePriority.High;
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage?: AllStage): boolean {
+    return stage === CardUseStage.PreCardUse && Card.isVirtualCardId(event.cardId);
   }
 
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent>,
-    stage?: AllStage,
-  ): boolean {
-    return (
-      (stage === CardUseStage.PreCardUse || stage === CardResponseStage.PreCardResponse) &&
-      Card.isVirtualCardId(event.cardId)
-    );
-  }
-
-  public canUse(
-    room: Room,
-    owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): boolean {
     return (
       content.fromId === owner.Id &&
       Sanguosha.getCardById<VirtualCard>(content.cardId).findByGeneratedSkill(this.GeneralName)
@@ -101,9 +133,7 @@ export class HuoMoShadow extends TriggerSkill {
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
-    const cardEvent = event.triggeredOnEvent as ServerEventFinder<
-      GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent
-    >;
+    const cardEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
     const preuseCard = Sanguosha.getCardById<VirtualCard>(cardEvent.cardId);
     const realCard = preuseCard.ActualCardIds[0];
     const from = room.getPlayerById(cardEvent.fromId);
@@ -150,34 +180,30 @@ export class HuoMoRecord extends TriggerSkill {
     return true;
   }
 
-  public getPriority() {
-    return StagePriority.High;
-  }
-
   public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent>,
+    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.PhaseChangeEvent>,
     stage?: AllStage,
   ): boolean {
-    return (
-      (stage === CardUseStage.AfterCardUseDeclared || stage === CardResponseStage.AfterCardResponseEffect) &&
-      Sanguosha.getCardById(event.cardId).is(CardType.Basic)
-    );
-  }
-
-  public isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
-    return stage === PlayerPhase.PhaseFinish;
-  }
-
-  public whenRefresh(room: Room, owner: Player) {
-    room.removeFlag(owner.Id, this.GeneralName);
+    return stage === CardUseStage.BeforeCardUseEffect || stage === PhaseChangeStage.PhaseChanged;
   }
 
   public canUse(
     room: Room,
     owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent>,
+    content: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.PhaseChangeEvent>,
   ): boolean {
-    return content.fromId === owner.Id;
+    const identifier = EventPacker.getIdentifier(content);
+    if (identifier === GameEventIdentifiers.CardUseEvent) {
+      const cardUseEvent = content as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
+      return cardUseEvent.fromId === owner.Id && Sanguosha.getCardById(cardUseEvent.cardId).is(CardType.Basic);
+    } else if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
+      const phaseChangeEvent = content as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
+      return (
+        phaseChangeEvent.from === PlayerPhase.PhaseFinish && owner.getFlag<string[]>(this.GeneralName) !== undefined
+      );
+    }
+
+    return false;
   }
 
   public async onTrigger(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
@@ -187,18 +213,25 @@ export class HuoMoRecord extends TriggerSkill {
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { triggeredOnEvent, fromId } = event;
-    const { cardId } = triggeredOnEvent as ServerEventFinder<
-      GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent
+    const unknownEvent = triggeredOnEvent as ServerEventFinder<
+      GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.PhaseChangeEvent
     >;
-    const usedCards = room.getFlag<string[]>(fromId, this.GeneralName) || [];
-    if (!usedCards.includes(Sanguosha.getCardById(cardId).GeneralName)) {
-      const slashName = Sanguosha.getCardById(cardId).GeneralName;
-      if (slashName === 'slash') {
-        usedCards.push('slash', 'thunder_slash', 'fire_slash');
-      } else {
-        usedCards.push(Sanguosha.getCardById(cardId).GeneralName);
+
+    const identifier = EventPacker.getIdentifier(unknownEvent);
+    if (identifier === GameEventIdentifiers.CardUseEvent) {
+      const cardId = (event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>).cardId;
+      const usedCards = room.getFlag<string[]>(fromId, this.GeneralName) || [];
+      if (!usedCards.includes(Sanguosha.getCardById(cardId).GeneralName)) {
+        const slashName = Sanguosha.getCardById(cardId).GeneralName;
+        if (slashName === 'slash') {
+          usedCards.push('slash', 'thunder_slash', 'fire_slash');
+        } else {
+          usedCards.push(Sanguosha.getCardById(cardId).GeneralName);
+        }
+        room.setFlag(fromId, this.GeneralName, usedCards);
       }
-      room.setFlag(fromId, this.GeneralName, usedCards);
+    } else {
+      room.removeFlag(fromId, this.GeneralName);
     }
 
     return true;

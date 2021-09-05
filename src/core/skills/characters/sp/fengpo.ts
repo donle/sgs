@@ -51,8 +51,9 @@ export class FengPo extends TriggerSkill {
       {
         options: this.FengPoOptions,
         conversation: TranslationPack.translationJsonPatcher(
-          '{0}: please choose fengpo options: {1}',
+          '{0}: please choose fengpo options: {1} {2}',
           this.Name,
+          TranslationPack.patchCardInTranslation((event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>).byCardId),
           TranslationPack.patchPlayerInTranslation(
             room.getPlayerById((event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>).toId),
           ),

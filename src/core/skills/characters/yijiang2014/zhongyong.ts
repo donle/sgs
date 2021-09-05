@@ -46,11 +46,13 @@ export class ZhongYong extends TriggerSkill {
     room.isCardOnProcessing(cardUseEvent.cardId) && allCards.push(...VirtualCard.getActualCards([cardUseEvent.cardId]));
     cardUseEvent.cardIdsResponded &&
       allCards.push(
-        ...VirtualCard.getActualCards(cardUseEvent.cardIdsResponded.filter(
-          id =>
-            VirtualCard.getActualCards([id]).length > 0 &&
-            VirtualCard.getActualCards([id]).find(cardId => !room.isCardInDropStack(cardId)) === undefined,
-        )),
+        ...VirtualCard.getActualCards(
+          cardUseEvent.cardIdsResponded.filter(
+            id =>
+              VirtualCard.getActualCards([id]).length > 0 &&
+              VirtualCard.getActualCards([id]).find(cardId => !room.isCardInDropStack(cardId)) === undefined,
+          ),
+        ),
       );
 
     const observeCardsEvent: ServerEventFinder<GameEventIdentifiers.ObserveCardsEvent> = {
@@ -137,7 +139,11 @@ export class ZhongYong extends TriggerSkill {
           scopedTargets: availableTargets,
           extraUse: true,
           cardMatcher: new CardMatcher({ generalName: ['slash'] }).toSocketPassenger(),
-          conversation: TranslationPack.translationJsonPatcher('{0}: do you want to use a slash?', this.Name).extract(),
+          conversation: TranslationPack.translationJsonPatcher(
+            '{0}: do you want to use a slash to zhongyong {1} targets?',
+            this.Name,
+            TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
+          ).extract(),
           triggeredBySkills: [this.Name],
         };
         const response = await room.askForCardUse(askForUseCard, toIds[0]);
