@@ -7,6 +7,7 @@ export interface AudioService {
   playSkillAudio(
     skillName: string,
     gender: CharacterGender,
+    audioIndex?: number,
     skinData?: CharacterSkinInfo[],
     characterName?: string,
     skinName?: string,
@@ -42,6 +43,7 @@ class AudioPlayerService implements AudioService {
   async playSkillAudio(
     skillName: string,
     gender: CharacterGender,
+    audioIndex?: number,
     skinData?: CharacterSkinInfo[],
     characterName?: string,
     skinName?: string,
@@ -51,10 +53,10 @@ class AudioPlayerService implements AudioService {
     }
     try {
       if (skinName) {
-        const audioUrl = await this.loader.getCharacterSkinAudio(characterName!, skinName, skillName, skinData, gender);
+        const audioUrl = await this.loader.getCharacterSkinAudio(characterName!, skinName, skillName, audioIndex, skinData, gender);
         await this.play(audioUrl);
       } else {
-        const audioUrl = await this.loader.getSkillAudio(skillName, gender, characterName);
+        const audioUrl = await this.loader.getSkillAudio(skillName, gender, characterName, audioIndex);
         await this.play(audioUrl);
       }
     } catch {
@@ -77,7 +79,7 @@ class AudioPlayerService implements AudioService {
   async playDeathAudio(characterName: string, skinData: CharacterSkinInfo[], skinName?: string) {
     try {
       if (skinName) {
-        const audioUrl = await this.loader.getCharacterSkinAudio(characterName, skinName, 'death', skinData);
+        const audioUrl = await this.loader.getCharacterSkinAudio(characterName, skinName, 'death', NaN, skinData);
         await this.play(audioUrl);
       } else {
         const audioUrl = await this.loader.getDeathAudio(characterName);

@@ -227,12 +227,13 @@ export class CharacterSpec extends React.Component<CharacterSpecProps> {
       this.props.audioService.playSkillAudio(
         skillName,
         this.props.character.Gender,
+        Math.round(Math.random() * 1) + 1,
         this.props.skinData,
         this.props.character.Name,
         this.props.skinName,
       );
     } else {
-      this.props.audioService.playSkillAudio(skillName, this.props.character.Gender, [], this.props.character.Name);
+      this.props.audioService.playSkillAudio(skillName, this.props.character.Gender, Math.round(Math.random() * 1) + 1, [], this.props.character.Name);
     }
   };
   @mobx.action
