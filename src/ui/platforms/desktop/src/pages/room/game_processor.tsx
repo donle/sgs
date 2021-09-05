@@ -1,7 +1,7 @@
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { Character, CharacterId } from 'core/characters/character';
+import { Character, CharacterGender, CharacterId } from 'core/characters/character';
 import {
   CardMoveArea,
   CardMovedBySpecifiedReason,
@@ -388,6 +388,13 @@ export class GameClientProcessor {
   ) {
     this.presenter.addUserMessage(this.translator.trx(content.message));
     this.presenter.onIncomingMessage(content.playerId, content.originalMessage);
+    if (content.originalMessage.replace(/\$[a-z]*\:\d/, '') === '') {
+      // play skill audio
+      const msg = content.originalMessage;
+      const skill = msg.slice(1, msg.length - 2);
+      // const index = parseInt(msg[msg.length - 1]);
+      this.audioService.playSkillAudio(skill, CharacterGender.Male);
+    }
     this.presenter.broadcastUIUpdate();
     this.electron.flashFrame();
   }
