@@ -69,10 +69,14 @@ export class TwoVersusTwoGameProcessor extends StandardGameProcessor {
 
     this.room.broadcast(GameEventIdentifiers.DrawCardEvent, drawEvent);
     this.room.broadcast(GameEventIdentifiers.MoveCardEvent, {
-      moveReason: CardMoveReason.CardDraw,
-      movingCards: cardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
-      toArea: CardMoveArea.HandArea,
-      toId: playerId,
+      infos: [
+        {
+          moveReason: CardMoveReason.CardDraw,
+          movingCards: cardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
+          toArea: CardMoveArea.HandArea,
+          toId: playerId,
+        },
+      ],
     });
     this.room
       .getPlayerById(playerId)

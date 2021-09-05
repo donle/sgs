@@ -13,13 +13,16 @@ export class YaJiao extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>, stage?: AllStage) {
     return (
       stage === CardMoveStage.AfterCardMoved &&
-      event.movingCards.find(cardInfo => cardInfo.fromArea === CardMoveArea.HandArea) !== undefined &&
-      [CardMoveReason.CardResponse, CardMoveReason.CardUse].includes(event.moveReason)
+      event.infos.find(
+        info =>
+          info.movingCards.find(cardInfo => cardInfo.fromArea === CardMoveArea.HandArea) !== undefined &&
+          [CardMoveReason.CardResponse, CardMoveReason.CardUse].includes(info.moveReason),
+      ) !== undefined
     );
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
-    return owner.Id === content.fromId && room.CurrentPlayer.Id !== owner.Id;
+    return content.infos.find(info => owner.Id === info.fromId) !== undefined && room.CurrentPlayer.Id !== owner.Id;
   }
 
   async onTrigger() {
@@ -41,7 +44,7 @@ export class YaJiao extends TriggerSkill {
     };
     room.broadcast(GameEventIdentifiers.CardDisplayEvent, cardDisplayEvent);
 
-    const lostCard = Sanguosha.getCardById(cardUseOrResponseEvent.movingCards[0].card);
+    const lostCard = Sanguosha.getCardById(cardUseOrResponseEvent.infos[0].movingCards[0].card);
     const obtainedCard = Sanguosha.getCardById(card[0]);
     const sameType = lostCard.BaseType === obtainedCard.BaseType;
 

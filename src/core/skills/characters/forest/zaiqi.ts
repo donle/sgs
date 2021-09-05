@@ -28,15 +28,24 @@ export class ZaiQi extends TriggerSkill {
     let isUseable = owner.Id === content.playerId && content.toStage === PlayerPhaseStages.DropCardStageEnd;
     if (isUseable) {
       let droppedCardNum = 0;
-      room.Analytics.getRecordEvents<GameEventIdentifiers.MoveCardEvent>(
+      const record = room.Analytics.getRecordEvents<GameEventIdentifiers.MoveCardEvent>(
         event =>
           EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
-          event.toArea === CardMoveArea.DropStack,
+          event.infos.find(info => info.toArea === CardMoveArea.DropStack) !== undefined,
         content.playerId,
         'round',
-      ).forEach(event => {
-        droppedCardNum += event.movingCards.filter(mcard => Sanguosha.getCardById(mcard.card).isRed()).length;
-      });
+      );
+
+      for (const event of record) {
+        if (event.infos.length === 1) {
+          droppedCardNum += event.infos[0].movingCards.filter(card => !Sanguosha.isVirtualCardId(card.card)).length;
+        } else {
+          const infos = event.infos.filter(info => info.toArea === CardMoveArea.DropStack);
+          for (const info of infos) {
+            droppedCardNum += info.movingCards.filter(card => !Sanguosha.isVirtualCardId(card.card)).length;
+          }
+        }
+      }
 
       isUseable = droppedCardNum > 0;
       if (isUseable) {

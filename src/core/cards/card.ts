@@ -13,34 +13,46 @@ import {
 } from './libs/card_props';
 
 export function None<T extends Card>(constructor: new (...args: any) => any): any {
-  return (class extends constructor {
+  return class extends constructor {
     private readonly cardTargetNumber = CardTargetEnum.None;
     private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.None;
-  } as any) as T;
+  } as any as T;
 }
 export function Single<T extends Card>(constructor: new (...args: any) => any): any {
-  return (class extends constructor {
+  return class extends constructor {
     private readonly cardTargetNumber = CardTargetEnum.Single;
     private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.Single;
-  } as any) as T;
+  } as any as T;
 }
 export function Multiple<T extends Card>(constructor: new (...args: any) => any): any {
-  return (class extends constructor {
+  return class extends constructor {
     private readonly cardTargetNumber = CardTargetEnum.Multiple;
     private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.Multiple;
-  } as any) as T;
+  } as any as T;
 }
 export function Others<T extends Card>(constructor: new (...args: any) => any): any {
-  return (class extends constructor {
+  return class extends constructor {
     private readonly cardTargetNumber = CardTargetEnum.Others;
     private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.Others;
-  } as any) as T;
+  } as any as T;
 }
 export function Globe<T extends Card>(constructor: new (...args: any) => any): any {
-  return (class extends constructor {
+  return class extends constructor {
     private readonly cardTargetNumber = CardTargetEnum.Globe;
     private manualSetCardTargetNumber: CardTargetEnum = CardTargetEnum.Globe;
-  } as any) as T;
+  } as any as T;
+}
+
+export const enum CardType {
+  Basic,
+  Equip,
+  Weapon,
+  Shield,
+  OffenseRide,
+  DefenseRide,
+  Precious,
+  Trick,
+  DelayedTrick,
 }
 
 export abstract class Card {
@@ -123,6 +135,11 @@ export abstract class Card {
   public is(type: CardType) {
     return this.cardType.includes(type);
   }
+
+  public isCommonTrick() {
+    return false;
+  }
+
   public isSameType(card: Card) {
     const intersectionTypes = this.cardType.filter(subType => card.Type.includes(subType));
     return intersectionTypes.length === card.Type.length || intersectionTypes.length === this.cardType.length;
@@ -162,18 +179,6 @@ export abstract class Card {
   public reset() {
     this.manualSetCardTargetNumber = this.cardTargetNumber;
   }
-}
-
-export const enum CardType {
-  Basic,
-  Equip,
-  Weapon,
-  Shield,
-  OffenseRide,
-  DefenseRide,
-  Precious,
-  Trick,
-  DelayedTrick,
 }
 
 export const enum EquipCardCategory {

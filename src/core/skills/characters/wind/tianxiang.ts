@@ -28,7 +28,7 @@ export class TianXiang extends TriggerSkill {
   }
 
   isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
-    return Sanguosha.getCardById(cardId).Suit === CardSuit.Heart;
+    return Sanguosha.getCardById(cardId).Suit === CardSuit.Heart && room.canDropCard(owner, cardId);
   }
 
   public availableCardAreas() {

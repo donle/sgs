@@ -20,17 +20,44 @@ export class ShanJia extends TriggerSkill implements OnDefineReleaseTiming {
     if (owner.getFlag<number>(this.Name) === undefined) {
       const lostNum = room.Analytics.getRecordEvents<GameEventIdentifiers.MoveCardEvent>(
         event =>
-          event.fromId === owner.Id &&
-          event.toId !== owner.Id &&
-          event.movingCards &&
-          event.movingCards.find(
-            card =>
-              (card.fromArea === CardMoveArea.HandArea || card.fromArea === CardMoveArea.EquipArea) &&
-              Sanguosha.getCardById(card.card).is(CardType.Equip),
-          ) !== undefined &&
-          event.moveReason !== CardMoveReason.CardUse,
+          EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
+          event.infos.find(
+            info =>
+              info.fromId === owner.Id &&
+              info.toId !== owner.Id &&
+              info.movingCards &&
+              info.movingCards.find(
+                card =>
+                  (card.fromArea === CardMoveArea.HandArea || card.fromArea === CardMoveArea.EquipArea) &&
+                  Sanguosha.getCardById(card.card).is(CardType.Equip),
+              ) !== undefined &&
+              info.moveReason !== CardMoveReason.CardUse,
+          ) !== undefined,
       ).reduce<number>((sum, event) => {
-        return sum + event.movingCards.filter(card => Sanguosha.getCardById(card.card).is(CardType.Equip)).length;
+        if (event.infos.length === 1) {
+          return (
+            sum + event.infos[0].movingCards.filter(card => Sanguosha.getCardById(card.card).is(CardType.Equip)).length
+          );
+        } else {
+          const infos = event.infos.filter(
+            info =>
+              info.fromId === owner.Id &&
+              info.toId !== owner.Id &&
+              info.movingCards &&
+              info.movingCards.find(
+                card =>
+                  (card.fromArea === CardMoveArea.HandArea || card.fromArea === CardMoveArea.EquipArea) &&
+                  Sanguosha.getCardById(card.card).is(CardType.Equip),
+              ) !== undefined &&
+              info.moveReason !== CardMoveReason.CardUse,
+          );
+
+          for (const info of infos) {
+            sum += info.movingCards.filter(card => Sanguosha.getCardById(card.card).is(CardType.Equip)).length;
+          }
+        }
+
+        return sum;
       }, 0);
 
       const dropNum = 3 - lostNum;
@@ -84,33 +111,24 @@ export class ShanJia extends TriggerSkill implements OnDefineReleaseTiming {
     const dropNum = room.getFlag<number>(fromId, this.Name);
     let dropCards: CardId[] | undefined;
     if (dropNum && dropNum > 0) {
-      const response = await room.doAskForCommonly<GameEventIdentifiers.AskForCardEvent>(
-        GameEventIdentifiers.AskForCardEvent,
-        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForCardEvent>({
-          cardAmount: dropNum,
-          toId: fromId,
-          reason: this.Name,
-          conversation: TranslationPack.translationJsonPatcher(
-            '{0}: please drop {1} card(s), if all of them are equip card, you can use a virtual slash',
-            this.Name,
-            dropNum,
-          ).extract(),
-          fromArea: [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
-          triggeredBySkills: [this.Name],
-        }),
+      const response = await room.askForCardDrop(
         fromId,
+        dropNum,
+        [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
+        true,
+        undefined,
+        this.Name,
+        TranslationPack.translationJsonPatcher(
+          '{0}: please drop {1} card(s), if all of them are equip card, you can use a virtual slash',
+          this.Name,
+          dropNum,
+        ).extract(),
       );
 
-      if (response.selectedCards.length === 0) {
-        const wholeCards = room.getPlayerById(fromId).getPlayerCards();
-        for (let i = 0; response.selectedCards.length < wholeCards.length; i++) {
-          response.selectedCards.push(wholeCards[i]);
-        }
+      if (response) {
+        dropCards = response.droppedCards;
+        await room.dropCards(CardMoveReason.SelfDrop, dropCards, fromId, fromId, this.Name);
       }
-
-      dropCards = response.selectedCards;
-
-      await room.dropCards(CardMoveReason.SelfDrop, response.selectedCards, fromId, fromId, this.Name);
     }
 
     if (
@@ -178,15 +196,17 @@ export class ShanJiaShadow extends TriggerSkill {
     if (identifier === GameEventIdentifiers.MoveCardEvent) {
       const moveCardEvent = content as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
       return (
-        moveCardEvent.fromId === owner.Id &&
-        moveCardEvent.toId !== owner.Id &&
-        moveCardEvent.movingCards.find(
-          card =>
-            (card.fromArea === CardMoveArea.HandArea || card.fromArea === CardMoveArea.EquipArea) &&
-            Sanguosha.getCardById(card.card).is(CardType.Equip),
-        ) !== undefined &&
-        moveCardEvent.moveReason !== CardMoveReason.CardUse &&
-        owner.getFlag<number>(this.GeneralName) !== 0
+        moveCardEvent.infos.find(
+          info =>
+            info.fromId === owner.Id &&
+            info.toId !== owner.Id &&
+            info.movingCards.find(
+              card =>
+                (card.fromArea === CardMoveArea.HandArea || card.fromArea === CardMoveArea.EquipArea) &&
+                Sanguosha.getCardById(card.card).is(CardType.Equip),
+            ) !== undefined &&
+            info.moveReason !== CardMoveReason.CardUse,
+        ) !== undefined && owner.getFlag<number>(this.GeneralName) !== 0
       );
     }
 
@@ -218,11 +238,31 @@ export class ShanJiaShadow extends TriggerSkill {
           : room.getFlag<number>(fromId, this.GeneralName);
       if (recordNum > 0) {
         const moveCardEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
-        const newRecord = Math.max(
-          recordNum -
-            moveCardEvent.movingCards.filter(card => Sanguosha.getCardById(card.card).is(CardType.Equip)).length,
-          0,
-        );
+
+        let num: number = 0;
+        if (moveCardEvent.infos.length === 0) {
+          num += moveCardEvent.infos[0].movingCards.filter(card =>
+            Sanguosha.getCardById(card.card).is(CardType.Equip),
+          ).length;
+        } else {
+          const infos = moveCardEvent.infos.filter(
+            info =>
+              info.fromId === fromId &&
+              info.toId !== fromId &&
+              info.movingCards.find(
+                card =>
+                  (card.fromArea === CardMoveArea.HandArea || card.fromArea === CardMoveArea.EquipArea) &&
+                  Sanguosha.getCardById(card.card).is(CardType.Equip),
+              ) !== undefined &&
+              info.moveReason !== CardMoveReason.CardUse,
+          );
+
+          for (const info of infos) {
+            num += info.movingCards.filter(card => Sanguosha.getCardById(card.card).is(CardType.Equip)).length;
+          }
+        }
+
+        const newRecord = Math.max(recordNum - num, 0);
 
         room.setFlag<number>(
           fromId,

@@ -55,8 +55,8 @@ export class SanYao extends ActiveSkill {
     );
   }
 
-  public isAvailableCard(): boolean {
-    return true;
+  public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
+    return room.canDropCard(owner, cardId);
   }
 
   public async onUse(): Promise<boolean> {

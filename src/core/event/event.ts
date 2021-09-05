@@ -252,6 +252,7 @@ export const enum CardMoveReason {
   PlaceToDrawStack,
   CardUse,
   CardResponse,
+  Reforge,
 }
 
 export const enum CardMoveArea {
@@ -336,14 +337,21 @@ export class EventPacker {
     return (event as any).timestamp;
   };
 
-  static isDisresponsiveEvent = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>): boolean => {
-    return (event as any).disresponsive;
+  static isDisresponsiveEvent = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>, includeUnoffsetable?: boolean): boolean => {
+    return (event as any).disresponsive || (includeUnoffsetable && (event as any).unoffsetable);
   };
 
   static setDisresponsiveEvent = <T extends GameEventIdentifiers>(
     event: ServerEventFinder<T>,
   ): ServerEventFinder<T> => {
     (event as any).disresponsive = true;
+    return event;
+  };
+
+  static setUnoffsetableEvent = <T extends GameEventIdentifiers>(
+    event: ServerEventFinder<T>,
+  ): ServerEventFinder<T> => {
+    (event as any).unoffsetable = true;
     return event;
   };
 
@@ -426,6 +434,7 @@ export class EventPacker {
       copyUncancellable?: boolean;
       copyMiddlewares?: boolean;
       copyDisresponsive?: boolean;
+      copyUnoffsetable?: boolean;
     } = {},
   ) {
     const {
@@ -433,6 +442,7 @@ export class EventPacker {
       copyUncancellable = true,
       copyMiddlewares = true,
       copyDisresponsive = true,
+      copyUnoffsetable = true,
     } = configuration;
 
     if (copyTerminate && (fromEvent as any).terminate !== undefined) {
@@ -446,6 +456,9 @@ export class EventPacker {
     }
     if (copyDisresponsive && (fromEvent as any).disresponsive !== undefined) {
       (toEvent as any).disresponsive = (fromEvent as any).disresponsive;
+    }
+    if (copyUnoffsetable && (fromEvent as any).unoffsetable !== undefined) {
+      (toEvent as any).unoffsetable = (fromEvent as any).unoffsetable;
     }
   }
 

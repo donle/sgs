@@ -7,6 +7,7 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, PersistentSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'qinguo', description: 'qinguo_description' })
 export class QinGuo extends TriggerSkill {
@@ -28,6 +29,13 @@ export class QinGuo extends TriggerSkill {
 
   public isAvailableTarget(owner: PlayerId, room: Room, targetId: PlayerId): boolean {
     return room.canAttack(room.getPlayerById(owner), room.getPlayerById(targetId));
+  }
+
+  public getSkillLog(): PatchedTranslationObject {
+    return TranslationPack.translationJsonPatcher(
+      '{0}: do you want to use a virtual slash?',
+      this.Name,
+    ).extract();
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -64,9 +72,12 @@ export class QinGuoRecover extends TriggerSkill {
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): boolean {
     return (
-      ((content.toId === owner.Id && content.toArea === CardMoveArea.EquipArea) ||
-        (content.fromId === owner.Id &&
-          content.movingCards.find(card => card.fromArea === CardMoveArea.EquipArea) !== undefined)) &&
+      content.infos.find(
+        info =>
+          (info.toId === owner.Id && info.toArea === CardMoveArea.EquipArea) ||
+          (info.fromId === owner.Id &&
+            info.movingCards.find(card => card.fromArea === CardMoveArea.EquipArea) !== undefined),
+      ) !== undefined &&
       owner.Hp === owner.getCardIds(PlayerCardsArea.EquipArea).length &&
       EventPacker.getMiddleware<number>(this.GeneralName, content) !== undefined &&
       EventPacker.getMiddleware<number>(this.GeneralName, content) !==
@@ -107,9 +118,12 @@ export class QinGuoRecorder extends TriggerSkill {
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): boolean {
     return (
-      (content.toId === owner.Id && content.toArea === CardMoveArea.EquipArea) ||
-      (content.fromId === owner.Id &&
-        content.movingCards.find(card => card.fromArea === CardMoveArea.EquipArea) !== undefined)
+      content.infos.find(
+        info =>
+          (info.toId === owner.Id && info.toArea === CardMoveArea.EquipArea) ||
+          (info.fromId === owner.Id &&
+            info.movingCards.find(card => card.fromArea === CardMoveArea.EquipArea) !== undefined),
+      ) !== undefined
     );
   }
 

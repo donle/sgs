@@ -161,13 +161,16 @@ export class ShouFuRemove extends TriggerSkill {
       return (
         room.CurrentPhasePlayer === owner &&
         Lu.length > 0 &&
-        moveCardEvent.fromId === owner.Id &&
-        moveCardEvent.moveReason === CardMoveReason.SelfDrop &&
-        moveCardEvent.movingCards.filter(
-          card =>
-            Sanguosha.getCardById(card.card).is(Sanguosha.getCardById(Lu[0]).BaseType) &&
-            (card.fromArea === CardMoveArea.HandArea || card.fromArea === CardMoveArea.EquipArea),
-        ).length > 1
+        moveCardEvent.infos.find(
+          info =>
+            info.fromId === owner.Id &&
+            info.moveReason === CardMoveReason.SelfDrop &&
+            info.movingCards.filter(
+              card =>
+                Sanguosha.getCardById(card.card).is(Sanguosha.getCardById(Lu[0]).BaseType) &&
+                (card.fromArea === CardMoveArea.HandArea || card.fromArea === CardMoveArea.EquipArea),
+            ).length > 1,
+        ) !== undefined
       );
     }
 

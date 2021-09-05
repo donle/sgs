@@ -36,6 +36,10 @@ export class ZhenLiang extends ActiveSkill {
     selectedCards: CardId[],
     selectedTargets: PlayerId[],
   ): boolean {
+    if (!room.canDropCard(owner, cardId)) {
+      return false;
+    }
+
     const ownerPlayer = room.getPlayerById(owner);
     const ren = ownerPlayer.getCardIds(PlayerCardsArea.OutsideArea, MingRen.Name);
     return (

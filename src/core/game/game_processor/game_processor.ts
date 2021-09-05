@@ -1,6 +1,7 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { Character } from 'core/characters/character';
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { BaseGameEvent, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { MoveCardEventInfos } from 'core/event/event.server';
 import { Player } from 'core/player/player';
 import { PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { ServerRoom } from 'core/room/room.server';
@@ -56,23 +57,19 @@ export abstract class GameProcessor {
     event: E,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ): Promise<void>;
-  public abstract onHandleAsyncMoveCardEvent(
-    events: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[],
-    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
-  ): Promise<void>;
   public abstract createCardMoveMessage(
     from: Player | undefined,
     to: Player | undefined,
     cardIds: CardId[],
     actualCardIds: CardId[],
-    event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>,
+    event: MoveCardEventInfos & BaseGameEvent,
   ): void;
   public abstract moveCardInGameboard(
     from: Player | undefined,
     to: Player | undefined,
     cardIds: CardId[],
     actualCardIds: CardId[],
-    event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>,
+    event: MoveCardEventInfos & BaseGameEvent,
   ): Promise<void>;
   public abstract turnToNextPlayer(): Promise<void>;
   public abstract insertPlayerRound(player: PlayerId): void;

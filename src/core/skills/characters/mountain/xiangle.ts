@@ -49,7 +49,7 @@ export class XiangLe extends TriggerSkill {
       ).extract(),
     );
 
-    if (response.droppedCards.length <= 0) {
+    if (!response || response.droppedCards.length <= 0) {
       triggeredOnEvent.nullifiedTargets.push(liushanId);
     } else {
       await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, fromId, fromId, this.Name);

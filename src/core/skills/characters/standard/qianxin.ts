@@ -13,7 +13,7 @@ export class QianXin extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
-    return owner.Id === content.fromId && owner.Hp < owner.MaxHp;
+    return owner.Id === content.fromId && room.enableToAwaken(this.Name, owner);
   }
 
   public async onTrigger(

@@ -1,6 +1,6 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
-import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
@@ -40,6 +40,10 @@ export class CheZheng extends TriggerSkill {
         player => !room.withinAttackDistance(player, room.getPlayerById(fromId)) && player.getPlayerCards().length > 0,
       )
       .map(player => player.Id);
+    if (players.length === 0) {
+      return false;
+    }
+
     const resp = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingPlayerEvent>(
       GameEventIdentifiers.AskForChoosingPlayerEvent,
       {
@@ -50,6 +54,7 @@ export class CheZheng extends TriggerSkill {
         triggeredBySkills: [this.Name],
       },
       fromId,
+      true,
     );
 
     resp.selectedPlayers = resp.selectedPlayers || [players[Math.floor(Math.random() * players.length)]];
@@ -62,27 +67,18 @@ export class CheZheng extends TriggerSkill {
     };
 
     const chooseCardEvent =
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>({
+      {
         fromId,
         toId,
         options,
-      });
+      };
 
-    const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-      chooseCardEvent,
-      fromId,
-    );
-
-    if (response.selectedCardIndex !== undefined) {
-      const cardIds = to.getCardIds(PlayerCardsArea.HandArea);
-      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
-    } else if (response.selectedCard === undefined) {
-      const cardIds = to.getPlayerCards();
-      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
+    const response = await room.askForChoosingPlayerCard(chooseCardEvent, fromId, true, true);
+    if (!response) {
+      return false;
     }
 
-    await room.dropCards(CardMoveReason.PassiveDrop, [response.selectedCard], toId, fromId, this.Name);
+    await room.dropCards(CardMoveReason.PassiveDrop, [response.selectedCard!], toId, fromId, this.Name);
 
     return true;
   }

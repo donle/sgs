@@ -1,5 +1,5 @@
 import { CardChoosingOptions } from 'core/cards/libs/card_props';
-import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
@@ -53,25 +53,14 @@ export class GangLie extends TriggerSkill {
         triggeredBySkills: [this.Name],
       };
 
-      room.notify(
-        GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(chooseCardEvent),
-        skillUseEvent.fromId,
-      );
-
-      const response = await room.onReceivingAsyncResponseFrom(
-        GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-        skillUseEvent.fromId,
-      );
-
-      if (response.selectedCard === undefined) {
-        const cardIds = damageFrom.getCardIds(PlayerCardsArea.HandArea);
-        response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
+      const response = await room.askForChoosingPlayerCard(chooseCardEvent, chooseCardEvent.fromId, true, true);
+      if (!response) {
+        return false;
       }
 
       await room.dropCards(
         CardMoveReason.PassiveDrop,
-        [response.selectedCard],
+        [response.selectedCard!],
         chooseCardEvent.toId,
         skillUseEvent.fromId,
         this.Name,

@@ -34,7 +34,10 @@ export class HanBingJianSkill extends TriggerSkill {
 
     EventPacker.terminate(damageEvent);
     for (let i = 0; i < 2; i++) {
-      if (to.getPlayerCards().length === 0) {
+      if (
+        (to.Id === event.fromId && to.getCardIds().filter(id => room.canDropCard(event.fromId, id)).length === 0) ||
+        to.getPlayerCards().length === 0
+      ) {
         return false;
       }
 
@@ -50,25 +53,15 @@ export class HanBingJianSkill extends TriggerSkill {
         triggeredBySkills: [this.Name],
       };
 
-      room.notify(
-        GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(chooseCardEvent),
-        event.fromId,
-      );
+      const response = await room.askForChoosingPlayerCard(chooseCardEvent, chooseCardEvent.fromId, true, true);
 
-      const response = await room.onReceivingAsyncResponseFrom(
-        GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-        event.fromId,
-      );
-
-      if (response.selectedCard === undefined) {
-        const handCardIds = to.getCardIds(PlayerCardsArea.HandArea);
-        response.selectedCard = handCardIds[Math.floor(Math.random() * handCardIds.length)];
+      if (!response) {
+        return false;
       }
 
       await room.dropCards(
         CardMoveReason.PassiveDrop,
-        [response.selectedCard],
+        [response.selectedCard!],
         chooseCardEvent.toId,
         chooseCardEvent.fromId,
         this.Name,

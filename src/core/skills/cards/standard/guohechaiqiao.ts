@@ -1,6 +1,6 @@
 import { GuoHeChaiQiaoSkillTrigger } from 'core/ai/skills/cards/guohechaiqiao';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
-import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
@@ -57,7 +57,10 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill implements ExtralCardSkillPr
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const to = room.getPlayerById(Precondition.exists(event.toIds, 'Unknown targets in guohechaiqiao')[0]);
-    if (to.getCardIds().length === 0) {
+    if (
+      (to.Id === event.fromId && to.getCardIds().filter(id => room.canDropCard(to.Id, id)).length === 0) ||
+      to.getCardIds().length === 0
+    ) {
       return true;
     }
 
@@ -74,28 +77,15 @@ export class GuoHeChaiQiaoSkill extends ActiveSkill implements ExtralCardSkillPr
       triggeredBySkills: [this.Name],
     };
 
-    room.notify(
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(chooseCardEvent),
-      event.fromId!,
-    );
+    const response = await room.askForChoosingPlayerCard(chooseCardEvent, chooseCardEvent.fromId, true, true);
 
-    const response = await room.onReceivingAsyncResponseFrom(
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-      event.fromId!,
-    );
-
-    if (response.selectedCardIndex !== undefined) {
-      const cardIds = to.getCardIds(PlayerCardsArea.HandArea);
-      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
-    } else if (response.selectedCard === undefined) {
-      const cardIds = to.getCardIds();
-      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
+    if (!response) {
+      return false;
     }
 
     await room.dropCards(
       CardMoveReason.PassiveDrop,
-      [response.selectedCard],
+      [response.selectedCard!],
       chooseCardEvent.toId,
       chooseCardEvent.fromId,
       this.Name,

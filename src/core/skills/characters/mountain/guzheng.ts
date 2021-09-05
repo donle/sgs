@@ -24,9 +24,7 @@ export class GuZheng extends TriggerSkill {
 
     const events = room.Analytics.getCardDropRecord(content.playerId, 'phase');
     const findFunc = (event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) => {
-      return event.movingCards.find(({ card, fromArea }) => {
-        return fromArea === CardMoveArea.HandArea;
-      });
+      return event.infos.find(info => info.movingCards.find(card => card.fromArea === CardMoveArea.HandArea));
     };
     return events.find(findFunc) !== undefined;
   }
@@ -42,7 +40,9 @@ export class GuZheng extends TriggerSkill {
       event => {
         return (
           EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
-          (event.moveReason === CardMoveReason.SelfDrop || event.moveReason === CardMoveReason.PassiveDrop)
+          event.infos.find(
+            info => info.moveReason === CardMoveReason.SelfDrop || info.moveReason === CardMoveReason.PassiveDrop,
+          ) !== undefined
         );
       },
       undefined,
@@ -58,31 +58,33 @@ export class GuZheng extends TriggerSkill {
     const guzhengee = (triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>).playerId;
 
     events.forEach(event => {
-      const isGuzhengee = event.fromId === guzhengee;
-      event.movingCards.forEach(({ card, fromArea }) => {
-        if (
-          !allCards
-            .map(card => {
-              return card.cardId;
-            })
-            .includes(card)
-        ) {
-          if (room.isCardInDropStack(card)) {
-            if (isGuzhengee === true && fromArea === CardMoveArea.HandArea) {
-              allCards.push({ cardId: card, enableToReturn: true });
-            } else {
-              allCards.push({ cardId: card, enableToReturn: false });
+      for (const info of event.infos) {
+        const isGuzhengee = info.fromId === guzhengee;
+        info.movingCards.forEach(({ card, fromArea }) => {
+          if (
+            !allCards
+              .map(card => {
+                return card.cardId;
+              })
+              .includes(card)
+          ) {
+            if (room.isCardInDropStack(card)) {
+              if (isGuzhengee === true && fromArea === CardMoveArea.HandArea) {
+                allCards.push({ cardId: card, enableToReturn: true });
+              } else {
+                allCards.push({ cardId: card, enableToReturn: false });
+              }
+            }
+          } else {
+            const index = allCards.findIndex(({ cardId, enableToReturn }) => {
+              return cardId === card && enableToReturn === false;
+            });
+            if (index >= 0) {
+              allCards[index].enableToReturn = true;
             }
           }
-        } else {
-          const index = allCards.findIndex(({ cardId, enableToReturn }) => {
-            return cardId === card && enableToReturn === false;
-          });
-          if (index >= 0) {
-            allCards[index].enableToReturn = true;
-          }
-        }
-      });
+        });
+      }
     });
 
     const displayCardIds: CardId[] = [];

@@ -57,10 +57,12 @@ export class YiJiShadow extends TriggerSkill {
   ) {
     const identifier = EventPacker.getIdentifier(content);
     if (identifier === GameEventIdentifiers.DrawCardEvent) {
-      return owner.Id === content.fromId && !!content.triggeredBySkills?.includes(this.GeneralName);
+      const drawCardEvent = content as ServerEventFinder<GameEventIdentifiers.DrawCardEvent>;
+      return owner.Id === drawCardEvent.fromId && !!drawCardEvent.triggeredBySkills?.includes(this.GeneralName);
     } else if (identifier === GameEventIdentifiers.MoveCardEvent) {
       content = content as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
-      const from = content.fromId && room.getPlayerById(content.fromId);
+      const info = content.infos[0];
+      const from = info.fromId && room.getPlayerById(info.fromId);
       if (!from) {
         return false;
       }
@@ -72,8 +74,8 @@ export class YiJiShadow extends TriggerSkill {
       }
 
       return (
-        owner.Id === content.fromId &&
-        content.toArea === CardMoveArea.HandArea &&
+        owner.Id === info.fromId &&
+        info.toArea === CardMoveArea.HandArea &&
         !!content.triggeredBySkills?.includes(this.GeneralName) &&
         usedTimes < 2
       );

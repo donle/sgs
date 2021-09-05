@@ -57,7 +57,7 @@ export class ShenSu extends TriggerSkill {
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
     if (room.getPlayerById(owner).getFlag<PlayerPhase>(this.Name) === PlayerPhase.PlayCardStage) {
-      return Sanguosha.getCardById(cardId).is(CardType.Equip);
+      return Sanguosha.getCardById(cardId).is(CardType.Equip) && room.canDropCard(owner, cardId);
     }
     return false;
   }

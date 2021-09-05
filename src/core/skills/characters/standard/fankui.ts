@@ -1,5 +1,5 @@
 import { CardChoosingOptions } from 'core/cards/libs/card_props';
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
@@ -52,24 +52,13 @@ export class FanKui extends TriggerSkill {
         triggeredBySkills: [this.Name],
       };
 
-      room.notify(
-        GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(chooseCardEvent),
-        skillUseEvent.fromId,
-      );
-
-      const response = await room.onReceivingAsyncResponseFrom(
-        GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-        skillUseEvent.fromId,
-      );
-
-      if (response.selectedCard === undefined) {
-        const cardIds = damageFrom.getCardIds(PlayerCardsArea.HandArea);
-        response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
+      const response = await room.askForChoosingPlayerCard(chooseCardEvent, chooseCardEvent.fromId, false, true);
+      if (!response) {
+        return false;
       }
 
       await room.moveCards({
-        movingCards: [{ card: response.selectedCard, fromArea: response.fromArea }],
+        movingCards: [{ card: response.selectedCard!, fromArea: response.fromArea }],
         fromId: chooseCardEvent.toId,
         toId: chooseCardEvent.fromId,
         toArea: CardMoveArea.HandArea,

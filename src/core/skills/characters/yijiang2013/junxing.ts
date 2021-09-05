@@ -21,8 +21,8 @@ export class JunXing extends ActiveSkill {
     return cards.length > 0;
   }
 
-  public isAvailableCard() {
-    return true;
+  public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
+    return room.canDropCard(owner, cardId);
   }
 
   public numberOfTargets() {
@@ -60,7 +60,7 @@ export class JunXing extends ActiveSkill {
         TranslationPack.translationJsonPatcher('{0}: drop {1} cards or turn over', this.Name, dropCardsNum).toString(),
       );
 
-      if (response.droppedCards.length === dropCardsNum) {
+      if (response && response.droppedCards.length === dropCardsNum) {
         await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toId);
         await room.loseHp(toId, 1);
       } else {

@@ -134,20 +134,18 @@ export class XunYiEffect extends TriggerSkill {
       await room.drawCards(1, player, 'top', player, this.GeneralName);
     } else {
       const player = target === damageEvent.toId ? fromId : target;
-      const response = await room.doAskForCommonly<GameEventIdentifiers.AskForCardDropEvent>(
-        GameEventIdentifiers.AskForCardDropEvent,
-        {
-          toId: fromId,
-          fromArea: [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
-          cardAmount: 1,
-          triggeredBySkills: [this.GeneralName],
-        },
-        player,
+      const response = await room.askForCardDrop(
+        fromId,
+        1,
+        [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
         true,
+        undefined,
+        this.Name,
+        TranslationPack.translationJsonPatcher('{0}: please drop a card', this.Name).extract(),
       );
-
-      const playerCards = room.getPlayerById(player).getPlayerCards();
-      response.droppedCards = response.droppedCards || playerCards[Math.floor(Math.random() * playerCards.length)];
+      if (!response) {
+        return false;
+      }
 
       await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, player, player, this.GeneralName);
     }

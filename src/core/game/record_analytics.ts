@@ -251,13 +251,16 @@ export class RecordAnalytics {
     return this.getRecordEvents<GameEventIdentifiers.MoveCardEvent>(
       event =>
         EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
-        !(
-          player === event.toId &&
-          (event.toArea === PlayerCardsArea.HandArea || event.toArea === PlayerCardsArea.EquipArea)
-        ) &&
-        event.fromId === player &&
-        event.movingCards.find(
-          cardInfo => cardInfo.fromArea === CardMoveArea.HandArea || cardInfo.fromArea === CardMoveArea.EquipArea,
+        event.infos.find(
+          info =>
+            !(
+              player === info.toId &&
+              (info.toArea === PlayerCardsArea.HandArea || info.toArea === PlayerCardsArea.EquipArea)
+            ) &&
+            info.fromId === player &&
+            info.movingCards.find(
+              cardInfo => cardInfo.fromArea === CardMoveArea.HandArea || cardInfo.fromArea === CardMoveArea.EquipArea,
+            ) !== undefined,
         ) !== undefined,
       undefined,
       current,
@@ -274,8 +277,7 @@ export class RecordAnalytics {
     return this.getRecordEvents<GameEventIdentifiers.MoveCardEvent>(
       event =>
         EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
-        event.toId === player &&
-        event.toArea === CardMoveArea.HandArea,
+        event.infos.find(info => info.toId === player && info.toArea === CardMoveArea.HandArea) !== undefined,
       undefined,
       current,
       inPhase,
@@ -291,8 +293,7 @@ export class RecordAnalytics {
     return this.getRecordEvents<GameEventIdentifiers.MoveCardEvent>(
       event =>
         EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
-        event.toId === player &&
-        event.moveReason === CardMoveReason.CardDraw,
+        event.infos.find(info => info.toId === player && info.moveReason === CardMoveReason.CardDraw) !== undefined,
       undefined,
       current,
       inPhase,
@@ -308,8 +309,11 @@ export class RecordAnalytics {
     return this.getRecordEvents<GameEventIdentifiers.MoveCardEvent>(
       event =>
         EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
-        event.fromId === player &&
-        (event.moveReason === CardMoveReason.SelfDrop || event.moveReason === CardMoveReason.PassiveDrop),
+        event.infos.find(
+          info =>
+            info.fromId === player &&
+            (info.moveReason === CardMoveReason.SelfDrop || info.moveReason === CardMoveReason.PassiveDrop),
+        ) !== undefined,
       undefined,
       current,
       inPhase,
@@ -323,7 +327,9 @@ export class RecordAnalytics {
     num: number = 0,
   ): ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[] {
     return this.getRecordEvents<GameEventIdentifiers.MoveCardEvent>(
-      event => EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent && event.proposer === player,
+      event =>
+        EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
+        event.infos.find(info => info.proposer === player) !== undefined,
       undefined,
       current,
       inPhase,
@@ -369,31 +375,93 @@ export class RecordAnalytics {
   }
   public getLostCard(player: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
     return this.getCardLostRecord(player, current, inPhase, num).reduce<MovingCardType[]>((allCards, event) => {
-      allCards.push(...event.movingCards);
+      if (event.infos.length === 1) {
+        allCards.push(...event.infos[0].movingCards);
+      } else {
+        const infos = event.infos.filter(
+          info =>
+            !(
+              player === info.toId &&
+              (info.toArea === PlayerCardsArea.HandArea || info.toArea === PlayerCardsArea.EquipArea)
+            ) &&
+            info.fromId === player &&
+            info.movingCards.find(
+              cardInfo => cardInfo.fromArea === CardMoveArea.HandArea || cardInfo.fromArea === CardMoveArea.EquipArea,
+            ) !== undefined,
+        );
+
+        for (const info of infos) {
+          allCards.push(...info.movingCards);
+        }
+      }
       return allCards;
     }, []);
   }
   public getObtainedCard(player: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
     return this.getCardObtainedRecord(player, current, inPhase, num).reduce<CardId[]>((allCards, event) => {
-      allCards.push(...event.movingCards.map(cardInfo => cardInfo.card));
+      if (event.infos.length === 1) {
+        allCards.push(...event.infos[0].movingCards.map(cardInfo => cardInfo.card));
+      } else {
+        const infos = event.infos.filter(
+          info => event.infos.find(info => info.toId === player && info.toArea === CardMoveArea.HandArea) !== undefined,
+        );
+
+        for (const info of infos) {
+          allCards.push(...info.movingCards.map(cardInfo => cardInfo.card));
+        }
+      }
       return allCards;
     }, []);
   }
   public getDrawedCard(player: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
     return this.getCardDrawRecord(player, current, inPhase, num).reduce<CardId[]>((allCards, event) => {
-      allCards.push(...event.movingCards.map(cardInfo => cardInfo.card));
+      if (event.infos.length === 1) {
+        allCards.push(...event.infos[0].movingCards.map(cardInfo => cardInfo.card));
+      } else {
+        const infos = event.infos.filter(
+          info =>
+            event.infos.find(info => info.toId === player && info.moveReason === CardMoveReason.CardDraw) !== undefined,
+        );
+
+        for (const info of infos) {
+          allCards.push(...info.movingCards.map(cardInfo => cardInfo.card));
+        }
+      }
       return allCards;
     }, []);
   }
   public getDroppedCard(player: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
     return this.getCardDropRecord(player, current, inPhase, num).reduce<CardId[]>((allCards, event) => {
-      allCards.push(...event.movingCards.map(cardInfo => cardInfo.card));
+      if (event.infos.length === 1) {
+        allCards.push(...event.infos[0].movingCards.map(cardInfo => cardInfo.card));
+      } else {
+        const infos = event.infos.filter(
+          info =>
+            event.infos.find(
+              info =>
+                info.fromId === player &&
+                (info.moveReason === CardMoveReason.SelfDrop || info.moveReason === CardMoveReason.PassiveDrop),
+            ) !== undefined,
+        );
+
+        for (const info of infos) {
+          allCards.push(...info.movingCards.map(cardInfo => cardInfo.card));
+        }
+      }
       return allCards;
     }, []);
   }
   public getMovedCard(player: PlayerId, current?: RecordCurrentType, inPhase?: PlayerPhase[], num: number = 0) {
     return this.getCardMoveRecord(player, current, inPhase, num).reduce<MovingCardType[]>((allCards, event) => {
-      allCards.push(...event.movingCards);
+      if (event.infos.length === 1) {
+        allCards.push(...event.infos[0].movingCards);
+      } else {
+        const infos = event.infos.filter(info => event.infos.find(info => info.proposer === player) !== undefined);
+
+        for (const info of infos) {
+          allCards.push(...info.movingCards);
+        }
+      }
       return allCards;
     }, []);
   }

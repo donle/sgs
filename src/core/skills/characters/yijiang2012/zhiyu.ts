@@ -50,7 +50,7 @@ export class ZhiYu extends TriggerSkill {
     const firstCardColor = Sanguosha.getCardById(handCards[0]).Color;
     const inSameColor = handCards.find(cardId => Sanguosha.getCardById(cardId).Color !== firstCardColor) === undefined;
     if (inSameColor) {
-      const { droppedCards } = await room.askForCardDrop(
+      const response = await room.askForCardDrop(
         damageEvent.fromId,
         1,
         [PlayerCardsArea.HandArea],
@@ -58,7 +58,17 @@ export class ZhiYu extends TriggerSkill {
         undefined,
         this.Name,
       );
-      await room.dropCards(CardMoveReason.SelfDrop, droppedCards, damageEvent.fromId, damageEvent.fromId, this.Name);
+      if (!response) {
+        return false;
+      }
+
+      await room.dropCards(
+        CardMoveReason.SelfDrop,
+        response.droppedCards,
+        damageEvent.fromId,
+        damageEvent.fromId,
+        this.Name,
+      );
     }
     return true;
   }

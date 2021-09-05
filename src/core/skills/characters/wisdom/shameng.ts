@@ -25,6 +25,10 @@ export class ShaMeng extends ActiveSkill {
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId, selectedCards: CardId[]): boolean {
+    if (!room.canDropCard(owner, cardId)) {
+      return false;
+    }
+
     if (selectedCards.length === 1) {
       return Sanguosha.getCardById(cardId).Color === Sanguosha.getCardById(selectedCards[0]).Color;
     }

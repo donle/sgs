@@ -14,13 +14,16 @@ export class ZhanJi extends TriggerSkill {
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): boolean {
     return (
-      content.toId === owner.Id &&
       room.CurrentPhasePlayer === owner &&
       room.CurrentPlayerPhase === PlayerPhase.PlayCardStage &&
-      content.toArea === CardMoveArea.HandArea &&
-      content.moveReason === CardMoveReason.CardDraw &&
-      content.movedByReason !== this.Name &&
-      content.movedByReason !== ZiShu.Name
+      content.infos.find(
+        info =>
+          info.toId === owner.Id &&
+          info.toArea === CardMoveArea.HandArea &&
+          info.moveReason === CardMoveReason.CardDraw &&
+          info.movedByReason !== this.Name &&
+          info.movedByReason !== ZiShu.Name,
+      ) !== undefined
     );
   }
 

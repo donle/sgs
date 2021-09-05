@@ -173,6 +173,7 @@ export const enum DamageEffectStage {
   DamageStart = 'DamageStart',
   DamageEffect = 'DamageEffect',
   DamagedEffect = 'DamagedEffect',
+  DamageDone = 'DamageDone',
   AfterDamageEffect = 'AfterDamageEffect',
   AfterDamagedEffect = 'AfterDamagedEffect',
 }
@@ -322,6 +323,7 @@ const gameEventStageList: {
     DamageEffectStage.DamageStart,
     DamageEffectStage.DamageEffect,
     DamageEffectStage.DamagedEffect,
+    DamageEffectStage.DamageDone,
     DamageEffectStage.AfterDamageEffect,
     DamageEffectStage.AfterDamagedEffect,
   ],

@@ -37,6 +37,14 @@ export class TongJi extends TriggerSkill {
   public async beforeUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     const { fromId, triggeredOnEvent } = event;
     const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
+    if (
+      !room
+        .getPlayerById(aimEvent.toId)
+        .getPlayerCards()
+        .find(id => room.canDropCard(aimEvent.toId, id))
+    ) {
+      return false;
+    }
 
     const response = await room.askForCardDrop(
       aimEvent.toId,
@@ -53,7 +61,7 @@ export class TongJi extends TriggerSkill {
       ).extract(),
     );
 
-    if (response.droppedCards.length > 0) {
+    if (response && response.droppedCards.length > 0) {
       event.cardIds = response.droppedCards;
       return true;
     }

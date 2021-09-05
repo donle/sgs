@@ -66,6 +66,13 @@ export const generalDictionary: Word[] = [
   { source: 'offense ride card', target: '进攻马' },
   { source: 'precious card', target: '宝物牌' },
 
+  { source: 'abbr:basic', target: '基' },
+  { source: 'abbr:trick', target: '锦' },
+  { source: 'abbr:equip', target: '装' },
+
+  { source: 'red', target: '红色' },
+  { source: 'black', target: '黑色' },
+
   { source: 'weapon section', target: '武器栏' },
   { source: 'shield section', target: '防具栏' },
   { source: 'ride section', target: '坐骑栏' },
@@ -94,11 +101,10 @@ export const eventDictionary: Word[] = [
 
   { source: 'yes', target: '是' },
   { source: 'no', target: '否' },
+  { source: '{0} chose {1}', target: '{0} 选择了 {1}' },
   { source: '({0})', target: '({0})' },
   { source: '[{0}]', target: '[{0}]' },
   { source: 'nosuit', target: '无色' },
-  { source: 'red', target: '黑色' },
-  { source: 'black', target: '红色' },
   { source: '[', target: '【' },
   { source: ']', target: '】' },
   { source: '{0} round start', target: '====== {0} 的回合开始 ======' },

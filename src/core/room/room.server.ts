@@ -27,9 +27,9 @@ import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props'
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { CardId } from 'core/cards/libs/card_props';
+import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { Character, CharacterEquipSections, CharacterId } from 'core/characters/character';
-import { PinDianProcedure, PinDianReport } from 'core/event/event.server';
+import { MoveCardEventInfos, PinDianProcedure, PinDianReport } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { GameProcessor } from 'core/game/game_processor/game_processor';
 import { GameInfo } from 'core/game/game_props';
@@ -684,6 +684,19 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     bySkill?: string,
     conversation?: string | PatchedTranslationObject,
   ) {
+    const cannotDropIds: CardId[] = [];
+    except = except || [];
+    const cardFilter = (id: CardId) => !(this.canDropCard(playerId, id) || except!.includes(id));
+
+    for (const area of fromArea) {
+      cannotDropIds.push(...this.getPlayerById(playerId).getCardIds(area).filter(cardFilter));
+    }
+
+    if (cannotDropIds.length > 0) {
+      except = except || [];
+      except.push(...cannotDropIds);
+    }
+
     const event: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent> = EventPacker.createIdentifierEvent(
       GameEventIdentifiers.AskForCardDropEvent,
       {
@@ -712,7 +725,26 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
 
     this.notify(GameEventIdentifiers.AskForCardDropEvent, event, playerId);
-    return await this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardDropEvent, playerId);
+    const response = await this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardDropEvent, playerId);
+
+    if (EventPacker.isUncancellabelEvent(event) && response.droppedCards.length === 0) {
+      const canDropCards: CardId[] = [];
+      for (const area of fromArea) {
+        canDropCards.push(
+          ...this.getPlayerById(playerId)
+            .getCardIds(area)
+            .filter(id => !except?.includes(id)),
+        );
+      }
+
+      while (canDropCards.length === 0 || response.droppedCards.length === event.cardAmount) {
+        const index = Math.floor(Math.random() * canDropCards.length);
+        response.droppedCards.push(canDropCards[index]);
+        canDropCards.splice(index, 1);
+      }
+    }
+
+    return response;
   }
 
   public async askForPeach(event: ServerEventFinder<GameEventIdentifiers.AskForPeachEvent>) {
@@ -822,6 +854,68 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     return responseEvent;
   }
 
+  public async askForChoosingPlayerCard(
+    event: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>,
+    to: PlayerId,
+    toDiscard?: boolean,
+    uncancellable?: boolean,
+  ): Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent> | void> {
+    uncancellable &&
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(event);
+
+    if (to === event.toId) {
+      const newOption: CardChoosingOptions = {};
+      for (const [area, cardIds] of Object.entries(event.options)) {
+        if (cardIds) {
+          let ids =
+            (Number(area) as PlayerCardsArea) === PlayerCardsArea.HandArea
+              ? this.getPlayerById(to).getCardIds(PlayerCardsArea.HandArea)
+              : cardIds;
+          if (ids instanceof Array) {
+            toDiscard && (ids = ids.filter(id => this.canDropCard(to, id)));
+            ids.length > 0 && (newOption[area] = ids);
+          } else {
+            newOption[area] = ids;
+          }
+        }
+      }
+
+      event.options = newOption;
+    }
+
+    if (Object.values(event.options).length === 0) {
+      return;
+    }
+
+    this.notify(GameEventIdentifiers.AskForChoosingCardFromPlayerEvent, event, to);
+
+    const response = await this.onReceivingAsyncResponseFrom(
+      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
+      to,
+    );
+
+    if (response.selectedCardIndex !== undefined) {
+      const cardIds =
+        to === event.toId
+          ? this.getPlayerById(to)
+              .getCardIds(PlayerCardsArea.HandArea)
+              .filter(id => this.canDropCard(to, id))
+          : this.getPlayerById(event.toId).getCardIds(PlayerCardsArea.HandArea);
+      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
+    } else if (EventPacker.isUncancellabelEvent(event) && response.selectedCard === undefined) {
+      const cardIds = Object.values(event.options).reduce<CardId[]>((allIds, option) => {
+        if (option) {
+          return allIds.concat(option);
+        }
+
+        return allIds;
+      }, []);
+      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
+    }
+
+    return response;
+  }
+
   public async doAskForCommonly<T extends GameEventIdentifiers>(
     type: T,
     event: ServerEventFinder<T>,
@@ -841,7 +935,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     await this.moveCards({
       fromId: from.Id,
       movingCards: [{ card: cardId, fromArea: CardMoveArea.HandArea }],
-      moveReason: CardMoveReason.PlaceToDropStack,
+      moveReason: CardMoveReason.Reforge,
       toArea: CardMoveArea.DropStack,
       proposer: from.Id,
       translationsMessage: TranslationPack.translationJsonPatcher(
@@ -1050,6 +1144,15 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
     await super.useCard(event);
 
+    if (
+      event.responseToEvent &&
+      EventPacker.getIdentifier(event.responseToEvent) === GameEventIdentifiers.CardEffectEvent
+    ) {
+      const cardEffectEvent = event.responseToEvent as ServerEventFinder<GameEventIdentifiers.CardEffectEvent>;
+      cardEffectEvent.cardIdsResponded = cardEffectEvent.cardIdsResponded || [];
+      cardEffectEvent.cardIdsResponded.push(event.cardId);
+    }
+
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, event, async stage => {
       if (
         stage !== CardUseStage.CardUseFinishedEffect &&
@@ -1188,6 +1291,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             }
 
             await onCardEffect(singleCardEffectEvent);
+
+            if (singleCardEffectEvent.cardIdsResponded) {
+              event.cardIdsResponded = event.cardIdsResponded || [];
+              event.cardIdsResponded.push(...singleCardEffectEvent.cardIdsResponded);
+            }
           }
         }
 
@@ -1383,6 +1491,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     droppedBy?: PlayerId,
     byReason?: string,
   ) {
+    if (droppedBy !== undefined && droppedBy === playerId && moveReason === CardMoveReason.SelfDrop) {
+      cardIds = cardIds.filter(id => this.canDropCard(droppedBy!, id));
+    }
+
     if (cardIds.length === 0) {
       return;
     }
@@ -1412,68 +1524,50 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     );
   }
 
-  public async moveCards(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
-    if (event.movingCards.length === 0) {
-      return;
-    }
-
-    const from = event.fromId ? this.getPlayerById(event.fromId) : undefined;
-    event.movingCards = event.movingCards.reduce<
-      {
-        card: CardId;
-        fromArea?: CardMoveArea | PlayerCardsArea;
-      }[]
-    >((allCards, cardInfo) => {
-      if (Card.isVirtualCardId(cardInfo.card)) {
-        const card = Sanguosha.getCardById<VirtualCard>(cardInfo.card);
-        if (!Sanguosha.isTransformCardSill(card.GeneratedBySkill)) {
-          allCards.push(
-            ...card.ActualCardIds.map(cardId => ({
-              card: cardId,
-              fromArea: from?.cardFrom(cardId),
-              asideMove: true,
-            })),
-          );
-        }
+  public async moveCards(...infos: MoveCardEventInfos[]) {
+    const event = { infos };
+    const toRemove: MoveCardEventInfos[] = [];
+    for (const info of event.infos) {
+      if (info.movingCards.length === 0) {
+        toRemove.push(info);
+        continue;
       }
 
-      allCards.push(cardInfo);
+      const from = info.fromId ? this.getPlayerById(info.fromId) : undefined;
+      info.movingCards = info.movingCards.reduce<
+        {
+          card: CardId;
+          fromArea?: CardMoveArea | PlayerCardsArea;
+        }[]
+      >((allCards, cardInfo) => {
+        if (Card.isVirtualCardId(cardInfo.card)) {
+          const card = Sanguosha.getCardById<VirtualCard>(cardInfo.card);
+          if (!Sanguosha.isTransformCardSill(card.GeneratedBySkill)) {
+            allCards.push(
+              ...card.ActualCardIds.map(cardId => ({
+                card: cardId,
+                fromArea: from?.cardFrom(cardId),
+                asideMove: true,
+              })),
+            );
+          }
+        }
 
-      return allCards;
-    }, []);
+        allCards.push(cardInfo);
+
+        return allCards;
+      }, []);
+    }
+
+    event.infos.filter(info => !toRemove.includes(info));
+    if (event.infos.length === 0) {
+      return;
+    }
 
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.MoveCardEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.MoveCardEvent, event),
     );
-  }
-
-  public async asyncMoveCards(events: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>[]) {
-    events.sort((prev, next) => {
-      if (prev.fromId !== undefined && next.fromId !== undefined) {
-        const prevPosition = this.getPlayerById(prev.fromId).Position;
-        const nextPosition = this.getPlayerById(next.fromId).Position;
-        if (prevPosition < nextPosition) {
-          return -1;
-        } else if (prevPosition === nextPosition) {
-          return 0;
-        }
-        return 1;
-      } else if (prev.toId !== undefined && next.toId !== undefined) {
-        const prevPosition = this.getPlayerById(prev.toId).Position;
-        const nextPosition = this.getPlayerById(next.toId).Position;
-        if (prevPosition < nextPosition) {
-          return -1;
-        } else if (prevPosition === nextPosition) {
-          return 0;
-        }
-        return 1;
-      }
-
-      return -1;
-    });
-
-    await this.gameProcessor.onHandleAsyncMoveCardEvent(events);
   }
 
   public async damage(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>): Promise<void> {
@@ -1617,19 +1711,22 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           return pos1 < pos2 ? 1 : -1;
         });
 
+        const moveCardInfos: MoveCardEventInfos[] = [];
         for (const target of targetList) {
           const currentResponse = responses.find(resp => resp.fromId === target);
           if (!currentResponse) {
             continue;
           }
 
-          await this.moveCards({
+          moveCardInfos.push({
             movingCards: [{ card: currentResponse.pindianCard, fromArea: PlayerCardsArea.HandArea }],
             fromId: target,
             toArea: CardMoveArea.ProcessingArea,
             moveReason: CardMoveReason.ActiveMove,
           });
         }
+
+        await this.moveCards(...moveCardInfos);
 
         return true;
       }
@@ -1723,11 +1820,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     if (this.CurrentPhasePlayer.Id === player) {
       this.gameProcessor.skip(phase);
       if (phase !== undefined) {
-        const event: ServerEventFinder<GameEventIdentifiers.PhaseSkippedEvent> = {
+        const event = EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseSkippedEvent, {
           playerId: player,
           skippedPhase: phase,
-        };
-        await this.trigger(EventPacker.createIdentifierEvent(GameEventIdentifiers.PhaseSkippedEvent, event));
+        });
+        this.analytics.record(event, this.isPlaying() ? this.CurrentPlayerPhase : undefined);
+        await this.trigger(event);
       }
     }
   }

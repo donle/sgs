@@ -111,9 +111,6 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   public async onReceivingAsyncResponseFrom(): Promise<any> {
     this.throwUntouchableError(this.onReceivingAsyncResponseFrom.name);
   }
-  public async asyncMoveCards(): Promise<void> {
-    this.throwUntouchableError(this.asyncMoveCards.name);
-  }
   public clearHeaded() {
     this.throwUntouchableError(this.clearHeaded.name);
   }
@@ -176,6 +173,10 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   //Server only
   public async askForCardResponse(): Promise<any> {
     this.throwUntouchableError(this.askForCardResponse.name);
+  }
+  //Server only
+  public async askForChoosingPlayerCard(): Promise<any> {
+    this.throwUntouchableError(this.askForChoosingPlayerCard.name);
   }
   //Server only
   public async doAskForCommonly(): Promise<any> {

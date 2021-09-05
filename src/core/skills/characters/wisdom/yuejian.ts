@@ -2,6 +2,7 @@ import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PlayerDyingStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
+import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, RulesBreakerSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
@@ -22,8 +23,8 @@ export class YueJian extends TriggerSkill {
     return cards.length === 2;
   }
 
-  public isAvailableCard(): boolean {
-    return true;
+  public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
+    return room.canDropCard(owner, cardId);
   }
 
   public getSkillLog(

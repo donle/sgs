@@ -1,5 +1,5 @@
 import { CardId } from 'core/cards/libs/card_props';
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, CardMoveStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -13,12 +13,19 @@ export class LianYing extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
-    const lostCards = content.movingCards.filter(({ fromArea }) => fromArea === PlayerCardsArea.HandArea);
-    room.setFlag(owner.Id, this.Name, lostCards.length);
-
-    return (
-      owner.Id === content.fromId && lostCards.length > 0 && owner.getCardIds(PlayerCardsArea.HandArea).length === 0
+    const infos = content.infos.filter(
+      info => owner.Id === info.fromId && info.movingCards.find(({ fromArea }) => fromArea === CardMoveArea.HandArea),
     );
+    const canUse = infos.length > 0 && owner.getCardIds(PlayerCardsArea.HandArea).length === 0;
+
+    if (canUse) {
+      const num = infos.reduce<number>((sum, info) => {
+        return sum + info.movingCards.filter(card => card.fromArea === CardMoveArea.HandArea).length;
+      }, 0);
+      room.setFlag(owner.Id, this.Name, num);
+    }
+
+    return canUse;
   }
 
   targetFilter(room: Room, owner: Player, targets: PlayerId[]) {

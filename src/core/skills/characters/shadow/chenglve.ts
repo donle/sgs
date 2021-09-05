@@ -1,6 +1,6 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
-import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { INFINITE_DISTANCE, INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import { AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
@@ -51,38 +51,21 @@ export class ChengLve extends ActiveSkill {
     const skillState = from.getSwitchSkillState(this.Name) === SwitchSkillState.Yang;
     await room.drawCards(skillState ? 1 : 2, fromId, 'top', fromId, this.Name);
 
-    const hands = from.getCardIds(PlayerCardsArea.HandArea);
-    const dropNum = Math.min(skillState ? 2 : 1, hands.length);
-    if (dropNum < 1) {
+    const dropNum = skillState ? 2 : 1;
+
+    const response = await room.askForCardDrop(
+      fromId,
+      dropNum,
+      [PlayerCardsArea.HandArea],
+      true,
+      undefined,
+      this.Name,
+    );
+    if (!response) {
       return false;
     }
 
-    let toDrop = hands;
-    if (dropNum < hands.length) {
-      const response = await room.doAskForCommonly<GameEventIdentifiers.AskForCardEvent>(
-        GameEventIdentifiers.AskForCardEvent,
-        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForCardEvent>({
-          cardAmount: dropNum,
-          toId: fromId,
-          reason: this.Name,
-          conversation: TranslationPack.translationJsonPatcher(
-            '{0}: please drop {1} card(s)',
-            this.Name,
-            dropNum,
-          ).extract(),
-          fromArea: [PlayerCardsArea.HandArea],
-          triggeredBySkills: [this.Name],
-        }),
-        fromId,
-      );
-
-      if (response.selectedCards.length === 0) {
-        response.selectedCards = from.getPlayerCards().slice(0, dropNum);
-      }
-
-      toDrop = response.selectedCards;
-    }
-
+    const toDrop = response.droppedCards;
     const suits = toDrop.reduce<CardSuit[]>((allSuit, cardId) => {
       const suit = Sanguosha.getCardById(cardId).Suit;
       allSuit.includes(suit) || allSuit.push(suit);

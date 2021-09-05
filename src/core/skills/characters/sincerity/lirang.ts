@@ -8,7 +8,10 @@ import { ActiveSkill, CommonSkill } from 'core/skills/skill';
 @CommonSkill({ name: 'lirang', description: 'lirang_description' })
 export class LiRang extends ActiveSkill {
   public canUse(room: Room, owner: Player) {
-    return !owner.hasUsedSkill(this.Name) && owner.getCardIds(PlayerCardsArea.HandArea).length > 0;
+    return (
+      !owner.hasUsedSkill(this.Name) &&
+      owner.getCardIds(PlayerCardsArea.HandArea).find(id => !room.canDropCard(owner.Id, id)) === undefined
+    );
   }
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {

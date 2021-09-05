@@ -7,6 +7,7 @@ import { Tooltip } from 'ui/tooltip/tooltip';
 import awakenIcon from './images/awaken.png';
 import dawuIcon from './images/dawu.png';
 import fuIcon from './images/fu.png';
+import jianIcon from './images/jian.png';
 import junlveIcon from './images/junlve.png';
 import kuangfengIcon from './images/kuangfeng.png';
 import lieIcon from './images/lie.png';
@@ -14,6 +15,7 @@ import limitIcon from './images/limit.png';
 import limitUsedIcon from './images/limit_used.png';
 import nightmareIcon from './images/nightmare.png';
 import wrathIcon from './images/nu.png';
+import weiIcon from './images/wei.png';
 import orangeIcon from './images/orange.png';
 import ranIcon from './images/ran.png';
 import renIcon from './images/ren.png';
@@ -38,6 +40,8 @@ const markIconMaps: {
   [MarkEnum.PveHuaShen]: nightmareIcon,
   [MarkEnum.Fu]: fuIcon,
   [MarkEnum.Ran]: ranIcon,
+  [MarkEnum.Wei]: weiIcon,
+  [MarkEnum.Jian]: jianIcon,
 };
 
 export type MarkProps = {

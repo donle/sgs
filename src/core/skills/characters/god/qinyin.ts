@@ -1,4 +1,5 @@
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { AllStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
@@ -22,17 +23,28 @@ export class QinYin extends TriggerSkill {
     let isUseable = owner.Id === content.playerId && content.toStage === PlayerPhaseStages.DropCardStageEnd;
     if (isUseable) {
       let droppedCardNum = 0;
-      room.Analytics.getRecordEvents<GameEventIdentifiers.MoveCardEvent>(
+      const record = room.Analytics.getRecordEvents<GameEventIdentifiers.MoveCardEvent>(
         event =>
           EventPacker.getIdentifier(event) === GameEventIdentifiers.MoveCardEvent &&
-          event.fromId === content.playerId &&
-          event.moveReason === CardMoveReason.SelfDrop,
+          event.infos.find(info => info.fromId === content.playerId && info.moveReason === CardMoveReason.SelfDrop) !==
+            undefined,
         content.playerId,
         'round',
         [PlayerPhase.DropCardStage],
-      ).forEach(event => {
-        droppedCardNum += event.movingCards.length;
-      });
+      );
+
+      for (const event of record) {
+        if (event.infos.length === 1) {
+          droppedCardNum += event.infos[0].movingCards.filter(card => !Sanguosha.isVirtualCardId(card.card)).length;
+        } else {
+          const infos = event.infos.filter(
+            info => info.fromId === content.playerId && info.moveReason === CardMoveReason.SelfDrop,
+          );
+          for (const info of infos) {
+            droppedCardNum += info.movingCards.filter(card => !Sanguosha.isVirtualCardId(card.card)).length;
+          }
+        }
+      }
 
       isUseable = droppedCardNum >= 2;
     }

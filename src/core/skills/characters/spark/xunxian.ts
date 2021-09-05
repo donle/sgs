@@ -1,3 +1,4 @@
+import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, CardMoveStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -18,12 +19,15 @@ export class XunXian extends TriggerSkill {
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): boolean {
     return (
-      (content.moveReason === CardMoveReason.CardUse || content.moveReason === CardMoveReason.CardResponse) &&
-      content.proposer === owner.Id &&
       room.CurrentPlayer !== owner &&
       !owner.hasUsedSkill(this.Name) &&
-      content.toArea === CardMoveArea.DropStack &&
-      content.movingCards.find(card => room.isCardInDropStack(card.card)) !== undefined &&
+      content.infos.find(
+        info =>
+          (info.moveReason === CardMoveReason.CardUse || info.moveReason === CardMoveReason.CardResponse) &&
+          info.proposer === owner.Id &&
+          info.toArea === CardMoveArea.DropStack &&
+          info.movingCards.find(card => room.isCardInDropStack(card.card)) !== undefined,
+      ) !== undefined &&
       room
         .getOtherPlayers(owner.Id)
         .find(
@@ -49,12 +53,30 @@ export class XunXian extends TriggerSkill {
     owner: Player,
     event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>,
   ): PatchedTranslationObject {
-    const cardIds = event.movingCards.filter(card => room.isCardInDropStack(card.card)).map(card => card.card);
+    const cardIds: CardId[] = [];
+    if (event.infos.length === 1) {
+      cardIds.push(
+        ...event.infos[0].movingCards.filter(card => room.isCardInDropStack(card.card)).map(card => card.card),
+      );
+    } else {
+      const infos = event.infos.filter(
+        info =>
+          (info.moveReason === CardMoveReason.CardUse || info.moveReason === CardMoveReason.CardResponse) &&
+          info.proposer === owner.Id &&
+          info.toArea === CardMoveArea.DropStack &&
+          info.movingCards.find(card => room.isCardInDropStack(card.card)) !== undefined,
+      );
+
+      for (const info of infos) {
+        cardIds.push(...info.movingCards.filter(card => room.isCardInDropStack(card.card)).map(card => card.card));
+      }
+    }
+
     const promptCardIds = cardIds.length > 1 ? cardIds.slice(0, 2) : [cardIds[0]];
     return TranslationPack.translationJsonPatcher(
       cardIds.length > 1
-        ? '{0}: do you want to give {1} to another player?'
-        : '{0}: do you want to give {1} cards to another player?',
+        ? '{0}: do you want to give {1} to another player with the number of hand cards more than you?'
+        : '{0}: do you want to give {1} cards to another player with the number of hand cards more than you?',
       this.Name,
       TranslationPack.patchCardInTranslation(...promptCardIds),
     ).extract();
@@ -70,8 +92,26 @@ export class XunXian extends TriggerSkill {
       return false;
     }
 
-    const cards = (event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>).movingCards;
-    const cardIds = cards.filter(card => room.isCardInDropStack(card.card)).map(card => card.card);
+    const moveCardEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
+    const cardIds: CardId[] = [];
+    if (moveCardEvent.infos.length === 1) {
+      cardIds.push(
+        ...moveCardEvent.infos[0].movingCards.filter(card => room.isCardInDropStack(card.card)).map(card => card.card),
+      );
+    } else {
+      const infos = moveCardEvent.infos.filter(
+        info =>
+          (info.moveReason === CardMoveReason.CardUse || info.moveReason === CardMoveReason.CardResponse) &&
+          info.proposer === fromId &&
+          info.toArea === CardMoveArea.DropStack &&
+          info.movingCards.find(card => room.isCardInDropStack(card.card)) !== undefined,
+      );
+
+      for (const info of infos) {
+        cardIds.push(...info.movingCards.filter(card => room.isCardInDropStack(card.card)).map(card => card.card));
+      }
+    }
+
     if (cardIds.length > 0) {
       await room.moveCards({
         movingCards: cardIds.map(card => ({ card, fromArea: CardMoveArea.DropStack })),

@@ -121,6 +121,8 @@ export class JieYue extends TriggerSkill {
         } else {
           discards = to.getPlayerCards().filter(card => !selectedCards.includes(card));
         }
+
+        discards = discards.filter(id => room.canDropCard(toId, id));
         if (discards.length > 0) {
           await room.dropCards(CardMoveReason.SelfDrop, discards, toId, toId, this.Name);
         }

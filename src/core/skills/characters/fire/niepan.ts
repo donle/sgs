@@ -1,7 +1,6 @@
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PlayerDyingStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { LimitSkill, TriggerSkill } from 'core/skills/skill';
 
@@ -23,14 +22,8 @@ export class NiePan extends TriggerSkill {
     const { fromId } = skillEffectEvent;
     const from = room.getPlayerById(fromId);
 
-    const wholeCards = from.getPlayerCards();
-    const judgeAreaCards = from.getCardIds(PlayerCardsArea.JudgeArea);
-    if (judgeAreaCards.length > 0) {
-      for (const cardId of judgeAreaCards) {
-        wholeCards.push(cardId);
-      }
-    }
-
+    let wholeCards = from.getCardIds();
+    wholeCards = wholeCards.filter(id => room.canDropCard(fromId, id));
     wholeCards.length > 0 && (await room.dropCards(CardMoveReason.SelfDrop, wholeCards, fromId, fromId, this.Name));
 
     !from.isFaceUp() && (await room.turnOver(skillEffectEvent.fromId));

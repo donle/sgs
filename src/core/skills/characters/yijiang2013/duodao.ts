@@ -28,7 +28,7 @@ export class DuoDao extends TriggerSkill {
   }
 
   isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
-    return true;
+    return room.canDropCard(owner, cardId);
   }
   cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
     return cards.length === 1;

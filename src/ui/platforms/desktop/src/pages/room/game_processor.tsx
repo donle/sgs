@@ -1085,127 +1085,129 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const {
-      toArea,
-      toId,
-      fromId,
-      toOutsideArea,
-      movingCards,
-      isOutsideAreaInPublic,
-      moveReason,
-      movedByReason,
-      proposer,
-      engagedPlayerIds,
-    } = content;
-    const to = toId && this.store.room.getPlayerById(toId);
-    const from = fromId ? this.store.room.getPlayerById(fromId) : undefined;
-
-    for (const { card, fromArea, asideMove } of movingCards) {
-      if (
-        from &&
-        !asideMove &&
-        ![CardMoveArea.DrawStack, CardMoveArea.DropStack, CardMoveArea.ProcessingArea].includes(
-          fromArea as CardMoveArea,
-        )
-      ) {
-        from.dropCards(card);
-      }
-    }
-
-    const cardIds = movingCards.reduce<CardId[]>((cards, cardInfo) => {
-      if (!cardInfo.asideMove) {
-        cards.push(cardInfo.card);
-      }
-      return cards;
-    }, []);
-
-    if (
-      to &&
-      ![CardMoveArea.DrawStack, CardMoveArea.DropStack, CardMoveArea.ProcessingArea].includes(toArea as CardMoveArea)
-    ) {
-      const actualCardIds = VirtualCard.getActualCards(cardIds);
-      if (toArea === CardMoveArea.OutsideArea) {
-        to.getCardIds((toArea as unknown) as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
-      } else if (toArea === CardMoveArea.JudgeArea) {
-        const transformedDelayedTricks = cardIds.map(cardId => {
-          if (!Card.isVirtualCardId(cardId)) {
-            return cardId;
-          }
-
-          const card = Sanguosha.getCardById<VirtualCard>(cardId);
-          if (card.ActualCardIds.length === 1) {
-            const originalCard = Sanguosha.getCardById(card.ActualCardIds[0]);
-            if (card.Suit !== originalCard.Suit) {
-              card.Suit = originalCard.Suit;
-            }
-            if (card.CardNumber !== originalCard.CardNumber) {
-              card.CardNumber = originalCard.CardNumber;
-            }
-
-            return card.Id;
-          }
-
-          return cardId;
-        });
-        to.getCardIds(PlayerCardsArea.JudgeArea).push(...transformedDelayedTricks);
-      } else {
-        this.store.room.transformCard(
-          to,
-          actualCardIds,
-          toArea as PlayerCardsArea.HandArea | PlayerCardsArea.EquipArea,
-        );
-        to.getCardIds(toArea as PlayerCardsArea).push(...actualCardIds);
-      }
-    }
-
-    const showCards: DisplayCardProp[] = [];
-
-    if (
-      moveReason !== CardMoveReason.CardUse &&
-      moveReason !== CardMoveReason.CardResponse &&
-      (toArea === CardMoveArea.ProcessingArea || toArea === CardMoveArea.DropStack)
-    ) {
-      for (const movingCard of movingCards) {
-        for (const cardId of VirtualCard.getActualCards([movingCard.card])) {
-          showCards.push({
-            card: Sanguosha.getCardById(cardId),
-            tag:
-              movedByReason === CardMovedBySpecifiedReason.JudgeProcess
-                ? TranslationPack.translationJsonPatcher(
-                    "{0}'s judge card",
-                    TranslationPack.patchPlayerInTranslation(this.store.room.getPlayerById(proposer!)),
-                  ).toString()
-                : toArea === CardMoveArea.DropStack
-                ? 'move to drop stack'
-                : undefined,
-            buried: !to && toArea !== CardMoveArea.ProcessingArea,
-            from,
-            to: to ? to : undefined,
-            hiddenMove: engagedPlayerIds ? !engagedPlayerIds.includes(this.store.clientPlayerId) : false,
-          });
+    for (const info of content.infos) {
+      const {
+        toArea,
+        toId,
+        fromId,
+        toOutsideArea,
+        movingCards,
+        isOutsideAreaInPublic,
+        moveReason,
+        movedByReason,
+        proposer,
+        engagedPlayerIds,
+      } = info;
+      const to = toId && this.store.room.getPlayerById(toId);
+      const from = fromId ? this.store.room.getPlayerById(fromId) : undefined;
+  
+      for (const { card, fromArea, asideMove } of movingCards) {
+        if (
+          from &&
+          !asideMove &&
+          ![CardMoveArea.DrawStack, CardMoveArea.DropStack, CardMoveArea.ProcessingArea].includes(
+            fromArea as CardMoveArea,
+          )
+        ) {
+          from.dropCards(card);
         }
       }
-    }
-
-    if (showCards.length > 0) {
-      this.presenter.showCards(...showCards);
-      for (let i = 0; i < showCards.length; i++) {
-        const showCard = showCards[i];
-        const from = this.calculateInitialFixedPosition(showCard, i);
-        // const to = this.calculateFinalFixedPosition(showCard, i);
-        this.presenter.playCardAnimation(showCard, from);
+  
+      const cardIds = movingCards.reduce<CardId[]>((cards, cardInfo) => {
+        if (!cardInfo.asideMove) {
+          cards.push(cardInfo.card);
+        }
+        return cards;
+      }, []);
+  
+      if (
+        to &&
+        ![CardMoveArea.DrawStack, CardMoveArea.DropStack, CardMoveArea.ProcessingArea].includes(toArea as CardMoveArea)
+      ) {
+        const actualCardIds = VirtualCard.getActualCards(cardIds);
+        if (toArea === CardMoveArea.OutsideArea) {
+          to.getCardIds((toArea as unknown) as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
+        } else if (toArea === CardMoveArea.JudgeArea) {
+          const transformedDelayedTricks = cardIds.map(cardId => {
+            if (!Card.isVirtualCardId(cardId)) {
+              return cardId;
+            }
+  
+            const card = Sanguosha.getCardById<VirtualCard>(cardId);
+            if (card.ActualCardIds.length === 1) {
+              const originalCard = Sanguosha.getCardById(card.ActualCardIds[0]);
+              if (card.Suit !== originalCard.Suit) {
+                card.Suit = originalCard.Suit;
+              }
+              if (card.CardNumber !== originalCard.CardNumber) {
+                card.CardNumber = originalCard.CardNumber;
+              }
+  
+              return card.Id;
+            }
+  
+            return cardId;
+          });
+          to.getCardIds(PlayerCardsArea.JudgeArea).push(...transformedDelayedTricks);
+        } else {
+          this.store.room.transformCard(
+            to,
+            actualCardIds,
+            toArea as PlayerCardsArea.HandArea | PlayerCardsArea.EquipArea,
+          );
+          to.getCardIds(toArea as PlayerCardsArea).push(...actualCardIds);
+        }
       }
-    }
-
-    for (const movingCard of movingCards) {
-      if (movingCard.fromArea === CardMoveArea.ProcessingArea) {
-        this.presenter.buryCards(movingCard.card);
+  
+      const showCards: DisplayCardProp[] = [];
+  
+      if (
+        moveReason !== CardMoveReason.CardUse &&
+        moveReason !== CardMoveReason.CardResponse &&
+        (toArea === CardMoveArea.ProcessingArea || toArea === CardMoveArea.DropStack)
+      ) {
+        for (const movingCard of movingCards) {
+          for (const cardId of VirtualCard.getActualCards([movingCard.card])) {
+            showCards.push({
+              card: Sanguosha.getCardById(cardId),
+              tag:
+                movedByReason === CardMovedBySpecifiedReason.JudgeProcess
+                  ? TranslationPack.translationJsonPatcher(
+                      "{0}'s judge card",
+                      TranslationPack.patchPlayerInTranslation(this.store.room.getPlayerById(proposer!)),
+                    ).toString()
+                  : toArea === CardMoveArea.DropStack
+                  ? 'move to drop stack'
+                  : undefined,
+              buried: !to && toArea !== CardMoveArea.ProcessingArea,
+              from,
+              to: to ? to : undefined,
+              hiddenMove: engagedPlayerIds ? !engagedPlayerIds.includes(this.store.clientPlayerId) : false,
+            });
+          }
+        }
       }
+  
+      if (showCards.length > 0) {
+        this.presenter.showCards(...showCards);
+        for (let i = 0; i < showCards.length; i++) {
+          const showCard = showCards[i];
+          const from = this.calculateInitialFixedPosition(showCard, i);
+          // const to = this.calculateFinalFixedPosition(showCard, i);
+          this.presenter.playCardAnimation(showCard, from);
+        }
+      }
+  
+      for (const movingCard of movingCards) {
+        if (movingCard.fromArea === CardMoveArea.ProcessingArea) {
+          this.presenter.buryCards(movingCard.card);
+        }
+      }
+  
+      toOutsideArea !== undefined && isOutsideAreaInPublic && to && to.setVisibleOutsideArea(toOutsideArea);
+  
+      this.presenter.broadcastUIUpdate();
     }
-
-    toOutsideArea !== undefined && isOutsideAreaInPublic && to && to.setVisibleOutsideArea(toOutsideArea);
-
-    this.presenter.broadcastUIUpdate();
   }
 
   protected onHandleJudgeEvent<T extends GameEventIdentifiers.JudgeEvent>(type: T, content: ServerEventFinder<T>) {

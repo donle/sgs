@@ -13,15 +13,12 @@ export class ZiShu extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): boolean {
-    if (
-      room.CurrentPlayer === owner &&
-      content.movedByReason !== undefined &&
-      content.movedByReason.includes(this.Name)
-    ) {
-      return false;
-    }
-
-    return content.toId === owner.Id && content.toArea === CardMoveArea.HandArea;
+    return (
+      content.infos.find(
+        info =>
+          !info.movedByReason?.includes(this.Name) && info.toId === owner.Id && info.toArea === CardMoveArea.HandArea,
+      ) !== undefined
+    );
   }
 
   public async onTrigger() {
@@ -37,7 +34,14 @@ export class ZiShu extends TriggerSkill {
       await room.drawCards(1, fromId, 'top', fromId, this.Name);
     } else {
       const zishuCards = from.getFlag<CardId[]>(this.Name) || [];
-      zishuCards.push(...moveCardEvent.movingCards.map(card => card.card));
+      if (moveCardEvent.infos.length === 1) {
+        zishuCards.push(...moveCardEvent.infos[0].movingCards.map(card => card.card));
+      } else {
+        const infos = moveCardEvent.infos.filter(info => info.toId === fromId && info.toArea === CardMoveArea.HandArea);
+        for (const info of infos) {
+          zishuCards.push(...info.movingCards.map(card => card.card));
+        }
+      }
       from.setFlag<CardId[]>(this.Name, zishuCards);
     }
 
