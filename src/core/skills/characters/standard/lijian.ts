@@ -38,7 +38,7 @@ export class LiJian extends ActiveSkill {
   }
 
   isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
-    return true;
+    return room.canDropCard(owner, cardId);
   }
 
   public getAnimationSteps(event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {

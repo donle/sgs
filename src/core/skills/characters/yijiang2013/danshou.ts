@@ -98,8 +98,8 @@ export class DanshouShadow extends TriggerSkill {
     return content.toStage === PlayerPhaseStages.FinishStageStart && !owner.hasUsedSkill(this.GeneralName);
   }
 
-  public isAvailableCard(owner: string, room: Room, cardId: CardId, selectedCards: CardId[]) {
-    return selectedCards.length < room.CurrentPhasePlayer.getCardIds(PlayerCardsArea.HandArea).length;
+  public isAvailableCard(owner: string, room: Room, cardId: CardId) {
+    return room.canDropCard(owner, cardId);
   }
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]) {

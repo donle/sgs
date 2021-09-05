@@ -59,7 +59,7 @@ export class PoXi extends ActiveSkill {
       cardFilter: System.AskForChoosingCardEventFilter.PoXi,
       customCardFields: {
         [from.Character.Name]: from.getCardIds(PlayerCardsArea.HandArea),
-        [to.Character.Name]: to.getCardIds(PlayerCardsArea.HandArea),
+        [to.Character.Name]: to.getCardIds(PlayerCardsArea.HandArea).filter(id => room.canDropCard(fromId, id)),
       },
       customTitle: this.Name,
       amount: 4,

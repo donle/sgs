@@ -1,8 +1,9 @@
-import { CardType } from 'core/cards/card';
+import { CardType, VirtualCard } from 'core/cards/card';
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { CardUseStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
+import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -42,10 +43,12 @@ export class JiZhi extends TriggerSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const cardId = (await room.drawCards(1, event.fromId, undefined, event.fromId, this.Name))[0];
-    if (
-      Sanguosha.getCardById(cardId).is(CardType.Basic) &&
-      room.getPlayerById(event.fromId).getCardId(cardId) !== undefined
-    ) {
+    const realCardId = room
+      .getPlayerById(event.fromId)
+      .getCardIds(PlayerCardsArea.HandArea)
+      .find(id => VirtualCard.getActualCards([id])[0] === cardId && room.canDropCard(event.fromId, id));
+
+    if (realCardId && Sanguosha.getCardById(realCardId).is(CardType.Basic)) {
       const askForOptionsEvent = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
         options: ['jizhi:discard', 'jizhi:keep'],
         toId: event.fromId,

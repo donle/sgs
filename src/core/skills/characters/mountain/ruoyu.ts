@@ -14,11 +14,7 @@ export class RuoYu extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    return (
-      room.getOtherPlayers(owner.Id).find(player => {
-        return player.Hp < owner.Hp;
-      }) === undefined && content.playerId === owner.Id
-    );
+    return content.playerId === owner.Id && room.enableToAwaken(this.Name, owner);
   }
 
   async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {

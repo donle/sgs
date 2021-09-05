@@ -1,11 +1,9 @@
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { AwakeningSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
-import { TunTian } from './tuntian';
 
 @AwakeningSkill({ name: 'zaoxian', description: 'zaoxian_description' })
 export class ZaoXian extends TriggerSkill {
@@ -21,7 +19,7 @@ export class ZaoXian extends TriggerSkill {
     owner: Player,
     content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
   ): boolean {
-    return content.playerId === owner.Id && owner.getCardIds(PlayerCardsArea.OutsideArea, TunTian.Name).length > 2;
+    return content.playerId === owner.Id && room.enableToAwaken(this.Name, owner);
   }
 
   public async onTrigger(

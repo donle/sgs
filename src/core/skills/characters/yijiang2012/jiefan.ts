@@ -55,6 +55,9 @@ export class JieFan extends ActiveSkill {
           TranslationPack.patchPlayerInTranslation(to),
         ).extract(),
       );
+      if (!response) {
+        return false;
+      }
 
       if (response.droppedCards.length > 0) {
         await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, player.Id, player.Id, this.Name);

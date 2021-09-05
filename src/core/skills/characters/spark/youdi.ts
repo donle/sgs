@@ -59,8 +59,7 @@ export class YouDi extends TriggerSkill {
       [PlayerCardsArea.HandArea]: from.getCardIds(PlayerCardsArea.HandArea).length,
     };
 
-    const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
+    const response = await room.askForChoosingPlayerCard(
       {
         fromId: toIds[0],
         toId: fromId,
@@ -69,19 +68,15 @@ export class YouDi extends TriggerSkill {
       },
       toIds[0],
       true,
+      true,
     );
-
-    if (response.selectedCardIndex !== undefined) {
-      const cardIds = from.getCardIds(PlayerCardsArea.HandArea);
-      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
-    } else if (response.selectedCard === undefined) {
-      const cardIds = from.getCardIds(PlayerCardsArea.HandArea);
-      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
+    if (!response) {
+      return false;
     }
 
-    const isSlash = Sanguosha.getCardById(response.selectedCard).GeneralName === 'slash';
-    const isBlack = Sanguosha.getCardById(response.selectedCard).isBlack();
-    await room.dropCards(CardMoveReason.SelfDrop, [response.selectedCard], fromId, toIds[0], this.Name);
+    const isSlash = Sanguosha.getCardById(response.selectedCard!).GeneralName === 'slash';
+    const isBlack = Sanguosha.getCardById(response.selectedCard!).isBlack();
+    await room.dropCards(CardMoveReason.SelfDrop, [response.selectedCard!], fromId, toIds[0], this.Name);
 
     const to = room.getPlayerById(toIds[0]);
     if (!isSlash && to.getPlayerCards().length > 0) {
@@ -90,8 +85,7 @@ export class YouDi extends TriggerSkill {
         [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea).length,
       };
 
-      const resp = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(
-        GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
+      const resp = await room.askForChoosingPlayerCard(
         {
           fromId,
           toId: toIds[0],
@@ -99,19 +93,15 @@ export class YouDi extends TriggerSkill {
           triggeredBySkills: [this.Name],
         },
         fromId,
+        false,
         true,
       );
-
-      if (resp.selectedCardIndex !== undefined) {
-        const ids = to.getCardIds(PlayerCardsArea.HandArea);
-        resp.selectedCard = ids[Math.floor(Math.random() * ids.length)];
-      } else if (resp.selectedCard === undefined) {
-        const ids = to.getPlayerCards();
-        resp.selectedCard = ids[Math.floor(Math.random() * ids.length)];
+      if (!resp) {
+        return false;
       }
 
       await room.moveCards({
-        movingCards: [{ card: resp.selectedCard, fromArea: to.cardFrom(resp.selectedCard) }],
+        movingCards: [{ card: resp.selectedCard!, fromArea: to.cardFrom(resp.selectedCard!) }],
         fromId: toIds[0],
         toId: fromId,
         toArea: PlayerCardsArea.HandArea,

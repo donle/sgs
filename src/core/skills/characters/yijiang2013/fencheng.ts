@@ -43,7 +43,7 @@ export class FenCheng extends ActiveSkill {
     const { fromId } = SkillEffectEvent;
     let x: number = 1;
     for (const player of room.getOtherPlayers(fromId)) {
-      const playerCardsLength = player.getCardIds().length;
+      const playerCardsLength = player.getPlayerCards().filter(id => room.canDropCard(player.Id, id)).length;
 
       const options = ['option-one', 'option-two'];
       playerCardsLength < x && options.shift();
@@ -82,6 +82,9 @@ export class FenCheng extends ActiveSkill {
             undefined,
             this.Name,
           );
+          if (!response) {
+            return false;
+          }
 
           droppedCards = response.droppedCards;
         }

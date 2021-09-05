@@ -35,7 +35,11 @@ export class QiaoBian extends TriggerSkill {
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
-    return room.getPlayerById(owner).cardFrom(cardId) === PlayerCardsArea.HandArea;
+    return room.canDropCard(owner, cardId);
+  }
+
+  public availableCardAreas() {
+    return [PlayerCardsArea.HandArea];
   }
 
   public getSkillLog(

@@ -44,6 +44,10 @@ export abstract class TrickCard extends Card {
     return CardType.Trick;
   }
 
+  public isCommonTrick() {
+    return !this.cardType.includes(CardType.DelayedTrick);
+  }
+
   public isDelayedTrick() {
     return this.cardType.includes(CardType.DelayedTrick);
   }

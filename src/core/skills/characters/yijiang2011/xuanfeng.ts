@@ -127,23 +127,12 @@ export class XuanFeng extends TriggerSkill {
       triggeredBySkills: [this.Name],
     };
 
-    room.notify(
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(chooseCardEvent),
-      fromId,
-    );
-
-    const response = await room.onReceivingAsyncResponseFrom(
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-      fromId,
-    );
-
-    if (response.selectedCard === undefined) {
-      const cardIds = to.getCardIds(PlayerCardsArea.HandArea);
-      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
+    const response = await room.askForChoosingPlayerCard(chooseCardEvent, fromId, true, true);
+    if (!response) {
+      return;
     }
 
-    await room.dropCards(CardMoveReason.PassiveDrop, [response.selectedCard], chooseCardEvent.toId, fromId, this.Name);
+    await room.dropCards(CardMoveReason.PassiveDrop, [response.selectedCard!], chooseCardEvent.toId, fromId, this.Name);
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {

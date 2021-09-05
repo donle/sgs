@@ -56,7 +56,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'tiaoxin_description',
-    target: '出牌阶段限一次，你可以令一名其他角色选择一项：1.对包括你在内的角色使用一张【杀】；2.令你弃置其一张牌。',
+    target: '出牌阶段限一次，你可以令攻击范围内含有你的一名角色选择是否对你使用一张【杀】。若其未使用【杀】或其使用的此【杀】未对你造成伤害，你弃置其一张牌，然后本技能于此阶段内改为“出牌阶段限两次”。',
   },
   {
     source: 'zhiji_description',

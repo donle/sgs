@@ -57,7 +57,7 @@ export class DiMeng extends ActiveSkill {
   }
 
   isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
-    return true;
+    return room.canDropCard(owner, cardId);
   }
 
   async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {

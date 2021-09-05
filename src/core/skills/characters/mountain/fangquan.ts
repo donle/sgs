@@ -67,7 +67,7 @@ export class FangQuanShadow extends TriggerSkill {
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
-    return true;
+    return room.canDropCard(owner, cardId);
   }
 
   public availableCardAreas() {

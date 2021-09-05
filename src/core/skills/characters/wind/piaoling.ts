@@ -89,24 +89,19 @@ export class PiaoLing extends TriggerSkill {
       });
 
       if (fromId === selectedPlayers![0]) {
-        const askForDropCard: ServerEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
-          toId: fromId,
-          fromArea: [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
-          cardAmount: 1,
-          triggeredBySkills: [this.Name],
-        };
-
-        room.notify(
-          GameEventIdentifiers.AskForCardDropEvent,
-          EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForCardDropEvent>(askForDropCard),
+        const resp = await room.askForCardDrop(
           fromId,
+          1,
+          [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
+          true,
+          undefined,
+          this.Name,
         );
-        const { droppedCards } = await room.onReceivingAsyncResponseFrom(
-          GameEventIdentifiers.AskForCardDropEvent,
-          fromId,
-        );
+        if (!resp) {
+          return false;
+        }
 
-        await room.dropCards(CardMoveReason.SelfDrop, droppedCards, fromId, fromId, this.Name);
+        await room.dropCards(CardMoveReason.SelfDrop, resp.droppedCards, fromId, fromId, this.Name);
       }
     }
     return true;

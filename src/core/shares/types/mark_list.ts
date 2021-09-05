@@ -12,4 +12,6 @@ export const enum MarkEnum {
   PveHuaShen = 'pve_huashen',
   Fu = 'fu',
   Ran = 'ran',
+  Wei = 'wei',
+  Jian = 'jian',
 }

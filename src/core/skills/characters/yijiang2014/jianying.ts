@@ -28,9 +28,8 @@ export class JianYing extends TriggerSkill {
     if (lastCardId !== undefined) {
       const lastCard = Sanguosha.getCardById(lastCardId);
       if (
-        lastCard.Suit !== CardSuit.NoSuit &&
-        lastCard.CardNumber !== undefined &&
-        (lastCard.Suit === card.Suit || lastCard.CardNumber === card.CardNumber)
+        (lastCard.Suit !== CardSuit.NoSuit && lastCard.Suit === card.Suit) ||
+        (lastCard.CardNumber !== 0 && lastCard.CardNumber === card.CardNumber)
       ) {
         return true;
       }

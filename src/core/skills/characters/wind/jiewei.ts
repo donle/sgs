@@ -71,8 +71,8 @@ export class JieWeiShadow extends TriggerSkill {
     return cards.length === 1;
   }
 
-  public isAvailableCard(): boolean {
-    return true;
+  public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
+    return room.canDropCard(owner, cardId);
   }
 
   public targetFilter(room: Room, owner: Player, targets: PlayerId[]): boolean {

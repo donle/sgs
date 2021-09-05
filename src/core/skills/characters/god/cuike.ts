@@ -1,4 +1,4 @@
-import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { DamageType } from 'core/game/game_props';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -39,19 +39,16 @@ export class CuiKe extends TriggerSkill {
     const { fromId, toIds } = skillUseEvent;
     const to = room.getPlayerById(toIds![0]);
     if (room.getMark(fromId, MarkEnum.JunLve) % 2 === 0) {
-      if (!to.ChainLocked) {
-        await room.chainedOn(toIds![0]);
-      }
-      if (to.getPlayerCards().length > 0) {
+      if (
+        to.Id === fromId
+          ? to.getCardIds().filter(id => room.canDropCard(fromId, id)).length > 0
+          : to.getCardIds().length > 0
+      ) {
         const options = {
           [PlayerCardsArea.JudgeArea]: to.getCardIds(PlayerCardsArea.JudgeArea),
           [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),
+          [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea),
         };
-        if (toIds![0] === fromId) {
-          options[PlayerCardsArea.HandArea] = to.getCardIds(PlayerCardsArea.HandArea);
-        } else {
-          options[PlayerCardsArea.HandArea] = to.getCardIds(PlayerCardsArea.HandArea).length;
-        }
 
         const chooseCardEvent = {
           fromId,
@@ -60,29 +57,20 @@ export class CuiKe extends TriggerSkill {
           triggeredBySkills: [this.Name],
         };
 
-        room.notify(
-          GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-          EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(chooseCardEvent),
-          fromId,
-        );
+        const response = await room.askForChoosingPlayerCard(chooseCardEvent, fromId, true, true);
 
-        const response = await room.onReceivingAsyncResponseFrom(
-          GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-          fromId,
-        );
+        response &&
+          (await room.dropCards(
+            CardMoveReason.PassiveDrop,
+            [response.selectedCard!],
+            chooseCardEvent.toId,
+            chooseCardEvent.fromId,
+            this.Name,
+          ));
+      }
 
-        if (response.selectedCard === undefined) {
-          const cardIds = to.getCardIds(PlayerCardsArea.HandArea);
-          response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
-        }
-
-        await room.dropCards(
-          CardMoveReason.PassiveDrop,
-          [response.selectedCard],
-          chooseCardEvent.toId,
-          chooseCardEvent.fromId,
-          this.Name,
-        );
+      if (!to.ChainLocked) {
+        await room.chainedOn(toIds![0]);
       }
     } else {
       await room.damage({

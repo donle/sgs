@@ -43,7 +43,7 @@ export class JuJian extends TriggerSkill {
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
-    return !Sanguosha.getCardById(cardId).is(CardType.Basic);
+    return !Sanguosha.getCardById(cardId).is(CardType.Basic) && room.canDropCard(owner, cardId);
   }
 
   public getSkillLog(room: Room, owner: Player): PatchedTranslationObject {

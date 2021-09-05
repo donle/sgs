@@ -65,6 +65,22 @@ export const characterDictionary: Word[] = [
   { source: 'god_ganning', target: '神甘宁' },
   { source: 'poxi', target: '魄袭' },
   { source: 'jieying', target: '劫营' },
+
+  { source: 'god_guojia', target: '神郭嘉' },
+  { source: 'god_huishi', target: '慧识' },
+  { source: 'god_tianyi', target: '天翊' },
+  { source: 'god_huishi_sec', target: '辉逝' },
+  { source: 'zuoxing', target: '佐幸' },
+  { source: 'side_zuoxing_s', target: '佐幸' },
+
+  { source: 'god_taishici', target: '神太史慈' },
+  { source: 'dulie', target: '笃烈' },
+  { source: 'powei', target: '破围' },
+  { source: 'powei:succeeded', target: '破围[成功]' },
+  { source: 'powei:failed', target: '破围[失败]' },
+  { source: 'powei', target: '破围' },
+  { source: 'dangmo', target: '荡魔' },
+  { source: 'shenzhuo', target: '神著' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -225,5 +241,15 @@ export const conversations: Word[] = [
   {
     source: '{0}: please choose and resume an equip section',
     target: '{0}：请选择一个装备栏恢复',
+  },
+
+  {
+    source: '{0}: please choose {1} targets to gain ‘Wei’ mark',
+    target: '{0}：请选择 {1} 名其他角色获得“围”标记',
+  },
+
+  {
+    source: '{0}: do you want to add at least {1} targets for {2} ?',
+    target: '{0}：你可以为 {2} 增加至多 {1} 名目标',
   },
 ];

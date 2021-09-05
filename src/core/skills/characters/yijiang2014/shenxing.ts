@@ -25,7 +25,7 @@ export class ShenXing extends ActiveSkill {
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
-    return room.getPlayerById(owner).cardFrom(cardId) !== undefined;
+    return room.canDropCard(owner, cardId);
   }
 
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {

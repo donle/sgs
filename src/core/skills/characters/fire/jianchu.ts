@@ -51,25 +51,15 @@ export class Jianchu extends TriggerSkill {
       triggeredBySkills: [this.Name],
     };
 
-    room.notify(
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(chooseCardEvent),
-      aimEvent.fromId,
-    );
+    const response = await room.askForChoosingPlayerCard(chooseCardEvent, skillUseEvent.fromId, true, true);
 
-    const response = await room.onReceivingAsyncResponseFrom(
-      GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-      aimEvent.fromId!,
-    );
-
-    if (response.selectedCard === undefined) {
-      const cardIds = to.getCardIds(PlayerCardsArea.HandArea);
-      response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
+    if (!response) {
+      return false;
     }
 
     await room.dropCards(
       CardMoveReason.PassiveDrop,
-      [response.selectedCard],
+      [response.selectedCard!],
       chooseCardEvent.toId,
       chooseCardEvent.fromId,
       this.Name,

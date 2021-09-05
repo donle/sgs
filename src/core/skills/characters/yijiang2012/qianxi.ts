@@ -55,6 +55,10 @@ export class QianXi extends TriggerSkill {
       undefined,
       this.Name,
     );
+    if (!response) {
+      return false;
+    }
+
     const color = Sanguosha.getCardById(response.droppedCards[0]).Color;
     await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, fromId, fromId, this.Name);
 
@@ -157,7 +161,7 @@ export class QianXiBlock extends FilterSkill {
     }
 
     return cardId instanceof CardMatcher
-      ? false
+      ? true
       : room.getPlayerById(owner).cardFrom(cardId) !== PlayerCardsArea.HandArea ||
           Sanguosha.getCardById(cardId).Color !== color;
   }

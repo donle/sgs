@@ -2,7 +2,6 @@ import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
-import { MarkEnum } from 'core/shares/types/mark_list';
 import { TriggerSkill } from 'core/skills/skill';
 import { AwakeningSkill } from 'core/skills/skill_wrappers';
 import { JiLve } from './jilve';
@@ -21,7 +20,7 @@ export class BaiYin extends TriggerSkill {
     owner: Player,
     content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
   ): boolean {
-    return owner.Id === content.playerId && owner.getMark(MarkEnum.Ren) > 3;
+    return owner.Id === content.playerId && room.enableToAwaken(this.Name, owner);
   }
 
   public async onTrigger(): Promise<boolean> {

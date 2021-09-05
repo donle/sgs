@@ -111,8 +111,10 @@ export class ZiShouReforge extends TriggerSkill {
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId, selectedCards: CardId[]): boolean {
     return (
-      selectedCards.length === 0 ||
-      selectedCards.find(card => Sanguosha.getCardById(card).Suit === Sanguosha.getCardById(cardId).Suit) === undefined
+      (selectedCards.length === 0 ||
+        selectedCards.find(card => Sanguosha.getCardById(card).Suit === Sanguosha.getCardById(cardId).Suit) ===
+          undefined) &&
+      room.canDropCard(owner, cardId)
     );
   }
 

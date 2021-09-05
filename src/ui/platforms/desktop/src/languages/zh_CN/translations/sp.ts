@@ -3,9 +3,24 @@ import { Word } from 'languages';
 export const characterDictionary: Word[] = [
   { source: 'sp', target: 'sp' },
 
+  { source: 'yangxiu', target: '杨修' },
+  { source: 'danlao', target: '啖酪' },
+  { source: 'jilei', target: '鸡肋' },
+
+  { source: 'sp_sunshangxiang', target: '蜀孙尚香' },
+  { source: 'liangzhu', target: '良助' },
+  { source: 'fanxiang', target: '返乡' },
+
+  { source: 'mayunlu', target: '马云騄' },
+  { source: 'fengpo', target: '凤魄' },
+
   { source: 'maliang', target: '马良' },
   { source: 'zishu', target: '自书' },
   { source: 'yingyuan', target: '应援' },
+
+  { source: 'mazhong', target: '马忠' },
+  { source: 'fuman', target: '抚蛮' },
+  { source: '#fuman', target: '抚蛮（摸牌）' },
 
   { source: 'zhouqun', target: '周群' },
   { source: 'tiansuan', target: '天算' },
@@ -22,9 +37,24 @@ export const characterDictionary: Word[] = [
   { source: 'shamoke', target: '沙摩柯' },
   { source: 'jili', target: '蒺藜' },
 
+  { source: 'sunhao', target: '孙皓' },
+  { source: 'canshi', target: '残蚀' },
+  { source: '#canshi', target: '残蚀（弃牌）' },
+  { source: 'chouhai', target: '仇海' },
+  { source: 'guiming', target: '归命' },
+
   { source: 'sp_zhaoyun', target: '群赵云' },
   { source: 'std_longdan', target: '龙胆' },
   { source: 'chongzhen', target: '冲阵' },
+
+  { source: 'fuwan', target: '伏完' },
+  { source: 'moukui', target: '谋溃' },
+
+  { source: 'shixie', target: '士燮' },
+  { source: 'biluan', target: '避乱' },
+  { source: 'distance buff: {0}', target: '距离+{0}' },
+  { source: 'distance debuff: {0}', target: '距离{0}' },
+  { source: 'lixia', target: '礼下' },
 
   { source: 'quyi', target: '麴义' },
   { source: 'fuji', target: '伏骑' },
@@ -44,9 +74,38 @@ export const characterDictionary: Word[] = [
 
   { source: 'sp_diaochan', target: '貂蝉' },
   { source: 'lihun', target: '离魂' },
+
+  { source: 'huangzu', target: '黄祖' },
+  { source: 'wangong', target: '挽弓' },
 ];
 
 export const skillDescriptions: Word[] = [
+  {
+    source: 'danlao_description',
+    target: '当你成为【杀】或锦囊牌的目标后，若目标数大于1，你可以摸一张牌并令此牌对你无效。',
+  },
+  {
+    source: 'jilei_description',
+    target:
+      '当你受到伤害后，若有伤害来源，你可以声明一种牌的类别，令其不能使用、打出或弃置此类别的手牌直到其下个回合开始。',
+  },
+
+  {
+    source: 'liangzhu_description',
+    target: '当一名角色于其出牌阶段内回复体力后，你可以选择一项：1.你摸一张牌；2.令其摸两张牌。',
+  },
+  {
+    source: 'fanxiang_description',
+    target:
+      '<b>觉醒技</b>，准备阶段开始时，若场上有已受伤且你发动过良助选项2令其摸牌的角色，你增加1点体力上限并回复1点体力，失去技能“良助”，获得技能“枭姬”。',
+  },
+
+  {
+    source: 'fengpo_description',
+    target:
+      '当你于出牌阶段首次使用【杀】或【决斗】指定唯一目标后，你可以选择一项：1.摸X张牌；2.令此牌伤害+X（X为其手牌中的方片牌数）。',
+  },
+
   {
     source: 'zishu_description',
     target:
@@ -55,6 +114,12 @@ export const skillDescriptions: Word[] = [
   {
     source: 'yingyuan_description',
     target: '当你于回合内使用基本牌或普通锦囊牌结算结束后，你可以将此牌交给一名其他角色（每种牌名每回合限一次）。',
+  },
+
+  {
+    source: 'fuman_description',
+    target:
+      '出牌阶段，你可以将一张【杀】交给本回合内未成为过你发动此技能的目标的一名其他角色。当其于其下个回合结束前使用此牌时，你摸一张牌。',
   },
 
   {
@@ -79,12 +144,42 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'canshi_description',
+    target:
+      '摸牌阶段，你可以多摸X张牌（X为已受伤的角色数）。若如此做，当你于本回合内使用【杀】或普通锦囊牌时，你弃置一张牌。',
+  },
+  {
+    source: 'chouhai_description',
+    target: '<b>锁定技</b>，当你受到【杀】造成的伤害时，若你没有手牌，此伤害+1。',
+  },
+  {
+    source: 'guiming_description',
+    target: '<b>主公技</b>，<b>锁定技</b>，你的“残蚀”中X的值增加未受伤的其他吴势力角色数。',
+  },
+
+  {
     source: 'std_longdan_description',
     target: '你可以将【杀】当【闪】，【闪】当【杀】使用或打出。',
   },
   {
     source: 'chongzhen_description',
     target: '当你发动“龙胆”后，你可以获得对方的一张手牌。',
+  },
+
+  {
+    source: 'moukui_description',
+    target: '当你使用【杀】指定目标后，你可以摸一张牌或弃置其一张牌。若如此做，当此【杀】被其抵消后，其弃置你一张牌。',
+  },
+
+  {
+    source: 'biluan_description',
+    target:
+      '结束阶段开始时，若有至你距离为1的角色，你可以弃置一张牌，令其他角色计算与你的距离+X（X为存活角色数且至多为4）。',
+  },
+  {
+    source: 'lixia_description',
+    target:
+      '<b>锁定技</b>，其他角色的结束阶段开始时，若你不在其攻击范围内，你选择一项：1.你摸一张牌；2.令其摸两张牌。选择完成后，其他角色计算与你的距离-1。',
   },
 
   {
@@ -115,7 +210,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'shoufu_description',
     target:
-      '出牌阶段限一次，你可以摸一张牌，然后将一张手牌置于一名没有“箓”的其他角色的武将牌旁：其不能使用或打出与其“箓”类别相同的牌；当其受到伤害后，或于弃牌阶段内弃置至少两张牌后，移去其“箓”。',
+      '出牌阶段限一次，你可以摸一张牌，然后将一张手牌置于一名没有“箓”的其他角色的武将牌旁：其不能使用或打出与其“箓”类别相同的牌；当其受到伤害后，或于弃牌阶段内弃置至少两张与其“箓”类别相同的牌后，移去其“箓”。',
   },
 
   {
@@ -133,9 +228,24 @@ export const skillDescriptions: Word[] = [
     target:
       '出牌阶段限一次，你可以弃置一张牌并翻面，然后获得一名男性角色的所有手牌。出牌阶段结束时，你将X张牌交给该角色（X为其体力值）。',
   },
+  {
+    source: 'wangong_description',
+    target:
+      '<b>锁定技</b>，当你使用牌结算结束后，若此牌为：基本牌，你拥有“挽弓”状态；非基本牌，你失去“挽弓”状态。若你处于“挽弓”状态，你使用【杀】无距离和次数限制、不计入次数限制，且伤害基数+1。',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
+  {
+    source: '{0}: do you want to draw a card and let {1} nullify to you?',
+    target: '{0}：你可以摸一张牌，然后令 {1} 对你无效',
+  },
+
+  {
+    source: '{0}: do you want to make {1} jilei until the start of his next turn?',
+    target: '{0}：你可以令 {1} 不能使用、打出或弃置你声明的一种类别的牌，直到其下个回合开始',
+  },
+
   {
     source: '{0}: do you want to give {1} to another player?',
     target: '{0}：你可以将 {1} 交给一名其他角色',
@@ -145,6 +255,18 @@ export const promptDescriptions: Word[] = [
     source: '{0}: do you want to prey {1} a hand card?',
     target: '{0}：你可以获得 {1} 的一张手牌',
   },
+
+  {
+    source: '{0}: do you want to drop a card to let others calculate the distance to you increase {1}',
+    target: '{0}：你可以弃置一张牌，令其他角色计算与你的距离+{1}',
+  },
+
+  {
+    source: '{0}: please choose lixia options: {1}',
+    target: '{0}：请选择令你或 {1} 摸牌',
+  },
+  { source: 'lixia:you', target: '你摸一张牌' },
+  { source: 'lixia:opponent', target: '其摸一张牌' },
 
   {
     source: '{0}: you can let anothor player give you a card',

@@ -33,6 +33,8 @@ export class ShiCai extends TriggerSkill implements OnDefineReleaseTiming {
           shicaiUsed.push(type);
         }
       }
+
+      shicaiUsed.length > 0 && owner.setFlag<CardType[]>(this.Name, shicaiUsed);
     }
   }
 

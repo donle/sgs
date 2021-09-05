@@ -75,8 +75,8 @@ export class XunXian extends TriggerSkill {
     const promptCardIds = cardIds.length > 1 ? cardIds.slice(0, 2) : [cardIds[0]];
     return TranslationPack.translationJsonPatcher(
       cardIds.length > 1
-        ? '{0}: do you want to give {1} to another player?'
-        : '{0}: do you want to give {1} cards to another player?',
+        ? '{0}: do you want to give {1} to another player with the number of hand cards more than you?'
+        : '{0}: do you want to give {1} cards to another player with the number of hand cards more than you?',
       this.Name,
       TranslationPack.patchCardInTranslation(...promptCardIds),
     ).extract();

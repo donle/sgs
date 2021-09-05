@@ -102,7 +102,7 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'lei_yongsi_description',
-    target: '<b>锁定技</b>，摸牌阶段，你令摸牌数改为X（X为存活势力数）；出牌阶段结束时，若你于此阶段：未造成过伤害，你将手牌摸至体力上限；造成过至少2点伤害，你本回合手牌上限为你已损失的体力值。',
+    target: '<b>锁定技</b>，摸牌阶段，你令摸牌数改为X（X为存活势力数）；出牌阶段结束时，若你于此阶段：未造成过伤害，你将手牌摸至体力值；造成过至少2点伤害，你本回合手牌上限为你已损失的体力值。',
   },
   {
     source: 'lei_weidi_description',

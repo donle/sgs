@@ -133,8 +133,10 @@ export class LiangYinShadow extends TriggerSkill {
       true,
       undefined,
       this.Name,
-      TranslationPack.translationJsonPatcher('{0}: please drop a card', this.Name).extract(),
     );
+    if (!response) {
+      return false;
+    }
 
     const cardIds = room.getPlayerById(toIds[0]).getPlayerCards();
     response.droppedCards = response.droppedCards || cardIds[Math.floor(Math.random() * cardIds.length)];

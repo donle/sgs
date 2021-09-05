@@ -32,7 +32,7 @@ export class ZuiLun extends TriggerSkill {
         if (identifier === GameEventIdentifiers.DamageEvent) {
           const damageEvent = event as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
           return damageEvent.fromId === player.Id;
-        } else {
+        } else if (identifier === GameEventIdentifiers.MoveCardEvent) {
           const moveCardEvent = event as ServerEventFinder<GameEventIdentifiers.MoveCardEvent>;
           return (
             moveCardEvent.infos.find(
@@ -46,6 +46,8 @@ export class ZuiLun extends TriggerSkill {
             ) !== undefined
           );
         }
+
+        return false;
       },
       player.Id,
       'round',

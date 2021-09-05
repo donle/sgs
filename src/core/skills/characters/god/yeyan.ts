@@ -34,7 +34,7 @@ export class YeYan extends ActiveSkill {
     selectedCards: CardId[],
     selectedTargets: PlayerId[],
   ): boolean {
-    if (selectedTargets.length === 3) {
+    if (!room.canDropCard(owner, cardId) || selectedTargets.length === 3) {
       return false;
     }
 
@@ -98,7 +98,7 @@ export class YeYan extends ActiveSkill {
 
     room.notify(
       GameEventIdentifiers.AskForChoosingOptionsEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(askForChoosingOptionsEvent),
+      askForChoosingOptionsEvent,
       skillUseEvent.fromId,
     );
 

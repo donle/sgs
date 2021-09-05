@@ -95,8 +95,10 @@ export class ZhenGu extends TriggerSkill implements OnDefineReleaseTiming {
           true,
           undefined,
           this.Name,
-          TranslationPack.translationJsonPatcher('{0}: please drop {1} card(s)', this.Name, -n).extract(),
         );
+        if (!response) {
+          return false;
+        }
 
         response.droppedCards = response.droppedCards || opponentsHands.slice(0, -n);
         await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toIds[0], toIds[0], this.Name);
@@ -182,8 +184,10 @@ export class ZhenGuShadow extends TriggerSkill implements OnDefineReleaseTiming 
           true,
           undefined,
           this.GeneralName,
-          TranslationPack.translationJsonPatcher('{0}: please drop {1} card(s)', this.GeneralName, -n).extract(),
         );
+        if (!response) {
+          return false;
+        }
 
         response.droppedCards = response.droppedCards || opponentsHands.slice(0, -n);
         await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, target, target, this.GeneralName);

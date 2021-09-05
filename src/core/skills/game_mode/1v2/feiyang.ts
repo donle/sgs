@@ -26,7 +26,7 @@ export class FeiYang extends TriggerSkill {
       owner.Id === content.playerId &&
       content.toStage === PlayerPhaseStages.JudgeStageStart &&
       owner.getCardIds(PlayerCardsArea.JudgeArea).length > 0 &&
-      owner.getCardIds(PlayerCardsArea.HandArea).length >= 2
+      owner.getCardIds(PlayerCardsArea.HandArea).filter(id => room.canDropCard(owner.Id, id)).length >= 2
     );
   }
 
@@ -36,7 +36,7 @@ export class FeiYang extends TriggerSkill {
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId } = skillUseEvent;
-    const { droppedCards } = await room.askForCardDrop(
+    const response = await room.askForCardDrop(
       fromId,
       2,
       [PlayerCardsArea.HandArea],
@@ -44,7 +44,11 @@ export class FeiYang extends TriggerSkill {
       undefined,
       this.Name,
     );
-    await room.dropCards(CardMoveReason.SelfDrop, droppedCards, fromId, fromId, this.Name);
+    if (!response) {
+      return false;
+    }
+
+    await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, fromId, fromId, this.Name);
 
     const from = room.getPlayerById(fromId);
     const askForChoosingCard: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardEvent> = {

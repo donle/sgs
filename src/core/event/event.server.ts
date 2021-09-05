@@ -83,7 +83,10 @@ export interface ServerEvent extends EventUtilities {
     extraUse?: boolean;
     withoutInvokes?: boolean;
     disresponsiveList?: PlayerId[];
+    unoffsetable?: PlayerId[];
     additionalDamage?: number;
+    customFromArea?: CardMoveArea;
+    cardIdsResponded?: CardId[];
   };
   [GameEventIdentifiers.CardEffectEvent]: {
     fromId?: PlayerId;
@@ -96,6 +99,7 @@ export interface ServerEvent extends EventUtilities {
     isCancelledOut?: boolean;
     disresponsiveList?: PlayerId[];
     additionalDamage?: number;
+    cardIdsResponded?: CardId[];
   };
   [GameEventIdentifiers.AimEvent]: {
     fromId: string;
