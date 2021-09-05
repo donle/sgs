@@ -9,7 +9,6 @@ export class YangXiu extends Character {
     super(id, 'yangxiu', CharacterGender.Male, CharacterNationality.Wei, 3, 3, GameCharacterExtensions.SP, [
       skillLorderInstance.getSkillByName('danlao'),
       skillLorderInstance.getSkillByName('jilei'),
-      skillLorderInstance.getSkillByName('god_huishi'),
     ]);
   }
 }
