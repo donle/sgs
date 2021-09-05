@@ -551,7 +551,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       }
 
       const toUnhook = p.HookedSkills.filter(skill => {
-        const hookedSkill = skill as unknown as OnDefineReleaseTiming;
+        const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
         if (hookedSkill.afterLosingSkill && hookedSkill.afterLosingSkill(this, p.Id, content, stage)) {
           return true;
         }
@@ -686,12 +686,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   ) {
     const cannotDropIds: CardId[] = [];
     except = except || [];
+    const cardFilter = (id: CardId) => !(this.canDropCard(playerId, id) || except!.includes(id));
+
     for (const area of fromArea) {
-      cannotDropIds.push(
-        ...this.getPlayerById(playerId)
-          .getCardIds(area)
-          .filter(id => !(this.canDropCard(playerId, id) || except!.includes(id))),
-      );
+      cannotDropIds.push(...this.getPlayerById(playerId).getCardIds(area).filter(cardFilter));
     }
 
     if (cannotDropIds.length > 0) {
@@ -870,7 +868,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       for (const [area, cardIds] of Object.entries(event.options)) {
         if (cardIds) {
           let ids =
-            Number(area) as PlayerCardsArea === PlayerCardsArea.HandArea
+            (Number(area) as PlayerCardsArea) === PlayerCardsArea.HandArea
               ? this.getPlayerById(to).getCardIds(PlayerCardsArea.HandArea)
               : cardIds;
           if (ids instanceof Array) {
