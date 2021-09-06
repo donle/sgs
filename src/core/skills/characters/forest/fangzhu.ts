@@ -72,12 +72,14 @@ export class FangZhu extends TriggerSkill {
           undefined,
           this.Name,
         );
-        if (!response) {
-          return false;
-        }
 
-        await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toIds![0]);
-        await room.loseHp(toIds![0], 1);
+        if (response.droppedCards.length > 0) {
+          await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toIds![0]);
+          await room.loseHp(toIds![0], 1);
+        } else {
+          await room.turnOver(toIds![0]);
+          await room.drawCards(from.LostHp, toIds![0], undefined, fromId, this.Name);
+        }
       }
     }
 

@@ -81,7 +81,7 @@ export const characterDictionary: Word[] = [
   { source: 'ranshang', target: '燃殇' },
   { source: 'hanyong', target: '悍勇' },
 
-  { source: 'sp_diaochan', target: '貂蝉' },
+  { source: 'sp_diaochan', target: 'SP貂蝉' },
   { source: 'lihun', target: '离魂' },
 
   { source: 'huangzu', target: '黄祖' },
@@ -105,8 +105,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'kunfen_EX_description',
-    target:
-      '结束阶段开始时，你可以失去1点体力，然后摸两张牌。',
+    target: '结束阶段开始时，你可以失去1点体力，然后摸两张牌。',
   },
   {
     source: 'fengliang_description',
@@ -116,7 +115,8 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'chenqing_description',
-    target: '每轮限一次，当一名角色进入濒死状态时，你可以令另一名其他角色摸四张牌，然后弃置四张牌，若其以此法弃置了四张牌且这些牌的花色各不相同，其视为对该濒死角色使用一张【桃】。',
+    target:
+      '每轮限一次，当一名角色进入濒死状态时，你可以令另一名其他角色摸四张牌，然后弃置四张牌，若其以此法弃置了四张牌且这些牌的花色各不相同，其视为对该濒死角色使用一张【桃】。',
   },
   {
     source: 'mozhi_description',
@@ -257,11 +257,13 @@ export const skillDescriptions: Word[] = [
     target:
       '当你使用黑桃普通【杀】、【南蛮入侵】或【万箭齐发】时，若你已受伤，你可令此牌的伤害基数+1，然后若你的体力值大于当前轮数，你获得1枚“燃”标记。',
   },
+
   {
     source: 'lihun_description',
     target:
-      '出牌阶段限一次，你可以弃置一张牌并翻面，然后获得一名男性角色的所有手牌。出牌阶段结束时，你将X张牌交给该角色（X为其体力值）。',
+      '出牌阶段限一次，你可以弃置一张牌并选择一名男性角色，然后你翻面并获得其所有手牌。若如此做，此阶段结束时，你将X张牌交给该角色（X为其体力值）。',
   },
+
   {
     source: 'wangong_description',
     target:
@@ -277,7 +279,11 @@ export const promptDescriptions: Word[] = [
 
   {
     source: '{0}: do you want to make {1} jilei until the start of his next turn?',
-    target: '{0}：你可以令 {1} 不能使用、打出或弃置你声明的一种类别的牌，直到其下个回合开始',
+    target: '{0}：你可以令 {1} 不能使用、打出或弃置你声明的一种类别的手牌，直到其下个回合开始',
+  },
+  {
+    source: '{0}: please choose jilei options: {1}',
+    target: '{0}：请选择以下一种类别，令 {1} 直到你的下个回合开始前不能使用、打出或弃置此类别的手牌',
   },
 
   {
@@ -378,7 +384,8 @@ export const promptDescriptions: Word[] = [
     target: '你可以选择其中一名角色发动“陈情”',
   },
   {
-    source: '{0}: please discard 4 cards, if these cards have different suit between each other, you use a virtual peach to {1}?',
+    source:
+      '{0}: please discard 4 cards, if these cards have different suit between each other, you use a virtual peach to {1}?',
     target: '{0}：请弃置四张牌，若这些牌的花色均不同，你视为对 {1} 使用一张【桃】',
   },
 

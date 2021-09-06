@@ -25,13 +25,13 @@ export class LuoYing extends TriggerSkill {
     return (
       event.infos.find(
         info =>
-          (info.fromId &&
+          !!info.movingCards.find(node => Sanguosha.getCardById(node.card).Suit === CardSuit.Club) &&
+          ((info.fromId &&
             info.fromId !== owner.Id &&
             (info.moveReason === CardMoveReason.PassiveDrop || info.moveReason === CardMoveReason.SelfDrop)) ||
-          (info.proposer &&
-            info.proposer !== owner.Id &&
-            info.movedByReason === CardMovedBySpecifiedReason.JudgeProcess &&
-            !!info.movingCards.find(node => Sanguosha.getCardById(node.card).Suit === CardSuit.Club)),
+            (info.proposer &&
+              info.proposer !== owner.Id &&
+              info.movedByReason === CardMovedBySpecifiedReason.JudgeProcess)),
       ) !== undefined
     );
   }

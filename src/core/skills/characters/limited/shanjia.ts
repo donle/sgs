@@ -125,7 +125,7 @@ export class ShanJia extends TriggerSkill implements OnDefineReleaseTiming {
         ).extract(),
       );
 
-      if (response) {
+      if (response.droppedCards.length > 0) {
         dropCards = response.droppedCards;
         await room.dropCards(CardMoveReason.SelfDrop, dropCards, fromId, fromId, this.Name);
       }

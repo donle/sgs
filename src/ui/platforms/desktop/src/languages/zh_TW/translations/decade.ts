@@ -22,6 +22,12 @@ export const characterDictionary: Word[] = [
   { source: 'liangxing', target: '梁興' },
   { source: 'lulve', target: '擄掠' },
   { source: 'zhuixi', target: '追襲' },
+
+  { source: 'panfeng', target: '潘鳳' },
+  { source: 'kuangfu', target: '狂斧' },
+
+  { source: 'xingdaorong', target: '邢道榮' },
+  { source: 'xuhe', target: '虛猲' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -127,6 +133,11 @@ export const promptDescriptions: Word[] = [
       '{0}；你可以將一張手牌當【順手牽羊】對其中一名角色使用（目標須合法）',
   },
 
+  {
+    source: '{0}: do you want to choose a lulve target to use this skill?',
+    target:
+      '{0}；你可以選擇手牌數少於你的一名角色，對其發動“擄掠”',
+  },
   {
     source: '{0}: please choose lulve options: {1}',
     target:

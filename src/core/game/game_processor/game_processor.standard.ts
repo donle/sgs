@@ -560,7 +560,8 @@ export class StandardGameProcessor extends GameProcessor {
         true,
       );
 
-      response && (await this.room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, response.fromId));
+      response.droppedCards.length > 0 &&
+        (await this.room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, response.fromId));
     }
   }
 

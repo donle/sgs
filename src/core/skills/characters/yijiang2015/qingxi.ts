@@ -67,7 +67,7 @@ export class QingXi extends TriggerSkill {
         ).extract(),
       );
 
-      if (response && response.droppedCards.length > 0) {
+      if (response.droppedCards.length > 0) {
         option2 = false;
         await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, aimEvent.toId, aimEvent.toId, this.Name);
 

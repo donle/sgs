@@ -712,23 +712,20 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForCardDropEvent>(event);
     }
     await this.trigger(event);
+
+    const canDropCards: CardId[] = [];
     if (event.responsedEvent) {
       EventPacker.terminate(event);
       return event.responsedEvent;
-    } else if (event.cardAmount <= 0) {
+    } else if (EventPacker.isUncancellabelEvent(event)) {
       const autoResponse: ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
         fromId: playerId,
         droppedCards: [],
       };
+      if (event.cardAmount === 0) {
+        return autoResponse;
+      }
 
-      return autoResponse;
-    }
-
-    this.notify(GameEventIdentifiers.AskForCardDropEvent, event, playerId);
-    const response = await this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardDropEvent, playerId);
-
-    if (EventPacker.isUncancellabelEvent(event) && response.droppedCards.length === 0) {
-      const canDropCards: CardId[] = [];
       for (const area of fromArea) {
         canDropCards.push(
           ...this.getPlayerById(playerId)
@@ -737,7 +734,22 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         );
       }
 
-      while (canDropCards.length === 0 || response.droppedCards.length === event.cardAmount) {
+      if (canDropCards.length === 0) {
+        return autoResponse;
+      } else if (canDropCards.length <= (event.cardAmount instanceof Array ? event.cardAmount[0] : event.cardAmount)) {
+        autoResponse.droppedCards = canDropCards;
+        return autoResponse;
+      }
+    }
+
+    this.notify(GameEventIdentifiers.AskForCardDropEvent, event, playerId);
+    const response = await this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardDropEvent, playerId);
+
+    if (EventPacker.isUncancellabelEvent(event) && response.droppedCards.length === 0) {
+      while (
+        canDropCards.length === 0 ||
+        response.droppedCards.length === (event.cardAmount instanceof Array ? event.cardAmount[0] : event.cardAmount)
+      ) {
         const index = Math.floor(Math.random() * canDropCards.length);
         response.droppedCards.push(canDropCards[index]);
         canDropCards.splice(index, 1);
@@ -1203,14 +1215,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
                   },
                 );
               } else {
-                await this.moveCards(
-                  {
-                    movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
-                    moveReason: CardMoveReason.CardUse,
-                    toId: from.Id,
-                    toArea: CardMoveArea.EquipArea,
-                  },
-                );
+                await this.moveCards({
+                  movingCards: [{ card: card.Id, fromArea: CardMoveArea.ProcessingArea }],
+                  moveReason: CardMoveReason.CardUse,
+                  toId: from.Id,
+                  toArea: CardMoveArea.EquipArea,
+                });
               }
             }
           }

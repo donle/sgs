@@ -41,11 +41,9 @@ export class MingShi extends TriggerSkill {
       undefined,
       this.Name,
     );
-    if (!response) {
-      return false;
-    }
 
-    await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, source, source, this.Name);
+    response.droppedCards.length > 0 &&
+      (await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, source, source, this.Name));
 
     return true;
   }

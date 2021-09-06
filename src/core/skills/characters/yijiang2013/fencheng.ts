@@ -70,26 +70,27 @@ export class FenCheng extends ActiveSkill {
       );
 
       if (selectedOption === 'option-one') {
-        let droppedCards: CardId[];
-        if (playerCardsLength === x) {
-          droppedCards = player.getCardIds();
-        } else {
-          const response = await room.askForCardDrop(
-            player.Id,
-            [x, playerCardsLength],
-            [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
-            false,
-            undefined,
-            this.Name,
-          );
-          if (!response) {
-            return false;
-          }
+        const response = await room.askForCardDrop(
+          player.Id,
+          [x, playerCardsLength],
+          [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
+          false,
+          undefined,
+          this.Name,
+        );
 
-          droppedCards = response.droppedCards;
+        if (response.droppedCards.length > 0) {
+          x = response.droppedCards.length + 1;
+          await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, player.Id, player.Id, this.GeneralName);
+        } else {
+          await room.damage({
+            fromId: SkillEffectEvent.fromId,
+            toId: player.Id,
+            damage: 2,
+            damageType: DamageType.Fire,
+            triggeredBySkills: [this.Name],
+          });
         }
-        x = droppedCards.length + 1;
-        await room.dropCards(CardMoveReason.SelfDrop, droppedCards, player.Id, player.Id, this.GeneralName);
       } else {
         await room.damage({
           fromId: SkillEffectEvent.fromId,

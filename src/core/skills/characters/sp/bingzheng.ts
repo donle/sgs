@@ -88,7 +88,8 @@ export class BingZheng extends TriggerSkill {
         TranslationPack.translationJsonPatcher('{0}: please drop a hand card', this.Name).extract(),
       );
 
-      response && (await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toIds[0], toIds[0], this.Name));
+      response.droppedCards.length > 0 &&
+        (await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toIds[0], toIds[0], this.Name));
     }
 
     if (to.Hp === to.getCardIds(PlayerCardsArea.HandArea).length) {

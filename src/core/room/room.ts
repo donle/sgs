@@ -171,7 +171,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     except?: CardId[],
     bySkill?: string,
     conversation?: string | PatchedTranslationObject,
-  ): Promise<ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent> | void>;
+  ): Promise<ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent>>;
   //Server only
   public abstract askForCardUse(
     event: ServerEventFinder<GameEventIdentifiers.AskForCardUseEvent>,

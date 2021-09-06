@@ -143,11 +143,9 @@ export class XunYiEffect extends TriggerSkill {
         this.Name,
         TranslationPack.translationJsonPatcher('{0}: please drop a card', this.Name).extract(),
       );
-      if (!response) {
-        return false;
-      }
 
-      await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, player, player, this.GeneralName);
+      response.droppedCards.length > 0 &&
+        (await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, player, player, this.GeneralName));
     }
 
     return true;

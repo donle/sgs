@@ -97,11 +97,9 @@ export class PiaoLing extends TriggerSkill {
           undefined,
           this.Name,
         );
-        if (!resp) {
-          return false;
-        }
 
-        await room.dropCards(CardMoveReason.SelfDrop, resp.droppedCards, fromId, fromId, this.Name);
+        resp.droppedCards.length > 0 &&
+          (await room.dropCards(CardMoveReason.SelfDrop, resp.droppedCards, fromId, fromId, this.Name));
       }
     }
     return true;

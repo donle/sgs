@@ -108,11 +108,9 @@ export class KuangFu extends ActiveSkill {
           (await room.drawCards(2, fromId, 'top', fromId, this.Name));
       } else if (!EventPacker.getDamageSignatureInCardUse(useCardEvent)) {
         const resp = await room.askForCardDrop(fromId, 2, [PlayerCardsArea.HandArea], true, undefined, this.Name);
-        if (!resp) {
-          return false;
-        }
 
-        await room.dropCards(CardMoveReason.SelfDrop, resp.droppedCards, fromId, fromId, this.Name);
+        resp.droppedCards.length > 0 &&
+          (await room.dropCards(CardMoveReason.SelfDrop, resp.droppedCards, fromId, fromId, this.Name));
       }
     }
 

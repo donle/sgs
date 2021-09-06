@@ -49,7 +49,7 @@ export class TieJi extends TriggerSkill {
       ).extract(),
     );
 
-    if (!response || response.droppedCards.length === 0) {
+    if (response.droppedCards.length === 0) {
       EventPacker.setDisresponsiveEvent(aimEvent);
     } else {
       await room.dropCards(

@@ -25,7 +25,7 @@ import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 @CommonSkill({ name: 'lihun', description: 'lihun_description' })
 export class Lihun extends ActiveSkill {
   public canUse(room: Room, owner: Player) {
-    return !owner.hasUsedSkill(this.Name);
+    return !owner.hasUsedSkill(this.Name) && owner.getPlayerCards().length > 0;
   }
 
   public isRefreshAt(room: Room, owner: Player, phase: PlayerPhase) {
@@ -41,11 +41,11 @@ export class Lihun extends ActiveSkill {
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
-    return room.getPlayerById(owner).cardFrom(cardId) !== undefined;
+    return room.canDropCard(owner, cardId);
   }
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId, selectedCards: CardId[]) {
-    return room.getPlayerById(target).Gender === CharacterGender.Male && target !== owner && selectedCards.length === 1;
+    return room.getPlayerById(target).Gender === CharacterGender.Male && target !== owner;
   }
 
   async onUse(room: Room, event: ClientEventFinder<GameEventIdentifiers.SkillUseEvent>) {

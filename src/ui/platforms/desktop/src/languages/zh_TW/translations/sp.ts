@@ -81,7 +81,7 @@ export const characterDictionary: Word[] = [
   { source: 'ranshang', target: '燃殤' },
   { source: 'hanyong', target: '悍勇' },
 
-  { source: 'sp_diaochan', target: '貂蟬' },
+  { source: 'sp_diaochan', target: 'SP貂蟬' },
   { source: 'lihun', target: '離魂' },
 
   { source: 'huangzu', target: '黃祖' },
@@ -105,8 +105,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'kunfen_EX_description',
-    target:
-      '結束階段開始時，你可以失去1點體力，然後摸兩張牌。',
+    target: '結束階段開始時，你可以失去1點體力，然後摸兩張牌。',
   },
   {
     source: 'fengliang_description',
@@ -116,7 +115,8 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'chenqing_description',
-    target: '每輪限一次，當一名角色進入瀕死狀態時，你可以令另一名其他角色摸四張牌，然後棄置四張牌，若其以此法棄置了四張牌且這些牌的花色各不相同，其視為對該瀕死角色使用一張【桃】。',
+    target:
+      '每輪限一次，當一名角色進入瀕死狀態時，你可以令另一名其他角色摸四張牌，然後棄置四張牌，若其以此法棄置了四張牌且這些牌的花色各不相同，其視為對該瀕死角色使用一張【桃】。',
   },
   {
     source: 'mozhi_description',
@@ -257,11 +257,13 @@ export const skillDescriptions: Word[] = [
     target:
       '當你使用黑桃普通【殺】、【南蠻入侵】或【萬箭齊發】時，若你已受傷，你可令此牌的傷害基數+1，然後若你的體力值大於當前輪數，你獲得1枚“燃”標記。',
   },
+
   {
     source: 'lihun_description',
     target:
-      '出牌階段限一次，你可以棄置一張牌並翻面，然後獲得一名男性角色的所有手牌。出牌階段結束時，你將X張牌交給該角色（X為其體力值）。',
+      '出牌階段限一次，你可以棄置一張牌並選擇一名男性角色，然後你翻面並獲得其所有手牌。若如此做，此階段結束時，你將X張牌交給該角色（X為其體力值）。',
   },
+
   {
     source: 'wangong_description',
     target:
@@ -277,7 +279,11 @@ export const promptDescriptions: Word[] = [
 
   {
     source: '{0}: do you want to make {1} jilei until the start of his next turn?',
-    target: '{0}：你可以令 {1} 不能使用、打出或棄置你聲明的一種類別的牌，直到其下個回合開始',
+    target: '{0}：你可以令 {1} 不能使用、打出或棄置你聲明的一種類別的手牌，直到其下個回合開始',
+  },
+  {
+    source: '{0}: please choose jilei options: {1}',
+    target: '{0}：請選擇以下一種類別，令 {1} 直到你的下個回合開始前不能使用、打出或棄置此類別的手牌',
   },
 
   {
@@ -341,13 +347,13 @@ export const promptDescriptions: Word[] = [
 
   {
     source: '{0}: please choose sheyan options: {1}',
-    target: '{0}：你可以為 {1} 增加或減少一個目標',
+    target: '{0}：你可以爲 {1} 增加或減少一個目標',
   },
   { source: 'sheyan:add', target: '增加目標' },
   { source: 'sheyan:reduce', target: '減少目標' },
   {
     source: 'sheyan: please select a player to append to card targets',
-    target: '舍宴：請選擇一名角色成為此牌的額外目標',
+    target: '舍宴：請選擇一名角色成爲此牌的額外目標',
   },
   {
     source: 'sheyan: please select a target to remove',
@@ -356,7 +362,7 @@ export const promptDescriptions: Word[] = [
 
   {
     source: '{0}: please choose a hand card and choose a target who has no ‘Lu’?',
-    target: '{0}：請選擇一張手牌和一名沒有“籙”的其他角色，將此牌置為其“籙”',
+    target: '{0}：請選擇一張手牌和一名沒有“籙”的其他角色，將此牌置爲其“籙”',
   },
 
   {
@@ -379,12 +385,12 @@ export const promptDescriptions: Word[] = [
   },
   {
     source: '{0}: please discard 4 cards, if these cards have different suit between each other, you use a virtual peach to {1}?',
-    target: '{0}：請棄置四張牌，若這些牌的花色均不同，你視為對 {1} 使用一張【桃】',
+    target: '{0}：請棄置四張牌，若這些牌的花色均不同，你視爲對 {1} 使用一張【桃】',
   },
 
   {
     source: '{0}: do you want to a hand card as {1} ?',
-    target: '{0}：你可以將一張手牌視為 {1} 使用',
+    target: '{0}：你可以將一張手牌視爲 {1} 使用',
   },
 
   {
@@ -396,7 +402,7 @@ export const promptDescriptions: Word[] = [
 
   {
     source: '{0}: please choose fengpo options: {1} {2}',
-    target: '{0}：你可以選擇一項：1.摸X張牌：2.令 {1} 對 {2} 造成的傷害+X（X為 {1} 手牌中的方片牌數）',
+    target: '{0}：你可以選擇一項：1.摸X張牌：2.令 {1} 對 {2} 造成的傷害+X（X爲 {1} 手牌中的方片牌數）',
   },
   { source: 'fengpo:draw', target: '摸牌' },
   { source: 'fengpo:damage', target: '增加傷害' },
@@ -410,6 +416,6 @@ export const promptDescriptions: Word[] = [
 
   {
     source: '{0}: do you want to use a virtual slash?',
-    target: '{0}：你可以視為使用一張【殺】（不計入次數限制）',
+    target: '{0}：你可以視爲使用一張【殺】（不計入次數限制）',
   },
 ];

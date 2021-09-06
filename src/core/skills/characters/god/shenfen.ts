@@ -82,7 +82,7 @@ export class ShenFen extends ActiveSkill {
           undefined,
           this.Name,
         );
-        response &&
+        response.droppedCards.length > 0 &&
           (await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, to.Id, to.Id, this.GeneralName));
       }
     });

@@ -41,7 +41,7 @@ export class JiLei extends TriggerSkill {
     const { fromId } = event;
     const source = (event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>).fromId!;
 
-    const options = ['basic', 'trick', 'equip'];
+    const options = ['basic card', 'trick card', 'equip card'];
     const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingOptionsEvent>(
       GameEventIdentifiers.AskForChoosingOptionsEvent,
       {

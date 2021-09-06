@@ -40,7 +40,11 @@ export class JuShou extends TriggerSkill {
     const player = room.getPlayerById(skillUseEvent.fromId);
     const handCards = player
       .getCardIds(PlayerCardsArea.HandArea)
-      .filter(id => !(Sanguosha.getCardById(id).is(CardType.Equip) || room.canDropCard(skillUseEvent.fromId, id)));
+      .filter(id =>
+        Sanguosha.getCardById(id).is(CardType.Equip)
+          ? player.canUseCardTo(room, id, skillUseEvent.fromId)
+          : room.canDropCard(skillUseEvent.fromId, id),
+      );
     if (handCards.length === 0) {
       return false;
     }

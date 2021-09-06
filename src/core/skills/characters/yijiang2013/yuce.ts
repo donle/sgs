@@ -73,9 +73,6 @@ export class YuCe extends TriggerSkill {
             .filter(id => Sanguosha.getCardById(id).BaseType === type),
           this.Name,
         );
-        if (!response) {
-          return false;
-        }
 
         if (response.droppedCards.length > 0) {
           await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, damageFromId, damageFromId, this.Name);

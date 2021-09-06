@@ -134,6 +134,11 @@ export const promptDescriptions: Word[] = [
   },
 
   {
+    source: '{0}: do you want to choose a lulve target to use this skill?',
+    target:
+      '{0}；你可以选择手牌数少于你的一名角色，对其发动“掳掠”',
+  },
+  {
     source: '{0}: please choose lulve options: {1}',
     target:
       '{0}；请选择一项：1.交给 {1} 所有手牌，其翻面；2.你翻面，视为对 {1} 使用一张【杀】',

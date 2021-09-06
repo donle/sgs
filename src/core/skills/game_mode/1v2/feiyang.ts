@@ -36,53 +36,45 @@ export class FeiYang extends TriggerSkill {
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId } = skillUseEvent;
-    const response = await room.askForCardDrop(
-      fromId,
-      2,
-      [PlayerCardsArea.HandArea],
-      false,
-      undefined,
-      this.Name,
-    );
-    if (!response) {
-      return false;
-    }
+    const response = await room.askForCardDrop(fromId, 2, [PlayerCardsArea.HandArea], false, undefined, this.Name);
 
-    await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, fromId, fromId, this.Name);
+    if (response.droppedCards.length > 0) {
+      await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, fromId, fromId, this.Name);
 
-    const from = room.getPlayerById(fromId);
-    const askForChoosingCard: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardEvent> = {
-      toId: fromId,
-      amount: 1,
-      customCardFields: {
-        [PlayerCardsArea.JudgeArea]: from.getCardIds(PlayerCardsArea.JudgeArea),
-      },
-      customTitle: 'please drop a judge card',
-      triggeredBySkills: [this.Name],
-    };
-
-    room.notify(
-      GameEventIdentifiers.AskForChoosingCardEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardEvent>(askForChoosingCard),
-      fromId,
-    );
-
-    const { selectedCards } = await room.onReceivingAsyncResponseFrom(
-      GameEventIdentifiers.AskForChoosingCardEvent,
-      fromId,
-    );
-    await room.moveCards({
-      movingCards: [
-        {
-          fromArea: CardMoveArea.JudgeArea,
-          card: selectedCards![0],
+      const from = room.getPlayerById(fromId);
+      const askForChoosingCard: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardEvent> = {
+        toId: fromId,
+        amount: 1,
+        customCardFields: {
+          [PlayerCardsArea.JudgeArea]: from.getCardIds(PlayerCardsArea.JudgeArea),
         },
-      ],
-      fromId,
-      moveReason: CardMoveReason.ActiveMove,
-      toArea: CardMoveArea.DropStack,
-      movedByReason: this.Name,
-    });
+        customTitle: 'please drop a judge card',
+        triggeredBySkills: [this.Name],
+      };
+
+      room.notify(
+        GameEventIdentifiers.AskForChoosingCardEvent,
+        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardEvent>(askForChoosingCard),
+        fromId,
+      );
+
+      const { selectedCards } = await room.onReceivingAsyncResponseFrom(
+        GameEventIdentifiers.AskForChoosingCardEvent,
+        fromId,
+      );
+      await room.moveCards({
+        movingCards: [
+          {
+            fromArea: CardMoveArea.JudgeArea,
+            card: selectedCards![0],
+          },
+        ],
+        fromId,
+        moveReason: CardMoveReason.ActiveMove,
+        toArea: CardMoveArea.DropStack,
+        movedByReason: this.Name,
+      });
+    }
 
     return true;
   }

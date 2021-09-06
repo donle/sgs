@@ -139,17 +139,15 @@ export class FeiJun extends ActiveSkill {
           this.Name,
           TranslationPack.translationJsonPatcher('{0}: please drop a equip card', this.Name).extract(),
         );
-        if (!response) {
-          return false;
-        }
 
-        await room.dropCards(
-          CardMoveReason.SelfDrop,
-          response.droppedCards,
-          resp.selectedPlayers[0],
-          resp.selectedPlayers[0],
-          this.Name,
-        );
+        response.droppedCards.length > 0 &&
+          (await room.dropCards(
+            CardMoveReason.SelfDrop,
+            response.droppedCards,
+            resp.selectedPlayers[0],
+            resp.selectedPlayers[0],
+            this.Name,
+          ));
       }
     }
 

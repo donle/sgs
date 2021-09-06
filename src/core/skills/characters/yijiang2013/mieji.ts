@@ -137,8 +137,8 @@ export class MieJi extends ActiveSkill {
             .filter(cardId => Sanguosha.getCardById(cardId).BaseType === CardType.Trick),
           this.Name,
         );
-        if (!response) {
-          return false;
+        if (response.droppedCards.length === 0) {
+          break;
         }
 
         await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toId);

@@ -61,7 +61,7 @@ export class ChengLve extends ActiveSkill {
       undefined,
       this.Name,
     );
-    if (!response) {
+    if (response.droppedCards.length === 0) {
       return false;
     }
 

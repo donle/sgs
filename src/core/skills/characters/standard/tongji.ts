@@ -61,7 +61,7 @@ export class TongJi extends TriggerSkill {
       ).extract(),
     );
 
-    if (response && response.droppedCards.length > 0) {
+    if (response.droppedCards.length > 0) {
       event.cardIds = response.droppedCards;
       return true;
     }

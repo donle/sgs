@@ -126,4 +126,9 @@ export const promptDescriptions: Word[] = [
     source: '{0}: please choose a target to deal {1} damage?',
     target: '{0}: 请选择一名其它角色，对其造成{1}点雷电伤害',
   },
+
+  {
+    source: '{0}: please choose a hand card, if it’s equipment, use it, otherwise drop it',
+    target: '{0}: 请选择一张手牌，如果为装备牌，则使用之，否则弃置此牌',
+  },
 ];

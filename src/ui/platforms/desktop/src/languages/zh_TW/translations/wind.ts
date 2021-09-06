@@ -20,8 +20,8 @@ export const characterDictionary: Word[] = [
 
   { source: 'xiaoqiao', target: '小喬' },
   { source: 'tianxiang', target: '天香' },
-  { source: 'hongyan', target: '紅顔' },
-  { source: '#hongyan', target: '紅顔' },
+  { source: 'hongyan', target: '紅顏' },
+  { source: '#hongyan', target: '紅顏' },
   { source: 'piaoling', target: '飄零' },
 
   { source: 'zhoutai', target: '周泰' },
@@ -44,17 +44,17 @@ export const skillDescriptions: Word[] = [
   {
     source: 'shensu_description',
     target:
-      '你可以做出如下選擇：1.跳過判定階段和摸牌階段；2.跳過出牌階段並棄置一張裝備牌；3.跳過棄牌階段並翻麵。你每選擇一項，便視為你使用一張無距離限製的【殺】。',
+      '你可以做出如下選擇：1.跳過判定階段和摸牌階段；2.跳過出牌階段並棄置一張裝備牌；3.跳過棄牌階段並翻面。你每選擇一項，便視為你使用一張無距離限制的【殺】。',
   },
-  { source: 'shebian_description', target: '當你翻麵後，你可以移動場上一張裝備牌。' },
+  { source: 'shebian_description', target: '當你翻面後，你可以移動場上一張裝備牌。' },
   {
     source: 'jushou_description',
-    target: '結束階段開始時，你可以翻麵並摸四張牌，然後選擇一項：1.棄置一張非裝備牌；2.使用一張裝備牌。',
+    target: '結束階段開始時，你可以翻面並摸四張牌，然後選擇一項：1.棄置一張非裝備牌；2.使用一張裝備牌。',
   },
   {
     source: 'jiewei_description',
     target:
-      '你可以將裝備區裏的牌當【無懈可擊】使用；當你的武將牌從背麵翻至正麵時，你可以棄置一張牌，然後移動場上的一張牌。',
+      '你可以將裝備區裡的牌當【無懈可擊】使用；當你的武將牌從背面翻至正面時，你可以棄置一張牌，然後移動場上的一張牌。',
   },
   {
     source: 'liegong_description',
@@ -64,7 +64,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'kuanggu_description',
     target:
-      '當你對一名角色造成1點傷害後，若你與其的距離於其因受到此傷害而扣減體力前不大於1，你可以回複1點體力或摸一張牌。',
+      '當你對一名角色造成1點傷害後，若你與其的距離於其因受到此傷害而扣減體力前不大於1，你可以回覆1點體力或摸一張牌。',
   },
   {
     source: 'qimou_description',
@@ -89,7 +89,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'buqu_description',
     target:
-      '<b>鎖定技</b>，當你處於瀕死狀態時，你將牌堆頂一張牌置於你的武將牌上，稱為"創"，若此牌的點數與你武將牌上已有的"創"點數均不同，則你將體力回複至1點。若出現相同點數則將此牌置入棄牌堆。若你的武將牌上有"創"，則你的手牌上限與"創"的數量相等。',
+      '<b>鎖定技</b>，當你處於瀕死狀態時，你將牌堆頂一張牌置於你的武將牌上，稱為"創"，若此牌的點數與你武將牌上已有的"創"點數均不同，則你將體力回覆至1點。若出現相同點數則將此牌置入棄牌堆。若你的武將牌上有"創"，則你的手牌上限與"創"的數量相等。',
   },
   {
     source: 'fenji_description',
@@ -98,7 +98,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'leiji_description',
     target:
-      '當你使用或打出【閃】或【閃電】時，你可以進行判定；當你的判定牌生效後，若判定結果為：黑桃，你可以選擇一名其他角色，對其造成2點雷電傷害；梅花，你回複1點體力，然後你可以選擇一名其他角色，對其造成1點雷電傷害。',
+      '當你使用或打出【閃】或【閃電】時，你可以進行判定；當你的判定牌生效後，若判定結果為：黑桃，你可以選擇一名其他角色，對其造成2點雷電傷害；梅花，你回覆1點體力，然後你可以選擇一名其他角色，對其造成1點雷電傷害。',
   },
   {
     source: 'guidao_description',
@@ -119,4 +119,16 @@ export const skillDescriptions: Word[] = [
   },
   { source: '#piaoling-select', target: '請選擇：1. 將判定牌置於牌堆頂。2. 交給一名角色' },
   { source: 'piaoling: select a player to obtain the judge card', target: '飄零：選擇一名角色獲得此判定牌' },
+];
+
+export const promptDescriptions: Word[] = [
+  {
+    source: '{0}: please choose a target to deal {1} damage?',
+    target: '{0}: 請選擇一名其它角色，對其造成{1}點雷電傷害',
+  },
+
+  {
+    source: '{0}: please choose a hand card, if it’s equipment, use it, otherwise drop it',
+    target: '{0}: 請選擇一張手牌，如果為裝備牌，則使用之，否則棄置此牌',
+  },
 ];

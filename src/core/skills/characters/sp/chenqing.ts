@@ -79,36 +79,35 @@ export class ChenQing extends TriggerSkill {
         TranslationPack.patchPlayerInTranslation(room.getPlayerById(dying)),
       ).extract(),
     );
-    if (!response) {
-      return false;
-    }
 
-    await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toIds[0], toIds[0], this.Name);
-    if (response.droppedCards.length < 4) {
-      return false;
-    }
-
-    const virtualPeach = VirtualCard.create({ cardName: 'peach', bySkill: this.Name }).Id;
-
-    const suits: CardSuit[] = [];
-    for (const cardId of response.droppedCards) {
-      const suit = Sanguosha.getCardById(cardId).Suit;
-      if (suits.includes(suit)) {
-        break;
+    if (response.droppedCards.length > 0) {
+      await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toIds[0], toIds[0], this.Name);
+      if (response.droppedCards.length < 4) {
+        return false;
       }
-
-      suits.push(suit);
-    }
-
-    if (
-      suits.length === response.droppedCards.length &&
-      room.getPlayerById(toIds[0]).canUseCardTo(room, virtualPeach, dying, true)
-    ) {
-      await room.useCard({
-        fromId: toIds[0],
-        targetGroup: [[dying]],
-        cardId: virtualPeach,
-      });
+  
+      const virtualPeach = VirtualCard.create({ cardName: 'peach', bySkill: this.Name }).Id;
+  
+      const suits: CardSuit[] = [];
+      for (const cardId of response.droppedCards) {
+        const suit = Sanguosha.getCardById(cardId).Suit;
+        if (suits.includes(suit)) {
+          break;
+        }
+  
+        suits.push(suit);
+      }
+  
+      if (
+        suits.length === response.droppedCards.length &&
+        room.getPlayerById(toIds[0]).canUseCardTo(room, virtualPeach, dying, true)
+      ) {
+        await room.useCard({
+          fromId: toIds[0],
+          targetGroup: [[dying]],
+          cardId: virtualPeach,
+        });
+      }
     }
 
     return true;

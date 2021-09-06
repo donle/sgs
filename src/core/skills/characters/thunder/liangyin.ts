@@ -134,13 +134,9 @@ export class LiangYinShadow extends TriggerSkill {
       undefined,
       this.Name,
     );
-    if (!response) {
-      return false;
-    }
 
-    const cardIds = room.getPlayerById(toIds[0]).getPlayerCards();
-    response.droppedCards = response.droppedCards || cardIds[Math.floor(Math.random() * cardIds.length)];
-    await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toIds[0], toIds[0], this.Name);
+    response.droppedCards.length > 0 &&
+      (await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toIds[0], toIds[0], this.Name));
 
     return true;
   }

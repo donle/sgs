@@ -134,7 +134,7 @@ export class YaoMing extends TriggerSkill {
           this.GeneralName,
         ).extract(),
       );
-      if (resp && resp.droppedCards.length > 0) {
+      if (resp.droppedCards.length > 0) {
         await room.dropCards(CardMoveReason.SelfDrop, resp.droppedCards, toIds[0], toIds[0], this.Name);
         await room.drawCards(resp.droppedCards.length, toIds[0], 'top', toIds[0], this.Name);
       }

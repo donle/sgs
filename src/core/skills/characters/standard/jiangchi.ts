@@ -88,19 +88,18 @@ export class JiangChi extends TriggerSkill {
         undefined,
         this.Name,
       );
-      if (!response) {
-        return false;
+
+      if (response.droppedCards.length > 0) {
+        await room.dropCards(
+          CardMoveReason.SelfDrop,
+          response.droppedCards,
+          skillUseEvent.fromId,
+          skillUseEvent.fromId,
+          this.Name,
+        );
+  
+        room.setFlag<string>(skillUseEvent.fromId, this.Name, JiangChi.ExtraFlag);
       }
-
-      await room.dropCards(
-        CardMoveReason.SelfDrop,
-        response.droppedCards,
-        skillUseEvent.fromId,
-        skillUseEvent.fromId,
-        this.Name,
-      );
-
-      room.setFlag<string>(skillUseEvent.fromId, this.Name, JiangChi.ExtraFlag);
     }
 
     return true;

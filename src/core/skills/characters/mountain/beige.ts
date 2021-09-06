@@ -65,7 +65,8 @@ export class BeiGe extends TriggerSkill {
           undefined,
           this.Name,
         );
-        response && (await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, fromId));
+        response.droppedCards.length > 0 &&
+          (await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, fromId));
       }
     } else if (judgeCard.Suit === CardSuit.Spade) {
       if (!damageFrom.Dead) {

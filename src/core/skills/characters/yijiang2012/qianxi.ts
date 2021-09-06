@@ -55,7 +55,7 @@ export class QianXi extends TriggerSkill {
       undefined,
       this.Name,
     );
-    if (!response) {
+    if (response.droppedCards.length === 0) {
       return false;
     }
 

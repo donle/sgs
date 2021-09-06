@@ -120,18 +120,19 @@ export class GuHuoShadow extends TriggerSkill {
       });
     }
 
-    const chooseOptionEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> =
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
-        toId: event.fromId,
-        options: ['guhuo:doubt', 'guhuo:no-doubt'],
-        conversation: TranslationPack.translationJsonPatcher(
-          'do you doubt the pre-use of {0} from {1}',
-          TranslationPack.patchCardInTranslation(cardEvent.cardId),
-          TranslationPack.patchPlayerInTranslation(from),
-        ).extract(),
-        ignoreNotifiedStatus: true,
-        triggeredBySkills: [this.Name],
-      });
+    const chooseOptionEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = EventPacker.createUncancellableEvent<
+      GameEventIdentifiers.AskForChoosingOptionsEvent
+    >({
+      toId: event.fromId,
+      options: ['guhuo:doubt', 'guhuo:no-doubt'],
+      conversation: TranslationPack.translationJsonPatcher(
+        'do you doubt the pre-use of {0} from {1}',
+        TranslationPack.patchCardInTranslation(cardEvent.cardId),
+        TranslationPack.patchPlayerInTranslation(from),
+      ).extract(),
+      ignoreNotifiedStatus: true,
+      triggeredBySkills: [this.Name],
+    });
 
     const askingResponses: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent>>[] = [];
     const askForPlayers = room
@@ -168,18 +169,19 @@ export class GuHuoShadow extends TriggerSkill {
     });
 
     let success = true;
-    const chooseOptions: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> =
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>({
-        options: ['guhuo:lose-hp', 'guhuo:drop-card'],
-        toId: '',
-        conversation: 'please choose',
-        triggeredBySkills: [this.Name],
-      });
+    const chooseOptions: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = EventPacker.createUncancellableEvent<
+      GameEventIdentifiers.AskForChoosingOptionsEvent
+    >({
+      options: ['guhuo:lose-hp', 'guhuo:drop-card'],
+      toId: '',
+      conversation: 'please choose',
+      triggeredBySkills: [this.Name],
+    });
     for (const response of responses) {
       if (preuseCard.Name === realCard.Name) {
         if (response.selectedOption === 'guhuo:doubt') {
           const player = room.getPlayerById(response.fromId);
-          if (player.getPlayerCards().length > 0) {
+          if (player.getPlayerCards().find(id => room.canDropCard(response.fromId, id))) {
             chooseOptions.toId = response.fromId;
             room.notify(GameEventIdentifiers.AskForChoosingOptionsEvent, chooseOptions, response.fromId);
             const { selectedOption } = await room.onReceivingAsyncResponseFrom(
@@ -197,14 +199,18 @@ export class GuHuoShadow extends TriggerSkill {
                 undefined,
                 this.Name,
               );
-              dropResponse &&
-                (await room.dropCards(
+
+              if (dropResponse.droppedCards.length > 0) {
+                await room.dropCards(
                   CardMoveReason.SelfDrop,
                   dropResponse.droppedCards,
                   response.fromId,
                   response.fromId,
                   this.Name,
-                ));
+                );
+              } else {
+                await room.loseHp(response.fromId, 1);
+              }
             }
           } else {
             await room.loseHp(response.fromId, 1);

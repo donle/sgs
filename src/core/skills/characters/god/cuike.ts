@@ -47,7 +47,7 @@ export class CuiKe extends TriggerSkill {
         const options = {
           [PlayerCardsArea.JudgeArea]: to.getCardIds(PlayerCardsArea.JudgeArea),
           [PlayerCardsArea.EquipArea]: to.getCardIds(PlayerCardsArea.EquipArea),
-          [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea),
+          [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea).length,
         };
 
         const chooseCardEvent = {

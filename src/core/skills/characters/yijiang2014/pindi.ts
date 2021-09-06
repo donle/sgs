@@ -96,7 +96,7 @@ export class PinDi extends ActiveSkill {
         this.Name,
       );
 
-      if (response && response.droppedCards.length > 0) {
+      if (response.droppedCards.length > 0) {
         await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, toIds[0], toIds[0], this.Name);
       }
     }

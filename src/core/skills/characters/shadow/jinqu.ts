@@ -52,11 +52,9 @@ export class JinQu extends TriggerSkill {
         undefined,
         this.Name,
       );
-      if (!response) {
-        return false;
-      }
 
-      await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, fromId, fromId, this.Name);
+      response.droppedCards.length > 0 &&
+        (await room.dropCards(CardMoveReason.SelfDrop, response.droppedCards, fromId, fromId, this.Name));
     }
 
     return true;

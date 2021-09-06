@@ -135,17 +135,15 @@ export class CanShiShadow extends TriggerSkill {
         undefined,
         this.GeneralName,
       );
-      if (!response) {
-        return false;
-      }
 
-      await room.dropCards(
-        CardMoveReason.SelfDrop,
-        response.droppedCards,
-        event.fromId,
-        event.fromId,
-        this.GeneralName,
-      );
+      response.droppedCards.length > 0 &&
+        (await room.dropCards(
+          CardMoveReason.SelfDrop,
+          response.droppedCards,
+          event.fromId,
+          event.fromId,
+          this.GeneralName,
+        ));
     } else {
       room.removeFlag(event.fromId, this.GeneralName);
     }

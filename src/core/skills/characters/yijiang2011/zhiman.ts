@@ -53,24 +53,13 @@ export class ZhiMan extends TriggerSkill {
         triggeredBySkills: [this.Name],
       };
 
-      room.notify(
-        GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardFromPlayerEvent>(chooseCardEvent),
-        fromId,
-      );
-
-      const response = await room.onReceivingAsyncResponseFrom(
-        GameEventIdentifiers.AskForChoosingCardFromPlayerEvent,
-        fromId,
-      );
-
-      if (response.selectedCard === undefined) {
-        const cardIds = to.getCardIds(PlayerCardsArea.HandArea);
-        response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
+      const response = await room.askForChoosingPlayerCard(chooseCardEvent, fromId, false, true);
+      if (!response) {
+        return false;
       }
 
       await room.moveCards({
-        movingCards: [{ card: response.selectedCard, fromArea: response.fromArea }],
+        movingCards: [{ card: response.selectedCard!, fromArea: response.fromArea }],
         fromId: chooseCardEvent.toId,
         toId: chooseCardEvent.fromId,
         toArea: CardMoveArea.HandArea,
