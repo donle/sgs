@@ -79,7 +79,7 @@ class AudioPlayerService implements AudioService {
   async playDeathAudio(characterName: string, skinData: CharacterSkinInfo[], skinName?: string) {
     try {
       if (skinName) {
-        const audioUrl = await this.loader.getCharacterSkinAudio(characterName, skinName, 'death', NaN, skinData);
+        const audioUrl = await this.loader.getCharacterSkinAudio(characterName, skinName, 'death', undefined, skinData);
         await this.play(audioUrl);
       } else {
         const audioUrl = await this.loader.getDeathAudio(characterName);

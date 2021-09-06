@@ -39,7 +39,12 @@ export class ProdAudioLoader implements AudioLoader {
     return (await import(`./audios/cards/${genderString}/${cardName}.ogg`)).default;
   }
 
-  async getSkillAudio(skillName: string, gender: CharacterGender, characterName?: string, audioIndex?: number): Promise<string> {
+  async getSkillAudio(
+    skillName: string,
+    gender: CharacterGender,
+    characterName?: string,
+    audioIndex?: number,
+  ): Promise<string> {
     if (!audioIndex) audioIndex = Math.round(Math.random() * 1) + 1;
     return (await import(`./audios/characters/${skillName}${audioIndex}.mp3`)).default;
   }
@@ -52,7 +57,7 @@ export class ProdAudioLoader implements AudioLoader {
     characterName: string,
     skinName: string,
     skillName: string,
-    audioIndex: number,
+    audioIndex?: number,
     skinData?: CharacterSkinInfo[],
     gender?: CharacterGender,
   ): Promise<string> {

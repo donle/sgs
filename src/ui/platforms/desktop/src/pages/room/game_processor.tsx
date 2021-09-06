@@ -386,7 +386,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    if (content.originalMessage.replace(/\$[a-z]*:\d/, '') === '') {
+    if (content.originalMessage.match(/\$[a-z]*:\d/)) {
       // play skill audio
       const msg = content.originalMessage;
       const skill = msg.slice(1, msg.length - 2);
