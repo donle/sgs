@@ -26,9 +26,14 @@ export class DevAudioLoader implements AudioLoader {
   getChainAudio(): string {
     return `${remoteRoot}/audios/chain.mp3`;
   }
-  async getSkillAudio(skillName: string, gender: CharacterGender, characterName?: string) {
-    const randomIndex = Math.round(Math.random() * 1) + 1;
-    return `${remoteRoot}/audios/characters/${skillName}${randomIndex}.mp3`;
+  async getSkillAudio(
+    skillName: string,
+    gender: CharacterGender,
+    characterName?: string,
+    audioIndex?: number,
+  ): Promise<string> {
+    if (!audioIndex) audioIndex = Math.round(Math.random() * 1) + 1;
+    return `${remoteRoot}/audios/characters/${skillName}${audioIndex}.mp3`;
   }
   async getCardAudio(cardName: string, gender: CharacterGender, characterName?: string) {
     return `${remoteRoot}/audios/cards/${gender === CharacterGender.Female ? 'female' : 'male'}/${cardName}.ogg`;
@@ -41,6 +46,7 @@ export class DevAudioLoader implements AudioLoader {
     characterName: string,
     skinName: string,
     skillName: string,
+    audioIndex?: number,
     skinData?: CharacterSkinInfo[],
     gender?: CharacterGender,
   ): Promise<string> {
@@ -48,7 +54,7 @@ export class DevAudioLoader implements AudioLoader {
     if (skillName === 'death') {
       voice = await this.getDeathAudio(characterName);
     } else {
-      voice = await this.getSkillAudio(skillName, gender!, characterName);
+      voice = await this.getSkillAudio(skillName, gender!, characterName, audioIndex);
     }
 
     return voice;

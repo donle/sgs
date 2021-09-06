@@ -1,7 +1,7 @@
 import { Card, CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { Character, CharacterId } from 'core/characters/character';
+import { Character, CharacterGender, CharacterId } from 'core/characters/character';
 import {
   CardMoveArea,
   CardMovedBySpecifiedReason,
@@ -386,8 +386,25 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    this.presenter.addUserMessage(this.translator.trx(content.message));
-    this.presenter.onIncomingMessage(content.playerId, content.originalMessage);
+    const matchArray = content.originalMessage.match(/\$([a-z_]+):(\d+)/);
+    if (matchArray) {
+      // play skill audio
+      const skill = matchArray[1];
+      const index = parseInt(matchArray[2]);
+      this.audioService.playSkillAudio(skill, CharacterGender.Male, index); // player's character may be undefined
+      
+      const player = this.store.room.getPlayerById(content.playerId);
+      this.presenter.addUserMessage(this.translator.trx(TranslationPack.translationJsonPatcher(
+        '{0} {1} says: {2}',
+        TranslationPack.patchPureTextParameter(player.Name),
+        player.CharacterId === undefined ? '' : TranslationPack.patchPlayerInTranslation(player),
+        this.translator.tr(content.originalMessage),
+      ).toString()));
+      this.presenter.onIncomingMessage(content.playerId, this.translator.tr(content.originalMessage));
+    } else {
+      this.presenter.addUserMessage(this.translator.trx(content.message));
+      this.presenter.onIncomingMessage(content.playerId, content.originalMessage);
+    }
     this.presenter.broadcastUIUpdate();
     this.electron.flashFrame();
   }
@@ -1520,7 +1537,7 @@ export class GameClientProcessor {
     const from = this.store.room.getPlayerById(content.fromId);
     const skinName = getSkinName(from.Character.Name, from.Id, this.skinData).skinName;
     !content.mute &&
-      this.audioService.playSkillAudio(skill.GeneralName, from.Gender, this.skinData, from.Character.Name, skinName);
+      this.audioService.playSkillAudio(skill.GeneralName, from.Gender, Math.round(Math.random() * 1) + 1, this.skinData, from.Character.Name, skinName);
 
     await this.store.room.useSkill(content);
     if (skill.SkillType === SkillType.Limit || skill.SkillType === SkillType.Awaken) {
