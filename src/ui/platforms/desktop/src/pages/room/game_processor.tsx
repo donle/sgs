@@ -386,11 +386,11 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    if (content.originalMessage.match(/\$[a-z]*:\d/)) {
+    const matchArray = content.originalMessage.match(/\$[a-z]*:\d/);
+    if (matchArray) {
       // play skill audio
-      const msg = content.originalMessage;
-      const skill = msg.slice(1, msg.length - 2);
-      const index = parseInt(msg[msg.length - 1]);
+      const skill = matchArray[1];
+      const index = parseInt(matchArray[2]);
       this.audioService.playSkillAudio(skill, CharacterGender.Male, index); // player's character may be undefined
       
       const player = this.store.room.getPlayerById(content.playerId);
