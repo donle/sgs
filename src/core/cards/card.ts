@@ -1,5 +1,6 @@
 import { Sanguosha } from 'core/game/engine';
 import { GameCardExtensions } from 'core/game/game_props';
+import { Algorithm } from 'core/shares/libs/algorithm';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { Skill, ViewAsSkill } from 'core/skills/skill';
 import {
@@ -410,7 +411,7 @@ export class VirtualCard<T extends Card = Card> extends Card {
       }
     }
 
-    return result;
+    return Algorithm.singleton(result);
   }
 
   public getRealActualCards(): CardId[] {

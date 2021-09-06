@@ -226,6 +226,10 @@ export const promptDescriptions: Word[] = [
   },
 
   {
+    source: '{0}: do you want to draw 2 cards, then give 2 cards to {1} ?',
+    target: '{0}: 你可以摸兩張牌，然後交給 {1} 兩張牌',
+  },
+  {
     source: '{0}: do you want to display a hand card from another player?',
     target: '{0}：你可以展示一名其他角色的一張手牌',
   },

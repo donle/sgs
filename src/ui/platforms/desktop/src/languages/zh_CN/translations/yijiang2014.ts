@@ -215,7 +215,10 @@ export const promptDescriptions: Word[] = [
     source: '{0}: please choose a target for {1}',
     target: '{0}：请为 {1} 选择目标',
   },
-
+  {
+    source: '{0}: do you want to draw 2 cards, then give 2 cards to {1} ?',
+    target: '{0}: 你可以摸两张牌，然后交给 {1} 两张牌',
+  },
   {
     source: '{0}: do you want to drop a card from {1}’s judge area?',
     target: '{0}：你可以弃置 {1} 判定区里的一张牌',

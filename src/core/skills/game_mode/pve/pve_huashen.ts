@@ -146,10 +146,6 @@ export class PveHuaShen extends TriggerSkill {
       room.addMark(event.fromId, MarkEnum.PveHuaShen, PveHuaShen.CHARACTERS.length);
       await this.nextEntity(room, event.fromId);
 
-      const cardup = longshen.getFlag<string[]>(PveTanSuo.Name) || [];
-      cardup.push('peach2');
-      longshen.setFlag(PveTanSuo.Name, cardup);
-
       room.AlivePlayers.filter(player => player.Id !== event.fromId).forEach(player =>
         room.changePlayerProperties({
           changedProperties: [

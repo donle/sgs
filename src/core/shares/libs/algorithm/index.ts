@@ -35,6 +35,15 @@ export namespace Algorithm {
   export function equals<T>(source: T[], target: T[]) {
     return target.length === source.length && target.filter(e => !source.includes(e)).length === 0;
   }
+  export function singleton<T>(source: T[]) {
+    return source.reduce<T[]>((singled, current) => {
+      if (!singled.includes(current)) {
+        singled.push(current);
+      }
+
+      return singled;
+    }, []);
+  }
   export function generateUUID() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
       const r = (Math.random() * 16) | 0,

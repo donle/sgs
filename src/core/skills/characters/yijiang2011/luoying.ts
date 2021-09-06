@@ -22,17 +22,15 @@ export class LuoYing extends TriggerSkill {
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>): boolean {
-    return (
-      event.infos.find(
-        info =>
-          !!info.movingCards.find(node => Sanguosha.getCardById(node.card).Suit === CardSuit.Club) &&
-          ((info.fromId &&
-            info.fromId !== owner.Id &&
-            (info.moveReason === CardMoveReason.PassiveDrop || info.moveReason === CardMoveReason.SelfDrop)) ||
-            (info.proposer &&
-              info.proposer !== owner.Id &&
-              info.movedByReason === CardMovedBySpecifiedReason.JudgeProcess)),
-      ) !== undefined
+    return !!event.infos.find(
+      info =>
+        !!info.movingCards.find(node => Sanguosha.getCardById(node.card).Suit === CardSuit.Club) &&
+        ((info.fromId &&
+          info.fromId !== owner.Id &&
+          (info.moveReason === CardMoveReason.PassiveDrop || info.moveReason === CardMoveReason.SelfDrop)) ||
+          (info.proposer &&
+            info.proposer !== owner.Id &&
+            info.movedByReason === CardMovedBySpecifiedReason.JudgeProcess)),
     );
   }
 

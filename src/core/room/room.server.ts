@@ -1537,9 +1537,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   public async moveCards(...infos: MoveCardEventInfos[]) {
-    const event = { infos };
     const toRemove: MoveCardEventInfos[] = [];
-    for (const info of event.infos) {
+    for (const info of infos) {
       if (info.movingCards.length === 0) {
         toRemove.push(info);
         continue;
@@ -1571,14 +1570,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       }, []);
     }
 
-    event.infos.filter(info => !toRemove.includes(info));
-    if (event.infos.length === 0) {
+    infos.filter(info => !toRemove.includes(info));
+    if (infos.length === 0) {
       return;
     }
 
     await this.gameProcessor.onHandleIncomingEvent(
       GameEventIdentifiers.MoveCardEvent,
-      EventPacker.createIdentifierEvent(GameEventIdentifiers.MoveCardEvent, event),
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.MoveCardEvent, { infos }),
     );
   }
 

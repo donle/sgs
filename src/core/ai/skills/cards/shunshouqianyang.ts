@@ -20,7 +20,7 @@ export class ShunShouQianYangSkillTrigger extends ActiveSkillTriggerClass<ShunSh
     const enemies = AiLibrary.sortEnemiesByRole(room, ai);
 
     const availableTargets = [...friends, ...enemies].filter(target =>
-      skill.isAvailableTarget(ai.Id, room, target.Id, [], [], skillInCard!),
+      target.getPlayerCards().length > 0 && skill.isAvailableTarget(ai.Id, room, target.Id, [], [], skillInCard!),
     );
 
     const targets = this.filterTargets(room, ai, skill, skillInCard!, availableTargets);

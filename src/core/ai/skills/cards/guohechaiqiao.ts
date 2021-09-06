@@ -19,8 +19,9 @@ export class GuoHeChaiQiaoSkillTrigger extends ActiveSkillTriggerClass<GuoHeChai
     );
     const enemies = AiLibrary.sortEnemiesByRole(room, ai);
 
-    const availableTargets = [...friends, ...enemies].filter(target =>
-      skill.isAvailableTarget(ai.Id, room, target.Id, [], [], skillInCard!),
+    const availableTargets = [...friends, ...enemies].filter(
+      target =>
+        target.getPlayerCards().length > 0 && skill.isAvailableTarget(ai.Id, room, target.Id, [], [], skillInCard!),
     );
 
     const targets = this.filterTargets(room, ai, skill, skillInCard!, availableTargets);

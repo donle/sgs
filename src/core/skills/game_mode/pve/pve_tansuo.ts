@@ -47,7 +47,7 @@ export class PveTanSuo extends TriggerSkill {
     const longshen = room.getPlayerById(event.fromId);
     const cardup = longshen.getFlag<string[]>(this.GeneralName) || [];
     const cardNumber = Sanguosha.getCardById(cardId).CardNumber;
-    const encounter = Math.floor(Math.random() * 24 + 1);
+    const encounter = Math.floor(Math.random() * 70 + 1);
     if (cardNumber > encounter) {
       room.broadcast(GameEventIdentifiers.CustomGameDialog, {
         translationsMessage: TranslationPack.translationJsonPatcher(
@@ -67,17 +67,23 @@ export class PveTanSuo extends TriggerSkill {
         await room.changeMaxHp(fromId, -1);
       }
       if (cardNumber / encounter > 4) {
+        room.broadcast(GameEventIdentifiers.CustomGameDialog, {
+          translationsMessage: TranslationPack.translationJsonPatcher(
+            '{0} ouyujiguan',
+            room.getPlayerById(fromId).Name,
+          ).extract(),
+        });
         await room.loseHp(fromId, damage);
       }
     }
-    if (encounter >= 18 || (encounter >= 1 && encounter < 5)) {
+    if ((encounter >= 18 && encounter < 25) || (encounter >= 1 && encounter < 5)) {
       room.broadcast(GameEventIdentifiers.CustomGameDialog, {
         translationsMessage: TranslationPack.translationJsonPatcher(
           '{0} qiyubaowu',
           room.getPlayerById(fromId).Name,
         ).extract(),
       });
-      if (encounter > 21 || encounter === 2) {
+      if ((encounter >= 22 && encounter < 25) || encounter === 2) {
         await room.drawCards(Math.floor(Math.random() * 3 + 1), fromId, 'top', fromId);
       }
       if (encounter === 21 || encounter === 18 || encounter === 3) {
