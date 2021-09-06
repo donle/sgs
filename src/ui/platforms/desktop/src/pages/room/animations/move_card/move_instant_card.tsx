@@ -69,8 +69,8 @@ export class MoveInstantCardAnimation extends UiAnimation {
       }
   
       const cards = info.movingCards.map(cardInfo => {
-        const isPublic = content.engagedPlayerIds
-          ? info.engagedPlayerIds?.includes(this.store.clientPlayerId)
+        const isPublic = info.engagedPlayerIds
+          ? info.engagedPlayerIds.includes(this.store.clientPlayerId)
           : !(cardInfo.fromArea === CardMoveArea.HandArea && info.toArea === CardMoveArea.HandArea) &&
             info.moveReason !== CardMoveReason.CardDraw;
         return {
