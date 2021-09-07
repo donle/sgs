@@ -141,19 +141,9 @@ export class Dashboard extends React.Component<DashboardProps> {
     return availableCards;
   }
 
-  getCardXOffset(index: number, offsetIndex: number = 0) {
-    if (index - this.onFocusCardIndex === 1 && this.cardOffset < 0) {
-      return (index + offsetIndex) * (this.handCardWidth + this.cardOffset) + this.handCardWidth / 2 - 16;
-    } else if (this.onFocusCardIndex - index === 1 && this.cardOffset < 0) {
-      return (index + offsetIndex) * (this.handCardWidth + this.cardOffset) - this.handCardWidth / 2 + 16;
-    } else {
-      return (index + offsetIndex) * (this.handCardWidth + this.cardOffset);
-    }
-  }
-
   getCardYOffset(index: number) {
     if (this.onFocusCardIndex === index) {
-      return -8;
+      return this.cardOffset < 0 ? -48 : -16;
     }
   }
 
@@ -165,23 +155,25 @@ export class Dashboard extends React.Component<DashboardProps> {
   @mobx.computed
   get AllClientHandCards() {
     const outsideCards = this.AvailableOutsideCards.map((cardInfo, index) => {
+      const isSelected = this.props.store.selectedCards.includes(cardInfo.card.Id);
+      const isDisabled = !this.props.outsideCardEnableMatcher || !this.props.outsideCardEnableMatcher(cardInfo.card);
       return (
         <ClientCard
           imageLoader={this.props.imageLoader}
           key={cardInfo.card.Id}
           width={this.handCardWidth}
-          offsetLeft={this.getCardXOffset(index)}
+          offsetLeft={index * (this.handCardWidth + this.cardOffset)}
           offsetTop={this.getCardYOffset(index)}
           translator={this.props.translator}
           card={cardInfo.card}
           highlight={this.props.store.highlightedCards}
-          onMouseEnter={this.onFocusCard(index)}
+          onMouseEnter={isSelected || isDisabled ? undefined : this.onFocusCard(index)}
           onMouseLeave={this.onFocusCard(-2)}
           onSelected={this.onClick(cardInfo.card)}
           tag={this.props.translator.tr(cardInfo.areaName)}
           className={styles.handCard}
-          disabled={!this.props.outsideCardEnableMatcher || !this.props.outsideCardEnableMatcher(cardInfo.card)}
-          selected={this.props.store.selectedCards.includes(cardInfo.card.Id)}
+          disabled={isDisabled}
+          selected={isSelected}
         />
       );
     });
@@ -189,22 +181,24 @@ export class Dashboard extends React.Component<DashboardProps> {
     const handcards =
       this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.HandArea).map((cardId, index) => {
         const card = Sanguosha.getCardById(cardId);
+        const isSelected = this.props.store.selectedCards.includes(card.Id);
+        const isDisabled = !this.props.cardEnableMatcher || !this.props.cardEnableMatcher(card);
         return (
           <ClientCard
             imageLoader={this.props.imageLoader}
             key={cardId}
             width={this.handCardWidth}
-            offsetLeft={this.getCardXOffset(index + outsideCards.length)}
+            offsetLeft={(index + outsideCards.length) * (this.handCardWidth + this.cardOffset)}
             offsetTop={this.getCardYOffset(index + outsideCards.length)}
             translator={this.props.translator}
-            onMouseEnter={this.onFocusCard(index + outsideCards.length)}
+            onMouseEnter={isSelected || isDisabled ? undefined : this.onFocusCard(index + outsideCards.length)}
             onMouseLeave={this.onFocusCard(-2)}
             card={card}
             highlight={this.props.store.highlightedCards}
             onSelected={this.onClick(card)}
             className={styles.handCard}
-            disabled={!this.props.cardEnableMatcher || !this.props.cardEnableMatcher(card)}
-            selected={this.props.store.selectedCards.includes(card.Id)}
+            disabled={isDisabled}
+            selected={isSelected}
           />
         );
       }) || [];
