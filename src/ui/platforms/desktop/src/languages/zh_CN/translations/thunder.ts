@@ -119,6 +119,162 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
+
+export const skillAudios: Word[] = [
+  {
+    source: '$zhengrong:1',
+    target: '跨海东征，家国俱荣！',
+  },
+  {
+    source: '$zhengrong:2',
+    target: '东征高句丽，保辽东安稳！',
+  },
+  {
+    source: '$hongju:1',
+    target: '一举拿下，鸿途可得！',
+  },
+  {
+    source: '$hongju:2',
+    target: '鸿飞荣升，举重若轻！',
+  },
+  {
+    source: '$qingce:1',
+    target: '感明帝之恩，清君侧之贼！',
+  },
+  {
+    source: '$qingce:2',
+    target: '得太后手诏，清奸佞乱臣！',
+  },
+ 
+  {
+    source: '$zhengu:1',
+    target: '镇守城池，必以骨相拼！',
+  },
+  {
+    source: '$zhengu:2',
+    target: '孔明计虽百算，却难抵吾镇骨千拒！',
+  },
+ 
+  {
+    source: '$zuilun:1',
+    target: '吾有三罪，未能除黄皓，制伯约，守国土。',
+  },
+  {
+    source: '$zuilun:2',
+    target: '哎，数罪当论，吾愧对先帝恩惠。',
+  },
+  {
+    source: '$fuyin:1',
+    target: '得父荫庇，平步青云。',
+  },
+  {
+    source: '$fuyin:2',
+    target: '吾自幼心怀父诫，方不愧父亲荫庇。',
+  },
+ 
+  {
+    source: '$wanglie:1',
+    target: '猛将之烈，统帅之所往。',
+  },
+  {
+    source: '$wanglie:2',
+    target: '与子龙忠勇相往，猛烈相合。',
+  },
+ 
+  {
+    source: '$qianjie:1',
+    target: '继父之节，谦逊恭毕。',
+  },
+  {
+    source: '$qianjie:2',
+    target: '谦谦清廉德，节节卓尔茂。',
+  },
+  {
+    source: '$jueyan:1',
+    target: '毁堰坝之计，实为阻晋粮道。',
+  },
+  {
+    source: '$jueyan:2',
+    target: '堰坝毁之，可令敌军自退。',
+  },
+  {
+    source: '$poshi:1',
+    target: '破晋军分进合击之势，牵晋军主力之实！',
+  },
+  {
+    source: '$poshi:2',
+    target: '破羊祜之策，势在必行！',
+  },
+  {
+    source: '$huairou:1',
+    target: '各保分界，无求细利。',
+  },
+  {
+    source: '$huairou:2',
+    target: '胸怀千万，彰其德，包其柔。',
+  },
+ 
+  {
+    source: '$liangyin:1',
+    target: '结得良姻，固吴基业。',
+  },
+  {
+    source: '$liangyin:2',
+    target: '君恩之命，妾身良姻之福。',
+  },
+  {
+    source: '$kongsheng:1',
+    target: '窈窕淑女，箜篌友之。',
+  },
+  {
+    source: '$kongsheng:2',
+    target: '箜篌声声，琴瑟鸣鸣。',
+  },
+
+  {
+    source: '$lei_yongsi:1',
+    target: '传朕旨意，诸部遵旨即可！',
+  },
+  {
+    source: '$lei_yongsi:2',
+    target: '传国玉玺在手，朕一语便是天言！',
+  },
+  {
+    source: '$lei_weidi:1',
+    target: '朕今日雄举淮南，明日便可一匡天下！',
+  },
+  {
+    source: '$lei_weidi:2',
+    target: '天下，即将尽归我袁公路！',
+  },
+ 
+  {
+    source: '$congjian:1',
+    target: '哼，目光所及，短寸之间。',
+  },
+  {
+    source: '$congjian:2',
+    target: '狭目之见，只能窥底。',
+  },
+
+  {
+    source: '$xiongluan:1',
+    target: '雄踞宛城，虽乱世可安。',
+  },
+  {
+    source: '$xiongluan:2',
+    target: '北地枭雄，乱世不败。',
+  },
+  {
+    source: '$congjian:1',
+    target: '听君谏言，去危亡，保宗祀。',
+  },
+  {
+    source: '$congjian:2',
+    target: '从谏良计，可得自保。',
+  },
+];
+
 export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to choose a target to draw or drop hand cards until the number of hand cards equal to you?',

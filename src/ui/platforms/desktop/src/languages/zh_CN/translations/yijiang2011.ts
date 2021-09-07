@@ -323,7 +323,7 @@ export const skillAudios: Word[] = [
     target: '善因得善果，恶因得恶报。',
   },
   {
-    source: '$enyuan:1',
+    source: '$enyuan:2',
     target: '私我者赠之琼瑶，厌我者报之斧钺。',
   },
   {

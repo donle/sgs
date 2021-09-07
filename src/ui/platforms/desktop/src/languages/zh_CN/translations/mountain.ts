@@ -118,6 +118,185 @@ export const skillDescriptions: Word[] = [
   { source: 'xinsheng_description', target: '当你受到1点伤害后，你可以获得一张“化身”。' },
 ];
 
+export const skillAudios: Word[] = [
+  {
+    source: '$qiaobian:1',
+    target: '兵无常势，水无常形。',
+  },
+  {
+    source: '$qiaobian:2',
+    target: '用兵之道，变化万千。',
+  },
+
+  {
+    source: '$tuntian:1',
+    target: '休养生息，是为以备不虞！',
+  },
+  {
+    source: '$tuntian:2',
+    target: '战损难免，应以军务减之。',
+  },
+  {
+    source: '$zaoxian:1',
+    target: '用兵以险，则战之以胜！',
+  },
+  {
+    source: '$zaoxian:2',
+    target: '已至马阁山，宜速进军破蜀！',
+  },
+  {
+    source: '$jixi:1',
+    target: '攻敌之不备，斩将夺辎！',
+  },
+  {
+    source: '$jixi:2',
+    target: '奇兵正攻，敌何能为？',
+  },
+
+  {
+    source: '$tiaoxin:1',
+    target: '黄口竖子，何必上阵送命？',
+  },
+  {
+    source: '$tiaoxin:2',
+    target: '汝如欲大败而归，则可进军一战！',
+  },
+  {
+    source: '$zhiji:1',
+    target: '维定当奋身以复汉室！',
+  },
+  {
+    source: '$zhiji:2',
+    target: '丞相之志，维必竭力而为。',
+  },
+
+  {
+    source: '$xiangle:1',
+    target: '诶嘿嘿嘿，还是玩耍快乐~',
+  },
+  {
+    source: '$xiangle:2',
+    target: '美好的日子，应该好好享受。',
+  },
+  {
+    source: '$fangquan:1',
+    target: '蜀汉有相父在，我可安心。',
+  },
+  {
+    source: '$fangquan:2',
+    target: '这些事情，你们安排就好。',
+  },
+  {
+    source: '$ruoyu:1',
+    target: '若愚故泰，巧骗众人。',
+  },
+  {
+    source: '$ruoyu:2',
+    target: '愚昧者，非真傻也。',
+  },
+  {
+    source: '$sishu:1',
+    target: '蜀乐乡土，怎不思念？',
+  },
+  {
+    source: '$sishu:2',
+    target: '思乡心切，徘徊惶惶。',
+  },
+
+  {
+    source: '$jiang:1',
+    target: '我会把胜利，带回江东！',
+  },
+  {
+    source: '$jiang:2',
+    target: '天下英雄，谁能与我一战！',
+  },
+  {
+    source: '$hunzi:1',
+    target: '小霸王之名，响彻天下，何人不知！',
+  },
+  {
+    source: '$hunzi:2',
+    target: '江东已平，中原动荡，直取许昌！',
+  },
+  {
+    source: '$zhiba:1',
+    target: '我的霸业，才刚刚开始。',
+  },
+  {
+    source: '$zhiba:2',
+    target: '汝是战是降，我皆奉陪。',
+  },
+
+  {
+    source: '$zhiba:1',
+    target: '我的霸业，才刚刚开始。',
+  },
+  {
+    source: '$zhiba:2',
+    target: '汝是战是降，我皆奉陪。',
+  },
+  {
+    source: '$zhiba:1',
+    target: '我的霸业，才刚刚开始。',
+  },
+  {
+    source: '$zhiba:2',
+    target: '汝是战是降，我皆奉陪。',
+  },
+
+  {
+    source: '$zhijian:1',
+    target: '为臣之道，在于直言不讳。',
+  },
+  {
+    source: '$zhijian:2',
+    target: '建言或逆耳，于国无一害。',
+  },
+  {
+    source: '$guzheng:1',
+    target: '为君者，不可私行土木，奢废物料。',
+  },
+  {
+    source: '$guzheng:2',
+    target: '安民固国，方可思栋。',
+  },
+
+  {
+    source: '$huashen:1',
+    target: '世间万物，贫道皆可化为其形。',
+  },
+  {
+    source: '$huashen:2',
+    target: '尘身土塑，唯魂魄难得。',
+  },
+  {
+    source: '$xinsheng:1',
+    target: '大成若缺，损亦无妨。',
+  },
+  {
+    source: '$xinsheng:2',
+    target: '大盈若冲，新神自现。',
+  },
+
+  {
+    source: '$beige:1',
+    target: '人多暴猛兮如虺蛇，控弦被甲兮为骄奢。',
+  },
+  {
+    source: '$beige:2',
+    target: '两拍张弦兮弦欲绝，志摧心折兮自悲嗟。',
+  },
+  {
+    source: '$duanchang:1',
+    target: '雁飞高兮邈难寻，空断肠兮思愔愔。',
+  },
+  {
+    source: '$duanchang:2',
+    target: '为天有眼兮，何不见我独漂流？',
+  },
+];
+
 export const promptDictionary: Word[] = [
   {
     source: '{0}: do you want to drop a hand card to skip {1} ?',

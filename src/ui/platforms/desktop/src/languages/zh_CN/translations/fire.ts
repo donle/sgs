@@ -102,6 +102,136 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
+export const skillAudios: Word[] = [
+  {
+    source: '$qiangxi:1',
+    target: '铁戟双提八十斤，威风凛凛震乾坤！',
+  },
+  {
+    source: '$qiangxi:2',
+    target: '勇字当头，义字当先！',
+  },
+
+  {
+    source: '$quhu:1',
+    target: '驱虎伤敌，保我无虑。',
+  },
+  {
+    source: '$quhu:2',
+    target: '无需费我，一兵一卒。',
+  },
+  {
+    source: '$jieming:1',
+    target: '杀身成仁，不负皇恩。',
+  },
+  {
+    source: '$jieming:2',
+    target: '因势利导，是为良计。',
+  },
+
+  {
+    source: '$lianhuan:1',
+    target: '连环之策，攻敌之计。',
+  },
+  {
+    source: '$lianhuan:2',
+    target: '锁链连舟，困步难行。',
+  },
+  {
+    source: '$niepan:1',
+    target: '烈火脱胎，涅槃重生。',
+  },
+  {
+    source: '$niepan:2',
+    target: '破而后立，方有大成。',
+  },
+
+  {
+    source: '$bazhen:1',
+    target: '八阵连星，日月同辉。',
+  },
+  {
+    source: '$bazhen:2',
+    target: '此阵变化，岂是汝等可解？',
+  },
+  {
+    source: '$huoji:1',
+    target: '赤壁借东风，燃火灭魏军。',
+  },
+  {
+    source: '$huoji:2',
+    target: '东风，让这火烧得再猛烈些吧！',
+  },
+  {
+    source: '$kanpo:1',
+    target: '此计奥妙，我已看破。',
+  },
+  {
+    source: '$kanpo:2',
+    target: '还有什么是我看不破的呢？',
+  },
+  {
+    source: '$cangzhuo:1',
+    target: '藏巧于拙，用晦而明。',
+  },
+  {
+    source: '$cangzhuo:2',
+    target: '寓清于浊，以屈为伸。',
+  },
+
+  {
+    source: '$tianyi:1',
+    target: '天降大任，速战解围！',
+  },
+  {
+    source: '$tianyi:2',
+    target: '义不从之，天必不佑！',
+  },
+  {
+    source: '$hanzhan:1',
+    target: '伯符，且与我一战！',
+  },
+  {
+    source: '$hanzhan:2',
+    target: '与君酣战，快哉快哉！',
+  },
+
+  {
+    source: '$jianchu:1',
+    target: '你这身躯，怎么能快过我？',
+  },
+  {
+    source: '$jianchu:2',
+    target: '这些，怎么能挡住我的威力！',
+  },
+
+  {
+    source: '$shuangxiong:1',
+    target: '哥哥，且看我与giao云一战！ ——且与他战个五十回合！',
+  },
+  {
+    source: '$shuangxiong:2',
+    target: '此战，若有你我一人在此，何惧华雄？ ——定叫他有去无回！',
+  },
+
+  {
+    source: '$luanji:1',
+    target: '谁都挡不住我的箭阵！',
+  },
+  {
+    source: '$luanji:2',
+    target: '我的箭支，准备颇多！',
+  },
+  {
+    source: '$xueyi:1',
+    target: '高贵名门，族裔盛名。',
+  },
+  {
+    source: '$xueyi:2',
+    target: '贵裔之脉，后起之秀！',
+  },
+];
+
 export const conversations: Word[] = [
   {
     source: 'shuangxiong: do you wanna to obtain slashes from "shuangxiong" ?',
