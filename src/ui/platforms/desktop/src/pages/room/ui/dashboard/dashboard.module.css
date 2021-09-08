@@ -75,6 +75,12 @@
     justify-content: flex-start;
 }
 
+.actionButtons {
+    position: absolute;
+    left: calc(gridLine * 3);
+    display: flex;
+}
+
 .equipSection {
     width: 180px;
     height: 166px;
@@ -97,9 +103,8 @@
     height: 25%;
 }
 
-.trustedButton {
-    position: absolute;
-    left: calc(gridLine * 3);
+.actionButton {
+    margin: 0 halfGridLine;
 }
 
 .trustedCover {

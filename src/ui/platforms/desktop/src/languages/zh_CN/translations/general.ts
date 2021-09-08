@@ -123,7 +123,7 @@ export const eventDictionary: Word[] = [
   { source: '{0} resumed {1} equip section', target: '{0} 恢复了 {1}' },
   { source: '{0} aborted judge area', target: '{0} 废除了判定区' },
   { source: '{0} resumed judge area', target: '{0} 恢复了判定区' },
-  { source: '{0} select nationality {1}', target: '{0} 选择了国籍 {1}'},
+  { source: '{0} select nationality {1}', target: '{0} 选择了国籍 {1}' },
   {
     source: 'do you want to trigger skill {0} ?',
     target: '是否发动技能 【{0}】?',
@@ -706,6 +706,7 @@ export const UiDictionary: Word[] = [
   { source: 'trusted', target: '托管' },
   { source: 'cancel trusted', target: '取消托管' },
   { source: 'in trusted', target: '托管中···' },
+  { source: 'adjust handcards', target: '整理手牌' },
   {
     source: 'New QSanguosha',
     target: '新神杀',

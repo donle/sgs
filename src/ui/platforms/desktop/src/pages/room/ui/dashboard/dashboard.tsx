@@ -21,6 +21,7 @@ import { AbortedCardItem } from './aborted_card_item/aborted_card_item';
 import styles from './dashboard.module.css';
 import { EquipCardItem } from './equip_card_item/equip_card_item';
 
+import { Functional } from 'core/shares/libs/functional';
 import { AutoButton } from 'ui/button/auto_button';
 import { Button } from 'ui/button/button';
 import { JudgeAreaDisabledIcon } from '../icon/judge_area_disabled_icon';
@@ -47,6 +48,7 @@ export type DashboardProps = {
   onClickReforgeButton?(): void;
   onClickCancelButton?(): void;
   onClickFinishButton?(): void;
+  onTrusted?(): void;
   onClickSkill?(skill: Skill, selected: boolean): void;
   isSkillDisabled(skill: Skill): boolean;
 };
@@ -282,21 +284,38 @@ export class Dashboard extends React.Component<DashboardProps> {
       this.props.store.room.emitStatus('player', player.Id);
     } else {
       this.props.store.room.emitStatus('trusted', player.Id);
+      this.props.onTrusted?.();
     }
+  };
+
+  private readonly onSortHandcards = () => {
+    const handcards = this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.HandArea) || [];
+    this.props.presenter.ClientPlayer?.setupCards(PlayerCardsArea.HandArea, Functional.sortCards(handcards));
+    this.props.presenter.broadcastUIUpdate();
   };
 
   render() {
     const player = this.props.presenter.ClientPlayer!;
     return (
       <div className={styles.dashboard} id={this.props.store.clientPlayerId}>
-        <Button
-          variant="primary"
-          className={styles.trustedButton}
-          onClick={this.onTrusted}
-          disabled={!this.props.store.room.isPlaying() || this.props.store.room.isGameOver()}
-        >
-          {this.props.translator.tr(player.isTrusted() ? 'cancel trusted' : 'trusted')}
-        </Button>
+        <div className={styles.actionButtons}>
+          <Button
+            variant="primary"
+            className={styles.actionButton}
+            onClick={this.onTrusted}
+            disabled={!this.props.store.room.isPlaying() || this.props.store.room.isGameOver()}
+          >
+            {this.props.translator.tr(player.isTrusted() ? 'cancel trusted' : 'trusted')}
+          </Button>
+          <Button
+            variant="primary"
+            className={styles.actionButton}
+            onClick={this.onSortHandcards}
+            disabled={!this.props.store.room.isPlaying() || this.props.store.room.isGameOver()}
+          >
+            {this.props.translator.tr('adjust handcards')}
+          </Button>
+        </div>
         {this.getEquipCardsSection()}
 
         {this.props.store.room.CurrentPlayer === player && this.props.store.room.CurrentPlayerPhase !== undefined && (

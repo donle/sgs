@@ -270,6 +270,10 @@ export class RoomPage extends React.Component<
     }
   }
 
+  private readonly onTrusted = () => {
+    this.gameProcessor.onPlayTrustedAction();
+  }
+
   @mobx.action
   private readonly onClickSettings = () => {
     this.openSettings = true;
@@ -339,6 +343,7 @@ export class RoomPage extends React.Component<
               onClick={this.store.onClickHandCardToPlay}
               onClickEquipment={this.store.onClickEquipmentToDoAction}
               onClickPlayer={this.store.onClickPlayer}
+              onTrusted={this.onTrusted}
               cardSkillEnableMatcher={this.store.cardSkillsSelectionMatcher}
               playerSelectableMatcher={this.store.playersSelectionMatcher}
               onClickSkill={this.store.onClickSkill}

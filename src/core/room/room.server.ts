@@ -722,7 +722,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         fromId: playerId,
         droppedCards: [],
       };
-      if (event.cardAmount === 0) {
+      if (event.cardAmount <= 0) {
         return autoResponse;
       }
 
@@ -734,7 +734,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         );
       }
 
-      if (canDropCards.length === 0) {
+      if (canDropCards.length <= 0) {
         return autoResponse;
       } else if (canDropCards.length <= (event.cardAmount instanceof Array ? event.cardAmount[0] : event.cardAmount)) {
         autoResponse.droppedCards = canDropCards;

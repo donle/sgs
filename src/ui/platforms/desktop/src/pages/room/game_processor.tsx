@@ -390,16 +390,20 @@ export class GameClientProcessor {
     if (matchArray) {
       // play skill audio
       const skill = matchArray[1];
-      const index = parseInt(matchArray[2]);
+      const index = parseInt(matchArray[2], 10);
       this.audioService.playSkillAudio(skill, CharacterGender.Male, index); // player's character may be undefined
-      
+
       const player = this.store.room.getPlayerById(content.playerId);
-      this.presenter.addUserMessage(this.translator.trx(TranslationPack.translationJsonPatcher(
-        '{0} {1} says: {2}',
-        TranslationPack.patchPureTextParameter(player.Name),
-        player.CharacterId === undefined ? '' : TranslationPack.patchPlayerInTranslation(player),
-        this.translator.tr(content.originalMessage),
-      ).toString()));
+      this.presenter.addUserMessage(
+        this.translator.trx(
+          TranslationPack.translationJsonPatcher(
+            '{0} {1} says: {2}',
+            TranslationPack.patchPureTextParameter(player.Name),
+            player.CharacterId === undefined ? '' : TranslationPack.patchPlayerInTranslation(player),
+            this.translator.tr(content.originalMessage),
+          ).toString(),
+        ),
+      );
       this.presenter.onIncomingMessage(content.playerId, this.translator.tr(content.originalMessage));
     } else {
       this.presenter.addUserMessage(this.translator.trx(content.message));
@@ -1117,7 +1121,7 @@ export class GameClientProcessor {
       } = info;
       const to = toId && this.store.room.getPlayerById(toId);
       const from = fromId ? this.store.room.getPlayerById(fromId) : undefined;
-  
+
       for (const { card, fromArea, asideMove } of movingCards) {
         if (
           from &&
@@ -1129,14 +1133,14 @@ export class GameClientProcessor {
           from.dropCards(card);
         }
       }
-  
+
       const cardIds = movingCards.reduce<CardId[]>((cards, cardInfo) => {
         if (!cardInfo.asideMove) {
           cards.push(cardInfo.card);
         }
         return cards;
       }, []);
-  
+
       if (
         to &&
         ![CardMoveArea.DrawStack, CardMoveArea.DropStack, CardMoveArea.ProcessingArea].includes(toArea as CardMoveArea)
@@ -1149,7 +1153,7 @@ export class GameClientProcessor {
             if (!Card.isVirtualCardId(cardId)) {
               return cardId;
             }
-  
+
             const card = Sanguosha.getCardById<VirtualCard>(cardId);
             if (card.ActualCardIds.length === 1) {
               const originalCard = Sanguosha.getCardById(card.ActualCardIds[0]);
@@ -1159,10 +1163,10 @@ export class GameClientProcessor {
               if (card.CardNumber !== originalCard.CardNumber) {
                 card.CardNumber = originalCard.CardNumber;
               }
-  
+
               return card.Id;
             }
-  
+
             return cardId;
           });
           to.getCardIds(PlayerCardsArea.JudgeArea).push(...transformedDelayedTricks);
@@ -1175,9 +1179,9 @@ export class GameClientProcessor {
           to.getCardIds(toArea as PlayerCardsArea).push(...actualCardIds);
         }
       }
-  
+
       const showCards: DisplayCardProp[] = [];
-  
+
       if (
         moveReason !== CardMoveReason.CardUse &&
         moveReason !== CardMoveReason.CardResponse &&
@@ -1204,7 +1208,7 @@ export class GameClientProcessor {
           }
         }
       }
-  
+
       if (showCards.length > 0) {
         this.presenter.showCards(...showCards);
         for (let i = 0; i < showCards.length; i++) {
@@ -1214,15 +1218,15 @@ export class GameClientProcessor {
           this.presenter.playCardAnimation(showCard, from);
         }
       }
-  
+
       for (const movingCard of movingCards) {
         if (movingCard.fromArea === CardMoveArea.ProcessingArea) {
           this.presenter.buryCards(movingCard.card);
         }
       }
-  
+
       toOutsideArea !== undefined && isOutsideAreaInPublic && to && to.setVisibleOutsideArea(toOutsideArea);
-  
+
       this.presenter.broadcastUIUpdate();
     }
   }
@@ -1537,7 +1541,14 @@ export class GameClientProcessor {
     const from = this.store.room.getPlayerById(content.fromId);
     const skinName = getSkinName(from.Character.Name, from.Id, this.skinData).skinName;
     !content.mute &&
-      this.audioService.playSkillAudio(skill.GeneralName, from.Gender, Math.round(Math.random() * 1) + 1, this.skinData, from.Character.Name, skinName);
+      this.audioService.playSkillAudio(
+        skill.GeneralName,
+        from.Gender,
+        Math.round(Math.random() * 1) + 1,
+        this.skinData,
+        from.Character.Name,
+        skinName,
+      );
 
     await this.store.room.useSkill(content);
     if (skill.SkillType === SkillType.Limit || skill.SkillType === SkillType.Awaken) {

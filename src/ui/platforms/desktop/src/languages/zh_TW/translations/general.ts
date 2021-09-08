@@ -700,6 +700,7 @@ export const UiDictionary: Word[] = [
   { source: 'trusted', target: '託管' },
   { source: 'cancel trusted', target: '取消託管' },
   { source: 'in trusted', target: '託管中···' },
+  { source: 'adjust handcards', target: '整理手牌'},
   {
     source: 'New QSanguosha',
     target: '新神殺',

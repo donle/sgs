@@ -1,6 +1,7 @@
-import { CardType } from 'core/cards/card';
-import { CardColor, CardSuit } from 'core/cards/libs/card_props';
+import { Card, CardType } from 'core/cards/card';
+import { CardColor, CardId, CardSuit } from 'core/cards/libs/card_props';
 import { CharacterNationality } from 'core/characters/character';
+import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { PlayerCardsArea, PlayerRole } from 'core/player/player_props';
 import { GameMode } from 'core/shares/types/room_props';
@@ -78,6 +79,46 @@ export abstract class Functional {
   static getPlayerNationalityText(nationality: CharacterNationality) {
     const playerRoleRawText = ['wei', 'shu', 'wu', 'qun', 'god'];
     return playerRoleRawText[nationality];
+  }
+
+  private static compareCardTypes(cardA: Card, cardB: Card) {
+    if (cardB.BaseType === CardType.Equip) {
+      return -1;
+    } else if (cardB.BaseType === CardType.Basic) {
+      return 1;
+    } else {
+      return cardA.BaseType === CardType.Equip ? 1 : -1;
+    }
+  }
+
+  static sortCards(cardIds: CardId[]) {
+    const cards = cardIds.map(id => Sanguosha.getCardById(id));
+    const sortedCards: CardId[] = [];
+    const basicCards: Card[] = [];
+    const trickCards: Card[] = [];
+    const equipCards: Card[] = [];
+    for (const card of cards) {
+      if (card.is(CardType.Basic)) {
+        basicCards.push(card);
+      } else if (card.is(CardType.Trick)) {
+        trickCards.push(card);
+      } else {
+        equipCards.push(card);
+      }
+    }
+
+    for (const tpyeCards of [basicCards, trickCards, equipCards]) {
+      for (const card of tpyeCards) {
+        const index = sortedCards.findIndex(id => Sanguosha.getCardById(id).Name === card.Name);
+        if (index >= 0) {
+          sortedCards.splice(index, 0, card.Id);
+        } else {
+          sortedCards.push(card.Id);
+        }
+      }
+    }
+
+    return sortedCards;
   }
 
   static getPlayerNationalityEnum(nationality: string) {
