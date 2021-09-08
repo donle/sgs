@@ -14,6 +14,10 @@ export const characterDictionary: Word[] = [
   { source: 'ruanyu', target: '阮瑀' },
   { source: 'xingzuo', target: '興作' },
   { source: 'miaoxian', target: '妙弦' },
+
+  { source: 'zhugeguo', target: '諸葛果' },
+  { source: 'qirang', target: '祈禳' },
+  { source: 'yuhua', target: '羽化' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -42,6 +46,15 @@ export const skillDescriptions: Word[] = [
     source: 'miaoxian_description',
     target:
       '若你的手牌中僅有一張：黑色牌，你可以將此牌當任意普通錦囊牌使用（每回合限一次）；紅色牌，你使用此牌時摸一張牌。',
+  },
+
+  {
+    source: 'qirang_description',
+    target: '當裝備牌進入你的裝備區後，你可以從牌堆隨機獲得一張錦囊牌。',
+  },
+  {
+    source: 'yuhua_description',
+    target: '<b>鎖定技</b>，你的非基本牌不計入手牌上限。',
   },
 ];
 
@@ -75,5 +88,10 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to choose a target to exchange hand cards with draw stack bottom?',
     target: '{0}：你可以令一名有牌的角色將所有手牌與牌堆底三張牌交換',
+  },
+
+  {
+    source: '{0}: do you want to gain a random equip card from draw stack?',
+    target: '{0}：你可以從牌堆隨機獲得一張錦囊牌',
   },
 ];
