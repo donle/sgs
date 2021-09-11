@@ -6,6 +6,7 @@ export type EventEmitterProps = {
   emit(to: string, eventName: string, ...args: any): void;
   send(eventName: string, ...args: any): void;
   on(eventName: string, callback: (...args: any) => void | Promise<void>);
+  disconnect(): void;
 };
 
 export interface LocalServerEmitterInnterface {

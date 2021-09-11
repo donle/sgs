@@ -148,4 +148,11 @@ export class RealConnectionService extends ConnectionService {
       return this.chatHistory;
     },
   };
+
+  public close() {
+    this.chatSocket.close();
+    for (const [, socket] of this.lobbySockets) {
+      socket.close();
+    }
+  }
 }

@@ -53,4 +53,6 @@ export abstract class ConnectionService {
   public get Chat() {
     return this.chatService;
   }
+
+  public abstract close(): void;
 }

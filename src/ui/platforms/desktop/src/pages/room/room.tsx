@@ -213,13 +213,14 @@ export class RoomPage extends React.Component<
   }
 
   private readonly disconnect = () => {
-    this.socket.notify(
-      GameEventIdentifiers.PlayerLeaveEvent,
-      EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerLeaveEvent, {
-        playerId: this.store.clientPlayerId,
-      }),
-    );
-    // this.socket.disconnect();
+    this.isCampaignMode
+      ? this.socket.disconnect()
+      : this.socket.notify(
+          GameEventIdentifiers.PlayerLeaveEvent,
+          EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerLeaveEvent, {
+            playerId: this.store.clientPlayerId,
+          }),
+        );
   };
 
   componentWillUnmount() {
@@ -272,7 +273,7 @@ export class RoomPage extends React.Component<
 
   private readonly onTrusted = () => {
     this.gameProcessor.onPlayTrustedAction();
-  }
+  };
 
   @mobx.action
   private readonly onClickSettings = () => {

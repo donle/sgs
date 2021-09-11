@@ -20,6 +20,10 @@ export class LocalClientEmitter extends ClientSocket {
     return this;
   }
 
+  public disconnect() {
+    this.emitter.disconnect();
+  }
+
   public async waitForResponse(): Promise<any> {
     throw new Error("Shouldn't call waitForResponse function in client socket");
   }
@@ -32,7 +36,4 @@ export class LocalClientEmitter extends ClientSocket {
 
   // tslint:disable-next-line: no-empty
   public onReconnected(callback: () => void) {}
-
-  // tslint:disable-next-line: no-empty
-  public disconnect() {}
 }

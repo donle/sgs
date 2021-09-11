@@ -70,4 +70,8 @@ export class FakeConnectionService extends ConnectionService {
       return this.chatHistory;
     },
   };
+
+  public close() {
+    this.chatSocket.close();
+  }
 }

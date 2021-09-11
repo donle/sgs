@@ -7,19 +7,10 @@ export function installEventEmitter() {
   }
 }
 
-export function bindPlayerWithGlobalEventEmitter(playerId: PlayerId) {
-  if (!(window as any).eventEmitter) {
-    (window as any).eventEmitter = EventEmitter.getInstance();
-  }
-
-  (window as any).eventEmitter.bindWithPlayer(playerId);
-}
-
 class EventEmitter implements EventEmitterProps {
   private constructor() {}
 
   private static instace: EventEmitter;
-  private emitterForPlayer: PlayerId;
 
   private onHangingEventCallback: { [K: string]: (...args: any) => void | Promise<void> } = {};
 
@@ -29,10 +20,6 @@ class EventEmitter implements EventEmitterProps {
     }
 
     return this.instace;
-  }
-
-  public bindWithPlayer(playerId: PlayerId) {
-    this.emitterForPlayer = playerId;
   }
 
   async send(evtName: string, ...args: any) {
@@ -45,5 +32,13 @@ class EventEmitter implements EventEmitterProps {
 
   on(evtName: string, callback: (...args: any) => void | Promise<void>) {
     this.onHangingEventCallback[evtName] = callback;
+  }
+
+  disconnect() {
+    for (const key of Object.keys(this.onHangingEventCallback)) {
+      delete this.onHangingEventCallback[key];
+    }
+
+    this.onHangingEventCallback = {};
   }
 }

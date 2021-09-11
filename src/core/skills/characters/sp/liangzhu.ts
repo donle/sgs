@@ -9,7 +9,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'liangzhu', description: 'liangzhu_description' })
 export class LiangZhu extends TriggerSkill {
-  private readonly LiangZhuOptions = ['liangzhu:you', 'luangzhu:opponent'];
+  private readonly LiangZhuOptions = ['liangzhu:you', 'liangzhu:opponent'];
 
   public isAutoTrigger(): boolean {
     return true;
