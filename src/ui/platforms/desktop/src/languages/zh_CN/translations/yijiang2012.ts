@@ -156,6 +156,170 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
+export const skillAudios: Word[] = [
+  {
+    source: '$zhenlie:1',
+    target: '忠贞与国，节烈与身！',
+  },
+  {
+    source: '$zhenliu:2',
+    target: '我辈虽女流，烈胆胜须眉！',
+  },
+  {
+    source: '$miji:1',
+    target: '孤城临险，需出奇计。',
+  },
+  {
+    source: '$miji:2',
+    target: '秘计九出，佐君平贼！',
+  },
+
+  {
+    source: '$qice:1',
+    target: '倾力为国，算无遗策。',
+  },
+  {
+    source: '$qice:2',
+    target: '奇策在此，谁与争锋？',
+  },
+  {
+    source: '$zhiyu:1',
+    target: '大勇若怯，大智如愚。',
+  },
+  {
+    source: '$zhiyu:2',
+    target: '愚者既出，智者何存？',
+  },
+
+  {
+    source: '$quanji:1',
+    target: '备兵驯马，以待战机。',
+  },
+  {
+    source: '$quanji:2',
+    target: '避其锋芒，权且忍让。',
+  },
+  {
+    source: '$zili:1',
+    target: '金鳞，岂是池中之物！',
+  },
+  {
+    source: '$zili:2',
+    target: '千载一时，鼎足而立！',
+  },
+  {
+    source: '$paiyi:1',
+    target: '艾命不遵，死有余辜。',
+  },
+  {
+    source: '$paiyi:2',
+    target: '非我族类，其心必异。',
+  },
+
+  {
+    source: '$fuhun:1',
+    target: '不雪父仇，誓不罢休！',
+  },
+  {
+    source: '$fuhun:2',
+    target: '承父遗志，横扫叛贼！',
+  },
+
+  {
+    source: '$dangxian:1',
+    target: '谁言蜀汉已无大将！',
+  },
+  {
+    source: '$dangxian:2',
+    target: '老将虽白发，宝刀刃犹',
+  },
+  {
+    source: '$fuli:1',
+    target: '未破敌军，岂可轻易伏诛？',
+  },
+  {
+    source: '$fuli:2',
+    target: '看老夫再奋身一战！',
+  },
+
+  {
+    source: '$qianxi:1',
+    target: '吾能斩魏延，亦能斩杀你！',
+  },
+  {
+    source: '$qianxi:2',
+    target: '擒贼先擒王，打蛇打七寸！',
+  },
+
+  {
+    source: '$anxu:1',
+    target: '和鸾雍雍，万福攸同。',
+  },
+  {
+    source: '$anxu:2',
+    target: '君子乐胥，万邦之屏。',
+  },
+  {
+    source: '$zhuiyi:1',
+    target: '终其永怀，恋心殷殷。',
+  },
+  {
+    source: '$zhuiyi:2',
+    target: '妾心所系，如月之恒。',
+  },
+
+  {
+    source: '$lihuo:1',
+    target: '引凶戾之火，以溃敌军！',
+  },
+  {
+    source: '$lihuo:2',
+    target: '熊熊天火，焚尽逆贼！',
+  },
+  {
+    source: '$chunlao:1',
+    target: '醇酒佳酿杯中饮，醉酒提壶力千钧！',
+  },
+  {
+    source: '$chunlao:2',
+    target: '身披疮痍，唯酒能医。',
+  },
+
+  {
+    source: '$gongqi:1',
+    target: '马踏飞箭，弓骑无双！',
+  },
+  {
+    source: '$gongqi:2',
+    target: '提弓上马，箭砺八方！',
+  },
+  {
+    source: '$jiefan:1',
+    target: '烦忧千万，且看我一刀解之。',
+  },
+  {
+    source: '$jiefan:2',
+    target: '莫道雄兵属北地，解烦威名天下扬。',
+  },
+
+  {
+    source: '$zishou:1',
+    target: '愿行仁义之道，何愁人心不归。',
+  },
+  {
+    source: '$zishou:2',
+    target: '稳据江汉，坐观时变。',
+  },
+  {
+    source: '$zongshi:1',
+    target: '',
+  },
+  {
+    source: '$zongshi:2',
+    target: '',
+  },
+];
+
 export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to draw a card, then put a hand card on your general card?',

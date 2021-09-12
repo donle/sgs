@@ -130,6 +130,179 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
+export const skillAudios: Word[] = [
+  {
+    source: '$chengxiang:1',
+    target: '容我来算上一算。',
+  },
+  {
+    source: '$chengxiang:2',
+    target: '物以载之，校可知矣。',
+  },
+  {
+    source: '$renxin:1',
+    target: '施仁心，怜众生。',
+  },
+  {
+    source: '$renxin:2',
+    target: '我身虽小，亦有仁心。',
+  },
+
+  {
+    source: '$zhuikong:1',
+    target: '曹贼！你怎可如此不尊汉室！',
+  },
+  {
+    source: '$zhuikong:2',
+    target: '密信之事，不可被曹贼知晓。',
+  },
+  {
+    source: '$qiuyuan:1',
+    target: '陛下！我不想离开',
+  },
+  {
+    source: '$qiuyuan:2',
+    target: '将军！此事可有希望？',
+  },
+
+  {
+    source: '$longyin:1',
+    target: '让我来助你一臂之力！',
+  },
+  {
+    source: '$longyin:2',
+    target: '龙啸九天，武圣显灵！',
+  },
+  {
+    source: '$jiezhong:1',
+    target: '尽心竭力，忠诚无私！',
+  },
+  {
+    source: '$jiezhong:2',
+    target: '险不辞难，竭忠奉君！',
+  },
+
+  {
+    source: '$jingce:1',
+    target: '良策佐君王，率征万精兵。',
+  },
+  {
+    source: '$jingce:2',
+    target: '得一寸进一尺。',
+  },
+
+  {
+    source: '$qiaoshuo:1',
+    target: '凭在下三寸不烂之舌，此事可成！',
+  },
+  {
+    source: '$qiaoshui:2',
+    target: '且听我慢慢道来。',
+  },
+  {
+    source: '$j3_zongshi:1',
+    target: '凭在下三寸不烂之舌，此事可成！',
+  },
+  {
+    source: '$j3_zongshi:2',
+    target: '且听我慢慢道来。',
+  },
+
+  {
+    source: '$juece:1',
+    target: '束手就擒吧。',
+  },
+  {
+    source: '$juece:2',
+    target: '斩草除根，以绝后患。',
+  },
+  {
+    source: '$mieji:1',
+    target: '就是要让你无路可走。',
+  },
+  {
+    source: '$meiji:2',
+    target: '你也逃不了。',
+  },
+  {
+    source: '$fencheng:1',
+    target: '',
+  },
+  {
+    source: '$fencheng:2',
+    target: '',
+  },
+
+  {
+    source: '$xiansi:1',
+    target: '破敌军阵，父亲定会刮目相看！',
+  },
+  {
+    source: '$xiansi:2',
+    target: '袭人于不意，溃敌于无形！',
+  },
+
+  {
+    source: '$junxing:1',
+    target: '严法尚公，岂分贵贱而异施！',
+  },
+  {
+    source: '$junxing:2',
+    target: '情理可容之事，法未必能容！',
+  },
+  {
+    source: '$yuce:1',
+    target: '骄之以利，示之以慑！',
+  },
+  {
+    source: '$yuce:2',
+    target: '虽举得于外，则福生于内矣！',
+  },
+
+  {
+    source: '$duodao:1',
+    target: '避其锋芒，夺其兵刃！',
+  },
+  {
+    source: '$duodao:2',
+    target: '好兵器啊！哈哈哈！',
+  },
+  {
+    source: '$anjian:1',
+    target: '看我一箭索命！',
+  },
+  {
+    source: '$anjian:2',
+    target: '明枪易躲，暗箭难防！',
+  },
+
+  {
+    source: '$zongxuan:1',
+    target: '凡夫俗子，怎识得卦象玄妙。',
+  },
+  {
+    source: '$zongxuan:2',
+    target: '微妙玄通，深不可识。',
+  },
+  {
+    source: '$zhiyan:1',
+    target: '失忠与信，何以侍君！',
+  },
+  {
+    source: '$zhiyan:2',
+    target: '恕臣耿直，犯颜谏诤！',
+  },
+
+  {
+    source: '$danshou:1',
+    target: '有胆，你便放马过来！',
+  },
+  {
+    source: '$danshou:2',
+    target: '御守江东，何惧之有？',
+  },
+];
+
 export const promptDescriptions: Word[] = [
   {
     source: 'mieji:trick',

@@ -88,6 +88,128 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
+export const skillAudios: Word[] = [
+/*  {
+    source: '$xin_yinju:1',
+    target: '据理直谏，吾人臣本分。',
+  },
+  {
+    source: '$xin_yinju:2',
+    target: '迁徙之计，危涉万民。',
+  },
+  {
+    source: '$xin_chijie:1',
+    target: '持节阻战，奉帝赐诏。',
+  },
+  {
+    source: '$xin_chijie:2',
+    target: '此战不在急，请仲达明了。',
+  },*/
+
+  {
+    source: '$yinju:1',
+    target: '据理直谏，吾人臣本分。',
+  },
+  {
+    source: '$yinju:2',
+    target: '迁徙之计，危涉万民。',
+  },
+  {
+    source: '$chijie:1',
+    target: '持节阻战，奉帝赐诏。',
+  },
+  {
+    source: '$chijie:2',
+    target: '此战不在急，请仲达明了。',
+  },
+
+  {
+    source: '$mouli:1',
+    target: '司马氏虽权尊势重，吾等徐图亦无不可。',
+  },
+  {
+    source: '$mouli:2',
+    target: '先谋后事者昌，先事后谋者亡！',
+  }, 
+  {
+    source: '$zifu:1',
+    target: '有心无力，请罪愿降。',
+  },
+  {
+    source: '$zifu:2',
+    target: '舆榇自缚，只求太傅开恩。',
+  },
+
+  {
+    source: '$cunsi:1',
+    target: '子龙，定要保吾儿平安。',
+  },
+  {
+    source: '$cunsi:2',
+    target: '将军护禅儿，快快突围！',
+  },
+  {
+    source: '$guixiu:1',
+    target: '通儿女之情意，晓乱世之冷暖。',
+  },
+  {
+    source: '$guixiu:2',
+    target: '深闺藏英秀，独怜乱世秋。',
+  }, 
+
+  {
+    source: '$xunyi:1',
+    target: '古有死恩之士，今有殉义之人。',
+  },
+  {
+    source: '$xunyi:2',
+    target: '舍身殉义，为君效死。',
+  },
+
+  {
+    source: '$heji:1',
+    target: '你我合势而击之，区区贼寇，岂会费力？',
+  },
+  {
+    source: '$heji:2',
+    target: '伯符，今日之战务必全力攻之。',
+  },
+
+  {
+    source: '$xianghai:1',
+    target: '快快闪开，伤到你们可就不好了，哈哈…',
+  },
+  {
+    source: '$xianghai:2',
+    target: '你自己撞上来的，这可怪不得小爷我。',
+  },
+  {
+    source: '$chuhai:1',
+    target: '有我在此，安敢为害？',
+  },
+  {
+    source: '$chuhai:2',
+    target: '小小孽畜，还不伏诛？',
+  },
+
+  {
+    source: '$mingshi:1',
+    target: '纵有强权在侧，亦不可失吾风骨。',
+  },
+  {
+    source: '$mingshi:2',
+    target: '黜邪崇正，何惧之有？',
+  },
+  {
+    source: '$lirang:1',
+    target: '仁之所至，礼之所及。',
+  },
+  {
+    source: '$lirang:2',
+    target: '施之以礼，还之以德。',
+  },
+];
+
 export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to use a slash or duel to {1} ?',

@@ -97,6 +97,76 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
+export const skillAudios: Word[] = [
+  {
+    source: '$lilu:1',
+    target: '微薄之礼，聊表敬意。',
+  },
+  {
+    source: '$lilu:2',
+    target: '乱狱滋丰，以礼赂之。',
+  },
+  {
+    source: '$yizheng:1',
+    target: '玉树盈阶，望子成龙。',
+  },
+  {
+    source: '$yizheng:2',
+    target: '择善者，翊赞季兴。',
+  },
+
+  {
+    source: '$pingjian:1',
+    target: '识人读心，评鉴推达。',
+  },
+  {
+    source: '$pingjian:2',
+    target: '月旦雅评，试论天下。',
+  }, 
+
+  {
+    source: '$minsi:1',
+    target: '能书会计，心思灵巧。',
+  },
+  {
+    source: '$minsi:2',
+    target: '才情兼备，选入掖庭。',
+  },
+  {
+    source: '$jijing:1',
+    target: '吉梦赐福，顺应天命。',
+  },
+  {
+    source: '$jijing:2',
+    target: '梦之指引，必为吉运。',
+  },
+  {
+    source: '$zhuide:1',
+    target: '思美人，两情悦。',
+  },
+  {
+    source: '$zhuide:2',
+    target: '花香蝶恋，君德妾慕。',
+  }, 
+
+  {
+    source: '$cixiao:1',
+    target: '吾儿奉先，天下无敌！',
+  },
+  {
+    source: '$cixiao:2',
+    target: '父慈子孝，义理为先！',
+  },
+  {
+    source: '$xianshuai:1',
+    target: '九州齐喑，首义嘱吾！',
+  },
+  {
+    source: '$xianshuai:2',
+    target: '雄兵一击，则天下大白！',
+  },
+];
+
 export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to draw {1} card(s) instead of drawing cards by rule?',
