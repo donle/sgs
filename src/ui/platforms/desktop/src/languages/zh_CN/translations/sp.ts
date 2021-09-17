@@ -16,12 +16,32 @@ export const characterDictionary: Word[] = [
   { source: 'kunfen_EX', target: '困奋' },
   { source: 'fengliang', target: '逢亮' },
 
+  { source: 'sp_pangde', target: '魏庞德' },
+  { source: 'juesi', target: '决死' },
+
+  { source: 'zhugedan', target: '诸葛诞' },
+  { source: 'gongao', target: '功獒' },
+  { source: 'juyi', target: '举义' },
+  { source: 'weizhong', target: '威重' },
+
+  { source: 'xizhicai', target: '戏志才' },
+  { source: 'xianfu', target: '先辅' },
+  { source: 'chouce', target: '筹策' },
+
   { source: 'sp_sunshangxiang', target: '蜀孙尚香' },
   { source: 'liangzhu', target: '良助' },
   { source: 'fanxiang', target: '返乡' },
 
   { source: 'mayunlu', target: '马云騄' },
   { source: 'fengpo', target: '凤魄' },
+
+  { source: 'sunqian', target: '孙乾' },
+  { source: 'qianya', target: '谦雅' },
+  { source: 'shuimeng', target: '说盟' },
+
+  { source: 'mizhu', target: '糜竺' },
+  { source: 'ziyuan', target: '资援' },
+  { source: 'jugu', target: '巨贾' },
 
   { source: 'maliang', target: '马良' },
   { source: 'zishu', target: '自书' },
@@ -58,6 +78,18 @@ export const characterDictionary: Word[] = [
 
   { source: 'fuwan', target: '伏完' },
   { source: 'moukui', target: '谋溃' },
+
+  { source: 'liuxie', target: '刘协' },
+  { source: 'tianming', target: '天命' },
+  { source: 'mizhao', target: '密诏' },
+
+  { source: 'sp_huangyueying', target: '群黄月英' },
+  { source: 'jiqiao', target: '机巧' },
+  { source: 'linglong', target: '玲珑' },
+
+  { source: 'zhangliang', target: '张梁' },
+  { source: 'jijun', target: '集军' },
+  { source: 'fangtong', target: '方统' },
 
   { source: 'shixie', target: '士燮' },
   { source: 'biluan', target: '避乱' },
@@ -125,6 +157,37 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'juesi_description',
+    target:
+      '出牌阶段，你可以弃置一张【杀】，并令一名有牌的其他角色弃置一张牌，若其弃置的牌不为【杀】且其体力值不小于你，你视为对其使用一张【决斗】。',
+  },
+
+  {
+    source: 'gongao_description',
+    target: '<b>锁定技</b>，当其他角色死亡后，你加1点体力上限并回复1点体力。',
+  },
+  {
+    source: 'juyi_description',
+    target: '<b>觉醒技</b>，准备阶段开始时，若你的体力上限大于存活角色数，你摸等同于你体力上限数量的牌，然后获得技能“崩坏”和“威重”。',
+  },
+  {
+    source: 'weizhong_description',
+    target:
+      '<b>锁定技</b>，当你的体力上限变化后，你摸一张牌（若你的手牌数为全场最少，改为摸两张牌）。',
+  },
+
+  {
+    source: 'xianfu_description',
+    target:
+      '<b>锁定技</b>，游戏开始时，你选择一名其他角色。当其受到伤害后，若其存活，你受到等量伤害；当其回复体力后，你回复等量体力。',
+  },
+  {
+    source: 'chouce_description',
+    target:
+      '当你受到伤害后，你可以判定。若为：黑色，你弃置一名角色区域里的一张牌；红色，你令一名角色摸一张牌（若其为你的“先辅”角色则改为其摸两张牌）。',
+  },
+
+  {
     source: 'liangzhu_description',
     target: '当一名角色于其出牌阶段内回复体力后，你可以选择一项：1.你摸一张牌；2.令其摸两张牌。',
   },
@@ -138,6 +201,27 @@ export const skillDescriptions: Word[] = [
     source: 'fengpo_description',
     target:
       '当你于出牌阶段首次使用【杀】或【决斗】指定唯一目标后，你可以选择一项：1.摸X张牌；2.令此牌伤害+X（X为其手牌中的方片牌数）。',
+  },
+  
+  {
+    source: 'qianya_description',
+    target:
+      '当你成为锦囊牌的目标后，你可以将至少一张手牌交给一名其他角色。',
+  },
+  {
+    source: 'shuimeng_description',
+    target:
+      '此牌阶段结束时，你可以与一名角色拼点，若你：赢，你视为使用一张【无中生有】；没赢，你视为使用一张【过河拆桥】。',
+  },
+
+  {
+    source: 'ziyuan_description',
+    target:
+      '出牌阶段限一次，你可以将至少一张点数之和为13的手牌交给一名其他角色，然后其回复1点体力。',
+  },
+  {
+    source: 'jugu_description',
+    target: '<b>锁定技</b>，游戏开始时，你摸X张牌；你的手牌上限+X（X为你的体力上限）。',
   },
 
   {
@@ -206,6 +290,24 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'tianming_description',
+    target: '当你成为【杀】的目标后，若你：有可弃置的牌，你可以弃置X张牌（X为2与这些牌数的较小值），然后摸两张牌；没有可弃置的牌，你可以摸两张牌。若如此做，若场上有手牌数唯一最多且不为你的角色，其可执行相同操作。',
+  },
+  {
+    source: 'mizhao_description',
+    target: '出牌阶段限一次，你可以将所有手牌交给一名其他角色，然后令其与另一名其他角色拼点，赢的角色视为对没赢的角色使用一张【杀】。',
+  },
+
+  {
+    source: 'jiqiao_description',
+    target: '出牌阶段开始时，你可以弃置至少一张装备牌，然后亮出牌堆顶两倍数量的牌，获得其中所有的非装备牌。',
+  },
+  {
+    source: 'linglong_description',
+    target: '<b>锁定技</b>，若你的装备区里没有：装备牌，你使用【杀】的次数上限+1；防具牌，你视为装备【八卦阵】；坐骑牌，你的手牌上限+1；宝物牌，你视为拥有技能“奇才”。',
+  },
+
+  {
     source: 'biluan_description',
     target:
       '结束阶段开始时，若有至你距离为1的角色，你可以弃置一张牌，令其他角色计算与你的距离+X（X为存活角色数且至多为4）。',
@@ -214,6 +316,15 @@ export const skillDescriptions: Word[] = [
     source: 'lixia_description',
     target:
       '<b>锁定技</b>，其他角色的结束阶段开始时，若你不在其攻击范围内，你选择一项：1.你摸一张牌；2.令其摸两张牌。选择完成后，其他角色计算与你的距离-1。',
+  },
+
+  {
+    source: 'jijun_description',
+    target: '当你使用武器牌或非装备牌指定第一个目标后，若目标中有你，你可以判定。当此判定牌进入弃牌堆后，你可以将之置于你的武将牌上，称为“方”。',
+  },
+  {
+    source: 'fangtong_description',
+    target: '结束阶段开始时，若你有“方”，你可以弃置一张牌，然后移去至少一张“方”。若你以此法弃置的牌与移去的“方”点数之和为36，你对一名其他角色造成3点雷电伤害。',
   },
 
   {
@@ -418,5 +529,48 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to use a virtual slash?',
     target: '{0}：你可以视为使用一张【杀】（不计入次数限制）',
+  },
+
+  {
+    source: '{0}: do you want to discard {1} to draw 2 cards?',
+    target: '{0}：你可以弃置 {1} ，然后摸两张牌',
+  },
+  {
+    source: '{0}: do you want to discard 2 cards to draw 2 cards?',
+    target: '{0}：你可以弃置两张牌，然后摸两张牌',
+  },
+
+  {
+    source: '{0}: please choose a target to pindian with {1}',
+    target: '{0}：请选择 {1} 的拼点目标',
+  },
+
+  {
+    source: '{0}: do you want to put {1} on your general as ‘Jun’?',
+    target: '{0}：你可以将 {1} 置为“方”',
+  },
+
+  {
+    source: '{0}: please choose at least 1 ‘Fang’ to remove',
+    target: '{0}：请选择至少一张“方”移去',
+  },
+  {
+    source: 'fangtong: please choose a target to deal 3 thunder damage to him?',
+    target: '方统：请选择一名其他角色，你对其造成3点雷电伤害',
+  },
+
+  {
+    source: '{0}: do you want to discard at least 1 equip card, then display the double cards and gain all unequip cards from these cards?',
+    target: '{0}：你可以弃置至少一张装备牌，然后亮出牌堆顶两倍数量的牌，获得其中的非装备牌',
+  },
+
+  {
+    source: '{0}: do you want to give at lease one hand card to another player?',
+    target: '{0}：你可以将至少一张手牌交给一名其他角色',
+  },
+
+  {
+    source: '{0}: do you want to choose a target to pindian?',
+    target: '{0}：你可以与一名角色拼点',
   },
 ];

@@ -28,6 +28,10 @@ export const characterDictionary: Word[] = [
 
   { source: 'xingdaorong', target: '邢道榮' },
   { source: 'xuhe', target: '虛猲' },
+
+  { source: 'caoxing', target: '曹性' },
+  { source: 'liushi', target: '流矢' },
+  { source: 'zhanwan', target: '斬腕' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -91,6 +95,17 @@ export const skillDescriptions: Word[] = [
     source: 'xuhe_description',
     target:
       '出牌階段開始時，你可以棄置距離1以內的所有角色各一張牌或令這些角色各摸一張牌；出牌階段結束時，若你的體力上限為全場最少，你加1點體力上限。',
+  },
+
+  {
+    source: 'liushi_description',
+    target:
+      '出牌階段，你可以將一張紅桃牌置於牌堆頂，然後視為使用一張無距離限制的【殺】（不計入次數限制）。當此【殺】造成傷害後，受傷角色的手牌上限-1。',
+  },
+  {
+    source: 'zhanwan_description',
+    target:
+      '<b>鎖定技</b>，受到“流矢”效果影響的角色的棄牌階段結束時，若其於此階段內棄置過其牌，你摸等量的牌，然後移除其“流矢”效果。',
   },
 ];
 

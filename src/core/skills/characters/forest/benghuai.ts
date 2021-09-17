@@ -8,6 +8,14 @@ import { JiuChi } from './jiuchi';
 
 @CompulsorySkill({ name: 'benghuai', description: 'benghuai_description' })
 export class BengHuai extends TriggerSkill {
+  public get RelatedCharacters() {
+    return ['zhugedan'];
+  }
+
+  public audioIndex(characterName?: string) {
+    return characterName && this.RelatedCharacters.includes(characterName) ? 1 : 2;
+  }
+
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage: AllStage): boolean {
     return stage === PhaseStageChangeStage.BeforeStageChange;
   }

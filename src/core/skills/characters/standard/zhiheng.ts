@@ -11,6 +11,14 @@ import { ActiveSkill, AI, CommonSkill } from 'core/skills/skill';
 @AI(ZhiHengSkillTrigger)
 @CommonSkill({ name: 'zhiheng', description: 'zhiheng_description' })
 export class ZhiHeng extends ActiveSkill {
+  public get RelatedCharacters(): string[] {
+    return ['god_simayi'];
+  }
+
+  public audioIndex(characterName?: string) {
+    return characterName && this.RelatedCharacters.includes(characterName) ? 1 : 2;
+  }
+
   public canUse(room: Room, owner: Player): boolean {
     return !owner.hasUsedSkill(this.Name);
   }

@@ -111,6 +111,7 @@ export interface ServerEvent extends EventUtilities {
     nullifiedTargets: PlayerId[];
     isFirstTarget: boolean;
     additionalDamage?: number;
+    extraUse?: boolean;
   };
   [GameEventIdentifiers.CardResponseEvent]: {
     fromId: PlayerId;
@@ -399,6 +400,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.ObtainSkillEvent]: {
     skillName: string;
     toId: PlayerId;
+    insertIndex?: number;
   };
   [GameEventIdentifiers.DrunkEvent]: {
     toId: PlayerId;

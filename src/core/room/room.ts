@@ -19,7 +19,7 @@ import { RecordAnalytics } from 'core/game/record_analytics';
 import { AllStage, GameEventStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Socket } from 'core/network/socket';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea, PlayerId, PlayerStatus } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId, PlayerRole, PlayerStatus } from 'core/player/player_props';
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { System } from 'core/shares/libs/system';
@@ -142,7 +142,9 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract loseSkill(playerId: PlayerId, skillName: string | string[], broadcast?: boolean): Promise<void>;
   //Server only
-  public abstract obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean): Promise<void>;
+  public abstract obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean, insertIndex?: number): Promise<void>;
+  //Server only
+  public abstract updateSkill(playerId: PlayerId, newSkillName: string, oldSkillName: string): Promise<void>;
   //Server only
   public abstract pindian(fromId: PlayerId, toIds: PlayerId[], bySkill: string): Promise<PinDianReport>;
   public abstract turnOver(playerId: PlayerId): Promise<void>;
@@ -720,6 +722,20 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       player.getFlag<string[]>(FlagEnum.EnableToAwaken)?.includes(skillName) ||
       System.AwakeningSkillApplier[skillName](this, player)
     );
+  }
+
+  public hasDifferentCampWith(from: Player, to: Player): boolean {
+    switch (from.Role) {
+      case PlayerRole.Lord:
+      case PlayerRole.Loyalist:
+        return to.Role === PlayerRole.Rebel || to.Role === PlayerRole.Renegade;
+      case PlayerRole.Rebel:
+        return to.Role === PlayerRole.Lord || to.Role === PlayerRole.Loyalist;
+      case PlayerRole.Renegade:
+        return from.Role !== to.Role;
+      default:
+        return false;
+    }
   }
 
   public get RoomId() {

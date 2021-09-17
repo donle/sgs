@@ -117,15 +117,19 @@ export class WuGuFengDengSkill extends ActiveSkill implements ExtralCardSkillPro
 
   public async afterEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
     const wugufengdengCards = room.getProcessingCards(event.cardId.toString());
-    room.endProcessOnTag(event.cardId.toString());
 
     const droppedCards: CardId[] = [];
     for (const cardId of event.toCardIds!) {
       if (wugufengdengCards.includes(cardId)) {
         droppedCards.push(cardId);
-        room.bury(cardId);
       }
     }
+
+    await room.moveCards({
+      movingCards: droppedCards.map(card => ({ card, fromArea: CardMoveArea.ProcessingArea })),
+      toArea: CardMoveArea.DropStack,
+      moveReason: CardMoveReason.PlaceToDropStack,
+    });
 
     room.broadcast(GameEventIdentifiers.ObserveCardFinishEvent, {
       translationsMessage:

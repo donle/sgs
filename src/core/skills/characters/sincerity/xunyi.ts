@@ -135,7 +135,7 @@ export class XunYiEffect extends TriggerSkill {
     } else {
       const player = target === damageEvent.toId ? fromId : target;
       const response = await room.askForCardDrop(
-        fromId,
+        player,
         1,
         [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
         true,

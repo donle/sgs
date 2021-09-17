@@ -8,6 +8,10 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @AwakeningSkill({ name: 'zhi_sanchen', description: 'zhi_sanchen_description' })
 export class ZhiSanChen extends TriggerSkill {
+  public get RelatedSkills(): string[] {
+    return ['miewu'];
+  }
+
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
     stage?: AllStage,

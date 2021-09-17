@@ -1906,6 +1906,7 @@ export class StandardGameProcessor extends GameProcessor {
       toArea: CardMoveArea.ProcessingArea,
       proposer: toId,
       movedByReason: CardMovedBySpecifiedReason.JudgeProcess,
+      triggeredBySkills: bySkill ? [bySkill] : undefined,
     });
 
     await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
@@ -1933,13 +1934,14 @@ export class StandardGameProcessor extends GameProcessor {
       }
     });
 
-    if (this.room.getCardOwnerId(event.judgeCardId) === undefined) {
+    if (this.room.isCardOnProcessing(event.judgeCardId)) {
       await this.room.moveCards({
         movingCards: [{ card: event.judgeCardId, fromArea: CardMoveArea.ProcessingArea }],
         moveReason: CardMoveReason.PlaceToDropStack,
         toArea: CardMoveArea.DropStack,
         proposer: event.toId,
         movedByReason: CardMovedBySpecifiedReason.JudgeProcess,
+        triggeredBySkills: bySkill ? [bySkill] : undefined,
       });
     }
 

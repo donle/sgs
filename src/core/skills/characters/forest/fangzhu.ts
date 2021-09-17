@@ -9,6 +9,14 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'fangzhu', description: 'fangzhu_description' })
 export class FangZhu extends TriggerSkill {
+  public get RelatedCharacters(): string[] {
+    return ['god_simayi'];
+  }
+
+  public audioIndex(characterName?: string) {
+    return characterName && this.RelatedCharacters.includes(characterName) ? 1 : 2;
+  }
+
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
     return stage === DamageEffectStage.AfterDamagedEffect;
   }

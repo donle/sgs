@@ -1084,6 +1084,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             allTargets: aimGroup,
             isFirstTarget,
             additionalDamage: event.additionalDamage,
+            extraUse: event.extraUse,
           });
 
           EventPacker.copyPropertiesTo(event, aimEvent);
@@ -1097,6 +1098,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           aimEvent.targetGroup = event.targetGroup;
           aimEvent.nullifiedTargets = event.nullifiedTargets || [];
           aimEvent.isFirstTarget = isFirstTarget;
+          aimEvent.extraUse = event.extraUse;
         }
 
         isFirstTarget = false;
@@ -1119,6 +1121,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
             ? [...event.triggeredBySkills, ...aimEvent.triggeredBySkills]
             : aimEvent.triggeredBySkills;
         }
+        event.extraUse = aimEvent.extraUse;
         if (AimGroupUtil.getAllTargets(aimEvent.allTargets).length === 0) {
           return false;
         }
@@ -1390,12 +1393,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       }
     }
   }
-  public async obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean) {
+  public async obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean, insertIndex?: number) {
     const player = this.getPlayerById(playerId);
-    player.obtainSkill(skillName);
+    player.obtainSkill(skillName, insertIndex);
     this.broadcast(GameEventIdentifiers.ObtainSkillEvent, {
       toId: playerId,
       skillName,
+      insertIndex,
       translationsMessage: broadcast
         ? TranslationPack.translationJsonPatcher(
             '{0} obtained skill {1}',
@@ -1405,6 +1409,17 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         : undefined,
     });
     await SkillLifeCycle.executeHookOnObtainingSkill(Sanguosha.getSkillBySkillName(skillName), this, player);
+  }
+
+  public async updateSkill(playerId: PlayerId, oldSkillName: string, newSkillName: string) {
+    const player = this.getPlayerById(playerId);
+    const index = player.getPlayerSkills(undefined, true).findIndex(skill => skill.Name === oldSkillName);
+    if (index === -1) {
+      return;
+    }
+
+    this.loseSkill(playerId, oldSkillName);
+    this.obtainSkill(playerId, newSkillName, false, index);
   }
 
   public async loseHp(playerId: PlayerId, lostHp: number) {
@@ -1598,7 +1613,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async recover(event: ServerEventFinder<GameEventIdentifiers.RecoverEvent>): Promise<void> {
     const to = this.getPlayerById(event.toId);
-    if (to.Hp === to.MaxHp) {
+    if (to.Hp === to.MaxHp || event.recoveredHp < 1) {
       return;
     }
 

@@ -7,6 +7,10 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @AwakeningSkill({ name: 'hunzi', description: 'hunzi_description' })
 export class HunZi extends TriggerSkill {
+  public get RelatedSkills(): string[] {
+    return ['yinghun', 'yingzi'];
+  }
+
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.StageChanged && event.toStage === PlayerPhaseStages.PrepareStageStart;
   }

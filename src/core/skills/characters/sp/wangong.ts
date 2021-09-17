@@ -25,6 +25,7 @@ export class WanGong extends TriggerSkill implements OnDefineReleaseTiming {
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): boolean {
     return (
       content.fromId === owner.Id &&
+      !content.extraUse &&
       owner.getFlag<boolean>(this.Name) &&
       Sanguosha.getCardById(content.cardId).GeneralName === 'slash'
     );
@@ -37,7 +38,9 @@ export class WanGong extends TriggerSkill implements OnDefineReleaseTiming {
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const cardUseEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
 
+    cardUseEvent.extraUse = true;
     room.CurrentPlayerPhase === PlayerPhase.PlayCardStage &&
+      room.CurrentPhasePlayer === room.getPlayerById(event.fromId) &&
       room.syncGameCommonRules(event.fromId, user => {
         room.CommonRules.addCardUsableTimes(new CardMatcher({ generalName: ['slash'] }), 1, user);
         user.addInvisibleMark(this.Name, 1);

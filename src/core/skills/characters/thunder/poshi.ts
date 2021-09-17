@@ -8,6 +8,10 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @AwakeningSkill({ name: 'poshi', description: 'poshi_description' })
 export class PoShi extends TriggerSkill {
+  public get RelatedSkills(): string[] {
+    return ['huairou'];
+  }
+
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.StageChanged && event.toStage === PlayerPhaseStages.PrepareStageStart;
   }

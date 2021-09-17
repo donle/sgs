@@ -11,6 +11,14 @@ import { PatchedTranslationObject, TranslationPack } from 'core/translations/tra
 
 @CommonSkill({ name: 'zhiyan', description: 'zhiyan_description' })
 export class ZhiYan extends TriggerSkill {
+  public get RelatedCharacters(): string[] {
+    return ['gexuan'];
+  }
+
+  public audioIndex(characterName?: string): number {
+    return characterName && this.RelatedCharacters.includes(characterName) ? 1 : 2;
+  }
+
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.StageChanged;
   }

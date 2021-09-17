@@ -17,6 +17,7 @@ export class KeJi extends TriggerSkill {
         event =>
           (EventPacker.getIdentifier(event) === GameEventIdentifiers.CardUseEvent ||
             EventPacker.getIdentifier(event) === GameEventIdentifiers.CardResponseEvent) &&
+          event.fromId === owner.Id &&
           Sanguosha.getCardById(event.cardId).GeneralName === 'slash',
         owner.Id,
         'round',

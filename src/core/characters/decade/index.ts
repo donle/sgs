@@ -1,4 +1,5 @@
 import { Character } from 'core/characters/character';
+import { CaoXing } from './caoxing';
 import { FanChou } from './fanchou';
 import { GuoSi } from './guosi';
 import { LiangXing } from './liangxing';
@@ -15,4 +16,5 @@ export const DecadePackage: (index: number) => Character[] = index => [
   new LiangXing(index++),
   new PanFeng(index++),
   new XingDaoRong(index++),
+  new CaoXing(index++),
 ];

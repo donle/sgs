@@ -63,7 +63,7 @@ export class ShiFei extends TriggerSkill {
         .getOtherPlayers(room.CurrentPlayer.Id)
         .find(
           player =>
-            player.getCardIds(PlayerCardsArea.HandArea).length >
+            player.getCardIds(PlayerCardsArea.HandArea).length >=
             room.CurrentPlayer.getCardIds(PlayerCardsArea.HandArea).length,
         )
     ) {

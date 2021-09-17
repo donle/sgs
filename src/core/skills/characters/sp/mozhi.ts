@@ -25,7 +25,12 @@ export class MoZhi extends TriggerSkill {
     owner: Player,
     content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
   ): boolean {
-    if (content.playerId !== owner.Id || owner.getCardIds(PlayerCardsArea.HandArea).length === 0) {
+    if (
+      content.playerId !== owner.Id ||
+      (owner.getCardIds(PlayerCardsArea.HandArea).length === 0 &&
+        room.GameParticularAreas.find(name => owner.getCardIds(PlayerCardsArea.OutsideArea, name).length > 0) ===
+          undefined)
+    ) {
       return false;
     }
 
@@ -66,12 +71,16 @@ export class MoZhi extends TriggerSkill {
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
-    return room
-      .getPlayerById(owner)
-      .canUseCard(
+    const ownerPlayer = room.getPlayerById(owner);
+    const outsideName = ownerPlayer.getOutsideAreaNameOf(cardId);
+    return (
+      (ownerPlayer.cardFrom(cardId) === PlayerCardsArea.HandArea ||
+        (outsideName !== undefined && room.GameParticularAreas.includes(outsideName))) &&
+      ownerPlayer.canUseCard(
         room,
         VirtualCard.create({ cardName: room.getFlag<string[]>(owner, this.Name)[0], bySkill: this.Name }, [cardId]).Id,
-      );
+      )
+    );
   }
 
   public targetFilter(room: Room, owner: Player, targets: string[], selectedCards: CardId[]) {
@@ -112,7 +121,7 @@ export class MoZhi extends TriggerSkill {
   }
 
   public availableCardAreas() {
-    return [PlayerCardsArea.HandArea];
+    return [PlayerCardsArea.HandArea, PlayerCardsArea.OutsideArea];
   }
 
   public getSkillLog(room: Room, owner: Player): PatchedTranslationObject {
@@ -153,7 +162,7 @@ export class MoZhi extends TriggerSkill {
       room.notify(
         GameEventIdentifiers.AskForSkillUseEvent,
         {
-          invokeSkillNames: [MoZhi.Name],
+          invokeSkillNames: [this.Name],
           toId: event.fromId,
           conversation: TranslationPack.translationJsonPatcher(
             '{0}: do you want to a hand card as {1} ?',
@@ -168,7 +177,7 @@ export class MoZhi extends TriggerSkill {
       if (response.cardIds && response.toIds) {
         await room.useCard({
           fromId: event.fromId,
-          targetGroup: [response.toIds],
+          targetGroup: response.toIds.length > 0 ? [response.toIds] : undefined,
           cardId: VirtualCard.create(
             { cardName: room.getFlag<string[]>(event.fromId, this.Name)[0], bySkill: this.Name },
             response.cardIds,

@@ -8,6 +8,14 @@ import { CompulsorySkill } from 'core/skills/skill_wrappers';
 
 @CompulsorySkill({ name: 'wansha', description: 'wansha_description' })
 export class WanSha extends GlobalFilterSkill {
+  public get RelatedCharacters(): string[] {
+    return ['god_simayi'];
+  }
+
+  public audioIndex(characterName?: string) {
+    return characterName && this.RelatedCharacters.includes(characterName) ? 1 : 2;
+  }
+
   canUseCardTo(cardId: CardId | CardMatcher, room: Room, owner: Player, from: Player, to: Player) {
     const inOwnersRound = room.CurrentPlayer.Id === owner.Id && to.Dying && from.Id !== to.Id;
 

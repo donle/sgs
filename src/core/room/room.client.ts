@@ -214,6 +214,10 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   public isCardInDrawStack(): any {
     this.throwUntouchableError(this.isCardInDrawStack.name);
   }
+  //Server only
+  public updateSkill(): any {
+    this.throwUntouchableError(this.updateSkill.name);
+  }
   public getCardsByNameFromStack(): any {
     this.throwUntouchableError(this.getCardsByNameFromStack.name);
   }
@@ -287,9 +291,9 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     return this.currentPlayerStage;
   }
 
-  public async obtainSkill(playerId: PlayerId, skillName: string): Promise<void> {
+  public async obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean, insertIndex?: number): Promise<void> {
     const player = this.getPlayerById(playerId);
-    player.obtainSkill(skillName);
+    player.obtainSkill(skillName, insertIndex);
     await SkillLifeCycle.executeHookOnObtainingSkill(Sanguosha.getSkillBySkillName(skillName), this, player);
   }
 

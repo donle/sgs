@@ -13,6 +13,14 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 @AI(TiaoXinSkillTrigger)
 @CommonSkill({ name: 'tiaoxin', description: 'tiaoxin_description' })
 export class TiaoXin extends ActiveSkill {
+  public get RelatedCharacters(): string[] {
+    return ['sp_jiangwei', 'xiahouba'];
+  }
+
+  public audioIndex(characterName?: string): number {
+    return characterName === this.RelatedCharacters[1] ? 1 : 2;
+  }
+
   public canUse(room: Room, owner: Player, containerCard?: CardId) {
     return owner.getFlag<boolean>(this.Name) ? owner.hasUsedSkillTimes(this.Name) < 2 : !owner.hasUsedSkill(this.Name);
   }
@@ -75,17 +83,19 @@ export class TiaoXin extends ActiveSkill {
 
       await room.useCard(slashUseEvent, true);
 
-      room.Analytics.getRecordEvents<GameEventIdentifiers.DamageEvent>(
-        event =>
-          EventPacker.getIdentifier(event) === GameEventIdentifiers.DamageEvent &&
-          event.cardIds === response.cardId &&
-          event.triggeredBySkills.includes(this.Name) &&
-          event.toId === fromId,
-        undefined,
-        'phase',
-        undefined,
-        1,
-      ).length === 0 && (option2 = false);
+      option2 =
+        room.Analytics.getRecordEvents<GameEventIdentifiers.DamageEvent>(
+          event =>
+            EventPacker.getIdentifier(event) === GameEventIdentifiers.DamageEvent &&
+            event.cardIds !== undefined &&
+            event.cardIds[0] === response.cardId &&
+            event.triggeredBySkills.includes(this.Name) &&
+            event.toId === fromId,
+          undefined,
+          'phase',
+          undefined,
+          1,
+        ).length === 0;
     }
 
     if (option2) {

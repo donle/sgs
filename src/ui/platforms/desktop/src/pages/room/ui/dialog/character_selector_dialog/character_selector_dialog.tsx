@@ -1,5 +1,7 @@
+import classNames from 'classnames';
 import { Character, CharacterId } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
+import { Skill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
@@ -34,20 +36,44 @@ export class CharacterSelectorDialog extends React.Component<CharacterSelectorDi
       this.tooltipCharacter = undefined;
     });
 
-  private readonly createTooltipContent = (character: Character) => {
+  private readonly createTooltipContent = (character: Character, getRelatedSkills?: boolean) => {
     const { translator } = this.props;
-    const skills = character.Skills.filter(skill => !skill.isShadowSkill());
-    return skills.map((skill, index) => (
-      <div className={styles.skillInfo} key={index}>
-        <div className={styles.skillItem}>
-          <span className={styles.skillName}>{translator.tr(skill.Name)}</span>
-          <span
-            className={styles.skillDescription}
-            dangerouslySetInnerHTML={{ __html: translator.tr(skill.Description) }}
-          />
-        </div>
-      </div>
-    ));
+    const skills = character.Skills.filter(
+      skill => !skill.isShadowSkill() && !(getRelatedSkills && skill.RelatedSkills.length === 0),
+    );
+
+    return getRelatedSkills
+      ? skills
+          .reduce<Skill[]>((relatedSkills, skill) => {
+            skill.RelatedSkills.length > 0 &&
+              relatedSkills.push(...skill.RelatedSkills.map(skillName => Sanguosha.getSkillBySkillName(skillName)));
+            return relatedSkills;
+          }, [])
+          .map((skill, index) => (
+            <div className={styles.skillInfo} key={index}>
+              {index === 0 && (
+                <span className={styles.relatedSkillTiltle}>{this.props.translator.trx('related skill')}</span>
+              )}
+              <div className={styles.skillItem}>
+                <span className={classNames(styles.skillName, styles.relatedSkill)}>{translator.tr(skill.Name)}</span>
+                <span
+                  className={styles.skillDescription}
+                  dangerouslySetInnerHTML={{ __html: translator.tr(skill.Description) }}
+                />
+              </div>
+            </div>
+          ))
+      : skills.map((skill, index) => (
+          <div className={styles.skillInfo} key={index}>
+            <div className={styles.skillItem}>
+              <span className={styles.skillName}>{translator.tr(skill.Name)}</span>
+              <span
+                className={styles.skillDescription}
+                dangerouslySetInnerHTML={{ __html: translator.tr(skill.Description) }}
+              />
+            </div>
+          </div>
+        ));
   };
 
   @mobx.action
@@ -91,6 +117,7 @@ export class CharacterSelectorDialog extends React.Component<CharacterSelectorDi
           {this.tooltipCharacter && (
             <Tooltip position={['center']} className={styles.tooltip}>
               {this.createTooltipContent(this.tooltipCharacter)}
+              {this.createTooltipContent(this.tooltipCharacter, true)}
             </Tooltip>
           )}
         </div>

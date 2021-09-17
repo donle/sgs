@@ -13,7 +13,7 @@ export class UniqueSkillRule {
       case QingGangSkill.Name:
       case XianZhenNullify.Name:
       case BenXi.Name:
-        return toSkill.Name === 'bazhen';
+        return toSkill.Name === 'bazhen' || toSkill.Name === 'linglong';
       default:
         return false;
     }
@@ -60,7 +60,7 @@ export class UniqueSkillRule {
       return skill.SkillType !== SkillType.Compulsory && owner.hasSkill(skill.Name);
     }
     if (owner.getFlag<boolean>('wuqian')) {
-      return skill.Name === 'bazhen';
+      return skill.Name === 'bazhen' || skill.Name === 'linglong';
     }
 
     return false;
