@@ -5,6 +5,8 @@ import styles from './mark.module.css';
 
 import { Tooltip } from 'ui/tooltip/tooltip';
 import awakenIcon from './images/awaken.png';
+import baoliIcon from './images/baoli.png';
+import danxueIcon from './images/dawu.png';
 import dawuIcon from './images/dawu.png';
 import fuIcon from './images/fu.png';
 import jianIcon from './images/jian.png';
@@ -42,6 +44,8 @@ const markIconMaps: {
   [MarkEnum.Ran]: ranIcon,
   [MarkEnum.Wei]: weiIcon,
   [MarkEnum.Jian]: jianIcon,
+  [MarkEnum.BaoLi]: baoliIcon,
+  [MarkEnum.DanXue]: danxueIcon,
 };
 
 export type MarkProps = {

@@ -13,6 +13,14 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'paoxiao', description: 'paoxiao_description' })
 export class PaoXiao extends RulesBreakerSkill {
+  public get RelatedCharacters(): string[] {
+    return ['guanxingzhangbao'];
+  }
+
+  public audioIndex(characterName?: string): number {
+    return characterName && this.RelatedCharacters.includes(characterName) ? 1 : 2;
+  }
+
   public breakCardUsableTimes(cardId: CardId | CardMatcher) {
     if (cardId instanceof CardMatcher) {
       return cardId.match(new CardMatcher({ generalName: ['slash'] })) ? INFINITE_TRIGGERING_TIMES : 0;

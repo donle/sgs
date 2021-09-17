@@ -17,6 +17,14 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'gongxin', description: 'gongxin_description' })
 export class GongXin extends ActiveSkill {
+  public get RelatedCharacters(): string[] {
+    return ['lvmeng', 'gexuan'];
+  }
+
+  public audioIndex(characterName?: string): number {
+    return characterName && characterName === this.RelatedCharacters[1] ? 1 : 2;
+  }
+
   public canUse(room: Room, owner: Player) {
     return !owner.hasUsedSkill(this.Name);
   }

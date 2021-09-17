@@ -21,6 +21,7 @@ export class JiaoJin extends TriggerSkill {
     const card = Sanguosha.getCardById(content.byCardId);
     return (
       content.fromId !== owner.Id &&
+      content.toId === owner.Id &&
       room.getPlayerById(content.fromId).Gender === CharacterGender.Male &&
       (card.GeneralName === 'slash' || card.isCommonTrick()) &&
       owner

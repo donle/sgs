@@ -10,6 +10,10 @@ import { LiangZhu } from './liangzhu';
 
 @AwakeningSkill({ name: 'fanxiang', description: 'fanxiang_description' })
 export class FanXiang extends TriggerSkill {
+  public get RelatedSkills(): string[] {
+    return ['xiaoji'];
+  }
+
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
     stage?: AllStage,

@@ -96,7 +96,7 @@ export class DuLieShadow extends RulesBreakerSkill {
     owner: Player,
     target: Player,
   ) {
-    if (target.getMark(MarkEnum.Lie) > 0 || !cardId) {
+    if (target.getMark(MarkEnum.Wei) > 0 || !cardId) {
       return 0;
     }
 

@@ -7,6 +7,14 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'guanxing', description: 'guanxing_description' })
 export class GuanXing extends TriggerSkill {
+  public get RelatedCharacters() {
+    return ['jiangwei', 'gexuan'];
+  }
+
+  public audioIndex(characterName?: string): number {
+    return characterName && characterName === this.RelatedCharacters[1] ? 1 : 2;
+  }
+
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.StageChanged;
   }

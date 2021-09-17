@@ -6,6 +6,7 @@ export const characterDictionary: Word[] = [
   { source: 'caorui', target: '曹叡' },
   { source: 'huituo', target: '恢拓' },
   { source: 'mingjian', target: '明鉴' },
+  { source: 'jian', target: '鉴' },
   { source: 'xingshuai', target: '兴衰' },
 
   { source: 'caoxiu', target: '曹休' },
@@ -30,6 +31,14 @@ export const characterDictionary: Word[] = [
 
   { source: 'quancong', target: '全琮' },
   { source: 'yaoming', target: '邀名' },
+
+  { source: 'sunxiu', target: '孙休' },
+  { source: 'yanzhu', target: '宴诛' },
+  { source: 'yanzhu points: {0}', target: '宴诛[{0}]' },
+  { source: 'yanzhu_ex', target: '宴诛' },
+  { source: 'xingxue', target: '兴学' },
+  { source: 'xingxue_ex', target: '兴学' },
+  { source: 'zhaofu', target: '诏缚' },
 
   { source: 'zhuzhi', target: '朱治' },
   { source: 'anguo', target: '安国' },
@@ -57,7 +66,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'xingshuai_description',
     target:
-      '<b>主公技</b>，当你进入濒死状态时，若你的体力值不大于0，你可以令其他魏势力角色依次选择是否令你回复1点体力。此濒死结算结束后，所有以此法令你回复体力的角色各受到1点伤害。',
+      '<b>主公技</b>，<b>限定技</b>，当你进入濒死状态时，若你的体力值不大于0，你可以令其他魏势力角色依次选择是否令你回复1点体力。此濒死结算结束后，所有以此法令你回复体力的角色各受到1点伤害。',
   },
 
   {
@@ -120,6 +129,32 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'yanzhu_description',
+    target:
+      '出牌阶段限一次，你可以令一名有牌的其他角色选择一项：1.弃置一张牌，且其于其下个回合开始前受到的下一次伤害+1；2.令你获得其装备区里的所有牌，然后修改你的本技能和“兴学”。',
+  },
+  {
+    source: 'yanzhu_ex_description',
+    target:
+      '出牌阶段限一次，你可以令一名其他角色于其下个回合开始前受到的下一次伤害+1。',
+  },
+  {
+    source: 'xingxue_description',
+    target:
+      '结束阶段开始时，你可以令一至X名角色各摸一张牌，然后其中手牌数大于体力值的角色分别将一张牌置于牌堆顶（X为你的体力值）。',
+  },
+  {
+    source: 'xingxue_ex_description',
+    target:
+      '结束阶段开始时，你可以令一至X名角色各摸一张牌，然后其中手牌数大于体力值的角色分别将一张牌置于牌堆顶（X为你的体力上限）。',
+  },
+  {
+    source: 'zhaofu_description',
+    target:
+      '<b>主公技</b>，<b>锁定技</b>，你距离为1的角色视为在其他吴势力角色的攻击范围内。',
+  },
+
+  {
     source: 'anguo_description',
     target:
       '出牌阶段限一次，你可以选择一名其他角色，若其为手牌数最少的角色，其摸一张牌。若其为体力值最少的角色，其回复1点体力。若其为装备区里牌数最少的角色，其从牌堆里随机使用一张装备牌。最后若其有未执行的效果且你满足条件，你依次执行对应效果。',
@@ -156,7 +191,7 @@ export const promptDescriptions: Word[] = [
   },
   {
     source: '{0}: do you want to let {1} recover 1 hp, then you will take 1 damage?',
-    target: '{0}：你可以令 {1} 回复1点体力，且会在其此次濒死状态结束后受到1点无来源伤害',
+    target: '{0}：你是否令 {1} 回复1点体力，且会在其此次濒死状态结束后受到1点无来源伤害',
   },
 
   {
@@ -224,5 +259,19 @@ export const promptDescriptions: Word[] = [
   {
     source: 'shifei: do you want to choose a target to drop 1 card by you? and you will use/response a virtual Jink',
     target: '饰非：你可以弃置其中一名角色一张牌，视为你使用或打出一张【闪】',
+  },
+
+  {
+    source: '{0}: please discard a card, or you must give {1} all the cards in your eqiup area',
+    target: '{0}；请弃置一张牌，否则你将装备区里的所有牌交给 {1}',
+  },
+
+  {
+    source: '{0}: do you want to choose at most {1} target(s) to draw a card?',
+    target: '{0}；你可以令至多 {1} 名角色各摸一张牌',
+  },
+  {
+    source: '{0}: please put a card onto the top of draw stack',
+    target: '{0}；请选择一张牌置于牌堆顶',
   },
 ];

@@ -9,6 +9,14 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'guicai', description: 'guicai_description' })
 export class GuiCai extends TriggerSkill {
+  public get RelatedCharacters(): string[] {
+    return ['god_simayi'];
+  }
+
+  public audioIndex(characterName?: string) {
+    return characterName && this.RelatedCharacters.includes(characterName) ? 1 : 2;
+  }
+
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.JudgeEvent>, stage?: AllStage) {
     return stage === JudgeEffectStage.BeforeJudgeEffect;
   }

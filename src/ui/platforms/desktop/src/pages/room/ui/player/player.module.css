@@ -233,6 +233,20 @@
     color: #dcad00;
 }
 
+.relatedSkillTiltle {
+    color: rgb(127, 196, 25);
+    font-size: calc(gridLine * 2);
+    margin-bottom: calc(gridLine * 1.5);
+    font-family: SanguoshaFont;
+    padding-top: calc(gridLine * 0.5);
+    cursor: pointer;
+}
+
+.relatedSkill {
+    color: rgb(127, 196, 25);
+    border-color: rgb(127, 196, 25);
+}
+
 .playerTags {
     position: absolute;
     top: calc(gridLine * 5);

@@ -48,8 +48,8 @@ export class YaoMing extends TriggerSkill {
       (players = players.filter(player => {
         const playerHandcards = player.getCardIds(PlayerCardsArea.HandArea).length;
         return (
-          !(used.includes(YaoMingEffect.Draw) && playerHandcards > handcards) &&
-          !(used.includes(YaoMingEffect.Discard) && playerHandcards < handcards) &&
+          !(used.includes(YaoMingEffect.Draw) && playerHandcards < handcards) &&
+          !(used.includes(YaoMingEffect.Discard) && playerHandcards > handcards) &&
           !(used.includes(YaoMingEffect.ZhiHeng) && playerHandcards === handcards)
         );
       }));

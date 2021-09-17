@@ -10,6 +10,10 @@ import { PanShi } from './panshi';
 
 @CommonSkill({ name: 'cixiao', description: 'cixiao_description' })
 export class CiXiao extends TriggerSkill implements OnDefineReleaseTiming {
+  public get RelatedSkills(): string[] {
+    return ['panshi'];
+  }
+
   private async handleCiXiaoFlag(room: Room, player: PlayerId, lose?: boolean) {
     if (lose) {
       room.removeFlag(player, this.Name);

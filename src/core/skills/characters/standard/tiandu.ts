@@ -6,6 +6,10 @@ import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'tiandu', description: 'tiandu_description' })
 export class TianDu extends TriggerSkill {
+  public get RelatedCharacters() {
+    return ['xizhicai'];
+  }
+
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.JudgeEvent>, stage?: AllStage) {
     return stage === JudgeEffectStage.AfterJudgeEffect;
   }

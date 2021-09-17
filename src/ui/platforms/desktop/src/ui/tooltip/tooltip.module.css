@@ -4,7 +4,7 @@
     position: absolute;
     padding: calc(gridLine * 2);
     z-index: 99;
-    min-width: calc(gridLine * 32);
+    min-width: calc(gridLine * 40);
     background: rgba(0, 0, 0, 0.7);
     color: #ddd;
     box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.7);

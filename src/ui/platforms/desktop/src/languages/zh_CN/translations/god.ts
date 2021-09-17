@@ -75,6 +75,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'god_taishici', target: '神太史慈' },
   { source: 'dulie', target: '笃烈' },
+  { source: 'dulie_wei', target: '围' },
   { source: 'powei', target: '破围' },
   { source: 'powei:succeeded', target: '破围[成功]' },
   { source: 'powei:failed', target: '破围[失败]' },
@@ -235,7 +236,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'god_tianyi_description',
     target:
-      '<b>觉醒技</b>，准备阶段开始时，若所有存活角色均在本局游戏内受到过伤害，你加2点体力上限并回复1点体力，令一名角色获得技能“佐幸”（准备阶段开始时，若场上有体力上限大于1的神郭嘉存活，你可以令其中一名减1点体力上限，然后你于本回合的出牌阶段限一次，你可以视为使用一张普通锦囊牌）。',
+      '<b>觉醒技</b>，准备阶段开始时，若所有存活角色均在本局游戏内受到过伤害，你加2点体力上限并回复1点体力，令一名角色获得技能“佐幸”。',
   },
   {
     source: 'god_huishi_sec_description',
@@ -256,7 +257,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'powei_description',
     target:
-      '<b>使命技</b>，当你使用【杀】对有“围”的角色造成伤害时，移去其一枚“围”标记，并防止此伤害。<br><b>成功</b>：当你使用【杀】结算结束后，若场上没有“围”，你获得技能“神著”<br><b>失败</b>：当你进入濒死状态时，若你的体力小于1，你弃置装备区里的所有牌，回复体力至1点。',
+      '<b>使命技</b>，当你使用【杀】对有“围”的角色造成伤害时，移去其一枚“围”标记，并防止此伤害。<br><b>成功</b>：当你使用【杀】结算结束后，若场上没有“围”，你获得技能“神著”。<br><b>失败</b>：当你进入濒死状态时，若你的体力小于1，你弃置装备区里的所有牌，回复体力至1点。',
   },
   {
     source: 'dangmo_description',

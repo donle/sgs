@@ -291,6 +291,10 @@ export class PingJianLoseSkill extends TriggerSkill implements OnDefineReleaseTi
     return room.CurrentPlayerPhase === PlayerPhase.PhaseBegin && stage === PhaseChangeStage.AfterPhaseChanged;
   }
 
+  public get Muted() {
+    return true;
+  }
+
   public isAutoTrigger(): boolean {
     return true;
   }

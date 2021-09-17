@@ -113,6 +113,7 @@ export namespace System {
     Zili = 'zili',
     GodTianYi = 'god_tianyi',
     FanXiang = 'fanxiang',
+    JuYi = 'juyi',
   }
 
   export const AwakeningSkillApplier: { [K in AwakeningSkillApplierEnum]: AwakeningSkillApplierFunc } = {
@@ -169,6 +170,9 @@ export namespace System {
     [AwakeningSkillApplierEnum.FanXiang]: (room: Room, player: Player) => {
       const players = player.getFlag<PlayerId[]>(LiangZhu.Name);
       return players && players.find(p => room.getPlayerById(p).LostHp > 0) !== undefined;
+    },
+    [AwakeningSkillApplierEnum.JuYi]: (room: Room, player: Player) => {
+      return player.MaxHp > room.AlivePlayers.length;
     },
   };
 }

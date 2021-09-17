@@ -59,6 +59,10 @@ export class JiJing extends TriggerSkill {
 @ShadowSkill
 @CommonSkill({ name: 'shadow_jijing', description: 'shadow_jijing_description' })
 export class JiJingSelect extends TriggerSkill {
+  public get Muted() {
+    return true;
+  }
+
   public isTriggerable(): boolean {
     return false;
   }

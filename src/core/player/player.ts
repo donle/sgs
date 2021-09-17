@@ -812,16 +812,16 @@ export abstract class Player implements PlayerInfo {
     return lostSkill;
   }
 
-  public obtainSkill(skillName: string) {
+  public obtainSkill(skillName: string, insertIndex?: number) {
     const skill = Sanguosha.getSkillBySkillName(skillName);
     if (this.playerSkills.includes(skill)) {
       return;
     }
 
     this.hookedSkills.filter(hookedSkill => hookedSkill !== skill);
-    this.playerSkills.push(skill);
+    insertIndex !== undefined ? this.playerSkills.splice(insertIndex, 0, skill) : this.playerSkills.push(skill);
     for (const shadowSkill of Sanguosha.getShadowSkillsBySkillName(skillName)) {
-      this.hookedSkills.filter(hookedSkill => hookedSkill !== skill);
+      this.hookedSkills.filter(hookedSkill => hookedSkill !== shadowSkill);
       this.playerSkills.push(shadowSkill);
     }
   }

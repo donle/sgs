@@ -99,6 +99,8 @@ export class SmartAI extends PlayerAI {
             | ClientEventFinder<GameEventIdentifiers.CardUseEvent>
             | undefined);
         if (useCard) {
+          console.log('1');
+
           const useCardEvent: ClientEventFinder<GameEventIdentifiers.AskForPlayCardsOrSkillsEvent> = {
             fromId,
             end: false,

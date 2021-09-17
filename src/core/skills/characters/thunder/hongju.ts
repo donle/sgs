@@ -9,6 +9,10 @@ import { ZhengRong } from './zhengrong';
 
 @AwakeningSkill({ name: 'hongju', description: 'hongju_description' })
 export class HongJu extends TriggerSkill {
+  public get RelatedSkills(): string[] {
+    return ['qingce'];
+  }
+
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
     stage?: AllStage,

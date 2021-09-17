@@ -8,6 +8,7 @@ import { ClientPlayer } from 'core/player/player.client';
 import { PlayerCardsArea, PlayerId, PlayerRole, PlayerStatus } from 'core/player/player_props';
 import { MarkEnum } from 'core/shares/types/mark_list';
 import { GameMode } from 'core/shares/types/room_props';
+import { Skill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
@@ -68,6 +69,8 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
   autoHidePlayerName: boolean = true;
   @mobx.observable.ref
   skinName: string;
+  @mobx.observable.ref
+  hideRelatedSkills: boolean = true;
   @mobx.computed
   private get showPlayerHandcards() {
     return (
@@ -227,18 +230,53 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
     );
   }
 
-  createTooltipContent() {
+  @mobx.action
+  private readonly hideOrShowRelatedSkills = () => {
+    this.hideRelatedSkills = !this.hideRelatedSkills;
+  };
+
+  createTooltipContent(getRelatedSkills?: boolean) {
     const { player, translator } = this.props;
-    const skills =
+    let skills =
       player?.CharacterId !== undefined ? player.getPlayerSkills().filter(skill => !skill.isShadowSkill()) : [];
-    return skills.map((skill, index) => (
-      <div className={styles.skillInfo} key={index}>
-        <div className={styles.skillItem}>
-          <span className={styles.skillName}>{translator.trx(skill.Name)}</span>
-          <span dangerouslySetInnerHTML={{ __html: translator.tr(skill.Description) }} />
-        </div>
-      </div>
-    ));
+
+    getRelatedSkills &&
+      (skills = skills.reduce<Skill[]>((relatedSkills, skill) => {
+        if (skill.RelatedSkills.length === 0) {
+          return relatedSkills;
+        }
+
+        const notHave = skill.RelatedSkills.filter(skillName => !skills.map(skill => skill.Name).includes(skillName));
+        return relatedSkills.concat(...notHave.map(skillName => Sanguosha.getSkillBySkillName(skillName)));
+      }, []));
+    return getRelatedSkills
+      ? this.hideRelatedSkills
+        ? skills.length > 0 && (
+            <span className={styles.relatedSkillTiltle} onClick={this.hideOrShowRelatedSkills}>
+              {this.props.translator.trx('related skill (click to show)')}
+            </span>
+          )
+        : skills.map((skill, index) => (
+            <div className={styles.skillInfo} key={index}>
+              {index === 0 && (
+                <span className={styles.relatedSkillTiltle} onClick={this.hideOrShowRelatedSkills}>
+                  {this.props.translator.trx('related skill (click to hide)')}
+                </span>
+              )}
+              <div className={styles.skillItem}>
+                <span className={classNames(styles.skillName, styles.relatedSkill)}>{translator.trx(skill.Name)}</span>
+                <span dangerouslySetInnerHTML={{ __html: translator.tr(skill.Description) }} />
+              </div>
+            </div>
+          ))
+      : skills.map((skill, index) => (
+          <div className={styles.skillInfo} key={index}>
+            <div className={styles.skillItem}>
+              <span className={styles.skillName}>{translator.trx(skill.Name)}</span>
+              <span dangerouslySetInnerHTML={{ __html: translator.tr(skill.Description) }} />
+            </div>
+          </div>
+        ));
   }
 
   @mobx.action
@@ -493,7 +531,10 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
           )}
           {inAction && <PlayingBar className={styles.playBar} playTime={actionTimeLimit} />}
           {this.onTooltipOpened && this.PlayerCharacter && (
-            <Tooltip position={['center', 'right']}>{this.createTooltipContent()}</Tooltip>
+            <Tooltip position={['center', 'right']}>
+              {this.createTooltipContent()}
+              {this.createTooltipContent(true)}
+            </Tooltip>
           )}
         </div>
         {this.getPlayerEquips()}

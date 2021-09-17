@@ -7,6 +7,10 @@ import { LimitSkill } from 'core/skills/skill_wrappers';
 
 @LimitSkill({ name: 'songsang', description: 'songsang_description' })
 export class SongSang extends TriggerSkill {
+  public get RelatedSkills(): string[] {
+    return ['zhanji'];
+  }
+
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>, stage?: AllStage): boolean {
     return stage === PlayerDiedStage.PlayerDied;
   }

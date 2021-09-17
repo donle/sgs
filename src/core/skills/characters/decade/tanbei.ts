@@ -142,7 +142,7 @@ export class TanBeiDebuff extends GlobalFilterSkill implements OnDefineReleaseTi
   }
 
   public canUseCardTo(_: CardId | CardMatcher, __: Room, owner: Player, from: Player, to: Player): boolean {
-    return owner === from && to.Id !== owner.getFlag<PlayerId>(this.GeneralName);
+    return !(owner === from && to.Id === owner.getFlag<PlayerId>(this.GeneralName));
   }
 }
 

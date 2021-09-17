@@ -44,6 +44,8 @@ export class LongYin extends TriggerSkill {
     const event = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
     await room.dropCards(CardMoveReason.SelfDrop, cardIds!, fromId, fromId, this.Name);
     from.setFlag<PlayerId>(this.Name, event.fromId);
+    event.extraUse = true;
+
     room.syncGameCommonRules(event.fromId, target => {
       room.CommonRules.addCardUsableTimes(
         new CardMatcher({ generalName: ['slash'] }),

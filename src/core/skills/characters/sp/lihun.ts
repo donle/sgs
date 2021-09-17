@@ -1,15 +1,4 @@
-import { CommonSkill, ActiveSkill, TriggerSkill } from 'core/skills/skill';
-import { Room } from 'core/room/room';
-import { Player } from 'core/player/player';
-import {
-  AllStage,
-  PhaseChangeStage,
-  PhaseStageChangeStage,
-  PlayerPhase,
-  PlayerPhaseStages,
-} from 'core/game/stage_processor';
 import { CardId } from 'core/cards/libs/card_props';
-import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { CharacterGender } from 'core/characters/character';
 import {
   CardMoveArea,
@@ -18,9 +7,20 @@ import {
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
-import { TranslationPack } from 'core/translations/translation_json_tool';
-import { PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import {
+  AllStage,
+  PhaseChangeStage,
+  PhaseStageChangeStage,
+  PlayerPhase,
+  PlayerPhaseStages,
+} from 'core/game/stage_processor';
+import { Player } from 'core/player/player';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
+import { Room } from 'core/room/room';
+import { ActiveSkill, CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
+import { PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'lihun', description: 'lihun_description' })
 export class Lihun extends ActiveSkill {
@@ -114,7 +114,11 @@ export class LihunShadow extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    return content.playerId === owner.Id && content.toStage === PlayerPhaseStages.PlayCardStageEnd;
+    return (
+      content.playerId === owner.Id &&
+      content.toStage === PlayerPhaseStages.PlayCardStageEnd &&
+      owner.getFlag<PlayerId>(this.GeneralName) !== undefined
+    );
   }
 
   public async onTrigger() {

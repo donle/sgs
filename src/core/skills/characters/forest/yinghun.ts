@@ -9,6 +9,10 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'yinghun', description: 'yinghun_description' })
 export class YingHun extends TriggerSkill {
+  public get RelatedCharacters(): string[] {
+    return ['sunce'];
+  }
+
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.StageChanged && event.toStage === PlayerPhaseStages.PrepareStageStart;
   }
