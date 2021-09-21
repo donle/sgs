@@ -23,6 +23,13 @@ export const characterDictionary: Word[] = [
   { source: 'lulve', target: '掳掠' },
   { source: 'zhuixi', target: '追袭' },
 
+  { source: 'duanwei', target: '段煨' },
+  { source: 'langmie', target: '狼灭' },
+
+  { source: 'zhangheng', target: '张横' },
+  { source: 'dangzai', target: '挡灾' },
+  { source: 'liangjue', target: '粮绝' },
+
   { source: 'panfeng', target: '潘凤' },
   { source: 'kuangfu', target: '狂斧' },
 
@@ -37,13 +44,11 @@ export const characterDictionary: Word[] = [
 export const skillDescriptions: Word[] = [
   {
     source: 'langxi_description',
-    target:
-      '准备阶段开始时，你可以选择一名体力值不大于你的其他角色，你对其造成0~2点随机伤害。',
+    target: '准备阶段开始时，你可以选择一名体力值不大于你的其他角色，你对其造成0~2点随机伤害。',
   },
   {
     source: 'yisuan_description',
-    target:
-      '每阶段限一次，当你于出牌阶段内使用普通锦囊牌结算结束后，你可以减1点体力上限，获得之。',
+    target: '每阶段限一次，当你于出牌阶段内使用普通锦囊牌结算结束后，你可以减1点体力上限，获得之。',
   },
 
   {
@@ -59,8 +64,7 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'xingluan_description',
-    target:
-      '每阶段限一次，当你于出牌阶段内使用牌结算结束后，你可以从牌堆随机获得点数为6的一张牌。',
+    target: '每阶段限一次，当你于出牌阶段内使用牌结算结束后，你可以从牌堆随机获得点数为6的一张牌。',
   },
 
   {
@@ -81,8 +85,22 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'zhuixi_description',
+    target: '<b>锁定技</b>，当你对一名角色造成伤害时，或一名角色对你造成伤害时，若其武将牌正面朝向与你不同，此伤害+1。',
+  },
+
+  {
+    source: 'langmie_description',
     target:
-      '<b>锁定技</b>，当你对一名角色造成伤害时，或一名角色对你造成伤害时，若其武将牌正面朝向与你不同，此伤害+1。',
+      '其他角色的出牌阶段结束时，若其于此阶段内使用过至少两张同类别的牌，你可以摸一张牌；其他角色的结束阶段开始时，若其于本回合内造成过的伤害值不少于2点，你可以弃置一张牌，对其造成1点伤害。',
+  },
+
+  {
+    source: 'dangzai_description',
+    target: '出牌阶段开始时，你可以将一名其他角色判定区里的一张牌移至你的判定区。',
+  },
+  {
+    source: 'liangjue_description',
+    target: '<b>锁定技</b>，当黑色牌进入或离开你的判定区或装备区后，若你的体力值大于1，你失去1点体力，然后摸两张牌。',
   },
 
   {
@@ -94,7 +112,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'xuhe_description',
     target:
-      '出牌阶段开始时，你可以弃置距离1以内的所有角色各一张牌或令这些角色各摸一张牌；出牌阶段结束时，若你的体力上限为全场最少，你加1点体力上限。',
+      '出牌阶段开始时，你可以减1点体力上限，然后弃置距离1以内的所有角色各一张牌或令这些角色各摸一张牌；出牌阶段结束时，若你的体力上限为全场最少，你加1点体力上限。',
   },
 
   {
@@ -112,26 +130,22 @@ export const skillDescriptions: Word[] = [
 export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to choose a target with hp less than your hp to deal 0-2 damage to him randomly?',
-    target:
-      '{0}；你可以对体力值不大于你的一名其他角色造成0~2点随机伤害',
+    target: '{0}；你可以对体力值不大于你的一名其他角色造成0~2点随机伤害',
   },
 
   {
     source: '{0}: do you want to lose a max hp to gain {1}?',
-    target:
-      '{0}；你可以减1点体力上限以获得 {1}',
+    target: '{0}；你可以减1点体力上限以获得 {1}',
   },
 
   {
     source: '{0}: do you want to gain a card with card number 6 from draw stack?',
-    target:
-      '{0}；你可以从牌堆随机获得点数为6的一张牌',
+    target: '{0}；你可以从牌堆随机获得点数为6的一张牌',
   },
 
   {
     source: '{0}: please choose lveming options',
-    target:
-      '{0}；请选择一个点数',
+    target: '{0}；请选择一个点数',
   },
 
   {
@@ -144,33 +158,28 @@ export const promptDescriptions: Word[] = [
 
   {
     source: '{0}: do you want to use a card as ShunShouQianYang to one of them?',
-    target:
-      '{0}；你可以将一张手牌当【顺手牵羊】对其中一名角色使用（目标须合法）',
+    target: '{0}；你可以将一张手牌当【顺手牵羊】对其中一名角色使用（目标须合法）',
   },
 
   {
     source: '{0}: do you want to choose a lulve target to use this skill?',
-    target:
-      '{0}；你可以选择手牌数少于你的一名角色，对其发动“掳掠”',
+    target: '{0}；你可以选择手牌数少于你的一名角色，对其发动“掳掠”',
   },
   {
     source: '{0}: please choose lulve options: {1}',
-    target:
-      '{0}；请选择一项：1.交给 {1} 所有手牌，其翻面；2.你翻面，视为对 {1} 使用一张【杀】',
+    target: '{0}；请选择一项：1.交给 {1} 所有手牌，其翻面；2.你翻面，视为对 {1} 使用一张【杀】',
   },
   { source: 'lulve:prey', target: '交给其手牌' },
   { source: 'lulve:turnOver', target: '你翻面' },
 
   {
     source: '{0}: please choose a target to use a virtual slash to him',
-    target:
-      '{0}；请为此【杀】选择目标',
+    target: '{0}；请为此【杀】选择目标',
   },
 
   {
     source: '{0}: please choose xuhe options: {1}',
-    target:
-      '{0}；你可以弃置 {1} 各一张牌，或令这些角色各摸一张牌',
+    target: '{0}；你可以弃置 {1} 各一张牌，或令这些角色各摸一张牌',
   },
   { source: 'xuhe:draw', target: '摸牌' },
   { source: 'xuhe:discard', target: '弃置牌' },

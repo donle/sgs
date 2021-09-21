@@ -7,6 +7,7 @@ import * as twoVersusTwoCharactersDictonary from './game_mode/2v2';
 import * as generalDictionary from './general';
 import * as godCharactersDictionary from './god';
 import * as LimitedCharacterDictionary from './limited';
+import * as mobileCharacterDictionary from './mobile';
 import * as mountainCharactersDictionary from './mountain';
 import * as pveCharactersDictionary from './pve';
 import * as shadowCharacterDictionary from './shadow';
@@ -47,6 +48,7 @@ export {
   decadeCharactersDictionary,
   LimitedCharacterDictionary,
   biographiesCharacterDictionary,
+  mobileCharacterDictionary,
   wisdomCharacterDictionary,
   sincerityCharactersDictionary,
   pveCharactersDictionary,

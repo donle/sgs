@@ -15,6 +15,7 @@ import {
   CardUseStage,
   DamageEffectStage,
   DrawCardStage,
+  JudgeEffectStage,
   PinDianStage,
   PlayerDiedStage,
   PlayerPhase,
@@ -675,6 +676,40 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.broadcast(GameEventIdentifiers.PlayerPropertiesChangeEvent, event);
   }
 
+  public async changeGeneral(
+    event: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent>,
+    keepSkills?: boolean,
+  ) {
+    const { changedProperties } = event;
+
+    if (!keepSkills) {
+      for (const property of changedProperties) {
+        if (!property.characterId) {
+          continue;
+        }
+
+        const player = this.getPlayerById(property.toId);
+        const skills = player.getPlayerSkills(undefined, true).filter(skill => !skill.isShadowSkill());
+        for (const skill of skills) {
+          await this.loseSkill(property.toId, skill.Name);
+        }
+      }
+    }
+
+    this.changePlayerProperties(event);
+
+    for (const property of changedProperties) {
+      if (!property.characterId) {
+        continue;
+      }
+
+      const character = Sanguosha.getCharacterById(property.characterId);
+      for (const skill of character.Skills) {
+        skill.isShadowSkill() || (await this.obtainSkill(property.toId, skill.Name));
+      }
+    }
+  }
+
   public async askForCardDrop(
     playerId: PlayerId,
     discardAmount: number | [number, number],
@@ -1273,6 +1308,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
         const list = event.disresponsiveList;
         if (card.Skill instanceof ResponsiveSkill) {
+          cardEffectEvent.disresponsiveList = EventPacker.isDisresponsiveEvent(event, true)
+            ? this.getAllPlayersFrom().map(player => player.Id)
+            : event.disresponsiveList;
           await onCardEffect(cardEffectEvent);
         } else {
           const collabroatorsIndex: { [player: string]: number } = {};
@@ -1657,20 +1695,29 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     bySkill?: string,
     judgeMatcherEnum?: JudgeMatcherEnum,
   ): Promise<ServerEventFinder<GameEventIdentifiers.JudgeEvent>> {
-    const judgeCardId = this.getCards(1, 'top')[0];
     const event: ServerEventFinder<GameEventIdentifiers.JudgeEvent> = {
       toId: to,
-      judgeCardId,
-      realJudgeCardId: judgeCardId,
+      judgeCardId: -1,
+      realJudgeCardId: -1,
       byCard,
       bySkill,
       judgeMatcherEnum,
     };
 
-    await this.gameProcessor.onHandleIncomingEvent(
-      GameEventIdentifiers.JudgeEvent,
+    await this.trigger(
       EventPacker.createIdentifierEvent(GameEventIdentifiers.JudgeEvent, event),
+      JudgeEffectStage.BeforeJudge,
     );
+
+    if (event.realJudgeCardId === -1) {
+      const judgeCardId = this.getCards(1, 'top')[0];
+      event.judgeCardId = judgeCardId;
+      event.realJudgeCardId = judgeCardId;
+    } else {
+      event.judgeCardId = event.realJudgeCardId;
+    }
+
+    await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.JudgeEvent, event);
 
     return event;
   }

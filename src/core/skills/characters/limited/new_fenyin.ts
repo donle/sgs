@@ -39,11 +39,13 @@ export class NewFenYin extends TriggerSkill {
     const bannedSuits = room.getFlag<CardSuit[]>(fromId, this.Name) || [];
     let drawNum = 0;
     for (const info of infos) {
-      const suits = info.movingCards
-        .filter(card => !bannedSuits.includes(Sanguosha.getCardById(card.card).Suit))
-        .map(card => Sanguosha.getCardById(card.card).Suit);
-      drawNum += suits.length;
-      bannedSuits.push(...suits);
+      for (const cardInfo of info.movingCards) {
+        const suit = Sanguosha.getCardById(cardInfo.card).Suit;
+        if (!bannedSuits.includes(suit)) {
+          drawNum++;
+          bannedSuits.push(suit);
+        }
+      }
     }
 
     room.getPlayerById(fromId).setFlag<CardSuit[]>(this.Name, bannedSuits);

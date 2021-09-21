@@ -386,13 +386,13 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     const matchArray =
-      content.originalMessage.match(/\$([a-z_]+)\.([a-z]+):(\d+)/) ||
+      content.originalMessage.match(/\$([a-z_]+)\.([a-z_]+):(\d+)/) ||
       content.originalMessage.match(/\$([a-z_]+):(\d+)/);
     if (matchArray) {
       // play skill audio
       const skill = matchArray[1];
       const characterName = matchArray.length > 3 ? matchArray[2] : undefined;
-      const index = parseInt(matchArray.length > 3 ? matchArray[2] : matchArray[3]);
+      const index = parseInt(matchArray.length > 3 ? matchArray[3] : matchArray[2], undefined);
       this.audioService.playSkillAudio(skill, CharacterGender.Male, index, undefined, characterName); // player's character may be undefined
 
       const player = this.store.room.getPlayerById(content.playerId);

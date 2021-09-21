@@ -87,6 +87,10 @@ export const characterDictionary: Word[] = [
   { source: 'jiqiao', target: '机巧' },
   { source: 'linglong', target: '玲珑' },
 
+  { source: 'zhangbao', target: '张宝' },
+  { source: 'zhoufu', target: '咒缚' },
+  { source: 'yingbing', target: '影兵' },
+
   { source: 'zhangliang', target: '张梁' },
   { source: 'jijun', target: '集军' },
   { source: 'fangtong', target: '方统' },
@@ -308,6 +312,15 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'zhoufu_description',
+    target: '出牌阶段限一次，你可以将一张手牌置于一名没有“咒”的其他角色的武将牌旁。当其判定时，将其“咒”作为判定牌；一名角色的回合结束时，所有本回合失去过“咒”的角色各失去1点体力。',
+  },
+  {
+    source: 'yingbing_description',
+    target: '<b>锁定技</b>，当有“咒”的角色使用与其“咒”颜色相同的牌时，你摸一张牌。若此为你第二次因此“咒”摸牌，你获得其“咒”。',
+  },
+
+  {
     source: 'biluan_description',
     target:
       '结束阶段开始时，若有至你距离为1的角色，你可以弃置一张牌，令其他角色计算与你的距离+X（X为存活角色数且至多为4）。',
@@ -417,7 +430,7 @@ export const promptDescriptions: Word[] = [
     target: '{0}：请选择令你或 {1} 摸牌',
   },
   { source: 'lixia:you', target: '你摸一张牌' },
-  { source: 'lixia:opponent', target: '其摸一张牌' },
+  { source: 'lixia:opponent', target: '其摸两张牌' },
 
   {
     source: '{0}: you can let anothor player give you a card',
@@ -572,5 +585,23 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to choose a target to pindian?',
     target: '{0}：你可以与一名角色拼点',
+  },
+
+  {
+    source: 'xianfu: please choose another player to be your ‘Xian Fu’ player',
+    target: '先辅：请选择一名角色作为你的“先辅”对象',
+  },
+
+  {
+    source: 'chouce: please choose a target to discard a card from his area',
+    target: '筹策：请选择一名角色，弃置其区域里的一张牌',
+  },
+  {
+    source: '{0}: please choose a target to draw a card (If the target is {1}, draw 2 cards instead)',
+    target: '{0}：请选择一名角色，令其摸一张牌（若其为 {1} ，则改为其摸两张牌）',
+  },
+  {
+    source: '{0}: please choose a target to draw a card',
+    target: '{0}：请选择一名角色，令其摸一张牌',
   },
 ];

@@ -3,6 +3,11 @@ import { Word } from 'languages';
 export const characterDictionary: Word[] = [
   { source: 'limited', target: '限定' },
 
+  { source: 'chenlin', target: '陈琳' },
+  { source: 'bifa', target: '笔伐' },
+  { source: 'songci', target: '颂词' },
+  { source: '#songci', target: '颂词（摸牌）' },
+
   { source: 'caochun', target: '曹纯' },
   { source: 'shanjia', target: '缮甲' },
   { source: 'shanjia count: {0}', target: '缮甲[{0}]' },
@@ -22,9 +27,19 @@ export const characterDictionary: Word[] = [
   { source: 'xingzuo', target: '兴作' },
   { source: 'miaoxian', target: '妙弦' },
 
+  { source: 'guansuo', target: '关索' },
+  { source: 'zhengnan', target: '征南' },
+  { source: 'xiefang', target: '撷芳' },
+
   { source: 'zhugeguo', target: '诸葛果' },
   { source: 'qirang', target: '祈禳' },
   { source: 'yuhua', target: '羽化' },
+
+  { source: 'baosanniang', target: '鲍三娘' },
+  { source: 'wuniang', target: '武娘' },
+  { source: 'xushen', target: '许身' },
+  { source: '#xushen', target: '许身（变关索）' },
+  { source: 'zhennan', target: '镇南' },
 
   { source: 'guozhao', target: '郭照' },
   { source: 'pianchong', target: '偏宠' },
@@ -53,6 +68,16 @@ export const skillDescriptions: Word[] = [
     source: 'shanjia_description',
     target:
       '出牌阶段开始时，你可以摸三张牌，然后弃置三张牌（本局游戏内你每不因使用而失去一张装备牌，便少弃置一张牌）。若你未以此法弃置非装备牌，你可视为使用一张无距离限制的【杀】。',
+  },
+
+  {
+    source: 'bifa_description',
+    target: '结束阶段开始时，你可以将一张手牌置于没有“檄”的一名其他角色的武将牌旁，称为“檄”。该角色于其下个回合开始时，观看此“檄”并选择一项：1.交给你一张与此“檄”类别相同的手牌，然后获得此“檄”；2.移去此“檄”并失去1点体力。',
+  },
+  {
+    source: 'songci_description',
+    target:
+      '每名角色限一次，出牌阶段，你可以选择一名角色，若其手牌数：大于体力值，其弃置两张牌；不大于体力值，其摸两张牌；弃牌阶段结束时，若你对所有存活角色均发动过本技能，你摸一张牌。',
   },
 
   {
@@ -94,12 +119,34 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'zhengnan_description',
+    target: '每名角色限一次，当一名角色进入濒死状态时，你可以回复1点体力，然后摸一张牌并选择以下一项技能获得：“当先”、“武圣”和“制蛮”（若你已拥有这三个技能则改为摸三张牌）。',
+  },
+  {
+    source: 'xiefang_description',
+    target: '<b>锁定技</b>，你计算与其他角色的距离-X（X为存活女性角色数）。',
+  },
+
+  {
     source: 'qirang_description',
     target: '当装备牌进入你的装备区后，你可以从牌堆随机获得一张锦囊牌。',
   },
   {
     source: 'yuhua_description',
     target: '<b>锁定技</b>，你的非基本牌不计入手牌上限。',
+  },
+
+  {
+    source: 'wuniang_description',
+    target: '当你使用或打出【杀】时，你可以获得一名其他角色的一张牌，然后其摸一张牌，若你已发动过“许身”且场上存在“关索”，其摸一张牌。',
+  },
+  {
+    source: 'xushen_description',
+    target: '<b>限定技</b>，当你进入濒死状态时，若你的体力不大于0，你可以回复1点体力并获得技能“镇南”。若如此做，当你脱离此次濒死状态后，若场上没有“关索”，你可以令一名其他角色选择是否用“关索”替换其武将牌并摸三张牌。',
+  },
+  {
+    source: 'zhennan_description',
+    target: '当一名角色使用普通锦囊牌指定第一个目标后，若目标数大于1，你可以对一名其他角色造成1点伤害。',
   },
 
   {
@@ -212,5 +259,29 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: please choose a hand card, give the other cards to {1}',
     target: '{0}：请选择一张手牌保留，将其他手牌交给 {1}',
+  },
+
+  {
+    source: '{0}: please choose a skill to gain',
+    target: '{0}：请选择以下一项技能获得',
+  },
+
+  {
+    source: '{0}: do you want to prey a card from another player?',
+    target: '{0}：你可以获得一名其他角色的一张牌，然后其摸一张牌',
+  },
+
+  {
+    source: '{0}: do you want to choose another player to let him change general to Guan Suo and draw 3 cards?',
+    target: '{0}：你可以令一名其他角色选择是否变为“关索”并摸三张牌',
+  },
+  {
+    source: '{0}: do you want to change your general to Guan Suo and draw 3 cards?',
+    target: '{0}：你可以变为“关索”并摸三张牌',
+  },
+
+  {
+    source: '{0}: do you want to deal 1 damage to another player?',
+    target: '{0}：你可以对一名其他角色造成1点伤害',
   },
 ];

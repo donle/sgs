@@ -5,6 +5,7 @@ import { FireCharacterPackage } from 'core/characters/fire';
 import { ForestCharacterPackage } from 'core/characters/forest';
 import { GodCharacterPackage } from 'core/characters/god';
 import { LimitedPackage } from 'core/characters/limited';
+import { MobilePackage } from 'core/characters/mobile';
 import { MountainCharacterPackage } from 'core/characters/mountain';
 import { PvePackage } from 'core/characters/pve';
 import { ShadowCharacterPackage } from 'core/characters/shadow';
@@ -51,6 +52,7 @@ const allCharacterLoaders: {
   [GameCharacterExtensions.Decade]: DecadePackage,
   [GameCharacterExtensions.Limited]: LimitedPackage,
   [GameCharacterExtensions.Biographies]: BiographiesPackage,
+  [GameCharacterExtensions.Mobile]: MobilePackage,
   [GameCharacterExtensions.Wisdom]: WisdomPackage,
   [GameCharacterExtensions.Sincerity]: SincerityCharacterPackage,
   [GameCharacterExtensions.Pve]: PvePackage,

@@ -9,6 +9,10 @@ import { PatchedTranslationObject, TranslationPack } from 'core/translations/tra
 
 @CommonSkill({ name: 'xingxue', description: 'xingxue_description' })
 export class XingXue extends TriggerSkill {
+  public get RelatedSkills(): string[] {
+    return ['xingxue_ex'];
+  }
+
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
     stage?: AllStage,

@@ -210,6 +210,7 @@ export class Sanguosha {
       GameCharacterExtensions.Decade,
       GameCharacterExtensions.Limited,
       GameCharacterExtensions.Biographies,
+      GameCharacterExtensions.Mobile,
       GameCharacterExtensions.Wisdom,
       GameCharacterExtensions.Sincerity,
     ];

@@ -48,6 +48,8 @@ export const characterDictionary: Word[] = [
   { source: 'liubiao', target: '刘表' },
   { source: 'zishou', target: '自守' },
   { source: 'zongshi', target: '宗室' },
+  
+  { source: 'decade_dangxian', target: '当先' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -147,6 +149,11 @@ export const skillDescriptions: Word[] = [
     target:
       '<b>锁定技</b>，你的手牌上限+X（X为存活势力数）；你的回合外，若你的手牌数不小于手牌上限，无色牌对你无效且你不能成为延时类锦囊牌的目标。',
   },
+
+  {
+    source: 'decade_dangxian_description',
+    target: '<b>锁定技</b>，回合开始时，你可以失去1点体力并随机获得弃牌堆里的一张【杀】，无论你是否失去体力，你执行一个额外的出牌阶段。',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
@@ -234,5 +241,10 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0} triggered skill {1}, prevent the damage to {2}',
     target: '{0} 的技能 【{1}】被触发，防止了对 {2} 造成的伤害',
+  },
+
+  {
+    source: '{0}: do you want to lose 1 hp to gain a slash from drop stack?',
+    target: '{0}：你可以失去1点体力，并随机获得弃牌堆里的一张【杀】',
   },
 ];

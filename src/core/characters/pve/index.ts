@@ -1,4 +1,5 @@
 import { Character } from '../character';
+import { GuanSuo } from '../limited/guansuo';
 import { PveBiAn } from './pve_bian';
 import { PveBiXi } from './pve_bixi';
 import { PveBoss } from './pve_boss';
@@ -15,4 +16,6 @@ export const PvePackage: (index: number) => Character[] = index => [
   new PveFuXi(index++),
   new PveBiXi(index++),
   new PveChaoFeng(index++),
+
+  new GuanSuo(index++),
 ];

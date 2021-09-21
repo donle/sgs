@@ -105,7 +105,11 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   }
   //Server only
   public changePlayerProperties(): void {
-    this.throwUntouchableError(this.getRandomCharactersFromLoadedPackage.name);
+    this.throwUntouchableError(this.changePlayerProperties.name);
+  }
+  //Server only
+  public async changeGeneral(): Promise<void> {
+    this.throwUntouchableError(this.changeGeneral.name);
   }
   //Server only
   public async onReceivingAsyncResponseFrom(): Promise<any> {

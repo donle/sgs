@@ -746,6 +746,7 @@ export class StandardGameProcessor extends GameProcessor {
       for (const player of this.room.getAlivePlayersFrom(this.CurrentPlayer.Id)) {
         notifierAllPlayers.push(player.Id);
         if (
+          event.disresponsiveList?.includes(player.Id) ||
           EventPacker.isDisresponsiveEvent(event, true) ||
           (!player.hasCard(this.room, wuxiekejiMatcher) &&
             this.room.GameParticularAreas.find(areaName =>
@@ -1894,14 +1895,20 @@ export class StandardGameProcessor extends GameProcessor {
     let fromArea: CardMoveArea = CardMoveArea.DrawStack;
     const { toId, bySkill, byCard, judgeCardId } = event;
 
-    const ownerId = this.room.getCardOwnerId(judgeCardId);
+    let ownerId = this.room.getCardOwnerId(judgeCardId);
     if (ownerId) {
       const cardArea = (this.room.getPlayerById(ownerId).cardFrom(judgeCardId) as any) as CardMoveArea | undefined;
       fromArea = cardArea === undefined ? fromArea : cardArea;
     }
 
+    if (this.room.getPlayerById(toId).getOutsideAreaNameOf(judgeCardId)) {
+      fromArea = CardMoveArea.OutsideArea;
+      ownerId = toId;
+    }
+
     await this.room.moveCards({
       movingCards: [{ card: judgeCardId, fromArea }],
+      fromId: fromArea !== CardMoveArea.DrawStack ? ownerId : undefined,
       moveReason: CardMoveReason.ActiveMove,
       toArea: CardMoveArea.ProcessingArea,
       proposer: toId,

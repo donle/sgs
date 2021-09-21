@@ -111,6 +111,7 @@ export class ChouCe extends TriggerSkill {
       response.selectedPlayers = response.selectedPlayers || [event.fromId];
 
       if (response.selectedPlayers[0] === xianfuPlayer && !room.getFlag<boolean>(xianfuPlayer, XianFu.XianFuPlayer)) {
+        room.removeFlag(xianfuPlayer, XianFu.XianFuPlayer);
         room.setFlag<boolean>(xianfuPlayer, XianFu.XianFuPlayer, true, XianFu.Name);
       }
 
