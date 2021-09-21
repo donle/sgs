@@ -179,6 +179,7 @@ export const enum DamageEffectStage {
 }
 
 export const enum JudgeEffectStage {
+  BeforeJudge = 'beforeJudge',
   OnJudge = 'OnJudge',
   BeforeJudgeEffect = 'BeforeJudgeEffect',
   JudgeEffect = 'JudgeEffect',

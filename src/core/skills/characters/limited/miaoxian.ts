@@ -75,7 +75,10 @@ export class MiaoXianShadow extends TriggerSkill {
           info.fromId === owner.Id &&
           info.moveReason === CardMoveReason.CardUse &&
           info.movingCards.filter(
-            card => Sanguosha.getCardById(card.card).Color === CardColor.Red && card.fromArea === CardMoveArea.HandArea,
+            card =>
+              !Sanguosha.isVirtualCardId(card.card) &&
+              Sanguosha.getCardById(card.card).Color === CardColor.Red &&
+              card.fromArea === CardMoveArea.HandArea,
           ).length === 1,
       ) !== undefined &&
       owner.getCardIds(PlayerCardsArea.HandArea).find(card => Sanguosha.getCardById(card).Color === CardColor.Red) ===

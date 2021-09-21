@@ -23,6 +23,7 @@ import { SunQian } from './sunqian';
 import { WuTuGu } from './wutugu';
 import { XiZhiCai } from './xizhicai';
 import { YangXiu } from './yangxiu';
+import { ZhangBao } from './zhangbao';
 import { ZhangLiang } from './zhangliang';
 import { ZhangLing } from './zhangling';
 import { ZhouQun } from './zhouqun';
@@ -52,6 +53,7 @@ export const SPPackage: (index: number) => Character[] = index => [
   new FuWan(index++),
   new LiuXie(index++),
   new SPHuangYueYing(index++),
+  new ZhangBao(index++),
   new ShiXie(index++),
   new ZhangLiang(index++),
   new QuYi(index++),

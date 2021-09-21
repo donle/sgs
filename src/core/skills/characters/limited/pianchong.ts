@@ -42,6 +42,8 @@ export class PianChong extends TriggerSkill {
     const { fromId } = event;
     const drawCardEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DrawCardEvent>;
 
+    console.log(room.getPlayerById(event.fromId).HookedSkills.map(skill => skill.Name));
+
     drawCardEvent.drawAmount = 0;
     const redCards = room.findCardsByMatcherFrom(new CardMatcher({ suit: [CardSuit.Diamond, CardSuit.Heart] }));
     const blackCards = room.findCardsByMatcherFrom(new CardMatcher({ suit: [CardSuit.Club, CardSuit.Spade] }));

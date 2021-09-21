@@ -12,6 +12,10 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'yanzhu', description: 'yanzhu_description' })
 export class YanZhu extends ActiveSkill {
+  public get RelatedSkills(): string[] {
+    return ['yanzhu_ex'];
+  }
+
   public canUse(room: Room, owner: Player): boolean {
     return !owner.hasUsedSkill(this.Name);
   }
@@ -67,6 +71,8 @@ export class YanZhu extends ActiveSkill {
         TranslationPack.translationJsonPatcher('yanzhu points: {0}', originalDamage + 1).toString(),
       );
 
+      console.log(room.getPlayerById(toIds[0]).hasShadowSkill(YanZhuDebuff.Name));
+      console.log(room.getPlayerById(toIds[0]).hasSkill(YanZhuDebuff.Name))
       room.getPlayerById(toIds[0]).hasShadowSkill(YanZhuDebuff.Name) ||
         (await room.obtainSkill(toIds[0], YanZhuDebuff.Name));
     } else {
@@ -96,19 +102,6 @@ export class YanZhu extends ActiveSkill {
 @PersistentSkill()
 @CommonSkill({ name: 's_yanzhu_debuff', description: 's_yanzhu_debuff_description' })
 export class YanZhuDebuff extends TriggerSkill implements OnDefineReleaseTiming {
-  public afterLosingSkill(
-    room: Room,
-    owner: PlayerId,
-    content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>,
-    stage?: AllStage,
-  ): boolean {
-    return (
-      content.toPlayer === owner &&
-      room.CurrentPlayerPhase === PlayerPhase.PhaseBegin &&
-      stage === PhaseChangeStage.AfterPhaseChanged
-    );
-  }
-
   public async whenDead(room: Room, player: Player) {
     await room.loseSkill(player.Id, this.Name);
     room.removeFlag(player.Id, YanZhu.Name);
@@ -162,6 +155,7 @@ export class YanZhuDebuff extends TriggerSkill implements OnDefineReleaseTiming 
       }
     }
 
+    console.log(this.Name);
     await room.loseSkill(event.fromId, this.Name);
 
     return true;

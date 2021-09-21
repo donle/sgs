@@ -34,7 +34,7 @@ export type RoomId = number;
 
 export abstract class Room<T extends WorkPlace = WorkPlace> {
   public get GameParticularAreas() {
-    return ['muniuliuma'];
+    return ['muniuliuma', 'jinfan'];
   }
 
   protected abstract readonly analytics: RecordAnalytics;
@@ -102,6 +102,11 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   public abstract changePlayerProperties(
     event: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent>,
   ): void;
+  //Server only
+  public abstract changeGeneral(
+    event: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent>,
+    keepSkills?: boolean,
+  ): Promise<void>;
   //Server only
   public abstract onReceivingAsyncResponseFrom<T extends GameEventIdentifiers>(
     identifier: T,

@@ -302,6 +302,7 @@ export { AnXu } from './characters/yijiang2012/anxu';
 export { ZhuiYi } from './characters/yijiang2012/zhuiyi';
 export { ZiShou, ZiShouReforge, ZiShouPrevent, ZiShouShadow } from './characters/yijiang2012/zishou';
 export { ZongShi, ZongShiNullify, ZongShiProhibit } from './characters/yijiang2012/zongshi';
+export { DecadeDangXian } from './characters/yijiang2012/decade_dangxian';
 
 export { ChengXiang } from './characters/yijiang2013/chengxiang';
 export { RenXin } from './characters/yijiang2013/renxin';
@@ -415,6 +416,8 @@ export { ChouCe } from './characters/sp/chouce';
 export { GongAo } from './characters/sp/gongao';
 export { JuYi } from './characters/sp/juyi';
 export { WeiZhong } from './characters/sp/weizhong';
+export { ZhouFu, ZhouFuDebuff } from './characters/sp/zhoufu';
+export { YingBing } from './characters/sp/yingbing';
 
 export { TuShe } from './characters/spark/tushe';
 export { LiMu, LiMuShadow } from './characters/spark/limu';
@@ -445,6 +448,9 @@ export { KuangFu } from './characters/decade/kuangfu';
 export { XuHe } from './characters/decade/xuhe';
 export { LiuShi, LiuShiShadow } from './characters/decade/liushi';
 export { ZhanWan } from './characters/decade/zhanwan';
+export { LangMie } from './characters/decade/langmie';
+export { DangZai } from './characters/decade/dangzai';
+export { LiangJue } from './characters/decade/liangjue';
 
 export { ShanJia, ShanJiaShadow } from './characters/limited/shanjia';
 export { WeiCheng } from './characters/limited/weicheng';
@@ -464,6 +470,13 @@ export { ShanZhuan } from './characters/limited/shanzhuan';
 export { ZhuiLie, ZhuiLieShadow, ZhuiLieClear } from './characters/limited/zhuilie';
 export { LianHua, LianHuaShadow } from './characters/limited/lianhua';
 export { ZhaFu, ZhaFuDebuff } from './characters/limited/zhafu';
+export { ZhengNan } from './characters/limited/zhengnan';
+export { XieFang } from './characters/limited/xiefang';
+export { WuNiang } from './characters/limited/wuniang';
+export { XuShen, XuShenShadow } from './characters/limited/xushen';
+export { ZhenNan } from './characters/limited/zhennan';
+export { BiFa, BiFaEffect } from './characters/limited/bifa';
+export { SongCi, SongCiShadow } from './characters/limited/songci';
 
 export { LiLu, LiLuSelect } from './characters/biographies/lilu';
 export { YiZheng, YiZhengShadow } from './characters/biographies/yizheng';
@@ -474,6 +487,16 @@ export { PingJian, PingJianLoseSkill, PingJianShadow } from './characters/biogra
 export { CiXiao } from './characters/biographies/cixiao';
 export { XianShuai } from './characters/biographies/xianshuai';
 export { PanShi, PanShiSelect } from './characters/biographies/panshi';
+
+export { DuJin } from './characters/mobile/dujin';
+export { YingJian } from './characters/mobile/yingjian';
+export { ShiXin } from './characters/mobile/shixin';
+export { TunChu, TunChuDebuff, TunChuShadow } from './characters/mobile/tunchu';
+export { ShuLiang } from './characters/mobile/shuliang';
+export { DaiGong } from './characters/mobile/daigong';
+export { ZhaoXin, ZhaoXinShadow } from './characters/mobile/zhaoxin';
+export { JinFan, JinFanShadow } from './characters/mobile/jinfan';
+export { SheQue } from './characters/mobile/sheque';
 
 export { WuKu } from './characters/wisdom/wuku';
 export { ZhiSanChen } from './characters/wisdom/zhi_sanchen';
