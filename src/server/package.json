@@ -7,7 +7,7 @@
   "dependencies": {
     "chalk": "^3.0.0",
     "express": "^4.17.1",
-    "shrink-string": "^3.0.9",
+    "shrink-string": "3.0.8",
     "socket.io": "2.4.1"
   },
   "devDependencies": {
