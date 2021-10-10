@@ -194,7 +194,10 @@ export class Lobby extends React.Component<LobbyProps> {
   }
 
   componentWillUnmount() {
-    this.audioService.stop();
+    const excludedBgmStopList = ['/characters'];
+    if (!excludedBgmStopList.includes(this.props.history.location.pathname)) {
+      this.audioService.stop();
+    }
   }
 
   @mobx.action
