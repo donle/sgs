@@ -214,6 +214,69 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
+
+export const skillAudios: Word[] = [
+  {
+    source: '$shanjia:1',
+    target: '缮甲厉兵，伺机而行。',
+  },
+  {
+    source: '$shanjia:2',
+    target: '战，当取精锐之兵，而弃驽钝也。',
+  },
+
+  {
+    source: '$weicheng:1',
+    target: '吾只观雅规，而非说客。',
+  },
+  {
+    source: '$weicheng:2',
+    target: '略施谋略，敌军便信以为真。',
+  },
+  {
+    source: '$daoshu:1',
+    target: '让我看看，这是什么机密。',
+  },
+  {
+    source: '$daoshu:2',
+    target: '得此文书，丞相定可高枕无忧！',
+  }, 
+
+  {
+    source: '$xingzuo:1',
+    target: '顺人之情，时之势，兴作可成。',
+  },
+  {
+    source: '$xingzuo:2',
+    target: '兴作从心，相继不绝。',
+  },
+  {
+    source: '$miaoxian:1',
+    target: '女为悦者容，士为知己死。',
+  },
+  {
+    source: '$miaoxian:2',
+    target: '与君高歌，请君侧耳。',
+  },
+
+  {
+    source: '$qirang:1',
+    target: '集母亲之智，效父亲之法，祈以七星。',
+  },
+  {
+    source: '$qirang:2',
+    target: '仙甲既来，岂无仙术乎？',
+  }, 
+  {
+    source: '$yuhua:1',
+    target: '凤羽飞烟，乘化仙尘。',
+  },
+  {
+    source: '$yuhua:2',
+    target: '此乃仙人之物，不可轻弃。',
+  },
+];
+
 export const promptDescriptions: Word[] = [
   {
     source: '{0}: please drop {1} card(s), if all of them are equip card, you can use a virtual slash',

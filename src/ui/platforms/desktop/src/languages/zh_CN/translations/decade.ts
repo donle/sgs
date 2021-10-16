@@ -234,6 +234,104 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
+export const skillAudios: Word[] = [
+  {
+    source: '$langxi:1',
+    target: '袭夺之势，如狼噬骨！',
+  },
+  {
+    source: '$langxi:2',
+    target: '引吾至此，怎能不袭掠之？',
+  },
+  {
+    source: '$yisuan:1',
+    target: '吾亦能善算谋划！',
+  },
+  {
+    source: '$yisuan:2',
+    target: '算计人心，我也可略施一二。',
+  },
+
+  {
+    source: '$tanbei:1',
+    target: '此机，我怎么会错失？',
+  },
+  {
+    source: '$tanbei:2',
+    target: '你的东西，现在是我的了！',
+  }, 
+  {
+    source: '$sidao:1',
+    target: '连发伺动，顺手可得。',
+  },
+  {
+    source: '$sidao:2',
+    target: '伺机而动，此地可窃。',
+  },
+
+  {
+    source: '$xingluan:1',
+    target: '大兴兵争，长安当乱！',
+  },
+  {
+    source: '$xingluan:2',
+    target: '勇猛兴军，乱世当立！',
+  },
+
+  {
+    source: '$lveming:1',
+    target: '劫命掠财，毫不费力。',
+  },
+  {
+    source: '$lveming:2',
+    target: '人财，皆掠之。嘿嘿！',
+  }, 
+  {
+    source: '$tunjun:1',
+    target: '得封侯爵，屯军弘农。',
+  },
+  {
+    source: '$tunjun:2',
+    target: '屯军弘农，养精蓄锐。',
+  },
+
+  {
+    source: '$lulve:1',
+    target: '趁火打劫，乘威掳掠。',
+  },
+  {
+    source: '$lulve:2',
+    target: '天下大乱，掳掠以自保。',
+  },
+  {
+    source: '$zhuixi:1',
+    target: '得势追袭，胜望在握！',
+  },
+  {
+    source: '$zhuixi:2',
+    target: '诸将得令，追而袭之！',
+  },
+
+  {
+    source: '$kuangfu:1',
+    target: '大斧到处，片甲不留！',
+  },
+  {
+    source: '$kuangfu:2',
+    target: '你可接得住我一斧？',
+  },
+
+  {
+    source: '$xuhe:1',
+    target: '说出吾名，吓汝一跳！',
+  },
+  {
+    source: '$xuhe:2',
+    target: '我乃是零陵上将军！',
+  },
+];
+
+
 export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to choose a target with hp less than your hp to deal 0-2 damage to him randomly?',

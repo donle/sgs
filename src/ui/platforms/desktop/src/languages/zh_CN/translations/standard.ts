@@ -362,6 +362,520 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
+export const skillAudios: Word[] = [
+  {
+    source: '$hujia:1',
+    target: '大胆逆贼，谁可擒之！',
+  },
+  {
+    source: '$hujia:2',
+    target: '护卫何在！',
+  },
+  {
+    source: '$jianxiong:1',
+    target: '夫英雄者，胸怀大志，腹有良谋！',
+  },
+  {
+    source: '$jianxiong:2',
+    target: '燕雀安知鸿鹄之志！',
+  },
+
+  {
+    source: '$fankui:1',
+    target: '哼！正中下怀！',
+  },
+  {
+    source: '$fankui:2',
+    target: '哼！自作孽不可活！',
+  },
+  {
+    source: '$guicai:1',
+    target: '才通天地，逆天改命！',
+  },
+  {
+    source: '$guicai:2',
+    target: '天命难违？哈哈哈哈哈哈！',
+  },
+
+  {
+    source: '$ganglie:1',
+    target: '哪个敢动我！',
+  },
+  {
+    source: '$ganglie:2',
+    target: '伤我者，十倍奉还！',
+  },
+  {
+    source: '$qingjian:1',
+    target: '福生于清俭，德生于卑退！',
+  },
+  {
+    source: '$qingjian:2',
+    target: '钱财，乃身外之物！',
+  },
+
+  {
+    source: '$tuxi:1',
+    target: '快马突袭，占尽先机！',
+  },
+  {
+    source: '$tuxi:2',
+    target: '马似飞云，枪如霹雳！',
+  },
+
+  {
+    source: '$luoyi:1',
+    target: '废话少说，放马过来吧！',
+  },
+  {
+    source: '$luoyi:2',
+    target: '过来打一架，对，就是你！',
+  },
+
+  {
+    source: '$tiandu:1',
+    target: '那，就这样吧。',
+  },
+  {
+    source: '$tiandu:2',
+    target: '天意如此。',
+  },
+  {
+    source: '$yiji:1',
+    target: '锦囊妙策，终定社稷。',
+  },
+  {
+    source: '$yiji:2',
+    target: '依此计行，辽东可定。',
+  },
+
+  {
+    source: '$luoshen:1',
+    target: '冯夷鸣鼓，女娲清歌。',
+  },
+  {
+    source: '$luoshen:2',
+    target: '屏翳收风，川后静波。',
+  },
+  {
+    source: '$qingguo:1',
+    target: '肩若削成，腰如约素。',
+  },
+  {
+    source: '$qingguo:2',
+    target: '延颈秀项，皓质呈露。',
+  },
+
+  {
+    source: '$xunxun:1',
+    target: '众将死战，非我之功。',
+  },
+  {
+    source: '$xunxun:2',
+    target: '爱兵如子，胜乃可全。',
+  },
+  {
+    source: '$wangxi:1',
+    target: '大丈夫，何拘小节。',
+  },
+  {
+    source: '$wangxi:2',
+    target: '前尘往事，莫再提起。',
+  },
+
+  {
+    source: '$jiangchi:1',
+    target: '率师而行，所向皆破！',
+  },
+  {
+    source: '$jiangchi:2',
+    target: '数从征伐，志意慷慨，不避险阻！',
+  },
+
+  {
+    source: '$rende:1',
+    target: '施仁布泽，乃我大汉立国之本！',
+  },
+  {
+    source: '$rende:2',
+    target: '同心同德，救困扶危！',
+  },
+  {
+    source: '$jijiang:1',
+    target: '哪位将军，替我拿下此贼！',
+  },
+  {
+    source: '$jijiang:2',
+    target: '欺我军无人乎？',
+  },
+
+  {
+    source: '$wusheng:1',
+    target: '刀锋所向，战无不克！',
+  },
+  {
+    source: '$wusheng:2',
+    target: '逆贼！哪里走！',
+  },
+  {
+    source: '$yijue:1',
+    target: '恩已断，义当绝！',
+  },
+  {
+    source: '$yijue:2',
+    target: '关某向来恩怨分明！',
+  },
+
+  {
+    source: '$paoxiao:1',
+    target: '喝啊！',
+  },
+  {
+    source: '$paoxiao:2',
+    target: '今，必斩汝马下！',
+  },
+  {
+    source: '$tishen:1',
+    target: '欺我无谋，定要尔等血偿！',
+  },
+  {
+    source: '$tishen:2',
+    target: '谁还敢过来一战！',
+  },
+
+  {
+    source: '$guanxing:1',
+    target: '天星之变，吾窥探一二。',
+  },
+  {
+    source: '$guanxing:2',
+    target: '星途莫测，细细推敲。',
+  },
+  {
+    source: '$kongcheng:1',
+    target: '淡然相对，转危为安。',
+  },
+  {
+    source: '$kongcheng:2',
+    target: '绝处逢生，此招慎用。',
+  },
+
+  {
+    source: '$longdan:1',
+    target: '进退自如，游刃有余！',
+  },
+  {
+    source: '$longdan:2',
+    target: '龙威虎胆，斩敌破阵！',
+  },
+  {
+    source: '$yajiao:1',
+    target: '遍寻天下，但求一败！',
+  },
+  {
+    source: '$yajiao:2',
+    target: '策马驱前，斩敌当先！',
+  },
+
+  {
+    source: '$tieji:1',
+    target: '敌人阵型已乱，随我杀~~~',
+  },
+  {
+    source: '$tieji:2',
+    target: '目标敌阵，全军突击！',
+  },
+
+  {
+    source: '$jizhi:1',
+    target: '得上通，智集心。',
+  },
+  {
+    source: '$jizhi:2',
+    target: '集万千才智，致巧趣鲜用。',
+  },
+
+  {
+    source: '$jijie:1',
+    target: '一拜一起，未足为劳。',
+  },
+  {
+    source: '$jijie:2',
+    target: '识言观行，方能雍容风议。',
+  },
+  {
+    source: '$jiyuan:1',
+    target: '公若此，必遭蔡瑁之害。',
+  },
+  {
+    source: '$jiyuan:2',
+    target: '情势危急，还请速行。',
+  },
+
+  {
+    source: '$zhuhai:1',
+    target: '善恶有报，天道轮回！',
+  },
+  {
+    source: '$zhuhai:2',
+    target: '早知今日，何必当初！',
+  },
+  {
+    source: '$qianxin:1',
+    target: '既遇明主，天下可图！',
+  },
+  {
+    source: '$qianxin:2',
+    target: '弃武从文，安邦卫国！',
+  },
+  {
+    source: '$jianyan:1',
+    target: '开言纳谏，社稷之福！',
+  },
+  {
+    source: '$jianyan:2',
+    target: '如此如此，敌军自破！',
+  },
+
+  {
+    source: '$zhiheng:1',
+    target: '不急不躁，稳谋应对。',
+  },
+  {
+    source: '$zhiheng:2',
+    target: '制衡互牵，大局可安。',
+  },
+  {
+    source: '$jiuyuan:1',
+    target: '你们真是朕的得力干将。',
+  },
+  {
+    source: '$jiuyuan:2',
+    target: '有爱卿在，朕无烦忧。',
+  },
+
+  {
+    source: '$qixi:1',
+    target: '弟兄们，准备动手！',
+  },
+  {
+    source: '$qixi:2',
+    target: '你用不了这么多了！',
+  },
+  {
+    source: '$fenwei:1',
+    target: '奋勇当先，威名远扬！',
+  },
+  {
+    source: '$fenwei:2',
+    target: '哼！敢欺我东吴无人？',
+  },
+
+  {
+    source: '$keji:1',
+    target: '蓄力待时，不争首功。',
+  },
+  {
+    source: '$keji:2',
+    target: '哼！敢欺我东吴无人？',
+  },
+  {
+    source: '$botu:1',
+    target: '今日起兵，渡江攻敌！',
+  },
+  {
+    source: '$botu:2',
+    target: '时机已到，全军出击！',
+  },
+  {
+    source: '$qinxue:1',
+    target: '兵书熟读，了然于胸。',
+  },
+  {
+    source: '$qinxue:2',
+    target: '勤以修身，学以报国。',
+  },
+
+  {
+    source: '$kurou:1',
+    target: '我这把老骨头不算什么！',
+  },
+  {
+    source: '$kurou:2',
+    target: '为成大义，死不足惜！',
+  },
+  {
+    source: '$zhaxiang:1',
+    target: '铁索连舟而行，东吴水师可破！',
+  },
+  {
+    source: '$zhaxiang:2',
+    target: '两军阵前，不斩降将！',
+  },
+
+  {
+    source: '$yingzi:1',
+    target: '伯符，且看我这一手！',
+  },
+  {
+    source: '$yingzi:2',
+    target: '哈哈哈哈哈哈哈哈！',
+  },
+  {
+    source: '$fanjian:1',
+    target: '抉择吧，在苦与痛的地狱中！',
+  },
+  {
+    source: '$fanjian:2',
+    target: '与我为敌，就当这般生不如死！',
+  },
+
+  {
+    source: '$guose:1',
+    target: '旅途劳顿，请下马休整吧~',
+  },
+  {
+    source: '$guose:2',
+    target: '还没到休息的时候！',
+  },
+  {
+    source: '$liuli:1',
+    target: '帮帮人家嘛~',
+  },
+  {
+    source: '$liuli:2',
+    target: '伯符不在身边，我要自己保重！',
+  },
+
+  {
+    source: '$qianxun:1',
+    target: '满招损，谦受益。',
+  },
+  {
+    source: '$qianxun:2',
+    target: '谦谦君子，温润如玉。',
+  },
+  {
+    source: '$lianying:1',
+    target: '生生不息，源源不绝。',
+  },
+  {
+    source: '$lianying:2',
+    target: '失之淡然，得之坦然。',
+  },
+
+  {
+    source: '$jieyin:1',
+    target: '得遇夫君，妾身福分。',
+  },
+  {
+    source: '$jieyin:2',
+    target: '随夫嫁娶，宜室宜家。',
+  },
+  {
+    source: '$xiaoji:1',
+    target: '剑利弓疾，你可打不过我！',
+  },
+  {
+    source: '$xiaoji:2',
+    target: '我会的武器可多着呢！',
+  },
+
+  {
+    source: '$jijiu:1',
+    target: '救死扶伤，悬壶济世。',
+  },
+  {
+    source: '$jijiu:2',
+    target: '妙手仁心，药到病除。',
+  },
+  {
+    source: '$qingnang:1',
+    target: '病去，如抽丝。',
+  },
+  {
+    source: '$qingnang:2',
+    target: '病入膏肓，需下猛药。',
+  },  
+
+  {
+    source: '$wushuang:1',
+    target: '还有哪个，敢挑战我！',
+  },
+  {
+    source: '$wushuang:2',
+    target: '三个齐上，也不是我的对手！',
+  }, 
+  {
+    source: '$liyu:1',
+    target: '大丈夫相时而动。',
+  },
+  {
+    source: '$liyu:2',
+    target: '人不为已，天诛地灭。',
+  }, 
+
+  {
+    source: '$lijian:1',
+    target: '赢家，才能得到我。',
+  },
+  {
+    source: '$lijian:2',
+    target: '这场比赛，将军可要赢哦~',
+  }, 
+  {
+    source: '$biyue:1',
+    target: '梦蝶幻月，如沫虚妄。',
+  },
+  {
+    source: '$biyue:2',
+    target: '水映月明，芙蓉照倩影。',
+  }, 
+
+  {
+    source: '$yaowu:1',
+    target: '有吾在此，解太师烦忧。',
+  },
+  {
+    source: '$yaowu:2',
+    target: '这些杂兵，我有何惧！',
+  },
+
+  {
+    source: '$wangzun:1',
+    target: '归顺于我，封爵赏地。',
+  },
+  {
+    source: '$wangzun:2',
+    target: '真命天子，八方拜服！',
+  },
+  {
+    source: '$tongji:1',
+    target: '你、你这是反了！',
+  },
+  {
+    source: '$tongji:2',
+    target: '弑君之罪，当诛九族！',
+  },
+
+  {
+    source: '$yicong:1',
+    target: '变阵冲轭，以守代攻。',
+  },
+  {
+    source: '$yicong:2',
+    target: '列阵锋矢，直取要害。',
+  },
+  {
+    source: '$qiaomeng:1',
+    target: '夺敌辎重，以为己用。',
+  },
+  {
+    source: '$qiaomeng:2',
+    target: '秣马厉兵，枕戈待战。',
+  },
+];
+
 export const promptDescriptions: Word[] = [
   {
     source: 'jiangchi:draw2',

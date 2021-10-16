@@ -556,6 +556,300 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
+export const skillAudios: Word[] = [
+  {
+    source: '$danlao:1',
+    target: '我喜欢。',
+  },
+  {
+    source: '$danlao:2',
+    target: '来来，一人一口。',
+  },
+  {
+    source: '$jilei:1',
+    target: '食之无肉，弃之有味。',
+  },
+  {
+    source: '$jilei:2',
+    target: '曹公之意，我已了然。',
+  },
+ 
+  {
+    source: '$chenqing:1',
+    target: '陈生死离别之苦，悲乱世之跌宕。',
+  },
+  {
+    source: '$chenqing:2',
+    target: '乱世陈情，字字血泪。',
+  }, 
+  {
+    source: '$mozhi:1',
+    target: '今日默书，方恨千卷诗书未能全记。',
+  },
+  {
+    source: '$mozhi:2',
+    target: '博闻强识，不辱才女之名。',
+  },
+ 
+  {
+    source: '$kunfen:1',
+    target: '纵使困顿难行，亦当砥砺奋进！',
+  },
+  {
+    source: '$kunfen:2',
+    target: '兴蜀需时，众将切勿备怠！',
+  },
+  {
+    source: '$fengliang:1',
+    target: '丞相大义，维岂有不从之理？',
+  },
+  {
+    source: '$fengliang:2',
+    target: '得遇丞相，再生之德！',
+  }, 
+
+  {
+    source: '$liangzhu:1',
+    target: '吾愿携弩征战沙场，助君一战。',
+  },
+  {
+    source: '$liangzhu:2',
+    target: '两国结盟，你我都是一家人。',
+  },
+  {
+    source: '$fanxiang:1',
+    target: '兄命难违，从此两别。',
+  },
+  {
+    source: '$fanxiang:2',
+    target: '今夕一别，不知何日再见？',
+  },
+
+  {
+    source: '$fengpo:1',
+    target: '对付你，用不着我家哥哥亲自上阵！',
+  },
+  {
+    source: '$fengpo:2',
+    target: '等我提枪上马，打你个落花流水！',
+  },
+
+  {
+    source: '$zishu:1',
+    target: '慢着，让我来。',
+  },
+  {
+    source: '$zishu:2',
+    target: '身外之物，不要也罢。',
+  },
+  {
+    source: '$yingyuan:1',
+    target: '接好嘞！',
+  },
+  {
+    source: '$yingyuan:2',
+    target: '好牌只用一次怎么够？',
+  },
+
+  {
+    source: '$fuman:1',
+    target: '恩威并施，蛮夷可为我所用！',
+  },
+  {
+    source: '$fuman:2',
+    target: '发兵器了！',
+  },
+
+  {
+    source: '$tiansuan:1',
+    target: '汝既持签问卜，亦当应天授命。',
+  },
+  {
+    source: '$tiansuan:2',
+    target: '尔若居正体道，福寿自当天成。',
+  },
+
+  {
+    source: '$bingzheng:1',
+    target: '自古，就是邪不胜正！',
+  },
+  {
+    source: '$bingzheng:2',
+    target: '主公面前，岂容小人搬弄是非？',
+  },
+  {
+    source: '$sheyan:1',
+    target: '公事为重，宴席不去也罢。',
+  },
+  {
+    source: '$sheyan:2',
+    target: '还是改日吧！',
+  },
+
+  {
+    source: '$jili:1',
+    target: '蒺藜骨朵，威震摄敌。',
+  },
+  {
+    source: '$jili:2',
+    target: '看我一招，铁蒺藜骨朵！',
+  },
+ 
+  {
+    source: '$canshi:1',
+    target: '众人，与蝼蚁何异？哼哼哼哼哼哼……',
+  },
+  {
+    source: '$canshi:2',
+    target: '难道，一切不在朕手中？',
+  },
+  {
+    source: '$chouhai:1',
+    target: '哼，树敌三千，又如何？',
+  },
+  {
+    source: '$chouhai:2',
+    target: '不发狂，就灭亡！',
+  },
+  {
+    source: '$guiming:1',
+    target: '这是要我命归黄泉吗！',
+  },
+  {
+    source: '$guiming:2',
+    target: '这就是末世皇帝的不归路！',
+  },
+
+  {
+    source: '$std_longdan:1',
+    target: '能进能退，乃真正法器！',
+  },
+  {
+    source: '$std_longdan:2',
+    target: '吾乃常山赵子龙也！',
+  },
+  {
+    source: '$chongzhen:1',
+    target: '陷阵杀敌，一马当先。',
+  },
+  {
+    source: '$chongzhen:2',
+    target: '贼将休走，可敢与我一战？',
+  },
+
+  {
+    source: '$moukui:1',
+    target: '你的死期到了。',
+  },
+  {
+    source: '$moukui:2',
+    target: '同归于尽吧！',
+  },
+
+  {
+    source: '$biluan:1',
+    target: '身处乱世，自保足矣。',
+  },
+  {
+    source: '$biluan:2',
+    target: '避一时之乱，求长世安稳。',
+  },
+  {
+    source: '$lixia:1',
+    target: '将军，真乃国之栋梁。',
+  },
+  {
+    source: '$lixia:2',
+    target: '英雄可安身立命于交州之地。',
+  },
+
+  {
+    source: '$fuji:1',
+    target: '既来之，休走之！',
+  },
+  {
+    source: '$fuji:2',
+    target: '白马？哼！定叫他有来无回！',
+  },
+  {
+    source: '$jiaozi:1',
+    target: '今日之获，皆是吾之功劳。',
+  },
+  {
+    source: '$jiaozi:2',
+    target: '今吾于此，尔等皆为飞灰。',
+  },
+
+  {
+    source: '$wenji:1',
+    target: '言出子口，入于吾耳，可以言未？',
+  },
+  {
+    source: '$wenji:2',
+    target: '还望先生救我！',
+  },
+  {
+    source: '$tunjiang:1',
+    target: '江夏冲要之地，孩儿愿往守之。',
+  },
+  {
+    source: '$tunjiang:2',
+    target: '皇叔勿惊，吾与关将军已到。',
+  },
+
+  {
+    source: '$huji:1',
+    target: '求仙长生，感悟万象。',
+  },
+  {
+    source: '$huji:2',
+    target: '骑虎云游，探求道法。',
+  },
+  {
+    source: '$shoufu:1',
+    target: '得授符法，驱鬼灭害。',
+  },
+  {
+    source: '$shoufu:2',
+    target: '吾得法器，必斩万恶！',
+  },
+
+  {
+    source: '$ranshang:1',
+    target: '战火燃尽英雄胆！',
+  },
+  {
+    source: '$ranshang:2',
+    target: '尔等，竟如此歹毒！',
+  },
+  {
+    source: '$hanyong:1',
+    target: '犯我者，杀！',
+  },
+  {
+    source: '$hanyong:2',
+    target: '藤甲军从无对手，不服来战！',
+  },
+
+  {
+    source: '$lihun:1',
+    target: '将军，这些都赏给妾身好不好嘛~',
+  },
+  {
+    source: '$lihun:2',
+    target: '这些人家不喜欢嘛，还给你吧！',
+  },
+
+  {
+    source: '$wangong:1',
+    target: '强弓挽之，以射长箭！',
+  },
+  {
+    source: '$wangong:2',
+    target: '挽弓如月，克定江夏！',
+  },
+];
+
 export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to draw a card and let {1} nullify to you?',
