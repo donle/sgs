@@ -71,8 +71,6 @@ export class YanZhu extends ActiveSkill {
         TranslationPack.translationJsonPatcher('yanzhu points: {0}', originalDamage + 1).toString(),
       );
 
-      console.log(room.getPlayerById(toIds[0]).hasShadowSkill(YanZhuDebuff.Name));
-      console.log(room.getPlayerById(toIds[0]).hasSkill(YanZhuDebuff.Name))
       room.getPlayerById(toIds[0]).hasShadowSkill(YanZhuDebuff.Name) ||
         (await room.obtainSkill(toIds[0], YanZhuDebuff.Name));
     } else {
@@ -155,7 +153,6 @@ export class YanZhuDebuff extends TriggerSkill implements OnDefineReleaseTiming 
       }
     }
 
-    console.log(this.Name);
     await room.loseSkill(event.fromId, this.Name);
 
     return true;

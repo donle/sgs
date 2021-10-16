@@ -6,6 +6,7 @@
     flex-direction: column;
 }
 .inputLabel {
+    position: relative;
     width: 100%;
     display: flex;
     align-items: center;
@@ -15,6 +16,27 @@
     background: transparent;
     border: 1px solid grey;
     margin-right: 4px;
+}
+.quickChat {
+    position: absolute;
+    height: calc(gridLine * 19);
+    width: 100%;
+    top: calc(gridLine * -20);
+    overflow: auto;
+    background-color: #211616;
+}
+.quickChatItems {
+    max-width: 100%;
+    word-wrap: break-word;
+    display: inline-block;
+    color: white;
+    padding: calc(gridLine / 2) calc(gridLine / 2);
+    margin: 0;
+    cursor: pointer;
+}
+.quickChatItems:hover {
+    background: linear-gradient(90deg, #211616 0%, rgba(177, 117, 40, 0.6) 40%, rgba(177, 117, 40, 0.7) 50%, rgba(177, 117, 40, 0.6) 60%, #211616 100%);
+    color: #d79529;
 }
 .sendButton {
     height: 100%;

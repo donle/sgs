@@ -27,7 +27,7 @@ export class BingYi extends TriggerSkill {
 
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const from = room.getPlayerById(skillUseEvent.fromId);
-    const handCards = from.getCardIds(PlayerCardsArea.HandArea);
+    const handCards = from.getCardIds(PlayerCardsArea.HandArea).slice();
     room.broadcast(GameEventIdentifiers.CardDisplayEvent, {
       fromId: skillUseEvent.fromId,
       displayCards: handCards,
@@ -69,6 +69,10 @@ export class BingYi extends TriggerSkill {
         }
       }
     }
+
+    handCards.every(
+      cardId => Sanguosha.getCardById(cardId).CardNumber === Sanguosha.getCardById(handCards[0]).CardNumber,
+    ) && (await room.drawCards(1, from.Id, 'top', from.Id, this.Name));
 
     return true;
   }

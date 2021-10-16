@@ -22,6 +22,13 @@ export const characterDictionary: Word[] = [
   { source: 'cixiao:yizi', target: '义子' },
   { source: 'xianshuai', target: '先率' },
   { source: 'panshi', target: '叛弑' },
+
+  { source: 'dongcheng', target: '董承' },
+  { source: 'xuezhao', target: '血诏' },
+
+  { source: 'qiuliju', target: '丘力居' },
+  { source: 'koulve', target: '寇略' },
+  { source: 'suiren', target: '随认' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -59,7 +66,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'cixiao_description',
     target:
-      '准备阶段开始时，你可以选择一名没有“义子”的其他角色，移去场上所有的“义子”标记，其获得1枚“义子”标记。有“义子”标记的角色视为拥有“叛弑”。',
+      '准备阶段开始时，你可以选择一名没有“义子”的其他角色（若场上有“义子”标记，你须先弃置一张牌），移去场上所有的“义子”标记，其获得1枚“义子”标记。有“义子”标记的角色视为拥有“叛弑”。',
   },
   {
     source: 'xianshuai_description',
@@ -70,6 +77,23 @@ export const skillDescriptions: Word[] = [
     source: 'panshi_description',
     target:
       '<b>锁定技</b>，准备阶段开始时，你将一张手牌交给一名拥有技能“慈孝”的其他角色；当你于出牌阶段内使用【杀】对拥有技能“慈孝”的角色造成伤害时，此伤害+1且你结束此阶段。',
+  },
+
+  {
+    source: 'xuezhao_description',
+    target:
+      '出牌阶段限一次，你可以弃置一张手牌，并令一至X名其他角色（X为你的体力值）依次选择是否交给你一张牌，若其：交给你牌，其摸一张牌且你本回合使用【杀】的次数上限+1；未交给你牌，其本回合不能响应你使用的牌。',
+  },
+
+  {
+    source: 'koulve_description',
+    target:
+      '当你于出牌阶段内对其他角色造成伤害后，你可以展示其一张手牌。若此牌为【杀】或伤害类锦囊牌，你获得之。若此牌为红色，你减1点体力上限（若你未受伤则改为失去1点体力），然后摸两张牌。',
+  },
+  {
+    source: 'suiren_description',
+    target:
+      '当你死亡时，你可以将你手牌中所有的【杀】和伤害类锦囊牌交给一名其他角色。',
   },
 ];
 
@@ -108,6 +132,10 @@ export const promptDescriptions: Word[] = [
   },
 
   {
+    source: '{0}: do you want to discard a card and choose another player to be your new son?',
+    target: '{0}：你可以弃一张牌，将“义子”标记转移给另一名其他角色',
+  },
+  {
     source: '{0}: do you want to choose another player to be your son?',
     target: '{0}：你可以令一名其他角色获得“义子”标记',
   },
@@ -119,5 +147,15 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: you need to give a handcard to {1}',
     target: '{0}：请将一张手牌交给 {1}',
+  },
+
+  {
+    source: '{0}: do you want to display a card from {1}’s hand?',
+    target: '{0}：你可以展示 {1} 的一张手牌',
+  },
+
+  {
+    source: '{0}: do you want to choose a another player to give him all the damage cards in your hand?',
+    target: '{0}：你可以将手牌中所有的【杀】和伤害类锦囊牌交给一名其他角色',
   },
 ];

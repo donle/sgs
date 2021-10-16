@@ -664,6 +664,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public changePlayerProperties(event: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent>): void {
     const { changedProperties } = event;
+
+    let newCurrentPlayerPosition: number | undefined;
     for (const property of changedProperties) {
       const player = this.getPlayerById(property.toId);
       property.characterId !== undefined && (player.CharacterId = property.characterId);
@@ -671,6 +673,16 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       property.hp !== undefined && (player.Hp = property.hp);
       property.nationality !== undefined && (player.Nationality = property.nationality);
       property.gender !== undefined && (player.Gender = property.gender);
+      if (property.playerPosition !== undefined) {
+        player.Position = property.playerPosition;
+        console.log(player === this.CurrentPlayer);
+        player === this.CurrentPlayer && (newCurrentPlayerPosition = property.playerPosition);
+      }
+    }
+
+    if (changedProperties.find(property => property.playerPosition)) {
+      this.sortPlayers();
+      newCurrentPlayerPosition !== undefined && this.gameProcessor.fixCurrentPosition(newCurrentPlayerPosition);
     }
 
     this.broadcast(GameEventIdentifiers.PlayerPropertiesChangeEvent, event);

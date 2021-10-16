@@ -20,4 +20,5 @@ export interface AudioLoader {
     skinData?: CharacterSkinInfo[],
     gender?: CharacterGender,
   ): Promise<string>;
+  getQuickChatAudio(index: number, gender: CharacterGender): Promise<string>;
 }

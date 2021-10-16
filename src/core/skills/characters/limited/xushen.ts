@@ -68,6 +68,7 @@ export class XuShenShadow extends TriggerSkill implements OnDefineReleaseTiming 
     return (
       event.dying === owner.Id &&
       EventPacker.getMiddleware<boolean>(this.GeneralName, event) === true &&
+      !owner.Dead &&
       !room.getAllPlayersFrom().find(player => player.Character.Name === 'guansuo')
     );
   }

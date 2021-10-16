@@ -80,6 +80,7 @@ export abstract class GameProcessor {
   public abstract getRoles(playerNumber: number): PlayerRole[];
   public abstract getWinners(players: Player[]): Player[] | undefined;
   public abstract assignRoles(players: Player[]): void;
+  public abstract fixCurrentPosition(playerPosition: number): void;
   protected abstract drawGameBeginsCards(playerInfo: PlayerInfo): Promise<void>;
   // tslint:disable-next-line: no-empty
   protected async beforeGameStartPreparation() {}

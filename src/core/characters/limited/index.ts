@@ -7,6 +7,7 @@ import { GeXuan } from './gexuan';
 import { GuoZhao } from './guozhao';
 import { JiangGan } from './jianggan';
 import { LiuZan } from './liuzan';
+import { PanShu } from './panshu';
 import { RuanYu } from './ruanyu';
 import { WangShuang } from './wangshuang';
 import { XuRong } from './xurong';
@@ -21,11 +22,12 @@ export const LimitedPackage: (index: number) => Character[] = index => [
   new GuoZhao(index++),
   new RuanYu(index++),
 
-  new GeXuan(index++),
-  new LiuZan(index++),
-
   new ZhuGeGuo(index++),
   new BaoSanNiang(index++),
+
+  new GeXuan(index++),
+  new LiuZan(index++),
+  new PanShu(index++),
 
   new XuRong(index++),
 ];

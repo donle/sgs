@@ -25,6 +25,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'ruanyu', target: '阮瑀' },
   { source: 'xingzuo', target: '兴作' },
+  { source: '#xingzuo', target: '兴作（换牌）' },
   { source: 'miaoxian', target: '妙弦' },
 
   { source: 'guansuo', target: '关索' },
@@ -57,6 +58,10 @@ export const characterDictionary: Word[] = [
   { source: 'liji', target: '力激' },
   { source: 'liji times: {0} {1}', target: '力激[{0}|+{1}]' },
 
+  { source: 'panshu', target: '潘淑' },
+  { source: 'weiyi', target: '威仪' },
+  { source: 'jinzhi', target: '锦织' },
+
   { source: 'xurong', target: '徐荣' },
   { source: 'xionghuo', target: '凶镬' },
   { source: 'baoli', target: '暴戾' },
@@ -72,7 +77,8 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'bifa_description',
-    target: '结束阶段开始时，你可以将一张手牌置于没有“檄”的一名其他角色的武将牌旁，称为“檄”。该角色于其下个回合开始时，观看此“檄”并选择一项：1.交给你一张与此“檄”类别相同的手牌，然后获得此“檄”；2.移去此“檄”并失去1点体力。',
+    target:
+      '结束阶段开始时，你可以将一张手牌置于没有“檄”的一名其他角色的武将牌旁，称为“檄”。该角色于其下个回合开始时，观看此“檄”并选择一项：1.交给你一张与此“檄”类别相同的手牌，然后获得此“檄”；2.移去此“檄”并失去1点体力。',
   },
   {
     source: 'songci_description',
@@ -104,7 +110,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'shanzhuan_description',
     target:
-      '当你对其他角色造成伤害后，若其判定区里没有牌，你可以将其一张牌置于其判定区内。若此牌不为延时类锦囊牌且为：红色牌，此牌视为【乐不思蜀】；黑色牌，此牌视为【兵粮寸断】。',
+      '当你对其他角色造成伤害后，若其判定区里没有牌，你可以将其一张牌置于其判定区内。若此牌不为延时类锦囊牌且为：红色牌，此牌视为【乐不思蜀】；黑色牌，此牌视为【兵粮寸断】。回合结束时，若你本回合没有造成过伤害，你可以摸一张牌。',
   },
 
   {
@@ -120,7 +126,8 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'zhengnan_description',
-    target: '每名角色限一次，当一名角色进入濒死状态时，你可以回复1点体力，然后摸一张牌并选择以下一项技能获得：“当先”、“武圣”和“制蛮”（若你已拥有这三个技能则改为摸三张牌）。',
+    target:
+      '每名角色限一次，当一名角色进入濒死状态时，你可以回复1点体力，然后摸一张牌并选择以下一项技能获得：“当先”、“武圣”和“制蛮”（若你已拥有这三个技能则改为摸三张牌）。',
   },
   {
     source: 'xiefang_description',
@@ -129,20 +136,22 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'qirang_description',
-    target: '当装备牌进入你的装备区后，你可以从牌堆随机获得一张锦囊牌。',
+    target: '当装备牌进入你的装备区后，你可以从牌堆随机获得一张锦囊牌。若此牌为普通锦囊牌，你于本回合使用此牌指定唯一目标时，你可以为此牌增加一个额外的目标。',
   },
   {
     source: 'yuhua_description',
-    target: '<b>锁定技</b>，你的非基本牌不计入手牌上限。',
+    target: '<b>锁定技</b>，你的非基本牌不计入手牌上限；结束阶段开始时，若你的手牌数大于体力上限，你观看牌堆顶一张牌，然后将之置于牌堆顶或牌堆底。',
   },
 
   {
     source: 'wuniang_description',
-    target: '当你使用或打出【杀】时，你可以获得一名其他角色的一张牌，然后其摸一张牌，若你已发动过“许身”且场上存在“关索”，其摸一张牌。',
+    target:
+      '当你使用或打出【杀】时，你可以获得一名其他角色的一张牌，然后其摸一张牌，若你已发动过“许身”且场上存在“关索”，其摸一张牌。',
   },
   {
     source: 'xushen_description',
-    target: '<b>限定技</b>，当你进入濒死状态时，若你的体力不大于0，你可以回复1点体力并获得技能“镇南”。若如此做，当你脱离此次濒死状态后，若场上没有“关索”，你可以令一名其他角色选择是否用“关索”替换其武将牌并摸三张牌。',
+    target:
+      '<b>限定技</b>，当你进入濒死状态时，若你的体力不大于0，你可以回复1点体力并获得技能“镇南”。若如此做，当你脱离此次濒死状态后，若场上没有“关索”，你可以令一名其他角色选择是否用“关索”替换其武将牌并摸三张牌。',
   },
   {
     source: 'zhennan_description',
@@ -180,6 +189,17 @@ export const skillDescriptions: Word[] = [
     source: 'liji_description',
     target:
       '每回合限零次，出牌阶段，你可以弃置一张牌，并对一名其他角色造成1点伤害；你的回合内，本回合进入弃牌堆的牌每达到8的倍数张时（若本回合开始时存活角色数小于5，改为4的倍数），此技能于本回合内的使用次数上限+1。',
+  },
+
+  {
+    source: 'weiyi_description',
+    target:
+      '每名角色限一次，当一名角色受到伤害后，若其体力值：大于你，你可以令其失去1点体力；小于你，你可以令其回复1点体力；等于你，你可以令其失去或回复1点体力。',
+  },
+  {
+    source: 'jinzhi_description',
+    target:
+      '当你需要使用或打出基本牌时，你可以弃置X张牌，然后摸一张牌，视为使用或打出此基本牌（X为你本轮内发动过本技能的次数+1）。',
   },
 
   {
@@ -229,6 +249,10 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to gain a random equip card from draw stack?',
     target: '{0}：你可以从牌堆随机获得一张锦囊牌',
+  },
+  {
+    source: '{0}: do you want to select a player to append to {1} targets?',
+    target: '{0}：你可以为 {1} 增加一个额外目标',
   },
 
   {
@@ -283,5 +307,20 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to deal 1 damage to another player?',
     target: '{0}：你可以对一名其他角色造成1点伤害',
+  },
+
+  {
+    source: '{0}: please choose weiyi options: {1}',
+    target: '{0}：你可以选择令 {1} 失去或回复1点体力',
+  },
+  { source: 'weiyi:loseHp', target: '其失去体力' },
+  { source: 'weiyi:recover', target: '其回复体力' },
+  {
+    source: '{0}: do you want to let {1} lose 1 hp?',
+    target: '{0}：你可以令 {1} 失去1点体力',
+  },
+  {
+    source: '{0}: do you want to let {1} recover 1 hp?',
+    target: '{0}：你可以令 {1} 回复1点体力',
   },
 ];

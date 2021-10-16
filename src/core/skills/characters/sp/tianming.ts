@@ -32,7 +32,7 @@ export class TianMing extends TriggerSkill {
     return canDropCards.length > 0
       ? canDropCards.length <= 2
         ? TranslationPack.translationJsonPatcher(
-            '{0}: do you want to discard {1} to draw 2 cards?',
+            '{0}: do you want to discard {1} card(s) to draw 2 cards?',
             this.Name,
             TranslationPack.patchCardInTranslation(...canDropCards),
           ).extract()

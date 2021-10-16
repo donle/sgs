@@ -42,8 +42,6 @@ export class PianChong extends TriggerSkill {
     const { fromId } = event;
     const drawCardEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DrawCardEvent>;
 
-    console.log(room.getPlayerById(event.fromId).HookedSkills.map(skill => skill.Name));
-
     drawCardEvent.drawAmount = 0;
     const redCards = room.findCardsByMatcherFrom(new CardMatcher({ suit: [CardSuit.Diamond, CardSuit.Heart] }));
     const blackCards = room.findCardsByMatcherFrom(new CardMatcher({ suit: [CardSuit.Club, CardSuit.Spade] }));
@@ -161,6 +159,7 @@ export class PianChongShadow extends TriggerSkill implements OnDefineReleaseTimi
             info.movingCards.find(
               card =>
                 (card.fromArea === CardMoveArea.HandArea || card.fromArea === CardMoveArea.EquipArea) &&
+                !Sanguosha.isVirtualCardId(card.card) &&
                 colors.includes(Sanguosha.getCardById(card.card).Color),
             ),
         ) !== undefined
@@ -199,7 +198,10 @@ export class PianChongShadow extends TriggerSkill implements OnDefineReleaseTimi
         }
 
         for (const cardInfo of info.movingCards) {
-          if (!(cardInfo.fromArea === CardMoveArea.HandArea || cardInfo.fromArea === CardMoveArea.EquipArea)) {
+          if (
+            !(cardInfo.fromArea === CardMoveArea.HandArea || cardInfo.fromArea === CardMoveArea.EquipArea) ||
+            Sanguosha.isVirtualCardId(cardInfo.card)
+          ) {
             continue;
           }
 

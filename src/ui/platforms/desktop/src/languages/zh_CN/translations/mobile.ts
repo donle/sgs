@@ -7,9 +7,27 @@ export const characterDictionary: Word[] = [
   { source: 'daigong', target: '怠攻' },
   { source: 'zhaoxin', target: '昭心' },
 
+  { source: 'jiakui', target: '贾逵' },
+  { source: 'zhongzuo', target: '忠佐' },
+  { source: 'wanlan', target: '挽澜' },
+
+  { source: 'simashi', target: '司马师' },
+  { source: 'baiyi', target: '败移' },
+  { source: 'jinglve', target: '景略' },
+  { source: 'sishi: {0} {1}', target: '死士[{0}{1}]' },
+  { source: 'shanli', target: '擅立' },
+
   { source: 'lifeng', target: '李丰' },
   { source: 'tunchu', target: '屯储' },
   { source: 'shuliang', target: '输粮' },
+
+  { source: 'dengzhi', target: '邓芝' },
+  { source: 'jimeng', target: '急盟' },
+  { source: 'shuaiyan', target: '率言' },
+
+  { source: 'mobile_furong', target: '傅肜' },
+  { source: 'xuewei', target: '血卫' },
+  { source: 'liechi', target: '烈斥' },
 
   { source: 'lingcao', target: '凌操' },
   { source: 'dujin', target: '独进' },
@@ -18,9 +36,18 @@ export const characterDictionary: Word[] = [
   { source: 'yingjian', target: '影箭' },
   { source: 'shixin', target: '释衅' },
 
+  { source: 'yangbiao', target: '杨彪' },
+  { source: 'zhaohan', target: '昭汉' },
+  { source: 'rangjie', target: '让节' },
+  { source: 'mobile_yizheng', target: '义争' },
+
   { source: 'xing_ganning', target: '星甘宁' },
   { source: 'jinfan', target: '锦帆' },
   { source: 'sheque', target: '射却' },
+
+  { source: 'gongsunkang', target: '公孙康' },
+  { source: 'juliao', target: '据辽' },
+  { source: 'taomie', target: '讨灭' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -36,6 +63,32 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'zhongzuo_description',
+    target:
+      '一名角色的结束阶段开始时，若你于此回合内造成或受到过伤害，你可以令一名角色摸两张牌，然后若其已受伤，你摸一张牌。',
+  },
+  {
+    source: 'wanlan_description',
+    target:
+      '<b>限定技</b>，当一名角色进入濒死状态时，若其体力不大于0，你可以发动此技能，弃置所有手牌，并令其将体力回复至1点，然后你于此濒死结算结束后对当前回合角色造成1点伤害。',
+  },
+
+  {
+    source: 'baiyi_description',
+    target: '<b>限定技</b>，出牌阶段，若你已受伤，你可以令两名其他角色交换座次。',
+  },
+  {
+    source: 'jinglve_description',
+    target:
+      '出牌阶段限一次，若场上没有“死士”牌，你可以观看一名其他角色的手牌，并选择其中一张标记为“死士”牌。若如此做，当其使用“死士”牌时，你取消此牌的所有目标；当“死士”牌不因使用而进入弃牌堆后，或其回合结束时“死士”牌仍在其区域内，你获得之。',
+  },
+  {
+    source: 'shanli_description',
+    target:
+      '<b>觉醒技</b>，准备阶段开始时，若你已发动过“败移”，且对至少两名角色发动过“景略”，你减1点体力上限，令一名角色获得由你选择的一项主公技（三选一）。',
+  },
+
+  {
     source: 'tunchu_description',
     target:
       '摸牌阶段，若你没有“粮”，你可以多摸两张牌，然后你可以将至少一张手牌置于你的武将牌上，称为“粮”；若你有“粮”，你不能使用【杀】。',
@@ -43,6 +96,25 @@ export const skillDescriptions: Word[] = [
   {
     source: 'shuliang_description',
     target: '一名角色的结束阶段开始时，你可以移去一张“粮”，令其摸两张牌。',
+  },
+
+  {
+    source: 'xuewei_description',
+    target:
+      '准备阶段开始时，你可以选择一名其他角色（仅对你可见）。当该角色于此时至你的下个回合开始期间受到第一次伤害时，你防止此伤害，受到同伤害来源的等量伤害（伤害来源死亡则改为无伤害来源），然后你对伤害来源造成等量的同属性伤害。',
+  },
+  {
+    source: 'liechi_description',
+    target: '<b>锁定技</b>，当你进入濒死状态时，若有令你进入濒死状态的角色，其弃置一张手牌。',
+  },
+
+  {
+    source: 'jimeng_description',
+    target: '出牌阶段开始时，你可以获得一名其他角色的一张牌，然后交给其X张牌（X为你的体力值）。',
+  },
+  {
+    source: 'shuaiyan_description',
+    target: '弃牌阶段开始时，若你的手牌数大于1，你可以展示所有手牌，令一名其他角色交给你一张牌。',
   },
 
   {
@@ -60,12 +132,39 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'zhaohan_description',
+    target:
+      '<b>锁定技</b>，准备阶段开始时，若你本局游戏内发动过本技能的次数：不大于3，你加1点体力上限并回复1点体力；大于3且小于7，你减1点体力上限。',
+  },
+  {
+    source: 'rangjie_description',
+    target:
+      '当你受到1点伤害后，你可以选择一项：1.移动场上一张牌；2.随机获得牌堆里一张你指定类别的牌。选择完成后，你摸一张牌。',
+  },
+  {
+    source: 'mobile_yizheng_description',
+    target:
+      '出牌阶段限一次，你可以与体力值不大于你的一名角色拼点。若你：赢，其跳过其下个摸牌阶段；没赢，你减1点体力上限。',
+  },
+
+  {
     source: 'jinfan_description',
-    target: '弃牌阶段开始时，你可以将至少一张花色各不相同，且与你的所有“铃”花色均不相同的手牌置于你的武将牌上，称为“铃”；你的“铃”可以如手牌般使用或打出；当你的一张“铃”移至其他区域后，你随机获得牌堆里一张花色相同的牌。',
+    target:
+      '弃牌阶段开始时，你可以将至少一张花色各不相同，且与你的所有“铃”花色均不相同的手牌置于你的武将牌上，称为“铃”；你的“铃”可以如手牌般使用或打出；当你的一张“铃”移至其他区域后，你随机获得牌堆里一张花色相同的牌。',
   },
   {
     source: 'sheque_description',
     target: '其他角色的准备阶段开始时，若其装备区里有牌，你可以对其使用一张无视防具的【杀】。',
+  },
+
+  {
+    source: 'juliao_description',
+    target: '<b>锁定技</b>，其他角色计算与你的距离+X（X为存活势力数-1）。',
+  },
+  {
+    source: 'taomie_description',
+    target:
+      '当你对其他角色造成伤害后，或其他角色对你造成伤害后，若其没有“讨灭”标记，你可以发动本技能，移去场上所有“讨灭”标记，令其获得一枚“讨灭”标记；你视为在有“讨灭”标记的其他角色的攻击范围内；当你对有“讨灭”标记的角色造成伤害时，你选择一项：1.令此伤害+1；2.获得其区域内的一张牌；3.依次执行前两项，然后于此伤害流程结算结束后移去其“讨灭”标记。',
   },
 ];
 
@@ -93,5 +192,71 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to use a slash to {1} (this slash ignores armors)?',
     target: '{0}；你可以对 {1} 使用一张无视防具的【杀】',
+  },
+
+  {
+    source: '{0}: do you want to choose a target to draw 2 cards? If he is wounded, you draw 1 card',
+    target: '{0}；你可以令一名角色摸两张牌，若其已受伤，你摸一张牌',
+  },
+
+  {
+    source:
+      '{0}: do you want to use this skill, discard all your hand cards, then let {1} recover to 1 hp, and deal 1 damage to current player?',
+    target: '{0}；你可以发动本技能，弃置所有手牌，令 {1} 回复体力至1点，然后对当前回合角色造成1点伤害',
+  },
+
+  {
+    source: 'jimeng {0}: do you want to prey a card from another player?',
+    target: '{0}；你可以获得一名其他角色一张牌，然后交给其等同于你体力值数量的牌',
+  },
+  {
+    source: '{0}: please give {1} {2} card(s)',
+    target: '{0}；请交给 {1} {2} 张牌',
+  },
+
+  {
+    source: '{0}: do you want to display all your hand cards to let another player give you a card?',
+    target: '{0}；你可以展示所有手牌，令一名其他角色交给你一张牌',
+  },
+  {
+    source: '{0}: please give {1} a card',
+    target: '{0}；请交给 {1} 一张牌',
+  },
+
+  {
+    source: '{0}: do you want to choose a Xue Wei target?',
+    target: '{0}；请选择一名其他角色作为“血卫”的目标',
+  },
+
+  {
+    source: '{0}: do you want to use this skill to {1} ?',
+    target: '{0}；你可以对 {1} 发动本技能',
+  },
+  {
+    source: '{0}: please choose taomie options: {1}',
+    target: '{0}；请选择令此对 {1} 造成的伤害+1，或获得其 {1} 区域内的一张牌',
+  },
+  { source: 'taomie:damage', target: '伤害+1' },
+  { source: 'taomie:prey', target: '获得其牌' },
+  { source: 'taomie:both', target: '执行前两项并移去其标记' },
+
+  {
+    source: '{0}: please choose rangjie options',
+    target: '{0}；请选择以下一项',
+  },
+  { source: 'rangjie:move', target: '移动场上一张牌' },
+  { source: 'rangjie:gain', target: '随机获得指定类别的牌' },
+  {
+    source: 'rangjie: please move a card on the game board',
+    target: '让节：请移动场上一张牌',
+  },
+
+  {
+    source: 'shanli: please choose a target to gain a lord skill',
+    target: '擅立：请选择一名角色获得一项由你选择的主公技（三选一）',
+  },
+  {
+    source: '{0}: please choose shanli options: {1}',
+    target: '{0}：请选择以下一项主公技，令 {1} 获得',
   },
 ];

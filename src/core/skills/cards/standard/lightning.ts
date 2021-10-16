@@ -8,10 +8,11 @@ import { Room } from 'core/room/room';
 import { JudgeMatcher, JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, CommonSkill, SelfTargetSkill } from 'core/skills/skill';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @CommonSkill({ name: 'lightning', description: 'lightning_description' })
 @SelfTargetSkill
-export class LightningSkill extends ActiveSkill {
+export class LightningSkill extends ActiveSkill implements ExtralCardSkillProperty {
   public canUse(room: Room, owner: Player, containerCard?: CardId) {
     let canUseTo = true;
     if (containerCard) {
@@ -35,6 +36,23 @@ export class LightningSkill extends ActiveSkill {
   public isAvailableCard(): boolean {
     return false;
   }
+
+  public isCardAvailableTarget(
+    owner: PlayerId,
+    room: Room,
+    target: PlayerId,
+    selectedCards: CardId[],
+    selectedTargets: PlayerId[],
+    containerCard: CardId,
+  ): boolean {
+    return (
+      room.getPlayerById(owner).canUseCardTo(room, containerCard, target) &&
+      room.getPlayerById(target)
+        .getCardIds(PlayerCardsArea.JudgeArea)
+        .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'lightning') === undefined
+    );
+  }
+
   public isAvailableTarget(): boolean {
     return false;
   }

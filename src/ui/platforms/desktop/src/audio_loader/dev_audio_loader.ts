@@ -27,6 +27,9 @@ export class DevAudioLoader implements AudioLoader {
   getChainAudio(): string {
     return `${remoteRoot}/audios/chain.mp3`;
   }
+  async getQuickChatAudio(index: number, gender: CharacterGender): Promise<string> {
+    return `${remoteRoot}/audios/quickChats/${gender === CharacterGender.Female ? 'female' : 'male'}/${index}.mp3`;
+  }
   async getSkillAudio(
     skillName: string,
     gender: CharacterGender,

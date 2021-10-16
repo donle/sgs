@@ -1,9 +1,9 @@
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardId } from 'core/cards/libs/card_props';
+import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, OnDefineReleaseTiming, TriggerSkill } from 'core/skills/skill';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 import { PanShi } from './panshi';
@@ -55,7 +55,8 @@ export class CiXiao extends TriggerSkill implements OnDefineReleaseTiming {
     return (
       content.playerId === owner.Id &&
       content.toStage === PlayerPhaseStages.PrepareStageStart &&
-      room.getOtherPlayers(owner.Id).find(player => !player.getFlag<boolean>(this.Name)) !== undefined
+      room.getOtherPlayers(owner.Id).find(player => !player.getFlag<boolean>(this.Name)) !== undefined &&
+      !(room.AlivePlayers.find(player => player.getFlag<boolean>(this.Name)) && owner.getPlayerCards().length === 0)
     );
   }
 
@@ -67,11 +68,24 @@ export class CiXiao extends TriggerSkill implements OnDefineReleaseTiming {
     return owner !== target && !room.getFlag<boolean>(target, this.Name);
   }
 
-  public getSkillLog(): PatchedTranslationObject {
-    return TranslationPack.translationJsonPatcher(
-      '{0}: do you want to choose another player to be your son?',
-      this.Name,
-    ).extract();
+  public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
+    return cards.length === (room.AlivePlayers.find(player => player.getFlag<boolean>(this.Name)) ? 1 : 0);
+  }
+
+  public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
+    return room.canDropCard(owner, cardId);
+  }
+
+  public getSkillLog(room: Room, owner: Player): PatchedTranslationObject {
+    return room.AlivePlayers.find(player => player.getFlag<boolean>(this.Name))
+      ? TranslationPack.translationJsonPatcher(
+          '{0}: do you want to discard a card and choose another player to be your new son?',
+          this.Name,
+        ).extract()
+      : TranslationPack.translationJsonPatcher(
+          '{0}: do you want to choose another player to be your son?',
+          this.Name,
+        ).extract();
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -79,14 +93,21 @@ export class CiXiao extends TriggerSkill implements OnDefineReleaseTiming {
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
-    const toId = Precondition.exists(event.toIds, 'Unable to get zhi_shanxi target')[0];
+    if (!event.toIds) {
+      return false;
+    }
+
+    if (event.cardIds && event.cardIds.length > 0) {
+      await room.dropCards(CardMoveReason.SelfDrop, event.cardIds, event.fromId, event.fromId, this.Name);
+    }
+
     for (const player of room.getOtherPlayers(event.fromId)) {
       if (player.getFlag<boolean>(this.Name)) {
         this.handleCiXiaoFlag(room, player.Id, true);
       }
     }
 
-    this.handleCiXiaoFlag(room, toId);
+    this.handleCiXiaoFlag(room, event.toIds[0]);
 
     return true;
   }

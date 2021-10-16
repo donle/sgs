@@ -713,7 +713,7 @@ export abstract class BaseAction {
               )
             );
           } else {
-            return matcher.Matcher.name ? matcher.Matcher.name.includes(cardName) : false;
+            return new CardMatcher({ name: [cardName] }).match(matcher);
           }
         });
 

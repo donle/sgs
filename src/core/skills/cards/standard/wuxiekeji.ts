@@ -16,9 +16,13 @@ export class WuXieKeJiSkill extends ResponsiveSkill {
   }
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.CardEffectEvent>) {
-    const { responseToEvent } = event;
+    const { responseToEvent, toCardIds } = event;
 
-    if (!responseToEvent || EventPacker.getIdentifier(responseToEvent) !== GameEventIdentifiers.CardEffectEvent) {
+    if (
+      !responseToEvent ||
+      !toCardIds ||
+      EventPacker.getIdentifier(responseToEvent) !== GameEventIdentifiers.CardEffectEvent
+    ) {
       return false;
     }
 
