@@ -10,10 +10,11 @@ import { JudgeMatcher, JudgeMatcherEnum } from 'core/shares/libs/judge_matchers'
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, AI, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @AI(LeBuSiShuSkillTrigger)
 @CommonSkill({ name: 'lebusishu', description: 'lebusishu_description' })
-export class LeBuSiShuSkill extends ActiveSkill {
+export class LeBuSiShuSkill extends ActiveSkill implements ExtralCardSkillProperty {
   public canUse(room: Room, owner: Player) {
     return true;
   }
@@ -28,7 +29,8 @@ export class LeBuSiShuSkill extends ActiveSkill {
   public isAvailableCard(): boolean {
     return false;
   }
-  public isAvailableTarget(
+
+  public isCardAvailableTarget(
     owner: PlayerId,
     room: Room,
     target: PlayerId,
@@ -44,6 +46,17 @@ export class LeBuSiShuSkill extends ActiveSkill {
         .getCardIds(PlayerCardsArea.JudgeArea)
         .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'lebusishu') === undefined
     );
+  }
+
+  public isAvailableTarget(
+    owner: PlayerId,
+    room: Room,
+    target: PlayerId,
+    selectedCards: CardId[],
+    selectedTargets: PlayerId[],
+    containerCard: CardId,
+  ): boolean {
+    return this.isCardAvailableTarget(owner, room, target, selectedCards, selectedTargets, containerCard);
   }
 
   public async onUse() {

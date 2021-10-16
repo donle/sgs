@@ -12,6 +12,10 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'qicai', description: 'qicai_description' })
 export class QiCai extends RulesBreakerSkill {
+  public audioIndex(): number { 
+    return 0;
+  }
+
   public breakCardUsableDistance(cardId: CardId | CardMatcher) {
     let match = false;
     if (cardId instanceof CardMatcher) {

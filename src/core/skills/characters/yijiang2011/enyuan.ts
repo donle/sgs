@@ -136,7 +136,7 @@ export class EnYuan extends TriggerSkill {
             fromId: damageFromId,
             toId: fromId,
             toArea: CardMoveArea.HandArea,
-            proposer: fromId,
+            proposer: damageFromId,
           });
 
           if (suit !== CardSuit.Heart) {

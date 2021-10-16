@@ -35,6 +35,10 @@ export class ProdAudioLoader implements AudioLoader {
     return chainAudio;
   }
 
+  async getQuickChatAudio(index: number, gender: CharacterGender): Promise<string> {
+    return (await import(`./audios/quickChats/${gender === CharacterGender.Female ? 'female' : 'male'}/${index}.mp3`)).default;
+  }
+
   async getCardAudio(cardName: string, gender: CharacterGender, characterName?: string): Promise<string> {
     const genderString = gender === CharacterGender.Female ? 'female' : 'male';
     return (await import(`./audios/cards/${genderString}/${cardName}.ogg`)).default;

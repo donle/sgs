@@ -18,6 +18,7 @@ import { Sanguosha } from 'core/game/engine';
 import {
   CardEffectStage,
   CardMoveStage,
+  CardUseStage,
   ChainLockStage,
   DamageEffectStage,
   DrawCardStage,
@@ -90,6 +91,10 @@ export class StandardGameProcessor extends GameProcessor {
       [players[0], players[lordIndex]] = [players[lordIndex], players[0]];
       [players[0].Position, players[lordIndex].Position] = [players[lordIndex].Position, players[0].Position];
     }
+  }
+
+  public fixCurrentPosition(playerPosition: number) {
+    this.playerPositionIndex = playerPosition;
   }
 
   protected async askForChoosingNationalities(playerId: PlayerId) {
@@ -418,6 +423,12 @@ export class StandardGameProcessor extends GameProcessor {
         await this.onHandleIncomingEvent(
           GameEventIdentifiers.GameBeginEvent,
           EventPacker.createIdentifierEvent(GameEventIdentifiers.GameBeginEvent, {}),
+        );
+
+        const circleStartEvent: ServerEventFinder<GameEventIdentifiers.CircleStartEvent> = {};
+        await this.onHandleIncomingEvent(
+          GameEventIdentifiers.CircleStartEvent,
+          EventPacker.createIdentifierEvent(GameEventIdentifiers.CircleStartEvent, circleStartEvent),
         );
       } else if (!this.inExtraRound) {
         if (this.playerPositionIndex < lastPlayerPosition) {
@@ -813,7 +824,7 @@ export class StandardGameProcessor extends GameProcessor {
 
       if (cardUseEvent) {
         await this.room.useCard(cardUseEvent, true);
-        if (!EventPacker.isTerminated(cardUseEvent)) {
+        if (!EventPacker.terminate(cardUseEvent) || event.isCancelledOut) {
           await this.room.trigger(event, CardEffectStage.CardEffectCancelledOut);
 
           event.isCancelledOut && EventPacker.terminate(event);
@@ -861,7 +872,7 @@ export class StandardGameProcessor extends GameProcessor {
           };
           await this.room.useCard(jinkUseEvent, true);
 
-          if (!EventPacker.isTerminated(jinkUseEvent)) {
+          if (!EventPacker.terminate(jinkUseEvent) || event.isCancelledOut) {
             await this.room.trigger(event, CardEffectStage.CardEffectCancelledOut);
             event.isCancelledOut && EventPacker.terminate(event);
           }
@@ -1523,6 +1534,9 @@ export class StandardGameProcessor extends GameProcessor {
 
     if (!event.withoutInvokes) {
       await this.iterateEachStage(identifier, event, onActualExecuted);
+
+      await this.room.trigger(event, CardUseStage.CardUseFinishedEffect);
+
       if (this.room.isCardOnProcessing(event.cardId)) {
         await this.room.moveCards({
           movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],

@@ -19,14 +19,42 @@ export const characterDictionary: Word[] = [
   { source: 'sp_pangde', target: '魏庞德' },
   { source: 'juesi', target: '决死' },
 
+  { source: 'sp_caoren', target: 'SP曹仁' },
+  { source: 'weikui', target: '伪溃' },
+  { source: 'lizhan', target: '励战' },
+
+  { source: 'caohong', target: '曹洪' },
+  { source: 'yuanhu', target: '援护' },
+
+  { source: 'yuejin', target: '乐进' },
+  { source: 'xiaoguo', target: '骁果' },
+
+  { source: 'caoang', target: '曹昂' },
+  { source: 'kangkai', target: '慷忾' },
+
+  { source: 'wenpin', target: '文聘' },
+  { source: 'zhenwei', target: '镇卫' },
+
   { source: 'zhugedan', target: '诸葛诞' },
   { source: 'gongao', target: '功獒' },
   { source: 'juyi', target: '举义' },
   { source: 'weizhong', target: '威重' },
 
+  { source: 'litong', target: '李通' },
+  { source: 'tuifeng', target: '推锋' },
+  { source: 'tuifeng: {0}', target: '推锋[{0}]' },
+
+  { source: 'simalang', target: '司马朗' },
+  { source: 'junbing', target: '郡兵' },
+  { source: 'quji', target: '去疾' },
+
   { source: 'xizhicai', target: '戏志才' },
   { source: 'xianfu', target: '先辅' },
   { source: 'chouce', target: '筹策' },
+
+  { source: 'sp_luzhi', target: '鲁芝' },
+  { source: 'qingzhong', target: '清忠' },
+  { source: 'weijing', target: '卫境' },
 
   { source: 'sp_sunshangxiang', target: '蜀孙尚香' },
   { source: 'liangzhu', target: '良助' },
@@ -66,11 +94,19 @@ export const characterDictionary: Word[] = [
   { source: 'shamoke', target: '沙摩柯' },
   { source: 'jili', target: '蒺藜' },
 
+  { source: 'xujing', target: '许靖' },
+  { source: 'yuxu', target: '誉虚' },
+  { source: 'shijian', target: '实荐' },
+
   { source: 'sunhao', target: '孙皓' },
   { source: 'canshi', target: '残蚀' },
   { source: '#canshi', target: '残蚀（弃牌）' },
   { source: 'chouhai', target: '仇海' },
   { source: 'guiming', target: '归命' },
+
+  { source: 'zumao', target: '祖茂' },
+  { source: 'yinbing', target: '引兵' },
+  { source: 'juedi', target: '绝地' },
 
   { source: 'sp_zhaoyun', target: '群赵云' },
   { source: 'std_longdan', target: '龙胆' },
@@ -82,6 +118,10 @@ export const characterDictionary: Word[] = [
   { source: 'liuxie', target: '刘协' },
   { source: 'tianming', target: '天命' },
   { source: 'mizhao', target: '密诏' },
+
+  { source: 'sp_machao', target: '群马超' },
+  { source: 'zhuiji', target: '追击' },
+  { source: 'shichou', target: '誓仇' },
 
   { source: 'sp_huangyueying', target: '群黄月英' },
   { source: 'jiqiao', target: '机巧' },
@@ -119,6 +159,12 @@ export const characterDictionary: Word[] = [
 
   { source: 'sp_diaochan', target: 'SP貂蝉' },
   { source: 'lihun', target: '离魂' },
+
+  { source: 'beimihu', target: '卑弥呼' },
+  { source: 'zongkui', target: '纵傀' },
+  { source: 'guju', target: '骨疽' },
+  { source: 'baijia', target: '拜假' },
+  { source: 'sp_canshi', target: '蚕食' },
 
   { source: 'huangzu', target: '黄祖' },
   { source: 'wangong', target: '挽弓' },
@@ -167,17 +213,68 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'weikui_description',
+    target:
+      '出牌阶段限一次，你可以失去1点体力并选择一名有手牌的其他角色，若其手牌中：有【闪】，你本回合至其的距离视为1，且你视为对其使用一张【杀】；没有【闪】，你观看其手牌并弃置其中一张牌。',
+  },
+  {
+    source: 'lizhan_description',
+    target: '结束阶段开始时，你可以令至少一名已受伤的角色各摸一张牌。',
+  },
+
+  {
+    source: 'yuanhu_description',
+    target:
+      '结束阶段开始时，你可以将一张装备牌置入一名角色的装备区内（不替换原装备）。若此牌为：装备牌，你弃置其距离为1的一名角色区域里的一张牌；防具牌，其摸一张牌；坐骑牌，其回复1点体力。',
+  },
+
+  {
+    source: 'xiaoguo_description',
+    target:
+      '其他角色的结束阶段开始时，你可以弃置一张基本牌，令其选择一项：1.弃置一张装备牌，然后你摸一张牌；2.受到你对其造成的1点伤害。',
+  },
+
+  {
+    source: 'kangkai_description',
+    target:
+      '当你距离1以内的角色成为【杀】的目标后，你可以摸一张牌，若其不为你，你展示并交给其一张牌，然后若此牌于其手牌中为装备牌，其可使用之。',
+  },
+
+  {
+    source: 'zhenwei_description',
+    target:
+      '当其他角色使用【杀】或黑色锦囊牌指定唯一目标时，若目标角色的体力值小于你，你可以弃置一张牌并选择一项：1.摸一张牌，将目标转移给你；2.将此牌置于使用者的武将牌旁，取消此牌的所有目标，其于本回合结束时收回这些牌。',
+  },
+
+  {
     source: 'gongao_description',
     target: '<b>锁定技</b>，当其他角色死亡后，你加1点体力上限并回复1点体力。',
   },
   {
     source: 'juyi_description',
-    target: '<b>觉醒技</b>，准备阶段开始时，若你的体力上限大于存活角色数，你摸等同于你体力上限数量的牌，然后获得技能“崩坏”和“威重”。',
+    target:
+      '<b>觉醒技</b>，准备阶段开始时，若你的体力上限大于存活角色数，你摸等同于你体力上限数量的牌，然后获得技能“崩坏”和“威重”。',
   },
   {
     source: 'weizhong_description',
+    target: '<b>锁定技</b>，当你的体力上限变化后，你摸一张牌（若你的手牌数为全场最少，改为摸两张牌）。',
+  },
+
+  {
+    source: 'tuifeng_description',
     target:
-      '<b>锁定技</b>，当你的体力上限变化后，你摸一张牌（若你的手牌数为全场最少，改为摸两张牌）。',
+      '当你受到1点伤害后，你可以将一张牌置于你的武将牌上，称为“锋”；准备阶段开始时，若你有“锋”，你移去你的所有“锋”，并摸2X张牌，且你于本回合使用【杀】的次数上限+X（X为你以此法移去的“锋”数）。',
+  },
+
+  {
+    source: 'junbing_description',
+    target:
+      '一名角色的结束阶段开始时，若其手牌数不大于1，其可以摸一张牌，若其不为你，其将所有手牌交给你，然后你交给其等量的牌。',
+  },
+  {
+    source: 'quji_description',
+    target:
+      '出牌阶段限一次，若你已受伤，你可以弃置X张牌，并令一至X名已受伤的角色各回复1点体力（X为你已损失的体力值）。若你以此法弃置了黑色牌，你失去1点体力。',
   },
 
   {
@@ -189,6 +286,15 @@ export const skillDescriptions: Word[] = [
     source: 'chouce_description',
     target:
       '当你受到伤害后，你可以判定。若为：黑色，你弃置一名角色区域里的一张牌；红色，你令一名角色摸一张牌（若其为你的“先辅”角色则改为其摸两张牌）。',
+  },
+
+  {
+    source: 'qingzhong_description',
+    target: '出牌阶段开始时，你可以摸两张牌。若如此做，此阶段结束时，你与场上手牌数最少的一名角色交换手牌。',
+  },
+  {
+    source: 'weijing_description',
+    target: '每轮限一次，当你需要使用【杀】或【闪】时，你可以视为使用之。',
   },
 
   {
@@ -206,11 +312,10 @@ export const skillDescriptions: Word[] = [
     target:
       '当你于出牌阶段首次使用【杀】或【决斗】指定唯一目标后，你可以选择一项：1.摸X张牌；2.令此牌伤害+X（X为其手牌中的方片牌数）。',
   },
-  
+
   {
     source: 'qianya_description',
-    target:
-      '当你成为锦囊牌的目标后，你可以将至少一张手牌交给一名其他角色。',
+    target: '当你成为锦囊牌的目标后，你可以将至少一张手牌交给一名其他角色。',
   },
   {
     source: 'shuimeng_description',
@@ -220,8 +325,7 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'ziyuan_description',
-    target:
-      '出牌阶段限一次，你可以将至少一张点数之和为13的手牌交给一名其他角色，然后其回复1点体力。',
+    target: '出牌阶段限一次，你可以将至少一张点数之和为13的手牌交给一名其他角色，然后其回复1点体力。',
   },
   {
     source: 'jugu_description',
@@ -266,6 +370,27 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'yuxu_description',
+    target:
+      '当你于出牌阶段内使用牌结算结束后，若你于此阶段内发动过本技能的次数为：偶数，你可以摸一张牌；奇数，你弃置一张牌。',
+  },
+  {
+    source: 'shijian_description',
+    target: '当其他角色于其出牌阶段内使用第二张牌结算结束后，你可以弃置一张牌，令其于本回合内拥有“誉虚”。',
+  },
+
+  {
+    source: 'yinbing_description',
+    target:
+      '结束阶段开始时，你可以将至少一张非基本牌置于你的武将牌上，称为“引兵”；当你受到【杀】或【决斗】造成的伤害后，你移去一张“引兵”牌。',
+  },
+  {
+    source: 'juedi_description',
+    target:
+      '<b>锁定技</b>，准备阶段开始时，若你有“引兵”牌，你选择一项：1.移去你的所有“引兵”牌，然后将手牌摸至体力上限；2.将你的所有“引兵”牌交给体力值不大于你的一名其他角色，其回复1点体力且摸等量的牌。',
+  },
+
+  {
     source: 'canshi_description',
     target:
       '摸牌阶段，你可以多摸X张牌（X为已受伤的角色数）。若如此做，当你于本回合内使用【杀】或普通锦囊牌时，你弃置一张牌。',
@@ -295,11 +420,22 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'tianming_description',
-    target: '当你成为【杀】的目标后，若你：有可弃置的牌，你可以弃置X张牌（X为2与这些牌数的较小值），然后摸两张牌；没有可弃置的牌，你可以摸两张牌。若如此做，若场上有手牌数唯一最多且不为你的角色，其可执行相同操作。',
+    target:
+      '当你成为【杀】的目标后，若你：有可弃置的牌，你可以弃置X张牌（X为2与这些牌数的较小值），然后摸两张牌；没有可弃置的牌，你可以摸两张牌。若如此做，若场上有手牌数唯一最多且不为你的角色，其可执行相同操作。',
   },
   {
     source: 'mizhao_description',
-    target: '出牌阶段限一次，你可以将所有手牌交给一名其他角色，然后令其与另一名其他角色拼点，赢的角色视为对没赢的角色使用一张【杀】。',
+    target:
+      '出牌阶段限一次，你可以将所有手牌交给一名其他角色，然后令其与另一名其他角色拼点，赢的角色视为对没赢的角色使用一张【杀】。',
+  },
+
+  {
+    source: 'zhuiji_description',
+    target: '<b>锁定技</b>，你至体力值不大于你的其他角色的距离视为1。',
+  },
+  {
+    source: 'shichou_description',
+    target: '当你使用【杀】声明指定目标后，你可以为此【杀】额外选择一至X名目标（X为你已损失的体力值，且至少为1）。',
   },
 
   {
@@ -308,16 +444,19 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'linglong_description',
-    target: '<b>锁定技</b>，若你的装备区里没有：装备牌，你使用【杀】的次数上限+1；防具牌，你视为装备【八卦阵】；坐骑牌，你的手牌上限+1；宝物牌，你视为拥有技能“奇才”。',
+    target:
+      '<b>锁定技</b>，若你的装备区里没有：装备牌，你使用【杀】的次数上限+1；防具牌，你视为装备【八卦阵】；坐骑牌，你的手牌上限+1；宝物牌，你视为拥有技能“奇才”。',
   },
 
   {
     source: 'zhoufu_description',
-    target: '出牌阶段限一次，你可以将一张手牌置于一名没有“咒”的其他角色的武将牌旁。当其判定时，将其“咒”作为判定牌；一名角色的回合结束时，所有本回合失去过“咒”的角色各失去1点体力。',
+    target:
+      '出牌阶段限一次，你可以将一张手牌置于一名没有“咒”的其他角色的武将牌旁。当其判定时，将其“咒”作为判定牌；一名角色的回合结束时，所有本回合失去过“咒”的角色各失去1点体力。',
   },
   {
     source: 'yingbing_description',
-    target: '<b>锁定技</b>，当有“咒”的角色使用与其“咒”颜色相同的牌时，你摸一张牌。若此为你第二次因此“咒”摸牌，你获得其“咒”。',
+    target:
+      '<b>锁定技</b>，当有“咒”的角色使用与其“咒”颜色相同的牌时，你摸一张牌。若此为你第二次因此“咒”摸牌，你获得其“咒”。',
   },
 
   {
@@ -333,11 +472,13 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'jijun_description',
-    target: '当你使用武器牌或非装备牌指定第一个目标后，若目标中有你，你可以判定。当此判定牌进入弃牌堆后，你可以将之置于你的武将牌上，称为“方”。',
+    target:
+      '当你使用武器牌或非装备牌指定第一个目标后，若目标中有你，你可以判定。当此判定牌进入弃牌堆后，你可以将之置于你的武将牌上，称为“方”。',
   },
   {
     source: 'fangtong_description',
-    target: '结束阶段开始时，若你有“方”，你可以弃置一张牌，然后移去至少一张“方”。若你以此法弃置的牌与移去的“方”点数之和为36，你对一名其他角色造成3点雷电伤害。',
+    target:
+      '结束阶段开始时，若你有“方”，你可以弃置一张牌，然后移去至少一张“方”。若你以此法弃置的牌与移去的“方”点数之和为36，你对一名其他角色造成3点雷电伤害。',
   },
 
   {
@@ -386,6 +527,26 @@ export const skillDescriptions: Word[] = [
     source: 'lihun_description',
     target:
       '出牌阶段限一次，你可以弃置一张牌并选择一名男性角色，然后你翻面并获得其所有手牌。若如此做，此阶段结束时，你将X张牌交给该角色（X为其体力值）。',
+  },
+
+  {
+    source: 'zongkui_description',
+    target:
+      '回合开始时，你可以令没有“傀”的一名其他角色获得一枚“傀”标记；每轮开始时，你令除你外体力值最低且没有“傀”的一名其他角色获得一枚“傀”。',
+  },
+  {
+    source: 'guju_description',
+    target: '<b>锁定技</b>，当一名有“傀”标记的角色受到伤害后，你摸一张牌。',
+  },
+  {
+    source: 'baijia_description',
+    target:
+      '<b>觉醒技</b>，准备阶段开始时，若你本局游戏因“骨疽”而摸的牌数不少于7张，你加1点体力上限并回复1点体力，失去技能“骨疽”，获得技能“蚕食”。',
+  },
+  {
+    source: 'sp_canshi_description',
+    target:
+      '当你成为基本牌或普通锦囊牌的唯一目标时，若使用者有“傀”，你可以取消之并移去其“傀”标记；当你使用基本牌或普通锦囊牌声明指定目标后，你可以为此牌增加至少一名有“傀”的角色为目标（无距离限制），并移去这些角色的“傀”标记。',
   },
 
   {
@@ -545,7 +706,7 @@ export const promptDescriptions: Word[] = [
   },
 
   {
-    source: '{0}: do you want to discard {1} to draw 2 cards?',
+    source: '{0}: do you want to discard {1} card(s) to draw 2 cards?',
     target: '{0}：你可以弃置 {1} ，然后摸两张牌',
   },
   {
@@ -573,7 +734,8 @@ export const promptDescriptions: Word[] = [
   },
 
   {
-    source: '{0}: do you want to discard at least 1 equip card, then display the double cards and gain all unequip cards from these cards?',
+    source:
+      '{0}: do you want to discard at least 1 equip card, then display the double cards and gain all unequip cards from these cards?',
     target: '{0}：你可以弃置至少一张装备牌，然后亮出牌堆顶两倍数量的牌，获得其中的非装备牌',
   },
 
@@ -603,5 +765,105 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: please choose a target to draw a card',
     target: '{0}：请选择一名角色，令其摸一张牌',
+  },
+
+  {
+    source: '{0}: do you want to put at least 1 un-basic cards on your general card as ‘Yin Bing’?',
+    target: '{0}：你可以将至少一张非基本牌置为“引兵”',
+  },
+
+  {
+    source: 'juedi: please choose a target to give all your ‘Yin Bing’ to him, or you remove all your ‘Yin Bing’',
+    target: '绝地：请选择体力值不大于你的一名其他角色，交给其你的所有“引兵”牌，否则移去这些牌，你将手牌摸至体力上限',
+  },
+
+  {
+    source: 'qingzhong {0}: do you want to draw 2 cards?',
+    target: '{0}：你可以摸两张牌，此阶段结束时，你与手牌数最少的一名角色交换手牌',
+  },
+  {
+    source: 'qingzhong: please choose a target to exchange hand cards',
+    target: '清忠：请选择手牌数最少的一名其他角色，与其交换手牌',
+  },
+  {
+    source: 'qingzhong: do you want to exchange hand cards?',
+    target: '清忠：你可以选择手牌数最少的一名其他角色，与其交换手牌',
+  },
+
+  {
+    source: 'do you want to discard a basic card to use {0} to {1} ?',
+    target: '你可以弃置一张基本牌，对 {1} 发动 【{0}】',
+  },
+  {
+    source: '{0}: please discard a equip card, or you will take 1 damage from {1} ?',
+    target: '{0}：请弃置一张装备牌，否则你将受到 {1} 对你造成的1点伤害',
+  },
+
+  {
+    source: '{0}: do you want to put a card on your general card as ‘Feng’?',
+    target: '{0}：你可以将一张牌置为“锋”',
+  },
+
+  {
+    source: '{0}: do you want to put a equip card into a player’s equip area?',
+    target: '{0}：你可以将一张装备牌置入一名角色的装备区内（不替换原装备）',
+  },
+  {
+    source: 'yuanhu: please choose a target to discard a card from his area',
+    target: '援护：请选择一名可选角色，弃置其区域内的一张牌',
+  },
+
+  {
+    source: '{0}: do you want to discard a card to let {1} obtain ‘Yu Xu’?',
+    target: '{0}：你可以弃置一张牌，令 {1} 于本回合内拥有“誉虚”',
+  },
+
+  {
+    source: '{0}: do you want to choose a target to gain 1 ‘Kui’ token?',
+    target: '{0}：你可以令一名其他角色获得一枚“傀”标记',
+  },
+  {
+    source: 'zongkui: please choose a target to gain 1 ‘Kui’ token',
+    target: '纵傀：请选择除你外体力值最低的一名其他角色获得一枚“傀”标记',
+  },
+
+  {
+    source: '{0}: please select at least Kuis to append to {1} targets',
+    target: '{0}：你可以选择至少一名有“傀”标记的角色，作为 {1} 的额外目标',
+  },
+  {
+    source: '{0}: please select a Kui to append to {1} targets',
+    target: '{0}：你可以为 {1} 增加一个额外的目标（请选择主副目标）',
+  },
+  {
+    source: '{0}: do you want to cancel {1} ?',
+    target: '{0}：你可以取消 {1} 对你的目标',
+  },
+
+  {
+    source: '{0}: do you want to draw 1 card, and then give {1} a card?',
+    target: '{0}：你可以摸一张牌，然后将一张牌交给 {1}',
+  },
+  {
+    source: '{0}: please choose a card to display and give it to {1} ? If this card is eqiup card, {1} can use it',
+    target: '{0}：请选择一张牌展示并交给 {1} ，若此牌在 {1} 的手牌中为装备牌，其可使用之',
+  },
+  {
+    source: '{0} displays card {1}',
+    target: '{0} 展示了 {1}',
+  },
+  {
+    source: '{0}: do you want to use {1}',
+    target: '{0}：你是否使用 【{1}】',
+  },
+
+  {
+    source: '{0}: do you want to choose targets to draw a card each?',
+    target: '{0}：你可以令至少一名已受伤的角色各摸一张牌',
+  },
+
+  {
+    source: '{0}: do you want to draw a card, and then give all your hand cards to {1} ?',
+    target: '{0}：你可以摸一张牌，然后将所有手牌交给 {1} ，其交给你等量的牌',
   },
 ];

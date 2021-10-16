@@ -87,7 +87,6 @@ export class XianFuChained extends TriggerSkill {
     const identifier = EventPacker.getIdentifier(unknownEvent);
 
     if (!room.getFlag<boolean>(unknownEvent.toId, XianFu.XianFuPlayer)) {
-      room.removeFlag(unknownEvent.toId, XianFu.XianFuPlayer);
       room.setFlag<boolean>(unknownEvent.toId, XianFu.XianFuPlayer, true, this.GeneralName);
     }
 

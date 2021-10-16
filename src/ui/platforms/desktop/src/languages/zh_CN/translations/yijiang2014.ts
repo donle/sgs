@@ -38,7 +38,7 @@ export const characterDictionary: Word[] = [
   { source: 'fenli', target: '奋励' },
   { source: 'pingkou', target: '平寇' },
 
-  { source: 'guyong', target: '顾庸' },
+  { source: 'guyong', target: '顾雍' },
   { source: 'shenxing', target: '慎行' },
   { source: 'bingyi', target: '秉壹' },
 
@@ -116,10 +116,10 @@ export const skillDescriptions: Word[] = [
     target: '回合结束时，你可以对一至X名其他角色各造成1点伤害（X为你本回合内跳过的阶段数）。',
   },
 
-  { source: 'shenxing_description', target: '出牌阶段，你可以弃置两张牌，然后摸一张牌。' },
+  { source: 'shenxing_description', target: '出牌阶段，若X：为0，你可以摸一张牌；大于0，你可以弃置X张牌，然后摸一张牌（X为你此阶段内发动过本技能的次数，且至多为2）。' },
   {
     source: 'bingyi_description',
-    target: '结束阶段开始时，你可以展示所有手牌，若颜色均相同，你令一至X名角色各摸一张牌（X为你的手牌数）。',
+    target: '结束阶段开始时，你可以展示所有手牌，若颜色均相同，你令一至X名角色各摸一张牌（X为你的手牌数）。若点数也均相同，你摸一张牌。',
   },
   {
     source: 'jianying_description',

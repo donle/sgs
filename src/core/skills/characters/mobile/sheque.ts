@@ -28,7 +28,7 @@ export class SheQue extends TriggerSkill {
   ): boolean {
     return (
       owner.Id !== content.playerId &&
-      PlayerPhaseStages.FinishStageStart === content.toStage &&
+      PlayerPhaseStages.PrepareStageStart === content.toStage &&
       room.getPlayerById(content.playerId).getCardIds(PlayerCardsArea.EquipArea).length > 0
     );
   }

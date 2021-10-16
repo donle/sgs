@@ -10,10 +10,11 @@ import { JudgeMatcher, JudgeMatcherEnum } from 'core/shares/libs/judge_matchers'
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ActiveSkill, AI, CommonSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { ExtralCardSkillProperty } from '../interface/extral_property';
 
 @AI(BingLiangCunDuanSkillTrigger)
 @CommonSkill({ name: 'bingliangcunduan', description: 'bingliangcunduan_description' })
-export class BingLiangCunDuanSkill extends ActiveSkill {
+export class BingLiangCunDuanSkill extends ActiveSkill implements ExtralCardSkillProperty {
   public canUse(room: Room, owner: Player) {
     return true;
   }
@@ -28,7 +29,8 @@ export class BingLiangCunDuanSkill extends ActiveSkill {
   public isAvailableCard(): boolean {
     return false;
   }
-  public isAvailableTarget(
+
+  public isCardAvailableTarget(
     owner: PlayerId,
     room: Room,
     target: PlayerId,
@@ -44,8 +46,21 @@ export class BingLiangCunDuanSkill extends ActiveSkill {
       from.canUseCardTo(room, containerCard, target) &&
       to
         .getCardIds(PlayerCardsArea.JudgeArea)
-        .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'bingliangcunduan') === undefined &&
-      room.cardUseDistanceBetween(room, containerCard, from, to) <=
+        .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'bingliangcunduan') === undefined
+    );
+  }
+
+  public isAvailableTarget(
+    owner: PlayerId,
+    room: Room,
+    target: PlayerId,
+    selectedCards: CardId[],
+    selectedTargets: PlayerId[],
+    containerCard: CardId,
+  ): boolean {
+    return (
+      this.isCardAvailableTarget(owner, room, target, selectedCards, selectedTargets, containerCard) &&
+      room.cardUseDistanceBetween(room, containerCard, room.getPlayerById(owner), room.getPlayerById(target)) <=
         Sanguosha.getCardById(containerCard).EffectUseDistance
     );
   }

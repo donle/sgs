@@ -143,6 +143,7 @@ export interface ServerEvent extends EventUtilities {
     toIds?: PlayerId[];
     triggeredOnEvent?: ServerEventFinder<GameEventIdentifiers>;
     mute?: boolean;
+    audioIndex?: number;
   };
   [GameEventIdentifiers.SkillEffectEvent]: {
     fromId: PlayerId;
@@ -451,6 +452,7 @@ export interface ServerEvent extends EventUtilities {
       gender?: CharacterGender;
       handCards?: CardId[];
       equips?: CardId[];
+      playerPosition?: number;
     }[];
   };
   [GameEventIdentifiers.SetOutsideCharactersEvent]: {

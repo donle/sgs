@@ -36,6 +36,7 @@ export const characterDictionary: Word[] = [
   { source: 'yanzhu', target: '宴诛' },
   { source: 'yanzhu points: {0}', target: '宴诛[{0}]' },
   { source: 'yanzhu_ex', target: '宴诛' },
+  { source: '#s_yanzhu_debuff', target: '宴诛（额外受伤）' },
   { source: 'xingxue', target: '兴学' },
   { source: 'xingxue_ex', target: '兴学' },
   { source: 'zhaofu', target: '诏缚' },
