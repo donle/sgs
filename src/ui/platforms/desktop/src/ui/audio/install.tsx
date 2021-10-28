@@ -53,7 +53,14 @@ class AudioPlayerService implements AudioService {
     }
     try {
       if (skinName) {
-        const audioUrl = await this.loader.getCharacterSkinAudio(characterName!, skinName, skillName, audioIndex, skinData, gender);
+        const audioUrl = await this.loader.getCharacterSkinAudio(
+          characterName!,
+          skinName,
+          skillName,
+          audioIndex,
+          skinData,
+          gender,
+        );
         await this.play(audioUrl);
       } else {
         const audioUrl = await this.loader.getSkillAudio(skillName, gender, characterName, audioIndex);
@@ -133,13 +140,14 @@ class AudioPlayerService implements AudioService {
     audio.setAttribute('type', type);
 
     const volumeString: string = this.electronLoader.getData(type === 'bgm' ? 'mainVolume' : 'gameVolume');
-    audio.volume = audio.volume = volumeString ? this.getFixedVolume(volumeString) : 0.5;
+    audio.volume = 0;
 
     audio.onended = () => {
       delete this.audioManager[url];
     };
+    audio.autoplay = true;
 
-    await audio.play();
+    audio.volume = audio.volume = volumeString ? this.getFixedVolume(volumeString) : 0.5;
   }
 
   public stop() {
