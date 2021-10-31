@@ -301,7 +301,9 @@
 }
 
 .incomingMessage {
-    width: 100%;
+    min-width: 0;
+    width: 110%;
+    word-wrap: break-word;
 }
 
 .playerStatus {

@@ -155,19 +155,27 @@ export const skillAudios: Word[] = [
 
   {
     source: '$tiaoxin:1',
-    target: '黄口竖子，何必上阵送命？',
+    target: '会闻用师，观衅而动。',
   },
   {
     source: '$tiaoxin:2',
-    target: '汝如欲大败而归，则可进军一战！',
+    target: '宜乘其衅会，以挑敌将！',
   },
   {
     source: '$zhiji:1',
-    target: '维定当奋身以复汉室！',
+    target: '丞相遗志，不死不休！',
   },
   {
     source: '$zhiji:2',
-    target: '丞相之志，维必竭力而为。',
+    target: '大业未成，矢志不渝！',
+  },
+  {
+    source: '$guanxing.jiangwei:1',
+    target: '星象相衔，此乃吉兆。',
+  },
+  {
+    source: '$guanxing.jiangwei:2',
+    target: '星之分野，各有所属。',
   },
 
   {

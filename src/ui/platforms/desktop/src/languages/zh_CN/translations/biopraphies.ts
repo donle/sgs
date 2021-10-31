@@ -165,6 +165,49 @@ export const skillAudios: Word[] = [
     source: '$xianshuai:2',
     target: '雄兵一击，则天下大白！',
   },
+
+  {
+    source: '$xuezhao:1',
+    target: '奉旨行事，莫敢不从！',
+  },
+  {
+    source: '$xuezhao:2',
+    target: '衣带密诏，当诛曹公！',
+  },
+
+  {
+    source: '$daoji:1',
+    target: '典韦勇猛，盗戟可除。',
+  },
+  {
+    source: '$daoji:2',
+    target: '你的就是我的。',
+  },
+  {
+    source: '$fuzhong:1',
+    target: '身负重任，绝无懈怠！',
+  },
+  {
+    source: '$fuzhong:2',
+    target: '勇冠其军，负重前行！',
+  },
+  
+  {
+    source: '$koulve:1',
+    target: '兵强马壮，时出寇略！',
+  },
+  {
+    source: '$koulve:2',
+    target: '饥则寇略，饱则弃馀。',
+  },
+  {
+    source: '$suiren:1',
+    target: '就交给你了。',
+  },
+  {
+    source: '$suiren:2',
+    target: '我的财富，收好。',
+  },
 ];
 
 export const promptDescriptions: Word[] = [

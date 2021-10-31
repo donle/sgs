@@ -17,6 +17,7 @@
     border: 1px solid grey;
     margin-right: 4px;
 }
+
 .quickChat {
     position: absolute;
     height: calc(gridLine * 19);
@@ -47,6 +48,7 @@
     flex-direction: column;
     padding: 4px 0;
     overflow: auto;
+    word-wrap: break-word;
     user-select: text;
 }
 .messageLine {

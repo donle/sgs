@@ -157,6 +157,154 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
+export const skillAudios: Word[] = [
+  {
+    source: '$sidi:1',
+    target: '总算困住你了。',
+  },
+  {
+    source: '$sidi:2',
+    target: '你出的了手吗！',
+  },
+
+  {
+    source: '$shenduan:1',
+    target: '行军断策，需慎之又慎！',
+  },
+  {
+    source: '$shenduan:2',
+    target: '为将者，务当慎行谨断。',
+  },
+  {
+    source: '$yonglve:1',
+    target: '兵势勇健，战胜攻取，无不如志！',
+  },
+  {
+    source: '$yonglve:2',
+    target: '雄才大略，举无遗策，威震四海！',
+  },
+
+  {
+    source: '$pindi:1',
+    target: '定品寻良骥，中正探人杰。',
+  },
+  {
+    source: '$pindi:2',
+    target: '取才赋职，论能行赏。',
+  },
+  {
+    source: '$faen:1',
+    target: '法礼有度，恩威并施。',
+  },
+  {
+    source: '$faen:2',
+    target: '礼法容情，皇恩浩荡。',
+  },
+
+  {
+    source: '$benxi:1',
+    target: '北伐曹魏，以弱制强！',
+  },
+  {
+    source: '$benxi:2',
+    target: '引军汉中，以御敌袭。',
+  },
+
+  {
+    source: '$qiangzhi:1',
+    target: '容我过目，即刻咏来。',
+  },
+  {
+    source: '$qiangzhi:2',
+    target: '文书强识，才可博于运筹。',
+  },
+  {
+    source: '$xiantu:1',
+    target: '将军莫虑，且看此图。',
+  },
+  {
+    source: '$xiantu:2',
+    target: '吾以诚心相献，君何踌躇不前！',
+  },
+
+  {
+    source: '$zhongyong:1',
+    target: '赤兔北奔，马踏鼠胆之辈！',
+  },
+  {
+    source: '$zhongyong:2',
+    target: '青龙夜照，刀斩悖主之贼！',
+  },
+
+  {
+    source: '$shenxing:1',
+    target: '谋而后动，行不容差。',
+  },
+  {
+    source: '$shenxing:2',
+    target: '谋略之道，需慎之又慎。',
+  },
+  {
+    source: '$bingyi:1',
+    target: '秉持心性，心口如一。',
+  },
+  {
+    source: '$bingyi:2',
+    target: '秉忠职守，一生不事二主。',
+  },
+
+  {
+    source: '$zenhui:1',
+    target: '萋兮斐兮，谋欲谮人。',
+  },
+  {
+    source: '$zenhui:2',
+    target: '稍稍谮毁，万劫不复！',
+  },
+  {
+    source: '$jiaojin:1',
+    target: '凭汝之力，何不自鉴？',
+  },
+  {
+    source: '$jiaojin:2',
+    target: '万金之躯，岂容狎侮！',
+  },
+
+  {
+    source: '$fenli:1',
+    target: '以逸待劳，坐收渔利。',
+  },
+  {
+    source: '$fenli:2',
+    target: '以主制客，占尽优势。',
+  },
+  {
+    source: '$pingkou:1',
+    target: '对敌人仁慈，就是对自己残忍！',
+  },
+  {
+    source: '$pingkou:2',
+    target: '反守为攻，直捣黄龙！',
+  },
+
+  {
+    source: '$jianying:1',
+    target: '事须缓图，欲速不达也。',
+  },
+  {
+    source: '$jianying:2',
+    target: '由缓至急，循循而进。',
+  },
+  {
+    source: '$shibei:1',
+    target: '命系袁氏，一心向北。',
+  },
+  {
+    source: '$shibei:2',
+    target: '矢志于北，尽忠于国！',
+  },
+];
+
 export const promptDescriptions: Word[] = [
   {
     source: '{0}: please choose pindi options: {1} {2}',

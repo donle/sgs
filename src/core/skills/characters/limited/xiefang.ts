@@ -6,6 +6,10 @@ import { CompulsorySkill } from 'core/skills/skill_wrappers';
 
 @CompulsorySkill({ name: 'xiefang', description: 'xiefang_description' })
 export class XieFang extends RulesBreakerSkill {
+  public audioIndex(): number {
+    return 0;
+  }
+
   public breakOffenseDistance(room: Room, owner: Player): number {
     return room.getAllPlayersFrom().filter(player => player.Gender === CharacterGender.Female).length;
   }

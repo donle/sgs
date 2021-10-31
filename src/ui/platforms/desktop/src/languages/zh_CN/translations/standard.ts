@@ -420,7 +420,7 @@ export const skillAudios: Word[] = [
   },
   {
     source: '$tuxi:2',
-    target: '马似飞云，枪如霹雳！',
+    target: '马似飞影，枪如霹雳！',
   },
 
   {
@@ -677,7 +677,7 @@ export const skillAudios: Word[] = [
   },
   {
     source: '$keji:2',
-    target: '哼！敢欺我东吴无人？',
+    target: '最好的机会还在等着我。',
   },
   {
     source: '$botu:1',

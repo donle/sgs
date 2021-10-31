@@ -179,6 +179,163 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
+export const skillAudios: Word[] = [
+  {
+    source: '$huituo:1',
+    target: '大展宏图，就在今日！',
+  },
+  {
+    source: '$huituo:2',
+    target: '富我大魏，扬我国威！',
+  },
+  {
+    source: '$mingjian:1',
+    target: '你我推心置腹，岂能相负！',
+  },
+  {
+    source: '$mingjian:2',
+    target: '孰忠孰奸，朕尚能明辨！',
+  },
+  {
+    source: '$xingshuai:1',
+    target: '百年兴衰，皆由人，不由天！',
+  },
+  {
+    source: '$xingshuai:2',
+    target: '聚群臣而加勋，隆天子之气运！',
+  },
+
+  {
+    source: '$qingxi:1',
+    target: '虎豹骑倾巢而动，安有不胜之理！',
+  },
+  {
+    source: '$qingxi:2',
+    target: '任尔等固若金汤，虎豹骑可破之！',
+  },
+
+  {
+    source: '$huomo:1',
+    target: '笔墨写春秋，挥毫退万敌！',
+  },
+  {
+    source: '$huomo:2',
+    target: '妙笔在手，研墨在心。',
+  },
+  {
+    source: '$zuoding:1',
+    target: '只有忠心，没有谋略，是不够的。',
+  },
+  {
+    source: '$zuoding:2',
+    target: '承君恩宠，报效国家！',
+  },
+
+  {
+    source: '$zhanjue:1',
+    target: '成败再此一举，杀！',
+  },
+  {
+    source: '$zhanjue:2',
+    target: '此刻唯有死战，安能言降！',
+  },
+  {
+    source: '$qinwang:1',
+    target: '大厦倾危，谁堪栋梁？',
+  },
+  {
+    source: '$qinwang:2',
+    target: '国有危难，哪位将军请战？',
+  },
+
+  {
+    source: '$qiaoshi:1',
+    target: '樵前情窦开，君后寻迹来。',
+  },
+  {
+    source: '$qiaoshi:2',
+    target: '樵薪遇郎君，妾心涟漪生。',
+  },
+  {
+    source: '$yanyu:1',
+    target: '伴君一生，不寂寞。',
+  },
+  {
+    source: '$yanyu:2',
+    target: '感君一回顾，思君朝与暮。',
+  },
+
+  {
+    source: '$wurong:1',
+    target: '策略以入算，果烈以立威！',
+  },
+  {
+    source: '$wurong:2',
+    target: '诈与和亲，不攻可得！',
+  },
+
+  {
+    source: '$yaoming:1',
+    target: '养威持重，不营小利。',
+  },
+  {
+    source: '$yaoming:2',
+    target: '则天而行，作功邀名。',
+  },
+  
+  {
+    source: '$yanzhu:1',
+    target: '觥筹交错，杀人于无形！',
+  },
+  {
+    source: '$yanzhu:2',
+    target: '子烈设宴，意在汝项上人头！',
+  },
+  {
+    source: '$xingxue:1',
+    target: '案古置学官，以敦王化，以隆风俗。',
+  },
+  {
+    source: '$xingxue:2',
+    target: '志善好学，未来可期。',
+  },
+
+  {
+    source: '$anguo:1',
+    target: '安邦定国，臣子分内之事。',
+  },
+  {
+    source: '$anguo:2',
+    target: '止干戈，休战事。',
+  },
+
+  {
+    source: '$huaiyi:1',
+    target: '曹刘可王，孤亦可王！',
+  },
+  {
+    source: '$huaiyi:2',
+    target: '汉失其鹿，天下豪杰当共逐之！',
+  },
+
+  {
+    source: '$jigong:1',
+    target: '此时不战，更待何时？',
+  },
+  {
+    source: '$jigong:2',
+    target: '箭在弦上，不得不发！',
+  },
+  {
+    source: '$shifei:1',
+    target: '若依吾计而行，许昌旦夕可破。',
+  },
+  {
+    source: '$shifei:2',
+    target: '先锋怯战，非谋策之过。',
+  },
+];
+
 export const promptDescriptions: Word[] = [
   {
     source:

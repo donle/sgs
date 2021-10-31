@@ -581,16 +581,16 @@ export const skillAudios: Word[] = [
   {
     source: '$chenqing:2',
     target: '乱世陈情，字字血泪。',
-  }, 
+  },
   {
     source: '$mozhi:1',
-    target: '今日默书，方恨千卷诗书未能全记。',
-  },
+    target: '博闻强识，不辱才女之名。',
+  }, 
   {
     source: '$mozhi:2',
-    target: '博闻强识，不辱才女之名。',
+    target: '今日默书，方恨千卷诗书未能全记。',
   },
- 
+
   {
     source: '$kunfen:1',
     target: '纵使困顿难行，亦当砥砺奋进！',
@@ -606,7 +606,154 @@ export const skillAudios: Word[] = [
   {
     source: '$fengliang:2',
     target: '得遇丞相，再生之德！',
-  }, 
+  },
+
+  {
+    source: '$juesi:1',
+    target: '我心在魏，绝不降贼！',
+  },
+  {
+    source: '$juesi:2',
+    target: '只有一个能站着离开！',
+  },
+
+  {
+    source: '$weikui:1',
+    target: '骑兵列队，准备突围！',
+  },
+  {
+    source: '$weikui:2',
+    target: '休整片刻，且随我杀出一条血路！',
+  },
+  {
+    source: '$lizhan:1',
+    target: '敌军围困万千重，我自岿然不动！',
+  },
+  {
+    source: '$lizhan:2',
+    target: '行伍严整，百战不殆！',
+  },
+
+  {
+    source: '$yuanhu:1',
+    target: '将军，这件兵器可还趁手？',
+  },
+  {
+    source: '$yuanhu:2',
+    target: '刀剑无眼，需得小心防护。',
+  },
+
+  {
+    source: '$xiaoguo:1',
+    target: '三军听我号令，不得撤退！',
+  },
+  {
+    source: '$xiaoguo:2',
+    target: '看我先登城头，立下首功！',
+  },
+
+  {
+    source: '$kangkai:1',
+    target: '典将军，比比看谁杀敌更多。',
+  },
+  {
+    source: '$kangkai:2',
+    target: '父亲快走，由我殿后！',
+  },
+
+  {
+    source: '$gongao:1',
+    target: '恪尽职守，忠心事主。',
+  },
+  {
+    source: '$gongao:2',
+    target: '攻城拔寨，建功立业！',
+  },
+  {
+    source: '$juyi:1',
+    target: '司马氏篡权，我当替天罚之！',
+  },
+  {
+    source: '$juyi:2',
+    target: '若国有难，吾当举义！',
+  },
+
+  {
+    source: '$tuifeng:1',
+    target: '摧锋陷阵，以杀贼首！',
+  },
+  {
+    source: '$tuifeng:2',
+    target: '敌锋之锐，我已尽知。',
+  },
+
+  {
+    source: '$junbing:1',
+    target: '男儿慷慨，军中豪迈。',
+  },
+  {
+    source: '$junbing:2',
+    target: '郡国当有搜狩习战之备。',
+  },
+  {
+    source: '$quji:1',
+    target: '若不去兵之疾，则将何以守国？',
+  },
+  {
+    source: '$quji:2',
+    target: '愿为将士，略尽绵薄。',
+  },
+
+  {
+    source: '$tiandu.xizhicai:1',
+    target: '天意不可逆。',
+  },
+  {
+    source: '$tiandu.xizhicai:2',
+    target: '既是如此。',
+  },
+  {
+    source: '$xianfu:1',
+    target: '辅佐明君，从一而终。',
+  },
+  {
+    source: '$xianfu:2',
+    target: '吾于此生，竭尽所能。',
+  },
+  {
+    source: '$chouce:1',
+    target: '一筹一划，一策一略。',
+  },
+  {
+    source: '$chouce:2',
+    target: '主公之忧，吾之所思也。',
+  },
+
+  {
+    source: '$qingzhong:1',
+    target: '执政为民，当尽我所能。',
+  },
+  {
+    source: '$qingzhong:2',
+    target: '吾自幼流离失所，更能体恤百姓之苦。',
+  },
+  {
+    source: '$weijing:1',
+    target: '战事兴起，最苦的仍是百姓。',
+  },
+  {
+    source: '$weijing:2',
+    target: '国乃大家，保大家才有小家。',
+  },
+
+  {
+    source: '$zhenwei:1',
+    target: '再敢来犯，仍教你无功而返！',
+  },
+  {
+    source: '$zhenwei:2',
+    target: '江夏防线，固若金汤！',
+  },
 
   {
     source: '$liangzhu:1',
@@ -623,6 +770,57 @@ export const skillAudios: Word[] = [
   {
     source: '$fanxiang:2',
     target: '今夕一别，不知何日再见？',
+  },
+
+  {
+    source: '$qianya:1',
+    target: '君子不妄动，动必有道。',
+  },
+  {
+    source: '$qianya:2',
+    target: '唉~将军过誉了。',
+  },
+  {
+    source: '$shuimeng:1',
+    target: '你我唇齿相依，共御外敌，何如？',
+  },
+  {
+    source: '$shuimeng:2',
+    target: '今兵薄势寡，可遣某为使往说之。',
+  },
+
+  {
+    source: '$ziyuan:1',
+    target: '区区薄礼，万望使君笑纳。',
+  },
+  {
+    source: '$ziyuan:2',
+    target: '雪中送炭，以解君愁。',
+  },
+  {
+    source: '$jugu:1',
+    target: '钱？要多少有多少。',
+  },
+  {
+    source: '$jugu:2',
+    target: '君子爱财，取之有道。',
+  },
+
+  {
+    source: '$yuxu:1',
+    target: '誉名浮虚，波流四海。。',
+  },
+  {
+    source: '$yuxu:2',
+    target: '誉虚之名，得保一时。',
+  },
+  {
+    source: '$shijian:1',
+    target: '行之得道，即社稷用宁。',
+  },
+  {
+    source: '$shijian:2',
+    target: '国家安危，在于足下。',
   },
 
   {
@@ -721,6 +919,23 @@ export const skillAudios: Word[] = [
   },
 
   {
+    source: '$yinbing:1',
+    target: '追兵凶猛，末将断后！',
+  },
+  {
+    source: '$yinbing:2',
+    target: '将军走此小道，追兵交我应付！',
+  },
+  {
+    source: '$juedi:1',
+    target: '困兽之斗，以全忠义！',
+  },
+  {
+    source: '$juedi:2',
+    target: '提起武器，最后一搏！',
+  },
+
+  {
     source: '$std_longdan:1',
     target: '能进能退，乃真正法器！',
   },
@@ -735,6 +950,116 @@ export const skillAudios: Word[] = [
   {
     source: '$chongzhen:2',
     target: '贼将休走，可敢与我一战？',
+  },
+
+  {
+    source: '$tianming:1',
+    target: '皇汉国祚，千年不息！',
+  },
+  {
+    source: '$tianming:2',
+    target: '朕乃大汉皇帝，天命之子！',
+  },
+  {
+    source: '$mizhao:1',
+    target: '爱卿世受皇恩，堪此重任。',
+  },
+  {
+    source: '$mizhao:2',
+    target: '此诏事关重大，切记小心行事。',
+  },
+
+  {
+    source: '$shichou:1',
+    target: '灭族之恨，不共戴天！',
+  },
+  {
+    source: '$shichou:2',
+    target: '休想跑！',
+  },
+
+  {
+    source: '$jiqiao:1',
+    target: '驭巧器，以取先机。',
+  },
+  {
+    source: '$jiqiao:2',
+    target: '颖悟之人，不以拙力取胜。',
+  },
+  {
+    source: '$linglong:1',
+    target: '哼，书中自有玲珑心。',
+  },
+  {
+    source: '$linglong:2',
+    target: '哼，自然是多多益善咯。',
+  },
+
+  {
+    source: '$zhoufu:1',
+    target: '违吾咒者，倾死灭亡！',
+  },
+  {
+    source: '$zhoufu:2',
+    target: '咒宝符命，速显威灵！',
+  },
+  {
+    source: '$yingbing:1',
+    target: '朱雀玄武，誓为我征！',
+  },
+  {
+    source: '$yingbing:2',
+    target: '所呼立至，所召立前。',
+  },
+
+  {
+    source: '$jijun:1',
+    target: '集万千义军，定天下大局！',
+  },
+  {
+    source: '$jijun:2',
+    target: '集民力万千，亦可为军！',
+  },
+  {
+    source: '$fangtong:1',
+    target: '统领方队，为民意所举！',
+  },
+  {
+    source: '$fangtong:2',
+    target: '三十六方，必为大统！',
+  },
+
+  {
+    source: '$zongkui:1',
+    target: '准备好听候女王的拆迁了吗？',
+  },
+  {
+    source: '$zongkui:2',
+    target: '契约已定。',
+  },
+  {
+    source: '$guju:1',
+    target: '我能看到你的灵魂在颤抖。',
+  },
+  {
+    source: '$guju:2',
+    target: '你死后，我将超度你的亡魂。',
+  },
+  {
+    source: '$baijia:1',
+    target: '以邪马台的名义！',
+  },
+  {
+    source: '$baijia:2',
+    target: '我要摧毁你的一切！然后建立我的国度。',
+  },
+  {
+    source: '$sp_canshi:1',
+    target: '是你在召唤我吗？',
+  },
+  {
+    source: '$sp_canshi:2',
+    target: '这片土地的人真是太有趣了。',
   },
 
   {

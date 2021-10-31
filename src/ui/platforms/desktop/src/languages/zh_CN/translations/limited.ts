@@ -217,6 +217,23 @@ export const skillDescriptions: Word[] = [
 
 export const skillAudios: Word[] = [
   {
+    source: '$bifa:1',
+    target: '笔墨纸砚，皆兵器也！',
+  },
+  {
+    source: '$bifa:2',
+    target: '汝德行败坏，人所不齿也！',
+  },
+  {
+    source: '$songci:1',
+    target: '将军德才兼备，大汉之栋梁也！',
+  },
+  {
+    source: '$songci:2',
+    target: '汝窃国奸贼，人人得而诛之！',
+  }, 
+
+  {
     source: '$shanjia:1',
     target: '缮甲厉兵，伺机而行。',
   },
@@ -240,7 +257,33 @@ export const skillAudios: Word[] = [
   {
     source: '$daoshu:2',
     target: '得此文书，丞相定可高枕无忧！',
-  }, 
+  },
+
+  {
+    source: '$tuogu:1',
+    target: '君托以六尺之孤，爽当寄百里之命！',
+  },
+  {
+    source: '$tuogu:2',
+    target: '先帝以大事托我，任重而道远。',
+  },
+  {
+    source: '$shanzhuan:1',
+    target: '打入冷宫，禁足绝食！',
+  },
+  {
+    source: '$shanzhuan:2',
+    target: '我言既出，谁敢不从？',
+  },
+
+  {
+    source: '$zhuilie:1',
+    target: '哈哈！我喜欢猎夺沙场的快感！',
+  },
+  {
+    source: '$zhuilie:2',
+    target: '追敌夺魂，猎尽贼寇！',
+  },
 
   {
     source: '$xingzuo:1',
@@ -260,6 +303,23 @@ export const skillAudios: Word[] = [
   },
 
   {
+    source: '$pianchong:1',
+    target: '得陛下怜爱，恩宠不衰。',
+  },
+  {
+    source: '$pianchong:2',
+    target: '谬蒙圣恩，光授殊宠。',
+  },
+  {
+    source: '$zunwei:1',
+    target: '处尊居显，位极椒房。',
+  },
+  {
+    source: '$zunwei:2',
+    target: '自在东宫，及即尊位。',
+  },
+
+  {
     source: '$qirang:1',
     target: '集母亲之智，效父亲之法，祈以七星。',
   },
@@ -274,6 +334,115 @@ export const skillAudios: Word[] = [
   {
     source: '$yuhua:2',
     target: '此乃仙人之物，不可轻弃。',
+  },
+
+  {
+    source: '$wuniang:1',
+    target: '虽为女子身，不输男儿郎。',
+  },
+  {
+    source: '$wuniang:2',
+    target: '剑舞轻影，杀场克敌。',
+  }, 
+  {
+    source: '$xushen:1',
+    target: '救命之恩，涌泉相报。',
+  },
+  {
+    source: '$xushen:2',
+    target: '解我危难，报君华彩。',
+  },
+  {
+    source: '$zhennan:1',
+    target: '镇守南中，夫君无忧。',
+  },
+  {
+    source: '$zhennan:2',
+    target: '与君携手，定平蛮夷。',
+  },
+
+  {
+    source: '$lianhua:1',
+    target: '白日清山，飞升化仙。',
+  },
+  {
+    source: '$lianhua:2',
+    target: '草木精炼，万物化丹。',
+  },
+  {
+    source: '$yingzi.gexuan:1',
+    target: '仙人之姿，凡目岂见！',
+  },
+  {
+    source: '$zhiyan.gexuan:1',
+    target: '仙人之语，凡耳震聩！',
+  },
+  {
+    source: '$gongxin.gexuan:1',
+    target: '仙人之目，因果即现！',
+  },
+  {
+    source: '$guanxing.gexuan:1',
+    target: '仙人之栖，群星浩瀚！',
+  },
+  {
+    source: '$zhafu:1',
+    target: '垂恩广救，慈悲在怀。',
+  },
+  {
+    source: '$zhafu:2',
+    target: '行符敕鬼，神变善易。',
+  },
+
+  {
+    source: '$new_fenyin:1',
+    target: '斗志高歌，士气昂扬！',
+  },
+  {
+    source: '$new_fenyin:2',
+    target: '亢音而歌，左右应之！',
+  },
+  {
+    source: '$liji:1',
+    target: '破敌搴旗，未尝负败！',
+  },
+  {
+    source: '$liji:2',
+    target: '鸷猛壮烈，万人不敌！',
+  },
+
+  {
+    source: '$weiyi:1',
+    target: '无威仪者，不可奉社稷。',
+  },
+  {
+    source: '$weiyi:2',
+    target: '有威仪者，禁止雍容。',
+  },
+  {
+    source: '$jinzhi:1',
+    target: '织锦为旗，以扬威仪。',
+  },
+  {
+    source: '$jinzhi:2',
+    target: '坐而织锦，立则为仪。',
+  },
+
+  {
+    source: '$xionghuo:1',
+    target: '此镬加之于你，定有所伤！',
+  },
+  {
+    source: '$xionghuo:2',
+    target: '凶镬沿袭，怎会轻易无伤？',
+  },
+  {
+    source: '$shajue:1',
+    target: '杀伐决绝，不留后患！',
+  },
+  {
+    source: '$shajue:2',
+    target: '吾既出，必绝之！',
   },
 ];
 

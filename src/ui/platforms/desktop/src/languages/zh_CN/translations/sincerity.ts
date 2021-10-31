@@ -172,7 +172,7 @@ export const skillAudios: Word[] = [
   },
   {
     source: '$heji:2',
-    target: '伯符，今日之战务必全力攻之。',
+    target: '伯符，今日之战吾必全力攻之。',
   },
 
   {

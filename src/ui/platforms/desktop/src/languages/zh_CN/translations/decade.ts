@@ -236,6 +236,74 @@ export const skillDescriptions: Word[] = [
 
 export const skillAudios: Word[] = [
   {
+    source: '$cuirui:1',
+    target: '摧折锐气，未战先衰。',
+  },
+  {
+    source: '$cuirui:2',
+    target: '挫其锐气，折其旌旗。',
+  },
+  {
+    source: '$liewei:1',
+    target: '都给我交出来！',
+  },
+  {
+    source: '$liewei:2',
+    target: '还有点用，暂且饶你一命。',
+  },
+
+  {
+    source: '$cuijian:1',
+    target: '所当皆披靡，破坚若无人！',
+  },
+  {
+    source: '$cuijian:2',
+    target: '一枪定顽敌，一骑破坚城！',
+  },
+  {
+    source: '$tongyuan:1',
+    target: '乐将军何在？随我共援上方谷！',
+  },
+  {
+    source: '$tongyuan:2',
+    target: '袍泽有难，岂有坐视之理？',
+  },
+
+  {
+    source: '$biaozhao:1',
+    target: '此人有祸患之相，望丞相慎之。',
+  },
+  {
+    source: '$biaozhao:2',
+    target: '孙策宜加贵宠，须召还京邑。',
+  },
+  {
+    source: '$yechou:1',
+    target: '会有人替我报仇的！',
+  },
+  {
+    source: '$yechou:2',
+    target: '我的门客，是不会放过你的！',
+  },
+
+  {
+    source: '$songshu:1',
+    target: '称颂蜀汉，以表诚心。',
+  },
+  {
+    source: '$songshu:2',
+    target: '吴蜀两和，方可安稳。',
+  },
+  {
+    source: '$sibian:1',
+    target: '才藻俊茂，辨思如涌。',
+  },
+  {
+    source: '$sibian:2',
+    target: '弘雅之素，英秀之德。',
+  },
+
+  {
     source: '$langxi:1',
     target: '袭夺之势，如狼噬骨！',
   },
@@ -313,6 +381,49 @@ export const skillAudios: Word[] = [
   },
 
   {
+    source: '$langmie:1',
+    target: '群狼四起，灭其以威众！',
+  },
+  {
+    source: '$langmie:2',
+    target: '贪狼强力，寡义而趋利。',
+  },
+
+  {
+    source: '$dangzai:1',
+    target: '此处有我，休得放肆！',
+  },
+  {
+    source: '$dangzai:2',
+    target: '退后，让我来！',
+  },
+  {
+    source: '$liangjue:1',
+    target: '行军者，切不可无粮。',
+  },
+  {
+    source: '$liangjue:2',
+    target: '粮尽援绝，需另谋出路。',
+  },
+
+  {
+    source: '$liushi:1',
+    target: '就你叫夏侯惇？',
+  },
+  {
+    source: '$liushi:2',
+    target: '兀那贼将，且吃我一箭！',
+  },
+  {
+    source: '$zhanwan:1',
+    target: '郝萌！尔敢造反不成？',
+  },
+  {
+    source: '$zhanwan:2',
+    target: '健儿护主，奸逆断腕！',
+  },
+
+  {
     source: '$kuangfu:1',
     target: '大斧到处，片甲不留！',
   },
@@ -328,6 +439,23 @@ export const skillAudios: Word[] = [
   {
     source: '$xuhe:2',
     target: '我乃是零陵上将军！',
+  },
+
+  {
+    source: '$yangzhong:1',
+    target: '宦祸所起，池鱼所终。',
+  },
+  {
+    source: '$yangzhong:2',
+    target: '窃权利己，弄祸殃众。',
+  },
+  {
+    source: '$huangkong:1',
+    target: '满腹忠心，如履薄冰！',
+  },
+  {
+    source: '$huangkong:2',
+    target: '咱家乃皇帝之母，能有什么坏心思？',
   },
 ];
 

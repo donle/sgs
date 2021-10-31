@@ -168,6 +168,220 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
+export const skillAudios: Word[] = [
+  {
+    source: '$daigong:1',
+    target: '不急，只等敌军士气渐怠。',
+  },
+  {
+    source: '$daigong:2',
+    target: '敌谋吾已尽料，可以长策縻之。',
+  },
+  {
+    source: '$zhaoxin:1',
+    target: '吾心昭昭，何惧天下之口？',
+  },
+  {
+    source: '$zhaoxin:2',
+    target: '公此行欲何为，吾自有量度。',
+  },
+
+  {
+    source: '$zhongzuo:1',
+    target: '历经磨难，不改祖国之志！',
+  },
+  {
+    source: '$zhongzuo:2',
+    target: '建立功业，惟愿天下早定。',
+  },
+  {
+    source: '$wanlan:1',
+    target: '挽狂澜于既倒，扶大厦于将倾！',
+  },
+  {
+    source: '$wanlan:2',
+    target: '深受国恩，今日便是报偿之时！',
+  },
+
+  {
+    source: '$baiyi:1',
+    target: '吾不听公休之言，以致需行此策。',
+  },
+  {
+    source: '$baiyi:2',
+    target: '诸将无过，且按吾之略再图破敌。',
+  },
+  {
+    source: '$jinglve:1',
+    target: '安待良机，自有舍生报吾之时。',
+  },
+  {
+    source: '$jinglve:2',
+    target: '察局备健，以保诸事不虞。',
+  },
+  {
+    source: '$shanli:1',
+    target: '荡尘涤污，重整河山，便在今日！',
+  },
+  {
+    source: '$shanli:2',
+    target: '效伊尹霍光，以反天下清明！',
+  },
+
+  {
+    source: '$tunchu:1',
+    target: '屯粮事大，暂不与尔等计较。',
+  },
+  {
+    source: '$tunchu:2',
+    target: '屯粮待战，莫动刀枪。',
+  },
+  {
+    source: '$shuliang:1',
+    target: '将军弛劳，酒肉慰劳。',
+  },
+  {
+    source: '$shuliang:2',
+    target: '将军，牌来了！',
+  },
+
+  {
+    source: '$jimeng:1',
+    target: '今日之言，皆是为保两国无虞。',
+  },
+  {
+    source: '$jimeng:2',
+    target: '天下之势已如水火，还望重修盟好。',
+  },
+  {
+    source: '$shuaiyan:1',
+    target: '并魏之日，想来便是两国征战之时。',
+  },
+  {
+    source: '$shuaiyan:2',
+    target: '在下所言，至诚至率！',
+  },
+
+  {
+    source: '$xuewei:1',
+    target: '吾主之尊，岂容尔等贼寇近前？',
+  },
+  {
+    source: '$xuewei:2',
+    target: '血佑忠魂，身卫英主。',
+  },
+  {
+    source: '$liechi:1',
+    target: '吾受汉帝恩，岂容吴贼辱？',
+  },
+  {
+    source: '$liechi:2',
+    target: '汉将有死无降，怎会如吴狗一般？',
+  },
+
+  {
+    source: '$dujin:1',
+    target: '带兵十万，不如老夫夺甲一件！',
+  },
+  {
+    source: '$dujin:2',
+    target: '轻舟独进，破敌先锋！',
+  },
+
+  {
+    source: '$yingjian:1',
+    target: '翩翩一云端，仿若桃花仙。',
+  },
+  {
+    source: '$yingjian:2',
+    target: '没牌，又有何不可能的？',
+  },
+  {
+    source: '$shixin:1',
+    target: '释怀之戾气，化君之不悦。',
+  },
+  {
+    source: '$shixin:2',
+    target: '星星之火，安能伤我？',
+  },
+
+  {
+    source: '$zhaohan:1',
+    target: '天道昭昭，再兴，如光武，亦可期。',
+  },
+  {
+    source: '$zhaohan:2',
+    target: '汉祚将终，我又岂能无憾？',
+  },
+  {
+    source: '$rangjie:1',
+    target: '公既执掌权柄，又何必令君臣遭乱？',
+  },
+  {
+    source: '$rangjie:2',
+    target: '公虽权倾朝野，亦当遵圣上之意。',
+  },
+  {
+    source: '$mobile_yizheng:1',
+    target: '一人劫天子，一人制公卿，此可行邪？',
+  },
+  {
+    source: '$mobile_yizheng:2',
+    target: '诸君举事，当上顺天心，奈何如是！',
+  },
+
+  {
+    source: '$jinfan:1',
+    target: '扬锦帆，劫四方，快意逍遥！',
+  },
+  {
+    source: '$jinfan:2',
+    target: '铃声所至之处，再无安宁！',
+  },
+  {
+    source: '$sheque:1',
+    target: '看我此箭，取那轻舟冒进之人性命！',
+  },
+  {
+    source: '$sheque:2',
+    target: '纵有劲甲良盾，也难挡我神射之威！',
+  },
+
+  {
+    source: '$taomie:1',
+    target: '犯我辽东疆界，必遭后报！',
+  },
+  {
+    source: '$taomie:2',
+    target: '韩濊之乱，再无可生之机。',
+  },
+  {
+    source: '$taomie:3',
+    target: '颅且远行万里，要席何用？',
+  },
+
+  {
+    source: '$zhengnan:1',
+    target: '末将愿承父志，随丞相出征。',
+  },
+  {
+    source: '$zhengnan:2',
+    target: '此番南征，必平父愿。',
+  },
+  {
+    source: '$dangxian.guansuo:1',
+    target: '各位将军，且让小辈先行出战。',
+  },
+  {
+    source: '$wusheng.guansuo:1',
+    target: '逆贼！可识得关氏之勇？',
+  },
+  {
+    source: '$zhiman.guansuo:1',
+    target: '蛮夷可抚，不可剿。',
+  },
+];
+
 export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to put at least 1 hand card on your general card as ‘liang’?',
