@@ -10,11 +10,12 @@ export const getClientConfig = (mode: ClientFlavor): ClientConfig => {
   let host: ServiceConfig[];
 
   switch (mode) {
+	case ClientFlavor.Web:
     case ClientFlavor.Dev:
       host = [
         {
           port: 2020,
-          host: 'localhost',
+          host: '134.175.232.188',
           protocol: 'http',
           hostTag: ServerHostTag.Localhost,
         },

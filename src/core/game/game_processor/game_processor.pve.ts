@@ -23,6 +23,15 @@ export class PveGameProcessor extends StandardGameProcessor {
       }
     }
   }
+  
+    protected getSelectableCharacters(
+    selectable: number,
+    selectableCharacters: Character[],
+    selected: CharacterId[],
+    filter?: (characer: Character) => boolean,
+  ) {
+      return Sanguosha.getAllCharacters();
+  }
 
   protected async chooseCharacters(playersInfo: PlayerInfo[], selectableCharacters: Character[]) {
     // link to  assignRoles
