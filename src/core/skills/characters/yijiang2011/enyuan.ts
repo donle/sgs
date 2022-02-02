@@ -118,8 +118,7 @@ export class EnYuan extends TriggerSkill {
             toId: damageFromId,
             reason: this.Name,
             conversation: TranslationPack.translationJsonPatcher(
-              '{0}: you need to give a handcard to {1}',
-              this.Name,
+              'enyuan: you need to give a handcard to {1}',
               TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
             ).extract(),
             fromArea: [PlayerCardsArea.HandArea],

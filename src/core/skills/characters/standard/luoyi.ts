@@ -75,7 +75,7 @@ export class LuoYi extends TriggerSkill {
       const askForChooseOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
         options: ['luoyi:obtain', 'luoyi:cancel'],
         toId: skillUseEvent.fromId,
-        conversation: 'Obtain Basic Card, Equip Card and Duel in display cards?',
+        conversation: 'Obtain Basic Card, Weapon Card and Duel in display cards?',
         triggeredBySkills: [this.Name],
       };
 

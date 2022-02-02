@@ -117,7 +117,7 @@ export const eventDictionary: Word[] = [
   { source: '{0} resumed {1} equip section', target: '{0} 恢復了 {1}' },
   { source: '{0} aborted judge area', target: '{0} 廢除了判定區' },
   { source: '{0} resumed judge area', target: '{0} 恢復了判定區' },
-  { source: '{0} select nationality {1}', target: '{0} 選擇了國籍 {1}'},
+  { source: '{0} select nationality {1}', target: '{0} 選擇了國籍 {1}' },
   {
     source: 'do you want to trigger skill {0} ?',
     target: '是否發動技能 【{0}】?',
@@ -436,8 +436,8 @@ export const eventDictionary: Word[] = [
   },
   { source: 'please choose a player to get a damage from {0}', target: '請選擇一名角色受到來自 {0} 的 1 點傷害' },
   {
-    source: 'Obtain Basic Card, Equip Card and Duel in display cards?',
-    target: '裸衣：是否放棄摸牌，然後獲取展示牌中的基本牌、裝備牌和【決鬥】',
+    source: 'Obtain Basic Card, Weapon Card and Duel in display cards?',
+    target: '裸衣：是否放棄摸牌，然後獲取展示牌中的基本牌、武器牌和【決鬥】',
   },
   {
     source: '{0} used skill {1}, display cards: {2}',
@@ -700,7 +700,7 @@ export const UiDictionary: Word[] = [
   { source: 'trusted', target: '託管' },
   { source: 'cancel trusted', target: '取消託管' },
   { source: 'in trusted', target: '託管中···' },
-  { source: 'adjust handcards', target: '整理手牌'},
+  { source: 'adjust handcards', target: '整理手牌' },
   {
     source: 'New QSanguosha',
     target: '新神殺',

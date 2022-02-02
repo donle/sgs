@@ -56,8 +56,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'pve_longlie_description',
-    target:
-      '<b>锁定技</b>，你使用的【杀】无法被响应，且游戏人数大于2时，此【杀】伤害+1。',
+    target: '<b>锁定技</b>，你使用的【杀】无法被响应，且游戏人数大于2时，此【杀】伤害+1。',
   },
   {
     source: 'pve_qinlv_description',
@@ -71,7 +70,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_jienu_description',
     target:
-      '<b>锁定技</b>，当你翻面后，你回复一点体力并对所有其他角色造成两点火属性伤害；出牌阶段开始时，若你的体力值小于已损失的体力值，你翻面；当你受到伤害后，你对所有其他角色造成两点火属性伤害，若此伤害为普通伤害，则你回复两点体力',
+      '<b>锁定技</b>，当你翻面后，你回复一点体力并对所有其他角色造成两点火属性伤害；当你受到伤害后，你对所有其他角色造成两点火属性伤害，若此伤害为普通伤害，则你回复两点体力',
   },
   {
     source: 'pve_chaiyue_description',
@@ -80,13 +79,11 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'pve_lige_description',
-    target:
-      '<b>锁定技</b>，一名其他角色结束阶段开始时，其交给你一张牌或令你摸两张牌，选择后视为对其使用【决斗】',
+    target: '<b>锁定技</b>，一名其他角色结束阶段开始时，其交给你一张牌或令你摸两张牌，选择后视为对其使用【决斗】',
   },
   {
     source: 'pve_bibao_description',
-    target:
-      '<b>锁定技</b>，你造成或受到伤害时，你回复1点体力且此伤害+1，你摸等同伤害+1张牌。',
+    target: '<b>锁定技</b>，你造成或受到伤害时，你回复1点体力且此伤害+1，你摸等同伤害+1张牌。',
   },
   {
     source: 'pve_tansuo_description',
@@ -94,7 +91,6 @@ export const skillDescriptions: Word[] = [
       '<b>锁定技</b>，第四关及之后，玩家使用牌有概率触发机关（此牌点数越高几率越大）或奇遇宝物。玩家初始强化【桃】且玩家共用强化池',
   },
 ];
-
 
 export const promptDescriptions: Word[] = [
   {
@@ -135,4 +131,4 @@ export const eventDictionary: Word[] = [
   { source: 'pve-hard-mode', target: '高难度' },
   { source: '{0} ouyujiguan', target: '{0} 偶遇了机关' },
   { source: '{0} qiyubaowu', target: '{0} 奇遇宝物' },
-]
+];

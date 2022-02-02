@@ -162,8 +162,8 @@ export const skillDescriptions: Word[] = [
 
 export const promptDescriptions: Word[] = [
   {
-    source: '{0}: you need to give a handcard to {1}',
-    target: '{0}：你需交給 {1} 一張手牌（若不為紅桃則 {1} 摸一張牌），否則失去1點體力',
+    source: 'enyuan: you need to give a handcard to {1}',
+    target: '恩怨：你需交給 {1} 一張手牌（若不為紅桃則 {1} 摸一張牌），否則失去1點體力',
   },
 
   { source: 'xuanhuo:attack', target: '選項一' },
