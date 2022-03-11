@@ -31,6 +31,7 @@ import { SunQian } from './sunqian';
 import { WenPin } from './wenpin';
 import { WuTuGu } from './wutugu';
 import { XiZhiCai } from './xizhicai';
+import { XSPLiuBei } from './xsp_liubei';
 import { XuJing } from './xujing';
 import { YangXiu } from './yangxiu';
 import { YueJin } from './yuejin';
@@ -86,4 +87,5 @@ export const SPPackage: (index: number) => Character[] = index => [
   new SPDiaochan(index++),
   new BeiMiHu(index++),
   new HuangZu(index++),
+  new XSPLiuBei(index++),
 ];
