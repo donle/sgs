@@ -16,6 +16,7 @@ import { SPSunShangXiang } from './sp_sunshangxiang';
 import { SPZhaoYun } from './sp_zhaoyun';
 import { SunHao } from './sunhao';
 import { WuTuGu } from './wutugu';
+import { XSPLiuBei } from './xsp_liubei';
 import { YangXiu } from './yangxiu';
 import { ZhangLing } from './zhangling';
 import { ZhouQun } from './zhouqun';
@@ -44,4 +45,5 @@ export const SPPackage: (index: number) => Character[] = index => [
   new WuTuGu(index++),
   new SPDiaochan(index++),
   new HuangZu(index++),
+  new XSPLiuBei(index++),
 ];

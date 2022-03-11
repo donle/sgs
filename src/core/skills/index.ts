@@ -396,6 +396,8 @@ export { KunFen, KunFenEX } from './characters/sp/kunfen';
 export { FengLiang } from './characters/sp/fengliang';
 export { ChenQing } from './characters/sp/chenqing';
 export { MoZhi } from './characters/sp/mozhi';
+export { ZhaoLie } from './characters/sp/zhaolie';
+export { SPShiChou,SPShiChouBuff } from './characters/sp/shichou';
 
 export { TuShe } from './characters/spark/tushe';
 export { LiMu, LiMuShadow } from './characters/spark/limu';

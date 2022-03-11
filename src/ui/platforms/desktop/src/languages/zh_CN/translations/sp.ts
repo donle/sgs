@@ -3,6 +3,10 @@ import { Word } from 'languages';
 export const characterDictionary: Word[] = [
   { source: 'sp', target: 'sp' },
 
+  { source: 'xsp_liubei', target: '刘备' },
+  { source: 'zhaolie', target: '昭烈' },
+  { source: 'spshichou', target: '誓仇' },
+
   { source: 'yangxiu', target: '杨修' },
   { source: 'danlao', target: '啖酪' },
   { source: 'jilei', target: '鸡肋' },
@@ -89,6 +93,18 @@ export const characterDictionary: Word[] = [
 ];
 
 export const skillDescriptions: Word[] = [
+
+  {
+    source: 'zhaolie_description',
+    target: '摸牌阶段你可以少摸一张牌并选择攻击范围内一名角色：你亮出牌顶三张牌并弃置其中非基本牌和【桃】，然后其选择一项：1.受到X点伤害，获得其余牌；2依次弃置X张牌，你获得其余牌。（X为其中非基本牌数）。',
+  },
+
+  {
+    source: 'shichou_description',
+    target:
+      '<b>主公技</b>，<b>限定技</b>，准备阶段开始时，你可以交给一名其他非蜀势力角色1张牌。当你受到伤害时，该角色受到等量伤害，其与你摸等量伤害张牌。',
+  },
+  
   {
     source: 'danlao_description',
     target: '当你成为【杀】或锦囊牌的目标后，若目标数大于1，你可以摸一张牌并令此牌对你无效。',
