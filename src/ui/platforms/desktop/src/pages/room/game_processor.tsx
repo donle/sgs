@@ -385,14 +385,37 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const matchArray = content.originalMessage.match(/\$([a-z_]+):(\d+)/);
+    const matchArray =
+      content.originalMessage.match(/\$([a-z_]+)\.([a-z_]+):(\d+)/) ||
+      content.originalMessage.match(/\$([a-z_]+):(\d+)/);
+
+    const quickChatMatchArray = content.originalMessage.match(/^quickChat:(\d|1\d|2[0-2])$/);
     if (matchArray) {
       // play skill audio
       const skill = matchArray[1];
-      const index = parseInt(matchArray[2], 10);
-      this.audioService.playSkillAudio(skill, CharacterGender.Male, index); // player's character may be undefined
+      const characterName = matchArray.length > 3 ? matchArray[2] : undefined;
+      const index = parseInt(matchArray.length > 3 ? matchArray[3] : matchArray[2], undefined);
+      this.audioService.playSkillAudio(skill, CharacterGender.Male, index, undefined, characterName); // player's character may be undefined
 
       const player = this.store.room.getPlayerById(content.playerId);
+      this.presenter.addUserMessage(
+        this.translator.trx(
+          TranslationPack.translationJsonPatcher(
+            '{0} {1} says: {2}',
+            TranslationPack.patchPureTextParameter(player.Name),
+            player.CharacterId === undefined ? '' : TranslationPack.patchPlayerInTranslation(player),
+            this.translator.tr(content.originalMessage),
+          ).toString(),
+        ),
+      );
+      this.presenter.onIncomingMessage(content.playerId, this.translator.tr(content.originalMessage));
+    } else if (quickChatMatchArray) {
+      const player = this.store.room.getPlayerById(content.playerId);
+      this.audioService.playQuickChatAudio(
+        parseInt(quickChatMatchArray[1], 10) + 1,
+        player.Character ? player.Character.Gender : CharacterGender.Male,
+      );
+
       this.presenter.addUserMessage(
         this.translator.trx(
           TranslationPack.translationJsonPatcher(
@@ -796,13 +819,24 @@ export class GameClientProcessor {
     content: ServerEventFinder<T>,
   ) {
     const { changedProperties } = content;
-    for (const { toId, characterId, maxHp, hp, nationality, gender, handCards, equips } of changedProperties) {
+    for (const {
+      toId,
+      characterId,
+      maxHp,
+      hp,
+      nationality,
+      gender,
+      handCards,
+      equips,
+      playerPosition,
+    } of changedProperties) {
       const player = this.store.room.getPlayerById(toId);
       characterId !== undefined && (player.CharacterId = characterId);
       maxHp !== undefined && (player.MaxHp = maxHp);
       hp !== undefined && (player.Hp = hp);
       nationality !== undefined && (player.Nationality = nationality);
       gender !== undefined && (player.Gender = gender);
+      playerPosition !== undefined && (player.Position = playerPosition);
 
       if (handCards !== undefined) {
         player.getCardIds(PlayerCardsArea.HandArea).splice(0, player.getCardIds(PlayerCardsArea.HandArea).length);
@@ -813,6 +847,8 @@ export class GameClientProcessor {
         player.getCardIds(PlayerCardsArea.EquipArea).push(...equips);
       }
     }
+
+    changedProperties.find(property => property.playerPosition) && this.store.room.sortPlayers();
 
     this.presenter.broadcastUIUpdate();
   }
@@ -1046,7 +1082,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    await this.store.room.obtainSkill(content.toId, content.skillName);
+    await this.store.room.obtainSkill(content.toId, content.skillName, false, content.insertIndex);
     this.presenter.broadcastUIUpdate();
   }
 
@@ -1540,7 +1576,7 @@ export class GameClientProcessor {
       this.audioService.playSkillAudio(
         skill.GeneralName,
         from.Gender,
-        Math.round(Math.random() * 1) + 1,
+        content.audioIndex,
         this.skinData,
         from.Character.Name,
         skinName,

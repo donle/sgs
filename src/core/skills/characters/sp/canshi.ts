@@ -1,7 +1,7 @@
 import { CharacterNationality } from 'core/characters/character';
 import { CardDrawReason, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { AllStage, CardUseStage, DrawCardStage, PlayerPhase } from 'core/game/stage_processor';
+import { AllStage, CardUseStage, DrawCardStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -21,7 +21,8 @@ export class CanShi extends TriggerSkill {
       !(
         owner.Id === content.fromId &&
         room.CurrentPlayerPhase === PlayerPhase.DrawCardStage &&
-        content.bySpecialReason === CardDrawReason.GameStage
+        content.bySpecialReason === CardDrawReason.GameStage &&
+        content.drawAmount > 0
       )
     ) {
       return false;
@@ -86,7 +87,7 @@ export class CanShiShadow extends TriggerSkill {
     event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.PhaseChangeEvent>,
     stage?: AllStage,
   ): boolean {
-    return stage === CardUseStage.CardUsing;
+    return stage === CardUseStage.CardUsing || stage === PhaseChangeStage.PhaseChanged;
   }
 
   public canUse(

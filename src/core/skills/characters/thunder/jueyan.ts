@@ -14,6 +14,10 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'jueyan', description: 'jueyan_description' })
 export class JueYan extends ActiveSkill {
+  public get RelatedSkills(): string[] {
+    return ['jizhi'];
+  }
+  
   public canUse(room: Room, owner: Player) {
     return !owner.hasUsedSkill(this.Name) && owner.AvailableEquipSections.length > 0;
   }

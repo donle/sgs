@@ -5,11 +5,14 @@ import styles from './mark.module.css';
 
 import { Tooltip } from 'ui/tooltip/tooltip';
 import awakenIcon from './images/awaken.png';
+import baoliIcon from './images/baoli.png';
+import danxueIcon from './images/danxue.png';
 import dawuIcon from './images/dawu.png';
 import fuIcon from './images/fu.png';
 import jianIcon from './images/jian.png';
 import junlveIcon from './images/junlve.png';
 import kuangfengIcon from './images/kuangfeng.png';
+import kuiIcon from './images/kui.png';
 import lieIcon from './images/lie.png';
 import limitIcon from './images/limit.png';
 import limitUsedIcon from './images/limit_used.png';
@@ -21,8 +24,10 @@ import ranIcon from './images/ran.png';
 import renIcon from './images/ren.png';
 import switchYangIcon from './images/switch_yang.png';
 import switchYinIcon from './images/switch_yin.png';
+import taomieIcon from './images/taomie.png';
 import xueyiIcon from './images/xueyi.png';
 import yingIcon from './images/ying.png';
+import zhongIcon from './images/zhong.png';
 
 const markIconMaps: {
   [K in MarkEnum]: string;
@@ -42,6 +47,11 @@ const markIconMaps: {
   [MarkEnum.Ran]: ranIcon,
   [MarkEnum.Wei]: weiIcon,
   [MarkEnum.Jian]: jianIcon,
+  [MarkEnum.BaoLi]: baoliIcon,
+  [MarkEnum.DanXue]: danxueIcon,
+  [MarkEnum.Zhong]: zhongIcon,
+  [MarkEnum.TaoMie]: taomieIcon,
+  [MarkEnum.Kui]: kuiIcon,
 };
 
 export type MarkProps = {

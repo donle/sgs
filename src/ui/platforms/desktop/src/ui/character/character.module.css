@@ -111,3 +111,21 @@
     font-size: calc(gridLine * 2);
     line-height: calc(gridLine * 3);
 }
+
+.relatedSkillTiltle {
+    color: rgb(127, 196, 25);
+    font-size: calc(gridLine * 2.2);
+    margin-bottom: calc(gridLine * 1.5);
+    font-family: SanguoshaFont;
+    padding-top: calc(gridLine * 0.5);
+}
+
+.relatedSkill {
+    color: rgb(127, 196, 25);
+    border-color: rgb(127, 196, 25);
+}
+
+.relatedSkill:hover {
+    background-color: rgb(127, 196, 25);
+    color: black;
+}

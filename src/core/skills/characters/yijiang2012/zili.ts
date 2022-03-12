@@ -8,6 +8,10 @@ import { PaiYi } from './paiyi';
 
 @AwakeningSkill({ name: 'zili', description: 'zili_description' })
 export class ZiLi extends TriggerSkill {
+  public get RelatedSkills(): string[] {
+    return ['paiyi'];
+  }
+
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
     stage?: AllStage,

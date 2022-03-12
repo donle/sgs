@@ -35,6 +35,10 @@ export class TianSuan extends ActiveSkill implements OnDefineReleaseTiming {
 
   public async whenDead(room: Room, player: Player) {
     const mappers = player.getFlag<TianSuanMapper>(TianSuan.TianSuanTargets);
+    if (!mappers) {
+      return;
+    }
+
     const targets = Object.keys(mappers);
 
     for (const target of targets) {

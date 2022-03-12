@@ -176,9 +176,11 @@ export const enum DamageEffectStage {
   DamageDone = 'DamageDone',
   AfterDamageEffect = 'AfterDamageEffect',
   AfterDamagedEffect = 'AfterDamagedEffect',
+  DamageFinishedEffect = 'DamageFinishedEffect',
 }
 
 export const enum JudgeEffectStage {
+  BeforeJudge = 'beforeJudge',
   OnJudge = 'OnJudge',
   BeforeJudgeEffect = 'BeforeJudgeEffect',
   JudgeEffect = 'JudgeEffect',
@@ -300,7 +302,6 @@ const gameEventStageList: {
     CardUseStage.AfterCardTargetDeclared,
     CardUseStage.CardUsing,
     CardUseStage.AfterCardUseEffect,
-    CardUseStage.CardUseFinishedEffect,
   ],
   [GameEventIdentifiers.CardEffectEvent]: [
     CardEffectStage.PreCardEffect,
@@ -326,6 +327,7 @@ const gameEventStageList: {
     DamageEffectStage.DamageDone,
     DamageEffectStage.AfterDamageEffect,
     DamageEffectStage.AfterDamagedEffect,
+    DamageEffectStage.DamageFinishedEffect,
   ],
   [GameEventIdentifiers.JudgeEvent]: [
     JudgeEffectStage.OnJudge,

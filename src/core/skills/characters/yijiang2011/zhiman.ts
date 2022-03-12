@@ -8,6 +8,14 @@ import { PatchedTranslationObject, TranslationPack } from 'core/translations/tra
 
 @CommonSkill({ name: 'zhiman', description: 'zhiman_description' })
 export class ZhiMan extends TriggerSkill {
+  public get RelatedCharacters() {
+    return ['guansuo'];
+  }
+
+  public audioIndex(characterName?: string): number {
+    return characterName && this.RelatedCharacters.includes(characterName) ? 1 : 2;
+  }
+
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage): boolean {
     return stage === DamageEffectStage.DamageEffect;
   }

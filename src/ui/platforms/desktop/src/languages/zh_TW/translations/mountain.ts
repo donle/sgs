@@ -118,6 +118,193 @@ export const skillDescriptions: Word[] = [
   { source: 'xinsheng_description', target: '當你受到1點傷害後，你可以獲得一張“化身”。' },
 ];
 
+export const skillAudios: Word[] = [
+  {
+    source: '$qiaobian:1',
+    target: '兵無常勢，水無常形。',
+  },
+  {
+    source: '$qiaobian:2',
+    target: '用兵之道，變化萬千。',
+  },
+
+  {
+    source: '$tuntian:1',
+    target: '休養生息，是爲以備不虞！',
+  },
+  {
+    source: '$tuntian:2',
+    target: '戰損難免，應以軍務減之。',
+  },
+  {
+    source: '$zaoxian:1',
+    target: '用兵以險，則戰之以勝！',
+  },
+  {
+    source: '$zaoxian:2',
+    target: '已至馬閣山，宜速進軍破蜀！',
+  },
+  {
+    source: '$jixi:1',
+    target: '攻敵之不備，斬將奪輜！',
+  },
+  {
+    source: '$jixi:2',
+    target: '奇兵正攻，敵何能爲？',
+  },
+
+  {
+    source: '$tiaoxin:1',
+    target: '會聞用師，觀釁而動。',
+  },
+  {
+    source: '$tiaoxin:2',
+    target: '宜乘其釁會，以挑敵將！',
+  },
+  {
+    source: '$zhiji:1',
+    target: '丞相遺志，不死不休！',
+  },
+  {
+    source: '$zhiji:2',
+    target: '大業未成，矢志不渝！',
+  },
+  {
+    source: '$guanxing.jiangwei:1',
+    target: '星象相銜，此乃吉兆。',
+  },
+  {
+    source: '$guanxing.jiangwei:2',
+    target: '星之分野，各有所屬。',
+  },
+
+  {
+    source: '$xiangle:1',
+    target: '誒嘿嘿嘿，還是玩耍快樂~',
+  },
+  {
+    source: '$xiangle:2',
+    target: '美好的日子，應該好好享受。',
+  },
+  {
+    source: '$fangquan:1',
+    target: '蜀漢有相父在，我可安心。',
+  },
+  {
+    source: '$fangquan:2',
+    target: '這些事情，你們安排就好。',
+  },
+  {
+    source: '$ruoyu:1',
+    target: '若愚故泰，巧騙衆人。',
+  },
+  {
+    source: '$ruoyu:2',
+    target: '愚昧者，非真傻也。',
+  },
+  {
+    source: '$sishu:1',
+    target: '蜀樂鄉土，怎不思念？',
+  },
+  {
+    source: '$sishu:2',
+    target: '思鄉心切，徘徊惶惶。',
+  },
+
+  {
+    source: '$jiang:1',
+    target: '我會把勝利，帶回江東！',
+  },
+  {
+    source: '$jiang:2',
+    target: '天下英雄，誰能與我一戰！',
+  },
+  {
+    source: '$hunzi:1',
+    target: '小霸王之名，響徹天下，何人不知！',
+  },
+  {
+    source: '$hunzi:2',
+    target: '江東已平，中原動盪，直取許昌！',
+  },
+  {
+    source: '$zhiba:1',
+    target: '我的霸業，纔剛剛開始。',
+  },
+  {
+    source: '$zhiba:2',
+    target: '汝是戰是降，我皆奉陪。',
+  },
+
+  {
+    source: '$zhiba:1',
+    target: '我的霸業，纔剛剛開始。',
+  },
+  {
+    source: '$zhiba:2',
+    target: '汝是戰是降，我皆奉陪。',
+  },
+  {
+    source: '$zhiba:1',
+    target: '我的霸業，纔剛剛開始。',
+  },
+  {
+    source: '$zhiba:2',
+    target: '汝是戰是降，我皆奉陪。',
+  },
+
+  {
+    source: '$zhijian:1',
+    target: '爲臣之道，在於直言不諱。',
+  },
+  {
+    source: '$zhijian:2',
+    target: '建言或逆耳，於國無一害。',
+  },
+  {
+    source: '$guzheng:1',
+    target: '爲君者，不可私行土木，奢廢物料。',
+  },
+  {
+    source: '$guzheng:2',
+    target: '安民固國，方可思棟。',
+  },
+
+  {
+    source: '$huashen:1',
+    target: '世間萬物，貧道皆可化爲其形。',
+  },
+  {
+    source: '$huashen:2',
+    target: '塵身土塑，唯魂魄難得。',
+  },
+  {
+    source: '$xinsheng:1',
+    target: '大成若缺，損亦無妨。',
+  },
+  {
+    source: '$xinsheng:2',
+    target: '大盈若衝，新神自現。',
+  },
+
+  {
+    source: '$beige:1',
+    target: '人多暴猛兮如虺蛇，控弦被甲兮爲驕奢。',
+  },
+  {
+    source: '$beige:2',
+    target: '兩拍張弦兮弦欲絕，志摧心折兮自悲嗟。',
+  },
+  {
+    source: '$duanchang:1',
+    target: '雁飛高兮邈難尋，空斷腸兮思愔愔。',
+  },
+  {
+    source: '$duanchang:2',
+    target: '爲天有眼兮，何不見我獨漂流？',
+  },
+];
+
 export const promptDictionary: Word[] = [
   {
     source: '{0}: do you want to drop a hand card to skip {1} ?',

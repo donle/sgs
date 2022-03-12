@@ -9,6 +9,7 @@ import { ConnectionService } from 'services/connection_service/connection_servic
 import { Button } from 'ui/button/button';
 import { Input } from 'ui/input/input';
 import styles from './message_dialog.module.css';
+import { createRawQuickMessage, quickMessageMaxIndex } from './message_dialog.static';
 
 export type MessageDialogProps = {
   store: RoomStore;
@@ -68,6 +69,8 @@ export class MessageDialog extends React.Component<MessageDialogProps> {
   private incomingMessage: boolean = false;
   @mobx.observable.ref
   private textMessage: string | undefined;
+  @mobx.observable.ref
+  private hideQuickChatItems: boolean = true;
   @mobx.action
   private readonly onMessageChange = (value?: string) => {
     this.textMessage = value;
@@ -114,6 +117,15 @@ export class MessageDialog extends React.Component<MessageDialogProps> {
     );
   }
 
+  private getQuickChatContents() {
+    const contents: string[] = [];
+    for (let i = 0; i <= quickMessageMaxIndex; i++) {
+      contents.push(createRawQuickMessage(i));
+    }
+
+    return contents;
+  }
+
   componentWillUnmount() {
     this.props.connectionService.Chat.disconnect();
   }
@@ -129,6 +141,41 @@ export class MessageDialog extends React.Component<MessageDialogProps> {
     this.incomingMessage = false;
     this.currentTab = tab;
   };
+
+  @mobx.action
+  private readonly onClickQuickChatButton = () => {
+    this.hideQuickChatItems = !this.hideQuickChatItems;
+  };
+
+  @mobx.action
+  private onClickQuickChatItem = (content: string) => () => {
+    !this.props.replayMode &&
+      this.props.store.room.broadcast(GameEventIdentifiers.UserMessageEvent, {
+        message: content,
+        playerId: this.props.presenter.ClientPlayer!.Id,
+      });
+
+    this.hideQuickChatItems = !this.hideQuickChatItems;
+  };
+
+  private getSkillAudios() {
+    return this.props.presenter.ClientPlayer !== undefined && this.props.presenter.ClientPlayer.Character
+      ? this.props.presenter
+          .ClientPlayer!.Character.Skills.filter(skill => !skill.isShadowSkill())
+          .reduce<string[]>((audioNames, skill) => {
+            const characterName = this.props.presenter.ClientPlayer!.Character.Name;
+            for (let i = 1; i <= skill.audioIndex(); i++) {
+              audioNames.push(
+                skill.RelatedCharacters.includes(characterName)
+                  ? '$' + skill.Name + '.' + characterName + ':' + i
+                  : '$' + skill.Name + ':' + i,
+              );
+            }
+
+            return audioNames;
+          }, [])
+      : [];
+  }
 
   render() {
     return (
@@ -155,13 +202,31 @@ export class MessageDialog extends React.Component<MessageDialogProps> {
             </p>
           ))}
         </div>
+
         <form className={classNames(styles.inputLabel, this.props.className)} onSubmit={this.onClickSendButton}>
+          {!this.hideQuickChatItems ? (
+            <div className={styles.quickChat}>
+              {[...this.getSkillAudios(), ...this.getQuickChatContents()].map((content, index) => (
+                <div>
+                  <span key={index} className={styles.quickChatItems} onClick={this.onClickQuickChatItem(content)}>
+                    {this.props.translator.tr(content)}
+                  </span>
+                  <br />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <></>
+          )}
           <Input
             className={styles.chatInput}
             onChange={this.onMessageChange}
             placeholder={this.props.translator.tr('please enter your text here')}
             value={this.textMessage}
           />
+          <Button className={styles.sendButton} variant="primary" type="button" onClick={this.onClickQuickChatButton}>
+            💬
+          </Button>
           <Button className={styles.sendButton} variant="primary" disabled={!this.textMessage}>
             {this.props.translator.tr('send')}
           </Button>

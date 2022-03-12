@@ -111,6 +111,7 @@ export interface ServerEvent extends EventUtilities {
     nullifiedTargets: PlayerId[];
     isFirstTarget: boolean;
     additionalDamage?: number;
+    extraUse?: boolean;
   };
   [GameEventIdentifiers.CardResponseEvent]: {
     fromId: PlayerId;
@@ -142,6 +143,7 @@ export interface ServerEvent extends EventUtilities {
     toIds?: PlayerId[];
     triggeredOnEvent?: ServerEventFinder<GameEventIdentifiers>;
     mute?: boolean;
+    audioIndex?: number;
   };
   [GameEventIdentifiers.SkillEffectEvent]: {
     fromId: PlayerId;
@@ -399,6 +401,7 @@ export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.ObtainSkillEvent]: {
     skillName: string;
     toId: PlayerId;
+    insertIndex?: number;
   };
   [GameEventIdentifiers.DrunkEvent]: {
     toId: PlayerId;
@@ -449,6 +452,7 @@ export interface ServerEvent extends EventUtilities {
       gender?: CharacterGender;
       handCards?: CardId[];
       equips?: CardId[];
+      playerPosition?: number;
     }[];
   };
   [GameEventIdentifiers.SetOutsideCharactersEvent]: {

@@ -136,6 +136,160 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
+export const skillAudios: Word[] = [
+  {
+    source: '$qizhi:1',
+    target: '吾意不在此地，已遣別部出發。',
+  },
+  {
+    source: '$qizhi:2',
+    target: '聲東擊西，敵寇一網成擒！',
+  },
+  {
+    source: '$jinqu:1',
+    target: '建上昶水城，以逼夏口。',
+  },
+  {
+    source: '$jinqu:2',
+    target: '通川聚糧，伐吳之業，當步步爲營。',
+  },
+
+  {
+    source: '$jianxiang:1',
+    target: '得遇曹公，吾之幸也。',
+  },
+  {
+    source: '$jianxiang:2',
+    target: '曹公得荊不喜，喜得吾二人足矣。',
+  },
+  {
+    source: '$shenshi:1',
+    target: '數語之言，審時度勢。',
+  },
+  {
+    source: '$shenshi:2',
+    target: '深中足智，鑑時審情。',
+  },
+
+  {
+    source: '$juzhan:1',
+    target: '砍頭便砍頭，何爲怒邪？',
+  },
+  {
+    source: '$juzhan:2',
+    target: '我州但有斷頭將軍，無降將軍也！',
+  },
+
+  {
+    source: '$feijun:1',
+    target: '無當飛軍，伐叛亂，鎮蠻夷。',
+  },
+  {
+    source: '$feijun:2',
+    target: '山地崎嶇，也擋不住飛軍破勢！',
+  },
+  {
+    source: '$binglve:1',
+    target: '兵略者，明戰勝攻取之數，形機之勢，詐譎之變。',
+  },
+  {
+    source: '$binglve:2',
+    target: '奇略兵速，敵未能料之。',
+  },
+
+  {
+    source: '$huaiju:1',
+    target: '情深舐犢，懷擢藏橘。',
+  },
+  {
+    source: '$huaiju:2',
+    target: '袖中懷綠桔，遺母報乳哺。',
+  },
+  {
+    source: '$weili:1',
+    target: '違失禮儀，則懼非議。',
+  },
+  {
+    source: '$weili:2',
+    target: '行遺禮之舉，於不敬王者。',
+  },
+  {
+    source: '$zhenglun:1',
+    target: '整論四海未泰，修文德以平。',
+  },
+  {
+    source: '$zhenglun:2',
+    target: '今論者不務道德懷取之術，而惟尚武，竊所未安。',
+  },
+
+  {
+    source: '$kuizhu:1',
+    target: '子通專恣，必謀而誅之。',
+  },
+  {
+    source: '$kuizhu:2',
+    target: '孫綝久專，不可久忍，必潰誅！',
+  },
+  {
+    source: '$chezheng:1',
+    target: '風馳電掣，政權不怠。',
+  },
+  {
+    source: '$chezheng:2',
+    target: '唉，簾屏掣政，實爲艱事。',
+  },
+  {
+    source: '$lijun:1',
+    target: '立於朝堂，定於軍心。',
+  },
+  {
+    source: '$lijun:2',
+    target: '君，立於朝堂；軍，側於四方。',
+  },
+
+  {
+    source: '$chenglve:1',
+    target: '成略在胸，良計速出。',
+  },
+  {
+    source: '$chenglve:2',
+    target: '吾有良略在懷，必爲阿瞞所需。',
+  },
+  {
+    source: '$shicai:1',
+    target: '吾才滿腹，袁本初竟不從之！',
+  },
+  {
+    source: '$shicai:2',
+    target: '阿瞞有我良計，取冀州便是易如反掌。',
+  },
+  {
+    source: '$cunmu:1',
+    target: '哼，目光所及，短寸之間。',
+  },
+  {
+    source: '$cunmu:2',
+    target: '狹目之見，只能窺底。',
+  },
+
+  {
+    source: '$mingren:1',
+    target: '得義真所救，吾任之必盡瘁以報。',
+  },
+  {
+    source: '$mingren:2',
+    target: '吾之任，君之明舉。',
+  },
+  {
+    source: '$zhenliang:1',
+    target: '風霜以別草木之性，危亂而見貞良之節。',
+  },
+  {
+    source: '$zhenliang:2',
+    target: '貞節賢良，吾之本心。',
+  },
+];
+
 export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to drop 1 hand card of another player, and this player will draw a card?',

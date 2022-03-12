@@ -12,6 +12,11 @@ export const enum MarkEnum {
   PveHuaShen = 'pve_huashen',
   Fu = 'fu',
   Ran = 'ran',
-  Wei = 'wei',
+  Wei = 'dulie_wei',
   Jian = 'jian',
+  BaoLi = 'baoli',
+  DanXue = 'danxue',
+  Zhong = 'zhong',
+  TaoMie = 'taomie',
+  Kui = 'kui',
 }

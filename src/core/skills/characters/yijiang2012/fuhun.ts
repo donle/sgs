@@ -15,6 +15,10 @@ import { WuSheng } from '../standard/wusheng';
 
 @CommonSkill({ name: 'fuhun', description: 'fuhun_description' })
 export class FuHun extends ViewAsSkill {
+  public get RelatedSkills(): string[] {
+    return ['wusheng', 'paoxiao'];
+  }
+
   public canViewAs(): string[] {
     return ['slash'];
   }

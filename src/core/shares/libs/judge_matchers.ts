@@ -1,4 +1,4 @@
-import { Card } from 'core/cards/card';
+import { Card, CardType } from 'core/cards/card';
 import { CardSuit } from 'core/cards/libs/card_props';
 import { Precondition } from './precondition/precondition';
 
@@ -15,6 +15,7 @@ export const enum JudgeMatcherEnum {
   HuJi,
   DuLie,
   QingXi,
+  ZhuiLie,
 }
 
 export abstract class JudgeMatcher {
@@ -44,6 +45,8 @@ export abstract class JudgeMatcher {
         return this.DuLie(card);
       case JudgeMatcherEnum.QingXi:
         return this.QingXi(card);
+      case JudgeMatcherEnum.ZhuiLie:
+        return this.ZhuiLie(card);
       default:
         throw Precondition.UnreachableError(matcherEnum);
     }
@@ -85,5 +88,8 @@ export abstract class JudgeMatcher {
   }
   private static QingXi(card: Card) {
     return card.isRed();
+  }
+  private static ZhuiLie(card: Card) {
+    return card.is(CardType.Weapon) || card.is(CardType.DefenseRide) || card.is(CardType.OffenseRide);
   }
 }

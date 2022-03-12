@@ -8,6 +8,10 @@ import { JiLve } from './jilve';
 
 @AwakeningSkill({ name: 'baiyin', description: 'baiyin_description' })
 export class BaiYin extends TriggerSkill {
+  public get RelatedSkills(): string[] {
+    return ['jilve', 'guicai', 'fangzhu', 'jizhi', 'zhiheng', 'wansha'];
+  }
+
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
     stage?: AllStage,

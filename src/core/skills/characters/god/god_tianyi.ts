@@ -8,6 +8,10 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @AwakeningSkill({ name: 'god_tianyi', description: 'god_tianyi_description' })
 export class GodTianYi extends TriggerSkill {
+  public get RelatedSkills(): string[] {
+    return ['zuoxing'];
+  }
+
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
     stage?: AllStage,

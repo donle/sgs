@@ -21,6 +21,7 @@ export interface AudioService {
   playRoomBGM(): void;
   playLobbyBGM(): void;
   playGameStartAudio(): void;
+  playQuickChatAudio(index: number, gender: CharacterGender): void;
   stop(): void;
 }
 
@@ -126,6 +127,11 @@ class AudioPlayerService implements AudioService {
   }
   async playGameStartAudio() {
     await this.play(this.loader.getGameStartAudio());
+  }
+
+  async playQuickChatAudio(index: number, gender: CharacterGender) {
+    const audioUrl = await this.loader.getQuickChatAudio(index, gender);
+    await this.play(audioUrl);
   }
 
   private async play(url: string, loop?: boolean, type: 'bgm' | 'game' = 'game') {

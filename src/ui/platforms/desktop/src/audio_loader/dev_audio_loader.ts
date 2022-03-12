@@ -1,4 +1,5 @@
 import { CharacterGender } from 'core/characters/character';
+import { Sanguosha } from 'core/game/engine';
 import { CharacterSkinInfo } from 'skins/skins';
 import { AudioLoader } from './audio_loader';
 
@@ -26,14 +27,26 @@ export class DevAudioLoader implements AudioLoader {
   getChainAudio(): string {
     return `${remoteRoot}/audios/chain.mp3`;
   }
+  async getQuickChatAudio(index: number, gender: CharacterGender): Promise<string> {
+    return `${remoteRoot}/audios/quickChats/${gender === CharacterGender.Female ? 'female' : 'male'}/${index}.mp3`;
+  }
   async getSkillAudio(
     skillName: string,
     gender: CharacterGender,
     characterName?: string,
     audioIndex?: number,
   ): Promise<string> {
-    if (!audioIndex) audioIndex = Math.round(Math.random() * 1) + 1;
-    return `${remoteRoot}/audios/characters/${skillName}${audioIndex}.mp3`;
+    const skill = Sanguosha.getSkillBySkillName(skillName);
+
+    if (!audioIndex) {
+      audioIndex = Math.round(Math.random() * (skill.audioIndex(characterName) - 1)) + 1;
+    }
+
+    if (characterName) {
+      characterName = skill.RelatedCharacters.includes(characterName) ? '.' + characterName : '';
+    }
+
+    return `${remoteRoot}/audios/characters/${skillName}${characterName ? characterName : ''}${audioIndex}.mp3`;
   }
   async getCardAudio(cardName: string, gender: CharacterGender, characterName?: string) {
     return `${remoteRoot}/audios/cards/${gender === CharacterGender.Female ? 'female' : 'male'}/${cardName}.ogg`;

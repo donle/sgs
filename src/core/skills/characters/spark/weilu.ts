@@ -219,7 +219,7 @@ export class WeiLuShadow extends TriggerSkill implements OnDefineReleaseTiming {
           room.removeFlag(other.Id, WeiLu.WeiLuCurrent);
           const newUsers = other.getFlag<PlayerId[]>(this.GeneralName) || [];
           currentUsers = currentUsers.filter(user => !newUsers.includes(user));
-          if (newUsers.length > 0) {
+          if (newUsers.length > 0 || currentUsers.length > 0) {
             room.setFlag<PlayerId[]>(other.Id, this.GeneralName, newUsers.concat(currentUsers), this.GeneralName);
           }
         }

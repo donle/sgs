@@ -2,7 +2,7 @@ import { CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardColor, CardId, CardSuit } from 'core/cards/libs/card_props';
 import { Slash } from 'core/cards/standard/slash';
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import {
   AllStage,
@@ -64,7 +64,7 @@ export class SiDi extends TriggerSkill {
 
     const response = await room.doAskForCommonly<GameEventIdentifiers.AskForCardEvent>(
       GameEventIdentifiers.AskForCardEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForCardEvent>({
+      {
         cardAmount: 1,
         toId: fromId,
         reason: this.Name,
@@ -85,7 +85,7 @@ export class SiDi extends TriggerSkill {
             : [PlayerCardsArea.OutsideArea],
         cardMatcher: new CardMatcher({ cards: availableCards }).toSocketPassenger(),
         triggeredBySkills: [this.Name],
-      }),
+      },
       fromId,
     );
 

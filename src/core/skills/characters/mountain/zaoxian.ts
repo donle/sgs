@@ -7,6 +7,10 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @AwakeningSkill({ name: 'zaoxian', description: 'zaoxian_description' })
 export class ZaoXian extends TriggerSkill {
+  public get RelatedSkills(): string[] {
+    return ['jixi'];
+  }
+
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
     stage?: AllStage,

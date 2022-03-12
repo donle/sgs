@@ -117,6 +117,145 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
+export const skillAudios: Word[] = [
+  {
+    source: '$zhi_qiai:1',
+    target: '恨我无时谋，譬诸具官臣。',
+  },
+  {
+    source: '$zhi_qiai:2',
+    target: '鞠躬中坚内，微画无所陈。',
+  },
+
+  {
+    source: '$zhi_shanxi:1',
+    target: '连舫踰万艘，带甲千万人。',
+  },
+  {
+    source: '$zhi_shanxi:2',
+    target: '率彼东南路，将定一举勋。',
+  },
+ 
+  {
+    source: '$wanwei:1',
+    target: '梁沛之间，无子廉焉有今日？',
+  },
+  {
+    source: '$wanwei:2',
+    target: '汝兄弟既为手足，何必苦苦相逼？',
+  }, 
+  {
+    source: '$yuejian:1',
+    target: '吾母仪天下，于节俭处当率先垂范。',
+  },
+  {
+    source: '$yuejian:2',
+    target: '取上为贪，取下为伪，妾则取其中者。',
+  },
+ 
+  {
+    source: '$shameng:1',
+    target: '歃血盟誓，以告神明。',
+  },
+  {
+    source: '$shameng:2',
+    target: '戮办一心，同讨魏贼。',
+  },
+
+  {
+    source: '$jianyu:1',
+    target: '功以才成，业由才广，弃才不用，非长计也。',
+  },
+  {
+    source: '$jianyu:2',
+    target: '舍此不任而防后患，是备风波而废舟楫也。',
+  }, 
+  {
+    source: '$shengxi:1',
+    target: '利治小之宜，秉居静之理。',
+  },
+  {
+    source: '$shengxi:2',
+    target: '外却骆谷之师，内保宁缉之实。',
+  },
+
+  {
+    source: '$qinzheng:1',
+    target: '夫国之有民，犹水之有舟。停则以安，扰则以危。',
+  },
+  {
+    source: '$qinzheng:2',
+    target: '治疾及其未笃，除患贵其未深。',
+  },
+
+  {
+    source: '$jianzhan:1',
+    target: '若能迎天子以兴兵讨贼，大业可成。',
+  },
+  {
+    source: '$jianzhan:2',
+    target: '明公乃当世之雄，谁可匹敌？',
+  },
+  {
+    source: '$duoji:1',
+    target: '将军若献冀州，必安如泰山也。',
+  },
+  {
+    source: '$duoji:2',
+    target: '袁氏得冀州，必厚德将军。',
+  },
+
+  {
+    source: '$wuku:1',
+    target: '损益万枢，竭世运机。',
+  },
+  {
+    source: '$wuku:2',
+    target: '胸藏万卷，充盈如库。',
+  },
+  {
+    source: '$zhi_sanchen:1',
+    target: '贼计已穷，陈兵吴地，可一鼓而下也。',
+  },
+  {
+    source: '$zhi_sanchen:2',
+    target: '伐吴此举，十有九利，惟陛下察之。',
+  },
+  {
+    source: '$miewu:1',
+    target: '倾荡之势已成，石城尽在眼下。',
+  },
+  {
+    source: '$miewu:2',
+    target: '吾军势如破竹，江东六郡唾手可得！',
+  },
+
+/*  {
+    source: '$dingyi:1',
+    target: '经国序民，还需制礼定仪。',
+  },
+  {
+    source: '$dingyi:2',
+    target: '无礼而治世，欲使国泰，安可得哉？',
+  },*/
+  {
+    source: '$fubi:1',
+    target: '辅君弼主，士之所志也。',
+  },
+  {
+    source: '$fubi:2',
+    target: '献策思计，佐定江山。',
+  },
+  {
+    source: '$zuici:1',
+    target: '既为朝堂宁定，吾请辞便是。',
+  },
+  {
+    source: '$zuici:2',
+    target: '国事为先，何惧清名有损。',
+  },
+];
+
 export const promptDescriptions: Word[] = [
   {
     source: 'zhi_qiai:draw',

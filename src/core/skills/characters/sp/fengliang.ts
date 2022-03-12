@@ -10,6 +10,10 @@ import { KunFen, KunFenEX } from './kunfen';
 
 @AwakeningSkill({ name: 'fengliang', description: 'fengliang_description' })
 export class FengLiang extends TriggerSkill {
+  public get RelatedSkills(): string[] {
+    return ['tiaoxin'];
+  }
+
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PlayerDyingEvent>, stage?: AllStage): boolean {
     return stage === PlayerDyingStage.PlayerDying;
   }

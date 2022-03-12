@@ -83,6 +83,7 @@ export class WuShuangShadow extends TriggerSkill {
         const { responseToEvent } = jinkEvent;
         const slashEvent = responseToEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
         canUse =
+          jinkEvent.toCardIds !== undefined &&
           Sanguosha.getCardById(jinkEvent.cardId).GeneralName === 'jink' &&
           slashEvent &&
           Sanguosha.getCardById(slashEvent.cardId).GeneralName === 'slash' &&
@@ -153,7 +154,7 @@ export class WuShuangShadow extends TriggerSkill {
         };
         EventPacker.addMiddleware({ tag: this.Name, data: true }, useJinkEvent);
         await room.useCard(useJinkEvent, true);
-        if (!EventPacker.isTerminated(useJinkEvent)) {
+        if (!EventPacker.terminate(useJinkEvent) || useJinkEvent.toCardIds) {
           EventPacker.recall(jinkEvent);
         }
       }

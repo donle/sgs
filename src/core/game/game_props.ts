@@ -29,6 +29,7 @@ export const enum GameCharacterExtensions {
   Decade = 'decade',
   Limited = 'limited',
   Biographies = 'biographies',
+  Mobile = 'mobile',
   Wisdom = 'wisdom',
   Sincerity = 'sincerity',
   Pve = 'pve',

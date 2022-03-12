@@ -10,6 +10,14 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CommonSkill({ name: 'jizhi', description: 'jizhi_description' })
 export class JiZhi extends TriggerSkill {
+  public get RelatedCharacters(): string[] {
+    return ['lukang', 'god_simayi'];
+  }
+
+  public audioIndex(characterName?: string) {
+    return characterName && this.RelatedCharacters.includes(characterName) ? 1 : 2;
+  }
+
   isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
     return stage === PlayerPhase.PhaseFinish;
   }

@@ -18,6 +18,7 @@ import { Sanguosha } from 'core/game/engine';
 import {
   CardEffectStage,
   CardMoveStage,
+  CardUseStage,
   ChainLockStage,
   DamageEffectStage,
   DrawCardStage,
@@ -90,6 +91,10 @@ export class StandardGameProcessor extends GameProcessor {
       [players[0], players[lordIndex]] = [players[lordIndex], players[0]];
       [players[0].Position, players[lordIndex].Position] = [players[lordIndex].Position, players[0].Position];
     }
+  }
+
+  public fixCurrentPosition(playerPosition: number) {
+    this.playerPositionIndex = playerPosition;
   }
 
   protected async askForChoosingNationalities(playerId: PlayerId) {
@@ -419,6 +424,12 @@ export class StandardGameProcessor extends GameProcessor {
           GameEventIdentifiers.GameBeginEvent,
           EventPacker.createIdentifierEvent(GameEventIdentifiers.GameBeginEvent, {}),
         );
+
+        const circleStartEvent: ServerEventFinder<GameEventIdentifiers.CircleStartEvent> = {};
+        await this.onHandleIncomingEvent(
+          GameEventIdentifiers.CircleStartEvent,
+          EventPacker.createIdentifierEvent(GameEventIdentifiers.CircleStartEvent, circleStartEvent),
+        );
       } else if (!this.inExtraRound) {
         if (this.playerPositionIndex < lastPlayerPosition) {
           this.room.nextCircle();
@@ -746,6 +757,7 @@ export class StandardGameProcessor extends GameProcessor {
       for (const player of this.room.getAlivePlayersFrom(this.CurrentPlayer.Id)) {
         notifierAllPlayers.push(player.Id);
         if (
+          event.disresponsiveList?.includes(player.Id) ||
           EventPacker.isDisresponsiveEvent(event, true) ||
           (!player.hasCard(this.room, wuxiekejiMatcher) &&
             this.room.GameParticularAreas.find(areaName =>
@@ -812,7 +824,7 @@ export class StandardGameProcessor extends GameProcessor {
 
       if (cardUseEvent) {
         await this.room.useCard(cardUseEvent, true);
-        if (!EventPacker.isTerminated(cardUseEvent)) {
+        if (!EventPacker.terminate(cardUseEvent) || event.isCancelledOut) {
           await this.room.trigger(event, CardEffectStage.CardEffectCancelledOut);
 
           event.isCancelledOut && EventPacker.terminate(event);
@@ -860,7 +872,7 @@ export class StandardGameProcessor extends GameProcessor {
           };
           await this.room.useCard(jinkUseEvent, true);
 
-          if (!EventPacker.isTerminated(jinkUseEvent)) {
+          if (!EventPacker.terminate(jinkUseEvent) || event.isCancelledOut) {
             await this.room.trigger(event, CardEffectStage.CardEffectCancelledOut);
             event.isCancelledOut && EventPacker.terminate(event);
           }
@@ -1522,6 +1534,9 @@ export class StandardGameProcessor extends GameProcessor {
 
     if (!event.withoutInvokes) {
       await this.iterateEachStage(identifier, event, onActualExecuted);
+
+      await this.room.trigger(event, CardUseStage.CardUseFinishedEffect);
+
       if (this.room.isCardOnProcessing(event.cardId)) {
         await this.room.moveCards({
           movingCards: [{ card: event.cardId, fromArea: CardMoveArea.ProcessingArea }],
@@ -1894,18 +1909,25 @@ export class StandardGameProcessor extends GameProcessor {
     let fromArea: CardMoveArea = CardMoveArea.DrawStack;
     const { toId, bySkill, byCard, judgeCardId } = event;
 
-    const ownerId = this.room.getCardOwnerId(judgeCardId);
+    let ownerId = this.room.getCardOwnerId(judgeCardId);
     if (ownerId) {
       const cardArea = (this.room.getPlayerById(ownerId).cardFrom(judgeCardId) as any) as CardMoveArea | undefined;
       fromArea = cardArea === undefined ? fromArea : cardArea;
     }
 
+    if (this.room.getPlayerById(toId).getOutsideAreaNameOf(judgeCardId)) {
+      fromArea = CardMoveArea.OutsideArea;
+      ownerId = toId;
+    }
+
     await this.room.moveCards({
       movingCards: [{ card: judgeCardId, fromArea }],
+      fromId: fromArea !== CardMoveArea.DrawStack ? ownerId : undefined,
       moveReason: CardMoveReason.ActiveMove,
       toArea: CardMoveArea.ProcessingArea,
       proposer: toId,
       movedByReason: CardMovedBySpecifiedReason.JudgeProcess,
+      triggeredBySkills: bySkill ? [bySkill] : undefined,
     });
 
     await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
@@ -1933,13 +1955,14 @@ export class StandardGameProcessor extends GameProcessor {
       }
     });
 
-    if (this.room.getCardOwnerId(event.judgeCardId) === undefined) {
+    if (this.room.isCardOnProcessing(event.judgeCardId)) {
       await this.room.moveCards({
         movingCards: [{ card: event.judgeCardId, fromArea: CardMoveArea.ProcessingArea }],
         moveReason: CardMoveReason.PlaceToDropStack,
         toArea: CardMoveArea.DropStack,
         proposer: event.toId,
         movedByReason: CardMovedBySpecifiedReason.JudgeProcess,
+        triggeredBySkills: bySkill ? [bySkill] : undefined,
       });
     }
 

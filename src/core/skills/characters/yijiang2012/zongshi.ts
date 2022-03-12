@@ -14,6 +14,10 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'zongshi', description: 'zongshi_description' })
 export class ZongShi extends RulesBreakerSkill {
+  public audioIndex(): number {
+    return 0;
+  }
+
   public breakAdditionalCardHoldNumber(room: Room): number {
     const nations = room.AlivePlayers.reduce<CharacterNationality[]>((allNations, player) => {
       if (!allNations.includes(player.Nationality)) {

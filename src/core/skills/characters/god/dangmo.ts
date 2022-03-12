@@ -51,7 +51,7 @@ export class DangMo extends TriggerSkill {
   }
 
   public targetFilter(room: Room, owner: Player, targets: PlayerId[]) {
-    return targets.length <= owner.Hp - 1;
+    return targets.length > 0 && targets.length <= owner.Hp - 1;
   }
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {

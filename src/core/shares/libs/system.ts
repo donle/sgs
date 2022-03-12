@@ -2,11 +2,12 @@ import { CardId } from 'core/cards/libs/card_props';
 import { CharacterNationality } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea, PlayerId, PlayerRole } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { QuanJi, TunTian, WuKu, ZhengRong } from 'core/skills';
+import { BaiYi, JingLve, QuanJi, TunTian, WuKu, ZhengRong } from 'core/skills';
 import { ZuoXing } from 'core/skills/characters/god/zuoxing';
 import { MouLi } from 'core/skills/characters/sincerity/mouli';
+import { GuJu } from 'core/skills/characters/sp/guju';
 import { LiangZhu } from 'core/skills/characters/sp/liangzhu';
 import { MarkEnum } from '../types/mark_list';
 import { Precondition } from './precondition/precondition';
@@ -79,11 +80,11 @@ export namespace System {
   }
 
   export const SideEffectSkillAppliers: { [K in SideEffectSkillApplierEnum]: SideEffectSkillApplierFunc } = {
-    [SideEffectSkillApplierEnum.ZhiBa]: (player: Player, room: Room) => {
-      return player.Nationality === CharacterNationality.Wu && player.Role !== PlayerRole.Lord;
+    [SideEffectSkillApplierEnum.ZhiBa]: (player: Player, room: Room, sourceId: PlayerId) => {
+      return player.Nationality === CharacterNationality.Wu && player.Id !== sourceId;
     },
-    [SideEffectSkillApplierEnum.HuangTian]: (player: Player, room: Room) => {
-      return player.Nationality === CharacterNationality.Qun && player.Role !== PlayerRole.Lord;
+    [SideEffectSkillApplierEnum.HuangTian]: (player: Player, room: Room, sourceId: PlayerId) => {
+      return player.Nationality === CharacterNationality.Qun && player.Id !== sourceId;
     },
     [SideEffectSkillApplierEnum.XianSi]: (player: Player, room: Room, sourceId: PlayerId) => {
       return player.Id !== sourceId;
@@ -113,6 +114,9 @@ export namespace System {
     Zili = 'zili',
     GodTianYi = 'god_tianyi',
     FanXiang = 'fanxiang',
+    JuYi = 'juyi',
+    BaiJia = 'baijia',
+    ShanLi = 'shanli',
   }
 
   export const AwakeningSkillApplier: { [K in AwakeningSkillApplierEnum]: AwakeningSkillApplierFunc } = {
@@ -169,6 +173,15 @@ export namespace System {
     [AwakeningSkillApplierEnum.FanXiang]: (room: Room, player: Player) => {
       const players = player.getFlag<PlayerId[]>(LiangZhu.Name);
       return players && players.find(p => room.getPlayerById(p).LostHp > 0) !== undefined;
+    },
+    [AwakeningSkillApplierEnum.JuYi]: (room: Room, player: Player) => {
+      return player.MaxHp > room.AlivePlayers.length;
+    },
+    [AwakeningSkillApplierEnum.BaiJia]: (room: Room, player: Player) => {
+      return player.getFlag<number>(GuJu.Name) >= 7;
+    },
+    [AwakeningSkillApplierEnum.ShanLi]: (room: Room, player: Player) => {
+      return player.hasUsedSkill(BaiYi.Name) && (player.getFlag<PlayerId[]>(JingLve.Name) || []).length >= 2;
     },
   };
 }

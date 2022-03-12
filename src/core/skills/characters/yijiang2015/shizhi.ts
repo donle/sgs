@@ -12,6 +12,10 @@ import { CompulsorySkill, PersistentSkill, ShadowSkill } from 'core/skills/skill
 
 @CompulsorySkill({ name: 'shizhi', description: 'shizhi_description' })
 export class ShiZhi extends TriggerSkill {
+  public audioIndex(): number {
+    return 0;
+  }
+
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage): boolean {
     return stage === DamageEffectStage.AfterDamageEffect;
   }

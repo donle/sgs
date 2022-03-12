@@ -88,6 +88,10 @@ export class MinSiShadow extends TriggerSkill implements OnDefineReleaseTiming {
     return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
   }
 
+  public get Muted() {
+    return true;
+  }
+
   public isAutoTrigger(): boolean {
     return true;
   }

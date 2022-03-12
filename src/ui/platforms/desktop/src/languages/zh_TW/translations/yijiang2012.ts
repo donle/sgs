@@ -48,6 +48,8 @@ export const characterDictionary: Word[] = [
   { source: 'liubiao', target: '劉表' },
   { source: 'zishou', target: '自守' },
   { source: 'zongshi', target: '宗室' },
+
+  { source: 'decade_dangxian', target: '當先' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -146,6 +148,175 @@ export const skillDescriptions: Word[] = [
     source: 'zongshi_description',
     target:
       '<b>鎖定技</b>，你的手牌上限+X（X為存活勢力數）；你的回合外，若你的手牌數不小於手牌上限，無色牌對你無效且你不能成為延時類錦囊牌的目標。',
+  },
+  {
+    source: 'decade_dangxian_description',
+    target:
+      '<b>鎖定技</b>，回合開始時，你可以失去1點體力並隨機獲得棄牌堆裏的一張【殺】，無論你是否失去體力，你執行一個額外的出牌階段。',
+  },
+];
+
+export const skillAudios: Word[] = [
+  {
+    source: '$zhenlie:1',
+    target: '忠貞與國，節烈與身！',
+  },
+  {
+    source: '$zhenliu:2',
+    target: '我輩雖女流，烈膽勝鬚眉！',
+  },
+  {
+    source: '$miji:1',
+    target: '孤城臨險，需出奇計。',
+  },
+  {
+    source: '$miji:2',
+    target: '祕計九出，佐君平賊！',
+  },
+
+  {
+    source: '$qice:1',
+    target: '傾力爲國，算無遺策。',
+  },
+  {
+    source: '$qice:2',
+    target: '奇策在此，誰與爭鋒？',
+  },
+  {
+    source: '$zhiyu:1',
+    target: '大勇若怯，大智如愚。',
+  },
+  {
+    source: '$zhiyu:2',
+    target: '愚者既出，智者何存？',
+  },
+
+  {
+    source: '$quanji:1',
+    target: '備兵馴馬，以待戰機。',
+  },
+  {
+    source: '$quanji:2',
+    target: '避其鋒芒，權且忍讓。',
+  },
+  {
+    source: '$zili:1',
+    target: '金鱗，豈是池中之物！',
+  },
+  {
+    source: '$zili:2',
+    target: '千載一時，鼎足而立！',
+  },
+  {
+    source: '$paiyi:1',
+    target: '艾命不遵，死有餘辜。',
+  },
+  {
+    source: '$paiyi:2',
+    target: '非我族類，其心必異。',
+  },
+
+  {
+    source: '$fuhun:1',
+    target: '不雪父仇，誓不罷休！',
+  },
+  {
+    source: '$fuhun:2',
+    target: '承父遺志，橫掃叛賊！',
+  },
+
+  {
+    source: '$dangxian:1',
+    target: '誰言蜀漢已無大將！',
+  },
+  {
+    source: '$dangxian:2',
+    target: '老將雖白髮，寶刀刃猶',
+  },
+  {
+    source: '$fuli:1',
+    target: '未破敵軍，豈可輕易伏誅？',
+  },
+  {
+    source: '$fuli:2',
+    target: '看老夫再奮身一戰！',
+  },
+
+  {
+    source: '$qianxi:1',
+    target: '吾能斬魏延，亦能斬殺你！',
+  },
+  {
+    source: '$qianxi:2',
+    target: '擒賊先擒王，打蛇打七寸！',
+  },
+
+  {
+    source: '$anxu:1',
+    target: '和鸞雍雍，萬福攸同。',
+  },
+  {
+    source: '$anxu:2',
+    target: '君子樂胥，萬邦之屏。',
+  },
+  {
+    source: '$zhuiyi:1',
+    target: '終其永懷，戀心殷殷。',
+  },
+  {
+    source: '$zhuiyi:2',
+    target: '妾心所繫，如月之恆。',
+  },
+
+  {
+    source: '$lihuo:1',
+    target: '引兇戾之火，以潰敵軍！',
+  },
+  {
+    source: '$lihuo:2',
+    target: '熊熊天火，焚盡逆賊！',
+  },
+  {
+    source: '$chunlao:1',
+    target: '醇酒佳釀杯中飲，醉酒提壺力千鈞！',
+  },
+  {
+    source: '$chunlao:2',
+    target: '身披瘡痍，唯酒能醫。',
+  },
+
+  {
+    source: '$gongqi:1',
+    target: '馬踏飛箭，弓騎無雙！',
+  },
+  {
+    source: '$gongqi:2',
+    target: '提弓上馬，箭礪八方！',
+  },
+  {
+    source: '$jiefan:1',
+    target: '煩憂千萬，且看我一刀解之。',
+  },
+  {
+    source: '$jiefan:2',
+    target: '莫道雄兵屬北地，解煩威名天下揚。',
+  },
+
+  {
+    source: '$zishou:1',
+    target: '願行仁義之道，何愁人心不歸。',
+  },
+  {
+    source: '$zishou:2',
+    target: '穩據江漢，坐觀時變。',
+  },
+  {
+    source: '$zongshi:1',
+    target: '',
+  },
+  {
+    source: '$zongshi:2',
+    target: '',
   },
 ];
 
