@@ -5,7 +5,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'xsp_liubei', target: '刘备' },
   { source: 'zhaolie', target: '昭烈' },
-  { source: 'spshichou', target: '誓仇' },
+  { source: 'liubei_shichou', target: '誓仇' },
 
   { source: 'yangxiu', target: '杨修' },
   { source: 'danlao', target: '啖酪' },
@@ -182,7 +182,7 @@ export const skillDescriptions: Word[] = [
   },
 
   {
-    source: 'shichou_description',
+    source: 'liubei_shichou_description',
     target:
       '<b>主公技</b>，<b>限定技</b>，准备阶段开始时，你可以交给一名其他非蜀势力角色1张牌。当你受到伤害时，该角色受到等量伤害，其与你摸等量伤害张牌。',
   },
