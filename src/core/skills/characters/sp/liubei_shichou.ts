@@ -66,7 +66,7 @@ export class SPLiuBeiShiChou extends TriggerSkill {
       triggeredBySkills: [this.Name],
     });
     await room.obtainSkill(fromId, SPLiuBeiShiChouBuff.Name);
-    room.getPlayerById(toId).setFlag<boolean>('spshichou', true);
+    room.getPlayerById(toId).setFlag<boolean>(SPLiuBeiShiChou.Name, true);
     return true;
   }
 }
@@ -91,7 +91,7 @@ export class SPLiuBeiShiChouBuff extends TriggerSkill {
     const { triggeredOnEvent, fromId } = event;
     const damageEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
     for (const player of room.getOtherPlayers(fromId)) {
-      if (room.getFlag<boolean>(player.Id, 'spshichou') === true) {
+      if (room.getFlag<boolean>(player.Id, SPLiuBeiShiChou.Name) === true) {
         await room.damage({
           toId: player.Id,
           damage: damageEvent.damage,

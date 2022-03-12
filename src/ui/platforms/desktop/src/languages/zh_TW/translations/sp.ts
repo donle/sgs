@@ -5,7 +5,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'xsp_liubei', target: '劉備' },
   { source: 'zhaolie', target: '昭烈' },
-  { source: 'spshichou', target: '誓仇' },
+  { source: 'liubei_shichou', target: '誓仇' },
 
   { source: 'yangxiu', target: '楊修' },
   { source: 'danlao', target: '啖酪' },
