@@ -439,6 +439,8 @@ export { QuJi } from './characters/sp/quji';
 export { ZhuiJi } from './characters/sp/zhuiji';
 export { ShiChou } from './characters/sp/shichou';
 export { ZhenWei, ZhenWeiClear } from './characters/sp/zhenwei';
+export { ZhaoLie } from './characters/sp/zhaolie';
+export { SPLiuBeiShiChou, SPLiuBeiShiChouBuff } from './characters/sp/liubei_shichou';
 
 export { TuShe } from './characters/spark/tushe';
 export { LiMu, LiMuShadow } from './characters/spark/limu';
