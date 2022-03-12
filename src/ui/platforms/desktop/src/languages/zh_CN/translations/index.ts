@@ -1,5 +1,6 @@
 import * as biographiesCharacterDictionary from './biopraphies';
 import * as cardsDictionary from './card';
+import * as decadeCharactersDictionary from './decade';
 import * as fireCharactersDictionary from './fire';
 import * as forestCharactersDictionary from './forest';
 import * as oneVersusTwoCharactersDictonary from './game_mode/1v2';
@@ -14,7 +15,6 @@ import * as shadowCharacterDictionary from './shadow';
 import * as sincerityCharactersDictionary from './sincerity';
 import * as spCharacterDictionary from './sp';
 import * as sparkCharactersDictionary from './spark';
-import * as decadeCharactersDictionary from './decade';
 import * as standardCharactersDictionary from './standard';
 import * as thunderCharactersDictionary from './thunder';
 import * as windCharactersDictionary from './wind';

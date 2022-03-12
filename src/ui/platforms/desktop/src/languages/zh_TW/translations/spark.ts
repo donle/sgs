@@ -124,6 +124,136 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
+export const skillAudios: Word[] = [
+  {
+    source: '$weilu:1',
+    target: '賊人勢大，須從長計議。',
+  },
+  {
+    source: '$weilu:2',
+    target: '時機未到，先行撤退。',
+  },
+  {
+    source: '$zengdao:1',
+    target: '有功賞之，有過罰之。',
+  },
+  {
+    source: '$zengdao:2',
+    target: '治軍之道，功過分明。',
+  },
+
+  {
+    source: '$guolun:1',
+    target: '品過是非，討評好壞。',
+  },
+  {
+    source: '$guolun:2',
+    target: '若有天下太平時，必討四海之內才。',
+  },
+  {
+    source: '$songsang:1',
+    target: '送喪至東吳，使命已完。',
+  },
+  {
+    source: '$songsang:2',
+    target: '送喪雖至，吾與孝則得相交。',
+  },
+  {
+    source: '$zhanji:1',
+    target: '功曹之恩，吾必有展驥之機。',
+  },
+  {
+    source: '$zhanji:2',
+    target: '展吾驥足，施吾羽翅。',
+  },
+
+  {
+    source: '$guanwei:1',
+    target: '今日宴請諸位，有要事相商。',
+  },
+  {
+    source: '$guanwei:2',
+    target: '天下未定，請主公以大局爲重。',
+  },
+  {
+    source: '$gongqing:1',
+    target: '爾輩何故與降虜交善！',
+  },
+  {
+    source: '$gongqing:2',
+    target: '豪將在外，增兵必成禍患啊！',
+  },
+
+  {
+    source: '$guanchao:1',
+    target: '朝夕之間，可知所進退。',
+  },
+  {
+    source: '$guanchao:2',
+    target: '月盈，潮起晨暮也；月虧，潮起日半也。',
+  },
+  {
+    source: '$xunxian:1',
+    target: '督軍之才，子明強於我甚多。',
+  },
+  {
+    source: '$xunxian:2',
+    target: '此間重任，公卿可擔之。',
+  },
+
+  {
+    source: '$duanfa:1',
+    target: '東吳已容不下我，願降以保周全。',
+  },
+  {
+    source: '$duanfa:2',
+    target: '箋書七條，足以表我歸降之心。',
+  },
+  {
+    source: '$youdi:1',
+    target: '身體髮膚，受之父母。',
+  },
+  {
+    source: '$youdi:2',
+    target: '今斷髮以明志，尚不可證吾之心意！',
+  },
+
+  {
+    source: '$qinguo:1',
+    target: '爲國勤事，體素精勤。',
+  },
+  {
+    source: '$qinguo:2',
+    target: '忠勤爲國，通達治體。',
+  },
+
+  {
+    source: '$tushe:1',
+    target: '非英傑不圖？吾既謀之且射畢。',
+  },
+  {
+    source: '$tushe:2',
+    target: '漢室衰微，朝綱禍亂，必圖後福。',
+  },
+  {
+    source: '$limu:1',
+    target: '米賊作亂，吾必爲益州自保。',
+  },
+  {
+    source: '$limu:2',
+    target: '廢史立牧，可得一方安定。',
+  },
+
+  {
+    source: '$kannan:1',
+    target: '俊才之傑，材匪戡難。',
+  },
+  {
+    source: '$kannan:2',
+    target: '戡，克也，難，攻之。',
+  },
+];
+
 export const promptDescriptions: Word[] = [
   {
     source: '{0}: please remove a ‘Dao’',

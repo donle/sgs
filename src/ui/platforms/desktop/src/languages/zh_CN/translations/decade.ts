@@ -459,7 +459,6 @@ export const skillAudios: Word[] = [
   },
 ];
 
-
 export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to choose a target with hp less than your hp to deal 0-2 damage to him randomly?',

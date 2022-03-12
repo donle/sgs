@@ -9,6 +9,7 @@ import { ConnectionService } from 'services/connection_service/connection_servic
 import { Button } from 'ui/button/button';
 import { Input } from 'ui/input/input';
 import styles from './message_dialog.module.css';
+import { createRawQuickMessage, quickMessageMaxIndex } from './message_dialog.static';
 
 export type MessageDialogProps = {
   store: RoomStore;
@@ -117,9 +118,9 @@ export class MessageDialog extends React.Component<MessageDialogProps> {
   }
 
   private getQuickChatContents() {
-    const contents:string[] = [];
-    for (let i = 0; i < 23; i++) {
-      contents.push('quickChat:' + i);
+    const contents: string[] = [];
+    for (let i = 0; i <= quickMessageMaxIndex; i++) {
+      contents.push(createRawQuickMessage(i));
     }
 
     return contents;
@@ -205,7 +206,7 @@ export class MessageDialog extends React.Component<MessageDialogProps> {
         <form className={classNames(styles.inputLabel, this.props.className)} onSubmit={this.onClickSendButton}>
           {!this.hideQuickChatItems ? (
             <div className={styles.quickChat}>
-              {[...this.getSkillAudios(), ...(this.getQuickChatContents())].map((content, index) => (
+              {[...this.getSkillAudios(), ...this.getQuickChatContents()].map((content, index) => (
                 <div>
                   <span key={index} className={styles.quickChatItems} onClick={this.onClickQuickChatItem(content)}>
                     {this.props.translator.tr(content)}
@@ -224,7 +225,7 @@ export class MessageDialog extends React.Component<MessageDialogProps> {
             value={this.textMessage}
           />
           <Button className={styles.sendButton} variant="primary" type="button" onClick={this.onClickQuickChatButton}>
-            {this.props.translator.tr('e')}
+            💬
           </Button>
           <Button className={styles.sendButton} variant="primary" disabled={!this.textMessage}>
             {this.props.translator.tr('send')}

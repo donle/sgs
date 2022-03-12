@@ -214,7 +214,6 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
-
 export const skillAudios: Word[] = [
   {
     source: '$bifa:1',

@@ -136,7 +136,6 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
-
 export const skillAudios: Word[] = [
   {
     source: '$qizhi:1',
@@ -171,7 +170,7 @@ export const skillAudios: Word[] = [
     source: '$shenshi:2',
     target: '深中足智，鉴时审情。',
   },
- 
+
   {
     source: '$juzhan:1',
     target: '砍头便砍头，何为怒邪？',
@@ -197,7 +196,7 @@ export const skillAudios: Word[] = [
     source: '$binglve:2',
     target: '奇略兵速，敌未能料之。',
   },
- 
+
   {
     source: '$huaiju:1',
     target: '情深舐犊，怀擢藏橘。',
@@ -290,7 +289,6 @@ export const skillAudios: Word[] = [
     target: '贞节贤良，吾之本心。',
   },
 ];
-
 
 export const promptDescriptions: Word[] = [
   {

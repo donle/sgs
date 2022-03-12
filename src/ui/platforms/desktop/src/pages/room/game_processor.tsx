@@ -412,7 +412,7 @@ export class GameClientProcessor {
     } else if (quickChatMatchArray) {
       const player = this.store.room.getPlayerById(content.playerId);
       this.audioService.playQuickChatAudio(
-        parseInt(quickChatMatchArray[1]) + 1,
+        parseInt(quickChatMatchArray[1], 10) + 1,
         player.Character ? player.Character.Gender : CharacterGender.Male,
       );
 

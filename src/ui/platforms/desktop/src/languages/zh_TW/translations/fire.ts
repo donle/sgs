@@ -40,6 +40,136 @@ export const characterDictionary: Word[] = [
   { source: '#xueyi', target: '血裔' },
 ];
 
+export const skillAudios: Word[] = [
+  {
+    source: '$qiangxi:1',
+    target: '鐵戟雙提八十斤，威風凜凜震乾坤！',
+  },
+  {
+    source: '$qiangxi:2',
+    target: '勇字當頭，義字當先！',
+  },
+
+  {
+    source: '$quhu:1',
+    target: '驅虎傷敵，保我無慮。',
+  },
+  {
+    source: '$quhu:2',
+    target: '無需費我，一兵一卒。',
+  },
+  {
+    source: '$jieming:1',
+    target: '殺身成仁，不負皇恩。',
+  },
+  {
+    source: '$jieming:2',
+    target: '因勢利導，是爲良計。',
+  },
+
+  {
+    source: '$lianhuan:1',
+    target: '連環之策，攻敵之計。',
+  },
+  {
+    source: '$lianhuan:2',
+    target: '鎖鏈連舟，困步難行。',
+  },
+  {
+    source: '$niepan:1',
+    target: '烈火脫胎，涅槃重生。',
+  },
+  {
+    source: '$niepan:2',
+    target: '破而後立，方有大成。',
+  },
+
+  {
+    source: '$bazhen:1',
+    target: '八陣連星，日月同輝。',
+  },
+  {
+    source: '$bazhen:2',
+    target: '此陣變化，豈是汝等可解？',
+  },
+  {
+    source: '$huoji:1',
+    target: '赤壁借東風，燃火滅魏軍。',
+  },
+  {
+    source: '$huoji:2',
+    target: '東風，讓這火燒得再猛烈些吧！',
+  },
+  {
+    source: '$kanpo:1',
+    target: '此計奧妙，我已看破。',
+  },
+  {
+    source: '$kanpo:2',
+    target: '還有什麼是我看不破的呢？',
+  },
+  {
+    source: '$cangzhuo:1',
+    target: '藏巧於拙，用晦而明。',
+  },
+  {
+    source: '$cangzhuo:2',
+    target: '寓清於濁，以屈爲伸。',
+  },
+
+  {
+    source: '$tianyi:1',
+    target: '天降大任，速戰解圍！',
+  },
+  {
+    source: '$tianyi:2',
+    target: '義不從之，天必不佑！',
+  },
+  {
+    source: '$hanzhan:1',
+    target: '伯符，且與我一戰！',
+  },
+  {
+    source: '$hanzhan:2',
+    target: '與君酣戰，快哉快哉！',
+  },
+
+  {
+    source: '$jianchu:1',
+    target: '你這身軀，怎麼能快過我？',
+  },
+  {
+    source: '$jianchu:2',
+    target: '這些，怎麼能擋住我的威力！',
+  },
+
+  {
+    source: '$shuangxiong:1',
+    target: '哥哥，且看我與giao雲一戰！ ——且與他戰個五十回合！',
+  },
+  {
+    source: '$shuangxiong:2',
+    target: '此戰，若有你我一人在此，何懼華雄？ ——定叫他有去無回！',
+  },
+
+  {
+    source: '$luanji:1',
+    target: '誰都擋不住我的箭陣！',
+  },
+  {
+    source: '$luanji:2',
+    target: '我的箭支，準備頗多！',
+  },
+  {
+    source: '$xueyi:1',
+    target: '高貴名門，族裔盛名。',
+  },
+  {
+    source: '$xueyi:2',
+    target: '貴裔之脈，後起之秀！',
+  },
+];
+
 export const skillDescriptions: Word[] = [
   {
     source: 'qiangxi_description',
