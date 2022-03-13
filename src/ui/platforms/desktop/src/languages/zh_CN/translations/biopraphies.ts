@@ -22,6 +22,13 @@ export const characterDictionary: Word[] = [
   { source: 'cixiao:yizi', target: '义子' },
   { source: 'xianshuai', target: '先率' },
   { source: 'panshi', target: '叛弑' },
+
+  { source: 'dongcheng', target: '董承' },
+  { source: 'xuezhao', target: '血诏' },
+
+  { source: 'qiuliju', target: '丘力居' },
+  { source: 'koulve', target: '寇略' },
+  { source: 'suiren', target: '随认' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -59,7 +66,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'cixiao_description',
     target:
-      '准备阶段开始时，你可以选择一名没有“义子”的其他角色，移去场上所有的“义子”标记，其获得1枚“义子”标记。有“义子”标记的角色视为拥有“叛弑”。',
+      '准备阶段开始时，你可以选择一名没有“义子”的其他角色（若场上有“义子”标记，你须先弃置一张牌），移去场上所有的“义子”标记，其获得1枚“义子”标记。有“义子”标记的角色视为拥有“叛弑”。',
   },
   {
     source: 'xianshuai_description',
@@ -70,6 +77,136 @@ export const skillDescriptions: Word[] = [
     source: 'panshi_description',
     target:
       '<b>锁定技</b>，准备阶段开始时，你将一张手牌交给一名拥有技能“慈孝”的其他角色；当你于出牌阶段内使用【杀】对拥有技能“慈孝”的角色造成伤害时，此伤害+1且你结束此阶段。',
+  },
+
+  {
+    source: 'xuezhao_description',
+    target:
+      '出牌阶段限一次，你可以弃置一张手牌，并令一至X名其他角色（X为你的体力值）依次选择是否交给你一张牌，若其：交给你牌，其摸一张牌且你本回合使用【杀】的次数上限+1；未交给你牌，其本回合不能响应你使用的牌。',
+  },
+
+  {
+    source: 'koulve_description',
+    target:
+      '当你于出牌阶段内对其他角色造成伤害后，你可以展示其一张手牌。若此牌为【杀】或伤害类锦囊牌，你获得之。若此牌为红色，你减1点体力上限（若你未受伤则改为失去1点体力），然后摸两张牌。',
+  },
+  {
+    source: 'suiren_description',
+    target:
+      '当你死亡时，你可以将你手牌中所有的【杀】和伤害类锦囊牌交给一名其他角色。',
+  },
+];
+
+export const skillAudios: Word[] = [
+  {
+    source: '$lilu:1',
+    target: '微薄之礼，聊表敬意。',
+  },
+  {
+    source: '$lilu:2',
+    target: '乱狱滋丰，以礼赂之。',
+  },
+  {
+    source: '$yizheng:1',
+    target: '玉树盈阶，望子成龙。',
+  },
+  {
+    source: '$yizheng:2',
+    target: '择善者，翊赞季兴。',
+  },
+
+  {
+    source: '$pingjian:1',
+    target: '识人读心，评鉴推达。',
+  },
+  {
+    source: '$pingjian:2',
+    target: '月旦雅评，试论天下。',
+  }, 
+
+  {
+    source: '$minsi:1',
+    target: '能书会计，心思灵巧。',
+  },
+  {
+    source: '$minsi:2',
+    target: '才情兼备，选入掖庭。',
+  },
+  {
+    source: '$jijing:1',
+    target: '吉梦赐福，顺应天命。',
+  },
+  {
+    source: '$jijing:2',
+    target: '梦之指引，必为吉运。',
+  },
+  {
+    source: '$zhuide:1',
+    target: '思美人，两情悦。',
+  },
+  {
+    source: '$zhuide:2',
+    target: '花香蝶恋，君德妾慕。',
+  }, 
+
+  {
+    source: '$cixiao:1',
+    target: '吾儿奉先，天下无敌！',
+  },
+  {
+    source: '$cixiao:2',
+    target: '父慈子孝，义理为先！',
+  },
+  {
+    source: '$xianshuai:1',
+    target: '九州齐喑，首义嘱吾！',
+  },
+  {
+    source: '$xianshuai:2',
+    target: '雄兵一击，则天下大白！',
+  },
+
+  {
+    source: '$xuezhao:1',
+    target: '奉旨行事，莫敢不从！',
+  },
+  {
+    source: '$xuezhao:2',
+    target: '衣带密诏，当诛曹公！',
+  },
+
+  {
+    source: '$daoji:1',
+    target: '典韦勇猛，盗戟可除。',
+  },
+  {
+    source: '$daoji:2',
+    target: '你的就是我的。',
+  },
+  {
+    source: '$fuzhong:1',
+    target: '身负重任，绝无懈怠！',
+  },
+  {
+    source: '$fuzhong:2',
+    target: '勇冠其军，负重前行！',
+  },
+  
+  {
+    source: '$koulve:1',
+    target: '兵强马壮，时出寇略！',
+  },
+  {
+    source: '$koulve:2',
+    target: '饥则寇略，饱则弃馀。',
+  },
+  {
+    source: '$suiren:1',
+    target: '就交给你了。',
+  },
+  {
+    source: '$suiren:2',
+    target: '我的财富，收好。',
   },
 ];
 
@@ -108,6 +245,10 @@ export const promptDescriptions: Word[] = [
   },
 
   {
+    source: '{0}: do you want to discard a card and choose another player to be your new son?',
+    target: '{0}：你可以弃一张牌，将“义子”标记转移给另一名其他角色',
+  },
+  {
     source: '{0}: do you want to choose another player to be your son?',
     target: '{0}：你可以令一名其他角色获得“义子”标记',
   },
@@ -119,5 +260,15 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: you need to give a handcard to {1}',
     target: '{0}：请将一张手牌交给 {1}',
+  },
+
+  {
+    source: '{0}: do you want to display a card from {1}’s hand?',
+    target: '{0}：你可以展示 {1} 的一张手牌',
+  },
+
+  {
+    source: '{0}: do you want to choose a another player to give him all the damage cards in your hand?',
+    target: '{0}：你可以将手牌中所有的【杀】和伤害类锦囊牌交给一名其他角色',
   },
 ];

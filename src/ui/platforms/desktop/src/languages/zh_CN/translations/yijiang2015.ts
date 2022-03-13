@@ -6,6 +6,7 @@ export const characterDictionary: Word[] = [
   { source: 'caorui', target: '曹叡' },
   { source: 'huituo', target: '恢拓' },
   { source: 'mingjian', target: '明鉴' },
+  { source: 'jian', target: '鉴' },
   { source: 'xingshuai', target: '兴衰' },
 
   { source: 'caoxiu', target: '曹休' },
@@ -30,6 +31,15 @@ export const characterDictionary: Word[] = [
 
   { source: 'quancong', target: '全琮' },
   { source: 'yaoming', target: '邀名' },
+
+  { source: 'sunxiu', target: '孙休' },
+  { source: 'yanzhu', target: '宴诛' },
+  { source: 'yanzhu points: {0}', target: '宴诛[{0}]' },
+  { source: 'yanzhu_ex', target: '宴诛' },
+  { source: '#s_yanzhu_debuff', target: '宴诛（额外受伤）' },
+  { source: 'xingxue', target: '兴学' },
+  { source: 'xingxue_ex', target: '兴学' },
+  { source: 'zhaofu', target: '诏缚' },
 
   { source: 'zhuzhi', target: '朱治' },
   { source: 'anguo', target: '安国' },
@@ -57,7 +67,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'xingshuai_description',
     target:
-      '<b>主公技</b>，当你进入濒死状态时，若你的体力值不大于0，你可以令其他魏势力角色依次选择是否令你回复1点体力。此濒死结算结束后，所有以此法令你回复体力的角色各受到1点伤害。',
+      '<b>主公技</b>，<b>限定技</b>，当你进入濒死状态时，若你的体力值不大于0，你可以令其他魏势力角色依次选择是否令你回复1点体力。此濒死结算结束后，所有以此法令你回复体力的角色各受到1点伤害。',
   },
 
   {
@@ -120,6 +130,32 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'yanzhu_description',
+    target:
+      '出牌阶段限一次，你可以令一名有牌的其他角色选择一项：1.弃置一张牌，且其于其下个回合开始前受到的下一次伤害+1；2.令你获得其装备区里的所有牌，然后修改你的本技能和“兴学”。',
+  },
+  {
+    source: 'yanzhu_ex_description',
+    target:
+      '出牌阶段限一次，你可以令一名其他角色于其下个回合开始前受到的下一次伤害+1。',
+  },
+  {
+    source: 'xingxue_description',
+    target:
+      '结束阶段开始时，你可以令一至X名角色各摸一张牌，然后其中手牌数大于体力值的角色分别将一张牌置于牌堆顶（X为你的体力值）。',
+  },
+  {
+    source: 'xingxue_ex_description',
+    target:
+      '结束阶段开始时，你可以令一至X名角色各摸一张牌，然后其中手牌数大于体力值的角色分别将一张牌置于牌堆顶（X为你的体力上限）。',
+  },
+  {
+    source: 'zhaofu_description',
+    target:
+      '<b>主公技</b>，<b>锁定技</b>，你距离为1的角色视为在其他吴势力角色的攻击范围内。',
+  },
+
+  {
     source: 'anguo_description',
     target:
       '出牌阶段限一次，你可以选择一名其他角色，若其为手牌数最少的角色，其摸一张牌。若其为体力值最少的角色，其回复1点体力。若其为装备区里牌数最少的角色，其从牌堆里随机使用一张装备牌。最后若其有未执行的效果且你满足条件，你依次执行对应效果。',
@@ -143,6 +179,163 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
+export const skillAudios: Word[] = [
+  {
+    source: '$huituo:1',
+    target: '大展宏图，就在今日！',
+  },
+  {
+    source: '$huituo:2',
+    target: '富我大魏，扬我国威！',
+  },
+  {
+    source: '$mingjian:1',
+    target: '你我推心置腹，岂能相负！',
+  },
+  {
+    source: '$mingjian:2',
+    target: '孰忠孰奸，朕尚能明辨！',
+  },
+  {
+    source: '$xingshuai:1',
+    target: '百年兴衰，皆由人，不由天！',
+  },
+  {
+    source: '$xingshuai:2',
+    target: '聚群臣而加勋，隆天子之气运！',
+  },
+
+  {
+    source: '$qingxi:1',
+    target: '虎豹骑倾巢而动，安有不胜之理！',
+  },
+  {
+    source: '$qingxi:2',
+    target: '任尔等固若金汤，虎豹骑可破之！',
+  },
+
+  {
+    source: '$huomo:1',
+    target: '笔墨写春秋，挥毫退万敌！',
+  },
+  {
+    source: '$huomo:2',
+    target: '妙笔在手，研墨在心。',
+  },
+  {
+    source: '$zuoding:1',
+    target: '只有忠心，没有谋略，是不够的。',
+  },
+  {
+    source: '$zuoding:2',
+    target: '承君恩宠，报效国家！',
+  },
+
+  {
+    source: '$zhanjue:1',
+    target: '成败再此一举，杀！',
+  },
+  {
+    source: '$zhanjue:2',
+    target: '此刻唯有死战，安能言降！',
+  },
+  {
+    source: '$qinwang:1',
+    target: '大厦倾危，谁堪栋梁？',
+  },
+  {
+    source: '$qinwang:2',
+    target: '国有危难，哪位将军请战？',
+  },
+
+  {
+    source: '$qiaoshi:1',
+    target: '樵前情窦开，君后寻迹来。',
+  },
+  {
+    source: '$qiaoshi:2',
+    target: '樵薪遇郎君，妾心涟漪生。',
+  },
+  {
+    source: '$yanyu:1',
+    target: '伴君一生，不寂寞。',
+  },
+  {
+    source: '$yanyu:2',
+    target: '感君一回顾，思君朝与暮。',
+  },
+
+  {
+    source: '$wurong:1',
+    target: '策略以入算，果烈以立威！',
+  },
+  {
+    source: '$wurong:2',
+    target: '诈与和亲，不攻可得！',
+  },
+
+  {
+    source: '$yaoming:1',
+    target: '养威持重，不营小利。',
+  },
+  {
+    source: '$yaoming:2',
+    target: '则天而行，作功邀名。',
+  },
+  
+  {
+    source: '$yanzhu:1',
+    target: '觥筹交错，杀人于无形！',
+  },
+  {
+    source: '$yanzhu:2',
+    target: '子烈设宴，意在汝项上人头！',
+  },
+  {
+    source: '$xingxue:1',
+    target: '案古置学官，以敦王化，以隆风俗。',
+  },
+  {
+    source: '$xingxue:2',
+    target: '志善好学，未来可期。',
+  },
+
+  {
+    source: '$anguo:1',
+    target: '安邦定国，臣子分内之事。',
+  },
+  {
+    source: '$anguo:2',
+    target: '止干戈，休战事。',
+  },
+
+  {
+    source: '$huaiyi:1',
+    target: '曹刘可王，孤亦可王！',
+  },
+  {
+    source: '$huaiyi:2',
+    target: '汉失其鹿，天下豪杰当共逐之！',
+  },
+
+  {
+    source: '$jigong:1',
+    target: '此时不战，更待何时？',
+  },
+  {
+    source: '$jigong:2',
+    target: '箭在弦上，不得不发！',
+  },
+  {
+    source: '$shifei:1',
+    target: '若依吾计而行，许昌旦夕可破。',
+  },
+  {
+    source: '$shifei:2',
+    target: '先锋怯战，非谋策之过。',
+  },
+];
+
 export const promptDescriptions: Word[] = [
   {
     source:
@@ -156,7 +349,7 @@ export const promptDescriptions: Word[] = [
   },
   {
     source: '{0}: do you want to let {1} recover 1 hp, then you will take 1 damage?',
-    target: '{0}：你可以令 {1} 回复1点体力，且会在其此次濒死状态结束后受到1点无来源伤害',
+    target: '{0}：你是否令 {1} 回复1点体力，且会在其此次濒死状态结束后受到1点无来源伤害',
   },
 
   {
@@ -224,5 +417,19 @@ export const promptDescriptions: Word[] = [
   {
     source: 'shifei: do you want to choose a target to drop 1 card by you? and you will use/response a virtual Jink',
     target: '饰非：你可以弃置其中一名角色一张牌，视为你使用或打出一张【闪】',
+  },
+
+  {
+    source: '{0}: please discard a card, or you must give {1} all the cards in your eqiup area',
+    target: '{0}；请弃置一张牌，否则你将装备区里的所有牌交给 {1}',
+  },
+
+  {
+    source: '{0}: do you want to choose at most {1} target(s) to draw a card?',
+    target: '{0}；你可以令至多 {1} 名角色各摸一张牌',
+  },
+  {
+    source: '{0}: please put a card onto the top of draw stack',
+    target: '{0}；请选择一张牌置于牌堆顶',
   },
 ];

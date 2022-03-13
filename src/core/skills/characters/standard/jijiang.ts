@@ -14,6 +14,10 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 @CommonSkill({ name: 'jijiang', description: 'jijiang_description' })
 @LordSkill
 export class JiJiang extends ViewAsSkill {
+  public get RelatedCharacters(): string[] {
+    return ['liushan'];
+  }
+
   public canViewAs(): string[] {
     return ['slash'];
   }

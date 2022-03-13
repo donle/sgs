@@ -9,7 +9,7 @@ export class XSPLiuBei extends Character {
   constructor(id: number) {
     super(id, 'xsp_liubei', CharacterGender.Male, CharacterNationality.Shu, 4, 4, GameCharacterExtensions.Standard, [
       skillLoaderInstance.getSkillByName('zhaolie'),
-      ...skillLoaderInstance.getSkillsByName('spshichou'),
+      ...skillLoaderInstance.getSkillsByName('liubei_shichou'),
     ]);
   }
 }

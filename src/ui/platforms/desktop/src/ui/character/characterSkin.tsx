@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import { Character, getNationalityRawText } from 'core/characters/character';
+import { Sanguosha } from 'core/game/engine';
 import { Skill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
@@ -233,7 +234,13 @@ export class CharacterSpec extends React.Component<CharacterSpecProps> {
         this.props.skinName,
       );
     } else {
-      this.props.audioService.playSkillAudio(skillName, this.props.character.Gender, undefined, [], this.props.character.Name);
+      this.props.audioService.playSkillAudio(
+        skillName,
+        this.props.character.Gender,
+        undefined,
+        [],
+        this.props.character.Name,
+      );
     }
   };
   @mobx.action
@@ -256,6 +263,14 @@ export class CharacterSpec extends React.Component<CharacterSpecProps> {
 
   render() {
     this.getSkillName();
+    const relatedSkills =
+      this.skills.length > 0
+        ? this.skills.reduce<Skill[]>((skills, skill) => {
+            skill.RelatedSkills.length > 0 &&
+              skills.push(...skill.RelatedSkills.map(skillName => Sanguosha.getSkillBySkillName(skillName)));
+            return skills;
+          }, [])
+        : [];
     return (
       <div className={styles.characterSpec}>
         <span className={styles.deathButton} onClick={this.onPlayDeathAudio(this.props.character.Name)}>
@@ -265,6 +280,21 @@ export class CharacterSpec extends React.Component<CharacterSpecProps> {
           this.skills.map(skill => (
             <div className={styles.skill} key={skill.Name}>
               <span className={styles.skillName} onClick={this.onPlaySkillAudio(skill.Name, this.props.skinName)}>
+                {this.props.translator.tr(skill.Name)}
+              </span>
+              <span
+                className={styles.skillDescription}
+                dangerouslySetInnerHTML={{ __html: this.props.translator.tr(skill.Description) }}
+              />
+            </div>
+          ))}
+        {relatedSkills.length > 0 && (
+          <span className={styles.relatedSkillTiltle}>{this.props.translator.trx('related skill')}</span>
+        )}
+        {relatedSkills.length > 0 &&
+          relatedSkills.map(skill => (
+            <div className={styles.skill} key={skill.Name}>
+              <span className={classNames(styles.skillName, styles.relatedSkill)} onClick={this.onPlaySkillAudio(skill.Name, this.props.skinName)}>
                 {this.props.translator.tr(skill.Name)}
               </span>
               <span

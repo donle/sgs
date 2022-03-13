@@ -1,87 +1,71 @@
-import { CardId } from 'core/cards/libs/card_props';
-import { CharacterNationality } from 'core/characters/character';
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import { DamageType } from 'core/game/game_props';
-import {
-  AllStage,
-  DamageEffectStage,
-  PhaseStageChangeStage,
-  PlayerDyingStage,
-  PlayerPhaseStages,
-} from 'core/game/stage_processor';
+import { EventProcessSteps, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
+import { AllStage, CardUseStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { TriggerSkill } from 'core/skills/skill';
-import { CompulsorySkill, LimitSkill, LordSkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import { CommonSkill } from 'core/skills/skill_wrappers';
+import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
-@LordSkill
-@LimitSkill({ name: 'spshichou', description: 'spshichou_description' })
-export class SPShiChou extends TriggerSkill {
-  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
-    return stage === PhaseStageChangeStage.StageChanged;
+@CommonSkill({ name: 'shichou', description: 'shichou_description' })
+export class ShiChou extends TriggerSkill {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage?: AllStage): boolean {
+    return stage === CardUseStage.AfterCardTargetDeclared;
   }
 
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    return (
-      content.playerId === owner.Id &&
-      content.toStage === PlayerPhaseStages.PrepareStage &&
-      owner.getPlayerCards().length >= 1
-    );
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): boolean {
+    if (owner.getFlag<PlayerId[]>(this.Name)) {
+      room.removeFlag(owner.Id, this.Name);
+    }
+
+    let canUse: boolean = content.fromId === owner.Id && Sanguosha.getCardById(content.cardId).GeneralName === 'slash';
+
+    if (canUse) {
+      const targets = room
+        .getOtherPlayers(owner.Id)
+        .filter(
+          player =>
+            room.canAttack(owner, player, content.cardId, undefined, true) &&
+            !TargetGroupUtil.getRealTargets(content.targetGroup).includes(player.Id),
+        );
+      canUse = targets.length > 0;
+      if (canUse) {
+        room.setFlag<PlayerId[]>(
+          owner.Id,
+          this.Name,
+          targets.map(player => player.Id),
+        );
+      }
+    }
+
+    return canUse;
   }
 
-  public numberOfTargets(): number {
-    return 1;
+  public targetFilter(room: Room, owner: Player, targets: PlayerId[]) {
+    return targets.length > 0 && targets.length <= Math.max(1, owner.LostHp);
   }
 
-  public isAvailableTarget(owner: PlayerId, room: Room, targetId: PlayerId): boolean {
-    const to = room.getPlayerById(targetId);
-    return to.Nationality === CharacterNationality.Shu && targetId !== owner;
+  public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
+    return room.getFlag<PlayerId[]>(owner, this.Name)?.includes(target);
   }
 
-  public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
-    return true;
-  }
-
-  public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
-    return cards.length === 1;
-  }
-
-  public async onTrigger() {
-    return true;
-  }
-
-  public async onEffect(
+  public getSkillLog(
     room: Room,
-    skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
-    const { toIds,  fromId } = skillUseEvent;
-    const toId = toIds![0];
-    await room.moveCards({
-      movingCards: skillUseEvent.cardIds!.map(cardId => ({ card:cardId, fromArea: room.getPlayerById(fromId).cardFrom(cardId) })),
-      fromId,
-      toId,
-      toArea: CardMoveArea.HandArea,
-      moveReason: CardMoveReason.ActiveMove,
-      proposer: fromId,
-      triggeredBySkills: [this.Name],
-    });
-    await room.obtainSkill(fromId, SPShiChouBuff.Name);
-    room.getPlayerById(toId).setFlag<boolean>('spshichou', true);
-    return true;
-  }
-}
-
-@ShadowSkill
-@PersistentSkill()
-@CompulsorySkill({ name: 'spshichoubuff', description: 'spshichoubuff_description' })
-export class SPShiChouBuff extends TriggerSkill {
-  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
-    return stage === DamageEffectStage.DamagedEffect;
+    owner: Player,
+    event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>,
+  ): PatchedTranslationObject {
+    return TranslationPack.translationJsonPatcher(
+      '{0}: do you want to add at least {1} targets for {2} ?',
+      this.Name,
+      Math.max(1, owner.LostHp),
+      TranslationPack.patchCardInTranslation(event.cardId),
+    ).extract();
   }
 
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
-    return owner.Id === content.toId;
+  public getAnimationSteps(event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): EventProcessSteps {
+    return event.toIds ? [{ from: event.fromId, tos: event.toIds }] : [];
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -89,20 +73,18 @@ export class SPShiChouBuff extends TriggerSkill {
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
-    const { triggeredOnEvent, fromId } = event;
-    const damageEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-    for (const player of room.getOtherPlayers(fromId)) {
-      if (room.getFlag<boolean>(player.Id, 'spshichou') === true) {
-        await room.damage({
-          toId: player.Id,
-          damage: damageEvent.damage,
-          damageType: DamageType.Normal,
-          triggeredBySkills: [this.Name],
-        });
-        await room.drawCards(damageEvent.damage, player.Id);
-        await room.drawCards(damageEvent.damage, damageEvent.toId);
+    const { toIds } = event;
+    if (!toIds) {
+      return false;
+    }
+
+    const targetGroup = (event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>).targetGroup;
+    if (targetGroup) {
+      for (const toId of toIds) {
+        TargetGroupUtil.pushTargets(targetGroup, toId);
       }
     }
+
     return true;
   }
 }

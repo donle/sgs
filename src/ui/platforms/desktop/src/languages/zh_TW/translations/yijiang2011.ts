@@ -163,18 +163,18 @@ export const skillDescriptions: Word[] = [
 export const promptDescriptions: Word[] = [
   {
     source: '{0}: you need to give a handcard to {1}',
-    target: '{0}：你需交給 {1} 一張手牌（若不為紅桃則 {1} 摸一張牌），否則失去1點體力',
+    target: '{0}：你需交給 {1} 一張手牌（若不爲紅桃則 {1} 摸一張牌），否則失去1點體力',
   },
 
   { source: 'xuanhuo:attack', target: '選項一' },
   { source: 'xuanhuo:give', target: '選項二' },
   {
     source: '{0}: please choose xuanhuo options: {1} {2}',
-    target: '{0}：選項一：視為對 {1} 使用一張任意【殺】或【決鬥】；選項二：交給 {2} 所有手牌',
+    target: '{0}：選項一：視爲對 {1} 使用一張任意【殺】或【決鬥】；選項二：交給 {2} 所有手牌',
   },
   {
     source: '{0}: please choose xuanhuo attack options: {1}',
-    target: '{0}：請選擇視為對 {1} 使用的牌',
+    target: '{0}：請選擇視爲對 {1} 使用的牌',
   },
 
   {
@@ -186,7 +186,7 @@ export const promptDescriptions: Word[] = [
 
   {
     source: '{0}: do you want to prevent the damage to {1} to pick one card in areas?',
-    target: '{0}：你可以防止對 {1} 造成的傷害，然後獲得其區域裡的一張牌',
+    target: '{0}：你可以防止對 {1} 造成的傷害，然後獲得其區域裏的一張牌',
   },
 
   {
@@ -207,14 +207,14 @@ export const promptDescriptions: Word[] = [
 
   {
     source: '{0}: please choose a target who {1} can use slash to',
-    target: '{0}：請選擇 {1} 攻擊範圍內的一名角色作為【殺】的目標',
+    target: '{0}：請選擇 {1} 攻擊範圍內的一名角色作爲【殺】的目標',
   },
 
   {
     source: 'please choose mingce options:{0}',
-    target: '明策：1.視為對 {0} 使用一張【殺】；2.摸一張牌',
+    target: '明策：1.視爲對 {0} 使用一張【殺】；2.摸一張牌',
   },
-  { source: 'mingce:slash', target: '視為使用【殺】' },
+  { source: 'mingce:slash', target: '視爲使用【殺】' },
   { source: 'mingce:draw', target: '摸一張牌' },
 
   {
@@ -224,11 +224,11 @@ export const promptDescriptions: Word[] = [
 
   {
     source: '{0}: do you want to reveal a hand card from {1} ?',
-    target: '{0}：你可以展示 {1} 的一張手牌，若此牌不為基本牌，其棄置之並回復1點體力',
+    target: '{0}：你可以展示 {1} 的一張手牌，若此牌不爲基本牌，其棄置之並回復1點體力',
   },
   {
     source: 'xianzhen: do you want to add {0} as targets of {1}?',
-    target: '陷陣：你可以令 {0} 也成為 {1} 的目標',
+    target: '陷陣：你可以令 {0} 也成爲 {1} 的目標',
   },
 
   {
@@ -242,11 +242,190 @@ export const promptDescriptions: Word[] = [
 
   {
     source: '{0}: please choose two target to move their equipment',
-    target: '{0}：你可以依次選擇兩名角色，先選角色裝備區裡的牌將被移至後選角色',
+    target: '{0}：你可以依次選擇兩名角色，先選角色裝備區裏的牌將被移至後選角色',
   },
 
   {
     source: '{0}: do you want to draw {1} cards?',
     target: '{0}: 是否摸 {1} 張牌?',
+  },
+];
+
+export const skillAudios: Word[] = [
+  {
+    source: '$luoying:1',
+    target: '五月繁花落，懷愁不同秋。',
+  },
+  {
+    source: '$luoying:2',
+    target: '驚風飄白日，光景馳西流。',
+  },
+
+  {
+    source: '$jiushi:1',
+    target: '德祖簞杯酒，吾亦醉撫琴。',
+  },
+  {
+    source: '$jiushi:2',
+    target: '利劍不在掌，結友何須多。',
+  },
+
+  {
+    source: '$chengzhang:1',
+    target: '妙筆趁酒興，文章儘自成。',
+  },
+
+  {
+    source: '$jieyue:1',
+    target: '敵人虛張聲勢，我且將計就計！',
+  },
+  {
+    source: '$jieyue:2',
+    target: '舍，然後纔有得。',
+  },
+
+  {
+    source: '$jueqing:1',
+    target: '博弈此生，終至無情。',
+  },
+  {
+    source: '$jueqing:2',
+    target: '此情已逝，故來決絕！',
+  },
+  {
+    source: '$shangshi:1',
+    target: '情隨傷而逝，恨隨痛而至！',
+  },
+  {
+    source: '$shangshi:2',
+    target: '春華已老紅顏去，此恨綿綿無絕期。',
+  },
+
+  {
+    source: '$sanyao:1',
+    target: '可曾聽說，人言可畏？',
+  },
+  {
+    source: '$sanyao:2',
+    target: '丞相謀略，吾已習得八九。',
+  },
+  {
+    source: '$zhiman:1',
+    target: '巧力勝於蠻力。',
+  },
+  {
+    source: '$zhiman:2',
+    target: '取你一件東西使使。',
+  },
+
+  {
+    source: '$enyuan:1',
+    target: '善因得善果，惡因得惡報。',
+  },
+  {
+    source: '$enyuan:2',
+    target: '私我者贈之瓊瑤，厭我者報之斧鉞。',
+  },
+  {
+    source: '$xuanhuo:1',
+    target: '光以眩目，言以惑人。',
+  },
+  {
+    source: '$xuanhuo:2',
+    target: '我法孝直如何會害你？',
+  },
+
+  {
+    source: '$wuyan:1',
+    target: '不忠不孝之人，不敢開口。',
+  },
+  {
+    source: '$wuyan:2',
+    target: '別跟我說話！我想靜靜。',
+  },
+  {
+    source: '$jujian:1',
+    target: '大賢不可屈就，將軍須當親往。',
+  },
+  {
+    source: '$jujian:2',
+    target: '大漢中興，皆系此人！',
+  },
+
+  {
+    source: '$ganlu:1',
+    target: '玄德實乃佳婿啊。',
+  },
+  {
+    source: '$ganlu:2',
+    target: '好一個郎才女貌，真是天作之合啊。',
+  },
+  {
+    source: '$buyi:1',
+    target: '有我在，定保賢婿無虞！',
+  },
+  {
+    source: '$buyi:2',
+    target: '東吳，豈容汝等兒戲！',
+  },
+
+  {
+    source: '$pojun:1',
+    target: '犯大吳疆土者，盛必擊而破之！',
+  },
+  {
+    source: '$pojun:2',
+    target: '若敢來犯，必叫你大敗而歸！',
+  },
+
+  {
+    source: '$xuanfeng:1',
+    target: '風襲千里，片甲不留！',
+  },
+  {
+    source: '$xuanfeng:2',
+    target: '凌風逐敵，橫掃千軍！',
+  },
+  {
+    source: '$yongjin:1',
+    target: '勇力載舟，長浪奮進！',
+  },
+  {
+    source: '$yongjin:2',
+    target: '以勇拒曹劉，氣吞萬里如虎！',
+  },
+
+  {
+    source: '$mingce:1',
+    target: '如此，霸業可圖也。',
+  },
+  {
+    source: '$mingce:2',
+    target: '如此，一擊可擒也。',
+  },
+  {
+    source: '$zhichi:1',
+    target: '若吾早知如此。',
+  },
+  {
+    source: '$zhichi:2',
+    target: '如今之計，唯有退守，再做決斷。',
+  },
+
+  {
+    source: '$xianzhen:1',
+    target: '攻無不克，戰無不勝！',
+  },
+  {
+    source: '$xianzhen:2',
+    target: '破陣斬將，易如反掌！',
+  },
+  {
+    source: '$jinjiu:1',
+    target: '避嫌遠疑，所以無誤。',
+  },
+  {
+    source: '$jinjiu:2',
+    target: '貶酒闕色，所以無污。',
   },
 ];

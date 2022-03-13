@@ -331,7 +331,7 @@ export abstract class Player implements PlayerInfo {
       }
     }
 
-    for (const [, cards] of Object.entries(this.getOutsideAreaCards)) {
+    for (const [, cards] of Object.entries(this.getOutsideAreaCards())) {
       const realCards = VirtualCard.getActualCards(cards);
       if (realCards.find(card => card === cardId)) {
         return PlayerCardsArea.OutsideArea;
@@ -812,16 +812,16 @@ export abstract class Player implements PlayerInfo {
     return lostSkill;
   }
 
-  public obtainSkill(skillName: string) {
+  public obtainSkill(skillName: string, insertIndex?: number) {
     const skill = Sanguosha.getSkillBySkillName(skillName);
     if (this.playerSkills.includes(skill)) {
       return;
     }
 
-    this.hookedSkills.filter(hookedSkill => hookedSkill !== skill);
-    this.playerSkills.push(skill);
+    this.hookedSkills = this.hookedSkills.filter(hookedSkill => hookedSkill !== skill);
+    insertIndex !== undefined ? this.playerSkills.splice(insertIndex, 0, skill) : this.playerSkills.push(skill);
     for (const shadowSkill of Sanguosha.getShadowSkillsBySkillName(skillName)) {
-      this.hookedSkills.filter(hookedSkill => hookedSkill !== skill);
+      this.hookedSkills = this.hookedSkills.filter(hookedSkill => hookedSkill !== shadowSkill);
       this.playerSkills.push(shadowSkill);
     }
   }
@@ -838,7 +838,7 @@ export abstract class Player implements PlayerInfo {
   }
 
   public removeHookedSkills(skills: Skill[]) {
-    this.hookedSkills.filter(skill => !skills.includes(skill));
+    this.hookedSkills = this.hookedSkills.filter(skill => !skills.includes(skill));
   }
 
   public hasSkill(skillName: string) {
@@ -922,21 +922,13 @@ export abstract class Player implements PlayerInfo {
       return;
     }
 
-    if (this.playerCharacter !== undefined) {
-      this.playerSkills = this.playerSkills.filter(skill => {
-        if (this.playerCharacter!.Skills.includes(skill)) {
-          return false;
-        }
-
-        return true;
-      });
-    }
+    const hasCharacterId = this.playerCharacterId;
 
     this.playerCharacterId = characterId;
     this.playerCharacter = Sanguosha.getCharacterById(this.playerCharacterId);
-    this.playerSkills = this.playerCharacter.Skills.filter(skill =>
+    hasCharacterId || (this.playerSkills = this.playerCharacter.Skills.filter(skill =>
       skill.isLordSkill() ? this.playerRole === PlayerRole.Lord : true,
-    );
+    ));
 
     this.hp = this.playerCharacter.Hp;
     this.maxHp = this.playerCharacter.MaxHp;

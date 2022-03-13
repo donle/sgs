@@ -75,10 +75,10 @@ export const characterDictionary: Word[] = [
 
   { source: 'god_taishici', target: '神太史慈' },
   { source: 'dulie', target: '笃烈' },
+  { source: 'dulie_wei', target: '围' },
   { source: 'powei', target: '破围' },
   { source: 'powei:succeeded', target: '破围[成功]' },
   { source: 'powei:failed', target: '破围[失败]' },
-  { source: 'powei', target: '破围' },
   { source: 'dangmo', target: '荡魔' },
   { source: 'shenzhuo', target: '神著' },
 ];
@@ -235,7 +235,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'god_tianyi_description',
     target:
-      '<b>觉醒技</b>，准备阶段开始时，若所有存活角色均在本局游戏内受到过伤害，你加2点体力上限并回复1点体力，令一名角色获得技能“佐幸”（准备阶段开始时，若场上有体力上限大于1的神郭嘉存活，你可以令其中一名减1点体力上限，然后你于本回合的出牌阶段限一次，你可以视为使用一张普通锦囊牌）。',
+      '<b>觉醒技</b>，准备阶段开始时，若所有存活角色均在本局游戏内受到过伤害，你加2点体力上限并回复1点体力，令一名角色获得技能“佐幸”。',
   },
   {
     source: 'god_huishi_sec_description',
@@ -256,7 +256,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'powei_description',
     target:
-      '<b>使命技</b>，当你使用【杀】对有“围”的角色造成伤害时，移去其一枚“围”标记，并防止此伤害。<br><b>成功</b>：当你使用【杀】结算结束后，若场上没有“围”，你获得技能“神著”<br><b>失败</b>：当你进入濒死状态时，若你的体力小于1，你弃置装备区里的所有牌，回复体力至1点。',
+      '<b>使命技</b>，当你使用【杀】对有“围”的角色造成伤害时，移去其一枚“围”标记，并防止此伤害。<br><b>成功</b>：当你使用【杀】结算结束后，若场上没有“围”，你获得技能“神著”。<br><b>失败</b>：当你进入濒死状态时，若你的体力小于1，你弃置装备区里的所有牌，回复体力至1点。',
   },
   {
     source: 'dangmo_description',
@@ -267,6 +267,310 @@ export const skillDescriptions: Word[] = [
     source: 'shenzhuo_description',
     target:
       '<b>锁定技</b>，你使用【杀】无次数限制；当你使用非转化和非虚拟的【杀】结算结束后，你摸一张牌。',
+  },
+];
+
+export const skillAudios: Word[] = [
+  {
+    source: '$wushen:1',
+    target: '取汝狗头，犹如探囊取物！',
+  },
+  {
+    source: '$wushen:2',
+    target: '还不速速领死！',
+  },
+  {
+    source: '$wuhun:1',
+    target: '拿命来！',
+  },
+  {
+    source: '$wuhun:2',
+    target: '谁来与我同去？',
+  },
+
+  {
+    source: '$gongxin:1',
+    target: '攻城为下，攻心为上。',
+  },
+  {
+    source: '$gongxin:2',
+    target: '我替施主把把脉。',
+  },
+  {
+    source: '$shelie:1',
+    target: '什么都略懂一点，生活更多彩一些。',
+  },
+  {
+    source: '$shelie:2',
+    target: '略懂，略懂。',
+  },
+
+  {
+    source: '$qinyin:1',
+    target: '（柔和的琴声）',
+  },
+  {
+    source: '$qinyin:2',
+    target: '（急促的琴声）',
+  },
+  {
+    source: '$yeyan:1',
+    target: '（燃烧声）让这熊熊业火，焚尽你的罪恶！',
+  },
+  {
+    source: '$yeyan:2',
+    target: '（燃烧声）聆听吧，这献给你的镇魂曲！',
+  },
+
+  {
+    source: '$qixing:1',
+    target: '祈星辰之力，佑我蜀汉！',
+  },
+  {
+    source: '$qixing:2',
+    target: '伏望天恩，誓讨汉贼！',
+  },
+  {
+    source: '$kuangfeng:1',
+    target: '风~~~起~~~！',
+  },
+  {
+    source: '$kuangfeng:2',
+    target: '万事俱备，只欠业火。',
+  },
+  {
+    source: '$dawu:1',
+    target: '此计，可保你一时平安。',
+  },
+  {
+    source: '$dawu:2',
+    target: '此非万全之策，惟惧天雷。',
+  },
+
+  {
+    source: '$guixin:1',
+    target: '山不厌高，海不厌深。',
+  },
+  {
+    source: '$guixin:2',
+    target: '周公吐哺，天下归心。',
+  },
+
+  {
+    source: '$kuangbao:1',
+    target: '哼！',
+  },
+  {
+    source: '$kuangbao:2',
+    target: '嗯~~~~',
+  },
+  {
+    source: '$wumou:1',
+    target: '不管这些了！',
+  },
+  {
+    source: '$wumou:2',
+    target: '哪个说我有勇无谋？',
+  },
+  {
+    source: '$wuqian:1',
+    target: '天王老子也保不住你！',
+  },
+  {
+    source: '$wuqian:2',
+    target: '看我神威！无坚不摧！',
+  },
+  {
+    source: '$shenfen:1',
+    target: '这，才是活生生的地狱！',
+  },
+  {
+    source: '$shenfen:2',
+    target: '凡人们，颤抖吧！这是神之怒火！',
+  },
+  
+  {
+    source: '$renjie:1',
+    target: '忍一时，风平浪静。',
+  },
+  {
+    source: '$renjie:2',
+    target: '退一步，海阔天空。',
+  },
+  {
+    source: '$baiyin:1',
+    target: '老骥伏枥，志在千里。',
+  },
+  {
+    source: '$baiyin:2',
+    target: '烈士暮年，壮心不已。',
+  },
+  {
+    source: '$lianpo:1',
+    target: '一鼓作气，破敌制胜！',
+  },
+  {
+    source: '$lianpo:2',
+    target: '受命于天，既寿永昌！',
+  },
+
+  {
+    source: '$juejing:1',
+    target: '置于死地，方能后生！',
+  },
+  {
+    source: '$juejing:2',
+    target: '背水一战，不胜便死！',
+  },
+  {
+    source: '$longhun:1',
+    target: '常山赵子龙在此！',
+  },
+  {
+    source: '$longhun:2',
+    target: '能屈能伸，才是大丈夫！',
+  },
+
+  {
+    source: '$longnu:1',
+    target: '龙意怒火，汝皆不能逃脱！',
+  },
+  {
+    source: '$longnu:2',
+    target: '龙怒降临，岂是尔等凡人可抗！',
+  },
+  {
+    source: '$liu_jieying:1',
+    target: '结草衔环，报兄弟大恩！',
+  },
+  {
+    source: '$liu_jieying:2',
+    target: '桃园结义，营一世之交！',
+  },
+
+  {
+    source: '$junlve:1',
+    target: '军略绵腹，制敌千里。',
+  },
+  {
+    source: '$junlve:2',
+    target: '文韬武略兼备，方可破敌如破竹。',
+  },
+  {
+    source: '$cuike:1',
+    target: '克险摧难，军略当先。',
+  },
+  {
+    source: '$cuike:2',
+    target: '摧敌心神，克敌计谋。',
+  },
+  {
+    source: '$zhanhuo:1',
+    target: '业火映东水，吴志绽敌营。',
+  },
+  {
+    source: '$zhanhuo:2',
+    target: '绽东吴业火，烧敌军数千。',
+  },
+
+  {
+    source: '$duorui:1',
+    target: '夺敌军锐气，杀敌方士气！',
+  },
+  {
+    source: '$duorui:2',
+    target: '尖锐之势，吾亦可一人夺之。',
+  },
+  {
+    source: '$zhiti:1',
+    target: '江东小儿，安敢啼哭？',
+  },
+  {
+    source: '$zhiti:2',
+    target: '娃闻名止啼，孙损十万休！',
+  },
+
+  {
+    source: '$poxi:1',
+    target: '夜袭敌军，挫其锐气！',
+  },
+  {
+    source: '$poxi:2',
+    target: '受主知遇，袭敌不惧。',
+  },
+  {
+    source: '$jieying:1',
+    target: '裹甲衔枚，劫营如入无人之境！',
+  },
+  {
+    source: '$jieying:2',
+    target: '劫营速战，措手不及！',
+  },
+
+  {
+    source: '$god_huishi:1',
+    target: '聪以知远，明以察微。',
+  },
+  {
+    source: '$god_huishi:2',
+    target: '见微知著，识人心志。',
+  },
+  {
+    source: '$god_tianyi:1',
+    target: '天命靡常，惟德是辅。',
+  },
+  {
+    source: '$god_tianyi:2',
+    target: '可成吾志者，必此人也。',
+  },
+  {
+    source: '$god_huishi_sec:1',
+    target: '丧家之犬，主公实不足虑也。',
+  },
+  {
+    source: '$god_huishi_sec:2',
+    target: '时势兼备，主公复有何忧？',
+  },
+  {
+    source: '$zuoxing:1',
+    target: '以聪虑难，悉咨于上。',
+  },
+  {
+    source: '$zuoxing:2',
+    target: '奉孝不才，愿献勤心。',
+  },
+
+  {
+    source: '$dulie:1',
+    target: '素来言出必践，成吾信义昭彰。',
+  },
+  {
+    source: '$dulie:2',
+    target: '小信如若不成，大信将以何立？',
+  },
+  {
+    source: '$powei:1',
+    target: '弓马齐射洒热血，突破重围显英豪！',
+  },
+  {
+    source: '$powei:2',
+    target: '敌军尚有严防，有待明日再看！',
+  },
+  {
+    source: '$dangmo:1',
+    target: '魔高一尺，道高一丈！',
+  },
+  {
+    source: '$dangmo:2',
+    target: '天魔祸世，吾自荡而除之！',
+  },
+  {
+    source: '$shenzhuo:1',
+    target: '力引强弓百斤，矢出贯手着棼！',
+  },
+  {
+    source: '$shenzhuo:2',
+    target: '箭既已在弦上，吾又岂能不发！',
   },
 ];
 

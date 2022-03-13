@@ -11,6 +11,14 @@ import { CommonSkill, CompulsorySkill, RulesBreakerSkill, ShadowSkill, ViewAsSki
 
 @CommonSkill({ name: 'wusheng', description: 'wusheng_description' })
 export class WuSheng extends ViewAsSkill {
+  public get RelatedCharacters() {
+    return ['guanxingzhangbao', 'guansuo'];
+  }
+
+  public audioIndex(characterName?: string): number {
+    return characterName && this.RelatedCharacters.includes(characterName) ? 1 : 2;
+  }
+
   public canViewAs(): string[] {
     return ['slash'];
   }

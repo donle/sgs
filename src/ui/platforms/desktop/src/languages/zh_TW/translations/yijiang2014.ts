@@ -10,7 +10,7 @@ export const characterDictionary: Word[] = [
   { source: 'shenduan', target: '慎斷' },
   { source: 'yonglve', target: '勇略' },
 
-  { source: 'chenqun', target: '陳群' },
+  { source: 'chenqun', target: '陳羣' },
   { source: 'pindi', target: '品第' },
   { source: 'faen', target: '法恩' },
 
@@ -38,12 +38,13 @@ export const characterDictionary: Word[] = [
   { source: 'fenli', target: '奮勵' },
   { source: 'pingkou', target: '平寇' },
 
-  { source: 'guyong', target: '顧庸' },
+  { source: 'guyong', target: '顧雍' },
   { source: 'shenxing', target: '慎行' },
   { source: 'bingyi', target: '秉壹' },
 
   { source: 'yjcm_jushou', target: '沮授' },
   { source: 'jianying', target: '漸營' },
+  { source: '#jianying', target: '漸營' },
   { source: 'shibei', target: '矢北' },
 
   { source: 'caifuren', target: '蔡夫人' },
@@ -55,7 +56,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'sidi_description',
     target:
-      '結束階段開始時，你可以將一張非基本牌置於你的武將牌上，稱為“司”；其他角色的出牌階段開始時，你可以移去一張“司”，令其此階段內不能使用或打出與此“司”顏色相同的牌。若如此做，此階段結束時，若其於此階段內未使用過【殺】，你視為對其使用一張【殺】，且若其於此階段內未使用過錦囊牌，你摸兩張牌。',
+      '結束階段開始時，你可以將一張非基本牌置於你的武將牌上，稱爲“司”；其他角色的出牌階段開始時，你可以移去一張“司”，令其此階段內不能使用或打出與此“司”顏色相同的牌。若如此做，此階段結束時，若其於此階段內未使用過【殺】，你視爲對其使用一張【殺】，且若其於此階段內未使用過錦囊牌，你摸兩張牌。',
   },
 
   {
@@ -65,20 +66,20 @@ export const skillDescriptions: Word[] = [
   {
     source: 'yonglve_description',
     target:
-      '其他角色的判定階段開始時，你可以棄置其判定區裡的一張牌，然後若該角色：在你的攻擊範圍內，你摸一張牌；不在你的攻擊範圍內，你視為對其使用一張【殺】。',
+      '其他角色的判定階段開始時，你可以棄置其判定區裏的一張牌，然後若該角色：在你的攻擊範圍內，你摸一張牌；不在你的攻擊範圍內，你視爲對其使用一張【殺】。',
   },
 
   {
     source: 'pindi_description',
     target:
-      '出牌階段，你可以棄置一張本回合內你未以此法棄置過的類別的牌，並選擇本回合內你未以此法選擇過的一名其他角色，你選擇一項：1.令其棄置X張牌；2.令其摸X張牌（X為你本回合發動過此技能的次數）。然後若其已受傷，你橫置。',
+      '出牌階段，你可以棄置一張本回合內你未以此法棄置過的類別的牌，並選擇本回合內你未以此法選擇過的一名其他角色，你選擇一項：1.令其棄置X張牌；2.令其摸X張牌（X爲你本回合發動過此技能的次數）。然後若其已受傷，你橫置。',
   },
   { source: 'faen_description', target: '當一名角色的武將牌翻至正面或橫置後，你可以令其摸一張牌。' },
 
   {
     source: 'benxi_description',
     target:
-      '<b>鎖定技</b>，當你於回合內使用牌時，本回合你計算與其他角色的距離-1；你的回合內，若你與所有其他角色的距離均為1，則當你使用【殺】或普通錦囊牌指定唯一目標時，選擇一至兩項：1.此牌目標+1；2.此牌無視防具；3.此牌不能被抵消；4.此牌造成傷害時，你摸一張牌。',
+      '<b>鎖定技</b>，當你於回合內使用牌時，本回合你計算與其他角色的距離-1；你的回合內，若你與所有其他角色的距離均爲1，則當你使用【殺】或普通錦囊牌指定唯一目標時，選擇一至兩項：1.此牌目標+1；2.此牌無視防具；3.此牌不能被抵消；4.此牌造成傷害時，你摸一張牌。',
   },
 
   {
@@ -100,30 +101,35 @@ export const skillDescriptions: Word[] = [
   {
     source: 'zenhui_description',
     target:
-      '當你於出牌階段內使用【殺】或黑色普通錦囊牌指定唯一目標時，你可以令不為此牌目標且可成為此牌目標的一名其他角色選擇一項：1.交給你一張牌，成為此牌的使用者；2.成為此牌的目標，此技能於本回合內失效。',
+      '當你於出牌階段內使用【殺】或黑色普通錦囊牌指定唯一目標時，你可以令不爲此牌目標且可成爲此牌目標的一名其他角色選擇一項：1.交給你一張牌，成爲此牌的使用者；2.成爲此牌的目標，此技能於本回合內失效。',
   },
   {
     source: 'jiaojin_description',
-    target: '當你成為男性角色使用【殺】或普通錦囊牌的目標後，你可以棄置一張裝備牌，然後該牌對你無效且你獲得此牌。',
+    target: '當你成爲男性角色使用【殺】或普通錦囊牌的目標後，你可以棄置一張裝備牌，然後該牌對你無效且你獲得此牌。',
   },
   {
     source: 'fenli_description',
     target:
-      '若你的手牌數為全場最多，你可以跳過摸牌階段；若你的體力值為全場最多，你可以跳過出牌階段；若你的裝備區裡有牌且牌數為全場最多，你可以跳過棄牌階段。',
+      '若你的手牌數爲全場最多，你可以跳過摸牌階段；若你的體力值爲全場最多，你可以跳過出牌階段；若你的裝備區裏有牌且牌數爲全場最多，你可以跳過棄牌階段。',
   },
   {
     source: 'pingkou_description',
-    target: '回合結束時，你可以對一至X名其他角色各造成1點傷害（X為你本回合內跳過的階段數）。',
+    target: '回合結束時，你可以對一至X名其他角色各造成1點傷害（X爲你本回合內跳過的階段數）。',
   },
 
-  { source: 'shenxing_description', target: '出牌階段，你可以棄置兩張牌，然後摸一張牌。' },
+  {
+    source: 'shenxing_description',
+    target:
+      '出牌階段，若X：爲0，你可以摸一張牌；大於0，你可以棄置X張牌，然後摸一張牌（X爲你此階段內發動過本技能的次數，且至多爲2）。',
+  },
   {
     source: 'bingyi_description',
-    target: '結束階段開始時，你可以展示所有手牌，若顏色均相同，你令一至X名角色各摸一張牌（X為你的手牌數）。',
+    target:
+      '結束階段開始時，你可以展示所有手牌，若顏色均相同，你令一至X名角色各摸一張牌（X爲你的手牌數）。若點數也均相同，你摸一張牌。',
   },
   {
     source: 'jianying_description',
-    target: '當你於出牌階段內使用牌時，若此牌與你此階段內使用過的上一張牌的花色或點數相同，你可以摸一張牌。',
+    target: '當你於出牌階段內使用牌時，若此牌與你於此階段內使用過的上一張牌花色或點數相同，你可以摸一張牌；出牌階段限一次，你可以將一張牌當任意基本牌使用（無次數限制，且若你於此階段內使用過的上一張牌有花色，此牌花色視為與之相同）。',
   },
   {
     source: 'shibei_description',
@@ -154,6 +160,154 @@ export const skillDescriptions: Word[] = [
   {
     source: 'jiaozi_description',
     target: '鎖定技，當你造成或受到傷害時，若你的手牌數為全場唯一最多，此傷害+1。',
+  },
+];
+
+export const skillAudios: Word[] = [
+  {
+    source: '$sidi:1',
+    target: '總算困住你了。',
+  },
+  {
+    source: '$sidi:2',
+    target: '你出的了手嗎！',
+  },
+
+  {
+    source: '$shenduan:1',
+    target: '行軍斷策，需慎之又慎！',
+  },
+  {
+    source: '$shenduan:2',
+    target: '爲將者，務當慎行謹斷。',
+  },
+  {
+    source: '$yonglve:1',
+    target: '兵勢勇健，戰勝攻取，無不如志！',
+  },
+  {
+    source: '$yonglve:2',
+    target: '雄才大略，舉無遺策，威震四海！',
+  },
+
+  {
+    source: '$pindi:1',
+    target: '定品尋良驥，中正探人傑。',
+  },
+  {
+    source: '$pindi:2',
+    target: '取才賦職，論能行賞。',
+  },
+  {
+    source: '$faen:1',
+    target: '法禮有度，恩威並施。',
+  },
+  {
+    source: '$faen:2',
+    target: '禮法容情，皇恩浩蕩。',
+  },
+
+  {
+    source: '$benxi:1',
+    target: '北伐曹魏，以弱制強！',
+  },
+  {
+    source: '$benxi:2',
+    target: '引軍漢中，以禦敵襲。',
+  },
+
+  {
+    source: '$qiangzhi:1',
+    target: '容我過目，即刻詠來。',
+  },
+  {
+    source: '$qiangzhi:2',
+    target: '文書強識，纔可博於運籌。',
+  },
+  {
+    source: '$xiantu:1',
+    target: '將軍莫慮，且看此圖。',
+  },
+  {
+    source: '$xiantu:2',
+    target: '吾以誠心相獻，君何躊躇不前！',
+  },
+
+  {
+    source: '$zhongyong:1',
+    target: '赤兔北奔，馬踏鼠膽之輩！',
+  },
+  {
+    source: '$zhongyong:2',
+    target: '青龍夜照，刀斬悖主之賊！',
+  },
+
+  {
+    source: '$shenxing:1',
+    target: '謀而後動，行不容差。',
+  },
+  {
+    source: '$shenxing:2',
+    target: '謀略之道，需慎之又慎。',
+  },
+  {
+    source: '$bingyi:1',
+    target: '秉持心性，心口如一。',
+  },
+  {
+    source: '$bingyi:2',
+    target: '秉忠職守，一生不事二主。',
+  },
+
+  {
+    source: '$zenhui:1',
+    target: '萋兮斐兮，謀欲譖人。',
+  },
+  {
+    source: '$zenhui:2',
+    target: '稍稍譖毀，萬劫不復！',
+  },
+  {
+    source: '$jiaojin:1',
+    target: '憑汝之力，何不自鑑？',
+  },
+  {
+    source: '$jiaojin:2',
+    target: '萬金之軀，豈容狎侮！',
+  },
+
+  {
+    source: '$fenli:1',
+    target: '以逸待勞，坐收漁利。',
+  },
+  {
+    source: '$fenli:2',
+    target: '以主制客，佔盡優勢。',
+  },
+  {
+    source: '$pingkou:1',
+    target: '對敵人仁慈，就是對自己殘忍！',
+  },
+  {
+    source: '$pingkou:2',
+    target: '反守爲攻，直搗黃龍！',
+  },
+
+  {
+    source: '$jianying:1',
+    target: '事須緩圖，欲速不達也。',
+  },
+  {
+    source: '$jianying:2',
+    target: '由緩至急，循循而進。',
+  },
+  {
+    source: '$shibei:1',
+    target: '命系袁氏，一心向北。',
+  },
+  {
+    source: '$shibei:2',
+    target: '矢志於北，盡忠於國！',
   },
 ];
 

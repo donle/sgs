@@ -9,6 +9,10 @@ import { CommonSkill, ViewAsSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'kanpo', description: 'kanpo_description' })
 export class KanPo extends ViewAsSkill {
+  public get RelatedCharacters(): string[] {
+    return ['pangtong'];
+  }
+
   public canViewAs(): string[] {
     return ['wuxiekeji'];
   }

@@ -132,6 +132,14 @@ export abstract class Skill {
     return false;
   }
 
+  public get RelatedCharacters(): string[] {
+    return [];
+  }
+
+  public get RelatedSkills(): string[] {
+    return [];
+  }
+
   public static get Description() {
     return '';
   }
@@ -190,6 +198,10 @@ export abstract class Skill {
 
   public tryToCallAiTrigger<T extends BaseSkillTrigger>(): T | undefined {
     return this.ai as T | undefined;
+  }
+
+  public audioIndex(characterName?: string): number {
+    return 2;
   }
 }
 

@@ -8,6 +8,10 @@ import { CompulsorySkill } from 'core/skills/skill_wrappers';
 
 @CompulsorySkill({ name: 'bazhen', description: 'bazhen_description' })
 export class BaZhen extends BaGuaZhenSkill {
+  public get RelatedCharacters(): string[] {
+    return ['pangtong'];
+  }
+
   async beforeUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     const askForInvoke: ServerEventFinder<GameEventIdentifiers.AskForSkillUseEvent> = {
       toId: event.fromId,

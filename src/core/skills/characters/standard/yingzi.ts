@@ -6,6 +6,14 @@ import { CompulsorySkill, RulesBreakerSkill, ShadowSkill, TriggerSkill } from 'c
 
 @CompulsorySkill({ name: 'yingzi', description: 'yingzi_description' })
 export class YingZi extends TriggerSkill {
+  public get RelatedCharacters(): string[] {
+    return ['sunce', 'gexuan'];
+  }
+
+  public audioIndex(characterName?: string): number {
+    return characterName && characterName === this.RelatedCharacters[1] ? 1 : 2;
+  }
+
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>, stage?: AllStage) {
     return stage === DrawCardStage.CardDrawing;
   }

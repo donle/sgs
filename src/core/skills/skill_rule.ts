@@ -1,5 +1,6 @@
 import { Card, CardType } from 'core/cards/card';
 import { Player } from 'core/player/player';
+import { SheQue } from '.';
 import { QingGangSkill } from './cards/standard/qinggang';
 import { XianZhenNullify } from './characters/yijiang2011/xianzhen';
 import { BenXi } from './characters/yijiang2014/benxi';
@@ -13,7 +14,8 @@ export class UniqueSkillRule {
       case QingGangSkill.Name:
       case XianZhenNullify.Name:
       case BenXi.Name:
-        return toSkill.Name === 'bazhen';
+      case SheQue.Name:
+        return toSkill.Name === 'bazhen' || toSkill.Name === 'linglong';
       default:
         return false;
     }
@@ -24,6 +26,7 @@ export class UniqueSkillRule {
       case QingGangSkill.Name:
       case XianZhenNullify.Name:
       case BenXi.Name:
+      case SheQue.Name:
         return !card.is(CardType.Shield);
       default:
         return true;
@@ -60,7 +63,7 @@ export class UniqueSkillRule {
       return skill.SkillType !== SkillType.Compulsory && owner.hasSkill(skill.Name);
     }
     if (owner.getFlag<boolean>('wuqian')) {
-      return skill.Name === 'bazhen';
+      return skill.Name === 'bazhen' || skill.Name === 'linglong';
     }
 
     return false;

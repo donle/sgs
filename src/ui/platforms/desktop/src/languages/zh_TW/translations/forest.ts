@@ -41,6 +41,176 @@ export const characterDictionary: Word[] = [
   { source: 'weimu', target: '帷幕' },
 ];
 
+export const skillAudios: Word[] = [
+  {
+    source: '$xingshang:1',
+    target: '羣燕辭歸鵠南翔，念君客遊思斷腸。',
+  },
+  {
+    source: '$xingshang:2',
+    target: '霜露紛兮交下，木葉落兮悽悽。',
+  },
+  {
+    source: '$fangzhu:1',
+    target: '國法不可廢，汝先退去。',
+  },
+  {
+    source: '$fangzhu:2',
+    target: '將軍征戰辛苦，孤當贈予良宅。',
+  },
+  {
+    source: '$songwei:1',
+    target: '藩屏大宗，禦侮厭難！',
+  },
+  {
+    source: '$songwei:2',
+    target: '朕承符運，受終革命！',
+  },
+
+  {
+    source: '$duanliang:1',
+    target: '糧不三載，敵軍已犯行軍大忌！',
+  },
+  {
+    source: '$duanliang:2',
+    target: '斷敵糧秣，此戰可勝！',
+  },
+  {
+    source: '$jiezi:1',
+    target: '因糧於敵，故軍食可足也。',
+  },
+  {
+    source: '$jiezi:2',
+    target: '食敵一鍾，當吾二十鍾。',
+  },
+
+  {
+    source: '$huoshou:1',
+    target: '漢人？豈是我等的對手！',
+  },
+  {
+    source: '$huoshou:2',
+    target: '定叫你們有來無回！',
+  },
+  {
+    source: '$zaiqi:1',
+    target: '勝敗乃常事，無妨！',
+  },
+  {
+    source: '$zaiqi:2',
+    target: '漢人奸詐，還是不服，再戰！',
+  },
+
+  {
+    source: '$juxiang:1',
+    target: '今日就讓這羣漢人，長長見識！',
+  },
+  {
+    source: '$juxiang:2',
+    target: '我的大象終於有了用武之地！',
+  },
+  {
+    source: '$lieren:1',
+    target: '有我手中飛刀在，何懼蜀軍！',
+  },
+  {
+    source: '$lieren:2',
+    target: '長矛！飛刀！烈火！都來吧！',
+  },
+
+  {
+    source: '$haoshi:1',
+    target: '來來來，見面分一半。',
+  },
+  {
+    source: '$haoshi:2',
+    target: '拿去拿去，莫跟哥哥客氣！',
+  },
+  {
+    source: '$dimeng:1',
+    target: '合縱連橫，方能以弱勝強。',
+  },
+  {
+    source: '$dimeng:2',
+    target: '以和爲貴，以和爲貴~',
+  },
+
+  {
+    source: '$yinghun:1',
+    target: '提刀奔走，滅敵不休！',
+  },
+  {
+    source: '$yinghun:2',
+    target: '賊寇草莽，我且出戰！',
+  },
+  {
+    source: '$wulie:1',
+    target: '孫武之後，英烈勇戰！',
+  },
+  {
+    source: '$wulie:2',
+    target: '興義之中，忠烈之名。',
+  },
+
+  {
+    source: '$jiuchi:1',
+    target: '有酒不歡？來來來，再飲，再飲！',
+  },
+  {
+    source: '$jiuchi:2',
+    target: '黃金美酒夜光杯，捨我其誰啊？哈哈哈哈哈',
+  },
+  {
+    source: '$roulin:1',
+    target: '美女、美酒、美食...嘿嘿！盡我享用！',
+  },
+  {
+    source: '$roulin:2',
+    target: '嗯~！盡享天下美味~ 呵哈哈哈',
+  },
+  {
+    source: '$baonve:1',
+    target: '不施嚴法怎治亂民？休得囉嗦！',
+  },
+  {
+    source: '$baonve:2',
+    target: '天子在我手裏，我怕誰！',
+  },
+  {
+    source: '$benghuai:1',
+    target: '什麼禮制綱常？我說的，就是綱常！',
+  },
+  {
+    source: '$benghuai:2',
+    target: '誰有權力，誰掌生死！',
+  },
+
+  {
+    source: '$luanwu:1',
+    target: '哼哼哼哼，坐山觀虎鬥。',
+  },
+  {
+    source: '$luanwu:2',
+    target: '哭喊吧，哀求吧，掙扎吧，然後死吧！',
+  },
+  {
+    source: '$wansha:1',
+    target: '我要你三更死，誰敢留你到五更！',
+  },
+  {
+    source: '$wansha:2',
+    target: '神仙難救，神仙難救啊！',
+  },
+  {
+    source: '$weimu:1',
+    target: '你奈我何？',
+  },
+  {
+    source: '$weimu:2',
+    target: '此計傷不到我。',
+  },
+];
+
 export const skillDescriptions: Word[] = [
   { source: 'xingshang_description', target: '當其他角色死亡時，你可以選擇一項：1.獲得其所有牌；2.回複1點體力。' },
   {

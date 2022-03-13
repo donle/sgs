@@ -1,4 +1,5 @@
 import { CharacterGender } from 'core/characters/character';
+import { Sanguosha } from 'core/game/engine';
 import { CharacterSkinInfo } from 'skins/skins';
 import lobbyBGM from './audios/bgm/lobby.mp3';
 import roomBGM from './audios/bgm/room.mp3';
@@ -34,6 +35,10 @@ export class ProdAudioLoader implements AudioLoader {
     return chainAudio;
   }
 
+  async getQuickChatAudio(index: number, gender: CharacterGender): Promise<string> {
+    return (await import(`./audios/quickChats/${gender === CharacterGender.Female ? 'female' : 'male'}/${index}.mp3`)).default;
+  }
+
   async getCardAudio(cardName: string, gender: CharacterGender, characterName?: string): Promise<string> {
     const genderString = gender === CharacterGender.Female ? 'female' : 'male';
     return (await import(`./audios/cards/${genderString}/${cardName}.ogg`)).default;
@@ -45,8 +50,17 @@ export class ProdAudioLoader implements AudioLoader {
     characterName?: string,
     audioIndex?: number,
   ): Promise<string> {
-    if (!audioIndex) audioIndex = Math.round(Math.random() * 1) + 1;
-    return (await import(`./audios/characters/${skillName}${audioIndex}.mp3`)).default;
+    const skill = Sanguosha.getSkillBySkillName(skillName);
+
+    if (!audioIndex) {
+      audioIndex = Math.round(Math.random() * (skill.audioIndex(characterName) - 1)) + 1;
+    }
+
+    if (characterName) {
+      characterName = skill.RelatedCharacters.includes(characterName) ? '.' + characterName : '';
+    }
+
+    return (await import(`./audios/characters/${skillName}${characterName ? characterName : ''}${audioIndex}.mp3`)).default;
   }
 
   async getDeathAudio(characterName: string): Promise<string> {

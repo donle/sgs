@@ -8,6 +8,10 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @AwakeningSkill({ name: 'qianxin', description: 'qianxin_description' })
 export class QianXin extends TriggerSkill {
+  public get RelatedSkills(): string[] {
+    return ['jianyan'];
+  }
+
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage): boolean {
     return stage === DamageEffectStage.AfterDamageEffect;
   }

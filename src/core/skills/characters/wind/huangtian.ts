@@ -74,7 +74,7 @@ export class HuangTianGiveCard extends ActiveSkill {
     selectedTargets: PlayerId[],
     containerCard?: CardId,
   ): boolean {
-    return room.getPlayerById(target).hasSkill(HuangTian.GeneralName);
+    return room.getPlayerById(target).hasSkill(HuangTian.GeneralName) && target !== owner;
   }
 
   public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {

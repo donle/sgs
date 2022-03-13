@@ -64,6 +64,8 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
   sideImage: string | undefined;
   @mobx.observable.ref
   autoHidePlayerName: boolean = true;
+  @mobx.observable.ref
+  hideRelatedSkills: boolean = true;
   private inProcessDialog = false;
 
   private openedDialog: string | undefined;
@@ -243,20 +245,55 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
     this.onTooltipOpeningTimer && clearTimeout(this.onTooltipOpeningTimer);
     this.onTooltipOpened = false;
   };
-  createTooltipContent() {
+
+  @mobx.action
+  private readonly hideOrShowRelatedSkills = () => {
+    this.hideRelatedSkills = !this.hideRelatedSkills;
+  };
+
+  createTooltipContent(getRelatedSkills?: boolean) {
     const { translator, presenter } = this.props;
-    const skills =
+    let skills =
       presenter.ClientPlayer?.CharacterId !== undefined
         ? presenter.ClientPlayer.getPlayerSkills().filter(skill => !skill.isShadowSkill())
         : [];
-    return skills.map((skill, index) => (
-      <div className={styles.skillInfo} key={index}>
-        <div className={styles.skillItem}>
-          <span className={styles.skillName}>{translator.trx(skill.Name)}</span>
-          <span dangerouslySetInnerHTML={{ __html: translator.tr(skill.Description) }} />
-        </div>
-      </div>
-    ));
+    getRelatedSkills &&
+      (skills = skills.reduce<Skill[]>((relatedSkills, skill) => {
+        if (skill.RelatedSkills.length === 0) {
+          return relatedSkills;
+        }
+
+        const notHave = skill.RelatedSkills.filter(skillName => !skills.map(skill => skill.Name).includes(skillName));
+        return relatedSkills.concat(...notHave.map(skillName => Sanguosha.getSkillBySkillName(skillName)));
+      }, []));
+    return getRelatedSkills
+      ? this.hideRelatedSkills
+        ? skills.length > 0 && (
+            <span className={styles.relatedSkillTiltle} onClick={this.hideOrShowRelatedSkills}>
+              {this.props.translator.trx('related skill (click to show)')}
+            </span>
+          )
+        : skills.map((skill, index) => (
+            <div className={styles.skillInfo} key={index}>
+              {index === 0 && (
+                <span className={styles.relatedSkillTiltle} onClick={this.hideOrShowRelatedSkills}>
+                  {this.props.translator.trx('related skill (click to hide)')}
+                </span>
+              )}
+              <div className={styles.skillItem}>
+                <span className={classNames(styles.skillName, styles.relatedSkill)}>{translator.trx(skill.Name)}</span>
+                <span dangerouslySetInnerHTML={{ __html: translator.tr(skill.Description) }} />
+              </div>
+            </div>
+          ))
+      : skills.map((skill, index) => (
+          <div className={styles.skillInfo} key={index}>
+            <div className={styles.skillItem}>
+              <span className={styles.skillName}>{translator.trx(skill.Name)}</span>
+              <span dangerouslySetInnerHTML={{ __html: translator.tr(skill.Description) }} />
+            </div>
+          </div>
+        ));
   }
 
   @mobx.action
@@ -526,7 +563,10 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
             {this.getOutsideAreaCards()}
           </div>
           {this.onTooltipOpened && clientPlayer?.CharacterId !== undefined && (
-            <Tooltip position={['left']}>{this.createTooltipContent()}</Tooltip>
+            <Tooltip position={['left']}>
+              {this.createTooltipContent()}
+              {this.createTooltipContent(true)}
+            </Tooltip>
           )}
         </div>
         <div className={styles.marks}>{this.getOnceSkillMarks()}</div>

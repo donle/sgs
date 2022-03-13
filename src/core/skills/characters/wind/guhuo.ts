@@ -21,6 +21,10 @@ import { ChanYuan } from './chanyuan';
 
 @CommonSkill({ name: 'guhuo', description: 'guhuo_description' })
 export class GuHuo extends ViewAsSkill {
+  public get RelatedSkills(): string[] {
+    return [ChanYuan.Name];
+  }
+
   public canViewAs(): string[] {
     return Sanguosha.getCardNameByType(
       types =>

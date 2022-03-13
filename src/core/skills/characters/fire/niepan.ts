@@ -6,6 +6,10 @@ import { LimitSkill, TriggerSkill } from 'core/skills/skill';
 
 @LimitSkill({ name: 'niepan', description: 'niepan_description' })
 export class NiePan extends TriggerSkill {
+  public get RelatedSkills(): string[] {
+    return ['bazhen', 'huoji', 'kanpo'];
+  }
+
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers>, stage: AllStage) {
     return stage === PlayerDyingStage.RequestRescue;
   }

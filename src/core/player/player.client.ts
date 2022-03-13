@@ -29,9 +29,12 @@ export class ClientPlayer extends Player {
       }
     } else if (!tagName && this.visiblePlayerTags[name] !== undefined) {
       delete this.visiblePlayerTags[name];
-      if (this.visiblePlayers[name] !== undefined) {
-        delete this.visiblePlayers[name];
-      }
+    }
+
+    if (!this.visiblePlayerTags[name]) {
+      delete this.visiblePlayers[name];
+    } else if (visiblePlayers && visiblePlayers.length > 0) {
+      this.visiblePlayers[name] = visiblePlayers;
     }
 
     return super.setFlag(name, value);

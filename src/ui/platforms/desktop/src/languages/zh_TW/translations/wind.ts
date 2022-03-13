@@ -121,6 +121,143 @@ export const skillDescriptions: Word[] = [
   { source: 'piaoling: select a player to obtain the judge card', target: '飄零：選擇一名角色獲得此判定牌' },
 ];
 
+export const skillAudios: Word[] = [
+  {
+    source: '$shensu:1',
+    target: '奔軼絕塵，不留蹤影！',
+  },
+  {
+    source: '$shensu:2',
+    target: '健步如飛，破敵不備！',
+  },
+  {
+    source: '$shebian:1',
+    target: '設變力戰，虜敵千萬！',
+  },
+  {
+    source: '$shebian:2',
+    target: '隨機應變，臨機設變。',
+  },
+
+  {
+    source: '$jushou:1',
+    target: '堅守此地，不退半步。',
+  },
+  {
+    source: '$jushou:2',
+    target: '兵精糧足，守土一方。',
+  },
+  {
+    source: '$jiewei:1',
+    target: '化守爲攻，出奇制勝！',
+  },
+  {
+    source: '$jiewei:2',
+    target: '堅壁清野，以挫敵銳！',
+  },
+
+  {
+    source: '$liegong:1',
+    target: '弓不離手，自有轉機。',
+  },
+  {
+    source: '$liegong:2',
+    target: '箭陣開道，所向無敵！',
+  },
+
+  {
+    source: '$kuanggu:1',
+    target: '反骨狂傲，彰顯本色！',
+  },
+  {
+    source: '$kuanggu:2',
+    target: '只有戰場，能讓我感到興奮。',
+  },
+  {
+    source: '$qimou:1',
+    target: '爲了勝利，可以出其不意。',
+  },
+  {
+    source: '$qimou:2',
+    target: '勇戰不如奇謀。',
+  },
+
+  {
+    source: '$tianxiang:1',
+    target: '碧玉閨秀，只可遠觀。',
+  },
+  {
+    source: '$tianxiang:2',
+    target: '你豈會懂我的美麗？',
+  },
+  {
+    source: '$hongyan:1',
+    target: '紅顏嬌花好，折花門前盼。',
+  },
+  {
+    source: '$hongyan:2',
+    target: '我的容貌，讓你心動了嗎？',
+  },
+  {
+    source: '$piaoling:1',
+    target: '清風拂君，落花飄零。',
+  },
+  {
+    source: '$piaoling:2',
+    target: '花自飄零水自流。',
+  },
+
+  {
+    source: '$buqu:1',
+    target: '戰如熊虎，不惜屈命。',
+  },
+  {
+    source: '$buqu:2',
+    target: '哼，這點小傷算什麼！',
+  },
+  {
+    source: '$fenji:1',
+    target: '百戰之身，奮勇趨前！',
+  },
+  {
+    source: '$fenji:2',
+    target: '兩肋插刀，願付此軀！',
+  },
+
+  {
+    source: '$guhuo:1',
+    target: '這牌，猜對了嗎？',
+  },
+  {
+    source: '$guhuo:2',
+    target: '真真假假，虛實難測。',
+  },
+
+  {
+    source: '$leiji:1',
+    target: '疾雷迅電，不可趨避！',
+  },
+  {
+    source: '$leiji:2',
+    target: '雷霆之誅，滅軍毀城！',
+  },
+  {
+    source: '$guidao:1',
+    target: '鬼道運行，由我把控！',
+  },
+  {
+    source: '$guidao:2',
+    target: '汝之命運，吾來改之！',
+  },
+  {
+    source: '$huangtian:1',
+    target: '黃天法力，萬軍可滅！',
+  },
+  {
+    source: '$huangtian:2',
+    target: '天書庇佑，黃巾可興！',
+  },
+];
 export const promptDescriptions: Word[] = [
   {
     source: '{0}: please choose a target to deal {1} damage?',

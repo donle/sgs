@@ -73,7 +73,7 @@ export class PveHuaShen extends TriggerSkill {
       ],
     };
 
-    room.changePlayerProperties(playerPropertiesChangeEvent);
+    await room.changeGeneral(playerPropertiesChangeEvent);
     const player = room.getPlayerById(ownerId);
 
     await room.moveCards({

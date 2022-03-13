@@ -14,7 +14,7 @@ export class YjcmJuShou extends Character {
       3,
       3,
       GameCharacterExtensions.YiJiang2014,
-      [skillLoaderInstance.getSkillByName('jianying'), ...skillLoaderInstance.getSkillsByName('shibei')],
+      [...skillLoaderInstance.getSkillsByName('jianying'), ...skillLoaderInstance.getSkillsByName('shibei')],
     );
   }
 }

@@ -1,11 +1,6 @@
 import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import {
-  AllStage,
-  CardUseStage,
-  DamageEffectStage,
-  PlayerDyingStage,
-} from 'core/game/stage_processor';
+import { AllStage, CardUseStage, DamageEffectStage, PlayerDyingStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -15,6 +10,10 @@ import { CommonSkill } from 'core/skills/skill_wrappers';
 
 @CommonSkill({ name: 'powei', description: 'powei_description' })
 export class PoWei extends TriggerSkill {
+  public get RelatedSkills(): string[] {
+    return ['shenzhuo'];
+  }
+
   public isAutoTrigger(): boolean {
     return true;
   }
@@ -74,7 +73,7 @@ export class PoWei extends TriggerSkill {
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const { fromId } = event;
     const unknownEvent = event.triggeredOnEvent as ServerEventFinder<
-    GameEventIdentifiers.DamageEvent | GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.PlayerDyingEvent
+      GameEventIdentifiers.DamageEvent | GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.PlayerDyingEvent
     >;
     const identifier = EventPacker.getIdentifier(unknownEvent);
 
@@ -89,7 +88,7 @@ export class PoWei extends TriggerSkill {
     } else {
       room.setFlag<boolean>(fromId, this.Name, false, 'powei:failed');
       const equips = room.getPlayerById(fromId).getCardIds(PlayerCardsArea.EquipArea);
-      equips.length > 0 && room.dropCards(CardMoveReason.SelfDrop, equips, fromId, fromId, this.Name);
+      equips.length > 0 && (await room.dropCards(CardMoveReason.SelfDrop, equips, fromId, fromId, this.Name));
       await room.recover({
         toId: fromId,
         recoveredHp: 1 - room.getPlayerById(fromId).Hp,

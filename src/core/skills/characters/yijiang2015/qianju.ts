@@ -5,6 +5,10 @@ import { CompulsorySkill } from 'core/skills/skill_wrappers';
 
 @CompulsorySkill({ name: 'qianju', description: 'qianju_description' })
 export class QianJu extends RulesBreakerSkill {
+  public audioIndex(): number {
+    return 0;
+  }
+
   public breakOffenseDistance(room: Room, owner: Player): number {
     return owner.LostHp;
   }

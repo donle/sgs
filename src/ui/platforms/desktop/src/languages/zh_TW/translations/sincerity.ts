@@ -58,8 +58,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'guixiu_description',
-    target:
-      '<b>鎖定技</b>，當你受到傷害後，你將武將牌翻至正面朝上；當你的武將牌翻至正面朝上後，你摸一張牌。',
+    target: '<b>鎖定技</b>，當你受到傷害後，你將武將牌翻至正面朝上；當你的武將牌翻至正面朝上後，你摸一張牌。',
   },
 
   {
@@ -85,6 +84,128 @@ export const skillDescriptions: Word[] = [
   {
     source: 'lirang_description',
     target: '出牌階段限一次，你可以棄置所有手牌，將其中一至X張牌交給一名其他角色（X為你的體力值），然後你摸一張牌。',
+  },
+];
+
+export const skillAudios: Word[] = [
+  /*  {
+      source: '$xin_yinju:1',
+      target: '據理直諫，吾人臣本分。',
+    },
+    {
+      source: '$xin_yinju:2',
+      target: '遷徙之計，危涉萬民。',
+    },
+    {
+      source: '$xin_chijie:1',
+      target: '持節阻戰，奉帝賜詔。',
+    },
+    {
+      source: '$xin_chijie:2',
+      target: '此戰不在急，請仲達明瞭。',
+    },*/
+
+  {
+    source: '$yinju:1',
+    target: '據理直諫，吾人臣本分。',
+  },
+  {
+    source: '$yinju:2',
+    target: '遷徙之計，危涉萬民。',
+  },
+  {
+    source: '$chijie:1',
+    target: '持節阻戰，奉帝賜詔。',
+  },
+  {
+    source: '$chijie:2',
+    target: '此戰不在急，請仲達明瞭。',
+  },
+
+  {
+    source: '$mouli:1',
+    target: '司馬氏雖權尊勢重，吾等徐圖亦無不可。',
+  },
+  {
+    source: '$mouli:2',
+    target: '先謀後事者昌，先事後謀者亡！',
+  },
+  {
+    source: '$zifu:1',
+    target: '有心無力，請罪願降。',
+  },
+  {
+    source: '$zifu:2',
+    target: '輿櫬自縛，只求太傅開恩。',
+  },
+
+  {
+    source: '$cunsi:1',
+    target: '子龍，定要保吾兒平安。',
+  },
+  {
+    source: '$cunsi:2',
+    target: '將軍護禪兒，快快突圍！',
+  },
+  {
+    source: '$guixiu:1',
+    target: '通兒女之情意，曉亂世之冷暖。',
+  },
+  {
+    source: '$guixiu:2',
+    target: '深閨藏英秀，獨憐亂世秋。',
+  },
+
+  {
+    source: '$xunyi:1',
+    target: '古有死恩之士，今有殉義之人。',
+  },
+  {
+    source: '$xunyi:2',
+    target: '捨身殉義，爲君效死。',
+  },
+
+  {
+    source: '$heji:1',
+    target: '你我合勢而擊之，區區賊寇，豈會費力？',
+  },
+  {
+    source: '$heji:2',
+    target: '伯符，今日之戰吾必全力攻之。',
+  },
+
+  {
+    source: '$xianghai:1',
+    target: '快快閃開，傷到你們可就不好了，哈哈…',
+  },
+  {
+    source: '$xianghai:2',
+    target: '你自己撞上來的，這可怪不得小爺我。',
+  },
+  {
+    source: '$chuhai:1',
+    target: '有我在此，安敢爲害？',
+  },
+  {
+    source: '$chuhai:2',
+    target: '小小孽畜，還不伏誅？',
+  },
+
+  {
+    source: '$mingshi:1',
+    target: '縱有強權在側，亦不可失吾風骨。',
+  },
+  {
+    source: '$mingshi:2',
+    target: '黜邪崇正，何懼之有？',
+  },
+  {
+    source: '$lirang:1',
+    target: '仁之所至，禮之所及。',
+  },
+  {
+    source: '$lirang:2',
+    target: '施之以禮，還之以德。',
   },
 ];
 

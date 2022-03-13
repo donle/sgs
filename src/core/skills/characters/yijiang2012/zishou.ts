@@ -30,7 +30,8 @@ export class ZiShou extends TriggerSkill {
     return (
       owner.Id === content.fromId &&
       room.CurrentPlayerPhase === PlayerPhase.DrawCardStage &&
-      content.bySpecialReason === CardDrawReason.GameStage
+      content.bySpecialReason === CardDrawReason.GameStage &&
+      content.drawAmount > 0
     );
   }
 

@@ -32,7 +32,7 @@ export class DuanFa extends ActiveSkill implements OnDefineReleaseTiming {
   }
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
-    return cards.length <= owner.MaxHp - (owner.getFlag<number>(this.Name) || 0);
+    return cards.length > 0 && cards.length <= owner.MaxHp - (owner.getFlag<number>(this.Name) || 0);
   }
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {

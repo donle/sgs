@@ -160,6 +160,97 @@ export const skillDescriptions: Word[] = [
   },
 ];
 
+export const promptDescriptions: Word[] = [
+  {
+    source: '{0}: you need to give a handcard to {1}',
+    target: '{0}：你需交给 {1} 一张手牌（若不为红桃则 {1} 摸一张牌），否则失去1点体力',
+  },
+
+  { source: 'xuanhuo:attack', target: '选项一' },
+  { source: 'xuanhuo:give', target: '选项二' },
+  {
+    source: '{0}: please choose xuanhuo options: {1} {2}',
+    target: '{0}：选项一：视为对 {1} 使用一张任意【杀】或【决斗】；选项二：交给 {2} 所有手牌',
+  },
+  {
+    source: '{0}: please choose xuanhuo attack options: {1}',
+    target: '{0}：请选择视为对 {1} 使用的牌',
+  },
+
+  {
+    source: 'please choose sanyao options',
+    target: '散谣：请选择消耗项',
+  },
+  { source: 'sanyao:hp', target: '体力值' },
+  { source: 'sanyao:handNum', target: '手牌数' },
+
+  {
+    source: '{0}: do you want to prevent the damage to {1} to pick one card in areas?',
+    target: '{0}：你可以防止对 {1} 造成的伤害，然后获得其区域里的一张牌',
+  },
+
+  {
+    source: '{0} triggered skill {1}, prevent the damage of {2}',
+    target: '{0} 触发了技能 {1} ，防止了 {2} 造成的伤害',
+  },
+  {
+    source: '{0}: do you want to drop a card except basic card and choose a target',
+    target: '{0}：你可以弃置一张非基本牌并选择一名其他角色，其选择摸牌、回血或复原',
+  },
+  {
+    source: '{0}: do you want to drop a card except basic card and choose a target',
+    target: '{0}：你可以弃置一张非基本牌并选择一名其他角色，其选择摸牌、回血或复原',
+  },
+  { source: 'jujian:draw', target: '摸两张牌' },
+  { source: 'jujian:recover', target: '回复1点体力' },
+  { source: 'jujian:restore', target: '复原武将牌' },
+
+  {
+    source: '{0}: please choose a target who {1} can use slash to',
+    target: '{0}：请选择 {1} 攻击范围内的一名角色作为【杀】的目标',
+  },
+
+  {
+    source: 'please choose mingce options:{0}',
+    target: '明策：1.视为对 {0} 使用一张【杀】；2.摸一张牌',
+  },
+  { source: 'mingce:slash', target: '视为使用【杀】' },
+  { source: 'mingce:draw', target: '摸一张牌' },
+
+  {
+    source: 'jieyue: please choose jieyue options',
+    target: '{0}：1.选择一张手牌和装备牌，弃置其余的牌；2.令 {1} 摸3张牌',
+  },
+
+  {
+    source: '{0}: do you want to reveal a hand card from {1} ?',
+    target: '{0}：你可以展示 {1} 的一张手牌，若此牌不为基本牌，其弃置之并回复1点体力',
+  },
+  {
+    source: 'xianzhen: do you want to add {0} as targets of {1}?',
+    target: '陷阵：你可以令 {0} 也成为 {1} 的目标',
+  },
+
+  {
+    source: '{0}: do you want to choose a target to drop a card?',
+    target: '{0}：你可以弃置一名角色的一张牌',
+  },
+  {
+    source: '{0}: do you want to choose a XuanFeng target to deal 1 damage?',
+    target: '{0}：你可以选择其中一名角色，对其造成1点伤害',
+  },
+
+  {
+    source: '{0}: please choose two target to move their equipment',
+    target: '{0}：你可以依次选择两名角色，先选角色装备区里的牌将被移至后选角色',
+  },
+
+  {
+    source: '{0}: do you want to draw {1} cards?',
+    target: '{0}: 是否摸 {1} 张牌?',
+  },
+];
+
 export const skillAudios: Word[] = [
   {
     source: '$luoying:1',
@@ -169,6 +260,7 @@ export const skillAudios: Word[] = [
     source: '$luoying:2',
     target: '惊风飘白日，光景驰西流。',
   },
+
   {
     source: '$jiushi:1',
     target: '德祖箪杯酒，吾亦醉抚琴。',
@@ -177,6 +269,7 @@ export const skillAudios: Word[] = [
     source: '$jiushi:2',
     target: '利剑不在掌，结友何须多。',
   },
+
   {
     source: '$chengzhang:1',
     target: '妙笔趁酒兴，文章尽自成。',
@@ -230,7 +323,7 @@ export const skillAudios: Word[] = [
     target: '善因得善果，恶因得恶报。',
   },
   {
-    source: '$enyuan:1',
+    source: '$enyuan:2',
     target: '私我者赠之琼瑶，厌我者报之斧钺。',
   },
   {
@@ -322,105 +415,17 @@ export const skillAudios: Word[] = [
   {
     source: '$xianzhen:1',
     target: '攻无不克，战无不胜！',
-  },{
+  },
+  {
     source: '$xianzhen:2',
     target: '破阵斩将，易如反掌！',
-  },{
+  },
+  {
     source: '$jinjiu:1',
     target: '避嫌远疑，所以无误。',
-  },{
+  },
+  {
     source: '$jinjiu:2',
     target: '贬酒阙色，所以无污。',
-  },
-];
-
-export const promptDescriptions: Word[] = [
-  {
-    source: '{0}: you need to give a handcard to {1}',
-    target: '{0}：你需交给 {1} 一张手牌（若不为红桃则 {1} 摸一张牌），否则失去1点体力',
-  },
-
-  { source: 'xuanhuo:attack', target: '选项一' },
-  { source: 'xuanhuo:give', target: '选项二' },
-  {
-    source: '{0}: please choose xuanhuo options: {1} {2}',
-    target: '{0}：选项一：视为对 {1} 使用一张任意【杀】或【决斗】；选项二：交给 {2} 所有手牌',
-  },
-  {
-    source: '{0}: please choose xuanhuo attack options: {1}',
-    target: '{0}：请选择视为对 {1} 使用的牌',
-  },
-
-  {
-    source: 'please choose sanyao options',
-    target: '散谣：请选择消耗项',
-  },
-  { source: 'sanyao:hp', target: '体力值' },
-  { source: 'sanyao:handNum', target: '手牌数' },
-
-  {
-    source: '{0}: do you want to prevent the damage to {1} to pick one card in areas?',
-    target: '{0}：你可以防止对 {1} 造成的伤害，然后获得其区域里的一张牌',
-  },
-
-  {
-    source: '{0} triggered skill {1}, prevent the damage of {2}',
-    target: '{0} 触发了技能 {1} ，防止了 {2} 造成的伤害',
-  },
-  {
-    source: '{0}: do you want to drop a card except basic card and choose a target',
-    target: '{0}：你可以弃置一张非基本牌并选择一名其他角色，其选择摸牌、回血或复原',
-  },
-  {
-    source: '{0}: do you want to drop a card except basic card and choose a target',
-    target: '{0}：你可以弃置一张非基本牌并选择一名其他角色，其选择摸牌、回血或复原',
-  },
-  { source: 'jujian:draw', target: '摸两张牌' },
-  { source: 'jujian:recover', target: '回复1点体力' },
-  { source: 'jujian:restore', target: '复原武将牌' },
-
-  {
-    source: '{0}: please choose a target who {1} can use slash to',
-    target: '{0}：请选择 {1} 攻击范围内的一名角色作为【杀】的目标',
-  },
-
-  {
-    source: 'please choose mingce options:{0}',
-    target: '明策：1.视为对 {0} 使用一张【杀】；2.摸一张牌',
-  },
-  { source: 'mingce:slash', target: '视为使用【杀】' },
-  { source: 'mingce:draw', target: '摸一张牌' },
-
-  {
-    source: 'jieyue: please choose jieyue options',
-    target: '{0}：1.选择一张手牌和装备牌，弃置其余的牌；2.令 {1} 摸3张牌',
-  },
-
-  {
-    source: '{0}: do you want to reveal a hand card from {1} ?',
-    target: '{0}：你可以展示 {1} 的一张手牌，若此牌不为基本牌，其弃置之并回复1点体力',
-  },
-  {
-    source: 'xianzhen: do you want to add {0} as targets of {1}?',
-    target: '陷阵：你可以令 {0} 也成为 {1} 的目标',
-  },
-
-  {
-    source: '{0}: do you want to choose a target to drop a card?',
-    target: '{0}：你可以弃置一名角色的一张牌',
-  },
-  {
-    source: '{0}: do you want to choose a XuanFeng target to deal 1 damage?',
-    target: '{0}：你可以选择其中一名角色，对其造成1点伤害',
-  },
-
-  {
-    source: '{0}: please choose two target to move their equipment',
-    target: '{0}：你可以依次选择两名角色，先选角色装备区里的牌将被移至后选角色',
-  },
-
-  {
-    source: '{0}: do you want to draw {1} cards?',
-    target: '{0}: 是否摸 {1} 张牌?',
   },
 ];

@@ -1,5 +1,6 @@
 import * as biographiesCharacterDictionary from './biopraphies';
 import * as cardsDictionary from './card';
+import * as decadeCharactersDictionary from './decade';
 import * as fireCharactersDictionary from './fire';
 import * as forestCharactersDictionary from './forest';
 import * as oneVersusTwoCharactersDictonary from './game_mode/1v2';
@@ -7,13 +8,13 @@ import * as twoVersusTwoCharactersDictonary from './game_mode/2v2';
 import * as generalDictionary from './general';
 import * as godCharactersDictionary from './god';
 import * as LimitedCharacterDictionary from './limited';
+import * as mobileCharacterDictionary from './mobile';
 import * as mountainCharactersDictionary from './mountain';
 import * as pveCharactersDictionary from './pve';
 import * as shadowCharacterDictionary from './shadow';
 import * as sincerityCharactersDictionary from './sincerity';
 import * as spCharacterDictionary from './sp';
 import * as sparkCharactersDictionary from './spark';
-import * as decadeCharactersDictionary from './decade';
 import * as standardCharactersDictionary from './standard';
 import * as thunderCharactersDictionary from './thunder';
 import * as windCharactersDictionary from './wind';
@@ -47,6 +48,7 @@ export {
   decadeCharactersDictionary,
   LimitedCharacterDictionary,
   biographiesCharacterDictionary,
+  mobileCharacterDictionary,
   wisdomCharacterDictionary,
   sincerityCharactersDictionary,
   pveCharactersDictionary,

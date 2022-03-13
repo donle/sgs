@@ -9,6 +9,10 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 @LordSkill
 @AwakeningSkill({ name: 'ruoyu', description: 'ruoyu_description' })
 export class RuoYu extends TriggerSkill {
+  public get RelatedSkills(): string[] {
+    return ['jijiang', 'sishu'];
+  }
+
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.StageChanged && event.toStage === PlayerPhaseStages.PrepareStageStart;
   }
