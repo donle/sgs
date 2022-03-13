@@ -44,6 +44,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'yjcm_jushou', target: '沮授' },
   { source: 'jianying', target: '漸營' },
+  { source: '#jianying', target: '漸營' },
   { source: 'shibei', target: '矢北' },
 
   { source: 'caifuren', target: '蔡夫人' },
@@ -128,7 +129,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'jianying_description',
-    target: '當你於出牌階段內使用牌時，若此牌與你此階段內使用過的上一張牌的花色或點數相同，你可以摸一張牌。',
+    target: '當你於出牌階段內使用牌時，若此牌與你於此階段內使用過的上一張牌花色或點數相同，你可以摸一張牌；出牌階段限一次，你可以將一張牌當任意基本牌使用（無次數限制，且若你於此階段內使用過的上一張牌有花色，此牌花色視為與之相同）。',
   },
   {
     source: 'shibei_description',

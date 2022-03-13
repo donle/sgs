@@ -325,7 +325,7 @@ export { DanShou, DanshouShadow } from './characters/yijiang2013/danshou';
 export { ZhuiKong, ZhuiKongFilter, ZhuiKongDistance } from './characters/yijiang2013/zhuikong';
 export { QiuYuan } from './characters/yijiang2013/qiuyuan';
 
-export { JianYing } from './characters/yijiang2014/jianying';
+export { JianYing, JianYingRecord, JianYingTrigger } from './characters/yijiang2014/jianying';
 export { ShiBei, ShiBeiShadow } from './characters/yijiang2014/shibei';
 export { BingYi } from './characters/yijiang2014/bingyi';
 export { ShenXing } from './characters/yijiang2014/shenxing';
