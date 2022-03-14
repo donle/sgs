@@ -94,7 +94,7 @@ export class WeiYi extends TriggerSkill {
       chosen === this.WeiYiOptions[0]
         ? await room.loseHp(victim, 1)
         : await room.recover({ toId: victim, recoveredHp: 1, recoverBy: event.fromId });
-    } else if (room.getPlayerById(event.fromId).Hp > room.getPlayerById(victim).Hp) {
+    } else if (room.getPlayerById(event.fromId).Hp < room.getPlayerById(victim).Hp) {
       await room.loseHp(victim, 1);
     } else {
       await room.recover({ toId: victim, recoveredHp: 1, recoverBy: event.fromId });
