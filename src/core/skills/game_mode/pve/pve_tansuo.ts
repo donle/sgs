@@ -208,7 +208,6 @@ export class PveTanSuoShow extends TriggerSkill {
     const cardup = longshen.getFlag<string[]>(this.GeneralName) || [];
 
     const cardName = Sanguosha.getCardById(cardId).Name;
-    console.log(cardup);
     for (const up of cardup) {
       if (up === cardName + '1') {
         await room.drawCards(1, fromId, 'top', fromId);

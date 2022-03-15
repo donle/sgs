@@ -127,7 +127,7 @@ export class ProdElectronLoader extends ElectronLoader {
 
   public sendReplayEventFlow(
     event: ServerEventFinder<GameEventIdentifiers>,
-    otherInfo: Pick<ReplayDataType, Exclude<keyof ReplayDataType, 'events'>>,
+    otherInfo: Omit<ReplayDataType, 'events'>,
   ): void {
     this.ipcRenderer.send(GAME_EVENT_FLOW, { event, otherInfo });
   }

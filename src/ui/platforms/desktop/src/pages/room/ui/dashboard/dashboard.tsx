@@ -2,8 +2,11 @@ import classNames from 'classnames';
 import { Card } from 'core/cards/card';
 import { EquipCard } from 'core/cards/equip_card';
 import { Sanguosha } from 'core/game/engine';
+import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
+import { ClientPlayer } from 'core/player/player.client';
 import { PlayerCardsArea } from 'core/player/player_props';
+import { Functional } from 'core/shares/libs/functional';
 import { Skill } from 'core/skills/skill';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
@@ -13,18 +16,16 @@ import { RoomPresenter, RoomStore } from 'pages/room/room.presenter';
 import * as React from 'react';
 import { CharacterSkinInfo } from 'skins/skins';
 import { PlayerPhaseBadge } from 'ui/badge/badge';
+import { AutoButton } from 'ui/button/auto_button';
+import { Button } from 'ui/button/button';
 import { ClientCard } from 'ui/card/card';
 import { DelayedTrickIcon } from '../icon/delayed_trick_icon';
+import { JudgeAreaDisabledIcon } from '../icon/judge_area_disabled_icon';
 import { PlayerAvatar } from '../player_avatar/player_avatar';
 import { PlayingBar } from '../playing_bar/playing_bar';
 import { AbortedCardItem } from './aborted_card_item/aborted_card_item';
 import styles from './dashboard.module.css';
 import { EquipCardItem } from './equip_card_item/equip_card_item';
-
-import { Functional } from 'core/shares/libs/functional';
-import { AutoButton } from 'ui/button/auto_button';
-import { Button } from 'ui/button/button';
-import { JudgeAreaDisabledIcon } from '../icon/judge_area_disabled_icon';
 import armorSlot from './images/armor.png';
 import defenseHorseSlot from './images/defense_horse.png';
 import offenseHorseSlot from './images/offense_horse.png';
@@ -242,21 +243,21 @@ export class Dashboard extends React.Component<DashboardProps> {
               variant="confirm"
               disabled={!this.props.store.actionButtonStatus.confirm}
               onClick={this.props.onClickConfirmButton}
-            ></AutoButton>
+            />
           )}
           {this.props.store.actionButtonStatus.cancel && (
             <AutoButton
               variant="cancel"
               disabled={!this.props.store.actionButtonStatus.cancel}
               onClick={this.props.onClickCancelButton}
-            ></AutoButton>
+            />
           )}
           {this.props.store.actionButtonStatus.finish && (
             <AutoButton
               variant="finish"
               disabled={!this.props.store.actionButtonStatus.finish}
               onClick={this.props.onClickFinishButton}
-            ></AutoButton>
+            />
           )}
         </div>
         <div className={styles.handCards}>
@@ -294,28 +295,59 @@ export class Dashboard extends React.Component<DashboardProps> {
     this.props.presenter.broadcastUIUpdate();
   };
 
+  private readonly onReverseSelectCards = () => {
+    const handcards = this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.HandArea) || [];
+    for (const cardId of handcards) {
+      const card = Sanguosha.getCardById(cardId);
+      this.props.store.selectedCards.includes(cardId)
+        ? this.props.presenter.unselectCard(card)
+        : this.props.presenter.selectCard(card);
+    }
+
+    this.props.presenter.broadcastUIUpdate();
+  };
+
+  private readonly createShortcutButtons = (player: ClientPlayer) => {
+    return (
+      <div className={styles.actionButtons}>
+        <Button
+          variant="primary"
+          className={styles.actionButton}
+          onClick={this.onTrusted}
+          disabled={!this.props.store.room.isPlaying() || this.props.store.room.isGameOver()}
+        >
+          {this.props.translator.tr(player.isTrusted() ? 'cancel trusted' : 'trusted')}
+        </Button>
+        <Button
+          variant="primary"
+          className={styles.actionButton}
+          onClick={this.onSortHandcards}
+          disabled={!this.props.store.room.isPlaying() || this.props.store.room.isGameOver()}
+        >
+          {this.props.translator.tr('adjust handcards')}
+        </Button>
+        <Button
+          variant="primary"
+          className={styles.actionButton}
+          onClick={this.onReverseSelectCards}
+          disabled={
+            !this.props.store.room.isPlaying() ||
+            this.props.store.room.isGameOver() ||
+            this.props.store.room.CurrentPlayer !== player ||
+            this.props.store.room.CurrentPlayerPhase !== PlayerPhase.DropCardStage
+          }
+        >
+          {this.props.translator.tr('reverse select')}
+        </Button>
+      </div>
+    );
+  };
+
   render() {
     const player = this.props.presenter.ClientPlayer!;
     return (
       <div className={styles.dashboard} id={this.props.store.clientPlayerId}>
-        <div className={styles.actionButtons}>
-          <Button
-            variant="primary"
-            className={styles.actionButton}
-            onClick={this.onTrusted}
-            disabled={!this.props.store.room.isPlaying() || this.props.store.room.isGameOver()}
-          >
-            {this.props.translator.tr(player.isTrusted() ? 'cancel trusted' : 'trusted')}
-          </Button>
-          <Button
-            variant="primary"
-            className={styles.actionButton}
-            onClick={this.onSortHandcards}
-            disabled={!this.props.store.room.isPlaying() || this.props.store.room.isGameOver()}
-          >
-            {this.props.translator.tr('adjust handcards')}
-          </Button>
-        </div>
+        {this.createShortcutButtons(player)}
         {this.getEquipCardsSection()}
 
         {this.props.store.room.CurrentPlayer === player && this.props.store.room.CurrentPlayerPhase !== undefined && (

@@ -160,6 +160,7 @@ export const characterDictionary: Word[] = [
   { source: 'wutugu', target: '兀突骨' },
   { source: 'ranshang', target: '燃殤' },
   { source: 'hanyong', target: '悍勇' },
+  { source: 'ran', target: '燃' },
 
   { source: 'sp_diaochan', target: 'SP貂蟬' },
   { source: 'lihun', target: '離魂' },
@@ -186,7 +187,7 @@ export const skillDescriptions: Word[] = [
     target:
       '<b>主公技</b>，<b>限定技</b>，準備階段開始時，你可以交給一名其他非蜀勢力角色1張牌。當你受到傷害時，該角色受到等量傷害，其与你摸等量傷害張牌。',
   },
-  
+
   {
     source: 'danlao_description',
     target: '當你成爲【殺】或錦囊牌的目標後，若目標數大於1，你可以摸一張牌並令此牌對你無效。',

@@ -160,6 +160,7 @@ export const characterDictionary: Word[] = [
   { source: 'wutugu', target: '兀突骨' },
   { source: 'ranshang', target: '燃殇' },
   { source: 'hanyong', target: '悍勇' },
+  { source: 'ran', target: '燃' },
 
   { source: 'sp_diaochan', target: 'SP貂蝉' },
   { source: 'lihun', target: '离魂' },
@@ -186,7 +187,7 @@ export const skillDescriptions: Word[] = [
     target:
       '<b>主公技</b>，<b>限定技</b>，准备阶段开始时，你可以交给一名其他非蜀势力角色1张牌。当你受到伤害时，该角色受到等量伤害，其与你摸等量伤害张牌。',
   },
-  
+
   {
     source: 'danlao_description',
     target: '当你成为【杀】或锦囊牌的目标后，若目标数大于1，你可以摸一张牌并令此牌对你无效。',
@@ -589,7 +590,7 @@ export const skillAudios: Word[] = [
     source: '$jilei:2',
     target: '曹公之意，我已了然。',
   },
- 
+
   {
     source: '$chenqing:1',
     target: '陈生死离别之苦，悲乱世之跌宕。',
@@ -601,7 +602,7 @@ export const skillAudios: Word[] = [
   {
     source: '$mozhi:1',
     target: '博闻强识，不辱才女之名。',
-  }, 
+  },
   {
     source: '$mozhi:2',
     target: '今日默书，方恨千卷诗书未能全记。',
@@ -908,7 +909,7 @@ export const skillAudios: Word[] = [
     source: '$jili:2',
     target: '看我一招，铁蒺藜骨朵！',
   },
- 
+
   {
     source: '$canshi:1',
     target: '众人，与蝼蚁何异？哼哼哼哼哼哼……',

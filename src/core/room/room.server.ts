@@ -675,7 +675,6 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       property.gender !== undefined && (player.Gender = property.gender);
       if (property.playerPosition !== undefined) {
         player.Position = property.playerPosition;
-        console.log(player === this.CurrentPlayer);
         player === this.CurrentPlayer && (newCurrentPlayerPosition = property.playerPosition);
       }
     }

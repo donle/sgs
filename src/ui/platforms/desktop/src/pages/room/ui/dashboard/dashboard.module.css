@@ -79,6 +79,7 @@
     position: absolute;
     left: calc(gridLine * 3);
     display: flex;
+    z-index: 2;
 }
 
 .equipSection {
