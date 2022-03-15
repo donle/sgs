@@ -87,7 +87,7 @@ export class GameClientProcessor {
     }
     if (serverResponsiveListenerEvents.includes(identifier)) {
       this.presenter.startAction(identifier, event);
-      this.onPlayTrustedAction();
+      this.doTrustedAction();
     }
 
     if (this.store.room && (this.store.room.isPlaying() || identifier === GameEventIdentifiers.GameReadyEvent)) {
@@ -131,20 +131,26 @@ export class GameClientProcessor {
   }
 
   public onPlayTrustedAction() {
-    this.onPlayTrustedActionTimer = setTimeout(() => {
-      const { identifier, event } = this.store.awaitingResponseEvent;
-      if (identifier === undefined) {
-        // tslint:disable-next-line:no-console
-        console.warn(`unknown identifier event: ${JSON.stringify(event, null, 2)}`);
-      } else {
-        const result = this.presenter.ClientPlayer!.AI.onAction(this.store.room, identifier, event!);
-        this.store.room.broadcast(identifier, result);
-      }
-      this.presenter.closeDialog();
-      this.presenter.closeIncomingConversation();
+    const { identifier, event } = this.store.awaitingResponseEvent;
+    if (identifier === undefined) {
+      // tslint:disable-next-line:no-console
+      console.warn(`unknown identifier event: ${JSON.stringify(event, null, 2)}`);
+    } else {
+      const result = this.presenter.ClientPlayer!.AI.onAction(this.store.room, identifier, event!);
+      this.store.room.broadcast(identifier, result);
+    }
+    this.presenter.closeDialog();
+    this.presenter.closeIncomingConversation();
 
-      this.endAction();
-    }, this.store.notificationTime * (this.presenter.ClientPlayer!.isTrusted() ? 0 : 1000));
+    this.endAction();
+    this.onPlayTrustedActionTimer && clearTimeout(this.onPlayTrustedActionTimer);
+  }
+
+  private doTrustedAction() {
+    this.onPlayTrustedActionTimer = setTimeout(
+      () => this.onPlayTrustedAction(),
+      this.store.notificationTime * (this.presenter.ClientPlayer!.isTrusted() ? 0 : 1000),
+    );
   }
 
   public endAction() {
