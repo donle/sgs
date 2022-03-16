@@ -11,10 +11,10 @@ import { AiLibrary } from './ai_lib';
 export class TrustAI extends PlayerAI {
   public static get Instance() {
     if (!this.instance) {
-      PlayerAI.instance = new TrustAI();
+      this.instance = new TrustAI();
     }
 
-    return PlayerAI.instance;
+    return this.instance;
   }
 
   protected onAskForPlayCardsOrSkillsEvent<T extends GameEventIdentifiers.AskForPlayCardsOrSkillsEvent>(

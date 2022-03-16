@@ -16,10 +16,10 @@ import { TriggerSkillTriggerClass } from './skills/base/trigger_skill_trigger';
 export class SmartAI extends PlayerAI {
   public static get Instance() {
     if (!this.instance) {
-      PlayerAI.instance = new SmartAI();
+      this.instance = new SmartAI();
     }
 
-    return PlayerAI.instance;
+    return this.instance;
   }
 
   protected onAskForPlayCardsOrSkillsEvent<T extends GameEventIdentifiers.AskForPlayCardsOrSkillsEvent>(
@@ -75,6 +75,7 @@ export class SmartAI extends PlayerAI {
         }
 
         if (card.BaseType === CardType.Equip) {
+          //@@TODO: equip comparison here
           if (from.getEquipment((card as EquipCard).EquipType) === undefined) {
             const equipCardUseEvent: ClientEventFinder<GameEventIdentifiers.CardUseEvent> = {
               fromId: from.Id,
@@ -125,13 +126,6 @@ export class SmartAI extends PlayerAI {
     const { invokeSkillNames, toId, triggeredOnEvent } = content as ServerEventFinder<
       GameEventIdentifiers.AskForSkillUseEvent
     >;
-    if (!EventPacker.isUncancellableEvent(content)) {
-      const skillUse: ClientEventFinder<GameEventIdentifiers.AskForSkillUseEvent> = {
-        invoke: invokeSkillNames !== undefined && invokeSkillNames[0] !== undefined ? invokeSkillNames[0] : undefined,
-        fromId: toId,
-      };
-      return skillUse;
-    }
 
     const from = room.getPlayerById(toId);
     for (const skillName of invokeSkillNames) {
@@ -142,6 +136,14 @@ export class SmartAI extends PlayerAI {
       if (triggerEvent) {
         return triggerEvent;
       }
+    }
+
+    if (EventPacker.isUncancellableEvent(content)) {
+      const skillUse: ClientEventFinder<GameEventIdentifiers.AskForSkillUseEvent> = {
+        invoke: invokeSkillNames !== undefined && invokeSkillNames[0] !== undefined ? invokeSkillNames[0] : undefined,
+        fromId: toId,
+      };
+      return skillUse;
     }
 
     const skillUse: ClientEventFinder<GameEventIdentifiers.AskForSkillUseEvent> = {
@@ -550,12 +552,6 @@ export class SmartAI extends PlayerAI {
 
     const { options, fromId, toId } = content;
 
-    if (!EventPacker.isUncancellableEvent(content)) {
-      const chooseCard: ClientEventFinder<T> = {
-        fromId,
-      };
-      return chooseCard;
-    }
     const chooseCard = AiLibrary.askAiChooseCardFromPlayer(room, fromId, toId, options);
     return chooseCard;
   }
@@ -621,12 +617,6 @@ export class SmartAI extends PlayerAI {
       }
     }
 
-    if (!EventPacker.isUncancellableEvent(content)) {
-      return {
-        fromId: content.toId,
-      };
-    }
-
     const selectedCards: CardId[] = [];
     let selectedCardsIndex: number[] = [];
     const cardAmount = amount instanceof Array ? amount[0] : amount;
@@ -671,8 +661,8 @@ export class SmartAI extends PlayerAI {
 
     return {
       fromId: content.toId,
-      selectedCards,
-      selectedCardsIndex,
+      selectedCards: selectedCards.length > 0 ? selectedCards : undefined,
+      selectedCardsIndex: selectedCardsIndex.length > 0 ? selectedCardsIndex : undefined,
     };
   }
 }

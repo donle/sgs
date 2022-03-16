@@ -134,15 +134,63 @@ export class Lobby extends React.Component<LobbyProps> {
     this.props.electronLoader.getGameLog().then(mobx.action(inlineHtml => (this.gameLog = inlineHtml)));
   }
 
-  private queryRoomList() {
+  private readonly queryRoomList = () => {
     mobx.runInAction(() => (this.roomList = []));
     this.props.connectionService.Lobby.getRoomList(
-      mobx.action(content =>
+      mobx.action(content => {
         this.roomList.push(
           ...content.packet.map(roomInfo => ({ info: roomInfo, host: content.hostTag, ping: content.ping })),
-        ),
-      ),
+        );
+      }),
     );
+  };
+
+  @mobx.computed
+  get UnmatchedHint() {
+    return this.unmatchedCoreVersion && this.unmatchedView();
+  }
+
+  @mobx.computed
+  get RoomListTable() {
+    return !this.unmatchedCoreVersion && this.roomList.map((hostInfo, index) => (
+      <li className={styles.roomInfo} key={index}>
+        <span className={styles.roomName}>
+          <span>{hostInfo.info.name}</span>
+        </span>
+        <span
+          className={styles.roomMode}
+          onMouseEnter={this.viewGameCharaterExtensions(index)}
+          onMouseLeave={this.closeGameCharaterExtensions}
+        >
+          <img
+            className={styles.gameModeIcon}
+            src={this.props.imageLoader.getGameModeIcon(hostInfo.info.gameMode).src}
+            alt=""
+          />
+          {this.viewCharacterExtenstions === index && (
+            <Tooltip position={['slightBottom', 'right']}>
+              {hostInfo.info.packages.map(p => this.props.translator.tr(p)).join(', ')}
+            </Tooltip>
+          )}
+        </span>
+        <span className={styles.roomStatus}>{this.props.translator.tr(hostInfo.info.status)}</span>
+        <span className={styles.roomPlayers}>{`${hostInfo.info.activePlayers}/${hostInfo.info.totalPlayers}`}</span>
+        <span className={styles.roomLocker}>{hostInfo.info.passcode && <img src={lockerImage} alt="" />}</span>
+        <span className={styles.roomActions}>
+          <LinkButton
+            onClick={this.enterRoom(hostInfo)}
+            disabled={
+              hostInfo.info.activePlayers === hostInfo.info.totalPlayers ||
+              !this.username ||
+              hostInfo.info.status === 'playing'
+            }
+          >
+            {this.props.translator.tr('Join')}
+          </LinkButton>
+        </span>
+        <SignalBar host={hostInfo.host} className={styles.signalBar} connectionService={this.props.connectionService} />
+      </li>
+    ));
   }
 
   private createRoom(roomInfo: TemporaryRoomCreationInfo) {
@@ -379,55 +427,8 @@ export class Lobby extends React.Component<LobbyProps> {
           </div>
           <div className={classNames(styles.roomList, { [styles.unavailable]: !this.username })}>
             {this.roomList.length === 0 && <span>{this.props.translator.tr('No rooms at the moment')}</span>}
-            {this.unmatchedCoreVersion
-              ? this.unmatchedView()
-              : this.roomList.map((hostInfo, index) => (
-                  <li className={styles.roomInfo} key={index}>
-                    <span className={styles.roomName}>
-                      <span>{hostInfo.info.name}</span>
-                    </span>
-                    <span
-                      className={styles.roomMode}
-                      onMouseEnter={this.viewGameCharaterExtensions(index)}
-                      onMouseLeave={this.closeGameCharaterExtensions}
-                    >
-                      <img
-                        className={styles.gameModeIcon}
-                        src={this.props.imageLoader.getGameModeIcon(hostInfo.info.gameMode).src}
-                        alt=""
-                      />
-                      {this.viewCharacterExtenstions === index && (
-                        <Tooltip position={['slightBottom', 'right']}>
-                          {hostInfo.info.packages.map(p => this.props.translator.tr(p)).join(', ')}
-                        </Tooltip>
-                      )}
-                    </span>
-                    <span className={styles.roomStatus}>{this.props.translator.tr(hostInfo.info.status)}</span>
-                    <span
-                      className={styles.roomPlayers}
-                    >{`${hostInfo.info.activePlayers}/${hostInfo.info.totalPlayers}`}</span>
-                    <span className={styles.roomLocker}>
-                      {hostInfo.info.passcode && <img src={lockerImage} alt="" />}
-                    </span>
-                    <span className={styles.roomActions}>
-                      <LinkButton
-                        onClick={this.enterRoom(hostInfo)}
-                        disabled={
-                          hostInfo.info.activePlayers === hostInfo.info.totalPlayers ||
-                          !this.username ||
-                          hostInfo.info.status === 'playing'
-                        }
-                      >
-                        {this.props.translator.tr('Join')}
-                      </LinkButton>
-                    </span>
-                    <SignalBar
-                      host={hostInfo.host}
-                      className={styles.signalBar}
-                      connectionService={this.props.connectionService}
-                    />
-                  </li>
-                ))}
+            {this.UnmatchedHint}
+            {this.RoomListTable}
             <CreateRoomButton
               imageLoader={this.props.imageLoader}
               onClick={this.onCreateRoom}

@@ -95,34 +95,10 @@ export class RoomPage extends React.Component<
     }>,
   ) {
     super(props);
-    const { match, translator } = this.props;
+    const { translator } = this.props;
 
-    this.roomId = parseInt(match.params.slug, 10);
     this.presenter = new RoomPresenter(this.props.imageLoader);
     this.store = this.presenter.createStore();
-
-    const roomId = this.roomId.toString();
-    const { ping, hostConfig, campaignMode } = this.props.location.state as {
-      ping?: number;
-      hostConfig: ServiceConfig;
-      campaignMode?: boolean;
-    };
-    this.isCampaignMode = !!campaignMode;
-
-    if (campaignMode) {
-      this.socket = new LocalClientEmitter((window as any).eventEmitter, roomId);
-      mobx.runInAction(() => (this.gameHostedServer = ServerHostTag.Localhost));
-    } else {
-      this.socket = new ClientSocket(
-        `${hostConfig.protocol}://${hostConfig.host}:${hostConfig.port}/room-${roomId}`,
-        roomId,
-      );
-      mobx.runInAction(() => (this.gameHostedServer = hostConfig.hostTag));
-    }
-
-    if (ping !== undefined) {
-      mobx.runInAction(() => (this.roomPing = ping));
-    }
 
     this.baseService = installService(this.props.translator, this.store, this.props.imageLoader);
     this.gameProcessor = new GameClientProcessor(
@@ -148,6 +124,31 @@ export class RoomPage extends React.Component<
 
   componentDidMount() {
     this.audioService.playRoomBGM();
+
+    this.roomId = parseInt(this.props.match.params.slug, 10);
+    const roomId = this.roomId.toString();
+    const { ping, hostConfig, campaignMode } = this.props.location.state as {
+      ping?: number;
+      hostConfig: ServiceConfig;
+      campaignMode?: boolean;
+    };
+    this.isCampaignMode = !!campaignMode;
+
+    if (campaignMode) {
+      this.socket = new LocalClientEmitter((window as any).eventEmitter, roomId);
+      mobx.runInAction(() => (this.gameHostedServer = ServerHostTag.Localhost));
+    } else {
+      this.socket = new ClientSocket(
+        `${hostConfig.protocol}://${hostConfig.host}:${hostConfig.port}/room-${roomId}`,
+        roomId,
+      );
+      mobx.runInAction(() => (this.gameHostedServer = hostConfig.hostTag));
+    }
+
+    if (ping !== undefined) {
+      mobx.runInAction(() => (this.roomPing = ping));
+    }
+
     this.presenter.setupRoomStatus({
       playerName: this.playerName,
       socket: this.socket,
