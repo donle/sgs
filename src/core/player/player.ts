@@ -252,15 +252,15 @@ export abstract class Player implements PlayerInfo {
   public getCardIds<T extends CardId | CharacterId = CardId>(area?: PlayerCardsArea, outsideAreaName?: string): T[] {
     if (area === undefined) {
       const [handCards, judgeCards, equipCards] = Object.values<CardId[]>(this.playerCards);
-      return [...handCards, ...judgeCards, ...equipCards] as unknown as T[];
+      return ([...handCards, ...judgeCards, ...equipCards] as unknown) as T[];
     }
 
     if (area !== PlayerCardsArea.OutsideArea) {
-      return this.playerCards[area] as unknown as T[];
+      return (this.playerCards[area] as unknown) as T[];
     } else {
       outsideAreaName = Precondition.exists(outsideAreaName, `Unable to get ${outsideAreaName} area cards`);
       this.playerOutsideCards[outsideAreaName] = this.playerOutsideCards[outsideAreaName] || [];
-      return this.playerOutsideCards[outsideAreaName] as unknown as T[];
+      return (this.playerOutsideCards[outsideAreaName] as unknown) as T[];
     }
   }
 
@@ -368,7 +368,9 @@ export abstract class Player implements PlayerInfo {
       this.playerCards[PlayerCardsArea.HandArea],
       this.playerCards[PlayerCardsArea.EquipArea],
       this.playerCards[PlayerCardsArea.JudgeArea],
-      ...Object.values(this.playerOutsideCards),
+      ...Object.entries(this.playerOutsideCards)
+        .filter(([areaName]) => !this.isCharacterOutsideArea(areaName))
+        .map(([, cards]) => cards),
     ];
 
     for (const card of cards) {
@@ -926,9 +928,10 @@ export abstract class Player implements PlayerInfo {
 
     this.playerCharacterId = characterId;
     this.playerCharacter = Sanguosha.getCharacterById(this.playerCharacterId);
-    hasCharacterId || (this.playerSkills = this.playerCharacter.Skills.filter(skill =>
-      skill.isLordSkill() ? this.playerRole === PlayerRole.Lord : true,
-    ));
+    hasCharacterId ||
+      (this.playerSkills = this.playerCharacter.Skills.filter(skill =>
+        skill.isLordSkill() ? this.playerRole === PlayerRole.Lord : true,
+      ));
 
     this.hp = this.playerCharacter.Hp;
     this.maxHp = this.playerCharacter.MaxHp;

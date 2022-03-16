@@ -125,7 +125,7 @@ export class SmartAI extends PlayerAI {
     const { invokeSkillNames, toId, triggeredOnEvent } = content as ServerEventFinder<
       GameEventIdentifiers.AskForSkillUseEvent
     >;
-    if (!EventPacker.isUncancellabelEvent(content)) {
+    if (!EventPacker.isUncancellableEvent(content)) {
       const skillUse: ClientEventFinder<GameEventIdentifiers.AskForSkillUseEvent> = {
         invoke: invokeSkillNames !== undefined && invokeSkillNames[0] !== undefined ? invokeSkillNames[0] : undefined,
         fromId: toId,
@@ -175,7 +175,7 @@ export class SmartAI extends PlayerAI {
       }
     }
 
-    if (EventPacker.isUncancellabelEvent(content)) {
+    if (EventPacker.isUncancellableEvent(content)) {
       const cardResponse: ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent> = {
         fromId: toId,
         cardId: availableCards.length > 0 ? AiLibrary.sortCardbyValue(availableCards)[0] : undefined,
@@ -222,7 +222,7 @@ export class SmartAI extends PlayerAI {
       }
     }
 
-    if (EventPacker.isUncancellabelEvent(content)) {
+    if (EventPacker.isUncancellableEvent(content)) {
       const cardResponse: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> = {
         fromId: toId,
         cardId: availableCards.length > 0 ? AiLibrary.sortCardbyValue(availableCards)[0] : undefined,
@@ -285,7 +285,7 @@ export class SmartAI extends PlayerAI {
       droppedCards: [],
     };
 
-    if (EventPacker.isUncancellabelEvent(content) || content.triggeredBySkills !== undefined) {
+    if (EventPacker.isUncancellableEvent(content) || content.triggeredBySkills !== undefined) {
       let cards = fromArea.reduce<CardId[]>((allCards, area) => {
         return [...allCards, ...to.getCardIds(area).filter(cardId => !except?.includes(cardId))];
       }, []);
@@ -550,7 +550,7 @@ export class SmartAI extends PlayerAI {
 
     const { options, fromId, toId } = content;
 
-    if (!EventPacker.isUncancellabelEvent(content)) {
+    if (!EventPacker.isUncancellableEvent(content)) {
       const chooseCard: ClientEventFinder<T> = {
         fromId,
       };
@@ -621,7 +621,7 @@ export class SmartAI extends PlayerAI {
       }
     }
 
-    if (!EventPacker.isUncancellabelEvent(content)) {
+    if (!EventPacker.isUncancellableEvent(content)) {
       return {
         fromId: content.toId,
       };

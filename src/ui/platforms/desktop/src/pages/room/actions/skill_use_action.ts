@@ -34,7 +34,7 @@ export class SkillUseAction extends BaseAction {
   }
 
   private invokeSpecifiedSkill(skillName: string, translator: ClientTranslationModule, callback: () => void) {
-    if (!EventPacker.isUncancellabelEvent(this.askForEvent)) {
+    if (!EventPacker.isUncancellableEvent(this.askForEvent)) {
       this.presenter.enableActionButton('cancel');
     } else {
       this.presenter.disableActionButton('cancel');
@@ -66,7 +66,7 @@ export class SkillUseAction extends BaseAction {
       this.presenter.resetSelectedSkill();
       callback();
     });
-    !EventPacker.isUncancellabelEvent(this.askForEvent) &&
+    !EventPacker.isUncancellableEvent(this.askForEvent) &&
       this.presenter.defineCancelButtonActions(() => {
         this.store.room.broadcast(GameEventIdentifiers.AskForSkillUseEvent, event);
         this.presenter.closeIncomingConversation();
@@ -140,7 +140,7 @@ export class SkillUseAction extends BaseAction {
     this.delightItems();
     this.presenter.highlightCards();
 
-    if (EventPacker.isUncancellabelEvent(this.askForEvent)) {
+    if (EventPacker.isUncancellableEvent(this.askForEvent)) {
       this.presenter.disableActionButton('cancel');
       this.presenter.broadcastUIUpdate();
     }

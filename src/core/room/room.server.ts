@@ -760,18 +760,18 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     await this.trigger(event);
 
     const canDropCards: CardId[] = [];
+    const autoResponse: ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
+      fromId: playerId,
+      droppedCards: [],
+    };
+    if (event.cardAmount <= 0) {
+      return autoResponse;
+    }
+
     if (event.responsedEvent) {
       EventPacker.terminate(event);
       return event.responsedEvent;
-    } else if (EventPacker.isUncancellabelEvent(event)) {
-      const autoResponse: ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
-        fromId: playerId,
-        droppedCards: [],
-      };
-      if (event.cardAmount <= 0) {
-        return autoResponse;
-      }
-
+    } else if (EventPacker.isUncancellableEvent(event)) {
       for (const area of fromArea) {
         canDropCards.push(
           ...this.getPlayerById(playerId)
@@ -791,7 +791,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.notify(GameEventIdentifiers.AskForCardDropEvent, event, playerId);
     const response = await this.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardDropEvent, playerId);
 
-    if (EventPacker.isUncancellabelEvent(event) && response.droppedCards.length === 0) {
+    if (EventPacker.isUncancellableEvent(event) && response.droppedCards.length === 0) {
       while (
         canDropCards.length === 0 ||
         response.droppedCards.length === (event.cardAmount instanceof Array ? event.cardAmount[0] : event.cardAmount)
@@ -960,7 +960,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
               .filter(id => this.canDropCard(to, id))
           : this.getPlayerById(event.toId).getCardIds(PlayerCardsArea.HandArea);
       response.selectedCard = cardIds[Math.floor(Math.random() * cardIds.length)];
-    } else if (EventPacker.isUncancellabelEvent(event) && response.selectedCard === undefined) {
+    } else if (EventPacker.isUncancellableEvent(event) && response.selectedCard === undefined) {
       const cardIds = Object.values(event.options).reduce<CardId[]>((allIds, option) => {
         if (option) {
           return allIds.concat(option);

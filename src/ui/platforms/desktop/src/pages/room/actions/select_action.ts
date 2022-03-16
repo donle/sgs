@@ -28,7 +28,7 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
     return new Promise<PlayerId[] | undefined>(resolve => {
       let requiredAmounts: [number, number];
       this.delightItems();
-      if (!EventPacker.isUncancellabelEvent(this.event)) {
+      if (!EventPacker.isUncancellableEvent(this.event)) {
         this.presenter.enableActionButton('cancel');
         this.presenter.defineCancelButtonActions(() => {
           this.resetAction();
@@ -172,7 +172,7 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
   onSelectCard(fromArea: PlayerCardsArea[], cardAmount: number | [number, number], except: CardId[] = []) {
     return new Promise<CardId[]>(resolve => {
       this.presenter.highlightCards();
-      if (!EventPacker.isUncancellabelEvent(this.event)) {
+      if (!EventPacker.isUncancellableEvent(this.event)) {
         this.presenter.enableActionButton('cancel');
         this.presenter.defineCancelButtonActions(() => {
           resolve([]);

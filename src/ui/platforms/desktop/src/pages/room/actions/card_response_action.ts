@@ -48,7 +48,7 @@ export class CardResponseAction extends BaseAction {
     this.askForEvent = askForEvent;
     this.matcher = new CardMatcher(this.askForEvent.cardMatcher);
 
-    if (!EventPacker.isUncancellabelEvent(this.askForEvent)) {
+    if (!EventPacker.isUncancellableEvent(this.askForEvent)) {
       this.presenter.enableActionButton('cancel');
     } else {
       this.presenter.disableActionButton('cancel');

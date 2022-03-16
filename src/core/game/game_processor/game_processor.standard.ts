@@ -1637,9 +1637,7 @@ export class StandardGameProcessor extends GameProcessor {
 
           continue;
         }
-      }
-
-      if (to && (to.Dead || (toArea === CardMoveArea.JudgeArea && to.judgeAreaDisabled()))) {
+      } else if (to && (to.Dead || (toArea === CardMoveArea.JudgeArea && to.judgeAreaDisabled()))) {
         info.toId = undefined;
         info.toArea = CardMoveArea.DropStack;
         info.moveReason = CardMoveReason.PlaceToDropStack;
@@ -1871,7 +1869,10 @@ export class StandardGameProcessor extends GameProcessor {
             to.equip(card);
           }
         } else if (toArea === CardMoveArea.OutsideArea) {
-          to.getCardIds((toArea as unknown) as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
+          to.getCardIds(
+            (toArea as unknown) as PlayerCardsArea,
+            Precondition.exists(toOutsideArea, 'outside area must have an area name'),
+          ).push(...actualCardIds);
         } else if (toArea === CardMoveArea.HandArea) {
           this.room.transformCard(to, actualCardIds, PlayerCardsArea.HandArea);
           to.getCardIds((toArea as unknown) as PlayerCardsArea).push(...actualCardIds);
@@ -1915,7 +1916,9 @@ export class StandardGameProcessor extends GameProcessor {
       fromArea = cardArea === undefined ? fromArea : cardArea;
     }
 
-    if (this.room.getPlayerById(toId).getOutsideAreaNameOf(judgeCardId)) {
+    const to = this.room.getPlayerById(toId);
+    const outsideAreaName = to.getOutsideAreaNameOf(judgeCardId)
+    if (outsideAreaName && !to.isCharacterOutsideArea(outsideAreaName)) {
       fromArea = CardMoveArea.OutsideArea;
       ownerId = toId;
     }

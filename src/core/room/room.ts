@@ -147,7 +147,12 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
   //Server only
   public abstract loseSkill(playerId: PlayerId, skillName: string | string[], broadcast?: boolean): Promise<void>;
   //Server only
-  public abstract obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean, insertIndex?: number): Promise<void>;
+  public abstract obtainSkill(
+    playerId: PlayerId,
+    skillName: string,
+    broadcast?: boolean,
+    insertIndex?: number,
+  ): Promise<void>;
   //Server only
   public abstract updateSkill(playerId: PlayerId, newSkillName: string, oldSkillName: string): Promise<void>;
   //Server only
@@ -498,10 +503,10 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     }
 
     const horses = from.getEquipment(CardType.OffenseRide);
-    const fixed =
-      horses && except?.includes(horses)
-        ? (Sanguosha.getCardById(horses).ShadowSkills[0] as RulesBreakerSkill).breakOffenseDistance(this, from)
-        : 0;
+    let fixed = 0;
+    if (horses && except && !except.includes(horses)) {
+      fixed = (Sanguosha.getCardById(horses).ShadowSkills[0] as RulesBreakerSkill).breakOffenseDistance(this, from);
+    }
 
     const seatGap = to.getDefenseDistance(this) - from.getOffenseDistance(this) + fixed;
     return Math.max(this.onSeatDistance(from, to) + seatGap, 1);
@@ -535,7 +540,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
 
   public isAvailableTarget(cardId: CardId, attacker: PlayerId, target: PlayerId) {
     for (const skill of this.getPlayerById(target).getSkills<FilterSkill>('filter')) {
-      if (!skill.canBeUsedCard(cardId, this as unknown as Room, target, attacker)) {
+      if (!skill.canBeUsedCard(cardId, (this as unknown) as Room, target, attacker)) {
         return false;
       }
     }

@@ -34,7 +34,7 @@ export class TrustAI extends PlayerAI {
     room: Room,
   ) {
     const { invokeSkillNames, toId } = content as ServerEventFinder<GameEventIdentifiers.AskForSkillUseEvent>;
-    if (!EventPacker.isUncancellabelEvent(content)) {
+    if (!EventPacker.isUncancellableEvent(content)) {
       const skillUse: ClientEventFinder<GameEventIdentifiers.AskForSkillUseEvent> = {
         invoke: invokeSkillNames !== undefined && invokeSkillNames[0] !== undefined ? invokeSkillNames[0] : undefined,
         fromId: toId,
@@ -60,7 +60,7 @@ export class TrustAI extends PlayerAI {
     //     : '');
 
     const { toId, cardMatcher } = content as ServerEventFinder<GameEventIdentifiers.AskForCardResponseEvent>;
-    if (EventPacker.isUncancellabelEvent(content)) {
+    if (EventPacker.isUncancellableEvent(content)) {
       const cardResponse: ClientEventFinder<GameEventIdentifiers.AskForCardResponseEvent> = {
         fromId: toId,
         cardId: room
@@ -95,7 +95,7 @@ export class TrustAI extends PlayerAI {
     const toPlayer = room.getPlayerById(toId);
     const availableCards = AiLibrary.findAvailableCardsToUse(room, toPlayer, new CardMatcher(cardMatcher));
 
-    if (EventPacker.isUncancellabelEvent(content)) {
+    if (EventPacker.isUncancellableEvent(content)) {
       const cardResponse: ClientEventFinder<GameEventIdentifiers.AskForCardUseEvent> = {
         fromId: toId,
         cardId: availableCards[0],
@@ -132,7 +132,7 @@ export class TrustAI extends PlayerAI {
       droppedCards: [],
     };
 
-    if (EventPacker.isUncancellabelEvent(content) || content.triggeredBySkills !== undefined) {
+    if (EventPacker.isUncancellableEvent(content) || content.triggeredBySkills !== undefined) {
       let cards = fromArea.reduce<CardId[]>((allCards, area) => {
         return [...allCards, ...to.getCardIds(area).filter(cardId => !except?.includes(cardId))];
       }, []);
@@ -296,7 +296,7 @@ export class TrustAI extends PlayerAI {
   ) {
     const { options, fromId, toId } = content;
 
-    if (!EventPacker.isUncancellabelEvent(content)) {
+    if (!EventPacker.isUncancellableEvent(content)) {
       const chooseCard: ClientEventFinder<T> = {
         fromId,
       };
@@ -348,7 +348,7 @@ export class TrustAI extends PlayerAI {
       }
     }
 
-    if (!EventPacker.isUncancellabelEvent(content)) {
+    if (!EventPacker.isUncancellableEvent(content)) {
       return {
         fromId: content.toId,
       };

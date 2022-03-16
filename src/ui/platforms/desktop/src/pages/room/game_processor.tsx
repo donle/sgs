@@ -1441,7 +1441,7 @@ export class GameClientProcessor {
       />,
     );
 
-    if (!EventPacker.isUncancellabelEvent(content)) {
+    if (!EventPacker.isUncancellableEvent(content)) {
       this.presenter.enableActionButton('cancel');
       this.presenter.defineCancelButtonActions(() => {
         this.presenter.closeDialog();
@@ -1516,7 +1516,7 @@ export class GameClientProcessor {
       />,
     );
 
-    if (!EventPacker.isUncancellabelEvent(content)) {
+    if (!EventPacker.isUncancellableEvent(content)) {
       this.presenter.enableActionButton('cancel');
       this.presenter.defineCancelButtonActions(() => {
         this.presenter.closeDialog();
@@ -1556,7 +1556,7 @@ export class GameClientProcessor {
       conversation,
     });
 
-    if (!EventPacker.isUncancellabelEvent(content)) {
+    if (!EventPacker.isUncancellableEvent(content)) {
       this.presenter.enableActionButton('cancel');
       this.presenter.defineCancelButtonActions(() => {
         const response: ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
