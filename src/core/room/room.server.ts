@@ -143,15 +143,16 @@ export class ServerRoom extends Room<WorkPlace.Server> {
         .map(card => card.Id);
 
       const missingCards = Algorithm.unique(allCards, [...this.drawStack, ...gameCards]);
-      this.logger.error(
-        'missing cards:',
-        missingCards
-          .map(id => {
-            const card = Sanguosha.getCardById(id);
-            return card.Name + ' ' + card.CardNumber + ' ' + Functional.getCardSuitRawText(card.Suit);
-          })
-          .join(', '),
-      );
+      missingCards.length > 0 &&
+        this.logger.error(
+          'missing cards:',
+          missingCards
+            .map(id => {
+              const card = Sanguosha.getCardById(id);
+              return card.Name + ' ' + card.CardNumber + ' ' + Functional.getCardSuitRawText(card.Suit);
+            })
+            .join(', '),
+        );
     });
   }
 
