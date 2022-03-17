@@ -77,7 +77,7 @@ export const CreateRoomDialog = (props: {
     Sanguosha.getGameCharacterExtensions(),
   );
   const [playerSelectionDisabled, disablePlayerSelection] = React.useState<boolean>(false);
-  const [playerSelectionSwitch, switchPlayerSelection] = React.useState<boolean>(true);
+  const [pvePlayerSelection, switchToPvePlayerSelection] = React.useState<boolean>(true);
   const [passcode, setPasscode] = React.useState<string>();
   const [roomName, setRoomName] = React.useState<string>(
     username ? props.translator.tr(TranslationPack.translationJsonPatcher("{0}'s room", username).extract()) : '',
@@ -109,7 +109,7 @@ export const CreateRoomDialog = (props: {
 
   const getPlayerOptions = () => {
     const options: { content: string | PatchedTranslationObject; value: number }[] = [];
-    if (playerSelectionSwitch) {
+    if (pvePlayerSelection) {
       options.push({ content: TranslationPack.translationJsonPatcher('one player').extract(), value: 2 });
       options.push({ content: TranslationPack.translationJsonPatcher('two players').extract(), value: 3 });
       options.push({ content: TranslationPack.translationJsonPatcher('pve classic one players').extract(), value: 4 });
@@ -132,13 +132,15 @@ export const CreateRoomDialog = (props: {
     } else {
       setcheckedGameMode(checkedIds[0]);
     }
-    switchPlayerSelection(checkedIds[0] === GameMode.Pve);
+    switchToPvePlayerSelection(checkedIds[0] === GameMode.Pve);
     disablePlayerSelection(checkedIds[0] === GameMode.OneVersusTwo || checkedIds[0] === GameMode.TwoVersusTwo);
 
     if (checkedIds[0] === GameMode.Standard) {
       setNumberOfPlayers(2);
-    } else if (checkedIds[0] === GameMode.OneVersusTwo || checkedIds[0] === GameMode.TwoVersusTwo) {
-      setNumberOfPlayers(checkedIds[0] === GameMode.OneVersusTwo ? 3 : 4);
+    } else if (checkedIds[0] === GameMode.OneVersusTwo) {
+      setNumberOfPlayers(3);
+    } else if (checkedIds[0] === GameMode.TwoVersusTwo) {
+      setNumberOfPlayers(4);
     } else if (checkedIds[0] === GameMode.Pve) {
       setNumberOfPlayers(2);
     }

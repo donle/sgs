@@ -20,16 +20,11 @@ import { StandardGameProcessor } from './game_processor.standard';
 
 export class TwoVersusTwoGameProcessor extends StandardGameProcessor {
   public assignRoles(players: Player[]) {
-    const combinations = [
-      [PlayerRole.Loyalist, PlayerRole.Rebel, PlayerRole.Rebel, PlayerRole.Loyalist],
-      [PlayerRole.Loyalist, PlayerRole.Rebel, PlayerRole.Loyalist, PlayerRole.Rebel],
-    ];
+    const roles = [PlayerRole.Loyalist, PlayerRole.Rebel, PlayerRole.Rebel, PlayerRole.Loyalist];
     const reverseRole = {
       [PlayerRole.Loyalist]: PlayerRole.Rebel,
       [PlayerRole.Rebel]: PlayerRole.Loyalist,
     };
-    const randomIndex = Math.random() >= 0.5 ? 1 : 0;
-    const roles = combinations[randomIndex];
     const reverse = Math.random() >= 0.5;
     for (let i = 0; i < players.length; i++) {
       players[i].Role = reverse ? reverseRole[roles[i]] : roles[i];
