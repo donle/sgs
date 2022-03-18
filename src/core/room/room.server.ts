@@ -1463,13 +1463,11 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async updateSkill(playerId: PlayerId, oldSkillName: string, newSkillName: string) {
     const player = this.getPlayerById(playerId);
-    const index = player.getPlayerSkills(undefined, true).findIndex(skill => skill.Name === oldSkillName);
-    if (index === -1) {
-      return;
-    }
 
-    this.loseSkill(playerId, oldSkillName);
-    this.obtainSkill(playerId, newSkillName, false, index);
+    if (player.hasSkill(oldSkillName)) {
+      await this.loseSkill(playerId, oldSkillName);
+      await this.obtainSkill(playerId, newSkillName, false);
+    }
   }
 
   public async loseHp(playerId: PlayerId, lostHp: number) {

@@ -33,10 +33,9 @@ export class TongYuan extends TriggerSkill {
     ).GeneralName;
     const from = room.getPlayerById(event.fromId);
 
-    from.hasSkill(CuiJianI.Name) && (await room.updateSkill(event.fromId, CuiJianI.Name, CuiJianEX.Name));
-    from.hasSkill(CuiJianII.Name) && (await room.updateSkill(event.fromId, CuiJianII.Name, CuiJianEX.Name));
-    from.hasSkill(CuiJian.Name) &&
-      (await room.updateSkill(event.fromId, CuiJian.Name, cardName === 'wuxiekeji' ? CuiJianI.Name : CuiJianII.Name));
+    await room.updateSkill(event.fromId, CuiJianI.Name, CuiJianEX.Name);
+    await room.updateSkill(event.fromId, CuiJianII.Name, CuiJianEX.Name);
+    await room.updateSkill(event.fromId, CuiJian.Name, cardName === 'wuxiekeji' ? CuiJianI.Name : CuiJianII.Name);
 
     const flagNumber = cardName === 'wuxiekeji' ? 1 : 2;
     const flags = from.getFlag<number[]>(this.Name) || [];
