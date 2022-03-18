@@ -123,6 +123,11 @@ export const CompulsorySkill = (skill: { name: string; description: string }) =>
     constructorFunction as any,
   );
 };
+export const QuestSkill = (skill: { name: string; description: string }) => <T extends Skill>(
+  constructorFunction: SKillConstructor<T>,
+) => {
+  return onCalculatingSkillUsageWrapper(SkillType.Quest, skill.name, skill.description, constructorFunction as any);
+};
 export function LordSkill<T extends Skill>(constructorFunction: SKillConstructor<T>) {
   return skillPropertyWrapper(
     {

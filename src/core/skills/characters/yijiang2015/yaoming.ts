@@ -170,11 +170,7 @@ export class YaoMingShadow extends TriggerSkill implements OnDefineReleaseTiming
   }
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
-    return (
-      owner.Id === event.fromPlayer &&
-      event.from === PlayerPhase.PhaseFinish &&
-      owner.getFlag<YaoMingEffect[]>(this.GeneralName) !== undefined
-    );
+    return event.from === PlayerPhase.PhaseFinish && owner.getFlag<YaoMingEffect[]>(this.GeneralName) !== undefined;
   }
 
   public async onTrigger(): Promise<boolean> {

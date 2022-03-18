@@ -8,6 +8,7 @@ export class WuJing extends Character {
   constructor(id: number) {
     super(id, 'wujing', CharacterGender.Male, CharacterNationality.Wu, 4, 4, GameCharacterExtensions.Sincerity, [
       ...skillLoaderInstance.getSkillsByName('heji'),
+      skillLoaderInstance.getSkillByName('liubing'),
     ]);
   }
 }

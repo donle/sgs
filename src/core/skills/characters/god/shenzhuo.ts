@@ -2,15 +2,18 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
-import { INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
-import { AllStage, CardUseStage } from 'core/game/stage_processor';
+import { AllStage, CardUseStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
+import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { RulesBreakerSkill, TriggerSkill } from 'core/skills/skill';
-import { CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import { FilterSkill, OnDefineReleaseTiming, RulesBreakerSkill, TriggerSkill } from 'core/skills/skill';
+import { CompulsorySkill, PersistentSkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 @CompulsorySkill({ name: 'shenzhuo', description: 'shenzhuo_description' })
 export class ShenZhuo extends TriggerSkill {
+  public static readonly Block = 'shenzhuo_block';
+
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage?: AllStage): boolean {
     return stage === CardUseStage.CardUseFinishedEffect;
   }
@@ -28,20 +31,134 @@ export class ShenZhuo extends TriggerSkill {
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
-    await room.drawCards(1, event.fromId, 'top', event.fromId, this.Name);
+    const options = ['shenzhuo:drawOne', 'shenzhuo:drawThree'];
+    const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingOptionsEvent>(
+      GameEventIdentifiers.AskForChoosingOptionsEvent,
+      {
+        options,
+        conversation: TranslationPack.translationJsonPatcher(
+          '{0}: please choose shenzhuo options: {1}',
+          this.Name,
+        ).extract(),
+        toId: event.fromId,
+        triggeredBySkills: [this.Name],
+      },
+      event.fromId,
+      true,
+    );
+
+    response.selectedOption = response.selectedOption || options[0];
+
+    if (response.selectedOption === options[0]) {
+      await room.drawCards(1, event.fromId, 'top', event.fromId, this.Name);
+      room.setFlag<number>(event.fromId, this.Name, (room.getFlag<number>(event.fromId, this.Name) || 0) + 1);
+    } else {
+      await room.drawCards(3, event.fromId, 'top', event.fromId, this.Name);
+      room.setFlag<boolean>(event.fromId, ShenZhuo.Block, true);
+    }
 
     return true;
   }
 }
 
 @ShadowSkill
+@PersistentSkill()
 @CompulsorySkill({ name: ShenZhuo.Name, description: ShenZhuo.Description })
-export class ShenZhuoShadow extends RulesBreakerSkill {
-  public breakCardUsableTimes(cardId: CardId | CardMatcher) {
-    if (cardId instanceof CardMatcher) {
-      return cardId.match(new CardMatcher({ generalName: ['slash'] })) ? INFINITE_TRIGGERING_TIMES : 0;
-    } else {
-      return Sanguosha.getCardById(cardId).GeneralName === 'slash' ? INFINITE_TRIGGERING_TIMES : 0;
+export class ShenZhuoExtra extends RulesBreakerSkill implements OnDefineReleaseTiming {
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
+  }
+
+  public breakCardUsableTimes(cardId: CardId | CardMatcher, room: Room, owner: Player): number {
+    if (!room.getFlag<number>(owner.Id, this.GeneralName)) {
+      return 0;
     }
+
+    let match = false;
+    if (cardId instanceof CardMatcher) {
+      match = cardId.match(new CardMatcher({ generalName: ['slash'] }));
+    } else {
+      match = Sanguosha.getCardById(cardId).GeneralName === 'slash';
+    }
+
+    if (match) {
+      return room.getFlag<number>(owner.Id, this.GeneralName);
+    } else {
+      return 0;
+    }
+  }
+}
+
+@ShadowSkill
+@PersistentSkill()
+@CompulsorySkill({ name: ShenZhuoExtra.Name, description: ShenZhuoExtra.Description })
+export class ShenZhuoBlock extends FilterSkill implements OnDefineReleaseTiming {
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
+  }
+
+  public canUseCard(cardId: CardId | CardMatcher, room: Room, owner: PlayerId): boolean {
+    if (!room.getFlag<boolean>(owner, ShenZhuo.Block)) {
+      return true;
+    }
+
+    return cardId instanceof CardMatcher
+      ? !cardId.match(new CardMatcher({ generalName: ['slash'] }))
+      : Sanguosha.getCardById(cardId).GeneralName !== 'slash';
+  }
+}
+
+@ShadowSkill
+@PersistentSkill()
+@CompulsorySkill({ name: ShenZhuoBlock.Name, description: ShenZhuoBlock.Description })
+export class ShenZhuoRemove extends TriggerSkill implements OnDefineReleaseTiming {
+  public afterLosingSkill(
+    room: Room,
+    owner: PlayerId,
+    content: ServerEventFinder<GameEventIdentifiers>,
+    stage?: AllStage,
+  ): boolean {
+    return room.CurrentPlayerPhase === PlayerPhase.PhaseFinish && stage === PhaseChangeStage.PhaseChanged;
+  }
+
+  public isAutoTrigger(): boolean {
+    return true;
+  }
+
+  public isFlaggedSkill(): boolean {
+    return true;
+  }
+
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage): boolean {
+    return stage === PhaseChangeStage.PhaseChanged;
+  }
+
+  public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
+    return (
+      event.from === PlayerPhase.PhaseFinish &&
+      (owner.getFlag<number>(this.GeneralName) !== undefined || owner.getFlag<boolean>(ShenZhuo.Block) !== undefined)
+    );
+  }
+
+  public async onTrigger(): Promise<boolean> {
+    return true;
+  }
+
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
+    room.getFlag<number>(event.fromId, this.GeneralName) !== undefined &&
+      room.removeFlag(event.fromId, this.GeneralName);
+    room.getFlag<boolean>(event.fromId, ShenZhuo.Block) !== undefined && room.removeFlag(event.fromId, ShenZhuo.Block);
+
+    return true;
   }
 }

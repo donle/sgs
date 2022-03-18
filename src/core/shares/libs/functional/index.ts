@@ -1,6 +1,6 @@
 import { Card, CardType } from 'core/cards/card';
 import { CardColor, CardId, CardSuit } from 'core/cards/libs/card_props';
-import { CharacterNationality } from 'core/characters/character';
+import { CharacterEquipSections, CharacterNationality } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { PlayerCardsArea, PlayerRole } from 'core/player/player_props';
@@ -207,6 +207,35 @@ export abstract class Functional {
         return 'K';
       default:
         return String(cardNumber);
+    }
+  }
+
+  static convertEquipSectionAndCardType(
+    equipSectionOrCardType: CharacterEquipSections | CardType,
+  ): CardType | CharacterEquipSections {
+    switch (equipSectionOrCardType) {
+      case CharacterEquipSections.Weapon:
+        return CardType.Weapon;
+      case CharacterEquipSections.Shield:
+        return CardType.Shield;
+      case CharacterEquipSections.DefenseRide:
+        return CardType.DefenseRide;
+      case CharacterEquipSections.OffenseRide:
+        return CardType.OffenseRide;
+      case CharacterEquipSections.Precious:
+        return CardType.Precious;
+      case CardType.Weapon:
+        return CharacterEquipSections.Weapon;
+      case CardType.Shield:
+        return CharacterEquipSections.Shield;
+      case CardType.DefenseRide:
+        return CharacterEquipSections.DefenseRide;
+      case CardType.OffenseRide:
+        return CharacterEquipSections.OffenseRide;
+      case CardType.Precious:
+        return CharacterEquipSections.Precious;
+      default:
+        throw new Error(`Cannot convert this value: ${equipSectionOrCardType}`);
     }
   }
 }

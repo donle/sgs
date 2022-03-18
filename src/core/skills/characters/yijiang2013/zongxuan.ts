@@ -1,83 +1,15 @@
+import { CardType } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardMoveStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { ActiveSkill, TriggerSkill } from 'core/skills/skill';
-import { CommonSkill, ShadowSkill } from 'core/skills/skill_wrappers';
-import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
+import { TriggerSkill } from 'core/skills/skill';
+import { CommonSkill } from 'core/skills/skill_wrappers';
 
 @CommonSkill({ name: 'zongxuan', description: 'zongxuan_description' })
-export class ZongXuan extends ActiveSkill {
-  public canUse(room: Room, owner: Player) {
-    return !owner.hasUsedSkill(this.Name);
-  }
-
-  public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
-    return cards.length === 0;
-  }
-
-  public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
-    return false;
-  }
-
-  public numberOfTargets() {
-    return 0;
-  }
-
-  public isAvailableTarget() {
-    return true;
-  }
-
-  public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
-    return true;
-  }
-
-  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const { fromId } = event;
-    const from = room.getPlayerById(fromId);
-
-    await room.drawCards(1, fromId, 'top', fromId, this.Name);
-
-    if (from.getPlayerCards().length > 0) {
-      const askForCard: ServerEventFinder<GameEventIdentifiers.AskForCardEvent> = {
-        cardAmount: 1,
-        toId: fromId,
-        reason: this.Name,
-        conversation: TranslationPack.translationJsonPatcher(
-          '{0}: please choose a card to put it on the top of the draw pile',
-          this.Name,
-        ).extract(),
-        fromArea: [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
-        triggeredBySkills: [this.Name],
-      };
-      room.notify(
-        GameEventIdentifiers.AskForCardEvent,
-        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForCardEvent>(askForCard),
-        fromId,
-      );
-      const response = await room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForCardEvent, fromId);
-
-      response.selectedCards = response.selectedCards || [from.getPlayerCards()[0]];
-
-      await room.moveCards({
-        movingCards: [{ card: response.selectedCards[0], fromArea: from.cardFrom(response.selectedCards[0]) }],
-        moveReason: CardMoveReason.ActiveMove,
-        fromId,
-        toArea: CardMoveArea.DrawStack,
-        proposer: fromId,
-        movedByReason: this.Name,
-      });
-    }
-
-    return true;
-  }
-}
-
-@ShadowSkill
-@CommonSkill({ name: ZongXuan.Name, description: ZongXuan.Description })
-export class ZongXuanShadow extends TriggerSkill {
+export class ZongXuan extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>, stage?: AllStage) {
     return stage === CardMoveStage.AfterCardMoved;
   }
@@ -91,13 +23,6 @@ export class ZongXuanShadow extends TriggerSkill {
           info.movingCards.find(node => room.isCardInDropStack(node.card)) !== undefined,
       ) !== undefined
     );
-  }
-
-  public getSkillLog(): PatchedTranslationObject {
-    return TranslationPack.translationJsonPatcher(
-      '{0}: do you want to put at least one of these cards on the top of the draw pile?',
-      this.GeneralName,
-    ).extract();
   }
 
   public async onTrigger() {
@@ -127,6 +52,56 @@ export class ZongXuanShadow extends TriggerSkill {
         }, []),
       );
     }
+
+    const tricks = cardIds.filter(id => Sanguosha.getCardById(id).is(CardType.Trick));
+    if (tricks.length > 0) {
+      const askForChooseCardEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingCardEvent> = {
+        toId: fromId,
+        cardIds: tricks,
+        amount: 1,
+        customTitle: 'zongxuan: please choose one of these cards',
+        ignoreNotifiedStatus: true,
+      };
+
+      const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardEvent>(
+        GameEventIdentifiers.AskForChoosingCardEvent,
+        askForChooseCardEvent,
+        fromId,
+      );
+
+      if (response.selectedCards && response.selectedCards.length > 0) {
+        const resp = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingPlayerEvent>(
+          GameEventIdentifiers.AskForChoosingPlayerEvent,
+          {
+            players: room.getOtherPlayers(fromId).map(player => player.Id),
+            toId: fromId,
+            requiredAmount: 1,
+            conversation: 'zongxuan: please choose another player',
+            triggeredBySkills: [this.Name],
+          },
+          fromId,
+          true,
+        );
+
+        if (resp.selectedPlayers && resp.selectedPlayers.length > 0) {
+          await room.moveCards({
+            movingCards: [{ card: response.selectedCards[0], fromArea: CardMoveArea.DropStack }],
+            toId: resp.selectedPlayers[0],
+            toArea: CardMoveArea.HandArea,
+            moveReason: CardMoveReason.ActiveMove,
+            triggeredBySkills: [this.Name],
+          });
+
+          const index = cardIds.findIndex(id => id === response.selectedCards![0]);
+          cardIds.splice(index, 1);
+        }
+      }
+    }
+
+    if (cardIds.length < 1) {
+      return true;
+    }
+
     const numOfCards = cardIds.length;
 
     const askForGuanxing = EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForPlaceCardsInDileEvent>({

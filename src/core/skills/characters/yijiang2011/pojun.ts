@@ -110,6 +110,7 @@ export class PoJunDamage extends TriggerSkill {
     if (
       event.fromId === owner.Id &&
       !!event.cardIds &&
+      !event.isFromChainedDamage &&
       Sanguosha.getCardById(event.cardIds[0]).GeneralName === 'slash'
     ) {
       const to = room.getPlayerById(event.toId);

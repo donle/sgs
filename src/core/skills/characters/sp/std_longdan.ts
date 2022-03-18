@@ -12,6 +12,14 @@ import { CommonSkill, ViewAsSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'std_longdan', description: 'std_longdan_description' })
 export class StdLongDan extends ViewAsSkill {
+  public get RelatedCharacters(): string[] {
+    return ['tongyuan_c'];
+  }
+
+  public audioIndex(characterName?: string): number {
+    return characterName && this.RelatedCharacters.includes(characterName) ? 1 : 2;
+  }
+
   public canViewAs(room: Room, owner: Player, selectedCards?: CardId[]): string[] {
     if (!selectedCards) {
       return ['jink', 'slash'];

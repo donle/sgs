@@ -152,7 +152,8 @@ export class HuaShen extends TriggerSkill implements OnDefineReleaseTiming {
           skill.isShadowSkill() ||
           skill.isLordSkill() ||
           skill.SkillType === SkillType.Limit ||
-          skill.SkillType === SkillType.Awaken
+          skill.SkillType === SkillType.Awaken ||
+          skill.SkillType === SkillType.Quest
         ),
     ).map(skill => skill.GeneralName);
 

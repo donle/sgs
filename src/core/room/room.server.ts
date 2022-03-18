@@ -761,18 +761,18 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     await this.trigger(event);
 
     const canDropCards: CardId[] = [];
-    const autoResponse: ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
-      fromId: playerId,
-      droppedCards: [],
-    };
-    if (event.cardAmount <= 0) {
-      return autoResponse;
-    }
-
     if (event.responsedEvent) {
       EventPacker.terminate(event);
       return event.responsedEvent;
     } else if (EventPacker.isUncancellableEvent(event)) {
+      const autoResponse: ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
+        fromId: playerId,
+        droppedCards: [],
+      };
+      if (event.cardAmount <= 0) {
+        return autoResponse;
+      }
+
       for (const area of fromArea) {
         canDropCards.push(
           ...this.getPlayerById(playerId)
@@ -1218,8 +1218,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     await this.gameProcessor.onHandleIncomingEvent(GameEventIdentifiers.CardUseEvent, event, async stage => {
       if (
         stage !== CardUseStage.CardUseFinishedEffect &&
-        !(Sanguosha.getCardById(event.cardId).Skill instanceof ResponsiveSkill) &&
-        TargetGroupUtil.getRealTargets(event.targetGroup).length === 0
+        Sanguosha.getCardById(event.cardId).Skill instanceof ResponsiveSkill
+          ? !event.toCardIds || event.toCardIds.length === 0
+          : TargetGroupUtil.getRealTargets(event.targetGroup).length === 0
       ) {
         return true;
       }
@@ -1463,11 +1464,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async updateSkill(playerId: PlayerId, oldSkillName: string, newSkillName: string) {
     const player = this.getPlayerById(playerId);
-
-    if (player.hasSkill(oldSkillName)) {
-      await this.loseSkill(playerId, oldSkillName);
-      await this.obtainSkill(playerId, newSkillName, false);
+    const index = player.getPlayerSkills(undefined, true).findIndex(skill => skill.Name === oldSkillName);
+    if (index === -1) {
+      return;
     }
+
+    this.loseSkill(playerId, oldSkillName);
+    this.obtainSkill(playerId, newSkillName, false, index);
   }
 
   public async loseHp(playerId: PlayerId, lostHp: number) {
@@ -1634,7 +1637,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
 
     infos.filter(info => !toRemove.includes(info));
-    if (infos.length === 0) {
+    if (!infos || infos.length === 0) {
       return;
     }
 

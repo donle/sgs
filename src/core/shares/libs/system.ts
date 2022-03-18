@@ -117,6 +117,9 @@ export namespace System {
     JuYi = 'juyi',
     BaiJia = 'baijia',
     ShanLi = 'shanli',
+    MangQing = 'mangqing',
+    ChouJue = 'choujue',
+    BeiShui = 'beishui',
   }
 
   export const AwakeningSkillApplier: { [K in AwakeningSkillApplierEnum]: AwakeningSkillApplierFunc } = {
@@ -182,6 +185,15 @@ export namespace System {
     },
     [AwakeningSkillApplierEnum.ShanLi]: (room: Room, player: Player) => {
       return player.hasUsedSkill(BaiYi.Name) && (player.getFlag<PlayerId[]>(JingLve.Name) || []).length >= 2;
+    },
+    [AwakeningSkillApplierEnum.MangQing]: (room: Room, player: Player) => {
+      return room.AlivePlayers.filter(player => player.LostHp > 0).length > player.Hp;
+    },
+    [AwakeningSkillApplierEnum.ChouJue]: (room: Room, player: Player) => {
+      return Math.abs(player.Hp - player.getCardIds(PlayerCardsArea.HandArea).length) >= 3;
+    },
+    [AwakeningSkillApplierEnum.BeiShui]: (room: Room, player: Player) => {
+      return player.Hp < 2 || player.getCardIds(PlayerCardsArea.HandArea).length < 2;
     },
   };
 }

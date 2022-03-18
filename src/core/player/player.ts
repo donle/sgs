@@ -48,6 +48,7 @@ type SkillStringType =
   | 'awaken'
   | 'compulsory'
   | 'switch'
+  | 'quest'
   | 'active'
   | 'filter'
   | 'globalFilter'
@@ -724,6 +725,8 @@ export abstract class Player implements PlayerInfo {
         return skills.filter(skill => skill.isSwitchSkill()) as T[];
       case 'skillProhibited':
         return skills.filter(skill => skill instanceof SkillProhibitedSkill) as T[];
+      case 'quest':
+        return skills.filter(skill => skill.SkillType === SkillType.Quest) as T[];
       default:
         throw Precondition.UnreachableError(skillType);
     }
@@ -771,6 +774,8 @@ export abstract class Player implements PlayerInfo {
         return skills.filter(skill => skill.isSwitchSkill()) as T[];
       case 'skillProhibited':
         return skills.filter(skill => skill instanceof SkillProhibitedSkill) as T[];
+      case 'quest':
+        return skills.filter(skill => skill.SkillType === SkillType.Quest) as T[];  
       default:
         throw Precondition.UnreachableError(skillType);
     }

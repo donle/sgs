@@ -70,7 +70,9 @@ export class ZhiYan extends TriggerSkill {
 
     room.broadcast(GameEventIdentifiers.CardDisplayEvent, showCardEvent);
 
-    if (card.is(CardType.Equip) && to.canUseCard(room, cardId)) {
+    if (card.is(CardType.Basic)) {
+      await room.drawCards(1, fromId, 'top', fromId, this.Name);
+    } else if (card.is(CardType.Equip) && to.canUseCard(room, cardId)) {
       await room.useCard({
         fromId: toId,
         cardId,
