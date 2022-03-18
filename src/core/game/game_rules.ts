@@ -134,6 +134,11 @@ export class GameCommonRules {
     this.userRules[user.Id].additionalHold += addedNumber;
   }
 
+  public addAdditionalAttackRange(user: Player, addedNumber: number) {
+    this.preCheck(user);
+    this.userRules[user.Id].additionalAttackDistance += addedNumber;
+  }
+
   public getBaseHoldCardNumber(room: Room, user: Player) {
     let cardHoldNumber = -1;
     user.getSkills<RulesBreakerSkill>('breaker').forEach(skill => {

@@ -154,7 +154,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     insertIndex?: number,
   ): Promise<void>;
   //Server only
-  public abstract updateSkill(playerId: PlayerId, newSkillName: string, oldSkillName: string): Promise<void>;
+  public abstract updateSkill(playerId: PlayerId, oldSkillName: string, newSkillName: string): Promise<void>;
   //Server only
   public abstract pindian(fromId: PlayerId, toIds: PlayerId[], bySkill: string): Promise<PinDianReport>;
   public abstract turnOver(playerId: PlayerId): Promise<void>;

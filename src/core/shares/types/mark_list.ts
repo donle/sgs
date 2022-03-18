@@ -19,4 +19,6 @@ export const enum MarkEnum {
   Zhong = 'zhong',
   TaoMie = 'taomie',
   Kui = 'kui',
+  PingDing = 'pingding',
+  DanLie = 'danlie',
 }

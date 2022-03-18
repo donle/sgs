@@ -1,4 +1,5 @@
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
@@ -53,15 +54,39 @@ export class QiaoShi extends TriggerSkill {
   }
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
-    await room.drawCards(
-      1,
-      (event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>).playerId,
-      'top',
-      event.fromId,
-      this.Name,
-    );
+    let invoked = false;
 
-    await room.drawCards(1, event.fromId, 'top', event.fromId, this.Name);
+    do {
+      invoked = false;
+      const toId = (event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>).playerId;
+
+      const idA = (await room.drawCards(1, toId, 'top', event.fromId, this.Name))[0];
+      const idB = (await room.drawCards(1, event.fromId, 'top', event.fromId, this.Name))[0];
+
+      if (room.getPlayerById(event.fromId).Dead || room.getPlayerById(toId).Dead) {
+        break;
+      }
+
+      if (Sanguosha.getCardById(idA).Suit === Sanguosha.getCardById(idB).Suit) {
+        const skillUseEvent = {
+          invokeSkillNames: [this.Name],
+          toId: event.fromId,
+          conversation: TranslationPack.translationJsonPatcher(
+            '{0}: do you want to draw a card with {1} ?',
+            this.Name,
+            TranslationPack.patchPlayerInTranslation(room.getPlayerById(toId)),
+          ).extract(),
+        };
+
+        room.notify(GameEventIdentifiers.AskForSkillUseEvent, skillUseEvent, event.fromId);
+        const { invoke } = await room.onReceivingAsyncResponseFrom(
+          GameEventIdentifiers.AskForSkillUseEvent,
+          event.fromId,
+        );
+
+        invoked = !!invoke;
+      }
+    } while (invoked);
 
     return true;
   }

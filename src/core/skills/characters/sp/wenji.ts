@@ -12,6 +12,7 @@ import {
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Functional } from 'core/shares/libs/functional';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { CommonSkill, PersistentSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
@@ -98,21 +99,25 @@ export class WenJi extends TriggerSkill {
         card = Sanguosha.getCardById(virtualCard.ActualCardIds[0]);
       }
 
-      const originalNames = room.getFlag<string[]>(fromId, this.Name) || [];
-      if (!originalNames.includes(card.GeneralName)) {
-        originalNames.push(card.GeneralName);
+      const originalTypes = room.getFlag<CardType[]>(fromId, this.Name) || [];
+      if (!originalTypes.includes(card.BaseType)) {
+        originalTypes.push(card.BaseType);
       }
 
       let originalText = '{0}：';
-      for (let i = 1; i <= originalNames.length; i++) {
+      for (let i = 1; i <= originalTypes.length; i++) {
         originalText = originalText + '[{' + i + '}]';
       }
 
-      room.setFlag<string[]>(
+      room.setFlag<CardType[]>(
         fromId,
         this.Name,
-        originalNames,
-        TranslationPack.translationJsonPatcher(originalText, this.Name, ...originalNames).toString(),
+        originalTypes,
+        TranslationPack.translationJsonPatcher(
+          originalText,
+          this.Name,
+          ...originalTypes.map(type => Functional.getCardBaseTypeAbbrRawText(type)),
+        ).toString(),
       );
     }
 
@@ -158,18 +163,17 @@ export class WenJiShadow extends TriggerSkill implements OnDefineReleaseTiming {
     if (identifier === GameEventIdentifiers.CardUseEvent) {
       const cardUseEvent = content as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
       const card = Sanguosha.getCardById(cardUseEvent.cardId);
-      const wenjiCards = owner.getFlag<string[]>(this.GeneralName);
+      const wenjiTypes = owner.getFlag<CardType[]>(this.GeneralName);
       return (
         cardUseEvent.fromId === owner.Id &&
         !card.is(CardType.DelayedTrick) &&
         !card.is(CardType.Equip) &&
-        wenjiCards &&
-        wenjiCards.includes(card.GeneralName)
+        wenjiTypes?.includes(card.BaseType)
       );
     } else if (identifier === GameEventIdentifiers.PhaseChangeEvent) {
       const phaseChangeEvent = content as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
       return (
-        owner.getFlag<string[]>(this.GeneralName) !== undefined && phaseChangeEvent.from === PlayerPhase.PhaseFinish
+        owner.getFlag<CardType[]>(this.GeneralName) !== undefined && phaseChangeEvent.from === PlayerPhase.PhaseFinish
       );
     }
 

@@ -78,25 +78,9 @@ export class YanYuShadow extends TriggerSkill {
           ) !== undefined,
         owner.Id,
         'phase',
-      ).reduce<number>((sum, event) => {
-        if (event.infos.length === 1) {
-          sum += event.infos[0].movingCards.filter(
-            card => Sanguosha.getCardById(card.card).GeneralName === 'slash',
-          ).length;
-        } else if (event.infos.length > 1) {
-          const infos = event.infos.filter(
-            info =>
-              info.fromId === owner.Id &&
-              info.moveReason === CardMoveReason.Reforge &&
-              info.movingCards.find(card => Sanguosha.getCardById(card.card).GeneralName === 'slash'),
-          );
-          for (const info of infos) {
-            sum += info.movingCards.filter(card => Sanguosha.getCardById(card.card).GeneralName === 'slash').length;
-          }
-        }
-
-        return sum;
-      }, 0) >= 2
+        undefined,
+        1,
+      ).length > 0
     );
   }
 
@@ -110,7 +94,7 @@ export class YanYuShadow extends TriggerSkill {
 
   public getSkillLog(): PatchedTranslationObject {
     return TranslationPack.translationJsonPatcher(
-      '{0}: do you want to choose a male character to draw 2 cards?',
+      '{0}: do you want to choose a male character to draw card(s)?',
       this.GeneralName,
     ).extract();
   }
@@ -124,7 +108,38 @@ export class YanYuShadow extends TriggerSkill {
       return false;
     }
 
-    await room.drawCards(2, event.toIds[0], 'top', event.fromId, this.GeneralName);
+    const drawNum = room.Analytics.getRecordEvents<GameEventIdentifiers.MoveCardEvent>(
+      moveCardEvent =>
+        EventPacker.getIdentifier(moveCardEvent) === GameEventIdentifiers.MoveCardEvent &&
+        moveCardEvent.infos.find(
+          info =>
+            info.fromId === event.fromId &&
+            info.moveReason === CardMoveReason.Reforge &&
+            info.movingCards.find(card => Sanguosha.getCardById(card.card).GeneralName === 'slash'),
+        ) !== undefined,
+      event.fromId,
+      'phase',
+    ).reduce<number>((sum, moveCardEvent) => {
+      if (moveCardEvent.infos.length === 1) {
+        sum += moveCardEvent.infos[0].movingCards.filter(
+          card => Sanguosha.getCardById(card.card).GeneralName === 'slash',
+        ).length;
+      } else if (moveCardEvent.infos.length > 1) {
+        const infos = moveCardEvent.infos.filter(
+          info =>
+            info.fromId === event.fromId &&
+            info.moveReason === CardMoveReason.Reforge &&
+            info.movingCards.find(card => Sanguosha.getCardById(card.card).GeneralName === 'slash'),
+        );
+        for (const info of infos) {
+          sum += info.movingCards.filter(card => Sanguosha.getCardById(card.card).GeneralName === 'slash').length;
+        }
+      }
+
+      return sum;
+    }, 0);
+
+    await room.drawCards(Math.min(drawNum, 3), event.toIds[0], 'top', event.fromId, this.GeneralName);
 
     return true;
   }

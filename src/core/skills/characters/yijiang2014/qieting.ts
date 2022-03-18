@@ -1,9 +1,10 @@
+import { CardChoosingOptions } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
+import { Algorithm } from 'core/shares/libs/algorithm';
 import { CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
@@ -16,13 +17,12 @@ export class QieTing extends TriggerSkill {
   public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>): boolean {
     return (
       owner.Id !== content.fromPlayer &&
-      room.Analytics.getRecordEvents<GameEventIdentifiers.CardUseEvent>(
+      room.Analytics.getRecordEvents<GameEventIdentifiers.DamageEvent>(
         event => {
           return (
+            EventPacker.getIdentifier(event) === GameEventIdentifiers.DamageEvent &&
             event.fromId === content.fromPlayer &&
-            event.targetGroup !== undefined &&
-            TargetGroupUtil.getRealTargets(event.targetGroup).find(player => player !== content.fromPlayer) !==
-              undefined
+            event.toId !== content.fromPlayer
           );
         },
         content.fromPlayer,
@@ -41,14 +41,16 @@ export class QieTing extends TriggerSkill {
     const { fromId, triggeredOnEvent } = event;
     const phaseStageChangeEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>;
     const toId = phaseStageChangeEvent.fromPlayer!;
+    const to = room.getPlayerById(toId);
 
-    const canMoveCards = room
-      .getPlayerById(toId)
-      .getCardIds(PlayerCardsArea.EquipArea)
-      .filter(cardId => room.canPlaceCardTo(cardId, fromId));
+    const canMoveCards = to.getCardIds(PlayerCardsArea.EquipArea).filter(cardId => room.canPlaceCardTo(cardId, fromId));
     const options: string[] = ['qieting:draw'];
     if (canMoveCards.length > 0) {
       options.unshift('qieting:move');
+    }
+
+    if (to.getCardIds(PlayerCardsArea.HandArea).length > 0) {
+      options.unshift('qieting:prey');
     }
 
     if (options.length > 1) {
@@ -57,7 +59,7 @@ export class QieTing extends TriggerSkill {
         conversation: TranslationPack.translationJsonPatcher(
           '{0}: please choose qieting options: {1}',
           this.Name,
-          TranslationPack.patchPlayerInTranslation(room.getPlayerById(toId)),
+          TranslationPack.patchPlayerInTranslation(to),
         ).extract(),
         toId: fromId,
       });
@@ -68,16 +70,47 @@ export class QieTing extends TriggerSkill {
         fromId,
       );
 
-      response.selectedOption = response.selectedOption || askForChooseEvent.options[0];
+      response.selectedOption = response.selectedOption || askForChooseEvent.options[options.length - 1];
 
-      if (response.selectedOption === askForChooseEvent.options[0]) {
-        const askForChooseCardEvent =
-          EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingCardEvent>({
-            toId: fromId,
-            cardIds: canMoveCards,
-            amount: 1,
-            customTitle: 'qieting: please move one of these cards to you',
-          });
+      if (response.selectedOption === 'qieting:prey') {
+        const options: CardChoosingOptions = {
+          [PlayerCardsArea.HandArea]: to.getCardIds(PlayerCardsArea.HandArea),
+        };
+
+        if (to.getCardIds(PlayerCardsArea.HandArea).length > 2) {
+          options[PlayerCardsArea.HandArea] = Algorithm.randomPick(2, to.getCardIds(PlayerCardsArea.HandArea));
+        }
+
+        const chooseCardEvent = {
+          fromId,
+          toId,
+          options,
+          triggeredBySkills: [this.Name],
+        };
+
+        const response = await room.askForChoosingPlayerCard(chooseCardEvent, chooseCardEvent.fromId, false, true);
+        if (!response) {
+          return false;
+        }
+
+        await room.moveCards({
+          movingCards: [{ card: response.selectedCard!, fromArea: response.fromArea }],
+          fromId: chooseCardEvent.toId,
+          toId: chooseCardEvent.fromId,
+          toArea: CardMoveArea.HandArea,
+          moveReason: CardMoveReason.ActivePrey,
+          proposer: chooseCardEvent.fromId,
+          movedByReason: this.Name,
+        });
+      } else if (response.selectedOption === 'qieting:move') {
+        const askForChooseCardEvent = EventPacker.createUncancellableEvent<
+          GameEventIdentifiers.AskForChoosingCardEvent
+        >({
+          toId: fromId,
+          cardIds: canMoveCards,
+          amount: 1,
+          customTitle: 'qieting: please move one of these cards to you',
+        });
 
         const response = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardEvent>(
           GameEventIdentifiers.AskForChoosingCardEvent,

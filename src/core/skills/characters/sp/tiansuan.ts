@@ -375,7 +375,11 @@ export class TianSuanRemove extends TriggerSkill implements OnDefineReleaseTimin
     content: ServerEventFinder<GameEventIdentifiers>,
     stage?: AllStage,
   ): boolean {
-    return room.CurrentPlayerPhase === PlayerPhase.PhaseBegin && stage === PhaseChangeStage.AfterPhaseChanged;
+    return (
+      room.CurrentPlayer === room.getPlayerById(owner) &&
+      room.CurrentPlayerPhase === PlayerPhase.PhaseBegin &&
+      stage === PhaseChangeStage.AfterPhaseChanged
+    );
   }
 
   public isAutoTrigger(): boolean {
