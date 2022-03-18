@@ -1,7 +1,8 @@
 import { CardType, VirtualCard } from 'core/cards/card';
 import { Alcohol } from 'core/cards/legion_fight/alcohol';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { AllStage, DamageEffectStage, TurnOverStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';

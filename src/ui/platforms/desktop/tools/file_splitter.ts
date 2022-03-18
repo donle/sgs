@@ -45,7 +45,9 @@ export abstract class FileSplitter {
     return new Promise(function (resolve, reject) {
       const reader = fs.createReadStream(file, { encoding: undefined });
       reader.pipe(writer, { end: false });
-      reader.on('error', (e) => { reject(e.message); });
+      reader.on('error', e => {
+        reject(e.message);
+      });
       reader.on('end', resolve);
     });
   }

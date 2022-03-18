@@ -2,7 +2,8 @@ import { CardType, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
 import { Slash } from 'core/cards/standard/slash';
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardMoveStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -241,9 +242,8 @@ export class ShanJiaShadow extends TriggerSkill {
 
         let num: number = 0;
         if (moveCardEvent.infos.length === 0) {
-          num += moveCardEvent.infos[0].movingCards.filter(card =>
-            Sanguosha.getCardById(card.card).is(CardType.Equip),
-          ).length;
+          num += moveCardEvent.infos[0].movingCards.filter(card => Sanguosha.getCardById(card.card).is(CardType.Equip))
+            .length;
         } else {
           const infos = moveCardEvent.infos.filter(
             info =>

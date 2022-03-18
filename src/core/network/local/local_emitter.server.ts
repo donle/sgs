@@ -1,11 +1,11 @@
 import {
   ClientEventFinder,
-  EventPacker,
   GameEventIdentifiers,
   serverActiveListenerEvents,
   ServerEventFinder,
   serverResponsiveListenerEvents,
 } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { ServerPlayer } from 'core/player/player.server';
 import { PlayerId } from 'core/player/player_props';
 import { ServerRoom } from 'core/room/room.server';

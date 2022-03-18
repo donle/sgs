@@ -1,12 +1,12 @@
 import {
   ClientEventFinder,
-  EventPacker,
   GameEventIdentifiers,
   serverActiveListenerEvents,
   ServerEventFinder,
   serverResponsiveListenerEvents,
   WorkPlace,
 } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { Socket } from 'core/network/socket';
 import { ServerPlayer } from 'core/player/player.server';

@@ -2,13 +2,8 @@ import { BaseSkillTrigger } from 'core/ai/skills/base/base_trigger';
 import { Card, VirtualCard } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import {
-  ClientEventFinder,
-  EventPacker,
-  EventProcessSteps,
-  GameEventIdentifiers,
-  ServerEventFinder,
-} from 'core/event/event';
+import { ClientEventFinder, EventProcessSteps, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { AllStage, PlayerPhase, StagePriority } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';

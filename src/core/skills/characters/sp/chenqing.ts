@@ -85,19 +85,19 @@ export class ChenQing extends TriggerSkill {
       if (response.droppedCards.length < 4) {
         return false;
       }
-  
+
       const virtualPeach = VirtualCard.create({ cardName: 'peach', bySkill: this.Name }).Id;
-  
+
       const suits: CardSuit[] = [];
       for (const cardId of response.droppedCards) {
         const suit = Sanguosha.getCardById(cardId).Suit;
         if (suits.includes(suit)) {
           break;
         }
-  
+
         suits.push(suit);
       }
-  
+
       if (
         suits.length === response.droppedCards.length &&
         room.getPlayerById(toIds[0]).canUseCardTo(room, virtualPeach, dying, true)

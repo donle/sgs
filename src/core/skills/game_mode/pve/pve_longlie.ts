@@ -1,4 +1,5 @@
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { AimStage, AllStage, DamageEffectStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -49,7 +50,7 @@ export class PveLongLieShadow extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
-    return owner.hasSkill(this.GeneralName) && event.fromId === owner.Id&&room.getAlivePlayersFrom().length>2;
+    return owner.hasSkill(this.GeneralName) && event.fromId === owner.Id && room.getAlivePlayersFrom().length > 2;
   }
 
   async onTrigger() {

@@ -67,7 +67,7 @@ export class MoveInstantCardAnimation extends UiAnimation {
       ) {
         return;
       }
-  
+
       const cards = info.movingCards.map(cardInfo => {
         const isPublic = info.engagedPlayerIds
           ? info.engagedPlayerIds.includes(this.store.clientPlayerId)
@@ -78,11 +78,11 @@ export class MoveInstantCardAnimation extends UiAnimation {
           public: isPublic || toId === this.store.clientPlayerId,
         };
       });
-  
+
       const elements = this.createCards(cards);
       const animationStyles: React.CSSProperties = {};
       const leftOffset = (this.cardWidth + (elements.length - 1) * 16) / 2;
-  
+
       if (fromId) {
         const position = this.store.animationPosition.getPosition(fromId, fromId === this.store.clientPlayerId);
         animationStyles.transform = `translate(${position.x - leftOffset}px, ${position.y - this.cardHeight / 2}px)`;
@@ -91,7 +91,7 @@ export class MoveInstantCardAnimation extends UiAnimation {
           this.CentralPosition.y - this.cardHeight / 2
         }px)`;
       }
-  
+
       const container = document.createElement('div');
       document.getElementById('root')?.append(container);
       ReactDOM.render(
@@ -100,11 +100,11 @@ export class MoveInstantCardAnimation extends UiAnimation {
         </div>,
         container,
       );
-  
+
       await UiAnimation.play(100, () => {
         const toPosition = this.store.animationPosition.getPosition(toId, toId === this.store.clientPlayerId);
         const leftOffset = (this.cardWidth + (elements.length - 1) * 16) / 2;
-  
+
         ReactDOM.render(
           <div
             className={styles.movingCards}
@@ -115,7 +115,7 @@ export class MoveInstantCardAnimation extends UiAnimation {
           container,
         );
       });
-  
+
       await UiAnimation.play(1000, () => {
         ReactDOM.render(
           <div className={styles.movingCards} style={{ opacity: 0 }}>
@@ -124,7 +124,7 @@ export class MoveInstantCardAnimation extends UiAnimation {
           container,
         );
       });
-  
+
       await UiAnimation.play(150, () => {
         ReactDOM.unmountComponentAtNode(container);
         container.remove();

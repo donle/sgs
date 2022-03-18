@@ -1,5 +1,6 @@
 import { CharacterEquipSections } from 'core/characters/character';
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, DamageEffectStage, PinDianStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';

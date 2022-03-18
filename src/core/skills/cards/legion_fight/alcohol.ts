@@ -1,6 +1,7 @@
 import { AlcoholSkillTrigger } from 'core/ai/skills/cards/alcohol';
 import { CardId } from 'core/cards/libs/card_props';
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
@@ -15,7 +16,7 @@ export class AlcoholSkill extends ActiveSkill implements ExtralCardSkillProperty
   private readonly recoverTag = 'recover';
 
   public canUse(room: Room, owner: Player, contentOrContainerCard: CardId) {
-    return owner.canUseCard(room,  contentOrContainerCard);
+    return owner.canUseCard(room, contentOrContainerCard);
   }
 
   isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {

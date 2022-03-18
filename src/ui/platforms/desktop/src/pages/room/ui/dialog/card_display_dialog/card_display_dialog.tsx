@@ -28,15 +28,7 @@ const getCardDisplayContainer = ({ cards, imageLoader, translator }: CardDisplay
     for (let i = index; i < Math.min(cards.length, maxCardsPerLine + index); i++) {
       const card = Sanguosha.getCardById(cards[i]);
 
-      cardLine.push(
-        <ClientCard
-          card={card}
-          key={i}
-          imageLoader={imageLoader}
-          translator={translator}
-          width={100}
-        />,
-      );
+      cardLine.push(<ClientCard card={card} key={i} imageLoader={imageLoader} translator={translator} width={100} />);
     }
 
     index += maxCardsPerLine;

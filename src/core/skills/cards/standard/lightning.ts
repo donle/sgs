@@ -47,7 +47,8 @@ export class LightningSkill extends ActiveSkill implements ExtralCardSkillProper
   ): boolean {
     return (
       room.getPlayerById(owner).canUseCardTo(room, containerCard, target) &&
-      room.getPlayerById(target)
+      room
+        .getPlayerById(target)
         .getCardIds(PlayerCardsArea.JudgeArea)
         .find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'lightning') === undefined
     );

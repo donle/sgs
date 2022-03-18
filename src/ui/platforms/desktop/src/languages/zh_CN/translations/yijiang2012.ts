@@ -48,7 +48,7 @@ export const characterDictionary: Word[] = [
   { source: 'liubiao', target: '刘表' },
   { source: 'zishou', target: '自守' },
   { source: 'zongshi', target: '宗室' },
-  
+
   { source: 'decade_dangxian', target: '当先' },
 ];
 
@@ -152,7 +152,8 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'decade_dangxian_description',
-    target: '<b>锁定技</b>，回合开始时，你可以失去1点体力并随机获得弃牌堆里的一张【杀】，无论你是否失去体力，你执行一个额外的出牌阶段。',
+    target:
+      '<b>锁定技</b>，回合开始时，你可以失去1点体力并随机获得弃牌堆里的一张【杀】，无论你是否失去体力，你执行一个额外的出牌阶段。',
   },
 ];
 

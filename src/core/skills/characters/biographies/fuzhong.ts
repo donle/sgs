@@ -1,4 +1,5 @@
-import { CardDrawReason, CardMoveArea, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardDrawReason, CardMoveArea, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { DamageType } from 'core/game/game_props';
 import { AllStage, CardMoveStage, DrawCardStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';

@@ -80,7 +80,7 @@ export class GodHuiShiSec extends ActiveSkill {
           TranslationPack.translationJsonPatcher(tag, this.Name, ...originalSkillNames).toString(),
         );
 
-        to.hasShadowSkill(GodHuiShiSecRemover.Name) || await room.obtainSkill(toIds[0], GodHuiShiSecRemover.Name);
+        to.hasShadowSkill(GodHuiShiSecRemover.Name) || (await room.obtainSkill(toIds[0], GodHuiShiSecRemover.Name));
       }
     } else {
       await room.drawCards(4, toIds[0], 'top', fromId, this.Name);
@@ -104,18 +104,11 @@ export class GodHuiShiSecRemover extends TriggerSkill {
     return true;
   }
 
-  public isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
-    stage?: AllStage,
-  ): boolean {
+  public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>, stage?: AllStage): boolean {
     return stage === SkillUseStage.BeforeSkillUse;
   }
 
-  public canUse(
-    room: Room,
-    owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>,
-  ): boolean {
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): boolean {
     return owner.Id === content.fromId && owner.getFlag<string[]>(FlagEnum.EnableToAwaken)?.includes(content.skillName);
   }
 
@@ -123,10 +116,7 @@ export class GodHuiShiSecRemover extends TriggerSkill {
     return true;
   }
 
-  public async onEffect(
-    room: Room,
-    event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
-  ): Promise<boolean> {
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     const content = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.SkillUseEvent>;
 
     const originalSkillNames = room.getFlag<string[]>(content.fromId, FlagEnum.EnableToAwaken) || [];

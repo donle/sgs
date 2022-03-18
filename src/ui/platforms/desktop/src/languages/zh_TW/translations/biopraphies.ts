@@ -101,8 +101,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'suiren_description',
-    target:
-      '當你死亡時，你可以將你手牌中所有的【殺】和傷害類錦囊牌交給一名其他角色。',
+    target: '當你死亡時，你可以將你手牌中所有的【殺】和傷害類錦囊牌交給一名其他角色。',
   },
 ];
 

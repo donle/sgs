@@ -36,7 +36,8 @@ export class ProdAudioLoader implements AudioLoader {
   }
 
   async getQuickChatAudio(index: number, gender: CharacterGender): Promise<string> {
-    return (await import(`./audios/quickChats/${gender === CharacterGender.Female ? 'female' : 'male'}/${index}.mp3`)).default;
+    return (await import(`./audios/quickChats/${gender === CharacterGender.Female ? 'female' : 'male'}/${index}.mp3`))
+      .default;
   }
 
   async getCardAudio(cardName: string, gender: CharacterGender, characterName?: string): Promise<string> {
@@ -60,7 +61,8 @@ export class ProdAudioLoader implements AudioLoader {
       characterName = skill.RelatedCharacters.includes(characterName) ? '.' + characterName : '';
     }
 
-    return (await import(`./audios/characters/${skillName}${characterName ? characterName : ''}${audioIndex}.mp3`)).default;
+    return (await import(`./audios/characters/${skillName}${characterName ? characterName : ''}${audioIndex}.mp3`))
+      .default;
   }
 
   async getDeathAudio(characterName: string): Promise<string> {

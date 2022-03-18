@@ -1,5 +1,6 @@
 import { CardSuit } from 'core/cards/libs/card_props';
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { AimStage, AllStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -53,7 +54,9 @@ export class FengPo extends TriggerSkill {
         conversation: TranslationPack.translationJsonPatcher(
           '{0}: please choose fengpo options: {1} {2}',
           this.Name,
-          TranslationPack.patchCardInTranslation((event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>).byCardId),
+          TranslationPack.patchCardInTranslation(
+            (event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>).byCardId,
+          ),
           TranslationPack.patchPlayerInTranslation(
             room.getPlayerById((event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>).toId),
           ),

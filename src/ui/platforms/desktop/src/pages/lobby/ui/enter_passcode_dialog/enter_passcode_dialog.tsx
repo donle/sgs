@@ -32,7 +32,7 @@ export const EnterPasscodeDialog = ({
 
   const [passcode, setPasscode] = React.useState<string>();
   return (
-    <Dialog className={styles.passcodeDialog}  onClose={onClose}>
+    <Dialog className={styles.passcodeDialog} onClose={onClose}>
       <img className={styles.background} src={imageLoader.getDialogBackgroundImage().src} alt="" />
       <div className={styles.inputField}>
         <span className={styles.inputLabelText}>{translator.tr('please enter your room passcode')}</span>

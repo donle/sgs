@@ -1,6 +1,6 @@
 import { VirtualCard } from 'core/cards/card';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
-import {  AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
+import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
@@ -50,8 +50,8 @@ export class PveLiGe extends TriggerSkill {
           toArea: CardMoveArea.HandArea,
           proposer: event.fromId,
         });
-      }else if(selectedCards.length === 0){
-        await room.drawCards(2,event.fromId)
+      } else if (selectedCards.length === 0) {
+        await room.drawCards(2, event.fromId);
       }
     }
     const duelUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {

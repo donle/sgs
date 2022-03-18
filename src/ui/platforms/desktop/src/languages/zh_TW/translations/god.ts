@@ -270,7 +270,10 @@ export const skillDescriptions: Word[] = [
     target:
       '<b>鎖定技</b>，當你使用非轉化和非虛擬的【殺】結算結束後，你選擇一項：1.摸一張牌，於本回合內使用【殺】的次數上限+1；2.摸三張牌，於本回合內不能使用【殺】。',
   },
-
+  {
+    source: 'dangmo_description',
+    target: '當你於出牌階段內首次使用【殺】聲明指定目標後，你可以爲此【殺】額外選擇一至X名目標（X爲你的體力值-1）。',
+  },
   {
     source: 'yingba_description',
     target:

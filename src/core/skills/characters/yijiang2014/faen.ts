@@ -1,4 +1,5 @@
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { AllStage, ChainLockStage, TurnOverStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
@@ -48,11 +49,9 @@ export class FaEn extends TriggerSkill {
       {
         from: event.fromId,
         tos: [
-          (
-            event.triggeredOnEvent as ServerEventFinder<
-              GameEventIdentifiers.PlayerTurnOverEvent | GameEventIdentifiers.ChainLockedEvent
-            >
-          ).toId,
+          (event.triggeredOnEvent as ServerEventFinder<
+            GameEventIdentifiers.PlayerTurnOverEvent | GameEventIdentifiers.ChainLockedEvent
+          >).toId,
         ],
       },
     ];
@@ -65,11 +64,9 @@ export class FaEn extends TriggerSkill {
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     await room.drawCards(
       1,
-      (
-        event.triggeredOnEvent as ServerEventFinder<
-          GameEventIdentifiers.PlayerTurnOverEvent | GameEventIdentifiers.ChainLockedEvent
-        >
-      ).toId,
+      (event.triggeredOnEvent as ServerEventFinder<
+        GameEventIdentifiers.PlayerTurnOverEvent | GameEventIdentifiers.ChainLockedEvent
+      >).toId,
       'top',
       event.fromId,
       this.Name,

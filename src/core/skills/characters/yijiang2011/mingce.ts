@@ -1,7 +1,8 @@
 import { CardType, VirtualCard } from 'core/cards/card';
 import { CardId } from 'core/cards/libs/card_props';
 import { Slash } from 'core/cards/standard/slash';
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';

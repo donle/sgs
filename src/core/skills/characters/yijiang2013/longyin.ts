@@ -57,7 +57,7 @@ export class LongYin extends TriggerSkill {
     if (Sanguosha.getCardById(event.cardId).isRed()) {
       await room.drawCards(1, fromId, 'top', fromId, this.Name);
     }
-    
+
     if (
       from.hasUsedSkill(JieZhong.Name) &&
       Sanguosha.getCardById(cardIds![0]).CardNumber === Sanguosha.getCardById(event.cardId).CardNumber

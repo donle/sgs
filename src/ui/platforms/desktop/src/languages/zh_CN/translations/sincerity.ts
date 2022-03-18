@@ -59,8 +59,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'guixiu_description',
-    target:
-      '<b>锁定技</b>，当你受到伤害后，你将武将牌翻至正面朝上；当你的武将牌翻至正面朝上后，你摸一张牌。',
+    target: '<b>锁定技</b>，当你受到伤害后，你将武将牌翻至正面朝上；当你的武将牌翻至正面朝上后，你摸一张牌。',
   },
 
   {
@@ -95,7 +94,7 @@ export const skillDescriptions: Word[] = [
 ];
 
 export const skillAudios: Word[] = [
-/*  {
+  /*  {
     source: '$xin_yinju:1',
     target: '据理直谏，吾人臣本分。',
   },
@@ -136,7 +135,7 @@ export const skillAudios: Word[] = [
   {
     source: '$mouli:2',
     target: '先谋后事者昌，先事后谋者亡！',
-  }, 
+  },
   {
     source: '$zifu:1',
     target: '有心无力，请罪愿降。',
@@ -161,7 +160,7 @@ export const skillAudios: Word[] = [
   {
     source: '$guixiu:2',
     target: '深闺藏英秀，独怜乱世秋。',
-  }, 
+  },
 
   {
     source: '$xunyi:1',

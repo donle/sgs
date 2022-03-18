@@ -92,7 +92,10 @@ export class LuLve extends TriggerSkill {
         }));
     } else {
       await room.moveCards({
-        movingCards: room.getPlayerById(toIds[0]).getCardIds(PlayerCardsArea.HandArea).map(card => ({ card, fromArea: CardMoveArea.HandArea })),
+        movingCards: room
+          .getPlayerById(toIds[0])
+          .getCardIds(PlayerCardsArea.HandArea)
+          .map(card => ({ card, fromArea: CardMoveArea.HandArea })),
         fromId: toIds[0],
         toId: fromId,
         toArea: CardMoveArea.HandArea,

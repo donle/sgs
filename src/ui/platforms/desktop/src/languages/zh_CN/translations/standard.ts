@@ -796,7 +796,7 @@ export const skillAudios: Word[] = [
   {
     source: '$qingnang:2',
     target: '病入膏肓，需下猛药。',
-  },  
+  },
 
   {
     source: '$wushuang:1',
@@ -805,7 +805,7 @@ export const skillAudios: Word[] = [
   {
     source: '$wushuang:2',
     target: '三个齐上，也不是我的对手！',
-  }, 
+  },
   {
     source: '$liyu:1',
     target: '大丈夫相时而动。',
@@ -813,7 +813,7 @@ export const skillAudios: Word[] = [
   {
     source: '$liyu:2',
     target: '人不为已，天诛地灭。',
-  }, 
+  },
 
   {
     source: '$lijian:1',
@@ -822,7 +822,7 @@ export const skillAudios: Word[] = [
   {
     source: '$lijian:2',
     target: '这场比赛，将军可要赢哦~',
-  }, 
+  },
   {
     source: '$biyue:1',
     target: '梦蝶幻月，如沫虚妄。',
@@ -830,7 +830,7 @@ export const skillAudios: Word[] = [
   {
     source: '$biyue:2',
     target: '水映月明，芙蓉照倩影。',
-  }, 
+  },
 
   {
     source: '$yaowu:1',

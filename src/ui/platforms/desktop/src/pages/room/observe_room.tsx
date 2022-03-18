@@ -1,8 +1,8 @@
 import { AudioLoader } from 'audio_loader/audio_loader';
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { clientActiveListenerEvents, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
-import { ClientOfflineSocket } from 'core/network/socket.offline';
-import { PlayerInfo } from 'core/player/player_props';
+import { ClientSocket } from 'core/network/socket.client';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronLoader } from 'electron_loader/electron_loader';
@@ -10,14 +10,15 @@ import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import { SettingsDialog } from 'pages/ui/settings/settings';
-import { ServerHostTag } from 'props/config_props';
+import { ServerHostTag, ServiceConfig } from 'props/config_props';
 import * as React from 'react';
+import { match } from 'react-router-dom';
 import { ConnectionService } from 'services/connection_service/connection_service';
 import { CharacterSkinInfo } from 'skins/skins';
 import { PagePropsWithConfig } from 'types/page_props';
 import { ReplayDataType } from 'types/replay_props';
 import { installAudioPlayerService } from 'ui/audio/install';
-import { ReplayClientProcessor } from './game_processor.replay';
+import { GameClientProcessor } from './game_processor';
 import { installService, RoomBaseService } from './install_service';
 import styles from './room.module.css';
 import { RoomPresenter, RoomStore } from './room.presenter';
@@ -29,8 +30,9 @@ import { GameDialog } from './ui/game_dialog/game_dialog';
 import { SeatsLayout } from './ui/seats_layout/seats_layout';
 
 @mobxReact.observer
-export class ReplayRoomPage extends React.Component<
+export class ObserveRoomPage extends React.Component<
   PagePropsWithConfig<{
+    match: match<{ slug: string }>;
     translator: ClientTranslationModule;
     imageLoader: ImageLoader;
     audioLoader: AudioLoader;
@@ -41,12 +43,8 @@ export class ReplayRoomPage extends React.Component<
 > {
   private presenter: RoomPresenter;
   private store: RoomStore;
-  private gameProcessor: ReplayClientProcessor;
-  private baseService: RoomBaseService;
   private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
-
-  private replayStepDelay = 2000;
-  private dumped = false;
+  private playerName: string = this.props.electronLoader.getData('username') || 'unknown';
 
   @mobx.observable.ref
   openSettings = false;
@@ -60,6 +58,10 @@ export class ReplayRoomPage extends React.Component<
     : 50;
   @mobx.observable.ref
   private renderSideBoard = true;
+  @mobx.observable.ref
+  private roomPing: number = 999;
+  @mobx.observable.ref
+  private gameHostedServer: ServerHostTag;
 
   private readonly settings = {
     onVolumeChange: mobx.action((volume: number) => {
@@ -73,9 +75,15 @@ export class ReplayRoomPage extends React.Component<
       this.audioService.changeBGMVolume();
     }),
   };
+  private gameProcessor: GameClientProcessor;
+  private baseService: RoomBaseService;
+  private roomId: number;
+  private socket: ClientSocket;
+  private lastEventTimeStamp: number;
 
   constructor(
     props: PagePropsWithConfig<{
+      match: match<{ slug: string }>;
       translator: ClientTranslationModule;
       imageLoader: ImageLoader;
       audioLoader: AudioLoader;
@@ -85,13 +93,29 @@ export class ReplayRoomPage extends React.Component<
     }>,
   ) {
     super(props);
-    const { translator } = this.props;
+    const { translator, match } = this.props;
 
     this.presenter = new RoomPresenter(this.props.imageLoader);
     this.store = this.presenter.createStore();
 
+    this.roomId = parseInt(match.params.slug, 10);
+    const roomId = this.roomId.toString();
+    const { ping, hostConfig } = this.props.location.state as {
+      ping?: number;
+      hostConfig: ServiceConfig;
+    };
+    this.socket = new ClientSocket(
+      `${hostConfig.protocol}://${hostConfig.host}:${hostConfig.port}/room-${roomId}`,
+      roomId,
+    );
+    mobx.runInAction(() => (this.gameHostedServer = hostConfig.hostTag));
+
+    if (ping !== undefined) {
+      mobx.runInAction(() => (this.roomPing = ping));
+    }
+
     this.baseService = installService(this.props.translator, this.store, this.props.imageLoader);
-    this.gameProcessor = new ReplayClientProcessor(
+    this.gameProcessor = new GameClientProcessor(
       this.presenter,
       this.store,
       translator,
@@ -102,90 +126,15 @@ export class ReplayRoomPage extends React.Component<
     );
   }
 
-  private static readonly nonDelayedEvents: GameEventIdentifiers[] = [
-    GameEventIdentifiers.PhaseChangeEvent,
-    GameEventIdentifiers.PhaseStageChangeEvent,
-    GameEventIdentifiers.PlayerBulkPacketEvent,
-    GameEventIdentifiers.PlayerBulkPacketEvent,
-    GameEventIdentifiers.MoveCardEvent,
-    GameEventIdentifiers.DrawCardEvent,
-    GameEventIdentifiers.DrunkEvent,
-    GameEventIdentifiers.HpChangeEvent,
-    GameEventIdentifiers.ChangeMaxHpEvent,
-    GameEventIdentifiers.PlayerPropertiesChangeEvent,
-    GameEventIdentifiers.ObtainSkillEvent,
-    GameEventIdentifiers.LoseSkillEvent,
-    GameEventIdentifiers.LoseHpEvent,
-    GameEventIdentifiers.DamageEvent,
-    GameEventIdentifiers.CustomGameDialog,
-    GameEventIdentifiers.NotifyEvent,
-    GameEventIdentifiers.UserMessageEvent,
-    GameEventIdentifiers.HookUpSkillsEvent,
-    GameEventIdentifiers.UnhookSkillsEvent,
-  ];
-
-  private async stepDelay(identifier: GameEventIdentifiers) {
-    if (ReplayRoomPage.nonDelayedEvents.includes(identifier)) {
-      await this.sleep(0);
-    } else {
-      await this.sleep(this.replayStepDelay);
-    }
-  }
-
-  private async loadSteps(events: ServerEventFinder<GameEventIdentifiers>[]) {
+  private readonly onHandleBulkEvents = async (events: ServerEventFinder<GameEventIdentifiers>[]) => {
+    this.store.room.emitStatus('trusted', this.props.electronLoader.getTemporaryData('playerId')!);
     for (const content of events) {
-      if (this.dumped) {
-        break;
-      }
-      const identifier = EventPacker.getIdentifier(content)!;
-      if (identifier === undefined) {
-        // tslint:disable-next-line:no-console
-        console.warn(`missing identifier: ${JSON.stringify(content, null, 2)}`);
-        continue;
-      }
-      if (identifier === GameEventIdentifiers.PlayerBulkPacketEvent) {
-        const { stackedLostMessages } = content as ServerEventFinder<GameEventIdentifiers.PlayerBulkPacketEvent>;
-        await this.loadSteps(stackedLostMessages);
-      } else {
-        await this.gameProcessor.onHandleIncomingEvent(identifier, content);
-        this.showMessageFromEvent(content);
-        this.animation(identifier, content);
-        this.updateGameStatus(content);
-        await this.stepDelay(identifier);
-      }
+      const identifier = Precondition.exists(EventPacker.getIdentifier(content), 'Unable to load event identifier');
+      await this.gameProcessor.onHandleIncomingEvent(identifier, content);
+      this.showMessageFromEvent(content);
+      this.updateGameStatus(content);
     }
-  }
-
-  componentDidMount() {
-    this.audioService.playRoomBGM();
-    const { replayData } = this.props.location.state as { replayData: ReplayDataType };
-    if (!replayData) {
-      this.props.history.push('/lobby');
-    }
-
-    this.presenter.setupClientPlayerId(replayData.viewerId);
-    this.presenter.createClientRoom(
-      replayData.roomId,
-      new ClientOfflineSocket(replayData.roomId.toString()),
-      replayData.gameInfo,
-      replayData.playersInfo as PlayerInfo[],
-    );
-    this.props.translator.setupPlayer(this.presenter.ClientPlayer);
-    this.store.animationPosition.insertPlayer(replayData.viewerId);
-
-    this.loadSteps(replayData.events);
-  }
-
-  private async sleep(ms: number) {
-    return new Promise<void>(r => {
-      setTimeout(() => r(), ms);
-    });
-  }
-
-  componentWillUnmount() {
-    this.dumped = true;
-    this.audioService.stop();
-  }
+  };
 
   private updateGameStatus(event: ServerEventFinder<GameEventIdentifiers>) {
     const info = EventPacker.getGameRunningInfo(event);
@@ -195,6 +144,7 @@ export class ReplayRoomPage extends React.Component<
 
   private animation<T extends GameEventIdentifiers>(identifier: T, event: ServerEventFinder<T>) {
     this.baseService.Animation.GuideLineAnimation.animate(identifier, event);
+    this.baseService.Animation.MoveInstantCardAnimation.animate(identifier, event);
   }
 
   private showMessageFromEvent(event: ServerEventFinder<GameEventIdentifiers>) {
@@ -210,6 +160,84 @@ export class ReplayRoomPage extends React.Component<
     messages.forEach(message => {
       this.presenter.addGameLog(translator.trx(message));
     });
+  }
+
+  componentDidMount() {
+    this.audioService.playRoomBGM();
+    this.presenter.setupRoomStatus({
+      playerName: this.playerName,
+      socket: this.socket,
+      roomId: this.roomId,
+      timestamp: Date.now(),
+    });
+
+    this.socket.on(GameEventIdentifiers.PlayerEnterRefusedEvent, () => {
+      this.props.history.push('/lobby');
+    });
+
+    if (!this.props.electronLoader.getTemporaryData('playerId')) {
+      this.props.electronLoader.saveTemporaryData('playerId', `${this.playerName}-${Date.now()}`);
+    }
+
+    clientActiveListenerEvents().forEach(identifier => {
+      this.socket.on(identifier, async (content: ServerEventFinder<GameEventIdentifiers>) => {
+        const timestamp = EventPacker.getTimestamp(content);
+        if (timestamp) {
+          this.lastEventTimeStamp = timestamp;
+        }
+
+        if (identifier === GameEventIdentifiers.PlayerBulkPacketEvent) {
+          await this.onHandleBulkEvents(
+            (content as ServerEventFinder<GameEventIdentifiers.PlayerBulkPacketEvent>).stackedLostMessages,
+          );
+        } else {
+          await this.gameProcessor.onHandleIncomingEvent(identifier, content);
+          this.showMessageFromEvent(content);
+          this.animation(identifier, content);
+          this.updateGameStatus(content);
+        }
+      });
+    });
+
+    this.socket.onReconnected(() => {
+      const playerId = this.props.electronLoader.getTemporaryData('playerId');
+      if (!playerId) {
+        return;
+      }
+
+      this.socket.notify(
+        GameEventIdentifiers.PlayerReenterEvent,
+        EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerReenterEvent, {
+          timestamp: this.lastEventTimeStamp,
+          playerId,
+          playerName: this.playerName,
+        }),
+      );
+    });
+
+    this.socket.notify(
+      GameEventIdentifiers.RequestObserveEvent,
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.RequestObserveEvent, {
+        observerId: this.props.electronLoader.getTemporaryData('playerId')!,
+      }),
+    );
+
+    window.addEventListener('beforeunload', () => this.disconnect());
+  }
+
+  private readonly disconnect = () => {
+    this.socket.notify(
+      GameEventIdentifiers.PlayerLeaveEvent,
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerLeaveEvent, {
+        playerId: this.store.clientPlayerId,
+      }),
+    );
+    // this.socket.disconnect();
+  };
+
+  componentWillUnmount() {
+    this.disconnect();
+    this.audioService.stop();
   }
 
   @mobx.action

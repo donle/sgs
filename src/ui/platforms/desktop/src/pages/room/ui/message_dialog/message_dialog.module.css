@@ -36,7 +36,14 @@
     cursor: pointer;
 }
 .quickChatItems:hover {
-    background: linear-gradient(90deg, #211616 0%, rgba(177, 117, 40, 0.6) 40%, rgba(177, 117, 40, 0.7) 50%, rgba(177, 117, 40, 0.6) 60%, #211616 100%);
+    background: linear-gradient(
+        90deg,
+        #211616 0%,
+        rgba(177, 117, 40, 0.6) 40%,
+        rgba(177, 117, 40, 0.7) 50%,
+        rgba(177, 117, 40, 0.6) 60%,
+        #211616 100%
+    );
     color: #d79529;
 }
 .sendButton {

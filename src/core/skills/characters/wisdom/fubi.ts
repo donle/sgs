@@ -1,5 +1,6 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import {
   AllStage,
   GameStartStage,

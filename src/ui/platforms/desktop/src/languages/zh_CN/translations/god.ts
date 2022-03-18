@@ -257,8 +257,7 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'dulie_description',
-    target:
-      '<b>锁定技</b>，当你成为体力值大于你的角色使用【杀】的目标时，你判定，若结果为红桃，取消之。',
+    target: '<b>锁定技</b>，当你成为体力值大于你的角色使用【杀】的目标时，你判定，若结果为红桃，取消之。',
   },
   {
     source: 'powei_description',
@@ -269,6 +268,10 @@ export const skillDescriptions: Word[] = [
     source: 'shenzhuo_description',
     target:
       '<b>锁定技</b>，当你使用非转化和非虚拟的【杀】结算结束后，你选择一项：1.摸一张牌，于本回合内使用【杀】的次数上限+1；2.摸三张牌，于本回合内不能使用【杀】。',
+  },
+  {
+    source: 'dangmo_description',
+    target: '当你于出牌阶段内首次使用【杀】声明指定目标后，你可以为此【杀】额外选择一至X名目标（X为你的体力值-1）。',
   },
 
   {
@@ -406,7 +409,7 @@ export const skillAudios: Word[] = [
     source: '$shenfen:2',
     target: '凡人们，颤抖吧！这是神之怒火！',
   },
-  
+
   {
     source: '$renjie:1',
     target: '忍一时，风平浪静。',

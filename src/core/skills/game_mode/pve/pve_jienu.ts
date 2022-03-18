@@ -1,4 +1,5 @@
-import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { DamageType } from 'core/game/game_props';
 import {
   AllStage,
@@ -63,7 +64,7 @@ export class PveJieNu extends TriggerSkill {
             recoverBy: fromId,
             toId: fromId,
           });
-        } 
+        }
         for (const player of room.getOtherPlayers(fromId)) {
           await room.damage({
             fromId,

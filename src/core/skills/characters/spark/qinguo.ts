@@ -1,6 +1,7 @@
 import { CardType, VirtualCard } from 'core/cards/card';
 import { Slash } from 'core/cards/standard/slash';
-import { CardMoveArea, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, CardMoveStage, CardUseStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
@@ -32,10 +33,7 @@ export class QinGuo extends TriggerSkill {
   }
 
   public getSkillLog(): PatchedTranslationObject {
-    return TranslationPack.translationJsonPatcher(
-      '{0}: do you want to use a virtual slash?',
-      this.Name,
-    ).extract();
+    return TranslationPack.translationJsonPatcher('{0}: do you want to use a virtual slash?', this.Name).extract();
   }
 
   public async onTrigger(): Promise<boolean> {

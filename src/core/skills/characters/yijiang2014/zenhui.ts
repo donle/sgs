@@ -38,7 +38,7 @@ export class ZenHui extends TriggerSkill {
           return (
             !AimGroupUtil.getAllTargets(event.allTargets).includes(playerId) &&
             room.isAvailableTarget(event.byCardId, owner.Id, playerId) &&
-            (Sanguosha.getCardById(event.byCardId).Skill as unknown as ExtralCardSkillProperty).isCardAvailableTarget(
+            ((Sanguosha.getCardById(event.byCardId).Skill as unknown) as ExtralCardSkillProperty).isCardAvailableTarget(
               owner.Id,
               room,
               playerId,
@@ -54,23 +54,24 @@ export class ZenHui extends TriggerSkill {
   public async beforeUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
     const aimEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
 
-    const { selectedPlayers } =
-      await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent>(
-        GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent,
-        {
-          user: event.fromId,
-          cardId: aimEvent.byCardId,
-          exclude: AimGroupUtil.getAllTargets(aimEvent.allTargets),
-          conversation: TranslationPack.translationJsonPatcher(
-            '{0}: please select a player who can be the target of {1}',
-            this.Name,
-            TranslationPack.patchCardInTranslation(aimEvent.byCardId),
-            this.Name,
-          ).extract(),
-          triggeredBySkills: [this.Name],
-        },
-        event.fromId,
-      );
+    const { selectedPlayers } = await room.doAskForCommonly<
+      GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent
+    >(
+      GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent,
+      {
+        user: event.fromId,
+        cardId: aimEvent.byCardId,
+        exclude: AimGroupUtil.getAllTargets(aimEvent.allTargets),
+        conversation: TranslationPack.translationJsonPatcher(
+          '{0}: please select a player who can be the target of {1}',
+          this.Name,
+          TranslationPack.patchCardInTranslation(aimEvent.byCardId),
+          this.Name,
+        ).extract(),
+        triggeredBySkills: [this.Name],
+      },
+      event.fromId,
+    );
 
     if (selectedPlayers) {
       event.toIds = selectedPlayers;

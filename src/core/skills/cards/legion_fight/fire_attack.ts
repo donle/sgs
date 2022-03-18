@@ -1,6 +1,7 @@
 import { FireAttackSkillTrigger } from 'core/ai/skills/cards/fire_attack';
 import { CardId } from 'core/cards/libs/card_props';
-import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';

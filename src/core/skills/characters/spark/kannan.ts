@@ -62,8 +62,7 @@ export class KanNan extends ActiveSkill {
         TranslationPack.translationJsonPatcher('kannan damage: {0}', originalNum + 1).toString(),
       );
 
-      room.getPlayerById(winner).hasShadowSkill(KanNanBuff.Name) ||
-        (await room.obtainSkill(winner, KanNanBuff.Name));
+      room.getPlayerById(winner).hasShadowSkill(KanNanBuff.Name) || (await room.obtainSkill(winner, KanNanBuff.Name));
       if (winner === fromId) {
         originalTargets.push(fromId);
         room.setFlag<PlayerId[]>(fromId, this.Name, originalTargets);
