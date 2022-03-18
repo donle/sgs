@@ -3,10 +3,10 @@ import {
   CardMoveArea,
   CardMoveReason,
   ClientEventFinder,
-  EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
 import { Player } from 'core/player/player';

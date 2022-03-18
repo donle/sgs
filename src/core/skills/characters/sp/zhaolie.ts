@@ -4,10 +4,10 @@ import {
   CardDrawReason,
   CardMoveArea,
   CardMoveReason,
-  EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
 import { AllStage, DrawCardStage, PlayerPhase } from 'core/game/stage_processor';

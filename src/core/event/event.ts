@@ -1,4 +1,3 @@
-import { GameRunningInfo } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
 import { ClientEvent } from './event.client';
