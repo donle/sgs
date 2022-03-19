@@ -3,6 +3,7 @@ import type { Word } from 'languages';
 export const characterDictionary: Word[] = [
   { source: 'god_guanyu', target: '神关羽' },
   { source: 'wushen', target: '武神' },
+  { source: '##wushen', target: '武神' },
   { source: 'wuhun', target: '武魂' },
   { source: '#wuhun', target: '武魂' },
 
@@ -71,6 +72,7 @@ export const characterDictionary: Word[] = [
   { source: 'god_tianyi', target: '天翊' },
   { source: 'god_huishi_sec', target: '辉逝' },
   { source: 'zuoxing', target: '佐幸' },
+  { source: '#zuoxing', target: '佐幸' },
   { source: 'side_zuoxing_s', target: '佐幸' },
 
   { source: 'god_taishici', target: '神太史慈' },
