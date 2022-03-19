@@ -14,6 +14,18 @@ export const characterDictionary: Word[] = [
   { source: 'cuijian_EX', target: '摧坚' },
   { source: 'tongyuan', target: '同援' },
 
+  { source: 'xiahoujie', target: '夏侯杰' },
+  { source: 'liedan', target: '裂胆' },
+  { source: 'zhuangdan', target: '壮胆' },
+
+  { source: 'dufuren', target: '杜夫人' },
+  { source: 'yise', target: '异色' },
+  { source: '#yise', target: '异色（受伤+1）' },
+  { source: 'yise points: {0}', target: '异色[{0}]' },
+  { source: 'shunshi', target: '顺世' },
+  { source: '#shunshi', target: '顺世（摸牌+1）' },
+  { source: 'shunshi points: {0}', target: '顺世[{0}]' },
+
   { source: 'xugong', target: '许贡' },
   { source: 'biaozhao', target: '表召' },
   { source: 'yechou', target: '业仇' },
@@ -69,6 +81,21 @@ export const characterDictionary: Word[] = [
   { source: 'daoji', target: '盗戟' },
   { source: 'fuzhong', target: '负重' },
   { source: 'zhong', target: '重' },
+
+  { source: 'tongyuan_c', target: '童渊' },
+  { source: 'chaofeng', target: '朝凤' },
+  { source: '#chaofeng', target: '朝凤' },
+  { source: 'chuanshu', target: '传术' },
+  { source: 'chuanyun', target: '穿云' },
+
+  { source: 'wanniangongzhu', target: '万年公主' },
+  { source: 'zhenge', target: '枕戈' },
+  { source: 'zhenge: {0}', target: '枕戈+{0}' },
+  { source: 'xinghan', target: '兴汉' },
+
+  { source: 'xunchen', target: '荀谌' },
+  { source: 'fenglve', target: '锋略' },
+  { source: 'anyong', target: '暗涌' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -84,27 +111,49 @@ export const skillDescriptions: Word[] = [
   {
     source: 'cuijian_description',
     target:
-      '出牌阶段限一次，你可以选择一名有手牌的其他角色，若其手牌中；有【闪】，其将手牌里的所有【闪】和装备区里的防具牌交给你，然后你交给其等量的牌；没有【闪】，你弃置一张手牌。',
+      '出牌阶段限一次，你可以选择一名有手牌的其他角色，若其手牌中有【闪】，其将手牌里的所有【闪】和装备区里的防具牌交给你，然后你交给其等量的牌。',
   },
   {
     source: 'cuijian_I_description',
     target:
-      '出牌阶段限一次，你可以选择一名有手牌的其他角色，若其手牌中；有【闪】，其将手牌里的所有【闪】和装备区里的防具牌交给你，然后你交给其等量的牌；没有【闪】，你摸一张牌。',
+      '出牌阶段限一次，你可以选择一名有手牌的其他角色，若其手牌中：有【闪】，其将手牌里的所有【闪】和装备区里的防具牌交给你，然后你交给其等量的牌；没有【闪】，你摸两张牌。',
   },
   {
     source: 'cuijian_II_description',
     target:
-      '出牌阶段限一次，你可以选择一名有手牌的其他角色，若其手牌中；有【闪】，其将手牌里的所有【闪】和装备区里的防具牌交给你，然后你交给其一张牌；没有【闪】，你弃置一张手牌。',
+      '出牌阶段限一次，你可以选择一名有手牌的其他角色，若其手牌中；有【闪】，其将手牌里的所有【闪】和装备区里的防具牌交给你。',
   },
   {
     source: 'cuijian_EX_description',
     target:
-      '出牌阶段限一次，你可以选择一名有手牌的其他角色，若其手牌中；有【闪】，其将手牌里的所有【闪】和装备区里的防具牌交给你，然后你交给其一张牌；没有【闪】，你摸一张牌。',
+      '出牌阶段限一次，你可以选择一名有手牌的其他角色，若其手牌中；有【闪】，其将手牌里的所有【闪】和装备区里的防具牌交给你；没有【闪】，你摸两张牌。',
   },
   {
     source: 'tongyuan_description',
     target:
-      '<b>锁定技</b>，当你于回合外使用牌结算结束后，若此牌为：【无懈可击】，你将你的“摧坚”中的“你弃置一张手牌”修改为“你摸一张牌”；【桃】，你将你的“摧坚”中的“你交给其等量的牌”修改为“你交给其一张牌”。若以上两个修改都已被触发，则你于本局游戏内接下来使用的【无懈可击】不可被抵消，使用的【桃】回复值+1。',
+      '<b>锁定技</b>，当你使用红色锦囊牌结算结束后，你的“摧坚”描述末尾增加“若其没有【闪】，你摸两张牌”；当你使用或打出红色基本牌结算结束后，你删除你的“摧坚”描述中的“然后交给你其等量的牌”。若以上两项均已触发，你于本局游戏剩余时间内使用的红色普通锦囊牌不可被响应，使用的红色基本牌可额外选择一个目标。',
+  },
+
+  {
+    source: 'yise_description',
+    target:
+      '当其他角色获得你的牌后，若其中有：红色牌，你可以令其回复1点体力；黑色牌，当其下次受到【杀】造成的伤害时，此伤害+1。',
+  },
+  {
+    source: 'shunshi_description',
+    target:
+      '准备阶段开始时，或当你于回合外受到伤害后，你可以将一张牌交给除伤害来源外的一名其他角色。若如此做，你于你的下个回合内（若此时处于你的回合内，则改为本回合内）获得以下效果：摸牌阶段摸牌数+1，出牌阶段使用【杀】的次数上限+1，弃牌阶段手牌上限+1。',
+  },
+
+  {
+    source: 'liedan_description',
+    target:
+      '<b>锁定技</b>，其他角色的准备阶段开始时，若X：大于0，你摸X张牌，然后若X等于3且你的体力上限小于8，你加1点体力上限；等于0，你失去1点体力并获得一枚“裂”标记（X为你的以下数值大于其的个数：体力值、手牌数、装备区里的牌数）；准备阶段开始时，若你有不少于5枚“裂”标记，你死亡。',
+  },
+  {
+    source: 'zhuangdan_description',
+    target:
+      '<b>锁定技</b>，其他角色的回合结束时，若你为手牌数唯一最多的角色，你的技能“裂胆”失效，直到你的下个回合结束。',
   },
 
   {
@@ -231,6 +280,44 @@ export const skillDescriptions: Word[] = [
     source: 'fuzhong_description',
     target:
       '<b>锁定技</b>，当你于回合外获得牌后，你获得1枚“重”标记；若你的“重”标记数不小于：1，你的手牌上限+1；2，你计算与其他角色的距离-1；3，摸牌阶段多摸一张牌；4，回合开始时，你对一名其他角色造成1点伤害，然后移去你的所有“重”。',
+  },
+
+  {
+    source: 'chaofeng_description',
+    target:
+      '出牌阶段限一次，或当你造成伤害时，你可以弃置一张牌，然后摸一张牌。若你以此法弃置的牌与造成伤害的牌：颜色相同，你多摸一张牌；类别相同，此伤害+1。',
+  },
+  {
+    source: 'chuanshu_description',
+    target:
+      '<b>限定技</b>，准备阶段开始时，若你已受伤，你可以发动本技能，你可令一名其他角色获得技能“朝凤”，无论是否执行，你获得技能“龙胆”、“从谏”和“穿云”；当你死亡时，你可令一名其他角色获得技能“朝凤”。',
+  },
+  {
+    source: 'chuanyun_description',
+    target:
+      '当你使用【杀】指定目标后，你可令其随机弃置其装备区里的一张牌。',
+  },
+
+  {
+    source: 'zhenge_description',
+    target:
+      '准备阶段开始时，你可以选择一名角色，令其攻击范围+1（至多+5）。然后若所有除其外的角色均处于其攻击范围内，你可以令其视为对由你指定的另一名角色使用一张【杀】。',
+  },
+  {
+    source: 'xinghan_description',
+    target:
+      '<b>锁定技</b>，当每回合被使用的第一张【杀】造成伤害后，若你对伤害来源发动过“枕戈”，且场上手牌唯一最多的角色：为你，你摸一张牌；不为你，你摸X张牌（X为伤害来源的攻击范围，且至多为5）。',
+  },
+
+  {
+    source: 'fenglve_description',
+    target:
+      '出牌阶段限一次，你可以与一名角色拼点。若：你赢，其交给你其区域里的两张牌；双方均没赢，本技能视为未发动过；你输，其获得你的拼点牌。',
+  },
+  {
+    source: 'anyong_description',
+    target:
+      '当一名角色于其回合内首次对除其外的角色造成伤害后，若伤害值为1且受伤角色存活，你可以弃置一张牌，对受伤角色造成1点伤害。',
   },
 ];
 
@@ -457,6 +544,91 @@ export const skillAudios: Word[] = [
     source: '$huangkong:2',
     target: '咱家乃皇帝之母，能有什么坏心思？',
   },
+
+  {
+    source: '$yise:1',
+    target: '明丽端庄，双瞳剪水。',
+  },
+  {
+    source: '$yise:2',
+    target: '姿色天然，貌若桃李。',
+  },
+  {
+    source: '$shunshi:1',
+    target: '顺应时运，得保安康。',
+  },
+  {
+    source: '$shunshi:2',
+    target: '随遇而安，宠辱不惊。',
+  },
+
+  {
+    source: '$chaofeng:1',
+    target: '鸾凤归巢，百鸟齐鸣。',
+  },
+  {
+    source: '$chaofeng:2',
+    target: '鸾凤之响，所闻皆朝。',
+  },
+  {
+    source: '$chuanshu:1',
+    target: '此术不传子，独传于贤。',
+  },
+  {
+    source: '$chuanshu:2',
+    target: '定倾之术，贤者可习之。',
+  },
+
+  {
+    source: '$zhenge:1',
+    target: '常备不懈，严阵以待。',
+  },
+  {
+    source: '$zhenge:2',
+    target: '枕戈待旦，日夜警惕。',
+  },
+  {
+    source: '$xinghan:1',
+    target: '汉之兴旺，不敢松懈。',
+  },
+  {
+    source: '$xinghan:2',
+    target: '兴汉除贼，吾之所念。',
+  },
+
+  {
+    source: '$fenglve:1',
+    target: '当今敢称贤者，唯袁氏本初一人！',
+  },
+  {
+    source: '$fenglve:2',
+    target: '冀州宝地，本当贤者居之。',
+  },
+  {
+    source: '$anyong:1',
+    target: '殿上太守且相看，殿下几人还拥韩？',
+  },
+  {
+    source: '$anyong:2',
+    target: '冀州暗潮汹涌，群士居危思变。',
+  },
+
+  {
+    source: '$liedan:1',
+    target: '声若洪钟，震胆发溃！',
+  },
+  {
+    source: '$liedan:2',
+    target: '阴雷滚滚，肝胆俱颤！',
+  },
+  {
+    source: '$zhuangdan:1',
+    target: '假丞相虎威，壮豪将龙胆。',
+  },
+  {
+    source: '$zhuangdan:2',
+    target: '我家丞相在此，哪个有胆敢动我？',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
@@ -564,5 +736,29 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to choose a yechou target to use this skill?',
     target: '你可以对已损失体力值大于1的一名其他角色发动【{0}】',
+  },
+
+  {
+    source: '{0}: do you want to give another player except {1} a card?',
+    target: '{0}：你可以交给除 {1} 外的一名其他角色一张牌',
+  },
+  {
+    source: '{0}: do you want to give another player a card?',
+    target: '{0}：你可以交给一名其他角色一张牌',
+  },
+
+  {
+    source: 'chuanshu: do you want to let another player gain skill ChaoFeng?',
+    target: '传术：你可以令一名其他角色获得技能“朝凤”',
+  },
+
+  {
+    source: '{0}: do you want to choose a target to be the target of the slash what use by {1}?',
+    target: '{0}：你可以选择一名角色，视为 {1} 对其使用一张【杀】',
+  },
+
+  {
+    source: '{0}: do you want to discard a card to deal 1 damage to {1} ?',
+    target: '{0}：你可以弃置一张牌，对 {1} 造成1点伤害',
   },
 ];

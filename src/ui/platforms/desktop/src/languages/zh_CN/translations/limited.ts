@@ -28,6 +28,16 @@ export const characterDictionary: Word[] = [
   { source: '#xingzuo', target: '兴作（换牌）' },
   { source: 'miaoxian', target: '妙弦' },
 
+  { source: 'wenyang', target: '文鸯' },
+  { source: 'lvli', target: '膂力' },
+  { source: 'lvli_I', target: '膂力' },
+  { source: 'lvli_II', target: '膂力' },
+  { source: 'lvli_EX', target: '膂力' },
+  { source: 'choujue', target: '仇决' },
+  { source: 'beishui', target: '背水' },
+  { source: 'qingjiao', target: '清剿' },
+  { source: '#qingjiao', target: '清剿（弃牌）' },
+
   { source: 'guansuo', target: '关索' },
   { source: 'zhengnan', target: '征南' },
   { source: 'xiefang', target: '撷芳' },
@@ -62,10 +72,20 @@ export const characterDictionary: Word[] = [
   { source: 'weiyi', target: '威仪' },
   { source: 'jinzhi', target: '锦织' },
 
+  { source: 'zhouyi', target: '周夷' },
+  { source: 'zhukou', target: '逐寇' },
+  { source: 'mangqing', target: '氓情' },
+  { source: 'yuyun', target: '玉陨' },
+
   { source: 'xurong', target: '徐荣' },
   { source: 'xionghuo', target: '凶镬' },
   { source: 'baoli', target: '暴戾' },
   { source: 'shajue', target: '杀绝' },
+
+  { source: 'liubian', target: '刘辩' },
+  { source: 'shiyuan', target: '诗怨' },
+  { source: 'dushi', target: '毒逝' },
+  { source: 'yuwei', target: '余威' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -105,7 +125,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'tuogu_description',
     target:
-      '当其他角色死亡时，你可以令其选择其一项技能（主公技、限定技、觉醒技和隐匿技除外），你失去以此法获得的上一个技能，获得此技能。',
+      '当其他角色死亡时，你可以令其选择其一项技能（主公技、限定技、觉醒技、使命技和隐匿技除外），你失去以此法获得的上一个技能，获得此技能。',
   },
   {
     source: 'shanzhuan_description',
@@ -122,6 +142,42 @@ export const skillDescriptions: Word[] = [
     source: 'miaoxian_description',
     target:
       '若你的手牌中仅有一张：黑色牌，你可以将此牌当任意普通锦囊牌使用（每回合限一次）；红色牌，你使用此牌时摸一张牌。',
+  },
+
+  {
+    source: 'lvli_description',
+    target:
+      '每回合限一次，当你造成伤害后，你可以将手牌摸至体力值或将体力值回复至手牌数。',
+  },
+  {
+    source: 'lvli_I_description',
+    target:
+      '每回合限一次（于你的回合内视为每回合限两次），当你造成伤害后，你可以将手牌摸至体力值或将体力值回复至手牌数。',
+  },
+  {
+    source: 'lvli_II_description',
+    target:
+      '每回合限一次，当你造成或受到伤害后，你可以将手牌摸至体力值或将体力值回复至手牌数。',
+  },
+  {
+    source: 'lvli_EX_description',
+    target:
+      '每回合限一次（于你的回合内视为每回合限两次），当你造成或受到伤害后，你可以将手牌摸至体力值或将体力值回复至手牌数。',
+  },
+  {
+    source: 'choujue_description',
+    target:
+      '<b>觉醒技</b>，每个回合结束时，若你的手牌数与体力值的差值不小于3，你减1点体力上限，获得技能“背水”，然后令你的“膂力”于你的回合内视为每回合限两次。',
+  },
+  {
+    source: 'beishui_description',
+    target:
+      '<b>觉醒技</b>，准备阶段开始时，若你的体力值或手牌数小于2，你减1点体力上限，获得技能“清剿”，然后令你的“膂力”于当你受到伤害后也可发动。',
+  },
+  {
+    source: 'qingjiao_description',
+    target:
+      '出牌阶段开始时，你可以发动本技能，然后你弃置所有牌，随机获得牌堆和弃牌堆中八张牌名和副类别各不相同的牌。若如此做，你于本回合的下个结束阶段开始时，弃置所有牌。',
   },
 
   {
@@ -203,6 +259,22 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'zhukou_description',
+    target:
+      '当你于每回合的出牌阶段内首次造成伤害后，你可以摸X张牌（X为你于本回合内使用过的牌数）。',
+  },
+  {
+    source: 'mangqing_description',
+    target:
+      '<b>觉醒技</b>，准备阶段开始时，若场上已受伤的角色数大于你的体力值，你加3点体力上限并回复3点体力，然后失去技能“逐寇”，获得技能“玉陨”。',
+  },
+  {
+    source: 'yuyun_description',
+    target:
+      '<b>锁定技</b>，出牌阶段开始时，你失去1点体力或减1点体力上限（不可减至1点以下），然后你依次选择至多X项（X为你已损失的体力值+1）：1.摸两张牌；2.对一名其他角色造成1点伤害，且你于本回合内对其使用【杀】无距离和次数限制；3.你于本回合内手牌上限为无限；4.弃置一名其他角色区域里的一张牌；5.令一名角色将手牌摸至体力上限（至多摸至五张）。',
+  },
+
+  {
     source: 'xionghuo_description',
     target:
       '游戏开始时，你获得3枚“暴戾”标记；出牌阶段，你可以将你的一枚“暴戾”标记移给没有“暴戾”标记的一名其他角色；当你对拥有“暴戾”的其他角色造成伤害时，此伤害+1；拥有“暴戾”的其他角色的出牌阶段开始时，移去其所有“暴戾”标记，且其随机执行一项：1.受到你对其造成的1点火焰伤害，其于本回合内不能对你使用【杀】；2.失去1点体力，其本回合手牌上限-1；3.令你随机获得其装备区和手牌里的各一张牌。',
@@ -212,7 +284,24 @@ export const skillDescriptions: Word[] = [
     target:
       '<b>锁定技</b>，当其他角色进入濒死状态时，若其体力小于0，你获得一枚“暴戾”标记，然后你获得令其进入濒死状态的牌。',
   },
+
+  {
+    source: 'shiyuan_description',
+    target:
+      '每回合每项限一次，当你成为其他角色使用牌的目标后，若其体力值：大于你，你可以摸三张牌；等于你，你可以摸两张牌；小于你，你可以摸一张牌。',
+  },
+  {
+    source: 'dushi_description',
+    target:
+      '<b>锁定技</b>，若你处于濒死流程中，其他角色不能对你使用【桃】；当你死亡时，你令一名其他角色获得本技能。',
+  },
+  {
+    source: 'yuwei_description',
+    target:
+      '<b>主公技</b>，<b>锁定技</b>，其他群雄角色的回合内，你的技能“诗怨”视为“每回合每项限两次”。',
+  },
 ];
+
 
 export const skillAudios: Word[] = [
   {
@@ -443,6 +532,81 @@ export const skillAudios: Word[] = [
     source: '$shajue:2',
     target: '吾既出，必绝之！',
   },
+
+  {
+    source: '$shiyuan:1',
+    target: '感怀诗于前，绝怨赋于后。',
+  },
+  {
+    source: '$shiyuan:2',
+    target: '汉宫楚歌起，四面无援矣。',
+  },
+  {
+    source: '$dushi:1',
+    target: '孤无病，此药无需服。',
+  },
+  {
+    source: '$dushi:2',
+    target: '辟恶之毒，为最毒。',
+  },
+
+  {
+    source: '$lvli:1',
+    target: '此击若中，万念俱灰！',
+  },
+  {
+    source: '$lvli:2',
+    target: '姿器膂力，万人之雄！',
+  },
+  {
+    source: '$choujue:1',
+    target: '家仇未报，怎可独安？',
+  },
+  {
+    source: '$choujue:2',
+    target: '逆臣之军，不足为惧！',
+  },
+  {
+    source: '$beishui:1',
+    target: '某若退却半步，诸将可立斩之！',
+  },
+  {
+    source: '$beishui:2',
+    target: '效淮阴之举，力敌数千！',
+  },
+  {
+    source: '$qingjiao:1',
+    target: '慈不掌兵，义不养财。',
+  },
+  {
+    source: '$qingjiao:2',
+    target: '清蛮夷之乱，剿不臣之贼！',
+  },
+
+  {
+    source: '$zhukou:1',
+    target: '草莽贼寇，不过如此。',
+  },
+  {
+    source: '$zhukou:2',
+    target: '轻装上阵，利剑出鞘。',
+  },
+  {
+    source: '$mangqing:1',
+    target: '女之耽兮，不可说也。',
+  },
+  {
+    source: '$mangqing:2',
+    target: '淇水汤汤，渐车帷裳。',
+  },
+  {
+    source: '$yuyun:1',
+    target: '春依旧，人消瘦。',
+  },
+  {
+    source: '$yuyun:2',
+    target: '泪沾青衫，玉殒香消。',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
@@ -553,5 +717,36 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to let {1} recover 1 hp?',
     target: '{0}：你可以令 {1} 回复1点体力',
+  },
+
+  {
+    source: '{0}: do you want to choose two targets to deal 1 damage each?',
+    target: '{0}：你可以对两名其他角色各造成1点伤害',
+  },
+
+  {
+    source: '{0}: please choose yuyun options',
+    target: '{0}：请选择以下一项',
+  },
+  { source: 'yuyun:loseMaxHp', target: '减1点体力上限' },
+  { source: 'yuyun:loseHp', target: '失去1点体力' },
+
+  {
+    source: '{0}: please choose yuyun options: {1}',
+    target: '{0}：请依次选择选择以下选项（还剩 {1} 项）',
+  },
+  { source: 'yuyun:draw2', target: '摸两张牌' },
+  { source: 'yuyun:damage', target: '对一名其他角色造成1点伤害，且本回合对其无限出杀' },
+  { source: 'yuyun:unlimited', target: '本回合手牌上限无限' },
+  { source: 'yuyun:discard', target: '弃置一名其他角色区域里的一张牌' },
+  { source: 'yuyun:letDraw', target: '令一名角色将手牌摸至体力上限' },
+  {
+    source: 'yuyun: please choose a target',
+    target: '玉陨：请选择目标角色',
+  },
+
+  {
+    source: 'dushi: please choose a target to gain this skill',
+    target: '毒逝：请选择一名其他角色获得本技能',
   },
 ];

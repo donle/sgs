@@ -87,9 +87,8 @@ export class YanZhu extends ActiveSkill {
         triggeredBySkills: [this.Name],
       });
 
-      room.getPlayerById(fromId).hasSkill(this.Name) && (await room.updateSkill(fromId, this.Name, YanZhuEX.Name));
-      room.getPlayerById(fromId).hasSkill(XingXue.Name) &&
-        (await room.updateSkill(fromId, XingXue.Name, XingXueEX.Name));
+      await room.updateSkill(fromId, this.Name, YanZhuEX.Name);
+      await room.updateSkill(fromId, XingXue.Name, XingXueEX.Name);
     }
 
     return true;

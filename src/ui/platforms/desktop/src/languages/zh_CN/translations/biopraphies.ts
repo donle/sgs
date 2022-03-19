@@ -8,6 +8,9 @@ export const characterDictionary: Word[] = [
   { source: 'lilu count: {0}', target: '礼赂[{0}]' },
   { source: 'yizheng', target: '翊正' },
 
+  { source: 'caoanmin', target: '曹安民' },
+  { source: 'xianwei', target: '险卫' },
+
   { source: 'xushao', target: '许劭' },
   { source: 'pingjian', target: '评荐' },
   { source: '#pingjian', target: '评荐' },
@@ -41,6 +44,12 @@ export const skillDescriptions: Word[] = [
     source: 'yizheng_description',
     target:
       '结束阶段开始时，你可以选择一名其他角色。若如此做，直到你的下个回合开始，当其造成伤害或回复体力时，若其体力上限小于你，你减1点体力上限，令此伤害值或回复值+1。',
+  },
+
+  {
+    source: 'xianwei_description',
+    target:
+      '<b>锁定技</b>，准备阶段开始时，你废除一个装备栏并摸等同于你未废除的装备栏数的牌，然后你令一名其他角色使用牌堆里的第一张与你废除装备栏对应副类别相同的装备牌（若牌堆中没有则改为其摸一张牌）。然后若你的所有装备栏均已废除，你加2点体力上限，且于本局游戏剩余时间内，你视为处于所有其他角色的攻击范围内，所有其他角色均视为处于你的攻击范围内。',
   },
 
   {
@@ -82,13 +91,13 @@ export const skillDescriptions: Word[] = [
   {
     source: 'xuezhao_description',
     target:
-      '出牌阶段限一次，你可以弃置一张手牌，并令一至X名其他角色（X为你的体力值）依次选择是否交给你一张牌，若其：交给你牌，其摸一张牌且你本回合使用【杀】的次数上限+1；未交给你牌，其本回合不能响应你使用的牌。',
+      '出牌阶段限一次，你可以弃置一张手牌，并令一至X名其他角色（X为你的体力上限）依次选择是否交给你一张牌，若其：交给你牌，其摸一张牌且你本回合使用【杀】的次数上限+1；未交给你牌，其本回合不能响应你使用的牌。',
   },
 
   {
     source: 'koulve_description',
     target:
-      '当你于出牌阶段内对其他角色造成伤害后，你可以展示其一张手牌。若此牌为【杀】或伤害类锦囊牌，你获得之。若此牌为红色，你减1点体力上限（若你未受伤则改为失去1点体力），然后摸两张牌。',
+      '当你于出牌阶段内对其他角色造成伤害后，你可以展示其X张手牌（X为其已损失的体力值）。若其中有【杀】或伤害类锦囊牌，你获得这些牌。若其中有红色牌，你减1点体力上限（若你未受伤则改为失去1点体力），然后摸两张牌。',
   },
   {
     source: 'suiren_description',
@@ -208,6 +217,15 @@ export const skillAudios: Word[] = [
     source: '$suiren:2',
     target: '我的财富，收好。',
   },
+
+  {
+    source: '$xianwei:1',
+    target: '曹家儿郎，何惧一死！',
+  },
+  {
+    source: '$xianwei:2',
+    target: '此役当战，有死无生！',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
@@ -263,12 +281,17 @@ export const promptDescriptions: Word[] = [
   },
 
   {
-    source: '{0}: do you want to display a card from {1}’s hand?',
-    target: '{0}：你可以展示 {1} 的一张手牌',
+    source: '{0}: do you want to display {1} card from {2}’s hand?',
+    target: '{0}：你可以展示 {2} 的 {1} 张手牌',
   },
 
   {
     source: '{0}: do you want to choose a another player to give him all the damage cards in your hand?',
     target: '{0}：你可以将手牌中所有的【杀】和伤害类锦囊牌交给一名其他角色',
+  },
+
+  {
+    source: 'xianwei: please choose a target to use equip from draw pile',
+    target: '险卫：请选择一名其他角色随机使用牌堆中一张与你废除装备栏对应的装备牌',
   },
 ];

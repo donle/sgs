@@ -502,10 +502,13 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       }
     }
 
-    const horses = from.getEquipment(CardType.OffenseRide);
+    const ride = from.getEquipment(CardType.OffenseRide);
     let fixed = 0;
-    if (horses && except && !except.includes(horses)) {
-      fixed = (Sanguosha.getCardById(horses).ShadowSkills[0] as RulesBreakerSkill).breakOffenseDistance(this, from);
+    if (ride && except && except.includes(ride)) {
+      const rideSkill = Sanguosha.getCardById(ride).Skill;
+      if (rideSkill) {
+        fixed = (rideSkill as RulesBreakerSkill).breakOffenseDistance(this, from);
+      }
     }
 
     const seatGap = to.getDefenseDistance(this) - from.getOffenseDistance(this) + fixed;

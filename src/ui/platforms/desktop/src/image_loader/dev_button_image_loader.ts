@@ -13,6 +13,8 @@ function getSkillTypeNameText(type: SkillType) {
       return 'limit_';
     case SkillType.Awaken:
       return 'awaken_';
+    case SkillType.Quest:
+      return 'common_';
     default:
       throw Precondition.UnreachableError(type);
   }

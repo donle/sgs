@@ -34,7 +34,6 @@ export const characterDictionary: Word[] = [
   { source: 'duodao', target: '夺刀' },
   { source: 'anjian', target: '暗箭' },
   { source: 'zongxuan', target: '纵玄' },
-  { source: '#zongxuan', target: '纵玄' },
   { source: 'zhiyan', target: '直言' },
   { source: 'danshou', target: '胆守' },
   { source: '#danshou', target: '胆守' },
@@ -117,11 +116,11 @@ export const skillDescriptions: Word[] = [
   {
     source: 'zongxuan_description',
     target:
-      '出牌阶段限一次，你可以摸一张牌并将一张牌置于牌堆顶；当你的牌因弃置而进入弃牌堆后，你可以将其中任意张牌置于牌堆顶。',
+      '当你的牌因弃置而进入弃牌堆后，你可以发动本技能，若其中有锦囊牌，你可以将其中一张锦囊牌交给一名其他角色。无论你是否以此法给出牌，你将其余至少一张牌以任意顺序置于牌堆顶。',
   },
   {
     source: 'zhiyan_description',
-    target: '结束阶段开始时，你可以令一名角色摸一张牌并展示之，若此牌为装备牌，其使用之，然后回复1点体力。',
+    target: '结束阶段开始时，你可以令一名角色摸一张牌并展示之，若此牌为：基本牌，你摸一张牌；装备牌，其使用之，然后回复1点体力。',
   },
   {
     source: 'danshou_description',
@@ -278,19 +277,19 @@ export const skillAudios: Word[] = [
 
   {
     source: '$zongxuan:1',
-    target: '凡夫俗子，怎识得卦象玄妙。',
+    target: '天命所定，乃天数之法。',
   },
   {
     source: '$zongxuan:2',
-    target: '微妙玄通，深不可识。',
+    target: '因果循环，已有定数。',
   },
   {
     source: '$zhiyan:1',
-    target: '失忠与信，何以侍君！',
+    target: '此事，臣有一言要讲。',
   },
   {
     source: '$zhiyan:2',
-    target: '恕臣耿直，犯颜谏诤！',
+    target: '还望将军听我一言。',
   },
 
   {
@@ -387,5 +386,14 @@ export const promptDescriptions: Word[] = [
   {
     source: 'please choose a trick card to pass to {0}',
     target: '请交给{0}一张锦囊牌',
+  },
+
+  {
+    source: 'zongxuan: please choose one of these cards',
+    target: '纵玄：你可选择其中一张牌交给一名其他角色',
+  },
+  {
+    source: 'zongxuan: please choose another player',
+    target: '纵玄：请选择一名其他角色获得此牌',
   },
 ];
