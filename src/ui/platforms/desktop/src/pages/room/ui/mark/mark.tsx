@@ -6,6 +6,7 @@ import styles from './mark.module.css';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import awakenIcon from './images/awaken.png';
 import baoliIcon from './images/baoli.png';
+import danlieIcon from './images/danlie.png';
 import danxueIcon from './images/danxue.png';
 import dawuIcon from './images/dawu.png';
 import fuIcon from './images/fu.png';
@@ -20,6 +21,7 @@ import nightmareIcon from './images/nightmare.png';
 import wrathIcon from './images/nu.png';
 import weiIcon from './images/wei.png';
 import orangeIcon from './images/orange.png';
+import pingdingIcon from './images/pingding.png';
 import ranIcon from './images/ran.png';
 import renIcon from './images/ren.png';
 import switchYangIcon from './images/switch_yang.png';
@@ -52,6 +54,8 @@ const markIconMaps: {
   [MarkEnum.Zhong]: zhongIcon,
   [MarkEnum.TaoMie]: taomieIcon,
   [MarkEnum.Kui]: kuiIcon,
+  [MarkEnum.PingDing]: pingdingIcon,
+  [MarkEnum.DanLie]: danlieIcon,
 };
 
 export type MarkProps = {
