@@ -4,6 +4,10 @@ import { CompulsorySkill, LordSkill } from 'core/skills/skill_wrappers';
 @LordSkill
 @CompulsorySkill({ name: 'yuwei', description: 'yuwei_description' })
 export class YuWei extends Skill {
+  public audioIndex(): number {
+    return 0;
+  }
+
   public canUse(): boolean {
     return false;
   }

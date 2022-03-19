@@ -87,8 +87,9 @@ export class YuYun extends TriggerSkill {
         {
           options: secOptions,
           conversation: TranslationPack.translationJsonPatcher(
-            '{0}: please choose yuyun_sec options',
+            '{0}: please choose yuyun_sec options: {1}',
             this.Name,
+            room.getPlayerById(fromId).LostHp + 1 - i,
           ).extract(),
           toId: fromId,
           triggeredBySkills: [this.Name],
@@ -123,7 +124,7 @@ export class YuYun extends TriggerSkill {
             players: targets.map(player => player.Id),
             toId: fromId,
             requiredAmount: 1,
-            conversation: 'shanjia: do you want to use a slash?',
+            conversation: 'yuyun: please choose a target',
             triggeredBySkills: [this.Name],
           },
           fromId,

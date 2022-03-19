@@ -25,6 +25,10 @@ export class PoWei extends TriggerSkill {
     return ['shenzhuo'];
   }
 
+  public audioIndex(): number {
+    return 3;
+  }
+
   public isAutoTrigger(): boolean {
     return true;
   }

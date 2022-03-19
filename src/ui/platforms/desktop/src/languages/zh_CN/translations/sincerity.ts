@@ -24,6 +24,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'wujing', target: '吴景' },
   { source: 'heji', target: '合击' },
+  { source: 'liubing', target: '流兵' },
 
   { source: 'zhouchu', target: '周处' },
   { source: 'xianghai', target: '乡害' },
@@ -65,7 +66,12 @@ export const skillDescriptions: Word[] = [
   {
     source: 'heji_description',
     target:
-      '当一名角色使用红色【杀】或红色【决斗】结算结束后，若目标数为1，你可对此目标使用一张【杀】或【决斗】（无距离限制）。若你以此法使用的牌不为转化牌，当此牌使用时，你随机获得牌堆里的一张红色牌。',
+      '当一名角色使用红色【杀】或红色【决斗】结算结束后，若目标数为1，你可对此目标使用一张【杀】或【决斗】（无距离限制）。若你以此法使用的牌不为转化牌，当此牌使用时，你随机获得牌堆里的一张牌。',
+  },
+  {
+    source: 'liubing_description',
+    target:
+      '<b>锁定技</b>，当你于一回合内首次声明使用有花色的【杀】后，此【杀】的花色视为方片。',
   },
 
   {

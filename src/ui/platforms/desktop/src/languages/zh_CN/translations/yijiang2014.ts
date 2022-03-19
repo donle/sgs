@@ -124,7 +124,8 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'jianying_description',
-    target: '当你于出牌阶段内使用牌时，若此牌与你于此阶段内使用过的上一张牌花色或点数相同，你可以摸一张牌；出牌阶段限一次，你可以将一张牌当任意基本牌使用（无次数限制，且若你于此阶段内使用过的上一张牌有花色，此牌花色视为与之相同）。',
+    target:
+      '当你于出牌阶段内使用牌时，若此牌与你于此阶段内使用过的上一张牌花色或点数相同，你可以摸一张牌；出牌阶段限一次，你可以将一张牌当任意基本牌使用（无次数限制，且若你于此阶段内使用过的上一张牌有花色，此牌花色视为与之相同）。',
   },
   {
     source: 'shibei_description',
@@ -134,7 +135,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'qieting_description',
     target:
-      '其他角色的回合结束时，若其此回合内未使用牌指定过除其外的角色为目标，你可以选择一项：1.将其装备区里的一张牌置入你的装备区；2.摸一张牌。',
+      '其他角色的回合结束时，若其于本回合内未对除其外的角色造成过伤害，你可以选择一项：1.观看其两张手牌，并获得其中一张；2.将其装备区里的一张牌移至你的装备区；3.摸一张牌。',
   },
   {
     source: 'xianzhou_description',
@@ -415,6 +416,7 @@ export const promptDescriptions: Word[] = [
   },
   { source: 'qieting:draw', target: '摸一张牌' },
   { source: 'qieting:move', target: '移动装备' },
+  { source: 'qieting:prey', target: '观看并获得其手牌' },
 
   {
     source: '{0}: please choose at least {1} xianzhou {2} target(s) to deal 1 damage each?',

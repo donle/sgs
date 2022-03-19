@@ -104,12 +104,12 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'qiaoshi_description',
-    target: '其他角色的结束阶段开始时，若其手牌数与你相等，你可以与其各摸一张牌。',
+    target: '其他角色的结束阶段开始时，若其手牌数与你相等，你可以与其各摸一张牌，然后若以此法摸的两张牌花色相同，你可重复此流程。',
   },
   {
     source: 'yanyu_description',
     target:
-      '出牌阶段，你可以重铸一张【杀】；出牌阶段结束时，若你于此阶段内重铸过至少两张【杀】，你可令一名男性角色摸两张牌。',
+      '出牌阶段，你可以重铸一张【杀】；出牌阶段结束时，若X大于0，你可令一名男性角色摸X张牌（X为你于此阶段内重铸过【杀】的数量，且至多为3）。',
   },
 
   {
@@ -250,19 +250,19 @@ export const skillAudios: Word[] = [
 
   {
     source: '$qiaoshi:1',
-    target: '樵前情窦开，君后寻迹来。',
+    target: '暖风细雨，心有灵犀。',
   },
   {
     source: '$qiaoshi:2',
-    target: '樵薪遇郎君，妾心涟漪生。',
+    target: '樵采城郭外，忽见郎君来。',
   },
   {
     source: '$yanyu:1',
-    target: '伴君一生，不寂寞。',
+    target: '边功未成，还请郎君努力。',
   },
   {
     source: '$yanyu:2',
-    target: '感君一回顾，思君朝与暮。',
+    target: '郎君有意倾心诉，妾身心中相思埋。',
   },
 
   {
@@ -367,8 +367,8 @@ export const promptDescriptions: Word[] = [
   },
 
   {
-    source: '{0}: do you want to choose a male character to draw 2 cards?',
-    target: '{0}：你可以令一名男性角色摸两张牌',
+    source: '{0}: do you want to choose a male character to draw card(s)?',
+    target: '{0}：你可以令一名男性角色摸牌',
   },
 
   {

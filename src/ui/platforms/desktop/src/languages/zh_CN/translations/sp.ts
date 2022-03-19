@@ -176,7 +176,6 @@ export const characterDictionary: Word[] = [
 ];
 
 export const skillDescriptions: Word[] = [
-
   {
     source: 'zhaolie_description',
     target: '摸牌阶段你可以少摸一张牌并选择攻击范围内一名角色：你亮出牌顶三张牌并弃置其中非基本牌和【桃】，然后其选择一项：1.受到X点伤害，获得其余牌；2依次弃置X张牌，你获得其余牌。（X为其中非基本牌数）。',
@@ -510,12 +509,12 @@ export const skillDescriptions: Word[] = [
   {
     source: 'wenji_description',
     target:
-      '出牌阶段开始时，你可以令一名其他角色交给你一张牌。若如此做，你于本回合内使用与该牌同名的牌不能被其他角色响应。',
+      '出牌阶段开始时，你可以令一名其他角色交给你一张牌。若如此做，你于本回合内使用与该牌类别相同的牌不能被其他角色响应。',
   },
   {
     source: 'tunjiang_description',
     target:
-      '结束阶段开始时，若你于此回合内未使用牌指定过其他角色为目标，且未跳过本回合的出牌阶段，你可以摸X张牌（X为存活势力数）。',
+      '结束阶段开始时，若你于本回合的出牌阶段内未使用牌指定过其他角色为目标，你可以摸X张牌（X为存活势力数）。',
   },
 
   {
@@ -575,6 +574,23 @@ export const skillDescriptions: Word[] = [
 
 export const skillAudios: Word[] = [
   {
+    source: '$zhaolie:1',
+    target: '吾弟且慢行，待为兄报仇雪恨！',
+  },
+  {
+    source: '$zhaolie:2',
+    target: '结桃园之义，雪手足之仇！',
+  },
+  {
+    source: '$liubei_shichou:1',
+    target: '手足之伤，不共戴天！',
+  },
+  {
+    source: '$liubei_shichou:2',
+    target: '手足之伤，不共戴天！',
+  },
+
+  {
     source: '$danlao:1',
     target: '我喜欢。',
   },
@@ -590,7 +606,7 @@ export const skillAudios: Word[] = [
     source: '$jilei:2',
     target: '曹公之意，我已了然。',
   },
-
+ 
   {
     source: '$chenqing:1',
     target: '陈生死离别之苦，悲乱世之跌宕。',
@@ -602,7 +618,7 @@ export const skillAudios: Word[] = [
   {
     source: '$mozhi:1',
     target: '博闻强识，不辱才女之名。',
-  },
+  }, 
   {
     source: '$mozhi:2',
     target: '今日默书，方恨千卷诗书未能全记。',
@@ -909,7 +925,7 @@ export const skillAudios: Word[] = [
     source: '$jili:2',
     target: '看我一招，铁蒺藜骨朵！',
   },
-
+ 
   {
     source: '$canshi:1',
     target: '众人，与蝼蚁何异？哼哼哼哼哼哼……',

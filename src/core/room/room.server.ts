@@ -761,18 +761,18 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     await this.trigger(event);
 
     const canDropCards: CardId[] = [];
+    const autoResponse: ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
+      fromId: playerId,
+      droppedCards: [],
+    };
+    if (event.cardAmount <= 0) {
+      return autoResponse;
+    }
+
     if (event.responsedEvent) {
       EventPacker.terminate(event);
       return event.responsedEvent;
     } else if (EventPacker.isUncancellableEvent(event)) {
-      const autoResponse: ClientEventFinder<GameEventIdentifiers.AskForCardDropEvent> = {
-        fromId: playerId,
-        droppedCards: [],
-      };
-      if (event.cardAmount <= 0) {
-        return autoResponse;
-      }
-
       for (const area of fromArea) {
         canDropCards.push(
           ...this.getPlayerById(playerId)
@@ -1469,8 +1469,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       return;
     }
 
-    this.loseSkill(playerId, oldSkillName);
-    this.obtainSkill(playerId, newSkillName, false, index);
+    await this.loseSkill(playerId, oldSkillName);
+    await this.obtainSkill(playerId, newSkillName, false, index);
   }
 
   public async loseHp(playerId: PlayerId, lostHp: number) {
