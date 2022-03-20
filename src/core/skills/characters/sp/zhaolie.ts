@@ -42,7 +42,7 @@ export class ZhaoLie extends TriggerSkill {
   public isAvailableTarget(owner: PlayerId, room: Room, targetId: PlayerId): boolean {
     const from = room.getPlayerById(owner);
     const to = room.getPlayerById(targetId);
-    return room.canAttack(to, from);
+    return room.canAttack(from,to);
   }
 
   async onTrigger() {

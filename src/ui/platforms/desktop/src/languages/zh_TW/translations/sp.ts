@@ -183,7 +183,7 @@ export const skillDescriptions: Word[] = [
   },
 
   {
-    source: 'shichou_description',
+    source: 'liubei_shichou_description',
     target:
       '<b>主公技</b>，<b>限定技</b>，準備階段開始時，你可以交給一名其他非蜀勢力角色1張牌。當你受到傷害時，該角色受到等量傷害，其与你摸等量傷害張牌。',
   },
@@ -1193,6 +1193,12 @@ export const skillAudios: Word[] = [
 ];
 
 export const promptDescriptions: Word[] = [
+  {
+    source: 'please choose: zhaolie-options',
+    target: '你可以受到傷害獲得非【桃】基本牌，或者棄置牌令劉備獲得',
+  },
+  { source: 'zhaolie-dama', target: '受到非基本牌數點傷害' },
+  { source: 'zhaolie-drop', target: '依次棄置非基本牌數張牌' },
   {
     source: '{0}: do you want to draw a card and let {1} nullify to you?',
     target: '{0}：你可以摸一張牌，然後令 {1} 對你無效',

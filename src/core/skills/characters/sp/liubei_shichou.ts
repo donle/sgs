@@ -35,7 +35,7 @@ export class SPLiuBeiShiChou extends TriggerSkill {
 
   public isAvailableTarget(owner: PlayerId, room: Room, targetId: PlayerId): boolean {
     const to = room.getPlayerById(targetId);
-    return to.Nationality === CharacterNationality.Shu && targetId !== owner;
+    return to.Nationality !== CharacterNationality.Shu && targetId !== owner;
   }
 
   public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {

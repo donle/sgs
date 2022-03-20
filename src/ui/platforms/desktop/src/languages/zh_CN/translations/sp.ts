@@ -1194,6 +1194,12 @@ export const skillAudios: Word[] = [
 
 export const promptDescriptions: Word[] = [
   {
+    source: 'please choose: zhaolie-options',
+    target: '你可以受到伤害获得非【桃】基本牌，或者弃置牌令刘备获得',
+  },
+  { source: 'zhaolie-dama', target: '受到非基本牌数点伤害' },
+  { source: 'zhaolie-drop', target: '依次弃置非基本牌数张牌' },
+  {
     source: '{0}: do you want to draw a card and let {1} nullify to you?',
     target: '{0}：你可以摸一张牌，然后令 {1} 对你无效',
   },
