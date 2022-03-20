@@ -146,8 +146,7 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'lvli_description',
-    target:
-      '每回合限一次，当你造成伤害后，你可以将手牌摸至体力值或将体力值回复至手牌数。',
+    target: '每回合限一次，当你造成伤害后，你可以将手牌摸至体力值或将体力值回复至手牌数。',
   },
   {
     source: 'lvli_I_description',
@@ -156,8 +155,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'lvli_II_description',
-    target:
-      '每回合限一次，当你造成或受到伤害后，你可以将手牌摸至体力值或将体力值回复至手牌数。',
+    target: '每回合限一次，当你造成或受到伤害后，你可以将手牌摸至体力值或将体力值回复至手牌数。',
   },
   {
     source: 'lvli_EX_description',
@@ -192,11 +190,13 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'qirang_description',
-    target: '当装备牌进入你的装备区后，你可以从牌堆随机获得一张锦囊牌。若此牌为普通锦囊牌，你于本回合使用此牌指定唯一目标时，你可以为此牌增加一个额外的目标。',
+    target:
+      '当装备牌进入你的装备区后，你可以从牌堆随机获得一张锦囊牌。若此牌为普通锦囊牌，你于本回合使用此牌指定唯一目标时，你可以为此牌增加一个额外的目标。',
   },
   {
     source: 'yuhua_description',
-    target: '<b>锁定技</b>，你的非基本牌不计入手牌上限；结束阶段开始时，若你的手牌数大于体力上限，你观看牌堆顶一张牌，然后将之置于牌堆顶或牌堆底。',
+    target:
+      '<b>锁定技</b>，你的非基本牌不计入手牌上限；结束阶段开始时，若你的手牌数大于体力上限，你观看牌堆顶一张牌，然后将之置于牌堆顶或牌堆底。',
   },
 
   {
@@ -260,8 +260,7 @@ export const skillDescriptions: Word[] = [
 
   {
     source: 'zhukou_description',
-    target:
-      '当你于每回合的出牌阶段内首次造成伤害后，你可以摸X张牌（X为你于本回合内使用过的牌数）。',
+    target: '当你于每回合的出牌阶段内首次造成伤害后，你可以摸X张牌（X为你于本回合内使用过的牌数）。',
   },
   {
     source: 'mangqing_description',
@@ -292,16 +291,13 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'dushi_description',
-    target:
-      '<b>锁定技</b>，若你处于濒死流程中，其他角色不能对你使用【桃】；当你死亡时，你令一名其他角色获得本技能。',
+    target: '<b>锁定技</b>，若你处于濒死流程中，其他角色不能对你使用【桃】；当你死亡时，你令一名其他角色获得本技能。',
   },
   {
     source: 'yuwei_description',
-    target:
-      '<b>主公技</b>，<b>锁定技</b>，其他群雄角色的回合内，你的技能“诗怨”视为“每回合每项限两次”。',
+    target: '<b>主公技</b>，<b>锁定技</b>，其他群雄角色的回合内，你的技能“诗怨”视为“每回合每项限两次”。',
   },
 ];
-
 
 export const skillAudios: Word[] = [
   {
@@ -319,7 +315,7 @@ export const skillAudios: Word[] = [
   {
     source: '$songci:2',
     target: '汝窃国奸贼，人人得而诛之！',
-  }, 
+  },
 
   {
     source: '$shanjia:1',
@@ -414,7 +410,7 @@ export const skillAudios: Word[] = [
   {
     source: '$qirang:2',
     target: '仙甲既来，岂无仙术乎？',
-  }, 
+  },
   {
     source: '$yuhua:1',
     target: '凤羽飞烟，乘化仙尘。',
@@ -431,7 +427,7 @@ export const skillAudios: Word[] = [
   {
     source: '$wuniang:2',
     target: '剑舞轻影，杀场克敌。',
-  }, 
+  },
   {
     source: '$xushen:1',
     target: '救命之恩，涌泉相报。',

@@ -24,6 +24,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'wujing', target: '吳景' },
   { source: 'heji', target: '合擊' },
+  { source: 'liubing', target: '流兵' },
 
   { source: 'zhouchu', target: '周處' },
   { source: 'xianghai', target: '鄉害' },
@@ -60,11 +61,14 @@ export const skillDescriptions: Word[] = [
     source: 'guixiu_description',
     target: '<b>鎖定技</b>，當你受到傷害後，你將武將牌翻至正面朝上；當你的武將牌翻至正面朝上後，你摸一張牌。',
   },
-
   {
     source: 'heji_description',
     target:
-      '當一名角色使用紅色【殺】或紅色【決鬥】結算結束後，若目標數為1，你可對此目標使用一張【殺】或【決鬥】（無距離限制）。若你以此法使用的牌不為轉化牌，當此牌使用時，你隨機獲得牌堆裡的一張紅色牌。',
+      '當一名角色使用紅色【殺】或紅色【決鬥】結算結束後，若目標數為1，你可對此目標使用一張【殺】或【決鬥】（無距離限制）。若你以此法使用的牌不為轉化牌，當此牌使用時，你隨機獲得牌堆裡的一張牌。',
+  },
+  {
+    source: 'liubing_description',
+    target: '<b>鎖定技</b>，當你於一回合內首次宣告使用有花色的【殺】後，此【殺】的花色視為方片。',
   },
 
   {
