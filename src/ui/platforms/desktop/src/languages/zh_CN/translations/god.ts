@@ -81,8 +81,13 @@ export const characterDictionary: Word[] = [
   { source: 'powei', target: '破围' },
   { source: 'powei:succeeded', target: '破围[成功]' },
   { source: 'powei:failed', target: '破围[失败]' },
-  { source: 'dangmo', target: '荡魔' },
   { source: 'shenzhuo', target: '神著' },
+
+  { source: 'god_sunce', target: '神孙策' },
+  { source: 'yingba', target: '英霸' },
+  { source: 'pingding', target: '平定' },
+  { source: 'god_fuhai', target: '覆海' },
+  { source: 'pinghe', target: '冯河' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -253,22 +258,33 @@ export const skillDescriptions: Word[] = [
   {
     source: 'dulie_description',
     target:
-      '<b>锁定技</b>，游戏开始时，你令X名其他角色各获得一枚“围”标记（X为角色数的一半，向下取整）；你对没有“围”的角色使用【杀】无距离限制；当你成为没有“围”的角色使用【杀】的目标时，你判定，若为红色，取消之。',
+      '<b>锁定技</b>，当你成为体力值大于你的角色使用【杀】的目标时，你判定，若结果为红桃，取消之。',
   },
   {
     source: 'powei_description',
     target:
-      '<b>使命技</b>，当你使用【杀】对有“围”的角色造成伤害时，移去其一枚“围”标记，并防止此伤害。<br><b>成功</b>：当你使用【杀】结算结束后，若场上没有“围”，你获得技能“神著”。<br><b>失败</b>：当你进入濒死状态时，若你的体力小于1，你弃置装备区里的所有牌，回复体力至1点。',
-  },
-  {
-    source: 'dangmo_description',
-    target:
-      '当你于出牌阶段内首次使用【杀】声明指定目标后，你可以为此【杀】额外选择一至X名目标（X为你的体力值-1）。',
+      '<b>使命技</b>，游戏开始时，你令所有没有“围”的其他角色各获得一枚“围”标记；有“围”标记的角色的回合开始时，你可以选择一项，令你于本回合内视为处于其攻击范围内：1.弃置一张手牌，对其造成1点伤害；2.若其体力值不大于你，你获得其一张手牌。回合开始时，你令所有有“围”标记的角色将其“围”标记移至除你外的下家角色。<br><b>成功</b>：回合开始时，若场上没有“围”标记，你获得技能“神著”。<br><b>失败</b>：当你进入濒死状态时，若你的体力小于0，你将体力回复至1点，然后你移去场上的所有“围”标记，并弃置你装备区里的所有牌。',
   },
   {
     source: 'shenzhuo_description',
     target:
-      '<b>锁定技</b>，你使用【杀】无次数限制；当你使用非转化和非虚拟的【杀】结算结束后，你摸一张牌。',
+      '<b>锁定技</b>，当你使用非转化和非虚拟的【杀】结算结束后，你选择一项：1.摸一张牌，于本回合内使用【杀】的次数上限+1；2.摸三张牌，于本回合内不能使用【杀】。',
+  },
+
+  {
+    source: 'yingba_description',
+    target:
+      '出牌阶段限一次，你可以令体力上限大于1的一名其他角色减1点体力上限并获得1枚“平定”标记，然后你减1点体力上限；你对有“平定”标记的角色使用牌无距离限制。',
+  },
+  {
+    source: 'god_fuhai_description',
+    target:
+      '<b>锁定技</b>，当你使用牌时，你令目标中有“平定”标记的角色不可响应此牌；当你使用牌指定有“平定”标记的角色为目标时，你摸一张牌（每回合限两次）；当有“平定”标记的其他角色死亡时，你加等同于其“平定”标记数的体力上限，并摸等量的牌。',
+  },
+  {
+    source: 'pinghe_description',
+    target:
+      '<b>锁定技</b>，你的手牌上限基值等同于你已损失的体力值；当你受到其他角色造成的伤害时，若你有手牌且体力上限大于1，防止此伤害，你减1点体力上限并将一张手牌交给一名其他角色，令伤害来源获得一枚“平定”标记。',
   },
 ];
 
@@ -390,7 +406,7 @@ export const skillAudios: Word[] = [
     source: '$shenfen:2',
     target: '凡人们，颤抖吧！这是神之怒火！',
   },
-
+  
   {
     source: '$renjie:1',
     target: '忍一时，风平浪静。',
@@ -559,6 +575,10 @@ export const skillAudios: Word[] = [
     target: '敌军尚有严防，有待明日再看！',
   },
   {
+    source: '$powei:3',
+    target: '君且城中等候，待吾探敌虚实。',
+  },
+  {
     source: '$dangmo:1',
     target: '魔高一尺，道高一丈！',
   },
@@ -573,6 +593,31 @@ export const skillAudios: Word[] = [
   {
     source: '$shenzhuo:2',
     target: '箭既已在弦上，吾又岂能不发！',
+  },
+
+  {
+    source: '$yingba:1',
+    target: '从我者可免，拒我者难容！',
+  },
+  {
+    source: '$yingba:2',
+    target: '卧榻之侧，岂容他人鼾睡！',
+  },
+  {
+    source: '$god_fuhai:1',
+    target: '翻江覆蹈海，六合定乾坤！',
+  },
+  {
+    source: '$god_fuhai:2',
+    target: '力攻平江东，威名扬天下！',
+  },
+  {
+    source: '$pinghe:1',
+    target: '不过胆小鼠辈，吾等有何惧哉？',
+  },
+  {
+    source: '$pinghe:2',
+    target: '只可得胜而返，岂能败战而归！',
   },
 ];
 
@@ -620,12 +665,21 @@ export const conversations: Word[] = [
   },
 
   {
-    source: '{0}: please choose {1} targets to gain ‘Wei’ mark',
-    target: '{0}：请选择 {1} 名其他角色获得“围”标记',
+    source: '{0}: please choose powei options: {1}',
+    target: '{0}：目标角色 {1}',
   },
+  { source: 'powei:dropCard', target: '弃置一张手牌，对其造成1点伤害' },
+  { source: 'powei:prey', target: '获得其一张手牌' },
 
   {
-    source: '{0}: do you want to add at least {1} targets for {2} ?',
-    target: '{0}：你可以为 {2} 增加至多 {1} 名目标',
+    source: '{0}: please choose shenzhuo options: {1}',
+    target: '{0}：请选择以下一项',
+  },
+  { source: 'shenzhuo:drawOne', target: '摸一张牌，本回合使用【杀】次数+1' },
+  { source: 'shenzhuo:drawThree', target: '摸三张牌，本回合不能使用【杀】' },
+
+  {
+    source: 'pinghe: please give a handcard to another player',
+    target: '冯河：请交给一名其他角色一张手牌',
   },
 ];

@@ -19,7 +19,13 @@ export class TuoGu extends TriggerSkill {
         .getPlayerById(content.playerId)
         .getPlayerSkills(undefined, true)
         .find(
-          skill => !skill.isLordSkill() && skill.SkillType !== SkillType.Limit && skill.SkillType !== SkillType.Awaken,
+          skill =>
+            !skill.isShadowSkill() &&
+            !skill.isLordSkill() &&
+            skill.SkillType !== SkillType.Limit &&
+            skill.SkillType !== SkillType.Awaken &&
+            skill.SkillType !== SkillType.Quest &&
+            !skill.isStubbornSkill(),
         ) !== undefined
     );
   }
@@ -41,6 +47,7 @@ export class TuoGu extends TriggerSkill {
           !skill.isLordSkill() &&
           skill.SkillType !== SkillType.Limit &&
           skill.SkillType !== SkillType.Awaken &&
+          skill.SkillType !== SkillType.Quest &&
           !skill.isStubbornSkill(),
       )
       .map(skill => skill.Name);

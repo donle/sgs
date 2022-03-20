@@ -132,9 +132,10 @@ export const skillDescriptions: Word[] = [
   {
     source: 'zhenliang_description',
     target:
-      '<b>转换技</b>，阳：出牌阶段限一次，你可以选择你攻击范围内的一名角色，并弃置与你的“任”颜色相同的一张牌，对其造成1点伤害；阴：当你于回合外使用或打出牌结算结束后，你可以令一名角色摸一张牌。',
+      '<b>转换技</b>，阳：出牌阶段限一次，你可以选择你攻击范围内的一名角色，并弃置与你的“任”颜色相同的一张牌，对其造成1点伤害；阴：当你于回合外使用或打出牌结算结束后，若此牌的颜色与你的“任”相同，你可以令一名角色摸一张牌。',
   },
 ];
+
 
 export const skillAudios: Word[] = [
   {
@@ -170,7 +171,7 @@ export const skillAudios: Word[] = [
     source: '$shenshi:2',
     target: '深中足智，鉴时审情。',
   },
-
+ 
   {
     source: '$juzhan:1',
     target: '砍头便砍头，何为怒邪？',
@@ -196,7 +197,7 @@ export const skillAudios: Word[] = [
     source: '$binglve:2',
     target: '奇略兵速，敌未能料之。',
   },
-
+ 
   {
     source: '$huaiju:1',
     target: '情深舐犊，怀擢藏橘。',
@@ -289,6 +290,7 @@ export const skillAudios: Word[] = [
     target: '贞节贤良，吾之本心。',
   },
 ];
+
 
 export const promptDescriptions: Word[] = [
   {

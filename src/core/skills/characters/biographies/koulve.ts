@@ -1,10 +1,12 @@
-import { CardChoosingOptions, DamageCardEnum } from 'core/cards/libs/card_props';
+import { CardId, DamageCardEnum } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { MovingCardProps } from 'core/event/event.server';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, DamageEffectStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Algorithm } from 'core/shares/libs/algorithm';
 import { TriggerSkill } from 'core/skills/skill';
 import { CommonSkill } from 'core/skills/skill_wrappers';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
@@ -22,6 +24,7 @@ export class KouLve extends TriggerSkill {
       room.CurrentPhasePlayer === owner &&
       room.CurrentPlayerPhase === PlayerPhase.PlayCardStage &&
       !room.getPlayerById(content.toId).Dead &&
+      room.getPlayerById(content.toId).LostHp > 0 &&
       room.getPlayerById(content.toId).getCardIds(PlayerCardsArea.HandArea).length > 0
     );
   }
@@ -32,8 +35,9 @@ export class KouLve extends TriggerSkill {
     event: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
   ): PatchedTranslationObject {
     return TranslationPack.translationJsonPatcher(
-      '{0}: do you want to display a card from {1}’s hand?',
+      '{0}: do you want to display {1} card from {2}’s hand?',
       this.Name,
+      room.getPlayerById(event.toId).LostHp,
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.toId)),
     ).extract();
   }
@@ -46,48 +50,62 @@ export class KouLve extends TriggerSkill {
     const { fromId } = event;
     const victim = (event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>).toId;
 
-    const options: CardChoosingOptions = {
-      [PlayerCardsArea.HandArea]: room.getPlayerById(victim).getCardIds(PlayerCardsArea.HandArea).length,
-    };
+    const handCards = room.getPlayerById(victim).getCardIds(PlayerCardsArea.HandArea);
+    let selectedCards: CardId[] = handCards;
 
-    const chooseCardEvent = {
-      fromId,
-      toId: victim,
-      options,
-      triggeredBySkills: [this.Name],
-    };
+    if (handCards.length > room.getPlayerById(victim).LostHp) {
+      const response = await room.doAskForCommonly(
+        GameEventIdentifiers.AskForChoosingCardWithConditionsEvent,
+        {
+          toId: victim,
+          customCardFields: {
+            [PlayerCardsArea.HandArea]: handCards.length,
+          },
+          customTitle: this.Name,
+          amount: room.getPlayerById(victim).LostHp,
+          triggeredBySkills: [this.Name],
+        },
+        fromId,
+        true,
+      );
 
-    const response = await room.askForChoosingPlayerCard(chooseCardEvent, fromId, false, true);
-    if (!response) {
-      return false;
+      response.selectedCardsIndex = response.selectedCardsIndex || [0];
+      selectedCards = Algorithm.randomPick(response.selectedCardsIndex.length, handCards);
     }
 
     const showCardEvent: ServerEventFinder<GameEventIdentifiers.CardDisplayEvent> = {
-      displayCards: [response.selectedCard!],
+      displayCards: selectedCards,
       fromId: victim,
       translationsMessage: TranslationPack.translationJsonPatcher(
         '{0} display hand card {1} from {2}',
         TranslationPack.patchPlayerInTranslation(room.getPlayerById(fromId)),
-        TranslationPack.patchCardInTranslation(response.selectedCard!),
+        TranslationPack.patchCardInTranslation(...selectedCards),
         TranslationPack.patchPlayerInTranslation(room.getPlayerById(victim)),
       ).extract(),
     };
     room.broadcast(GameEventIdentifiers.CardDisplayEvent, showCardEvent);
 
-    const card = Sanguosha.getCardById(response.selectedCard!);
-    if ((Object.values(DamageCardEnum) as string[]).includes(card.GeneralName)) {
-      await room.moveCards({
-        movingCards: [{ card: response.selectedCard!, fromArea: CardMoveArea.HandArea }],
-        fromId: victim,
-        toId: fromId,
-        toArea: CardMoveArea.HandArea,
-        moveReason: CardMoveReason.ActivePrey,
-        proposer: fromId,
-        triggeredBySkills: [this.Name],
-      });
+    const movingCards: MovingCardProps[] = [];
+    let hasRed = false;
+    for (const id of selectedCards) {
+      const card = Sanguosha.getCardById(id);
+      if ((Object.values(DamageCardEnum) as string[]).includes(card.GeneralName)) {
+        movingCards.push({ card: id, fromArea: CardMoveArea.HandArea });
+      }
+      hasRed = hasRed || card.isRed();
     }
 
-    if (card.isRed()) {
+    await room.moveCards({
+      movingCards,
+      fromId: victim,
+      toId: fromId,
+      toArea: CardMoveArea.HandArea,
+      moveReason: CardMoveReason.ActivePrey,
+      proposer: fromId,
+      triggeredBySkills: [this.Name],
+    });
+
+    if (hasRed) {
       room.getPlayerById(fromId).LostHp > 0 ? await room.changeMaxHp(fromId, -1) : await room.loseHp(fromId, 1);
       await room.drawCards(2, event.fromId, 'top', event.fromId, this.Name);
     }

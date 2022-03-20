@@ -100,24 +100,6 @@ export class CuiJian extends ActiveSkill {
           proposer: fromId,
           triggeredBySkills: [this.Name],
         }));
-    } else {
-      const response = await room.askForCardDrop(
-        event.fromId,
-        1,
-        [PlayerCardsArea.HandArea],
-        true,
-        undefined,
-        this.GeneralName,
-      );
-
-      response.droppedCards.length > 0 &&
-        (await room.dropCards(
-          CardMoveReason.SelfDrop,
-          response.droppedCards,
-          event.fromId,
-          event.fromId,
-          this.GeneralName,
-        ));
     }
 
     return true;
@@ -193,7 +175,7 @@ export class CuiJianI extends CuiJian {
           triggeredBySkills: [this.Name],
         }));
     } else {
-      await room.drawCards(1, fromId, 'top', fromId, this.Name);
+      await room.drawCards(2, fromId, 'top', fromId, this.Name);
     }
 
     return true;
@@ -232,62 +214,6 @@ export class CuiJianII extends CuiJian {
         proposer: event.toIds[0],
         triggeredBySkills: [this.GeneralName],
       });
-
-      let selectedCards: CardId[] = room.getPlayerById(fromId).getPlayerCards();
-      if (selectedCards.length > 1) {
-        const resp = await room.doAskForCommonly<GameEventIdentifiers.AskForCardEvent>(
-          GameEventIdentifiers.AskForCardEvent,
-          {
-            cardAmount: 1,
-            toId: fromId,
-            reason: this.Name,
-            conversation: TranslationPack.translationJsonPatcher(
-              '{0}: please give {1} {2} card(s)',
-              this.Name,
-              TranslationPack.patchPlayerInTranslation(to),
-              1,
-            ).extract(),
-            fromArea: [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
-            triggeredBySkills: [this.Name],
-          },
-          fromId,
-          true,
-        );
-
-        selectedCards =
-          resp.selectedCards.length > 0
-            ? resp.selectedCards
-            : [selectedCards[Math.floor(Math.random() * selectedCards.length)]];
-      }
-
-      selectedCards.length > 0 &&
-        (await room.moveCards({
-          movingCards: selectedCards.map(card => ({ card, fromArea: room.getPlayerById(fromId).cardFrom(card) })),
-          fromId,
-          toId: event.toIds[0],
-          toArea: CardMoveArea.HandArea,
-          moveReason: CardMoveReason.ActiveMove,
-          proposer: fromId,
-          triggeredBySkills: [this.Name],
-        }));
-    } else {
-      const response = await room.askForCardDrop(
-        event.fromId,
-        1,
-        [PlayerCardsArea.HandArea],
-        true,
-        undefined,
-        this.GeneralName,
-      );
-
-      response.droppedCards.length > 0 &&
-        (await room.dropCards(
-          CardMoveReason.SelfDrop,
-          response.droppedCards,
-          event.fromId,
-          event.fromId,
-          this.GeneralName,
-        ));
     }
 
     return true;
@@ -326,46 +252,8 @@ export class CuiJianEX extends CuiJian {
         proposer: fromId,
         triggeredBySkills: [this.GeneralName],
       });
-
-      let selectedCards: CardId[] = room.getPlayerById(fromId).getPlayerCards();
-      if (selectedCards.length > 1) {
-        const resp = await room.doAskForCommonly<GameEventIdentifiers.AskForCardEvent>(
-          GameEventIdentifiers.AskForCardEvent,
-          {
-            cardAmount: 1,
-            toId: fromId,
-            reason: this.Name,
-            conversation: TranslationPack.translationJsonPatcher(
-              '{0}: please give {1} {2} card(s)',
-              this.Name,
-              TranslationPack.patchPlayerInTranslation(to),
-              1,
-            ).extract(),
-            fromArea: [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
-            triggeredBySkills: [this.Name],
-          },
-          fromId,
-          true,
-        );
-
-        selectedCards =
-          resp.selectedCards.length > 0
-            ? resp.selectedCards
-            : [selectedCards[Math.floor(Math.random() * selectedCards.length)]];
-      }
-
-      selectedCards.length > 0 &&
-        (await room.moveCards({
-          movingCards: selectedCards.map(card => ({ card, fromArea: room.getPlayerById(fromId).cardFrom(card) })),
-          fromId,
-          toId: event.toIds[0],
-          toArea: CardMoveArea.HandArea,
-          moveReason: CardMoveReason.ActiveMove,
-          proposer: fromId,
-          triggeredBySkills: [this.Name],
-        }));
     } else {
-      await room.drawCards(1, fromId, 'top', fromId, this.Name);
+      await room.drawCards(2, fromId, 'top', fromId, this.Name);
     }
 
     return true;

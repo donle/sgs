@@ -84,7 +84,7 @@ export abstract class JudgeMatcher {
     return card.isRed();
   }
   private static DuLie(card: Card) {
-    return card.isRed();
+    return card.Suit === CardSuit.Heart;
   }
   private static QingXi(card: Card) {
     return card.isRed();

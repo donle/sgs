@@ -23,6 +23,7 @@ export const enum SkillType {
   Compulsory,
   Awaken,
   Limit,
+  Quest,
 }
 
 export const enum SwitchSkillState {

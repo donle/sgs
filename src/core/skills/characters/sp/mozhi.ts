@@ -143,7 +143,7 @@ export class MoZhi extends TriggerSkill {
     const mozhiCards = room.getFlag<string[]>(event.fromId, this.Name);
     await room.useCard({
       fromId: event.fromId,
-      targetGroup: [event.toIds],
+      targetGroup: event.toIds.length > 0 ? [event.toIds] : undefined,
       cardId: VirtualCard.create({ cardName: mozhiCards[0], bySkill: this.Name }, event.cardIds).Id,
     });
 

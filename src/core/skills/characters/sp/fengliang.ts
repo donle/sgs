@@ -45,7 +45,7 @@ export class FengLiang extends TriggerSkill {
     });
 
     await room.obtainSkill(fromId, TiaoXin.Name, true);
-    await room.updateSkill(fromId, KunFenEX.Name, KunFen.Name);
+    await room.updateSkill(fromId, KunFen.Name, KunFenEX.Name);
 
     return true;
   }

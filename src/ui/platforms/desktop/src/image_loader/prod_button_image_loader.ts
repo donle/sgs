@@ -113,6 +113,20 @@ const skillButtons: {
       disabled: awakenDisabledImage,
     },
   },
+  [SkillType.Quest]: {
+    wide: {
+      default: wideCommonImage,
+      hover: wideCommonHoverImage,
+      down: wideCommonDownImage,
+      disabled: wideCommonDisabledImage,
+    },
+    normal: {
+      default: commonImage,
+      hover: commonHoverImage,
+      down: commonDownImage,
+      disabled: commonDisabledImage,
+    },
+  },
 };
 
 export function getSkillButtonImages(type: SkillType, size: 'wide' | 'normal') {

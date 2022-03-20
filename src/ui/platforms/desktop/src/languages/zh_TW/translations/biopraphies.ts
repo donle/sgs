@@ -8,6 +8,9 @@ export const characterDictionary: Word[] = [
   { source: 'lilu count: {0}', target: '禮賂[{0}]' },
   { source: 'yizheng', target: '翊正' },
 
+  { source: 'caoanmin', target: '曹安民' },
+  { source: 'xianwei', target: '險衛' },
+
   { source: 'xushao', target: '許劭' },
   { source: 'pingjian', target: '評薦' },
   { source: '#pingjian', target: '評薦' },
@@ -35,12 +38,18 @@ export const skillDescriptions: Word[] = [
   {
     source: 'lilu_description',
     target:
-      '摸牌階段，你可以改爲將手牌摸至體力上限（最多摸至五張，且無法摸牌也可發動），然後你將至少一張手牌交給一名其他角色。若你此次交出的牌數大於你上次以此法交出的牌數，你加1點體力上限並回復1點體力。',
+      '摸牌階段，你可以改為將手牌摸至體力上限（最多摸至五張，且無法摸牌也可發動），然後你將至少一張手牌交給一名其他角色。若你此次交出的牌數大於你上次以此法交出的牌數，你加1點體力上限並回復1點體力。',
   },
   {
     source: 'yizheng_description',
     target:
       '結束階段開始時，你可以選擇一名其他角色。若如此做，直到你的下個回合開始，當其造成傷害或回覆體力時，若其體力上限小於你，你減1點體力上限，令此傷害值或回覆值+1。',
+  },
+
+  {
+    source: 'xianwei_description',
+    target:
+      '<b>鎖定技</b>，準備階段開始時，你廢除一個裝備欄並摸等同於你未廢除的裝備欄數的牌，然後你令一名其他角色使用牌堆裡的第一張與你廢除裝備欄對應副類別相同的裝備牌（若牌堆中沒有則改為其摸一張牌）。然後若你的所有裝備欄均已廢除，你加2點體力上限，且於本局遊戲剩餘時間內，你視為處於所有其他角色的攻擊範圍內，所有其他角色均視為處於你的攻擊範圍內。',
   },
 
   {
@@ -52,26 +61,26 @@ export const skillDescriptions: Word[] = [
   {
     source: 'minsi_description',
     target:
-      '出牌階段限一次，你可以棄置至少一張點數和爲13的牌，然後摸兩倍數量的牌。你以此法摸的：紅色牌於本回合不計入手牌上限；黑色牌於本回合無距離限制。',
+      '出牌階段限一次，你可以棄置至少一張點數和為13的牌，然後摸兩倍數量的牌。你以此法摸的：紅色牌於本回合不計入手牌上限；黑色牌於本回合無距離限制。',
   },
   {
     source: 'jijing_description',
-    target: '當你受到傷害後，你可以判定，然後若你棄置至少一張點數和爲判定結果點數的牌，你回覆1點體力。',
+    target: '當你受到傷害後，你可以判定，然後若你棄置至少一張點數和為判定結果點數的牌，你回覆1點體力。',
   },
   {
     source: 'zhuide_description',
-    target: '當你死亡時，你可以令一名其他角色獲得牌堆裏牌名各不相同的四張基本牌。',
+    target: '當你死亡時，你可以令一名其他角色獲得牌堆裡牌名各不相同的四張基本牌。',
   },
 
   {
     source: 'cixiao_description',
     target:
-      '準備階段開始時，你可以選擇一名沒有“義子”的其他角色（若場上有“義子”標記，你須先棄置一張牌），移去場上所有的“義子”標記，其獲得1枚“義子”標記。有“義子”標記的角色視爲擁有“叛弒”。',
+      '準備階段開始時，你可以選擇一名沒有“義子”的其他角色（若場上有“義子”標記，你須先棄置一張牌），移去場上所有的“義子”標記，其獲得1枚“義子”標記。有“義子”標記的角色視為擁有“叛弒”。',
   },
   {
     source: 'xianshuai_description',
     target:
-      '<b>鎖定技，</b>當一名角色造成傷害後，若此傷害時本輪內造成過的第一次傷害，你摸一張牌，然後若傷害來源爲你，你對受傷角色造成1點傷害。',
+      '<b>鎖定技，</b>當一名角色造成傷害後，若此傷害時本輪內造成過的第一次傷害，你摸一張牌，然後若傷害來源為你，你對受傷角色造成1點傷害。',
   },
   {
     source: 'panshi_description',
@@ -82,13 +91,13 @@ export const skillDescriptions: Word[] = [
   {
     source: 'xuezhao_description',
     target:
-      '出牌階段限一次，你可以棄置一張手牌，並令一至X名其他角色（X爲你的體力值）依次選擇是否交給你一張牌，若其：交給你牌，其摸一張牌且你本回合使用【殺】的次數上限+1；未交給你牌，其本回合不能響應你使用的牌。',
+      '出牌階段限一次，你可以棄置一張手牌，並令一至X名其他角色（X為你的體力上限）依次選擇是否交給你一張牌，若其：交給你牌，其摸一張牌且你本回合使用【殺】的次數上限+1；未交給你牌，其本回合不能響應你使用的牌。',
   },
 
   {
     source: 'koulve_description',
     target:
-      '當你於出牌階段內對其他角色造成傷害後，你可以展示其一張手牌。若此牌爲【殺】或傷害類錦囊牌，你獲得之。若此牌爲紅色，你減1點體力上限（若你未受傷則改爲失去1點體力），然後摸兩張牌。',
+      '當你於出牌階段內對其他角色造成傷害後，你可以展示其X張手牌（X為其已損失的體力值）。若其中有【殺】或傷害類錦囊牌，你獲得這些牌。若其中有紅色牌，你減1點體力上限（若你未受傷則改為失去1點體力），然後摸兩張牌。',
   },
   {
     source: 'suiren_description',
@@ -122,7 +131,7 @@ export const skillAudios: Word[] = [
   {
     source: '$pingjian:2',
     target: '月旦雅評，試論天下。',
-  }, 
+  },
 
   {
     source: '$minsi:1',
@@ -138,7 +147,7 @@ export const skillAudios: Word[] = [
   },
   {
     source: '$jijing:2',
-    target: '夢之指引，必爲吉運。',
+    target: '夢之指引，必為吉運。',
   },
   {
     source: '$zhuide:1',
@@ -147,7 +156,7 @@ export const skillAudios: Word[] = [
   {
     source: '$zhuide:2',
     target: '花香蝶戀，君德妾慕。',
-  }, 
+  },
 
   {
     source: '$cixiao:1',
@@ -155,7 +164,7 @@ export const skillAudios: Word[] = [
   },
   {
     source: '$cixiao:2',
-    target: '父慈子孝，義理爲先！',
+    target: '父慈子孝，義理為先！',
   },
   {
     source: '$xianshuai:1',
@@ -191,7 +200,7 @@ export const skillAudios: Word[] = [
     source: '$fuzhong:2',
     target: '勇冠其軍，負重前行！',
   },
-  
+
   {
     source: '$koulve:1',
     target: '兵強馬壯，時出寇略！',
@@ -208,12 +217,21 @@ export const skillAudios: Word[] = [
     source: '$suiren:2',
     target: '我的財富，收好。',
   },
+
+  {
+    source: '$xianwei:1',
+    target: '曹家兒郎，何懼一死！',
+  },
+  {
+    source: '$xianwei:2',
+    target: '此役當戰，有死無生！',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to draw {1} card(s) instead of drawing cards by rule?',
-    target: '{0}：你可以放棄摸牌，改爲摸 {1} 張牌',
+    target: '{0}：你可以放棄摸牌，改為摸 {1} 張牌',
   },
   {
     source: '{0}: do you want to give up to draw cards by rule?',
@@ -236,12 +254,12 @@ export const promptDescriptions: Word[] = [
 
   {
     source: '{0}: do you want to drop cards with sum of {1} Card Number to recover 1 hp?',
-    target: '{0}：你可以棄置至少一張點數和爲 {1} 的牌來回復1點體力',
+    target: '{0}：你可以棄置至少一張點數和為 {1} 的牌來回復1點體力',
   },
 
   {
     source: '{0}: do you want to let another player draw 4 defferent basic cards?',
-    target: '{0}：你可以令一名其他角色獲得牌堆裏四張牌名各不相同的基本牌',
+    target: '{0}：你可以令一名其他角色獲得牌堆裡四張牌名各不相同的基本牌',
   },
 
   {
@@ -263,12 +281,17 @@ export const promptDescriptions: Word[] = [
   },
 
   {
-    source: '{0}: do you want to display a card from {1}’s hand?',
-    target: '{0}：你可以展示 {1} 的一張手牌',
+    source: '{0}: do you want to display {1} card from {2}’s hand?',
+    target: '{0}：你可以展示 {2} 的 {1} 張手牌',
   },
 
   {
     source: '{0}: do you want to choose a another player to give him all the damage cards in your hand?',
     target: '{0}：你可以將手牌中所有的【殺】和傷害類錦囊牌交給一名其他角色',
+  },
+
+  {
+    source: 'xianwei: please choose a target to use equip from draw pile',
+    target: '險衛：請選擇一名其他角色隨機使用牌堆中一張與你廢除裝備欄對應的裝備牌',
   },
 ];

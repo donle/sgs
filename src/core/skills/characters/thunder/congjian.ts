@@ -12,6 +12,14 @@ import { PatchedTranslationObject, TranslationPack } from 'core/translations/tra
 
 @CommonSkill({ name: 'congjian', description: 'congjian_description' })
 export class CongJian extends TriggerSkill {
+  public get RelatedCharacters(): string[] {
+    return ['tongyuan_c'];
+  }
+
+  public audioIndex(characterName?: string): number {
+    return characterName && this.RelatedCharacters.includes(characterName) ? 1 : 2;
+  }
+
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage): boolean {
     return stage === AimStage.AfterAimmed;
   }

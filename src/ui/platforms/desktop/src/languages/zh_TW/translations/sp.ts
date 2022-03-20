@@ -176,10 +176,10 @@ export const characterDictionary: Word[] = [
 ];
 
 export const skillDescriptions: Word[] = [
-
   {
     source: 'zhaolie_description',
-    target: '摸牌階段你可以少摸一張牌並選擇攻擊範圍內一名角色：你亮出牌頂三張牌並棄置其中非基本牌和【桃】，然後其選擇一項：1.受到X點傷害，獲得其余牌；2依次棄置X張牌，你獲得其余牌。（X為其中非基本牌數）。',
+    target:
+      '摸牌階段你可以少摸一張牌並選擇攻擊範圍內一名角色：你亮出牌頂三張牌並棄置其中非基本牌和【桃】，然後其選擇一項：1.受到X點傷害，獲得其余牌；2依次棄置X張牌，你獲得其余牌。（X為其中非基本牌數）。',
   },
 
   {
@@ -506,16 +506,14 @@ export const skillDescriptions: Word[] = [
     source: 'jiaozi_description',
     target: '<b>鎖定技</b>，當你造成或受到傷害時，若你的手牌數爲全場唯一最多，此傷害+1。',
   },
-
   {
     source: 'wenji_description',
     target:
-      '出牌階段開始時，你可以令一名其他角色交給你一張牌。若如此做，你於本回合內使用與該牌同名的牌不能被其他角色響應。',
+      '出牌階段開始時，你可以令一名其他角色交給你一張牌。若如此做，你於本回合內使用與該牌類別相同的牌不能被其他角色響應。',
   },
   {
     source: 'tunjiang_description',
-    target:
-      '結束階段開始時，若你於此回合內未使用牌指定過其他角色爲目標，且未跳過本回合的出牌階段，你可以摸X張牌（X爲存活勢力數）。',
+    target: '結束階段開始時，若你於本回合的出牌階段內未使用牌指定過其他角色為目標，你可以摸X張牌（X為存活勢力數）。',
   },
 
   {
@@ -575,6 +573,23 @@ export const skillDescriptions: Word[] = [
 
 export const skillAudios: Word[] = [
   {
+    source: '$zhaolie:1',
+    target: '吾弟且慢行，待為兄報仇雪恨！',
+  },
+  {
+    source: '$zhaolie:2',
+    target: '結桃園之義，雪手足之仇！',
+  },
+  {
+    source: '$liubei_shichou:1',
+    target: '手足之傷，不共戴天！',
+  },
+  {
+    source: '$liubei_shichou:2',
+    target: '手足之傷，不共戴天！',
+  },
+
+  {
     source: '$danlao:1',
     target: '我喜歡。',
   },
@@ -614,7 +629,7 @@ export const skillAudios: Word[] = [
   },
   {
     source: '$kunfen:2',
-    target: '興蜀需時，衆將切勿備怠！',
+    target: '興蜀需時，眾將切勿備怠！',
   },
   {
     source: '$fengliang:1',
@@ -631,7 +646,7 @@ export const skillAudios: Word[] = [
   },
   {
     source: '$juesi:2',
-    target: '只有一個能站着離開！',
+    target: '只有一個能站著離開！',
   },
 
   {
@@ -718,7 +733,7 @@ export const skillAudios: Word[] = [
   },
   {
     source: '$quji:2',
-    target: '願爲將士，略盡綿薄。',
+    target: '願為將士，略盡綿薄。',
   },
 
   {
@@ -748,7 +763,7 @@ export const skillAudios: Word[] = [
 
   {
     source: '$qingzhong:1',
-    target: '執政爲民，當盡我所能。',
+    target: '執政為民，當盡我所能。',
   },
   {
     source: '$qingzhong:2',
@@ -760,7 +775,7 @@ export const skillAudios: Word[] = [
   },
   {
     source: '$weijing:2',
-    target: '國乃大家，保大家纔有小家。',
+    target: '國乃大家，保大家才有小家。',
   },
 
   {
@@ -799,11 +814,11 @@ export const skillAudios: Word[] = [
   },
   {
     source: '$shuimeng:1',
-    target: '你我脣齒相依，共御外敵，何如？',
+    target: '你我唇齒相依，共御外敵，何如？',
   },
   {
     source: '$shuimeng:2',
-    target: '今兵薄勢寡，可遣某爲使往說之。',
+    target: '今兵薄勢寡，可遣某為使往說之。',
   },
 
   {
@@ -842,7 +857,7 @@ export const skillAudios: Word[] = [
 
   {
     source: '$fengpo:1',
-    target: '對付你，用不着我家哥哥親自上陣！',
+    target: '對付你，用不著我家哥哥親自上陣！',
   },
   {
     source: '$fengpo:2',
@@ -851,7 +866,7 @@ export const skillAudios: Word[] = [
 
   {
     source: '$zishu:1',
-    target: '慢着，讓我來。',
+    target: '慢著，讓我來。',
   },
   {
     source: '$zishu:2',
@@ -868,7 +883,7 @@ export const skillAudios: Word[] = [
 
   {
     source: '$fuman:1',
-    target: '恩威並施，蠻夷可爲我所用！',
+    target: '恩威並施，蠻夷可為我所用！',
   },
   {
     source: '$fuman:2',
@@ -894,7 +909,7 @@ export const skillAudios: Word[] = [
   },
   {
     source: '$sheyan:1',
-    target: '公事爲重，宴席不去也罷。',
+    target: '公事為重，宴席不去也罷。',
   },
   {
     source: '$sheyan:2',
@@ -912,7 +927,7 @@ export const skillAudios: Word[] = [
 
   {
     source: '$canshi:1',
-    target: '衆人，與螻蟻何異？哼哼哼哼哼哼……',
+    target: '眾人，與螻蟻何異？哼哼哼哼哼哼……',
   },
   {
     source: '$canshi:2',
@@ -1022,7 +1037,7 @@ export const skillAudios: Word[] = [
   },
   {
     source: '$yingbing:1',
-    target: '朱雀玄武，誓爲我徵！',
+    target: '朱雀玄武，誓為我徵！',
   },
   {
     source: '$yingbing:2',
@@ -1035,15 +1050,15 @@ export const skillAudios: Word[] = [
   },
   {
     source: '$jijun:2',
-    target: '集民力萬千，亦可爲軍！',
+    target: '集民力萬千，亦可為軍！',
   },
   {
     source: '$fangtong:1',
-    target: '統領方隊，爲民意所舉！',
+    target: '統領方隊，為民意所舉！',
   },
   {
     source: '$fangtong:2',
-    target: '三十六方，必爲大統！',
+    target: '三十六方，必為大統！',
   },
 
   {
@@ -1119,7 +1134,7 @@ export const skillAudios: Word[] = [
   },
   {
     source: '$jiaozi:2',
-    target: '今吾於此，爾等皆爲飛灰。',
+    target: '今吾於此，爾等皆為飛灰。',
   },
 
   {
@@ -1141,7 +1156,7 @@ export const skillAudios: Word[] = [
 
   {
     source: '$huji:1',
-    target: '求仙長生，感悟萬象。',
+    target: '求仙長生，感悟永珍。',
   },
   {
     source: '$huji:2',

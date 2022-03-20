@@ -7,9 +7,8 @@ const skillLoaderInstance = SkillLoader.getInstance();
 export class GodTaiShiCi extends Character {
   constructor(id: number) {
     super(id, 'god_taishici', CharacterGender.Male, CharacterNationality.God, 4, 4, GameCharacterExtensions.God, [
-      ...skillLoaderInstance.getSkillsByName('dulie'),
-      skillLoaderInstance.getSkillByName('powei'),
-      ...skillLoaderInstance.getSkillsByName('dangmo'),
+      skillLoaderInstance.getSkillByName('dulie'),
+      ...skillLoaderInstance.getSkillsByName('powei'),
     ]);
   }
 }

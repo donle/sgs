@@ -23,7 +23,7 @@ export class XueZhao extends ActiveSkill {
   }
 
   public targetFilter(room: Room, owner: Player, targets: PlayerId[]) {
-    return targets.length > 0 && targets.length <= owner.Hp;
+    return targets.length > 0 && targets.length <= owner.MaxHp;
   }
 
   public isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {

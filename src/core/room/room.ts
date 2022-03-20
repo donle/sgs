@@ -154,7 +154,7 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
     insertIndex?: number,
   ): Promise<void>;
   //Server only
-  public abstract updateSkill(playerId: PlayerId, newSkillName: string, oldSkillName: string): Promise<void>;
+  public abstract updateSkill(playerId: PlayerId, oldSkillName: string, newSkillName: string): Promise<void>;
   //Server only
   public abstract pindian(fromId: PlayerId, toIds: PlayerId[], bySkill: string): Promise<PinDianReport>;
   public abstract turnOver(playerId: PlayerId): Promise<void>;
@@ -502,10 +502,13 @@ export abstract class Room<T extends WorkPlace = WorkPlace> {
       }
     }
 
-    const horses = from.getEquipment(CardType.OffenseRide);
+    const ride = from.getEquipment(CardType.OffenseRide);
     let fixed = 0;
-    if (horses && except && !except.includes(horses)) {
-      fixed = (Sanguosha.getCardById(horses).ShadowSkills[0] as RulesBreakerSkill).breakOffenseDistance(this, from);
+    if (ride && except && except.includes(ride)) {
+      const rideSkill = Sanguosha.getCardById(ride).Skill;
+      if (rideSkill) {
+        fixed = (rideSkill as RulesBreakerSkill).breakOffenseDistance(this, from);
+      }
     }
 
     const seatGap = to.getDefenseDistance(this) - from.getOffenseDistance(this) + fixed;

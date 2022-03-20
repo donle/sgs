@@ -28,6 +28,16 @@ export const characterDictionary: Word[] = [
   { source: '#xingzuo', target: '興作（換牌）' },
   { source: 'miaoxian', target: '妙弦' },
 
+  { source: 'wenyang', target: '文鴦' },
+  { source: 'lvli', target: '膂力' },
+  { source: 'lvli_I', target: '膂力' },
+  { source: 'lvli_II', target: '膂力' },
+  { source: 'lvli_EX', target: '膂力' },
+  { source: 'choujue', target: '仇決' },
+  { source: 'beishui', target: '背水' },
+  { source: 'qingjiao', target: '清剿' },
+  { source: '#qingjiao', target: '清剿（棄牌）' },
+
   { source: 'guansuo', target: '關索' },
   { source: 'zhengnan', target: '徵南' },
   { source: 'xiefang', target: '擷芳' },
@@ -62,23 +72,33 @@ export const characterDictionary: Word[] = [
   { source: 'weiyi', target: '威儀' },
   { source: 'jinzhi', target: '錦織' },
 
+  { source: 'zhouyi', target: '周夷' },
+  { source: 'zhukou', target: '逐寇' },
+  { source: 'mangqing', target: '氓情' },
+  { source: 'yuyun', target: '玉隕' },
+
   { source: 'xurong', target: '徐榮' },
   { source: 'xionghuo', target: '兇鑊' },
   { source: 'baoli', target: '暴戾' },
   { source: 'shajue', target: '殺絕' },
+
+  { source: 'liubian', target: '劉辯' },
+  { source: 'shiyuan', target: '詩怨' },
+  { source: 'dushi', target: '毒逝' },
+  { source: 'yuwei', target: '餘威' },
 ];
 
 export const skillDescriptions: Word[] = [
   {
     source: 'shanjia_description',
     target:
-      '出牌階段開始時，你可以摸三張牌，然後棄置三張牌（本局遊戲內你每不因使用而失去一張裝備牌，便少棄置一張牌）。若你未以此法棄置非裝備牌，你可視爲使用一張無距離限制的【殺】。',
+      '出牌階段開始時，你可以摸三張牌，然後棄置三張牌（本局遊戲內你每不因使用而失去一張裝備牌，便少棄置一張牌）。若你未以此法棄置非裝備牌，你可視為使用一張無距離限制的【殺】。',
   },
 
   {
     source: 'bifa_description',
     target:
-      '結束階段開始時，你可以將一張手牌置於沒有“檄”的一名其他角色的武將牌旁，稱爲“檄”。該角色於其下個回合開始時，觀看此“檄”並選擇一項：1.交給你一張與此“檄”類別相同的手牌，然後獲得此“檄”；2.移去此“檄”並失去1點體力。',
+      '結束階段開始時，你可以將一張手牌置於沒有“檄”的一名其他角色的武將牌旁，稱為“檄”。該角色於其下個回合開始時，觀看此“檄”並選擇一項：1.交給你一張與此“檄”類別相同的手牌，然後獲得此“檄”；2.移去此“檄”並失去1點體力。',
   },
   {
     source: 'songci_description',
@@ -93,24 +113,24 @@ export const skillDescriptions: Word[] = [
   {
     source: 'daoshu_description',
     target:
-      '出牌階段，你可以聲明一種花色並獲得一名其他角色的一張手牌，若此牌與你聲明的花色：相同，你對其造成1點傷害；不同，你交給其一張不爲你以此法獲得的牌花色的手牌（若無法給出，則改爲展示所有手牌），且此技能於本回合內失效。',
+      '出牌階段，你可以宣告一種花色並獲得一名其他角色的一張手牌，若此牌與你宣告的花色：相同，你對其造成1點傷害；不同，你交給其一張不為你以此法獲得的牌花色的手牌（若無法給出，則改為展示所有手牌），且此技能於本回合內失效。',
   },
 
   {
     source: 'zhuilie_description',
     target:
-      '<b>鎖定技</b>，你使用【殺】無距離限制；當你使用【殺】指定不在你攻擊範圍內的角色後，此【殺】不計入次數限制且你判定，若爲武器牌或坐騎牌，你令此【殺】對其傷害基數等同於其體力值，否則你失去1點體力。',
+      '<b>鎖定技</b>，你使用【殺】無距離限制；當你使用【殺】指定不在你攻擊範圍內的角色後，此【殺】不計入次數限制且你判定，若為武器牌或坐騎牌，你令此【殺】對其傷害基數等同於其體力值，否則你失去1點體力。',
   },
 
   {
     source: 'tuogu_description',
     target:
-      '當其他角色死亡時，你可以令其選擇其一項技能（主公技、限定技、覺醒技和隱匿技除外），你失去以此法獲得的上一個技能，獲得此技能。',
+      '當其他角色死亡時，你可以令其選擇其一項技能（主公技、限定技、覺醒技、使命技和隱匿技除外），你失去以此法獲得的上一個技能，獲得此技能。',
   },
   {
     source: 'shanzhuan_description',
     target:
-      '當你對其他角色造成傷害後，若其判定區裏沒有牌，你可以將其一張牌置於其判定區內。若此牌不爲延時類錦囊牌且爲：紅色牌，此牌視爲【樂不思蜀】；黑色牌，此牌視爲【兵糧寸斷】。回合結束時，若你本回合沒有造成過傷害，你可以摸一張牌。',
+      '當你對其他角色造成傷害後，若其判定區裡沒有牌，你可以將其一張牌置於其判定區內。若此牌不為延時類錦囊牌且為：紅色牌，此牌視為【樂不思蜀】；黑色牌，此牌視為【兵糧寸斷】。回合結束時，若你本回合沒有造成過傷害，你可以摸一張牌。',
   },
 
   {
@@ -125,22 +145,58 @@ export const skillDescriptions: Word[] = [
   },
 
   {
+    source: 'lvli_description',
+    target: '每回合限一次，當你造成傷害後，你可以將手牌摸至體力值或將體力值回覆至手牌數。',
+  },
+  {
+    source: 'lvli_I_description',
+    target:
+      '每回合限一次（於你的回合內視為每回合限兩次），當你造成傷害後，你可以將手牌摸至體力值或將體力值回覆至手牌數。',
+  },
+  {
+    source: 'lvli_II_description',
+    target: '每回合限一次，當你造成或受到傷害後，你可以將手牌摸至體力值或將體力值回覆至手牌數。',
+  },
+  {
+    source: 'lvli_EX_description',
+    target:
+      '每回合限一次（於你的回合內視為每回合限兩次），當你造成或受到傷害後，你可以將手牌摸至體力值或將體力值回覆至手牌數。',
+  },
+  {
+    source: 'choujue_description',
+    target:
+      '<b>覺醒技</b>，每個回合結束時，若你的手牌數與體力值的差值不小於3，你減1點體力上限，獲得技能“背水”，然後令你的“膂力”於你的回合內視為每回合限兩次。',
+  },
+  {
+    source: 'beishui_description',
+    target:
+      '<b>覺醒技</b>，準備階段開始時，若你的體力值或手牌數小於2，你減1點體力上限，獲得技能“清剿”，然後令你的“膂力”於當你受到傷害後也可發動。',
+  },
+  {
+    source: 'qingjiao_description',
+    target:
+      '出牌階段開始時，你可以發動本技能，然後你棄置所有牌，隨機獲得牌堆和棄牌堆中八張牌名和副類別各不相同的牌。若如此做，你於本回合的下個結束階段開始時，棄置所有牌。',
+  },
+
+  {
     source: 'zhengnan_description',
     target:
-      '每名角色限一次，當一名角色進入瀕死狀態時，你可以回覆1點體力，然後摸一張牌並選擇以下一項技能獲得：“當先”、“武聖”和“制蠻”（若你已擁有這三個技能則改爲摸三張牌）。',
+      '每名角色限一次，當一名角色進入瀕死狀態時，你可以回覆1點體力，然後摸一張牌並選擇以下一項技能獲得：“當先”、“武聖”和“制蠻”（若你已擁有這三個技能則改為摸三張牌）。',
   },
   {
     source: 'xiefang_description',
-    target: '<b>鎖定技</b>，你計算與其他角色的距離-X（X爲存活女性角色數）。',
+    target: '<b>鎖定技</b>，你計算與其他角色的距離-X（X為存活女性角色數）。',
   },
 
   {
     source: 'qirang_description',
-    target: '當裝備牌進入你的裝備區後，你可以從牌堆隨機獲得一張錦囊牌。若此牌爲普通錦囊牌，你於本回合使用此牌指定唯一目標時，你可以爲此牌增加一個額外的目標。',
+    target:
+      '當裝備牌進入你的裝備區後，你可以從牌堆隨機獲得一張錦囊牌。若此牌為普通錦囊牌，你於本回合使用此牌指定唯一目標時，你可以為此牌增加一個額外的目標。',
   },
   {
     source: 'yuhua_description',
-    target: '<b>鎖定技</b>，你的非基本牌不計入手牌上限；結束階段開始時，若你的手牌數大於體力上限，你觀看牌堆頂一張牌，然後將之置於牌堆頂或牌堆底。',
+    target:
+      '<b>鎖定技</b>，你的非基本牌不計入手牌上限；結束階段開始時，若你的手牌數大於體力上限，你觀看牌堆頂一張牌，然後將之置於牌堆頂或牌堆底。',
   },
 
   {
@@ -161,7 +217,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pianchong_description',
     target:
-      '摸牌階段，你可以改爲隨機獲得牌堆裏的黑色和紅色牌各一張，然後選擇一項獲得一項效果直到你的下個回合開始：1.當你失去一張黑色牌後，你隨機獲得牌堆裏的一張紅色牌；2.當你失去一張紅色牌後，你隨機獲得牌堆裏的一張黑色牌。',
+      '摸牌階段，你可以改為隨機獲得牌堆裡的黑色和紅色牌各一張，然後選擇一項獲得一項效果直到你的下個回合開始：1.當你失去一張黑色牌後，你隨機獲得牌堆裡的一張紅色牌；2.當你失去一張紅色牌後，你隨機獲得牌堆裡的一張黑色牌。',
   },
   {
     source: 'zunwei_description',
@@ -172,7 +228,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'lianhua_description',
     target:
-      '<b>鎖定技</b>，當其他角色於你的回合外受到傷害後，你獲得一枚“丹血”標記直到你的下個出牌階段開始（若其陣營與你：相同，此“丹血”爲紅色；不同，此“丹血”爲黑色。丹血的顏色對所有角色不可見）；準備階段開始時，你根據你擁有的“丹血”的數量及顏色，從牌堆和棄牌堆中獲得相應的牌各一張，以及相應的一項技能（此技能回合結束失去）：不多於3枚，【桃】和“英姿”；多於3枚且紅色較多，【無中生有】和“觀星”；多於3枚且黑色較多，【順手牽羊】和“直言”；多於3枚且紅黑數量相等，【殺】及【決鬥】，“攻心”。',
+      '<b>鎖定技</b>，當其他角色於你的回合外受到傷害後，你獲得一枚“丹血”標記直到你的下個出牌階段開始（若其陣營與你：相同，此“丹血”為紅色；不同，此“丹血”為黑色。丹血的顏色對所有角色不可見）；準備階段開始時，你根據你擁有的“丹血”的數量及顏色，從牌堆和棄牌堆中獲得相應的牌各一張，以及相應的一項技能（此技能回合結束失去）：不多於3枚，【桃】和“英姿”；多於3枚且紅色較多，【無中生有】和“觀星”；多於3枚且黑色較多，【順手牽羊】和“直言”；多於3枚且紅黑數量相等，【殺】及【決鬥】，“攻心”。',
   },
   {
     source: 'zhafu_description',
@@ -188,7 +244,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'liji_description',
     target:
-      '每回合限零次，出牌階段，你可以棄置一張牌，並對一名其他角色造成1點傷害；你的回合內，本回合進入棄牌堆的牌每達到8的倍數張時（若本回合開始時存活角色數小於5，改爲4的倍數），此技能於本回合內的使用次數上限+1。',
+      '每回合限零次，出牌階段，你可以棄置一張牌，並對一名其他角色造成1點傷害；你的回合內，本回合進入棄牌堆的牌每達到8的倍數張時（若本回合開始時存活角色數小於5，改為4的倍數），此技能於本回合內的使用次數上限+1。',
   },
 
   {
@@ -199,18 +255,47 @@ export const skillDescriptions: Word[] = [
   {
     source: 'jinzhi_description',
     target:
-      '當你需要使用或打出基本牌時，你可以棄置X張牌，然後摸一張牌，視爲使用或打出此基本牌（X爲你本輪內發動過本技能的次數+1）。',
+      '當你需要使用或打出基本牌時，你可以棄置X張牌，然後摸一張牌，視為使用或打出此基本牌（X為你本輪內發動過本技能的次數+1）。',
+  },
+
+  {
+    source: 'zhukou_description',
+    target: '當你於每回合的出牌階段內首次造成傷害後，你可以摸X張牌（X為你於本回合內使用過的牌數）。',
+  },
+  {
+    source: 'mangqing_description',
+    target:
+      '<b>覺醒技</b>，準備階段開始時，若場上已受傷的角色數大於你的體力值，你加3點體力上限並回復3點體力，然後失去技能“逐寇”，獲得技能“玉隕”。',
+  },
+  {
+    source: 'yuyun_description',
+    target:
+      '<b>鎖定技</b>，出牌階段開始時，你失去1點體力或減1點體力上限（不可減至1點以下），然後你依次選擇至多X項（X為你已損失的體力值+1）：1.摸兩張牌；2.對一名其他角色造成1點傷害，且你於本回合內對其使用【殺】無距離和次數限制；3.你於本回合內手牌上限為無限；4.棄置一名其他角色區域裡的一張牌；5.令一名角色將手牌摸至體力上限（至多摸至五張）。',
   },
 
   {
     source: 'xionghuo_description',
     target:
-      '遊戲開始時，你獲得3枚“暴戾”標記；出牌階段，你可以將你的一枚“暴戾”標記移給沒有“暴戾”標記的一名其他角色；當你對擁有“暴戾”的其他角色造成傷害時，此傷害+1；擁有“暴戾”的其他角色的出牌階段開始時，移去其所有“暴戾”標記，且其隨機執行一項：1.受到你對其造成的1點火焰傷害，其於本回合內不能對你使用【殺】；2.失去1點體力，其本回合手牌上限-1；3.令你隨機獲得其裝備區和手牌裏的各一張牌。',
+      '遊戲開始時，你獲得3枚“暴戾”標記；出牌階段，你可以將你的一枚“暴戾”標記移給沒有“暴戾”標記的一名其他角色；當你對擁有“暴戾”的其他角色造成傷害時，此傷害+1；擁有“暴戾”的其他角色的出牌階段開始時，移去其所有“暴戾”標記，且其隨機執行一項：1.受到你對其造成的1點火焰傷害，其於本回合內不能對你使用【殺】；2.失去1點體力，其本回合手牌上限-1；3.令你隨機獲得其裝備區和手牌裡的各一張牌。',
   },
   {
     source: 'shajue_description',
     target:
       '<b>鎖定技</b>，當其他角色進入瀕死狀態時，若其體力小於0，你獲得一枚“暴戾”標記，然後你獲得令其進入瀕死狀態的牌。',
+  },
+
+  {
+    source: 'shiyuan_description',
+    target:
+      '每回合每項限一次，當你成為其他角色使用牌的目標後，若其體力值：大於你，你可以摸三張牌；等於你，你可以摸兩張牌；小於你，你可以摸一張牌。',
+  },
+  {
+    source: 'dushi_description',
+    target: '<b>鎖定技</b>，若你處於瀕死流程中，其他角色不能對你使用【桃】；當你死亡時，你令一名其他角色獲得本技能。',
+  },
+  {
+    source: 'yuwei_description',
+    target: '<b>主公技</b>，<b>鎖定技</b>，其他群雄角色的回合內，你的技能“詩怨”視為“每回合每項限兩次”。',
   },
 ];
 
@@ -230,7 +315,7 @@ export const skillAudios: Word[] = [
   {
     source: '$songci:2',
     target: '汝竊國奸賊，人人得而誅之！',
-  }, 
+  },
 
   {
     source: '$shanjia:1',
@@ -247,7 +332,7 @@ export const skillAudios: Word[] = [
   },
   {
     source: '$weicheng:2',
-    target: '略施謀略，敵軍便信以爲真。',
+    target: '略施謀略，敵軍便信以為真。',
   },
   {
     source: '$daoshu:1',
@@ -294,7 +379,7 @@ export const skillAudios: Word[] = [
   },
   {
     source: '$miaoxian:1',
-    target: '女爲悅者容，士爲知己死。',
+    target: '女為悅者容，士為知己死。',
   },
   {
     source: '$miaoxian:2',
@@ -325,7 +410,7 @@ export const skillAudios: Word[] = [
   {
     source: '$qirang:2',
     target: '仙甲既來，豈無仙術乎？',
-  }, 
+  },
   {
     source: '$yuhua:1',
     target: '鳳羽飛煙，乘化仙塵。',
@@ -337,12 +422,12 @@ export const skillAudios: Word[] = [
 
   {
     source: '$wuniang:1',
-    target: '雖爲女子身，不輸男兒郎。',
+    target: '雖為女子身，不輸男兒郎。',
   },
   {
     source: '$wuniang:2',
     target: '劍舞輕影，殺場克敵。',
-  }, 
+  },
   {
     source: '$xushen:1',
     target: '救命之恩，湧泉相報。',
@@ -382,7 +467,7 @@ export const skillAudios: Word[] = [
   },
   {
     source: '$guanxing.gexuan:1',
-    target: '仙人之棲，羣星浩瀚！',
+    target: '仙人之棲，群星浩瀚！',
   },
   {
     source: '$zhafu:1',
@@ -420,11 +505,11 @@ export const skillAudios: Word[] = [
   },
   {
     source: '$jinzhi:1',
-    target: '織錦爲旗，以揚威儀。',
+    target: '織錦為旗，以揚威儀。',
   },
   {
     source: '$jinzhi:2',
-    target: '坐而織錦，立則爲儀。',
+    target: '坐而織錦，立則為儀。',
   },
 
   {
@@ -442,6 +527,81 @@ export const skillAudios: Word[] = [
   {
     source: '$shajue:2',
     target: '吾既出，必絕之！',
+  },
+
+  {
+    source: '$shiyuan:1',
+    target: '感懷詩於前，絕怨賦於後。',
+  },
+  {
+    source: '$shiyuan:2',
+    target: '漢宮楚歌起，四面無援矣。',
+  },
+  {
+    source: '$dushi:1',
+    target: '孤無病，此藥無需服。',
+  },
+  {
+    source: '$dushi:2',
+    target: '辟惡之毒，為最毒。',
+  },
+
+  {
+    source: '$lvli:1',
+    target: '此擊若中，萬念俱灰！',
+  },
+  {
+    source: '$lvli:2',
+    target: '姿器膂力，萬人之雄！',
+  },
+  {
+    source: '$choujue:1',
+    target: '家仇未報，怎可獨安？',
+  },
+  {
+    source: '$choujue:2',
+    target: '逆臣之軍，不足為懼！',
+  },
+  {
+    source: '$beishui:1',
+    target: '某若退卻半步，諸將可立斬之！',
+  },
+  {
+    source: '$beishui:2',
+    target: '效淮陰之舉，力敵數千！',
+  },
+  {
+    source: '$qingjiao:1',
+    target: '慈不掌兵，義不養財。',
+  },
+  {
+    source: '$qingjiao:2',
+    target: '清蠻夷之亂，剿不臣之賊！',
+  },
+
+  {
+    source: '$zhukou:1',
+    target: '草莽賊寇，不過如此。',
+  },
+  {
+    source: '$zhukou:2',
+    target: '輕裝上陣，利劍出鞘。',
+  },
+  {
+    source: '$mangqing:1',
+    target: '女之耽兮，不可說也。',
+  },
+  {
+    source: '$mangqing:2',
+    target: '淇水湯湯，漸車帷裳。',
+  },
+  {
+    source: '$yuyun:1',
+    target: '春依舊，人消瘦。',
+  },
+  {
+    source: '$yuyun:2',
+    target: '淚沾青衫，玉殞香消。',
   },
 ];
 
@@ -553,5 +713,35 @@ export const promptDescriptions: Word[] = [
   {
     source: '{0}: do you want to let {1} recover 1 hp?',
     target: '{0}：你可以令 {1} 回覆1點體力',
+  },
+  {
+    source: '{0}: do you want to choose two targets to deal 1 damage each?',
+    target: '{0}：你可以對兩名其他角色各造成1點傷害',
+  },
+
+  {
+    source: '{0}: please choose yuyun options',
+    target: '{0}：請選擇以下一項',
+  },
+  { source: 'yuyun:loseMaxHp', target: '減1點體力上限' },
+  { source: 'yuyun:loseHp', target: '失去1點體力' },
+
+  {
+    source: '{0}: please choose yuyun options: {1}',
+    target: '{0}：請依次選擇選擇以下選項（還剩 {1} 項）',
+  },
+  { source: 'yuyun:draw2', target: '摸兩張牌' },
+  { source: 'yuyun:damage', target: '對一名其他角色造成1點傷害，且本回合對其無限出殺' },
+  { source: 'yuyun:unlimited', target: '本回合手牌上限無限' },
+  { source: 'yuyun:discard', target: '棄置一名其他角色區域裡的一張牌' },
+  { source: 'yuyun:letDraw', target: '令一名角色將手牌摸至體力上限' },
+  {
+    source: 'yuyun: please choose a target',
+    target: '玉隕：請選擇目標角色',
+  },
+
+  {
+    source: 'dushi: please choose a target to gain this skill',
+    target: '毒逝：請選擇一名其他角色獲得本技能',
   },
 ];
