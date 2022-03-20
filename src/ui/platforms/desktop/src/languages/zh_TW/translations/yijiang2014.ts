@@ -296,19 +296,36 @@ export const skillAudios: Word[] = [
 
   {
     source: '$jianying:1',
-    target: '事須緩圖，欲速不達也。',
+    target: '良謀百出，漸定決戰勝勢。',
   },
   {
     source: '$jianying:2',
-    target: '由緩至急，循循而進。',
+    target: '佳策數成，破敵垂手可得。',
   },
   {
     source: '$shibei:1',
-    target: '命系袁氏，一心向北。',
+    target: '只有殺身士，絕無降曹夫！',
   },
   {
     source: '$shibei:2',
-    target: '矢志於北，盡忠於國！',
+    target: '心向袁氏，絕無背離可言！',
+  },
+
+  {
+    source: '$qieting:1',
+    target: '密言？哼，早已入我耳中。',
+  },
+  {
+    source: '$qieting:2',
+    target: '此子不除，久必為患！',
+  },
+  {
+    source: '$xianzhou:1',
+    target: '既是諸位之意，妾身復有何疑。',
+  },
+  {
+    source: '$xianzhou:2',
+    target: '我雖女流，亦知獻州乃為長久之計。',
   },
 ];
 
