@@ -34,7 +34,6 @@ export const characterDictionary: Word[] = [
   { source: 'duodao', target: '奪刀' },
   { source: 'anjian', target: '暗箭' },
   { source: 'zongxuan', target: '縱玄' },
-  { source: '#zongxuan', target: '縱玄' },
   { source: 'zhiyan', target: '直言' },
   { source: 'danshou', target: '膽守' },
   { source: '#danshou', target: '膽守' },
@@ -117,11 +116,12 @@ export const skillDescriptions: Word[] = [
   {
     source: 'zongxuan_description',
     target:
-      '出牌階段限一次，你可以摸一張牌並將一張牌置於牌堆頂；當你的牌因棄置而進入棄牌堆後，你可以將其中任意張牌置於牌堆頂。',
+      '當你的牌因棄置而進入棄牌堆後，你可以發動本技能，若其中有錦囊牌，你可以將其中一張錦囊牌交給一名其他角色。無論你是否以此法給出牌，你將其餘至少一張牌以任意順序置於牌堆頂。',
   },
   {
     source: 'zhiyan_description',
-    target: '結束階段開始時，你可以令一名角色摸一張牌並展示之，若此牌為裝備牌，其使用之，然後回覆1點體力。',
+    target:
+      '結束階段開始時，你可以令一名角色摸一張牌並展示之，若此牌為：基本牌，你摸一張牌；裝備牌，其使用之，然後回覆1點體力。',
   },
   {
     source: 'danshou_description',
@@ -278,19 +278,19 @@ export const skillAudios: Word[] = [
 
   {
     source: '$zongxuan:1',
-    target: '凡夫俗子，怎識得卦象玄妙。',
+    target: '天命所定，乃天數之法。',
   },
   {
     source: '$zongxuan:2',
-    target: '微妙玄通，深不可識。',
+    target: '因果迴圈，已有定數。',
   },
   {
     source: '$zhiyan:1',
-    target: '失忠與信，何以侍君！',
+    target: '此事，臣有一言要講。',
   },
   {
     source: '$zhiyan:2',
-    target: '恕臣耿直，犯顏諫諍！',
+    target: '還望將軍聽我一言。',
   },
 
   {

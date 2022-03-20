@@ -606,7 +606,7 @@ export const skillAudios: Word[] = [
     source: '$jilei:2',
     target: '曹公之意，我已了然。',
   },
- 
+
   {
     source: '$chenqing:1',
     target: '陈生死离别之苦，悲乱世之跌宕。',
@@ -618,7 +618,7 @@ export const skillAudios: Word[] = [
   {
     source: '$mozhi:1',
     target: '博闻强识，不辱才女之名。',
-  }, 
+  },
   {
     source: '$mozhi:2',
     target: '今日默书，方恨千卷诗书未能全记。',
@@ -925,7 +925,7 @@ export const skillAudios: Word[] = [
     source: '$jili:2',
     target: '看我一招，铁蒺藜骨朵！',
   },
- 
+
   {
     source: '$canshi:1',
     target: '众人，与蝼蚁何异？哼哼哼哼哼哼……',
