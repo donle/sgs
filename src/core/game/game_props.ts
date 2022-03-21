@@ -54,6 +54,16 @@ export type GameInfo = {
   coreVersion: string;
 };
 
+export type TemporaryRoomCreationInfo = {
+  numberOfPlayers: number;
+  roomName: string;
+  gameMode: GameMode;
+  passcode?: string;
+  campaignMode?: boolean;
+  characterExtensions: GameCharacterExtensions[];
+  coreVersion: string;
+};
+
 export type GameRunningInfo = {
   numberOfDrawStack: number;
   numberOfDropStack: number;

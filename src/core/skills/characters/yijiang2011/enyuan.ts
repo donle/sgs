@@ -55,6 +55,7 @@ export class EnYuan extends TriggerSkill {
           info =>
             info.toId === owner.Id &&
             info.fromId !== undefined &&
+            info.fromId !== owner.Id &&
             info.toArea === CardMoveArea.HandArea &&
             info.movingCards.length >= 2 &&
             room.getPlayerById(info.fromId).Dead === false,

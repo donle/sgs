@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { Sanguosha } from 'core/game/engine';
-import { GameCharacterExtensions } from 'core/game/game_props';
+import { GameCharacterExtensions, TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { GameMode } from 'core/shares/types/room_props';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -52,16 +52,6 @@ function getGameCharacterExtensions(translator: ClientTranslationModule) {
     disabled: extension === GameCharacterExtensions.Standard,
   }));
 }
-
-export type TemporaryRoomCreationInfo = {
-  numberOfPlayers: number;
-  roomName: string;
-  gameMode: GameMode;
-  passcode?: string;
-  campaignMode?: boolean;
-  characterExtensions: GameCharacterExtensions[];
-  coreVersion: string;
-};
 
 export const CreateRoomDialog = (props: {
   translator: ClientTranslationModule;

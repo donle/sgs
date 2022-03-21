@@ -3,6 +3,7 @@ import { AudioLoader } from 'audio_loader/audio_loader';
 import classNames from 'classnames';
 import { Sanguosha } from 'core/game/engine';
 import { GameCardExtensions } from 'core/game/game_props';
+import { TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -27,7 +28,7 @@ import styles from './lobby.module.css';
 import { AcknowledgeDialog } from './ui/acknowledge_dialog/acknowledge_dialog';
 import { Chat } from './ui/chat/chat';
 import { CreateRoomButton } from './ui/create_room_button/create_room_button';
-import { CreateRoomDialog, TemporaryRoomCreationInfo } from './ui/create_room_dialog/create_room_dialog';
+import { CreateRoomDialog } from './ui/create_room_dialog/create_room_dialog';
 import { EnterPasscodeDialog } from './ui/enter_passcode_dialog/enter_passcode_dialog';
 import { FeedbackDialog } from './ui/feedback_dialog/feedback_dialog';
 

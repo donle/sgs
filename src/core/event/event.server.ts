@@ -1,7 +1,13 @@
 import { CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
 import { CardChoosingOptions, CardId } from 'core/cards/libs/card_props';
 import { CharacterEquipSections, CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
-import { DamageType, GameCommonRuleObject, GameInfo, GameRunningInfo } from 'core/game/game_props';
+import {
+  DamageType,
+  GameCommonRuleObject,
+  GameInfo,
+  GameRunningInfo,
+  TemporaryRoomCreationInfo,
+} from 'core/game/game_props';
 import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props';
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
@@ -19,6 +25,8 @@ import {
   EventUtilities,
   GameEventIdentifiers,
   ServerEventFinder,
+  WaitingRoomEvent,
+  WaitingRoomEventUtilities,
 } from './event';
 
 export type MovingCardProps = {
@@ -506,3 +514,7 @@ export type PinDianReport = {
   pindianCardId?: CardId;
   pindianRecord: PinDianProcedure[];
 };
+
+export interface WaitingRoomServerEvent extends WaitingRoomEventUtilities {
+  [WaitingRoomEvent.GameInfoUpdate]: TemporaryRoomCreationInfo;
+}

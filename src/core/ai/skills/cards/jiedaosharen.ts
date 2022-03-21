@@ -40,7 +40,9 @@ export class JieDaoShaRenSkillTrigger extends ActiveSkillTriggerClass<JieDaoShaR
     skill: JieDaoShaRenSkill,
     skillInCard?: CardId,
   ): ClientEventFinder<GameEventIdentifiers.CardUseEvent> | undefined => {
-    const enemies = AiLibrary.sortEnemiesByRole(room, ai).filter(e => e.getEquipment(CardType.Weapon) !== undefined);
+    const enemies = AiLibrary.sortEnemiesByRole(room, ai).filter(
+      e => e.getEquipment(CardType.Weapon) !== undefined && ai.canUseCardTo(room, skillInCard!, e.Id, false),
+    );
 
     if (enemies.length === 0) {
       return;

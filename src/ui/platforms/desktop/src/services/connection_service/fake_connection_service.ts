@@ -1,7 +1,7 @@
 import { GameCardExtensions } from 'core/game/game_props';
+import { TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { RoomId } from 'core/room/room';
 import { ChatSocketEvent } from 'core/shares/types/server_types';
-import { TemporaryRoomCreationInfo } from 'pages/lobby/ui/create_room_dialog/create_room_dialog';
 import { ClientConfig, ServerHostTag } from 'props/config_props';
 import SocketIOClient from 'socket.io-client';
 import {

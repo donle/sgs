@@ -23,7 +23,7 @@ export class GuJu extends TriggerSkill {
 
   public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
     await room.drawCards(1, event.fromId, 'top', event.fromId, this.Name);
-    const originalTimes = room.getFlag<number>(event.fromId, MarkEnum.Kui) || 0;
+    const originalTimes = room.getFlag<number>(event.fromId, this.Name) || 0;
     room.setFlag<number>(
       event.fromId,
       this.Name,

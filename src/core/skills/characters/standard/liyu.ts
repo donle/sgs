@@ -26,7 +26,7 @@ export class LiYu extends TriggerSkill {
     const to = room.getPlayerById(content.toId);
     const cards = to.getCardIds();
 
-    return owner.Id === content.fromId && cards.length > 0;
+    return owner.Id === content.fromId && content.toId !== owner.Id && cards.length > 0;
   }
 
   public async onTrigger(): Promise<boolean> {
