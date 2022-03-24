@@ -55,7 +55,7 @@ export class PveHuaShen extends TriggerSkill {
 
   private async nextEntity(room: Room, ownerId: PlayerId) {
     const level = PveHuaShen.CHARACTERS.length - room.getMark(ownerId, MarkEnum.PveHuaShen);
-    const NewMaxHp = room.getPlayerById(ownerId).MaxHp + 1;
+    const NewMaxHp = room.getFlag(ownerId, PveHuaShen.pveHardMode)?room.getPlayerById(ownerId).MaxHp + 3:room.getPlayerById(ownerId).MaxHp + 1;
     const chara = PveHuaShen.CHARACTERS[level];
     room.addMark(ownerId, MarkEnum.PveHuaShen, -1);
 
@@ -120,11 +120,12 @@ export class PveHuaShen extends TriggerSkill {
     await room.obtainSkill(ownerId, PveTanSuo.Name);
 
     if (room.getMark(ownerId, MarkEnum.PveHuaShen) === 0) {
+      if (!room.getFlag(ownerId, PveHuaShen.pveHardMode)) {
       await room.loseSkill(
         ownerId,
         !room.getFlag(ownerId, PveHuaShen.pveHardMode) ? charaSkills[1].GeneralName : charaSkills[0].GeneralName,
         true,
-      );
+      );}
     } else if (charaSkills.length > 1) {
       await room.loseSkill(ownerId, skill.GeneralName, true);
     }
@@ -145,7 +146,6 @@ export class PveHuaShen extends TriggerSkill {
     if (identifier === GameEventIdentifiers.GameStartEvent) {
       room.addMark(event.fromId, MarkEnum.PveHuaShen, PveHuaShen.CHARACTERS.length);
       await this.nextEntity(room, event.fromId);
-
       room.AlivePlayers.filter(player => player.Id !== event.fromId).forEach(player =>
         room.changePlayerProperties({
           changedProperties: [
@@ -155,8 +155,12 @@ export class PveHuaShen extends TriggerSkill {
               hp: player.Character.Hp + 1,
             },
           ],
-        }),
+        }), 
       );
+      const otherPlayers = room.AlivePlayers.filter(player => player.Id !== event.fromId);
+      for (const player of otherPlayers) {
+        await room.obtainSkill(player.Id, 'pve_pyjiaoyi');
+      }
     } else {
       const { triggeredOnEvent } = event;
       EventPacker.terminate(triggeredOnEvent!);
@@ -165,7 +169,7 @@ export class PveHuaShen extends TriggerSkill {
       for (const player of otherPlayers) {
         await room.recover({ recoverBy: event.fromId, recoveredHp: 1, toId: player.Id });
         await room.drawCards(2, player.Id, 'top');
-        if (room.getMark(event.fromId, MarkEnum.PveHuaShen) === 1) {
+        if (room.getMark(event.fromId, MarkEnum.PveHuaShen) === 4) {
           const bossaskForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
             options: [PveHuaShen.pveEasyMode, PveHuaShen.pveHardMode],
             toId: player.Id,
@@ -223,7 +227,7 @@ export class PveHuaShen extends TriggerSkill {
         );
 
         await room.obtainSkill(player.Id, selectedOption!, true);
-        if (room.getMark(event.fromId, MarkEnum.PveHuaShen) !== 0) {
+        if (room.getMark(event.fromId, MarkEnum.PveHuaShen) === -10) {
           const trcard = Sanguosha.getCardNameByType(
             types => types.includes(CardType.Trick) || types.includes(CardType.Basic) || types.includes(CardType.Equip),
           );

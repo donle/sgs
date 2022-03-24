@@ -23,6 +23,19 @@ export const characterDictionary: Word[] = [
   { source: 'pve_lige', target: '离歌' },
   { source: 'pve_bibao', target: '必报' },
   { source: 'pve_tansuo', target: '探索' },
+  { source: 'pve_beifa', target: '北伐' },
+  { source: 'pve_beifa times: {0}', target: '北[{0}]' },
+  { source: 'pve_buxu', target: '不许' },
+  { source: 'pve_buxu times: {0}', target: '不[{0}]' },
+  { source: 'pve_dudu', target: '都督' },
+  { source: 'pve_dudu times: {0}', target: '都[{0}]' },
+  { source: 'pve_feihua', target: '废话' },
+  { source: 'pve_feihua times: {0}', target: '废[{0}]' },
+  { source: 'pve_chengxiang', target: '丞相' },
+  { source: 'pve_chengxiang times: {0}', target: '丞[{0}]' },
+  { source: 'pve_zhibing', target: '知兵' },
+  { source: 'pve_zhibing times: {0}', target: '知[{0}]' },
+  { source: 'pve_pyjiaoyi', target: '交易' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -34,7 +47,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_longlin_description',
     target:
-      '<b>锁定技</b>，锁定技，准备阶段开始时，若你的装备区：没有武器，你摸两张牌，没有防具，你摸两张牌，没有宝具，你摸两张牌；摸牌阶段开始时，你额外摸装备区花色数张牌；当你使用装备牌时，若你已受伤，你回复两点体力并摸一张牌，若你未受伤，你增加一点体力上限并摸三张牌。',
+      '<b>锁定技</b>，准备阶段开始时，若你的装备区：没有武器，你摸两张牌，没有防具，你摸两张牌，没有宝具，你摸两张牌；摸牌阶段开始时，你额外摸装备区花色数张牌；当你使用装备牌时，若你已受伤，你回复两点体力并摸一张牌，若你未受伤，你增加一点体力上限并摸三张牌。',
   },
   {
     source: 'pve_ruiyan_description',
@@ -91,7 +104,42 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_tansuo_description',
     target:
-      '<b>锁定技</b>，第四关及之后，玩家使用牌有概率触发机关（此牌点数越高几率越大）或奇遇宝物。玩家初始强化【桃】且玩家共用强化池',
+      '<b>锁定技</b>，第四关及之后，玩家使用牌有概率触发机关（此牌点数越高几率越大且随着每回合使用次数提高）或奇遇宝物。玩家共用强化池',
+  },
+  {
+    source: 'pve_beifa_description',
+    target:
+      '<b>锁定技</b>，你失去最后一张牌时，令一名角色失去X点体力。（X为此技能等级）',
+  },
+  {
+    source: 'pve_buxu_description',
+    target:
+      '<b>锁定技</b>，BOSS回合内其使用的前X张牌对你无效。（X为此技能等级）',
+  },
+  {
+    source: 'pve_dudu_description',
+    target:
+      '出牌阶段限一次，你摸1张牌。（升级多摸两张）',
+  },
+  {
+    source: 'pve_feihua_description',
+    target:
+      '<b>锁定技</b>，你触发减少触发机关概率等级越高提升越大',
+  },
+  {
+    source: 'pve_chengxiang_description',
+    target:
+      '<b>锁定技</b>，出牌阶段结束时，你随机回复1-3点体力。（升级提升1点回复。）',
+  },
+  {
+    source: 'pve_zhibing_description',
+    target:
+      '出牌阶段限一次，对一名角色造成随机1-3点伤害。（升级提升1点伤害上限）',
+  },
+  {
+    source: 'pve_pyjiaoyi_description',
+    target:
+      '限一次,通关后次数+1，出牌阶段，你可以和BOSS进行一次交易，牺牲一些代价获得宝物或者升级宝物。',
   },
 ];
 
@@ -119,7 +167,7 @@ export const promptDescriptions: Word[] = [
   },
   {
     source: 'pve_huashen: please announce a boss',
-    target: '请选择最终BOSS难度',
+    target: '请选择关卡难度',
   },
   {
     source: 'pve_huashen:choose a role losehp 1',
@@ -128,6 +176,14 @@ export const promptDescriptions: Word[] = [
   {
     source: 'pve_huashen:choose a role damage',
     target: '选择一名角色，对其造成伤害。',
+  },
+  {
+    source: 'pve_pyjiaoyi: A dirty deal1',
+    target: '交给BOSS，你1点体力上限。',
+  },
+  {
+    source: 'pve_pyjiaoyi: A dirty deal2',
+    target: '交给BOSS，全部手牌（至少1张）。',
   },
 ];
 export const eventDictionary: Word[] = [

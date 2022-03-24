@@ -621,3 +621,4 @@ export { PveQinLv } from './game_mode/pve/pve_qinlv';
 export { PveJieNu } from './game_mode/pve/pve_jienu';
 export { PveBiBao } from './game_mode/pve/pve_bibao';
 export { PveTanSuo, PveTanSuoShow } from './game_mode/pve/pve_tansuo';
+export { PveBeiFa,PveBuXu,PveChengXiang,PveDuDu,PveFeiHua,PvePyJiaoYi,PveZhiBing,} from './game_mode/pve/pve_jiangliskill';
