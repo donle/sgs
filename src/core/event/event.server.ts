@@ -517,4 +517,35 @@ export type PinDianReport = {
 
 export interface WaitingRoomServerEvent extends WaitingRoomEventUtilities {
   [WaitingRoomEvent.GameInfoUpdate]: TemporaryRoomCreationInfo;
+  [WaitingRoomEvent.PlayerChatMessage]: {
+    fromId: PlayerId;
+    messageContent: string;
+    timestamp: number;
+  };
+  [WaitingRoomEvent.GameStart]: {
+    hostId: PlayerId;
+    roomId: string;
+    otherPlayersId: PlayerId[];
+    roomInfo: TemporaryRoomCreationInfo;
+  };
+  [WaitingRoomEvent.PlayerEnter]: {
+    playerId: { playerId: PlayerId; avatarId: number };
+    otherPlayersInfo: { playerId: PlayerId; avatarId: number }[];
+    roomInfo: TemporaryRoomCreationInfo;
+  };
+  [WaitingRoomEvent.PlayerLeave]: {
+    leftPlayerId: PlayerId;
+  };
+  [WaitingRoomEvent.PlayerReady]: {
+    readyPlayerId: PlayerId;
+  };
+  [WaitingRoomEvent.PlayerUnready]: {
+    readyPlayerId: PlayerId;
+  };
+  [WaitingRoomEvent.SeatDisabled]: {
+    seatId: number;
+  };
+  [WaitingRoomEvent.SeatEnabled]: {
+    seatId: number;
+  };
 }

@@ -1,4 +1,5 @@
 import { CardMatcherSocketPassenger } from 'core/cards/libs/card_matcher';
+import { CharacterId } from 'core/characters/character';
 import { PlayerId, PlayerRole } from 'core/player/player_props';
 import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
@@ -60,6 +61,9 @@ export type TemporaryRoomCreationInfo = {
   gameMode: GameMode;
   passcode?: string;
   campaignMode?: boolean;
+  excludedCharacters?: CharacterId[];
+  playingTimeLimit?: number;
+  wuxiekejiTimeLimit?: number;
   characterExtensions: GameCharacterExtensions[];
   coreVersion: string;
 };

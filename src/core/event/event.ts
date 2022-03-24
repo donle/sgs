@@ -1,7 +1,7 @@
 import { PlayerId } from 'core/player/player_props';
 import { PatchedTranslationObject } from 'core/translations/translation_json_tool';
-import { ClientEvent } from './event.client';
-import { ServerEvent } from './event.server';
+import { ClientEvent, WaitingRoomClientEvent } from './event.client';
+import { ServerEvent, WaitingRoomServerEvent } from './event.server';
 
 export const enum GameEventIdentifiers {
   UserMessageEvent = 100,
@@ -302,6 +302,7 @@ export type ServerEventFinder<I extends GameEventIdentifiers> = BaseGameEvent & 
 export const enum WaitingRoomEvent {
   SeatDisabled = 'SeatDisabled',
   SeatEnabled = 'SeatEnabled',
+  PlayerChatMessage = 'PlayerChatMessage',
   GameInfoUpdate = 'GameInfoUpdate',
   PlayerEnter = 'PlayerEnter',
   PlayerLeave = 'PlayerLeave',
@@ -319,6 +320,21 @@ export const waitingRoomEventsList = [
   WaitingRoomEvent.PlayerReady,
   WaitingRoomEvent.PlayerUnready,
   WaitingRoomEvent.GameStart,
+  WaitingRoomEvent.PlayerChatMessage,
 ];
 
 export type WaitingRoomEventUtilities<Event extends object = object> = Record<WaitingRoomEvent, Event>;
+export type WaitingRoomClientEventFinder<I extends WaitingRoomEvent> = WaitingRoomClientEvent[I];
+export type WaitingRoomServerEventFinder<I extends WaitingRoomEvent> = WaitingRoomServerEvent[I];
+
+export const clientActiveWaitingRoomListeningEvents = [
+  WaitingRoomEvent.GameInfoUpdate,
+  WaitingRoomEvent.GameStart,
+  WaitingRoomEvent.PlayerChatMessage,
+  WaitingRoomEvent.PlayerEnter,
+  WaitingRoomEvent.PlayerLeave,
+  WaitingRoomEvent.PlayerReady,
+  WaitingRoomEvent.PlayerUnready,
+  WaitingRoomEvent.SeatDisabled,
+  WaitingRoomEvent.SeatEnabled,
+];
