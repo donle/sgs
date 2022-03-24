@@ -49,10 +49,13 @@ export class PveTanSuo extends TriggerSkill {
     const longshen = room.getPlayerById(event.fromId);
     const longshenlv = PveHuaShen.CHARACTERS.length - room.getMark(longshen.Id, MarkEnum.PveHuaShen);
     const cardup = longshen.getFlag<string[]>(this.GeneralName) || [];
+    const feihua = room.getPlayerById(fromId).getFlag<number>('pve_feihua') || 0;
     const cardNumber = Sanguosha.getCardById(cardId).CardNumber;
-    const encounter = Math.floor(Math.random() * 200 + 1);
+    const encounter = !room.getFlag(event.fromId, PveHuaShen.pveHardMode)
+      ? Math.floor(Math.random() * 350 + 1)
+      : Math.floor(Math.random() * 200 + 1);
     const cardcounter = room.Analytics.getCardUseRecord(fromId, 'round').length;
-    if (cardNumber > encounter / cardcounter) {
+    if (cardNumber - feihua > encounter / cardcounter) {
       room.broadcast(GameEventIdentifiers.CustomGameDialog, {
         translationsMessage: TranslationPack.translationJsonPatcher(
           '{0} ouyujiguan',
@@ -67,10 +70,10 @@ export class PveTanSuo extends TriggerSkill {
         damageType: DamageType.Normal,
         triggeredBySkills: [this.Name],
       });
-      if (encounter / cardcounter >= 13 || encounter / cardcounter <= 14) {
+      if (encounter / cardcounter - feihua >= 10 && encounter / cardcounter - feihua <= 16) {
         await room.changeMaxHp(fromId, -1);
       }
-      if (cardNumber / (encounter / cardcounter) > 4) {
+      if (cardNumber - feihua / (encounter / cardcounter) > 2) {
         room.broadcast(GameEventIdentifiers.CustomGameDialog, {
           translationsMessage: TranslationPack.translationJsonPatcher(
             '{0} ouyujiguan',
@@ -80,7 +83,7 @@ export class PveTanSuo extends TriggerSkill {
         await room.loseHp(fromId, damage);
       }
     }
-    if ((encounter >= 18 && encounter < 25) || (encounter >= 1 && encounter < 5)) {
+    if ((encounter >= 30 && encounter < 40) || (encounter >= 1 && encounter < 5)) {
       room.broadcast(GameEventIdentifiers.CustomGameDialog, {
         translationsMessage: TranslationPack.translationJsonPatcher(
           '{0} qiyubaowu',
@@ -101,7 +104,7 @@ export class PveTanSuo extends TriggerSkill {
         this.treasure = 0;
         if (cardup.length < 9) {
           const trcard = Sanguosha.getCardNameByType(
-            types => types.includes(CardType.Trick) || types.includes(CardType.Basic) || types.includes(CardType.Equip),
+            types => types.includes(CardType.Trick) || types.includes(CardType.Basic),
           );
           const upcard = Math.floor(Math.random() * 4 + 1);
           const options = [

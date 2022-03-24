@@ -636,3 +636,12 @@ export { PveClassicTianLiang } from './game_mode/pve/pve_classic_tianliang';
 export { PveClassicTianTong } from './game_mode/pve/pve_classic_tiantong';
 export { PveClassicTianXiang } from './game_mode/pve/pve_classic_tianxiang';
 export { PveClassicLianZhen, PveClassicLianZhenBuf } from './game_mode/pve/pve_classic_lianzhen';
+export {
+  PveBeiFa,
+  PveBuXu,
+  PveChengXiang,
+  PveDuDu,
+  PveFeiHua,
+  PvePyJiaoYi,
+  PveZhiBing,
+} from './game_mode/pve/pve_jiangliskill';
