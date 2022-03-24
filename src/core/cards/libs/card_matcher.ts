@@ -92,7 +92,10 @@ export class CardMatcher {
           const allNames = cardMatcher.generalName.reduce<string[]>((target, currentGeneralName) => {
             if (this.generalNameMaps[currentGeneralName]) {
               target.push(...this.generalNameMaps[currentGeneralName]);
+            } else {
+              target.push(currentGeneralName);
             }
+
             return target;
           }, []);
 

@@ -1,4 +1,5 @@
 import { Card, CardType, VirtualCard } from 'core/cards/card';
+import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { GameEventIdentifiers, ServerEventFinder, WorkPlace } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
@@ -19,8 +20,12 @@ export class JianYing extends ViewAsSkill {
     return phase === PlayerPhase.PhaseBegin && room.CurrentPlayer.Id === owner.Id;
   }
 
+  private canUseBasicCard(room: Room, owner: Player) {
+    return owner.canUseCard(room, new CardMatcher({ generalName: ['slash', 'jink', 'alcohol'] }));
+  }
+
   public canUse(room: Room, owner: Player): boolean {
-    return !owner.hasUsedSkill(this.Name) && owner.getPlayerCards().length > 0;
+    return !owner.hasUsedSkill(this.Name) && this.canUseBasicCard(room, owner) && owner.getPlayerCards().length > 0;
   }
 
   public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
