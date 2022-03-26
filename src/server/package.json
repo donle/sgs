@@ -24,7 +24,7 @@
   "scripts": {
     "patch": "ts-node ../pre_release.ts",
     "dev:watch": "NODE_PATH=../ nodemon",
-    "dev": "NODE_PATH=../ ts-node -P ./tsconfig.server.json ./main.ts",
+    "dev": "yarn build && NODE_PATH=./build node ./build/server/main.js",
     "build": "NODE_PATH=../ tsc -p ./tsconfig.server.json",
     "dev:win": "cross-env NODE_PATH=../ ts-node -P ./tsconfig.server.json ./main.ts",
     "dev:win:watch": "cross-env NODE_PATH=../ nodemon",
