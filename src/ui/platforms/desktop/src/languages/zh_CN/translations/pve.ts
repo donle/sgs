@@ -23,6 +23,7 @@ export const characterDictionary: Word[] = [
   { source: 'pve_lige', target: '离歌' },
   { source: 'pve_bibao', target: '必报' },
   { source: 'pve_tansuo', target: '探索' },
+  { source: 'pve_soldier', target: '风瑶军' },
 ];
 
 export const skillDescriptions: Word[] = [

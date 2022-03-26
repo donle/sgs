@@ -3,6 +3,7 @@ import { GameProcessor } from 'core/game/game_processor/game_processor';
 import { OneVersusTwoGameProcessor } from 'core/game/game_processor/game_processor.1v2';
 import { TwoVersusTwoGameProcessor } from 'core/game/game_processor/game_processor.2v2';
 import { PveGameProcessor } from 'core/game/game_processor/game_processor.pve';
+import { PveClassicGameProcessor } from 'core/game/game_processor/game_processor.pve_classic';
 import { StandardGameProcessor } from 'core/game/game_processor/game_processor.standard';
 import { GameInfo } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
@@ -87,11 +88,17 @@ class App {
     socket.emit(LobbySocketEvent.PingServer.toString());
   };
 
-  private readonly createDifferentModeGameProcessor = (gameMode: GameMode): GameProcessor => {
-    this.logger.debug('game mode is ' + gameMode);
-    switch (gameMode) {
+  private readonly createDifferentModeGameProcessor = (content: GameInfo): GameProcessor => {
+    this.logger.debug('game mode is ' + content.gameMode);
+    switch (content.gameMode) {
       case GameMode.Pve:
-        return new PveGameProcessor(new StageProcessor(this.logger), this.logger);
+        if ([2, 3].includes(content.numberOfPlayers)) {
+          return new PveGameProcessor(new StageProcessor(this.logger), this.logger);
+        } else if ([4, 5].includes(content.numberOfPlayers)) {
+          return new PveClassicGameProcessor(new StageProcessor(this.logger), this.logger);
+        } else {
+          throw new Error('Pve Player Number Abnormal ');
+        }
       case GameMode.OneVersusTwo:
         return new OneVersusTwoGameProcessor(new StageProcessor(this.logger), this.logger);
       case GameMode.TwoVersusTwo:
@@ -116,7 +123,7 @@ class App {
       roomId,
       content,
       roomSocket,
-      this.createDifferentModeGameProcessor(content.gameMode),
+      this.createDifferentModeGameProcessor(content),
       new RecordAnalytics(),
       [],
       this.config.mode,
