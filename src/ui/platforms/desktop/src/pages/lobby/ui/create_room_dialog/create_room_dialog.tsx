@@ -85,8 +85,7 @@ export const CreateRoomDialog = (props: {
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    /* const isCampaignMode = checkedGameMode === GameMode.Pve && numberOfPlayers === 2; */
-    const isCampaignMode = false;
+    const isCampaignMode = checkedGameMode === GameMode.Pve && numberOfPlayers === 2;
     props.onSubmit({
       numberOfPlayers,
       roomName,
