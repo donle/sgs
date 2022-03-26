@@ -1000,6 +1000,10 @@ export abstract class Player implements PlayerInfo {
     this.dead = true;
   }
 
+  public revive() {
+    this.dead = false;
+  }
+
   public getPlayerInfo(): PlayerInfo {
     return {
       Id: this.playerId,

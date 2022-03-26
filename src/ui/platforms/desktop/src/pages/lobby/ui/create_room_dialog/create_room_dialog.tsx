@@ -112,6 +112,8 @@ export const CreateRoomDialog = (props: {
     if (playerSelectionSwitch) {
       options.push({ content: TranslationPack.translationJsonPatcher('one player').extract(), value: 2 });
       options.push({ content: TranslationPack.translationJsonPatcher('two players').extract(), value: 3 });
+      options.push({ content: TranslationPack.translationJsonPatcher('pve classic one players').extract(), value: 3 });
+      options.push({ content: TranslationPack.translationJsonPatcher('pve classic two players').extract(), value: 4 });
     } else {
       for (let i = 2; i <= 8; i++) {
         options.push({ content: TranslationPack.translationJsonPatcher('{0} players', i).extract(), value: i });

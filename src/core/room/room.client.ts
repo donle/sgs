@@ -328,6 +328,10 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     deadPlayer.bury();
   }
 
+  public async revive(deadPlayer: Player): Promise<void> {
+    deadPlayer.revive();
+  }
+
   public emitStatus(status: 'offline' | 'online' | 'quit' | 'trusted' | 'player', toId: PlayerId) {
     this.broadcast(GameEventIdentifiers.PlayerStatusEvent, { status, toId });
   }

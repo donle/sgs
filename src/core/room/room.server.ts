@@ -674,6 +674,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       property.hp !== undefined && (player.Hp = property.hp);
       property.nationality !== undefined && (player.Nationality = property.nationality);
       property.gender !== undefined && (player.Gender = property.gender);
+      property.revive !== undefined && property.revive && player.Dead && player.revive();
       if (property.playerPosition !== undefined) {
         player.Position = property.playerPosition;
         player === this.CurrentPlayer && (newCurrentPlayerPosition = property.playerPosition);

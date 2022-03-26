@@ -2,6 +2,7 @@ import { GameProcessor } from 'core/game/game_processor/game_processor';
 import { OneVersusTwoGameProcessor } from 'core/game/game_processor/game_processor.1v2';
 import { TwoVersusTwoGameProcessor } from 'core/game/game_processor/game_processor.2v2';
 import { PveGameProcessor } from 'core/game/game_processor/game_processor.pve';
+import { PveClassicGameProcessor } from 'core/game/game_processor/game_processor.pve_classic';
 import { StandardGameProcessor } from 'core/game/game_processor/game_processor.standard';
 import { GameCardExtensions } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
@@ -24,10 +25,20 @@ export class CampaignService {
   } = {};
   constructor(private logger: ClientLogger, private flavor: ClientFlavor) {}
 
-  private readonly createDifferentModeGameProcessor = (gameMode: GameMode): GameProcessor => {
-    switch (gameMode) {
+  private readonly createDifferentModeGameProcessor = (
+    roomInfo: {
+      cardExtensions: GameCardExtensions[];
+    } & TemporaryRoomCreationInfo,
+  ): GameProcessor => {
+    switch (roomInfo.gameMode) {
       case GameMode.Pve:
-        return new PveGameProcessor(new StageProcessor(this.logger), this.logger);
+        if ([2, 3].includes(roomInfo.numberOfPlayers)) {
+          return new PveGameProcessor(new StageProcessor(this.logger), this.logger);
+        } else if ([4, 5].includes(roomInfo.numberOfPlayers)) {
+          return new PveClassicGameProcessor(new StageProcessor(this.logger), this.logger);
+        } else {
+          throw new Error('Pve Player Number Abnormal ');
+        }
       case GameMode.OneVersusTwo:
         return new OneVersusTwoGameProcessor(new StageProcessor(this.logger), this.logger);
       case GameMode.TwoVersusTwo:
@@ -54,8 +65,8 @@ export class CampaignService {
         campaignMode: !!roomInfo.campaignMode,
         flavor: this.flavor === ClientFlavor.Dev ? Flavor.Dev : Flavor.Prod,
       },
-      (socket as unknown) as ServerSocket,
-      this.createDifferentModeGameProcessor(roomInfo.gameMode),
+      socket as unknown as ServerSocket,
+      this.createDifferentModeGameProcessor(roomInfo),
       new RecordAnalytics(),
       [],
       this.flavor === ClientFlavor.Dev ? Flavor.Dev : Flavor.Prod,

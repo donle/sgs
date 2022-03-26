@@ -835,6 +835,7 @@ export class GameClientProcessor {
       handCards,
       equips,
       playerPosition,
+      revive,
     } of changedProperties) {
       const player = this.store.room.getPlayerById(toId);
       characterId !== undefined && (player.CharacterId = characterId);
@@ -842,6 +843,7 @@ export class GameClientProcessor {
       hp !== undefined && (player.Hp = hp);
       nationality !== undefined && (player.Nationality = nationality);
       gender !== undefined && (player.Gender = gender);
+      revive !== undefined && revive && player.Dead && this.store.room.revive(player);
       playerPosition !== undefined && (player.Position = playerPosition);
 
       if (handCards !== undefined) {
