@@ -85,7 +85,8 @@ export const CreateRoomDialog = (props: {
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const isCampaignMode = checkedGameMode === GameMode.Pve && numberOfPlayers === 2;
+    /* const isCampaignMode = checkedGameMode === GameMode.Pve && numberOfPlayers === 2; */
+    const isCampaignMode = false;
     props.onSubmit({
       numberOfPlayers,
       roomName,
@@ -112,8 +113,8 @@ export const CreateRoomDialog = (props: {
     if (playerSelectionSwitch) {
       options.push({ content: TranslationPack.translationJsonPatcher('one player').extract(), value: 2 });
       options.push({ content: TranslationPack.translationJsonPatcher('two players').extract(), value: 3 });
-      options.push({ content: TranslationPack.translationJsonPatcher('pve classic one players').extract(), value: 3 });
-      options.push({ content: TranslationPack.translationJsonPatcher('pve classic two players').extract(), value: 4 });
+      options.push({ content: TranslationPack.translationJsonPatcher('pve classic one players').extract(), value: 4 });
+      options.push({ content: TranslationPack.translationJsonPatcher('pve classic two players').extract(), value: 5 });
     } else {
       for (let i = 2; i <= 8; i++) {
         options.push({ content: TranslationPack.translationJsonPatcher('{0} players', i).extract(), value: i });

@@ -23,18 +23,19 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
     for (let i = 0; i < players.length; i++) {
       players[i].Role = players[i].isSmartAI() ? PlayerRole.Rebel : PlayerRole.Loyalist;
     }
+    // todo: sort seat
   }
 
   protected async chooseCharacters(playersInfo: PlayerInfo[], selectableCharacters: Character[]) {
-    // link to
-
-    const bossInfo = playersInfo.find(info => this.room.getPlayerById(info.Id).isSmartAI())!;
     const bossCharacter = Sanguosha.getCharacterByCharaterName('pve_soldier');
-    const bossPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
-      changedProperties: [{ toId: bossInfo.Id, characterId: bossCharacter.Id }],
-    };
-
-    this.room.changePlayerProperties(bossPropertiesChangeEvent);
+    const bossInfos = playersInfo.filter(info => this.room.getPlayerById(info.Id).isSmartAI());
+    for (let i = 0; i < bossInfos.length; i++) {
+      console.log(bossInfos[i]);
+      const bossPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
+        changedProperties: [{ toId: bossInfos[i].Id, characterId: bossCharacter.Id, playerPosition: i }],
+      };
+      this.room.changePlayerProperties(bossPropertiesChangeEvent);
+    }
 
     const otherPlayersInfo = playersInfo.filter(info => !this.room.getPlayerById(info.Id).isSmartAI())!;
 
@@ -124,13 +125,6 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
         };
 
         this.room.changePlayerProperties(bossPropertiesChangeEvent);
-
-        // console.log('create revive event for ' + deadPlayer.Id);
-        // const bossReviveEvent: ServerEventFinder<GameEventIdentifiers.PlayerReviveEvent> = {
-        //   playerId: deadPlayer.Id,
-        // };
-
-        // this.room.revivePlayer(bossReviveEvent);
       }
     });
 

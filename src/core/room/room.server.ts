@@ -105,7 +105,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   private initAIPlayers() {
-    if (this.gameMode === GameMode.Pve && this.Players.length === 0) {
+    if (this.gameMode === GameMode.Pve && [4, 5].includes(this.gameInfo.numberOfPlayers)) {
+      for (var i = 0; i < 3; i++) {
+        const fakePlayer = new SmartPlayer(this.Players.length, this.gameMode);
+        this.addPlayer(fakePlayer);
+      }
+    } else if (this.gameMode === GameMode.Pve) {
       const fakePlayer = new SmartPlayer(this.Players.length, this.gameMode);
       this.addPlayer(fakePlayer);
     }
