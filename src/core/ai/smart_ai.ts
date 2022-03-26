@@ -313,7 +313,7 @@ export class SmartAI extends PlayerAI {
     const to = room.getPlayerById(toId);
     if (!AiLibrary.areTheyFriendly(from, to, room.Info.gameMode)) {
       return {
-        fromId: content.toId,
+        fromId: content.fromId,
       };
     }
 
@@ -325,7 +325,7 @@ export class SmartAI extends PlayerAI {
     const alcoholCard = rescueCards.find(cardId => Sanguosha.getCardById(cardId).GeneralName === 'alcohol');
 
     const usePeach: ClientEventFinder<T> = {
-      fromId: content.toId,
+      fromId: content.fromId,
       cardId: alcoholCard || rescueCards[0],
     };
     return usePeach;
