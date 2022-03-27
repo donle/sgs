@@ -529,12 +529,13 @@ export interface WaitingRoomServerEvent extends WaitingRoomEventUtilities {
     roomInfo: TemporaryRoomCreationInfo;
   };
   [WaitingRoomEvent.PlayerEnter]: {
-    playerId: { playerId: PlayerId; avatarId: number };
-    otherPlayersInfo: { playerId: PlayerId; avatarId: number }[];
+    playerId: { playerId: PlayerId; avatarId: number; seatId: number };
+    otherPlayersInfo: { playerId: PlayerId; avatarId: number; seatId: number }[];
     roomInfo: TemporaryRoomCreationInfo;
   };
   [WaitingRoomEvent.PlayerLeave]: {
     leftPlayerId: PlayerId;
+    seatId: number;
   };
   [WaitingRoomEvent.PlayerReady]: {
     readyPlayerId: PlayerId;
@@ -547,5 +548,9 @@ export interface WaitingRoomServerEvent extends WaitingRoomEventUtilities {
   };
   [WaitingRoomEvent.SeatEnabled]: {
     seatId: number;
+  };
+  [WaitingRoomEvent.RoomCreated]: {
+    roomId: number;
+    roomInfo: TemporaryRoomCreationInfo;
   };
 }

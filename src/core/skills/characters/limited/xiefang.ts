@@ -11,6 +11,6 @@ export class XieFang extends RulesBreakerSkill {
   }
 
   public breakOffenseDistance(room: Room, owner: Player): number {
-    return room.getAllPlayersFrom().filter(player => player.Gender === CharacterGender.Female).length;
+    return room.AlivePlayers.filter(player => player.Gender === CharacterGender.Female).length;
   }
 }

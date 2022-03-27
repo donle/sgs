@@ -1,4 +1,5 @@
 import { getAudioLoader } from 'audio_loader/audio_loader_util';
+import { Sanguosha } from 'core/game/engine';
 import { ClientLogger } from 'core/shares/libs/logger/client_logger';
 import { Flavor } from 'core/shares/types/host_config';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -45,7 +46,7 @@ export class App extends React.PureComponent<{
   // }
   componentDidMount() {
     // this.getSkinData();
-    document.title = this.props.translator.tr('New QSanguosha');
+    document.title = this.props.translator.tr('New QSanguosha') + ' - ' + Sanguosha.Version;
     installEventEmitter();
   }
 
