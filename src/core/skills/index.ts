@@ -621,3 +621,4 @@ export { PveQinLv } from './game_mode/pve/pve_qinlv';
 export { PveJieNu } from './game_mode/pve/pve_jienu';
 export { PveBiBao } from './game_mode/pve/pve_bibao';
 export { PveTanSuo, PveTanSuoShow } from './game_mode/pve/pve_tansuo';
+export { PveClassicGu, PveClassicGuShadow } from './game_mode/pve/pve_classic_human';
