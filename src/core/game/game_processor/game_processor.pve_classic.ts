@@ -19,11 +19,14 @@ import { VirtualCard } from 'core/cards/card';
 
 export class PveClassicGameProcessor extends StandardGameProcessor {
   public assignRoles(players: Player[]) {
-    console.log('log can use');
+    const ais = players.filter(player => player.isSmartAI());
+    const humans = players.filter(player => !player.isSmartAI());
+    players = [...ais, ...humans];
     for (let i = 0; i < players.length; i++) {
+      console.log(`player ${i} is ${players[i].Id}`);
       players[i].Role = players[i].isSmartAI() ? PlayerRole.Rebel : PlayerRole.Loyalist;
+      players[i].Position = i;
     }
-    // todo: sort seat
   }
 
   protected async chooseCharacters(playersInfo: PlayerInfo[], selectableCharacters: Character[]) {
