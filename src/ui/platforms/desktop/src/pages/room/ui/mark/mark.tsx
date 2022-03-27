@@ -35,6 +35,15 @@ import houtuIcon from './images/houtu.png';
 import yuqingIcon from './images/yuqing.png';
 import gouchenIcon from './images/gouchen.png';
 
+import pveClassicGuIcon from './images/pve_classic_gu.png';
+import pveClassicHeIcon from './images/pve_classic_he.png';
+import pveClassicJianIcon from './images/pve_classic_jian.png';
+import pveClassicJiIcon from './images/pve_classic_ji.png';
+import pveClassicXiIcon from './images/pve_classic_xi.png';
+import pveClassicYingIcon from './images/pve_classic_ying.png';
+import pveClassicYuIcon from './images/pve_classic_yu.png';
+import pveClassicZhiIcon from './images/pve_classic_zhi.png';
+
 const markIconMaps: {
   [K in MarkEnum]: string;
 } = {
@@ -64,6 +73,15 @@ const markIconMaps: {
   [MarkEnum.HouTu]: houtuIcon,
   [MarkEnum.GouChen]: gouchenIcon,
   [MarkEnum.YuQing]: yuqingIcon,
+
+  [MarkEnum.PveJi]: pveClassicJiIcon,
+  [MarkEnum.PveJian]: pveClassicJianIcon,
+  [MarkEnum.PveXi]: pveClassicXiIcon,
+  [MarkEnum.PveYing]: pveClassicYingIcon,
+  [MarkEnum.PveYu]: pveClassicYuIcon,
+  [MarkEnum.PveZhi]: pveClassicZhiIcon,
+  [MarkEnum.PveHe]: pveClassicHeIcon,
+  [MarkEnum.PveGu]: pveClassicGuIcon,
 };
 
 export type MarkProps = {
