@@ -30,6 +30,10 @@ import taomieIcon from './images/taomie.png';
 import xueyiIcon from './images/xueyi.png';
 import yingIcon from './images/ying.png';
 import zhongIcon from './images/zhong.png';
+import ziweiIcon from './images/ziwei.png';
+import houtuIcon from './images/houtu.png';
+import yuqingIcon from './images/yuqing.png';
+import gouchenIcon from './images/gouchen.png';
 
 const markIconMaps: {
   [K in MarkEnum]: string;
@@ -56,6 +60,10 @@ const markIconMaps: {
   [MarkEnum.Kui]: kuiIcon,
   [MarkEnum.PingDing]: pingdingIcon,
   [MarkEnum.DanLie]: danlieIcon,
+  [MarkEnum.ZiWei]: ziweiIcon,
+  [MarkEnum.HouTu]: houtuIcon,
+  [MarkEnum.GouChen]: gouchenIcon,
+  [MarkEnum.YuQing]: yuqingIcon,
 };
 
 export type MarkProps = {
