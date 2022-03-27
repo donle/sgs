@@ -146,7 +146,7 @@ export class Dashboard extends React.Component<DashboardProps> {
 
   getCardYOffset(index: number) {
     if (this.onFocusCardIndex === index) {
-      return this.cardOffset < 0 ? -48 : -16;
+      return this.cardOffset < 0 ? -48 : -5;
     }
   }
 
