@@ -38,7 +38,6 @@ export class PveClassicAi extends TriggerSkill {
       GameEventIdentifiers.DrawCardEvent | GameEventIdentifiers.DamageEvent | GameEventIdentifiers.LevelBeginEvent
     >,
   ) {
-    const identifier = EventPacker.getIdentifier(content);
     switch (EventPacker.getIdentifier(content)) {
       case GameEventIdentifiers.DrawCardEvent:
         const markPlayer = room.AlivePlayers.find(player => player.getMark(MarkEnum.PveJian));
@@ -60,10 +59,7 @@ export class PveClassicAi extends TriggerSkill {
         );
 
       case GameEventIdentifiers.LevelBeginEvent:
-        const aiMarkPlayer = room.AlivePlayers.find(
-          player => player.getMark(MarkEnum.PveYing) || player.getMark(MarkEnum.PveJi),
-        );
-        return aiMarkPlayer !== undefined && owner.Role === aiMarkPlayer.Role;
+        return owner.getMark(MarkEnum.PveYing) > 0 || owner.getMark(MarkEnum.PveJi) > 0;
       default:
         return false;
     }
