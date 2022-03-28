@@ -77,8 +77,6 @@ export interface ClientEvent extends EventUtilities {
 
   [GameEventIdentifiers.GameBeginEvent]: {};
 
-  [GameEventIdentifiers.CircleStartEvent]: {};
-
   [GameEventIdentifiers.GameOverEvent]: {
     playersInfo: PlayerInfo[];
   };
