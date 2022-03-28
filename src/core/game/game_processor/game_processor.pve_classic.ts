@@ -6,6 +6,7 @@ import {
   CardDrawReason,
   CardMoveArea,
   CardMoveReason,
+  EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
@@ -16,8 +17,31 @@ import { GameMode } from 'core/shares/types/room_props';
 import { Functional } from 'core/shares/libs/functional';
 import { CardId } from 'core/cards/libs/card_props';
 import { VirtualCard } from 'core/cards/card';
+import { PveClassicGu } from 'core/skills';
+import { PveClassicAi } from 'core/skills/game_mode/pve/pve_classic_ai';
+import { MarkEnum } from 'core/shares/types/mark_list';
+import { Algorithm } from 'core/shares/libs/algorithm';
 
 export class PveClassicGameProcessor extends StandardGameProcessor {
+  private human_num: number = 0;
+  private level: number = 0;
+  private mark_list: MarkEnum[] = [];
+
+  public getLevelMark() {
+    if (this.mark_list.length === 0) {
+      this.mark_list = [
+        MarkEnum.PveJi,
+        MarkEnum.PveJian,
+        MarkEnum.PveXi,
+        MarkEnum.PveYing,
+        MarkEnum.PveYu,
+        MarkEnum.PveZhi,
+      ];
+      Algorithm.shuffle(this.mark_list);
+    }
+    return this.mark_list.splice(0, this.level * this.human_num);
+  }
+
   public assignRoles(players: Player[]) {
     const ais = players.filter(player => player.isSmartAI());
     const humans = players.filter(player => !player.isSmartAI());
@@ -27,6 +51,42 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       players[i].Role = players[i].isSmartAI() ? PlayerRole.Rebel : PlayerRole.Loyalist;
       players[i].Position = i;
     }
+  }
+
+  protected async beforeGameStartPreparation() {
+    const humans = this.room.Players.filter(player => !player.isSmartAI());
+    this.level = 1;
+    this.human_num = humans.length;
+
+    if (humans.length === 1) {
+      humans.map(player => this.room.obtainSkill(player.Id, PveClassicGu.Name));
+    } else {
+      // humans.map(player => this.room.obtainSkill(player.Id, PveClassicAi.Name));
+    }
+
+    const ais = this.room.Players.filter(player => player.isSmartAI());
+    ais.map(player => this.room.obtainSkill(player.Id, PveClassicAi.Name));
+
+    let marks = this.getLevelMark();
+    for (let i = 0; i < this.human_num; i++) {
+      ais.map(player => this.room.addMark(player.Id, marks.pop()!, 1));
+    }
+
+    // for (let mark of [
+    //   MarkEnum.PveJi,
+    //   MarkEnum.PveJian,
+    //   MarkEnum.PveXi,
+    //   MarkEnum.PveYing,
+    //   MarkEnum.PveYu,
+    //   MarkEnum.PveZhi,
+    // ]) {
+    //   ais.map(player => this.room.addMark(player.Id, mark, 1));
+    // }
+    const levelBeginEvent: ServerEventFinder<GameEventIdentifiers.LevelBeginEvent> = {};
+    await this.onHandleIncomingEvent(
+      GameEventIdentifiers.LevelBeginEvent,
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.LevelBeginEvent, levelBeginEvent),
+    );
   }
 
   protected async chooseCharacters(playersInfo: PlayerInfo[], selectableCharacters: Character[]) {
@@ -127,7 +187,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
           changedProperties: [{ toId: deadPlayer.Id, characterId: bossCharacter.Id, hp: 3, revive: true }],
         };
 
-        this.room.changePlayerProperties(bossPropertiesChangeEvent);
+        // this.room.changePlayerProperties(bossPropertiesChangeEvent);
       }
     });
 
