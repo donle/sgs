@@ -24,6 +24,15 @@ export const characterDictionary: Word[] = [
   { source: 'pve_bibao', target: '必报' },
   { source: 'pve_tansuo', target: '探索' },
   { source: 'pve_soldier', target: '风瑶军' },
+
+  { source: 'pve_jian', target: '渐' },
+  { source: 'pve_zhi', target: '制' },
+  { source: 'pve_xi', target: '袭' },
+  { source: 'pve_ji', target: '疾' },
+  { source: 'pve_yu', target: '御' },
+  { source: 'pve_ying', target: '盈' },
+  { source: 'pve_gu', target: '孤' },
+  { source: 'pve_he', target: '合' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -57,8 +66,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'pve_longlie_description',
-    target:
-      '<b>锁定技</b>，你使用的【杀】无法被响应，且游戏人数大于2时，此【杀】伤害+1。',
+    target: '<b>锁定技</b>，你使用的【杀】无法被响应，且游戏人数大于2时，此【杀】伤害+1。',
   },
   {
     source: 'pve_qinlv_description',
@@ -81,13 +89,11 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'pve_lige_description',
-    target:
-      '<b>锁定技</b>，一名其他角色结束阶段开始时，其交给你一张牌或令你摸两张牌，选择后视为对其使用【决斗】',
+    target: '<b>锁定技</b>，一名其他角色结束阶段开始时，其交给你一张牌或令你摸两张牌，选择后视为对其使用【决斗】',
   },
   {
     source: 'pve_bibao_description',
-    target:
-      '<b>锁定技</b>，你造成或受到伤害时，你回复1点体力且此伤害+1，你摸等同伤害+1张牌。',
+    target: '<b>锁定技</b>，你造成或受到伤害时，你回复1点体力且此伤害+1，你摸等同伤害+1张牌。',
   },
   {
     source: 'pve_tansuo_description',
@@ -95,7 +101,6 @@ export const skillDescriptions: Word[] = [
       '<b>锁定技</b>，第四关及之后，玩家使用牌有概率触发机关（此牌点数越高几率越大）或奇遇宝物。玩家初始强化【桃】且玩家共用强化池',
   },
 ];
-
 
 export const promptDescriptions: Word[] = [
   {
@@ -136,4 +141,4 @@ export const eventDictionary: Word[] = [
   { source: 'pve-hard-mode', target: '高难度' },
   { source: '{0} ouyujiguan', target: '{0} 偶遇了机关' },
   { source: '{0} qiyubaowu', target: '{0} 奇遇宝物' },
-]
+];
