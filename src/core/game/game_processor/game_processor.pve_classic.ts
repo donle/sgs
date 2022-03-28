@@ -24,6 +24,7 @@ import { Algorithm } from 'core/shares/libs/algorithm';
 
 export class PveClassicGameProcessor extends StandardGameProcessor {
   private human_num: number = 0;
+  private ai_num: number = 0;
   private level: number = 0;
   private mark_list: MarkEnum[] = [];
 
@@ -39,7 +40,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       ];
       Algorithm.shuffle(this.mark_list);
     }
-    return this.mark_list.splice(0, this.level * this.human_num);
+    return this.mark_list.splice(0, this.level * this.human_num * this.ai_num);
   }
 
   public assignRoles(players: Player[]) {
@@ -55,8 +56,10 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
 
   protected async beforeGameStartPreparation() {
     const humans = this.room.Players.filter(player => !player.isSmartAI());
+    const ais = this.room.Players.filter(player => player.isSmartAI());
     this.level = 1;
     this.human_num = humans.length;
+    this.ai_num = ais.length;
 
     if (humans.length === 1) {
       humans.map(player => this.room.obtainSkill(player.Id, PveClassicGu.Name));
@@ -64,12 +67,15 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       // humans.map(player => this.room.obtainSkill(player.Id, PveClassicAi.Name));
     }
 
-    const ais = this.room.Players.filter(player => player.isSmartAI());
     ais.map(player => this.room.obtainSkill(player.Id, PveClassicAi.Name));
 
     let marks = this.getLevelMark();
     for (let i = 0; i < this.human_num; i++) {
-      ais.map(player => this.room.addMark(player.Id, marks.pop()!, 1));
+      ais.map(player => {
+        const mark = marks.pop()!;
+        console.log(`mark is ${mark}`);
+        this.room.addMark(player.Id, mark, 1);
+      });
     }
 
     // for (let mark of [
