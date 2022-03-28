@@ -57,6 +57,7 @@ export const enum GameEventIdentifiers {
   GameStartEvent,
   GameBeginEvent,
   CircleStartEvent,
+  LevelBeginEvent,
   GameOverEvent,
   PlayerEnterRefusedEvent,
   PlayerReenterEvent,
@@ -337,7 +338,10 @@ export class EventPacker {
     return (event as any).timestamp;
   };
 
-  static isDisresponsiveEvent = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>, includeUnoffsetable?: boolean): boolean => {
+  static isDisresponsiveEvent = <T extends GameEventIdentifiers>(
+    event: ServerEventFinder<T>,
+    includeUnoffsetable?: boolean,
+  ): boolean => {
     return (event as any).disresponsive || (includeUnoffsetable && (event as any).unoffsetable);
   };
 
@@ -348,9 +352,7 @@ export class EventPacker {
     return event;
   };
 
-  static setUnoffsetableEvent = <T extends GameEventIdentifiers>(
-    event: ServerEventFinder<T>,
-  ): ServerEventFinder<T> => {
+  static setUnoffsetableEvent = <T extends GameEventIdentifiers>(event: ServerEventFinder<T>): ServerEventFinder<T> => {
     (event as any).unoffsetable = true;
     return event;
   };
@@ -392,7 +394,7 @@ export class EventPacker {
 
   static createIdentifierEvent = <
     T extends GameEventIdentifiers,
-    E extends ServerEventFinder<T> | ClientEventFinder<T>
+    E extends ServerEventFinder<T> | ClientEventFinder<T>,
   >(
     identifier: T,
     event: E,

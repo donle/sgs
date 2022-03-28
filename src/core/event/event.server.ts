@@ -39,7 +39,7 @@ export type MoveCardEventInfos = {
   movedByReason?: string;
   hideBroadcast?: boolean;
   placeAtTheBottomOfDrawStack?: boolean;
-} & BaseGameEvent
+} & BaseGameEvent;
 
 export interface ServerEvent extends EventUtilities {
   [GameEventIdentifiers.SetFlagEvent]: {
@@ -47,7 +47,7 @@ export interface ServerEvent extends EventUtilities {
     value: any;
     to: PlayerId;
     tagName?: string;
-    visiblePlayers?: PlayerId[],
+    visiblePlayers?: PlayerId[];
   };
   [GameEventIdentifiers.RemoveFlagEvent]: {
     name: string;
@@ -214,6 +214,7 @@ export interface ServerEvent extends EventUtilities {
   };
   [GameEventIdentifiers.GameBeginEvent]: {};
   [GameEventIdentifiers.CircleStartEvent]: {};
+  [GameEventIdentifiers.LevelBeginEvent]: {};
   [GameEventIdentifiers.GameOverEvent]: {
     loserIds: PlayerId[];
     winnerIds: PlayerId[];

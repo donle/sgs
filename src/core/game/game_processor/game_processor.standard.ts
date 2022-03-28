@@ -1069,6 +1069,14 @@ export class StandardGameProcessor extends GameProcessor {
           onActualExecuted,
         );
         break;
+      case GameEventIdentifiers.LevelBeginEvent:
+        console.log('level begin event');
+        await this.onHandleLevelBeginEvent(
+          identifier as GameEventIdentifiers.LevelBeginEvent,
+          event as any,
+          onActualExecuted,
+        );
+        break;
       default:
         throw new Error(`Unknown incoming event: ${identifier}`);
     }
@@ -2079,6 +2087,16 @@ export class StandardGameProcessor extends GameProcessor {
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
     this.room.broadcast(GameEventIdentifiers.CircleStartEvent, event);
+    return await this.iterateEachStage(identifier, event, onActualExecuted);
+  }
+
+  private async onHandleLevelBeginEvent(
+    identifier: GameEventIdentifiers.LevelBeginEvent,
+    event: ServerEventFinder<GameEventIdentifiers.LevelBeginEvent>,
+    onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
+  ) {
+    console.log('board level begin event');
+    this.room.broadcast(GameEventIdentifiers.LevelBeginEvent, event);
     return await this.iterateEachStage(identifier, event, onActualExecuted);
   }
 
