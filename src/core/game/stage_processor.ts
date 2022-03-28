@@ -251,12 +251,17 @@ export const enum HpChangeStage {
   AfterHpChange = 'AfterHpChange',
 }
 
+export const enum LevelBeginStage {
+  LevelBegining = 'LevelBegining',
+}
+
 export type GameEventStage =
   | PhaseChangeStage
   | PhaseStageChangeStage
   | GameStartStage
   | GameBeginStage
   | CircleStartStage
+  | LevelBeginStage
   | CardEffectStage
   | CardUseStage
   | CardResponseStage
@@ -281,6 +286,7 @@ export type AllStage = PlayerPhaseStages | GameEventStage;
 const gameEventStageList: {
   [K in GameEventIdentifiers]?: GameEventStage[];
 } = {
+  [GameEventIdentifiers.LevelBeginEvent]: [LevelBeginStage.LevelBegining],
   [GameEventIdentifiers.GameStartEvent]: [
     GameStartStage.BeforeGameStart,
     GameStartStage.GameStarting,
@@ -490,7 +496,7 @@ export class StageProcessor {
     if (specificStage === undefined) {
       return PlayerPhase.PhaseBegin;
     }
-    for (const [stage, stageList] of (Object.entries(playerStagesList) as unknown) as [string, PlayerPhaseStages[]][]) {
+    for (const [stage, stageList] of Object.entries(playerStagesList) as unknown as [string, PlayerPhaseStages[]][]) {
       if (stageList.includes(specificStage)) {
         return parseInt(stage, 10) as PlayerPhase;
       }
