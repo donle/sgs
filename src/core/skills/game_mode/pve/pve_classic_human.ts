@@ -75,7 +75,7 @@ export class PveClassicGu extends TriggerSkill {
           markNumber > 0 &&
           room.CurrentPlayerPhase === PlayerPhase.DrawCardStage &&
           drawCardEvent.bySpecialReason === CardDrawReason.GameStage &&
-          drawCardEvent.fromId == owner.Id
+          drawCardEvent.fromId === owner.Id
         );
       case GameEventIdentifiers.DamageEvent:
         const damageEvent = content as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
