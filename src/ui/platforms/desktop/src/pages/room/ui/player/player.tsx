@@ -337,6 +337,10 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
       mobx.runInAction(() => {
         this.PlayerRoleCard = () => <img className={styles.playerRoleCard} alt={image.alt} src={image.src} />;
       });
+    } else if (this.PlayerRoleCard === undefined && this.props.player && !this.props.player.Dead) {
+      mobx.runInAction(() => {
+        this.PlayerRoleCard = () => <></>;
+      });
     }
   }
 
