@@ -29,10 +29,7 @@ export abstract class GameProcessor {
     Precondition.assert(this.room !== undefined, 'Game is not started yet');
   }
 
-  protected abstract chooseCharacters(
-    playersInfo: PlayerInfo[],
-    selectableCharacters: Character[],
-  ): Promise<void>;
+  protected abstract chooseCharacters(playersInfo: PlayerInfo[], selectableCharacters: Character[]): Promise<void>;
 
   protected abstract iterateEachStage<T extends GameEventIdentifiers>(
     identifier: T,
@@ -84,6 +81,7 @@ export abstract class GameProcessor {
   protected abstract drawGameBeginsCards(playerInfo: PlayerInfo): Promise<void>;
   // tslint:disable-next-line: no-empty
   protected async beforeGameStartPreparation() {}
+  protected async beforeGameBeginPreparation() {}
 
   protected abstract onPlayerJudgeStage(phase: PlayerPhase): Promise<void>;
   protected abstract onPlayerDrawCardStage(phase: PlayerPhase): Promise<void>;
