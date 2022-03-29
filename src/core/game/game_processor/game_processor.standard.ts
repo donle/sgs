@@ -438,6 +438,8 @@ export class StandardGameProcessor extends GameProcessor {
     await this.chooseCharacters(playersInfo, selectableCharacters);
     setSelectedCharacters();
 
+    await this.beforeGameStartPreparation();
+
     const gameStartEvent: ServerEventFinder<GameEventIdentifiers.GameStartEvent> = {
       players: playersInfo,
     };
@@ -452,8 +454,6 @@ export class StandardGameProcessor extends GameProcessor {
     }
 
     let lastPlayerPosition = this.playerPositionIndex;
-    await this.beforeGameStartPreparation();
-
     while (this.room.isPlaying() && !this.room.isGameOver() && !this.room.isClosed()) {
       if (this.room.Circle === 0) {
         this.room.nextCircle();
