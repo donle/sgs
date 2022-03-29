@@ -83,6 +83,7 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
 
   private onTooltipOpeningTimer: NodeJS.Timer;
   private openedDialog: string | undefined;
+  private ifDead: boolean;
 
   private readonly onClick = mobx.action(() => {
     if (this.props.disabled === false) {
@@ -306,7 +307,6 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
         huashenCharacter &&
         (await this.props.imageLoader.getCharacterImage(huashenCharacter.Name, this.props.player?.Id)).src;
     }
-
     if (this.PlayerImage === undefined && this.PlayerCharacter) {
       mobx.runInAction(() => {
         this.PlayerImage = () => (
@@ -325,8 +325,8 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
         );
       });
     } else if (
-      this.PlayerRoleCard === undefined &&
       this.props.player &&
+      this.ifDead !== this.props.player.Dead &&
       this.props.player.Dead &&
       this.props.player.Role !== PlayerRole.Unknown
     ) {
@@ -337,11 +337,17 @@ export class PlayerCard extends React.Component<PlayerCardProps> {
       mobx.runInAction(() => {
         this.PlayerRoleCard = () => <img className={styles.playerRoleCard} alt={image.alt} src={image.src} />;
       });
-    } else if (this.PlayerRoleCard === undefined && this.props.player && !this.props.player.Dead) {
+    } else if (
+      this.props.player &&
+      this.ifDead !== this.props.player.Dead &&
+      !this.props.player.Dead &&
+      this.props.player.Role !== PlayerRole.Unknown
+    ) {
       mobx.runInAction(() => {
         this.PlayerRoleCard = () => <></>;
       });
     }
+    this.ifDead = this.props.player ? this.props.player.Dead : this.ifDead;
   }
 
   private readonly onCloseIncomingMessageCallback = () => {
