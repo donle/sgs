@@ -188,7 +188,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       } else if (stage === PlayerDiedStage.AfterPlayerDied) {
         const bossCharacter = Sanguosha.getCharacterByCharaterName('pve_soldier');
         const bossPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
-          changedProperties: [{ toId: deadPlayer.Id, characterId: bossCharacter.Id, hp: 3, revive: true }],
+          changedProperties: [{ toId: deadPlayer.Id, characterId: bossCharacter.Id, hp: 3, activate: true }],
         };
 
         // this.room.changePlayerProperties(bossPropertiesChangeEvent);

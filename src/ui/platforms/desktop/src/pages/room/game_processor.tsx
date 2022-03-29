@@ -835,7 +835,7 @@ export class GameClientProcessor {
       handCards,
       equips,
       playerPosition,
-      revive,
+      activate,
     } of changedProperties) {
       const player = this.store.room.getPlayerById(toId);
       characterId !== undefined && (player.CharacterId = characterId);
@@ -843,7 +843,13 @@ export class GameClientProcessor {
       hp !== undefined && (player.Hp = hp);
       nationality !== undefined && (player.Nationality = nationality);
       gender !== undefined && (player.Gender = gender);
-      revive !== undefined && revive && player.Dead && this.store.room.revive(player);
+
+      if (activate !== undefined) {
+        // revive
+        activate && player.Dead && player.revive();
+        // kill
+        activate || player.Dead || player.bury();
+      }
       playerPosition !== undefined && (player.Position = playerPosition);
 
       if (handCards !== undefined) {
@@ -1187,7 +1193,7 @@ export class GameClientProcessor {
       ) {
         const actualCardIds = VirtualCard.getActualCards(cardIds);
         if (toArea === CardMoveArea.OutsideArea) {
-          to.getCardIds((toArea as unknown) as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
+          to.getCardIds(toArea as unknown as PlayerCardsArea, toOutsideArea).push(...actualCardIds);
         } else if (toArea === CardMoveArea.JudgeArea) {
           const transformedDelayedTricks = cardIds.map(cardId => {
             if (!Card.isVirtualCardId(cardId)) {
@@ -1348,7 +1354,7 @@ export class GameClientProcessor {
   }
 
   protected onHandleAskForChoosingCardWithConditionsEvent<
-    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent
+    T extends GameEventIdentifiers.AskForChoosingCardWithConditionsEvent,
   >(type: T, content: ServerEventFinder<T>) {
     const selectedCards: CardId[] = [];
     const selectedCardsIndex: number[] = [];
@@ -1662,7 +1668,7 @@ export class GameClientProcessor {
   }
 
   protected async onHandleAskForChoosingCardAvailableTargetEvent<
-    T extends GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent
+    T extends GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent,
   >(type: T, content: ServerEventFinder<T>) {
     const { user, cardId, exclude, conversation } = content;
     this.presenter.createIncomingConversation({
@@ -1801,7 +1807,7 @@ export class GameClientProcessor {
   }
 
   protected async onHandleAbortOrResumePlayerSectionsEvent<
-    T extends GameEventIdentifiers.AbortOrResumePlayerSectionsEvent
+    T extends GameEventIdentifiers.AbortOrResumePlayerSectionsEvent,
   >(type: T, content: ServerEventFinder<T>) {
     const { toId, isResumption, toSections } = content;
     const to = this.store.room.getPlayerById(toId);
@@ -1815,7 +1821,7 @@ export class GameClientProcessor {
   }
 
   protected async onHandleAbortOrResumePlayerJudgeAreaEvent<
-    T extends GameEventIdentifiers.AbortOrResumePlayerJudgeAreaEvent
+    T extends GameEventIdentifiers.AbortOrResumePlayerJudgeAreaEvent,
   >(type: T, content: ServerEventFinder<T>) {
     const { toId, isResumption } = content;
     const to = this.store.room.getPlayerById(toId);

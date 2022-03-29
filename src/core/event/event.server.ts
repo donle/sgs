@@ -454,7 +454,7 @@ export interface ServerEvent extends EventUtilities {
       handCards?: CardId[];
       equips?: CardId[];
       playerPosition?: number;
-      revive?: boolean;
+      activate?: boolean;
     }[];
   };
   [GameEventIdentifiers.SetOutsideCharactersEvent]: {
