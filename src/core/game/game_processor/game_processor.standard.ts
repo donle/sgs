@@ -449,11 +449,13 @@ export class StandardGameProcessor extends GameProcessor {
       EventPacker.createIdentifierEvent(GameEventIdentifiers.GameStartEvent, gameStartEvent),
     );
 
-    for (const player of playersInfo) {
+    for (const player of this.room.AlivePlayers.map(player => player.getPlayerInfo())) {
       await this.drawGameBeginsCards(player);
     }
 
     let lastPlayerPosition = this.playerPositionIndex;
+    await this.beforeGameBeginPreparation();
+
     while (this.room.isPlaying() && !this.room.isGameOver() && !this.room.isClosed()) {
       if (this.room.Circle === 0) {
         this.room.nextCircle();
