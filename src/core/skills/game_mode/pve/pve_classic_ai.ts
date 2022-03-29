@@ -1,6 +1,5 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
-import { CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
 import { CardDrawReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, DamageEffectStage, DrawCardStage, LevelBeginStage, PlayerPhase } from 'core/game/stage_processor';
