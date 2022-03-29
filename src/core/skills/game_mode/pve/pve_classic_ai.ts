@@ -1,9 +1,11 @@
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId } from 'core/cards/libs/card_props';
+import { CharacterGender, CharacterId, CharacterNationality } from 'core/characters/character';
 import { CardDrawReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { AllStage, DamageEffectStage, DrawCardStage, LevelBeginStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
+import { PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { MarkEnum } from 'core/shares/types/mark_list';
 import { RulesBreakerSkill, TriggerSkill } from 'core/skills/skill';
@@ -85,21 +87,31 @@ export class PveClassicAi extends TriggerSkill {
         await room.drawCards(1, damageEvent.toId, 'top', damageEvent.toId, this.Name);
         break;
       case GameEventIdentifiers.LevelBeginEvent:
-        const markYingPlayer = room.AlivePlayers.find(player => player.getMark(MarkEnum.PveYing));
-        const markJiPlayer = room.AlivePlayers.find(player => player.getMark(MarkEnum.PveJi));
-        if (markJiPlayer !== undefined) {
-          const partners = room.AlivePlayers.filter(player => player.Role === markJiPlayer.Role);
+        const owner = room.getPlayerById(event.fromId);
+        if (owner.getMark(MarkEnum.PveJi) > 0) {
+          const partners = room.AlivePlayers.filter(player => player.Role === owner.Role);
           for (const player of partners) {
             await room.drawCards(3, player.Id, 'top', player.Id, this.Name);
           }
         }
 
-        if (markYingPlayer !== undefined) {
-          const partners = room.AlivePlayers.filter(player => player.Role === markYingPlayer.Role);
+        if (owner.getMark(MarkEnum.PveYing) > 0) {
+          const partners = room.AlivePlayers.filter(player => player.Role === owner.Role);
+
+          const changedProperties: {
+            toId: PlayerId;
+            maxHp?: number;
+            hp?: number;
+          }[] = [];
           for (const player of partners) {
-            await room.changeMaxHp(player.Id, 1);
-            await room.recover({ toId: player.Id, recoveredHp: 1, recoverBy: event.fromId });
+            changedProperties.push({
+              toId: player.Id,
+              hp: player.Hp + 1,
+              maxHp: player.MaxHp + 1,
+            });
           }
+
+          room.changePlayerProperties({ changedProperties });
         }
     }
     return true;
