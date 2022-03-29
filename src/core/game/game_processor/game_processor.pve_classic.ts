@@ -23,10 +23,10 @@ import { MarkEnum } from 'core/shares/types/mark_list';
 import { Algorithm } from 'core/shares/libs/algorithm';
 
 export class PveClassicGameProcessor extends StandardGameProcessor {
-  private human_num: number = 0;
-  private ai_num: number = 0;
   private level: number = 0;
   private mark_list: MarkEnum[] = [];
+  private human: Player[];
+  private activate_ai: Player[];
 
   public getLevelMark() {
     if (this.mark_list.length === 0) {
@@ -40,7 +40,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       ];
       Algorithm.shuffle(this.mark_list);
     }
-    return this.mark_list.splice(0, this.level * this.human_num * this.ai_num);
+    return this.mark_list.splice(0, this.level * this.human.length * this.activate_ai.length);
   }
 
   public assignRoles(players: Player[]) {
@@ -56,34 +56,35 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
 
   protected async beforeGameStartPreparation() {
     this.level = 1;
+    this.human = this.room.Players.filter(player => !player.isSmartAI());
+    if (this.human.length === 1) {
+      this.room.obtainSkill(this.human[0].Id, PveClassicGu.Name);
+    }
 
     const allAI = this.room.Players.filter(player => player.isSmartAI());
     allAI.map(player => this.room.obtainSkill(player.Id, PveClassicAi.Name));
     Algorithm.shuffle(allAI);
+    const changedProperties: {
+      toId: PlayerId;
+      activate: boolean;
+    }[] = [];
     const deactiveAis = allAI.splice(0, 2);
-    deactiveAis.map(player => {
-      console.log(`player is ${player.Id}`);
-      player.bury();
-    });
+    deactiveAis.map(player => changedProperties.push({ toId: player.Id, activate: false }));
+    this.room.changePlayerProperties({ changedProperties });
 
-    const ais = this.room.AlivePlayers.filter(player => player.isSmartAI());
-    this.ai_num = ais.length;
-
-    const humans = this.room.Players.filter(player => !player.isSmartAI());
-    this.human_num = humans.length;
-    if (humans.length === 1) {
-      humans.map(player => this.room.obtainSkill(player.Id, PveClassicGu.Name));
-    }
+    this.activate_ai = this.room.AlivePlayers.filter(player => player.isSmartAI());
 
     let marks = this.getLevelMark();
-    for (let i = 0; i < this.human_num; i++) {
-      ais.map(player => {
+    for (let i = 0; i < this.human.length; i++) {
+      this.activate_ai.map(player => {
         const mark = marks.pop()!;
         this.room.addMark(player.Id, mark, 1);
         return [];
       });
     }
+  }
 
+  protected async beforeGameBeginPreparation() {
     const levelBeginEvent: ServerEventFinder<GameEventIdentifiers.LevelBeginEvent> = {};
     await this.onHandleIncomingEvent(
       GameEventIdentifiers.LevelBeginEvent,
