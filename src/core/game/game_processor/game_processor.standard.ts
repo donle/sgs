@@ -439,7 +439,6 @@ export class StandardGameProcessor extends GameProcessor {
     setSelectedCharacters();
 
     await this.beforeGameStartPreparation();
-
     const gameStartEvent: ServerEventFinder<GameEventIdentifiers.GameStartEvent> = {
       players: playersInfo,
     };

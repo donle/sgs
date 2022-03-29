@@ -558,7 +558,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       }
 
       const toUnhook = p.HookedSkills.filter(skill => {
-        const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+        const hookedSkill = skill as unknown as OnDefineReleaseTiming;
         if (hookedSkill.afterLosingSkill && hookedSkill.afterLosingSkill(this, p.Id, content, stage)) {
           return true;
         }
@@ -679,7 +679,13 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       property.hp !== undefined && (player.Hp = property.hp);
       property.nationality !== undefined && (player.Nationality = property.nationality);
       property.gender !== undefined && (player.Gender = property.gender);
-      property.revive !== undefined && property.revive && player.Dead && player.revive();
+      if (property.activate !== undefined) {
+        // revive
+        property.activate && player.Dead && player.revive();
+        // kill
+        property.activate || player.Dead || player.bury();
+      }
+
       if (property.playerPosition !== undefined) {
         player.Position = property.playerPosition;
         player === this.CurrentPlayer && (newCurrentPlayerPosition = property.playerPosition);
