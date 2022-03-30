@@ -63,28 +63,6 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       this.room.obtainSkill(player.Id, PveClassicAi.Name),
     );
     this.nextLevel();
-
-    // const allAI = this.room.Players.filter(player => player.isSmartAI());
-    // allAI.map(player => this.room.obtainSkill(player.Id, PveClassicAi.Name));
-    // Algorithm.shuffle(allAI);
-    // const changedProperties: {
-    //   toId: PlayerId;
-    //   activate: boolean;
-    // }[] = [];
-    // const deactiveAis = allAI.splice(0, 2);
-    // deactiveAis.map(player => changedProperties.push({ toId: player.Id, activate: false }));
-    // this.room.changePlayerProperties({ changedProperties });
-
-    // this.activate_ai = this.room.AlivePlayers.filter(player => player.isSmartAI());
-
-    // let marks = this.getLevelMark();
-    // for (let i = 0; i < this.human.length; i++) {
-    //   this.activate_ai.map(player => {
-    //     const mark = marks.pop()!;
-    //     this.room.addMark(player.Id, mark, 1);
-    //     return [];
-    //   });
-    // }
   }
 
   protected async beforeGameBeginPreparation() {
