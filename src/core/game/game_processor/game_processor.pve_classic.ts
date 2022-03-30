@@ -55,33 +55,36 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
   }
 
   protected async beforeGameStartPreparation() {
-    this.level = 1;
     this.human = this.room.Players.filter(player => !player.isSmartAI());
     if (this.human.length === 1) {
       this.room.obtainSkill(this.human[0].Id, PveClassicGu.Name);
     }
+    this.room.Players.filter(player => player.isSmartAI()).map(player =>
+      this.room.obtainSkill(player.Id, PveClassicAi.Name),
+    );
+    this.nextLevel();
 
-    const allAI = this.room.Players.filter(player => player.isSmartAI());
-    allAI.map(player => this.room.obtainSkill(player.Id, PveClassicAi.Name));
-    Algorithm.shuffle(allAI);
-    const changedProperties: {
-      toId: PlayerId;
-      activate: boolean;
-    }[] = [];
-    const deactiveAis = allAI.splice(0, 2);
-    deactiveAis.map(player => changedProperties.push({ toId: player.Id, activate: false }));
-    this.room.changePlayerProperties({ changedProperties });
+    // const allAI = this.room.Players.filter(player => player.isSmartAI());
+    // allAI.map(player => this.room.obtainSkill(player.Id, PveClassicAi.Name));
+    // Algorithm.shuffle(allAI);
+    // const changedProperties: {
+    //   toId: PlayerId;
+    //   activate: boolean;
+    // }[] = [];
+    // const deactiveAis = allAI.splice(0, 2);
+    // deactiveAis.map(player => changedProperties.push({ toId: player.Id, activate: false }));
+    // this.room.changePlayerProperties({ changedProperties });
 
-    this.activate_ai = this.room.AlivePlayers.filter(player => player.isSmartAI());
+    // this.activate_ai = this.room.AlivePlayers.filter(player => player.isSmartAI());
 
-    let marks = this.getLevelMark();
-    for (let i = 0; i < this.human.length; i++) {
-      this.activate_ai.map(player => {
-        const mark = marks.pop()!;
-        this.room.addMark(player.Id, mark, 1);
-        return [];
-      });
-    }
+    // let marks = this.getLevelMark();
+    // for (let i = 0; i < this.human.length; i++) {
+    //   this.activate_ai.map(player => {
+    //     const mark = marks.pop()!;
+    //     this.room.addMark(player.Id, mark, 1);
+    //     return [];
+    //   });
+    // }
   }
 
   protected async beforeGameBeginPreparation() {
@@ -110,8 +113,55 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
 
   public getWinners(players: Player[]) {
     const alivePlayers = players.filter(player => !player.Dead);
-    if (alivePlayers.every(player => player.isSmartAI()) || alivePlayers.every(player => !player.isSmartAI())) {
+    if (
+      alivePlayers.every(player => player.isSmartAI()) ||
+      (alivePlayers.every(player => !player.isSmartAI()) && this.level === 3)
+    ) {
       return alivePlayers;
+    }
+  }
+
+  protected nextLevel() {
+    this.level++;
+    const allAI = this.room.Players.filter(player => player.isSmartAI());
+    Algorithm.shuffle(allAI);
+    const changedProperties: {
+      toId: PlayerId;
+      hp: number;
+      maxHp: number;
+      activate: boolean;
+    }[] = [];
+    allAI.splice(0, 3 - this.level);
+    this.activate_ai = allAI;
+
+    this.room.Players.filter(player => player.isSmartAI()).map(player =>
+      changedProperties.push(
+        this.activate_ai.includes(player)
+          ? {
+              toId: player.Id,
+              activate: true,
+              hp: Sanguosha.getCharacterByCharaterName('pve_soldier').Hp,
+              maxHp: Sanguosha.getCharacterByCharaterName('pve_soldier').MaxHp,
+            }
+          : { toId: player.Id, activate: false, hp: 0, maxHp: 0 },
+      ),
+    );
+    this.room.changePlayerProperties({ changedProperties });
+
+    // level 1 draw game begins cards at game begin
+    if (this.level > 1) {
+      for (const player of this.activate_ai) {
+        this.drawGameBeginsCards(player.getPlayerInfo());
+      }
+    }
+
+    let marks = this.getLevelMark();
+    for (let i = 0; i < this.human.length; i++) {
+      this.activate_ai.map(player => {
+        const mark = marks.pop()!;
+        this.room.addMark(player.Id, mark, 1);
+        return [];
+      });
     }
   }
 
@@ -120,14 +170,12 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    console.log('handle died event');
     const deadPlayer = this.room.getPlayerById(event.playerId);
     await this.iterateEachStage(identifier, event, onActualExecuted, async stage => {
       if (stage === PlayerDiedStage.PrePlayerDied) {
         this.room.broadcast(identifier, event);
         deadPlayer.bury();
         const winners = this.room.getGameWinners();
-        console.log(`winners is ${winners !== undefined && winners[0]}`);
         if (winners !== undefined && winners[0].Role === PlayerRole.Loyalist) {
           this.stageProcessor.clearProcess();
           this.playerStages = [];
@@ -186,12 +234,9 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
           }
         }
       } else if (stage === PlayerDiedStage.AfterPlayerDied) {
-        const bossCharacter = Sanguosha.getCharacterByCharaterName('pve_soldier');
-        const bossPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
-          changedProperties: [{ toId: deadPlayer.Id, characterId: bossCharacter.Id, hp: 3, activate: true }],
-        };
-
-        // this.room.changePlayerProperties(bossPropertiesChangeEvent);
+        if (this.activate_ai.every(player => player.Dead) && this.level < 3) {
+          this.nextLevel();
+        }
       }
     });
 
