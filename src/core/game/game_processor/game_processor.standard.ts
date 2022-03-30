@@ -274,7 +274,10 @@ export class StandardGameProcessor extends GameProcessor {
               Sanguosha.getCharacterById(lordCharacter.Id).Name,
               Functional.getPlayerRoleRawText(playerInfo.Role!, GameMode.Standard),
             ).extract()
-          : TranslationPack.translationJsonPatcher('please choose a character').extract();
+          : TranslationPack.translationJsonPatcher(
+              'your role is {0}, please choose a character',
+              Functional.getPlayerRoleRawText(playerInfo.Role!, GameMode.OneVersusTwo),
+            ).extract();
 
       this.room.notify(
         GameEventIdentifiers.AskForChoosingCharacterEvent,
