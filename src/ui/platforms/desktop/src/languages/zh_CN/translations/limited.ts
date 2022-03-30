@@ -86,6 +86,11 @@ export const characterDictionary: Word[] = [
   { source: 'shiyuan', target: '诗怨' },
   { source: 'dushi', target: '毒逝' },
   { source: 'yuwei', target: '余威' },
+
+  { source: 'ziwei', target: '紫微' },
+  { source: 'houtu', target: '厚土' },
+  { source: 'yuqing', target: '玉清' },
+  { source: 'gouchen', target: '勾陈' },
 ];
 
 export const skillDescriptions: Word[] = [
