@@ -40,7 +40,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       ];
       Algorithm.shuffle(this.mark_list);
     }
-    return this.mark_list.splice(0, this.level * this.human.length * this.activate_ai.length);
+    return this.mark_list.splice(0, this.human.length * this.activate_ai.length);
   }
 
   public assignRoles(players: Player[]) {
