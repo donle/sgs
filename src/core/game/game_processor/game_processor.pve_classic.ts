@@ -17,10 +17,10 @@ import { GameMode } from 'core/shares/types/room_props';
 import { Functional } from 'core/shares/libs/functional';
 import { CardId } from 'core/cards/libs/card_props';
 import { VirtualCard } from 'core/cards/card';
-import { PveClassicGu } from 'core/skills';
 import { PveClassicAi } from 'core/skills/game_mode/pve/pve_classic_ai';
 import { MarkEnum } from 'core/shares/types/mark_list';
 import { Algorithm } from 'core/shares/libs/algorithm';
+import { PveClassicGu } from 'core/skills';
 
 export class PveClassicGameProcessor extends StandardGameProcessor {
   private level: number = 0;
@@ -56,21 +56,10 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
 
   protected async beforeGameStartPreparation() {
     this.human = this.room.Players.filter(player => !player.isSmartAI());
-    if (this.human.length === 1) {
-      this.room.obtainSkill(this.human[0].Id, PveClassicGu.Name);
-    }
     this.room.Players.filter(player => player.isSmartAI()).map(player =>
       this.room.obtainSkill(player.Id, PveClassicAi.Name),
     );
-    this.nextLevel();
-  }
-
-  protected async beforeGameBeginPreparation() {
-    const levelBeginEvent: ServerEventFinder<GameEventIdentifiers.LevelBeginEvent> = {};
-    await this.onHandleIncomingEvent(
-      GameEventIdentifiers.LevelBeginEvent,
-      EventPacker.createIdentifierEvent(GameEventIdentifiers.LevelBeginEvent, levelBeginEvent),
-    );
+    await this.nextLevel();
   }
 
   protected async chooseCharacters(playersInfo: PlayerInfo[], selectableCharacters: Character[]) {
@@ -99,7 +88,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
     }
   }
 
-  protected nextLevel() {
+  protected async nextLevel() {
     this.level++;
     const allAI = this.room.Players.filter(player => player.isSmartAI());
     Algorithm.shuffle(allAI);
@@ -141,6 +130,20 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
         return [];
       });
     }
+
+    if (this.human.length === 1) {
+      switch (this.level) {
+        case 2:
+          this.room.obtainSkill(this.human[0].Id, PveClassicGu.Name);
+          break;
+      }
+    }
+
+    const levelBeginEvent: ServerEventFinder<GameEventIdentifiers.LevelBeginEvent> = {};
+    await this.onHandleIncomingEvent(
+      GameEventIdentifiers.LevelBeginEvent,
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.LevelBeginEvent, levelBeginEvent),
+    );
   }
 
   protected async onHandlePlayerDiedEvent(
@@ -213,6 +216,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
         }
       } else if (stage === PlayerDiedStage.AfterPlayerDied) {
         if (this.activate_ai.every(player => player.Dead) && this.level < 3) {
+          this.stageProcessor.clearProcess();
           this.nextLevel();
         }
       }
