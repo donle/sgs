@@ -555,15 +555,15 @@ export abstract class AiLibrary {
 
     switch (mode) {
       case GameMode.Pve:
+      case GameMode.TwoVersusTwo: {
+        return playerA.Role === playerB.Role;
+      }
       case GameMode.OneVersusTwo: {
         if (playerA.Role === PlayerRole.Lord || playerB.Role === PlayerRole.Lord) {
           return false;
         }
 
         return true;
-      }
-      case GameMode.TwoVersusTwo: {
-        return playerA.Role === playerB.Role;
       }
       case GameMode.Standard: {
         if (playerA.Role === PlayerRole.Lord || playerA.Role === PlayerRole.Loyalist) {
