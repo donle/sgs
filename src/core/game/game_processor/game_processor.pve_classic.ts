@@ -226,7 +226,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
         this.room.broadcast(identifier, event);
         deadPlayer.bury();
         const winners = this.room.getGameWinners();
-        if (winners !== undefined && winners[0].Role === PlayerRole.Loyalist) {
+        if (winners !== undefined) {
           this.stageProcessor.clearProcess();
           this.playerStages = [];
           this.room.gameOver();
