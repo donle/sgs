@@ -128,6 +128,10 @@ export class PveClassicGu extends TriggerSkill {
 @ShadowSkill
 @CompulsorySkill({ name: PveClassicGu.Name, description: PveClassicGu.Description })
 export class PveClassicGuShadow extends TriggerSkill {
+  public isAutoTrigger(): boolean {
+    return true;
+  }
+
   public isTriggerable(
     event: ServerEventFinder<GameEventIdentifiers.CardUseEvent | GameEventIdentifiers.CardResponseEvent>,
     stage?: AllStage,
