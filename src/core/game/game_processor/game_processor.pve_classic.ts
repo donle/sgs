@@ -6,6 +6,7 @@ import {
   CardDrawReason,
   CardMoveArea,
   CardMoveReason,
+  ClientEventFinder,
   EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
@@ -133,8 +134,13 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
 
     if (this.human.length === 1) {
       switch (this.level) {
+        case 1:
+          break;
         case 2:
-          this.room.obtainSkill(this.human[0].Id, PveClassicGu.Name);
+          await this.room.obtainSkill(this.human[0].Id, PveClassicGu.Name);
+          break;
+        case 3:
+          await this.levelRewardSkill(this.human);
           break;
       }
     }
@@ -144,6 +150,69 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       GameEventIdentifiers.LevelBeginEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.LevelBeginEvent, levelBeginEvent),
     );
+  }
+
+  private async askForChooseSkill(playerId: PlayerId, options: string[]) {
+    const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
+      options,
+      toId: playerId,
+      conversation: 'please announce a skill',
+    };
+
+    this.room.notify(
+      GameEventIdentifiers.AskForChoosingOptionsEvent,
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(askForChoosingOptionsEvent),
+      playerId,
+    );
+
+    const chooseResp = await this.room.onReceivingAsyncResponseFrom(
+      GameEventIdentifiers.AskForChoosingOptionsEvent,
+      playerId,
+    );
+
+    return chooseResp;
+  }
+
+  private async levelRewardSkill(players: Player[]) {
+    const sequentialAsyncResponse: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingCharacterEvent>>[] = [];
+    const notifyOtherPlayer: PlayerId[] = players.map(player => player.Id);
+    this.room.doNotify(notifyOtherPlayer);
+
+    for (const player of players) {
+      const candidateCharacters = this.room.getRandomCharactersFromLoadedPackage(5);
+
+      this.room.notify(
+        GameEventIdentifiers.AskForChoosingCharacterEvent,
+        {
+          amount: 1,
+          characterIds: candidateCharacters,
+          toId: player.Id,
+          byHuaShen: true,
+          translationsMessage: TranslationPack.translationJsonPatcher(
+            'Please choose a character for get a skill',
+          ).extract(),
+          ignoreNotifiedStatus: true,
+        },
+        player.Id,
+      );
+
+      sequentialAsyncResponse.push(
+        this.room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChoosingCharacterEvent, player.Id),
+      );
+    }
+
+    const askForChoosingOptionsEvent: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent>>[] =
+      [];
+    for (const resp of await Promise.all(sequentialAsyncResponse)) {
+      const options = Sanguosha.getCharacterById(resp.chosenCharacterIds[0])
+        .Skills.filter(skill => !(skill.isShadowSkill() || skill.isLordSkill()))
+        .map(skill => skill.GeneralName);
+      askForChoosingOptionsEvent.push(this.askForChooseSkill(resp.fromId, options));
+    }
+
+    for (const resp of await Promise.all(askForChoosingOptionsEvent)) {
+      await this.room.obtainSkill(resp.fromId, resp.selectedOption!);
+    }
   }
 
   protected async onHandlePlayerDiedEvent(
