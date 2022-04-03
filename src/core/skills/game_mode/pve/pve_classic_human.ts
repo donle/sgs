@@ -96,7 +96,6 @@ export class PveClassicGu extends TriggerSkill {
 
     const owner = room.getPlayerById(event.fromId);
     const identifier = EventPacker.getIdentifier(event.triggeredOnEvent);
-    console.log(`event identifier is ${identifier}`);
     switch (identifier) {
       case GameEventIdentifiers.PhaseStageChangeEvent:
         console.log(`add MaxHp`);
