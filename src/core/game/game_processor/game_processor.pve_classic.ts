@@ -286,7 +286,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       } else if (stage === PlayerDiedStage.AfterPlayerDied) {
         if (this.activate_ai.every(player => player.Dead) && this.level < 3) {
           this.stageProcessor.clearProcess();
-          this.nextLevel();
+          await this.nextLevel();
         }
       }
     });
