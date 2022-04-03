@@ -1074,7 +1074,6 @@ export class StandardGameProcessor extends GameProcessor {
         );
         break;
       case GameEventIdentifiers.LevelBeginEvent:
-        console.log('level begin event');
         await this.onHandleLevelBeginEvent(
           identifier as GameEventIdentifiers.LevelBeginEvent,
           event as any,
@@ -2099,7 +2098,6 @@ export class StandardGameProcessor extends GameProcessor {
     event: ServerEventFinder<GameEventIdentifiers.LevelBeginEvent>,
     onActualExecuted?: (stage: GameEventStage) => Promise<boolean>,
   ) {
-    console.log('board level begin event');
     this.room.broadcast(GameEventIdentifiers.LevelBeginEvent, event);
     return await this.iterateEachStage(identifier, event, onActualExecuted);
   }
