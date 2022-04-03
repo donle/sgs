@@ -33,6 +33,10 @@ export const characterDictionary: Word[] = [
   { source: 'pve_ying', target: '盈' },
   { source: 'pve_gu', target: '孤' },
   { source: 'pve_he', target: '合' },
+
+  { source: 'pve_classic_gu', target: '孤勇' },
+  { source: 'pve_classic_ai', target: '合击' },
+  { source: '#pve_classic_ai', target: '合击' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -99,6 +103,11 @@ export const skillDescriptions: Word[] = [
     source: 'pve_tansuo_description',
     target:
       '<b>锁定技</b>，第四关及之后，玩家使用牌有概率触发机关（此牌点数越高几率越大）或奇遇宝物。玩家初始强化【桃】且玩家共用强化池',
+  },
+  {
+    source: 'pve_classic_ai',
+    target:
+      '<b>锁定技</b>渐：摸牌阶段可以多摸一张牌；制：手牌上限等于体力值；袭：出牌阶段可以多出一张杀；疾：初始手牌数量加3; 御：受到伤害后可以摸一张牌；盈：体力及体力上限加1;',
   },
 ];
 
