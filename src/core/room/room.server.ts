@@ -1947,6 +1947,8 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public async kill(deadPlayer: Player, killedBy?: PlayerId, killedByCards?: CardId[]) {
     deadPlayer.Dying = false;
+    deadPlayer.clearMarks();
+    deadPlayer.clearFlags();
     const playerDiedEvent: ServerEventFinder<GameEventIdentifiers.PlayerDiedEvent> = {
       playerId: deadPlayer.Id,
       killedBy,

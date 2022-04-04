@@ -145,6 +145,13 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       }
     }
 
+    console.log(`room entry ${this.level} level`);
+    for (const ai of this.activate_ai) {
+      for (const [mark, num] of Object.entries(ai.getAllMarks())) {
+        console.log(`player: ${ai.Id} has marks ${mark}:${num}`);
+      }
+    }
+
     const levelBeginEvent: ServerEventFinder<GameEventIdentifiers.LevelBeginEvent> = {};
     await this.onHandleIncomingEvent(
       GameEventIdentifiers.LevelBeginEvent,
