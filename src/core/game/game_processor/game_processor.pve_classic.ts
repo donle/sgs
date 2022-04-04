@@ -143,6 +143,16 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
           await this.levelRewardSkill(this.human);
           break;
       }
+    } else {
+      switch (this.level) {
+        case 1:
+          break;
+        case 2:
+          break;
+        case 3:
+          await this.levelRewardSkill(this.human);
+          break;
+      }
     }
 
     console.log(`room entry ${this.level} level`);
