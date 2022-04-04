@@ -35,6 +35,7 @@ export const characterDictionary: Word[] = [
   { source: 'pve_he', target: '合' },
 
   { source: 'pve_classic_gu', target: '孤勇' },
+  { source: '#pve_classic_gu', target: '孤勇' },
   { source: 'pve_classic_ai', target: '合击' },
   { source: '#pve_classic_ai', target: '合击' },
 ];
@@ -109,6 +110,11 @@ export const skillDescriptions: Word[] = [
     target:
       '<b>锁定技</b> 你或你的队友拥有如下标记时，执行对应操作：【渐】摸牌阶段可以多摸一张牌；【制】手牌上限等于体力值；【袭】出牌阶段可以多出一张杀；【疾】初始手牌数量加3；【御】受到伤害后可以摸一张牌；【盈】体力及体力上限加1',
   },
+  {
+    source: 'pve_classic_gu_desc',
+    target:
+      '<b>锁定技</b>你每打出或使用一种花色的牌，若没有对应的标记，根据这些牌的花色，你获得对应标记：黑桃牌，获得“紫微”；梅花牌，获得“后土”；红桃牌，获得“玉清”；方块牌，获得“勾陈”。当你摸牌时，消耗一枚标记，额外摸一张牌；当你造成或受到伤害时，消耗两枚标记，伤害值+1/-1；准备阶段开始时，消耗三枚标记，摸一张牌并视为使用一张杀；结束阶段结束时，消耗四枚标记，增加一点体力上限并回复一点体力',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
@@ -143,6 +149,14 @@ export const promptDescriptions: Word[] = [
   {
     source: 'pve_huashen:choose a role damage',
     target: '选择一名角色，对其造成伤害。',
+  },
+  {
+    source: 'please announce a skill',
+    target: '请选择一个技能',
+  },
+  {
+    source: 'Please choose a character for get a skill',
+    target: '请选择一个武将并获得其一个技能',
   },
 ];
 export const eventDictionary: Word[] = [
