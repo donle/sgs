@@ -224,7 +224,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
         TranslationPack.patchPureTextParameter(content.message),
       ).toString();
       content.ignoreNotifiedStatus = true;
-      this.broadcast(identifier, (content as unknown) as ServerEventFinder<GameEventIdentifiers.UserMessageEvent>);
+      this.broadcast(identifier, content as unknown as ServerEventFinder<GameEventIdentifiers.UserMessageEvent>);
     }
   }
 
@@ -359,7 +359,6 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     };
 
     if (!toPlayer.isOnline()) {
-      this.logger.debug('Ai Action with Offonline');
       const result = toPlayer.AI.onAction(this.room!, type, content);
       setTimeout(() => {
         const asyncResolver = this.asyncResponseResolver[type] && this.asyncResponseResolver[type][to];
