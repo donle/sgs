@@ -285,6 +285,9 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
           toArea: CardMoveArea.DropStack,
         });
 
+        this.room.getPlayerById(playerId).clearMarks();
+        this.room.getPlayerById(playerId).clearFlags();
+
         if (killedBy) {
           const killer = this.room.getPlayerById(killedBy);
 

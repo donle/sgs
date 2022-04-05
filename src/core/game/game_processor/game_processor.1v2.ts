@@ -192,6 +192,9 @@ export class OneVersusTwoGameProcessor extends StandardGameProcessor {
         toArea: CardMoveArea.DropStack,
       });
 
+      this.room.getPlayerById(playerId).clearMarks();
+      this.room.getPlayerById(playerId).clearFlags();
+
       if (this.room.CurrentPlayer.Id === playerId) {
         await this.room.skip(playerId);
       }
