@@ -622,4 +622,15 @@ export { PveJieNu } from './game_mode/pve/pve_jienu';
 export { PveBiBao } from './game_mode/pve/pve_bibao';
 export { PveTanSuo, PveTanSuoShow } from './game_mode/pve/pve_tansuo';
 export { PveClassicGu, PveClassicGuShadow } from './game_mode/pve/pve_classic_human';
+export {
+  PveClassicGuYong,
+  PveClassicGuYongMark,
+  PveClassicGuYongBuf,
+  PveClassicGuYongBufZiWei,
+} from './game_mode/pve/pve_classic_guyong';
 export { PveClassicAi, PveClassicAiEx } from './game_mode/pve/pve_classic_ai';
+export { PveClassicQiSha } from './game_mode/pve/pve_classic_qisha';
+export { PveClassicTianJi } from './game_mode/pve/pve_classic_tianji';
+export { PveClassicTianLiang } from './game_mode/pve/pve_classic_tianliang';
+export { PveClassicTianTong } from './game_mode/pve/pve_classic_tiantong';
+export { PveClassicTianXiang } from './game_mode/pve/pve_classic_tianxiang';
