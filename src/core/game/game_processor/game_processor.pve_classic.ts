@@ -21,7 +21,7 @@ import { VirtualCard } from 'core/cards/card';
 import { PveClassicAi } from 'core/skills/game_mode/pve/pve_classic_ai';
 import { MarkEnum } from 'core/shares/types/mark_list';
 import { Algorithm } from 'core/shares/libs/algorithm';
-import { PveClassicGu } from 'core/skills';
+import { PveClassicGuYong } from 'core/skills';
 
 export class PveClassicGameProcessor extends StandardGameProcessor {
   private level: number = 0;
@@ -135,12 +135,9 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
     if (this.human.length === 1) {
       switch (this.level) {
         case 1:
-          break;
+          await this.room.obtainSkill(this.human[0].Id, PveClassicGuYong.Name);
         case 2:
-          await this.room.obtainSkill(this.human[0].Id, PveClassicGu.Name);
-          break;
         case 3:
-          await this.levelRewardSkill(this.human);
           break;
       }
     } else {

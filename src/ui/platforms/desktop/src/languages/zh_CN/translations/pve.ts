@@ -24,6 +24,11 @@ export const characterDictionary: Word[] = [
   { source: 'pve_bibao', target: '必报' },
   { source: 'pve_tansuo', target: '探索' },
   { source: 'pve_soldier', target: '风瑶军' },
+  { source: 'pve_qisha', target: '七杀' },
+  { source: 'pve_tiantong', target: '天同' },
+  { source: 'pve_tianliang', target: '天梁' },
+  { source: 'pve_tianji', target: '天机' },
+  { source: 'pve_tianxiang', target: '天相' },
 
   { source: 'pve_jian', target: '渐' },
   { source: 'pve_zhi', target: '制' },
@@ -34,8 +39,17 @@ export const characterDictionary: Word[] = [
   { source: 'pve_gu', target: '孤' },
   { source: 'pve_he', target: '合' },
 
+  { source: 'pve_classic_qisha', target: '七杀' },
+  { source: 'pve_classic_tiantong', target: '天同' },
+  { source: 'pve_classic_tianliang', target: '天梁' },
+  { source: 'pve_classic_tianji', target: '天机' },
+  { source: 'pve_classic_tianxiang', target: '天相' },
   { source: 'pve_classic_gu', target: '孤勇' },
   { source: '#pve_classic_gu', target: '孤勇' },
+  { source: 'pve_classic_guyong', target: '孤勇' },
+  { source: '#pve_classic_guyong', target: '孤勇' },
+  { source: '##pve_classic_guyong', target: '孤勇' },
+  { source: '###pve_classic_guyong', target: '孤勇' },
   { source: 'pve_classic_ai', target: '合击' },
   { source: '#pve_classic_ai', target: '合击' },
 ];
@@ -115,6 +129,31 @@ export const skillDescriptions: Word[] = [
     target:
       '<b>锁定技</b>你每打出或使用一种花色的牌，若没有对应的标记，根据这些牌的花色，你获得对应标记：黑桃牌，获得“紫微”；梅花牌，获得“后土”；红桃牌，获得“玉清”；方块牌，获得“勾陈”。当你摸牌时，消耗一枚标记，额外摸一张牌；当你造成或受到伤害时，消耗两枚标记，伤害值+1/-1；准备阶段开始时，消耗三枚标记，摸一张牌并视为使用一张杀；结束阶段结束时，消耗四枚标记，增加一点体力上限并回复一点体力',
   },
+  {
+    source: 'pve_classic_guyong_description',
+    target:
+      '<b>锁定技</b>，你点亮的标记拥有如下效果：玉清：结束阶段结束时摸一张牌；厚土：当你受到伤害后，获得伤害来源一张手牌；勾陈：准备阶段开始时，选择一名角色视为对其使用一张杀；紫微：每回合第一次造成伤害时，弃置一张牌并使伤害值加1；每当一种花色的判定牌亮出，或当你杀死一名角色时，你点亮一个阶段的标记。准备阶段开始时，若你已点亮四种标记时，你获得适应性加强。',
+  },
+  {
+    source: 'pve_classic_qisha_description',
+    target: '<b>锁定技</b>，你的杀和决斗的伤害基数+1',
+  },
+  {
+    source: 'pve_classic_tianji_description',
+    target: '<b>锁定技</b>，其他角色回合结束时，若其本回合没有造成过伤害，你弃一张牌对其造成一点雷属性伤害',
+  },
+  {
+    source: 'pve_classic_tianliang_description',
+    target: '<b>锁定技</b>，摸牌时你多摸一张牌（每回合限x次，x为你的体力上限）',
+  },
+  {
+    source: 'pve_classic_tianxiang_description',
+    target: '<b>锁定技</b>，当你成为其它角色使用牌的目标后，你摸一张牌',
+  },
+  {
+    source: 'pve_classic_tiantong_description',
+    target: '<b>限定技</b>，出牌阶段开始时，你的体力值及体力上限加3',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
@@ -158,10 +197,15 @@ export const promptDescriptions: Word[] = [
     source: 'Please choose a character for get a skill',
     target: '请选择一个武将并获得其一个技能',
   },
+  {
+    source: 'you can choose one player to use a slash',
+    target: '请选择一名角色，视为你对其使用一张杀',
+  },
 ];
 export const eventDictionary: Word[] = [
   { source: 'pve-easy-mode', target: '低难度' },
   { source: 'pve-hard-mode', target: '高难度' },
   { source: '{0} ouyujiguan', target: '{0} 偶遇了机关' },
   { source: '{0} qiyubaowu', target: '{0} 奇遇宝物' },
+  { source: 'please discard a card to deal 1 thunder damage to {0} ?', target: '请弃置一张牌并对{0}造成一点雷电伤害' },
 ];

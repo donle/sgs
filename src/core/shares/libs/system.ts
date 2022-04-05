@@ -120,6 +120,7 @@ export namespace System {
     MangQing = 'mangqing',
     ChouJue = 'choujue',
     BeiShui = 'beishui',
+    PveClassicGuYong = 'pve_classic_guyong',
   }
 
   export const AwakeningSkillApplier: { [K in AwakeningSkillApplierEnum]: AwakeningSkillApplierFunc } = {
@@ -194,6 +195,11 @@ export namespace System {
     },
     [AwakeningSkillApplierEnum.BeiShui]: (room: Room, player: Player) => {
       return player.Hp < 2 || player.getCardIds(PlayerCardsArea.HandArea).length < 2;
+    },
+    [AwakeningSkillApplierEnum.PveClassicGuYong]: (room: Room, player: Player) => {
+      return [MarkEnum.ZiWei, MarkEnum.HouTu, MarkEnum.GouChen, MarkEnum.YuQing].every(
+        mark => player.getMark(mark) > 0,
+      );
     },
   };
 }
