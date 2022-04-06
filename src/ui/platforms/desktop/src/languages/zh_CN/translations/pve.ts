@@ -38,6 +38,10 @@ export const characterDictionary: Word[] = [
   { source: 'pve_ying', target: '盈' },
   { source: 'pve_gu', target: '孤' },
   { source: 'pve_he', target: '合' },
+  { source: 'pve_tanlang', target: '贪狼' },
+  { source: 'pve_wenqu', target: '文曲' },
+  { source: 'pve_wuqu', target: '武曲' },
+  { source: 'pve_pojun', target: '破军' },
 
   { source: 'pve_classic_qisha', target: '七杀' },
   { source: 'pve_classic_tiantong', target: '天同' },
@@ -132,7 +136,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_classic_guyong_description',
     target:
-      '<b>锁定技</b>，你点亮的标记拥有如下效果：玉清：结束阶段结束时摸一张牌；厚土：当你受到伤害后，获得伤害来源一张手牌；勾陈：准备阶段开始时，选择一名角色视为对其使用一张杀；紫微：每回合第一次造成伤害时，弃置一张牌并使伤害值加1；每当一种花色的判定牌亮出，或当你杀死一名角色时，你点亮一个阶段的标记。准备阶段开始时，若你已点亮四种标记时，你获得适应性加强。',
+      '<b>锁定技</b>，你点亮的标记拥有如下效果：贪狼：结束阶段结束时摸一张牌；文曲：当你受到伤害后，获得伤害来源一张手牌；武曲：准备阶段开始时，选择一名角色视为对其使用一张杀；破军：每回合第一次造成伤害时，弃置一张牌并使伤害值加1；每当一种花色的判定牌亮出，或当你杀死一名角色时，你点亮一个阶段的标记。准备阶段开始时，若你已点亮四种标记时，你获得适应性加强。',
   },
   {
     source: 'pve_classic_qisha_description',

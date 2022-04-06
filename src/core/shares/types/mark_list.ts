@@ -33,4 +33,8 @@ export const enum MarkEnum {
   PveYing = 'pve_ying',
   PveGu = 'pve_gu',
   PveHe = 'pve_he',
+  PveTanLang = 'pve_tanlang',
+  PveWenQu = 'pve_wenqu',
+  PveWuQu = 'pve_wuqu',
+  PvePoJun = 'pve_pojun',
 }

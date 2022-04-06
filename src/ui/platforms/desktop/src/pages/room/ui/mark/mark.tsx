@@ -82,6 +82,10 @@ const markIconMaps: {
   [MarkEnum.PveZhi]: pveClassicZhiIcon,
   [MarkEnum.PveHe]: pveClassicHeIcon,
   [MarkEnum.PveGu]: pveClassicGuIcon,
+  [MarkEnum.PveTanLang]: houtuIcon,
+  [MarkEnum.PveWenQu]: gouchenIcon,
+  [MarkEnum.PveWuQu]: yuqingIcon,
+  [MarkEnum.PvePoJun]: ziweiIcon,
 };
 
 export type MarkProps = {

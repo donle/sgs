@@ -197,7 +197,7 @@ export namespace System {
       return player.Hp < 2 || player.getCardIds(PlayerCardsArea.HandArea).length < 2;
     },
     [AwakeningSkillApplierEnum.PveClassicGuYong]: (room: Room, player: Player) => {
-      return [MarkEnum.ZiWei, MarkEnum.HouTu, MarkEnum.GouChen, MarkEnum.YuQing].every(
+      return [MarkEnum.PveTanLang, MarkEnum.PveWenQu, MarkEnum.PveWuQu, MarkEnum.PvePoJun].every(
         mark => player.getMark(mark) > 0,
       );
     },
