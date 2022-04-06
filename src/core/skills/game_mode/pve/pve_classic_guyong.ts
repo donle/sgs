@@ -157,16 +157,16 @@ export class PveClassicGuYongMark extends TriggerSkill {
 
     switch (suitFlag.length) {
       case 1:
-        owner.getMark(MarkEnum.YuQing) || room.addMark(owner.Id, MarkEnum.YuQing, 1);
+        owner.getMark(MarkEnum.PveTanLang) || room.addMark(owner.Id, MarkEnum.PveTanLang, 1);
         break;
       case 2:
-        owner.getMark(MarkEnum.HouTu) || room.addMark(owner.Id, MarkEnum.HouTu, 1);
+        owner.getMark(MarkEnum.PveWenQu) || room.addMark(owner.Id, MarkEnum.PveWenQu, 1);
         break;
       case 3:
-        owner.getMark(MarkEnum.GouChen) || room.addMark(owner.Id, MarkEnum.GouChen, 1);
+        owner.getMark(MarkEnum.PveWuQu) || room.addMark(owner.Id, MarkEnum.PveWuQu, 1);
         break;
       case 4:
-        owner.getMark(MarkEnum.ZiWei) || room.addMark(owner.Id, MarkEnum.ZiWei, 1);
+        owner.getMark(MarkEnum.PvePoJun) || room.addMark(owner.Id, MarkEnum.PvePoJun, 1);
         break;
       default:
         break;
@@ -200,13 +200,13 @@ export class PveClassicGuYongBuf extends TriggerSkill {
     switch (identifier) {
       case GameEventIdentifiers.PhaseStageChangeEvent:
         const phaseStageChangeEvent = content as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
-        const canTriggerYuQing =
+        const canTriggerPveTanLang =
           phaseStageChangeEvent.toStage === PlayerPhaseStages.PhaseFinishEnd &&
-          room.getMark(owner.Id, MarkEnum.YuQing) > 0;
-        const canTriggerGouChen =
+          room.getMark(owner.Id, MarkEnum.PveTanLang) > 0;
+        const canTriggerPveWuQu =
           phaseStageChangeEvent.toStage === PlayerPhaseStages.PrepareStageStart &&
-          room.getMark(owner.Id, MarkEnum.GouChen) > 0;
-        return phaseStageChangeEvent.playerId === owner.Id && (canTriggerYuQing || canTriggerGouChen);
+          room.getMark(owner.Id, MarkEnum.PveWuQu) > 0;
+        return phaseStageChangeEvent.playerId === owner.Id && (canTriggerPveTanLang || canTriggerPveWuQu);
 
       case GameEventIdentifiers.DamageEvent:
         const damageEvent = content as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
@@ -217,7 +217,7 @@ export class PveClassicGuYongBuf extends TriggerSkill {
         ) {
           return false;
         }
-        return damageEvent.toId === owner.Id && room.getMark(owner.Id, MarkEnum.HouTu) > 0;
+        return damageEvent.toId === owner.Id && room.getMark(owner.Id, MarkEnum.PveWenQu) > 0;
       default:
         return false;
     }
@@ -316,7 +316,7 @@ export class PveClassicGuYongBuf extends TriggerSkill {
 
 @ShadowSkill
 @CompulsorySkill({ name: PveClassicGuYongBuf.Name, description: PveClassicGuYongBuf.Description })
-export class PveClassicGuYongBufZiWei extends TriggerSkill {
+export class PveClassicGuYongBufPoJun extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
     return stage === DamageEffectStage.DamagedEffect;
   }
@@ -327,7 +327,7 @@ export class PveClassicGuYongBufZiWei extends TriggerSkill {
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
     return (
-      owner.getMark(MarkEnum.ZiWei) > 0 &&
+      owner.getMark(MarkEnum.PvePoJun) > 0 &&
       !owner.hasUsedSkill(this.Name) &&
       content.fromId === owner.Id &&
       owner.getCardIds().length > 0

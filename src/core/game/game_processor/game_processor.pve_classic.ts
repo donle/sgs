@@ -136,16 +136,10 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       switch (this.level) {
         case 1:
           await this.room.obtainSkill(this.human[0].Id, PveClassicGuYong.Name);
-        case 2:
-        case 3:
           break;
       }
     } else {
       switch (this.level) {
-        case 1:
-          break;
-        case 2:
-          break;
         case 3:
           await this.levelRewardSkill(this.human);
           break;
