@@ -64,6 +64,7 @@ export type TemporaryRoomCreationInfo = {
   excludedCharacters?: CharacterId[];
   playingTimeLimit?: number;
   wuxiekejiTimeLimit?: number;
+  allowObserver?: boolean;
   characterExtensions: GameCharacterExtensions[];
   coreVersion: string;
 };
