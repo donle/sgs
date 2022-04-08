@@ -85,14 +85,14 @@ export const CreateRoomDialog = (props: {
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const isCampaignMode = checkedGameMode === GameMode.Pve && numberOfPlayers === 2;
+    /* const isCampaignMode = checkedGameMode === GameMode.Pve && numberOfPlayers === 2; */
     props.onSubmit({
       numberOfPlayers,
       roomName,
       gameMode: checkedGameMode!,
       passcode,
       characterExtensions,
-      campaignMode: isCampaignMode,
+      campaignMode: false,
       coreVersion: Sanguosha.Version,
     });
   };

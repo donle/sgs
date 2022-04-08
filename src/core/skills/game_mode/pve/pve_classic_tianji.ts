@@ -15,7 +15,10 @@ export class PveClassicTianJi extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    const noDamage =
+    return (
+      owner.Id !== content.playerId &&
+      PlayerPhaseStages.FinishStageEnd === content.toStage &&
+      owner.getPlayerCards().length > 0 &&
       room.Analytics.getRecordEvents<GameEventIdentifiers.DamageEvent>(
         event => {
           return EventPacker.getIdentifier(event) === GameEventIdentifiers.DamageEvent;
@@ -24,12 +27,7 @@ export class PveClassicTianJi extends TriggerSkill {
         'round',
         undefined,
         1,
-      ).length === 0;
-    return (
-      owner.Id !== content.playerId &&
-      noDamage &&
-      PlayerPhaseStages.FinishStageEnd === content.toStage &&
-      owner.getPlayerCards().length > 0
+      ).length === 0
     );
   }
 

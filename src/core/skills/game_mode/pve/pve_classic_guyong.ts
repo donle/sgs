@@ -339,7 +339,6 @@ export class PveClassicGuYongBufPoJun extends TriggerSkill {
   }
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    console.log(`skill ${this.Name} on effect`);
     const resp = await room.askForCardDrop(
       event.fromId!,
       1,

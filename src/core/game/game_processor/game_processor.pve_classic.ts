@@ -25,13 +25,13 @@ import { PveClassicGuYong } from 'core/skills';
 
 export class PveClassicGameProcessor extends StandardGameProcessor {
   private level: number = 0;
-  private mark_list: MarkEnum[] = [];
+  private markList: MarkEnum[] = [];
   private human: Player[];
-  private activate_ai: Player[];
+  private activateAi: Player[];
 
   public getLevelMark() {
-    if (this.mark_list.length === 0) {
-      this.mark_list = [
+    if (this.markList.length === 0) {
+      this.markList = [
         MarkEnum.PveJi,
         MarkEnum.PveJian,
         MarkEnum.PveXi,
@@ -39,9 +39,9 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
         MarkEnum.PveYu,
         MarkEnum.PveZhi,
       ];
-      Algorithm.shuffle(this.mark_list);
+      Algorithm.shuffle(this.markList);
     }
-    return this.mark_list.splice(0, this.human.length * this.activate_ai.length);
+    return this.markList.splice(0, this.human.length * this.activateAi.length);
   }
 
   public assignRoles(players: Player[]) {
@@ -49,7 +49,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
     const humans = players.filter(player => !player.isSmartAI());
     players = [...ais, ...humans];
     for (let i = 0; i < players.length; i++) {
-      console.log(`player ${i} is ${players[i].Id}`);
+      this.logger.debug(`player ${i} is ${players[i].Id}`);
       players[i].Role = players[i].isSmartAI() ? PlayerRole.Rebel : PlayerRole.Loyalist;
       players[i].Position = i;
     }
@@ -67,7 +67,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
     const bossCharacter = Sanguosha.getCharacterByCharaterName('pve_soldier');
     const bossInfos = playersInfo.filter(info => this.room.getPlayerById(info.Id).isSmartAI());
     for (let i = 0; i < bossInfos.length; i++) {
-      console.log(bossInfos[i]);
+      this.logger.debug(bossInfos[i]);
       const bossPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
         changedProperties: [{ toId: bossInfos[i].Id, characterId: bossCharacter.Id, playerPosition: i }],
       };
@@ -100,11 +100,11 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       activate: boolean;
     }[] = [];
     allAI.splice(0, 3 - this.level);
-    this.activate_ai = allAI;
+    this.activateAi = allAI;
 
     this.room.Players.filter(player => player.isSmartAI()).map(player =>
       changedProperties.push(
-        this.activate_ai.includes(player)
+        this.activateAi.includes(player)
           ? {
               toId: player.Id,
               activate: true,
@@ -118,14 +118,14 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
 
     // level 1 draw game begins cards at game begin
     if (this.level > 1) {
-      for (const player of this.activate_ai) {
+      for (const player of this.activateAi) {
         this.drawGameBeginsCards(player.getPlayerInfo());
       }
     }
 
     let marks = this.getLevelMark();
     for (let i = 0; i < this.human.length; i++) {
-      this.activate_ai.map(player => {
+      this.activateAi.map(player => {
         const mark = marks.pop()!;
         this.room.addMark(player.Id, mark, 1);
         return [];
@@ -146,10 +146,10 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       }
     }
 
-    console.log(`room entry ${this.level} level`);
-    for (const ai of this.activate_ai) {
+    this.logger.debug(`room entry ${this.level} level`);
+    for (const ai of this.activateAi) {
       for (const [mark, num] of Object.entries(ai.getAllMarks())) {
-        console.log(`player: ${ai.Id} has marks ${mark}:${num}`);
+        this.logger.debug(`player: ${ai.Id} has marks ${mark}:${num}`);
       }
     }
 
@@ -295,7 +295,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
           }
         }
       } else if (stage === PlayerDiedStage.AfterPlayerDied) {
-        if (this.activate_ai.every(player => player.Dead) && this.level < 3) {
+        if (this.activateAi.every(player => player.Dead) && this.level < 3) {
           this.stageProcessor.clearProcess();
           await this.nextLevel();
         }
