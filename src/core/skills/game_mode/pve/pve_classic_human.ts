@@ -112,7 +112,6 @@ export class PveClassicGu extends TriggerSkill {
         const phaseStageChangeEvent =
           event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
         if (this.getMarkNumber(owner) > 3 && phaseStageChangeEvent.toStage === PlayerPhaseStages.PhaseFinishEnd) {
-          console.log(`add MaxHp`);
           this.useMark(room, owner, 4);
           await room.changeMaxHp(event.fromId, 1);
           await room.recover({ toId: event.fromId, recoveredHp: 1, recoverBy: event.fromId });

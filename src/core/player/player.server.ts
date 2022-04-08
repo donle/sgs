@@ -25,7 +25,7 @@ export class ServerPlayer extends Player {
 
 export class SmartPlayer extends ServerPlayer {
   constructor(protected playerPosition: number, gameMode: GameMode) {
-    super('SmartAI-' + playerPosition + Date.now(), 'AI', playerPosition, undefined, undefined, SmartAI.Instance);
+    super(`SmartAI-${playerPosition}:${Date.now()}`, 'AI', playerPosition, undefined, undefined, SmartAI.Instance);
     this.delegateOnSmartAI();
   }
 }
