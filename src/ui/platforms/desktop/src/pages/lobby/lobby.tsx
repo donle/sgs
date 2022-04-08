@@ -2,7 +2,6 @@ import logoImage from 'assets/images/lobby/logo.png';
 import { AudioLoader } from 'audio_loader/audio_loader';
 import classNames from 'classnames';
 import { Sanguosha } from 'core/game/engine';
-import { GameCardExtensions } from 'core/game/game_props';
 import { TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { TranslationPack } from 'core/translations/translation_json_tool';
@@ -206,7 +205,7 @@ export class Lobby extends React.Component<LobbyProps> {
       this.props.campaignService.createRoom(
         this.props.config.flavor,
         {
-          cardExtensions: [GameCardExtensions.Standard, GameCardExtensions.LegionFight],
+          cardExtensions: Sanguosha.getCardExtensionsFromGameMode(roomInfo.gameMode),
           ...roomInfo,
         },
         event => {
@@ -228,7 +227,7 @@ export class Lobby extends React.Component<LobbyProps> {
     } else {
       this.props.connectionService.Lobby.createGame(
         {
-          cardExtensions: [GameCardExtensions.Standard, GameCardExtensions.LegionFight],
+          cardExtensions: Sanguosha.getCardExtensionsFromGameMode(roomInfo.gameMode),
           ...roomInfo,
         },
         event => {

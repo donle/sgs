@@ -250,6 +250,6 @@ export interface WaitingRoomClientEvent extends WaitingRoomEventUtilities {
     seatId: number;
   };
   [WaitingRoomEvent.RoomCreated]: {
-    roomId: number, roomInfo: TemporaryRoomCreationInfo;
+    roomInfo: TemporaryRoomCreationInfo; coreVersion: string;
   }
 }

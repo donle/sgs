@@ -552,5 +552,6 @@ export interface WaitingRoomServerEvent extends WaitingRoomEventUtilities {
   [WaitingRoomEvent.RoomCreated]: {
     roomId: number;
     roomInfo: TemporaryRoomCreationInfo;
-  };
+    disabledSeats: number[];
+  } | { error: string };
 }

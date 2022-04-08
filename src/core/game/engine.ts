@@ -3,6 +3,7 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CardId, VirtualCardId } from 'core/cards/libs/card_props';
 import { Character, CharacterId, CharacterNationality } from 'core/characters/character';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { GameMode } from 'core/shares/types/room_props';
 import { Skill, TransformSkill } from 'core/skills/skill';
 import { GameCardExtensions, GameCharacterExtensions } from './game_props';
 import { CardLoader } from './package_loader/loader.cards';
@@ -224,6 +225,20 @@ export class Sanguosha {
       CharacterNationality.Qun,
       CharacterNationality.God,
     ];
+  }
+
+  public static getCardExtensionsFromGameMode(mode: GameMode) {
+    switch (mode) {
+      case GameMode.Hegemony:
+        //@@TODO: add hegemony card extensions here
+      case GameMode.OneVersusTwo:
+      case GameMode.Pve:
+      case GameMode.Standard:
+      case GameMode.TwoVersusTwo:
+        return [GameCardExtensions.Standard, GameCardExtensions.LegionFight];
+      default:
+        throw Precondition.UnreachableError(mode);
+    }
   }
 
   public static get Version() {
