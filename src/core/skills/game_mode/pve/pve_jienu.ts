@@ -56,19 +56,20 @@ export class PveJieNu extends TriggerSkill {
         room.getPlayerById(fromId).Hp < room.getPlayerById(fromId).LostHp)
     ) {
       if (identifier === GameEventIdentifiers.DamageEvent) {
+        const upboss = room.getPlayerById(fromId).getFlag<number>('upboss') || 0;
         const damageEvent = unknownEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
         if (damageEvent.damageType === DamageType.Normal) {
           await room.recover({
-            recoveredHp: 2,
+            recoveredHp: 2 + upboss,
             recoverBy: fromId,
             toId: fromId,
           });
-        } 
+        }
         for (const player of room.getOtherPlayers(fromId)) {
           await room.damage({
             fromId,
             toId: player.Id,
-            damage: 2,
+            damage: 2+ upboss,
             damageType: DamageType.Fire,
             triggeredBySkills: [this.Name],
           });

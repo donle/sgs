@@ -30,7 +30,7 @@ export class PveTanSuo extends TriggerSkill {
 
   public canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>): boolean {
     const cardNumber = Sanguosha.getCardById(event.cardId).CardNumber;
-    return event.fromId !== owner.Id && cardNumber > 0 && room.getMark(owner.Id, MarkEnum.PveHuaShen) < 3;
+    return event.fromId !== owner.Id && cardNumber > 0 && room.getMark(owner.Id, MarkEnum.PveHuaShen) < 3&&Sanguosha.getCardById(event.cardId).BaseType!==CardType.Equip;
   }
 
   public async onTrigger(): Promise<boolean> {
@@ -48,11 +48,18 @@ export class PveTanSuo extends TriggerSkill {
     const longshen = room.getPlayerById(event.fromId);
     const longshenlv = PveHuaShen.CHARACTERS.length - room.getMark(longshen.Id, MarkEnum.PveHuaShen);
     const cardup = longshen.getFlag<string[]>(this.GeneralName) || [];
-    const feihua = room.getPlayerById(fromId).getFlag<number>('pve_feihua') || 0;
+    const feihua =
+      room.getPlayerById(fromId).getFlag<number>('pve_feihua') ||
+      0 - room.getPlayerById(fromId).getFlag<number>('jiguanup') ||
+      0;
     const cardNumber = Sanguosha.getCardById(cardId).CardNumber;
-    const encounter = !room.getFlag(event.fromId, PveHuaShen.pveHardMode) ? Math.floor(Math.random() * 350 + 1) : Math.floor(Math.random() * 200 + 1);
-    const cardcounter = room.Analytics.getCardUseRecord(fromId, 'round').length;
-    if (cardNumber-feihua > encounter / cardcounter) {
+    const encounter = !room.getFlag(event.fromId, PveHuaShen.pveHardMode)
+      ? Math.floor(Math.random() * 200 + 1)
+      : Math.floor(Math.random() * 30 + 1);
+    const cardcounter = !room.getFlag(event.fromId, PveHuaShen.pveHardMode)
+      ? room.Analytics.getCardUseRecord(fromId, 'round').length
+      : 1;
+    if (cardNumber - feihua > encounter / cardcounter) {
       room.broadcast(GameEventIdentifiers.CustomGameDialog, {
         translationsMessage: TranslationPack.translationJsonPatcher(
           '{0} ouyujiguan',
@@ -67,10 +74,10 @@ export class PveTanSuo extends TriggerSkill {
         damageType: DamageType.Normal,
         triggeredBySkills: [this.Name],
       });
-      if (encounter / cardcounter-feihua >= 10 && encounter / cardcounter-feihua <= 16) {
+      if (encounter / cardcounter - feihua >= 10 && encounter / cardcounter - feihua <= 16) {
         await room.changeMaxHp(fromId, -1);
       }
-      if (cardNumber-feihua / (encounter / cardcounter) > 2) {
+      if (cardNumber - feihua / (encounter / cardcounter) > 3) {
         room.broadcast(GameEventIdentifiers.CustomGameDialog, {
           translationsMessage: TranslationPack.translationJsonPatcher(
             '{0} ouyujiguan',
@@ -101,7 +108,7 @@ export class PveTanSuo extends TriggerSkill {
         this.treasure = 0;
         if (cardup.length < 9) {
           const trcard = Sanguosha.getCardNameByType(
-            types => types.includes(CardType.Trick) || types.includes(CardType.Basic) ,
+            types => types.includes(CardType.Trick) || types.includes(CardType.Basic),
           );
           const upcard = Math.floor(Math.random() * 4 + 1);
           const options = [

@@ -29,13 +29,15 @@ export const characterDictionary: Word[] = [
   { source: 'pve_buxu times: {0}', target: '不[{0}]' },
   { source: 'pve_dudu', target: '都督' },
   { source: 'pve_dudu times: {0}', target: '都[{0}]' },
-  { source: 'pve_feihua', target: '废话' },
+  { source: 'pve_feihua', target: '飞华' },
   { source: 'pve_feihua times: {0}', target: '废[{0}]' },
   { source: 'pve_chengxiang', target: '丞相' },
   { source: 'pve_chengxiang times: {0}', target: '丞[{0}]' },
   { source: 'pve_zhibing', target: '知兵' },
   { source: 'pve_zhibing times: {0}', target: '知[{0}]' },
   { source: 'pve_pyjiaoyi', target: '交易' },
+  { source: 'pve_tishen', target: '替身' },
+  { source: 'pve_zhiheng', target: '再议' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -109,7 +111,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_beifa_description',
     target:
-      '<b>锁定技</b>，你失去最后一张牌时，令一名角色失去X点体力。（X为此技能等级）',
+      '你失去最后一张牌时，令一名角色失去X点体力。（X为此技能等级）',
   },
   {
     source: 'pve_buxu_description',
@@ -124,12 +126,12 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_feihua_description',
     target:
-      '<b>锁定技</b>，你触发减少触发机关概率等级越高提升越大',
+      '<b>锁定技</b>，你触发减少触发机关概率,等级越高提升越大',
   },
   {
     source: 'pve_chengxiang_description',
     target:
-      '<b>锁定技</b>，出牌阶段结束时，你随机回复1-3点体力。（升级提升1点回复。）',
+      '出牌阶段结束时，你随机回复1-3点体力。（升级提升1点回复。）',
   },
   {
     source: 'pve_zhibing_description',
@@ -139,10 +141,19 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_pyjiaoyi_description',
     target:
-      '限一次,通关后次数+1，出牌阶段，你可以和BOSS进行一次交易，牺牲一些代价获得宝物或者升级宝物。',
+      '出牌阶段限一次,通关后次数+1，你可以和BOSS进行一次交易，支付一些代价获得宝物或者升级宝物。',
+  },
+  {
+    source: 'pve_tishen_description',
+    target:
+      '准备阶段，你可以将体力恢复至体力上限并摸等量张牌',
+  },
+  {
+    source: 'pve_zhiheng_description',
+    target:
+      '出牌阶段限一次，你可以弃置至少一张牌，然后摸等量的牌。若你以此法弃置了所有的手牌，则额外摸一张牌。',
   },
 ];
-
 
 export const promptDescriptions: Word[] = [
   {
@@ -185,10 +196,26 @@ export const promptDescriptions: Word[] = [
     source: 'pve_pyjiaoyi: A dirty deal2',
     target: '交给BOSS，全部手牌（至少1张）。',
   },
+  {
+    source: 'pve_pyjiaoyi: A dirty deal3',
+    target: 'BOSS似乎在让你一手。',
+  },
+  {
+    source: 'pve_pyjiaoyi: A dirty deal4',
+    target: 'BOSS正在不怀好意。',
+  },
+  {
+    source: 'pve_pyjiaoyi: A dirty deal5',
+    target: 'BOSS准备设下圈套。',
+  },
 ];
 export const eventDictionary: Word[] = [
   { source: 'pve-easy-mode', target: '低难度' },
   { source: 'pve-hard-mode', target: '高难度' },
   { source: '{0} ouyujiguan', target: '{0} 偶遇了机关' },
   { source: '{0} qiyubaowu', target: '{0} 奇遇宝物' },
+  {
+    source: '{0} {1}pve, please choose a character',
+    target: '挑战者, 请选择一名武将',
+  },
 ]

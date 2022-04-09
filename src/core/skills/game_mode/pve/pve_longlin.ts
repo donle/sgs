@@ -37,12 +37,13 @@ export class PveLongLin extends TriggerSkill {
   }
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    const upboss = room.getPlayerById(event.fromId).getFlag<number>('upboss') || 0;
     if (room.getPlayerById(event.fromId).isInjured()) {
       await room.recover({ recoverBy: event.fromId, recoveredHp: 2, toId: event.fromId });
-      await room.drawCards(1, event.fromId, 'top', event.fromId, this.Name);
+      await room.drawCards(1+upboss*2, event.fromId, 'top', event.fromId, this.Name);
     } else {
       await room.changeMaxHp(event.fromId, 1);
-      await room.drawCards(3, event.fromId, 'top', event.fromId, this.Name);
+      await room.drawCards(3+upboss*2, event.fromId, 'top', event.fromId, this.Name);
     }
 
     return true;
@@ -108,7 +109,6 @@ export class PveLongLinDraw extends TriggerSkill {
         }
         return allSuits;
       }, []).length;
-
     if (extraDrawNum !== 0) {
       const drawCardEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DrawCardEvent>;
       drawCardEvent.drawAmount += extraDrawNum;

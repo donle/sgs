@@ -36,6 +36,8 @@ export const characterDictionary: Word[] = [
   { source: 'pve_zhibing', target: '知兵' },
   { source: 'pve_zhibing times: {0}', target: '知[{0}]' },
   { source: 'pve_pyjiaoyi', target: '交易' },
+  { source: 'pve_tishen', target: '替身' },
+  { source: 'pve_zhiheng', target: '再議' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -69,8 +71,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'pve_longlie_description',
-    target:
-      '<b>鎖定技</b>，你使用【殺】不能被響應；遊戲人數大於2時，此【殺】傷害+1',
+    target: '<b>鎖定技</b>，你使用【殺】不能被響應；遊戲人數大於2時，此【殺】傷害+1',
   },
   {
     source: 'pve_qinlv_description',
@@ -93,53 +94,53 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'pve_lige_description',
-    target:
-      '<b>鎖定技</b>，一名其他角色結束階段開始時，其交給你一張牌或令你摸兩張牌，選擇後視為對其使用【決鬥】',
+    target: '<b>鎖定技</b>，一名其他角色結束階段開始時，其交給你一張牌或令你摸兩張牌，選擇後視為對其使用【決鬥】',
   },
   {
     source: 'pve_bibao_description',
-    target:
-      '<b>鎖定技</b>，你造成或受到傷害時，你回復1點體力且此傷害+1，你摸等同傷害+1張牌。',
+    target: '<b>鎖定技</b>，你造成或受到傷害時，你回復1點體力且此傷害+1，你摸等同傷害+1張牌。',
   },
   {
     source: 'pve_tansuo_description',
-    target:
-      '<b>鎖定技</b>，第四關及之後，玩家使用牌有概率觸發機關或奇遇寶物。玩家共用強化池',
+    target: '<b>鎖定技</b>，第四關及之後，玩家使用牌有概率觸發機關或奇遇寶物。玩家共用強化池',
   },
   {
     source: 'pve_beifa_description',
-    target:
-      '<b>鎖定技</b>，你失去最後一張牌時，令一名角色失去X點體力。（X爲此技能等級）',
+    target: '你失去最後一張牌時，令一名角色失去X點體力。（X爲此技能等級）',
   },
   {
     source: 'pve_buxu_description',
-    target:
-      '<b>鎖定技</b>，BOSS回合內其使用牌次數≤此技能等級，則無效。',
+    target: '<b>鎖定技</b>，BOSS回合內其使用牌次數≤此技能等級，則無效。',
   },
   {
     source: 'pve_dudu_description',
-    target:
-      '出牌階段限一次，你摸1張牌。（升級多摸兩張）',
+    target: '出牌階段限一次，你摸1張牌。（升級多摸兩張）',
   },
   {
     source: 'pve_feihua_description',
-    target:
-      '<b>鎖定技</b>，你使用牌點數-X。（X爲此技能等級）',
+    target: '<b>鎖定技</b>，你觸發減少觸發機關概率,等級越高提升越大',
   },
   {
     source: 'pve_chengxiang_description',
-    target:
-      '<b>鎖定技</b>，出牌階段結束時，你隨機回複1-3點體力。（升級提升1點回複。）',
+    target: '出牌階段結束時，你隨機回複1-3點體力。（升級提升1點回複。）',
   },
   {
     source: 'pve_zhibing_description',
-    target:
-      '出牌階段限一次，對一名角色造成隨機1-3點傷害。（升級提升1點傷害上限）',
+    target: '出牌階段限一次，對一名角色造成隨機1-3點傷害。（升級提升1點傷害上限）',
   },
   {
     source: 'pve_pyjiaoyi_description',
+    target: '出牌階段限一次,通關後次數+1，你可以和BOSS進行一次交易，支付一些代價獲得寶物或者升級寶物。',
+  },
+  {
+    source: 'pve_tishen_description',
     target:
-      '限一次,通關後次數+1，出牌階段，你可以和BOSS進行一次交易，犧牲一些代價獲得寶物或者升級寶物。',
+      '準備階段，你可以將體力恢復至體力上限並摸等量張牌',
+  },
+  {
+    source: 'pve_zhiheng_description',
+    target:
+      '出牌階段限一次，你可以棄置至少一張牌，然後摸等量的牌。若你以此法棄置了所有的手牌，則額外摸一張牌。',
   },
 ];
 
@@ -177,6 +178,18 @@ export const promptDescriptions: Word[] = [
     target: '交給BOSS，全部手牌（至少1張）。',
   },
   {
+    source: 'pve_pyjiaoyi: A dirty deal3',
+    target: 'BOSS似乎在讓你一手。',
+  },
+  {
+    source: 'pve_pyjiaoyi: A dirty deal4',
+    target: 'BOSS正在不懷好意。',
+  },
+  {
+    source: 'pve_pyjiaoyi: A dirty deal5',
+    target: 'BOSS準備設下圈套。',
+  },
+  {
     source: 'pve_huashen:choose a role losehp 1',
     target: '選擇一名角色，令其失去1點體力',
   },
@@ -190,4 +203,8 @@ export const eventDictionary: Word[] = [
   { source: 'pve-hard-mode', target: '高難度' },
   { source: '{0} ouyujiguan', target: '{0} 偶遇了機關' },
   { source: '{0} qiyubaowu', target: '{0} 奇遇寶物' },
-]
+  {
+    source: 'pve, please choose a character',
+    target: '挑戰者, 請選擇一名武將',
+  },
+];

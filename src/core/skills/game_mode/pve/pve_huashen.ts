@@ -160,6 +160,59 @@ export class PveHuaShen extends TriggerSkill {
       const otherPlayers = room.AlivePlayers.filter(player => player.Id !== event.fromId);
       for (const player of otherPlayers) {
         await room.obtainSkill(player.Id, 'pve_pyjiaoyi');
+        if (player.Character.Name==='guojia') {
+          await room.changeMaxHp(player.Id, 6);
+        }else if (player.Character.Name==='simayi') {
+          await room.obtainSkill(player.Id, 'renjie');
+          await room.obtainSkill(player.Id, 'jilve');
+        }
+        else if (player.Character.Name==='yujin') {
+          await room.obtainSkill(player.Id, 'tuntian');
+          await room.obtainSkill(player.Id, 'jixi');
+        }else if (player.Character.Name==='caoren') {
+          await room.obtainSkill(player.Id, 'qingjiao');
+        }else if (player.Character.Name==='xuchu') {
+          await room.obtainSkill(player.Id, 'bifa');
+        } else if (player.Character.Name==='guanyu') {
+          await room.changeMaxHp(player.Id, 2);
+          await room.obtainSkill(player.Id, 'jiuchi');
+        }else if (player.Character.Name==='wolong') {
+          await room.obtainSkill(player.Id, 'pve_feihua');
+          room.setFlag<number>(player.Id, 'pve_feihua', 3)
+          await room.obtainSkill(player.Id, 'pve_chengxiang');
+          await room.obtainSkill(player.Id, 'pve_beifa');
+        }else if (player.Character.Name==='zhangfei') {
+          await room.obtainSkill(player.Id, 'pve_tishen');
+        }else if (player.Character.Name==='huangzhong') {
+          await room.obtainSkill(player.Id, 'yingzi');
+        }else if (player.Character.Name==='machao') {
+          await room.obtainSkill(player.Id, 'songci');
+          await room.obtainSkill(player.Id, 'liangzhu');
+          await room.obtainSkill(player.Id, 'liji');
+        }else if (player.Character.Name==='luxun') {
+          await room.obtainSkill(player.Id, 'jieyin');
+          await room.obtainSkill(player.Id, 'liangzhu');
+        }else if (player.Character.Name==='sunce') {
+          await room.obtainSkill(player.Id, 'pve_buxu');
+          room.setFlag<number>(player.Id, 'pve_buxu', 3)
+        }else if (player.Character.Name==='zhouyu') {
+          await room.changeMaxHp(player.Id, 2);
+          await room.obtainSkill(player.Id, 'pve_dudu');
+          await room.obtainSkill(player.Id, 'qinxue');
+        }else if (player.Character.Name==='lvmeng') {
+          await room.obtainSkill(player.Id, 'jiang');
+        }else if (player.Character.Name==='lusu') {
+          await room.obtainSkill(player.Id, 'pve_dudu');
+          room.setFlag<number>(player.Id, 'pve_buxu', 5)
+        }else if (player.Character.Name==='liubei') {
+          await room.obtainSkill(player.Id, 'pve_zhibing');
+          room.setFlag<number>(player.Id, 'pve_zhibing', 3)
+        }else if (player.Character.Name==='caocao') {
+          await room.obtainSkill(player.Id, 'pve_chengxiang');
+          room.setFlag<number>(player.Id, 'pve_chengxiang', 2)
+        }else if (player.Character.Name==='sunquan') {
+          await room.obtainSkill(player.Id, 'pve_zhiheng');
+        }
       }
     } else {
       const { triggeredOnEvent } = event;
