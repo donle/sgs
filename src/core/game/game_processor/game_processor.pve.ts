@@ -41,7 +41,39 @@ export class PveGameProcessor extends StandardGameProcessor {
     this.room.doNotify(notifyOtherPlayer);
 
     for (let i = 1; i < playersInfo.length; i++) {
-      const characters = this.getSelectableCharacters(5, selectableCharacters, selectedCharacters);
+      const wei = [
+        Sanguosha.getCharacterByCharaterName('simayi'),
+        Sanguosha.getCharacterByCharaterName('yujin'),
+        Sanguosha.getCharacterByCharaterName('guojia'),
+        Sanguosha.getCharacterByCharaterName('caoren'),
+        Sanguosha.getCharacterByCharaterName('xuchu'),
+      ];
+      const shu = [
+        Sanguosha.getCharacterByCharaterName('guanyu'),
+        Sanguosha.getCharacterByCharaterName('wolong'),
+        Sanguosha.getCharacterByCharaterName('zhangfei'),
+        Sanguosha.getCharacterByCharaterName('huangzhong'),
+        Sanguosha.getCharacterByCharaterName('machao'),
+      ];
+      const wu = [
+        Sanguosha.getCharacterByCharaterName('luxun'),
+        Sanguosha.getCharacterByCharaterName('sunce'),
+        Sanguosha.getCharacterByCharaterName('zhouyu'),
+        Sanguosha.getCharacterByCharaterName('lvmeng'),
+        Sanguosha.getCharacterByCharaterName('lusu'),
+      ];
+      const zhuqungod = [
+        Sanguosha.getCharacterByCharaterName('liubei'),
+        Sanguosha.getCharacterByCharaterName('caocao'),
+        Sanguosha.getCharacterByCharaterName('sunquan'),
+        Sanguosha.getCharacterByCharaterName('zhangjiao'),
+        Sanguosha.getCharacterByCharaterName('xingdaorong'),
+      ];
+      const characters = this.getSelectableCharacters(2, selectableCharacters, selectedCharacters);
+      characters.push(wei[Math.floor(Math.random() * wei.length)]);
+      characters.push(shu[Math.floor(Math.random() * shu.length)]);
+      characters.push(wu[Math.floor(Math.random() * wu.length)]);
+      characters.push(zhuqungod[Math.floor(Math.random() * zhuqungod.length)]);
       characters.forEach(character => selectedCharacters.push(character.Id));
       const playerInfo = playersInfo[i];
       this.room.notify(
@@ -51,7 +83,7 @@ export class PveGameProcessor extends StandardGameProcessor {
           characterIds: characters.map(character => character.Id),
           toId: playerInfo.Id,
           translationsMessage: TranslationPack.translationJsonPatcher(
-            'lord is {0}, your role is {1}, please choose a character',
+            '{0} {1}pve, please choose a character',
             Sanguosha.getCharacterById(lordCharacter.Id).Name,
             Functional.getPlayerRoleRawText(playerInfo.Role!, GameMode.Pve),
           ).extract(),
@@ -82,10 +114,6 @@ export class PveGameProcessor extends StandardGameProcessor {
         toId: playerInfo.Id,
         characterId: character.Id,
       });
-
-      if (character.Nationality === CharacterNationality.God) {
-        askForChooseNationalities.push(this.askForChoosingNationalities(playerInfo.Id));
-      }
     }
 
     this.room.doNotify(notifyOtherPlayer);

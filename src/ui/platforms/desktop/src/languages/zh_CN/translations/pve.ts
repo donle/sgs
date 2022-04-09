@@ -67,13 +67,15 @@ export const characterDictionary: Word[] = [
   { source: 'pve_buxu times: {0}', target: '不[{0}]' },
   { source: 'pve_dudu', target: '都督' },
   { source: 'pve_dudu times: {0}', target: '都[{0}]' },
-  { source: 'pve_feihua', target: '废话' },
+  { source: 'pve_feihua', target: '飞华' },
   { source: 'pve_feihua times: {0}', target: '废[{0}]' },
   { source: 'pve_chengxiang', target: '丞相' },
   { source: 'pve_chengxiang times: {0}', target: '丞[{0}]' },
   { source: 'pve_zhibing', target: '知兵' },
   { source: 'pve_zhibing times: {0}', target: '知[{0}]' },
   { source: 'pve_pyjiaoyi', target: '交易' },
+  { source: 'pve_tishen', target: '替身' },
+  { source: 'pve_zhiheng', target: '再议' },
 ];
 
 export const skillDescriptions: Word[] = [
@@ -209,6 +211,14 @@ export const skillDescriptions: Word[] = [
     source: 'pve_classic_lianzhen_description',
     target: '回合开始时，你可以指定一名角色，该角色每获得一张牌，你摸一张牌；若此时在你的回合内，你额外摸一张牌；',
   },
+  {
+    source: 'pve_tishen_description',
+    target: '准备阶段，你可以将体力恢复至体力上限并摸等量张牌',
+  },
+  {
+    source: 'pve_zhiheng_description',
+    target: '出牌阶段限一次，你可以弃置至少一张牌，然后摸等量的牌。若你以此法弃置了所有的手牌，则额外摸一张牌。',
+  },
 ];
 
 export const promptDescriptions: Word[] = [
@@ -264,6 +274,18 @@ export const promptDescriptions: Word[] = [
     source: 'pve_pyjiaoyi: A dirty deal2',
     target: '交给BOSS，全部手牌（至少1张）。',
   },
+  {
+    source: 'pve_pyjiaoyi: A dirty deal3',
+    target: 'BOSS似乎在让你一手。',
+  },
+  {
+    source: 'pve_pyjiaoyi: A dirty deal4',
+    target: 'BOSS正在不怀好意。',
+  },
+  {
+    source: 'pve_pyjiaoyi: A dirty deal5',
+    target: 'BOSS准备设下圈套。',
+  },
 ];
 export const eventDictionary: Word[] = [
   { source: 'pve-easy-mode', target: '低难度' },
@@ -289,5 +311,9 @@ export const eventDictionary: Word[] = [
   {
     source: '{0}: you can drop a card to deal 1 thunder damage to current player?',
     target: '{0}: 你可以弃置一张牌，并对当前回合角色造成一点雷属性伤害',
+  },
+  {
+    source: '{0} {1}pve, please choose a character',
+    target: '挑战者, 请选择一名武将',
   },
 ];

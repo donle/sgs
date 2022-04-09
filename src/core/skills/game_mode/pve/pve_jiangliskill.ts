@@ -1,5 +1,5 @@
 import { VirtualCard } from 'core/cards/card';
-import { CardId } from 'core/cards/libs/card_props';
+import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import {
   CardMoveArea,
   CardMoveReason,
@@ -10,11 +10,12 @@ import {
 } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
-import { CardEffectStage, CardMoveStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
+import { CardEffectStage, CardMoveStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { AllStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { MarkEnum } from 'core/shares/types/mark_list';
 import { ActiveSkill, OnDefineReleaseTiming, TransformSkill, TriggerSkill } from 'core/skills/skill';
 import { CommonSkill, CompulsorySkill } from 'core/skills/skill_wrappers';
@@ -322,12 +323,16 @@ export class PvePyJiaoYi extends ActiveSkill {
   ): Promise<boolean> {
     const BOSS = room.getOtherPlayers(skillUseEvent.fromId).filter(player => player.hasSkill('pve_huashen'));
     for (const player of BOSS) {
-      const py = Math.floor(Math.random() * 2 + 1);
+      const py1 = Math.floor(Math.random() * 5 + 1);
       const pyskill = ['pve_beifa', 'pve_buxu', 'pve_dudu', 'pve_feihua', 'pve_chengxiang', 'pve_zhibing'];
       const options = [pyskill[Math.floor(Math.random() * pyskill.length)]];
       while (3 > options.length) {
         options.push(pyskill[Math.floor(Math.random() * pyskill.length)]);
       }
+      options.push('yijue:cancel');
+      const py = (py1 === 2&&room.getPlayerById(skillUseEvent.fromId).getCardIds(PlayerCardsArea.HandArea).length===0)
+      ? 3
+      : py1;
       const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
         options,
         toId: skillUseEvent.fromId,
@@ -346,7 +351,7 @@ export class PvePyJiaoYi extends ActiveSkill {
         GameEventIdentifiers.AskForChoosingOptionsEvent,
         skillUseEvent.fromId,
       );
-      if (selectedOption) {
+      if (selectedOption&&selectedOption!=='yijue:cancel') {
         if (py === 1) {
           await room.changeMaxHp(skillUseEvent.fromId, -1);
           await room.changeMaxHp(player.Id, 1);
@@ -363,6 +368,21 @@ export class PvePyJiaoYi extends ActiveSkill {
             proposer: skillUseEvent.fromId,
             triggeredBySkills: [this.Name],
           });
+        } else if (py === 3) {
+          const skilllv = room.getPlayerById(player.Id).getFlag<number>('upboss') || 0;
+          room.setFlag<number>(player.Id, 'upboss', skilllv + 1);
+        } else if (py === 4) {
+          const damage = Math.floor(Math.random() * 3 + 1);
+          await room.damage({
+            fromId: undefined,
+            toId: skillUseEvent.fromId,
+            damage,
+            damageType: DamageType.Normal,
+            triggeredBySkills: [this.Name],
+          });
+        } else if (py === 5) {
+          const skilllv = room.getPlayerById(player.Id).getFlag<number>('jiguanup') || 0;
+          room.setFlag<number>(player.Id, 'jiguanup', skilllv + 1);
         }
         if (room.getPlayerById(skillUseEvent.fromId).hasSkill(selectedOption)) {
           const skilllv = room.getPlayerById(skillUseEvent.fromId).getFlag<number>(selectedOption) || 0;
@@ -379,6 +399,105 @@ export class PvePyJiaoYi extends ActiveSkill {
         }
       }
     }
+    return true;
+  }
+}
+
+@CommonSkill({ name: 'pve_tishen', description: 'pve_tishen_description' })
+export class TiShen extends TriggerSkill {
+  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
+    return stage === PhaseStageChangeStage.StageChanged;
+  }
+
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
+    return (
+      owner.Id === content.playerId && PlayerPhaseStages.PrepareStageStart === content.toStage && owner.Hp < owner.MaxHp
+    );
+  }
+
+  async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    return true;
+  }
+
+  async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    const { fromId } = skillUseEvent;
+    const from = room.getPlayerById(fromId);
+    const recover = from.MaxHp - from.Hp;
+
+    await room.recover({
+      recoveredHp: recover,
+      recoverBy: fromId,
+      toId: fromId,
+    });
+
+    await room.drawCards(recover, fromId, 'top', fromId, this.Name);
+
+    return true;
+  }
+}
+
+@CommonSkill({ name: 'pve_zhiheng', description: 'pve_zhiheng_description' })
+export class ZhiHeng extends ActiveSkill {
+
+  public canUse(room: Room, owner: Player): boolean {
+    return !owner.hasUsedSkill(this.Name);
+  }
+
+  public isRefreshAt(room: Room, owner: Player, phase: PlayerPhase): boolean {
+    return phase === PlayerPhase.PlayCardStage;
+  }
+
+  public numberOfTargets(): number {
+    return 0;
+  }
+
+  public cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
+    return cards.length > 0;
+  }
+
+  public isAvailableTarget(): boolean {
+    return false;
+  }
+
+  public isAvailableCard(owner: PlayerId, room: Room, cardId: CardId): boolean {
+    return room.canDropCard(owner, cardId);
+  }
+
+  public async onUse(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>): Promise<boolean> {
+    return true;
+  }
+
+  public async onEffect(
+    room: Room,
+    skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>,
+  ): Promise<boolean> {
+    skillUseEvent.cardIds = Precondition.exists(skillUseEvent.cardIds, 'Unable to get zhiheng cards');
+
+    const handCards = room.getPlayerById(skillUseEvent.fromId).getCardIds(PlayerCardsArea.HandArea);
+    let additionalCardDraw = 0;
+    if (
+      skillUseEvent.cardIds.filter(zhihengCard => handCards.includes(zhihengCard)).length === handCards.length &&
+      handCards.length > 0
+    ) {
+      additionalCardDraw++;
+    }
+
+    await room.dropCards(
+      CardMoveReason.SelfDrop,
+      skillUseEvent.cardIds,
+      skillUseEvent.fromId,
+      skillUseEvent.fromId,
+      this.Name,
+    );
+
+    await room.drawCards(
+      skillUseEvent.cardIds.length + additionalCardDraw,
+      skillUseEvent.fromId,
+      undefined,
+      skillUseEvent.fromId,
+      this.Name,
+    );
+
     return true;
   }
 }
