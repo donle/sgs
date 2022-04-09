@@ -92,9 +92,9 @@ class App {
     this.logger.debug('game mode is ' + content.gameMode);
     switch (content.gameMode) {
       case GameMode.Pve:
-        if ([2, 3].includes(content.numberOfPlayers)) {
+        if (content.numberOfPlayers <= 3) {
           return new PveGameProcessor(new StageProcessor(this.logger), this.logger);
-        } else if ([4, 5].includes(content.numberOfPlayers)) {
+        } else if (content.numberOfPlayers <= 5) {
           return new PveClassicGameProcessor(new StageProcessor(this.logger), this.logger);
         } else {
           throw new Error('Pve Player Number Abnormal ');

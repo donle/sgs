@@ -32,9 +32,9 @@ export class CampaignService {
   ): GameProcessor => {
     switch (roomInfo.gameMode) {
       case GameMode.Pve:
-        if ([2, 3].includes(roomInfo.numberOfPlayers)) {
+        if (roomInfo.numberOfPlayers <= 3) {
           return new PveGameProcessor(new StageProcessor(this.logger), this.logger);
-        } else if ([4, 5].includes(roomInfo.numberOfPlayers)) {
+        } else if (roomInfo.numberOfPlayers <= 5) {
           return new PveClassicGameProcessor(new StageProcessor(this.logger), this.logger);
         } else {
           throw new Error('Pve Player Number Abnormal ');
