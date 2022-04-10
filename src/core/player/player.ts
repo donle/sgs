@@ -1001,7 +1001,6 @@ export abstract class Player implements PlayerInfo {
   }
 
   public revive() {
-    Precondition.assert(this.Hp <= 0, `revive can only be executed after player hp > 0`);
     this.dead = false;
   }
 
