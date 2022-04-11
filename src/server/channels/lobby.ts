@@ -16,12 +16,17 @@ import { Logger } from 'core/shares/libs/logger/logger';
 import { GameMode } from 'core/shares/types/room_props';
 import { ChatSocketEvent, LobbySocketEvent } from 'core/shares/types/server_types';
 import { ServerConfig } from 'server/server_config';
+import { RoomService } from 'server/services/room_service';
 
 export class LobbyEventChannel {
   private eventHandlers: { [E in LobbySocketEvent]?: (socket: SocketIO.Socket) => (...args: any) => void } = {};
-  private rooms: ServerRoom[] = [];
 
-  constructor(private socket: SocketIO.Server, private logger: Logger, private config: ServerConfig) {
+  constructor(
+    private roomService: RoomService,
+    private socket: SocketIO.Server,
+    private logger: Logger,
+    private config: ServerConfig,
+  ) {
     this.socket.of('/chat').on('connect', socket => {
       socket.on(ChatSocketEvent.Chat, this.onGameChat);
     });
@@ -65,22 +70,7 @@ export class LobbyEventChannel {
   };
 
   private readonly onCheckingRoomExist = (socket: SocketIO.Socket) => (id: RoomId) => {
-    socket.emit(LobbySocketEvent.CheckRoomExist.toString(), this.rooms.find(room => room.RoomId === id) !== undefined);
-  };
-
-  private readonly createDifferentModeGameProcessor = (gameMode: GameMode): GameProcessor => {
-    this.logger.debug('game mode is ' + gameMode);
-    switch (gameMode) {
-      case GameMode.Pve:
-        return new PveGameProcessor(new StageProcessor(this.logger), this.logger);
-      case GameMode.OneVersusTwo:
-        return new OneVersusTwoGameProcessor(new StageProcessor(this.logger), this.logger);
-      case GameMode.TwoVersusTwo:
-        return new TwoVersusTwoGameProcessor(new StageProcessor(this.logger), this.logger);
-      case GameMode.Standard:
-      default:
-        return new StandardGameProcessor(new StageProcessor(this.logger), this.logger);
-    }
+    socket.emit(LobbySocketEvent.CheckRoomExist.toString(), this.roomService.checkRoomExist(id));
   };
 
   private readonly onGameCreated = (socket: SocketIO.Socket) => (content: GameInfo) => {
@@ -92,26 +82,7 @@ export class LobbyEventChannel {
     }
 
     const roomId = Date.now();
-    const roomSocket = new ServerSocket(this.join(`/room-${roomId}`), roomId, this.logger);
-    const room = new ServerRoom(
-      roomId,
-      content,
-      roomSocket,
-      this.createDifferentModeGameProcessor(content.gameMode),
-      new RecordAnalytics(),
-      [],
-      this.config.mode,
-      this.logger,
-      content.gameMode,
-      new GameCommonRules(),
-      new RoomEventStacker(),
-    );
-
-    room.onClosed(() => {
-      this.rooms = this.rooms.filter(r => r !== room);
-    });
-
-    this.rooms.push(room);
+    this.roomService.createRoom(this.join(`/room-${roomId}`), content, this.config.mode);
     socket.emit(LobbySocketEvent.GameCreated.toString(), {
       roomId,
       roomInfo: content,
@@ -119,8 +90,7 @@ export class LobbyEventChannel {
   };
 
   private readonly onQueryRoomsInfo = (socket: SocketIO.Socket) => () => {
-    const roomsInfo = this.rooms.map(room => room.getRoomInfo());
-    socket.emit(LobbySocketEvent.QueryRoomList.toString(), roomsInfo);
+    socket.emit(LobbySocketEvent.QueryRoomList.toString(), this.roomService.getRoomsInfo());
   };
 
   join(channelId: string) {
