@@ -202,49 +202,38 @@ export class Lobby extends React.Component<LobbyProps> {
 
   private createRoom(roomInfo: TemporaryRoomCreationInfo) {
     if (roomInfo.campaignMode) {
-      this.props.campaignService.createRoom(
-        this.props.config.flavor,
-        {
-          cardExtensions: Sanguosha.getCardExtensionsFromGameMode(roomInfo.gameMode),
-          ...roomInfo,
-        },
-        event => {
-          const { packet, ping, hostTag, error } = event;
-          if (packet) {
-            const { roomId, roomInfo } = packet;
-            const hostConfig = this.props.config.host.find(config => config.hostTag === hostTag);
-            this.props.history.push(`/room/${roomId}`, {
-              gameMode: roomInfo.gameMode,
-              ping,
-              hostConfig,
-              campaignMode: true,
-            });
-          } else {
-            console.error(error);
-          }
-        },
-      );
+      this.props.campaignService.createRoom(this.props.config.flavor, roomInfo, event => {
+        const { packet, ping, hostTag, error } = event;
+        if (packet) {
+          const { roomId, roomInfo: gameInfo } = packet;
+          const hostConfig = this.props.config.host.find(config => config.hostTag === hostTag);
+          this.props.history.push(`/room/${roomId}`, {
+            gameMode: gameInfo.gameMode,
+            ping,
+            hostConfig,
+            campaignMode: gameInfo.campaignMode,
+            hostPlayerId: roomInfo.hostPlayerId,
+          });
+        } else {
+          console.error(error);
+        }
+      });
     } else {
-      this.props.connectionService.Lobby.createGame(
-        {
-          cardExtensions: Sanguosha.getCardExtensionsFromGameMode(roomInfo.gameMode),
-          ...roomInfo,
-        },
-        event => {
-          const { packet, ping, hostTag, error } = event;
-          if (packet) {
-            const { roomId, roomInfo } = packet;
-            const hostConfig = this.props.config.host.find(config => config.hostTag === hostTag);
-            this.props.history.push(`/room/${roomId}`, {
-              gameMode: roomInfo.gameMode,
-              ping,
-              hostConfig,
-            });
-          } else {
-            console.error(error);
-          }
-        },
-      );
+      this.props.connectionService.Lobby.createGame(roomInfo, event => {
+        const { packet, ping, hostTag, error } = event;
+        if (packet) {
+          const { roomId, roomInfo: gameInfo } = packet;
+          const hostConfig = this.props.config.host.find(config => config.hostTag === hostTag);
+          this.props.history.push(`/waiting-room/${roomId}`, {
+            gameMode: gameInfo.gameMode,
+            ping,
+            hostConfig,
+            hostPlayerId: roomInfo.hostPlayerId,
+          });
+        } else {
+          console.error(error);
+        }
+      });
     }
   }
 
@@ -504,6 +493,7 @@ export class Lobby extends React.Component<LobbyProps> {
             imageLoader={this.props.imageLoader}
             translator={this.props.translator}
             electronLoader={this.props.electronLoader}
+            playerName={this.username}
             onSubmit={this.onRoomCreated}
             onCancel={this.onRoomCreationCancelled}
           />

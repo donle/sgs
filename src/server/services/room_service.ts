@@ -1,38 +1,35 @@
 import { WorkPlace } from 'core/event/event';
 import { GameProcessor } from 'core/game/game_processor/game_processor';
-import { OneVersusTwoGameProcessor } from 'core/game/game_processor/game_processor.1v2';
-import { TwoVersusTwoGameProcessor } from 'core/game/game_processor/game_processor.2v2';
-import { PveGameProcessor } from 'core/game/game_processor/game_processor.pve';
-import { StandardGameProcessor } from 'core/game/game_processor/game_processor.standard';
-import { GameInfo } from 'core/game/game_props';
+import { GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
 import { RecordAnalytics } from 'core/game/record_analytics';
-import { StageProcessor } from 'core/game/stage_processor';
 import { ServerSocket } from 'core/network/socket.server';
 import { Player } from 'core/player/player';
 import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { RoomEventStacker } from 'core/room/utils/room_event_stack';
-import { Logger } from 'core/shares/libs/logger/logger';
+import { WaitingRoomInfo } from 'core/room/waiting_room';
 import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
 import { RoomInfo } from 'core/shares/types/server_types';
+import { WaitingRoomSocket } from 'server/channels/waiting_room';
 import SocketIO from 'socket.io';
 
 export class RoomService {
   private rooms: ServerRoom[] = [];
+  private waitingRooms: WaitingRoomInfo[] = [];
 
   constructor(
-    private createServerSocket: (roomChannel: SocketIO.Namespace, roomId: RoomId, logger: Logger) => ServerSocket,
+    private readonly lobbySocket: SocketIO.Server,
+    private createGameServerSocket: (roomChannel: SocketIO.Namespace, roomId: RoomId) => ServerSocket,
     private createServerRoom: (
       roomId: RoomId,
-      gameInfo: GameInfo,
+      gameInfo: TemporaryRoomCreationInfo,
       socket: ServerSocket,
       gameProcessor: GameProcessor,
       analytics: RecordAnalytics,
       players: Player[],
       flavor: Flavor,
-      logger: Logger,
       gameMode: GameMode,
       gameCommonRules: GameCommonRules,
       eventStack: RoomEventStacker<WorkPlace.Server>,
@@ -40,35 +37,39 @@ export class RoomService {
     private createRecordAnalytics: () => RecordAnalytics,
     private createGameCommonRules: () => GameCommonRules,
     private createRoomEventStacker: () => RoomEventStacker<WorkPlace.Server>,
-    private logger: Logger,
+    private createGameWaitingRoom: (info: TemporaryRoomCreationInfo) => WaitingRoomInfo,
+    private createWaitingRoomSocket: (socket: SocketIO.Namespace, roomInfo: WaitingRoomInfo) => WaitingRoomSocket,
+    private createDifferentModeGameProcessor: (gameMode: GameMode) => GameProcessor,
   ) {}
-
-  private readonly createDifferentModeGameProcessor = (gameMode: GameMode): GameProcessor => {
-    this.logger.debug('game mode is ' + gameMode);
-    switch (gameMode) {
-      case GameMode.Pve:
-        return new PveGameProcessor(new StageProcessor(this.logger), this.logger);
-      case GameMode.OneVersusTwo:
-        return new OneVersusTwoGameProcessor(new StageProcessor(this.logger), this.logger);
-      case GameMode.TwoVersusTwo:
-        return new TwoVersusTwoGameProcessor(new StageProcessor(this.logger), this.logger);
-      case GameMode.Standard:
-      default:
-        return new StandardGameProcessor(new StageProcessor(this.logger), this.logger);
-    }
-  };
 
   checkRoomExist(roomId: RoomId) {
     return this.rooms.find(room => room.RoomId === roomId) !== undefined;
   }
 
   getRoomsInfo(): ReadonlyArray<RoomInfo> {
-    return this.rooms.map(room => room.getRoomInfo());
+    return [
+      ...this.rooms.map(room => room.getRoomInfo()),
+      ...this.waitingRooms.map(room => this.getWaitingRoomInfo(room)),
+    ];
   }
 
-  createRoom(roomChannel: SocketIO.Namespace, gameInfo: GameInfo, mode: Flavor) {
+  private getWaitingRoomInfo(room: WaitingRoomInfo): RoomInfo {
+    const { roomInfo, players, closedSeats, roomId } = room;
+    return {
+      name: roomInfo.roomName,
+      activePlayers: players.length,
+      totalPlayers: roomInfo.numberOfPlayers - closedSeats.length,
+      status: 'waiting',
+      packages: roomInfo.characterExtensions,
+      id: roomId,
+      gameMode: roomInfo.gameMode,
+      passcode: roomInfo.passcode,
+    };
+  }
+
+  createRoom(gameInfo: TemporaryRoomCreationInfo, mode: Flavor): { roomId: RoomId; gameInfo: GameInfo } {
     const roomId = Date.now();
-    const roomSocket = this.createServerSocket(roomChannel, roomId, this.logger);
+    const roomSocket = this.createGameServerSocket(this.lobbySocket.of(`/room-${roomId}`), roomId);
     const room = this.createServerRoom(
       roomId,
       gameInfo,
@@ -77,7 +78,6 @@ export class RoomService {
       this.createRecordAnalytics(),
       [],
       mode,
-      this.logger,
       gameInfo.gameMode,
       this.createGameCommonRules(),
       this.createRoomEventStacker(),
@@ -88,5 +88,31 @@ export class RoomService {
     });
 
     this.rooms.push(room);
+
+    return {
+      roomId,
+      gameInfo: {
+        ...gameInfo,
+        flavor: mode,
+        campaignMode: !!gameInfo.campaignMode,
+      },
+    };
+  }
+
+  createWaitingRoom(roomInfo: TemporaryRoomCreationInfo) {
+    const roomId = Date.now();
+    const room = this.createGameWaitingRoom(roomInfo);
+    const roomSocket = this.createWaitingRoomSocket(this.lobbySocket.of(`/waiting-room-${roomId}`), room);
+
+    roomSocket.onClosed(() => {
+      this.waitingRooms = this.waitingRooms.filter(r => r !== room);
+    });
+
+    this.waitingRooms.push(room);
+
+    return {
+      roomId,
+      roomInfo,
+    };
   }
 }

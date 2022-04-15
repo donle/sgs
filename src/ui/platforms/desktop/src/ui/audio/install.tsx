@@ -21,6 +21,8 @@ export interface AudioService {
   playRoomBGM(): void;
   playLobbyBGM(): void;
   playGameStartAudio(): void;
+  changeGameVolume(): void;
+  changeBGMVolume(): void;
   playQuickChatAudio(index: number, gender: CharacterGender): void;
   stop(): void;
 }

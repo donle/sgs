@@ -516,42 +516,40 @@ export type PinDianReport = {
 };
 
 export interface WaitingRoomServerEvent extends WaitingRoomEventUtilities {
-  [WaitingRoomEvent.GameInfoUpdate]: TemporaryRoomCreationInfo;
+  [WaitingRoomEvent.GameInfoUpdate]: {
+    roomInfo: TemporaryRoomCreationInfo;
+  };
   [WaitingRoomEvent.PlayerChatMessage]: {
     fromId: PlayerId;
     messageContent: string;
     timestamp: number;
   };
   [WaitingRoomEvent.GameStart]: {
-    hostId: PlayerId;
     roomId: string;
     otherPlayersId: PlayerId[];
-    roomInfo: TemporaryRoomCreationInfo;
+    roomInfo: GameInfo;
   };
   [WaitingRoomEvent.PlayerEnter]: {
-    playerId: { playerId: PlayerId; avatarId: number; seatId: number };
+    hostPlayerId: PlayerId;
+    playerInfo: { playerId: PlayerId; avatarId: number; seatId: number };
     otherPlayersInfo: { playerId: PlayerId; avatarId: number; seatId: number }[];
     roomInfo: TemporaryRoomCreationInfo;
   };
   [WaitingRoomEvent.PlayerLeave]: {
     leftPlayerId: PlayerId;
-    seatId: number;
   };
   [WaitingRoomEvent.PlayerReady]: {
     readyPlayerId: PlayerId;
-  };
-  [WaitingRoomEvent.PlayerUnready]: {
-    readyPlayerId: PlayerId;
+    isReady: boolean;
   };
   [WaitingRoomEvent.SeatDisabled]: {
     seatId: number;
-  };
-  [WaitingRoomEvent.SeatEnabled]: {
-    seatId: number;
+    disabled: boolean;
   };
   [WaitingRoomEvent.RoomCreated]: {
     roomId: number;
     roomInfo: TemporaryRoomCreationInfo;
+    hostPlayerId: PlayerId;
     disabledSeats: number[];
   } | { error: string };
 }

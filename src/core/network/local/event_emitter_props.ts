@@ -9,7 +9,7 @@ export type EventEmitterProps = {
   disconnect(): void;
 };
 
-export interface LocalServerEmitterInnterface {
+export interface LocalServerEmitterInterface {
   emit(room: ServerRoom): void;
   notify<I extends GameEventIdentifiers>(type: I, content: ServerEventFinder<I>, to: PlayerId): void;
   broadcast<I extends GameEventIdentifiers>(type: I, content: ServerEventFinder<I>): void;

@@ -301,45 +301,26 @@ export type ServerEventFinder<I extends GameEventIdentifiers> = BaseGameEvent & 
 
 export const enum WaitingRoomEvent {
   SeatDisabled = 'SeatDisabled',
-  SeatEnabled = 'SeatEnabled',
   PlayerChatMessage = 'PlayerChatMessage',
   GameInfoUpdate = 'GameInfoUpdate',
   RoomCreated = 'RoomCreated',
   PlayerEnter = 'PlayerEnter',
   PlayerLeave = 'PlayerLeave',
   PlayerReady = 'PlayerReady',
-  PlayerUnready = 'PlayerUnready',
   GameStart = 'GameStart',
 }
 
-export const waitingRoomEventsList = [
+export const activeWaitingRoomListeningEvents = [
   WaitingRoomEvent.SeatDisabled,
-  WaitingRoomEvent.SeatEnabled,
   WaitingRoomEvent.RoomCreated,
   WaitingRoomEvent.GameInfoUpdate,
   WaitingRoomEvent.PlayerEnter,
   WaitingRoomEvent.PlayerLeave,
   WaitingRoomEvent.PlayerReady,
-  WaitingRoomEvent.PlayerUnready,
   WaitingRoomEvent.GameStart,
   WaitingRoomEvent.PlayerChatMessage,
-  WaitingRoomEvent.RoomCreated,
 ];
 
 export type WaitingRoomEventUtilities<Event extends object = object> = Record<WaitingRoomEvent, Event>;
 export type WaitingRoomClientEventFinder<I extends WaitingRoomEvent> = WaitingRoomClientEvent[I];
 export type WaitingRoomServerEventFinder<I extends WaitingRoomEvent> = WaitingRoomServerEvent[I];
-
-export const clientActiveWaitingRoomListeningEvents = [
-  WaitingRoomEvent.GameInfoUpdate,
-  WaitingRoomEvent.GameStart,
-  WaitingRoomEvent.PlayerChatMessage,
-  WaitingRoomEvent.RoomCreated,
-  WaitingRoomEvent.PlayerEnter,
-  WaitingRoomEvent.PlayerLeave,
-  WaitingRoomEvent.PlayerReady,
-  WaitingRoomEvent.PlayerUnready,
-  WaitingRoomEvent.SeatDisabled,
-  WaitingRoomEvent.SeatEnabled,
-  WaitingRoomEvent.RoomCreated,
-];

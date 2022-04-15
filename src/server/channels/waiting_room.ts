@@ -1,91 +1,119 @@
-import { WaitingRoomClientEventFinder, WaitingRoomEvent, WaitingRoomServerEventFinder } from 'core/event/event';
+import { WaitingRoomClientEventFinder, WaitingRoomEvent } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { TemporaryRoomCreationInfo } from 'core/game/game_props';
+import { WaitingRoomInfo } from 'core/room/waiting_room';
 import { Logger } from 'core/shares/libs/logger/logger';
+import { Flavor } from 'core/shares/types/host_config';
+import { RoomService } from 'server/services/room_service';
+import SocketIO from 'socket.io';
 
-/**
- *
-  WaitingRoomEvent.SeatDisabled,
-  WaitingRoomEvent.SeatEnabled,
-  WaitingRoomEvent.GameInfoUpdate,
-  WaitingRoomEvent.PlayerEnter,
-  WaitingRoomEvent.PlayerLeave,
-  WaitingRoomEvent.PlayerReady,
-  WaitingRoomEvent.PlayerUnready,
-  WaitingRoomEvent.GameStart,
-  WaitingRoomEvent.PlayerChatMessage,
- */
+export class WaitingRoomSocket {
+  private disposeCallback: () => void;
+  private connectedPlayersMap: Record<string, string> = {};
 
-export type WaitingRoomInfo = {
-  roomInfo: TemporaryRoomCreationInfo;
-  players: WaitingRoomServerEventFinder<WaitingRoomEvent.PlayerEnter>['otherPlayersInfo'];
-  closedSeats: number[];
-};
+  constructor(
+    private roomService: RoomService,
+    private socket: SocketIO.Namespace,
+    private flavor: Flavor,
+    private logger: Logger,
+    private waitingRoomInfo: WaitingRoomInfo,
+  ) {
+    this.socket.on('connection', socket => {
+      // socket.on(WaitingRoomEvent.RoomCreated, this.onRoomCreated(socket));
+      socket.on(WaitingRoomEvent.GameInfoUpdate, this.onGameInfoUpdate(socket));
+      socket.on(WaitingRoomEvent.GameStart, this.onGameStart(socket));
+      socket.on(WaitingRoomEvent.PlayerChatMessage, this.onSendMessage(socket));
+      socket.on(WaitingRoomEvent.PlayerEnter, this.onPlayerEnter(socket));
+      socket.on(WaitingRoomEvent.PlayerLeave, this.onPlayerLeave(socket));
+      socket.on(WaitingRoomEvent.PlayerReady, this.onPlayerReady(socket));
+      socket.on(WaitingRoomEvent.SeatDisabled, this.onSeatDisabled(socket));
 
-export class WaitingRoomEventChannel {
-  private eventHandlers: { [E in WaitingRoomEvent]?: (socket: SocketIO.Socket) => (...args: any) => void } = {};
-  private waitingRooms: {
-    roomId: number;
-    roomInfo: TemporaryRoomCreationInfo;
-    socket: SocketIO.Namespace;
-    disabledSeats: number[];
-  }[] = [];
-
-  constructor(private socket: SocketIO.Server, private logger: Logger) {
-    this.socket.of('/waiting-room').on('connect', socket => {
-      socket.on(WaitingRoomEvent.RoomCreated, this.onRoomCreated(socket));
-    });
-  }
-
-  private readonly installEventHandlers = (socket: SocketIO.Socket) => {
-    for (const [eventEnum, handler] of Object.entries<(socket: SocketIO.Socket) => (...args: any) => void>(
-      this.eventHandlers,
-    )) {
-      socket.on(eventEnum, handler(socket));
-    }
-  };
-
-  readonly registerEventHandler = (
-    eventEnum: WaitingRoomEvent,
-    handler: (socket: SocketIO.Socket) => (...args: any) => void,
-  ) => {
-    this.eventHandlers[eventEnum] = handler;
-  };
-
-  private readonly onRoomCreated = (socket: SocketIO.Socket) => (
-    content: WaitingRoomClientEventFinder<WaitingRoomEvent.RoomCreated>,
-  ) => {
-    if (content.coreVersion !== Sanguosha.Version) {
-      socket.emit(WaitingRoomEvent.RoomCreated, {
-        error: 'unmatched core version',
+      socket.on('disconnect', () => {
+        if (this.connectedPlayersMap[socket.id]) {
+          socket.emit(WaitingRoomEvent.PlayerLeave, {
+            playerId: this.connectedPlayersMap[socket.id],
+          });
+        }
       });
-      return;
+    });
+    this.socket.on('disconnection', () => {
+      this.disposeCallback?.();
+    });
+  }
+
+  private getAvailabeSeatId() {
+    for (let i = 0; i < this.waitingRoomInfo.roomInfo.numberOfPlayers; i++) {
+      if (!this.waitingRoomInfo.closedSeats.includes(i)) {
+        return i;
+      }
     }
 
-    const roomId = Date.now();
-    const roomSocket = this.join(`/waiting-room-${roomId}`);
-    roomSocket.on('disconnect', () => {
-      this.waitingRooms = this.waitingRooms.filter(r => r.roomId !== roomId);
-    });
-    roomSocket.on('connect', socket => {
-      this.installEventHandlers(socket);
-    });
+    return -1;
+  }
 
-    this.waitingRooms.push({
-      roomId,
-      roomInfo: content.roomInfo,
-      socket: roomSocket,
-      disabledSeats: [],
-    });
+  private readonly onGameInfoUpdate = (socket: SocketIO.Socket) => (
+    evt: WaitingRoomClientEventFinder<WaitingRoomEvent.GameInfoUpdate>,
+  ) => {
+    socket.emit(WaitingRoomEvent.GameInfoUpdate, evt);
+  };
 
-    socket.emit(WaitingRoomEvent.RoomCreated, {
+  private readonly onGameStart = (socket: SocketIO.Socket) => (
+    evt: WaitingRoomClientEventFinder<WaitingRoomEvent.GameStart>,
+  ) => {
+    const { roomId, gameInfo } = this.roomService.createRoom(evt.roomInfo, this.flavor);
+    socket.emit(WaitingRoomEvent.GameStart, {
       roomId,
-      roomInfo: content.roomInfo,
-      disabledSeats: [],
+      otherPlayersId: this.waitingRoomInfo.players.map(player => player.playerId),
+      roomInfo: gameInfo,
     });
   };
 
-  join(channelId: string) {
-    return this.socket.of(channelId);
-  }
+  private readonly onSendMessage = (socket: SocketIO.Socket) => (
+    evt: WaitingRoomClientEventFinder<WaitingRoomEvent.PlayerChatMessage>,
+  ) => {
+    socket.emit(WaitingRoomEvent.PlayerChatMessage, evt);
+  };
+
+  private readonly onPlayerEnter = (socket: SocketIO.Socket) => (
+    evt: WaitingRoomClientEventFinder<WaitingRoomEvent.PlayerEnter>,
+  ) => {
+    const seatId = this.getAvailabeSeatId();
+    if (
+      seatId < 0 ||
+      this.waitingRoomInfo.players.length + this.waitingRoomInfo.closedSeats.length >=
+        this.waitingRoomInfo.roomInfo.numberOfPlayers
+    ) {
+      socket.emit(WaitingRoomEvent.PlayerLeave, { playerId: evt.playerInfo.playerId });
+    } else {
+      const playerInfo = { ...evt.playerInfo, seatId };
+      this.waitingRoomInfo.players.push(playerInfo);
+      socket.emit(WaitingRoomEvent.PlayerEnter, {
+        playerInfo,
+        otherPlayersInfo: this.waitingRoomInfo.players.filter(p => p.playerId !== playerInfo.playerId),
+        roomInfo: this.waitingRoomInfo.roomInfo,
+      });
+    }
+  };
+
+  private readonly onPlayerLeave = (socket: SocketIO.Socket) => (
+    evt: WaitingRoomClientEventFinder<WaitingRoomEvent.PlayerLeave>,
+  ) => {
+    socket.emit(WaitingRoomEvent.PlayerLeave, evt);
+  };
+
+  private readonly onPlayerReady = (socket: SocketIO.Socket) => (
+    evt: WaitingRoomClientEventFinder<WaitingRoomEvent.PlayerReady>,
+  ) => {
+    socket.emit(WaitingRoomEvent.PlayerReady, evt);
+  };
+
+  private readonly onSeatDisabled = (socket: SocketIO.Socket) => (
+    evt: WaitingRoomClientEventFinder<WaitingRoomEvent.SeatDisabled>,
+  ) => {
+    socket.emit(WaitingRoomEvent.SeatDisabled, evt);
+  };
+
+  public readonly onClosed = (disposeCallback: () => void) => {
+    this.disposeCallback = disposeCallback;
+  };
 }

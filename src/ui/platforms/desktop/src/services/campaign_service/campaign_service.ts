@@ -51,9 +51,7 @@ export class CampaignService {
 
   createRoom(
     flavor: ClientFlavor,
-    roomInfo: {
-      cardExtensions: GameCardExtensions[];
-    } & TemporaryRoomCreationInfo,
+    roomInfo: TemporaryRoomCreationInfo,
     callback: (evt: CreateGameListenerResponse) => void,
   ) {
     const roomId = Date.now();

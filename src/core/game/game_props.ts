@@ -48,10 +48,13 @@ export type GameInfo = {
   roomName: string;
   passcode?: string;
   multiCharacters?: boolean;
-  enableObserver?: boolean;
+  excludedCharacters?: CharacterId[];
+  playingTimeLimit?: number;
+  wuxiekejiTimeLimit?: number;
+  allowObserver?: boolean;
+  campaignMode: boolean;
   flavor: Flavor;
   gameMode: GameMode;
-  campaignMode: boolean;
   coreVersion: string;
 };
 
@@ -61,12 +64,15 @@ export type TemporaryRoomCreationInfo = {
   gameMode: GameMode;
   passcode?: string;
   campaignMode?: boolean;
+  multiCharacters?: boolean;
   excludedCharacters?: CharacterId[];
   playingTimeLimit?: number;
   wuxiekejiTimeLimit?: number;
   allowObserver?: boolean;
+  cardExtensions: GameCardExtensions[];
   characterExtensions: GameCharacterExtensions[];
   coreVersion: string;
+  hostPlayerId: PlayerId;
 };
 
 export type GameRunningInfo = {

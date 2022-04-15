@@ -36,14 +36,9 @@ export namespace Algorithm {
     return target.length === source.length && target.filter(e => !source.includes(e)).length === 0;
   }
   export function singleton<T>(source: T[]) {
-    return source.reduce<T[]>((singled, current) => {
-      if (!singled.includes(current)) {
-        singled.push(current);
-      }
-
-      return singled;
-    }, []);
+    return Array.from(new Set(source));
   }
+
   export function generateUUID() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
       const r = (Math.random() * 16) | 0,

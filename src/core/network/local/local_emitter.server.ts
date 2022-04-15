@@ -11,9 +11,9 @@ import { PlayerId } from 'core/player/player_props';
 import { ServerRoom } from 'core/room/room.server';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { EventEmitterProps } from './event_emitter_props';
-import { LocalServerEmitterInnterface } from './event_emitter_props';
+import { LocalServerEmitterInterface } from './event_emitter_props';
 
-export class LocalServerEmitter implements LocalServerEmitterInnterface {
+export class LocalServerEmitter implements LocalServerEmitterInterface {
   private room: ServerRoom | undefined;
   private playerId: string;
   private asyncResponseResolver: {

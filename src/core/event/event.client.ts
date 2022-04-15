@@ -221,35 +221,33 @@ export type PlayerCardOrSkillInnerEvent =
     };
 
 export interface WaitingRoomClientEvent extends WaitingRoomEventUtilities {
-  [WaitingRoomEvent.GameInfoUpdate]: TemporaryRoomCreationInfo;
+  [WaitingRoomEvent.GameInfoUpdate]: {
+    roomInfo: TemporaryRoomCreationInfo;
+  };
   [WaitingRoomEvent.PlayerChatMessage]: {
     fromId: PlayerId;
     messageContent: string;
   };
   [WaitingRoomEvent.GameStart]: {
-    hostId: PlayerId;
     otherPlayersId: PlayerId[];
     roomInfo: TemporaryRoomCreationInfo;
   };
   [WaitingRoomEvent.PlayerEnter]: {
-    playerId: { playerId: PlayerId; avatarId: number };
+    playerInfo: { playerId: PlayerId; avatarId: number };
   };
   [WaitingRoomEvent.PlayerLeave]: {
     leftPlayerId: PlayerId;
   };
   [WaitingRoomEvent.PlayerReady]: {
     readyPlayerId: PlayerId;
-  };
-  [WaitingRoomEvent.PlayerUnready]: {
-    readyPlayerId: PlayerId;
+    isReady: boolean;
   };
   [WaitingRoomEvent.SeatDisabled]: {
     seatId: number;
-  };
-  [WaitingRoomEvent.SeatEnabled]: {
-    seatId: number;
+    disabled: boolean;
   };
   [WaitingRoomEvent.RoomCreated]: {
-    roomInfo: TemporaryRoomCreationInfo; coreVersion: string;
+    roomInfo: TemporaryRoomCreationInfo;
+    hostPlayerId: PlayerId;
   }
 }
