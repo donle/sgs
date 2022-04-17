@@ -30,6 +30,7 @@ import { PveClassicTianXiang } from './pve_classic_tianxiang';
 import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { ExtralCardSkillProperty } from 'core/skills/cards/interface/extral_property';
 import { PveClassicLianZhen } from './pve_classic_lianzhen';
+import { DamageType } from 'core/game/game_props';
 
 @AwakeningSkill({ name: 'pve_classic_guyong', description: 'pve_classic_guyong_description' })
 export class PveClassicGuYong extends TriggerSkill {
@@ -344,7 +345,7 @@ export class PveClassicGuYongWuQu extends TriggerSkill {
     return room.canPindian(owner, target);
   }
 
-  getSkillLog(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
+  getSkillLog() {
     return TranslationPack.translationJsonPatcher('{0}: you can pindian to a player', this.Name).extract();
   }
 
@@ -390,15 +391,15 @@ export class PveClassicGuYongBufPoJun extends TriggerSkill {
   }
 
   cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
-    return cards.length === owner.Hp;
+    return cards.length === owner.MaxHp - owner.Hp;
   }
 
   isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
     return room.canDropCard(owner, cardId);
   }
 
-  getSkillLog(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
-    return TranslationPack.translationJsonPatcher('{0}: you can drop {1}', this.Name, owner.Hp).extract();
+  getSkillLog(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
+    return TranslationPack.translationJsonPatcher('{0}: you can drop {1}', this.Name, owner.MaxHp - owner.Hp).extract();
   }
 
   async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
@@ -423,7 +424,17 @@ export class PveClassicGuYongBufPoJun extends TriggerSkill {
     ).length;
 
     if (blackCardNumber === 0) {
-      await room.recover({ recoverBy: owner.Id, toId: owner.Id, recoveredHp: 1 });
+      const fromId = (event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>).fromId;
+      const damageFrom = fromId && room.getPlayerById(fromId);
+      if (damageFrom && !damageFrom.Dead) {
+        await room.damage({
+          fromId: owner.Id,
+          damage: 1,
+          damageType: DamageType.Normal,
+          toId: damageFrom.Id,
+          triggeredBySkills: [this.Name],
+        });
+      }
     } else {
       await room.drawCards(blackCardNumber * 2, owner.Id);
     }
