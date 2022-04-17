@@ -29,6 +29,7 @@ import { PveClassicTianTong } from './pve_classic_tiantong';
 import { PveClassicTianXiang } from './pve_classic_tianxiang';
 import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
 import { ExtralCardSkillProperty } from 'core/skills/cards/interface/extral_property';
+import { PveClassicLianZhen } from './pve_classic_lianzhen';
 
 @AwakeningSkill({ name: 'pve_classic_guyong', description: 'pve_classic_guyong_description' })
 export class PveClassicGuYong extends TriggerSkill {
@@ -39,11 +40,12 @@ export class PveClassicGuYong extends TriggerSkill {
       PveClassicTianLiang.GeneralName,
       PveClassicTianTong.GeneralName,
       PveClassicTianXiang.GeneralName,
+      PveClassicLianZhen.GeneralName,
     ];
   }
 
   public get RelatedCharacters() {
-    return ['pve_qisha', 'pve_tianji', 'pve_tianliang', 'pve_tiantong', 'pve_tianxiang'];
+    return ['pve_qisha', 'pve_tianji', 'pve_tianliang', 'pve_tiantong', 'pve_tianxiang', 'pve_lianzhen'];
   }
 
   getSkillLog() {

@@ -31,10 +31,11 @@ export class PveClassicLianZhen extends TriggerSkill {
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     if (event.toIds && event.toIds[0]) {
       room.getPlayerById(event.fromId).setFlag(this.GeneralName, event.toIds[0]);
-      return true;
+    } else {
+      room.getPlayerById(event.fromId).removeFlag(this.GeneralName);
     }
 
-    return false;
+    return true;
   }
 }
 

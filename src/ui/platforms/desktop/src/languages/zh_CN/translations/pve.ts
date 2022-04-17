@@ -30,6 +30,7 @@ export const characterDictionary: Word[] = [
   { source: 'pve_tianliang', target: '天梁' },
   { source: 'pve_tianji', target: '天机' },
   { source: 'pve_tianxiang', target: '天相' },
+  { source: 'pve_lianzhen', target: '廉贞' },
 
   { source: 'pve_jian', target: '渐' },
   { source: 'pve_zhi', target: '制' },
@@ -49,6 +50,7 @@ export const characterDictionary: Word[] = [
   { source: 'pve_classic_tianliang', target: '天梁' },
   { source: 'pve_classic_tianji', target: '天机' },
   { source: 'pve_classic_tianxiang', target: '天相' },
+  { source: 'pve_classic_lianzhen', target: '廉贞' },
   { source: 'pve_classic_gu', target: '孤勇' },
   { source: '#pve_classic_gu', target: '孤勇' },
   { source: 'pve_classic_guyong', target: '孤勇' },
@@ -160,6 +162,10 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_classic_tiantong_description',
     target: '<b>限定技</b>准备阶段开始时，你的体力值及体力上限加3；',
+  },
+  {
+    source: 'pve_classic_lianzhen_description',
+    target: '回合开始时，你可以指定一名角色，该角色每获得一张牌，你摸一张牌；若此时在你的回合内，你额外摸一张牌；',
   },
 ];
 
