@@ -288,7 +288,11 @@ export class PveClassicGuYongWenQu extends TriggerSkill {
         user: cardUseEvent.fromId,
         cardId: card.Id,
         exclude: TargetGroupUtil.getRealTargets(cardUseEvent.targetGroup),
-        conversation: 'pve_guyong_wenqu: please select a player append to target',
+        conversation: TranslationPack.translationJsonPatcher(
+          '{0}: please select a player append to target for {1}',
+          this.Name,
+          TranslationPack.patchCardInTranslation(card.Id),
+        ).extract(),
         triggeredBySkills: [this.Name],
       },
       cardUseEvent.fromId,

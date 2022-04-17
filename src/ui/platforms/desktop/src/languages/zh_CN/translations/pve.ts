@@ -219,6 +219,7 @@ export const eventDictionary: Word[] = [
     source: '{0}: you can append a player to the targets of {1}',
     target: '{0} 你可以选择一名其它角色，令其也成为 {1} 的目标',
   },
+  { source: '{0}: please select a player append to target for {1}', target: '{0} 请选择一名角色成为{1}的额外目标' },
   { source: '{0} triggered skill {1}, add a target for {2}', target: '{0} 使用了技能 {1}, 为 {2} 添加了一个目标' },
   { source: '{0}: you can pindian to a player', target: '{0} 你可以选择一名角色拼点' },
   { source: '{0}: you can drop {1}', target: '{0} 你可以弃置{1}张牌' },
