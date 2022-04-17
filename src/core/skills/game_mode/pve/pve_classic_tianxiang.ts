@@ -12,7 +12,11 @@ export class PveClassicTianXiang extends TriggerSkill {
   }
 
   canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
-    return event.toId === owner.Id && event.fromId !== owner.Id;
+    return (
+      event.toId === owner.Id &&
+      event.fromId !== owner.Id &&
+      owner.hasUsedSkillTimes(this.Name) < owner.MaxHp - owner.Hp
+    );
   }
 
   async onTrigger() {
