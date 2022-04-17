@@ -14,7 +14,10 @@ export class PveClassicQiSha extends TriggerSkill {
 
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
     const card = Sanguosha.getCardById(content.cardId);
-    return content.fromId === owner.Id && ['slash', 'duel'].includes(card.GeneralName);
+    return (
+      content.fromId === owner.Id &&
+      ['slash', 'duel', 'fire_attack', 'nanmanruqing', 'wanjianqifa'].includes(card.GeneralName)
+    );
   }
 
   async onTrigger() {

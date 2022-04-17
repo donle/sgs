@@ -23,6 +23,7 @@ export const characterDictionary: Word[] = [
   { source: 'pve_lige', target: '离歌' },
   { source: 'pve_bibao', target: '必报' },
   { source: 'pve_tansuo', target: '探索' },
+
   { source: 'pve_soldier', target: '风瑶军' },
   { source: 'pve_qisha', target: '七杀' },
   { source: 'pve_tiantong', target: '天同' },
@@ -51,9 +52,11 @@ export const characterDictionary: Word[] = [
   { source: 'pve_classic_gu', target: '孤勇' },
   { source: '#pve_classic_gu', target: '孤勇' },
   { source: 'pve_classic_guyong', target: '孤勇' },
-  { source: '#pve_classic_guyong', target: '孤勇' },
-  { source: '##pve_classic_guyong', target: '孤勇' },
-  { source: '###pve_classic_guyong', target: '孤勇' },
+  { source: '#pve_classic_guyong', target: '孤勇-天命' },
+  { source: '##pve_classic_guyong', target: '孤勇-贪狼' },
+  { source: '###pve_classic_guyong', target: '孤勇-文曲' },
+  { source: '####pve_classic_guyong', target: '孤勇-武曲' },
+  { source: '#####pve_classic_guyong', target: '孤勇-破军' },
   { source: 'pve_classic_ai', target: '合击' },
   { source: '#pve_classic_ai', target: '合击' },
 ];
@@ -201,10 +204,6 @@ export const promptDescriptions: Word[] = [
     source: 'Please choose a character for get a skill',
     target: '请选择一个武将并获得其一个技能',
   },
-  {
-    source: 'you can choose one player to use a slash',
-    target: '请选择一名角色，视为你对其使用一张杀',
-  },
 ];
 export const eventDictionary: Word[] = [
   { source: 'pve-easy-mode', target: '低难度' },
@@ -212,4 +211,15 @@ export const eventDictionary: Word[] = [
   { source: '{0} ouyujiguan', target: '{0} 偶遇了机关' },
   { source: '{0} qiyubaowu', target: '{0} 奇遇宝物' },
   { source: 'please discard a card to deal 1 thunder damage to {0} ?', target: '请弃置一张牌并对{0}造成一点雷电伤害' },
+  { source: '{0}: do you want to awaken?', target: '{0} 已点亮四种标记，请选择适应性强化' },
+  { source: '{0}: get the next stage mark', target: '{0} 点亮下一阶段标记' },
+  { source: '{0}: do you want to draw a card?', target: '{0} 你可以摸一张牌' },
+  { source: '{0} triggered skill {1}, draw a card', target: '{0} 触发了{1}摸了一张牌' },
+  {
+    source: '{0}: you can append a player to the targets of {1}',
+    target: '{0} 你可以选择一名其它角色，令其也成为 {1} 的目标',
+  },
+  { source: '{0} triggered skill {1}, add a target for {2}', target: '{0} 使用了技能 {1}, 为 {2} 添加了一个目标' },
+  { source: '{0}: you can pindian to a player', target: '{0} 你可以选择一名角色拼点' },
+  { source: '{0}: you can drop {1}', target: '{0} 你可以弃置{1}张牌' },
 ];
