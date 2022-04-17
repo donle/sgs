@@ -3,9 +3,9 @@ import { AimStage, AllStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
-import { CompulsorySkill } from 'core/skills/skill_wrappers';
+import { CommonSkill } from 'core/skills/skill_wrappers';
 
-@CompulsorySkill({ name: 'pve_classic_tianxiang', description: 'pve_classic_tianxiang_description' })
+@CommonSkill({ name: 'pve_classic_tianxiang', description: 'pve_classic_tianxiang_description' })
 export class PveClassicTianXiang extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage) {
     return stage === AimStage.AfterAimmed && event.byCardId !== undefined;
