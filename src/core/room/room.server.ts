@@ -680,9 +680,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       property.nationality !== undefined && (player.Nationality = property.nationality);
       property.gender !== undefined && (player.Gender = property.gender);
       if (property.activate !== undefined) {
-        // revive
-        property.activate && player.Dead && player.revive();
-        // kill
+        property.activate && player.Dead && player.activate();
         property.activate || player.Dead || player.bury();
       }
 
@@ -698,6 +696,20 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     }
 
     this.broadcast(GameEventIdentifiers.PlayerPropertiesChangeEvent, event);
+  }
+
+  public activate(event: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent>) {
+    const { changedProperties } = event;
+    for (const property of changedProperties) {
+      if (property.activate) {
+        Precondition.assert(
+          property.hp !== undefined && property.hp > 0,
+          'can only activate player who hp > 0 and dead',
+        );
+      }
+
+      this.changePlayerProperties(event);
+    }
   }
 
   public async changeGeneral(

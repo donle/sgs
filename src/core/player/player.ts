@@ -253,15 +253,15 @@ export abstract class Player implements PlayerInfo {
   public getCardIds<T extends CardId | CharacterId = CardId>(area?: PlayerCardsArea, outsideAreaName?: string): T[] {
     if (area === undefined) {
       const [handCards, judgeCards, equipCards] = Object.values<CardId[]>(this.playerCards);
-      return ([...handCards, ...judgeCards, ...equipCards] as unknown) as T[];
+      return [...handCards, ...judgeCards, ...equipCards] as unknown as T[];
     }
 
     if (area !== PlayerCardsArea.OutsideArea) {
-      return (this.playerCards[area] as unknown) as T[];
+      return this.playerCards[area] as unknown as T[];
     } else {
       outsideAreaName = Precondition.exists(outsideAreaName, `Unable to get ${outsideAreaName} area cards`);
       this.playerOutsideCards[outsideAreaName] = this.playerOutsideCards[outsideAreaName] || [];
-      return (this.playerOutsideCards[outsideAreaName] as unknown) as T[];
+      return this.playerOutsideCards[outsideAreaName] as unknown as T[];
     }
   }
 
@@ -775,7 +775,7 @@ export abstract class Player implements PlayerInfo {
       case 'skillProhibited':
         return skills.filter(skill => skill instanceof SkillProhibitedSkill) as T[];
       case 'quest':
-        return skills.filter(skill => skill.SkillType === SkillType.Quest) as T[];  
+        return skills.filter(skill => skill.SkillType === SkillType.Quest) as T[];
       default:
         throw Precondition.UnreachableError(skillType);
     }
@@ -1000,7 +1000,8 @@ export abstract class Player implements PlayerInfo {
     this.dead = true;
   }
 
-  public revive() {
+  public activate() {
+    Precondition.assert(this.Hp > 0, 'Activate can only use for player who dead and Hp > 0');
     this.dead = false;
   }
 

@@ -114,7 +114,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
           : { toId: player.Id, activate: false, hp: 0, maxHp: 0 },
       ),
     );
-    this.room.changePlayerProperties({ changedProperties });
+    this.room.activate({ changedProperties });
 
     // level 1 draw game begins cards at game begin
     if (this.level > 1) {

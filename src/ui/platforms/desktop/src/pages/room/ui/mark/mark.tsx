@@ -44,6 +44,11 @@ import pveClassicYingIcon from './images/pve_classic_ying.png';
 import pveClassicYuIcon from './images/pve_classic_yu.png';
 import pveClassicZhiIcon from './images/pve_classic_zhi.png';
 
+import pveClassicTanLang from './images/pve_tanlang.png';
+import pveClassicWenQu from './images/pve_wenqu.png';
+import pveClassicWuQu from './images/pve_wuqu.png';
+import pveClassicPoJun from './images/pve_pojun.png';
+
 const markIconMaps: {
   [K in MarkEnum]: string;
 } = {
@@ -82,10 +87,10 @@ const markIconMaps: {
   [MarkEnum.PveZhi]: pveClassicZhiIcon,
   [MarkEnum.PveHe]: pveClassicHeIcon,
   [MarkEnum.PveGu]: pveClassicGuIcon,
-  [MarkEnum.PveTanLang]: houtuIcon,
-  [MarkEnum.PveWenQu]: gouchenIcon,
-  [MarkEnum.PveWuQu]: yuqingIcon,
-  [MarkEnum.PvePoJun]: ziweiIcon,
+  [MarkEnum.PveTanLang]: pveClassicTanLang,
+  [MarkEnum.PveWenQu]: pveClassicWenQu,
+  [MarkEnum.PveWuQu]: pveClassicWuQu,
+  [MarkEnum.PvePoJun]: pveClassicPoJun,
 };
 
 export type MarkProps = {
