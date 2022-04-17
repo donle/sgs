@@ -23,10 +23,22 @@ export const getClientConfig = (mode: ClientFlavor): ClientConfig => {
     case ClientFlavor.Web:
       host = [
         {
-          port: 8080,
+          port: 2020,
           host: '146.56.218.109',
           protocol: 'http',
           hostTag: ServerHostTag.NanJing,
+        },
+        {
+          port: 2020,
+          host: '47.106.210.245',
+          protocol: 'http',
+          hostTag: ServerHostTag.ShenZhen,
+        },
+        {
+          port: 2020,
+          host: '121.41.167.150',
+          protocol: 'http',
+          hostTag: ServerHostTag.HangZhou,
         },
       ];
       break;
