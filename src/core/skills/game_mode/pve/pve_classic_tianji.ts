@@ -5,10 +5,10 @@ import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { TriggerSkill } from 'core/skills/skill';
-import { CompulsorySkill } from 'core/skills/skill_wrappers';
+import { CommonSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 
-@CompulsorySkill({ name: 'pve_classic_tianji', description: 'pve_classic_tianji_description' })
+@CommonSkill({ name: 'pve_classic_tianji', description: 'pve_classic_tianji_description' })
 export class PveClassicTianJi extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.StageChanged;
