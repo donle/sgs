@@ -19,7 +19,7 @@ export class PveClassicTianTong extends TriggerSkill {
     owner: Player,
     content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>,
   ): boolean {
-    return content.playerId === owner.Id && content.toStage === PlayerPhaseStages.PlayCardStageStart;
+    return content.playerId === owner.Id && content.toStage === PlayerPhaseStages.PrepareStageStart;
   }
 
   public async onTrigger(): Promise<boolean> {

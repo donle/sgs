@@ -1,7 +1,6 @@
-import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { VirtualCard } from 'core/cards/card';
-import { CardMatcher } from 'core/cards/libs/card_matcher';
-import { CardSuit, CardChoosingOptions } from 'core/cards/libs/card_props';
+import { CardColor, CardId, CardSuit } from 'core/cards/libs/card_props';
 import { Slash } from 'core/cards/standard/slash';
 import { Sanguosha } from 'core/game/engine';
 import {
@@ -9,23 +8,27 @@ import {
   DamageEffectStage,
   JudgeEffectStage,
   PhaseStageChangeStage,
-  PlayerPhase,
   PlayerPhaseStages,
   StagePriority,
   PlayerDiedStage,
+  CardUseStage,
+  PhaseChangeStage,
+  PlayerPhase,
 } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
-import { PlayerCardsArea } from 'core/player/player_props';
+import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
 import { MarkEnum } from 'core/shares/types/mark_list';
 import { TriggerSkill } from 'core/skills/skill';
-import { AwakeningSkill, CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
+import { AwakeningSkill, CommonSkill, CompulsorySkill, ShadowSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { PveClassicQiSha } from './pve_classic_qisha';
 import { PveClassicTianJi } from './pve_classic_tianji';
 import { PveClassicTianLiang } from './pve_classic_tianliang';
 import { PveClassicTianTong } from './pve_classic_tiantong';
 import { PveClassicTianXiang } from './pve_classic_tianxiang';
+import { TargetGroupUtil } from 'core/shares/libs/utils/target_group';
+import { ExtralCardSkillProperty } from 'core/skills/cards/interface/extral_property';
 
 @AwakeningSkill({ name: 'pve_classic_guyong', description: 'pve_classic_guyong_description' })
 export class PveClassicGuYong extends TriggerSkill {
@@ -43,12 +46,18 @@ export class PveClassicGuYong extends TriggerSkill {
     return ['pve_qisha', 'pve_tianji', 'pve_tianliang', 'pve_tiantong', 'pve_tianxiang'];
   }
 
-  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
-    return stage === PhaseStageChangeStage.StageChanged && event.toStage === PlayerPhaseStages.PrepareStageStart;
+  getSkillLog() {
+    return TranslationPack.translationJsonPatcher('{0}: do you want to awaken?', this.Name).extract();
   }
 
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
-    return content.playerId === owner.Id && room.enableToAwaken(this.Name, owner);
+  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage) {
+    return stage === PhaseChangeStage.AfterPhaseChanged;
+  }
+
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
+    return (
+      content.toPlayer === owner.Id && content.to === PlayerPhase.PhaseBegin && room.enableToAwaken(this.Name, owner)
+    );
   }
 
   async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
@@ -57,7 +66,6 @@ export class PveClassicGuYong extends TriggerSkill {
       TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
       this.Name,
     ).extract();
-
     return true;
   }
 
@@ -92,7 +100,7 @@ export class PveClassicGuYong extends TriggerSkill {
 @ShadowSkill
 @CompulsorySkill({ name: PveClassicGuYong.Name, description: PveClassicGuYong.Description })
 export class PveClassicGuYongMark extends TriggerSkill {
-  public getPriority() {
+  getPriority() {
     return StagePriority.High;
   }
 
@@ -131,7 +139,11 @@ export class PveClassicGuYongMark extends TriggerSkill {
     }
   }
 
-  async onTrigger() {
+  async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    skillUseEvent.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0}: get the next stage mark',
+      this.Name,
+    ).extract();
     return true;
   }
 
@@ -178,181 +190,238 @@ export class PveClassicGuYongMark extends TriggerSkill {
 }
 
 @ShadowSkill
-@CompulsorySkill({ name: PveClassicGuYongMark.Name, description: PveClassicGuYongMark.Description })
-export class PveClassicGuYongBuf extends TriggerSkill {
-  public getPriority() {
-    return StagePriority.High;
+@CommonSkill({ name: PveClassicGuYongMark.Name, description: PveClassicGuYongMark.Description })
+export class PveClassicGuYongTanLang extends TriggerSkill {
+  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
+    return stage === PhaseStageChangeStage.StageChanged;
   }
 
-  isTriggerable(
-    event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent | GameEventIdentifiers.DamageEvent>,
-    stage?: AllStage,
-  ) {
-    return stage === PhaseStageChangeStage.StageChanged || stage === DamageEffectStage.AfterDamagedEffect;
-  }
-
-  public canUse(
-    room: Room,
-    owner: Player,
-    content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent | GameEventIdentifiers.DamageEvent>,
-  ) {
-    const identifier = EventPacker.getIdentifier(content);
-    switch (identifier) {
-      case GameEventIdentifiers.PhaseStageChangeEvent:
-        const phaseStageChangeEvent = content as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
-        const canTriggerPveTanLang =
-          phaseStageChangeEvent.toStage === PlayerPhaseStages.PhaseFinishEnd &&
-          room.getMark(owner.Id, MarkEnum.PveTanLang) > 0;
-        const canTriggerPveWuQu =
-          phaseStageChangeEvent.toStage === PlayerPhaseStages.PrepareStageStart &&
-          room.getMark(owner.Id, MarkEnum.PveWuQu) > 0;
-        return phaseStageChangeEvent.playerId === owner.Id && (canTriggerPveTanLang || canTriggerPveWuQu);
-
-      case GameEventIdentifiers.DamageEvent:
-        const damageEvent = content as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-        if (
-          damageEvent.fromId === undefined ||
-          damageEvent.fromId === owner.Id ||
-          room.getPlayerById(damageEvent.fromId).getCardIds(PlayerCardsArea.HandArea).length === 0
-        ) {
-          return false;
-        }
-        return damageEvent.toId === owner.Id && room.getMark(owner.Id, MarkEnum.PveWenQu) > 0;
-      default:
-        return false;
-    }
-  }
-
-  public async onTrigger() {
-    return true;
-  }
-
-  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    if (event.triggeredOnEvent === undefined) {
-      return false;
-    }
-
-    const owner = room.getPlayerById(event.fromId);
-    const identifier = EventPacker.getIdentifier(event.triggeredOnEvent);
-    switch (identifier) {
-      case GameEventIdentifiers.PhaseStageChangeEvent:
-        const phaseStageChangeEvent =
-          event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>;
-        if (phaseStageChangeEvent.toStage === PlayerPhaseStages.PhaseFinishEnd) {
-          await room.drawCards(1, event.fromId);
-        }
-
-        if (phaseStageChangeEvent.toStage === PlayerPhaseStages.PrepareStageStart) {
-          const targets = room
-            .getOtherPlayers(owner.Id)
-            .filter(player =>
-              room.getPlayerById(owner.Id).canUseCardTo(room, new CardMatcher({ generalName: ['slash'] }), player.Id),
-            )
-            .map(player => player.Id);
-
-          if (targets.length > 0) {
-            const resp = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingPlayerEvent>(
-              GameEventIdentifiers.AskForChoosingPlayerEvent,
-              {
-                players: targets,
-                toId: owner.Id,
-                requiredAmount: 1,
-                conversation: 'you can choose one player to use a slash',
-                triggeredBySkills: [this.Name],
-              },
-              owner.Id,
-            );
-
-            if (resp.selectedPlayers && resp.selectedPlayers.length > 0) {
-              await room.useCard({
-                fromId: owner.Id,
-                targetGroup: [resp.selectedPlayers],
-                cardId: VirtualCard.create<Slash>({ cardName: 'slash', bySkill: this.Name }).Id,
-                extraUse: true,
-                triggeredBySkills: [this.Name],
-              });
-            }
-          }
-        }
-
-        return true;
-      case GameEventIdentifiers.DamageEvent:
-        const damageEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-        if (damageEvent.fromId !== undefined) {
-          const damageFrom = room.getPlayerById(damageEvent.fromId);
-          const options: CardChoosingOptions = {
-            [PlayerCardsArea.HandArea]: damageFrom.getCardIds(PlayerCardsArea.HandArea).length,
-          };
-
-          const chooseCardEvent = {
-            fromId: event.fromId,
-            toId: damageFrom.Id,
-            options,
-            triggeredBySkills: [this.Name],
-          };
-
-          const response = await room.askForChoosingPlayerCard(chooseCardEvent, chooseCardEvent.fromId, false, true);
-          if (!response) {
-            return false;
-          }
-
-          await room.moveCards({
-            movingCards: [{ card: response.selectedCard!, fromArea: response.fromArea }],
-            fromId: chooseCardEvent.toId,
-            toId: chooseCardEvent.fromId,
-            toArea: CardMoveArea.HandArea,
-            moveReason: CardMoveReason.ActivePrey,
-            proposer: chooseCardEvent.fromId,
-            movedByReason: this.Name,
-          });
-        }
-
-        return true;
-      default:
-        return false;
-    }
-  }
-}
-
-@ShadowSkill
-@CompulsorySkill({ name: PveClassicGuYongBuf.Name, description: PveClassicGuYongBuf.Description })
-export class PveClassicGuYongBufPoJun extends TriggerSkill {
-  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
-    return stage === DamageEffectStage.DamagedEffect;
-  }
-
-  public isRefreshAt(room: Room, owner: Player, phase: PlayerPhase): boolean {
-    return phase === PlayerPhase.PhaseBegin;
-  }
-
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
+  public canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
     return (
-      owner.getMark(MarkEnum.PvePoJun) > 0 &&
-      !owner.hasUsedSkill(this.Name) &&
-      content.fromId === owner.Id &&
-      owner.getCardIds().length > 0
+      content.toStage === PlayerPhaseStages.PrepareStageStart &&
+      room.getMark(owner.Id, MarkEnum.PveTanLang) > 0 &&
+      room.CurrentPlayer !== owner &&
+      owner.getCardIds(PlayerCardsArea.HandArea).length <= owner.MaxHp
     );
   }
 
-  async onTrigger() {
+  getSkillLog() {
+    return TranslationPack.translationJsonPatcher('{0}: do you want to draw a card?', this.Name).extract();
+  }
+
+  async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    skillUseEvent.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} triggered skill {1}, draw a card',
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
+      this.Name,
+    ).extract();
     return true;
   }
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const resp = await room.askForCardDrop(
-      event.fromId!,
-      1,
-      [PlayerCardsArea.HandArea, PlayerCardsArea.EquipArea],
-      true,
-      undefined,
+    await room.drawCards(1, event.fromId);
+    return true;
+  }
+}
+
+@ShadowSkill
+@CommonSkill({ name: PveClassicGuYongTanLang.Name, description: PveClassicGuYongTanLang.Description })
+export class PveClassicGuYongWenQu extends TriggerSkill {
+  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>, stage?: AllStage) {
+    return stage === CardUseStage.AfterCardTargetDeclared;
+  }
+
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
+    const card = Sanguosha.getCardById(content.cardId);
+    return (
+      content.fromId === owner.Id &&
+      room.getMark(owner.Id, MarkEnum.PveWenQu) > 0 &&
+      ['guohechaiqiao', 'shunshouqianyang', 'duel', 'fire_attack'].includes(card.GeneralName) &&
+      room.AlivePlayers.filter(
+        player =>
+          !TargetGroupUtil.getRealTargets(content.targetGroup).includes(player.Id) &&
+          room.isAvailableTarget(card.Id, content.fromId, player.Id) &&
+          (Sanguosha.getCardById(content.cardId).Skill as unknown as ExtralCardSkillProperty).isCardAvailableTarget(
+            content.fromId,
+            room,
+            player.Id,
+            [],
+            [],
+            content.cardId,
+          ),
+      ).length > 0
+    );
+  }
+
+  getSkillLog(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
+    return TranslationPack.translationJsonPatcher(
+      '{0}: you can append a player to the targets of {1}',
       this.Name,
+      TranslationPack.patchCardInTranslation(event.cardId),
+    ).extract();
+  }
+
+  async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    skillUseEvent.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} triggered skill {1}, add a target for {2}',
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
+      this.Name,
+      TranslationPack.patchCardInTranslation(
+        Sanguosha.getCardById(
+          (skillUseEvent.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>).cardId,
+        ).Id,
+      ),
+    ).extract();
+    return true;
+  }
+
+  public resortTargets(): boolean {
+    return false;
+  }
+
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    const cardUseEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.CardUseEvent>;
+    const card = Sanguosha.getCardById(cardUseEvent.cardId);
+    const resp = await room.doAskForCommonly<GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent>(
+      GameEventIdentifiers.AskForChoosingCardAvailableTargetEvent,
+      {
+        user: cardUseEvent.fromId,
+        cardId: card.Id,
+        exclude: TargetGroupUtil.getRealTargets(cardUseEvent.targetGroup),
+        conversation: 'pve_guyong_wenqu: please select a player append to target',
+        triggeredBySkills: [this.Name],
+      },
+      cardUseEvent.fromId,
     );
 
-    if (resp.droppedCards.length > 0) {
-      await room.dropCards(CardMoveReason.SelfDrop, resp.droppedCards, event.fromId);
-      const damageEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>;
-      damageEvent.damage++;
+    if (resp.selectedPlayers === undefined) {
+      return false;
     }
+
+    const selectedPlayer = resp.selectedPlayers[0];
+
+    room.broadcast(GameEventIdentifiers.CustomGameDialog, {
+      translationsMessage: TranslationPack.translationJsonPatcher(
+        "{1} is appended to target list of {2} by {0}'s skill {3}",
+        TranslationPack.patchPlayerInTranslation(room.getPlayerById(event.fromId)),
+        TranslationPack.patchPlayerInTranslation(room.getPlayerById(selectedPlayer)),
+        TranslationPack.patchCardInTranslation(cardUseEvent.cardId),
+        this.Name,
+      ).extract(),
+    });
+    TargetGroupUtil.pushTargets(cardUseEvent.targetGroup!, selectedPlayer);
+
+    return true;
+  }
+}
+
+@ShadowSkill
+@CommonSkill({ name: PveClassicGuYongWenQu.Name, description: PveClassicGuYongWenQu.Description })
+export class PveClassicGuYongWuQu extends TriggerSkill {
+  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
+    return stage === PhaseStageChangeStage.StageChanged;
+  }
+
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
+    return (
+      content.toStage === PlayerPhaseStages.PrepareStageEnd &&
+      room.getMark(owner.Id, MarkEnum.PveWuQu) > 0 &&
+      room.CurrentPlayer === owner
+    );
+  }
+
+  numberOfTargets() {
+    return 1;
+  }
+
+  isAvailableTarget(owner: PlayerId, room: Room, target: PlayerId): boolean {
+    return room.canPindian(owner, target);
+  }
+
+  getSkillLog(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
+    return TranslationPack.translationJsonPatcher('{0}: you can pindian to a player', this.Name).extract();
+  }
+
+  async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    skillUseEvent.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} triggered skill {1}',
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
+      this.Name,
+    ).extract();
+    return true;
+  }
+
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    const { fromId, toIds } = event;
+    if (!toIds) {
+      return false;
+    }
+
+    const { pindianRecord } = await room.pindian(fromId, toIds, this.GeneralName);
+    if (!pindianRecord) {
+      return false;
+    }
+
+    if (pindianRecord[0].winner === fromId) {
+      const slash = VirtualCard.create<Slash>({ cardName: 'slash', bySkill: this.Name }).Id;
+      const slashUseEvent = { fromId, cardId: slash, targetGroup: [toIds] };
+      await room.useCard(slashUseEvent);
+    }
+
+    return true;
+  }
+}
+
+@ShadowSkill
+@CommonSkill({ name: PveClassicGuYongWuQu.Name, description: PveClassicGuYongWuQu.Description })
+export class PveClassicGuYongBufPoJun extends TriggerSkill {
+  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
+    return stage === DamageEffectStage.DamageFinishedEffect;
+  }
+
+  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
+    return owner.getMark(MarkEnum.PvePoJun) > 0 && content.toId === owner.Id && owner.isInjured();
+  }
+
+  cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
+    return cards.length === owner.Hp;
+  }
+
+  isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
+    return room.canDropCard(owner, cardId);
+  }
+
+  getSkillLog(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.CardUseEvent>) {
+    return TranslationPack.translationJsonPatcher('{0}: you can drop {1}', this.Name, owner.Hp).extract();
+  }
+
+  async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    skillUseEvent.translationsMessage = TranslationPack.translationJsonPatcher(
+      '{0} triggered skill {1}',
+      TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
+      this.Name,
+    ).extract();
+    return true;
+  }
+
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    const owner = room.getPlayerById(event.fromId);
+    if (!event.cardIds) {
+      return false;
+    }
+
+    await room.dropCards(CardMoveReason.SelfDrop, event.cardIds, owner.Id, owner.Id, this.Name);
+
+    const blackCardNumber = event.cardIds.filter(
+      cardId => Sanguosha.getCardById(cardId).Color === CardColor.Black,
+    ).length;
+
+    if (blackCardNumber === 0) {
+      await room.recover({ recoverBy: owner.Id, toId: owner.Id, recoveredHp: 1 });
+    } else {
+      await room.drawCards(blackCardNumber * 2, owner.Id);
+    }
+
     return true;
   }
 }
