@@ -33,7 +33,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     players: ClientPlayer[],
     protected analytics: RecordAnalytics,
     protected gameCommonRules: GameCommonRules,
-    protected eventStack: RoomEventStacker<WorkPlace.Client>
+    protected eventStack: RoomEventStacker<WorkPlace.Client>,
   ) {
     super();
 
@@ -295,7 +295,12 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     return this.currentPlayerStage;
   }
 
-  public async obtainSkill(playerId: PlayerId, skillName: string, broadcast?: boolean, insertIndex?: number): Promise<void> {
+  public async obtainSkill(
+    playerId: PlayerId,
+    skillName: string,
+    broadcast?: boolean,
+    insertIndex?: number,
+  ): Promise<void> {
     const player = this.getPlayerById(playerId);
     player.obtainSkill(skillName, insertIndex);
     await SkillLifeCycle.executeHookOnObtainingSkill(Sanguosha.getSkillBySkillName(skillName), this, player);
@@ -310,7 +315,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
       if (outsideCards && player.isCharacterOutsideArea(skill.Name)) {
         outsideCards.splice(0, outsideCards.length);
       }
-      const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
+      const hookedSkill = skill as unknown as OnDefineReleaseTiming;
       if (hookedSkill.whenLosingSkill) {
         await hookedSkill.whenLosingSkill(this, player);
       }
@@ -328,8 +333,8 @@ export class ClientRoom extends Room<WorkPlace.Client> {
     deadPlayer.bury();
   }
 
-  public async revive(deadPlayer: Player): Promise<void> {
-    deadPlayer.revive();
+  public async activate(deadPlayer: Player): Promise<void> {
+    deadPlayer.activate();
   }
 
   public emitStatus(status: 'offline' | 'online' | 'quit' | 'trusted' | 'player', toId: PlayerId) {
