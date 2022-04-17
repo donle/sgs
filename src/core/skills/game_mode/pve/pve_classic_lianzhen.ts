@@ -1,4 +1,4 @@
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, CardMoveStage, PhaseChangeStage, PlayerPhase } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerId } from 'core/player/player_props';
@@ -49,7 +49,9 @@ export class PveClassicLianZhenBuf extends TriggerSkill {
   canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.MoveCardEvent>) {
     return (
       owner.getFlag(this.GeneralName) !== undefined &&
-      content.infos.find(info => info.toId === owner.getFlag(this.GeneralName)) !== undefined
+      content.infos.find(
+        info => info.toId === owner.getFlag(this.GeneralName) && info.toArea === CardMoveArea.HandArea,
+      ) !== undefined
     );
   }
 
