@@ -7,6 +7,7 @@ import {
   PveClassicTianLiang,
   PveClassicTianTong,
   PveClassicTianXiang,
+  PveClassicLianZhen,
 } from 'core/skills';
 
 const skillLoaderInstance = SkillLoader.getInstance();
@@ -53,6 +54,14 @@ export class PveQiSha extends Character {
   constructor(id: number) {
     super(id, 'pve_qisha', CharacterGender.Female, CharacterNationality.God, 4, 4, GameCharacterExtensions.Pve, [
       skillLoaderInstance.getSkillByName(PveClassicQiSha.Name),
+    ]);
+  }
+}
+
+export class PveLianZhen extends Character {
+  constructor(id: number) {
+    super(id, 'pve_lianzhen', CharacterGender.Female, CharacterNationality.God, 4, 4, GameCharacterExtensions.Pve, [
+      ...skillLoaderInstance.getSkillsByName(PveClassicLianZhen.GeneralName),
     ]);
   }
 }
