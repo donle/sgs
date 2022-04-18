@@ -35,7 +35,7 @@ export class PveClassicTianJi extends TriggerSkill {
 
   getSkillLog() {
     return TranslationPack.translationJsonPatcher(
-      'please discard a card to deal 1 thunder damage to current player?',
+      'please drop a card to deal 1 thunder damage to current player?',
     ).extract();
   }
 
@@ -47,11 +47,11 @@ export class PveClassicTianJi extends TriggerSkill {
     return room.canDropCard(owner, cardId);
   }
 
-  public async onTrigger() {
+  async onTrigger() {
     return true;
   }
 
-  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     if (event.cardIds !== undefined && event.cardIds.length === 1) {
       await room.dropCards(CardMoveReason.SelfDrop, event.cardIds, event.fromId);
       const current = room.CurrentPlayer;
