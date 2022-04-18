@@ -210,13 +210,20 @@ export const promptDescriptions: Word[] = [
     source: 'Please choose a character for get a skill',
     target: '請選擇一個武將並獲得其一個技能',
   },
+  {
+    source: 'you can drop a card to then draw a card',
+    target: '你可以棄置一張牌，然後摸一張牌',
+  },
+  {
+    source: 'you can drop a card to deal 1 thunder damage to current player?',
+    target: '你可以棄置一張牌，並對當前回合角色造成一點雷屬性傷害',
+  },
 ];
 export const eventDictionary: Word[] = [
   { source: 'pve-easy-mode', target: '低難度' },
   { source: 'pve-hard-mode', target: '高難度' },
   { source: '{0} ouyujiguan', target: '{0} 偶遇了機關' },
   { source: '{0} qiyubaowu', target: '{0} 奇遇寶物' },
-  { source: 'please discard a card to deal 1 thunder damage to {0} ?', target: '請棄置一張牌並對{0}造成一點雷電傷害' },
   { source: '{0}: do you want to awaken?', target: '{0} 已點亮四種標記，請選擇適應性強化' },
   { source: '{0}: get the next stage mark', target: '{0} 點亮下一階段標記' },
   { source: '{0}: do you want to draw a card?', target: '{0} 你可以摸一張牌' },
