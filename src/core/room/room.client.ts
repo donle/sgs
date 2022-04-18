@@ -334,7 +334,7 @@ export class ClientRoom extends Room<WorkPlace.Client> {
   }
 
   public async activate(deadPlayer: Player): Promise<void> {
-    deadPlayer.activate();
+    deadPlayer.revive();
   }
 
   public emitStatus(status: 'offline' | 'online' | 'quit' | 'trusted' | 'player', toId: PlayerId) {

@@ -680,7 +680,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       property.nationality !== undefined && (player.Nationality = property.nationality);
       property.gender !== undefined && (player.Gender = property.gender);
       if (property.activate !== undefined) {
-        property.activate && player.Dead && player.activate();
+        property.activate && player.Dead && player.revive();
         property.activate || player.Dead || player.bury();
       }
 

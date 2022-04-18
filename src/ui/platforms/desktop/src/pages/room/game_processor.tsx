@@ -845,7 +845,7 @@ export class GameClientProcessor {
       gender !== undefined && (player.Gender = gender);
 
       if (activate !== undefined) {
-        activate && player.Dead && player.activate();
+        activate && player.Dead && player.revive();
         activate || player.Dead || player.bury();
       }
       playerPosition !== undefined && (player.Position = playerPosition);
