@@ -1000,8 +1000,8 @@ export abstract class Player implements PlayerInfo {
     this.dead = true;
   }
 
-  public activate() {
-    Precondition.assert(this.Hp > 0, 'Activate can only use for player who dead and Hp > 0');
+  public revive() {
+    Precondition.assert(this.Hp > 0, 'Revive can only use for player who dead and Hp > 0');
     this.dead = false;
   }
 
