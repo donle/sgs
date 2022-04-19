@@ -212,10 +212,6 @@ export const promptDescriptions: Word[] = [
     target: '请选择一个武将并获得其一个技能',
   },
   {
-    source: 'you can drop a card to then draw a card',
-    target: '你可以弃置一张牌，然后摸一张牌',
-  },
-  {
     source: 'you can drop a card to deal 1 thunder damage to current player?',
     target: '你可以弃置一张牌，并对当前回合角色造成一点雷属性伤害',
   },
@@ -237,4 +233,8 @@ export const eventDictionary: Word[] = [
   { source: '{0} triggered skill {1}, add a target for {2}', target: '{0} 使用了技能 {1}, 为 {2} 添加了一个目标' },
   { source: '{0}: you can pindian to a player', target: '{0} 你可以选择一名角色拼点' },
   { source: '{0}: you can drop {1}', target: '{0} 你可以弃置{1}张牌' },
+  {
+    source: '{0}: you can drop a card then draw a card',
+    target: '你可以弃置一张牌，然后摸一张牌',
+  },
 ];

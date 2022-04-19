@@ -627,7 +627,7 @@ export {
   PveClassicGuYongTanLang,
   PveClassicGuYongWenQu,
   PveClassicGuYongWuQu,
-  PveClassicGuYongBufPoJun,
+  PveClassicGuYongPoJun,
 } from './game_mode/pve/pve_classic_guyong';
 export { PveClassicAi, PveClassicAiEx } from './game_mode/pve/pve_classic_ai';
 export { PveClassicQiSha } from './game_mode/pve/pve_classic_qisha';
