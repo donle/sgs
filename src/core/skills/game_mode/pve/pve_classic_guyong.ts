@@ -8,7 +8,6 @@ import { DamageType } from 'core/game/game_props';
 import {
   AllStage,
   CardUseStage,
-  DamageEffectStage,
   JudgeEffectStage,
   PhaseChangeStage,
   PhaseStageChangeStage,
@@ -16,6 +15,7 @@ import {
   PlayerPhase,
   PlayerPhaseStages,
   StagePriority,
+  AimStage,
 } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -245,7 +245,7 @@ export class PveClassicGuYongWenQu extends TriggerSkill {
         player =>
           !TargetGroupUtil.getRealTargets(content.targetGroup).includes(player.Id) &&
           room.isAvailableTarget(card.Id, content.fromId, player.Id) &&
-          ((Sanguosha.getCardById(content.cardId).Skill as unknown) as ExtralCardSkillProperty).isCardAvailableTarget(
+          (Sanguosha.getCardById(content.cardId).Skill as unknown as ExtralCardSkillProperty).isCardAvailableTarget(
             content.fromId,
             room,
             player.Id,
@@ -383,45 +383,40 @@ export class PveClassicGuYongWuQu extends TriggerSkill {
 @ShadowSkill
 @CommonSkill({ name: PveClassicGuYongWuQu.Name, description: PveClassicGuYongWuQu.Description })
 export class PveClassicGuYongBufPoJun extends TriggerSkill {
-  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
-    return stage === DamageEffectStage.DamageFinishedEffect;
+  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage) {
+    return stage === AimStage.AfterAimmed && event.byCardId !== undefined;
   }
 
-  canUse(room: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
-    return owner.getMark(MarkEnum.PvePoJun) > 0 && content.toId === owner.Id && owner.isInjured();
+  canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
+    return owner.getMark(MarkEnum.PvePoJun) > 0 && event.toId === owner.Id && event.fromId !== owner.Id;
   }
 
-  cardFilter(room: Room, owner: Player, cards: CardId[]): boolean {
-    return cards.length === owner.MaxHp - owner.Hp;
+  getSkillLog() {
+    return TranslationPack.translationJsonPatcher('you can drop a card to then draw a card').extract();
+  }
+
+  cardFilter(room: Room, owner: Player, cards: CardId[]) {
+    return cards.length === 1;
   }
 
   isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
     return room.canDropCard(owner, cardId);
   }
 
-  getSkillLog(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
-    return TranslationPack.translationJsonPatcher('{0}: you can drop {1}', this.Name, owner.MaxHp - owner.Hp).extract();
-  }
-
-  async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
-    skillUseEvent.translationsMessage = TranslationPack.translationJsonPatcher(
-      '{0} triggered skill {1}',
-      TranslationPack.patchPlayerInTranslation(room.getPlayerById(skillUseEvent.fromId)),
-      this.Name,
-    ).extract();
+  async onTrigger() {
     return true;
   }
 
-  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     const owner = room.getPlayerById(event.fromId);
     if (!event.cardIds) {
       return false;
     }
-
     await room.dropCards(CardMoveReason.SelfDrop, event.cardIds, owner.Id, owner.Id, this.Name);
 
-    const blackCardNumber = event.cardIds.filter(cardId => Sanguosha.getCardById(cardId).Color === CardColor.Black)
-      .length;
+    const blackCardNumber = event.cardIds.filter(
+      cardId => Sanguosha.getCardById(cardId).Color === CardColor.Black,
+    ).length;
 
     if (blackCardNumber === 0) {
       const fromId = (event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DamageEvent>).fromId;
@@ -438,7 +433,6 @@ export class PveClassicGuYongBufPoJun extends TriggerSkill {
     } else {
       await room.drawCards(blackCardNumber * 2, owner.Id);
     }
-
     return true;
   }
 }
