@@ -18,6 +18,7 @@ import { Button } from 'ui/button/button';
 import { CharacterCard } from 'ui/character/character';
 import { CharacterSkinCard, CharacterSpec } from 'ui/character/characterSkin';
 import { CheckBoxGroup } from 'ui/check_box/check_box_group';
+import { Picture } from 'ui/picture/picture';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import styles from './characters_list.module.css';
 
@@ -31,8 +32,8 @@ export type CharactersListProps = PagePropsWithConfig<{
 
 @mobxReact.observer
 export class CharactersList extends React.Component<CharactersListProps> {
-  private backgroundImage = this.props.imageLoader.getLobbyBackgroundImage().src!;
-  private roomListBackgroundImage = this.props.imageLoader.getRoomListBackgroundImage().src!;
+  private backgroundImage = this.props.imageLoader.getLobbyBackgroundImage();
+  private roomListBackgroundImage = this.props.imageLoader.getRoomListBackgroundImage();
   private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
 
   @mobx.observable.ref
@@ -78,7 +79,7 @@ export class CharactersList extends React.Component<CharactersListProps> {
   render() {
     return (
       <div className={styles.charactersList}>
-        <img src={this.backgroundImage} alt="" className={styles.background} />
+        <Picture image={this.backgroundImage} className={styles.background} />
         <div className={styles.board}>
           <div className={styles.functionBoard}>
             <Button variant="primary" className={styles.button} onClick={this.backToLobby}>
@@ -86,7 +87,7 @@ export class CharactersList extends React.Component<CharactersListProps> {
             </Button>
           </div>
           <div className={styles.innerList}>
-            <img src={this.roomListBackgroundImage} alt="" className={styles.roomListBackground} />
+            <Picture image={this.roomListBackgroundImage} className={styles.roomListBackground} />
             <div className={styles.checkboxGroups}>
               <CheckBoxGroup
                 className={styles.packagesGroup}

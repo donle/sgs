@@ -20,6 +20,7 @@ import { PagePropsWithConfig } from 'types/page_props';
 import { installAudioPlayerService } from 'ui/audio/install';
 import { Button } from 'ui/button/button';
 import { LinkButton } from 'ui/button/link_button';
+import { Picture } from 'ui/picture/picture';
 import { SignalBar } from 'ui/signal_bar/signal_bar';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import lockerImage from './images/locked.png';
@@ -85,11 +86,10 @@ export class Lobby extends React.Component<LobbyProps> {
   @mobx.observable.ref
   private gameLog: string;
 
-  private backgroundImage = this.props.imageLoader.getLobbyBackgroundImage().src!;
-  private illustrationImage = this.props.imageLoader.getRandomLobbyIllustration().src!;
-  private gameLogBoardImage = this.props.imageLoader.getGameLogBoradImage().src!;
-  private roomListBackgroundImage = this.props.imageLoader.getRoomListBackgroundImage().src!;
-  private createRoomImage = this.props.imageLoader.getCreateRoomButtonImage().src!;
+  private backgroundImage = this.props.imageLoader.getLobbyBackgroundImage();
+  private illustrationImage = this.props.imageLoader.getRandomLobbyIllustration();
+  private gameLogBoardImage = this.props.imageLoader.getGameLogBoradImage();
+  private roomListBackgroundImage = this.props.imageLoader.getRoomListBackgroundImage();
   private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
 
   private currentInteractiveRoomInfo: HostRoomInfo;
@@ -164,10 +164,9 @@ export class Lobby extends React.Component<LobbyProps> {
             onMouseEnter={this.viewGameCharaterExtensions(index)}
             onMouseLeave={this.closeGameCharaterExtensions}
           >
-            <img
+            <Picture
               className={styles.gameModeIcon}
-              src={this.props.imageLoader.getGameModeIcon(hostInfo.info.gameMode).src}
-              alt=""
+              image={this.props.imageLoader.getGameModeIcon(hostInfo.info.gameMode)}
             />
             {this.viewCharacterExtenstions === index && (
               <Tooltip position={['slightBottom', 'right']}>
@@ -177,7 +176,7 @@ export class Lobby extends React.Component<LobbyProps> {
           </span>
           <span className={styles.roomStatus}>{this.props.translator.tr(hostInfo.info.status)}</span>
           <span className={styles.roomPlayers}>{`${hostInfo.info.activePlayers}/${hostInfo.info.totalPlayers}`}</span>
-          <span className={styles.roomLocker}>{hostInfo.info.passcode && <img src={lockerImage} alt="" />}</span>
+          <span className={styles.roomLocker}>{hostInfo.info.passcode && <img src={lockerImage} />}</span>
           <span className={styles.roomActions}>
             <LinkButton
               onClick={this.enterRoom(hostInfo)}
@@ -399,16 +398,16 @@ export class Lobby extends React.Component<LobbyProps> {
   render() {
     return (
       <div className={styles.lobby}>
-        <img src={this.backgroundImage} alt="" className={styles.background} />
+        <Picture image={this.backgroundImage} className={styles.background} />
         <div className={styles.board}>
           <div className={styles.functionBoard}>
             <div className={styles.illustration}>
-              <img src={this.illustrationImage} alt="" />
+              <Picture image={this.illustrationImage} />
               <img className={styles.logo} src={logoImage} alt={'logo'} />
             </div>
             <div className={styles.gameLog}>
               <div className={styles.gameLogContainer}>
-                <img className={styles.gameLogBoardImage} src={this.gameLogBoardImage} alt="" />
+                <Picture className={styles.gameLogBoardImage} image={this.gameLogBoardImage} />
                 <p className={styles.gameLogText} dangerouslySetInnerHTML={{ __html: this.gameLog }} />
               </div>
             </div>
@@ -429,10 +428,9 @@ export class Lobby extends React.Component<LobbyProps> {
               imageLoader={this.props.imageLoader}
               onClick={this.onCreateRoom}
               className={styles.createRoomButton}
-              image={this.createRoomImage}
               disabled={!this.username || this.unmatchedCoreVersion}
             />
-            <img src={this.roomListBackgroundImage} alt="" className={styles.roomListBackground} />
+            <Picture image={this.roomListBackgroundImage} className={styles.roomListBackground} />
           </div>
           <div className={styles.systemButtons}>
             <button
@@ -440,17 +438,15 @@ export class Lobby extends React.Component<LobbyProps> {
               onClick={this.onOpenReplay}
               disabled={!this.props.electronLoader.ReplayEnabled}
             >
-              <img
-                {...this.props.imageLoader.getLobbyButtonImage(LobbyButton.Record)}
+              <Picture
+                image={this.props.imageLoader.getLobbyButtonImage(LobbyButton.Record)}
                 className={styles.lobbyButtonIcon}
-                alt=""
               />
             </button>
             <button className={styles.systemButton} onClick={this.onClickCharactersList}>
-              <img
-                {...this.props.imageLoader.getLobbyButtonImage(LobbyButton.CharactersList)}
+              <Picture
+                image={this.props.imageLoader.getLobbyButtonImage(LobbyButton.CharactersList)}
                 className={styles.lobbyButtonIcon}
-                alt=""
               />
             </button>
             <button className={styles.systemButton} onClick={this.onClickSettings}>
@@ -459,24 +455,21 @@ export class Lobby extends React.Component<LobbyProps> {
                   {this.props.translator.tr('please input your username here')}
                 </Tooltip>
               )}
-              <img
-                {...this.props.imageLoader.getLobbyButtonImage(LobbyButton.Settings)}
+              <Picture
+                image={this.props.imageLoader.getLobbyButtonImage(LobbyButton.Settings)}
                 className={styles.lobbyButtonIcon}
-                alt=""
               />
             </button>
             <button className={styles.systemButton} onClick={this.onOpenFeedback}>
-              <img
-                {...this.props.imageLoader.getLobbyButtonImage(LobbyButton.Feedback)}
+              <Picture
+                image={this.props.imageLoader.getLobbyButtonImage(LobbyButton.Feedback)}
                 className={styles.lobbyButtonIcon}
-                alt=""
               />
             </button>
             <button className={styles.systemButton} onClick={this.onOpenAcknowledgement}>
-              <img
-                {...this.props.imageLoader.getLobbyButtonImage(LobbyButton.Acknowledgement)}
+              <Picture
+                image={this.props.imageLoader.getLobbyButtonImage(LobbyButton.Acknowledgement)}
                 className={styles.lobbyButtonIcon}
-                alt=""
               />
             </button>
           </div>

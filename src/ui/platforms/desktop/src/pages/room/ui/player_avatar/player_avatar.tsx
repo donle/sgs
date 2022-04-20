@@ -16,6 +16,7 @@ import { CharacterSkinInfo } from 'skins/skins';
 import { NationalityBadge } from 'ui/badge/badge';
 import { SkillButton } from 'ui/button/skill_button';
 import { Hp } from 'ui/hp/hp';
+import { Picture } from 'ui/picture/picture';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import { getSkinName } from '../../ui/switch_avatar/switch_skin';
 import { CardSelectorDialog } from '../dialog/card_selector_dialog/card_selector_dialog';
@@ -378,7 +379,7 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
         this.props.store.room.Info.gameMode,
       );
       mobx.runInAction(() => {
-        this.PlayerRoleCard = () => <img className={styles.playerRoleCard} alt={image.alt} src={image.src} />;
+        this.PlayerRoleCard = () => <Picture className={styles.playerRoleCard} image={image} />;
       });
     }
   }
@@ -545,11 +546,11 @@ export class PlayerAvatar extends React.Component<PlayerAvatarProps> {
           )}
 
           {!clientPlayer?.isFaceUp() && (
-            <img className={styles.status} src={this.props.imageLoader.getTurnedOverCover().src} alt="" />
+            <Picture className={styles.status} image={this.props.imageLoader.getTurnedOverCover()} />
           )}
           {clientPlayer && clientPlayer.hasDrunk() > 0 && <div className={styles.drunk} />}
           {clientPlayer && clientPlayer.ChainLocked && (
-            <img className={styles.chain} src={this.props.imageLoader.getChainImage().src} alt="" />
+            <Picture className={styles.chain} image={this.props.imageLoader.getChainImage()} />
           )}
 
           {this.PlayerRoleCard !== undefined && <this.PlayerRoleCard />}

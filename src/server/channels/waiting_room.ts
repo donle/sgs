@@ -1,6 +1,4 @@
 import { WaitingRoomClientEventFinder, WaitingRoomEvent } from 'core/event/event';
-import { Sanguosha } from 'core/game/engine';
-import { TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { WaitingRoomInfo } from 'core/room/waiting_room';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Flavor } from 'core/shares/types/host_config';
@@ -85,6 +83,8 @@ export class WaitingRoomSocket {
     ) {
       socket.emit(WaitingRoomEvent.PlayerLeave, { playerId: evt.playerInfo.playerId });
     } else {
+      this.connectedPlayersMap[socket.id] = evt.playerInfo.playerId;
+
       const playerInfo = { ...evt.playerInfo, seatId };
       this.waitingRoomInfo.players.push(playerInfo);
       socket.emit(WaitingRoomEvent.PlayerEnter, {

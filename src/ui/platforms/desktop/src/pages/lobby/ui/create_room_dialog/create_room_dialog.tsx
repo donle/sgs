@@ -10,6 +10,7 @@ import * as React from 'react';
 import { Button } from 'ui/button/button';
 import { CheckBoxGroup } from 'ui/check_box/check_box_group';
 import { Dialog } from 'ui/dialog/dialog';
+import { Picture } from 'ui/picture/picture';
 import styles from './create_room_dialog.module.css';
 
 function getGameModeOptions(translator: ClientTranslationModule) {
@@ -149,7 +150,7 @@ export const CreateRoomDialog = (props: {
 
   return (
     <Dialog className={styles.createRoomDialog} onClose={props.onCancel}>
-      <img src={props.imageLoader.getDialogBackgroundImage().src} alt="bg" className={styles.background} />
+      <Picture image={props.imageLoader.getDialogBackgroundImage()} className={styles.background} />
       <form onSubmit={onSubmit} className={styles.createRoomForm} onMouseDown={onAction}>
         <div className={styles.layout}>
           <div className={classNames(styles.verticalLayout, styles.basicInfo)}>

@@ -3,6 +3,7 @@ import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
 import { Button } from 'ui/button/button';
 import { Dialog } from 'ui/dialog/dialog';
+import { Picture } from 'ui/picture/picture';
 import styles from './enter_passcode_dialog.module.css';
 
 export const EnterPasscodeDialog = ({
@@ -33,7 +34,7 @@ export const EnterPasscodeDialog = ({
   const [passcode, setPasscode] = React.useState<string>();
   return (
     <Dialog className={styles.passcodeDialog} onClose={onClose}>
-      <img className={styles.background} src={imageLoader.getDialogBackgroundImage().src} alt="" />
+      <Picture className={styles.background} image={imageLoader.getDialogBackgroundImage()} />
       <div className={styles.inputField}>
         <span className={styles.inputLabelText}>{translator.tr('please enter your room passcode')}</span>
         <input

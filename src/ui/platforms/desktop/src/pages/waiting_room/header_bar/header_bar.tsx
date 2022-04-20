@@ -7,6 +7,7 @@ import * as mobxReact from 'mobx-react';
 import { Background } from 'pages/room/ui/background/background';
 import { Banner } from 'pages/room/ui/banner/banner';
 import { SettingsDialog } from 'pages/ui/settings/settings';
+import { ServerHostTag } from 'props/config_props';
 import * as React from 'react';
 import { ConnectionService } from 'services/connection_service/connection_service';
 import { AudioService } from 'ui/audio/install';
@@ -22,6 +23,7 @@ export type HeaderBarProps = {
   roomName: string;
   roomId?: number | string;
   defaultPing?: number;
+  host?: ServerHostTag;
   getConnectionService(campaignMode: boolean): ConnectionService;
 };
 
@@ -71,6 +73,7 @@ export class HeaderBar extends React.Component<HeaderBarProps> {
           className={styles.roomBanner}
           connectionService={this.props.getConnectionService(this.props.isCampaignMode)}
           onClickSettings={this.onClickSettings}
+          host={this.props.host}
         />
 
         {this.openSettings && (

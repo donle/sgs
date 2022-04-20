@@ -5,6 +5,7 @@ import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
 import { Button } from 'ui/button/button';
 import { Dialog } from 'ui/dialog/dialog';
+import { Picture } from 'ui/picture/picture';
 import { Slider } from 'ui/slider/slider';
 import styles from './settings.module.css';
 
@@ -47,7 +48,7 @@ export const SettingsDialog = (props: SettingsProps) => {
 
   return (
     <Dialog className={styles.settings} onClose={props.onConfirm}>
-      <img src={props.imageLoader.getDialogBackgroundImage().src} alt="" className={styles.background} />
+      <Picture image={props.imageLoader.getDialogBackgroundImage()} className={styles.background} />
       <Slider
         label={props.translator.tr('main volume')}
         className={styles.mainVolume}
