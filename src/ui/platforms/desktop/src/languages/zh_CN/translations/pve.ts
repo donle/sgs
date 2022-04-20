@@ -235,6 +235,6 @@ export const eventDictionary: Word[] = [
   { source: '{0}: you can drop {1}', target: '{0} 你可以弃置{1}张牌' },
   {
     source: '{0}: you can drop a card then draw a card',
-    target: '你可以弃置一张牌，然后摸一张牌',
+    target: '{0}: 你可以弃置一张牌，然后摸一张牌',
   },
 ];
