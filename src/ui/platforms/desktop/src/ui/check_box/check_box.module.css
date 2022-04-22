@@ -27,3 +27,13 @@
 .smashCheckBox {
     width: 16.67%;
 }
+
+.checkboxGroupHead {
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: calc(gridLine * 2);
+    margin-bottom: calc(gridLine * 2);
+    width: 100%;
+    text-align: left;
+}

@@ -1,5 +1,14 @@
-@value XinWeiFont from '../metrics/metrics.css';
 @value gridLine from '../metrics/metrics.css';
+
+.inputContainer {
+    display: flex;
+}
+
+.suffix {
+    color: white;
+    font-size: 14px;
+    padding-left: gridLine;
+}
 
 .input {
     border-radius: calc(gridLine / 2);

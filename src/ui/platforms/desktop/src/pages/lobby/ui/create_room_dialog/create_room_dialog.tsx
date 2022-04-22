@@ -180,16 +180,16 @@ export const CreateRoomDialog = (props: {
           </div>
           <div className={styles.verticalLayout}>
             <div className={styles.inputField}>
-              <span className={styles.inputLabelText}>{props.translator.tr('please select a game mode')}</span>
               <CheckBoxGroup
+                head={props.translator.tr('please select a game mode')}
                 options={getGameModeOptions(props.translator)}
                 excludeSelection={true}
                 onChecked={onGameModeChecked}
               />
             </div>
             <div className={styles.inputField}>
-              <span className={styles.inputLabelText}>{props.translator.tr('please select character extensions')}</span>
               <CheckBoxGroup
+                head={props.translator.tr('please select character extensions')}
                 options={getGameCharacterExtensions(props.translator)}
                 onChecked={onCharacterExtensionsChecked}
               />

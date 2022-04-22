@@ -1,6 +1,7 @@
 import { CardSuit } from 'core/cards/libs/card_props';
 import { Player } from 'core/player/player';
 import { Algorithm } from 'core/shares/libs/algorithm/index';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import * as React from 'react';
 import { Languages, TranslationPack, TranslationsDictionary } from './translation_json_tool';
 import { TranslationModule } from './translation_module';
@@ -28,6 +29,10 @@ export class ClientTranslationModule extends TranslationModule {
 
   public switchLanguage(language: Languages) {
     this.currentLanguage = language;
+  }
+
+  public get Dictionary(): Readonly<TranslationsDictionary> {
+    return Precondition.exists(this.dictionary.get(this.currentLanguage), 'ClientTranslationModule is not initialized');
   }
 
   private commonTextStyle: React.CSSProperties = {

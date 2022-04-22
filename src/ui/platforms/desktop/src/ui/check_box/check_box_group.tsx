@@ -9,9 +9,11 @@ export type CheckBoxGroupProps = {
   onChecked?(checkedIds: (string | number)[]): void;
   itemsPerLine?: 4 | 5 | 6;
   className?: string;
+  head?: string | JSX.Element;
 };
 
 export const CheckBoxGroup = ({
+  head,
   options,
   excludeSelection,
   onChecked,
@@ -54,6 +56,7 @@ export const CheckBoxGroup = ({
 
   return (
     <div className={classNames(styles.checkboxGroup, className)}>
+      {typeof head === 'string' ? <h3 className={styles.checkboxGroupHead}>{head}</h3> : head}
       {options.map((option, index) => (
         <CheckBox
           {...option}
