@@ -1,0 +1,31 @@
+@value gridLine from '../../../ui/metrics/metrics.css';
+
+.container {
+  min-width: calc(gridLine * 22);
+  display: flex;
+  flex-direction: column;
+}
+
+.settingsLabel {
+  width: 100%;
+  margin-top: calc(gridLine * 2);
+  margin-bottom: calc(gridLine * 2);
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+}
+
+.inputLabel {
+  width: 100%;
+  margin-top: gridLine;
+  margin-bottom: gridLine;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+}
+
+.inputTitle {
+  font-size: 14px;
+  color: white;
+  font-weight: 550;
+}

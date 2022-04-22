@@ -11,10 +11,11 @@ export type InputProps = {
   value?: string;
   placeholder?: string;
   suffix?: string;
+  disabled?: boolean;
 };
 
 export const Input = (props: InputProps) => {
-  const { className, onChange, value, placeholder, type, min, max, suffix } = props;
+  const { className, onChange, value, placeholder, type, min, max, suffix, disabled } = props;
 
   const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onChange?.(event.target.value);
@@ -26,6 +27,7 @@ export const Input = (props: InputProps) => {
         placeholder={placeholder}
         className={classNames(styles.input, className)}
         onChange={onInputChange}
+        disabled={disabled}
         value={value}
         min={min}
         max={max}

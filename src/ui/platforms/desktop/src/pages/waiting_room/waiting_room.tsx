@@ -135,7 +135,6 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
             presenter={this.presenter}
             store={this.store}
             controlable={this.isHost}
-            senderService={this.services.eventSenderService}
           />
         </div>
       </div>

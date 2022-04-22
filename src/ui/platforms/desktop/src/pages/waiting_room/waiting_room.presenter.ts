@@ -1,9 +1,25 @@
+import { Sanguosha } from 'core/game/engine';
+import { GameMode } from 'core/shares/types/room_props';
 import * as mobx from 'mobx';
 import { WaitingRoomGameSettings, WaitingRoomSeatInfo, WaitingRoomStore } from './waiting_room.store';
 
 export class WaitingRoomPresenter {
   createStore() {
-    return new WaitingRoomStore();
+    const store = new WaitingRoomStore();
+    this.initGameSettings(store);
+    return store;
+  }
+
+  @mobx.action
+  private initGameSettings(store: WaitingRoomStore) {
+    store.gameSettings = {
+      gameMode: GameMode.Standard,
+      cardExtensions: Sanguosha.getCardExtensionsFromGameMode(GameMode.Standard),
+      characterExtensions: Sanguosha.getGameCharacterExtensions(),
+      playingTimeLimit: 60,
+      wuxiekejiTimeLimit: 15,
+      allowObserver: false,
+    };
   }
 
   @mobx.action
