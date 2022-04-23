@@ -211,10 +211,6 @@ export const promptDescriptions: Word[] = [
     source: 'Please choose a character for get a skill',
     target: '請選擇一個武將並獲得其一個技能',
   },
-  {
-    source: 'you can drop a card to deal 1 thunder damage to current player?',
-    target: '你可以棄置一張牌，並對當前回合角色造成一點雷屬性傷害',
-  },
 ];
 export const eventDictionary: Word[] = [
   { source: 'pve-easy-mode', target: '低難度' },
@@ -234,7 +230,11 @@ export const eventDictionary: Word[] = [
   { source: '{0}: you can pindian to a player', target: '{0} 你可以選擇一名角色拼點' },
   { source: '{0}: you can drop {1}', target: '{0} 你可以棄置{1}張牌' },
   {
-    source: '{0} you can drop a card then draw a card',
-    target: '{0} 你可以棄置一張牌，然後摸一張牌',
+    source: '{0}: you can drop a card then draw a card',
+    target: '{0}: 你可以棄置一張牌，然後摸一張牌',
+  },
+  {
+    source: '{0}: you can drop a card to deal 1 thunder damage to current player?',
+    target: '{0}: 你可以棄置一張牌，並對當前回合角色造成一點雷屬性傷害',
   },
 ];
