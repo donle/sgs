@@ -121,7 +121,7 @@ export class Dashboard extends React.Component<DashboardProps> {
   }
 
   get AvailableOutsideCards() {
-    if (!this.props.outsideCardEnableMatcher || !this.props.presenter.ClientPlayer) {
+    if (!this.props.presenter.ClientPlayer) {
       return [];
     }
 
@@ -133,7 +133,6 @@ export class Dashboard extends React.Component<DashboardProps> {
 
       availableCards.push(
         ...cards
-          .filter(card => this.props.outsideCardEnableMatcher!(Sanguosha.getCardById(card)))
           .map(cardId => ({
             areaName,
             card: Sanguosha.getCardById(cardId),
