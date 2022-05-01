@@ -144,10 +144,12 @@ export class Dashboard extends React.Component<DashboardProps> {
     return availableCards;
   }
 
-  getCardYOffset(index: number) {
-    if (this.onFocusCardIndex === index) {
-      return this.cardOffset < 0 ? -48 : -5;
-    }
+  getCardXOffset(index:number) {
+	let offsetX=index * (this.handCardWidth + this.cardOffset)
+	if(this.cardOffset!==this.cardMargin && this.onFocusCardIndex>=0 && index>this.onFocusCardIndex ){
+		 offsetX = index * (this.handCardWidth + this.cardOffset)-this.cardOffset+this.cardMargin
+	 }
+	  return offsetX 
   }
 
   private readonly onFocusCard = (index: number) =>
@@ -165,8 +167,7 @@ export class Dashboard extends React.Component<DashboardProps> {
           imageLoader={this.props.imageLoader}
           key={cardInfo.card.Id}
           width={this.handCardWidth}
-          offsetLeft={index * (this.handCardWidth + this.cardOffset)}
-          offsetTop={this.getCardYOffset(index)}
+          offsetLeft={this.getCardXOffset(index)}
           translator={this.props.translator}
           card={cardInfo.card}
           highlight={this.props.store.highlightedCards}
@@ -191,8 +192,7 @@ export class Dashboard extends React.Component<DashboardProps> {
             imageLoader={this.props.imageLoader}
             key={cardId}
             width={this.handCardWidth}
-            offsetLeft={(index + outsideCards.length) * (this.handCardWidth + this.cardOffset)}
-            offsetTop={this.getCardYOffset(index + outsideCards.length)}
+            offsetLeft={this.getCardXOffset(index+ outsideCards.length)}
             translator={this.props.translator}
             onMouseEnter={isSelected || isDisabled ? undefined : this.onFocusCard(index + outsideCards.length)}
             onMouseLeave={this.onFocusCard(-2)}
