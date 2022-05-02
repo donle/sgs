@@ -76,7 +76,7 @@ export class Dashboard extends React.Component<DashboardProps> {
   componentDidUpdate() {
     const { presenter } = this.props;
     if (this.handBoardRef.current && presenter.ClientPlayer) {
-      const width = this.handBoardRef.current.clientWidth;
+      const width = this.handBoardRef.current.clientWidth - 35;
       const numOfHandCards =
         presenter.ClientPlayer.getCardIds(PlayerCardsArea.HandArea).length + this.AvailableOutsideCards.length;
       if (width < numOfHandCards * (this.handCardWidth + this.cardMargin)) {
