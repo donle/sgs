@@ -132,23 +132,22 @@ export class Dashboard extends React.Component<DashboardProps> {
       }
 
       availableCards.push(
-        ...cards
-          .map(cardId => ({
-            areaName,
-            card: Sanguosha.getCardById(cardId),
-          })),
+        ...cards.map(cardId => ({
+          areaName,
+          card: Sanguosha.getCardById(cardId),
+        })),
       );
     }
 
     return availableCards;
   }
 
-  getCardXOffset(index:number) {
-	let offsetX=index * (this.handCardWidth + this.cardOffset)
-	if(this.cardOffset!==this.cardMargin && this.onFocusCardIndex>=0 && index>this.onFocusCardIndex ){
-		 offsetX = index * (this.handCardWidth + this.cardOffset)-this.cardOffset+this.cardMargin
-	 }
-	  return offsetX 
+  getCardXOffset(index: number) {
+    let offsetX = index * (this.handCardWidth + this.cardOffset);
+    if (this.cardOffset !== this.cardMargin && this.onFocusCardIndex >= 0 && index > this.onFocusCardIndex) {
+      offsetX = index * (this.handCardWidth + this.cardOffset) - this.cardOffset + this.cardMargin;
+    }
+    return offsetX;
   }
 
   private readonly onFocusCard = (index: number) =>
@@ -191,7 +190,7 @@ export class Dashboard extends React.Component<DashboardProps> {
             imageLoader={this.props.imageLoader}
             key={cardId}
             width={this.handCardWidth}
-            offsetLeft={this.getCardXOffset(index+ outsideCards.length)}
+            offsetLeft={this.getCardXOffset(index + outsideCards.length)}
             translator={this.props.translator}
             onMouseEnter={isSelected || isDisabled ? undefined : this.onFocusCard(index + outsideCards.length)}
             onMouseLeave={this.onFocusCard(-2)}
@@ -306,6 +305,25 @@ export class Dashboard extends React.Component<DashboardProps> {
     this.props.presenter.broadcastUIUpdate();
   };
 
+  private readonly onSelectTips = () => {
+    const handcards = this.props.presenter.ClientPlayer?.getCardIds(PlayerCardsArea.HandArea) || [];
+
+    if (this.props.store.selectedCards.length === 0) {
+      for (const cardId of handcards) {
+        const card = Sanguosha.getCardById(cardId);
+        const isDisabled = !this.props.cardEnableMatcher || !this.props.cardEnableMatcher(card);
+        if (!isDisabled) {
+          this.props.onClick && this.props.onClick(card, true);
+        }
+      }
+    } else {
+      for (const cardId of handcards) {
+        const card = Sanguosha.getCardById(cardId);
+        this.props.onClick && this.props.onClick(card, false);
+      }
+    }
+  };
+
   private readonly createShortcutButtons = (player: ClientPlayer) => {
     return (
       <div className={styles.actionButtons}>
@@ -337,6 +355,14 @@ export class Dashboard extends React.Component<DashboardProps> {
           }
         >
           {this.props.translator.tr('reverse select')}
+        </Button>
+        <Button
+          variant="primary"
+          className={styles.actionButton}
+          onClick={this.onSelectTips}
+          disabled={!this.props.store.room.isPlaying() || this.props.store.room.isGameOver()}
+        >
+          {this.props.translator.tr('select tips')}
         </Button>
       </div>
     );
