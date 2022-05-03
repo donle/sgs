@@ -388,6 +388,10 @@ export class PveClassicGuYongWuQu extends TriggerSkill {
 @ShadowSkill
 @CommonSkill({ name: PveClassicGuYongWuQu.Name, description: PveClassicGuYongWuQu.Description })
 export class PveClassicGuYongPoJun extends TriggerSkill {
+  isRefreshAt(room: Room, owner: Player, stage: PlayerPhase) {
+    return stage === PlayerPhase.PhaseBegin;
+  }
+
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage) {
     return stage === AimStage.AfterAimmed && Sanguosha.getCardById(event.byCardId).is(CardType.Trick);
   }
