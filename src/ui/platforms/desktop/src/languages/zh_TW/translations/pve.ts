@@ -141,7 +141,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_classic_guyong_description',
     target:
-      '<b>鎖定技</b>，你點亮的標記擁有如下效果：貪狼：其它角色準備階段開始時，若你的手牌數不大於體力上限，你可以摸一張牌；文曲：你使用順手牽羊、過河拆橋、火攻和決鬥可以額外增加一個目標；武曲：當你成爲其它角色使用牌的目標後，你可以摸一張牌；破軍：準備階段結束時，你可以與一名角色拼點，若你嬴，視爲你對其使用一張殺；每當一種花色的判定牌亮出，或當你殺死一名角色時，你點亮一個階段的標記。準備階段開始時，若你已點亮四種標記時，你獲得適應性加強。',
+      '<b>鎖定技</b>，你點亮的標記擁有如下效果：<p>貪狼：其它角色準備階段開始時，若你的手牌數不大於體力上限，你可以摸一張牌</p><p>文曲：你使用順手牽羊、過河拆橋、火攻和決鬥可以額外增加一個目標</p><p>武曲：準備階段結束時，你可以與一名角色拼點，若你嬴，視爲你對其使用一張殺，若你沒贏，視爲其對你使用一張決鬥</p><p>破軍：每回合限一次，當你於回合外成爲錦囊牌的目標後，你可以棄置一張牌；若此牌：爲裝備牌，你對其造成一點傷害；爲錦囊牌，你隨機獲得其一張手牌，爲基本牌，你摸一張牌</p>每當一種花色的判定牌亮出，或當你殺死一名角色時，你點亮一個階段的標記。準備階段開始時，若你已點亮四種標記時，你獲得適應性加強。',
   },
   {
     source: 'pve_classic_qisha_description',
@@ -230,8 +230,8 @@ export const eventDictionary: Word[] = [
   { source: '{0}: you can pindian to a player', target: '{0} 你可以選擇一名角色拼點' },
   { source: '{0}: you can drop {1}', target: '{0} 你可以棄置{1}張牌' },
   {
-    source: '{0}: you can drop a card then draw a card',
-    target: '{0}: 你可以棄置一張牌，然後摸一張牌',
+    source: '{0}: you can drop a card',
+    target: '{0}: 你可以棄置一張牌',
   },
   {
     source: '{0}: you can drop a card to deal 1 thunder damage to current player?',

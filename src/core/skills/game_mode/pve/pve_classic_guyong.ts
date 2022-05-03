@@ -1,7 +1,8 @@
-import { VirtualCard } from 'core/cards/card';
-import { CardColor, CardId, CardSuit } from 'core/cards/libs/card_props';
+import { CardType, VirtualCard } from 'core/cards/card';
+import { CardId, CardSuit } from 'core/cards/libs/card_props';
+import { Duel } from 'core/cards/standard/duel';
 import { Slash } from 'core/cards/standard/slash';
-import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
@@ -326,43 +327,6 @@ export class PveClassicGuYongWenQu extends TriggerSkill {
 @ShadowSkill
 @CommonSkill({ name: PveClassicGuYongWenQu.Name, description: PveClassicGuYongWenQu.Description })
 export class PveClassicGuYongWuQu extends TriggerSkill {
-  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage) {
-    return stage === AimStage.AfterAimmed && event.byCardId !== undefined;
-  }
-
-  canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
-    return owner.getMark(MarkEnum.PvePoJun) > 0 && event.toId === owner.Id && event.fromId !== owner.Id;
-  }
-
-  getSkillLog() {
-    return TranslationPack.translationJsonPatcher('{0}: you can drop a card then draw a card', this.Name).extract();
-  }
-
-  cardFilter(room: Room, owner: Player, cards: CardId[]) {
-    return cards.length === 1;
-  }
-
-  isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
-    return room.canDropCard(owner, cardId);
-  }
-
-  async onTrigger() {
-    return true;
-  }
-
-  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
-    if (event.cardIds !== undefined && event.cardIds.length === 1) {
-      await room.dropCards(CardMoveReason.SelfDrop, event.cardIds, event.fromId);
-      const { toId } = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
-      await room.drawCards(1, toId, 'top', toId, this.Name);
-    }
-    return true;
-  }
-}
-
-@ShadowSkill
-@CommonSkill({ name: PveClassicGuYongWuQu.Name, description: PveClassicGuYongWuQu.Description })
-export class PveClassicGuYongPoJun extends TriggerSkill {
   isTriggerable(event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage?: AllStage) {
     return stage === PhaseStageChangeStage.StageChanged;
   }
@@ -411,8 +375,76 @@ export class PveClassicGuYongPoJun extends TriggerSkill {
       const slash = VirtualCard.create<Slash>({ cardName: 'slash', bySkill: this.Name }).Id;
       const slashUseEvent = { fromId, cardId: slash, targetGroup: [toIds] };
       await room.useCard(slashUseEvent);
+    } else {
+      const duel = VirtualCard.create<Duel>({ cardName: 'duel', bySkill: this.Name }).Id;
+      const duelUseEvent = { fromId: toIds[0], cardId: duel, targetGroup: [[fromId]] };
+      await room.useCard(duelUseEvent);
     }
 
+    return true;
+  }
+}
+
+@ShadowSkill
+@CommonSkill({ name: PveClassicGuYongWuQu.Name, description: PveClassicGuYongWuQu.Description })
+export class PveClassicGuYongPoJun extends TriggerSkill {
+  isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage) {
+    return stage === AimStage.AfterAimmed && Sanguosha.getCardById(event.byCardId).is(CardType.Trick);
+  }
+
+  canUse(room: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.AimEvent>) {
+    return (
+      owner.getMark(MarkEnum.PvePoJun) > 0 &&
+      event.toId === owner.Id &&
+      room.CurrentPhasePlayer !== owner &&
+      !owner.hasUsedSkill(this.Name)
+    );
+  }
+
+  getSkillLog() {
+    return TranslationPack.translationJsonPatcher('{0}: you can drop a card', this.Name).extract();
+  }
+
+  cardFilter(room: Room, owner: Player, cards: CardId[]) {
+    return cards.length === 1;
+  }
+
+  isAvailableCard(owner: PlayerId, room: Room, cardId: CardId) {
+    return room.canDropCard(owner, cardId);
+  }
+
+  async onTrigger() {
+    return true;
+  }
+
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    if (event.cardIds !== undefined && event.cardIds.length === 1) {
+      await room.dropCards(CardMoveReason.SelfDrop, event.cardIds, event.fromId);
+      const { toId } = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
+      const card = Sanguosha.getCardById(event.cardIds[0]);
+      if (card.is(CardType.Equip)) {
+        await room.damage({
+          fromId: event.fromId,
+          toId: toId,
+          damage: 1,
+          damageType: DamageType.Normal,
+          triggeredBySkills: [this.GeneralName],
+        });
+      } else if (card.is(CardType.Trick)) {
+        const allCards = room.getPlayerById(toId).getPlayerCards();
+        const randomCard = allCards[Math.floor(Math.random() * allCards.length)];
+        await room.moveCards({
+          movingCards: [{ card: randomCard }],
+          fromId: toId,
+          toId: event.fromId,
+          moveReason: CardMoveReason.ActivePrey,
+          toArea: CardMoveArea.HandArea,
+          movedByReason: this.Name,
+        });
+      } else {
+        await room.drawCards(1, toId, 'top', toId, this.Name);
+      }
+    }
     return true;
   }
 }
