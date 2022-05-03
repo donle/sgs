@@ -424,23 +424,23 @@ export class PveClassicGuYongPoJun extends TriggerSkill {
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
     if (event.cardIds !== undefined && event.cardIds.length === 1) {
       await room.dropCards(CardMoveReason.SelfDrop, event.cardIds, event.fromId);
-      const { toId } = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
+      const { fromId, toId } = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
       const card = Sanguosha.getCardById(event.cardIds[0]);
       if (card.is(CardType.Equip)) {
         await room.damage({
-          fromId: event.fromId,
-          toId: toId,
+          fromId: toId,
+          toId: fromId,
           damage: 1,
           damageType: DamageType.Normal,
           triggeredBySkills: [this.GeneralName],
         });
       } else if (card.is(CardType.Trick)) {
-        const allCards = room.getPlayerById(toId).getPlayerCards();
+        const allCards = room.getPlayerById(fromId).getPlayerCards();
         const randomCard = allCards[Math.floor(Math.random() * allCards.length)];
         await room.moveCards({
           movingCards: [{ card: randomCard }],
-          fromId: toId,
-          toId: event.fromId,
+          fromId: fromId,
+          toId: toId,
           moveReason: CardMoveReason.ActivePrey,
           toArea: CardMoveArea.HandArea,
           movedByReason: this.Name,
