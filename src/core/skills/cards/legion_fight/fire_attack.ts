@@ -125,7 +125,7 @@ export class FireAttackSkill extends ActiveSkill implements ExtralCardSkillPrope
           const damageEvent: ServerEventFinder<GameEventIdentifiers.DamageEvent> = {
             fromId,
             toId,
-            damage: 1,
+            damage: 1 + (event.additionalDamage ? event.additionalDamage : 0),
             damageType: DamageType.Fire,
             cardIds: [event.cardId],
             triggeredBySkills: event.triggeredBySkills ? [...event.triggeredBySkills, this.Name] : [this.Name],
