@@ -198,20 +198,20 @@ export abstract class AiLibrary {
     byCardId: CardId,
     cardUseFrom?: PlayerId,
   ) {
-    const isAiRound = room.CurrentPhasePlayer.Id === player.Id;
     const askedByCard = Sanguosha.getCardById(byCardId);
-
-    if (isAiRound) {
-      return player.Id !== cardUseFrom;
-    }
-
+    // todo: improve from multi target trick
     if (askedByCard.Name === 'wanjianqifa') {
       if (cardUseFrom && room.CurrentPhasePlayer.Id === cardUseFrom && !room.CurrentPhasePlayer.hasUsed('slash')) {
         return AiLibrary.findCardsByMatcher(room, player, new CardMatcher({ name: ['jink'] })).length <= 1;
       }
     }
 
-    return cardUseFrom !== undefined && cardUseFrom !== player.Id;
+    // improve with cheat
+    // if cardUsefrom is teammate, should not use wuxie
+    // if cardUsefrom is enemy, should use wuxie
+    return (
+      cardUseFrom !== undefined && !this.areTheyFriendly(room.getPlayerById(cardUseFrom), player, room.Info.gameMode)
+    );
   }
 
   static shouldUseJink(
