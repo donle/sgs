@@ -210,6 +210,21 @@ export class SelectAction<T extends GameEventIdentifiers> extends BaseAction {
           selectedCards.includes(card.Id)
         );
       });
+
+      this.presenter.setupclientPlayerOutsideCardShowMatcher(card => {
+        if (this.isCardFromParticularArea(card)) {
+          return true;
+        }
+        if (
+          !fromArea.includes(PlayerCardsArea.OutsideArea) ||
+          (this.customSelector && !this.customSelector.match(card)) ||
+          except.includes(card.Id)
+        ) {
+          return false;
+        }
+        return true;
+      });
+
       this.presenter.setupCardSkillSelectionMatcher(card => {
         if (
           !fromArea.includes(PlayerCardsArea.EquipArea) ||

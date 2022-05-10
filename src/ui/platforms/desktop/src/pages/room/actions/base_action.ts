@@ -94,7 +94,7 @@ export abstract class BaseAction {
     this.presenter.disableActionButton('cancel');
     this.presenter.disableCardReforgeStatus();
     this.delightItems();
-    this.presenter.highlightCards(true);
+    this.presenter.highlightCards();
     this.onResetAction();
     this.presenter.broadcastUIUpdate();
   };
@@ -103,6 +103,7 @@ export abstract class BaseAction {
     this.presenter.setupPlayersSelectionMatcher(() => false);
     this.presenter.setupClientPlayerCardActionsMatcher(() => false);
     this.presenter.setupClientPlayerOutsideCardActionsMatcher(() => false);
+    this.presenter.setupclientPlayerOutsideCardShowMatcher((card: Card) => this.isOutsideCardShow(card));
     this.presenter.setupCardSkillSelectionMatcher(() => false);
     this.presenter.clearSelectedCards();
     this.presenter.clearSelectedPlayers();
@@ -190,16 +191,18 @@ export abstract class BaseAction {
     );
   }
 
-  protected isCardEnabledInArea(skill: ViewAsSkill | ActiveSkill, card: Card, fromArea: PlayerCardsArea) {
-    if (
-      this.store.room.GameParticularAreas.includes(skill.GeneralName) &&
-      !this.store.room.GameParticularAreas.includes(card.GeneralName) &&
-      fromArea === PlayerCardsArea.OutsideArea
-    ) {
-      return false;
+  isOutsideCardShow(card: Card): boolean {
+    if (this.isCardFromParticularArea(card)) {
+      return true;
     }
 
-    return this.isCardFromParticularArea(card) || skill.availableCardAreas().includes(fromArea);
+    if (this.selectedSkillToPlay) {
+      const skill = this.selectedSkillToPlay;
+      if (skill instanceof ActiveSkill) {
+        return skill.availableCardAreas().includes(PlayerCardsArea.OutsideArea);
+      }
+    }
+    return false;
   }
 
   isCardEnabled(
@@ -260,7 +263,7 @@ export abstract class BaseAction {
       } else if (skill instanceof ViewAsSkill) {
         return (
           skill.isAvailableCard(this.store.room, player, card.Id, this.pendingCards, this.equipSkillCardId) &&
-          this.isCardEnabledInArea(skill, card, fromArea) &&
+          skill.availableCardAreas().includes(fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             player,
@@ -418,7 +421,7 @@ export abstract class BaseAction {
             this.pendingCards,
             this.equipSkillCardId,
           ) &&
-          this.isCardEnabledInArea(skill, card, fromArea) &&
+          skill.availableCardAreas().includes(fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.presenter.ClientPlayer!,

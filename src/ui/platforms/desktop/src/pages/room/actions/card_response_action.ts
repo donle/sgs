@@ -56,6 +56,13 @@ export class CardResponseAction extends BaseAction {
     }
   }
 
+  isOutsideCardShowOnResponse(card: Card) {
+    if (this.isCardFromParticularArea(card)) {
+      return true;
+    }
+    return false;
+  }
+
   isCardEnabledOnResponse(card: Card, fromArea: PlayerCardsArea, matcher: CardMatcher) {
     for (const skill of this.player.getSkills<FilterSkill>('filter')) {
       if (!skill.canUseCard(card.Id, this.store.room, this.playerId)) {
@@ -88,7 +95,7 @@ export class CardResponseAction extends BaseAction {
             this.equipSkillCardId,
             this.matcher,
           ) &&
-          this.isCardEnabledInArea(skill, card, fromArea) &&
+          skill.availableCardAreas().includes(fromArea) &&
           (!skill.cardFilter(
             this.store.room,
             this.player,
@@ -193,6 +200,7 @@ export class CardResponseAction extends BaseAction {
       this.presenter.setupClientPlayerOutsideCardActionsMatcher((card: Card) =>
         this.isCardEnabledOnResponse(card, PlayerCardsArea.OutsideArea, new CardMatcher(this.askForEvent.cardMatcher)),
       );
+      this.presenter.setupclientPlayerOutsideCardShowMatcher((card: Card) => this.isOutsideCardShowOnResponse(card));
       this.presenter.setupCardSkillSelectionMatcher((card: Card) =>
         this.isCardEnabledOnResponse(card, PlayerCardsArea.EquipArea, new CardMatcher(this.askForEvent.cardMatcher)),
       );

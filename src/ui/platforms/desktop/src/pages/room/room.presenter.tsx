@@ -137,6 +137,8 @@ export class RoomStore {
   @mobx.observable.ref
   clientPlayerOutsideCardActionsMatcher: (card: Card) => boolean;
   @mobx.observable.ref
+  clientPlayerOutsideCardShowMatcher: (card: Card) => boolean;
+  @mobx.observable.ref
   onClickHandCardToPlay: (card: Card, selected: boolean) => void;
   @mobx.observable.ref
   onClickEquipmentToDoAction: (card: Card, selected: boolean) => void;
@@ -399,6 +401,10 @@ export class RoomPresenter {
   @mobx.action
   setupClientPlayerOutsideCardActionsMatcher(matcher: (card: Card) => boolean) {
     this.store.clientPlayerOutsideCardActionsMatcher = matcher;
+  }
+  @mobx.action
+  setupclientPlayerOutsideCardShowMatcher(matcher: (card: Card) => boolean) {
+    this.store.clientPlayerOutsideCardShowMatcher = matcher;
   }
   @mobx.action
   onClickPlayerCard(handler: (card: Card, selected: boolean) => void) {
