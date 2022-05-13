@@ -142,28 +142,31 @@ export class XianSiFilter extends GlobalFilterSkill {
 @CommonSkill({ name: XianSi.GeneralName, description: XianSi.Description })
 export class XianSiSlash extends ViewAsSkill {
   canUse(room: Room, owner: Player, contentOrContainerCard?: ServerEventFinder<GameEventIdentifiers> | CardId) {
-    if (
-      room
-        .getOtherPlayers(owner.Id)
-        .find(player => player.getCardIds(PlayerCardsArea.OutsideArea, XianSi.Name).length >= 2) === undefined
-    ) {
+    // Now SideEffectSkill Don't Support Multiple Same Skill
+    // See in room.ts
+    const target = room
+      .getOtherPlayers(owner.Id)
+      .find(player => player.getCardIds(PlayerCardsArea.OutsideArea, XianSi.Name).length >= 2);
+
+    if (target === undefined) {
       return false;
     }
 
     if (typeof contentOrContainerCard === 'object') {
       const identifier = EventPacker.getIdentifier(contentOrContainerCard);
-      if (identifier !== GameEventIdentifiers.AskForCardUseEvent) {
-        return false;
+      switch (identifier) {
+        case GameEventIdentifiers.AskForPlayCardsOrSkillsEvent:
+          return owner.canUseCardTo(room, new CardMatcher({ generalName: ['slash'] }), target.Id);
+        case GameEventIdentifiers.AskForCardResponseEvent:
+        case GameEventIdentifiers.AskForCardUseEvent:
+          const content = contentOrContainerCard as ServerEventFinder<
+            GameEventIdentifiers.AskForCardResponseEvent | GameEventIdentifiers.AskForCardUseEvent
+          >;
+          return (
+            content.toId === target.Id &&
+            CardMatcher.match(content.cardMatcher, new CardMatcher({ generalName: ['slash'] }))
+          );
       }
-
-      const { toId, cardMatcher } = contentOrContainerCard as ServerEventFinder<
-        GameEventIdentifiers.AskForCardUseEvent
-      >;
-      return (
-        !!cardMatcher.generalName &&
-        cardMatcher.generalName.includes('slash') &&
-        room.getPlayerById(toId).hasSkill(XianSi.Name)
-      );
     }
 
     return owner.canUseCard(room, new CardMatcher({ generalName: ['slash'] }));
@@ -174,7 +177,7 @@ export class XianSiSlash extends ViewAsSkill {
   }
 
   viewAs() {
-    return VirtualCard.create({ cardName: 'slash', cardSuit: CardSuit.NoSuit, bySkill: XianSiSlash.Name });
+    return VirtualCard.create({ cardName: 'slash', cardSuit: CardSuit.NoSuit, bySkill: XianSi.Name });
   }
 
   isAvailableCard() {
