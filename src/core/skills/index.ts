@@ -318,7 +318,7 @@ export { ZongXuan } from './characters/yijiang2013/zongxuan';
 export { ZhiYan } from './characters/yijiang2013/zhiyan';
 export { AnJian, AnJianPeach } from './characters/yijiang2013/anjian';
 export { DuoDao } from './characters/yijiang2013/duodao';
-export { XianSi, XianSiShadow, XianSiFilter, XianSiSlash } from './characters/yijiang2013/xiansi';
+export { XianSi, XianSiShadow, XianSiSlash, XianSiSlashShadow } from './characters/yijiang2013/xiansi';
 export { LongYin, LongYinClear } from './characters/yijiang2013/longyin';
 export { JieZhong } from './characters/yijiang2013/jiezhong';
 export { QiaoShuo, QiaoShuoLose, QiaoShuoWin } from './characters/yijiang2013/qiaoshuo';
