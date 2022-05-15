@@ -99,6 +99,7 @@ export const enum GameEventIdentifiers {
   RequestObserveEvent,
   BackToWaitingRoomEvent,
   PlayerReadyEvent,
+  ChangeInitialCardEvent,
 }
 
 export type CardResponsiveEventIdentifiers =
@@ -202,6 +203,7 @@ export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.AbortOrResumePlayerJudgeAreaEvent,
   GameEventIdentifiers.RefreshOnceSkillEvent,
   GameEventIdentifiers.BackToWaitingRoomEvent,
+  GameEventIdentifiers.ChangeInitialCardEvent,
 ];
 
 export const serverActiveListenerEvents = [

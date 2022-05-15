@@ -55,6 +55,14 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
     }
   }
 
+  async beforeGameBeginPreparation() {
+    const changeInitialCardEvent: ServerEventFinder<GameEventIdentifiers.ChangeInitialCardEvent> = {
+      toIds: this.human.map(player => player.Id),
+    };
+
+    this.room.broadcast(GameEventIdentifiers.ChangeInitialCardEvent, changeInitialCardEvent);
+  }
+
   protected async beforeGameStartPreparation() {
     this.human = this.room.Players.filter(player => !player.isSmartAI());
     this.room.Players.filter(player => player.isSmartAI()).map(player =>
