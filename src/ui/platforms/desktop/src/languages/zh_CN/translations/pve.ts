@@ -211,6 +211,10 @@ export const promptDescriptions: Word[] = [
     source: 'Please choose a character for get a skill',
     target: '请选择一个武将并获得其一个技能',
   },
+  {
+    source: 'Please select cards which needs to be replaced',
+    target: '请选择需要更换的手牌',
+  },
 ];
 export const eventDictionary: Word[] = [
   { source: 'pve-easy-mode', target: '低难度' },
