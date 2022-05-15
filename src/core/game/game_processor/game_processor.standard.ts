@@ -76,6 +76,7 @@ export class StandardGameProcessor extends GameProcessor {
 
   private readonly DamageTypeTag = 'damageType';
   private readonly BeginnerTag = 'beginnerOfTheDamage';
+  private proposalCharacters: string[] = ['liubei', 'liufeng', 'diaochan'];
 
   constructor(protected stageProcessor: StageProcessor, protected logger: Logger) {
     super();
@@ -259,14 +260,21 @@ export class StandardGameProcessor extends GameProcessor {
     const notifyOtherPlayer: PlayerId[] = playersInfo.map(info => info.Id);
     this.room.doNotify(notifyOtherPlayer);
 
+    selectedCharacters.concat(
+      this.proposalCharacters.map(characterName => Sanguosha.getCharacterByCharaterName(characterName)),
+    );
+
     for (const playerInfo of playersInfo) {
-      const candidateCharacters = this.getSelectableCharacters(
-        5,
+      const characterName = Algorithm.shuffle(this.proposalCharacters).pop();
+      const extraCharacters = characterName ? [Sanguosha.getCharacterByCharaterName(characterName)] : [];
+
+      const candCharacters = this.getSelectableCharacters(
+        5 - extraCharacters.length,
         selectableCharacters,
         selectedCharacters.map(character => character.Id),
       );
 
-      selectedCharacters = [...candidateCharacters, ...selectedCharacters];
+      selectedCharacters = [...candCharacters, ...selectedCharacters];
 
       const translationsMessage =
         lordCharacter !== undefined
@@ -284,7 +292,7 @@ export class StandardGameProcessor extends GameProcessor {
         GameEventIdentifiers.AskForChoosingCharacterEvent,
         {
           amount: 1,
-          characterIds: candidateCharacters.map(character => character.Id),
+          characterIds: candCharacters.concat(extraCharacters).map(character => character.Id),
           toId: playerInfo.Id,
           translationsMessage,
           ignoreNotifiedStatus: true,
