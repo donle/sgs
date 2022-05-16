@@ -648,13 +648,12 @@ export class GameClientProcessor {
 
     await action.onPlay(this.translator);
   }
-  
+
   protected async onHandleAskForChangeInitialCardEvent<T extends GameEventIdentifiers.ChangeInitialCardEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const playerId = content.toIds;
-    if (playerId.indexOf(this.store.clientPlayerId) > -1) {
+    if (this.store.clientPlayerId === content.toId) {
       const action = new ResponsiveChangeCardAction(this.store.clientPlayerId, this.store, this.presenter);
       await action.onPlay(this.translator);
     }

@@ -511,7 +511,7 @@ export interface ServerEvent extends EventUtilities {
     roomId: RoomId;
   };
   [GameEventIdentifiers.ChangeInitialCardEvent]: {
-    toIds: PlayerId[];
+    toId: PlayerId;
   };
 }
 
