@@ -510,7 +510,7 @@ export interface ServerEvent extends EventUtilities {
     roomInfo: TemporaryRoomCreationInfo;
     roomId: RoomId;
   };
-  [GameEventIdentifiers.ChangeInitialCardEvent]: {
+  [GameEventIdentifiers.AskForChangeInitCardEvent]: {
     toId: PlayerId;
   };
 }

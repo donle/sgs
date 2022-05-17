@@ -57,10 +57,10 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
 
   async beforeGameBeginPreparation() {
     for (const toId of this.human.map(player => player.Id)) {
-      const content: ServerEventFinder<GameEventIdentifiers.ChangeInitialCardEvent> = { toId };
-      this.room.notify(GameEventIdentifiers.ChangeInitialCardEvent, content, toId);
+      const content: ServerEventFinder<GameEventIdentifiers.AskForChangeInitCardEvent> = { toId };
+      this.room.notify(GameEventIdentifiers.AskForChangeInitCardEvent, content, toId);
 
-      const resp = await this.room.onReceivingAsyncResponseFrom(GameEventIdentifiers.ChangeInitialCardEvent, toId);
+      const resp = await this.room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChangeInitCardEvent, toId);
       const cardIds = resp.cardIds;
       if (cardIds !== undefined) {
         const newCardIds = this.room.getCards(cardIds.length, 'top');

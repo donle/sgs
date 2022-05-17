@@ -374,8 +374,8 @@ export class GameClientProcessor {
       case GameEventIdentifiers.HookUpSkillsEvent:
         await this.onHandleHookUpSkillsEvent(e as any, content);
         break;
-      case GameEventIdentifiers.ChangeInitialCardEvent:
-        await this.onHandleAskForChangeInitialCardEvent(e as any, content);
+      case GameEventIdentifiers.AskForChangeInitCardEvent:
+        await this.onHandleAskForChangeInitCardEvent(e as any, content);
         break;
       case GameEventIdentifiers.UnhookSkillsEvent:
         await this.onHandleUnhookSkillsEvent(e as any, content);
@@ -649,7 +649,7 @@ export class GameClientProcessor {
     await action.onPlay(this.translator);
   }
 
-  protected async onHandleAskForChangeInitialCardEvent<T extends GameEventIdentifiers.ChangeInitialCardEvent>(
+  protected async onHandleAskForChangeInitCardEvent<T extends GameEventIdentifiers.AskForChangeInitCardEvent>(
     type: T,
     content: ServerEventFinder<T>,
   ) {

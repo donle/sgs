@@ -89,11 +89,11 @@ export class ResponsiveChangeCardAction {
       });
 
       this.presenter.defineConfirmButtonActions(() => {
-        const event: ClientEventFinder<GameEventIdentifiers.ChangeInitialCardEvent> = {
+        const event: ClientEventFinder<GameEventIdentifiers.AskForChangeInitCardEvent> = {
           fromId: this.playerId,
           cardIds: this.selectedCards,
         };
-        this.store.room.broadcast(GameEventIdentifiers.ChangeInitialCardEvent, event);
+        this.store.room.broadcast(GameEventIdentifiers.AskForChangeInitCardEvent, event);
         console.log(event);
         this.resetActionHandlers();
         this.resetAction();
@@ -101,11 +101,11 @@ export class ResponsiveChangeCardAction {
       });
 
       this.presenter.defineCancelButtonActions(() => {
-        const event: ClientEventFinder<GameEventIdentifiers.ChangeInitialCardEvent> = {
+        const event: ClientEventFinder<GameEventIdentifiers.AskForChangeInitCardEvent> = {
           fromId: this.playerId,
           cardIds: [],
         };
-        this.store.room.broadcast(GameEventIdentifiers.ChangeInitialCardEvent, event);
+        this.store.room.broadcast(GameEventIdentifiers.AskForChangeInitCardEvent, event);
         console.log(event);
         this.resetActionHandlers();
         this.resetAction();
