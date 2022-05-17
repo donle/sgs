@@ -56,11 +56,34 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
   }
 
   async beforeGameBeginPreparation() {
-    const changeInitialCardEvent: ServerEventFinder<GameEventIdentifiers.ChangeInitialCardEvent> = {
-      toIds: this.human.map(player => player.Id),
-    };
+    for (const toId of this.human.map(player => player.Id)) {
+      const content: ServerEventFinder<GameEventIdentifiers.ChangeInitialCardEvent> = { toId };
+      this.room.notify(GameEventIdentifiers.ChangeInitialCardEvent, content, toId);
 
-    this.room.broadcast(GameEventIdentifiers.ChangeInitialCardEvent, changeInitialCardEvent);
+      const resp = await this.room.onReceivingAsyncResponseFrom(GameEventIdentifiers.ChangeInitialCardEvent, toId);
+      const cardIds = resp.cardIds;
+      if (cardIds !== undefined) {
+        const newCardIds = this.room.getCards(cardIds.length, 'top');
+        await this.room.dropCards(CardMoveReason.PlaceToDrawStack, cardIds, toId, toId);
+
+        this.room.broadcast(GameEventIdentifiers.MoveCardEvent, {
+          infos: [
+            {
+              moveReason: CardMoveReason.CardDraw,
+              movingCards: newCardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
+              toArea: CardMoveArea.HandArea,
+              toId,
+            },
+          ],
+        });
+        this.room
+          .getPlayerById(toId)
+          .getCardIds(PlayerCardsArea.HandArea)
+          .push(...newCardIds);
+      }
+    }
+
+    this.room.shuffle();
   }
 
   protected async beforeGameStartPreparation() {
