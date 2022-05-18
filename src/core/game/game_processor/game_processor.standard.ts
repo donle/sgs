@@ -260,8 +260,8 @@ export class StandardGameProcessor extends GameProcessor {
     const notifyOtherPlayer: PlayerId[] = playersInfo.map(info => info.Id);
     this.room.doNotify(notifyOtherPlayer);
 
-    selectedCharacters.concat(
-      this.proposalCharacters.map(characterName => Sanguosha.getCharacterByCharaterName(characterName)),
+    selectedCharacters.push(
+      ...this.proposalCharacters.map(characterName => Sanguosha.getCharacterByCharaterName(characterName)),
     );
 
     for (const playerInfo of playersInfo) {
@@ -292,7 +292,7 @@ export class StandardGameProcessor extends GameProcessor {
         GameEventIdentifiers.AskForChoosingCharacterEvent,
         {
           amount: 1,
-          characterIds: candCharacters.concat(extraCharacters).map(character => character.Id),
+          characterIds: extraCharacters.concat(candCharacters).map(character => character.Id),
           toId: playerInfo.Id,
           translationsMessage,
           ignoreNotifiedStatus: true,
