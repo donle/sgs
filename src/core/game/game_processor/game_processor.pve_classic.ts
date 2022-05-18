@@ -98,7 +98,6 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
     const bossCharacter = Sanguosha.getCharacterByCharaterName('pve_soldier');
     const bossInfos = playersInfo.filter(info => this.room.getPlayerById(info.Id).isSmartAI());
     for (let i = 0; i < bossInfos.length; i++) {
-      this.logger.debug(bossInfos[i]);
       const bossPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
         changedProperties: [{ toId: bossInfos[i].Id, characterId: bossCharacter.Id, playerPosition: i }],
       };
