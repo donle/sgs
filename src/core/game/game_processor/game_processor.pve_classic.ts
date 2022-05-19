@@ -56,42 +56,71 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
   }
 
   async beforeGameBeginPreparation() {
-    const sequenceAsyncResp: Promise<void>[] = [];
     for (const toId of this.human.map(player => player.Id)) {
       const content: ServerEventFinder<GameEventIdentifiers.AskForChangeInitCardEvent> = { toId };
       this.room.notify(GameEventIdentifiers.AskForChangeInitCardEvent, content, toId);
-      const asyncResp = this.room
-        .onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChangeInitCardEvent, toId)
-        .then(resp => {
-          const cardIds = resp.cardIds;
-          const toId = resp.fromId;
-          if (cardIds !== undefined) {
-            const newCardIds = this.room.getCards(cardIds.length, 'top');
-            this.room.dropCards(CardMoveReason.PlaceToDrawStack, cardIds, toId, toId).then(() => {
-              this.room.notify(
-                GameEventIdentifiers.MoveCardEvent,
-                {
-                  infos: [
-                    {
-                      moveReason: CardMoveReason.CardDraw,
-                      movingCards: newCardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
-                      toArea: CardMoveArea.HandArea,
-                      toId,
-                    },
-                  ],
-                },
+      const resp = await this.room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChangeInitCardEvent, toId);
+      const cardIds = resp.cardIds;
+      if (cardIds !== undefined) {
+        const newCardIds = this.room.getCards(cardIds.length, 'top');
+        await this.room.dropCards(CardMoveReason.PlaceToDrawStack, cardIds, toId, toId);
+        this.room.notify(
+          GameEventIdentifiers.MoveCardEvent,
+          {
+            infos: [
+              {
+                moveReason: CardMoveReason.CardDraw,
+                movingCards: newCardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
+                toArea: CardMoveArea.HandArea,
                 toId,
-              );
-              this.room
-                .getPlayerById(toId)
-                .getCardIds(PlayerCardsArea.HandArea)
-                .push(...newCardIds);
-            });
-          }
-        });
-      sequenceAsyncResp.push(asyncResp);
+              },
+            ],
+          },
+          toId,
+        );
+        this.room
+          .getPlayerById(toId)
+          .getCardIds(PlayerCardsArea.HandArea)
+          .push(...newCardIds);
+      }
     }
-    await Promise.all(sequenceAsyncResp);
+
+    // const sequenceAsyncResp: Promise<void>[] = [];
+    // for (const toId of this.human.map(player => player.Id)) {
+    //   const content: ServerEventFinder<GameEventIdentifiers.AskForChangeInitCardEvent> = { toId };
+    //   this.room.notify(GameEventIdentifiers.AskForChangeInitCardEvent, content, toId);
+    //   const asyncResp = this.room
+    //     .onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChangeInitCardEvent, toId)
+    //     .then(resp => {
+    //       const cardIds = resp.cardIds;
+    //       const toId = resp.fromId;
+    //       if (cardIds !== undefined) {
+    //         const newCardIds = this.room.getCards(cardIds.length, 'top');
+    //         this.room.dropCards(CardMoveReason.PlaceToDrawStack, cardIds, toId, toId).then(() => {
+    //           this.room.notify(
+    //             GameEventIdentifiers.MoveCardEvent,
+    //             {
+    //               infos: [
+    //                 {
+    //                   moveReason: CardMoveReason.CardDraw,
+    //                   movingCards: newCardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
+    //                   toArea: CardMoveArea.HandArea,
+    //                   toId,
+    //                 },
+    //               ],
+    //             },
+    //             toId,
+    //           );
+    //           this.room
+    //             .getPlayerById(toId)
+    //             .getCardIds(PlayerCardsArea.HandArea)
+    //             .push(...newCardIds);
+    //         });
+    //       }
+    //     });
+    //   sequenceAsyncResp.push(asyncResp);
+    // }
+    // await Promise.all(sequenceAsyncResp);
     this.room.shuffle();
   }
 
