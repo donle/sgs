@@ -68,16 +68,20 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
           if (cardIds !== undefined) {
             const newCardIds = this.room.getCards(cardIds.length, 'top');
             this.room.dropCards(CardMoveReason.PlaceToDrawStack, cardIds, toId, toId).then(() => {
-              this.room.broadcast(GameEventIdentifiers.MoveCardEvent, {
-                infos: [
-                  {
-                    moveReason: CardMoveReason.CardDraw,
-                    movingCards: newCardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
-                    toArea: CardMoveArea.HandArea,
-                    toId,
-                  },
-                ],
-              });
+              this.room.notify(
+                GameEventIdentifiers.MoveCardEvent,
+                {
+                  infos: [
+                    {
+                      moveReason: CardMoveReason.CardDraw,
+                      movingCards: newCardIds.map(card => ({ card, fromArea: CardMoveArea.DrawStack })),
+                      toArea: CardMoveArea.HandArea,
+                      toId,
+                    },
+                  ],
+                },
+                toId,
+              );
               this.room
                 .getPlayerById(toId)
                 .getCardIds(PlayerCardsArea.HandArea)
