@@ -37,7 +37,7 @@ export class GuiCai extends TriggerSkill {
     );
   }
 
-  async onTrigger(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+  async onTrigger() {
     return true;
   }
 
