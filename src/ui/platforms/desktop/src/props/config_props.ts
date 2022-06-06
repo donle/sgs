@@ -14,7 +14,8 @@ export const enum ServerHostTag {
   Localhost = 'localhost',
   ShenZhen = 'shenzhen',
   NanJing = 'nanjing',
-  HangZhou = 'hangzhou'
+  HangZhou = 'hangzhou',
+  GuangZhou = 'guangzhou',
 }
 
 export type ServiceConfig = {
