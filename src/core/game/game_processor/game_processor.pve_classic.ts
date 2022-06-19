@@ -1,6 +1,3 @@
-import { VirtualCard } from 'core/cards/card';
-import { CardId } from 'core/cards/libs/card_props';
-import { Character } from 'core/characters/character';
 import {
   CardDrawReason,
   CardMoveArea,
@@ -12,6 +9,8 @@ import {
 import { EventPacker } from 'core/event/event_packer';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
+import { Character, CharacterGender } from 'core/characters/character';
+import { CardId } from 'core/cards/libs/card_props';
 import { Algorithm } from 'core/shares/libs/algorithm';
 import { Functional } from 'core/shares/libs/functional';
 import { MarkEnum } from 'core/shares/types/mark_list';
@@ -22,6 +21,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 import { Sanguosha } from '../engine';
 import { GameEventStage, PlayerDiedStage } from '../stage_processor';
 import { StandardGameProcessor } from './game_processor.standard';
+import { VirtualCard } from 'core/cards/card';
 
 export class PveClassicGameProcessor extends StandardGameProcessor {
   private level: number = 0;
@@ -133,18 +133,20 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
   }
 
   protected async chooseCharacters(playersInfo: PlayerInfo[], selectableCharacters: Character[]) {
-    const bossCharacter = Sanguosha.getCharacterByCharaterName('pve_soldier');
     const bossInfos = playersInfo.filter(info => this.room.getPlayerById(info.Id).isSmartAI());
+    const bossCharacters = Algorithm.shuffle(
+      Sanguosha.getAllCharacters().filter(character => character.Gender === CharacterGender.Female),
+    ).slice(0, bossInfos.length);
     for (let i = 0; i < bossInfos.length; i++) {
       const bossPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
-        changedProperties: [{ toId: bossInfos[i].Id, characterId: bossCharacter.Id, playerPosition: i }],
+        changedProperties: [{ toId: bossInfos[i].Id, characterId: bossCharacters[i].Id, playerPosition: i }],
       };
       this.room.changePlayerProperties(bossPropertiesChangeEvent);
     }
 
     const otherPlayersInfo = playersInfo.filter(info => !this.room.getPlayerById(info.Id).isSmartAI())!;
 
-    await this.sequentialChooseCharacters(otherPlayersInfo, selectableCharacters, [bossCharacter]);
+    await this.sequentialChooseCharacters(otherPlayersInfo, selectableCharacters, bossCharacters);
   }
 
   public getWinners(players: Player[]) {
@@ -176,8 +178,8 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
           ? {
               toId: player.Id,
               activate: true,
-              hp: Sanguosha.getCharacterByCharaterName('pve_soldier').Hp,
-              maxHp: Sanguosha.getCharacterByCharaterName('pve_soldier').MaxHp,
+              hp: Sanguosha.getCharacterById(player.getPlayerInfo().CharacterId!).Hp,
+              maxHp: Sanguosha.getCharacterById(player.getPlayerInfo().CharacterId!).MaxHp,
             }
           : { toId: player.Id, activate: false, hp: 0, maxHp: 0 },
       ),
@@ -269,9 +271,8 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       );
     }
 
-    const askForChoosingOptionsEvent: Promise<
-      ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent>
-    >[] = [];
+    const askForChoosingOptionsEvent: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent>>[] =
+      [];
     for (const resp of await Promise.all(sequentialAsyncResponse)) {
       const options = Sanguosha.getCharacterById(resp.chosenCharacterIds[0])
         .Skills.filter(skill => !(skill.isShadowSkill() || skill.isLordSkill()))
