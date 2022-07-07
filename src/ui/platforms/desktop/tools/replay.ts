@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import * as stringCompressor from 'shrink-string';
+// import * as stringCompressor from 'shrink-string';
 
 export type ReplayOtherInfo = {
   gameInfo: object;
@@ -39,12 +39,16 @@ export class Replay {
     let encryptedVersion = cipher.update(this.otherInfo!.version);
     encryptedVersion = Buffer.concat([encryptedVersion, cipher.final()]);
     this.otherInfo!.version = encryptedVersion.toString('hex');
-    return await stringCompressor.compress(
-      JSON.stringify({
-        events: this.gameEvents,
-        otherInfo: this.otherInfo,
-      }),
-    );
+    // return await stringCompressor.compress(
+    //   JSON.stringify({
+    //     events: this.gameEvents,
+    //     otherInfo: this.otherInfo,
+    //   }),
+    // );
+    return JSON.stringify({
+      events: this.gameEvents,
+      otherInfo: this.otherInfo,
+    });
   }
 
   public async parse(rawData: string): Promise<object> {
@@ -52,7 +56,8 @@ export class Replay {
     try {
       data = JSON.parse(rawData);
     } catch {
-      const rawJsonString = await stringCompressor.decompress(rawData);
+      // const rawJsonString = await stringCompressor.decompress();
+      const rawJsonString = rawData;
       data = JSON.parse(rawJsonString);
     }
 
