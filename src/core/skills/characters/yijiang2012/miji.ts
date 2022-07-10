@@ -1,12 +1,14 @@
+import { MiJiSkillTrigger } from 'core/ai/skills/characters/yijiang2012/miji';
 import { CardId } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
+import { AI, CommonSkill, ShadowSkill, TriggerSkill } from 'core/skills/skill';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
+@AI(MiJiSkillTrigger)
 @CommonSkill({ name: 'miji', description: 'miji_description' })
 export class MiJi extends TriggerSkill {
   public isTriggerable(
