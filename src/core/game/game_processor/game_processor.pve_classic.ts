@@ -22,6 +22,7 @@ import { Sanguosha } from '../engine';
 import { GameEventStage, PlayerDiedStage } from '../stage_processor';
 import { StandardGameProcessor } from './game_processor.standard';
 import { VirtualCard } from 'core/cards/card';
+import { GameCharacterExtensions } from '../game_props';
 
 export class PveClassicGameProcessor extends StandardGameProcessor {
   private level: number = 0;
@@ -135,7 +136,9 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
   protected async chooseCharacters(playersInfo: PlayerInfo[], selectableCharacters: Character[]) {
     const bossInfos = playersInfo.filter(info => this.room.getPlayerById(info.Id).isSmartAI());
     const bossCharacters = Algorithm.shuffle(
-      Sanguosha.getAllCharacters().filter(character => character.Gender === CharacterGender.Female),
+      Sanguosha.getAllCharacters().filter(
+        character => character.Gender === CharacterGender.Female && character.Package !== GameCharacterExtensions.Pve,
+      ),
     ).slice(0, bossInfos.length);
     for (let i = 0; i < bossInfos.length; i++) {
       const bossPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
