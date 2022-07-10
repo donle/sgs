@@ -1,3 +1,4 @@
+import { ZhenLieSkillTrigger } from 'core/ai/skills/characters/yijiang2012/zhenlie';
 import { CardType } from 'core/cards/card';
 import { CardChoosingOptions } from 'core/cards/libs/card_props';
 import { CardMoveReason, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
@@ -6,9 +7,10 @@ import { AimStage, AllStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { CommonSkill, TriggerSkill } from 'core/skills/skill';
+import { AI, CommonSkill, TriggerSkill } from 'core/skills/skill';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 
+@AI(ZhenLieSkillTrigger)
 @CommonSkill({ name: 'zhenlie', description: 'zhenlie_description' })
 export class ZhenLie extends TriggerSkill {
   public isTriggerable(event: ServerEventFinder<GameEventIdentifiers.AimEvent>, stage?: AllStage): boolean {
