@@ -76,7 +76,7 @@ export class StandardGameProcessor extends GameProcessor {
 
   private readonly DamageTypeTag = 'damageType';
   private readonly BeginnerTag = 'beginnerOfTheDamage';
-  private proposalCharacters: string[] = ['liubei', 'liufeng', 'diaochan'];
+  protected proposalCharacters: string[] = [];
 
   constructor(protected stageProcessor: StageProcessor, protected logger: Logger) {
     super();
