@@ -1,5 +1,5 @@
 import { VirtualCard } from 'core/cards/card';
-import { CardId, CardSuit } from 'core/cards/libs/card_props';
+import { CardId } from 'core/cards/libs/card_props';
 import {
   CardMoveArea,
   CardMoveReason,
@@ -10,7 +10,13 @@ import {
 } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { DamageType } from 'core/game/game_props';
-import { CardEffectStage, CardMoveStage, PhaseStageChangeStage, PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
+import {
+  CardEffectStage,
+  CardMoveStage,
+  PhaseStageChangeStage,
+  PlayerPhase,
+  PlayerPhaseStages,
+} from 'core/game/stage_processor';
 import { AllStage } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId } from 'core/player/player_props';
@@ -330,9 +336,10 @@ export class PvePyJiaoYi extends ActiveSkill {
         options.push(pyskill[Math.floor(Math.random() * pyskill.length)]);
       }
       options.push('yijue:cancel');
-      const py = (py1 === 2&&room.getPlayerById(skillUseEvent.fromId).getCardIds(PlayerCardsArea.HandArea).length===0)
-      ? 3
-      : py1;
+      const py =
+        py1 === 2 && room.getPlayerById(skillUseEvent.fromId).getCardIds(PlayerCardsArea.HandArea).length === 0
+          ? 3
+          : py1;
       const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
         options,
         toId: skillUseEvent.fromId,
@@ -351,7 +358,7 @@ export class PvePyJiaoYi extends ActiveSkill {
         GameEventIdentifiers.AskForChoosingOptionsEvent,
         skillUseEvent.fromId,
       );
-      if (selectedOption&&selectedOption!=='yijue:cancel') {
+      if (selectedOption && selectedOption !== 'yijue:cancel') {
         if (py === 1) {
           await room.changeMaxHp(skillUseEvent.fromId, -1);
           await room.changeMaxHp(player.Id, 1);
@@ -438,7 +445,6 @@ export class TiShen extends TriggerSkill {
 
 @CommonSkill({ name: 'pve_zhiheng', description: 'pve_zhiheng_description' })
 export class ZhiHeng extends ActiveSkill {
-
   public canUse(room: Room, owner: Player): boolean {
     return !owner.hasUsedSkill(this.Name);
   }
