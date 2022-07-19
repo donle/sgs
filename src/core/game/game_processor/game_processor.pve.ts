@@ -3,9 +3,9 @@ import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { Sanguosha } from '../engine';
-import { StandardGameProcessor } from './game_processor.standard';
+import { PveClassicGameProcessor } from './game_processor.pve_classic';
 
-export class PveGameProcessor extends StandardGameProcessor {
+export class PveGameProcessor extends PveClassicGameProcessor {
   protected proposalCharacters: string[] = [
     'simayi',
     'yujin',
@@ -31,15 +31,8 @@ export class PveGameProcessor extends StandardGameProcessor {
 
   public assignRoles(players: Player[]) {
     for (let i = 0; i < players.length; i++) {
-      if (players[i].isSmartAI()) {
-        players[i].Role = PlayerRole.Lord;
-        if (i !== 0) {
-          [players[0], players[i]] = [players[i], players[0]];
-          [players[0].Position, players[i].Position] = [players[i].Position, players[0].Position];
-        }
-      } else {
-        players[i].Role = PlayerRole.Rebel;
-      }
+      players[i].Role = players[i].isSmartAI() ? PlayerRole.Lord : PlayerRole.Rebel;
+      players[i].Position = i;
     }
   }
 
