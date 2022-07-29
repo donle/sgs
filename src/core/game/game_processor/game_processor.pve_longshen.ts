@@ -5,7 +5,7 @@ import { PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { Sanguosha } from '../engine';
 import { PveClassicGameProcessor } from './game_processor.pve_classic';
 
-export class PveGameProcessor extends PveClassicGameProcessor {
+export class PveLongshenGameProcessor extends PveClassicGameProcessor {
   protected proposalCharacters: string[] = [
     'simayi',
     'yujin',

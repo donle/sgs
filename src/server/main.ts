@@ -3,7 +3,8 @@ import { Sanguosha } from 'core/game/engine';
 import { GameProcessor } from 'core/game/game_processor/game_processor';
 import { OneVersusTwoGameProcessor } from 'core/game/game_processor/game_processor.1v2';
 import { TwoVersusTwoGameProcessor } from 'core/game/game_processor/game_processor.2v2';
-import { PveGameProcessor } from 'core/game/game_processor/game_processor.pve';
+import { PveLongshenGameProcessor } from 'core/game/game_processor/game_processor.pve_longshen';
+import { PveClassicGameProcessor } from 'core/game/game_processor/game_processor.pve_classic';
 import { StandardGameProcessor } from 'core/game/game_processor/game_processor.standard';
 import { GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
@@ -41,7 +42,7 @@ function createDifferentModeGameProcessor(gameMode: GameMode): GameProcessor {
   logger.debug('game mode is ' + gameMode);
   switch (gameMode) {
     case GameMode.Pve:
-      return new PveGameProcessor(new StageProcessor(logger), logger);
+      return new PveLongshenGameProcessor(new StageProcessor(logger), logger);
     case GameMode.OneVersusTwo:
       return new OneVersusTwoGameProcessor(new StageProcessor(logger), logger);
     case GameMode.TwoVersusTwo:
