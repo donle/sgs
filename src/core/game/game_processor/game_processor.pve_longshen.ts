@@ -29,22 +29,47 @@ export class PveLongshenGameProcessor extends PveClassicGameProcessor {
     'xingdaorong',
   ];
 
-  public assignRoles(players: Player[]) {
-    for (let i = 0; i < players.length; i++) {
-      players[i].Role = players[i].isSmartAI() ? PlayerRole.Lord : PlayerRole.Rebel;
-      players[i].Position = i;
+  public getWinners(players: Player[]) {
+    const alivePlayers = players.filter(player => !player.Dead);
+    if (
+      alivePlayers.every(player => player.isSmartAI()) ||
+      (alivePlayers.every(player => !player.isSmartAI()) && this.level === 7)
+    ) {
+      return alivePlayers;
     }
+  }
+
+  protected async nextLevel() {
+    this.level++;
+    const boss = this.room.Players.find(player => player.isSmartAI())!;
+    this.room.activate({
+      changedProperties: [
+        {
+          toId: boss.Id,
+          maxHp: 4,
+          hp: 4,
+          activate: true,
+        },
+      ],
+    });
+  }
+
+  protected async beforeGameStartPreparation() {
+    await this.nextLevel();
   }
 
   protected async chooseCharacters(playersInfo: PlayerInfo[], selectableCharacters: Character[]) {
     // link to  assignRoles
-    const lordInfo = playersInfo[0];
-    const lordCharacter = Sanguosha.getCharacterByCharaterName('pve_boss');
-    const lordPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
-      changedProperties: [{ toId: lordInfo.Id, characterId: lordCharacter.Id }],
+    const bossPropertiesChangeEvent: ServerEventFinder<GameEventIdentifiers.PlayerPropertiesChangeEvent> = {
+      changedProperties: [
+        {
+          toId: playersInfo.find(info => info.Role === PlayerRole.Rebel)!.Id,
+          characterId: Sanguosha.getCharacterByCharaterName('pve_boss').Id,
+        },
+      ],
     };
 
-    this.room.changePlayerProperties(lordPropertiesChangeEvent);
+    this.room.changePlayerProperties(bossPropertiesChangeEvent);
     const otherPlayersInfo = playersInfo.filter(info => !this.room.getPlayerById(info.Id).isSmartAI())!;
 
     await this.sequentialChooseCharacters(otherPlayersInfo, selectableCharacters, []);

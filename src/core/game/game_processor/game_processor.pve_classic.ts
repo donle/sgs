@@ -25,10 +25,10 @@ import { VirtualCard } from 'core/cards/card';
 import { GameCharacterExtensions } from '../game_props';
 
 export class PveClassicGameProcessor extends StandardGameProcessor {
-  private level: number = 0;
-  private markList: MarkEnum[] = [];
-  private human: Player[];
+  protected level: number = 0;
+
   private activateAi: Player[];
+  private markList: MarkEnum[] = [];
 
   public getLevelMark() {
     if (this.markList.length === 0) {
@@ -42,13 +42,16 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       ];
       Algorithm.shuffle(this.markList);
     }
-    return this.markList.splice(0, this.human.length * this.activateAi.length);
+    return this.markList.splice(
+      0,
+      this.room.Players.filter(player => !player.isSmartAI()).length * this.activateAi.length,
+    );
   }
 
   public assignRoles(players: Player[]) {
     const ais = players.filter(player => player.isSmartAI());
-    const humans = players.filter(player => !player.isSmartAI());
-    players = [...ais, ...humans];
+    const human = players.filter(player => !player.isSmartAI());
+    players = [...ais, ...human];
     for (let i = 0; i < players.length; i++) {
       this.logger.debug(`player ${i} is ${players[i].Id}`);
       players[i].Role = players[i].isSmartAI() ? PlayerRole.Rebel : PlayerRole.Loyalist;
@@ -57,7 +60,8 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
   }
 
   async beforeGameBeginPreparation() {
-    for (const toId of this.human.map(player => player.Id)) {
+    const human = this.room.Players.filter(player => !player.isSmartAI());
+    for (const toId of human.map(player => player.Id)) {
       const content: ServerEventFinder<GameEventIdentifiers.AskForChangeInitCardEvent> = { toId };
       this.room.notify(GameEventIdentifiers.AskForChangeInitCardEvent, content, toId);
       const resp = await this.room.onReceivingAsyncResponseFrom(GameEventIdentifiers.AskForChangeInitCardEvent, toId);
@@ -126,7 +130,6 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
   }
 
   protected async beforeGameStartPreparation() {
-    this.human = this.room.Players.filter(player => !player.isSmartAI());
     this.room.Players.filter(player => player.isSmartAI()).map(player =>
       this.room.obtainSkill(player.Id, PveClassicAi.Name),
     );
@@ -164,6 +167,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
 
   protected async nextLevel() {
     this.level++;
+    const human = this.room.Players.filter(player => !player.isSmartAI());
     const allAI = this.room.Players.filter(player => player.isSmartAI());
     Algorithm.shuffle(allAI);
     const changedProperties: {
@@ -196,8 +200,8 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       }
     }
 
-    const marks = this.getLevelMark();
-    for (let i = 0; i < this.human.length; i++) {
+    let marks = this.getLevelMark();
+    for (let i = 0; i < human.length; i++) {
       this.activateAi.map(player => {
         const mark = marks.pop()!;
         this.room.addMark(player.Id, mark, 1);
@@ -205,10 +209,18 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       });
     }
 
-    if (this.human.length === 1 && this.level === 1) {
-      await this.room.obtainSkill(this.human[0].Id, PveClassicGuYong.Name);
-    } else if (this.level === 3) {
-      await this.levelRewardSkill(this.human);
+    if (human.length === 1) {
+      switch (this.level) {
+        case 1:
+          await this.room.obtainSkill(human[0].Id, PveClassicGuYong.Name);
+          break;
+      }
+    } else {
+      switch (this.level) {
+        case 3:
+          await this.levelRewardSkill(human);
+          break;
+      }
     }
 
     this.logger.debug(`room entry ${this.level} level`);
