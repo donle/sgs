@@ -84,6 +84,15 @@ export const characterDictionary: Word[] = [
 
 export const skillDescriptions: Word[] = [
   {
+    source: 'pve_longshen_zhihuo_description',
+    target: '<b>锁定技</b>，你的回合开始时，若其它角色技能数量超过5个，你随机获得其一个技能',
+  },
+  {
+    source: 'pve_longshen_qifu_description',
+    target:
+      '其它角色出牌阶段内，其可以发动此技能并获得一个技能；若其发动此技能前技能数量已经不小于5个，其需先失去一个技能',
+  },
+  {
     source: 'pve_huashen_description',
     target:
       '<b>锁定技</b>，游戏开始时，你获得6枚“化神”标记。游戏开始时，你移去一枚“化神”标记，进入下一形态。当你进入濒死状态时，你弃置手牌区及装备区所有牌，移去一枚“化神”标记，进入下一形态；若如此做，其它所有角色依次回复1点体力，摸两张牌，选择一张牌名强化并从四名武将中选择一个，获得其一个技能。',

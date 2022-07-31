@@ -1,7 +1,11 @@
 import { Word } from 'languages';
 
 export const characterDictionary: Word[] = [
-  { source: 'pve_boss', target: '龍神' },
+  { source: 'pve_longshen', target: '龍神' },
+  { source: 'pve_longshen_zhihuo', target: '止火' },
+  { source: 'pve_longshen_qifu', target: '祈福' },
+  { source: '~pve_longshen_qifu', target: '祈福' },
+
   { source: 'pve_huashen', target: '化神' },
   { source: 'pve_chaofeng', target: '嘲風' },
   { source: 'pve_longlin', target: '龍鱗' },
@@ -23,6 +27,7 @@ export const characterDictionary: Word[] = [
   { source: 'pve_lige', target: '離歌' },
   { source: 'pve_bibao', target: '必報' },
   { source: 'pve_tansuo', target: '探索' },
+
   { source: 'pve_soldier', target: '風瑤軍' },
   { source: 'pve_qisha', target: '七殺' },
   { source: 'pve_tiantong', target: '天同' },
@@ -66,7 +71,7 @@ export const characterDictionary: Word[] = [
   { source: 'pve_buxu times: {0}', target: '不[{0}]' },
   { source: 'pve_dudu', target: '都督' },
   { source: 'pve_dudu times: {0}', target: '都[{0}]' },
-  { source: 'pve_feihua', target: '廢話' },
+  { source: 'pve_feihua', target: '飛華' },
   { source: 'pve_feihua times: {0}', target: '廢[{0}]' },
   { source: 'pve_chengxiang', target: '丞相' },
   { source: 'pve_chengxiang times: {0}', target: '丞[{0}]' },
@@ -79,6 +84,15 @@ export const characterDictionary: Word[] = [
 
 export const skillDescriptions: Word[] = [
   {
+    source: 'pve_longshen_zhihuo_description',
+    target: '<b>鎖定技</b>，你的回合開始時，若其它角色技能數量超過5個，你隨機獲得其一個技能',
+  },
+  {
+    source: 'pve_longshen_qifu_description',
+    target:
+      '其它角色出牌階段內，其可以發動此技能並獲得一個技能；若其發動此技能前技能數量已經不小於5個，其需先失去一個技能',
+  },
+  {
     source: 'pve_huashen_description',
     target:
       '<b>鎖定技</b>，遊戲開始時，你獲得6枚“化神”標記。遊戲開始時，你移去一枚“化神”標記，進入下一形態。當你進入瀕死狀態時，你棄置手牌區及裝備區所有牌，移去一枚“化神”標記，進入下一形態；若如此做，其它所有角色依次回覆1點體力，摸兩張牌，選擇一張牌名強化並從四名武將中選擇一個，獲得其一個技能。',
@@ -86,7 +100,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_longlin_description',
     target:
-      '<b>鎖定技</b>，準備階段開始時，若你的裝備區：沒有武器，你摸两張牌，沒有防具，你摸两張牌，沒有寶具，你摸两張牌；摸牌階段開始時，你額外摸裝備區花色數張牌；當你使用裝備牌時，若你已受傷，你回覆两點體力並摸一張牌，若你未受傷，你增加一點體力上限並摸三張牌。',
+      '<b>鎖定技</b>，準備階段開始時，若你的裝備區：沒有武器，你摸兩張牌，沒有防具，你摸兩張牌，沒有寶具，你摸兩張牌；摸牌階段開始時，你額外摸裝備區花色數張牌；當你使用裝備牌時，若你已受傷，你回覆兩點體力並摸一張牌，若你未受傷，你增加一點體力上限並摸三張牌。',
   },
   {
     source: 'pve_ruiyan_description',
@@ -104,11 +118,11 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_longshi_description',
     target:
-      '<b>鎖定技</b>: 準備階段開始時，你依次棄置其它角色各個區域至多三張牌；若你以此法棄置的卡牌型別之和：為3，你獲得這些牌，為2，你對其造成一點傷害，不大於1，你扣減其一點體力上限。',
+      '<b>鎖定技</b>，鎖定技: 準備階段開始時，你依次棄置其它角色各個區域至多三張牌；若你以此法棄置的卡牌類型之和：爲3，你獲得這些牌，爲2，你對其造成一點傷害，不大於1，你扣減其一點體力上限。',
   },
   {
     source: 'pve_longlie_description',
-    target: '<b>鎖定技</b>，你使用【殺】不能被響應；遊戲人數大於2時，此【殺】傷害+1',
+    target: '<b>鎖定技</b>，你使用的【殺】無法被響應，且遊戲人數大於2時，此【殺】傷害+1。',
   },
   {
     source: 'pve_qinlv_description',
@@ -140,7 +154,35 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_tansuo_description',
     target:
-      '<b>鎖定技</b>，第四關及之後，玩家使用牌有概率觸發機關（此牌點數越高几率越大）或奇遇寶物。玩家初始強化【桃】且玩家共用強化池',
+      '<b>鎖定技</b>，第四關及之後，玩家使用牌有概率觸發機關（此牌點數越高几率越大且隨着每回合使用次數提高）或奇遇寶物。玩家共用強化池',
+  },
+  {
+    source: 'pve_beifa_description',
+    target: '<b>鎖定技</b>，你失去最後一張牌時，令一名角色失去X點體力。（X爲此技能等級）',
+  },
+  {
+    source: 'pve_buxu_description',
+    target: '<b>鎖定技</b>，BOSS回合內其使用的前X張牌對你無效。（X爲此技能等級）',
+  },
+  {
+    source: 'pve_dudu_description',
+    target: '出牌階段限一次，你摸1張牌。（升級多摸兩張）',
+  },
+  {
+    source: 'pve_feihua_description',
+    target: '<b>鎖定技</b>，你觸發減少觸發機關概率等級越高提升越大',
+  },
+  {
+    source: 'pve_chengxiang_description',
+    target: '<b>鎖定技</b>，出牌階段結束時，你隨機回覆1-3點體力。（升級提升1點回復。）',
+  },
+  {
+    source: 'pve_zhibing_description',
+    target: '出牌階段限一次，對一名角色造成隨機1-3點傷害。（升級提升1點傷害上限）',
+  },
+  {
+    source: 'pve_pyjiaoyi_description',
+    target: '限一次,通關後次數+1，出牌階段，你可以和BOSS進行一次交易，犧牲一些代價獲得寶物或者升級寶物。',
   },
   {
     source: 'pve_classic_ai_desc',
@@ -183,42 +225,6 @@ export const skillDescriptions: Word[] = [
     target: '回合開始時，你可以指定一名角色，該角色每獲得一張牌，你摸一張牌；若此時在你的回合內，你額外摸一張牌；',
   },
   {
-    source: 'pve_beifa_description',
-    target: '<b>鎖定技</b>，你失去最後一張牌時，令一名角色失去X點體力。（X爲此技能等級）',
-  },
-  {
-    source: 'pve_bibao_description',
-    target: '<b>鎖定技</b>，你造成或受到傷害時，你回復1點體力且此傷害+1，你摸等同傷害+1張牌。',
-  },
-  {
-    source: 'pve_tansuo_description',
-    target: '<b>鎖定技</b>，第四關及之後，玩家使用牌有概率觸發機關或奇遇寶物。玩家共用強化池',
-  },
-  {
-    source: 'pve_buxu_description',
-    target: '<b>鎖定技</b>，BOSS回合內其使用牌次數≤此技能等級，則無效。',
-  },
-  {
-    source: 'pve_dudu_description',
-    target: '出牌階段限一次，你摸1張牌。（升級多摸兩張）',
-  },
-  {
-    source: 'pve_feihua_description',
-    target: '<b>鎖定技</b>，你觸發減少觸發機關概率,等級越高提升越大',
-  },
-  {
-    source: 'pve_chengxiang_description',
-    target: '出牌階段結束時，你隨機回複1-3點體力。（升級提升1點回複。）',
-  },
-  {
-    source: 'pve_zhibing_description',
-    target: '出牌階段限一次，對一名角色造成隨機1-3點傷害。（升級提升1點傷害上限）',
-  },
-  {
-    source: 'pve_pyjiaoyi_description',
-    target: '出牌階段限一次,通關後次數+1，你可以和BOSS進行一次交易，支付一些代價獲得寶物或者升級寶物。',
-  },
-  {
     source: 'pve_tishen_description',
     target: '準備階段，你可以將體力恢復至體力上限並摸等量張牌',
   },
@@ -229,10 +235,6 @@ export const skillDescriptions: Word[] = [
 ];
 
 export const promptDescriptions: Word[] = [
-  {
-    source: 'pve_huashen: please announce a skill to obtain',
-    target: '請選擇一個武將並獲得其一個技能',
-  },
   {
     source: 'pve_huashen: please make a card1',
     target: '請選擇一張牌名，使用此牌名時，摸一張牌',
@@ -250,12 +252,29 @@ export const promptDescriptions: Word[] = [
     target: '請選擇一張牌名，使用此牌名時，你隨機回覆至多3點體力',
   },
   {
-    source: 'pve_huashen: please announce a boss',
-    target: '請選擇難度',
+    source: 'pve_huashen:choose a role losehp 1',
+    target: '選擇一名角色，令其失去1點體力',
+  },
+  {
+    source: 'pve_huashen:choose a role damage',
+    target: '選擇一名角色，對其造成傷害。',
+  },
+  { source: 'Please drop a skill', target: '請選擇一個技能失去' },
+  {
+    source: 'Please announce a skill',
+    target: '請選擇一個技能獲得',
+  },
+  {
+    source: 'Please choose a character for get a skill',
+    target: '請選擇一個武將並獲得其一個技能',
+  },
+  {
+    source: 'Please select cards which needs to be replaced',
+    target: '請選擇需要更換的手牌',
   },
   {
     source: 'pve_pyjiaoyi: A dirty deal1',
-    target: '交給BOSS，你一半體力上限。',
+    target: '交給BOSS，你1點體力上限。',
   },
   {
     source: 'pve_pyjiaoyi: A dirty deal2',
@@ -272,26 +291,6 @@ export const promptDescriptions: Word[] = [
   {
     source: 'pve_pyjiaoyi: A dirty deal5',
     target: 'BOSS準備設下圈套。',
-  },
-  {
-    source: 'pve_huashen:choose a role losehp 1',
-    target: '選擇一名角色，令其失去1點體力',
-  },
-  {
-    source: 'pve_huashen:choose a role damage',
-    target: '選擇一名角色，對其造成傷害。',
-  },
-  {
-    source: 'please announce a skill',
-    target: '請選擇一個技能',
-  },
-  {
-    source: 'Please choose a character for get a skill',
-    target: '請選擇一個武將並獲得其一個技能',
-  },
-  {
-    source: 'Please select cards which needs to be replaced',
-    target: '請選擇需要更換的手牌',
   },
 ];
 export const eventDictionary: Word[] = [
@@ -319,9 +318,8 @@ export const eventDictionary: Word[] = [
     source: '{0}: you can drop a card to deal 1 thunder damage to current player?',
     target: '{0}: 你可以棄置一張牌，並對當前回合角色造成一點雷屬性傷害',
   },
-
   {
-    source: 'pve, please choose a character',
+    source: '{0} {1}pve, please choose a character',
     target: '挑戰者, 請選擇一名武將',
   },
 ];
