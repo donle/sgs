@@ -26,8 +26,6 @@ import { GameCharacterExtensions } from '../game_props';
 
 export class PveClassicGameProcessor extends StandardGameProcessor {
   protected level: number = 0;
-
-  private activateAi: Player[];
   private markList: MarkEnum[] = [];
 
   public getLevelMark() {
@@ -42,10 +40,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       ];
       Algorithm.shuffle(this.markList);
     }
-    return this.markList.splice(
-      0,
-      this.room.Players.filter(player => !player.isSmartAI()).length * this.activateAi.length,
-    );
+    return this.markList.splice(0, this.room.Players.filter(player => !player.isSmartAI()).length * this.level);
   }
 
   public assignRoles(players: Player[]) {
@@ -177,11 +172,11 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       activate: boolean;
     }[] = [];
     allAI.splice(0, 3 - this.level);
-    this.activateAi = allAI;
+    const activateAi = allAI;
 
     this.room.Players.filter(player => player.isSmartAI()).map(player =>
       changedProperties.push(
-        this.activateAi.includes(player)
+        activateAi.includes(player)
           ? {
               toId: player.Id,
               activate: true,
@@ -195,14 +190,14 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
 
     // level 1 draw game begins cards at game begin
     if (this.level > 1) {
-      for (const player of this.activateAi) {
+      for (const player of activateAi) {
         this.drawGameBeginsCards(player.getPlayerInfo());
       }
     }
 
     let marks = this.getLevelMark();
     for (let i = 0; i < human.length; i++) {
-      this.activateAi.map(player => {
+      activateAi.map(player => {
         const mark = marks.pop()!;
         this.room.addMark(player.Id, mark, 1);
         return [];
@@ -224,7 +219,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
     }
 
     this.logger.debug(`room entry ${this.level} level`);
-    for (const ai of this.activateAi) {
+    for (const ai of activateAi) {
       for (const [mark, num] of Object.entries(ai.getAllMarks())) {
         this.logger.debug(`player: ${ai.Id} has marks ${mark}:${num}`);
       }
@@ -372,7 +367,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
           }
         }
       } else if (stage === PlayerDiedStage.AfterPlayerDied) {
-        if (this.activateAi.every(player => player.Dead) && this.level < 3) {
+        if (this.room.Players.filter(player => player.isSmartAI()).every(player => player.Dead)) {
           this.stageProcessor.clearProcess();
           await this.nextLevel();
         }
