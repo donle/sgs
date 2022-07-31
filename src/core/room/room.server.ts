@@ -1478,7 +1478,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       const outsideCards = player.getCardIds(PlayerCardsArea.OutsideArea, skill.Name);
       await SkillLifeCycle.executeHookOnLosingSkill(skill, this, player);
 
-      if (outsideCards) {
+      if (outsideCards.length > 0) {
         if (player.isCharacterOutsideArea(skill.Name)) {
           outsideCards.splice(0, outsideCards.length);
         } else {
