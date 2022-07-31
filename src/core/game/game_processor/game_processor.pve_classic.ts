@@ -236,7 +236,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
     const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
       options,
       toId: playerId,
-      conversation: 'please announce a skill',
+      conversation: 'Please announce a skill',
     };
 
     this.room.notify(

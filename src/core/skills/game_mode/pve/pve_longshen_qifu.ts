@@ -95,7 +95,7 @@ export class PveLongShenQiFuReward extends ActiveSkill {
       const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
         options: skills.map(skill => skill.Name),
         toId: event.fromId,
-        conversation: 'please announce a skill',
+        conversation: 'Please drop a skill',
         triggeredBySkills: [this.Name],
       };
 
@@ -142,7 +142,7 @@ export class PveLongShenQiFuReward extends ActiveSkill {
     const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
       options,
       toId: event.fromId,
-      conversation: 'please announce a skill',
+      conversation: 'Please announce a skill',
       triggeredBySkills: [this.Name],
     };
 

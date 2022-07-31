@@ -227,10 +227,6 @@ export const skillDescriptions: Word[] = [
 
 export const promptDescriptions: Word[] = [
   {
-    source: 'pve_huashen: please announce a skill to obtain',
-    target: '请选择一个武将并获得其一个技能',
-  },
-  {
     source: 'pve_huashen: please make a card1',
     target: '请选择一张牌名，使用此牌名时，摸一张牌',
   },
@@ -247,10 +243,6 @@ export const promptDescriptions: Word[] = [
     target: '请选择一张牌名，使用此牌名时，你随机回复至多3点体力',
   },
   {
-    source: 'pve_huashen: please announce a boss',
-    target: '请选择关卡难度',
-  },
-  {
     source: 'pve_huashen:choose a role losehp 1',
     target: '选择一名角色，令其失去1点体力',
   },
@@ -258,9 +250,10 @@ export const promptDescriptions: Word[] = [
     source: 'pve_huashen:choose a role damage',
     target: '选择一名角色，对其造成伤害。',
   },
+  { source: 'Please drop a skill', target: '请选择一个技能失去' },
   {
-    source: 'please announce a skill',
-    target: '请选择一个技能',
+    source: 'Please announce a skill',
+    target: '请选择一个技能获得',
   },
   {
     source: 'Please choose a character for get a skill',
