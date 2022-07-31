@@ -29,6 +29,16 @@ export class PveLongshenGameProcessor extends PveClassicGameProcessor {
     'xingdaorong',
   ];
 
+  private CHARACTERS: string[] = [
+    'pve_suanni',
+    'pve_bian',
+    'pve_bixi',
+    'pve_bixi',
+    'pve_yazi',
+    'pve_fuxi',
+    'pve_chaofeng',
+  ];
+
   public getWinners(players: Player[]) {
     const alivePlayers = players.filter(player => !player.Dead);
     if (
@@ -52,8 +62,17 @@ export class PveLongshenGameProcessor extends PveClassicGameProcessor {
     );
 
     this.room.activate({
-      changedProperties: [{ toId: boss.Id, maxHp: 4, hp: 4, activate: true }],
+      changedProperties: [{ toId: boss.Id, maxHp: this.level + 3, hp: this.level + 3, activate: true }],
     });
+
+    const chara = this.CHARACTERS[this.level - 1];
+    const charaSkills = Sanguosha.getCharacterByCharaterName(chara).Skills.filter(skill => !skill.isShadowSkill());
+    const skill = charaSkills[Math.floor(charaSkills.length * Math.random())];
+    this.room.obtainSkill(boss.Id, skill.Name);
+
+    if (this.level > 1) {
+      this.drawGameBeginsCards(boss.getPlayerInfo());
+    }
 
     const levelBeginEvent: ServerEventFinder<GameEventIdentifiers.LevelBeginEvent> = {};
     await this.onHandleIncomingEvent(

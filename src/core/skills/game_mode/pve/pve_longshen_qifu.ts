@@ -91,7 +91,7 @@ export class PveLongShenQiFuReward extends ActiveSkill {
       .getPlayerSkills()
       .filter(skill => !skill.isShadowSkill());
 
-    if (skills.length > 3) {
+    if (skills.length >= 5) {
       const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
         options: skills.map(skill => skill.Name),
         toId: event.fromId,
