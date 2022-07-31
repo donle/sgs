@@ -1,5 +1,5 @@
 import { Character } from 'core/characters/character';
-import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Player } from 'core/player/player';
 import { PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { Sanguosha } from '../engine';
@@ -42,16 +42,24 @@ export class PveLongshenGameProcessor extends PveClassicGameProcessor {
   protected async nextLevel() {
     this.level++;
     const boss = this.room.Players.find(player => player.isSmartAI())!;
+    const originSkills = Sanguosha.getCharacterByCharaterName('pve_longshen').Skills.map(skill => skill.Name);
+    this.room.loseSkill(
+      boss.Id,
+      boss
+        .getPlayerSkills()
+        .filter(skill => !originSkills.includes(skill.Name))
+        .map(skill => skill.Name),
+    );
+
     this.room.activate({
-      changedProperties: [
-        {
-          toId: boss.Id,
-          maxHp: 4,
-          hp: 4,
-          activate: true,
-        },
-      ],
+      changedProperties: [{ toId: boss.Id, maxHp: 4, hp: 4, activate: true }],
     });
+
+    const levelBeginEvent: ServerEventFinder<GameEventIdentifiers.LevelBeginEvent> = {};
+    await this.onHandleIncomingEvent(
+      GameEventIdentifiers.LevelBeginEvent,
+      EventPacker.createIdentifierEvent(GameEventIdentifiers.LevelBeginEvent, levelBeginEvent),
+    );
   }
 
   protected async beforeGameStartPreparation() {
@@ -64,7 +72,7 @@ export class PveLongshenGameProcessor extends PveClassicGameProcessor {
       changedProperties: [
         {
           toId: playersInfo.find(info => info.Role === PlayerRole.Rebel)!.Id,
-          characterId: Sanguosha.getCharacterByCharaterName('pve_boss').Id,
+          characterId: Sanguosha.getCharacterByCharaterName('pve_longshen').Id,
         },
       ],
     };

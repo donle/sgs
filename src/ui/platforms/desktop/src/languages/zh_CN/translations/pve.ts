@@ -1,7 +1,11 @@
 import { Word } from 'languages';
 
 export const characterDictionary: Word[] = [
-  { source: 'pve_boss', target: '龙神' },
+  { source: 'pve_longshen', target: '龙神' },
+  { source: 'pve_longshen_zhihuo', target: '止火' },
+  { source: 'pve_longshen_qifu', target: '祈福' },
+  { source: '~pve_longshen_qifu', target: '祈福' },
+
   { source: 'pve_huashen', target: '化神' },
   { source: 'pve_chaofeng', target: '嘲风' },
   { source: 'pve_longlin', target: '龙鳞' },
