@@ -39,8 +39,8 @@ export class PveLongShenZiYu extends TriggerSkill {
   }
 }
 
-@CompulsorySkill({ name: 'pve_longshen_zhifei', description: 'pve_longshen_zhifei_description' })
-export class PveLongShenZhiFei extends TriggerSkill {
+@CompulsorySkill({ name: 'pve_longshen_chouxin', description: 'pve_longshen_chouxin_description' })
+export class PveLongShenChouXin extends TriggerSkill {
   isTriggerable(_: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>, stage?: AllStage) {
     return stage === DrawCardStage.BeforeDrawCardEffect;
   }
