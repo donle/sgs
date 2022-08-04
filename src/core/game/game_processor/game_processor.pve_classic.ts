@@ -44,11 +44,9 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
   }
 
   public assignRoles(players: Player[]) {
-    const ais = players.filter(player => player.isSmartAI());
-    const human = players.filter(player => !player.isSmartAI());
-    players = [...ais, ...human];
+    players.sort((a, _) => (a.isSmartAI() ? -1 : 0));
     for (let i = 0; i < players.length; i++) {
-      this.logger.debug(`player ${i} is ${players[i].Id}`);
+      this.logger.debug(`player ${i} is ${players[i].Id}: ${players[i].Position}`);
       players[i].Role = players[i].isSmartAI() ? PlayerRole.Rebel : PlayerRole.Loyalist;
       players[i].Position = i;
     }
