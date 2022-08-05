@@ -42,7 +42,6 @@ export class PveLongShenQiFu extends TriggerSkill implements OnDefineReleaseTimi
   }
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
-    console.log('pve longsheng qifu trigger');
     room.installSideEffectSkill(
       System.SideEffectSkillApplierEnum.PveLongShenQiFu,
       PveLongShenQiFuReward.Name,
@@ -60,8 +59,7 @@ export class PveLongShenQiFu extends TriggerSkill implements OnDefineReleaseTimi
 @SideEffectSkill
 @LimitSkill({ name: PveLongShenQiFu.Name, description: PveLongShenQiFu.Description })
 export class PveLongShenQiFuReward extends ActiveSkill {
-  public canUse(room: Room, owner: Player) {
-    console.log(`owner is ${owner.Name}`);
+  public canUse() {
     return true;
   }
 
