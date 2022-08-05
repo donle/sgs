@@ -2,6 +2,7 @@ import { app, BrowserWindow, BrowserWindowConstructorOptions, dialog, ipcMain, s
 import Extract from 'extract-zip';
 import fetch from 'node-fetch';
 import * as fs from 'original-fs';
+import * as os from 'os';
 import * as path from 'path';
 import * as url from 'url';
 import { FileSplitter } from './file_splitter';
@@ -50,7 +51,7 @@ class AppWindow {
   }
 
   private windowInstance: BrowserWindow | undefined;
-  private store = new Store();
+  private store = new Store('./savedata.json');
   private replay = new Replay();
   private translation = getTranslations(this.store.get<Language>('language'));
 
@@ -320,7 +321,7 @@ async function mergeFiles(downloadDir: string) {
   return files;
 }
 
-async function beforeLaunch() {
+async function beforeLaunchOnWindows() {
   const appPath = app.getPath('exe');
   const updateFolder = path.join(appPath, '../update');
   if (!fs.existsSync(updateFolder)) {
@@ -344,6 +345,22 @@ async function beforeLaunch() {
     for (const file of files) {
       fs.unlinkSync(path.join(updateFolder, file));
     }
+  }
+}
+
+async function beforeLaunchOnMac() {
+  const homePath = path.join(os.homedir(), 'sgs');
+  if (!fs.existsSync(homePath)) {
+    fs.mkdirSync(homePath);
+  }
+  // Auto update is not available on Mac
+}
+
+async function beforeLaunch() {
+  if (process.platform === 'win32') {
+    return beforeLaunchOnWindows();
+  } else if (process.platform === 'darwin' || process.platform === 'linux') {
+    return beforeLaunchOnMac();
   }
 }
 

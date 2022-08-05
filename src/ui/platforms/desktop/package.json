@@ -120,11 +120,12 @@
     },
     "mac": {
       "category": "category.type",
-      "icon": "./build/favicon.ico",
+      "icon": "./build/favicon512.ico",
       "target": {
         "target": "default",
         "arch": [
-          "arm64"
+          "arm64",
+          "x64"
         ]
       }
     },

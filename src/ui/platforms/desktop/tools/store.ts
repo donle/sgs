@@ -1,12 +1,21 @@
 import { app } from 'electron';
 import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 
 export class Store {
-  private savFileDir: string = './savedata.json';
+  private savFileDir: string;
+
   private saveJson: any = {
     language: app.getLocale(),
   };
-  constructor() {
+  constructor(saveDir: string) {
+    if (process.platform === 'win32') {
+      this.savFileDir = saveDir;
+    } else if (process.platform === 'darwin' || process.platform === 'linux') {
+      this.savFileDir = path.join(os.homedir(), 'sgs', saveDir);
+    }
+
     if (!fs.existsSync(this.savFileDir)) {
       fs.writeFileSync(this.savFileDir, JSON.stringify(this.saveJson));
     } else {
