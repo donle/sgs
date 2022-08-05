@@ -24,6 +24,18 @@ export const REQUEST_CORE_VERSION = 'requestCoreVersion';
 export const RESTART_CLIENT = 'restartClient';
 
 app.setPath('userData', __dirname);
+
+type Flavor = 'dev' | 'prod';
+function formatFlavor(flavor: string | undefined): Flavor {
+  if (flavor === 'development') {
+    return 'dev';
+  } else if (flavor === 'production') {
+    return 'prod';
+  }
+
+  return 'dev';
+}
+const flavor = formatFlavor(process.env.NODE_ENV);
 class AppWindow {
   public static readonly GameReleaseApi = 'https://gitee.com/api/v5/repos/doublebit/PicTest/releases/latest';
   public static onReady(callbackFn: () => void) {
@@ -58,7 +70,9 @@ class AppWindow {
   constructor(windowOptions?: BrowserWindowConstructorOptions) {
     this.windowInstance = new BrowserWindow(windowOptions);
     this.installIpcListener();
-    // this.windowInstance.webContents.openDevTools();
+    if (flavor === 'dev') {
+      this.windowInstance.webContents.openDevTools();
+    }
     this.windowInstance.webContents.on('will-navigate', this.handleRedirect);
     this.windowInstance.webContents.on('new-window', this.handleRedirect);
   }
@@ -299,11 +313,13 @@ export function main() {
 
   winAppInstance.setMenu(null);
   winAppInstance.loadURL(
-    url.format({
-      pathname: path.join(__dirname, './index.html'),
-      protocol: 'file:',
-      slashes: true,
-    }),
+    flavor === 'dev'
+      ? 'http://localhost:3000'
+      : url.format({
+          pathname: path.join(__dirname, './index.html'),
+          protocol: 'file:',
+          slashes: true,
+        }),
   );
   winApp.onClose(() => winApp.releaseInstance());
   return { winAppInstance, winApp };

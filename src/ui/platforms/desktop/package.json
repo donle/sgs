@@ -96,11 +96,11 @@
     "start:dev:win": "yarn build:dev:win && xcopy .\\public\\home .\\build\\public\\home /s /i && ts-node ./server/app.ts",
     "build-electron:mac": "yarn sync:mac && GENERATE_SOURCEMAP=false REACT_APP_DEV_MODE=desktop node scripts/build.js",
     "build-electron:win": "yarn sync:win && cross-env GENERATE_SOURCEMAP=false REACT_APP_DEV_MODE=desktop node scripts/build.js",
-    "electron:win": "yarn build-electron:win && tsc --project ./tools/tsconfig.json && copy .\\tools\\preload.js .\\build && cross-env NODE_ENV=production electron .",
-    "electron:mac": "yarn build-electron:mac && tsc --project ./tools/tsconfig.json && copy .\\tools\\preload.js .\\build && NODE_ENV=production electron .",
-    "build:electron:win": "yarn build-electron:win && tsc --project ./tools/tsconfig.json && copy .\\tools\\preload.js .\\build && electron-builder",
-    "build:electron:mac": "yarn build-electron:mac && tsc --project ./tools/tsconfig.json && cp -R ./tools/preload.js ./build && electron-builder",
-    "electron": "tsc --project ./tools/tsconfig.json && copy .\\tools\\preload.js .\\build && electron-builder",
+    "electron:win": "tsc --project ./tools/tsconfig.json && cross-env NODE_ENV=development electron .",
+    "electron:mac": "tsc --project ./tools/tsconfig.json && NODE_ENV=development electron .",
+    "build:electron:win": "yarn build-electron:win && tsc --project ./tools/tsconfig.json && NODE_ENV=production electron-builder",
+    "build:electron:mac": "yarn build-electron:mac && tsc --project ./tools/tsconfig.json && NODE_ENV=production electron-builder",
+    "electron": "tsc --project ./tools/tsconfig.json && NODE_ENV=production electron-builder",
     "test": "node scripts/test.js"
   },
   "build": {
