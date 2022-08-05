@@ -31,6 +31,23 @@ $ cd ./ui/platforms/desktop
 $ npm run start:mac #start:win if you're using Windows.
 ```
 
+## Test with electron environment
+
+1. Running electron in the frontend root directoy
+```sh
+$ cd [<work_directory>]/src/ui/platforms/desktop
+```
+
+2. Launch dev web for electron
+```sh
+$ yarn electron-dev:mac #electron-dev:win if you'r using Windows
+```
+
+3. Lunch electron locally with embedded dev web
+```sh
+$ yarn electron:mac #electron:win if you're using Windows
+```
+
 ## Configuration
 
 You may configure how the clients and server execute and communicate.
