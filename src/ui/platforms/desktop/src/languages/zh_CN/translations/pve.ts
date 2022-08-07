@@ -5,14 +5,26 @@ export const characterDictionary: Word[] = [
   { source: 'pve_longshen_zhihuo', target: '止火' },
   { source: 'pve_longshen_qifu', target: '祈福' },
   { source: '~pve_longshen_qifu', target: '祈福' },
+  { source: 'pve_longshen_chouxin', target: '抽薪' },
+  { source: 'pve_longshen_suwei', target: '肃威' },
+  { source: 'pve_longshen_ziyu', target: '自愈' },
+  { source: 'pve_longshen_longlin', target: '龙鳞' },
+  { source: 'pve_longshen_longling', target: '龙铃' },
+  { source: 'pve_longshen_longning', target: '龙聍' },
+  { source: 'pve_longshen_ruiyan', target: '瑞烟' },
+  { source: 'pve_longshen_longshi', target: '龙识' },
+  { source: 'pve_longshen_longli', target: '龙厉' },
+  { source: 'pve_longshen_longlie', target: '龙烈' },
+  { source: 'pve_longshen_qinlv', target: '琴律' },
+  { source: 'pve_longshen_longhou', target: '龙吼' },
+  { source: 'pve_longshen_longwei', target: '龙威' },
+  { source: 'pve_longshen_longen', target: '龙恩' },
 
   { source: 'pve_huashen', target: '化神' },
   { source: 'pve_chaofeng', target: '嘲风' },
-  { source: 'pve_longlin', target: '龙鳞' },
   { source: 'pve_suanni', target: '狻猊' },
   { source: 'pve_ruiyan', target: '瑞烟' },
   { source: 'pve_bian', target: '狴犴' },
-  { source: 'pve_suwei', target: '肃威' },
   { source: 'pve_bixi', target: '赑屃' },
   { source: 'pve_lingxi', target: '灵屃' },
   { source: 'pve_fuxi', target: '负屃' },
@@ -20,9 +32,7 @@ export const characterDictionary: Word[] = [
   { source: 'pve_yazi', target: '睚眦' },
   { source: 'pve_longlie', target: '龙烈' },
   { source: '#pve_longlie', target: '龙烈' },
-  { source: 'pve_qinlv', target: '琴律' },
   { source: 'pve_jienu', target: '介怒' },
-  { source: 'pve_longhou', target: '龙吼' },
   { source: 'pve_chaiyue', target: '豺月' },
   { source: 'pve_lige', target: '离歌' },
   { source: 'pve_bibao', target: '必报' },
@@ -93,46 +103,68 @@ export const skillDescriptions: Word[] = [
       '其它角色出牌阶段内，其可以发动此技能并获得一个技能；若其发动此技能前技能数量已经不小于5个，其需先失去一个技能',
   },
   {
-    source: 'pve_huashen_description',
-    target:
-      '<b>锁定技</b>，游戏开始时，你获得6枚“化神”标记。游戏开始时，你移去一枚“化神”标记，进入下一形态。当你进入濒死状态时，你弃置手牌区及装备区所有牌，移去一枚“化神”标记，进入下一形态；若如此做，其它所有角色依次回复1点体力，摸两张牌，选择一张牌名强化并从四名武将中选择一个，获得其一个技能。',
+    source: 'pve_longshen_ziyu_description',
+    target: '<b>锁定技</b>，准备阶段开始时，你将体力值恢复至体力上限。',
   },
   {
-    source: 'pve_longlin_description',
-    target:
-      '<b>锁定技</b>，准备阶段开始时，若你的装备区：没有武器，你摸两张牌，没有防具，你摸两张牌，没有宝具，你摸两张牌；摸牌阶段开始时，你额外摸装备区花色数张牌；当你使用装备牌时，若你已受伤，你回复两点体力并摸一张牌，若你未受伤，你增加一点体力上限并摸三张牌。',
+    source: 'pve_longshen_chouxin_description',
+    target: '<b>锁定技</b>，其它角色于出牌阶段获得牌后，你获得其一张牌。',
   },
   {
-    source: 'pve_ruiyan_description',
-    target: '<b>锁定技</b>，准备阶段或结束阶段开始时，你摸X张牌（X为其它角色数）。',
-  },
-  {
-    source: 'pve_suwei_description',
+    source: 'pve_longshen_suwei_description',
     target: '<b>锁定技</b>，当你成为一名其它角色使用牌的目标后，你摸一张牌并弃置其一张牌。',
   },
   {
-    source: 'pve_lingxi_description',
+    source: 'pve_longshen_longlin_description',
     target:
-      '<b>锁定技</b>，当你受到伤害后，你摸一张牌并将一张牌置于武将牌上，称为【碑】；你的手牌上限+X；摸牌阶段开始时，你额外摸X张牌（X为碑的数目）。',
+      '<b>锁定技</b>当你使用装备牌时，若你已受伤，你回复1点体力并摸两张牌，若你未受伤，你增加一点体力上限并摸三张牌。',
   },
   {
-    source: 'pve_longshi_description',
+    source: 'pve_longshen_longling_description',
     target:
-      '<b>锁定技</b>，锁定技: 准备阶段开始时，你依次弃置其它角色各个区域至多三张牌；若你以此法弃置的卡牌类型之和：为3，你获得这些牌，为2，你对其造成一点伤害，不大于1，你扣减其一点体力上限。',
+      '<b>锁定技</b>，准备阶段开始时，若你的装备区：没有武器，你摸两张牌，没有防具，你摸两张牌，没有宝具，你摸两张牌。',
   },
   {
-    source: 'pve_longlie_description',
-    target: '<b>锁定技</b>，你使用的【杀】无法被响应，且游戏人数大于2时，此【杀】伤害+1。',
+    source: 'pve_longshen_longning_description',
+    target: '<b>锁定技</b>，当你摸牌时，你的装备区每有一种花色的牌，你多摸一张牌。',
   },
   {
-    source: 'pve_qinlv_description',
+    source: 'pve_longshen_ruiyan_description',
+    target: '<b>锁定技</b>，准备阶段或结束阶段开始时，你摸X张牌（X为其它角色数）。',
+  },
+  {
+    source: 'pve_longshen_longshi_description',
+    target:
+      '<b>锁定技</b>，准备阶段开始时，你依次弃置其它角色各个区域至多三张牌；若你以此法弃置的卡牌类型之和：为3，你获得这些牌，为2，你对其造成一点伤害，不大于1，你扣减其一点体力上限。',
+  },
+  {
+    source: 'pve_longshen_longli_description',
+    target: '<b>锁定技</b>，你使用的牌无法被响应。',
+  },
+  {
+    source: 'pve_longshen_longlie_description',
+    target: '<b>锁定技</b>，你造成的伤害+1。',
+  },
+  {
+    source: 'pve_longshen_qinlv_description',
     target:
       '<b>锁定技</b>，每名角色结束阶段开始时，你与其各回复一点体力；若你仍受伤且不是你的回合，其失去X点体力；若其未受伤，则你摸X张牌。（X为其体力上限一半，向下取整）',
   },
   {
-    source: 'pve_longhou_description',
-    target: '<b>锁定技</b>，你使用牌指定目标后，目标角色体力上限+1，然后受到其已损失体力值的伤害。',
+    source: 'pve_longshen_longhou_description',
+    target:
+      '<b>锁定技</b>，每回合限三次，当你使用牌指定其它角色为目标后，你令其体力上限+1，然后受到其已损失体力值的伤害。',
   },
+  { source: 'pve_longshen_longwei_description', target: '<b>锁定技</b>，你的回合外，其它角色使用的前3张牌对你无效' },
+  {
+    source: 'pve_longshen_longen_description',
+    target: '<b>锁定技</b>，其它角色摸牌时，你令其多摸一张牌，然后视为你对其使用一张火杀',
+  },
+
+  { source: '', target: '' },
+  { source: '', target: '' },
+  { source: '', target: '' },
+  { source: '', target: '' },
   {
     source: 'pve_jienu_description',
     target:
@@ -152,11 +184,6 @@ export const skillDescriptions: Word[] = [
     target: '<b>锁定技</b>，你造成或受到伤害时，你回复1点体力且此伤害+1，你摸等同伤害+1张牌。',
   },
   {
-    source: 'pve_tansuo_description',
-    target:
-      '<b>锁定技</b>，第四关及之后，玩家使用牌有概率触发机关（此牌点数越高几率越大且随着每回合使用次数提高）或奇遇宝物。玩家共用强化池',
-  },
-  {
     source: 'pve_beifa_description',
     target: '<b>锁定技</b>，你失去最后一张牌时，令一名角色失去X点体力。（X为此技能等级）',
   },
@@ -169,20 +196,12 @@ export const skillDescriptions: Word[] = [
     target: '出牌阶段限一次，你摸1张牌。（升级多摸两张）',
   },
   {
-    source: 'pve_feihua_description',
-    target: '<b>锁定技</b>，你触发减少触发机关概率等级越高提升越大',
-  },
-  {
     source: 'pve_chengxiang_description',
     target: '<b>锁定技</b>，出牌阶段结束时，你随机回复1-3点体力。（升级提升1点回复。）',
   },
   {
     source: 'pve_zhibing_description',
     target: '出牌阶段限一次，对一名角色造成随机1-3点伤害。（升级提升1点伤害上限）',
-  },
-  {
-    source: 'pve_pyjiaoyi_description',
-    target: '限一次,通关后次数+1，出牌阶段，你可以和BOSS进行一次交易，牺牲一些代价获得宝物或者升级宝物。',
   },
   {
     source: 'pve_classic_ai_desc',
@@ -317,9 +336,5 @@ export const eventDictionary: Word[] = [
   {
     source: '{0}: you can drop a card to deal 1 thunder damage to current player?',
     target: '{0}: 你可以弃置一张牌，并对当前回合角色造成一点雷属性伤害',
-  },
-  {
-    source: '{0} {1}pve, please choose a character',
-    target: '挑战者, 请选择一名武将',
   },
 ];

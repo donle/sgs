@@ -4,40 +4,11 @@ import { Player } from 'core/player/player';
 import { PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { Sanguosha } from '../engine';
 import { PveClassicGameProcessor } from './game_processor.pve_classic';
+import { pveLongShenSkills } from '../../../core/skills/game_mode/pve/pve_longshen_skills';
+import { Algorithm } from 'core/shares/libs/algorithm';
 
 export class PveLongshenGameProcessor extends PveClassicGameProcessor {
-  protected proposalCharacters: string[] = [
-    'simayi',
-    'yujin',
-    'guojia',
-    'caoren',
-    'xuchu',
-    'guanyu',
-    'wolong',
-    'zhangfei',
-    'huangzhong',
-    'machao',
-    'luxun',
-    'sunce',
-    'zhouyu',
-    'lvmeng',
-    'lusu',
-    'liubei',
-    'caocao',
-    'sunquan',
-    'zhangjiao',
-    'xingdaorong',
-  ];
-
-  private CHARACTERS: string[] = [
-    'pve_suanni',
-    'pve_bian',
-    'pve_bixi',
-    'pve_bixi',
-    'pve_yazi',
-    'pve_fuxi',
-    'pve_chaofeng',
-  ];
+  protected proposalCharacters: string[] = [];
 
   public getWinners(players: Player[]) {
     const alivePlayers = players.filter(player => !player.Dead);
@@ -62,13 +33,23 @@ export class PveLongshenGameProcessor extends PveClassicGameProcessor {
     );
 
     this.room.activate({
-      changedProperties: [{ toId: boss.Id, maxHp: this.level + 3, hp: this.level + 3, activate: true }],
+      changedProperties: [{ toId: boss.Id, maxHp: boss.MaxHp + 1, hp: boss.MaxHp + 1, activate: true }],
     });
 
-    const chara = this.CHARACTERS[this.level - 1];
-    const charaSkills = Sanguosha.getCharacterByCharaterName(chara).Skills.filter(skill => !skill.isShadowSkill());
-    const skill = charaSkills[Math.floor(charaSkills.length * Math.random())];
-    this.room.obtainSkill(boss.Id, skill.Name);
+    const candSkills = pveLongShenSkills;
+    Algorithm.shuffle(candSkills);
+
+    let weights = 0;
+    while (
+      weights < this.level * this.room.Players.filter(player => !player.isSmartAI()).length &&
+      candSkills.length > 0
+    ) {
+      const item = candSkills.shift();
+      if (item !== undefined) {
+        weights += item.weights;
+        this.room.obtainSkill(boss.Id, item.name);
+      }
+    }
 
     if (this.level > 1) {
       this.drawGameBeginsCards(boss.getPlayerInfo());
