@@ -18,6 +18,7 @@ export const characterDictionary: Word[] = [
 
   { source: 'guanxingzhangbao', target: '关兴张苞' },
   { source: 'fuhun', target: '父魂' },
+  { source: '#fuhun', target: '父魂' },
 
   { source: 'liaohua', target: '廖化' },
   { source: 'dangxian', target: '当先' },
