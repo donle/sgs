@@ -220,7 +220,7 @@ export class PveLongShenLongLing extends TriggerSkill {
   }
 }
 
-@CompulsorySkill({ name: 'pve_longshen_longning', description: 'pve_longshen_longning' })
+@CompulsorySkill({ name: 'pve_longshen_longning', description: 'pve_longshen_longning_description' })
 export class PveLongShenLongNing extends TriggerSkill {
   isTriggerable(_: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>, stage?: AllStage) {
     return stage === DrawCardStage.CardDrawing;
