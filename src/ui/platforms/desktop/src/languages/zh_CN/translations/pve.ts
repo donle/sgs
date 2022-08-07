@@ -131,8 +131,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'pve_longshen_qinlv_description',
-    target:
-      '<b>锁定技</b>，每名角色结束阶段开始时，你与其各回复一点体力；若你仍受伤且不是你的回合，其失去X点体力；若其未受伤，则你摸X张牌。（X为其体力上限一半，向下取整）',
+    target: '<b>锁定技</b>，每名角色结束阶段开始时，你回复一点体力，若你仍受伤，你摸X张牌。（X为你已损失的体力值）',
   },
   {
     source: 'pve_longshen_longhou_description',

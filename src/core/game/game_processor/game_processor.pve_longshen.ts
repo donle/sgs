@@ -6,6 +6,7 @@ import { Sanguosha } from '../engine';
 import { PveClassicGameProcessor } from './game_processor.pve_classic';
 import { pveLongShenSkills } from '../../../core/skills/game_mode/pve/pve_longshen_skills';
 import { Algorithm } from 'core/shares/libs/algorithm';
+import { TranslationPack } from 'core/translations/translation_json_tool';
 
 export class PveLongshenGameProcessor extends PveClassicGameProcessor {
   protected proposalCharacters: string[] = [];

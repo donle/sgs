@@ -446,15 +446,8 @@ export class PveLongShenQinLv extends TriggerSkill {
     const player = room.CurrentPhasePlayer;
 
     await room.recover({ recoveredHp: 1, recoverBy: owner.Id, toId: player.Id });
-    if (owner.Id !== player.Id) {
-      await room.recover({ recoveredHp: 1, recoverBy: owner.Id, toId: owner.Id });
-      if (owner.isInjured()) {
-        await room.loseHp(player.Id, Math.floor(player.MaxHp / 2));
-      }
-    }
-
-    if (!player.isInjured()) {
-      await room.drawCards(Math.floor(player.MaxHp / 2), owner.Id, 'top', owner.Id, this.Name);
+    if (owner.isInjured()) {
+      await room.drawCards(owner.MaxHp - owner.Hp, owner.Id, 'top', owner.Id, this.Name);
     }
 
     return true;
