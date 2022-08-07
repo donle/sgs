@@ -266,39 +266,12 @@ export const promptDescriptions: Word[] = [
     target: '请选择一个技能获得',
   },
   {
-    source: 'Please choose a character for get a skill',
-    target: '请选择一个武将并获得其一个技能',
-  },
-  {
     source: 'Please select cards which needs to be replaced',
     target: '请选择需要更换的手牌',
   },
-  {
-    source: 'pve_pyjiaoyi: A dirty deal1',
-    target: '交给BOSS，你1点体力上限。',
-  },
-  {
-    source: 'pve_pyjiaoyi: A dirty deal2',
-    target: '交给BOSS，全部手牌（至少1张）。',
-  },
-  {
-    source: 'pve_pyjiaoyi: A dirty deal3',
-    target: 'BOSS似乎在让你一手。',
-  },
-  {
-    source: 'pve_pyjiaoyi: A dirty deal4',
-    target: 'BOSS正在不怀好意。',
-  },
-  {
-    source: 'pve_pyjiaoyi: A dirty deal5',
-    target: 'BOSS准备设下圈套。',
-  },
 ];
+
 export const eventDictionary: Word[] = [
-  { source: 'pve-easy-mode', target: '低难度' },
-  { source: 'pve-hard-mode', target: '高难度' },
-  { source: '{0} ouyujiguan', target: '{0} 偶遇了机关' },
-  { source: '{0} qiyubaowu', target: '{0} 奇遇宝物' },
   { source: '{0}: do you want to awaken?', target: '{0} 已点亮四种标记，请选择适应性强化' },
   { source: '{0}: get the next stage mark', target: '{0} 点亮下一阶段标记' },
   { source: '{0}: do you want to draw a card?', target: '{0} 你可以摸一张牌' },
@@ -318,5 +291,10 @@ export const eventDictionary: Word[] = [
   {
     source: '{0}: you can drop a card to deal 1 thunder damage to current player?',
     target: '{0}: 你可以弃置一张牌，并对当前回合角色造成一点雷属性伤害',
+  },
+
+  {
+    source: 'Please choose a character for get a skill',
+    target: '请选择一个武将并获得其一个技能',
   },
 ];
