@@ -37,7 +37,8 @@ export class PveLongshenGameProcessor extends PveClassicGameProcessor {
       changedProperties: [{ toId: boss.Id, maxHp: boss.MaxHp + 1, hp: boss.MaxHp + 1, activate: true }],
     });
 
-    const candSkills = pveLongShenSkills;
+    const candSkills = pveLongShenSkills.slice();
+    console.log(candSkills);
     Algorithm.shuffle(candSkills);
 
     let weights = 0;
