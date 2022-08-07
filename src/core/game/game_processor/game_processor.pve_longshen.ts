@@ -56,6 +56,7 @@ export class PveLongshenGameProcessor extends PveClassicGameProcessor {
     }
 
     const levelBeginEvent: ServerEventFinder<GameEventIdentifiers.LevelBeginEvent> = {};
+    levelBeginEvent.messages = [TranslationPack.translationJsonPatcher('{0} level start', this.level).toString()];
     await this.onHandleIncomingEvent(
       GameEventIdentifiers.LevelBeginEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.LevelBeginEvent, levelBeginEvent),

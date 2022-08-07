@@ -72,6 +72,8 @@ export const characterDictionary: Word[] = [
   { source: 'pve_pyjiaoyi', target: '交易' },
   { source: 'pve_tishen', target: '替身' },
   { source: 'pve_zhiheng', target: '再议' },
+
+  { source: '{0} level start', target: '====== 第{0}关开始 ======' },
 ];
 
 export const skillDescriptions: Word[] = [
