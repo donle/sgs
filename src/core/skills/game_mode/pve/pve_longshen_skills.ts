@@ -529,7 +529,7 @@ export class PveLongShenLongWei extends TriggerSkill {
 @CompulsorySkill({ name: 'pve_longshen_longen', description: 'pve_longshen_longen_description' })
 export class PveLongShenLongEn extends TriggerSkill {
   isTriggerable(_: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>, stage?: AllStage) {
-    return stage === DrawCardStage.AfterDrawCardEffect;
+    return stage === DrawCardStage.CardDrawing;
   }
 
   canUse(_: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.DrawCardEvent>) {
@@ -542,7 +542,7 @@ export class PveLongShenLongEn extends TriggerSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const drawCardEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DrawCardEvent>;
-    drawCardEvent.drawAmount++;
+    drawCardEvent.drawAmount += 1;
 
     const slash = VirtualCard.create<Slash>({ cardName: 'fire_slash', bySkill: this.Name }).Id;
     const slashUseEvent = { fromId: event.fromId, cardId: slash, targetGroup: [[drawCardEvent.fromId]] };
