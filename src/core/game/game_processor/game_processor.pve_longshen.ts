@@ -40,15 +40,18 @@ export class PveLongshenGameProcessor extends PveClassicGameProcessor {
     Algorithm.shuffle(candSkills);
 
     let weights = 0;
-    while (
-      weights < this.level * this.room.Players.filter(player => !player.isSmartAI()).length &&
-      candSkills.length > 0
-    ) {
+    const except_weights = this.level * this.room.Players.filter(player => !player.isSmartAI()).length;
+    while (weights < except_weights) {
       const item = candSkills.shift();
-      if (item !== undefined) {
-        weights += item.weights;
-        this.room.obtainSkill(boss.Id, item.name);
+      if (item === undefined) {
+        break;
       }
+
+      if (item.weights + weights > except_weights) {
+        continue;
+      }
+      weights += item.weights;
+      this.room.obtainSkill(boss.Id, item.name);
     }
 
     if (this.level > 1) {
