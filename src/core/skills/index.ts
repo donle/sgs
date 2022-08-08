@@ -643,4 +643,6 @@ export {
   PveLongShenLongHou,
   PveLongShenLongWei,
   PveLongShenLongEn,
+  PveLongShenLongXiao,
+  PveLongShenLongGu,
 } from './game_mode/pve/pve_longshen_skills';
