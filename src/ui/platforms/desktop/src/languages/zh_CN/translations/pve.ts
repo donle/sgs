@@ -19,6 +19,8 @@ export const characterDictionary: Word[] = [
   { source: 'pve_longshen_longhou', target: '龙吼' },
   { source: 'pve_longshen_longwei', target: '龙威' },
   { source: 'pve_longshen_longen', target: '龙恩' },
+  { source: 'pve_longshen_longxiao', target: '龙啸' },
+  { source: 'pve_longshen_longgu', target: '龙顾' },
 
   { source: 'pve_soldier', target: '风瑶军' },
   { source: 'pve_qisha', target: '七杀' },
@@ -138,16 +140,20 @@ export const skillDescriptions: Word[] = [
     target:
       '<b>锁定技</b>，每回合限三次，当你使用牌指定其它角色为目标后，你令其体力上限+1，然后受到其已损失体力值的伤害。',
   },
-  { source: 'pve_longshen_longwei_description', target: '<b>锁定技</b>，你的回合外，其它角色使用的前3张牌对你无效' },
+  { source: 'pve_longshen_longwei_description', target: '<b>锁定技</b>，你的回合外，其它角色使用的前3张牌对你无效。' },
   {
     source: 'pve_longshen_longen_description',
-    target: '<b>锁定技</b>，其它角色摸牌时，视为你对其使用一张火杀，然后你令其多摸一张牌',
+    target: '<b>锁定技</b>，其它角色摸牌时，视为你对其使用一张火杀，然后你令其多摸一张牌。',
+  },
+  {
+    source: 'pve_longshen_longxiao_description',
+    target: '<b>锁定技</b>，你使用牌无次数限制。',
+  },
+  {
+    source: 'pve_longshen_longgu_description',
+    target: '<b>锁定技</b>，回合开始时，你获得牌堆中一张装备牌并使用。',
   },
 
-  { source: '', target: '' },
-  { source: '', target: '' },
-  { source: '', target: '' },
-  { source: '', target: '' },
   {
     source: 'pve_jienu_description',
     target:

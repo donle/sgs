@@ -3,7 +3,7 @@ import { CardId, CardSuit } from 'core/cards/libs/card_props';
 import { CardMoveArea, CardMoveReason, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { Slash } from 'core/cards/standard/slash';
-import { DamageType } from 'core/game/game_props';
+import { DamageType, INFINITE_TRIGGERING_TIMES } from 'core/game/game_props';
 import {
   AimStage,
   AllStage,
@@ -11,6 +11,7 @@ import {
   CardUseStage,
   DamageEffectStage,
   DrawCardStage,
+  PhaseChangeStage,
   PhaseStageChangeStage,
   PlayerPhase,
   PlayerPhaseStages,
@@ -18,9 +19,10 @@ import {
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { TriggerSkill } from 'core/skills/skill';
+import { RulesBreakerSkill, TriggerSkill } from 'core/skills/skill';
 import { CompulsorySkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
+import { CardMatcher } from 'core/cards/libs/card_matcher';
 
 export const pveLongShenSkills = [
   { name: 'pve_longshen_ziyu', weights: 2 },
@@ -37,6 +39,8 @@ export const pveLongShenSkills = [
   { name: 'pve_longshen_longhou', weights: 2 },
   { name: 'pve_longshen_longwei', weights: 2 },
   { name: 'pve_longshen_longen', weights: 3 },
+  { name: 'pve_longshen_longxiao', weights: 1 },
+  { name: 'pve_longshen_longgu', weights: 1 },
 ];
 
 @CompulsorySkill({ name: 'pve_longshen_ziyu', description: 'pve_longshen_ziyu_description' })
@@ -540,6 +544,57 @@ export class PveLongShenLongEn extends TriggerSkill {
     const slash = VirtualCard.create<Slash>({ cardName: 'fire_slash', bySkill: this.Name }).Id;
     const slashUseEvent = { fromId: event.fromId, cardId: slash, targetGroup: [[drawCardEvent.fromId]] };
     await room.useCard(slashUseEvent);
+
+    return true;
+  }
+}
+
+@CompulsorySkill({ name: 'pve_longshen_longxiao', description: 'pve_longshen_longxiao_description' })
+export class PveLongShenLongXiao extends RulesBreakerSkill {
+  breakCardUsableTimesTo(_: CardId | CardMatcher, room: Room, owner: Player, target: Player): number {
+    if (room.withinAttackDistance(owner, target)) {
+      return INFINITE_TRIGGERING_TIMES;
+    } else {
+      return 0;
+    }
+  }
+}
+
+@CompulsorySkill({ name: 'pve_longshen_longgu', description: 'pve_longshen_longgu' })
+export class PveLongShenLongGu extends TriggerSkill {
+  isTriggerable(_: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage) {
+    return stage === PhaseChangeStage.AfterPhaseChanged;
+  }
+
+  canUse(_: Room, owner: Player, content: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>) {
+    return content.toPlayer === owner.Id && content.to === PlayerPhase.PhaseBegin;
+  }
+
+  async onTrigger() {
+    return true;
+  }
+
+  public async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>): Promise<boolean> {
+    const tricks = room.findCardsByMatcherFrom(new CardMatcher({ type: [CardType.Equip] }));
+
+    if (tricks.length > 0) {
+      const randomEquip = tricks[Math.floor(Math.random() * tricks.length)];
+      await room.moveCards({
+        movingCards: [{ card: randomEquip, fromArea: CardMoveArea.DrawStack }],
+        toId: event.fromId,
+        toArea: CardMoveArea.HandArea,
+        moveReason: CardMoveReason.ActivePrey,
+        proposer: event.fromId,
+        triggeredBySkills: [this.Name],
+      });
+
+      const equipUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
+        fromId: event.fromId,
+        cardId: randomEquip,
+      };
+
+      await room.useCard(equipUseEvent);
+    }
 
     return true;
   }
