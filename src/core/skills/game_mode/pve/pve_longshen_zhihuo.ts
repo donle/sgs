@@ -37,7 +37,7 @@ export class PveLongShenZhiHuo extends TriggerSkill {
       .filter(player => player.getPlayerSkills().filter(skill => !skill.isShadowSkill()).length > 5);
     for (const player of targets) {
       const skills = player.getPlayerSkills().filter(skill => !skill.isShadowSkill());
-      console.log(`${player} has skills:`);
+      console.log(`${player.Name} has skills:`);
       console.log(`${skills.map(skill => skill.Name)}`);
       Algorithm.shuffle(skills);
       room.loseSkill(player.Id, skills[0].Name, true);

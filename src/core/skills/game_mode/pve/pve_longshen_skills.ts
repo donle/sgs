@@ -62,7 +62,7 @@ export class PveLongShenZiYu extends TriggerSkill {
   async onEffect(room: Room, content: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const owner = room.getPlayerById(content.fromId);
     await room.recover({
-      recoveredHp: owner.MaxHp - owner.Hp,
+      recoveredHp: Math.ceil((owner.MaxHp - owner.Hp) / 2),
       recoverBy: owner.Id,
       toId: owner.Id,
     });
@@ -447,9 +447,8 @@ export class PveLongShenQinLv extends TriggerSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const owner = room.getPlayerById(event.fromId);
-    const player = room.CurrentPhasePlayer;
 
-    await room.recover({ recoveredHp: 1, recoverBy: owner.Id, toId: player.Id });
+    await room.recover({ recoveredHp: 1, recoverBy: owner.Id, toId: owner.Id });
     if (owner.isInjured()) {
       await room.drawCards(owner.MaxHp - owner.Hp, owner.Id, 'top', owner.Id, this.Name);
     }

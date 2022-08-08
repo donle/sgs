@@ -90,7 +90,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'pve_longshen_ziyu_description',
-    target: '<b>锁定技</b>，准备阶段开始时，你将体力值恢复至体力上限。',
+    target: '<b>锁定技</b>，准备阶段开始时，你恢复已损失体力值一半的生命值。',
   },
   {
     source: 'pve_longshen_chouxin_description',
