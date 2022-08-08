@@ -28,16 +28,16 @@ export const pveLongShenSkills = [
   { name: 'pve_longshen_ziyu', weights: 2 },
   { name: 'pve_longshen_chouxin', weights: 1 },
   { name: 'pve_longshen_suwei', weights: 2 },
-  { name: 'pve_longshen_longlin', weights: 1 },
-  { name: 'pve_longshen_longling', weights: 2 },
+  { name: 'pve_longshen_longlin', weights: 2 },
+  { name: 'pve_longshen_longling', weights: 1 },
   { name: 'pve_longshen_longning', weights: 2 },
   { name: 'pve_longshen_ruiyan', weights: 1 },
   { name: 'pve_longshen_longshi', weights: 3 },
   { name: 'pve_longshen_longli', weights: 1 },
   { name: 'pve_longshen_longlie', weights: 1 },
   { name: 'pve_longshen_qinlv', weights: 2 },
-  { name: 'pve_longshen_longhou', weights: 2 },
-  { name: 'pve_longshen_longwei', weights: 2 },
+  { name: 'pve_longshen_longhou', weights: 3 },
+  { name: 'pve_longshen_longwei', weights: 3 },
   { name: 'pve_longshen_longen', weights: 3 },
   { name: 'pve_longshen_longxiao', weights: 1 },
   { name: 'pve_longshen_longgu', weights: 1 },
@@ -218,7 +218,7 @@ export class PveLongShenLongLing extends TriggerSkill {
         extraDrawCardsNum++;
       }
     }
-    await room.drawCards(2 * extraDrawCardsNum, owner.Id);
+    await room.drawCards(extraDrawCardsNum, owner.Id);
 
     return true;
   }

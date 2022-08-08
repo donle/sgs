@@ -108,7 +108,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_longshen_longling_description',
     target:
-      '<b>锁定技</b>，准备阶段开始时，若你的装备区：没有武器，你摸两张牌，没有防具，你摸两张牌，没有宝具，你摸两张牌。',
+      '<b>锁定技</b>，准备阶段开始时，若你的装备区：没有武器，你摸一张牌，没有防具，你摸一张牌，没有宝具，你摸一张牌。',
   },
   {
     source: 'pve_longshen_longning_description',
