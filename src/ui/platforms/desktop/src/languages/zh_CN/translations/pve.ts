@@ -2,9 +2,9 @@ import { Word } from 'languages';
 
 export const characterDictionary: Word[] = [
   { source: 'pve_longshen', target: '龙神' },
-  { source: 'pve_longshen_zhihuo', target: '止火' },
   { source: 'pve_longshen_qifu', target: '祈福' },
-  { source: '~pve_longshen_qifu', target: '祈福' },
+  { source: '~pve_longshen_juhun', target: '拘魂' },
+  { source: '~pve_longshen_zhanpo', target: '斩魄' },
   { source: 'pve_longshen_chouxin', target: '抽薪' },
   { source: 'pve_longshen_suwei', target: '肃威' },
   { source: 'pve_longshen_ziyu', target: '自愈' },
@@ -80,13 +80,9 @@ export const characterDictionary: Word[] = [
 
 export const skillDescriptions: Word[] = [
   {
-    source: 'pve_longshen_zhihuo_description',
-    target: '<b>锁定技</b>，你的回合开始时，若其它角色技能数量超过5个，你随机获得其一个技能',
-  },
-  {
     source: 'pve_longshen_qifu_description',
     target:
-      '其它角色出牌阶段内，其可以发动此技能并获得一个技能；若其发动此技能前技能数量已经不小于5个，其需先失去一个技能',
+      '你令其它角色获得“拘魂”和“斩魄”。<b>招魂</b>：其它角色可以从五名武将选择并获得其一个技能。<b>斩魄</b>：其它角色可以封印你的一个技能，并失去x个技能（x为此技能权重-1）',
   },
   {
     source: 'pve_longshen_ziyu_description',

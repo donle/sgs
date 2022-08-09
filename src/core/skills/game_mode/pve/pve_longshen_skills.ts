@@ -11,6 +11,7 @@ import {
   CardUseStage,
   DamageEffectStage,
   DrawCardStage,
+  LevelBeginStage,
   PhaseChangeStage,
   PhaseStageChangeStage,
   PlayerPhase,
@@ -19,14 +20,16 @@ import {
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
 import { Room } from 'core/room/room';
-import { RulesBreakerSkill, TriggerSkill } from 'core/skills/skill';
-import { CompulsorySkill } from 'core/skills/skill_wrappers';
+import { ActiveSkill, RulesBreakerSkill, TriggerSkill } from 'core/skills/skill';
+import { CompulsorySkill, LimitSkill, SideEffectSkill } from 'core/skills/skill_wrappers';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
+import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
+import { System } from 'core/shares/libs/system';
 
 export const pveLongShenSkills = [
   { name: 'pve_longshen_ziyu', weights: 2 },
-  { name: 'pve_longshen_chouxin', weights: 1 },
+  { name: 'pve_longshen_chouxin', weights: 2 },
   { name: 'pve_longshen_suwei', weights: 2 },
   { name: 'pve_longshen_longlin', weights: 2 },
   { name: 'pve_longshen_longling', weights: 1 },
@@ -42,6 +45,245 @@ export const pveLongShenSkills = [
   { name: 'pve_longshen_longxiao', weights: 1 },
   { name: 'pve_longshen_longgu', weights: 1 },
 ];
+
+@CompulsorySkill({ name: 'pve_longshen_qifu', description: 'pve_longshen_qifu_description' })
+export class PveLongShenQiFu extends TriggerSkill implements OnDefineReleaseTiming {
+  isAutoTrigger() {
+    return true;
+  }
+
+  isFlaggedSkill() {
+    return true;
+  }
+
+  async whenLosingSkill(room: Room) {
+    room.uninstallSideEffectSkill(System.SideEffectSkillApplierEnum.PveLongShenJuHun);
+    room.uninstallSideEffectSkill(System.SideEffectSkillApplierEnum.PveLongShenZhanPo);
+  }
+
+  async whenObtainingSkill(room: Room, owner: Player) {
+    room.installSideEffectSkill(System.SideEffectSkillApplierEnum.PveLongShenJuHun, PveLongShenJuHun.Name, owner.Id);
+    room.installSideEffectSkill(System.SideEffectSkillApplierEnum.PveLongShenZhanPo, PveLongShenZhanPo.Name, owner.Id);
+  }
+
+  isTriggerable(_: ServerEventFinder<GameEventIdentifiers.LevelBeginEvent>, stage?: AllStage) {
+    return stage === LevelBeginStage.LevelBegining;
+  }
+
+  canUse() {
+    return true;
+  }
+
+  async onTrigger(_: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    event.translationsMessage = undefined;
+    return true;
+  }
+
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
+    room.installSideEffectSkill(
+      System.SideEffectSkillApplierEnum.PveLongShenJuHun,
+      PveLongShenJuHun.Name,
+      event.fromId,
+    );
+
+    room.installSideEffectSkill(
+      System.SideEffectSkillApplierEnum.PveLongShenZhanPo,
+      PveLongShenZhanPo.Name,
+      event.fromId,
+    );
+
+    room.getOtherPlayers(event.fromId).forEach(player => {
+      room.refreshPlayerOnceSkill(player.Id, PveLongShenJuHun.Name);
+      room.refreshPlayerOnceSkill(player.Id, PveLongShenZhanPo.Name);
+    });
+
+    return true;
+  }
+}
+
+@SideEffectSkill
+@LimitSkill({ name: 'pve_longshen_juhun', description: 'pve_longshen_juhun_description' })
+export class PveLongShenJuHun extends ActiveSkill {
+  public canUse() {
+    return true;
+  }
+
+  public numberOfTargets() {
+    return 0;
+  }
+
+  public cardFilter(_: Room, __: Player, cards: CardId[]): boolean {
+    return cards.length === 0;
+  }
+
+  public isAvailableTarget() {
+    return false;
+  }
+
+  public isAvailableCard(): boolean {
+    return false;
+  }
+
+  public async onUse() {
+    return true;
+  }
+
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    const characters = room.getRandomCharactersFromLoadedPackage(5);
+    room.notify(
+      GameEventIdentifiers.AskForChoosingCharacterEvent,
+      {
+        amount: 1,
+        characterIds: characters,
+        toId: event.fromId,
+        byHuaShen: true,
+        triggeredBySkills: [this.Name],
+        translationsMessage: TranslationPack.translationJsonPatcher(
+          'Please choose a character for get a skill',
+        ).extract(),
+      },
+      event.fromId,
+    );
+
+    const { chosenCharacterIds } = await room.onReceivingAsyncResponseFrom(
+      GameEventIdentifiers.AskForChoosingCharacterEvent,
+      event.fromId,
+    );
+
+    const options = Sanguosha.getCharacterById(chosenCharacterIds[0])
+      .Skills.filter(skill => !(skill.isShadowSkill() || skill.isLordSkill()))
+      .map(skill => skill.GeneralName);
+
+    const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
+      options,
+      toId: event.fromId,
+      conversation: 'Please announce a skill',
+      triggeredBySkills: [this.Name],
+    };
+
+    room.notify(
+      GameEventIdentifiers.AskForChoosingOptionsEvent,
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(askForChoosingOptionsEvent),
+      event.fromId,
+    );
+
+    const chooseResp = await room.onReceivingAsyncResponseFrom(
+      GameEventIdentifiers.AskForChoosingOptionsEvent,
+      event.fromId,
+    );
+    room.obtainSkill(event.fromId, chooseResp.selectedOption!);
+
+    return true;
+  }
+}
+
+@SideEffectSkill
+@LimitSkill({ name: 'pve_longshen_zhanpo', description: 'pve_longshen_zhanpo_description' })
+export class PveLongShenZhanPo extends ActiveSkill {
+  canUse(room: Room, owner: Player) {
+    const boss = room.AlivePlayers.find(player => player.hasSkill(PveLongShenQiFu.Name));
+    return (
+      boss !== undefined &&
+      owner.getPlayerSkills().length > 1 &&
+      pveLongShenSkills
+        .slice()
+        .filter(sw => sw.weights > 1)
+        .filter(sw => boss.getPlayerSkills().find(skill => skill.Name === sw.name))
+        .map(sw => sw.name).length > 0
+    );
+  }
+
+  numberOfTargets() {
+    return 0;
+  }
+
+  cardFilter(_: Room, __: Player, cards: CardId[]): boolean {
+    return cards.length === 0;
+  }
+
+  isAvailableTarget() {
+    return false;
+  }
+
+  isAvailableCard(): boolean {
+    return false;
+  }
+
+  async onUse() {
+    return true;
+  }
+
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    const boss = room.AlivePlayers.find(player => player.hasSkill(PveLongShenQiFu.Name));
+    if (boss === undefined) {
+      return false;
+    }
+
+    const bossSkills = boss.getPlayerSkills();
+    const options = pveLongShenSkills
+      .slice()
+      .filter(sw => sw.weights > 1)
+      .filter(sw => bossSkills.find(skill => skill.Name === sw.name))
+      .map(sw => sw.name);
+
+    if (options.length === 0) {
+      return true;
+    }
+
+    const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
+      options,
+      toId: event.fromId,
+      conversation: 'Please choose drop one boss skill',
+      triggeredBySkills: [this.Name],
+    };
+
+    room.notify(
+      GameEventIdentifiers.AskForChoosingOptionsEvent,
+      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(askForChoosingOptionsEvent),
+      event.fromId,
+    );
+
+    const chooseResp = await room.onReceivingAsyncResponseFrom(
+      GameEventIdentifiers.AskForChoosingOptionsEvent,
+      event.fromId,
+    );
+
+    const selectedOption = chooseResp.selectedOption !== undefined ? chooseResp.selectedOption : options[0];
+
+    const skillName = selectedOption[0];
+    const skillNum = pveLongShenSkills.find(sw => sw.name === skillName)!.weights - 1;
+
+    for (let i = 0; i < skillNum; i++) {
+      const skills = room
+        .getPlayerById(event.fromId)
+        .getPlayerSkills()
+        .filter(skill => !skill.isShadowSkill());
+      const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
+        options: skills.map(skill => skill.Name),
+        toId: event.fromId,
+        conversation: 'Please drop a skill',
+        triggeredBySkills: [this.Name],
+      };
+
+      room.notify(
+        GameEventIdentifiers.AskForChoosingOptionsEvent,
+        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(
+          askForChoosingOptionsEvent,
+        ),
+        event.fromId,
+      );
+
+      const chooseResp = await room.onReceivingAsyncResponseFrom(
+        GameEventIdentifiers.AskForChoosingOptionsEvent,
+        event.fromId,
+      );
+      room.loseSkill(event.fromId, chooseResp.selectedOption!);
+    }
+    room.loseSkill(boss.Id, skillName);
+
+    return true;
+  }
+}
 
 @CompulsorySkill({ name: 'pve_longshen_ziyu', description: 'pve_longshen_ziyu_description' })
 export class PveLongShenZiYu extends TriggerSkill {
