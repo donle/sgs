@@ -5,6 +5,7 @@ import { ClientSocket } from 'core/network/socket.client';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ElectronData } from 'electron_loader/electron_data';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
@@ -44,17 +45,17 @@ export class ObserveRoomPage extends React.Component<
   private presenter: RoomPresenter;
   private store: RoomStore;
   private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
-  private playerName: string = this.props.electronLoader.getData('username') || 'unknown';
+  private playerName: string = this.props.electronLoader.getData(ElectronData.PlayerName) || 'unknown';
 
   @mobx.observable.ref
   openSettings = false;
   @mobx.observable.ref
-  private defaultMainVolume = this.props.electronLoader.getData('mainVolume')
-    ? Number.parseInt(this.props.electronLoader.getData('mainVolume'), 10)
+  private defaultMainVolume = this.props.electronLoader.getData(ElectronData.MainVolume)
+    ? Number.parseInt(this.props.electronLoader.getData(ElectronData.MainVolume), 10)
     : 50;
   @mobx.observable.ref
-  private defaultGameVolume = this.props.electronLoader.getData('gameVolume')
-    ? Number.parseInt(this.props.electronLoader.getData('gameVolume'), 10)
+  private defaultGameVolume = this.props.electronLoader.getData(ElectronData.GameVolume)
+    ? Number.parseInt(this.props.electronLoader.getData(ElectronData.GameVolume), 10)
     : 50;
   @mobx.observable.ref
   private renderSideBoard = true;
@@ -65,12 +66,12 @@ export class ObserveRoomPage extends React.Component<
 
   private readonly settings = {
     onVolumeChange: mobx.action((volume: number) => {
-      this.props.electronLoader.setData('gameVolume', volume.toString());
+      this.props.electronLoader.setData(ElectronData.GameVolume, volume.toString());
       this.defaultGameVolume = volume;
       this.audioService.changeGameVolume();
     }),
     onMainVolumeChange: mobx.action((volume: number) => {
-      this.props.electronLoader.setData('mainVolume', volume.toString());
+      this.props.electronLoader.setData(ElectronData.MainVolume, volume.toString());
       this.defaultMainVolume = volume;
       this.audioService.changeBGMVolume();
     }),
@@ -127,7 +128,7 @@ export class ObserveRoomPage extends React.Component<
   }
 
   private readonly onHandleBulkEvents = async (events: ServerEventFinder<GameEventIdentifiers>[]) => {
-    this.store.room.emitStatus('trusted', this.props.electronLoader.getTemporaryData('playerId')!);
+    this.store.room.emitStatus('trusted', this.props.electronLoader.getTemporaryData(ElectronData.PlayerId)!);
     for (const content of events) {
       const identifier = Precondition.exists(EventPacker.getIdentifier(content), 'Unable to load event identifier');
       await this.gameProcessor.onHandleIncomingEvent(identifier, content);
@@ -175,8 +176,8 @@ export class ObserveRoomPage extends React.Component<
       this.props.history.push('/lobby');
     });
 
-    if (!this.props.electronLoader.getTemporaryData('playerId')) {
-      this.props.electronLoader.saveTemporaryData('playerId', `${this.playerName}-${Date.now()}`);
+    if (!this.props.electronLoader.getTemporaryData(ElectronData.PlayerId)) {
+      this.props.electronLoader.saveTemporaryData(ElectronData.PlayerId, `${this.playerName}-${Date.now()}`);
     }
 
     clientActiveListenerEvents().forEach(identifier => {
@@ -200,7 +201,7 @@ export class ObserveRoomPage extends React.Component<
     });
 
     this.socket.onReconnected(() => {
-      const playerId = this.props.electronLoader.getTemporaryData('playerId');
+      const playerId = this.props.electronLoader.getTemporaryData(ElectronData.PlayerId);
       if (!playerId) {
         return;
       }
@@ -218,7 +219,7 @@ export class ObserveRoomPage extends React.Component<
     this.socket.notify(
       GameEventIdentifiers.RequestObserveEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.RequestObserveEvent, {
-        observerId: this.props.electronLoader.getTemporaryData('playerId')!,
+        observerId: this.props.electronLoader.getTemporaryData(ElectronData.PlayerId)!,
       }),
     );
 

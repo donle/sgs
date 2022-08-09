@@ -90,6 +90,8 @@
     "sync:win": "rimraf ./src/core ./build && xcopy ..\\..\\..\\core .\\src\\core /s /i",
     "build:mac": "yarn sync:mac && GENERATE_SOURCEMAP=false REACT_APP_DEV_MODE=web node scripts/build.js",
     "build:win": "yarn sync:win && cross-env GENERATE_SOURCEMAP=false REACT_APP_DEV_MODE=web node scripts/build.js",
+    "start:mac": "yarn sync:mac && node scripts/start.js",
+    "start:win": "yarn sync:win && cross-env GENERATE_SOURCEMAP=true node scripts/start.js",
     "electron-dev:mac": "yarn sync:mac && REACT_APP_DEV_MODE=desktop node scripts/start.js",
     "electron-dev:win": "yarn sync:win && cross-env REACT_APP_DEV_MODE=desktop GENERATE_SOURCEMAP=true node scripts/start.js",
     "build:dev:win": "yarn sync:win && cross-env GENERATE_SOURCEMAP=false node scripts/build.js",

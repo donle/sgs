@@ -1,5 +1,6 @@
 import { TemporaryRoomCreationInfo } from 'core/game/game_props';
 import * as mobx from 'mobx';
+import { ChatPacketObject } from 'services/connection_service/connection_service';
 
 export type WaitingRoomGameSettings = Pick<
   TemporaryRoomCreationInfo,
@@ -25,5 +26,8 @@ export class WaitingRoomStore {
   gameSettings: WaitingRoomGameSettings;
 
   @mobx.observable.ref
-  seats: WaitingRoomSeatInfo[];
+  seats: WaitingRoomSeatInfo[] = [];
+
+  @mobx.observable.ref
+  chatMessages: ChatPacketObject[] = [];
 }

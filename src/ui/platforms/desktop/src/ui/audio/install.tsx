@@ -1,5 +1,6 @@
 import { AudioLoader } from 'audio_loader/audio_loader';
 import { CharacterGender } from 'core/characters/character';
+import { ElectronData } from 'electron_loader/electron_data';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { CharacterSkinInfo } from 'skins/skins';
 
@@ -147,7 +148,9 @@ class AudioPlayerService implements AudioService {
 
     audio.setAttribute('type', type);
 
-    const volumeString: string = this.electronLoader.getData(type === 'bgm' ? 'mainVolume' : 'gameVolume');
+    const volumeString: string = this.electronLoader.getData(
+      type === 'bgm' ? ElectronData.MainVolume : ElectronData.GameVolume,
+    );
     audio.volume = 0;
 
     audio.onended = () => {
@@ -166,7 +169,7 @@ class AudioPlayerService implements AudioService {
   }
 
   public changeBGMVolume() {
-    const volumeString: string = this.electronLoader.getData('mainVolume');
+    const volumeString: string = this.electronLoader.getData(ElectronData.MainVolume);
     if (!volumeString) {
       return;
     }
@@ -179,7 +182,7 @@ class AudioPlayerService implements AudioService {
   }
 
   public changeGameVolume() {
-    const volumeString: string = this.electronLoader.getData('gameVolume');
+    const volumeString: string = this.electronLoader.getData(ElectronData.GameVolume);
     if (!volumeString) {
       return;
     }

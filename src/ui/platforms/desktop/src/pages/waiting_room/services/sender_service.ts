@@ -1,4 +1,4 @@
-import { WaitingRoomClientEventFinder, WaitingRoomEvent, WaitingRoomServerEventFinder } from 'core/event/event';
+import { WaitingRoomClientEventFinder, WaitingRoomEvent } from 'core/event/event';
 import { PlayerId } from 'core/player/player_props';
 
 export class WaitingRoomSender {
@@ -8,17 +8,18 @@ export class WaitingRoomSender {
     this.socket.emit(identifier, event);
   }
 
-  sendChat(from: PlayerId, message: string) {
+  sendChat(from: string, message: string) {
     this.socket.emit(WaitingRoomEvent.PlayerChatMessage, {
-      fromId: from,
+      from,
       messageContent: message,
     });
   }
 
-  kickPlayerOrCloseSeat(seatId: number, close: boolean) {
+  kickPlayerOrCloseSeat(seatId: number, close: boolean, kickedPlayerId?: PlayerId) {
     const closeSeatEvent: WaitingRoomClientEventFinder<WaitingRoomEvent.SeatDisabled> = {
       seatId,
       disabled: close,
+      kickedPlayerId,
     };
 
     this.socket.emit(WaitingRoomEvent.SeatDisabled, closeSeatEvent);

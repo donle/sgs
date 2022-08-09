@@ -1,5 +1,6 @@
 import { getAllLanguages, Languages } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ElectronData } from 'electron_loader/electron_data';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
@@ -21,10 +22,10 @@ export type SettingsProps = {
 };
 
 export const SettingsDialog = (props: SettingsProps) => {
-  const [username, setUsername] = React.useState<string>(props.electronLoader.getData('username') || '');
-  const [language, setLanguage] = React.useState<Languages>(props.electronLoader.getData('language'));
+  const [username, setUsername] = React.useState<string>(props.electronLoader.getData(ElectronData.PlayerName) || '');
+  const [language, setLanguage] = React.useState<Languages>(props.electronLoader.getData(ElectronData.Language));
   const onSubmit = () => {
-    props.electronLoader.setData('username', username);
+    props.electronLoader.setData(ElectronData.PlayerName, username);
     props.translator.switchLanguage(language);
     props.onConfirm();
   };
@@ -38,7 +39,7 @@ export const SettingsDialog = (props: SettingsProps) => {
   };
 
   const onChangeLanguge = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    props.electronLoader.setData('language', event.currentTarget.value);
+    props.electronLoader.setData(ElectronData.Language, event.currentTarget.value);
     setLanguage(event.currentTarget.value as Languages);
   };
 

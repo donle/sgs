@@ -6,6 +6,7 @@ import { TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { RoomInfo } from 'core/shares/types/server_types';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ElectronData } from 'electron_loader/electron_data';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
@@ -96,12 +97,12 @@ export class Lobby extends React.Component<LobbyProps> {
 
   private readonly settings = {
     onVolumeChange: mobx.action((volume: number) => {
-      this.props.electronLoader.setData('gameVolume', volume.toString());
+      this.props.electronLoader.setData(ElectronData.GameVolume, volume.toString());
       this.defaultGameVolume = volume;
       this.audioService.changeGameVolume();
     }),
     onMainVolumeChange: mobx.action((volume: number) => {
-      this.props.electronLoader.setData('mainVolume', volume.toString());
+      this.props.electronLoader.setData(ElectronData.MainVolume, volume.toString());
       this.defaultMainVolume = volume;
       this.audioService.changeBGMVolume();
     }),
@@ -112,13 +113,13 @@ export class Lobby extends React.Component<LobbyProps> {
     this.queryRoomList();
     this.props.electronLoader.refreshReplayDataFlow();
     this.audioService.playLobbyBGM();
-    this.defaultMainVolume = this.props.electronLoader.getData('mainVolume')
-      ? Number.parseInt(this.props.electronLoader.getData('mainVolume'), 10)
+    this.defaultMainVolume = this.props.electronLoader.getData(ElectronData.MainVolume)
+      ? Number.parseInt(this.props.electronLoader.getData(ElectronData.MainVolume), 10)
       : 50;
-    this.defaultGameVolume = this.props.electronLoader.getData('gameVolume')
-      ? Number.parseInt(this.props.electronLoader.getData('gameVolume'), 10)
+    this.defaultGameVolume = this.props.electronLoader.getData(ElectronData.GameVolume)
+      ? Number.parseInt(this.props.electronLoader.getData(ElectronData.GameVolume), 10)
       : 50;
-    this.username = this.props.electronLoader.getData('username');
+    this.username = this.props.electronLoader.getData(ElectronData.PlayerName);
 
     this.props.electronLoader.whenUpdate(
       mobx.action(
@@ -176,7 +177,7 @@ export class Lobby extends React.Component<LobbyProps> {
           </span>
           <span className={styles.roomStatus}>{this.props.translator.tr(hostInfo.info.status)}</span>
           <span className={styles.roomPlayers}>{`${hostInfo.info.activePlayers}/${hostInfo.info.totalPlayers}`}</span>
-          <span className={styles.roomLocker}>{hostInfo.info.passcode && <img src={lockerImage} />}</span>
+          <span className={styles.roomLocker}>{hostInfo.info.passcode && <img src={lockerImage} alt="" />}</span>
           <span className={styles.roomActions}>
             <LinkButton
               onClick={this.enterRoom(hostInfo)}
@@ -199,7 +200,7 @@ export class Lobby extends React.Component<LobbyProps> {
     );
   }
 
-  private createRoom(roomInfo: TemporaryRoomCreationInfo) {
+  private createRoom(roomInfo: TemporaryRoomCreationInfo, roomName: string, passcode?: string) {
     if (roomInfo.campaignMode) {
       this.props.campaignService.createRoom(this.props.config.flavor, roomInfo, event => {
         const { packet, ping, hostTag, error } = event;
@@ -212,6 +213,7 @@ export class Lobby extends React.Component<LobbyProps> {
             hostConfig,
             campaignMode: gameInfo.campaignMode,
             hostPlayerId: roomInfo.hostPlayerId,
+            roomName,
           });
         } else {
           console.error(error);
@@ -228,6 +230,8 @@ export class Lobby extends React.Component<LobbyProps> {
             ping,
             hostConfig,
             hostPlayerId: roomInfo.hostPlayerId,
+            roomName,
+            passcode,
           });
         } else {
           console.error(error);
@@ -292,9 +296,9 @@ export class Lobby extends React.Component<LobbyProps> {
   };
 
   @mobx.action
-  private readonly onRoomCreated = (roomInfo: TemporaryRoomCreationInfo) => {
+  private readonly onRoomCreated = (roomInfo: TemporaryRoomCreationInfo, roomName: string, passcode?: string) => {
     this.openRoomCreationDialog = false;
-    this.createRoom(roomInfo);
+    this.createRoom(roomInfo, roomName, passcode);
   };
 
   @mobx.action
@@ -313,7 +317,7 @@ export class Lobby extends React.Component<LobbyProps> {
 
   @mobx.action
   private readonly onCloseSettings = () => {
-    this.username = this.props.electronLoader.getData('username');
+    this.username = this.props.electronLoader.getData(ElectronData.PlayerName);
     this.openSettings = false;
   };
 
@@ -475,7 +479,7 @@ export class Lobby extends React.Component<LobbyProps> {
           </div>
           <Chat
             className={styles.chatSection}
-            username={this.props.electronLoader.getData('username')}
+            username={this.props.electronLoader.getData(ElectronData.PlayerName)}
             translator={this.props.translator}
             connectionService={this.props.connectionService}
           />

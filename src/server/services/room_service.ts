@@ -24,7 +24,7 @@ export class RoomService {
     private createGameServerSocket: (roomChannel: SocketIO.Namespace, roomId: RoomId) => ServerSocket,
     private createServerRoom: (
       roomId: RoomId,
-      gameInfo: TemporaryRoomCreationInfo,
+      gameInfo: GameInfo,
       socket: ServerSocket,
       gameProcessor: GameProcessor,
       analytics: RecordAnalytics,
@@ -67,7 +67,7 @@ export class RoomService {
     };
   }
 
-  createRoom(gameInfo: TemporaryRoomCreationInfo, mode: Flavor): { roomId: RoomId; gameInfo: GameInfo } {
+  createRoom(gameInfo: GameInfo): { roomId: RoomId; gameInfo: GameInfo } {
     const roomId = Date.now();
     const roomSocket = this.createGameServerSocket(this.lobbySocket.of(`/room-${roomId}`), roomId);
     const room = this.createServerRoom(
@@ -77,7 +77,7 @@ export class RoomService {
       this.createDifferentModeGameProcessor(gameInfo.gameMode),
       this.createRecordAnalytics(),
       [],
-      mode,
+      gameInfo.flavor,
       gameInfo.gameMode,
       this.createGameCommonRules(),
       this.createRoomEventStacker(),
@@ -93,7 +93,6 @@ export class RoomService {
       roomId,
       gameInfo: {
         ...gameInfo,
-        flavor: mode,
         campaignMode: !!gameInfo.campaignMode,
       },
     };

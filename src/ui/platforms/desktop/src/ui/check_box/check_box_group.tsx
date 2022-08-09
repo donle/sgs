@@ -10,6 +10,7 @@ export type CheckBoxGroupProps = {
   itemsPerLine?: 4 | 5 | 6;
   className?: string;
   head?: string | JSX.Element;
+  disabled?: boolean;
 };
 
 export const CheckBoxGroup = ({
@@ -19,6 +20,7 @@ export const CheckBoxGroup = ({
   onChecked,
   itemsPerLine = 4,
   className,
+  disabled = false,
 }: CheckBoxGroupProps) => {
   const [checkedIds, setCheckedIds] = React.useState<(string | number)[]>(
     options.filter(o => o.checked).map(o => o.id),
@@ -66,6 +68,7 @@ export const CheckBoxGroup = ({
             [styles.squashCheckBox]: itemsPerLine === 5,
             [styles.smashCheckBox]: itemsPerLine === 6,
           })}
+          disabled={disabled || option.disabled}
           onChecked={onCheck(index, option.id)}
           checked={checkedIndex[index]}
         />

@@ -1,6 +1,5 @@
 import classNames from 'classnames';
 import { ImageLoader } from 'image_loader/image_loader';
-import { ImageProps } from 'props/image_props';
 import * as React from 'react';
 import { Picture } from 'ui/picture/picture';
 import styles from './create_room_button.module.css';

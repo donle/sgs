@@ -82,7 +82,7 @@ const roomService = new RoomService(
   (roomChannel: SocketIO.Namespace, roomId: RoomId) => new ServerSocket(roomChannel, roomId, logger),
   (
     roomId: RoomId,
-    gameInfo: TemporaryRoomCreationInfo,
+    gameInfo: GameInfo,
     socket: ServerSocket,
     gameProcessor: GameProcessor,
     analytics: RecordAnalytics,
@@ -91,11 +91,10 @@ const roomService = new RoomService(
     gameMode: GameMode,
     gameCommonRules: GameCommonRules,
     eventStack: RoomEventStacker<WorkPlace.Server>,
-  ) => {
-    const roomInfo: GameInfo = { ...gameInfo, flavor: mode, campaignMode: !!gameInfo.campaignMode };
-    return new ServerRoom(
+  ) =>
+    new ServerRoom(
       roomId,
-      roomInfo,
+      gameInfo,
       socket,
       gameProcessor,
       analytics,
@@ -105,8 +104,7 @@ const roomService = new RoomService(
       gameMode,
       gameCommonRules,
       eventStack,
-    );
-  },
+    ),
   () => new RecordAnalytics(),
   () => new GameCommonRules(),
   () => new RoomEventStacker<WorkPlace.Server>(),

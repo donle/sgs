@@ -1,5 +1,6 @@
 import { AudioLoader } from 'audio_loader/audio_loader';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ElectronData } from 'electron_loader/electron_data';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
@@ -11,7 +12,7 @@ import { ServerHostTag } from 'props/config_props';
 import * as React from 'react';
 import { ConnectionService } from 'services/connection_service/connection_service';
 import { AudioService } from 'ui/audio/install';
-import styles from './header_bard.module.css';
+import styles from './header_bar.module.css';
 
 export type HeaderBarProps = {
   electronLoader: ElectronLoader;
@@ -24,6 +25,7 @@ export type HeaderBarProps = {
   roomId?: number | string;
   defaultPing?: number;
   host?: ServerHostTag;
+  variant?: 'room' | 'waitingRoom';
   getConnectionService(campaignMode: boolean): ConnectionService;
 };
 
@@ -32,12 +34,12 @@ export class HeaderBar extends React.Component<HeaderBarProps> {
   @mobx.observable.ref
   openSettings = false;
   @mobx.observable.ref
-  private defaultMainVolume = this.props.electronLoader.getData('mainVolume')
-    ? Number.parseInt(this.props.electronLoader.getData('mainVolume'), 10)
+  private defaultMainVolume = this.props.electronLoader.getData(ElectronData.MainVolume)
+    ? Number.parseInt(this.props.electronLoader.getData(ElectronData.MainVolume), 10)
     : 50;
   @mobx.observable.ref
-  private defaultGameVolume = this.props.electronLoader.getData('gameVolume')
-    ? Number.parseInt(this.props.electronLoader.getData('gameVolume'), 10)
+  private defaultGameVolume = this.props.electronLoader.getData(ElectronData.GameVolume)
+    ? Number.parseInt(this.props.electronLoader.getData(ElectronData.GameVolume), 10)
     : 50;
   @mobx.action
   private readonly onClickSettings = () => {
@@ -50,12 +52,12 @@ export class HeaderBar extends React.Component<HeaderBarProps> {
 
   private readonly settings = {
     onVolumeChange: mobx.action((volume: number) => {
-      this.props.electronLoader.setData('gameVolume', volume.toString());
+      this.props.electronLoader.setData(ElectronData.GameVolume, volume.toString());
       this.defaultGameVolume = volume;
       this.props.audioService.changeGameVolume();
     }),
     onMainVolumeChange: mobx.action((volume: number) => {
-      this.props.electronLoader.setData('mainVolume', volume.toString());
+      this.props.electronLoader.setData(ElectronData.MainVolume, volume.toString());
       this.defaultMainVolume = volume;
       this.props.audioService.changeBGMVolume();
     }),
@@ -67,6 +69,7 @@ export class HeaderBar extends React.Component<HeaderBarProps> {
         <Background imageLoader={this.props.imageLoader} />
 
         <Banner
+          variant={this.props.variant}
           translator={this.props.translator}
           roomName={this.props.roomName}
           defaultPing={this.props.defaultPing}

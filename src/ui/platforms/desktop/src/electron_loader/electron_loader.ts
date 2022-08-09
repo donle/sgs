@@ -1,14 +1,15 @@
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import MarkDown from 'markdown-it';
 import { ReplayDataType } from 'types/replay_props';
+import { ElectronData } from './electron_data';
 
 export abstract class ElectronLoader {
   public abstract flashFrame(): void;
-  public abstract setData<T>(key: string, value: T): void;
-  public abstract getData<T>(key: string): T;
-  public abstract removeData(key: string): void;
-  public abstract saveTemporaryData(key: string, value: string): void;
-  public abstract getTemporaryData(key: string): string | null;
+  public abstract setData<T>(key: ElectronData, value: T): void;
+  public abstract getData<T>(key: ElectronData): T;
+  public abstract removeData(key: ElectronData): void;
+  public abstract saveTemporaryData(key: ElectronData, value: string): void;
+  public abstract getTemporaryData(key: ElectronData): string | null;
   public abstract sendReplayEventFlow(
     event: ServerEventFinder<GameEventIdentifiers>,
     otherInfo?: Pick<ReplayDataType, Exclude<keyof ReplayDataType, 'events'>>,

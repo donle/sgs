@@ -4,6 +4,7 @@ import { GameCharacterExtensions, TemporaryRoomCreationInfo } from 'core/game/ga
 import { GameMode } from 'core/shares/types/room_props';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ElectronData } from 'electron_loader/electron_data';
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
@@ -57,12 +58,13 @@ function getGameCharacterExtensions(translator: ClientTranslationModule) {
 export const CreateRoomDialog = (props: {
   playerName: string;
   translator: ClientTranslationModule;
-  onSubmit(data: TemporaryRoomCreationInfo): void;
+  onSubmit(data: TemporaryRoomCreationInfo, roomName: string, passcode?: string): void;
   onCancel(): void;
   imageLoader: ImageLoader;
   electronLoader: ElectronLoader;
 }) => {
-  const username: string = props.electronLoader.getData('username');
+  const username: string = props.electronLoader.getData(ElectronData.PlayerName);
+  const [globalDisabled, disableAllSettings] = React.useState<boolean>(true);
   const [numberOfPlayers, setNumberOfPlayers] = React.useState<number>(2);
   const [checkedGameMode, setcheckedGameMode] = React.useState<GameMode>(GameMode.Pve);
   const [characterExtensions, setCharacterExtensions] = React.useState<GameCharacterExtensions[]>(
@@ -75,20 +77,30 @@ export const CreateRoomDialog = (props: {
     username ? props.translator.tr(TranslationPack.translationJsonPatcher("{0}'s room", username).extract()) : '',
   );
 
+  React.useEffect(() => {
+    if (checkedGameMode === GameMode.Pve) {
+      disableAllSettings(false);
+    }
+  }, [checkedGameMode]);
+
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     /* const isCampaignMode = checkedGameMode === GameMode.Pve && numberOfPlayers === 2; */
-    props.onSubmit({
-      hostPlayerId: props.electronLoader.getTemporaryData('playerId')!,
-      numberOfPlayers,
+    props.onSubmit(
+      {
+        hostPlayerId: props.electronLoader.getTemporaryData(ElectronData.PlayerId)!,
+        numberOfPlayers,
+        roomName,
+        gameMode: checkedGameMode!,
+        passcode,
+        characterExtensions,
+        campaignMode: false,
+        coreVersion: Sanguosha.Version,
+        cardExtensions: Sanguosha.getCardExtensionsFromGameMode(checkedGameMode),
+      },
       roomName,
-      gameMode: checkedGameMode!,
       passcode,
-      characterExtensions,
-      campaignMode: false,
-      coreVersion: Sanguosha.Version,
-      cardExtensions: Sanguosha.getCardExtensionsFromGameMode(checkedGameMode),
-    });
+    );
   };
 
   const onRoomNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -168,7 +180,7 @@ export const CreateRoomDialog = (props: {
                 className={styles.input}
                 value={numberOfPlayers}
                 onChange={onNumberOfPlayersChange}
-                disabled={playerSelectionDisabled}
+                disabled={playerSelectionDisabled || globalDisabled}
               >
                 {getPlayerOptions().map(option => (
                   <option key={option.value} value={option.value}>
@@ -192,6 +204,7 @@ export const CreateRoomDialog = (props: {
                 head={props.translator.tr('please select character extensions')}
                 options={getGameCharacterExtensions(props.translator)}
                 onChecked={onCharacterExtensionsChecked}
+                disabled={globalDisabled}
               />
             </div>
           </div>

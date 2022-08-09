@@ -1,14 +1,17 @@
 import classNames from 'classnames';
-import { WaitingRoomEvent } from 'core/event/event';
+import { PlayerId } from 'core/player/player_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
 import { ImageProps } from 'props/image_props';
 import * as React from 'react';
+import { Button } from 'ui/button/button';
 import { Picture } from 'ui/picture/picture';
 import { RoomAvatarService } from '../services/avatar_service';
 import { WaitingRoomSender } from '../services/sender_service';
 import { WaitingRoomPresenter } from '../waiting_room.presenter';
 import { WaitingRoomSeatInfo, WaitingRoomStore } from '../waiting_room.store';
+import { GetReadyBadge } from './get_ready_badge/get_ready_badge';
+import { Messages } from './messages';
 import styles from './seats.module.css';
 
 export type SeatsProps = {
@@ -18,6 +21,7 @@ export type SeatsProps = {
   store: WaitingRoomStore;
   avatarService: RoomAvatarService;
   senderService: WaitingRoomSender;
+  className?: string;
 };
 
 const ClickableSeat = React.memo(
@@ -25,7 +29,7 @@ const ClickableSeat = React.memo(
     imageLoader: ImageLoader;
     seatInfo: WaitingRoomSeatInfo;
     avatarService: RoomAvatarService;
-    onClick(closeSeat: boolean, seatId: number): void;
+    onClick(closeSeat: boolean, seatId: number, kickedPlayerId?: string): void;
   }) => {
     const emptySeatImage = props.imageLoader.getEmptySeatImage();
     const [characterAvatar, setCharacterAvatar] = React.useState<ImageProps>(emptySeatImage);
@@ -40,10 +44,14 @@ const ClickableSeat = React.memo(
           setCharacterAvatar(character);
         });
       }
-    }, [characterAvatar]);
+    }, [characterAvatar, emptySeatImage, props.avatarService, props.seatInfo]);
 
     const onClick = () => {
-      props.onClick(!props.seatInfo.seatDisabled, props.seatInfo.seatId);
+      props.onClick(
+        !props.seatInfo.seatDisabled,
+        props.seatInfo.seatId,
+        !props.seatInfo.seatDisabled ? props.seatInfo.playerId : undefined,
+      );
     };
 
     return (
@@ -61,8 +69,12 @@ const ClickableSeat = React.memo(
 );
 
 export class Seats extends React.Component<SeatsProps> {
-  onClickSeat = (closeSeat: boolean, seatId: number) => {
-    this.props.senderService.kickPlayerOrCloseSeat(seatId, closeSeat);
+  onClickSeat = (closeSeat: boolean, seatId: number, kickedPlayerId?: PlayerId) => {
+    this.props.senderService.kickPlayerOrCloseSeat(seatId, closeSeat, kickedPlayerId);
+  };
+
+  isEveryoneReady = () => {
+    return this.props.store.seats.every(seat => (seat.seatDisabled ? true : seat.playerReady));
   };
 
   createSeats = () => {
@@ -76,12 +88,26 @@ export class Seats extends React.Component<SeatsProps> {
             avatarService={this.props.avatarService}
             onClick={this.onClickSeat}
           />
+          {!seat.seatDisabled && seat.playerReady && (
+            <GetReadyBadge translator={this.props.translator} className={styles.userGetReady} />
+          )}
         </span>,
       );
     }
+
+    return seatComponents;
   };
 
   render() {
-    return <div className={styles.conainer}></div>;
+    return (
+      <div className={classNames(styles.conainer, this.props.className)}>
+        {this.createSeats()}
+        {this.isEveryoneReady() && (
+          <Button className={styles.startButton} variant="primary">
+            {this.props.translator.tr(Messages.gameStart())}
+          </Button>
+        )}
+      </div>
+    );
   }
 }

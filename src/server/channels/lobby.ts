@@ -1,5 +1,5 @@
 import { Sanguosha } from 'core/game/engine';
-import { TemporaryRoomCreationInfo } from 'core/game/game_props';
+import { GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { RoomId } from 'core/room/room';
 import { ChatSocketEvent, LobbySocketEvent } from 'core/shares/types/server_types';
 import { ServerConfig } from 'server/server_config';
@@ -55,7 +55,7 @@ export class LobbyEventChannel {
     socket.emit(LobbySocketEvent.CheckRoomExist.toString(), this.roomService.checkRoomExist(id));
   };
 
-  private readonly onGameCreated = (socket: SocketIO.Socket) => (content: TemporaryRoomCreationInfo) => {
+  private readonly onGameCreated = (socket: SocketIO.Socket) => (content: GameInfo) => {
     if (content.coreVersion !== Sanguosha.Version) {
       socket.emit(LobbySocketEvent.GameCreated.toString(), {
         error: 'unmatched core version',
@@ -63,13 +63,13 @@ export class LobbyEventChannel {
       return;
     }
 
-    const { roomId } = this.roomService.createWaitingRoom(content);
+    const roomId = Date.now();
+    this.roomService.createRoom(content);
     socket.emit(LobbySocketEvent.GameCreated.toString(), {
       roomId,
       roomInfo: content,
     });
   };
-
   private readonly onQueryRoomsInfo = (socket: SocketIO.Socket) => () => {
     socket.emit(LobbySocketEvent.QueryRoomList.toString(), this.roomService.getRoomsInfo());
   };

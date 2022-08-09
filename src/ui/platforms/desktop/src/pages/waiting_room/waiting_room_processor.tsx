@@ -1,9 +1,25 @@
 import { activeWaitingRoomListeningEvents, WaitingRoomEvent, WaitingRoomServerEventFinder } from 'core/event/event';
+import { GameInfo } from 'core/game/game_props';
+import { PlayerId } from 'core/player/player_props';
+import { RoomId } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { createTranslationMessages } from './messages';
+import { WaitingRoomPresenter } from './waiting_room.presenter';
+import { WaitingRoomSeatInfo, WaitingRoomStore } from './waiting_room.store';
 
 export class WaitingRoomProcessor {
-  constructor(private socket: SocketIOClient.Socket, private translator: ClientTranslationModule) {}
+  constructor(
+    private socket: SocketIOClient.Socket,
+    private translator: ClientTranslationModule,
+    private presenter: WaitingRoomPresenter,
+    private store: WaitingRoomStore,
+    private selfPlayerId: PlayerId,
+    private accessRejectedHandler: () => void,
+    private joinIntoTheGame: (roomId: RoomId, roomInfo: GameInfo) => void,
+  ) {}
+
+  private messages = createTranslationMessages(this.translator);
 
   initWaitingRoomConnectionListeners() {
     activeWaitingRoomListeningEvents.forEach(identifier => {
@@ -40,19 +56,100 @@ export class WaitingRoomProcessor {
     });
   }
 
-  private onPlayerEnter(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.PlayerEnter>) {}
+  private onPlayerEnter(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.PlayerEnter>) {
+    if (evt.playerInfo.playerId === this.selfPlayerId) {
+      const seatsInfo: WaitingRoomSeatInfo[] = [evt.playerInfo, ...evt.otherPlayersInfo].map(playerInfo => ({
+        seatDisabled: false,
+        seatId: playerInfo.seatId,
+        playerAvatarId: playerInfo.avatarId,
+        playerId: playerInfo.playerId,
+        playerName: playerInfo.playerName,
+        playerReady: false,
+      }));
+      this.presenter.initSeatsInfo(this.store, seatsInfo);
+    } else {
+      this.presenter.updateSeatInfo(this.store, {
+        seatDisabled: false,
+        seatId: evt.playerInfo.seatId,
+        playerAvatarId: evt.playerInfo.avatarId,
+        playerId: evt.playerInfo.playerId,
+        playerName: evt.playerInfo.playerName,
+      });
+    }
 
-  private onGameInfoUpdate(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.GameInfoUpdate>) {}
+    this.presenter.sendChatMessage(this.store, {
+      from: this.translator.tr(this.messages.systemNotification()),
+      message: this.messages.playerEnter(evt.playerInfo.playerName),
+      timestamp: Date.now(),
+    });
+  }
 
-  private onGameStart(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.GameStart>) {}
+  private onGameInfoUpdate(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.GameInfoUpdate>) {
+    const { numberOfPlayers, roomName, campaignMode, coreVersion, hostPlayerId, ...settings } = evt.roomInfo;
 
-  private onPlayerChat(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.PlayerChatMessage>) {}
+    this.presenter.updateGameSettings(this.store, settings);
+  }
 
-  private onPlayerLeave(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.PlayerLeave>) {}
+  private onGameStart(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.GameStart>) {
+    this.joinIntoTheGame(evt.roomId, evt.roomInfo);
+  }
 
-  private onPlayerReady(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.PlayerReady>) {}
+  private onPlayerChat(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.PlayerChatMessage>) {
+    this.presenter.sendChatMessage(this.store, {
+      from: evt.from,
+      message: evt.messageContent,
+      timestamp: evt.timestamp,
+    });
+  }
 
-  private onRoomCreated(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.RoomCreated>) {}
+  private onPlayerLeave(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.PlayerLeave>) {
+    const existingSeat = this.store.seats.find(seat => !seat.seatDisabled && seat.playerId === evt.leftPlayerId);
+    if (!existingSeat) {
+      return;
+    }
 
-  private onSeatDisabled(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.SeatDisabled>) {}
+    const seatInfo: WaitingRoomSeatInfo = {
+      seatDisabled: false,
+      seatId: existingSeat.seatId,
+    };
+
+    this.presenter.updateSeatInfo(this.store, seatInfo);
+    if (!existingSeat.seatDisabled && existingSeat.playerName) {
+      this.presenter.sendChatMessage(this.store, {
+        from: this.translator.tr(this.messages.systemNotification()),
+        message: this.messages.playerLeft(existingSeat.playerName),
+        timestamp: Date.now(),
+      });
+    }
+  }
+
+  private onPlayerReady(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.PlayerReady>) {
+    const playerSeat = this.store.seats.find(seat => !seat.seatDisabled && seat.playerId === evt.readyPlayerId);
+    if (!playerSeat || playerSeat.seatDisabled) {
+      return;
+    }
+
+    this.presenter.updateSeatInfo(this.store, { ...playerSeat, playerReady: evt.isReady });
+  }
+
+  private onRoomCreated(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.RoomCreated>) {
+    console.log(evt);
+    if (evt.error !== null) {
+      this.accessRejectedHandler();
+    } else {
+      const { numberOfPlayers, roomName, campaignMode, coreVersion, hostPlayerId, ...settings } = evt.roomInfo;
+
+      this.presenter.updateGameSettings(this.store, settings);
+      this.presenter.initSeatsInfo(this.store);
+    }
+  }
+
+  private onSeatDisabled(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.SeatDisabled>) {
+    const playerSeat = this.store.seats.find(seat => seat.seatId === evt.seatId);
+    if (!playerSeat) {
+      return;
+    }
+
+    this.presenter.updateSeatInfo(this.store, { ...playerSeat, seatDisabled: evt.disabled });
+  }
 }

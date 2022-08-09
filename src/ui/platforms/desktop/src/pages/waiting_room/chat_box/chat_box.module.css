@@ -1,0 +1,45 @@
+@value gridLine from '../../../ui/metrics/metrics.css';
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: calc(gridLine * 2);
+}
+
+.messageBox {
+  flex: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.message {
+  margin: 0;
+  margin-bottom: 4px;
+  font-size: 14px;
+  width: 100%;
+}
+
+.userInput {
+  min-height: calc(girdLine * 5);
+  margin: 0;
+  margin-bottom: 4px;
+  line-height: 16px;
+  display: flex;
+  width: 100%;
+}
+
+.input {
+  flex: auto;
+  background: transparent;
+  border: 1px solid grey;
+  margin-right: 4px;
+  border-radius: 4px;
+  color: #dcad00;
+  outline: none;
+}
+
+.sendButton {
+  height: 100%;
+}

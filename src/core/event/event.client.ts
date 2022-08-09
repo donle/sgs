@@ -225,7 +225,7 @@ export interface WaitingRoomClientEvent extends WaitingRoomEventUtilities {
     roomInfo: TemporaryRoomCreationInfo;
   };
   [WaitingRoomEvent.PlayerChatMessage]: {
-    fromId: PlayerId;
+    from: string;
     messageContent: string;
   };
   [WaitingRoomEvent.GameStart]: {
@@ -233,7 +233,7 @@ export interface WaitingRoomClientEvent extends WaitingRoomEventUtilities {
     roomInfo: TemporaryRoomCreationInfo;
   };
   [WaitingRoomEvent.PlayerEnter]: {
-    playerInfo: { playerId: PlayerId; avatarId: number };
+    playerInfo: { playerId: PlayerId; avatarId: number; playerName: string };
   };
   [WaitingRoomEvent.PlayerLeave]: {
     leftPlayerId: PlayerId;
@@ -245,9 +245,10 @@ export interface WaitingRoomClientEvent extends WaitingRoomEventUtilities {
   [WaitingRoomEvent.SeatDisabled]: {
     seatId: number;
     disabled: boolean;
+    kickedPlayerId?: PlayerId;
   };
   [WaitingRoomEvent.RoomCreated]: {
     roomInfo: TemporaryRoomCreationInfo;
     hostPlayerId: PlayerId;
-  }
+  };
 }

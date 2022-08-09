@@ -229,8 +229,8 @@ export class Sanguosha {
 
   public static getCardExtensionsFromGameMode(mode: GameMode) {
     switch (mode) {
+      //@@TODO: add hegemony card extensions here
       case GameMode.Hegemony:
-        //@@TODO: add hegemony card extensions here
       case GameMode.OneVersusTwo:
       case GameMode.Pve:
       case GameMode.Standard:

@@ -1,9 +1,11 @@
 import { Sanguosha } from 'core/game/engine';
 import { GameMode } from 'core/shares/types/room_props';
 import * as mobx from 'mobx';
+import { ChatPacketObject } from 'services/connection_service/connection_service';
 import { WaitingRoomGameSettings, WaitingRoomSeatInfo, WaitingRoomStore } from './waiting_room.store';
 
 export class WaitingRoomPresenter {
+  static readonly defaultNumberOfPlayers = 8;
   createStore() {
     const store = new WaitingRoomStore();
     this.initGameSettings(store);
@@ -20,6 +22,7 @@ export class WaitingRoomPresenter {
       wuxiekejiTimeLimit: 15,
       allowObserver: false,
     };
+    store.chatMessages = [];
   }
 
   @mobx.action
@@ -40,12 +43,23 @@ export class WaitingRoomPresenter {
   }
 
   @mobx.action
-  initSeatsInfo(store: WaitingRoomStore) {
-    for (let i = 0; i < 8; i++) {
-      store.seats.push({
-        seatDisabled: false,
-        seatId: i,
-      });
+  initSeatsInfo(store: WaitingRoomStore, seatsInfo?: WaitingRoomSeatInfo[]) {
+    if (seatsInfo) {
+      for (const seatInfo of seatsInfo) {
+        store.seats.push(seatInfo);
+      }
+    } else {
+      for (let i = 0; i < WaitingRoomPresenter.defaultNumberOfPlayers; i++) {
+        store.seats.push({
+          seatDisabled: false,
+          seatId: i,
+        });
+      }
     }
+  }
+
+  @mobx.action
+  sendChatMessage(store: WaitingRoomStore, message: ChatPacketObject) {
+    store.chatMessages.push(message);
   }
 }

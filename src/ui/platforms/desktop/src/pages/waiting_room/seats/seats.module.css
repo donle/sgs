@@ -1,0 +1,49 @@
+@value gridLine from '../../../ui/metrics/metrics.css';
+
+.conainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(gridLine * 8);
+  position: relative;
+}
+
+.seatComponent {
+  display: block;
+  position: relative;
+}
+
+.seat {
+  display: block;
+  position: relative;
+}
+.playerName {
+  position: absolute;
+  width: 100%;
+  top: gridLine;
+  text-align: center;
+  z-index: 0;
+}
+
+.seatClosed {
+  filter: grayscale(1);
+}
+
+.seatImage {
+  min-width: calc(gridLine * 15);
+  height: calc(gridLine * 18.75);
+}
+
+.userGetReady {
+  position: absolute;
+  bottom: gridLine;
+  right: gridLine;
+  z-index: 0;
+}
+
+.startButton {
+  position: absolute;
+  bottom: gridLine;
+  right: gridLine;
+  z-index: 1;
+}

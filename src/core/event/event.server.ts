@@ -10,6 +10,7 @@ import {
 } from 'core/game/game_props';
 import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props';
+import { RoomId } from 'core/room/room';
 import { JudgeMatcherEnum } from 'core/shares/libs/judge_matchers';
 import { System } from 'core/shares/libs/system';
 import { AimGroup } from 'core/shares/libs/utils/aim_group';
@@ -520,23 +521,24 @@ export interface WaitingRoomServerEvent extends WaitingRoomEventUtilities {
     roomInfo: TemporaryRoomCreationInfo;
   };
   [WaitingRoomEvent.PlayerChatMessage]: {
-    fromId: PlayerId;
+    from: string;
     messageContent: string;
     timestamp: number;
   };
   [WaitingRoomEvent.GameStart]: {
-    roomId: string;
+    roomId: RoomId;
     otherPlayersId: PlayerId[];
     roomInfo: GameInfo;
   };
   [WaitingRoomEvent.PlayerEnter]: {
     hostPlayerId: PlayerId;
-    playerInfo: { playerId: PlayerId; avatarId: number; seatId: number };
-    otherPlayersInfo: { playerId: PlayerId; avatarId: number; seatId: number }[];
+    playerInfo: { playerId: PlayerId; avatarId: number; playerName: string; seatId: number };
+    otherPlayersInfo: { playerId: PlayerId; avatarId: number; playerName: string; seatId: number }[];
     roomInfo: TemporaryRoomCreationInfo;
   };
   [WaitingRoomEvent.PlayerLeave]: {
     leftPlayerId: PlayerId;
+    byKicked: boolean;
   };
   [WaitingRoomEvent.PlayerReady]: {
     readyPlayerId: PlayerId;
@@ -546,10 +548,13 @@ export interface WaitingRoomServerEvent extends WaitingRoomEventUtilities {
     seatId: number;
     disabled: boolean;
   };
-  [WaitingRoomEvent.RoomCreated]: {
-    roomId: number;
-    roomInfo: TemporaryRoomCreationInfo;
-    hostPlayerId: PlayerId;
-    disabledSeats: number[];
-  } | { error: string };
+  [WaitingRoomEvent.RoomCreated]:
+    | {
+        roomId: RoomId;
+        roomInfo: TemporaryRoomCreationInfo;
+        hostPlayerId: PlayerId;
+        disabledSeats: number[];
+        error: null;
+      }
+    | { error: string };
 }

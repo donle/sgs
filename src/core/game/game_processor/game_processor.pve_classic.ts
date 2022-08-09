@@ -1,27 +1,27 @@
-import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
-import { StandardGameProcessor } from './game_processor.standard';
-import { Player } from 'core/player/player';
-import { Sanguosha } from '../engine';
+import { VirtualCard } from 'core/cards/card';
+import { CardId } from 'core/cards/libs/card_props';
+import { Character } from 'core/characters/character';
 import {
   CardDrawReason,
   CardMoveArea,
   CardMoveReason,
   ClientEventFinder,
-  EventPacker,
   GameEventIdentifiers,
   ServerEventFinder,
 } from 'core/event/event';
-import { Character } from 'core/characters/character';
-import { GameEventStage, PlayerDiedStage } from '../stage_processor';
-import { TranslationPack } from 'core/translations/translation_json_tool';
-import { GameMode } from 'core/shares/types/room_props';
-import { Functional } from 'core/shares/libs/functional';
-import { CardId } from 'core/cards/libs/card_props';
-import { VirtualCard } from 'core/cards/card';
-import { PveClassicAi } from 'core/skills/game_mode/pve/pve_classic_ai';
-import { MarkEnum } from 'core/shares/types/mark_list';
+import { EventPacker } from 'core/event/event_packer';
+import { Player } from 'core/player/player';
+import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
 import { Algorithm } from 'core/shares/libs/algorithm';
+import { Functional } from 'core/shares/libs/functional';
+import { MarkEnum } from 'core/shares/types/mark_list';
+import { GameMode } from 'core/shares/types/room_props';
 import { PveClassicGuYong } from 'core/skills';
+import { PveClassicAi } from 'core/skills/game_mode/pve/pve_classic_ai';
+import { TranslationPack } from 'core/translations/translation_json_tool';
+import { Sanguosha } from '../engine';
+import { GameEventStage, PlayerDiedStage } from '../stage_processor';
+import { StandardGameProcessor } from './game_processor.standard';
 
 export class PveClassicGameProcessor extends StandardGameProcessor {
   private level: number = 0;
@@ -123,7 +123,7 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       }
     }
 
-    let marks = this.getLevelMark();
+    const marks = this.getLevelMark();
     for (let i = 0; i < this.human.length; i++) {
       this.activateAi.map(player => {
         const mark = marks.pop()!;
@@ -132,18 +132,10 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       });
     }
 
-    if (this.human.length === 1) {
-      switch (this.level) {
-        case 1:
-          await this.room.obtainSkill(this.human[0].Id, PveClassicGuYong.Name);
-          break;
-      }
-    } else {
-      switch (this.level) {
-        case 3:
-          await this.levelRewardSkill(this.human);
-          break;
-      }
+    if (this.human.length === 1 && this.level === 1) {
+      await this.room.obtainSkill(this.human[0].Id, PveClassicGuYong.Name);
+    } else if (this.level === 3) {
+      await this.levelRewardSkill(this.human);
     }
 
     this.logger.debug(`room entry ${this.level} level`);
@@ -209,8 +201,9 @@ export class PveClassicGameProcessor extends StandardGameProcessor {
       );
     }
 
-    const askForChoosingOptionsEvent: Promise<ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent>>[] =
-      [];
+    const askForChoosingOptionsEvent: Promise<
+      ClientEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent>
+    >[] = [];
     for (const resp of await Promise.all(sequentialAsyncResponse)) {
       const options = Sanguosha.getCharacterById(resp.chosenCharacterIds[0])
         .Skills.filter(skill => !(skill.isShadowSkill() || skill.isLordSkill()))

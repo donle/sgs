@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { Sanguosha } from 'core/game/engine';
 import { GameCharacterExtensions } from 'core/game/game_props';
 import { GameMode } from 'core/shares/types/room_props';
@@ -18,6 +19,7 @@ export type GameSettingsProps = {
   translator: ClientTranslationModule;
   presenter: WaitingRoomPresenter;
   store: WaitingRoomStore;
+  className?: string;
 };
 
 @mobxReact.observer
@@ -104,7 +106,7 @@ export class GameSettings extends React.Component<GameSettingsProps> {
 
   render() {
     return (
-      <div className={styles.container}>
+      <div className={classNames(styles.container, this.props.className)}>
         <div className={styles.settingsLabel}>
           <CheckBoxGroup
             head={this.translationMessage.gameMode()}

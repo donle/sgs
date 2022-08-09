@@ -1,7 +1,8 @@
 import { CardType } from 'core/cards/card';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { CharacterEquipSections } from 'core/characters/character';
-import { CardMoveArea, EventPacker, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { CardMoveArea, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
+import { EventPacker } from 'core/event/event_packer';
 import { AllStage, PhaseStageChangeStage, PlayerPhaseStages } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { Room } from 'core/room/room';

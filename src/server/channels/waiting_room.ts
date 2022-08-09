@@ -1,4 +1,5 @@
 import { WaitingRoomClientEventFinder, WaitingRoomEvent } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { WaitingRoomInfo } from 'core/room/waiting_room';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Flavor } from 'core/shares/types/host_config';
@@ -17,7 +18,7 @@ export class WaitingRoomSocket {
     private waitingRoomInfo: WaitingRoomInfo,
   ) {
     this.socket.on('connection', socket => {
-      // socket.on(WaitingRoomEvent.RoomCreated, this.onRoomCreated(socket));
+      socket.on(WaitingRoomEvent.RoomCreated, this.onRoomCreated(socket));
       socket.on(WaitingRoomEvent.GameInfoUpdate, this.onGameInfoUpdate(socket));
       socket.on(WaitingRoomEvent.GameStart, this.onGameStart(socket));
       socket.on(WaitingRoomEvent.PlayerChatMessage, this.onSendMessage(socket));
@@ -58,7 +59,11 @@ export class WaitingRoomSocket {
   private readonly onGameStart = (socket: SocketIO.Socket) => (
     evt: WaitingRoomClientEventFinder<WaitingRoomEvent.GameStart>,
   ) => {
-    const { roomId, gameInfo } = this.roomService.createRoom(evt.roomInfo, this.flavor);
+    const { roomId, gameInfo } = this.roomService.createRoom({
+      ...evt.roomInfo,
+      campaignMode: !!evt.roomInfo.campaignMode,
+      flavor: this.flavor,
+    });
     socket.emit(WaitingRoomEvent.GameStart, {
       roomId,
       otherPlayersId: this.waitingRoomInfo.players.map(player => player.playerId),
@@ -69,7 +74,7 @@ export class WaitingRoomSocket {
   private readonly onSendMessage = (socket: SocketIO.Socket) => (
     evt: WaitingRoomClientEventFinder<WaitingRoomEvent.PlayerChatMessage>,
   ) => {
-    socket.emit(WaitingRoomEvent.PlayerChatMessage, evt);
+    socket.emit(WaitingRoomEvent.PlayerChatMessage, { ...evt, timestamp: Date.now() });
   };
 
   private readonly onPlayerEnter = (socket: SocketIO.Socket) => (
@@ -98,7 +103,7 @@ export class WaitingRoomSocket {
   private readonly onPlayerLeave = (socket: SocketIO.Socket) => (
     evt: WaitingRoomClientEventFinder<WaitingRoomEvent.PlayerLeave>,
   ) => {
-    socket.emit(WaitingRoomEvent.PlayerLeave, evt);
+    socket.emit(WaitingRoomEvent.PlayerLeave, { ...evt, byKicked: false });
   };
 
   private readonly onPlayerReady = (socket: SocketIO.Socket) => (
@@ -110,7 +115,21 @@ export class WaitingRoomSocket {
   private readonly onSeatDisabled = (socket: SocketIO.Socket) => (
     evt: WaitingRoomClientEventFinder<WaitingRoomEvent.SeatDisabled>,
   ) => {
+    if (evt.kickedPlayerId) {
+      socket.emit(WaitingRoomEvent.PlayerLeave, { leftPlayerId: evt.kickedPlayerId, byKicked: true });
+    }
+
     socket.emit(WaitingRoomEvent.SeatDisabled, evt);
+  };
+
+  private readonly onRoomCreated = (socket: SocketIO.Socket) => (
+    evt: WaitingRoomClientEventFinder<WaitingRoomEvent.RoomCreated>,
+  ) => {
+    if (evt.roomInfo.coreVersion !== Sanguosha.Version) {
+      socket.emit(WaitingRoomEvent.RoomCreated, { error: 'unmatched core version' });
+    } else {
+      socket.emit(WaitingRoomEvent.SeatDisabled, evt);
+    }
   };
 
   public readonly onClosed = (disposeCallback: () => void) => {

@@ -1,32 +1,33 @@
 import { ReplayDataType } from 'types/replay_props';
+import { ElectronData } from './electron_data';
 import { ElectronLoader } from './electron_loader';
 
 export class DevElectronLoader extends ElectronLoader {
   constructor() {
     super();
-    if (!window.localStorage.getItem('language')) {
+    if (!window.localStorage.getItem(ElectronData.Language)) {
       window.localStorage.setItem('language', navigator.language);
     }
   }
   // tslint:disable-next-line:no-empty
   public flashFrame() {}
 
-  public setData<T>(key: string, value: T) {
+  public setData<T>(key: ElectronData, value: T) {
     window.localStorage.setItem(key, typeof value === 'object' ? JSON.stringify(value) : (value as any));
   }
 
-  public getData(key: string) {
+  public getData(key: ElectronData) {
     return window.localStorage.getItem(key) as any;
   }
 
-  public removeData(key: string) {
+  public removeData(key: ElectronData) {
     return window.localStorage.removeItem(key);
   }
 
-  public saveTemporaryData(key: string, value: string): void {
+  public saveTemporaryData(key: ElectronData, value: string): void {
     window.sessionStorage.setItem(key, value);
   }
-  public getTemporaryData(key: string): string | null {
+  public getTemporaryData(key: ElectronData): string | null {
     return window.sessionStorage.getItem(key);
   }
 
