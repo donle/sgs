@@ -559,7 +559,7 @@ export class PveLongShenLongXiao extends RulesBreakerSkill {
   }
 }
 
-@CompulsorySkill({ name: 'pve_longshen_longgu', description: 'pve_longshen_longgu' })
+@CompulsorySkill({ name: 'pve_longshen_longgu', description: 'pve_longshen_longgu_description' })
 export class PveLongShenLongGu extends TriggerSkill {
   isTriggerable(_: ServerEventFinder<GameEventIdentifiers.PhaseChangeEvent>, stage?: AllStage) {
     return stage === PhaseChangeStage.AfterPhaseChanged;
