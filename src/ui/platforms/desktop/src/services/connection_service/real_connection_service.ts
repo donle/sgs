@@ -8,6 +8,7 @@ import {
   ChatPacketObject,
   ConnectionService,
   CreateGameListenerResponse,
+  CreateWaitingRoomListenerResponse,
   RoomListListenerResponse,
   VersionCheckListenerResponse,
 } from './connection_service';
@@ -20,6 +21,7 @@ export class RealConnectionService extends ConnectionService {
   private queryRoomListListener: (res: RoomListListenerResponse) => void;
   private versionCheckListener: (res: VersionCheckListenerResponse) => void;
   private createGameListener: (res: Omit<CreateGameListenerResponse, 'hostTag'>) => void;
+  private createWaitingRoomListener: (res: Omit<CreateWaitingRoomListenerResponse, 'hostTag'>) => void;
   private checkRoomExistListener: (exist: boolean) => void;
   private pingListener: (ping: number) => void;
   private pingBestHost: Promise<ServerHostTag>[] = [];
@@ -53,6 +55,12 @@ export class RealConnectionService extends ConnectionService {
       });
       lobbySocket.on(LobbySocketEvent.GameCreated.toString(), evt => {
         this.createGameListener?.({
+          packet: evt,
+          ping: Math.round((Date.now() - this.pingStartTimestamp) / 2),
+        });
+      });
+      lobbySocket.on(LobbySocketEvent.CreateWaitingRoom.toString(), evt => {
+        this.createWaitingRoomListener?.({
           packet: evt,
           ping: Math.round((Date.now() - this.pingStartTimestamp) / 2),
         });
@@ -97,6 +105,26 @@ export class RealConnectionService extends ConnectionService {
       };
       lobbySocket.emit(LobbySocketEvent.CheckRoomExist.toString(), id);
     },
+    createWaitingRoom: (
+      gameInfo: TemporaryRoomCreationInfo,
+      callback: (response: CreateWaitingRoomListenerResponse) => void,
+    ) => {
+      this.pingStartTimestamp = Date.now();
+      Promise.race(this.pingBestHost).then(serverHost => {
+        const lobbySocket = this.lobbySockets.get(serverHost)!;
+        lobbySocket.emit(LobbySocketEvent.CreateWaitingRoom.toString(), { roomInfo: gameInfo });
+        this.createWaitingRoomListener = res => {
+          callback({ hostTag: serverHost, ...res });
+        };
+      });
+
+      for (const [, lobbySocket] of this.lobbySockets.entries()) {
+        lobbySocket.emit(LobbySocketEvent.PingServer.toString());
+      }
+    },
+    /**
+     * @deprecated game won't be created from lobby anymore.
+     */
     createGame: (
       gameInfo: {
         cardExtensions: GameCardExtensions[];

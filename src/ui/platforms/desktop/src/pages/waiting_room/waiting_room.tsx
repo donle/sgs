@@ -1,8 +1,8 @@
 import { AudioLoader } from 'audio_loader/audio_loader';
 import { WaitingRoomEvent } from 'core/event/event';
-import { Sanguosha } from 'core/game/engine';
-import { GameInfo } from 'core/game/game_props';
+import { GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { RoomId } from 'core/room/room';
+import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronData } from 'electron_loader/electron_data';
 import { ElectronLoader } from 'electron_loader/electron_loader';
@@ -23,6 +23,7 @@ import { installServices } from './install';
 import { Seats } from './seats/seats';
 import styles from './waiting_room.module.css';
 import { WaitingRoomPresenter } from './waiting_room.presenter';
+import { WaitingRoomStore } from './waiting_room.store';
 
 type WaitingRoomProps = PagePropsWithConfig<{
   match: match<{ slug: string }>;
@@ -46,21 +47,28 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
   private isHost: boolean;
   private services: ReturnType<typeof installServices>;
 
+  private selfPlayerId = Precondition.exists(
+    this.props.electronLoader.getTemporaryData(ElectronData.PlayerId),
+    'Unknown player id',
+  );
+  private selfPlayerName =
+    this.props.electronLoader.getData<string>(ElectronData.PlayerName) || this.props.translator.tr('unknown');
+
   private presenter = new WaitingRoomPresenter();
-  private store = this.presenter.createStore();
+  private store: WaitingRoomStore;
 
   constructor(props: WaitingRoomProps) {
     super(props);
     const { match, electronLoader } = this.props;
 
-    const { campaignMode, hostPlayerId, roomName, ping, passcode } = this.props.location.state as {
-      campaignMode?: boolean;
-      roomName: string;
-      hostPlayerId: string;
+    const { ping, roomInfo } = this.props.location.state as {
+      roomInfo: TemporaryRoomCreationInfo;
       ping: number;
-      passcode?: string;
       hostConfig: ServiceConfig;
     };
+
+    const { roomName, campaignMode, coreVersion, hostPlayerId, ...settings } = roomInfo;
+    this.store = this.presenter.createStore(this.selfPlayerId, settings);
 
     if (!match.params.slug) {
       this.backwardsToLoddy();
@@ -86,12 +94,13 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
       this.props.electronLoader,
       this.presenter,
       this.store,
-      this.props.electronLoader.getTemporaryData(ElectronData.PlayerId) || this.props.translator.tr('unknown'),
+      this.selfPlayerName,
       this.backwardsToLoddy,
       this.joinIntoTheGame(hostPlayerId, ping),
     );
 
-    this.createGame(hostPlayerId, roomName, passcode);
+    this.services.roomProcessorService.initWaitingRoomConnectionListeners();
+    this.createGame(roomInfo);
   }
 
   private readonly backwardsToLoddy = () => {
@@ -120,16 +129,14 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
     mobx.runInAction(() => (this.gameHostedServer = hostConfig.hostTag));
   }
 
-  private createGame(hostPlayerId: string, roomName: string, passcode?: string) {
+  private createGame(roomInfo: TemporaryRoomCreationInfo) {
     this.services.eventSenderService.broadcast(WaitingRoomEvent.RoomCreated, {
-      hostPlayerId,
+      hostPlayerId: roomInfo.hostPlayerId,
       roomInfo: {
-        numberOfPlayers: WaitingRoomPresenter.defaultNumberOfPlayers,
-        roomName,
-        hostPlayerId,
-        coreVersion: Sanguosha.Version,
+        roomName: roomInfo.roomName,
+        hostPlayerId: roomInfo.hostPlayerId,
+        coreVersion: roomInfo.coreVersion,
         ...this.store.gameSettings,
-        passcode,
       },
     });
   }
@@ -137,11 +144,8 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
   render() {
     const { match, location, ...props } = this.props;
     const { roomName, ping } = location.state as {
-      campaignMode?: boolean;
       roomName: string;
-      hostPlayerId: string;
       ping: number;
-      hostConfig?: ServiceConfig;
     };
 
     return (
@@ -167,6 +171,8 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
               store={this.store}
               avatarService={this.services.avatarService}
               imageLoader={this.props.imageLoader}
+              isHost={this.isHost}
+              roomName={roomName}
             />
             <ChatBox
               translator={props.translator}

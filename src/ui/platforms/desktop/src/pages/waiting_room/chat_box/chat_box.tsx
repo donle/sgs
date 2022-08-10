@@ -34,8 +34,8 @@ export class ChatBox extends React.Component<ChatBoxProps> {
     this.typing = '';
   };
 
-  @mobx.action
-  private renderMessages() {
+  @mobx.computed
+  private get Messages() {
     return this.props.store.chatMessages.map((message, index) => {
       const date = new Date(message.timestamp);
       return (
@@ -50,7 +50,7 @@ export class ChatBox extends React.Component<ChatBoxProps> {
   render() {
     return (
       <div className={styles.container}>
-        <div className={styles.messageBox}>{this.renderMessages()}</div>
+        <div className={styles.messageBox}>{this.Messages}</div>
         <form className={styles.userInput} onSubmit={this.onSend}>
           <input className={styles.input} value={this.typing} onChange={this.onInputChange} />
           <Button className={styles.sendButton} variant="primary" type="submit">

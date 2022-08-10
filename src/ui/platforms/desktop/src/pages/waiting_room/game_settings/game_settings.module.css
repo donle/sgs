@@ -28,4 +28,5 @@
   font-size: 14px;
   color: white;
   font-weight: 550;
+  margin-bottom: calc(gridLine * 2);
 }

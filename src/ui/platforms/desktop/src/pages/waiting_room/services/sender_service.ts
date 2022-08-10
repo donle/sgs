@@ -1,5 +1,6 @@
-import { WaitingRoomClientEventFinder, WaitingRoomEvent } from 'core/event/event';
+import { WaitingRoomClientEventFinder, WaitingRoomEvent, WaitingRoomServerEventFinder } from 'core/event/event';
 import { PlayerId } from 'core/player/player_props';
+import { ChatPacketObject } from 'services/connection_service/connection_service';
 
 export class WaitingRoomSender {
   constructor(private socket: SocketIOClient.Socket) {}
@@ -13,6 +14,30 @@ export class WaitingRoomSender {
       from,
       messageContent: message,
     });
+  }
+
+  onReceivingChatMessage(receiver: (msg: ChatPacketObject) => void) {
+    this.socket.on(
+      WaitingRoomEvent.PlayerChatMessage,
+      (evt: WaitingRoomServerEventFinder<WaitingRoomEvent.PlayerChatMessage>) => {
+        receiver({
+          from: evt.from,
+          message: evt.messageContent,
+          timestamp: evt.timestamp,
+        });
+      },
+    );
+  }
+
+  getReady(playerId: PlayerId, ready: boolean) {
+    this.socket.emit(WaitingRoomEvent.PlayerReady, {
+      readyPlayerId: playerId,
+      isReady: ready,
+    });
+  }
+
+  requestGameStart(roomInfo: WaitingRoomClientEventFinder<WaitingRoomEvent.GameStart>['roomInfo']) {
+    this.socket.emit(WaitingRoomEvent.GameStart, { roomInfo });
   }
 
   kickPlayerOrCloseSeat(seatId: number, close: boolean, kickedPlayerId?: PlayerId) {

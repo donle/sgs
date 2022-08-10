@@ -18,6 +18,7 @@ export class WaitingRoomSocket {
     private waitingRoomInfo: WaitingRoomInfo,
   ) {
     this.socket.on('connection', socket => {
+      logger.info('user ' + socket.id + ' connected');
       socket.on(WaitingRoomEvent.RoomCreated, this.onRoomCreated(socket));
       socket.on(WaitingRoomEvent.GameInfoUpdate, this.onGameInfoUpdate(socket));
       socket.on(WaitingRoomEvent.GameStart, this.onGameStart(socket));
@@ -28,21 +29,26 @@ export class WaitingRoomSocket {
       socket.on(WaitingRoomEvent.SeatDisabled, this.onSeatDisabled(socket));
 
       socket.on('disconnect', () => {
+        logger.info('user ' + socket.id + ' disconnected');
         if (this.connectedPlayersMap[socket.id]) {
           socket.emit(WaitingRoomEvent.PlayerLeave, {
             playerId: this.connectedPlayersMap[socket.id],
           });
+          socket.leave(this.waitingRoomInfo.roomId.toString());
+
+          delete this.connectedPlayersMap[socket.id];
+        }
+
+        if (Object.keys(this.connectedPlayersMap).length === 0) {
+          this.disposeCallback?.();
         }
       });
-    });
-    this.socket.on('disconnection', () => {
-      this.disposeCallback?.();
     });
   }
 
   private getAvailabeSeatId() {
     for (let i = 0; i < this.waitingRoomInfo.roomInfo.numberOfPlayers; i++) {
-      if (!this.waitingRoomInfo.closedSeats.includes(i)) {
+      if (!this.waitingRoomInfo.closedSeats.includes(i) && !this.waitingRoomInfo.players.find(p => p.seatId === i)) {
         return i;
       }
     }
@@ -104,6 +110,7 @@ export class WaitingRoomSocket {
     evt: WaitingRoomClientEventFinder<WaitingRoomEvent.PlayerLeave>,
   ) => {
     socket.emit(WaitingRoomEvent.PlayerLeave, { ...evt, byKicked: false });
+    this.waitingRoomInfo.players = this.waitingRoomInfo.players.filter(p => p.playerId !== evt.leftPlayerId);
   };
 
   private readonly onPlayerReady = (socket: SocketIO.Socket) => (
@@ -117,9 +124,15 @@ export class WaitingRoomSocket {
   ) => {
     if (evt.kickedPlayerId) {
       socket.emit(WaitingRoomEvent.PlayerLeave, { leftPlayerId: evt.kickedPlayerId, byKicked: true });
+      this.waitingRoomInfo.players = this.waitingRoomInfo.players.filter(p => p.playerId !== evt.kickedPlayerId);
     }
 
     socket.emit(WaitingRoomEvent.SeatDisabled, evt);
+    if (evt.disabled) {
+      this.waitingRoomInfo.closedSeats.push(evt.seatId);
+    } else {
+      this.waitingRoomInfo.closedSeats = this.waitingRoomInfo.closedSeats.filter(s => s !== evt.seatId);
+    }
   };
 
   private readonly onRoomCreated = (socket: SocketIO.Socket) => (
@@ -128,7 +141,7 @@ export class WaitingRoomSocket {
     if (evt.roomInfo.coreVersion !== Sanguosha.Version) {
       socket.emit(WaitingRoomEvent.RoomCreated, { error: 'unmatched core version' });
     } else {
-      socket.emit(WaitingRoomEvent.SeatDisabled, evt);
+      socket.emit(WaitingRoomEvent.RoomCreated, evt);
     }
   };
 

@@ -1,18 +1,11 @@
+import { Sanguosha } from 'core/game/engine';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ImageLoader } from 'image_loader/image_loader';
 
 export class RoomAvatarService {
   constructor(private imageLoader: ImageLoader) {}
 
-  private readonly avatarIndexMap = [
-    'sunquan',
-    'liubei',
-    'sunshangxiang',
-    'xiaoqiao',
-    'wuguotai',
-    'zhouyu',
-    'god_liubei',
-  ];
+  private readonly avatarIndexMap = Sanguosha.getAllCharacters().map(character => character.Name);
 
   public getAvatarIndexByName(name: string) {
     return this.avatarIndexMap.findIndex(avatarName => avatarName === name);
@@ -25,6 +18,12 @@ export class RoomAvatarService {
   }
 
   public getRandomAvatar() {
-    this.imageLoader.getCharacterImage(this.avatarIndexMap[Math.floor(Math.random() * this.avatarIndexMap.length)]);
+    return this.imageLoader.getCharacterImage(
+      this.avatarIndexMap[Math.floor(Math.random() * this.avatarIndexMap.length)],
+    );
+  }
+
+  public getRandomAvatarIndex() {
+    return Math.floor(Math.random() * this.avatarIndexMap.length);
   }
 }

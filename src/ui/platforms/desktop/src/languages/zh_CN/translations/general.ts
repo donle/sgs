@@ -769,4 +769,14 @@ export const UiDictionary: Word[] = [
   { source: 'quickChat:20', target: '放开我的队友！冲我来。' },
   { source: 'quickChat:21', target: '你随便杀，闪不了算我输。' },
   { source: 'quickChat:22', target: '见证奇迹的时刻到了。' },
+
+  { source: 'system notification', target: '系统公告' },
+  { source: 'ready', target: '已准备' },
+  { source: 'cancel ready', target: '取消准备' },
+  { source: 'get ready', target: '准备' },
+  { source: 'enable observer', target: '允许旁观' },
+  { source: '{0} time limit', target: '{0}操作时间' },
+  { source: 'game mode', target: '游戏模式' },
+  { source: 'character package settings', target: '武将扩展包设置' },
+  { source: 'start game', target: '开始游戏' },
 ];

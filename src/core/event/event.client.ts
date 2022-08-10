@@ -1,6 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { CharacterId } from 'core/characters/character';
-import { DamageType, TemporaryRoomCreationInfo } from 'core/game/game_props';
+import { DamageType, GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props';
 import {
   EventUtilities,
@@ -229,11 +229,11 @@ export interface WaitingRoomClientEvent extends WaitingRoomEventUtilities {
     messageContent: string;
   };
   [WaitingRoomEvent.GameStart]: {
-    otherPlayersId: PlayerId[];
-    roomInfo: TemporaryRoomCreationInfo;
+    roomInfo: Pick<GameInfo, Exclude<keyof GameInfo, 'flavor'>>;
   };
   [WaitingRoomEvent.PlayerEnter]: {
     playerInfo: { playerId: PlayerId; avatarId: number; playerName: string };
+    isHost: boolean;
   };
   [WaitingRoomEvent.PlayerLeave]: {
     leftPlayerId: PlayerId;

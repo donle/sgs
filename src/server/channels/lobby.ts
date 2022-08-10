@@ -1,9 +1,11 @@
 import { Sanguosha } from 'core/game/engine';
 import { GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
+import { PlayerId } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { ChatSocketEvent, LobbySocketEvent } from 'core/shares/types/server_types';
 import { ServerConfig } from 'server/server_config';
 import { RoomService } from 'server/services/room_service';
+import SocketIO from 'socket.io';
 
 export class LobbyEventChannel {
   private eventHandlers: { [E in LobbySocketEvent]?: (socket: SocketIO.Socket) => (...args: any) => void } = {};
@@ -15,6 +17,7 @@ export class LobbyEventChannel {
 
     this.registerEventHandler(LobbySocketEvent.GameCreated, this.onGameCreated);
     this.registerEventHandler(LobbySocketEvent.QueryRoomList, this.onQueryRoomsInfo);
+    this.registerEventHandler(LobbySocketEvent.CreateWaitingRoom, this.onCreatingWaitingRoom);
     this.registerEventHandler(LobbySocketEvent.QueryVersion, this.matchCoreVersion);
     this.registerEventHandler(LobbySocketEvent.CheckRoomExist, this.onCheckingRoomExist);
   }
@@ -55,6 +58,26 @@ export class LobbyEventChannel {
     socket.emit(LobbySocketEvent.CheckRoomExist.toString(), this.roomService.checkRoomExist(id));
   };
 
+  private readonly onCreatingWaitingRoom = (socket: SocketIO.Socket) => (content: {
+    roomInfo: TemporaryRoomCreationInfo;
+  }) => {
+    if (content.roomInfo.coreVersion !== Sanguosha.Version) {
+      socket.emit(LobbySocketEvent.GameCreated.toString(), {
+        error: 'unmatched core version',
+      });
+      return;
+    }
+
+    const { roomId, roomInfo } = this.roomService.createWaitingRoom(content.roomInfo);
+    socket.emit(LobbySocketEvent.CreateWaitingRoom.toString(), {
+      roomId,
+      roomInfo,
+    });
+  };
+
+  /**
+   * @deprecated game will not be created from lobby anymore.
+   */
   private readonly onGameCreated = (socket: SocketIO.Socket) => (content: GameInfo) => {
     if (content.coreVersion !== Sanguosha.Version) {
       socket.emit(LobbySocketEvent.GameCreated.toString(), {
@@ -63,13 +86,13 @@ export class LobbyEventChannel {
       return;
     }
 
-    const roomId = Date.now();
-    this.roomService.createRoom(content);
+    const { roomId, gameInfo } = this.roomService.createRoom(content);
     socket.emit(LobbySocketEvent.GameCreated.toString(), {
       roomId,
-      roomInfo: content,
+      roomInfo: gameInfo,
     });
   };
+
   private readonly onQueryRoomsInfo = (socket: SocketIO.Socket) => () => {
     socket.emit(LobbySocketEvent.QueryRoomList.toString(), this.roomService.getRoomsInfo());
   };

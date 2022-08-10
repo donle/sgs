@@ -1,6 +1,5 @@
 import { AudioLoader } from 'audio_loader/audio_loader';
 import { GameInfo } from 'core/game/game_props';
-import { PlayerId } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronLoader } from 'electron_loader/electron_loader';
@@ -20,18 +19,20 @@ export function installServices(
   electronLoader: ElectronLoader,
   presenter: WaitingRoomPresenter,
   store: WaitingRoomStore,
-  selfPlayerId: PlayerId,
+  selectedPlayerName: string,
   accessRejectedHandler: () => void,
   joinIntoTheGame: (roomId: RoomId, roomInfo: GameInfo) => void,
 ) {
+  const avatarService = new RoomAvatarService(imageLoader);
   return {
-    avatarService: new RoomAvatarService(imageLoader),
+    avatarService,
     roomProcessorService: new WaitingRoomProcessor(
       socket,
+      avatarService,
       translator,
       presenter,
       store,
-      selfPlayerId,
+      selectedPlayerName,
       accessRejectedHandler,
       joinIntoTheGame,
     ),

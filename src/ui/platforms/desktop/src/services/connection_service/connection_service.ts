@@ -21,6 +21,12 @@ export type CreateGameListenerResponse = {
   hostTag: ServerHostTag;
   ping: number;
 };
+export type CreateWaitingRoomListenerResponse = {
+  packet?: LobbySocketEventPicker<LobbySocketEvent.CreateWaitingRoom>;
+  error?: string;
+  hostTag: ServerHostTag;
+  ping: number;
+};
 
 export abstract class ConnectionService {
   protected abstract chatSocket: SocketIOClient.Socket;
@@ -30,6 +36,13 @@ export abstract class ConnectionService {
     getRoomList(callback: (response: RoomListListenerResponse) => void): void;
     checkCoreVersion(callback: (response: VersionCheckListenerResponse) => void): void;
     checkRoomExist(host: ServerHostTag, id: RoomId, callback: (exist: boolean) => void): void;
+    createWaitingRoom(
+      gameInfo: TemporaryRoomCreationInfo,
+      callback: (response: CreateWaitingRoomListenerResponse) => void,
+    ): void;
+    /**
+     * @deprecated game won't be created from lobby anymore.
+     */
     createGame(
       gameInfo: {
         cardExtensions: GameCardExtensions[];

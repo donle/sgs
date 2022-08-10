@@ -8,6 +8,7 @@ import {
   ChatPacketObject,
   ConnectionService,
   CreateGameListenerResponse,
+  CreateWaitingRoomListenerResponse,
   RoomListListenerResponse,
   VersionCheckListenerResponse,
 } from './connection_service';
@@ -30,6 +31,14 @@ export class FakeConnectionService extends ConnectionService {
     checkCoreVersion: (callback: (response: VersionCheckListenerResponse) => void) => {},
     // tslint:disable-next-line:no-empty
     checkRoomExist: (host: ServerHostTag, id: RoomId, callback: (exist: boolean) => void) => {},
+    createWaitingRoom(
+      gameInfo: TemporaryRoomCreationInfo,
+      callback: (response: CreateWaitingRoomListenerResponse) => void,
+    // tslint:disable-next-line: no-empty
+    ): void {},
+    /**
+     * @deprecated game won't be created from lobby anymore.
+     */
     createGame: (
       gameInfo: {
         cardExtensions: GameCardExtensions[];

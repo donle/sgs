@@ -120,6 +120,7 @@ export class Lobby extends React.Component<LobbyProps> {
       ? Number.parseInt(this.props.electronLoader.getData(ElectronData.GameVolume), 10)
       : 50;
     this.username = this.props.electronLoader.getData(ElectronData.PlayerName);
+    this.props.electronLoader.saveTemporaryData(ElectronData.PlayerId, `${this.username}-${Date.now()}`);
 
     this.props.electronLoader.whenUpdate(
       mobx.action(
@@ -220,18 +221,16 @@ export class Lobby extends React.Component<LobbyProps> {
         }
       });
     } else {
-      this.props.connectionService.Lobby.createGame(roomInfo, event => {
+      // this.props.connectionService.Lobby.createGame(roomInfo, event => {
+      this.props.connectionService.Lobby.createWaitingRoom(roomInfo, event => {
         const { packet, ping, hostTag, error } = event;
         if (packet) {
-          const { roomId, roomInfo: gameInfo } = packet;
+          const { roomId, roomInfo } = packet;
           const hostConfig = this.props.config.host.find(config => config.hostTag === hostTag);
           this.props.history.push(`/waiting-room/${roomId}`, {
-            gameMode: gameInfo.gameMode,
+            roomInfo,
             ping,
             hostConfig,
-            hostPlayerId: roomInfo.hostPlayerId,
-            roomName,
-            passcode,
           });
         } else {
           console.error(error);

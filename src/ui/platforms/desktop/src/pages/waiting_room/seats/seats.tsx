@@ -1,16 +1,18 @@
 import classNames from 'classnames';
+import { Sanguosha } from 'core/game/engine';
 import { PlayerId } from 'core/player/player_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
-import { ImageProps } from 'props/image_props';
+import * as mobx from 'mobx';
+import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import { Button } from 'ui/button/button';
 import { Picture } from 'ui/picture/picture';
 import { RoomAvatarService } from '../services/avatar_service';
 import { WaitingRoomSender } from '../services/sender_service';
+import { StatusBadge } from '../status_badge/status_badge';
 import { WaitingRoomPresenter } from '../waiting_room.presenter';
 import { WaitingRoomSeatInfo, WaitingRoomStore } from '../waiting_room.store';
-import { GetReadyBadge } from './get_ready_badge/get_ready_badge';
 import { Messages } from './messages';
 import styles from './seats.module.css';
 
@@ -22,60 +24,87 @@ export type SeatsProps = {
   avatarService: RoomAvatarService;
   senderService: WaitingRoomSender;
   className?: string;
+  isHost: boolean;
+  roomName: string;
 };
 
-const ClickableSeat = React.memo(
-  (props: {
-    imageLoader: ImageLoader;
-    seatInfo: WaitingRoomSeatInfo;
-    avatarService: RoomAvatarService;
-    onClick(closeSeat: boolean, seatId: number, kickedPlayerId?: string): void;
-  }) => {
-    const emptySeatImage = props.imageLoader.getEmptySeatImage();
-    const [characterAvatar, setCharacterAvatar] = React.useState<ImageProps>(emptySeatImage);
-    React.useEffect(() => {
-      if (!props.seatInfo.seatDisabled) {
-        const getAvatar = async () =>
-          props.seatInfo.seatDisabled || !props.seatInfo.playerAvatarId
-            ? emptySeatImage
-            : await props.avatarService.getAvatarByIndex(props.seatInfo.playerAvatarId);
+@mobxReact.observer
+class ClickableSeat extends React.Component<{
+  imageLoader: ImageLoader;
+  seatInfo: WaitingRoomSeatInfo;
+  avatarService: RoomAvatarService;
+  translator: ClientTranslationModule;
+  onClick(closeSeat: boolean, seatId: number, kickedPlayerId?: string): void;
+  selfPlayerId: PlayerId;
+  clickable: boolean;
+}> {
+  @mobx.observable.ref
+  private characterAvatar = this.props.imageLoader.getEmptySeatImage();
 
-        getAvatar().then(character => {
-          setCharacterAvatar(character);
-        });
+  private readonly onClick = () => {
+    this.props.onClick(
+      !this.props.seatInfo.seatDisabled,
+      this.props.seatInfo.seatId,
+      !this.props.seatInfo.seatDisabled ? this.props.seatInfo.playerId : undefined,
+    );
+  };
+
+  @mobx.action
+  async componentDidUpdate() {
+    if (!this.props.seatInfo.seatDisabled && this.props.seatInfo.playerAvatarId) {
+      const latestAvatar = await this.props.avatarService.getAvatarByIndex(this.props.seatInfo.playerAvatarId);
+      if (this.characterAvatar.src !== latestAvatar.src) {
+        this.characterAvatar = latestAvatar;
       }
-    }, [characterAvatar, emptySeatImage, props.avatarService, props.seatInfo]);
+    }
+  }
 
-    const onClick = () => {
-      props.onClick(
-        !props.seatInfo.seatDisabled,
-        props.seatInfo.seatId,
-        !props.seatInfo.seatDisabled ? props.seatInfo.playerId : undefined,
-      );
-    };
-
+  render() {
     return (
-      <span className={styles.seat} onClick={onClick}>
-        {!props.seatInfo.seatDisabled && <span className={styles.playerName}>{props.seatInfo.playerName}</span>}
+      <span
+        className={classNames(styles.seat, {
+          [styles.clickable]: this.props.clickable,
+        })}
+        onClick={this.onClick}
+      >
+        {!this.props.seatInfo.seatDisabled && (
+          <span className={styles.playerName}>{this.props.seatInfo.playerName}</span>
+        )}
         <Picture
-          image={characterAvatar}
+          image={this.characterAvatar}
           className={classNames(styles.seatImage, {
-            [styles.seatClosed]: props.seatInfo.seatDisabled,
+            [styles.seatClosed]: this.props.seatInfo.seatDisabled,
           })}
         />
+        {!this.props.seatInfo.seatDisabled && this.props.seatInfo.playerReady && (
+          <StatusBadge className={styles.userGetReady} text={this.props.translator.tr(Messages.ready())} />
+        )}
       </span>
     );
-  },
-);
+  }
+}
 
+@mobxReact.observer
 export class Seats extends React.Component<SeatsProps> {
+  private isReady = false;
+
   onClickSeat = (closeSeat: boolean, seatId: number, kickedPlayerId?: PlayerId) => {
+    if (this.props.store.selfPlayerId === kickedPlayerId) {
+      return;
+    }
+
     this.props.senderService.kickPlayerOrCloseSeat(seatId, closeSeat, kickedPlayerId);
   };
 
-  isEveryoneReady = () => {
-    return this.props.store.seats.every(seat => (seat.seatDisabled ? true : seat.playerReady));
-  };
+  @mobx.computed
+  get isEveryoneReady() {
+    return this.props.store.seats.every(seat => (seat.seatDisabled || seat.playerId == null ? true : seat.playerReady));
+  }
+
+  @mobx.computed
+  get countPlayers() {
+    return this.props.store.seats.filter(seat => !seat.seatDisabled && seat.playerId != null).length;
+  }
 
   createSeats = () => {
     const seatComponents: JSX.Element[] = [];
@@ -85,12 +114,12 @@ export class Seats extends React.Component<SeatsProps> {
           <ClickableSeat
             imageLoader={this.props.imageLoader}
             seatInfo={seat}
+            translator={this.props.translator}
             avatarService={this.props.avatarService}
+            selfPlayerId={this.props.store.selfPlayerId}
             onClick={this.onClickSeat}
+            clickable={this.props.isHost && this.props.store.selfPlayerId !== (seat as any).playerId}
           />
-          {!seat.seatDisabled && seat.playerReady && (
-            <GetReadyBadge translator={this.props.translator} className={styles.userGetReady} />
-          )}
         </span>,
       );
     }
@@ -98,15 +127,58 @@ export class Seats extends React.Component<SeatsProps> {
     return seatComponents;
   };
 
+  private readonly getReady = () => {
+    this.isReady = !this.isReady;
+    this.props.senderService.getReady(this.props.store.selfPlayerId, this.isReady);
+  };
+
+  private readonly requestGameStart = () => {
+    this.props.senderService.requestGameStart({
+      ...this.props.store.gameSettings,
+      numberOfPlayers: this.countPlayers,
+      roomName: this.props.roomName,
+      coreVersion: Sanguosha.Version,
+      campaignMode: false,
+    });
+  };
+
+  renderPlayerControlButton() {
+    if (this.props.isHost) {
+      const selfSeat = this.props.store.seats.find(
+        s => !s.seatDisabled && s.playerId === this.props.store.selfPlayerId,
+      );
+      if (selfSeat && !selfSeat.seatDisabled && !selfSeat.playerReady) {
+        return (
+          <Button className={styles.startButton} variant="primary" onClick={this.getReady}>
+            {this.props.translator.tr(Messages.getReady())}
+          </Button>
+        );
+      }
+
+      return (
+        <Button
+          className={styles.startButton}
+          variant="primary"
+          onClick={this.requestGameStart}
+          disabled={!this.isEveryoneReady || this.countPlayers < 2}
+        >
+          {this.props.translator.tr(Messages.gameStart())}
+        </Button>
+      );
+    } else {
+      return (
+        <Button className={styles.startButton} variant="primary" onClick={this.getReady}>
+          {this.isReady ? this.props.translator.tr(Messages.cancelReady()) : this.props.translator.tr(Messages.ready())}
+        </Button>
+      );
+    }
+  }
+
   render() {
     return (
       <div className={classNames(styles.conainer, this.props.className)}>
         {this.createSeats()}
-        {this.isEveryoneReady() && (
-          <Button className={styles.startButton} variant="primary">
-            {this.props.translator.tr(Messages.gameStart())}
-          </Button>
-        )}
+        {this.renderPlayerControlButton()}
       </div>
     );
   }

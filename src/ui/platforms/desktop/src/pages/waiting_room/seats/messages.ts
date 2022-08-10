@@ -1,4 +1,6 @@
 export const Messages = {
-  getReady: () => 'Ready',
+  ready: () => 'ready',
+  cancelReady: () => 'cancel ready',
+  getReady: () => 'get ready',
   gameStart: () => 'start game',
 };

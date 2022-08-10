@@ -9,5 +9,4 @@ export const createTranslationMessages = (translator: ClientTranslationModule) =
   enableObserver: () => translator.tr('enable observer'),
   getTimeLimit: action =>
     TranslationPack.translationJsonPatcher('{0} time limit', action).translateTo(translator.Dictionary),
-  inputChatHere: () => translator.tr('input chat here'),
 });

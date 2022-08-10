@@ -12,10 +12,11 @@ export type InputProps = {
   placeholder?: string;
   suffix?: string;
   disabled?: boolean;
+  transparency?: number;
 };
 
 export const Input = (props: InputProps) => {
-  const { className, onChange, value, placeholder, type, min, max, suffix, disabled } = props;
+  const { className, onChange, value, placeholder, type, min, max, suffix, disabled, transparency } = props;
 
   const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onChange?.(event.target.value);
@@ -32,6 +33,7 @@ export const Input = (props: InputProps) => {
         min={min}
         max={max}
         type={type}
+        style={transparency != null ? { backgroundColor: `rgba(0,0,0,${transparency})` } : undefined}
       />
       {suffix && <span className={styles.suffix}>{suffix}</span>}
     </div>

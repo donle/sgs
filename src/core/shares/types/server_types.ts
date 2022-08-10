@@ -1,4 +1,4 @@
-import { GameCharacterExtensions, GameInfo } from 'core/game/game_props';
+import { GameCharacterExtensions, GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { GameMode } from './room_props';
@@ -10,6 +10,7 @@ export const enum LobbySocketEvent {
   VersionMismatch,
   PingServer,
   CheckRoomExist,
+  CreateWaitingRoom,
 }
 
 export const enum ChatSocketEvent {
@@ -71,4 +72,8 @@ interface LobbyEventList extends LobbyEventUtilities {
   };
   [LobbySocketEvent.VersionMismatch]: boolean;
   [LobbySocketEvent.CheckRoomExist]: boolean;
+  [LobbySocketEvent.CreateWaitingRoom]: {
+    roomInfo: TemporaryRoomCreationInfo;
+    roomId: RoomId;
+  };
 }

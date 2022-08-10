@@ -31,31 +31,25 @@ export class GameSettings extends React.Component<GameSettingsProps> {
       {
         label: translator.tr(GameMode.Standard),
         id: GameMode.Standard,
-        checked: false,
+        checked: this.props.store.gameSettings.gameMode === GameMode.Standard,
         disabled: !controlable,
       },
       {
         label: translator.tr(GameMode.OneVersusTwo),
         id: GameMode.OneVersusTwo,
-        checked: false,
+        checked: this.props.store.gameSettings.gameMode === GameMode.OneVersusTwo,
         disabled: !controlable,
       },
       {
         label: translator.tr(GameMode.TwoVersusTwo),
         id: GameMode.TwoVersusTwo,
-        checked: false,
+        checked: this.props.store.gameSettings.gameMode === GameMode.TwoVersusTwo,
         disabled: !controlable,
       },
       {
         label: translator.tr(GameMode.Hegemony),
         id: GameMode.Hegemony,
-        checked: false,
-        disabled: true,
-      },
-      {
-        label: translator.tr(GameMode.Pve),
-        id: GameMode.Pve,
-        checked: true,
+        checked: this.props.store.gameSettings.gameMode === GameMode.Standard,
         disabled: true,
       },
     ];
@@ -65,7 +59,7 @@ export class GameSettings extends React.Component<GameSettingsProps> {
     return Sanguosha.getGameCharacterExtensions().map(extension => ({
       id: extension,
       label: translator.tr(extension),
-      checked: true,
+      checked: this.props.store.gameSettings.characterExtensions.includes(extension),
       disabled: extension === GameCharacterExtensions.Standard || !controlable,
     }));
   }
@@ -132,12 +126,13 @@ export class GameSettings extends React.Component<GameSettingsProps> {
             label={this.translationMessage.enableObserver()}
           />
           <div className={styles.inputLabel}>
-            <span className={styles.inputTitle}>{this.translationMessage.getTimeLimit('play phase')}</span>
+            <span className={styles.inputTitle}>{this.translationMessage.getTimeLimit('play stage')}</span>
             <Input
               type="number"
               value={this.props.store.gameSettings.playingTimeLimit?.toString()}
               onChange={this.onChangePlayTimeLimit}
               disabled={!this.props.controlable}
+              transparency={0.3}
               min={15}
               max={300}
             />
@@ -149,6 +144,7 @@ export class GameSettings extends React.Component<GameSettingsProps> {
               value={this.props.store.gameSettings.wuxiekejiTimeLimit?.toString()}
               onChange={this.onChangeWuXieKeJiTimeLimit}
               disabled={!this.props.controlable}
+              transparency={0.3}
               min={5}
               max={60}
             />
