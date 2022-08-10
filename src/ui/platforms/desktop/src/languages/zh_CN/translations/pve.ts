@@ -173,22 +173,6 @@ export const skillDescriptions: Word[] = [
     target: '<b>锁定技</b>，你失去最后一张牌时，令一名角色失去X点体力。（X为此技能等级）',
   },
   {
-    source: 'pve_buxu_description',
-    target: '<b>锁定技</b>，BOSS回合内其使用的前X张牌对你无效。（X为此技能等级）',
-  },
-  {
-    source: 'pve_dudu_description',
-    target: '出牌阶段限一次，你摸1张牌。（升级多摸两张）',
-  },
-  {
-    source: 'pve_chengxiang_description',
-    target: '<b>锁定技</b>，出牌阶段结束时，你随机回复1-3点体力。（升级提升1点回复。）',
-  },
-  {
-    source: 'pve_zhibing_description',
-    target: '出牌阶段限一次，对一名角色造成随机1-3点伤害。（升级提升1点伤害上限）',
-  },
-  {
     source: 'pve_classic_ai_desc',
     target:
       '<b>锁定技</b> 你或你的队友拥有如下标记时，执行对应操作：【渐】摸牌阶段可以多摸一张牌；【制】手牌上限等于体力值；【袭】出牌阶段可以多出一张杀；【疾】初始手牌数量加3；【御】受到伤害后可以摸一张牌；【盈】体力及体力上限加1',
