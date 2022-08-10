@@ -30,7 +30,7 @@ export class FakeConnectionService extends ConnectionService {
     // tslint:disable-next-line:no-empty
     checkCoreVersion: (callback: (response: VersionCheckListenerResponse) => void) => {},
     // tslint:disable-next-line:no-empty
-    checkRoomExist: (host: ServerHostTag, id: RoomId, callback: (exist: boolean) => void) => {},
+    checkRoomExist: (host: ServerHostTag, id: RoomId, callback: (exist: boolean, ping: number) => void) => {},
     createWaitingRoom(
       gameInfo: TemporaryRoomCreationInfo,
       callback: (response: CreateWaitingRoomListenerResponse) => void,

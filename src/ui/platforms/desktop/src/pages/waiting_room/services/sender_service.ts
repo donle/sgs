@@ -1,4 +1,5 @@
 import { WaitingRoomClientEventFinder, WaitingRoomEvent, WaitingRoomServerEventFinder } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { PlayerId } from 'core/player/player_props';
 import { ChatPacketObject } from 'services/connection_service/connection_service';
 
@@ -27,6 +28,14 @@ export class WaitingRoomSender {
         });
       },
     );
+  }
+
+  enterRoom(playerId: PlayerId, avatarId: number, playerName: string, isHost: boolean) {
+    this.socket.emit(WaitingRoomEvent.PlayerEnter, {
+      playerInfo: { playerId, avatarId, playerName },
+      isHost,
+      coreVersion: Sanguosha.Version,
+    });
   }
 
   getReady(playerId: PlayerId, ready: boolean) {

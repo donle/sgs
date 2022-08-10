@@ -35,7 +35,7 @@ export abstract class ConnectionService {
   protected abstract readonly lobbyService: {
     getRoomList(callback: (response: RoomListListenerResponse) => void): void;
     checkCoreVersion(callback: (response: VersionCheckListenerResponse) => void): void;
-    checkRoomExist(host: ServerHostTag, id: RoomId, callback: (exist: boolean) => void): void;
+    checkRoomExist(host: ServerHostTag, id: RoomId, callback: (exist: boolean, ping: number) => void): void;
     createWaitingRoom(
       gameInfo: TemporaryRoomCreationInfo,
       callback: (response: CreateWaitingRoomListenerResponse) => void,

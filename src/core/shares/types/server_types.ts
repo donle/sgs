@@ -11,6 +11,7 @@ export const enum LobbySocketEvent {
   PingServer,
   CheckRoomExist,
   CreateWaitingRoom,
+  EnterWaitingRoom,
 }
 
 export const enum ChatSocketEvent {
@@ -76,4 +77,7 @@ interface LobbyEventList extends LobbyEventUtilities {
     roomInfo: TemporaryRoomCreationInfo;
     roomId: RoomId;
   };
+  [LobbySocketEvent.EnterWaitingRoom]: {
+    roomInfo: TemporaryRoomCreationInfo;
+  }
 }

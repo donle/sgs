@@ -234,6 +234,7 @@ export interface WaitingRoomClientEvent extends WaitingRoomEventUtilities {
   [WaitingRoomEvent.PlayerEnter]: {
     playerInfo: { playerId: PlayerId; avatarId: number; playerName: string };
     isHost: boolean;
+    coreVersion: string;
   };
   [WaitingRoomEvent.PlayerLeave]: {
     leftPlayerId: PlayerId;

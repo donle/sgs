@@ -1,6 +1,8 @@
 import { AudioLoader } from 'audio_loader/audio_loader';
 import { WaitingRoomEvent } from 'core/event/event';
+import { Sanguosha } from 'core/game/engine';
 import { GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
+import { PlayerId } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -37,11 +39,11 @@ type WaitingRoomProps = PagePropsWithConfig<{
 @mobxReact.observer
 export class WaitingRoom extends React.Component<WaitingRoomProps> {
   @mobx.observable.ref
-  private isCampaignMode = false;
-  @mobx.observable.ref
   private roomIdString: string;
   @mobx.observable.ref
   private gameHostedServer: ServerHostTag;
+  @mobx.observable.ref
+  private hostPlayerId: PlayerId;
 
   private socket: SocketIOClient.Socket;
   private isHost: boolean;
@@ -59,86 +61,86 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
 
   constructor(props: WaitingRoomProps) {
     super(props);
-    const { match, electronLoader } = this.props;
+    const { match, electronLoader, translator, imageLoader, audioLoader } = this.props;
 
-    const { ping, roomInfo } = this.props.location.state as {
-      roomInfo: TemporaryRoomCreationInfo;
+    const { ping, roomInfo, hostConfig } = this.props.location.state as {
+      roomInfo?: TemporaryRoomCreationInfo;
       ping: number;
       hostConfig: ServiceConfig;
     };
-
-    const { roomName, campaignMode, coreVersion, hostPlayerId, ...settings } = roomInfo;
-    this.store = this.presenter.createStore(this.selfPlayerId, settings);
+    mobx.runInAction(() => {
+      this.roomIdString = match.params.slug;
+      this.isHost = !!roomInfo;
+    });
 
     if (!match.params.slug) {
       this.backwardsToLoddy();
     }
 
-    mobx.runInAction(() => {
-      this.roomIdString = match.params.slug;
-      this.isCampaignMode = !!campaignMode;
-      this.isHost = hostPlayerId === electronLoader.getTemporaryData(ElectronData.PlayerId);
-    });
-
-    if (this.isCampaignMode) {
-      // @TODO(donle) add campagin mode process here
-    } else {
-      this.connectToServer();
-    }
+    this.connectToServer(hostConfig);
 
     this.services = installServices(
       this.socket,
-      this.props.translator,
-      this.props.imageLoader,
-      this.props.audioLoader,
-      this.props.electronLoader,
+      translator,
+      imageLoader,
+      audioLoader,
+      electronLoader,
       this.presenter,
       this.store,
       this.selfPlayerName,
       this.backwardsToLoddy,
-      this.joinIntoTheGame(hostPlayerId, ping),
+      this.joinIntoTheGame(ping),
     );
-
     this.services.roomProcessorService.initWaitingRoomConnectionListeners();
-    this.createGame(roomInfo);
+
+    if (!roomInfo) {
+      this.services.roomProcessorService.on(WaitingRoomEvent.PlayerEnter, content => {
+        this.initWithRoomInfo(content.roomInfo);
+      });
+
+      this.services.eventSenderService.enterRoom(
+        this.selfPlayerId,
+        this.services.avatarService.getRandomAvatarIndex(),
+        this.selfPlayerName,
+        false,
+      );
+    } else {
+      this.initWithRoomInfo(roomInfo);
+    }
+  }
+
+  @mobx.action
+  private initWithRoomInfo(roomInfo: TemporaryRoomCreationInfo) {
+    const { roomName, campaignMode, coreVersion, hostPlayerId, ...settings } = roomInfo;
+    this.hostPlayerId = hostPlayerId;
+    this.store = this.presenter.createStore(this.selfPlayerId, settings);
+
+    this.services.eventSenderService.broadcast(WaitingRoomEvent.RoomCreated, {
+      hostPlayerId,
+      roomInfo,
+    });
   }
 
   private readonly backwardsToLoddy = () => {
     this.props.history.push('/lobby');
   };
 
-  private readonly joinIntoTheGame = (hostPlayerId: string, ping: number) => (roomId: RoomId, roomInfo: GameInfo) => {
+  private readonly joinIntoTheGame = (ping: number) => (roomId: RoomId, roomInfo: GameInfo) => {
     const hostConfig = this.props.config.host.find(config => config.hostTag === this.gameHostedServer);
 
     this.props.history.push(`/room/${roomId}`, {
       gameMode: roomInfo.gameMode,
       ping,
       hostConfig,
-      hostPlayerId,
     });
   };
 
-  private connectToServer() {
-    const { hostConfig } = this.props.location.state as {
-      hostConfig: ServiceConfig;
-    };
-
+  @mobx.action
+  private connectToServer(hostConfig: ServiceConfig) {
     this.socket = IOSocketClient(
       `${hostConfig.protocol}://${hostConfig.host}:${hostConfig.port}/waiting-room-${this.roomIdString}`,
     );
-    mobx.runInAction(() => (this.gameHostedServer = hostConfig.hostTag));
-  }
-
-  private createGame(roomInfo: TemporaryRoomCreationInfo) {
-    this.services.eventSenderService.broadcast(WaitingRoomEvent.RoomCreated, {
-      hostPlayerId: roomInfo.hostPlayerId,
-      roomInfo: {
-        roomName: roomInfo.roomName,
-        hostPlayerId: roomInfo.hostPlayerId,
-        coreVersion: roomInfo.coreVersion,
-        ...this.store.gameSettings,
-      },
-    });
+    this.gameHostedServer = hostConfig.hostTag;
   }
 
   render() {
@@ -153,7 +155,7 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
         <Background imageLoader={this.props.imageLoader} />
         <HeaderBar
           {...props}
-          isCampaignMode={this.isCampaignMode}
+          isCampaignMode={false}
           audioService={this.services.audioService}
           roomName={roomName}
           roomId={this.roomIdString}
@@ -172,6 +174,7 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
               avatarService={this.services.avatarService}
               imageLoader={this.props.imageLoader}
               isHost={this.isHost}
+              hostPlayerId={this.hostPlayerId}
               roomName={roomName}
             />
             <ChatBox

@@ -1,5 +1,5 @@
 import { activeWaitingRoomListeningEvents, WaitingRoomEvent, WaitingRoomServerEventFinder } from 'core/event/event';
-import { GameInfo } from 'core/game/game_props';
+import { GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { RoomId } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -7,6 +7,10 @@ import { createTranslationMessages } from './messages';
 import { RoomAvatarService } from './services/avatar_service';
 import { WaitingRoomPresenter } from './waiting_room.presenter';
 import { WaitingRoomSeatInfo, WaitingRoomStore } from './waiting_room.store';
+
+interface WaitingRoomProcessorListenerData {
+  [WaitingRoomEvent.PlayerEnter]: { roomInfo: TemporaryRoomCreationInfo };
+}
 
 export class WaitingRoomProcessor {
   constructor(
@@ -21,6 +25,23 @@ export class WaitingRoomProcessor {
   ) {}
 
   private messages = createTranslationMessages(this.translator);
+
+  private playerEnterListener: (content: WaitingRoomProcessorListenerData[WaitingRoomEvent.PlayerEnter]) => void;
+
+  public on<Event extends WaitingRoomEvent.PlayerEnter>(
+    event: Event,
+    listener: (content: WaitingRoomProcessorListenerData[WaitingRoomEvent.PlayerEnter]) => void,
+  ) {
+    switch (event) {
+      case WaitingRoomEvent.PlayerEnter: {
+        this.playerEnterListener = listener;
+        break;
+      }
+
+      default:
+        return;
+    }
+  }
 
   initWaitingRoomConnectionListeners() {
     activeWaitingRoomListeningEvents.forEach(identifier => {
@@ -83,6 +104,8 @@ export class WaitingRoomProcessor {
       message: this.messages.playerEnter(evt.playerInfo.playerName),
       timestamp: Date.now(),
     });
+
+    this.playerEnterListener?.({ roomInfo: evt.roomInfo });
   }
 
   private onGameInfoUpdate(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.GameInfoUpdate>) {
@@ -146,6 +169,7 @@ export class WaitingRoomProcessor {
       this.socket.emit(WaitingRoomEvent.PlayerEnter, {
         playerInfo: { playerId: this.store.selfPlayerId, avatarId: avatarIndex, playerName: this.selfPlayerName },
         isHost: true,
+        coreVersion,
       });
     }
   }

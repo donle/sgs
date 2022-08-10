@@ -22,7 +22,7 @@ export class RealConnectionService extends ConnectionService {
   private versionCheckListener: (res: VersionCheckListenerResponse) => void;
   private createGameListener: (res: Omit<CreateGameListenerResponse, 'hostTag'>) => void;
   private createWaitingRoomListener: (res: Omit<CreateWaitingRoomListenerResponse, 'hostTag'>) => void;
-  private checkRoomExistListener: (exist: boolean) => void;
+  private checkRoomExistListener: (exist: boolean, ping: number) => void;
   private pingListener: (ping: number) => void;
   private pingBestHost: Promise<ServerHostTag>[] = [];
   constructor(config: ClientConfig) {
@@ -66,7 +66,7 @@ export class RealConnectionService extends ConnectionService {
         });
       });
       lobbySocket.on(LobbySocketEvent.CheckRoomExist.toString(), exist => {
-        this.checkRoomExistListener?.(exist);
+        this.checkRoomExistListener?.(exist, Math.round((Date.now() - this.pingStartTimestamp) / 2));
       });
       lobbySocket.on(LobbySocketEvent.PingServer.toString(), () => {
         this.pingListener?.(Math.round((Date.now() - this.pingStartTimestamp) / 2));
@@ -98,10 +98,10 @@ export class RealConnectionService extends ConnectionService {
         lobbySocket.emit(LobbySocketEvent.VersionMismatch.toString());
       });
     },
-    checkRoomExist: (host: ServerHostTag, id: RoomId, callback: (exist: boolean) => void) => {
+    checkRoomExist: (host: ServerHostTag, id: RoomId, callback: (exist: boolean, ping: number) => void) => {
       const lobbySocket = this.lobbySockets.get(host)!;
-      this.checkRoomExistListener = (exist: boolean) => {
-        callback(exist);
+      this.checkRoomExistListener = (exist: boolean, ping: number) => {
+        callback(exist, ping);
       };
       lobbySocket.emit(LobbySocketEvent.CheckRoomExist.toString(), id);
     },

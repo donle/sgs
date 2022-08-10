@@ -274,9 +274,10 @@ export class Lobby extends React.Component<LobbyProps> {
       this.openPasscodeEnterDialog = true;
       this.currentInteractiveRoomInfo = hostInfo;
     } else {
-      this.props.connectionService.Lobby.checkRoomExist(host, info.id, exist => {
+      this.props.connectionService.Lobby.checkRoomExist(host, info.id, (exist, ping) => {
         if (exist) {
-          this.props.history.push(`/room/${info.id}`, {
+          this.props.history.push(`/waiting-room/${info.id}`, {
+            ping,
             hostConfig: this.props.config.host.find(config => config.hostTag === host),
           });
         } else {

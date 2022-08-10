@@ -90,7 +90,8 @@ export class WaitingRoomSocket {
     if (
       seatId < 0 ||
       this.waitingRoomInfo.players.length + this.waitingRoomInfo.closedSeats.length >=
-        this.waitingRoomInfo.roomInfo.numberOfPlayers
+        this.waitingRoomInfo.roomInfo.numberOfPlayers ||
+      evt.coreVersion !== Sanguosha.Version
     ) {
       socket.emit(WaitingRoomEvent.PlayerLeave, { playerId: evt.playerInfo.playerId });
     } else {

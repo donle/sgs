@@ -25,6 +25,7 @@ export type SeatsProps = {
   senderService: WaitingRoomSender;
   className?: string;
   isHost: boolean;
+  hostPlayerId: PlayerId;
   roomName: string;
 };
 

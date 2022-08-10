@@ -104,14 +104,12 @@ export class RoomPage extends React.Component<
     this.store = this.presenter.createStore();
 
     const roomId = this.roomId.toString();
-    const { ping, hostConfig, campaignMode, hostPlayerId } = this.props.location.state as {
+    const { ping, hostConfig, campaignMode } = this.props.location.state as {
       ping?: number;
       hostConfig: ServiceConfig;
       campaignMode?: boolean;
-      hostPlayerId: string;
     };
     this.isCampaignMode = !!campaignMode;
-    this.props.electronLoader.saveTemporaryData(ElectronData.PlayerId, hostPlayerId);
 
     if (campaignMode) {
       this.socket = new LocalClientEmitter((window as any).eventEmitter, roomId);
