@@ -43,6 +43,10 @@ class ClickableSeat extends React.Component<{
   private characterAvatar = this.props.imageLoader.getEmptySeatImage();
 
   private readonly onClick = () => {
+    if (!this.props.clickable) {
+      return;
+    }
+
     this.props.onClick(
       !this.props.seatInfo.seatDisabled,
       this.props.seatInfo.seatId,
@@ -90,7 +94,7 @@ export class Seats extends React.Component<SeatsProps> {
   private isReady = false;
 
   onClickSeat = (closeSeat: boolean, seatId: number, kickedPlayerId?: PlayerId) => {
-    if (this.props.store.selfPlayerId === kickedPlayerId) {
+    if (this.props.store.selfPlayerId === kickedPlayerId || !this.props.isHost) {
       return;
     }
 

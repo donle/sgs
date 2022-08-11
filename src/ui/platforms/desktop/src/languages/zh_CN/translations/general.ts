@@ -779,4 +779,6 @@ export const UiDictionary: Word[] = [
   { source: 'game mode', target: '游戏模式' },
   { source: 'character package settings', target: '武将扩展包设置' },
   { source: 'start game', target: '开始游戏' },
+  { source: 'second', target: '秒' },
+  { source: 'save settings', target: '保存设置' },
 ];

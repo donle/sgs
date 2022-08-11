@@ -1,6 +1,5 @@
 import { AudioLoader } from 'audio_loader/audio_loader';
 import { WaitingRoomEvent } from 'core/event/event';
-import { Sanguosha } from 'core/game/engine';
 import { GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
@@ -57,7 +56,7 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
     this.props.electronLoader.getData<string>(ElectronData.PlayerName) || this.props.translator.tr('unknown');
 
   private presenter = new WaitingRoomPresenter();
-  private store: WaitingRoomStore;
+  private store: WaitingRoomStore = this.presenter.createStore(this.selfPlayerId);
 
   constructor(props: WaitingRoomProps) {
     super(props);
@@ -96,6 +95,10 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
     if (!roomInfo) {
       this.services.roomProcessorService.on(WaitingRoomEvent.PlayerEnter, content => {
         this.initWithRoomInfo(content.roomInfo);
+
+        const { roomName, campaignMode, coreVersion, hostPlayerId, ...settings } = content.roomInfo;
+        this.presenter.updateGameSettings(this.store, settings);
+        this.presenter.initSeatsInfo(this.store);
       });
 
       this.services.eventSenderService.enterRoom(
@@ -106,6 +109,10 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
       );
     } else {
       this.initWithRoomInfo(roomInfo);
+      this.services.eventSenderService.broadcast(WaitingRoomEvent.RoomCreated, {
+        hostPlayerId: roomInfo.hostPlayerId,
+        roomInfo,
+      });
     }
   }
 
@@ -113,12 +120,7 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
   private initWithRoomInfo(roomInfo: TemporaryRoomCreationInfo) {
     const { roomName, campaignMode, coreVersion, hostPlayerId, ...settings } = roomInfo;
     this.hostPlayerId = hostPlayerId;
-    this.store = this.presenter.createStore(this.selfPlayerId, settings);
-
-    this.services.eventSenderService.broadcast(WaitingRoomEvent.RoomCreated, {
-      hostPlayerId,
-      roomInfo,
-    });
+    this.presenter.updateGameSettings(this.store, settings);
   }
 
   private readonly backwardsToLoddy = () => {
@@ -137,11 +139,20 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
 
   @mobx.action
   private connectToServer(hostConfig: ServiceConfig) {
-    this.socket = IOSocketClient(
-      `${hostConfig.protocol}://${hostConfig.host}:${hostConfig.port}/waiting-room-${this.roomIdString}`,
-    );
+    const endpoint = `${hostConfig.protocol}://${hostConfig.host}:${hostConfig.port}/waiting-room-${this.roomIdString}`;
+    this.socket = IOSocketClient(endpoint, {
+      reconnection: true,
+      autoConnect: true,
+      reconnectionAttempts: 3,
+      timeout: 180000,
+    });
+
     this.gameHostedServer = hostConfig.hostTag;
   }
+
+  private readonly onSaveSettings = () => {
+    this.services.eventSenderService.saveSettings(this.store.gameSettings);
+  };
 
   render() {
     const { match, location, ...props } = this.props;
@@ -191,6 +202,7 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
             presenter={this.presenter}
             store={this.store}
             controlable={this.isHost}
+            onSave={this.onSaveSettings}
           />
         </div>
       </div>

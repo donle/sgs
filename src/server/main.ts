@@ -108,16 +108,13 @@ const roomService = new RoomService(
   () => new RecordAnalytics(),
   () => new GameCommonRules(),
   () => new RoomEventStacker<WorkPlace.Server>(),
-  (info: TemporaryRoomCreationInfo) => {
-    const roomId: RoomId = Date.now();
-    return {
-      roomId,
-      roomInfo: info,
-      closedSeats: [],
-      players: [],
-      hostPlayerId: info.hostPlayerId,
-    };
-  },
+  (info: TemporaryRoomCreationInfo, roomId: RoomId) => ({
+    roomId,
+    roomInfo: info,
+    closedSeats: [],
+    players: [],
+    hostPlayerId: info.hostPlayerId,
+  }),
   (socket: SocketIO.Namespace, roomInfo: WaitingRoomInfo) =>
     new WaitingRoomSocket(roomService, socket, mode, logger, roomInfo),
   createDifferentModeGameProcessor,

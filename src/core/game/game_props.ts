@@ -107,3 +107,11 @@ export type GameCommonRuleObject = {
   additionalHold: number;
   additionalAttackDistance: number;
 };
+
+export type WaitingRoomGameSettings = Pick<
+  TemporaryRoomCreationInfo,
+  Exclude<
+    keyof TemporaryRoomCreationInfo,
+    'roomName' | 'campaignMode' | 'coreVersion' | 'hostPlayerId'
+  >
+>;

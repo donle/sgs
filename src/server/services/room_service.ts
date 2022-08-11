@@ -37,13 +37,16 @@ export class RoomService {
     private createRecordAnalytics: () => RecordAnalytics,
     private createGameCommonRules: () => GameCommonRules,
     private createRoomEventStacker: () => RoomEventStacker<WorkPlace.Server>,
-    private createGameWaitingRoom: (info: TemporaryRoomCreationInfo) => WaitingRoomInfo,
+    private createGameWaitingRoom: (info: TemporaryRoomCreationInfo, roomId: RoomId) => WaitingRoomInfo,
     private createWaitingRoomSocket: (socket: SocketIO.Namespace, roomInfo: WaitingRoomInfo) => WaitingRoomSocket,
     private createDifferentModeGameProcessor: (gameMode: GameMode) => GameProcessor,
   ) {}
 
   checkRoomExist(roomId: RoomId) {
-    return this.rooms.find(room => room.RoomId === roomId) !== undefined;
+    return (
+      this.rooms.find(room => room.RoomId === roomId) !== undefined ||
+      this.waitingRooms.find(room => room.roomId === roomId) !== undefined
+    );
   }
 
   getRoomsInfo(): ReadonlyArray<RoomInfo> {
@@ -99,9 +102,8 @@ export class RoomService {
   }
 
   createWaitingRoom(roomInfo: TemporaryRoomCreationInfo) {
-    const roomId = Date.now();
-    const room = this.createGameWaitingRoom(roomInfo);
-    const roomSocket = this.createWaitingRoomSocket(this.lobbySocket.of(`/waiting-room-${roomId}`), room);
+    const room = this.createGameWaitingRoom(roomInfo, Date.now());
+    const roomSocket = this.createWaitingRoomSocket(this.lobbySocket.of(`/waiting-room-${room.roomId}`), room);
 
     roomSocket.onClosed(() => {
       this.waitingRooms = this.waitingRooms.filter(r => r !== room);
@@ -110,7 +112,7 @@ export class RoomService {
     this.waitingRooms.push(room);
 
     return {
-      roomId,
+      roomId: room.roomId,
       roomInfo,
     };
   }

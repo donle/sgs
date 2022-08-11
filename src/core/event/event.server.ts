@@ -7,6 +7,7 @@ import {
   GameInfo,
   GameRunningInfo,
   TemporaryRoomCreationInfo,
+  WaitingRoomGameSettings,
 } from 'core/game/game_props';
 import { PlayerPhase, PlayerPhaseStages } from 'core/game/stage_processor';
 import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props';
@@ -518,7 +519,7 @@ export type PinDianReport = {
 
 export interface WaitingRoomServerEvent extends WaitingRoomEventUtilities {
   [WaitingRoomEvent.GameInfoUpdate]: {
-    roomInfo: TemporaryRoomCreationInfo;
+    roomInfo: WaitingRoomGameSettings;
   };
   [WaitingRoomEvent.PlayerChatMessage]: {
     from: string;

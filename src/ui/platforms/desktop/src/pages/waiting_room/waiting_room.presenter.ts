@@ -1,9 +1,10 @@
 import { Sanguosha } from 'core/game/engine';
+import { WaitingRoomGameSettings } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { GameMode } from 'core/shares/types/room_props';
 import * as mobx from 'mobx';
 import { ChatPacketObject } from 'services/connection_service/connection_service';
-import { WaitingRoomGameSettings, WaitingRoomSeatInfo, WaitingRoomStore } from './waiting_room.store';
+import { WaitingRoomSeatInfo, WaitingRoomStore } from './waiting_room.store';
 
 export class WaitingRoomPresenter {
   static readonly defaultNumberOfPlayers = 8;
@@ -15,16 +16,17 @@ export class WaitingRoomPresenter {
 
   @mobx.action
   private initGameSettings(store: WaitingRoomStore, defaultSettings?: WaitingRoomGameSettings) {
-    store.gameSettings = defaultSettings || {
+    store.gameSettings = {
       gameMode: GameMode.Standard,
       cardExtensions: Sanguosha.getCardExtensionsFromGameMode(GameMode.Standard),
       characterExtensions: Sanguosha.getGameCharacterExtensions(),
       numberOfPlayers: WaitingRoomPresenter.defaultNumberOfPlayers,
+      playingTimeLimit: 60,
+      wuxiekejiTimeLimit: 15,
+      allowObserver: false,
+      ...defaultSettings,
     };
 
-    store.gameSettings.playingTimeLimit = store.gameSettings.playingTimeLimit || 60;
-    store.gameSettings.wuxiekejiTimeLimit = store.gameSettings.wuxiekejiTimeLimit || 15;
-    store.gameSettings.allowObserver = store.gameSettings.allowObserver || false;
     store.chatMessages = [];
   }
 
@@ -61,12 +63,12 @@ export class WaitingRoomPresenter {
   @mobx.action
   initSeatsInfo(store: WaitingRoomStore, seatsInfo?: WaitingRoomSeatInfo[]) {
     if (seatsInfo) {
-      for (const seatInfo of seatsInfo) {
-        const seatIndex = store.seats.findIndex(s => s.seatId === seatInfo.seatId);
-        if (seatIndex >= 0) {
-          store.seats.splice(seatIndex, 1, seatInfo);
-        }
+      const newSeats: WaitingRoomSeatInfo[] = [];
+      for (let i = 0; i < store.seats.length; i++) {
+        const seat = seatsInfo.find(s => s.seatId === i);
+        newSeats.push(seat || store.seats[i]);
       }
+      store.seats = newSeats;
     } else {
       for (let i = 0; i < WaitingRoomPresenter.defaultNumberOfPlayers; i++) {
         store.seats.push({

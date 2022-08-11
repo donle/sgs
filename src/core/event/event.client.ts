@@ -1,6 +1,6 @@
 import { CardId } from 'core/cards/libs/card_props';
 import { CharacterId } from 'core/characters/character';
-import { DamageType, GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
+import { DamageType, GameInfo, TemporaryRoomCreationInfo, WaitingRoomGameSettings } from 'core/game/game_props';
 import { PlayerCardsArea, PlayerId, PlayerInfo } from 'core/player/player_props';
 import {
   EventUtilities,
@@ -222,7 +222,7 @@ export type PlayerCardOrSkillInnerEvent =
 
 export interface WaitingRoomClientEvent extends WaitingRoomEventUtilities {
   [WaitingRoomEvent.GameInfoUpdate]: {
-    roomInfo: TemporaryRoomCreationInfo;
+    roomInfo: WaitingRoomGameSettings;
   };
   [WaitingRoomEvent.PlayerChatMessage]: {
     from: string;

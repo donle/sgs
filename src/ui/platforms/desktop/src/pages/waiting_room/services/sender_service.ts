@@ -1,13 +1,17 @@
 import { WaitingRoomClientEventFinder, WaitingRoomEvent, WaitingRoomServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
+import { WaitingRoomGameSettings } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { ChatPacketObject } from 'services/connection_service/connection_service';
-
 export class WaitingRoomSender {
   constructor(private socket: SocketIOClient.Socket) {}
 
   broadcast<I extends WaitingRoomEvent>(identifier: I, event: WaitingRoomClientEventFinder<I>) {
     this.socket.emit(identifier, event);
+  }
+
+  saveSettings(settings: WaitingRoomGameSettings) {
+    this.socket.emit(WaitingRoomEvent.GameInfoUpdate, { roomInfo: settings });
   }
 
   sendChat(from: string, message: string) {

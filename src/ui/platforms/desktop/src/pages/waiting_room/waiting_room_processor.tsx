@@ -109,9 +109,7 @@ export class WaitingRoomProcessor {
   }
 
   private onGameInfoUpdate(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.GameInfoUpdate>) {
-    const { roomName, campaignMode, coreVersion, hostPlayerId, ...settings } = evt.roomInfo;
-
-    this.presenter.updateGameSettings(this.store, settings);
+    this.presenter.updateGameSettings(this.store, evt.roomInfo);
   }
 
   private onGameStart(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.GameStart>) {

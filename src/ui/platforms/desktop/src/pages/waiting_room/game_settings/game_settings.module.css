@@ -22,11 +22,17 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+
 }
 
 .inputTitle {
   font-size: 14px;
   color: white;
   font-weight: 550;
-  margin-bottom: calc(gridLine * 2);
+  margin-bottom: gridLine;
+  min-width: calc(gridLine * 6);
+}
+
+.saveButton {
+  align-self: center;
 }

@@ -1,4 +1,4 @@
-import { WaitingRoomClientEventFinder, WaitingRoomEvent } from 'core/event/event';
+import { WaitingRoomClientEventFinder, WaitingRoomEvent, WaitingRoomServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { WaitingRoomInfo } from 'core/room/waiting_room';
 import { Logger } from 'core/shares/libs/logger/logger';
@@ -31,8 +31,9 @@ export class WaitingRoomSocket {
       socket.on('disconnect', () => {
         logger.info('user ' + socket.id + ' disconnected');
         if (this.connectedPlayersMap[socket.id]) {
-          socket.emit(WaitingRoomEvent.PlayerLeave, {
-            playerId: this.connectedPlayersMap[socket.id],
+          this.broadcast(WaitingRoomEvent.PlayerLeave, {
+            leftPlayerId: this.connectedPlayersMap[socket.id],
+            byKicked: false,
           });
           socket.leave(this.waitingRoomInfo.roomId.toString());
 
@@ -44,6 +45,10 @@ export class WaitingRoomSocket {
         }
       });
     });
+  }
+
+  private broadcast<Event extends WaitingRoomEvent>(e: Event, content: WaitingRoomServerEventFinder<Event>) {
+    this.socket.emit(e, content);
   }
 
   private getAvailabeSeatId() {
@@ -59,7 +64,11 @@ export class WaitingRoomSocket {
   private readonly onGameInfoUpdate = (socket: SocketIO.Socket) => (
     evt: WaitingRoomClientEventFinder<WaitingRoomEvent.GameInfoUpdate>,
   ) => {
-    socket.emit(WaitingRoomEvent.GameInfoUpdate, evt);
+    for (const key of Object.keys(evt.roomInfo)) {
+      this.waitingRoomInfo.roomInfo[key] = evt.roomInfo[key];
+    }
+
+    this.broadcast(WaitingRoomEvent.GameInfoUpdate, evt);
   };
 
   private readonly onGameStart = (socket: SocketIO.Socket) => (
@@ -70,7 +79,7 @@ export class WaitingRoomSocket {
       campaignMode: !!evt.roomInfo.campaignMode,
       flavor: this.flavor,
     });
-    socket.emit(WaitingRoomEvent.GameStart, {
+    this.broadcast(WaitingRoomEvent.GameStart, {
       roomId,
       otherPlayersId: this.waitingRoomInfo.players.map(player => player.playerId),
       roomInfo: gameInfo,
@@ -80,7 +89,7 @@ export class WaitingRoomSocket {
   private readonly onSendMessage = (socket: SocketIO.Socket) => (
     evt: WaitingRoomClientEventFinder<WaitingRoomEvent.PlayerChatMessage>,
   ) => {
-    socket.emit(WaitingRoomEvent.PlayerChatMessage, { ...evt, timestamp: Date.now() });
+    this.broadcast(WaitingRoomEvent.PlayerChatMessage, { ...evt, timestamp: Date.now() });
   };
 
   private readonly onPlayerEnter = (socket: SocketIO.Socket) => (
@@ -89,17 +98,17 @@ export class WaitingRoomSocket {
     const seatId = this.getAvailabeSeatId();
     if (
       seatId < 0 ||
-      this.waitingRoomInfo.players.length + this.waitingRoomInfo.closedSeats.length >=
-        this.waitingRoomInfo.roomInfo.numberOfPlayers ||
+      this.waitingRoomInfo.players.length > this.waitingRoomInfo.roomInfo.numberOfPlayers ||
       evt.coreVersion !== Sanguosha.Version
     ) {
-      socket.emit(WaitingRoomEvent.PlayerLeave, { playerId: evt.playerInfo.playerId });
+      this.broadcast(WaitingRoomEvent.PlayerLeave, { leftPlayerId: evt.playerInfo.playerId, byKicked: false });
     } else {
       this.connectedPlayersMap[socket.id] = evt.playerInfo.playerId;
 
       const playerInfo = { ...evt.playerInfo, seatId };
       this.waitingRoomInfo.players.push(playerInfo);
-      socket.emit(WaitingRoomEvent.PlayerEnter, {
+      this.broadcast(WaitingRoomEvent.PlayerEnter, {
+        hostPlayerId: this.waitingRoomInfo.hostPlayerId,
         playerInfo,
         otherPlayersInfo: this.waitingRoomInfo.players.filter(p => p.playerId !== playerInfo.playerId),
         roomInfo: this.waitingRoomInfo.roomInfo,
@@ -110,29 +119,31 @@ export class WaitingRoomSocket {
   private readonly onPlayerLeave = (socket: SocketIO.Socket) => (
     evt: WaitingRoomClientEventFinder<WaitingRoomEvent.PlayerLeave>,
   ) => {
-    socket.emit(WaitingRoomEvent.PlayerLeave, { ...evt, byKicked: false });
+    this.broadcast(WaitingRoomEvent.PlayerLeave, { ...evt, byKicked: false });
     this.waitingRoomInfo.players = this.waitingRoomInfo.players.filter(p => p.playerId !== evt.leftPlayerId);
   };
 
   private readonly onPlayerReady = (socket: SocketIO.Socket) => (
     evt: WaitingRoomClientEventFinder<WaitingRoomEvent.PlayerReady>,
   ) => {
-    socket.emit(WaitingRoomEvent.PlayerReady, evt);
+    this.broadcast(WaitingRoomEvent.PlayerReady, evt);
   };
 
   private readonly onSeatDisabled = (socket: SocketIO.Socket) => (
     evt: WaitingRoomClientEventFinder<WaitingRoomEvent.SeatDisabled>,
   ) => {
     if (evt.kickedPlayerId) {
-      socket.emit(WaitingRoomEvent.PlayerLeave, { leftPlayerId: evt.kickedPlayerId, byKicked: true });
+      this.broadcast(WaitingRoomEvent.PlayerLeave, { leftPlayerId: evt.kickedPlayerId, byKicked: true });
       this.waitingRoomInfo.players = this.waitingRoomInfo.players.filter(p => p.playerId !== evt.kickedPlayerId);
     }
 
-    socket.emit(WaitingRoomEvent.SeatDisabled, evt);
+    this.broadcast(WaitingRoomEvent.SeatDisabled, evt);
     if (evt.disabled) {
       this.waitingRoomInfo.closedSeats.push(evt.seatId);
+      this.waitingRoomInfo.roomInfo.numberOfPlayers--;
     } else {
       this.waitingRoomInfo.closedSeats = this.waitingRoomInfo.closedSeats.filter(s => s !== evt.seatId);
+      this.waitingRoomInfo.roomInfo.numberOfPlayers++;
     }
   };
 
@@ -140,9 +151,14 @@ export class WaitingRoomSocket {
     evt: WaitingRoomClientEventFinder<WaitingRoomEvent.RoomCreated>,
   ) => {
     if (evt.roomInfo.coreVersion !== Sanguosha.Version) {
-      socket.emit(WaitingRoomEvent.RoomCreated, { error: 'unmatched core version' });
+      this.broadcast(WaitingRoomEvent.RoomCreated, { error: 'unmatched core version' });
     } else {
-      socket.emit(WaitingRoomEvent.RoomCreated, evt);
+      this.broadcast(WaitingRoomEvent.RoomCreated, {
+        error: null,
+        ...evt,
+        roomId: this.waitingRoomInfo.roomId,
+        disabledSeats: this.waitingRoomInfo.closedSeats,
+      });
     }
   };
 

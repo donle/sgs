@@ -1,15 +1,7 @@
-import { TemporaryRoomCreationInfo } from 'core/game/game_props';
+import { WaitingRoomGameSettings } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import * as mobx from 'mobx';
 import { ChatPacketObject } from 'services/connection_service/connection_service';
-
-export type WaitingRoomGameSettings = Pick<
-  TemporaryRoomCreationInfo,
-  Exclude<
-    keyof TemporaryRoomCreationInfo,
-    'roomName' | 'campaignMode' | 'coreVersion' | 'hostPlayerId'
-  >
->;
 
 export type WaitingRoomSeatInfo = { seatId: number } & (
   | {
@@ -26,7 +18,7 @@ export class WaitingRoomStore {
   constructor(public readonly selfPlayerId: PlayerId) {}
 
   @mobx.observable.deep
-  gameSettings: WaitingRoomGameSettings;
+  gameSettings: WaitingRoomGameSettings = {} as any;
 
   @mobx.observable.deep
   seats: WaitingRoomSeatInfo[] = [];
