@@ -133,8 +133,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'pve_longshen_longhou_description',
-    target:
-      '<b>锁定技</b>，每回合限三次，当你使用牌指定其它角色为目标后，你令其体力上限+1，然后受到其已损失体力值的伤害。',
+    target: '<b>锁定技</b>，每回合限三次，当你使用牌指定其它角色为目标后，其受到其已损失体力值的伤害，然后体力上限+1。',
   },
   { source: 'pve_longshen_longwei_description', target: '<b>锁定技</b>，你的回合外，其它角色使用的前3张牌对你无效。' },
   {

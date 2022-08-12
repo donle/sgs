@@ -725,15 +725,17 @@ export class PveLongShenLongHou extends TriggerSkill {
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const { fromId, triggeredOnEvent } = event;
     const aimEvent = triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.AimEvent>;
-    const { toId } = aimEvent;
-    await room.changeMaxHp(toId, 1);
-    await room.damage({
-      fromId,
-      toId,
-      damage: room.getPlayerById(toId).LostHp,
-      damageType: DamageType.Normal,
-      triggeredBySkills: [this.Name],
-    });
+    const target = room.getPlayerById(aimEvent.toId);
+    if (target.isInjured()) {
+      await room.damage({
+        fromId,
+        toId: target.Id,
+        damage: target.LostHp,
+        damageType: DamageType.Normal,
+        triggeredBySkills: [this.Name],
+      });
+    }
+    await room.changeMaxHp(target.Id, 1);
     return true;
   }
 }
