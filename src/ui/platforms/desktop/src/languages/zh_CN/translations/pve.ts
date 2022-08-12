@@ -139,7 +139,7 @@ export const skillDescriptions: Word[] = [
   { source: 'pve_longshen_longwei_description', target: '<b>锁定技</b>，你的回合外，其它角色使用的前3张牌对你无效。' },
   {
     source: 'pve_longshen_longen_description',
-    target: '<b>锁定技</b>，其它角色摸牌时，视为你对其使用一张火杀，然后你令其多摸一张牌。',
+    target: '<b>锁定技</b>，其它角色摸牌时，然后你令其多摸一张牌。若本回合你已发动此技能三次，你终止其摸牌流程。',
   },
   {
     source: 'pve_longshen_longxiao_description',

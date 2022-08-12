@@ -780,11 +780,12 @@ export class PveLongShenLongEn extends TriggerSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const drawCardEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DrawCardEvent>;
-    drawCardEvent.drawAmount += 1;
 
-    const slash = VirtualCard.create<Slash>({ cardName: 'fire_slash', bySkill: this.Name }).Id;
-    const slashUseEvent = { fromId: event.fromId, cardId: slash, targetGroup: [[drawCardEvent.fromId]] };
-    await room.useCard(slashUseEvent);
+    if (room.getPlayerById(event.fromId).hasUsedSkillTimes(this.Name) < 3) {
+      drawCardEvent.drawAmount += 1;
+    } else {
+      EventPacker.terminate(event);
+    }
 
     return true;
   }
