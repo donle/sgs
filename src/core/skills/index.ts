@@ -628,8 +628,7 @@ export { PveClassicTianXiang } from './game_mode/pve/pve_classic_tianxiang';
 export { PveClassicLianZhen, PveClassicLianZhenBuf } from './game_mode/pve/pve_classic_lianzhen';
 export {
   PveLongShenQiFu,
-  PveLongShenJuHun,
-  PveLongShenZhanPo,
+  PveLongShenQiFuReward,
   PveLongShenZiYu,
   PveLongShenChouXin,
   PveLongShenSuWei,

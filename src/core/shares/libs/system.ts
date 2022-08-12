@@ -81,8 +81,7 @@ export namespace System {
     XianSi,
     MouLi,
     ZuoXing,
-    PveLongShenJuHun,
-    PveLongShenZhanPo,
+    PveLongShenQiFu,
   }
 
   export const SideEffectSkillAppliers: { [K in SideEffectSkillApplierEnum]: SideEffectSkillApplierFunc } = {
@@ -101,10 +100,7 @@ export namespace System {
     [SideEffectSkillApplierEnum.ZuoXing]: (player: Player, room: Room) => {
       return player.getFlag(ZuoXing.Name);
     },
-    [SideEffectSkillApplierEnum.PveLongShenJuHun]: (player: Player, _: Room, sourceId: PlayerId) => {
-      return player.Id !== sourceId;
-    },
-    [SideEffectSkillApplierEnum.PveLongShenZhanPo]: (player: Player, _: Room, sourceId: PlayerId) => {
+    [SideEffectSkillApplierEnum.PveLongShenQiFu]: (player: Player, _: Room, sourceId: PlayerId) => {
       return player.Id !== sourceId;
     },
   };

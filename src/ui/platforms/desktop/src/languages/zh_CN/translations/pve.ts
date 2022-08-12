@@ -3,8 +3,7 @@ import { Word } from 'languages';
 export const characterDictionary: Word[] = [
   { source: 'pve_longshen', target: '龙神' },
   { source: 'pve_longshen_qifu', target: '祈福' },
-  { source: '~pve_longshen_juhun', target: '拘魂' },
-  { source: '~pve_longshen_zhanpo', target: '斩魄' },
+  { source: '~pve_longshen_qifu', target: '祈福' },
   { source: 'pve_longshen_chouxin', target: '抽薪' },
   { source: 'pve_longshen_suwei', target: '肃威' },
   { source: 'pve_longshen_ziyu', target: '自愈' },
@@ -59,21 +58,6 @@ export const characterDictionary: Word[] = [
   { source: '#####pve_classic_guyong', target: '孤勇-破军' },
   { source: 'pve_classic_ai', target: '合击' },
   { source: '#pve_classic_ai', target: '合击' },
-  { source: 'pve_beifa', target: '北伐' },
-  { source: 'pve_beifa times: {0}', target: '北[{0}]' },
-  { source: 'pve_buxu', target: '不许' },
-  { source: 'pve_buxu times: {0}', target: '不[{0}]' },
-  { source: 'pve_dudu', target: '都督' },
-  { source: 'pve_dudu times: {0}', target: '都[{0}]' },
-  { source: 'pve_feihua', target: '飞华' },
-  { source: 'pve_feihua times: {0}', target: '废[{0}]' },
-  { source: 'pve_chengxiang', target: '丞相' },
-  { source: 'pve_chengxiang times: {0}', target: '丞[{0}]' },
-  { source: 'pve_zhibing', target: '知兵' },
-  { source: 'pve_zhibing times: {0}', target: '知[{0}]' },
-  { source: 'pve_pyjiaoyi', target: '交易' },
-  { source: 'pve_tishen', target: '替身' },
-  { source: 'pve_zhiheng', target: '再议' },
 
   { source: '{0} level start', target: '====== 第{0}关开始 ======' },
 ];
@@ -82,7 +66,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_longshen_qifu_description',
     target:
-      '你令其它角色获得“拘魂”和“斩魄”。<b>招魂</b>：其它角色可以从五名武将选择并获得其一个技能。<b>斩魄</b>：其它角色可以封印你的一个技能，并失去x个技能（x为此技能权重-1）',
+      '<b>限定技</b>其它角色回合内，其可以发动此技能。若其技能数量小于5，其可以从五名武将中选择一个技能获得；或者其可以选择获得你的一个技能，并失去x个技能（x为技能权重且不大于2）。',
   },
   {
     source: 'pve_longshen_ziyu_description',
@@ -116,8 +100,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'pve_longshen_longshi_description',
-    target:
-      '<b>锁定技</b>，准备阶段开始时，你依次弃置其它角色各个区域至多三张牌；若你以此法弃置的卡牌类型之和：为3，你获得这些牌，为2，你对其造成一点伤害，不大于1，你扣减其一点体力上限。',
+    target: '<b>锁定技</b>，准备阶段开始时，你依次弃置其它角色至多三张牌，并视为对其使用一张杀。',
   },
   {
     source: 'pve_longshen_longli_description',

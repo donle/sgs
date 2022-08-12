@@ -26,6 +26,7 @@ import { TranslationPack } from 'core/translations/translation_json_tool';
 import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { OnDefineReleaseTiming } from 'core/skills/skill_hooks';
 import { System } from 'core/shares/libs/system';
+import { Algorithm } from 'core/shares/libs/algorithm';
 
 export const pveLongShenSkills = [
   { name: 'pve_longshen_ziyu', weights: 2 },
@@ -57,13 +58,11 @@ export class PveLongShenQiFu extends TriggerSkill implements OnDefineReleaseTimi
   }
 
   async whenLosingSkill(room: Room) {
-    room.uninstallSideEffectSkill(System.SideEffectSkillApplierEnum.PveLongShenJuHun);
-    room.uninstallSideEffectSkill(System.SideEffectSkillApplierEnum.PveLongShenZhanPo);
+    room.uninstallSideEffectSkill(System.SideEffectSkillApplierEnum.PveLongShenQiFu);
   }
 
   async whenObtainingSkill(room: Room, owner: Player) {
-    room.installSideEffectSkill(System.SideEffectSkillApplierEnum.PveLongShenJuHun, PveLongShenJuHun.Name, owner.Id);
-    room.installSideEffectSkill(System.SideEffectSkillApplierEnum.PveLongShenZhanPo, PveLongShenZhanPo.Name, owner.Id);
+    room.installSideEffectSkill(System.SideEffectSkillApplierEnum.PveLongShenQiFu, PveLongShenQiFu.Name, owner.Id);
   }
 
   isTriggerable(_: ServerEventFinder<GameEventIdentifiers.LevelBeginEvent>, stage?: AllStage) {
@@ -80,21 +79,10 @@ export class PveLongShenQiFu extends TriggerSkill implements OnDefineReleaseTimi
   }
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
-    room.installSideEffectSkill(
-      System.SideEffectSkillApplierEnum.PveLongShenJuHun,
-      PveLongShenJuHun.Name,
-      event.fromId,
-    );
-
-    room.installSideEffectSkill(
-      System.SideEffectSkillApplierEnum.PveLongShenZhanPo,
-      PveLongShenZhanPo.Name,
-      event.fromId,
-    );
+    room.installSideEffectSkill(System.SideEffectSkillApplierEnum.PveLongShenQiFu, PveLongShenQiFu.Name, event.fromId);
 
     room.getOtherPlayers(event.fromId).forEach(player => {
-      room.refreshPlayerOnceSkill(player.Id, PveLongShenJuHun.Name);
-      room.refreshPlayerOnceSkill(player.Id, PveLongShenZhanPo.Name);
+      room.refreshPlayerOnceSkill(player.Id, PveLongShenQiFu.Name);
     });
 
     return true;
@@ -102,10 +90,20 @@ export class PveLongShenQiFu extends TriggerSkill implements OnDefineReleaseTimi
 }
 
 @SideEffectSkill
-@LimitSkill({ name: 'pve_longshen_juhun', description: 'pve_longshen_juhun_description' })
-export class PveLongShenJuHun extends ActiveSkill {
-  public canUse() {
-    return true;
+@LimitSkill({ name: 'pve_longshen_qifu', description: 'pve_longshen_qifu_description' })
+export class PveLongShenQiFuReward extends ActiveSkill {
+  public canUse(room: Room, owner: Player) {
+    const boss = room.Players.find(player => player.hasSkill(this.GeneralName));
+    if (boss === undefined) {
+      return false;
+    }
+    if (owner.getPlayerSkills().length < 5) {
+      return true;
+    } else {
+      const skillsName = boss.getPlayerSkills().map(skill => skill.Name);
+      const candSkills = pveLongShenSkills.slice().filter(sw => skillsName.includes(sw.name) && sw.weights < 3);
+      return candSkills.length > 0;
+    }
   }
 
   public numberOfTargets() {
@@ -129,6 +127,34 @@ export class PveLongShenJuHun extends ActiveSkill {
   }
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    const skills = room
+      .getPlayerById(event.fromId)
+      .getPlayerSkills()
+      .filter(skill => !skill.isShadowSkill());
+
+    if (skills.length >= 5) {
+      const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
+        options: skills.map(skill => skill.Name),
+        toId: event.fromId,
+        conversation: 'Please drop a skill',
+        triggeredBySkills: [this.Name],
+      };
+
+      room.notify(
+        GameEventIdentifiers.AskForChoosingOptionsEvent,
+        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(
+          askForChoosingOptionsEvent,
+        ),
+        event.fromId,
+      );
+
+      const chooseResp = await room.onReceivingAsyncResponseFrom(
+        GameEventIdentifiers.AskForChoosingOptionsEvent,
+        event.fromId,
+      );
+      room.loseSkill(event.fromId, chooseResp.selectedOption!);
+    }
+
     const characters = room.getRandomCharactersFromLoadedPackage(5);
     room.notify(
       GameEventIdentifiers.AskForChoosingCharacterEvent,
@@ -172,114 +198,6 @@ export class PveLongShenJuHun extends ActiveSkill {
       event.fromId,
     );
     room.obtainSkill(event.fromId, chooseResp.selectedOption!);
-
-    return true;
-  }
-}
-
-@SideEffectSkill
-@LimitSkill({ name: 'pve_longshen_zhanpo', description: 'pve_longshen_zhanpo_description' })
-export class PveLongShenZhanPo extends ActiveSkill {
-  canUse(room: Room, owner: Player) {
-    const boss = room.AlivePlayers.find(player => player.hasSkill(PveLongShenQiFu.Name));
-    return (
-      boss !== undefined &&
-      owner.getPlayerSkills().length > 1 &&
-      pveLongShenSkills
-        .slice()
-        .filter(sw => sw.weights > 1)
-        .filter(sw => boss.getPlayerSkills().find(skill => skill.Name === sw.name))
-        .map(sw => sw.name).length > 0
-    );
-  }
-
-  numberOfTargets() {
-    return 0;
-  }
-
-  cardFilter(_: Room, __: Player, cards: CardId[]): boolean {
-    return cards.length === 0;
-  }
-
-  isAvailableTarget() {
-    return false;
-  }
-
-  isAvailableCard(): boolean {
-    return false;
-  }
-
-  async onUse() {
-    return true;
-  }
-
-  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
-    const boss = room.AlivePlayers.find(player => player.hasSkill(PveLongShenQiFu.Name));
-    if (boss === undefined) {
-      return false;
-    }
-
-    const bossSkills = boss.getPlayerSkills();
-    const options = pveLongShenSkills
-      .slice()
-      .filter(sw => sw.weights > 1)
-      .filter(sw => bossSkills.find(skill => skill.Name === sw.name))
-      .map(sw => sw.name);
-
-    if (options.length === 0) {
-      return true;
-    }
-
-    const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
-      options,
-      toId: event.fromId,
-      conversation: 'Please choose drop one boss skill',
-      triggeredBySkills: [this.Name],
-    };
-
-    room.notify(
-      GameEventIdentifiers.AskForChoosingOptionsEvent,
-      EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(askForChoosingOptionsEvent),
-      event.fromId,
-    );
-
-    const chooseResp = await room.onReceivingAsyncResponseFrom(
-      GameEventIdentifiers.AskForChoosingOptionsEvent,
-      event.fromId,
-    );
-
-    const selectedOption = chooseResp.selectedOption !== undefined ? chooseResp.selectedOption : options[0];
-
-    const skillName = selectedOption[0];
-    const skillNum = pveLongShenSkills.find(sw => sw.name === skillName)!.weights - 1;
-
-    for (let i = 0; i < skillNum; i++) {
-      const skills = room
-        .getPlayerById(event.fromId)
-        .getPlayerSkills()
-        .filter(skill => !skill.isShadowSkill());
-      const askForChoosingOptionsEvent: ServerEventFinder<GameEventIdentifiers.AskForChoosingOptionsEvent> = {
-        options: skills.map(skill => skill.Name),
-        toId: event.fromId,
-        conversation: 'Please drop a skill',
-        triggeredBySkills: [this.Name],
-      };
-
-      room.notify(
-        GameEventIdentifiers.AskForChoosingOptionsEvent,
-        EventPacker.createUncancellableEvent<GameEventIdentifiers.AskForChoosingOptionsEvent>(
-          askForChoosingOptionsEvent,
-        ),
-        event.fromId,
-      );
-
-      const chooseResp = await room.onReceivingAsyncResponseFrom(
-        GameEventIdentifiers.AskForChoosingOptionsEvent,
-        event.fromId,
-      );
-      room.loseSkill(event.fromId, chooseResp.selectedOption!);
-    }
-    room.loseSkill(boss.Id, skillName);
 
     return true;
   }
@@ -545,75 +463,18 @@ export class PveLongShenLongShi extends TriggerSkill {
     return true;
   }
 
-  public async longShiDropCard(room: Room, owner: Player, target: Player): Promise<CardId[]> {
-    const dropCardIds: CardId[] = [];
-
-    for (const area of [PlayerCardsArea.JudgeArea, PlayerCardsArea.EquipArea, PlayerCardsArea.HandArea]) {
-      const cardIds = target.getCardIds(area);
-      if (cardIds.length > 0) {
-        dropCardIds.push(cardIds[Math.floor(Math.random() * cardIds.length)]);
-      }
-    }
-
-    const targetOutSideCardIds: CardId[] = [];
-    for (const [, cards] of Object.entries(target.getOutsideAreaCards())) {
-      targetOutSideCardIds.push(...cards);
-    }
-
-    if (targetOutSideCardIds.length > 0 && dropCardIds.length < 3) {
-      dropCardIds.push(targetOutSideCardIds[Math.floor(targetOutSideCardIds.length * Math.random())]);
-    }
-
-    await room.dropCards(CardMoveReason.PassiveDrop, dropCardIds, target.Id, owner.Id, this.Name);
-
-    return dropCardIds;
-  }
-
   async onEffect(room: Room, skillUseEvent: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const fromId = skillUseEvent.fromId;
     const targetPlayers: Player[] = room.AlivePlayers.filter(player => player.Id !== fromId);
 
     for (const target of targetPlayers) {
-      const longShiDropCardIds = await this.longShiDropCard(room, room.getPlayerById(fromId), target);
-      const cardTypeNum = longShiDropCardIds.reduce<CardType[]>((allTypes, cardId) => {
-        const card = Sanguosha.getCardById(cardId);
-        if (!allTypes.includes(card.BaseType)) {
-          allTypes.push(card.BaseType);
-        }
-
-        return allTypes;
-      }, []).length;
-
-      switch (cardTypeNum) {
-        case 0:
-        case 1:
-          await room.changeMaxHp(target.Id, -1);
-          break;
-        case 2:
-          await room.damage({
-            fromId,
-            toId: target.Id,
-            damage: 1,
-            damageType: DamageType.Normal,
-            triggeredBySkills: [this.Name],
-          });
-          break;
-        case 3:
-          await room.moveCards({
-            movingCards: longShiDropCardIds.map(cardId => ({
-              card: cardId,
-              fromArea: CardMoveArea.DropStack,
-            })),
-            moveReason: CardMoveReason.ActivePrey,
-            toId: fromId,
-            toArea: PlayerCardsArea.HandArea,
-            proposer: fromId,
-            movedByReason: this.Name,
-          });
-          break;
-        default:
-          break;
-      }
+      const allCards = target.getPlayerCards();
+      Algorithm.shuffle(allCards);
+      const dropCards = allCards.slice(0, 3);
+      await room.dropCards(CardMoveReason.PassiveDrop, dropCards, target.Id, fromId, this.Name);
+      const slash = VirtualCard.create<Slash>({ cardName: 'fire_slash', bySkill: this.Name }).Id;
+      const slashUseEvent = { fromId, cardId: slash, targetGroup: [[target.Id]] };
+      await room.useCard(slashUseEvent);
     }
     return true;
   }
