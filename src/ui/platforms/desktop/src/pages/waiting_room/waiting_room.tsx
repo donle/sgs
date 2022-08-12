@@ -98,9 +98,9 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
 
         const { roomName, campaignMode, coreVersion, hostPlayerId, ...settings } = content.roomInfo;
         this.presenter.updateGameSettings(this.store, settings);
-        this.presenter.initSeatsInfo(this.store);
       });
 
+      this.presenter.initSeatsInfo(this.store);
       this.services.eventSenderService.enterRoom(
         this.selfPlayerId,
         this.services.avatarService.getRandomAvatarIndex(),

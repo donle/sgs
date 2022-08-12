@@ -138,6 +138,7 @@ export class WaitingRoomSocket {
     }
 
     this.broadcast(WaitingRoomEvent.SeatDisabled, evt);
+
     if (evt.disabled) {
       this.waitingRoomInfo.closedSeats.push(evt.seatId);
       this.waitingRoomInfo.roomInfo.numberOfPlayers--;

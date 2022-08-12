@@ -57,11 +57,11 @@ export class RoomService {
   }
 
   private getWaitingRoomInfo(room: WaitingRoomInfo): RoomInfo {
-    const { roomInfo, players, closedSeats, roomId } = room;
+    const { roomInfo, players, roomId } = room;
     return {
       name: roomInfo.roomName,
       activePlayers: players.length,
-      totalPlayers: roomInfo.numberOfPlayers - closedSeats.length,
+      totalPlayers: roomInfo.numberOfPlayers,
       status: 'waiting',
       packages: roomInfo.characterExtensions,
       id: roomId,

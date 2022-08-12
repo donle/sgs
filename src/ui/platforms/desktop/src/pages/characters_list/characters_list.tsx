@@ -18,6 +18,7 @@ import { Button } from 'ui/button/button';
 import { CharacterCard } from 'ui/character/character';
 import { CharacterSkinCard, CharacterSpec } from 'ui/character/characterSkin';
 import { CheckBoxGroup } from 'ui/check_box/check_box_group';
+import { CheckBoxGroupPresenter } from 'ui/check_box/check_box_group_presenter';
 import { Picture } from 'ui/picture/picture';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import styles from './characters_list.module.css';
@@ -36,6 +37,22 @@ export class CharactersList extends React.Component<CharactersListProps> {
   private roomListBackgroundImage = this.props.imageLoader.getRoomListBackgroundImage();
   private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
 
+  private checkBoxPresenter = new CheckBoxGroupPresenter();
+  private nationalityCheckBoxStore = this.checkBoxPresenter.createStore<CharacterNationality>(
+    Sanguosha.getNationalitiesList().map(nationality => ({
+      label: this.props.translator.tr(Functional.getPlayerNationalityText(nationality)),
+      checked: true,
+      id: nationality,
+    })),
+  );
+  private gameCharacterExtensionsStore = this.checkBoxPresenter.createStore<GameCharacterExtensions>(
+    Sanguosha.getGameCharacterExtensions().map(extension => ({
+      id: extension,
+      label: this.props.translator.tr(extension),
+      checked: true,
+    })),
+  );
+
   @mobx.observable.ref
   private focusedCharacterId: CharacterId;
   @mobx.observable.ref
@@ -45,20 +62,15 @@ export class CharactersList extends React.Component<CharactersListProps> {
     this.props.history.push('/lobby');
   };
 
-  @mobx.observable.shallow
-  private checkedExtensions: GameCharacterExtensions[] = Sanguosha.getGameCharacterExtensions();
-  @mobx.observable.shallow
-  private selectedNationalities: CharacterNationality[] = Sanguosha.getNationalitiesList();
+  @mobx.computed
+  private get checkedExtensions() {
+    return this.gameCharacterExtensionsStore.options.filter(o => o.checked).map(o => o.id);
+  }
 
-  @mobx.action
-  private readonly onCheckExtension = (exts: GameCharacterExtensions[]) => {
-    this.checkedExtensions = exts;
-  };
-
-  @mobx.action
-  private readonly onCheckNationality = (nationalities: CharacterNationality[]) => {
-    this.selectedNationalities = nationalities;
-  };
+  @mobx.computed
+  private get selectedNationalities() {
+    return this.nationalityCheckBoxStore.options.filter(o => o.checked).map(o => o.id);
+  }
 
   @mobx.computed
   private get Characters() {
@@ -76,6 +88,7 @@ export class CharactersList extends React.Component<CharactersListProps> {
   private readonly onfocusedSkinName = (skinName: string) => {
     this.focusedSkinName = skinName;
   };
+
   render() {
     return (
       <div className={styles.charactersList}>
@@ -91,22 +104,14 @@ export class CharactersList extends React.Component<CharactersListProps> {
             <div className={styles.checkboxGroups}>
               <CheckBoxGroup
                 className={styles.packagesGroup}
-                options={Sanguosha.getGameCharacterExtensions().map(ext => ({
-                  label: this.props.translator.tr(ext),
-                  checked: true,
-                  id: ext,
-                }))}
-                onChecked={this.onCheckExtension}
+                store={this.gameCharacterExtensionsStore}
+                presenter={this.checkBoxPresenter}
                 itemsPerLine={6}
               />
               <CheckBoxGroup
                 className={styles.nationalitiesGroup}
-                options={Sanguosha.getNationalitiesList().map(nationality => ({
-                  label: this.props.translator.tr(Functional.getPlayerNationalityText(nationality)),
-                  checked: true,
-                  id: nationality,
-                }))}
-                onChecked={this.onCheckNationality}
+                store={this.nationalityCheckBoxStore}
+                presenter={this.checkBoxPresenter}
                 itemsPerLine={6}
               />
             </div>

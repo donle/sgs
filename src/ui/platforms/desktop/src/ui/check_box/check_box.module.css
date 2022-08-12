@@ -19,7 +19,7 @@
 }
 
 .regularCheckBox {
-    width: 25%;
+    margin-right: gridLine;
 }
 .squashCheckBox {
     width: 20%;

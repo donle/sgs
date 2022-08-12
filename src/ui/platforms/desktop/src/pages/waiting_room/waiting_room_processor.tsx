@@ -9,7 +9,7 @@ import { WaitingRoomPresenter } from './waiting_room.presenter';
 import { WaitingRoomSeatInfo, WaitingRoomStore } from './waiting_room.store';
 
 interface WaitingRoomProcessorListenerData {
-  [WaitingRoomEvent.PlayerEnter]: { roomInfo: TemporaryRoomCreationInfo };
+  [WaitingRoomEvent.PlayerEnter]: { roomInfo: TemporaryRoomCreationInfo; seatsInfo: WaitingRoomSeatInfo[] };
 }
 
 export class WaitingRoomProcessor {
@@ -99,13 +99,12 @@ export class WaitingRoomProcessor {
       });
     }
 
+
     this.presenter.sendChatMessage(this.store, {
       from: this.translator.tr(this.messages.systemNotification()),
       message: this.messages.playerEnter(evt.playerInfo.playerName),
       timestamp: Date.now(),
     });
-
-    this.playerEnterListener?.({ roomInfo: evt.roomInfo });
   }
 
   private onGameInfoUpdate(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.GameInfoUpdate>) {

@@ -781,4 +781,6 @@ export const UiDictionary: Word[] = [
   { source: 'start game', target: '开始游戏' },
   { source: 'second', target: '秒' },
   { source: 'save settings', target: '保存设置' },
+  { source: 'campaign', target: '单人游戏' },
+  { source: 'multi online', target: '联机游戏' },
 ];

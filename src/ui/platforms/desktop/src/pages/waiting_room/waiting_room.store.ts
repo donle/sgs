@@ -17,12 +17,12 @@ export type WaitingRoomSeatInfo = { seatId: number } & (
 export class WaitingRoomStore {
   constructor(public readonly selfPlayerId: PlayerId) {}
 
-  @mobx.observable.deep
+  @mobx.observable.ref
   gameSettings: WaitingRoomGameSettings = {} as any;
 
-  @mobx.observable.deep
+  @mobx.observable.shallow
   seats: WaitingRoomSeatInfo[] = [];
 
-  @mobx.observable.deep
+  @mobx.observable.shallow
   chatMessages: ChatPacketObject[] = [];
 }

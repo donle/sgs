@@ -54,14 +54,32 @@ class ClickableSeat extends React.Component<{
     );
   };
 
-  @mobx.action
-  async componentDidUpdate() {
+  // constructor(props: any) {
+  //   super(props);
+
+  //   this.doPlayersUpdate();
+  // }
+
+  private async doPlayersUpdate() {
     if (!this.props.seatInfo.seatDisabled && this.props.seatInfo.playerAvatarId) {
       const latestAvatar = await this.props.avatarService.getAvatarByIndex(this.props.seatInfo.playerAvatarId);
       if (this.characterAvatar.src !== latestAvatar.src) {
-        this.characterAvatar = latestAvatar;
+        mobx.runInAction(() => {
+          this.characterAvatar = latestAvatar;
+        });
+      }
+    } else {
+      const latestAvatar = this.props.imageLoader.getEmptySeatImage();
+      if (this.characterAvatar.src !== latestAvatar.src) {
+        mobx.runInAction(() => {
+          this.characterAvatar = latestAvatar;
+        });
       }
     }
+  }
+
+  componentDidUpdate() {
+    this.doPlayersUpdate();
   }
 
   render() {
