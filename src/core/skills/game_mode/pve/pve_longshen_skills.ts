@@ -100,37 +100,27 @@ export class PveLongShenQiFu extends TriggerSkill implements OnDefineReleaseTimi
 @SideEffectSkill
 @LimitSkill({ name: 'pve_longshen_qifu', description: 'pve_longshen_qifu_description' })
 export class PveLongShenQiFuReward extends ActiveSkill {
-  public canUse(room: Room, owner: Player) {
-    const boss = room.Players.find(player => player.hasSkill(this.GeneralName));
-    if (boss === undefined) {
-      return false;
-    }
-    if (owner.getPlayerSkills().length < 5) {
-      return true;
-    } else {
-      const skillsName = boss.getPlayerSkills().map(skill => skill.Name);
-      const candSkills = pveLongShenSkills.slice().filter(sw => skillsName.includes(sw.name) && sw.weights < 3);
-      return candSkills.length > 0;
-    }
+  canUse() {
+    return true;
   }
 
-  public numberOfTargets() {
+  numberOfTargets() {
     return 0;
   }
 
-  public cardFilter(_: Room, __: Player, cards: CardId[]): boolean {
+  cardFilter(_: Room, __: Player, cards: CardId[]): boolean {
     return cards.length === 0;
   }
 
-  public isAvailableTarget() {
+  isAvailableTarget() {
     return false;
   }
 
-  public isAvailableCard(): boolean {
+  isAvailableCard(): boolean {
     return false;
   }
 
-  public async onUse() {
+  async onUse() {
     return true;
   }
 

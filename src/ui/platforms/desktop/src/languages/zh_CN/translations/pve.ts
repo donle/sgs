@@ -66,7 +66,7 @@ export const skillDescriptions: Word[] = [
   {
     source: 'pve_longshen_qifu_description',
     target:
-      '<b>限定技</b>其它角色回合内，其可以发动此技能。若其技能数量小于5，其可以从五名武将中选择一个技能获得；或者其可以选择获得你的一个技能，并失去x个技能（x为技能权重且不大于2）。',
+      '<b>限定技</b>其它角色回合内，其可以发动此技能，从五名武将中选择一个技能获得；若其技能数多于5，其需先选择一个技能失去。',
   },
   {
     source: 'pve_longshen_ziyu_description',
