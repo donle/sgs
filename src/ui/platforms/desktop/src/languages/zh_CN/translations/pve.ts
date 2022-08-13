@@ -100,7 +100,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'pve_longshen_longshi_description',
-    target: '<b>锁定技</b>，准备阶段开始时，你依次弃置其它角色至多三张牌，并视为对其使用一张杀。',
+    target: '<b>锁定技</b>，准备阶段开始时，你依次弃置其它角色至多三张牌；若弃置的牌数量少于3，你视为对其使用一张杀。',
   },
   {
     source: 'pve_longshen_longli_description',

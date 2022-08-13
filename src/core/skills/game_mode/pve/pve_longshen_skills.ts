@@ -62,7 +62,11 @@ export class PveLongShenQiFu extends TriggerSkill implements OnDefineReleaseTimi
   }
 
   async whenObtainingSkill(room: Room, owner: Player) {
-    room.installSideEffectSkill(System.SideEffectSkillApplierEnum.PveLongShenQiFu, PveLongShenQiFu.Name, owner.Id);
+    room.installSideEffectSkill(
+      System.SideEffectSkillApplierEnum.PveLongShenQiFu,
+      PveLongShenQiFuReward.Name,
+      owner.Id,
+    );
   }
 
   isTriggerable(_: ServerEventFinder<GameEventIdentifiers.LevelBeginEvent>, stage?: AllStage) {
@@ -79,10 +83,14 @@ export class PveLongShenQiFu extends TriggerSkill implements OnDefineReleaseTimi
   }
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillUseEvent>) {
-    room.installSideEffectSkill(System.SideEffectSkillApplierEnum.PveLongShenQiFu, PveLongShenQiFu.Name, event.fromId);
+    room.installSideEffectSkill(
+      System.SideEffectSkillApplierEnum.PveLongShenQiFu,
+      PveLongShenQiFuReward.Name,
+      event.fromId,
+    );
 
     room.getOtherPlayers(event.fromId).forEach(player => {
-      room.refreshPlayerOnceSkill(player.Id, PveLongShenQiFu.Name);
+      room.refreshPlayerOnceSkill(player.Id, PveLongShenQiFuReward.Name);
     });
 
     return true;
@@ -472,9 +480,11 @@ export class PveLongShenLongShi extends TriggerSkill {
       Algorithm.shuffle(allCards);
       const dropCards = allCards.slice(0, 3);
       await room.dropCards(CardMoveReason.PassiveDrop, dropCards, target.Id, fromId, this.Name);
-      const slash = VirtualCard.create<Slash>({ cardName: 'fire_slash', bySkill: this.Name }).Id;
-      const slashUseEvent = { fromId, cardId: slash, targetGroup: [[target.Id]] };
-      await room.useCard(slashUseEvent);
+      if (dropCards.length < 3) {
+        const slash = VirtualCard.create<Slash>({ cardName: 'fire_slash', bySkill: this.Name }).Id;
+        const slashUseEvent = { fromId, cardId: slash, targetGroup: [[target.Id]] };
+        await room.useCard(slashUseEvent);
+      }
     }
     return true;
   }
