@@ -45,6 +45,9 @@ export const pveLongShenSkills = [
   { name: 'pve_longshen_longen', weights: 3 },
   { name: 'pve_longshen_longxiao', weights: 1 },
   { name: 'pve_longshen_longgu', weights: 1 },
+  { name: 'pve_longshen_chaiyue', weights: 1 },
+  { name: 'pve_longshen_lige', weights: 1 },
+  { name: 'pve_longshen_bibao', weights: 1 },
 ];
 
 @CompulsorySkill({ name: 'pve_longshen_qifu', description: 'pve_longshen_qifu_description' })
@@ -701,6 +704,86 @@ export class PveLongShenLongGu extends TriggerSkill {
       await room.useCard(equipUseEvent);
     }
 
+    return true;
+  }
+}
+
+@CompulsorySkill({ name: 'pve_longshen_chaiyue', description: 'pve_longshen_chaiyue_description' })
+export class PveLongShenChaiYue extends TriggerSkill {
+  isTriggerable(_: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage) {
+    return stage === DamageEffectStage.AfterDamagedEffect;
+  }
+
+  canUse(_: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
+    return event.toId === owner.Id && event.damageType === DamageType.Normal;
+  }
+
+  async onTrigger() {
+    return true;
+  }
+
+  public triggerableTimes(event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
+    return event.damage;
+  }
+
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    const owner = room.getPlayerById(event.fromId);
+    await room.drawCards(2, owner.Id, 'top', owner.Id, this.Name);
+    return true;
+  }
+}
+
+@CompulsorySkill({ name: 'pve_longshen_lige', description: 'pve_longshen_lige_description' })
+export class PveLongShenLiGe extends TriggerSkill {
+  isTriggerable(_: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>, stage: AllStage) {
+    return stage === PhaseStageChangeStage.StageChanged;
+  }
+
+  canUse(_: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.PhaseStageChangeEvent>) {
+    return owner.Id !== event.playerId && event.toStage === PlayerPhaseStages.FinishStageStart;
+  }
+
+  async onTrigger() {
+    return true;
+  }
+
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    const duelUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> = {
+      fromId: event.fromId,
+      cardId: VirtualCard.create({
+        cardName: 'guohechaiqiao',
+        bySkill: this.Name,
+      }).Id,
+      targetGroup: [[room.CurrentPhasePlayer.Id]],
+    };
+
+    await room.useCard(duelUseEvent);
+
+    return true;
+  }
+}
+
+@CompulsorySkill({ name: 'pve_longshen_bibao', description: 'pve_longshen_bibao_description' })
+export class PveLongShenBiBao extends TriggerSkill {
+  isTriggerable(_: ServerEventFinder<GameEventIdentifiers.DamageEvent>, stage?: AllStage): boolean {
+    return stage === DamageEffectStage.DamageEffect || stage === DamageEffectStage.DamagedEffect;
+  }
+
+  canUse(
+    _: Room,
+    owner: Player,
+    content: ServerEventFinder<GameEventIdentifiers.DamageEvent>,
+    stage?: AllStage,
+  ): boolean {
+    return stage === DamageEffectStage.DamageEffect && content.fromId === owner.Id;
+  }
+
+  async onTrigger() {
+    return true;
+  }
+
+  async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
+    await room.recover({ recoveredHp: 1, recoverBy: event.fromId, toId: event.fromId });
     return true;
   }
 }

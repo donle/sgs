@@ -20,6 +20,9 @@ export const characterDictionary: Word[] = [
   { source: 'pve_longshen_longen', target: '龙恩' },
   { source: 'pve_longshen_longxiao', target: '龙啸' },
   { source: 'pve_longshen_longgu', target: '龙顾' },
+  { source: 'pve_longshen_chaiyue', target: '豺月' },
+  { source: 'pve_longshen_chaiyue', target: '离歌' },
+  { source: 'pve_longshen_bibao', target: '必报' },
 
   { source: 'pve_soldier', target: '风瑶军' },
   { source: 'pve_qisha', target: '七杀' },
@@ -131,24 +134,17 @@ export const skillDescriptions: Word[] = [
     source: 'pve_longshen_longgu_description',
     target: '<b>锁定技</b>，回合开始时，你获得牌堆中一张装备牌并使用。',
   },
-
   {
-    source: 'pve_jienu_description',
-    target:
-      '<b>锁定技</b>，当你翻面后，你回复一点体力并对所有其他角色造成两点火属性伤害；出牌阶段开始时，若你的体力值小于已损失的体力值，你翻面；当你受到伤害后，你对所有其他角色造成两点火属性伤害，若此伤害为普通伤害，则你回复两点体力',
+    source: 'pve_longshen_chaiyue_description',
+    target: '<b>锁定技</b>，每当你受到1点普通伤害时，你摸两张牌。',
   },
   {
-    source: 'pve_chaiyue_description',
-    target:
-      '<b>锁定技</b>，你每受到1点普通伤害后，你摸两张牌并将一张牌置于武将牌上，称为【碑】；摸牌阶段开始时，你摸X张牌；你的【杀】次数+X（X为【碑】数）',
+    source: 'pve_longshen_lige_description',
+    target: '<b>锁定技</b>，其他角色结束阶段开始时，你可以对其使用一张过河拆桥',
   },
   {
-    source: 'pve_lige_description',
-    target: '<b>锁定技</b>，一名其他角色结束阶段开始时，其交给你一张牌或令你摸两张牌，选择后视为对其使用【决斗】',
-  },
-  {
-    source: 'pve_bibao_description',
-    target: '<b>锁定技</b>，你造成或受到伤害时，你回复1点体力且此伤害+1，你摸等同伤害+1张牌。',
+    source: 'pve_longshen_bibao_description',
+    target: '<b>锁定技</b>，你造成或受到伤害时，你回复1点体力。',
   },
   {
     source: 'pve_beifa_description',
