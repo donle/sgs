@@ -33,7 +33,7 @@ function formatFlavor(flavor: string | undefined): Flavor {
     return 'prod';
   }
 
-  return 'dev';
+  return 'prod';
 }
 const flavor = formatFlavor(process.env.NODE_ENV);
 class AppWindow {

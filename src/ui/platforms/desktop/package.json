@@ -98,9 +98,9 @@
     "build-electron:win": "yarn sync:win && cross-env GENERATE_SOURCEMAP=false REACT_APP_DEV_MODE=desktop node scripts/build.js",
     "electron:win": "tsc --project ./tools/tsconfig.json && cross-env NODE_ENV=development electron .",
     "electron:mac": "tsc --project ./tools/tsconfig.json && NODE_ENV=development electron .",
-    "build:electron:win": "yarn build-electron:win && tsc --project ./tools/tsconfig.json && NODE_ENV=production electron-builder",
-    "build:electron:mac": "yarn build-electron:mac && tsc --project ./tools/tsconfig.json && NODE_ENV=production electron-builder",
-    "electron": "tsc --project ./tools/tsconfig.json && NODE_ENV=production electron-builder",
+    "build:electron:win": "yarn build-electron:win && tsc --project ./tools/tsconfig.json && electron-builder",
+    "build:electron:mac": "yarn build-electron:mac && tsc --project ./tools/tsconfig.json && electron-builder",
+    "electron": "tsc --project ./tools/tsconfig.json && electron-builder",
     "test": "node scripts/test.js"
   },
   "build": {
