@@ -608,9 +608,6 @@ export { Cheat } from './system/cheat';
 export { BaHu, BaHuShadow } from './game_mode/1v2/bahu';
 export { FeiYang } from './game_mode/1v2/feiyang';
 
-export { PveChaiYue, PveChaiYueBuff, PveChaiYueShadow, PveChaiYueDraw } from './game_mode/pve/pve_chaiyue';
-export { PveLiGe } from './game_mode/pve/pve_lige';
-export { PveBiBao } from './game_mode/pve/pve_bibao';
 export {
   PveClassicGuYong,
   PveClassicGuYongMark,
@@ -645,4 +642,7 @@ export {
   PveLongShenLongEn,
   PveLongShenLongXiao,
   PveLongShenLongGu,
+  PveLongShenChaiYue,
+  PveLongShenLiGe,
+  PveLongShenBiBao,
 } from './game_mode/pve/pve_longshen_skills';
