@@ -646,8 +646,11 @@ export class PveLongShenLongEn extends TriggerSkill {
 
   async onEffect(room: Room, event: ServerEventFinder<GameEventIdentifiers.SkillEffectEvent>) {
     const drawCardEvent = event.triggeredOnEvent as ServerEventFinder<GameEventIdentifiers.DrawCardEvent>;
-
-    if (room.getPlayerById(event.fromId).hasUsedSkillTimes(this.Name) < 3) {
+    const owner = room.AlivePlayers.find(player => player.hasSkill(this.GeneralName));
+    if (owner === undefined) {
+      return false;
+    }
+    if (owner.hasUsedSkillTimes(this.Name) < 3) {
       drawCardEvent.drawAmount += 1;
     } else {
       EventPacker.terminate(event);

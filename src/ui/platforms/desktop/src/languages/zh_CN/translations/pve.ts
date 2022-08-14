@@ -21,7 +21,7 @@ export const characterDictionary: Word[] = [
   { source: 'pve_longshen_longxiao', target: '龙啸' },
   { source: 'pve_longshen_longgu', target: '龙顾' },
   { source: 'pve_longshen_chaiyue', target: '豺月' },
-  { source: 'pve_longshen_chaiyue', target: '离歌' },
+  { source: 'pve_longshen_lige', target: '离歌' },
   { source: 'pve_longshen_bibao', target: '必报' },
 
   { source: 'pve_soldier', target: '风瑶军' },
