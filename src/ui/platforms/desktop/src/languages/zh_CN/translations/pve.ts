@@ -136,7 +136,7 @@ export const skillDescriptions: Word[] = [
   },
   {
     source: 'pve_longshen_chaiyue_description',
-    target: '<b>锁定技</b>，每当你受到1点普通伤害时，你摸两张牌。',
+    target: '<b>锁定技</b>，每当你受到1点伤害后，你摸两张牌。',
   },
   {
     source: 'pve_longshen_lige_description',

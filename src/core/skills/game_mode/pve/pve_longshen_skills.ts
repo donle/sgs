@@ -718,7 +718,7 @@ export class PveLongShenChaiYue extends TriggerSkill {
   }
 
   canUse(_: Room, owner: Player, event: ServerEventFinder<GameEventIdentifiers.DamageEvent>) {
-    return event.toId === owner.Id && event.damageType === DamageType.Normal;
+    return event.toId === owner.Id;
   }
 
   async onTrigger() {
