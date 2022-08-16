@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerId } from 'core/player/player_props';
+import { GameMode } from 'core/shares/types/room_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
@@ -127,6 +128,10 @@ export class Seats extends React.Component<SeatsProps> {
 
   @mobx.computed
   get countPlayers() {
+    if (this.props.store.gameSettings.gameMode === GameMode.Pve) {
+      return this.props.store.gameSettings.pveNumberOfPlayers;
+    }
+
     return this.props.store.seats.filter(seat => !seat.seatDisabled && seat.playerId != null).length;
   }
 

@@ -177,6 +177,8 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
       return allPlayers.length === 3;
     } else if (this.store.gameSettings.gameMode === GameMode.TwoVersusTwo) {
       return allPlayers.length === 4;
+    } else if (this.store.gameSettings.gameMode === GameMode.Pve) {
+      return allPlayers.length === 2;
     } else if (this.store.gameSettings.gameMode === GameMode.Standard) {
       return allPlayers.length > 1;
     }

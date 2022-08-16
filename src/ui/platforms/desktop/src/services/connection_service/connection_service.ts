@@ -37,7 +37,7 @@ export abstract class ConnectionService {
     checkCoreVersion(callback: (response: VersionCheckListenerResponse) => void): void;
     checkRoomExist(host: ServerHostTag, id: RoomId, callback: (exist: boolean, ping: number) => void): void;
     createWaitingRoom(
-      gameInfo: TemporaryRoomCreationInfo,
+      gameInfo: TemporaryRoomCreationInfo & { roomId?: number },
       callback: (response: CreateWaitingRoomListenerResponse) => void,
     ): void;
     /**
@@ -46,7 +46,7 @@ export abstract class ConnectionService {
     createGame(
       gameInfo: {
         cardExtensions: GameCardExtensions[];
-      } & TemporaryRoomCreationInfo,
+      } & TemporaryRoomCreationInfo & { roomId?: number },
       callback: (response: CreateGameListenerResponse) => void,
     ): void;
     ping(hostTag: ServerHostTag, callback: (ping: number) => void): void;

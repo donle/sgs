@@ -1,8 +1,10 @@
 import classNames from 'classnames';
 import { CardId } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
+import { GameInfo } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
+import { RoomId } from 'core/room/room';
 import { Functional } from 'core/shares/libs/functional';
 import { GameMode } from 'core/shares/types/room_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -14,6 +16,7 @@ import { Button } from 'ui/button/button';
 import { ClientCard } from 'ui/card/card';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import styles from './game_over_dialog.module.css';
+import { Messages } from './messages';
 
 const PlayerInfoTable = (props: {
   translator: ClientTranslationModule;
@@ -34,11 +37,11 @@ const PlayerInfoTable = (props: {
   return (
     <div className={classNames(styles.players, props.className)}>
       <div className={styles.title}>
-        <span className={styles.username}>{props.translator.tr('player name')}</span>
-        <span className={styles.characterName}>{props.translator.tr('character name')}</span>
-        <span className={styles.role}>{props.translator.tr('role')}</span>
-        <span className={styles.status}>{props.translator.tr('status')}</span>
-        <span className={styles.handcards}>{props.translator.tr('handcards')}</span>
+        <span className={styles.username}>{props.translator.tr(Messages.playerName())}</span>
+        <span className={styles.characterName}>{props.translator.tr(Messages.characterName())}</span>
+        <span className={styles.role}>{props.translator.tr(Messages.role())}</span>
+        <span className={styles.status}>{props.translator.tr(Messages.status())}</span>
+        <span className={styles.handcards}>{props.translator.tr(Messages.handcards())}</span>
       </div>
       {props.players.map(player => (
         <div className={styles.player} key={player.Id}>
@@ -47,10 +50,10 @@ const PlayerInfoTable = (props: {
           <span className={styles.role}>
             {props.translator.tr(Functional.getPlayerRoleRawText(player.Role, props.gameMode))}
           </span>
-          <span className={styles.status}>{props.translator.tr(player.Dead ? 'dead' : 'alive')}</span>
+          <span className={styles.status}>{props.translator.tr(player.Dead ? Messages.dead() : Messages.alive())}</span>
           <span className={styles.handcards}>
             <Button variant="primary" onMouseEnter={onSetHandCards(player)} onMouseLeave={onClearHandCards}>
-              {props.translator.tr('check')}
+              {props.translator.tr(Messages.check())}
               {activePlayer === player && handcards.length > 0 && (
                 <Tooltip position={['bottom']} className={styles.tooltip}>
                   {handcards.map(cardId => (
@@ -80,6 +83,7 @@ export const GameOverDialog = (props: {
   electron: ElectronLoader;
   gameMode: GameMode;
   disableSaveReplayButton?: boolean;
+  onBackingToWaitingRoom?(): void;
 }) => {
   const { translator, winners, losers, imageLoader, electron, disableSaveReplayButton, gameMode } = props;
   const history = useHistory();
@@ -90,21 +94,24 @@ export const GameOverDialog = (props: {
   return (
     <div className={styles.gameOverBoard}>
       <div className={styles.winners}>
-        <span className={styles.title}>{translator.tr('winners')}</span>
+        <span className={styles.title}>{translator.tr(Messages.winners())}</span>
         <PlayerInfoTable imageLoader={imageLoader} players={winners} translator={translator} gameMode={gameMode} />
       </div>
       <div className={styles.losers}>
-        <span className={styles.title}>{translator.tr('losers')}</span>
+        <span className={styles.title}>{translator.tr(Messages.losers())}</span>
         <PlayerInfoTable imageLoader={imageLoader} players={losers} translator={translator} gameMode={gameMode} />
       </div>
       <div className={styles.actionButtons}>
         {electron.ReplayEnabled && !disableSaveReplayButton && (
           <Button variant="primary" onClick={saveReplay}>
-            {translator.tr('save replay')}
+            {translator.tr(Messages.saveReplay())}
           </Button>
         )}
+        <Button variant="primary" onClick={props.onBackingToWaitingRoom}>
+          {translator.tr(Messages.backToWaitingRoom())}
+        </Button>
         <Button variant="primary" onClick={backToLobby}>
-          {translator.tr('back to lobby')}
+          {translator.tr(Messages.backToLobby())}
         </Button>
       </div>
     </div>

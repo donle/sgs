@@ -98,9 +98,7 @@ export class CreateRoomDialog extends React.Component<{
 
   private readonly selectPlayerOptions = [
     { content: 'one player', value: 2 },
-    { content: 'two players', value: 3 },
     { content: 'pve classic one players', value: 4 },
-    { content: 'pve classic two players', value: 5 },
   ];
 
   private readonly onAction = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {

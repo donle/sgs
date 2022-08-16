@@ -106,7 +106,7 @@ export class RealConnectionService extends ConnectionService {
       lobbySocket.emit(LobbySocketEvent.CheckRoomExist.toString(), id);
     },
     createWaitingRoom: (
-      gameInfo: TemporaryRoomCreationInfo,
+      gameInfo: TemporaryRoomCreationInfo & { roomId?: number },
       callback: (response: CreateWaitingRoomListenerResponse) => void,
     ) => {
       this.pingStartTimestamp = Date.now();
@@ -128,7 +128,7 @@ export class RealConnectionService extends ConnectionService {
     createGame: (
       gameInfo: {
         cardExtensions: GameCardExtensions[];
-      } & TemporaryRoomCreationInfo,
+      } & TemporaryRoomCreationInfo & { roomId?: number },
       callback: (response: CreateGameListenerResponse) => void,
     ) => {
       this.pingStartTimestamp = Date.now();

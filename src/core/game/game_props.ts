@@ -110,8 +110,5 @@ export type GameCommonRuleObject = {
 
 export type WaitingRoomGameSettings = Pick<
   TemporaryRoomCreationInfo,
-  Exclude<
-    keyof TemporaryRoomCreationInfo,
-    'roomName' | 'campaignMode' | 'coreVersion' | 'hostPlayerId'
-  >
->;
+  Exclude<keyof TemporaryRoomCreationInfo, 'roomName' | 'campaignMode' | 'coreVersion' | 'hostPlayerId'>
+> & { pveNumberOfPlayers: number };

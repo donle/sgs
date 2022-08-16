@@ -59,10 +59,10 @@ export class LobbyEventChannel {
   };
 
   private readonly onCreatingWaitingRoom = (socket: SocketIO.Socket) => (content: {
-    roomInfo: TemporaryRoomCreationInfo;
+    roomInfo: TemporaryRoomCreationInfo & { roomId?: number };
   }) => {
     if (content.roomInfo.coreVersion !== Sanguosha.Version) {
-      socket.emit(LobbySocketEvent.GameCreated.toString(), {
+      socket.emit(LobbySocketEvent.CreateWaitingRoom.toString(), {
         error: 'unmatched core version',
       });
       return;
@@ -86,7 +86,7 @@ export class LobbyEventChannel {
       return;
     }
 
-    const { roomId, gameInfo } = this.roomService.createRoom(content);
+    const { roomId, gameInfo } = this.roomService.createRoom(content, { ...content, hostPlayerId: 'fake-id' });
     socket.emit(LobbySocketEvent.GameCreated.toString(), {
       roomId,
       roomInfo: gameInfo,

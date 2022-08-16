@@ -24,6 +24,7 @@ export class WaitingRoomPresenter {
       playingTimeLimit: 60,
       wuxiekejiTimeLimit: 15,
       allowObserver: false,
+      pveNumberOfPlayers: 3,
       ...defaultSettings,
     };
 
@@ -31,7 +32,7 @@ export class WaitingRoomPresenter {
   }
 
   @mobx.action
-  updateGameSettings(store: WaitingRoomStore, newGameSettings: WaitingRoomGameSettings) {
+  updateGameSettings(store: WaitingRoomStore, newGameSettings: Partial<WaitingRoomGameSettings>) {
     for (const key of Object.keys(newGameSettings)) {
       store.gameSettings[key] = newGameSettings[key];
     }

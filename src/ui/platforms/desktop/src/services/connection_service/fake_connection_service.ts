@@ -32,7 +32,7 @@ export class FakeConnectionService extends ConnectionService {
     // tslint:disable-next-line:no-empty
     checkRoomExist: (host: ServerHostTag, id: RoomId, callback: (exist: boolean, ping: number) => void) => {},
     createWaitingRoom(
-      gameInfo: TemporaryRoomCreationInfo,
+      gameInfo: TemporaryRoomCreationInfo & { roomId?: number },
       callback: (response: CreateWaitingRoomListenerResponse) => void,
     // tslint:disable-next-line: no-empty
     ): void {},
@@ -42,7 +42,7 @@ export class FakeConnectionService extends ConnectionService {
     createGame: (
       gameInfo: {
         cardExtensions: GameCardExtensions[];
-      } & TemporaryRoomCreationInfo,
+      } & TemporaryRoomCreationInfo & { roomId?: number },
       callback: (response: CreateGameListenerResponse) => void,
       // tslint:disable-next-line:no-empty
     ) => {},

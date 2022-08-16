@@ -504,6 +504,12 @@ export interface ServerEvent extends EventUtilities {
     toId: PlayerId;
     skillNames: string[];
   };
+  [GameEventIdentifiers.BackToWaitingRoomEvent]: {
+    playerId: PlayerId;
+    playerName: string;
+    roomInfo: TemporaryRoomCreationInfo;
+    roomId: RoomId;
+  }
 }
 
 export type PinDianProcedure = {

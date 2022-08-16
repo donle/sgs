@@ -194,6 +194,10 @@ export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.GameReadyEvent]: never;
   [GameEventIdentifiers.HookUpSkillsEvent]: never;
   [GameEventIdentifiers.UnhookSkillsEvent]: never;
+  [GameEventIdentifiers.BackToWaitingRoomEvent]: {
+    playerId: PlayerId;
+    playerName: string;
+  }
 }
 
 type PlayCardOrSkillEvent =
@@ -229,7 +233,7 @@ export interface WaitingRoomClientEvent extends WaitingRoomEventUtilities {
     messageContent: string;
   };
   [WaitingRoomEvent.GameStart]: {
-    roomInfo: Pick<GameInfo, Exclude<keyof GameInfo, 'flavor'>>;
+    roomInfo: Pick<GameInfo, Exclude<keyof GameInfo, 'flavor'>> & { roomId?: number };
   };
   [WaitingRoomEvent.PlayerEnter]: {
     playerInfo: { playerId: PlayerId; avatarId: number; playerName: string };
@@ -249,7 +253,7 @@ export interface WaitingRoomClientEvent extends WaitingRoomEventUtilities {
     kickedPlayerId?: PlayerId;
   };
   [WaitingRoomEvent.RoomCreated]: {
-    roomInfo: TemporaryRoomCreationInfo;
+    roomInfo: TemporaryRoomCreationInfo & { roomId?: number };
     hostPlayerId: PlayerId;
   };
 }

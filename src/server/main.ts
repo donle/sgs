@@ -91,6 +91,7 @@ const roomService = new RoomService(
     gameMode: GameMode,
     gameCommonRules: GameCommonRules,
     eventStack: RoomEventStacker<WorkPlace.Server>,
+    waitingRoomSettings: TemporaryRoomCreationInfo,
   ) =>
     new ServerRoom(
       roomId,
@@ -104,6 +105,7 @@ const roomService = new RoomService(
       gameMode,
       gameCommonRules,
       eventStack,
+      waitingRoomSettings,
     ),
   () => new RecordAnalytics(),
   () => new GameCommonRules(),

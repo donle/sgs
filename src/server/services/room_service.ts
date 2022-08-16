@@ -33,6 +33,7 @@ export class RoomService {
       gameMode: GameMode,
       gameCommonRules: GameCommonRules,
       eventStack: RoomEventStacker<WorkPlace.Server>,
+      waitingRoomInfo: TemporaryRoomCreationInfo,
     ) => ServerRoom,
     private createRecordAnalytics: () => RecordAnalytics,
     private createGameCommonRules: () => GameCommonRules,
@@ -70,8 +71,11 @@ export class RoomService {
     };
   }
 
-  createRoom(gameInfo: GameInfo): { roomId: RoomId; gameInfo: GameInfo } {
-    const roomId = Date.now();
+  createRoom(
+    gameInfo: GameInfo,
+    roomInfo: TemporaryRoomCreationInfo & { roomId?: number },
+  ): { roomId: RoomId; gameInfo: GameInfo } {
+    const roomId = roomInfo.roomId || Date.now();
     const roomSocket = this.createGameServerSocket(this.lobbySocket.of(`/room-${roomId}`), roomId);
     const room = this.createServerRoom(
       roomId,
@@ -84,6 +88,7 @@ export class RoomService {
       gameInfo.gameMode,
       this.createGameCommonRules(),
       this.createRoomEventStacker(),
+      roomInfo,
     );
 
     room.onClosed(() => {
@@ -101,8 +106,8 @@ export class RoomService {
     };
   }
 
-  createWaitingRoom(roomInfo: TemporaryRoomCreationInfo) {
-    const room = this.createGameWaitingRoom(roomInfo, Date.now());
+  createWaitingRoom(roomInfo: TemporaryRoomCreationInfo & { roomId?: number }) {
+    const room = this.createGameWaitingRoom(roomInfo, roomInfo.roomId || Date.now());
     const roomSocket = this.createWaitingRoomSocket(this.lobbySocket.of(`/waiting-room-${room.roomId}`), room);
 
     roomSocket.onClosed(() => {

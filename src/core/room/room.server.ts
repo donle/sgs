@@ -16,7 +16,7 @@ import { MoveCardEventInfos, PinDianProcedure, PinDianReport } from 'core/event/
 import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { GameProcessor } from 'core/game/game_processor/game_processor';
-import { GameInfo } from 'core/game/game_props';
+import { GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { GameCommonRules } from 'core/game/game_rules';
 import { CardLoader } from 'core/game/package_loader/loader.cards';
 import { CharacterLoader } from 'core/game/package_loader/loader.characters';
@@ -83,6 +83,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     protected gameMode: GameMode,
     protected gameCommonRules: GameCommonRules,
     protected eventStack: RoomEventStacker<WorkPlace.Server>,
+    protected readonly waitingRoomInfo: TemporaryRoomCreationInfo,
   ) {
     super();
     this.init();
@@ -100,18 +101,21 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.dropStack = [];
 
     this.socket.emit(this);
-    this.initAIPlayers();
+
+    if (this.gameMode === GameMode.Pve) {
+      this.initAIPlayers();
+    }
   }
 
   private initAIPlayers() {
-    if (this.gameMode === GameMode.Pve && [4, 5].includes(this.gameInfo.numberOfPlayers)) {
-      for (var i = 0; i < 3; i++) {
+    if (this.gameInfo.numberOfPlayers <= 3) {
+      const fakePlayer = new SmartPlayer(this.Players.length, this.gameMode);
+      this.addPlayer(fakePlayer);
+    } else if (this.gameInfo.numberOfPlayers <= 5) {
+      for (let i = 0; i < 3; i++) {
         const fakePlayer = new SmartPlayer(this.Players.length, this.gameMode);
         this.addPlayer(fakePlayer);
       }
-    } else if (this.gameMode === GameMode.Pve) {
-      const fakePlayer = new SmartPlayer(this.Players.length, this.gameMode);
-      this.addPlayer(fakePlayer);
     }
   }
 
@@ -557,7 +561,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
       }
 
       const toUnhook = p.HookedSkills.filter(skill => {
-        const hookedSkill = skill as unknown as OnDefineReleaseTiming;
+        const hookedSkill = (skill as unknown) as OnDefineReleaseTiming;
         if (hookedSkill.afterLosingSkill && hookedSkill.afterLosingSkill(this, p.Id, content, stage)) {
           return true;
         }
@@ -2288,6 +2292,10 @@ export class ServerRoom extends Room<WorkPlace.Server> {
 
   public get Flavor() {
     return this.flavor;
+  }
+
+  public get WaitingRoomInfo() {
+    return { roomInfo: this.waitingRoomInfo, roomId: this.roomId };
   }
 
   public close() {

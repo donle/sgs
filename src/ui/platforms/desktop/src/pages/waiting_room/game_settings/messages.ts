@@ -12,4 +12,8 @@ export const createTranslationMessages = (translator: ClientTranslationModule) =
   second: () => translator.tr('second'),
   passcode: () => translator.tr('please enter your room passcode'),
   save: () => translator.tr('save settings'),
+
+  pveModeSelection: () => translator.tr('pve mode selection'),
+  pveDragon: () => translator.tr('two players'),
+  pveClassic: () => translator.tr('pve classic two players'),
 });

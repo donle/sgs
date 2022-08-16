@@ -97,6 +97,7 @@ export const enum GameEventIdentifiers {
   UnhookSkillsEvent,
 
   RequestObserveEvent,
+  BackToWaitingRoomEvent,
 }
 
 export type CardResponsiveEventIdentifiers =
@@ -199,6 +200,7 @@ export const clientActiveListenerEvents = () => [
   GameEventIdentifiers.AbortOrResumePlayerSectionsEvent,
   GameEventIdentifiers.AbortOrResumePlayerJudgeAreaEvent,
   GameEventIdentifiers.RefreshOnceSkillEvent,
+  GameEventIdentifiers.BackToWaitingRoomEvent,
 ];
 
 export const serverActiveListenerEvents = [
@@ -208,6 +210,7 @@ export const serverActiveListenerEvents = [
   GameEventIdentifiers.PlayerStatusEvent,
   GameEventIdentifiers.PlayerReenterEvent,
   GameEventIdentifiers.RequestObserveEvent,
+  GameEventIdentifiers.BackToWaitingRoomEvent,
 ];
 
 export const serverResponsiveListenerEvents = [

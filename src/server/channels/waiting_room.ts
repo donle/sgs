@@ -76,11 +76,15 @@ export class WaitingRoomSocket {
   private readonly onGameStart = (socket: SocketIO.Socket) => (
     evt: WaitingRoomClientEventFinder<WaitingRoomEvent.GameStart>,
   ) => {
-    const { roomId, gameInfo } = this.roomService.createRoom({
-      ...evt.roomInfo,
-      campaignMode: !!evt.roomInfo.campaignMode,
-      flavor: this.flavor,
-    });
+    const { roomId, gameInfo } = this.roomService.createRoom(
+      {
+        ...evt.roomInfo,
+        campaignMode: !!evt.roomInfo.campaignMode,
+        flavor: this.flavor,
+      },
+      this.waitingRoomInfo.roomInfo,
+    );
+
     this.broadcast(WaitingRoomEvent.GameStart, {
       roomId,
       otherPlayersId: this.waitingRoomInfo.players.map(player => player.playerId),

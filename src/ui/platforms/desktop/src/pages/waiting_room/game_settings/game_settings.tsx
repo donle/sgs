@@ -7,7 +7,6 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
-import { Button } from 'ui/button/button';
 import { CheckBox } from 'ui/check_box/check_box';
 import { CheckBoxGroup } from 'ui/check_box/check_box_group';
 import { Input } from 'ui/input/input';
@@ -27,10 +26,25 @@ export type GameSettingsProps = {
 
 @mobxReact.observer
 export class GameSettings extends React.Component<GameSettingsProps> {
-  @mobx.observable.ref
-  private enableSave = false;
-
   private translationMessage = createTranslationMessages(this.props.translator);
+
+  @mobx.computed
+  private get pvePlayersOptions() {
+    return [
+      {
+        label: this.translationMessage.pveDragon(),
+        id: 3,
+        checked: this.props.store.gameSettings.pveNumberOfPlayers === 3,
+        disabled: !this.props.controlable,
+      },
+      {
+        label: this.translationMessage.pveClassic(),
+        id: 5,
+        checked: this.props.store.gameSettings.pveNumberOfPlayers === 5,
+        disabled: !this.props.controlable,
+      },
+    ];
+  }
 
   @mobx.computed
   private get getGameModeOptions() {
@@ -54,9 +68,15 @@ export class GameSettings extends React.Component<GameSettingsProps> {
         disabled: !this.props.controlable,
       },
       {
+        label: this.props.translator.tr(GameMode.Pve),
+        id: GameMode.Pve,
+        checked: this.props.store.gameSettings.gameMode === GameMode.Pve,
+        disabled: !this.props.controlable,
+      },
+      {
         label: this.props.translator.tr(GameMode.Hegemony),
         id: GameMode.Hegemony,
-        checked: this.props.store.gameSettings.gameMode === GameMode.Standard,
+        checked: this.props.store.gameSettings.gameMode === GameMode.Hegemony,
         disabled: true,
       },
     ];
@@ -74,32 +94,29 @@ export class GameSettings extends React.Component<GameSettingsProps> {
 
   private onChangeGameSettings<T>(property: keyof WaitingRoomGameSettings) {
     return (value: T) => {
-      mobx.runInAction(() => {
-        this.enableSave = true;
-      });
-
       this.props.presenter.updateGameSettings(this.props.store, {
         ...this.props.store.gameSettings,
         [property]: value,
       });
+      this.props.onSave();
     };
   }
 
   private readonly onCheckedGameMode = (checkedIds: GameMode[]) => {
-    mobx.runInAction(() => {
-      this.enableSave = true;
-    });
-
     this.props.presenter.updateGameSettings(this.props.store, {
       ...this.props.store.gameSettings,
       gameMode: checkedIds[0],
     });
+    this.props.onSave();
   };
 
   @mobx.action
-  private readonly onSaveSettings = () => {
+  private readonly onCheckedPveSpecifiedGameMode = (playerNumbers: number[]) => {
+    this.props.presenter.updateGameSettings(this.props.store, {
+      ...this.props.store.gameSettings,
+      pveNumberOfPlayers: playerNumbers[0],
+    });
     this.props.onSave();
-    this.enableSave = false;
   };
 
   render() {
@@ -113,6 +130,16 @@ export class GameSettings extends React.Component<GameSettingsProps> {
             excludeSelection={true}
           />
         </div>
+        {this.props.store.gameSettings.gameMode === GameMode.Pve && (
+          <div className={styles.settingsLabel}>
+            <CheckBoxGroup
+              head={this.translationMessage.pveModeSelection()}
+              options={this.pvePlayersOptions}
+              onChecked={this.onCheckedPveSpecifiedGameMode}
+              excludeSelection={true}
+            />
+          </div>
+        )}
         <div className={styles.settingsLabel}>
           <CheckBoxGroup
             head={this.translationMessage.characterPackageSettings()}
@@ -166,16 +193,6 @@ export class GameSettings extends React.Component<GameSettingsProps> {
               suffix={this.translationMessage.second()}
             />
           </div>
-          {this.props.controlable && (
-            <Button
-              className={styles.saveButton}
-              variant="primary"
-              disabled={!this.enableSave}
-              onClick={this.onSaveSettings}
-            >
-              {this.translationMessage.save()}
-            </Button>
-          )}
         </div>
       </div>
     );

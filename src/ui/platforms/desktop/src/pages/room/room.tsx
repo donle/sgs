@@ -2,6 +2,7 @@ import { AudioLoader } from 'audio_loader/audio_loader';
 import { clientActiveListenerEvents, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
+import { TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { LocalClientEmitter } from 'core/network/local/local_emitter.client';
 import { ClientSocket } from 'core/network/socket.client';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
@@ -52,6 +53,7 @@ export class RoomPage extends React.Component<
   private baseService: RoomBaseService;
   private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
   private isCampaignMode = false;
+  private connectionService: ConnectionService;
 
   private lastEventTimeStamp: number;
 
@@ -110,6 +112,7 @@ export class RoomPage extends React.Component<
       campaignMode?: boolean;
     };
     this.isCampaignMode = !!campaignMode;
+    this.connectionService = this.props.getConnectionService(this.isCampaignMode);
 
     if (campaignMode) {
       this.socket = new LocalClientEmitter((window as any).eventEmitter, roomId);
@@ -135,8 +138,38 @@ export class RoomPage extends React.Component<
       this.audioService,
       this.props.electronLoader,
       this.props.skinData,
+      this.createWaitingRoomCaller,
     );
   }
+
+  private readonly createWaitingRoomCaller = (roomInfo: TemporaryRoomCreationInfo, roomId?: number) => {
+    if (roomId) {
+      this.connectionService.Lobby.checkRoomExist(this.gameHostedServer, roomId, (exist, ping) => {
+        if (exist) {
+          this.props.history.push(`/waiting-room/${roomId}`, {
+            roomInfo,
+            ping,
+            hostConfig: this.gameHostedServer,
+          });
+        }
+      });
+    } else {
+      this.connectionService.Lobby.createWaitingRoom(roomInfo, event => {
+        const { packet, ping, hostTag, error } = event;
+        if (packet) {
+          const { roomId, roomInfo } = packet;
+          const hostConfig = this.props.config.host.find(config => config.hostTag === hostTag);
+          this.props.history.push(`/waiting-room/${roomId}`, {
+            roomInfo,
+            ping,
+            hostConfig,
+          });
+        } else {
+          console.error(error);
+        }
+      });
+    }
+  };
 
   private readonly onHandleBulkEvents = async (events: ServerEventFinder<GameEventIdentifiers>[]) => {
     this.store.room.emitStatus('trusted', this.props.electronLoader.getTemporaryData(ElectronData.PlayerId)!);
@@ -302,7 +335,7 @@ export class RoomPage extends React.Component<
               translator={this.props.translator}
               roomName={this.store.room.getRoomInfo().name}
               className={styles.roomBanner}
-              connectionService={this.props.getConnectionService(this.isCampaignMode)}
+              connectionService={this.connectionService}
               onClickSettings={this.onClickSettings}
               onSwitchSideBoard={this.onSwitchSideBoard}
               defaultPing={this.roomPing}
@@ -326,7 +359,7 @@ export class RoomPage extends React.Component<
                     store={this.store}
                     presenter={this.presenter}
                     translator={this.props.translator}
-                    connectionService={this.props.getConnectionService(this.isCampaignMode)}
+                    connectionService={this.connectionService}
                   />
                 </div>
               )}
