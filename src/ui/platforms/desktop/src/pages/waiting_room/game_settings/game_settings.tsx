@@ -10,7 +10,6 @@ import * as React from 'react';
 import { Button } from 'ui/button/button';
 import { CheckBox } from 'ui/check_box/check_box';
 import { CheckBoxGroup } from 'ui/check_box/check_box_group';
-import { CheckBoxGroupPresenter } from 'ui/check_box/check_box_group_presenter';
 import { Input } from 'ui/input/input';
 import { WaitingRoomPresenter } from '../waiting_room.presenter';
 import { WaitingRoomStore } from '../waiting_room.store';
@@ -33,53 +32,45 @@ export class GameSettings extends React.Component<GameSettingsProps> {
 
   private translationMessage = createTranslationMessages(this.props.translator);
 
-  private checkBoxPresenter = new CheckBoxGroupPresenter();
-  private gameModeCheckBoxStore = this.checkBoxPresenter.createStore([
-    {
-      label: this.props.translator.tr(GameMode.Standard),
-      id: GameMode.Standard,
-      checked: this.props.store.gameSettings.gameMode === GameMode.Standard,
-      disabled: !this.props.controlable,
-    },
-    {
-      label: this.props.translator.tr(GameMode.OneVersusTwo),
-      id: GameMode.OneVersusTwo,
-      checked: this.props.store.gameSettings.gameMode === GameMode.OneVersusTwo,
-      disabled: !this.props.controlable,
-    },
-    {
-      label: this.props.translator.tr(GameMode.TwoVersusTwo),
-      id: GameMode.TwoVersusTwo,
-      checked: this.props.store.gameSettings.gameMode === GameMode.TwoVersusTwo,
-      disabled: !this.props.controlable,
-    },
-    {
-      label: this.props.translator.tr(GameMode.Hegemony),
-      id: GameMode.Hegemony,
-      checked: this.props.store.gameSettings.gameMode === GameMode.Hegemony,
-      disabled: true,
-    },
-  ]);
+  @mobx.computed
+  private get getGameModeOptions() {
+    return [
+      {
+        label: this.props.translator.tr(GameMode.Standard),
+        id: GameMode.Standard,
+        checked: this.props.store.gameSettings.gameMode === GameMode.Standard,
+        disabled: !this.props.controlable,
+      },
+      {
+        label: this.props.translator.tr(GameMode.OneVersusTwo),
+        id: GameMode.OneVersusTwo,
+        checked: this.props.store.gameSettings.gameMode === GameMode.OneVersusTwo,
+        disabled: !this.props.controlable,
+      },
+      {
+        label: this.props.translator.tr(GameMode.TwoVersusTwo),
+        id: GameMode.TwoVersusTwo,
+        checked: this.props.store.gameSettings.gameMode === GameMode.TwoVersusTwo,
+        disabled: !this.props.controlable,
+      },
+      {
+        label: this.props.translator.tr(GameMode.Hegemony),
+        id: GameMode.Hegemony,
+        checked: this.props.store.gameSettings.gameMode === GameMode.Standard,
+        disabled: true,
+      },
+    ];
+  }
 
-  private gameCharacterExtensionsStore = this.checkBoxPresenter.createStore(
-    Sanguosha.getGameCharacterExtensions().map(extension => ({
+  @mobx.computed
+  private get gameCharacterExtensions() {
+    return Sanguosha.getGameCharacterExtensions().map(extension => ({
       id: extension,
       label: this.props.translator.tr(extension),
       checked: this.props.store.gameSettings.characterExtensions.includes(extension),
       disabled: extension === GameCharacterExtensions.Standard || !this.props.controlable,
-    })),
-  );
-
-  private readonly onCheckedGameMode = (checkedIds: GameMode[]) => {
-    mobx.runInAction(() => {
-      this.enableSave = true;
-    });
-
-    this.props.presenter.updateGameSettings(this.props.store, {
-      ...this.props.store.gameSettings,
-      gameMode: checkedIds[0],
-    });
-  };
+    }));
+  }
 
   private onChangeGameSettings<T>(property: keyof WaitingRoomGameSettings) {
     return (value: T) => {
@@ -94,6 +85,17 @@ export class GameSettings extends React.Component<GameSettingsProps> {
     };
   }
 
+  private readonly onCheckedGameMode = (checkedIds: GameMode[]) => {
+    mobx.runInAction(() => {
+      this.enableSave = true;
+    });
+
+    this.props.presenter.updateGameSettings(this.props.store, {
+      ...this.props.store.gameSettings,
+      gameMode: checkedIds[0],
+    });
+  };
+
   @mobx.action
   private readonly onSaveSettings = () => {
     this.props.onSave();
@@ -106,8 +108,7 @@ export class GameSettings extends React.Component<GameSettingsProps> {
         <div className={styles.settingsLabel}>
           <CheckBoxGroup
             head={this.translationMessage.gameMode()}
-            presenter={this.checkBoxPresenter}
-            store={this.gameModeCheckBoxStore}
+            options={this.getGameModeOptions}
             onChecked={this.onCheckedGameMode}
             excludeSelection={true}
           />
@@ -115,8 +116,7 @@ export class GameSettings extends React.Component<GameSettingsProps> {
         <div className={styles.settingsLabel}>
           <CheckBoxGroup
             head={this.translationMessage.characterPackageSettings()}
-            presenter={this.checkBoxPresenter}
-            store={this.gameCharacterExtensionsStore}
+            options={this.gameCharacterExtensions}
             onChecked={this.onChangeGameSettings('characterExtensions')}
             excludeSelection={false}
           />
@@ -166,14 +166,16 @@ export class GameSettings extends React.Component<GameSettingsProps> {
               suffix={this.translationMessage.second()}
             />
           </div>
-          <Button
-            className={styles.saveButton}
-            variant="primary"
-            disabled={!this.enableSave}
-            onClick={this.onSaveSettings}
-          >
-            {this.translationMessage.save()}
-          </Button>
+          {this.props.controlable && (
+            <Button
+              className={styles.saveButton}
+              variant="primary"
+              disabled={!this.enableSave}
+              onClick={this.onSaveSettings}
+            >
+              {this.translationMessage.save()}
+            </Button>
+          )}
         </div>
       </div>
     );

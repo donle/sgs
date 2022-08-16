@@ -4,6 +4,7 @@ import { GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { PlayerId } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
+import { GameMode } from 'core/shares/types/room_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronData } from 'electron_loader/electron_data';
 import { ElectronLoader } from 'electron_loader/electron_loader';
@@ -21,6 +22,7 @@ import { ChatBox } from './chat_box/chat_box';
 import { GameSettings } from './game_settings/game_settings';
 import { HeaderBar } from './header_bar/header_bar';
 import { installServices } from './install';
+import { createTranslationMessages } from './messages';
 import { Seats } from './seats/seats';
 import styles from './waiting_room.module.css';
 import { WaitingRoomPresenter } from './waiting_room.presenter';
@@ -45,6 +47,7 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
   private hostPlayerId: PlayerId;
 
   private socket: SocketIOClient.Socket;
+  @mobx.observable.ref
   private isHost: boolean;
   private services: ReturnType<typeof installServices>;
 
@@ -114,6 +117,18 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
         roomInfo,
       });
     }
+
+    this.services.roomProcessorService.on(
+      'hostChange',
+      mobx.action(content => {
+        this.isHost = content.newHostPlayerId === this.selfPlayerId;
+        const messages = createTranslationMessages(this.props.translator);
+        this.services.eventSenderService.sendChat(
+          messages.systemNotification(),
+          messages.roomHostChanged(this.selfPlayerName),
+        );
+      }),
+    );
   }
 
   @mobx.action
@@ -148,6 +163,25 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
     });
 
     this.gameHostedServer = hostConfig.hostTag;
+  }
+
+  componentWillUnmount() {
+    this.services.eventSenderService.leaveRoom(this.selfPlayerId);
+    this.socket.disconnect();
+  }
+
+  @mobx.computed
+  private get validSettings() {
+    const allPlayers = this.store.seats.filter(seat => !seat.seatDisabled && seat.playerId != null);
+    if (this.store.gameSettings.gameMode === GameMode.OneVersusTwo) {
+      return allPlayers.length === 3;
+    } else if (this.store.gameSettings.gameMode === GameMode.TwoVersusTwo) {
+      return allPlayers.length === 4;
+    } else if (this.store.gameSettings.gameMode === GameMode.Standard) {
+      return allPlayers.length > 1;
+    }
+
+    return true;
   }
 
   private readonly onSaveSettings = () => {
@@ -185,6 +219,7 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
               avatarService={this.services.avatarService}
               imageLoader={this.props.imageLoader}
               isHost={this.isHost}
+              validToStartGame={this.validSettings}
               hostPlayerId={this.hostPlayerId}
               roomName={roomName}
             />

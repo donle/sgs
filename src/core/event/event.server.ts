@@ -534,12 +534,20 @@ export interface WaitingRoomServerEvent extends WaitingRoomEventUtilities {
   [WaitingRoomEvent.PlayerEnter]: {
     hostPlayerId: PlayerId;
     playerInfo: { playerId: PlayerId; avatarId: number; playerName: string; seatId: number };
-    otherPlayersInfo: { playerId: PlayerId; avatarId: number; playerName: string; seatId: number }[];
+    otherPlayersInfo: {
+      playerId: PlayerId;
+      avatarId: number;
+      playerName: string;
+      seatId: number;
+      playerReady: boolean;
+    }[];
     roomInfo: TemporaryRoomCreationInfo;
+    disableSeats: number[];
   };
   [WaitingRoomEvent.PlayerLeave]: {
     leftPlayerId: PlayerId;
     byKicked: boolean;
+    newHostPlayerId?: PlayerId;
   };
   [WaitingRoomEvent.PlayerReady]: {
     readyPlayerId: PlayerId;

@@ -1,5 +1,6 @@
 import { activeWaitingRoomListeningEvents, WaitingRoomEvent, WaitingRoomServerEventFinder } from 'core/event/event';
 import { GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
+import { PlayerId } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -9,7 +10,8 @@ import { WaitingRoomPresenter } from './waiting_room.presenter';
 import { WaitingRoomSeatInfo, WaitingRoomStore } from './waiting_room.store';
 
 interface WaitingRoomProcessorListenerData {
-  [WaitingRoomEvent.PlayerEnter]: { roomInfo: TemporaryRoomCreationInfo; seatsInfo: WaitingRoomSeatInfo[] };
+  [WaitingRoomEvent.PlayerEnter]: { roomInfo: TemporaryRoomCreationInfo };
+  hostChange: { newHostPlayerId: PlayerId };
 }
 
 export class WaitingRoomProcessor {
@@ -27,14 +29,19 @@ export class WaitingRoomProcessor {
   private messages = createTranslationMessages(this.translator);
 
   private playerEnterListener: (content: WaitingRoomProcessorListenerData[WaitingRoomEvent.PlayerEnter]) => void;
+  private hostChangedListener: (content: WaitingRoomProcessorListenerData['hostChange']) => void;
 
-  public on<Event extends WaitingRoomEvent.PlayerEnter>(
+  public on<Event extends WaitingRoomEvent.PlayerEnter | 'hostChange'>(
     event: Event,
-    listener: (content: WaitingRoomProcessorListenerData[WaitingRoomEvent.PlayerEnter]) => void,
+    listener: (content: WaitingRoomProcessorListenerData[Event]) => void,
   ) {
     switch (event) {
       case WaitingRoomEvent.PlayerEnter: {
-        this.playerEnterListener = listener;
+        this.playerEnterListener = listener as any;
+        break;
+      }
+      case 'hostChange': {
+        this.hostChangedListener = listener as any;
         break;
       }
 
@@ -79,15 +86,35 @@ export class WaitingRoomProcessor {
   }
 
   private onPlayerEnter(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.PlayerEnter>) {
+    const seatsInfo: WaitingRoomSeatInfo[] = [];
     if (evt.playerInfo.playerId === this.store.selfPlayerId) {
-      const seatsInfo: WaitingRoomSeatInfo[] = [evt.playerInfo, ...evt.otherPlayersInfo].map(playerInfo => ({
-        seatDisabled: false,
-        seatId: playerInfo.seatId,
-        playerAvatarId: playerInfo.avatarId,
-        playerId: playerInfo.playerId,
-        playerName: playerInfo.playerName,
-        playerReady: false,
-      }));
+      const playersInfo: {
+        playerId: string;
+        avatarId: number;
+        playerName: string;
+        seatId: number;
+        playerReady?: boolean;
+      }[] = [evt.playerInfo, ...evt.otherPlayersInfo];
+      for (let i = 0; i < WaitingRoomPresenter.defaultNumberOfPlayers; i++) {
+        if (!evt.disableSeats.includes(i)) {
+          const seatInfo = playersInfo.shift();
+          if (seatInfo) {
+            seatsInfo.push({
+              seatDisabled: false,
+              seatId: seatInfo.seatId,
+              playerAvatarId: seatInfo.avatarId,
+              playerId: seatInfo.playerId,
+              playerName: seatInfo.playerName,
+              playerReady: seatInfo.playerReady || false,
+            });
+          } else {
+            seatsInfo.push({ seatDisabled: false, seatId: i });
+          }
+        } else {
+          seatsInfo.push({ seatDisabled: true, seatId: i });
+        }
+      }
+
       this.presenter.initSeatsInfo(this.store, seatsInfo);
     } else {
       this.presenter.updateSeatInfo(this.store, {
@@ -99,12 +126,13 @@ export class WaitingRoomProcessor {
       });
     }
 
-
     this.presenter.sendChatMessage(this.store, {
-      from: this.translator.tr(this.messages.systemNotification()),
+      from: this.messages.systemNotification(),
       message: this.messages.playerEnter(evt.playerInfo.playerName),
       timestamp: Date.now(),
     });
+
+    this.playerEnterListener?.({ roomInfo: evt.roomInfo });
   }
 
   private onGameInfoUpdate(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.GameInfoUpdate>) {
@@ -129,6 +157,10 @@ export class WaitingRoomProcessor {
       return;
     }
 
+    if (evt.leftPlayerId === this.store.selfPlayerId) {
+      return this.accessRejectedHandler();
+    }
+
     const seatInfo: WaitingRoomSeatInfo = {
       seatDisabled: false,
       seatId: existingSeat.seatId,
@@ -137,10 +169,14 @@ export class WaitingRoomProcessor {
     this.presenter.updateSeatInfo(this.store, seatInfo);
     if (!existingSeat.seatDisabled && existingSeat.playerName) {
       this.presenter.sendChatMessage(this.store, {
-        from: this.translator.tr(this.messages.systemNotification()),
+        from: this.messages.systemNotification(),
         message: this.messages.playerLeft(existingSeat.playerName),
         timestamp: Date.now(),
       });
+    }
+
+    if (evt.newHostPlayerId != null) {
+      this.hostChangedListener?.({ newHostPlayerId: evt.newHostPlayerId });
     }
   }
 

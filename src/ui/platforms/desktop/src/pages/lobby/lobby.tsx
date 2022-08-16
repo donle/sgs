@@ -221,7 +221,6 @@ export class Lobby extends React.Component<LobbyProps> {
         }
       });
     } else {
-      // this.props.connectionService.Lobby.createGame(roomInfo, event => {
       this.props.connectionService.Lobby.createWaitingRoom(roomInfo, event => {
         const { packet, ping, hostTag, error } = event;
         if (packet) {
@@ -341,7 +340,7 @@ export class Lobby extends React.Component<LobbyProps> {
         this.currentInteractiveRoomInfo.info.id,
         exist => {
           if (exist) {
-            this.props.history.push(`/room/${this.currentInteractiveRoomInfo.info.id}`, {
+            this.props.history.push(`/waiting-room/${this.currentInteractiveRoomInfo.info.id}`, {
               hostConfig: this.props.config.host.find(
                 config => config.hostTag === this.currentInteractiveRoomInfo.host,
               ),

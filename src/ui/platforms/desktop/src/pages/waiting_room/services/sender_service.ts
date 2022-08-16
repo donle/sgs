@@ -42,6 +42,12 @@ export class WaitingRoomSender {
     });
   }
 
+  leaveRoom(playerId: PlayerId) {
+    this.socket.emit(WaitingRoomEvent.PlayerLeave, {
+      leftPlayerId: playerId,
+    });
+  }
+
   getReady(playerId: PlayerId, ready: boolean) {
     this.socket.emit(WaitingRoomEvent.PlayerReady, {
       readyPlayerId: playerId,

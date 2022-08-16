@@ -18,7 +18,6 @@ import { Button } from 'ui/button/button';
 import { CharacterCard } from 'ui/character/character';
 import { CharacterSkinCard, CharacterSpec } from 'ui/character/characterSkin';
 import { CheckBoxGroup } from 'ui/check_box/check_box_group';
-import { CheckBoxGroupPresenter } from 'ui/check_box/check_box_group_presenter';
 import { Picture } from 'ui/picture/picture';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import styles from './characters_list.module.css';
@@ -37,40 +36,57 @@ export class CharactersList extends React.Component<CharactersListProps> {
   private roomListBackgroundImage = this.props.imageLoader.getRoomListBackgroundImage();
   private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
 
-  private checkBoxPresenter = new CheckBoxGroupPresenter();
-  private nationalityCheckBoxStore = this.checkBoxPresenter.createStore<CharacterNationality>(
-    Sanguosha.getNationalitiesList().map(nationality => ({
-      label: this.props.translator.tr(Functional.getPlayerNationalityText(nationality)),
-      checked: true,
-      id: nationality,
-    })),
-  );
-  private gameCharacterExtensionsStore = this.checkBoxPresenter.createStore<GameCharacterExtensions>(
-    Sanguosha.getGameCharacterExtensions().map(extension => ({
-      id: extension,
-      label: this.props.translator.tr(extension),
-      checked: true,
-    })),
-  );
-
   @mobx.observable.ref
   private focusedCharacterId: CharacterId;
   @mobx.observable.ref
   private focusedSkinName: string;
 
+  @mobx.observable.deep
+  private characterExtensionOptions = Sanguosha.getGameCharacterExtensions().map(ext => ({
+    label: this.props.translator.tr(ext),
+    checked: true,
+    id: ext,
+  }));
+
+  @mobx.observable.deep
+  private nationalityOptions = Sanguosha.getNationalitiesList().map(nationality => ({
+    label: this.props.translator.tr(Functional.getPlayerNationalityText(nationality)),
+    checked: true,
+    id: nationality,
+  }));
+
   private readonly backToLobby = () => {
     this.props.history.push('/lobby');
   };
 
-  @mobx.computed
-  private get checkedExtensions() {
-    return this.gameCharacterExtensionsStore.options.filter(o => o.checked).map(o => o.id);
-  }
+  @mobx.observable.shallow
+  private checkedExtensions: GameCharacterExtensions[] = Sanguosha.getGameCharacterExtensions();
+  @mobx.observable.shallow
+  private selectedNationalities: CharacterNationality[] = Sanguosha.getNationalitiesList();
 
-  @mobx.computed
-  private get selectedNationalities() {
-    return this.nationalityCheckBoxStore.options.filter(o => o.checked).map(o => o.id);
-  }
+  @mobx.action
+  private readonly onCheckExtension = (exts: GameCharacterExtensions[]) => {
+    this.checkedExtensions = exts;
+    for (const option of this.characterExtensionOptions) {
+      if (exts.find(ext => ext === option.id)) {
+        option.checked = true;
+      } else {
+        option.checked = false;
+      }
+    }
+  };
+
+  @mobx.action
+  private readonly onCheckNationality = (nationalities: CharacterNationality[]) => {
+    this.selectedNationalities = nationalities;
+    for (const option of this.nationalityOptions) {
+      if (nationalities.find(nationality => nationality === option.id) != null) {
+        option.checked = true;
+      } else {
+        option.checked = false;
+      }
+    }
+  };
 
   @mobx.computed
   private get Characters() {
@@ -88,7 +104,6 @@ export class CharactersList extends React.Component<CharactersListProps> {
   private readonly onfocusedSkinName = (skinName: string) => {
     this.focusedSkinName = skinName;
   };
-
   render() {
     return (
       <div className={styles.charactersList}>
@@ -104,14 +119,14 @@ export class CharactersList extends React.Component<CharactersListProps> {
             <div className={styles.checkboxGroups}>
               <CheckBoxGroup
                 className={styles.packagesGroup}
-                store={this.gameCharacterExtensionsStore}
-                presenter={this.checkBoxPresenter}
+                options={this.characterExtensionOptions}
+                onChecked={this.onCheckExtension}
                 itemsPerLine={6}
               />
               <CheckBoxGroup
                 className={styles.nationalitiesGroup}
-                store={this.nationalityCheckBoxStore}
-                presenter={this.checkBoxPresenter}
+                options={this.nationalityOptions}
+                onChecked={this.onCheckNationality}
                 itemsPerLine={6}
               />
             </div>

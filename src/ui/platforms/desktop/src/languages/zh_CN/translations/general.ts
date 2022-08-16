@@ -783,4 +783,5 @@ export const UiDictionary: Word[] = [
   { source: 'save settings', target: '保存设置' },
   { source: 'campaign', target: '单人游戏' },
   { source: 'multi online', target: '联机游戏' },
+  { source: 'room host has been changed to {0}', target: '{0} 成为了新房主' },
 ];

@@ -1,5 +1,6 @@
 import { WaitingRoomClientEventFinder, WaitingRoomEvent, WaitingRoomServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
+import { PlayerId } from 'core/player/player_props';
 import { WaitingRoomInfo } from 'core/room/waiting_room';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Flavor } from 'core/shares/types/host_config';
@@ -9,6 +10,7 @@ import SocketIO from 'socket.io';
 export class WaitingRoomSocket {
   private disposeCallback: () => void;
   private connectedPlayersMap: Record<string, string> = {};
+  private readonly defaultNumberOfPlayers = 8;
 
   constructor(
     private roomService: RoomService,
@@ -52,7 +54,7 @@ export class WaitingRoomSocket {
   }
 
   private getAvailabeSeatId() {
-    for (let i = 0; i < this.waitingRoomInfo.roomInfo.numberOfPlayers; i++) {
+    for (let i = 0; i < this.defaultNumberOfPlayers; i++) {
       if (!this.waitingRoomInfo.closedSeats.includes(i) && !this.waitingRoomInfo.players.find(p => p.seatId === i)) {
         return i;
       }
@@ -105,13 +107,14 @@ export class WaitingRoomSocket {
     } else {
       this.connectedPlayersMap[socket.id] = evt.playerInfo.playerId;
 
-      const playerInfo = { ...evt.playerInfo, seatId };
+      const playerInfo = { ...evt.playerInfo, seatId, playerReady: false };
       this.waitingRoomInfo.players.push(playerInfo);
       this.broadcast(WaitingRoomEvent.PlayerEnter, {
         hostPlayerId: this.waitingRoomInfo.hostPlayerId,
         playerInfo,
         otherPlayersInfo: this.waitingRoomInfo.players.filter(p => p.playerId !== playerInfo.playerId),
         roomInfo: this.waitingRoomInfo.roomInfo,
+        disableSeats: this.waitingRoomInfo.closedSeats,
       });
     }
   };
@@ -119,26 +122,29 @@ export class WaitingRoomSocket {
   private readonly onPlayerLeave = (socket: SocketIO.Socket) => (
     evt: WaitingRoomClientEventFinder<WaitingRoomEvent.PlayerLeave>,
   ) => {
-    this.broadcast(WaitingRoomEvent.PlayerLeave, { ...evt, byKicked: false });
     this.waitingRoomInfo.players = this.waitingRoomInfo.players.filter(p => p.playerId !== evt.leftPlayerId);
+
+    let newHostPlayerId: PlayerId | undefined;
+    if (evt.leftPlayerId === this.waitingRoomInfo.hostPlayerId && this.waitingRoomInfo.players.length > 0) {
+      newHostPlayerId = this.waitingRoomInfo.players[0].playerId;
+    }
+    this.broadcast(WaitingRoomEvent.PlayerLeave, { ...evt, byKicked: false, newHostPlayerId });
   };
 
   private readonly onPlayerReady = (socket: SocketIO.Socket) => (
     evt: WaitingRoomClientEventFinder<WaitingRoomEvent.PlayerReady>,
   ) => {
+    const player = this.waitingRoomInfo.players.find(p => p.playerId === evt.readyPlayerId);
+    if (player) {
+      player.playerReady = evt.isReady;
+    }
+
     this.broadcast(WaitingRoomEvent.PlayerReady, evt);
   };
 
   private readonly onSeatDisabled = (socket: SocketIO.Socket) => (
     evt: WaitingRoomClientEventFinder<WaitingRoomEvent.SeatDisabled>,
   ) => {
-    if (evt.kickedPlayerId) {
-      this.broadcast(WaitingRoomEvent.PlayerLeave, { leftPlayerId: evt.kickedPlayerId, byKicked: true });
-      this.waitingRoomInfo.players = this.waitingRoomInfo.players.filter(p => p.playerId !== evt.kickedPlayerId);
-    }
-
-    this.broadcast(WaitingRoomEvent.SeatDisabled, evt);
-
     if (evt.disabled) {
       this.waitingRoomInfo.closedSeats.push(evt.seatId);
       this.waitingRoomInfo.roomInfo.numberOfPlayers--;
@@ -146,6 +152,13 @@ export class WaitingRoomSocket {
       this.waitingRoomInfo.closedSeats = this.waitingRoomInfo.closedSeats.filter(s => s !== evt.seatId);
       this.waitingRoomInfo.roomInfo.numberOfPlayers++;
     }
+
+    if (evt.kickedPlayerId) {
+      this.broadcast(WaitingRoomEvent.PlayerLeave, { leftPlayerId: evt.kickedPlayerId, byKicked: true });
+      this.waitingRoomInfo.players = this.waitingRoomInfo.players.filter(p => p.playerId !== evt.kickedPlayerId);
+    }
+
+    this.broadcast(WaitingRoomEvent.SeatDisabled, evt);
   };
 
   private readonly onRoomCreated = (socket: SocketIO.Socket) => (

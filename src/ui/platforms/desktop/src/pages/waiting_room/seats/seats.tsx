@@ -24,6 +24,7 @@ export type SeatsProps = {
   avatarService: RoomAvatarService;
   senderService: WaitingRoomSender;
   className?: string;
+  validToStartGame: boolean;
   isHost: boolean;
   hostPlayerId: PlayerId;
   roomName: string;
@@ -183,7 +184,7 @@ export class Seats extends React.Component<SeatsProps> {
           className={styles.startButton}
           variant="primary"
           onClick={this.requestGameStart}
-          disabled={!this.isEveryoneReady || this.countPlayers < 2}
+          disabled={!this.isEveryoneReady || !this.props.validToStartGame}
         >
           {this.props.translator.tr(Messages.gameStart())}
         </Button>

@@ -12,7 +12,6 @@ import { observer } from 'mobx-react';
 import * as React from 'react';
 import { Button } from 'ui/button/button';
 import { CheckBoxGroup } from 'ui/check_box/check_box_group';
-import { CheckBoxGroupPresenter } from 'ui/check_box/check_box_group_presenter';
 import { Dialog } from 'ui/dialog/dialog';
 import { Picture } from 'ui/picture/picture';
 import styles from './create_room_dialog.module.css';
@@ -37,8 +36,8 @@ export class CreateRoomDialog extends React.Component<{
     ? this.props.translator.tr(TranslationPack.translationJsonPatcher("{0}'s room", this.username).extract())
     : '';
 
-  private checkBoxPresenter = new CheckBoxGroupPresenter();
-  private gameModeCheckBoxStore = this.checkBoxPresenter.createStore([
+  @mobx.observable.deep
+  private gameModeOptions = [
     {
       label: this.props.translator.tr(Messages.multi()),
       id: GameMode.Standard,
@@ -49,12 +48,12 @@ export class CreateRoomDialog extends React.Component<{
       id: GameMode.Pve,
       checked: true,
     },
-  ]);
+  ];
 
   private readonly onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const gameMode = this.gameModeCheckBoxStore.options.find(o => o.checked)?.id!;
+    const gameMode = this.gameModeOptions.find(o => o.checked)?.id!;
     this.props.onSubmit(
       {
         hostPlayerId: this.props.electronLoader.getTemporaryData(ElectronData.PlayerId)!,
@@ -84,6 +83,17 @@ export class CreateRoomDialog extends React.Component<{
   @mobx.action
   onNumberOfPlayersChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     this.numberOfPlayers = parseInt(event.target.value, 10);
+  };
+
+  @mobx.action
+  private readonly onGameModeChecked = (gameModes: GameMode[]) => {
+    for (const option of this.gameModeOptions) {
+      if (gameModes.find(mode => mode === option.id)) {
+        option.checked = true;
+      } else {
+        option.checked = false;
+      }
+    }
   };
 
   private readonly selectPlayerOptions = [
@@ -120,7 +130,7 @@ export class CreateRoomDialog extends React.Component<{
                   className={styles.input}
                   value={this.numberOfPlayers}
                   onChange={this.onNumberOfPlayersChange}
-                  disabled={this.gameModeCheckBoxStore.options.find(o => o.checked)?.id !== GameMode.Pve}
+                  disabled={this.gameModeOptions.find(o => o.checked)?.id !== GameMode.Pve}
                 >
                   {this.selectPlayerOptions.map(option => (
                     <option key={option.value} value={option.value}>
@@ -134,8 +144,8 @@ export class CreateRoomDialog extends React.Component<{
               <div className={styles.inputField}>
                 <CheckBoxGroup
                   head={props.translator.tr(Messages.selectGameMode())}
-                  presenter={this.checkBoxPresenter}
-                  store={this.gameModeCheckBoxStore}
+                  options={this.gameModeOptions}
+                  onChecked={this.onGameModeChecked}
                   excludeSelection={true}
                 />
               </div>
