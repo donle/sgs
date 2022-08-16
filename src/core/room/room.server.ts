@@ -83,7 +83,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     protected gameMode: GameMode,
     protected gameCommonRules: GameCommonRules,
     protected eventStack: RoomEventStacker<WorkPlace.Server>,
-    protected readonly waitingRoomInfo: TemporaryRoomCreationInfo,
+    protected readonly waitingRoomInfo: { roomInfo: TemporaryRoomCreationInfo, roomId: number },
   ) {
     super();
     this.init();
@@ -2295,7 +2295,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   public get WaitingRoomInfo() {
-    return { roomInfo: this.waitingRoomInfo, roomId: this.roomId };
+    return this.waitingRoomInfo;
   }
 
   public close() {

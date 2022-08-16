@@ -86,7 +86,7 @@ export class LobbyEventChannel {
       return;
     }
 
-    const { roomId, gameInfo } = this.roomService.createRoom(content, { ...content, hostPlayerId: 'fake-id' });
+    const { roomId, gameInfo } = this.roomService.createRoom(content, { ...content, hostPlayerId: 'fake-id' }, -1);
     socket.emit(LobbySocketEvent.GameCreated.toString(), {
       roomId,
       roomInfo: gameInfo,

@@ -83,6 +83,7 @@ export class WaitingRoomSocket {
         flavor: this.flavor,
       },
       this.waitingRoomInfo.roomInfo,
+      this.waitingRoomInfo.roomId,
     );
 
     this.broadcast(WaitingRoomEvent.GameStart, {

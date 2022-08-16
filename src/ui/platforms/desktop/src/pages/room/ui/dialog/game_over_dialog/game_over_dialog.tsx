@@ -1,10 +1,8 @@
 import classNames from 'classnames';
 import { CardId } from 'core/cards/libs/card_props';
 import { Sanguosha } from 'core/game/engine';
-import { GameInfo } from 'core/game/game_props';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea } from 'core/player/player_props';
-import { RoomId } from 'core/room/room';
 import { Functional } from 'core/shares/libs/functional';
 import { GameMode } from 'core/shares/types/room_props';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -107,9 +105,11 @@ export const GameOverDialog = (props: {
             {translator.tr(Messages.saveReplay())}
           </Button>
         )}
-        <Button variant="primary" onClick={props.onBackingToWaitingRoom}>
-          {translator.tr(Messages.backToWaitingRoom())}
-        </Button>
+        {props.onBackingToWaitingRoom && (
+          <Button variant="primary" onClick={props.onBackingToWaitingRoom}>
+            {translator.tr(Messages.backToWaitingRoom())}
+          </Button>
+        )}
         <Button variant="primary" onClick={backToLobby}>
           {translator.tr(Messages.backToLobby())}
         </Button>

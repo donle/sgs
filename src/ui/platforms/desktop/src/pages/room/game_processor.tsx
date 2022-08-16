@@ -26,7 +26,6 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
-import { ConnectionService } from 'services/connection_service/connection_service';
 import { CharacterSkinInfo } from 'skins/skins';
 import { AudioService } from 'ui/audio/install';
 import { AskForPeachAction } from './actions/ask_for_peach_action';
@@ -60,7 +59,7 @@ export class GameClientProcessor {
     protected audioService: AudioService,
     protected electron: ElectronLoader,
     protected skinData?: CharacterSkinInfo[],
-    protected createWaitingRoomCaller?: (roomInfo: TemporaryRoomCreationInfo, roomId?: number) => void,
+    protected createWaitingRoomCaller?: (roomInfo: TemporaryRoomCreationInfo, roomId: number) => void,
   ) {}
 
   protected tryToThrowNotReadyException(e: GameEventIdentifiers) {
@@ -379,6 +378,7 @@ export class GameClientProcessor {
         break;
       case GameEventIdentifiers.BackToWaitingRoomEvent:
         await this.BackingToWaitingRoomEvent(e as any, content);
+        break;
       default:
         throw new Error(`Unhandled Game event: ${e}`);
     }
@@ -1869,7 +1869,7 @@ export class GameClientProcessor {
     type: T,
     content: ServerEventFinder<T>,
   ) {
-    const { playerId, playerName, roomId, roomInfo } = content;
+    const { roomId, roomInfo } = content;
     this.createWaitingRoomCaller?.(roomInfo, roomId);
   }
 }

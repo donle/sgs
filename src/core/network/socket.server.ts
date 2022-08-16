@@ -240,7 +240,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     identifier: GameEventIdentifiers.BackToWaitingRoomEvent,
     content: ClientEventFinder<GameEventIdentifiers.BackToWaitingRoomEvent>,
   ) {
-    this.broadcast(identifier, {
+    socket.emit(identifier.toString(), {
       ...this.room!.WaitingRoomInfo,
       playerId: content.playerId,
       playerName: content.playerName,

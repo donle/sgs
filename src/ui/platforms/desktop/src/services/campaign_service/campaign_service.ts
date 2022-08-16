@@ -63,7 +63,7 @@ export class CampaignService {
         campaignMode: !!roomInfo.campaignMode,
         flavor: this.flavor === ClientFlavor.Dev ? Flavor.Dev : Flavor.Prod,
       },
-      socket as unknown as ServerSocket,
+      (socket as unknown) as ServerSocket,
       this.createDifferentModeGameProcessor(roomInfo),
       new RecordAnalytics(),
       [],
@@ -72,6 +72,7 @@ export class CampaignService {
       roomInfo.gameMode,
       new GameCommonRules(),
       new RoomEventStacker(),
+      roomInfo,
     );
     this.campaginRooms[roomId] = room;
 

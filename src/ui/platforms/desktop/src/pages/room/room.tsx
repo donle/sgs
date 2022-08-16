@@ -142,33 +142,30 @@ export class RoomPage extends React.Component<
     );
   }
 
-  private readonly createWaitingRoomCaller = (roomInfo: TemporaryRoomCreationInfo, roomId?: number) => {
-    if (roomId) {
-      this.connectionService.Lobby.checkRoomExist(this.gameHostedServer, roomId, (exist, ping) => {
-        if (exist) {
-          this.props.history.push(`/waiting-room/${roomId}`, {
-            roomInfo,
-            ping,
-            hostConfig: this.gameHostedServer,
-          });
-        }
-      });
-    } else {
-      this.connectionService.Lobby.createWaitingRoom(roomInfo, event => {
-        const { packet, ping, hostTag, error } = event;
-        if (packet) {
-          const { roomId, roomInfo } = packet;
-          const hostConfig = this.props.config.host.find(config => config.hostTag === hostTag);
-          this.props.history.push(`/waiting-room/${roomId}`, {
-            roomInfo,
-            ping,
-            hostConfig,
-          });
-        } else {
-          console.error(error);
-        }
-      });
-    }
+  private readonly createWaitingRoomCaller = (roomInfo: TemporaryRoomCreationInfo, roomId: number) => {
+    this.connectionService.Lobby.checkRoomExist(this.gameHostedServer, roomId, (exist, ping) => {
+      if (exist) {
+        this.props.history.push(`/waiting-room/${roomId}`, {
+          ping,
+          hostConfig: this.gameHostedServer,
+        });
+      } else {
+        this.connectionService.Lobby.createWaitingRoom({ ...roomInfo, roomId }, event => {
+          const { packet, ping, hostTag, error } = event;
+          if (packet) {
+            const { roomId, roomInfo } = packet;
+            const hostConfig = this.props.config.host.find(config => config.hostTag === hostTag);
+            this.props.history.push(`/waiting-room/${roomId}`, {
+              roomInfo,
+              ping,
+              hostConfig,
+            });
+          } else {
+            console.error(error);
+          }
+        });
+      }
+    });
   };
 
   private readonly onHandleBulkEvents = async (events: ServerEventFinder<GameEventIdentifiers>[]) => {
