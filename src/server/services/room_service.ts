@@ -18,6 +18,7 @@ import SocketIO from 'socket.io';
 export class RoomService {
   private rooms: ServerRoom[] = [];
   private waitingRooms: WaitingRoomInfo[] = [];
+  private waitingRoomMaps: Map<number | string, WaitingRoomSocket> = new Map();
 
   constructor(
     private readonly lobbySocket: SocketIO.Server,
@@ -46,14 +47,14 @@ export class RoomService {
   checkRoomExist(roomId: RoomId) {
     return (
       this.rooms.find(room => room.RoomId === roomId) !== undefined ||
-      this.waitingRooms.find(room => room.roomId === roomId) !== undefined
+      this.waitingRooms.find(room => room.roomId === roomId && !room.isPlaying) !== undefined
     );
   }
 
   getRoomsInfo(): ReadonlyArray<RoomInfo> {
     return [
       ...this.rooms.map(room => room.getRoomInfo()),
-      ...this.waitingRooms.map(room => this.getWaitingRoomInfo(room)),
+      ...this.waitingRooms.filter(room => !room.isPlaying).map(room => this.getWaitingRoomInfo(room)),
     ];
   }
 
@@ -94,6 +95,20 @@ export class RoomService {
 
     room.onClosed(() => {
       this.rooms = this.rooms.filter(r => r !== room);
+
+      const waitingRoomIndex = this.waitingRooms.findIndex(r => r.roomId !== room.WaitingRoomInfo.roomId);
+      const waitingRoom = this.waitingRooms[waitingRoomIndex];
+
+      if (waitingRoom?.players.length === 0) {
+        this.waitingRooms.splice(waitingRoomIndex, 1);
+        this.waitingRoomMaps.delete(waitingRoom.roomId);
+      } else if (waitingRoom) {
+        if (waitingRoom.players.find(p => p.playerId === waitingRoom.hostPlayerId) == null) {
+          this.waitingRoomMaps
+            .get(waitingRoom.roomId)
+            ?.reassigHost(waitingRoom.hostPlayerId, waitingRoom.players[0].playerId);
+        }
+      }
     });
 
     this.rooms.push(room);
@@ -110,6 +125,7 @@ export class RoomService {
   createWaitingRoom(roomInfo: TemporaryRoomCreationInfo & { roomId?: number }) {
     const room = this.createGameWaitingRoom(roomInfo, roomInfo.roomId || Date.now());
     const roomSocket = this.createWaitingRoomSocket(this.lobbySocket.of(`/waiting-room-${room.roomId}`), room);
+    this.waitingRoomMaps.set(room.roomId, roomSocket);
 
     roomSocket.onClosed(() => {
       this.waitingRooms = this.waitingRooms.filter(r => r !== room);

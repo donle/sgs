@@ -72,7 +72,7 @@ export class CampaignService {
       roomInfo.gameMode,
       new GameCommonRules(),
       new RoomEventStacker(),
-      roomInfo,
+      { roomInfo, roomId: 1 },
     );
     this.campaginRooms[roomId] = room;
 

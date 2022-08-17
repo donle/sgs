@@ -116,6 +116,7 @@ const roomService = new RoomService(
     closedSeats: [],
     players: [],
     hostPlayerId: info.hostPlayerId,
+    isPlaying: false,
   }),
   (socket: SocketIO.Namespace, roomInfo: WaitingRoomInfo) =>
     new WaitingRoomSocket(roomService, socket, mode, logger, roomInfo),

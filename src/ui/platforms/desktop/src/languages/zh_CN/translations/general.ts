@@ -785,4 +785,5 @@ export const UiDictionary: Word[] = [
   { source: 'multi online', target: '联机游戏' },
   { source: 'room host has been changed to {0}', target: '{0} 成为了新房主' },
   { source: 'pve mode selection', target: 'PvE模式选择' },
+  { source: 'back to waiting room', target: '放回房间' },
 ];

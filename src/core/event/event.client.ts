@@ -101,6 +101,9 @@ export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.PlayerLeaveEvent]: {
     playerId: PlayerId;
   };
+  [GameEventIdentifiers.PlayerReadyEvent]: {
+    playerId: PlayerId;
+  };
   [GameEventIdentifiers.PlayerDiedEvent]: {
     playerInfo: PlayerInfo;
   };
@@ -197,7 +200,7 @@ export interface ClientEvent extends EventUtilities {
   [GameEventIdentifiers.BackToWaitingRoomEvent]: {
     playerId: PlayerId;
     playerName: string;
-  }
+  };
 }
 
 type PlayCardOrSkillEvent =

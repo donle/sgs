@@ -968,7 +968,7 @@ export class GameClientProcessor {
   ) {
     Precondition.assert(this.store.clientRoomInfo !== undefined, 'Uninitialized Client room info');
     if (
-      content.joiningPlayerName === this.store.clientRoomInfo.playerName &&
+      content.joiningPlayerId === this.store.clientRoomInfo.playerId &&
       content.timestamp === this.store.clientRoomInfo.timestamp
     ) {
       this.presenter.setupClientPlayerId(content.joiningPlayerId);
@@ -979,8 +979,12 @@ export class GameClientProcessor {
         content.gameInfo,
         content.playersInfo,
       );
+
       this.translator.setupPlayer(this.presenter.ClientPlayer);
       this.store.animationPosition.insertPlayer(content.joiningPlayerId);
+
+      this.presenter.ClientPlayer?.getReady();
+      this.store.room.broadcast(GameEventIdentifiers.PlayerReadyEvent, { playerId: this.store.clientPlayerId });
     } else {
       const playerInfo = Precondition.exists(
         content.playersInfo.find(playerInfo => playerInfo.Id === content.joiningPlayerId),
@@ -988,7 +992,10 @@ export class GameClientProcessor {
       );
 
       this.store.animationPosition.insertPlayer(playerInfo.Id);
-      this.presenter.playerEnter(playerInfo);
+
+      if (this.store.room) {
+        this.presenter.playerEnter(playerInfo);
+      }
     }
   }
 

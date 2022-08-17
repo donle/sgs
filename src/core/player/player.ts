@@ -90,6 +90,7 @@ export abstract class Player implements PlayerInfo {
   protected abstract playerId: PlayerId;
   protected abstract playerName: string;
   protected abstract playerPosition: number;
+  protected ready: boolean = false;
   protected playerRole: PlayerRole = PlayerRole.Unknown;
   protected nationality: CharacterNationality;
   protected huashenInfo: HuaShenInfo | undefined;
@@ -253,15 +254,15 @@ export abstract class Player implements PlayerInfo {
   public getCardIds<T extends CardId | CharacterId = CardId>(area?: PlayerCardsArea, outsideAreaName?: string): T[] {
     if (area === undefined) {
       const [handCards, judgeCards, equipCards] = Object.values<CardId[]>(this.playerCards);
-      return [...handCards, ...judgeCards, ...equipCards] as unknown as T[];
+      return ([...handCards, ...judgeCards, ...equipCards] as unknown) as T[];
     }
 
     if (area !== PlayerCardsArea.OutsideArea) {
-      return this.playerCards[area] as unknown as T[];
+      return (this.playerCards[area] as unknown) as T[];
     } else {
       outsideAreaName = Precondition.exists(outsideAreaName, `Unable to get ${outsideAreaName} area cards`);
       this.playerOutsideCards[outsideAreaName] = this.playerOutsideCards[outsideAreaName] || [];
-      return this.playerOutsideCards[outsideAreaName] as unknown as T[];
+      return (this.playerOutsideCards[outsideAreaName] as unknown) as T[];
     }
   }
 
@@ -1095,5 +1096,13 @@ export abstract class Player implements PlayerInfo {
 
   public get Status() {
     return this.status;
+  }
+
+  public getReady() {
+    this.ready = true;
+  }
+
+  public isReady() {
+    return this.ready;
   }
 }

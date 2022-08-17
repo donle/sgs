@@ -197,7 +197,7 @@ export class Seats extends React.Component<SeatsProps> {
     } else {
       return (
         <Button className={styles.startButton} variant="primary" onClick={this.getReady}>
-          {this.isReady ? this.props.translator.tr(Messages.cancelReady()) : this.props.translator.tr(Messages.ready())}
+          {this.isReady ? this.props.translator.tr(Messages.cancelReady()) : this.props.translator.tr(Messages.getReady())}
         </Button>
       );
     }

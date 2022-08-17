@@ -5,6 +5,7 @@ import { Sanguosha } from 'core/game/engine';
 import { TemporaryRoomCreationInfo } from 'core/game/game_props';
 import { LocalClientEmitter } from 'core/network/local/local_emitter.client';
 import { ClientSocket } from 'core/network/socket.client';
+import { PlayerId } from 'core/player/player_props';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -50,6 +51,10 @@ export class RoomPage extends React.Component<
   private gameProcessor: GameClientProcessor;
   private roomId: number;
   private playerName: string = this.props.electronLoader.getData(ElectronData.PlayerName) || 'unknown';
+  private playerId: PlayerId = Precondition.exists(
+    this.props.electronLoader.getTemporaryData(ElectronData.PlayerId),
+    'unknown player id',
+  );
   private baseService: RoomBaseService;
   private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
   private isCampaignMode = false;
@@ -143,33 +148,39 @@ export class RoomPage extends React.Component<
   }
 
   private readonly createWaitingRoomCaller = (roomInfo: TemporaryRoomCreationInfo, roomId: number) => {
-    this.connectionService.Lobby.checkRoomExist(this.gameHostedServer, roomId, (exist, ping) => {
-      if (exist) {
-        this.props.history.push(`/waiting-room/${roomId}`, {
-          ping,
-          hostConfig: this.gameHostedServer,
-        });
-      } else {
-        this.connectionService.Lobby.createWaitingRoom({ ...roomInfo, roomId }, event => {
-          const { packet, ping, hostTag, error } = event;
-          if (packet) {
-            const { roomId, roomInfo } = packet;
-            const hostConfig = this.props.config.host.find(config => config.hostTag === hostTag);
-            this.props.history.push(`/waiting-room/${roomId}`, {
-              roomInfo,
-              ping,
-              hostConfig,
-            });
-          } else {
-            console.error(error);
-          }
-        });
-      }
+    this.props.history.push(`/waiting-room/${roomId}`, {
+      ping: 0,
+      hostConfig: this.props.config.host.find(host => host.hostTag === this.gameHostedServer),
     });
+
+    // this.connectionService.Lobby.checkRoomExist(this.gameHostedServer, roomId, (exist, ping) => {
+    //   if (exist) {
+    //     this.props.history.push(`/waiting-room/${roomId}`, {
+    //       ping,
+    //       hostConfig: this.gameHostedServer,
+    //     });
+    //   } else {
+    //     this.connectionService.Lobby.createWaitingRoom({ ...roomInfo, roomId }, event => {
+    //       const { packet, ping, hostTag, error } = event;
+    //       if (packet) {
+    //         const { roomId, roomInfo } = packet;
+    //         console.log(packet);
+    //         const hostConfig = this.props.config.host.find(config => config.hostTag === hostTag);
+    //         this.props.history.push(`/waiting-room/${roomId}`, {
+    //           roomInfo,
+    //           ping,
+    //           hostConfig,
+    //         });
+    //       } else {
+    //         console.error(error);
+    //       }
+    //     });
+    //   }
+    // });
   };
 
   private readonly onHandleBulkEvents = async (events: ServerEventFinder<GameEventIdentifiers>[]) => {
-    this.store.room.emitStatus('trusted', this.props.electronLoader.getTemporaryData(ElectronData.PlayerId)!);
+    this.store.room.emitStatus('trusted', this.playerId!);
     for (const content of events) {
       const identifier = Precondition.exists(EventPacker.getIdentifier(content), 'Unable to load event identifier');
       await this.gameProcessor.onHandleIncomingEvent(identifier, content);
@@ -185,9 +196,10 @@ export class RoomPage extends React.Component<
       socket: this.socket,
       roomId: this.roomId,
       timestamp: Date.now(),
+      playerId: this.playerId,
     });
 
-    if (!this.props.electronLoader.getTemporaryData(ElectronData.PlayerId)) {
+    if (!this.playerId) {
       this.props.electronLoader.saveTemporaryData(ElectronData.PlayerId, `${this.playerName}-${Date.now()}`);
     }
 
@@ -216,7 +228,7 @@ export class RoomPage extends React.Component<
     });
 
     this.socket.onReconnected(() => {
-      const playerId = this.props.electronLoader.getTemporaryData(ElectronData.PlayerId);
+      const playerId = this.playerId;
       if (!playerId) {
         return;
       }
@@ -236,7 +248,7 @@ export class RoomPage extends React.Component<
       EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerEnterEvent, {
         playerName: this.playerName,
         timestamp: this.store.clientRoomInfo.timestamp,
-        playerId: this.props.electronLoader.getTemporaryData(ElectronData.PlayerId)!,
+        playerId: this.playerId!,
         coreVersion: Sanguosha.Version,
       }),
     );

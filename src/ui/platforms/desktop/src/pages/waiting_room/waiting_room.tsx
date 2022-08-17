@@ -70,14 +70,14 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
       ping: number;
       hostConfig: ServiceConfig;
     };
-    mobx.runInAction(() => {
-      this.roomIdString = match.params.slug;
-      this.isHost = !!roomInfo;
-    });
 
     if (!match.params.slug) {
       this.backwardsToLoddy();
     }
+
+    mobx.runInAction(() => {
+      this.roomIdString = match.params.slug;
+    });
 
     this.connectToServer(hostConfig);
 
@@ -100,6 +100,7 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
         this.initWithRoomInfo(content.roomInfo);
 
         const { roomName, campaignMode, coreVersion, hostPlayerId, ...settings } = content.roomInfo;
+        mobx.runInAction(() => (this.isHost = this.selfPlayerId === hostPlayerId));
         this.presenter.updateGameSettings(this.store, settings);
       });
 
@@ -116,6 +117,7 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
         hostPlayerId: roomInfo.hostPlayerId,
         roomInfo,
       });
+      mobx.runInAction(() => (this.isHost = true));
     }
 
     this.services.roomProcessorService.on(

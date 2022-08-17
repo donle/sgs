@@ -10,7 +10,7 @@ import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { Socket } from 'core/network/socket';
 import { ServerPlayer } from 'core/player/player.server';
-import { PlayerId } from 'core/player/player_props';
+import { PlayerId, PlayerStatus } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';
@@ -66,6 +66,13 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
                 socket,
                 identifier,
                 content as ClientEventFinder<GameEventIdentifiers.PlayerLeaveEvent>,
+              );
+              break;
+            case GameEventIdentifiers.PlayerReadyEvent:
+              this.onPlayerReady(
+                socket,
+                identifier,
+                content as ClientEventFinder<GameEventIdentifiers.PlayerReadyEvent>,
               );
               break;
             case GameEventIdentifiers.UserMessageEvent:
@@ -316,6 +323,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
     const player = new ServerPlayer(event.playerId, event.playerName, room.Players.length);
     room.addPlayer(player);
     this.mapSocketIdToPlayerId[event.playerId] = socket.id;
+
     this.broadcast(GameEventIdentifiers.PlayerEnterEvent, {
       joiningPlayerName: event.playerName,
       joiningPlayerId: event.playerId,
@@ -328,8 +336,20 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       ).extract(),
       timestamp: event.timestamp,
     });
+  }
 
-    if (room.Players.length === room.getRoomInfo().totalPlayers) {
+  private async onPlayerReady(
+    socket: IOSocketServer.Socket,
+    identifier: GameEventIdentifiers.PlayerReadyEvent,
+    event: ClientEventFinder<typeof identifier>,
+  ) {
+    const room = this.room as ServerRoom;
+    const player = room.Players.find(player => player.Id === event.playerId);
+    if (player) {
+      player.getReady();
+    }
+
+    if (room.Players.length === room.getRoomInfo().totalPlayers && room.Players.every(player => player.isReady())) {
       await room.gameStart();
     }
   }
@@ -350,6 +370,7 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       ).extract(),
       ignoreNotifiedStatus: true,
     };
+
     this.broadcast(
       GameEventIdentifiers.PlayerLeaveEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent),

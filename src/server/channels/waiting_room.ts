@@ -9,6 +9,7 @@ import SocketIO from 'socket.io';
 
 export class WaitingRoomSocket {
   private disposeCallback: () => void;
+  private hangOutCallback: () => void;
   private connectedPlayersMap: Record<string, string> = {};
   private readonly defaultNumberOfPlayers = 8;
 
@@ -43,7 +44,7 @@ export class WaitingRoomSocket {
         }
 
         if (Object.keys(this.connectedPlayersMap).length === 0) {
-          this.disposeCallback?.();
+          this.waitingRoomInfo.isPlaying ? this.hangOutCallback?.() : this.disposeCallback?.();
         }
       });
     });
@@ -86,6 +87,7 @@ export class WaitingRoomSocket {
       this.waitingRoomInfo.roomId,
     );
 
+    this.waitingRoomInfo.isPlaying = true;
     this.broadcast(WaitingRoomEvent.GameStart, {
       roomId,
       otherPlayersId: this.waitingRoomInfo.players.map(player => player.playerId),
@@ -102,6 +104,8 @@ export class WaitingRoomSocket {
   private readonly onPlayerEnter = (socket: SocketIO.Socket) => (
     evt: WaitingRoomClientEventFinder<WaitingRoomEvent.PlayerEnter>,
   ) => {
+    this.waitingRoomInfo.isPlaying = false;
+
     const seatId = this.getAvailabeSeatId();
     if (
       seatId < 0 ||
@@ -183,5 +187,13 @@ export class WaitingRoomSocket {
 
   public readonly onClosed = (disposeCallback: () => void) => {
     this.disposeCallback = disposeCallback;
+  };
+
+  public readonly onGameStarting = (hangOutCallback: () => void) => {
+    this.hangOutCallback = hangOutCallback;
+  };
+
+  public readonly reassigHost = (prevHostPlayerId: PlayerId, newHostPlayerId: PlayerId) => {
+    this.broadcast(WaitingRoomEvent.PlayerLeave, { leftPlayerId: prevHostPlayerId, byKicked: false, newHostPlayerId });
   };
 }

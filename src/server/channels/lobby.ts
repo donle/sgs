@@ -1,6 +1,5 @@
 import { Sanguosha } from 'core/game/engine';
 import { GameInfo, TemporaryRoomCreationInfo } from 'core/game/game_props';
-import { PlayerId } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { ChatSocketEvent, LobbySocketEvent } from 'core/shares/types/server_types';
 import { ServerConfig } from 'server/server_config';

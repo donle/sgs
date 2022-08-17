@@ -9,4 +9,5 @@ export type WaitingRoomInfo = {
   players: WaitingRoomServerEventFinder<WaitingRoomEvent.PlayerEnter>['otherPlayersInfo'];
   closedSeats: number[];
   hostPlayerId: PlayerId;
+  isPlaying: boolean;
 };

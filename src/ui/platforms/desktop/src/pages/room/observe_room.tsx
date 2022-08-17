@@ -2,6 +2,7 @@ import { AudioLoader } from 'audio_loader/audio_loader';
 import { clientActiveListenerEvents, GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
 import { ClientSocket } from 'core/network/socket.client';
+import { PlayerId } from 'core/player/player_props';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
@@ -46,6 +47,10 @@ export class ObserveRoomPage extends React.Component<
   private store: RoomStore;
   private audioService = installAudioPlayerService(this.props.audioLoader, this.props.electronLoader);
   private playerName: string = this.props.electronLoader.getData(ElectronData.PlayerName) || 'unknown';
+  private playerId: PlayerId = Precondition.exists(
+    this.props.electronLoader.getTemporaryData(ElectronData.PlayerId),
+    'unknown player id',
+  );
 
   @mobx.observable.ref
   openSettings = false;
@@ -128,7 +133,7 @@ export class ObserveRoomPage extends React.Component<
   }
 
   private readonly onHandleBulkEvents = async (events: ServerEventFinder<GameEventIdentifiers>[]) => {
-    this.store.room.emitStatus('trusted', this.props.electronLoader.getTemporaryData(ElectronData.PlayerId)!);
+    this.store.room.emitStatus('trusted', this.playerId!);
     for (const content of events) {
       const identifier = Precondition.exists(EventPacker.getIdentifier(content), 'Unable to load event identifier');
       await this.gameProcessor.onHandleIncomingEvent(identifier, content);
@@ -170,13 +175,14 @@ export class ObserveRoomPage extends React.Component<
       socket: this.socket,
       roomId: this.roomId,
       timestamp: Date.now(),
+      playerId: this.playerId,
     });
 
     this.socket.on(GameEventIdentifiers.PlayerEnterRefusedEvent, () => {
       this.props.history.push('/lobby');
     });
 
-    if (!this.props.electronLoader.getTemporaryData(ElectronData.PlayerId)) {
+    if (!this.playerId) {
       this.props.electronLoader.saveTemporaryData(ElectronData.PlayerId, `${this.playerName}-${Date.now()}`);
     }
 
@@ -201,7 +207,7 @@ export class ObserveRoomPage extends React.Component<
     });
 
     this.socket.onReconnected(() => {
-      const playerId = this.props.electronLoader.getTemporaryData(ElectronData.PlayerId);
+      const playerId = this.playerId;
       if (!playerId) {
         return;
       }
@@ -219,7 +225,7 @@ export class ObserveRoomPage extends React.Component<
     this.socket.notify(
       GameEventIdentifiers.RequestObserveEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.RequestObserveEvent, {
-        observerId: this.props.electronLoader.getTemporaryData(ElectronData.PlayerId)!,
+        observerId: this.playerId!,
       }),
     );
 
