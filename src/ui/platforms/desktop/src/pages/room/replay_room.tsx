@@ -3,6 +3,7 @@ import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
 import { ClientOfflineSocket } from 'core/network/socket.offline';
 import { PlayerInfo } from 'core/player/player_props';
+import { System } from 'core/shares/libs/system';
 import { TranslationPack } from 'core/translations/translation_json_tool';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
 import { ElectronData } from 'electron_loader/electron_data';
@@ -127,9 +128,9 @@ export class ReplayRoomPage extends React.Component<
 
   private async stepDelay(identifier: GameEventIdentifiers) {
     if (ReplayRoomPage.nonDelayedEvents.includes(identifier)) {
-      await this.sleep(0);
+      await System.Thread.sleep(0);
     } else {
-      await this.sleep(this.replayStepDelay);
+      await System.Thread.sleep(this.replayStepDelay);
     }
   }
 
@@ -175,12 +176,6 @@ export class ReplayRoomPage extends React.Component<
     this.store.animationPosition.insertPlayer(replayData.viewerId);
 
     this.loadSteps(replayData.events);
-  }
-
-  private async sleep(ms: number) {
-    return new Promise<void>(r => {
-      setTimeout(() => r(), ms);
-    });
   }
 
   componentWillUnmount() {

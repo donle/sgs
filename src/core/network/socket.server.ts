@@ -10,7 +10,7 @@ import { EventPacker } from 'core/event/event_packer';
 import { Sanguosha } from 'core/game/engine';
 import { Socket } from 'core/network/socket';
 import { ServerPlayer } from 'core/player/player.server';
-import { PlayerId, PlayerStatus } from 'core/player/player_props';
+import { PlayerId } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { Logger } from 'core/shares/libs/logger/logger';

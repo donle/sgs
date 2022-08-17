@@ -132,7 +132,9 @@ export class WaitingRoomProcessor {
       timestamp: Date.now(),
     });
 
-    this.playerEnterListener?.({ roomInfo: evt.roomInfo });
+    if (this.store.selfPlayerId === evt.playerInfo.playerId) {
+      this.playerEnterListener?.({ roomInfo: evt.roomInfo });
+    }
   }
 
   private onGameInfoUpdate(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.GameInfoUpdate>) {
@@ -152,13 +154,17 @@ export class WaitingRoomProcessor {
   }
 
   private onPlayerLeave(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.PlayerLeave>) {
+    if (evt.leftPlayerId === this.store.selfPlayerId) {
+      return this.accessRejectedHandler();
+    }
+
+    if (evt.newHostPlayerId != null) {
+      this.hostChangedListener?.({ newHostPlayerId: evt.newHostPlayerId });
+    }
+
     const existingSeat = this.store.seats.find(seat => !seat.seatDisabled && seat.playerId === evt.leftPlayerId);
     if (!existingSeat) {
       return;
-    }
-
-    if (evt.leftPlayerId === this.store.selfPlayerId) {
-      return this.accessRejectedHandler();
     }
 
     const seatInfo: WaitingRoomSeatInfo = {
@@ -173,10 +179,6 @@ export class WaitingRoomProcessor {
         message: this.messages.playerLeft(existingSeat.playerName),
         timestamp: Date.now(),
       });
-    }
-
-    if (evt.newHostPlayerId != null) {
-      this.hostChangedListener?.({ newHostPlayerId: evt.newHostPlayerId });
     }
   }
 

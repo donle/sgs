@@ -2,6 +2,7 @@ import { CardMatcher } from 'core/cards/libs/card_matcher';
 import { GameEventIdentifiers, ServerEventFinder } from 'core/event/event';
 import { EventPacker } from 'core/event/event_packer';
 import { Room } from 'core/room/room';
+import { System } from 'core/shares/libs/system';
 import { CommonSkill, ResponsiveSkill } from 'core/skills/skill';
 
 @CommonSkill({ name: 'wuxiekeji', description: 'wuxiekeji_description' })
@@ -33,7 +34,7 @@ export class WuXieKeJiSkill extends ResponsiveSkill {
       room.AlivePlayers.map(player => player.Id),
       1500,
     );
-    await room.sleep(1500);
+    await System.Thread.sleep(1500);
 
     return true;
   }

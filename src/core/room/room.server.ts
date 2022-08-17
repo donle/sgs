@@ -210,7 +210,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     };
     this.broadcast(GameEventIdentifiers.GameReadyEvent, event);
     this.gameStarted = true;
-    await this.sleep(3000);
+    await System.Thread.sleep(3000);
     await this.gameProcessor.gameStart(this, this.loadedCharacters, () => {
       this.selectedCharacters = this.getAlivePlayersFrom().map(player => player.CharacterId) as CharacterId[];
     });
@@ -1896,7 +1896,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           });
 
           await this.trigger(pindianEvent, PinDianStage.PinDianResultConfirmed);
-          await this.sleep(2500);
+          await System.Thread.sleep(2500);
           this.broadcast(GameEventIdentifiers.ObserveCardFinishEvent, {});
         }
 
