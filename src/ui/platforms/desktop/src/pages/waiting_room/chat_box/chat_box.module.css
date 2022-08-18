@@ -29,7 +29,7 @@
 }
 
 .userInput {
-  min-height: calc(girdLine * 5);
+  min-height: calc(gridLine * 5);
   margin: 0;
   margin-bottom: 4px;
   line-height: 16px;
