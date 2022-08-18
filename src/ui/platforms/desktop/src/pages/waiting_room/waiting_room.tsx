@@ -56,6 +56,7 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
   );
   private selfPlayerName =
     this.props.electronLoader.getData<string>(ElectronData.PlayerName) || this.props.translator.tr('unknown');
+  private roomName: string;
 
   private presenter = new WaitingRoomPresenter();
   private store: WaitingRoomStore = this.presenter.createStore(this.selfPlayerId);
@@ -97,9 +98,6 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
     if (!roomInfo) {
       this.services.roomProcessorService.on(WaitingRoomEvent.PlayerEnter, content => {
         this.initWithRoomInfo(content.roomInfo);
-
-        const { hostPlayerId } = content.roomInfo;
-        mobx.runInAction(() => (this.isHost = this.selfPlayerId === hostPlayerId));
       });
 
       this.presenter.initSeatsInfo(this.store);
@@ -115,7 +113,6 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
         hostPlayerId: roomInfo.hostPlayerId,
         roomInfo,
       });
-      mobx.runInAction(() => (this.isHost = true));
     }
 
     this.services.roomProcessorService.on(
@@ -129,6 +126,9 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
   @mobx.action
   private initWithRoomInfo(roomInfo: TemporaryRoomCreationInfo) {
     const { roomName, campaignMode, coreVersion, hostPlayerId, ...settings } = roomInfo;
+    this.isHost = this.selfPlayerId === hostPlayerId;
+    this.roomName = roomName;
+
     this.hostPlayerId = hostPlayerId;
     this.presenter.updateGameSettings(this.store, settings);
     this.services.roomProcessorService.saveSettingsLocally();
@@ -189,8 +189,7 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
 
   render() {
     const { match, location, ...props } = this.props;
-    const { roomName, ping } = location.state as {
-      roomName: string;
+    const { ping } = location.state as {
       ping: number;
     };
 
@@ -201,7 +200,7 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
           {...props}
           isCampaignMode={false}
           audioService={this.services.audioService}
-          roomName={roomName}
+          roomName={this.roomName}
           roomId={this.roomIdString}
           defaultPing={ping}
           host={this.gameHostedServer}
@@ -220,7 +219,7 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
               isHost={this.isHost}
               validToStartGame={this.validSettings}
               hostPlayerId={this.hostPlayerId}
-              roomName={roomName}
+              roomName={this.roomName}
             />
             <ChatBox
               translator={props.translator}

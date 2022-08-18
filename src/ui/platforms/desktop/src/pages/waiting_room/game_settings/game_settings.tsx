@@ -159,7 +159,7 @@ export class GameSettings extends React.Component<GameSettingsProps> {
 
         this.inputDebounceTimer = undefined;
       }),
-      1500,
+      1000,
     );
   };
 
@@ -174,6 +174,7 @@ export class GameSettings extends React.Component<GameSettingsProps> {
 
     mobx.runInAction(() => {
       this.searchCharacterInput = '';
+      this.searchResultList = [];
     });
   };
 
@@ -262,7 +263,7 @@ export class GameSettings extends React.Component<GameSettingsProps> {
             placeholder={this.translationMessage.searchCharacterByName()}
           />
 
-          {this.searchCharacterInput && this.searchTooltipPosition && (
+          {this.searchResultList.length > 0 && this.searchTooltipPosition && (
             <Tooltip
               position={{ bottom: this.searchTooltipPosition[1], right: this.searchTooltipPosition[0] }}
               className={styles.searchResultsList}
