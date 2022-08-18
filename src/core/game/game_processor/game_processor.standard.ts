@@ -1090,6 +1090,9 @@ export class StandardGameProcessor extends GameProcessor {
     return;
   }
 
+  protected readonly isTerminated = (event: ServerEventFinder<GameEventIdentifiers>) =>
+    EventPacker.isTerminated(event) || this.room.isClosed();
+
   protected iterateEachStage = async <T extends GameEventIdentifiers>(
     identifier: T,
     event: ServerEventFinder<GameEventIdentifiers>,
@@ -1098,7 +1101,7 @@ export class StandardGameProcessor extends GameProcessor {
   ) => {
     let processingStage: GameEventStage | undefined = this.stageProcessor.involve(identifier);
     while (true) {
-      if (EventPacker.isTerminated(event)) {
+      if (this.isTerminated(event)) {
         this.stageProcessor.skipEventProcess();
         break;
       }
@@ -1106,7 +1109,7 @@ export class StandardGameProcessor extends GameProcessor {
       this.currentProcessingStage = processingStage;
       await this.room.trigger<typeof event>(event, this.currentProcessingStage);
       this.currentProcessingStage = processingStage;
-      if (EventPacker.isTerminated(event)) {
+      if (this.isTerminated(event)) {
         this.stageProcessor.skipEventProcess();
         break;
       }
@@ -1116,7 +1119,7 @@ export class StandardGameProcessor extends GameProcessor {
         await onActualExecuted(processingStage!);
         this.currentProcessingStage = processingStage;
       }
-      if (EventPacker.isTerminated(event)) {
+      if (this.isTerminated(event)) {
         this.stageProcessor.skipEventProcess();
         break;
       }
@@ -1126,7 +1129,7 @@ export class StandardGameProcessor extends GameProcessor {
         await processor(processingStage);
         this.currentProcessingStage = processingStage;
       }
-      if (EventPacker.isTerminated(event)) {
+      if (this.isTerminated(event)) {
         this.stageProcessor.skipEventProcess();
         break;
       }

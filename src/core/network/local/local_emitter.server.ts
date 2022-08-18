@@ -146,7 +146,6 @@ export class LocalServerEmitter implements LocalServerEmitterInterface {
     event: ClientEventFinder<typeof identifier>,
   ) {
     const room = this.room as ServerRoom;
-    room.getPlayerById(event.playerId).setOffline(true);
     const playerLeaveEvent: ServerEventFinder<GameEventIdentifiers.PlayerLeaveEvent> = {
       playerId: event.playerId,
       quit: true,
@@ -161,10 +160,8 @@ export class LocalServerEmitter implements LocalServerEmitterInterface {
       EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent),
     );
     room.getPlayerById(event.playerId).setOffline(true);
-    if (room.Players.every(player => !player.isOnline()) || room.Players.length === 0) {
-      room.close();
-      return;
-    }
+    room.close();
+    socket.disconnect();
   }
 
   public emit(room: ServerRoom) {

@@ -378,7 +378,6 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       GameEventIdentifiers.PlayerLeaveEvent,
       EventPacker.createIdentifierEvent(GameEventIdentifiers.PlayerLeaveEvent, playerLeaveEvent),
     );
-    room.getPlayerById(event.playerId).setOffline(true);
     if (room.Players.every(player => !player.isOnline()) || room.Players.length === 0) {
       room.close();
       return;
