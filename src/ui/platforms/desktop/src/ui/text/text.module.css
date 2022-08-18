@@ -1,0 +1,78 @@
+@value gridLine from '../metrics/metrics.css';
+
+.text {
+    font-size: 14px;
+    display: block;
+}
+
+.start {
+    text-align: start;
+}
+.center {
+    text-align: center;
+}
+.end {
+    text-align: end;
+}
+
+.normal {
+    font-weight: 500;
+}
+.semiBold {
+    font-weight: 600;
+}
+.bold {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.white {
+    color: white;
+}
+.grey {
+    color: grey;
+}
+.highlight {
+    color: #dcad00;
+}
+.black {
+    color: #000;
+}
+
+.top_spacing8 {
+    margin-top: gridLine;
+}
+.top_spacing16 {
+    margin-top: calc(gridLine * 2);
+}
+.top_spacing24 {
+    margin-top: calc(gridLine * 3);
+}
+.top_spacing32 {
+    margin-top: calc(gridLine * 4);
+}
+.top_spacing48 {
+    margin-top: calc(gridLine * 6);
+}
+.top_spacing96 {
+    margin-top: calc(gridLine * 12);
+}
+
+.bottom_spacing8 {
+    margin-bottom: gridLine;
+}
+.bottom_spacing16 {
+    margin-bottom: calc(gridLine * 2);
+}
+.bottom_spacing24 {
+    margin-bottom: calc(gridLine * 3);
+}
+.bottom_spacing32 {
+    margin-bottom: calc(gridLine * 4);
+}
+.bottom_spacing48 {
+    margin-bottom: calc(gridLine * 6);
+}
+.bottom_spacing96 {
+    margin-bottom: calc(gridLine * 12);
+}

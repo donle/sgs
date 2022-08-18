@@ -13,6 +13,7 @@ import { CharacterCard } from 'ui/character/character';
 import { CheckBox } from 'ui/check_box/check_box';
 import { CheckBoxGroup } from 'ui/check_box/check_box_group';
 import { Input } from 'ui/input/input';
+import { Spacing, Text } from 'ui/text/text';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import { WaitingRoomPresenter } from '../waiting_room.presenter';
 import { WaitingRoomStore } from '../waiting_room.store';
@@ -210,13 +211,16 @@ export class GameSettings extends React.Component<GameSettingsProps> {
         <div className={styles.settingsLabel}>
           <CheckBox
             id="enableObserver"
+            className={styles.observerCheckbox}
             checked={this.props.store.gameSettings.allowObserver || false}
             disabled={!this.props.controlable}
             onChecked={this.onChangeGameSettings('allowObserver')}
             label={this.translationMessage.enableObserver()}
           />
           <div className={styles.inputLabel}>
-            <span className={styles.inputTitle}>{this.translationMessage.passcode()}</span>
+            <Text className={styles.inputTitle} color="white" variant="semiBold" bottomSpacing={Spacing.Spacing_8}>
+              {this.translationMessage.passcode()}
+            </Text>
             <Input
               value={this.props.store.gameSettings.passcode}
               onChange={this.onChangeGameSettings('passcode')}
@@ -226,35 +230,49 @@ export class GameSettings extends React.Component<GameSettingsProps> {
               max={60}
             />
           </div>
-          <div className={styles.inputLabel}>
-            <span className={styles.inputTitle}>{this.translationMessage.getTimeLimit('play stage')}</span>
-            <Input
-              type="number"
-              value={this.props.store.gameSettings.playingTimeLimit?.toString()}
-              onChange={this.onChangeGameSettings('playingTimeLimit')}
-              disabled={!this.props.controlable}
-              transparency={0.3}
-              min={15}
-              max={300}
-              suffix={this.translationMessage.second()}
-            />
-          </div>
-          <div className={styles.inputLabel}>
-            <span className={styles.inputTitle}>{this.translationMessage.getTimeLimit(WuXieKeJiSkill.Name)}</span>
-            <Input
-              type="number"
-              value={this.props.store.gameSettings.wuxiekejiTimeLimit?.toString()}
-              onChange={this.onChangeGameSettings('wuxiekejiTimeLimit')}
-              disabled={!this.props.controlable}
-              transparency={0.3}
-              min={5}
-              max={60}
-              suffix={this.translationMessage.second()}
-            />
+          <div className={classNames(styles.inputLabel, styles.horizontalInput)}>
+            <div>
+              <Text className={styles.inputTitle} color="white" variant="semiBold" bottomSpacing={Spacing.Spacing_8}>
+                {this.translationMessage.getTimeLimit('play stage')}
+              </Text>
+              <Input
+                type="number"
+                value={this.props.store.gameSettings.playingTimeLimit?.toString()}
+                onChange={this.onChangeGameSettings('playingTimeLimit')}
+                disabled={!this.props.controlable}
+                transparency={0.3}
+                min={15}
+                max={300}
+                suffix={this.translationMessage.second()}
+              />
+            </div>
+            <div>
+              <Text className={styles.inputTitle} color="white" variant="semiBold" bottomSpacing={Spacing.Spacing_8}>
+                {this.translationMessage.getTimeLimit(WuXieKeJiSkill.Name)}
+              </Text>
+              <Input
+                type="number"
+                value={this.props.store.gameSettings.wuxiekejiTimeLimit?.toString()}
+                onChange={this.onChangeGameSettings('wuxiekejiTimeLimit')}
+                disabled={!this.props.controlable}
+                transparency={0.3}
+                min={5}
+                max={60}
+                suffix={this.translationMessage.second()}
+              />
+            </div>
           </div>
         </div>
         <div className={styles.settingsLabel} ref={this.searchContentElementRef}>
-          <span className={styles.inputTitle}>{this.translationMessage.forbiddenCharacters()}</span>
+          <Text
+            className={styles.inputTitle}
+            color="white"
+            variant="semiBold"
+            bottomSpacing={Spacing.Spacing_16}
+            topSpacing={Spacing.Spacing_16}
+          >
+            {this.translationMessage.forbiddenCharacters()}
+          </Text>
           <Input
             value={this.searchCharacterInput}
             onChange={this.onSearchCharacterInputChange}

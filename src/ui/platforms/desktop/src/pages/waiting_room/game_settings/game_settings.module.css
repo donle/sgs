@@ -4,14 +4,14 @@
   min-width: calc(gridLine * 40);
   display: flex;
   flex-direction: column;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
   max-height: calc(100vh - calc(gridLine * 5));
 }
 
 .settingsLabel {
   width: 100%;
-  margin-top: calc(gridLine * 2);
+  border-top: 1px dashed grey;
   margin-bottom: calc(gridLine * 2);
   display: flex;
   flex-direction: column;
@@ -26,14 +26,19 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+}
 
+.horizontalInput {
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.observerCheckbox {
+  margin-top: calc(gridLine * 2);
+  margin-bottom: calc(gridLine * 2);
 }
 
 .inputTitle {
-  font-size: 14px;
-  color: white;
-  font-weight: 550;
-  margin-bottom: gridLine;
   min-width: calc(gridLine * 6);
 }
 

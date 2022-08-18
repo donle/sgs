@@ -12,7 +12,8 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  min-height: calc(gridLine * 20);
+  height: calc(gridLine * 20);
+  overflow: auto;
   border: 1px solid gray;
   border-radius: 4px;
   margin-bottom: calc(gridLine * 2);
@@ -29,7 +30,6 @@
 }
 
 .userInput {
-  min-height: calc(gridLine * 5);
   margin: 0;
   margin-bottom: 4px;
   line-height: 16px;

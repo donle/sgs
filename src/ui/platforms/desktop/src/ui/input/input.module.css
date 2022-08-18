@@ -8,6 +8,8 @@
     color: white;
     font-size: 14px;
     padding-left: gridLine;
+    display: flex;
+    align-items: center;
 }
 
 .input {
