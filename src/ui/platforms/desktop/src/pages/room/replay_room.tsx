@@ -128,9 +128,9 @@ export class ReplayRoomPage extends React.Component<
 
   private async stepDelay(identifier: GameEventIdentifiers) {
     if (ReplayRoomPage.nonDelayedEvents.includes(identifier)) {
-      await System.Thread.sleep(0);
+      await System.MainThread.sleep(0);
     } else {
-      await System.Thread.sleep(this.replayStepDelay);
+      await System.MainThread.sleep(this.replayStepDelay);
     }
   }
 

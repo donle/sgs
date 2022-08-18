@@ -1,9 +1,9 @@
 import { WaitingRoomClientEventFinder, WaitingRoomEvent, WaitingRoomServerEventFinder } from 'core/event/event';
 import { Sanguosha } from 'core/game/engine';
 import { PlayerId } from 'core/player/player_props';
-import { WaitingRoomInfo } from 'core/room/waiting_room';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Flavor } from 'core/shares/types/host_config';
+import { WaitingRoomInfo } from 'core/shares/types/waiting_room_info';
 import { RoomService } from 'server/services/room_service';
 import SocketIO from 'socket.io';
 
@@ -30,6 +30,7 @@ export class WaitingRoomSocket {
       socket.on(WaitingRoomEvent.PlayerLeave, this.onPlayerLeave(socket));
       socket.on(WaitingRoomEvent.PlayerReady, this.onPlayerReady(socket));
       socket.on(WaitingRoomEvent.SeatDisabled, this.onSeatDisabled(socket));
+      socket.on(WaitingRoomEvent.ChangeHost, this.onHostChanged(socket));
 
       socket.on('disconnect', () => {
         logger.info('user ' + socket.id + ' disconnected');
@@ -170,6 +171,12 @@ export class WaitingRoomSocket {
     this.broadcast(WaitingRoomEvent.SeatDisabled, evt);
   };
 
+  private readonly onHostChanged = (socket: SocketIO.Socket) => (
+    evt: WaitingRoomClientEventFinder<WaitingRoomEvent.ChangeHost>,
+  ) => {
+    this.broadcast(WaitingRoomEvent.ChangeHost, evt);
+  };
+
   private readonly onRoomCreated = (socket: SocketIO.Socket) => (
     evt: WaitingRoomClientEventFinder<WaitingRoomEvent.RoomCreated>,
   ) => {
@@ -194,6 +201,6 @@ export class WaitingRoomSocket {
   };
 
   public readonly reassigHost = (prevHostPlayerId: PlayerId, newHostPlayerId: PlayerId) => {
-    this.broadcast(WaitingRoomEvent.PlayerLeave, { leftPlayerId: prevHostPlayerId, byKicked: false, newHostPlayerId });
+    this.broadcast(WaitingRoomEvent.ChangeHost, { prevHostPlayerId, newHostPlayerId });
   };
 }

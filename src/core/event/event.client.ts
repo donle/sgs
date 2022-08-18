@@ -259,4 +259,8 @@ export interface WaitingRoomClientEvent extends WaitingRoomEventUtilities {
     roomInfo: TemporaryRoomCreationInfo & { roomId?: number };
     hostPlayerId: PlayerId;
   };
+  [WaitingRoomEvent.ChangeHost]: {
+    prevHostPlayerId: PlayerId;
+    newHostPlayerId: PlayerId;
+  }
 }

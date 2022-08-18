@@ -20,6 +20,7 @@ export class WaitingRoomPresenter {
       gameMode: GameMode.Standard,
       cardExtensions: Sanguosha.getCardExtensionsFromGameMode(GameMode.Standard),
       characterExtensions: Sanguosha.getGameCharacterExtensions(),
+      excludedCharacters: [],
       numberOfPlayers: WaitingRoomPresenter.defaultNumberOfPlayers,
       playingTimeLimit: 60,
       wuxiekejiTimeLimit: 15,

@@ -40,6 +40,7 @@ import {
 } from 'core/game/stage_processor';
 import { Player } from 'core/player/player';
 import { PlayerCardsArea, PlayerId, PlayerInfo, PlayerRole } from 'core/player/player_props';
+import { TimeLimitVariant } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { Algorithm } from 'core/shares/libs/algorithm';
 import { Functional } from 'core/shares/libs/functional';
@@ -351,7 +352,7 @@ export class StandardGameProcessor extends GameProcessor {
   protected async chooseCharacters(playersInfo: PlayerInfo[], selectableCharacters: Character[]) {
     // lord choose character
     const lordInfo = playersInfo[0];
-    const stdLordCharacters = Sanguosha.getLordCharacters(this.room.Info.characterExtensions);
+    const stdLordCharacters = selectableCharacters.filter(character => character.isLord());
     const lordCharacters = [
       ...stdLordCharacters,
       ...this.getSelectableCharacters(
@@ -842,7 +843,7 @@ export class StandardGameProcessor extends GameProcessor {
       }
 
       //TODO: enable to custom wuxiekeji response time limit
-      this.room.doNotify(notifierAllPlayers, 15);
+      this.room.doNotify(notifierAllPlayers, TimeLimitVariant.AskForWuxiekeji);
       let cardUseEvent: ServerEventFinder<GameEventIdentifiers.CardUseEvent> | undefined;
       while (Object.keys(pendingResponses).length > 0) {
         const response = await Promise.race(Object.values(pendingResponses));
@@ -1921,12 +1922,12 @@ export class StandardGameProcessor extends GameProcessor {
           }
         } else if (toArea === CardMoveArea.OutsideArea) {
           to.getCardIds(
-            toArea as unknown as PlayerCardsArea,
+            (toArea as unknown) as PlayerCardsArea,
             Precondition.exists(toOutsideArea, 'outside area must have an area name'),
           ).push(...actualCardIds);
         } else if (toArea === CardMoveArea.HandArea) {
           this.room.transformCard(to, actualCardIds, PlayerCardsArea.HandArea);
-          to.getCardIds(toArea as unknown as PlayerCardsArea).push(...actualCardIds);
+          to.getCardIds((toArea as unknown) as PlayerCardsArea).push(...actualCardIds);
         } else {
           const transformedDelayedTricks = cardIds.map(cardId => {
             if (!Card.isVirtualCardId(cardId)) {
@@ -1947,7 +1948,7 @@ export class StandardGameProcessor extends GameProcessor {
 
             return cardId;
           });
-          to.getCardIds(toArea as unknown as PlayerCardsArea).push(...transformedDelayedTricks);
+          to.getCardIds((toArea as unknown) as PlayerCardsArea).push(...transformedDelayedTricks);
         }
       }
     }
@@ -1963,7 +1964,7 @@ export class StandardGameProcessor extends GameProcessor {
 
     let ownerId = this.room.getCardOwnerId(judgeCardId);
     if (ownerId) {
-      const cardArea = this.room.getPlayerById(ownerId).cardFrom(judgeCardId) as any as CardMoveArea | undefined;
+      const cardArea = (this.room.getPlayerById(ownerId).cardFrom(judgeCardId) as any) as CardMoveArea | undefined;
       fromArea = cardArea === undefined ? fromArea : cardArea;
     }
 

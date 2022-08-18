@@ -135,11 +135,21 @@ export class Seats extends React.Component<SeatsProps> {
     return this.props.store.seats.filter(seat => !seat.seatDisabled && seat.playerId != null).length;
   }
 
+  private readonly transferHost = (playerId: PlayerId) => () => {
+    this.props.senderService.giveHostTo(this.props.store.selfPlayerId, playerId);
+  };
+
   createSeats = () => {
     const seatComponents: JSX.Element[] = [];
     for (const seat of this.props.store.seats) {
+      const hostControl = this.props.isHost && this.props.store.selfPlayerId !== (seat as any).playerId;
       seatComponents.push(
         <span className={styles.seatComponent} key={seat.seatId}>
+          {hostControl && (seat as any).playerId && (
+            <Button variant="primary" onClick={this.transferHost((seat as any).playerId)} className={styles.giveHostButton}>
+              {this.props.translator.tr(Messages.transferHost())}
+            </Button>
+          )}
           <ClickableSeat
             imageLoader={this.props.imageLoader}
             seatInfo={seat}
@@ -147,7 +157,7 @@ export class Seats extends React.Component<SeatsProps> {
             avatarService={this.props.avatarService}
             selfPlayerId={this.props.store.selfPlayerId}
             onClick={this.onClickSeat}
-            clickable={this.props.isHost && this.props.store.selfPlayerId !== (seat as any).playerId}
+            clickable={hostControl}
           />
         </span>,
       );
@@ -197,7 +207,9 @@ export class Seats extends React.Component<SeatsProps> {
     } else {
       return (
         <Button className={styles.startButton} variant="primary" onClick={this.getReady}>
-          {this.isReady ? this.props.translator.tr(Messages.cancelReady()) : this.props.translator.tr(Messages.getReady())}
+          {this.isReady
+            ? this.props.translator.tr(Messages.cancelReady())
+            : this.props.translator.tr(Messages.getReady())}
         </Button>
       );
     }

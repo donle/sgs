@@ -60,7 +60,7 @@ import {
 } from 'core/skills/skill';
 import { UniqueSkillRule } from 'core/skills/skill_rule';
 import { PatchedTranslationObject, TranslationPack } from 'core/translations/translation_json_tool';
-import { Room, RoomId } from './room';
+import { Room, RoomId, TimeLimitVariant } from './room';
 import { RoomEventStacker } from './utils/room_event_stack';
 
 export class ServerRoom extends Room<WorkPlace.Server> {
@@ -83,7 +83,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     protected gameMode: GameMode,
     protected gameCommonRules: GameCommonRules,
     protected eventStack: RoomEventStacker<WorkPlace.Server>,
-    protected readonly waitingRoomInfo: { roomInfo: TemporaryRoomCreationInfo, roomId: number },
+    protected readonly waitingRoomInfo: { roomInfo: TemporaryRoomCreationInfo; roomId: number },
   ) {
     super();
     this.init();
@@ -93,7 +93,9 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   private roomClosed = false;
 
   protected init() {
-    this.loadedCharacters = CharacterLoader.getInstance().getPackages(...this.gameInfo.characterExtensions);
+    this.loadedCharacters = CharacterLoader.getInstance()
+      .getPackages(...this.gameInfo.characterExtensions)
+      .filter(character => !this.gameInfo.excludedCharacters.includes(character.Id));
     this.drawStack = CardLoader.getInstance()
       .getPackages(...this.gameInfo.cardExtensions)
       .map(card => card.Id);
@@ -210,7 +212,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     };
     this.broadcast(GameEventIdentifiers.GameReadyEvent, event);
     this.gameStarted = true;
-    await System.Thread.sleep(3000);
+    await System.MainThread.sleep(3000);
     await this.gameProcessor.gameStart(this, this.loadedCharacters, () => {
       this.selectedCharacters = this.getAlivePlayersFrom().map(player => player.CharacterId) as CharacterId[];
     });
@@ -230,14 +232,12 @@ export class ServerRoom extends Room<WorkPlace.Server> {
     this.broadcast(GameEventIdentifiers.DrunkEvent, { toId, drunk: false });
   }
 
-  public notify<I extends GameEventIdentifiers>(
-    type: I,
-    content: ServerEventFinder<I>,
-    to: PlayerId,
-    notificationTime: number = 60,
-  ) {
+  public notify<I extends GameEventIdentifiers>(type: I, content: ServerEventFinder<I>, to: PlayerId) {
     !content.ignoreNotifiedStatus &&
-      this.broadcast(GameEventIdentifiers.NotifyEvent, { toIds: [to], notificationTime });
+      this.broadcast(GameEventIdentifiers.NotifyEvent, {
+        toIds: [to],
+        notificationTime: this.gameInfo.playingTimeLimit || 60,
+      });
 
     content = EventPacker.createIdentifierEvent(type, EventPacker.minifyPayload(content));
     this.eventStack.push(content);
@@ -246,8 +246,14 @@ export class ServerRoom extends Room<WorkPlace.Server> {
   }
 
   //TODO: enable to custom response time limit
-  public doNotify(toIds: PlayerId[], notificationTime: number = 60) {
-    this.broadcast(GameEventIdentifiers.NotifyEvent, { toIds, notificationTime });
+  public doNotify(toIds: PlayerId[], timeLimitVariant: TimeLimitVariant = TimeLimitVariant.PlayPhase) {
+    this.broadcast(GameEventIdentifiers.NotifyEvent, {
+      toIds,
+      notificationTime:
+        timeLimitVariant === TimeLimitVariant.PlayPhase
+          ? this.gameInfo.playingTimeLimit || 60
+          : this.gameInfo.wuxiekejiTimeLimit || 15,
+    });
   }
 
   public broadcast<I extends GameEventIdentifiers>(type: I, content: ServerEventFinder<I>) {
@@ -1896,7 +1902,7 @@ export class ServerRoom extends Room<WorkPlace.Server> {
           });
 
           await this.trigger(pindianEvent, PinDianStage.PinDianResultConfirmed);
-          await System.Thread.sleep(2500);
+          await System.MainThread.sleep(2500);
           this.broadcast(GameEventIdentifiers.ObserveCardFinishEvent, {});
         }
 

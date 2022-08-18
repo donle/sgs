@@ -152,31 +152,6 @@ export class RoomPage extends React.Component<
       ping: 0,
       hostConfig: this.props.config.host.find(host => host.hostTag === this.gameHostedServer),
     });
-
-    // this.connectionService.Lobby.checkRoomExist(this.gameHostedServer, roomId, (exist, ping) => {
-    //   if (exist) {
-    //     this.props.history.push(`/waiting-room/${roomId}`, {
-    //       ping,
-    //       hostConfig: this.gameHostedServer,
-    //     });
-    //   } else {
-    //     this.connectionService.Lobby.createWaitingRoom({ ...roomInfo, roomId }, event => {
-    //       const { packet, ping, hostTag, error } = event;
-    //       if (packet) {
-    //         const { roomId, roomInfo } = packet;
-    //         console.log(packet);
-    //         const hostConfig = this.props.config.host.find(config => config.hostTag === hostTag);
-    //         this.props.history.push(`/waiting-room/${roomId}`, {
-    //           roomInfo,
-    //           ping,
-    //           hostConfig,
-    //         });
-    //       } else {
-    //         console.error(error);
-    //       }
-    //     });
-    //   }
-    // });
   };
 
   private readonly onHandleBulkEvents = async (events: ServerEventFinder<GameEventIdentifiers>[]) => {

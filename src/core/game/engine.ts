@@ -17,7 +17,8 @@ export class Sanguosha {
     [name: string]: Skill;
   } = {};
   private static cards: Card[];
-  private static characters: Character[];
+  private static charactersMap: Map<GameCharacterExtensions, Character[]> = new Map();
+  private static characters: Character[] = [];
   private static version: string;
   private static transformSkills: string[] = [];
   private static cardCategories: {
@@ -94,6 +95,12 @@ export class Sanguosha {
 
     const character = Sanguosha.characters[characterId] as Character;
     return Precondition.exists(character, `Unable to find the card by id: ${characterId}`);
+  }
+
+  public static getCharacterByExtensions(extensions: GameCharacterExtensions[], exclude?: (Character | CharacterId)[]) {
+    this.tryToThrowUninitializedError();
+
+    return CharacterLoader.getInstance().getPackages(...extensions);
   }
 
   public static getVirtualCardById<T extends Card>(cardId: VirtualCardId): VirtualCard<T> {

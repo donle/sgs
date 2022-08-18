@@ -21,6 +21,10 @@ export class WaitingRoomSender {
     });
   }
 
+  giveHostTo(from: PlayerId, to: PlayerId) {
+    this.socket.emit(WaitingRoomEvent.ChangeHost, { prevHostPlayerId: from, newHostPlayerId: to });
+  }
+
   onReceivingChatMessage(receiver: (msg: ChatPacketObject) => void) {
     this.socket.on(
       WaitingRoomEvent.PlayerChatMessage,

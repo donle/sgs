@@ -12,6 +12,8 @@ export const createTranslationMessages = (translator: ClientTranslationModule) =
   second: () => translator.tr('second'),
   passcode: () => translator.tr('please enter your room passcode'),
   save: () => translator.tr('save settings'),
+  forbiddenCharacters: () => translator.tr('forbidden characters'),
+  searchCharacterByName: () => translator.tr('search character by name'),
 
   pveModeSelection: () => translator.tr('pve mode selection'),
   pveDragon: () => translator.tr('two players'),

@@ -4,6 +4,8 @@ import { PlayerId } from 'core/player/player_props';
 import { RoomId } from 'core/room/room';
 import { Precondition } from 'core/shares/libs/precondition/precondition';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ElectronData } from 'electron_loader/electron_data';
+import { ElectronLoader } from 'electron_loader/electron_loader';
 import { createTranslationMessages } from './messages';
 import { RoomAvatarService } from './services/avatar_service';
 import { WaitingRoomPresenter } from './waiting_room.presenter';
@@ -19,6 +21,7 @@ export class WaitingRoomProcessor {
     private socket: SocketIOClient.Socket,
     private avatarService: RoomAvatarService,
     private translator: ClientTranslationModule,
+    private electronLoader: ElectronLoader,
     private presenter: WaitingRoomPresenter,
     private store: WaitingRoomStore,
     private selfPlayerName: string,
@@ -78,11 +81,30 @@ export class WaitingRoomProcessor {
           case WaitingRoomEvent.SeatDisabled:
             this.onSeatDisabled(evt as WaitingRoomServerEventFinder<WaitingRoomEvent.SeatDisabled>);
             return;
+          case WaitingRoomEvent.ChangeHost:
+            this.onHostChanged(evt as WaitingRoomServerEventFinder<WaitingRoomEvent.ChangeHost>);
+            return;
           default:
             throw Precondition.UnreachableError(identifier);
         }
       });
     });
+  }
+
+  public saveSettingsLocally() {
+    this.electronLoader.setData(ElectronData.RoomSettingsAllowObserver, this.store.gameSettings.allowObserver || false);
+    this.electronLoader.setData(ElectronData.RoomSettingsCardExtensions, this.store.gameSettings.cardExtensions);
+    this.electronLoader.setData(
+      ElectronData.RoomSettingsCharacterExtensions,
+      this.store.gameSettings.characterExtensions,
+    );
+    this.electronLoader.setData(ElectronData.RoomSettingsGameMode, this.store.gameSettings.gameMode);
+    this.electronLoader.setData(ElectronData.RoomSettingsPlayTime, this.store.gameSettings.playingTimeLimit);
+    this.electronLoader.setData(ElectronData.RoomSettingsWuxiekejiTime, this.store.gameSettings.wuxiekejiTimeLimit);
+    this.electronLoader.setData(
+      ElectronData.RoomSettingsDisabledCharacters,
+      this.store.gameSettings.excludedCharacters,
+    );
   }
 
   private onPlayerEnter(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.PlayerEnter>) {
@@ -139,6 +161,7 @@ export class WaitingRoomProcessor {
 
   private onGameInfoUpdate(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.GameInfoUpdate>) {
     this.presenter.updateGameSettings(this.store, evt.roomInfo);
+    this.saveSettingsLocally();
   }
 
   private onGameStart(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.GameStart>) {
@@ -158,13 +181,13 @@ export class WaitingRoomProcessor {
       return this.accessRejectedHandler();
     }
 
-    if (evt.newHostPlayerId != null) {
-      this.hostChangedListener?.({ newHostPlayerId: evt.newHostPlayerId });
-    }
-
     const existingSeat = this.store.seats.find(seat => !seat.seatDisabled && seat.playerId === evt.leftPlayerId);
     if (!existingSeat) {
       return;
+    }
+
+    if (evt.newHostPlayerId != null) {
+      this.hostChangedListener?.({ newHostPlayerId: evt.newHostPlayerId });
     }
 
     const seatInfo: WaitingRoomSeatInfo = {
@@ -198,6 +221,8 @@ export class WaitingRoomProcessor {
       const { roomName, campaignMode, coreVersion, hostPlayerId, ...settings } = evt.roomInfo;
 
       this.presenter.updateGameSettings(this.store, settings);
+      this.saveSettingsLocally();
+
       this.presenter.initSeatsInfo(this.store);
 
       const avatarIndex = await this.avatarService.getRandomAvatarIndex();
@@ -217,5 +242,14 @@ export class WaitingRoomProcessor {
 
     this.presenter.updateSeatInfo(this.store, { ...playerSeat, seatDisabled: evt.disabled });
     this.presenter.updateRoomPlayers(this.store, evt.disabled ? -1 : 1);
+  }
+
+  private onHostChanged(evt: WaitingRoomServerEventFinder<WaitingRoomEvent.ChangeHost>) {
+    this.hostChangedListener?.({ newHostPlayerId: evt.newHostPlayerId });
+    this.presenter.sendChatMessage(this.store, {
+      from: this.messages.systemNotification(),
+      message: this.messages.roomHostChanged(this.selfPlayerName),
+      timestamp: Date.now(),
+    });
   }
 }

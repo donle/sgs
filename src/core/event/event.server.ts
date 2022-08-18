@@ -509,7 +509,7 @@ export interface ServerEvent extends EventUtilities {
     playerName: string;
     roomInfo: TemporaryRoomCreationInfo;
     roomId: RoomId;
-  }
+  };
 }
 
 export type PinDianProcedure = {
@@ -572,4 +572,8 @@ export interface WaitingRoomServerEvent extends WaitingRoomEventUtilities {
         error: null;
       }
     | { error: string };
+  [WaitingRoomEvent.ChangeHost]: {
+    prevHostPlayerId: PlayerId;
+    newHostPlayerId: PlayerId;
+  };
 }

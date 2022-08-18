@@ -1,15 +1,19 @@
 import classNames from 'classnames';
+import { Character } from 'core/characters/character';
 import { Sanguosha } from 'core/game/engine';
 import { GameCharacterExtensions, WaitingRoomGameSettings } from 'core/game/game_props';
 import { GameMode } from 'core/shares/types/room_props';
 import { WuXieKeJiSkill } from 'core/skills';
 import { ClientTranslationModule } from 'core/translations/translation_module.client';
+import { ImageLoader } from 'image_loader/image_loader';
 import * as mobx from 'mobx';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
+import { CharacterCard } from 'ui/character/character';
 import { CheckBox } from 'ui/check_box/check_box';
 import { CheckBoxGroup } from 'ui/check_box/check_box_group';
 import { Input } from 'ui/input/input';
+import { Tooltip } from 'ui/tooltip/tooltip';
 import { WaitingRoomPresenter } from '../waiting_room.presenter';
 import { WaitingRoomStore } from '../waiting_room.store';
 import styles from './game_settings.module.css';
@@ -18,6 +22,7 @@ import { createTranslationMessages } from './messages';
 export type GameSettingsProps = {
   controlable: boolean;
   translator: ClientTranslationModule;
+  imageLoader: ImageLoader;
   presenter: WaitingRoomPresenter;
   store: WaitingRoomStore;
   className?: string;
@@ -27,6 +32,16 @@ export type GameSettingsProps = {
 @mobxReact.observer
 export class GameSettings extends React.Component<GameSettingsProps> {
   private translationMessage = createTranslationMessages(this.props.translator);
+  private inputDebounceTimer: NodeJS.Timer | undefined;
+  private searchContentElementRef = React.createRef<HTMLDivElement>();
+
+  @mobx.observable.ref
+  private searchCharacterInput: string = '';
+  @mobx.observable.ref
+  private searchTooltipPosition: [number, number] | undefined;
+
+  @mobx.observable.shallow
+  private searchResultList: Character[] = [];
 
   @mobx.computed
   private get pvePlayersOptions() {
@@ -119,6 +134,49 @@ export class GameSettings extends React.Component<GameSettingsProps> {
     this.props.onSave();
   };
 
+  @mobx.action
+  private readonly onSearchCharacterInputChange = (value?: string) => {
+    this.searchCharacterInput = value ?? '';
+
+    if (this.inputDebounceTimer) {
+      clearTimeout(this.inputDebounceTimer);
+    }
+
+    this.inputDebounceTimer = setTimeout(
+      mobx.action(() => {
+        this.searchResultList = Sanguosha.getCharacterByExtensions(
+          this.props.store.gameSettings.characterExtensions,
+        ).filter(
+          character =>
+            character.Name.includes(this.searchCharacterInput) ||
+            this.props.translator.tr(character.Name).includes(this.searchCharacterInput),
+        );
+
+        if (this.searchContentElementRef.current) {
+          const { left } = this.searchContentElementRef.current.getBoundingClientRect();
+          this.searchTooltipPosition = [window.screen.width - left, window.screen.height / 2];
+        }
+
+        this.inputDebounceTimer = undefined;
+      }),
+      1500,
+    );
+  };
+
+  private readonly addOrRemoveForbiddenCharactersById = (character: Character) => {
+    this.props.presenter.updateGameSettings(this.props.store, {
+      ...this.props.store.gameSettings,
+      excludedCharacters: this.props.store.gameSettings.excludedCharacters.includes(character.Id)
+        ? this.props.store.gameSettings.excludedCharacters.filter(characterId => characterId !== character.Id)
+        : [...this.props.store.gameSettings.excludedCharacters, character.Id],
+    });
+    this.props.onSave();
+
+    mobx.runInAction(() => {
+      this.searchCharacterInput = '';
+    });
+  };
+
   render() {
     return (
       <div className={classNames(styles.container, this.props.className)}>
@@ -192,6 +250,47 @@ export class GameSettings extends React.Component<GameSettingsProps> {
               max={60}
               suffix={this.translationMessage.second()}
             />
+          </div>
+        </div>
+        <div className={styles.settingsLabel} ref={this.searchContentElementRef}>
+          <span className={styles.inputTitle}>{this.translationMessage.forbiddenCharacters()}</span>
+          <Input
+            value={this.searchCharacterInput}
+            onChange={this.onSearchCharacterInputChange}
+            disabled={!this.props.controlable}
+            transparency={0.3}
+            placeholder={this.translationMessage.searchCharacterByName()}
+          />
+
+          {this.searchCharacterInput && this.searchTooltipPosition && (
+            <Tooltip
+              position={{ bottom: this.searchTooltipPosition[1], right: this.searchTooltipPosition[0] }}
+              className={styles.searchResultsList}
+            >
+              {this.searchResultList.map(character => (
+                <CharacterCard
+                  key={character.Id}
+                  character={character}
+                  size="tiny"
+                  imageLoader={this.props.imageLoader}
+                  translator={this.props.translator}
+                  onClick={this.addOrRemoveForbiddenCharactersById}
+                />
+              ))}
+            </Tooltip>
+          )}
+
+          <div className={styles.searchResultsList}>
+            {this.props.store.gameSettings.excludedCharacters.map(characterId => (
+              <CharacterCard
+                key={characterId}
+                character={Sanguosha.getCharacterById(characterId)}
+                size="tiny"
+                imageLoader={this.props.imageLoader}
+                translator={this.props.translator}
+                onClick={this.addOrRemoveForbiddenCharactersById}
+              />
+            ))}
           </div>
         </div>
       </div>

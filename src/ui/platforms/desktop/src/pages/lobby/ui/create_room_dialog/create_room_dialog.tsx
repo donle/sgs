@@ -59,12 +59,23 @@ export class CreateRoomDialog extends React.Component<{
         hostPlayerId: this.props.electronLoader.getTemporaryData(ElectronData.PlayerId)!,
         numberOfPlayers: gameMode === GameMode.Pve ? this.numberOfPlayers : 8,
         roomName: this.roomName,
-        gameMode,
+        gameMode:
+          gameMode === GameMode.Pve
+            ? gameMode
+            : this.props.electronLoader.getData(ElectronData.RoomSettingsGameMode) || gameMode,
         passcode: this.passcode,
-        characterExtensions: Sanguosha.getGameCharacterExtensions(),
+        characterExtensions:
+          this.props.electronLoader.getData(ElectronData.RoomSettingsCharacterExtensions) ||
+          Sanguosha.getGameCharacterExtensions(),
         campaignMode: gameMode === GameMode.Pve,
         coreVersion: Sanguosha.Version,
-        cardExtensions: Sanguosha.getCardExtensionsFromGameMode(gameMode),
+        cardExtensions:
+          this.props.electronLoader.getData(ElectronData.RoomSettingsCardExtensions) ||
+          Sanguosha.getCardExtensionsFromGameMode(gameMode),
+        allowObserver: this.props.electronLoader.getData(ElectronData.RoomSettingsAllowObserver) || false,
+        playingTimeLimit: this.props.electronLoader.getData(ElectronData.RoomSettingsPlayTime) || 60,
+        wuxiekejiTimeLimit: this.props.electronLoader.getData(ElectronData.RoomSettingsWuxiekejiTime) || 15,
+        excludedCharacters: this.props.electronLoader.getData(ElectronData.RoomSettingsDisabledCharacters) || [],
       },
       this.roomName,
       this.passcode,

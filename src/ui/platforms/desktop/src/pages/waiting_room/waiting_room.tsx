@@ -22,7 +22,6 @@ import { ChatBox } from './chat_box/chat_box';
 import { GameSettings } from './game_settings/game_settings';
 import { HeaderBar } from './header_bar/header_bar';
 import { installServices } from './install';
-import { createTranslationMessages } from './messages';
 import { Seats } from './seats/seats';
 import styles from './waiting_room.module.css';
 import { WaitingRoomPresenter } from './waiting_room.presenter';
@@ -99,9 +98,8 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
       this.services.roomProcessorService.on(WaitingRoomEvent.PlayerEnter, content => {
         this.initWithRoomInfo(content.roomInfo);
 
-        const { roomName, campaignMode, coreVersion, hostPlayerId, ...settings } = content.roomInfo;
+        const { hostPlayerId } = content.roomInfo;
         mobx.runInAction(() => (this.isHost = this.selfPlayerId === hostPlayerId));
-        this.presenter.updateGameSettings(this.store, settings);
       });
 
       this.presenter.initSeatsInfo(this.store);
@@ -124,11 +122,6 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
       'hostChange',
       mobx.action(content => {
         this.isHost = content.newHostPlayerId === this.selfPlayerId;
-        const messages = createTranslationMessages(this.props.translator);
-        this.services.eventSenderService.sendChat(
-          messages.systemNotification(),
-          messages.roomHostChanged(this.selfPlayerName),
-        );
       }),
     );
   }
@@ -138,6 +131,7 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
     const { roomName, campaignMode, coreVersion, hostPlayerId, ...settings } = roomInfo;
     this.hostPlayerId = hostPlayerId;
     this.presenter.updateGameSettings(this.store, settings);
+    this.services.roomProcessorService.saveSettingsLocally();
   }
 
   private readonly backwardsToLoddy = () => {
@@ -190,6 +184,7 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
 
   private readonly onSaveSettings = () => {
     this.services.eventSenderService.saveSettings(this.store.gameSettings);
+    this.services.roomProcessorService.saveSettingsLocally();
   };
 
   render() {
@@ -238,6 +233,7 @@ export class WaitingRoom extends React.Component<WaitingRoomProps> {
           <GameSettings
             className={styles.gameSettings}
             translator={props.translator}
+            imageLoader={props.imageLoader}
             presenter={this.presenter}
             store={this.store}
             controlable={this.isHost}

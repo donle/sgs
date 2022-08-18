@@ -34,7 +34,7 @@ export class WuXieKeJiSkill extends ResponsiveSkill {
       room.AlivePlayers.map(player => player.Id),
       1500,
     );
-    await System.Thread.sleep(1500);
+    await System.MainThread.sleep(1500);
 
     return true;
   }

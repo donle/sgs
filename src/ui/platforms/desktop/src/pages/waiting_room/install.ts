@@ -30,6 +30,7 @@ export function installServices(
       socket,
       avatarService,
       translator,
+      electronLoader,
       presenter,
       store,
       selectedPlayerName,

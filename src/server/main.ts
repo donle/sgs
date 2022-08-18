@@ -14,7 +14,7 @@ import { Player } from 'core/player/player';
 import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { RoomEventStacker } from 'core/room/utils/room_event_stack';
-import { WaitingRoomInfo } from 'core/room/waiting_room';
+import { WaitingRoomInfo } from 'core/shares/types/waiting_room_info';
 import { Logger } from 'core/shares/libs/logger/logger';
 import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';

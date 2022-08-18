@@ -37,6 +37,11 @@
     width: calc(gridLine * 3);
     font-size: 18px;
 }
+.badge.tiny {
+    height: calc(gridLine * 12);
+    width: calc(gridLine * 2.5);
+    font-size: 14px;
+}
 .nationalityBadge {
     position: absolute;
     top: 0;
@@ -49,6 +54,10 @@
     align-items: center;
     margin-top: calc(8px * 5);
     display: flex;
+}
+
+.badge.tiny .badgeContext {
+    margin-top: calc(8px * 3);
 }
 
 .playerPhase {

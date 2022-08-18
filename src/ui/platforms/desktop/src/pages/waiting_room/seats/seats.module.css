@@ -15,6 +15,13 @@
   display: flex;
   justify-content: center;
   width: 25%;
+  position: relative;
+  padding-top: calc(gridLine * 4);
+}
+
+.giveHostButton {
+  position: absolute;
+  top: gridLine;
 }
 
 .seat {

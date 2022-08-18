@@ -8,11 +8,11 @@ import { Player } from 'core/player/player';
 import { RoomId } from 'core/room/room';
 import { ServerRoom } from 'core/room/room.server';
 import { RoomEventStacker } from 'core/room/utils/room_event_stack';
-import { WaitingRoomInfo } from 'core/room/waiting_room';
 import { System } from 'core/shares/libs/system';
 import { Flavor } from 'core/shares/types/host_config';
 import { GameMode } from 'core/shares/types/room_props';
 import { RoomInfo } from 'core/shares/types/server_types';
+import { WaitingRoomInfo } from 'core/shares/types/waiting_room_info';
 import { WaitingRoomSocket } from 'server/channels/waiting_room';
 import SocketIO from 'socket.io';
 
@@ -100,7 +100,7 @@ export class RoomService {
       /**
        * To wait for players joining waiting room and room info being updated
        */
-      await System.Thread.sleep(1500);
+      await System.MainThread.sleep(1500);
 
       const waitingRoomIndex = this.waitingRooms.findIndex(r => r.roomId === room.WaitingRoomInfo.roomId);
       const waitingRoom = this.waitingRooms[waitingRoomIndex];
@@ -108,13 +108,10 @@ export class RoomService {
       if (waitingRoom?.players.length === 0) {
         this.waitingRooms.splice(waitingRoomIndex, 1);
         this.waitingRoomMaps.delete(waitingRoom.roomId);
-      }
-      if (waitingRoom) {
-        if (waitingRoom.players.find(p => p.playerId === waitingRoom.hostPlayerId) == null) {
-          this.waitingRoomMaps
-            .get(waitingRoom.roomId)
-            ?.reassigHost(waitingRoom.hostPlayerId, waitingRoom.players[0].playerId);
-        }
+      } else if (waitingRoom && waitingRoom.players.find(p => p.playerId === waitingRoom.hostPlayerId) == null) {
+        this.waitingRoomMaps
+          .get(waitingRoom.roomId)
+          ?.reassigHost(waitingRoom.hostPlayerId, waitingRoom.players[0].playerId);
       }
     });
 

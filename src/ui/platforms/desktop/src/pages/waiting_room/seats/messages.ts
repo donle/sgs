@@ -3,4 +3,5 @@ export const Messages = {
   cancelReady: () => 'cancel ready',
   getReady: () => 'get ready',
   gameStart: () => 'start game',
+  transferHost: () => 'give host',
 };

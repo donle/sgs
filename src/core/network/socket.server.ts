@@ -349,7 +349,10 @@ export class ServerSocket extends Socket<WorkPlace.Server> {
       player.getReady();
     }
 
-    if (room.Players.length === room.getRoomInfo().totalPlayers && room.Players.every(player => player.isReady())) {
+    if (
+      room.Players.length === room.getRoomInfo().totalPlayers &&
+      room.Players.every(player => player.isSmartAI() || player.isReady())
+    ) {
       await room.gameStart();
     }
   }

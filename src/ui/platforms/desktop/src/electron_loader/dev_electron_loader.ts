@@ -16,8 +16,17 @@ export class DevElectronLoader extends ElectronLoader {
     window.localStorage.setItem(key, typeof value === 'object' ? JSON.stringify(value) : (value as any));
   }
 
-  public getData(key: ElectronData) {
-    return window.localStorage.getItem(key) as any;
+  public getData<T = unknown>(key: ElectronData): T {
+    const data = window.localStorage.getItem(key);
+    try {
+      if (data) {
+        return JSON.parse(data);
+      } else {
+        return data as unknown as T;
+      }
+    } catch {
+      return data as unknown as T;
+    }
   }
 
   public removeData(key: ElectronData) {

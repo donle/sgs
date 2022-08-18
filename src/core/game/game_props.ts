@@ -48,7 +48,7 @@ export type GameInfo = {
   roomName: string;
   passcode?: string;
   multiCharacters?: boolean;
-  excludedCharacters?: CharacterId[];
+  excludedCharacters: CharacterId[];
   playingTimeLimit?: number;
   wuxiekejiTimeLimit?: number;
   allowObserver?: boolean;
@@ -65,7 +65,7 @@ export type TemporaryRoomCreationInfo = {
   passcode?: string;
   campaignMode?: boolean;
   multiCharacters?: boolean;
-  excludedCharacters?: CharacterId[];
+  excludedCharacters: CharacterId[];
   playingTimeLimit?: number;
   wuxiekejiTimeLimit?: number;
   allowObserver?: boolean;

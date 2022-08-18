@@ -8,9 +8,16 @@
     font-size: calc(gridLine * 3);
     position: relative;
 }
+.characterCard.clickable {
+    cursor: pointer;
+}
 .characterCard.small {
     min-width: calc(gridLine * 15);
     height: calc(gridLine * 18.75);
+}
+.characterCard.tiny {
+    min-width: calc(gridLine * 12);
+    height: calc(gridLine * 15);
 }
 
 .selected {
@@ -22,6 +29,11 @@
     position: absolute;
     top: 0;
     z-index: -2;
+}
+
+.characterImage.tiny {
+    width: calc(gridLine * 12);
+    height: inherit;
 }
 
 .characterImage.left {
@@ -46,7 +58,7 @@
     justify-content: center;
 }
 
-.characterHp.small {
+.characterHp.small, .characterHp.tiny {
     max-width: calc(gridLine * 10);
     flex-wrap: wrap;
 }

@@ -10,7 +10,7 @@ export type InputProps = {
   max?: number;
   value?: string;
   placeholder?: string;
-  suffix?: string;
+  suffix?: React.ReactNode;
   disabled?: boolean;
   transparency?: number;
 };

@@ -774,7 +774,7 @@ export const UiDictionary: Word[] = [
   { source: 'ready', target: '已准备' },
   { source: 'cancel ready', target: '取消准备' },
   { source: 'get ready', target: '准备' },
-  { source: 'enable observer', target: '允许旁观' },
+  { source: 'enable observer', target: '允许旁观(暂无效果)' },
   { source: '{0} time limit', target: '{0}操作时间' },
   { source: 'game mode', target: '游戏模式' },
   { source: 'character package settings', target: '武将扩展包设置' },
@@ -785,5 +785,8 @@ export const UiDictionary: Word[] = [
   { source: 'multi online', target: '联机游戏' },
   { source: 'room host has been changed to {0}', target: '{0} 成为了新房主' },
   { source: 'pve mode selection', target: 'PvE模式选择' },
-  { source: 'back to waiting room', target: '放回房间' },
+  { source: 'back to waiting room', target: '返回房间' },
+  { source: 'give host', target: '设为房主' },
+  { source: 'forbidden characters', target: '禁用武将列表' },
+  { source: 'search character by name', target: '输入武将名' },
 ];
