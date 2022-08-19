@@ -1,4 +1,6 @@
 @value gridLine from '../../../ui/metrics/metrics.css';
+@value textGrey from '../../../ui/metrics/metrics.css';
+@value textHighlight from '../../../ui/metrics/metrics.css';
 
 .container {
     display: flex;
@@ -14,7 +16,7 @@
     align-items: flex-start;
     height: calc(gridLine * 20);
     overflow: auto;
-    border: 1px solid gray;
+    border: 1px solid textGrey;
     border-radius: 4px;
     margin-bottom: calc(gridLine * 2);
     background-color: rgba(0, 0, 0, 0.6);
@@ -26,7 +28,7 @@
     margin-bottom: 4px;
     font-size: 14px;
     width: 100%;
-    color: #dcad00;
+    color: textHighlight;
 }
 
 .userInput {
@@ -40,10 +42,10 @@
 .input {
     flex: auto;
     background: transparent;
-    border: 1px solid grey;
+    border: 1px solid textGrey;
     margin-right: 4px;
     border-radius: 4px;
-    color: #dcad00;
+    color: textHighlight;
     outline: none;
 }
 

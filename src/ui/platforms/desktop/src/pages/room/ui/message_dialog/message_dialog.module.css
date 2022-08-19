@@ -1,4 +1,10 @@
 @value gridLine from '../../../../ui/metrics/metrics.css';
+@value halfGridLine from '../../../../ui/metrics/metrics.css';
+@value textLightBlack from '../../../../ui/metrics/metrics.css';
+@value textWhite from '../../../../ui/metrics/metrics.css';
+@value textGrey from '../../../../ui/metrics/metrics.css';
+@value textWarning from '../../../../ui/metrics/metrics.css';
+@value textHighlight from '../../../../ui/metrics/metrics.css';
 
 .chat {
     display: flex;
@@ -14,8 +20,8 @@
 .chatInput {
     flex: auto;
     background: transparent;
-    border: 1px solid grey;
-    margin-right: 4px;
+    border: 1px solid textGrey;
+    margin-right: halfGridLine;
 }
 
 .quickChat {
@@ -24,13 +30,13 @@
     width: 100%;
     top: calc(gridLine * -20);
     overflow: auto;
-    background-color: #211616;
+    background-color: textLightBlack;
 }
 .quickChatItems {
     max-width: 100%;
     word-wrap: break-word;
     display: inline-block;
-    color: white;
+    color: textWhite;
     padding: calc(gridLine / 2) calc(gridLine / 2);
     margin: 0;
     cursor: pointer;
@@ -53,16 +59,16 @@
 .messageDialog {
     display: flex;
     flex-direction: column;
-    padding: 4px 0;
+    padding: halfGridLine 0;
     overflow: auto;
     word-wrap: break-word;
     user-select: text;
 }
 .messageLine {
     margin: 0;
-    margin-bottom: 4px;
-    color: #dcad00;
-    line-height: 16px;
+    margin-bottom: halfGridLine;
+    color: textHighlight;
+    line-height: calc(gridLine * 2);
 }
 .tabs {
     display: flex;
@@ -72,17 +78,17 @@
     line-height: calc(gridLine * 3);
     width: calc(gridLine * 5);
     text-align: center;
-    color: #dcad00;
-    border-radius: 8px 8px 0 0;
-    border: 1px solid grey;
+    color: textHighlight;
+    border-radius: gridLine gridLine 0 0;
+    border: 1px solid textGrey;
     font-size: 14px;
     position: relative;
 }
 .tab.new::before {
     content: '';
-    height: 8px;
-    width: 8px;
-    background: red;
+    height: gridLine;
+    width: gridLine;
+    background: textWarning;
     position: absolute;
     border-radius: 50%;
     right: 0;
@@ -93,5 +99,5 @@
 }
 .spacer {
     flex: auto;
-    border-bottom: 1px solid grey;
+    border-bottom: 1px solid textGrey;
 }

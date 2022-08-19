@@ -1,12 +1,16 @@
 @value SanguoshaFont from '../../../../ui/metrics/metrics.css';
+@value textLightGrey from '../../../../ui/metrics/metrics.css';
+@value textGrey from '../../../../ui/metrics/metrics.css';
+@value textWhite from '../../../../ui/metrics/metrics.css';
+@value textLightBlack from '../../../../ui/metrics/metrics.css';
 
 .selectorDialog {
     position: absolute;
     align-self: center;
-    background: lightgrey;
-    border: 1px solid grey;
-    background-color: #1b1b1b;
-    color: white;
+    background: textLightGrey;
+    border: 1px solid textGrey;
+    background-color: textLightBlack;
+    color: textWhite;
     padding: 16px;
     z-index: 999;
 }

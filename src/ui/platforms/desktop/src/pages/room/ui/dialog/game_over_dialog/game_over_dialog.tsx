@@ -9,7 +9,6 @@ import { ClientTranslationModule } from 'core/translations/translation_module.cl
 import { ElectronLoader } from 'electron_loader/electron_loader';
 import { ImageLoader } from 'image_loader/image_loader';
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
 import { Button } from 'ui/button/button';
 import { ClientCard } from 'ui/card/card';
 import { Tooltip } from 'ui/tooltip/tooltip';
@@ -84,9 +83,7 @@ export const GameOverDialog = (props: {
   onBackingToWaitingRoom?(): void;
 }) => {
   const { translator, winners, losers, imageLoader, electron, disableSaveReplayButton, gameMode } = props;
-  const history = useHistory();
 
-  const backToLobby = () => history.push('/lobby');
   const saveReplay = () => electron.saveReplay();
 
   return (
@@ -110,9 +107,6 @@ export const GameOverDialog = (props: {
             {translator.tr(Messages.backToWaitingRoom())}
           </Button>
         )}
-        <Button variant="primary" onClick={backToLobby}>
-          {translator.tr(Messages.backToLobby())}
-        </Button>
       </div>
     </div>
   );

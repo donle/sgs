@@ -1,4 +1,6 @@
 @value gridLine from '../../ui/metrics/metrics.css';
+@value textWhite from '../../ui/metrics/metrics.css';
+@value textBlack from '../../ui/metrics/metrics.css';
 
 .lobby {
     display: flex;
@@ -81,7 +83,7 @@
     display: flex;
     flex-direction: column;
     margin: 0;
-    color: white;
+    color: textWhite;
     height: 100%;
     overflow: auto;
     width: 100%;
@@ -106,7 +108,7 @@
     padding: 0;
     min-height: calc(gridLine * 60);
     z-index: 2;
-    color: white;
+    color: textWhite;
     border-radius: 4px;
     padding: 4px;
     position: relative;
@@ -181,7 +183,7 @@
 .actionPlace {
     display: flex;
     padding: calc(gridLine * 4);
-    border-top: 1px solid black;
+    border-top: 1px solid textBlack;
 }
 .functionBoard {
     position: relative;
@@ -251,7 +253,7 @@
     font-size: 14px;
     right: gridLine;
     bottom: gridLine;
-    color: white;
+    color: textWhite;
     display: flex;
     justify-content: center;
     flex-direction: column;

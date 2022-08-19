@@ -6,6 +6,8 @@
 @value qunColor: rgb(165, 161, 158);
 @value godColor: rgb(192, 179, 74);
 
+@value shuLightColor: #ffa344;
+
 @value wuDarkColor: rgb(81, 149, 21);
 @value weiDarkColor: rgb(46, 93, 142);
 @value shuDarkColor: rgb(187, 111, 44);
@@ -20,3 +22,13 @@
 @value SanguoshaFont: XinWei, LiSu, -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', 微软雅黑;
 @value XinWeiFont: XinWei, -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', 微软雅黑;
 @value FZLiBianFont: FZLiBian, -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', 微软雅黑;
+
+@value textBlack: #000000;
+@value textLightBlack: #3b3232;
+@value textUltraLightBlack: #404040;
+@value textWhite: #ffffff;
+@value textGrey: rgb(128, 128, 128);
+@value textLightGrey: rgb(211, 211, 211);
+@value textHighlight: #dcad00;
+@value textWarning: red;
+@value textGreen: rgb(127, 196, 25);

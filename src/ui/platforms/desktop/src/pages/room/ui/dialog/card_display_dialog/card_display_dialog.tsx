@@ -8,7 +8,6 @@ import * as React from 'react';
 import { Button } from 'ui/button/button';
 import { ClientCard } from 'ui/card/card';
 import { BaseDialog } from '../base_dialog';
-import wuguStyles from '../wugufengdeng_dialog/wugufengdeng_dialog.module.css';
 import styles from './card_display_dialog.module.css';
 
 type CardDisplayDialogProps = {
@@ -54,10 +53,10 @@ export const CardDisplayDialog = (props: CardDisplayDialogProps) => {
           : 'cards displayed to you',
       )}
     >
-      <div className={wuguStyles.cardContainer} onMouseDown={onAction}>
+      <div className={styles.cardContainer} onMouseDown={onAction}>
         {getCardDisplayContainer(props).map((cardsLine, index) => {
           return (
-            <div className={wuguStyles.cardLine} key={index}>
+            <div className={styles.cardLine} key={index}>
               {cardsLine}
             </div>
           );

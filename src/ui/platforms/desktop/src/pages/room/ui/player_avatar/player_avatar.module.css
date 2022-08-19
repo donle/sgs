@@ -1,6 +1,12 @@
 @value SanguoshaFont from '../../../../ui/metrics/metrics.css';
 @value gridLine from '../../../../ui/metrics/metrics.css';
 
+@value textGrey from '../../../../ui/metrics/metrics.css';
+@value textWhite from '../../../../ui/metrics/metrics.css';
+@value textHighlight from '../../../../ui/metrics/metrics.css';
+@value textWarning from '../../../../ui/metrics/metrics.css';
+@value textGreen from '../../../../ui/metrics/metrics.css';
+
 .playerCard {
     position: relative;
     height: 230px;
@@ -34,7 +40,7 @@
     width: 100%;
     text-align: center;
     margin-top: calc(gridLine * 2);
-    text-shadow: 0px 0px 2px rgb(255, 255, 255), 0px 0px 2px rgb(255, 255, 255), 0px 0px 2px rgb(255, 255, 255);
+    text-shadow: 0px 0px 2px textWhite, 0px 0px 2px textWhite, 0px 0px 2px textWhite;
     font-weight: 550;
     font-size: 14px;
     height: calc(gridLine * 3);
@@ -58,7 +64,7 @@
     border-radius: calc(gridLine * 1.5);
 }
 .highlightBorder.selected {
-    box-shadow: 0px 0px 5px 2px red;
+    box-shadow: 0px 0px 5px 2px textWarning;
 }
 
 .playerImage {
@@ -129,11 +135,11 @@
     min-width: calc(gridLine * 6);
     font-weight: 600;
     font-size: calc(gridLine * 2);
-    color: #dcad00;
+    color: textHighlight
 }
 
 .relatedSkillTiltle {
-    color: rgb(127, 196, 25);
+    color: textGreen;
     font-size: calc(gridLine * 2);
     margin-bottom: calc(gridLine * 1.5);
     font-family: SanguoshaFont;
@@ -142,8 +148,8 @@
 }
 
 .relatedSkill {
-    color: rgb(127, 196, 25);
-    border-color: rgb(127, 196, 25);
+    color: textGreen;
+    border-color: textGreen;
 }
 
 .status {
@@ -162,7 +168,7 @@
     left: calc(gridLine * 3);
     font-size: 14px;
     font-weight: 600;
-    color: white;
+    color: textWhite;
 }
 
 .skillTags,
@@ -175,7 +181,7 @@
 }
 
 .skillTag {
-    background-color: grey;
+    background-color: textGrey;
     margin: 0px 4px;
     font-size: 13px;
     font-weight: 500;
@@ -198,7 +204,7 @@
     bottom: 0;
     width: 100%;
     height: calc(100% - calc(gridLine * 2));
-    background-color: #cc1b0d;
+    background-color: textWarning;
     opacity: 0.3;
     z-index: -1;
 }

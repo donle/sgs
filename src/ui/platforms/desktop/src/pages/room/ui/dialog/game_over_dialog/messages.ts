@@ -11,5 +11,4 @@ export const Messages = {
   winners: () => 'winners',
   saveReplay: () => 'save replay',
   backToWaitingRoom: () => 'back to waiting room',
-  backToLobby: () => 'back to lobby',
 };

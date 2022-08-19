@@ -13,12 +13,13 @@
 @value shuDarkColor from '../metrics/metrics.css';
 @value qunDarkColor from '../metrics/metrics.css';
 @value godDarkColor from '../metrics/metrics.css';
+@value textWhite from '../metrics/metrics.css';
 
 .badge {
     font-family: SanguoshaFont;
     position: relative;
     font-size: 20px;
-    color: white;
+    color: textWhite;
     padding-left: calc(gridLine * 3);
     text-shadow: 0px 0px 3px rgba(50, 50, 50, 0.87), 0px 0px 5px rgba(50, 50, 50, 0.87),
         0px 0px 7px rgba(50, 50, 50, 0.87);

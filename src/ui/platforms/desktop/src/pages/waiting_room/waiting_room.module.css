@@ -1,4 +1,5 @@
 @value gridLine from '../../ui/metrics/metrics.css';
+@value textGrey from '../../ui/metrics/metrics.css';
 
 .waitingRoom {
     display: block;
@@ -22,7 +23,7 @@
 
 .gameSettings {
     width: calc(gridLine * 35);
-    border: 1px solid grey;
+    border: 1px solid textGrey;
     border-radius: 4px;
     padding: gridLine;
 }

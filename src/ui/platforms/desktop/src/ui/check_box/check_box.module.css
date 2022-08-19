@@ -1,4 +1,5 @@
 @value gridLine from '../metrics/metrics.css';
+@value textWhite from '../metrics/metrics.css';
 
 .checkbox {
     display: flex;
@@ -9,7 +10,7 @@
 }
 
 .label {
-    color: white;
+    color: textWhite;
     font-size: 14px;
 }
 
@@ -29,7 +30,7 @@
 }
 
 .checkboxGroupHead {
-    color: white;
+    color: textWhite;
     font-size: 14px;
     font-weight: 600;
     margin-top: calc(gridLine * 2);

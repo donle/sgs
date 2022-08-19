@@ -1,3 +1,5 @@
+@value gridLine from '../../../../ui/metrics/metrics.css';
+
 .createRoomButton {
     background: none;
     border: none;
@@ -6,7 +8,7 @@
 }
 
 .buttonImage {
-    width: 32px;
+    width: calc(gridLine * 4);
 }
 
 .createRoomButton:disabled {

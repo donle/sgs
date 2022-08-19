@@ -13,7 +13,8 @@ import { CharacterCard } from 'ui/character/character';
 import { CheckBox } from 'ui/check_box/check_box';
 import { CheckBoxGroup } from 'ui/check_box/check_box_group';
 import { Input } from 'ui/input/input';
-import { Spacing, Text } from 'ui/text/text';
+import { Spacing } from 'ui/layout/spacing';
+import { Text } from 'ui/text/text';
 import { Tooltip } from 'ui/tooltip/tooltip';
 import { WaitingRoomPresenter } from '../waiting_room.presenter';
 import { WaitingRoomStore } from '../waiting_room.store';
@@ -145,6 +146,12 @@ export class GameSettings extends React.Component<GameSettingsProps> {
 
     this.inputDebounceTimer = setTimeout(
       mobx.action(() => {
+        if (!this.searchCharacterInput) {
+          this.searchResultList = [];
+          this.inputDebounceTimer = undefined;
+          return;
+        }
+
         this.searchResultList = Sanguosha.getCharacterByExtensions(
           this.props.store.gameSettings.characterExtensions,
         ).filter(

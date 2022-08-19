@@ -1630,7 +1630,7 @@ export class GameClientProcessor {
         gameMode={this.store.room.Info.gameMode}
         winners={winners}
         losers={losers}
-        onBackingToWaitingRoom={this.onBackingToWaitingRoom}
+        onBackingToWaitingRoom={this.store.room.Info.campaignMode ? undefined : this.onBackingToWaitingRoom}
       />,
     );
     this.presenter.broadcastUIUpdate();

@@ -1,3 +1,4 @@
+@value textGrey from '../../../ui/metrics/metrics.css';
 @value gridLine from '../../../ui/metrics/metrics.css';
 
 .container {
@@ -11,7 +12,7 @@
 
 .settingsLabel {
     width: 100%;
-    border-top: 1px dashed grey;
+    border-top: 1px dashed textGrey;
     margin-bottom: calc(gridLine * 2);
     display: flex;
     flex-direction: column;
